@@ -135,6 +135,7 @@ function CharacterSelect_OnLoad(self)
 	self.backFromCharCreate = false;
     self.characterPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedButtonTemplate");
 	self.waitingforCharacterList = true;
+	self.showSocialContract = false;
     self:RegisterEvent("CHARACTER_LIST_UPDATE");
     self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
     self:RegisterEvent("FORCE_RENAME_CHARACTER");
@@ -163,6 +164,7 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("MIN_EXPANSION_LEVEL_UPDATED");
 	self:RegisterEvent("MAX_EXPANSION_LEVEL_UPDATED");
 	self:RegisterEvent("INITIAL_HOTFIXES_APPLIED");
+	self:RegisterEvent("SOCIAL_CONTRACT_STATUS_UPDATE");
 
     SetCharSelectModelFrame("CharacterSelectModel");
 
@@ -294,6 +296,10 @@ function CharacterSelect_OnShow(self)
         GlueDialog_Hide();
         C_Login.DisconnectFromServer();
     end
+
+	if not self.showSocialContract then
+		C_SocialContractGlue.GetShouldShowSocialContract();
+	end
 end
 
 function CharacterSelect_OnHide(self)
@@ -329,6 +335,8 @@ function CharacterSelect_OnHide(self)
     if ( CharSelectServicesFlowFrame:IsShown() ) then
         CharSelectServicesFlowFrame:Hide();
     end
+
+	SocialContractFrame:Hide();
 
     AccountReactivate_CloseDialogs();
     SetInCharacterSelect(false);
@@ -654,6 +662,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 		UpdateCharacterList();
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" or event == "MIN_EXPANSION_LEVEL_UPDATED" or event == "MAX_EXPANSION_LEVEL_UPDATED" or event == "INITIAL_HOTFIXES_APPLIED" ) then
 		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+	elseif ( event == "SOCIAL_CONTRACT_STATUS_UPDATE") then
+		self.showSocialContract = ...;
+		if self.showSocialContract and GlueParent_GetCurrentScreen() == "charselect" then
+			CharacterSelect_UpdateIfUpdateIsNotPending();
+		end
 	end
 end
 
@@ -790,6 +803,11 @@ function UpdateCharacterList(skipSelect)
 		GlueAnnouncementDialog:Display(CHAR_LEVELS_SQUISHED_TITLE, CHAR_LEVELS_SQUISHED_DESCRIPTION, "seenLevelSquishPopup");
 	else
 		CharacterSelect_CheckDialogStates();
+	end
+
+	if CharacterSelect.showSocialContract then
+		SocialContractFrame:Show();
+		CharacterSelect.showSocialContract = false;
 	end
 
     local numChars = GetNumCharacters();
@@ -1019,12 +1037,16 @@ function UpdateCharacterList(skipSelect)
             upgradeIcon:Show();
             upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
             upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
-		elseif ( vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue and productInfo ) then
+		elseif ( vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue ) then
 			upgradeIcon:Show();
             upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
-            upgradeIcon.tooltip2 = VAS_SERVICE_PROCESSING:format(productInfo.sharedData.name);
-            if (VAS_QUEUE_TIMES[guid] and VAS_QUEUE_TIMES[guid] > 0) then
-                upgradeIcon.tooltip2 = upgradeIcon.tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(VAS_QUEUE_TIMES[guid]*60, true, false, 2, true))
+			if productInfo then
+				upgradeIcon.tooltip2 = VAS_SERVICE_PROCESSING:format(productInfo.sharedData.name);
+				if (VAS_QUEUE_TIMES[guid] and VAS_QUEUE_TIMES[guid] > 0) then
+					upgradeIcon.tooltip2 = upgradeIcon.tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(VAS_QUEUE_TIMES[guid]*60, true, false, 2, true))
+				end
+			else
+				upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
             end
 		elseif ( vasServiceState == Enum.VasPurchaseProgress.ProcessingFactionChange ) then
             upgradeIcon:Show();

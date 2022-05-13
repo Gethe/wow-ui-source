@@ -738,6 +738,7 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	self.CrossFactionGroup.disableTooltip = LFG_LIST_CROSS_FACTION_DISABLE_TOOLTIP:format(localizedFaction);
 	self.CrossFactionGroup:SetShown(shouldShowCrossFactionToggle); 
 	self.CrossFactionGroup.CheckButton:SetEnabled(not shouldDisableCrossFactionToggle); 
+	self.CrossFactionGroup.CheckButton:SetChecked(shouldDisableCrossFactionToggle);
 	if(shouldDisableCrossFactionToggle) then 
 		self.CrossFactionGroup.Label:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 	else 

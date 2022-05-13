@@ -107,6 +107,8 @@
 			<OnLoad inherit="prepend" method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnKeyDown function="nop"/>
+			<OnKeyUp function="nop"/>
 		</Scripts>
 	</Frame>
 </Ui>

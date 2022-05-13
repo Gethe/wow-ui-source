@@ -154,15 +154,20 @@ function ChallengesFrame_Update(self)
 			level = inTimeInfo and inTimeInfo.level or overtimeInfo.level; 
 			dungeonScore = inTimeInfo and inTimeInfo.dungeonScore or overtimeInfo.dungeonScore;
 		end
-		tinsert(sortedMaps, { id = self.maps[i], level = level, dungeonScore = dungeonScore});
+		local name = C_ChallengeMode.GetMapUIInfo(self.maps[i]);
+		tinsert(sortedMaps, { id = self.maps[i], level = level, dungeonScore = dungeonScore, name = name});
     end
 
     table.sort(sortedMaps,
 	function(a, b)
-		return a.dungeonScore > b.dungeonScore;
+		if(b.dungeonScore ~= a.dungeonScore) then 
+			return a.dungeonScore > b.dungeonScore; 
+		else 
+			return strcmputf8i(a.name, b.name) > 0;
+		end
 	end);
 
-	 local hasWeeklyRun = false;
+	local hasWeeklyRun = false;
 	local weeklySortedMaps = {};
 	 for i = 1, #self.maps do
 		local _, weeklyLevel = C_MythicPlus.GetWeeklyBestForMap(self.maps[i])
