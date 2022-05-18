@@ -2401,6 +2401,7 @@ function UnitPopupGarrisonVisitButtonMixin:GetText()
 	return (C_Garrison.IsUsingPartyGarrison() and GARRISON_RETURN) or GARRISON_VISIT_LEADER;
 end 
 
+--This function is overriden on mainline
 function UnitPopupGarrisonVisitButtonMixin:CanShow()
 	return C_Garrison.IsVisitGarrisonAvailable();
 end

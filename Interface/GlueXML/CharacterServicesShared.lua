@@ -201,7 +201,7 @@ function VASCharacterSelectBlockBase:IsFinished(wasFromRewind)
 end
 
 function VASCharacterSelectBlockBase:SaveResultInfo(characterButton, guid)
-	self.results = { selectedCharacterGUID = guid, characterButtonID = characterButton:GetID() };
+	self.results = { selectedCharacterGUID = guid, characterButtonID = characterButton:GetID(), characterIndex = characterButton.index };
 end
 
 function VASCharacterSelectBlockBase:GetResult()

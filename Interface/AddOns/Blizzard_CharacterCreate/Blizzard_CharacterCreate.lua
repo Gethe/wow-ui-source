@@ -281,7 +281,7 @@ function CharacterCreateMixin:GetExistingCharacterID()
 	if self.paidServiceType then
 		return self.paidServiceCharacterID;
 	elseif self.vasType then
-		return self.vasInfo.characterButtonID;
+		return self.vasInfo.characterIndex;
 	end
 	return nil;
 end

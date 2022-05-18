@@ -536,3 +536,7 @@ end
 function UnitPopupPartyLeaveButtonMixin:OnClick()
 	C_PartyInfo.LeaveParty();
 end
+
+function UnitPopupGarrisonVisitButtonMixin:CanShow()
+	return C_Garrison.IsVisitGarrisonAvailable() and (not C_PartyInfo.IsCrossFactionParty());
+end
