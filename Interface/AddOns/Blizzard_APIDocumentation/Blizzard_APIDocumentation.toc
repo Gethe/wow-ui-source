@@ -76,6 +76,7 @@ PaperDollInfoDocumentation.lua
 PartyInfoDocumentation.lua
 PartyPoseUIDocumentation.lua
 PetInfoDocumentation.lua
+PetJournalInfoDocumentation.lua
 PlatformDocumentation.lua
 PlayerLocationDocumentation.lua
 PvpInfoDocumentation.lua

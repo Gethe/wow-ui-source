@@ -55,6 +55,7 @@ function TradeSkillFrame_OnEvent(self, event, ...)
 		end
 		TradeSkillCreateButton:Disable();
 		TradeSkillCreateAllButton:Disable();
+		TradeSkillDescription:Hide();
 		if ( GetTradeSkillSelectionIndex() > 1 and GetTradeSkillSelectionIndex() <= GetNumTradeSkills() ) then
 			TradeSkillFrame_SetSelection(GetTradeSkillSelectionIndex());
 		else
@@ -107,7 +108,7 @@ function TradeSkillFrame_Update()
 
 	-- ScrollFrame update
 	FauxScrollFrame_Update(TradeSkillListScrollFrame, numTradeSkills, TRADE_SKILLS_DISPLAYED, TRADE_SKILL_HEIGHT, nil, nil, nil, TradeSkillHighlightFrame, 293, 316 );
-	
+
 	TradeSkillHighlightFrame:Hide();
 	for i=1, TRADE_SKILLS_DISPLAYED, 1 do
 		local skillIndex = i + skillOffset;
@@ -191,7 +192,7 @@ function TradeSkillFrame_Update()
 end
 
 function TradeSkillFrame_SetSelection(id)
-	local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(id);
+	local skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(id);
 	TradeSkillHighlightFrame:Show();
 	if ( skillType == "header" ) then
 		TradeSkillHighlightFrame:Hide();
@@ -247,6 +248,13 @@ function TradeSkillFrame_SetSelection(id)
 	-- Reagents
 	local creatable = 1;
 	local numReagents = GetTradeSkillNumReagents(id);
+
+	if(numReagents > 0) then
+		TradeSkillReagentLabel:Show();
+	else
+		TradeSkillReagentLabel:Hide();
+	end
+
 	for i=1, numReagents, 1 do
 		local reagentName, reagentTexture, reagentCount, playerReagentCount = GetTradeSkillReagentInfo(id, i);
 		local reagent = getglobal("TradeSkillReagent"..i)
@@ -292,6 +300,8 @@ function TradeSkillFrame_SetSelection(id)
 		TradeSkillRequirementText:SetText("");
 	end
 
+	TradeSkillCreateButton:SetText(altVerb or CREATE);
+
 	if ( creatable ) then
 		TradeSkillCreateButton:Enable();
 		TradeSkillCreateAllButton:Enable();
@@ -299,10 +309,28 @@ function TradeSkillFrame_SetSelection(id)
 		TradeSkillCreateButton:Disable();
 		TradeSkillCreateAllButton:Disable();
 	end
+
 	TradeSkillDetailScrollFrame:UpdateScrollChildRect();
 
 	-- Reset the number of items to be created
 	TradeSkillInputBox:SetNumber(GetTradeskillRepeatCount());
+
+	if(altVerb) then
+		TradeSkillCreateAllButton:Hide();
+		TradeSkillDecrementButton:Hide();
+		TradeSkillInputBox:Hide();
+		TradeSkillIncrementButton:Hide();
+	end
+
+	if ( GetTradeSkillDescription(id) ) then
+		TradeSkillDescription:SetText(GetTradeSkillDescription(id))
+		TradeSkillReagentLabel:SetPoint("TOPLEFT", "TradeSkillDescription", "BOTTOMLEFT", 0, -10);
+	else
+		TradeSkillDescription:SetText(" ");
+		TradeSkillReagentLabel:SetPoint("TOPLEFT", "TradeSkillDescription", "TOPLEFT", 0, 0);
+	end
+
+	TradeSkillDescription:Show();
 end
 
 function TradeSkillSkillButton_OnClick(self, button)
@@ -378,7 +406,7 @@ function TradeSkillFilterFrame_LoadSubClasses(...)
 		info.checked = allChecked;
 		UIDropDownMenu_AddButton(info);
 	end
-	
+
 	local checked;
 	for i=1, argN, 1 do
 		if ( allChecked and argN > 1 ) then

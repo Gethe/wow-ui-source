@@ -202,6 +202,15 @@ local PartyInfo =
 				{ Name = "newRole", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "RolePollBegin",
+			Type = "Event",
+			LiteralName = "ROLE_POLL_BEGIN",
+			Payload =
+			{
+				{ Name = "fromName", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

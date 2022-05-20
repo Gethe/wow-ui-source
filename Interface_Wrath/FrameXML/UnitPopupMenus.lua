@@ -1,7 +1,8 @@
 ---------------------------- Main Menus ----------------------------------------------
 function UnitPopupMenuSelf:GetMenuButtons()
 	return {
-		UnitPopupRaidTargetButtonMixin, 
+		UnitPopupSelectRoleButtonMixin,
+		UnitPopupRaidTargetButtonMixin,
 		UnitPopupSetFocusButtonMixin,
 		UnitPopupPvpFlagButtonMixin,
 		UnitPopupLootSubsectionTitle,
@@ -27,6 +28,7 @@ end
 
 function UnitPopupMenuParty:GetMenuButtons()
 	return {
+		UnitPopupSelectRoleButtonMixin,
 		UnitPopupMenuFriendlyPlayer, --This is a submenu
 		UnitPopupRafSummonButtonMixin,
 		UnitPopupRafGrantLevelButtonMixin,
@@ -35,7 +37,7 @@ function UnitPopupMenuParty:GetMenuButtons()
 		UnitPopupLootPromoteButtonMixin,
 		UnitPopupMenuFriendlyPlayerInteract, --This is a submenu
 		UnitPopupOtherSubsectionTitle,
-		UnitPopupVoiceChatButtonMixin, 
+		UnitPopupVoiceChatButtonMixin,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupReportGroupMemberButtonMixin,
@@ -61,6 +63,7 @@ end
 
 function UnitPopupMenuRaidPlayer:GetMenuButtons()
 	return {
+		UnitPopupSelectRoleButtonMixin,
 		UnitPopupMenuFriendlyPlayer, --This is a subMenu
 		UnitPopupRafSummonButtonMixin,
 		UnitPopupRafGrantLevelButtonMixin,
@@ -70,7 +73,7 @@ function UnitPopupMenuRaidPlayer:GetMenuButtons()
 		UnitPopupLootPromoteButtonMixin,
 		UnitPopupMenuFriendlyPlayerInteract, --This is a subMenu
 		UnitPopupOtherSubsectionTitle,
-		UnitPopupVoiceChatButtonMixin, 
+		UnitPopupVoiceChatButtonMixin,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupReportGroupMemberButtonMixin,

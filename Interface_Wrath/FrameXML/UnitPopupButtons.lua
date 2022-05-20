@@ -605,3 +605,13 @@ end
 function UnitPopupPartyLeaveButtonMixin:OnClick()
 	LeaveParty();
 end
+
+function UnitPopupSelectRoleButtonMixin:CanShow()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+	local isLeader = UnitIsGroupLeader("player"); 
+	local isAssistant = UnitIsGroupAssistant("player"); 
+	if ( not ( IsInGroup() and (isLeader or isAssistant or UnitIsUnit(dropdownMenu.unit, "player")) ) ) then
+		return false; 
+	end
+	return true; 
+end

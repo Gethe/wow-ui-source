@@ -8,6 +8,7 @@ PTR_IssueReporter.TooltipTypes = {
     currency = "Currency",
     talent = "Talent",
     skill = "Skill",
+    glyph = "Glyph",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSpellTooltips()
@@ -77,41 +78,13 @@ function PTR_IssueReporter.SetupUnitTooltips()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupQuestTooltips()
-    local questLogFrames = {}
-    
-    local UpdateQuestTooltips = function()
-        local i = 1
-        local frame = true
-        while (frame) do
-            frame = _G["QuestLogTitle"..i]
-            if (frame) then
-                frame.buttonIndex = FauxScrollFrame_GetOffset(QuestLogListScrollFrame) + i
-                
-                if not (questLogFrames[frame]) then -- We want to make sure we don't HookScript more than once
-                    questLogFrames[frame] = true
-                    
-                    frame:HookScript("OnEnter", function(self)
-                        local title = GetQuestLogTitle(self.buttonIndex)
-                        local questID = select(8, GetQuestLogTitle(self.buttonIndex))
-                        if (questID) and (questID > 0) then
-                            GameTooltip:ClearAllPoints()
-                            GameTooltip:SetOwner(self, "ANCHOR_NONE")
-                            GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0)
-                            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, questID, title, true, true)
-                            GameTooltip:Show()
-                        end
-                    end)
-                end
-                i = i + 1
-            end
+    local bindingFunc = function(EventCallbackData, self, questName, questID, inParty)
+        if (questID) and (questName) then
+            PTR_IssueReporter.HookIntoTooltip(GameTooltip, IssueEditorTooltipIntegration.TooltipTypes.quest, questID, questName)
         end
     end
-    
-    hooksecurefunc("QuestLog_Update", UpdateQuestTooltips)
-    
-    if (QuestLogFrame) then
-        QuestLogFrame:HookScript("OnShow", UpdateQuestTooltips)    
-    end
+
+    EventRegistry:RegisterCallback("QuestLogFrame.MouseOver", bindingFunc, "PTR_IssueReporter")
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSkillTooltips()
@@ -168,6 +141,16 @@ function PTR_IssueReporter.SetupTalentTooltips()
     end)
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupGlyphTooltips()
+    local bindingFunc = function(EventCallbackData, tooltip, glyphName, glyphSpellID)
+        if (glyphName) and (glyphSpellID) then
+            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.glyph, glyphSpellID, glyphName)
+        end
+    end
+
+    EventRegistry:RegisterCallback("GlyphFrameGlyph.MouseOver", bindingFunc,"PTR_IssueReporter")
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupSpellTooltips()
     PTR_IssueReporter.SetupItemTooltips()
@@ -175,5 +158,6 @@ function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupQuestTooltips()
     PTR_IssueReporter.SetupTalentTooltips()
     PTR_IssueReporter.SetupSkillTooltips()
+    PTR_IssueReporter.SetupGlyphTooltips()
 end
 ----------------------------------------------------------------------------------------------------

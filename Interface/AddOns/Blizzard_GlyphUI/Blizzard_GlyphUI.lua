@@ -268,8 +268,14 @@ function GlyphFrameGlyph_OnEnter (self)
 	if ( self.background:IsShown() ) then
 		self.highlight:Show();
 	end
+
+	local glyphSpellID = self.spell;
+	local glyphName = GetSpellInfo(glyphSpellID);
+	
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetGlyph(self:GetID(), PlayerTalentFrame and PlayerTalentFrame.talentGroup);
+
+	EventRegistry:TriggerEvent("GlyphFrameGlyph.MouseOver", self, glyphName, glyphSpellID);
 	GameTooltip:Show();
 end
 

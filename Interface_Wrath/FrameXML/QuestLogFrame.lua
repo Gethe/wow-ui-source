@@ -1,5 +1,4 @@
-QUESTS_DISPLAYED = 6;
-MAX_OBJECTIVES = 10;
+QUESTS_DISPLAYED = 22;
 QUESTLOG_QUEST_HEIGHT = 16;
 UPDATE_DELAY = 0.1;
 MAX_QUESTWATCH_LINES = 30;
@@ -14,6 +13,33 @@ Array-style table to keep track of watched quests and how long we've been watchi
 QUEST_WATCH_LIST = { };
 MAX_QUEST_WATCH_TIMER = 300;
 QUEST_WATCH_NO_EXPIRE = 999;
+
+local function _QuestLog_HighlightQuest(questLogTitle)
+	local prevParent = QuestLogHighlightFrame:GetParent();
+	if ( prevParent and prevParent ~= questLogTitle ) then
+		-- set prev quest's colors back to normal
+		local prevName = prevParent:GetName();
+		prevParent:UnlockHighlight();
+		prevParent.tag:SetTextColor(prevParent.r, prevParent.g, prevParent.b);
+		prevParent.groupMates:SetTextColor(prevParent.r, prevParent.g, prevParent.b);
+	end
+	if ( questLogTitle ) then
+		local name = questLogTitle:GetName();
+		-- highlight the quest's colors
+		questLogTitle.tag:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		questLogTitle.groupMates:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		questLogTitle:LockHighlight();
+		-- reposition highlight frames
+		QuestLogHighlightFrame:SetParent(questLogTitle);
+		QuestLogHighlightFrame:SetPoint("TOPLEFT", questLogTitle, "TOPLEFT", 0, 0);
+		QuestLogHighlightFrame:SetPoint("BOTTOMRIGHT", questLogTitle, "BOTTOMRIGHT", 0, 0);
+		QuestLogSkillHighlight:SetVertexColor(questLogTitle.r, questLogTitle.g, questLogTitle.b);
+		QuestLogHighlightFrame:Show();
+	else
+		QuestLogHighlightFrame:Hide();
+	end
+end
+
 
 function ToggleQuestLog()
 	if ( QuestLogFrame:IsVisible() ) then
@@ -50,6 +76,7 @@ function QuestLog_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 end
 
+
 function QuestLog_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( event == "PLAYER_LOGIN" ) then
@@ -85,15 +112,25 @@ function QuestLog_OnEvent(self, event, ...)
 end
 
 function QuestLog_OnShow(self)
+	if ( QuestLogDetailFrame:IsShown() ) then
+		HideUIPanel(QuestLogDetailFrame);
+	end
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
+	QuestLogControlPanel_UpdatePosition();
+	-- QuestLogShowMapPOI_UpdatePosition();
 	QuestLog_SetSelection(GetQuestLogSelection());
+	QuestLogDetailFrame_AttachToQuestLog();
 	QuestLog_Update();
+	
 end
 
 function QuestLog_OnHide(self)
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
+	QuestLogControlPanel_UpdatePosition();
+
+	QuestLogDetailFrame_DetachFromQuestLog();
 end
 
 function QuestLog_OnUpdate(self, elapsed)
@@ -107,40 +144,54 @@ function QuestLog_OnUpdate(self, elapsed)
 end
 
 function QuestLog_Update(self)
+	if ( not QuestLogFrame:IsShown() ) then
+		return;
+	end
 	local numEntries, numQuests = GetNumQuestLogEntries();
 	if ( numEntries == 0 ) then
+		QuestLogListScrollFrame:Show()
 		EmptyQuestLogFrame:Show();
 		QuestLogFrameAbandonButton:Disable();
 		QuestLogFrame.hasTimer = nil;
 		QuestLogDetailScrollFrame:Hide();
-		QuestLogExpandButtonFrame:Hide();
 	else
 		EmptyQuestLogFrame:Hide();
 		QuestLogFrameAbandonButton:Enable();
 		QuestLogDetailScrollFrame:Show();
-		QuestLogExpandButtonFrame:Show();
+		QuestLogListScrollFrame:Show()
+	end
+	local questLogSelection = GetQuestLogSelection();
+	-- If no selection then set it to the first available quest
+	if ( questLogSelection == 0 ) then
+		QuestLog_SetFirstValidSelection();
+		questLogSelection = GetQuestLogSelection();
 	end
 
 	-- Update Quest Count
 	QuestLogUpdateQuestCount(numQuests);
+	local scrollOffset = HybridScrollFrame_GetOffset(QuestLogListScrollFrame);
 
-	-- ScrollFrame update
-	FauxScrollFrame_Update(QuestLogListScrollFrame, numEntries, QUESTS_DISPLAYED, QUESTLOG_QUEST_HEIGHT, nil, nil, nil, QuestLogHighlightFrame, 293, 316 )
-	
 	-- Update the quest listing
 	QuestLogHighlightFrame:Hide();
 	
+	local buttons = QuestLogListScrollFrame.buttons;
+	local buttonHeight = buttons[1]:GetHeight();
+	local displayedHeight = 0;
+
 	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questHighlight, questCheck;
 	local questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete, color;
 	local numPartyMembers, partyMembersOnQuest, tempWidth, textWidth;
+
+
 	for i=1, QUESTS_DISPLAYED, 1 do
-		questIndex = i + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
-		questLogTitle = _G["QuestLogTitle"..i];
-		questTitleTag = _G["QuestLogTitle"..i.."Tag"];
-		questNumGroupMates = _G["QuestLogTitle"..i.."GroupMates"];
-		questCheck = _G["QuestLogTitle"..i.."Check"];
-		questNormalText = _G["QuestLogTitle"..i.."NormalText"];
-		questHighlight = _G["QuestLogTitle"..i.."Highlight"];
+		questLogTitle = buttons[i];
+		questIndex = i + scrollOffset;
+		questLogTitle:SetID(questIndex);
+		questTitleTag = questLogTitle.tag;
+		questNumGroupMates = questLogTitle.groupMates;
+		questCheck = questLogTitle.check;
+		questNormalText = questLogTitle.normalText;
+		-- Need to get the quest info here, for the buttons
 		if ( questIndex <= numEntries ) then
 			questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questIndex);
 			if ( isHeader ) then
@@ -155,8 +206,9 @@ function QuestLog_Update(self)
 				else
 					questLogTitle:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up"); 
 				end
-				questHighlight:SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
+				questLogTitle:SetHighlightTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
 				questNumGroupMates:SetText("");
+				questTitleTag:Hide();
 				questCheck:Hide();
 			else
 				questLogTitle:SetText("  "..questLogTitleText);
@@ -164,7 +216,6 @@ function QuestLog_Update(self)
 				QuestLogDummyText:SetText("  "..questLogTitleText);
 
 				questLogTitle:SetNormalTexture("");
-				questHighlight:SetTexture("");
 
 				-- If not a header see if any nearby group mates are on this quest
 				partyMembersOnQuest = 0;
@@ -178,6 +229,9 @@ function QuestLog_Update(self)
 				else
 					questNumGroupMates:SetText("");
 				end
+				-- this isn't a header, hide the header textures
+				questLogTitle:SetNormalTexture("");
+				questLogTitle:SetHighlightTexture("");
 			end
 			-- Save if its a header or not
 			questLogTitle.isHeader = isHeader;
@@ -218,22 +272,24 @@ function QuestLog_Update(self)
 					questCheck:Show();
 				end
 			else
+				-- TODO do logic for  watching
 				questTitleTag:SetText("");
-				-- Reset to max text width
-				if ( questNormalText:GetWidth() > 275 ) then
-					questNormalText:SetWidth(260);
-				end
+				-- -- Reset to max text width
+				-- if ( questNormalText:GetWidth() > 275 ) then
+				-- 	questNormalText:SetWidth(260);
+				-- end
 
-				-- Show check if quest is being watched
-				questCheck:Hide();
-				if ( IsQuestWatched(questIndex) ) then
-					if ( questNormalText:GetWidth() + 24 < 275 ) then
-						questCheck:SetPoint("LEFT", questLogTitle, "LEFT", QuestLogDummyText:GetWidth()+24, 0);
-					else
-						questCheck:SetPoint("LEFT", questNormalText, "LEFT", questNormalText:GetWidth(), 0);
-					end
-					questCheck:Show();
-				end
+				-- -- Show check if quest is being watched
+				-- questCheck:Hide();
+				-- if ( IsQuestWatched(questIndex) ) then
+				-- 	if ( questNormalText:GetWidth() + 24 < 275 ) then
+				-- 		questCheck:SetPoint("LEFT", questLogTitle, "LEFT", QuestLogDummyText:GetWidth()+24, 0);
+				-- 	else
+				-- 		questCheck:SetPoint("LEFT", questNormalText, "LEFT", questNormalText:GetWidth(), 0);
+				-- 	end
+				-- 	print("Here2")
+				-- 	questCheck:Show();
+				-- end
 			end
 
 			-- Color the quest title and highlight according to the difficulty level
@@ -251,13 +307,8 @@ function QuestLog_Update(self)
 			questLogTitle:Show();
 
 			-- Place the highlight and lock the highlight state
-			if ( QuestLogFrame.selectedButtonID and GetQuestLogSelection() == questIndex ) then
-				QuestLogSkillHighlight:SetVertexColor(questLogTitle.r, questLogTitle.g, questLogTitle.b);
-				QuestLogHighlightFrame:SetPoint("TOPLEFT", "QuestLogTitle"..i, "TOPLEFT", 0, 0);
-				QuestLogHighlightFrame:Show();
-				questTitleTag:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				questNumGroupMates:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				questLogTitle:LockHighlight();
+			if ( questLogSelection == questIndex ) then
+				_QuestLog_HighlightQuest(questLogTitle);
 			else
 				questLogTitle:UnlockHighlight();
 			end
@@ -265,6 +316,7 @@ function QuestLog_Update(self)
 		else
 			questLogTitle:Hide();
 		end
+		displayedHeight = displayedHeight + buttonHeight;
 	end
 
 	-- Set the expand/collapse all button texture
@@ -281,231 +333,51 @@ function QuestLog_Update(self)
 			end
 		end
 	end
-	-- If all headers are not expanded then show collapse button, otherwise show the expand button
-	if ( notExpanded ~= numHeaders ) then
-		QuestLogCollapseAllButton.collapsed = nil;
-		QuestLogCollapseAllButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
-	else
-		QuestLogCollapseAllButton.collapsed = 1;
-		QuestLogCollapseAllButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
-	end
 
 	-- Update Quest Count
 	QuestLogQuestCount:SetText(format(QUEST_LOG_COUNT_TEMPLATE, numQuests, MAX_QUESTLOG_QUESTS));
 
-	-- If no selection then set it to the first available quest
-	if ( GetQuestLogSelection() == 0 ) then
-		QuestLog_SetFirstValidSelection();
-	end
+	HybridScrollFrame_Update(QuestLogListScrollFrame, numEntries * buttonHeight, displayedHeight);
 
-	-- Determine whether the selected quest is pushable or not
-	if ( numEntries == 0 ) then
-		QuestFramePushQuestButton:Disable();
-	elseif ( GetQuestLogPushable() and IsInGroup() ) then
-		QuestFramePushQuestButton:Enable();
-	else
-		QuestFramePushQuestButton:Disable();
-	end
+	-- update the control panel
+	QuestLogControlPanel_UpdateState();
 end
 
-function QuestLog_SetSelection(questID)
-	local selectedQuest;
-	if ( questID == 0 ) then
+function QuestLog_SetSelection(questIndex)
+
+	SelectQuestLogEntry(questIndex);
+	StaticPopup_Hide("ABANDON_QUEST");
+	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
+	SetAbandonQuest();
+	if ( questIndex == 0 ) then
 		QuestLogDetailScrollFrame:Hide();
 		return;
-	end
+	end	
 
-	-- Get xml id
-	local id = questID - FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
-	
-	SelectQuestLogEntry(questID);
-	local titleButton = _G["QuestLogTitle"..id];
-	local titleButtonTag = _G["QuestLogTitle"..id.."Tag"];
-	local questLogTitleText, level, questTag, isHeader, isCollapsed = GetQuestLogTitle(questID);
+	QuestLog_UpdateQuestDetails();
+
+	local questLogTitleText, level, questTag, isHeader, isCollapsed = GetQuestLogTitle(questIndex);
 	if ( isHeader ) then
 		if ( isCollapsed ) then
-			ExpandQuestHeader(questID);
-			return;
+			ExpandQuestHeader(questIndex);
 		else
-			CollapseQuestHeader(questID);
-			return;
+			CollapseQuestHeader(questIndex);
 		end
-	else
-		-- Set newly selected quest and highlight it
-		QuestLogFrame.selectedButtonID = questID;
-		local scrollFrameOffset = FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
-		if ( questID > scrollFrameOffset and questID <= (scrollFrameOffset + QUESTS_DISPLAYED) and questID <= GetNumQuestLogEntries() ) then
-			titleButton:LockHighlight();
-			titleButtonTag:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			QuestLogSkillHighlight:SetVertexColor(titleButton.r, titleButton.g, titleButton.b);
-			QuestLogHighlightFrame:SetPoint("TOPLEFT", "QuestLogTitle"..id, "TOPLEFT", 5, 0);
-			QuestLogHighlightFrame:Show();
-		end
-	end
-	if ( GetQuestLogSelection() > GetNumQuestLogEntries() ) then
 		return;
 	end
-	QuestLog_UpdateQuestDetails();
 end
 
 function QuestLog_UpdateQuestDetails(doNotScroll)
-	local questID = GetQuestLogSelection();
-	local questTitle = GetQuestLogTitle(questID);
-	if ( not questTitle ) then
-		questTitle = "";
-	end
-	if ( IsCurrentQuestFailed() ) then
-		questTitle = questTitle.." - ("..FAILED..")";
-	end
-	QuestLogQuestTitle:SetText(questTitle);
-
-	local questDescription;
-	local questObjectives;
-	questDescription, questObjectives = GetQuestLogQuestText();
-	QuestLogObjectivesText:SetText(questObjectives);
-	
-	local questTimer = GetQuestLogTimeLeft();
-	if ( questTimer ) then
-		QuestLogFrame.hasTimer = 1;
-		QuestLogFrame.timePassed = 0;
-		QuestLogTimerText:Show();
-		QuestLogTimerText:SetText(TIME_REMAINING.." "..SecondsToTime(questTimer));
-		QuestLogObjective1:SetPoint("TOPLEFT", "QuestLogTimerText", "BOTTOMLEFT", 0, -10);
-	else
-		QuestLogFrame.hasTimer = nil;
-		QuestLogTimerText:Hide();
-		QuestLogObjective1:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
-	end
-	
-	-- Show Quest Watch if track quest is checked
-	local numObjectives = GetNumQuestLeaderBoards();
-	
-	for i=1, numObjectives, 1 do
-		local string = _G["QuestLogObjective"..i];
-		local text;
-		local type;
-		local finished;
-		text, type, finished = GetQuestLogLeaderBoard(i);
-		if ( not text or strlen(text) == 0 ) then
-			text = type;
-		end
-		if ( finished ) then
-			string:SetTextColor(0.2, 0.2, 0.2);
-			text = text.." ("..COMPLETE..")";
-		else
-			string:SetTextColor(0, 0, 0);
-		end
-		string:SetText(text);
-		string:Show();
-		QuestFrame_SetAsLastShown(string);
-	end
-
-	for i=numObjectives + 1, MAX_OBJECTIVES, 1 do
-		_G["QuestLogObjective"..i]:Hide();
-	end
-	-- If there's money required then anchor and display it
-	if ( GetQuestLogRequiredMoney() > 0 ) then
-		if ( numObjectives > 0 ) then
-			QuestLogRequiredMoneyText:SetPoint("TOPLEFT", "QuestLogObjective"..numObjectives, "BOTTOMLEFT", 0, -4);
-		else
-			QuestLogRequiredMoneyText:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
-		end
-		
-		MoneyFrame_Update("QuestLogRequiredMoneyFrame", GetQuestLogRequiredMoney());
-		
-		if ( GetQuestLogRequiredMoney() > GetMoney() ) then
-			-- Not enough money
-			QuestLogRequiredMoneyText:SetTextColor(0, 0, 0);
-			SetMoneyFrameColor("QuestLogRequiredMoneyFrame", 1.0, 0.1, 0.1);
-		else
-			QuestLogRequiredMoneyText:SetTextColor(0.2, 0.2, 0.2);
-			SetMoneyFrameColor("QuestLogRequiredMoneyFrame", 1.0, 1.0, 1.0);
-		end
-		QuestLogRequiredMoneyText:Show();
-		QuestLogRequiredMoneyFrame:Show();
-	else
-		QuestLogRequiredMoneyText:Hide();
-		QuestLogRequiredMoneyFrame:Hide();
-	end
-
-	if ( GetQuestLogRequiredMoney() > 0 ) then
-		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogRequiredMoneyText", "BOTTOMLEFT", 0, -10);
-	elseif ( numObjectives > 0 ) then
-		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogObjective"..numObjectives, "BOTTOMLEFT", 0, -10);
-	else
-		if ( questTimer ) then
-			QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogTimerText", "BOTTOMLEFT", 0, -10);
-		else
-			QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
-		end
-	end
-
-	if ( GetQuestLogGroupNum() > 0 ) then
-		local suggestedGroupString = format(QUEST_SUGGESTED_GROUP_NUM, GetQuestLogGroupNum());
-		QuestLogSuggestedGroupNum:SetText(suggestedGroupString);
-		QuestLogSuggestedGroupNum:Show();
-		QuestLogSuggestedGroupNum:ClearAllPoints();
-		if ( GetQuestLogRequiredMoney() > 0 ) then
-			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogRequiredMoneyText", "BOTTOMLEFT", 0, -4);
-		elseif ( numObjectives > 0 ) then
-			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogObjective"..numObjectives, "BOTTOMLEFT", 0, -4);
-		elseif ( questTimer ) then
-			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogTimerText", "BOTTOMLEFT", 0, -10);
-		else
-			QuestLogSuggestedGroupNum:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
-		end
-	else
-		QuestLogSuggestedGroupNum:Hide();
-	end
-
-	if ( GetQuestLogGroupNum() > 0 ) then
-		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogSuggestedGroupNum", "BOTTOMLEFT", 0, -10);
-	elseif ( GetQuestLogRequiredMoney() > 0 ) then
-		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogRequiredMoneyText", "BOTTOMLEFT", 0, -10);
-	elseif ( numObjectives > 0 ) then
-		QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogObjective"..numObjectives, "BOTTOMLEFT", 0, -10);
-	else
-		if ( questTimer ) then
-			QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogTimerText", "BOTTOMLEFT", 0, -10);
-		else
-			QuestLogDescriptionTitle:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
-		end
-	end
-	if ( questDescription ) then
-		QuestLogQuestDescription:SetText(questDescription);
-		QuestFrame_SetAsLastShown(QuestLogQuestDescription);
-	end
-	local numRewards = GetNumQuestLogRewards();
-	local numChoices = GetNumQuestLogChoices();
-	local money = GetQuestLogRewardMoney();
-	local honor = GetQuestLogRewardHonor();
-	local playerTitle = GetQuestLogRewardTitle();
-
-	if ( playerTitle or (numRewards + numChoices + money + honor) > 0 ) then
-		QuestLogRewardTitleText:Show();
-		QuestFrame_SetAsLastShown(QuestLogRewardTitleText);
-	else
-		QuestLogRewardTitleText:Hide();
-	end
-
-	QuestFrameItems_Update("QuestLog");
-	if ( not doNotScroll ) then
+	QuestInfo_Display(QUEST_TEMPLATE_LOG, QuestLogDetailScrollChildFrame)
+	if (not doNotScroll ) then
 		QuestLogDetailScrollFrameScrollBar:SetValue(0);
-	end
-	QuestLogDetailScrollFrame:UpdateScrollChildRect();
-end
-
---Used to attach an empty spacer frame to the last shown object
-function QuestFrame_SetAsLastShown(frame, spacerFrame)
-	if ( not spacerFrame ) then
-		spacerFrame = QuestLogSpacerFrame;
-	end
-	spacerFrame:SetPoint("TOP", frame, "BOTTOM", 0, 0);
+	end	
+	QuestLogDetailScrollFrame:Show();
 end
 
 function QuestLogTitleButton_OnClick(self, button)
 	local questName = self:GetText();
-	local questIndex = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
+	local questIndex = self:GetID() + HybridScrollFrame_GetOffset(QuestLogListScrollFrame);
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		-- If header then return
 		if ( self.isHeader ) then
@@ -544,24 +416,40 @@ function QuestLogTitleButton_OnClick(self, button)
 			QuestWatch_Update();
 		end
 	end
-	QuestLog_SetSelection(questIndex)
+	QuestLog_SetSelection(self:GetID())
 	QuestLog_Update();
 end
 
 function QuestLogTitleButton_OnEnter(self)
 	-- Set highlight
-	_G[self:GetName().."Tag"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	local name = self:GetName();
+	self.tag:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	self.groupMates:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 
 	-- Set group info tooltip
 	QuestLog_UpdatePartyInfoTooltip(self);
 end
 
+function QuestLogTitleButton_OnLeave(self)
+	if ( self:GetID() ~= GetQuestLogSelection()) then
+		local name = self:GetName();
+		self.tag:SetTextColor(self.r, self.g, self.b);
+		self.groupMates:SetTextColor(self.r, self.g, self.b);
+	end
+	GameTooltip:Hide();
+end
+
 function QuestLog_UpdatePartyInfoTooltip(self)
-	local index = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
+	local index = self:GetID();
+	local questName = tostring(self:GetText());
+	local questID = GetQuestIDFromLogIndex(index);
 	local numPartyMembers = GetNumSubgroupMembers();
+
 	if ( numPartyMembers == 0 or self.isHeader ) then
+		EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, questName, questID, false);
 		return;
 	end
+	EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, questName, questID, true);
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	
 	local questLogTitleText = GetQuestLogTitle(index);
@@ -604,16 +492,6 @@ function QuestLogRewardItem_OnClick(self)
 	end
 end
 
-function QuestLogCollapseAllButton_OnClick(self)
-	if (self.collapsed) then
-		self.collapsed = nil;
-		ExpandQuestHeader(0);
-	else
-		self.collapsed = 1;
-		QuestLogListScrollFrameScrollBar:SetValue(0);
-		CollapseQuestHeader(0);
-	end
-end
 
 function QuestLog_GetFirstSelectableQuest()
 	local numEntries = GetNumQuestLogEntries();
@@ -648,6 +526,7 @@ function QuestWatch_OnLogin()
 	end
 end
 
+-- TODO, need to update with correct LKC watchframe
 function QuestWatch_Update()
 	local numObjectives;
 	local questWatchMaxWidth = 0;
@@ -665,9 +544,8 @@ function QuestWatch_Update()
 			numObjectives = GetNumQuestLeaderBoards(questIndex);
 		
 			--If there are objectives set the title
-			if ( numObjectives > 0 ) then
+			if ( false ) then
 				-- Set title
-				watchText = _G["QuestWatchLine"..watchTextIndex];
 				watchText:SetText(GetQuestLogTitle(questIndex));
 				tempWidth = watchText:GetWidth();
 				-- Set the anchor of the title line a little lower
@@ -718,26 +596,29 @@ function QuestWatch_Update()
 	end
 
 	-- Set tracking indicator
-	if ( GetNumQuestWatches() > 0 ) then
-		QuestLogTrackTracking:SetVertexColor(0, 1.0, 0);
-	else
-		QuestLogTrackTracking:SetVertexColor(1.0, 0, 0);
-	end
+	-- TODO will need to change
+	-- if ( GetNumQuestWatches() > 0 ) then
+	-- 	QuestLogTrackTracking:SetVertexColor(0, 1.0, 0);
+	-- else
+	-- 	QuestLogTrackTracking:SetVertexColor(1.0, 0, 0);
+	-- end
 	
-	-- If no watch lines used then hide the frame and return
-	if ( watchTextIndex == 1 ) then
-		QuestWatchFrame:Hide();
-		return;
-	else
-		QuestWatchFrame:Show();
-		QuestWatchFrame:SetHeight(watchTextIndex * 13);
-		QuestWatchFrame:SetWidth(questWatchMaxWidth + 10);
-	end
 
-	-- Hide unused watch lines
-	for i=watchTextIndex, MAX_QUESTWATCH_LINES do
-		_G["QuestWatchLine"..i]:Hide();
-	end
+	-- TODO also check what the reference does for this
+	-- If no watch lines used then hide the frame and return
+	-- if ( watchTextIndex == 1 ) then
+	-- 	QuestWatchFrame:Hide();
+	-- 	return;
+	-- else
+	-- 	QuestWatchFrame:Show();
+	-- 	QuestWatchFrame:SetHeight(watchTextIndex * 13);
+	-- 	QuestWatchFrame:SetWidth(questWatchMaxWidth + 10);
+	-- end
+
+	-- -- Hide unused watch lines
+	-- for i=watchTextIndex, MAX_QUESTWATCH_LINES do
+	-- 	_G["QuestWatchLine"..i]:Hide();
+	-- end
 
 	UIParent_ManageFramePositions();
 end
@@ -844,19 +725,139 @@ function QuestLogUpdateQuestCount(numQuests)
 	if ( dailyQuestsComplete > 0 ) then
 		QuestLogDailyQuestCount:SetFormattedText(QUEST_LOG_DAILY_COUNT_TEMPLATE, dailyQuestsComplete, GetMaxDailyQuests());
 		QuestLogDailyQuestCount:Show();
-		DailyQuestCountButton:Show();
+		--DailyQuestCountButton:Show();
 		-- Use this width
 		if ( QuestLogDailyQuestCount:GetWidth() > width ) then
 			width = QuestLogDailyQuestCount:GetWidth();
 		end
 		QuestLogCount:SetHeight(textHeight*2+vPadding);
-		QuestLogCount:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -44, -38);
+		QuestLogCount:SetPoint("TOPLEFT", QuestLogFrame, "TOPLEFT", 80, -38);
 	else
 		QuestLogDailyQuestCount:Hide();
-		DailyQuestCountButton:Hide();
+		--DailyQuestCountButton:Hide();
 		width = QuestLogQuestCount:GetWidth();
 		QuestLogCount:SetHeight(textHeight+vPadding);
-		QuestLogCount:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -44, -41);
+		QuestLogCount:SetPoint("TOPLEFT", QuestLogFrame, "TOPLEFT", 80, -41);
 	end
 	QuestLogCount:SetWidth(width+hPadding);
+end
+-- Wrath new stuff here
+
+
+--
+-- QuestLogDetailFrame
+--
+
+function QuestLogDetailFrame_OnShow(self)
+	QuestLogControlPanel_UpdatePosition();
+	--QuestLogShowMapPOI_UpdatePosition();
+	QuestLog_UpdateQuestDetails();
+end
+
+function QuestLogDetailFrame_OnHide(self)
+	-- this function effectively deselects the selected quest
+	QuestLogControlPanel_UpdatePosition();
+	--QuestLogShowMapPOI_UpdatePosition();
+end
+
+function QuestLogDetailFrame_AttachToQuestLog()
+	QuestLogDetailScrollFrame:SetParent(QuestLogFrame);
+	QuestLogDetailScrollFrame:ClearAllPoints();
+	QuestLogDetailScrollFrame:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -32, -77);
+	QuestLogDetailScrollFrame:SetHeight(333);
+	QuestLogDetailScrollFrameScrollBar:SetPoint("TOPLEFT", QuestLogDetailScrollFrame, "TOPRIGHT", 6, -13);
+	QuestLogDetailScrollFrameScrollBackgroundBottomRight:Hide();
+	QuestLogDetailScrollFrameScrollBackgroundTopLeft:Hide();
+end
+
+function QuestLogDetailFrame_DetachFromQuestLog()
+	QuestLogDetailScrollFrame:SetParent(QuestLogDetailFrame);
+	QuestLogDetailScrollFrame:ClearAllPoints();
+	QuestLogDetailScrollFrame:SetPoint("TOPLEFT", QuestLogDetailFrame, "TOPLEFT", 19, -76);
+	QuestLogDetailScrollFrame:SetHeight(334);
+	QuestLogDetailScrollFrameScrollBar:SetPoint("TOPLEFT", QuestLogDetailScrollFrame, "TOPRIGHT", 6, -16);
+	QuestLogDetailScrollFrameScrollBackgroundBottomRight:Show();
+	QuestLogDetailScrollFrameScrollBackgroundTopLeft:Show();
+end
+
+function QuestLogDetailFrame_OnLoad(self)
+	QuestLogDetailFrame_DetachFromQuestLog();
+end
+
+
+--
+-- QuestLogControlPanel
+--
+
+function QuestLogControlPanel_UpdatePosition()
+	local parent;
+	if ( QuestLogFrame:IsShown() ) then
+		parent = QuestLogFrame;
+		QuestLogControlPanel:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", 18, 11);
+		QuestLogControlPanel:SetWidth(307);
+	elseif ( QuestLogDetailFrame:IsShown() ) then
+		parent = QuestLogDetailFrame;
+		QuestLogControlPanel:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", 18, 5);
+		QuestLogControlPanel:SetWidth(327);
+	end
+	if ( parent ) then
+		QuestLogControlPanel:SetParent(parent);
+		QuestLogControlPanel:Show();
+	else
+		QuestLogControlPanel:Hide();
+	end
+end
+
+function QuestLogControlPanel_UpdateState()
+	local questLogSelection = GetQuestLogSelection();
+	if ( questLogSelection == 0 ) then
+		QuestLogFrameAbandonButton:Disable();
+		QuestLogFrameTrackButton:Disable();
+		QuestFramePushQuestButton:Disable();
+	else
+		if ( GetAbandonQuestName() ) then
+			QuestLogFrameAbandonButton:Enable();
+		else
+			QuestLogFrameAbandonButton:Disable();
+		end
+
+		QuestLogFrameTrackButton:Enable();
+
+		if ( GetQuestLogPushable() and IsInGroup()) then
+			QuestFramePushQuestButton:Enable();
+		else
+			QuestFramePushQuestButton:Disable();
+		end
+	end
+end
+
+--
+-- QuestLogListScrollFrame
+--
+function QuestLogListScrollFrame_OnLoad(self)
+	HybridScrollFrame_OnLoad(self);
+	self.update = QuestLog_Update;
+	HybridScrollFrame_CreateButtons(self, "QuestLogTitleButtonTemplate");
+end
+
+--
+-- QuestLogFrameTrackButton
+--
+local function _QuestLog_ToggleQuestWatch(questIndex)
+	if ( IsQuestWatched(questIndex) ) then
+		RemoveQuestWatch(questIndex);
+		WatchFrame_Update();
+	else
+		if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then -- Check this first though it's less likely, otherwise they could make the frame bigger and be disappointed
+			UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
+			return;
+		end
+		AddQuestWatch(questIndex);
+		WatchFrame_Update();
+	end
+end
+
+function QuestLogFrameTrackButton_OnClick(self)
+	_QuestLog_ToggleQuestWatch(GetQuestLogSelection());
+	QuestLog_Update();
 end

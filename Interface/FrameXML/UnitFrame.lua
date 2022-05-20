@@ -37,6 +37,9 @@ PowerBarColor[13] = PowerBarColor["INSANITY"];
 PowerBarColor[17] = PowerBarColor["FURY"];
 PowerBarColor[18] = PowerBarColor["PAIN"];
 
+-- Threat Display
+MAX_DISPLAYED_THREAT_PERCENT = 999;
+
 function GetPowerBarColor(powerType)
 	return PowerBarColor[powerType];
 end
@@ -59,8 +62,8 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.portrait = portrait;
 	self.healthbar = healthbar;
 	self.manabar = manabar;
-	--self.threatIndicator = threatIndicator;
-	--self.threatNumericIndicator = threatNumericIndicator;
+	self.threatIndicator = threatIndicator;
+	self.threatNumericIndicator = threatNumericIndicator;
 	self.myHealPredictionBar = myHealPredictionBar;
 	self.otherHealPredictionBar = otherHealPredictionBar
 	self.totalAbsorbBar = totalAbsorbBar;
@@ -117,7 +120,7 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	end
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
 	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player" or unit == "pet" or unit == "vehicle" or unit == "target" or unit == "focus"));
-	--UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
+	UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
 	UnitFrame_Update(self);
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
@@ -715,7 +718,7 @@ function UnitFrameManaBar_Update(statusbar, unit)
 	end
 	TextStatusBar_UpdateTextString(statusbar);
 end
---[[
+
 function UnitFrameThreatIndicator_Initialize(unit, unitFrame, feedbackUnit)
 	local indicator = unitFrame.threatIndicator;
 	if ( not indicator ) then
@@ -769,7 +772,9 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 					if ( isTanking ) then
 						display = UnitThreatPercentageOfLead(indicator.feedbackUnit, indicator.unit);
 					end
+
 					if ( display and display ~= 0 ) then
+						display = min(display, MAX_DISPLAYED_THREAT_PERCENT);
 						numericIndicator.text:SetText(format("%1.0f", display).."%");
 						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(status));
 						numericIndicator:Show();
@@ -788,7 +793,7 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 		end
 	end
 end
---]]
+
 function GetUnitName(unit, showServerName)
 	local name, server = UnitName(unit);
 	local relationship = UnitRealmRelationship(unit);
@@ -806,7 +811,7 @@ function GetUnitName(unit, showServerName)
 		return name;
 	end
 end
---[[
+
 function ShowNumericThreat()
 	if ( GetCVar("threatShowNumeric") == "1" ) then
 		return true;
@@ -814,4 +819,3 @@ function ShowNumericThreat()
 		return false;
 	end
 end
---]]

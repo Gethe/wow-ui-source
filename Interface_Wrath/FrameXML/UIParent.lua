@@ -67,8 +67,8 @@ UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushabl
 -- The offset and width values help the Classic frames blend in with modern frames that use ButtonFrameTemplate.
 UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	height = 424,	whileDead = 1 };
-UIPanelWindows["PlayerTalentFrame"] =					{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
-UIPanelWindows["QuestLogFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["PlayerTalentFrame"] =			{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["QuestLogFrame"] =				{ area = "doublewide",		pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	whileDead = 1 };
 UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };

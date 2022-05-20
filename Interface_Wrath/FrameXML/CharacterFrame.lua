@@ -2,7 +2,7 @@ CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationF
 local NUM_CHARACTERFRAME_TABS = 4;
 
 function ToggleCharacter(tab, onlyShow)
-	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() ) then
+	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() and (GetNumCompanions("CRITTER") == 0) and (GetNumCompanions("MOUNT") == 0)) then
 		return;
 	end
 	local subFrame = _G[tab];

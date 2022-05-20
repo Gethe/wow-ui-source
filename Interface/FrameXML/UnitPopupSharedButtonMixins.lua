@@ -2993,3 +2993,95 @@ UnitPopupLegacyRaidSubsectionTitle = CreateFromMixins(UnitPopupSubsectionTitleMi
 function UnitPopupLegacyRaidSubsectionTitle:GetText()
 	return UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_LEGACY_RAID;
 end
+
+UnitPopupSelectRoleButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+function UnitPopupSelectRoleButtonMixin:GetText()
+	return SET_ROLE; 
+end 
+
+function UnitPopupSelectRoleButtonMixin:IsNested()
+	return true; 
+end
+
+function UnitPopupSelectRoleButtonMixin:CanShow()
+	return false; -- Overriden by specific versions.
+end
+
+function UnitPopupSelectRoleButtonMixin:GetButtons()
+	return { 
+		UnitPopupSetRoleTankButton,
+		UnitPopupSetRoleHealerButton,
+		UnitPopupSetRoleDpsButton,
+		UnitPopupSetRoleNoneButton,
+	}
+end 
+
+UnitPopupSetRoleNoneButton = CreateFromMixins(UnitPopupButtonBaseMixin);
+function UnitPopupSetRoleNoneButton:GetText()
+	return NO_ROLE; 
+end 
+
+function UnitPopupSetRoleNoneButton:IsCheckable()
+	return true; 
+end
+
+function UnitPopupSetRoleNoneButton:GetRole()
+	return "NONE";
+end
+
+function UnitPopupSetRoleNoneButton:OnClick()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+	UnitSetRole(dropdownMenu.unit, self:GetRole());
+end 
+
+function UnitPopupSetRoleNoneButton:IsChecked()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+	if ( UnitGroupRolesAssigned(dropdownMenu.unit) == self:GetRole()) then
+		return true
+	end
+end
+
+UnitPopupSetRoleTankButton = CreateFromMixins(UnitPopupSetRoleNoneButton);
+function UnitPopupSetRoleTankButton:GetText()
+	return INLINE_TANK_ICON.." "..TANK; 
+end 
+
+function UnitPopupSetRoleTankButton:GetRole()
+	return "TANK";
+end
+
+function UnitPopupSetRoleTankButton:IsEnabled()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownMenu.unit);
+	return canBeTank; 
+end
+
+UnitPopupSetRoleDpsButton = CreateFromMixins(UnitPopupSetRoleNoneButton);
+function UnitPopupSetRoleDpsButton:GetText()
+	return INLINE_DAMAGER_ICON.." "..DAMAGER; 
+end 
+
+function UnitPopupSetRoleDpsButton:GetRole()
+	return "DAMAGER";
+end
+
+function UnitPopupSetRoleDpsButton:IsEnabled()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownMenu.unit);
+	return canBeDamager; 
+end
+
+UnitPopupSetRoleHealerButton = CreateFromMixins(UnitPopupSetRoleNoneButton);
+function UnitPopupSetRoleHealerButton:GetText()
+	return INLINE_HEALER_ICON.." "..HEALER; 
+end 
+
+function UnitPopupSetRoleHealerButton:GetRole()
+	return "HEALER";
+end
+
+function UnitPopupSetRoleHealerButton:IsEnabled()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownMenu.unit);
+	return canBeHealer; 
+end

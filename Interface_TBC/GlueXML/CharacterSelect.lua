@@ -133,6 +133,8 @@ function CharacterSelect_OnLoad(self)
     self.createIndex = 0;
     self.selectedIndex = 0;
     self.selectLast = false;
+	self.waitingForCharacterList = true;
+	self.showSocialContract = false;
     self.characterPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedButtonTemplate");
     self:RegisterEvent("CHARACTER_LIST_UPDATE");
     self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
@@ -165,6 +167,7 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("UPDATE_NAME_RESERVATION");
 	self:RegisterEvent("TBC_INFO_PANE_UPDATE");
 	self:RegisterEvent("TBC_INFO_PANE_PRICE_UPDATE");
+	self:RegisterEvent("SOCIAL_CONTRACT_STATUS_UPDATE");
     SetCharSelectModelFrame("CharacterSelectModel");
 
     CHARACTER_SELECT_BACK_FROM_CREATE = false;
@@ -305,6 +308,10 @@ function CharacterSelect_OnShow(self)
         SetCheckedSystemRequirements(true);
     end
 
+	if not self.showSocialContract then
+		C_SocialContractGlue.GetShouldShowSocialContract();
+	end
+
 	local includeSeenWarnings = true;
 	CharacterSelectUI.ConfigurationWarnings:SetShown(#C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings) > 0);
 end
@@ -343,8 +350,15 @@ function CharacterSelect_OnHide(self)
         CharSelectServicesFlowFrame:Hide();
     end
 
+	SocialContractFrame:Hide();
+
     AccountReactivate_CloseDialogs();
     SetInCharacterSelect(false);
+end
+
+function CharacterSelect_GetCharacterListUpdate()
+	CharacterSelect.waitingForCharacterList = true;
+	GetCharacterListUpdate();
 end
 
 function CharacterSelect_SetAutoSwitchRealm(isAuto)
@@ -385,7 +399,7 @@ function CharacterSelect_UpdateState(fromLoginState)
                 end
             end
 			if (not IsCharacterListUpdateRequested()) then
-	            GetCharacterListUpdate();
+	            CharacterSelect_GetCharacterListUpdate();
 			end
         else
             UpdateCharacterList();
@@ -534,6 +548,7 @@ function CharacterSelect_OnEvent(self, event, ...)
             self.undeleteNoCharacters = false;
         end
 
+		self.waitingForCharacterList = false;
         UpdateCharacterList();
         UpdateAddonButton(true);
         CharSelectCharacterName:SetText(GetCharacterInfo(GetCharIDFromIndex(self.selectedIndex)));
@@ -607,9 +622,7 @@ function CharacterSelect_OnEvent(self, event, ...)
         local result = ...;
         CharacterSelect_CheckVeteranStatus();
     elseif (event == "VAS_CHARACTER_STATE_CHANGED" or event == "STORE_PRODUCTS_UPDATED") then
-        if ( not IsCharacterListUpdatePending() ) then
-            UpdateCharacterList();
-        end
+		CharacterSelect_UpdateIfUpdateIsNotPending();
 
 		if (event == "STORE_PRODUCTS_UPDATED") then
 			TBCInfoPane_RefreshPrice();
@@ -646,9 +659,7 @@ function CharacterSelect_OnEvent(self, event, ...)
     elseif ( event == "VAS_CHARACTER_QUEUE_STATUS_UPDATE" ) then
         local guid, minutes = ...;
         VAS_QUEUE_TIMES[guid] = minutes;
-        if (not IsCharacterListUpdatePending()) then
-            UpdateCharacterList();
-        end
+		CharacterSelect_UpdateIfUpdateIsNotPending();
     elseif ( event == "LOGIN_STATE_CHANGED" ) then
         local FROM_LOGIN_STATE_CHANGE = true;
         CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
@@ -661,6 +672,17 @@ function CharacterSelect_OnEvent(self, event, ...)
 		TBCInfoPane_Update();
 	elseif ( event == "TBC_INFO_PANE_PRICE_UPDATE") then
 		TBCInfoPane_RefreshPrice();
+	elseif ( event == "SOCIAL_CONTRACT_STATUS_UPDATE") then
+		self.showSocialContract = ...;
+		if self.showSocialContract and GlueParent_GetCurrentScreen() == "charselect" then
+			CharacterSelect_UpdateIfUpdateIsNotPending();
+		end
+	end
+end
+
+function CharacterSelect_UpdateIfUpdateIsNotPending()
+	if ( not IsCharacterListUpdatePending() ) then
+		UpdateCharacterList();
 	end
 end
 
@@ -757,6 +779,15 @@ function UpdateCharacterSelection(self)
 end
 
 function UpdateCharacterList(skipSelect)
+	if CharacterSelect.waitingForCharacterList then
+		return;
+	end
+
+	if CharacterSelect.showSocialContract then
+		SocialContractFrame:Show();
+		CharacterSelect.showSocialContract = false;
+	end
+
     local numChars = GetNumVisibleCharacters();
     local coords;
 
@@ -1277,7 +1308,7 @@ function CharacterSelect_SelectCharacterByGUID(guid)
             button:LockHighlight();
 			SetLastCharacterGuid(guid);
             UpdateCharacterSelection(CharacterSelect);
-            GetCharacterListUpdate();
+            CharacterSelect_GetCharacterListUpdate();
             return true;
         end
     end
@@ -1424,7 +1455,7 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
         CHARACTER_LIST_OFFSET = 0;
         PAID_SERVICE_CHARACTER_ID = nil;
         PAID_SERVICE_TYPE = nil;
-        GetCharacterListUpdate();
+        CharacterSelect_GetCharacterListUpdate();
         return;
     end
 
@@ -1903,7 +1934,7 @@ end
 function CharacterSelect_ActivateFactionChange()
     if IsConnectedToServer() then
         EnableChangeFaction();
-        GetCharacterListUpdate();
+        CharacterSelect_GetCharacterListUpdate();
     end
 end
 

@@ -103,7 +103,7 @@ HTML_END = "</p></body></html>";
 --
 CLASS_SORT_ORDER = {
 	"WARRIOR",
-	--"DEATHKNIGHT",
+	"DEATHKNIGHT",
 	"PALADIN",
 	--"MONK",
 	"PRIEST",
