@@ -2602,22 +2602,13 @@ function WardrobeItemsCollectionMixin:SetChosenVisualSource(visualID, sourceID)
 end
 
 function WardrobeItemsCollectionMixin:ValidateChosenVisualSources()
-	local collections = not C_Transmog.IsAtTransmogNPC();
 	for visualID, sourceID in pairs(self.chosenVisualSources) do
 		if ( sourceID ~= Constants.Transmog.NoTransmogID ) then
 			local keep = false;
-			local sources = C_TransmogCollection.GetAppearanceSources(visualID, self.activeCategory, self.transmogLocation);
-			if ( sources ) then
-				for i = 1, #sources do
-					if ( sources[i].sourceID == sourceID ) then
-						if ( sources[i].isCollected) then
-							-- hot recheck errors are temporary failures (spec, player condition, etc.), and shouldn't exclude things from collections
-							if ( not sources[i].useError or (collections and sources[i].useErrorType == Enum.TransmogUseErrorType.HotRecheckFailed)) then 
-								keep = true;
-							end
-						end
-						break;
-					end
+			local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID);
+			if sourceInfo then
+				if sourceInfo.isCollected and not sourceInfo.useError then
+					keep = true;
 				end
 			end
 			if ( not keep ) then
