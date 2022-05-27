@@ -80,7 +80,11 @@ end
 function PTR_IssueReporter.SetupQuestTooltips()
     local bindingFunc = function(EventCallbackData, self, questName, questID, inParty)
         if (questID) and (questName) then
-            PTR_IssueReporter.HookIntoTooltip(GameTooltip, IssueEditorTooltipIntegration.TooltipTypes.quest, questID, questName)
+            GameTooltip:SetOwner(self, "ANCHOR_NONE")
+            GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0)
+            GameTooltip:AddLine(string.format("%s (QID%s)", questName, questID))
+            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, questID, questName)
+            GameTooltip:Show()
         end
     end
 
@@ -144,7 +148,10 @@ end
 function PTR_IssueReporter.SetupGlyphTooltips()
     local bindingFunc = function(EventCallbackData, tooltip, glyphName, glyphSpellID)
         if (glyphName) and (glyphSpellID) then
+            GameTooltip:SetOwner(self, "ANCHOR_NONE")
+            GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0)
             PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.glyph, glyphSpellID, glyphName)
+            GameTooltip:Show()
         end
     end
 

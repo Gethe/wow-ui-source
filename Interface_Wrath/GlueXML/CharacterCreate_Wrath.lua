@@ -69,8 +69,8 @@ function CharacterCreateEnumerateRaces()
 		_G["CharacterCreateRaceButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button = _G["CharacterCreateRaceButton"..index];
 		button:Show();
-		local isNewTBCRace = raceData.fileName == "BloodElf" or raceData.fileName == "Draenei";
-		if isBoostedCharacter and isNewTBCRace then
+
+		if isBoostedCharacter and CharacterUpgradeFlow and CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.boostType and C_CharacterServices.DoesBoostTypeRestrictRace(CharacterUpgradeFlow.data.boostType, raceData.raceID) then
 			button:Disable();
 			local texture = button:GetNormalTexture();
 			if ( texture ) then
@@ -102,20 +102,22 @@ function CharacterCreateEnumerateClasses()
 		return;
 	end
 
+	local isBoostedCharacter = CharacterUpgrade_IsCreatedCharacterUpgrade() or CharacterUpgrade_IsCreatedCharacterTrialBoost();
 	local coords;
 	local button;
 	for index, classData in pairs(classes) do
 		coords = CLASS_ICON_TCOORDS[strupper(classData.fileName)];
 		_G["CharacterCreateClassButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button = _G["CharacterCreateClassButton"..index];
-		if (classData.enabled) then 
-			button.enable = true;
-			button:Enable();
-			_G["CharacterCreateClassButton"..index.."DisableTexture"]:Hide();
-		else
+
+		if (not classData.enabled or (isBoostedCharacter and CharacterUpgradeFlow and CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.boostType and C_CharacterServices.DoesBoostTypeRestrictClass(CharacterUpgradeFlow.data.boostType, classData.classID))) then 
 			button.enable = false;
 			button:Disable();
 			_G["CharacterCreateClassButton"..index.."DisableTexture"]:Show();
+		else
+			button.enable = true;
+			button:Enable();
+			_G["CharacterCreateClassButton"..index.."DisableTexture"]:Hide();
 		end
 		button.tooltip = classData.name;
 		button.classID = classData.classID;
