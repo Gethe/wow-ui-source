@@ -56,24 +56,24 @@ local DEFAULT_ICON_NAME = "Interface\\Icons\\INV_Misc_Note_02";
 StoreCardMixin = {};
 function StoreCardMixin:OnLoad()
 	self.ProductName:SetSpacing(3);
-	self.CurrentPrice:SetTextColor(1.0, 0.82, 0);		
+	self.CurrentPrice:SetTextColor(1.0, 0.82, 0);
 	self:Layout();
-	
+
 	-- the caching of NormalPrice's anchor HAS to be done after Layout
 	self.basePoint = { self.NormalPrice:GetPoint() };
 end
 
 function StoreCardMixin:OnEnter()
-
 	local entryInfo = self:GetEntryInfo();
 	local productDecorator = entryInfo.sharedData.productDecorator;
-	if productDecorator ~= Enum.BattlepayProductDecorator.VasService or IsOnGlueScreen() then
+	local canBuyHere = self:CanBuyHere(entryInfo);
+	if canBuyHere then
 		self.HighlightTexture:SetShown(StoreFrame_GetSelectedEntryID() ~= self:GetID());
 		self:UpdateMagnifier();
 	end
 	self:ShowTooltip();
 
-	local enableHighlight = self:GetID() ~= StoreFrame_GetSelectedEntryID() and (productDecorator ~= Enum.BattlepayProductDecorator.VasService or IsOnGlueScreen());
+	local enableHighlight = self:GetID() ~= StoreFrame_GetSelectedEntryID() and canBuyHere;
 	self.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
 end
 
@@ -85,7 +85,7 @@ end
 
 function StoreCardMixin:OnClick()
 	local entryInfo = self:GetEntryInfo();
-	if entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen() then
+	if not self:CanBuyHere(entryInfo) then
 		return;
 	end
 
@@ -106,6 +106,18 @@ function StoreCardMixin:OnMouseUp(...)
 	self.ModelScene:OnMouseUp(...);
 end
 
+function StoreCardMixin:IsRestrictedVASProduct(entryInfo)
+	return entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen();
+end
+
+function StoreCardMixin:CanBuyHere(entryInfo)
+	if self:IsRestrictedVASProduct(entryInfo) then
+		return false;
+	end
+
+	return entryInfo.sharedData.buyableHere;
+end
+
 function StoreCardMixin:InitMagnifier()
 	-- override this in your mixin to determine how the magnifier is initialized, if needed
 	self.Magnifier:Hide();
@@ -120,15 +132,15 @@ function StoreCardMixin:ShouldShowMagnifyingGlass()
 	return entryInfo and #entryInfo.sharedData.cards > 0;
 end
 
-function StoreCardMixin:GetTooltipOffsets()	
+function StoreCardMixin:GetTooltipOffsets()
 	local rightPos = self:GetRight();
 	local rightDist = GetScreenWidth() - rightPos;
-	
+
 	local point;
 	local rpoint;
 	local x;
 	local y = self:GetTop();
-	
+
 	if rightDist < StoreTooltip:GetWidth() then
 		x = self:GetLeft() + 4;
 		point = "LEFT";
@@ -138,7 +150,7 @@ function StoreCardMixin:GetTooltipOffsets()
 		point = "RIGHT";
 		rpoint = "BOTTOMLEFT"
 	end
-	
+
 	return x, y, point, rpoint;
 end
 
@@ -173,7 +185,7 @@ function StoreCardMixin:AppendBundleInformationToTooltipDescription(entryInfo, t
 			end
 		end
 	end
-	
+
 	return tooltipDescription;
 end
 
@@ -189,17 +201,17 @@ function StoreCardMixin:ShowTooltip()
 			rpoint = "TOPRIGHT";
 			x = -4;
 		end
-		
+
 		local entryInfo = self:GetEntryInfo();
 		local name = entryInfo.sharedData.name:gsub("|n", " ");
 		local description = "";
-		
+
 		if self.productTooltipDescription then
 			description = self.productTooltipDescription;
 		elseif entryInfo.sharedData.description then
 			description = entryInfo.sharedData.description;
 		end
-		
+
 		description = self:AppendBundleInformationToTooltipDescription(entryInfo, description);
 
 		if self:ShouldAddDiscountInformationToTooltip(entryInfo) then
@@ -215,11 +227,13 @@ function StoreCardMixin:ShowTooltip()
 
 		StoreTooltip:ClearAllPoints();
 		StoreTooltip:SetPoint(point, self, rpoint, x, 0);
-		if entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen() then
+
+		if not self:CanBuyHere(entryInfo) then
 			name = "";
 			description = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
-		end			
-		description = strtrim(description, "\n\r"); -- Ensure we don't end the description with a new line.			
+		end
+
+		description = strtrim(description, "\n\r"); -- Ensure we don't end the description with a new line.
 		StoreTooltip_Show(name, description, entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken);
 	end
 end
@@ -300,7 +314,7 @@ function StoreCardMixin:UpdatePricing(currencyInfo, entryInfo, currencyFormat)
 		self.Strikethrough:Hide();
 		self.CurrentPrice:Hide();
 	elseif discounted then
-		self:ShowDiscount(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));	
+		self:ShowDiscount(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));
 	else
 		self.NormalPrice:Hide();
 		self.SalePrice:Hide();
@@ -374,7 +388,7 @@ end
 function StoreCardMixin:ShouldShowIcon(entryInfo)
 	local showAnyModel = self:ShouldShowModel(entryInfo);
 	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture;
-	
+
 	return tryToShowTexture;
 end
 
@@ -395,7 +409,7 @@ function StoreCardMixin:ShowIcon(displayData)
 	local overrideTexture = displayData.overrideTexture;
 	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlag.UseSquareIconBorder) == Enum.BattlepayDisplayFlag.UseSquareIconBorder;
 	local iconItemQuantity = displayData.itemQuantity;
-	
+
 	self.IconBorder:Show();
 	self.Icon:Show();
 	self.ItemQuantity:Hide();
@@ -407,7 +421,7 @@ function StoreCardMixin:ShowIcon(displayData)
 	if overrideTexture then
 		self.IconBorder:Hide();
 		self.Icon:SetAtlas(overrideTexture, true);
-	else		
+	else
 		self.Icon:SetSize(64, 64);
 
 		if useSquareBorder then -- square icon borders use atlases
@@ -520,14 +534,14 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 	self:SetupWoWToken(entryInfo);
 	self:SetupDescription(entryInfo);
 	self:SetDisclaimerText(entryInfo);
-	
+
 	self:UpdateModel(entryInfo, forceModelUpdate);
 
 	if self:ShouldShowIcon(entryInfo) then
 		self:ShowIcon(entryInfo.sharedData);
 	else
 		self:HideIcon();
-	end	
+	end
 
 	self:SetID(entryID);
 	self:UpdateState();
@@ -549,17 +563,17 @@ function StoreCardMixin:UpdateCard(entryID, forceModelUpdate)
 		self.Checkmark:SetShown(completelyOwned);
 	end
 
-	local restrictedInGame = entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen();
+	local cannotBuyHere = not self:CanBuyHere(entryInfo);
 	local disabled = not self:IsEnabled();
 
 	-- If the only reason we can't buy this product is that we're in-world, redirect to the glue shop.
-	if not disabled and restrictedInGame then
+	if not disabled and cannotBuyHere then
 		self.disabledTooltip = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
 	else
 		self.disabledTooltip = nil;
 	end
 
-	local disabledOverlayShouldBeShown = disabled or restrictedInGame;
+	local disabledOverlayShouldBeShown = disabled or cannotBuyHere;
 	self:SetDisabledOverlayShown(disabledOverlayShouldBeShown);
 end
 --------------------------------------------------
@@ -570,7 +584,7 @@ end
 function StoreProductCardItem_OnEnter(self)
 	local card = self:GetParent();
 	card:OnEnter();
-	
+
 	local entryInfo = card:GetEntryInfo()
 	local x, y, point, rpoint = card:GetTooltipOffsets();
 
@@ -590,7 +604,7 @@ function StoreProductCardItem_OnLeave(self)
 
 	if ( card.SelectedTexture ) then
 		card.SelectedTexture:SetShown(card:GetID() == selectedEntryID);
-	end	
+	end
 
 	if self.hasItemTooltip then
 		Outbound.ClearItemTooltip();
@@ -619,7 +633,7 @@ end
 function StoreProductCardCheckmark_OnEnter(self)
 	local card = self:GetParent();
 	card:OnEnter();
-	
+
 	local x, y, point, rpoint = card:GetTooltipOffsets();
 	if (point == "LEFT") then
 		point = "BOTTOMRIGHT";

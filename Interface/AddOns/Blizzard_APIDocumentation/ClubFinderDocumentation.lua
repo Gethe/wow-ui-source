@@ -348,23 +348,12 @@ local ClubFinder =
 				{ Name = "avatarId", Type = "number", Nilable = false },
 				{ Name = "specs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "type", Type = "ClubFinderRequestType", Nilable = false },
+				{ Name = "crossFaction", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
 			{
 				{ Name = "succesful", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "ReportPosting",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "reportType", Type = "ClubFinderPostingReportType", Nilable = false },
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
-				{ Name = "playerGUID", Type = "string", Nilable = false },
-				{ Name = "complaintNote", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -502,6 +491,18 @@ local ClubFinder =
 			},
 		},
 		{
+			Name = "SendChatWhisper",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "playerGUID", Type = "string", Nilable = false },
+				{ Name = "applicantType", Type = "ClubFinderRequestType", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "SetAllRecruitmentSettings",
 			Type = "Function",
 
@@ -578,6 +579,15 @@ local ClubFinder =
 			{
 				{ Name = "type", Type = "ClubFinderRequestType", Nilable = false },
 				{ Name = "clubFinderGUIDs", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ClubFinderCanWhisperApplicant",
+			Type = "Event",
+			LiteralName = "CLUB_FINDER_CAN_WHISPER_APPLICANT",
+			Payload =
+			{
+				{ Name = "applicant", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -825,6 +835,7 @@ local ClubFinder =
 				{ Name = "requestStatus", Type = "PlayerClubRequestStatus", Nilable = false },
 				{ Name = "lookupSuccess", Type = "bool", Nilable = false },
 				{ Name = "lastUpdatedTime", Type = "number", Nilable = false },
+				{ Name = "faction", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -849,6 +860,7 @@ local ClubFinder =
 				{ Name = "sortMembers", Type = "bool", Nilable = false },
 				{ Name = "sortNewest", Type = "bool", Nilable = false },
 				{ Name = "autoAccept", Type = "bool", Nilable = false },
+				{ Name = "crossFaction", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -874,6 +886,7 @@ local ClubFinder =
 				{ Name = "lastPosterGUID", Type = "string", Nilable = false },
 				{ Name = "clubId", Type = "string", Nilable = false },
 				{ Name = "lastUpdatedTime", Type = "number", Nilable = false },
+				{ Name = "isCrossFaction", Type = "bool", Nilable = false },
 			},
 		},
 	},

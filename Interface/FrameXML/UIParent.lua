@@ -4463,6 +4463,8 @@ function ToggleGameMenu()
 		ChallengesKeystoneFrame:Hide();
 	elseif ( CanAutoSetGamePadCursorControl(false) and (not IsModifierKeyDown()) ) then
 		SetGamePadCursorControl(false);
+	elseif(ReportFrame and ReportFrame:IsShown()) then 
+		ReportFrame:Hide();
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);
@@ -4691,19 +4693,23 @@ function HandlePendingInviteConfirmation_QuestSession(invite)
 end
 
 function CreatePendingInviteConfirmationText(invite)
-	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(invite);
+	local confirmationType, name, guid, rolesInvalid, willConvertToRaid, _, _, _, isCrossFaction, playerFactionGroup, localizedFaction = GetInviteConfirmationInfo(invite);
 
 	if confirmationType == LE_INVITE_CONFIRMATION_REQUEST then
-		return CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid);
+		return CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction);
 	elseif confirmationType == LE_INVITE_CONFIRMATION_SUGGEST then
-		return CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid);
+		return CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction);
 	else
 		return CreatePendingInviteConfirmationText_AppendWarnings("", invite, name, guid, rolesInvalid, willConvertToRaid);
 	end
 end
 
-function CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid)
+function CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction)
 	local coloredName, coloredSuggesterName = CreatePendingInviteConfirmationNames(invite, name, guid, rolesInvalid, willConvertToRaid);
+
+	if isCrossFaction then
+		coloredName = CROSS_FACTION_PLAYER_NAME:format(coloredName, localizedFaction);
+	end
 
 	local suggesterGuid, _, relationship, isQuickJoin, clubId = C_PartyInfo.GetInviteReferralInfo(invite);
 
@@ -4769,10 +4775,14 @@ function CreatePendingInviteConfirmationNames(invite, name, guid, rolesInvalid, 
 	end
 end
 
-function CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid)
+function CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction)
 	local suggesterGuid, suggesterName, relationship, isQuickJoin = C_PartyInfo.GetInviteReferralInfo(invite);
 	suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
 	name = GetSocialColoredName(name, guid);
+
+	if isCrossFaction then
+		name = CROSS_FACTION_PLAYER_NAME:format(name, localizedFaction);
+	end
 
 	-- Only using a single string here, if somebody is suggesting a person to join the group, QuickJoin text doesn't apply.
 	local text = INVITE_CONFIRMATION_SUGGEST:format(suggesterName, name);

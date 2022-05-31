@@ -30,3 +30,31 @@ do
 		return C_PvP.GetBattlefieldFlagPosition(flagIndex, uiMapId);
 	end
 end
+
+-- Calendar constants
+do
+	-- Event Types
+	CALENDAR_EVENTTYPE_RAID			= Enum.CalendarEventType.Raid;
+	CALENDAR_EVENTTYPE_DUNGEON		= Enum.CalendarEventType.Dungeon;
+	CALENDAR_EVENTTYPE_PVP			= Enum.CalendarEventType.PvP;
+	CALENDAR_EVENTTYPE_MEETING		= Enum.CalendarEventType.Meeting;
+	CALENDAR_EVENTTYPE_OTHER		= Enum.CalendarEventType.Other;
+	CALENDAR_MAX_EVENTTYPE			= Enum.CalendarEventTypeMeta.MaxValue;
+
+	-- Invite Statuses
+	CALENDAR_INVITESTATUS_INVITED		= Enum.CalendarStatus.Invited;
+	CALENDAR_INVITESTATUS_ACCEPTED		= Enum.CalendarStatus.Available;
+	CALENDAR_INVITESTATUS_DECLINED		= Enum.CalendarStatus.Declined;
+	CALENDAR_INVITESTATUS_CONFIRMED		= Enum.CalendarStatus.Confirmed;
+	CALENDAR_INVITESTATUS_OUT			= Enum.CalendarStatus.Out;
+	CALENDAR_INVITESTATUS_STANDBY		= Enum.CalendarStatus.Standby;
+	CALENDAR_INVITESTATUS_SIGNEDUP		= Enum.CalendarStatus.Signedup;
+	CALENDAR_INVITESTATUS_NOT_SIGNEDUP	= Enum.CalendarStatus.NotSignedup;
+	CALENDAR_INVITESTATUS_TENTATIVE		= Enum.CalendarStatus.Tentative;
+	CALENDAR_MAX_INVITESTATUS			= Enum.CalendarStatusMeta.MaxValue;
+
+	-- Invite Types
+	CALENDAR_INVITETYPE_NORMAL		= Enum.CalendarInviteType.Normal;
+	CALENDAR_INVITETYPE_SIGNUP		= Enum.CalendarInviteType.Signup;
+	CALENDAR_MAX_INVITETYPE			= Enum.CalendarInviteTypeMeta.MaxValue;
+end

@@ -112,6 +112,7 @@ function MerchantFrame_OnHide(self)
 	ResetCursor();
 	
 	StaticPopup_Hide("CONFIRM_PURCHASE_TOKEN_ITEM");
+	StaticPopup_Hide("CONFIRM_PURCHASE_ITEM_DELAYED");
 	StaticPopup_Hide("CONFIRM_REFUND_TOKEN_ITEM");
 	StaticPopup_Hide("CONFIRM_REFUND_MAX_HONOR");
 	StaticPopup_Hide("CONFIRM_REFUND_MAX_ARENA_POINTS");
@@ -677,7 +678,16 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			end
 		elseif ( itemLink ) then
-			local _, _, itemQuality = GetItemInfo(itemLink);
+			local itemName, itemLink, itemQuality = GetItemInfo(itemLink);
+
+			if ( i == 1 and GetMerchantItemCostInfo(index) == 1 ) then
+				local limitedCurrencyItemInfo = MerchantFrame_GetLimitedCurrencyItemInfo(itemLink);
+				if ( limitedCurrencyItemInfo ) then
+					MerchantFrame_ConfirmLimitedCurrencyPurchase(itemButton, limitedCurrencyItemInfo, numToPurchase, costItemCount);
+					return;
+				end
+			end
+
 			maxQuality = math.max(itemQuality, maxQuality);
 			if ( itemsString ) then
 				itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, costItemCount, itemLink);
@@ -703,31 +713,14 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		return;
 	end
 	
-	
-	local itemName;
-	local itemQuality = 1;
-	local _;
-	local r, g, b = 1, 1, 1;
-	local specs = {};
-	if(itemButton.link) then
-		itemName, _, itemQuality = GetItemInfo(itemButton.link);
-	end
+	local popupData, specs = MerchantFrame_GetProductInfo(itemButton);
+	popupData.count = numToPurchase;
 
-	if ( itemName ) then
-		--It's an item
-		r, g, b = GetItemQualityColor(itemQuality); 
-		specs = GetItemSpecInfo(itemButton.link, specs);
-	else
-		--Not an item. Could be currency or something. Just use what's on the button.
-		itemName = itemButton.name;
-		r, g, b = GetItemQualityColor(1); 
-	end
 	local specText;
 	if (specs and #specs > 0) then
-		local specName, specIcon;
 		specText = "\n\n";
 		for i=1, #specs do
-			_, specName, _, specIcon = GetSpecializationInfoByID(specs[i], UnitSex("player"));
+			local specID, specName, specDesc, specIcon = GetSpecializationInfoByID(specs[i], UnitSex("player"));
 			specText = specText.." |T"..specIcon..":0:0:0:-1|t "..NORMAL_FONT_COLOR_CODE..specName..FONT_COLOR_CODE_CLOSE;
 			if (i < #specs) then
 				specText = specText..PLAYER_LIST_DELIMITER
@@ -738,14 +731,40 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	end
 	
 	if (itemButton.showNonrefundablePrompt) then
-		StaticPopup_Show("CONFIRM_PURCHASE_NONREFUNDABLE_ITEM", itemsString, specText, 
-							{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
-							["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+		StaticPopup_Show("CONFIRM_PURCHASE_NONREFUNDABLE_ITEM", itemsString, specText, popupData );
 	else
-		StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, specText, 
-							{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
-							["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+		StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, specText, popupData );
 	end
+end
+
+function MerchantFrame_GetProductInfo(itemButton)
+	local itemName, itemHyperlink;
+	local itemQuality = 1;
+	local r, g, b = 1, 1, 1;
+	if(itemButton.link) then
+		itemName, itemHyperlink, itemQuality = GetItemInfo(itemButton.link);
+	end
+
+	local specs = {};
+	if ( itemName ) then
+		--It's an item
+		r, g, b = GetItemQualityColor(itemQuality); 
+		specs = GetItemSpecInfo(itemButton.link, specs);
+	else
+		--Not an item. Could be currency or something. Just use what's on the button.
+		itemName = itemButton.name;
+		r, g, b = GetItemQualityColor(1); 
+	end
+
+	local productInfo = {
+		texture = itemButton.texture,
+		name = itemName,
+		color = {r, g, b, 1},
+		link = itemButton.link,
+		index = itemButton:GetID(),
+	};
+
+	return productInfo, specs;
 end
 
 function MerchantFrame_ResetRefundItem()
@@ -766,6 +785,36 @@ function MerchantFrame_ConfirmHighCostItem(itemButton, quantity)
 	MerchantFrame.count = quantity;
 	MerchantFrame.price = itemButton.price;
 	StaticPopup_Show("CONFIRM_HIGH_COST_ITEM", itemButton.link);
+end
+
+function MerchantFrame_GetLimitedCurrencyItemInfo(itemLink)
+	local itemName, iconFileID, quantity, maxQuantity, totalEarned = C_Item.GetLimitedCurrencyItemInfo(itemLink);
+	if not itemName then
+		return nil;
+	end
+
+	return { ["name"] = itemName, ["iconFileID"] = iconFileID, ["quantity"] = quantity, ["maxQuantity"] = maxQuantity, ["totalEarned"] = totalEarned, };
+end
+
+function MerchantFrame_ConfirmLimitedCurrencyPurchase(itemButton, currencyInfo, numToPurchase, totalCurrencyCost)
+	local currencyIcon = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0);
+	local currencyString = currencyIcon .. currencyInfo.name;
+	local costString = currencyIcon .. totalCurrencyCost .. " " .. currencyInfo.name;
+
+	local alreadySpent = currencyInfo.totalEarned - currencyInfo.quantity;
+	-- The amount of this limited currency that the player currently has + the amount that they can still earn
+	local unusedAmount = currencyInfo.maxQuantity - alreadySpent;
+	local isFinalPurchase = (unusedAmount - totalCurrencyCost <= 0);
+
+	local popupData = MerchantFrame_GetProductInfo(itemButton);
+	popupData.count = numToPurchase;
+	if isFinalPurchase then
+		popupData.confirmationText = LIMITED_CURRENCY_PURCHASE_FINAL:format(currencyInfo.name, currencyInfo.name, costString);
+	else
+		popupData.confirmationText = LIMITED_CURRENCY_PURCHASE:format(costString, unusedAmount - totalCurrencyCost, currencyString, costString)
+	end
+
+	StaticPopup_Show("CONFIRM_PURCHASE_ITEM_DELAYED", nil, nil, popupData);
 end
 
 function MerchantFrame_UpdateCanRepairAll()

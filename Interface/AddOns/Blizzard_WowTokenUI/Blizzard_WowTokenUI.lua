@@ -81,6 +81,10 @@ Import("BLIZZARD_STORE_CURRENCY_FORMAT_AUD");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_JPY");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_CAD");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_NZD");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_GEL");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_TRY");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_KZT");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_UAH");
 Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 Import("BLIZZARD_STORE_CURRENCY_BETA");
 
@@ -140,6 +144,10 @@ local CURRENCY_BETA = 16;
 local CURRENCY_JPY = 28;
 local CURRENCY_CAD = 29;
 local CURRENCY_NZD = 30;
+local CURRENCY_GEL = 31;
+local CURRENCY_TRY = 32;
+local CURRENCY_KZT = 33;
+local CURRENCY_UAH = 34;
 
 local currencyMult = 100;
 
@@ -236,6 +244,22 @@ local function currencyFormatNZD(dollars, cents)
 	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_NZD, formatCurrency(dollars, cents, false));
 end
 
+local function currencyFormatGEL(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_GEL, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatTRY(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_TRY, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatKZT(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_KZT, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatUAH(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_UAH, formatCurrency(dollars, cents, false));
+end
+
 local currencySpecific = {
 	[CURRENCY_USD] = {
 		["currencyFormat"] = currencyFormatUSD,
@@ -284,6 +308,18 @@ local currencySpecific = {
 	},
 	[CURRENCY_NZD] = {
 		["currencyFormat"] = currencyFormatNZD,
+	},
+	[CURRENCY_GEL] = {
+		["currencyFormat"] = currencyFormatGEL,
+	},
+	[CURRENCY_TRY] = {
+		["currencyFormat"] = currencyFormatTRY,
+	},
+	[CURRENCY_KZT] = {
+		["currencyFormat"] = currencyFormatKZT,
+	},
+	[CURRENCY_UAH] = {
+		["currencyFormat"] = currencyFormatUAH,
 	},
 };
 

@@ -375,8 +375,8 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	self.Icon:SetSize(iconSize, iconSize);
 
 	if not hasBorderTexture then 
-		self.Border:SetAtlas("UI-Frame-IconBorder", false); 
-	end 
+		self.Border:SetAtlas("UI-Frame-IconBorder", false);
+	end
 
 	local iconWidth = self.Icon:GetWidth();
 	local textWidth = 0;
@@ -391,18 +391,17 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	self.Text:SetShown(textShown);
 
 	if textShown then
-		if spellInfo.text ~= "" then
-			self.Text:SetText(spellInfo.text);
-		else
-			self.Text:SetText(name);
-		end
 		if textWidth == 0 then
 			textWidth = self.Text:GetWidth();
 		end
+		iconWidth = iconWidth + 5;
+
+		local text = (spellInfo.text == "") and name or spellInfo.text;
+		self.Text:Setup(text, spellInfo.textFontType, spellInfo.textSizeType, enabledState, spellInfo.hAlignType);
+
 		if self.Text:GetHeight() < self.Icon:GetHeight() then
 			self.Text:SetHeight(self.Icon:GetHeight());
 		end
-		iconWidth = iconWidth + 5;
 	end
 
 	if spellInfo.stackDisplay > 0 then

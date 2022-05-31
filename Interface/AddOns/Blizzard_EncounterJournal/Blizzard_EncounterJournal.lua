@@ -608,7 +608,7 @@ function EncounterJournal_ListInstances()
 
 	local scrollFrame = instanceSelect.scroll.child;
 	local index = 1;
-	local instanceID, name, description, _, buttonImage, _, _, _, link = EJ_GetInstanceByIndex(index, showRaid);
+	local instanceID, name, description, _, buttonImage, _, _, _, link, _, mapID = EJ_GetInstanceByIndex(index, showRaid);
 
 	--No instances in this tab
 	if not instanceID and not infiniteLoopPolice then
@@ -646,10 +646,22 @@ function EncounterJournal_ListInstances()
 		instanceButton.tooltipTitle = name;
 		instanceButton.tooltipText = description;
 		instanceButton.link = link;
+		instanceButton.mapID = mapID; 
 		instanceButton:Show();
+		instanceButton.ModifiedInstanceIcon:Hide(); 
+
+		local modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(mapID)
+		if (modifiedInstanceInfo) then 
+			instanceButton.ModifiedInstanceIcon.info = modifiedInstanceInfo;
+			instanceButton.ModifiedInstanceIcon.name = name;
+			local atlas = instanceButton.ModifiedInstanceIcon:GetIconTextureAtlas();
+			instanceButton.ModifiedInstanceIcon.Icon:SetAtlas(atlas, true)
+			instanceButton.ModifiedInstanceIcon:SetSize(instanceButton.ModifiedInstanceIcon.Icon:GetSize());
+			instanceButton.ModifiedInstanceIcon:Show(); 
+		end 
 
 		index = index + 1;
-		instanceID, name, description, _, buttonImage, _, _, _, link = EJ_GetInstanceByIndex(index, showRaid);
+		instanceID, name, description, _, buttonImage, _, _, _, link, _, mapID = EJ_GetInstanceByIndex(index, showRaid);
 	end
 
 	EJ_HideInstances(index);
@@ -3577,3 +3589,19 @@ function EncounterItemTemplate_DividerFrameTipOnEnter(self)
 	GameTooltip:AddLine(BONUS_LOOT_TOOLTIP_BODY, nil, nil, nil, true);
 	GameTooltip:Show();
 end
+
+ModifiedInstanceIconMixin = { };
+function ModifiedInstanceIconMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, self.name, HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddNormalLine(GameTooltip, self.info.description);
+	GameTooltip:Show();
+end 
+
+function ModifiedInstanceIconMixin:GetIconTextureAtlas()
+	return GetFinalNameFromTextureKit("%s-large", self.info.uiTextureKit);
+end 
+
+function ModifiedInstanceIconMixin:OnLeave()
+	GameTooltip:Hide(); 
+end 

@@ -91,8 +91,17 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 	elseif ( worldQuestType == Enum.QuestTagType.Threat ) then
 		iconAtlas = QuestUtil.GetThreatPOIIcon(questID);
 	else
-		return "worldquest-questmarker-questbang", 6, 15;
+		if(questID) then 
+			local theme = C_QuestLog.GetQuestDetailsTheme(questID);
+			if theme then
+				iconAtlas = theme.poiIcon;
+			end
+		end
 	end
+
+	if(not iconAtlas) then 
+		return "worldquest-questmarker-questbang", 6, 15;
+	end 
 
 	local info = C_Texture.GetAtlasInfo(iconAtlas);
 	return iconAtlas, info and info.width, info and info.height;

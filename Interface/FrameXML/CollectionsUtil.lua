@@ -72,8 +72,8 @@ function CollectionWardrobeUtil.SortSources(sources, primaryVisualID, primarySou
 	return sources;
 end
 
-function CollectionWardrobeUtil.GetSortedAppearanceSources(visualID, category)
-	local sources = C_TransmogCollection.GetAppearanceSources(visualID, category);
+function CollectionWardrobeUtil.GetSortedAppearanceSources(visualID, category, transmogLocation)
+	local sources = C_TransmogCollection.GetAppearanceSources(visualID, category, transmogLocation);
 	return CollectionWardrobeUtil.SortSources(sources);
 end
 
@@ -325,7 +325,7 @@ end
 -- if the sourceID is not collectable, this will try to find a collectable one that has the same appearance
 -- returns: preferredSourceID, hasAllDataAvailable, canCollect
 -- if all data was not available, calling this after TRANSMOG_COLLECTION_ITEM_UPDATE and TRANSMOG_SOURCE_COLLECTABILITY_UPDATE events may result in a better sourceID returned
-function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearanceInfo)
+function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearanceInfo, category, transmogLocation)
 	if not appearanceInfo then
 		appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(initialSourceID);
 	end
@@ -365,7 +365,7 @@ function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearance
 		-- 1. the initialSourceID is not known (HiddenUntilCollected or not available to player)
 		-- 2. the appearance is collected but the initialSourceID is not
 		-- In either case, grab the first valid one from the list
-		local sourceInfos = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceInfo.appearanceID);
+		local sourceInfos = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceInfo.appearanceID, category, transmogLocation);
 		for i, sourceInfo in ipairs(sourceInfos) do
 			if not sourceInfo.name then
 				hasAllData = false;

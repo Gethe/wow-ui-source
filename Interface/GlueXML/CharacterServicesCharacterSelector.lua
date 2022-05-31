@@ -72,10 +72,7 @@ function CharacterServicesCharacterSelectorMixin:OnLoad()
 	self.ButtonPools:CreatePool("Frame", self, "CharacterServicesBonusIconTemplate");
 end
 
--- The characterSelectableCallback recives a characterID and a characterSelectButton and should return:
--- bool: enable the character button (this will show the arrow indicator next to the character)
--- bool: enable the bonus icon, the bonus icon communicates some custom state
-function CharacterServicesCharacterSelectorMixin:UpdateDisplay(characterSelectableCallback)
+function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
 	CharacterSelect_SetScrollEnabled(true);
 	CharacterSelect_SaveCharacterOrder();
 
@@ -89,10 +86,13 @@ function CharacterServicesCharacterSelectorMixin:UpdateDisplay(characterSelectab
 
 	self.ButtonPools:ReleaseAll();
 
+	self.initialSelectedCharacterIndex = GetCharacterSelection();
 	CharacterSelect.selectedIndex = -1;
 	UpdateCharacterSelection(CharacterSelect);
 
 	disableAllScripts();
+
+	local hasAnyValidCharacter = false;
 
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
@@ -100,10 +100,11 @@ function CharacterServicesCharacterSelectorMixin:UpdateDisplay(characterSelectab
 
 		local characterID = GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET);
 
-		local isEnabled, showBonus = characterSelectableCallback(characterID, button);
+		local isEnabled, showBonus = self:ProcessCharacterFromBlock(characterID, button, block);
 		CharacterSelect_SetCharacterButtonEnabled(i, isEnabled);
 
 		if isEnabled then
+			hasAnyValidCharacter = true;
 			local arrow = self.ButtonPools:Acquire("CharacterServicesArrowTemplate");
 			arrow:SetPoint("RIGHT", button, "LEFT", -8, 8);
 			arrow:Show();
@@ -115,26 +116,68 @@ function CharacterServicesCharacterSelectorMixin:UpdateDisplay(characterSelectab
 			end
 		end
 	end
+
+	self.GlowBox:SetShown(hasAnyValidCharacter);
 end
 
--- glowBoxEnabledCallback takes a characterID and is expected to return true or false indicating that the character could be selected
--- for whatever service flow is active.
-function CharacterServicesCharacterSelectorMixin:CheckGlowboxEnabled(checkCallback)
-	self.GlowBox:Hide();
+function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(characterID, characterButton, block)
+	local serviceInfo = block:GetServiceInfoByCharacterID(characterID);
+	if serviceInfo.isEligible then
+		characterButton:SetScript("OnClick", function(characterButton, button)
+			if serviceInfo.requiresLogin then
+				GlueDialog_Show("MUST_LOG_IN_FIRST");
+				CharSelectServicesFlowFrame:Hide();
+				return;
+			end
+			block:SaveResultInfo(characterButton, serviceInfo.playerguid);
+		
+			-- The user entered a normal boost flow and selected a trial boost character, at this point
+			-- put the flow into the auto-select state.
+			if serviceInfo.checkTrialBoost then
+				local trialBoostFlowGuid = serviceInfo.isTrialBoost and playerguid or nil;
+				CharacterUpgradeFlow:SetTrialBoostGuid(trialBoostFlowGuid);
+			end
 
-	--- Why not early out? Because this could have side effects; it's only run one time per flow.
-	for i = 1, GetNumCharacters() do
-		if checkCallback(GetCharIDFromIndex(i)) then
-			self.GlowBox:SetShown(true);
+			CharacterSelectButton_OnClick(characterButton);
+			characterButton.selection:Show();
+			CharacterServicesMaster_Update();
+		end);
+
+		-- Determine if this should auto-advance and cache off relevant information
+		-- NOTE: CharacterUpgradeCharacterSelectBlock always uses auto-advance, there's no "next"
+		-- button, so once a character is selected it has to advance automatically.
+		if serviceInfo.checkAutoSelect and CharacterUpgradeFlow:GetAutoSelectGuid() == serviceInfo.playerguid then
+			block:SaveResultInfo(characterButton, serviceInfo.playerguid);
+			characterButton.selection:Show();
 		end
+	elseif serviceInfo.checkErrors then
+		characterButton:SetScript("OnEnter", function(self)
+			if #serviceInfo.errors > 0 then
+				local tooltip = GetAppropriateTooltip();
+				tooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -25, 70);
+				GameTooltip_SetTitle(tooltip, BLIZZARD_STORE_VAS_ERROR_LABEL);
+				for index, errorMsg in pairs(serviceInfo.errors) do
+					GameTooltip_AddErrorLine(tooltip, errorMsg);
+				end
+
+				tooltip:Show();
+			end
+		end);
+
+		characterButton:SetScript("OnLeave", function(self)
+			local tooltip = GetAppropriateTooltip();
+			tooltip:Hide();
+		end);
 	end
+
+	return serviceInfo.isEligible, serviceInfo.hasBonus;
 end
 
 function CharacterServicesCharacterSelectorMixin:HasAnyEligibleCharacter()
 	return self.GlowBox:IsShown();
 end
 
-function CharacterServicesCharacterSelectorMixin:ResetState(selectedCharacterIndex)
+function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 	self:Hide();
 	CharacterSelect_SetScrollEnabled(true);
 
@@ -149,11 +192,14 @@ function CharacterServicesCharacterSelectorMixin:ResetState(selectedCharacterInd
 	end
 
 	UpdateCharacterList(true);
-
-	if selectedCharacterIndex and selectedCharacterIndex > 0 and selectedCharacterIndex <= MAX_CHARACTERS_DISPLAYED then
+	local selectedCharacterIndex;
+	if selectedButtonIndex and selectedButtonIndex > 0 then
+		selectedCharacterIndex = selectedButtonIndex + CHARACTER_LIST_OFFSET;
+	else
+		selectedCharacterIndex = self.initialSelectedCharacterIndex;
+	end
+	if selectedCharacterIndex and selectedCharacterIndex > 0 then
 		CharacterSelect.selectedIndex = selectedCharacterIndex;
-		local button = _G["CharSelectCharacterButton"..selectedCharacterIndex];
-		CharacterSelectButton_OnClick(button);
-		button.selection:Show();
+		UpdateCharacterSelection(CharacterSelect);
 	end
 end

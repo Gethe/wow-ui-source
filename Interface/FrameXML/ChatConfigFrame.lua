@@ -2337,12 +2337,23 @@ function ChatConfigFrameTabManagerMixin:UpdateTabDisplay()
 
 	local lastTab = nil;
 	local tabCount = FCF_GetNumActiveChatFrames();
-	if (GetCVarBool("textToSpeech")) then
-		tabCount = math.max(tabCount, VOICE_WINDOW_ID);
+	
+	--This is needed to properly skip or include the TTS config tab
+	local showTTSConfigTab = GetCVarBool("textToSpeech") or GetCVarBool("remoteTextToSpeech")
+	if ( GetCVarBool("textToSpeech") and not GetCVarBool("remoteTextToSpeech") ) then
+		tabCount = tabCount + 1;
 	end
+
 	for i = 1, tabCount do
+
+		--Skip over the reserved TTS config tab if we aren't showing it. This assumes TTS tab is the last of the reserved tabs.
+		local offset = 0;
+		if(not showTTSConfigTab and i >= VOICE_WINDOW_ID) then
+			offset = 1;
+		end
+
 		local tab = self.tabPool:Acquire();
-		tab:SetChatWindowIndex(i);
+		tab:SetChatWindowIndex(i + offset);
 		if lastTab then
 			tab:SetPoint("LEFT", lastTab, "RIGHT");
 		else

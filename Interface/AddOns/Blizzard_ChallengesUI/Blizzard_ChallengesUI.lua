@@ -154,15 +154,20 @@ function ChallengesFrame_Update(self)
 			level = inTimeInfo and inTimeInfo.level or overtimeInfo.level; 
 			dungeonScore = inTimeInfo and inTimeInfo.dungeonScore or overtimeInfo.dungeonScore;
 		end
-		tinsert(sortedMaps, { id = self.maps[i], level = level, dungeonScore = dungeonScore});
+		local name = C_ChallengeMode.GetMapUIInfo(self.maps[i]);
+		tinsert(sortedMaps, { id = self.maps[i], level = level, dungeonScore = dungeonScore, name = name});
     end
 
     table.sort(sortedMaps,
 	function(a, b)
-		return a.dungeonScore > b.dungeonScore;
+		if(b.dungeonScore ~= a.dungeonScore) then 
+			return a.dungeonScore > b.dungeonScore; 
+		else 
+			return strcmputf8i(a.name, b.name) > 0;
+		end
 	end);
 
-	 local hasWeeklyRun = false;
+	local hasWeeklyRun = false;
 	local weeklySortedMaps = {};
 	 for i = 1, #self.maps do
 		local _, weeklyLevel = C_MythicPlus.GetWeeklyBestForMap(self.maps[i])
@@ -914,7 +919,8 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
 		end
 	end		
 
-	if (data.isEligibleForScore and data.oldDungeonScore and data.newDungeonScore) then
+	local isOnlyRunThisSeason = #C_MythicPlus.GetRunHistory(true, true) <= 1; 
+	if (data.isEligibleForScore and ((data.oldDungeonScore and data.newDungeonScore) or (isOnlyRunThisSeason))) then
 		local gainedScore = data.newDungeonScore - data.oldDungeonScore;
 		local color = C_ChallengeMode.GetDungeonScoreRarityColor(data.newDungeonScore);
 		if (not color) then 
@@ -922,11 +928,12 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
 		end
 		self.DescriptionLineThree:SetText(CHALLENGE_COMPLETE_DUNGEON_SCORE:format(color:WrapTextInColorCode(CHALLENGE_COMPLETE_DUNGEON_SCORE_FORMAT_TEXT:format(data.newDungeonScore, gainedScore))));
 		
-		if(gainedScore > 0) then 
+		local showChatMessage = gainedScore or isOnlyRunThisSeason;
+		if(showChatMessage) then 
 			local chatString;
 			if(data.keystoneUpgradeLevels and data.keystoneUpgradeLevels > 0) then 
 				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_KEYSTONE_UPGRADE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore, data.keystoneUpgradeLevels);
-			else 
+			else
 				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore);
 			end
 			local info = ChatTypeInfo["SYSTEM"];

@@ -61,6 +61,7 @@ function CommunitiesSettingsDialogMixin:OnShow()
 	local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId); 
 	local shouldShowFinderOptions = C_ClubFinder.IsEnabled() and clubType == Enum.ClubType.Character and isProperRecruitingRole and C_ClubFinder.GetClubFinderDisableReason() == nil and not isPostingBanned;  
 	self:HideOrShowCommunityFinderOptions(shouldShowFinderOptions);
+	self.CrossFactionToggle:SetShown(clubType == Enum.ClubType.Character);
 
 	if (clubType == Enum.ClubType.Character) then 
 		self:UpdateSettingsInfoFromClubInfo(); 
@@ -103,6 +104,10 @@ function CommunitiesSettingsDialogMixin:SetClubId(clubId)
 		self.Description.EditBox:SetText(clubInfo.description);
 		self.Description.EditBox.Instructions:SetText(self.clubType == Enum.ClubType.BattleNet and COMMUNITIES_CREATE_DIALOG_DESCRIPTION_INSTRUCTIONS_BATTLE_NET or COMMUNITIES_CREATE_DIALOG_DESCRIPTION_INSTRUCTIONS);
 		self.MessageOfTheDay.EditBox:SetText(clubInfo.broadcast);
+		self.CrossFactionToggle.CheckButton:SetChecked(clubInfo.crossFaction);
+
+		local canChangeCrossFaction = not C_Club.DoesCommunityHaveMembersOfTheOppositeFaction(clubId); 
+		self.CrossFactionToggle.CheckButton:SetEnabled(canChangeCrossFaction);
 
 		local clubPostingInfo = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubId);
 		if (clubPostingInfo) then
@@ -145,6 +150,10 @@ function CommunitiesSettingsDialogMixin:GetMessageOfTheDay()
 	return self.MessageOfTheDay.EditBox:GetText();
 end
 
+function CommunitiesSettingsDialogMixin:GetCrossFaction() 
+	return self.CrossFactionToggle.CheckButton:GetChecked(); 
+end
+
 function CommunitiesSettingsDialogMixin:UpdateCreateButton()
 	local name = self.NameEdit:GetText();
 	local nameIsValid = C_Club.ValidateText(self:GetClubType(), name, Enum.ClubFieldType.ClubName) == Enum.ValidateNameResult.NameSuccess;
@@ -175,7 +184,7 @@ function CommunitiesSettingsDialogMixin:PostClub(newName)
 	local description = self.Description.EditBox:GetText(); 
 
 	if(clubInfo and clubInfo.clubType == Enum.ClubType.Character) then 
-		local postClubSuccessful = C_ClubFinder.PostClub(clubInfo.clubId, minItemLevel, newName, description, self:GetAvatarId(), specsInList, Enum.ClubFinderRequestType.Community);
+		local postClubSuccessful = C_ClubFinder.PostClub(clubInfo.clubId, minItemLevel, newName, description, self:GetAvatarId(), specsInList, Enum.ClubFinderRequestType.Community, self:GetCrossFaction());
 		if (self.ShouldListClub.Button:GetChecked() and postClubSuccessful) then
 			shouldHideNow = false;
 		elseif(not postClubSuccessful) then 
@@ -410,7 +419,7 @@ end
 
 function CommunitiesSettingsDialogAcceptButton_OnClick(self)
 	local communitiesSettingsDialog = self:GetParent();
-	C_Club.EditClub(communitiesSettingsDialog:GetClubId(), communitiesSettingsDialog:GetName(), communitiesSettingsDialog:GetShortName(), communitiesSettingsDialog:GetDescription(), communitiesSettingsDialog:GetAvatarId(), communitiesSettingsDialog:GetMessageOfTheDay());
+	C_Club.EditClub(communitiesSettingsDialog:GetClubId(), communitiesSettingsDialog:GetName(), communitiesSettingsDialog:GetShortName(), communitiesSettingsDialog:GetDescription(), communitiesSettingsDialog:GetAvatarId(), communitiesSettingsDialog:GetMessageOfTheDay(), communitiesSettingsDialog:GetCrossFaction());
 	local shouldHideNow = communitiesSettingsDialog:PostClub(communitiesSettingsDialog:GetName());
 
 	if (shouldHideNow) then 
@@ -448,3 +457,14 @@ function CommunitiesSettingsButton_OnClick(self)
 		CloseCommunitiesSettingsDialog();
 	end
 end
+
+CommunitiesSettingsCrossFactionToggleMixin = { };
+
+function CommunitiesSettingsCrossFactionToggleMixin:OnEnter()
+	GameTooltip:SetOwner(self.Label, "ANCHOR_TOPLEFT", 90); 
+	GameTooltip_AddNormalLine(GameTooltip, COMMUNITIES_SETTING_CROSS_FACTION_TOOLTIP); 
+	if(not self.CheckButton:IsEnabled()) then 
+		GameTooltip_AddColoredLine(GameTooltip, COMMUNITIES_SETTING_CROSS_FACTION_TOOLTIP_ERROR, RED_FONT_COLOR); 
+	end		
+	GameTooltip:Show(); 
+end		

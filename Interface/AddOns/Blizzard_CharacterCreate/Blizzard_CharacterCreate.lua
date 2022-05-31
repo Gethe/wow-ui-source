@@ -58,6 +58,8 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("CHAR_CREATE_BEGIN_ANIMATIONS");
 	self:RegisterEvent("CHAR_CREATE_ANIM_KIT_FINISHED");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
+	self:RegisterEvent("ASSIGN_VAS_RESPONSE");
 
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
@@ -156,6 +158,11 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" then
 		self:OnDisplaySizeChanged();
+	elseif event == "STORE_VAS_PURCHASE_ERROR" then
+		self:OnStoreVASPurchaseError();
+	elseif event == "ASSIGN_VAS_RESPONSE" then
+		local token, storeError, vasPurchaseResult = ...;
+		self:OnAssignVASResponse(token, storeError, vasPurchaseResult);
 	end
 
 	if showError then
@@ -168,8 +175,9 @@ function CharacterCreateMixin:OnShow()
 	C_CharacterCreation.SetInCharacterCreate(true);
 
 	local _, selectedFaction;
-	if self.paidServiceType then
-		C_CharacterCreation.CustomizeExistingCharacter(self.paidServiceCharacterID);
+	local existingCharacterID = self:GetExistingCharacterID();
+	if existingCharacterID then
+		C_CharacterCreation.CustomizeExistingCharacter(existingCharacterID);
 		self.currentPaidServiceName = C_PaidServices.GetName();
 		_, selectedFaction = C_PaidServices.GetCurrentFaction();
 		NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName);
@@ -195,7 +203,7 @@ local rafHelpTipInfo = {
 
 function CharacterCreateMixin:UpdateRecruitInfo()
 	local active, faction = C_RecruitAFriend.GetRecruitInfo();
-	if active and not self.paidServiceType and C_CharacterCreation.UseBeginnerMode() then
+	if active and not self:HasService() and C_CharacterCreation.UseBeginnerMode() then
 		local recruiterIsHorde = (PLAYER_FACTION_GROUP[faction] == "Horde");
 		rafHelpTipInfo.text = recruiterIsHorde and RECRUIT_A_FRIEND_FACTION_SUGGESTION_HORDE or RECRUIT_A_FRIEND_FACTION_SUGGESTION_ALLIANCE;
 		rafHelpTipInfo.targetPoint = recruiterIsHorde and HelpTip.Point.RightEdgeCenter or HelpTip.Point.LeftEdgeCenter;
@@ -210,6 +218,7 @@ function CharacterCreateMixin:OnHide()
 	C_CharacterCreation.SetInCharacterCreate(false);
 	RaceAndClassFrame:StopClassAnimations();
 	self:ClearPaidServiceInfo();
+	self:ClearVASInfo();
 	self.creatingCharacter = false;
 	self.currentMode = 0;
 end
@@ -223,9 +232,58 @@ function CharacterCreateMixin:SetPaidServiceInfo(serviceType, characterID)
 	self.paidServiceCharacterID = characterID;
 end
 
+function CharacterCreateMixin:SetVASInfo(vasType, info)
+	self.vasType = vasType;
+	self.vasInfo = info;
+end
+
 function CharacterCreateMixin:ClearPaidServiceInfo()
 	self.paidServiceType = nil;
 	self.paidServiceCharacterID = nil;
+end
+
+function CharacterCreateMixin:ClearVASInfo()
+	self.vasType = nil;
+	self.vasInfo = nil;	
+end
+
+function CharacterCreateMixin:BeginVASTransaction()
+	if self.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+		local noIsValidateOnly = false;
+		C_CharacterServices.AssignPFCDistribution(self.vasInfo.selectedCharacterGUID, CharacterCreateFrame:GetSelectedName(), noIsValidateOnly);
+	end
+end
+
+function CharacterCreateMixin:OnStoreVASPurchaseError()
+	if self.vasType then
+		local displayMsg = VASErrorData_GetCombinedMessage(self.vasInfo.selectedCharacterGUID);
+		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg);
+	end
+end
+
+function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchaseResult)
+	if self.vasType then
+		local purchaseComplete, errorMsg = IsVASAssignmentValid(storeError, vasPurchaseResult, self.vasInfo.selectedCharacterGUID);
+		if purchaseComplete then
+			CharacterSelect.selectGuid = self.vasInfo.selectedCharacterGUID;
+			CharacterCreateFrame:Exit();
+		else
+			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg);
+		end
+	end
+end
+
+function CharacterCreateMixin:HasService()
+	return (self.paidServiceType or self.vasType) and true or false;
+end
+
+function CharacterCreateMixin:GetExistingCharacterID()
+	if self.paidServiceType then
+		return self.paidServiceCharacterID;
+	elseif self.vasType then
+		return self.vasInfo.characterIndex;
+	end
+	return nil;
 end
 
 function CharacterCreateMixin:OnMouseDown(button)
@@ -469,12 +527,16 @@ function CharacterCreateMixin:NavBack()
 				CharacterUpgrade_ResetBoostData();
 			end
 
-			CharacterSelect.backFromCharCreate = true;
-			GlueParent_SetScreen("charselect");
+			self:Exit();
 		end
 	else
 		self:UpdateMode(-1);
 	end
+end
+
+function CharacterCreateMixin:Exit()
+	CharacterSelect.backFromCharCreate = true;
+	GlueParent_SetScreen("charselect");
 end
 
 local function SortBlockers(a, b)
@@ -525,6 +587,8 @@ end
 function CharacterCreateMixin:CreateCharacter()
 	if self.paidServiceType then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
+	elseif self.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
 		if Kiosk.IsEnabled() then
 			KioskModeSplash:SetAutoEnterWorld(true);
@@ -732,7 +796,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 	self:SetIconAtlas(atlas);
 
 	local buttonEnabled;
-	if CharacterCreateFrame.paidServiceType then
+	if CharacterCreateFrame:HasService() then
 		buttonEnabled = (selectedClassID == classData.classID);
 	else
 		buttonEnabled = classData.enabled;
@@ -818,7 +882,7 @@ end
 
 function CharacterCreateClassButtonMixin:OnEnter()
 	CharCustomizeFrameWithTooltipMixin.OnEnter(self);
-	if not CharacterCreateFrame.paidServiceType and self:IsDisabledByRace() then
+	if not CharacterCreateFrame:HasService() and self:IsDisabledByRace() then
 		local validRaces = C_CharacterCreation.GetValidRacesForClass(self.classData.classID);
 		local validRacesMap = {};
 		for _, raceData in ipairs(validRaces) do
@@ -867,7 +931,7 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 	self:SetIconAtlas(atlas);
 
 	local isValidRace = RaceAndClassFrame:IsRaceValid(raceData, self.faction);
-	self.allowSelectionOnDisable = not isValidRace and not CharacterCreateFrame.paidServiceType;
+	self.allowSelectionOnDisable = not isValidRace and not CharacterCreateFrame:HasService();
 	self:SetEnabledState(isValidRace);
 
 	if isValidRace and RaceAndClassFrame.classValidRaces then
@@ -1110,7 +1174,7 @@ function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
 	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame.paidServiceType then
+		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() then
 			-- For neutral races, if the player is using a character template, chose to start in the NPE or is using a paid service we need to pass back the selected faction
 			return self.selectedFaction;
 		else
@@ -1134,7 +1198,7 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
-	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
+	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not CharacterCreateFrame:HasService() and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()
@@ -1310,7 +1374,7 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 		self.selectedFaction = self.selectedRaceData.factionInternalName;
 	end
 
-	if not self:IsRaceValid(self.selectedRaceData, self.selectedFaction) and CharacterCreateFrame.paidServiceType then
+	if not self:IsRaceValid(self.selectedRaceData, self.selectedFaction) and CharacterCreateFrame:HasService() then
 		local randomRaceData = self:GetRandomValidRaceData();
 		if randomRaceData then
 			self:SetCharacterRace(randomRaceData.raceID, randomRaceData.factionInternalName);
@@ -1407,7 +1471,7 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
 		local _, currentFaction = C_PaidServices.GetCurrentFaction();
 		return (currentRace == raceData.raceID and currentFaction == faction);
-	elseif CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE then
+	elseif CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
 		local _, currentFaction = C_PaidServices.GetCurrentFaction();
 		local currentClass = C_PaidServices.GetCurrentClassID();
 		return (currentFaction ~= faction and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass));
@@ -1807,7 +1871,7 @@ end
 function CharacterCreateZoneChoiceMixin:Setup()
 	local firstZoneChoiceInfo, secondZoneChoiceInfo = C_CharacterCreation.GetStartingZoneChoices();
 
-	if not secondZoneChoiceInfo or CharacterCreateFrame.paidServiceType or (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Normal) then
+	if not secondZoneChoiceInfo or CharacterCreateFrame:HasService() or (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Normal) then
 		self:SetUseNPE(firstZoneChoiceInfo.isNPE);
 		self.shouldShow = false;
 		return;

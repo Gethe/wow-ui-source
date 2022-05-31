@@ -39,6 +39,7 @@ function MovieFrame_OnShow(self)
 	self.uiParentShown = UIParent:IsShown();
 	UIParent:Hide();
 	self:EnableSubtitles(GetCVarBool("movieSubtitle"));
+	SpellStopTargeting();
 end
 
 function MovieFrame_OnHide(self)

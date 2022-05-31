@@ -60,6 +60,19 @@ function TradeSkillFrame_CalculateRankInfoFromRankLinks(recipeInfo)
 	return totalRanks, currentRank;
 end
 
+function TradeSkillFrame_IsUsingDefaultFilters()
+	local showAllRecipes =  not C_TradeSkillUI.GetOnlyShowMakeableRecipes() and not C_TradeSkillUI.GetOnlyShowSkillUpRecipes();
+	return showAllRecipes and not C_TradeSkillUI.AreAnyInventorySlotsFiltered() and not C_TradeSkillUI.AnyRecipeCategoriesFiltered() and TradeSkillFrame_AreAllSourcesUnfiltered();
+end
+
+function TradeSkillFrame_SetDefaultFilters()
+	C_TradeSkillUI.SetOnlyShowMakeableRecipes(false);
+	C_TradeSkillUI.SetOnlyShowSkillUpRecipes(false);
+	C_TradeSkillUI.ClearInventorySlotFilter();
+	TradeSkillFrame_SetAllSourcesFiltered(false);
+	C_TradeSkillUI.ClearRecipeCategoryFilter();
+end
+
 function TradeSkillFrame_SetAllSourcesFiltered(filtered)
 	local numSources = C_PetJournal.GetNumPetSources();
 	for i = 1, numSources do

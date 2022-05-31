@@ -25,6 +25,8 @@ BNET_CLIENT_ARCADE = "RTRO";
 BNET_CLIENT_CRASH4 = "WLBY";
 BNET_CLIENT_D2 = "OSI";
 BNET_CLIENT_COD_VANGUARD = "FORE";
+BNET_CLIENT_DI = "ANBS";
+BNET_CLIENT_ARCLIGHT = "GRY";
 
 WOW_PROJECT_MAINLINE = 1;
 WOW_PROJECT_CLASSIC = 2;
@@ -448,6 +450,10 @@ function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-DiabloIIResurrected";
 	elseif ( client == BNET_CLIENT_COD_VANGUARD ) then
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyVanguard";
+	elseif ( client == BNET_CLIENT_DI) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-DiabloImmortal";
+	elseif ( client == BNET_CLIENT_ARCLIGHT) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-WarcraftArclightRumble";
 	else
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Battlenet";
 	end
@@ -489,6 +495,10 @@ function BNet_GetClientTexture(client)
 		return "Interface\\FriendsFrame\\Battlenet-DiabloIIResurrectedicon";
 	elseif ( client == BNET_CLIENT_COD_VANGUARD ) then
 		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyVanguardicon";
+	elseif ( client == BNET_CLIENT_DI) then
+		return "Interface\\FriendsFrame\\Battlenet-DiabloImmortalicon";
+	elseif ( client == BNET_CLIENT_ARCLIGHT) then
+		return "Interface\\FriendsFrame\\Battlenet-WarcraftArclightRumbleicon";
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end

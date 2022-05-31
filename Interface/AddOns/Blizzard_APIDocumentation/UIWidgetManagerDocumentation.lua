@@ -1471,6 +1471,9 @@ local UIWidgetManager =
 				{ Name = "iconSizeType", Type = "SpellDisplayIconSizeType", Nilable = false },
 				{ Name = "iconDisplayType", Type = "SpellDisplayIconDisplayType", Nilable = false },
 				{ Name = "textShownState", Type = "SpellDisplayTextShownStateType", Nilable = false },
+				{ Name = "textFontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
+				{ Name = "hAlignType", Type = "WidgetTextHorizontalAlignmentType", Nilable = false },
 			},
 		},
 		{

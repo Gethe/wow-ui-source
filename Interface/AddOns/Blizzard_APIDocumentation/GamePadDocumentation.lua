@@ -7,6 +7,21 @@ local GamePad =
 	Functions =
 	{
 		{
+			Name = "AddSDLMapping",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "platform", Type = "ClientPlatformType", Nilable = false },
+				{ Name = "mapping", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ApplyConfigs",
 			Type = "Function",
 		},
@@ -167,6 +182,20 @@ local GamePad =
 			},
 		},
 		{
+			Name = "GetPowerLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "deviceID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "powerLevel", Type = "GamePadPowerLevel", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEnabled",
 			Type = "Function",
 
@@ -248,6 +277,15 @@ local GamePad =
 			Name = "GamePadDisconnected",
 			Type = "Event",
 			LiteralName = "GAME_PAD_DISCONNECTED",
+		},
+		{
+			Name = "GamePadPowerChanged",
+			Type = "Event",
+			LiteralName = "GAME_PAD_POWER_CHANGED",
+			Payload =
+			{
+				{ Name = "powerLevel", Type = "GamePadPowerLevel", Nilable = false },
+			},
 		},
 	},
 

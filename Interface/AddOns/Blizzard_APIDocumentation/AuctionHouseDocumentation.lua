@@ -163,6 +163,15 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "GetBids",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "bids", Type = "table", InnerType = "BidInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBrowseResults",
 			Type = "Function",
 
@@ -503,6 +512,15 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "GetOwnedAuctions",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ownedAuctions", Type = "table", InnerType = "OwnedAuctionInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuoteDurationRemaining",
 			Type = "Function",
 
@@ -822,6 +840,10 @@ local AuctionHouse =
 			Documentation = { "This function should be used in place of an 'allItem' QueryAuctionItems call to query the entire auction house." },
 		},
 		{
+			Name = "RequestFavorites",
+			Type = "Function",
+		},
+		{
 			Name = "RequestMoreBrowseResults",
 			Type = "Function",
 		},
@@ -864,7 +886,7 @@ local AuctionHouse =
 
 			Returns =
 			{
-				{ Name = "bidderName", Type = "string", Nilable = true },
+				{ Name = "bidderName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -959,6 +981,15 @@ local AuctionHouse =
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_AUCTION_CREATED",
 			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
+			Payload =
+			{
+				{ Name = "auctionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionHouseAuctionsExpired",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_AUCTIONS_EXPIRED",
 			Payload =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },
@@ -1318,7 +1349,7 @@ local AuctionHouse =
 			{
 				{ Name = "classID", Type = "number", Nilable = false },
 				{ Name = "subClassID", Type = "number", Nilable = true },
-				{ Name = "inventoryType", Type = "number", Nilable = true },
+				{ Name = "inventoryType", Type = "InventoryType", Nilable = true },
 			},
 		},
 		{

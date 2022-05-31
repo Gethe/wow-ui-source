@@ -64,6 +64,7 @@ local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 8;
 local INVITE_RESTRICTION_NONE = 9;
 local INVITE_RESTRICTION_MOBILE = 10;
 local INVITE_RESTRICTION_REGION = 11;
+local INVITE_RESTRICTION_QUEST_SESSION = 12;
 
 local FriendListEntries = { };
 local playerRealmID = GetRealmID();
@@ -476,8 +477,13 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = REPORT_PLAYER;
-		info.hasArrow = true;
-		info.func = nil;
+		info.func = function() 
+			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
+			local playerLocation = PlayerLocation:CreateFromBattleNetID(bnetIDAccount);
+			local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Friend);
+			local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+			ReportFrame:InitiateReport(reportInfo, name, playerLocation, bnetIDAccount ~= nil);
+		end; 
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = BLOCK_INVITES;
@@ -490,39 +496,12 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 						end
 					end
 		UIDropDownMenu_AddButton(info, level)
-	else
-		if level == 2 then
-			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
-			local playerLocation = PlayerLocation:CreateFromBattleNetID(bnetIDAccount);
-			info.text = REPORT_SPAMMING;
-			info.func = function()
-							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							C_ReportSystem.OpenReportPlayerDialog(PLAYER_REPORT_TYPE_SPAM, name, playerLocation);
-						end
-			UIDropDownMenu_AddButton(info, level)
-
-			info.text = REPORT_ABUSE;
-			info.func = function()
-							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							C_ReportSystem.OpenReportPlayerDialog(PLAYER_REPORT_TYPE_ABUSE, name, playerLocation);
-						end
-			UIDropDownMenu_AddButton(info, level)
-
-			info.text = REPORT_BAD_NAME;
-			info.func = function()
-							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							C_ReportSystem.OpenReportPlayerDialog(PLAYER_REPORT_TYPE_BAD_PLAYER_NAME, name, playerLocation);
-						end
-			UIDropDownMenu_AddButton(info, level)
-			info.notCheckable = false;
-		end
 	end
 end
 
 function FriendsList_ClosePendingInviteDialogs()
 	CloseDropDownMenus();
 	StaticPopup_Hide("CONFIRM_BLOCK_INVITES");
-	StaticPopupSpecial_Hide(PlayerReportFrame);
 end
 
 function FriendsList_GetScrollFrameTopButton(offset)
@@ -1376,6 +1355,8 @@ function FriendsFrame_UpdateFriendButton(button)
 	local height = FRIENDS_BUTTON_HEIGHTS[button.buttonType];
 	local nameText, nameColor, infoText, isFavoriteFriend, statusTexture;
 	local hasTravelPassButton = false;
+	local isCrossFactionInvite = false;
+	local inviteFaction = nil;
 	if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
 		local info = C_FriendList.GetFriendInfoByIndex(FriendListEntries[index].id);
 		if ( info.connected ) then
@@ -1408,6 +1389,9 @@ function FriendsFrame_UpdateFriendButton(button)
 			isFavoriteFriend = accountInfo.isFavorite;
 
 			button.status:SetTexture(statusTexture);
+
+			isCrossFactionInvite = accountInfo.gameAccountInfo.factionName ~= playerFactionGroup;
+			inviteFaction = accountInfo.gameAccountInfo.factionName;
 
 			if accountInfo.gameAccountInfo.isOnline then
 				button.background:SetColorTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
@@ -1514,6 +1498,36 @@ function FriendsFrame_UpdateFriendButton(button)
 	-- update the tooltip if hovering over a button
 	if (FriendsTooltip.button == button) or (GetMouseFocus() == button) then
 		button:OnEnter();
+	end
+	-- show cross faction helptip on first online cross faction friend
+	if hasTravelPassButton and isCrossFactionInvite and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CROSS_FACTION_INVITE) then
+		local helpTipInfo = {
+			text = CROSS_FACTION_INVITE_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_CROSS_FACTION_INVITE,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			alignment = HelpTip.Alignment.Left,
+		};
+		crossFactionHelpTipInfo = helpTipInfo;
+		crossFactionHelpTipButton = button;
+		HelpTip:Show(FriendsFrame, helpTipInfo, button.travelPassButton);
+	end
+	-- update invite button atlas to show faction for cross faction players, or reset to default for same faction players
+	if hasTravelPassButton then
+		if isCrossFactionInvite and inviteFaction == "Horde" then
+			button.travelPassButton.NormalTexture:SetAtlas("friendslist-invitebutton-horde-normal");
+			button.travelPassButton.PushedTexture:SetAtlas("friendslist-invitebutton-horde-pressed");
+			button.travelPassButton.DisabledTexture:SetAtlas("friendslist-invitebutton-horde-disabled");
+		elseif isCrossFactionInvite and inviteFaction == "Alliance" then
+			button.travelPassButton.NormalTexture:SetAtlas("friendslist-invitebutton-alliance-normal");
+			button.travelPassButton.PushedTexture:SetAtlas("friendslist-invitebutton-alliance-pressed");
+			button.travelPassButton.DisabledTexture:SetAtlas("friendslist-invitebutton-alliance-disabled");
+		else
+			button.travelPassButton.NormalTexture:SetAtlas("friendslist-invitebutton-default-normal");
+			button.travelPassButton.PushedTexture:SetAtlas("friendslist-invitebutton-default-pressed");
+			button.travelPassButton.DisabledTexture:SetAtlas("friendslist-invitebutton-default-disabled");
+		end
 	end
 	return height;
 end
@@ -2257,6 +2271,8 @@ function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
 	elseif ( inviteType == "REQUEST_INVITE" ) then
 		BNRequestInviteFriend(gameAccountID);
 	end
+
+	HelpTip:Acknowledge(FriendsFrame, CROSS_FACTION_INVITE_HELPTIP);
 end
 
 function FriendsFrame_BattlenetInviteByIndex(friendIndex)
@@ -2349,6 +2365,32 @@ function FriendsFrame_GetPlayerGUIDFromIndex(index)
 	return nil;
 end
 
+function FriendsFrame_GetDisplayedInviteTypeAndGuid(index)
+	local inviteType = nil;
+	local guid = nil;
+	local factionName = nil;
+	local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(index);
+	for i = 1, numGameAccounts do
+		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(index, i);
+		if gameAccountInfo.playerGuid then
+			guid = gameAccountInfo.playerGuid;
+			factionName = gameAccountInfo.factionName;
+
+			if (factionName == playerFactionGroup) then
+				break;
+			end
+		end
+	end
+
+	local inviteType = GetDisplayedInviteType(guid);
+
+	if (factionName and factionName ~= playerFactionGroup) then
+		inviteType = inviteType .. "_CROSS_FACTION";
+	end
+
+	return inviteType, guid, factionName;
+end
+
 function FriendsFrame_GetInviteRestriction(index)
 	local restriction = INVITE_RESTRICTION_NO_GAME_ACCOUNTS;
 	local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(index);
@@ -2363,8 +2405,12 @@ function FriendsFrame_GetInviteRestriction(index)
 				else
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_ID, restriction);
 				end
-			elseif gameAccountInfo.factionName ~= playerFactionGroup then
-				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
+			elseif (not C_PartyInfo.CanFormCrossFactionParties() or C_QuestSession.Exists()) and gameAccountInfo.factionName ~= playerFactionGroup then
+				if C_QuestSession.Exists() then
+					restriction = max(INVITE_RESTRICTION_QUEST_SESSION, restriction);
+				elseif not C_PartyInfo.CanFormCrossFactionParties() then
+					restriction = max(INVITE_RESTRICTION_FACTION, restriction);
+				end
 			elseif gameAccountInfo.realmID == 0 then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
 			elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
@@ -2405,23 +2451,43 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_MOBILE;
 	elseif ( restriction == INVITE_RESTRICTION_REGION ) then
 		return ERR_TRAVEL_PASS_DIFFERENT_REGION;
+	elseif ( restriction == INVITE_RESTRICTION_QUEST_SESSION ) then
+		return ERR_TRAVEL_PASS_QUEST_SESSION;
 	else
 		return "";
 	end
 end
 
+local inviteTypeToButtonText =
+{
+	["INVITE"] = TRAVEL_PASS_INVITE,
+	["SUGGEST_INVITE"] = SUGGEST_INVITE,
+	["REQUEST_INVITE"] = REQUEST_INVITE,
+	["INVITE_CROSS_FACTION"] = TRAVEL_PASS_INVITE_CROSS_FACTION,
+	["SUGGEST_INVITE_CROSS_FACTION"] = SUGGEST_INVITE_CROSS_FACTION,
+	["REQUEST_INVITE_CROSS_FACTION"] = REQUEST_INVITE_CROSS_FACTION,
+};
+
+local inviteTypeIsCrossFaction =
+{
+	["INVITE_CROSS_FACTION"] = true,
+	["SUGGEST_INVITE_CROSS_FACTION"] = true,
+	["REQUEST_INVITE_CROSS_FACTION"] = true,
+};
+
 function TravelPassButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local restriction = FriendsFrame_GetInviteRestriction(self:GetParent().id);
+
+	local inviteType, guid, factionName = FriendsFrame_GetDisplayedInviteTypeAndGuid(self:GetParent().id);
+	GameTooltip:SetText(inviteTypeToButtonText[inviteType], HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	
+	if ( inviteTypeIsCrossFaction[inviteType] and factionName ) then
+		GameTooltip:AddLine(CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS_FROM_STRING[factionName]), nil, nil, nil, true);
+	end
+
 	if ( restriction == INVITE_RESTRICTION_NONE ) then
-		local guid = FriendsFrame_GetPlayerGUIDFromIndex(self:GetParent().id);
-		local inviteType = GetDisplayedInviteType(guid);
-		if ( inviteType == "INVITE" ) then
-			GameTooltip:SetText(TRAVEL_PASS_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		elseif ( inviteType == "SUGGEST_INVITE" ) then
-			GameTooltip:SetText(SUGGEST_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		else --inviteType == "REQUEST_INVITE"
-			GameTooltip:SetText(REQUEST_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		if ( inviteType == "REQUEST_INVITE" or inviteType == "REQUEST_INVITE_CROSS_FACTION" ) then
 			--For REQUEST_INVITE, we'll display other members in the group if there are any.
 			local group = C_SocialQueue.GetGroupForPlayer(guid);
 			local members = C_SocialQueue.GetGroupMembers(group);
@@ -2442,7 +2508,6 @@ function TravelPassButton_OnEnter(self)
 			end
 		end
 	else
-		GameTooltip:SetText(TRAVEL_PASS_INVITE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
 		GameTooltip:AddLine(FriendsFrame_GetInviteRestrictionText(restriction), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 	end
 	GameTooltip:Show();

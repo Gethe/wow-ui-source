@@ -1105,6 +1105,10 @@ function CommunitiesMemberListEntryMixin:GetMemberId()
 	return self.memberInfo and self.memberInfo.memberId or nil;
 end
 
+function CommunitiesMemberListEntryMixin:GetFaction()
+	return  self.memberInfo and self.memberInfo.faction or nil;
+end 
+
 function CommunitiesMemberListEntryMixin:OnEnter()
 	if self.expanded then
 		if not self.NameFrame.Name:IsTruncated() and not self.Rank:IsTruncated() and not self.Note:IsTruncated() and not self.Zone:IsTruncated() then
@@ -1131,7 +1135,11 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 			local raceInfo = C_CreatureInfo.GetRaceInfo(memberInfo.race);
 			local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
 			if raceInfo and classInfo then
-				GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+				if(clubInfo and clubInfo.clubType == Enum.ClubType.Character and memberInfo.faction and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction])) then 
+					GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FACTION_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className, FACTION_LABELS[memberInfo.faction]), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+				else 
+					GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+				end
 			end
 		end
 
@@ -1170,6 +1178,7 @@ end
 
 function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	if not self.expanded then
+		self.FactionButton:SetShown(false);
 		return;
 	end
 
@@ -1189,6 +1198,9 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	if not clubInfo then
 		return;
 	end
+
+	local shouldShowFactionIcon = hasMemberInfo and memberInfo.faction and clubInfo.clubType == Enum.ClubType.Character and ((UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction]));
+	self.FactionButton:SetShown(shouldShowFactionIcon and not self.isInvitation);
 
 	if clubInfo.clubType == Enum.ClubType.BattleNet then
 		self.Level:Hide();
@@ -1693,4 +1705,30 @@ function CommunityMemberListDropDownMenu_Initialize(self)
 
 	UIDropDownMenu_AddButton(info);
 	self:UpdateNotificationFlash(communitiesFrame:HasNewClubApplications(memberList:GetSelectedClubId()) and hasFinderPermissions);
+end
+
+CommunitiesMemberListFactionButtonMixin = { }; 
+function CommunitiesMemberListFactionButtonMixin:OnShow()
+	local faction = self:GetParent():GetFaction(); 
+	if(not faction) then 
+		return; 
+	end 
+
+	if(PLAYER_FACTION_GROUP[faction] == "Horde") then 
+		self:SetNormalAtlas("communities-icon-faction-horde")
+	else 
+		self:SetNormalAtlas("communities-icon-faction-alliance");
+	end 
+end		
+
+function CommunitiesMemberListFactionButtonMixin:OnEnter()
+	local faction = self:GetParent():GetFaction(); 
+	if(not faction) then 
+		return; 
+	end 
+	
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, COMMUNITIES_CROSS_FACTION_BUTTON_TOOLTIP_TITLE:format(FACTION_LABELS[faction]));
+	GameTooltip_AddNormalLine(GameTooltip, CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS[faction])); 
+	GameTooltip:Show(); 
 end

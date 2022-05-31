@@ -625,6 +625,8 @@ function LFDQueueFrameFindGroupButton_Update()
 	local lfgListDisabled;
 	if ( C_LFGList.HasActiveEntryInfo() ) then
 		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	elseif(C_PartyInfo.IsCrossFactionParty()) then 
+		lfgListDisabled = CROSS_FACTION_RAID_DUNGEON_FINDER_ERROR;
 	end
 
 	if ( lfgListDisabled ) then

@@ -139,7 +139,7 @@ local CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT		= 0x02;
 -- CreateEventFrame constants
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_TITLE			= CALENDAR_EVENT_NAME;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_DESCRIPTION		= CALENDAR_EVENT_DESCRIPTION;
-local CALENDAR_CREATEEVENTFRAME_DEFAULT_TYPE			= CALENDAR_EVENTTYPE_OTHER;
+local CALENDAR_CREATEEVENTFRAME_DEFAULT_TYPE			= Enum.CalendarEventType.Other;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_HOUR			= 12;		-- default is standard (not military) time
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_MINUTE			= 0;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_AM				= true;
@@ -524,38 +524,38 @@ local CALENDAR_CALENDARTYPE_COLORS_TOOLTIP = {
 };
 
 local CALENDAR_EVENTTYPE_TEXTURES = {
-	[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-Raid",
-	[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-Dungeon",
-	[CALENDAR_EVENTTYPE_PVP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
-	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
-	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
+	[Enum.CalendarEventType.Raid]		= "Interface\\LFGFrame\\LFGIcon-Raid",
+	[Enum.CalendarEventType.Dungeon]	= "Interface\\LFGFrame\\LFGIcon-Dungeon",
+	[Enum.CalendarEventType.PvP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
+	[Enum.CalendarEventType.Meeting]	= "Interface\\Calendar\\MeetingIcon",
+	[Enum.CalendarEventType.Other]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
 };
 local CALENDAR_EVENTTYPE_TCOORDS = {
-	[CALENDAR_EVENTTYPE_RAID] = {
+	[Enum.CalendarEventType.Raid] = {
 		left	= 0.0,
 		right	= 1.0,
 		top		= 0.0,
 		bottom	= 1.0,
 	},
-	[CALENDAR_EVENTTYPE_DUNGEON] = {
+	[Enum.CalendarEventType.Dungeon] = {
 		left	= 0.0,
 		right	= 1.0,
 		top		= 0.0,
 		bottom	= 1.0,
 	},
-	[CALENDAR_EVENTTYPE_PVP] = {
+	[Enum.CalendarEventType.PvP] = {
 		left	= 0.0,
 		right	= 1.0,
 		top		= 0.0,
 		bottom	= 1.0,
 	},
-	[CALENDAR_EVENTTYPE_MEETING] = {
+	[Enum.CalendarEventType.Meeting] = {
 		left	= 0.0,
 		right	= 1.0,
 		top		= 0.0,
 		bottom	= 1.0,
 	},
-	[CALENDAR_EVENTTYPE_OTHER] = {
+	[Enum.CalendarEventType.Other] = {
 		left	= 0.0,
 		right	= 1.0,
 		top		= 0.0,
@@ -568,9 +568,9 @@ do
 	if ( factionGroup and factionGroup ~= "Neutral" ) then
 		-- need new texcoords too?
 		if ( factionGroup == "Alliance" ) then
-			CALENDAR_EVENTTYPE_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP02";
+			CALENDAR_EVENTTYPE_TEXTURES[Enum.CalendarEventType.PvP] = "Interface\\Calendar\\UI-Calendar-Event-PVP02";
 		else
-			CALENDAR_EVENTTYPE_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
+			CALENDAR_EVENTTYPE_TEXTURES[Enum.CalendarEventType.PvP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
 		end
 	end
 end
@@ -602,15 +602,15 @@ do
 			name = nil,
 			tcoords = CLASS_ICON_TCOORDS[class],
 			counts = {
-				[CALENDAR_INVITESTATUS_INVITED]		= 0,
-				[CALENDAR_INVITESTATUS_ACCEPTED]	= 0,
-				[CALENDAR_INVITESTATUS_DECLINED]	= 0,
-				[CALENDAR_INVITESTATUS_CONFIRMED]	= 0,
-				[CALENDAR_INVITESTATUS_OUT]			= 0,
-				[CALENDAR_INVITESTATUS_STANDBY]		= 0,
-				[CALENDAR_INVITESTATUS_SIGNEDUP]	= 0,
-				[CALENDAR_INVITESTATUS_NOT_SIGNEDUP]	= 0,
-				[CALENDAR_INVITESTATUS_TENTATIVE]	= 0,
+				[Enum.CalendarStatus.Invited]		= 0,
+				[Enum.CalendarStatus.Available]	= 0,
+				[Enum.CalendarStatus.Declined]	= 0,
+				[Enum.CalendarStatus.Confirmed]	= 0,
+				[Enum.CalendarStatus.Out]			= 0,
+				[Enum.CalendarStatus.Standby]		= 0,
+				[Enum.CalendarStatus.Signedup]	= 0,
+				[Enum.CalendarStatus.NotSignedup]	= 0,
+				[Enum.CalendarStatus.Tentative]	= 0,
 			},
 		};
 	end
@@ -722,22 +722,22 @@ end
 
 local function _CalendarFrame_CanInviteeRSVP(inviteStatus)
 	return
-		inviteStatus == CALENDAR_INVITESTATUS_INVITED or
-		inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or
-		inviteStatus == CALENDAR_INVITESTATUS_DECLINED or
-		inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP or
-		inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP or
-		inviteStatus == CALENDAR_INVITESTATUS_TENTATIVE;
+		inviteStatus == Enum.CalendarStatus.Invited or
+		inviteStatus == Enum.CalendarStatus.Available or
+		inviteStatus == Enum.CalendarStatus.Declined or
+		inviteStatus == Enum.CalendarStatus.Signedup or
+		inviteStatus == Enum.CalendarStatus.NotSignedup or
+		inviteStatus == Enum.CalendarStatus.Tentative;
 end
 
 local function _CalendarFrame_IsSignUpEvent(calendarType, inviteType)
-	return (calendarType == "GUILD_EVENT" or calendarType == "COMMUNITY_EVENT") and inviteType == CALENDAR_INVITETYPE_SIGNUP;
+	return (calendarType == "GUILD_EVENT" or calendarType == "COMMUNITY_EVENT") and inviteType == Enum.CalendarInviteType.Signup;
 end
 
 local function _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType, inviteStatus)
 	return
 		modStatus ~= "CREATOR" and
-		(calendarType == "PLAYER" or ((calendarType == "GUILD_EVENT" or calendarType == "COMMUNITY_EVENT") and inviteType == CALENDAR_INVITETYPE_NORMAL));
+		(calendarType == "PLAYER" or ((calendarType == "GUILD_EVENT" or calendarType == "COMMUNITY_EVENT") and inviteType == Enum.CalendarInviteType.Normal));
 end
 
 local function _CalendarFrame_CacheEventTextures_Internal(eventType, textures)
@@ -748,7 +748,7 @@ local function _CalendarFrame_CacheEventTextures_Internal(eventType, textures)
 		return false;
 	end
 
-	local overlappingMapIDs = (eventType == CALENDAR_EVENTTYPE_RAID or eventType == CALENDAR_EVENTTYPE_DUNGEON) and {};
+	local overlappingMapIDs = (eventType == Enum.CalendarEventType.Raid or eventType == Enum.CalendarEventType.Dungeon) and {};
 
 	local cacheIndex = 1;
 	for textureIndex = 1, numTextures do
@@ -920,10 +920,10 @@ local function _CalendarFrame_InviteToRaid(maxInviteCount)
 	while ( inviteCount < maxInviteCount and i <= C_Calendar.GetNumInvites() ) do
 		local inviteInfo = C_Calendar.EventGetInvite(i);
 		if ( inviteInfo.name ~= playerName and not UnitInParty(inviteInfo.name) and not UnitInRaid(inviteInfo.name) and
-			 (inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or
-			 inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED or
-			 inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP or
-			 inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_TENTATIVE)  ) then
+			 (inviteInfo.inviteStatus == Enum.CalendarStatus.Available or
+			 inviteInfo.inviteStatus == Enum.CalendarStatus.Confirmed or
+			 inviteInfo.inviteStatus == Enum.CalendarStatus.Signedup or
+			 inviteInfo.inviteStatus == Enum.CalendarStatus.Tentative)  ) then
 			C_PartyInfo.InviteUnit(inviteInfo.name);
 			inviteCount = inviteCount + 1;
 		end
@@ -938,10 +938,10 @@ local function _CalendarFrame_GetInviteToRaidCount(maxInviteCount)
 	while ( inviteCount < maxInviteCount and i <= C_Calendar.GetNumInvites() ) do
 		local inviteInfo = C_Calendar.EventGetInvite(i);
 		if ( not UnitInParty(inviteInfo.name) and not UnitInRaid(inviteInfo.name) and
-			 (inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or
-			 inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED or
-			 inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP or
-			 inviteInfo.inviteStatus == CALENDAR_INVITESTATUS_TENTATIVE) ) then
+			 (inviteInfo.inviteStatus == Enum.CalendarStatus.Available or
+			 inviteInfo.inviteStatus == Enum.CalendarStatus.Confirmed or
+			 inviteInfo.inviteStatus == Enum.CalendarStatus.Signedup or
+			 inviteInfo.inviteStatus == Enum.CalendarStatus.Tentative) ) then
 			inviteCount = inviteCount + 1;
 		end
 		i = i + 1;
@@ -2196,7 +2196,7 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 					-- spacer
 					if ( _CalendarFrame_IsSignUpEvent(event.calendarType, event.inviteType) ) then
 						-- We no longer show remove event in the dropdown, only Sign Up.
-						if ( event.inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
+						if ( event.inviteStatus == Enum.CalendarStatus.NotSignedup ) then
 							-- sign up
 							if ( needSpacer ) then
 								UIMenu_AddButton(self, "");
@@ -2208,15 +2208,15 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 							UIMenu_AddButton(self, "");
 						end
 						-- accept invitation
-						if ( event.inviteStatus ~= CALENDAR_INVITESTATUS_ACCEPTED ) then
+						if ( event.inviteStatus ~= Enum.CalendarStatus.Available ) then
 							UIMenu_AddButton(self, CALENDAR_ACCEPT_INVITATION, nil, CalendarDayContextMenu_AcceptInvite);
 						end
 						-- tentative invitation
-						if ( event.inviteStatus ~= CALENDAR_INVITESTATUS_TENTATIVE ) then
+						if ( event.inviteStatus ~= Enum.CalendarStatus.Tentative ) then
 							UIMenu_AddButton(self, CALENDAR_TENTATIVE_INVITATION, nil, CalendarDayContextMenu_TentativeInvite);
 						end
 						-- decline invitation
-						if ( event.inviteStatus ~= CALENDAR_INVITESTATUS_DECLINED ) then
+						if ( event.inviteStatus ~= Enum.CalendarStatus.Declined ) then
 							UIMenu_AddButton(self, CALENDAR_DECLINE_INVITATION, nil, CalendarDayContextMenu_DeclineInvite);
 						end
 					end
@@ -2237,7 +2237,7 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 					UIMenu_AddButton(self, "");
 				end
 				-- report spam
-				UIMenu_AddButton(self, REPORT_SPAM, nil, CalendarDayContextMenu_ReportSpam);
+				UIMenu_AddButton(self, REPORT_CALENDAR, nil, CalendarDayContextMenu_ReportSpam);
 				needSpacer = true;
 			end
 		elseif ( canPaste ) then
@@ -2365,7 +2365,8 @@ function CalendarDayContextMenu_DeleteEvent()
 end
 
 function CalendarDayContextMenu_ReportSpam()
-	C_Calendar.ContextMenuEventComplain();
+	reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Calendar);
+	ReportFrame:InitiateReport(reportInfo);
 end
 
 function CalendarDayContextMenu_AcceptInvite()
@@ -2489,8 +2490,8 @@ function CalendarDayButton_OnEnter(self)
 			else
 				if ( _CalendarFrame_IsSignUpEvent(event.calendarType, event.inviteType) ) then
 					local inviteStatusInfo = CalendarUtil.GetCalendarInviteStatusInfo(event.inviteStatus);
-					if ( event.inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP or
-							event.inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP ) then
+					if ( event.inviteStatus == Enum.CalendarStatus.NotSignedup or
+							event.inviteStatus == Enum.CalendarStatus.Signedup ) then
 						text = inviteStatusInfo.name;
 					else
 						text = format(CALENDAR_SIGNEDUP_FOR_GUILDEVENT_WITH_STATUS, inviteStatusInfo.name);
@@ -3162,7 +3163,7 @@ end
 
 function CalendarViewEventAcceptButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
+	if ( CalendarViewEventFrame.inviteType == Enum.CalendarInviteType.Signup ) then
 		GameTooltip:SetText(CALENDAR_TOOLTIP_SIGNUPBUTTON, nil, nil, nil, nil, true);
 	else
 		GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, true);
@@ -3171,7 +3172,7 @@ function CalendarViewEventAcceptButton_OnEnter(self)
 end
 
 function CalendarViewEventAcceptButton_OnClick(self)
-	if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
+	if ( CalendarViewEventFrame.inviteType == Enum.CalendarInviteType.Signup ) then
 		C_Calendar.EventSignUp();
 	else
 		C_Calendar.EventAvailable();
@@ -3200,7 +3201,7 @@ end
 
 function CalendarViewEventRemoveButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
+	if ( CalendarViewEventFrame.inviteType == Enum.CalendarInviteType.Signup ) then
 		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVESIGNUPBUTTON, nil, nil, nil, nil, true);
 	else
 		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, true);
@@ -3260,7 +3261,7 @@ function CalendarViewEventRSVP_Update(month, day, year, pendingInvite, inviteSta
 	if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
 		-- update shown buttons
 		if ( isTodayOrLater ) then
-			if ( inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
+			if ( inviteStatus == Enum.CalendarStatus.NotSignedup ) then
 				CalendarViewEventAcceptButton:Enable();
 				CalendarViewEventTentativeButton:Enable();
 				CalendarViewEventRemoveButton:Disable();
@@ -3279,17 +3280,17 @@ function CalendarViewEventRSVP_Update(month, day, year, pendingInvite, inviteSta
 		-- update shown buttons
 		local canRSVP = _CalendarFrame_CanInviteeRSVP(inviteStatus);
 		if ( isTodayOrLater and canRSVP ) then
-			if ( inviteStatus ~= CALENDAR_INVITESTATUS_ACCEPTED ) then
+			if ( inviteStatus ~= Enum.CalendarStatus.Available ) then
 				CalendarViewEventAcceptButton:Enable();
 			else
 				CalendarViewEventAcceptButton:Disable();
 			end
-			if ( inviteStatus ~= CALENDAR_INVITESTATUS_TENTATIVE ) then
+			if ( inviteStatus ~= Enum.CalendarStatus.Tentative ) then
 				CalendarViewEventTentativeButton:Enable();
 			else
 				CalendarViewEventTentativeButton:Disable();
 			end
-			if ( inviteStatus ~= CALENDAR_INVITESTATUS_DECLINED ) then
+			if ( inviteStatus ~= Enum.CalendarStatus.Declined ) then
 				CalendarViewEventDeclineButton:Enable();
 			else
 				CalendarViewEventDeclineButton:Disable();
@@ -3921,7 +3922,7 @@ end
 
 function CalendarCreateEventTypeDropDown_OnClick(self)
 	local eventType = self.value;
-	if ( eventType == CALENDAR_EVENTTYPE_DUNGEON or eventType == CALENDAR_EVENTTYPE_RAID ) then
+	if ( eventType == Enum.CalendarEventType.Dungeon or eventType == Enum.CalendarEventType.Raid ) then
 		CalendarTexturePickerFrame_Show(eventType);
 	else
 		CalendarCreateEventFrame.selectedTextureIndex = nil;
@@ -5177,7 +5178,7 @@ function CalendarTexturePickerFrame_Update()
 end
 
 function CalendarTexturePickerTitleFrame_Update()
-	if ( CalendarTexturePickerFrame.eventType == CALENDAR_EVENTTYPE_RAID ) then
+	if ( CalendarTexturePickerFrame.eventType == Enum.CalendarEventType.Raid ) then
 		CalendarTexturePickerFrame.Header:Setup(CALENDAR_TEXTURE_PICKER_TITLE_RAID);
 	else
 		CalendarTexturePickerFrame.Header:Setup(CALENDAR_TEXTURE_PICKER_TITLE_DUNGEON);
@@ -5388,9 +5389,9 @@ function CalendarClassButtonContainer_Update()
 		buttonIcon = button:GetNormalTexture();
 		-- set the count
 		classData = CalendarClassData[class];
-		count = classData.counts[CALENDAR_INVITESTATUS_CONFIRMED] +
-			classData.counts[CALENDAR_INVITESTATUS_ACCEPTED] +
-			classData.counts[CALENDAR_INVITESTATUS_SIGNEDUP];
+		count = classData.counts[Enum.CalendarStatus.Confirmed] +
+			classData.counts[Enum.CalendarStatus.Available] +
+			classData.counts[Enum.CalendarStatus.Signedup];
 		buttonCount:SetText(count);
 		if ( count > 0 ) then
 			buttonCount:Show();

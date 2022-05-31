@@ -1,32 +1,6 @@
 local playbackActive = false;
 local queuedMessages = {};
 
-local TextToSpeechChatTypes = {
-	"MONSTER_SAY",
-	"MONSTER_YELL",
-	"MONSTER_WHISPER",
-	"MONSTER_EMOTE",
-	"RAID_BOSS_EMOTE",
-	"RAID_BOSS_WHISPER",
-	"SYSTEM",
-	"EMOTE",
-	"WHISPER",
-	"SAY",
-	"YELL",
-	"PARTY_LEADER",
-	"PARTY",
-	"OFFICER",
-	"GUILD",
-	"GUILD_ACHIEVEMENT",
-	"ACHIEVEMENT",
-	"RAID_LEADER",
-	"RAID",
-	"RAID_WARNING",
-	"INSTANCE_CHAT_LEADER",
-	"INSTANCE_CHAT",
-	"BN_WHISPER",
-};
-
 local DefaultLegacySettings =  {
 	playSoundSeparatingChatLineBreaks = true,
 	addCharacterNameToSpeech = true,
@@ -282,7 +256,7 @@ function TextToSpeechFrame_LoadLegacySettings()
 	local speechVolume = TEXTTOSPEECH_CONFIG.speechVolume or 100;
 	C_TTSSettings.SetSpeechVolume(speechVolume);
 
-	for _, chatType in ipairs(TextToSpeechChatTypes) do
+	for _, chatType in ipairs(TEXT_TO_SPEECH_CHAT_TYPES) do
 		local chatTypeEnabled = TEXTTOSPEECH_CONFIG.enabledChatTypes and TEXTTOSPEECH_CONFIG.enabledChatTypes["CHAT_MSG_"..chatType];
 		C_TTSSettings.SetChatTypeEnabled(chatType, chatTypeEnabled);
 	end
@@ -314,7 +288,7 @@ function TextToSpeechFrame_CheckLoad(self)
 
 		TextToSpeechFrameTtsVoiceDropdown_OnLoad(self.PanelContainer.TtsVoiceDropdown);
 		TextToSpeechFrameTtsVoiceAlternateDropdown_OnLoad(self.PanelContainer.TtsVoiceAlternateDropdown);
-		TextToSpeechFrame_CreateCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer, TextToSpeechChatTypes, "TextToSpeechChatTypeCheckButtonTemplate");
+		TextToSpeechFrame_CreateCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer, TEXT_TO_SPEECH_CHAT_TYPES, "TextToSpeechChatTypeCheckButtonTemplate");
 
 		local maxSettingsDepth = 2;
 		if TEXTTOSPEECH_CONFIG and not tCompare(TEXTTOSPEECH_CONFIG, DefaultLegacySettings, maxSettingsDepth) then
@@ -348,7 +322,9 @@ function TextToSpeechFrame_OnEvent(self, event, ...)
 
 			-- Add short delay for message sound if enabled, otherwise play next immediately
 			if ( C_TTSSettings.GetSetting(Enum.TtsBoolSetting.PlaySoundSeparatingChatLineBreaks) ) then
+				playbackActive = true;
 				C_Timer.After(1, function()
+					playbackActive = false;
 					TextToSpeech_Speak(queuedMessage.text, queuedMessage.voice);
 				end);
 			else
@@ -802,9 +778,9 @@ function TextToSpeechFrame_IsEventNarrationEnabled(frame, event, ...)
 
 	local chatType = strsub(event, 10);
 	local chatGroup = Chat_GetChatCategory(chatType);
-	local chatTarget = FCFManager_GetChatTarget(chatGroup, arg2, arg8);
+	local chatTarget = FCFManager_GetChatTarget and FCFManager_GetChatTarget(chatGroup, arg2, arg8) or false;
 
-	if ( FCFManager_ShouldSuppressMessage(frame, chatGroup, chatTarget) ) then
+	if ( chatTarget and FCFManager_ShouldSuppressMessage(frame, chatGroup, chatTarget) ) then
 		return false;
 	end
 

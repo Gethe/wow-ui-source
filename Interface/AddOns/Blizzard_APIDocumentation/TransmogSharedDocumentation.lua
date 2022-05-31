@@ -43,6 +43,18 @@ local TransmogShared =
 			},
 		},
 		{
+			Name = "TransmogModification",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Main", Type = "TransmogModification", EnumValue = 0 },
+				{ Name = "Secondary", Type = "TransmogModification", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "TransmogSearchType",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -73,6 +85,18 @@ local TransmogShared =
 				{ Name = "Achievement", Type = "TransmogSource", EnumValue = 7 },
 				{ Name = "Profession", Type = "TransmogSource", EnumValue = 8 },
 				{ Name = "NotValidForTransmog", Type = "TransmogSource", EnumValue = 9 },
+			},
+		},
+		{
+			Name = "TransmogType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Appearance", Type = "TransmogType", EnumValue = 0 },
+				{ Name = "Illusion", Type = "TransmogType", EnumValue = 1 },
 			},
 		},
 		{

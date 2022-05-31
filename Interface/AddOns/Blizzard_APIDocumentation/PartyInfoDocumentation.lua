@@ -21,6 +21,15 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "CanFormCrossFactionParties",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canFormCrossFactionParties", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanInvite",
 			Type = "Function",
 
@@ -158,6 +167,20 @@ local PartyInfo =
 			Arguments =
 			{
 				{ Name = "targetName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCrossFactionParty",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+			},
+
+			Returns =
+			{
+				{ Name = "isCrossFactionParty", Type = "bool", Nilable = false },
 			},
 		},
 		{

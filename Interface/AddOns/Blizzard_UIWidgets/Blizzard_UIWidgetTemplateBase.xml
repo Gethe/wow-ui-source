@@ -106,7 +106,7 @@
 						<MaskedTexture childKey="Icon"/>
 					</MaskedTextures>
 				</MaskTexture>
-				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE" parentArray="ColoredStrings">
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE" parentArray="ColoredStrings" mixin="UIWidgetBaseTextMixin">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="5" />
 					</Anchors>

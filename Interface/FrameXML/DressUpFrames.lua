@@ -683,7 +683,8 @@ end
 
 function DressUpOutfitDetailsSlotMixin:RefreshAppearanceTooltip()
 	local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(self.transmogID);
-	local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceInfo.appearanceID);
+	local category = C_TransmogCollection.GetCategoryForItem(self.transmogID);
+	local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceInfo.appearanceID, category, self.transmogLocation);
 	local showUseError = true;	
 	local inLegionArtifactCategory = false;
 	local slotName = TransmogUtil.GetSlotName(self.slotID);
@@ -701,11 +702,14 @@ function DressUpOutfitDetailsSlotMixin:SetUp(slotID, transmogInfo, field)
 	elseif field == "secondaryAppearanceID" then
 		return self:SetAppearance(slotID, transmogID, isSecondary);
 	elseif field == "illusionID" then
-		return self:SetIllusion(transmogID);
+		return self:SetIllusion(slotID, transmogID);
 	end
 end
 
 function DressUpOutfitDetailsSlotMixin:SetAppearance(slotID, transmogID, isSecondary)
+	local modificationType = Enum.TransmogModification.Secondary and isSecondary or Enum.TransmogModification.Main;
+	self.transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, modificationType);
+
 	local itemID = C_TransmogCollection.GetSourceItemID(transmogID);
 	if not itemID then
 		-- no empty slot for secondaries
@@ -723,7 +727,8 @@ function DressUpOutfitDetailsSlotMixin:SetAppearance(slotID, transmogID, isSecon
 	else
 		local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(transmogID);
 		local hasAllData = false;
-		transmogID, hasAllData = CollectionWardrobeUtil.GetPreferredSourceID(transmogID, appearanceInfo);
+		local category = C_TransmogCollection.GetCategoryForItem(transmogID);
+		transmogID, hasAllData = CollectionWardrobeUtil.GetPreferredSourceID(transmogID, appearanceInfo, category, self.transmogLocation);
 		if not hasAllData then
 			self:GetParent():MarkWaitingOnItemData();
 		end
@@ -767,7 +772,7 @@ function DressUpOutfitDetailsSlotMixin:SetItemInfo(transmogID, appearanceInfo, i
 	self:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual);
 end
 
-function DressUpOutfitDetailsSlotMixin:SetIllusion(transmogID)
+function DressUpOutfitDetailsSlotMixin:SetIllusion(slotID, transmogID)
 	local illusionInfo = C_TransmogCollection.GetIllusionInfo(transmogID);
 	if not illusionInfo then
 		return false;
@@ -778,6 +783,8 @@ function DressUpOutfitDetailsSlotMixin:SetIllusion(transmogID)
 	local slotState = illusionInfo.isCollected and OUTFIT_SLOT_STATE_COLLECTED or OUTFIT_SLOT_STATE_UNCOLLECTED;
 	local isHiddenVisual = illusionInfo.isHideVisual;
 	self:SetDetails(transmogID, illusionInfo.icon, TRANSMOGRIFIED_ENCHANT:format(name), useSmallIcon, slotState, isHiddenVisual);
+	
+	self.transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Illusion, Enum.TransmogModification.Main);
 
 	return true;
 end

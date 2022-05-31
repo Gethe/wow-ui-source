@@ -10,9 +10,9 @@ function GuildNewsFrame_OnLoad(self)
 	HybridScrollFrame_CreateButtons(GuildNewsContainer, "GuildNewsButtonTemplate", 0, 0);
 	
 	if ( GetGuildFactionGroup() == 0 ) then  -- horde
-		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
+		GUILD_EVENT_TEXTURES[Enum.CalendarEventType.PvP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
 	else  -- alliance
-		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP02";
+		GUILD_EVENT_TEXTURES[Enum.CalendarEventType.PvP] = "Interface\\Calendar\\UI-Calendar-Event-PVP02";
 	end
 end
 

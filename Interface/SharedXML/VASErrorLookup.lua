@@ -280,7 +280,7 @@ local vasErrorData = {
 	},
 	[Enum.VasError.AccountRestricted] = {
 		msg = function(character)
-			if IsCharacterNPERestricted(character.guid) then
+			if character and character.guid and IsCharacterNPERestricted(character.guid) then
 				return BLIZZARD_STORE_VAS_ERROR_NEW_PLAYER_EXPERIENCE;
 			end
 
@@ -390,6 +390,23 @@ function VASErrorData_GetMessage(errorCode, character)
 	end
 
 	return "";
+end
+
+function VASErrorData_GetCombinedMessage(characterGUID)
+	local errors = C_StoreSecure.GetVASErrors();
+
+	local msgTable = {};
+
+	local character = C_StoreSecure.GetCharacterInfoByGUID(characterGUID);
+	for index, errorID in ipairs(errors) do
+		local error = VASErrorData_GetMessage(errorID, character);
+		table.insert(msgTable, error);
+	end
+
+	local displayMsg = table.concat(msgTable, "\n");
+	displayMsg = (displayMsg ~= "") and displayMsg or BLIZZARD_STORE_VAS_ERROR_OTHER;
+
+	return displayMsg;
 end
 
 function StoreErrorData_GetMessage(errorCode)

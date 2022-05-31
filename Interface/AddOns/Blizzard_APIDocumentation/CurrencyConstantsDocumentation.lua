@@ -53,7 +53,7 @@ local CurrencyConstants =
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
-				{ Name = "CurrencyBShowQuestXpGainInTooltip", Type = "CurrencyFlagsB", EnumValue = 2 },
+				{ Name = "CurrencyBShowQuestXPGainInTooltip", Type = "CurrencyFlagsB", EnumValue = 2 },
 				{ Name = "CurrencyBNoNotificationMailOnOfflineProgress", Type = "CurrencyFlagsB", EnumValue = 4 },
 			},
 		},

@@ -1171,6 +1171,27 @@ function UIMenuButtonStretchMixin:OnLeave()
 	end
 end
 
+UIResettableDropdownButtonMixin = {};
+
+function UIResettableDropdownButtonMixin:OnLoad()
+	self.ResetButton:SetScript("OnClick", function(button, buttonName, down)
+		if self.resetFunction then
+			 self.resetFunction();
+		end
+
+		self.ResetButton:Hide();
+	end);
+end
+
+function UIResettableDropdownButtonMixin:OnMouseDown()
+	UIMenuButtonStretchMixin.OnMouseDown(self, button);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function UIResettableDropdownButtonMixin:SetResetFunction(resetFunction)
+	self.resetFunction = resetFunction;
+end
+
 DialogHeaderMixin = {};
 
 function DialogHeaderMixin:OnLoad()

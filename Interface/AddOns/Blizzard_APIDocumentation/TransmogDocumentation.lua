@@ -418,18 +418,6 @@ local Transmog =
 	Tables =
 	{
 		{
-			Name = "TransmogModification",
-			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 0,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "Main", Type = "TransmogModification", EnumValue = 0 },
-				{ Name = "Secondary", Type = "TransmogModification", EnumValue = 1 },
-			},
-		},
-		{
 			Name = "TransmogPendingType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -441,18 +429,6 @@ local Transmog =
 				{ Name = "Revert", Type = "TransmogPendingType", EnumValue = 1 },
 				{ Name = "ToggleOn", Type = "TransmogPendingType", EnumValue = 2 },
 				{ Name = "ToggleOff", Type = "TransmogPendingType", EnumValue = 3 },
-			},
-		},
-		{
-			Name = "TransmogType",
-			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 0,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "Appearance", Type = "TransmogType", EnumValue = 0 },
-				{ Name = "Illusion", Type = "TransmogType", EnumValue = 1 },
 			},
 		},
 		{

@@ -22,6 +22,24 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "AreAllCollectionTypeFiltersChecked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areAllCollectionTypeFiltersChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AreAllSourceTypeFiltersChecked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areAllSourceTypeFiltersChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanAppearanceHaveIllusion",
 			Type = "Function",
 
@@ -172,7 +190,8 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "appearanceID", Type = "number", Nilable = false },
-				{ Name = "categoryType", Type = "TransmogCollectionType", Nilable = true },
+				{ Name = "categoryType", Type = "TransmogCollectionType", Nilable = false },
+				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -202,6 +221,7 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
+				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -221,6 +241,20 @@ local TransmogItems =
 			Returns =
 			{
 				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCategoryForItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "collectionCategory", Type = "TransmogCollectionType", Nilable = false },
 			},
 		},
 		{
@@ -613,6 +647,15 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "IsUsingDefaultFilters",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUsingDefaultFilters", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ModifyOutfit",
 			Type = "Function",
 
@@ -749,6 +792,15 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "SetAllCollectionTypeFilters",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "checked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetAllSourceTypeFilters",
 			Type = "Function",
 
@@ -765,6 +817,10 @@ local TransmogItems =
 			{
 				{ Name = "shown", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "SetDefaultFilters",
+			Type = "Function",
 		},
 		{
 			Name = "SetIsAppearanceFavorite",

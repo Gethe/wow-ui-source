@@ -527,26 +527,16 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.ItemsTab" relativePoint="TOPLEFT" x="195" y="-11"/>
 				</Anchors>
 			</StatusBar>
-			<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
-				<Size x="93" y="22"/>
+			<DropDownToggleButton parentKey="FilterButton" inherits="UIResettableDropdownButtonTemplate" text="FILTER">
+				<KeyValues>
+					<KeyValue key="resetFunction" value="WardrobeFilterDropDown_ResetFilters" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="2" y="-1"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-							<Size x="10" y="12"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
-					<OnMouseDown>
-						UIMenuButtonStretchMixin.OnMouseDown(self, button);
+					<OnMouseDown inherit="prepend">
 						if self:IsEnabled() then
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 							ToggleDropDownMenu(1, nil, WardrobeFilterDropDown, self, 74, 15);
 						end
 					</OnMouseDown>
@@ -555,6 +545,7 @@
 					</OnEnable>
 					<OnDisable>
 						self.Icon:SetDesaturated(true);
+						self.ResetButton:Hide();
 					</OnDisable>
 				</Scripts>
 			</DropDownToggleButton>

@@ -226,6 +226,20 @@ local FriendList =
 			},
 		},
 		{
+			Name = "IsOnIgnoredList",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "token", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isIgnored", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RemoveFriend",
 			Type = "Function",
 

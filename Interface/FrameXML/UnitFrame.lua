@@ -6,7 +6,7 @@ PowerBarColor["FOCUS"] = { r = 1.00, g = 0.50, b = 0.25, fullPowerAnim=true };
 PowerBarColor["ENERGY"] = { r = 1.00, g = 1.00, b = 0.00, fullPowerAnim=true };
 PowerBarColor["COMBO_POINTS"] = { r = 1.00, g = 0.96, b = 0.41 };
 PowerBarColor["RUNES"] = { r = 0.50, g = 0.50, b = 0.50 };
-PowerBarColor["RUNIC_POWER"] = { r = 0.00, g = 0.82, b = 1.00 };
+PowerBarColor["RUNIC_POWER"] = { r = 0.00, g = 0.82, b = 1.00, fullPowerAnim=true };
 PowerBarColor["SOUL_SHARDS"] = { r = 0.50, g = 0.32, b = 0.55 };
 PowerBarColor["LUNAR_POWER"] = { r = 0.30, g = 0.52, b = 0.90, atlas="_Druid-LunarBar" };
 PowerBarColor["HOLY_POWER"] = { r = 0.95, g = 0.90, b = 0.60 };
@@ -477,6 +477,9 @@ function UnitFrameManaBar_UpdateType (manaBar)
 	local powerType, powerToken, altR, altG, altB = UnitPowerType(manaBar.unit);
 	local prefix = _G[powerToken];
 	local info = PowerBarColor[powerToken];
+
+	manaBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
+
 	if ( info ) then
 		if ( not manaBar.lockColor ) then
 			local playerDeadOrGhost = (manaBar.unit == "player" and (UnitIsDead("player") or UnitIsGhost("player")));
@@ -486,7 +489,6 @@ function UnitFrameManaBar_UpdateType (manaBar)
 				manaBar:GetStatusBarTexture():SetDesaturated(playerDeadOrGhost);
 				manaBar:GetStatusBarTexture():SetAlpha(playerDeadOrGhost and 0.5 or 1);
 			else
-				manaBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
 				if ( playerDeadOrGhost ) then
 					manaBar:SetStatusBarColor(0.6, 0.6, 0.6, 0.5);
 				else
@@ -503,7 +505,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 			end
 		end
 	else
-		if ( not altR) then
+		if ( not altR ) then
 			-- couldn't find a power token entry...default to indexing by power type or just mana if we don't have that either
 			info = PowerBarColor[powerType] or PowerBarColor["MANA"];
 		else

@@ -7,36 +7,12 @@ local Cursor =
 	Functions =
 	{
 		{
-			Name = "DropCursorCommunitiesStream",
-			Type = "Function",
-		},
-		{
-			Name = "GetCursorCommunitiesStream",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "streamId", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "GetCursorItem",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "item", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
-			},
-		},
-		{
-			Name = "SetCursorCommunitiesStream",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "streamId", Type = "string", Nilable = false },
 			},
 		},
 	},
@@ -47,11 +23,6 @@ local Cursor =
 			Name = "BattlePetCursorClear",
 			Type = "Event",
 			LiteralName = "BATTLE_PET_CURSOR_CLEAR",
-		},
-		{
-			Name = "CommunitiesStreamCursorClear",
-			Type = "Event",
-			LiteralName = "COMMUNITIES_STREAM_CURSOR_CLEAR",
 		},
 		{
 			Name = "CursorChanged",
@@ -82,9 +53,9 @@ local Cursor =
 		{
 			Name = "UICursorType",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 21,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "Default", Type = "UICursorType", EnumValue = 0 },
@@ -106,8 +77,7 @@ local Cursor =
 				{ Name = "BattlePet", Type = "UICursorType", EnumValue = 17 },
 				{ Name = "Mount", Type = "UICursorType", EnumValue = 18 },
 				{ Name = "Toy", Type = "UICursorType", EnumValue = 19 },
-				{ Name = "CommunitiesStream", Type = "UICursorType", EnumValue = 20 },
-				{ Name = "ConduitCollectionItem", Type = "UICursorType", EnumValue = 21 },
+				{ Name = "ConduitCollectionItem", Type = "UICursorType", EnumValue = 20 },
 			},
 		},
 	},

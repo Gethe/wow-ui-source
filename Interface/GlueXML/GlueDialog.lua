@@ -203,6 +203,27 @@ GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
 	end,
 }
 
+GlueDialogTypes["CONFIRM_VAS_FACTION_CHANGE"] = {
+	text = CONFIRM_PAID_SERVICE,
+	button1 = DONE,
+	button2 = CANCEL,
+	OnAccept = function()
+		CharacterCreateFrame:BeginVASTransaction();
+	end,
+	OnCancel = function()
+		CharacterCreateFrame:UpdateForwardButton();
+	end,
+}
+
+GlueDialogTypes["CHARACTER_CREATE_VAS_ERROR"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
+	OnAccept = function ()
+		CharacterCreateFrame:Exit();
+	end,
+}
+
 GlueDialogTypes["REALM_LOCALE_WARNING"] = {
 	text = REALM_TYPE_LOCALE_WARNING,
 	button1 = OKAY,

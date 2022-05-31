@@ -62,19 +62,6 @@ function ClubFinderApplicantEntryMixin:GetClubGUID()
 	return self.Info.clubFinderGUID;
 end
 
-function ClubFinderApplicantEntryMixin:GetServerName()
-	local normalizedRealmName = select(7, GetPlayerInfoByGUID(self.Info.playerGUID));
-	return normalizedRealmName;
-end
-
-function ClubFinderApplicantEntryMixin:GetFullName()
-	local serverName = self:GetServerName();
-	if (serverName ~= "") then
-		serverName = "-"..serverName
-	end
-	return self:GetApplicantName()..serverName;
-end
-
 function ClubFinderApplicantEntryMixin:OnMouseDown(button)
 	if ( button == "RightButton" ) then
 		ToggleDropDownMenu(1, nil, self.RightClickDropdown, self, 100, 0);
@@ -93,6 +80,8 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 	self.ClassColor = CreateColor(GetClassColor(classTag));
 	self.Name:SetText(info.name);
 	self.Name:SetTextColor(self.ClassColor.r, self.ClassColor.g, self.ClassColor.b);
+
+	self.faction = info.faction; 
 
 	self.Level:SetText(info.level);
 	self.ItemLevel:SetText(info.ilvl); 
@@ -207,7 +196,11 @@ function ClubFinderApplicantEntryMixin:OnEnter()
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_AddColoredLine(GameTooltip, self.Info.name, self.ClassColor);
-	GameTooltip_AddColoredLine(GameTooltip, UNIT_TYPE_LEVEL_TEMPLATE:format(self.Info.level, self.ClassName), HIGHLIGHT_FONT_COLOR);
+	if(self.faction and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[self.faction])) then 
+		GameTooltip_AddColoredLine(GameTooltip, UNIT_TYPE_LEVEL_FACTION_TEMPLATE:format(self.Info.level, self.ClassName, FACTION_LABELS[self.faction]), HIGHLIGHT_FONT_COLOR);
+	else 
+		GameTooltip_AddColoredLine(GameTooltip, UNIT_TYPE_LEVEL_TEMPLATE:format(self.Info.level, self.ClassName), HIGHLIGHT_FONT_COLOR);
+	end 
 	GameTooltip_AddNormalLine(GameTooltip, LFG_LIST_ITEM_LEVEL_CURRENT:format(self.Info.ilvl));
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_SPECIALIZATIONS);
@@ -231,20 +224,14 @@ function ClubFinderApplicantEntryMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
+function ClubFinderApplicantReport(clubFinderGUID, playerName, playerGUID)
+	local reportInfo = ReportInfo:CreateClubFinderReportInfo(Enum.ReportType.ClubFinderApplicant, clubFinderGUID);
+	reportInfo:SetReportTarget(playerGUID);
+	ReportFrame:InitiateReport(reportInfo, playerName); 
+end
+
 function ApplicantRightClickOptionsMenuInitialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
-
-	if UIDROPDOWNMENU_MENU_VALUE == 1 then
-		info.text = CLUB_FINDER_REPORT_NAME;
-		info.notCheckable = true;
-		info.func = function()  ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.ApplicantsName, self:GetParent():GetClubGUID(), self:GetParent():GetPlayerGUID(), self:GetParent().Info); end
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = CLUB_FINDER_REPORT_JOIN_NOTE;
-		info.notCheckable = true;
-		info.func = function() ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.JoinNote, self:GetParent():GetClubGUID(), self:GetParent():GetPlayerGUID(), self:GetParent().Info); end
-		UIDropDownMenu_AddButton(info, level);
-	end
 	
 	if (level == 1) then 
 		info.text = self:GetParent():GetApplicantName();
@@ -267,15 +254,15 @@ function ApplicantRightClickOptionsMenuInitialize(self, level)
 		info.isTitle = false; 
 		info.notCheckable = true; 
 		info.disabled = nil;
-		info.func = function () ChatFrame_SendTell(self:GetParent():GetFullName()); end
+		info.func = function () ClubFinderMessageApplicant(self); end
 		UIDropDownMenu_AddButton(info, level);
 
-		info.text = CLUB_FINDER_REPORT_FOR; 
+		info.text = CLUB_FINDER_REPORT_APPLICANT; 
 		info.isTitle = false; 
 		info.disabled = nil;
 		info.colorCode = HIGHLIGHT_FONT_COLOR_CODE; 
 		info.notCheckable = true; 
-		info.hasArrow = true
+		info.func = function() ClubFinderApplicantReport(self:GetParent():GetClubGUID(), self:GetParent().Info.name, self:GetParent().Info.playerGUID); end
 		info.value = 1; 
 		UIDropDownMenu_AddButton(info, level);
 	end
@@ -596,6 +583,27 @@ function ClubFinderCancelOrAcceptApplicant(self, shouldInvite, forceAccept)
 		end
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end 
+
+function ClubFinderMessageApplicant(self)
+local communityFrame = self:GetParent():GetParent():GetParent():GetParent():GetParent();
+	local clubId = communityFrame:GetSelectedClubId();
+	if (clubId) then 
+		local clubInfo = C_Club.GetClubInfo(clubId);
+		if (clubInfo)  then 
+			local applicantType;
+
+			if(clubInfo.clubType == Enum.ClubType.Guild) then
+				applicantType = Enum.ClubFinderRequestType.Guild
+			elseif(clubInfo.clubType == Enum.ClubType.Character) then
+				applicantType = Enum.ClubFinderRequestType.Community
+			end
+
+			if(applicantType) then 
+				C_ClubFinder.SendChatWhisper(self:GetParent().Info.clubFinderGUID, self:GetParent().Info.playerGUID, applicantType, ConcatinateServerNameToPlayerName(self:GetParent().Info.playerGUID));
+			end
+		end
+	end 
 end 
 
 function ClubFinderApplicantInviteButtonMixin:OnClick() 

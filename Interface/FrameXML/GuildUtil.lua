@@ -11,16 +11,16 @@ NEWS_LEGENDARY_LOOTED = 8;
 NEWS_GUILD_EVENT = 9;
 
 GUILD_EVENT_TEXTURES = {
-	[CALENDAR_EVENTTYPE_PVP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
-	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
-	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
+	[Enum.CalendarEventType.PvP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
+	[Enum.CalendarEventType.Meeting]	= "Interface\\Calendar\\MeetingIcon",
+	[Enum.CalendarEventType.Other]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
 };
 
 local icon_table = {
 	motd = { width = 16, height = 11, texture = "Interface\\GuildFrame\\GuildExtra", texcoords={0.56640625, 0.59765625, 0.86718750, 0.95312500}},
-	[CALENDAR_EVENTTYPE_PVP] = { width = 14, height = 14, texture = "Interface\\Calendar\\UI-Calendar-Event-PVP", texcoords={0, 1, 0, 1}},
-	[CALENDAR_EVENTTYPE_MEETING] = { width = 14, height = 14, texture = "Interface\\Calendar\\MeetingIcon", texcoords={0, 1, 0, 1}},
-	[CALENDAR_EVENTTYPE_OTHER] = { width = 14, height = 14, texture = "Interface\\Calendar\\UI-Calendar-Event-Other", texcoords={0, 1, 0, 1}},
+	[Enum.CalendarEventType.PvP] = { width = 14, height = 14, texture = "Interface\\Calendar\\UI-Calendar-Event-PVP", texcoords={0, 1, 0, 1}},
+	[Enum.CalendarEventType.Meeting] = { width = 14, height = 14, texture = "Interface\\Calendar\\MeetingIcon", texcoords={0, 1, 0, 1}},
+	[Enum.CalendarEventType.Other] = { width = 14, height = 14, texture = "Interface\\Calendar\\UI-Calendar-Event-Other", texcoords={0, 1, 0, 1}},
 	event = { width = 14, height = 14, texcoords={0, 1, 0, 1}},
 	news = { width = 13, height = 11, texture = "Interface\\GuildFrame\\GuildFrame", texcoords={0.41406250, 0.42675781, 0.96875000, 0.99023438}},
 }

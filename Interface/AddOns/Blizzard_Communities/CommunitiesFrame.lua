@@ -31,6 +31,7 @@ local COMMUNITIES_FRAME_EVENTS = {
 	"CLUB_FINDER_RECRUITMENT_POST_RETURNED",
 	"CLUB_FINDER_ENABLED_OR_DISABLED",
 	"CLUB_STREAM_SUBSCRIBED",
+	"CLUB_FINDER_CAN_WHISPER_APPLICANT",
 };
 
 local COMMUNITIES_STATIC_POPUPS = {
@@ -311,6 +312,9 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		if clubId == self:GetSelectedClubId() and streamId == self:GetSelectedStreamId() then
 			self.Chat:RequestInitialMessages(clubId, streamId);
 		end
+	elseif event == "CLUB_FINDER_CAN_WHISPER_APPLICANT" then 
+		local applicantGUID = ...; 
+		ChatFrame_SendTell(ConcatinateServerNameToPlayerName(applicantGUID));
 	end
 end
 
@@ -1040,6 +1044,19 @@ function CommunitiesFrameMixin:CheckForTutorials()
 		return;
 	end
 
+	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() and isGuildOrCommunity) then 
+		if(self:TryShowCrossFactionCommunitiesTutorialForLeader()) then 
+			if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_GUILD_LINK) then
+				HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_GUILD_LINK);
+			end
+			return; 
+		end
+	else
+		if(HelpTip:IsShowing(self, CROSS_FACTION_COMMUNITIES_HELPTIP)) then
+			HelpTip:Hide(self, CROSS_FACTION_COMMUNITIES_HELPTIP);
+		end
+	end		
+
 	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() or self.CommunitiesControlFrame.GuildRecruitmentButton:IsShown()) then
 		local clubPostingInfo = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubId);
 		if clubPostingInfo then
@@ -1055,6 +1072,10 @@ function CommunitiesFrameMixin:CheckForTutorials()
 				end
 				return;
 			end
+		end
+	else 
+		if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_POSTING) then
+			HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_POSTING);
 		end
 	end
 
@@ -1136,6 +1157,25 @@ function CommunitiesFrameMixin:TryShowClubFinderRecruitmentTutorialForLeader(isG
 
 	return HelpTip:Show(self, helpTipInfo, button);
 end
+
+function CommunitiesFrameMixin:TryShowCrossFactionCommunitiesTutorialForLeader()
+	if (not self:IsCharacterCommunitySelected()) then
+		return false;
+	end 
+	
+	local button = self.CommunitiesControlFrame.CommunitiesSettingsButton;
+	local helpTipInfo = {
+		text = CROSS_FACTION_COMMUNITIES_HELPTIP,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_CROSS_FACTION_COMMUNITY,
+		targetPoint = HelpTip.Point.BottomEdgeCenter,
+		offsetX = -4,
+		useParentStrata = true,
+		checkCVars = true,
+	};
+	return HelpTip:Show(self, helpTipInfo, button);
+end 
 
 function CommunitiesFrameMixin:TryShowClubFinderLanguageFilterTutorialForLeader(isGuildSelected)
 	if not isGuildSelected and not self:IsCharacterCommunitySelected() then

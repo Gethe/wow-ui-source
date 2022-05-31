@@ -221,7 +221,7 @@
 						<Scripts>
 							<OnHyperlinkClick function="GetURLIndexAndLoadURLWithSound" />
 						</Scripts>
-					</Frame>
+					</Frame>				
 					<Frame name="TextToSpeechFrameTtsVoicePicker" inherits="TextToSpeechFrameTtsVoicePickerTemplate" parentKey="VoicePicker">
 						<Scripts>
 							<OnLoad function="TextToSpeechFrameTtsVoicePicker_OnLoad"/>

@@ -135,6 +135,7 @@ function CharacterSelect_OnLoad(self)
 	self.backFromCharCreate = false;
     self.characterPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedButtonTemplate");
 	self.waitingforCharacterList = true;
+	self.showSocialContract = false;
     self:RegisterEvent("CHARACTER_LIST_UPDATE");
     self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
     self:RegisterEvent("FORCE_RENAME_CHARACTER");
@@ -163,6 +164,7 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("MIN_EXPANSION_LEVEL_UPDATED");
 	self:RegisterEvent("MAX_EXPANSION_LEVEL_UPDATED");
 	self:RegisterEvent("INITIAL_HOTFIXES_APPLIED");
+	self:RegisterEvent("SOCIAL_CONTRACT_STATUS_UPDATE");
 
     SetCharSelectModelFrame("CharacterSelectModel");
 
@@ -294,6 +296,10 @@ function CharacterSelect_OnShow(self)
         GlueDialog_Hide();
         C_Login.DisconnectFromServer();
     end
+
+	if not self.showSocialContract then
+		C_SocialContractGlue.GetShouldShowSocialContract();
+	end
 end
 
 function CharacterSelect_OnHide(self)
@@ -329,6 +335,8 @@ function CharacterSelect_OnHide(self)
     if ( CharSelectServicesFlowFrame:IsShown() ) then
         CharSelectServicesFlowFrame:Hide();
     end
+
+	SocialContractFrame:Hide();
 
     AccountReactivate_CloseDialogs();
     SetInCharacterSelect(false);
@@ -654,6 +662,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 		UpdateCharacterList();
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" or event == "MIN_EXPANSION_LEVEL_UPDATED" or event == "MAX_EXPANSION_LEVEL_UPDATED" or event == "INITIAL_HOTFIXES_APPLIED" ) then
 		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+	elseif ( event == "SOCIAL_CONTRACT_STATUS_UPDATE") then
+		self.showSocialContract = ...;
+		if self.showSocialContract and GlueParent_GetCurrentScreen() == "charselect" then
+			CharacterSelect_UpdateIfUpdateIsNotPending();
+		end
 	end
 end
 
@@ -790,6 +803,11 @@ function UpdateCharacterList(skipSelect)
 		GlueAnnouncementDialog:Display(CHAR_LEVELS_SQUISHED_TITLE, CHAR_LEVELS_SQUISHED_DESCRIPTION, "seenLevelSquishPopup");
 	else
 		CharacterSelect_CheckDialogStates();
+	end
+
+	if CharacterSelect.showSocialContract then
+		SocialContractFrame:Show();
+		CharacterSelect.showSocialContract = false;
 	end
 
     local numChars = GetNumCharacters();
@@ -1019,12 +1037,16 @@ function UpdateCharacterList(skipSelect)
             upgradeIcon:Show();
             upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
             upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
-		elseif ( vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue and productInfo ) then
+		elseif ( vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue ) then
 			upgradeIcon:Show();
             upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
-            upgradeIcon.tooltip2 = VAS_SERVICE_PROCESSING:format(productInfo.sharedData.name);
-            if (VAS_QUEUE_TIMES[guid] and VAS_QUEUE_TIMES[guid] > 0) then
-                upgradeIcon.tooltip2 = upgradeIcon.tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(VAS_QUEUE_TIMES[guid]*60, true, false, 2, true))
+			if productInfo then
+				upgradeIcon.tooltip2 = VAS_SERVICE_PROCESSING:format(productInfo.sharedData.name);
+				if (VAS_QUEUE_TIMES[guid] and VAS_QUEUE_TIMES[guid] > 0) then
+					upgradeIcon.tooltip2 = upgradeIcon.tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(VAS_QUEUE_TIMES[guid]*60, true, false, 2, true))
+				end
+			else
+				upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
             end
 		elseif ( vasServiceState == Enum.VasPurchaseProgress.ProcessingFactionChange ) then
             upgradeIcon:Show();
@@ -1434,6 +1456,12 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
     else
         GlueParent_SetScreen("charcreate");
     end
+end
+
+function CharacterSelect_StartCustomizeForVAS(vasType, info)
+	CharacterCreateFrame:SetVASInfo(vasType, info);
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+	GlueParent_SetScreen("charcreate");
 end
 
 function CharacterSelectScrollDown_OnClick()
@@ -2092,7 +2120,7 @@ function CharacterServicesMaster_UpdateServiceButton()
 end
 
 ------------------------------------------------------------------
--- Fake API for VAS PCT tokens:
+-- API for VAS tokens:
 ------------------------------------------------------------------
 local function GetVASDistributions()
 	local distributions = C_CharacterServices.GetVASDistributions();
@@ -2104,9 +2132,15 @@ local function GetVASDistributions()
 	end
 
 	if GetNumCharacters() == 0 then
-		local pct = distributionsByVASType[Enum.ValueAddedServiceType.PaidCharacterTransfer];
-		if pct then
-			pct.tokenStatus = "noCharacters";
+		local needsNoCharactersStatus = {
+			Enum.ValueAddedServiceType.PaidCharacterTransfer,
+			Enum.ValueAddedServiceType.PaidFactionChange
+		};
+		for i, serviceType in ipairs(needsNoCharactersStatus) do
+			local distribution = distributionsByVASType[serviceType];
+			if distribution then
+				distribution.tokenStatus = "noCharacters";
+			end
 		end
 	end
 
@@ -2122,8 +2156,8 @@ local function GetVASTokenAlpha(vasTokenInfo)
 end
 
 local statusToTooltipLookup = {
-	review = PCT_TOKEN_TOOLTIP_STATUS_REVIEW,
-	noCharacters = PCT_TOKEN_TOOLTIP_STATUS_NO_CHARACTERS,
+	review = VAS_TOKEN_TOOLTIP_STATUS_REVIEW,
+	noCharacters = VAS_TOKEN_TOOLTIP_STATUS_NO_CHARACTERS,
 };
 
 local function GetVASTokenStatusTooltip(vasTokenInfo)
@@ -2185,8 +2219,8 @@ function CharacterServicesMaster_UpdateBoostButtons(displayOrder, upgradeInfo)
 	end
 end
 
--- NOTE: This is a stub/faked wrapper around the VAS services besides Boost.
--- Currently supporting PCT as a token, removing it from the store.
+-- NOTE: This is a wrapper around the VAS services besides Boost.
+-- Currently supporting PCT & PFC as a token, removing it from the store.
 function CharacterServicesMaster_UpdateVASButtons(displayOrder)
 	local upgradeInfo = GetVASDistributions();
 	for _, characterService in pairs(displayOrder) do
@@ -2325,6 +2359,8 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 	assert(data.vasType ~= nil);
 	if data.vasType == Enum.ValueAddedServiceType.PaidCharacterTransfer  then
 		BeginFlow(PaidCharacterTransferFlow, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.PaidFactionChange  then
+		BeginFlow(PaidFactionChangeFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end

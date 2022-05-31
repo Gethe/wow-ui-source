@@ -249,6 +249,11 @@ function CharacterServicesFlowMixin:GetNumSteps()
 	return #self.Steps;
 end
 
+function CharacterServicesFlowMixin:IsAllFinished()
+	local lastStep = self:GetStep(self:GetNumSteps());
+	return lastStep:IsFinished();
+end
+
 function CharacterServicesFlowMixin:IsWarningAccepted()
 	return self.warningAccepted;
 end

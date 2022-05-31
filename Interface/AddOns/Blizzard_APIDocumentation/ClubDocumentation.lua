@@ -98,6 +98,7 @@ local Club =
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "clubType", Type = "ClubType", Nilable = false, Documentation = { "Valid types are BattleNet or Character" } },
 				{ Name = "avatarId", Type = "number", Nilable = false },
+				{ Name = "isCrossFaction", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -124,6 +125,7 @@ local Club =
 				{ Name = "allowedRedeemCount", Type = "number", Nilable = true, Documentation = { "Number of uses. nil means unlimited" } },
 				{ Name = "duration", Type = "number", Nilable = true, Documentation = { "Duration in seconds. nil never expires" } },
 				{ Name = "defaultStreamId", Type = "string", Nilable = true },
+				{ Name = "isCrossFaction", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -179,6 +181,20 @@ local Club =
 			},
 		},
 		{
+			Name = "DoesCommunityHaveMembersOfTheOppositeFaction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasMembersOfOppositeFaction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EditClub",
 			Type = "Function",
 			Documentation = { "nil arguments will not change existing club data" },
@@ -191,6 +207,7 @@ local Club =
 				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "avatarId", Type = "number", Nilable = true },
 				{ Name = "broadcast", Type = "string", Nilable = true },
+				{ Name = "crossFaction", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -1277,9 +1294,9 @@ local Club =
 		{
 			Name = "ClubErrorType",
 			Type = "Enumeration",
-			NumValues = 40,
+			NumValues = 42,
 			MinValue = 0,
-			MaxValue = 39,
+			MaxValue = 41,
 			Fields =
 			{
 				{ Name = "ErrorCommunitiesNone", Type = "ClubErrorType", EnumValue = 0 },
@@ -1322,6 +1339,8 @@ local Club =
 				{ Name = "ErrorClubTicketCountAtMax", Type = "ClubErrorType", EnumValue = 37 },
 				{ Name = "ErrorClubTicketNoSuchTicket", Type = "ClubErrorType", EnumValue = 38 },
 				{ Name = "ErrorClubTicketHasConsumedAllowedRedeemCount", Type = "ClubErrorType", EnumValue = 39 },
+				{ Name = "ErrorClubDoesntAllowCrossFaction", Type = "ClubErrorType", EnumValue = 40 },
+				{ Name = "ErrorClubEditHasCrossFactionMembers", Type = "ClubErrorType", EnumValue = 41 },
 			},
 		},
 		{
@@ -1495,6 +1514,7 @@ local Club =
 				{ Name = "favoriteTimeStamp", Type = "number", Nilable = true },
 				{ Name = "joinTime", Type = "number", Nilable = true },
 				{ Name = "socialQueueingEnabled", Type = "bool", Nilable = true },
+				{ Name = "crossFaction", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -1560,6 +1580,7 @@ local Club =
 				{ Name = "guildRankOrder", Type = "number", Nilable = true },
 				{ Name = "isRemoteChat", Type = "bool", Nilable = true },
 				{ Name = "overallDungeonScore", Type = "number", Nilable = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true },
 			},
 		},
 		{

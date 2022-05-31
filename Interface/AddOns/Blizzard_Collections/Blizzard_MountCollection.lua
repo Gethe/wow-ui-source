@@ -769,106 +769,96 @@ end
 
 function MountJournalFilterDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, MountJournalFilterDropDown_Initialize, "MENU");
+	MountJournalResetFiltersButton_UpdateVisibility();
 end
 
+function MountJournalFilterDropdown_ResetFilters()
+	C_MountJournal.SetDefaultFilters();
+	MountJournalFilterButton.ResetButton:Hide();
+end
+
+function MountJournalResetFiltersButton_UpdateVisibility()
+	MountJournalFilterButton.ResetButton:SetShown(not C_MountJournal.IsUsingDefaultFilters());
+end
+
+function MountJournal_SetCollectedFilter(value)
+	return C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED, value);
+end
+
+function MountJournal_GetCollectedFilter()
+	return C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED);
+end
+
+function MountJournal_SetNotCollectedFilter(value)
+	C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED, value);
+end
+
+function MountJournal_GetNotCollectedFilter()
+	return C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED);
+end
+
+function MountJournal_SetUnusableFilter(value)
+	C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, value);
+end
+
+function MountJournal_GetUnusableFilter()
+	return C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE);
+end
+
+function MountJournal_SetAllSourceFilters(value)
+	C_MountJournal.SetAllSourceFilters(value); 
+	UIDropDownMenu_Refresh(MountJournalFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
+end 
+
 function MountJournalFilterDropDown_Initialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;
+	local filterSystem = {
+		onUpdate = MountJournalResetFiltersButton_UpdateVisibility,
+		filters = {
+			{ type = FilterComponent.Checkbox, text = COLLECTED, set = MountJournal_SetCollectedFilter, isSet = MountJournal_GetCollectedFilter },
+			{ type = FilterComponent.Checkbox, text = NOT_COLLECTED, set = MountJournal_SetNotCollectedFilter, isSet = MountJournal_GetNotCollectedFilter },
+			{ type = FilterComponent.Checkbox, text = MOUNT_JOURNAL_FILTER_UNUSABLE, set = MountJournal_SetUnusableFilter, isSet = MountJournal_GetUnusableFilter },
+			{ type = FilterComponent.Space },
+			{ type = FilterComponent.Title, text = MOUNT_JOURNAL_FILTER_TYPE, },
+			{ type = FilterComponent.CustomFunction, customFunc = MountJournal_AddInMountTypes, },
+			{ type = FilterComponent.Submenu, text = SOURCES, value = 1, childrenInfo = {
+					filters = {
+						{ type = FilterComponent.TextButton, 
+						  text = CHECK_ALL,
+						  set = function() MountJournal_SetAllSourceFilters(true); end, 
+						},
+						{ type = FilterComponent.TextButton,
+						  text = UNCHECK_ALL,
+						  set = function() MountJournal_SetAllSourceFilters(false); end, 
+						},
+						{ type = FilterComponent.DynamicFilterSet,
+						  buttonType = FilterComponent.Checkbox, 
+						  set = C_MountJournal.SetSourceFilter,
+						  isSet = C_MountJournal.IsSourceChecked,
+						  numFilters = C_PetJournal.GetNumPetSources,
+						  filterValidation = C_MountJournal.IsValidSourceFilter,
+						  globalPrepend = "BATTLE_PET_SOURCE_", 
+						},
+					},
+				},
+			},
+		},
+	};
 
-	if level == 1 then
-		info.text = COLLECTED
-		info.func = function(_, _, _, value)
-						C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED,value);
-					end
-		info.checked = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
+	FilterDropDownSystem.Initialize(self, filterSystem, level);
+end
 
-		info.text = NOT_COLLECTED
-		info.func = function(_, _, _, value)
-						C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED,value);
-					end
-		info.checked = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
-
-		info.text = MOUNT_JOURNAL_FILTER_UNUSABLE
-		info.func = function(_, _, _, value)
-						C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, value);
-					end
-		info.checked = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
-
-		UIDropDownMenu_AddSpace(level);
-
-		info.hasArrow = false;
-		info.isNotRadio = true;
-		info.notCheckable = true;
-		info.isTitle = true;
-		info.text = MOUNT_JOURNAL_FILTER_TYPE;
-		UIDropDownMenu_AddButton(info, level);
-
-		for i=1, Enum.MountTypeMeta.NumValues do
-			info = UIDropDownMenu_CreateInfo();
-			info.keepShownOnClick = true;
-			info.isNotRadio = true;
-			if not C_MountJournal.IsValidTypeFilter(i) then
-				break;
-			end
-
-			info.text = mountTypeStrings[i-1];
-
-			info.func = function(_, _, _, value)
-							C_MountJournal.SetTypeFilter(i, value);
-						end
-			info.checked = function() return C_MountJournal.IsTypeChecked(i) end;
-			UIDropDownMenu_AddButton(info, level);
-		end;
-
-		UIDropDownMenu_AddSpace(level);
-
-		info.checked = 	nil;
-		info.isNotRadio = nil;
-		info.func =  nil;
-		info.hasArrow = true;
-		info.notCheckable = true;
-
-		info.text = SOURCES;
-		info.value = 1;
-		UIDropDownMenu_AddButton(info, level)
-
-	else --if level == 2 then
-		info.hasArrow = false;
-		info.isNotRadio = true;
-		info.notCheckable = true;
-
-		info.text = CHECK_ALL
-		info.func = function()
-						C_MountJournal.SetAllSourceFilters(true);
-						UIDropDownMenu_Refresh(MountJournalFilterDropDown, 1, 2);
-					end
-		UIDropDownMenu_AddButton(info, level)
-
-		info.text = UNCHECK_ALL
-		info.func = function()
-						C_MountJournal.SetAllSourceFilters(false);
-						UIDropDownMenu_Refresh(MountJournalFilterDropDown, 1, 2);
-					end
-		UIDropDownMenu_AddButton(info, level)
-
-		info.notCheckable = false;
-		local numSources = C_PetJournal.GetNumPetSources();
-		for i=1,numSources do
-			if C_MountJournal.IsValidSourceFilter(i) then
-				info.text = _G["BATTLE_PET_SOURCE_"..i];
-				info.func = function(_, _, _, value)
-								C_MountJournal.SetSourceFilter(i,value);
-							end
-				info.checked = function() return C_MountJournal.IsSourceChecked(i) end;
-				UIDropDownMenu_AddButton(info, level);
-			end
+function MountJournal_AddInMountTypes(level)
+	for i = 1, Enum.MountTypeMeta.NumValues do
+		if not C_MountJournal.IsValidTypeFilter(i) then
+			break;
 		end
+
+		local set = function(_, _, _, value)
+					C_MountJournal.SetTypeFilter(i, value);
+					MountJournalResetFiltersButton_UpdateVisibility()
+				  end
+		local isSet = function() return C_MountJournal.IsTypeChecked(i) end;
+		FilterDropDownSystem.AddCheckBoxButton(mountTypeStrings[i - 1], set, isSet, level);
 	end
 end
 

@@ -66,6 +66,9 @@
 ..\SharedXML\Scroll\ScrollBox.xml
 ..\SharedXML\Scroll\ScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
+..\SharedXML\Scroll\TrimScrollBar.xml
+..\SharedXML\Scroll\OribosScrollBar.xml
+..\SharedXML\Scroll\MinimalScrollBar.xml
 ..\SharedXML\StringUtil.lua
 ..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
@@ -191,6 +194,7 @@ NavigationBar.xml
 ..\SharedXML\GridList.xml
 GameMenuFrame.xml
 CharacterFrameTemplates.xml
+FilterDropDown.lua
 TextStatusBar.lua
 TextStatusBar.xml
 UIErrorsFrame.xml
@@ -238,8 +242,16 @@ VoiceChatDots.xml
 VoiceChatTranscriptionButton.xml
 VoiceChatHeadsetButton.xml
 VoiceToggleButton.xml
+ReportFrame.xml
 UnitPopupSlider.xml
 UnitPopupCustomControls.xml
+UnitPopupSharedUtils.lua
+UnitPopupUtils.lua
+UnitPopupSharedButtonMixins.lua
+UnitPopupShared.xml
+UnitPopupSharedMenus.lua
+UnitPopupButtons.lua
+UnitPopupMenus.lua
 UnitPopup.xml
 HistoryKeeper.lua
 ChatFrame.xml
@@ -272,6 +284,7 @@ RoleSelectionTemplate.xml
 ItemRef.xml
 SocialQueue.xml
 QuickJoinToast.xml
+TextToSpeechFrameConstants.lua
 TextToSpeechCommands.lua
 TextToSpeechFrame.xml
 TextToSpeech.xml

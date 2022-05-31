@@ -909,8 +909,17 @@ function ClubFinderFilterDropdownMixin:Initialize()
 end
 
 function ClubFinderFilterDropdownInitialize(self, level)
-	-- Add the focus label
+	-- Add Cross Faction
 	local info = UIDropDownMenu_CreateInfo();
+	if(not self:GetParent():GetParent().isGuildType) then 
+		info.text = CROSS_FACTION_CLUB_FINDER_SEARCH_OPTION;
+		info.isNotRadio = true;
+		info.keepShownOnClick = true;
+		self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.FactionNeutral, CROSS_FACTION_CLUB_FINDER_SEARCH_OPTION);
+		UIDropDownMenu_AddButton(info);	
+	end		
+
+	-- Add the focus label
 	info.text = CLUB_FINDER_FOCUS;
 	info.isTitle = true;
 	info.notCheckable = true;
@@ -1227,6 +1236,12 @@ function ClubFinderSearchEditBoxMixin:OnTextChanged()
 	self:GetParent().Search:UpdateEnabledState();
 end
 
+function ClubFinderReportPosting(clubFinderGUID, clubName, playerGUID)
+	local reportInfo = ReportInfo:CreateClubFinderReportInfo(Enum.ReportType.ClubFinderPosting, clubFinderGUID);
+	reportInfo:SetReportTarget(playerGUID);
+	ReportFrame:InitiateReport(reportInfo, clubName); 
+end
+
 function CardRightClickOptionsMenuInitialize(self, level)
 
 	if(self:GetParent():IsReported() or not self:GetParent().cardInfo) then 
@@ -1234,26 +1249,6 @@ function CardRightClickOptionsMenuInitialize(self, level)
 	end
 
 	local info = UIDropDownMenu_CreateInfo();
-
-	if UIDROPDOWNMENU_MENU_VALUE == 1 then
-		info.text = self:GetParent().cardInfo.isGuild and CLUB_FINDER_REPORT_GUILD_NAME or CLUB_FINDER_REPORT_COMMUNITY_NAME;
-		info.notCheckable = true;
-		info.func = function() ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.ClubName, self:GetParent():GetClubGUID(), self:GetParent():GetLastPosterGUID(), self:GetParent().cardInfo); end
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = CLUB_FINDER_REPORT_NAME;
-		info.notCheckable = true;
-		info.func = function() ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.PostersName, self:GetParent():GetClubGUID(), self:GetParent():GetLastPosterGUID(), self:GetParent().cardInfo); end
-		UIDropDownMenu_AddButton(info, level);
-
-		local guildDescrip = self:GetParent().cardInfo.comment;
-		if(guildDescrip:gsub("%s", "") ~= "") then 
-			info.text = CLUB_FINDER_REPORT_DESCRIPTION;
-			info.notCheckable = true;
-			info.func = function() 	ClubFinderReportFrame:ShowReportDialog(Enum.ClubFinderPostingReportType.PostingDescription, self:GetParent():GetClubGUID(), self:GetParent():GetLastPosterGUID(), self:GetParent().cardInfo); end
-			UIDropDownMenu_AddButton(info, level);
-		end
-	end
 
 	if (level == 1) then
 		info.text = self:GetParent():GetCardName();
@@ -1307,13 +1302,12 @@ function CardRightClickOptionsMenuInitialize(self, level)
 			UIDropDownMenu_AddButton(info, level);
 		end
 
-		info.text = CLUB_FINDER_REPORT_FOR;
+		info.text = CLUB_FINDER_REPORT_POSTING;
 		info.isTitle = false;
 		info.disabled = nil;
 		info.colorCode = HIGHLIGHT_FONT_COLOR_CODE;
 		info.notCheckable = true;
-		info.hasArrow = true
-		info.func = nil;
+		info.func = function() ClubFinderReportPosting(self:GetParent():GetClubGUID(), self:GetParent().cardInfo.name, self:GetParent().cardInfo.lastPosterGUID); end
 		info.value = 1;
 		UIDropDownMenu_AddButton(info, level);
 	end
@@ -1654,6 +1648,9 @@ function ClubFinderCommunitiesCardMixin:OnEnter()
 	GameTooltip_AddColoredLine(GameTooltip, info.name, GREEN_FONT_COLOR);
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_ACTIVE_MEMBERS:format(info.numActiveMembers));
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_LEADER:format(info.guildLeader));
+	if(info.isCrossFaction) then 
+		GameTooltip_AddNormalLine(GameTooltip, CROSS_FACTION_CLUB_FINDER_SEARCH_OPTION);
+	end		
 
 	if (self.RequestJoin:IsShown()) then
 		self.RequestJoin.Highlight:Show();
@@ -2473,6 +2470,8 @@ function ClubFinderGetPlayerSettingsByValue(value)
 		return playerSettings.sortMembers;
 	elseif (value == Enum.ClubFinderSettingFlags.SortNewest) then
 		return playerSettings.sortNewest;
+	elseif (value ==  Enum.ClubFinderSettingFlags.FactionNeutral) then
+		return playerSettings.crossFaction
 	end
 end
 

@@ -557,6 +557,7 @@
 			<KeyValue key="label" value="LABEL_TEXT" type="global"/>
 			Optional
 			<KeyValue key="tooltip" value="LABEL_TEXT" type="global"/>
+			<KeyValue key="disableTooltip" value="LABEL_TEXT" type="global"/>
 		</KeyValues-->
 		<Size x="296" y="22"/>
 		<Layers>
@@ -570,7 +571,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton parentKey="CheckButton">
+			<CheckButton parentKey="CheckButton" motionScriptsWhileDisabled="true">
 				<Size x="22" y="22"/>
 				<HitRectInsets>
 					<AbsInset left="0" right="-130" top="0" bottom="0"/>
@@ -588,9 +589,14 @@
 					</OnClick>
 					<OnEnter>
 						local tooltip = self:GetParent().tooltip;
-						if ( tooltip ) then
+						local disableTooltip = self:GetParent().disableTooltip; 
+						if ( tooltip and self:IsEnabled()) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 							GameTooltip:SetText(tooltip, nil, nil, nil, nil, true);
+							GameTooltip:Show();
+						elseif (not self:IsEnabled() and disableTooltip) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(disableTooltip, nil, nil, nil, nil, true);
 							GameTooltip:Show();
 						end
 					</OnEnter>
@@ -1893,13 +1899,23 @@
 							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
 						</KeyValues>
 					</Frame>
+					<Frame parentKey="CrossFactionGroup" inherits="LFGListOptionCheckButtonTemplate">
+						<KeyValues>
+							<KeyValue key="label" value="LFG_LIST_CROSS_FACTION" type="global"/>
+							<KeyValue key="tooltip" value="LFG_LIST_CROSS_FACTION_TOOLTIP" type="global"/>
+							<KeyValue key="disableTooltip" value="LFG_LIST_CROSS_FACTION_DISABLE_TOOLTIP" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChat" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+						</Anchors>
+					</Frame>
 					<Frame parentKey="PrivateGroup" inherits="LFGListOptionCheckButtonTemplate">
 						<KeyValues>
 							<KeyValue key="label" value="LFG_LIST_PRIVATE" type="global"/>
 							<KeyValue key="tooltip" value="LFG_LIST_PRIVATE_TOOLTIP" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChat" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChat" relativePoint="BOTTOMLEFT" x="220" y="-3"/>
 						</Anchors>
 					</Frame>
 					<Button parentKey="ListGroupButton" inherits="LFGListMagicButtonTemplate" text="LIST_GROUP" motionScriptsWhileDisabled="true">

@@ -78,6 +78,8 @@ GlueContextMenu.xml
 ..\SharedXML\Scroll\ScrollBox.xml
 ..\SharedXML\Scroll\ScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
+..\SharedXML\Scroll\TrimScrollBar.xml
+..\SharedXML\Scroll\MinimalScrollBar.xml
 ..\SharedXML\HybridScrollFrame.xml
 ..\SharedXML\TemplatedList.xml
 ..\SharedXML\ScrollList.xml
@@ -114,11 +116,14 @@ CharacterServicesPatchwerk.xml
 CharacterSelect.xml
 AccountReactivate.xml
 KioskModeSplash.xml
+CharacterServicesShared.lua
 CharacterServicesTemplates.xml
 CharacterServicesCharacterSelector.xml
 CharacterServices.xml
 CharacterServicesAccountSelector.xml
 CharacterServicesPaidCharacterTransfer.xml
+CharacterServicesPaidFactionChange.xml
+SocialContract.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml
 ..\SharedXML\OptionsFrameTemplates.xml
