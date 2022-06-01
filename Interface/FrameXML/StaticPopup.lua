@@ -2215,6 +2215,9 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
+		if ( QuestLogDetailFrame:IsShown() ) then
+			HideUIPanel(QuestLogDetailFrame);
+		end
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
 	timeout = 0,
@@ -2228,6 +2231,9 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
+		if ( QuestLogDetailFrame:IsShown() ) then
+			HideUIPanel(QuestLogDetailFrame);
+		end
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
 	timeout = 0,

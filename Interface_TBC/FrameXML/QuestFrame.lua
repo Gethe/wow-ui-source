@@ -52,7 +52,8 @@ function QuestFrame_OnEvent(self, event, ...)
 		HideUIPanel(QuestLogPopupDetailFrame);
 		QuestFrameDetailPanel:Hide();
 		QuestFrameDetailPanel:Show();
-	elseif ( event == "QUEST_PROGRESS" ) then
+	elseif ( event == "QUEST_PROGRESS" ) then	
+		HideUIPanel(GossipFrame);
 		HideUIPanel(QuestLogPopupDetailFrame);
 		QuestFrameProgressPanel:Hide();
 		QuestFrameProgressPanel:Show();
@@ -338,6 +339,7 @@ function QuestFrameGreetingPanel_OnShow()
 end
 
 function QuestFrame_OnShow()
+	HideUIPanel(QuestLogDetailFrame);
 	PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
 	NPCFriendshipStatusBar_Update(QuestFrame);
 end
@@ -758,6 +760,8 @@ end
 function QuestDetailDeclineButton_OnClick()
 	DeclineQuest();
 	PlaySound(SOUNDKIT.IG_QUEST_CANCEL);
+	HideUIPanel(QuestFrame);
+	ShowUIPanel(GossipFrame);
 end
 
 function QuestFrame_SetMaterial(frame, material)

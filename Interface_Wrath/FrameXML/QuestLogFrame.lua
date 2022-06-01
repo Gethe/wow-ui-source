@@ -66,6 +66,7 @@ end
 function QuestLog_OnLoad(self)
 	self.selectedButtonID = 2;
 	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("QUEST_DETAIL");
 	self:RegisterEvent("QUEST_WATCH_UPDATE");
 	self:RegisterEvent("UPDATE_FACTION");
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
@@ -83,12 +84,11 @@ function QuestLog_OnEvent(self, event, ...)
 		QuestWatch_OnLogin();
 	elseif ( event == "QUEST_LOG_UPDATE" or event == "UPDATE_FACTION" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") ) then
 		QuestLog_Update();
-		QuestWatch_Update();
 		if ( QuestLogFrame:IsVisible() ) then
 			QuestLog_UpdateQuestDetails(1);
 		end
 		if ( GetCVar("autoQuestWatch") == "1" ) then
-			AutoQuestWatch_CheckDeleted();
+			-- AutoQuestWatch_CheckDeleted();
 		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
 		if ( GetCVar("autoQuestWatch") == "1" ) then
@@ -97,6 +97,12 @@ function QuestLog_OnEvent(self, event, ...)
 		end
 	elseif ( eventy == "PLAYER_LEVEL_UP" ) then
 		QuestLog_Update();
+	elseif ( event == "QUEST_DETAIL" ) then
+		-- Opening a quest from a quest giver
+		HideUIPanel(QuestLogDetailFrame);
+		HideUIPanel(GossipFrame);
+		QuestFrameDetailPanel:Hide();
+		QuestFrameDetailPanel:Show();
 	else
 		QuestLog_Update();
 		if ( event == "GROUP_ROSTER_UPDATE" ) then
@@ -258,40 +264,18 @@ function QuestLog_Update(self)
 				else
 					textWidth = QuestLogDummyText:GetWidth();
 				end
-				
 				questNormalText:SetWidth(tempWidth);
-				
 				-- If there's quest tag position check accordingly
+				questTitleTag:Show();
 				questCheck:Hide();
-				if ( IsQuestWatched(questIndex) ) then
-					if ( questNormalText:GetWidth() + 24 < 275 ) then
-						questCheck:SetPoint("LEFT", questLogTitle, "LEFT", textWidth+24, 0);
-					else
-						questCheck:SetPoint("LEFT", questLogTitle, "LEFT", textWidth+10, 0);
-					end
-					questCheck:Show();
-				end
 			else
-				-- TODO do logic for  watching
 				questTitleTag:SetText("");
-				-- -- Reset to max text width
-				-- if ( questNormalText:GetWidth() > 275 ) then
-				-- 	questNormalText:SetWidth(260);
-				-- end
-
-				-- -- Show check if quest is being watched
-				-- questCheck:Hide();
-				-- if ( IsQuestWatched(questIndex) ) then
-				-- 	if ( questNormalText:GetWidth() + 24 < 275 ) then
-				-- 		questCheck:SetPoint("LEFT", questLogTitle, "LEFT", QuestLogDummyText:GetWidth()+24, 0);
-				-- 	else
-				-- 		questCheck:SetPoint("LEFT", questNormalText, "LEFT", questNormalText:GetWidth(), 0);
-				-- 	end
-				-- 	print("Here2")
-				-- 	questCheck:Show();
-				-- end
 			end
-
+			if ( IsQuestWatched(questIndex) ) then
+				questCheck:Show();
+			else
+				questCheck:Hide();
+			end
 			-- Color the quest title and highlight according to the difficulty level
 			if ( isHeader ) then
 				color = QuestDifficultyColors["header"];
@@ -348,6 +332,7 @@ function QuestLog_SetSelection(questIndex)
 	SelectQuestLogEntry(questIndex);
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
+	QuestLogControlPanel_UpdateState();
 	SetAbandonQuest();
 	if ( questIndex == 0 ) then
 		QuestLogDetailScrollFrame:Hide();
@@ -364,6 +349,10 @@ function QuestLog_SetSelection(questIndex)
 			CollapseQuestHeader(questIndex);
 		end
 		return;
+	end
+	-- For selection from the watchFrame
+	if ( not QuestLogFrame:IsShown() ) then
+		ShowUIPanel(QuestLogDetailFrame);
 	end
 end
 
@@ -392,28 +381,11 @@ function QuestLogTitleButton_OnClick(self, button)
 		end
 
 		-- Shift-click toggles quest-watch on this quest.
-		if ( IsQuestWatched(questIndex) ) then
-			local questID = GetQuestIDFromLogIndex(questIndex);
-			for index, value in ipairs(QUEST_WATCH_LIST) do
-				if ( value.id == questID ) then
-					tremove(QUEST_WATCH_LIST, index);
-				end
-			end
-			RemoveQuestWatch(questIndex);
-			QuestWatch_Update();
-		else
-			-- Set error if no objectives
-			if ( GetNumQuestLeaderBoards(questIndex) == 0 ) then
-				UIErrorsFrame:AddMessage(QUEST_WATCH_NO_OBJECTIVES, 1.0, 0.1, 0.1, 1.0);
-				return;
-			end
-			-- Set an error message if trying to show too many quests
-			if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then
-				UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
-				return;
-			end
-			AutoQuestWatch_Insert(questIndex, QUEST_WATCH_NO_EXPIRE);
-			QuestWatch_Update();
+		_QuestLog_ToggleQuestWatch(questIndex);
+		-- Set an error message if trying to show too many quests
+		if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then
+			UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
+			return;
 		end
 	end
 	QuestLog_SetSelection(self:GetID())
@@ -526,103 +498,6 @@ function QuestWatch_OnLogin()
 	end
 end
 
--- TODO, need to update with correct LKC watchframe
-function QuestWatch_Update()
-	local numObjectives;
-	local questWatchMaxWidth = 0;
-	local tempWidth;
-	local watchText;
-	local text, type, finished;
-	local questTitle
-	local watchTextIndex = 1;
-	local questIndex;
-	local objectivesCompleted;
-
-	for i=1, GetNumQuestWatches() do
-		questIndex = GetQuestIndexForWatch(i);
-		if ( questIndex ) then
-			numObjectives = GetNumQuestLeaderBoards(questIndex);
-		
-			--If there are objectives set the title
-			if ( false ) then
-				-- Set title
-				watchText:SetText(GetQuestLogTitle(questIndex));
-				tempWidth = watchText:GetWidth();
-				-- Set the anchor of the title line a little lower
-				if ( watchTextIndex > 1 ) then
-					watchText:SetPoint("TOPLEFT", "QuestWatchLine"..(watchTextIndex - 1), "BOTTOMLEFT", 0, -4);
-				end
-				watchText:Show();
-				if ( tempWidth > questWatchMaxWidth ) then
-					questWatchMaxWidth = tempWidth;
-				end
-				watchTextIndex = watchTextIndex + 1;
-				objectivesCompleted = 0;
-				for j=1, numObjectives do
-					text, type, finished = GetQuestLogLeaderBoard(j, questIndex);
-					if ( text == nil ) then
-						text = "";
-					end
-					if ( finished == nil ) then
-						finished = true;
-					end
-					watchText = _G["QuestWatchLine"..watchTextIndex];
-					-- Set Objective text
-					watchText:SetText(" - "..text);
-					-- Color the objectives
-					if ( finished ) then
-						watchText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-						objectivesCompleted = objectivesCompleted + 1;
-					else
-						watchText:SetTextColor(0.8, 0.8, 0.8);
-					end
-					tempWidth = watchText:GetWidth();
-					if ( tempWidth > questWatchMaxWidth ) then
-						questWatchMaxWidth = tempWidth;
-					end
-					watchText:SetPoint("TOPLEFT", "QuestWatchLine"..(watchTextIndex - 1), "BOTTOMLEFT", 0, 0);
-					watchText:Show();
-					watchTextIndex = watchTextIndex + 1;
-				end
-				-- Brighten the quest title if all the quest objectives were met
-				watchText = _G["QuestWatchLine"..watchTextIndex-numObjectives-1];
-				if ( objectivesCompleted == numObjectives ) then
-					watchText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				else
-					watchText:SetTextColor(0.75, 0.61, 0);
-				end
-			end
-		end
-	end
-
-	-- Set tracking indicator
-	-- TODO will need to change
-	-- if ( GetNumQuestWatches() > 0 ) then
-	-- 	QuestLogTrackTracking:SetVertexColor(0, 1.0, 0);
-	-- else
-	-- 	QuestLogTrackTracking:SetVertexColor(1.0, 0, 0);
-	-- end
-	
-
-	-- TODO also check what the reference does for this
-	-- If no watch lines used then hide the frame and return
-	-- if ( watchTextIndex == 1 ) then
-	-- 	QuestWatchFrame:Hide();
-	-- 	return;
-	-- else
-	-- 	QuestWatchFrame:Show();
-	-- 	QuestWatchFrame:SetHeight(watchTextIndex * 13);
-	-- 	QuestWatchFrame:SetWidth(questWatchMaxWidth + 10);
-	-- end
-
-	-- -- Hide unused watch lines
-	-- for i=watchTextIndex, MAX_QUESTWATCH_LINES do
-	-- 	_G["QuestWatchLine"..i]:Hide();
-	-- end
-
-	UIParent_ManageFramePositions();
-end
-
 function GetQuestLogIndexByName(name)
 	local numEntries = GetNumQuestLogEntries();
 	local questLogTitleText;
@@ -702,7 +577,6 @@ function AutoQuestWatch_OnUpdate(self, elapsed)
 			if ( value.timer < 0 ) then
 				RemoveQuestWatch(GetQuestLogIndexByID(value.id));
 				tremove(QUEST_WATCH_LIST, index);
-				QuestWatch_Update();
 				QuestLog_Update();
 			end
 		end
@@ -743,6 +617,22 @@ function QuestLogUpdateQuestCount(numQuests)
 end
 -- Wrath new stuff here
 
+function QuestLog_OpenToQuest(questIndex, keepOpen)
+	local selectedIndex = GetQuestLogSelection();
+
+	if ( not keepOpen and selectedIndex ~= 0 and questIndex == selectedIndex and QuestLogDetailFrame:IsShown() ) then
+		-- if the current quest is selected and is visible, then treat this as a toggle
+		HideUIPanel(QuestLogDetailFrame);
+		return;
+	end
+
+	local numEntries, numQuests = GetNumQuestLogEntries();
+	if ( questIndex < 1 or questIndex > numEntries ) then
+		return;
+	end
+	HideUIPanel(QuestFrame);
+	QuestLog_SetSelection(questIndex);
+end
 
 --
 -- QuestLogDetailFrame
@@ -843,7 +733,7 @@ end
 --
 -- QuestLogFrameTrackButton
 --
-local function _QuestLog_ToggleQuestWatch(questIndex)
+function _QuestLog_ToggleQuestWatch(questIndex)
 	if ( IsQuestWatched(questIndex) ) then
 		RemoveQuestWatch(questIndex);
 		WatchFrame_Update();

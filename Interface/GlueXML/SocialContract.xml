@@ -84,8 +84,12 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomInsetEdge" relativePoint="TOPRIGHT" x="1" y="-7"/>
 				</Anchors>		
 			</EventFrame>					
-			<Button parentKey="AcceptButton" mixin="SocialContractAcceptButtonMixin" inherits="UIPanelButtonTemplate" text="SOCIAL_CONTRACT_ACCEPT_BUTTON">
+			<Button parentKey="AcceptButton" mixin="SocialContractAcceptButtonMixin" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="SOCIAL_CONTRACT_ACCEPT_BUTTON">
 				<Size x="136" y="22"/>
+				<KeyValues>
+					<KeyValue key="disabledTooltip" value="SOCIAL_CONTRACT_ERROR" type="global"/>
+					<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativePoint="TOP" relativeKey="$parent.BottomInset" x="-75" y="-6"/>
 				</Anchors>

@@ -166,7 +166,7 @@ end
 
 function EyeTemplate_OnUpdate(self, elapsed)
 	local textureInfo = LFG_EYE_TEXTURES[self.queueType or "default"];
-	AnimateTexCoords(self.texture, textureInfo.width, textureInfo.height, textureInfo.iconSize, textureInfo.iconSize, textureInfo.frames, elapsed, textureInfo.delay)
+	AnimateTexCoords(self.Texture, textureInfo.width, textureInfo.height, textureInfo.iconSize, textureInfo.iconSize, textureInfo.frames, elapsed, textureInfo.delay)
 end
 
 function EyeTemplate_StartAnimating(eye)
@@ -175,11 +175,11 @@ end
 
 function EyeTemplate_StopAnimating(eye)
 	eye:SetScript("OnUpdate", nil);
-	if ( eye.texture.frame ) then
-		eye.texture.frame = 1;	--To start the animation over.
+	if ( eye.Texture.frame ) then
+		eye.Texture.frame = 1;	--To start the animation over.
 	end
 	local textureInfo = LFG_EYE_TEXTURES[eye.queueType or "default"];
-	eye.texture:SetTexCoord(0, textureInfo.iconSize / textureInfo.width, 0, textureInfo.iconSize / textureInfo.height);
+	eye.Texture:SetTexCoord(0, textureInfo.iconSize / textureInfo.width, 0, textureInfo.iconSize / textureInfo.height);
 end
 
 function MinimapButton_OnMouseDown(self, button)
@@ -547,7 +547,7 @@ end
 function MiniMapLFGDropDown_Initialize()
 	if (C_LFGList.HasActiveEntryInfo()) then
 		local info = UIDropDownMenu_CreateInfo();
-		info.text = CLEAR_ALL;
+		info.text = LFG_LIST_UNLIST;
 		info.func = wrapFunc(C_LFGList.RemoveListing);
 		info.disabled = not C_LFGList.HasActiveEntryInfo();
 		info.notCheckable = 1;

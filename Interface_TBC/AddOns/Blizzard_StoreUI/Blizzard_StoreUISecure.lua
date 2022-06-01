@@ -3247,11 +3247,8 @@ function StoreProductCardMagnifyingGlass_OnClick(self, button, down)
 	local card = self:GetParent();
 	local entryID = card:GetID();
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-	if #entryInfo.sharedData.cards > 1 then
+	if #entryInfo.sharedData.cards > 0 then
 		StoreFrame_ShowPreviews(entryInfo.sharedData.cards);
-	elseif #entryInfo.sharedData.cards > 0 then
-		local card = entryInfo.sharedData.cards[1];
-		StoreFrame_ShowPreview(card.name, card.creatureDisplayInfoID, card.modelSceneID);
 	end
 end
 

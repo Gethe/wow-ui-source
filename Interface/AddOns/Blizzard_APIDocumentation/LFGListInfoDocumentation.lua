@@ -48,6 +48,15 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetLFGRoles",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "roles", Type = "LFGRoles", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSearchResultInfo",
 			Type = "Function",
 
@@ -113,6 +122,15 @@ local LFGListInfo =
 				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "filter", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "preferredFilters", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
+		{
+			Name = "SetLFGRoles",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "roles", Type = "LFGRoles", Nilable = false },
 			},
 		},
 		{
@@ -207,6 +225,16 @@ local LFGListInfo =
 				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "comment", Type = "string", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "LFGRoles",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "tank", Type = "bool", Nilable = false },
+				{ Name = "healer", Type = "bool", Nilable = false },
+				{ Name = "dps", Type = "bool", Nilable = false },
 			},
 		},
 		{

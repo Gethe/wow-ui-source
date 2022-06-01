@@ -69,7 +69,8 @@ UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,		xoffset 
 UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	height = 424,	whileDead = 1 };
 UIPanelWindows["PlayerTalentFrame"] =			{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["QuestLogFrame"] =				{ area = "doublewide",		pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	whileDead = 1 };
-UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["QuestLogDetailFrame"] =			{ area = "left",			pushable = 1, 		xoffset = -16,		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 1,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["DressUpFrame"] =				{ area = "left",			pushable = 2,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["InspectFrame"] =				{ area = "left",			pushable = 2,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
@@ -2542,12 +2543,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		anchorY = anchorY - UIWidgetBelowMinimapContainerFrame:GetHeight() - 4;
 	end
 
-	-- Quest timers
-	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-	if ( QuestTimerFrame:IsShown() ) then
-		anchorY = anchorY - QuestTimerFrame:GetHeight();
-	end
-
 	-- Boss frames - need to move below buffs/debuffs if both right action bars are showing
 	local numBossFrames = 0;
 	for i = 1, MAX_BOSS_FRAMES do
@@ -2582,13 +2577,22 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 
 	-- QuestWatchFrame
-	if ( rightActionBars > 0 ) then
-		anchorY = min(anchorY, buffsAnchorY);
+	local numArenaOpponents = GetNumArenaOpponents();
+	if ( not WatchFrame:IsUserPlaced() and ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
+		WatchFrame:ClearAllPoints();
+		WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+	elseif ( not WatchFrame:IsUserPlaced() ) then -- We're using Simple Quest Tracking, automagically size and position!
+		WatchFrame:ClearAllPoints();
+		-- move up if only the minimap cluster is above, move down a little otherwise
+		if ( anchorY == 0 ) then
+			anchorY = 10;
+		end
+		WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+		-- OnSizeChanged for WatchFrame handles its redraw
 	end
-	if ( QuestWatchFrame ) then
-		QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-	end
-
+	
+	WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
+	
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
 	UpdateContainerFrameAnchors();

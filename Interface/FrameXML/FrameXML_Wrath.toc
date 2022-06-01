@@ -215,8 +215,8 @@ SkillFrame.xml
 ..\..\Interface_Wrath\FrameXML\ReputationFrame.xml
 ..\..\Interface_TBC\FrameXML\QuestFrame.xml
 ..\..\Interface_Wrath\FrameXML\QuestLogFrame.xml
-QuestTimerFrame.xml
 ..\..\Interface_Wrath\FrameXML\QuestInfo.xml
+..\..\Interface_Wrath\FrameXML\WatchFrame.xml
 ..\..\Interface_TBC\FrameXML\MerchantFrame.xml
 TradeFrame.xml
 ContainerFrame.xml

@@ -555,7 +555,7 @@ end
 DisplayPanelOptions = {
 	findYourselfMode = { text = "SELF_HIGHLIGHT_OPTION", tooltip = OPTION_TOOLTIP_SELF_HIGHLIGHT },
 	instantQuestText = { text = "SHOW_QUEST_FADING_TEXT", tooltip = OPTION_TOOLTIP_SHOW_QUEST_FADING },
-	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT", tooltip = OPTION_TOOLTIP_AUTO_QUEST_PROGRESS },
+	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT", tooltip = OPTION_TOOLTIP_AUTO_QUEST_WATCH },
 	hideOutdoorWorldState = { text = "HIDE_OUTDOOR_WORLD_STATE_TEXT" , tooltip = OPTION_TOOLTIP_HIDE_OUTDOOR_WORLD_STATE },
 	rotateMinimap = { text = "ROTATE_MINIMAP" },
 	showMinimapClock = { text = "SHOW_MINIMAP_CLOCK" },

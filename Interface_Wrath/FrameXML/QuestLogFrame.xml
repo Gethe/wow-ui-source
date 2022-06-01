@@ -170,13 +170,13 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<!-- <Scripts>
+				<Scripts>
 					<OnClick function="QuestLogFrameTrackButton_OnClick"/>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, TRACK_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_TRACKQUEST, 1);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts> -->
+				</Scripts>
 			</Button>
 			<Button name="QuestFramePushQuestButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST_ABBREV">
 				<Size>
@@ -375,164 +375,6 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Frame name="QuestLogMapFrame" alpha="0.5" hidden="false">
-				<Size>
-					<AbsDimension x="225" y="150"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="QuestLogDetailScrollFrame" relativePoint="BOTTOM">
-						<Offset x="0" y="0"/>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="QuestLogMapFrame1">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame2">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame1" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame3">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame2" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame4">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame3" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame5">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame1" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame6">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame5" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame7">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame6" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame8">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame7" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame9">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame5" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame10">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame9" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame11">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame10" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="QuestLogMapFrame12">
-							<Size>
-								<AbsDimension x="56" y="56"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="QuestLogMapFrame11" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="QuestLogDetailFrame_OnLoad"/>

@@ -1,627 +1,30 @@
-LFGS_TO_DISPLAY = 16;
-
------------------------------ LFG Parent Functions -----------------------------
-LFGParentFrameMixin = {};
-
-function LFGParentFrameMixin:OnLoad()
-	self:RegisterEvent("PLAYER_LEVEL_UP");
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
-	PanelTemplates_SetNumTabs(self, 2);
-	LFGParentFrame.selectedTab = 1;
-	PanelTemplates_UpdateTabs(self);
-end
-
-function LFGParentFrameMixin:OnEvent(event, ...)
-	if (event == "PLAYER_LEVEL_UP") then
-		C_LFGList.RequestAvailableActivities();
-	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
-		local unit = ...;
-		if ( unit == "player" ) then
-			SetPortraitTexture(LFGParentFrameIcon, unit);
-		end
-	end
-end
-
-function ToggleLFGParentFrame(tab)
-	local hideLFGParent = false;
-	if ((not C_LFGList.IsLookingForGroupEnabled()) or
-		(LFGParentFrame:IsShown() and tab == LFGParentFrame.selectedTab and LFGParentFrameTab1:IsShown()) or
-		(LFGParentFrame:IsShown() and not tab)
-	) then
-		hideLFGParent = true;
-	end
-
-	if ( hideLFGParent ) then
-		HideUIPanel(LFGParentFrame);
-	else
-		ShowUIPanel(LFGParentFrame);
-		-- Decide which subframe to show
-		local tabToShow = tab or LFGParentFrame.selectedTab;
-		if (tabToShow == 2) then
-			LFGParentFrameTab2_OnClick();
-		else -- Default to tab 1.
-			LFGParentFrameTab1_OnClick();
-		end
-	end
-	UpdateMicroButtons();
-end
-
-function LFGParentFrameTab1_OnClick()
-	PanelTemplates_SetTab(LFGParentFrame, 1);
-	LFGFrame:Show();
-	LFMFrame:Hide();
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-end
-
-function LFGParentFrameTab2_OnClick()
-	PanelTemplates_SetTab(LFGParentFrame, 2);
-	LFGFrame:Hide();
-	LFMFrame:Show();
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-end
-
-function LFGParentFrame_LFMSearchActiveEntry()
-	PanelTemplates_SetTab(LFGParentFrame, 2);
-	LFGFrame:Hide();
-	LFMFrame:Show();
-	LFMFrame:SearchActiveEntry();
-end
-
------------------------------ LFM Functions -----------------------------
-LFMFrameMixin = {};
-
-function LFMFrameMixin:OnLoad()
-	-- Event for entire list
-	self:RegisterEvent("LFG_LIST_AVAILABILITY_UPDATE");
-	self:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED");
-	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
-
-	self:ClearSelection();
-	self.numResultsLoaded = 0;
-
-	self.TypeDropDown.activityDropdown = self.ActivityDropDown;
-	self.ActivityDropDown.typeDropdown = self.TypeDropDown;
-	UIDropDownMenu_Initialize(self.TypeDropDown, LFMFrameTypeDropDown_Initialize);
-	UIDropDownMenu_Initialize(self.ActivityDropDown, LFMFrameActivityDropDown_Initialize);
-end
-
-function LFMFrameMixin:OnEvent(event, ...)
-	if ( event == "LFG_LIST_AVAILABILITY_UPDATE" ) then
-		self:RefreshDropdowns();
-	elseif ( event == "LFG_LIST_SEARCH_RESULTS_RECEIVED" ) then
-		self:RefreshResults();
-	elseif ( event == "LFG_LIST_SEARCH_RESULT_UPDATED") then
-		local resultID = ...;
-		self:RefreshResults(resultID);
-	end
-end
-
-function LFMFrameMixin:RefreshDropdowns()
-	UIDropDownMenu_Initialize(self.TypeDropDown, LFMFrameTypeDropDown_Initialize);
-	UIDropDownMenu_Initialize(self.ActivityDropDown, LFMFrameActivityDropDown_Initialize);
-end
-
-function LFMFrameMixin:OnShow()
-	LFGParentFrameBackground:SetTexture("Interface\\LFGFrame\\LFMFrame");
-	self:RefreshDropdowns();
-	self:RefreshResults();
-	LFGParentFrameTab1:Show();
-	LFGParentFrameTab2:Show();
-	LFGParentFrameTitle:SetText(LFM_TITLE);
-end
-
-function LFMFrameMixin:RefreshResults(singleRefreshID)
-	local numResults, resultIDs = C_LFGList.GetFilteredSearchResults();
-	self.numResultsLoaded = numResults;
-	local scrollOffset = FauxScrollFrame_GetOffset(LFMListScrollFrame);
-	local showScrollBar = false;
-	if ( numResults > LFGS_TO_DISPLAY ) then
-		showScrollBar = true;
-	end
-
-	for i=1, LFGS_TO_DISPLAY, 1 do
-		local resultIndex = scrollOffset + i;
-		local button = self.LFMFrameButton[i];
-		
-		if ( resultIndex <= numResults ) then
-			local resultID = resultIDs[resultIndex];
-
-			local doResultRefresh = true;
-			if (singleRefreshID and singleRefreshID ~= resultID) then
-				doResultRefresh = false;
-			end
-
-			if (doResultRefresh) then
-				LFMButton_Reset(button);
-				button.resultID = resultID;
-				local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-				if ( searchResultInfo and searchResultInfo.numMembers > 0 and searchResultInfo.leaderName ) then
-					-- Leader info.
-					local name, classFileName, className, level, zone = C_LFGList.GetSearchResultLeaderInfo(resultID);
-					local classTextColor = classFileName and RAID_CLASS_COLORS[classFileName] or NORMAL_FONT_COLOR;
-
-					button.Name:SetText(searchResultInfo.leaderName);
-					button.Level:SetText(level);
-					button.Class:SetText(className);
-					button.Zone:SetText(zone);
-					
-					button.isDelisted = searchResultInfo.isDelisted;
-					if (button.isDelisted) then
-						button.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-						button.Level:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-						button.Class:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-						button.Zone:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-					else
-						button.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-						button.Level:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-						button.Class:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
-						button.Zone:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-					end
-
-					-- Show the party leader icon if necessary
-					local isGroup = searchResultInfo.numMembers > 1;
-					if ( isGroup ) then
-						button.PartyIcon:Show();
-					else	
-						button.PartyIcon:Hide();
-					end
-
-					-- Set info for the tooltip
-					button.isLFM = isGroup;
-					button.leaderName = LFM_NAME_TEMPLATE:format(name, level, className);
-					button.activityIDs = searchResultInfo.activityIDs;
-					button.comment = searchResultInfo.comment;
-					button.partyMembers = searchResultInfo.numMembers;
-				
-					-- If need scrollbar resize columns
-					if ( showScrollBar ) then
-						button.Zone:SetWidth(102);
-					else
-						button.Zone:SetWidth(117);
-					end
-
-					button:Show();
-				end
-			end
-		else
-			LFMButton_Reset(button);
-			button:Hide();
-		end
-	end
-
-	-- Clear our selection unless it matches one of our buttons, and that button isn't delisted.
-	local clearSelection = true;
-	if (self.selectedLFM) then
-		for i=1,#self.LFMFrameButton do
-			local button = self.LFMFrameButton[i];
-			if (button.resultID == self.selectedLFM) then
-				if (not button.isDelisted) then
-					clearSelection = false;
-				end
-				break;
-			end
-		end
-	end
-	if (clearSelection) then
-		self:ClearSelection();
-	end
-
-	self:UpdateScrollBar();
-end
-
-function LFMFrameMixin:SearchActiveEntry()
-	-- Note: Players can queue for activities in multiple categories, but the LFM UI only supports showing one category at a time.
-	-- Thus, we'll use the first category we find and only search for activities in that first category.
-
-	if (not self.TypeDropDown or not self.ActivityDropDown) then
-		return;
-	end
-
-	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-	local firstTypeID = 0;
-	if (activeEntryInfo) then
-		LFMFrameActivityDropDown_ValueReset(self.ActivityDropDown);
-		for i=1, #activeEntryInfo.activityIDs do
-			local activityID = activeEntryInfo.activityIDs[i];
-			if (activityID ~= 0) then
-				local _, _, typeID = C_LFGList.GetActivityInfo(activityID);
-				if (firstTypeID == 0) then
-					firstTypeID = typeID;
-					UIDropDownMenu_Initialize(self.TypeDropDown, LFMFrameTypeDropDown_Initialize);
-					UIDropDownMenu_SetSelectedValue(self.TypeDropDown, typeID);
-				end
-				if (typeID == firstTypeID) then
-					LFMFrameActivityDropDown_ValueSetSelected(self.ActivityDropDown, activityID, true)
-				end
-			end
-		end
-	end
-
-	SendLFMQuery();
-end
-
-function LFMFrameMixin:ClearSelection()
-	self.selectedLFM = nil;
-	self.selectedName = nil;
-	self:UpdateSelection();
-end
-
-function LFMFrameMixin:SetSelection(selectedResultID)
-	self.selectedLFM = selectedResultID;
-	self:UpdateSelection();
-end
-
-function LFMFrameMixin:UpdateSelection()
-	local selectionIsDelisted = false;
-	for i=1, LFGS_TO_DISPLAY, 1 do
-		-- Highlight the correct lfm
-		local button = self.LFMFrameButton[i];
-		if ( self.selectedLFM and self.selectedLFM == button.resultID ) then
-			self.selectedName = button.Name:GetText();
-			button:LockHighlight();
-			selectionIsDelisted = button.isDelisted;
-		else
-			button:UnlockHighlight();
-		end
-	end
-
-	-- Update send message and group invite buttons
-	if ( self.selectedName and (self.selectedName ~= UnitName("player") and not selectionIsDelisted) ) then
-		LFMFrameSendMessageButton:Enable();
-		if ( CanGroupInvite() ) then
-			LFMFrameGroupInviteButton:Enable();
-		else
-			LFMFrameGroupInviteButton:Disable();
-		end
-	else
-		LFMFrameSendMessageButton:Disable();
-		LFMFrameGroupInviteButton:Disable();
-	end
-end
-
-function LFMFrameMixin:UpdateScrollBar()
-	-- If need scrollbar resize columns
-	if ( showScrollBar ) then
-		WhoFrameColumn_SetWidth(LFMFrameColumnHeader2, 105);
-	else
-		WhoFrameColumn_SetWidth(LFMFrameColumnHeader2, 120);
-	end
-
-	-- ScrollFrame update
-	FauxScrollFrame_Update(LFMListScrollFrame, self.numResultsLoaded, LFGS_TO_DISPLAY, 16);
-end
-
-function LFMButton_Reset(self)
-	self.resultID = 0;
-	self.isDelisted = false;
-	self.isLFM = false;
-	self.leaderName = "";
-	self.activityIDs = {};
-	self.comment = "";
-	self.partyMembers = 0;
-end
-
-function LFMButton_OnClick(self, button)
-	if (self.isDelisted) then
-		return;
-	end
-
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	if ( button == "LeftButton" ) then
-		LFMFrame:SetSelection(self.resultID);
-	elseif ( button == "RightButton" ) then
-		EasyMenu(LFMFrame:GetSearchEntryMenu(self.resultID), LFMFrameEntryDropDown, "cursor", nil, nil, "MENU");
-	end
-end
-
-function LFMButton_OnEnter(self)
-	if (self.isDelisted) then
-		return;
-	end
-
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 27, -37);
-	if ( self.isLFM ) then
-		GameTooltip_AddColoredLine(GameTooltip, LFM_TITLE, HIGHLIGHT_FONT_COLOR);
-	else
-		GameTooltip_AddColoredLine(GameTooltip, LFG_TITLE, HIGHLIGHT_FONT_COLOR);
-	end
-	
-	GameTooltip_AddColoredLine(GameTooltip, self.leaderName, NORMAL_FONT_COLOR);
-	local numPartyMembers = self.partyMembers;
-	if ( numPartyMembers > 0 ) then
-		if (self.isLFM) then
-			GameTooltip:AddTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
-		end
-		-- Only show party members if there are 10 or less
-		if ( numPartyMembers > 10 ) then
-			GameTooltip:AddLine(format(LFM_NUM_RAID_MEMBER_TEMPLATE, numPartyMembers));
-			-- Bogus texture to make the spacing correct
-			GameTooltip:AddTexture("");
-		else
-			for i=1, numPartyMembers do
-				local name, _, class, level, isLeader = C_LFGList.GetSearchResultMemberInfo(self.resultID, i);
-				if ( name and not isLeader ) then -- Skip the leader since we added them above.
-					GameTooltip_AddColoredLine(GameTooltip, format(LFM_NAME_TEMPLATE, name, level, class), NORMAL_FONT_COLOR);
-					-- Bogus texture to make the spacing correct
-					GameTooltip:AddTexture("");
-				end
-			end
-		end
-	end
-
-	local activityString = "";
-	for i=1, #self.activityIDs do
-		local name = C_LFGList.GetActivityInfo(self.activityIDs[i]);
-		if (name) then
-			activityString = activityString .. "\n" .. name;
-		end
-	end
-	GameTooltip_AddColoredLine(GameTooltip, activityString, HIGHLIGHT_FONT_COLOR);
-
-	if ( self.comment and self.comment ~= "" ) then
-		GameTooltip_AddColoredLine(GameTooltip, "\n"..self.comment, HIGHLIGHT_FONT_COLOR, 1);
-	end
-
-	GameTooltip:Show();
-end
-
--- ////////////////////////////////////////////////// Type Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-function LFMFrameTypeDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-	local categories = C_LFGList.GetAvailableCategories();
-	if (#categories == 0) then
-		-- None button
-		info.text = LFG_TYPE_NONE;
-		info.value = 0;
-		info.func = LFMTypeButton_OnClick;
-		info.owner = self;
-		info.checked = UIDropDownMenu_GetSelectedValue(self) == info.value;
-		info.classicChecks = true;
-		UIDropDownMenu_AddButton(info);
-	else
-		local currentSelectedValue = UIDropDownMenu_GetSelectedValue(self) or 0;
-		local defaultToFirstValue = currentSelectedValue <= 0;
-		for i=1, #categories do
-			local name = C_LFGList.GetCategoryInfo(categories[i]);
-
-			info.text = name;
-			info.value = categories[i];
-			info.func = LFMTypeButton_OnClick;
-			info.owner = self;
-			info.checked = currentSelectedValue == info.value or (defaultToFirstValue and i == 1);
-			info.classicChecks = true;
-			UIDropDownMenu_AddButton(info);
-			if (info.checked) then
-				UIDropDownMenu_SetSelectedValue(self, info.value);
-			end
-		end
-	end
-end
-
-function LFMTypeButton_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
-	LFMFrameActivityDropDown_ValueReset(self.owner.activityDropdown);
-	UIDropDownMenu_ClearAll(self.owner.activityDropdown);
-	UIDropDownMenu_Initialize(self.owner.activityDropdown, LFMFrameActivityDropDown_Initialize);
-end
--- ////////////////////////////////////////////////// Type Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
--- ////////////////////////////////////////////////// Activity Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-function LFMFrameActivityDropDown_Initialize(self)
-	local selectedType = 0;
-	if (self.typeDropdown) then
-		selectedType = UIDropDownMenu_GetSelectedValue(self.typeDropdown) or 0;
-	end
-
-	if ( selectedType > 0 ) then
-		UIDropDownMenu_EnableDropDown(self);
-		local activities = C_LFGList.GetAvailableActivities(selectedType);
-
-		if (#activities > 0) then
-			local metaButtonInfo = UIDropDownMenu_CreateInfo();
-			metaButtonInfo.keepShownOnClick = true;
-			metaButtonInfo.notCheckable = true;
-			metaButtonInfo.leftPadding = 5;
-
-			-- Check All button
-			metaButtonInfo.text = CHECK_ALL;
-			metaButtonInfo.func = function()
-				LFMFrameActivityDropDown_ValueAll(self);
-				UIDropDownMenu_Refresh(self, true);
-				LFMFrameActivityDropDown_UpdateHeaderText(self);
-				SendLFMQuery();
-			end;
-			UIDropDownMenu_AddButton(metaButtonInfo);
-
-			-- Uncheck All button
-			metaButtonInfo.text = UNCHECK_ALL;
-			metaButtonInfo.func = function()
-				LFMFrameActivityDropDown_ValueReset(self);
-				UIDropDownMenu_Refresh(self, true);
-				LFMFrameActivityDropDown_UpdateHeaderText(self);
-				SendLFMQuery();
-			end;
-			UIDropDownMenu_AddButton(metaButtonInfo);
-		end
-
-		-- Individual Activity Buttons
-		local buttonInfo = UIDropDownMenu_CreateInfo();
-		buttonInfo.func = LFMActivityButton_OnClick;
-		buttonInfo.owner = self;
-		buttonInfo.keepShownOnClick = true;
-		buttonInfo.classicChecks = true;
-
-		for i=1, #activities do
-			local name = C_LFGList.GetActivityInfo(activities[i]);
-
-			buttonInfo.text = name;
-			buttonInfo.value = activities[i];
-			buttonInfo.checked = function(self)
-				return LFMFrameActivityDropDown_ValueIsSelected(LFMFrameActivityDropDown, self.value);
-			end;
-			UIDropDownMenu_AddButton(buttonInfo);
-		end
-	else
-		LFMFrameActivityDropDown_ValueReset(self);
-		UIDropDownMenu_DisableDropDown(self);
-		UIDropDownMenu_ClearAll(self);
-	end
-
-	LFMFrameActivityDropDown_UpdateHeaderText(self);
-end
-
-function LFMFrameActivityDropDown_ValueAll(self)
-	local selectedType = 0;
-	if (self.typeDropdown) then
-		selectedType = UIDropDownMenu_GetSelectedValue(self.typeDropdown) or 0;
-	end
-
-	if ( selectedType > 0 ) then
-		local activities = C_LFGList.GetAvailableActivities(selectedType);
-		for i=1, #activities do
-			LFMFrameActivityDropDown_ValueSetSelected(self, activities[i], true);
-		end
-	end
-end
-
-function LFMFrameActivityDropDown_ValueReset(self)
-	wipe(self.selectedValues);
-end
-
-function LFMFrameActivityDropDown_ValueIsSelected(self, value)
-	return tContains(self.selectedValues, value);
-end
-
-function LFMFrameActivityDropDown_ValueSetSelected(self, value, selected)
-	if (selected) then
-		if (not tContains(self.selectedValues, value)) then
-			tinsert(self.selectedValues, value);
-		end
-	else
-		tDeleteItem(self.selectedValues, value);
-	end
-	LFMFrameActivityDropDown_UpdateHeaderText(self);
-end
-
-function LFMFrameActivityDropDown_ValueToggleSelected(self, value)
-	LFMFrameActivityDropDown_ValueSetSelected(self, value, not LFMFrameActivityDropDown_ValueIsSelected(self, value));
-end
-
-function LFMFrameActivityDropDown_UpdateHeaderText(self)
-	if #self.selectedValues == 1 then
-		local name = C_LFGList.GetActivityInfo(self.selectedValues[1]);
-		UIDropDownMenu_SetText(self, name);
-	else
-		UIDropDownMenu_SetText(self, string.format(LFM_ACTIVITY_HEADER, #self.selectedValues));
-	end
-end
-
-function LFMActivityButton_OnClick(self)
-	LFMFrameActivityDropDown_ValueToggleSelected(self.owner, self.value);
-	SendLFMQuery();
-end
--- ////////////////////////////////////////////////// Activity Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
--- Refresh Button and Search
-function LFMFrameSearchButton_OnClick(self, button)
-	SendLFMQuery();
-end
-
-function SendLFMQuery()
-	local categoryID = UIDropDownMenu_GetSelectedValue(LFMFrameTypeDropDown) or 0;
-	local activityIDs = LFMFrameActivityDropDown.selectedValues;
-	if (categoryID > 0) then
-		C_LFGList.Search(categoryID, activityIDs);
-	end
-end
-
-local LFM_FRAME_SEARCH_ENTRY_MENU = {
-	{
-		text = nil,	--Leader name goes here
-		isTitle = true,
-		notCheckable = true,
-	},
-	{
-		text = SEND_MESSAGE,
-		func = function(_, name) ChatFrame_SendTell(name); end,
-		notCheckable = true,
-		arg1 = nil, --Leader name goes here
-		disabled = nil, --Disabled if we don't have a leader name yet
-		tooltipWhileDisabled = 1,
-		tooltipOnButton = 1,
-		tooltipTitle = nil, --The title to display on mouseover
-		tooltipText = nil, --The text to display on mouseover
-	},
-	{
-		text = GROUP_INVITE,
-		func = function(_, name) InviteUnit(name); end,
-		notCheckable = true,
-		arg1 = nil, --Leader name goes here
-		disabled = nil, --Disabled if we don't have a leader name yet
-		tooltipWhileDisabled = 1,
-		tooltipOnButton = 1,
-		tooltipTitle = nil, --The title to display on mouseover
-		tooltipText = nil, --The text to display on mouseover
-	},
-	{
-		text = LFG_LIST_REPORT_GROUP_FOR,
-		hasArrow = true,
-		notCheckable = true,
-		menuList = {
-			{
-				text = LFG_LIST_SPAM,
-				func = function(_, id)
-					CloseDropDownMenus();
-					C_LFGList.ReportSearchResult(id, "lfglistspam");
-					LFMFrame:RefreshResults();
-				end,
-				arg1 = nil, --Search result ID goes here
-				notCheckable = true,
-			},
-			{
-				text = LFG_LIST_BAD_DESCRIPTION,
-				func = function(_, id)
-					C_LFGList.ReportSearchResult(id, "lfglistcomment");
-					LFMFrame:RefreshResults();
-				end,
-				arg1 = nil, --Search reuslt ID goes here
-				notCheckable = true,
-				disabled = nil,	--Disabled if the description is just an empty string
-			},
-			{
-				text = LFG_LIST_BAD_LEADER_NAME,
-				func = function(_, id)
-					C_LFGList.ReportSearchResult(id, "badplayername");
-					LFMFrame:RefreshResults();
-				end,
-				arg1 = nil, --Search reuslt ID goes here
-				notCheckable = true,
-				disabled = nil,	--Disabled if we don't have a name for the leader
-			},
-		},
-	},
-	{
-		text = CANCEL,
-		notCheckable = true,
-	},
+-------------------------------------------------------
+----------Constants
+-------------------------------------------------------
+
+--Hard-coded values. Should probably make these part of the DB, but it gets a little more complicated with the per-expansion textures
+local LFG_LIST_CATEGORY_TEXTURES = {
+	[2] = "ratedbgs", -- Dungeons
+	[117] = "dungeons", -- Heroic Dungeons
+	[114] = "raids-wrath", -- Raids
+	[116] = "questing", -- Quests & Zones
+	[118] = "battlegrounds", -- PvP
+	[120] = "custom-pve", -- Custom
 };
 
-function LFMFrameMixin:GetSearchEntryMenu(resultID)
-	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	LFM_FRAME_SEARCH_ENTRY_MENU[1].text = searchResultInfo.leaderName;
-	LFM_FRAME_SEARCH_ENTRY_MENU[2].arg1 = searchResultInfo.leaderName;
-	LFM_FRAME_SEARCH_ENTRY_MENU[2].disabled = not searchResultInfo.leaderName;
-	LFM_FRAME_SEARCH_ENTRY_MENU[3].arg1 = searchResultInfo.leaderName;
-	LFM_FRAME_SEARCH_ENTRY_MENU[3].disabled = not searchResultInfo.leaderName;
-	LFM_FRAME_SEARCH_ENTRY_MENU[4].menuList[1].arg1 = resultID;
-	LFM_FRAME_SEARCH_ENTRY_MENU[4].menuList[2].arg1 = resultID;
-	LFM_FRAME_SEARCH_ENTRY_MENU[4].menuList[2].disabled = (searchResultInfo.comment == "");
-	LFM_FRAME_SEARCH_ENTRY_MENU[4].menuList[3].arg1 = resultID;
-	LFM_FRAME_SEARCH_ENTRY_MENU[4].menuList[3].disabled = not searchResultInfo.leaderName;
-	return LFM_FRAME_SEARCH_ENTRY_MENU;
-end
+local LFG_VIEWSTATE_CATEGORIES = 1;
+local LFG_VIEWSTATE_ACTIVITIES = 2;
+local LFG_VIEWSTATE_LOCKED = 3;
 
------------------------------ LFG Functions -----------------------------
+local LFG_BUTTON_TYPE_CHECKALL = 1;
+local LFG_BUTTON_TYPE_ACTIVITY = 2;
+
+local IN_SET_CATEGORY_SELECTION = false; -- Baby hack. This bool will be true when we're in code triggered by LFGFrameMixin:SetCategorySelection. Useful for downstream effects.
+local PENDING_LISTING_UPDATE = false; -- Will be true after the player fires off an update to their listing from the UI. Used to determine what feedback we should give.
+
+-------------------------------------------------------
+----------LFGFrameMixin
+-------------------------------------------------------
 LFGFrameMixin = {};
 
 function LFGFrameMixin:OnLoad()
@@ -631,25 +34,44 @@ function LFGFrameMixin:OnLoad()
 	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS");
 	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TIMEOUT");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
-	self:SetDirty(false);
-	self:DefaultDropDownSetup();
-	self:PermissionUpdate();
+	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
+
+	self.activities = {};
+	self.categorySelection = nil;
+	self.dirty = false;
+	self.viewState = LFG_VIEWSTATE_ACTIVITIES;
+
+	self:ClearUI();
+	self:UpdateLFGFrameView();
 end
 
 function LFGFrameMixin:OnEvent(event, ...)
-	if ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
+	if ( event == "GROUP_ROSTER_UPDATE" or event == "PARTY_LEADER_CHANGED" ) then
+		self:UpdateLFGFrameView();
+	elseif ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
 		local createdNew = ...;
 		self:LoadActiveEntry();
-		if ( createdNew ) then
-			PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
-			-- Search LFM based on the active entry.
-			LFGParentFrame_LFMSearchActiveEntry();
+		if (C_LFGList.HasActiveEntryInfo()) then
+			if (createdNew or PENDING_LISTING_UPDATE) then
+				-- Play sound, only if the update was manual.
+				PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
+			end
+			if ( createdNew ) then
+				-- Search LFM based on the active entry.
+				LFGParentFrame_LFMSearchActiveEntry();
+			end
+		else
+			if (PENDING_LISTING_UPDATE) then
+				-- Play sound, only if the update was manual.
+				PlaySound(SOUNDKIT.LFG_DENIED);
+			end
+			self:SetDirty(self:IsAnyActivitySelected());
 		end
+		PENDING_LISTING_UPDATE = false;
 	elseif ( event == "LFG_LIST_AVAILABILITY_UPDATE" ) then
-		self:DefaultDropDownSetup();
-	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "PARTY_LEADER_CHANGED" ) then
-		self:PermissionUpdate();
-		self:UpdatePostButtonState();
+		-- If available activities change, attempt a "soft reset" back to category selection. Then reload the active entry, if there is one.
+		self:ClearCategorySelection();
+		self:LoadActiveEntry();
 	elseif ( event == "LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS" ) then
 		if ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
 			StaticPopup_Show("LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS");
@@ -658,74 +80,233 @@ function LFGFrameMixin:OnEvent(event, ...)
 		if ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
 			StaticPopup_Show("LFG_LIST_ENTRY_EXPIRED_TIMEOUT");
 		end
+	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
+		UIDropDownMenu_Initialize(self.GroupRoleButtons.RoleDropDown, LFGFrameRoleDropDown_Initialize);
+		LFGRoleIcon_UpdateRoleTexture(self.GroupRoleButtons.RoleIcon);
 	end
 end
 
 function LFGFrameMixin:OnShow()
-	LFGParentFrameBackground:SetTexture("Interface\\LFGFrame\\LFGFrame");
-	LFGParentFrameTab1:Show();
-	LFGParentFrameTab2:Show();
+	LFGParentFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-FRAME");
+	LFGParentFrameBackground:SetPoint("TOPLEFT", 0, 0);
 	LFGParentFrameTitle:SetText(LFG_TITLE);
+
+	-- Baby hack... the selected tab texture doesn't blend well with the LFG texture, so move it down a hair when it's selected.
+	LFGParentFrameTab1:SetPoint("BOTTOMLEFT", 16, 43);
+	LFGParentFrameTab2:SetPoint("LEFT", LFGParentFrameTab1, "RIGHT", -14, 2);
+
 	self:LoadActiveEntry();
+
+	if (not C_LFGList.HasActiveEntryInfo()) then
+		self:SetDirty(self:IsAnyActivitySelected());
+	end
+	self:UpdatePostButtonEnableState();
+	self:UpdateBackButtonEnableState();
+
+	UIDropDownMenu_Initialize(self.GroupRoleButtons.RoleDropDown, LFGFrameRoleDropDown_Initialize);
+	LFGRoleIcon_UpdateRoleTexture(self.GroupRoleButtons.RoleIcon);
+end
+
+function LFGFrameMixin:UpdateLFGFrameView()
+	-- Content view.
+	self.CategoryView:Hide();
+	self.ActivityView:Hide();
+	self.LockedView:Hide();
+	if (not self:CanEditListing()) then
+		self.viewState = LFG_VIEWSTATE_LOCKED;
+		self.LockedView:Show();
+	elseif (not self.categorySelection) then
+		self.viewState = LFG_VIEWSTATE_CATEGORIES;
+		self.CategoryView:Show();
+	else
+		self.viewState = LFG_VIEWSTATE_ACTIVITIES;
+		self.ActivityView:Show();
+	end
+
+	-- Role view.
+	if (IsInGroup(LE_PARTY_CATEGORY_HOME)) then
+		self.SoloRoleButtons:Hide();
+		self.GroupRoleButtons:Show();
+	else
+		self.SoloRoleButtons:Show();
+		self.GroupRoleButtons:Hide();
+	end
+
+	-- Buttons.
+	self:UpdatePostButtonEnableState();
+	self:UpdateBackButtonEnableState();
+end
+
+function LFGFrameMixin:ClearUI()
+	self:ClearCategorySelection();
+	C_LFGList.ClearCreationTextFields();
+	self.ActivityView.Comment.EditBox:ClearFocus();
+	self:SetDirty(false);
+end
+
+function LFGFrameMixin:SetDirty(state)
+	self.dirty = state;
+	self:UpdatePostButtonEnableState();
+end
+
+-------------------------------------------------------
+----------Active Entry
+-------------------------------------------------------
+function LFGFrameMixin:LoadActiveEntry()
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+
+	if (activeEntryInfo) then
+		-- Set LFG settings
+		local _, _, categoryID = C_LFGList.GetActivityInfo(activeEntryInfo.activityIDs[1]);
+		self:SetCategorySelection(categoryID); -- This will call UpdateActivities.
+		C_LFGList.CopyActiveEntryInfoToCreationFields();
+		self:SetDirty(false);
+	end
 end
 
 function LFGFrameMixin:CanEditListing()
 	return not IsInGroup(LE_PARTY_CATEGORY_HOME) or UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME);
 end
 
-function LFGFrameMixin:PermissionUpdate()
-	self.readOnly = not self:CanEditListing();
+function LFGFrameMixin:CreateOrUpdateListing()
+	if (not self.dirty) then
+		return;
+	end
 
-	if (self.readOnly) then
-		for i=1, #self.TypeDropDown do
-			LFGFrameTypeDropDown_UpdateDisableState(self.TypeDropDown[i]);
+	local selectedActivityIDs = {};
+	local hasSelectedActivity = false;
+	local i = 1;
+	for activityID, selected in pairs(self.activities) do
+		if (selected) then
+			hasSelectedActivity = true;
+			selectedActivityIDs[i] = activityID;
+			i = i+1;
 		end
-		for i=1, #self.ActivityDropDown do
-			LFGFrameActivityDropDown_UpdateDisableState(self.ActivityDropDown[i]);
+	end
+
+	if (C_LFGList.HasActiveEntryInfo()) then
+		if (hasSelectedActivity) then
+			-- Update.
+			PENDING_LISTING_UPDATE = true;
+			C_LFGList.UpdateListing(selectedActivityIDs);
+		else
+			-- Delete.
+			PENDING_LISTING_UPDATE = true;
+			C_LFGList.RemoveListing();
 		end
-		self.Comment:Disable();
-		self.Comment:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		self.Comment.Instructions:SetText("");
-		self.ClearAll:Disable();
 	else
-		for i=1, #self.TypeDropDown do
-			LFGFrameTypeDropDown_UpdateDisableState(self.TypeDropDown[i]);
+		if (hasSelectedActivity) then
+			-- Create.
+			PENDING_LISTING_UPDATE = true;
+			C_LFGList.CreateListing(selectedActivityIDs);
 		end
-		for i=1, #self.ActivityDropDown do
-			LFGFrameActivityDropDown_UpdateDisableState(self.ActivityDropDown[i]);
+	end
+end
+
+function LFGFrameMixin:RemoveListing()
+	PENDING_LISTING_UPDATE = true;
+	C_LFGList.RemoveListing();
+end
+
+-------------------------------------------------------
+----------Category Selection
+-------------------------------------------------------
+function LFGFrameMixin:GetCategorySelection()
+	return self.categorySelection;
+end
+
+function LFGFrameMixin:SetCategorySelection(categoryID)
+	IN_SET_CATEGORY_SELECTION = true;
+	self.categorySelection = categoryID;
+	self:UpdateActivities();
+	self:UpdateLFGFrameView();
+	IN_SET_CATEGORY_SELECTION = false;
+end
+
+function LFGFrameMixin:ClearCategorySelection()
+	self.categorySelection = nil;
+	self:UpdateActivities();
+	self:UpdateLFGFrameView();
+end
+
+-------------------------------------------------------
+----------Activity Selection
+-------------------------------------------------------
+function LFGFrameMixin:UpdateActivities()
+	self:ClearActivities();
+	if (self.categorySelection) then
+		local _, _, autoChooseActivity = C_LFGList.GetCategoryInfo(self.categorySelection);
+		local activities = C_LFGList.GetAvailableActivities(self.categorySelection);
+		for i=1, #activities do
+			self:SetActivity(activities[i], false, true); -- Initialize to false, then overwrite later.
 		end
-		self.Comment:Enable();
-		self.Comment:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		self.Comment.Instructions:SetText(CLICK_TO_ENTER_COMMENT);
-		self.ClearAll:Enable();
+
+		if (C_LFGList.HasActiveEntryInfo()) then
+			local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+			for i=1, #activeEntryInfo.activityIDs do
+				self:SetActivity(activeEntryInfo.activityIDs[i], true);
+			end
+		elseif (autoChooseActivity) then
+			self:SetAllActivities(true);
+		end
 	end
 end
 
-function LFGFrameMixin:SetDirty(state)
-	self.dirty = state;
-	self:UpdatePostButtonState();
+function LFGFrameMixin:ClearActivities()
+	self.activities = {};
 end
 
-function LFGFrameMixin:CheckActivitiesDirty()
-	local activeActivityID1, activeActivityID2, activeActivityID3 = 0, 0, 0;
+function LFGFrameMixin:IsActivitySelected(activityID)
+	return self.activities[activityID];
+end
 
-	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-	if (activeEntryInfo) then
-		activeActivityID1 = activeEntryInfo.activityIDs[1];
-		activeActivityID2 = activeEntryInfo.activityIDs[2];
-		activeActivityID3 = activeEntryInfo.activityIDs[3];
+function LFGFrameMixin:IsAnyActivitySelected()
+	for activityID, selected in pairs(self.activities) do
+		if selected then
+			return true;
+		end
+	end
+	return false;
+end
+
+function LFGFrameMixin:AreAllActivitiesSelected()
+	for activityID, selected in pairs(self.activities) do
+		if not selected then
+			return false;
+		end
+	end
+	return true;
+end
+
+function LFGFrameMixin:SetActivity(activityID, selected, allowCreate, userInput)
+	if (not allowCreate and self.activities[activityID] == nil) then
+		return;
 	end
 
-	if (
-		activeActivityID1 ~= (UIDropDownMenu_GetSelectedValue(_G["LFGFrameActivityDropDown1"]) or 0) or
-		activeActivityID2 ~= (UIDropDownMenu_GetSelectedValue(_G["LFGFrameActivityDropDown2"]) or 0) or
-		activeActivityID3 ~= (UIDropDownMenu_GetSelectedValue(_G["LFGFrameActivityDropDown3"]) or 0)
-	) then
-		self:SetDirty(true);
+	self.activities[activityID] = selected;
+	if (userInput) then
+		if (C_LFGList.HasActiveEntryInfo()) then
+			self:SetDirty(true);
+		else
+			self:SetDirty(self:IsAnyActivitySelected());
+		end
 	end
 end
 
-function LFGFrameMixin:UpdatePostButtonState()
+function LFGFrameMixin:SetAllActivities(selected, userInput)
+	for activityID, _ in pairs(self.activities) do
+		self:SetActivity(activityID, selected, false, userInput);
+	end
+end
+
+function LFGFrameMixin:ToggleActivity(activityID, allowCreate, userInput)
+	self:SetActivity(activityID, not self:IsActivitySelected(activityID), allowCreate, userInput);
+end
+
+-------------------------------------------------------
+----------Button Control
+-------------------------------------------------------
+function LFGFrameMixin:UpdatePostButtonEnableState()
 	-- Check dirty state.
 	if (not self.dirty) then
 		self.PostButton.errorText = nil;
@@ -736,10 +317,9 @@ function LFGFrameMixin:UpdatePostButtonState()
 	-- Check party size state.
 	if (IsInGroup(LE_PARTY_CATEGORY_HOME)) then
 		local groupCount = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME);
-		for i=1, #self.ActivityDropDown do
-			local activityID = UIDropDownMenu_GetSelectedValue(self.ActivityDropDown[i]) or 0;
-			if (activityID ~= 0) then
-				local maxPlayers = select(8, C_LFGList.GetActivityInfo(activityID));
+		for activityID, selected in pairs(self.activities) do
+			if (selected) then
+				local maxPlayers = select(9, C_LFGList.GetActivityInfo(activityID));
 				if (maxPlayers > 0 and groupCount >= maxPlayers) then
 					self.PostButton.errorText = string.format(LFG_LIST_TOO_MANY_FOR_ACTIVITY, maxPlayers);
 					self.PostButton:SetEnabled(false);
@@ -749,271 +329,91 @@ function LFGFrameMixin:UpdatePostButtonState()
 		end
 	end
 
-	-- If we passed our checks, enable the button.
 	self.PostButton.errorText = nil;
 	self.PostButton:SetEnabled(true);
 end
 
-function LFGFrameMixin:CreateOrUpdateListing()
-	if (not self.dirty) then
-		return;
-	end
-
-	local activityIDs = {};
-	local hasNonZeroActivityID = false;
-	for i=1, #self.ActivityDropDown do
-		local activityID = UIDropDownMenu_GetSelectedValue(self.ActivityDropDown[i]) or 0;
-		activityIDs[i] = activityID;
-		if (activityID ~= 0) then
-			hasNonZeroActivityID = true;
-		end
-	end
-
-	local hasActiveEntry = C_LFGList.HasActiveEntryInfo();
-	if (hasActiveEntry) then
-		if (hasNonZeroActivityID) then
-			-- Update.
-			C_LFGList.UpdateListing(activityIDs);
-		else
-			-- Delete.
-			C_LFGList.RemoveListing();
-		end
-	else
-		if (hasNonZeroActivityID) then
-			-- Create.
-			C_LFGList.CreateListing(activityIDs);
-		end
-	end
+function LFGFrameMixin:UpdateBackButtonEnableState()
+	self.BackButton:SetEnabled(self.viewState == LFG_VIEWSTATE_ACTIVITIES);
 end
 
-function LFGFrameMixin:DefaultDropDownSetup()
-	for i=1, #self.TypeDropDown do
-		local typeDropDown = self.TypeDropDown[i];
-		local activityDropDown = self.ActivityDropDown[i];
-		typeDropDown.activityDropdown = activityDropDown;
-		activityDropDown.typeDropdown = typeDropDown;
-
-		UIDropDownMenu_ClearAll(typeDropDown);
-		LFGFrameTypeDropDown_UpdateDisableState(typeDropDown);
-		UIDropDownMenu_ClearAll(activityDropDown);
-		LFGFrameActivityDropDown_UpdateDisableState(activityDropDown);
-		self:UpdateActivityIcon(i);
-	end
-end
-
-function LFGFrameMixin:LoadActiveEntry()
-	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-
-	if (activeEntryInfo) then
-		-- Set LFG settings
-		for i=1, #activeEntryInfo.activityIDs do
-			local typeDropDown = self.TypeDropDown[i];
-			local activityDropDown = self.ActivityDropDown[i];
-			local activityID = activeEntryInfo.activityIDs[i];
-
-			if (activityID ~= 0) then
-				local _, _, typeID = C_LFGList.GetActivityInfo(activityID);
-				UIDropDownMenu_Initialize(typeDropDown, LFGFrameTypeDropDown_Initialize);
-				LFGFrameTypeDropDown_SetValue(typeDropDown, typeID);
-
-				UIDropDownMenu_Initialize(activityDropDown, LFGFrameActivityDropDown_Initialize);
-				LFGFrameActivityDropDown_SetValue(activityDropDown, activityID);
-			else
-				UIDropDownMenu_ClearAll(typeDropDown);
-				UIDropDownMenu_ClearAll(activityDropDown);
-			end
-
-			LFGFrameActivityDropDown_UpdateDisableState(activityDropDown);
-			self:UpdateActivityIcon(i);
-		end
-		C_LFGList.CopyActiveEntryInfoToCreationFields();
-		LFGEye:Show();
-	else
-		LFGFrame:ClearFields();
-		C_LFGList.ClearCreationTextFields();
-		LFGEye:Hide();
-	end
-
-	self:SetDirty(false);
-end
-
-function LFGFrameMixin:UpdateActivityIcon(i)
-	local activityIcon = self.ActivityIcon[i];
-	local categoryID = UIDropDownMenu_GetSelectedValue(self.TypeDropDown[i]);
-	local activityID = UIDropDownMenu_GetSelectedValue(self.ActivityDropDown[i]);
-
-	if (not activityID or activityID <= 0) then
-		activityIcon:SetTexture("");
-		return;
-	end
-
-	local activityFileDataID = activityID and select(14, C_LFGList.GetActivityInfo(activityID)) or nil;
-	local categoryFileDataID = categoryID and select(5, C_LFGList.GetCategoryInfo(categoryID)) or nil;
-	if (activityFileDataID and activityFileDataID > 0) then
-		activityIcon:SetTexture(activityFileDataID);
-	elseif (categoryFileDataID and categoryFileDataID > 0) then
-		activityIcon:SetTexture(categoryFileDataID);
-	else
-		activityIcon:SetTexture("");
-	end
-end
-
-function LFGFrameMixin:FindSlotWithActivity(desiredActivity)
-	for i=1, #self.ActivityDropDown do
-		local selectedActivity = UIDropDownMenu_GetSelectedValue(self.ActivityDropDown[i]) or 0;
-		if (selectedActivity == desiredActivity) then
-			return i;
-		end
-	end
-	return 0;
-end
-
-function LFGFrameMixin:ClearFields()
-	self:DefaultDropDownSetup();
-	C_LFGList.ClearCreationTextFields();
-	self.Comment:ClearFocus();
-end
-
--- ////////////////////////////////////////////////// Type Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-function LFGFrameTypeDropDown_Initialize(self)
+-------------------------------------------------------
+----------Role UI
+-------------------------------------------------------
+function LFGFrameRoleDropDown_Initialize(self)
 	local info = UIDropDownMenu_CreateInfo();
-	local categories = C_LFGList.GetAvailableCategories();
+	local currentRole = UnitGroupRolesAssigned("player");
 
-	-- None button
-	if (#categories == 0) then
-		-- None button
-		info.text = LFG_TYPE_NONE;
-		info.value = 0;
-		info.func = LFMTypeButton_OnClick;
+	info.func = LFGRoleButton_OnClick;
+	info.classicChecks = true;
+
+	local buttons = {
+		{ text = TANK, value = "TANK", },
+		{ text = HEALER, value = "HEALER", },
+		{ text = DAMAGER, value = "DAMAGER", },
+		{ text = NO_ROLE, value = "NONE", },
+	};
+
+	for i, button in ipairs(buttons) do
+		info.text = button.text;
+		info.value = button.value;
+		info.checked = currentRole == info.value;
 		info.owner = self;
-		info.checked = UIDropDownMenu_GetSelectedValue(self) == info.value;
-		info.classicChecks = true;
 		UIDropDownMenu_AddButton(info);
-	else
-		for i=1, #categories do
-			local name = C_LFGList.GetCategoryInfo(categories[i]);
-
-			info.text = name;
-			info.value = categories[i];
-			info.func = LFGTypeButton_OnClick;
-			info.owner = self;
-			info.checked = UIDropDownMenu_GetSelectedValue(self) == info.value;
-			info.classicChecks = true;
-			UIDropDownMenu_AddButton(info);
+		if (info.checked) then
+			UIDropDownMenu_SetSelectedValue(self, info.value);
 		end
 	end
 end
 
-function LFGFrameTypeDropDown_UpdateDisableState(self)
-	if (LFGFrame.readOnly) then
-		UIDropDownMenu_DisableDropDown(self);
-		self:Disable();
-		self.Instructions:Hide();
+function LFGRoleButton_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
+	UnitSetRole("player", self.value);
+end
+
+function LFGRoleIcon_UpdateRoleTexture(self)
+	local currentRole = UnitGroupRolesAssigned("player");
+	if (currentRole == "NONE") then
+		self:Hide();
 	else
-		UIDropDownMenu_EnableDropDown(self);
-		self:Enable();
-		if (not UIDropDownMenu_GetSelectedValue(self)) then
-			self.Instructions:Show();
-		else
-			self.Instructions:Hide();
-		end
+		self:Show();
+		self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole(currentRole));
+		self.Background:SetTexCoord(GetBackgroundTexCoordsForRole(currentRole));
+		self.roleID = currentRole;
 	end
 end
 
-function LFGFrameTypeDropDown_SetValue(self, value)
-	UIDropDownMenu_SetSelectedValue(self, value);
-	self.Instructions:Hide();
+-------------------------------------------------------
+----------Role Check Button
+-------------------------------------------------------
+function LFGFrameRolePollButton_OnLoad(self)
+	self:RegisterEvent("PARTY_LEADER_CHANGED");
+	LFGFrameRolePollButton_UpdateEnableState(self);
 end
 
-function LFGTypeButton_OnClick(self)
-	LFGFrameTypeDropDown_SetValue(self.owner, self.value);
-	UIDropDownMenu_ClearAll(self.owner.activityDropdown);
-	UIDropDownMenu_Initialize(self.owner.activityDropdown, LFGFrameActivityDropDown_Initialize);
-
-	LFGFrame:UpdateActivityIcon(self.owner:GetID());
-	LFGFrame:CheckActivitiesDirty();
-end
--- ////////////////////////////////////////////////// Type Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
--- ////////////////////////////////////////////////// Activity Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-function LFGFrameActivityDropDown_Initialize(self)
-	local selectedType = 0;
-	if (self.typeDropdown) then
-		selectedType = UIDropDownMenu_GetSelectedValue(self.typeDropdown) or 0;
-	end
-	if ( selectedType > 0 ) then
-		local info = UIDropDownMenu_CreateInfo();
-		local activities = C_LFGList.GetAvailableActivities(selectedType);
-		for i=1, #activities do
-			-- Filter out activities that are already selected by a different dropdown.
-			local activityAlreadySelected = false;
-			local existingActivitySlot = LFGFrame:FindSlotWithActivity(activities[i]);
-			if (existingActivitySlot > 0 and existingActivitySlot ~= self:GetID()) then
-				activityAlreadySelected = true;
-			end
-
-			if (not activityAlreadySelected) then
-				local name = C_LFGList.GetActivityInfo(activities[i]);
-
-				info.text = name;
-				info.value = activities[i];
-				info.func = LFGActivityButton_OnClick;
-				info.owner = self;
-				info.checked = UIDropDownMenu_GetSelectedValue(self) == info.value;
-				info.classicChecks = true;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
-	else
-		UIDropDownMenu_ClearAll(self);
-	end
-
-	LFGFrameActivityDropDown_UpdateDisableState(self);
-end
-
-function LFGFrameActivityDropDown_UpdateDisableState(self)
-	local typeDropDownHasValue = self.typeDropdown and ((UIDropDownMenu_GetSelectedValue(self.typeDropdown) or 0) > 0);
-	if (LFGFrame.readOnly or not typeDropDownHasValue) then
-		UIDropDownMenu_DisableDropDown(self);
-		self.Instructions:Hide();
-	else
-		UIDropDownMenu_EnableDropDown(self);
-		if (not UIDropDownMenu_GetSelectedValue(self)) then
-			self.Instructions:Show();
-		else
-			self.Instructions:Hide();
-		end
+function LFGFrameRolePollButton_OnEvent(self, event)
+	if (event == "PARTY_LEADER_CHANGED") then
+		LFGFrameRolePollButton_UpdateEnableState(self);
 	end
 end
 
-function LFGFrameActivityDropDown_SetValue(self, value)
-	UIDropDownMenu_SetSelectedValue(self, value);
-	self.Instructions:Hide();
-end
-
-function LFGActivityButton_OnClick(self)
-	LFGFrameActivityDropDown_SetValue(self.owner, self.value);
-	LFGFrame:UpdateActivityIcon(self.owner:GetID());
-	LFGFrame:CheckActivitiesDirty();
-end
--- ////////////////////////////////////////////////// Activity Dropdown \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-function LFGComment_OnTextChanged(self, userInput)
-	if (userInput and C_LFGList.HasActiveEntryInfo()) then
-		LFGFrame:SetDirty(true);
-	end
-end
-
-function LFGFrameClearAllButton_OnClick(self, button)
+function LFGFrameRolePollButton_OnClick(self, button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	if (C_LFGList.HasActiveEntryInfo()) then
-		C_LFGList.RemoveListing();
+	InitiateRolePoll();
+end
+
+function LFGFrameRolePollButton_UpdateEnableState(self)
+	self:RegisterEvent("PARTY_LEADER_CHANGED");
+	if (IsInGroup() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player"))) then
+		self:Enable();
 	else
-		LFGFrame:ClearFields();
-		LFGFrame:SetDirty(false);
+		self:Disable();
 	end
 end
 
+-------------------------------------------------------
+----------Post Button
+-------------------------------------------------------
 function LFGFramePostButton_OnLoad(self)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
@@ -1026,6 +426,11 @@ function LFGFramePostButton_OnEvent(self, event)
 	end
 end
 
+function LFGFramePostButton_OnClick(self, button)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	LFGFrame:CreateOrUpdateListing();
+end
+
 function LFGFramePostButton_UpdateText(self)
 	if (C_LFGList.HasActiveEntryInfo()) then
 		self:SetText(LFG_POST_GROUP_UPDATE);
@@ -1036,21 +441,283 @@ function LFGFramePostButton_UpdateText(self)
 	end
 end
 
-function LFGFramePostButton_OnClick(self, button)
+-------------------------------------------------------
+----------Back Button
+-------------------------------------------------------
+function LFGFrameBackButton_OnLoad(self)
+	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+	LFGFrameBackButton_UpdateText(self);
+end
+
+function LFGFrameBackButton_OnEvent(self, event)
+	if ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
+		LFGFrameBackButton_UpdateText(self);
+	end
+end
+
+function LFGFrameBackButton_OnClick(self, button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	LFGFrame:CreateOrUpdateListing();
+	if (C_LFGList.HasActiveEntryInfo()) then
+		LFGFrame:RemoveListing();
+	else
+		LFGFrame:ClearUI();
+	end
 end
 
--- QoL hackery: since the LFG Frame has a lot of wide dropdowns, we'll make the dropdowns behave like buttons.
-function LFGLFMDropDown_OnEnter(self)
-	self.Button:LockHighlight();
+function LFGFrameBackButton_UpdateText(self)
+	if (C_LFGList.HasActiveEntryInfo()) then
+		self:SetText(LFG_LIST_UNLIST);
+	else
+		self:SetText(BACK);
+	end
 end
 
-function LFGLFMDropDown_OnLeave(self)
-	self.Button:UnlockHighlight();
+-------------------------------------------------------
+----------Category Selection
+-------------------------------------------------------
+function LFGCategorySelection_OnShow(self)
+	LFGCategorySelection_UpdateCategoryButtons(self);
 end
 
-function LFGLFMDropDown_OnClick(self)
-	ToggleDropDownMenu(nil, nil, self);
+function LFGCategorySelection_UpdateCategoryButtons(self)
+	local categories = C_LFGList.GetAvailableCategories();
+	local nextBtn = 1;
+
+	--Update category buttons
+	for i=1, #categories do
+		local categoryID = categories[i];
+		local categoryInfo = C_LFGList.GetCategoryInfo(categoryID);
+
+		nextBtn = LFGCategorySelection_AddButton(self, nextBtn, categoryID);
+	end
+
+	--Hide any extra buttons
+	for i=nextBtn, #self.CategoryButtons do
+		self.CategoryButtons[i]:Hide();
+	end
+end
+
+function LFGCategorySelection_AddButton(self, btnIndex, categoryID)
+	if ( #C_LFGList.GetAvailableActivities(categoryID, nil) == 0) then
+		return btnIndex;
+	end
+
+	local categoryName = C_LFGList.GetCategoryInfo(categoryID);
+
+	local button = self.CategoryButtons[btnIndex];
+	if ( not button ) then
+		self.CategoryButtons[btnIndex] = CreateFrame("BUTTON", nil, self, "LFGCategoryTemplate");
+		self.CategoryButtons[btnIndex]:SetPoint("TOP", self.CategoryButtons[btnIndex - 1], "BOTTOM", 0, -4);
+		button = self.CategoryButtons[btnIndex];
+	end
+
+	button:SetText(categoryName);
+	button.categoryID = categoryID;
+
+	local atlasName = "groupfinder-button-"..(LFG_LIST_CATEGORY_TEXTURES[categoryID] or "questing");
+	button.Icon:SetAtlas(atlasName);
+
+	button:Show();
+
+	return btnIndex + 1;
+end
+
+function LFGCategorySelectionButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	LFGFrame:SetCategorySelection(self.categoryID);
+end
+
+-------------------------------------------------------
+----------Activity Selection
+-------------------------------------------------------
+function LFGActivityView_OnLoad(self)
+	local view = CreateScrollBoxListLinearView();
+
+	view:SetElementFactory(function(factory, elementData)
+		-- Check All button
+		if (elementData.buttonType == LFG_BUTTON_TYPE_CHECKALL) then
+
+			local frame = factory("Frame", "LFGActivityCheckAllTemplate");
+
+			frame.CheckButton:SetScript("OnClick", function(button, buttonName, down)
+				LFGFrame:SetAllActivities(not LFGFrame:AreAllActivitiesSelected(), true);
+
+				view:ForEachFrame(function(frame, elementData)
+					if (elementData.buttonType == LFG_BUTTON_TYPE_ACTIVITY) then
+						LFGActivityView_InitActivityButton(frame, elementData);
+					end
+				end);
+			end)
+
+			LFGActivityView_InitCheckAllButton(frame, elementData);
+
+		-- Individual Activity button
+		elseif (elementData.buttonType == LFG_BUTTON_TYPE_ACTIVITY) then
+			local frame = factory("Frame", "LFGActivityTemplate");
+
+			frame.CheckButton:SetScript("OnClick", function(button, buttonName, down)
+				local activityID = button:GetParent():GetElementData().activityID;
+				LFGFrame:ToggleActivity(activityID, false, true);
+
+				local checkAllButton = view:FindFrameByPredicate(function(frame) return frame:GetElementData().buttonType == LFG_BUTTON_TYPE_CHECKALL; end);
+				if (checkAllButton) then
+					LFGActivityView_InitCheckAllButton(checkAllButton, checkAllButton:GetElementData());
+				end
+			end)
+
+			LFGActivityView_InitActivityButton(frame, elementData);
+		end
+	end);
+
+	view:SetPadding(4,4,4,4,2);
+	view:SetElementExtent(18);
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	local scrollBoxAnchorsWithBar = {
+		CreateAnchor("TOPLEFT", 0, 0),
+		CreateAnchor("BOTTOMRIGHT", -28, 88);
+	};
+	local scrollBoxAnchorsWithoutBar = {
+		scrollBoxAnchorsWithBar[1],
+		CreateAnchor("BOTTOMRIGHT", 0, 88);
+	};
+	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
+end
+
+function LFGActivityView_OnShow(self)
+	local categoryID = LFGFrame:GetCategorySelection();
+	local _, _, autoChooseActivity = C_LFGList.GetCategoryInfo(categoryID);
+	self.Comment.EditBox:ClearFocus();
+	if (autoChooseActivity) then
+		self.BarLeft:Hide();
+		self.BarMiddle:Hide();
+		self.BarRight:Hide();
+		self.ScrollBox:Hide();
+		self.Comment:ClearAllPoints();
+		self.Comment:SetPoint("CENTER", 0, 20);
+		self.Comment:SetHeight(110);
+		self.Comment.EditBox.Instructions:SetText(DESCRIPTION_OF_YOUR_GROUP_MANDATORY);
+		if (IN_SET_CATEGORY_SELECTION) then
+			self.Comment.EditBox:SetFocus();
+		end
+	else
+		self.BarLeft:Show();
+		self.BarMiddle:Show();
+		self.BarRight:Show();
+		self.ScrollBox:Show();
+		self.Comment:ClearAllPoints();
+		self.Comment:SetPoint("BOTTOM", 0, 19);
+		self.Comment:SetHeight(47);
+		self.Comment.EditBox.Instructions:SetText(DESCRIPTION_OF_YOUR_GROUP);
+	end
+
+	LFGActivityView_UpdateActivities(self, categoryID);
+end
+
+function LFGActivityView_UpdateActivities(self, categoryID)
+	local activities = C_LFGList.GetAvailableActivities(categoryID);
+	local dataProvider = CreateDataProvider();
+
+	dataProvider:Insert({buttonType = LFG_BUTTON_TYPE_CHECKALL});
+
+	for i=1, #activities do
+		local longName, shortName, _, _, _, _, minLevel, maxLevel = C_LFGList.GetActivityInfo(activities[i]);
+		local name = shortName ~= "" and shortName or longName;
+
+		dataProvider:Insert({buttonType = LFG_BUTTON_TYPE_ACTIVITY, activityID = activities[i], name = name, minLevel = minLevel, maxLevel = maxLevel});
+	end
+
+	local function SortComparator(lhs, rhs)
+		if (lhs.buttonType ~= rhs.buttonType) then return lhs.buttonType < rhs.buttonType;
+		elseif (lhs.maxLevel ~= rhs.maxLevel) then return lhs.maxLevel > rhs.maxLevel;
+		elseif (lhs.minLevel ~= rhs.minLevel) then return lhs.minLevel > rhs.minLevel;
+		else return strcmputf8i(lhs.name, rhs.name) < 0;
+		end
+	end
+	dataProvider:SetSortComparator(SortComparator);
+
+	self.ScrollBox:SetDataProvider(dataProvider);
+end
+
+function LFGActivityView_InitCheckAllButton(button, elementData)
+	button.CheckButton:SetChecked(LFGFrame:AreAllActivitiesSelected());
+end
+
+function LFGActivityView_InitActivityButton(button, elementData)
+	button.Name:SetText(elementData.name);
+	if ( elementData.minLevel == elementData.maxLevel ) then
+		if (elementData.minLevel == 0) then
+			button.Level:SetText("");
+		else
+			button.Level:SetText(format(LFD_LEVEL_FORMAT_SINGLE, elementData.minLevel));
+		end
+	else
+		button.Level:SetText(format(LFD_LEVEL_FORMAT_RANGE, elementData.minLevel, elementData.maxLevel));
+	end
+	button.CheckButton:SetChecked(LFGFrame:IsActivitySelected(elementData.activityID));
+end
+
+-------------------------------------------------------
+----------Comment
+-------------------------------------------------------
+function LFGComment_OnTextChanged(self, userInput)
+	if (userInput and (C_LFGList.HasActiveEntryInfo() or LFGFrame:IsAnyActivitySelected())) then
+		LFGFrame:SetDirty(true);
+	end
+end
+
+-------------------------------------------------------
+----------Locked View
+-------------------------------------------------------
+function LFGLockedView_OnLoad(self)
+	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+	self.fontStringPool = CreateFontStringPool(self, "ARTWORK", 0, "LFGActivityNameTemplate")
+	self.maxActivityLines = 11; -- Max number of names to show. If we have more than this, we'll show n-1 and the last line will be the overflow line.
+	LFGLockedView_RefreshContent(self);
+end
+
+function LFGLockedView_OnEvent(self, event)
+	if (event == "LFG_LIST_ACTIVE_ENTRY_UPDATE") then
+		LFGLockedView_RefreshContent(self);
+	end
+end
+
+function LFGLockedView_RefreshContent(self)
+	self.fontStringPool:ReleaseAll();
+
+	if (not C_LFGList.HasActiveEntryInfo()) then
+		self.ErrorText:SetText(LFG_LIST_ONLY_LEADER_CREATE);
+		self.ErrorText:ClearAllPoints();
+		self.ErrorText:SetPoint("CENTER", 0, 25);
+		self.ActivityText:Hide();
+	else
+		self.ErrorText:SetText(LFG_LIST_ONLY_LEADER_UPDATE);
+		self.ErrorText:ClearAllPoints();
+		self.ErrorText:SetPoint("TOPLEFT", 16, -20);
+		self.ActivityText:Show();
+		local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+		local needOverflowText = #activeEntryInfo.activityIDs > self.maxActivityLines;
+		local lastFontString = nil;
+		for i = 1, math.min(self.maxActivityLines, #activeEntryInfo.activityIDs) do
+			local fontString = self.fontStringPool:Acquire();
+			local verticalSpacing = -3;
+
+			if (i == self.maxActivityLines and needOverflowText) then
+				fontString:SetText(string.format(LFG_LIST_AND_MORE, #activeEntryInfo.activityIDs - (self.maxActivityLines - 1)));
+				verticalSpacing = -6;
+			else
+				local activityID = activeEntryInfo.activityIDs[i];
+				local longName, shortName = C_LFGList.GetActivityInfo(activityID);
+				fontString:SetText(shortName ~= "" and shortName or longName);
+			end
+
+			fontString:Show();
+			if (lastFontString) then
+				fontString:SetPoint("TOPLEFT", lastFontString, "BOTTOMLEFT", 0, verticalSpacing);
+			else
+				fontString:SetPoint("TOPLEFT", self.ActivityText, "BOTTOMLEFT", 12, -6)
+			end
+			lastFontString = fontString;
+		end
+	end
 end
