@@ -28,7 +28,7 @@ function UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData)
 	self.mostRecentDropdownMenu = nil;
 
 	if ( unit ) then
-		name, server = UnitNameUnmodified(unit) or UnitName(unit);
+		name, server = UnitNameUnmodified(unit);
 	elseif ( name ) then
 		local n, s = strmatch(name, "^([^-]+)-(.*)");
 		if ( n ) then

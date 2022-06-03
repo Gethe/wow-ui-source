@@ -2538,8 +2538,12 @@ function TravelPassDropDown_Initialize(self)
 		restriction = INVITE_RESTRICTION_NONE;
 		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(self.index, i);
 		if gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
-			if gameAccountInfo.factionName ~= playerFactionGroup then
-				restriction = INVITE_RESTRICTION_FACTION;
+			if (not C_PartyInfo.CanFormCrossFactionParties() or C_QuestSession.Exists()) and gameAccountInfo.factionName ~= playerFactionGroup then
+				if C_QuestSession.Exists() then
+					restriction = INVITE_RESTRICTION_QUEST_SESSION;
+				elseif not C_PartyInfo.CanFormCrossFactionParties() then
+					restriction = INVITE_RESTRICTION_FACTION;
+				end
 			elseif gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID then
 				restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
 			elseif gameAccountInfo.realmID == 0 then

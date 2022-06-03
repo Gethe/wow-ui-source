@@ -511,6 +511,10 @@ function UnitPopupBnetSuggestInviteButtonMixin:GetText()
 	return SUGGEST_INVITE; 
 end
 
+function UnitPopupBnetSuggestInviteButtonMixin:CanShow()
+	return UnitPopupBnetInviteButtonMixin.CanShow(self);
+end
+
 UnitPopupBnetRequestInviteButtonMixin = CreateFromMixins(UnitPopupBnetInviteButtonMixin);
 function UnitPopupBnetRequestInviteButtonMixin:GetButtonName()
 	return "BN_REQUEST_INVITE";
@@ -519,6 +523,10 @@ end
 function UnitPopupBnetRequestInviteButtonMixin:GetText()
 	return REQUEST_INVITE; 
 end 
+
+function UnitPopupBnetRequestInviteButtonMixin:CanShow()
+	return UnitPopupBnetInviteButtonMixin.CanShow(self);
+end
 
 UnitPopupBnetTargetButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupBnetTargetButtonMixin:GetText()

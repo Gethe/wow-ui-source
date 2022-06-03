@@ -179,15 +179,6 @@ function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)
 	tooltip:SetText(text, r, g, b, 1, wrap);
 end
 
-function GameTooltip_ShowDisabledTooltip(tooltip, owner, text, tooltipAnchor)
-	tooltip:SetOwner(owner, tooltipAnchor);
-
-	local wrap = true;
-	GameTooltip_SetTitle(tooltip, text, RED_FONT_COLOR, wrap);
-
-	tooltip:Show();
-end
-
 function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 	style = style or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT;
 

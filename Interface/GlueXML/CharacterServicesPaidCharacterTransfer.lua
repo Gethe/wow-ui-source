@@ -385,7 +385,7 @@ function PCTEndStep:OnAssignVASResponse(token, storeError, vasPurchaseResult)
 	EventRegistry:UnregisterCallback("ASSIGN_VAS_RESPONSE", self);
 
 	local errorMsg;
-	self.purchaseComplete, errorMsg = IsAssignmentValid(storeError, vasPurchaseResult, self.results.selectedCharacterGUID);
+	self.purchaseComplete, errorMsg = IsVASAssignmentValid(storeError, vasPurchaseResult, self.results.selectedCharacterGUID);
 
 	if not self.purchaseComplete then
 		CharSelectServicesFlowFrame:SetErrorMessage(errorMsg);

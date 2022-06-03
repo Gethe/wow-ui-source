@@ -1204,7 +1204,7 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		self.MythicPlusRating.EditBox:SetText(activeEntryInfo.requiredDungeonScore or "" );
 		self.PVPRating.EditBox:SetText(activeEntryInfo.requiredPvpRating or "" )
 		self.PrivateGroup.CheckButton:SetChecked(activeEntryInfo.privateGroup);
-		self.CrossFactionGroup.CheckButton:SetChecked(activeEntryInfo.isCrossFactionListing);
+		self.CrossFactionGroup.CheckButton:SetChecked(not activeEntryInfo.isCrossFactionListing);
 		if(self.PlayStyleDropdown:IsShown()) then
 			LFGListEntryCreation_OnPlayStyleSelected(self, self.PlayStyleDropdown, activeEntryInfo.playstyle);
 		end 
