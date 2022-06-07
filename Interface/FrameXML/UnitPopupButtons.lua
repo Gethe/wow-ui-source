@@ -463,10 +463,8 @@ function UnitPopupBnetTargetButtonMixin:IsEnabled()
 	return true; 
 end 
 
-function UnitPopupVoteToKickButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	local _, instanceType = IsInInstance();
-	if ( not IsInGroup() or not UnitPopupSharedUtil.IsPlayer() or (instanceType == "pvp") or (instanceType == "arena") or (not HasLFGRestrictions()) or IsInActiveWorldPVP() ) then
+function UnitPopupVoteToKickButtonMixin:IsEnabled()
+	if (not IsInGroup() or not HasLFGRestrictions()) then
 		return false;
 	end
 	return true; 

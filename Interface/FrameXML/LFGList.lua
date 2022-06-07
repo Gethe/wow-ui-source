@@ -1043,7 +1043,13 @@ function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, aut
 	local honorLevel = 0;
 	if ( LFGListEntryCreation_IsEditMode(self) ) then
 		local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-		C_LFGList.UpdateListing(activityID, itemLevel, honorLevel, activeEntryInfo.autoAccept, privateGroup, activeEntryInfo.questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction);
+		if activeEntryInfo.isCrossFactionListing == isCrossFaction then
+			C_LFGList.UpdateListing(activityID, itemLevel, honorLevel, activeEntryInfo.autoAccept, privateGroup, activeEntryInfo.questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction);
+		else
+			-- Changing cross faction setting requires re-listing the group due to how listings are bucketed server side.
+			C_LFGList.RemoveListing();
+			C_LFGList.CreateListing(activityID, itemLevel, honorLevel, activeEntryInfo.autoAccept, privateGroup, activeEntryInfo.questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction);
+		end
 		LFGListFrame_SetActivePanel(self:GetParent(), self:GetParent().ApplicationViewer);
 	else
 		if(C_LFGList.CreateListing(activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction)) then
@@ -3507,19 +3513,21 @@ LFG_LIST_UTIL_ALLOW_AUTO_ACCEPT_LINE = 2;
 function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
-	
+	local categoryInfo = C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID);
+	local categoryAllowsCrossFaction = categoryInfo and categoryInfo.allowCrossFaction; 
+
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
 	tooltip:AddLine(activityName);
 
 	if (searchResultInfo.playstyle > 0) then 
 		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, activityInfo);
-		if(not searchResultInfo.crossFactionListing) then 
+		if(not searchResultInfo.crossFactionListing and categoryAllowsCrossFaction) then 
 			GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITH_PLAYSTLE:format(playstyleString,  FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
 		else 
 			GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR); 
 		end 
-	elseif(not searchResultInfo.crossFactionListing) then 
+	elseif(not searchResultInfo.crossFactionListing and categoryAllowsCrossFaction) then 
 		GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITHOUT_PLAYSTLE:format(FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
 	end		
 	if ( searchResultInfo.comment and searchResultInfo.comment == "" and searchResultInfo.questID ) then
