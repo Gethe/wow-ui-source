@@ -3514,7 +3514,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 	local categoryInfo = C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID);
-	local categoryAllowsCrossFaction = categoryInfo and categoryInfo.allowCrossFaction; 
+	local allowsCrossFaction = (categoryInfo and categoryInfo.allowCrossFaction) and (activityInfo and activityInfo.allowCrossFaction);
 
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
@@ -3522,12 +3522,12 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 
 	if (searchResultInfo.playstyle > 0) then 
 		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, activityInfo);
-		if(not searchResultInfo.crossFactionListing and categoryAllowsCrossFaction) then 
+		if(not searchResultInfo.crossFactionListing and allowsCrossFaction) then 
 			GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITH_PLAYSTLE:format(playstyleString,  FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
 		else 
 			GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR); 
 		end 
-	elseif(not searchResultInfo.crossFactionListing and categoryAllowsCrossFaction) then 
+	elseif(not searchResultInfo.crossFactionListing and allowsCrossFaction) then 
 		GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITHOUT_PLAYSTLE:format(FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
 	end		
 	if ( searchResultInfo.comment and searchResultInfo.comment == "" and searchResultInfo.questID ) then
