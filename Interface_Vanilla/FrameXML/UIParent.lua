@@ -452,7 +452,7 @@ function Store_LoadUI()
 end
 
 function APIDocumentation_LoadUI()
-	UIParentLoadAddOn("Blizzard_APIDocumentation");
+	UIParentLoadAddOn("Blizzard_APIDocumentationGenerated");
 end
 
 --[[
@@ -1595,7 +1595,7 @@ function UIParent_UpdateTopFramePositions()
 	local notificationAnchorTo = UIParent;
 	if gmChatStatusFrameShown then
 		GMChatStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
-		
+
 		buffOffset = math.max(buffOffset, GMChatStatusFrame:GetHeight());
 		notificationAnchorTo = GMChatStatusFrame;
 	end
@@ -1606,7 +1606,7 @@ function UIParent_UpdateTopFramePositions()
 		else
 			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
 		end
-		
+
 		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
 		notificationAnchorTo = TicketStatusFrame;
 	end
@@ -1622,7 +1622,7 @@ function UIParent_UpdateTopFramePositions()
 
 		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
 	end
-	
+
 	local y = -(buffOffset + 13)
 	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
 end

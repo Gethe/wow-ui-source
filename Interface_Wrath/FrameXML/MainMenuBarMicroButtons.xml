@@ -3,7 +3,7 @@
 	<Script file="MainMenuBarMicroButtons.lua"/>
 	<Button name="MainMenuBarMicroButton" motionScriptsWhileDisabled="true" virtual="true">
 		<Size>
-			<AbsDimension x="29" y="58"/>
+			<AbsDimension x="28" y="58"/>
 		</Size>
 		<HitRectInsets>
 			<AbsInset left="0" right="0" top="18" bottom="0"/>

@@ -213,7 +213,7 @@ SpellBookFrame.xml
 ..\..\Interface_Wrath\FrameXML\PetPaperDollFrame.xml
 SkillFrame.xml
 ..\..\Interface_Wrath\FrameXML\ReputationFrame.xml
-..\..\Interface_TBC\FrameXML\QuestFrame.xml
+..\..\Interface_Wrath\FrameXML\QuestFrame.xml
 ..\..\Interface_Wrath\FrameXML\QuestLogFrame.xml
 ..\..\Interface_Wrath\FrameXML\QuestInfo.xml
 ..\..\Interface_Wrath\FrameXML\WatchFrame.xml
@@ -228,7 +228,8 @@ ItemRef.xml
 ..\..\Interface_TBC\FrameXML\FriendsFrame.xml
 RaidFrame.xml
 PetActionBarFrame.xml
-MainMenuBarBagButtons.xml
+MultiCastActionBarFrame.xml
+..\..\Interface_Wrath\FrameXML\MainMenuBarBagButtons.xml
 UnitPositionFrameTemplates.xml
 RaidWarning.xml
 CinematicFrame.xml

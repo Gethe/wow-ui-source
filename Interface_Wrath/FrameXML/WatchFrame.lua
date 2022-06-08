@@ -121,6 +121,7 @@ function WatchFrameLinkButtonTemplate_OnLeftClick (self, button)
 			ExpandQuestHeader( GetQuestSortIndex( GetQuestIndexForWatch(self.index) ) );
 			-- you have to call GetQuestIndexForWatch again because ExpandQuestHeader will sort the indices
 			QuestLog_OpenToQuest( GetQuestIndexForWatch(self.index) );
+			QuestLogControlPanel_UpdateState();
 		end
 		return;
 	elseif ( self.type == "ACHIEVEMENT" ) then

@@ -8,7 +8,7 @@
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT">
 							<Offset>
-								<AbsDimension x="-16" y="192"/>
+								<AbsDimension x="-16" y="292"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

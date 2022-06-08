@@ -273,6 +273,8 @@ function MainMenuBarVehicleLeaveButton_Update()
 		MainMenuBarVehicleLeaveButton:ClearAllPoints();
 		if ( GetNumShapeshiftForms() > 0 ) then
 			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", "StanceButton"..GetNumShapeshiftForms(), "RIGHT", 30, 0);
+		elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", MultiCastActionBarFrame, "RIGHT", 30, 0);
 		else
 			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", StanceBarFrame, "LEFT", 10, 0);
 		end

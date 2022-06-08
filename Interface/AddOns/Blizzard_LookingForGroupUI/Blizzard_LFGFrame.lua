@@ -589,6 +589,7 @@ function LFGActivityView_OnShow(self)
 	local _, _, autoChooseActivity = C_LFGList.GetCategoryInfo(categoryID);
 	self.Comment.EditBox:ClearFocus();
 	if (autoChooseActivity) then
+		-- For auto-choose activity categories, we're going to check everything, so only show the comment.
 		self.BarLeft:Hide();
 		self.BarMiddle:Hide();
 		self.BarRight:Hide();
@@ -597,7 +598,7 @@ function LFGActivityView_OnShow(self)
 		self.Comment:SetPoint("CENTER", 0, 20);
 		self.Comment:SetHeight(110);
 		self.Comment.EditBox.Instructions:SetText(DESCRIPTION_OF_YOUR_GROUP_MANDATORY);
-		if (IN_SET_CATEGORY_SELECTION) then
+		if (IN_SET_CATEGORY_SELECTION) then -- If this is being invoked because the user is choosing a category, auto-select the comment box.
 			self.Comment.EditBox:SetFocus();
 		end
 	else

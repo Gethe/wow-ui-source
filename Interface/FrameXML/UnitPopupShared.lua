@@ -28,7 +28,7 @@ function UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData)
 	self.mostRecentDropdownMenu = nil;
 
 	if ( unit ) then
-		name, server = UnitNameUnmodified(unit) or UnitName(unit);
+		name, server = UnitNameUnmodified(unit);
 	elseif ( name ) then
 		local n, s = strmatch(name, "^([^-]+)-(.*)");
 		if ( n ) then
@@ -228,30 +228,28 @@ function UnitPopupManager:OnUpdate(elapsed)
 	if ( not UnitPopup_HasVisibleMenu() ) then
 		return;
 	end
-
+	local tempCount, count; 
 	for level, dropdownFrame in pairs(OPEN_DROPDOWNMENUS) do
 		if(dropdownFrame) then
-			local count = 1;
+			count = 0;
 			local menu = self:GetMenu(dropdownFrame.which);
 			local menuButtons = menu:GetButtons();
-			local nestedDropdownMenu = menuButtons[level];
-			local nestedDropdownMenus = nil; 
-			if(nestedDropdownMenu) then 
-				nestedDropdownMenus = nestedDropdownMenu:GetButtons();
-			end
-			local menus = nestedDropdownMenu or menuButtons
-			for index, button in ipairs(menus) do 
+			for index, button in ipairs(menuButtons) do 
 				local shown = button:CanShow(); 
 				if(shown) then
-					local enable = UnitPopupSharedUtil:IsEnabled(button);
-					if( not button.isSubsection) then
-						if (enable and not button.isSubsection) then
-							UIDropDownMenu_EnableButton(level, count);
-						else 
-							UIDropDownMenu_DisableButton(level, count);
-						end
-					end
 					count = count + 1;
+					local enable = UnitPopupSharedUtil:IsEnabled(button);
+					local diff = (level > 1) and 0 or 1;
+					tempCount = count + diff; 
+					if(button.isSubsectionTitle) then 
+						count = count + 1; 
+					elseif (not button.isSubsection) then
+						if (enable) then
+							UIDropDownMenu_EnableButton(level, tempCount);
+						else 
+							UIDropDownMenu_DisableButton(level, tempCount);
+						end
+					end		
 				end 
 			end
 		end
