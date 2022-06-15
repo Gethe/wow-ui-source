@@ -3272,6 +3272,15 @@ function LFGList_ReportListing(searchResultID, leaderName)
 	ReportFrame:InitiateReport(reportInfo, leaderName); 
 end
 
+function LFGList_ReportAdvertisement(searchResultID, leaderName)
+	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.GroupFinderPosting);
+	reportInfo:SetGroupFinderSearchResultID(searchResultID);
+	ReportFrame:SetMinorCategoryFlag(Enum.ReportMinorCategory.Advertisement, true);
+	ReportFrame:SetMajorType(Enum.ReportMajorCategory.InappropriateCommunication);
+	local sendReportWithoutDialog = true; 
+	ReportFrame:InitiateReport(reportInfo, leaderName, nil, nil, sendReportWithoutDialog); 
+end
+
 local LFG_LIST_SEARCH_ENTRY_MENU = {
 	{
 		text = nil,	--Group name goes here
@@ -3298,6 +3307,14 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 		end;
 	},
 	{
+		text = REPORT_GROUP_FINDER_ADVERTISEMENT,
+		notCheckable = true,
+		func = function(_, id, name) 
+			LFGList_ReportAdvertisement(id, name); 
+			LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel); 
+		end;
+	},
+	{
 		text = CANCEL,
 		notCheckable = true,
 	},
@@ -3314,6 +3331,8 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	LFG_LIST_SEARCH_ENTRY_MENU[2].tooltipText = (not applied) and LFG_LIST_MUST_SIGN_UP_TO_WHISPER;
 	LFG_LIST_SEARCH_ENTRY_MENU[3].arg1 = resultID;
 	LFG_LIST_SEARCH_ENTRY_MENU[3].arg2 = searchResultInfo.leaderName;
+	LFG_LIST_SEARCH_ENTRY_MENU[4].arg1 = resultID;
+	LFG_LIST_SEARCH_ENTRY_MENU[4].arg2 = searchResultInfo.leaderName;
 	return LFG_LIST_SEARCH_ENTRY_MENU;
 end
 
