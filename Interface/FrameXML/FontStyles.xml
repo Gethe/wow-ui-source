@@ -27,6 +27,9 @@
 	<Font name="GameFontNormalLeftGrey" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
+	<Font name="GameFontNormalLeftLightGrey" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.6" g="0.6" b="0.6"/>
+	</Font>
 	<Font name="GameFontNormalLeftRed" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="0.9" g="0.0" b="0.0"/>
 	</Font>

@@ -2213,6 +2213,11 @@ end
 function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
 	local inviteType = GetDisplayedInviteType(guid);
 	if ( inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" ) then
+		if inviteType == "SUGGEST_INVITE" and C_PartyInfo.IsPartyFull() then
+			ChatFrame_DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
+			return;
+		end
+
 		BNInviteFriend(gameAccountID);
 	elseif ( inviteType == "REQUEST_INVITE" ) then
 		BNRequestInviteFriend(gameAccountID);

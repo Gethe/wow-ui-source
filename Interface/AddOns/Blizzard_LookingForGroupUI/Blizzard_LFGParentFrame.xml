@@ -1,28 +1,24 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	<Script file="Blizzard_LFGParentFrame.lua"/>
+	<Button name="LFGDropDownTemplate" virtual="true" inherits="UIDropDownMenuTemplate">
+		<HitRectInsets>
+			<AbsInset left="25" right="40" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnEnter function="LFGDropDown_OnEnter"/>
+			<OnLeave function="LFGDropDown_OnLeave"/>
+			<OnClick function="LFGDropDown_OnClick"/>
+		</Scripts>
+	</Button>
+	<!-- Start LFG Parent Frame -->
 	<Frame name="LFGParentFrame" toplevel="true" hidden="true" enableMouse="true" parent="UIParent" mixin="LFGParentFrameMixin">
 		<Size x="384" y="512"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>
 		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="LFGParentFrameBackground" file="Interface\LFGFrame\UI-LFG-FRAME">
-					<Size x="512" y="512"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString name="LFGParentFrameTitle" inherits="GameFontNormal" text="LFM_TITLE">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-18"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="45"/>
+			<AbsInset left="0" right="30" top="0" bottom="74"/>
 		</HitRectInsets>
 		<Frames>
 			<Button inherits="UIPanelCloseButton">
@@ -35,6 +31,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchor point="BOTTOMLEFT" x="16" y="45"/> <!-- Reanchored in code. -->
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						self.selectedTextY = 4;
+						LowerFrameLevel(self);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+					</OnLoad>
 					<OnShow>
 						PanelTemplates_TabResize(self, 0);
 					</OnShow>
@@ -54,6 +55,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchor point="LEFT" relativeTo="LFGParentFrameTab1" relativePoint="RIGHT" x="-14" y="0"/> <!-- Reanchored in code. -->
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						self.selectedTextY = 4;
+						LowerFrameLevel(self);
+						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+					</OnLoad>
 					<OnShow>
 						PanelTemplates_TabResize(self, 0);
 					</OnShow>
@@ -101,4 +107,5 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</OnHide>
 		</Scripts>
 	</Frame>
+	<!-- End LFG Parent Frame -->
 </Ui>

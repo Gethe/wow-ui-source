@@ -660,6 +660,8 @@ function UIDropDownMenu_AddButton(info, level)
 
 	-- Set the height of the listframe
 	listFrame:SetHeight((index * UIDROPDOWNMENU_BUTTON_HEIGHT) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2));
+
+	return button;
 end
 
 function UIDropDownMenu_CheckAddCustomFrame(self, button, info)
@@ -1314,11 +1316,19 @@ function UIDropDownMenuButton_OpenColorPicker(self, button)
 end
 
 function UIDropDownMenu_DisableButton(level, id)
-	_G["DropDownList"..level.."Button"..id]:Disable();
+	UIDropDownMenu_SetDropdownButtonEnabled(_G["DropDownList"..level.."Button"..id], false);
 end
 
 function UIDropDownMenu_EnableButton(level, id)
-	_G["DropDownList"..level.."Button"..id]:Enable();
+	UIDropDownMenu_SetDropdownButtonEnabled(_G["DropDownList"..level.."Button"..id], true);
+end
+
+function UIDropDownMenu_SetDropdownButtonEnabled(button, enabled)
+	if enabled then
+		button:Enable();
+	else
+		button:Disable();
+	end
 end
 
 function UIDropDownMenu_SetButtonText(level, id, text, colorCode)

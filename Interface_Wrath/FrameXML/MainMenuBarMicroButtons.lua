@@ -67,6 +67,12 @@ end
 function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked)
 	CharacterMicroButton:ClearAllPoints();
 	CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
+	PVPMicroButton:ClearAllPoints();
+	if ( isStacked ) then
+		PVPMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 23);
+	else
+		PVPMicroButton:SetPoint("BOTTOMLEFT", SocialsMicroButton, "BOTTOMRIGHT", -2, 0);
+	end
 	UpdateMicroButtons();
 end
 

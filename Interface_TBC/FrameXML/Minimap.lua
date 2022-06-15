@@ -148,9 +148,9 @@ function MiniMapLFGFrame_OnEnter(self)
 	if (activeEntryInfo) then
 		local text = "";
 		for i=1, #activeEntryInfo.activityIDs do
-			local name = C_LFGList.GetActivityInfo(activeEntryInfo.activityIDs[i]);
-			if (name and name ~= "") then
-				text = text .. name .. "\n"
+			local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityIDs[i]);
+			if (activityInfo and activityInfo.fullName ~= "") then
+				text = text .. activityInfo.fullName .. "\n"
 			end
 		end
 
@@ -631,12 +631,14 @@ function MiniMapLFGDropDown_OnLoad(self)
 end
 
 function MiniMapLFGDropDown_Initialize()
-	if (C_LFGList.HasActiveEntryInfo()) then
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = LFG_LIST_UNLIST;
-		info.func = wrapFunc(C_LFGList.RemoveListing);
-		info.disabled = not C_LFGList.HasActiveEntryInfo();
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
+	if (IsAddOnLoaded("Blizzard_LookingForGroupUI")) then
+		if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = LFG_LIST_UNLIST;
+			info.func = wrapFunc(C_LFGList.RemoveListing);
+			info.disabled = not C_LFGList.HasActiveEntryInfo();
+			info.notCheckable = 1;
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 end

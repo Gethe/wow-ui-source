@@ -4,5 +4,5 @@
 ## LoadOnDemand: 1
 
 Blizzard_LFGParentFrame.xml
-Blizzard_LFGFrame.xml
-Blizzard_LFMFrame.xml
+Blizzard_LFGListing.xml
+Blizzard_LFGBrowse.xml

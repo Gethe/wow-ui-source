@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
-	<Script file="Blizzard_LFGFrame.lua"/>
-	<Button name="LFGRoleTemplate" virtual="true" motionScriptsWhileDisabled="true">
+	<Script file="Blizzard_LFGListing.lua"/>
+	<Button name="LFGListingRoleTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="48" y="48"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -30,7 +30,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Scripts>
 		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
 	</Button>
-	<Button name="LFGRoleButtonTemplate" inherits="LFGRoleTemplate" virtual="true" motionScriptsWhileDisabled="true">
+	<Button name="LFGListingRoleButtonTemplate" inherits="LFGListingRoleTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Frames>
 			<CheckButton parentKey="CheckButton">
 				<Size x="24" y="24"/>
@@ -47,6 +47,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						if ( self.onClick ) then
 							self.onClick(self, button);
 						end
+						LFGListingFrame:SetSoloRoles();
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
@@ -73,7 +74,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="LFGCategoryTemplate" virtual="true">
+	<Button name="LFGListingCategoryTemplate" virtual="true">
 		<Size x="267" y="41"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -98,7 +99,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="LFGCategorySelectionButton_OnClick"/>
+			<OnClick function="LFGListingCategorySelectionButton_OnClick"/>
 		</Scripts>
 		<HighlightTexture parentKey="HighlightTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD">
 			<Size x="257" y="31"/>
@@ -113,7 +114,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Anchors>
 		</ButtonText>
 	</Button>
-	<Frame name="LFGActivityCheckAllTemplate" virtual="true">
+	<Frame name="LFGListingActivityCheckAllTemplate" virtual="true">
 		<Size x="295" y="18"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -139,7 +140,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="LFGActivityTemplate" virtual="true">
+	<Frame name="LFGListingActivityTemplate" virtual="true">
 		<Size x="295" y="18"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -171,12 +172,25 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<FontString name="LFGActivityNameTemplate" virtual="true" inherits="GameFontNormal" justifyH="LEFT"/>
-	<!-- Start LFG Frame -->
-	<Frame name="LFGFrame" parent="LFGParentFrame" setAllPoints="true" hidden="true" mixin="LFGFrameMixin">
+	<FontString name="LFGListingActivityNameTemplate" virtual="true" inherits="GameFontNormal" justifyH="LEFT"/>
+	<!-- Start LFG Listing Frame -->
+	<Frame name="LFGListingFrame" parent="LFGParentFrame" setAllPoints="true" hidden="true" mixin="LFGListingMixin">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="groupfinder-background-classic">
+				<Texture name="$parentFrameBackground" file="Interface\LFGFrame\UI-LFG-FRAME">
+					<Size x="512" y="512"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentFrameTitle" inherits="GameFontNormal" text="LFG_TITLE">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBackgroundArt" parentKey="BackgroundArt" atlas="groupfinder-background-classic">
 					<Size x="324" y="282"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="22" y="-128"/>
@@ -191,9 +205,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchor point="BOTTOMLEFT" x="19" y="79"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad  function="LFGFrameBackButton_OnLoad"/>
-					<OnEvent function="LFGFrameBackButton_OnEvent"/>
-					<OnClick function="LFGFrameBackButton_OnClick"/>
+					<OnLoad  function="LFGListingBackButton_OnLoad"/>
+					<OnEvent function="LFGListingBackButton_OnEvent"/>
+					<OnClick function="LFGListingBackButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentPostButton" parentKey="PostButton" inherits="UIPanelButtonTemplate" text="LFG_POST_GROUP" motionScriptsWhileDisabled="true">
@@ -202,9 +216,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchor point="BOTTOMRIGHT" x="-40" y="79"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad  function="LFGFramePostButton_OnLoad"/>
-					<OnEvent function="LFGFramePostButton_OnEvent"/>
-					<OnClick function="LFGFramePostButton_OnClick"/>
+					<OnLoad  function="LFGListingPostButton_OnLoad"/>
+					<OnEvent function="LFGListingPostButton_OnEvent"/>
+					<OnClick function="LFGListingPostButton_OnClick"/>
 					<OnEnter>
 						if ( self.errorText ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -221,7 +235,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchor point="TOPLEFT" x="82" y="-60"/>
 				</Anchors>
 				<Frames>
-					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate">
+					<Button name="$parentRoleButtonTank" parentKey="Tank" inherits="LFGListingRoleButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
@@ -234,7 +248,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate">
+					<Button name="$parentRoleButtonHealer" parentKey="Healer" inherits="LFGListingRoleButtonTemplate">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="45" y="0"/>
 						</Anchors>
@@ -247,7 +261,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate">
+					<Button name="$parentRoleButtonDPS" parentKey="DPS" inherits="LFGListingRoleButtonTemplate">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="43" y="0"/>
 						</Anchors>
@@ -268,14 +282,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchor point="TOPLEFT" x="82" y="-57"/>
 				</Anchors>
 				<Frames>
-					<Button name="$parentRole" parentKey="RoleIcon" inherits="LFGRoleTemplate">
+					<Button name="$parentRole" parentKey="RoleIcon" inherits="LFGListingRoleTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-16" y="-2"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self.Background:SetAlpha(0.6);
-								LFGRoleIcon_UpdateRoleTexture(self);
+								LFGListingRoleIcon_UpdateRoleTexture(self);
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -285,9 +299,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							<Anchor point="TOPLEFT" x="5" y="2"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad function="LFGFrameRolePollButton_OnLoad"/>
-							<OnEvent function="LFGFrameRolePollButton_OnEvent"/>
-							<OnClick function="LFGFrameRolePollButton_OnClick"/>
+							<OnLoad function="LFGListingRolePollButton_OnLoad"/>
+							<OnEvent function="LFGListingRolePollButton_OnEvent"/>
+							<OnClick function="LFGListingRolePollButton_OnClick"/>
 							<OnEnter>
 								if (not self:IsEnabled()) then
 									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -300,14 +314,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</OnLeave>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleDropDown" parentKey="RoleDropDown" inherits="UIDropDownMenuTemplate">
+					<Button name="$parentRoleDropDown" parentKey="RoleDropDown" inherits="LFGDropDownTemplate">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentInitiateRolePoll" relativePoint="BOTTOM" x="0" y="-8"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								UIDropDownMenu_SetWidth(self, 112);
-								UIDropDownMenu_Initialize(self, LFGFrameRoleDropDown_Initialize);
+								UIDropDownMenu_Initialize(self, LFGListingRoleDropDown_Initialize);
 								UIDropDownMenu_SetAnchor(self, -15, 10, "TOPRIGHT", self, "BOTTOMRIGHT");
 							</OnLoad>
 						</Scripts>
@@ -317,28 +331,28 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<Frame name="$parentCategoryView" parentKey="CategoryView">
 				<Size x="324" y="282"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="LFGFrame" x="22" y="-128"/>
+					<Anchor point="TOPLEFT" x="22" y="-128"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="CategorySelection" useParentLevel="true" hidden="true" setAllPoints="true" virtual="true">
 						<KeyValues>
-							<KeyValue key="updateAll" value="LFGCategorySelection_UpdateCategoryButtons" type="global"/>
+							<KeyValue key="updateAll" value="LFGListingCategorySelection_UpdateCategoryButtons" type="global"/>
 						</KeyValues>
 					</Frame>
-					<Button parentArray="CategoryButtons" inherits="LFGCategoryTemplate">
+					<Button parentArray="CategoryButtons" inherits="LFGListingCategoryTemplate">
 						<Anchors>
 							<Anchor point="TOP" x="-3" y="-7"/>
 						</Anchors>
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnShow function="LFGCategorySelection_OnShow"/>
+					<OnShow function="LFGListingCategorySelection_OnShow"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentActivityView" parentKey="ActivityView" hidden="true">
 				<Size x="324" y="282"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="LFGFrame" x="22" y="-128"/>
+					<Anchor point="TOPLEFT" x="22" y="-128"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -377,7 +391,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							<Anchor relativeTo="$parentScrollBox" point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
 						</Anchors>
 					</EventFrame>
-					<ScrollFrame name="LFGComment" parentkey="Comment" inherits="InputScrollFrameTemplate">
+					<ScrollFrame name="LFGListingComment" parentkey="Comment" inherits="InputScrollFrameTemplate">
 						<Size x="285" y="47"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="19"/> <!-- Reanchored in code. -->
@@ -389,13 +403,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</KeyValues>
 						<Scripts>
 							<OnLoad>
-								StoreSecureReference("LFGComment", self.EditBox);
+								StoreSecureReference("LFGListingComment", self.EditBox);
 								self.EditBox:SetSecurityDisableSetText();
 								self.EditBox:SetSecurityDisablePaste();
 								InputScrollFrame_OnLoad(self);
 
 								self.EditBox:SetScript("OnTextChanged", function(self, userInput)
-									LFGComment_OnTextChanged(self, userInput);
+									LFGListingComment_OnTextChanged(self, userInput);
 									InputScrollFrame_OnTextChanged(self, userInput);
 								end);
 								self.EditBox:SetScript("OnEscapePressed", function(self) self:ClearFocus(); end);
@@ -404,14 +418,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
-					<OnLoad function="LFGActivityView_OnLoad"/>
-					<OnShow function="LFGActivityView_OnShow"/>
+					<OnLoad function="LFGListingActivityView_OnLoad"/>
+					<OnShow function="LFGListingActivityView_OnShow"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentLockedView" parentKey="LockedView" hidden="true">
 				<Size x="324" y="282"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="LFGFrame" x="22" y="-128"/>
+					<Anchor point="TOPLEFT" x="22" y="-128"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -430,8 +444,8 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="LFGLockedView_OnLoad"/>
-					<OnEvent function="LFGLockedView_OnEvent"/>
+					<OnLoad function="LFGListingLockedView_OnLoad"/>
+					<OnEvent function="LFGListingLockedView_OnEvent"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -441,5 +455,5 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
-	<!-- End LFG Frame -->
+	<!-- End LFG Listing Frame -->
 </Ui>

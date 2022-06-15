@@ -4567,7 +4567,7 @@ end
 
 --Only really works on friends and guild-mates
 function GetDisplayedInviteType(guid)
-	--[[if ( IsInGroup() ) then
+	if ( IsInGroup() ) then
 		if ( UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
 			return "INVITE";
 		else
@@ -4584,8 +4584,7 @@ function GetDisplayedInviteType(guid)
 		else
 			return "INVITE";
 		end
-	end]]
-	return "INVITE";
+	end
 end
 
 function nop()

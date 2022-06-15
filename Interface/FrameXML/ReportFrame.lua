@@ -48,16 +48,18 @@ end
 
 
 
-function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport)
+function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog)
 	self:SetAttribute("initiate_report", {
 		reportInfo = reportInfo,
 		playerName = playerName,
 		playerLocation = playerLocation,
 		isBnetReport = isBnetReport,
+		sendReportWithoutDialog = sendReportWithoutDialog,
 	});
 end
 
-function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport) 	if(not reportInfo) then 
+function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog) 	
+	if(not reportInfo) then 
 		return;
 	end 
 
@@ -66,15 +68,18 @@ function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerL
 	self.reportPlayerLocation = playerLocation; 
 	self.playerName = playerName; 
 	self:UpdateThankYouMessage(false);
+	
+	self.isBnetReport = isBnetReport; 
+	self:SetShown(not sendReportWithoutDialog);
+	if (sendReportWithoutDialog) then 
+		self:SendReport(); 
+		return; 
+	end
 
 	if(playerName) then 
 		self.ReportString:SetText(REPORTING_REPORT_PLAYER:format(playerName));
 	end 
-	
-	self.isBnetReport = isBnetReport; 
 	self.ReportString:SetShown(playerName)
-	self:Show();
-
 	self.MinorCategoryButtonPool:ReleaseAll();
 	self.selectedMajorType = nil; 
 	self.Comment:Hide(); 
@@ -131,6 +136,10 @@ function ReportFrameMixin:MajorTypeSelected(reportType, majorType)
 	self.Comment:Show(); 
 	self.ReportButton:UpdateButtonState(); 
 	self:Layout(); 
+end
+
+function ReportFrameMixin:SetMajorType(type)
+	self.selectedMajorType = type; 
 end
 
 function ReportFrameMixin:AnchorMinorCategory(index, minorCategory)
@@ -414,7 +423,8 @@ do
 			local playerName = data.playerName;
 			local playerLocation = data.playerLocation and Mixin(data.playerLocation, PlayerLocationMixin) or nil;
 			local isBnetReport = data.isBnetReport;
-			self:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport);
+			local sendReportWithoutDialog = data.sendReportWithoutDialog;
+			self:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog);
 		end
 	end
 end

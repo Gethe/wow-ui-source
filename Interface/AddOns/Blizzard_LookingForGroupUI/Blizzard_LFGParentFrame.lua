@@ -1,3 +1,8 @@
+---------------------------------------------------
+----------Constants
+-------------------------------------------------------
+
+
 -------------------------------------------------------
 ----------LFG Parent
 -------------------------------------------------------
@@ -29,6 +34,19 @@ function LFGParentFrameMixin:UpdateEyePortrait()
 	end
 end
 
+function ShowLFGParentFrame(tab)
+	ShowUIPanel(LFGParentFrame);
+	-- Decide which subframe to show
+	local tabToShow = tab or LFGParentFrame.selectedTab;
+	if (tabToShow == 2) then
+		LFGParentFrameTab2_OnClick();
+	else -- Default to tab 1.
+		LFGParentFrameTab1_OnClick();
+	end
+
+	UpdateMicroButtons();
+end
+
 function ToggleLFGParentFrame(tab)
 	local hideLFGParent = false;
 	if ((not C_LFGList.IsLookingForGroupEnabled()) or
@@ -40,36 +58,73 @@ function ToggleLFGParentFrame(tab)
 
 	if ( hideLFGParent ) then
 		HideUIPanel(LFGParentFrame);
+		UpdateMicroButtons();
 	else
-		ShowUIPanel(LFGParentFrame);
-		-- Decide which subframe to show
-		local tabToShow = tab or LFGParentFrame.selectedTab;
-		if (tabToShow == 2) then
-			LFGParentFrameTab2_OnClick();
-		else -- Default to tab 1.
-			LFGParentFrameTab1_OnClick();
-		end
+		ShowLFGParentFrame(tab);
 	end
-	UpdateMicroButtons();
 end
 
 function LFGParentFrameTab1_OnClick()
 	PanelTemplates_SetTab(LFGParentFrame, 1);
-	LFGFrame:Show();
-	LFMFrame:Hide();
+	LFGListingFrame:Show();
+	LFGBrowseFrame:Hide();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
 function LFGParentFrameTab2_OnClick()
 	PanelTemplates_SetTab(LFGParentFrame, 2);
-	LFGFrame:Hide();
-	LFMFrame:Show();
+	LFGListingFrame:Hide();
+	LFGBrowseFrame:Show();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
-function LFGParentFrame_LFMSearchActiveEntry()
+function LFGParentFrame_SearchActiveEntry()
+	LFGBrowseFrame:SearchActiveEntry();
 	PanelTemplates_SetTab(LFGParentFrame, 2);
-	LFGFrame:Hide();
-	LFMFrame:Show();
-	LFMFrame:SearchActiveEntry();
+	LFGListingFrame:Hide();
+	LFGBrowseFrame:Show();
+end
+
+-------------------------------------------------------
+----------Util
+-------------------------------------------------------
+function LFGUtil_SortActivityIDs(activityIDList, useFullName)
+	local function SortCB(activityID1, activityID2)
+		local activityInfo1 = C_LFGList.GetActivityInfoTable(activityID1);
+		local activityInfo2 = C_LFGList.GetActivityInfoTable(activityID2);
+
+		if (activityInfo1.orderIndex ~= activityInfo2.orderIndex) then
+			return activityInfo1.orderIndex < activityInfo2.orderIndex
+		end
+
+		if (useFullName) then
+			if (activityInfo1.fullName ~= activityInfo2.fullName) then
+				return strcmputf8i(activityInfo1.fullName, activityInfo2.fullName) < 0
+			end
+		else
+			if (activityInfo1.shortName ~= activityInfo2.shortName) then
+				return strcmputf8i(activityInfo1.shortName, activityInfo2.shortName) < 0
+			end
+		end
+
+		return activityID1 < activityID2;
+	end
+
+	table.sort(activityIDList, SortCB);
+end
+
+-------------------------------------------------------
+----------Drop-Down QoL
+-------------------------------------------------------
+function LFGDropDown_OnEnter(self)
+	self.Button:LockHighlight();
+end
+
+function LFGDropDown_OnLeave(self)
+	self.Button:UnlockHighlight();
+end
+
+function LFGDropDown_OnClick(self)
+	ToggleDropDownMenu(nil, nil, self);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end

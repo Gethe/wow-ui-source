@@ -175,6 +175,7 @@ Cooldown.xml
 ..\..\Interface_Wrath\FrameXML\MainMenuBarMicroButtons.xml
 ActionBarController.xml
 ..\..\Interface_TBC\FrameXML\StanceBar.xml
+OverrideActionBar.xml
 TutorialFrame.xml
 ..\..\Interface_TBC\FrameXML\Minimap.xml
 GameTime.xml
@@ -241,7 +242,7 @@ HelpFrame.xml
 ColorPickerFrame.xml
 GossipFrame.xml
 MailFrame.xml
-PetStable.xml
+..\..\Interface_Wrath\FrameXML\PetStable.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
 ..\..\Interface_TBC\FrameXML\WorldStateFrame.xml
