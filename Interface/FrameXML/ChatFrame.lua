@@ -231,6 +231,9 @@ ChatTypeGroup["LOOT"] = {
 ChatTypeGroup["MONEY"] = {
 	"CHAT_MSG_MONEY",
 };
+ChatTypeGroup["CURRENCY"] = {
+	"CHAT_MSG_CURRENCY",
+};
 ChatTypeGroup["OPENING"] = {
 	"CHAT_MSG_OPENING";
 };

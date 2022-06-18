@@ -12,30 +12,30 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<Frame parentKey="Solo" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
+						<FontString parentKey="RolesText" inherits="GameFontHighlightSmall" justifyH="CENTER" text="LFG_TOOLTIP_ROLES">
+							<Size x="0" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-70" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="RoleTank" parentArray="Roles" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RolesText" relativePoint="RIGHT" x="4" y="0"/>
+							</Anchors>
+						</Texture>
 						<Texture parentKey="RoleDPS" parentArray="Roles" atlas="groupfinder-icon-role-large-dps">
 							<Size x="18" y="18"/>
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.RoleTank" relativePoint="CENTER" x="18" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="RoleHealer" parentArray="Roles" atlas="groupfinder-icon-role-large-heal">
 							<Size x="18" y="18"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.RoleDPS" relativePoint="CENTER" x="-18" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.RoleHealer" relativePoint="CENTER" x="18" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="RoleTank" parentArray="Roles" atlas="groupfinder-icon-role-large-tank">
-							<Size x="18" y="18"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.RoleHealer" relativePoint="CENTER" x="-18" y="0"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="RolesText" inherits="GameFontHighlightSmall" justifyH="CENTER" text="LFG_TOOLTIP_ROLES">
-							<Size x="0" y="14"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.RoleTank" relativePoint="LEFT" x="-4" y="0"/>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>

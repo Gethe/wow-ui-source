@@ -191,6 +191,7 @@ UnitPopupUtils.lua
 UnitPopupShared.xml
 UnitPopupSharedMenus.lua
 UnitPopupSharedButtonMixins.lua
+UnitPopupButtons_Shared.lua
 ..\..\Interface_Vanilla\FrameXML\UnitPopupButtons.lua
 ..\..\Interface_Vanilla\FrameXML\UnitPopupMenus.lua
 ..\..\Interface_Vanilla\FrameXML\UnitPopup.lua
@@ -202,6 +203,7 @@ ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
 ..\..\Interface_Vanilla\FrameXML\TargetFrame.xml
+..\..\Interface_Vanilla\FrameXML\PetFrame_Vanilla.lua
 PetFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
@@ -250,6 +252,7 @@ TextToSpeechFrame.xml
 TextToSpeech.xml
 VoiceChatTranscriptionFrame.xml
 VoiceChatTranscriptionButton.xml
+..\..\Interface_Vanilla\FrameXML\ChatConfigFrame_Vanilla.lua
 ChatConfigFrame.xml
 MovieFrame.xml
 AnimationSystem.lua

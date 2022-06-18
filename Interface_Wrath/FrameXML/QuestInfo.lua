@@ -449,7 +449,7 @@ function QuestInfo_ShowRewards()
 		if C_QuestLog.ShouldShowQuestRewards(questID) then
 		numQuestRewards = GetNumQuestLogRewards();
 		numQuestChoices = GetNumQuestLogChoices();
-		--numQuestCurrencies = GetNumQuestLogRewardCurrencies();
+		numQuestCurrencies = GetNumQuestLogRewardCurrencies();
 		money = GetQuestLogRewardMoney();
 		--skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
 		-- Don't show XP rewards in Classic.
@@ -465,7 +465,7 @@ function QuestInfo_ShowRewards()
 	else
 		numQuestRewards = GetNumQuestRewards();
 		numQuestChoices = GetNumQuestChoices();
-		numQuestCurrencies = 0;--GetNumRewardCurrencies();
+		numQuestCurrencies = GetNumRewardCurrencies();
 		money = GetRewardMoney();
 		skillName, skillIcon, skillPoints = 0, 0, 0;--GetRewardSkillPoints();
 		xp = GetRewardXP();
@@ -796,7 +796,7 @@ function QuestInfo_ShowRewards()
 		baseIndex = rewardsCount;
 		local foundCurrencies = 0;
 		buttonIndex = buttonIndex + 1;
-		--[[for i = 1, GetMaxRewardCurrencies(), 1 do
+		for i = 1, GetMaxRewardCurrencies(), 1 do
 			index = i + baseIndex;
 			questItem = QuestInfo_GetRewardButton(rewardsFrame, index);
 			questItem.type = "reward";
@@ -842,7 +842,7 @@ function QuestInfo_ShowRewards()
 					break;
 				end
 			end
-		end]]
+		end
 
         rewardsFrame.HonorFrame:ClearAllPoints();
         if ( honor > 0 ) then

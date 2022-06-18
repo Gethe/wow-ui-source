@@ -240,6 +240,7 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PET_TALENT_UPDATE");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
+	self:RegisterEvent("TALENT_GROUP_ROLE_CHANGED");
 	self.unit = "player";
 	self.inspect = false;
 	self.pet = false;
@@ -366,6 +367,12 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 	--TODO - Vehicle UI
 	--elseif ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
 		--MainMenuBar_ToPlayerArt(MainMenuBarArtFrame);
+	elseif ( event == "TALENT_GROUP_ROLE_CHANGED" ) then
+		local talentGroupIndex, role = ...;
+		local spec = selectedSpec and specs[selectedSpec];
+		if (spec and spec.talentGroup == talentGroupIndex) then
+			PlayerTalentFrameRole_UpdateRole(PlayerTalentFrameRoleButton, role);
+		end
 	end
 end
 
@@ -515,6 +522,11 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 		PlayerTalentFramePreviewBar:Hide();
 		-- unsquish frames since the bar is now hidden
 		PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
+	end
+
+	local role = GetTalentGroupRole(spec.talentGroup);
+	if (role) then
+		PlayerTalentFrameRole_UpdateRole(PlayerTalentFrameRoleButton, role);
 	end
 end
 
@@ -1044,3 +1056,52 @@ function PlayerSpecTab_OnEnter(self)
 	end
 end
 
+function PlayerTalentFrameRole_UpdateRole(self, role)
+	if (not role or role == "NONE") then
+		role = "DAMAGER";
+	end
+
+	self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole(role));
+end
+
+function PlayerTalentFrameRoleDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, PlayerTalentFrameRoleDropDown_Initialize, "MENU");
+end
+
+function PlayerTalentFrameRoleDropDown_Initialize()
+		local currentRole = "NONE";
+		local spec = selectedSpec and specs[selectedSpec];
+		if (spec) then
+			currentRole = GetTalentGroupRole(spec.talentGroup);
+		end
+
+		local info = UIDropDownMenu_CreateInfo();
+
+		info.text = INLINE_TANK_ICON.." "..TANK;
+		info.func = PlayerTalentFrameRoleDropDown_OnSelect;
+		info.classicChecks = true;
+		info.value = "TANK";
+		info.checked = info.value == currentRole;
+		UIDropDownMenu_AddButton(info);
+
+		info.text = INLINE_HEALER_ICON.." "..HEALER;
+		info.func = PlayerTalentFrameRoleDropDown_OnSelect;
+		info.classicChecks = true;
+		info.value = "HEALER";
+		info.checked = info.value == currentRole;
+		UIDropDownMenu_AddButton(info);
+
+		info.text = INLINE_DAMAGER_ICON.." "..DAMAGER;
+		info.func = PlayerTalentFrameRoleDropDown_OnSelect;
+		info.classicChecks = true;
+		info.value = "DAMAGER";
+		info.checked = info.value == currentRole or currentRole == "NONE";
+		UIDropDownMenu_AddButton(info);
+end
+
+function PlayerTalentFrameRoleDropDown_OnSelect(self)
+	local spec = selectedSpec and specs[selectedSpec];
+	if (spec) then
+		SetTalentGroupRole(spec.talentGroup, self.value);
+	end
+end

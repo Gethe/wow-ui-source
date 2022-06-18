@@ -193,6 +193,7 @@ UnitPopupUtils.lua
 UnitPopupShared.xml
 UnitPopupSharedMenus.lua
 UnitPopupSharedButtonMixins.lua
+UnitPopupButtons_Shared.lua
 ..\..\Interface_Wrath\FrameXML\UnitPopupButtons.lua
 ..\..\Interface_Wrath\FrameXML\UnitPopupMenus.lua
 ..\..\Interface_Wrath\FrameXML\UnitPopup.lua
@@ -206,6 +207,7 @@ PlayerFrame.xml
 PartyFrame.xml
 ..\..\Interface_Wrath\FrameXML\TargetFrame.xml
 TotemFrame.xml
+..\..\Interface_Wrath\FrameXML\PetFrame_Wrath.lua
 PetFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
@@ -256,6 +258,7 @@ VoiceChatTranscriptionFrame.xml
 TextToSpeechCommands.lua
 TextToSpeechFrame.xml
 TextToSpeech.xml
+..\..\Interface_Wrath\FrameXML\ChatConfigFrame_Wrath.lua
 ChatConfigFrame.xml
 MovieFrame.xml
 AnimationSystem.lua
@@ -265,6 +268,7 @@ CompactPartyFrame.xml
 ..\..\Interface_Wrath\FrameXML\RolePoll.xml
 StreamingFrame.xml
 LootHistory.xml
+CurrencyContainer.lua
 StaticPopupSpecial.xml
 PVPHelper.xml
 ProductChoice.xml
@@ -276,7 +280,7 @@ ArenaFrame.xml
 ArenaRegistrarFrame.xml
 ..\..\Interface_Wrath\FrameXML\PVPFrame.xml
 RuneFrame.xml
-
+..\..\Interface_Wrath\FrameXML\EquipmentManager.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

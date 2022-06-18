@@ -239,6 +239,22 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
+			<Button name="CharacterFrameTab5" inherits="CharacterFrameTabButtonTemplate" id="5" text="CURRENCY"  motionScriptsWhileDisabled="false" hidden="true">
+                <Anchors>
+                   <Anchor point="LEFT" relativeTo="CharacterFrameTab4" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-15" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MicroButtonTooltipText(CURRENCY, "TOGGLECURRENCY"), 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+                </Scripts>
+            </Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CharacterFrame_OnLoad"/>

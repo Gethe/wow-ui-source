@@ -40,7 +40,11 @@ end
 
 function PetStable_Update()
 	-- Set stablemaster portrait
-	SetPortraitTexture(PetStableFramePortrait, "npc");
+	if(IsAtStableMaster()) then
+		SetPortraitTexture(PetStableFramePortrait, "npc");
+	else
+		SetPortraitTexture(PetStableFramePortrait, "player");
+	end;
 	
 	-- So warlock pets don't show
 	local _, playerClass = UnitClass("player")
@@ -195,7 +199,7 @@ function PetStable_Update()
 	
 	-- Enable, disable, or hide purchase button
 	PetStablePurchaseButton:Show();
-	if ( GetNumStableSlots() == NUM_PET_STABLE_SLOTS ) then
+	if ( GetNumStableSlots() == NUM_PET_STABLE_SLOTS  or (not IsAtStableMaster())) then
 		PetStablePurchaseButton:Hide();
 		PetStableCostLabel:Hide();
 		PetStableCostMoneyFrame:Hide();

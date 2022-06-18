@@ -1,5 +1,5 @@
-CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "SkillFrame" };
-local NUM_CHARACTERFRAME_TABS = 4;
+CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationFrame", "SkillFrame", "TokenFrame" };
+local NUM_CHARACTERFRAME_TABS = 5;
 
 function ToggleCharacter(tab, onlyShow)
 	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() and (GetNumCompanions("CRITTER") == 0) and (GetNumCompanions("MOUNT") == 0)) then
@@ -49,6 +49,8 @@ function CharacterFrameTab_OnClick(self, button)
 		ToggleCharacter("ReputationFrame");
 	elseif ( name == "CharacterFrameTab4" ) then
 		ToggleCharacter("SkillFrame");
+	elseif ( name == "CharacterFrameTab5" ) then
+		ToggleCharacter("TokenFrame");	
 	end
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
@@ -114,6 +116,13 @@ function CharacterFrame_OnShow(self)
 	end
 	
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
+	-- Show Currency tab?
+	if (GetCurrencyListSize() > 0) then
+		CharacterFrameTab5:Show();
+	else
+		CharacterFrameTab5:Hide();
+	end
+
 end
 
 function CharacterFrame_OnHide(self)

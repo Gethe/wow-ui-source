@@ -100,6 +100,8 @@ function LFGBrowseMixin:UpdateResultList()
 end
 
 function LFGBrowseMixin:UpdateResults()
+	self.selectionBehavior:ClearSelections();
+
 	if ( self.searching ) then
 		self.SearchingSpinner:Show();
 		self.ScrollBox:ClearDataProvider();
@@ -153,6 +155,16 @@ function LFGBrowseMixin:SearchActiveEntry()
 	LFGBrowse_DoSearch();
 end
 
+function LFGBrowseMixin:ValidateSelection()
+	local selectedResultID = self.selectionBehavior:HasSelection() and LFGBrowseFrame.selectionBehavior:GetSelectedElementData()[1].resultID or nil;
+	if (selectedResultID) then
+		local searchResultInfo = C_LFGList.GetSearchResultInfo(selectedResultID);
+		if (not searchResultInfo or searchResultInfo.isDelisted) then
+			self.selectionBehavior:ClearSelections();
+		end
+	end
+end
+
 function LFGBrowseMixin:RefreshDropDowns()
 	UIDropDownMenu_Initialize(self.CategoryDropDown, LFGBrowseCategoryDropDown_Initialize);
 	UIDropDownMenu_Initialize(self.ActivityDropDown, LFGBrowseActivityDropDown_Initialize);
@@ -165,19 +177,10 @@ function LFGBrowseMixin:UpdateButtonState()
 	self.GroupInviteButton:SetText(inviteText);
 	self.GroupInviteButton.inviteFunc = inviteFunc;
 
-	if (self.selectionBehavior:HasSelection()) then
-		self.SendMessageButton:Enable();
-		self.GroupInviteButton:Enable();
-	else
-		self.SendMessageButton:Disable();
-		self.GroupInviteButton:Disable();
-	end
-
-	if (self.searching) then
-		self.RefreshButton:Disable();
-	else
-		self.RefreshButton:Enable();
-	end
+	self.SendMessageButton:SetEnabled(self.selectionBehavior:HasSelection());
+	self.GroupInviteButton:SetEnabled(self.selectionBehavior:HasSelection());
+	
+	self.RefreshButton:SetEnabled(not self.searching);
 end
 
 -------------------------------------------------------
@@ -217,7 +220,7 @@ function LFGBrowseSearchEntry_Update(self)
 		self.ClassIcon:Show();
 		self.Level:Show();
 
-		local classFile, _, _, level = select(2, C_LFGList.GetSearchResultMemberInfo(self.resultID, 1));
+		local classFile, _, level = select(3, C_LFGList.GetSearchResultMemberInfo(self.resultID, 1));
 		if (classFile and level) then
 			self.Level:SetText(LEVEL_ABBR .. " " ..level);
 			self.ClassIcon:SetAtlas(LFGBROWSE_GROUPDATA_ATLASES[classFile], false);
@@ -238,12 +241,6 @@ function LFGBrowseSearchEntry_Update(self)
 		activityText = activityInfo.shortName ~= "" and activityInfo.shortName or activityInfo.fullName;
 	else
 		activityText = string.format(LFGBROWSE_ACTIVITY_COUNT, #searchResultInfo.activityIDs)
-	end
-
-	if (LFGBrowseFrame.selectionBehavior.IsElementDataSelected(self:GetElementData()) and searchResultInfo.isDelisted) then
-		LFGBrowseFrame.selectionBehavior:ToggleSelect(self); -- Toggle off.
-	else
-		LFGBrowseSearchEntry_SetSelection(self, LFGBrowseFrame.selectionBehavior.IsElementDataSelected(self:GetElementData()));
 	end
 
 	local nameColor = NORMAL_FONT_COLOR;
@@ -286,6 +283,7 @@ function LFGBrowseSearchEntry_OnEvent(self, event, ...)
 	if ( event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
 		local id = ...;
 		if ( id == self.resultID ) then
+			LFGBrowseFrame:ValidateSelection();
 			LFGBrowseSearchEntry_Update(self);
 		end
 	end
@@ -359,7 +357,7 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 		self.LeaderIcon:Hide();
 		self.Leader:SetPoint("TOPLEFT", self.LeaderIcon, "TOPLEFT", 0, -2)
 	end
-	local name, classFileName, className, role, level, areaName = C_LFGList.GetSearchResultLeaderInfo(resultID);
+	local name, role, classFileName, className, level, areaName = C_LFGList.GetSearchResultLeaderInfo(resultID);
 	if (name) then
 		local classColor = RAID_CLASS_COLORS[classFileName];
 		self.Leader.Name:SetWidth(0); -- Reset the width so that we auto-expand to the text size correctly.
@@ -379,7 +377,7 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	self.memberPool:ReleaseAll();
 	if (numMembers <= 10) then
 		for i=1, numMembers do
-			local name, classFileName, className, role, level, isLeader = C_LFGList.GetSearchResultMemberInfo(resultID, i);
+			local name, role, classFileName, className, level, isLeader = C_LFGList.GetSearchResultMemberInfo(resultID, i);
 			if (name and not isLeader) then -- Leader handled above.
 				local frame = self.memberPool:Acquire();
 				local classColor = RAID_CLASS_COLORS[classFileName];
@@ -498,9 +496,7 @@ function LFGBrowseGroupDataDisplay_Update(self, activityID, displayData, disable
 	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.PlayerCount ) then
 		self.PlayerCount:Show();
 		LFGBrowseGroupDataDisplayPlayerCount_Update(self.PlayerCount, displayData, disabled);
-	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.HideAll ) then
-		-- Handled above!
-	else
+	elseif ( activityInfo.displayType ~= Enum.LFGListDisplayType.HideAll ) then
 		GMError("Unknown display type");
 	end
 end

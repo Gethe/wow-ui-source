@@ -35,6 +35,7 @@ function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("BAG_CLOSED");
 	self:RegisterEvent("QUEST_ACCEPTED");
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	ContainerFrame1.bagsShown = 0;
 	ContainerFrame1.bags = {};
 	ContainerFrame1.forceExtended = false;
@@ -89,6 +90,8 @@ function ContainerFrame_OnEvent(self, event, ...)
 				ContainerFrame_Update(self);
 			end
 		end
+	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
+		BackpackTokenFrame_Update();
 	end
 end
 
@@ -159,10 +162,10 @@ function ToggleBackpack()
 	else
 		ToggleBag(0);
 		-- If there are tokens watched then show the bar
-		--[[if ( ManageBackpackTokenFrame ) then
+		if ( ManageBackpackTokenFrame ) then
 			BackpackTokenFrame_Update();
 			ManageBackpackTokenFrame();
-		end]]
+		end
 	end
 end
 

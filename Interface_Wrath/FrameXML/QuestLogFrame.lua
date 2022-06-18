@@ -369,10 +369,13 @@ end
 
 function QuestLog_UpdateQuestDetails(doNotScroll)
 	QuestInfo_Display(QUEST_TEMPLATE_LOG, QuestLogDetailScrollChildFrame)
+	local numEntries, numQuests = GetNumQuestLogEntries();
 	if (not doNotScroll ) then
 		QuestLogDetailScrollFrameScrollBar:SetValue(0);
 	end	
-	QuestLogDetailScrollFrame:Show();
+	if (numEntries > 1) then
+		QuestLogDetailScrollFrame:Show();
+	end
 end
 
 function QuestLogTitleButton_OnClick(self, button)
