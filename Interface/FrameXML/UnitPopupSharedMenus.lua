@@ -174,6 +174,7 @@ function UnitPopupMenuRaid:GetMenuButtons()
 		UnitPopupSetRaidAssistButtonMixin, 
 		UnitPopupSetRaidMainTankButtonMixin,
 		UnitPopupSetRaidMainAssistButtonMixin,
+		UnitPopupSetRaidDemoteButtonMixin,
 		UnitPopupLootPromoteButtonMixin,
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 
