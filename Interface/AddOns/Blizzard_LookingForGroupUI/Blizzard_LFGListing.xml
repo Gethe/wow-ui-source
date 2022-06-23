@@ -47,7 +47,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						if ( self.onClick ) then
 							self.onClick(self, button);
 						end
-						LFGListingFrame:SetSoloRoles();
+						LFGListingFrame:SetDirty(true);
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>

@@ -177,8 +177,8 @@ ActionBarController.xml
 ..\..\Interface_TBC\FrameXML\StanceBar.xml
 OverrideActionBar.xml
 TutorialFrame.xml
-..\..\Interface_TBC\FrameXML\Minimap.xml
-GameTime.xml
+..\..\Interface_Wrath\FrameXML\Minimap.xml
+..\..\Interface_Wrath\FrameXML\GameTime.xml
 BuffFrame.xml
 LowHealthFrame.xml
 CombatFeedback.xml
@@ -247,7 +247,7 @@ MailFrame.xml
 ..\..\Interface_Wrath\FrameXML\PetStable.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
-..\..\Interface_TBC\FrameXML\WorldStateFrame.xml
+..\..\Interface_Wrath\FrameXML\WorldStateFrame.xml
 RatingMenuFrame.xml
 ..\..\Interface_Wrath\FrameXML\TalentFrameBase.lua
 Blizzard_TalentUITemplates.xml
@@ -274,13 +274,12 @@ PVPHelper.xml
 ProductChoice.xml
 ..\SharedXML\ModelPreviewFrame.xml
 ClassTrainerFrameTemplates.xml
-BattlefieldFrame.xml
+..\..\Interface_Wrath\FrameXML\BattlefieldFrame.xml
 ..\SharedXML\ArenaUtil.lua
 ArenaFrame.xml
 ArenaRegistrarFrame.xml
 ..\..\Interface_Wrath\FrameXML\PVPFrame.xml
 RuneFrame.xml
-..\..\Interface_Wrath\FrameXML\EquipmentManager.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

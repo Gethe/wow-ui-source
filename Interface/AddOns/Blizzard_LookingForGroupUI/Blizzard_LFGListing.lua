@@ -32,6 +32,7 @@ function LFGListingMixin:OnLoad()
 	self:RegisterEvent("LFG_LIST_AVAILABILITY_UPDATE");
 	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS");
 	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TIMEOUT");
+	self:RegisterEvent("LFG_LIST_ROLE_UPDATE");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 
@@ -41,7 +42,6 @@ function LFGListingMixin:OnLoad()
 	self.viewState = LFGLISTING_VIEWSTATE_ACTIVITIES;
 
 	self:ClearUI();
-	self:LoadSoloRoles();
 	self:UpdateFrameView();
 end
 
@@ -87,6 +87,8 @@ function LFGListingMixin:OnEvent(event, ...)
 		if ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
 			StaticPopup_Show("LFG_LIST_ENTRY_EXPIRED_TIMEOUT");
 		end
+	elseif ( event == "LFG_LIST_ROLE_UPDATE" ) then
+		self:LoadSoloRoles();
 	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
 		UIDropDownMenu_Initialize(self.GroupRoleButtons.RoleDropDown, LFGListingRoleDropDown_Initialize);
 		LFGListingRoleIcon_UpdateRoleTexture(self.GroupRoleButtons.RoleIcon);
@@ -98,11 +100,13 @@ function LFGListingMixin:OnShow()
 	LFGParentFrameTab1:SetPoint("BOTTOMLEFT", 16, 43);
 	LFGParentFrameTab2:SetPoint("LEFT", LFGParentFrameTab1, "RIGHT", -14, 2);
 
-	self:LoadActiveEntry();
-
-	if (not C_LFGList.HasActiveEntryInfo()) then
+	if (C_LFGList.HasActiveEntryInfo()) then
+		self:LoadActiveEntry();
+		self:LoadSoloRoles();
+	else
 		self:SetDirty(self:IsAnyActivitySelected());
 	end
+
 	self:UpdatePostButtonEnableState();
 	self:UpdateBackButtonEnableState();
 
@@ -200,6 +204,9 @@ function LFGListingMixin:CreateOrUpdateListing()
 			C_LFGList.CreateListing(selectedActivityIDs);
 		end
 	end
+
+	-- In addition to saving our listing, also update our solo roles.
+	self:SaveSoloRoles();
 end
 
 function LFGListingMixin:RemoveListing()
@@ -306,8 +313,9 @@ end
 ----------Button Control
 -------------------------------------------------------
 function LFGListingMixin:UpdatePostButtonEnableState()
-	-- Check dirty state.
-	if (not self.dirty) then
+	-- If our dirty flag is not set, disable the Post button.
+	-- Alternatively, if we do not have an activeEntry, and also do not have any activities set, disable the Post button. (An initial listing needs at least one activity.)
+	if (not self.dirty or (not C_LFGList.HasActiveEntryInfo() and not LFGListingFrame:IsAnyActivitySelected())) then
 		self.PostButton.errorText = nil;
 		self.PostButton:SetEnabled(false);
 		return;
@@ -341,14 +349,14 @@ end
 ----------Solo Role UI
 -------------------------------------------------------
 function LFGListingMixin:LoadSoloRoles()
-	local roles = C_LFGList.GetLFGRoles();
+	local roles = C_LFGList.GetRoles();
 	self.SoloRoleButtons.Tank.CheckButton:SetChecked(roles.tank);
 	self.SoloRoleButtons.Healer.CheckButton:SetChecked(roles.healer);
 	self.SoloRoleButtons.DPS.CheckButton:SetChecked(roles.dps);
 end
 
-function LFGListingMixin:SetSoloRoles()
-	C_LFGList.SetLFGRoles({
+function LFGListingMixin:SaveSoloRoles()
+	C_LFGList.SetRoles({
 		tank   = self.SoloRoleButtons.Tank.CheckButton:GetChecked(),
 		healer = self.SoloRoleButtons.Healer.CheckButton:GetChecked(),
 		dps    = self.SoloRoleButtons.DPS.CheckButton:GetChecked(),
@@ -679,7 +687,7 @@ end
 ----------Comment
 -------------------------------------------------------
 function LFGListingComment_OnTextChanged(self, userInput)
-	if (userInput and (C_LFGList.HasActiveEntryInfo() or LFGListingFrame:IsAnyActivitySelected())) then
+	if (userInput) then
 		LFGListingFrame:SetDirty(true);
 	end
 end

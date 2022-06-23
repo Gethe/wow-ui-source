@@ -1,4 +1,5 @@
 --Readability == win
+local FirstTime = true;
 local RUNETYPE_BLOOD = 1;
 local RUNETYPE_FROST = 2;
 local RUNETYPE_UNHOLY = 3;
@@ -47,6 +48,7 @@ function RuneButton_OnUpdate (self, elapsed, ...)
 	local index = self:GetID();
 
 	local start, duration, runeReady = GetRuneCooldown(index); 
+	
 	local displayCooldown = (runeReady and 0) or 1;
 	
 	if self.spentAnimActive == false and displayCooldown and start > 0 and duration > 0 then
@@ -65,7 +67,6 @@ end
 function RuneButton_Update (self, rune, dontFlash)
 	rune = rune or self:GetID();
 	local runeType = GetRuneType(rune);
-
 
 	if ( (not dontFlash) and (runeType) and (runeType ~= self.rune.runeType)) then 
 		self.shine:SetVertexColor(unpack(runeColors[runeType]));
@@ -117,6 +118,10 @@ end
 
 function RuneFrame_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		if ( FirstTime ) then
+			RuneFrame_FixRunes(self);
+			FirstTime = false;
+		end
 		for rune in next, self.runes do
 			RuneButton_Update(self.runes[rune], rune, true);
 		end
@@ -125,10 +130,10 @@ function RuneFrame_OnEvent (self, event, ...)
 		if ( not usable and rune and self.runes[rune] ) then
 			self.runes[rune]:SetScript("OnUpdate", RuneButton_OnUpdate);
 		elseif ( usable and rune and self.runes[rune] ) then
-			--self.runes[rune].shine:SetVertexColor(1, 1, 1);
-			--RuneButton_ShineFadeIn(self.runes[rune].shine)
+			self.runes[rune].shine:SetVertexColor(1, 1, 1);
+			RuneButton_ShineFadeIn(self.runes[rune].shine)
 
-			--self:SetScript("OnUpdate", nil);
+			self:SetScript("OnUpdate", nil);
 		end
 	elseif ( event == "RUNE_TYPE_UPDATE" ) then		
 		local rune = ...;
@@ -161,3 +166,14 @@ function RuneButton_ShineFadeOut(self)
 	UIFrameFadeOut(self, 0.5);
 end
 
+function RuneFrame_FixRunes	(runeFrame)	--We want to swap where frost and unholy appear'
+	local temp;
+	
+	temp = runeFrame.runes[3];
+	runeFrame.runes[3] = runeFrame.runes[5];
+	runeFrame.runes[5] = temp;
+	
+	temp = runeFrame.runes[4];
+	runeFrame.runes[4] = runeFrame.runes[6];
+	runeFrame.runes[6] = temp;
+end

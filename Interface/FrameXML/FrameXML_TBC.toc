@@ -176,7 +176,7 @@ ActionBarController.xml
 ..\..\Interface_TBC\FrameXML\StanceBar.xml
 TutorialFrame.xml
 ..\..\Interface_TBC\FrameXML\Minimap.xml
-GameTime.xml
+..\..\Interface_Vanilla\FrameXML\GameTime.xml
 BuffFrame.xml
 LowHealthFrame.xml
 CombatFeedback.xml

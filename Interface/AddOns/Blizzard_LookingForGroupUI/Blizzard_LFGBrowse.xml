@@ -18,22 +18,22 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-70" y="0"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="RoleTank" parentArray="Roles" atlas="groupfinder-icon-role-large-tank">
+						<Texture parentKey="Role1" parentArray="Roles">
 							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.RolesText" relativePoint="RIGHT" x="4" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="RoleDPS" parentArray="Roles" atlas="groupfinder-icon-role-large-dps">
+						<Texture parentKey="Role2" parentArray="Roles">
 							<Size x="18" y="18"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.RoleTank" relativePoint="CENTER" x="18" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.Role1" relativePoint="CENTER" x="18" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="RoleHealer" parentArray="Roles" atlas="groupfinder-icon-role-large-heal">
+						<Texture parentKey="Role3" parentArray="Roles">
 							<Size x="18" y="18"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.RoleHealer" relativePoint="CENTER" x="18" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.Role2" relativePoint="CENTER" x="18" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -188,10 +188,28 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="4" y="-1"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="Role">
+				<Texture parentKey="Role" parentArray="Roles">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="LFGBrowseSearchEntryTooltipGroupLeader" inherits="LFGBrowseSearchEntryTooltipGroupMember" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Role2" parentArray="Roles" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Role" relativePoint="CENTER" x="16" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Role3" parentArray="Roles" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Role2" relativePoint="CENTER" x="16" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -230,7 +248,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Leader" inherits="LFGBrowseSearchEntryTooltipGroupMember">
+			<Frame parentKey="Leader" inherits="LFGBrowseSearchEntryTooltipGroupLeader">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.LeaderIcon" relativePoint="TOPRIGHT" x="0" y="-2"/> <!-- Reanchored in script. -->
 				</Anchors>

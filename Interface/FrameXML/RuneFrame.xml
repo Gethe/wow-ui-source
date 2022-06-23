@@ -2,33 +2,11 @@
 ..\FrameXML\UI.xsd">
   <Script file="RuneFrame.lua"/>
   <Button name="RuneButtonIndividualTemplate" virtual="true" hidden="false">
-		<Animations>
-			<AnimationGroup parentKey="energize" setToFinalAlpha="true">
-				<Alpha childKey="EnergizeGlow" smoothing="IN_OUT" duration="0.125" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="EnergizeGlow" startDelay="0.25" smoothing="IN_OUT" duration="0.325" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha parentKey="RuneFade" childKey="Rune" duration=".1" order="1" fromAlpha="0" toAlpha="1"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="spent" setToFinalAlpha="true">
-				<Alpha parentKey="RuneFade" childKey="Rune" startDelay="0.15" duration="0.1" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha parentKey="RuneFlash" childKey="Rune2" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scripts>
-					<OnPlay>
-						self:GetParent():GetParent():OnSpentAnimStarted();
-					</OnPlay>
-					<OnFinished>
-						self:GetParent():GetParent():OnSpentAnimStopped();
-					</OnFinished>
-					<OnStop>
-						self:GetParent():GetParent():OnSpentAnimStopped();
-					</OnStop>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
     <Size>
       <AbsDimension x="18" y="18"/>
     </Size>
     <Frames>
-		<Cooldown name="$parentCooldown" reverse="false" drawEdge="true" drawBling="true" hideCountdownNumbers="true" useCircularEdge="true" inherits="CooldownFrameTemplate">
+		<Cooldown name="$parentCooldown" reverse="false" drawEdge="true"  hideCountdownNumbers="true" useCircularEdge="true" inherits="CooldownFrameTemplate" drawBling="false">
 			<Size x="15" y="15"/>
 			<Anchors>
 			  <Anchor point="CENTER">
@@ -37,9 +15,6 @@
 				</Offset>
 			  </Anchor>
 			</Anchors>
-			<BlingTexture file="Interface\Cooldown\star4">
-				<Color r="1" g="1" b="1" a="1"/>
-			</BlingTexture>
 		</Cooldown>
 		<Frame name="$parentBorder" frameStrata="LOW">
 			<Size x="24" y="24"/>
@@ -138,7 +113,7 @@
     </Anchors>
   </Button>
 
-  <Button name="Rune3" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="3">
+  <Button name="Rune3" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="5">
     <Anchors>
       <Anchor point="LEFT"  relativeTo="Rune2" relativePoint="RIGHT">
         <Offset>
@@ -148,7 +123,7 @@
     </Anchors>
   </Button>
 
-  <Button name="Rune4" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="4">
+  <Button name="Rune4" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="6">
     <Anchors>
       <Anchor point="LEFT" relativeTo="Rune3" relativePoint="RIGHT">
         <Offset>
@@ -158,7 +133,7 @@
     </Anchors>
   </Button>
 
-  <Button name="Rune5" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="5">
+  <Button name="Rune5" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="3">
     <Anchors>
       <Anchor point="LEFT" relativeTo="Rune4" relativePoint="RIGHT">
         <Offset>
@@ -168,7 +143,7 @@
     </Anchors>
   </Button>
 
-  <Button name="Rune6" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="6">
+  <Button name="Rune6" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="4">
     <Anchors>
       <Anchor point="LEFT" relativeTo="Rune5" relativePoint="RIGHT">
         <Offset>

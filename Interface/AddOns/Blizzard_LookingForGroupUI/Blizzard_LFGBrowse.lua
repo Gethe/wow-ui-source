@@ -336,6 +336,7 @@ end
 function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	local numMembers = searchResultInfo.numMembers;
+	local isSolo = numMembers == 1;
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 
 	-- Delisted Alert
@@ -357,14 +358,23 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 		self.LeaderIcon:Hide();
 		self.Leader:SetPoint("TOPLEFT", self.LeaderIcon, "TOPLEFT", 0, -2)
 	end
-	local name, role, classFileName, className, level, areaName = C_LFGList.GetSearchResultLeaderInfo(resultID);
+	local name, role, classFileName, className, level, areaName, soloRoleTank, soloRoleHealer, soloRoleDPS = C_LFGList.GetSearchResultLeaderInfo(resultID);
 	if (name) then
 		local classColor = RAID_CLASS_COLORS[classFileName];
 		self.Leader.Name:SetWidth(0); -- Reset the width so that we auto-expand to the text size correctly.
 		self.Leader.Name:SetText(name);
 		self.Leader.Name:SetTextColor(classColor.r, classColor.g, classColor.b)
 		self.Leader.Level:SetText(LEVEL_ABBR .. " " .. level);
-		self.Leader.Role:SetAtlas(LFGBROWSE_GROUPDATA_ATLASES[role], false);
+		if (isSolo) then
+			LFGBrowseUtil_MapRoleStatesToRoleIcons(self.Leader.Roles, soloRoleTank, soloRoleHealer, soloRoleDPS);
+		else
+			-- If we're in a party, just show our party-level role.
+			self.Leader.Roles[1]:SetAtlas(LFGBROWSE_GROUPDATA_ATLASES[role], false);
+			self.Leader.Roles[1]:Show();
+			for i = 2,#self.Leader.Roles do
+				self.Leader.Roles[i]:Hide();
+			end
+		end
 		self.Leader:Show();
 
 		maxNameWidth = math.max(maxNameWidth, self.Leader.Name:GetWidth());
@@ -416,7 +426,11 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	end
 
 	-- Member Count
-	self.MemberCount:SetText(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
+	if (isSolo) then
+		self.MemberCount:SetText(string.format(LFG_LIST_TOOLTIP_MEMBERS_SIMPLE, numMembers));
+	else
+		self.MemberCount:SetText(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
+	end
 
 	-- Activities
 	local lastActivityString = nil
@@ -511,8 +525,16 @@ function LFGBrowseGroupDataDisplayComment_Update(self, text, disabled)
 end
 
 function LFGBrowseGroupDataDisplaySolo_Update(self, displayData)
-	-- TODO: IMPLEMENT ONCE SOLO ROLES ARE IN
-	self:Hide();
+	local isTank = displayData.LEADER_ROLE_TANK;
+	local isHealer = displayData.LEADER_ROLE_HEALER;
+	local isDPS = displayData.LEADER_ROLE_DAMAGER;
+
+	if (not isTank and not isHealer and not isDPS) then
+		self:Hide();
+	else
+		LFGBrowseUtil_MapRoleStatesToRoleIcons(self.Roles, isTank, isHealer, isDPS);
+		self:Show();
+	end
 end
 
 function LFGBrowseGroupDataDisplayRoleCount_Update(self, displayData, disabled)
@@ -919,4 +941,20 @@ function LFGBrowseUtil_GetInviteActionForResult(resultID)
 	end
 
 	return inviteText, inviteFunc;
+end
+function LFGBrowseUtil_MapRoleStatesToRoleIcons(iconArray, isTank, isHealer, isDPS)
+	-- For each role flag, put its icon in the first available button slot. Then hide the rest.
+	-- iconArray must be an array of (at least) 3 Textures.
+	local roleStates = { isTank, isHealer, isDPS };
+	local roleButtonIndex = 1;
+	for i, state in ipairs(roleStates) do
+		if (state) then
+			iconArray[roleButtonIndex]:SetAtlas(LFGBROWSE_GROUPDATA_ATLASES[LFGBROWSE_GROUPDATA_ROLE_ORDER[i]], false);
+			iconArray[roleButtonIndex]:Show();
+			roleButtonIndex = roleButtonIndex+1;
+		end
+	end
+	for j = roleButtonIndex,#iconArray do
+		iconArray[j]:Hide();
+	end
 end

@@ -54,6 +54,10 @@ function QuestLogTitleButton_OnLoad(self)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
+
+	-- anchor the check to the normal text now since we can't do it with the way it's currently setup in XML
+	local name = self:GetName();
+	self.check:SetPoint("LEFT", name.."NormalText", "RIGHT", 2, 0);
 end
 
 function QuestLogTitleButton_OnEvent(self, event)
@@ -308,6 +312,9 @@ function QuestLog_Update(self)
 				questLogTitle:UnlockHighlight();
 			end
 
+			-- Resize text
+			QuestLogTitleButton_Resize(questLogTitle);
+
 		else
 			questLogTitle:Hide();
 		end
@@ -378,9 +385,49 @@ function QuestLog_UpdateQuestDetails(doNotScroll)
 	end
 end
 
+-- HACK ALERT --
+-- QuestLogTitleButton_Resize contains a couple of big hacks to compensate for some weaknesses in the UI system
+function QuestLogTitleButton_Resize(questLogTitle)
+	-- the purpose of this function is to resize the contents of the questLogTitle button to fit inside its width
+
+	-- first reset the width of the button's font string (called normal text)
+	local questNormalText = questLogTitle.normalText;
+	-- HACK: in order to reset the width of the font string to be exactly the width of the quest title text,
+	-- we have to explicitly set the font string's width to 0 and then call SetText on the button
+	questNormalText:SetWidth(0);
+	questLogTitle:SetText(questLogTitle:GetText());
+
+	local questTitleTag = questLogTitle.tag;
+	local questCheck = questLogTitle.check;
+
+	-- find the right edge of the text
+	-- HACK: Unfortunately we can't just call questTitleTag:GetLeft() or questLogTitle:GetRight() to find right edges.
+	-- The reason why is because SetWidth may be called on the questLogTitle button before we enter this function. The
+	-- results of a SetWidth are not calculated until the next update tick; so in order to get the most up-to-date
+	-- right edge, we call GetLeft() + GetWidth() instead of just GetRight()
+	local rightEdge;
+	if ( questTitleTag:IsShown() ) then
+		-- adjust the normal text to not overrun the title tag
+		if ( questCheck:IsShown() ) then
+			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth() - questTitleTag:GetWidth() - 4 - questCheck:GetWidth() - 2;
+		else
+			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth() - questTitleTag:GetWidth() - 4;
+		end
+	else
+		-- adjust the normal text to not overrun the button
+		if ( questCheck:IsShown() ) then
+			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth() - questCheck:GetWidth() - 2;
+		else
+			rightEdge = questLogTitle:GetLeft() + questLogTitle:GetWidth();
+		end
+	end
+	-- subtract from the text width the number of pixels that overrun the right edge
+	local questNormalTextWidth = questNormalText:GetWidth() - max(questNormalText:GetRight() - rightEdge, 0);
+	questNormalText:SetWidth(questNormalTextWidth);
+end
+
 function QuestLogTitleButton_OnClick(self, button)
 	local questName = self:GetText();
-	local questIndex = self:GetID() + HybridScrollFrame_GetOffset(QuestLogListScrollFrame);
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		-- If header then return
 		if ( self.isHeader ) then
@@ -395,7 +442,7 @@ function QuestLogTitleButton_OnClick(self, button)
 		end
 
 		-- Shift-click toggles quest-watch on this quest.
-		_QuestLog_ToggleQuestWatch(questIndex);
+		_QuestLog_ToggleQuestWatch(self:GetID());
 		-- Set an error message if trying to show too many quests
 		if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then
 			UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
@@ -425,36 +472,33 @@ function QuestLogTitleButton_OnLeave(self)
 	GameTooltip:Hide();
 end
 
-function QuestLog_UpdatePartyInfoTooltip(self)
-	local index = self:GetID();
-	local questName = tostring(self:GetText());
-	local questID = GetQuestIDFromLogIndex(index);
+function QuestLog_UpdatePartyInfoTooltip(questLogTitle)
 	local numPartyMembers = GetNumSubgroupMembers();
-
-	if ( numPartyMembers == 0 or self.isHeader ) then
-		EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, questName, questID, false);
+	if ( numPartyMembers == 0 or questLogTitle.isHeader ) then
 		return;
 	end
-	EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, questName, questID, true);
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
-	
-	local questLogTitleText = GetQuestLogTitle(index);
-	GameTooltip:SetText(questLogTitleText);
 
-	local partyMemberOnQuest;
+	GameTooltip_SetDefaultAnchor(GameTooltip, questLogTitle);
+
+	local questIndex = questLogTitle:GetID();
+	local title = GetQuestLogTitle(questIndex);
+	GameTooltip:SetText(title);
+
+	local partyMemberOnQuest = false;
 	for i=1, numPartyMembers do
-		if ( IsUnitOnQuest(index, "party"..i) ) then
+		if ( IsUnitOnQuest(questIndex, "party"..i) ) then
 			if ( not partyMemberOnQuest ) then
 				GameTooltip:AddLine(HIGHLIGHT_FONT_COLOR_CODE..PARTY_QUEST_STATUS_ON..FONT_COLOR_CODE_CLOSE);
-				partyMemberOnQuest = 1;
+				partyMemberOnQuest = true;
 			end
 			GameTooltip:AddLine(LIGHTYELLOW_FONT_COLOR_CODE..UnitName("party"..i)..FONT_COLOR_CODE_CLOSE);
 		end
 	end
 	if ( not partyMemberOnQuest ) then
-		GameTooltip:AddLine(HIGHLIGHT_FONT_COLOR_CODE..PARTY_QUEST_STATUS_NONE..FONT_COLOR_CODE_CLOSE);
+		GameTooltip:Hide();
+	else
+		GameTooltip:Show();
 	end
-	GameTooltip:Show();
 end
 
 function QuestLogRewardItem_OnClick(self)
