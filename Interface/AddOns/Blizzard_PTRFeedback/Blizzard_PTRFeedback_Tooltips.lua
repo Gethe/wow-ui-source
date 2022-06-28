@@ -146,12 +146,9 @@ function PTR_IssueReporter.SetupTalentTooltips()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupGlyphTooltips()
-    local bindingFunc = function(EventCallbackData, tooltip, glyphName, glyphSpellID)
+    local bindingFunc = function(sender, frame, glyphName, glyphSpellID)
         if (glyphName) and (glyphSpellID) then
-            GameTooltip:SetOwner(self, "ANCHOR_NONE")
-            GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0)
             PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.glyph, glyphSpellID, glyphName)
-            GameTooltip:Show()
         end
     end
 

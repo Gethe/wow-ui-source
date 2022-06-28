@@ -338,6 +338,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for PVP
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+
+	-- Events for Reporting SYSTEM
+	self:RegisterEvent("REPORT_PLAYER_RESULT");
 end
 
 function UIParent_OnShow(self)
@@ -1534,6 +1537,16 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
 		IslandsQueue_LoadUI(); 
 		ShowUIPanel(IslandsQueueFrame); 
+	-- Events for Reporting system
+	elseif (event == "REPORT_PLAYER_RESULT") then
+		local success = ...;
+		if (success) then
+			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMITTED_SUCCESSFULLY);
+			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
+		else
+			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMISSION_FAILED);
+			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
+		end
 	end
 end
 

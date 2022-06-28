@@ -10,14 +10,7 @@ function ReportFrameMixin:OnLoad()
 end		
 
 function ReportFrameMixin:OnHide()
-	self.MinorCategoryButtonPool:ReleaseAll();
-	self.selectedMajorType = nil; 
-	self.Comment:ClearAllPoints(); 
-	self.reporPlayerLocation = nil;
-	self.reportInfo = nil; 
-	self.minorCategoryFlags:ClearAll();
-	self.Comment.EditBox:SetText("");
-	self:Layout(); 
+	self:Reset();
 	Enable_BagButtons();
 end
 
@@ -26,6 +19,17 @@ function ReportFrameMixin:OnEvent(event, ...)
 		self:UpdateThankYouMessage(true);
 	end		
 end	
+
+function ReportFrameMixin:Reset()
+	self.MinorCategoryButtonPool:ReleaseAll();
+	self.selectedMajorType = nil; 
+	self.Comment:ClearAllPoints(); 
+	self.reporPlayerLocation = nil;
+	self.reportInfo = nil; 
+	self.minorCategoryFlags:ClearAll();
+	self.Comment.EditBox:SetText("");
+	self:Layout(); 
+end
 
 function ReportFrameMixin:UpdateThankYouMessage(showThankYouMessage)
 	self.MinorCategoryButtonPool:ReleaseAll(); 
@@ -73,6 +77,7 @@ function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerL
 	self:SetShown(not sendReportWithoutDialog);
 	if (sendReportWithoutDialog) then 
 		self:SendReport(); 
+		self:Reset();
 		return; 
 	end
 

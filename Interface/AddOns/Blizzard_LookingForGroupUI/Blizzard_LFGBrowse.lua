@@ -101,10 +101,10 @@ end
 
 function LFGBrowseMixin:UpdateResults()
 	self.selectionBehavior:ClearSelections();
+	self.ScrollBox:ClearDataProvider();
 
 	if ( self.searching ) then
 		self.SearchingSpinner:Show();
-		self.ScrollBox:ClearDataProvider();
 	else
 		self.SearchingSpinner:Hide();
 		
@@ -630,40 +630,25 @@ local LFGBROWSE_SEARCH_ENTRY_MENU = {
 	},
 	{
 		text = LFG_LIST_REPORT_GROUP_FOR,
-		hasArrow = true,
 		notCheckable = true,
-		menuList = {
-			{
-				text = LFG_LIST_SPAM,
-				func = function(_, id)
-					CloseDropDownMenus();
-					C_LFGList.ReportSearchResult(id, "lfglistspam");
-					LFGBrowseFrame:RefreshResults();
-				end,
-				arg1 = nil, --Search result ID goes here
-				notCheckable = true,
-			},
-			{
-				text = LFG_LIST_BAD_DESCRIPTION,
-				func = function(_, id)
-					C_LFGList.ReportSearchResult(id, "lfglistcomment");
-					LFGBrowseFrame:RefreshResults();
-				end,
-				arg1 = nil, --Search reuslt ID goes here
-				notCheckable = true,
-				disabled = nil,	--Disabled if the description is just an empty string
-			},
-			{
-				text = LFG_LIST_BAD_LEADER_NAME,
-				func = function(_, id)
-					C_LFGList.ReportSearchResult(id, "badplayername");
-					LFGBrowseFrame:RefreshResults();
-				end,
-				arg1 = nil, --Search reuslt ID goes here
-				notCheckable = true,
-				disabled = nil,	--Disabled if we don't have a name for the leader
-			},
-		},
+		arg1 = nil, --Search result ID goes here
+		arg2 = nil, --Leader name goes here
+		func = function(_, id, name) 
+			CloseDropDownMenus();
+			LFGBrowseUtil_ReportListing(id, name);
+			LFGBrowseFrame:UpdateResultList();
+		end,
+	},
+	{
+		text = REPORT_GROUP_FINDER_ADVERTISEMENT,
+		notCheckable = true,
+		arg1 = nil, --Search result ID goes here
+		arg2 = nil, --Leader name goes here
+		func = function(_, id, name) 
+			CloseDropDownMenus();
+			LFGBrowseUtil_ReportAdvertisement(id, name);
+			LFGBrowseFrame:UpdateResultList();
+		end;
 	},
 	{
 		text = CANCEL,
@@ -678,17 +663,18 @@ function LFGBrowseMixin:GetSearchEntryMenu(resultID)
 	LFGBROWSE_SEARCH_ENTRY_MENU[2].arg1 = searchResultInfo.leaderName;
 	LFGBROWSE_SEARCH_ENTRY_MENU[2].disabled = not searchResultInfo.leaderName;
 
-	LFGBROWSE_SEARCH_ENTRY_MENU[3].arg1 = searchResultInfo.leaderName;
-	LFGBROWSE_SEARCH_ENTRY_MENU[3].disabled = not searchResultInfo.leaderName;
 	local inviteText, inviteFunc = LFGBrowseUtil_GetInviteActionForResult(resultID);
 	LFGBROWSE_SEARCH_ENTRY_MENU[3].text = inviteText;
+	LFGBROWSE_SEARCH_ENTRY_MENU[3].arg1 = searchResultInfo.leaderName;
 	LFGBROWSE_SEARCH_ENTRY_MENU[3].arg2 = inviteFunc;
+	LFGBROWSE_SEARCH_ENTRY_MENU[3].disabled = not searchResultInfo.leaderName;
 
-	LFGBROWSE_SEARCH_ENTRY_MENU[4].menuList[1].arg1 = resultID;
-	LFGBROWSE_SEARCH_ENTRY_MENU[4].menuList[2].arg1 = resultID;
-	LFGBROWSE_SEARCH_ENTRY_MENU[4].menuList[2].disabled = (searchResultInfo.comment == "");
-	LFGBROWSE_SEARCH_ENTRY_MENU[4].menuList[3].arg1 = resultID;
-	LFGBROWSE_SEARCH_ENTRY_MENU[4].menuList[3].disabled = not searchResultInfo.leaderName;
+	LFGBROWSE_SEARCH_ENTRY_MENU[4].arg1 = resultID;
+	LFGBROWSE_SEARCH_ENTRY_MENU[4].arg2 = searchResultInfo.leaderName;
+
+	LFGBROWSE_SEARCH_ENTRY_MENU[5].arg1 = resultID;
+	LFGBROWSE_SEARCH_ENTRY_MENU[5].arg2 = searchResultInfo.leaderName;
+
 	return LFGBROWSE_SEARCH_ENTRY_MENU;
 end
 
@@ -957,4 +943,20 @@ function LFGBrowseUtil_MapRoleStatesToRoleIcons(iconArray, isTank, isHealer, isD
 	for j = roleButtonIndex,#iconArray do
 		iconArray[j]:Hide();
 	end
+end
+
+function LFGBrowseUtil_ReportListing(searchResultID, leaderName)
+	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.GroupFinderPosting);
+	reportInfo:SetGroupFinderSearchResultID(searchResultID);
+	ReportFrame:InitiateReport(reportInfo, leaderName); 
+end
+
+function LFGBrowseUtil_ReportAdvertisement(searchResultID, leaderName)
+	ReportFrame:Hide(); -- Since we're about to submit a brand new report, close any existing report frames.
+	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.GroupFinderPosting);
+	reportInfo:SetGroupFinderSearchResultID(searchResultID);
+	ReportFrame:SetMinorCategoryFlag(Enum.ReportMinorCategory.Advertisement, true);
+	ReportFrame:SetMajorType(Enum.ReportMajorCategory.InappropriateCommunication);
+	local sendReportWithoutDialog = true; 
+	ReportFrame:InitiateReport(reportInfo, leaderName, nil, nil, sendReportWithoutDialog); 
 end
