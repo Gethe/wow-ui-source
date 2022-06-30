@@ -72,9 +72,9 @@ function UnitPopupSharedUtil:GetFullPlayerName()
 	local dropdownFrame = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 	local fullName = dropdownFrame.name; 
 	if dropdownFrame.isRafRecruit and dropdownFrame.accountInfo.gameAccountInfo.characterName and dropdownFrame.accountInfo.gameAccountInfo.realmName then
-		fullname = dropdownFrame.accountInfo.gameAccountInfo.characterName.."-"..dropdownFrame.accountInfo.gameAccountInfo.realmName;
+		fullName = dropdownFrame.accountInfo.gameAccountInfo.characterName.."-"..dropdownFrame.accountInfo.gameAccountInfo.realmName;
 	elseif ( dropdownFrame.server and ((not dropdownFrame.unit and GetNormalizedRealmName() ~= dropdownFrame.server) or (dropdownFrame.unit and UnitRealmRelationship(dropdownFrame.unit) ~= LE_REALM_RELATION_SAME)) ) then
-		fullname = dropdownFrame.name.."-"..dropdownFrame.server;
+		fullName = dropdownFrame.name.."-"..dropdownFrame.server;
 	end
 	return fullName; 
 end		

@@ -208,7 +208,7 @@ function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
 	local locals = debuglocals(DEBUGLOCALS_LEVEL);
 
 	if LogAuroraClient then
-		LogAuroraClient("ae", "Lua Error", "message", msg, "stack", stack);
+		LogAuroraClient("ae", "Lua Error ", "message", msg, "stack", stack);
 	end
 
 	self:DisplayMessageInternal(msg, warnType, keepHidden, locals, msg.."\n"..stack);

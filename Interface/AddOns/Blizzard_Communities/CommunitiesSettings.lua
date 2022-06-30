@@ -106,8 +106,9 @@ function CommunitiesSettingsDialogMixin:SetClubId(clubId)
 		self.MessageOfTheDay.EditBox:SetText(clubInfo.broadcast);
 		self.CrossFactionToggle.CheckButton:SetChecked(clubInfo.crossFaction);
 
-		local canChangeCrossFaction = not C_Club.DoesCommunityHaveMembersOfTheOppositeFaction(clubId); 
-		self.CrossFactionToggle.CheckButton:SetEnabled(canChangeCrossFaction);
+		local canChangeCrossFaction = not C_Club.DoesCommunityHaveMembersOfTheOppositeFaction(clubId);
+		local disableCrossFactionButton = clubInfo.crossFaction and not canChangeCrossFaction;
+		self.CrossFactionToggle.CheckButton:SetEnabled(not disableCrossFactionButton);
 
 		local clubPostingInfo = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubId);
 		if (clubPostingInfo) then

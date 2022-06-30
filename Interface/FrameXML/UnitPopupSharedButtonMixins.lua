@@ -511,6 +511,10 @@ function UnitPopupBnetSuggestInviteButtonMixin:GetText()
 	return SUGGEST_INVITE; 
 end
 
+function UnitPopupBnetSuggestInviteButtonMixin:CanShow()
+	return UnitPopupBnetInviteButtonMixin.CanShow(self);
+end
+
 UnitPopupBnetRequestInviteButtonMixin = CreateFromMixins(UnitPopupBnetInviteButtonMixin);
 function UnitPopupBnetRequestInviteButtonMixin:GetButtonName()
 	return "BN_REQUEST_INVITE";
@@ -519,6 +523,10 @@ end
 function UnitPopupBnetRequestInviteButtonMixin:GetText()
 	return REQUEST_INVITE; 
 end 
+
+function UnitPopupBnetRequestInviteButtonMixin:CanShow()
+	return UnitPopupBnetInviteButtonMixin.CanShow(self);
+end
 
 UnitPopupBnetTargetButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupBnetTargetButtonMixin:GetText()
@@ -902,9 +910,18 @@ function UnitPopupReportGroupMemberButtonMixin:CanShow()
 	return UnitPopupReportButtonMixin.CanShow(self);
 end 
 
+UnitPopupReportPvpScoreboardButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
+function UnitPopupReportPvpScoreboardButtonMixin:GetText()
+	return REPORT_PVP_SCOREBOARD;
+end 
+
+function UnitPopupReportPvpScoreboardButtonMixin:GetReportType()
+	return Enum.ReportType.PvPScoreboard;
+end
+
 UnitPopupReportInWorldButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
 function UnitPopupReportInWorldButtonMixin:GetText()
-	return REPORT_IN_WORLD_PLAYER; 
+	return REPORT_IN_WORLD_PLAYER;
 end 
 
 function UnitPopupReportInWorldButtonMixin:GetReportType()

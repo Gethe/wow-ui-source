@@ -254,10 +254,22 @@ function CharacterCreateMixin:BeginVASTransaction()
 	end
 end
 
+function CharacterCreateMixin:IsVASErrorUserFixable(errorID)
+	return errorID == Enum.VasError.NameNotAvailable or errorID == Enum.VasError.DuplicateCharacterName;
+end
+
 function CharacterCreateMixin:OnStoreVASPurchaseError()
 	if self.vasType then
 		local displayMsg = VASErrorData_GetCombinedMessage(self.vasInfo.selectedCharacterGUID);
-		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg);
+		local errors = C_StoreSecure.GetVASErrors();
+		local exitAfterError = false;
+		for index, errorID in ipairs(errors) do
+			if not self:IsVASErrorUserFixable(errorID) then
+				exitAfterError = true;
+				break;
+			end
+		end
+		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, exitAfterError);
 	end
 end
 
@@ -268,7 +280,8 @@ function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchase
 			CharacterSelect.selectGuid = self.vasInfo.selectedCharacterGUID;
 			CharacterCreateFrame:Exit();
 		else
-			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg);
+			local exitAfterError = not self:IsVASErrorUserFixable(vasPurchaseResult);
+			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, exitAfterError);
 		end
 	end
 end
@@ -1473,6 +1486,9 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 		return (currentRace == raceData.raceID and currentFaction == faction);
 	elseif CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
 		local _, currentFaction = C_PaidServices.GetCurrentFaction();
+		if CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+			currentFaction = select(29, GetCharacterInfoByGUID(CharacterCreateFrame.vasInfo.selectedCharacterGUID));
+		end
 		local currentClass = C_PaidServices.GetCurrentClassID();
 		return (currentFaction ~= faction and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass));
 	elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE then

@@ -174,6 +174,7 @@ function UnitPopupMenuRaid:GetMenuButtons()
 		UnitPopupSetRaidAssistButtonMixin, 
 		UnitPopupSetRaidMainTankButtonMixin,
 		UnitPopupSetRaidMainAssistButtonMixin,
+		UnitPopupSetRaidDemoteButtonMixin,
 		UnitPopupLootPromoteButtonMixin,
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 
@@ -417,7 +418,16 @@ UnitPopupMenuWorldStateScore = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("WORLD_STATE_SCORE", UnitPopupMenuWorldStateScore);
 function UnitPopupMenuWorldStateScore:GetMenuButtons()
 	return {
-		UnitPopupReportInWorldButtonMixin, 
+		UnitPopupReportPvpScoreboardButtonMixin, 
 		UnitPopupCancelButtonMixin, 
+	}
+end
+
+UnitPopupMenuPvpScoreboard = CreateFromMixins(UnitPopupTopLevelMenuMixin)
+UnitPopupManager:RegisterMenu("PVP_SCOREBOARD", UnitPopupMenuPvpScoreboard);
+function UnitPopupMenuPvpScoreboard:GetMenuButtons()
+	return {
+		UnitPopupReportPvpScoreboardButtonMixin,
+		UnitPopupCancelButtonMixin,
 	}
 end

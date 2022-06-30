@@ -2155,13 +2155,14 @@ function DisabledTooltipButtonMixin:OnEnter()
 	if not self:IsEnabled() then
 		local disabledTooltip, disabledTooltipAnchor = self:GetDisabledTooltip();
 		if disabledTooltip ~= nil then
-			GameTooltip_ShowDisabledTooltip(GameTooltip, self, disabledTooltip, disabledTooltipAnchor);
+			GameTooltip_ShowDisabledTooltip(GetAppropriateTooltip(), self, disabledTooltip, disabledTooltipAnchor);
 		end
 	end
 end
 
 function DisabledTooltipButtonMixin:OnLeave()
-	GameTooltip_Hide();
+	local tooltip = GetAppropriateTooltip();
+	tooltip:Hide();
 end
 
 function DisabledTooltipButtonMixin:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor)
