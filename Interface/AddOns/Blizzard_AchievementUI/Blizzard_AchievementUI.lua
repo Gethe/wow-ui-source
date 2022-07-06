@@ -1034,14 +1034,14 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		end
 			
 		if ( points > 0 ) then
-			--button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
+			button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
 		else
-			--button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
+			button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
 		end
 		button.description:SetText(description);
 		button.hiddenDescription:SetText(description);
 		button.numLines = ceil(button.hiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
-		--button.icon.texture:SetTexture(icon);
+		button.icon.texture:SetTexture(icon);
 		if ( completed and not button.completed ) then
 			button.completed = true;
 			button.dateCompleted:SetText(string.format(SHORTDATE, day, month, year));

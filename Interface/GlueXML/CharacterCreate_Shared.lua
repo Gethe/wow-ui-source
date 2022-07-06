@@ -255,7 +255,7 @@ function CharacterCreateRotateLeft_OnUpdate(self)
 end
 
 function CharacterCreate_UpdateCustomizationOptions()
-	for i=Enum.CharCustomizeMeta.MinValue, Enum.CharCustomizeMeta.MaxValue do
+	for i=Enum.CharCustomizationTypeMeta.MinValue, NUM_CHAR_CUSTOMIZATIONS-1 do
 		_G["CharacterCustomizationButtonFrame"..(i+1).."Text"]:SetText(C_CharacterCreation.GetCustomizationDetails(i));
 	end
 end

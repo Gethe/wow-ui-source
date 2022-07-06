@@ -142,21 +142,49 @@ function Minimap_ZoomOut()
 	MinimapZoomOut:Click();
 end
 
+local MAX_VERBOSE_LFG_ACTIVITIES_MINIMAP_TOOLTIP = 20;
 function MiniMapLFGFrame_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-	if (activeEntryInfo) then
-		local text = "";
-		for i=1, #activeEntryInfo.activityIDs do
-			local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityIDs[i]);
-			if (activityInfo and activityInfo.fullName ~= "") then
-				text = text .. activityInfo.fullName .. "\n"
-			end
-		end
 
-		if (text ~= "") then
-			GameTooltip:SetText(LFG_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			GameTooltip:AddLine(text);
+	if (activeEntryInfo) then
+		local numActivities = #activeEntryInfo.activityIDs;
+		if (numActivities > 0) then
+			local verbose = numActivities <= MAX_VERBOSE_LFG_ACTIVITIES_MINIMAP_TOOLTIP;
+			GameTooltip:SetText(LFG_LIST_MY_ACTIVITY_LIST_HEADER, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			
+			local organizedActivities = LFGUtil_OrganizeActivitiesByActivityGroup(activeEntryInfo.activityIDs);
+			local activityGroupIDs = GetKeysArray(organizedActivities);
+			LFGUtil_SortActivityGroupIDs(activityGroupIDs);
+			for _, activityGroupID in ipairs(activityGroupIDs) do
+				local activityIDs = organizedActivities[activityGroupID];
+				if (activityGroupID == 0) then -- Free-floating activities (no group)
+					for _, activityID in ipairs(activityIDs) do
+						local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+						if (activityInfo and activityInfo.fullName ~= "") then
+							GameTooltip:AddLine(activityInfo.fullName);
+						end
+					end
+				else -- Grouped activities
+					local activityGroupName = C_LFGList.GetActivityGroupInfo(activityGroupID);
+					if (verbose) then
+						GameTooltip:AddLine(activityGroupName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						for _, activityID in ipairs(activityIDs) do
+							local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+							if (activityInfo and activityInfo.fullName ~= "") then
+								GameTooltip:AddLine(string.format(LFG_LIST_INDENT, activityInfo.fullName));
+							end
+						end
+					else
+						GameTooltip:AddLine(activityGroupName.." ("..string.format(LFGBROWSE_ACTIVITY_COUNT, #activityIDs)..")", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					end
+				end
+			end
+
+			if (activeEntryInfo.comment and activeEntryInfo.comment ~= "") then
+				GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, activeEntryInfo.comment), DISABLED_FONT_COLOR.r, DISABLED_FONT_COLOR.g, DISABLED_FONT_COLOR.b);
+			end
+
 			GameTooltip:Show();
 		else
 			GameTooltip:Hide();
@@ -794,9 +822,15 @@ function MiniMapLFGDropDown_Initialize()
 	if (IsAddOnLoaded("Blizzard_LookingForGroupUI")) then
 		if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
 			local info = UIDropDownMenu_CreateInfo();
+			info.text = LFG_LIST_EDIT;
+			info.func = function() ShowLFGParentFrame(1); end;
+			info.disabled = not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing());
+			info.notCheckable = 1;
+			UIDropDownMenu_AddButton(info);
+
 			info.text = LFG_LIST_UNLIST;
 			info.func = wrapFunc(C_LFGList.RemoveListing);
-			info.disabled = not C_LFGList.HasActiveEntryInfo();
+			info.disabled = not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing());
 			info.notCheckable = 1;
 			UIDropDownMenu_AddButton(info);
 		end

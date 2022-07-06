@@ -2,11 +2,19 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TradeSkillUI.lua"/>
 	<Button name="TradeSkillSkillButtonTemplate" inherits="ClassTrainerSkillButtonTemplate" hidden="false" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCount" inherits="GameFontNormal">
+					<Size x="0" y="13"/>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Scripts>
-			<OnLoad>
-				self:SetFrameLevel(self:GetFrameLevel() + 1);
-				self.text:SetWidth(290);
-			</OnLoad>
 			<OnClick>
 				if ( IsModifiedClick() ) then
 					HandleModifiedItemClick(GetTradeSkillRecipeLink(self:GetID()));
@@ -14,18 +22,21 @@
 					TradeSkillSkillButton_OnClick(self,button);
 				end
 			</OnClick>
+			<OnLoad>
+				_G[self:GetName().."Count"]:SetPoint("LEFT", self:GetName().."Text", "RIGHT", 2, 0);
+			</OnLoad>
+			<OnEnter>
+				_G[self:GetName().."Count"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			</OnEnter>
+			<OnLeave>
+				if ( not self.isHighlighted ) then
+					_G[self:GetName().."Count"]:SetVertexColor(self.r, self.g, self.b);
+				end
+			</OnLeave>
 		</Scripts>
 	</Button>
 	<Button name="TradeSkillItemTemplate" inherits="QuestItemTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>
-				self.hasItem = 1;
-				self.UpdateTooltip = function (self)
-					GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
-					GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill, self:GetID());
-					CursorUpdate(self);
-				end;
-			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
 				GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill, self:GetID());
@@ -35,6 +46,9 @@
 				GameTooltip:Hide();
 				ResetCursor();
 			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate(self, elapsed);
+			</OnUpdate>
 			<OnClick>
 				HandleModifiedItemClick(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
 			</OnClick>
@@ -56,19 +70,28 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-                <Texture name="TradeSkillFramePortrait">
-                    <Size>
-                        <AbsDimension x="60" y="60"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="7" y="-6"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-            </Layer>
+				<Texture name="TradeSkillFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!-- Used for determining display width of skill names -->
+				<FontString name="$parentDummyString" inherits="GameFontNormal" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<Size x="0" y="0"/>
+				</FontString>
+			</Layer>
 			<Layer level="BORDER">
 				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
 					<Size>
@@ -176,14 +199,14 @@
 				</HighlightTexture>
 			</Button>
 
-			<CheckButton name="TradeSkillFrameAvailableFilterCheckButton" frameLevel="100" inherits="UICheckButtonTemplate" >
+			<CheckButton name="TradeSkillFrameAvailableFilterCheckButton" inherits="UICheckButtonTemplate" >
 				<Size>
-					<AbsDimension x="20" y="20"/>
+					<AbsDimension x="24" y="24"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="70" y="-50"/>
+							<AbsDimension x="70" y="-46"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -198,23 +221,74 @@
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						GameTooltip:SetText(CRAFT_IS_MAKEABLE_TOOLTIP, nil, nil, nil, nil, 1);
 					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<HitRectInsets>
 					<AbsInset left="0" right="-75" top="0" bottom="0"/>
 				</HitRectInsets>
 			</CheckButton>
 
+			<StatusBar name="TradeSkillRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0" enableMouse="false">
+				<Size>
+					<AbsDimension x="265" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="75" y="-36"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="CENTER">
+							<Size>
+								<AbsDimension x="0" y="9"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TradeSkillFrameTitleText">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentBorder" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size>
+								<AbsDimension x="274" y="27"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+							<Texture name="$parentBackground">
+								<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
+							</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:RegisterEvent("SKILL_LINES_CHANGED");
+					</OnLoad>
+					<OnEvent function="TradeSkillFrame_Update"/>
+				</Scripts>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarColor r="0.25" g="0.25" b="0.75" />
+			</StatusBar>
 
-			<EditBox name="TradeSearchInputBox" autoFocus="false">
+			<EditBox name="$parentEditBox" autoFocus="false">
 				<Size>
 					<AbsDimension x="128" y="20"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-45" y="-50"/>
+					<Anchor point="TOPRIGHT" relativeTo="TradeSkillRankFrame" relativePoint="BOTTOMRIGHT">
+						<Offset x="2" y="2"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
@@ -257,103 +331,25 @@
 					<OnShow>
 						self:SetText(SEARCH);
 					</OnShow>
-					<OnEnterPressed>
-						self:ClearFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
-					<OnTextChanged>
-						TradeSkillFilter_OnTextChanged(self);
-					</OnTextChanged>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnTextChanged function="TradeSkillFilter_OnTextChanged"/>
 					<OnEditFocusLost>
 						self:HighlightText(0, 0);
 						if ( self:GetText() == "" ) then
-						self:SetText(SEARCH);
+							self:SetText(SEARCH);
 						end
 					</OnEditFocusLost>
 					<OnEditFocusGained>
 						self:HighlightText();
 						if ( self:GetText() == SEARCH ) then
-						self:SetText("");
+							self:SetText("");
 						end
 					</OnEditFocusGained>
 				</Scripts>
 				<FontString inherits="ChatFontSmall"/>
 			</EditBox>
 
-			
-			<StatusBar name="TradeSkillRankFrame" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
-				<Size>
-					<AbsDimension x="268" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="73" y="-37"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentSkillName" inherits="GameFontNormalSmall">
-							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="6" y="1"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="LEFT">
-							<Size>
-								<AbsDimension x="128" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentSkillName" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="13" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="BACKGROUND">
-							<Texture name="$parentBackground">
-								<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
-							</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button name="$parentBorder">
-						<Size>
-							<AbsDimension x="281" y="32"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT">
-								<Offset>
-									<AbsDimension x="-5" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<NormalTexture name="$parentNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder" />
-					</Button>			
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:RegisterEvent("SKILL_LINES_CHANGED");
-					</OnLoad>
-					<OnEvent>
-						if ( event == "SKILL_LINES_CHANGED" ) then
-							TradeSkillFrame_Update();
-						end
-					</OnEvent>
-				</Scripts>
-				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
-				<BarColor r="0.25" g="0.25" b="0.75" />
-			</StatusBar>
-
-			
 			<Frame name="TradeSkillExpandButtonFrame">
 				<Size>
 					<AbsDimension x="54" y="32"/>
@@ -411,11 +407,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								getglobal(self:GetName()):SetText(ALL);
+								_G[self:GetName()]:SetText(ALL);
 							</OnLoad>
-							<OnClick>
-								TradeSkillCollapseAllButton_OnClick(self);
-							</OnClick>
+							<OnClick function="TradeSkillCollapseAllButton_OnClick"/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -429,12 +423,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						TradeSkillInvSlotDropDown_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						TradeSkillInvSlotDropDown_OnShow(self);
-					</OnShow>
+					<OnLoad function="TradeSkillInvSlotDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<Frame name="TradeSkillSubClassDropDown" inherits="UIDropDownMenuTemplate" id="1">
@@ -446,12 +435,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						TradeSkillSubClassDropDown_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						TradeSkillSubClassDropDown_OnShow(self);
-					</OnShow>
+					<OnLoad function="TradeSkillSubClassDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			
@@ -703,35 +687,25 @@
 								<Scripts>
 									<OnLoad>
 										self.hasItem = 1;
-										self.UpdateTooltip = function (self)
-											if ( TradeSkillFrame.selectedSkill ~= 0 ) then
-												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-												GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill);
-												CursorUpdate(self);
-											end
-										end;
 									</OnLoad>
 									<OnClick>
 										HandleModifiedItemClick(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
 									</OnClick>
-									<OnEnter>
-										if ( TradeSkillFrame.selectedSkill ~= 0 ) then
-											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-											GameTooltip:SetTradeSkillItem(TradeSkillFrame.selectedSkill);
-											CursorUpdate(self);
+									<OnEnter function="TradeSkillItem_OnEnter"/>
+									<OnLeave function="GameTooltip_HideResetCursor"/>
+									<OnUpdate>
+										if ( GameTooltip:IsOwned(self) ) then
+											TradeSkillItem_OnEnter(self);
 										end
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-										ResetCursor();
-									</OnLeave>
+										CursorOnUpdate(self);
+									</OnUpdate>
 								</Scripts>
 							</Button>
 							<Button name="TradeSkillReagent1" inherits="TradeSkillItemTemplate" id="1">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="TradeSkillReagentLabel" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="-5" y="-3"/>
+											<AbsDimension x="-2" y="-3"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -814,10 +788,25 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Frames>
+					<Frame name="$parentMask" setAllPoints="true" enableMouse="true" hidden="true">
+						<Scripts>
+							<OnEnter>
+								if (self.tooltip) then
+									GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnClick>
-						DoTradeSkill(TradeSkillFrame.selectedSkill, TradeSkillInputBox:GetNumber());
-						TradeSkillInputBox:ClearFocus();
+						if ( (not PartialPlayTime()) and (not NoPlayTime()) ) then
+							DoTradeSkill(TradeSkillFrame.selectedSkill, TradeSkillInputBox:GetNumber());
+							TradeSkillInputBox:ClearFocus();
+						end
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -833,9 +822,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(TradeSkillFrame);
-					</OnClick>
+					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
 			<Button name="TradeSkillCreateAllButton" inherits="UIPanelButtonTemplate" text="CREATE_ALL">
@@ -849,11 +836,26 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Frames>
+					<Frame name="$parentMask" setAllPoints="true" enableMouse="true" hidden="true">
+						<Scripts>
+							<OnEnter>
+								if (self.tooltip) then
+									GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnClick>
-						TradeSkillInputBox:SetNumber(TradeSkillFrame.numAvailable);
-						DoTradeSkill(TradeSkillFrame.selectedSkill, TradeSkillFrame.numAvailable);
-						TradeSkillInputBox:ClearFocus();
+						if ( (not PartialPlayTime()) and (not NoPlayTime()) ) then
+							TradeSkillInputBox:SetNumber(TradeSkillFrame.numAvailable);
+							DoTradeSkill(TradeSkillFrame.selectedSkill, TradeSkillFrame.numAvailable);
+							TradeSkillInputBox:ClearFocus();
+						end
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -870,7 +872,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						TradeSkillFrameDecrement_OnClick(self);
+						TradeSkillFrameDecrement_OnClick();
 						TradeSkillInputBox:ClearFocus();
 					</OnClick>
 				</Scripts>
@@ -879,7 +881,7 @@
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<EditBox name="TradeSkillInputBox" letters="3" historyLines="0" numeric="true" autoFocus="false">
+			<EditBox name="TradeSkillInputBox" letters="3" numeric="true" autoFocus="false">
 				<Size>
 					<AbsDimension x="30" y="20"/>
 				</Size>
@@ -931,23 +933,15 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnterPressed>
-						self:ClearFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						self:ClearFocus();
-					</OnEscapePressed>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
 					<OnTextChanged>
 						if ( self:GetText() == "0" ) then
 							self:SetText("1");
 						end
 					</OnTextChanged> 
-					<OnEditFocusLost>
-						self:HighlightText(0, 0);
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						self:HighlightText();
-					</OnEditFocusGained>
+					<OnEditFocusLost function="EditBox_ClearHighlight"/>
+					<OnEditFocusGained function="EditBox_HighlightText"/>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
@@ -964,7 +958,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						TradeSkillFrameIncrement_OnClick(self);
+						TradeSkillFrameIncrement_OnClick();
 						TradeSkillInputBox:ClearFocus();
 					</OnClick>
 				</Scripts>
@@ -984,12 +978,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TradeSkillFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				TradeSkillFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad function="TradeSkillFrame_OnLoad"/>
+			<OnEvent function="TradeSkillFrame_OnEvent"/>
 			<OnShow>
 				TradeSkillFrame_OnShow(self);
 				TradeSkillInputBox:SetNumber(1);
@@ -999,9 +989,7 @@
 				CloseTradeSkill();
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 			</OnHide>
-			<OnMouseWheel>
-				return;
-			</OnMouseWheel>
+			<OnUpdate function="TradeSkillFrame_PlaytimeUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

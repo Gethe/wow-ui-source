@@ -3,7 +3,7 @@
 -------------------------------------------------------
 local LFGLISTING_CATEGORY_TEXTURES = {
 	[2] = "ratedbgs", -- Dungeons
-	[117] = "dungeons", -- Heroic Dungeons
+	--[117] = "dungeons", -- Heroic Dungeons
 	[114] = "raids-wrath", -- Raids
 	[116] = "questing", -- Quests & Zones
 	[118] = "battlegrounds", -- PvP
@@ -14,7 +14,7 @@ local LFGLISTING_VIEWSTATE_CATEGORIES = 1;
 local LFGLISTING_VIEWSTATE_ACTIVITIES = 2;
 local LFGLISTING_VIEWSTATE_LOCKED = 3;
 
-local LFGLISTING_BUTTONTYPE_CHECKALL = 1;
+local LFGLISTING_BUTTONTYPE_ACTIVITYGROUP = 1;
 local LFGLISTING_BUTTONTYPE_ACTIVITY = 2;
 
 local IN_SET_CATEGORY_SELECTION = false; -- Baby hack. This bool will be true when we're in code triggered by LFGListingMixin:SetCategorySelection. Useful for downstream effects.
@@ -187,11 +187,13 @@ function LFGListingMixin:CreateOrUpdateListing()
 		end
 	end
 
+	local saveSoloRoles = false;
 	if (C_LFGList.HasActiveEntryInfo()) then
 		if (hasSelectedActivity) then
 			-- Update.
 			PENDING_LISTING_UPDATE = true;
 			C_LFGList.UpdateListing(selectedActivityIDs);
+			saveSoloRoles = true;
 		else
 			-- Delete.
 			PENDING_LISTING_UPDATE = true;
@@ -202,11 +204,13 @@ function LFGListingMixin:CreateOrUpdateListing()
 			-- Create.
 			PENDING_LISTING_UPDATE = true;
 			C_LFGList.CreateListing(selectedActivityIDs);
+			saveSoloRoles = true;
 		end
 	end
 
-	-- In addition to saving our listing, also update our solo roles.
-	self:SaveSoloRoles();
+	if (saveSoloRoles) then
+		self:SaveSoloRoles();
+	end
 end
 
 function LFGListingMixin:RemoveListing()
@@ -275,10 +279,33 @@ function LFGListingMixin:IsAnyActivitySelected()
 	return false;
 end
 
+function LFGListingMixin:IsAnyActivityForActivityGroupSelected(activityGroupID)
+	for activityID, selected in pairs(self.activities) do
+		if (LFGUtil_GetActivityGroupForActivity(activityID) == activityGroupID) then
+			if selected then
+				return true;
+			end
+		end
+	end
+	return false;
+end
+
+
 function LFGListingMixin:AreAllActivitiesSelected()
 	for activityID, selected in pairs(self.activities) do
 		if not selected then
 			return false;
+		end
+	end
+	return true;
+end
+
+function LFGListingMixin:AreAllActivitiesForActivityGroupSelected(activityGroupID)
+	for activityID, selected in pairs(self.activities) do
+		if (LFGUtil_GetActivityGroupForActivity(activityID) == activityGroupID) then
+			if not selected then
+				return false;
+			end
 		end
 	end
 	return true;
@@ -302,6 +329,14 @@ end
 function LFGListingMixin:SetAllActivities(selected, userInput)
 	for activityID, _ in pairs(self.activities) do
 		self:SetActivity(activityID, selected, false, userInput);
+	end
+end
+
+function LFGListingMixin:SetAllActivitiesForActivityGroup(activityGroupID, selected, userInput)
+	for activityID, _ in pairs(self.activities) do
+		if (LFGUtil_GetActivityGroupForActivity(activityID) == activityGroupID) then
+			self:SetActivity(activityID, selected, false, userInput);
+		end
 	end
 end
 
@@ -356,7 +391,7 @@ function LFGListingMixin:LoadSoloRoles()
 end
 
 function LFGListingMixin:SaveSoloRoles()
-	C_LFGList.SetRoles({
+	return C_LFGList.SetRoles({
 		tank   = self.SoloRoleButtons.Tank.CheckButton:GetChecked(),
 		healer = self.SoloRoleButtons.Healer.CheckButton:GetChecked(),
 		dps    = self.SoloRoleButtons.DPS.CheckButton:GetChecked(),
@@ -532,7 +567,7 @@ function LFGListingCategorySelection_AddButton(self, btnIndex, categoryID)
 	local button = self.CategoryButtons[btnIndex];
 	if ( not button ) then
 		self.CategoryButtons[btnIndex] = CreateFrame("BUTTON", nil, self, "LFGListingCategoryTemplate");
-		self.CategoryButtons[btnIndex]:SetPoint("TOP", self.CategoryButtons[btnIndex - 1], "BOTTOM", 0, -4);
+		self.CategoryButtons[btnIndex]:SetPoint("TOP", self.CategoryButtons[btnIndex - 1], "BOTTOM", 0, -8);
 		button = self.CategoryButtons[btnIndex];
 	end
 
@@ -556,37 +591,52 @@ end
 ----------Activity Selection
 -------------------------------------------------------
 function LFGListingActivityView_OnLoad(self)
-	local view = CreateScrollBoxListLinearView();
+	local view = CreateScrollBoxListTreeListView(0);
 
-	view:SetElementFactory(function(factory, elementData)
-		-- Check All button
-		if (elementData.buttonType == LFGLISTING_BUTTONTYPE_CHECKALL) then
+	view:SetElementFactory(function(factory, node)
+		local elementData = node:GetData();
 
-			local frame = factory("Frame", "LFGListingActivityCheckAllTemplate");
+		if (elementData.buttonType == LFGLISTING_BUTTONTYPE_ACTIVITYGROUP) then
+			local frame = factory("Frame", "LFGListingActivityRowTemplate");
 
 			frame.CheckButton:SetScript("OnClick", function(button, buttonName, down)
-				LFGListingFrame:SetAllActivities(not LFGListingFrame:AreAllActivitiesSelected(), true);
+				local node = button:GetParent():GetElementData();
+				local parentFrame = view:FindFrame(node);
+				local parentData = node:GetData();
+				local activityGroupID = parentData.activityGroupID;
+				local allSelected = LFGListingFrame:IsAnyActivityForActivityGroupSelected(activityGroupID);
+				LFGListingFrame:SetAllActivitiesForActivityGroup(activityGroupID, not allSelected, true);
 
-				view:ForEachFrame(function(frame, elementData)
-					if (elementData.buttonType == LFGLISTING_BUTTONTYPE_ACTIVITY) then
-						LFGListingActivityView_InitActivityButton(frame, elementData);
+				LFGListingActivityView_InitActivityGroupButton(parentFrame, parentData, node:IsCollapsed());
+				for index, child in ipairs(node.nodes) do
+					local childFrame = view:FindFrame(child);
+					if (childFrame) then
+						LFGListingActivityView_InitActivityButton(childFrame, child:GetData());
 					end
-				end);
+				end
 			end)
 
-			LFGListingActivityView_InitCheckAllButton(frame, elementData);
+			frame.ExpandOrCollapseButton:SetScript("OnClick", function(button, buttonName, down)
+				local node = button:GetParent():GetElementData();
+				node:ToggleCollapsed(true);
+				LFGListingActivityView_InitActivityGroupButton(view:FindFrame(node), node:GetData(), node:IsCollapsed());
+			end)
 
-		-- Individual Activity button
+			LFGListingActivityView_InitActivityGroupButton(frame, elementData, node:IsCollapsed());
+
 		elseif (elementData.buttonType == LFGLISTING_BUTTONTYPE_ACTIVITY) then
-			local frame = factory("Frame", "LFGListingActivityTemplate");
+			local frame = factory("Frame", "LFGListingActivityRowTemplate");
 
 			frame.CheckButton:SetScript("OnClick", function(button, buttonName, down)
-				local activityID = button:GetParent():GetElementData().activityID;
+				local node = button:GetParent():GetElementData();
+				local activityID = node:GetData().activityID;
 				LFGListingFrame:ToggleActivity(activityID, false, true);
 
-				local checkAllButton = view:FindFrameByPredicate(function(frame) return frame:GetElementData().buttonType == LFGLISTING_BUTTONTYPE_CHECKALL; end);
-				if (checkAllButton) then
-					LFGListingActivityView_InitCheckAllButton(checkAllButton, checkAllButton:GetElementData());
+				if (node.parent) then
+					local parentFrame = view:FindFrame(node.parent);
+					if (parentFrame) then
+						LFGListingActivityView_InitActivityGroupButton(parentFrame, node.parent:GetData(), node.parent:IsCollapsed());
+					end
 				end
 			end)
 
@@ -594,7 +644,7 @@ function LFGListingActivityView_OnLoad(self)
 		end
 	end);
 
-	view:SetPadding(4,4,4,4,2);
+	view:SetPadding(4,4,4,4,0);
 	view:SetElementExtent(18);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
@@ -641,36 +691,142 @@ function LFGListingActivityView_OnShow(self)
 end
 
 function LFGListingActivityView_UpdateActivities(self, categoryID)
-	local activities = C_LFGList.GetAvailableActivities(categoryID);
-	local dataProvider = CreateDataProvider();
+	local function ActivitySortComparator(lhsNode, rhsNode)
+		local lhs = lhsNode:GetData();
+		local rhs = rhsNode:GetData();
 
-	dataProvider:Insert({buttonType = LFGLISTING_BUTTONTYPE_CHECKALL});
-
-	for i=1, #activities do
-		local activityInfo = C_LFGList.GetActivityInfoTable(activities[i]);
-		local name = activityInfo.shortName ~= "" and activityInfo.shortName or activityInfo.fullName;
-
-		dataProvider:Insert({buttonType = LFGLISTING_BUTTONTYPE_ACTIVITY, activityID = activities[i], name = name, minLevel = activityInfo.minLevel, maxLevel = activityInfo.maxLevel});
-	end
-
-	local function SortComparator(lhs, rhs)
-		if (lhs.buttonType ~= rhs.buttonType) then return lhs.buttonType < rhs.buttonType;
+		if (lhs.orderIndex ~= rhs.orderIndex) then return lhs.orderIndex > rhs.orderIndex;
 		elseif (lhs.maxLevel ~= rhs.maxLevel) then return lhs.maxLevel > rhs.maxLevel;
 		elseif (lhs.minLevel ~= rhs.minLevel) then return lhs.minLevel > rhs.minLevel;
 		else return strcmputf8i(lhs.name, rhs.name) < 0;
 		end
 	end
-	dataProvider:SetSortComparator(SortComparator);
+	local function ActivityGroupSortComparator(lhsNode, rhsNode)
+		local lhs = lhsNode:GetData();
+		local rhs = rhsNode:GetData();
+
+		if (lhs.buttonType ~= rhs.buttonType) then return lhs.buttonType > rhs.buttonType; -- If we have any free-floating activities, put them above any activity groups.
+		elseif (lhs.orderIndex ~= rhs.orderIndex) then return lhs.orderIndex < rhs.orderIndex;
+		elseif (lhs.buttonType == LFGLISTING_BUTTONTYPE_ACTIVITY) then return ActivitySortComparator(lhsNode, rhsNode);
+		else return strcmputf8i(lhs.name, rhs.name) < 0;
+		end
+	end
+
+	local dataProvider = CreateLinearizedTreeListDataProvider();
+
+	-- Handle any activities without a group first.
+	do
+		local activities = C_LFGList.GetAvailableActivities(categoryID, 0);
+
+		for _, activityID in ipairs(activities) do
+			local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+			local name = activityInfo.shortName ~= "" and activityInfo.shortName or activityInfo.fullName;
+			dataProvider:Insert({
+				buttonType = LFGLISTING_BUTTONTYPE_ACTIVITY,
+				activityID = activityID,
+				name = name,
+				minLevel = activityInfo.minLevel,
+				maxLevel = activityInfo.maxLevel,
+				orderIndex = activityInfo.orderIndex,
+			});
+		end
+	end
+
+	local playerLevel = UnitLevel("player");
+	-- Now loop over groups and handle each of them.
+	local activityGroups = C_LFGList.GetAvailableActivityGroups(categoryID);
+	for _, activityGroupID in ipairs(activityGroups) do
+		local activities = C_LFGList.GetAvailableActivities(categoryID, activityGroupID);
+		if (#activities > 0) then
+			local name, orderIndex = C_LFGList.GetActivityGroupInfo(activityGroupID);
+			local groupTree = dataProvider:Insert({
+				buttonType = LFGLISTING_BUTTONTYPE_ACTIVITYGROUP,
+				activityGroupID = activityGroupID,
+				name = name,
+				orderIndex = orderIndex,
+			});
+
+			local hasSuggestedActivity = false;
+			for _, activityID in ipairs(activities) do
+				local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+				local name = activityInfo.shortName ~= "" and activityInfo.shortName or activityInfo.fullName;
+				 
+				groupTree:Insert({
+					buttonType = LFGLISTING_BUTTONTYPE_ACTIVITY,
+					activityID = activityID,
+					name = name,
+					minLevel = activityInfo.minLevel,
+					maxLevel = activityInfo.maxLevel,
+					orderIndex = activityInfo.orderIndex
+				});
+
+				if (playerLevel and not hasSuggestedActivity) then
+					hasSuggestedActivity = activityInfo.maxLevelSuggestion >= playerLevel;
+				end
+			end
+			if (playerLevel and not hasSuggestedActivity) then
+				groupTree:SetCollapsed(true);
+			end
+			groupTree:SetSortComparator(ActivitySortComparator);
+		end
+	end
+
+	dataProvider:SetSortComparator(ActivityGroupSortComparator);
 
 	self.ScrollBox:SetDataProvider(dataProvider);
 end
 
-function LFGListingActivityView_InitCheckAllButton(button, elementData)
-	button.CheckButton:SetChecked(LFGListingFrame:AreAllActivitiesSelected());
+function LFGListingActivityView_InitActivityGroupButton(button, elementData, isCollapsed)
+	-- Controls
+	button.ExpandOrCollapseButton:Show();
+	if (isCollapsed) then
+		button.ExpandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
+	else
+		button.ExpandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
+	end
+
+	local allActivitiesSelected = LFGListingFrame:AreAllActivitiesForActivityGroupSelected(elementData.activityGroupID);
+	local anyActivitySelected = LFGListingFrame:IsAnyActivityForActivityGroupSelected(elementData.activityGroupID);
+	if (allActivitiesSelected) then
+		button.CheckButton:SetChecked(true);
+		button.CheckButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
+		button.CheckButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
+	elseif (anyActivitySelected) then
+		button.CheckButton:SetChecked(true);
+		button.CheckButton:SetCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Up");
+		button.CheckButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Disabled");
+	else
+		button.CheckButton:SetChecked(false);
+		button.CheckButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
+		button.CheckButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
+	end
+
+	-- Name
+	button.NameButton.Name:SetWidth(0);
+	button.NameButton.Name:SetText(elementData.name);
+	button.NameButton.Name:SetFontObject(LFGActivityHeader);
+	button.NameButton:SetWidth(button.NameButton.Name:GetWidth());
+
+	-- Level
+	button.Level:Hide();
 end
 
 function LFGListingActivityView_InitActivityButton(button, elementData)
-	button.Name:SetText(elementData.name);
+	-- Controls
+	button.ExpandOrCollapseButton:Hide();
+
+	button.CheckButton:SetChecked(LFGListingFrame:IsActivitySelected(elementData.activityID));
+	button.CheckButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
+	button.CheckButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
+
+	-- Name
+	button.NameButton.Name:SetWidth(0);
+	button.NameButton.Name:SetText(elementData.name);
+	button.NameButton.Name:SetFontObject(LFGActivityEntry);
+	button.NameButton:SetWidth(button.NameButton.Name:GetWidth());
+
+	-- Level
+	button.Level:Show();
 	if ( elementData.minLevel == elementData.maxLevel ) then
 		if (elementData.minLevel == 0) then
 			button.Level:SetText("");
@@ -680,7 +836,6 @@ function LFGListingActivityView_InitActivityButton(button, elementData)
 	else
 		button.Level:SetText(format(LFD_LEVEL_FORMAT_RANGE, elementData.minLevel, elementData.maxLevel));
 	end
-	button.CheckButton:SetChecked(LFGListingFrame:IsActivitySelected(elementData.activityID));
 end
 
 -------------------------------------------------------
@@ -697,8 +852,8 @@ end
 -------------------------------------------------------
 function LFGListingLockedView_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
-	self.fontStringPool = CreateFontStringPool(self, "ARTWORK", 0, "LFGListingActivityNameTemplate")
-	self.maxActivityLines = 11; -- Max number of names to show. If we have more than this, we'll show n-1 and the last line will be the overflow line.
+	self.framePool = CreateFramePool("Button", self, "LFGListingLockedViewActivityTemplate")
+	self.maxActivityLines = 13; -- Max number of activity lines to show.
 	LFGListingLockedView_RefreshContent(self);
 end
 
@@ -709,47 +864,125 @@ function LFGListingLockedView_OnEvent(self, event)
 end
 
 function LFGListingLockedView_RefreshContent(self)
-	self.fontStringPool:ReleaseAll();
+	self.framePool:ReleaseAll();
 
 	if (not C_LFGList.HasActiveEntryInfo()) then
 		self.ErrorText:SetText(LFG_LIST_ONLY_LEADER_CREATE);
-		self.ErrorText:ClearAllPoints();
-		self.ErrorText:SetPoint("CENTER", 0, 25);
 		self.ActivityText:Hide();
 	else
 		self.ErrorText:SetText(LFG_LIST_ONLY_LEADER_UPDATE);
-		self.ErrorText:ClearAllPoints();
-		self.ErrorText:SetPoint("TOPLEFT", 16, -20);
 		self.ActivityText:Show();
 
 		local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-		LFGUtil_SortActivityIDs(activeEntryInfo.activityIDs);
-		local numActivities = #activeEntryInfo.activityIDs;
-		local needOverflowText = numActivities > self.maxActivityLines;
-		local lastFontString = nil;
-
-		for i = 1, math.min(self.maxActivityLines, numActivities) do
-			local fontString = self.fontStringPool:Acquire();
-			local verticalSpacing = -3;
-
-			if (i == self.maxActivityLines and needOverflowText) then
-				fontString:SetText(string.format(LFG_LIST_AND_MORE, numActivities - (self.maxActivityLines - 1)));
-				verticalSpacing = -6;
-			else
-				local activityID = activeEntryInfo.activityIDs[i];
-				local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
-				fontString:SetText(activityInfo.shortName ~= "" and activityInfo.shortName or activityInfo.fullName);
+		local organizedActivities = LFGUtil_OrganizeActivitiesByActivityGroup(activeEntryInfo.activityIDs);
+		local activityGroupIDs = GetKeysArray(organizedActivities);
+		LFGUtil_SortActivityGroupIDs(activityGroupIDs);
+		local numVerboseLines = 0; -- Predicted number of lines if we use verbose mode...
+		for _, activityGroupID in ipairs(activityGroupIDs) do
+			if (activityGroupID ~= 0) then
+				numVerboseLines = numVerboseLines + 1;
 			end
+			numVerboseLines = numVerboseLines + #organizedActivities[activityGroupID];
+		end
+		local verboseMode = numVerboseLines <= self.maxActivityLines;
 
-			fontString:Show();
-			if (lastFontString) then
-				fontString:SetPoint("TOPLEFT", lastFontString, "BOTTOMLEFT", 0, verticalSpacing);
-			else
-				fontString:SetPoint("TOPLEFT", self.ActivityText, "BOTTOMLEFT", 12, -6)
+		local lastFrame = nil;
+		for _, activityGroupID in ipairs(activityGroupIDs) do
+			local activityIDs = organizedActivities[activityGroupID];
+			if (activityGroupID == 0) then -- Free-floating activities (no group)
+				for _, activityID in ipairs(activityIDs) do
+					local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+					local frame = LFGListingLockedView_SafeAcquireFrame(self);
+					if (not frame) then
+						return;
+					end
+
+					LFGListingLockedView_SetLineContent(self, frame, activityInfo.fullName, nil);
+
+					if (lastFrame) then
+						frame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -2);
+					else
+						frame:SetPoint("TOPLEFT", self.ActivityText, "BOTTOMLEFT", 12, -6)
+					end
+					lastFrame = frame;
+				end
+			else -- Grouped activities
+				if (verboseMode) then
+					do
+						local activityGroupName = C_LFGList.GetActivityGroupInfo(activityGroupID);
+						local frame = LFGListingLockedView_SafeAcquireFrame(self);
+						if (not frame) then
+							return;
+						end
+
+						local lineText = activityGroupName.." "..HIGHLIGHT_FONT_COLOR:WrapTextInColorCode("("..string.format(LFGBROWSE_ACTIVITY_COUNT, #activityIDs)..")");
+						LFGListingLockedView_SetLineContent(self, frame, lineText, nil);
+
+						if (lastFrame) then
+							frame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -2);
+						else
+							frame:SetPoint("TOPLEFT", self.ActivityText, "BOTTOMLEFT", 12, -6)
+						end
+						lastFrame = frame;
+					end
+					for _, activityID in ipairs(activityIDs) do
+						local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+						local frame = LFGListingLockedView_SafeAcquireFrame(self);
+						if (not frame) then
+							return;
+						end
+
+						local lineText = string.format(LFG_LIST_INDENT, activityInfo.fullName);
+						LFGListingLockedView_SetLineContent(self, frame, lineText, nil);
+
+						if (lastFrame) then
+							frame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -2);
+						else
+							frame:SetPoint("TOPLEFT", self.ActivityText, "BOTTOMLEFT", 12, -6)
+						end
+						lastFrame = frame;
+					end
+				else
+					local activityGroupName = C_LFGList.GetActivityGroupInfo(activityGroupID);
+					local frame = LFGListingLockedView_SafeAcquireFrame(self);
+					if (not frame) then
+						return;
+					end
+
+					local lineText = activityGroupName.." "..HIGHLIGHT_FONT_COLOR:WrapTextInColorCode("("..string.format(LFGBROWSE_ACTIVITY_COUNT, #activityIDs)..")");
+					local tooltip = activityGroupName;
+					for _, activityID in ipairs(activityIDs) do
+						local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+						tooltip = tooltip.."\n"..string.format(LFG_LIST_INDENT, activityInfo.fullName);
+					end
+					LFGListingLockedView_SetLineContent(self, frame, lineText, tooltip);
+
+					if (lastFrame) then
+						frame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -2);
+					else
+						frame:SetPoint("TOPLEFT", self.ActivityText, "BOTTOMLEFT", 12, -6)
+					end
+					lastFrame = frame;
+				end
 			end
-			lastFontString = fontString;
 		end
 	end
+end
+
+function LFGListingLockedView_SafeAcquireFrame(self)
+	if (self.framePool:GetNumActive() >= self.maxActivityLines) then
+		return nil;
+	else
+		return self.framePool:Acquire();
+	end
+end
+
+function LFGListingLockedView_SetLineContent(self, frame, text, tooltip)
+	frame.Text:SetSize(0, 0);
+	frame.Text:SetText(text);
+	frame.tooltip = tooltip;
+	frame:SetSize(frame.Text:GetWidth(), frame.Text:GetHeight());
+	frame:Show();
 end
 
 -------------------------------------------------------

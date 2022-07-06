@@ -41,7 +41,7 @@ GlueCheck.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\Constants.lua
-..\..\Interface_TBC\GlueXML\Constants.lua
+..\..\Interface_Wrath\GlueXML\Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
 ..\..\Interface_TBC\GlueXML\GlueLocalization.xml
@@ -115,7 +115,7 @@ VideoOptionsFrame.xml
 AudioOptionsFrame.xml
 AudioOptionsPanels.xml
 MovieFrame.xml
-..\..\Interface_TBC\GlueXML\CinematicsFrame.xml
+..\..\Interface_Wrath\GlueXML\CinematicsFrame.xml
 ..\..\Interface_TBC\GlueXML\CreditsFrame.xml
 GlueMenuFrame.xml
 SocialContract.xml

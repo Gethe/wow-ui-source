@@ -47,7 +47,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						if ( self.onClick ) then
 							self.onClick(self, button);
 						end
-						LFGListingFrame:SetDirty(true);
+						if (not LFGListingFrame:SaveSoloRoles()) then
+							-- If SaveSoloRoles return false, the update failed. Revert the checkbox to its previous state.
+							self:SetChecked(not self:GetChecked());
+						end
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
@@ -75,7 +78,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Scripts>
 	</Button>
 	<Button name="LFGListingCategoryTemplate" virtual="true">
-		<Size x="267" y="41"/>
+		<Size x="287" y="44"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" atlas="groupfinder-button-battlegrounds">
@@ -90,7 +93,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD" hidden="true">
-					<Size x="257" y="31"/>
+					<Size x="277" y="34"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -102,7 +105,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnClick function="LFGListingCategorySelectionButton_OnClick"/>
 		</Scripts>
 		<HighlightTexture parentKey="HighlightTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD">
-			<Size x="257" y="31"/>
+			<Size x="277" y="34"/>
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>
@@ -114,33 +117,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Anchors>
 		</ButtonText>
 	</Button>
-	<Frame name="LFGListingActivityCheckAllTemplate" virtual="true">
-		<Size x="295" y="18"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentText" parentKey="Text" text="CHECK_ALL" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="0" y="18"/>
-					<Anchors>
-						<Anchor point="LEFT" x="32" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton name="$parentCheckButton" parentKey="CheckButton">
-				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="LEFT" x="8" y="0"/>
-				</Anchors>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-			</CheckButton>
-		</Frames>
-	</Frame>
-	<Frame name="LFGListingActivityTemplate" virtual="true">
+	<Frame name="LFGListingActivityRowTemplate" virtual="true">
 		<Size x="295" y="18"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -150,19 +127,34 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<Anchor point="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentName" parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="185" y="18"/>
-					<Anchors>
-						<Anchor point="LEFT" x="40" y="0"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentExpandOrCollapseButton" parentKey="ExpandOrCollapseButton">
+				<Size x="13" y="13"/>
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="0"/>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="1" right="-4" top="-2" bottom="-2"/>
+				</HitRectInsets>
+				<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="3" y="0"/>
+					</Anchors>
+				</NormalTexture>
+				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="3" y="0"/>
+					</Anchors>
+				</HighlightTexture>
+			</Button>
 			<CheckButton name="$parentCheckButton" parentKey="CheckButton">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="LEFT" x="16" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.ExpandOrCollapseButton" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>
 				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -170,32 +162,92 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
+			<Button name="$parentNameButton" parentKey="NameButton">
+				<Size x="0" y="18"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.CheckButton" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentName" parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="0" y="18"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self:GetParent().CheckButton:LockHighlight();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent().CheckButton:UnlockHighlight();
+					</OnLeave>
+					<OnClick>
+						self:GetParent().CheckButton:Click();
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 	</Frame>
-	<FontString name="LFGListingActivityNameTemplate" virtual="true" inherits="GameFontNormal" justifyH="LEFT"/>
-	<!-- Start LFG Listing Frame -->
-	<Frame name="LFGListingFrame" parent="LFGParentFrame" setAllPoints="true" hidden="true" mixin="LFGListingMixin">
+	<Frame name="LFGListingLockedViewActivityTemplate" virtual="true">
+		<Size x="0" y="0"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentFrameBackground" file="Interface\LFGFrame\UI-LFG-FRAME">
-					<Size x="512" y="512"/>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" parentKey="Text" virtual="true" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltip);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<!-- Start LFG Listing Frame -->
+	<Frame name="LFGListingFrame" parent="LFGParentFrame" setAllPoints="true" hidden="true" mixin="LFGListingMixin">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture name="$parentFrameBackgroundTop" file="Interface\LFGFrame\UI-LFG-FRAME">
+					<Size x="512" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture name="$parentBackgroundArt" parentKey="BackgroundArt" atlas="groupfinder-background-classic">
+					<Size x="324" y="282"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="22" y="-129"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentFrameBackgroundBottom" file="Interface\LFGFrame\UI-LFG-FRAME">
+					<Size x="512" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-256"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.5" bottom="1.0"/>
 				</Texture>
 				<FontString name="$parentFrameTitle" inherits="GameFontNormal" text="LFG_TITLE">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-18"/>
 					</Anchors>
 				</FontString>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentBackgroundArt" parentKey="BackgroundArt" atlas="groupfinder-background-classic">
-					<Size x="324" y="282"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="22" y="-128"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -341,7 +393,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Frame>
 					<Button parentArray="CategoryButtons" inherits="LFGListingCategoryTemplate">
 						<Anchors>
-							<Anchor point="TOP" x="-3" y="-7"/>
+							<Anchor point="TOP" x="0" y="-15"/>
 						</Anchors>
 					</Button>
 				</Frames>
@@ -432,7 +484,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<FontString name="$parentErrorText" parentKey="ErrorText" text="LFG_LIST_ONLY_LEADER_CREATE" inherits="GameFontNormal" justifyH="LEFT">
 							<Size x="304"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-20"/> <!-- Reanchored in code. -->
+								<Anchor point="TOPLEFT" x="16" y="-20"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentActivityText" parentKey="ActivityText" text="LFG_LIST_MY_ACTIVITY_LIST_HEADER" inherits="GameFontNormal" justifyH="LEFT">

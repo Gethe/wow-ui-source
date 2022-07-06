@@ -1,7 +1,10 @@
 -------------------------------------------------------
 ----------Constants
 -------------------------------------------------------
+local LFGBROWSE_TOOLTIP_MIN_WIDTH = 200;
 local LFGBROWSE_DELISTED_FONT_COLOR = {r=0.3, g=0.3, b=0.3};
+local LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR = GRAY_FONT_COLOR;
+local LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR = BRIGHTBLUE_FONT_COLOR;
 local LFGBROWSE_GROUPDATA_ROLE_ORDER = { "TANK", "HEALER", "DAMAGER" };
 local LFGBROWSE_GROUPDATA_CLASS_ORDER = CLASS_SORT_ORDER;
 local LFGBROWSE_GROUPDATA_ATLASES = {
@@ -177,8 +180,8 @@ function LFGBrowseMixin:UpdateButtonState()
 	self.GroupInviteButton:SetText(inviteText);
 	self.GroupInviteButton.inviteFunc = inviteFunc;
 
-	self.SendMessageButton:SetEnabled(self.selectionBehavior:HasSelection());
-	self.GroupInviteButton:SetEnabled(self.selectionBehavior:HasSelection());
+	self.SendMessageButton:SetEnabled(self.selectionBehavior:HasSelection() and self.GroupInviteButton.inviteFunc);
+	self.GroupInviteButton:SetEnabled(self.selectionBehavior:HasSelection() and self.GroupInviteButton.inviteFunc);
 	
 	self.RefreshButton:SetEnabled(not self.searching);
 end
@@ -193,8 +196,12 @@ end
 function LFGBrowse_DoSearch()
 	if (not LFGBrowseFrame.searching) then
 		local categoryID = UIDropDownMenu_GetSelectedValue(LFGBrowseFrame.CategoryDropDown) or 0;
-		local activityIDs = LFGBrowseFrame.ActivityDropDown.selectedValues;
 		if (categoryID > 0) then
+			local activityIDs = LFGBrowseFrame.ActivityDropDown.selectedValues;
+			if (#activityIDs == 0) then -- If we have no activities selected in the filter, search for everything in this category.
+				activityIDs = C_LFGList.GetAvailableActivities(categoryID);
+			end
+
 			C_LFGList.Search(categoryID, activityIDs);
 			LFGBrowseFrame.searching = true;
 			LFGBrowseFrame.searchFailed = false;
@@ -214,6 +221,7 @@ end
 
 function LFGBrowseSearchEntry_Update(self)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(self.resultID);
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	local isSolo = searchResultInfo.numMembers == 1;
 	if (isSolo) then
 		self.PartyIcon:Hide();
@@ -228,32 +236,49 @@ function LFGBrowseSearchEntry_Update(self)
 			self.Level:Hide();
 			self.ClassIcon:Hide();
 		end
+		self.Name:SetPoint("TOPLEFT", self.PartyIcon, "TOPLEFT", 1, -2);
 	else
 		self.PartyIcon:Show();
 		self.ClassIcon:Hide();
 		self.Level:Hide();
 		self.ClassIcon:Hide();
+		self.Name:SetPoint("TOPLEFT", self.PartyIcon, "TOPRIGHT", 0, -2);
 	end
 
+	self.isDelisted = searchResultInfo.isDelisted;
+
+	local matchingActivities = {};
+	local hasMatchingActivity = false;
+	if (activeEntryInfo) then
+		for _, activityID in ipairs(activeEntryInfo.activityIDs) do
+			if (tContains(searchResultInfo.activityIDs, activityID)) then
+				hasMatchingActivity = true;
+				tinsert(matchingActivities, activityID);
+			end
+		end
+	end
+	local activitiesToDisplay = hasMatchingActivity and matchingActivities or searchResultInfo.activityIDs;
+
 	local activityText = "";
-	if (#searchResultInfo.activityIDs == 1) then
-		local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityIDs[1]);
-		activityText = activityInfo.shortName ~= "" and activityInfo.shortName or activityInfo.fullName;
+	if (#activitiesToDisplay == 1) then
+		local activityInfo = C_LFGList.GetActivityInfoTable(activitiesToDisplay[1]);
+		activityText = activityInfo.fullName;
 	else
-		activityText = string.format(LFGBROWSE_ACTIVITY_COUNT, #searchResultInfo.activityIDs)
+		local activityString = hasMatchingActivity and LFGBROWSE_ACTIVITY_MATCHING_COUNT or LFGBROWSE_ACTIVITY_COUNT;
+		activityText = string.format(activityString, #activitiesToDisplay);
 	end
 
 	local nameColor = NORMAL_FONT_COLOR;
 	local levelColor = GRAY_FONT_COLOR;
-	local activityColor = GRAY_FONT_COLOR;
+	local activityColor = LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR;
 	if ( searchResultInfo.isDelisted ) then
-		self.isDelisted = true;
 		nameColor = LFGBROWSE_DELISTED_FONT_COLOR;
 		levelColor = LFGBROWSE_DELISTED_FONT_COLOR;
 		activityColor = LFGBROWSE_DELISTED_FONT_COLOR;
-	else
-		self.isDelisted = false;
+	elseif (hasMatchingActivity) then
+		activityColor = LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR;
 	end
+
 	self.Name:SetWidth(0);
 	self.Name:SetText(searchResultInfo.leaderName);
 	self.Name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
@@ -261,6 +286,7 @@ function LFGBrowseSearchEntry_Update(self)
 		self.Name:SetWidth(176);
 	end
 	self.Level:SetTextColor(levelColor.r, levelColor.g, levelColor.b);
+	self.ClassIcon:SetDesaturated(searchResultInfo.isDelisted);
 	self.ActivityName:SetText(activityText);
 	self.ActivityName:SetTextColor(activityColor.r, activityColor.g, activityColor.b);
 	self.ActivityName:SetWidth(176);
@@ -338,6 +364,7 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	local numMembers = searchResultInfo.numMembers;
 	local isSolo = numMembers == 1;
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
+	local maxContentWidth = 0; -- Tracking the width of any variable-width content, so we can resize the container to match.
 
 	-- Delisted Alert
 	if (searchResultInfo.isDelisted) then
@@ -366,10 +393,12 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 		self.Leader.Name:SetTextColor(classColor.r, classColor.g, classColor.b)
 		self.Leader.Level:SetText(LEVEL_ABBR .. " " .. level);
 		if (isSolo) then
-			LFGBrowseUtil_MapRoleStatesToRoleIcons(self.Leader.Roles, soloRoleTank, soloRoleHealer, soloRoleDPS);
+			LFGBrowseUtil_MapRoleStatesToRoleIcons(self.Leader.Roles, soloRoleTank, soloRoleHealer, soloRoleDPS, true);
+			self.Leader.Roles[1]:SetSize(14, 14);
 		else
 			-- If we're in a party, just show our party-level role.
 			self.Leader.Roles[1]:SetAtlas(LFGBROWSE_GROUPDATA_ATLASES[role], false);
+			self.Leader.Roles[1]:SetSize(16, 16);
 			self.Leader.Roles[1]:Show();
 			for i = 2,#self.Leader.Roles do
 				self.Leader.Roles[i]:Hide();
@@ -435,27 +464,104 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	-- Activities
 	local lastActivityString = nil
 	self.activityPool:ReleaseAll();
-	LFGUtil_SortActivityIDs(searchResultInfo.activityIDs);
-	for i=1, #searchResultInfo.activityIDs do
-		local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityIDs[i]);
-		if (activityInfo) then
-			local fontString = self.activityPool:Acquire();
-			fontString:SetText(activityInfo.shortName);
+	local numActivities = #searchResultInfo.activityIDs;
+	local numActivityGroups = 1; -- Used for height calculation; value updated later.
+	local ACTIVITY_GROUP_SPACER_HEIGHT = 6;
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 
-			if (lastActivityString) then
-				fontString:SetPoint("TOPLEFT", lastActivityString, "BOTTOMLEFT", 0, 0);
-			else
-				fontString:SetPoint("TOPLEFT", self.MemberCount, "BOTTOMLEFT", 0, -8);
+	if (numActivities > 0) then
+		local organizedActivities = LFGUtil_OrganizeActivitiesByActivityGroup(searchResultInfo.activityIDs);
+		local activityGroupIDs = GetKeysArray(organizedActivities);
+		numActivityGroups = #activityGroupIDs;
+		LFGUtil_SortActivityGroupIDs(activityGroupIDs);
+
+		for i, activityGroupID in ipairs(activityGroupIDs) do
+			local activityIDs = organizedActivities[activityGroupID];
+			if (activityGroupID == 0) then -- Free-floating activities (no group)
+				for _, activityID in ipairs(activityIDs) do
+					local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+					if (activityInfo and activityInfo.fullName ~= "") then
+						local fontString = self.activityPool:Acquire();
+						fontString:SetWidth(0);
+						fontString:SetText(activityInfo.fullName);
+
+						if (activeEntryInfo and tContains(activeEntryInfo.activityIDs, activityID)) then
+							fontString:SetTextColor(LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR.r, LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR.g, LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR.b);
+						else
+							fontString:SetTextColor(LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR.r, LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR.g, LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR.b);
+						end
+
+						fontString:Show();
+						if (lastActivityString) then
+							fontString:SetPoint("TOPLEFT", lastActivityString, "BOTTOMLEFT", 0, 0);
+						else
+							fontString:SetPoint("TOPLEFT", self.MemberCount, "BOTTOMLEFT", 0, -8);
+						end
+						maxContentWidth = math.max(maxContentWidth, fontString:GetWidth());
+						fontString:SetPoint("RIGHT", self, "RIGHT", -11, 0);
+						lastActivityString = fontString;
+					end
+				end
+			else -- Grouped activities
+				local activityGroupName = C_LFGList.GetActivityGroupInfo(activityGroupID);
+				local groupFontString = self.activityPool:Acquire();
+				groupFontString:SetWidth(0);
+				groupFontString:SetText(activityGroupName);
+				groupFontString:Show();
+				if (lastActivityString) then
+					if (i > 1) then
+						-- If this is a group after the first, add a bit more space.
+						groupFontString:SetPoint("TOPLEFT", lastActivityString, "BOTTOMLEFT", 0, -ACTIVITY_GROUP_SPACER_HEIGHT);
+					else
+						groupFontString:SetPoint("TOPLEFT", lastActivityString, "BOTTOMLEFT", 0, 0);
+					end
+				else
+					groupFontString:SetPoint("TOPLEFT", self.MemberCount, "BOTTOMLEFT", 0, -8);
+				end
+				maxContentWidth = math.max(maxContentWidth, groupFontString:GetWidth());
+				lastActivityString = groupFontString;
+				local groupHasMatchingActivity = false;
+
+				for _, activityID in ipairs(activityIDs) do
+					local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+					if (activityInfo and activityInfo.fullName ~= "") then
+						local fontString = self.activityPool:Acquire();
+						fontString:SetWidth(0);
+						fontString:SetText(string.format(LFG_LIST_INDENT, activityInfo.fullName));
+
+						if (activeEntryInfo and tContains(activeEntryInfo.activityIDs, activityID)) then
+							groupHasMatchingActivity = true;
+							fontString:SetTextColor(LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR.r, LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR.g, LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR.b);
+						else
+							fontString:SetTextColor(LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR.r, LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR.g, LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR.b);
+						end
+
+						fontString:Show();
+						if (lastActivityString) then
+							fontString:SetPoint("TOPLEFT", lastActivityString, "BOTTOMLEFT", 0, 0);
+						else
+							fontString:SetPoint("TOPLEFT", self.MemberCount, "BOTTOMLEFT", 0, -8);
+						end
+						maxContentWidth = math.max(maxContentWidth, fontString:GetWidth());
+						fontString:SetPoint("RIGHT", self, "RIGHT", -11, 0);
+						lastActivityString = fontString;
+					end
+				end
+
+				if (groupHasMatchingActivity) then
+					groupFontString:SetTextColor(LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR.r, LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR.g, LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR.b);
+				else
+					groupFontString:SetTextColor(LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR.r, LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR.g, LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR.b);
+				end
 			end
-
-			lastActivityString = fontString;
-			fontString:Show();
 		end
 	end
 
 	-- Show
 	self:Show();
 
+	-- Set Width
+	self:SetWidth(math.max(maxContentWidth+22, LFGBROWSE_TOOLTIP_MIN_WIDTH));
 	-- Height calculation
 	local contentHeight = 40;
 	if ( self.Delisted:IsShown() ) then
@@ -474,6 +580,7 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	for fontString in self.activityPool:EnumerateActive() do
 		contentHeight = contentHeight + fontString:GetHeight();
 	end
+	contentHeight = contentHeight + ACTIVITY_GROUP_SPACER_HEIGHT * (numActivityGroups - 1); -- Gaps between activity groups.
 	self:SetHeight(contentHeight);
 end
 
@@ -497,7 +604,7 @@ function LFGBrowseGroupDataDisplay_Update(self, activityID, displayData, disable
 		LFGBrowseGroupDataDisplayComment_Update(self.Comment, comment, disabled);
 	elseif ( isSolo ) then
 		self.Solo:Show();
-		LFGBrowseGroupDataDisplaySolo_Update(self.Solo, displayData);
+		LFGBrowseGroupDataDisplaySolo_Update(self.Solo, displayData, disabled);
 	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.RoleCount ) then
 		self.RoleCount:Show();
 		LFGBrowseGroupDataDisplayRoleCount_Update(self.RoleCount, displayData, disabled);
@@ -524,15 +631,21 @@ function LFGBrowseGroupDataDisplayComment_Update(self, text, disabled)
 	end
 end
 
-function LFGBrowseGroupDataDisplaySolo_Update(self, displayData)
+function LFGBrowseGroupDataDisplaySolo_Update(self, displayData, disabled)
 	local isTank = displayData.LEADER_ROLE_TANK;
 	local isHealer = displayData.LEADER_ROLE_HEALER;
 	local isDPS = displayData.LEADER_ROLE_DAMAGER;
 
+	if (disabled) then
+		self.RolesText:SetTextColor(LFGBROWSE_DELISTED_FONT_COLOR.r, LFGBROWSE_DELISTED_FONT_COLOR.g, LFGBROWSE_DELISTED_FONT_COLOR.b);
+	else
+		self.RolesText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	end
+
 	if (not isTank and not isHealer and not isDPS) then
 		self:Hide();
 	else
-		LFGBrowseUtil_MapRoleStatesToRoleIcons(self.Roles, isTank, isHealer, isDPS);
+		LFGBrowseUtil_MapRoleStatesToRoleIcons(self.Roles, isTank, isHealer, isDPS, true, disabled);
 		self:Show();
 	end
 end
@@ -618,7 +731,7 @@ local LFGBROWSE_SEARCH_ENTRY_MENU = {
 	},
 	{
 		text = GROUP_INVITE,
-		func = function(_, name, inviteFunc) inviteFunc(name); end,
+		func = function(_, inviteFunc) inviteFunc(); end,
 		notCheckable = true,
 		arg1 = nil, --Leader name goes here
 		arg2 = InviteUnit, -- Invite action function goes here
@@ -665,9 +778,8 @@ function LFGBrowseMixin:GetSearchEntryMenu(resultID)
 
 	local inviteText, inviteFunc = LFGBrowseUtil_GetInviteActionForResult(resultID);
 	LFGBROWSE_SEARCH_ENTRY_MENU[3].text = inviteText;
-	LFGBROWSE_SEARCH_ENTRY_MENU[3].arg1 = searchResultInfo.leaderName;
-	LFGBROWSE_SEARCH_ENTRY_MENU[3].arg2 = inviteFunc;
-	LFGBROWSE_SEARCH_ENTRY_MENU[3].disabled = not searchResultInfo.leaderName;
+	LFGBROWSE_SEARCH_ENTRY_MENU[3].arg1 = inviteFunc;
+	LFGBROWSE_SEARCH_ENTRY_MENU[3].disabled = not inviteFunc;
 
 	LFGBROWSE_SEARCH_ENTRY_MENU[4].arg1 = resultID;
 	LFGBROWSE_SEARCH_ENTRY_MENU[4].arg2 = searchResultInfo.leaderName;
@@ -723,14 +835,22 @@ function LFGBrowseCategoryButton_OnClick(self)
 	LFGBrowseActivityDropDown_ValueReset(LFGBrowseFrame.ActivityDropDown);
 	UIDropDownMenu_ClearAll(LFGBrowseFrame.ActivityDropDown);
 	UIDropDownMenu_Initialize(LFGBrowseFrame.ActivityDropDown, LFGBrowseActivityDropDown_Initialize);
-	LFGBrowseActivityDropDown_ValueAll(LFGBrowseFrame.ActivityDropDown);
 	LFGBrowse_DoSearch();
 end
 
 -------------------------------------------------------
 ----------Activity DropDown
 -------------------------------------------------------
-function LFGBrowseActivityDropDown_Initialize(self)
+function LFGBrowseActivityDropDown_Initialize(self, level, menuList)
+	-- If we're a submenu, just display that.
+	if (menuList) then
+		for _, buttonInfo in pairs(menuList) do
+			UIDropDownMenu_AddButton(buttonInfo, level);
+		end
+		return;
+	end
+
+	-- If we're not a submenu, we need to generate the full menu from the top.
 	local selectedType = UIDropDownMenu_GetSelectedValue(LFGBrowseFrame.CategoryDropDown) or 0;
 
 	if ( selectedType > 0 ) then
@@ -738,48 +858,86 @@ function LFGBrowseActivityDropDown_Initialize(self)
 		local activities = C_LFGList.GetAvailableActivities(selectedType);
 
 		if (#activities > 0) then
-			local metaButtonInfo = UIDropDownMenu_CreateInfo();
-			metaButtonInfo.keepShownOnClick = true;
-			metaButtonInfo.notCheckable = true;
-			metaButtonInfo.leftPadding = 5;
+			local organizedActivities = LFGUtil_OrganizeActivitiesByActivityGroup(activities);
+			local activityGroupIDs = GetKeysArray(organizedActivities);
+			LFGUtil_SortActivityGroupIDs(activityGroupIDs);
 
-			-- Check All button
-			metaButtonInfo.text = CHECK_ALL;
-			metaButtonInfo.func = function()
-				LFGBrowseActivityDropDown_ValueAll(self);
-				UIDropDownMenu_Refresh(self, true);
-				LFGBrowseActivityDropDown_UpdateHeaderText(self);
-				LFGBrowse_DoSearch();
-			end;
-			UIDropDownMenu_AddButton(metaButtonInfo);
+			for _, activityGroupID in ipairs(activityGroupIDs) do
+				local activityIDs = organizedActivities[activityGroupID];
+				if (activityGroupID == 0) then
+					-- Free-floating activities (no group)
+					local buttonInfo = UIDropDownMenu_CreateInfo();
+					buttonInfo.func = LFGBrowseActivityButton_OnClick;
+					buttonInfo.owner = self;
+					buttonInfo.keepShownOnClick = true;
+					buttonInfo.classicChecks = true;
 
-			-- Uncheck All button
-			metaButtonInfo.text = UNCHECK_ALL;
-			metaButtonInfo.func = function()
-				LFGBrowseActivityDropDown_ValueReset(self);
-				UIDropDownMenu_Refresh(self, true);
-				LFGBrowseActivityDropDown_UpdateHeaderText(self);
-				LFGBrowse_DoSearch();
-			end;
-			UIDropDownMenu_AddButton(metaButtonInfo);
-		end
+					for _, activityID in pairs(activityIDs) do
+						local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
 
-		-- Individual Activity Buttons
-		local buttonInfo = UIDropDownMenu_CreateInfo();
-		buttonInfo.func = LFGBrowseActivityButton_OnClick;
-		buttonInfo.owner = self;
-		buttonInfo.keepShownOnClick = true;
-		buttonInfo.classicChecks = true;
+						buttonInfo.text = activityInfo.shortName;
+						buttonInfo.value = activityID;
+						buttonInfo.checked = function(self)
+							return LFGBrowseActivityDropDown_ValueIsSelected(LFGBrowseFrame.ActivityDropDown, self.value);
+						end;
+						UIDropDownMenu_AddButton(buttonInfo, level);
+					end
+				else
+					-- Grouped activities.
+					local groupButtonInfo = UIDropDownMenu_CreateInfo();
+					groupButtonInfo.func = LFGBrowseActivityGroupButton_OnClick;
+					groupButtonInfo.owner = self;
+					groupButtonInfo.keepShownOnClick = true;
+					groupButtonInfo.classicChecks = true;
+					groupButtonInfo.text = C_LFGList.GetActivityGroupInfo(activityGroupID);
+					groupButtonInfo.value = activityGroupID;
+					groupButtonInfo.checked = function(self)
+						return LFGBrowseActivityDropDown_IsAnyValueSelectedForActivityGroup(LFGBrowseFrame.ActivityDropDown, self.value);
+					end;
 
-		for i=1, #activities do
-			local activityInfo = C_LFGList.GetActivityInfoTable(activities[i]);
+					if (#activityGroupIDs == 1) then -- If we only have one activityGroup, do everything in one menu.
+						UIDropDownMenu_AddButton(groupButtonInfo, level);
 
-			buttonInfo.text = activityInfo.fullName;
-			buttonInfo.value = activities[i];
-			buttonInfo.checked = function(self)
-				return LFGBrowseActivityDropDown_ValueIsSelected(LFGBrowseFrame.ActivityDropDown, self.value);
-			end;
-			UIDropDownMenu_AddButton(buttonInfo);
+						for _, activityID in pairs(activityIDs) do
+							local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+							local buttonInfo = UIDropDownMenu_CreateInfo();
+							buttonInfo.func = LFGBrowseActivityButton_OnClick;
+							buttonInfo.owner = self;
+							buttonInfo.keepShownOnClick = true;
+							buttonInfo.classicChecks = true;
+
+							buttonInfo.text = "  "..activityInfo.shortName; -- Extra spacing to "indent" this from the group title.
+							buttonInfo.value = activityID;
+							buttonInfo.checked = function(self)
+								return LFGBrowseActivityDropDown_ValueIsSelected(LFGBrowseFrame.ActivityDropDown, self.value);
+							end;
+
+							UIDropDownMenu_AddButton(buttonInfo, level);
+						end
+					else -- If we have more than one group, do submenus.
+						groupButtonInfo.hasArrow = true;
+						groupButtonInfo.menuList = {};
+
+						for _, activityID in pairs(activityIDs) do
+							local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+							local buttonInfo = UIDropDownMenu_CreateInfo();
+							buttonInfo.func = LFGBrowseActivityButton_OnClick;
+							buttonInfo.owner = self;
+							buttonInfo.keepShownOnClick = true;
+							buttonInfo.classicChecks = true;
+
+							buttonInfo.text = activityInfo.shortName;
+							buttonInfo.value = activityID;
+							buttonInfo.checked = function(self)
+								return LFGBrowseActivityDropDown_ValueIsSelected(LFGBrowseFrame.ActivityDropDown, self.value);
+							end;
+							tinsert(groupButtonInfo.menuList, buttonInfo);
+						end
+
+						UIDropDownMenu_AddButton(groupButtonInfo, level);
+					end
+				end
+			end
 		end
 	else
 		LFGBrowseActivityDropDown_ValueReset(self);
@@ -787,18 +945,37 @@ function LFGBrowseActivityDropDown_Initialize(self)
 		UIDropDownMenu_ClearAll(self);
 	end
 
-	LFGBrowseActivityDropDown_UpdateHeaderText(self);
+	LFGBrowseActivityDropDown_UpdateHeader(self);
 end
 
-function LFGBrowseActivityDropDown_ValueAll(self)
+function LFGBrowseActivityDropDown_SetAllValuesForActivityGroup(self, activityGroupID, selected)
 	local selectedType = UIDropDownMenu_GetSelectedValue(LFGBrowseFrame.CategoryDropDown) or 0;
 
 	if ( selectedType > 0 ) then
 		local activities = C_LFGList.GetAvailableActivities(selectedType);
 		for i=1, #activities do
-			LFGBrowseActivityDropDown_ValueSetSelected(self, activities[i], true);
+			if (LFGUtil_GetActivityGroupForActivity(activities[i]) == activityGroupID) then
+				LFGBrowseActivityDropDown_ValueSetSelected(self, activities[i], selected);
+			end
 		end
 	end
+end
+
+function LFGBrowseActivityDropDown_IsAnyValueSelectedForActivityGroup(self, activityGroupID)
+	local selectedType = UIDropDownMenu_GetSelectedValue(LFGBrowseFrame.CategoryDropDown) or 0;
+
+	if ( selectedType > 0 ) then
+		local activities = C_LFGList.GetAvailableActivities(selectedType);
+		for i=1, #activities do
+			if (LFGUtil_GetActivityGroupForActivity(activities[i]) == activityGroupID) then
+				if (LFGBrowseActivityDropDown_ValueIsSelected(self, activities[i])) then
+					return true;
+				end
+			end
+		end
+	end
+
+	return false;
 end
 
 function LFGBrowseActivityDropDown_ValueReset(self)
@@ -817,24 +994,45 @@ function LFGBrowseActivityDropDown_ValueSetSelected(self, value, selected)
 	else
 		tDeleteItem(self.selectedValues, value);
 	end
-	LFGBrowseActivityDropDown_UpdateHeaderText(self);
+	LFGBrowseActivityDropDown_UpdateHeader(self);
 end
 
 function LFGBrowseActivityDropDown_ValueToggleSelected(self, value)
 	LFGBrowseActivityDropDown_ValueSetSelected(self, value, not LFGBrowseActivityDropDown_ValueIsSelected(self, value));
 end
 
-function LFGBrowseActivityDropDown_UpdateHeaderText(self)
-	if #self.selectedValues == 1 then
+function LFGBrowseActivityDropDown_UpdateHeader(self)
+	if #self.selectedValues == 0 then
+		UIDropDownMenu_SetText(self, LFGBROWSE_ACTIVITY_HEADER_DEFAULT);
+		self.ResetButton:Hide();
+	elseif #self.selectedValues == 1 then
 		local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedValues[1]);
 		UIDropDownMenu_SetText(self, activityInfo.fullName);
+		self.ResetButton:Show();
 	else
 		UIDropDownMenu_SetText(self, string.format(LFGBROWSE_ACTIVITY_HEADER, #self.selectedValues));
+		self.ResetButton:Show();
 	end
+end
+
+function LFGBrowseActivityDropDownResetButton_OnClick(self)
+	CloseDropDownMenus();
+	LFGBrowseActivityDropDown_ValueReset(self:GetParent());
+	LFGBrowseActivityDropDown_UpdateHeader(self:GetParent());
+	LFGBrowse_DoSearch();
+end
+
+function LFGBrowseActivityGroupButton_OnClick(self)
+	LFGBrowseActivityDropDown_SetAllValuesForActivityGroup(self.owner, self.value, not LFGBrowseActivityDropDown_IsAnyValueSelectedForActivityGroup(self.owner, self.value));
+	UIDropDownMenu_Refresh(self.owner, true);
+	LFGBrowseActivityDropDown_UpdateHeader(self.owner);
+	LFGBrowse_DoSearch();
 end
 
 function LFGBrowseActivityButton_OnClick(self)
 	LFGBrowseActivityDropDown_ValueToggleSelected(self.owner, self.value);
+	UIDropDownMenu_RefreshAll(self.owner, true);
+	LFGBrowseActivityDropDown_UpdateHeader(self.owner);
 	LFGBrowse_DoSearch();
 end
 
@@ -842,13 +1040,7 @@ end
 ----------Buttons
 -------------------------------------------------------
 function LFGBrowseGroupInviteButton_OnClick(self, button)
-	local selectedElement = LFGBrowseFrame.selectionBehavior:GetSelectedElementData()[1];
-	if (selectedElement) then
-		local searchResultInfo = C_LFGList.GetSearchResultInfo(selectedElement.resultID);
-		if (searchResultInfo) then
-			self.inviteFunc(searchResultInfo.leaderName);
-		end
-	end
+	self.inviteFunc();
 end
 
 function LFGBrowseSendMessageButton_OnClick(self, button)
@@ -913,29 +1105,39 @@ end
 
 function LFGBrowseUtil_GetInviteActionForResult(resultID)
 	local inviteText = GROUP_INVITE;
-	local inviteFunc = InviteToGroup;
-	if (IsInGroup()) then
-		if (not (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player"))) then
-			inviteText = SUGGEST_INVITE;
-		end
-	elseif (resultID) then
+	local inviteFunc = nil;
+	if (resultID) then
 		local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-		if (searchResultInfo and searchResultInfo.numMembers > 1) then
-			inviteText = JOIN_QUEUE;
-			inviteFunc = RequestInviteFromUnit;
+		if (searchResultInfo) then
+			inviteFunc = function() InviteToGroup(searchResultInfo.leaderName); end;
+			if (IsInGroup()) then
+				if (not (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player"))) then
+					inviteText = SUGGEST_INVITE;
+				end
+			elseif (searchResultInfo.numMembers > 1) then
+				inviteText = JOIN_QUEUE;
+				inviteFunc = function() C_LFGList.RequestInvite(resultID); end;
+			end
 		end
 	end
 
 	return inviteText, inviteFunc;
 end
-function LFGBrowseUtil_MapRoleStatesToRoleIcons(iconArray, isTank, isHealer, isDPS)
+function LFGBrowseUtil_MapRoleStatesToRoleIcons(iconArray, isTank, isHealer, isDPS, useSimple, useDisabled)
 	-- For each role flag, put its icon in the first available button slot. Then hide the rest.
 	-- iconArray must be an array of (at least) 3 Textures.
 	local roleStates = { isTank, isHealer, isDPS };
 	local roleButtonIndex = 1;
 	for i, state in ipairs(roleStates) do
 		if (state) then
-			iconArray[roleButtonIndex]:SetAtlas(LFGBROWSE_GROUPDATA_ATLASES[LFGBROWSE_GROUPDATA_ROLE_ORDER[i]], false);
+			if (useSimple) then
+				iconArray[roleButtonIndex]:SetTexture("Interface\\LFGFrame\\LFGROLE.BLP");
+				iconArray[roleButtonIndex]:SetTexCoord(GetTexCoordsForRoleSmall(LFGBROWSE_GROUPDATA_ROLE_ORDER[i]));
+				iconArray[roleButtonIndex]:SetDesaturated(useDisabled);
+			else
+				iconArray[roleButtonIndex]:SetAtlas(LFGBROWSE_GROUPDATA_ATLASES[LFGBROWSE_GROUPDATA_ROLE_ORDER[i]], false);
+				iconArray[roleButtonIndex]:SetDesaturated(useDisabled);
+			end
 			iconArray[roleButtonIndex]:Show();
 			roleButtonIndex = roleButtonIndex+1;
 		end

@@ -1158,7 +1158,6 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
-						self.event = "STATUS_TEXT_DISPLAY";
 						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
@@ -1170,7 +1169,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<CheckButton name="$parentShowAggroPercentagesz" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowAggroPercentages" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAggroWarningDropdown" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -1202,6 +1201,7 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
+						self.event = "STATUS_TEXT_DISPLAY";
 						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>

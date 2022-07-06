@@ -644,7 +644,7 @@ function PlayerFrame_ShowVehicleTexture()
 		TotemFrame:Hide();
 	elseif ( class == "DEATHKNIGHT" ) then
 		RuneFrame:Hide();
-	elseif ( class == "PRIEST" ) then
+	elseif ( class == "PRIEST" and PriestBarFrame) then
 		PriestBarFrame:Hide();
 	end
 end
@@ -660,7 +660,7 @@ function PlayerFrame_HideVehicleTexture()
 		TotemFrame_Update();
 	elseif ( class == "DEATHKNIGHT" ) then
 		RuneFrame:Show();
-	elseif ( class == "PRIEST" ) then
+	elseif ( class == "PRIEST" and PriestBarFrame) then
 		PriestBarFrame_CheckAndShow();
 	end
 end
@@ -748,7 +748,7 @@ function PlayerFrame_AdjustAttachments()
 			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -6);
 		elseif ( class == "DRUID" ) then
 		CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
-		elseif ( class == "PRIEST" and PriestBarFrame:IsShown() ) then
+		elseif ( class == "PRIEST" and PriestBarFrame and PriestBarFrame:IsShown() ) then
 			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -2);
 		elseif ( class == "DEATHKNIGHT" or class == "WARLOCK" ) then
 			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 4);

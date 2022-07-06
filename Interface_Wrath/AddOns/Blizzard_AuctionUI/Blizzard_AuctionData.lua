@@ -422,6 +422,11 @@ do -- Consumables
 	consumablesCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Consumable);
 end
 
+do -- Glyphs
+	local glyphsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_GLYPHS);
+	glyphsCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Glyph);
+end
+
 do -- Trade Goods
 	local tradeGoodsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_TRADE_GOODS);
 	tradeGoodsCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Tradegoods);
@@ -445,11 +450,6 @@ end
 do -- Gems
 	local gemsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_GEMS);
 	gemsCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Gem);
-end
-
-do -- Glyphs
-	local glyphsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_GLYPHS);
-	glyphsCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Glyph);
 end
 
 do -- Miscellaneous

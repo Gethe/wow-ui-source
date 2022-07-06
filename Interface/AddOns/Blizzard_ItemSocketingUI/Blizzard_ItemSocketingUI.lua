@@ -7,6 +7,8 @@ GEM_TYPE_INFO["Yellow"] = {tex=primaryGemTexture, w=43, h=43, left=0, right=0.16
 GEM_TYPE_INFO["Red"] = {tex=primaryGemTexture, w=43, h=43, left=0.1796875, right=0.34375, top=0.640625, bottom=0.80859375, r=1, g=0.47, b=0.47, CBx=53, CBy=53, CBLeft=0.5546875, CBRight=0.7578125, CBTop=0.4765625, CBBottom=0.68359375, OBx=61, OBy=57, OBLeft=0.7578125, OBRight=0.9921875, OBTop=0.4765625, OBBottom=0.69921875};
 GEM_TYPE_INFO["Blue"] = {tex=primaryGemTexture, w=43, h=43, left=0.3515625, right=0.51953125, top=0.640625, bottom=0.80859375, r=0.47, g=0.67, b=1, CBx=53, CBy=53, CBLeft=0.5546875, CBRight=0.7578125, CBTop=0.23828125, CBBottom=0.4453125, OBx=61, OBy=57, OBLeft=0.7578125, OBRight=0.9921875, OBTop=0.23828125, OBBottom=0.4609375};
 GEM_TYPE_INFO["Meta"] = {tex=primaryGemTexture, w=57, h=52, left=0.171875, right=0.3984375, top=0.40234375, bottom=0.609375, r=1, g=1, b=1, CBLeft=0.5546875, CBx=53, CBy=53, CBRight=0.7578125, CBTop=0, CBBottom=0.20703125, OBLeft=0.7578125, OBx=61, OBy=57, OBRight=0.9921875, OBTop=0, OBBottom=0.22265625};
+-- Note when comparing to Reference: Original classic UI code referred to "Prismatic" socket types as just "Socket" until 09/2010
+GEM_TYPE_INFO["Prismatic"] = {tex=primaryGemTexture, w=57, h=52, left=0.171875, right=0.3984375, top=0.40234375, bottom=0.609375, r=1, g=1, b=1, CBx=53, CBy=53, CBLeft=0.5546875, CBRight=0.7578125, CBTop=0, CBBottom=0.20703125, OBx=61, OBy=57, OBLeft=0.7578125, OBRight=0.9921875, OBTop=0, OBBottom=0.22265625};
 
 ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH = 240;
 

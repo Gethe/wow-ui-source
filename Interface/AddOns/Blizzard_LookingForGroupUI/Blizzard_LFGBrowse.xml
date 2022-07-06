@@ -19,21 +19,21 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</Anchors>
 						</FontString>
 						<Texture parentKey="Role1" parentArray="Roles">
-							<Size x="18" y="18"/>
+							<Size x="14" y="14"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.RolesText" relativePoint="RIGHT" x="4" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Role2" parentArray="Roles">
-							<Size x="18" y="18"/>
+							<Size x="14" y="14"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Role1" relativePoint="CENTER" x="18" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.Role1" relativePoint="CENTER" x="16" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Role3" parentArray="Roles">
-							<Size x="18" y="18"/>
+							<Size x="14" y="14"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Role2" relativePoint="CENTER" x="18" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.Role2" relativePoint="CENTER" x="16" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -115,16 +115,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<Anchor point="TOPLEFT" x="8" y="-4"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="ClassIcon" atlas="groupfinder-icon-class-warrior" hidden="true">
-					<Size x="18" y="18"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.PartyIcon" x="-1" y="0"/>
-					</Anchors>
-				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="1">
 					<Size x="0" y="14"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.PartyIcon" relativePoint="TOPRIGHT" x="0" y="-2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PartyIcon" relativePoint="TOPRIGHT" x="0" y="-2"/> <!-- Reanchored in code. -->
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Level" inherits="GameFontDisableSmallLeft" maxLines="1">
@@ -133,6 +127,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMRIGHT" x="2" y="-1"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="ClassIcon" atlas="groupfinder-icon-class-warrior" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Level" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
 				<FontString parentKey="ActivityName" inherits="GameFontDisableSmallLeft">
 					<Size x="0" y="15"/>
 					<Anchors>
@@ -189,7 +189,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 				</FontString>
 				<Texture parentKey="Role" parentArray="Roles">
-					<Size x="16" y="16"/>
+					<Size x="16" y="16"/> <!-- Resized in script. -->
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="4" y="0"/>
 					</Anchors>
@@ -201,13 +201,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Role2" parentArray="Roles" hidden="true">
-					<Size x="16" y="16"/>
+					<Size x="14" y="14"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Role" relativePoint="CENTER" x="16" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Role3" parentArray="Roles" hidden="true">
-					<Size x="16" y="16"/>
+					<Size x="14" y="14"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Role2" relativePoint="CENTER" x="16" y="0"/>
 					</Anchors>
@@ -215,11 +215,11 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 	</Frame>
-	<FontString name="LFGBrowseSearchEntryTooltipActivityNameTemplate" virtual="true" inherits="GameFontNormalLeftLightGrey" justifyH="LEFT"/>
+	<FontString name="LFGBrowseSearchEntryTooltipActivityNameTemplate" virtual="true" inherits="GameFontNormal" justifyH="LEFT" wordwrap="false"/>
 	<Frame name="LFGBrowseSearchEntryTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
-		<Size x="225" y="0"/>
+		<Size x="200" y="1"/> <!-- Resized in script. -->
 		<Anchors>
-			<Anchor point="CENTER"/>
+			<Anchor point="TOPLEFT"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -234,7 +234,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<Anchor point="TOPLEFT" x="11" y="-10"/> <!-- Reanchored in script. -->
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Comment" inherits="GameFontNormalLeftLightGrey" justifyV="TOP" justifyH="LEFT">
+				<FontString parentKey="Comment" inherits="GameFontNormalLeftLightGrey" justifyV="TOP" justifyH="LEFT" wordwrap="true">
 					<Anchors>
 						<Anchor point="LEFT" x="11" y="0"/>
 						<Anchor point="RIGHT" x="-11" y="0"/>
@@ -261,7 +261,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	<!-- Start LFG Browse Frame -->
 	<Frame name="LFGBrowseFrame" parent="LFGParentFrame" hidden="false" setAllPoints="true" mixin="LFGBrowseMixin">
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture name="$parentFrameBackgroundTop" file="Interface\LFGFrame\UI-LFR-FRAME-MAIN">
 					<Size x="512" y="121"/>
 					<Anchors>
@@ -269,26 +269,35 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="0" bottom="0.236328125"/>
 				</Texture>
-				<Texture name="$parentFrameBackgroundBottom" file="Interface\LFGFrame\UI-LFG-FRAME">
-					<Size x="512" y="391"/>
+				<Texture name="$parentFrameBackgroundMiddle" file="Interface\LFGFrame\UI-LFG-FRAME">
+					<Size x="512" y="135"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="-121"/>
 					</Anchors>
-					<TexCoords left="0" right="1.0" top="0.236328125" bottom="1.0"/>
+					<TexCoords left="0" right="1.0" top="0.236328125" bottom="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture name="$parentBackgroundArt" parentKey="BackgroundArt" atlas="groupfinder-background-classic" textureSubLevel="0">
+					<Size x="324" y="282"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="22" y="-129"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentFrameBackgroundBottom" file="Interface\LFGFrame\UI-LFG-FRAME" textureSubLevel="1">
+					<Size x="512" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-256"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.5" bottom="1.0"/>
 				</Texture>
 				<FontString name="$parentFrameTitle" inherits="GameFontNormal" text="LFG_TITLE">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-18"/>
 					</Anchors>
 				</FontString>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentBackgroundArt" parentKey="BackgroundArt" atlas="groupfinder-background-classic">
-					<Size x="324" y="282"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="22" y="-128"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="NoResultsFound" inherits="GameFontDisable" text="LFG_LIST_NO_RESULTS_FOUND">
@@ -317,10 +326,24 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentCategoryDropDown" relativePoint="RIGHT" x="-20" y="0"/>
 				</Anchors>
+				<Frames>
+					<Button parentKey="ResetButton" hidden="true">
+						<Size x="13" y="13"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="RIGHT" x="-9" y="2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="LFGBrowseActivityDropDownResetButton_OnClick"/>
+						</Scripts>
+						<NormalTexture atlas="common-search-clearbutton" useAtlasSize="false" scale="0.65" alpha="0.5">
+							<Size x="13" y="13"/>
+						</NormalTexture>
+					</Button>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						self.selectedValues = {};
-						UIDropDownMenu_SetWidth(self, 162);
+						UIDropDownMenu_SetWidth(self, 153);
 						UIDropDownMenu_Initialize(self, LFGBrowseActivityDropDown_Initialize);
 						UIDropDownMenu_JustifyText(self, "LEFT");
 					</OnLoad>

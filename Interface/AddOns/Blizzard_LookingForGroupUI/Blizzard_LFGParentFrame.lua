@@ -94,16 +94,16 @@ function LFGUtil_SortActivityIDs(activityIDList, useFullName)
 		local activityInfo2 = C_LFGList.GetActivityInfoTable(activityID2);
 
 		if (activityInfo1.orderIndex ~= activityInfo2.orderIndex) then
-			return activityInfo1.orderIndex < activityInfo2.orderIndex
+			return activityInfo1.orderIndex < activityInfo2.orderIndex;
 		end
 
 		if (useFullName) then
 			if (activityInfo1.fullName ~= activityInfo2.fullName) then
-				return strcmputf8i(activityInfo1.fullName, activityInfo2.fullName) < 0
+				return strcmputf8i(activityInfo1.fullName, activityInfo2.fullName) < 0;
 			end
 		else
 			if (activityInfo1.shortName ~= activityInfo2.shortName) then
-				return strcmputf8i(activityInfo1.shortName, activityInfo2.shortName) < 0
+				return strcmputf8i(activityInfo1.shortName, activityInfo2.shortName) < 0;
 			end
 		end
 
@@ -111,6 +111,56 @@ function LFGUtil_SortActivityIDs(activityIDList, useFullName)
 	end
 
 	table.sort(activityIDList, SortCB);
+end
+
+function LFGUtil_SortActivityGroupIDs(activityGroupIDList)
+	local function SortCB(activityGroupID1, activityGroupID2)
+		local name1, orderIndex1 = C_LFGList.GetActivityGroupInfo(activityGroupID1);
+		local name2, orderIndex2 = C_LFGList.GetActivityGroupInfo(activityGroupID2);
+
+		if (orderIndex1 and orderIndex2 and orderIndex1 ~= orderIndex2) then
+			return orderIndex1 < orderIndex2;
+		end
+
+		if (name1 and name2 and name1 ~= name2) then
+			return strcmputf8i(name1, name2) < 0;
+		end
+
+		return activityGroupID1 < activityGroupID2;
+	end
+
+	table.sort(activityGroupIDList, SortCB);
+end
+
+local ACTIVITY_ACTIVITYGROUP_CACHE = {};
+function LFGUtil_GetActivityGroupForActivity(activityID)
+	if (not ACTIVITY_ACTIVITYGROUP_CACHE[activityID]) then
+		local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+		if (activityInfo) then
+			ACTIVITY_ACTIVITYGROUP_CACHE[activityID] = activityInfo.groupFinderActivityGroupID;
+		end
+	end
+		
+	return ACTIVITY_ACTIVITYGROUP_CACHE[activityID];
+end
+
+function LFGUtil_OrganizeActivitiesByActivityGroup(activities)
+	local organizedActivities = {};
+	for i, activityID in ipairs(activities) do
+		local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+		if (activityInfo) then
+			if (not organizedActivities[activityInfo.groupFinderActivityGroupID]) then
+				organizedActivities[activityInfo.groupFinderActivityGroupID] = {};
+			end
+			tinsert(organizedActivities[activityInfo.groupFinderActivityGroupID], activityID);
+		end
+	end
+
+	for activityGroupID, activityIDs in pairs(organizedActivities) do
+		LFGUtil_SortActivityIDs(activityIDs);
+	end
+
+	return organizedActivities;
 end
 
 -------------------------------------------------------

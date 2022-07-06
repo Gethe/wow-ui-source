@@ -37,7 +37,6 @@ function RuneButton_OnLoad (self)
 	self.rune = _G[self:GetName().."Rune"];
 	self.fill = _G[self:GetName().."Fill"];
 	self.shine = _G[self:GetName().."ShineTexture"];
-	self.spentAnimActive = false;
 
 	RuneButton_Update(self);
 end
@@ -51,14 +50,12 @@ function RuneButton_OnUpdate (self, elapsed, ...)
 	
 	local displayCooldown = (runeReady and 0) or 1;
 	
-	if self.spentAnimActive == false and displayCooldown and start > 0 and duration > 0 then
+	if displayCooldown and start > 0 and duration > 0 then
 		CooldownFrame_Set(cooldown, start, duration, displayCooldown, true);
-		self.spentAnimActive = true;
 	end
 ;
 
 	if ( runeReady ) then
-		self.spentAnimActive = false;
 		self:SetScript("OnUpdate", nil);
 		
 	end

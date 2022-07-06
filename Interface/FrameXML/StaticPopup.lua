@@ -1599,10 +1599,10 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 			return;
 		end
 
-		local _, _, guid, _, _, level, spec, itemLevel = GetInviteConfirmationInfo(self.data);
+		local _, _, guid, roles, _, level = GetInviteConfirmationInfo(self.data);
 		local className, classFilename, _, _, gender, characterName, _ = GetPlayerInfoByGUID(guid);
 
-		GameTooltip:SetOwner(self.linkRegion);
+		GameTooltip:SetOwner(self.linkRegion, "ANCHOR_CURSOR_RIGHT");
 
 		if ( className ) then
 			self.nextUpdateTime = nil; -- The tooltip will be created with valid data, no more updates necessary.
@@ -1610,12 +1610,21 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 			local _, _, _, colorCode = GetClassColor(classFilename);
 			GameTooltip:SetText(WrapTextInColorCode(characterName, colorCode));
 
-			local _, specName = GetSpecializationInfoByID(spec, gender);
-			local characterLine = CHARACTER_LINK_CLASS_LEVEL_SPEC_TOOLTIP:format(level, className, specName);
-			local itemLevelLine = CHARACTER_LINK_ITEM_LEVEL_TOOLTIP:format(itemLevel);
+			local characterLine = CHARACTER_LINK_CLASS_LEVEL_TOOLTIP:format(level, className);
+			if (roles["TANK"] or roles["HEALER"] or roles["DAMAGER"]) then
+				characterLine = characterLine .. " ";
+				if (roles["TANK"]) then
+					characterLine = characterLine .. " " .. INLINE_TANK_ICON_SMALL;
+				end
+				if (roles["HEALER"]) then
+					characterLine = characterLine .. " " .. INLINE_HEALER_ICON_SMALL;
+				end
+				if (roles["DAMAGER"]) then
+					characterLine = characterLine .. " " .. INLINE_DAMAGER_ICON_SMALL;
+				end
+			end
 
 			GameTooltip:AddLine(characterLine, HIGHLIGHT_FONT_COLOR:GetRGB());
-			GameTooltip:AddLine(itemLevelLine, HIGHLIGHT_FONT_COLOR:GetRGB());
 		else
 			self.nextUpdateTime = timeNow + .5;
 			GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
@@ -3320,6 +3329,20 @@ StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
 	timeout = 0,
 	hideOnEscape = 1
 };
+
+StaticPopupDialogs["CONFIRM_BARBERS_CHOICE"] = {
+	text = BARBERS_CHOICE_CONFIRM,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ConfirmBarbersChoice();
+	end,
+	hasMoneyFrame = 1,
+	exclusive = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["CONFIRM_PET_UNLEARN"] = {
 	text = CONFIRM_PET_UNLEARN,
 	button1 = ACCEPT,
