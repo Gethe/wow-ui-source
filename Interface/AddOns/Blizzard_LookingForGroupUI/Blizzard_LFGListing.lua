@@ -449,11 +449,14 @@ end
 -------------------------------------------------------
 function LFGListingRolePollButton_OnLoad(self)
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
+	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	LFGListingRolePollButton_UpdateEnableState(self);
 end
 
 function LFGListingRolePollButton_OnEvent(self, event)
 	if (event == "PARTY_LEADER_CHANGED") then
+		LFGListingRolePollButton_UpdateEnableState(self);
+	elseif (event == "PLAYER_ROLES_ASSIGNED") then
 		LFGListingRolePollButton_UpdateEnableState(self);
 	end
 end

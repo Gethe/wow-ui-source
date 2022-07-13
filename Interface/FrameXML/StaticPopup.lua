@@ -1650,6 +1650,7 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 		self.nextUpdateTime = nil;
 		GameTooltip:Hide();
 	end,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 };
 StaticPopupDialogs["GUILD_INVITE"] = {

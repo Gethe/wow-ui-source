@@ -465,6 +465,10 @@ function GlyphFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GlyphUI");
 end
 
+function Calendar_LoadUI()
+	UIParentLoadAddOn("Blizzard_Calendar");
+end
+
 function TimeManager_LoadUI()
 	UIParentLoadAddOn("Blizzard_TimeManager");
 end
@@ -604,6 +608,13 @@ end
 function ToggleBattlefieldMap()
 	BattlefieldMap_LoadUI();
 	BattlefieldMapFrame:Toggle();
+end
+
+function ToggleCalendar()
+	Calendar_LoadUI();
+	if ( Calendar_Toggle ) then
+		Calendar_Toggle();
+	end
 end
 
 function IsCommunitiesUIDisabledByTrialAccount()
@@ -1029,15 +1040,13 @@ function UIParent_OnEvent(self, event, ...)
 		local resSicknessTime = GetResSicknessDuration();
 		if ( resSicknessTime ) then
 			local dialog = nil;
-			dialog = StaticPopup_Show("XP_LOSS", resSicknessTime);
+			if (UnitLevel("player") < Constants.LevelConstsExposed.MIN_RES_SICKNESS_LEVEL) then
+				dialog = StaticPopup_Show("XP_LOSS_NO_SICKNESS_NO_DURABILITY", resSicknessTime);
+			else
+				dialog = StaticPopup_Show("XP_LOSS", resSicknessTime);
+			end
 			if ( dialog ) then
 				dialog.data = resSicknessTime;
-			end
-		else
-			local dialog = nil;
-			dialog = StaticPopup_Show("XP_LOSS_NO_SICKNESS");
-			if ( dialog ) then
-				dialog.data = 1;
 			end
 		end
 		HideUIPanel(GossipFrame);

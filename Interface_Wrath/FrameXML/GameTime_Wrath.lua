@@ -19,20 +19,19 @@ local INVITE_PULSE_SEC	= 1.0 / (2.0*1.0);	-- mul by 2 so the pulse constant coun
 -- GameTimeFrame functions
 
 function GameTimeFrame_OnLoad(self)
-	-- TODO: Calendar UI
-	--[[self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES");
 	self:RegisterEvent("CALENDAR_EVENT_ALARM");
-	self:RegisterForClicks("AnyUp");--]]
+	self:RegisterForClicks("AnyUp");
 
 	-- adjust button texture layers to not interfere with overlaid textures
-	--local tex;
-	--tex = self:GetNormalTexture();
-	--tex:SetDrawLayer("BACKGROUND");
-	--tex = self:GetPushedTexture();
-	--tex:SetDrawLayer("BACKGROUND");
+	local tex;
+	tex = self:GetNormalTexture();
+	tex:SetDrawLayer("BACKGROUND");
+	tex = self:GetPushedTexture();
+	tex:SetDrawLayer("BACKGROUND");
 
-	--self:GetFontString():SetDrawLayer("BACKGROUND");
+	self:GetFontString():SetDrawLayer("BACKGROUND");
 
 	self.timeOfDay = 0;
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
@@ -47,8 +46,8 @@ function GameTimeFrame_OnEnter(self)
 end
 
 function GameTimeFrame_OnEvent(self, event, ...)
-	-- TODO: Calendar UI
-	--[[if ( event == "CALENDAR_UPDATE_PENDING_INVITES" or event == "PLAYER_ENTERING_WORLD" ) then
+
+	if ( event == "CALENDAR_UPDATE_PENDING_INVITES" or event == "PLAYER_ENTERING_WORLD" ) then
 		local pendingCalendarInvites = C_Calendar.GetNumPendingInvites();
 		if ( pendingCalendarInvites > self.pendingCalendarInvites ) then
 			if ( not CalendarFrame or (CalendarFrame and not CalendarFrame:IsShown()) ) then
@@ -69,7 +68,7 @@ function GameTimeFrame_OnEvent(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(format(CALENDAR_EVENT_ALARM_MESSAGE, title), info.r, info.g, info.b, info.id);
 		--UIFrameFlash(GameTimeCalendarEventAlarmTexture, 1.0, 1.0, 6);
-	end--]]
+	end
 end
 
 function GameTimeFrame_OnUpdate(self, elapsed)
@@ -92,8 +91,7 @@ function GameTimeFrame_OnUpdate(self, elapsed)
 		GameTimeTexture:SetTexCoord(minx, maxx, miny, maxy);
 	end
 	
-	-- TODO: Calendar UI
-	--[[if(GameTooltip:IsOwned(self)) then
+	if(GameTooltip:IsOwned(self)) then
 		GameTooltip:ClearLines();
 		if ( GameTimeCalendarInvitesTexture:IsShown() ) then
 			GameTooltip:AddLine(GAMETIME_TOOLTIP_CALENDAR_INVITES);
@@ -109,10 +107,10 @@ function GameTimeFrame_OnUpdate(self, elapsed)
 			GameTooltip:AddLine(GAMETIME_TOOLTIP_TOGGLE_CALENDAR);
 		end
 		GameTooltip:Show();
-	end--]]
+	end
 
 	-- Flashing stuff
-	--[[if ( elapsed and GameTimeFrame.flashInvite ) then
+	if ( elapsed and GameTimeFrame.flashInvite ) then
 		local flashIndex = TWOPI * self.flashTimer * INVITE_PULSE_SEC;
 		local flashValue = max(0.0, 0.5 + 0.5*cos(flashIndex));
 		if ( flashIndex >= TWOPI ) then
@@ -124,12 +122,10 @@ function GameTimeFrame_OnUpdate(self, elapsed)
 		GameTimeCalendarInvitesTexture:SetAlpha(flashValue);
 		GameTimeCalendarInvitesGlow:SetAlpha(flashValue);
 	end
-	--]]
 end
 
 function GameTimeFrame_OnClick(self)
-	-- TODO: Calendar UI
-	--[[if ( GameTimeCalendarInvitesTexture:IsShown() ) then
+	if ( GameTimeCalendarInvitesTexture:IsShown() ) then
 		Calendar_LoadUI();
 		if ( Calendar_Show ) then
 			Calendar_Show();
@@ -140,7 +136,7 @@ function GameTimeFrame_OnClick(self)
 		GameTimeFrame.flashInvite = false;
 	else
 		ToggleCalendar();
-	end--]]
+	end
 end
 
 function GameTimeFrame_SetDate()

@@ -212,7 +212,7 @@ PetFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
 ..\..\Interface_Wrath\FrameXML\CharacterFrame.xml
-..\..\Interface_TBC\FrameXML\PaperDollFrame.xml
+..\..\Interface_Wrath\FrameXML\PaperDollFrame.xml
 ..\..\Interface_Wrath\FrameXML\PetPaperDollFrame.xml
 SkillFrame.xml
 ..\..\Interface_Wrath\FrameXML\ReputationFrame.xml
@@ -280,6 +280,7 @@ ArenaFrame.xml
 ArenaRegistrarFrame.xml
 ..\..\Interface_Wrath\FrameXML\PVPFrame.xml
 RuneFrame.xml
+..\..\Interface_Wrath\FrameXML\EquipmentManager.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

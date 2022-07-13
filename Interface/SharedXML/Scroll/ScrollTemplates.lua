@@ -324,6 +324,11 @@ function ScrollingFontMixin:SetText(text)
 	scrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 end
 
+function ScrollingFontMixin:SetTextColor(color)
+	local fontString = self:GetFontString();
+	fontString:SetTextColor(color:GetRGB());
+end
+
 function ScrollingFontMixin:ClearText()
 	self:SetText("");
 end

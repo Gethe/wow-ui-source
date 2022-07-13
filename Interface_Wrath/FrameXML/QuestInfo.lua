@@ -101,7 +101,6 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 		-- reward frame text
 		QuestInfoRewardsFrame.ItemChooseText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoRewardsFrame.ItemReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
-		QuestInfoRewardsFrame.PlayerTitleText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoRewardsFrame.XPFrame.ReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoRewardsFrame.TalentFrame.ReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 
@@ -436,6 +435,7 @@ function QuestInfo_ShowRewards()
 	local artifactXP = 0;
 	local artifactCategory;
 	local honor = 0;
+	local arenaPoints = 0;
 	local playerTitle;
 	local talents = 0;
 	local totalHeight = 0;
@@ -456,6 +456,7 @@ function QuestInfo_ShowRewards()
 		xp = GetQuestLogRewardXP();
 		--artifactXP, artifactCategory = GetQuestLogRewardArtifactXP();
 		honor = GetQuestLogRewardHonor();
+		arenaPoints = GetQuestLogRewardArenaPoints();
 		playerTitle = GetQuestLogRewardTitle();
 		talents = GetQuestLogRewardTalents();
 		--ProcessQuestLogRewardFactions();
@@ -470,13 +471,13 @@ function QuestInfo_ShowRewards()
 		skillName, skillIcon, skillPoints = 0, 0, 0;--GetRewardSkillPoints();
 		xp = GetRewardXP();
 		artifactXP, artifactCategory = 0, nil;--GetRewardArtifactXP();
-		honor = 0;--GetRewardHonor();
-		playerTitle = nil;--GetRewardTitle();
+		honor = GetRewardHonor();
+		arenaPoints = GetRewardArenaPoints();
+		playerTitle = GetRewardTitle();
 		talents = GetRewardTalentPoints();
 		numSpellRewards = GetNumRewardSpells();
 		spellGetter = GetRewardSpell;
 	end
-
 	for rewardSpellIndex = 1, numSpellRewards do
 		local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = spellGetter(rewardSpellIndex);
 		local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
@@ -660,26 +661,12 @@ function QuestInfo_ShowRewards()
 		end
 	end
 
-	-- Title reward
-	if ( playerTitle ) then
-		rewardsFrame.PlayerTitleText:Show();
-		rewardsFrame.PlayerTitleText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
-		totalHeight = totalHeight +  rewardsFrame.PlayerTitleText:GetHeight() + REWARDS_SECTION_OFFSET;
-		rewardsFrame.TitleFrame:SetPoint("TOPLEFT", rewardsFrame.PlayerTitleText, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
-		rewardsFrame.TitleFrame.Name:SetText(playerTitle);
-		rewardsFrame.TitleFrame:Show();
-		lastFrame = rewardsFrame.TitleFrame;
-		totalHeight = totalHeight +  rewardsFrame.TitleFrame:GetHeight() + REWARDS_SECTION_OFFSET;
-	else
-		rewardsFrame.PlayerTitleText:Hide();
-		rewardsFrame.TitleFrame:Hide();
-	end
 
 	-- Setup mandatory rewards
-	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or xp > 0 or talents > 0 ) then
+	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or xp > 0 or talents > 0 or playerTitle) then
 		-- receive text, will either say "You will receive" or "You will also receive"
 		local questItemReceiveText = rewardsFrame.ItemReceiveText;
-		if ( numQuestChoices > 0 or numQuestSpellRewards > 0 or playerTitle ) then
+		if ( numQuestChoices > 0 or numQuestSpellRewards > 0 ) then
 			questItemReceiveText:SetText(REWARD_ITEMS);
 		else
 			questItemReceiveText:SetText(REWARD_ITEMS_ONLY);
@@ -731,6 +718,16 @@ function QuestInfo_ShowRewards()
 		if ( QuestInfo_ToggleRewardElement(rewardsFrame.TalentFrame, talents, lastFrame) ) then
 			lastFrame = rewardsFrame.TalentFrame;
 			totalHeight = totalHeight + rewardsFrame.TalentFrame:GetHeight() + REWARDS_SECTION_OFFSET;
+		end
+		-- Title reward
+		if ( playerTitle ) then
+			rewardsFrame.TitleFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
+			rewardsFrame.TitleFrame.Title:SetText(playerTitle);
+			rewardsFrame.TitleFrame:Show();
+			lastFrame = rewardsFrame.TitleFrame;
+			totalHeight = totalHeight +  rewardsFrame.TitleFrame:GetHeight() + REWARDS_SECTION_OFFSET;
+		else
+			rewardsFrame.TitleFrame:Hide();
 		end
 		-- Skill Point rewards
 		if ( QuestInfo_ToggleRewardElement(rewardsFrame.SkillPointFrame, skillPoints, lastFrame) ) then
@@ -808,7 +805,10 @@ function QuestInfo_ShowRewards()
 				name, texture, numItems, quality = GetQuestCurrencyInfo(questItem.type, i);
 				currencyID = GetQuestCurrencyID(questItem.type, i);
 			end
-			if (name and texture and numItems) then
+			if (currencyID == Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID) then
+				--skip
+				questItem:Hide();
+			elseif (name and texture and numItems) then
 				name, texture, numItems, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, quality);
 				questItem:SetID(i)
 				questItem:Show();
@@ -848,14 +848,13 @@ function QuestInfo_ShowRewards()
         if ( honor > 0 ) then
             local icon;
             if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
-                icon = "Interface\\Icons\\PVPCurrency-Honor-Horde";
+                icon = "Interface\\TargetingFrame\\UI-PVP-Horde";
             else
-                icon = "Interface\\Icons\\PVPCurrency-Honor-Alliance";
+                icon = "Interface\\TargetingFrame\\UI-PVP-Alliance";
             end
 
             rewardsFrame.HonorFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
-            rewardsFrame.HonorFrame.Count:SetText(BreakUpLargeNumbers(honor));
-            rewardsFrame.HonorFrame.Name:SetText(HONOR);
+            rewardsFrame.HonorFrame.Points:SetText(BreakUpLargeNumbers(honor));
             rewardsFrame.HonorFrame.Icon:SetTexture(icon);
             rewardsFrame.HonorFrame:Show();
 
@@ -864,12 +863,27 @@ function QuestInfo_ShowRewards()
         else
             rewardsFrame.HonorFrame:Hide();
         end
+	
+	rewardsFrame.ArenaPointsFrame:ClearAllPoints();
+	if ( arenaPoints > 0 ) then
+            rewardsFrame.ArenaPointsFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
+            rewardsFrame.ArenaPointsFrame.Points:SetText(BreakUpLargeNumbers(arenaPoints));
+            -- rewardsFrame.ArenaPointsFrame.Icon:SetTexture(icon);
+            rewardsFrame.ArenaPointsFrame:Show();
+
+			lastFrame = rewardsFrame.ArenaPointsFrame;
+            totalHeight = totalHeight + rewardsFrame.ArenaPointsFrame:GetHeight() + REWARDS_SECTION_OFFSET;
+        else
+            rewardsFrame.ArenaPointsFrame:Hide();
+        end
+
 	else
 		rewardsFrame.ItemReceiveText:Hide();
 		rewardsFrame.MoneyFrame:Hide();
 		rewardsFrame.XPFrame:Hide();
 		rewardsFrame.SkillPointFrame:Hide();
         rewardsFrame.HonorFrame:Hide();
+		rewardsFrame.ArenaPointsFrame:Hide();
 		rewardsFrame.TalentFrame:Hide();
 	end
 

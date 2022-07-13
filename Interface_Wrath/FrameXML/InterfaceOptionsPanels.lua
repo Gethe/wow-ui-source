@@ -2315,3 +2315,10 @@ function InterfaceOptions_CombatTextComboPoints(combatTextEnabled)
 		BlizzardOptionsPanel_CheckButton_Disable(InterfaceOptionsCombatPanelCombatTextComboPoints);
 	end
 end
+
+-- [[ Features Panel ]] --
+
+FeaturesPanelOptions = {
+	equipmentManager = { text = "USE_EQUIPMENT_MANAGER" },
+	previewTalents = { text = "PREVIEW_TALENT_CHANGES" },
+}

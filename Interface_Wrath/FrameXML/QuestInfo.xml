@@ -296,11 +296,11 @@
 					<Size x="285" y="0"/>
 				</FontString>
 				<FontString parentKey="ItemReceiveText" inherits="QuestFont" hidden="true" justifyH="LEFT" />
-				<FontString parentKey="PlayerTitleText" inherits="QuestFont" text="REWARD_TITLE" hidden="true" justifyH="LEFT" />
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="HonorFrame" inherits="QuestHonorFrameTemplate" hidden="true"/>
+			<Button parentKey="ArenaPointsFrame" inherits="QuestArenaPointsFrameTemplate" hidden="true"/>
 			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="LargeQuestRewardItemButtonTemplate" hidden="true"/>
 			<Frame parentKey="MoneyFrame" name="QuestInfoMoneyFrame" inherits="MoneyFrameTemplate">
 				<Anchors>
@@ -369,6 +369,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="TitleFrame" name="QuestInfoPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate" />
 			<Frame parentKey="TalentFrame" name="QuestInfoTalentFrame">
 				<Size x="280" y="20"/>
 				<Layers>
@@ -406,48 +407,6 @@
 					<OnLeave function="GameTooltip_Hide" />
 				</Scripts>
 			</Button>
-			<Frame parentKey="TitleFrame" name="QuestInfoPlayerTitleFrame">
-				<Size x="500" y="39"/>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_Note_02">
-							<Size x="39" y="39"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="FrameLeft" file="Interface\QuestFrame\UI-QuestItemNameFrame">
-							<Size x="4" y="40"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
-							</Anchors>
-							<TexCoords left="0.078125" right="0.1171875" top="0.15625" bottom="0.828125"/>
-						</Texture>
-						<Texture parentKey="FrameCenter" file="Interface\QuestFrame\UI-QuestItemNameFrame">
-							<Size x="200" y="40"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.FrameLeft" relativePoint="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.1171875" right="0.828125" top="0.15625" bottom="0.828125"/>
-						</Texture>
-						<Texture parentKey="FrameRight" file="Interface\QuestFrame\UI-QuestItemNameFrame">
-							<Size x="11" y="40"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.FrameCenter" relativePoint="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.828125" right="0.9140625" top="0.15625" bottom="0.828125"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
-							<Size x="200" y="0"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.FrameLeft" x="8" y="-2"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
 			<Frame parentKey="ItemHighlight" name="QuestInfoItemHighlight" hidden="true">
 				<Size x="256" y="64"/>
 				<Anchors>
@@ -508,7 +467,9 @@
 			</Frame>
 			<Button parentArray="RewardButtons" name="$parentQuestInfoItem1" inherits="SmallQuestRewardItemButtonTemplate" hidden="true"/>
 			<Button parentKey="XPFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
+			<Frame parentKey="QuestInfoPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate" />
             <Button parentKey="HonorFrame" inherits="QuestHonorFrameTemplate" hidden="true"/>
+			<Button parentKey="ArenaPointsFrame" inherits="QuestArenaPointsFrameTemplate" hidden="true"/>
 			<Button parentKey="ArtifactXPFrame" inherits="SmallItemButtonTemplate" hidden="true">
 				<Layers>
 					<Layer level="BORDER">

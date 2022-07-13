@@ -2350,6 +2350,13 @@ SlashCmdList["ACHIEVEMENTUI"] = function(msg)
 	ToggleAchievementFrame();
 end
 
+SlashCmdList["EQUIP_SET"] = function(msg)
+	local set = SecureCmdOptionParse(msg);
+	if ( set and set ~= "" ) then
+		C_EquipmentSet.UseEquipmentSet(C_EquipmentSet.GetEquipmentSetID(set));
+	end
+end
+
 -- easier method to turn on/off errors for macros
 SlashCmdList["UI_ERRORS_OFF"] = function(msg)
 	UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE");
