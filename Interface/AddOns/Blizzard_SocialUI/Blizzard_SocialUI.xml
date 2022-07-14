@@ -193,8 +193,10 @@
 			<OnMouseUp function="SocialScreenshotCrop_Move_OnMouseUp"/>
 		</Scripts>
 	</Frame>
-	
-	<OffScreenFrame name="OffScreenFrame" hidden="true">
+		
+		<Frame name="AchievementFrameAchievementsObjectivesOffScreen" inherits="AchievementFrameAchievementsObjectivesTemplate" />
+
+		<OffScreenFrame name="OffScreenFrame" hidden="true">
 		<Size x="1024" y="1024"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" />
@@ -202,6 +204,9 @@
 		</Anchors>
 		<Frames>
 			<Button name="$parentAchievement" hidden="true" parentKey="Achievement" inherits="AchievementTemplate">
+				<KeyValues>
+					<KeyValue key="useOffscreenObjectiveFrame" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>

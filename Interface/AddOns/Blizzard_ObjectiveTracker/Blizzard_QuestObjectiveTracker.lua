@@ -93,6 +93,9 @@ function QUEST_TRACKER_MODULE:OnBlockHeaderEnter(block)
 		GameTooltip:SetPoint("TOPRIGHT", block, "TOPLEFT", 0, 0);
 		GameTooltip:SetOwner(block, "ANCHOR_PRESERVE");
 		GameTooltip:SetQuestPartyProgress(block.id);
+        EventRegistry:TriggerEvent("OnQuestBlockHeader.OnEnter", block, block.id, true);
+    else
+        EventRegistry:TriggerEvent("OnQuestBlockHeader.OnEnter", block, block.id, false);
 	end
 end
 

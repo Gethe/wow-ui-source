@@ -4,31 +4,26 @@ local MAINMENU_XPOS = 0;
 MAIN_MENU_BAR_MARGIN = 75;		-- number of art pixels on one side, used by UIParent_ManageFramePositions. It's not the art's full size, don't care about the gryphon's tail.
 
 MainMenuBarMixin = { };
-function MainMenuBarMixin:OnStatusBarsUpdated()
-	self:SetPositionForStatusBars();
-end
+
 
 function MainMenuBarMixin:OnLoad()
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("UNIT_LEVEL");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	self:RegisterEvent("UI_SCALE_CHANGED");
-
-	CreateFrame("FRAME", "StatusTrackingBarManager", self, "StatusTrackingBarManagerTemplate");
+	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 
 	MAX_PLAYER_LEVEL = GetMaxLevelForPlayerExpansion();
 
 	self.state = "player";
-	MainMenuBarArtFrame.PageNumber:SetText(GetActionBarPage());
+	MainMenuBar.ActionBarPageNumber.Text:SetText(GetActionBarPage());
 	MicroButtonAndBagsBar:SetFrameLevel(self:GetFrameLevel()+2);
+	self:UpdateEndCaps();
 end
 
 function MainMenuBarMixin:OnShow()
-	UpdateMicroButtonsParent(MainMenuBarArtFrame);
-	MoveMicroButtons("BOTTOMLEFT", MicroButtonAndBagsBar, "BOTTOMLEFT", 6, 3, false);
+	UpdateMicroButtonsParent(MicroButtonAndBagsBar);
+	MoveMicroButtons("BOTTOMLEFT", MicroButtonAndBagsBar, "BOTTOMLEFT", 7, 6, false);
 end
 
 function MainMenuBarMixin:SetYOffset(yOffset)
@@ -39,32 +34,9 @@ function MainMenuBarMixin:GetYOffset()
 	return self.yOffset;
 end
 
-function MainMenuBarMixin:SetPositionForStatusBars()
-	MainMenuBar:ClearAllPoints();
-	MainMenuBarArtFrame.LeftEndCap:ClearAllPoints();
-	MainMenuBarArtFrame.RightEndCap:ClearAllPoints();
-	if ( StatusTrackingBarManager:GetNumberVisibleBars() == 2 ) then
-		self:SetYOffset(19);
-		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -19);
-		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -19);
-	elseif ( StatusTrackingBarManager:GetNumberVisibleBars() == 1 ) then
-		self:SetYOffset(14);
-		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, -14);
-		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, -14);
-	else
-		self:SetYOffset(0);
-		MainMenuBarArtFrame.LeftEndCap:SetPoint("BOTTOMLEFT", MainMenuBar, -98, 0);
-		MainMenuBarArtFrame.RightEndCap:SetPoint("BOTTOMRIGHT", MainMenuBar, 98, 0);
-	end
-	if ( IsPlayerInWorld() ) then
-		UIParent_ManageFramePositions();
-	end
-end
-
-local firstEnteringWorld = true;
 function MainMenuBarMixin:OnEvent(event, ...)
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
-		MainMenuBarArtFrame.PageNumber:SetText(GetActionBarPage());
+		MainMenuBar.ActionBarPageNumber.Text:SetText(GetActionBarPage());
 	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
 		local showTokenFrame = GetCVarBool("showTokenFrame");
 		if ( not showTokenFrame ) then
@@ -76,41 +48,31 @@ function MainMenuBarMixin:OnEvent(event, ...)
 				if ( not TokenFrame:IsVisible() ) then
 					SetButtonPulse(CharacterFrameTab3, 60, 1);
 				end
+
 				TokenFrame_Update();
-				BackpackTokenFrame_Update();
+				BackpackTokenFrame:UpdateIfVisible();
 			else
 				CharacterFrameTab3:Hide();
 			end
 		else
 			TokenFrame_Update();
-			BackpackTokenFrame_Update();
+			BackpackTokenFrame:UpdateIfVisible();
 		end
 	elseif ( event == "UNIT_LEVEL" ) then
 		local unitToken = ...;
 		if ( unitToken == "player" ) then
 			UpdateMicroButtons();
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		local initialLogin, reloadingUI = ...;
-		if ( initialLogin or reloadingUI ) then
-			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "ReputationStatusBarTemplate");
-			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "HonorStatusBarTemplate");
-			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "ArtifactStatusBarTemplate");
-			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "ExpStatusBarTemplate");
-			StatusTrackingBarManager:AddBarFromTemplate("FRAME", "AzeriteBarTemplate");
-			UIParent_ManageFramePositions();
-		end
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
 		UpdateMicroButtons();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
-		self:ChangeMenuBarSizeAndPosition(SHOW_MULTI_ACTIONBAR_2 and IsNormalActionBarState());
+		self:ChangeMenuBarSizeAndPosition(MultiBar2_IsVisible() and IsNormalActionBarState());
+	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
+		self:UpdateEndCaps();
 	end
-
-	self:SetPositionForStatusBars();
 end
 
 function MainMenuBarVehicleLeaveButton_OnLoad(self)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 	self:RegisterEvent("UPDATE_MULTI_CAST_ACTIONBAR");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
@@ -137,17 +99,6 @@ end
 
 function MainMenuBarVehicleLeaveButton_Update()
 	if ( CanExitVehicle() and ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_MAIN ) then
-		MainMenuBarVehicleLeaveButton:ClearAllPoints();
-		if ( IsPossessBarVisible() ) then
-			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessButton2, "RIGHT", 30, 0);
-		elseif ( GetNumShapeshiftForms() > 0 ) then
-			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", "StanceButton"..GetNumShapeshiftForms(), "RIGHT", 30, 0);
-		elseif ( HasMultiCastActionBar() ) then
-			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", MultiCastActionBarFrame, "RIGHT", 30, 0);
-		else
-			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessBarFrame, "LEFT", 10, 0);
-		end
-
 		MainMenuBarVehicleLeaveButton:Show();
 		MainMenuBarVehicleLeaveButton:Enable();
 		ShowPetActionBar(true);
@@ -157,8 +108,6 @@ function MainMenuBarVehicleLeaveButton_Update()
 		MainMenuBarVehicleLeaveButton:Hide();
 		ShowPetActionBar(true);
 	end
-
-	UIParent_ManageFramePositions();
 end
 
 function MainMenuBarVehicleLeaveButton_OnClicked(self)
@@ -324,42 +273,65 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	GameTooltip:Show();
 end
 
-function MainMenuBarMixin:ChangeMenuBarSizeAndPosition(rightMultiBarShowing)
-	local atlasInfo;
-
-	if( rightMultiBarShowing ) then
-		atlasInfo = C_Texture.GetAtlasInfo("hud-MainMenuBar-large");
-	else
-		atlasInfo = C_Texture.GetAtlasInfo("hud-MainMenuBar-small");
-	end
-
-	local width = atlasInfo and atlasInfo.width or 0;
-	local height = atlasInfo and atlasInfo.height or 0;
-	self:SetSize(width, height);
-	MainMenuBarArtFrame:SetSize(width, height);
-	MainMenuBarArtFrameBackground:SetSize(width, height);
-	MainMenuBarArtFrameBackground.BackgroundLarge:SetShown(rightMultiBarShowing);
-	MainMenuBarArtFrameBackground.BackgroundSmall:SetShown(not rightMultiBarShowing);
-	MainMenuBarArtFrame.PageNumber:ClearAllPoints();
-
-	if rightMultiBarShowing then
-		MainMenuBarArtFrame.PageNumber:SetPoint("CENTER", MainMenuBarArtFrameBackground, "CENTER", 138, -3);
-	else
-		MainMenuBarArtFrame.PageNumber:SetPoint("RIGHT", MainMenuBarArtFrameBackground, "RIGHT", -6, -3);
-	end
-
-	local isLargeSize = rightMultiBarShowing;
-	StatusTrackingBarManager:SetBarSize(isLargeSize);
+function MainMenuBarMixin:SetQuickKeybindModeEffectsShown(showEffects)
+	self.QuickKeybindBottomShadow:SetShown(showEffects);
+	self.QuickKeybindGlowSmall:SetShown(showEffects);
+	self.QuickKeybindGlowLarge:SetShown(showEffects);
+	MicroButtonAndBagsBar.QuickKeybindsMicroBagBarGlow:SetShown(showEffects);
+	local useRightShadow = MultiBarRight:IsShown();
+	self.QuickKeybindRightShadow:SetShown(useRightShadow and showEffects);
 end
 
-function MainMenuBarMixin:SetQuickKeybindModeEffectsShown(showEffects)
-	local artFrameBG = self.ArtFrame.Background;
-	local microBar = self.MicroButtonAndBagsBar;
-	artFrameBG.QuickKeybindBottomShadow:SetShown(showEffects);
-	local useLargeBackground = artFrameBG.BackgroundLarge:IsShown();
-	artFrameBG.QuickKeybindGlowSmall:SetShown(not useLargeBackground and showEffects);
-	artFrameBG.QuickKeybindGlowLarge:SetShown(useLargeBackground and showEffects);
-	microBar.QuickKeybindsMicroBagBarGlow:SetShown(showEffects);
-	local useRightShadow = MultiBarRight:IsShown();
-	artFrameBG.QuickKeybindRightShadow:SetShown(useRightShadow and showEffects);
+function MainMenuBarMixin:UpdateEndCaps(overrideHideEndCaps)
+	local factionGroup = UnitFactionGroup("player");
+	local showEndCaps = false;
+
+	if ( factionGroup and factionGroup ~= "Neutral" ) then
+
+		if ( factionGroup == "Alliance" ) then
+			self.EndCaps.LeftEndCap:SetAtlas("ui-hud-actionbar-gryphon-left");
+			self.EndCaps.RightEndCap:SetAtlas("ui-hud-actionbar-gryphon-right");
+		elseif ( factionGroup == "Horde" ) then
+			self.EndCaps.LeftEndCap:SetAtlas("ui-hud-actionbar-wyvern-left");
+			self.EndCaps.RightEndCap:SetAtlas("ui-hud-actionbar-wyvern-right");
+		end
+
+		showEndCaps = true;
+	end
+
+	self.EndCaps:SetShown(showEndCaps and not overrideHideEndCaps);
+end
+
+function MainMenuBarMixin:EditModeSetScale(newScale)
+	self.BorderArt:SetScale(newScale);
+
+	-- For end caps and page number, only scale down, not up
+	self.EndCaps:SetScale(newScale < 1 and newScale or 1);
+	self.ActionBarPageNumber:SetScale(newScale < 1 and newScale or 1);
+end
+
+MainActionBarUpButtonMixin = {}
+
+function MainActionBarUpButtonMixin:OnClick()
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		ActionBar_PageUp();
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+	end
+end
+
+function MainActionBarUpButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+MainActionBarDownButtonMixin = {}
+
+function MainActionBarDownButtonMixin:OnClick()
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		ActionBar_PageDown();
+		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+	end
+end
+
+function MainActionBarDownButtonMixin:OnLeave()
+	GameTooltip:Hide();
 end

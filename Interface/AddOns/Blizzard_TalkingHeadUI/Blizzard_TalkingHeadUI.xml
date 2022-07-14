@@ -2,8 +2,11 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TalkingHeadUI.lua"/>
 
-	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH" frameLevel="1">
+	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" inherits="UIParentBottomManagedFrameTemplate" hidden="true" frameStrata="HIGH" frameLevel="1">
 		<Size x="570" y="155"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="8" type="number"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="96"/>
 		</Anchors>
@@ -224,8 +227,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="TalkingHeadFrame_OnLoad"/>
-			<OnShow function="TalkingHeadFrame_OnShow"/>
-			<OnHide function="TalkingHeadFrame_OnHide"/>
 			<OnEvent function="TalkingHeadFrame_OnEvent"/>
 			<OnClick function="TalkingHeadFrame_OnClick"/>
 		</Scripts>

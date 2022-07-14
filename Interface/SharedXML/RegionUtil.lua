@@ -68,6 +68,11 @@ function RegionUtil.CalculateAngleBetween(region1, region2)
 	return CalculateAngleBetween(x1, y1, x2, y2);
 end
 
+function RegionUtil.GetSides(region)
+	local left, bottom, width, height = region:GetRect();
+	return left, left and (left + width) or nil, bottom, bottom and (bottom + height) or nil;
+end
+
 function enumerate_regions(frame)
 	return ipairs({frame:GetRegions()});
 end

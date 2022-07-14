@@ -49,6 +49,8 @@ OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO			= 0x04000;
 OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT			= 0x08000;
 OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS			= 0x10000;
 OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS			= 0x20000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE	= 0x40000;
+
 -- special updates
 OBJECTIVE_TRACKER_UPDATE_STATIC						= 0x0000;
 OBJECTIVE_TRACKER_UPDATE_ALL						= 0xFFFFFFFF;
@@ -790,6 +792,21 @@ function ObjectiveTracker_OnLoad(self)
 	QuestPOI_Initialize(self.BlocksFrame, function(self) self:SetScale(0.9); self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); end );
 end
 
+function ObjectiveTracker_UpdateHeight()
+	local self = ObjectiveTrackerFrame;
+	local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(1);
+	if(offsetY) then 
+		local parentHeight = self:GetParent():GetHeight(); 
+		local setHeight = parentHeight + offsetY;
+		self:SetHeight(setHeight);
+	end 
+end
+
+function ObjectiveTracker_OnShow(self)
+	UIParentManagedFrameMixin.OnShow(self); 
+	ObjectiveTracker_UpdateHeight();
+end
+
 function ObjectiveTracker_Initialize(self)
 	self.MODULES = {	SCENARIO_CONTENT_TRACKER_MODULE,
 						UI_WIDGET_TRACKER_MODULE,
@@ -798,6 +815,7 @@ function ObjectiveTracker_Initialize(self)
 						CAMPAIGN_QUEST_TRACKER_MODULE,
 						QUEST_TRACKER_MODULE,
 						ACHIEVEMENT_TRACKER_MODULE,
+						PROFESSION_RECIPE_TRACKER_MODULE,
 	};
 	self.MODULES_UI_ORDER = {	SCENARIO_CONTENT_TRACKER_MODULE,
 								UI_WIDGET_TRACKER_MODULE,
@@ -806,6 +824,7 @@ function ObjectiveTracker_Initialize(self)
 								BONUS_OBJECTIVE_TRACKER_MODULE,
 								WORLD_QUEST_TRACKER_MODULE,
 								ACHIEVEMENT_TRACKER_MODULE,
+								PROFESSION_RECIPE_TRACKER_MODULE,
 	};
 
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -833,6 +852,7 @@ function ObjectiveTracker_Initialize(self)
 	WorldMapFrame:RegisterCallback("ClearFocusedQuestID", ObjectiveTracker_OnFocusedQuestChanged, self);
 
 	QuestSuperTracking_Initialize();
+	ProfessionsRecipeTracking_Initialize();
 
 	self.initialized = true;
 end
@@ -856,7 +876,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 					ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, questID);
 				end
 			else
-				if ( AUTO_QUEST_WATCH == "1" and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES ) then
+				if ( GetCVarBool("autoQuestWatch") and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES ) then
 					C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
 					QuestSuperTracking_OnQuestTracked(questID);
 				end
@@ -932,7 +952,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		self.lastMapID = C_Map.GetBestMapForUnit("player");
 	elseif ( event == "CVAR_UPDATE" ) then
 		local arg1 =...;
-		if ( arg1 == "QUEST_POI" ) then
+		if ( arg1 == "questPOI" ) then
 			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 		end
 	elseif ( event == "VARIABLES_LOADED" ) then
@@ -1412,6 +1432,7 @@ function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 
 	tracker.BlocksFrame.currentBlock = nil;
 	tracker.isUpdating = false;
+	UIParent_ManageFramePositions();
 end
 
 function ObjectiveTracker_CheckAndHideHeader(moduleHeader)
@@ -1544,3 +1565,4 @@ function QuestHeaderMixin:UpdateHeader()
 		self.Text:SetText(TRACKER_HEADER_QUESTS);
 	end
 end
+

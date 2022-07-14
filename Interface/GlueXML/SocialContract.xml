@@ -77,7 +77,7 @@
 			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
 				<KeyValues>
 					<KeyValue key="hideBackground" value="true" type="boolean"/>
-					<KeyValue key="backdropAlpha" value="0" type="number"/>
+					<KeyValue key="hideBackplate" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.TopInsetEdge" relativePoint="BOTTOMRIGHT" x="1" y="20"/>

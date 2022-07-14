@@ -48,7 +48,7 @@ function SpellFlyoutButton_OnClick(self)
 end
 
 function SpellFlyoutButton_OnDrag(self)
-	if (not self:GetParent().isActionBar or LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION")) then
+	if (not self:GetParent().isActionBar or not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
 		if (self.spellID) then
 			PickupSpell(self.spellID);
 		end
@@ -251,6 +251,12 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			local button = _G["SpellFlyoutButton"..numButtons+1];
 			if (not button) then
 				button = CreateFrame("CHECKBUTTON", "SpellFlyoutButton"..numButtons+1, SpellFlyout, "SpellFlyoutButtonTemplate");
+
+				local point, relativeTo, relativePoint = button.IconMask:GetPoint(1);
+				button.IconMask:SetPoint(point, relativeTo, relativePoint, -11, 11);
+
+				point, relativeTo, relativePoint = button.IconMask:GetPoint(2);
+				button.IconMask:SetPoint(point, relativeTo, relativePoint, 12, -12);
 			end
 
 			button:ClearAllPoints();

@@ -75,8 +75,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetItemContainerFrame(container, slot)
-	local frameIndex = (GetContainerNumSlots(container) + 1) - slot;
-	return _G["ContainerFrame" .. (container + 1) .. "Item" .. frameIndex];
+	return ContainerFrame_GetItemButton(container, slot);
 end
 
 -- ------------------------------------------------------------------------------------------------------------

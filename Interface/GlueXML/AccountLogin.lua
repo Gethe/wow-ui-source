@@ -200,8 +200,6 @@ end
 function AccountLogin_OnEscapePressed()
 	if GlueParent_IsSecondaryScreenOpen("options") then
 		GlueParent_CloseSecondaryScreen();
-	else
-		AccountLogin_Exit();
 	end
 end
 

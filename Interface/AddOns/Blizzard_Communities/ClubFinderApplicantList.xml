@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="ClubFinderApplicantList.lua"/>
-	
+
 	<Button name="ClubFinderApplicantEntryTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="ClubFinderApplicantEntryMixin">
 		<Size x="600" y="20"/>
 		<Frames>
@@ -133,25 +133,23 @@
 					<KeyValue key="sortingFunction" value="ClubFinderApplicantListColumnDisplay_OnClick" type="global"/>
 				</KeyValues>
 			</Frame>
-			<ScrollFrame parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="BOTTOMRIGHT" x="-18" y="1"/>
 				</Anchors>
-				<Frames>
-					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-15" y="-15"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="15" y="11"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
-							</Layer>
-						</Layers>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-16" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</EventFrame>
 			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
 				<Anchors>

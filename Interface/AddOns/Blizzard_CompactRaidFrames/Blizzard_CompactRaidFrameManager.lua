@@ -29,8 +29,7 @@ function CompactRaidFrameManager_OnLoad(self)
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-
-	self.containerResizeFrame:SetMinResize(self.container:GetWidth(), MINIMUM_RAID_CONTAINER_HEIGHT + RESIZE_VERTICAL_OUTSETS * 2 + 1);
+	
 	self.dynamicContainerPosition = true;
 
 	CompactRaidFrameContainer_SetFlowFilterFunction(self.container, CRFFlowFilterFunc)
@@ -543,8 +542,13 @@ function CompactRaidFrameManager_ResetContainerPosition()
 	CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
 end
 
-function CompactRaidFrameManager_UpdateContainerBounds(self) --Hah, "Bounds" instead of "SizeAndPosition". WHO NEEDS A THESAURUS NOW?!
-	self.containerResizeFrame:SetMaxResize(self.containerResizeFrame:GetWidth(), GetScreenHeight() - 90);
+function CompactRaidFrameManager_UpdateContainerBounds(self)
+	local containerWidth = self.container:GetWidth();
+	local minWidth = containerWidth;
+	local minHeight = MINIMUM_RAID_CONTAINER_HEIGHT + RESIZE_VERTICAL_OUTSETS * 2 + 1;
+	local maxWidth = self.containerResizeFrame:GetWidth();
+	local maxHeight = GetScreenHeight() - 90;
+	self.containerResizeFrame:SetResizeBounds(minWidth, minHeight, maxWidth, maxHeight);
 
 	if ( self.dynamicContainerPosition ) then
 		--Should be below the TargetFrameSpellBar at its lowest height..

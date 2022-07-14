@@ -333,3 +333,20 @@ function TextureLoadingGroupMixin:IsFullyLoaded()
 	end
 	return true;
 end
+
+DirtiableMixin = {};
+
+function DirtiableMixin:SetDirtyMethod(method)
+	self.dirtyCallback = function()
+		method(self);
+		self.dirty = nil;
+	end;
+end
+
+function DirtiableMixin:MarkDirty()
+	if not self.dirty then
+		RunNextFrame(self.dirtyCallback);
+	end
+
+	self.dirty = true;
+end

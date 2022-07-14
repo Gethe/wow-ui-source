@@ -16,7 +16,6 @@ function ToggleFramerate(benchmark)
 end
 
 function WorldFrame_OnLoad(self)
-	self:IgnoreDepth(true);
 	TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
 	TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 10;
 end
@@ -46,7 +45,7 @@ function WorldFrame_OnUpdate(self, elapsed)
 	for i=1, MIRRORTIMER_NUMTIMERS do
 		bar = _G["MirrorTimer"..i];
 		if ( bar and bar:IsShown() and not bar:IsVisible() ) then
-			MirrorTimerFrame_OnUpdate(bar, elapsed);
+			bar:OnUpdate(bar, elapsed);
 		end
 	end
 

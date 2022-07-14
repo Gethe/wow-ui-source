@@ -5,12 +5,12 @@
 	<Button name="EventButton" mixin="EventButtonMixin" enableMouse="true" intrinsic="true">
 		<Scripts>
 			<OnLoad method="OnLoad_Intrinsic"/>
-			<OnMouseUp method="OnMouseUp_Intrinsic"/>
-			<OnMouseDown method="OnMouseDown_Intrinsic"/>
-			<OnClick method="OnClick_Intrinsic"/>
-			<OnEnter method="OnEnter_Intrinsic"/>
-			<OnLeave method="OnLeave_Intrinsic"/>
-			<OnSizeChanged method="OnSizeChanged_Intrinsic"/>
+			<OnMouseUp method="OnMouseUp_Intrinsic" intrinsicOrder="postcall"/>
+			<OnMouseDown method="OnMouseDown_Intrinsic" intrinsicOrder="postcall"/>
+			<OnClick method="OnClick_Intrinsic" intrinsicOrder="postcall"/>
+			<OnEnter method="OnEnter_Intrinsic" intrinsicOrder="postcall"/>
+			<OnLeave method="OnLeave_Intrinsic" intrinsicOrder="postcall"/>
+			<OnSizeChanged method="OnSizeChanged_Intrinsic" intrinsicOrder="postcall"/>
 		</Scripts>
 	</Button>
 </Ui>

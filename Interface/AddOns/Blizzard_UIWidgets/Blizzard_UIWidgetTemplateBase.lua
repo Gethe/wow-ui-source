@@ -1,8 +1,8 @@
 UIWidgetTemplateTooltipFrameMixin = {}
 
 function UIWidgetTemplateTooltipFrameMixin:SetMouse(disableMouse)
-	local useMouse = self.tooltip and self.tooltip ~= "" and not disableMouse;
-	self:EnableMouse(useMouse)
+	local useMouse = (self.tooltip and self.tooltip ~= "" and not disableMouse) or false;
+	self:EnableMouse(useMouse);
 	self:SetMouseClickEnabled(false);
 end
 
@@ -168,26 +168,26 @@ function UIWidgetBaseTemplateMixin:ClearEffects()
 	local frames = {self:GetChildren()};
 	table.insert(frames, self);
 	for _, frame in ipairs(frames) do
-		if frame.effectController then 
+		if frame.effectController then
 			frame.effectController:CancelEffect();
 			frame.effectController = nil;
-		end	
+		end
 	end
-end 
+end
 
-function UIWidgetBaseTemplateMixin:ApplyEffectToFrame(widgetInfo, widgetContainer, frame) 
-	if frame.effectController then 
+function UIWidgetBaseTemplateMixin:ApplyEffectToFrame(widgetInfo, widgetContainer, frame)
+	if frame.effectController then
 		frame.effectController:CancelEffect();
 		frame.effectController = nil;
 	end
 	if widgetInfo.scriptedAnimationEffectID and widgetInfo.modelSceneLayer ~= Enum.UIWidgetModelSceneLayer.None then
-		if widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Front then 
+		if widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Front then
 			frame.effectController = widgetContainer.FrontModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
-		elseif widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Back then 
+		elseif widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Back then
 			frame.effectController = widgetContainer.BackModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
-		end 
+		end
 	end
-end	
+end
 
 function UIWidgetBaseTemplateMixin:ApplyEffects(widgetInfo)
 	local applyFrames = self:ShouldApplyEffectsToSubFrames() and {self:GetChildren()} or {self};
@@ -230,7 +230,7 @@ end
 function UIWidgetBaseTemplateMixin:ResetAnimState()
 	self.FadeInAnim:Stop();
 	self.FadeOutAnim:Stop();
-	self:SetAlpha(100);
+	self:SetAlpha(1);
 end
 
 function UIWidgetBaseTemplateMixin:AnimIn()
@@ -283,7 +283,7 @@ function UIWidgetBaseTemplateMixin:Setup(widgetInfo, widgetContainer)
 	self:SetTooltipLocation(widgetInfo.tooltipLoc);
 	self.widgetContainer = widgetContainer;
 	self.orderIndex = widgetInfo.orderIndex;
-	self.layoutDirection = widgetInfo.layoutDirection; 
+	self.layoutDirection = widgetInfo.layoutDirection;
 	self:AnimIn();
 end
 
@@ -358,14 +358,14 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	SetupTextureKitsFromRegionInfo(textureKit, self, spellTextureKitRegionInfo);
 
 	local hasAmountBorderTexture = self.AmountBorder:IsShown();
-	local hasBorderTexture = self.Border:IsShown(); 
+	local hasBorderTexture = self.Border:IsShown();
 
 	self.StackCount:ClearAllPoints();
-	if hasAmountBorderTexture then  
+	if hasAmountBorderTexture then
 		self.StackCount:SetPoint("CENTER", self.AmountBorder);
-	else 
+	else
 		self.StackCount:SetPoint("BOTTOMRIGHT", self.Icon, -2, 2);
-	end 
+	end
 
 	local name, _, icon = GetSpellInfo(spellInfo.spellID);
 	self.Icon:SetTexture(icon);
@@ -374,7 +374,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	local iconSize = GetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
 
-	if not hasBorderTexture then 
+	if not hasBorderTexture then
 		self.Border:SetAtlas("UI-Frame-IconBorder", false);
 	end
 
@@ -615,8 +615,8 @@ function UIWidgetBaseStatusBarTemplateMixin:UpdateLabel()
 end
 
 function UIWidgetBaseStatusBarTemplateMixin:SetMouse(disableMouse)
-	local useMouse = ((self.tooltip and self.tooltip ~= "") or (self.overrideBarText and self.overrideBarText ~= "") or (self.barText and self.barText ~= "")) and not disableMouse;
-	self:EnableMouse(useMouse)
+	local useMouse = (((self.tooltip and self.tooltip ~= "") or (self.overrideBarText and self.overrideBarText ~= "") or (self.barText and self.barText ~= "")) and not disableMouse) or false;
+	self:EnableMouse(useMouse);
 	self:SetMouseClickEnabled(false);
 end
 
@@ -717,11 +717,11 @@ function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, to
 	local fgTextureKitFmt = "%s";
 
 	if layoutIndex then
-		if frameTextureKit and C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit("%s_"..layoutIndex, frameTextureKit)) then 
+		if frameTextureKit and C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit("%s_"..layoutIndex, frameTextureKit)) then
 			bgTextureKitFmt = "%s_"..layoutIndex;
 		end
 
-		if textureKit and C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit("%s_"..layoutIndex, textureKit)) then 
+		if textureKit and C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit("%s_"..layoutIndex, textureKit)) then
 			fgTextureKitFmt = "%s_"..layoutIndex;
 		end
 	end
@@ -1007,7 +1007,7 @@ end
 
 function UIWidgetBaseScenarioHeaderTemplateMixin:OnWaitTimerDone()
 	self.WaitTimer = nil;
-	
+
 	local _, currentScenarioStage = C_Scenario.GetInfo();
 	self.lastScenarioStage = currentScenarioStage;
 
@@ -1085,7 +1085,7 @@ local outlineFonts =
 	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4_Outline",
 }
 
-local fontTypes = 
+local fontTypes =
 {
 	[Enum.UIWidgetFontType.Normal]	= normalFonts,
 	[Enum.UIWidgetFontType.Shadow]	= shadowFonts,

@@ -1,0 +1,12 @@
+## Title: Blizzard Professions
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_ProfessionsTemplates
+Blizzard_ProfessionsRankBar.xml
+Blizzard_ProfessionsGuildMemberList.xml
+Blizzard_ProfessionsCraftingOutputLog.xml
+Blizzard_ProfessionsRecipeLevel.xml
+Blizzard_ProfessionsFrame.xml
+Blizzard_ProfessionsHub.xml
+Blizzard_ProfessionsCrafting.xml
+Registration.lua

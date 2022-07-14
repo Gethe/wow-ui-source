@@ -51,8 +51,13 @@ function UIWidgetTemplateTextColumnRowMixin:Setup(widgetInfo, widgetContainer)
 		entry:Setup(entryInfo.text, widgetInfo.fontType, widgetInfo.textSizeType, entryInfo.enabledState, entryInfo.hAlign, entryInfo.columnWidth, index);
 		entry:Show();
 	end
-
-	self:Layout();
+	
+	if #widgetInfo.entries == 0 then
+		self:Hide();
+		return;
+	else
+		self:Layout();
+	end
 end
 
 function UIWidgetTemplateTextColumnRowMixin:OnReset()

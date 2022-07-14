@@ -17,7 +17,7 @@
 			</OnHyperlinkClick>
 		</Scripts>
 	</ScrollingMessageFrame>
-	<EditBox name="ChatFrameEditBoxTemplate" inherits="AutoCompleteEditBoxTemplate" autoFocus="false" ignoreArrows="true" frameStrata="DIALOG" toplevel="true" historyLines="32" bytes="512" visibleBytes="255" invisibleBytes="255" hidden="true" virtual="true">
+	<EditBox name="ChatFrameEditBoxTemplate" inherits="AutoCompleteEditBoxTemplate" autoFocus="false" ignoreArrows="true" frameStrata="DIALOG" toplevel="true" historyLines="32" bytes="1280" visibleBytes="255" invisibleBytes="1023" hidden="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">

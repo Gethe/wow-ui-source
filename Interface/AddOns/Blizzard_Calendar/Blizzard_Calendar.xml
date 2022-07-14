@@ -449,7 +449,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="CalendarViewHolidayInfoTexture" hidden="true">
+				<Texture parentKey="Texture" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="12" y="-13"/>
 						<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
@@ -460,45 +460,21 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame parentKey="Header" inherits="DialogHeaderTemplate"/>
-			<ScrollFrame name="CalendarViewHolidayScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<Frame parentKey="ScrollingFont" inherits="ScrollingFontTemplate" frameStrata="HIGH">
 				<Size x="270" y="278"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="15" y="-30"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.scrollBarHideable = 1;
-						ScrollFrame_OnLoad(self);
-						ScrollFrame_OnScrollRangeChanged(self);
-					</OnLoad>
-				</Scripts>
-				<ScrollChild>
-					<Frame name="CalendarViewHolidayScrollChild">
-						<Size x="270" y="10"/>
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BORDER">
-								<FontString name="CalendarViewHolidayDescription" inherits="GameFontHighlightLeft" nonspacewrap="true" justifyV="TOP">
-									<Size x="265" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
+				<KeyValues>
+					<KeyValue key="fontName" value="GameFontHighlightLeft" type="string"/>
+				</KeyValues>
 					</Frame>
-				</ScrollChild>
-			</ScrollFrame>
 			<Button name="CalendarViewHolidayCloseButton" inherits="CalendarEventCloseButtonTemplate"/>
-
 			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CalendarViewHolidayFrame_OnLoad"/>
 			<OnShow function="CalendarViewHolidayFrame_OnShow"/>
-			<OnHide function="CalendarViewHolidayFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -512,39 +488,16 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame parentKey="Header" inherits="DialogHeaderTemplate"/>
-			<ScrollFrame name="CalendarViewRaidScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<Frame parentKey="ScrollingFont" inherits="ScrollingFontTemplate" frameStrata="HIGH">
 				<Size x="270" y="108"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="15" y="-30"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.scrollBarHideable = 1;
-						ScrollFrame_OnLoad(self);
-						ScrollFrame_OnScrollRangeChanged(self);
-					</OnLoad>
-				</Scripts>
-				<ScrollChild>
-					<Frame name="CalendarViewRaidScrollChild">
-						<Size x="270" y="10"/>
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BORDER">
-								<FontString name="CalendarViewRaidDescription" inherits="GameFontHighlightLeft" nonspacewrap="true" justifyV="TOP">
-									<Size x="265" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
+				<KeyValues>
+					<KeyValue key="fontName" value="GameFontHighlightLeft" type="string"/>
+				</KeyValues>
 					</Frame>
-				</ScrollChild>
-			</ScrollFrame>
 			<Button name="CalendarViewRaidCloseButton" inherits="CalendarEventCloseButtonTemplate"/>
-
 			<Frame name="$parentModalOverlay" inherits="CalendarModalEventOverlayTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
@@ -630,30 +583,28 @@
 					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
 				</KeyValues>
 				<Frames>
-					<ScrollFrame name="CalendarViewEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
-						<Scripts>
-							<OnLoad function="CalendarViewEventDescriptionScrollFrame_OnLoad"/>
-						</Scripts>
-						<ScrollChild>
-							<Frame name="CalendarViewEventDescriptionScrollChild">
-								<Size x="263" y="1"/>
+					<Frame parentKey="ScrollingFont" inherits="ScrollingFontTemplate" frameStrata="HIGH">
+						<Size x="270" y="108"/>
 								<Anchors>
-									<Anchor point="TOPLEFT"/>
+							<Anchor point="TOPLEFT" x="15" y="-30"/>
 								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<FontString name="CalendarViewEventDescription" inherits="GameFontNormalSmallLeft" nonspacewrap="true" justifyV="TOP">
-											<Size x="263" y="0"/>
+						<KeyValues>
+							<KeyValue key="fontName" value="GameFontNormalSmallLeft" type="string"/>
+						</KeyValues>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+						<KeyValues>
+							<KeyValue key="hideBackground" value="true" type="boolean"/>
+						</KeyValues>
 											<Anchors>
-												<Anchor point="TOPLEFT"/>
+							<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="3"/>
 											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-						</ScrollChild>
-					</ScrollFrame>
+					</EventFrame>
 				</Frames>
+				<Scripts>
+					<OnLoad inherit="prepend" function="CalendarViewEventDescriptionContainer_OnLoad"/>
+				</Scripts>
 			</Frame>
 			<Frame name="CalendarViewEventInviteListSection">
 				<Size x="320" y="320"/>
@@ -709,9 +660,15 @@
 						</Scripts>
 					</Button>
 					<Frame name="CalendarViewEventInviteList" inherits="CalendarEventInviteListTemplate">
+						<KeyValues>
+							<KeyValue key="buttonTemplate" value="CalendarViewEventInviteListButtonTemplate" type="string"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-60"/>
 						</Anchors>
+						<Scripts>
+							<OnLoad inherit="prepend" function="CalendarViewEventInviteList_OnLoad"/>
+						</Scripts>
 					</Frame>
 				</Frames>
 			</Frame>
@@ -823,7 +780,7 @@
 				</Anchors>
 				<Scripts>
 					<OnTabPressed>
-						EditBox_HandleTabbing(self, CALENDAR_CREATEEVENTFRAME_TAB_LIST);
+						CalendarOnEditBoxTab(self);
 					</OnTabPressed>
 					<OnTextChanged function="CalendarCreateEventTitleEdit_OnTextChanged"/>
 					<OnEnterPressed function="EditBox_ClearFocus"/>
@@ -861,57 +818,6 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="52" y="-50"/>
 				</Anchors>
-			</Frame>
-			<Frame name="CalendarCreateEventDescriptionContainer" inherits="TooltipBackdropTemplate">
-				<Size x="287" y="65"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="16" y="-146"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
-					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
-				</KeyValues>
-				<Frames>
-					<ScrollFrame name="CalendarCreateEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
-						<Scripts>
-							<OnLoad function="CalendarCreateEventDescriptionScrollFrame_OnLoad"/>
-							<OnMouseDown>
-								CalendarCreateEventDescriptionEdit:SetFocus();
-							</OnMouseDown>
-						</Scripts>
-						<ScrollChild>
-							<EditBox name="CalendarCreateEventDescriptionEdit" multiLine="true" letters="255" autoFocus="false">
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-								<Size x="263" y="1"/>
-								<Scripts>
-									<OnTabPressed>
-										EditBox_HandleTabbing(self, CALENDAR_CREATEEVENTFRAME_TAB_LIST);
-									</OnTabPressed>
-									<OnTextChanged function="CalendarCreateEventDescriptionEdit_OnTextChanged"/>
-									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
-									<OnUpdate>
-										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
-									</OnUpdate>
-									<OnEscapePressed function="EditBox_ClearFocus"/>
-									<OnEditFocusGained>
-										if ( self:GetText() == CALENDAR_EVENT_DESCRIPTION ) then
-											self:HighlightText();
-										end
-									</OnEditFocusGained>
-									<OnEditFocusLost>
-										self:HighlightText(0, 0);
-										if ( self:GetText() == "" ) then
-											self:SetText(CALENDAR_EVENT_DESCRIPTION);
-										end
-									</OnEditFocusLost>
-								</Scripts>
-								<FontString inherits="GameFontHighlightSmall"/>
-							</EditBox>
-						</ScrollChild>
-					</ScrollFrame>
-				</Frames>
 			</Frame>
 			<Frame name="CalendarCreateEventInviteListSection">
 				<Size x="320" y="330"/>
@@ -966,6 +872,9 @@
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-50"/>
 						</Anchors>
+						<Scripts>
+							<OnLoad inherit="prepend" function="CalendarCreateEventInviteList_OnLoad"/>
+						</Scripts>
 					</Frame>
 					<EditBox name="CalendarCreateEventInviteEdit" letters="32" inherits="InputBoxTemplate,AutoCompleteEditBoxTemplate" autoFocus="false">
 						<Size x="192" y="20"/>
@@ -979,7 +888,7 @@
 							</OnLoad>
 							<OnTabPressed>
 								if ( not AutoCompleteEditBox_OnTabPressed(self) ) then
-									EditBox_HandleTabbing(self, CALENDAR_CREATEEVENTFRAME_TAB_LIST);
+									CalendarOnEditBoxTab(self);
 								end
 							</OnTabPressed>
 							<OnEnterPressed function="CalendarCreateEventInviteEdit_OnEnterPressed"/>
@@ -1014,6 +923,43 @@
 						</Scripts>
 					</Button>
 				</Frames>
+			</Frame>
+			<Frame name="CalendarCreateEventDescriptionContainer" inherits="TooltipBackdropTemplate">
+				<Size x="287" y="65"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="16" y="-146"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
+					<KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="ScrollingEditBox" inherits="ScrollingEditBoxTemplate" frameStrata="HIGH">
+						<KeyValues>
+							<KeyValue key="fontName" value="GameFontHighlightSmall" type="string"/>
+							<KeyValue key="defaultFontName" value="GameFontDisableSmall" type="string"/>
+							<KeyValue key="defaultText" value="CALENDAR_EVENT_DESCRIPTION" type="global"/>
+							<KeyValue key="maxLetters" value="255" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="4" y="-4"/>
+							<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+						<KeyValues>
+							<KeyValue key="hideBackground" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPRIGHT" parentKey="$parent.ScrollingEditBox" relativePoint="TOPRIGHT" x="-2" y="-1"/>
+							<Anchor point="BOTTOMRIGHT" parentKey="$parent.ScrollingEditBox" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad inherit="prepend" function="CalendarCreateEventDescriptionContainer_OnLoad"/>
+				</Scripts>
 			</Frame>
 			<Button name="CalendarCreateEventMassInviteButton" inherits="UIPanelButtonTemplate" text="CALENDAR_MASS_INVITE">
 				<Anchors>
@@ -1262,22 +1208,18 @@
 					<KeyValue key="textString" value="CALENDAR_EVENT_PICKER_TITLE" type="global"/>
 				</KeyValues>
 			</Frame>
-			<ScrollFrame name="CalendarEventPickerScrollFrame" inherits="HybridScrollFrameTemplate">
-				<Size x="239" y="165"/>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Size x="235" y="163"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-26"/>
 				</Anchors>
-				<Frames>
-					<Slider name="CalendarEventPickerScrollBar" inherits="HybridScrollBarTemplate">
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="4" y="14"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="4"/>
 						</Anchors>
-					</Slider>
-				</Frames>
-				<Scripts>
-					<OnLoad function="CalendarEventPickerScrollFrame_OnLoad"/>
-				</Scripts>
-			</ScrollFrame>
+			</EventFrame>
 			<Button name="CalendarEventPickerCloseButton" inherits="CalendarEventButtonTemplate" text="CLOSE">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-11" y="12"/>
@@ -1327,22 +1269,18 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
 			<Frame parentKey="Header" inherits="DialogHeaderTemplate"/>
-			<ScrollFrame name="CalendarTexturePickerScrollFrame" inherits="HybridScrollFrameTemplate">
-				<Size x="239" y="225"/>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Size x="239" y="224"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-26"/>
 				</Anchors>
-				<Frames>
-					<Slider name="CalendarTexturePickerScrollBar" inherits="HybridScrollBarTemplate">
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" y="14"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
-					</Slider>
-				</Frames>
-				<Scripts>
-					<OnLoad function="CalendarTexturePickerScrollFrame_OnLoad"/>
-				</Scripts>
-			</ScrollFrame>
+			</EventFrame>
 			<Button name="CalendarTexturePickerCancelButton" inherits="CalendarEventButtonTemplate" text="CANCEL">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-11" y="12"/>

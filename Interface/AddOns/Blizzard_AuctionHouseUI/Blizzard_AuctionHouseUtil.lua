@@ -220,28 +220,12 @@ function AuctionHouseUtil.ConvertCategoryToSearchContext(selectedCategoryIndex)
 	return AuctionHouseSearchContext.BrowseAll;
 end
 
-function AuctionHouseUtil.AggregateSearchResults(itemID, numSearchResults)
-	numSearchResults = numSearchResults or C_AuctionHouse.GetNumCommoditySearchResults(itemID);
-
-	local totalQuantity = 0;
-	local totalPrice = 0;
-	for searchResultIndex = 1, numSearchResults do
-		local searchResult = C_AuctionHouse.GetCommoditySearchResultInfo(itemID, searchResultIndex);
-		if searchResult then
-			local quantityAvailable = searchResult.quantity - searchResult.numOwnerItems;
-			totalQuantity = totalQuantity + quantityAvailable;
-			totalPrice = totalPrice + (searchResult.unitPrice * quantityAvailable);
-		end
-	end
-
-	return totalQuantity, totalPrice;
-end
-
 function AuctionHouseUtil.AggregateSearchResultsByQuantity(itemID, quantity)
 	local remainingQuantity = quantity;
 	local totalQuantity = 0;
 	local totalPrice = 0;
 	local numResultsAggregated = 0;
+	local partiallyPurchased = false;
 	for searchResultIndex = 1, C_AuctionHouse.GetNumCommoditySearchResults(itemID) do
 		numResultsAggregated = numResultsAggregated + 1;
 		local searchResult = C_AuctionHouse.GetCommoditySearchResultInfo(itemID, searchResultIndex);
@@ -252,12 +236,13 @@ function AuctionHouseUtil.AggregateSearchResultsByQuantity(itemID, quantity)
 			totalQuantity = totalQuantity + quantityToBuy;
 			remainingQuantity = remainingQuantity - quantityToBuy;
 			if remainingQuantity <= 0 then
+				partiallyPurchased = quantityToBuy ~= quantityAvailable;
 				break;
 			end
 		end
 	end
-
-	return totalQuantity, totalPrice, numResultsAggregated;
+	
+	return totalQuantity, totalPrice, numResultsAggregated, partiallyPurchased;
 end
 
 function AuctionHouseUtil.AggregateCommoditySearchResultsByMaxPrice(itemID, maxPrice)
@@ -711,6 +696,7 @@ local AuctionHouseErrorToErrorText = {
 	[Enum.AuctionHouseError.EquippedBag] = ERR_AUCTION_EQUIPPED_BAG,
 	[Enum.AuctionHouseError.WrappedItem] = ERR_AUCTION_WRAPPED_ITEM,
 	[Enum.AuctionHouseError.LootItem] = ERR_AUCTION_LOOT_ITEM,
+	[Enum.AuctionHouseError.DoubleBid] = ERR_AUCTION_DOUBLE_BID,
 };
 
 function AuctionHouseUtil.GetErrorText(auctionHouseError)

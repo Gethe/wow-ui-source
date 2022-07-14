@@ -306,6 +306,12 @@ function LargeMoneyInputFrameMixin:Clear()
 	self.GoldBox:Clear();
 end
 
+function LargeMoneyInputFrameMixin:SetEnabled(enabled)
+	self.CopperBox:SetEnabled(enabled);
+	self.SilverBox:SetEnabled(enabled);
+	self.GoldBox:SetEnabled(enabled);
+end
+
 function LargeMoneyInputFrameMixin:SetAmount(amount)
 	self.CopperBox:SetAmount(amount % COPPER_PER_SILVER);
 	self.SilverBox:SetAmount(math.floor((amount % COPPER_PER_GOLD) / COPPER_PER_SILVER));

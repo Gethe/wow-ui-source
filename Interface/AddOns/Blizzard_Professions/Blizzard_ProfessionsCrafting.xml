@@ -1,0 +1,93 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsCrafting.lua"/>
+	
+	<Frame parentKey="CraftingPage" parent="ProfessionsFrame" parentArray="Pages" setAllPoints="true" mixin="ProfessionsCraftingPageMixin">
+		<KeyValues>
+			<KeyValue key="page" value="Crafting" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="RecipeList" inherits="ProfessionsRecipeListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-72"/>
+					<Anchor point="BOTTOMLEFT" y="5"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SchematicForm" inherits="ProfessionsRecipeSchematicFormTemplate" useParentLevel="true">
+				<Size x="720" y="484"/>
+				<KeyValues>
+					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RecipeList" relativePoint="TOPRIGHT" x="2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="RankBar" drawLayer="BACKGROUND" inherits="ProfessionsRankBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="370" y="-44"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="CreateButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="4"/>
+				</Anchors>
+				<Scripts>
+				</Scripts>
+			</Button>
+
+			<EditBox parentKey="CreateMultipleInputBox" inherits="NumericInputSpinnerTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CreateButton" relativePoint="LEFT" x="-30"/>
+				</Anchors>
+			</EditBox>
+
+			<Button parentKey="CreateAllButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CreateMultipleInputBox" relativePoint="LEFT" x="-30"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="ViewGuildCraftersButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" hidden="true">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="20" y="20"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="GuildFrame" inherits="ProfessionsGuildListingTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="25" y="19"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CraftingOutputLog" inherits="ProfessionsCraftingOutputLogTemplate" frameStrata="DIALOG" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="20"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

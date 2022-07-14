@@ -99,21 +99,15 @@ function GetActionButtonForID(id)
 	return _G["ActionButton"..id];
 end
 
-local function CheckUseActionButton(button, checkingFromDown)
-	local actionButtonUseKeyDown = GetCVarBool("ActionButtonUseKeyDown");
-	local doAction = (checkingFromDown and actionButtonUseKeyDown) or not (checkingFromDown or actionButtonUseKeyDown);
-
-	if doAction then
-		if not button.ZoneAbilityDisabled then
-			SecureActionButton_OnClick(button, "LeftButton");
-
-			if GetNewActionHighlightMark(button.action) then
-				ClearNewActionHighlight(button.action);
-				button:UpdateHighlightMark();
-			end
+function TryUseActionButton(self, checkingFromDown)
+	local usedActionButton = SecureActionButton_OnClick(self, "LeftButton", checkingFromDown);
+	if usedActionButton then
+		if GetNewActionHighlightMark(self.action) then
+			ClearNewActionHighlight(self.action);
+			self:UpdateHighlightMark();
 		end
-		button:UpdateState();
 	end
+	self:UpdateState();
 end
 
 local isInPetBattle = C_PetBattles.IsInBattle;
@@ -141,7 +135,7 @@ function ActionButtonDown(id)
 			button:SetButtonState("PUSHED");
 		end
 
-		CheckUseActionButton(button, true);
+		TryUseActionButton(button, true);
 	end
 end
 
@@ -154,7 +148,7 @@ function ActionButtonUp(id)
 	if button then
 		if ( button:GetButtonState() == "PUSHED" ) then
 			button:SetButtonState("NORMAL");
-			CheckUseActionButton(button, false);
+			TryUseActionButton(button, false);
 		end
 	end
 end
@@ -199,8 +193,6 @@ ActionBarButtonEventsFrameMixin = {};
 function ActionBarButtonEventsFrameMixin:OnLoad()
 	self.frames = {};
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("ACTIONBAR_SHOWGRID");
-	self:RegisterEvent("ACTIONBAR_HIDEGRID");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 	self:RegisterEvent("UPDATE_BINDINGS");
 	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
@@ -279,17 +271,21 @@ end
 ActionBarActionButtonMixin = {};
 
 function ActionBarActionButtonMixin:OnLoad()
+	self.SetButtonStateBase = self.SetButtonState;
+	self.SetButtonState = self.SetButtonStateOverride;
+
 	self.flashing = 0;
 	self.flashtime = 0;
-	self:SetAttribute("showgrid", 0);
+	self:SetAttribute("showgrid", 1);
 	self:SetAttribute("type", "action");
+	self:SetAttribute("typerelease", "actionrelease");
 	self:SetAttribute("checkselfcast", true);
 	self:SetAttribute("checkfocuscast", true);
 	self:SetAttribute("checkmouseovercast", true);
 	self:SetAttribute("useparent-unit", true);
 	self:SetAttribute("useparent-actionpage", true);
 	self:RegisterForDrag("LeftButton", "RightButton");
-	self:RegisterForClicks("AnyUp");
+	self:RegisterForClicks("AnyUp", "LeftButtonDown", "RightButtonDown");
 	ActionBarButtonEventsFrame:RegisterFrame(self);
 	self:UpdateAction();
 	self:UpdateHotkeys(self.buttonType);
@@ -322,6 +318,22 @@ function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
     end
 end
 
+function ActionBarActionButtonMixin:UpdatePressAndHoldAction()
+	self.pressAndHoldAction = false;
+
+	if self.action then
+		local actionType, id = GetActionInfo(self.action);
+		if actionType == "spell" then
+			self.pressAndHoldAction = IsPressHoldReleaseSpell(id);
+		elseif actionType == "macro" then
+			local spellID = GetMacroSpell(id);
+			if spellID then
+				self.pressAndHoldAction = IsPressHoldReleaseSpell(spellID);
+			end
+		end
+	end
+end
+
 function ActionBarActionButtonMixin:UpdateAction(force)
 	local action = self:CalculateAction();
 	if ( action ~= self.action or force ) then
@@ -337,7 +349,6 @@ function ActionBarActionButtonMixin:Update()
 	local buttonCooldown = self.cooldown;
 	local texture = GetActionTexture(action);
 
-	self.zoneAbilityDisabled = false;
 	icon:SetDesaturated(false);
 	local type, id = GetActionInfo(action);
 	if ( HasAction(action) ) then
@@ -361,11 +372,8 @@ function ActionBarActionButtonMixin:Update()
 			self.eventsRegistered = nil;
 		end
 
-		if ( self:GetAttribute("showgrid") == 0 ) then
-			self:Hide();
-		else
-			buttonCooldown:Hide();
-		end
+
+		buttonCooldown:Hide();
 
 		ClearChargeCooldown(self);
 		
@@ -376,12 +384,14 @@ function ActionBarActionButtonMixin:Update()
 			self.LevelLinkLockIcon:SetShown(false);
 		end
 	end
+
+	self:UpdatePressAndHoldAction();
 	
 	-- Add a green border if button is an equipped item
 	local border = self.Border;
 	if border then
 		if ( IsEquippedAction(action) ) then
-			border:SetVertexColor(0, 1.0, 0, 0.35);
+			border:SetVertexColor(0, 1.0, 0, 0.5);
 			border:Show();
 		else
 			border:Hide();
@@ -432,7 +442,7 @@ end
 
 function ActionBarActionButtonMixin:UpdateHighlightMark()
 	if ( self.NewActionTexture ) then
-		self.NewActionTexture:SetShown(GetNewActionHighlightMark(self.action));
+		self.NewActionTexture:SetShown(GetNewActionHighlightMark(self.action)); -- TODO: Should bindings support this, or should we force SetShown to take a bool?
 	end
 end
 
@@ -453,34 +463,20 @@ function ActionBarActionButtonMixin:UpdateSpellHighlightMark()
 	end
 end
 
-function ActionBarActionButtonMixin:ShowGrid(reason)
-	assert(reason);
-	if ( issecure() ) then
-		self:SetAttribute("showgrid", bit.bor(self:GetAttribute("showgrid"), reason));
-	end
-
-	if ( self.NormalTexture ) then
-		self.NormalTexture:SetVertexColor(1.0, 1.0, 1.0, 0.5);
-	end
-
-	if ( self:GetAttribute("showgrid") > 0 and not self:GetAttribute("statehidden") ) then
-		self:Show();
-	end
+function ActionBarActionButtonMixin:GetShowGrid()
+	local showGridAttribute = self:GetAttribute("showgrid");
+	return showGridAttribute and showGridAttribute > 0 or false;
 end
 
-function ActionBarActionButtonMixin:HideGrid(reason)
+function ActionBarActionButtonMixin:SetShowGrid(showGrid, reason)
 	assert(reason);
 
-	local showgrid = self:GetAttribute("showgrid");
-
-	if ( issecure() ) then
-		if ( showgrid > 0 ) then
-			self:SetAttribute("showgrid", bit.band(showgrid, bit.bnot(reason)));
+	if ( issecure() and self:GetShowGrid() ~= showGrid ) then
+		if ( showGrid ) then
+			self:SetAttribute("showgrid", bit.bor(self:GetAttribute("showgrid"), reason));
+		else
+			self:SetAttribute("showgrid", bit.band(self:GetAttribute("showgrid"), bit.bnot(reason)));
 		end
-	end
-
-	if ( self:GetAttribute("showgrid") == 0 and not HasAction(self.action) ) then
-		self:Hide();
 	end
 end
 
@@ -492,21 +488,14 @@ end
 
 function ActionBarActionButtonMixin:UpdateUsable()
 	local icon = self.icon;
-	local normalTexture = self.NormalTexture;
-	if ( not normalTexture ) then
-		return;
-	end
 
 	local isUsable, notEnoughMana = IsUsableAction(self.action);
 	if ( isUsable ) then
 		icon:SetVertexColor(1.0, 1.0, 1.0);
-		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
 	elseif ( notEnoughMana ) then
 		icon:SetVertexColor(0.5, 0.5, 1.0);
-		normalTexture:SetVertexColor(0.5, 0.5, 1.0);
 	else
 		icon:SetVertexColor(0.4, 0.4, 0.4);
-		normalTexture:SetVertexColor(1.0, 1.0, 1.0);
 	end
 
 	local isLevelLinkLocked = C_LevelLink.IsActionLocked(self.action);
@@ -545,7 +534,47 @@ function ActionButton_UpdateCooldown(self)
 	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
 	local modRate = 1.0;
 	local chargeModRate = 1.0;
-	if ( self.spellID ) then
+	local actionType, actionID = nil; 
+	if (self.action) then 
+		actionType, actionID = GetActionInfo(self.action);
+	end 
+	local auraData = nil;
+	local passiveCooldownSpellID = nil;
+	local onEquipPassiveSpellID = nil;
+
+	if(actionID) then 
+		onEquipPassiveSpellID = C_ActionBar.GetItemActionOnEquipSpellID(self.action);
+	end
+
+	if (onEquipPassiveSpellID) then
+		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(onEquipPassiveSpellID);
+	elseif ((actionType and actionType == "spell") and actionID ) then 
+		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(actionID);
+	elseif(self.spellID) then 
+		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(self.spellID);
+	end
+
+	if(passiveCooldownSpellID and passiveCooldownSpellID ~= 0) then 
+		auraData = C_UnitAuras.GetPlayerAuraBySpellID(passiveCooldownSpellID);
+	end
+
+	if(auraData) then
+		local currentTime = GetTime();
+		local timeUntilExpire = auraData.expirationTime - currentTime;
+		local howMuchTimeHasPassed = auraData.duration - timeUntilExpire; 
+
+		locStart =  currentTime - howMuchTimeHasPassed;
+		locDuration = auraData.expirationTime - currentTime;
+		start = currentTime - howMuchTimeHasPassed;
+		duration =  auraData.duration
+		modRate = auraData.timeMod; 
+		charges = auraData.charges; 
+		maxCharges = auraData.maxCharges; 
+		chargeStart = currentTime * 0.001; 
+		chargeDuration = duration * 0.001;
+		chargeModRate = modRate; 
+		enable = 1; 
+	elseif (self.spellID) then
 		locStart, locDuration = GetSpellLossOfControlCooldown(self.spellID);
 		start, duration, enable, modRate = GetSpellCooldown(self.spellID);
 		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(self.spellID);
@@ -768,12 +797,6 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 		local texture = GetActionTexture(self.action);
 		if (texture) then
 			self.icon:SetTexture(texture);
-		end
-	elseif ( event == "ACTIONBAR_SHOWGRID" ) then
-		self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
-	elseif ( event == "ACTIONBAR_HIDEGRID" ) then
-		if ( not KeybindFrames_InQuickKeybindMode() ) then
-			self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 		end
 	elseif ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
 		self:UpdateHotkeys(self.buttonType);
@@ -1007,48 +1030,79 @@ function ActionBarActionButtonMixin:IsFlashing()
 	return nil;
 end
 
--- Shared between action bar buttons and spell flyout buttons.
-function ActionButton_UpdateFlyout(self)
-	if not self.FlyoutArrow then
+-- Shared between action bar buttons and spell flyout buttons
+function ActionButton_UpdateFlyout(self, isButtonDownOverride)
+	if (not self.FlyoutArrowContainer or
+		not self.FlyoutBorderShadow) then
 		return;
 	end
 
 	local actionType = GetActionInfo(self.action);
-	if (actionType == "flyout") then
-		-- Update border and determine arrow position
-		local arrowDistance;
-		if ((SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
-			self.FlyoutBorder:Show();
-			self.FlyoutBorderShadow:Show();
-			arrowDistance = 5;
-		else
-			self.FlyoutBorder:Hide();
-			self.FlyoutBorderShadow:Hide();
-			arrowDistance = 2;
-		end
-
-		-- Update arrow
-		self.FlyoutArrow:Show();
-		self.FlyoutArrow:ClearAllPoints();
-		local direction = self:GetAttribute("flyoutDirection");
-		if (direction == "LEFT") then
-			self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0);
-			SetClampedTextureRotation(self.FlyoutArrow, 270);
-		elseif (direction == "RIGHT") then
-			self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", arrowDistance, 0);
-			SetClampedTextureRotation(self.FlyoutArrow, 90);
-		elseif (direction == "DOWN") then
-			self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, -arrowDistance);
-			SetClampedTextureRotation(self.FlyoutArrow, 180);
-		else
-			self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, arrowDistance);
-			SetClampedTextureRotation(self.FlyoutArrow, 0);
-		end
-	else
-		self.FlyoutBorder:Hide();
+	if (actionType ~= "flyout") then
 		self.FlyoutBorderShadow:Hide();
-		self.FlyoutArrow:Hide();
+		self.FlyoutArrowContainer:Hide();
+		return;
 	end
+
+	-- Update border
+	local isMouseOverButton =  GetMouseFocus() == self;
+	local isFlyoutShown = SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self;
+	if (isFlyoutShown or isMouseOverButton) then
+		self.FlyoutBorderShadow:Show();
+	else
+		self.FlyoutBorderShadow:Hide();
+	end
+
+	-- Update arrow
+	local isButtonDown;
+	if (isButtonDownOverride ~= nil) then
+		isButtonDown = isButtonDownOverride;
+	else
+		isButtonDown = self:GetButtonState() == "PUSHED";
+	end
+
+	local flyoutArrowTexture = self.FlyoutArrowContainer.FlyoutArrowNormal;
+
+	if (isButtonDown) then
+		flyoutArrowTexture = self.FlyoutArrowContainer.FlyoutArrowPushed;
+
+		self.FlyoutArrowContainer.FlyoutArrowNormal:Hide();
+		self.FlyoutArrowContainer.FlyoutArrowHighlight:Hide();
+	elseif (isMouseOverButton) then
+		flyoutArrowTexture = self.FlyoutArrowContainer.FlyoutArrowHighlight;
+
+		self.FlyoutArrowContainer.FlyoutArrowNormal:Hide();
+		self.FlyoutArrowContainer.FlyoutArrowPushed:Hide();
+	else
+		self.FlyoutArrowContainer.FlyoutArrowHighlight:Hide();
+		self.FlyoutArrowContainer.FlyoutArrowPushed:Hide();
+	end
+
+	self.FlyoutArrowContainer:Show();
+	flyoutArrowTexture:Show();
+	flyoutArrowTexture:ClearAllPoints();
+
+	local arrowDirection = self:GetAttribute("flyoutDirection");
+	local arrowDistance = isFlyoutShown and 1 or 4;
+
+	if (arrowDirection == "LEFT") then
+		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 90 or 270);
+		flyoutArrowTexture:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0);
+	elseif (arrowDirection == "RIGHT") then
+		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 270 or 90);
+		flyoutArrowTexture:SetPoint("RIGHT", self, "RIGHT", arrowDistance, 0);
+	elseif (arrowDirection == "DOWN") then
+		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 0 or 180);
+		flyoutArrowTexture:SetPoint("BOTTOM", self, "BOTTOM", 0, -arrowDistance);
+	else
+		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 180 or 0);
+		flyoutArrowTexture:SetPoint("TOP", self, "TOP", 0, arrowDistance);
+	end
+end
+
+function ActionBarActionButtonMixin:SetButtonStateOverride(state)
+	self:SetButtonStateBase(state);
+	ActionButton_UpdateFlyout(self);
 end
 
 function ActionBarActionButtonMixin:OnClick(button, down)
@@ -1061,14 +1115,26 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 	else
 		if button == "RightButton" and C_ActionBar.IsAutoCastPetAction(self.action) then
 			C_ActionBar.ToggleAutoCastPetAction(self.action);
-		elseif (not self.zoneAbilityDisabled) then
-			SecureActionButton_OnClick(self, button);
+		else
+			local useKeyDownCvar = GetCVarBool("ActionButtonUseKeyDown");
+			local actionBarLocked = Settings.GetValue("lockActionBars");
+
+			local lockedBarDoNothing = actionBarLocked and down and IsModifiedClick("PICKUPACTION");
+			local unlockedBarDoNothing = not actionBarLocked and (self.pressAndHoldAction or (useKeyDownCvar and down));
+			if lockedBarDoNothing or unlockedBarDoNothing then
+				return;
+			end
+
+			local useDown = down or (useKeyDownCvar and not actionBarLocked);
+			SecureActionButton_OnClick(self, button, useDown);
 		end
 	end
+
+	ActionButton_UpdateFlyout(self, down);
 end
 
 function ActionBarActionButtonMixin:OnDragStart()
-	if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION") ) then
+	if ( not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION") ) then
 		SpellFlyout:Hide();
 		PickupAction(self.action);
 		self:UpdateState();
@@ -1098,4 +1164,58 @@ function ActionBarActionButtonMixin:OnLeave()
 	ActionBarButtonEventsFrame.tooltipOwner = nil;
 	ActionBarActionEventsFrame.tooltipOwner = nil;
 	ActionButton_UpdateFlyout(self);
+end
+
+BaseActionButtonMixin = {}
+
+function BaseActionButtonMixin:BaseActionButtonMixin_OnLoad()
+	self:UpdateButtonArt(self.isLastActionButton);
+end
+
+function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
+	if (not self.SlotArt or not self.SlotBackground) then
+		return;
+	end
+
+	local function SetDividerShown(shown)
+		if (not self.RightDivider or not self.BottomDivider) then
+			return;
+		end
+
+		-- Don't show dividers if we have multiple rows or any extra padding
+		if (not shown or self:GetParent().numRows > 1 or self:GetParent().buttonPadding > 3) then
+			self.RightDivider:Hide();
+			self.BottomDivider:Hide();
+			return;
+		end
+
+		-- Right now buttons are only added to the right for horizontal and below for vertical
+		if (self:GetParent().isHorizontal) then
+			self.RightDivider:Show();
+			self.BottomDivider:Hide();
+		else
+			self.RightDivider:Hide();
+			self.BottomDivider:Show();
+		end
+	end
+
+	if (self.showButtonArt) then
+		SetDividerShown(not hideDivider);
+		self.SlotArt:Show();
+		self.SlotBackground:Hide();
+		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame");
+		self.NormalTexture:SetSize(35, 35);
+		self.NormalTexture:ClearAllPoints();
+		self.NormalTexture:SetPoint("TOPLEFT");
+		self.NormalTexture:SetPoint("BOTTOMRIGHT");
+	else
+		SetDividerShown(false);
+		self.SlotArt:Hide();
+		self.SlotBackground:Show();
+		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow");
+		self.NormalTexture:SetSize(41, 41);
+		self.NormalTexture:ClearAllPoints();
+		self.NormalTexture:SetPoint("TOPLEFT", -1.5, 1.5);
+		self.NormalTexture:SetPoint("BOTTOMRIGHT", 5.5, -5.5);
+	end
 end

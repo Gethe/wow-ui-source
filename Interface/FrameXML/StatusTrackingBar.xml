@@ -1,8 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="StatusTrackingManager.lua"/>
-	<Frame name="StatusTrackingBarManagerTemplate" frameStrata="MEDIUM" mixin="StatusTrackingManagerMixin" virtual="true">
-		<Size x="804" y="11"/>
+
+	<Frame name="StatusTrackingBarManager" parent="UIParent" frameStrata="MEDIUM" mixin="StatusTrackingManagerMixin">
+		<Size x="540" y="11"/>
 		<Anchors>
 			<Anchor point="BOTTOM"/>
 		</Anchors>

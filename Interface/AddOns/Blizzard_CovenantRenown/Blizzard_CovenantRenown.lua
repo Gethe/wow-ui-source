@@ -151,7 +151,7 @@ function CovenantRenownMixin:GetLevels()
 	local renownLevel = C_CovenantSanctumUI.GetRenownLevel();
 	self.actualLevel = renownLevel;	
 	local cvarName = "lastRenownForCovenant"..g_covenantID;
-	local lastRenownLevel = tonumber(GetCVar(cvarName));
+	local lastRenownLevel = tonumber(GetCVar(cvarName)) or 1;
 	if lastRenownLevel < renownLevel then
 		renownLevel = lastRenownLevel;
 	end

@@ -1,21 +1,33 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LFGList.lua"/>
-	<!--Button name="TestButton" parent="UIParent" inherits="UIPanelButtonTemplate" text="TEST">
-		<Size x="100" y="50"/>
-		<Anchors>
-			<Anchor point="RIGHT"/>
-		</Anchors>
+
+	<Button name="LFGStartGroupButtonTemplate" inherits="UIPanelButtonTemplate" text="START_A_GROUP" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="135" y="22"/>
 		<Scripts>
-			<OnClick>
-				if ( LFGListFrame.activePanel == LFGListFrame.CategorySelection ) then
-					LFGListFrame_SetActivePanel(LFGListFrame, LFGListFrame_GetBestPanel(LFGListFrame));
-				else
-					LFGListFrame_SetActivePanel(LFGListFrame, LFGListFrame.CategorySelection);
+			<OnClick function="LFGListSearchPanel_CreateGroupInstead"/>
+			<OnEnter>
+				if ( self.tooltip ) then
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+				GameTooltip:Show();
 				end
-			</OnClick>
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-	</Button-->
+	</Button>
+
+	<Frame name="LFGStartGroupButtonListTemplate" virtual="true">
+		<Size y="36"/>
+		<Frames>
+			<Button inherits="LFGStartGroupButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+	
 	<Frame name="LFGListGroupDataDisplayTemplate" virtual="true">
 		<Size x="125" y="24"/>
 		<Frames>
@@ -110,7 +122,7 @@
 		<Scripts>
 			<OnClick>
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				LFGListEntryCreationActivityFinder_Select(self:GetParent():GetParent():GetParent():GetParent(), self.activityID);
+				LFGListEntryCreationActivityFinder_Select(LFGListFrame.EntryCreation.ActivityFinder, self.activityID);
 			</OnClick>
 			<OnEnter>
 				if ( self.Label:IsTruncated() ) then
@@ -386,6 +398,9 @@
 					end
 				end
 			</OnEvent>
+			<OnHide>
+				self.applicantID = nil;
+			</OnHide>
 		</Scripts>
 	</Button>
 	<Button name="LFGListRoleButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
@@ -896,7 +911,7 @@
 			<OnEvent function="LFGListSearchEntry_OnEvent"/>
 			<OnClick function="LFGListSearchEntry_OnClick"/>
 			<OnEnter function="LFGListSearchEntry_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave function="LFGListSearchEntry_OnLeave"/>
 		</Scripts>
 	</Button>
 	<Frame name="LFGListPanelTemplate" useParentLevel="true" hidden="true" setAllPoints="true" virtual="true"/>
@@ -1183,8 +1198,7 @@
 							<Anchor point="BOTTOMRIGHT" x="-25" y="26"/>
 						</Anchors>
 					</Frame>
-					<!--Name needed for HybridScrollFrameTemplate-->
-					<ScrollFrame parentKey="ScrollFrame" name="LFGListSearchPanelScrollFrame" inherits="HybridScrollFrameTemplate">
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ResultsInset" x="1" y="-3"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ResultsInset" x="-4" y="3"/>
@@ -1200,37 +1214,22 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button parentKey="StartGroupButton" inherits="UIPanelButtonTemplate" text="START_A_GROUP" motionScriptsWhileDisabled="true">
-								<Size x="135" y="22"/>
+							<Button parentKey="StartGroupButton" inherits="LFGStartGroupButtonTemplate">
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.NoResultsFound" relativePoint="BOTTOM" x="0" y="-20"/>
 								</Anchors>
-								<Scripts>
-									<OnClick function="LFGListSearchPanel_CreateGroupInstead"/>
-									<OnEnter>
-										if ( self.tooltip ) then
-											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-											GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
-											GameTooltip:Show();
-										end
-									</OnEnter>
-									<OnLeave function="GameTooltip_Hide"/>
-								</Scripts>
 							</Button>
-							<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="-13"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="12"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.trackBG:Show();
-										self.trackBG:SetVertexColor(0, 0, 0, 0.75);
-									</OnLoad>
-								</Scripts>
-							</Slider>
 						</Frames>
-					</ScrollFrame>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+						<KeyValues>
+							<KeyValue key="hideBackground" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+						</Anchors>
+					</EventFrame>
 					<Frame parentKey="SearchingSpinner" inherits="LoadingSpinnerTemplate">
 						<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent.ResultsInset"/>
@@ -1471,8 +1470,8 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<!--Name needed for HybridScrollFrameTemplate-->
-					<ScrollFrame parentKey="ScrollFrame" name="LFGListApplicationViewerScrollFrame" inherits="HybridScrollFrameTemplate">
+
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="1" y="-3"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-4" y="3"/>
@@ -1488,21 +1487,16 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate" parentKey="scrollBar">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="-13"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="12"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.trackBG:Show();
-										self.trackBG:SetVertexColor(0, 0, 0, 0.75);
-									</OnLoad>
-								</Scripts>
-							</Slider>
-						</Frames>
-					</ScrollFrame>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+						<KeyValues>
+							<KeyValue key="hideBackground" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+						</Anchors>
+					</EventFrame>
 					<Button parentKey="RemoveEntryButton" inherits="LFGListMagicButtonTemplate" text="GROUP_FINDER_DELIST">
 						<Size x="90" y="22"/>
 						<Anchors>
@@ -1535,8 +1529,8 @@
 					</Button>
 					<Frame parentKey="UnempoweredCover" enableMouse="true" frameLevel="15">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollFrame" relativePoint="TOPLEFT" x="0" y="0"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollFrame" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1719,24 +1713,25 @@
 											</OnEnterPressed>
 										</Scripts>
 									</EditBox>
-									<ScrollFrame name="LFGListEntryCreationSearchScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="ScrollFrame">
+									<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 										<Anchors>
 											<Anchor point="TOPLEFT" x="25" y="-45"/>
-											<Anchor point="BOTTOMRIGHT" x="-25" y="50"/>
+											<Anchor point="BOTTOMRIGHT" x="-45" y="50"/>
 										</Anchors>
-										<Frames>
-											<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
-												<Anchors>
-													<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-3" y="-17"/>
-													<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-15" y="16"/>
-												</Anchors>
-											</Slider>
-										</Frames>
-									</ScrollFrame>
+									</Frame>
+									<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+										<KeyValues>
+											<KeyValue key="hideBackground" value="true" type="boolean"/>
+										</KeyValues>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+										</Anchors>
+									</EventFrame>
 									<Frame parentKey="BorderFrame" inherits="TooltipBackdropTemplate" useParentLevel="true"> <!--Because there isn't an easy way to change the bounds of a scroll frame-->
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollFrame" relativePoint="TOPLEFT" x="-5" y="5"/>
-											<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollFrame" relativePoint="BOTTOMRIGHT" x="5" y="-5"/>
+											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPLEFT" x="-5" y="5"/>
+											<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="25" y="-5"/>
 										</Anchors>
 									</Frame>
 									<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" text="LFG_LIST_SELECT">

@@ -277,6 +277,8 @@ function WorldMapMixin:OnHide()
 	self:OnUIClose();
 	self:TriggerEvent("WorldMapOnHide");
 	C_Map.CloseWorldMapInteraction();
+	
+	UpdateMicroButtons();
 end
 
 function WorldMapMixin:RefreshOverlayFrames()

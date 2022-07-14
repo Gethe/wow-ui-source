@@ -99,8 +99,17 @@ function Round(value)
 	return math.floor(value + .5);
 end
 
+function RoundToSignificantDigits(value, numDigits)
+	local multiplier = 10 ^ numDigits;
+	return Round(value * multiplier) / multiplier;
+end
+
 function Square(value)
 	return value * value;
+end
+
+function Sign(value)
+	return value > 0 and 1 or (value == 0 and 0 or -1);
 end
 
 function WithinRange(value, min, max)

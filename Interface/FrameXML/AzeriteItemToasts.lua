@@ -42,13 +42,13 @@ function AzeriteItemLevelUpToastMixin:PlayAzeriteItemPowerToast(azeriteItemLocat
 	end
 
 	continuableContainer:ContinueOnLoad(function()
-		TopBannerManager_Show(self, { 
-			name = item:GetItemName(), 
+		TopBannerManager_Show(self, {
+			name = item:GetItemName(),
 			itemColor = item:GetItemQualityColor(),
-			text = AZERITE_ITEM_LEVELED_UP_TOAST:format(newPowerLevel), 
+			text = AZERITE_ITEM_LEVELED_UP_TOAST:format(newPowerLevel),
 			unlockedEmpoweredItemsInfo = equippedUnlockedEmpoweredItemsInfo,
 			newPowerLevel = newPowerLevel,
-		}); 
+		});
 	end);
 end
 
@@ -84,11 +84,11 @@ function AzeriteItemLevelUpToastMixin:PlayBanner(data)
 	local effectiveToastHeight = toastHeight + addedHeight;
 	local effectiveScale = effectiveToastHeight / toastHeight;
 
-	self.ShowAnim.BGScaleAnim:SetToScale(1, effectiveScale);
+	self.ShowAnim.BGScaleAnim:SetScaleTo(1, effectiveScale);
 	self.ShowAnim.GlowLineBottomTranslation:SetOffset(0, -effectiveToastHeight);
 
 	for i, region in ipairs(self.BottomRegions) do
-		local point, parent, relativePoint, sourceX, sourceY = region:GetPoint();
+		local point, parent, relativePoint, sourceX, sourceY = region:GetPoint(1);
 		region:SetPoint(point, parent, relativePoint, sourceX, -effectiveToastHeight);
 	end
 
@@ -103,7 +103,7 @@ function AzeriteItemLevelUpToastMixin:PlayBanner(data)
 
 	self:SetAlpha(1);
 	self:Show();
-	
+
 	self.ShowAnim:Play();
 	PlaySound(SOUNDKIT.UI_70_ARTIFACT_FORGE_TOAST_TRAIT_AVAILABLE);
 end

@@ -25,6 +25,9 @@ end
 function CharCustomizeParentFrameBaseMixin:SetViewingShapeshiftForm(formID)
 end
 
+function CharCustomizeParentFrameBaseMixin:SetViewingChrModel(chrModelID)
+end
+
 function CharCustomizeParentFrameBaseMixin:SetModelDressState(dressedState)
 end
 
@@ -421,20 +424,11 @@ end
 
 CharCustomizeAlteredFormButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
 
-function CharCustomizeAlteredFormButtonMixin:SetupAlteredFormButton(raceData, selectedSexID, isSelected, isAlteredForm, layoutIndex)
+function CharCustomizeAlteredFormButtonMixin:SetupAlteredFormButton(raceData, isSelected, isAlteredForm, layoutIndex)
 	self.layoutIndex = layoutIndex;
 	self.isAlteredForm = isAlteredForm;
 
-	local sexString;
-	if selectedSexID == Enum.UnitSex.Male then
-		sexString = "male";
-	else
-		sexString = "female";
-	end
-
-	local useHiRez = true;
-	local atlas = GetRaceAtlas(strlower(raceData.fileName), sexString, useHiRez);
-	self:SetIconAtlas(atlas);
+	self:SetIconAtlas(raceData.createScreenIconAtlas);
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(CHARACTER_FORM:format(raceData.name));
@@ -468,8 +462,13 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 	end
 
 	self.New:SetShown(categoryData.hasNewChoices);
-
-	if selectedCategoryID == categoryData.id then
+	local selected = false;
+	if categoryData.chrModelID then
+		selected = categoryData.chrModelID == CharCustomizeFrame.viewingChrModelID;
+	else
+		selected = selectedCategoryID == categoryData.id;
+	end
+	if selected then
 		self:SetChecked(true);
 		self:SetIconAtlas(categoryData.selectedIcon);
 	else
@@ -504,22 +503,40 @@ function CharCustomizeShapeshiftFormButtonMixin:SetCategory(categoryData, select
 	end
 end
 
-CharCustomizeSexButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
+CharCustomizeRidingDrakeButtonMixin = CreateFromMixins(CharCustomizeCategoryButtonMixin);
 
-function CharCustomizeSexButtonMixin:SetSex(sexID, selectedSexID, layoutIndex)
-	self.sexID = sexID;
+function CharCustomizeRidingDrakeButtonMixin:SetupAnchors(tooltip)
+	tooltip:SetOwner(self, "ANCHOR_NONE");
+	tooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", self.tooltipXOffset, self.tooltipYOffset);
+end
+
+function CharCustomizeRidingDrakeButtonMixin:SetCategory(categoryData, selectedCategoryID)
+	CharCustomizeCategoryButtonMixin.SetCategory(self, categoryData, selectedCategoryID);
+	self:ClearTooltipLines();
+	self:AddTooltipLine(categoryData.name);
+
+	if showDebugTooltipInfo then
+		self:AddBlankTooltipLine();
+		self:AddTooltipLine("Category ID: "..categoryData.id, HIGHLIGHT_FONT_COLOR);
+	end
+end
+
+CharCustomizeBodyTypeButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
+
+function CharCustomizeBodyTypeButtonMixin:SetBodyType(bodyTypeID, selecteBodyTypeID, layoutIndex)
+	self.sexID = bodyTypeID;
 	self.layoutIndex = layoutIndex;
 
 	self:ClearTooltipLines();
 
-	if sexID == Enum.UnitSex.Male then
-		self:AddTooltipLine(MALE, HIGHLIGHT_FONT_COLOR);
+	if bodyTypeID == Enum.UnitSex.Male then
+		self:AddTooltipLine(BODY_1, HIGHLIGHT_FONT_COLOR);
 	else
-		self:AddTooltipLine(FEMALE, HIGHLIGHT_FONT_COLOR);
+		self:AddTooltipLine(BODY_2, HIGHLIGHT_FONT_COLOR);
 	end
 
-	local isSelected = selectedSexID == sexID;
-	local baseAtlas, selectedAtlas = GetGenderAtlases(sexID);
+	local isSelected = selecteBodyTypeID == bodyTypeID;
+	local baseAtlas, selectedAtlas = GetBodyTypeAtlases(bodyTypeID);
 	self:SetIconAtlas(isSelected and selectedAtlas or baseAtlas);
 
 	self:SetChecked(isSelected);
@@ -527,7 +544,7 @@ function CharCustomizeSexButtonMixin:SetSex(sexID, selectedSexID, layoutIndex)
 	self:UpdateHighlightTexture();
 end
 
-function CharCustomizeSexButtonMixin:OnClick()
+function CharCustomizeBodyTypeButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 	CharCustomizeFrame:SetCharacterSex(self.sexID);
 end
@@ -940,6 +957,7 @@ function CharCustomizeMixin:OnLoad()
 	self.pools:CreatePool("CHECKBUTTON", self.Categories, "CharCustomizeCategoryButtonTemplate");
 	self.pools:CreatePool("FRAME", self.Options, "CharCustomizeOptionCheckButtonTemplate");
 	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeShapeshiftFormButtonTemplate");
+	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeRidingDrakeButtonTemplate");
 
 	-- Keep the selectionPopout and sliders in different pools because we need to be careful not to release the option the player is interacting with
 	self.selectionPopoutPool = CreateFramePool("BUTTON", self.Options, "CharCustomizeOptionSelectionPopoutTemplate");
@@ -1032,20 +1050,20 @@ function CharCustomizeMixin:UpdateAlteredFormButtons()
 	self.alteredFormsPools:ReleaseAll();
 
 	local buttonPool = self:GetAlteredFormsButtonPool();
-	if self.selectedRaceData.alternateFormRaceData then
+	if self.selectedRaceData.alternateFormRaceData and self.selectedRaceData.alternateFormRaceData.createScreenIconAtlas then
 		local normalForm = buttonPool:Acquire();
 		local normalFormSelected = not self.viewingShapeshiftForm and not self.viewingAlteredForm;
-		normalForm:SetupAlteredFormButton(self.selectedRaceData, self.selectedSexID, normalFormSelected, false, -1);
+		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
 		normalForm:Show();
 
 		local alteredForm = buttonPool:Acquire();
 		local alteredFormSelected = not self.viewingShapeshiftForm and self.viewingAlteredForm;
-		alteredForm:SetupAlteredFormButton(self.selectedRaceData.alternateFormRaceData, self.selectedSexID, alteredFormSelected, true, 0);
+		alteredForm:SetupAlteredFormButton(self.selectedRaceData.alternateFormRaceData, alteredFormSelected, true, 0);
 		alteredForm:Show();
 	elseif self.hasShapeshiftForms then
 		local normalForm = buttonPool:Acquire();
 		local normalFormSelected = not self.viewingShapeshiftForm;
-		normalForm:SetupAlteredFormButton(self.selectedRaceData, self.selectedSexID, normalFormSelected, false, -1);
+		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
 		normalForm:Show();
 	end
 
@@ -1057,6 +1075,7 @@ function CharCustomizeMixin:SetSelectedData(selectedRaceData, selectedSexID, vie
 	self.selectedSexID = selectedSexID;
 	self.viewingAlteredForm = viewingAlteredForm;
 	self.viewingShapeshiftForm = nil;
+	self.viewingChrModelID = nil;
 end
 
 function CharCustomizeMixin:SetViewingAlteredForm(viewingAlteredForm)
@@ -1065,6 +1084,10 @@ function CharCustomizeMixin:SetViewingAlteredForm(viewingAlteredForm)
 	if self.viewingShapeshiftForm then
 		self:ClearViewingShapeshiftForm();
 	end
+
+	if self.viewingChrModelID then
+		self:ClearViewingChrModel();
+	end	
 
 	local resetCategory = true;
 	self.parentFrame:SetViewingAlteredForm(viewingAlteredForm, resetCategory);
@@ -1079,6 +1102,18 @@ function CharCustomizeMixin:SetViewingShapeshiftForm(formID)
 	if self.viewingShapeshiftForm ~= formID then
 		self.viewingShapeshiftForm = formID;
 		self.parentFrame:SetViewingShapeshiftForm(formID);
+	end
+end
+
+function CharCustomizeMixin:ClearViewingChrModel()
+	local noModelID = nil;
+	self:SetViewingChrModel(noModelID);
+end
+
+function CharCustomizeMixin:SetViewingChrModel(chrModelID)
+	if self.viewingChrModelID ~= chrModelID then
+		self.viewingChrModelID = chrModelID;
+		self.parentFrame:SetViewingChrModel(chrModelID);
 	end
 end
 
@@ -1120,8 +1155,10 @@ function CharCustomizeMixin:GetOptionPool(optionType)
 end
 
 function CharCustomizeMixin:GetCategoryPool(categoryData)
-	if categoryData.spellShapeshiftFormID then
-		return self.pools:GetPool("CharCustomizeShapeshiftFormButtonTemplate");
+	if categoryData.chrModelID then
+		return self.pools:GetPool("CharCustomizeRidingDrakeButtonTemplate");
+	elseif categoryData.spellShapeshiftFormID then
+		return self.pools:GetPool("CharCustomizeShapeshiftFormButtonTemplate");	
 	else
 		return self.pools:GetPool("CharCustomizeCategoryButtonTemplate");
 	end
@@ -1184,6 +1221,7 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	end
 
 	self.hasShapeshiftForms = false;
+	self.hasChrModels = false;	-- nothing using this right now, tracking it anyway
 	self.numNormalCategories = 0;
 
 	local optionsToSetup = {};
@@ -1197,7 +1235,9 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 			button:SetCategory(categoryData, self.selectedCategoryData.id);
 			button:Show();
 
-			if categoryData.spellShapeshiftFormID then
+			if categoryData.chrModelID then
+				self.hasChrModels = true;
+			elseif categoryData.spellShapeshiftFormID then
 				self.hasShapeshiftForms = true;
 			else
 				self.numNormalCategories = self.numNormalCategories + 1;
@@ -1283,7 +1323,9 @@ function CharCustomizeMixin:UpdateCameraMode(keepCustomZoom)
 end
 
 function CharCustomizeMixin:SetSelectedCategory(categoryData, keepState)
-	if categoryData.spellShapeshiftFormID or self.viewingShapeshiftForm then
+	if categoryData.chrModelID then
+		self:SetViewingChrModel(categoryData.chrModelID);
+	elseif categoryData.spellShapeshiftFormID or self.viewingShapeshiftForm then
 		self:SetViewingShapeshiftForm(categoryData.spellShapeshiftFormID);
 	end
 

@@ -452,13 +452,13 @@ end
 CurrencyDisplayMixin = CreateFromMixins(CurrencyTemplateMixin);
 
 -- currencies: An array of currencyInfo
--- currencyInfo: either a currencyID, or an array with { currencyID, overrideAmount, colorCode }, or a table with { currencyID = 123, amount = 45, colorCode = RED_FONT_COLOR_CODE }
+-- currencyInfo: either a currencyID, or an array with { currencyID, overrideAmount, colorCode }, or a table with { currencyID = 123, amount = 45, colorCode = RED_FONT_COLOR_CODE [, formatString = "5 / %s"] }
 function CurrencyDisplayMixin:SetCurrencies(currencies, formatString)
 	if #currencies == 1 then
 		local currency = currencies[1];
 		if type(currency) == "table" then
 			if currency.currencyID and currency.amount then
-				self:SetCurrencyFromID(currency.currencyID, currency.amount, formatString, currency.colorCode);
+				self:SetCurrencyFromID(currency.currencyID, currency.amount, currency.formatString or formatString, currency.colorCode);
 			else
 				local currencyID, overrideAmount, colorCode = unpack(currency);
 				self:SetCurrencyFromID(currencyID, overrideAmount, formatString, colorCode);
@@ -489,6 +489,10 @@ function CurrencyDisplayMixin:SetTextAnchorPoint(anchorPoint)
 	self:MarkDirty();
 end
 
+function CurrencyDisplayMixin:SetCurrencyFont(fontObject)
+	self.Text:SetFontObject(fontObject);
+end
+
 CurrencyDisplayGroupMixin = {};
 
 function CurrencyDisplayGroupMixin:OnLoad()
@@ -509,19 +513,24 @@ function CurrencyDisplayGroupMixin:SetCurrencies(currencies, initFunction, initi
 
 	local function FactoryFunction(index)
 		local currencyFrame = self.currencyFramePool:Acquire();
+
+		local customFontObject = self.customFontObject;
+		if customFontObject ~= nil then
+			currencyFrame:SetCurrencyFont(customFontObject);
+		end
+
 		local tIndex = index;
 		if reverseOrder then
 			tIndex = #currencies + 1 - index;
 		end
 		local currencyInfo = currencies[tIndex];
 
-		currencyFrame:SetTooltipAnchor(tooltipAnchor);
+		currencyFrame:SetTooltipAnchor(tooltipAnchor or "ANCHOR_RIGHT");
 		currencyFrame:SetAbbreviate(abbreviate);
 
 		if type(currencyInfo) == "table" then
 			if currencyInfo.currencyID and currencyInfo.amount then
-				local formatString = nil;
-				currencyFrame:SetCurrencyFromID(currencyInfo.currencyID, currencyInfo.amount, formatString, currencyInfo.colorCode);
+				currencyFrame:SetCurrencyFromID(currencyInfo.currencyID, currencyInfo.amount, currencyInfo.formatString, currencyInfo.colorCode);
 			else
 				currencyFrame:SetCurrencyFromID(unpack(currencyInfo));
 			end
@@ -551,6 +560,14 @@ function CurrencyDisplayGroupMixin:Refresh()
 	for currencyFrame in self.currencyFramePool:EnumerateActive() do
 		currencyFrame:Refresh();
 	end
+end
+
+function CurrencyDisplayGroupMixin:SetCurrencyFont(fontObject)
+	for currencyFrame in self.currencyFramePool:EnumerateActive() do
+		currencyFrame:SetCurrencyFont(fontObject);
+	end
+
+	self.customFontObject = fontObject;
 end
 
 CurrencyHorizontalLayoutFrameMixin = { };

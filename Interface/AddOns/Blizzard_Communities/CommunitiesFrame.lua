@@ -155,7 +155,8 @@ function CommunitiesFrameMixin:OnShow()
 	self:UpdateCommunitiesTabs();
 
 	if self.CommunitiesList:IsShown() then
-		self.CommunitiesList:ScrollToClub(self:GetSelectedClubId());
+		local noScrollInterpolation = true;
+		self.CommunitiesList:ScrollToClub(self:GetSelectedClubId(), noScrollInterpolation);
 	end
 
 	self:RegisterCallback(CommunitiesFrameMixin.Event.MemberListDropDownShown, self.OnMemberListDropDownShown, self);
@@ -1044,18 +1045,18 @@ function CommunitiesFrameMixin:CheckForTutorials()
 		return;
 	end
 
-	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() and isGuildOrCommunity) then 
+	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() and isGuildOrCommunity) then
 		if(self:TryShowCrossFactionCommunitiesTutorialForLeader()) then 
 			if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_GUILD_LINK) then
 				HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_GUILD_LINK);
 			end
-			return; 
+			return;
 		end
 	else
 		if(HelpTip:IsShowing(self, CROSS_FACTION_COMMUNITIES_HELPTIP)) then
 			HelpTip:Hide(self, CROSS_FACTION_COMMUNITIES_HELPTIP);
 		end
-	end		
+	end
 
 	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() or self.CommunitiesControlFrame.GuildRecruitmentButton:IsShown()) then
 		local clubPostingInfo = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubId);
@@ -1073,13 +1074,13 @@ function CommunitiesFrameMixin:CheckForTutorials()
 				return;
 			end
 		end
-	else 
+	else
 		if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_POSTING) then
 			HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_POSTING);
 		end
 	end
 
-	if self.InviteButton:IsShown() and isGuild and clubId and C_ClubFinder.RequestPostingInformationFromClubId(clubId)then
+	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.InviteButton:IsShown() and isGuild and clubId and C_ClubFinder.RequestPostingInformationFromClubId(clubId)) then
 		if self:TryShowClubFinderLinkTutorialForLeader() then
 			-- The "ClubFinderRecruitment" HelpTip overlaps with the "ClubFinderLink" HelpTip we are now showing.
 			-- We hide but do not acknowledge that HelpTip so that it still pops up again when a Community tab is opened.
@@ -1087,6 +1088,10 @@ function CommunitiesFrameMixin:CheckForTutorials()
 				HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_POSTING);
 			end
 			return;
+		end
+	else
+		if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_GUILD_LINK) then
+			HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_GUILD_LINK);
 		end
 	end
 end

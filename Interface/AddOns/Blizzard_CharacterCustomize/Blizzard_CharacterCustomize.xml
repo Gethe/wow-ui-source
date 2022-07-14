@@ -227,7 +227,19 @@
 		</KeyValues>
 	</CheckButton>
 
-	<CheckButton name="CharCustomizeSexButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeSexButtonMixin" virtual="true">
+	<CheckButton name="CharCustomizeRidingDrakeButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeRidingDrakeButtonMixin" virtual="true">
+		<Size x="64" y="64"/>
+		<KeyValues>
+			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+			<KeyValue key="ringWidth" value="109" type="number"/>
+			<KeyValue key="ringHeight" value="110" type="number"/>
+			<KeyValue key="checkedTextureSize" value="94" type="number"/>
+			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="CharCustomizeBodyTypeButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeBodyTypeButtonMixin" virtual="true">
 		<Size x="46" y="46"/>
 		<KeyValues>
 			<KeyValue key="ringAtlas" value="charactercreate-ring-metaldark" type="string"/>

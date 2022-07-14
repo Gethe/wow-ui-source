@@ -481,6 +481,24 @@ function SpellBookFrame_OnHide(self)
 	end
 end
 
+--Returns whether the spec has spells that aren't on the player's bar, if it does returns the spell id of the first undragged spell
+function SpellBookFrame_SpecHasUnDraggedSpells()
+	--Always only checks the new player's currently selected spec
+	local tabIndex = 3;
+	local _, _, offset, numSlots = GetSpellTabInfo(tabIndex);
+
+	for i = 1, numSlots do
+		local slot = i + offset;
+		local slotType, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+
+		if not C_ActionBar.IsOnBarOrSpecialBar(spellID) and slotType ~="FUTURESPELL" and not IsPassiveSpell(slot, SpellBookFrame.bookType) then
+			return true, spellID;
+		end
+	end
+
+	return false;
+end
+
 function SpellButton_OnLoad(self)
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -504,7 +522,7 @@ function SpellButton_OnEvent(self, event, ...)
 		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 			SpellButton_UpdateButton(self);
 		end
-	elseif ( event == "CURSOR_UPDATE" ) then
+	elseif ( event == "CURSOR_CHANGED" ) then
 		if ( self.spellGrabbed ) then
 			SpellButton_UpdateButton(self);
 			self.spellGrabbed = false;
@@ -546,7 +564,7 @@ function SpellButton_OnShow(self)
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
 	self:RegisterEvent("ARCHAEOLOGY_CLOSED");
 	self:RegisterEvent("PET_BAR_UPDATE");
-	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("CURSOR_CHANGED");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 
 	--SpellButton_UpdateButton(self);
@@ -561,7 +579,7 @@ function SpellButton_OnHide(self)
 	self:UnregisterEvent("TRADE_SKILL_CLOSE");
 	self:UnregisterEvent("ARCHAEOLOGY_CLOSED");
 	self:UnregisterEvent("PET_BAR_UPDATE");
-	self:UnregisterEvent("CURSOR_UPDATE");
+	self:UnregisterEvent("CURSOR_CHANGED");
 	self:UnregisterEvent("ACTIONBAR_SLOT_CHANGED");
 end
 
@@ -647,9 +665,6 @@ function SpellButton_OnClick(self, button)
 		return;
 	end
 
-	if (self.isPassive) then
-		return;
-	end
 
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		if ( self.offSpecID == 0 ) then
@@ -868,6 +883,10 @@ function SpellButton_UpdateButton(self)
 	local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType);
 	self.isPassive = isPassive;
 
+	-- TODO:: Re-enable this behavior when we can distinguish between passives that show
+	-- a cooldown like Cauterize and Cheat Death, and ones that don't.
+	-- self.PassiveSpellOverlay:SetShown(self.isPassive);
+
 	if (slotType == "FLYOUT") then
 		SetClampedTextureRotation(self.FlyoutArrow, 90);
 		self.FlyoutArrow:Show();
@@ -885,13 +904,7 @@ function SpellButton_UpdateButton(self)
 		spell:ContinueOnSpellLoad(function()
 			local subSpellName = spell:GetSpellSubtext();
 			if ( subSpellName == "" ) then
-				if ( IsTalentSpell(slot, SpellBookFrame.bookType, specID) ) then
-					if ( isPassive ) then
-						subSpellName = TALENT_PASSIVE;
-					else
-						subSpellName = TALENT;
-					end
-				elseif ( isPassive ) then
+				if ( isPassive ) then
 					subSpellName = SPELL_PASSIVE;
 				end
 			end
@@ -1371,12 +1384,6 @@ function UpdateProfessionButton(self)
 		self.iconTexture:SetVertexColor(0.4, 0.4, 0.4);
 	end
 
-	if ( self:GetParent().specializationIndex >= 0 and self:GetID() == self:GetParent().specializationOffset) then
-		self.unlearn:Show();
-	else
-		self.unlearn:Hide();
-	end
-
 	self.spellString:SetText(spellName);
 	self.subSpellString:SetText("");
 	if spellID then
@@ -1440,7 +1447,6 @@ function FormatProfession(frame, index)
 
 		if frame.icon and texture then
 			SetPortraitToTexture(frame.icon, texture);
-			frame.unlearn:Show();
 		end
 
 		frame.professionName:SetText(name);
@@ -1479,7 +1485,6 @@ function FormatProfession(frame, index)
 
 		if frame.icon then
 			SetPortraitToTexture(frame.icon, "Interface\\Icons\\INV_Scroll_04");
-			frame.unlearn:Hide();
 			frame.specialization:SetText("");
 		end
 		frame.button1:Hide();

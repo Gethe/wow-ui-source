@@ -385,18 +385,12 @@
 		ActionBar_PageUp();
 	</Binding>
 	<Binding name="TOGGLEACTIONBARLOCK" category="BINDING_HEADER_ACTIONBAR">
-		if ( LOCK_ACTIONBAR == "1" ) then
-			LOCK_ACTIONBAR = "0";
-		else
-			LOCK_ACTIONBAR = "1";
-		end
+		local locked = Settings.GetValue("lockActionBars");
+		Settings.SetValue("lockActionBars", not locked);
 	</Binding>
 	<Binding name="TOGGLEAUTOSELFCAST" category="BINDING_HEADER_ACTIONBAR">
-		if ( GetCVar("autoSelfCast") == "1" ) then
-			SetCVar("autoSelfCast", "0");
-		else
-			SetCVar("autoSelfCast", "1");
-		end
+		local selfCast = Settings.GetValue("autoSelfCast");
+		Settings.SetValue("lockActionBars", not selfCast);
 	</Binding>
 
 	<!-- MultiAction bar bindings header="MULTIACTIONBAR" -->
@@ -870,13 +864,13 @@
 	</Binding>
 
 	<Binding name="NAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
-		if ( SHOW_ENEMIES ) then
-			SetCVar("nameplateShowEnemies", 0);
+		local showEnemies = Settings.GetValue("nameplateShowEnemies");
+		if ( showEnemies ) then
+			Settings.SetValue("nameplateShowEnemies", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
-			SetCVar("nameplateShowEnemies", 1);
-			if ( GetCVarBool("nameplateShowAll") ) then
+			Settings.SetValue("nameplateShowEnemies", true);
+			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
@@ -884,13 +878,13 @@
 		end
 	</Binding>
 	<Binding name="FRIENDNAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( SHOW_FRIENDS ) then
-			SetCVar("nameplateShowFriends", 0);
+		local showFriends = Settings.GetValue("nameplateShowFriends");
+		if ( showFriends ) then
+			Settings.SetValue("nameplateShowFriends", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
-			SetCVar("nameplateShowFriends", 1);
-			if ( GetCVarBool("nameplateShowAll") ) then
+			Settings.SetValue("nameplateShowFriends", true);
+			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
@@ -898,19 +892,19 @@
 		end
 	</Binding>
 	<Binding name="ALLNAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
-		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( not SHOW_ENEMIES or not SHOW_FRIENDS ) then
-			SetCVar("nameplateShowEnemies", 1);
-			SetCVar("nameplateShowFriends", 1);
-			if ( GetCVarBool("nameplateShowAll") ) then
+		local showEnemies = Settings.GetValue("nameplateShowEnemies");
+		local showFriends = Settings.GetValue("nameplateShowFriends");
+		if ( not showEnemies or not showFriends ) then
+			Settings.SetValue("nameplateShowEnemies", true);
+			Settings.SetValue("nameplateShowFriends", true);
+		if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			end
 		else
-			SetCVar("nameplateShowEnemies", 0);
-			SetCVar("nameplateShowFriends", 0);
+			Settings.SetValue("nameplateShowEnemies", false);
+			Settings.SetValue("nameplateShowFriends", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
 	</Binding>
@@ -953,6 +947,9 @@
 	</Binding>
 	<Binding name="TOGGLEBACKPACK" category="BINDING_HEADER_INTERFACE">
 		ToggleBackpack();
+	</Binding>
+	<Binding name="TOGGLEREAGENTBAG1" category="BINDING_HEADER_INTERFACE">
+		ToggleBag(5);
 	</Binding>
 	<Binding name="TOGGLEBAG1" category="BINDING_HEADER_INTERFACE">
 		ToggleBag(4);
@@ -1374,6 +1371,7 @@
 	<ModifiedClick action="COMPAREITEMS" default="SHIFT"/>
 	<ModifiedClick action="OPENALLBAGS" default="SHIFT"/>
 	<ModifiedClick action="QUESTWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="RECIPEWATCHTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="TOKENWATCHTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="SHOWITEMFLYOUT" default="ALT"/>
 	<ModifiedClick action="SHOWMULTICASTFLYOUT" default="ALT"/>

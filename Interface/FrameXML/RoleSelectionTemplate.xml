@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="RoleSelectionTemplate.lua"/>
 	<Button name="RoleSelectionRoleTemplate" mixin="RoleSelectionRoleMixin" virtual="true" motionScriptsWhileDisabled="true">
-		<Size>
-			<AbsDimension x="48" y="48"/>
-		</Size>
+		<Size x="48" y="48"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="Cover" alpha="0.5" hidden="true">
@@ -118,15 +116,9 @@
 				</Scripts>
 			</Button>
 			<Button parentKey="RoleButtonDPS" parentArray="Roles" inherits="RoleSelectionRoleTemplate" id="1">
-				<Size>
-					<AbsDimension x="70" y="70"/>
-				</Size>
+				<Size x="70" y="70"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RoleButtonHealer" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeKey="$parent.RoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -137,15 +129,9 @@
 				</Scripts>
 			</Button>
 			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
-				<Size>
-					<AbsDimension x="115" y="22"/>
-				</Size>
+				<Size x="115" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="-3" y="15"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM" x="-3" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -154,15 +140,9 @@
 				</Scripts>
 			</Button>
 			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size>
-					<AbsDimension x="115" y="22"/>
-				</Size>
+				<Size x="115" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.AcceptButton" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="6" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeKey="$parent.AcceptButton" relativePoint="RIGHT" x="6" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

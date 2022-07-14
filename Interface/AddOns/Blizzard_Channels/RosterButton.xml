@@ -14,7 +14,7 @@
 				<Texture parentKey="Rank">
 					<Size x="12" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" x="0" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -195,11 +195,7 @@
 					<Button name="$parentMover" parentKey="mover">
 						<Size x="32" y="16"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
-								<Offset>
-									<AbsDimension x="5" y="-8"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="5" y="-8"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -227,11 +223,7 @@
 					<Button name="$parentResizer" parentKey="resizer">
 						<Size x="32" y="16"/>
 						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="$parent">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOM" relativeTo="$parent" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnMouseDown>
@@ -321,9 +313,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								InterfaceOptionsFrame_OpenToCategory(COMPACT_UNIT_FRAME_PROFILES_LABEL);
+								Settings.OpenToCategory("Audio");
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-								--ToggleRaidFrame();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -599,10 +590,10 @@
 								self:SetChecked(IsEveryoneAssistant());
 								if ( UnitIsGroupLeader("player") ) then
 									self:Enable();
-									self.text:SetFontObject(GameFontNormalSmall);
+									self.Text:SetFontObject(GameFontNormalSmall);
 								else
 									self:Disable();
-									self.text:SetFontObject(GameFontDisableSmall);
+									self.Text:SetFontObject(GameFontDisableSmall);
 								end
 							</OnEvent>
 							<OnClick>

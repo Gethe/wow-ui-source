@@ -20,13 +20,15 @@ do
 	};
 
 	function QuickJoinMixin:OnLoad()
-		self.ScrollFrame.update = function() self:UpdateScrollFrame(); end
-		self.ScrollFrame.dynamic = function(...) return self:GetTopButton(...) end
+		local view = CreateScrollBoxListLinearView();
+		view:SetElementInitializer("QuickJoinButtonTemplate", function(button, elementData)
+			button:Init(elementData);
+		end);
+
+		ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 		self.entries = CreateFromMixins(QuickJoinEntriesMixin);
 		self.entries:Init();
-
-		HybridScrollFrame_CreateButtons(self.ScrollFrame, "QuickJoinButtonTemplate");
 
 		self.dropdown = QuickJoinFrameDropDown;
 		UIDropDownMenu_Initialize(self.dropdown, nil, "MENU");
@@ -103,86 +105,37 @@ function QuickJoinMixin:UpdateEntry(guid)
 end
 
 function QuickJoinMixin:UpdateScrollFrame()
-	local offset = HybridScrollFrame_GetOffset(self.ScrollFrame);
-
-	local buttons = self.ScrollFrame.buttons;
-
-	local totalHeight = 0;
 	local entries = self.entries:GetEntries();
-	for i=1, #entries do
-		totalHeight = totalHeight + entries[i]:GetFrameHeight();
-		end
-
-	for i=1, #buttons do
-		local entryIndex = i + offset;
-		if ( entryIndex <= #entries ) then
-			buttons[i]:SetEntry(entries[entryIndex]);
-			local selected = buttons[i]:GetEntry():GetGUID() == self.selectedGUID;
-			buttons[i].Selected:SetShown(selected);
-			buttons[i].Highlight:SetAlpha(selected and 0 or 0.5);
-			buttons[i]:Show();
-		else
-			buttons[i]:Hide();
-		end
-	end
-
-	HybridScrollFrame_Update(self.ScrollFrame, totalHeight, totalHeight);
-end
-
-function QuickJoinMixin:GetTopButton(offset)
-	local usedHeight = 0;
-	local entries = self.entries:GetEntries();
-	for i=1, #entries do
-		local entry = entries[i];
-		local height = entry:GetFrameHeight();
-		if ( usedHeight + height >= offset ) then
-			return i - 1, offset - usedHeight;
-		else
-			usedHeight = usedHeight + height;
-		end
-	end
-	return 0, 0;
+	local dataProvider = CreateDataProvider(entries);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end
 
 function QuickJoinMixin:SelectGroup(guid)
+	local oldSelectedGUID = self.selectedGUID;
 	self.selectedGUID = guid;
+
 	self:UpdateScrollFrame();
 	self:UpdateJoinButtonState();
+
+	local function UpdateButtonSelection(guid, selected)
+		if guid then
+			local button = self.ScrollBox:FindFrameByPredicate(function(button)
+				return button:GetElementData().guid == guid;
+			end);
+			if button then
+				button:SetSelected(selected);
+			end
+		end
+	end;
+	
+	UpdateButtonSelection(oldSelectedGUID, false);
+	UpdateButtonSelection(guid, true);
 end
 
 function QuickJoinMixin:ScrollToGroup(guid)
-	local totalHeight = 0;
-	local entries = self.entries:GetEntries();
-	local scrollFrameHeight = self.ScrollFrame:GetHeight();
-	for i=1, #entries do
-		local entry = entries[i];
-		local frameHeight = entry:GetFrameHeight();
-		if ( entry:GetGUID() == guid ) then
-			local offset = 0;
-			-- we don't need to do anything if the entry is fully displayed with the scroll all the way up
-			if ( totalHeight + frameHeight > scrollFrameHeight ) then
-				if ( frameHeight > scrollFrameHeight ) then
-					-- this entry is larger than the entire scrollframe, put it at the top
-					offset = totalHeight;
-				else
-					-- otherwise place it in the center
-					local diff = scrollFrameHeight - frameHeight;
-					offset = totalHeight - diff / 2;
-				end
-				-- because of valuestep our positioning might change
-				-- we'll do the adjustment ourselves to make sure the entry ends up above the center rather than below
-				local valueStep = self.ScrollFrame.scrollBar:GetValueStep();
-				offset = offset + valueStep - mod(offset, valueStep);
-				-- but if we ended up moving the entry so high up that its top is not visible, move it back down
-				if ( offset > totalHeight ) then
-					offset = offset - valueStep;
-				end
-			end
-			self.ScrollFrame.scrollBar:SetValue(offset);
-			break;
-		end
-		totalHeight = totalHeight + frameHeight;
-	end
+	self.ScrollBox:ScrollToElementData(function(elementData)
+		return elementData.guid == guid;
+	end);
 end
 
 function QuickJoinMixin:GetSelectedGroup()
@@ -271,6 +224,17 @@ end
 
 function QuickJoinButtonMixin:GetEntry()
 	return self.entry;
+end
+
+function QuickJoinButtonMixin:Init(elementData)
+	self:SetEntry(elementData);
+	local selected = self:GetEntry():GetGUID() == QuickJoinFrame.selectedGUID;
+	self:SetSelected(selected);
+end
+
+function QuickJoinButtonMixin:SetSelected(selected)
+	self.Selected:SetShown(selected);
+	self.Highlight:SetAlpha(selected and 0 or 0.5);
 end
 
 function QuickJoinButtonMixin:OnEnter()

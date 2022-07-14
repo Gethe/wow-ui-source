@@ -188,9 +188,7 @@
 	<Frame name="MountJournal" parent="CollectionsJournal" setAllPoints="true">
 		<Frames>
 			<Button name="$parentSummonRandomFavoriteButton" parentKey="SummonRandomFavoriteButton" inherits="SecureFrameTemplate">
-				<Size>
-					<AbsDimension x="33" y="33"/>
-				</Size>
+				<Size x="33" y="33"/>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-24" y="-42"/>
 				</Anchors>
@@ -471,27 +469,21 @@
 					</ModelScene>
 				</Frames>
 			</Frame>
-			<!--Name needed for HybridScrollFrameTemplate-->
-			<ScrollFrame name="$parentListScrollFrame" parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
+			
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="3" y="-36"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LeftInset" x="-2" y="3"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="20"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="11"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.trackBG:Show();
-								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
-							</OnLoad>
-						</Scripts>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="36"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="0"/>
+				</Anchors>
+			</EventFrame>
+			
 			<Button parentKey="MountButton" name="$parentMountButton" motionScriptsWhileDisabled="true" inherits="MagicButtonTemplate" text="MOUNT">
 				<Size x="140" y="22"/>
 				<Anchors>

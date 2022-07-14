@@ -224,7 +224,7 @@ function EventToastManagerFrameMixin:SetupButton(uiTextureKit)
 	end
 
 	if (higlightTextureAtlas) then 
-		self.HideButton:SetHighlightAtlas(higlightTextureAtlas, true);
+		self.HideButton:SetHighlightAtlas(higlightTextureAtlas);
 	end
 
 	local hitRectInsets = hideButtonHitRectInsets[uiTextureKit];

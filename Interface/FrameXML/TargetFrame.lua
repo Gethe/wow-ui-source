@@ -24,6 +24,8 @@ local PLAYER_UNITS = {
 	pet = true,
 };
 
+CVarCallbackRegistry:SetCVarCachable("showTargetOfTarget");
+
 function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -72,6 +74,10 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 						 _G[thisName.."TotalAbsorbBar"], _G[thisName.."TotalAbsorbBarOverlay"], _G[thisName.."TextureFrameOverAbsorbGlow"],
 						 _G[thisName.."TextureFrameOverHealAbsorbGlow"], _G[thisName.."HealAbsorbBar"],
 						 _G[thisName.."HealAbsorbBarLeftShadow"], _G[thisName.."HealAbsorbBarRightShadow"]);
+
+	self.auraPools = CreateFramePoolCollection();
+	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");
+	self.auraPools:CreatePool("FRAME", self, "TargetBuffFrameTemplate");
 
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -141,7 +147,6 @@ function TargetFrame_Update (self)
 				self.leaderIcon:Hide();
 			end
 		end
-		TargetFrame_UpdateAuras(self);
 		if ( self.portrait ) then
 			self.portrait:SetAlpha(1.0);
 		end
@@ -162,6 +167,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		-- Moved here to avoid taint from functions below
 		TargetFrame_Update(self);
 		TargetFrame_UpdateRaidTargetIcon(self);
+		TargetFrame_UpdateAuras(self);
 		CloseDropDownMenus();
 
 		if ( UnitExists(self.unit) and not IsReplacingUnit()) then
@@ -180,6 +186,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		end
 		CloseDropDownMenus();
 		UIParent_ManageFramePositions();
+		BossTargetFrameContainer:Show(); 
 	elseif ( event == "UNIT_TARGETABLE_CHANGED" and arg1 == self.unit) then
 		TargetFrame_Update(self);
 		TargetFrame_UpdateRaidTargetIcon(self);
@@ -206,8 +213,8 @@ function TargetFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == self.unit ) then
-			local isFullUpdate, updatedAuraInfos = select(2, ...);
-			TargetFrame_UpdateAuras(self, isFullUpdate, updatedAuraInfos);
+			local unitAuraUpdateInfo = select(2, ...);
+			TargetFrame_UpdateAuras(self, unitAuraUpdateInfo);
 		end
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 		if ( arg1 == self.unit ) then
@@ -494,164 +501,166 @@ local function ShouldAuraBeLarge(caster)
 	end
 end
 
-local function AuraCouldShow(auraInfo, ...)
-	local self = ...;
-	if auraInfo.isHelpful then
-		return not auraInfo.isNameplateOnly;
+local AuraUpdateChangedType = EnumUtil.MakeEnum(
+	"None",
+	"Debuff",
+	"Buff"
+);
+
+local function TargetFrame_ProcessAura(self, aura)
+	if aura == nil or aura.icon == nil then
+		return AuraUpdateChangedType.None;
 	end
 
-	if auraInfo.isHarmful then
-		return TargetFrame_ShouldShowDebuffs(self.unit, auraInfo.sourceUnit, auraInfo.nameplateShowAll, auraInfo.isFromPlayerOrPlayerPet);
+	if aura.isHelpful and not aura.isNameplateOnly then
+		self.activeBuffs[aura.auraInstanceID] = aura;
+		return AuraUpdateChangedType.Buff;
+	elseif aura.isHarmful and TargetFrame_ShouldShowDebuffs(self.unit, aura.sourceUnit, aura.nameplateShowAll, aura.isFromPlayerOrPlayerPet) then
+		self.activeDebuffs[aura.auraInstanceID] = aura;
+		return AuraUpdateChangedType.Debuff;
 	end
 
-	return false;
+	return AuraUpdateChangedType.None;
 end
 
-function TargetFrame_UpdateAuras(self, isFullUpdate, updatedAuraInfos)
-	local numBuffs = 0;
-	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
-	local selfName = self:GetName();
+local function TargetFrame_ParseAllAuras(self)
+	if self.activeDebuffs == nil then
+		self.activeDebuffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+		self.activeBuffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+	else
+		self.activeDebuffs:Clear();
+		self.activeBuffs:Clear();
+	end
 
-	if AuraUtil.ShouldSkipAuraUpdate(isFullUpdate, updatedAuraInfos, AuraCouldShow, self) then
+	local function HandleAura(aura)
+		TargetFrame_ProcessAura(self, aura);
+		return false;
+	end
+
+	local batchCount = nil;
+	local usePackedAura = true;
+	AuraUtil.ForEachAura(self.unit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Helpful), batchCount, HandleAura, usePackedAura);
+	AuraUtil.ForEachAura(self.unit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful, AuraUtil.AuraFilters.IncludeNameplateOnly), batchCount, HandleAura, usePackedAura);
+end
+
+function TargetFrame_UpdateAuras(self, unitAuraUpdateInfo)
+	local debuffsChanged = false;
+	local buffsChanged = false;
+
+	if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate or self.activeDebuffs == nil then
+		TargetFrame_ParseAllAuras(self);
+		debuffsChanged = true;
+		buffsChanged = true;
+	else
+		if unitAuraUpdateInfo.addedAuras ~= nil then
+			for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
+				local type = TargetFrame_ProcessAura(self, aura);
+				if type == AuraUpdateChangedType.Buff then
+					buffsChanged = true;
+				elseif type == AuraUpdateChangedType.Debuff then
+					debuffsChanged = true;
+				end
+			end
+		end
+
+		if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
+			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
+				if self.activeDebuffs[auraInstanceID] ~= nil then
+					local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(self.unit, auraInstanceID);
+					self.activeDebuffs[auraInstanceID] = newAura;
+					debuffsChanged = true;
+				elseif self.activeBuffs[auraInstanceID] ~= nil then
+					local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(self.unit, auraInstanceID);
+					self.activeBuffs[auraInstanceID] = newAura;
+					buffsChanged = true;
+				end
+			end
+		end
+
+		if unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil then
+			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+				if self.activeDebuffs[auraInstanceID] ~= nil then
+					self.activeDebuffs[auraInstanceID] = nil;
+					debuffsChanged = true;
+				elseif self.activeBuffs[auraInstanceID] ~= nil then
+					self.activeBuffs[auraInstanceID] = nil;
+					buffsChanged = true;
+				end
+			end
+		end
+	end
+
+	if not (buffsChanged or debuffsChanged) then
 		return;
 	end
-
-	local index = 1;
-	local maxBuffs = math.min(self.maxBuffs or MAX_TARGET_BUFFS, MAX_TARGET_BUFFS);
-	AuraUtil.ForEachAura(self.unit, "HELPFUL", maxBuffs, function(...)
-        local buffName, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _ , spellId, _, _, casterIsPlayer, nameplateShowAll = ...;
-        if ( icon ) then
-			numBuffs = numBuffs + 1;
-			local frame = self.Buff and self.Buff[numBuffs];
-			if ( not frame ) then
-				local frameName = selfName.."Buff"..numBuffs;
-				frame = CreateFrame("Button", frameName, self, "TargetBuffFrameTemplate");
-				frame.unit = self.unit;
-			end
-            frame:SetID(index);
-
-            -- set the icon
-            frame.Icon:SetTexture(icon);
-
-            -- set the count
-            local frameCount = frame.Count;
-            if ( count > 1 and self.showAuraCount ) then
-                frameCount:SetText(count);
-                frameCount:Show();
-            else
-                frameCount:Hide();
-            end
-
-            -- Handle cooldowns
-            CooldownFrame_Set(frame.Cooldown, expirationTime - duration, duration, duration > 0, true);
-
-            -- Show stealable frame if the target is not the current player and the buff is stealable.
-            frame.Stealable:SetShown(not playerIsTarget and canStealOrPurge);
-
-            -- set the buff to be big if the buff is cast by the player or his pet
-            largeBuffList[numBuffs] = ShouldAuraBeLarge(caster);
-
-            frame:ClearAllPoints();
-            frame:Show();
-        end
-		index = index + 1;
-		return numBuffs >= maxBuffs;
-	end);
-
-	if self.Buff then
-		for i = numBuffs + 1, MAX_TARGET_BUFFS do
-			local frame = self.Buff[i];
-			if ( frame ) then
-				frame:Hide();
-			else
-				break;
-			end
-		end
-	end
-
-	local numDebuffs = 0;
-	local maxDebuffs = math.min(self.maxDebuffs or MAX_TARGET_DEBUFFS, MAX_TARGET_DEBUFFS);
 	
-	index = 1;
-	AuraUtil.ForEachAura(self.unit, "HARMFUL|INCLUDE_NAME_PLATE_ONLY", maxDebuffs, function(...)
-	    local debuffName, icon, count, debuffType, duration, expirationTime, caster, _, _, _, _, _, casterIsPlayer, nameplateShowAll = ...;
-		if ( TargetFrame_ShouldShowDebuffs(self.unit, caster, nameplateShowAll, casterIsPlayer) ) then
-			if ( icon ) then
-				numDebuffs = numDebuffs + 1;
-		        local frame = self.Debuff and self.Debuff[numDebuffs];
-				if ( not frame ) then
-					local frameName = selfName.."Debuff"..numDebuffs;
-					frame = CreateFrame("Button", frameName, self, "TargetDebuffFrameTemplate");
-					frame.unit = self.unit;
-				end
-				frame:SetID(index);
+	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
+	local numBuffs = 0;
+	local numDebuffs = 0;
+	self.auraPools:ReleaseAll();
 
-				-- set the icon
-				frame.Icon:SetTexture(icon);
+	local function UpdateAuraFrame(frame, aura)
+		frame.unit = self.unit;
+		frame.auraInstanceID = aura.auraInstanceID;
 
-				-- set the count
-				local frameCount = frame.Count;
-				if ( count > 1 and self.showAuraCount ) then
-					frameCount:SetText(count);
-					frameCount:Show();
-				else
-					frameCount:Hide();
-				end
+		-- set the icon
+		frame.Icon:SetTexture(aura.icon);
 
-				-- Handle cooldowns
-				CooldownFrame_Set(frame.Cooldown, expirationTime - duration, duration, duration > 0, true);
-
-				-- set debuff type color
-				local color;
-				if ( debuffType ) then
-					color = DebuffTypeColor[debuffType];
-				else
-					color = DebuffTypeColor["none"];
-				end
-				frame.Border:SetVertexColor(color.r, color.g, color.b);
-
-				-- set the debuff to be big if the buff is cast by the player or his pet
-				largeDebuffList[numDebuffs] = ShouldAuraBeLarge(caster);
-
-				frame:ClearAllPoints();
-				frame:Show();
-			end
+		-- set the count
+		local frameCount = frame.Count;
+		if aura.applications > 1 and self.showAuraCount then
+			frameCount:SetText(aura.applications);
+			frameCount:Show();
+		else
+			frameCount:Hide();
 		end
-		index = index + 1;
-		return numDebuffs >= maxDebuffs;
-	end);
 
-	if self.Debuff then
-		for i = numDebuffs + 1, MAX_TARGET_DEBUFFS do
-			local frame = self.Debuff[i];
-			if ( frame ) then
-				frame:Hide();
+		-- Handle cooldowns
+		CooldownFrame_Set(frame.Cooldown, aura.expirationTime - aura.duration, aura.duration, aura.duration > 0, true);
+
+		if aura.isHarmful then
+			-- set debuff type color
+			local color;
+			if aura.dispelName ~= nil then
+				color = DebuffTypeColor[aura.dispelName];
 			else
-				break;
+				color = DebuffTypeColor["none"];
 			end
+			frame.Border:SetVertexColor(color.r, color.g, color.b);
+		else
+			-- Show stealable frame if the target is not the current player and the buff is stealable.
+			frame.Stealable:SetShown(not playerIsTarget and aura.isStealable);
 		end
+
+		frame:ClearAllPoints();
+		frame:Show();
 	end
+
+	local maxBuffs = math.min(self.maxBuffs or MAX_TARGET_BUFFS, MAX_TARGET_BUFFS);
+	numBuffs = math.min(maxBuffs, self.activeBuffs:Size());
+
+	local maxDebuffs = math.min(self.maxDebuffs or MAX_TARGET_DEBUFFS, MAX_TARGET_DEBUFFS);
+	numDebuffs = math.min(maxDebuffs, self.activeDebuffs:Size());
 
 	self.auraRows = 0;
-
 	local mirrorAurasVertically = false;
-	if ( self.buffsOnTop ) then
+	if self.buffsOnTop then
 		mirrorAurasVertically = true;
 	end
 	local haveTargetofTarget;
-	if ( self.totFrame ) then
+	if self.totFrame ~= nil then
 		haveTargetofTarget = self.totFrame:IsShown();
 	end
 	self.spellbarAnchor = nil;
 	local maxRowWidth;
 	-- update buff positions
 	maxRowWidth = ( haveTargetofTarget and self.TOT_AURA_ROW_WIDTH ) or AURA_ROW_WIDTH;
-	TargetFrame_UpdateAuraPositions(self, selfName.."Buff", numBuffs, numDebuffs, largeBuffList, TargetFrame_UpdateBuffAnchor, maxRowWidth, 3, mirrorAurasVertically);
+	TargetFrame_UpdateAuraFrames(self, self.activeBuffs, numDebuffs, UpdateAuraFrame, TargetFrame_UpdateBuffAnchor, maxRowWidth, 3, mirrorAurasVertically);
 	-- update debuff positions
 	maxRowWidth = ( haveTargetofTarget and self.auraRows < NUM_TOT_AURA_ROWS and self.TOT_AURA_ROW_WIDTH ) or AURA_ROW_WIDTH;
-	TargetFrame_UpdateAuraPositions(self, selfName.."Debuff", numDebuffs, numBuffs, largeDebuffList, TargetFrame_UpdateDebuffAnchor, maxRowWidth, 4, mirrorAurasVertically);
+	TargetFrame_UpdateAuraFrames(self, self.activeDebuffs, numBuffs, UpdateAuraFrame, TargetFrame_UpdateDebuffAnchor, maxRowWidth, 4, mirrorAurasVertically);
 	-- update the spell bar position
-	if ( self.spellbar ) then
+	if self.spellbar ~= nil then
 		Target_Spellbar_AdjustPosition(self.spellbar);
 	end
 end
@@ -679,7 +688,6 @@ function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsA
 	local targetIsFriendly = not UnitCanAttack("player", unit);
 	local targetIsAPlayer =  UnitIsPlayer(unit);
 	local targetIsAPlayerPet = UnitIsOtherPlayersPet(unit);
-
 	if (not targetIsAPlayer and not targetIsAPlayerPet and not targetIsFriendly and casterIsAPlayer) then
         return false;
     end
@@ -687,18 +695,26 @@ function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsA
     return true;
 end
 
-function TargetFrame_UpdateAuraPositions(self, auraName, numAuras, numOppositeAuras, largeAuraList, updateFunc, maxRowWidth, offsetX, mirrorAurasVertically)
+function TargetFrame_UpdateAuraFrames(self, auraList, numOppositeAuras, setupFunc, anchorFunc, maxRowWidth, offsetX, mirrorAurasVertically)
 	-- a lot of this complexity is in place to allow the auras to wrap around the target of target frame if it's shown
-
+	
 	-- Position auras
 	local size;
 	local offsetY = AURA_OFFSET_Y;
 	-- current width of a row, increases as auras are added and resets when a new aura's width exceeds the max row width
 	local rowWidth = 0;
-	local firstBuffOnRow = 1;
-	for i=1, numAuras do
+	local i = 1;
+	local firstIndexOnRow = 1;
+	local firstBuffOnRow;
+	local lastBuff;
+	auraList:Iterate(function(auraInstanceID, aura)
+		local template = aura.isHarmful and "TargetDebuffFrameTemplate" or "TargetBuffFrameTemplate";
+		local pool = self.auraPools:GetPool(template);
+		local frame = pool:Acquire();
+		setupFunc(frame, aura);
+
 		-- update size and offset info based on large aura status
-		if ( largeAuraList[i] ) then
+		if ShouldAuraBeLarge(aura.sourceUnit) then
 			size = LARGE_AURA_SIZE;
 			offsetY = AURA_OFFSET_Y + AURA_OFFSET_Y;
 		else
@@ -706,20 +722,22 @@ function TargetFrame_UpdateAuraPositions(self, auraName, numAuras, numOppositeAu
 		end
 
 		-- anchor the current aura
-		if ( i == 1 ) then
+		if i == 1 then
 			rowWidth = size;
 			self.auraRows = self.auraRows + 1;
+			firstBuffOnRow = frame;
 		else
 			rowWidth = rowWidth + size + offsetX;
 		end
-		if ( rowWidth > maxRowWidth ) then
+		if rowWidth > maxRowWidth then
 			-- this aura would cause the current row to exceed the max row width, so make this aura
 			-- the start of a new row instead
-			updateFunc(self, auraName, i, numOppositeAuras, firstBuffOnRow, size, offsetX, offsetY, mirrorAurasVertically);
+			anchorFunc(self, frame, i, numOppositeAuras, firstBuffOnRow, firstIndexOnRow, size, offsetX, offsetY, mirrorAurasVertically);
 
 			rowWidth = size;
 			self.auraRows = self.auraRows + 1;
-			firstBuffOnRow = i;
+			firstIndexOnRow = i;
+			firstBuffOnRow = frame;
 			offsetY = AURA_OFFSET_Y;
 
 			if ( self.auraRows > NUM_TOT_AURA_ROWS ) then
@@ -728,12 +746,15 @@ function TargetFrame_UpdateAuraPositions(self, auraName, numAuras, numOppositeAu
 				maxRowWidth = AURA_ROW_WIDTH;
 			end
 		else
-			updateFunc(self, auraName, i, numOppositeAuras, i - 1, size, offsetX, offsetY, mirrorAurasVertically);
+			anchorFunc(self, frame, i, numOppositeAuras, lastBuff, i - 1, size, offsetX, offsetY, mirrorAurasVertically);
 		end
-	end
+
+		lastBuff = frame;
+		i = i + 1;
+	end);
 end
 
-function TargetFrame_UpdateBuffAnchor(self, buffName, index, numDebuffs, anchorIndex, size, offsetX, offsetY, mirrorVertically)
+function TargetFrame_UpdateBuffAnchor(self, buff, index, numDebuffs, anchorBuff, anchorIndex, size, offsetX, offsetY, mirrorVertically)
 	--For mirroring vertically
 	local point, relativePoint;
 	local startY, auraOffsetY;
@@ -753,7 +774,6 @@ function TargetFrame_UpdateBuffAnchor(self, buffName, index, numDebuffs, anchorI
 		auraOffsetY = AURA_OFFSET_Y;
 	end
 
-	local buff = _G[buffName..index];
 	if ( index == 1 ) then
 		if ( UnitIsFriend("player", self.unit) or numDebuffs == 0 ) then
 			-- unit is friendly or there are no debuffs...buffs start on top
@@ -767,12 +787,12 @@ function TargetFrame_UpdateBuffAnchor(self, buffName, index, numDebuffs, anchorI
 		self.spellbarAnchor = buff;
 	elseif ( anchorIndex ~= (index-1) ) then
 		-- anchor index is not the previous index...must be a new row
-		buff:SetPoint(point.."LEFT", _G[buffName..anchorIndex], relativePoint.."LEFT", 0, -offsetY);
+		buff:SetPoint(point.."LEFT", anchorBuff, relativePoint.."LEFT", 0, -offsetY);
 		self.buffs:SetPoint(relativePoint.."LEFT", buff, relativePoint.."LEFT", 0, -auraOffsetY);
 		self.spellbarAnchor = buff;
 	else
 		-- anchor index is the previous index
-		buff:SetPoint(point.."LEFT", _G[buffName..anchorIndex], point.."RIGHT", offsetX, 0);
+		buff:SetPoint(point.."LEFT", anchorBuff, point.."RIGHT", offsetX, 0);
 	end
 
 	-- Resize
@@ -780,8 +800,7 @@ function TargetFrame_UpdateBuffAnchor(self, buffName, index, numDebuffs, anchorI
 	buff:SetHeight(size);
 end
 
-function TargetFrame_UpdateDebuffAnchor(self, debuffName, index, numBuffs, anchorIndex, size, offsetX, offsetY, mirrorVertically)
-	local buff = _G[debuffName..index];
+function TargetFrame_UpdateDebuffAnchor(self, buff, index, numBuffs, anchorBuff, anchorIndex, size, offsetX, offsetY, mirrorVertically)
 	local isFriend = UnitIsFriend("player", self.unit);
 
 	--For mirroring vertically
@@ -818,20 +837,20 @@ function TargetFrame_UpdateDebuffAnchor(self, debuffName, index, numBuffs, ancho
 		end
 	elseif ( anchorIndex ~= (index-1) ) then
 		-- anchor index is not the previous index...must be a new row
-		buff:SetPoint(point.."LEFT", _G[debuffName..anchorIndex], relativePoint.."LEFT", 0, -offsetY);
+		buff:SetPoint(point.."LEFT", anchorBuff, relativePoint.."LEFT", 0, -offsetY);
 		self.debuffs:SetPoint(relativePoint.."LEFT", buff, relativePoint.."LEFT", 0, -auraOffsetY);
 		if ( ( isFriend ) or ( not isFriend and numBuffs == 0) ) then
 			self.spellbarAnchor = buff;
 		end
 	else
 		-- anchor index is the previous index
-		buff:SetPoint(point.."LEFT", _G[debuffName..(index-1)], point.."RIGHT", offsetX, 0);
+		buff:SetPoint(point.."LEFT", anchorBuff, point.."RIGHT", offsetX, 0);
 	end
 
 	-- Resize
 	buff:SetWidth(size);
 	buff:SetHeight(size);
-	local debuffFrame =_G[debuffName..index.."Border"];
+	local debuffFrame = buff.Border;
 	debuffFrame:SetWidth(size+2);
 	debuffFrame:SetHeight(size+2);
 end
@@ -984,9 +1003,8 @@ function TargetofTarget_OnHide(self)
 end
 
 function TargetofTarget_Update(self, elapsed)
-	local show;
 	local parent = self:GetParent();
-	if ( SHOW_TARGET_OF_TARGET == "1" and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("showTargetOfTarget") and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
 		if ( not self:IsShown() ) then
 			self:Show();
 			if ( parent.spellbar ) then
@@ -1059,7 +1077,7 @@ function TargetFrame_CreateSpellbar(self, event, boss)
 	spellbar:RegisterEvent("CVAR_UPDATE");
 	spellbar:RegisterEvent("VARIABLES_LOADED");
 
-	CastingBarFrame_SetUnit(spellbar, self.unit, false, true);
+	spellbar:SetUnit(self.unit, false, true);
 	if ( event ) then
 		spellbar.updateEvent = event;
 		spellbar:RegisterEvent(event);
@@ -1109,7 +1127,7 @@ function Target_Spellbar_OnEvent(self, event, ...)
 		-- The position depends on the classification of the target
 		Target_Spellbar_AdjustPosition(self);
 	end
-	CastingBarFrame_OnEvent(self, event, arg1, select(2, ...));
+	self:OnEvent(event, arg1, select(2, ...));
 end
 
 function Target_Spellbar_AdjustPosition(self)
@@ -1187,7 +1205,7 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
 	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
-	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint("CENTER")));
+	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint(1)));
 	self.raidTargetIcon:SetPoint("RIGHT", -90, 0);
 	self.threatNumericIndicator:SetPoint("BOTTOM", self, "TOP", -85, -22);
 	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss-Flash");
@@ -1316,4 +1334,22 @@ function FocusFrame_UpdateBuffsOnTop()
 		FocusFrame.buffsOnTop = false;
 	end
 	TargetFrame_UpdateAuras(FocusFrame);
+end
+
+BossTargetFrameContainerMixin = { };
+
+function BossTargetFrameContainerMixin:UpdateSize()
+	local currentHeight = self:GetHeight();
+	local currentWidth = self:GetWidth(); 
+	local actualHeightUsed = currentHeight * .75
+	local actualWidthUsed = currentWidth * .75
+	BossTargetFrameContainer.bottomPadding =  (actualHeightUsed - currentHeight); 
+	BossTargetFrameContainer.rightPadding =  (actualWidthUsed - currentWidth) - 20; 
+	BossTargetFrameContainer:Layout();
+	UIParent_ManageFramePositions(); 
+end 
+
+function BossTargetFrameContainerMixin:OnShow()
+	LayoutMixin.OnShow(self);
+	UIParentManagedFrameMixin.OnShow(self);
 end

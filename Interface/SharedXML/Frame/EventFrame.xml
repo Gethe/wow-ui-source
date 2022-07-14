@@ -5,9 +5,9 @@
 	<Frame name="EventFrame" mixin="EventFrameMixin" enableMouse="true" intrinsic="true">
 		<Scripts>
 			<OnLoad method="OnLoad_Intrinsic"/>
-			<OnHide method="OnHide_Intrinsic"/>
-			<OnShow method="OnShow_Intrinsic"/>
-			<OnSizeChanged method="OnSizeChanged_Intrinsic"/>
+			<OnHide method="OnHide_Intrinsic" intrinsicOrder="postcall"/>
+			<OnShow method="OnShow_Intrinsic" intrinsicOrder="postcall"/>
+			<OnSizeChanged method="OnSizeChanged_Intrinsic" intrinsicOrder="postcall"/>
 		</Scripts>
 	</Frame>
 </Ui>

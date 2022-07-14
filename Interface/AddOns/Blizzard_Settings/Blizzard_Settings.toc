@@ -1,0 +1,3 @@
+## Title: Blizzard Settings
+## Author: Blizzard Entertainment
+## AllowLoad: Both

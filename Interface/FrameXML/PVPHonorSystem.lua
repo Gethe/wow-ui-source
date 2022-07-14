@@ -182,7 +182,7 @@ function PVPHonorXPBar_Update(self)
 	self.Bar:SetAnimatedValues(current, 0, max, level);
 	self.Bar.Spark:SetShown(current > 0);
 
-    self.Bar:SetStatusBarAtlas("_honorsystem-bar-fill");
+    self.Bar:SetStatusBarTexture("_honorsystem-bar-fill");
     
     
     if (not self.locked) then

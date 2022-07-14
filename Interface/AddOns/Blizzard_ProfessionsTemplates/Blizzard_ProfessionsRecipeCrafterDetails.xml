@@ -1,0 +1,247 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsRecipeCrafterDetails.lua"/>
+
+	<Frame name="ProfessionsCrafterDetailsStatLineTemplate" mixin="ProfessionsCrafterDetailsStatLineMixin" virtual="true">
+		<Size x="200" y="25"/>
+		<KeyValues>
+			<KeyValue key="displayAsPct" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="LeftLabel" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="300" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RightLabel" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Size x="150" y="20"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ProfessionsQualityMeterCapTemplate" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" scale=".6">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ProfessionsRecipeCrafterDetailsTemplate" mixin="ProfessionsRecipeCrafterDetailsMixin" virtual="true">
+		<Size x="260" y="353"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTop" atlas="Professions-QualityPane-bg-top" useAtlasSize="true">
+					<Size y="100"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundBottom" atlas="Professions-QualityPane-bg-bottom" useAtlasSize="true">
+					<Size y="99"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundMiddle" atlas="Professions-QualityPane-bg-middle" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTop" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BackgroundTop" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BackgroundBottom" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundBottom" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Line" atlas="Professions-QualityPane-Divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" y="-55"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Label" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="350" y="20"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Line" relativePoint="TOP"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="DifficultyStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
+				<KeyValues>
+					<KeyValue key="statLineType" value="CraftingQualityStatLine.Difficulty" type="global"/>
+					<KeyValue key="displayAsPct" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Line" relativePoint="BOTTOMLEFT" y="-15"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Line" relativePoint="BOTTOMRIGHT" y="-15"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="SkillStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
+				<KeyValues>
+					<KeyValue key="statLineType" value="CraftingQualityStatLine.Skill" type="global"/>
+					<KeyValue key="displayAsPct" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DifficultyStatLine" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.DifficultyStatLine" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+			
+			<Frame parentKey="QualityMeter" mixin="ProfessionsQualityMeterMixin">
+				<Size x="250" y="75"/>
+				<Anchors>
+					<Anchor point="TOP" y="-200"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Center">
+						<Size x="193" y="36"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Test2b" alphaMode="ADD" alpha="0" hidden="true">
+									<Color r=".8" g=".8" b=".8"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-6" y="6"/>
+										<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Fill">
+								<Anchors>
+									<Anchor point="TOP" y="-3"/>
+									<Anchor point="BOTTOM" y="7"/>
+									<Anchor point="LEFT" x="5"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK" textureSubLevel="1">
+										<Texture parentKey="Background">
+											<Color r="1" g="1" b="1"/>
+										</Texture>
+										<Texture parentKey="Test1" alphaMode="ADD">
+											<Color r="1" g="1" b="1"/>
+											<Animations>
+												<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+													<Alpha duration=".5" order="1" fromAlpha="1" toAlpha="0"/>
+												</AnimationGroup>
+											</Animations>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+												<Anchor point="BOTTOMRIGHT" x="50"/>
+											</Anchors>
+										</Texture>
+
+										<Texture parentKey="Test2" alphaMode="ADD" alpha="0">
+											<Color r="1" g="1" b="1"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+												<Anchor point="BOTTOMLEFT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+
+									<Layer level="ARTWORK" textureSubLevel="2">
+										<Texture parentKey="Flare" atlas="QualityBar_Mockup_Flare" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.Test1" relativePoint="RIGHT"/>
+											</Anchors>
+											<Animations>
+												<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+													<Alpha duration=".5" order="1" fromAlpha="1" toAlpha="0"/>
+												</AnimationGroup>
+											</Animations>
+										</Texture>
+									</Layer>
+									
+									<Layer level="ARTWORK" textureSubLevel="2">
+										<Texture parentKey="Flare2" atlas="QualityBar_Mockup_Flare" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.Test2" relativePoint="RIGHT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+							<StatusBar parentKey="Fill2">
+								<Size x="50"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Fill" relativePoint="TOPRIGHT"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Fill" relativePoint="BOTTOMRIGHT"/>
+								</Anchors>
+								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+							</StatusBar>
+						</Frames>
+					</Frame>
+					<Frame parentKey="Border" frameLevel="8">
+						<Size x="193" y="36"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Center"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Center"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="Professions-QualityBar-Frame" useAtlasSize="true"/>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Marker" atlas="Professions-QualityBar-marker" useAtlasSize="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="Left" inherits="ProfessionsQualityMeterCapTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.Center" relativePoint="LEFT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Right" inherits="ProfessionsQualityMeterCapTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Center" relativePoint="RIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="FinishingReagentSlotContainer">
+				<Size x="260" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="Label" inherits="GameFontNormal" justifyH="CENTER">
+							<Size x="300" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" y="-15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -31,7 +31,7 @@ function MailFrame_OnLoad(self)
 	self:RegisterEvent("MAIL_SEND_INFO_UPDATE");
 	self:RegisterEvent("MAIL_SEND_SUCCESS");
 	self:RegisterEvent("MAIL_FAILED");
-	self:RegisterEvent("MAIL_SUCCESS");	
+	self:RegisterEvent("MAIL_SUCCESS");
 	self:RegisterEvent("CLOSE_INBOX_ITEM");
 	self:RegisterEvent("MAIL_LOCK_SEND_ITEMS");
 	self:RegisterEvent("MAIL_UNLOCK_SEND_ITEMS");
@@ -120,7 +120,7 @@ function MailFrame_OnMouseWheel(self, value)
 	else
 		if ( InboxNextPageButton:IsEnabled() ) then
 			InboxNextPage();
-		end	
+		end
 	end
 end
 
@@ -181,7 +181,7 @@ function InboxFrame_Update()
 	local index = ((InboxFrame.pageNum - 1) * INBOXITEMS_TO_DISPLAY) + 1;
 	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemLink;
 	local icon, button, expireTime, senderText, subjectText, buttonIcon;
-	
+
 	if ( totalItems > numItems ) then
 		if ( not InboxFrame.maxShownMails ) then
 			InboxFrame.maxShownMails = numItems;
@@ -191,12 +191,12 @@ function InboxFrame_Update()
 	else
 		InboxFrame.overflowMails = nil;
 	end
-	
+
 	for i=1, INBOXITEMS_TO_DISPLAY do
 		if ( index <= numItems ) then
 			-- Setup mail item
 			packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, x, y, z, isGM, firstItemQuantity, firstItemLink = GetInboxHeaderInfo(index);
-			
+
 			-- Set icon
 			if ( packageIcon ) and ( not isGM ) then
 				icon = packageIcon;
@@ -204,7 +204,7 @@ function InboxFrame_Update()
 				icon = stationeryIcon;
 			end
 
-			
+
 			-- If no sender set it to "Unknown"
 			if ( not sender ) then
 				sender = UNKNOWN;
@@ -221,14 +221,14 @@ function InboxFrame_Update()
 				button.IconBorder:Hide();
 				button.IconOverlay:Hide();
 			end
-			
+
 			buttonIcon = _G["MailItem"..i.."ButtonIcon"];
 			buttonIcon:SetTexture(icon);
 			subjectText = _G["MailItem"..i.."Subject"];
 			subjectText:SetText(subject);
 			senderText = _G["MailItem"..i.."Sender"];
 			senderText:SetText(sender);
-			
+
 			-- If hasn't been read color the button yellow
 			if ( wasRead ) then
 				senderText:SetTextColor(0.75, 0.75, 0.75);
@@ -319,7 +319,7 @@ function InboxFrame_OnClick(self, index)
 		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 	else
 		InboxFrame.openMailID = 0;
-		HideUIPanel(OpenMailFrame);		
+		HideUIPanel(OpenMailFrame);
 	end
 	InboxFrame_Update();
 end
@@ -369,14 +369,14 @@ end
 function InboxNextPage()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	InboxFrame.pageNum = InboxFrame.pageNum + 1;
-	InboxGetMoreMail();	
+	InboxGetMoreMail();
 	InboxFrame_Update();
 end
 
 function InboxPrevPage()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	InboxFrame.pageNum = InboxFrame.pageNum - 1;
-	InboxGetMoreMail();	
+	InboxGetMoreMail();
 	InboxFrame_Update();
 end
 
@@ -391,7 +391,7 @@ end
 
 function OpenMailFrame_OnHide()
 	StaticPopup_Hide("DELETE_MAIL");
-	if ( not InboxFrame.openMailID ) then
+	if ( not OpenMailFrame_IsValidMailID() ) then
 		InboxFrame_Update();
 		PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 		return;
@@ -406,7 +406,7 @@ function OpenMailFrame_OnHide()
 			isAuctionTempInvoice = true;
 		end
 	end
-	
+
 	-- If mail contains no items, then delete it on close
 	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, wasReturned, textCreated  = GetInboxHeaderInfo(InboxFrame.openMailID);
 	if ( money == 0 and not itemCount and textCreated and not isAuctionTempInvoice ) then
@@ -415,6 +415,10 @@ function OpenMailFrame_OnHide()
 	InboxFrame.openMailID = 0;
 	InboxFrame_Update();
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
+end
+
+function OpenMailFrame_IsValidMailID()
+	return InboxFrame.openMailID and InboxFrame.openMailID > 0;
 end
 
 function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stationeryIcon, money)
@@ -499,7 +503,7 @@ function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stat
 end
 
 function OpenMail_Update()
-	if ( not InboxFrame.openMailID ) then
+	if ( not OpenMailFrame_IsValidMailID()) then
 		return;
 	end
 	if ( CanComplainInboxItem(InboxFrame.openMailID) ) then
@@ -553,7 +557,7 @@ function OpenMail_Update()
 				OpenMailInvoicePurchaser:SetText(SOLD_BY_COLON.." "..playerName);
 				OpenMailInvoiceAmountReceived:SetText(AMOUNT_PAID_COLON);
 				-- Update purchase price
-				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid);	
+				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid);
 				-- Position buy line
 				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoicePurchaser", "BOTTOMLEFT", 125, 0);
 				-- Not used for a purchase invoice
@@ -593,12 +597,12 @@ function OpenMail_Update()
 				OpenMailSalePriceMoneyFrame:Show();
 				OpenMailInvoiceNotYetSent:Hide();
 				OpenMailInvoiceMoneyDelay:Hide();
-			elseif (invoiceType == "seller_temp_invoice") then 
+			elseif (invoiceType == "seller_temp_invoice") then
 				OpenMailInvoiceItemLabel:SetText(ITEM_SOLD_COLON.." "..itemName);
 				OpenMailInvoicePurchaser:SetText(PURCHASED_BY_COLON.." "..playerName);
 				OpenMailInvoiceAmountReceived:SetText(AUCTION_INVOICE_PENDING_FUNDS_COLON);
 				-- Update purchase price
-				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid+deposit-consignment);	
+				MoneyFrame_Update("OpenMailTransactionAmountMoneyFrame", bid+deposit-consignment);
 				-- Position buy line
 				OpenMailArithmeticLine:SetPoint("TOP", "OpenMailInvoicePurchaser", "BOTTOMLEFT", 125, 0);
 				-- How long they have to wait to get the money
@@ -892,7 +896,7 @@ function SendMailFrame_Update()
 			sendMailAttachmentButton:SetNormalTexture(itemTexture or "Interface\\Icons\\INV_Misc_QuestionMark");
 			SetItemButtonCount(sendMailAttachmentButton, stackCount or 0);
 			SetItemButtonQuality(sendMailAttachmentButton, quality, itemID);
-		
+
 			-- determine what a name for the message in case it doesn't already have one
 			if not itemTitle and itemName then
 				if stackCount <= 1 then
@@ -907,7 +911,7 @@ function SendMailFrame_Update()
 			end
 			last = i;
 		else
-			sendMailAttachmentButton:SetNormalTexture(nil);
+			sendMailAttachmentButton:ClearNormalTexture();
 			SetItemButtonCount(sendMailAttachmentButton, 0);
 			SetItemButtonQuality(sendMailAttachmentButton, nil);
 		end
@@ -926,7 +930,7 @@ function SendMailFrame_Update()
 	else
 		-- If no itemname see if the subject is the name of the previously held item, if so clear the subject
 		if ( SendMailSubjectEditBox:GetText() == SendMailFrame.previousItem ) then
-			SendMailSubjectEditBox:SetText("");	
+			SendMailSubjectEditBox:SetText("");
 		end
 		SendMailFrame.previousItem = "";
 
@@ -935,8 +939,8 @@ function SendMailFrame_Update()
 		SendMailCODButtonText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
 	-- Update the cost
-	MoneyFrame_Update("SendMailCostMoneyFrame", GetSendMailPrice());	
-	
+	MoneyFrame_Update("SendMailCostMoneyFrame", GetSendMailPrice());
+
 	-- Color the postage text
 	if ( GetSendMailPrice() > GetMoney() ) then
 		SetMoneyFrameColor("SendMailCostMoneyFrame", "red");
@@ -991,14 +995,14 @@ function SendMailFrame_Update()
 	SendStationeryBackgroundRight:SetTexCoord(0, 1.0, 0, min(scrollHeight, 256) / 256);
 	SendStationeryBackgroundLeft:SetTexture("Interface/Stationery/stationerytest1");
 	SendStationeryBackgroundRight:SetTexture("Interface/Stationery/stationerytest2");
-	
+
 	-- Set Items
 	for i=1, ATTACHMENTS_MAX_SEND do
 		if (cursory >= 0) then
 			SendMailFrame.SendMailAttachments[i]:Enable();
 			SendMailFrame.SendMailAttachments[i]:Show();
 			SendMailFrame.SendMailAttachments[i]:SetPoint("TOPLEFT", "SendMailFrame", "BOTTOMLEFT", indentx + (tabx * cursorx), indenty + (taby * cursory));
-			
+
 			cursorx = cursorx + 1;
 			if (cursorx >= ATTACHMENTS_PER_ROW_SEND) then
 				cursory = cursory - 1;
@@ -1045,14 +1049,14 @@ function SendMailFrame_CanSend()
 			if ( ENABLE_COLORBLIND_MODE ~= "1" ) then
 				SendMailErrorCoin:Show();
 			end
-			SendMailErrorText:Show();			
+			SendMailErrorText:Show();
 		else
 			SendMailErrorText:Hide();
 			SendMailErrorCoin:Hide();
 			checks = checks + 1;
 		end
 	end
-	
+
 	if ( checks == checksRequired ) then
 		SendMailMailButton:Enable();
 	else
@@ -1157,17 +1161,17 @@ function OpenAllMailMixin:AdvanceToNextItem()
 			end
 		end
 	end
-	
+
 	if ( not foundAttachment ) then
 		self.mailIndex = self.mailIndex + 1;
 		self.attachmentIndex = ATTACHMENTS_MAX;
 		if ( self.mailIndex > GetInboxNumItems() ) then
 			return false;
 		end
-		
+
 		return self:AdvanceToNextItem();
 	end
-	
+
 	return true;
 end
 
@@ -1176,7 +1180,7 @@ function OpenAllMailMixin:AdvanceAndProcessNextItem()
 		self:StopOpening();
 		return;
 	end
-	
+
 	if ( self:AdvanceToNextItem() ) then
 		self:ProcessNextItem();
 	else
@@ -1190,7 +1194,7 @@ function OpenAllMailMixin:ProcessNextItem()
 		self:AdvanceAndProcessNextItem();
 		return;
 	end
-	
+
 	if ( money > 0 ) then
 		TakeInboxMoney(self.mailIndex);
 		self.timeUntilNextRetrieval = OPEN_ALL_MAIL_MIN_DELAY;
@@ -1223,7 +1227,7 @@ end
 function OpenAllMailMixin:OnUpdate(dt)
 	if ( self.timeUntilNextRetrieval ) then
 		self.timeUntilNextRetrieval = self.timeUntilNextRetrieval - dt;
-		
+
 		if ( self.timeUntilNextRetrieval <= 0 ) then
 			if ( not C_Mail.IsCommandPending() ) then
 				self.timeUntilNextRetrieval = nil;
@@ -1248,7 +1252,7 @@ function OpenAllMailMixin:AddBlacklistedItem(itemID)
 	if ( not self.blacklistedItemIDs ) then
 		self.blacklistedItemIDs = {};
 	end
-	
+
 	self.blacklistedItemIDs[itemID] = true;
 end
 

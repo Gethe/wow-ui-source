@@ -77,30 +77,30 @@
 							<Anchor point="TOPRIGHT" x="-25" y="-3"/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
+
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Size y="256"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollCategories" relativePoint="BOTTOMLEFT"/>
-							<Anchor point="TOPRIGHT" x="-22"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.ScrollCategories" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
-						<Frames>
-							<Slider inherits="HybridScrollBarTemplate" parentKey="ScrollBar">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="36"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" y="14"/>
-								</Anchors>
-							</Slider>
-						</Frames>
-            <Layers>
-              <Layer>
-                <Texture parentKey="Background" atlas="pvpscoreboard-background-color" alphaMode="ADD" setAllPoints="true"/>
-              </Layer>
-            </Layers>
-					</ScrollFrame>
+						<Layers>
+							<Layer>
+								<Texture parentKey="Background" atlas="pvpscoreboard-background-color" alphaMode="ADD" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-22" y="-3"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="41"/>
+						</Anchors>
+					</EventFrame>
+					
 					<Frame parentKey="TabContainer">
 						<Size y="45"/>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.ScrollFrame" relativePoint="BOTTOM"/>
+							<Anchor point="TOP" relativeKey="$parent.ScrollBox" relativePoint="BOTTOM"/>
 							<Anchor point="LEFT" relativePoint="BOTTOMLEFT"/>
 							<Anchor point="TOPRIGHT"/>
 						</Anchors>

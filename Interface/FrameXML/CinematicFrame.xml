@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="CinematicFrame.lua"/>
 	<Button name="CinematicDialogButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="119" y="21"/>
-		</Size>
+		<Size x="119" y="21"/>
 		<NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
 			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
 		</NormalTexture>
@@ -25,9 +23,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="UpperBlackBar" name="UpperBlackBar">
-					<Size>
-						<AbsDimension x="0" y="128"/>
-					</Size>
+					<Size x="0" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="TOPRIGHT"/>
@@ -35,9 +31,7 @@
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
 				<Texture parentKey="LowerBlackBar" name="LowerBlackBar">
-					<Size>
-						<AbsDimension x="0" y="128"/>
-					</Size>
+					<Size x="0" y="128"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT"/>
@@ -71,15 +65,9 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" inherits="GameFontHighlight" text="CONFIRM_CLOSE_CINEMATIC">
-							<Size>
-								<AbsDimension x="290" y="0"/>
-							</Size>
+							<Size x="290" y="0"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="0" y="-16"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" x="0" y="-16"/>
 							</Anchors>
 						</FontString>
 					</Layer>

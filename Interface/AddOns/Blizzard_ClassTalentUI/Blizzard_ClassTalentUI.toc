@@ -1,0 +1,13 @@
+## Title: Blizzard Class Talent UI
+## LoadOnDemand: 1
+## Dependencies: Blizzard_SharedTalentUI
+## SavedVariablesPerCharacter: g_classTalentConfigIDBySpec
+
+Blizzard_ClassTalentUtil.lua
+Blizzard_ClassTalentSpecTab.xml
+Blizzard_ClassTalentTalentsTab.xml
+Blizzard_PvPTalentListTemplates.xml
+Blizzard_PvPTalentSlotTemplates.xml
+Blizzard_WarmodeButtonTemplate.xml
+Blizzard_ClassTalentFrameTemplate.xml
+Blizzard_ClassTalentFrame.xml

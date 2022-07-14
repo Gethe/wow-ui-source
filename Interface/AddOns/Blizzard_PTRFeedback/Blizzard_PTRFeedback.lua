@@ -18,11 +18,11 @@ PTR_IssueReporter.Data = {
     RegisteredSlashSurveys = {},
     DefaultKeybind = "F6",
     SuppressedLocations = {},
-    BugReportString = "I have encountered a bug.",
+    BugReportString = "I have encountered a bug in this zone.",
     ButtonDataPackage = {},
-    bossBugButtonText = "Bug & Feedback - %s",
+    bossBugButtonText = "Issue - %s",
     CurrentBugButtonContext = "",
-    DefaultBugButtonContext = "Bug",
+    DefaultBugButtonContext = "Zone Bug",
     Height = 50,
     FrameComponents = {},
     UnusedFrameComponents = {},
@@ -139,7 +139,7 @@ function PTR_IssueReporter.GetKeybind()
     local i = 1
     while i <= GetNumBindings() do
         local bindingName, bindingGroup, bindingKey = GetBinding(i)
-        if bindingName == "Open Bug Report" and bindingGroup == "PTR" then
+        if bindingName == "Open Issue Report" and bindingGroup == "PTR" then
             return bindingKey or ""
         end
         i = i + 1
@@ -159,7 +159,7 @@ function PTR_IssueReporter.SetDefaultKeybindIfUnusedAndNotSet()
     end
     
     if not (bindingAlreadyUsed) and (PTR_IssueReporter.GetKeybind() == "") then
-        SetBinding(PTR_IssueReporter.Data.DefaultKeybind, "Open Bug Report")
+        SetBinding(PTR_IssueReporter.Data.DefaultKeybind, "Open Issue Report")
     end
 end
 ----------------------------------------------------------------------------------------------------
@@ -255,6 +255,21 @@ function PTR_IssueReporter.AddDataCollectorToReport(survey, collectorType, ...)
                     displayVertically = displayVertically,
                 }
                 table.insert(survey.Collectors, newDataCollector)
+            end
+        
+        elseif (collectorType == types.SelectOne_MessageKeyUpdater) then
+            local choices, displayVertically = ...
+            if (choices) and ((type(choices) == "table")) then                
+                if (displayVertically == null) then
+                    displayVertically = false
+                end
+                
+                local newDataCollector = {
+                    collectorType = collectorType,
+                    choices = choices,
+                    displayVertically = displayVertically,
+                }
+                table.insert(survey.Collectors, newDataCollector)
             end           
             
         elseif collectorType == types.OpenEndedQuestion then
@@ -309,8 +324,16 @@ function PTR_IssueReporter.AddDataCollectorToReport(survey, collectorType, ...)
     end
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.GetFeedbackMessageKey()
+    return PTR_IssueReporter.Data.Feedback_Message_Key
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.GetMessageKey()
-    return PTR_IssueReporter.Data.Message_Key
+    return PTR_IssueReporter.Data.Current_Message_Key
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.ResetKey()
+    PTR_IssueReporter.Data.Current_Message_Key = PTR_IssueReporter.Data.Message_Key 
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.RegisterEventToReport(tableToUse, survey, popEventType, eventArgument)    
@@ -524,8 +547,10 @@ function PTR_IssueReporter.BuildSurveyFrameFromSurveyData(surveyFrame, survey, d
         local skipExpandingString = false
         if (collector.collectorType == types.RunFunction) then
             if (collector.collectorFunction) and (type(collector.collectorFunction) == "function") then
-                newString = collector.collectorFunction(dataPackage)
+                newString = "%s"
+                PTR_IssueReporter.AttachEmptyFunctionComponent(surveyFrame, collector.collectorFunction)
             end
+            
         elseif (collector.collectorType == types.FromDataPackage) then
             local data = tostring(dataPackage[collector.dataPackageKey])
             if (data) then
@@ -537,12 +562,17 @@ function PTR_IssueReporter.BuildSurveyFrameFromSurveyData(surveyFrame, survey, d
         elseif (collector.collectorType == types.SelectOne_MultipleChoiceQuestion) or (collector.collectorType == types.SelectMultiple_MultipleChoiceQuestion) then
             PTR_IssueReporter.AttachMultipleChoiceQuestion(surveyFrame, collector.question, collector.choices, (collector.collectorType == types.SelectMultiple_MultipleChoiceQuestion), collector.displayVertically)
             newString = "%s"
+        elseif (collector.collectorType == types.SelectOne_MessageKeyUpdater) then
+            PTR_IssueReporter.AttachMultipleChoiceNoQuestion(surveyFrame, collector.choices, (collector.collectorType == types.SelectMultiple_MultipleChoiceQuestion), collector.displayVertically)
+            skipExpandingString = true
         elseif (collector.collectorType == types.SurveyID) then
             newString = survey.ID
         elseif (collector.collectorType == types.TextBlock) then
             PTR_IssueReporter.AttachTextBlock(surveyFrame, collector.text)
             skipExpandingString = true
         end
+        
+        collector.skipExpandingString = skipExpandingString
         
         if not (skipExpandingString) then
             if collectedString == "" then
@@ -562,7 +592,7 @@ function PTR_IssueReporter.PopFrameAttachedSurvey(framePopData, dataPackage)
     local RegisterAttachedFrameEndEvent = function(endEvent)
         if (PTR_IssueReporter.ReportEventTypes[endEvent]) then
             PTR_IssueReporter.RegisterFunctionToEvent(endEvent, function()
-                PTR_IssueReporter.Data.FrameAttachedSurveyFrames[framePopData.frame]:SubmitBugReport()
+                PTR_IssueReporter.Data.FrameAttachedSurveyFrames[framePopData.frame]:SubmitIssueReport()
             end)
         end
     end

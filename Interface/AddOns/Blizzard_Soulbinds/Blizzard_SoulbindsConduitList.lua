@@ -504,7 +504,7 @@ function ConduitListMixin:OnLoad()
 			return (#elementData.conduitDatas * buttonHeight) + expandedExtent;
 		end
 	end);
-	view:SetElementInitializer("EventFrame", "ConduitListSectionTemplate", function(list, elementData)
+	view:SetElementInitializer("ConduitListSectionTemplate", function(list, elementData)
 		list:Init(elementData);
 	end);
 

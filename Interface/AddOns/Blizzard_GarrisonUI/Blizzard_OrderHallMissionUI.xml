@@ -2,10 +2,6 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_OrderHallMissionUI.lua"/>
 
-	<Button name="OrderHallMissionListButtonTemplate" inherits="GarrisonMissionListButtonTemplate" virtual="true">
-		<Size x="832" y="75"/>
-	</Button>
-
 	<Frame name="OrderHallMissionPageEnemyTemplate" inherits="GarrisonMissionPageEnemyTemplate" mixin="OrderHallMissionPageEnemyMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="MechanicEffect">

@@ -1,4 +1,4 @@
-
+local FOLLOWER_BUTTON_HEIGHT = 80;
 ---------------------------------------------------------------------------------
 --- Garrison Follower Options				                                  ---
 ---------------------------------------------------------------------------------
@@ -1741,7 +1741,8 @@ GarrisonShipyardFollowerList = {};
 function GarrisonShipyardFollowerList:Initialize(followerType, followerTab)
 	self.followerTab = followerTab or self:GetParent().FollowerTab;
 	self.followerTab.followerList = self;
-	self:Setup(self:GetParent(), followerType, "GarrisonShipFollowerButtonTemplate", 12);
+	local initialOffsetX = 12;
+	self:Setup(self:GetParent(), followerType, "GarrisonShipFollowerButtonTemplate", initialOffsetX, GarrisonShipyardFollowerList_InitButton, FOLLOWER_BUTTON_HEIGHT);
 end
 
 function GarrisonShipyardFollowerList:OnEvent(event, ...)
@@ -1952,92 +1953,88 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 	self.lastUpdate = self:IsShown() and GetTime() or nil;
 end
 
-function GarrisonShipyardFollowerList:UpdateData()
-	local mainFrame = self:GetParent();
-	local followers = self.followers;
-	local followersList = self.followersList;
-	local numFollowers = #followersList;
-	local scrollFrame = self.listScroll;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numButtons = #buttons;
-
-	self.NoShipsLabel:SetShown(numFollowers == 0);
-
-	for i = 1, numButtons do
-		local button = buttons[i];
-		local index = offset + i; -- adjust index
-		if ( index <= numFollowers) then
-			local follower = followers[followersList[index]];
-			button.isCollected = true;
-			button.id = follower.followerID;
-			button.info = follower;
-			button.Portrait:SetAtlas(follower.textureKit .. "-List", true);
-			button.BoatName:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, follower.name));
-			button.BoatType:SetText(follower.className);
-			button.Status:SetText(follower.status);
-			button.Selection:SetShown(button.id == mainFrame.selectedFollower);
-
-			if (follower.quality == Enum.ItemQuality.Epic) then
-				button.Quality:SetAtlas("ShipMission_BoatRarity-Epic", true);
-			elseif (follower.quality == Enum.ItemQuality.Rare) then
-				button.Quality:SetAtlas("ShipMission_BoatRarity-Rare", true);
-			else
-				button.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
-			end
-
-			if (follower.status) then
-				button.BusyFrame:Show();
-				button.BusyFrame.Texture:SetColorTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
-			else
-				button.BusyFrame:Hide();
-			end
-
-			local color = FOLLOWER_QUALITY_COLORS[follower.quality];
-			button.BoatName:SetTextColor(color.r, color.g, color.b);
-			if (follower.xp == 0 or follower.levelXP == 0) then
-				button.XPBar:Hide();
-			else
-				button.XPBar:Show();
-				button.XPBar:SetWidth((follower.xp/follower.levelXP) * 228);
-			end
-
-			if (self.canExpand and button.id == self.expandedFollower and button.id == mainFrame.selectedFollower) then
-				self:ExpandButton(button, self);
-			else
-				self:CollapseButton(button);
-			end
-
-			GarrisonFollowerButton_UpdateCounters(mainFrame, button, follower, self.showCounters, mainFrame.lastUpdate);
-
-			button:Show();
-		else
-			button:Hide();
-		end
-	end
-
-	local extraHeight = 0;
-	if ( self.expandedFollower ) then
-		extraHeight = self.expandedFollowerHeight - scrollFrame.buttonHeight;
+function GarrisonShipyardFollowerList_InitButton(button, elementData)
+	local follower = elementData.follower;
+	button.isCollected = true;
+	button.id = follower.followerID;
+	button.info = follower;
+	button.Portrait:SetAtlas(follower.textureKit .. "-List", true);
+	button.BoatName:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, follower.name));
+	button.BoatType:SetText(follower.className);
+	button.Status:SetText(follower.status);
+	button.Selection:SetShown(GarrisonShipyardFrame.selectedFollower == button.id);
+	
+	if (follower.quality == Enum.ItemQuality.Epic) then
+		button.Quality:SetAtlas("ShipMission_BoatRarity-Epic", true);
+	elseif (follower.quality == Enum.ItemQuality.Rare) then
+		button.Quality:SetAtlas("ShipMission_BoatRarity-Rare", true);
 	else
-		extraHeight = 0;
+		button.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
 	end
-	local totalHeight = numFollowers * scrollFrame.buttonHeight + extraHeight;
-	local displayedHeight = numButtons * scrollFrame.buttonHeight;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
+	
+	if (follower.status) then
+		button.BusyFrame:Show();
+		button.BusyFrame.Texture:SetColorTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
+	else
+		button.BusyFrame:Hide();
+	end
+	
+	local color = FOLLOWER_QUALITY_COLORS[follower.quality];
+	button.BoatName:SetTextColor(color.r, color.g, color.b);
+	if (follower.xp == 0 or follower.levelXP == 0) then
+		button.XPBar:Hide();
+	else
+		button.XPBar:Show();
+		button.XPBar:SetWidth((follower.xp/follower.levelXP) * 228);
+	end
+	
+	if elementData.expanded then
+		elementData.followerList:ExpandButton(button, self);
+	else
+		elementData.followerList:CollapseButton(button);
+	end
+
+	GarrisonFollowerButton_UpdateCounters(GarrisonShipyardFrame, button, follower, GarrisonShipyardFrame.FollowerList.showCounters, GarrisonShipyardFrame.lastUpdate);
+end
+
+function GarrisonShipyardFollowerList:UpdateData()
+	self.ScrollBox:ForEachFrame(function(frame)
+		GarrisonShipyardFollowerList_InitButton(frame, frame:GetElementData());
+	end);
+
+	self.NoShipsLabel:SetShown(self.ScrollBox:GetDataProviderSize() == 0);
 
 	self.lastUpdate = GetTime();
 end
 
 function GarrisonShipyardFollowerList:ExpandButton(button, followerListFrame)
-	local abHeight = self:ExpandButtonAbilities(button, true);
-	button:SetHeight(75 + abHeight);
-	followerListFrame.expandedFollowerHeight = 75 + abHeight + 6;
+	local abilityHeight = self:ExpandButtonAbilities(button, true);
+	button:SetHeight(FOLLOWER_BUTTON_HEIGHT + abilityHeight);
 end
 
 function GarrisonShipyardFollowerList:CollapseButton(button)
 	self:CollapseButtonAbilities(button);
-	button:SetHeight(80);
+	button:SetHeight(FOLLOWER_BUTTON_HEIGHT);
+end
+
+function GarrisonShipyard_CalculateExpandedButtonHeight(elementData)
+	local height = FOLLOWER_BUTTON_HEIGHT;
+	local abilityHeight = 0;
+	local follower = elementData.follower;
+
+	local abilities = C_Garrison.GetFollowerAbilities(follower.followerID);
+	local abilityExtent = 20 + 3; -- ability height + padding
+	for index, ability in ipairs(abilities) do
+		if ability.icon then
+			abilityHeight = abilityHeight + abilityExtent;
+		end
+	end
+	
+	if abilityHeight > 0 then
+		local backgroundPadding = 8;
+		abilityHeight = abilityHeight + backgroundPadding;
+	end
+	return height + abilityHeight;
 end
 
 ---------------------------------------------------------------------------------
@@ -2045,25 +2042,26 @@ end
 ---------------------------------------------------------------------------------
 
 function GarrisonShipFollowerListButton_OnClick(self, button)
-	local mainFrame = self:GetParent():GetParent().followerFrame;
-	local followerList = self:GetParent():GetParent():GetParent();
+	local followerList = GarrisonShipyardFrame.FollowerList;
+
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_SELECT_FOLLOWER);
 
 	if (button == "LeftButton") then
-		mainFrame.selectedFollower = self.id;
-
-		if (followerList.canExpand) then
-			if (followerList.expandedFollower == self.id) then
-				followerList.expandedFollower = nil;
-				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_CLOSE);
-			else
-				followerList.expandedFollower = self.id;
-				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_OPEN);
-			end
-		elseif (followerList.expandedFollower ~= self.id ) then
-			followerList.expandedFollower = nil;
+		GarrisonShipyardFrame.selectedFollower = self.id;
+		
+		local nowExpanded = GarrisonFollowerList_ToggleExpansion(self:GetElementData(), followerList.ScrollBox);
+		if nowExpanded then
+			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_OPEN);
+		else
+			PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_CLOSE);
 		end
 
+		-- Reinitialize the frames and update the ScrollBox
+		followerList.ScrollBox:ForEachFrame(function(button)
+			GarrisonShipyardFollowerList_InitButton(button, button:GetElementData());
+		end);
+		followerList.ScrollBox:FullUpdate(ScrollBoxConstants.UpdateQueued);
+		
 		followerList:UpdateData();
 		followerList:ShowFollower(self.id);
 	elseif (button == "RightButton" and not followerList.isLandingPage) then

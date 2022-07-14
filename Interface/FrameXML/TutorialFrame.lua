@@ -1048,7 +1048,7 @@ function HelpPlate_Button_AnimGroup_Show_OnFinished(self)
 end
 
 function HelpPlate_Button_OnShow(self)
-	local point, relative, relPoint, xOff, yOff = self:GetPoint();
+	local point, relative, relPoint, xOff, yOff = self:GetPoint(1);
 	self.animGroup_Show.translate:SetOffset( (-1*xOff), (-1*yOff) );
 	self.animGroup_Show.translate:SetDuration(0.5);
 	self.animGroup_Show.alpha:SetDuration(0.5);

@@ -2,7 +2,7 @@ UIWidgetPowerBarContainerMixin = {}
 
 local function WidgetsLayout(widgetContainer, sortedWidgets)
 	DefaultWidgetLayout(widgetContainer, sortedWidgets);
-	UIParent_ManageFramePositions();
+	UIParent_ManageFramePositions(); 
 end
 
 function UIWidgetPowerBarContainerMixin:OnLoad()

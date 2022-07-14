@@ -6,8 +6,8 @@
 ## SavedVariablesPerCharacter: g_activeBidAuctionIDs
 Blizzard_AuctionHouseUtil.lua
 Blizzard_AuctionData.lua
-Blizzard_AuctionHouseTableBuilder.xml
 Blizzard_AuctionHouseSharedTemplates.xml
+Blizzard_AuctionHouseTableBuilder.xml
 Blizzard_AuctionHouseTab.xml
 Blizzard_AuctionHouseItemList.xml
 Blizzard_AuctionHouseCategoriesList.xml

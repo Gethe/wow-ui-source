@@ -58,7 +58,7 @@ function SetItemButtonTexture(button, texture)
 	if ( not button ) then
 		return;
 	end
-	
+
 	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 	if ( texture ) then
 		icon:Show();
@@ -73,7 +73,7 @@ function SetItemButtonTextureVertexColor(button, r, g, b)
 	if ( not button ) then
 		return;
 	end
-	
+
 	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 	icon:SetVertexColor(r, g, b);
 end
@@ -86,7 +86,7 @@ function SetItemButtonDesaturated(button, desaturated)
 	if ( not icon ) then
 		return;
 	end
-	
+
 	icon:SetDesaturated(desaturated);
 end
 
@@ -94,15 +94,15 @@ function SetItemButtonNormalTextureVertexColor(button, r, g, b)
 	if ( not button ) then
 		return;
 	end
-	
-	_G[button:GetName().."NormalTexture"]:SetVertexColor(r, g, b);
+
+	button:GetNormalTexture():SetVertexColor(r, g, b);
 end
 
 function SetItemButtonNameFrameVertexColor(button, r, g, b)
 	if ( not button ) then
 		return;
 	end
-	
+
 	local nameFrame = button.NameFrame or _G[button:GetName().."NameFrame"];
 	nameFrame:SetVertexColor(r, g, b);
 end
@@ -111,11 +111,20 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 	if ( not button ) then
 		return;
 	end
-	
-	_G[button:GetName().."SlotTexture"]:SetVertexColor(r, g, b);
+
+	button.SlotTexture:SetVertexColor(r, g, b);
 end
 
 function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, isBound)
+	button.IconOverlay:Hide();
+	if button.IconOverlay2 then
+		button.IconOverlay2:Hide();
+	end
+
+	if button.ProfessionQualityOverlay then
+		button.ProfessionQualityOverlay:Hide();
+	end
+
 	if button.useCircularIconBorder then
 		button.IconBorder:Show();
 
@@ -140,13 +149,8 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, i
 		else
 			button.IconBorder:Hide();
 		end
-		
-		return;
-	end
 
-	button.IconOverlay:Hide();
-	if button.IconOverlay2 then
-		button.IconOverlay2:Hide();
+		return;
 	end
 
 	if itemIDOrLink then
@@ -155,7 +159,7 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, i
 		else
 			button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		end
-		
+
 		if not suppressOverlays then
 			SetItemButtonOverlay(button, itemIDOrLink, quality, isBound);
 		end
@@ -179,6 +183,10 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 	button.IconOverlay:SetVertexColor(1,1,1);
 	if button.IconOverlay2 then
 		button.IconOverlay2:Hide();
+	end
+
+	if button.ProfessionQualityOverlay then
+		button.ProfessionQualityOverlay:Hide();
 	end
 
 	if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
@@ -206,6 +214,23 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 		end
 	else
 		button.IconOverlay:Hide();
+
+		-- The reagent slots contain this button/mixin, however there's a nuance in the button behavior that the overlay needs to be
+		-- hidden if more than 1 quality of reagent is assigned to the slot. Those slots have a separate overlay that is
+		-- managed independently of this, though it still uses the rest of this button's behaviors.
+		if not button.noQualityOverlay then
+			local quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemIDOrLink);
+			if quality then
+				if not button.ProfessionQualityOverlay then
+					button.ProfessionQualityOverlay = button:CreateTexture(nil, "OVERLAY");
+					button.ProfessionQualityOverlay:SetPoint("TOPLEFT", 0, -2);
+				end
+
+				local atlas = ("Professions-Icon-Quality-Tier%d-Small"):format(quality);
+				button.ProfessionQualityOverlay:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+				button.ProfessionQualityOverlay:Show();
+			end
+		end
 	end
 end
 
@@ -213,7 +238,7 @@ function SetItemButtonReagentCount(button, reagentCount, playerReagentCount)
 	local playerReagentCountAbbreviated = AbbreviateNumbers(playerReagentCount);
 	button.Count:SetFormattedText(TRADESKILL_REAGENT_COUNT, playerReagentCountAbbreviated, reagentCount);
 	--fix text overflow when the button count is too high
-	if math.floor(button.Count:GetStringWidth()) > math.floor(button.Icon:GetWidth() + .5) then 
+	if math.floor(button.Count:GetStringWidth()) > math.floor(button.Icon:GetWidth() + .5) then
 		--round count width down because the leftmost number can overflow slightly without looking bad
 		--round icon width because it should always be an int, but sometimes it's a slightly off float
 		button.Count:SetFormattedText("%s\n/%s", playerReagentCountAbbreviated, reagentCount);
@@ -259,7 +284,7 @@ end
 
 function ItemButtonMixin:PostOnShow()
 	self:UpdateItemContextMatching();
-	
+
 	local hasFunctionSet = self.GetItemContextMatchResult ~= nil;
 	if hasFunctionSet then
 		ItemButtonUtil.RegisterCallback(ItemButtonUtil.Event.ItemContextChanged, self.OnItemContextChanged, self);
@@ -300,7 +325,7 @@ function ItemButtonMixin:UpdateItemContextMatching()
 	else
 		self.itemContextMatchResult = ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 	end
-	
+
 	self:UpdateItemContextOverlay(self);
 end
 
@@ -334,6 +359,8 @@ function ItemButtonMixin:Reset()
 
 	self.itemLink = nil;
 	self:SetItemSource(nil);
+
+	self.noQualityOverlay = false;
 end
 
 function ItemButtonMixin:SetItemSource(itemLocation)
@@ -433,4 +460,23 @@ function ItemButtonMixin:SetAlpha(alpha)
 	self.IconOverlay:SetAlpha(alpha);
 	self.Stock:SetAlpha(alpha);
 	self.Count:SetAlpha(alpha);
+end
+
+function ItemButtonMixin:SetBagID(bagID)
+	self.bagID = bagID;
+end
+
+function ItemButtonMixin:GetBagID()
+	return self.bagID;
+end
+
+function ItemButtonMixin:OnUpdateItemContextMatching(bagID)
+	if self:GetBagID() == bagID then
+		self:UpdateItemContextMatching();
+	end
+end
+
+function ItemButtonMixin:RegisterBagButtonUpdateItemContextMatching()
+	assert(self:GetBagID() ~= nil);
+	EventRegistry:RegisterCallback("ItemButton.UpdateItemContextMatching", self.OnUpdateItemContextMatching, self);
 end

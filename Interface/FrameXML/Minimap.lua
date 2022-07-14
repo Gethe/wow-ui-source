@@ -20,17 +20,62 @@ GARRISON_ALERT_CONTEXT_MISSION = {
 };
 GARRISON_ALERT_CONTEXT_INVASION = 3;
 
-LFG_EYE_TEXTURES = { };
-LFG_EYE_TEXTURES["default"] = { file = "Interface\\LFGFrame\\LFG-Eye", width = 512, height = 256, frames = 29, iconSize = 64, delay = 0.1 };
-LFG_EYE_TEXTURES["raid"] = { file = "Interface\\LFGFrame\\LFR-Anim", width = 256, height = 256, frames = 16, iconSize = 64, delay = 0.05 };
-LFG_EYE_TEXTURES["unknown"] = { file = "Interface\\LFGFrame\\WaitAnim", width = 128, height = 128, frames = 4, iconSize = 64, delay = 0.25 };
+MinimapZoneTextButtonMixin = { };
 
-function Minimap_OnLoad(self)
+function MinimapZoneTextButtonMixin:OnLoad()
+	self.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");
+	self:RegisterEvent("UPDATE_BINDINGS");
+end
+
+function MinimapZoneTextButtonMixin:OnEvent()
+	self.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");
+end
+
+function MinimapZoneTextButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	local pvpType, isSubZonePvP, factionName = GetZonePVPInfo();
+	Minimap_SetTooltip( pvpType, factionName );
+	GameTooltip:AddLine(self.tooltipText);
+	GameTooltip:Show();
+end
+
+function MinimapZoneTextButtonMixin:OnClick()
+	ToggleWorldMap();
+end
+
+function MinimapZoneTextButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+MinimapMixin = { };
+
+function MinimapMixin:OnLoad()
 	self.fadeOut = nil;
 	self:RegisterEvent("MINIMAP_PING");
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function MinimapMixin:OnClick()
+	local x, y = GetCursorPosition();
+	x = x / self:GetEffectiveScale();
+	y = y / self:GetEffectiveScale();
+
+	local cx, cy = self:GetCenter();
+	x = x - cx;
+	y = y - cy;
+	if ( sqrt(x * x + y * y) < (self:GetWidth() / 2) ) then
+		Minimap:PingLocation(x, y);
+	end
+end
+
+function MinimapMixin:OnMouseWheel(d)
+	if d > 0 then
+		Minimap_ZoomIn();
+	elseif d < 0 then
+		Minimap_ZoomOut();
+	end
 end
 
 function ToggleMinimap()
@@ -66,8 +111,8 @@ function Minimap_Update()
 end
 
 function Minimap_SetTooltip( pvpType, factionName )
-	if ( GameTooltip:IsOwned(MinimapZoneTextButton) ) then
-		GameTooltip:SetOwner(MinimapZoneTextButton, "ANCHOR_LEFT");
+	if ( GameTooltip:IsOwned(MinimapCluster.ZoneTextButton) ) then
+		GameTooltip:SetOwner(MinimapCluster.ZoneTextButton, "ANCHOR_LEFT");
 		local zoneName = GetZoneText();
 		local subzoneName = GetSubZoneText();
 		if ( subzoneName == zoneName ) then
@@ -103,20 +148,20 @@ function Minimap_SetTooltip( pvpType, factionName )
 	end
 end
 
-function Minimap_OnEvent(self, event, ...)
+function MinimapMixin:OnEvent(event, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
 		self:UpdateBlips();
 	elseif ( event == "MINIMAP_PING" ) then
 		local arg1, arg2, arg3 = ...;
 		Minimap_SetPing(arg2, arg3, 1);
 	elseif ( event == "MINIMAP_UPDATE_ZOOM" ) then
-		MinimapZoomIn:Enable();
-		MinimapZoomOut:Enable();
+		self.ZoomIn:Enable();
+		self.ZoomOut:Enable();
 		local zoom = Minimap:GetZoom();
 		if ( zoom == (Minimap:GetZoomLevels() - 1) ) then
-			MinimapZoomIn:Disable();
+			self.ZoomIn:Disable();
 		elseif ( zoom == 0 ) then
-			MinimapZoomOut:Disable();
+			self.ZoomOut:Disable();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		if C_Minimap.ShouldUseHybridMinimap() then
@@ -132,107 +177,138 @@ function Minimap_OnEvent(self, event, ...)
 	end
 end
 
+function MinimapMixin:OnEnter()
+	self.ZoomIn:Show();
+	self.ZoomOut:Show();
+end
+
+function MinimapMixin:OnLeave()
+	if not self.ZoomIn:IsMouseOver() and not self.ZoomOut:IsMouseOver() and not self.ZoomHitArea:IsMouseOver() then
+		self.ZoomIn:Hide();
+		self.ZoomOut:Hide();
+	end
+end
+
 function Minimap_SetPing(x, y, playSound)
 	if ( playSound ) then
 		PlaySound(SOUNDKIT.MAP_PING);
 	end
 end
 
-function Minimap_ZoomInClick()
-	MinimapZoomOut:Enable();
+MinimapZoomInButtonMixin = { };
+
+function MinimapZoomInButtonMixin:OnClick()
+	Minimap.ZoomOut:Enable();
 	PlaySound(SOUNDKIT.IG_MINIMAP_ZOOM_IN);
 	Minimap:SetZoom(Minimap:GetZoom() + 1);
 	if(Minimap:GetZoom() == (Minimap:GetZoomLevels() - 1)) then
-		MinimapZoomIn:Disable();
+		Minimap.ZoomIn:Disable();
 	end
 end
 
-function Minimap_ZoomOutClick()
-	MinimapZoomIn:Enable();
+function MinimapZoomInButtonMixin:OnEnter()
+	if ( GetCVar("UberTooltips") == "1" ) then
+		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+		GameTooltip:SetText(ZOOM_IN);
+	end
+end
+
+function MinimapZoomInButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+MinimapZoomOutButtonMixin = { };
+
+function MinimapZoomOutButtonMixin:OnClick()
+	Minimap.ZoomIn:Enable();
 	PlaySound(SOUNDKIT.IG_MINIMAP_ZOOM_OUT);
 	Minimap:SetZoom(Minimap:GetZoom() - 1);
 	if(Minimap:GetZoom() == 0) then
-		MinimapZoomOut:Disable();
+		Minimap.ZoomOut:Disable();
 	end
 end
 
-function Minimap_OnClick(self)
-	local x, y = GetCursorPosition();
-	x = x / self:GetEffectiveScale();
-	y = y / self:GetEffectiveScale();
-
-	local cx, cy = self:GetCenter();
-	x = x - cx;
-	y = y - cy;
-	if ( sqrt(x * x + y * y) < (self:GetWidth() / 2) ) then
-		Minimap:PingLocation(x, y);
+function MinimapZoomOutButtonMixin:OnEnter()
+	if ( GetCVar("UberTooltips") == "1" ) then
+		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+		GameTooltip:SetText(ZOOM_OUT);
 	end
+end
+
+function MinimapZoomOutButtonMixin:OnLeave()
+	GameTooltip_Hide();
 end
 
 function Minimap_ZoomIn()
-	MinimapZoomIn:Click();
+	Minimap.ZoomIn:Click();
 end
 
 function Minimap_ZoomOut()
-	MinimapZoomOut:Click();
+	Minimap.ZoomOut:Click();
 end
 
-function EyeTemplate_OnUpdate(self, elapsed)
-	local textureInfo = LFG_EYE_TEXTURES[self.queueType or "default"];
-	AnimateTexCoords(self.texture, textureInfo.width, textureInfo.height, textureInfo.iconSize, textureInfo.iconSize, textureInfo.frames, elapsed, textureInfo.delay)
+MinimapClusterMixin = { };
+
+function MinimapClusterMixin:OnLoad()
+	Minimap.timer = 0;
+	Minimap_Update();
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_INDOORS");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:RegisterEvent("SETTINGS_LOADED");
+	local raisedFrameLevel = self:GetFrameLevel() + 10;
+	MiniMapInstanceDifficulty:SetFrameLevel(raisedFrameLevel);
+	GuildInstanceDifficulty:SetFrameLevel(raisedFrameLevel);
+	MiniMapChallengeMode:SetFrameLevel(raisedFrameLevel);
 end
 
-function EyeTemplate_StartAnimating(eye)
-	eye:SetScript("OnUpdate", EyeTemplate_OnUpdate);
-end
-
-function EyeTemplate_StopAnimating(eye)
-	eye:SetScript("OnUpdate", nil);
-	if ( eye.texture.frame ) then
-		eye.texture.frame = 1;	--To start the animation over.
-	end
-	local textureInfo = LFG_EYE_TEXTURES[eye.queueType or "default"];
-	eye.texture:SetTexCoord(0, textureInfo.iconSize / textureInfo.width, 0, textureInfo.iconSize / textureInfo.height);
-end
-
-function MinimapButton_OnMouseDown(self, button)
-	if ( self.isDown ) then
-		return;
-	end
-	local button = _G[self:GetName().."Icon"];
-	local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint();
-	button:SetPoint(point, relativeTo, relativePoint, offsetX+1, offsetY-1);
-	self.isDown = 1;
-end
-function MinimapButton_OnMouseUp(self)
-	if ( not self.isDown ) then
-		return;
-	end
-	local button = _G[self:GetName().."Icon"];
-	local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint();
-	button:SetPoint(point, relativeTo, relativePoint, offsetX-1, offsetY+1);
-	self.isDown = nil;
-end
-
-function Minimap_UpdateRotationSetting()
-	if ( GetCVar("rotateMinimap") == "1" ) then
-		MinimapCompassTexture:Show();
-		MinimapNorthTag:Hide();
-	else
-		MinimapCompassTexture:Hide();
-		MinimapNorthTag:Show();
-	end
+function MinimapClusterMixin:OnEvent(event, ...)
+	Minimap_Update();
 end
 
 function ToggleMiniMapRotation()
-	local rotate = GetCVar("rotateMinimap");
-	if ( rotate == "1" ) then
-		rotate = "0";
-	else
-		rotate = "1";
+	local currentValue = Settings.GetValue("rotateMinimap");
+	Settings.SetValue("rotateMinimap", not currentValue);
+end
+
+MiniMapMailFrameMixin = { };
+
+function MiniMapMailFrameMixin:OnLoad()
+	self:RegisterEvent("UPDATE_PENDING_MAIL");
+	self:SetFrameLevel(self:GetFrameLevel()+1);
+	MiniMapMailFrame_UpdatePosition();
+end
+
+function MiniMapMailFrameMixin:OnEvent(event)
+	if ( event == "UPDATE_PENDING_MAIL" ) then
+		if ( HasNewMail() ) then
+			self:Show();
+			if( GameTooltip:IsOwned(self) ) then
+				MinimapMailFrameUpdate();
+			end
+		else
+			self:Hide();
+		end
 	end
-	SetCVar("rotateMinimap", rotate);
-	Minimap_UpdateRotationSetting();
+end
+
+function MiniMapMailFrameMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+	if( GameTooltip:IsOwned(self) ) then
+		MinimapMailFrameUpdate();
+	end
+end
+
+function MiniMapMailFrameMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function MiniMapMailFrame_UpdatePosition()
+	if MinimapCluster.Tracking:IsShown() then
+		MinimapCluster.MailFrame:SetPoint("TOPRIGHT", MinimapCluster.Tracking, "BOTTOMRIGHT", 2, -1);
+	else
+		MinimapCluster.MailFrame:SetPoint("TOPRIGHT", MinimapCluster.BorderTop, "TOPLEFT", -1, -1);
+	end
 end
 
 function MinimapMailFrameUpdate()
@@ -242,32 +318,51 @@ function MinimapMailFrameUpdate()
 	GameTooltip:Show();
 end
 
-function MiniMapTracking_Update()
-	UIDropDownMenu_RefreshAll(MiniMapTrackingDropDown);
+MiniMapTrackingButtonMixin = { };
+
+function MiniMapTrackingButtonMixin:OnLoad()
+	self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("CVAR_UPDATE");
+	self:Update();
 end
 
-function MiniMapTracking_OnMouseDown(self)
-	MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 8, -8);
-	MiniMapTrackingIconOverlay:Show();
-	MiniMapTrackingDropDown.point = "TOPRIGHT";
-	MiniMapTrackingDropDown.relativePoint = "BOTTOMLEFT";
-	ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 8, 5);
+function MiniMapTrackingButtonMixin:OnEvent(event, arg1)
+	if event == "MINIMAP_UPDATE_TRACKING" then
+		self:Update();
+	elseif event == "VARIABLES_LOADED" or (event == "CVAR_UPDATE" and arg1 == "minimapTrackingDropdown") then
+		self:Show(GetCVarBool("minimapTrackingDropdown"));
+	end
+end
+
+function MiniMapTrackingButtonMixin:Update()
+	if UIDROPDOWNMENU_OPEN_MENU == MinimapCluster.Tracking.DropDown then
+		UIDropDownMenu_RefreshAll(MinimapCluster.Tracking.DropDown);
+	end
+end
+
+function MiniMapTrackingButtonMixin:Show(shown)
+	MinimapCluster.Tracking:SetShown(shown);
+	if MinimapCluster.MailFrame then
+		MiniMapMailFrame_UpdatePosition();
+	end
+end
+
+function MiniMapTrackingButtonMixin:OnMouseDown()
+	MinimapCluster.Tracking.DropDown.point = "TOPRIGHT";
+	MinimapCluster.Tracking.DropDown.relativePoint = "BOTTOMLEFT";
+	ToggleDropDownMenu(1, nil, MinimapCluster.Tracking.DropDown, MinimapCluster.Tracking, 8, 5);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
-function MiniMapTracking_OnMouseUp(self)
-	MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6);
-	MiniMapTrackingIconOverlay:Hide();
-end
-
-function MiniMapTracking_OnEnter(self)
+function MiniMapTrackingButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:SetText(TRACKING, 1, 1, 1);
 	GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 
-function MiniMapTracking_OnLeave(self)
+function MiniMapTrackingButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
@@ -276,21 +371,25 @@ function MiniMapTrackingDropDown_OnLoad(self)
 	self.noResize = true;
 end
 
-function MiniMapTracking_SetTracking (self, id, unused, on)
-	SetTracking(id, on);
-	UIDropDownMenu_Refresh(MiniMapTrackingDropDown);
+function MiniMapTrackingDropDown_SetTracking(self, id, unused, on)
+	C_Minimap.SetTracking(id, on);
+
+	local colorCode = MiniMapTracking_FilterIsDefaultValue(id, on) and HIGHLIGHT_FONT_COLOR_CODE or RED_FONT_COLOR_CODE;
+	self:SetText(colorCode .. self.value);
+
+	UIDropDownMenu_Refresh(MinimapCluster.Tracking.DropDown);
 end
 
-function MiniMapTrackingDropDownButton_IsActive(button)
-	local name, texture, active, category = GetTrackingInfo(button.arg1);
+function MiniMapTrackingDropDown_IsActive(button)
+	local name, texture, active, category = C_Minimap.GetTrackingInfo(button.arg1);
 	return active;
 end
 
 function MiniMapTrackingDropDown_IsNoTrackingActive()
 	local name, texture, active, category;
-	local count = GetNumTrackingTypes();
+	local count = C_Minimap.GetNumTrackingTypes();
 	for id=1, count do
-		name, texture, active, category  = GetTrackingInfo(id);
+		name, texture, active, category  = C_Minimap.GetTrackingInfo(id);
 		if (active) then
 			return false;
 		end
@@ -298,9 +397,53 @@ function MiniMapTrackingDropDown_IsNoTrackingActive()
 	return true;
 end
 
+local REMOVED_FILTERS = {
+	[Enum.MinimapTrackingFilter.VenderFood] = true,
+	[Enum.MinimapTrackingFilter.VendorReagent] = true,
+	[Enum.MinimapTrackingFilter.POI] = true,
+	[Enum.MinimapTrackingFilter.Focus] = true,
+};
+
+local ALWAYS_ON_FILTERS = {
+	[Enum.MinimapTrackingFilter.QuestPoIs] = true,
+	[Enum.MinimapTrackingFilter.TaxiNode] = true,
+	[Enum.MinimapTrackingFilter.Innkeeper] = true,
+	[Enum.MinimapTrackingFilter.Banker] = true,
+	[Enum.MinimapTrackingFilter.Auctioneer] = true,
+	[Enum.MinimapTrackingFilter.Barber] = true,
+	[Enum.MinimapTrackingFilter.ItemUpgrade] = true,
+	[Enum.MinimapTrackingFilter.Transmogrifier] = true,
+	[Enum.MinimapTrackingFilter.Battlemaster] = true,
+	[Enum.MinimapTrackingFilter.Stablemaster] = true,
+};
+
+local CONDITIONAL_FILTERS = {
+	[Enum.MinimapTrackingFilter.Mailbox] = true,
+	[Enum.MinimapTrackingFilter.Target] = true,
+	[Enum.MinimapTrackingFilter.Digsites] = true,
+	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
+	[Enum.MinimapTrackingFilter.Repair] = true,
+};
+
+local WORLD_MAP_FILTERS = {
+	[Enum.MinimapTrackingFilter.TrivialQuests] = true,
+};
+
+function MiniMapTracking_FilterIsDefaultValue(id, active)
+	local filter = C_Minimap.GetTrackingFilter(id);
+	local removedFilter = filter and REMOVED_FILTERS[filter.filterID];
+	local alwaysOnFilter = filter and ALWAYS_ON_FILTERS[filter.filterID];
+	local worldMapFilter = filter and WORLD_MAP_FILTERS[filter.filterID];
+	local conditionalFilter = filter and CONDITIONAL_FILTERS[filter.filterID];
+	local filterTypeIsDefaultValue = (not active and removedFilter) or (active and alwaysOnFilter) or (active and conditionalFilter) or (not active and worldMapFilter);
+	local filterIsSpell = filter and filter.spellID;
+	local filterIsDefaultValue = filterTypeIsDefaultValue or filterIsSpell;
+	return filterIsDefaultValue;
+end
+
 function MiniMapTrackingDropDown_Initialize(self, level)
 	local name, texture, active, category, nested, numTracking;
-	local count = GetNumTrackingTypes();
+	local count = C_Minimap.GetNumTrackingTypes();
 	local info;
 	local _, class = UnitClass("player");
 
@@ -308,7 +451,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		info = UIDropDownMenu_CreateInfo();
 		info.text=MINIMAP_TRACKING_NONE;
 		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive;
-		info.func = ClearAllTracking;
+		info.func = C_Minimap.ClearAllTracking;
 		info.icon = nil;
 		info.arg1 = nil;
 		info.isNotRadio = true;
@@ -319,7 +462,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 			numTracking = 0;
 			-- make sure there are at least two options in dropdown
 			for id=1, count do
-				name, texture, active, category, nested = GetTrackingInfo(id);
+				name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
 				if (nested == HUNTER_TRACKING and category == "spell") then
 					numTracking = numTracking + 1;
 				end
@@ -345,15 +488,21 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 	end
 
 	for id=1, count do
-		name, texture, active, category, nested = GetTrackingInfo(id);
+		name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
+
 		info = UIDropDownMenu_CreateInfo();
 		info.text = name;
-		info.checked = MiniMapTrackingDropDownButton_IsActive;
-		info.func = MiniMapTracking_SetTracking;
+		info.checked = MiniMapTrackingDropDown_IsActive;
+		info.func = MiniMapTrackingDropDown_SetTracking;
 		info.icon = texture;
 		info.arg1 = id;
 		info.isNotRadio = true;
 		info.keepShownOnClick = true;
+
+		if not MiniMapTracking_FilterIsDefaultValue(id, active) then
+			info.colorCode = RED_FONT_COLOR_CODE;
+		end
+
 		if ( category == "spell" ) then
 			info.tCoordLeft = 0.0625;
 			info.tCoordRight = 0.9;
@@ -377,26 +526,26 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 
 end
 
-function MiniMapTrackingShineFadeIn()
-	-- Fade in the shine and then fade it out with the ComboPointShineFadeOut function
-	local fadeInfo = {};
-	fadeInfo.mode = "IN";
-	fadeInfo.timeToFade = 0.5;
-	fadeInfo.finishedFunc = MiniMapTrackingShineFadeOut;
-	UIFrameFade(MiniMapTrackingButtonShine, fadeInfo);
-end
-
-function MiniMapTrackingShineFadeOut()
-	UIFrameFadeOut(MiniMapTrackingButtonShine, 0.5);
-end
-
 --
 -- Dungeon Difficulty
 --
 
 local IS_GUILD_GROUP;
 
-function MiniMapInstanceDifficulty_OnEvent(self, event, ...)
+MiniMapInstanceDifficultyMixin = { };
+
+function MiniMapInstanceDifficultyMixin:OnLoad()
+	self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED");
+	self:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED");
+	self:RegisterEvent("UPDATE_INSTANCE_INFO");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+	self:RegisterEvent("PARTY_MEMBER_ENABLE");
+	self:RegisterEvent("PARTY_MEMBER_DISABLE");
+	self:RegisterEvent("GUILD_PARTY_STATE_UPDATED");
+end
+
+function MiniMapInstanceDifficultyMixin:OnEvent(event, ...)
 	if ( event == "GUILD_PARTY_STATE_UPDATED" ) then
 		local isGuildGroup = ...;
 		if ( isGuildGroup ~= IS_GUILD_GROUP ) then
@@ -505,7 +654,7 @@ function MiniMapInstanceDifficulty_Update()
 	end
 end
 
-function MiniMapInstanceDifficulty_OnEnter(self)
+function MiniMapInstanceDifficultyMixin:OnEnter()
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, lfgID = GetInstanceInfo();
 	local isLFR = select(8, GetDifficultyInfo(difficulty))
 	if (isLFR and lfgID) then
@@ -517,7 +666,13 @@ function MiniMapInstanceDifficulty_OnEnter(self)
 	end
 end
 
-function GuildInstanceDifficulty_OnEnter(self)
+function MiniMapInstanceDifficultyMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+GuildInstanceDifficultyMixin = { };
+
+function GuildInstanceDifficultyMixin:OnEnter()
 	local guildName = GetGuildInfo("player");
 	local _, instanceType, _, _, maxPlayers = GetInstanceInfo();
 	local _, numGuildPresent, numGuildRequired, xpMultiplier = InGuildParty();
@@ -540,8 +695,13 @@ function GuildInstanceDifficulty_OnEnter(self)
 	GameTooltip:Show();
 end
 
+function GuildInstanceDifficultyMixin:OnLeave()
+	GameTooltip:Hide();
+end
 
-function GarrisonLandingPageMinimapButton_OnLoad(self)
+GarrisonLandingPageMinimapButtonMixin = { };
+
+function GarrisonLandingPageMinimapButtonMixin:OnLoad()
 	self.pulseLocks = {};
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
 	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
@@ -560,11 +720,11 @@ function GarrisonLandingPageMinimapButton_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
-function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
+function GarrisonLandingPageMinimapButtonMixin:OnEvent(event, ...)
 	if (event == "GARRISON_HIDE_LANDING_PAGE") then
 		self:Hide();
 	elseif (event == "GARRISON_SHOW_LANDING_PAGE") then
-		GarrisonLandingPageMinimapButton_UpdateIcon(self);
+		self:UpdateIcon();
 		self:Show();
 	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
 		local buildingName, garrisonType = ...;
@@ -612,8 +772,8 @@ local function GetMinimapAtlases_GarrisonType8_0(faction)
 end
 
 local garrisonTypeAnchors = {
-	["default"] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", 32, -118),
-	[Enum.GarrisonType.Type_9_0] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", 32, -106),
+	["default"] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", 5, -162),
+	[Enum.GarrisonType.Type_9_0] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", -3, -150),
 }
 
 local function GetGarrisonTypeAnchor(garrisonType)
@@ -650,7 +810,7 @@ local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow)
 	self.LoopingGlow:SetAtlas(glow, true);
 end
 
-function GarrisonLandingPageMinimapButton_UpdateIcon(self)
+function GarrisonLandingPageMinimapButtonMixin:UpdateIcon()
 	local garrisonType = C_Garrison.GetLandingPageGarrisonType();
 	self.garrisonType = garrisonType;
 
@@ -689,9 +849,20 @@ function GarrisonLandingPageMinimapButton_UpdateIcon(self)
 	end
 end
 
-function GarrisonLandingPageMinimapButton_OnClick(self, button)
+function GarrisonLandingPageMinimapButtonMixin:OnClick(button)
 	GarrisonLandingPage_Toggle();
 	GarrisonMinimap_HideHelpTip(self);
+end
+
+function GarrisonLandingPageMinimapButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(self.title, 1, 1, 1);
+	GameTooltip:AddLine(self.description, nil, nil, nil, true);
+	GameTooltip:Show();
+end
+
+function GarrisonLandingPageMinimapButtonMixin:OnLeave()
+	GameTooltip:Hide();
 end
 
 function GarrisonLandingPage_Toggle()

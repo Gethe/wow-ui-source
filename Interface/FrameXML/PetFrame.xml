@@ -156,45 +156,21 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="48" y="-42"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
 			</Button>
 			<Button name="$parentDebuff2" inherits="PartyDebuffFrameTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
 			</Button>
 			<Button name="$parentDebuff3" inherits="PartyDebuffFrameTemplate" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
 			</Button>
 			<Button name="$parentDebuff4" inherits="PartyDebuffFrameTemplate" id="4">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -224,8 +200,8 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<StatusBar name="PetCastingBarFrame" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">
-		<Size x="195" y="13"/>
+	<StatusBar name="PetCastingBarFrame" mixin="CastingBarMixin" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">
+		<Size x="209" y="11"/>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>

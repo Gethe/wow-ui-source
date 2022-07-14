@@ -93,15 +93,9 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="ToggleButton">
-				<Size>
-					<AbsDimension x="14" y="14"/>
-				</Size>
+				<Size x="14" y="14"/>
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset>
-							<AbsDimension x="5" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" x="5" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

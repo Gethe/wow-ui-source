@@ -1,4 +1,4 @@
-MinimalScrollBarStepperScriptsMixin = CreateFromMixins(ScrollBarButtonBehaviorMixin);
+MinimalScrollBarStepperScriptsMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
 function MinimalScrollBarStepperScriptsMixin:GetAtlas()
 	if self:IsEnabled() then
@@ -16,26 +16,26 @@ function MinimalScrollBarStepperScriptsMixin:UpdateAtlas()
 end
 
 function MinimalScrollBarStepperScriptsMixin:OnEnter()
-	if ScrollBarButtonBehaviorMixin.OnEnter(self) then
+	if ButtonStateBehaviorMixin.OnEnter(self) then
 		self:UpdateAtlas();
 	end
 end
 
 function MinimalScrollBarStepperScriptsMixin:OnLeave()
-	if ScrollBarButtonBehaviorMixin.OnLeave(self) then
+	if ButtonStateBehaviorMixin.OnLeave(self) then
 		self:UpdateAtlas();
 	end
 end
 
 function MinimalScrollBarStepperScriptsMixin:OnMouseDown()
-	if ScrollBarButtonBehaviorMixin.OnMouseDown(self) then
+	if ButtonStateBehaviorMixin.OnMouseDown(self) then
 		self:UpdateAtlas();
 		self.Texture:AdjustPointsOffset(1, -1);
 	end
 end
 
 function MinimalScrollBarStepperScriptsMixin:OnMouseUp()
-	if ScrollBarButtonBehaviorMixin.OnMouseUp(self) then
+	if ButtonStateBehaviorMixin.OnMouseUp(self) then
 		self:UpdateAtlas();
 		self.Texture:AdjustPointsOffset(-1, 1);
 	end
@@ -47,14 +47,14 @@ function MinimalScrollBarStepperScriptsMixin:OnEnable()
 end
 
 function MinimalScrollBarStepperScriptsMixin:OnDisable()
-	ScrollBarButtonBehaviorMixin.OnDisable(self);
+	ButtonStateBehaviorMixin.OnDisable(self);
 	self:UpdateAtlas();
 
 	self:DesaturateHierarchy(1);
 	self.Texture:ClearPointsOffset();
 end
 
-MinimalScrollBarThumbScriptsMixin = CreateFromMixins(ScrollBarButtonBehaviorMixin);
+MinimalScrollBarThumbScriptsMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
 function MinimalScrollBarThumbScriptsMixin:GetAtlas()
 	if self:IsEnabled() then
@@ -75,25 +75,25 @@ function MinimalScrollBarThumbScriptsMixin:UpdateAtlas()
 end
 
 function MinimalScrollBarThumbScriptsMixin:OnEnter()
-	if ScrollBarButtonBehaviorMixin.OnEnter(self) then
+	if ButtonStateBehaviorMixin.OnEnter(self) then
 		self:UpdateAtlas();
 	end
 end
 
 function MinimalScrollBarThumbScriptsMixin:OnLeave()
-	if ScrollBarButtonBehaviorMixin.OnLeave(self) then
+	if ButtonStateBehaviorMixin.OnLeave(self) then
 		self:UpdateAtlas();
 	end
 end
 
 function MinimalScrollBarThumbScriptsMixin:OnMouseDown()
-	if ScrollBarButtonBehaviorMixin.OnMouseDown(self) then
+	if ButtonStateBehaviorMixin.OnMouseDown(self) then
 		self:UpdateAtlas();
 	end
 end
 
 function MinimalScrollBarThumbScriptsMixin:OnMouseUp()
-	if ScrollBarButtonBehaviorMixin.OnMouseUp(self) then
+	if ButtonStateBehaviorMixin.OnMouseUp(self) then
 		self:UpdateAtlas();
 	end
 end
@@ -104,7 +104,7 @@ function MinimalScrollBarThumbScriptsMixin:OnEnable()
 end
 
 function MinimalScrollBarThumbScriptsMixin:OnDisable()
-	ScrollBarButtonBehaviorMixin.OnDisable(self);
+	ButtonStateBehaviorMixin.OnDisable(self);
 	self:UpdateAtlas();
 
 	self:DesaturateHierarchy(1);

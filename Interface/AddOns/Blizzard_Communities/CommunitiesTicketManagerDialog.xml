@@ -123,7 +123,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<ScrollFrame parentKey="ListScrollFrame">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="13" y="-41"/>
 					<Anchor point="BOTTOMRIGHT" x="-36" y="0"/>
@@ -133,31 +133,18 @@
 						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true"/>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate" frameLevel="200">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="12"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="14"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BORDER">
-								<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
-							</Layer>
-						</Layers>
-					</Slider>
-				</Frames>
-				<Scripts>
-					<OnLoad function="HybridScrollFrame_OnLoad"/>
-					<OnMouseWheel function="HybridScrollFrame_OnMouseWheel"/>
-				</Scripts>
-				<ScrollChild>
-					<Frame name="$parentScrollChild" parentKey="ScrollChild">
-						<Scripts>
-							<OnLoad function="HybridScrollFrameScrollChild_OnLoad"/>
-						</Scripts>
-					</Frame>
-				</ScrollChild>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="2" y="2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</EventFrame>
 			<Frame parentKey="ColumnDisplay" inherits="ColumnDisplayTemplate" frameLevel="100">
 				<Size x="0" y="34"/>
 				<Anchors>

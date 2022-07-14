@@ -5,13 +5,13 @@
 		<Size x="10" y="16"/>
 		<Scripts>
 			<OnLoad>
-				_G[self:GetName().."Highlight"]:SetVertexColor(0.11, 0.325, 0.48);
+				self.Highlight:SetVertexColor(0.11, 0.325, 0.48);
 			</OnLoad>
 			<OnClick>
 				ChatConfigCategory_OnClick(self, button, down);
 			</OnClick>
 		</Scripts>
-		<ButtonText name="$parentNormalText">
+		<ButtonText parentKey="NormalText" name="$parentNormalText">
 			<Size x="0" y="16"/>
 			<Anchors>
 				<Anchor point="LEFT" x="2" y="1"/>
@@ -20,13 +20,11 @@
 		<NormalFont style="GameFontNormalLeft"/>
 		<DisabledFont style="GameFontDisableLeft"/>
 		<HighlightFont style="GameFontHighlightLeft"/>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
+		<HighlightTexture parentKey="Highlight" name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
 	</Button>
 	<Button name="ConfigFilterButtonTemplate" inherits="ConfigCategoryButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick>
-				ChatConfigFilter_OnClick(self:GetID()+FauxScrollFrame_GetOffset(ChatConfigCombatSettingsFiltersScrollFrame));
-			</OnClick>
+			<OnClick function="ChatConfigCombatButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<Frame name="ChatConfigBoxTemplate" inherits="TooltipBackdropTemplate" virtual="true">
@@ -537,48 +535,25 @@
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-12" y="35"/>
 				</Anchors>
 				<Frames>
-					<Frame name="$parentFilters" inherits="ChatConfigBoxTemplate">
+					<Frame parentKey="Filters" name="$parentFilters" inherits="ChatConfigBoxTemplate">
 						<Size x="0" y="0"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-85"/>
 						</Anchors>
 						<Frames>
-							<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplateLight">
+							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 								<Anchors>
 									<Anchor point="TOPLEFT" x="5" y="-6"/>
 									<Anchor point="BOTTOMRIGHT" x="-28" y="4"/>
 								</Anchors>
-								<Scripts>
-									<OnVerticalScroll>
-										FauxScrollFrame_OnVerticalScroll(self, offset, CHATCONFIG_FILTER_HEIGHT, ChatConfig_UpdateFilterList);
-									</OnVerticalScroll>
-								</Scripts>
-							</ScrollFrame>
-							<Button name="$parentButton1" inherits="ConfigFilterButtonTemplate" id="1">
+							</Frame>
+							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" x="5" y="-7"/>
-									<Anchor point="TOPRIGHT" x="-5" y="-7"/>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-23" y="-4"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
 								</Anchors>
-							</Button>
-							<Button name="$parentButton2" inherits="ConfigFilterButtonTemplate" id="2">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-									<Anchor point="TOPRIGHT" relativeTo="$parentButton1" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentButton3" inherits="ConfigFilterButtonTemplate" id="3">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-									<Anchor point="TOPRIGHT" relativeTo="$parentButton2" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentButton4" inherits="ConfigFilterButtonTemplate" id="4">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-									<Anchor point="TOPRIGHT" relativeTo="$parentButton3" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
-								</Anchors>
-							</Button>
+							</EventFrame>
 							<Button name="$parentDeleteButton" inherits="UIPanelButtonTemplate" text="DELETE">
 								<Size x="60" y="22"/>
 								<Anchors>

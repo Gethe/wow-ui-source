@@ -18,9 +18,13 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0].missionFollo
 GarrisonFollowerMission = {};
 
 function GarrisonFollowerMission:SetupMissionList()
-	self.MissionTab.MissionList.listScroll.update = function() self.MissionTab.MissionList:Update(); end;
-	HybridScrollFrame_CreateButtons(self.MissionTab.MissionList.listScroll, "GarrisonMissionListButtonTemplate", 13, -8, nil, nil, nil, -4);
-	self.MissionTab.MissionList:Update();
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("GarrisonMissionListButtonTemplate", function(button, elementData)
+		GarrisonMissionList_InitButton(button, elementData, self);
+	end);
+	view:SetPadding(8,0,13,13,4);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.MissionTab.MissionList.ScrollBox, self.MissionTab.MissionList.ScrollBar, view);
 
 	GarrisonMissionListTab_SetTab(self.MissionTab.MissionList.Tab1);
 end
@@ -603,17 +607,14 @@ function GarrisonFollowerMission:CheckTutorials(advance)
 			local relativeFrame;
 			local anchor = tutorial.anchor;
 			if anchor == "mission" then
-				relativeFrame = self.MissionTab.MissionList.listScroll.buttons[1];
+				relativeFrame = self.MissionTab.MissionList.ScrollBox:GetFrames()[1];
 			elseif anchor == "threat" then
 				local enemy = self:GetMissionPage().Enemy1;
 				if enemy then
 					relativeFrame = enemy.Mechanics[1];
 				end
 			elseif anchor == "follower" then
-				local buttons = self.FollowerList.listScroll.buttons;
-				if buttons then
-					relativeFrame = buttons[1];
-				end
+				relativeFrame = self.FollowerList.ScrollBox:GetFrames()[1];
 			elseif anchor == "slot" then
 				relativeFrame = self:GetMissionPage().Follower1;
 			elseif anchor == "rewards" then
@@ -708,10 +709,9 @@ end
 function GarrisonFollowerMission:UpdateRewards(itemID)
 	-- mission list
 	if (self.MissionTab.MissionList) then
-		local missionButtons = self.MissionTab.MissionList.listScroll.buttons;
-		for i = 1, #missionButtons do
-			self:CheckRewardButtons(missionButtons[i].Rewards, itemID);
-		end
+		self.MissionTab.MissionList.ScrollBox:ForEachFrame(function(frame)
+			self:CheckRewardButtons(frame.Rewards, itemID);
+		end);
 	end
 	-- mission page
 	if (self:GetMissionPage().RewardsFrame) then
@@ -832,8 +832,6 @@ function GarrisonMissionListMixin:OnLoad()
 	self.inProgressMissions = {};
 	self.availableMissions = {};
 	self.newMissionIDs = {};
-
-	self.listScroll:SetScript("OnMouseWheel", function(self, ...) HybridScrollFrame_OnMouseWheel(self, ...); GarrisonMissionList_UpdateMouseOverTooltip(self); end);
 end
 
 function GarrisonMissionListMixin:GetMissionFrame()
@@ -855,7 +853,26 @@ function GarrisonMissionListMixin:OnUpdate()
 	if (self.showInProgress) then
 		C_Garrison.GetInProgressMissions(self.inProgressMissions, self:GetMissionFrame().followerTypeID);
 		self.Tab2:SetText(WINTERGRASP_IN_PROGRESS.." - "..#self.inProgressMissions)
-		self:Update();
+		
+		local dataProvider = self.ScrollBox:GetDataProvider();
+		if dataProvider then
+			for index, mission in ipairs(self.inProgressMissions) do
+				local elementData = dataProvider:FindElementDataByPredicate(function(elementData)
+					return elementData.mission.missionID == mission.missionID;
+				end);
+
+				-- Move the mission data into the elementData we want to keep.
+				if elementData then
+					MergeTable(elementData.mission, mission);
+				end
+			end
+
+			self.ScrollBox:ForEachFrame(function(frame)
+				GarrisonMissionList_InitButton(frame, frame:GetElementData(), self:GetParent():GetParent());
+			end);
+		else
+			self:Update();
+		end
 	else
 		local timeNow = GetTime();
 		for i = 1, #self.availableMissions do
@@ -921,131 +938,112 @@ function GarrisonMissionListMixin:UpdateMissions()
 	self:Update();
 end
 
-function GarrisonMissionListMixin:Update()
-	local missions;
-	local followerTypeID = self:GetMissionFrame().followerTypeID;
-	if (self.showInProgress) then
-		missions = self.inProgressMissions;
+function GarrisonMissionList_InitButton(button, elementData, missionFrame)
+	local mission = elementData.mission;
+	local index = elementData.index;
+
+	button.id = index;
+	button.info = mission;
+	button.Title:SetWidth(0);
+	button.Title:SetText(mission.name);
+	button.Level:SetText(mission.level);
+	if ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
+		local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
+		button.Summary:SetFormattedText(PARENS_TEMPLATE, duration);
 	else
-		missions = self.availableMissions;
+		button.Summary:SetFormattedText(PARENS_TEMPLATE, mission.duration);
 	end
-	local numMissions = #missions;
-	local scrollFrame = self.listScroll;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numButtons = #buttons;
-
-	if (numMissions == 0) then
-		self.EmptyListString:Show();
+	if ( mission.locTextureKit ) then
+		button.LocBG:Show();
+		button.LocBG:SetAtlas(mission.locTextureKit.."-List");
 	else
-		self.EmptyListString:Hide();
+		button.LocBG:Hide();
+	end
+	if (mission.isRare) then
+		button.RareOverlay:Show();
+		button.RareText:Show();
+		button.IconBG:SetVertexColor(0, 0.012, 0.291, 0.4)
+	else
+		button.RareOverlay:Hide();
+		button.RareText:Hide();
+		button.IconBG:SetVertexColor(0, 0, 0, 0.4)
+	end
+	local showingItemLevel = false;
+
+	local followerTypeID = missionFrame.followerTypeID;
+
+	if ( GarrisonFollowerOptions[followerTypeID].showILevelOnMission and mission.isMaxLevel and mission.iLevel > 0 ) then
+		button.ItemLevel:SetFormattedText(NUMBER_IN_PARENTHESES, mission.iLevel);
+		button.ItemLevel:Show();
+		showingItemLevel = true;
+	else
+		button.ItemLevel:Hide();
+	end
+	if ( showingItemLevel and mission.isRare ) then
+		button.Level:SetPoint("CENTER", button, "TOPLEFT", 35, -22);
+	else
+		button.Level:SetPoint("CENTER", button, "TOPLEFT", 35, -36);
 	end
 
-	for i = 1, numButtons do
-		local button = buttons[i];
-		local index = offset + i; -- adjust index
-		if ( index <= numMissions) then
-			local mission = missions[index];
-			button.id = index;
-			button.info = mission;
-			button.Title:SetWidth(0);
-			button.Title:SetText(mission.name);
-			button.Level:SetText(mission.level);
-			if ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
-				local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
-				button.Summary:SetFormattedText(PARENS_TEMPLATE, duration);
-			else
-				button.Summary:SetFormattedText(PARENS_TEMPLATE, mission.duration);
-			end
-			if ( mission.locTextureKit ) then
-				button.LocBG:Show();
-				button.LocBG:SetAtlas(mission.locTextureKit.."-List");
-			else
-				button.LocBG:Hide();
-			end
-			if (mission.isRare) then
-				button.RareOverlay:Show();
-				button.RareText:Show();
-				button.IconBG:SetVertexColor(0, 0.012, 0.291, 0.4)
-			else
-				button.RareOverlay:Hide();
-				button.RareText:Hide();
-				button.IconBG:SetVertexColor(0, 0, 0, 0.4)
-			end
-			local showingItemLevel = false;
-			if ( GarrisonFollowerOptions[followerTypeID].showILevelOnMission and mission.isMaxLevel and mission.iLevel > 0 ) then
-				button.ItemLevel:SetFormattedText(NUMBER_IN_PARENTHESES, mission.iLevel);
-				button.ItemLevel:Show();
-				showingItemLevel = true;
-			else
-				button.ItemLevel:Hide();
-			end
-			if ( showingItemLevel and mission.isRare ) then
-				button.Level:SetPoint("CENTER", button, "TOPLEFT", 35, -22);
-			else
-				button.Level:SetPoint("CENTER", button, "TOPLEFT", 35, -36);
-			end
+	button:Enable();
+	if (mission.inProgress) then
+		button.Overlay:Show();
+		button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR_CODE..GARRISON_MISSION_IN_PROGRESS..FONT_COLOR_CODE_CLOSE);
+	else
+		button.Overlay:Hide();
+	end
+	if ( button.Title:GetWidth() + button.Summary:GetWidth() + 8 < 655 - #mission.rewards * 65 ) then
+		button.Title:SetPoint("LEFT", 165, 0);
+		button.Summary:ClearAllPoints();
+		button.Summary:SetPoint("BOTTOMLEFT", button.Title, "BOTTOMRIGHT", 8, 0);
+	else
+		button.Title:SetPoint("LEFT", 165, 10);
+		button.Title:SetWidth(655 - #mission.rewards * 65);
+		button.Summary:ClearAllPoints();
+		button.Summary:SetPoint("TOPLEFT", button.Title, "BOTTOMLEFT", 0, -4);
+	end
+	button.MissionType:SetAtlas(mission.typeAtlas);
+	if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
+		button.MissionType:SetSize(62, 62);
+		button.MissionType:SetPoint("TOPLEFT", 74, -6);
+	else
+		button.MissionType:SetSize(75, 75);
+		button.MissionType:SetPoint("TOPLEFT", 68, -2);
+	end
+	GarrisonMissionButton_SetRewards(button, mission.rewards, #mission.rewards);
 
-			button:Enable();
-			if (mission.inProgress) then
-				button.Overlay:Show();
-				button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR_CODE..GARRISON_MISSION_IN_PROGRESS..FONT_COLOR_CODE_CLOSE);
-			else
-				button.Overlay:Hide();
-			end
-			if ( button.Title:GetWidth() + button.Summary:GetWidth() + 8 < 655 - #mission.rewards * 65 ) then
-				button.Title:SetPoint("LEFT", 165, 0);
-				button.Summary:ClearAllPoints();
-				button.Summary:SetPoint("BOTTOMLEFT", button.Title, "BOTTOMRIGHT", 8, 0);
-			else
-				button.Title:SetPoint("LEFT", 165, 10);
-				button.Title:SetWidth(655 - #mission.rewards * 65);
-				button.Summary:ClearAllPoints();
-				button.Summary:SetPoint("TOPLEFT", button.Title, "BOTTOMLEFT", 0, -4);
-			end
-			button.MissionType:SetAtlas(mission.typeAtlas);
-			if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
-				button.MissionType:SetSize(62, 62);
-				button.MissionType:SetPoint("TOPLEFT", 74, -6);
-			else
-				button.MissionType:SetSize(75, 75);
-				button.MissionType:SetPoint("TOPLEFT", 68, -2);
-			end
-			GarrisonMissionButton_SetRewards(button, mission.rewards, #mission.rewards);
-			button:Show();
-
-			local isNewMission = self.newMissionIDs[mission.missionID];
-			if (isNewMission) then
-				if (not button.NewHighlight) then
-					button.NewHighlight = CreateFrame("Frame", nil, button, "GarrisonMissionListButtonNewHighlightTemplate");
-					button.NewHighlight:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0);
-					button.NewHighlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0);
-				end
-				button.NewHighlight:Show();
-			else
-				if (button.NewHighlight) then
-					button.NewHighlight:Hide();
-				end
-			end
-		else
-			button:Hide();
-			button.info = nil;
+	local isNewMission = missionFrame.MissionTab.MissionList.newMissionIDs[mission.missionID];
+	if (isNewMission) then
+		if (not button.NewHighlight) then
+			button.NewHighlight = CreateFrame("Frame", nil, button, "GarrisonMissionListButtonNewHighlightTemplate");
+			button.NewHighlight:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0);
+			button.NewHighlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0);
 		end
-	end
-
-	local totalHeight = numMissions * scrollFrame.buttonHeight;
-	local displayedHeight = numButtons * scrollFrame.buttonHeight;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
+		button.NewHighlight:Show();
+	else
+		if (button.NewHighlight) then
+			button.NewHighlight:Hide();
+		end
+	end	
 end
 
-function GarrisonMissionList_UpdateMouseOverTooltip(self)
-	local buttons = self.buttons;
-	for i = 1, #buttons do
-		if ( buttons[i]:IsMouseOver() ) then
-			ExecuteFrameScript(buttons[i], "OnEnter");
-			break;
-		end
+function GarrisonMissionListMixin:Update()
+	local missions = self.showInProgress and self.inProgressMissions or self.availableMissions;
+
+	local dataProvider = CreateDataProvider();
+	for index, mission in ipairs(missions) do
+		dataProvider:Insert({index=index, mission=mission});
 	end
+
+	local function SortWrapper(lhs, rhs)
+		return GarrisonMissionSorter(lhs.mission, rhs.mission);
+	end
+	dataProvider:SetSortComparator(SortWrapper);
+
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
+	local haveMissions = dataProvider:GetSize() > 0;
+	self.EmptyListString:SetShown(not haveMissions);
 end
 
 function GarrisonMissionButtonRewards_OnEnter(self)
@@ -1071,95 +1069,6 @@ function GarrisonMissionButtonRewards_OnEnter(self)
 		GameTooltip:AddLine(self.tooltip, 1, 1, 1, true);
 	end
 	GameTooltip:Show();
-end
-
-function GarrisonMissionButton_SetReward(frame, reward, currencyMultipliers)
-	frame.Quantity:Hide();
-	frame.Quantity:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-	frame.IconBorder:Hide();
-	frame.itemID = nil;
-	frame.currencyID = nil;
-	frame.tooltip = nil;
-	if (reward.itemID) then
-		frame.itemID = reward.itemID;
-		frame.itemLink = reward.itemLink;
-		GarrisonMissionFrame_SetItemRewardDetails(frame);
-		if ( reward.quantity > 1 ) then
-			frame.Quantity:SetText(reward.quantity);
-			frame.Quantity:Show();
-		end
-	else
-		frame.Icon:SetTexture(reward.icon);
-		frame.title = reward.title
-		if (reward.currencyID and reward.quantity) then
-			local quantity = reward.quantity;
-			if (reward.currencyID == 0) then
-				if (goldMultiplier ~= nil) then
-					quantity = quantity * goldMultiplier;
-				end
-				frame.tooltip = GetMoneyString(quantity);
-				frame.Quantity:SetText(BreakUpLargeNumbers(floor(quantity / COPPER_PER_GOLD)));
-				frame.Quantity:Show();
-			else
-				if (currencyMultipliers[reward.currencyID] ~= nil) then
-					quantity = quantity * currencyMultipliers[reward.currencyID];
-				end
-				frame.currencyID = reward.currencyID;
-
-				local currencyName, currencyTexture, currencyQuantity, currencyQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.currencyID, reward.quantity, reward.title, reward.icon, nil);
-				if (currencyTexture) then
-					frame.Icon:SetTexture(currencyTexture);
-				end
-
-				frame.currencyQuantity = quantity;
-
-				if (currencyQuality) then
-					SetItemButtonQuality(frame, currencyQuality, reward.currencyID);
-				end
-
-				if (currencyQuantity > 1) then
-					frame.Quantity:SetText(currencyQuantity);
-					local currencyColor = GetColorForCurrencyReward(reward.currencyID, quantity);
-					frame.Quantity:SetTextColor(currencyColor:GetRGB());
-					frame.Quantity:Show();
-				end
-			end
-		else
-			frame.tooltip = reward.tooltip;
-			if ( reward.followerXP ) then
-				frame.Quantity:SetText(BreakUpLargeNumbers(reward.followerXP));
-				frame.Quantity:Show();
-			end
-		end
-	end
-end
-
-function GarrisonMissionButton_SetRewards(self, rewards)
-	if (#rewards > 0) then
-		local currencyMultipliers = nil;
-		local goldMultiplier = nil;
-		if (self.info.inProgress) then
-			currencyMultipliers, goldMultiplier = select(8, C_Garrison.GetPartyMissionInfo(self.info.missionID));
-		else
-			currencyMultipliers = {};
-		end
-
-		local index = 1;
-		for id, reward in pairs(rewards) do
-			if (not self.Rewards[index]) then
-				self.Rewards[index] = CreateFrame("Frame", nil, self, "GarrisonMissionListButtonRewardTemplate");
-				self.Rewards[index]:SetPoint("RIGHT", self.Rewards[index-1], "LEFT", 0, 0);
-			end
-			local Reward = self.Rewards[index];
-			GarrisonMissionButton_SetReward(Reward, reward, currencyMultipliers)
-			Reward:Show();
-			index = index + 1;
-		end
-	end
-
-	for i = (#rewards + 1), #self.Rewards do
-		self.Rewards[i]:Hide();
-	end
 end
 
 function GarrisonMissionButton_OnClick(self, button)
@@ -1199,7 +1108,9 @@ function GarrisonMissionButton_OnEnter(self, button)
 	GameTooltip:Show();
 
 	missionFrame.MissionTab.MissionList.newMissionIDs[self.info.missionID] = nil;
-	missionFrame.MissionTab.MissionList:Update();
+	missionFrame.MissionTab.MissionList.ScrollBox:ForEachFrame(function(frame)
+		GarrisonMissionList_InitButton(frame, frame:GetElementData(), missionFrame);
+	end);
 end
 
 function GarrisonMissionButton_SetInProgressTooltip(missionInfo, showRewards)

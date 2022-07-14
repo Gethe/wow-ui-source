@@ -11,9 +11,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="texture">
-					<Size>
-						<AbsDimension x="27" y="27"/>
-					</Size>
+					<Size x="27" y="27"/>
 					<Anchors>
 						<Anchor point="CENTER" x="-3" y="3"/>
 					</Anchors>
@@ -908,9 +906,7 @@
 			<Layer level="OVERLAY">
 				<!--LootWin-Glow-->
 				<Texture atlas="loottoast-glow" alphaMode="ADD" hidden="true" parentKey="glow">
-					<Size>
-						<AbsDimension x="286" y="109"/>
-					</Size>
+					<Size x="286" y="109"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -2342,9 +2338,7 @@
 			<Layer level="OVERLAY">
 				<!--LootWin-Glow-->
 				<Texture atlas="loottoast-glow" alphaMode="ADD" hidden="true" parentKey="glow">
-					<Size>
-						<AbsDimension x="298" y="109"/>
-					</Size>
+					<Size x="298" y="109"/>
 					<Anchors>
 						<Anchor point="CENTER" x="10" y="1"/>
 					</Anchors>
@@ -2463,9 +2457,7 @@
 			<Layer level="OVERLAY">
 				<!--LootWin-Glow-->
 				<Texture atlas="loottoast-glow" alphaMode="ADD" hidden="true" parentKey="glow">
-					<Size>
-						<AbsDimension x="286" y="109"/>
-					</Size>
+					<Size x="286" y="109"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>

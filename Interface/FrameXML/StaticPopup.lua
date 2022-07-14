@@ -62,6 +62,122 @@ local function OnResurrectButtonClick(selectedOption, reason)
 	end
 end
 
+function StaticPopup_StandardConfirmationTextHandler(self, expectedText)
+	local parent = self:GetParent();
+	parent.button1:SetEnabled(ConfirmationEditBoxMatches(parent.editBox, expectedText));
+end
+
+function StaticPopup_StandardNonEmptyTextHandler(self)
+	local parent = self:GetParent();
+	parent.button1:SetEnabled(UserEditBoxNonEmpty(parent.editBox));
+end
+
+function StaticPopup_StandardEditBoxOnEscapePressed(self)
+	self:GetParent():Hide();
+end
+
+StaticPopupDialogs["GENERIC_CONFIRMATION"] = {
+	text = "",		-- supplied dynamically.
+	button1 = "",	-- supplied dynamically.
+	button2 = "",	-- supplied dynamically.
+	OnShow = function(self, data)
+		self.text:SetFormattedText(data.text, data.text_arg1, data.text_arg2);
+		self.button1:SetText(data.acceptText or YES);
+		self.button2:SetText(data.cancelText or NO);
+
+		if data.showAlert then
+			self.AlertIcon:Show();
+		end
+	end,
+	OnAccept = function(self, data)
+		data.callback();
+	end,
+	OnCancel = function(self, data)
+		local cancelCallback = data.cancelCallback;
+		if cancelCallback ~= nil then
+			cancelCallback();
+		end
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	multiple = 1,
+	whileDead = 1,
+	wide = 1, -- Always wide to accomodate the alert icon if it is present.
+};
+
+StaticPopupDialogs["GENERIC_INPUT_BOX"] = {
+	text = "",		-- supplied dynamically.
+	button1 = "",	-- supplied dynamically.
+	button2 = "",	-- supplied dynamically.
+	hasEditBox = 1,
+	OnShow = function(self, data)
+		self.text:SetFormattedText(data.text, data.text_arg1, data.text_arg2);
+		self.button1:SetText(data.acceptText or DONE);
+		self.button2:SetText(data.cancelText or CANCEL);
+
+		self.editBox:SetMaxLetters(data.maxLetters or 24);
+		self.editBox:SetCountInvisibleLetters(not not data.countInvisibleLetters);
+	end,
+	OnAccept = function(self, data)
+		local text = self.editBox:GetText();
+		data.callback(text);
+	end,
+	OnCancel = function(self, data)
+		local cancelCallback = data.cancelCallback;
+		if cancelCallback ~= nil then
+			cancelCallback();
+		end
+	end,
+	EditBoxOnEnterPressed = function(self, data)
+		local parent = self:GetParent();
+		if parent.button1:IsEnabled() then
+			local text = parent.editBox:GetText();
+			data.callback(text);
+			parent:Hide();
+		end
+	end,
+	EditBoxOnTextChanged = StaticPopup_StandardNonEmptyTextHandler,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["GENERIC_DROP_DOWN"] = {
+	text = "", -- supplied dynamically.
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasDropDown = 1,
+	dropDownOptions = {};
+	OnShow = function(self, data)
+		self.text:SetText(data.text);
+		self.DropDownControl:SetOptions(data.options, data.defaultOption);
+
+		local hasButtons = not not data.hasButtons;
+		self.button1:SetShown(hasButtons);
+		self.button2:SetShown(hasButtons);
+
+		if hasButtons then
+			self.DropDownControl:SetOptionSelectedCallback(nil);
+		else
+			local function StaticPopupGenericDropDownOptionSelectedCallback(option)
+				data.callback(option);
+				self:Hide();
+			end
+
+			self.DropDownControl:SetOptionSelectedCallback(StaticPopupGenericDropDownOptionSelectedCallback);
+		end
+	end,
+	OnAccept = function(self, data)
+		data.callback(self.DropDownControl:GetSelectedValue());
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+};
+
 StaticPopupDialogs["CONFIRM_OVERWRITE_EQUIPMENT_SET"] = {
 	text = CONFIRM_OVERWRITE_EQUIPMENT_SET,
 	button1 = YES,
@@ -144,62 +260,6 @@ StaticPopupDialogs["CONFIRM_GLYPH_REMOVAL"] = {
 	exclusive = 1,
 }
 
-StaticPopupDialogs["CONFIRM_RESET_VIDEO_SETTINGS"] = {
-	text = CONFIRM_RESET_SETTINGS,
-	button1 = ALL_SETTINGS,
-	button3 = CURRENT_SETTINGS,
-	button2 = CANCEL,
-	OnAccept = function ()
-		VideoOptionsFrame_SetAllToDefaults();
-	end,
-	OnAlt = function ()
-		VideoOptionsFrame_SetCurrentToDefaults();
-	end,
-	OnCancel = function() end,
-	showAlert = 1,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1,
-	whileDead = 1,
-}
-
-StaticPopupDialogs["CONFIRM_RESET_AUDIO_SETTINGS"] = {
-	text = CONFIRM_RESET_SETTINGS,
-	button1 = ALL_SETTINGS,
-	button3 = CURRENT_SETTINGS,
-	button2 = CANCEL,
-	OnAccept = function ()
-		AudioOptionsFrame_SetAllToDefaults();
-	end,
-	OnAlt = function ()
-		AudioOptionsFrame_SetCurrentToDefaults();
-	end,
-	OnCancel = function() end,
-	showAlert = 1,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1,
-	whileDead = 1,
-}
-
-StaticPopupDialogs["CONFIRM_RESET_INTERFACE_SETTINGS"] = {
-	text = CONFIRM_RESET_INTERFACE_SETTINGS,
-	button1 = ALL_SETTINGS,
-	button3 = CURRENT_SETTINGS,
-	button2 = CANCEL,
-	OnAccept = function ()
-		InterfaceOptionsFrame_SetAllToDefaults();
-	end,
-	OnAlt = function ()
-		InterfaceOptionsFrame_SetCurrentToDefaults();
-	end,
-	OnCancel = function() end,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1,
-	whileDead = 1,
-}
-
 StaticPopupDialogs["CONFIRM_RESET_TEXTTOSPEECH_SETTINGS"] = {
 	text = CONFIRM_TEXT_TO_SPEECH_RESET,
 	button1 = ACCEPT,
@@ -227,53 +287,6 @@ StaticPopupDialogs["CONFIRM_REDOCK_CHAT"] = {
 	hideOnEscape = 1,
 	whileDead = 1,
 }
-
-StaticPopupDialogs["MAC_OPEN_UNIVERSAL_ACCESS"] = {
-	text = MAC_OPEN_UNIVERSAL_ACCESS,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function ()
-		MacOptions_OpenUniversalAccess();
-		ShowUIPanel(MacOptionsFrame);
-	end,
-	OnCancel = function()
-		ShowUIPanel(MacOptionsFrame);
-	end,
-	OnShow = function(self)
-		self.text:SetFormattedText(MAC_OPEN_UNIVERSAL_ACCESS1090, MacOptions_GetGameBundleName());
-	end,
-	showAlert = 1,
-	timeout = 0,
-	exclusive = 0,
-	hideOnEscape = false,
-	whileDead = 1,
-}
-
-StaticPopupDialogs["MAC_OPEN_INPUT_MONITORING"] = {
-	text = MAC_OPEN_UNIVERSAL_ACCESS,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function ()
-		MacOptions_OpenInputMonitoring();
-		ShowUIPanel(MacOptionsFrame);
-	end,
-	OnCancel = function()
-		ShowUIPanel(MacOptionsFrame);
-	end,
-	OnShow = function(self)
-		if (MacOptions_HasNewStyleInputMonitoring()) then
-			self.text:SetFormattedText(MAC_INPUT_MONITORING1015, MacOptions_GetGameBundleName());
-		else
-			self.text:SetFormattedText(MAC_INPUT_MONITORING1014, MacOptions_GetGameBundleName());
-		end
-	end,
-	showAlert = 1,
-	timeout = 0,
-	exclusive = 0,
-	hideOnEscape = false,
-	whileDead = 1,
-}
-
 
 StaticPopupDialogs["CONFIRM_PURCHASE_TOKEN_ITEM"] = {
 	text = CONFIRM_PURCHASE_TOKEN_ITEM,
@@ -1082,9 +1095,7 @@ StaticPopupDialogs["JOIN_CHANNEL"] = {
 		editBox:SetText("");
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	hideOnEscape = 1
 };
 
@@ -1114,9 +1125,7 @@ StaticPopupDialogs["CHANNEL_INVITE"] = {
 		editBox:SetText("");
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	hideOnEscape = 1
 };
 
@@ -1145,9 +1154,7 @@ StaticPopupDialogs["CHANNEL_PASSWORD"] = {
 		editBox:SetText("");
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	hideOnEscape = 1
 };
 
@@ -1184,9 +1191,7 @@ StaticPopupDialogs["NAME_CHAT"] = {
 		FCF_DockUpdate();
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function (self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	hideOnEscape = 1
 };
 
@@ -1202,9 +1207,7 @@ StaticPopupDialogs["RESET_CHAT"] = {
 		end
 	end,
 	timeout = 0,
-	EditBoxOnEscapePressed = function (self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	hideOnEscape = 1,
 	exclusive = 1,
 };
@@ -1645,9 +1648,7 @@ StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 		StaticPopupDialogs["CHAT_CHANNEL_INVITE"].inviteAccepted = 1;
 		self:GetParent():Hide();
 	end,
-	EditBoxOnEscapePressed = function(self, data)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	OnCancel = function(self, data)
 		local chanName = data;
 		DeclineChannelInvite(chanName);
@@ -1707,9 +1708,7 @@ StaticPopupDialogs["CHAT_CHANNEL_PASSWORD"] = {
 		ChatChannelPasswordHandler(self:GetParent(), data);
 		self:GetParent():Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 	hideOnEscape = 1
@@ -1919,9 +1918,7 @@ StaticPopupDialogs["CONFIRM_AZERITE_EMPOWERED_RESPEC_EXPENSIVE"] = {
 	EditBoxOnTextChanged = function (self)
 		StaticPopup_StandardConfirmationTextHandler(self, CONFIRM_AZERITE_EMPOWERED_RESPEC_STRING);
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 
 	timeout = 0,
 	exclusive = 1,
@@ -2045,7 +2042,7 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 		StaticPopup_StandardConfirmationTextHandler(self, DELETE_ITEM_CONFIRM_STRING);
 	end,
 	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
+		StaticPopup_StandardEditBoxOnEscapePressed(self);
 		ClearCursor();
 	end
 };
@@ -2091,7 +2088,7 @@ StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"] = {
 		StaticPopup_StandardConfirmationTextHandler(self, DELETE_ITEM_CONFIRM_STRING);
 	end,
 	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
+		StaticPopup_StandardEditBoxOnEscapePressed(self);
 		ClearCursor();
 	end
 };
@@ -2190,9 +2187,7 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 		C_FriendList.AddFriend(parent.editBox:GetText());
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -2229,9 +2224,7 @@ StaticPopupDialogs["SET_FRIENDNOTE"] = {
 		end
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -2264,9 +2257,7 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 		BNSetFriendNote(FriendsFrame.NotesID, parent.editBox:GetText());
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -2300,9 +2291,7 @@ StaticPopupDialogs["SET_COMMUNITY_MEMBER_NOTE"] = {
 		C_Club.SetClubMemberNote(data.clubId, data.memberId, parent.editBox:GetText());
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -2434,7 +2423,7 @@ StaticPopupDialogs["CONFIRM_DESTROY_COMMUNITY"] = {
 		StaticPopup_StandardConfirmationTextHandler(self, COMMUNITIES_DELETE_CONFIRM_STRING);
 	end,
 	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
+		StaticPopup_StandardEditBoxOnEscapePressed();
 		ClearCursor();
 	end
 };
@@ -2463,9 +2452,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 		C_FriendList.AddIgnore(parent.editBox:GetText());
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -2539,9 +2526,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 			parent:Hide();
 		end
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -2638,9 +2623,7 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 		GuildRosterSetPublicNote(GetGuildRosterSelection(), parent.editBox:GetText());
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -2671,9 +2654,7 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 		GuildRosterSetOfficerNote(GetGuildRosterSelection(), parent.editBox:GetText());
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -2704,9 +2685,7 @@ StaticPopupDialogs["SET_GUILD_COMMUNITIY_NOTE"] = {
 		C_GuildInfo.SetNote(data.guid, self:GetText(), data.isPublic);
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -2789,9 +2768,7 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	button2 = CANCEL,
 	OnAccept = function(self, index)
 		AbandonSkill(index);
-		if TradeSkillFrame then
-			HideUIPanel(TradeSkillFrame);
-		end
+		HideUIPanel(ProfessionsFrame);
 	end,
 	timeout = STATICPOPUP_TIMEOUT,
 	exclusive = 1,
@@ -3333,9 +3310,7 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 		C_GossipInfo.SelectOption(data, parent.editBox:GetText());
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	timeout = 0,
 	exclusive = 1,
 	hideOnEscape = 1
@@ -3357,9 +3332,7 @@ StaticPopupDialogs["CREATE_COMBAT_FILTER"] = {
 		CombatConfig_CreateCombatFilter(parent.editBox:GetText());
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function (self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	OnHide = function (self)
 		self.editBox:SetText("");
 	end,
@@ -3381,9 +3354,7 @@ StaticPopupDialogs["COPY_COMBAT_FILTER"] = {
 		CombatConfig_CreateCombatFilter(parent.editBox:GetText(), parent.data);
 		parent:Hide();
 	end,
-	EditBoxOnEscapePressed = function (self)
-		self:GetParent():Hide();
-	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	OnHide = function (self)
 		self.editBox:SetText("");
 	end,
@@ -3419,9 +3390,6 @@ StaticPopupDialogs["WOW_MOUSE_NOT_FOUND"] = {
 	button1 = OKAY,
 	OnHide = function(self)
 		SetCVar("enableWoWMouse", "0");
-		if ( InterfaceOptionsFrame:IsShown() ) then
-			InterfaceOptionsMousePanelWoWMouse:Click();
-		end
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -3851,9 +3819,7 @@ StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
 	EditBoxOnTextChanged = function (self)
 		StaticPopup_StandardNonEmptyTextHandler(self);
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 };
 
 StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
@@ -4204,7 +4170,7 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 		self:GetParent().button1:Click();
 	end,
 	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
+		StaticPopup_StandardEditBoxOnEscapePressed(self);
 		ClearCursor();
 	end
 };
@@ -4249,9 +4215,7 @@ StaticPopupDialogs["CONFIRM_RAF_REMOVE_RECRUIT"] = {
 	EditBoxOnTextChanged = function (self)
 		StaticPopup_StandardConfirmationTextHandler(self, REMOVE_RECRUIT_CONFIRM_STRING);
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 };
 
 StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
@@ -4385,6 +4349,9 @@ function StaticPopup_Resize(dialog, which)
 	elseif ( info.hasMoneyInputFrame ) then
 		height = height + 22;
 	end
+	if ( info.hasDropDown ) then
+		height = height + 8 + dialog.DropDownControl:GetHeight();
+	end
 	if ( dialog.insertedFrame ) then
 		height = height + dialog.insertedFrame:GetHeight();
 	end
@@ -4433,6 +4400,55 @@ function StaticPopup_ShowNotification(systemPrefix, notificationType, message)
 	local text_arg1 = nil;
 	local text_arg2 = nil;
 	StaticPopup_Show(staticPopupToken, text_arg1, text_arg2, message);
+end
+
+function StaticPopup_ShowGenericConfirmation(text, callback, insertedFrame)
+	local data = { text = text, callback = callback, };
+	StaticPopup_ShowCustomGenericConfirmation(data, insertedFrame);
+end
+
+-- customData keys:
+-- .text: the text for the confirmation.
+-- .text_arg1 : formatted into text if provided
+-- .text_arg2 : formatted into text if provided
+-- .callback: the callback when the player accepts.
+-- .cancelCallback: the callback when the player cancels (will not be called on accept).
+-- .acceptText: custom text for the accept button.
+-- .cancelText: custom text for the cancel button.
+-- .showAlert: whether or not the alert texture should show.
+-- .referenceKey: used with StaticPopup_IsCustomGenericConfirmationShown.
+function StaticPopup_ShowCustomGenericConfirmation(customData, insertedFrame)
+	StaticPopup_Show("GENERIC_CONFIRMATION", nil, nil, customData, insertedFrame);
+end
+
+function StaticPopup_IsCustomGenericConfirmationShown(referenceKey)
+	for index = 1, STATICPOPUP_NUMDIALOGS do
+		local frame = _G["StaticPopup"..index];
+		if ( frame:IsShown() and (frame.which == "GENERIC_CONFIRMATION") and (frame.data.referenceKey == referenceKey) ) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+-- customData keys:
+-- .text: the text for the confirmation.
+-- .text_arg1 : formatted into text if provided
+-- .text_arg2 : formatted into text if provided
+-- .callback: the callback when the player accepts.
+-- .cancelCallback: the callback when the player cancels (will not be called on accept).
+-- .acceptText: custom text for the accept button.
+-- .cancelText: custom text for the cancel button.
+-- .maxLetters: the maximum text length that can be entered.
+-- .countInvisibleLetters: used in tandem with maxLetters.
+function StaticPopup_ShowCustomGenericInputBox(customData, insertedFrame)
+	StaticPopup_Show("GENERIC_INPUT_BOX", nil, nil, customData, insertedFrame);
+end
+
+function StaticPopup_ShowGenericDropDown(text, callback, options, hasButtons, defaultOption, insertedFrame)
+	local data = { text = text, callback = callback, options = options, hasButtons = hasButtons, defaultOption = defaultOption };
+	StaticPopup_Show("GENERIC_DROP_DOWN", nil, nil, data, insertedFrame);
 end
 
 local tempButtonLocs = {};	--So we don't make a new table each time.
@@ -4646,6 +4662,24 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		editBox:Hide();
 	end
 
+	if ( info.hasDropDown ) then
+		dialog.DropDownControl:Show();
+		dialog.DropDownControl:SetOptions(info.dropDownOptions, info.dropDownDefaultOption);
+
+		local function StaticPopup_OnDropDownOptionSelected(value, isUserInput)
+			info.OnDropDownOptionSelected(dialog, data, value, isUserInput);
+		end
+
+		dialog.DropDownControl:SetOptionSelectedCallback(nil);
+		dialog.DropDownControl:SetSelectedValue(nil);
+
+		if info.OnDropDownOptionSelected then
+			dialog.DropDownControl:SetOptionSelectedCallback(StaticPopup_OnDropDownOptionSelected);
+		end
+	else
+		dialog.DropDownControl:Hide();
+	end
+
 	-- Show or hide money frame
 	if ( info.hasMoneyFrame ) then
 		_G[dialog:GetName().."MoneyFrame"]:Show();
@@ -4827,8 +4861,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		local width = 128
 		local padding = 40;
 		local textWidth = extraButton:GetTextWidth() + padding;
-		width = math.max(width, textWidth)
-		extraButton:SetWidth(width)
+		width = math.max(width, textWidth);
+		extraButton:SetWidth(width);
 
 		dialog.Separator:Show();
 	else
@@ -4838,7 +4872,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 
 	-- Show or hide the alert icon
 	local alertIcon = _G[dialog:GetName().."AlertIcon"];
-	if ( info.showAlert ) then
+	local dataShowsAlert = (which == "GENERIC_CONFIRMATION") and data.showAlert;
+	if ( dataShowsAlert or info.showAlert ) then
 		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERT);
 		if ( button3:IsShown() )then
 			alertIcon:SetPoint("LEFT", 24, 10);
@@ -5344,16 +5379,6 @@ end
 function StaticPopup_OnEvent(self)
 	self.maxHeightSoFar = 0;
 	StaticPopup_Resize(self, self.which);
-end
-
-function StaticPopup_StandardConfirmationTextHandler(self, expectedText)
-	local parent = self:GetParent();
-	parent.button1:SetEnabled(ConfirmationEditBoxMatches(parent.editBox, expectedText));
-end
-
-function StaticPopup_StandardNonEmptyTextHandler(self)
-	local parent = self:GetParent();
-	parent.button1:SetEnabled(UserEditBoxNonEmpty(parent.editBox));
 end
 
 function StaticPopup_HideExclusive()

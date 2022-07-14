@@ -2,19 +2,20 @@
 ..\SharedXML\SharedConstants.lua
 
 ## add C namespace augmentations here
-..\SharedXML\C_TimerAugment.lua
 
 ##DebugHook.lua
 ..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
 ..\SharedXML\TableUtil.lua
 ..\SharedXML\EnumUtil.lua
+..\SharedXML\LocaleUtil.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
+..\SharedXML\CallbackRegistrant.xml
 ..\SharedXML\CvarUtil.lua
 ..\SharedXML\Color.lua
 ..\SharedXML\ColorUtil.lua
@@ -33,6 +34,7 @@
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\EventUtil.lua
 ..\SharedXML\RegionUtil.lua
 ..\SharedXML\SoundKitConstants.lua
 ..\SharedXML\Pools.lua
@@ -43,12 +45,24 @@
 ..\SharedXML\AnchorUtil.lua
 ..\SharedXML\GridLayoutUtil.lua
 ..\SharedXML\StringUtil.lua
+..\SharedXML\GlobalCallbackRegistry.lua
+..\SharedXML\SelectableButton.xml
+..\SharedXML\ButtonGroup.lua
+..\SharedXML\Frame\EventFrame.xml
+..\SharedXML\Frame\EventButton.xml
+..\SharedXML\DataProvider.lua
+..\SharedXML\Interpolator.lua
+..\SharedXML\ButtonStateBehavior.lua
+..\SharedXML\Slider\MinimalSlider.xml
+..\SharedXML\Scroll\ScrollUtil.lua
+..\SharedXML\Scroll\ScrollController.lua
+..\SharedXML\Scroll\ScrollBox.xml
+..\SharedXML\Scroll\ScrollBar.xml
+..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
 ..\SharedXML\NewFeatureLabel.xml
 ..\SharedXML\VASErrorLookup.lua
-..\SharedXML\Frame\EventFrame.xml
-..\SharedXML\Frame\EventButton.xml
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
@@ -62,9 +76,9 @@ GlueLocalization.xml
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
+..\SharedXML\Tabs\MinimalTab.xml
 ..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\KeyCommand.lua
-..\SharedXML\GlobalCallbackRegistry.lua
 GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml
@@ -72,14 +86,10 @@ GlueButtons.xml
 GlueContextMenu.xml
 
 ..\SharedXML\DataProviders.xml
-..\SharedXML\Interpolator.lua
-..\SharedXML\Scroll\ScrollUtil.lua
-..\SharedXML\Scroll\ScrollController.lua
-..\SharedXML\Scroll\ScrollBox.xml
-..\SharedXML\Scroll\ScrollBar.xml
-..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\Scroll\TrimScrollBar.xml
 ..\SharedXML\Scroll\MinimalScrollBar.xml
+..\SharedXML\ButtonTray\ButtonTrayUtil.lua
+..\SharedXML\ButtonTray\ButtonTray.xml
 ..\SharedXML\HybridScrollFrame.xml
 ..\SharedXML\TemplatedList.xml
 ..\SharedXML\ScrollList.xml
@@ -94,9 +104,14 @@ GlueContextMenu.xml
 ..\SharedXML\BulletPoint.xml
 ..\SharedXML\FrameStack.lua
 ..\SharedXML\AnimationTemplates.xml
+..\SharedXML\Selector\Blizzard_SelectorUI.xml
+..\SharedXML\Selector\Blizzard_GridSelectorUI.xml
+..\SharedXML\Selector\Blizzard_ScrollBoxSelector.xml
+
 
 ##New stuff!!!
 GlueAddons.lua
+GlueParentUtil.lua
 GlueParent.xml
 ## These SharedXML files need to be loaded after GlueParent.xml
 ..\SharedXML\IME.xml
@@ -108,6 +123,11 @@ GlueParent.xml
 ..\SharedXML\HelpTip.xml
 GlueDialog.xml
 GlueTooltip.xml
+..\SharedXML\DialogUtil.lua
+
+..\SharedXML\Settings\Settings.xml
+SettingDefinitions\Definitions.xml
+
 ..\SharedXML\AddonList.xml
 ServerAlert.xml
 AccountLogin.xml
@@ -126,12 +146,6 @@ CharacterServicesPaidFactionChange.xml
 SocialContract.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml
-..\SharedXML\OptionsFrameTemplates.xml
-..\SharedXML\OptionsPanelTemplates.xml
-..\SharedXML\VideoOptionsFrame.xml
-..\SharedXML\VideoOptionsPanels.xml
-..\SharedXML\AudioOptionsFrame.xml
-..\SharedXML\AudioOptionsPanels.xml
 MovieFrame.xml
 CinematicsFrame.xml
 CreditsFrame.xml

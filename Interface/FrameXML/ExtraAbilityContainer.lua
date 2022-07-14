@@ -10,10 +10,12 @@ function ExtraAbilityContainerMixin:OnLoad()
 end
 
 function ExtraAbilityContainerMixin:OnShow()
+	LayoutMixin.OnShow(self);
+	UIParentManagedFrameMixin.OnShow(self);
 end
 
 function ExtraAbilityContainerMixin:OnHide()
-	UIParent_ManageFramePositions();
+	UIParentManagedFrameMixin.OnHide(self)
 end
 
 local function SortFramePairs(lhsFramePair, rhsFramePair)
@@ -70,8 +72,4 @@ function ExtraAbilityContainerMixin:UpdateLayoutIndicies()
 	end
 
 	self:MarkDirty();
-end
-
-function ExtraAbilityContainerMixin:OnCleaned()
-	UIParent_ManageFramePositions();
-end
+end	

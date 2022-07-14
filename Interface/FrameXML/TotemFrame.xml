@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="TotemFrame.lua"/>
 	<Button name="TotemButtonTemplate" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>
+		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" file="Interface\Minimap\UI-Minimap-Background">
@@ -78,51 +76,29 @@
 		</Scripts>
 	</Button>
 	<Frame name="TotemFrame" toplevel="true" parent="PlayerFrame" hidden="true">
-		<Size>
-			<AbsDimension x="128" y="53"/>
-		</Size>
+		<Size x="128" y="53"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
-				<Offset>
-					<AbsDimension x="99" y="38"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="99" y="38"/>
 		</Anchors>
 		<Frames>
 			<Button name="$parentTotem1" inherits="TotemButtonTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentTotem2" inherits="TotemButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTotem1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-4" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentTotem1" relativePoint="RIGHT" x="-4" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentTotem3" inherits="TotemButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTotem2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-4" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentTotem2" relativePoint="RIGHT" x="-4" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentTotem4" inherits="TotemButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTotem3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-4" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentTotem3" relativePoint="RIGHT" x="-4" y="0"/>
 				</Anchors>
 			</Button>
 		</Frames>

@@ -11,14 +11,6 @@ function TalkingHeadFrame_OnLoad(self)
 	AlertFrame:SetSubSystemAnchorPriority(alertSystem, 0);
 end
 
-function TalkingHeadFrame_OnShow(self)
-	UIParent_ManageFramePositions();
-end
-
-function TalkingHeadFrame_OnHide(self)
-	UIParent_ManageFramePositions();
-end
-
 function TalkingHeadFrame_OnEvent(self, event, ...)
 	if ( event == "TALKINGHEAD_REQUESTED" ) then
 		TalkingHeadFrame_PlayCurrent();

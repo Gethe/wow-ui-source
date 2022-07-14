@@ -132,6 +132,14 @@ end
 	return self.customBindingType;
 end
 
+--[[public]] function CustomBindingButtonMixin:SetCustomBindingHandler(handler)
+	self.handler = handler;
+end
+
+--[[public]] function CustomBindingButtonMixin:GetCustomBindingHandler()
+	return self.handler;
+end
+
 --[[public, virtual]] function CustomBindingButtonMixin:OnBindingTextChanged(bindingText)
 	self:SetText(bindingText);
 end

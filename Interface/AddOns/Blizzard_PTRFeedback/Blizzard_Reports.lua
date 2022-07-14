@@ -1,7 +1,9 @@
 PTR_IssueReporter.Data.Message_Key = "[*S&^$&L]"
+PTR_IssueReporter.Data.Feedback_Message_Key = "[*S&^$&LF]"
+PTR_IssueReporter.Data.Current_Message_Key = PTR_IssueReporter.Data.Message_Key
 PTR_IssueReporter.LockedReports = {}
 
-function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey)
+function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQuestion, setAsFeedback)
     local collector = PTR_IssueReporter.DataCollectorTypes
     local GetFaction = function()
         return select(1, UnitFactionGroup(PTR_IssueReporter.Data.UnitTokens.Player))
@@ -69,7 +71,12 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey)
 		return results
 	end
     
-    survey:AddDataCollection(collector.RunFunction, PTR_IssueReporter.GetMessageKey)
+    if (setAsFeedback) then
+        survey:AddDataCollection(collector.RunFunction, PTR_IssueReporter.GetFeedbackMessageKey)
+    else
+        survey:AddDataCollection(collector.RunFunction, PTR_IssueReporter.GetMessageKey)
+    end
+    
     survey:AddDataCollection(collector.SurveyID)
     survey:AddDataCollection(collector.RunFunction, GetPlayerLevel)
     survey:AddDataCollection(collector.RunFunction, GetFaction)
@@ -82,6 +89,9 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey)
 	survey:AddDataCollection(collector.RunFunction, C_Soulbinds.GetActiveSoulbindID)
 	survey:AddDataCollection(collector.RunFunction, GetCurrentConduits)
 	survey:AddDataCollection(collector.RunFunction, GetCurrentSoulbindTraits)
+    if not (ignoreTypeQuestion) then
+        survey:AddDataCollection(collector.SelectOne_MessageKeyUpdater, { { Choice = "Bug", Key = PTR_IssueReporter.Data.Message_Key }, { Choice = "Feedback", Key = PTR_IssueReporter.Data.Feedback_Message_Key }})
+    end
 end
 --------------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.CreateReports()
@@ -104,22 +114,22 @@ function PTR_IssueReporter.CreateReports()
     PTR_IssueReporter.AddMapToSuppressedList(IslandMapIDs) 
     
     ------------------------------------ Confused Reporting --------------------------------------------
-    local confusedReport = PTR_IssueReporter.CreateSurvey(1, "Confused Report")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(confusedReport)
+    local confusedReport = PTR_IssueReporter.CreateSurvey(1, "Feedback Report")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(confusedReport, true, true)
     
-    confusedReport:AddDataCollection(collector.OpenEndedQuestion, "What has caused your confusion?")
+    confusedReport:AddDataCollection(collector.OpenEndedQuestion, "What is your Feedback for this Zone?")
 
     confusedReport:RegisterPopEvent(event.UIButtonClicked, "Confused")
     
     --------------------------------------- Bug Reporting ----------------------------------------------
     local bugReport = PTR_IssueReporter.CreateSurvey(2, "Bug Report")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(bugReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(bugReport, true)
     
     bugReport:AddDataCollection(collector.OpenEndedQuestion, "Please describe the issue:")     
-    bugReport:RegisterPopEvent(event.UIButtonClicked, "Bug")
+    bugReport:RegisterPopEvent(event.UIButtonClicked, "Zone Bug")
     
     ----------------------------------- Creature Reporting ---------------------------------------------
-    local creatureReport = PTR_IssueReporter.CreateSurvey(3, "Bug Report: %s")
+    local creatureReport = PTR_IssueReporter.CreateSurvey(3, "Issue Report: %s")
     creatureReport:PopulateDynamicTitleToken(1, "Name")
     creatureReport:AttachModelViewer("ID")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(creatureReport)
@@ -168,7 +178,7 @@ function PTR_IssueReporter.CreateReports()
 		return results
 	end
     
-    local questReport = PTR_IssueReporter.CreateSurvey(4, "Bug Report: %s")
+    local questReport = PTR_IssueReporter.CreateSurvey(4, "Issue Report: %s")
     questReport:PopulateDynamicTitleToken(1, "Name")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(questReport)
     
@@ -178,7 +188,7 @@ function PTR_IssueReporter.CreateReports()
     questReport:AddDataCollection(collector.RunFunction, IsQuestDisabledFromQuestSync)
 	questReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
     
-    local AutoQuestReport = PTR_IssueReporter.CreateSurvey(4, "Bug Report: Quest")
+    local AutoQuestReport = PTR_IssueReporter.CreateSurvey(4, "Issue Report: Quest")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(AutoQuestReport)
     
     AutoQuestReport:AddDataCollection(collector.FromDataPackage, "ID")
@@ -191,7 +201,7 @@ function PTR_IssueReporter.CreateReports()
     AutoQuestReport:RegisterFrameAttachedSurvey(QuestFrame, event.QuestRewardFrameShown, {event.QuestFrameClosed, event.QuestTurnedIn}, 0, 0) 
     
     ------------------------------------- Island Reporting ----------------------------------------------
-    local islandReport = PTR_IssueReporter.CreateSurvey(5, "Bug Report: %s")
+    local islandReport = PTR_IssueReporter.CreateSurvey(5, "Issue Report: %s")
     islandReport:PopulateDynamicTitleToken(1, "Name")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(islandReport)
     
@@ -208,7 +218,7 @@ function PTR_IssueReporter.CreateReports()
     islandReport:RegisterPopEvent(event.MapDifficultyIDEnded, islandDifficultIDs)
 
     ------------------------------------ Warfronts Reporting ---------------------------------------------
-    local warfrontsReport = PTR_IssueReporter.CreateSurvey(6, "Bug Report: %s")
+    local warfrontsReport = PTR_IssueReporter.CreateSurvey(6, "Issue Report: %s")
     warfrontsReport:PopulateDynamicTitleToken(1, "Name")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(warfrontsReport)
     
@@ -229,7 +239,7 @@ function PTR_IssueReporter.CreateReports()
         return select(3, GetSpellInfo(value))
     end
     
-    local spellReport = PTR_IssueReporter.CreateSurvey(7, "Bug Report: %s")
+    local spellReport = PTR_IssueReporter.CreateSurvey(7, "Issue Report: %s")
     spellReport:PopulateDynamicTitleToken(1, "Name")
     spellReport:AttachIconViewer("ID", GetIconFromSpellID)
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(spellReport)
@@ -254,7 +264,7 @@ function PTR_IssueReporter.CreateReports()
 		return returnString
 	end
 
-    local encounterReport = PTR_IssueReporter.CreateSurvey(8, "Bug Report: %s")
+    local encounterReport = PTR_IssueReporter.CreateSurvey(8, "Issue Report: %s")
     encounterReport:PopulateDynamicTitleToken(1, "Name")
     encounterReport:AttachModelViewer("DisplayInfoID", true)
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(encounterReport)
@@ -264,7 +274,7 @@ function PTR_IssueReporter.CreateReports()
     encounterReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this boss?")
 	encounterReport:AddDataCollection(collector.RunFunction, GetMythicPlusInfo)
     
-    local automaticEncounterReport = PTR_IssueReporter.CreateSurvey(8, "Bug Report: %s")
+    local automaticEncounterReport = PTR_IssueReporter.CreateSurvey(8, "Issue Report: %s")
     automaticEncounterReport:PopulateDynamicTitleToken(1, "Name")
     automaticEncounterReport:AttachModelViewer("DisplayInfoID", true)
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(automaticEncounterReport)
@@ -321,7 +331,7 @@ function PTR_IssueReporter.CreateReports()
         return ""
     end
 
-    local itemReport = PTR_IssueReporter.CreateSurvey(9, "Bug Report: %s")
+    local itemReport = PTR_IssueReporter.CreateSurvey(9, "Issue Report: %s")
     itemReport:PopulateDynamicTitleToken(1, "Name")
     itemReport:AttachIconViewer("ID", GetIconFromItemID)
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(itemReport)
@@ -337,7 +347,7 @@ function PTR_IssueReporter.CreateReports()
         return select(10, GetAchievementInfo(value))
     end
     
-    local achievementReport = PTR_IssueReporter.CreateSurvey(10, "Bug Report: %s")
+    local achievementReport = PTR_IssueReporter.CreateSurvey(10, "Issue Report: %s")
     achievementReport:PopulateDynamicTitleToken(1, "Name")
     achievementReport:AttachIconViewer("ID", GetIconFromAchievementID)
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(achievementReport)
@@ -352,7 +362,7 @@ function PTR_IssueReporter.CreateReports()
         return C_CurrencyInfo.GetCurrencyInfo(value).iconFileID;
     end
     
-    local currencyReport = PTR_IssueReporter.CreateSurvey(11, "Bug Report: %s")
+    local currencyReport = PTR_IssueReporter.CreateSurvey(11, "Issue Report: %s")
     currencyReport:PopulateDynamicTitleToken(1, "Name")
     currencyReport:AttachIconViewer("ID", GetIconFromCurrencyID)
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(currencyReport)
@@ -363,7 +373,7 @@ function PTR_IssueReporter.CreateReports()
     currencyReport:RegisterPopEvent(event.Tooltip, tooltips.currency)
     
     -------------------------------- Pet Battle Creature Reporting ---------------------------------------
-    local petBattleCreatureReport = PTR_IssueReporter.CreateSurvey(12, "Bug Report: Pet Battles")
+    local petBattleCreatureReport = PTR_IssueReporter.CreateSurvey(12, "Issue Report: Pet Battles")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(petBattleCreatureReport)
     
     petBattleCreatureReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with pet battles?")
@@ -383,7 +393,7 @@ function PTR_IssueReporter.CreateReports()
         end
     end
     
-    local azeriteEssenceReport = PTR_IssueReporter.CreateSurvey(13, "Bug Report: %s")
+    local azeriteEssenceReport = PTR_IssueReporter.CreateSurvey(13, "Issue Report: %s")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(azeriteEssenceReport)
     azeriteEssenceReport:PopulateDynamicTitleToken(1, "Name")
     azeriteEssenceReport:AttachIconViewer("ID", GetIconFromAzeriteEssenceID)
@@ -392,7 +402,7 @@ function PTR_IssueReporter.CreateReports()
     azeriteEssenceReport:AddDataCollection(collector.FromDataPackage, "ID") 
 
     azeriteEssenceReport:RegisterPopEvent(event.Tooltip, tooltips.azerite)
-    --------------------------------------- Garrison Talent Bug Reporting ----------------------------------------------
+    --------------------------------------- Garrison Talent Issue Reporting ----------------------------------------------
     local GetIconFromGarrTalentID = function(talentID)
         local talentInfo = C_Garrison.GetTalentInfo(talentID)
         if (talentInfo) and (talentInfo.icon) then
@@ -415,7 +425,7 @@ function PTR_IssueReporter.CreateReports()
         return talentTreeStateString
     end
     
-    local garrTalentReport = PTR_IssueReporter.CreateSurvey(14, "Bug Report: %s")
+    local garrTalentReport = PTR_IssueReporter.CreateSurvey(14, "Issue Report: %s")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(garrTalentReport)
     garrTalentReport:PopulateDynamicTitleToken(1, "Name")
     garrTalentReport:AttachIconViewer("ID", GetIconFromGarrTalentID)
@@ -426,8 +436,8 @@ function PTR_IssueReporter.CreateReports()
     
     garrTalentReport:RegisterPopEvent(event.Tooltip, tooltips.talent)
     
-    --------------------------------------- Character Customization Bug Reporting ----------------------------------------------
-    local barberShopReport = PTR_IssueReporter.CreateSurvey(3001, "Bug Report")
+    --------------------------------------- Character Customization Issue Reporting ----------------------------------------------
+    local barberShopReport = PTR_IssueReporter.CreateSurvey(3001, "Issue Report")
     
     local GetRaceID = function()
         return select(3, UnitRace(PTR_IssueReporter.Data.UnitTokens.Player))

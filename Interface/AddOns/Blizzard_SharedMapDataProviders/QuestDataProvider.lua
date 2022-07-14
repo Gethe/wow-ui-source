@@ -231,6 +231,7 @@ function QuestPinMixin:OnMouseEnter()
 	end
 	GameTooltip:Show();
 	self:GetMap():TriggerEvent("SetHighlightedQuestPOI", questID);
+    EventRegistry:TriggerEvent("QuestPin.OnEnter", self, questID);
 end
 
 function QuestPinMixin:OnMouseLeave()

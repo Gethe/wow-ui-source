@@ -79,9 +79,7 @@
 	</Frame>
 
 	<Frame name="MageArcaneChargesFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, MagePowerBar">
-		<Size>
-		  <AbsDimension x="125" y="39"/>
-		</Size>
+		<Size x="125" y="39"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="50" y="34"/>
 		</Anchors>

@@ -26,7 +26,8 @@
 -- The primary elements of GridLayoutManagerMixin are:
 --  primarySizeCalculator: how to measure regions. Typically GetWidth or GetHeight.
 --  secondarySizeCalculator: how to measure regions. Typically GetWidth or GetHeight.
---  direction: a table of primaryMultiplier and secondaryMultiplier to be used when applying offsets. Typically 1 or -1.
+--  primaryMultiplier: to be used when applying offsets. Typically 1 or -1.
+--  secondaryMultiplier: to be used when applying offsets. Typically 1 or -1.
 --  primarySizePadding: padding between elements in sections.
 --  secondarySizePadding: padding between sections.
 --  isHeightPrimary: by default, width is primary. Set to switch to height as primary.
@@ -40,7 +41,7 @@
 --  secondaryPaddingStrategy: resolution between different size regions in a section.
 --  Notes: "leading" space is referred to as padding, and "trailing" space is referred to as spacing. This is all relative to direction though.
 --
--- GridLayoutManagerMixin:ApplyToRegions:ApplyToRegions is the engine that runs at the heart of the system. The algorithm is:
+-- GridLayoutManagerMixin:ApplyToRegions is the engine that runs at the heart of the system. The algorithm is:
 -- 1. Group regions into sections.
 -- 2. Based on sections, generate cross sections.
 -- 3. Add extra padding along the primary axis based on cross sections.
@@ -63,34 +64,105 @@ function GridLayoutUtil.GridLayoutRegions(regions, initialAnchor, layout)
 	local secondarySizePadding = isColumnBased and layout.paddingX or layout.paddingY;
 	local primaryMultiplier = isColumnBased and layout.direction.y or layout.direction.x;
 	local secondaryMultiplier = isColumnBased and layout.direction.x or layout.direction.y;
-	local direction = { primaryMultiplier = primaryMultiplier, secondaryMultiplier = secondaryMultiplier };
-	local layoutManager = CreateAndInitFromMixin(GridLayoutManagerMixin, primarySizeCalculator, secondarySizeCalculator, direction, primarySizePadding, secondarySizePadding);
+	local layoutManager = CreateAndInitFromMixin(GridLayoutManagerMixin, primarySizeCalculator, secondarySizeCalculator, primaryMultiplier, secondaryMultiplier, primarySizePadding, secondarySizePadding);
 
 	layoutManager:SetHeightAsPrimary(layout.isColumnBased);
 
 	layoutManager:SetPrimaryPaddingStrategy(GridLayoutUtilPrimaryPaddingStrategy.AllPaddingToFirst);
 	layoutManager:SetSecondaryPaddingStrategy(GridLayoutUtilSecondaryPaddingStrategy.Equal);
 
-	local sectionPadding = 0;
 	local sectionSize = layout.stride;
 	if layout.direction.isVertical then
-		layoutManager:SetSectionStrategy(GenerateClosure(GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsVertical, sectionSize, sectionPadding));
+		layoutManager:SetSectionStrategy(GenerateClosure(GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsVertical, sectionSize));
 	else
-		layoutManager:SetSectionStrategy(GenerateClosure(GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSections, sectionSize, sectionPadding));
+		layoutManager:SetSectionStrategy(GenerateClosure(GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSections, sectionSize));
 	end
 
 	layoutManager:SetCrossSectionStrategy(GridLayoutUtilCrossSectionStrategy.CalculateGridCrossSections);
 	layoutManager:ApplyToRegions(initialAnchor, regions);
 end
 
+-- Layout a grid with each frame taking up one cell regardless of actual width/height.
+function GridLayoutUtil.CreateStandardGridLayout(stride, xPadding, yPadding, xMultiplier, yMultiplier, isColumnBased)
+	local layout = GridLayoutUtil.CreateGridLayout();
+	layout.primarySizePadding = (xPadding or layout.primarySizePadding);
+	layout.secondarySizePadding = (yPadding or layout.secondarySizePadding);
+	layout.primaryMultiplier = (xMultiplier or layout.primaryMultiplier);
+	layout.secondaryMultiplier = (yMultiplier or layout.secondaryMultiplier);
+	layout.isColumnBased = isColumnBased;
+	layout.sectionStrategy = GenerateClosure(GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSections, stride);
+
+	layout.crossSectionStrategy = GridLayoutUtilCrossSectionStrategy.CalculateGridCrossSections;
+
+	return layout;
+end
+
+-- Layout a grid with each frame taking up one cell regardless of actual width/height.
+function GridLayoutUtil.CreateVerticalGridLayout(stride, xPadding, yPadding, xMultiplier, yMultiplier)
+	-- Calling standard grid layout but flipping x and y to account for being vertical rather than horizontal
+	local isColumnBased = true;
+	return GridLayoutUtil.CreateStandardGridLayout(stride, yPadding, xPadding, yMultiplier, xMultiplier, isColumnBased);
+end
+
+-- Layout a grid based on the frame's actual UI width/height.
+function GridLayoutUtil.CreateNaturalGridLayout(stride, xPadding, yPadding, xMultiplier, yMultiplier)
+	local gridLayout = GridLayoutUtil.CreateGridLayout();
+	gridLayout.primarySizePadding = (xPadding or gridLayout.primarySizePadding);
+	gridLayout.secondarySizePadding = (yPadding or gridLayout.secondarySizePadding);
+	gridLayout.primaryMultiplier = (xMultiplier or gridLayout.primaryMultiplier);
+	gridLayout.secondaryMultiplier = (yMultiplier or gridLayout.secondaryMultiplier);
+
+	gridLayout.primaryPaddingStrategy = GridLayoutUtilPrimaryPaddingStrategy.AllSpacingToLast;
+	gridLayout.secondaryPaddingStrategy = GridLayoutUtilSecondaryPaddingStrategy.Equal;
+
+	gridLayout.sectionStrategy = GenerateClosure(GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsByNaturalSize, stride);
+	gridLayout.crossSectionStrategy = GridLayoutUtilCrossSectionStrategy.CalculateFlatCrossSections;
+
+	return gridLayout;
+end
+
+function GridLayoutUtil.ApplyGridLayout(regions, initialAnchor, gridLayout)
+	if #regions == 0 then
+		return;
+	end
+
+	local isColumnBased = gridLayout.isColumnBased;
+	local primarySizeCalculator = isColumnBased and regions[1].GetHeight or regions[1].GetWidth;
+	local secondarySizeCalculator = isColumnBased and regions[1].GetWidth or regions[1].GetHeight;
+	local layoutManager = CreateAndInitFromMixin(GridLayoutManagerMixin, primarySizeCalculator, secondarySizeCalculator, gridLayout.primaryMultiplier, gridLayout.secondaryMultiplier,
+													gridLayout.primarySizePadding, gridLayout.secondarySizePadding);
+
+	layoutManager:SetHeightAsPrimary(isColumnBased);
+
+	layoutManager:SetPrimaryPaddingStrategy(gridLayout.primaryPaddingStrategy, gridLayout.minimumPrimarySize);
+	layoutManager:SetSecondaryPaddingStrategy(gridLayout.secondaryPaddingStrategy, gridLayout.minimumSecondarySize);
+	layoutManager:SetSectionStrategy(gridLayout.sectionStrategy);
+	layoutManager:SetCrossSectionStrategy(gridLayout.crossSectionStrategy);
+	layoutManager:ApplyToRegions(initialAnchor, regions);
+end
+
+function GridLayoutUtil.CreateGridLayout()
+	return {
+		primarySizeCalculator = UIParent.GetWidth,
+		secondarySizeCalculator = UIParent.GetHeight,
+		primarySizePadding = 0,
+		secondarySizePadding = 0,
+		primaryMultiplier = 1,
+		secondaryMultiplier = -1,
+		primaryPaddingStrategy = GridLayoutUtilPrimaryPaddingStrategy.AllPaddingToFirst,
+		secondaryPaddingStrategy = GridLayoutUtilSecondaryPaddingStrategy.Equal,
+		isColumnBased = false,
+	};
+end
+
 
 GridLayoutManagerMixin = {};
 
-function GridLayoutManagerMixin:Init(primarySizeCalculator, secondarySizeCalculator, direction, primarySizePadding, secondarySizePadding)
+function GridLayoutManagerMixin:Init(primarySizeCalculator, secondarySizeCalculator, primaryMultiplier, secondaryMultiplier, primarySizePadding, secondarySizePadding)
 	self.primarySizeCalculator = primarySizeCalculator;
 	self.secondarySizeCalculator = secondarySizeCalculator;
-	self.primaryMultiplier = direction.primaryMultiplier;
-	self.secondaryMultiplier = direction.secondaryMultiplier;
+	self.primaryMultiplier = primaryMultiplier;
+	self.secondaryMultiplier = secondaryMultiplier;
 	self.primarySizePadding = primarySizePadding;
 	self.secondarySizePadding = secondarySizePadding;
 end
@@ -103,12 +175,14 @@ function GridLayoutManagerMixin:SetCrossSectionStrategy(crossSectionStrategy)
 	self.crossSectionStrategy = crossSectionStrategy;
 end
 
-function GridLayoutManagerMixin:SetPrimaryPaddingStrategy(primaryPaddingStrategy)
+function GridLayoutManagerMixin:SetPrimaryPaddingStrategy(primaryPaddingStrategy, minimumPrimarySize)
 	self.primaryPaddingStrategy = primaryPaddingStrategy;
+	self.minimumPrimarySize = minimumPrimarySize;
 end
 
-function GridLayoutManagerMixin:SetSecondaryPaddingStrategy(secondaryPaddingStrategy)
+function GridLayoutManagerMixin:SetSecondaryPaddingStrategy(secondaryPaddingStrategy, minimumSecondarySize)
 	self.secondaryPaddingStrategy = secondaryPaddingStrategy;
+	self.minimumSecondarySize = minimumSecondarySize;
 end
 
 function GridLayoutManagerMixin:SetHeightAsPrimary(isHeightPrimary)
@@ -120,20 +194,21 @@ function GridLayoutManagerMixin:ApplyToRegions(initialAnchor, regions)
 		return;
 	end
 
-	local sectionGroups = self.sectionStrategy(self, regions);
-	local crossSectionGroups = self.crossSectionStrategy(self, sectionGroups);
-	self:ApplyPrimaryPadding(self, crossSectionGroups);
-	self:ApplySecondaryPadding(self, sectionGroups);
-	self:ApplyAnchoring(sectionGroups, initialAnchor);
+	local sectionGroup = self.sectionStrategy(self, regions);
+	local crossSectionGroups = self.crossSectionStrategy(self, sectionGroup);
+	self:ApplyPrimaryPadding(crossSectionGroups);
+	self:ApplySecondaryPadding(sectionGroup);
+	self:ApplyAnchoring(sectionGroup, initialAnchor);
 end
 
-function GridLayoutManagerMixin:ApplyPrimaryPadding(layoutManager, crossSectionGroups)
+function GridLayoutManagerMixin:ApplyPrimaryPadding(crossSectionGroups)
 	if self.primaryPaddingStrategy == nil then
 		return;
 	end
 
+	local minimumPrimarySize = self.minimumPrimarySize or 0;
 	for crossSectionIndex, crossSectionGroup in ipairs(crossSectionGroups) do
-		local crossSectionPrimarySize = crossSectionGroup:GetCachedPrimarySize();
+		local crossSectionPrimarySize = math.max(minimumPrimarySize, crossSectionGroup:GetCachedPrimarySize());
 		for sectionIndex, section in crossSectionGroup:EnumerateSections() do
 			local availableSpace = crossSectionPrimarySize - section:GetCachedPrimarySize();
 			self.primaryPaddingStrategy(section, GridLayoutRegionEntryMixin.GetPrimarySize, GridLayoutRegionEntryMixin.SetExtraPrimaryPadding, GridLayoutRegionEntryMixin.SetExtraPrimarySpacing, availableSpace);
@@ -141,18 +216,19 @@ function GridLayoutManagerMixin:ApplyPrimaryPadding(layoutManager, crossSectionG
 	end
 end
 
-function GridLayoutManagerMixin:ApplySecondaryPadding(layoutManager, sectionGroups)
+function GridLayoutManagerMixin:ApplySecondaryPadding(sectionGroup)
 	if self.secondaryPaddingStrategy == nil then
 		return;
 	end
 
-	for sectionIndex, section in sectionGroups:EnumerateSections() do
-		local sectionSecondarySize = section:GetCachedSecondarySize();
+	local minimumSecondarySize = self.minimumSecondarySize or 0;
+	for sectionIndex, section in sectionGroup:EnumerateSections() do
+		local sectionSecondarySize = math.max(minimumSecondarySize, section:GetCachedSecondarySize());
 		self.secondaryPaddingStrategy(section, GridLayoutRegionEntryMixin.GetSecondarySize, GridLayoutRegionEntryMixin.SetExtraSecondaryPadding, GridLayoutRegionEntryMixin.SetExtraSecondarySpacing, sectionSecondarySize);
 	end
 end
 
-function GridLayoutManagerMixin:ApplyAnchoring(sectionGroups, initialAnchor)
+function GridLayoutManagerMixin:ApplyAnchoring(sectionGroup, initialAnchor)
 	local isHeightPrimary = self.isHeightPrimary;
 	local primaryMultiplier = self.primaryMultiplier;
 	local secondaryMultiplier = self.secondaryMultiplier;
@@ -160,7 +236,7 @@ function GridLayoutManagerMixin:ApplyAnchoring(sectionGroups, initialAnchor)
 	local primaryOffset = 0;
 	local secondaryOffset = 0;
 	local sectionPrimaryPadding = (self:GetPrimarySizePadding() * primaryMultiplier);
-	for sectionIndex, section in sectionGroups:EnumerateSections() do
+	for sectionIndex, section in sectionGroup:EnumerateSections() do
 		primaryOffset = 0;
 
 		for regionEntryIndex, regionEntry in section:EnumerateRegionEntries() do
@@ -389,9 +465,9 @@ end
 
 GridLayoutUtilSectionStrategy = {};
 
-function GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(maxSectionSize, sectionPadding, layoutManager, regionDataProvider, sectionSizeCalculator)
-	local sectionGroups = CreateAndInitFromMixin(GridLayoutSectionGroupMixin, layoutManager);
-	local currentSection = sectionGroups:AddEmptySection();
+function GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(maxSectionSize, layoutManager, regionDataProvider, sectionSizeCalculator)
+	local sectionGroup = CreateAndInitFromMixin(GridLayoutSectionGroupMixin, layoutManager);
+	local currentSection = sectionGroup:AddEmptySection();
 	local currentSectionSize = 0;
 
 	local infiniteGuard = 300;
@@ -402,51 +478,54 @@ function GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(maxSection
 		end
 
 		local isFirstInSection = (currentSectionSize == 0);
-		local regionSize = sectionSizeCalculator(region);
-		local padding = (isFirstInSection and 0 or sectionPadding);
-		local newSectionSize = (padding + currentSectionSize + regionSize);
+		local regionSize = sectionSizeCalculator(region, currentSectionSize);
+		local newSectionSize = (currentSectionSize + regionSize);
 		if isFirstInSection or (newSectionSize <= maxSectionSize) then
 			currentSectionSize = newSectionSize;
 		else
-			currentSection = sectionGroups:AddEmptySection();
+			currentSection = sectionGroup:AddEmptySection();
 			currentSectionSize = regionSize;
 		end
 
 		currentSection:AddRegion(region);
 	end
 
-	return sectionGroups;
+	return sectionGroup;
 end
 
-function GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsByNaturalSize(sectionSize, sectionPadding, layoutManager, regions)
+function GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsByNaturalSize(sectionSize, layoutManager, regions)
 	local function NaturalRegionDataProvider(i)
 		return regions[i];
 	end
 
-	local function NaturalSectionSizeCalculator(region)
-		return layoutManager:CalculatePrimarySize(region);
+	local function NaturalSectionSizeCalculator(region, currentSectionSize)
+		if currentSectionSize == 0 then
+			return layoutManager:CalculatePrimarySize(region);
+		else
+			return layoutManager:CalculatePrimarySize(region) + layoutManager:GetPrimarySizePadding();
+		end
 	end
 
-	return GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(layoutManager, NaturalRegionDataProvider, NaturalSectionSizeCalculator, sectionSize, sectionPadding);
+	return GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(sectionSize, layoutManager, NaturalRegionDataProvider, NaturalSectionSizeCalculator);
 end
 
-function GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsInternal(sectionSize, sectionPadding, layoutManager, regionDataProvider)
-	local function GridSectionSizeCalculator()
+function GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsInternal(sectionSize, layoutManager, regionDataProvider)
+	local function GridSectionSizeCalculator(region, currentSectionSize)
 		return 1;
 	end
 
-	return GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(sectionSize, sectionPadding, layoutManager, regionDataProvider, GridSectionSizeCalculator);
+	return GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(sectionSize, layoutManager, regionDataProvider, GridSectionSizeCalculator);
 end
 
-function GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSections(sectionSize, sectionPadding, layoutManager, regions)
+function GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSections(sectionSize, layoutManager, regions)
 	local function GridRegionDataProviderByRow(i)
 		return regions[i];
 	end
 
-	return GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsInternal(sectionSize, sectionPadding, layoutManager, GridRegionDataProviderByRow);
+	return GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsInternal(sectionSize, layoutManager, GridRegionDataProviderByRow);
 end
 
-function GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsVertical(sectionSize, sectionPadding, layoutManager, regions)
+function GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsVertical(sectionSize, layoutManager, regions)
 	local numRegions = #regions;
 	local numCrossSections = math.ceil(numRegions / sectionSize);
 	local function GridRegionDataProviderVertical(i)
@@ -459,20 +538,20 @@ function GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsVertical(sect
 		return regions[row + column];
 	end
 
-	return GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsInternal(sectionSize, sectionPadding, layoutManager, GridRegionDataProviderVertical);
+	return GridLayoutUtilSectionStrategy.SplitRegionsIntoGridSectionsInternal(sectionSize, layoutManager, GridRegionDataProviderVertical);
 end
 
 
 GridLayoutUtilCrossSectionStrategy = {};
 
-function GridLayoutUtilCrossSectionStrategy.CalculateGridCrossSections(layoutManager, sectionGroups)
+function GridLayoutUtilCrossSectionStrategy.CalculateGridCrossSections(layoutManager, sectionGroup)
 	local crossSectionGroups = {};
 
 	local infiniteGuard = 300;
 	for crossSectionIndex = 1, infiniteGuard do
 		local crossSection = CreateAndInitFromMixin(GridLayoutSectionGroupMixin, layoutManager);
 		local crossSectionIsEmpty = true;
-		for i, section in sectionGroups:EnumerateSections() do
+		for i, section in sectionGroup:EnumerateSections() do
 			local sectionRegion = section:GetRegionEntry(crossSectionIndex);
 			if sectionRegion then
 				crossSection:AddToSection(i, sectionRegion);
@@ -488,6 +567,21 @@ function GridLayoutUtilCrossSectionStrategy.CalculateGridCrossSections(layoutMan
 
 		table.insert(crossSectionGroups, crossSection);
 	end
+
+	return crossSectionGroups;
+end
+
+function GridLayoutUtilCrossSectionStrategy.CalculateFlatCrossSections(layoutManager, sectionGroup)
+	local crossSectionGroups = {};
+
+	local crossSectionGroup = CreateAndInitFromMixin(GridLayoutSectionGroupMixin, layoutManager);
+	for i, section in sectionGroup:EnumerateSections() do
+		for j, region in section:EnumerateRegionEntries() do
+			crossSectionGroup:AddToSection(i, region);
+		end
+
+	end
+	table.insert(crossSectionGroups, crossSectionGroup);
 
 	return crossSectionGroups;
 end
@@ -529,7 +623,7 @@ function GridLayoutUtilPrimaryPaddingStrategy.EvenSpacing(section, regionSizeCal
 
 	for i = 1, spacedEntries do
 		local regionEntry = section:GetRegionEntry(i);
-		paddingSetter(regionEntry, equalSpacing);
+		spacingSetter(regionEntry, equalSpacing);
 	end
 end
 

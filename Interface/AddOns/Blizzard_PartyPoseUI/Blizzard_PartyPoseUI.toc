@@ -5,4 +5,4 @@
 ## LoadOnDemand: 1
 
 Blizzard_PartyPoseUI.lua
-Blizzard_PartyPoseUI.xml 
+Blizzard_PartyPoseUI.xml

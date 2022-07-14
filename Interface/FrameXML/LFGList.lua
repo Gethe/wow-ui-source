@@ -48,6 +48,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[6] = "legion",
 	[7] = "battleforazeroth",
 	[8] = "shadowlands",
+	[9] = "expansion9",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {
@@ -169,7 +170,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 					if ( not IsInRaid(LE_PARTY_CATEGORY_HOME) and
 					GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) + C_LFGList.GetNumInvitedApplicantMembers() + C_LFGList.GetNumPendingApplicantMembers() > (MAX_PARTY_MEMBERS+1) ) then
 						if ( self.displayedAutoAcceptConvert ) then
-							QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", true, numPings);
+							QueueStatusButton:SetGlowLock("lfglist-applicant", true, numPings);
 							self.stopAssistPings = true;
 						else
 							self.displayedAutoAcceptConvert = true;
@@ -177,7 +178,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 						end
 					end
 				elseif ( not self:IsVisible() ) then
-					QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", true, numPings);
+					QueueStatusButton:SetGlowLock("lfglist-applicant", true, numPings);
 					self.stopAssistPings = true;
 				end
 			end
@@ -185,7 +186,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_LIST_APPLICANT_UPDATED" ) then
 		local numApps, numActiveApps = C_LFGList.GetNumApplicants();
 		if ( numActiveApps == 0 ) then
-			QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", false);
+			QueueStatusButton:SetGlowLock("lfglist-applicant", false);
 			self.stopAssistPings = false;
 		end
 	elseif ( event == "LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS" ) then
@@ -207,7 +208,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 			self.displayedAutoAcceptConvert = false;
 		end
 	elseif ( event == "LFG_GROUP_DELISTED_LEADERSHIP_CHANGE") then
-		local listingTitle, delistTime = ...;
+		local listingTitle, delistTime = ...; 
 		StaticPopup_Show("PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING", nil, nil, { listingTitle = listingTitle, delistTime = delistTime, });
 	end
 
@@ -232,7 +233,7 @@ function LFGListFrame_OnShow(self)
 	LFGListFrame_FixPanelValid(self);
 	C_LFGList.RequestAvailableActivities();
 	self.stopAssistPings = false;
-	QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", false);
+	QueueStatusButton:SetGlowLock("lfglist-applicant", false);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
 
@@ -1258,9 +1259,12 @@ function LFGListEntryCreationListGroupButton_OnClick(self)
 end
 
 function LFGListEntryCreationActivityFinder_OnLoad(self)
-	self.Dialog.ScrollFrame.update = function() LFGListEntryCreationActivityFinder_Update(self); end;
-	self.Dialog.ScrollFrame.scrollBar.doNotHide = true;
-	HybridScrollFrame_CreateButtons(self.Dialog.ScrollFrame, "LFGListEntryCreationActivityListTemplate");
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("LFGListEntryCreationActivityListTemplate", function(button, elementData)
+		LFGListEntryCreationActivityFinder_InitButton(button, elementData);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.Dialog.ScrollBox, self.Dialog.ScrollBar, view);
 
 	self.matchingActivities = {};
 end
@@ -1283,33 +1287,25 @@ function LFGListEntryCreationActivityFinder_UpdateMatching(self)
 	if ( not self.selectedActivity or not tContains(self.matchingActivities, self.selectedActivity) ) then
 		self.selectedActivity = self.matchingActivities[1];
 	end
-	LFGListEntryCreationActivityFinder_Update(self);
+
+	local dataProvider = CreateDataProviderWithAssignedKey(self.matchingActivities, "id");
+	self.Dialog.ScrollBox:SetDataProvider(dataProvider);
 end
 
-function LFGListEntryCreationActivityFinder_Update(self)
-	local actitivities = self.matchingActivities;
+function LFGListEntryCreationActivityFinder_InitButton(button, elementData)
+	local id = elementData.id;
+	button.activityID = id;
+	button:SetText(C_LFGList.GetActivityInfo(id));
+	LFGListEntryCreationActivityFinder_SetButtonSelected(button, LFGListFrame.EntryCreation.ActivityFinder.selectedActivity == id);
+end
 
-	local offset = HybridScrollFrame_GetOffset(self.Dialog.ScrollFrame);
-
-	for i=1, #self.Dialog.ScrollFrame.buttons do
-		local button = self.Dialog.ScrollFrame.buttons[i];
-		local idx = i + offset;
-		local id = actitivities[idx];
-		if ( id ) then
-			button:SetText( (C_LFGList.GetActivityFullName(id)) );
-			button.activityID = id;
-			button.Selected:SetShown(self.selectedActivity == id);
-			if ( self.selectedActivity == id ) then
-				button:LockHighlight();
-			else
-				button:UnlockHighlight();
-			end
-			button:Show();
-		else
-			button:Hide();
-		end
+function LFGListEntryCreationActivityFinder_SetButtonSelected(button, selected)
+	button.Selected:SetShown(selected);
+	if ( selected ) then
+		button:LockHighlight();
+	else
+		button:UnlockHighlight();
 	end
-	HybridScrollFrame_Update(self.Dialog.ScrollFrame, self.Dialog.ScrollFrame.buttons[1]:GetHeight() * #actitivities, self.Dialog.ScrollFrame:GetHeight());
 end
 
 function LFGListEntryCreationActivityFinder_Accept(self)
@@ -1324,18 +1320,38 @@ function LFGListEntryCreationActivityFinder_Cancel(self)
 end
 
 function LFGListEntryCreationActivityFinder_Select(self, activityID)
+	local oldSelectedActivityID = self.selectedActivity;
 	self.selectedActivity = activityID;
-	LFGListEntryCreationActivityFinder_Update(self);
+
+	local function UpdateButtonSelection(id, selected)
+		if id then
+			local button = self.Dialog.ScrollBox:FindFrameByPredicate(function(button)
+				return button:GetElementData().id == id;
+			end);
+			if button then
+				LFGListEntryCreationActivityFinder_SetButtonSelected(button, selected);
+			end
+		end
+	end;
+	
+	UpdateButtonSelection(oldSelectedActivityID,  false);
+	UpdateButtonSelection(activityID, true);
 end
 
 -------------------------------------------------------
 ----------Application Viewing
 -------------------------------------------------------
 function LFGListApplicationViewer_OnLoad(self)
-	self.ScrollFrame.update = function() LFGListApplicationViewer_UpdateResults(self); end;
-	self.ScrollFrame.dynamic = function(offset) return LFGListApplicationViewer_GetScrollOffset(self, offset) end
-	self.ScrollFrame.scrollBar.doNotHide = true;
-	HybridScrollFrame_CreateButtons(self.ScrollFrame, "LFGListApplicantTemplate");
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementExtentCalculator(function(dataIndex, elementData)
+		return LFGListApplicationViewerUtil_GetButtonHeight(elementData.numMembers);
+	end);
+	view:SetElementInitializer("LFGListApplicantTemplate", function(button, elementData)
+		LFGListApplicationViewer_InitButton(button, elementData);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
 end
 
 function LFGListApplicationViewer_OnEvent(self, event, ...)
@@ -1352,6 +1368,13 @@ function LFGListApplicationViewer_OnEvent(self, event, ...)
 		local id = ...;
 		if ( not LFGListUtil_IsEntryEmpowered() ) then
 			C_LFGList.RemoveApplicant(id);
+		end
+
+		local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
+			return frame:GetElementData().id == id;
+		end);
+		if frame then
+			LFGListApplicationViewer_UpdateApplicant(frame, id);
 		end
 
 		--Update whether we can invite people
@@ -1521,7 +1544,7 @@ function LFGListApplicationViewer_UpdateAvailability(self)
 
 	local empowered = LFGListUtil_IsEntryEmpowered();
 	self.UnempoweredCover:SetShown(not empowered);
-	self.ScrollFrame.NoApplicants:SetShown(empowered and (not self.applicants or #self.applicants == 0));
+	self.ScrollBox.NoApplicants:SetShown(empowered and (not self.applicants or #self.applicants == 0));
 end
 
 function LFGListApplicationViewer_UpdateResultList(self)
@@ -1529,16 +1552,6 @@ function LFGListApplicationViewer_UpdateResultList(self)
 
 	--Sort applicants
 	LFGListUtil_SortApplicants(self.applicants);
-
-	--Cache off the group sizes for the scroll frame and the total height
-	local totalHeight = 0;
-	self.applicantSizes = {};
-	for i=1, #self.applicants do
-		local applicantInfo = C_LFGList.GetApplicantInfo(self.applicants[i]);
-		self.applicantSizes[i] = applicantInfo.numMembers;
-		totalHeight = totalHeight + LFGListApplicationViewerUtil_GetButtonHeight(applicantInfo.numMembers);
-	end
-	self.totalApplicantHeight = totalHeight;
 
 	LFGListApplicationViewer_UpdateAvailability(self);
 end
@@ -1558,37 +1571,39 @@ function LFGListApplicationViewer_UpdateInviteState(self)
 	local currentCount = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME);
 	local numInvited = C_LFGList.GetNumInvitedApplicantMembers();
 
-	local buttons = self.ScrollFrame.buttons;
-	for i=1, #buttons do
-		local button = buttons[i];
-		if ( button.applicantID ) then
-			if ( button.numMembers + currentCount > numAllowed ) then
-				button.InviteButton:Disable();
-				button.InviteButton.tooltip = LFG_LIST_GROUP_TOO_FULL;
-			elseif ( button.numMembers + currentCount + numInvited > numAllowed ) then
-				button.InviteButton:Disable();
-				button.InviteButton.tooltip = LFG_LIST_INVITED_APP_FILLS_GROUP;
-			else
-				button.InviteButton:Enable();
-				button.InviteButton.tooltip = nil;
-			end
+	self.ScrollBox:ForEachFrame(function(button)
+		if ( button.numMembers + currentCount > numAllowed ) then
+			button.InviteButton:Disable();
+			button.InviteButton.tooltip = LFG_LIST_GROUP_TOO_FULL;
+		elseif ( button.numMembers + currentCount + numInvited > numAllowed ) then
+			button.InviteButton:Disable();
+			button.InviteButton.tooltip = LFG_LIST_INVITED_APP_FILLS_GROUP;
+		else
+			button.InviteButton:Enable();
+			button.InviteButton.tooltip = nil;
+		end
 
-			--If our mouse is already over the button, update the tooltip
-			if ( button.InviteButton:IsMouseOver() ) then
-				if ( button.InviteButton.tooltip ) then
-					button.InviteButton:GetScript("OnEnter")(button.InviteButton);
-				else
-					GameTooltip:Hide();
-				end
+		--If our mouse is already over the button, update the tooltip
+		if ( button.InviteButton:IsMouseOver() ) then
+			if ( button.InviteButton.tooltip ) then
+				button.InviteButton:GetScript("OnEnter")(button.InviteButton);
+			else
+				GameTooltip:Hide();
 			end
 		end
-	end
+	end);
+end
+
+function LFGListApplicationViewer_InitButton(button, elementData)
+	local id = elementData.id;
+	local index = elementData.index;
+
+	button.applicantID = id;
+	LFGListApplicationViewer_UpdateApplicant(button, id);
+	button.Background:SetAlpha(index % 2 == 0 and 0.1 or 0.05);
 end
 
 function LFGListApplicationViewer_UpdateResults(self)
-	local offset = HybridScrollFrame_GetOffset(self.ScrollFrame);
-	local buttons = self.ScrollFrame.buttons;
-
 	--If the mouse is over something in this frame, update it
 	local mouseover = GetMouseFocus();
 	local mouseoverParent = mouseover and mouseover:GetParent();
@@ -1598,22 +1613,15 @@ function LFGListApplicationViewer_UpdateResults(self)
 		GameTooltip:Hide();
 	end
 
-	for i=1, #buttons do
-		local button = buttons[i];
-		local idx = i + offset;
-		local id = self.applicants[idx];
-
-		if ( id ) then
-			button.applicantID = id;
-			LFGListApplicationViewer_UpdateApplicant(button, id);
-			button.Background:SetAlpha(idx % 2 == 0 and 0.1 or 0.05);
-			button:Show();
-		else
-			button.applicantID = nil;
-			button:Hide();
-		end
+	local dataProvider = CreateDataProvider();
+	for index = 1, #self.applicants do
+		local id = self.applicants[index];
+		local info = C_LFGList.GetApplicantInfo(id);
+		local numMembers = info.numMembers;
+		dataProvider:Insert({index=index, id=id, numMembers=numMembers});
 	end
-	HybridScrollFrame_Update(self.ScrollFrame, self.totalApplicantHeight, self.ScrollFrame:GetHeight());
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
 	LFGListApplicationViewer_UpdateInviteState(self);
 end
 
@@ -1800,20 +1808,6 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 	end
 end
 
-function LFGListApplicationViewer_GetScrollOffset(self, offset)
-	local acum = 0;
-	for i=1, #self.applicantSizes do
-		local height = LFGListApplicationViewerUtil_GetButtonHeight(self.applicantSizes[i]);
-		acum = acum + height;
-		if ( acum > offset ) then
-			return i - 1, height + offset - acum;
-		end
-	end
-
-	--We're scrolled completely off the bottom
-	return #self.applicantSizes, 0;
-end
-
 function LFGListApplicationViewerUtil_GetButtonHeight(numApplicants)
 	return 20 * numApplicants + 6;
 end
@@ -1966,9 +1960,18 @@ end
 ----------Searching
 -------------------------------------------------------
 function LFGListSearchPanel_OnLoad(self)
-	self.ScrollFrame.update = function() LFGListSearchPanel_UpdateResults(self); end;
-	self.ScrollFrame.scrollBar.doNotHide = true;
-	HybridScrollFrame_CreateButtons(self.ScrollFrame, "LFGListSearchEntryTemplate");
+	
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementFactory(function(factory, elementData)
+		if elementData.startGroup then
+			factory("LFGStartGroupButtonListTemplate");
+		else
+			factory("LFGListSearchEntryTemplate", LFGListSearchPanel_InitButton);
+		end
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
 	self.SearchBox.clearButton:SetScript("OnClick", function(btn)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local editBox = btn:GetParent();
@@ -1977,15 +1980,6 @@ function LFGListSearchPanel_OnLoad(self)
 
 		LFGListSearchPanel_DoSearch(self);
 	end);
-
-	self.ScrollFrame.StartGroupButton:SetParent(self.ScrollFrame.ScrollChild);
-	self.ScrollFrame.NoResultsFound:SetParent(self.ScrollFrame.ScrollChild);
-
-	self.ScrollFrame.ScrollChild.StartGroupButton = self.ScrollFrame.StartGroupButton;
-	self.ScrollFrame.ScrollChild.NoResultsFound = self.ScrollFrame.NoResultsFound;
-
-	self.ScrollFrame.StartGroupButton = nil;
-	self.ScrollFrame.NoResultsFound = nil;
 end
 
 function LFGListSearchPanel_OnEvent(self, event, ...)
@@ -2103,7 +2097,7 @@ end
 
 function LFGListSearchPanel_CreateGroupInstead(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local panel = self:GetParent():GetParent():GetParent();
+	local panel = LFGListFrame.SearchPanel;
 	LFGListEntryCreation_Show(panel:GetParent().EntryCreation, panel.preferredFilters, panel.categoryID, panel.filters);
 end
 
@@ -2129,98 +2123,59 @@ function LFGListSearchPanelUtil_CanSelectResult(resultID)
 	return true;
 end
 
-local function LFGListSearchPanel_UpdateAdditionalButtons(self, totalHeight, showNoResults, showStartGroup, lastVisibleButton)
-	local startGroupButton = self.ScrollFrame.ScrollChild.StartGroupButton;
-	local noResultsFound = self.ScrollFrame.ScrollChild.NoResultsFound;
-
-	noResultsFound:SetShown(showNoResults);
-	startGroupButton:SetShown(showStartGroup);
-	local topFrame, bottomFrame;
-
-	if showNoResults then
-		noResultsFound:ClearAllPoints();
-		topFrame = noResultsFound;
-		bottomFrame = noResultsFound;
-
-		if lastVisibleButton then
-			noResultsFound:SetPoint("TOP", lastVisibleButton, "BOTTOM", 0, -10);
-		else
-			noResultsFound:SetPoint("TOP", self.ScrollFrame.ScrollChild, "TOP", 0, -27);
-		end
-	end
-
-	if showStartGroup then
-		startGroupButton:ClearAllPoints();
-
-		bottomFrame = startGroupButton;
-		if not topFrame then
-			topFrame = startGroupButton;
-		end
-
-		if showNoResults then
-			startGroupButton:SetPoint("TOP", noResultsFound, "BOTTOM", 0, -5);
-		elseif lastVisibleButton then
-			startGroupButton:SetPoint("TOP", lastVisibleButton, "BOTTOM", 0, -10);
-		else
-			startGroupButton:SetPoint("TOP", self.ScrollFrame.ScrollChild, "TOP", 0, -27);
-		end
-
-		noResultsFound:SetText(showStartGroup and LFG_LIST_NO_RESULTS_FOUND or LFG_LIST_SEARCH_FAILED);
-	end
-
-	if topFrame and bottomFrame then
-		local _, _, _, _, offsetY = topFrame:GetPoint(1);
-		totalHeight = totalHeight - offsetY + (topFrame:GetTop() - bottomFrame:GetBottom());
-	end
-
-	return totalHeight;
+function LFGListSearchPanel_InitButton(button, elementData)
+	button.resultID = elementData.resultID;
+	LFGListSearchEntry_Update(button);
 end
 
 function LFGListSearchPanel_UpdateResults(self)
-	local offset = HybridScrollFrame_GetOffset(self.ScrollFrame);
-	local buttons = self.ScrollFrame.buttons;
-
 	--If we have an application selected, deselect it.
 	LFGListSearchPanel_ValidateSelected(self);
 
-	local startGroupButton = self.ScrollFrame.ScrollChild.StartGroupButton;
-	local noResultsFound = self.ScrollFrame.ScrollChild.NoResultsFound;
-
 	if ( self.searching ) then
 		self.SearchingSpinner:Show();
-		noResultsFound:Hide();
-		startGroupButton:Hide();
-		for i=1, #buttons do
-			buttons[i]:Hide();
-		end
+		self.ScrollBox.NoResultsFound:Hide();
+		self.ScrollBox.StartGroupButton:Hide();
+		self.ScrollBox:ClearDataProvider();
 	else
 		self.SearchingSpinner:Hide();
+		
+		local dataProvider = CreateDataProvider();
 		local results = self.results;
+		for index = 1, #results do
+			dataProvider:Insert({resultID=results[index]});
+		end
+
 		local apps = self.applications;
-		local lastVisibleButton;
-
-		for i=1, #buttons do
-			local button = buttons[i];
-			local idx = i + offset;
-			local result = (idx <= #apps) and apps[idx] or results[idx - #apps];
-
-			if ( result ) then
-				button.resultID = result;
-				LFGListSearchEntry_Update(button);
-				button:Show();
-				lastVisibleButton = button;
-			else
-				button.resultID = nil;
-				button:Hide();
+		local resultSet = tInvert(self.results);
+		for i, app in ipairs(apps) do
+			if not resultSet[app]  then
+				dataProvider:Insert({resultID=app});
 			end
 		end
 
-		local totalHeight = buttons[1]:GetHeight() * (#results + #apps);
-		local showNoResults = (self.totalResults == 0);
-		local showStartGroup = ((self.totalResults == 0) or self.shouldAlwaysShowCreateGroupButton) and not self.searchFailed;
-		totalHeight = LFGListSearchPanel_UpdateAdditionalButtons(self, totalHeight, showNoResults, showStartGroup, lastVisibleButton);
+		if(self.totalResults == 0) then
+			self.ScrollBox.NoResultsFound:Show();
+			self.ScrollBox.StartGroupButton:SetShown(not self.searchFailed);
+			self.ScrollBox.StartGroupButton:ClearAllPoints();
+			self.ScrollBox.StartGroupButton:SetPoint("BOTTOM", self.ScrollBox.NoResultsFound, "BOTTOM", 0, - 27);
+			self.ScrollBox.NoResultsFound:SetText(self.searchFailed and LFG_LIST_SEARCH_FAILED or LFG_LIST_NO_RESULTS_FOUND);
+		elseif(self.shouldAlwaysShowCreateGroupButton) then
+			self.ScrollBox.NoResultsFound:Hide();
+			self.ScrollBox.StartGroupButton:SetShown(false);
 
-		HybridScrollFrame_Update(self.ScrollFrame, totalHeight, self.ScrollFrame:GetHeight());
+			dataProvider:Insert({startGroup=true});
+		else
+			self.ScrollBox.NoResultsFound:Hide();
+		end
+
+		self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
+		--Reanchor the errors to not overlap applications
+		if not self.ScrollBox:HasScrollableExtent() then
+			local extent = self.ScrollBox:GetExtent();
+			self.ScrollBox.NoResultsFound:SetPoint("TOP", self.ScrollBox, "TOP", 0, -extent - 27);
+		end
 	end
 	LFGListSearchPanel_UpdateButtonStatus(self);
 end
@@ -2265,28 +2220,27 @@ function LFGListSearchPanel_UpdateButtonStatus(self)
 		self.SignUpButton.tooltip = LFG_LIST_SELECT_A_SEARCH_RESULT;
 	end
 
-	local startGroupButton = self.ScrollFrame.ScrollChild.StartGroupButton;
 	local isPartyLeader = UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME);
 	local canBrowseWhileQueued = C_LFGList.HasActiveEntryInfo() and isPartyLeader;
 	--Update the StartGroupButton
 	if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and not isPartyLeader ) then
-		startGroupButton:Disable();
-		startGroupButton.tooltip = LFG_LIST_NOT_LEADER;
+		self.ScrollBox.StartGroupButton:Disable();
+		self.ScrollBox.StartGroupButton.tooltip = LFG_LIST_NOT_LEADER;
 	else
 		local messageStart = LFGListUtil_GetActiveQueueMessage(false);
 		local startError, errorText = GetStartGroupRestriction();
 		if ( messageStart ) then
-			startGroupButton:Disable();
-			startGroupButton.tooltip = messageStart;
+			self.ScrollBox.StartGroupButton:Disable();
+			self.ScrollBox.StartGroupButton.tooltip = messageStart;
 		elseif ( startError ~= nil ) then
-			startGroupButton:Disable();
-			startGroupButton.tooltip = errorText;
+			self.ScrollBox.StartGroupButton:Disable();
+			self.ScrollBox.StartGroupButton.tooltip = errorText;
 		elseif (canBrowseWhileQueued) then 
 			startGroupButton:Disable(); 
 			startGroupButton.tooltip = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED; 
 		else
-			startGroupButton:Enable();
-			startGroupButton.tooltip = nil;
+			self.ScrollBox.StartGroupButton:Enable();
+			self.ScrollBox.StartGroupButton.tooltip = nil;
 		end
 	end
 
@@ -2541,8 +2495,9 @@ function LFGListSearchEntry_Update(self)
 	local activityName = C_LFGList.GetActivityFullName(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 
 	self.resultID = resultID;
-	self.Selected:SetShown(panel.selectedResult == resultID and not isApplication and not searchResultInfo.isDelisted);
-	self.Highlight:SetShown(panel.selectedResult ~= resultID and not isApplication and not searchResultInfo.isDelisted);
+	local selected = panel.selectedResult == resultID and not isApplication and not searchResultInfo.isDelisted;
+	LFGListSearchEntry_SetSelected(self, selected);
+	
 	local nameColor = NORMAL_FONT_COLOR;
 	local activityColor = GRAY_FONT_COLOR;
 	if ( searchResultInfo.isDelisted or isAppFinished ) then
@@ -2587,6 +2542,10 @@ function LFGListSearchEntry_Update(self)
 	end
 end
 
+function LFGListSearchEntry_SetSelected(self, selected)
+	self.Selected:SetShown(selected);
+end
+
 function LFGListSearchEntry_UpdateExpiration(self)
 	local duration = 0;
 	local now = GetTime();
@@ -2613,13 +2572,13 @@ function LFGListSearchEntry_OnEvent(self, event, ...)
 end
 
 function LFGListSearchEntry_OnClick(self, button)
-	local scrollFrame = self:GetParent():GetParent();
+	local panel = LFGListFrame.SearchPanel;
 	if ( button == "RightButton" ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		EasyMenu(LFGListUtil_GetSearchEntryMenu(self.resultID), LFGListFrameDropDown, self, 290, -2, "MENU");
-	elseif ( scrollFrame:GetParent().selectedResult ~= self.resultID and LFGListSearchPanelUtil_CanSelectResult(self.resultID) ) then
+	elseif ( panel.selectedResult ~= self.resultID and LFGListSearchPanelUtil_CanSelectResult(self.resultID) ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		LFGListSearchPanel_SelectResult(scrollFrame:GetParent(), self.resultID);
+		LFGListSearchPanel_SelectResult(panel, self.resultID);
 	end
 end
 
@@ -2627,10 +2586,21 @@ function LFGListSearchEntry_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 25, 0);
 	local resultID = self.resultID;
 	LFGListUtil_SetSearchEntryTooltip(GameTooltip, resultID);
+
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	if(searchResultInfo.crossFactionListing) then 
 		LFGListSearchPanel_EvaluateTutorial(LFGListFrame.SearchPanel, self);
 	end 
+
+	if not self.Selected:IsShown() then
+		self.Highlight:Show();
+	end
+end
+
+function LFGListSearchEntry_OnLeave(self)
+	GameTooltip_Hide();
+
+	self.Highlight:Hide();
 end
 
 function LFGListSearchEntryUtil_GetFriendList(resultID)

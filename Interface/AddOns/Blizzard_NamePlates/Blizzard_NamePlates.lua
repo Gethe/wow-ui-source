@@ -182,15 +182,7 @@ function NamePlateDriverMixin:OnTargetChanged()
 	self:OnUnitAuraUpdate("target");
 end
 
-local function NameplateBuffContainerShowsBuff(name, caster, nameplateShowPersonal, nameplateShowAll)
-	if (not name) then
-		return false;
-	end
-	return nameplateShowAll or
-		   (nameplateShowPersonal and (caster == "player" or caster == "pet" or caster == "vehicle"));
-end
-
-function NamePlateDriverMixin:OnUnitAuraUpdate(unit, isFullUpdate, updatedAuraInfos)
+function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 	local filter;
 	local showAll = false;
 
@@ -199,45 +191,40 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, isFullUpdate, updatedAuraIn
 	-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
 	local hostileUnit = reaction and reaction <= 4;
 	local showDebuffsOnFriendly = GetCVarBool("nameplateShowDebuffsOnFriendly");
+
+	local auraSettings =
+	{
+		helpful = false;
+		harmful = false;
+		raid = false;
+		includeNameplateOnly = false;
+		showAll = false;
+		hideAll = false;
+	};
+
 	if isPlayer then
-		filter = "HELPFUL|INCLUDE_NAME_PLATE_ONLY";
+		auraSettings.helpful = true;
+		auraSettings.includeNameplateOnly = true;
 	else
 		if hostileUnit then
-		-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
-			filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY";
+			-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
+			auraSettings.harmful = true;
+			auraSettings.includeNameplateOnly = true;
 		else
 			if (showDebuffsOnFriendly) then
 				-- dispellable debuffs
-				filter = "HARMFUL|RAID";
-				showAll = true;
+				auraSettings.harmful = true;
+				auraSettings.raid = true;
+				auraSettings.showAll = true;
 			else
-				filter = "NONE";
+				auraSettings.hideAll = true;
 			end
 		end
 	end
 
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, issecure());
 	if (nameplate) then
-		-- Early out if the update cannot affect the nameplate
-		local function AuraCouldDisplayAsBuff(auraInfo)
-			if not NameplateBuffContainerShowsBuff(auraInfo.name, auraInfo.sourceUnit, auraInfo.nameplateShowPersonal, auraInfo.nameplateShowAll or showAll) then
-				return false;
-			elseif isPlayer then
-				return auraInfo.isHelpful;
-			elseif hostileUnit then
-				return auraInfo.isHarmful;
-			elseif showDebuffsOnFriendly then
-				return auraInfo.isHarmful and auraInfo.isRaid;
-			end
-
-			return false;
-		end
-
-		if filter ~= "NONE" and AuraUtil.ShouldSkipAuraUpdate(isFullUpdate, updatedAuraInfos, AuraCouldDisplayAsBuff) then
-			return;
-		end
-
-		nameplate.UnitFrame.BuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, filter, showAll);
+		nameplate.UnitFrame.BuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, unitAuraUpdateInfo, auraSettings);
 	end
 end
 
@@ -550,9 +537,9 @@ end
 NameplateBuffContainerMixin = {};
 
 function NameplateBuffContainerMixin:OnLoad()
-	self.buffList = {};
 	self.targetYOffset = 0;
 	self.baseYOffset = 0;
+	self.buffPool = CreateFramePool("FRAME", self, "NameplateBuffButtonTemplate");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 end
 
@@ -588,75 +575,173 @@ function NameplateBuffContainerMixin:UpdateAnchor()
 	end
 end
 
-function NameplateBuffContainerMixin:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll)
-	return NameplateBuffContainerShowsBuff(name, caster, nameplateShowPersonal, nameplateShowAll);
+function NameplateBuffContainerMixin:ShouldShowBuff(aura, forceAll)
+	if (not aura or not aura.name) then
+		return false;
+	end
+	return aura.nameplateShowAll or forceAll or
+		   (aura.nameplateShowPersonal and (aura.sourceUnit == "player" or aura.sourceUnit == "pet" or aura.sourceUnit == "vehicle"));
 end
 
 function NameplateBuffContainerMixin:SetActive(isActive)
 	self.isActive = isActive;
 end
 
-function NameplateBuffContainerMixin:UpdateBuffs(unit, filter, showAll)
-	if not self.isActive then
-		for i = 1, BUFF_MAX_DISPLAY do
-			if (self.buffList[i]) then
-				self.buffList[i]:Hide();
-			else
-				break;
+function NameplateBuffContainerMixin:ParseAllAuras(forceAll)
+	if self.auras == nil then
+		self.auras = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+	else
+		self.auras:Clear();
+	end
+
+	local function HandleAura(aura)
+		if self:ShouldShowBuff(aura, forceAll) then
+			self.auras[aura.auraInstanceID] = aura;
+		end
+
+		return false;
+	end
+
+	local batchCount = nil;
+	local usePackedAura = true;
+	AuraUtil.ForEachAura(self.unit, self.filter, batchCount, HandleAura, usePackedAura);
+end
+
+function NameplateBuffContainerMixin:HasActiveBuff(spellID)
+	for buff in self.buffPool:EnumerateActive() do 
+		if (buff.spellID == spellID) then 
+			return true; 
+		end		
+	end
+	return false; 
+end
+function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraSettings)
+	local filters = {};
+	if auraSettings.helpful then
+		table.insert(filters, AuraUtil.AuraFilters.Helpful);
+	end
+	if auraSettings.harmful then
+		table.insert(filters, AuraUtil.AuraFilters.Harmful);
+	end
+	if auraSettings.raid then
+		table.insert(filters, AuraUtil.AuraFilters.Raid);
+	end
+	if auraSettings.includeNameplateOnly then
+		table.insert(filters, AuraUtil.AuraFilters.IncludeNameplateOnly);
+	end
+	local filterString = AuraUtil.CreateFilterString(unpack(filters));
+
+	local previousFilter = self.filter;
+	local previousUnit = self.unit;
+	self.unit = unit;
+	self.filter = filterString;
+
+	local aurasChanged = false;
+	if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate or unit ~= previousUnit or self.auras == nil or filterString ~= previousFilter then
+		self:ParseAllAuras(auraSettings.showAll);
+		aurasChanged = true;
+	else
+		if unitAuraUpdateInfo.addedAuras ~= nil then
+			for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
+				if self:ShouldShowBuff(aura, auraSettings.showAll) and not C_UnitAuras.IsAuraFilteredOutByInstanceID(unit, aura.auraInstanceID, filterString) then
+					self.auras[aura.auraInstanceID] = aura;
+					aurasChanged = true;
+				end
 			end
 		end
 
+		if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
+			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
+				if self.auras[auraInstanceID] ~= nil then
+					local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(self.unit, auraInstanceID);
+					self.auras[auraInstanceID] = newAura;
+					aurasChanged = true;
+				end
+			end
+		end
+
+		if unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil then
+			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+				if self.auras[auraInstanceID] ~= nil then
+					self.auras[auraInstanceID] = nil;
+					aurasChanged = true;
+				end
+			end
+		end
+	end
+
+	self:UpdateAnchor();
+
+	if not aurasChanged then
 		return;
 	end
 
-	self.unit = unit;
-	self.filter = filter;
-	self:UpdateAnchor();
+	self.buffPool:ReleaseAll();
 
-	if filter == "NONE" then
-		for i, buff in ipairs(self.buffList) do
-			buff:Hide();
-		end
-	else
-		-- Some buffs may be filtered out, use this to create the buff frames.
-		local buffIndex = 1;
-		local index = 1;
-		AuraUtil.ForEachAura(unit, filter, BUFF_MAX_DISPLAY, function(...)
-			local name, texture, count, debuffType, duration, expirationTime, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = ...;
-
-			if (self:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll or showAll)) then
-				if (not self.buffList[buffIndex]) then
-					self.buffList[buffIndex] = CreateFrame("Frame", nil, self, "NameplateBuffButtonTemplate");
-					self.buffList[buffIndex]:SetMouseClickEnabled(false);
-					self.buffList[buffIndex].layoutIndex = buffIndex;
-				end
-				local buff = self.buffList[buffIndex];
-				buff:SetID(index);
-				buff.Icon:SetTexture(texture);
-				if (count > 1) then
-					buff.CountFrame.Count:SetText(count);
-					buff.CountFrame.Count:Show();
-				else
-					buff.CountFrame.Count:Hide();
-				end
-
-				CooldownFrame_Set(buff.Cooldown, expirationTime - duration, duration, duration > 0, true);
-
-				buff:Show();
-				buffIndex = buffIndex + 1;
-			end
-			index = index + 1;
-			return buffIndex > BUFF_MAX_DISPLAY;
-		end);
-
-		for i = buffIndex, BUFF_MAX_DISPLAY do
-			if (self.buffList[i]) then
-				self.buffList[i]:Hide();
-			else
-				break;
-			end
-		end
+	if auraSettings.hideAll or not self.isActive then
+		return;
 	end
+
+	local buffIndex = 1;
+	self.auras:Iterate(function(auraInstanceID, aura)
+		local buff = self.buffPool:Acquire();
+		buff.auraInstanceID = auraInstanceID;
+		buff.isBuff = aura.isHelpful;
+		buff.layoutIndex = buffIndex;
+		buff.spellID = aura.spellId;
+
+		buff.Icon:SetTexture(aura.icon);
+		if (aura.applications > 1) then
+			buff.CountFrame.Count:SetText(aura.applications);
+			buff.CountFrame.Count:Show();
+		else
+			buff.CountFrame.Count:Hide();
+		end
+
+		CooldownFrame_Set(buff.Cooldown, aura.expirationTime - aura.duration, aura.duration, aura.duration > 0, true);
+
+		buff:Show();
+
+		buffIndex = buffIndex + 1;
+		return buffIndex >= BUFF_MAX_DISPLAY;
+	end);
+
+	--Add Cooldowns 
+	if(buffIndex < BUFF_MAX_DISPLAY and UnitIsUnit(self:GetParent().unit, "player")) then 
+		local nameplateSpells = C_SpellBook.GetTrackedNameplateSpells(); 
+		for _, spellID in ipairs(nameplateSpells) do 
+			if (not self:HasActiveBuff(spellID) and buffIndex < BUFF_MAX_DISPLAY) then
+				local locStart, locDuration = GetSpellLossOfControlCooldown(spellID);
+				local start, duration, enable, modRate = GetSpellCooldown(spellID);
+				if (locDuration ~= 0 or duration ~= 0) then 
+					local spellInfo = C_SpellBook.GetSpellInfo(spellID);
+					if(spellInfo) then 
+						local buff = self.buffPool:Acquire();
+						buff.isBuff = true;
+						buff.layoutIndex = buffIndex;
+						buff.spellID = spellID; 
+						buff.auraInstanceID = nil;
+						buff.Icon:SetTexture(spellInfo.iconID); 
+
+						local charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(spellID);
+						buff.Cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
+						buff.Cooldown:SetSwipeColor(0, 0, 0);
+						CooldownFrame_Set(buff.Cooldown, start, duration, enable, false, modRate);
+
+						if (maxCharges and maxCharges > 1) then
+							buff.CountFrame.Count:SetText(charges);
+							buff.CountFrame.Count:Show();
+						else
+							buff.CountFrame.Count:Hide();
+						end
+						buff:Show();
+						buffIndex = buffIndex + 1; 
+					end
+				end
+			end
+		end 
+	end
+
 	self:Layout();
 end
 
@@ -664,7 +749,13 @@ NameplateBuffButtonTemplateMixin = {};
 
 function NameplateBuffButtonTemplateMixin:OnEnter()
 	NamePlateTooltip:SetOwner(self, "ANCHOR_LEFT");
-	NamePlateTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter);
+
+	if(self.spellID and not self.auraInstanceID) then 
+		NamePlateTooltip:SetSpellByID(self.spellID);
+	elseif(self.auraInstanceID) then 
+		local setFunction = self.isBuff and NamePlateTooltip.SetUnitBuffByAuraInstanceID or NamePlateTooltip.SetUnitDebuffByAuraInstanceID;
+		setFunction(NamePlateTooltip, self:GetParent().unit, self.auraInstanceID, self:GetParent().filter);
+	end 
 
 	self.UpdateTooltip = self.OnEnter;
 end

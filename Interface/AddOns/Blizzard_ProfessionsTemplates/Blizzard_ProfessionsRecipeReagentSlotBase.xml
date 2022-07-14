@@ -1,0 +1,79 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="Blizzard_ProfessionsRecipeReagentSlotBase.lua"/>
+	
+	<Frame name="ProfessionsReagentSlotBaseTemplate" virtual="true">
+		<Size x="180" y="50"/>
+		<Frames>
+			<ItemButton parentKey="Button" inherits="ProfessionsReagentButtonTemplate" mixin="ProfessionsReagentSlotButtonMixin">
+				<Anchors>
+					<Anchor point="LEFT" x="10" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="QualityOverlay">
+							<Anchors>
+								<Anchor point="TOPLEFT" y="-2"/>
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="AddIcon" atlas="tradeskills-icon-add" alphaMode="ADD" useAtlasSize="true" scale=".5" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="InputOverlay" setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="AddIcon" atlas="Professions-Slot-Plus" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-4" y="2"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="AddIconHighlight" atlas="Professions-Slot-Plus-Over" useAtlasSize="true" alphaMode="ADD" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.AddIcon"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="LockedIcon" atlas="tradeskills-icon-locked" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<!-- HRO TODO: Remove? Seems unused -->
+							<AnimationGroup parentKey="AddIconPulseAnim" looping="BOUNCE">
+								<Alpha childKey="AddIcon" duration="0.8" fromAlpha="0" toAlpha="0.6"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+				</Frames>
+			</ItemButton>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="CustomerState" hidden="true">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".7"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="110" y="36" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="10" y="0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

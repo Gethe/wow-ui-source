@@ -195,29 +195,19 @@
 	</Frame>
 
 	<Frame name="GarrisonListTemplate" inherits="GarrisonMissionBaseFrameTemplate" virtual="true">
-		<Size x="300" y="575"/>
 		<Frames>
-			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-6"/>
-					<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+					<Anchor point="BOTTOMRIGHT" x="-23" y="8"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-12"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="12"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.trackBG:Show();
-								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
-								self.doNotHide = true;
-							</OnLoad>
-						</Scripts>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 	</Frame>
 
@@ -333,9 +323,7 @@
 	</Button>
 
 	<Button name="GarrisonFollowerCombatAllySpellTemplate" virtual="true" mixin="GarrisonFollowerCombatAllySpellMixin">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>
+		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="iconTexture" setAllPoints="true"/>

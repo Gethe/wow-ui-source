@@ -22,11 +22,18 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="PartyDebuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
+	<Frame name="PartyDebuffFrameTemplate" parentArray="debuffFrames" virtual="true" enableMouse="true" hidden="true">
 		<Size x="15" y="15"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
@@ -39,34 +46,37 @@
 				</Texture>	
 			</Layer>
 		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-1"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
 		<Scripts>
 			<OnUpdate>
-				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff("party"..self:GetParent():GetID(), self:GetID());
+				if GameTooltip:IsOwned(self) then
+					if self.isBossBuff then
+						GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().unit, self.auraInstanceID, self.filter);
+					else
+						GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().unit, self.auraInstanceID, self.filter);
+					end
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetUnitDebuff("party"..self:GetParent():GetID(), self:GetID());
+				if self.isBossBuff then
+					GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().unit, self.auraInstanceID, self.filter);
+				else
+					GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().unit, self.auraInstanceID, self.filter);
+				end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="PartyPetDebuffFrameTemplate" inherits="PartyDebuffFrameTemplate" virtual="true" hidden="true">
-		<Scripts>
-			<OnUpdate>
-				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff("partypet"..self:GetParent():GetID(), self:GetID());
-				end
-			</OnUpdate>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetUnitDebuff("partypet"..self:GetParent():GetParent():GetID(), self:GetID());
-			</OnEnter>
-		</Scripts>
-	</Frame>
+	<Frame name="PartyPetDebuffFrameTemplate" inherits="PartyDebuffFrameTemplate" virtual="true" hidden="true"/>
 	<Button name="PartyMemberPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Size x="64" y="26"/>
 		<Anchors>
@@ -228,9 +238,9 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame setAllPoints="true">
+			<Frame parentKey="PartyMemberOverlay" setAllPoints="true">
 				<Frames>
-					<Frame setAllPoints="true">
+					<Frame parentKey="Info" setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
@@ -289,7 +299,7 @@
 								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture name="$parentStatus" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
+								<Texture name="$parentStatus" parentKey="Status" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
 									<Size x="36" y="36"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="$parentPortrait" x="0" y="0"/>
@@ -432,7 +442,7 @@
 					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentPetFrame" inherits="PartyMemberPetFrameTemplate"/>
+			<Button name="$parentPetFrame" parentKey="PetFrame" inherits="PartyMemberPetFrameTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnLoad>

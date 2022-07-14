@@ -241,22 +241,25 @@ function QuestFrameProgressItems_Update()
 			_G[questItemName..1]:SetPoint("TOPLEFT", "QuestProgressRequiredItemsText", "BOTTOMLEFT", -3, -5);
 		end
 
-		-- Keep track of how many actual required items there are, in case we hide all of them.
+		-- Check if this quest should hide required items on turn in.
 		local actualNumRequiredItems = 0;
-		for i=1, numRequiredItems do
-			local hidden = IsQuestItemHidden(i);
-			if (hidden == 0) then
-				local requiredItem = _G[questItemName..buttonIndex];
-				requiredItem.type = "required";
-				requiredItem.objectType = "item";
-				requiredItem:SetID(i);
-				local name, texture, numItems = GetQuestItemInfo(requiredItem.type, i);
-				SetItemButtonCount(requiredItem, numItems);
-				SetItemButtonTexture(requiredItem, texture);
-				requiredItem:Show();
-				_G[questItemName..buttonIndex.."Name"]:SetText(name);
-				buttonIndex = buttonIndex+1;
-				actualNumRequiredItems = actualNumRequiredItems+1;
+		if ( not IsQuestCompletable() or not C_QuestOffer.GetHideRequiredItemsOnTurnIn() ) then
+			-- Keep track of how many actual required items there are, in case we hide any of them.
+			for i=1, numRequiredItems do
+				local hidden = IsQuestItemHidden(i);
+				if (hidden == 0) then
+					local requiredItem = _G[questItemName..buttonIndex];
+					requiredItem.type = "required";
+					requiredItem.objectType = "item";
+					requiredItem:SetID(i);
+					local name, texture, numItems = GetQuestItemInfo(requiredItem.type, i);
+					SetItemButtonCount(requiredItem, numItems);
+					SetItemButtonTexture(requiredItem, texture);
+					requiredItem:Show();
+					_G[questItemName..buttonIndex.."Name"]:SetText(name);
+					buttonIndex = buttonIndex+1;
+					actualNumRequiredItems = actualNumRequiredItems+1;
+				end
 			end
 		end
 

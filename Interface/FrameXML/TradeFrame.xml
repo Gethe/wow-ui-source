@@ -30,9 +30,7 @@
 		</Layers>
 	</Frame>
 	<Frame name="TradeItemTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="153" y="37"/>
-		</Size>
+		<Size x="153" y="37"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentSlotTexture" parentKey="SlotTexture" file="Interface\Buttons\UI-EmptySlot">

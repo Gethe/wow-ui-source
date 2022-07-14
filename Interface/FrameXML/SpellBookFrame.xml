@@ -88,26 +88,16 @@
 	-->
 
 	<Frame name="SpellBookShineTemplate" inherits="AutoCastShineTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="30" y="30"/>
-		</Size>
+		<Size x="30" y="30"/>
 	</Frame>
 	<CheckButton name="SpellBookSkillLineTabTemplate" frameLevel="510" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
+		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-3" y="11"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-3" y="11"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -165,9 +155,7 @@
 		</Scripts>
     </Button>
 	<CheckButton name="SpellButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>
+		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" inherits="Spellbook-EmptySlot" parentKey="EmptySlot">
@@ -194,52 +182,28 @@
 			<Layer level="ARTWORK">
 				<Texture name="$parentIconTexture" setAllPoints="true" hidden="true"/>
 				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="3" hidden="true" justifyH="LEFT" parentKey="SpellName">
-					<Size>
-						<AbsDimension x="145" y="0"/>
-					</Size>
+					<Size x="145" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="8" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentSubSpellName" inherits="SubSpellFont" hidden="true" justifyH="LEFT" parentKey="SpellSubName">
-					<Size>
-						<AbsDimension x="145" y="0"/>
-					</Size>
+					<Size x="145" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentRequiredLevelString" inherits="GameFontBlackSmall" hidden="true" justifyH="LEFT" parentKey="RequiredLevelString">
-					<Size>
-						<AbsDimension x="145" y="0"/>
-					</Size>
+					<Size x="145" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSubSpellName" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentSubSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 					<Color r="0.25" g="0.12" b="0"/>
 				</FontString>
 				<FontString name="$parentSeeTrainerString" inherits="GameFontHighlightSmall" hidden="true" justifyH="LEFT" parentKey="SeeTrainerString" text="SPELLBOOK_TRAINABLE">
-					<Size>
-						<AbsDimension x="145" y="0"/>
-					</Size>
+					<Size x="145" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSubSpellName" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentSubSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -272,18 +236,17 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<!--
+					TODO:: Re-enable this behavior when we can distinguish between passives that show
+					a cooldown like Cauterize and Cheat Death, and ones that don't.
+				<Texture parentKey="PassiveSpellOverlay" atlas="LootToast-Azerite-Border" setAllPoints="true" hidden="true"/>
+				-->
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentAutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
+					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="GlyphIcon" hidden="true" alpha="1" alphaMode="BLEND" atlas="GlyphIcon-Spellbook" useAtlasSize="true">
@@ -373,11 +336,9 @@
 				SpellButton_OnHide(self);
 			</OnHide>
 			<OnDragStart>
-				if (self.isPassive) then return end;
 				SpellButton_OnDragStart(self, button);
 			</OnDragStart>
 			<OnReceiveDrag>
-				if (self.isPassive) then return end;
 				SpellButton_OnReceiveDrag(self);
 			</OnReceiveDrag>
 			<OnEnter>
@@ -411,48 +372,28 @@
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	<CheckButton name="ProfessionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="40" y="40"/>
-		</Size>
+		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentIconTexture" setAllPoints="true" parentKey="iconTexture"/>
 				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="LEFT" parentKey="spellString">
-					<Size>
-						<AbsDimension x="100" y="0"/>
-					</Size>
+					<Size x="100" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="5" y="7"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="7"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentSubSpellName" inherits="NewSubSpellFont" justifyH="LEFT" justifyV="TOP" parentKey="subSpellString">
-					<Size>
-						<AbsDimension x="95" y="28"/>
-					</Size>
+					<Size x="95" y="28"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentNameFrame" file="Interface\Spellbook\ProfessionsBook">
-					<Size>
-						<AbsDimension x="108" y="41"/>
-					</Size>
+					<Size x="108" y="41"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="1" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="1" y="0"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="1.0" a="0.8"/>
 					<TexCoords left="0.00390625" right="0.42578125" top="0.14843750" bottom="0.46875000"/>
@@ -461,43 +402,6 @@
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown"/>
-			<Button name="$parentUnlearnButton" parentKey="unlearn" hidden="true">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
-				<Anchors>
-					<Anchor point="RIGHT"  relativeTo="$parent" relativePoint="LEFT" x="-5" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75" parentKey="texture"/>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						self.texture:SetAlpha(1.0);
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(UNLEARN_SPECIALIZATION_TOOLTIP);
-					</OnEnter>
-					<OnLeave>
-						self.texture:SetAlpha(0.75);
-						GameTooltip_Hide();
-					</OnLeave>
-					<OnMouseDown>
-						self.texture:SetPoint("TOPLEFT", 1, -1);
-					</OnMouseDown>
-					<OnMouseUp>
-						self.texture:SetPoint("TOPLEFT", 0, 0);
-					</OnMouseUp>
-					<OnClick>
-						local parent = self:GetParent():GetParent();
-						if ( parent.specializationIndex >= 0 ) then
-							local spellName = GetSpellBookItemName( (parent.spellOffset + parent.specializationOffset), SpellBookFrame.bookType);
-							StaticPopup_Show("UNLEARN_SPECIALIZATION", spellName, nil, parent.specializationIndex);
-						end
-					</OnClick>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -540,9 +444,7 @@
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 	<Frame name="ProfessionTrialCapTemplate" hidden="true" enableMouse="true" virtual="true">
-		<Size>
-			<AbsDimension x="18" y="21"/>
-		</Size>
+		<Size x="18" y="21"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentLockedIndicator"  file="Interface/LFGFrame/UI-LFG-ICON-LOCK" parentKey="lockedIndicator" setAllPoints="true">
@@ -561,18 +463,12 @@
 		</Scripts>
 	</Frame>
 	<StatusBar name="ProfessionStatusBarTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="95" y="16"/>
-		</Size>
+		<Size x="95" y="16"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString name="$parentRank" inherits="TextStatusBarText" parentKey ="rankText" text="0/0">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentLeft" file="Interface\Spellbook\ProfessionsBook">
@@ -636,49 +532,37 @@
 		</Scripts>
 	</StatusBar>
 	<Frame name="PrimaryProfessionTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="437" y="81"/>
-		</Size>
+		<Size x="437" y="81"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString name="$parentProfessionName" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="professionName" text="TRADE_SKILLS">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
+					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"  x="100" y="-2"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentSpecialization" inherits="GameFontNormal" justifyH="LEFT" parentKey="specialization" text="">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
+					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentMissing" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="missingHeader" text="PROFESSIONS_FIRST_PROFESSION">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
+					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"  x="120" y="-13"/>
 					</Anchors>
 					<Color r="0.85" g="0.7" b="0.6"/>
 				</FontString>
 				<FontString inherits="SubSpellFont" justifyH="LEFT" parentKey="missingText" text="PROFESSIONS_MISSING_PROFESSION">
-					<Size>
-						<AbsDimension x="305" y="0"/>
-					</Size>
+					<Size x="305" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMissing" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 					<Color r="0.1" g="0.05" b="0.05"/>
 				</FontString>
 				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="rank" text="TRADE_SKILLS">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
+					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-33"/>
 					</Anchors>
@@ -687,11 +571,7 @@
 				<Texture name="$parentIconBorder" file="Interface\Spellbook\ProfessionsBook">
 					<Size x="72" y="72"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-7"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
 					</Anchors>
 					<TexCoords left="0.43359375" right="0.72265625" top="0.14843750" bottom="0.72656250"/>
 				</Texture>
@@ -725,38 +605,6 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
 				</Anchors>
 			</StatusBar>
-			<Button name="$parentUnlearnButton" parentKey="unlearn">
-				<Size x="16" y="16" />
-				<Anchors>
-					<Anchor point="RIGHT"  relativeTo="$parentStatusBar" relativePoint="LEFT" x="-21" y="1"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75" parentKey="texture"/>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						self.texture:SetAlpha(1.0);
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(UNLEARN_SKILL_TOOLTIP);
-					</OnEnter>
-					<OnLeave>
-						self.texture:SetAlpha(0.75);
-						GameTooltip_Hide();
-					</OnLeave>
-					<OnMouseDown>
-						self.texture:SetPoint("TOPLEFT", 1, -1);
-					</OnMouseDown>
-					<OnMouseUp>
-						self.texture:SetPoint("TOPLEFT", 0, 0);
-					</OnMouseUp>
-					<OnClick>
-						local parent = self:GetParent();
-						StaticPopup_Show("UNLEARN_SKILL", parent.skillName, nil, parent.skillLine);
-					</OnClick>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -826,9 +674,7 @@
 	</Frame>
 
 	<Frame name="SpellBookFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
-		<Size>
-			<AbsDimension x="550" y="525"/>
-		</Size>
+		<Size x="550" y="525"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="SpellBookPage1" file="Interface\Spellbook\Spellbook-Page-1">
@@ -856,47 +702,27 @@
 			</Button>
 			<Button name="SpellBookFrameTabButton1" inherits="SpellBookFrameTabButtonTemplate">
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="1"/>
-                        </Offset>
-                    </Anchor>
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="1"/>
                 </Anchors>
             </Button>
 			<Button name="SpellBookFrameTabButton2" inherits="SpellBookFrameTabButtonTemplate">
                 <Anchors>
-                    <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton1" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-15" y="0"/>
-                        </Offset>
-                    </Anchor>
+                    <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton1" relativePoint="RIGHT" x="-15" y="0"/>
                 </Anchors>
             </Button>
 			<Button name="SpellBookFrameTabButton3" inherits="SpellBookFrameTabButtonTemplate">
                 <Anchors>
-                    <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton2" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-15" y="0"/>
-                        </Offset>
-                    </Anchor>
+                    <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton2" relativePoint="RIGHT" x="-15" y="0"/>
                 </Anchors>
             </Button>
 			<Button name="SpellBookFrameTabButton4" inherits="SpellBookFrameTabButtonTemplate">
                 <Anchors>
-                    <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton3" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-15" y="0"/>
-                        </Offset>
-                    </Anchor>
+                    <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton3" relativePoint="RIGHT" x="-15" y="0"/>
                 </Anchors>
             </Button>
 			<Button name="SpellBookFrameTabButton5" inherits="SpellBookFrameTabButtonTemplate">
                 <Anchors>
-                    <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton4" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-15" y="0"/>
-                        </Offset>
-                    </Anchor>
+                    <Anchor point="LEFT" relativeTo="SpellBookFrameTabButton4" relativePoint="RIGHT" x="-15" y="0"/>
                 </Anchors>
             </Button>
 
@@ -906,15 +732,9 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<FontString name="SpellBookPageText" inherits="GameFontBlack" justifyH="RIGHT">
-							<Size>
-								<AbsDimension x="102" y="0"/>
-							</Size>
+							<Size x="102" y="0"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-110" y="38"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMRIGHT" x="-110" y="38"/>
 							</Anchors>
 							<Color r="0.25" g="0.12" b="0"/>
 						</FontString>
@@ -922,15 +742,9 @@
 				</Layers>
 				<Frames>
 					<Button name="SpellBookPrevPageButton">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
+						<Size x="32" y="32"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame">
-								<Offset>
-									<AbsDimension x="-66" y="26"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame" x="-66" y="26"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="SpellBookPrevPageButton_OnClick"/>
@@ -941,15 +755,9 @@
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="SpellBookNextPageButton">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
+						<Size x="32" y="32"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-31" y="26"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" x="-31" y="26"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="SpellBookNextPageButton_OnClick"/>
@@ -969,110 +777,62 @@
 				<Frames>
 					<CheckButton name="SpellButton1" inherits="SpellButtonTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="100" y="-72"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="100" y="-72"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton2" inherits="SpellButtonTemplate" id="7">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton1">
-								<Offset>
-									<AbsDimension x="225" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton1" x="225" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton3" inherits="SpellButtonTemplate" id="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton1" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-29"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton1" relativePoint="BOTTOMLEFT" x="0" y="-29"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton4" inherits="SpellButtonTemplate" id="8">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton3">
-								<Offset>
-									<AbsDimension x="225" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton3" x="225" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton5" inherits="SpellButtonTemplate" id="3">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton3" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-29"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton3" relativePoint="BOTTOMLEFT" x="0" y="-29"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton6" inherits="SpellButtonTemplate" id="9">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton5">
-								<Offset>
-									<AbsDimension x="225" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton5" x="225" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton7" inherits="SpellButtonTemplate" id="4">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton5" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-29"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton5" relativePoint="BOTTOMLEFT" x="0" y="-29"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton8" inherits="SpellButtonTemplate" id="10">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton7">
-								<Offset>
-									<AbsDimension x="225" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton7" x="225" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton9" inherits="SpellButtonTemplate" id="5">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton7" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-29"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton7" relativePoint="BOTTOMLEFT" x="0" y="-29"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton10" inherits="SpellButtonTemplate" id="11">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton9">
-								<Offset>
-									<AbsDimension x="225" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton9" x="225" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton11" inherits="SpellButtonTemplate" id="6">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton9" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-29"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton9" relativePoint="BOTTOMLEFT" x="0" y="-29"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellButton12" inherits="SpellButtonTemplate" id="12">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellButton11">
-								<Offset>
-									<AbsDimension x="225" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton11" x="225" y="0"/>
 						</Anchors>
 					</CheckButton>
 				</Frames>
@@ -1085,149 +845,95 @@
 				<Frames>
 					<CheckButton name="SpellBookSkillLineTab1" inherits="SpellBookSkillLineTabTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="-36"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-36"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellBookSkillLineTab2" inherits="SpellBookSkillLineTabTemplate" id="2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab1" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-17"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab1" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellBookSkillLineTab3" inherits="SpellBookSkillLineTabTemplate" id="3">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab2" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-17"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab2" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellBookSkillLineTab4" inherits="SpellBookSkillLineTabTemplate" id="4">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab3" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-17"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab3" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellBookSkillLineTab5" inherits="SpellBookSkillLineTabTemplate" id="5">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab4" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-17"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab4" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellBookSkillLineTab6" inherits="SpellBookSkillLineTabTemplate" id="6">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab5" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-17"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab5" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellBookSkillLineTab7" inherits="SpellBookSkillLineTabTemplate" id="7">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab6" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-17"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab6" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="SpellBookSkillLineTab8" inherits="SpellBookSkillLineTabTemplate" id="8">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab7" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-17"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab7" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 						</Anchors>
 					</CheckButton>
 					<Frame name="SpellBookTabFlashFrame" hidden="true">
-						<Size>
-							<AbsDimension x="10" y="10"/>
-						</Size>
+						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab1">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab1" x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture name="SpellBookSkillLineTab1Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab1"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab2Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab2"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab3Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab3"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab4Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab4"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab5Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab5"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab6Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab6"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab7Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab7"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab8Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab8"/>
 									</Anchors>

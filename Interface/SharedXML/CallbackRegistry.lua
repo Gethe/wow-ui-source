@@ -1,5 +1,4 @@
 local secureexecuterange = secureexecuterange;
-local securecall = securecall;
 local securecallfunction  = securecallfunction;
 local unpack = unpack;
 local error = error;
@@ -7,12 +6,16 @@ local pairs = pairs;
 local rawset = rawset;
 local next = next;
 
+-- Callbacks can be registered without an owner as a matter of convenience. Generally this is fine when you never
+-- intend to release the callback.
+local generateOwnerID = CreateCounter();
+
 local InsertEventAttribute = "insert-secure-event";
 local AttributeDelegate = CreateFrame("FRAME");
 AttributeDelegate:SetForbidden();
 AttributeDelegate:SetScript("OnAttributeChanged", function(self, attribute, value)
 	if attribute == InsertEventAttribute then
-		local registry, event = securecall(unpack, value);
+		local registry, event = securecallfunction(unpack, value);
 		if type(event) ~= "string" then
 			error("AttributeDelegate OnAttributeChanged 'event' requires string type.")
 		end
@@ -74,8 +77,12 @@ function CallbackRegistryMixin:RegisterCallback(event, func, owner, ...)
 		error("CallbackRegistryMixin::RegisterCallback 'event' requires string type.");
 	elseif type(func) ~= "function" then
 		error("CallbackRegistryMixin::RegisterCallback 'func' requires function type.");
-	elseif not owner then
-		error("CallbackRegistryMixin:RegisterCallback 'owner' is required.")
+	else
+		if owner == nil then
+			owner = securecallfunction(generateOwnerID);
+		elseif type(owner) == "number" then
+			error("CallbackRegistryMixin:RegisterCallback 'owner' as number is reserved internally.")
+		end
 	end
 
 	-- Taint barrier for inserting event key into callback tables.
@@ -94,6 +101,24 @@ function CallbackRegistryMixin:RegisterCallback(event, func, owner, ...)
 		local callbacks = self:GetCallbacksByEvent(CallbackType.Function, event);
 		callbacks[owner] = func;
 	end
+
+	return owner;
+end
+
+local function CreateCallbackHandle(cbr, event, owner)
+	-- Wrapped in a table for future flexibility.
+	local handle = 
+	{
+		Unregister = function()
+			cbr:UnregisterCallback(event, owner);
+		end,
+	};
+	return handle;
+end
+
+function CallbackRegistryMixin:RegisterCallbackWithHandle(event, func, owner, ...)
+	owner = self:RegisterCallback(event, func, owner, ...);
+	return CreateCallbackHandle(self, event, owner);
 end
 
 function CallbackRegistryMixin:TriggerEvent(event, ...)
@@ -125,7 +150,7 @@ end
 function CallbackRegistryMixin:UnregisterCallback(event, owner)
 	if type(event) ~= "string" then
 		error("CallbackRegistryMixin:UnregisterCallback 'event' requires string type.");
-	elseif not owner then
+	elseif owner == nil then
 		error("CallbackRegistryMixin:UnregisterCallback 'owner' is required.");
 	end
 

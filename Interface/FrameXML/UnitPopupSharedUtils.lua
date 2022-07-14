@@ -165,9 +165,11 @@ function UnitPopupSharedUtil:IsEnabled(unitPopupButton)
 		return false;
 	end
 
-	local dist = unitPopupButton:GetInteractDistance();
-	if dist and not CheckInteractDistance(dropdown.unit, dist) then
-		return false;
+	if (dropdown.unit) then
+		local dist = unitPopupButton:GetInteractDistance();
+		if dist and not CheckInteractDistance(dropdown.unit, dist) then
+			return false;
+		end
 	end
 
 	if unitPopupButton:IsDisabledInKioskMode() and Kiosk.IsEnabled() then

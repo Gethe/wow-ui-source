@@ -9,68 +9,40 @@
 		</Scripts>
 	</EditBox>
 	<Button name="GameMenuButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="144" y="21"/>
-		</Size>
+		<Size x="144" y="21"/>
 		<NormalFont style="GameFontHighlight"/>
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
 	</Button>
 	<Frame name="AnimatedShineTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>
+		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parent1" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="13" y="13"/>
-					</Size>
+					<Size x="13" y="13"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent2" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="13" y="13"/>
-					</Size>
+					<Size x="13" y="13"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent3" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="13" y="13"/>
-					</Size>
+					<Size x="13" y="13"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent4" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="13" y="13"/>
-					</Size>
+					<Size x="13" y="13"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
@@ -79,222 +51,120 @@
 	</Frame>
 	<Frame name="AutoCastShineTemplate" virtual="true">
 		<Anchors>
-			<Anchor point="CENTER">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
-		<Size>
-			<AbsDimension x="28" y="28"/>
-		</Size>
+		<Size x="28" y="28"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parent1" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="13" y="13"/>
-					</Size>
+					<Size x="13" y="13"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent2" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent3" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="7" y="7"/>
-					</Size>
+					<Size x="7" y="7"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent4" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="4" y="4"/>
-					</Size>
+					<Size x="4" y="4"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent5" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="13" y="13"/>
-					</Size>
+					<Size x="13" y="13"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent6" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent7" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="7" y="7"/>
-					</Size>
+					<Size x="7" y="7"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent8" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="4" y="4"/>
-					</Size>
+					<Size x="4" y="4"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent9" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="13" y="13"/>
-					</Size>
+					<Size x="13" y="13"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent10" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent11" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="7" y="7"/>
-					</Size>
+					<Size x="7" y="7"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent12" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="4" y="4"/>
-					</Size>
+					<Size x="4" y="4"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent13" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="13" y="13"/>
-					</Size>
+					<Size x="13" y="13"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent14" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent15" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="7" y="7"/>
-					</Size>
+					<Size x="7" y="7"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
 				<Texture name="$parent16" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
-					<Size>
-						<AbsDimension x="4" y="4"/>
-					</Size>
+					<Size x="4" y="4"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
@@ -306,76 +176,9 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Button name="UIServiceButtonTemplate" virtual="true">
-		<Size x="293" y="47"/>
-		<Frames>
-			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" parentKey="money">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="5" y="-7"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "STATIC");
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentIcon" parentKey="icon">
-					<Size x="36" y="36"/>
-					<Anchors>
-						<Anchor point="LEFT" x="6" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
-					<Size x="0" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"  relativeTo="$parentIcon" relativePoint="TOPRIGHT" x="6" y="-1"/>
-						<Anchor point="RIGHT" relativeTo="$parentMoneyFrame" relativePoint="LEFT" x="-2" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSubText" inherits="SystemFont_Shadow_Small" justifyH="LEFT" justifyV="MIDDLE" parentKey="subText">
-					<Size x="240" y="30"/>
-					<Anchors>
-						<Anchor point="LEFT"  relativeTo="$parentName" relativePoint="LEFT" x="0" y="-19"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
-					<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>
-				</Texture>
-				<Texture parentKey="lock" file="Interface\GuildFrame\GuildFrame" hidden="true">
-					<Size x="17" y="21"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.51660156" right="0.53320313" top="0.92578125" bottom="0.96679688"/>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="disabledBG" hidden="true" alphaMode="MOD">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-2"/>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
-					</Anchors>
-					<Color r="0.55" g="0.55" b="0.55" a="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<NormalTexture file="Interface\ClassTrainerFrame\TrainerTextures">
-			<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>
-		</NormalTexture>
-		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
-			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
-		</HighlightTexture>
-	</Button>
+
 	<Button name="UIPanelInfoButton" virtual="true">
-		<Size>
-			<AbsDimension x="16" y="16"/>
-		</Size>
+		<Size x="16" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon" parentKey="texture">
@@ -482,31 +285,23 @@
     </Button>
 
 	<Button name="UIPanelLargeSilverButton" virtual="true">
-		<Size>
-			<AbsDimension x="96" y="46"/>
-		</Size>
+		<Size x="96" y="46"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\Buttons\UI-SilverButtonLG-Left-Up">
-					<Size>
-						<AbsDimension x="32" y="64"/>
-					</Size>
+					<Size x="32" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\Buttons\UI-SilverButtonLG-Right-Up">
-					<Size>
-						<AbsDimension x="32" y="64"/>
-					</Size>
+					<Size x="32" y="64"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMiddle" file="Interface\Buttons\UI-SilverButtonLG-Mid-Up">
-					<Size>
-						<AbsDimension x="32" y="64"/>
-					</Size>
+					<Size x="32" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
 						<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT" x="0" y="0"/>
@@ -515,25 +310,19 @@
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture name="$parentLeft" file="Interface\Buttons\UI-SilverButtonLG-Left-Hi">
-					<Size>
-						<AbsDimension x="32" y="64"/>
-					</Size>
+					<Size x="32" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\Buttons\UI-SilverButtonLG-Right-Hi">
-					<Size>
-						<AbsDimension x="32" y="64"/>
-					</Size>
+					<Size x="32" y="64"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMiddle" file="Interface\Buttons\UI-SilverButtonLG-Mid-Hi">
-					<Size>
-						<AbsDimension x="32" y="64"/>
-					</Size>
+					<Size x="32" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
 						<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT" x="0" y="0"/>
@@ -1655,9 +1444,7 @@
 		<TexCoords left="0.41601563" right="0.42285156" top="0.91796875" bottom="0.94531250"/>
 	</Texture>
 	<Frame name="CapProgressBarTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="254" y="20"/>
-		</Size>
+		<Size x="254" y="20"/>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
@@ -1851,9 +1638,7 @@
 -->
 
 	<Frame name="ThinGoldEdgeTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="100" y="20"/>
-		</Size>
+		<Size x="100" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\Common\Moneyframe">

@@ -75,6 +75,21 @@ function WorldMapTrackingOptionsButtonMixin:Refresh()
 	-- nothing to do here
 end
 
+function WorldMapTrackingOptionsButtonMixin:IsTrackingFilter(filter)
+	return not C_Minimap.IsFilteredOut(filter);
+end
+
+function WorldMapTrackingOptionsButtonMixin:SetTrackingFilter(filter, on)
+	local count = C_Minimap.GetNumTrackingTypes();
+	for id=1, count do
+		local filterInfo = C_Minimap.GetTrackingFilter(id);
+		if filterInfo and filterInfo.filterID == filter then
+			C_Minimap.SetTracking(id, on);
+			return;
+		end
+	end
+end
+
 function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 	if (checked) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -83,13 +98,14 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 	end
 
 	if (value == "quests") then
-		SetCVar("questPOI", checked and "1" or "0", "QUEST_POI");
+		SetCVar("questPOI", checked and "1" or "0");
 	elseif (value == "dungeon entrances") then
-		SetCVar("showDungeonEntrancesOnMap", checked and "1" or "0", "SHOW_DUNGEON_ENTRANCES");
+		SetCVar("showDungeonEntrancesOnMap", checked and "1" or "0");
 	elseif (value == "digsites") then
-		SetCVar("digSites", checked and "1" or "0", "SHOW_DIG_SITES");
+		SetCVar("digSites", checked and "1" or "0");
+		self:SetTrackingFilter(Enum.MinimapTrackingFilter.Digsites, checked);
 	elseif (value == "tamers") then
-		SetCVar("showTamers", checked and "1" or "0", "SHOW_TAMERS");
+		SetCVar("showTamers", checked and "1" or "0");
 	elseif (value == "primaryProfessionsFilter" or value == "secondaryProfessionsFilter") then
 		SetCVar(value, checked and "1" or "0");
 	elseif (value == "worldQuestFilterResources" or value == "worldQuestFilterArtifactPower" or
@@ -98,6 +114,8 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 			value == "worldQuestFilterAnima") then
 		-- World quest reward filter cvars
 		SetCVar(value, checked and "1" or "0");
+	elseif (value == "trivialQuests") then
+		self:SetTrackingFilter(Enum.MinimapTrackingFilter.TrivialQuests, checked);
 	end
 	self:GetParent():RefreshAllDataProviders();
 end
@@ -135,16 +153,21 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	if arch then
 		info.text = ARCHAEOLOGY_SHOW_DIG_SITES;
 		info.value = "digsites";
-		info.checked = GetCVarBool("digSites");
+		info.checked = GetCVarBool("digSites") and self:IsTrackingFilter(Enum.MinimapTrackingFilter.Digsites);
 		UIDropDownMenu_AddButton(info);
 	end
 
-	if CanTrackBattlePets() then
+	if C_Minimap.CanTrackBattlePets() then
 		info.text = SHOW_PET_BATTLES_ON_MAP_TEXT;
 		info.value = "tamers";
 		info.checked = GetCVarBool("showTamers");
 		UIDropDownMenu_AddButton(info);
 	end
+
+	info.text = MINIMAP_TRACKING_TRIVIAL_QUESTS;
+	info.value = "trivialQuests";
+	info.checked = self:IsTrackingFilter(Enum.MinimapTrackingFilter.TrivialQuests);
+	UIDropDownMenu_AddButton(info);
 
 	-- If we aren't on a map which has emissaries don't show the world quest reward filter options.
 	local mapID = self:GetParent():GetMapID();

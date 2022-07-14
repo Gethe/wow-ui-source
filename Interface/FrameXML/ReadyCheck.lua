@@ -126,8 +126,9 @@ function ReadyCheck_OnUpdate(readyCheckFrame, elapsed)
 		end
 	elseif ( readyCheckFrame.fadeTimer ) then
 		readyCheckFrame.fadeTimer = readyCheckFrame.fadeTimer - elapsed;
-		readyCheckFrame:SetAlpha(readyCheckFrame.fadeTimer / 1.5);
-		if ( readyCheckFrame.fadeTimer <= 0 ) then
+		if ( readyCheckFrame.fadeTimer > 0 ) then
+			readyCheckFrame:SetAlpha(readyCheckFrame.fadeTimer / 1.5);
+		else
 			readyCheckFrame.fadeTimer = nil;
 			readyCheckFrame:Hide();
 			readyCheckFrame:SetScript("OnUpdate", nil);

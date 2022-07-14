@@ -130,15 +130,6 @@ function GameTimeFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_EVENT_ALARM");
 	self:RegisterForClicks("AnyUp");
 
-	-- adjust button texture layers to not interfere with overlaid textures
-	local tex;
-	tex = self:GetNormalTexture();
-	tex:SetDrawLayer("BACKGROUND");
-	tex = self:GetPushedTexture();
-	tex:SetDrawLayer("BACKGROUND");
-
-	self:GetFontString():SetDrawLayer("BACKGROUND");
-
 	self.timeOfDay = 0;
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 	self.pendingCalendarInvites = 0;
@@ -244,6 +235,11 @@ end
 
 function GameTimeFrame_SetDate()
 	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
-	GameTimeFrame:SetText(currentCalendarTime.monthDay);
+	local day = currentCalendarTime.monthDay;
+	local atlasFormat = "ui-hud-calendar-%d-%s";
+
+	GameTimeFrame:SetNormalTexture(atlasFormat:format(day, "up"));
+	GameTimeFrame:SetPushedTexture(atlasFormat:format(day, "down"));
+	GameTimeFrame:SetHighlightTexture(atlasFormat:format(day, "mouseover"));
 end
 

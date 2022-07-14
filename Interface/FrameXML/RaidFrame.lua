@@ -25,10 +25,18 @@ function RaidFrame_OnLoad(self)
 	RaidOptionsFrame_UpdatePartyFrames();
 	RaidFrame_Update();
 
+	-- Used in ChatFrame.lua
 	RaidFrame.hasRaidInfo = nil;
 	-- Set this as the first tab
-	RaidParentFrame.selectectTab = 1;
+	RaidParentFrame.selectTab = 1;
 	ClaimRaidFrame(RaidParentFrame);
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("RaidInfoInstanceTemplate", function(button, elementData)
+		RaidInfoFrame_InitButton(button, elementData);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(RaidInfoFrame.ScrollBox, RaidInfoFrame.ScrollBar, view);
 end
 
 function RaidFrame_OnShow(self)
@@ -37,11 +45,7 @@ function RaidFrame_OnShow(self)
 
 	RaidFrame_Update();
 
-	if ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) then
-		RaidFrameRaidInfoButton:Enable();
-	else
-		RaidFrameRaidInfoButton:Disable();
-	end
+	RaidFrameRaidInfoButton:SetEnabled(GetNumSavedInstances() + GetNumSavedWorldBosses() > 0);
 
 	RequestRaidInfo();
 
@@ -75,26 +79,21 @@ function RaidFrame_OnEvent(self, event, ...)
 			RaidFrame.hasRaidInfo = 1;
 			return;
 		end
-		if ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) then
-			RaidFrameRaidInfoButton:Enable();
-		else
-			RaidFrameRaidInfoButton:Disable();
-		end
-		RaidInfoFrame_Update(true);
+		RaidFrameRaidInfoButton:SetEnabled(GetNumSavedInstances() + GetNumSavedWorldBosses() > 0);
+		RaidInfoFrame_Update();
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "PARTY_LEADER_CHANGED" or event == "PARTY_LFG_RESTRICTED" ) then
 		RaidFrame_Update();
 	end
 end
 
 function RaidParentFrame_SetView(tab)
+	RaidParentFrame.selectTab = tab;
 	if ( tab == 1 ) then
-		RaidParentFrame.selectectTab = 1;
 		LFRParentFrame:Hide();
 		ClaimRaidFrame(RaidParentFrame);
 		RaidFrame:Show();
 		PanelTemplates_Tab_OnClick(RaidParentFrameTab1, RaidParentFrame);
 	elseif ( tab == 2 ) then
-		RaidParentFrame.selectectTab = 2;
 		if ( RaidFrame:GetParent() == RaidParentFrame ) then
 			RaidFrame:Hide();
 		end
@@ -131,108 +130,69 @@ end
 
 -- Function for raid options
 function RaidOptionsFrame_UpdatePartyFrames()
-	if ( GetDisplayedAllyFrames() ~= "party" ) then
-		HidePartyFrame();
-	else
-		HidePartyFrame();
+	HidePartyFrame();
+
+	if ( GetDisplayedAllyFrames() == "party" ) then
 		ShowPartyFrame();
 	end
+
 	UpdatePartyMemberBackground();
 end
 
--- Populates Raid Info Data
-function RaidInfoFrame_Update(scrollToSelected)
-	RaidInfoFrame_UpdateSelectedIndex();
-
-	local scrollFrame = RaidInfoScrollFrame;
-	local savedInstances = GetNumSavedInstances();
-	local savedWorldBosses = GetNumSavedWorldBosses();
-	local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName;
-	local frameName, frameNameText, frameID, frameReset, width;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numButtons = #buttons;
-	local buttonHeight = buttons[1]:GetHeight();
-
-	if ( scrollToSelected == true and RaidInfoFrame.selectedIndex ) then --Using == true in case the HybridScrollFrame .update is changed to pass in the parent.
-		local button = buttons[RaidInfoFrame.selectedIndex - offset]
-		if ( not button or (button:GetTop() > scrollFrame:GetTop()) or (button:GetBottom() < scrollFrame:GetBottom()) ) then
-			local scrollFrame = RaidInfoScrollFrame;
-			local buttonHeight = scrollFrame.buttons[1]:GetHeight();
-			local scrollValue = min(((RaidInfoFrame.selectedIndex - 1) * buttonHeight), scrollFrame.range)
-			if ( scrollValue ~= scrollFrame.scrollBar:GetValue() ) then
-				scrollFrame.scrollBar:SetValue(scrollValue);
-			end
-		end
-	end
-
-	offset = HybridScrollFrame_GetOffset(scrollFrame);	--May have changed in the previous section to move selected parts into view.
-
-	local mouseIsOverScrollFrame = scrollFrame:IsVisible() and scrollFrame:IsMouseOver();
-
-	for i=1, numButtons do
-		local frame = buttons[i];
-		local index = i + offset;
-
-		if ( index <= savedInstances + savedWorldBosses) then
-			if (index <= savedInstances) then
-				instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(index);
-				frame.worldBossID = nil;
-				frame.instanceID = instanceID;
-				frame.longInstanceID = string.format("%s_%s", instanceIDMostSig, instanceID);
-			else
-				instanceName, instanceID, instanceReset = GetSavedWorldBossInfo(index - savedInstances);
-				locked = true;
-				extended = false;
-				difficultyName = RAID_INFO_WORLD_BOSS;
-				frame.worldBossID = instanceID;
-				frame.instanceID = nil;
-				frame.longInstanceID = nil;
-			end
-
-			frame:SetID(index);
-
-			if ( RaidInfoFrame.selectedIndex == index ) then
-				frame:LockHighlight();
-			else
-				frame:UnlockHighlight();
-			end
-
-			frame.difficulty:SetText(difficultyName);
-
-			if ( extended or locked ) then
-				frame.reset:SetText(SecondsToTime(instanceReset, true, nil, 3));
-				frame.name:SetText(instanceName);
-			else
-				frame.reset:SetFormattedText("|cff808080%s|r", RAID_INSTANCE_EXPIRES_EXPIRED);
-				frame.name:SetFormattedText("|cff808080%s|r", instanceName);
-			end
-
-			if ( extended ) then
-				frame.extended:Show();
-			else
-				frame.extended:Hide();
-			end
-
-			frame:Show();
-
-			if ( mouseIsOverScrollFrame and frame:IsMouseOver() ) then
-				RaidInfoInstance_OnEnter(frame);
-			end
+function RaidInfoFrame_InitButton(button, elementData)
+	local function InitButton(extended, locked, reset, name, difficulty)
+		if extended or locked then
+			button.reset:SetText(SecondsToTime(reset, true, nil, 3));
+			button.name:SetText(name);
 		else
-			frame:Hide();
+			button.reset:SetFormattedText("|cff808080%s|r", RAID_INSTANCE_EXPIRES_EXPIRED);
+			button.name:SetFormattedText("|cff808080%s|r", name);
 		end
+		button.difficulty:SetText(difficulty);
+		button.extended:SetShown(extended);
 	end
-	HybridScrollFrame_Update(scrollFrame, (savedInstances + savedWorldBosses) * buttonHeight, scrollFrame:GetHeight());
+
+	local index = elementData.index;
+	if elementData.isInstance then
+		local name, instanceID, reset, difficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(index);
+		InitButton(extended, locked, reset, name, difficultyName);
+		button.instanceID = instanceID;
+	else
+		local name, _, reset = GetSavedWorldBossInfo(index);
+		local locked = true;
+		local extended = false;
+		InitButton(extended, locked, reset, name, RAID_INFO_WORLD_BOSS);
+
+		button.instanceID = nil;
+	end
+
+	local selected = RaidInfoFrame.selectedIndex == index and RaidInfoFrame.selectedIsInstance == elementData.isInstance;
+	RaidInfoFrame_SetButtonSelected(button, selected);
 end
 
-function RaidInfoScrollFrame_OnLoad(self)
-	HybridScrollFrame_OnLoad(self);
-	self.update = RaidInfoFrame_Update;
-	HybridScrollFrame_CreateButtons(self, "RaidInfoInstanceTemplate");
+function RaidInfoFrame_SetButtonSelected(button, selected)
+	if selected then
+		button:LockHighlight();
+	else
+		button:UnlockHighlight();
+	end
 end
 
---Makes the button look likes it's being pressed
+function RaidInfoFrame_Update()
+	local dataProvider = CreateDataProvider();
+	for index = 1, GetNumSavedInstances() do
+		dataProvider:Insert({index=index, isInstance=true});
+	end
+
+	for index = 1, GetNumSavedWorldBosses() do
+		dataProvider:Insert({index=index});
+	end
+
+	RaidInfoFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
+	RaidInfoFrame_UpdateButtons();
+end
+
 function RaidInfoInstance_OnMouseDown(self)
 	self.name:SetPoint("TOPLEFT", 7, -12);
 	self.reset:SetPoint("TOPRIGHT", 2, -13);
@@ -244,73 +204,63 @@ function RaidInfoInstance_OnMouseUp(self)
 end
 
 function RaidInfoInstance_OnClick(self)
-	if ( IsModifiedClick("CHATLINK") ) then
-		if (self.instanceID) then
-			ChatEdit_InsertLink(GetSavedInstanceChatLink(self:GetID()));
-		else
-			-- No chat links for World Boss locks yet
-		end
+	if self.instanceID and IsModifiedClick("CHATLINK") then
+		ChatEdit_InsertLink(GetSavedInstanceChatLink(self:GetElementData().index));
 	else
-		RaidInfoFrame.selectedRaidID = self.longInstanceID;
-		RaidInfoFrame.selectedWorldBossID = self.worldBossID;
-		RaidInfoFrame_Update();
+		local oldSelectedIndex = RaidInfoFrame.selectedIndex;
+		local oldSelectedIsInstance = RaidInfoFrame.selectedIsInstance;
+		local elementData = self:GetElementData();
+		RaidInfoFrame.selectedIndex = elementData.index;
+		RaidInfoFrame.selectedIsInstance = elementData.isInstance;
+
+		local function UpdateButtonSelected(index, isInstance, selected)
+			if index then
+				local button = RaidInfoFrame.ScrollBox:FindFrameByPredicate(function(button)
+					local elementData = button:GetElementData();
+					return elementData.index == index and elementData.isInstance == isInstance;
+				end);
+				if button then
+					RaidInfoFrame_SetButtonSelected(button, selected);
+				end
+			end
+		end;
+
+		UpdateButtonSelected(oldSelectedIndex, oldSelectedIsInstance, false);
+		UpdateButtonSelected(RaidInfoFrame.selectedIndex, RaidInfoFrame.selectedIsInstance, true);
+
+		RaidInfoFrame_UpdateButtons();
 	end
 end
 
 function RaidInfoInstance_OnEnter(self)
 	if (self.instanceID) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetInstanceLockEncountersComplete(self:GetID());
+		GameTooltip:SetInstanceLockEncountersComplete(self:GetElementData().index);
 		GameTooltip:Show();
 	else
-		local index = self:GetID() - GetNumSavedInstances();
-		local instanceName, instanceID, instanceReset = GetSavedWorldBossInfo(index);
+		local instanceName, instanceID, instanceReset = GetSavedWorldBossInfo(self:GetElementData().index);
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(instanceName);
 		GameTooltip:Show();
 	end
 end
 
-function RaidInfoFrame_UpdateSelectedIndex()
-	if (RaidInfoFrame.selectedRaidID) then
-		local savedInstances = GetNumSavedInstances();
-		for index=1, savedInstances do
-			local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, _, _, _, _, _, extendDisabled = GetSavedInstanceInfo(index);
-			if ( string.format("%s_%s", instanceIDMostSig, instanceID) == RaidInfoFrame.selectedRaidID ) then
-				RaidInfoFrame.selectedIndex = index;
-				if ( extendDisabled ) then
-					RaidInfoExtendButton:Disable();
-				else
-					RaidInfoExtendButton:Enable();
-				end
-				if ( extended ) then
-					RaidInfoExtendButton.doExtend = false;
-					RaidInfoExtendButton:SetText(UNEXTEND_RAID_LOCK);
-				else
-					RaidInfoExtendButton.doExtend = true;
-					if ( locked ) then
-						RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
-					else
-						RaidInfoExtendButton:SetText(REACTIVATE_RAID_LOCK);
-					end
-				end
-				return;
+function RaidInfoFrame_UpdateButtons()
+	if RaidInfoFrame.selectedIndex then
+		if RaidInfoFrame.selectedIsInstance then
+			local _, _, _, _, locked, extended, _, _, _, _, _, _, extendDisabled = GetSavedInstanceInfo(RaidInfoFrame.selectedIndex);
+			RaidInfoExtendButton:SetEnabled(not extendDisabled);
+			RaidInfoExtendButton.doExtend = not extended;
+			if extended then
+				RaidInfoExtendButton:SetText(UNEXTEND_RAID_LOCK);
+			else
+				RaidInfoExtendButton:SetText(locked and EXTEND_RAID_LOCK or REACTIVATE_RAID_LOCK);
 			end
-		end
-	elseif (RaidInfoFrame.selectedWorldBossID) then
-		local savedInstances = GetNumSavedWorldBosses();
-		for index=1, savedInstances do
-			local _, worldBossID, _ = GetSavedWorldBossInfo(index);
-			if (worldBossID == RaidInfoFrame.selectedWorldBossID) then
-				RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
-				RaidInfoExtendButton:Disable();
-				RaidInfoFrame.selectedIndex = index + GetNumSavedInstances();
-				return;
-			end
+		else
+			RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
+			RaidInfoExtendButton:Disable();
 		end
 	end
-	RaidInfoFrame.selectedIndex = nil;
-	RaidInfoExtendButton:Disable();
 end
 
 function RaidInfoExtendButton_OnClick(self)
@@ -325,10 +275,10 @@ function RaidFrameAllAssistCheckButton_UpdateAvailable(self)
 	self:SetChecked(IsEveryoneAssistant());
 	if ( UnitIsGroupLeader("player") ) then
 		self:Enable();
-		self.text:SetFontObject(GameFontNormalSmall);
+		self.Text:SetFontObject(GameFontNormalSmall);
 	else
 		self:Disable();
-		self.text:SetFontObject(GameFontDisableSmall);
+		self.Text:SetFontObject(GameFontDisableSmall);
 	end
 end
 

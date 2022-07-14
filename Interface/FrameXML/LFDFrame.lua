@@ -18,11 +18,6 @@ LFD_NUM_ROLES = 3;
 
 --General functions
 function LFDFrame_OnLoad(self)
-	--self:RegisterEvent("LFG_PROPOSAL_UPDATE");
-	--self:RegisterEvent("LFG_PROPOSAL_SHOW");
-	--self:RegisterEvent("LFG_PROPOSAL_FAILED");
-	--self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
-	--self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
 	self:RegisterEvent("LFG_ROLE_CHECK_HIDE");
@@ -38,6 +33,12 @@ function LFDFrame_OnLoad(self)
 	ButtonFrameTemplate_HideAttic(self);
 	self.Inset:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 2, 284);
 	self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -2, 26);
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("LFDFrameDungeonChoiceTemplate", function(button, elementData)
+		LFDQueueFrameSpecificList_InitButton(button, elementData);
+	end);
+	ScrollUtil.InitScrollBoxListWithScrollBar(LFDQueueFrame.Specific.ScrollBox, LFDQueueFrame.Specific.ScrollBar, view);
 end
 
 function LFDFrame_OnEvent(self, event, ...)
@@ -318,12 +319,12 @@ function LFDQueueFrameSpecificList_Update()
 		end
 	end
 
-	FauxScrollFrame_Update(LFDQueueFrameSpecificListScrollFrame, #LFDDungeonList, NUM_LFD_CHOICE_BUTTONS, 16);
+	local dataProvider = CreateDataProviderWithAssignedKey(LFDDungeonList, "dungeonID");
+	LFDQueueFrame.Specific.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+end
 
-	local offset = FauxScrollFrame_GetOffset(LFDQueueFrameSpecificListScrollFrame);
-
-	local areButtonsBig = not LFDQueueFrameSpecificListScrollFrame:IsShown();
-
+function LFDQueueFrameSpecificList_InitButton(button, elementData)
+	local dungeonID = elementData.dungeonID;
 	local enabled, queued = LFGDungeonList_EvaluateListState(LE_LFG_CATEGORY_LFD);
 
 	local checkedList;
@@ -333,22 +334,9 @@ function LFDQueueFrameSpecificList_Update()
 		checkedList = LFGEnabledList;
 	end
 
-	for i = 1, NUM_LFD_CHOICE_BUTTONS do
-		local button = _G["LFDQueueFrameSpecificListButton"..i];
-		local dungeonID = LFDDungeonList[i+offset];
+	button:SetWidth(295);
 
-		if ( dungeonID ) then
-			button:Show();
-			if ( areButtonsBig ) then
-				button:SetWidth(315);
-			else
-				button:SetWidth(295);
-			end
-			LFGDungeonListButton_SetDungeon(button, dungeonID, enabled, checkedList);
-		else
-			button:Hide();
-		end
-	end
+	LFGDungeonListButton_SetDungeon(button, dungeonID, enabled, checkedList);
 end
 
 function LFDQueueFrame_Join()

@@ -1,0 +1,10 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ClassTalentFrame.lua"/>
+	
+	<Frame name="ClassTalentFrame" inherits="ClassTalentFrameTemplate" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-41"/>
+		</Anchors>
+	</Frame>
+</Ui>

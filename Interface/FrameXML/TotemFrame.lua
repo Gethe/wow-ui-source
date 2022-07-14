@@ -137,7 +137,7 @@ function TotemButton_OnLoad(self)
 end
 
 function TotemButton_OnUpdate(button, elapsed)
-	AuraButton_UpdateDuration(button, GetTotemTimeLeft(button.slot));
+	AuraButtonMixin.UpdateDuration(button, GetTotemTimeLeft(button.slot));
 	if ( GameTooltip:IsOwned(button) ) then
 		GameTooltip:SetTotem(button.slot);
 	end

@@ -2164,9 +2164,10 @@ function StoreFrame_OnLoad(self)
 	-- we preallocate all the card pools because if we create frames outside
 	-- of the LoadAddOn call, then the scripts aren't set properly due to scoped modifier issues
 	local forbidden = true;
+	local specialization = nil;
 	local preallocate = true;
 	for template, info in pairs(productCardTemplateData) do
-		self.productCardPoolCollection:CreatePool("Button", self, template, nil, forbidden, info.poolSize, preallocate);
+		self.productCardPoolCollection:CreatePool("Button", self, template, nil, forbidden, specialization, info.poolSize, preallocate);
 	end
 
 	StoreFrame.Notice.Description:SetSpacing(5);
@@ -2892,9 +2893,9 @@ function StoreConfirmationFrame_OnLoad(self)
 	self.Title:SetText(BLIZZARD_STORE_CONFIRMATION_TITLE);
 	self.NoticeFrame.TotalLabel:SetText(BLIZZARD_STORE_FINAL_PRICE_LABEL);
 
-	self.LicenseAcceptText:SetTextColor(0.8, 0.8, 0.8);
+	self.LicenseAcceptText:SetTextColor("P", 0.8, 0.8, 0.8);
 
-	self.NoticeFrame.Notice:SetSpacing(6);
+	self.NoticeFrame.Notice:SetSpacing("P", 6);
 
 	self:RegisterEvent("STORE_CONFIRM_PURCHASE");
 end
@@ -3413,9 +3414,9 @@ local function UpdateQueueStatusDisclaimer(self, queueTime)
 	local vasDisclaimerData = currencyInfo.vasDisclaimerData;
 	if vasDisclaimerData and vasDisclaimerData[VASServiceType] then
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
-			self.Disclaimer:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+			self.Disclaimer:SetTextColor("P", _G.RED_FONT_COLOR:GetRGB());
 		else
-			self.Disclaimer:SetTextColor(0, 0, 0);
+			self.Disclaimer:SetTextColor("P", 0, 0, 0);
 		end
 
 		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
@@ -4139,15 +4140,8 @@ end
 function VASCharacterSelectionChangeIconFrame_SetIcons(character, serviceType)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame.ChangeIconFrame;
 
-	local gender;
-	if (character.sex == 0) then
-		gender = "male";
-	else
-		gender = "female";
-	end
-
 	local fromIcon = frame.FromIcon;
-	fromIcon.Icon:SetAtlas(_G.GetRaceAtlas(string.lower(character.raceFileName), gender), false);
+	fromIcon.Icon:SetAtlas(character.createScreenIconAtlas);
 	fromIcon.Icon:SetTexCoord(0.0625, 0.9375, 0.0625, 0.9375);
 	fromIcon:Show();
 
@@ -4301,7 +4295,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.SelectedCharacterDescription:Show();
 	end
 
-	frame.ValidationDescription:SetTextColor(0, 0, 0);
+	frame.ValidationDescription:SetTextColor("P", 0, 0, 0);
 	frame.ValidationDescription:Hide();
 
 	StoreVASValidationState_Unlock();
@@ -4897,12 +4891,12 @@ local timeoutTicker;
 
 function VASCharacterSelectionStartTimeout()
 	VASCharacterSelectionCancelTimeout();
-	timeoutTicker = NewSecureTicker(TIMEOUT_SECS, VASCharacterSelectionTimeout, 1);
+	timeoutTicker = C_Timer.NewTicker(TIMEOUT_SECS, VASCharacterSelectionTimeout, 1);
 end
 
 function VASCharacterSelectionCancelTimeout()
 	if (timeoutTicker) then
-		SecureCancelTicker(timeoutTicker);
+		timeoutTicker:Cancel();
 		timeoutTicker = nil;
 	end
 end
@@ -5311,39 +5305,6 @@ end
 --------------------------------------
 local priceUpdateTimer, currentPollTimeSeconds;
 
-------------------------------------------------------------------------------------------------------------------------------------------------------
--- This code is replicated from C_TimerAugment.lua to ensure that the timers are secure.
-------------------------------------------------------------------------------------------------------------------------------------------------------
---Cancels a ticker or timer. May be safely called within the ticker's callback in which
---case the ticker simply won't be started again.
---Cancel is guaranteed to be idempotent.
-function SecureCancelTicker(ticker)
-	ticker._cancelled = true;
-end
-
-function NewSecureTicker(duration, callback, iterations)
-	local ticker = {};
-	ticker._remainingIterations = iterations;
-	ticker._callback = function()
-		if ( not ticker._cancelled ) then
-			callback(ticker);
-
-			--Make sure we weren't cancelled during the callback
-			if ( not ticker._cancelled ) then
-				if ( ticker._remainingIterations ) then
-					ticker._remainingIterations = ticker._remainingIterations - 1;
-				end
-				if ( not ticker._remainingIterations or ticker._remainingIterations > 0 ) then
-					C_Timer.After(duration, ticker._callback);
-				end
-			end
-		end
-	end;
-
-	C_Timer.After(duration, ticker._callback);
-	return ticker;
-end
-
 function StoreFrame_UpdateMarketPrice()
 	C_WowTokenPublic.UpdateMarketPrice();
 end
@@ -5354,14 +5315,14 @@ function StoreFrame_CheckMarketPriceUpdates()
 		local _, pollTimeSeconds = C_WowTokenPublic.GetCommerceSystemStatus();
 		if (not priceUpdateTimer or pollTimeSeconds ~= currentPollTimeSeconds) then
 			if (priceUpdateTimer) then
-				SecureCancelTicker(priceUpdateTimer);
+				priceUpdateTimer:Cancel();
 			end
-			priceUpdateTimer = NewSecureTicker(pollTimeSeconds, StoreFrame_UpdateMarketPrice);
+			priceUpdateTimer = C_Timer.NewTicker(pollTimeSeconds, StoreFrame_UpdateMarketPrice);
 			currentPollTimeSeconds = pollTimeSeconds;
 		end
 	else
 		if (priceUpdateTimer) then
-			SecureCancelTicker(priceUpdateTimer);
+			priceUpdateTimer:Cancel();
 		end
 	end
 end

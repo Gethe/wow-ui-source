@@ -192,9 +192,7 @@
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture" />
 		</Button>
 		<CheckButton name="StoreCheckButtonTemplate" virtual="true">
-			<Size>
-				<AbsDimension x="32" y="32" />
-			</Size>
+			<Size x="32" y="32"/>
 			<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
 			<PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
 			<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" />

@@ -291,9 +291,7 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset x="0" y="0"/>
@@ -301,9 +299,7 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT">
 									<Offset x="0" y="0"/>
@@ -317,9 +313,7 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT">
 									<Offset x="0" y="0"/>
@@ -327,9 +321,7 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT">
 									<Offset x="0" y="0"/>

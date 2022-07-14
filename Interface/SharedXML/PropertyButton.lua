@@ -90,7 +90,7 @@ function PropertyButtonMixin:SetHighlight(highlight)
 end
 
 function PropertyButtonMixin:ClearHighlight()
-	self:SetHighlightTexture(nil); -- TODO: Add consistent API for clearing a highlight
+	self:ClearHighlightTexture();
 end
 
 function PropertyButtonMixin:SetIconStateQueryFunction(iconStateQuery)

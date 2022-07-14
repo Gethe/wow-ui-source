@@ -101,7 +101,7 @@ function TextToSpeech_Speak(text, voice)
 		table.insert(queuedMessages, {text=text, voice=voice});
 		return;
 	end
-	
+
 	if text:match("|T") then
 		for textureFormat, stringFormat in pairs(currencyReplacements) do
 			local replaceTexture = textureFormat:gsub(PLACEHOLDER_CURRENCY, "");
@@ -422,7 +422,8 @@ function TextToSpeechFrame_CreateCheckboxes(frame, checkBoxTable, checkBoxTempla
 		checkBox:SetChecked(TextToSpeechFrame_GetChatTypeEnabled(value));
 		checkBoxFontString = checkBox.text;
 		checkBoxFontString:SetText(_G[value] or value);
-		checkBoxFontString:SetVertexColor(GetMessageTypeColor(value));
+		local r, g, b = GetMessageTypeColor(value);
+		checkBoxFontString:SetVertexColor(r, g, b);
 		checkBoxFontString:SetMaxLines(1);
 	end
 end
@@ -486,8 +487,7 @@ end
 
 function TextToSpeechFrameTtsVoicePicker_OnLoad(self)
 	local view = CreateScrollBoxListLinearView();
-	view:SetElementExtent(18);
-	view:SetElementInitializer("Button", "TextToSpeechVoicePickerButtonTemplate", function(button, voice)
+	view:SetElementInitializer("TextToSpeechVoicePickerButtonTemplate", function(button, voice)
 		local checked = TextToSpeech_IsSelectedVoice(voice, Enum.TtsVoiceType.Standard);
 		button.Check:SetShown(checked);
 		button.UnCheck:SetShown(not checked);
@@ -504,8 +504,7 @@ end
 
 function TextToSpeechFrameTtsVoiceAlternatePicker_OnLoad(self)
 	local view = CreateScrollBoxListLinearView();
-	view:SetElementExtent(18);
-	view:SetElementInitializer("Button", "TextToSpeechVoicePickerButtonTemplate", function(button, voice)
+	view:SetElementInitializer("TextToSpeechVoicePickerButtonTemplate", function(button, voice)
 		local checked = TextToSpeech_IsSelectedVoice(voice, Enum.TtsVoiceType.Alternate);
 		button.Check:SetShown(checked);
 		button.UnCheck:SetShown(not checked);

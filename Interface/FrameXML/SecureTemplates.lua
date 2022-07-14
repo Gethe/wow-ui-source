@@ -358,11 +358,19 @@ SECURE_ACTIONS.action =
 
             if ( actionType == "flyout" and not cursorType ) then
 				local direction = SecureButton_GetModifiedAttribute(self, "flyoutDirection", button);
-                SpellFlyout:Toggle(flyoutId, self, direction, 3, true);
+                SpellFlyout:Toggle(flyoutId, self, direction, 0, true);
             else
                 SpellFlyout:Hide();
                 UseAction(action, unit, button);
             end
+        end
+    end;
+
+SECURE_ACTIONS.actionrelease = 
+	function (self, unit, button)
+        local action = self:CalculateAction(button);
+        if ( action ) then
+            ReleaseAction(action, unit, button);
         end
     end;
 
@@ -379,7 +387,7 @@ SECURE_ACTIONS.flyout =
         function (self, unit, button)
                 local flyoutId = SecureButton_GetModifiedAttribute(self, "spell", button);
 				local direction = SecureButton_GetModifiedAttribute(self, "flyoutDirection", button);
-                SpellFlyout:Toggle(flyoutId, self, direction, 3, true);
+                SpellFlyout:Toggle(flyoutId, self, direction, 0, true);
         end;
 
 SECURE_ACTIONS.multispell =
@@ -618,85 +626,121 @@ function SecureActionButtonMixin:CalculateAction(button)
     end
 end
 
-function SecureActionButton_OnClick(self, button, down)
-    -- TODO check with Tom etc if this is kosher
-    if (down) then
-        -- remap the button if desired for up-down behaviors. This behavior may not be safe and has been deferred.
-        button = SecureButton_GetModifiedAttribute(self, "downbutton", button) or button
-    end
+local PRESS_TYPE_DOWN = 1;
+local PRESS_TYPE_UP = 2;
+local PRESS_TYPE_HOLD_RELEASE = 3;
 
-    -- Lookup the unit, based on the modifiers and button
-    local unit = SecureButton_GetModifiedUnit(self, button);
+local function GetConvertedButtonUnitAndActionType(self, button, pressType)
+	if pressType == PRESS_TYPE_DOWN then
+		-- remap the button if desired for up-down behaviors. This behavior may not be safe and has been deferred.
+		button = SecureButton_GetModifiedAttribute(self, "downbutton", button) or button
+	end
 
-    -- Remap button suffixes based on the disposition of the unit (contributed by Iriel and Cladhaire)
-    if ( unit ) then
-        local origButton = button;
-        if ( UnitCanAttack("player", unit) )then
-            button = SecureButton_GetModifiedAttribute(self, "harmbutton", button) or button;
-        elseif ( UnitCanAssist("player", unit) )then
-            button = SecureButton_GetModifiedAttribute(self, "helpbutton", button) or button;
-        end
+	-- Lookup the unit, based on the modifiers and button
+	local unit = SecureButton_GetModifiedUnit(self, button);
 
-        -- The unit may have changed based on button remapping
-        if ( button ~= origButton ) then
-            unit = SecureButton_GetModifiedUnit(self, button);
-        end
-    end
+	-- Remap button suffixes based on the disposition of the unit (contributed by Iriel and Cladhaire)
+	if unit then
+		local origButton = button;
+		if UnitCanAttack("player", unit) then
+			button = SecureButton_GetModifiedAttribute(self, "harmbutton", button) or button;
+		elseif UnitCanAssist("player", unit) then
+			button = SecureButton_GetModifiedAttribute(self, "helpbutton", button) or button;
+		end
 
-    if ( type(button) ~= "string" ) then
-        return;
-    end
+		-- The unit may have changed based on button remapping
+		if ( button ~= origButton ) then
+			unit = SecureButton_GetModifiedUnit(self, button);
+		end
+	end
 
-    -- Don't do anything if our unit doesn't exist
-    if ( unit and unit ~= "none" and not UnitExists(unit) ) then
-        return;
-    end
+	if type(button) ~= "string" then
+		return nil;
+	end
 
-    -- Lookup the action type, based on the modifiers and button
-    local actionType = SecureButton_GetModifiedAttribute(self, "type", button);
+	if unit and unit ~= "none" and not UnitExists(unit) then
+		return nil;
+	end
 
-    -- Perform the requested action!
-    if ( actionType ) then
-        local atRisk = false;
-        local handler = SECURE_ACTIONS[actionType]
-        if ( not handler ) then
-            atRisk = true; -- user-provided function, be careful
-            -- GMA call allows generic click handler snippets
-            handler = SecureButton_GetModifiedAttribute(self, "_"..actionType, button);
-        end
-        if ( not handler ) then
-            atRisk = false;
-            -- functions retrieved from table keys carry their own taint
-            handler = rawget(self, actionType);
-        end
-        if ( type(handler) == 'function' ) then
-            if ( atRisk ) then
-                forceinsecure();
-            end
-            -- actionType arg removed for 4,0
-            handler(self, unit, button);
-        elseif ( type(handler) == 'string' ) then
-            SecureHandler_OnClick(self, "_"..actionType, button, down);
-        end
-    end
+	-- Lookup the action type, based on the modifiers and button
+	local attributeName = (pressType == PRESS_TYPE_HOLD_RELEASE) and "typerelease" or "type";
+	local actionType = SecureButton_GetModifiedAttribute(self, attributeName, button);
 
-    -- Target predefined item, if we just cast a spell that targets an item
-    if ( SpellCanTargetItem() or SpellCanTargetItemID() ) then
-        local bag = SecureButton_GetModifiedAttribute(self, "target-bag", button);
-        local slot = SecureButton_GetModifiedAttribute(self, "target-slot", button);
-        if ( slot ) then
-            if ( bag ) then
-                UseContainerItem(bag, slot);
-            else
-                UseInventoryItem(slot);
-            end
-        else
-            local item = SecureButton_GetModifiedAttribute(self, "target-item", button);
-            if ( item ) then
-                SpellTargetItem(item);
-            end
-        end
-    end
+	return button, unit, actionType;
+end
+
+local function PerformAction(self, button, unit, actionType, down)
+	if button and actionType then
+		local atRisk = false;
+		local handler = SECURE_ACTIONS[actionType]
+		if not handler then
+			atRisk = true; -- user-provided function, be careful
+			-- GMA call allows generic click handler snippets
+			handler = SecureButton_GetModifiedAttribute(self, "_"..actionType, button);
+		end
+		if not handler then
+			atRisk = false;
+			-- functions retrieved from table keys carry their own taint
+			handler = rawget(self, actionType);
+		end
+		if type(handler) == 'function' then
+			if atRisk then
+				forceinsecure();
+			end
+			handler(self, unit, button);
+		elseif type(handler) == 'string' then
+			SecureHandler_OnClick(self, "_"..actionType, button, down);
+		end
+	end
+end
+
+local function OnActionButtonClick(self, inputButton, down)
+	local button, unit, actionType = GetConvertedButtonUnitAndActionType(self, inputButton, down and PRESS_TYPE_DOWN or PRESS_TYPE_UP);
+
+	if not button then
+		return;
+	end
+
+	PerformAction(self, button, unit, actionType, down);
+
+	-- Target predefined item, if we just cast a spell that targets an item
+	if SpellCanTargetItem() or SpellCanTargetItemID() then
+		local bag = SecureButton_GetModifiedAttribute(self, "target-bag", button);
+		local slot = SecureButton_GetModifiedAttribute(self, "target-slot", button);
+		if slot then
+			if bag then
+				UseContainerItem(bag, slot);
+			else
+				UseInventoryItem(slot);
+			end
+		else
+			local item = SecureButton_GetModifiedAttribute(self, "target-item", button);
+			if item then
+				SpellTargetItem(item);
+			end
+		end
+	end
+end
+
+local function OnActionButtonPressAndHoldRelease(self, inputButton)
+	local button, unit, actionType = GetConvertedButtonUnitAndActionType(self, inputButton, PRESS_TYPE_HOLD_RELEASE);
+	PerformAction(self, button, unit, actionType, false);
+end
+
+function SecureActionButton_OnClick(self, inputButton, down)
+	local useOnKeyDown = GetCVarBool("ActionButtonUseKeyDown") or self.pressAndHoldAction;
+	local clickAction = (down and useOnKeyDown) or (not down and not useOnKeyDown);
+	local releaseAction = (not down and self.pressAndHoldAction);
+
+	if clickAction then
+		OnActionButtonClick(self, inputButton, down);
+		return true;
+	elseif releaseAction then
+		OnActionButtonPressAndHoldRelease(self, inputButton);
+		return true;
+	end
+
+	return false;
 end
 
 function SecureUnitButton_OnLoad(self, unit, menufunc)
@@ -707,7 +751,7 @@ function SecureUnitButton_OnLoad(self, unit, menufunc)
     self.menu = menufunc;
 end
 
-function SecureUnitButton_OnClick(self, button)
+function SecureUnitButton_OnClick(self, button, down)
     local modifiers = C_ClickBindings.MakeModifiers();
     local bindingType = C_ClickBindings.GetBindingType(button, modifiers);
     if ( (bindingType == Enum.ClickBindingType.Spell) or (bindingType == Enum.ClickBindingType.Macro) ) then
@@ -722,6 +766,6 @@ function SecureUnitButton_OnClick(self, button)
                 return;
             end
         end
-        SecureActionButton_OnClick(self, effectiveButton);
+        OnActionButtonClick(self, effectiveButton, down);
     end
 end

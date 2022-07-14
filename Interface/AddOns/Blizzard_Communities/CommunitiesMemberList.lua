@@ -285,67 +285,35 @@ function CommunitiesMemberListMixin:IsDisplayingProfessions()
 end
 
 function CommunitiesMemberListMixin:RefreshListDisplay()
-	local scrollFrame = self.ListScrollFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-
 	local displayingProfessions = self:IsDisplayingProfessions();
-	local professionId = nil;
-	local usedHeight = 0;
-	local height = buttons[1]:GetHeight();
-	local memberList = displayingProfessions and (self.sortedProfessionList) or (self.sortedMemberList or {});
-	local invitations = self.invitations;
-	local displayInvitations = self.expandedDisplay and not displayingProfessions and #invitations > 0;
-	for i = 1, #buttons do
-		local displayIndex = i + offset;
-		local button = buttons[i];
-		if displayIndex <= #memberList then
-			local memberInfo = memberList[displayIndex];
+	local dataProvider = CreateDataProvider();
+
+	local memberList = displayingProfessions and self.sortedProfessionList or self.sortedMemberList;
+	if memberList and #memberList > 0 then
+		local professionId = nil;
+		for index, memberInfo in ipairs(memberList) do
 			if memberInfo.professionHeaderId then
 				professionId = memberInfo.professionHeaderId;
-				button:SetProfessionHeader(memberInfo.professionHeaderId, memberInfo.professionHeaderName, memberInfo.professionHeaderCollapsed);
-				button:Show();
-				usedHeight = usedHeight + height;
-			else
-				button:SetMember(memberInfo, false, professionId);
-				button:Show();
-				usedHeight = usedHeight + height;
 			end
-		else
-			if displayInvitations  then
-				displayIndex = displayIndex - #memberList;
+			memberInfo.professionId = professionId;
+			dataProvider:Insert({memberInfo=memberInfo});
+		end
+	end
+	
+	local invitations = self.invitations;
+	local displayInvitations = self.expandedDisplay and not displayingProfessions and #invitations > 0;
+	if displayInvitations then
+		dataProvider:Insert({invitationHeaderCount=#invitations});
 
-				-- Display an extra space and header first.
-				if displayIndex == 1 then
-					-- Leave an extra space between the member list and invitations.
-					button:SetMember(nil);
-					button:Hide();
-					usedHeight = usedHeight + height;
-				elseif displayInvitations and displayIndex == 2 then
-					button:SetHeader(COMMUNITIES_MEMBER_LIST_PENDING_INVITE_HEADER:format(#invitations));
-					button:Show();
-					usedHeight = usedHeight + height;
-				elseif displayInvitations and (displayIndex - 2) <= #invitations then
-					button:SetMember(invitations[(displayIndex - 2)].invitee, true);
-					button:Show();
-					usedHeight = usedHeight + height;
-				else
-					button:SetMember(nil);
-					button:Hide();
-				end
-			else
-				button:SetMember(nil);
-				button:Hide();
-			end
+		for index, invitationInfo in ipairs(invitations) do
+			dataProvider:Insert({invitationInfo=invitationInfo});
 		end
 	end
 
-	local totalNum = #memberList;
-	if displayInvitations then
-		totalNum = totalNum + #invitations + 2;
-	end
-
-	HybridScrollFrame_Update(scrollFrame, height * totalNum, usedHeight);
+	self.ScrollBox:SetDataProvider(dataProvider);
+	self.ScrollBox:ForEachFrame(function(button, elementData)
+		button:SetExpanded(self.expandedDisplay);
+	end);
 end
 
 function CommunitiesMemberListMixin:UpdateMemberList()
@@ -459,17 +427,16 @@ function CommunitiesMemberListMixin:SortList()
 end
 
 function CommunitiesMemberListMixin:OnLoad()
-	self.ListScrollFrame.update = function()
-		self:Update();
-	end;
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("CommunitiesMemberListEntryTemplate", function(button, elementData)
+		button:Init(elementData);
+	end);
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	self.invitations = {};
 	self.professionDisplay = {};
 	self.showOfflinePlayers = GetCVarBool("communitiesShowOffline");
 	self.ShowOfflineButton:SetChecked(self.showOfflinePlayers);
-
-	self.ListScrollFrame.scrollBar.doNotHide = true;
-	self.ListScrollFrame.scrollBar:SetValue(0);
 
 	self:SetExpandedDisplay(false);
 	self:SetGuildColumnIndex(EXTRA_GUILD_COLUMN_ACHIEVEMENT);
@@ -577,7 +544,6 @@ end
 function CommunitiesMemberListMixin:SetShowOfflinePlayers(showOfflinePlayers)
 	self.showOfflinePlayers = showOfflinePlayers;
 	SetCVar("communitiesShowOffline", showOfflinePlayers and "1" or "0");
-	self.ListScrollFrame.scrollBar:SetValue(0);
 	self:UpdateMemberList();
 end
 
@@ -586,10 +552,6 @@ function CommunitiesMemberListMixin:RefreshLayout()
 		self:SetPoint("TOPLEFT", self:GetCommunitiesFrame().CommunitiesList, "TOPRIGHT", 26, -60);
 	else
 		self:SetPoint("TOPLEFT", self:GetCommunitiesFrame(), "TOPRIGHT", -165, -63);
-	end
-
-	if not self.ListScrollFrame.buttons then
-		HybridScrollFrame_CreateButtons(self.ListScrollFrame, "CommunitiesMemberListEntryTemplate", 0, 0);
 	end
 
 	self.ColumnDisplay:Hide();
@@ -613,10 +575,10 @@ function CommunitiesMemberListMixin:RefreshLayout()
 		end
 	end
 
-	for i, button in ipairs(self.ListScrollFrame.buttons or {}) do
+	self.ScrollBox:ForEachFrame(function(button, elementData)
 		button:SetExpanded(self.expandedDisplay);
 		button:SetGuildColumnIndex(guildColumnIndex);
-	end
+	end);
 end
 
 function CommunitiesMemberListMixin:OnEvent(event, ...)
@@ -1069,6 +1031,22 @@ function CommunitiesMemberListEntryMixin:SetMember(memberInfo, isInvitation, pro
 	self:UpdateVoiceMemberInfo(self:GetMemberList():GetVoiceChannelID());
 	self:UpdateVoiceButtons();
 	self:UpdateNameFrame();
+end
+
+function CommunitiesMemberListEntryMixin:Init(elementData)
+	if elementData.invitationHeaderCount then
+		self:SetHeader(COMMUNITIES_MEMBER_LIST_PENDING_INVITE_HEADER:format(elementData.invitationHeaderCount));
+	elseif elementData.memberInfo then
+		local memberInfo = elementData.memberInfo;
+		if memberInfo.professionHeaderId then
+			self:SetProfessionHeader(memberInfo.professionHeaderId, memberInfo.professionHeaderName, memberInfo.professionHeaderCollapsed);
+		else
+			self:SetMember(memberInfo, false, memberInfo.professionId);
+		end
+	elseif elementData.invitationInfo then
+		local invitationInfo = elementData.invitationInfo;
+		self:SetMember(invitationInfo.invitee, true);
+	end
 end
 
 function CommunitiesMemberListEntryMixin:UpdateVoiceMemberInfo(voiceChannelID)

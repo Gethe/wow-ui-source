@@ -65,9 +65,7 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
-		<Size>
-			<AbsDimension x="230" y="44"/>
-		</Size>
+		<Size x="230" y="44"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" parentKey="icon">

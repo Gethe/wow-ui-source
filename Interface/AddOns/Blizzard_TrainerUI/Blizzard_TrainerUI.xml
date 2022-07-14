@@ -24,11 +24,72 @@
 		<Size x="293" y="47"/>	
 		<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>	
 	</Texture-->
-	
-	
-	
-	<Button name="ClassTrainerSkillButtonTemplate" virtual="true" inherits="UIServiceButtonTemplate">
+
+	<Button name="ClassTrainerSkillButtonTemplate" virtual="true">
 		<Size x="298" y="47"/>
+		<Frames>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" parentKey="money">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="5" y="-7"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" x="6" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="6" y="-1"/>
+						<Anchor point="RIGHT" relativeKey="$parent.money" relativePoint="LEFT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" inherits="SystemFont_Shadow_Small" justifyH="LEFT" justifyV="MIDDLE" parentKey="subText">
+					<Size x="240" y="30"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.name" relativePoint="LEFT" x="0" y="-19"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
+					<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>
+				</Texture>
+				<Texture parentKey="lock" file="Interface\GuildFrame\GuildFrame" hidden="true">
+					<Size x="17" y="21"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.51660156" right="0.53320313" top="0.92578125" bottom="0.96679688"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="disabledBG" hidden="true" alphaMode="MOD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<Color r="0.55" g="0.55" b="0.55" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\ClassTrainerFrame\TrainerTextures">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>
+		</NormalTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
+		</HighlightTexture>
 		<Scripts>
 			<OnEnter>
 				self.showingTooltip = true;
@@ -40,13 +101,11 @@
 				GameTooltip_Hide();
 				self.showingTooltip = false;
 			</OnLeave>
-			<OnClick> 
-				ClassTrainerSkillButton_OnClick(self, button);	
+			<OnClick>
+				ClassTrainerSkillButton_OnClick(self, button);
 			</OnClick>
 		</Scripts>
 	</Button>
-	
-	
 	
 	<Frame name="ClassTrainerFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Layers>
@@ -66,25 +125,15 @@
 		</Layers>
 		<Frames>
 			<StatusBar name="ClassTrainerStatusBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0" enableMouse="false">
-				<Size>
-					<AbsDimension x="136" y="18"/>
-				</Size>
+				<Size x="136" y="18"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="64" y="-36"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="64" y="-36"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="CENTER" parentKey="rankText">
 							<Anchors>
-								<Anchor point="CENTER" relativeTo="ClassTrainerStatusBar">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" relativeTo="ClassTrainerStatusBar" x="0" y="0"/>
 							</Anchors>
 						</FontString>
 						<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
@@ -127,11 +176,7 @@
 			</StatusBar>
 			<Frame name="ClassTrainerFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 					<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="6" y="-30"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="6" y="-30"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="ClassTrainerFrameFilterDropDown_OnLoad"/>
@@ -157,22 +202,18 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="6" y="-5"/>
 				</Anchors>
 			</Button>
-			<ScrollFrame name="ClassTrainerScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame">
-				<Size>
-					<AbsDimension x="302" y="330"/>
-				</Size>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
+				<Size x="302" y="330"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentInset" x="-5" y="5"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="3" y="-12"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="3" y="13"/>
-						</Anchors>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="2" y="3"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="2" y="-7"/>
+				</Anchors>
+			</EventFrame>
 			<Frame name="$parentBottomInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="bottomInset" hidden="true">
 				<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-6" y="26" />

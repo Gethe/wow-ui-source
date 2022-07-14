@@ -53,11 +53,22 @@
 
 				If expand is set to true, the region/frame will expand to fit the parent layout frame
 				<KeyValue key="expand" value="true" type="boolean"/>
+				
+				The align keyValue can be used to control how this child is anchored relative to the VerticalLayoutFrame.
+				By default each child is anchored from TOPLEFT of the child to TOPLEFT of the VerticalLayoutFrame
+				Possible choices here are "center" (anchored TOP to TOP) and "right" (anchored TOPRIGHT to TOPRIGHT)
+				<KeyValue key="align" value="center" type="string"/>
 			-->
 		</Frame>
 
 		<Frame name="HorizontalLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="LayoutMixin, HorizontalLayoutMixin">
-			<!-- Uses the same key/value pairs as VerticalLayoutFrame -->
+			<!-- Uses the same key/value pairs as VerticalLayoutFrame EXCEPT for: 
+			
+				The align keyValue does the same thing as VerticalLayoutFrame, but the valid values are different.
+				Just like VerticalLayoutFrame, by default each child is anchored from TOPLEFT of the child to TOPLEFT of the HorizontalLayoutFrame
+				Possible choices here are "center" (anchored LEFT to LEFT) and "bottom" (anchored BOTTOMLEFT to BOTTOMLEFT)
+				<KeyValue key="align" value="center" type="string"/>
+			-->
 		</Frame>
 
 		<Frame name="ResizeLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="ResizeLayoutMixin">

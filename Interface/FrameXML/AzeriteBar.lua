@@ -68,7 +68,7 @@ function AzeriteBarMixin:OnEvent(event, ...)
 			end
 		elseif ( event == "BAG_UPDATE" ) then
 			local bagID = ...;
-			if bagID > NUM_BAG_SLOTS then
+			if bagID > NUM_TOTAL_EQUIPPED_BAG_SLOTS then
 				self:Update();
 			end
 		end

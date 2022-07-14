@@ -21,20 +21,6 @@ function StanceBar_Update()
 	local needFrameMgrUpdate = false;
 	if ( numForms > 0 and not IsPossessBarVisible()) then
 		if ( StanceBarFrame.numForms ~= numForms ) then
-			--Setup the Stance bar to display the appropriate number of slots
-			if ( numForms == 1 ) then
-				StanceBarMiddle:Hide();
-				StanceBarRight:SetPoint("LEFT", "StanceBarLeft", "LEFT", 12, 0);
-			elseif ( numForms == 2 ) then
-				StanceBarMiddle:Hide();
-				StanceBarRight:SetPoint("LEFT", "StanceBarLeft", "RIGHT", 1, 0);
-			else
-				StanceBarMiddle:Show();
-				StanceBarMiddle:SetPoint("LEFT", "StanceBarLeft", "RIGHT", 0, 0);
-				StanceBarMiddle:SetWidth(37 * (numForms-2));
-				StanceBarMiddle:SetTexCoord(0, numForms-2, 0, 1);
-				StanceBarRight:SetPoint("LEFT", "StanceBarMiddle", "RIGHT", 0, 0);
-			end
 			StanceBarFrame.numForms = numForms;
 			needFrameMgrUpdate = true;
 		end
@@ -60,6 +46,7 @@ function StanceBar_UpdateState ()
 	local texture, isActive, isCastable;
 	local button, icon, cooldown;
 	local start, duration, enable;
+	local numStancesShown = 1; 
 	for i=1, NUM_STANCE_SLOTS do
 		button = StanceBarFrame.StanceButtons[i];
 		icon = button.icon;
@@ -91,10 +78,13 @@ function StanceBar_UpdateState ()
 			end
 
 			button:Show();
+			numStancesShown = numStancesShown + 1; 
 		else
 			button:Hide();
 		end
 	end
+	local frameWidth = 29 * numStancesShown;
+	StanceBarFrame:SetWidth(frameWidth);
 end
 
 function StanceBar_Select(id)
@@ -102,12 +92,30 @@ function StanceBar_Select(id)
 	CastShapeshiftForm(id);
 end
 
-function StanceButton_OnEnter(self)
+StanceButtonMixin = {}
+
+function StanceButtonMixin:OnLoad()
+	self.cooldown:SetSwipeColor(0, 0, 0);
+	self:RegisterForClicks("AnyUp");
+end
+
+function StanceButtonMixin:OnClick()
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		self:SetChecked(not self:GetChecked());
+		StanceBar_Select(self:GetID());
+	end
+end
+
+function StanceButtonMixin:OnEnter()
 	if ( GetCVarBool("UberTooltips") or KeybindFrames_InQuickKeybindMode() ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 	GameTooltip:SetShapeshift(self:GetID());
-	self.UpdateTooltip = StanceButton_OnEnter;
+	self.UpdateTooltip = self.OnEnter;
+end
+
+function StanceButtonMixin:OnLeave()
+	GameTooltip_Hide();
 end

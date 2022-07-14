@@ -238,21 +238,6 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<ScrollFrame name="CalendarEventDescriptionScrollFrame" inherits="UIPanelScrollFrameTemplate" virtual="true">
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset x="4" y="-4"/>
-			</Anchor>
-			<Anchor point="BOTTOMRIGHT">
-				<Offset x="-4" y="4"/>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				CalendarEventDescriptionScrollFrame_OnLoad(self);
-			</OnLoad>
-		</Scripts>
-	</ScrollFrame>
 	<Button name="CalendarEventInviteSortButtonTemplate" virtual="true">
 		<Size x="45" y="14"/>
 		<Layers>
@@ -284,34 +269,17 @@
 			<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
 		</KeyValues>
 		<Frames>
-			<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList"/>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<KeyValues>
+					<KeyValue key="hideBackground" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="3" y="-3"/>
-					</Anchor>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-25" y="3"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="3"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset x="0" y="-16"/>
-							</Anchor>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-								<Offset x="0" y="14"/>
-							</Anchor>
-						</Anchors>
-					</Slider>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						HybridScrollFrame_OnLoad(self);
-						self:GetParent().scrollFrame = self;
-					</OnLoad>
-				</Scripts>
-			</ScrollFrame>
+			</EventFrame>
+
 			<Button name="$parentNameSortButton" inherits="CalendarEventInviteSortButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" relativePoint="TOP">
@@ -355,39 +323,36 @@
 				<ButtonText text="STATUS" justifyH="LEFT"/>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnLoad inherit="prepend" function="CalendarEventInviteList_OnLoad"/>
-		</Scripts>
 	</Frame>
 	<Button name="CalendarEventInviteListButtonTemplate" virtual="true">
 		<Size x="260" y="14"/>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="$parentModIcon" hidden="true">
+				<Texture parentKey="ModIcon" hidden="true">
 					<Size x="14" y="14"/>
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentPartyIcon" file="Interface\RaidFrame\ReadyCheck-Ready" hidden="true">
+				<Texture parentKey="PartyIcon" file="Interface\RaidFrame\ReadyCheck-Ready" hidden="true">
 					<Size x="14" y="14"/>
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="110" y="14"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentPartyIcon" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.PartyIcon" relativePoint="RIGHT"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentStatus" inherits="GameFontNormalSmall" justifyH="RIGHT">
+				<FontString parentKey="Status" inherits="GameFontNormalSmall" justifyH="RIGHT">
 					<Size x="77" y="14"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentClass" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<FontString parentKey="Class" inherits="GameFontNormalSmall" justifyH="LEFT">
 					<Size x="80" y="14"/>
 					<Anchors>
 						<Anchor point="CENTER">
@@ -502,7 +467,7 @@
 
 	<!-- Calendar Event Picker Templates -->
 	<Button name="CalendarEventPickerButtonTemplate" virtual="true">
-		<Size x="240" y="16"/>
+		<Size x="235" y="16"/>
 		<Anchors>
 			<Anchor point="RIGHT">
 				<Offset x="-4" y="0"/>
@@ -510,21 +475,21 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="$parentIcon">
+				<Texture parentKey="Icon">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentTime" inherits="GameFontHighlight" justifyH="RIGHT">
+				<FontString parentKey="Time" inherits="GameFontHighlight" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTitle" inherits="GameFontNormal" justifyH="LEFT">
+				<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTime" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Time" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -553,17 +518,17 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="$parentIcon">
+				<Texture parentKey="Icon">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.796875" top="0.0" bottom="0.71875"/>
 				</Texture>
-				<FontString name="$parentTitle" inherits="GameFontNormal" justifyH="LEFT">
+				<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="224" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT"/>
 					</Anchors>
 				</FontString>
 			</Layer>

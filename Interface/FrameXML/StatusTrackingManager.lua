@@ -1,5 +1,4 @@
 StatusTrackingManagerMixin = { };
-local MAX_BARS_VISIBLE = 2;
 
 function StatusTrackingManagerMixin:SetTextLocked(isLocked)
 	if ( self.textLocked ~= isLocked ) then
@@ -8,33 +7,22 @@ function StatusTrackingManagerMixin:SetTextLocked(isLocked)
 	end
 end
 
-function StatusTrackingManagerMixin:GetNumberVisibleBars()
-	local numVisBars = 0; 
-	for i, bar in ipairs(self.bars) do
-		if (bar:ShouldBeVisible()) then
-			numVisBars = numVisBars + 1; 
-		end
-	end	
-	return math.min(MAX_BARS_VISIBLE, numVisBars); 
-end
-
 function StatusTrackingManagerMixin:IsTextLocked()
 	return self.textLocked;
-end	
+end
 
 function StatusTrackingManagerMixin:UpdateBarVisibility()
 	for i, bar in ipairs(self.bars) do
 		if(bar:ShouldBeVisible()) then
 			bar:UpdateTextVisibility();
 		end
-	end	
+	end
 end
 
 function StatusTrackingManagerMixin:AddBarFromTemplate(frameType, template)
 	local bar = CreateFrame(frameType, nil, self, template);
 	table.insert(self.bars, bar);
 	self:UpdateBarsShown();
-	
 end
 
 function StatusTrackingManagerMixin:SetBarAnimation(Animation)
@@ -67,11 +55,6 @@ function StatusTrackingManagerMixin:HideVisibleBarText()
 	end
 end
 
-function StatusTrackingManagerMixin:SetBarSize(largeSize)
-	self.largeSize = largeSize; 
-	self:UpdateBarsShown(); 
-end
-
 function StatusTrackingManagerMixin:UpdateBarsShown()
 	local visibleBars = {};
 	for i, bar in ipairs(self.bars) do
@@ -81,25 +64,25 @@ function StatusTrackingManagerMixin:UpdateBarsShown()
 	end
 		
 	table.sort(visibleBars, function(left, right) return left:GetPriority() < right:GetPriority() end);
-	self:LayoutBars(visibleBars); 
+	self:LayoutBars(visibleBars);
 end
 
 function StatusTrackingManagerMixin:HideStatusBars()
-	self.SingleBarSmall:Hide(); 
+	self.SingleBarSmall:Hide();
 	self.SingleBarLarge:Hide();
 	self.SingleBarSmallUpper:Hide();
 	self.SingleBarLargeUpper:Hide();
 	for i, bar in ipairs(self.bars) do
-		bar:Hide(); 
+		bar:Hide();
 	end
 end
 
 function StatusTrackingManagerMixin:SetInitialBarSize()
 	self.barHeight = self.SingleBarLarge:GetHeight();
-end 
+end
 
 function StatusTrackingManagerMixin:GetInitialBarHeight()
-	return self.barHeight; 
+	return self.barHeight;
 end
 
 -- Sets the bar size depending on whether the bottom right multi-bar is shown. 
@@ -155,19 +138,19 @@ function StatusTrackingManagerMixin:LayoutBar(bar, barWidth, isTopBar, isDouble)
 	
 	if ( isDouble ) then
 		if ( isTopBar ) then
-			bar:SetPoint("BOTTOM", self:GetParent(), 0, -10);
+			bar:SetPoint("BOTTOM", self, 0, 10);
 		else		
-			bar:SetPoint("BOTTOM", self:GetParent(), 0, -19);
+			bar:SetPoint("BOTTOM", self, 0, 0);
 		end
 		self:SetDoubleBarSize(bar, barWidth);
 	else 
-		bar:SetPoint("BOTTOM", self:GetParent(), 0, -14);
+		bar:SetPoint("BOTTOM", self, 0, 0);
 		self:SetSingleBarSize(bar, barWidth);
 	end
 end
 
 function StatusTrackingManagerMixin:LayoutBars(visBars)
-	local width = self:GetParent():GetSize();
+	local width = self:GetSize();
 	self:HideStatusBars();
 
 	local TOP_BAR = true;
@@ -178,13 +161,12 @@ function StatusTrackingManagerMixin:LayoutBars(visBars)
 	elseif( #visBars == 1 ) then 
 		self:LayoutBar(visBars[1], width, TOP_BAR, not IS_DOUBLE);
 	end 
-	self:GetParent():OnStatusBarsUpdated();
 	self:UpdateBarTicks();
 end
 
 function StatusTrackingManagerMixin:OnLoad()
 	self.bars = {};
-	
+
 	self:RegisterEvent("UPDATE_FACTION");
 	self:RegisterEvent("ENABLE_XP_GAIN");
 	self:RegisterEvent("DISABLE_XP_GAIN");
@@ -200,14 +182,24 @@ function StatusTrackingManagerMixin:OnLoad()
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:RegisterUnitEvent("UNIT_LEVEL", "player")
 	self:SetInitialBarSize();
-	self:UpdateBarsShown(); 
+	self:UpdateBarsShown();
 end
 
-function StatusTrackingManagerMixin:OnEvent(event)
+function StatusTrackingManagerMixin:OnEvent(event, ...)
 	if ( event == "CVAR_UPDATE" ) then
 		self:UpdateBarVisibility();
-	end	
-	self:UpdateBarsShown(); 
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		local initialLogin, reloadingUI = ...;
+		if ( initialLogin or reloadingUI ) then
+			self:AddBarFromTemplate("FRAME", "ReputationStatusBarTemplate");
+			self:AddBarFromTemplate("FRAME", "HonorStatusBarTemplate");
+			self:AddBarFromTemplate("FRAME", "ArtifactStatusBarTemplate");
+			self:AddBarFromTemplate("FRAME", "ExpStatusBarTemplate");
+			self:AddBarFromTemplate("FRAME", "AzeriteBarTemplate");
+			UIParent_ManageFramePositions();
+		end
+	end
+	self:UpdateBarsShown();
 end
 
 function StatusTrackingManagerMixin:GetEndCapWidth()

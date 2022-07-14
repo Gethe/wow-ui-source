@@ -1,0 +1,9 @@
+## Title: Blizzard Professions Crafter Orders
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_ProfessionsTemplates
+Blizzard_ProfessionsCrafterOrdersForm.xml
+Blizzard_ProfessionsCrafterOrdersBrowseOrders.xml
+Blizzard_ProfessionsCrafterOrdersOrderList.xml
+Blizzard_ProfessionsCrafterOrders.xml
+Registration.lua

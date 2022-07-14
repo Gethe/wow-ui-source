@@ -680,6 +680,7 @@
 		</Scripts>
 	</Frame>
 
+	<!--adventures log still needs this-->
 	<Button name="OribosScrollUpButtonTemplate" virtual="true">
 		<Size x="10" y="10"/>
 		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true"/>
@@ -695,73 +696,31 @@
 		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" alphaMode="ADD"/>
 	</Button>
 
-	<Slider name="OribosScrollBarTemplate" parentKey="scrollBar" virtual="true">
-		<Size x="10" y="0"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture name="$parentBG" setAllPoints="true" hidden="true" parentKey="trackBG" atlas="Soulbinds_Collection_Scrollbar_Background" useAtlasSize="true"/>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture atlas="Soulbinds_Collection_Scrollbar_Backplate" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="7" y="30"/>
-						<Anchor point="BOTTOMRIGHT" x="7" y="-30"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentScrollUpButton" parentKey="UpButton" inherits="OribosScrollUpButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativePoint="TOP" x="0" y="15"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="HybridScrollFrameScrollUp_OnLoad"/>
-					<OnClick  function="HybridScrollFrameScrollButton_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button name="$parentScrollDownButton" parentKey="DownButton" inherits="OribosScrollDownButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="-20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="HybridScrollFrameScrollDown_OnLoad"/>
-					<OnClick function="HybridScrollFrameScrollButton_OnClick"/>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnValueChanged function="HybridScrollFrame_OnValueChanged"/>
-		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" atlas="Soulbinds_Collection_Scrollbar_Thumb_Wide" parentKey="thumbTexture">
-			<Size x="10" y="24"/>
-		</ThumbTexture>
-	</Slider>
-
 	<Frame name="CovenantListWideFrameTemplate" inherits="CovenantMissionBaseFrameTemplate" virtual="true">
 		<Size x="300" y="575"/>
 		<Frames>
-			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-6"/>
-					<Anchor point="BOTTOMRIGHT" x="-3" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="-24" y="6"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="OribosScrollBarTemplate" parentKey="scrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-22" y="-30"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-22" y="30"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.trackBG:Show();
-								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
-								self.doNotHide = true;
-							</OnLoad>
-						</Scripts>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="OribosScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-11"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="13"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Soulbinds_Collection_Scrollbar_Backplate" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="7" y="15"/>
+								<Anchor point="BOTTOMRIGHT" x="7" y="-18"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</EventFrame>
 		</Frames>
 	</Frame>
 
@@ -777,27 +736,28 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-6"/>
-					<Anchor point="BOTTOMRIGHT" x="-3" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="-23" y="6"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="OribosScrollBarTemplate" parentKey="scrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-14" y="-30"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-14" y="30"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.trackBG:Show();
-								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
-								self.doNotHide = true;
-							</OnLoad>
-						</Scripts>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="OribosScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="7" y="-4"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="7" y="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Soulbinds_Collection_Scrollbar_Backplate" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="7" y="5"/>
+								<Anchor point="BOTTOMRIGHT" x="7" y="-8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</EventFrame>
 			<Frame parentKey="ElevatedFrame" framelevel="50" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY" textureSubLayer="5">
@@ -1069,7 +1029,7 @@
 		<Frames>
 			<Frame parentArray="Rewards" inherits="GarrisonMissionListButtonRewardTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.RewardsBG" x="-14"/>
+					<Anchor point="RIGHT" relativeKey="$parent.RewardsBG" x="-40"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="EncounterIcon" inherits="CovenantMissionEncounterIconTemplate">

@@ -262,7 +262,7 @@ function AnimatedStatusBarMixin:SetupAnimationForValueChange(anim, startingPerce
 		end
 	elseif objectType == "Scale" then
 		if anim.adjustScaleTo then
-			anim:SetToScale(percentChange * self:GetWidth() * (anim.scaleFactor or 1), 1);
+			anim:SetScaleTo(percentChange * self:GetWidth() * (anim.scaleFactor or 1), 1);
 		end
 	end
 

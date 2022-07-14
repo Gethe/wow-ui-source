@@ -248,10 +248,10 @@ TransmogAndMountDressupFrameMixin = CreateFromMixins(DressUpModelFrameBaseMixin)
 
 function TransmogAndMountDressupFrameMixin:OnLoad()
 	local checkButton = self.ShowMountCheckButton; 
-	checkButton.text:SetFontObject("GameFontNormal");
-	checkButton.text:ClearAllPoints(); 
-	checkButton.text:SetPoint("RIGHT", checkButton, "LEFT"); 
-	checkButton.text:SetText(TRANSMOG_AND_MOUNT_DRESSUP_FRAME_SHOW_MOUNT);
+	checkButton.Text:SetFontObject("GameFontNormal");
+	checkButton.Text:ClearAllPoints(); 
+	checkButton.Text:SetPoint("RIGHT", checkButton, "LEFT"); 
+	checkButton.Text:SetText(TRANSMOG_AND_MOUNT_DRESSUP_FRAME_SHOW_MOUNT);
 end 
 
 function TransmogAndMountDressupFrameMixin:OnHide()

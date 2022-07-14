@@ -1,4 +1,5 @@
 ## Title: Blizzard Macro UI
 ## LoadOnDemand: 1
 Blizzard_MacroUI.xml
+Blizzard_MacroIconSelector.xml
 Localization.lua

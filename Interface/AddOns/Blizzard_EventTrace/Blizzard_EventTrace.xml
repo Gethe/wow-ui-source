@@ -79,7 +79,7 @@
 		</Layers>
 	</Button>
 
-	<Button name="EventTraceLogEventButtonTemplate" inherits="EventTraceScrollBoxButtonTemplate" mixin="EventTraceLogEventButtonMixin" virtual="true">
+	<Button name="EventTraceLogEventButtonTemplate" inherits="EventTraceScrollBoxButtonTemplate" registerForClicks="AnyUp" mixin="EventTraceLogEventButtonMixin" virtual="true">
 		<Size y="20"/>
 		<Layers>
 			<Layer level="OVERLAY">

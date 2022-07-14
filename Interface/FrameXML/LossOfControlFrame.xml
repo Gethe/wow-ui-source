@@ -3,9 +3,7 @@
 	<Script file="LossOfControlFrame.lua"/>
 
 	<Frame name="LossOfControlFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="256" y="58"/>
-		</Size>
+		<Size x="256" y="58"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>

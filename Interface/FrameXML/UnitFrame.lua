@@ -484,7 +484,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 		if ( not manaBar.lockColor ) then
 			local playerDeadOrGhost = (manaBar.unit == "player" and (UnitIsDead("player") or UnitIsGhost("player")));
 			if ( info.atlas ) then
-				manaBar:SetStatusBarAtlas(info.atlas);
+				manaBar:SetStatusBarTexture(info.atlas);
 				manaBar:SetStatusBarColor(1, 1, 1);
 				manaBar:GetStatusBarTexture():SetDesaturated(playerDeadOrGhost);
 				manaBar:GetStatusBarTexture():SetAlpha(playerDeadOrGhost and 0.5 or 1);
@@ -815,6 +815,8 @@ function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdat
 	end
 	statusbar:RegisterEvent("UNIT_DISPLAYPOWER");
 	statusbar:RegisterUnitEvent("UNIT_MAXPOWER", unit);
+	statusbar:RegisterUnitEvent("PLAYER_GAINS_VEHICLE_DATA", unit);
+	statusbar:RegisterUnitEvent("PLAYER_LOSES_VEHICLE_DATA", unit);
 	if ( statusbar.unit == "player" ) then
 		statusbar:RegisterEvent("PLAYER_DEAD");
 		statusbar:RegisterEvent("PLAYER_ALIVE");
@@ -837,6 +839,8 @@ function UnitFrameManaBar_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_ALIVE"  or event == "PLAYER_DEAD" or event == "PLAYER_UNGHOST" ) then
 		UnitFrameManaBar_UpdateType(self);
+	elseif ( event == "PLAYER_GAINS_VEHICLE_DATA"  or event == "PLAYER_LOSES_VEHICLE_DATA" ) then
+		UnitFrameManaBar_UpdateType(self);
 	else
 		if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
 			UnitFrameManaBar_Update(self, ...);
@@ -854,7 +858,7 @@ function UnitFrameManaBar_OnUpdate(self)
 		if ( currValue ~= self.currValue or self.forceUpdate ) then
 			self.forceUpdate = nil;
 			if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
-				if ( self.FeedbackFrame ) then
+				if ( self.FeedbackFrame and self.FeedbackFrame.maxValue ) then
 					-- Only show anim if change is more than 10%
 					local oldValue = self.currValue or 0;
 					if ( self.FeedbackFrame.maxValue ~= 0 and math.abs(currValue - oldValue) / self.FeedbackFrame.maxValue > 0.1 ) then

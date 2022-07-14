@@ -39,6 +39,6 @@ function ScrollBoxPaddingMixin:SetRight(right)
 	self.right = right;
 end
 
-function CreateScrollBoxPadding(top, bottom, left, right, spacing)
-	return CreateAndInitFromMixin(ScrollBoxPaddingMixin, top, bottom, left, right, spacing);
+function CreateScrollBoxPadding(top, bottom, left, right)
+	return CreateAndInitFromMixin(ScrollBoxPaddingMixin, top, bottom, left, right);
 end

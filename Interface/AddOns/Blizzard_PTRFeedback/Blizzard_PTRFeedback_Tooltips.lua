@@ -85,48 +85,44 @@ function PTR_IssueReporter.SetupUnitTooltips()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupQuestTooltips()
-    local function HookIntoQuestTooltip(self)
-        if self.questID then
-            local title = C_QuestLog.GetTitleForQuestID(self.questID);
-            if title then
-                PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, self.questID, title)
-            end
+    local function HookIntoQuestTooltip(sender, self, questID, isGroup)    
+        local title = C_QuestLog.GetTitleForQuestID(questID)        
+        if (isGroup ~= null and not isGroup) then
+            --If isGroup is null, that means the event always shows tooltip
+            --If isGroup is a bool, it only shows a tooltip if true, so when false we must provide our own
+            GameTooltip:ClearAllPoints()
+            GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, 0)
+            GameTooltip:SetOwner(self, "ANCHOR_PRESERVE")
+            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, questID, title, true)
+            GameTooltip:Show()
+        else
+            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, tooltipData)
         end
     end
 
-    hooksecurefunc("QuestMapLogTitleButton_OnEnter", HookIntoQuestTooltip)
-
-    local function OnTaskPOITooltipShown(self, owningFrame)
-        HookIntoQuestTooltip(owningFrame)
-    end
-
-    -- Commented out for now as they are some details to work out still.
-    -- EventRegistry:RegisterCallback("TaskPOI.TooltipShown", OnTaskPOITooltipShown, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("TaskPOI.TooltipShown", HookIntoQuestTooltip, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("QuestPin.OnEnter", HookIntoQuestTooltip, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("QuestMapLogTittleButton.OnEnter", HookIntoQuestTooltip, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("OnQuestBlockHeader.OnEnter", HookIntoQuestTooltip, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("TaskPOI.TooltipShown", HookIntoQuestTooltip, PTR_IssueReporter)
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.SetupAchievementTooltips()
-    local frame = CreateFrame("frame")
-    frame:RegisterEvent("ADDON_LOADED")
-    frame:SetScript("OnEvent", function(_, _, eventSender)
-        if eventSender == "Blizzard_AchievementUI" then
-            for i,button in ipairs(AchievementFrameAchievementsContainer.buttons) do
-                button:HookScript("OnEnter", function()
-                    GameTooltip:SetOwner(button, "ANCHOR_NONE")
-                    GameTooltip:SetPoint("TOPLEFT", button, "TOPRIGHT", 0, 0)
-                    local id = button.id
-                    if (id) then
-                        local achievementTitle = select(2, GetAchievementInfo(id))
-                        PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.achievement,id, achievementTitle, true)
-                        GameTooltip:Show()
-                    end
-                end)
-                button:HookScript("OnLeave", function()
-                    GameTooltip:Hide()
-                end)
-            end
-            frame:UnregisterEvent("ADDON_LOADED")
-        end
-    end)
+function PTR_IssueReporter.SetupAchievementTooltips()    
+    local bindingFunc = function(sender, self, achievementID)        
+        local title = select(2, GetAchievementInfo(achievementID))
+        
+        GameTooltip:ClearAllPoints();
+        GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);
+        GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");            
+        PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.achievement, achievementID, achievementTitle, true)        GameTooltip:Show()
+    end
+    
+    local exitBindingFunc = function()
+        GameTooltip:Hide()
+    end
+
+    EventRegistry:RegisterCallback("AchievementFrameAchievement.OnEnter", bindingFunc, PTR_IssueReporter)    
+    EventRegistry:RegisterCallback("AchievementFrameAchievement.OnLeave", exitBindingFunc, PTR_IssueReporter)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupCurrencyTooltips()

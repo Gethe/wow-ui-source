@@ -13,6 +13,7 @@ local mountTypeStrings = {
 	[Enum.MountType.Ground] = MOUNT_JOURNAL_FILTER_GROUND,
 	[Enum.MountType.Flying] = MOUNT_JOURNAL_FILTER_FLYING,
 	[Enum.MountType.Aquatic] = MOUNT_JOURNAL_FILTER_AQUATIC,
+	[Enum.MountType.Dragonriding] = MOUNT_JOURNAL_FILTER_DRAGONRIDING,
 };
 
 StaticPopupDialogs["DIALOG_REPLACE_MOUNT_EQUIPMENT"] = {
@@ -143,11 +144,16 @@ function MountJournal_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 	self:RegisterEvent("MOUNT_EQUIPMENT_APPLY_RESULT");
-	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("CURSOR_CHANGED");
 
-	self.ListScrollFrame.update = MountJournal_UpdateMountList;
-	self.ListScrollFrame.scrollBar.doNotHide = true;
-	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "MountListButtonTemplate", 44, 0);
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("MountListButtonTemplate", function(button, elementData)
+		MountJournal_InitMountButton(button, elementData);
+	end);
+	view:SetPadding(0,0,44,0,0);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
 	UIDropDownMenu_Initialize(self.mountOptionsMenu, MountOptionsMenu_Init, "MENU");
 
 	local bottomLeftInset = self.BottomLeftInset;
@@ -166,6 +172,98 @@ function MountJournal_OnLoad(self)
 	MountJournal_UpdateEquipment(self);
 end
 
+function MountJournal_ResetMountButton(button)
+	button.name:SetText("");
+	button.icon:SetTexture("Interface\\PetBattles\\MountJournalEmptyIcon");
+	button.index = nil;
+	button.spellID = 0;
+	button.selected = false;
+	CollectionItemListButton_SetRedOverlayShown(button, false);
+	button.DragButton.ActiveTexture:Hide();
+	button.selectedTexture:Hide();
+	button:SetEnabled(false);
+	button.DragButton:SetEnabled(false);
+	button.icon:SetDesaturated(true);
+	button.icon:SetAlpha(0.5);
+	button.favorite:Hide();
+	button.factionIcon:Hide();
+	button.background:SetVertexColor(1, 1, 1, 1);
+	button.iconBorder:Hide();
+end
+
+function MountJournal_InitMountButton(button, elementData)
+	local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, isFiltered, isCollected, mountID = C_MountJournal.GetDisplayedMountInfo(elementData.index);
+	local needsFanfare = C_MountJournal.NeedsFanfare(mountID);
+
+	button.name:SetText(creatureName);
+	button.icon:SetTexture(needsFanfare and COLLECTIONS_FANFARE_ICON or icon);
+	button.new:SetShown(needsFanfare);
+	button.newGlow:SetShown(needsFanfare);
+
+	button.index = elementData.index;
+	button.spellID = spellID;
+	button.mountID = mountID;
+
+	button.active = active;
+	if (active) then
+		button.DragButton.ActiveTexture:Show();
+	else
+		button.DragButton.ActiveTexture:Hide();
+	end
+	button:Show();
+
+	if ( MountJournal.selectedSpellID == spellID ) then
+		button.selected = true;
+		button.selectedTexture:Show();
+	else
+		button.selected = false;
+		button.selectedTexture:Hide();
+	end
+	button:SetEnabled(true);
+	CollectionItemListButton_SetRedOverlayShown(button, false);
+	button.iconBorder:Hide();
+	button.background:SetVertexColor(1, 1, 1, 1);
+	if (isUsable or needsFanfare) then
+		button.DragButton:SetEnabled(true);
+		button.additionalText = nil;
+		button.icon:SetDesaturated(false);
+		button.icon:SetAlpha(1.0);
+		button.name:SetFontObject("GameFontNormal");
+	else
+		if (isCollected) then
+			CollectionItemListButton_SetRedOverlayShown(button, true);
+			button.DragButton:SetEnabled(true);
+			button.name:SetFontObject("GameFontNormal");
+			button.icon:SetAlpha(0.75);
+			button.additionalText = nil;
+			button.background:SetVertexColor(1, 0, 0, 1);
+		else
+			button.icon:SetDesaturated(true);
+			button.DragButton:SetEnabled(false);
+			button.icon:SetAlpha(0.25);
+			button.additionalText = nil;
+			button.name:SetFontObject("GameFontDisable");
+		end
+	end
+
+	if ( isFavorite ) then
+		button.favorite:Show();
+	else
+		button.favorite:Hide();
+	end
+
+	if ( isFactionSpecific ) then
+		button.factionIcon:SetAtlas(MOUNT_FACTION_TEXTURES[faction], true);
+		button.factionIcon:Show();
+	else
+		button.factionIcon:Hide();
+	end
+
+	if ( button.showingTooltip ) then
+		MountJournalMountButton_UpdateTooltip(button);
+	end
+end
+
 function MountJournal_OnEvent(self, event, ...)
 	if ( event == "MOUNT_JOURNAL_USABILITY_CHANGED" or event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" ) then
 		local companionType = ...;
@@ -180,7 +278,7 @@ function MountJournal_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
 		MountJournal_UpdateEquipment(self);
-	elseif ( event == "CURSOR_UPDATE" ) then
+	elseif ( event == "CURSOR_CHANGED" ) then
 		MountJournal_ValidateCursorDragSourceCompatible(self);
 	elseif ( event == "MOUNT_EQUIPMENT_APPLY_RESULT" ) then
 		local success = ...;
@@ -390,9 +488,12 @@ function MountJournal_OnHide(self)
 end
 
 function MountJournal_UpdateMountList()
-	local scrollFrame = MountJournal.ListScrollFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
+	local newDataProvider = CreateDataProvider();
+	for index = 1, C_MountJournal.GetNumDisplayedMounts() do
+		local mountID = C_MountJournal.GetDisplayedMountID(index);
+		newDataProvider:Insert({index = index, mountID = mountID});
+	end
+	MountJournal.ScrollBox:SetDataProvider(newDataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	local numMounts = C_MountJournal.GetNumMounts();
 	MountJournal.numOwned = 0;
@@ -413,104 +514,6 @@ function MountJournal_UpdateMountList()
 		MountJournal.MountDisplay.NoMounts:Hide();
 	end
 
-	local numDisplayedMounts = C_MountJournal.GetNumDisplayedMounts();
-	for i=1, #buttons do
-		local button = buttons[i];
-		local displayIndex = i + offset;
-		if ( displayIndex <= numDisplayedMounts and showMounts ) then
-			local index = displayIndex;
-			local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, isFiltered, isCollected, mountID = C_MountJournal.GetDisplayedMountInfo(index);
-			local needsFanfare = C_MountJournal.NeedsFanfare(mountID);
-
-			button.name:SetText(creatureName);
-			button.icon:SetTexture(needsFanfare and COLLECTIONS_FANFARE_ICON or icon);
-			button.new:SetShown(needsFanfare);
-			button.newGlow:SetShown(needsFanfare);
-
-			button.index = index;
-			button.spellID = spellID;
-			button.mountID = mountID;
-
-			button.active = active;
-			if (active) then
-				button.DragButton.ActiveTexture:Show();
-			else
-				button.DragButton.ActiveTexture:Hide();
-			end
-			button:Show();
-
-			if ( MountJournal.selectedSpellID == spellID ) then
-				button.selected = true;
-				button.selectedTexture:Show();
-			else
-				button.selected = false;
-				button.selectedTexture:Hide();
-			end
-			button:SetEnabled(true);
-			CollectionItemListButton_SetRedOverlayShown(button, false);
-			button.iconBorder:Hide();
-			button.background:SetVertexColor(1, 1, 1, 1);
-			if (isUsable or needsFanfare) then
-				button.DragButton:SetEnabled(true);
-				button.additionalText = nil;
-				button.icon:SetDesaturated(false);
-				button.icon:SetAlpha(1.0);
-				button.name:SetFontObject("GameFontNormal");
-			else
-				if (isCollected) then
-					CollectionItemListButton_SetRedOverlayShown(button, true);
-					button.DragButton:SetEnabled(true);
-					button.name:SetFontObject("GameFontNormal");
-					button.icon:SetAlpha(0.75);
-					button.additionalText = nil;
-					button.background:SetVertexColor(1, 0, 0, 1);
-				else
-					button.icon:SetDesaturated(true);
-					button.DragButton:SetEnabled(false);
-					button.icon:SetAlpha(0.25);
-					button.additionalText = nil;
-					button.name:SetFontObject("GameFontDisable");
-				end
-			end
-
-			if ( isFavorite ) then
-				button.favorite:Show();
-			else
-				button.favorite:Hide();
-			end
-
-			if ( isFactionSpecific ) then
-				button.factionIcon:SetAtlas(MOUNT_FACTION_TEXTURES[faction], true);
-				button.factionIcon:Show();
-			else
-				button.factionIcon:Hide();
-			end
-
-			if ( button.showingTooltip ) then
-				MountJournalMountButton_UpdateTooltip(button);
-			end
-		else
-			button.name:SetText("");
-			button.icon:SetTexture("Interface\\PetBattles\\MountJournalEmptyIcon");
-			button.index = nil;
-			button.spellID = 0;
-			button.selected = false;
-			CollectionItemListButton_SetRedOverlayShown(button, false);
-			button.DragButton.ActiveTexture:Hide();
-			button.selectedTexture:Hide();
-			button:SetEnabled(false);
-			button.DragButton:SetEnabled(false);
-			button.icon:SetDesaturated(true);
-			button.icon:SetAlpha(0.5);
-			button.favorite:Hide();
-			button.factionIcon:Hide();
-			button.background:SetVertexColor(1, 1, 1, 1);
-			button.iconBorder:Hide();
-		end
-	end
-
-	local totalHeight = numDisplayedMounts * MOUNT_BUTTON_HEIGHT;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, scrollFrame:GetHeight());
 	MountJournal.MountCount.Count:SetText(MountJournal.numOwned);
 	if ( not showMounts ) then
 		MountJournal.selectedSpellID = nil;
@@ -589,7 +592,8 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 				if not disablePlayerMountPreview and not showPlayer then
 					disablePlayerMountPreview = true;
 				end
-				MountJournal.MountDisplay.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID);
+				local useNativeForm = PlayerUtil.ShouldUseNativeFormInModelScene();
+				MountJournal.MountDisplay.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID, useNativeForm);
 			end
 		end
 
@@ -634,40 +638,36 @@ function MountJournal_GetMountButtonHeight()
 end
 
 function MountJournal_GetMountButtonByMountID(mountID)
-	local scrollFrame = MountJournal.ListScrollFrame;
-	local buttons = scrollFrame.buttons;
-
-	for i=1, #buttons do
-		local button = buttons[i];
-		if ( button.mountID == mountID ) then
-			return button;
-		end
-	end
-end
-
-local function GetMountDisplayIndexByMountID(mountID)
-	for i = 1, C_MountJournal.GetNumDisplayedMounts() do
-		local creatureName, spellID, icon, active, _, _, _, _, _, _, _, currentMountID = C_MountJournal.GetDisplayedMountInfo(i);
-		if currentMountID == mountID then
-			return i;
-		end
-	end
-	return nil;
+	return self.ScrollBox:FindFrameByPredicate(function(elementData)
+			return elementData.mountID == mountID;
+		end);
 end
 
 function MountJournal_SetSelected(selectedMountID, selectedSpellID)
+	local oldSelectedID = MountJournal.selectedMountID;
 	MountJournal.selectedSpellID = selectedSpellID;
 	MountJournal.selectedMountID = selectedMountID;
 	MountJournal_HideMountDropdown();
-	MountJournal_UpdateMountList();
 	MountJournal_UpdateMountDisplay();
 	
-	local inView = MountJournal_GetMountButtonByMountID(selectedMountID) ~= nil;
-	if not inView then
-		local mountIndex = GetMountDisplayIndexByMountID(selectedMountID);
-		if mountIndex then
-			HybridScrollFrame_ScrollToIndex(MountJournal.ListScrollFrame, mountIndex, MountJournal_GetMountButtonHeight);
+	if oldSelectedID ~= selectedMountID then
+		local foundFrame = MountJournal.ScrollBox:FindFrameByPredicate(function(elementData)
+			return elementData.mountID == oldSelectedID;
+		end);
+		if foundFrame then
+			MountJournal_InitMountButton(foundFrame, foundFrame:GetElementData());
 		end
+	end
+
+	-- Scroll to the selected mount only if it is not in view.
+	local function FindSelectedMount(elementData)
+		return elementData.mountID == selectedMountID;
+	end;
+	local foundFrame = MountJournal.ScrollBox:FindFrameByPredicate(FindSelectedMount);
+	if not foundFrame then
+		MountJournal.ScrollBox:ScrollToElementDataByPredicate(FindSelectedMount);
+	else
+		MountJournal_InitMountButton(foundFrame, foundFrame:GetElementData());
 	end
 end
 

@@ -192,7 +192,7 @@
 				</Scripts>
 			</Button>
 
-			<Frame parentKey="ZoneNameButton" inherits="ResizeLayoutFrame" mixin="ResizeCheckButtonMixin, CharacterCreateStartingZoneButtonMixin">
+			<Frame parentKey="ZoneNameButton" inherits="ResizeCheckButtonBehaviorTemplate" mixin="CharacterCreateStartingZoneButtonMixin">
 				<Anchors>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
@@ -372,7 +372,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame parentKey="Sexes" inherits="HorizontalLayoutFrame">
+					<Frame parentKey="BodyTypes" inherits="HorizontalLayoutFrame">
 						<KeyValues>
 							<KeyValue key="spacing" value="22" type="number"/>
 						</KeyValues>

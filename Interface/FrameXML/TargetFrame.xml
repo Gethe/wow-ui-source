@@ -34,7 +34,7 @@
 				end
 				local unit = self:GetParent().unit;
 				local filter;
-				if ( SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) then
+				if ( GetCVarBool("showDispelDebuffs") and UnitCanAssist("player", unit) ) then
 					filter = "RAID";
 				end
 				GameTooltip:SetUnitDebuff(unit, self:GetID(), filter);
@@ -44,7 +44,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="TargetDebuffFrameTemplate" parentArray="Debuff" virtual="true" enableMouse="true">
+	<Frame name="TargetDebuffFrameTemplate" virtual="true" enableMouse="true">
 		<Size x="17" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -76,19 +76,19 @@
 		<Scripts>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff(self.unit, self:GetID());
+					GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.auraInstanceID);
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
-				GameTooltip:SetUnitDebuff(self.unit, self:GetID());
+				GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.auraInstanceID);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="TargetBuffFrameTemplate" parentArray="Buff" virtual="true" enableMouse="true">
+	<Frame name="TargetBuffFrameTemplate" virtual="true" enableMouse="true">
 		<Size x="21" y="21"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -120,12 +120,12 @@
 		<Scripts>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitBuff(self.unit, self:GetID());
+					GameTooltip:SetUnitBuffByAuraInstanceID(self.unit, self.auraInstanceID);
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
-				GameTooltip:SetUnitBuff(self.unit, self:GetID());
+				GameTooltip:SetUnitBuffByAuraInstanceID(self.unit, self.auraInstanceID);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -386,6 +386,9 @@
 		</Scripts>
 	</Button>
 	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
@@ -408,6 +411,13 @@
 				end
 				TargetFrame_CreateSpellbar(self, "INSTANCE_ENCOUNTER_ENGAGE_UNIT", true);
 			</OnLoad>
+			<OnShow>
+				BossTargetFrameContainer:UpdateSize(); 
+			</OnShow>
+			<OnHide>
+				BossTargetFrameContainer:UpdateSize();
+				TargetFrame_OnHide(self);
+			</OnHide>
 		</Scripts>
 	</Button>
 	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
@@ -600,29 +610,47 @@
 			<OnDragStop function="FocusFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
-	<Button name="Boss1TargetFrame" inherits="BossTargetFrameTemplate" id="1">
+	<Frame name="BossTargetFrameContainer" parent ="UIParent" inherits="VerticalLayoutFrame, UIParentRightManagedFrameTemplate" mixin="BossTargetFrameContainerMixin" hidden="false">
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="55" y="-236"/>
+			<Anchor point="CENTER"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="4" type="number"/>
+			<KeyValue key="spacing" value="10" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="Boss1TargetFrame" parent="BossTargetFrameContainer" inherits="BossTargetFrameTemplate" id="1">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="4" type="number"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 	</Button>
-	<Button name="Boss2TargetFrame" inherits="BossTargetFrameTemplate" id="2">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Boss1TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-		</Anchors>
+	<Button name="Boss2TargetFrame"  parent="BossTargetFrameContainer" inherits="BossTargetFrameTemplate" id="2">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="5" type="number"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 	</Button>
-	<Button name="Boss3TargetFrame" inherits="BossTargetFrameTemplate" id="3">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Boss2TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-		</Anchors>
+	<Button name="Boss3TargetFrame"  parent="BossTargetFrameContainer" inherits="BossTargetFrameTemplate" id="3">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="6" type="number"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 	</Button>
-	<Button name="Boss4TargetFrame" inherits="BossTargetFrameTemplate" id="4">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Boss3TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-		</Anchors>
+	<Button name="Boss4TargetFrame"  parent="BossTargetFrameContainer" inherits="BossTargetFrameTemplate" id="4">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="7" type="number"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 	</Button>
-	<Button name="Boss5TargetFrame" inherits="BossTargetFrameTemplate" id="5">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Boss4TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-		</Anchors>
+	<Button name="Boss5TargetFrame"  parent="BossTargetFrameContainer" inherits="BossTargetFrameTemplate" id="5">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="8" type="number"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 	</Button>
 </Ui>

@@ -129,16 +129,9 @@ function GarrisonBuildingFrame_OnLoad(self)
 	
 	GarrisonBuildingFrame_UpdateCurrency();
 	
-	self.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_6_0);
+	self.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_6_0, "GarrisonBuildingFollowerButtonTemplate");
 	self.FollowerList:SetSortFuncs(GarrisonFollowerList_DefaultSort, GarrisonFollowerList_InitializeDefaultSort);
 
-	local buttons = self.FollowerList.listScroll.buttons
-	for i = 1, #buttons do
-		buttons[i].Follower:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);
-		buttons[i].Follower:SetScript("OnEnter", GarrisonBuildingFollowerButton_OnEnter);
-		buttons[i].Follower:SetScript("OnLeave", GarrisonBuildingFollowerButton_OnLeave);
-	end
-	
 	GarrisonBuildingFrame.SPEC_CHANGE_CURRENCY, GarrisonBuildingFrame.SPEC_CHANGE_COST = C_Garrison.GetSpecChangeCost();
 	
 	self.TitleText:SetText(GARRISON_ARCHITECT);
@@ -1012,25 +1005,21 @@ function GarrisonBuildingAddFollowerButton_OnLeave(self, button)
 end
 
 function GarrisonBuildingFollowerList_OnShow(self)
+	local followerList = GarrisonBuildingFrame.FollowerList;
 	self.followers = C_Garrison.GetPossibleFollowersForBuilding(Enum.GarrisonFollowerType.FollowerType_6_0, GarrisonBuildingFrame.selectedBuilding.plotID);
-	self.followersList = { };
-	for i = 1, #self.followers do
-		tinsert(self.followersList, i);
-	end	
 	GarrisonFollowerList_SortFollowers(self);
-	self:UpdateData();
-	
-	if (#self.followers == 0) then
-		GarrisonBuildingFrame.FollowerList.NoFollowerText:Show();
-	else
-		GarrisonBuildingFrame.FollowerList.NoFollowerText:Hide();
+
+	local dataProvider = CreateDataProvider();
+	for index, follower in ipairs(self.followers) do
+		dataProvider:Insert({index=index, follower=follower, followerList=self});
 	end
+	followerList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+	followerList.NoFollowerText:SetShown(#self.followers == 0);
 end
 
 function GarrisonBuildingFollowerList_OnHide(self)
 	self.followers = nil;
 end
-
 
 function GarrisonBuildingFollowerButton_OnClick(self, button)
 	if ( C_Garrison.GetFollowerStatus(self.id) ) then

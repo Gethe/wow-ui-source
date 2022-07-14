@@ -45,7 +45,12 @@ function UIWidgetTemplateZoneControlMixin:Setup(widgetInfo, widgetContainer)
 		self.lastVals[index] = zoneInfo;
 	end
 
-	self:Layout();
+	if #widgetInfo.zoneEntries == 0 then
+		self:Hide();
+		return;
+	else
+		self:Layout();
+	end
 end
 
 function UIWidgetTemplateZoneControlMixin:OnReset()

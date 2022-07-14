@@ -5,7 +5,7 @@
 		<Size x="153" y="44"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+				<Texture parentKey="SlotTexture" name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-13" y="13"/>
@@ -61,11 +61,7 @@
 			</ItemButton>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="2" y="31"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT" x="2" y="31"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -77,11 +73,7 @@
 			</Frame>
 			<Frame name="$parentAltCurrencyFrame" inherits="SmallAlternateCurrencyFrameTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="2" y="31"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT" x="2" y="31"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -368,7 +360,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+						<Texture parentKey="SlotTexture" name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
 							<Size x="64" y="64"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-13" y="13"/>

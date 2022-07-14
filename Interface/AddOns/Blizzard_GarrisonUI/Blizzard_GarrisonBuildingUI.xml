@@ -2,6 +2,16 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonBuildingUI.lua"/>
 
+	<Frame name="GarrisonBuildingFollowerButtonTemplate" inherits="GarrisonMissionFollowerOrCategoryListButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.Follower:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);
+				self.Follower:SetScript("OnEnter", GarrisonBuildingFollowerButton_OnEnter);
+				self.Follower:SetScript("OnLeave", GarrisonBuildingFollowerButton_OnLeave);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
 	<Frame name="GarrisonBaseInfoBoxTemplate" useParentLevel="true" virtual="true">
 		<Layers>
 			<Layer level="BORDER">

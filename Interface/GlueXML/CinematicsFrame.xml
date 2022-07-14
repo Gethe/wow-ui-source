@@ -143,16 +143,14 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
 			<Button name="CinematicsFrameCloseButton" inherits="BigRedExitButtonTemplate">
+				<KeyValues>
+					<KeyValue key="onClickHandler" value="GlueParent_CloseSecondaryScreen" type="global"/>
+					<KeyValue key="onClickSoundKit" value="SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF" type="global"/>
+				</KeyValues>
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-						GlueParent_CloseSecondaryScreen();
-					</OnClick>
-				</Scripts>
 			</Button>
 			<Button name="CinematicsButton1" parentArray="CinematicsButtons" inherits="CinematicsButtonTemplate" text="WORLD_OF_WARCRAFT" hidden="true" id="1">
 				<Anchors>

@@ -5,14 +5,28 @@ MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
 MAX_REPUTATION_REACTION = 8;
 
+local g_selectionBehavior = nil;
+
 function ReputationFrame_OnLoad(self)
 	ReputationWatchBar_UpdateMaxLevel();
-	--[[for i=1, NUM_FACTIONS_DISPLAYED, 1 do
-		_G["ReputationBar"..i.."FactionStanding"]:SetPoint("CENTER",_G["ReputationBar"..i.."ReputationBar"]);
-	end
-	--]]
-	self.paragonFramesPool = CreateFramePool("FRAME", self, "ReputationParagonFrameTemplate");
+
 	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("ReputationBarTemplate", function(button, elementData)
+		ReputationFrame_InitReputationRow(button, elementData);
+	end);
+	view:SetPadding(0,0,0,2,2);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	g_selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorFlags.Deselectable, SelectionBehaviorFlags.Intrusive);
+	g_selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, function(o, elementData, selected)
+		local button = self.ScrollBox:FindFrame(elementData);
+		if button then
+			ReputationFrame_InitReputationRow(button, elementData);
+	end
+	end, self);
 end
 
 function ReputationFrame_OnShow(self)
@@ -42,25 +56,28 @@ function ReputationFrame_OnEvent(self, event, ...)
 end
 
 function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--rowType is a binary table of type isHeader, isChild
-	local factionRowName = factionRow:GetName()
-	local factionBar = _G[factionRowName.."ReputationBar"];
-	local factionTitle = _G[factionRowName.."FactionName"];
-	local factionButton = _G[factionRowName.."ExpandOrCollapseButton"];
-	local factionStanding = _G[factionRowName.."ReputationBarFactionStanding"];
-	local factionBackground = _G[factionRowName.."Background"];
-	local factionLeftTexture = _G[factionRowName.."ReputationBarLeftTexture"];
-	local factionRightTexture = _G[factionRowName.."ReputationBarRightTexture"];
+	local factionContainer = factionRow.Container;
+	local factionBar = factionContainer.ReputationBar;
+	local factionTitle = factionContainer.Name;
+	local factionButton = factionContainer.ExpandOrCollapseButton;
+	local factionBackground = factionContainer.Background;
+	local factionStanding = factionBar.FactionStanding;
+	local factionLeftTexture = factionBar.LeftTexture;
+	local factionRightTexture = factionBar.RightTexture;
+
 	factionLeftTexture:SetWidth(62);
 	factionRightTexture:SetWidth(42);
-	factionBar:SetPoint("RIGHT", factionRow, "RIGHT", 0, 0);
+	factionBar:SetPoint("RIGHT", 0, 0);
 	if ( isHeader ) then
 		if (isChild) then
-			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 29, 0);
+			factionContainer:SetPoint("LEFT", 21, 0);
 		else
-			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 10, 0);
+			factionContainer:SetPoint("LEFT", 2, 0);
 		end
-		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);
+
+		factionButton:SetPoint("LEFT", factionContainer, "LEFT", 3, 0);
 		factionButton:Show();
+
 		factionTitle:SetPoint("LEFT",factionButton,"RIGHT", 10, 0);
 		if (hasRep) then
 			factionTitle:SetPoint("RIGHT", factionBar, "LEFT", -3, 0);
@@ -79,13 +96,13 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 		factionBar:SetWidth(99);
 	else
 		if ( isChild ) then
-			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 52, 0);
+			factionContainer:SetPoint("LEFT", 44, 0);
 		else
-			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 34, 0);
+			factionContainer:SetPoint("LEFT", 25, 0);
 		end
 
 		factionButton:Hide();
-		factionTitle:SetPoint("LEFT", factionRow, "LEFT", 10, 0);
+		factionTitle:SetPoint("LEFT", 10, 0);
 		factionTitle:SetPoint("RIGHT", factionBar, "LEFT", -3, 0);
 		factionTitle:SetFontObject(GameFontHighlightSmall);
 		factionBackground:Show();
@@ -99,158 +116,148 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 	if ( (hasRep) or (not isHeader) ) then
 		factionStanding:Show();
 		factionBar:Show();
-		factionBar:GetParent().hasRep = true;
+		factionBar:GetParent():GetParent().hasRep = true;
 	else
 		factionStanding:Hide();
 		factionBar:Hide();
-		factionBar:GetParent().hasRep = false;
+		factionBar:GetParent():GetParent().hasRep = false;
+	end
+end
+
+function ReputationFrame_InitReputationRow(factionRow, elementData)
+	local factionIndex = elementData.index;
+	local factionContainer = factionRow.Container;
+	local factionBar = factionContainer.ReputationBar;
+	local factionTitle = factionContainer.Name;
+	local factionButton = factionContainer.ExpandOrCollapseButton;
+	local factionStanding = factionBar.FactionStanding;
+
+	local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canSetInactive = GetFactionInfo(factionIndex);
+	factionTitle:SetText(name);
+	if ( isCollapsed ) then
+		factionButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
+	else
+		factionButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
+	end
+	factionRow.index = factionIndex;
+	factionRow.isCollapsed = isCollapsed;
+
+	local colorIndex = standingID;
+	local factionStandingtext;
+
+	local isParagon = factionID and C_Reputation.IsFactionParagon(factionID);
+	if ( isParagon ) then
+		local paragonFrame = factionContainer.Paragon;
+		paragonFrame.factionID = factionID;
+		local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(factionID);
+		C_Reputation.RequestFactionParagonPreloadRewardData(factionID);
+		paragonFrame.Glow:SetShown(not tooLowLevelForParagon and hasRewardPending);
+		paragonFrame.Check:SetShown(not tooLowLevelForParagon and hasRewardPending);
+	end
+	factionContainer.Paragon:SetShown(isParagon);
+
+	local isCapped;
+	if (standingID == MAX_REPUTATION_REACTION) then
+		isCapped = true;
+	end
+	-- check if this is a friendship faction
+	local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
+	if (friendID ~= nil) then
+		factionStandingtext = friendTextLevel;
+		if ( nextFriendThreshold ) then
+			barMin, barMax, barValue = friendThreshold, nextFriendThreshold, friendRep;
+		else
+			-- max rank, make it look like a full bar
+			barMin, barMax, barValue = 0, 1, 1;
+			isCapped = true;
+		end
+		colorIndex = 5;								-- always color friendships green
+		factionRow.friendshipID = friendID;			-- for doing friendship tooltip
+	else
+		local gender = UnitSex("player");
+		factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+		factionRow.friendshipID = nil;
+	end
+
+	factionStanding:SetText(factionStandingtext);
+
+	--Normalize Values
+	barMax = barMax - barMin;
+	barValue = barValue - barMin;
+	barMin = 0;
+
+	factionRow.standingText = factionStandingtext;
+	if ( isCapped ) then
+		factionRow.rolloverText = nil;
+	else
+		factionRow.rolloverText = HIGHLIGHT_FONT_COLOR_CODE.." "..format(REPUTATION_PROGRESS_FORMAT, BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(barMax))..FONT_COLOR_CODE_CLOSE;
+	end
+	factionBar:SetFillStyle("STANDARD_NO_RANGE_FILL");
+	factionBar:SetMinMaxValues(0, barMax);
+	factionBar:SetValue(barValue);
+	local color = FACTION_BAR_COLORS[colorIndex];
+	factionBar:SetStatusBarColor(color.r, color.g, color.b);
+
+	factionBar.BonusIcon:SetShown(hasBonusRepGain);
+
+	ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep);
+
+	factionRow:Show();
+
+	-- Update details if this is the selected faction
+	if ( atWarWith ) then
+		factionContainer.ReputationBar.AtWarHighlight1:Show();
+		factionContainer.ReputationBar.AtWarHighlight2:Show();
+	else
+		factionContainer.ReputationBar.AtWarHighlight1:Hide();
+		factionContainer.ReputationBar.AtWarHighlight2:Hide();
+	end
+	if ( factionIndex == GetSelectedFaction() ) then
+		if ( ReputationDetailFrame:IsShown() ) then
+			ReputationDetailFactionName:SetText(name);
+			ReputationDetailFactionDescription:SetText(description);
+			if ( atWarWith ) then
+				ReputationDetailAtWarCheckBox:SetChecked(true);
+			else
+				ReputationDetailAtWarCheckBox:SetChecked(false);
+			end
+			if ( canToggleAtWar and (not isHeader)) then
+				ReputationDetailAtWarCheckBox:Enable();
+				ReputationDetailAtWarCheckBoxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			else
+				ReputationDetailAtWarCheckBox:Disable();
+				ReputationDetailAtWarCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			end
+			if ( canSetInactive ) then
+				ReputationDetailInactiveCheckBox:Enable();
+				ReputationDetailInactiveCheckBoxText:SetTextColor(ReputationDetailInactiveCheckBoxText:GetFontObject():GetTextColor());
+			else
+				ReputationDetailInactiveCheckBox:Disable();
+				ReputationDetailInactiveCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			end
+			if ( IsFactionInactive(factionIndex) ) then
+				ReputationDetailInactiveCheckBox:SetChecked(true);
+			else
+				ReputationDetailInactiveCheckBox:SetChecked(false);
+			end
+			if ( isWatched ) then
+				ReputationDetailMainScreenCheckBox:SetChecked(true);
+			else
+				ReputationDetailMainScreenCheckBox:SetChecked(false);
+			end
+			factionContainer.ReputationBar.Highlight1:Show();
+			factionContainer.ReputationBar.Highlight2:Show();
+		end
+	else
+		factionContainer.ReputationBar.Highlight1:Hide();
+		factionContainer.ReputationBar.Highlight2:Hide();
 	end
 end
 
 function ReputationFrame_Update()
-	ReputationFrame.paragonFramesPool:ReleaseAll();
+	local newDataProvider = CreateDataProviderByIndexCount(GetNumFactions());
+	ReputationFrame.ScrollBox:SetDataProvider(newDataProvider, ScrollBoxConstants.RetainScrollPosition);
 
-	local numFactions = GetNumFactions();
-
-	-- Update scroll frame
-	if ( not FauxScrollFrame_Update(ReputationListScrollFrame, numFactions, NUM_FACTIONS_DISPLAYED, REPUTATIONFRAME_FACTIONHEIGHT ) ) then
-		ReputationListScrollFrameScrollBar:SetValue(0);
-	end
-	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame);
-
-	local gender = UnitSex("player");
-
-	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
-		local factionIndex = factionOffset + i;
-		local factionRow = _G["ReputationBar"..i];
-		local factionBar = _G["ReputationBar"..i.."ReputationBar"];
-		local factionTitle = _G["ReputationBar"..i.."FactionName"];
-		local factionButton = _G["ReputationBar"..i.."ExpandOrCollapseButton"];
-		local factionStanding = _G["ReputationBar"..i.."ReputationBarFactionStanding"];
-		local factionBackground = _G["ReputationBar"..i.."Background"];
-		if ( factionIndex <= numFactions ) then
-			local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canSetInactive = GetFactionInfo(factionIndex);
-			factionTitle:SetText(name);
-			if ( isCollapsed ) then
-				factionButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
-			else
-				factionButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
-			end
-			factionRow.index = factionIndex;
-			factionRow.isCollapsed = isCollapsed;
-
-			local colorIndex = standingID;
-			local factionStandingtext;
-
-			if ( factionID and C_Reputation.IsFactionParagon(factionID) ) then
-				local paragonFrame = ReputationFrame.paragonFramesPool:Acquire();
-				paragonFrame.factionID = factionID;
-				paragonFrame:SetPoint("RIGHT", factionRow, 11, 0);
-				local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(factionID);
-				C_Reputation.RequestFactionParagonPreloadRewardData(factionID);
-				paragonFrame.Glow:SetShown(not tooLowLevelForParagon and hasRewardPending);
-				paragonFrame.Check:SetShown(not tooLowLevelForParagon and hasRewardPending);
-				paragonFrame:Show();
-			end
-			local isCapped;
-			if (standingID == MAX_REPUTATION_REACTION) then
-				isCapped = true;
-			end
-			-- check if this is a friendship faction
-			local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
-			if (friendID ~= nil) then
-				factionStandingtext = friendTextLevel;
-				if ( nextFriendThreshold ) then
-					barMin, barMax, barValue = friendThreshold, nextFriendThreshold, friendRep;
-				else
-					-- max rank, make it look like a full bar
-					barMin, barMax, barValue = 0, 1, 1;
-					isCapped = true;
-				end
-				colorIndex = 5;								-- always color friendships green
-				factionRow.friendshipID = friendID;			-- for doing friendship tooltip
-			else
-				factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
-				factionRow.friendshipID = nil;
-			end
-
-			factionStanding:SetText(factionStandingtext);
-
-			--Normalize Values
-			barMax = barMax - barMin;
-			barValue = barValue - barMin;
-			barMin = 0;
-
-			factionRow.standingText = factionStandingtext;
-			if ( isCapped ) then
-				factionRow.rolloverText = nil;
-			else
-				factionRow.rolloverText = HIGHLIGHT_FONT_COLOR_CODE.." "..format(REPUTATION_PROGRESS_FORMAT, BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(barMax))..FONT_COLOR_CODE_CLOSE;
-			end
-			factionBar:SetFillStyle("STANDARD_NO_RANGE_FILL");
-			factionBar:SetMinMaxValues(0, barMax);
-			factionBar:SetValue(barValue);
-			local color = FACTION_BAR_COLORS[colorIndex];
-			factionBar:SetStatusBarColor(color.r, color.g, color.b);
-
-			factionBar.BonusIcon:SetShown(hasBonusRepGain);
-
-			ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep);
-
-			factionRow:Show();
-
-			-- Update details if this is the selected faction
-			if ( atWarWith ) then
-				_G["ReputationBar"..i.."ReputationBarAtWarHighlight1"]:Show();
-				_G["ReputationBar"..i.."ReputationBarAtWarHighlight2"]:Show();
-			else
-				_G["ReputationBar"..i.."ReputationBarAtWarHighlight1"]:Hide();
-				_G["ReputationBar"..i.."ReputationBarAtWarHighlight2"]:Hide();
-			end
-			if ( factionIndex == GetSelectedFaction() ) then
-				if ( ReputationDetailFrame:IsShown() ) then
-					ReputationDetailFactionName:SetText(name);
-					ReputationDetailFactionDescription:SetText(description);
-					if ( atWarWith ) then
-						ReputationDetailAtWarCheckBox:SetChecked(true);
-					else
-						ReputationDetailAtWarCheckBox:SetChecked(false);
-					end
-					if ( canToggleAtWar and (not isHeader)) then
-						ReputationDetailAtWarCheckBox:Enable();
-						ReputationDetailAtWarCheckBoxText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-					else
-						ReputationDetailAtWarCheckBox:Disable();
-						ReputationDetailAtWarCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-					end
-					if ( canSetInactive ) then
-						ReputationDetailInactiveCheckBox:Enable();
-						ReputationDetailInactiveCheckBoxText:SetTextColor(ReputationDetailInactiveCheckBoxText:GetFontObject():GetTextColor());
-					else
-						ReputationDetailInactiveCheckBox:Disable();
-						ReputationDetailInactiveCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-					end
-					if ( IsFactionInactive(factionIndex) ) then
-						ReputationDetailInactiveCheckBox:SetChecked(true);
-					else
-						ReputationDetailInactiveCheckBox:SetChecked(false);
-					end
-					if ( isWatched ) then
-						ReputationDetailMainScreenCheckBox:SetChecked(true);
-					else
-						ReputationDetailMainScreenCheckBox:SetChecked(false);
-					end
-					_G["ReputationBar"..i.."ReputationBarHighlight1"]:Show();
-					_G["ReputationBar"..i.."ReputationBarHighlight2"]:Show();
-				end
-			else
-				_G["ReputationBar"..i.."ReputationBarHighlight1"]:Hide();
-				_G["ReputationBar"..i.."ReputationBarHighlight2"]:Hide();
-			end
-		else
-			factionRow:Hide();
-		end
-	end
 	if ( GetSelectedFaction() == 0 ) then
 		ReputationDetailFrame:Hide();
 	end
@@ -265,9 +272,10 @@ function ReputationBar_OnClick(self)
 			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 			SetSelectedFaction(self.index);
 			ReputationDetailFrame:Show();
-			ReputationFrame_Update();
 		end
 	end
+
+	g_selectionBehavior:ToggleSelect(self);
 end
 
 function ReputationWatchBar_UpdateMaxLevel()

@@ -238,5 +238,5 @@ MawBuffsBelowMinimapFrameMixin = { };
 function MawBuffsBelowMinimapFrameMixin:OnShow()
 	self.Container.fromFrameManager = true;
 	self.Container:Update(); 
-	UIParent_ManageFramePositions();
+	UIParentManagedFrameMixin.OnShow(self);
 end 

@@ -186,9 +186,13 @@ function OrderHallMission:SetupTabs()
 end
 
 function OrderHallMission:SetupMissionList()
-	self.MissionTab.MissionList.listScroll.update = function() self.MissionTab.MissionList:Update(); end;
-	HybridScrollFrame_CreateButtons(self.MissionTab.MissionList.listScroll, "OrderHallMissionListButtonTemplate", 13, -8, nil, nil, nil, -4);
-	self.MissionTab.MissionList:Update();
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("GarrisonMissionListButtonTemplate", function(button, elementData)
+		GarrisonMissionList_InitButton(button, elementData, self);
+	end);
+	view:SetPadding(8,0,13,13,4);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.MissionTab.MissionList.ScrollBox, self.MissionTab.MissionList.ScrollBar, view);
 
 	GarrisonMissionListTab_SetTab(self.MissionTab.MissionList.Tab1);
 end
@@ -887,9 +891,11 @@ local function PositionAtFirstTroop(missionFrame)
 	end
 
 	if (troopButtonIndex) then
-		return HelpTip.Point.TopEdgeCenter, 8, 25, OrderHallMissionFrame.FollowerList.listScroll.buttons[troopButtonIndex].Follower.DurabilityFrame;
+		local frames = OrderHallMissionFrame.FollowerList.ScrollBox:GetFrames();
+		local durabilityFrame = frames[troopButtonIndex] and frames[troopButtonIndex].Follower.DurabilityFrame or nil;
+		return HelpTip.Point.TopEdgeCenter, 8, 25, durabilityFrame;
 	else
-		return HelpTip.Point.TopEdgeCenter, -10, -520, OrderHallMissionFrame.FollowerList.listScroll;
+		return HelpTip.Point.TopEdgeCenter, -10, -520, OrderHallMissionFrame.FollowerList.ScrollBox;
 	end
 end
 

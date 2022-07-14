@@ -1,0 +1,206 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsRecipeList.lua"/>
+
+	<Frame name="ProfessionsRecipeListTemplate" mixin="ProfessionsRecipeListMixin" virtual="true">
+		<Size x="240" y="505"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Backgroud" atlas="Professions-background-summarylist" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BackgroundNineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+				</Anchors>
+			</Frame>
+
+			<Frame name="ProfessionSkillLineDropDown" parentKey="SkillLineDropDown" inherits="UIDropDownMenuTemplate">
+				<Size x="238" y="30"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+			</Frame>
+
+			<DropDownToggleButton parentKey="FilterButton" inherits="UIResettableDropdownButtonTemplate" text="FILTER">
+				<Size x="67" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="10"/>
+				</Anchors>
+			</DropDownToggleButton>
+
+			<EditBox parentKey="SearchBox" autoFocus="false" inherits="SearchBoxTemplate">
+				<Size x="120" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-3" y="0"/>
+				</Anchors>
+			</EditBox>
+			
+			<Frame parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate"/>
+
+			<Frame parentKey="ContextMenu" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
+
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SkillLineDropDown" relativePoint="BOTTOMLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="2"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="ProfessionsRecipeListElementTemplate" mixin="ProfessionsRecipeListElementMixin" virtual="true">
+		<Size y="20"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="MouseoverOverlay" hidden="true">
+					<Color r="1" g="1" b="1" a=".1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="ProfessionsRecipeListCategoryTemplate" inherits="ProfessionsRecipeListElementTemplate" mixin="ProfessionsRecipeListCategoryMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="Label" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="CollapseIcon">
+					<Anchors>
+						<Anchor point="RIGHT" x="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="RankBar" inherits="ProfessionsStatusBarArtTemplate" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CollapseIcon" relativePoint="LEFT"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="ProfessionsRecipeListStarTemplate" virtual="true">
+		<Size x="12" y="11"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Unearned" atlas="tradeskills-star-off" alpha=".28" />
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Earned" atlas="tradeskills-star" alpha=".65" />
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="ProfessionsRecipeListRecipeTemplate" inherits="ProfessionsRecipeListElementTemplate" mixin="ProfessionsRecipeListRecipeMixin" registerForClicks="RightButtonUp, LeftButtonUp" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="Label" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Count" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="SelectedOverlay" hidden="true">
+					<Color r="1" g="1" b="1" a=".25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SkillUps" hidden="true">
+				<Size x="36" y="16"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" file="Interface\TradeSkillFrame\UI-TradeSkill-Multiskill">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontNormal">
+							<Size x="0" y="13"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="0" y="1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+			<Frame parentKey="Stars" hidden="true">
+				<Size x="35" y="16"/>
+				<Frames>
+					<Frame parentKey="Star1" parentArray="Stars" inherits="ProfessionsRecipeListStarTemplate">
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Star2" parentArray="Stars" inherits="ProfessionsRecipeListStarTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Star1" relativePoint="RIGHT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Star3" parentArray="Stars" inherits="ProfessionsRecipeListStarTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Star2" relativePoint="RIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button parentKey="LockedIcon" hidden="true">
+				<Size x="17" y="16"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\LFGFrame\UI-LFG-ICON-LOCK">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+</Ui>

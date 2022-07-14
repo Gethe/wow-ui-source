@@ -1,0 +1,271 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SharedTalentButtonTemplates.lua"/>
+	
+	<Frame name="TalentDisplayTemplate" mixin="TalentDisplayMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="TalentButtonArtTemplate" mixin="TalentButtonArtMixin" inherits="TalentDisplayTemplate" virtual="true">
+		<KeyValues>
+			<!--
+			GetEdgeDiameterOffset: Method that takes the angle of the incoming edge to determine offset adjustment
+									required for the length of the edges. (self, angle) -> edgeDiameterOffset
+			artSet: A table of atlases, see TalentButtonArtMixin.
+			<KeyValue key="GetEdgeDiameterOffset" value="TalentButtonArtMixin.GetSquareEdgeDiameterOffset" type="global"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.Square" type="global"/>
+			-->
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Shadow">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_QuestionMark">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="DisabledOverlay" hidden="true">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="StateBorder">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="SpendText" inherits="SystemFont18_Shadow_ThickOutline" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOM" x="11" y="4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<MaskTexture parentKey="IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<MaskTexture parentKey="DisabledOverlayMask" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.DisabledOverlay" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="DisabledOverlay"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<!-- TODO:: Remove this entirely once professions has replaced its templates that use it. -->
+	<Button name="TalentButtonBasicArtTemplate" mixin="TalentButtonBasicArtMixin" inherits="TalentDisplayTemplate" virtual="true">
+		<Size x="60" y="60"/>
+		<Layers>
+			<!--
+			Add a StateBorder to your derived template.
+			<Layer level="BORDER">
+				<Texture parentKey="StateBorder">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			-->
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_QuestionMark">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="SpendText" inherits="SystemFont18_Shadow_ThickOutline" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="DisabledOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<Button name="TalentButtonChoiceTemplate" mixin="TalentButtonSplitIconMixin" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="GetEdgeDiameterOffset" value="TalentButtonArtMixin.GetChoiceEdgeDiameterOffset" type="global"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.Choice" type="global"/>
+		</KeyValues>
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon2" file="Interface\Icons\INV_Misc_QuestionMark">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<MaskTexture parentKey="IconSplitMask" atlas="talents-node-choice-mask-half" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="Icon2Mask" atlas="talents-node-choice-mask" rotation="180" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon2" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon2"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="TalenButtonOldCircleTemplate" inherits="TalentButtonBasicArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sizingAdjustment" value="TalentButtonBasicArtMixin.SizingAdjustment.Circle" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BorderShadow">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="3">
+				<Texture parentKey="StateBorder">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="Border2">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0.4" g="0.4" b="0.4"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="3">
+				<Texture parentKey="Border">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0.7" g="0.7" b="0.7"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<MaskTexture parentKey="IconMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="BorderMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Border" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Border"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="Border2Mask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Border2" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Border2"/>
+						<MaskedTexture childKey="StateBorder"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="DisabledOverlayMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.DisabledOverlay" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="DisabledOverlay"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="BorderShadowMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BorderShadow" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="BorderShadow"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="TalentButtonCircleTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="GetEdgeDiameterOffset" value="TalentButtonArtMixin.GetCircleEdgeDiameterOffset" type="global"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.Circle" type="global"/>
+		</KeyValues>
+		<Size x="40" y="40"/>
+	</Button>
+
+	<Button name="TalentButtonSquareTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="GetEdgeDiameterOffset" value="TalentButtonArtMixin.GetSquareEdgeDiameterOffset" type="global"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.Square" type="global"/>
+		</KeyValues>
+		<Size x="40" y="40"/>
+	</Button>
+</Ui>

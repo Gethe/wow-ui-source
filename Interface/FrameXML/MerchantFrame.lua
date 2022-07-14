@@ -921,7 +921,7 @@ function MerchantFrame_UpdateCurrencies()
 			local count = currencyInfo.quantity;
 			local icon = currencyInfo.iconFileID;
 			if ( name and name ~= "" ) then
-				tokenButton.icon:SetTexture(icon);
+				tokenButton.Icon:SetTexture(icon);
 				tokenButton.currencyID = currencies[index];
 				tokenButton:Show();
 				MerchantFrame_UpdateCurrencyButton(tokenButton);
@@ -971,7 +971,7 @@ function MerchantFrame_UpdateCurrencyButton(tokenButton)
 				displayCount = "*"
 			end
 		end
-		tokenButton.count:SetText(displayCount);
+		tokenButton.Count:SetText(displayCount);
 		tokenButton:SetWidth(displayWidth);
 	end
 end

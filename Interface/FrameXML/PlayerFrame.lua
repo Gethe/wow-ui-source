@@ -396,7 +396,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	UnitFrame_SetUnit(PetFrame, "player", PetFrameHealthBar, PetFrameManaBar);
 	PetFrame_Update(PetFrame);
 	PlayerFrame_Update();
-	BuffFrame_Update();
+	BuffFrame:Update();
 	ComboFrame_Update(ComboFrame);
 
 	PlayerFrameTexture:Hide();
@@ -436,7 +436,7 @@ function PlayerFrame_ToPlayerArt(self)
 	UnitFrame_SetUnit(PetFrame, "pet", PetFrameHealthBar, PetFrameManaBar);
 	PetFrame_Update(PetFrame);
 	PlayerFrame_Update();
-	BuffFrame_Update();
+	BuffFrame:Update();
 	ComboFrame_Update(ComboFrame);
 
 	PlayerFrameTexture:Show();
@@ -760,6 +760,7 @@ function PlayerFrame_ShowVehicleTexture()
 	end
 
 	ComboPointPlayerFrame:Setup();
+	EssencePlayerFrame:Setup();
 end
 
 
@@ -778,6 +779,7 @@ function PlayerFrame_HideVehicleTexture()
 	end
 
 	ComboPointPlayerFrame:Setup();
+	EssencePlayerFrame:Setup();
 end
 
 function PlayerFrame_OnDragStart(self)
@@ -817,15 +819,16 @@ function PlayerFrame_AttachCastBar()
 	-- player
 	castBar.ignoreFramePositionManager = true;
 	castBar:SetAttribute("ignoreFramePositionManager", true);
-	CastingBarFrame_SetLook(castBar, "UNITFRAME");
+	castBar:SetLook("UNITFRAME");
 	castBar:ClearAllPoints();
-	castBar:SetPoint("LEFT", PlayerFrame, 78, 0);
+	castBar:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 78, 18);
 	-- pet
 	CastingBarFrame_SetLook(petCastBar, "UNITFRAME");
 	petCastBar:SetWidth(150);
 	petCastBar:SetHeight(10);
 	petCastBar:ClearAllPoints();
-	petCastBar:SetPoint("TOP", castBar, "TOP", 0, 0);
+	petCastBar:SetPoint("LEFT", castBar, 0, 0);
+	petCastBar:SetPoint("TOP", PetFrame, "BOTTOM", 0, -8);
 
 	PlayerFrame_AdjustAttachments();
 	UIParent_ManageFramePositions();
@@ -837,7 +840,7 @@ function PlayerFrame_DetachCastBar()
 	-- player
 	castBar.ignoreFramePositionManager = nil;
 	castBar:SetAttribute("ignoreFramePositionManager", false);
-	CastingBarFrame_SetLook(castBar, "CLASSIC");
+	castBar:SetLook("CLASSIC");
 	castBar:ClearAllPoints();
 	-- pet
 	CastingBarFrame_SetLook(petCastBar, "CLASSIC");

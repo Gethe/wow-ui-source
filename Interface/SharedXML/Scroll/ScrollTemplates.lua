@@ -1,42 +1,3 @@
-ScrollBarButtonBehaviorMixin = {};
-
-function ScrollBarButtonBehaviorMixin:OnEnter()
-	if self:IsEnabled() then
-		self.over = true;
-		return true;
-	end
-	return false;
-end
-
-function ScrollBarButtonBehaviorMixin:OnLeave()
-	if self:IsEnabled() then
-		self.over = nil;
-		return true;
-	end
-	return false;
-end
-
-function ScrollBarButtonBehaviorMixin:OnMouseDown()
-	if self:IsEnabled() then
-		self.down = true;
-		return true;
-	end
-	return false;
-end
-
-function ScrollBarButtonBehaviorMixin:OnMouseUp()
-	if self:IsEnabled() then
-		self.down = nil;
-		return true;
-	end
-	return false;
-end
-
-function ScrollBarButtonBehaviorMixin:OnDisable()
-	self.over = nil;
-	self.down = nil;
-end
-
 ScrollingEditBoxMixin = CreateFromMixins(CallbackRegistryMixin);
 ScrollingEditBoxMixin:GenerateCallbackEvents(
 	{
@@ -52,30 +13,36 @@ ScrollingEditBoxMixin:GenerateCallbackEvents(
 function ScrollingEditBoxMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	
+	assert(self.fontName);
+
 	local scrollBox = self:GetScrollBox();
 	scrollBox:SetAlignmentOverlapIgnored(true);
 
 	self:SetInterpolateScroll(self.canInterpolateScroll);
 
 	local editBox = self:GetEditBox();
-	assert(self.fontName);
-	editBox.fontName = self.fontName;
-
-	if self.defaultFontName then
-		editBox.defaultFontName = self.defaultFontName;
-	end
-
-	editBox:SetFontObject(self.fontName);
-	local fontHeight = editBox:GetFontHeight();
 	
 	if self.maxLetters then
 		editBox:SetMaxLetters(self.maxLetters);
+	end
+
+	editBox.fontName = self.fontName;
+	editBox.defaultFontName = self.defaultFontName;
+	editBox:SetFontObject(self.fontName);
+	
+	if self.fontColor then
+		self:SetTextColor(self.fontColor:GetRGB());
+	end
+
+	if self.defaultFontColor then
+		self:SetDefaultTextColor(self.defaultFontColor:GetRGB());
 	end
 
 	if self.defaultText then
 		self:SetDefaultText(self.defaultText);
 	end
 
+	local fontHeight = editBox:GetFontHeight();
 	local bottomPadding = fontHeight * .5;
 	local view = CreateScrollBoxLinearView(0, bottomPadding, 0, 0, 0);
 	view:SetPanExtent(fontHeight);
@@ -162,6 +129,16 @@ end
 function ScrollingEditBoxMixin:SetDefaultText(defaultText)
 	local editBox = self:GetEditBox();
 	editBox:ApplyDefaultText(defaultText);
+end
+
+function ScrollingEditBoxMixin:SetTextColor(color)
+	local editBox = self:GetEditBox();
+	editBox:ApplyTextColor(color);
+end
+
+function ScrollingEditBoxMixin:SetDefaultTextColor(color)
+	local editBox = self:GetEditBox();
+	editBox:ApplyDefaultTextColor(color);
 end
 
 function ScrollingEditBoxMixin:GetInputText()
@@ -260,16 +237,15 @@ ScrollingFontMixin = {};
 function ScrollingFontMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	
-	local fontHeight = 10;
-	local fontString = self:GetFontString();
-	if self.fontName then
-		fontString:SetFontObject(self.fontName);
-		fontHeight = select(2, fontString:GetFont());
-	end
-
+	assert(self.fontName);
+	
 	local scrollBox = self:GetScrollBox();
 	scrollBox:SetAlignmentOverlapIgnored(true);
 
+	local fontString = self:GetFontString();
+	fontString:SetFontObject(self.fontName);
+
+	local fontHeight = select(2, fontString:GetFont());
 	local bottomPadding = fontHeight * .5;
 	local view = CreateScrollBoxLinearView(0, bottomPadding, 0, 0, 0);
 	view:SetPanExtent(fontHeight);
@@ -326,6 +302,11 @@ end
 
 function ScrollingFontMixin:ClearText()
 	self:SetText("");
+end
+
+function ScrollingFontMixin:SetTextColor(color)
+	local fontString = self:GetFontString();
+	fontString:SetTextColor(color:GetRGB());
 end
 
 function ScrollingFontMixin:SetFontObject(fontName)

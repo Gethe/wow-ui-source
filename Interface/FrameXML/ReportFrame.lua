@@ -10,14 +10,7 @@ function ReportFrameMixin:OnLoad()
 end		
 
 function ReportFrameMixin:OnHide()
-	self.MinorCategoryButtonPool:ReleaseAll();
-	self.selectedMajorType = nil; 
-	self.Comment:ClearAllPoints(); 
-	self.reporPlayerLocation = nil;
-	self.reportInfo = nil; 
-	self.minorCategoryFlags:ClearAll();
-	self.Comment.EditBox:SetText("");
-	self:Layout(); 
+	self:Reset();
 	Enable_BagButtons();
 end
 
@@ -26,6 +19,17 @@ function ReportFrameMixin:OnEvent(event, ...)
 		self:UpdateThankYouMessage(true);
 	end		
 end	
+
+function ReportFrameMixin:Reset()
+	self.MinorCategoryButtonPool:ReleaseAll();
+	self.selectedMajorType = nil; 
+	self.Comment:ClearAllPoints(); 
+	self.reporPlayerLocation = nil;
+	self.reportInfo = nil; 
+	self.minorCategoryFlags:ClearAll();
+	self.Comment.EditBox:SetText("");
+	self:Layout(); 
+end
 
 function ReportFrameMixin:UpdateThankYouMessage(showThankYouMessage)
 	self.MinorCategoryButtonPool:ReleaseAll(); 
@@ -73,6 +77,7 @@ function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerL
 	self:SetShown(not sendReportWithoutDialog);
 	if (sendReportWithoutDialog) then 
 		self:SendReport(); 
+		self:Reset();
 		return; 
 	end
 
@@ -89,7 +94,7 @@ function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerL
 	Disable_BagButtons(); 
 end		
 
-function ReportFrameMixin:ReportByType(reportType) 
+function ReportFrameMixin:ReportByType(reportType)
 	self:SetupDropdownByReportType(reportType);
 end
 
@@ -102,8 +107,8 @@ function ReportFrameMixin:CanDisplayMinorCategory(minorCategory)
 			return clubFinderType and clubFinderType == Enum.ClubFinderRequestType.Guild;
 		else 
 			local playerLocationGUID =  self.reportPlayerLocation and self.reportPlayerLocation:GetGUID() or nil;
-			local reportedPlayer = playerLocationGUID and playerLocationGUID or self.reportInfo.reportTarget; 
-			return C_PlayerInfo.IsPlayerInGuildFromGUID(reportedPlayer);
+			local reportedPlayer = playerLocationGUID and playerLocationGUID or self.reportInfo.reportTarget; 	
+			return IsPlayerInGuildFromGUID(reportedPlayer);
 		end 
 	elseif (self.reportInfo.reportType == Enum.ReportType.ClubFinderPosting and minorCategory == Enum.ReportMinorCategory.Name) then 
 		if (self.reportInfo.clubFinderGUID) then 

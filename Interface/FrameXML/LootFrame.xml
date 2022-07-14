@@ -604,8 +604,11 @@
 			<OnEvent function="GroupLootFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
-	<ContainedAlertFrame name="GroupLootContainer" parent="UIParent" hidden="true">
+	<ContainedAlertFrame name="GroupLootContainer" inherits="UIParentBottomManagedFrameTemplate" parent="UIParent" hidden="true">
 		<Size x="256" y="1"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="3" type="number"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad function="GroupLootContainer_OnLoad"/>
 		</Scripts>

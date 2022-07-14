@@ -33,10 +33,6 @@ function UpdatePetActionHighlightMarks(petAction)
 	end
 end
 
-function PetActionBar_OnShow(self)
-	UIParent_ManageFramePositions(self);
-end
-
 local function PetActionBar_CancelSpellLoadCallback(button)
 	if button.spellDataLoadedCancelFunc then
 		button.spellDataLoadedCancelFunc();
@@ -49,7 +45,7 @@ function PetActionBar_OnHide(self)
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
 		PetActionBar_CancelSpellLoadCallback(_G["PetActionButton" .. i]);
 	end
-	UIParent_ManageFramePositions(self);
+	UIParentManagedFrameMixin.OnHide(self)
 end
 
 function PetActionBar_OnLoad (self)
@@ -113,24 +109,11 @@ function PetActionBarFrame_OnUpdate(self, elapsed)
 	local yPos;
 	if ( self.slideTimer and (self.slideTimer < self.timeToSlide) ) then
 		self.completed = nil;
-		if ( self.mode == "show" ) then
-			yPos = (self.slideTimer/self.timeToSlide) * PETACTIONBAR_YPOS;
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
-			self:Show();
-		elseif ( self.mode == "hide" ) then
-			yPos = (1 - (self.slideTimer/self.timeToSlide)) * PETACTIONBAR_YPOS;
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, yPos);
-		end
 		self.slideTimer = self.slideTimer + elapsed;
 	else
 		self.completed = 1;
-		if ( self.mode == "show" ) then
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
-			--Move the chat frame and edit box up a bit
-		elseif ( self.mode == "hide" ) then
-			self:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
+		if ( self.mode == "hide" ) then
 			self:Hide();
-			--Move the chat frame and edit box back down to original position
 		end
 		self.mode = "none";
 	end
@@ -174,16 +157,16 @@ function PetActionBar_Update(self)
 		end
 		if ( isActive ) then
 			if ( IsPetAttackAction(i) ) then
-				PetActionButton_StartFlash(petActionButton);
+				petActionButton:StartFlash();
 				-- the checked texture looks a little confusing at full alpha (looks like you have an extra ability selected)
 				petActionButton:GetCheckedTexture():SetAlpha(0.5);
 			else
-				PetActionButton_StopFlash(petActionButton);
+				petActionButton:StopFlash();
 				petActionButton:GetCheckedTexture():SetAlpha(1.0);
 			end
 			petActionButton:SetChecked(true);
 		else
-			PetActionButton_StopFlash(petActionButton);
+			petActionButton:StopFlash();
 			petActionButton:SetChecked(false);
 		end
 		if ( autoCastAllowed ) then
@@ -210,12 +193,10 @@ function PetActionBar_Update(self)
 				petActionIcon:SetVertexColor(0.4, 0.4, 0.4);
 			end
 			petActionIcon:Show();
-			petActionButton:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
 		else
 			petActionIcon:Hide();
-			petActionButton:SetNormalTexture("Interface\\Buttons\\UI-Quickslot");
 		end
-		
+
 		SharedActionButton_RefreshSpellHighlight(petActionButton, HasPetActionHighlightMark(i));
 	end
 	PetActionBar_UpdateCooldowns();
@@ -235,7 +216,7 @@ function PetActionBar_UpdateCooldowns()
 		-- Update tooltip
 		local actionButton = _G["PetActionButton"..i];
 		if ( GameTooltip:GetOwner() == actionButton ) then
-			PetActionButton_OnEnter(actionButton);
+			actionButton:OnEnter(actionButton);
 		end
 	end
 end
@@ -295,6 +276,7 @@ function PetActionBar_ShowGrid()
 	for i=1, NUM_PET_ACTION_SLOTS do
 		_G["PetActionButton"..i]:Show();
 	end
+	PetActionBarFrame:Layout(); 
 end
 
 function PetActionBar_HideGrid()
@@ -311,6 +293,7 @@ function PetActionBar_HideGrid()
 			end
 		end
 	end
+	PetActionBarFrame:Layout(); 
 end
 
 function PetActionButtonDown(id)
@@ -333,9 +316,19 @@ function PetActionButtonUp (id)
 	end
 end
 
-function PetActionButton_OnLoad(self)
+function LockPetActionBar()
+	PetActionBarFrame.locked = 1;
+end
+
+function UnlockPetActionBar()
+	PetActionBarFrame.locked = nil;
+end
+
+PetActionButtonMixin = {}
+
+function PetActionButtonMixin:OnLoad()
 	self.HotKey:ClearAllPoints();
-	self.HotKey:SetPoint("TOPLEFT", -2, -3);
+	self.HotKey:SetPoint("TOPRIGHT", -2, -2);
 	self:RegisterForDrag("LeftButton", "RightButton");
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
@@ -344,40 +337,45 @@ function PetActionButton_OnLoad(self)
 	_G[self:GetName().."Cooldown"]:SetWidth(33);
 	_G[self:GetName().."Cooldown"]:SetHeight(33);
 	_G[self:GetName().."Cooldown"]:SetPoint("CENTER", self, "CENTER", -2, -1);
-	PetActionButton_SetHotkeys(self);
+	self:SetHotkeys();
+	self.cooldown:SetSwipeColor(0, 0, 0);
 end
 
-function PetActionButton_OnEvent(self, event, ...)
+function PetActionButtonMixin:OnEvent(event, ...)
 	if ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
-		PetActionButton_SetHotkeys(self);
+		self:SetHotkeys();
 		return;
 	end
 end
 
-function PetActionButton_OnClick(self, button)
-	if ( button == "LeftButton" ) then
-		CastPetAction(self:GetID());
-	else
-		TogglePetAutocast(self:GetID());
+function PetActionButtonMixin:PreClick()
+	self:SetChecked(false);
+end
+
+function PetActionButtonMixin:OnClick(button)
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		if ( IsModifiedClick() and IsModifiedClick("PICKUPACTION") ) then
+			PickupPetAction(self:GetID());
+			return;
+		else
+			if ( button == "LeftButton" ) then
+				CastPetAction(self:GetID());
+			else
+				TogglePetAutocast(self:GetID());
+			end
+		end
 	end
 end
 
-function PetActionButton_OnModifiedClick(self, button)
-	if ( IsModifiedClick("PICKUPACTION") ) then
-		PickupPetAction(self:GetID());
-		return;
-	end
-end
-
-function PetActionButton_OnDragStart(self)
-	if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION")) then
+function PetActionButtonMixin:OnDragStart()
+	if ( not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
 		self:SetChecked(false);
 		PickupPetAction(self:GetID());
 		PetActionBar_Update();
 	end
 end
 
-function PetActionButton_OnReceiveDrag(self)
+function PetActionButtonMixin:OnReceiveDrag()
 	local cursorType = GetCursorInfo();
 	if (cursorType == "petaction") then
 		self:SetChecked(false);
@@ -386,10 +384,11 @@ function PetActionButton_OnReceiveDrag(self)
 	end
 end
 
-function PetActionButton_OnEnter(self)
+function PetActionButtonMixin:OnEnter()
 	if ( not self.tooltipName ) then
 		return;
 	end
+
 	local uber = GetCVar("UberTooltips");
 	if ( uber == "0" and not KeybindFrames_InQuickKeybindMode() ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -407,19 +406,19 @@ function PetActionButton_OnEnter(self)
 	else
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 		if (GameTooltip:SetPetAction(self:GetID())) then
-			self.UpdateTooltip = PetActionButton_OnEnter;
+			self.UpdateTooltip = self.OnEnter;
 		else
 			self.UpdateTooltip = nil;
 		end
 	end
 end
 
-function PetActionButton_OnLeave()
+function PetActionButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-function PetActionButton_OnUpdate(self, elapsed)
-	if ( PetActionButton_IsFlashing(self) ) then
+function PetActionButtonMixin:OnUpdate(elapsed)
+	if ( self:IsFlashing() ) then
 		local flashtime = self.flashtime;
 		flashtime = flashtime - elapsed;
 
@@ -437,26 +436,12 @@ function PetActionButton_OnUpdate(self, elapsed)
 				flashTexture:Show();
 			end
 		end
-		
+
 		self.flashtime = flashtime;
 	end
 end
 
-function PetActionButton_StartFlash(self)
-	self.flashing = true;
-	self.flashtime = 0;
-end
-
-function PetActionButton_StopFlash(self)
-	self.flashing = false;
-	_G[self:GetName().."Flash"]:Hide();
-end
-
-function PetActionButton_IsFlashing(self)
-	return self.flashing;
-end
-
-function PetActionButton_SetHotkeys(self)
+function PetActionButtonMixin:SetHotkeys()
 	local binding = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), true);
 	local hotkey = _G[self:GetName().."HotKey"];
 	if ( binding == "" ) then
@@ -468,10 +453,15 @@ function PetActionButton_SetHotkeys(self)
 	end
 end
 
-function LockPetActionBar()
-	PetActionBarFrame.locked = 1;
+function PetActionButtonMixin:StartFlash()
+	self.flashing = true;
+	self.flashtime = 0;
 end
 
-function UnlockPetActionBar()
-	PetActionBarFrame.locked = nil;
+function PetActionButtonMixin:StopFlash()
+	self.flashing = false;
+	_G[self:GetName().."Flash"]:Hide();
+end
+function PetActionButtonMixin:IsFlashing()
+	return self.flashing;
 end

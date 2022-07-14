@@ -458,22 +458,28 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<CheckButton name="UICheckButtonTemplate" virtual="true">
-		<Size x="32" y="32"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+	<CheckButton name="UICheckButtonArtTemplate" virtual="true">
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+	
+	<CheckButton name="UICheckButtonTemplate" inherits="UICheckButtonArtTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="Text">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
+					</Anchors>
+					<Scripts>
+						<OnLoad function="UICheckButtonFontString_SetParentKeyAlias"/>
+					</Scripts>
+				</FontString>
+			</Layer>
+		</Layers>
 	</CheckButton>
 
 	<Slider name="UISliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
@@ -676,7 +682,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-
+	
 <!--
 *******************************************************************************
    Frame border element
@@ -901,8 +907,7 @@
 			<Layer level="OVERLAY">
 				<FontString name="$parentTitleText" inherits="GameFontNormal" parentKey="TitleText" wordwrap="false">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="25"/>
-						<Anchor point="TOPRIGHT" x="-25"/>
+						<Anchor point="CENTER" relativeKey="$parent.TitleBg"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -973,7 +978,7 @@
 		<Frames>
 			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5.6" y="5"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5" y="5"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -1220,18 +1225,6 @@
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
-
-	<Slider name="HorizontalSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true" inherits="BackdropTemplate">
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
-		</HitRectInsets>
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
-		</KeyValues>
-		<ThumbTexture parentKey="Thumb" name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
-			<Size x="32" y="32"/>
-		</ThumbTexture>
-	</Slider>
 
 	<Slider name="UIPanelStretchableArtScrollBarTemplate" inherits="UIPanelScrollBarTemplate" virtual="true">
 		<Size x="20" y="0" />
@@ -2045,60 +2038,9 @@
 		</Scripts>
 	</Button>
 
-	<Button name="IconButtonTemplate" mixin="IconButtonMixin" virtual="true">
-		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-		</Scripts>
-	</Button>
-
-	<Button name="SquareIconButtonTemplate" mixin="SquareIconButtonMixin" virtual="true">
-		<Size x="32" y="32"/>
-		<!--
-		icon: texture file to be displayed on the button.
-		iconAtlas: atlas to be displayed on the button.
-		tooltipText: displayed on the right of the button by default.
-		onClickHandler: forwards the standard OnClick arguments.
-		<KeyValues>
-			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
-			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
-			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
-			<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
-		</KeyValues>
-		-->
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Icon">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="CENTER" x="-1" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnClick method="OnClick"/>
-		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
-		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
-		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-	</Button>
-
-	<Button name="RefreshButtonTemplate" inherits="SquareIconButtonTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
-		</KeyValues>
-	</Button>
-
 	<Button name="ThreeSliceButtonTemplate" mixin="ThreeSliceButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<!--
-		atlasName: The art kit to use for the 3 sections of the button.
+		atlasName: The art kit to use for the 3 sections of the button. 
 						* The left textures will be "atlasName-Left", "atlasName-Left-Disabled" and "atlasName-Left-Pressed"
 						* The right textures will be "atlasName-Right", "atlasName-Right-Disabled" and "atlasName-Right-Pressed"
 						* The center textures will be "_atlasName-Center", "_atlasName-Disabled" and "_atlasName-Pressed"
@@ -2152,7 +2094,69 @@
 			<OnSizeChanged method="UpdateScale"/>
 		</Scripts>
 	</Button>
+	
+	<CheckButton name="NineSliceCheckButtonTemplate" mixin="NineSliceCheckButtonMixin" virtual="true">
+		<!--
+		<KeyValues>
+			<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
 
+			<KeyValue key="normalAtlasName" value="UI-HUD-ActionBar-IconFrame" type="string"/>
+			<KeyValue key="normalLeftPadding" value="0" type="number"/> Optional
+			<KeyValue key="normalTopPadding" value="0" type="number"/> Optional
+			<KeyValue key="normalRightPadding" value="0" type="number"/> Optional
+			<KeyValue key="normalBottomPadding" value="0" type="number"/> Optional
+
+			<KeyValue key="pushedAtlasName" value="UI-HUD-ActionBar-IconFrame-Pushed" type="string"/>
+			<KeyValue key="pushedLeftPadding" value="0" type="number"/> Optional
+			<KeyValue key="pushedTopPadding" value="0" type="number"/> Optional
+			<KeyValue key="pushedRightPadding" value="0" type="number"/> Optional
+			<KeyValue key="pushedBottomPadding" value="0" type="number"/> Optional
+
+			<KeyValue key="highlightAtlasName" value="UI-HUD-ActionBar-IconFrame-Highlight" type="string"/>
+			<KeyValue key="highlightLeftPadding" value="0" type="number"/> Optional
+			<KeyValue key="highlightTopPadding" value="0" type="number"/> Optional
+			<KeyValue key="highlightRightPadding" value="0" type="number"/> Optional
+			<KeyValue key="highlightBottomPadding" value="0" type="number"/> Optional
+
+			<KeyValue key="checkedAtlasName" value="UI-HUD-ActionBar-IconFrame-Checked" type="string"/>
+			<KeyValue key="checkedLeftPadding" value="0" type="number"/> Optional
+			<KeyValue key="checkedTopPadding" value="0" type="number"/> Optional
+			<KeyValue key="checkedRightPadding" value="0" type="number"/> Optional
+			<KeyValue key="checkedBottomPadding" value="0" type="number"/> Optional
+		</KeyValues>
+		-->
+		<Size x="20" y="20"/>
+		<Frames>
+			<Frame parentKey="NormalNineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="atlasKey" value="normalAtlasName" type="string"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="PushedNineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="atlasKey" value="pushedAtlasName" type="string"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="HighlightNineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="atlasKey" value="highlightAtlasName" type="string"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="CheckedNineSlice" inherits="NineSlicePanelTemplate"  useParentLevel="true" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="atlasKey" value="checkedAtlasName" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</CheckButton>
+	
 	<Button name="BigRedThreeSliceButtonTemplate" inherits="ThreeSliceButtonTemplate" virtual="true">
 		<Size x="441" y="128"/>
 		<KeyValues>
@@ -2210,22 +2214,38 @@
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
 	</Button>
-
+	
 	<Button name="UIButtonTemplate" mixin="UIButtonMixin" virtual="true">
 		<Size x="20" y="20"/>
 		<!--
-		atlasName: The art kit to use for the  button.
-						* The normal texture will be "atlasName"
-						* The pressed texture will be "atlasName-Pressed"
-						* The disabled texture will be "atlasName-Disabled"
-						* The highlight texture will be "atlasName-Highlight"
-		tooltip: This can be either a string or a function which returns a string
-
+		buttonArtKit: The art kit to use for the  button. 
+						* The normal texture will be "buttonArtKit"
+						* The pressed texture will be "buttonArtKit-Pressed"
+						* The disabled texture will be "buttonArtKit-Disabled"
+						* The highlight texture will be "buttonArtKit-Highlight"
+		onClickHandler: forwards the standard OnClick arguments.
+		onClickSoundKit: sound to play for OnClick.
+		tooltipAnchor: where to anchor the tooltip for SetOwner.
+		tooltipTitle: the title text for the tooltip.
+		tooltipTitleColor: a color for tooltipTitle.
+		tooltipText: the body text for a tooltip; can be set with or without tooltipTitle.
+		tooltipTextColor: a color for tooltipText.
+		tooltipOffsetX: x offset for the tooltip relative to tooltipAnchor for SetOwner.
+		tooltipOffsetY: y offset for the tooltip relative to tooltipAnchor for SetOwner.
+		
 		<KeyValues>
-			<KeyValue key="atlasName" value="128-RedButton" type="string"/>
-			<KeyValue key="tooltip" value="MyTooltipFunction" type="global"/>
-				or
-			<KeyValue key="tooltip" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+			<KeyValue key="buttonArtKit" value="128-RedButton" type="string"/>
+			<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
+			<KeyValue key="onClickSoundKit" value="SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON" type="global"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+			<KeyValue key="tooltipTitle" value="REFRESH_BUTTON_TOOLTIP_TITLE" type="string"/>
+			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+			<KeyValue key="tooltipOffsetX" value="0" type="number"/>
+			<KeyValue key="tooltipOffsetY" value="0" type="number"/>
+			<KeyValue key="disabledTooltip" value="REFRESH_BUTTON_TOOLTIP_DISABLED" type="string"/>
+			<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+			<KeyValue key="disabledTooltipOffsetX" value="0" type="number"/>
+			<KeyValue key="disabledTooltipOffsetY" value="0" type="number"/>
 		</KeyValues>
 		-->
 		<Frames>
@@ -2236,41 +2256,111 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
 	</Button>
 
 	<Button name="BigRedRefreshButtonTemplate" inherits="UIButtonTemplate" virtual="true">
 		<Size x="128" y="128"/>
 		<KeyValues>
-			<KeyValue key="atlasName" value="128-RedButton-Refresh" type="string"/>
+			<KeyValue key="buttonArtKit" value="128-RedButton-Refresh" type="string"/>
 		</KeyValues>
 	</Button>
 
 	<Button name="BigRedExitButtonTemplate" inherits="UIButtonTemplate" virtual="true">
 		<Size x="128" y="128"/>
 		<KeyValues>
-			<KeyValue key="atlasName" value="128-redbutton-exit" type="string"/>
+			<KeyValue key="buttonArtKit" value="128-redbutton-exit" type="string"/>
+		</KeyValues>
+	</Button>
+	
+	<Button name="IconButtonTemplate" mixin="IconButtonMixin" inherits="UIButtonTemplate" virtual="true">
+		<!--
+		icon: texture file to be displayed on the button.
+		iconSize: size for square icons. iconSize/{iconWidth iconHeight}/useAtlasSize are exclusive.
+		iconWidth: specified with iconHeight.
+		iconHeight: specified with iconWidth.
+		iconAtlas: atlas to be displayed on the button.
+		useAtlasSize: used with iconAtlas.
+		useIconAsHighlight: use the same icon for the highlight texture.
+		<KeyValues>
+			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
+			<KeyValue key="iconSize" value="16" type="number"/>
+			<KeyValue key="iconWidth" value="16" type="number"/>
+			<KeyValue key="iconHeight" value="16" type="number"/>
+			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
+			<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+			<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<!-- TODO:: This should be using InitButton -->
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Button>
+
+	<Button name="SquareIconButtonTemplate" mixin="SquareIconButtonMixin" inherits="IconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconSize" value="16" type="number"/>
+		</KeyValues>
+		<Size x="32" y="32"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="RefreshButtonTemplate" inherits="SquareIconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
 		</KeyValues>
 	</Button>
 
-	<Frame name="ResizeCheckButtonTemplate" inherits="ResizeLayoutFrame" mixin="ResizeCheckButtonMixin" virtual="true">
+	<Frame name="ResizeCheckButtonBehaviorTemplate" inherits="ResizeLayoutFrame" mixin="ResizeCheckButtonMixin" virtual="true">
 		<!--
+		onBoxToggled: a function that takes two arguments: a boolean for whether the box is checked or not, and a boolean for whether it
+						was toggled by the user or programmatically. Called when the checked state changes.
 		labelText: The text to use on the label
-
 		<KeyValues>
+			<KeyValue key="onBoxToggled" value="nop" type="global"/>
 			<KeyValue key="labelText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
 		</KeyValues>
 		-->
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ResizeCheckButtonTemplate" inherits="ResizeCheckButtonBehaviorTemplate" virtual="true">
 		<Frames>
-			<CheckButton parentKey="Button">
+			<CheckButton parentKey="Button" inherits="UICheckButtonTemplate">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 				<Scripts>
 					<OnClick>
 						self:GetParent():OnCheckButtonClick();
@@ -2287,10 +2377,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-		</Scripts>
 	</Frame>
 
 	<EditBox name="SharedEditBoxTemplate" mixin="SharedEditBoxMixin" virtual="true">
@@ -2321,20 +2407,6 @@
 		</Scripts>
 	</EditBox>
 
-	<Slider name="SharedHorizontalSliderTemplate" orientation="HORIZONTAL" obeyStepOnDrag="true" virtual="true">
-		<Size x="300" y="20"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Track" atlas="common-slider-track" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<ThumbTexture parentKey="Thumb" atlas="common-slider-thumb" useAtlasSize="true"/>
-	</Slider>
-
 	<Frame name="SliderWithButtonsAndLabelTemplate" inherits="ResizeLayoutFrame" mixin="SliderWithButtonsAndLabelMixin" virtual="true">
 		<Size x="1" y="1"/>
 		<Layers>
@@ -2350,7 +2422,8 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Slider parentKey="Slider" inherits="SharedHorizontalSliderTemplate" scale="0.7">
+			<Slider parentKey="Slider" orientation="HORIZONTAL" obeyStepOnDrag="true" scale="0.7">
+				<Size x="300" y="20"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
@@ -2365,6 +2438,16 @@
 						self:GetParent():OnSliderValueChanged(value, userInput);
 					</OnValueChanged>
 				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Track" atlas="common-slider-track" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ThumbTexture parentKey="Thumb" atlas="common-slider-thumb" useAtlasSize="true"/>
 			</Slider>
 			<Button parentKey="IncrementButton" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
@@ -2531,7 +2614,7 @@
 		It is most useful in Glues, where we ALWAYS apply a UIScale, with no way to turn it off.
 		But it can also be used in game in order to attain a consistent look on a panel.
 		If you choose to use it in-game, remember that when you use it, the player will no longer be able to scale that panel up for accessibility reasons.-->
-
+		
 	<!--IMPORTANT:
 		If you are inheriting from more than 1 frame, inherit this frame LAST (the right-most in the list).
 		If you have your own mixin, use inherit="prepend" for OnLoad & OnEvent if you define them-->
@@ -2575,11 +2658,40 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="LargeDropDownControlTemplate" mixin="DropDownControlMixin" virtual="true">
+		<Size x="150" y="30"/>
+		<Frames>
+			<Frame parentKey="DropDownMenu" inherits="LargeUIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="EnumDropDownControlTemplate" mixin="EnumDropDownControlMixin" inherits="DropDownControlTemplate" virtual="true">
 		<KeyValues>
 			<!-- Overwrite to change the dropdown text when the selected value is nil -->
 			<KeyValue key="noneSelectedText" value="NONE" type="global"/>
 		</KeyValues>
+	</Frame>
+
+	<Frame name="LabeledEnumDropDownControlTemplate" mixin="LabeledEnumDropDownControlMixin" inherits="DropDownControlTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.DropDownMenu" relativePoint="TOPLEFT" x="20" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="ClickToDragTemplate" mixin="ClickToDragMixin" movable="true" virtual="true">
@@ -2589,11 +2701,63 @@
 			<OnDragStop method="OnDragStop"/>
 		</Scripts>
 	</Frame>
-
-	<Button name="DisabledTooltipButtonTemplate" mixin="DisabledTooltipButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+	
+	<EditBox name="NumericInputBoxTemplate" mixin="NumericInputBoxMixin" inherits="InputBoxTemplate" numeric="true" virtual="true">
+		<KeyValues>
+			<!--
+			valueChangedCallback: a function that takes two arguments, the numeric value of the edit box, and a boolean for whether
+										it was set by user input (as opposed to set by script). Called whenever the value changes
+			valueFinalizedCallback: a function that takes the numeric value of the edit box when the focus is cleared (i.e. enter pressed).
+			-->
+			<KeyValue key="valueChangedCallback" value="nop" type="global"/>
+			<KeyValue key="valueFinalizedCallback" value="nop" type="global"/>
+		</KeyValues>
 		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
+			<OnTextChanged method="OnTextChanged"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost method="OnEditFocusLost"/>
 		</Scripts>
-	</Button>
+	</EditBox>
+
+	<Frame name="SliderAndEditControlTemplate" mixin="SliderAndEditControlMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="12" type="number"/>
+			<KeyValue key="heightPadding" value="6" type="number"/>
+		</KeyValues>
+		<Frames>
+			<EditBox parentKey="ValueBox" inherits="NumericInputBoxTemplate" letters="3" autoFocus="false">
+				<Size x="30" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" x="6" y="6"/>
+				</Anchors>
+			</EditBox>
+
+			<Slider parentKey="Slider" inherits="UISliderTemplate" obeyStepOnDrag="true">
+				<Size x="120" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ValueBox" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnLeave();
+					</OnLeave>
+					<OnValueChanged>
+						self:GetParent():OnSliderValueChanged(value, userInput);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Slider" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

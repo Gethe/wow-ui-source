@@ -710,81 +710,6 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ClubPendingRecruitListFrameTemplate" mixin="ClubPendingRecruitListMixin" virtual="true">
-		<Frames>
-			<Frame parentKey="ColumnDisplay" useParentLevel="true" inherits="ColumnDisplayTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="60"/>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="22" y="60"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="0" y="3"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent" x="-3" y="-3"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="InsetBorderTop" inherits="_UI-Frame-InnerTopTile">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="InsetBorderLeft" inherits="!UI-Frame-InnerLeftTile">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-			<ScrollFrame parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<Frames>
-					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-15"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="11"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
-							</Layer>
-						</Layers>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
-			</Frame>
-			<Frame parentKey="InsetFrame" useParentLevel="false" inherits="InsetFrameTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="-3" y="3"/>
-					<Anchor point="BOTTOMRIGHT" x="-2" y="-2"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.Bg:Hide();
-						self:SetFrameLevel(100);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</Frame>
-
 	<Frame name="ClubFinderGuildCardTemplate" mixin="ClubFinderGuildCardMixin" virtual="true">
 		<Size x="178" y="264"/>
 		<Layers>
@@ -1007,14 +932,11 @@
 
 	<Button name="ClubFinderCommunitiesCardTemplate" motionScriptsWhileDisabled="true" mixin="ClubFinderCommunitiesCardMixin" virtual="true">
 		<Size x="570" y="71"/>
-		<Anchors>
-			<Anchor point="CENTER" x="20" y="-20"/>
-		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="communitiesfinder-card" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="LEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1057,7 +979,7 @@
 				<FontString parentKey="RequestStatus" hidden="true" inherits="GameFontNormal">
 					<Size x="80" y="68"/>
 					<Anchors>
-						<Anchor point="RIGHT" x="0" y="0"/>
+						<Anchor point="RIGHT" x="-15" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Focus" justifyH="RIGHT" inherits="GameFontNormalSmall">
@@ -1090,7 +1012,7 @@
 			<Frame parentKey="RequestJoin">
 				<Size x="60" y="60"/>
 				<Anchors>
-					<Anchor point="RIGHT"/>
+					<Anchor point="RIGHT" x="-15" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -1123,27 +1045,26 @@
 		</Scripts>
 		<HighlightTexture parentKey="HighlightBackground" atlas="communitiesfinder_card_highlight" useAtlasSize="true" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="CENTER"/>
+				<Anchor point="LEFT" x="-5"/>
+				<Anchor point="RIGHT" x="-7"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
 
 	<Frame name="ClubFinderCommunitiesCardFrameTemplate" virtual="true">
 		<Frames>
-			<ScrollFrame parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="BOTTOMRIGHT" x="-16" y="1"/>
 				</Anchors>
-				<Frames>
-					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-15" y="-15"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="15" y="11"/>
-						</Anchors>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="1"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 	</Frame>
 

@@ -38,7 +38,7 @@ function ScriptAnimationUtil.ShakeFrame(region, shake, maximumDuration, frequenc
 		return nop;
 	end
 
-	local point, relativeRegion, relativePoint, x, y = region:GetPoint();
+	local point, relativeRegion, relativePoint, x, y = region:GetPoint(1);
 	local shakeIndex = 1;
 	local endTime = GetTime() + maximumDuration;
 
@@ -76,7 +76,7 @@ function ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, dist
 		return distanceX * progress, distanceY * progress, alpha * progress, scale * progress;
 	end
 
-	return VariationCallback; 
+	return VariationCallback;
 end
 
 
@@ -90,7 +90,7 @@ function ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, dur
 
 	variationCallback = variationCallback;
 
-	local point, relativeRegion, relativePoint, x, y = region:GetPoint();
+	local point, relativeRegion, relativePoint, x, y = region:GetPoint(1);
 	local alpha = region:GetAlpha();
 	local scale = region:GetScale();
 
@@ -104,7 +104,7 @@ function ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, dur
 	local endTime = startTime + duration;
 	local elapsedTime = 0;
 	ApplyVariation(variationCallback(elapsedTime, duration));
-	
+
 	local function CancelScriptAnimation()
 		ApplyVariation(variationCallback(duration, duration));
 		region.translationTicker:Cancel();

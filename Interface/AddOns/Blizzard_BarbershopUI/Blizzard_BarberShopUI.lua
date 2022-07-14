@@ -8,7 +8,7 @@ function BarberShopMixin:OnLoad()
 
 	CharCustomizeFrame:AttachToParentFrame(self);
 
-	self.sexButtonPool = CreateFramePool("CHECKBUTTON", self.Sexes, "CharCustomizeSexButtonTemplate");
+	self.sexButtonPool = CreateFramePool("CHECKBUTTON", self.BodyTypes, "CharCustomizeBodyTypeButtonTemplate");
 end
 
 function BarberShopMixin:OnEvent(event, ...)
@@ -31,12 +31,12 @@ function BarberShopMixin:OnEvent(event, ...)
 end
 
 function BarberShopMixin:OnShow()
-	self.oldErrorFramePointInfo = {UIErrorsFrame:GetPoint()};
+	self.oldErrorFramePointInfo = {UIErrorsFrame:GetPoint(1)};
 
 	UIErrorsFrame:SetParent(self);
 	UIErrorsFrame:SetFrameStrata("DIALOG");
 	UIErrorsFrame:ClearAllPoints();
-	UIErrorsFrame:SetPoint("TOP", self.Sexes, "BOTTOM", 0, 0);
+	UIErrorsFrame:SetPoint("TOP", self.BodyTypes, "BOTTOM", 0, 0);
 
 	ActionStatus:SetParent(self);
 
@@ -58,13 +58,13 @@ function BarberShopMixin:UpdateSex()
 		local sexes = {Enum.UnitSex.Male, Enum.UnitSex.Female};
 		for index, sexID in ipairs(sexes) do
 			local button = self.sexButtonPool:Acquire();
-			button:SetSex(sexID, currentCharacterData.sex, index);
+			button:SetBodyType(sexID, currentCharacterData.sex, index);
 			button:Show();
 		end
 	end
 
-	self.Sexes:MarkDirty();
-	self.Sexes:Show();
+	self.BodyTypes:MarkDirty();
+	self.BodyTypes:Show();
 end
 
 function BarberShopMixin:OnHide()
@@ -192,7 +192,13 @@ end
 function BarberShopMixin:SetViewingShapeshiftForm(formID)
 	self:RegisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 	C_BarberShop.SetViewingShapeshiftForm(formID);
-	self.Sexes:SetShown(formID == nil);
+	self.BodyTypes:SetShown(formID == nil);
+end
+
+function BarberShopMixin:SetViewingChrModel(chrModelID)
+	self:RegisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
+	C_BarberShop.SetViewingChrModel(chrModelID);
+	self.BodyTypes:SetShown(false);
 end
 
 function BarberShopMixin:SetModelDressState(dressedState)

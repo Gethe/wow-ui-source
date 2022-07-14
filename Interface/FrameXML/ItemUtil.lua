@@ -180,7 +180,7 @@ function ItemUtil.PickupBagItem(itemLocation)
 	end
 end
 
-function ItemUtil.GetOptionalReagentCount(itemID)
+function ItemUtil.GetCraftingReagentCount(itemID)
 	local includeBank = true;
 	local includeUses = false;
 	local includeReagentBank = true;
@@ -188,8 +188,8 @@ function ItemUtil.GetOptionalReagentCount(itemID)
 end
 
 function ItemUtil.IteratePlayerInventory(callback)
-	-- Only includes the backpack and primary 4 bag slots.
-	for bag = 0, NUM_BAG_FRAMES do
+	-- Only includes the backpack and held bag slots.
+	for bag = 0, NUM_TOTAL_BAG_FRAMES do
 		for slot = 1, ContainerFrame_GetContainerNumSlots(bag) do
 			local bagItem = ItemLocation:CreateFromBagAndSlot(bag, slot);
 			if C_Item.DoesItemExist(bagItem) then
@@ -230,6 +230,15 @@ end
 function ItemUtil.CreateItemTransmogInfo(appearanceID, secondaryAppearanceID, illusionID)
 	return CreateAndInitFromMixin(ItemTransmogInfoMixin, appearanceID, secondaryAppearanceID, illusionID);
 end
+
+function ItemUtil.TransformItemIDsToItems(itemIDs)
+	local items = {};
+	for index, itemID in ipairs(itemIDs) do
+		table.insert(items, Item:CreateFromItemID(itemID));
+	end
+	return items;
+end
+
 
 ItemTransmogInfoMixin = {};
 

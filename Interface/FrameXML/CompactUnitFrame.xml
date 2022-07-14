@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="CompactUnitFrame.lua"/>
 	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false" registerForClicks="AnyDown">
-		<Size>
-			<AbsDimension x="17" y="17"/>
-		</Size>
+		<Size x="17" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" parentKey="icon" setAllPoints="true"/>
@@ -12,11 +10,7 @@
 			<Layer level="OVERLAY">
 				<FontString name="$parentCount" parentKey="count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="5" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -24,11 +18,7 @@
 		<Frames>
 			<Cooldown name="$parentCooldown" parentKey="cooldown" hideCountdownNumbers="true" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" x="0" y="-1"/>
 				</Anchors>
 			</Cooldown>
 		</Frames>
@@ -36,7 +26,7 @@
 			<OnClick function="PassClickToParent"/>
 		</Scripts>
 	</Button>
-	<Button name="CompactDebuffTemplate" inherits="CompactAuraTemplate" virtual="true">
+	<Button name="CompactDebuffTemplate" inherits="CompactAuraTemplate" parentArray="debuffFrames" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" parentKey="border" file="Interface\Buttons\UI-Debuff-Overlays">
@@ -53,28 +43,21 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				local parent = self:GetParent();
-				if ( not parent.debuffFrames ) then
-					parent.debuffFrames = {};
-				end
-				tinsert(parent.debuffFrames, self);
-			</OnLoad>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
 					if ( self.isBossBuff ) then
-						GameTooltip:SetUnitBuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
+						GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
 					else
-						GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
+						GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
 					end
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
 					if ( self.isBossBuff ) then
-						GameTooltip:SetUnitBuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
+						GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
 					else
-						GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID(), self.filter);
+						GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
 					end
 			</OnEnter>
 			<OnLeave>
@@ -82,30 +65,23 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="CompactBuffTemplate" inherits="CompactAuraTemplate" virtual="true">
+	<Button name="CompactBuffTemplate" inherits="CompactAuraTemplate" parentArray="buffFrames" virtual="true">
 		<Scripts>
-			<OnLoad>
-				local parent = self:GetParent();
-				if ( not parent.buffFrames ) then
-					parent.buffFrames = {};
-				end
-				tinsert(parent.buffFrames, self);
-			</OnLoad>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitBuff(self:GetParent().displayedUnit, self:GetID());
+					GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-				GameTooltip:SetUnitBuff(self:GetParent().displayedUnit, self:GetID());
+				GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="CompactDispelDebuffTemplate" virtual="true">
+	<Button name="CompactDispelDebuffTemplate" parentArray="dispelDebuffFrames" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" parentKey="icon">
@@ -114,23 +90,15 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				local parent = self:GetParent();
-				if ( not parent.dispelDebuffFrames ) then
-					parent.dispelDebuffFrames = {};
-				end
-				tinsert(parent.dispelDebuffFrames, self);
-				self:RegisterForClicks("LeftButtonDown", "RightButtonUp");
-			</OnLoad>
 			<OnClick function="PassClickToParent"/>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID(), "RAID");
+					GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, "RAID");
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-				GameTooltip:SetUnitDebuff(self:GetParent().displayedUnit, self:GetID());
+				GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, "RAID");
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -238,15 +206,9 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown" hidden="true">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="10" y="-60"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="10" y="-60"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -256,44 +218,4 @@
 			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	<StatusBar name="CompactUnitFrameCastBarTemplate" parentKey="castBar" hidden="true" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture parentKey="Background" setAllPoints="true"/>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<FontString parentKey="Text" inherits="SystemFont_Shadow_Small">
-					<Size x="0" y="16" />
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-				<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield" hidden="true" ignoreParentAlpha="true">
-					<Size x="10" y="12" />
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="LEFT" x="-2" y="-1"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
-					<Size x="16" y="16" />
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Flash" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill" alphaMode="ADD" />
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				CastingBarFrame_OnLoad(self, nil, false, true);
-			</OnLoad>
-			<OnEvent function="CastingBarFrame_OnEvent" />
-			<OnUpdate function="CastingBarFrame_OnUpdate" />
-			<OnShow function="CastingBarFrame_OnShow" />
-		</Scripts>
-		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-		<BarColor r="1.0" g="0.7" b="0.0"/>
-	</StatusBar>
 </Ui>

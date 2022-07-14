@@ -27,7 +27,9 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 	self.entryPool:ReleaseAll();
 	self.animationPools:ReleaseAll();
 	self.spacing = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_SPACING;
+	self.fixedWidth = widgetInfo.fixedWidth;
 
+	local isShown = {};
 	self.animationInfo = texturekitAnimationTemplatesInfo[widgetInfo.frameTextureKit];
 	self.animatedEntries = self.animationInfo and {} or nil;
 	for index, entryInfo in ipairs(widgetInfo.entries) do
@@ -38,34 +40,62 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 		entryFrame:Show();
 
 		if self.animationInfo then
-			table.insert(self.animatedEntries, entryFrame);
+			if not self.wasShown[index] then
+				table.insert(self.animatedEntries, entryFrame);
+			end
 		end
+
+		isShown[index] = true;
 	end
 
-	self:Layout(); -- Layout visible entries horizontally
-end
+	self.wasShown = isShown;
 
-function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimOnEntryFrame(widgetInfo, entryFrame, index)
-	if self.animationInfo then
-		local animationPool = self.animationPools:GetOrCreatePool("FRAME", self, self.animationInfo.template);
-		if animationPool then 
-			local animationFrame = animationPool:Acquire(); 
-			animationFrame:SetPoint("CENTER", entryFrame);
-			animationFrame:SetFrameLevel(entryFrame:GetFrameLevel() + 1);
-			animationFrame:Reset();
-			animationFrame:Show();
-			C_Timer.After(index * self.animationInfo.animationDelayModifier, function() if (not self.animationInfo) then return; end; animationFrame:Play(); C_Timer.After(self.animationInfo.effectDelay, function() self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, entryFrame) end); end);		
-		end
+	if #widgetInfo.entries == 0 then
+		self:Hide();
+		return;
+	else
+		self:Layout(); -- Layout visible entries horizontally
 	end
+
+	self:PlayAnimations(widgetInfo);
 end
 
-function UIWidgetTemplateTextureAndTextRowMixin:ApplyEffects(widgetInfo)
+function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimations(widgetInfo)
 	if self.animatedEntries then
 		for index, entryFrame in ipairs(self.animatedEntries) do
 			entryFrame:SetAlpha(0);
 			self:PlayAnimOnEntryFrame(widgetInfo, entryFrame, index);
 		end
-	else
+	end
+end
+
+function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimOnEntryFrame(widgetInfo, entryFrame, index)
+	if self.animationInfo then
+		local animationPool = self.animationPools:GetOrCreatePool("FRAME", self, self.animationInfo.template);
+		if animationPool and not entryFrame.animationFrame then 
+			entryFrame.animationFrame = animationPool:Acquire(); 
+			entryFrame.animationFrame:SetPoint("CENTER", entryFrame);
+			entryFrame.animationFrame:SetFrameLevel(entryFrame:GetFrameLevel() + 1);
+			entryFrame.animationFrame:Reset();
+			entryFrame.animationFrame:Show();
+
+			local function applyEffectAndClearAnim()
+				self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, entryFrame);
+				entryFrame.animationFrame = nil;
+			end
+
+			local function playAnim()
+				entryFrame.animationFrame:Play();
+				entryFrame.animTimer = C_Timer.NewTimer(self.animationInfo.effectDelay, applyEffectAndClearAnim);
+			end
+
+			entryFrame.animTimer = C_Timer.NewTimer(index * self.animationInfo.animationDelayModifier, playAnim);
+		end
+	end
+end
+
+function UIWidgetTemplateTextureAndTextRowMixin:ApplyEffects(widgetInfo)
+	if not self.animatedEntries then
 		UIWidgetBaseTemplateMixin.ApplyEffects(self, widgetInfo);
 	end
 end
@@ -75,10 +105,21 @@ function UIWidgetTemplateTextureAndTextRowMixin:OnReset()
 	if(self.animatedEntries) then 
 		for _, entryFrame in ipairs(self.animatedEntries) do
 			entryFrame:SetAlpha(1);
+
+			if entryFrame.animTimer then
+				entryFrame.animTimer:Cancel();
+			end
+
+			if entryFrame.animationFrame then
+				entryFrame.animationFrame:Reset();
+				entryFrame.animationFrame = nil;
+			end
 		end	
 	end	
 	self.entryPool:ReleaseAll();
 	self.animationPools:ReleaseAll();
 	self.animationInfo = nil;
 	self.animatedEntries = nil;
+	self.wasShown = {};
+	self.fixedWidth = nil;
 end

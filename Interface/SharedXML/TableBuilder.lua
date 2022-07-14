@@ -1,3 +1,5 @@
+local ColumnFramePoolCollection = CreateFramePoolCollection();
+
 local ColumnWidthConstraints = {
 	Fill = 1, -- Width will be distributed by available space.
 	Fixed = 2, -- Width is specified when initializing the column.
@@ -13,7 +15,7 @@ function TableBuilderElementMixin:Init(...)
 end
 
 --Derive
-function TableBuilderElementMixin:Populate(rowData, dataIndex)
+function TableBuilderElementMixin:Populate(rowData, dataProviderKey)
 end
 
 TableBuilderCellMixin = CreateFromMixins(TableBuilderElementMixin);
@@ -73,20 +75,42 @@ function TableBuilderColumnMixin:ConstructHeader(templateType, template, ...)
 	frame:Show();
 end
 
--- Constructs cells corresponding to each row with an optional initializer.
-function TableBuilderColumnMixin:ConstructCells(templateType, template, ...)
-	local cells = self.table:ConstructCells(templateType, template);
-	self.cells = cells;
-	for k, cell in pairs(cells) do
-		if cell.Init then
-			cell:Init(...);
-		end
-		cell:Show();
+function TableBuilderColumnMixin:Reset()
+	for row, cell in pairs(self.cells) do
+		self.pool:Release(cell);
+		tDeleteItem(row.cells, cell);
 	end
+	self.cells = {};
 end
 
-function TableBuilderColumnMixin:GetCellByRowIndex(rowIndex)
-	return self.cells[rowIndex];
+function TableBuilderColumnMixin:RemoveRow(row)
+	local cell = self.cells[row];
+	self.cells[row] = nil;
+	self.pool:Release(cell);
+end
+
+function TableBuilderColumnMixin:ConstructCell(row, rowData, dataProviderKey)
+	local cell = self.pool:Acquire();
+	self.cells[row] = cell;
+
+	if cell.Init then
+		cell:Init(unpack(self.args));
+	end
+
+	if cell.Populate then
+		cell.rowData = rowData;
+		cell:Populate(rowData, dataProviderKey);
+	end
+
+	cell:Show();
+	return cell;
+end
+
+-- Constructs cells corresponding to each row with an optional initializer.
+function TableBuilderColumnMixin:ConstructCells(templateType, template, ...)
+	self.args = {...};
+
+	self.pool = ColumnFramePoolCollection:GetOrCreatePool(templateType, nil, template);
 end
 
 function TableBuilderColumnMixin:GetFillCoefficient()
@@ -181,14 +205,14 @@ end
 -- a hybrid scroll frame or statically fixed set. To populate the table, assign a data provider (CAPI or lua function)
 -- that can retrieve an object by index (number).
 TableBuilderMixin = {};
-function TableBuilderMixin:Init(rows)
+function TableBuilderMixin:Init()
+	self.rows = {};
 	self.columns = {};
 	self.leftMargin = 0;
 	self.rightMargin = 0;
 	self.columnHeaderOverlap = 0;
 	self.tableWidth = 0;
 	self.headerPoolCollection = CreateFramePoolCollection();
-	self:SetRows(rows);
 end
 
 function TableBuilderMixin:GetDataProvider()
@@ -199,9 +223,9 @@ function TableBuilderMixin:SetDataProvider(dataProvider)
 	self.dataProvider = dataProvider;
 end
 
-function TableBuilderMixin:GetDataProviderData(dataIndex)
+function TableBuilderMixin:GetDataProviderData(dataProviderKey)
 	local dataProvider = self:GetDataProvider();
-	return dataProvider and dataProvider(dataIndex) or nil;
+	return dataProvider and dataProvider(dataProviderKey) or nil;
 end
 
 -- Controls the margins of the left-most and right-most columns within the table.
@@ -247,37 +271,12 @@ function TableBuilderMixin:SetHeaderContainer(headerContainer)
 	self:SetTableWidth(headerContainer:GetWidth());
 end
 
-function TableBuilderMixin:ReleaseRowPools()
-	local rows = self.rows;
-	if rows then
-		for k, row in pairs(rows) do
-			local poolCollection = row.poolCollection;
-			if poolCollection then
-				poolCollection:ReleaseAll();
-			end
-		end
-	end
-end
-
-function TableBuilderMixin:SetRows(rows)
-	-- Release any previous rows, though I can't imagine a case where the rows
-	-- are being exchanged.
-	self:ReleaseRowPools();
-
-	self.rows = rows;
-	for k, row in pairs(rows) do
-		if not row.poolCollection then
-			row.poolCollection = CreateFramePoolCollection();
-		end
-	end
-end
-
 function TableBuilderMixin:GetHeaderPoolCollection()
 	return self.headerPoolCollection;
 end
 
-function TableBuilderMixin:GetRows()
-	return self.rows;
+function TableBuilderMixin:EnumerateHeaders()
+	return self.headerPoolCollection:EnumerateActive();
 end
 
 function TableBuilderMixin:ConstructHeader(templateType, template)
@@ -288,68 +287,103 @@ function TableBuilderMixin:ConstructHeader(templateType, template)
 	return pool:Acquire(template);
 end
 
-function TableBuilderMixin:ConstructCells(templateType, template)
-	local cells = {};
-	for k, row in pairs(self:GetRows()) do
-		local pool = row.poolCollection:GetOrCreatePool(templateType, row, template);
-		local cell = pool:Acquire(template);
-		tinsert(cells, cell);
-	end
-	return cells;
-end
-
 function TableBuilderMixin:Arrange()
 	local columns = self:GetColumns();
 	if columns and #columns > 0 then
 		self:CalculateColumnSpacing();
 		self:ArrangeHeaders();
-		self:ArrangeCells();
+	end
+
+	for columnIndex, column in ipairs(self.columns) do
+		column:Reset();
+	end
+
+	-- Repopulate cells for each row in case the column information changed.
+	for index, row in ipairs(self.rows) do
+		assert(TableIsEmpty(row.cells));
+		for columnIndex, column in ipairs(self.columns) do
+			assert(row.rowData);
+			local cell = column:ConstructCell(row, row.rowData, columnIndex);
+			table.insert(row.cells, cell);
+		end
+	
+		self:ArrangeCells(row);
 	end
 end
 
 function TableBuilderMixin:Reset()
-	self.columns = {};
 	self:GetHeaderPoolCollection():ReleaseAll();
-	self:ReleaseRowPools();
-end
 
-function TableBuilderMixin:Populate(offset, count)
-	local dataProvider = self:GetDataProvider();
-	local columns = self:GetColumns();
-	for rowIndex = 1, count do
-		local dataIndex = rowIndex + offset;
-		local rowData = dataProvider(dataIndex);
-		if not rowData then
-			break;
-		end
-
-		local row = self:GetRowByIndex(rowIndex);
-		if row then
-			-- Data is assigned to the rows and elements so they can
-			-- access it later in tooltips.
-			row.rowData = rowData;
-			if row.Populate then
-				row:Populate(rowData, dataIndex);
-			end
-
-			for columnIndex, p in ipairs(columns) do
-				local cell = self:GetCellByIndex(rowIndex, columnIndex);
-				if cell.Populate then
-					cell.rowData = rowData;
-					cell:Populate(rowData, dataIndex);
-				end
-			end
-		end
+	for columnIndex, column in ipairs(self.columns) do
+		column:Reset();
 	end
+	self.columns = {};
 end
 
-function TableBuilderMixin:GetCellByIndex(rowIndex, index)
-	local row = self:GetRowByIndex(rowIndex);
-	return row.cells[index];
+function TableBuilderMixin:AddRow(row, dataProviderKey)
+	local rowData = self:GetDataProviderData(dataProviderKey);	
+	if not rowData then
+		return;
+	end
+	row.rowData = rowData;
+	table.insert(self.rows, row);
+
+	if row.Populate then
+		row:Populate(rowData, dataProviderKey);
+	end
+
+	row.cells = {};
+	for columnIndex, column in ipairs(self.columns) do
+		local cell = column:ConstructCell(row, rowData, columnIndex);
+		table.insert(row.cells, cell);
+	end
+
+	self:ArrangeCells(row);
 end
 
-function TableBuilderMixin:GetRowByIndex(rowIndex)
-	return self.rows[rowIndex];
+function TableBuilderMixin:RemoveRow(row)
+	local deleted = tDeleteItem(self.rows, row) > 0;
+	if not deleted then
+		return;
+	end
+
+	for columnIndex, column in ipairs(self.columns) do
+		column:RemoveRow(row);
+	end
+
+	row.rowData = nil;
+end
+
+function TableBuilderMixin:ArrangeCells(row)
+	local columns = self:GetColumns();
+	if #columns == 0 then
+		return;
+	end
+
+	local height = row:GetHeight();
+	local leftMargin, rightMargin = self:GetTableMargins();
+
+	local column = columns[1];
+	local cell = row.cells[1];
+	cell:SetParent(row);
+	cell:SetHeight(height);
+	local leftCellPadding, rightCellPadding = column:GetCellPadding();
+	
+	self:ArrangeHorizontally(cell, row, column:GetCellWidth(), "TOPLEFT", "TOPLEFT", "BOTTOMLEFT", "BOTTOMLEFT", leftMargin + leftCellPadding);
+	
+	local previousCell = cell;
+	local previousRightCellPadding = rightCellPadding;
+	for columnIndex = 2, #columns do
+		column = columns[columnIndex];
+		local cell = row.cells[columnIndex];
+		cell:SetParent(row);
+		cell:SetHeight(height);
+		leftCellPadding, rightCellPadding = column:GetCellPadding();
+
+		self:ArrangeHorizontally(cell, previousCell, column:GetCellWidth(), "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", column:GetPadding() + leftCellPadding + previousRightCellPadding);
+		previousCell = cell;
+		previousRightCellPadding = rightCellPadding;
+	end
 end
 
 function TableBuilderMixin:AddColumn()
@@ -455,39 +489,6 @@ function TableBuilderMixin:ArrangeHeaders()
 		end
 
 		columnIndex = columnIndex + 1;
-	end
-end
-
-function TableBuilderMixin:ArrangeCells()
-	local columns = self:GetColumns();
-	local leftMargin, rightMargin = self:GetTableMargins();
-	for rowIndex, row in ipairs(self:GetRows()) do
-		local cells = {};
-		local height = row:GetHeight();
-
-		local column = columns[1];
-		local cell = column:GetCellByRowIndex(rowIndex);
-		tinsert(cells, cell);
-		cell:SetHeight(height);
-		local leftCellPadding, rightCellPadding = column:GetCellPadding();
-		
-		self:ArrangeHorizontally(cell, row, column:GetCellWidth(), "TOPLEFT", "TOPLEFT", "BOTTOMLEFT", "BOTTOMLEFT", leftMargin + leftCellPadding);
-		
-		local previousCell = cell;
-		local previousRightCellPadding = rightCellPadding;
-		for columnIndex = 2, #columns do
-			column = columns[columnIndex];
-			cell = column:GetCellByRowIndex(rowIndex);
-			tinsert(cells, cell);
-			cell:SetHeight(height);
-			leftCellPadding, rightCellPadding = column:GetCellPadding();
-
-			self:ArrangeHorizontally(cell, previousCell, column:GetCellWidth(), "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", column:GetPadding() + leftCellPadding + previousRightCellPadding);
-			previousCell = cell;
-			previousRightCellPadding = rightCellPadding;
-		end
-
-		row.cells = cells;
 	end
 end
 

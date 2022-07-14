@@ -1016,47 +1016,18 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-6"/>
-					<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+					<Anchor point="BOTTOMRIGHT" x="-31" y="8"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-12"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="12"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="colorRed" value="1.0" type="number"/>
-							<KeyValue key="colorGreen" value="1.0" type="number"/>
-							<KeyValue key="colorBlue" value="1.0" type="number"/>
-						</KeyValues>
-						<Scripts>
-							<OnLoad>
-								self.trackBG:Show();
-								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
-								self.doNotHide = true;
-
-								self.Top:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.Bottom:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.Middle:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.thumbTexture:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-
-								self.UpButton.Normal:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.UpButton.Pushed:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.UpButton.Disabled:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.UpButton.Highlight:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-
-								self.DownButton.Normal:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.DownButton.Pushed:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.DownButton.Disabled:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.DownButton.Highlight:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-							</OnLoad>
-						</Scripts>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-25" y="-6"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 	</Frame>
 

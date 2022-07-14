@@ -126,7 +126,7 @@ function OverrideActionBar_SetSkin(skin)
 	end
 	for _,tex in pairs(xpBarTextureList) do
 		OverrideActionBar.xpBar[tex]:SetTexture(textureFile, strsub(tex, 1, 1) == "_", strsub(tex, 1, 1) == "|");
-	end	
+	end
 end
 
 
@@ -134,6 +134,7 @@ function OverrideActionBar_CalcSize()
 	local width, xpWidth, anchor, buttonAnchor;
 	OverrideActionBar.pitchFrame:Hide();
 	OverrideActionBar.leaveFrame:Hide();
+
 	if OverrideActionBar.HasExit and OverrideActionBar.HasPitch then
 		width, xpWidth, anchor, buttonAnchor = 1020, 580, 103, -234;
 		OverrideActionBar.pitchFrame:Show();
@@ -147,36 +148,36 @@ function OverrideActionBar_CalcSize()
 	else
 		width, xpWidth, anchor, buttonAnchor = 860, 460, 100, -237;
 	end
-	
+
 	OverrideActionBar:SetWidth(width);
 	OverrideActionBar.xpBar.XpMid:SetWidth(xpWidth);
 	OverrideActionBar.xpBar:SetWidth(xpWidth+16);
 	OverrideActionBar.Divider2:SetPoint("BOTTOM", anchor, 0);
 	OverrideActionBar.SpellButton1:SetPoint("BOTTOM", buttonAnchor, 17);
 
-	
+
 	local divWidth = OverrideActionBar.xpBar.XpMid:GetWidth()/19;
-	local xpos = divWidth-15;	
+	local xpos = divWidth-15;
 	for i=1,19 do
 		local texture = OverrideActionBar.xpBar["XpDiv"..i];
 		texture:SetPoint("LEFT", OverrideActionBar.xpBar.XpMid, "LEFT", floor(xpos), 10);
 		xpos = xpos + divWidth;
 	end
 	OverrideActionBar_UpdateXpBar();
-	
+
 	UnitFrameHealthBar_Update(OverrideActionBarHealthBar, "vehicle");
 	UnitFrameManaBar_Update(OverrideActionBarPowerBar, "vehicle");
 end
 
 
 function OverrideActionBar_GetMicroButtonAnchor()
-	local x, y = 543, 43;
+	local x, y = 562, 42;
 	if OverrideActionBar.HasExit and OverrideActionBar.HasPitch then
-		x = 626;
+		x = 645;
 	elseif OverrideActionBar.HasPitch then
-		x = 630;
+		x = 650;
 	elseif OverrideActionBar.HasExit then
-		x = 538;
+		x = 558;
 	end
 	return x,y
 end

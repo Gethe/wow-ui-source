@@ -21,20 +21,12 @@
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true" parentKey="Count">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-5" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentStock" parentKey="Stock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -79,7 +71,7 @@
 			<OnHide method="PostOnHide" intrinsicOrder="postcall"/>
 			<OnEvent method="PostOnEvent" intrinsicOrder="postcall"/>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			<Size x="64" y="64"/>
 			<Anchors>
 				<Anchor point="CENTER" x="0" y="-1"/>
@@ -214,57 +206,26 @@
 	</Button>
 
 	<CheckButton name="SimplePopupButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="36" y="36"/>
-		</Size>
+		<Size x="36" y="36"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
-					<Size>
-						<AbsDimension x="36" y="10"/>
-					</Size>
+				<FontString name="$parentName" inherits="GameFontHighlightSmallOutline" parentKey="Name">
+					<Size x="36" y="10"/>
 					<Anchors>
-						<Anchor point="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOM" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\Buttons\UI-EmptySlot-Disabled">
-					<Size>
-						<AbsDimension x="45" y="45"/>
-					</Size>
+					<Size x="45" y="45"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="-1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.140625" right="0.84375" top="0.140625" bottom="0.84375"/>
 				</Texture>
 			</Layer>
 		</Layers>
-	</CheckButton>
-
-	<CheckButton name="PopupButtonTemplate" virtual="true" inherits="SimplePopupButtonTemplate">
-		<NormalTexture name="$parentIcon" parentKey="Icon">
-			<Size>
-				<AbsDimension x="36" y="36"/>
-			</Size>
-			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="-1"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</NormalTexture>
-		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
 
 	<Button name="LargeItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
@@ -354,7 +315,7 @@
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.NameFrame" x="4" y="0"/>
 					</Anchors>
-				</FontString>			
+				</FontString>
 				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="3" y="1"/>
@@ -362,5 +323,5 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Button>	
+	</Button>
  </Ui>

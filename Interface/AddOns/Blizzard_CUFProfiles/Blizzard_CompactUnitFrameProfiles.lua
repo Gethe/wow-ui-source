@@ -6,20 +6,44 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	
-	--Get this working with the InterfaceOptions panel.
 	self.name = COMPACT_UNIT_FRAME_PROFILES_LABEL;
-	self.options = {
-		useCompactPartyFrames = { text = "USE_RAID_STYLE_PARTY_FRAMES" },
-	}
+
+	self.RaidStylePartyFramesCheckBox.Text:SetText(USE_RAID_STYLE_PARTY_FRAMES);
+	local function SetAutoActivationCheckBoxes(checked)
+		self.optionsFrame.autoActivate2Players:SetEnabled(checked);
+		self.optionsFrame.autoActivate3Players:SetEnabled(checked);
+		self.optionsFrame.autoActivate5Players:SetEnabled(checked);
+	end
 	
-	BlizzardOptionsPanel_OnLoad(self, CompactUnitFrameProfiles_SaveChanges, CompactUnitFrameProfiles_CancelCallback, CompactUnitFrameProfiles_DefaultCallback, CompactUnitFrameProfiles_UpdateCurrentPanel);
-	InterfaceOptions_AddCategory(self, false, 11);
+	local cvar = "useCompactPartyFrames";
+	
+	local function SetUseRaidStylePartyFramesEnabled(enabled)
+		self.RaidStylePartyFramesCheckBox:SetChecked(enabled);
+
+		SetAutoActivationCheckBoxes(enabled);
+		RaidOptionsFrame_UpdatePartyFrames();
+		CompactRaidFrameManager_UpdateShown(CompactRaidFrameManager);
+	end
+
+	self.RaidStylePartyFramesCheckBox:SetScript("OnClick", function(self)
+		local checked = self:GetChecked();
+		Settings.SetValue(cvar, checked);
+
+		SetUseRaidStylePartyFramesEnabled(checked);
+	end);
+	
+	local function OnValueChanged(o, setting, value)
+		SetUseRaidStylePartyFramesEnabled(value);
+	end
+
+	Settings.SetOnValueChangedCallback(cvar, OnValueChanged);
+
+	SetAutoActivationCheckBoxes(Settings.GetValue(cvar));
+
+	self.OnDefault = GenerateClosure(CompactUnitFrameProfiles_ResetToDefaults, self);
 end
 
 function CompactUnitFrameProfiles_OnEvent(self, event, ...)
-	--Do normal BlizzardOptionsPanel code too.
-	BlizzardOptionsPanel_OnEvent(self, event, ...);
-	
 	if ( event == "COMPACT_UNIT_FRAME_PROFILES_LOADED" ) then
 		--HasLoadedCUFProfiles will now return true.
 		self:UnregisterEvent(event);
@@ -49,11 +73,6 @@ function CompactUnitFrameProfiles_ValidateProfilesLoaded(self)
 	end
 end
 
-function CompactUnitFrameProfiles_DefaultCallback(self)
-	InterfaceOptionsPanel_Default(self);
-	CompactUnitFrameProfiles_ResetToDefaults();
-end
-
 function CompactUnitFrameProfiles_ResetToDefaults()
 	local profiles = {};
 	for i=1, GetNumRaidProfiles() do
@@ -72,12 +91,10 @@ function CompactUnitFrameProfiles_SaveChanges(self)
 end
 
 function CompactUnitFrameProfiles_CancelCallback(self)
-	InterfaceOptionsPanel_Cancel(self);
 	CompactUnitFrameProfiles_CancelChanges(self);
 end
 
 function CompactUnitFrameProfiles_CancelChanges(self)
-	InterfaceOptionsPanel_Cancel(self);
 	RestoreRaidProfileFromCopy();
 	CompactUnitFrameProfiles_UpdateCurrentPanel();
 	CompactUnitFrameProfiles_ApplyCurrentSettings();
@@ -116,7 +133,6 @@ end
 function CompactUnitFrameProfilesProfileSelector_SetUp(self)
 	UIDropDownMenu_SetWidth(self, 190);
 	UIDropDownMenu_Initialize(self, CompactUnitFrameProfilesProfileSelector_Initialize);
-	--UIDropDownMenu_SetSelectedValue(self, GetActiveRaidProfile());
 end
 
 function CompactUnitFrameProfilesProfileSelector_Initialize()
@@ -156,7 +172,7 @@ function CompactUnitFrameProfiles_NewProfileButtonClicked()
 	end
 end
 
-function CompactUnitFrameProfiles_ActivateRaidProfile(profile)	
+function CompactUnitFrameProfiles_ActivateRaidProfile(profile)
 	CompactUnitFrameProfiles.selectedProfile = profile;
 	SaveRaidProfileCopy(profile);	--Save off the current version in case we cancel.
 	SetActiveRaidProfile(profile);
@@ -176,7 +192,6 @@ end
 
 
 function CompactUnitFrameProfiles_UpdateCurrentPanel()
-	InterfaceOptionsPanel_Refresh(CompactUnitFrameProfiles);
 	local panel = CompactUnitFrameProfiles.optionsFrame;
 	for i=1, #panel.optionControls do
 		panel.optionControls[i]:updateFunc();
@@ -480,7 +495,6 @@ end
 
 function CompactUnitFrameProfilesDropdown_Initialize(dropDown)
 	local info = UIDropDownMenu_CreateInfo();
-	
 	local currentValue = GetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, dropDown.optionName);
 	for i=1, #dropDown.options do
 		local id = dropDown.options[i];

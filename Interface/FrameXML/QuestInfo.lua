@@ -966,7 +966,7 @@ function QuestInfo_ShowRewards()
 end
 
 function QuestInfo_OnHyperlinkEnter(self, link, text, region, left, bottom, width, height)
-	local linkType, linkData = ExtractLinkData(link);
+	local linkType, linkData = LinkUtil.SplitLinkData(link);
 	local title, body;
 	if linkType == "questReplay" then
 		title = QUEST_SESSION_REPLAY_TOOLTIP_TITLE_ENABLED;

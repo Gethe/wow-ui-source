@@ -5,12 +5,13 @@
 	<Script file="ScrollBoxView.lua"/>
 	<Script file="ScrollBoxListView.lua"/>
 	<Script file="ScrollBoxLinearView.lua"/>
+	<Script file="ScrollBoxTreeView.lua"/>
 	<Script file="ScrollBoxGridView.lua"/>
 	<Script file="ScrollBox.lua"/>
 	
 	<Frame name="ScrollBoxBaseTemplate" clipChildren="true" mixin="ScrollBoxBaseMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="canInterpolateScroll" value="true" type="boolean"/>
+			<KeyValue key="canInterpolateScroll" value="false" type="boolean"/>
 			<!--
 			<KeyValue key="upperShadow" value="atlasName" type="string"/>
 			<KeyValue key="lowerShadow" value="atlasName" type="string"/>

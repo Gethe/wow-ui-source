@@ -3,6 +3,8 @@ TRANSMOG_SHAPESHIFT_MIN_ZOOM = -0.3;
 local EXCLUSION_CATEGORY_OFFHAND	= 1;
 local EXCLUSION_CATEGORY_MAINHAND	= 2;
 
+local g_selectionBehavior = nil;
+
 local function GetPage(entryIndex, pageSize)
 	return floor((entryIndex-1) / pageSize) + 1;
 end
@@ -208,12 +210,12 @@ function TransmogFrameMixin:GetRandomAppearanceID()
 	local baseInfo = C_TransmogCollection.GetAppearanceInfoBySource(baseItemTransmogInfo.appearanceID);
 	local baseVisual = baseInfo and baseInfo.appearanceID;
 	local appliedItemTransmogInfo = C_Item.GetAppliedItemTransmogInfo(self.selectedSlotButton.itemLocation);
-	local appliedInfo = C_TransmogCollection.GetAppearanceInfoBySource(appliedItemTransmogInfo.appearanceID);	
+	local appliedInfo = C_TransmogCollection.GetAppearanceInfoBySource(appliedItemTransmogInfo.appearanceID);
 	local appliedVisual = appliedInfo and appliedInfo.appearanceID or Constants.Transmog.NoTransmogID;
 
 	-- the collection should always be matched with the slot
 	local visualsList = WardrobeCollectionFrame.ItemsCollectionFrame:GetFilteredVisualsList();
-	
+
 	local function GetValidRandom(minIndex, maxIndex)
 		local range = maxIndex - minIndex + 1;
 		local startPoint = math.random(minIndex, maxIndex);
@@ -263,7 +265,7 @@ function TransmogFrameMixin:ToggleSecondaryForSelectedSlotButton()
 	-- if on the main slot, switch to secondary
 	if transmogLocation.modification == Enum.TransmogModification.Main then
 		transmogLocation = TransmogUtil.GetTransmogLocation(transmogLocation.slotID, transmogLocation.type, Enum.TransmogModification.Secondary);
-	end	
+	end
 	local isSecondaryTransmogrified = TransmogUtil.IsSecondaryTransmoggedForItemLocation(self.selectedSlotButton.itemLocation);
 	local toggledOn = self.ToggleSecondaryAppearanceCheckbox:GetChecked();
 	if toggledOn then
@@ -687,7 +689,7 @@ end
 function TransmogSlotButtonMixin:OnTransmogrifySuccess()
 	self:Animate();
 	self:GetParent():MarkDirty();
-	self.priorTransmogID = nil;	
+	self.priorTransmogID = nil;
 end
 
 function TransmogSlotButtonMixin:Animate()
@@ -1191,6 +1193,7 @@ function WardrobeCollectionFrameMixin:OpenTransmogLink(link)
 		local setID = tonumber(id);
 		self:SetTab(TAB_SETS);
 		self.SetsCollectionFrame:SelectSet(setID);
+		self.SetsCollectionFrame:ScrollToSet(self.SetsCollectionFrame:GetSelectedSetID(), ScrollBoxConstants.AlignCenter);
 	end
 end
 
@@ -1316,7 +1319,7 @@ end
 function WardrobeCollectionFrameMixin:GetSearchType()
 	return self.activeFrame.searchType;
 end
-		
+
 WardrobeItemsCollectionSlotButtonMixin = { }
 
 function WardrobeItemsCollectionSlotButtonMixin:OnClick()
@@ -1327,7 +1330,7 @@ end
 function WardrobeItemsCollectionSlotButtonMixin:OnEnter()
 	if self.transmogLocation:IsIllusion() then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(WEAPON_ENCHANTMENT);	
+		GameTooltip:SetText(WEAPON_ENCHANTMENT);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		local slotName = _G[self.slot];
@@ -1835,7 +1838,7 @@ function WardrobeItemsCollectionMixin:SetActiveCategory(category)
 		resetPage = true;
 		switchSearchCategory = true;
 	end
-	
+
 	if resetPage then
 		self:ResetPage();
 	end
@@ -2252,7 +2255,7 @@ function WardrobeItemsCollectionMixin:GoToSourceID(sourceID, transmogLocation, f
 	end
 	if overrideCategoryID then
 		categoryID = overrideCategoryID;
-	end	
+	end
 	if ( visualID or forceGo ) then
 		self.jumpToVisualID = visualID;
 		if ( self.activeCategory ~= categoryID or not self.transmogLocation:IsEqual(transmogLocation) ) then
@@ -2317,12 +2320,12 @@ function WardrobeItemsCollectionMixin:UpdateSlotButtons()
 		-- if it was selected and got hidden, reset to main shoulder
 		-- otherwise if main selected, update cameras
 		local mainShoulderTransmogLocation = TransmogUtil.GetTransmogLocation("SHOULDERSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
-		if not showSecondaryShoulder and self.transmogLocation:IsEqual(secondaryShoulderTransmogLocation) then		
+		if not showSecondaryShoulder and self.transmogLocation:IsEqual(secondaryShoulderTransmogLocation) then
 			self:SetActiveSlot(mainShoulderTransmogLocation);
 		elseif self.transmogLocation:IsEqual(mainShoulderTransmogLocation) then
 			self:UpdateItems();
 		end
-	end	
+	end
 end
 
 function WardrobeItemsCollectionMixin:OnPageChanged(userAction)
@@ -2380,11 +2383,9 @@ WardrobeItemsModelMixin = { };
 function WardrobeItemsModelMixin:OnLoad()
 	self:SetAutoDress(false);
 
-	local lightValues = { enabled=true, omni=false, dirX=-1, dirY=1, dirZ=-1, ambIntensity=1.05, ambR=1, ambG=1, ambB=1, dirIntensity=0, dirR=1, dirG=1, dirB=1 };
-	self:SetLight(lightValues.enabled, lightValues.omni,
-			lightValues.dirX, lightValues.dirY, lightValues.dirZ,
-			lightValues.ambIntensity, lightValues.ambR, lightValues.ambG, lightValues.ambB,
-			lightValues.dirIntensity, lightValues.dirR, lightValues.dirG, lightValues.dirB);
+	local lightValues = { omnidirectional = false, point = CreateVector3D(-1, 1, -1), ambientIntensity = 1.05, ambientColor = CreateColor(1, 1, 1), diffuseIntensity = 0, diffuseColor = CreateColor(1, 1, 1) };
+	local enabled = true;
+	self:SetLight(enabled, lightValues);
 end
 
 function WardrobeItemsModelMixin:OnModelLoaded()
@@ -2511,14 +2512,17 @@ function WardrobeSetsTransmogModelMixin:OnLoad()
 	self:SetAutoDress(false);
 	self:SetUnit("player");
 	self:FreezeAnimation(0, 0, 0);
-	local x, y, z = self:TransformCameraSpaceToModelSpace(0, 0, -0.25);
+	local x, y, z = self:TransformCameraSpaceToModelSpace(CreateVector3D(0, 0, -0.25)):GetXYZ();
 	self:SetPosition(x, y, z);
-	self:SetLight(true, false, -1, 1, -1, 1, 1, 1, 1, 0, 1, 1, 1);
+
+	local lightValues = { omnidirectional = false, point = CreateVector3D(-1, 1, -1), ambientIntensity = 1, ambientColor = CreateColor(1, 1, 1), diffuseIntensity = 0, diffuseColor = CreateColor(1, 1, 1) };
+	local enabled = true;
+	self:SetLight(enabled, lightValues);
 end
 
 function WardrobeSetsTransmogModelMixin:OnEvent()
 	self:RefreshCamera();
-	local x, y, z = self:TransformCameraSpaceToModelSpace(0, 0, -0.25);
+	local x, y, z = self:TransformCameraSpaceToModelSpace(CreateVector3D(0, 0, -0.25)):GetXYZ();
 	self:SetPosition(x, y, z);
 end
 
@@ -2737,7 +2741,7 @@ function WardrobeCollectionFrameWeaponDropDown_Init(self)
 	local isForOffHand = transmogLocation:IsOffHand();
 	for categoryID = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE do
 		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
-		if ( name and isWeapon ) then		
+		if ( name and isWeapon ) then
 			if ( (isForMainHand and canMainHand) or (isForOffHand and canOffHand) ) then
 				if ( not checkCategory or C_TransmogCollection.IsCategoryValidForItem(categoryID, equippedItemID) ) then
 					info.text = name;
@@ -2768,7 +2772,7 @@ WardrobeCollectionFrameSearchBoxProgressMixin = { };
 
 function WardrobeCollectionFrameSearchBoxProgressMixin:OnLoad()
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 15);
-	
+
 	self.ProgressBar:SetStatusBarColor(0, .6, 0, 1);
 	self.ProgressBar:SetMinMaxValues(0, 1000);
 	self.ProgressBar:SetValue(0);
@@ -2780,12 +2784,12 @@ function WardrobeCollectionFrameSearchBoxProgressMixin:OnHide()
 end
 
 function WardrobeCollectionFrameSearchBoxProgressMixin:OnUpdate(elapsed)
-	if self.updateProgressBar then		
+	if self.updateProgressBar then
 		local searchType = WardrobeCollectionFrame:GetSearchType();
 		if not C_TransmogCollection.IsSearchInProgress(searchType) then
 			self:Hide();
 		else
-			local _, maxValue = self.ProgressBar:GetMinMaxValues();	
+			local _, maxValue = self.ProgressBar:GetMinMaxValues();
 			local searchSize = C_TransmogCollection.SearchSize(searchType);
 			local searchProgress = C_TransmogCollection.SearchProgress(searchType);
 			self.ProgressBar:SetValue((searchProgress * maxValue) / searchSize);
@@ -3012,19 +3016,24 @@ function WardrobeTransmogFrameSpecDropDown_Initialize()
 	info.value = 0;
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 
-	info.text = TRANSMOG_CURRENT_SPECIALIZATION;
-	info.func = WardrobeTransmogFrameSpecDropDown_OnClick;
-	info.checked = currentSpecOnly;
-	info.value = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
+	-- We do not add a current specialization option if none is set.
 	local spec = GetSpecialization();
-	local _, name = spec and GetSpecializationInfo(spec);
-	info.text = format(PARENS_TEMPLATE, name or "");
-	info.leftPadding = 16;
-	info.notCheckable = true;
-	info.notClickable = true;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+	if  spec then
+		local _, name = GetSpecializationInfo(spec);
+		if name and name ~= "" then
+			info.text = TRANSMOG_CURRENT_SPECIALIZATION;
+			info.func = WardrobeTransmogFrameSpecDropDown_OnClick;
+			info.checked = currentSpecOnly;
+			info.value = 1;
+			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+
+			info.text = format(PARENS_TEMPLATE, name);
+			info.leftPadding = 16;
+			info.notCheckable = true;
+			info.notClickable = true;
+			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+		end
+	end
 end
 
 function WardrobeTransmogFrameSpecDropDown_OnClick(self)
@@ -3339,6 +3348,7 @@ function WardrobeSetsCollectionMixin:OnShow()
 	if ( not self.init ) then
 		self.init = true;
 		if ( defaultSetID ) then
+			self.ListContainer:UpdateDataProvider();
 			self:SelectSet(defaultSetID);
 		end
 	else
@@ -3358,7 +3368,7 @@ function WardrobeSetsCollectionMixin:OnShow()
 		if ( setID ) then
 			self:SelectSet(setID);
 			local baseSetID = C_TransmogSets.GetBaseSetID(setID);
-			self:ScrollToSet(baseSetID);
+			self:ScrollToSet(baseSetID, ScrollBoxConstants.AlignCenter);
 		end
 		self:ClearLatestSource();
 	end
@@ -3412,7 +3422,7 @@ function WardrobeSetsCollectionMixin:ClearLatestSource()
 end
 
 function WardrobeSetsCollectionMixin:Refresh()
-	self.ScrollFrame:Update();
+	self.ListContainer:UpdateDataProvider();
 	self:DisplaySet(self:GetSelectedSetID());
 end
 
@@ -3578,6 +3588,10 @@ function WardrobeSetsCollectionMixin:OpenVariantSetsDropDown()
 	end
 end
 
+function WardrobeSetsCollectionMixin:SelectBaseSetID(baseSetID)
+	self:SelectSet(self:GetDefaultSetIDForBaseSet(baseSetID));
+end
+
 function WardrobeSetsCollectionMixin:GetDefaultSetIDForBaseSet(baseSetID)
 	if ( SetsDataProvider:IsBaseSetNew(baseSetID) ) then
 		if ( C_TransmogSets.SetHasNewSources(baseSetID) ) then
@@ -3615,11 +3629,6 @@ function WardrobeSetsCollectionMixin:GetDefaultSetIDForBaseSet(baseSetID)
 	return highestCountSetID or baseSetID;
 end
 
-function WardrobeSetsCollectionMixin:SelectSetFromButton(setID)
-	CloseDropDownMenus();
-	self:SelectSet(self:GetDefaultSetIDForBaseSet(setID));
-end
-
 function WardrobeSetsCollectionMixin:SelectSet(setID)
 	self.selectedSetID = setID;
 
@@ -3629,7 +3638,9 @@ function WardrobeSetsCollectionMixin:SelectSet(setID)
 		self.selectedVariantSets[baseSetID] = setID;
 	end
 
-	self:Refresh();
+	self.ListContainer:SelectElementDataMatchingSetID(baseSetID);
+
+	self:DisplaySet(self:GetSelectedSetID());
 end
 
 function WardrobeSetsCollectionMixin:GetSelectedSetID()
@@ -3688,26 +3699,19 @@ function WardrobeSetsCollectionMixin:HandleKey(key)
 	local sets = SetsDataProvider:GetBaseSets();
 	index = Clamp(index, 1, #sets);
 	self:SelectSet(self:GetDefaultSetIDForBaseSet(sets[index].setID));
-	self:ScrollToSet(sets[index].setID);
+
+	self:ScrollToSet(sets[index].setID, ScrollBoxConstants.AlignNearest);
 end
 
-function WardrobeSetsCollectionMixin:ScrollToSet(setID)
-	local totalHeight = 0;
-	local scrollFrameHeight = self.ScrollFrame:GetHeight();
-	local buttonHeight = self.ScrollFrame.buttonHeight;
-	for i, set in ipairs(SetsDataProvider:GetBaseSets()) do
-		if ( set.setID == setID ) then
-			local offset = self.ScrollFrame.scrollBar:GetValue();
-			if ( totalHeight + buttonHeight > offset + scrollFrameHeight ) then
-				offset = totalHeight + buttonHeight - scrollFrameHeight;
-			elseif ( totalHeight < offset ) then
-				offset = totalHeight;
-			end
-			self.ScrollFrame.scrollBar:SetValue(offset, true);
-			break;
-		end
-		totalHeight = totalHeight + buttonHeight;
-	end
+function WardrobeSetsCollectionMixin:ScrollToSet(setID, alignment)
+	local scrollBox = self.ListContainer.ScrollBox;
+
+	local baseSetID = C_TransmogSets.GetBaseSetID(setID);
+	local function FindSet(elementData)
+		return elementData.setID == baseSetID;
+	end;
+
+	scrollBox:ScrollToElementDataByPredicate(FindSet, alignment, ScrollBoxConstants.NoScrollInterpolation);
 end
 
 do
@@ -3718,8 +3722,6 @@ do
 		UIDropDownMenu_Initialize(self, OpenVariantSetsDropDown, "MENU");
 	end
 end
-
-WardrobeSetsCollectionScrollFrameMixin = { };
 
 local function WardrobeSetsCollectionScrollFrame_FavoriteDropDownInit(self)
 	if ( not self.baseSetID ) then
@@ -3759,95 +3761,139 @@ local function WardrobeSetsCollectionScrollFrame_FavoriteDropDownInit(self)
 
 	UIDropDownMenu_AddButton(info, level);
 	info.disabled = nil;
-
-	info.text = CANCEL;
-	info.func = nil;
-	UIDropDownMenu_AddButton(info, level);
 end
 
-function WardrobeSetsCollectionScrollFrameMixin:OnLoad()
-	self.scrollBar.trackBG:Show();
-	self.scrollBar.trackBG:SetVertexColor(0, 0, 0, 0.75);
-	self.scrollBar.doNotHide = true;
-	self.update = self.Update;
-	HybridScrollFrame_CreateButtons(self, "WardrobeSetsScrollFrameButtonTemplate", 44, 0);
+WardrobeSetsScrollFrameButtonMixin = {};
+
+function WardrobeSetsScrollFrameButtonMixin:Init(elementData)
+	local displayData = elementData;
+	-- if the base set is hiddenUntilCollected and not collected, it's showing up because one of its variant sets is collected
+	-- in that case use any variant set to populate the info in the list
+	if elementData.hiddenUntilCollected and not elementData.collected then
+		local variantSets = C_TransmogSets.GetVariantSets(elementData.setID);
+		if variantSets then
+			-- variant sets are already filtered for visibility (won't get a hiddenUntilCollected one unless it's collected)
+			-- any set will do so just picking first one
+			displayData = variantSets[1];
+		end
+	end
+	self.Name:SetText(displayData.name);
+	local topSourcesCollected, topSourcesTotal = SetsDataProvider:GetSetSourceTopCounts(displayData.setID);
+	-- progress visuals use the top collected progress, so collected visuals should reflect the top completion status as well
+	local setCollected = displayData.collected or topSourcesCollected == topSourcesTotal;
+	local color = IN_PROGRESS_FONT_COLOR;
+	if ( setCollected ) then
+		color = NORMAL_FONT_COLOR;
+	elseif ( topSourcesCollected == 0 ) then
+		color = GRAY_FONT_COLOR;
+	end
+	self.Name:SetTextColor(color.r, color.g, color.b);
+	self.Label:SetText(displayData.label);
+	self.Icon:SetTexture(SetsDataProvider:GetIconForSet(displayData.setID));
+	self.Icon:SetDesaturation((topSourcesCollected == 0) and 1 or 0);
+	self.Favorite:SetShown(elementData.favoriteSetID);
+	self.New:SetShown(SetsDataProvider:IsBaseSetNew(elementData.setID));
+	self.setID = elementData.setID;
+
+	if ( topSourcesCollected == 0 or setCollected ) then
+		self.ProgressBar:Hide();
+	else
+		self.ProgressBar:Show();
+		self.ProgressBar:SetWidth(SET_PROGRESS_BAR_MAX_WIDTH * topSourcesCollected / topSourcesTotal);
+	end
+	self.IconCover:SetShown(not setCollected);
+
+	self:SetSelected(SelectionBehaviorMixin.IsElementDataIntrusiveSelected(elementData));
+end
+
+function WardrobeSetsScrollFrameButtonMixin:SetSelected(selected)
+	self.SelectedTexture:SetShown(selected);
+end
+
+function WardrobeSetsScrollFrameButtonMixin:OnClick(buttonName, down)
+	if ( buttonName == "LeftButton" ) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		g_selectionBehavior:Select(self);
+	elseif ( buttonName == "RightButton" ) then
+		local dropDown = self:GetParent():GetParent():GetParent().FavoriteDropDown;
+		dropDown.baseSetID = self.setID;
+		ToggleDropDownMenu(1, nil, dropDown, self, 0, 0);
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
+end
+
+WardrobeSetsCollectionContainerMixin = { };
+
+function WardrobeSetsCollectionContainerMixin:OnLoad()
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("WardrobeSetsScrollFrameButtonTemplate", function(button, elementData)
+		button:Init(elementData);
+	end);
+	view:SetPadding(0,0,44,0,0);
+
+	local panExtent = buttonHeight;
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	g_selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorFlags.Intrusive);
+	g_selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, function(o, elementData, selected)
+		local button = self.ScrollBox:FindFrame(elementData);
+		if button then
+			button:SetSelected(selected);
+
+			if selected then
+				local setCollectionFrame = self:GetParent();
+				setCollectionFrame:SelectBaseSetID(elementData.setID);
+			end
+		end
+	end, self);
+
 	UIDropDownMenu_Initialize(self.FavoriteDropDown, WardrobeSetsCollectionScrollFrame_FavoriteDropDownInit, "MENU");
 end
 
-function WardrobeSetsCollectionScrollFrameMixin:OnShow()
+function WardrobeSetsCollectionContainerMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_SETS_UPDATE_FAVORITE");
 end
 
-function WardrobeSetsCollectionScrollFrameMixin:OnHide()
+function WardrobeSetsCollectionContainerMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_SETS_UPDATE_FAVORITE");
 end
 
-function WardrobeSetsCollectionScrollFrameMixin:OnEvent(event, ...)
+function WardrobeSetsCollectionContainerMixin:OnEvent(event, ...)
 	if ( event == "TRANSMOG_SETS_UPDATE_FAVORITE" ) then
 		SetsDataProvider:RefreshFavorites();
-		self:Update();
+		self:UpdateDataProvider();
 	end
 end
 
-function WardrobeSetsCollectionScrollFrameMixin:Update()
-	local offset = HybridScrollFrame_GetOffset(self);
-	local buttons = self.buttons;
-	local baseSets = SetsDataProvider:GetBaseSets();
+function WardrobeSetsCollectionContainerMixin:ReinitializeButtonWithBaseSetID(baseSetID)
+	local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
+		local elementData = frame:GetElementData();
+		return elementData.setID == baseSetID;
+	end);
 
-	-- show the base set as selected
-	local selectedSetID = self:GetParent():GetSelectedSetID();
-	local selectedBaseSetID = selectedSetID and C_TransmogSets.GetBaseSetID(selectedSetID);
-
-	for i = 1, #buttons do
-		local button = buttons[i];
-		local setIndex = i + offset;
-		if ( setIndex <= #baseSets ) then
-			local baseSet = baseSets[setIndex];
-			local displaySet = baseSet;
-			-- if the base set is hiddenUntilCollected and not collected, it's showing up because one of its variant sets is collected
-			-- in that case use any variant set to populate the info in the list
-			if baseSet.hiddenUntilCollected and not baseSet.collected then
-				local variantSets = C_TransmogSets.GetVariantSets(baseSet.setID);
-				if variantSets then
-					-- variant sets are already filtered for visibility (won't get a hiddenUntilCollected one unless it's collected)
-					-- any set will do so just picking first one
-					displaySet = variantSets[1];
-				end
-			end
-			button:Show();
-			button.Name:SetText(displaySet.name);
-			local topSourcesCollected, topSourcesTotal = SetsDataProvider:GetSetSourceTopCounts(displaySet.setID);
-			local setCollected = displaySet.collected;
-			local color = IN_PROGRESS_FONT_COLOR;
-			if ( setCollected ) then
-				color = NORMAL_FONT_COLOR;
-			elseif ( topSourcesCollected == 0 ) then
-				color = GRAY_FONT_COLOR;
-			end
-			button.Name:SetTextColor(color.r, color.g, color.b);
-			button.Label:SetText(displaySet.label);
-			button.Icon:SetTexture(SetsDataProvider:GetIconForSet(displaySet.setID));
-			button.Icon:SetDesaturation((topSourcesCollected == 0) and 1 or 0);
-			button.SelectedTexture:SetShown(baseSet.setID == selectedBaseSetID);
-			button.Favorite:SetShown(baseSet.favoriteSetID);
-			button.New:SetShown(SetsDataProvider:IsBaseSetNew(baseSet.setID));
-			button.setID = baseSet.setID;
-
-			if ( topSourcesCollected == 0 or setCollected ) then
-				button.ProgressBar:Hide();
-			else
-				button.ProgressBar:Show();
-				button.ProgressBar:SetWidth(SET_PROGRESS_BAR_MAX_WIDTH * topSourcesCollected / topSourcesTotal);
-			end
-			button.IconCover:SetShown(not setCollected);
-		else
-			button:Hide();
-		end
+	if frame then
+		frame:Init(frame:GetElementData());
 	end
+end
 
-	local extraHeight = (self.largeButtonHeight and self.largeButtonHeight - BASE_SET_BUTTON_HEIGHT) or 0;
-	local totalHeight = #baseSets * BASE_SET_BUTTON_HEIGHT + extraHeight;
-	HybridScrollFrame_Update(self, totalHeight, self:GetHeight());
+function WardrobeSetsCollectionContainerMixin:UpdateDataProvider()
+	local dataProvider = CreateDataProvider(SetsDataProvider:GetBaseSets());
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
+	self:UpdateListSelection();
+end
+
+function WardrobeSetsCollectionContainerMixin:UpdateListSelection()
+	local selectedSetID = self:GetParent():GetSelectedSetID();
+	if selectedSetID then
+		self:SelectElementDataMatchingSetID(C_TransmogSets.GetBaseSetID(selectedSetID));
+	end
+end
+
+function WardrobeSetsCollectionContainerMixin:SelectElementDataMatchingSetID(setID)
+	g_selectionBehavior:SelectElementDataByPredicate(function(elementData)
+		return elementData.setID == setID;
+	end);
 end
 
 WardrobeSetsDetailsModelMixin = { };
@@ -3856,7 +3902,10 @@ function WardrobeSetsDetailsModelMixin:OnLoad()
 	self:SetAutoDress(false);
 	self:SetUnit("player");
 	self:UpdatePanAndZoomModelType();
-	self:SetLight(true, false, -1, 0, 0, .7, .7, .7, .7, .6, 1, 1, 1);
+
+	local lightValues = { omnidirectional = false, point = CreateVector3D(-1, 0, 0), ambientIntensity = .7, ambientColor = CreateColor(.7, .7, .7), diffuseIntensity = .6, diffuseColor = CreateColor(1, 1, 1) };
+	local enabled = true;
+	self:SetLight(enabled, lightValues);
 end
 
 function WardrobeSetsDetailsModelMixin:UpdatePanAndZoomModelType()
@@ -3954,12 +4003,15 @@ function WardrobeSetsDetailsItemMixin:OnEnter()
 	);
 
 	if ( self.New:IsShown() ) then
+		self.New:Hide();
+
 		local transmogSlot = C_Transmog.GetSlotForInventoryType(self.invType);
 		local setID = WardrobeCollectionFrame.SetsCollectionFrame:GetSelectedSetID();
 		C_TransmogSets.ClearSetNewSourcesForSlot(setID, transmogSlot);
 		local baseSetID = C_TransmogSets.GetBaseSetID(setID);
 		SetsDataProvider:ResetBaseSetNewStatus(baseSetID);
-		WardrobeCollectionFrame.SetsCollectionFrame:Refresh();
+
+		WardrobeCollectionFrame.SetsCollectionFrame.ListContainer:ReinitializeButtonWithBaseSetID(baseSetID);
 	end
 end
 

@@ -125,3 +125,12 @@ end
 function AuctionHouseItemBuyFrameMixin:HasAuctionSelected()
 	return self.ItemList:GetSelectedEntry() ~= nil;
 end
+
+AuctionHouseItemBuyItemDisplayMixin = CreateFromMixins(AuctionHouseItemDisplayMixin);
+
+function AuctionHouseItemBuyItemDisplayMixin:OnLoad() 
+	AuctionHouseItemDisplayMixin.OnLoad(self);
+
+	self.FavoriteButton:SetPoint("TOPRIGHT", -10, -11);
+	self.Name:SetPoint("RIGHT", -35, 1);
+end

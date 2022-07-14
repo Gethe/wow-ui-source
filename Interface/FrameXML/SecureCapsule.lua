@@ -112,6 +112,7 @@ retain("SetPortraitTexture");
 retain("getmetatable");
 retain("BACKPACK_CONTAINER");
 retain("NUM_BAG_SLOTS");
+retain("NUM_TOTAL_EQUIPPED_BAG_SLOTS");
 retain("RAID_CLASS_COLORS");
 retain("CLASS_ICON_TCOORDS");
 retain("C_Timer");

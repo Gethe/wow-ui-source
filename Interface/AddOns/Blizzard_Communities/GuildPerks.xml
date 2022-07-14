@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="GuildPerks.lua"/>
-	<Button name="CommunitiesGuildPerksButtonTemplate" virtual="true">
+	<Button name="CommunitiesGuildPerksButtonTemplate" mixin="CommunitiesGuildPerksButtonMixin" virtual="true">
 		<Size x="270" y="44"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -36,11 +36,7 @@
 				<Texture parentKey="Icon">
 					<Size x="39" y="39"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
@@ -134,22 +130,18 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="$parentContainer" parentKey="Container" inherits="MinimalHybridScrollFrameTemplate">
-				<Size x="260" y="326"/>
-				<KeyValues>
-					<KeyValue key="buttonWidth" value="260" type="number"/>
-					<KeyValue key="width" value="260" type="number"/>
-					<KeyValue key="height" value="326" type="number"/>
-					<KeyValue key="yOffset" value="-4" type="number"/>
-					<KeyValue key="buttonWidthNoScroll" value="270" type="number"/>
-					<KeyValue key="widthNoScroll" value="304" type="number"/>
-					<KeyValue key="heightNoScroll" value="310" type="number"/>
-					<KeyValue key="yOffsetNoScroll" value="-8" type="number"/>
-				</KeyValues>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList"/>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="-4"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-4" y="2"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-4" y="-5"/>
 				</Anchors>
-			</ScrollFrame>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</EventFrame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CommunitiesGuildPerksFrame_OnLoad"/>

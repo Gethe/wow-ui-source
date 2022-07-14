@@ -1,3 +1,15 @@
+local tRemove = table.remove;
+local tInsert = table.insert;
+local tWipe = table.wipe;
+
+TableUtil = {};
+
+TableUtil.Constants =
+{
+	AssociativePriorityTable = true,
+	ArraylikePriorityTable = false,
+};
+
 function ipairs_reverse(table)
 	local function Enumerator(table, index)
 		index = index - 1;
@@ -31,7 +43,7 @@ function tDeleteItem(tbl, item)
 	local index = size;
 	while index > 0 do
 		if item == tbl[index] then
-			tremove(tbl, index);
+			tRemove(tbl, index);
 		end
 		index = index - 1;
 	end
@@ -121,12 +133,20 @@ function tAppendAll(table, addedArray)
 	end
 end
 
+function tInsertUnique(tbl, item)
+	if not tContains(tbl, item) then
+		table.insert(tbl, item);
+		return #tbl;
+	end
+	return nil;
+end
+
 function tUnorderedRemove(tbl, index)
 	if index ~= #tbl then
 		tbl[index] = tbl[#tbl];
 	end
 
-	table.remove(tbl);
+	tRemove(tbl);
 end
 
 function CopyTable(settings, shallow)
@@ -145,6 +165,13 @@ function MergeTable(destination, source)
 	for k, v in pairs(source) do
 		destination[k] = v;
 	end
+end
+
+-- Useful if there are external references to a table but we want to set
+-- that table's key-value pairs to be exactly the same as another table's key-value pairs.
+function SetTablePairsToTable(destination, source)
+	tWipe(destination);
+	MergeTable(destination, source);
 end
 
 function Accumulate(tbl)
@@ -183,6 +210,49 @@ function FindInTableIf(tbl, pred)
 	return nil;
 end
 
+function FindValueInTableIf(tbl, pred)
+	local _, value = FindInTableIf(tbl, pred);
+	return value;
+end
+
+local function FindSortedIndexImplementation(tbl, searchComparison, startIndex, rangeStart, rangeEnd)
+	local comparisonResult = searchComparison(tbl[startIndex]);
+	if comparisonResult == 0 then
+		return startIndex;
+	end
+
+	if comparisonResult > 0 then
+		if startIndex >= rangeEnd then
+			return startIndex + 1;
+		end
+
+		rangeStart = startIndex + 1;
+		return FindSortedIndexImplementation(tbl, searchComparison, startIndex + math.ceil((rangeEnd - startIndex) / 2), rangeStart, rangeEnd);
+	end
+
+	-- comparisonResult < 0
+	if startIndex <= rangeStart then
+		return startIndex;
+	end
+
+	rangeEnd = startIndex - 1;
+	return FindSortedIndexImplementation(tbl, searchComparison, math.floor(startIndex / 2), rangeStart, rangeEnd);
+end
+
+function FindSortedIndex(tbl, searchComparison)
+	local numTable = #tbl;
+	local startingIndex = math.ceil(numTable / 2);
+	if startingIndex == 0 then
+		return 1;
+	end
+
+	return FindSortedIndexImplementation(tbl, searchComparison, startingIndex, 1, numTable);
+end
+
+function TableIsEmpty(tbl)
+	return next(tbl) == nil;
+end
+
 function TableHasAnyEntries(tbl)
 	return next(tbl) ~= nil;
 end
@@ -207,7 +277,8 @@ end
 
 function GetOrCreateTableEntry(table, key, defaultValue)
 	local currentValue = table[key];
-	if currentValue == nil then
+	local isNewValue = (currentValue == nil);
+	if isNewValue then
 		if defaultValue ~= nil then
 			currentValue = defaultValue;
 		else
@@ -216,34 +287,219 @@ function GetOrCreateTableEntry(table, key, defaultValue)
 		table[key] = currentValue;
 	end
 
-	return currentValue;
+	return currentValue, isNewValue;
 end
 
 function GetOrCreateTableEntryByCallback(table, key, callback)
 	local currentValue = table[key];
-	if currentValue == nil then
+	local isNewValue = (currentValue == nil);
+	if isNewValue then
 		currentValue = callback();
 		table[key] = currentValue;
 	end
 
-	return currentValue;
+	return currentValue, isNewValue;
 end
 
 function GetRandomArrayEntry(array)
 	return array[math.random(1, #array)];
 end
 
+function GetRandomTableValue(tbl)
+	local value;
+	local n = 0;
+	for k, v in pairs(tbl) do
+		n = n + 1;
+		local r = math.random();
+		if r <= (1 / n) then
+			value = v;
+		end
+	end
+	return value;
+end
+
 function GetKeysArray(tbl)
 	local keysArray = {};
 	for key in pairs(tbl) do
-		table.insert(keysArray, key);
+		tInsert(keysArray, key);
 	end
 
 	return keysArray;
+end
+
+function GetValuesArray(tbl)
+	local valuesArray = {};
+	for key, value in pairs(tbl) do
+		tInsert(valuesArray, value);
+	end
+
+	return valuesArray;
 end
 
 function SwapTableEntries(lhsTable, rhsTable, key)
 	local lhsValue = lhsTable[key];
 	lhsTable[key] = rhsTable[key];
 	rhsTable[key] = lhsValue;
+end
+
+function TableUtil.OperateOnKeys(tbl, operation)
+	for key, value in pairs(tbl) do
+		operation(key);
+	end
+end
+
+--[[
+This utility creates and returns a table of elements that are sorted by value "priority".
+
+Arguments:
+comparator - comparator(A, B) returns whether A has higher priority than B
+isAssociative - whether the table should be associative (true) or array-like (false). Only values have priorities for associative tables, not keys.
+
+Return usage:
+t[k]/t:Get(k) - returns the value stored with key/index k
+t[k] = v (Associative only) - stores the value v at key k, sorting accordingly
+t:Insert(v) (Array-like only) - inserts the value v, sorting accordingly
+t:Remove(k) - removes the element at key/index k
+t:Iterate(cb) - calls function cb on each key/index value pair in sorted priority order. !!WARNING!! This must be used instead of pairs(t)/ipairs(t)
+t:GetTop() - returns the highest priority element
+t:Pop() - returns and removes the highest priority element
+t:GetBottom() - returns the lowest priority element
+t:Size() - returns the number of stored elements. !!WARNING!! This must be used instead of #t
+t:Clear() - removes all elements
+--]]
+function TableUtil.CreatePriorityTable(comparator, isAssociative)
+	local sortedArray = {};
+
+	local ShiftPositionMap;
+	local keyToPosMap;
+	if isAssociative then
+		keyToPosMap = {};
+
+		ShiftPositionMap = function(position, shiftUp)
+			local mod = shiftUp and 1 or -1;
+			for k, p in pairs(keyToPosMap) do
+				if p >= position then
+					keyToPosMap[k] = p + mod;
+				end
+			end
+		end
+	end
+
+	local function SortedInsert(k, v)
+		if isAssociative then
+			local prevPos = keyToPosMap[k];
+			if prevPos then
+				tRemove(sortedArray, prevPos);
+				local shiftUp = false;
+				ShiftPositionMap(prevPos, shiftUp);
+			end
+		end
+
+		local top = (#sortedArray > 0) and (#sortedArray + 1) or 1;
+		local bottom = 1;
+		while top ~= bottom do
+			local mid = math.floor((top - bottom) / 2) + bottom;
+			if not comparator(v, sortedArray[mid]) then
+				bottom = mid + 1;
+			else
+				top = mid;
+			end
+		end
+		local idx = bottom;
+		tInsert(sortedArray, idx, v);
+
+		if isAssociative then
+			local shiftUp = true;
+			ShiftPositionMap(idx, shiftUp);
+			keyToPosMap[k] = idx;
+		end
+	end
+
+	local t = {};
+
+	function t:Get(k)
+		local key = isAssociative and keyToPosMap[k] or k;
+		return sortedArray[key];
+	end
+
+	if not isAssociative then
+		function t:Insert(v)
+			SortedInsert(nil, v)
+		end
+	end
+
+	function t:Remove(k)
+		local key = isAssociative and keyToPosMap[k] or k;
+		tRemove(sortedArray, key);
+		if isAssociative then
+			keyToPosMap[k] = nil;
+			local shiftUp = false;
+			ShiftPositionMap(key, shiftUp);
+		end
+	end
+
+	function t:GetTop()
+		return #sortedArray > 0 and sortedArray[1];
+	end
+
+	function t:GetBottom()
+		return #sortedArray > 0 and sortedArray[#sortedArray];
+	end
+
+	function t:Pop()
+		if t:Size() == 0 then
+			return nil;
+		end
+
+		local top = t:GetTop();
+		local removalKey = isAssociative and tInvert(keyToPosMap)[1] or 1;
+		t:Remove(removalKey);
+		return top;
+	end
+
+	function t:Iterate(callback)
+		local posToKeyMap = isAssociative and tInvert(keyToPosMap) or nil;
+		for pos, v in ipairs(sortedArray) do
+			local key = isAssociative and posToKeyMap[pos] or pos;
+			local done = callback(key, v);
+			if done then
+				return;
+			end
+		end
+	end
+
+	function t:Size()
+		return #sortedArray;
+	end
+
+	function t:Clear()
+		sortedArray = {};
+		if isAssociative then
+			keyToPosMap = {};
+		end
+	end
+
+	local mt =
+	{
+		__index = function(t, k)
+			return t:Get(k);
+		end,
+	};
+	if isAssociative then
+		mt.__newindex = function(t, k, v)
+			if v ~= nil then
+				SortedInsert(k, v);
+			else
+				t:Remove(k);
+			end
+		end
+	else
+		mt.__newindex = function(t, k, v)
+			error("Attempted to assign a value to an array-like priority queue index. Use Insert()/Remove() instead.")
+		end
+	end
+
+	setmetatable(t, mt);
+
+	return t;
 end

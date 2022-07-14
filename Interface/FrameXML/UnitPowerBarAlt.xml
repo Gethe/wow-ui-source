@@ -153,9 +153,7 @@
 				</Anchors>
 			</Frame>
 			<StatusBar name="$parentStatusFrame" parentKey="statusFrame">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
@@ -196,18 +194,37 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="PlayerPowerBarAlt" parent="UIParent" inherits="UnitPowerBarAltTemplate">
+	<Frame name="PlayerPowerBarAlt" parent="UIParent" inherits="UnitPowerBarAltTemplate, UIParentBottomManagedFrameTemplate">
 		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="TOP" relativePoint="TOP" x="0" y="-30"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="6" type="number"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad>
 				self.isPlayerBar = true;
 				UnitPowerBarAlt_Initialize(self, "player", 1);
 			</OnLoad>
 			<OnShow>
-				UIParent_ManageFramePositions();
+				local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
+				if(barInfo and barInfo.anchorTop) then
+					self:SetParent(UIParent); 
+					self:ClearAllPoints(); 
+					self:SetPoint("TOP", 0, -30);
+					return; 
+				end
+				UIParentManagedFrameMixin.OnShow(self);
 			</OnShow>
 			<OnHide>
-				UIParent_ManageFramePositions();
+				if(barInfo and barInfo.anchorTop) then
+					self:SetParent(UIParent);
+					self:ClearAllPoints();
+					self:SetPoint("TOP", 0, -30);
+					return;
+				end
+				UIParentManagedFrameMixin.OnHide(self);
 			</OnHide>
 		</Scripts>
 	</Frame>

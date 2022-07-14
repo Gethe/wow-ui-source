@@ -118,33 +118,19 @@
 			<ScrollFrame name="GuildRewardsContainer" inherits="HybridScrollFrameTemplate" hidden="false">
 				<Size x="302" y="306"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="4" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="4" y="-4"/>
 				</Anchors>
 				<Frames>
 					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="-12"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="10"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="10"/>
 						</Anchors>
 					</Slider>
 				</Frames>
 			</ScrollFrame>
 			<Frame name="GuildRewardsDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Scripts>
 					<OnLoad function="GuildRewardsDropDown_OnLoad"/>
 				</Scripts>

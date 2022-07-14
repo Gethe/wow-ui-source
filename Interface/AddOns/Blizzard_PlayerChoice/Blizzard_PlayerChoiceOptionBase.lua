@@ -248,7 +248,7 @@ function PlayerChoiceBaseOptionTextTemplateMixin:SetUseHTML(useHTML)
 end
 
 function PlayerChoiceBaseOptionTextTemplateMixin:ClearText()
-	self.textObject:SetText(nil);
+	self.textObject:SetText("");
 	self.textObject:SetHeight(0);
 	self:SetHeight(10);
 end
@@ -262,15 +262,27 @@ function PlayerChoiceBaseOptionTextTemplateMixin:SetText(...)
 end
 
 function PlayerChoiceBaseOptionTextTemplateMixin:SetFontObject(...)
-	self.textObject:SetFontObject(...);
+	if self.useHTML then
+		self.textObject:SetFontObject("P", ...);
+	else
+		self.textObject:SetFontObject(...);
+	end
 end
 
 function PlayerChoiceBaseOptionTextTemplateMixin:SetTextColor(...)
-	self.textObject:SetTextColor(...);
+	if self.useHTML then
+		self.textObject:SetTextColor("P", ...);
+	else
+		self.textObject:SetTextColor(...);
+	end
 end
 
 function PlayerChoiceBaseOptionTextTemplateMixin:SetJustifyH(...)
-	self.textObject:SetJustifyH(...);
+	if self.useHTML then
+		self.textObject:SetJustifyH("P", ...);
+	else
+		self.textObject:SetJustifyH(...);
+	end
 end
 
 function PlayerChoiceBaseOptionTextTemplateMixin:SetStringHeight(height)
@@ -509,7 +521,7 @@ end
 function PlayerChoiceBaseOptionItemRewardMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:SetItemByID(self.itemButton.item);
-		
+
 	if IsModifiedClick("DRESSUP") and self.dressupReward then
 		ShowInspectCursor();
 	else
@@ -538,7 +550,7 @@ function PlayerChoiceBaseOptionCurrencyContainerRewardMixin:OnLoad()
 end
 
 function PlayerChoiceBaseOptionCurrencyContainerRewardMixin:Setup(currencyRewardInfo, fontColor)
-	local currencyContainerInfo = C_CurrencyInfo.GetCurrencyContainerInfo(currencyRewardInfo.currencyId, currencyRewardInfo.quantity); 
+	local currencyContainerInfo = C_CurrencyInfo.GetCurrencyContainerInfo(currencyRewardInfo.currencyId, currencyRewardInfo.quantity);
 	SetItemButtonTexture(self.itemButton, currencyContainerInfo.icon);
 	SetItemButtonQuality(self.itemButton, currencyContainerInfo.quality);
 	SetItemButtonCount(self.itemButton, currencyContainerInfo.displayAmount);

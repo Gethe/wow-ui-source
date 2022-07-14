@@ -686,9 +686,7 @@
 	</Frame>
 
 	<Button name="GarrisonMissionPageCloseButtonTemplate" inherits="UIPanelCloseButtonNoScripts" virtual="true">
-		<Size>
-			<AbsDimension x="40" y="40"/>
-		</Size>
+		<Size x="40" y="40"/>
 		<Scripts>
 			<OnClick>
 				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_MISSION_CLOSE);

@@ -266,19 +266,14 @@ function AlertContainerMixin:OnLoad()
 		firstFrameRendered = false;
 	};
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("VARIABLES_LOADED");
-	self:RegisterEvent("FIRST_FRAME_RENDERED");
-end
-
-function AlertContainerMixin:OnEvent(event, ...)
-	if event == "PLAYER_ENTERING_WORLD" then
-		self:SetPlayerEnteredWorld();
-	elseif event == "VARIABLES_LOADED" then
-		self:SetVariablesLoaded();
-	elseif event == "FIRST_FRAME_RENDERED" then
-		self:SetFirstFrameRendered();
+	local function Callback()
+		self:SetEnabledFlag("playerEnteredWorld", true);
+		self:SetEnabledFlag("variablesLoaded", true);
+		-- The first frame immediately after a load can take a long time and miss alert frames, so we enable this flag the frame after
+		C_Timer.After(0, GenerateClosure(self.SetEnabledFlag, self, "firstFrameRendered", true));
 	end
+
+	EventUtil.ContinueAfterAllEvents(Callback, "VARIABLES_LOADED", "PLAYER_ENTERING_WORLD", "FIRST_FRAME_RENDERED");
 end
 
 function AlertContainerMixin:SetEnabledFlag(flagName, enabled)
@@ -291,22 +286,6 @@ function AlertContainerMixin:SetEnabledFlag(flagName, enabled)
 			alertFrameSubSystem:CheckQueuedAlerts();
 		end
 	end
-end
-
-function AlertContainerMixin:SetPlayerEnteredWorld()
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD");
-	self:SetEnabledFlag("playerEnteredWorld", true);
-end
-
-function AlertContainerMixin:SetVariablesLoaded()
-	self:UnregisterEvent("VARIABLES_LOADED");
-	self:SetEnabledFlag("variablesLoaded", true);
-end
-
-function AlertContainerMixin:SetFirstFrameRendered()
-	self:UnregisterEvent("FIRST_FRAME_RENDERED");
-	-- The first frame immediately after a load can take a long time and miss alert frames, so we enable this flag the frame after
-	C_Timer.After(0, GenerateClosure(self.SetEnabledFlag, self, "firstFrameRendered", true));
 end
 
 function AlertContainerMixin:SetAlertsEnabled(enabled, reason)
@@ -473,8 +452,6 @@ function CreateContinuableContainerForLFGRewards()
 end
 
 function AlertFrameMixin:OnEvent(event, ...)
-	AlertContainerMixin.OnEvent(self, event, ...);
-
 	if ( event == "ACHIEVEMENT_EARNED" ) then
 		if (Kiosk.IsEnabled()) then
 			return;

@@ -91,9 +91,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateHealth(self);		--This may signify that the unit is a new pet who replaced an old pet, and needs a health update
 				CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
 			elseif ( event == "UNIT_AURA" ) then
-				local isFullUpdate = arg2;
-				local updateAuraInfos = arg3;
-				CompactUnitFrame_UpdateAuras(self, isFullUpdate, updateAuraInfos);
+				local unitAuraUpdateInfo = arg2;
+				CompactUnitFrame_UpdateAuras(self, unitAuraUpdateInfo);
 			elseif ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
 				CompactUnitFrame_UpdateAggroHighlight(self);
 				CompactUnitFrame_UpdateAggroFlash(self);
@@ -141,7 +140,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		end
 
 		if ( unitMatches or arg1 == "player" ) then
-			if ( event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" ) then
+			if ( event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "PLAYER_GAINS_VEHICLE_DATA" or event == "PLAYER_LOSES_VEHICLE_DATA" ) then
 				CompactUnitFrame_UpdateAll(self);
 			end
 		end
@@ -153,6 +152,11 @@ function CompactUnitFrame_OnUpdate(self, elapsed)
 	CompactUnitFrame_UpdateInRange(self);
 	CompactUnitFrame_UpdateDistance(self);
 	CompactUnitFrame_CheckReadyCheckDecay(self, elapsed);
+
+	if self.aurasDirty then
+		CompactUnitFrame_UpdateAuras(self);
+		self.aurasDirty = false;
+	end
 end
 
 --Externally accessed functions
@@ -174,11 +178,11 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		end
 		if ( unit and not frame.optionTable.hideCastbar ) then
 			if ( frame.castBar ) then
-				CastingBarFrame_SetUnit(frame.castBar, unit, false, true);
+				frame.castBar:SetUnit(unit, false, true);
 			end
 		else
 			if ( frame.castBar ) then
-				CastingBarFrame_SetUnit(frame.castBar, nil, nil, nil);
+				frame.castBar:SetUnit(nil, nil, nil);
 			end
 		end
 		CompactUnitFrame_UpdateAll(frame);
@@ -217,7 +221,7 @@ end
 
 function CompactUnitFrame_SetOptionTable(frame, optionTable)
 	frame.optionTable = optionTable;
-	--CompactUnitFrame_UpdateAll(frame);
+	frame.aurasDirty = true;
 end
 
 function CompactUnitFrame_RegisterEvents(frame)
@@ -258,6 +262,8 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_PHASE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_CTR_OPTIONS", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_FLAGS", unit, displayedUnit);
+	frame:RegisterUnitEvent("PLAYER_GAINS_VEHICLE_DATA", unit, displayedUnit);
+	frame:RegisterUnitEvent("PLAYER_LOSES_VEHICLE_DATA", unit, displayedUnit);
 end
 
 function CompactUnitFrame_UnregisterEvents(frame)
@@ -282,14 +288,17 @@ end
 
 function CompactUnitFrame_SetMaxBuffs(frame, numBuffs)
 	frame.maxBuffs = numBuffs;
+	frame.aurasDirty = true;
 end
 
 function CompactUnitFrame_SetMaxDebuffs(frame, numDebuffs)
 	frame.maxDebuffs = numDebuffs;
+	frame.aurasDirty = true;
 end
 
 function CompactUnitFrame_SetMaxDispelDebuffs(frame, numDispelDebuffs)
 	frame.maxDispelDebuffs = numDispelDebuffs;
+	frame.aurasDirty = true;
 end
 
 function CompactUnitFrame_SetUpdateAllEvent(frame, updateAllEvent, updateAllFilter)
@@ -561,10 +570,10 @@ function CompactUnitFrame_UpdateWidgetsOnlyMode(frame)
 
 	if frame.castBar and not frame.optionTable.hideCastbar then
 		if inWidgetsOnlyMode then
-			CastingBarFrame_SetUnit(frame.castBar, nil, nil, nil);
+			frame.castBar:SetUnit(nil, nil, nil);
 			frame.hideCastbar = true;
 		else
-			CastingBarFrame_SetUnit(frame.castBar, frame.unit, false, true);
+			frame.castBar:SetUnit(frame.unit, false, true);
 		end
 	end
 
@@ -1052,8 +1061,8 @@ end
 function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 	if ( frame.centerStatusIcon ) then
 		if ( frame.optionTable.displayInOtherGroup and UnitInOtherParty(frame.unit) ) then
-			frame.centerStatusIcon.texture:SetTexture("Interface\\LFGFrame\\LFG-Eye");
-			frame.centerStatusIcon.texture:SetTexCoord(0.125, 0.25, 0.25, 0.5);
+			frame.centerStatusIcon.texture:SetAtlas("groupfinder-eye-single", true);
+			frame.centerStatusIcon.texture:SetTexCoord(0, 1, 0, 1);
 			frame.centerStatusIcon.border:SetTexture("Interface\\Common\\RingBorder");
 			frame.centerStatusIcon.border:Show();
 			frame.centerStatusIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
@@ -1141,242 +1150,182 @@ end
 
 --Other internal functions
 do
-	local function SetDebuffsHelper(debuffFrames, frameNum, maxDebuffs, filter, isBossAura, isBossBuff, auras)
-		if auras then
-			for i = 1,#auras do
-				local aura = auras[i];
-				if frameNum > maxDebuffs then
-					break;
+	local function CompactUnitFrame_ParseAllAuras(frame, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs)
+		if frame.debuffs == nil then
+			frame.debuffs = TableUtil.CreatePriorityTable(AuraUtil.UnitFrameDebuffComparator, TableUtil.Constants.AssociativePriorityTable);
+			frame.buffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+			frame.dispels = {};
+			for type, _ in pairs(AuraUtil.DispellableDebuffTypes) do
+				frame.dispels[type] = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+			end
+		else
+			frame.debuffs:Clear();
+			frame.buffs:Clear();
+			for type, _ in pairs(AuraUtil.DispellableDebuffTypes) do
+				frame.dispels[type]:Clear();
+			end
+		end
+
+		local batchCount = nil;
+		local usePackedAura = true;
+		local function HandleAura(aura)
+			local type = AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
+
+			if type == AuraUtil.AuraUpdateChangedType.Debuff then
+				frame.debuffs[aura.auraInstanceID] = aura;
+			elseif type == AuraUtil.AuraUpdateChangedType.Buff then
+				frame.buffs[aura.auraInstanceID] = aura;
+			elseif type == AuraUtil.AuraUpdateChangedType.Dispel then
+				frame.dispels[aura.dispelName][aura.auraInstanceID] = aura;
+			end
+		end
+		AuraUtil.ForEachAura(frame.displayedUnit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful), batchCount, HandleAura, usePackedAura);
+		AuraUtil.ForEachAura(frame.displayedUnit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Helpful), batchCount, HandleAura, usePackedAura);
+		AuraUtil.ForEachAura(frame.displayedUnit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful, AuraUtil.AuraFilters.Raid), batchCount, HandleAura, usePackedAura);
+	end
+
+	local function CompactUnitFrame_UpdateAurasInternal(frame, unitAuraUpdateInfo)
+		local displayOnlyDispellableDebuffs = frame.optionTable.displayOnlyDispellableDebuffs;
+		local ignoreBuffs = not frame.buffFrames or not frame.optionTable.displayBuffs or frame.maxBuffs == 0;
+		local ignoreDebuffs = not frame.debuffFrames or not frame.optionTable.displayDebuffs or frame.maxDebuffs == 0;
+		local ignoreDispelDebuffs = not frame.dispelDebuffFrames or not frame.optionTable.displayDispelDebuffs or frame.maxDispelDebuffs == 0;
+
+		local debuffsChanged = false;
+		local buffsChanged = false;
+		local dispelsChanged = false;
+
+		if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate or frame.debuffs == nil then
+			CompactUnitFrame_ParseAllAuras(frame, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
+			debuffsChanged = true;
+			buffsChanged = true;
+			dispelsChanged = true;
+		else
+			if unitAuraUpdateInfo.addedAuras ~= nil then
+				for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
+					local type = AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
+					if type == AuraUtil.AuraUpdateChangedType.Debuff then
+						frame.debuffs[aura.auraInstanceID] = aura;
+						debuffsChanged = true;
+					elseif type == AuraUtil.AuraUpdateChangedType.Buff then
+						frame.buffs[aura.auraInstanceID] = aura;
+						buffsChanged = true;
+					elseif type == AuraUtil.AuraUpdateChangedType.Dispel then
+						frame.dispels[aura.dispelName][aura.auraInstanceID] = aura;
+						dispelsChanged = true;
+					end
 				end
-				local debuffFrame = debuffFrames[frameNum];
-				local index, name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellId = aura[1], aura[2], aura[3], aura[4], aura[5], aura[6], aura[7], aura[8], aura[9], aura[10], aura[11];
-				local unit = nil;
-				CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBossAura, isBossBuff, name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellId);
+			end
+
+			if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
+				for _, auraInstanceID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
+					if frame.debuffs[auraInstanceID] ~= nil then
+						local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
+						local oldDebuffType = frame.debuffs[auraInstanceID].debuffType;
+						if newAura ~= nil then
+							newAura.debuffType = oldDebuffType;
+						end
+						frame.debuffs[auraInstanceID] = newAura;
+						debuffsChanged = true;
+					elseif frame.buffs[auraInstanceID] ~= nil then
+						local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
+						if newAura ~= nil then
+							newAura.isBuff = true;
+						end
+						frame.buffs[auraInstanceID] = newAura;
+						buffsChanged = true;
+					else
+						for _, tbl in pairs(frame.dispels) do
+							if tbl[auraInstanceID] ~= nil then
+								tbl[auraInstanceID] = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
+								dispelsChanged = true;
+								break;
+							end
+						end
+					end
+				end
+			end
+
+			if unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil then
+				for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+					if frame.debuffs[auraInstanceID] ~= nil then
+						frame.debuffs[auraInstanceID] = nil;
+						debuffsChanged = true;
+					elseif frame.buffs[auraInstanceID] ~= nil then
+						frame.buffs[auraInstanceID] = nil;
+						buffsChanged = true;
+					else
+						for _, tbl in pairs(frame.dispels) do
+							if tbl[auraInstanceID] ~= nil then
+								tbl[auraInstanceID] = nil;
+								dispelsChanged = true;
+								break;
+							end
+						end
+					end
+				end
+			end
+		end
+
+		if debuffsChanged then
+			local frameNum = 1;
+			local maxDebuffs = frame.maxDebuffs;
+			frame.debuffs:Iterate(function(auraInstanceID, aura)
+				if frameNum > maxDebuffs then
+					return true;
+				end
+				local debuffFrame = frame.debuffFrames[frameNum];
+				CompactUnitFrame_UtilSetDebuff(debuffFrame, aura);
 				frameNum = frameNum + 1;
 
-				if isBossAura then
-					--Boss auras are about twice as big as normal debuffs, so we may need to display fewer buffs
+				if aura.isBossAura then
+					-- Boss auras are about twice as big as normal debuffs, so we may need to display fewer buffs
 					local bossDebuffScale = (debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE)/debuffFrame.baseSize;
 					maxDebuffs = maxDebuffs - (bossDebuffScale - 1);
 				end
-			end
-		end
-		return frameNum, maxDebuffs;
-	end
 
-	local function NumElements(arr)
-		return arr and #arr or 0;
-	end
-	
-	local dispellableDebuffTypes = { Magic = true, Curse = true, Disease = true, Poison = true};
-
-	local function CompactUnitFrame_CouldDisplayAura(auraInfo, ...)
-		local displayOnlyDispellableDebuffs = ...;
-
-		if auraInfo.isNameplateOnly then
-			return false;
-		end
-
-		if auraInfo.isBossAura then
-			return true;
-		end
-
-		if auraInfo.isHarmful and CompactUnitFrame_Util_IsPriorityDebuff(auraInfo.spellId) then
-			return true;
-		end
-
-		if auraInfo.isHarmful and (not displayOnlyDispellableDebuffs) and CompactUnitFrame_Util_ShouldDisplayDebuff(auraInfo.sourceUnit, auraInfo.spellId) then
-			return true;
-		end
-
-		if auraInfo.isHelpful and CompactUnitFrame_UtilShouldDisplayBuff(auraInfo.sourceUnit, auraInfo.spellId, auraInfo.canApplyAura) then
-			return true;
-		end
-
-		local isHarmfulAndRaid = auraInfo.isHarmful and auraInfo.isRaid;
-		if isHarmfulAndRaid and (not auraInfo.isBossAura) and displayOnlyDispellableDebuffs and CompactUnitFrame_Util_ShouldDisplayDebuff(auraInfo.sourceUnit, auraInfo.spellId) and (not CompactUnitFrame_Util_IsPriorityDebuff(auraInfo.spellId)) then
-			return true;
-		end
-
-		if isHarmfulAndRaid and dispellableDebuffTypes[auraInfo.debuffType] ~= nil then
-			return true;
-		end
-
-		return false;
-	end
-
-	-- This interleaves updating buffFrames, debuffFrames and dispelDebuffFrames to reduce the number of calls to UnitAuraSlots/UnitAuraBySlot
-	local function CompactUnitFrame_UpdateAurasInternal(frame, isFullUpdate, updatedAuraInfos)
-		local displayOnlyDispellableDebuffs = frame.optionTable.displayOnlyDispellableDebuffs;
-
-		if AuraUtil.ShouldSkipAuraUpdate(isFullUpdate, updatedAuraInfos, CompactUnitFrame_CouldDisplayAura, displayOnlyDispellableDebuffs) then
-			return;
-		end
-
-		local doneWithBuffs = not frame.buffFrames or not frame.optionTable.displayBuffs or frame.maxBuffs == 0;
-		local doneWithDebuffs = not frame.debuffFrames or not frame.optionTable.displayDebuffs or frame.maxDebuffs == 0;
-		local doneWithDispelDebuffs = not frame.dispelDebuffFrames or not frame.optionTable.displayDispelDebuffs or frame.maxDispelDebuffs == 0;
-
-		local numUsedBuffs = 0;
-		local numUsedDebuffs = 0;
-		local numUsedDispelDebuffs = 0;
-
-		-- The following is the priority order for debuffs
-		local bossDebuffs, bossBuffs, priorityDebuffs, nonBossDebuffs, nonBossRaidDebuffs;
-		local index = 1;
-		local batchCount = frame.maxDebuffs;
-
-		if not doneWithDebuffs then
-			AuraUtil.ForEachAura(frame.displayedUnit, "HARMFUL", batchCount, function(...)
-				local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossAura = ...;
-				if isBossAura then
-					if not bossDebuffs then
-						bossDebuffs = {};
-					end
-					tinsert(bossDebuffs, {index, ...});
-					numUsedDebuffs = numUsedDebuffs + 1;
-					if numUsedDebuffs == frame.maxDebuffs then
-						doneWithDebuffs = true;
-						return true;
-					end
-				elseif CompactUnitFrame_Util_IsPriorityDebuff(spellId) then
-					if not priorityDebuffs then
-						priorityDebuffs = {};
-					end
-					tinsert(priorityDebuffs, {index, ...});
-				elseif not displayOnlyDispellableDebuffs and CompactUnitFrame_Util_ShouldDisplayDebuff(unitCaster, spellId) then
-					if not nonBossDebuffs then
-						nonBossDebuffs = {};
-					end
-					tinsert(nonBossDebuffs, {index, ...});
-				end
-
-				index = index + 1;
 				return false;
 			end);
+
+			CompactUnitFrame_HideAllDebuffs(frame, frameNum);
 		end
 
-		if not doneWithBuffs or not doneWithDebuffs then
-			index = 1;
-			batchCount = math.max(frame.maxDebuffs, frame.maxBuffs);
-			AuraUtil.ForEachAura(frame.displayedUnit, "HELPFUL", batchCount, function(...)
-				local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossAura = ...;
-				if isBossAura then
-					-- Boss Auras are considered Debuffs for our purposes.
-					if not doneWithDebuffs then
-						if not bossBuffs then
-							bossBuffs = {};
-						end
-						tinsert(bossBuffs, {index, ...});
-						numUsedDebuffs = numUsedDebuffs + 1;
-						if numUsedDebuffs == frame.maxDebuffs then
-							doneWithDebuffs = true;
-						end
-					end
-				elseif CompactUnitFrame_UtilShouldDisplayBuff(unitCaster, spellId, canApplyAura) then
-					if not doneWithBuffs then
-						numUsedBuffs = numUsedBuffs + 1;
-						local buffFrame = frame.buffFrames[numUsedBuffs];
-						CompactUnitFrame_UtilSetBuff(buffFrame, index, ...);
-						if numUsedBuffs == frame.maxBuffs then
-							doneWithBuffs = true;
-						end
-					end
+		if buffsChanged then
+			local frameNum = 1;
+			local maxBuffs = frame.maxBuffs;
+			frame.buffs:Iterate(function(auraInstanceID, aura)
+				if frameNum > maxBuffs then
+					return true;
 				end
+				local buffFrame = frame.buffFrames[frameNum];
+				CompactUnitFrame_UtilSetBuff(buffFrame, aura);
+				frameNum = frameNum + 1;
 
-				index = index + 1;
-				return doneWithBuffs and doneWithDebuffs;
+				return false;
 			end);
+
+			CompactUnitFrame_HideAllBuffs(frame, frameNum);
 		end
 
-		numUsedDebuffs = math.min(frame.maxDebuffs, numUsedDebuffs + NumElements(priorityDebuffs));
-		if numUsedDebuffs == frame.maxDebuffs then
-			doneWithDebuffs = true;
-		end
-
-		if not doneWithDispelDebuffs then
-			--Clear what we currently have for dispellable debuffs
-			for debuffType, display in pairs(dispellableDebuffTypes) do
-				if ( display ) then
-					frame["hasDispel"..debuffType] = false;
+		if dispelsChanged then
+			local frameNum = 1;
+			local maxDispelDebuffs = frame.maxDispelDebuffs;
+			for _, auraTbl in pairs(frame.dispels) do
+				if frameNum > maxDispelDebuffs then
+					break;
+				end
+				if auraTbl:Size() ~= 0 then
+					local dispellDebuffFrame = frame.dispelDebuffFrames[frameNum];
+					CompactUnitFrame_UtilSetDispelDebuff(dispellDebuffFrame, auraTbl:GetTop());
+					frameNum = frameNum + 1;
 				end
 			end
-		end
 
-		if not doneWithDispelDebuffs or not doneWithDebuffs then
-			batchCount = math.max(frame.maxDebuffs, frame.maxDispelDebuffs);
-			index = 1;
-			AuraUtil.ForEachAura(frame.displayedUnit, "HARMFUL|RAID", batchCount, function(...)
-				local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossAura = ...;
-				if not doneWithDebuffs and displayOnlyDispellableDebuffs then
-					if CompactUnitFrame_Util_ShouldDisplayDebuff(unitCaster, spellId) and not isBossAura and not CompactUnitFrame_Util_IsPriorityDebuff(spellId) then
-						if not nonBossRaidDebuffs then
-							nonBossRaidDebuffs = {};
-						end
-						tinsert(nonBossRaidDebuffs, {index, ...});
-						numUsedDebuffs = numUsedDebuffs + 1;
-						if numUsedDebuffs == frame.maxDebuffs then
-							doneWithDebuffs = true;
-						end
-					end
-				end
-				if not doneWithDispelDebuffs then
-					if ( dispellableDebuffTypes[debuffType] and not frame["hasDispel"..debuffType] ) then
-						frame["hasDispel"..debuffType] = true;
-						numUsedDispelDebuffs = numUsedDispelDebuffs + 1;
-						local dispellDebuffFrame = frame.dispelDebuffFrames[numUsedDispelDebuffs];
-						CompactUnitFrame_UtilSetDispelDebuff(dispellDebuffFrame, debuffType, index)
-						if numUsedDispelDebuffs == frame.maxDispelDebuffs then
-							doneWithDispelDebuffs = true;
-						end
-					end
-				end
-				index = index + 1;
-				return (doneWithDebuffs or not displayOnlyDispellableDebuffs) and doneWithDispelDebuffs;
-			end);
+			CompactUnitFrame_HideAllDispelDebuffs(frame, frameNum);
 		end
-
-		local frameNum = 1;
-		local maxDebuffs = frame.maxDebuffs;
-
-		do
-			local isBossAura = true;
-			local isBossBuff = false;
-			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HARMFUL", isBossAura, isBossBuff, bossDebuffs);
-		end
-		do
-			local isBossAura = true;
-			local isBossBuff = true;
-			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HELPFUL", isBossAura, isBossBuff, bossBuffs);
-		end
-		do
-			local isBossAura = false;
-			local isBossBuff = false;
-			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HARMFUL", isBossAura, isBossBuff, priorityDebuffs);
-		end
-		do
-			local isBossAura = false;
-			local isBossBuff = false;
-			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HARMFUL|RAID", isBossAura, isBossBuff, nonBossRaidDebuffs);
-		end
-		do
-			local isBossAura = false;
-			local isBossBuff = false;
-			frameNum, maxDebuffs = SetDebuffsHelper(frame.debuffFrames, frameNum, maxDebuffs, "HARMFUL", isBossAura, isBossBuff, nonBossDebuffs);
-		end
-		numUsedDebuffs = frameNum - 1;
-
-		CompactUnitFrame_HideAllBuffs(frame, numUsedBuffs + 1);
-		CompactUnitFrame_HideAllDebuffs(frame, numUsedDebuffs + 1);
-		CompactUnitFrame_HideAllDispelDebuffs(frame, numUsedDispelDebuffs + 1);
 	end
 
-	function CompactUnitFrame_UpdateAuras(frame, isFullUpdate, updatedAuraInfos)
-		if CompactUnitFrame_UpdateAuras_BackwardsCompat then
-			CompactUnitFrame_UpdateAuras_BackwardsCompat(frame);
-		end
-
-		CompactUnitFrame_UpdateAurasInternal(frame, isFullUpdate, updatedAuraInfos);
+	function CompactUnitFrame_UpdateAuras(frame, unitAuraUpdateInfo)
+		CompactUnitFrame_UpdateAurasInternal(frame, unitAuraUpdateInfo);
 		CompactUnitFrame_UpdateClassificationIndicator(frame);
 	end
 end
@@ -1431,12 +1380,11 @@ function CompactUnitFrame_HideAllDispelDebuffs(frame, startingIndex)
 	end
 end
 
-function CompactUnitFrame_UtilSetBuff(buffFrame, index, ...)
-	local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura = ...;
-	buffFrame.icon:SetTexture(icon);
-	if ( count > 1 ) then
-		local countText = count;
-		if ( count >= 100 ) then
+function CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+	buffFrame.icon:SetTexture(aura.icon);
+	if ( aura.applications > 1 ) then
+		local countText =  aura.applications;
+		if (  aura.applications >= 100 ) then
 			countText = BUFF_STACKS_OVERFLOW;
 		end
 		buffFrame.count:Show();
@@ -1444,133 +1392,23 @@ function CompactUnitFrame_UtilSetBuff(buffFrame, index, ...)
 	else
 		buffFrame.count:Hide();
 	end
-	buffFrame:SetID(index);
-	local enabled = expirationTime and expirationTime ~= 0;
+	buffFrame.auraInstanceID = aura.auraInstanceID;
+	local enabled = aura.expirationTime and aura.expirationTime ~= 0;
 	if enabled then
-		local startTime = expirationTime - duration;
-		CooldownFrame_Set(buffFrame.cooldown, startTime, duration, true);
+		local startTime = aura.expirationTime - aura.duration;
+		CooldownFrame_Set(buffFrame.cooldown, startTime, aura.duration, true);
 	else
 		CooldownFrame_Clear(buffFrame.cooldown);
 	end
 	buffFrame:Show();
 end
 
-do
-	local hasValidPlayer = false;
-	EventRegistry:RegisterFrameEvent("PLAYER_ENTERING_WORLD");
-	EventRegistry:RegisterFrameEvent("PLAYER_LEAVING_WORLD");
-	EventRegistry:RegisterCallback("PLAYER_ENTERING_WORLD", function()
-		hasValidPlayer = true;
-	end, {});
-	EventRegistry:RegisterCallback("PLAYER_LEAVING_WORLD", function()
-		hasValidPlayer = false;
-	end, {});
-
-	local cachedVisualizationInfo = {};
-	
-	-- Visualization info is specific to the spec it was checked under
-	EventRegistry:RegisterFrameEvent("PLAYER_SPECIALIZATION_CHANGED");
-	EventRegistry:RegisterCallback("PLAYER_SPECIALIZATION_CHANGED", function()
-		cachedVisualizationInfo = {};
-	end, {});
-
-	local function GetCachedVisibilityInfo(spellId)
-		if cachedVisualizationInfo[spellId] == nil then
-			local newInfo = {SpellGetVisibilityInfo(spellId, UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT")}
-			if not hasValidPlayer then
-				-- Don't cache the info if the player is not valid since we didn't get a valid result
-				return unpack(newInfo);
-			end
-			cachedVisualizationInfo[spellId] = newInfo;
-		end
-
-		local info = cachedVisualizationInfo[spellId];
-		return unpack(info);
-	end
-
-	function CompactUnitFrame_Util_ShouldDisplayDebuff(unitCaster, spellId)
-		local hasCustom, alwaysShowMine, showForMySpec = GetCachedVisibilityInfo(spellId);
-		if ( hasCustom ) then
-			return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") );	--Would only be "mine" in the case of something like forbearance.
-		else
-			return true;
-		end
-	end
-
-	local cachedSelfBuffChecks = {};
-	local function CheckIsSelfBuff(spellId)
-		if cachedSelfBuffChecks[spellId] == nil then
-			cachedSelfBuffChecks[spellId] = SpellIsSelfBuff(spellId);
-		end
-
-		return cachedSelfBuffChecks[spellId];
-	end
-
-	function CompactUnitFrame_UtilShouldDisplayBuff(unitCaster, spellId, canApplyAura)
-		local hasCustom, alwaysShowMine, showForMySpec = GetCachedVisibilityInfo(spellId);
-	
-		if ( hasCustom ) then
-			return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle"));
-		else
-			return (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") and canApplyAura and not CheckIsSelfBuff(spellId);
-		end
-	end
-
-
-	local cachedPriorityChecks = {};
-	local function CheckIsPriorityAura(spellId)
-		if cachedPriorityChecks[spellId] == nil then
-			cachedPriorityChecks[spellId] = SpellIsPriorityAura(spellId);
-		end
-
-		return cachedPriorityChecks[spellId];
-	end
-
-	local _, classFilename = UnitClass("player");
-	if ( classFilename == "PALADIN" ) then
-		CompactUnitFrame_Util_IsPriorityDebuff = function(spellId)
-			local isForbearance = (spellId == 25771);
-			return isForbearance or CheckIsPriorityAura(spellId);
-		end
-	else
-		CompactUnitFrame_Util_IsPriorityDebuff = function(spellId)
-			return CheckIsPriorityAura(spellId);
-		end
-	end
-
-	local function DumpCaches()
-		cachedVisualizationInfo = {};
-		cachedSelfBuffChecks = {};
-		cachedPriorityChecks = {};
-	end
-	EventRegistry:RegisterFrameEvent("PLAYER_REGEN_ENABLED");
-	EventRegistry:RegisterFrameEvent("PLAYER_REGEN_DISABLED");
-	EventRegistry:RegisterCallback("PLAYER_REGEN_ENABLED", DumpCaches, {});
-	EventRegistry:RegisterCallback("PLAYER_REGEN_DISABLED", DumpCaches, {});
-end
-
-function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBossAura, isBossBuff, ...)
-	-- make sure you are using the correct index here!
-	--isBossAura says make this look large.
-	--isBossBuff looks in HELPFULL auras otherwise it looks in HARMFULL ones
-	local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId = ...;
-	if name == nil then
-		-- for backwards compatibility - this functionality will be removed in a future update
-		if unit then
-			if (isBossBuff) then
-				name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId = UnitBuff(unit, index, filter);
-			else
-				name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId = UnitDebuff(unit, index, filter);
-			end
-		else
-			return;
-		end
-	end
-	debuffFrame.filter = filter;
-	debuffFrame.icon:SetTexture(icon);
-	if ( count > 1 ) then
-		local countText = count;
-		if ( count >= 100 ) then
+function CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid;
+	debuffFrame.icon:SetTexture(aura.icon);
+	if ( aura.applications > 1 ) then
+		local countText = aura.applications;
+		if ( aura.applications >= 100 ) then
 			countText = BUFF_STACKS_OVERFLOW;
 		end
 		debuffFrame.count:Show();
@@ -1578,20 +1416,20 @@ function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBoss
 	else
 		debuffFrame.count:Hide();
 	end
-	debuffFrame:SetID(index);
-	local enabled = expirationTime and expirationTime ~= 0;
+	debuffFrame.auraInstanceID = aura.auraInstanceID;
+	local enabled = aura.expirationTime and aura.expirationTime ~= 0;
 	if enabled then
-		local startTime = expirationTime - duration;
-		CooldownFrame_Set(debuffFrame.cooldown, startTime, duration, true);
+		local startTime = aura.expirationTime - aura.duration;
+		CooldownFrame_Set(debuffFrame.cooldown, startTime, aura.duration, true);
 	else
 		CooldownFrame_Clear(debuffFrame.cooldown);
 	end
 
-	local color = DebuffTypeColor[debuffType] or DebuffTypeColor["none"];
+	local color = DebuffTypeColor[aura.dispelName] or DebuffTypeColor["none"];
 	debuffFrame.border:SetVertexColor(color.r, color.g, color.b);
 
-	debuffFrame.isBossBuff = isBossBuff;
-	if ( isBossAura ) then
+	debuffFrame.isBossBuff = aura.isBossAura and aura.isHelpful;
+	if ( aura.isBossAura ) then
 		local size = min(debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE, debuffFrame.maxHeight);
 		debuffFrame:SetSize(size, size);
 	else
@@ -1601,10 +1439,10 @@ function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBoss
 	debuffFrame:Show();
 end
 
-function CompactUnitFrame_UtilSetDispelDebuff(dispellDebuffFrame, debuffType, index)
+function CompactUnitFrame_UtilSetDispelDebuff(dispellDebuffFrame, aura)
 	dispellDebuffFrame:Show();
-	dispellDebuffFrame.icon:SetTexture("Interface\\RaidFrame\\Raid-Icon-Debuff"..debuffType);
-	dispellDebuffFrame:SetID(index);
+	dispellDebuffFrame.icon:SetTexture("Interface\\RaidFrame\\Raid-Icon-Debuff"..aura.dispelName);
+	dispellDebuffFrame.auraInstanceID = aura.auraInstanceID;
 end
 
 --Dropdown
@@ -1699,7 +1537,8 @@ function DefaultCompactUnitFrameSetup(frame)
 
 	frame.healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1 + powerBarUsedHeight);
 
-	frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill", "BORDER");
+	frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill");
+	frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER");
 
 	if ( frame.powerBar ) then
 		if ( options.displayPowerBar ) then
@@ -1709,7 +1548,8 @@ function DefaultCompactUnitFrameSetup(frame)
 				frame.powerBar:SetPoint("TOPLEFT", frame.healthBar, "BOTTOMLEFT", 0, 0);
 			end
 			frame.powerBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1);
-			frame.powerBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Fill", "BORDER");
+			frame.powerBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Fill");
+			frame.powerBar:GetStatusBarTexture():SetDrawLayer("BORDER");
 			frame.powerBar.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Background");
 			frame.powerBar:Show();
 		else
@@ -1719,14 +1559,14 @@ function DefaultCompactUnitFrameSetup(frame)
 
 	frame.myHealPrediction:ClearAllPoints();
 	frame.myHealPrediction:SetColorTexture(1,1,1);
-	frame.myHealPrediction:SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
+	frame.myHealPrediction:SetGradient("VERTICAL", CreateColor(8/255, 93/255, 72/255, 1), CreateColor(11/255, 136/255, 105/255, 1));
 	frame.myHealAbsorb:ClearAllPoints();
 	frame.myHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
 	frame.myHealAbsorbLeftShadow:ClearAllPoints();
 	frame.myHealAbsorbRightShadow:ClearAllPoints();
 	frame.otherHealPrediction:ClearAllPoints();
 	frame.otherHealPrediction:SetColorTexture(1,1,1);
-	frame.otherHealPrediction:SetGradient("VERTICAL", 11/255, 53/255, 43/255, 21/255, 89/255, 72/255);
+	frame.otherHealPrediction:SetGradient("VERTICAL", CreateColor(11/255, 53/255, 43/255, 1), CreateColor(21/255, 89/255, 72/255, 1));
 	frame.totalAbsorb:ClearAllPoints();
 	frame.totalAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Fill");
 	frame.totalAbsorb.overlay = frame.totalAbsorbOverlay;
@@ -1891,18 +1731,19 @@ function DefaultCompactMiniFrameSetup(frame)
 	frame.background:SetTexCoord(0, 1, 0, 0.53125);
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);
 	frame.healthBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1);
-	frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill", "BORDER");
+	frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill");
+	frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER");
 
 	frame.myHealPrediction:ClearAllPoints();
 	frame.myHealPrediction:SetColorTexture(1,1,1);
-	frame.myHealPrediction:SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
+	frame.myHealPrediction:SetGradient("VERTICAL", CreateColor(8/255, 93/255, 72/255, 1), CreateColor(11/255, 136/255, 105/255, 1));
 	frame.myHealAbsorb:ClearAllPoints();
 	frame.myHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
 	frame.myHealAbsorbLeftShadow:ClearAllPoints();
 	frame.myHealAbsorbRightShadow:ClearAllPoints();
 	frame.otherHealPrediction:ClearAllPoints();
 	frame.otherHealPrediction:SetColorTexture(1,1,1);
-	frame.otherHealPrediction:SetGradient("VERTICAL", 3/255, 72/255, 5/255, 2/255, 101/255, 18/255);
+	frame.otherHealPrediction:SetGradient("VERTICAL", CreateColor(3/255, 72/255, 5/255, 1), CreateColor(2/255, 101/255, 18/255, 1));
 	frame.totalAbsorb:ClearAllPoints();
 	frame.totalAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Fill");
 	frame.totalAbsorb.overlay = frame.totalAbsorbOverlay;
@@ -2072,8 +1913,8 @@ function DefaultCompactNamePlateFrameSetup(frame, options)
 
 	frame.castBar:SetStatusBarTexture("Interface/TargetingFrame/UI-TargetingFrame-BarFill");
 
-	CastingBarFrame_AddWidgetForFade(frame.castBar, frame.castBar.Icon);
-	CastingBarFrame_AddWidgetForFade(frame.castBar, frame.castBar.BorderShield);
+	frame.castBar:AddWidgetForFade(frame.castBar.Icon);
+	frame.castBar:AddWidgetForFade(frame.castBar.BorderShield);
 
 	DefaultCompactNamePlateFrameSetupInternal(frame, DefaultCompactNamePlateFrameSetUpOptions, options);
 	DefaultCompactNamePlateFrameAnchors(frame);
@@ -2173,7 +2014,7 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 
 	frame.overHealAbsorbGlow:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb");
 	frame.overHealAbsorbGlow:SetBlendMode("ADD");
-	
+
 	frame.myHealPrediction:ClearAllPoints();
 
 	frame.myHealAbsorb:ClearAllPoints();
@@ -2208,7 +2049,7 @@ function DefaultCompactNamePlateFrameAnchorInternal(frame, setupOptions)
 
 	if not customOptions or not customOptions.ignoreIconPoint then
 	frame.castBar.Icon:ClearAllPoints();
-	PixelUtil.SetPoint(frame.castBar.Icon, "CENTER", frame.castBar, "LEFT", 0, 0);
+	PixelUtil.SetPoint(frame.castBar.Icon, "CENTER", frame.castBar, "LEFT", 0, -1);
 	end
 
 	if not customOptions or not customOptions.ignoreBarSize then

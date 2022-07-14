@@ -422,38 +422,22 @@
 			</Button>
 			<Button name="PlayerTalentFrameTab1" inherits="PlayerTalentTabTemplate" id="1" text="SPECIALIZATION">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="15" y="1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="15" y="1"/>
 				</Anchors>
 			</Button>
 			<Button name="PlayerTalentFrameTab2" inherits="PlayerTalentTabTemplate" text="TALENTS" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab1" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="PlayerTalentFrameTab3" inherits="PlayerTalentTabTemplate" text="PET_SPECIALIZATION" hidden="true" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab2" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
 			<CheckButton name="PlayerSpecTab1" inherits="PlayerSpecTabTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="-50"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-50"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -463,11 +447,7 @@
 			</CheckButton>
 			<CheckButton name="PlayerSpecTab2" inherits="PlayerSpecTabTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PlayerSpecTab1" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-22"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="PlayerSpecTab1" relativePoint="BOTTOMLEFT" x="0" y="-22"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -672,35 +652,21 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" hidden="true">
-							<Size>
-								<AbsDimension x="27" y="120"/>
-							</Size>
+							<Size x="27" y="120"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-1" y="2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-1" y="2"/>
 							</Anchors>
 							<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
 						</Texture>
 						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" hidden="true">
-							<Size>
-								<AbsDimension x="27" y="123"/>
-							</Size>
+							<Size x="27" y="123"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-1" y="-2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-1" y="-2"/>
 							</Anchors>
 							<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
 						</Texture>
 						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" hidden="true">
-							<Size>
-								<AbsDimension x="27" y="200"/>
-							</Size>
+							<Size x="27" y="200"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT" x="-1" y="0"/>
 							</Anchors>
@@ -711,16 +677,8 @@
 				<Frames>
 					<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="6" y="-16"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="6" y="16"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-16"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="16"/>
 						</Anchors>
 					</Slider>
 				</Frames>
@@ -1194,12 +1152,19 @@
 							<Anchor point="LEFT" relativeTo="PlayerTalentFrame" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 						<Frames>
-							<ScrollFrame name="$parentScrollFrame" inherits="BasicHybridScrollFrameTemplate" parentKey="ScrollFrame">
+							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="5" y="-3"/>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-20" y="3"/>
 								</Anchors>
-							</ScrollFrame>
+							</Frame>
+
+							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+								</Anchors>
+							</EventFrame>
 							<Button inherits="MagicButtonTemplate" text="CLOSE">
 								<Size x="100" y="22"/>
 								<Anchors>

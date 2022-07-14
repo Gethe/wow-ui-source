@@ -164,6 +164,8 @@ function FCF_GetChatWindowInfo(id)
 		end
 		return name, size, r, g, b, a, isShown, isLocked, isDocked, isUninteractable;
 	end
+
+	return "", CHAT_FRAME_DEFAULT_FONT_SIZE, 0, 0, 0, 0;
 end
 
 function FCF_CopyChatSettings(copyTo, copyFrom)
@@ -755,7 +757,7 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 	chatTab.selectedColorTable = { r = info.r, g = info.g, b = info.b };
 	FCFTab_UpdateColors(chatTab, not chatFrame.isDocked or chatFrame == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
 
-	chatFrame:SetMinResize(CHAT_FRAME_MIN_WIDTH, CHAT_FRAME_NORMAL_MIN_HEIGHT);
+	chatFrame:SetResizeBounds(CHAT_FRAME_MIN_WIDTH, CHAT_FRAME_NORMAL_MIN_HEIGHT);
 
 	--Set the icon
 	local icon;
@@ -1297,9 +1299,8 @@ function FCF_RestorePositionAndDimensions(chatFrame)
 		chatFrame:SetUserPlaced(true);
 	elseif ( chatFrame == DEFAULT_CHAT_FRAME ) then
 		chatFrame:ClearAllPoints();
-		--ChatFrame1 is a managed frame so UIParent_ManageFramePositions() will reposition it.
+		chatFrame:SetPoint("BOTTOMLEFT", 32, 95);
 		chatFrame:SetUserPlaced(false);
-		UIParent_ManageFramePositions();
 	else
 		chatFrame:SetUserPlaced(false);
 	end
@@ -1788,14 +1789,14 @@ end
 -- Reset the chat windows to default
 function FCF_ResetChatWindows()
 	ChatFrame1:ClearAllPoints();
-	--ChatFrame1 is a managed frame so UIParent_ManageFramePositions() will reposition it.
+	ChatFrame1:SetPoint("BOTTOMLEFT", 32, 95);
 	ChatFrame1:SetWidth(430);
 	ChatFrame1:SetHeight(120);
 	FCF_SetButtonSide(ChatFrame1, "left");
 	FCF_ResetChatWindow(ChatFrame1, GENERAL);
 	SELECTED_CHAT_FRAME = ChatFrame1;
 	DEFAULT_CHAT_FRAME.chatframe = DEFAULT_CHAT_FRAME;
-	
+
 	FCF_ResetChatWindow(ChatFrame2, COMBAT_LOG);
 	FCF_ResetChatWindow(ChatFrame3, VOICE);
 
@@ -1822,8 +1823,6 @@ function FCF_ResetChatWindows()
 
 	-- resets to hard coded defaults
 	ResetChatWindows(CHAT_FRAME_DEFAULT_FONT_SIZE);
-
-	UIParent_ManageFramePositions();
 	FCFDock_SelectWindow(GENERAL_CHAT_DOCK, ChatFrame1);
 end
 

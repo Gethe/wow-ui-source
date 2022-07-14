@@ -50,6 +50,6 @@ function BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power,
 		BattlePetTooltip:Show();
 
 		BattlePetTooltip:ClearAllPoints();
-		BattlePetTooltip:SetPoint(GameTooltip:GetPoint());
+		BattlePetTooltip:SetPoint(GameTooltip:GetPoint(1));
 	end
 end

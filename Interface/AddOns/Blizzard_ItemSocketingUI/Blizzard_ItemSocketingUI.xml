@@ -2,9 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ItemSocketingUI.lua"/>
 	<Button name="ItemSocketingSocketButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="40" y="40"/>
-		</Size>
+		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentRight" file="Interface\ItemSocketingFrame\UI-ItemSockets">

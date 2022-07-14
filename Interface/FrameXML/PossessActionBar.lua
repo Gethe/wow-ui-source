@@ -23,12 +23,11 @@ end
 
 function PossessBar_UpdateState ()
 	local texture, spellID, enabled;
-	local button, background, icon, cooldown;
+	local button, icon, cooldown;
 
 	for i=1, NUM_POSSESS_SLOTS do
 		-- Possess Icon
 		button = _G["PossessButton"..i];
-		background = _G["PossessBackground"..i];
 		icon = _G["PossessButton"..i.."Icon"];
 		texture, spellID, enabled = GetPossessInfo(i);
 		icon:SetTexture(texture);
@@ -44,10 +43,8 @@ function PossessBar_UpdateState ()
 
 		if ( enabled ) then
 			button:Show();
-			background:Show();
 		else
 			button:Hide();
-			background:Hide();
 		end
 	end
 end

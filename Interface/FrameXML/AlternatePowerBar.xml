@@ -2,18 +2,14 @@
 ..\FrameXML\UI.xsd">
 	<Script file="AlternatePowerBar.lua"/>
 	<StatusBar name="AlternatePowerBarTemplate" inherits="TextStatusBar" virtual="true">
-		<Size>
-			<AbsDimension x="78" y="12"/>
-		</Size>
+		<Size x="78" y="12"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" setAllPoints="true" parentKey="DefaultBackground">
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 				<Texture name="$parentBackground" file="Interface\PlayerFrame\MonkManaBar" parentKey="MonkBackground" hidden="true">
-					<Size>
-						<AbsDimension x="128" y="16"/>
-					</Size>
+					<Size x="128" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-17" y="0"/>
 					</Anchors>
@@ -22,9 +18,7 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator" parentKey="DefaultBorder">
-					<Size>
-						<AbsDimension x="0" y="16"/>
-					</Size>
+					<Size x="0" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="4" y="0"/>
 						<Anchor point="TOPRIGHT" x="-4" y="0"/>
@@ -32,27 +26,21 @@
 					<TexCoords left="0.125" right="0.250" top="1.0" bottom="0.0"/>
 				</Texture>
 				<Texture name="$parentLeftBorder" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator" parentKey="DefaultBorderLeft">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parentBorder" relativePoint="LEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.125" top="1.0" bottom="0.0"/>
 				</Texture>
 				<Texture name="$parentRightBorder" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator" parentKey="DefaultBorderRight">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentBorder" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.125" right="0" top="1.0" bottom="0.0"/>
 				</Texture>
 				<Texture name="$parentBorder" file="Interface\PlayerFrame\MonkManaBar" parentKey="MonkBorder" hidden="true">
-					<Size>
-						<AbsDimension x="128" y="16"/>
-					</Size>
+					<Size x="128" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-17" y="0"/>
 					</Anchors>
@@ -60,11 +48,7 @@
 				</Texture>
 				<FontString name="$parentText" inherits="TextStatusBarText">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="LeftText" inherits="TextStatusBarText">
@@ -98,11 +82,7 @@
 	<StatusBar name="PlayerFrameAlternateManaBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">	<!--For Druids in forms -->
 		<Size x="104" y="12"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="114" y="23"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" x="114" y="23"/>
 		</Anchors>
 	</StatusBar>
 </Ui>

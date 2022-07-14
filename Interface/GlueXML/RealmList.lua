@@ -2,170 +2,173 @@ local REALM_BUTTON_HEIGHT = 16;
 local MAX_REALMS_DISPLAYED = 20;
 
 function RealmList_OnLoad(self)
+	self:RegisterEvent("REALM_LIST_UPDATED");
+
 	self.selectedRealm = nil;
 	self.selectedCategory = nil;
 
-	local scrollFrame = RealmListScrollFrame;
-	scrollFrame.update = function() RealmList_Update() end;
-	HybridScrollFrame_CreateButtons(RealmListScrollFrame, "RealmListRealmButtonTemplate");
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("RealmListRealmButtonTemplate", function(button, elementData)
+		RealmList_InitButton(button, elementData);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(RealmListBackground.ScrollBox, RealmListBackground.ScrollBar, view);
 end
 
-function RealmList_Update()
+function RealmList_OnEvent(self, event, ...)
+	local retainScrollPosition = true;
+	RealmList_Update(retainScrollPosition);
+end
+
+function RealmList_IsButtonSelectable(button)
+	return button.populationState ~= "OFFLINE";
+end
+
+function RealmList_InitButton(button, realmAddr)
+	local name, numCharacters, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
+
+	button.isPvP = isPvP;
+	button.isRP = isRP;
+	button.versionMismatch = versionMismatch;
+	button.numCharacters = numCharacters;
+	button.populationState = populationState;
+	button.realmAddr = realmAddr;
+
+	local isSelectedRealm = realmAddr == RealmList.selectedRealm;
+	RealmList_SetButtonSelected(button, isSelectedRealm);
+
+	button:SetEnabled(populationState ~= "OFFLINE");
+
+	--Update character count
+	if ( numCharacters > 0 ) then
+		button.PlayerCount:SetText("("..numCharacters..")");
+	else
+		button.PlayerCount:SetText("");
+	end
+
+	--Update name
+	if ( versionMajor ) then
+		button:SetText(name.." ("..versionMajor.."."..versionMinor.."."..versionRev..")");
+	else
+		button:SetText(name);
+	end
+end
+
+function RealmList_SetButtonSelected(button, selected)
+	local isPvP = button.isPvP;
+	local isRP = button.isRP;
+	if ( isPvP and isRP ) then
+		button.RealmType:SetText(RPPVP_PARENTHESES);
+		button.RealmType:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	elseif ( isRP ) then
+		button.RealmType:SetText(RP_PARENTHESES);
+		button.RealmType:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+	elseif ( isPvP ) then
+		button.RealmType:SetText(PVP_PARENTHESES);
+		button.RealmType:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+	else
+		button.RealmType:SetText(GAMETYPE_NORMAL);
+		button.RealmType:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+
+	local populationState = button.populationState;
+	local versionMismatch = button.versionMismatch;
+	if ( populationState == "OFFLINE" ) then
+		button.Load:SetText(REALM_DOWN);
+		button.Load:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+	elseif ( versionMismatch ) then --not a population state
+		button.Load:SetText(ADDON_INCOMPATIBLE);
+		button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+	elseif ( populationState == "LOCKED" ) then
+		button.Load:SetText(REALM_LOCKED);
+		button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+	elseif ( populationState == "LOW" ) then
+		button.Load:SetText(LOAD_LOW);
+		button.Load:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+	elseif ( populationState == "HIGH" ) then
+		button.Load:SetText(LOAD_HIGH);
+		button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+	elseif ( populationState == "NEW" ) then
+		button.Load:SetText(LOAD_NEW);
+		button.Load:SetTextColor(BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b);
+	elseif ( populationState == "RECOMMENDED" ) then
+		button.Load:SetText(LOAD_RECOMMENDED);
+		button.Load:SetTextColor(BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b);
+	elseif ( populationState == "FULL" ) then
+		button.Load:SetText(LOAD_FULL);
+		button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+	elseif ( populationState == "MEDIUM" ) then
+		button.Load:SetText(LOAD_MEDIUM);
+		button.Load:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	else
+		--Should never happen
+		button.Load:SetText(LOAD_MEDIUM);
+		button.Load:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+
+	local numCharacters = button.numCharacters;
+	if ( populationState == "OFFLINE" ) then
+		button:SetNormalFontObject(RealmDownNormal);
+		button:SetHighlightFontObject(RealmDownHighlight);
+	elseif ( versionMismatch ) then
+		button:SetNormalFontObject(RealmInvalidNormal);
+		button:SetHighlightFontObject(RealmInvalidHighlight);
+	elseif ( numCharacters > 0 ) then
+		button:SetNormalFontObject(RealmCharactersNormal);
+		button:SetHighlightFontObject(GlueFontHighlightLeft);
+	else
+		button:SetNormalFontObject(RealmNoCharactersNormal);
+		button:SetHighlightFontObject(GlueFontHighlightLeft);
+	end
+
+	if selected then
+		button:LockHighlight();
+		button.RealmType:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		button.Load:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+
+		--Update the highlight color
+		if ( button.versionMismatch ) then
+			button.SelectedTexture:SetVertexColor(1.0, 0.1, 0.1);
+		elseif ( button.numCharacters > 0 ) then
+			button.SelectedTexture:SetVertexColor(0.1, 1.0, 0.1);
+		else
+			button.SelectedTexture:SetVertexColor(1.0, 0.78, 0.0);
+		end
+	else
+		button:UnlockHighlight();
+	end
+
+	button.SelectedTexture:SetShown(selected);
+end
+
+function RealmList_Update(retainScrollPosition)
 	-- If we don't have anything selected, select something
 	if ( not RealmList_GetCategoryIndex(RealmList.selectedCategory) ) then
 		RealmList.selectedCategory = C_RealmList.GetAvailableCategories()[1];
 	end
 
-	local kioskRealmAddr = GetKioskAutoRealmAddress();
-	if (kioskRealmAddr) then
-		RealmList.selectedRealm = kioskRealmAddr;
-	end
-
 	-- Update category tabs
 	RealmList_UpdateTabs();
 
-	-- Make sure the selected realm is on-screen
-
 	-- Update the realm buttons
-	local realms = RealmList.selectedCategory and C_RealmList.GetRealmsInCategory(RealmList.selectedCategory) or {};
-	RealmListUtility_SortRealms(realms);
-	local scrollFrame = RealmListScrollFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame)
+	RealmList.realms = RealmList.selectedCategory and C_RealmList.GetRealmsInCategory(RealmList.selectedCategory) or {};
+	RealmListUtility_SortRealms(RealmList.realms);
 
-	local foundSelectedRealm;
-	for i=1, #scrollFrame.buttons do
-		local idx = i + offset;
-		local button = scrollFrame.buttons[i];
+	local dataProvider = CreateDataProvider(RealmList.realms);
+	RealmListBackground.ScrollBox:SetDataProvider(dataProvider, retainScrollPosition);
 
-		if ( idx <= #realms ) then
-			local realmAddr = realms[idx];
-			local name, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
-
-			button.realmAddr = realmAddr;
-			local isSelectedRealm = realmAddr == RealmList.selectedRealm;
-
-			--Update RealmType
-			if ( isPvP and isRP ) then
-				button.RealmType:SetText(RPPVP_PARENTHESES);
-				button.RealmType:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			elseif ( isRP ) then
-				button.RealmType:SetText(RP_PARENTHESES);
-				button.RealmType:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-			elseif ( isPvP ) then
-				button.RealmType:SetText(PVP_PARENTHESES);
-				button.RealmType:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-			else
-				button.RealmType:SetText(GAMETYPE_NORMAL);
-				button.RealmType:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			end
-
-			--Update Load text
-
-			if ( populationState == "OFFLINE" ) then
-				button.Load:SetText(REALM_DOWN);
-				button.Load:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			elseif ( versionMismatch ) then --not a population state
-				button.Load:SetText(ADDON_INCOMPATIBLE);
-				button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-			elseif ( populationState == "LOCKED" ) then
-				button.Load:SetText(REALM_LOCKED);
-				button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-			elseif ( populationState == "LOW" ) then
-				button.Load:SetText(LOAD_LOW);
-				button.Load:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-			elseif ( populationState == "HIGH" ) then
-				button.Load:SetText(LOAD_HIGH);
-				button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-			elseif ( populationState == "NEW" ) then
-				button.Load:SetText(LOAD_NEW);
-				button.Load:SetTextColor(BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b);
-			elseif ( populationState == "RECOMMENDED" ) then
-				button.Load:SetText(LOAD_RECOMMENDED);
-				button.Load:SetTextColor(BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b);
-			elseif ( populationState == "FULL" ) then
-				button.Load:SetText(LOAD_FULL);
-				button.Load:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-			elseif ( populationState == "MEDIUM" ) then
-				button.Load:SetText(LOAD_MEDIUM);
-				button.Load:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			else
-				--Should never happen
-				button.Load:SetText(LOAD_MEDIUM);
-				button.Load:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			end
-
-			--Update selected state
-			if ( isSelectedRealm ) then
-				button:LockHighlight();
-				RealmListHighlight:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0);
-				RealmListHighlight:SetShown(populationState ~= "OFFLINE");
-				button.RealmType:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				button.Load:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-
-				--Update the highlight color
-				if ( versionMismatch ) then
-					RealmListHighlightTexture:SetVertexColor(1.0, 0.1, 0.1);
-				elseif ( numChars > 0 ) then
-					RealmListHighlightTexture:SetVertexColor(0.1, 1.0, 0.1);
-				else
-					RealmListHighlightTexture:SetVertexColor(1.0, 0.78, 0.0);
-				end
-				foundSelectedRealm = true;
-			else
-				button:UnlockHighlight();
-			end
-
-			--Update font colors
-			if ( populationState == "OFFLINE" ) then
-				button:SetNormalFontObject(RealmDownNormal);
-				button:SetHighlightFontObject(RealmDownHighlight);
-			elseif ( versionMismatch ) then
-				button:SetNormalFontObject(RealmInvalidNormal);
-				button:SetHighlightFontObject(RealmInvalidHighlight);
-			elseif ( numChars > 0 ) then
-				button:SetNormalFontObject(RealmCharactersNormal);
-				button:SetHighlightFontObject(GlueFontHighlightLeft);
-			else
-				button:SetNormalFontObject(RealmNoCharactersNormal);
-				button:SetHighlightFontObject(GlueFontHighlightLeft);
-			end
-
-			--Update enable state
-			button:SetEnabled(populationState ~= "OFFLINE");
-
-			--Update character count
-			if ( numChars > 0 ) then
-				button.PlayerCount:SetText("("..numChars..")");
-			else
-				button.PlayerCount:SetText("");
-			end
-
-			--Update name
-			if ( versionMajor ) then
-				button:SetText(name.." ("..versionMajor.."."..versionMinor.."."..versionRev..")");
-			else
-				button:SetText(name);
-			end
-
-
-			button:Show();
-		else
-			button:Hide();
+	local kioskRealmAddr = GetKioskAutoRealmAddress();
+	if kioskRealmAddr then
+		local containsKioskRealm = dataProvider:ContainsElementDataByPredicate(function(elementData)
+			return elementData == kioskRealmAddr;
+		end);
+		if containsKioskRealm then
+			C_RealmList.ConnectToRealm(kioskRealmAddr);
+			SetKioskAutoRealmAddress(nil);
 		end
 	end
 
-	if ( not foundSelectedRealm ) then
-		RealmListHighlight:Hide();
-	end
-
-	if (kioskRealmAddr and foundSelectedRealm) then
-		C_RealmList.ConnectToRealm(kioskRealmAddr);
-		SetKioskAutoRealmAddress(nil);
-	end
-
 	RealmList_UpdateOKButton();
-
-	HybridScrollFrame_Update(scrollFrame, (scrollFrame.buttons[1]:GetHeight()) * #realms, scrollFrame:GetHeight());
 end
 
 function RealmList_UpdateOKButton()
@@ -174,7 +177,7 @@ function RealmList_UpdateOKButton()
 		return;
 	end
 
-	local name, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+	local name, numCharacters, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
 	RealmListOkButton:SetEnabled(populationState and populationState ~= "OFFLINE");
 end
 
@@ -243,9 +246,9 @@ end
 function RealmList_OnOk()
 	if (RealmList.selectedRealm) then
 		-- If trying to join a Full realm then popup a dialog
-		local name, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+		local name, numCharacters, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
 
-		if ( populationState == "FULL" and numChars == 0 ) then
+		if ( populationState == "FULL" and numCharacters == 0 ) then
 			GlueDialog_Show("REALM_IS_FULL");
 		else
 			C_RealmList.ConnectToRealm(RealmList.selectedRealm);
@@ -270,10 +273,27 @@ function RealmList_ClickButton(self, doubleClick)
 		return;
 	end
 
+	local oldSelectedRealm = RealmList.selectedRealm;
 	RealmList.selectedRealm = self.realmAddr;
-	RealmList_Update();
+	
+	local function UpdateButtonSelected(realmAddr, selected)
+		if realmAddr then
+			local button = RealmListBackground.ScrollBox:FindFrameByPredicate(function(button)
+				return button.realmAddr == realmAddr;
+			end);
+			if button then
+				RealmList_SetButtonSelected(button, selected);
+			end
+		end
+	end;
+	
+	UpdateButtonSelected(oldSelectedRealm, false);
+	UpdateButtonSelected(RealmList.selectedRealm, true);
+
 	if ( doubleClick ) then
 		RealmList_OnOk();
+	else
+		RealmList_UpdateOKButton();
 	end
 end
 
@@ -309,7 +329,7 @@ function RealmList_GetInfoFromName(name)
 		local realms = C_RealmList.GetRealmsInCategory(categories[i]);
 		for j=1, #realms do
 			local realmAddr = realms[j];
-			local realmName, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
+			local realmName, numCharacters, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
 
 			if ( realmName == name ) then
 				return realmAddr, categories[i];
@@ -332,6 +352,7 @@ function RealmListTab_OnClick(tab)
 	RealmList.selectedCategory = C_RealmList.GetAvailableCategories()[tab:GetID()];
 	RealmList.selectedRealm = nil;
 	GlueTemplates_SetTab(RealmList, tab:GetID());
+
 	RealmList_Update();
 end
 
@@ -386,9 +407,9 @@ REALM_LIST_SORT_DEFINITIONS = {
 	},
 	numCharacters = {
 		func = function(realm1, realm2)
-			local numChars1 = select(2, C_RealmList.GetRealmInfo(realm1));
-			local numChars2 = select(2, C_RealmList.GetRealmInfo(realm2));
-			return numChars2 - numChars1;
+			local numCharacters1 = select(2, C_RealmList.GetRealmInfo(realm1));
+			local numCharacters2 = select(2, C_RealmList.GetRealmInfo(realm2));
+			return numCharacters2 - numCharacters1;
 		end
 	},
 	population = {

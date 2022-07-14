@@ -951,6 +951,7 @@ function NewRecipeLearnedAlertFrame_SetUp(self, recipeID, recipeLevel)
 				self.Name:SetText(recipeName);
 			end
 			self.tradeSkillID = parentTradeSkillID or tradeSkillID;
+			self.skillLineID = tradeSkillID;
 			self.recipeID = recipeID;
 			return true;
 		end
@@ -963,9 +964,22 @@ function NewRecipeLearnedAlertFrame_OnClick(self, button, down)
 		return;
 	end
 
-	TradeSkillFrame_LoadUI();
-	if C_TradeSkillUI.OpenTradeSkill(self.tradeSkillID) then
-		TradeSkillFrame:SelectRecipe(self.recipeID);
+	ProfessionsFrame_LoadUI();
+
+	local currBaseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
+	local currentSkillLineInfo = C_TradeSkillUI.GetChildProfessionInfo();
+	if currentSkillLineInfo ~= nil and currentSkillLineInfo.professionID == self.skillLineID then
+		local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.recipeID);
+		ProfessionsFrame:SelectPage("Crafting");
+		EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", recipeInfo);
+	elseif currBaseProfessionInfo ~= nil and currBaseProfessionInfo.professionID == self.tradeSkillID then
+		C_TradeSkillUI.SetProfessionChildSkillLineID(self.skillLineID);
+		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+		professionInfo.openRecipeID = self.recipeID;
+		EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
+	else
+		ProfessionsFrame:SetOpenRecipeResponse(self.skillLineID, self.recipeID);
+		C_TradeSkillUI.OpenTradeSkill(self.tradeSkillID);
 	end
 end
 
@@ -1247,6 +1261,10 @@ end
 
 function NewCosmeticAlertFrameMixin:OnClick(button, down)
 	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+
+	if IsModifiedClick("DRESSUP") and DressUpItemLink(self.itemModifiedAppearanceID) then
 		return;
 	end
 

@@ -1,0 +1,123 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ClassTalentTalentsTab.lua"/>
+	
+	<Frame name="ClassTalentCurrencyDisplayTemplate" mixin="ClassTalentCurrencyDisplayMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer>
+				<FontString parentKey="CurrencyLabel" inherits="SystemFont_Shadow_Large2" justifyH="CENTER"/>
+				<FontString parentKey="CurrencyAmount" inherits="Game32Font_Shadow2" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.CurrencyLabel" relativePoint="BOTTOM" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ClassTalentTalentsTabTemplate" mixin="ClassTalentTalentsTabMixin" inherits="TalentFrameBaseTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="getEdgeTemplateType" value="ClassTalentUtil.GetEdgeTemplateType" type="global"/>
+			<KeyValue key="topPadding" value="0" type="number"/>
+			<KeyValue key="leftPadding" value="0" type="number"/>
+			<KeyValue key="bottomPadding" value="82" type="number"/>
+			<KeyValue key="rightPadding" value="0" type="number"/>
+			<KeyValue key="basePanOffsetX" value="4" type="number"/>
+			<KeyValue key="basePanOffsetY" value="-30" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BottomBar" atlas="talents-background-bottombar" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="Background" atlas="talents-background-druid-restoration" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.BottomBar" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ClassCurrencyDisplay" inherits="ClassTalentCurrencyDisplayTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="417" y="-48"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SpecCurrencyDisplay" inherits="ClassTalentCurrencyDisplayTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-416" y="-48"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="LoadoutDropDown" inherits="DropDownLoadSystemTemplate">
+				<Size x="170" y="30"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.BottomBar" relativePoint="LEFT" x="48" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="ApplyButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_FRAME_APPLY_BUTTON_TEXT">
+				<Size x="164" y="22"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.BottomBar" relativePoint="CENTER" x="0" y="3"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="ResetButton" inherits="IconButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="talents-button-reset" type="string"/>
+					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+					<KeyValue key="tooltipText" value="TALENT_FRAME_RESET_BUTTON_TOOLTIP" type="global"/>
+					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ApplyButton" relativePoint="RIGHT" x="14" y="0"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="UndoButton" inherits="IconButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
+					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+					<KeyValue key="tooltipText" value="TALENT_FRAME_DISCARD_CHANGES_BUTTON_TOOLTIP" type="global"/>
+					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ResetButton" relativePoint="CENTER"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="WarmodeButton" inherits="WarmodeButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.BottomBar" relativePoint="RIGHT" x="-6" y="12"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="PvPTalentSlotTray" inherits="PvPTalentSlotTrayTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.BottomBar" relativePoint="RIGHT" x="-114" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="PvPTalentList" inherits="PvPTalentListTemplate" frameLevel="1000" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.PvPTalentSlotTray" relativePoint="BOTTOMRIGHT" x="14" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

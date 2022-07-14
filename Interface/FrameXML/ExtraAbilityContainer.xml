@@ -2,10 +2,11 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ExtraAbilityContainer.lua"/>
 
-	<Frame name="ExtraAbilityContainerTemplate" mixin="ExtraAbilityContainerMixin" inherits="HorizontalLayoutFrame" virtual="true">
+	<Frame name="ExtraAbilityContainerTemplate" mixin="ExtraAbilityContainerMixin" inherits="HorizontalLayoutFrame, UIParentBottomManagedFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="spacing" value="-30" type="number"/>
 			<KeyValue key="fixedHeight" value="120" type="number"/>
+			<KeyValue key="layoutIndex" value="9" type="number"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -14,7 +15,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ExtraAbilityContainer" inherits="ExtraAbilityContainerTemplate" parent="UIParent" topLevel="true" hidden="true">
+	<Frame name="ExtraAbilityContainer" inherits="ExtraAbilityContainerTemplate" topLevel="true" hidden="true">
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>

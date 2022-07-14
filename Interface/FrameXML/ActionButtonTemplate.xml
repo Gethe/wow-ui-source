@@ -1,46 +1,137 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Script file="ActionButton.lua"/>
 
-	<Texture name="ActionBarFlyoutButton-ArrowUp" file="Interface\Buttons\ActionBarFlyoutButton" virtual="true" >
-		<Size x="23" y="11"/>	
-		<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500"/>	
-	</Texture>
 	<Texture name="ActionBarFlyoutButton-IconFrame" file="Interface\Buttons\ActionBarFlyoutButton" virtual="true" >
 		<Size x="42" y="42"/>	
 		<TexCoords left="0.01562500" right="0.67187500" top="0.39843750" bottom="0.72656250"/>	
 	</Texture>
-	<Texture name="ActionBarFlyoutButton-IconShadow" file="Interface\Buttons\ActionBarFlyoutButton" virtual="true" >
-		<Size x="48" y="48"/>	
-		<TexCoords left="0.01562500" right="0.76562500" top="0.00781250" bottom="0.38281250"/>	
-	</Texture>
-	
-	<CheckButton name="ActionButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="36" y="36"/>
-		</Size>
+
+	<Frame name="ActionBarButtonSpellActivationAlert" virtual="true" mixin="ActionBarButtonSpellActivationAlertMixin">
+		<Animations>
+			<AnimationGroup parentKey="animIn" mixin="ActionBarOverlayGlowAnimInMixin">
+				<Scale target="$parentSpark" duration="0.2" scaleX="1.5" scaleY="1.5" order="1"/>
+				<Alpha target="$parentSpark" duration="0.2" fromAlpha="0" toAlpha="1" order="1"/>
+				<Scale target="$parentInnerGlow" 			duration="0.3" scaleX="2" scaleY="2" order="1"/>
+				<Scale target="$parentInnerGlowOver" 	duration="0.3" scaleX="2" scaleY="2" order="1"/>
+				<Alpha target="$parentInnerGlowOver"	duration="0.3" fromAlpha="1" toAlpha="0" order="1"/>
+				<Scale target="$parentOuterGlow" 			duration="0.3" scaleX="0.5" scaleY="0.5" order="1"/>
+				<Scale target="$parentOuterGlowOver" 	duration="0.3" scaleX="0.5" scaleY="0.5" order="1"/>
+				<Alpha target="$parentOuterGlowOver"	duration="0.3" fromAlpha="1" toAlpha="0" order="1"/>
+				<Scale target="$parentSpark" startDelay="0.2" duration="0.2" scaleX="0.666666" scaleY="0.666666" order="1"/>
+				<Alpha target="$parentSpark" startDelay="0.2" duration="0.2" fromAlpha="1" toAlpha="0" order="1"/>
+				<Alpha target="$parentInnerGlow" startDelay="0.3" duration="0.2" fromAlpha="1" toAlpha="0" order="1"/>
+				<Alpha target="$parentAnts"	startDelay="0.3" duration="0.2" fromAlpha="0" toAlpha="1" order="1"/>
+				<Scripts>
+					<OnPlay method="OnPlay"/>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="animOut" mixin="ActionBarOverlayGlowAnimOutMixin">
+				<Alpha target="$parentOuterGlowOver" duration="0.2" fromAlpha="0" toAlpha="1" order="1"/>
+				<Alpha target="$parentAnts"	duration="0.2" fromAlpha="1" toAlpha="0" order="1"/>
+				<Alpha target="$parentOuterGlowOver" duration="0.2" fromAlpha="1" toAlpha="0" order="2"/>
+				<Alpha target="$parentOuterGlow" duration="0.2" fromAlpha="1" toAlpha="0" order="2"/>
+				<Scripts>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" parentKey="icon"/>
+				<Texture name="$parentSpark" parentKey="spark" file="Interface\SpellActivationOverlay\IconAlert" alpha="0" setAllPoints="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.61718750" top="0.00390625" bottom="0.26953125"/>
+				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentFlash" parentKey="Flash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
-				<Texture name="$parentFlyoutBorder" inherits="ActionBarFlyoutButton-IconFrame" parentKey="FlyoutBorder" hidden="true">
+			<Layer level="ARTWORK">
+				<Texture name="$parentInnerGlow" parentKey="innerGlow" file="Interface\SpellActivationOverlay\IconAlert" alpha="0" setAllPoints="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.27734375" bottom="0.52734375"/>
+				</Texture>
+				<Texture name="$parentInnerGlowOver" parentKey="innerGlowOver" file="Interface\SpellActivationOverlay\IconAlert" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentInnerGlow" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentInnerGlow" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.53515625" bottom="0.78515625"/>
+				</Texture>
+				<Texture name="$parentOuterGlow" parentKey="outerGlow" file="Interface\SpellActivationOverlay\IconAlert" alpha="0" setAllPoints="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.27734375" bottom="0.52734375"/>
+				</Texture>
+				<Texture name="$parentOuterGlowOver" parentKey="outerGlowOver" file="Interface\SpellActivationOverlay\IconAlert" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentOuterGlow" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentOuterGlow" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.50781250" top="0.53515625" bottom="0.78515625"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentAnts" parentKey="ants" file="Interface\SpellActivationOverlay\IconAlertAnts" alpha="0" setAllPoints="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentFlyoutBorderShadow" inherits="ActionBarFlyoutButton-IconShadow" parentKey="FlyoutBorderShadow" hidden="true">
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ActionBarButtonEventsFrame" mixin="ActionBarButtonEventsFrameMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ActionBarActionEventsFrame" mixin="ActionBarActionEventsFrameMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<CheckButton name="ActionButtonTemplate" parentArray="ActionButtons" mixin="BaseActionButtonMixin" virtual="true">
+		<Size x="35" y="35"/>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" parentKey="icon" />
+				<MaskTexture parentKey="IconMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="-14" y="14"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="15" y="-15"/>
 					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="SlotArt" atlas="ui-hud-actionbar-iconframe-slot">
+					<Size x="30" y="30"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentFlash" parentKey="Flash" atlas="UI-HUD-ActionBar-IconFrame-Flash" hidden="true"/>
+				<Texture name="$parentFlyoutBorderShadow" parentKey="FlyoutBorderShadow" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBorderShadow" hidden="true">
+					<Size x="39" y="39"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture name="$parentFlyoutArrow" inherits="ActionBarFlyoutButton-ArrowUp" parentKey="FlyoutArrow" hidden="true"/>
 				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" parentKey="HotKey" justifyH="RIGHT">
 					<Size x="32" y="10"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="Count" justifyH="RIGHT">
@@ -56,25 +147,16 @@
 						<Anchor point="BOTTOM" x="0" y="2"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentBorder" file="Interface\Buttons\UI-ActionButton-Border" parentKey="Border" hidden="true" alphaMode="ADD">
-					<Size x="62" y="62"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
+				<Texture name="$parentBorder" parentKey="Border" atlas="UI-HUD-ActionBar-IconFrame-Border" hidden="true">
+					<Size x="35" y="35"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="NewActionTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" hidden="true">
-					<Size x="44" y="44"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
+				<Texture parentKey="NewActionTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" hidden="true">
+					<Size x="35" y="35"/>
 				</Texture>
-				<Texture parentKey="SpellHighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" hidden="true">
-					<Size x="44" y="44"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
+				<Texture parentKey="SpellHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" hidden="true">
+					<Size x="35" y="35"/>
 				</Texture>
 				<Texture parentKey="AutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
 					<Size x="58" y="58"/>
@@ -89,38 +171,112 @@
 				</Texture>
 			</Layer>
 		</Layers>
+
 		<Animations>
 			<AnimationGroup parentKey="SpellHighlightAnim" looping="REPEAT">
 				<Alpha childKey="SpellHighlightTexture" smoothing="OUT" duration=".35" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="SpellHighlightTexture" smoothing="IN" duration=".35" order="2" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
+
 		<Frames>
+			<Frame parentKey="SlotBackground" inherits="NineSliceCodeTemplate" frameLevel="1" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="UI-HUD-ActionBar-Frame-Background" type="string"/>
+					<KeyValue key="layoutTextureLayer" value="BACKGROUND" type="string"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="FlyoutArrowContainer" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="FlyoutArrowNormal" atlas="UI-HUD-ActionBar-Flyout" hidden="true">
+							<Size x="18" y="7"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlyoutArrowPushed" atlas="UI-HUD-ActionBar-Flyout-Down" hidden="true">
+							<Size x="19" y="8"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlyoutArrowHighlight" atlas="UI-HUD-ActionBar-Flyout-Mouseover" hidden="true">
+							<Size x="18" y="7"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
 			<Frame name="$parentShine" parentKey="AutoCastShine" inherits="AutoCastShineTemplate">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 				<Size x="28" y="28"/>
 			</Frame>
+
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown">
-				<Size x="36" y="36"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="-1"/>
-				</Anchors>
+				<Size x="35" y="35"/>
 				<SwipeTexture>
 					<Color r="1" g="1" b="1" a="0.8"/>
 				</SwipeTexture>
 			</Cooldown>
-		</Frames>
-		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
-			<Anchors>
-				<Anchor point="TOPLEFT" x="-15" y="15"/>
-				<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
-			</Anchors>
-		</NormalTexture>
-		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-	</CheckButton>
-</Ui>
 
+			<Frame parentKey="RightDivider" inherits="NineSliceCodeTemplate" hidden="true">
+				<Size x="7"/>
+				<KeyValues>
+					<KeyValue key="layoutType" value="ThreeSliceVerticalLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-2"/>
+					<Anchor point="TOP"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BottomDivider" inherits="NineSliceCodeTemplate" hidden="true">
+				<Size y="7"/>
+				<KeyValues>
+					<KeyValue key="layoutType" value="ThreeSliceHorizontalLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider-horizontal" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" y="-2"/>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+
+		<Scripts>
+			<OnLoad method="BaseActionButtonMixin_OnLoad" inherit="append"/>
+		</Scripts>
+
+		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" atlas="UI-HUD-ActionBar-IconFrame"/>
+		<PushedTexture atlas="UI-HUD-ActionBar-IconFrame-Down" parentKey="PushedTexture"/>
+		<HighlightTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="HighlightTexture"/>
+		<CheckedTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="CheckedTexture"/>
+	</CheckButton>
+
+	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate" virtual="true" mixin="ActionBarActionButtonMixin">
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnAttributeChanged method="UpdateAction"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick" inherit="prepend"/>
+			<PostClick method="UpdateState"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnEnter method="OnEnter" inherit="append"/>
+			<OnLeave method="OnLeave" inherit="append"/>
+			<OnUpdate method="OnUpdate" inherit="append"/>
+		</Scripts>
+	</CheckButton>
+
+	<CheckButton name="ActionBarButtonTemplate" inherits="ActionButtonTemplate, ActionBarButtonCodeTemplate" virtual="true"/>
+</Ui>

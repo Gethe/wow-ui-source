@@ -1,6 +1,6 @@
-## Title: PTR Bug Reporter
+## Title: PTR Issue Reporter
 ## OnlyBetaAndPTR: 1
-## Notes: Tool for gathering bugs from PTR
+## Notes: Tool for gathering issues from PTR
 ## SavedVariables: Blizzard_PTRIssueReporter_Saved
 
 Bindings.xml

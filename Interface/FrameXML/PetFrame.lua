@@ -76,7 +76,7 @@ function PetFrame_Update (self, override)
 			end
 			PetAttackModeTexture:Hide();
 
-			RefreshDebuffs(self, self.unit, nil, nil, true);
+			PartyMemberFrame_UpdateAuras(self);
 		else
 			self:Hide();
 		end
@@ -107,7 +107,8 @@ function PetFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == self.unit ) then
-			RefreshDebuffs(self, self.unit, nil, nil, true);
+			local unitAuraUpdateInfo = arg2;
+			PartyMemberFrame_UpdateAuras(self, unitAuraUpdateInfo);
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
@@ -182,7 +183,7 @@ function PetFrameDropDown_Initialize ()
 end
 
 function PetCastingBarFrame_OnLoad (self)
-	CastingBarFrame_OnLoad(self, "pet", false, false);
+	self:OnLoad("pet", false, false);
 
 	self:RegisterEvent("UNIT_PET");
 
@@ -203,5 +204,5 @@ function PetCastingBarFrame_OnEvent (self, event, ...)
 		end
 		return;
 	end
-	CastingBarFrame_OnEvent(self, event, ...);
+	self:OnEvent(event, ...);
 end

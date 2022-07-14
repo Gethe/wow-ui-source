@@ -513,10 +513,13 @@ local MIN_BONUS_HONOR_LEVEL;
 local HONOR_REWARD_QUEST_ID = 54748;
 
 function HonorFrame_OnLoad(self)
-	self.SpecificFrame.scrollBar.doNotHide = true;
-	self.SpecificFrame.update = HonorFrameSpecificList_Update;
-	self.SpecificFrame.dynamic = HonorFrame_CalculateScroll;
-	HybridScrollFrame_CreateButtons(self.SpecificFrame, "PVPSpecificBattlegroundButtonTemplate", -2, -1);
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("PVPSpecificBattlegroundButtonTemplate", function(button, elementData)
+		HonorFrame_InitSpecificButton(button, elementData);
+	end);
+	view:SetPadding(1,0,2,0,0);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.SpecificScrollBox, self.SpecificScrollBar, view);
 
 	-- min level for bonus frame
 	MIN_BONUS_HONOR_LEVEL = (C_PvP.GetRandomBGInfo()).minLevel;
@@ -607,10 +610,12 @@ function HonorFrame_SetType(value)
 	UIDropDownMenu_SetSelectedValue(HonorFrameTypeDropDown, value);
 
 	if ( value == "specific" ) then
-		HonorFrame.SpecificFrame:Show();
+		HonorFrame.SpecificScrollBox:Show();
+		HonorFrame.SpecificScrollBar:Show();
 		HonorFrame.BonusFrame:Hide();
 	elseif ( value == "bonus" ) then
-		HonorFrame.SpecificFrame:Hide();
+		HonorFrame.SpecificScrollBox:Hide();
+		HonorFrame.SpecificScrollBar:Hide();
 		HonorFrame.BonusFrame:Show();
 	end
 end
@@ -621,7 +626,7 @@ function HonorFrame_UpdateQueueButtons()
 	local arenaID;
 	local isBrawl;
 	if ( HonorFrame.type == "specific" ) then
-		if ( HonorFrame.SpecificFrame.selectionID ) then
+		if ( HonorFrame.SpecificScrollBox.selectionID ) then
 			canQueue = true;
 		end
 	elseif ( HonorFrame.type == "bonus" ) then
@@ -709,8 +714,8 @@ end
 
 function HonorFrame_Queue()
 	local HonorFrame = HonorFrame;
-	if ( HonorFrame.type == "specific" and HonorFrame.SpecificFrame.selectionID ) then
-		JoinBattlefield(HonorFrame.SpecificFrame.selectionID);
+	if ( HonorFrame.type == "specific" and HonorFrame.SpecificScrollBox.selectionID ) then
+		JoinBattlefield(HonorFrame.SpecificScrollBox.selectionID);
 	elseif ( HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton ) then
 		if ( HonorFrame.BonusFrame.selectedButton.arenaID ) then
 			JoinSkirmish(HonorFrame.BonusFrame.selectedButton.arenaID);
@@ -728,113 +733,66 @@ function HonorFrame_Queue()
 end
 
 -------- Specific BG Frame --------
+function HonorFrame_InitSpecificButton(button, elementData)
+	local localizedName = elementData.localizedName;
+	local shortDescription = elementData.shortDescription;
+	local longDescription = elementData.longDescription;
+	local maxPlayers = elementData.maxPlayers;
+	local gameType = elementData.gameType;
+	local iconTexture = elementData.iconTexture;
+	local battleGroundID = elementData.battleGroundID;
+
+	button.NameText:SetText(localizedName);
+	button.name = localizedName;
+	button.shortDescription = shortDescription;
+	button.longDescription = longDescription;
+	button.SizeText:SetFormattedText(PVP_TEAMTYPE, maxPlayers, maxPlayers);
+	button.InfoText:SetText(gameType);
+	button.Icon:SetTexture(iconTexture or DEFAULT_BG_TEXTURE);
+	if ( HonorFrame.SpecificScrollBox.selectionID == battleGroundID ) then
+		button.SelectedTexture:Show();
+		button.NameText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		button.SizeText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	else
+		button.SelectedTexture:Hide();
+		button.NameText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		button.SizeText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	end
+	button.bgID = battleGroundID;
+end
 
 function HonorFrameSpecificList_Update()
-	local scrollFrame = HonorFrame.SpecificFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numButtons = #buttons;
-	local numBattlegrounds = GetNumBattlegroundTypes();
-	local selectionID = scrollFrame.selectionID;
-	local buttonCount = -offset;
-
-	for i = 1, numBattlegrounds do
-		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture, shortDescription, longDescription = GetBattlegroundInfo(i);
-		if ( localizedName and canEnter and not isRandom ) then
-			buttonCount = buttonCount + 1;
-			if ( buttonCount > 0 and buttonCount <= numButtons ) then
-				local button = buttons[buttonCount];
-				button:Show();
-				button.NameText:SetText(localizedName);
-				button.name = localizedName;
-				button.shortDescription = shortDescription;
-				button.longDescription = longDescription;
-				button.SizeText:SetFormattedText(PVP_TEAMTYPE, maxPlayers, maxPlayers);
-				button.InfoText:SetText(gameType);
-				button.Icon:SetTexture(iconTexture or DEFAULT_BG_TEXTURE);
-				if ( selectionID == battleGroundID ) then
-					button.SelectedTexture:Show();
-					button.NameText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-					button.SizeText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				else
-					button.SelectedTexture:Hide();
-					button.NameText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-					button.SizeText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				end
-				button:Show();
-				button.bgID = battleGroundID;
-			end
+	local dataProvider = CreateDataProvider();
+	for index = 1, GetNumBattlegroundTypes() do
+		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture, shortDescription, longDescription = GetBattlegroundInfo(index);
+		if localizedName and canEnter and not isRandom then
+			dataProvider:Insert({
+				localizedName=localizedName,
+				battleGroundID=battleGroundID,
+				maxPlayers=maxPlayers,
+				gameType=gameType,
+				iconTexture=iconTexture,
+				shortDescription=shortDescription,
+				longDescription=longDescription,
+			});
 		end
 	end
-	buttonCount = max(buttonCount, 0);	-- safety check
-	for i = buttonCount + 1, numButtons do
-		buttons[i]:Hide();
-	end
-
-	local totalHeight = (buttonCount + offset) * BATTLEGROUND_BUTTON_HEIGHT;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, numButtons * scrollFrame.buttonHeight);
+	HonorFrame.SpecificScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	HonorFrame_UpdateQueueButtons();
 end
 
-function HonorFrame_CalculateScroll(offset)
-	local heightLeft = offset;
-	local buttonHeight;
-	local numBattlegrounds = GetNumBattlegroundTypes();
-
-	for i = 1, numBattlegrounds do
-		buttonHeight = 40;
-		if ( heightLeft - buttonHeight <= 0 ) then
-			return i-1, heightLeft;
-		else
-			heightLeft = heightLeft - buttonHeight;
-		end
-	end
-end
-
 function HonorFrameSpecificList_FindAndSelectBattleground(bgID)
-	local numBattlegrounds = GetNumBattlegroundTypes();
-	local buttonCount = 0;
-	local bgButtonIndex = 0;
-
-	for i = 1, numBattlegrounds do
-		local localizedName, canEnter, isHoliday, isRandom, battleGroundID = GetBattlegroundInfo(i);
-		if ( localizedName and canEnter and not isRandom ) then
-			buttonCount = buttonCount + 1;
-			if ( battleGroundID == bgID ) then
-				bgButtonIndex = buttonCount;
-			end
-		end
-	end
-
-	if ( bgButtonIndex == 0 ) then
-		-- didn't find the bg
-		return;
-	end
-
-	HonorFrame.SpecificFrame.selectionID = bgID;
-	-- scroll the list if necessary
-	if ( numBattlegrounds > MAX_SHOWN_BATTLEGROUNDS ) then
-		local offset;
-		if ( bgButtonIndex <= MAX_SHOWN_BATTLEGROUNDS ) then
-			-- if the bg is on the first page, scroll to the top
-			offset = 0;
-		elseif ( bgButtonIndex > ( numBattlegrounds - MAX_SHOWN_BATTLEGROUNDS ) ) then
-			-- if the bg is on the last page, scroll to the bottom
-			offset = ( numBattlegrounds - MAX_SHOWN_BATTLEGROUNDS ) * BATTLEGROUND_BUTTON_HEIGHT;
-		else
-			-- otherwise scroll to put that bg to the top
-			offset = ( bgButtonIndex - 1 ) * BATTLEGROUND_BUTTON_HEIGHT;
-		end
-		HonorFrame.SpecificFrame.scrollBar:SetValue(offset);
-	end
-
+	HonorFrame.SpecificScrollBox.selectionID = bgID;
+	HonorFrame.SpecificScrollBox:ScrollToElementDataByPredicate(function(elementData)
+		return elementData.battleGroundID == bgID;
+	end);
 	HonorFrameSpecificList_Update();
 end
 
 function HonorFrameSpecificBattlegroundButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	HonorFrame.SpecificFrame.selectionID = self.bgID;
+	HonorFrame.SpecificScrollBox.selectionID = self.bgID;
 	HonorFrameSpecificList_Update();
 end
 
@@ -1872,10 +1830,6 @@ function PVPConquestBarMixin:Update()
 	self.locked = not IsPlayerAtEffectiveMaxLevel();
 	self.Lock:SetShown(self.locked);
 
-	local maxProgress = currencyInfo.maxQuantity;
-	local progress = math.min(currencyInfo.totalEarned, maxProgress);
-
-	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID);
 	local maxProgress = currencyInfo.maxQuantity;
 	local progress = math.min(currencyInfo.totalEarned, maxProgress);
 

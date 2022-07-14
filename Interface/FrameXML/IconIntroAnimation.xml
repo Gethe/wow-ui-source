@@ -58,38 +58,28 @@
 
 
 	<Frame name="IconIntroTemplate" virtual="true" frameStrata="HIGH">
-		<Size>
-			<AbsDimension x="40" y="40"/>
-		</Size>
+		<Size x="40" y="40"/>
 		<Frames>
 			<Frame name="$parentIconTrail3" inherits="IconIntroAnimTemplate" parentKey="trail3" >
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentIconTrail2" inherits="IconIntroAnimTemplate" parentKey="trail2" >
-				<Size>
-					<AbsDimension x="20" y="20"/>
-				</Size>
+				<Size x="20" y="20"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentIconTrail1" inherits="IconIntroAnimTemplate" parentKey="trail1" >
-				<Size>
-					<AbsDimension x="30" y="30"/>
-				</Size>
+				<Size x="30" y="30"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentIcon" inherits="IconIntroAnimTemplate" parentKey="icon" >
-				<Size>
-					<AbsDimension x="40" y="40"/>
-				</Size>
+				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>

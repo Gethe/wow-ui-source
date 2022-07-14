@@ -1,7 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ContainerFrame.lua"/>
-	
+
+	<Texture name="ItemSlotBackgroundCombinedBagsTemplate" file="Interface\ContainerFrame\UI-Bag-Components" virtual="true">
+		<TexCoords left="0.64453125" right="0.7890625" top="0.42578125" bottom="0.498046875"/>
+	</Texture>
+
 	<Frame name="ContainerFrameExtendedItemButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -19,7 +23,26 @@
 		</Scripts>
 	</Frame>
 
-	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" hidden="true" virtual="true">
+	<DropDownToggleButton name="ContainerFramePortraitButtonTemplate" mixin="ContainerFramePortraitButtonMixin" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-3" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</DropDownToggleButton>
+
+	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" parentArray="Items" hidden="true" virtual="true">
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 		</Anchors>
@@ -34,7 +57,7 @@
 		</Animations>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture name="$parentIconQuestTexture">
+				<Texture name="$parentIconQuestTexture" parentKey="IconQuestTexture">
 					<Size x="37" y="38"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="0"/>
@@ -64,16 +87,16 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="BagIndicator" file="Interface\Store\store-item-highlight" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="ExtendedSlot" file="Interface\Buttons\UI-Quickslot2" alpha="0.5" alphaMode="ADD" hidden="true">
 					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="-1"/>
 					</Anchors>
-					<Scripts>
-						<OnLoad>
-							self:SetVertexColor(0.603, 0.875, 1);
-						</OnLoad>
-					</Scripts>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="5">
@@ -85,47 +108,20 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnClick>
-				local modifiedClick = IsModifiedClick();
-				-- If we can loot the item and autoloot toggle is active, then do a normal click
-				if ( button ~= "LeftButton" and modifiedClick and IsModifiedClick("AUTOLOOTTOGGLE") ) then
-					local _, _, _, _, _, lootable = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
-					if ( lootable ) then
-						modifiedClick = false;
-					end
-				end
-				if ( modifiedClick ) then
-					ContainerFrameItemButton_OnModifiedClick(self, button);
-				else
-					ContainerFrameItemButton_OnClick(self, button);
-				end
-			</OnClick>
-			<OnLoad>
-				ContainerFrameItemButton_OnLoad(self);
-			</OnLoad>
-			<OnEnter>
-				ContainerFrameItemButton_OnEnter(self);
-			</OnEnter>
-			<OnLeave>
-				ContainerFrameItemButton_OnLeave(self);
-			</OnLeave>
-			<OnHide>
-				if ( self.hasStackSplit and (self.hasStackSplit == 1) ) then
-					StackSplitFrame:Hide();
-				end
-			</OnHide>
-			<OnDragStart>
-				ContainerFrameItemButton_OnDrag(self, button);
-			</OnDragStart>
-			<OnReceiveDrag>
-				ContainerFrameItemButton_OnDrag(self);
-			</OnReceiveDrag>
+			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad"/>
+			<OnEnter function="ContainerFrameItemButton_OnEnter"/> <!-- NOTE: Tutorials hook this, possibly refactor later. -->
+			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
 		</Scripts>
 	</ItemButton>
-	<Frame name="ContainerFrameTemplate" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
+
+	<Frame name="ContainerFrameTemplate" mixin="ContainerFrameMixin" parent="UIParent" parentArray="ContainerFrames" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
 		<Size x="256" y="256"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -137,40 +133,40 @@
                 </Texture>
             </Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBackgroundTop" file="Interface\ContainerFrame\UI-Bag-Components">
+				<Texture name="$parentBackgroundTop" parentKey="BackgroundTop" file="Interface\ContainerFrame\UI-Bag-Components">
 					<Size x="256" y="512"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeTo="$parent" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBackgroundMiddle1" file="Interface\ContainerFrame\UI-Bag-Components">
+				<Texture name="$parentBackgroundMiddle1" parentArray="BackgroundMiddle" file="Interface\ContainerFrame\UI-Bag-Components">
 					<Size x="256" y="512"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentBackgroundTop" relativePoint="BOTTOM"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0.3515625" bottom="0.8515625"/>
 				</Texture>
-				<Texture name="$parentBackgroundMiddle2" file="Interface\ContainerFrame\UI-Bag-Components" hidden="true">
+				<Texture name="$parentBackgroundMiddle2" parentArray="BackgroundMiddle" file="Interface\ContainerFrame\UI-Bag-Components" hidden="true">
 					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0.353515625" bottom="0.8515625"/>
 				</Texture>
-				<Texture name="$parentBackgroundBottom" file="Interface\ContainerFrame\UI-Bag-Components">
+				<Texture name="$parentBackgroundBottom" parentKey="BackgroundBottom" file="Interface\ContainerFrame\UI-Bag-Components">
 					<Size x="256" y="10"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="0.330078125" bottom="0.349609375"/>
 				</Texture>
-				<FontString name="$parentName" inherits="GameFontHighlight">
+				<FontString name="$parentName" parentKey="Name" inherits="GameFontHighlight">
 					<Size x="112" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="47" y="-10"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentBackground1Slot" file="Interface\ContainerFrame\UI-Bag-1Slot" hidden="true">
+				<Texture name="$parentBackground1Slot" parentKey="Background1Slot" file="Interface\ContainerFrame\UI-Bag-1Slot" hidden="true">
 					<Size x="99" y="74"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="0" y="0"/>
@@ -180,10 +176,8 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-2" y="-274"/>
-				</Anchors>
+			<!-- [NB] TODO: Only the backpack should even have these frames, any other frames having them is a waste. -->
+			<Frame name="$parentMoneyFrame" parentKey="MoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 				<Scripts>
 					<OnLoad>
 						SmallMoneyFrame_OnLoad(self);
@@ -229,26 +223,10 @@
 			<ItemButton name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
 			<ItemButton name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
 
-			<DropDownToggleButton name="$parentPortraitButton" mixin="ContainerFramePortraitButtonMixin" parentKey="PortraitButton">
-				<Size x="40" y="40"/>
+			<DropDownToggleButton name="$parentPortraitButton" parentKey="PortraitButton" inherits="ContainerFramePortraitButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-5"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
-							<Size x="36" y="36"/>
-							<Anchors>
-								<Anchor point="CENTER" x="-3" y="3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnMouseDown method="OnMouseDown"/>
-					<OnEnter method="OnEnter" />
-					<OnLeave method="OnLeave" />
-				</Scripts>
 			</DropDownToggleButton>
 			<Button parentKey="FilterIcon" mixin="DropDownToggleButtonMixin" hidden="true">
 				<Size x="28" y="28"/>
@@ -282,7 +260,7 @@
 					</OnMouseDown>
 				</Scripts>
 			</Button>
-			<Button name="$parentAddSlotsButton" hidden="true" frameLevel="100">
+			<Button name="$parentAddSlotsButton" parentKey="AddSlotsButton" hidden="true" frameLevel="100">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="12" y="37"/>
@@ -333,15 +311,11 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ToggleBag(self:GetParent():GetID());
+						CloseBag(self:GetParent():GetBagID());
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="ContainerFrameFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Button parentKey="ClickableTitleFrame" mixin="DropDownToggleButtonMixin">
 				<Size x="118" y="16"/>
 				<Anchors>
@@ -362,35 +336,74 @@
 					</OnMouseDown>
 				</Scripts>
 			</Button>
-		</Frames>	
+		</Frames>
 		<Scripts>
-			<OnEvent>
-				ContainerFrame_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnLoad>
-				ContainerFrame_OnLoad(self);
-			</OnLoad>
-			<OnHide>
-				ContainerFrame_OnHide(self);
-			</OnHide>
-			<OnShow>
-				ContainerFrame_OnShow(self);
-			</OnShow>
+			<OnEvent function="ContainerFrame_OnEvent"/>
+			<OnLoad function="ContainerFrame_OnLoad"/>
+			<OnHide function="ContainerFrame_OnHide"/>
+			<OnShow function="ContainerFrame_OnShow"/>
 		</Scripts>
 	</Frame>
-	<Frame name="ContainerFrame1" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame2" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame3" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame4" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame5" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame6" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame7" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame8" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame9" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame10" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame11" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame12" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
-	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
+
+	<Frame name="ContainerFrameBankTemplate" inherits="ContainerFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="canUseForBankBag" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="ContainerFrameBackpackTemplate" inherits="ContainerFrameTemplate" mixin="ContainerFrameBackpackMixin" virtual="true">
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ContainerFrame1" inherits="ContainerFrameBackpackTemplate"/>
+	<Frame name="ContainerFrame2" inherits="ContainerFrameTemplate"/>
+	<Frame name="ContainerFrame3" inherits="ContainerFrameTemplate"/>
+	<Frame name="ContainerFrame4" inherits="ContainerFrameTemplate"/>
+	<Frame name="ContainerFrame5" inherits="ContainerFrameTemplate"/>
+	<Frame name="ContainerFrame6" inherits="ContainerFrameTemplate"/>
+	<Frame name="ContainerFrame7" inherits="ContainerFrameBankTemplate"/>
+	<Frame name="ContainerFrame8" inherits="ContainerFrameBankTemplate"/>
+	<Frame name="ContainerFrame9" inherits="ContainerFrameBankTemplate"/>
+	<Frame name="ContainerFrame10" inherits="ContainerFrameBankTemplate"/>
+	<Frame name="ContainerFrame11" inherits="ContainerFrameBankTemplate"/>
+	<Frame name="ContainerFrame12" inherits="ContainerFrameBankTemplate"/>
+	<Frame name="ContainerFrame13" inherits="ContainerFrameBankTemplate"/>
+
+	<Frame name="ContainerFrameCombinedBags" inherits="PortraitFrameTemplate" mixin="ContainerFrameCombinedBagsMixin" parent="UIParent" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="onCloseCallback" value="ContainerFrameCombinedBagsMixin.Close" type="global"/> <!-- NOTE: Will pass close button as first argument, use a function that doesn't care about that -->
+		</KeyValues>
+		<Frames>
+			<DropDownToggleButton name="$parentPortraitButton" parentKey="PortraitButton" inherits="ContainerFramePortraitButtonTemplate" scale="1.5"/>
+			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate"/>
+
+			<Frame parentKey="MoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BGTemp" setAllPoints="true">
+							<Color color="BLACK_FONT_COLOR"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "PLAYER");
+						MoneyFrame_SetMaxDisplayWidth(self, 160);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEvent function="ContainerFrame_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
 
 	<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
 		<Size x="96" y="18"/>

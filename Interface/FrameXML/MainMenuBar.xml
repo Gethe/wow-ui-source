@@ -1,10 +1,29 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBar.lua"/>
-	<Frame name="MainMenuBar"  enableMouse="true" parent="UIParent" mixin="MainMenuBarMixin">
+
+	<CheckButton name="MainBarActionBarButtonTemplate" inherits="ActionBarButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="showButtonArt" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+
+	<Frame name="MainMenuBar" inherits="EditModeActionBarTemplate" enableMouse="true" parent="UIParent" frameLevel="50" mixin="MainMenuBarMixin">
+		<Size x="454" y="35"/>
 		<Anchors>
 			<Anchor point="BOTTOM"/>
 		</Anchors>
+
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MainBarActionBarButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="ACTION" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="systemIndex" value="1" type="number"/>
+		</KeyValues>
+
 		<Animations>
 			<AnimationGroup parentKey="slideOut">
 				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>
@@ -18,95 +37,143 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="QuickKeybindBottomShadow" atlas="_QuickKeybind_Bottom_Shadow" useAtlasSize="true" horizTile="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QuickKeybindRightShadow" atlas="!QuickKeybind_Side_Shadow" useAtlasSize="true" vertTile="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="UIParent" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="QuickKeybindGlowLarge" atlas="QuickKeybind_BottomBarExtended_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.BackgroundLarge" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QuickKeybindGlowSmall" atlas="QuickKeybind_BottomBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.BackgroundSmall" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
 		<Frames>
-			<Frame name="MicroButtonAndBagsBar" parentKey="MicroButtonAndBagsBar">
-				<Size x="298" y="88"/>
+			<Frame parentKey="BorderArt" inherits="NineSliceCodeTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame" type="string"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" x="0"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-4" y="4"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="9" y="-9"/>
 				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Background" inherits="NineSliceCodeTemplate" frameLevel="1" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-background" type="string"/>
+					<KeyValue key="layoutTextureLayer" value="BACKGROUND" type="string"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="EndCaps" setAllPoints="true" frameLevel="100">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
 				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-1">
-						<Texture parentKey="QuickKeybindsMicroBagBarGlow" atlas="QuickKeybind_BagMicro_Glow" useAtlasSize="true" hidden="true">
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<Texture parentKey="LeftEndCap" atlas="ui-hud-actionbar-gryphon-left">
+							<Size x="77" y="77"/>
 							<Anchors>
-								<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.MicroBagBar" x="-30" y="30"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 							</Anchors>
 						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="MicroBagBar" atlas="hud-MicroBagBar" useAtlasSize="true"/>
+						<Texture parentKey="RightEndCap" atlas="ui-hud-actionbar-gryphon-right">
+							<Size x="77" y="77"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-17"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="MainMenuBarArtFrame" parentKey="ArtFrame">
+
+			<Frame parentKey="ActionBarPageNumber" frameLevel="100">
+				<Size x="17" y="38"/>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MainMenuBar" y="10"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBar" y="10"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
 				</Anchors>
-				<Frames>
-					<Frame name="MainMenuBarArtFrameBackground" parentKey="Background" frameStrata="LOW">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="BOTTOM"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND" textureSubLevel="-2">
-								<Texture parentKey="QuickKeybindBottomShadow" atlas="_QuickKeybind_Bottom_Shadow" useAtlasSize="true" horizTile="true" hidden="true">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-										<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="QuickKeybindRightShadow" atlas="!QuickKeybind_Side_Shadow" useAtlasSize="true" vertTile="true" hidden="true">
-									<Anchors>
-										<Anchor point="TOPRIGHT" relativeTo="UIParent" relativePoint="TOPRIGHT" x="0" y="0"/>
-										<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND" textureSubLevel="-1">
-								<Texture parentKey="QuickKeybindGlowLarge" atlas="QuickKeybind_BottomBarExtended_Glow" useAtlasSize="true" hidden="true">
-									<Anchors>
-										<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.BackgroundLarge" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="QuickKeybindGlowSmall" atlas="QuickKeybind_BottomBar_Glow" useAtlasSize="true" hidden="true">
-									<Anchors>
-										<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.BackgroundSmall" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="BackgroundLarge" atlas="hud-MainMenuBar-large" useAtlasSize="true" hidden="true"/>
-								<Texture parentKey="BackgroundSmall" atlas="hud-MainMenuBar-small" useAtlasSize="true" hidden="true"/>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
 				<Layers>
 					<Layer level="OVERLAY" textureSubLevel="5">
-						<Texture parentKey="LeftEndCap" atlas="hud-MainMenuBar-gryphon" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBarArtFrame" x="-98" y="-10"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="RightEndCap" atlas="hud-MainMenuBar-gryphon" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBarArtFrame" x="98" y="-10"/>
-							</Anchors>
-							<TexCoords left="1" right="0" top="0" bottom="1"/>
-						</Texture>
-						<FontString parentKey="PageNumber" inherits="GameFontNormalSmall">
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="MainMenuBarArtFrameBackground" relativePoint="CENTER" x="134" y="-3"/>
-							</Anchors>
+						<FontString parentKey="Text" inherits="GameFontNormalCenter">
+							<Size x="17" y="10"/>
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Button parentKey="UpButton" inherits="QuickKeybindButtonTemplate" mixin="MainActionBarUpButtonMixin">
+						<KeyValues>
+							<KeyValue key="commandName" value="NEXTACTIONPAGE" type="string"/>
+						</KeyValues>
+						<Size x="17" y="14"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="10"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick" inherit="append"/>
+							<OnLeave method="OnLeave" inherit="append"/>
+						</Scripts>
+						<NormalTexture atlas="ui-hud-actionbar-pageuparrow-up"/>
+						<PushedTexture atlas="ui-hud-actionbar-pageuparrow-down"/>
+						<DisabledTexture atlas="ui-hud-actionbar-pageuparrow-disabled"/>
+						<HighlightTexture atlas="ui-hud-actionbar-pageuparrow-mouseover"/>
+					</Button>
+					<Button parentKey="DownButton" inherits="QuickKeybindButtonTemplate" mixin="MainActionBarDownButtonMixin">
+						<KeyValues>
+							<KeyValue key="commandName" value="PREVIOUSACTIONPAGE" type="string"/>
+						</KeyValues>
+						<Size x="17" y="14"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick" inherit="append"/>
+							<OnLeave method="OnLeave" inherit="append"/>
+						</Scripts>
+						<NormalTexture atlas="ui-hud-actionbar-pagedownarrow-up"/>
+						<PushedTexture atlas="ui-hud-actionbar-pagedownarrow-down"/>
+						<DisabledTexture atlas="ui-hud-actionbar-pagedownarrow-disabled"/>
+						<HighlightTexture atlas="ui-hud-actionbar-pagedownarrow-mouseover"/>
+					</Button>
+				</Frames>
 			</Frame>
-			<Button name="MainMenuBarVehicleLeaveButton" parentKey="VehicleLeaveButton" hidden="true" motionScriptsWhileDisabled="true">
+
+			<Button name="MainMenuBarVehicleLeaveButton" parentKey="VehicleLeaveButton" inherits="UIParentBottomManagedFrameTemplate" hidden="true" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="300" type="number"/>
+					<KeyValue key="align" value="left" type="string"/>
+					<KeyValue key="layoutOnBottom" value="true" type="boolean"/>
+				</KeyValues>
 				<Scripts>
 					<OnLoad function="MainMenuBarVehicleLeaveButton_OnLoad"/>
 					<OnEvent function="MainMenuBarVehicleLeaveButton_OnEvent"/>
@@ -123,9 +190,10 @@
 				<HighlightTexture parentKey="Highlight" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 			</Button>
 		</Frames>
+
 		<Scripts>
 			<OnShow method="OnShow"/>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

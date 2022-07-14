@@ -119,18 +119,12 @@
 		</Layers>
 	</Frame>
 	<CheckButton name="GuildPermissionCheckBoxTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="20" y="20"/>
-		</Size>
+		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" inherits="GameFontHighlightSmall" parentKey="text">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="1" y="1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="1" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -272,9 +266,7 @@
 							</Anchors>
 						</FontString>
 						<FontString name="$parentCostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
-							<Size>
-								<AbsDimension x="0" y="12"/>
-							</Size>
+							<Size x="0" y="12"/>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="$parentBuyText" relativePoint="TOP">
 									<Offset x="-93" y="-28"/>
@@ -286,11 +278,7 @@
 				<Frames>
 					<Frame name="$parentCostMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false" parentKey="money">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentCostLabel" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="10" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="$parentCostLabel" relativePoint="RIGHT" x="10" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -300,9 +288,7 @@
 						</Scripts>
 					</Frame>
 					<Button name="$parentPurchaseButton" inherits="UIPanelButtonTemplate" text="BANKSLOTPURCHASE" parentKey="button">
-						<Size>
-							<AbsDimension x="124" y="21"/>
-						</Size>
+						<Size x="124" y="21"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentCostMoneyFrame" relativePoint="RIGHT" x="12" y="0"/>
 						</Anchors>

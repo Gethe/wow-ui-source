@@ -38,7 +38,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Sexes" inherits="HorizontalLayoutFrame">
+			<Frame parentKey="BodyTypes" inherits="HorizontalLayoutFrame">
 				<KeyValues>
 					<KeyValue key="spacing" value="22" type="number"/>
 				</KeyValues>

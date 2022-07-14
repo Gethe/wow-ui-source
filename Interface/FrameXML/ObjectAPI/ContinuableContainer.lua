@@ -17,6 +17,12 @@ ContinuableContainer = {};
 	return CreateFromMixins(self);
 end
 
+function ContinuableContainer:AddContinuables(tbl)
+	for index, continuable in pairs(tbl) do
+		self:AddContinuable(continuable);
+	end
+end
+
 function ContinuableContainer:AddContinuable(continuable)
 	if not self.continuables or not self.evictableObjects then
 		self.continuables = {};
@@ -24,7 +30,7 @@ function ContinuableContainer:AddContinuable(continuable)
 
 		self.onContinuableLoadedCallback = function()
 			self.numOutstanding = self.numOutstanding - 1;
-			self:CheckIfSatisifed();
+			self:CheckIfSatisfied();
 		end;
 	end
 
@@ -32,7 +38,7 @@ function ContinuableContainer:AddContinuable(continuable)
 	if continuable:IsDataEvictable() then
 		table.insert(self.evictableObjects, continuable);
 	end
-	table.insert(self.continuables, continuable:ContinueWithCancelOnItemLoad(self.onContinuableLoadedCallback));
+	table.insert(self.continuables, continuable:ContinueWithCancelOnRecordLoad(self.onContinuableLoadedCallback));
 end
 
 function ContinuableContainer:ContinueOnLoad(callbackFunction)
@@ -41,7 +47,7 @@ function ContinuableContainer:ContinueOnLoad(callbackFunction)
 	end
 
 	self.callbackFunction = callbackFunction;
-	self:CheckIfSatisifed();
+	return self:CheckIfSatisfied();
 end
 
 function ContinuableContainer:GetNumOutstandingLoads()
@@ -65,7 +71,7 @@ function ContinuableContainer:Cancel()
 end
 
 -- "private"
-function ContinuableContainer:CheckIfSatisifed()
+function ContinuableContainer:CheckIfSatisfied()
 	if not self:AreAnyLoadsOutstanding() and self.callbackFunction and self:RecheckEvictableContinuables() then
 		local callbackFunction = self.callbackFunction;
 		self.callbackFunction = nil;
@@ -74,18 +80,22 @@ function ContinuableContainer:CheckIfSatisifed()
 		self.evictableObjects = nil;
 
 		xpcall(callbackFunction, CallErrorHandler);
+
+		return true;
 	end
+
+	return false;
 end
 
 function ContinuableContainer:RecheckEvictableContinuables()
 	local areAllLoaded = true;
 	if self.evictableObjects then
 		for i, evictableObject in ipairs(self.evictableObjects) do
-			if not evictableObject:IsItemDataCached() then
+			if not evictableObject:IsRecordDataCached() then
 				areAllLoaded = false;
 
 				self.numOutstanding = self.numOutstanding + 1;
-				table.insert(self.continuables, evictableObject:ContinueWithCancelOnItemLoad(self.onContinuableLoadedCallback));
+				table.insert(self.continuables, evictableObject:ContinueWithCancelOnRecordLoad(self.onContinuableLoadedCallback));
 			end
 		end
 	end

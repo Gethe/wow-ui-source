@@ -1,18 +1,14 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="BuffFrame.lua"/>
-	<Button name="AuraButtonTemplate" virtual="true">
+	<Button name="AuraButtonTemplate" mixin="AuraButtonMixin" virtual="true">
 		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon" parentKey="Icon"/>
 				<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-2" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentDuration" inherits="GameFontNormalSmall" hidden="true" parentKey="duration">
@@ -23,60 +19,46 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-				GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
-				GameTooltip:SetUnitAura(PlayerFrame.unit, self:GetID(), self.filter);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Button>
-	<Button name="BuffButtonTemplate" parentArray="BuffButton" inherits="AuraButtonTemplate" virtual="true">
+	<Button name="BuffButtonTemplate" inherits="AuraButtonTemplate" mixin="BuffButtonMixin" virtual="true">
 		<Scripts>
-			<OnLoad>
-				BuffButton_OnLoad(self);
-			</OnLoad>
-			<OnClick>
-				BuffButton_OnClick(self, button, down);
-			</OnClick>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	<Button name="DebuffButtonTemplate" parentArray="DebuffButton" inherits="AuraButtonTemplate" virtual="true">
+	<Button name="DebuffButtonTemplate" inherits="AuraButtonTemplate" mixin="DebuffButtonMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
-					<Size>
-						<AbsDimension x="33" y="32"/>
-					</Size>
+					<Size x="33" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
-				</Texture>	
+				</Texture>
 				<FontString parentKey="symbol" inherits="TextStatusBarText">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="2" y="-2"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self.duration:SetPoint("TOP", self, "BOTTOM", 0, -1);
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	<Button name="TempEnchantButtonTemplate" parentArray="TempEnchant" inherits="AuraButtonTemplate" virtual="true">
+
+	<Button name="DeadlyDebuffButtonTemplate" inherits="DebuffButtonTemplate" virtual="true"/>
+	<Button name="TempEnchantButtonTemplate" mixin="TempEnchantButtonMixin" inherits="AuraButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-TempEnchant-Border">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -84,76 +66,76 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				TempEnchantButton_OnLoad(self);
-			</OnLoad>
-			<OnUpdate>
-				TempEnchantButton_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnClick>
-				TempEnchantButton_OnClick(self, button, down);
-			</OnClick>
-			<OnEnter>
-				TempEnchantButton_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
 		</Scripts>
 	</Button>
 
-	<Frame name="BuffFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
-		<Size>
-			<AbsDimension x="50" y="50"/>
-		</Size>
+	<Frame name="BuffFrame" parent="UIParent" mixin="BuffFrameMixin" frameStrata="LOW" toplevel="true">
+		<Size x="50" y="50"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="MinimapCluster" x="-10" y="0" />
 		</Anchors>
+		<Frames>
+			<CheckButton parentKey="CollapseAndExpandButton" mixin="CollapseAndExpandButtonMixin">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-31" y="26"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<CheckedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</CheckButton>
+			<Frame parentKey="BuffsContainer">
+				<Size x="376" y="100"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CollapseAndExpandButton" relativePoint="LEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DebuffsContainer" inherits="ResizeLayoutFrame">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BuffsContainer" relativePoint="BOTTOMRIGHT" x="20" y="-50"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DeadlyDebuffContainer" inherits="ResizeLayoutFrame">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.DebuffsContainer" relativePoint="LEFT" x="-5" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
-			<OnLoad function="BuffFrame_OnLoad"/>
-			<OnEvent function="BuffFrame_OnEvent"/>
-			<OnUpdate function="BuffFrame_OnUpdate"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-
-	<Frame name="TemporaryEnchantFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
-		<Size>
-			<AbsDimension x="36" y="36"/>
-		</Size>
+	<Frame name="DeadlyDebuffFrame" parent="UIParent" mixin="DeadlyDebuffFrameMixin" hidden="true" frameStrata="DIALOG" toplevel="true">
+		<Size x="400" y="300"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="TOPRIGHT" />
+			<Anchor point="TOP" relativeTo="UIErrorsFrame" relativePoint="BOTTOM"/>
 		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="WarningText" inherits="GameFontNormal" text="This debuff is gonna kill youuuuu">
+					<Size x="400" y="30"/>
+					<Anchors>
+						<Anchor point="TOP"/> 
+					</Anchors>
+					<Color color="RED_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Frames>
-			<Button name="TempEnchant1" inherits="TempEnchantButtonTemplate">
+			<Button parentKey="Debuff" inherits="DeadlyDebuffButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="TempEnchant2" inherits="TempEnchantButtonTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="TempEnchant1" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-5" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="TempEnchant3" inherits="TempEnchantButtonTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="TempEnchant2" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="-5" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeKey="$parent.WarningText" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnUpdate function="TemporaryEnchantFrame_OnUpdate"/>
-		</Scripts>
-	</Frame>	
+	</Frame>
 </Ui>

@@ -57,7 +57,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	local fillAtlas = fillTextureKitFormatString:format(widgetInfo.frameTextureKit, widgetInfo.fillTextureKit);
 	local fillAtlasInfo = C_Texture.GetAtlasInfo(fillAtlas);
 	if fillAtlasInfo then
-		self.Bar:SetStatusBarAtlas(fillAtlas);
+		self.Bar:SetStatusBarTexture(fillAtlas);
 		self.Bar:SetHeight(fillAtlasInfo.height);
 		self.Bar:GetStatusBarTexture():SetHorizTile(fillAtlasInfo.tilesHorizontally);
 	end

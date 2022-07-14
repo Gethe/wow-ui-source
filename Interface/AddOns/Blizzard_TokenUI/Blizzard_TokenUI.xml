@@ -4,7 +4,7 @@
 		<Size x="295" y="17"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentStripe">
+				<Texture parentKey="Stripe">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="-1" y="0"/>
@@ -13,56 +13,56 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentIcon">
+				<Texture parentKey="Icon">
 					<Size x="15" y="15"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-20" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentCount" inherits="GameFontHighlightRight" text="100">
+				<FontString parentKey="Count" inherits="GameFontHighlightRight">
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentIcon" relativePoint="LEFT" x="-5" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-5" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentName" inherits="GameFontHighlightLeft">
+				<FontString parentKey="Name" inherits="GameFontHighlightLeft">
 					<Size x="210" y="11"/>
 					<Anchors>
 						<Anchor point="LEFT" x="11" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check">
+				<Texture parentKey="Check" file="Interface\Buttons\UI-CheckBox-Check">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-3" y="0"/>
 					</Anchors>
 				</Texture>
 
-				<Texture name="$parentCategoryLeft" file="Interface\Buttons\CollapsibleHeader" parentKey="categoryLeft">
+				<Texture parentKey="CategoryLeft" file="Interface\Buttons\CollapsibleHeader">
 					<Size x="76" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>
 				</Texture>
-				<Texture name="$parentCategoryRight" file="Interface\Buttons\CollapsibleHeader" parentKey="categoryRight">
+				<Texture parentKey="CategoryRight" file="Interface\Buttons\CollapsibleHeader" >
 					<Size x="76" y="16"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>
 				</Texture>
-				<Texture name="$parentCategoryMiddle" file="Interface\Buttons\CollapsibleHeader" parentKey="categoryMiddle">
+				<Texture parentKey="CategoryMiddle" file="Interface\Buttons\CollapsibleHeader">
 					<Size x="0" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentCategoryLeft" relativePoint="RIGHT" x="-20" y="0"/>
-						<Anchor point="RIGHT" relativeTo="$parentCategoryRight" relativePoint="LEFT" x="20" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.CategoryLeft" relativePoint="RIGHT" x="-20" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.CategoryRight" relativePoint="LEFT" x="20" y="0"/>
 					</Anchors>
 					<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>
 				</Texture>
 
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentExpandIcon" file="Interface\Buttons\UI-PlusMinus-Buttons">
+				<Texture parentKey="ExpandIcon" file="Interface\Buttons\UI-PlusMinus-Buttons">
 					<Size x="7" y="7"/>
 					<Anchors>
 						<Anchor point="LEFT" x="8" y="0"/>
@@ -71,10 +71,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button enableMouse="true" parentKey="LinkButton">
+			<Button parentKey="LinkButton" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -91,9 +91,6 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				TokenButton_OnLoad(self);
-			</OnLoad>
 			<OnClick>
 				TokenButton_OnClick(self, button, down);
 			</OnClick>
@@ -104,7 +101,7 @@
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormal"/>
-		<HighlightTexture name="$parentHighlight" file="Interface\TokenFrame\UI-TokenFrame-CategoryButton" alphaMode="ADD">
+		<HighlightTexture parentKey="Highlight" file="Interface\TokenFrame\UI-TokenFrame-CategoryButton" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" x="3" y="-2"/>
 				<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
@@ -112,19 +109,22 @@
 			<TexCoords left="0" right="1" top="0.609375" bottom="0.796875"/>
 		</HighlightTexture>
 	</Button>
-	<Frame name="TokenFrame" setAllPoints="true" parent="CharacterFrame" useParentLevel="true" enableMouse="true" hidden="true" id="3">
-        <Frames>
-			<ScrollFrame name="$parentContainer" parentKey="Container" inherits="HybridScrollFrameTemplate">
-				<!-- See TokenFrame_OnShow for anchors -->
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="11"/>
-						</Anchors>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+
+	<Frame name="TokenFrame" parentKey="TokenFrame" setAllPoints="true" parent="CharacterFrame" useParentLevel="true" enableMouse="true" hidden="true" id="3">
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Inset" x="4" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Inset" x="-22" y="2"/>
+				</Anchors>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="TokenFrame_OnLoad"/>
@@ -134,6 +134,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
+
 	<Frame name="TokenFramePopup" parent="TokenFrame" toplevel="true" hidden="true" enableMouse="true">
 		<Size x="205" y="100"/>
 		<Anchors>
@@ -141,14 +142,14 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentTitle" inherits="GameFontNormal" text="TOKEN_OPTIONS">
+				<FontString parentKey="Title" inherits="GameFontNormal" text="TOKEN_OPTIONS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TokenFramePopup" relativePoint="TOPLEFT" x="25" y="-17"/>
+						<Anchor point="TOPLEFT" x="25" y="-17"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+				<Texture parentKey="Corner" file="Interface\DialogFrame\UI-DialogBox-Corner">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-6" y="-7"/>
@@ -158,10 +159,10 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
-			<CheckButton name="$parentInactiveCheckBox" inherits="OptionsSmallCheckButtonTemplate" mixin="InactiveCurrencyCheckBoxMixin">
+			<CheckButton parentKey="InactiveCheckBox" inherits="UICheckButtonTemplate" mixin="InactiveCurrencyCheckBoxMixin">
 				<Size x="26" y="26"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TokenFramePopup" relativePoint="TOPLEFT" x="32" y="-32"/>
+					<Anchor point="TOPLEFT" x="32" y="-32"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -170,10 +171,10 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentBackpackCheckBox" inherits="OptionsSmallCheckButtonTemplate" mixin="BackpackCurrencyCheckBoxMixin">
+			<CheckButton parentKey="BackpackCheckBox" inherits="UICheckButtonTemplate" mixin="BackpackCurrencyCheckBoxMixin">
 				<Size x="26" y="26"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TokenFramePopupInactiveCheckBox" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.InactiveCheckBox" relativePoint="BOTTOMLEFT" x="0" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -182,7 +183,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</CheckButton>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+			<Button parentKey="$parent.CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 				</Anchors>
@@ -197,21 +198,21 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Button name="BackpackTokenTemplate" parentArray="Tokens" hidden="true" virtual="true">
+	<Button name="BackpackTokenTemplate" hidden="true" virtual="true">
 		<Size x="50" y="12"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" parentKey="icon">
+				<Texture parentKey="Icon">
 					<Size x="12" y="12"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="4" y="1"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentCount" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="count">
+				<FontString parentKey="Count" inherits="GameFontHighlightSmall" justifyH="RIGHT">
 					<Size y="10"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.icon" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -231,11 +232,11 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="BackpackTokenFrame" parent="UIParent">
+	<Frame name="BackpackTokenFrameTemplate" mixin="BackpackTokenFrameMixin" virtual="true">
 		<Size x="183" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\ContainerFrame\UI-Backpack-TokenFrame">
+				<Texture parentKey="BG" file="Interface\ContainerFrame\UI-Backpack-TokenFrame">
 					<Size x="256" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -243,22 +244,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button name="$parentToken1" inherits="BackpackTokenTemplate" id="1">
-				<Anchors>
-					<Anchor point="LEFT" x="13" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentToken2" inherits="BackpackTokenTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentToken1" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentToken3" inherits="BackpackTokenTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentToken2" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-			</Button>
-		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 </Ui>

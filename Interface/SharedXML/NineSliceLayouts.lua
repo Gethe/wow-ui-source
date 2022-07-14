@@ -348,4 +348,20 @@ NineSliceLayouts =
 		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
 		["Center"] = { atlas = "%s-NineSlice-Center" },
 	};
+
+	ThreeSliceVerticalLayout =
+	{
+		threeSliceVertical = true,
+		["TopEdge"] = { atlas = "%s-ThreeSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "%s-ThreeSlice-EdgeBottom" },
+		["Center"] = { atlas = "!%s-ThreeSlice-Center" },
+	};
+
+	ThreeSliceHorizontalLayout =
+	{
+		threeSliceHorizontal = true,
+		["LeftEdge"] = { atlas = "%s-ThreeSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "%s-ThreeSlice-EdgeRight" },
+		["Center"] = { atlas = "!%s-ThreeSlice-Center" },
+	};
 };

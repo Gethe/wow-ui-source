@@ -34,4 +34,43 @@
 			<OnAttributeChanged function="UpdateUIPanelPositions"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="UIParentManagedFrameTemplate" mixin="UIParentManagedFrameMixin" virtual="true">
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="UIParentBottomManagedFrameTemplate" inherits="UIParentManagedFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutParent" value="UIParentBottomManagedFrameContainer" type="global"/>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="UIParentRightManagedFrameTemplate" inherits="UIParentManagedFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutParent" value="UIParentRightManagedFrameContainer" type="global"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="UIParentManagedFrameContainer" parent="UIParent" inherits="VerticalLayoutFrame" mixin="UIParentManagedFrameContainerMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="spacing" value="10" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="BottomManagedLayoutContainer" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="500" type="number"/>
+					<KeyValue key="spacing" value="12" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Frame name="UIParentBottomManagedFrameContainer" frameStrata="LOW" inherits="UIParentManagedFrameContainer"/>
+	<Frame name="UIParentRightManagedFrameContainer" frameStrata="LOW" inherits="UIParentManagedFrameContainer"/>
 </Ui>

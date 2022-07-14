@@ -128,8 +128,19 @@ function GuildBankFrameMixin:OnHide()
 	StaticPopup_Hide("CONFIRM_BUY_GUILDBANK_TAB");
 	CloseGuildBankFrame();
 	PlaySound(SOUNDKIT.GUILD_VAULT_CLOSE);
-	GB_ICON_FILENAMES = nil;
-	collectgarbage();
+
+	if self.iconDataProvider ~= nil then
+		self.iconDataProvider:Release();
+		self.iconDataProvider = nil;
+	end
+end
+
+function GuildBankFrameMixin:RefreshIconList()
+	if self.iconDataProvider == nil then
+		self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.None);
+	end
+
+	return self.iconDataProvider;
 end
 
 function GuildBankFrameMixin:Update()
@@ -564,7 +575,7 @@ function GuildBankTabButtonMixin:UpdateFiltered()
 		local filtered = ( select(7, GetGuildBankTabInfo(self:GetParent():GetID())) );
 		if ( filtered ) then
 			self.SearchOverlay:Show();
-		else
+	else
 			self.SearchOverlay:Hide();
 		end
 	end
@@ -620,9 +631,8 @@ function GuildBankTabMixin:OnClick(button, down)
 	SetCurrentGuildBankTab(currentTab);
 	guildBankFrame:UpdateTabs();
 	if ( CanEditGuildBankTabInfo() and button == "RightButton" and currentTab ~= (GetNumGuildBankTabs() + 1) ) then
-		--Show the popup if it's a right click
 		GuildBankPopupFrame:Show();
-		GuildBankPopupFrame:Update();
+		GuildBankPopupFrame:SetSelectedTexture(self.Button.IconTexture:GetTexture());
 	end
 	guildBankFrame:Update();
 	if ( guildBankFrame.Log:IsShown() ) then
@@ -827,77 +837,32 @@ end
 GuildBankPopupFrameMixin = {};
 
 function GuildBankPopupFrameMixin:RefreshIconList()
-	if ( GB_ICON_FILENAMES ) then
-		return;
-	end
-	
-	GB_ICON_FILENAMES = {};
-	GB_ICON_FILENAMES[1] = "INV_MISC_QUESTIONMARK";
+	self.iconDataProvider = GuildBankFrame:RefreshIconList();
+end
 
-	GetLooseMacroItemIcons(GB_ICON_FILENAMES);
-	GetLooseMacroIcons(GB_ICON_FILENAMES);
-	GetMacroItemIcons(GB_ICON_FILENAMES);
-	GetMacroIcons(GB_ICON_FILENAMES);
+function GuildBankPopupFrameMixin:SetSelectedTexture(icon)
+	self:Update();
+	self.IconSelector:SetSelectedIndex(self.iconDataProvider:GetIndexOfIcon(icon));
+	self.IconSelector:ScrollToSelectedIndex();
 end
 
 function GuildBankPopupFrameMixin:Update()
-	local numguildBankIcons = #GB_ICON_FILENAMES;
-	local guildBankPopupOffset = FauxScrollFrame_GetOffset(self.ScrollFrame);
+	local name = GetGuildBankTabInfo(GetCurrentGuildBankTab());
+	self.EditBox:SetText(name);
 	
-	local _, tabTexture = GetGuildBankTabInfo(GetCurrentGuildBankTab());
-	tabTexture = gsub( strupper(tabTexture), "INTERFACE\\ICONS\\", "")
-	-- Icon list
-	local texture, guildBankPopupButton, guildBankPopupIcon, index;
-	for i=1, NUM_GUILDBANK_ICONS_SHOWN do
-		guildBankPopupButton = self.Buttons[i];
-		guildBankPopupIcon = guildBankPopupButton.Icon;
-		index = (guildBankPopupOffset * NUM_GUILDBANK_ICONS_PER_ROW) + i;
-		texture = GB_ICON_FILENAMES[index];
-		if ( index <= numguildBankIcons ) then
-			if ( type(texture) == "number" ) then
-				guildBankPopupIcon:SetTexture(texture);
-			else
-				guildBankPopupIcon:SetTexture("INTERFACE\\ICONS\\"..texture);
-			end
-	
-			guildBankPopupButton:Show();
-		else
-			guildBankPopupIcon:SetTexture("");
-			guildBankPopupButton:Hide();
-		end
-		if ( self.selectedIcon ) then
-			if ( index == self.selectedIcon ) then
-				guildBankPopupButton:SetChecked(true);
-			else
-				guildBankPopupButton:SetChecked(false);
-			end
-		elseif ( tabTexture == texture ) then
-			guildBankPopupButton:SetChecked(true);
-			self.selectedIcon = index;
-		else
-			guildBankPopupButton:SetChecked(false);
-		end
-	end
-	--Only do this if the player hasn't clicked on an icon or the icon is not visible
-	if ( not self.selectedIcon ) then
-		for i=1, numguildBankIcons do
-			texture = tostring(GB_ICON_FILENAMES[i]);
-			if ( tabTexture == texture ) then
-				self.selectedIcon = i;
-				if ( i <= NUM_GUILDBANK_ICONS_SHOWN ) then
-					self.Buttons[i]:SetChecked(true);
-				end
-				break;
-			end
-		end
-	end
-	
-	-- Scrollbar stuff
-	FauxScrollFrame_Update(self.ScrollFrame, ceil(numguildBankIcons / NUM_GUILDBANK_ICONS_PER_ROW) + 1, NUM_GUILDBANK_ICON_ROWS, GUILDBANK_ICON_ROW_HEIGHT);
+	self:RefreshIconList();
+	local getSelection = GenerateClosure(self.iconDataProvider.GetIconByIndex, self.iconDataProvider);
+	local getNumSelections = GenerateClosure(self.iconDataProvider.GetNumIcons, self.iconDataProvider);
+	self.IconSelector:SetSelectionsDataProvider(getSelection, getNumSelections);
 end
 
 function GuildBankPopupFrameMixin:OnLoad()
-	self.ScrollFrame.ScrollBar.scrollStep = 8 * GUILDBANK_ICON_ROW_HEIGHT;
+	local function GuildBankPopupIconInitializer(button, selectionIndex, icon)
+		button:SetIconTexture(icon);
+	end
+
+	self.IconSelector:SetSetupCallback(GuildBankPopupIconInitializer);
+	self.IconSelector:AdjustScrollBarOffsets(0, 18, -1);
 end
 
 local GUILD_BANK_POPUP_FRAME_MINIMUM_PADDING = 40;
@@ -915,14 +880,8 @@ function GuildBankPopupFrameMixin:OnShow()
 	if ( not name or name == "" ) then
 		name = format(GUILDBANK_TAB_NUMBER, GetCurrentGuildBankTab());
 	end
-	self.EditBox:SetText(name);
-	self.selectedIcon = nil;
+	
 	self:RefreshIconList();
-
-	if ( not self.iconArrayBuilt ) then
-		BuildIconArray(self, "GuildBankPopupButton", "GuildBankPopupButtonTemplate", NUM_GUILDBANK_ICONS_PER_ROW, NUM_GUILDBANK_ICON_ROWS);
-		self.iconArrayBuilt = true;
-	end
 end
 
 function GuildBankPopupFrameMixin:OnHide()
@@ -935,29 +894,13 @@ function GuildBankPopupFrameMixin:ConfirmEdit()
 	if ( not name or name == "" ) then
 		name = format(GUILDBANK_TAB_NUMBER, tab);
 	end
-	local iconTexture = GB_ICON_FILENAMES[self.selectedIcon];
-	if ( not iconTexture ) then
-		local _, texture = GetGuildBankTabInfo(tab);
-		iconTexture = gsub( strupper(texture), "INTERFACE\\ICONS\\", "");
-	end
-		
+	local iconTexture = self.iconDataProvider:GetIconForSaving(self.IconSelector:GetSelectedIndex());
 	SetGuildBankTabInfo(tab, name, iconTexture);
 	self:Hide();
 end
 
 function GuildBankPopupFrameMixin:CancelEdit()
 	self:Hide();
-end
-
-
-GuildBankPopupButtonMixin = {};
-
-function GuildBankPopupButtonMixin:OnClick(button, down)
-	local popupFrame = self:GetParent();
-	local offset = FauxScrollFrame_GetOffset(popupFrame.ScrollFrame);
-	local index = (offset * NUM_GUILDBANK_ICONS_PER_ROW) + self:GetID();
-	popupFrame.selectedIcon = index;
-	popupFrame:Update();
 end
 
 

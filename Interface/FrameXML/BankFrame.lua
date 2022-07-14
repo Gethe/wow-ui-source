@@ -14,7 +14,7 @@ function BankFrameBaseButton_OnLoad (self)
 	self.UpdateTooltip = BankFrameItemButton_OnEnter;
 end
 
-function BankFrameItemButton_OnLoad (self) 
+function BankFrameItemButton_OnLoad (self)
 	BankFrameBaseButton_OnLoad (self);
 	self.SplitStack = function(button, split)
 		SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
@@ -25,11 +25,24 @@ function BankFrameBagButton_OnLoad (self)
 	self.isBag = 1;
 	BankFrameBaseButton_OnLoad(self);
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
+
+	self:SetBagID(self:GetID() + NUM_BAG_FRAMES + NUM_REAGENTBAG_FRAMES);
+
+	local function UpdateBagHighlight(owner, container)
+		if self:GetBagID() == container:GetBagID() then
+			self.SlotHighlightTexture:SetShown(container:IsShown());
+		end
+	end
+
+	EventRegistry:RegisterCallback("ContainerFrame.CloseBag", UpdateBagHighlight, self);
+	EventRegistry:RegisterCallback("ContainerFrame.OpenBag", UpdateBagHighlight, self);
+
+	self:RegisterBagButtonUpdateItemContextMatching();
 end
 
 function BankFrameBagButton_OnEvent (self, event, ...)
 	if ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		if ( IsContainerFiltered(self:GetID()+NUM_BAG_SLOTS) ) then
+		if ( IsContainerFiltered(self:GetID()+NUM_TOTAL_EQUIPPED_BAG_SLOTS) ) then
 			self.searchOverlay:Show();
 		else
 			self.searchOverlay:Hide();
@@ -40,7 +53,7 @@ end
 BankItemButtonBagMixin = {};
 
 function BankItemButtonBagMixin:GetItemContextMatchResult()
-	return ItemButtonUtil.GetItemContextMatchResultForContainer(self:GetID() + NUM_BAG_SLOTS);
+	return ItemButtonUtil.GetItemContextMatchResultForContainer(self:GetID() + NUM_TOTAL_EQUIPPED_BAG_SLOTS);
 end
 
 function BankFrameItemButton_OnEnter (self)
@@ -55,9 +68,9 @@ function BankFrameItemButton_OnEnter (self)
 
 	if (self.isBag) then
 		if (not IsInventoryItemProfessionBag("player", self:GetInventorySlot())) then
-			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-				if ( GetBankBagSlotFlag(self:GetID(), i) ) then
-					GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
+			for i, flag in ContainerFrameUtil_EnumerateBagGearFilters() do
+				if C_Container.GetBagSlotFlag(self:GetID() + NUM_BAG_SLOTS, flag) then -- [NB] TODO: Bank bags should use actual bank bag ids rather than translating in place or using a different API.
+					GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[flag]));
 					break;
 				end
 			end
@@ -99,7 +112,7 @@ function BankFrameItemButton_Update (button)
 			questTexture:Show();
 		elseif ( questId or isQuestItem ) then
 			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
-			questTexture:Show();		
+			questTexture:Show();
 		else
 			questTexture:Hide();
 		end
@@ -114,11 +127,11 @@ function BankFrameItemButton_Update (button)
 		texture:SetTexture(slotTextureName);
 		SetItemButtonCount(button,0);
 		texture:Show();
-	else 
+	else
 		texture:Hide();
 		SetItemButtonCount(button,0);
 	end
-	
+
 	button:UpdateItemContextMatching();
 	button:SetMatchesSearch(not isFiltered);
 
@@ -133,6 +146,14 @@ BankItemButtonMixin = {};
 
 function BankItemButtonMixin:GetItemContextMatchResult()
 	return ItemButtonUtil.GetItemContextMatchResultForItem(ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID()));
+end
+
+function BankItemButtonMixin:GetBagID()
+	if self.isBag then
+		return -4;
+	else
+		return self:GetParent():GetID();
+	end
 end
 
 function BankFrame_UpdateCooldown(container, button)
@@ -151,11 +172,11 @@ function BankFrame_UpdateCooldown(container, button)
 	end
 end
 
-function BankFrameItemButton_UpdateLocked (button) 
+function BankFrameItemButton_UpdateLocked (button)
 	local inventoryID = button:GetInventorySlot();
 	if ( IsInventoryItemLocked(inventoryID) ) then
 		SetItemButtonDesaturated(button, true);
-	else 
+	else
 		if ( button.isBag and ((button:GetID() - 4) > GetNumBankSlots()) ) then
 			return;
 		end
@@ -166,27 +187,36 @@ end
 function BankSlotsFrame_OnLoad(self)
 	self:SetID(BANK_CONTAINER);
 
+	local parent = self:GetParent();
+	parent:SetBagSize(28); -- This onload runs first
+	self["Item1"] = self.Item1; -- For consistency
+	parent["Item1"] = self.Item1; -- So that enumerateItems will work
+
 	--Create bank item buttons, button background textures, and rivets between buttons
-	for i = 2, 28 do
+	for i = 2, self:GetParent():GetBagSize() do
 		local button = CreateFrame("ItemButton", "BankFrameItem"..i, self, "BankItemButtonGenericTemplate");
 		button:SetID(i);
 		self["Item"..i] = button;
+		parent["Item"..i] = button;
 		if ((i%7) == 1) then
 			button:SetPoint("TOPLEFT", self["Item"..(i-7)], "BOTTOMLEFT", 0, -7);
 		else
 			button:SetPoint("TOPLEFT", self["Item"..(i-1)], "TOPRIGHT", 12, 0);
 		end
 	end
-	for i = 1, 28 do
+
+	for i = 1, self:GetParent():GetBagSize() do
 		local texture = self:CreateTexture(nil, "BORDER", "Bank-Slot-BG");
 		texture:SetPoint("TOPLEFT", self["Item"..i], "TOPLEFT", -6, 5);
 		texture:SetPoint("BOTTOMRIGHT", self["Item"..i], "BOTTOMRIGHT", 6, -7);
 	end
+
 	for i = 1, 7 do
 		local texture = self:CreateTexture(nil, "BORDER", "Bank-Slot-BG");
 		texture:SetPoint("TOPLEFT", self["Bag"..i], "TOPLEFT", -6, 5);
 		texture:SetPoint("BOTTOMRIGHT", self["Bag"..i], "BOTTOMRIGHT", 6, -7);
 	end
+
 	for i = 1, 20 do
 		if ((i%7) ~= 0) then
 			local texture = self:CreateTexture(nil, "BORDER", "Bank-Rivet");
@@ -199,20 +229,20 @@ end
 function BankFrame_OnLoad (self)
 	self:RegisterEvent("BANKFRAME_OPENED");
 	self:RegisterEvent("BANKFRAME_CLOSED");
-	self.size = 28;
+	self:SetBagSize(28);
 	self:SetID(BANK_CONTAINER);
-	
+
 	PanelTemplates_SetNumTabs(self, #BANK_PANELS);
 	self.maxTabWidth = (self:GetWidth() - 19) / #BANK_PANELS;
 	self.selectedTab = 1;
 end
 
-function UpdateBagSlotStatus () 
+function UpdateBagSlotStatus ()
 	local purchaseFrame = BankFramePurchaseInfo;
 	if( purchaseFrame == nil ) then
 		return;
 	end
-	
+
 	local numSlots,full = GetNumBankSlots();
 	local button;
 	for i=1, NUM_BANKBAGSLOTS, 1 do
@@ -245,8 +275,8 @@ function UpdateBagSlotStatus ()
 	end
 end
 
-function CloseBankBagFrames () 
-	for i=NUM_BAG_SLOTS+1, (NUM_BAG_SLOTS + NUM_BANKBAGSLOTS), 1 do
+function CloseBankBagFrames ()
+	for i=NUM_TOTAL_EQUIPPED_BAG_SLOTS+1, (NUM_TOTAL_EQUIPPED_BAG_SLOTS + NUM_BANKBAGSLOTS), 1 do
 		CloseBag(i);
 	end
 end
@@ -288,8 +318,8 @@ function BankFrame_OnEvent (self, event, ...)
 	elseif ( event == "PLAYER_MONEY" or event == "PLAYERBANKBAGSLOTS_CHANGED" ) then
 		UpdateBagSlotStatus();
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		ContainerFrame_UpdateSearchResults(self);
-		ContainerFrame_UpdateSearchResults(ReagentBankFrame);
+		self:UpdateSearchResults();
+		ReagentBankFrame:UpdateSearchResults();
 	end
 end
 
@@ -312,7 +342,7 @@ function BankFrame_OnShow (self)
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 
 	BankFrame_UpdateItems(self);
-	
+
 	for i=1, NUM_BANKBAGSLOTS, 1 do
 		local button = BankSlotsFrame["Bag"..i];
 		BankFrameItemButton_Update(button);
@@ -372,7 +402,7 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 		return;
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
-		local texture, itemCount, locked = GetContainerItemInfo(container, self:GetID());
+		local _, itemCount, locked = GetContainerItemInfo(container, self:GetID());
 		if ( not locked and itemCount and itemCount > 1) then
 			StackSplitFrame:OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 		end
@@ -380,13 +410,13 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 	end
 end
 
-function BankFrameItemButtonBag_OnClick (self, button) 
+function BankFrameItemButtonBag_OnClick (self, button)
 	local inventoryID = self:GetInventorySlot();
 	local hadItem = PutItemInBag(inventoryID);
 	local id = self:GetID();
 	if ( not hadItem ) then
 		-- open bag
-		ToggleBag(id+NUM_BAG_SLOTS);
+		ToggleBag(id+NUM_TOTAL_EQUIPPED_BAG_SLOTS);
 	end
 end
 
@@ -420,13 +450,13 @@ function BankFrame_ShowPanel(sidePanelName, selection)
 			-- no current panel, go to the first panel
 			tabIndex = 1;
 		end
-	end	
+	end
 	if ( not tabIndex ) then
 		return;
 	end
 	-- show it
 	ShowUIPanel(self);
-	self.activeTabIndex = tabIndex;	
+	self.activeTabIndex = tabIndex;
 	PanelTemplates_SetTab(self, tabIndex);
 	for index, data in pairs(BANK_PANELS) do
 		local panel = _G[data.name];
@@ -435,7 +465,7 @@ function BankFrame_ShowPanel(sidePanelName, selection)
 			if( panel.update ) then
 				panel:update(selection);
 			end
-			
+
 			self:SetWidth(data.size.x);
 			self:SetHeight(data.size.y);
 			data.SetTitle();
@@ -459,12 +489,12 @@ end
 -- Reagent Bank
 function ReagentBankFrame_OnLoad(self)
 	self:SetID(REAGENTBANK_CONTAINER);
-	self.size = 0;
+	self:SetBagSize(0);
 	self:RegisterEvent("REAGENTBANK_PURCHASED");
 end
 
 function ReagentBankFrame_OnEvent(self, event, ...)
-	if(event == "REAGENTBANK_PURCHASED")then		
+	if(event == "REAGENTBANK_PURCHASED")then
 		ReagentBankFrame.UnlockInfo:Hide();
 		ReagentBankFrame.DespositButton:Enable();
 	end
@@ -474,7 +504,7 @@ function ReagentBankFrame_OnShow(self)
 	HelpTip:Hide(BankFrame, REAGENT_BANK_HELP);
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK, true);
 
-	if(not IsReagentBankUnlocked()) then		
+	if(not IsReagentBankUnlocked()) then
 		ReagentBankFrame.UnlockInfo:Show();
 		MoneyFrame_Update( ReagentBankFrame.UnlockInfo.CostMoneyFrame, GetReagentBankCost());
 		ReagentBankFrame.DespositButton:Disable();
@@ -488,8 +518,8 @@ function ReagentBankFrame_OnShow(self)
 		self.numRow = 7;
 		self.numColumn = 7;
 		self.numSubColumn = 2;
-		self.size = self.numRow*self.numColumn*self.numSubColumn;
-		
+		self:SetBagSize(self.numRow*self.numColumn*self.numSubColumn);
+
 		-- setup slot backgrounds and shadows
 		for column = 2, self.numColumn do
 			local texture = ReagentBankFrame:CreateTexture(nil, "ARTWORK");
@@ -500,7 +530,7 @@ function ReagentBankFrame_OnShow(self)
 			shadow:SetPoint("CENTER", ReagentBankFrame["BG"..(column)], "CENTER", 0, 0);
 			shadow:SetAtlas("bank-slots-shadow", true);
 		end
-		
+
 		-- the item slots
 		local slotOffsetX = 49;
 		local slotOffsetY = 44;
@@ -519,10 +549,8 @@ function ReagentBankFrame_OnShow(self)
 			end
 		end
 	end
-	
-	local button;
-	for i=1, self.size do
-		button = ReagentBankFrame["Item"..i];
+
+	for index, button in self:EnumerateItems() do
 		BankFrameItemButton_Update(button);
 	end
 end
@@ -543,5 +571,24 @@ function ReagentBankFrameItemButton_OnLoad(self)
 	ReagentBankFrameBaseButton_OnLoad (self);
 	self.SplitStack = function(button, split)
 		SplitContainerItem(REAGENTBANK_CONTAINER, button:GetID(), split);
+	end
+end
+
+BankFrameMixin = CreateFromMixins(BaseContainerFrameMixin);
+
+do
+	local function iterator(container, index)
+		index = index + 1;
+		if index <= container:GetBagSize() then
+			return index, container["Item"..index];
+		end
+	end
+
+	function BankFrameMixin:EnumerateValidItems()
+		return iterator, self, 0;
+	end
+
+	function BankFrameMixin:EnumerateItems()
+		return self:EnumerateValidItems();
 	end
 end

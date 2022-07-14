@@ -1,19 +1,21 @@
 ..\SharedXML\SharedConstants.lua
 
 ## add C namespace augmentations here
-..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
 ..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
 ..\SharedXML\TableUtil.lua
 ..\SharedXML\EnumUtil.lua
+..\SharedXML\LocaleUtil.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\MathUtil.lua
+..\SharedXML\ExportUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
+..\SharedXML\CallbackRegistrant.xml
 ..\SharedXML\CvarUtil.lua
 ..\SharedXML\Color.lua
 ..\SharedXML\ColorUtil.lua
@@ -33,8 +35,10 @@
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\EventUtil.lua
 ..\SharedXML\RegionUtil.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\SortUtil.lua
 ..\SharedXML\GridLayoutUtil.lua
 ..\SharedXML\ScriptAnimationUtil.lua
 ..\SharedXML\Pools.lua
@@ -61,6 +65,8 @@
 ..\SharedXML\Frame\EventEditBox.xml
 ..\SharedXML\DataProviders.xml
 ..\SharedXML\Interpolator.lua
+..\SharedXML\ButtonStateBehavior.lua
+..\SharedXML\Slider\MinimalSlider.xml
 ..\SharedXML\Scroll\ScrollUtil.lua
 ..\SharedXML\Scroll\ScrollController.lua
 ..\SharedXML\Scroll\ScrollBox.xml
@@ -69,10 +75,13 @@
 ..\SharedXML\Scroll\TrimScrollBar.xml
 ..\SharedXML\Scroll\OribosScrollBar.xml
 ..\SharedXML\Scroll\MinimalScrollBar.xml
+..\SharedXML\ButtonTray\ButtonTrayUtil.lua
+..\SharedXML\ButtonTray\ButtonTray.xml
 ..\SharedXML\StringUtil.lua
 ..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
 MixinUtil.lua
+IconDataProvider.lua
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
@@ -121,10 +130,16 @@ ObjectAPI\CovenantCalling.lua
 ChatBubbleTemplates.xml
 WorldFrame.xml
 UIParent.xml
+..\SharedXML\LoadSystem\LoadSystemTemplates.xml
+..\SharedXML\TabSystem\TabSystemTemplates.xml
+..\SharedXML\TabSystem\TabSystemOwner.xml
 ..\SharedXML\ScriptedAnimations\ScriptedAnimationEffects.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedEffectController.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedModelScene.xml
+..\SharedXML\Selector\Blizzard_SelectorUI.xml
+..\SharedXML\Selector\Blizzard_GridSelectorUI.xml
+..\SharedXML\Selector\Blizzard_ScrollBoxSelector.xml
 ..\SharedXML\GlobalFXModelScenes.xml
 PartyUtil.lua
 QuestUtils.lua
@@ -155,6 +170,8 @@ MoneyInputFrame.lua
 MoneyInputFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
+..\SharedXML\Tabs\MinimalTab.xml
+
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
 ..\SharedXML\SharedBasicControls.xml
@@ -166,7 +183,6 @@ AdventuresFollowerTooltip.xml
 FloatingGarrisonFollowerTooltip.xml
 GarrisonFollowerTooltip.xml
 GameTooltip.xml
-QuickKeybind.xml
 UIMenu.xml
 ..\SharedXML\UIDropDownMenu.xml
 UIPanelTemplates.lua
@@ -191,7 +207,6 @@ NavigationBar.xml
 ..\SharedXML\TemplatedList.xml
 ..\SharedXML\ScrollList.xml
 ..\SharedXML\PagedList.xml
-..\SharedXML\GridList.xml
 GameMenuFrame.xml
 CharacterFrameTemplates.xml
 FilterDropDown.lua
@@ -200,18 +215,19 @@ TextStatusBar.xml
 UIErrorsFrame.xml
 AutoComplete.xml
 StaticPopup.xml
+..\SharedXML\DialogUtil.lua
+
+..\SharedXML\Settings\Settings.xml
+SettingDefinitions\Definitions.xml
+
+QuickKeybind.xml
+EditModePresetLayouts.lua
+EditModeSettingDisplayInfo.lua
+EditModeManager.lua
+EditModeManager.xml
 Sound.lua
 UIOptions.xml
-..\SharedXML\OptionsFrameTemplates.xml
-..\SharedXML\OptionsPanelTemplates.xml
-..\SharedXML\VideoOptionsFrame.xml
-..\SharedXML\VideoOptionsPanels.xml
-MacOptionsPanel.xml
-..\SharedXML\AudioOptionsFrame.xml
-..\SharedXML\AudioOptionsPanels.xml
-..\SharedXML\AudioOptionsPanelsVoice.xml
-InterfaceOptionsFrame.xml
-InterfaceOptionsPanels.xml
+..\SharedXML\DeprecatedTemplates.xml
 ..\SharedXML\AddonList.xml
 AlertFrameIntrinsic.xml
 AlertFrames.xml
@@ -332,6 +348,7 @@ RuneFrame.xml
 ShardBar.xml
 ComboFramePlayer.xml
 InsanityBar.xml
+EssenceFramePlayer.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml

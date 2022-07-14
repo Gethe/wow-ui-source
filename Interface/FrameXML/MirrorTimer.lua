@@ -1,18 +1,11 @@
 
 MIRRORTIMER_NUMTIMERS = 3;
 
-MirrorTimerColors = { };
-MirrorTimerColors["EXHAUSTION"] = {
-	r = 1.00, g = 0.90, b = 0.00
-};
-MirrorTimerColors["BREATH"] = {
-	r = 0.00, g = 0.50, b = 1.00
-};
-MirrorTimerColors["DEATH"] = {
-	r = 1.00, g = 0.70, b = 0.00
-};
-MirrorTimerColors["FEIGNDEATH"] = {
-	r = 1.00, g = 0.70, b = 0.00
+MirrorTimerAtlas = {
+	EXHAUSTION = "ui-castingbar-filling-standard",
+	BREATH = "ui-castingbar-filling-applyingcrafting",
+	DEATH = "ui-castingbar-filling-standard",
+	FEIGNDEATH = "ui-castingbar-filling-channel",
 };
 
 function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
@@ -51,30 +44,30 @@ function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
 	end
 
 	-- Set the text of the dialog
-	local text = _G[dialog:GetName().."Text"];
+	local text = dialog.Text;
 	text:SetText(label);
 
 	-- Set the status bar of the dialog
-	local statusbar = _G[dialog:GetName().."StatusBar"];
-	local color = MirrorTimerColors[timer];
+	local statusbar = dialog.StatusBar;
 	statusbar:SetMinMaxValues(0, (maxvalue / 1000));
 	statusbar:SetValue(dialog.value);
-	statusbar:SetStatusBarColor(color.r, color.g, color.b);
+	statusbar:SetStatusBarTexture(MirrorTimerAtlas[timer]);
 
 	dialog:Show();
 
 	return dialog;
 end
 
+MirrorTimerMixin = { };
 
-function MirrorTimerFrame_OnLoad(self)
+function MirrorTimerMixin:OnLoad()
 	self:RegisterEvent("MIRROR_TIMER_PAUSE");
 	self:RegisterEvent("MIRROR_TIMER_STOP");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self.timer = nil;
 end
 
-function MirrorTimerFrame_OnEvent(self, event, ...)
+function MirrorTimerMixin:OnEvent(event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		for index=1, MIRRORTIMER_NUMTIMERS do
 			local timer, value, maxvalue, scale, paused, label = GetMirrorTimerInfo(index);
@@ -105,11 +98,11 @@ function MirrorTimerFrame_OnEvent(self, event, ...)
 	end
 end
 
-function MirrorTimerFrame_OnUpdate(frame, elapsed)
-	if ( frame.paused ) then
+function MirrorTimerMixin:OnUpdate(elapsed)
+	if ( self.paused ) then
 		return;
 	end
-	local statusbar = _G[frame:GetName().."StatusBar"];
-	frame.value = GetMirrorTimerProgress(frame.timer)  / 1000;
-	statusbar:SetValue(frame.value);
+	local statusbar = self.StatusBar;
+	self.value = GetMirrorTimerProgress(self.timer)  / 1000;
+	statusbar:SetValue(self.value);
 end

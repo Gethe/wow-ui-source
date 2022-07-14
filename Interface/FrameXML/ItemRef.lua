@@ -4,20 +4,10 @@ local PVP_LINK_ITERATE = 3;
 local PVP_LINK_ITERATE_BRACKET = 4; 
 local PVP_LINK_INDEX_START = 7;
 
-local function FormatLink(linkType, linkDisplayText, ...)
-	local linkFormatTable = { ("|H%s"):format(linkType), ... };
-	local returnLink = table.concat(linkFormatTable, ":");
-	if linkDisplayText then
-		return returnLink .. ("|h%s|h"):format(linkDisplayText);
-	else
-		return returnLink .. "|h";
-	end
-end
-
 function SetItemRef(link, text, button, chatFrame)
 
 	-- Going forward, use linkType and linkData instead of strsub and strsplit everywhere
-	local linkType, linkData = ExtractLinkData(link);
+	local linkType, linkData = LinkUtil.SplitLinkData(link);
 
 	if ( strsub(link, 1, 6) == "player" ) then
 		local namelink, isGMLink, isCommunityLink;
@@ -249,7 +239,7 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 9) == "shareitem" ) then
 		local strippedItemLink, earned = link:match("^shareitem:(.-):(%d+)$");
-		local itemLink = FormatLink("item", nil, strippedItemLink);
+		local itemLink = LinkUtil.FormatLink("item", nil, strippedItemLink);
 		SocialFrame_LoadUI();
 		Social_ShowItem(itemLink, earned);
 		return;
@@ -377,6 +367,12 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 14) == "aadcopenconfig" ) then
 		ShowUIPanel(ChatConfigFrame);
 		return;
+	elseif ( strsub(link, 1, 6) == "layout" ) then
+		local fixedLink = GetFixedLink(text);
+		if not HandleModifiedItemClick(fixedLink) then
+			EditModeManagerFrame:OpenAndShowImportLayoutLinkDialog(fixedLink);
+		end
+		return;
 	end
 	if ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);
@@ -418,7 +414,7 @@ function GetFixedLink(text, quality)
 		elseif ( strsub(text, startLink + 2, startLink + 14) == "battlePetAbil" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cff4e96f7%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 10) == "battlepet" ) then
-			return (gsub(text, "(|H.+|h.+|h)", "|cffffd200%1|r", 1)); -- s_defaultColorString (yellow)
+			return (gsub(text, "(|H.+|h.+|h)", "|cffffd200%1|r", 1)); -- UIColor::GetColorString("NORMAL_FONT_COLOR") (yellow)
 		elseif ( strsub(text, startLink + 2, startLink + 12) == "garrmission" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 17) == "transmogillusion" ) then
@@ -431,6 +427,8 @@ function GetFixedLink(text, quality)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 9) == "worldmap" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 7) == "layout" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		end
 	end
 	--Nothing to change.
@@ -445,27 +443,27 @@ function GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed)
 	end
 
 	local linkDisplayText = ("[%s]"):format(name);
-	return ("|cff4e96f7%s|r"):format(FormatLink("battlePetAbil", linkDisplayText, abilityID, maxHealth or 100, power or 0, speed or 0));
+	return ("|cff4e96f7%s|r"):format(LinkUtil.FormatLink("battlePetAbil", linkDisplayText, abilityID, maxHealth or 100, power or 0, speed or 0));
 end
 
 function GetPlayerLink(characterName, linkDisplayText, lineID, chatType, chatTarget)
 	-- Use simplified link if possible
 	if lineID or chatType or chatTarget then
-		return FormatLink("player", linkDisplayText, characterName, lineID or 0, chatType or 0, chatTarget or "");
+		return LinkUtil.FormatLink("player", linkDisplayText, characterName, lineID or 0, chatType or 0, chatTarget or "");
 	else
-		return FormatLink("player", linkDisplayText, characterName);
+		return LinkUtil.FormatLink("player", linkDisplayText, characterName);
 	end
 end
 
 function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
-	return FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
+	return LinkUtil.FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
 end
 
 function GetGMLink(gmName, linkDisplayText, lineID)
 	if lineID then
-		return FormatLink("playerGM", linkDisplayText, gmName, lineID or 0);
+		return LinkUtil.FormatLink("playerGM", linkDisplayText, gmName, lineID or 0);
 	else
-		return FormatLink("playerGM", linkDisplayText, gmName);
+		return LinkUtil.FormatLink("playerGM", linkDisplayText, gmName);
 	end
 end
 
@@ -484,16 +482,16 @@ end
 
 function GetBNPlayerCommunityLink(playerName, linkDisplayText, bnetIDAccount, clubId, streamId, epoch, position)
 	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
-	return FormatLink("BNplayerCommunity", linkDisplayText, playerName, bnetIDAccount, clubId, streamId, epoch, position);
+	return LinkUtil.FormatLink("BNplayerCommunity", linkDisplayText, playerName, bnetIDAccount, clubId, streamId, epoch, position);
 end
 
 function GetPlayerCommunityLink(playerName, linkDisplayText, clubId, streamId, epoch, position)
 	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
-	return FormatLink("playerCommunity", linkDisplayText, playerName, clubId, streamId, epoch, position);
+	return LinkUtil.FormatLink("playerCommunity", linkDisplayText, playerName, clubId, streamId, epoch, position);
 end
 
 function GetClubTicketLink(ticketId, clubName, clubType)
-	local link = FormatLink("clubTicket", CLUB_INVITE_HYPERLINK_TEXT:format(clubName), ticketId);
+	local link = LinkUtil.FormatLink("clubTicket", CLUB_INVITE_HYPERLINK_TEXT:format(clubName), ticketId);
 	if clubType == Enum.ClubType.BattleNet then
 		return BATTLENET_FONT_COLOR:WrapTextInColorCode(link);
 	else
@@ -513,7 +511,7 @@ function GetClubFinderLink(clubFinderId, clubName)
 	else
 		linkGlobalString = ""
 	end
-	return fontColor:WrapTextInColorCode(FormatLink("clubFinder", linkGlobalString:format(clubName), clubFinderId));
+	return fontColor:WrapTextInColorCode(LinkUtil.FormatLink("clubFinder", linkGlobalString:format(clubName), clubFinderId));
 end
 
 function DungeonScoreLinkAddDungeonsToTable()
@@ -669,7 +667,7 @@ function GetDungeonScoreLink(dungeonScore, playerName)
 	local runHistory = C_MythicPlus.GetRunHistory(true, true);
 	local bestSeasonScore, bestSeasonNumber = C_MythicPlus.GetSeasonBestMythicRatingFromThisExpansion(); 
 	local dungeonScoreTable = { C_ChallengeMode.GetOverallDungeonScore(), UnitGUID("player"), playerName, class, math.ceil(avgItemLevel), UnitLevel("player"), runHistory and #runHistory or 0, bestSeasonScore, bestSeasonNumber, unpack(DungeonScoreLinkAddDungeonsToTable())};
-	return NORMAL_FONT_COLOR:WrapTextInColorCode(FormatLink("dungeonScore", DUNGEON_SCORE_LINK, unpack(dungeonScoreTable)));
+	return NORMAL_FONT_COLOR:WrapTextInColorCode(LinkUtil.FormatLink("dungeonScore", DUNGEON_SCORE_LINK, unpack(dungeonScoreTable)));
 end		
 
 function GetPvpRatingLink(playerName)
@@ -677,13 +675,13 @@ function GetPvpRatingLink(playerName)
 	local _, _, class = UnitClass("player");
 	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
 	local pvpRatingTable = { UnitGUID("player"), playerName, class, math.ceil(avgItemLevelPvP), UnitLevel("player"), unpack(AddPvpRatingsToTable())};
-	return fontColor:WrapTextInColorCode(FormatLink("pvpRating", PVP_PERSONAL_RATING_LINK, unpack(pvpRatingTable)));
+	return fontColor:WrapTextInColorCode(LinkUtil.FormatLink("pvpRating", PVP_PERSONAL_RATING_LINK, unpack(pvpRatingTable)));
 end
 
 function GetCalendarEventLink(monthOffset, monthDay, index)
 	local dayEvent = C_Calendar.GetDayEvent(monthOffset, monthDay, index);
 	if dayEvent then
-		return FormatLink("calendarEvent", dayEvent.title, monthOffset, monthDay, index);
+		return LinkUtil.FormatLink("calendarEvent", dayEvent.title, monthOffset, monthDay, index);
 	end
 
 	return nil;
@@ -692,7 +690,7 @@ end
 function GetCommunityLink(clubId)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if clubInfo then
-		local link = FormatLink("community", COMMUNITY_REFERENCE_FORMAT:format(clubInfo.name), clubId);
+		local link = LinkUtil.FormatLink("community", COMMUNITY_REFERENCE_FORMAT:format(clubInfo.name), clubId);
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
 			return BATTLENET_FONT_COLOR:WrapTextInColorCode(link);
 		else
@@ -701,28 +699,6 @@ function GetCommunityLink(clubId)
 	end
 
 	return nil;
-end
-
-
-LinkUtil = {};
-
-function LinkUtil.SplitLink(link) -- returns linkText and displayText
-	return link:match("^|H(.+)|h(.*)|h$");
-end
-
--- Extract the first link from the text given, ignoring leading and trailing characters.
--- returns linkType, linkOptions, displayText
-function LinkUtil.ExtractLink(text)
-	-- linkType: |H([^:]*): matches everything that's not a colon, up to the first colon.
-	-- linkOptions: ([^|]*)|h matches everything that's not a |, up to the first |h.
-	-- displayText: ([^|]*)|h matches everything that's not a |, up to the second |h.
-	-- Ex: |cffffffff|Htype:a:b:c:d|htext|h|r becomes type, a:b:c:d, text
-	return string.match(text, [[|H([^:]*):([^|]*)|h([^|]*)|h]]);
-end
-
-function LinkUtil.IsLinkType(link, matchLinkType)
-	local linkType, linkOptions, displayText = LinkUtil.ExtractLink(link);
-	return linkType == matchLinkType;
 end
 
 ItemRefTooltipMixin = {};

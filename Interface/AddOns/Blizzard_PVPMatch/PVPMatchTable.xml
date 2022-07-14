@@ -4,10 +4,6 @@
 
   <Frame name="PVPTableRowTemplate" mixin="PVPRowMixin" enableMouse="true" virtual="true">
     <Size y="16"/>
-    <Anchors>
-      <Anchor point="TOPLEFT"/>
-      <Anchor point="TOPRIGHT"/>
-    </Anchors>
     <Layers>
       <Layer level="BACKGROUND">
 				<Texture parentKey="backgroundLeft" parentArray="Backgrounds" file="Interface\WorldStateFrame\WorldStateFinalScore-Highlight">
@@ -66,9 +62,21 @@
 		</Scripts>
 	</Frame>
   <Button name="PVPCellNameTemplate" mixin="PVPCellNameMixin" inherits="PVPStringTemplate" parentKey="cell" registerForClicks="LeftButtonUp,RightButtonUp" enableMouse="true" virtual="true">
+    <Frames>
+      <Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+        <Size x="100" y="100"/>
+        <Anchors>
+          <Anchor point="TOPLEFT"/>
+        </Anchors>
+        <Scripts>
+          <OnLoad function="PvpCellNameDropDown_OnLoad"/>
+        </Scripts>
+      </Frame>
+    </Frames>
     <Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+      <OnClick method="OnClick"/>
     </Scripts>
   </Button>
 	<Button name="PVPSoloShuffleCellNameTemplate" mixin="PVPSoloShuffleCellNameMixin" inherits="PVPCellNameTemplate" virtual="true"/>

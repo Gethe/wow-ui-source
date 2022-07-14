@@ -4,6 +4,11 @@ MAX_PARTY_DEBUFFS = 4;
 MAX_PARTY_TOOLTIP_BUFFS = 16;
 MAX_PARTY_TOOLTIP_DEBUFFS = 8;
 
+CVarCallbackRegistry:SetCVarCachable("showPartyPets");
+CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
+CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
+CVarCallbackRegistry:SetCVarCachable("showPartyBackground");
+
 function HidePartyFrame()
 	for i=1, MAX_PARTY_MEMBERS, 1 do
 		_G["PartyMemberFrame"..i]:Hide();
@@ -173,7 +178,7 @@ function PartyMemberFrame_UpdateMember (self)
 	end
 	PartyMemberFrame_UpdatePet(self);
 	PartyMemberFrame_UpdatePvPStatus(self);
-	RefreshDebuffs(self, "party"..id, nil, nil, true);
+	PartyMemberFrame_UpdateAuras(self);
 	PartyMemberFrame_UpdateVoiceStatus(self);
 	PartyMemberFrame_UpdateReadyCheck(self);
 	PartyMemberFrame_UpdateOnlineStatus(self);
@@ -181,23 +186,16 @@ function PartyMemberFrame_UpdateMember (self)
 	UpdatePartyMemberBackground();
 end
 
-function PartyMemberFrame_UpdatePet (self, id)
-	if ( not id ) then
-		id = self:GetID();
-	end
-
-	local frameName = "PartyMemberFrame"..id;
-	local petFrame = _G["PartyMemberFrame"..id.."PetFrame"];
-
-	if ( UnitIsConnected("party"..id) and UnitExists("partypet"..id) and SHOW_PARTY_PETS == "1" ) then
-		petFrame:Show();
-		petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -43);
+function PartyMemberFrame_UpdatePet (self)
+	if ( UnitIsConnected(self.unit) and UnitExists(self.PetFrame.unit) and CVarCallbackRegistry:GetCVarValueBool("showPartyPets") ) then
+		self.PetFrame:Show();
+		self.PetFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 23, -43);
 	else
-		petFrame:Hide();
-		petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -27);
+		self.PetFrame:Hide();
+		self.PetFrame:SetPoint("TOPLEFT", self, "TOPLEFT", 23, -27);
 	end
 
-	PartyMemberFrame_RefreshPetDebuffs(self, id);
+	PartyMemberFrame_UpdateAuras(self.PetFrame);
 	UpdatePartyMemberBackground();
 end
 
@@ -316,8 +314,8 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 
 	if ( UnitInOtherParty(partyID) ) then
 		self:SetAlpha(0.6);
-		self.notPresentIcon.texture:SetTexture("Interface\\LFGFrame\\LFG-Eye");
-		self.notPresentIcon.texture:SetTexCoord(0.125, 0.25, 0.25, 0.5);
+		self.notPresentIcon.texture:SetAtlas("groupfinder-eye-single", true);
+		self.notPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
 		self.notPresentIcon.Border:Show();
 		self.notPresentIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
 		self.notPresentIcon:Show();
@@ -390,14 +388,15 @@ function PartyMemberFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event =="UNIT_AURA" ) then
 		if ( arg1 == unit ) then
-			RefreshDebuffs(self, unit, nil, nil, true);
+			local unitAuraUpdateInfo = arg2;
+			PartyMemberFrame_UpdateAuras(self, unitAuraUpdateInfo);
 			if ( PartyMemberBuffTooltip:IsShown() and
 				selfID == PartyMemberBuffTooltip:GetID() ) then
 				PartyMemberBuffTooltip_Update(self);
 			end
 		else
 			if ( arg1 == unitPet ) then
-				PartyMemberFrame_RefreshPetDebuffs(self);
+				PartyMemberFrame_UpdateAuras(self.PetFrame, unitAuraUpdateInfo);
 			end
 		end
 	elseif ( event =="UNIT_PET" ) then
@@ -447,47 +446,31 @@ end
 
 function PartyMemberFrame_OnUpdate (self, elapsed)
 	PartyMemberFrame_UpdateMemberHealth(self, elapsed);
-	local partyStatus = _G[self:GetName().."Status"];
-	if ( self.hasDispellable ) then
-		partyStatus:Show();
-		partyStatus:SetAlpha(BuffFrame.BuffAlphaValue);
-		if ( self.debuffCountdown and self.debuffCountdown > 0 ) then
-			self.debuffCountdown = self.debuffCountdown - elapsed;
-		else
-			partyStatus:Hide();
-		end
-	else
-		partyStatus:Hide();
-	end
-end
-
-function PartyMemberFrame_RefreshPetDebuffs (self, id)
-	if ( not id ) then
-		id = self:GetID();
-	end
-	RefreshDebuffs(_G["PartyMemberFrame"..id.."PetFrame"], "partypet"..id, nil, nil, true);
 end
 
 function PartyMemberBuffTooltip_Update(self)
-	local numBuffs = 0;
-	local numDebuffs = 0;
-
 	PartyMemberBuffTooltip:SetID(self:GetID());
 
-	local filter = ( SHOW_CASTABLE_BUFFS == "1" ) and "HELPFUL|RAID" or "HELPFUL";
-	local index = 1;
-	AuraUtil.ForEachAura(self.unit, filter, MAX_PARTY_TOOLTIP_BUFFS, function(...)
-		local name, icon = ...;
-		if ( icon ) then
-			PartyMemberBuffTooltip.Buff[index].Icon:SetTexture(icon);
-			PartyMemberBuffTooltip.Buff[index]:Show();
-			index = index + 1;
+	local numBuffs = 0;
+	local frameNum = 1;
+	self.buffs:Iterate(function(auraInstanceID, aura)
+		if frameNum > MAX_PARTY_TOOLTIP_BUFFS then
+			return true;
+		end
+
+		if aura.icon then
+			local buff = PartyMemberBuffTooltip.Buff[frameNum];
+			buff.Icon:SetTexture(aura.icon);
+			buff:Show();
+
+			frameNum = frameNum + 1;
 			numBuffs = numBuffs + 1;
 		end
-		return index > MAX_PARTY_TOOLTIP_BUFFS
+
+		return false;
 	end);
 
-	for i=index, MAX_PARTY_TOOLTIP_BUFFS do
+	for i = frameNum, MAX_PARTY_TOOLTIP_BUFFS do
 		PartyMemberBuffTooltip.Buff[i]:Hide();
 	end
 
@@ -499,29 +482,28 @@ function PartyMemberBuffTooltip_Update(self)
 		PartyMemberBuffTooltip.Debuff[1]:SetPoint("TOP", PartyMemberBuffTooltip.Buff[9], "BOTTOM", 0, -2);
 	end
 
-	filter = ( SHOW_DISPELLABLE_DEBUFFS == "1" ) and "HARMFUL|RAID" or "HARMFUL";
-	index = 1;
-	AuraUtil.ForEachAura(self.unit, filter, MAX_PARTY_TOOLTIP_DEBUFFS, function(...)
-		local debuffBorder = PartyMemberBuffTooltip.Debuff[index].Border;
-		local partyDebuff = PartyMemberBuffTooltip.Debuff[index].Icon;
-		local name, icon, debuffStack, debuffType = ...;
-		if ( icon ) then
-			partyDebuff:SetTexture(icon);
-			local color;
-			if ( debuffType ) then
-				color = DebuffTypeColor[debuffType];
-			else
-				color = DebuffTypeColor["none"];
-			end
-			debuffBorder:SetVertexColor(color.r, color.g, color.b);
-			PartyMemberBuffTooltip.Debuff[index]:Show();
-			numDebuffs = numDebuffs + 1;
-			index = index + 1;
+	local numDebuffs = 0;
+	frameNum = 1;
+	self.debuffs:Iterate(function(auraInstanceID, aura)
+		if frameNum > MAX_PARTY_TOOLTIP_DEBUFFS then
+			return true;
 		end
-		return index > MAX_PARTY_TOOLTIP_DEBUFFS;
+
+		if aura.icon then
+			local debuff = PartyMemberBuffTooltip.Debuff[frameNum]
+			debuff.Icon:SetTexture(aura.icon);
+			local color = aura.dispelName and DebuffTypeColor[aura.dispelName] or DebuffTypeColor["none"]
+			debuff.Border:SetVertexColor(color.r, color.g, color.b);
+			debuff:Show();
+
+			frameNum = frameNum + 1;
+			numDebuffs = numDebuffs + 1;
+		end
+
+		return false;
 	end);
 
-	for i=index, MAX_PARTY_TOOLTIP_DEBUFFS do
+	for i = frameNum, MAX_PARTY_TOOLTIP_DEBUFFS do
 		PartyMemberBuffTooltip.Debuff[i]:Hide();
 	end
 
@@ -575,7 +557,7 @@ function UpdatePartyMemberBackground ()
 		return;
 	end
 	local numMembers = GetNumSubgroupMembers();
-	if ( numMembers > 0 and SHOW_PARTY_BACKGROUND == "1" and GetDisplayedAllyFrames() == "party" ) then
+	if ( numMembers > 0 and CVarCallbackRegistry:GetCVarValueBool("showPartyBackground") and GetDisplayedAllyFrames() == "party" ) then
 		if ( _G["PartyMemberFrame"..numMembers.."PetFrame"]:IsShown() ) then
 			PartyMemberBackground:SetPoint("BOTTOMLEFT", "PartyMemberFrame"..numMembers, "BOTTOMLEFT", -5, -21);
 		else
@@ -651,5 +633,167 @@ function PartyMemberFrame_UpdateOnlineStatus(self)
 		local selfName = self:GetName();
 		SetDesaturation(_G[selfName.."Portrait"], false);
 		_G[selfName.."Disconnect"]:Hide();
+	end
+end
+
+function PartyMemberFrame_UpdateAuras(frame, unitAuraUpdateInfo)
+	PartyMemberFrame_UpdateAurasInternal(frame, unitAuraUpdateInfo);
+end
+
+
+function PartyMemberFrame_UpdateAurasInternal(frame, unitAuraUpdateInfo)
+	local displayOnlyDispellableDebuffs = CVarCallbackRegistry:GetCVarValueBool("showDispelDebuffs") and UnitCanAssist("player", frame.unit);
+	-- Buffs are only displayed in the Party Buff Tooltip
+	local ignoreBuffs = MAX_PARTY_TOOLTIP_BUFFS == 0;
+	local ignoreDebuffs = not frame.debuffFrames or MAX_PARTY_DEBUFFS == 0;
+	local ignoreDispelDebuffs = not frame.debuffFrames or MAX_PARTY_DEBUFFS == 0;
+
+	local debuffsChanged = false;
+
+	if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate or frame.debuffs == nil then
+		PartyMemberFrame_ParseAllAuras(frame, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
+		debuffsChanged = true;
+	else
+		if unitAuraUpdateInfo.addedAuras ~= nil then
+			for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
+				local type = AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
+
+				if type == AuraUtil.AuraUpdateChangedType.Debuff or type == AuraUtil.AuraUpdateChangedType.Dispel then
+					frame.debuffs[aura.auraInstanceID] = aura;
+					debuffsChanged = true;
+				elseif type == AuraUtil.AuraUpdateChangedType.Buff then
+					frame.buffs[aura.auraInstanceID] = aura;
+				end
+			end
+		end
+
+		if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
+			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
+				if frame.debuffs[auraInstanceID] ~= nil then
+					local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, auraInstanceID);
+					local oldDebuffType = frame.debuffs[auraInstanceID].debuffType;
+					if newAura ~= nil then
+						newAura.debuffType = oldDebuffType;
+					end
+					frame.debuffs[auraInstanceID] = newAura;
+					debuffsChanged = true;
+				elseif frame.buffs[auraInstanceID] ~= nil then
+					local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, auraInstanceID);
+					if newAura ~= nil then
+						newAura.isBuff = true;
+					end
+					frame.buffs[auraInstanceID] = newAura;
+				end
+			end
+		end
+
+		if unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil then
+			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+				if frame.debuffs[auraInstanceID] ~= nil then
+					frame.debuffs[auraInstanceID] = nil;
+					debuffsChanged = true;
+				elseif frame.buffs[auraInstanceID] ~= nil then
+					frame.buffs[auraInstanceID] = nil;
+				end
+			end
+		end
+	end
+
+	if debuffsChanged then
+		local frameNum = 1;
+		frame.debuffs:Iterate(function(auraInstanceID, aura)
+			if frameNum > MAX_PARTY_DEBUFFS then
+				return true;
+			end
+
+			local debuffFrame = frame.debuffFrames[frameNum];
+			PartyMemberFrame_SetDebuff(frame, debuffFrame, aura, frameNum);
+			frameNum = frameNum + 1;
+
+			return false;
+		end);
+
+
+		local unitStatus;
+		if frame.PartyMemberOverlay and frame.PartyMemberOverlay.Info then
+			unitStatus = frame.PartyMemberOverlay.Info.Status;
+		end
+
+		if unitStatus then
+			local highestPriorityDebuff = frame.debuffs:GetTop();
+			if highestPriorityDebuff then
+				local statusColor = DebuffTypeColor[highestPriorityDebuff.dispelName] or DebuffTypeColor["none"];
+				unitStatus:SetVertexColor(statusColor.r, statusColor.g, statusColor.b);
+				unitStatus:Show();
+			else
+				unitStatus:Hide();
+			end
+		end
+
+		PartyMemberFrame_HideAllDebuffs(frame, frameNum);
+	end
+end
+
+function PartyMemberFrame_ParseAllAuras(frame, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs) 
+	if frame.debuffs == nil then
+		frame.debuffs = TableUtil.CreatePriorityTable(AuraUtil.UnitFrameDebuffComparator, TableUtil.Constants.AssociativePriorityTable);
+		frame.buffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+	else
+		frame.debuffs:Clear();
+		frame.buffs:Clear();
+	end
+
+	local batchCount = nil;
+	local usePackedAura = true;
+	local function HandleAura(aura)
+		local type = AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
+
+		if type == AuraUtil.AuraUpdateChangedType.Debuff or type == AuraUtil.AuraUpdateChangedType.Dispel then
+			frame.debuffs[aura.auraInstanceID] = aura;
+		elseif type == AuraUtil.AuraUpdateChangedType.Buff then
+			frame.buffs[aura.auraInstanceID] = aura;
+		end
+	end
+	AuraUtil.ForEachAura(frame.unit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful), batchCount, HandleAura, usePackedAura);
+	AuraUtil.ForEachAura(frame.unit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Helpful), batchCount, HandleAura, usePackedAura);
+	AuraUtil.ForEachAura(frame.unit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful, AuraUtil.AuraFilters.Raid), batchCount, HandleAura, usePackedAura);
+end
+
+function PartyMemberFrame_SetDebuff(partyMemberFrame, debuffFrame, aura, frameNum)
+	debuffFrame.auraInstanceID = aura.auraInstanceID;
+	debuffFrame.isBossBuff = aura.isBossAura and aura.isHelpful;
+	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid;
+
+	if aura.icon then
+		debuffFrame.Icon:SetTexture(aura.icon);
+
+		if ( aura.applications > 1 ) then
+				local countText = aura.applications >= 100 and BUFF_STACKS_OVERFLOW or aura.applications;
+				debuffFrame.Count:Show();
+				debuffFrame.Count:SetText(countText);
+		else
+			debuffFrame.Count:Hide();
+		end
+
+		local color = DebuffTypeColor[aura.dispelName] or DebuffTypeColor["none"];
+		debuffFrame.Border:SetVertexColor(color.r, color.g, color.b);
+
+		local enabled = aura.expirationTime and aura.expirationTime ~= 0;
+		if enabled then
+			local startTime = aura.expirationTime - aura.duration;
+			CooldownFrame_Set(debuffFrame.Cooldown, startTime, aura.duration, true);
+		else
+			CooldownFrame_Clear(debuffFrame.Cooldown);
+		end
+
+		debuffFrame:Show();
+	end
+end
+
+function PartyMemberFrame_HideAllDebuffs(frame, startingIndex)
+	if frame.debuffFrames then
+		for i = startingIndex or 1, #frame.debuffFrames do
+			frame.debuffFrames[i]:Hide();
+		end
 	end
 end

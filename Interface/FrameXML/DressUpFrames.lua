@@ -244,7 +244,8 @@ function DressUpMount(mountID, forcedFrame)
 			mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
 			mountActor:SetAnimation(0);
 		end
-		frame.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview);
+		local useNativeForm = PlayerUtil.ShouldUseNativeFormInModelScene();
+		frame.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID, useNativeForm);
 	end
 	return true;
 end

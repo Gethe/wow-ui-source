@@ -377,7 +377,7 @@ function ScenarioObjectiveTracker_AnimateReward(xp, money)
 	local numRewards = #rewards;
 	local contentsHeight = 12 + numRewards * 36;
 	rewardsFrame.Anim.RewardsBottomAnim:SetOffset(0, -contentsHeight);
-	rewardsFrame.Anim.RewardsShadowAnim:SetToScale(0.8, contentsHeight / 16);
+	rewardsFrame.Anim.RewardsShadowAnim:SetScaleTo(0.8, contentsHeight / 16);
 	rewardsFrame.Anim:Play();
 	-- configure reward frames
 	for i = 1, numRewards do

@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_LootJournal.lua"/>
 
-	<Button name="RuneforgeLegendaryPowerLootJournalTemplate" mixin="RuneforgeLegendaryPowerLootJournalMixin" inherits="GridListElementTemplate" virtual="true">
+	<Button name="RuneforgeLegendaryPowerLootJournalTemplate" mixin="RuneforgeLegendaryPowerLootJournalMixin" virtual="true">
 		<Size x="326" y="80"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -80,6 +80,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<Onclick method="OnClick"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
@@ -134,19 +135,19 @@
 				</Scripts>
 			</DropDownToggleButton>
 
-			<ScrollFrame parentKey="PowersFrame" inherits="GridListTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Size x="747" y="333"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="35" y="3"/>
 				</Anchors>
-				<Frames>
-					<Slider parentKey="ScrollBar" inherits="EncounterJournalScrollBarTemplate">
-						<KeyValues>
-							<KeyValue key="scrollStep" value="20" type="number"/>
-						</KeyValues>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-22" y="-42"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-22" y="3"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

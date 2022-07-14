@@ -7,28 +7,22 @@
 			<Layer level="BACKGROUND">
 				<FontString name="$parentLabel" inherits="GameFontNormalSmall" parentKey="label">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-							<Offset>
-								<AbsDimension x="16" y="3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="16" y="3"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<!--OnLoad>
+			<OnLoad>
 				CompactUnitFrameProfilesDropdown_InitializeWidget(self);
-			</OnLoad-->
+			</OnLoad>
 			<OnShow>
 				CompactUnitFrameProfilesDropdown_OnShow(self);
 			</OnShow>
 		</Scripts>
 	</Frame>
 	<CheckButton name="CompactUnitFrameProfilesCheckButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Size>
-			<AbsDimension x="26" y="26"/>
-		</Size>
+		<Size x="26" y="26"/>
 		<HitRectInsets>
 			<AbsInset left="0" right="-100" top="0" bottom="0"/>
 		</HitRectInsets>
@@ -36,19 +30,12 @@
 			<Layer level="ARTWORK">
 				<FontString name="$parentLabel" inherits="GameFontHighlightLeft" parentKey="label">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="2" y="1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<!--OnLoad>
-				CompactUnitFrameProfilesCheckButton_Initialize(self);
-			</OnLoad-->
 			<OnClick>
 				CompactUnitFrameProfilesCheckButton_OnClick(self, button);
 			</OnClick>
@@ -79,7 +66,7 @@
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
-	<Slider name="CompactUnitFrameProfilesSliderTemplate" inherits="HorizontalSliderTemplate" virtual="true">
+	<Slider name="CompactUnitFrameProfilesSliderTemplate" inherits="UISliderTemplate" virtual="true">
 		<Size x="144" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -90,20 +77,12 @@
 				</FontString>
 				<FontString name="$parentLow" inherits="GameFontHighlightSmall" text="LOW" parentKey="minLabel">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="-4" y="3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="-4" y="3"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentHigh" inherits="GameFontHighlightSmall" text="HIGH" parentKey="maxLabel">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="4" y="3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="4" y="3"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -150,17 +129,13 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-
-	<Frame name="CompactUnitFrameProfiles" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+	
+	<Frame name="CompactUnitFrameProfiles" hidden="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentTitle" text="COMPACT_UNIT_FRAME_PROFILES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="16" y="-16"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="16" y="-16"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentSeparator">
@@ -205,35 +180,10 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<CheckButton name="$parentRaidStylePartyFrames" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton parentKey="RaidStylePartyFramesCheckBox" name="$parentRaidStylePartyFrames" inherits="UICheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-260" y="-8"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "useCompactPartyFrames";
-						self.setFunc = function (value)
-							RaidOptionsFrame_UpdatePartyFrames()
-							CompactRaidFrameManager_UpdateShown(CompactRaidFrameManager);
-
-							if ( value and value ~= "0" ) then
-								self:GetParent().optionsFrame.autoActivate2Players:Enable();
-								self:GetParent().optionsFrame.autoActivate3Players:Enable();
-								self:GetParent().optionsFrame.autoActivate5Players:Enable();
-							else
-								self:GetParent().optionsFrame.autoActivate2Players:Disable();
-								self:GetParent().optionsFrame.autoActivate3Players:Disable();
-								self:GetParent().optionsFrame.autoActivate5Players:Disable();
-							end
-						end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self:RegisterEvent("VARIABLES_LOADED");
-					</OnLoad>
-					<OnEvent>
-						self.setFunc(GetCVar(self.cvar));
-					</OnEvent>
-				</Scripts>
 			</CheckButton>
 			<Frame name="$parentNewProfileDialog" inherits="CompactUnitFrameProfileDialogWithCoverTemplate" parentKey="newProfileDialog">
 				<Size x="450" y="200"/>
@@ -248,45 +198,29 @@
 				</Layers>
 				<Frames>
 					<EditBox name="$parentEditBox" autoFocus="false" parentKey="editBox" letters="31">
-						<Size>
-							<AbsDimension x="210" y="32"/>
-						</Size>
+						<Size x="210" y="32"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentLabel" relativePoint="BOTTOM" x="0" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
+									<Size x="32" y="32"/>
 									<Anchors>
 										<Anchor point="LEFT" x="-10" y="0"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
+									<Size x="32" y="32"/>
 									<Anchors>
 										<Anchor point="RIGHT" x="10" y="0"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentMid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
-									<Size>
-										<AbsDimension x="0" y="32"/>
-									</Size>
+									<Size x="0" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+										<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT" x="0" y="0"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -457,7 +391,7 @@
 							<!--The size is changed programatically -->
 							<Size x="190" y="0"/>	<!--Also change the with of AutoActivateDisabledLabel -->
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="415" y="-50"/>
+								<Anchor point="TOPLEFT" x="415" y="-50"/>
 							</Anchors>
 							<Color r="0.3" g="0.3" b="0.3" a="0.3"/>
 						</Texture>
@@ -485,7 +419,7 @@
 							<OnLoad>
 								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "keepGroupsTogether", function(self)
 									local currentValue = GetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName);
-									local sortBy = _G[self:GetParent():GetName().."SortByDropdown"];
+									local sortBy = self:GetParent().SortByDropdown;
 									local horizontalGroups = _G[self:GetParent():GetName().."HorizontalGroups"];
 									if ( currentValue ) then
 										sortBy:Hide();
@@ -509,7 +443,7 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<Frame name="$parentSortByDropdown" inherits="CompactUnitFrameProfilesDropdownTemplate">
+					<Frame parentKey="SortByDropdown" name="$parentSortByDropdown" inherits="CompactUnitFrameProfilesDropdownTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="15" y="-10"/>
 						</Anchors>

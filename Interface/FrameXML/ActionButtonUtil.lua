@@ -27,16 +27,12 @@ local MicroButtons = {
 ActionButtonUtil = {};
 
 function ActionButtonUtil.ShowAllActionButtonGrids()
-	for i = 1, NumActionBarButtons do
-		_G["ActionButton"..i]:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
-	end
+	MainMenuBar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 	MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_EVENT, true);
 end
 
 function ActionButtonUtil.HideAllActionButtonGrids()
-	for i = 1, NumActionBarButtons do
-		_G["ActionButton"..i]:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
-	end
+	MainMenuBar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 	MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 end
 
@@ -51,8 +47,8 @@ function ActionButtonUtil.SetAllQuickKeybindButtonHighlights(show)
 		_G["StanceButton"..i].QuickKeybindHighlightTexture:SetShown(show);
 	end
 	ExtraActionButton1.QuickKeybindHighlightTexture:SetShown(show);
-	ActionBarUpButton.QuickKeybindHighlightTexture:SetShown(show);
-	ActionBarDownButton.QuickKeybindHighlightTexture:SetShown(show);
+	MainMenuBar.ActionBarPageNumber.UpButton.QuickKeybindHighlightTexture:SetShown(show);
+	MainMenuBar.ActionBarPageNumber.DownButton.QuickKeybindHighlightTexture:SetShown(show);
 	for i = 0, NumBagSlots do
 		_G["CharacterBag"..i.."Slot"].QuickKeybindHighlightTexture:SetShown(show);
 	end

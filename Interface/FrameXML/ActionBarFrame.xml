@@ -1,21 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ActionButton.lua"/>
-	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate" virtual="true" mixin="ActionBarActionButtonMixin">
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnAttributeChanged method="UpdateAction"/>
-			<OnEvent method="OnEvent"/>
-			<OnClick method="OnClick" inherit="append"/>
-			<PostClick method="UpdateState"/>
-			<OnDragStart method="OnDragStart"/>
-			<OnReceiveDrag method="OnReceiveDrag"/>
-			<OnEnter method="OnEnter" inherit="append"/>
-			<OnLeave method="OnLeave" inherit="append"/>
-			<OnUpdate method="OnUpdate" inherit="append"/>
-		</Scripts>
-	</CheckButton>
-	<CheckButton name="ActionBarButtonTemplate" inherits="ActionBarButtonCodeTemplate, ActionButtonTemplate" virtual="true"/>
+
 	<Frame name="ActionBarButtonSpellActivationAlert" virtual="true" mixin="ActionBarButtonSpellActivationAlertMixin">
 		<Animations>
 			<AnimationGroup parentKey="animIn" mixin="ActionBarOverlayGlowAnimInMixin">
@@ -108,148 +94,192 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-	<CheckButton name="ActionButton1" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="1">
+
+	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate" virtual="true" mixin="ActionBarActionButtonMixin">
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnAttributeChanged method="UpdateAction"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick" inherit="prepend"/>
+			<PostClick method="UpdateState"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnEnter method="OnEnter" inherit="append"/>
+			<OnLeave method="OnLeave" inherit="append"/>
+			<OnUpdate method="OnUpdate" inherit="append"/>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="ActionBarButtonTemplate" inherits="ActionButtonTemplate, ActionBarButtonCodeTemplate" virtual="true"/>
+	<CheckButton name="MainBarActionBarButtonTemplate" parentArray="ActionButtons" inherits="ActionBarButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="showBarArt" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+	<CheckButton name="ActionButton1" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="1">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON1" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBarArtFrameBackground" x="8" y="4"/>
+			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBar" x="0" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton2" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="2">
+	<CheckButton name="ActionButton2" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="2">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON2" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton1" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton1" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton3" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="3">
+	<CheckButton name="ActionButton3" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="3">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON3" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton2" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton2" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton4" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="4">
+	<CheckButton name="ActionButton4" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="4">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON4" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton3" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton3" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton5" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="5">
+	<CheckButton name="ActionButton5" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="5">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON5" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton4" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton4" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton6" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="6">
+	<CheckButton name="ActionButton6" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="6">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON6" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton5" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton5" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton7" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="7">
+	<CheckButton name="ActionButton7" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="7">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON7" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton6" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton6" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton8" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="8">
+	<CheckButton name="ActionButton8" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="8">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON8" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton7" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton7" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton9" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="9">
+	<CheckButton name="ActionButton9" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="9">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON9" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton8" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton8" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton10" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="10">
+	<CheckButton name="ActionButton10" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="10">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON10" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton9" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton9" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton11" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="11">
+	<CheckButton name="ActionButton11" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="11">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON11" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton10" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton10" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<CheckButton name="ActionButton12" inherits="ActionBarButtonTemplate" parent="MainMenuBarArtFrame" id="12">
+	<CheckButton name="ActionButton12" inherits="MainBarActionBarButtonTemplate" parent="MainMenuBar" id="12">
 		<KeyValues>
 			<KeyValue key="commandName" value="ACTIONBUTTON12" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="ActionButton11" relativePoint="RIGHT" x="6" y="0"/>
+			<Anchor point="LEFT" relativeTo="ActionButton11" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
 	</CheckButton>
-	<Button name="ActionBarUpButton" inherits="QuickKeybindButtonTemplate" parent="MainMenuBarArtFrame">
+
+	<Frame name="ActionBarButtonDividerTemplate" inherits="NineSliceCodeTemplate" frameLevel="60" virtual="true">
+		<Size x="7"/>
 		<KeyValues>
-			<KeyValue key="commandName" value="NEXTACTIONPAGE" type="string"/>
+			<KeyValue key="layoutType" value="ThreeSliceVerticalLayout" type="string"/>
+			<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
 		</KeyValues>
-		<Size x="21" y="19"/>
 		<Anchors>
-			<Anchor point="RIGHT" relativeTo="ActionButton12" x="25" y="9"/>
+			<Anchor point="TOP" y="-1"/>
+			<Anchor point="BOTTOM"/>
 		</Anchors>
-		<Scripts>
-			<OnClick inherit="append">
-				if ( not KeybindFrames_InQuickKeybindMode() ) then
-					ActionBar_PageUp(self);
-					PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-				end
-			</OnClick>
-			<OnLeave inherit="append">
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-		<NormalTexture atlas="hud-MainMenuBar-arrowup-up"/>
-		<PushedTexture atlas="hud-MainMenuBar-arrowup-down"/>
-		<DisabledTexture atlas="hud-MainMenuBar-arrowup-disabled"/>
-		<HighlightTexture alphaMode="ADD" atlas="hud-MainMenuBar-arrowup-highlight"/>
-	</Button>
-	<Button name="ActionBarDownButton" inherits="QuickKeybindButtonTemplate" parent="MainMenuBarArtFrame">
-		<KeyValues>
-			<KeyValue key="commandName" value="PREVIOUSACTIONPAGE" type="string"/>
-		</KeyValues>
-		<Size x="21" y="19"/>
-		<Anchors>
-			<Anchor point="CENTER" relativeTo="ActionBarUpButton" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
-		</Anchors>
-		<Scripts>
-			<OnClick inherit="append">
-				if ( not KeybindFrames_InQuickKeybindMode() ) then
-					ActionBar_PageDown(self);
-					PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-				end
-			</OnClick>
-			<OnLeave inherit="append">
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-		<NormalTexture atlas="hud-MainMenuBar-arrowdown-up"/>
-		<PushedTexture atlas="hud-MainMenuBar-arrowdown-down"/>
-		<DisabledTexture atlas="hud-MainMenuBar-arrowdown-disabled"/>
-		<HighlightTexture alphaMode="ADD" atlas="hud-MainMenuBar-arrowdown-highlight"/>
-	</Button>
+	</Frame>
+	<Frame parentKey="ButtonDividersContainer" parent="MainMenuBar" setAllPoints="true">
+		<Frames>
+			<Frame parentKey="ActionBarButtonDivider1" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton1" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ActionBarButtonDivider2" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton2" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ActionBarButtonDivider3" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton3" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ActionBarButtonDivider4" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton4" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ActionBarButtonDivider5" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton5" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ActionBarButtonDivider6" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton6" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ActionBarButtonDivider7" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton7" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ActionBarButtonDivider8" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton8" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ActionBarButtonDivider9" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton9" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ActionBarButtonDivider10" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton10" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ActionBarButtonDivider11" inherits="ActionBarButtonDividerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ActionButton11" relativePoint="RIGHT" x="-2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
 </Ui>

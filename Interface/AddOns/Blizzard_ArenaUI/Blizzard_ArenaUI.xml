@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ArenaUI.lua"/>
-	<StatusBar name="ArenaCastingBarFrameTemplate" drawLayer="BORDER" virtual="true" hidden="true">
+	<StatusBar name="ArenaCastingBarFrameTemplate" mixin="CastingBarMixin" drawLayer="BORDER" virtual="true" hidden="true">
 		<Size x="80" y="14"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -30,8 +30,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
-					<Size x="32" y="32"/>
+				<Texture parentKey="Spark" atlas="ui-castingbar-pip">
+					<Size x="6" y="16"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -46,13 +46,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="CastingBarFrame_OnLoad" />
-			<OnEvent function="CastingBarFrame_OnEvent" />
-			<OnUpdate function="CastingBarFrame_OnUpdate" />
-			<OnShow function="CastingBarFrame_OnShow" />
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<OnUpdate method="OnUpdate" />
+			<OnShow method="OnShow" />
 		</Scripts>
-		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
 	<Button name="ArenaEnemyPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
 		<Size x="77" y="31"/>
@@ -303,9 +301,8 @@
 			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				self:SetFrameLevel(2);
-			</OnShow>
+			<OnShow function="ArenaPrepFrame_OnShow"/>
+			<OnHide function="ArenaPrepFrame_OnHide"/>
 		</Scripts>
 	</Button>
 	<Button name="ArenaEnemyFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="ArenaPrepFrameTemplate" virtual="true">
@@ -356,49 +353,48 @@
 		<Scripts>
 			<OnLoad function="ArenaEnemyFrame_OnLoad"/>
 			<OnShow function="ArenaEnemyFrame_OnShow"/>
+			<OnHide function="ArenaEnemyFrame_OnHide"/>
 			<OnEvent function="ArenaEnemyFrame_OnEvent"/>
 			<OnEnter function="UnitFrame_OnEnter"/>
 			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	<Frame name="ArenaPrepFrames" hidden="true" parent="UIParent">
-		<Size x="1" y="1"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT" x="-100" y="-25"/>
-		</Anchors>
+	<Frame name="ArenaPrepFrames" hidden="true" inherits="VerticalLayoutFrame, UIParentRightManagedFrameTemplate">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="12" type="number"/>
+			<KeyValue key="spacing" value="10" type="number"/>
+		</KeyValues>
 		<Frames>
 			<Button name="ArenaPrepFrame1" inherits="ArenaPrepFrameTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOP"/>
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
 			</Button>
 			<Button name="ArenaPrepFrame2" inherits="ArenaPrepFrameTemplate" id="2">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaPrepFrame1" relativePoint="BOTTOM" y="-20" />
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
+					<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
 			</Button>
 			<Button name="ArenaPrepFrame3" inherits="ArenaPrepFrameTemplate" id="3">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaPrepFrame2" relativePoint="BOTTOM" y="-20" />
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
 			</Button>
 			<Button name="ArenaPrepFrame4" inherits="ArenaPrepFrameTemplate" id="4">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaPrepFrame3" relativePoint="BOTTOM" y="-20" />
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+				</KeyValues>
 			</Button>
 			<Button name="ArenaPrepFrame5" inherits="ArenaPrepFrameTemplate" id="5">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaPrepFrame4" relativePoint="BOTTOM" y="-20" />
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+				</KeyValues>
 			</Button>
 			<Frame name="ArenaPrepBackground" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate">
 				<Size x="125" y="10"/>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ArenaPrepFrame1" x="-15" y="6"/>
 					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
@@ -436,44 +432,42 @@
 			<OnHide function="ArenaPrepFrames_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="ArenaEnemyFrames" hidden="true" parent="UIParent">
-		<Size x="1" y="1"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT" x="-100" y="-25"/>
-		</Anchors>
+	<Frame name="ArenaEnemyFrames" hidden="true" inherits="VerticalLayoutFrame, UIParentRightManagedFrameTemplate" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="10" type="number"/>
+			<KeyValue key="spacing" value="10" type="number"/>
+		</KeyValues>
 		<Frames>
 			<Button name="ArenaEnemyFrame1" inherits="ArenaEnemyFrameTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOP"/>
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
 			</Button>
 			<Button name="ArenaEnemyFrame2" inherits="ArenaEnemyFrameTemplate" id="2">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaEnemyFrame1" relativePoint="BOTTOM" y="-20" />
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
 			</Button>
 			<Button name="ArenaEnemyFrame3" inherits="ArenaEnemyFrameTemplate" id="3">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaEnemyFrame2" relativePoint="BOTTOM" y="-20" />
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
 			</Button>
 			<Button name="ArenaEnemyFrame4" inherits="ArenaEnemyFrameTemplate" id="4">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaEnemyFrame3" relativePoint="BOTTOM" y="-20" />
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+				</KeyValues>
 			</Button>
 			<Button name="ArenaEnemyFrame5" inherits="ArenaEnemyFrameTemplate" id="5">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="ArenaEnemyFrame4" relativePoint="BOTTOM" y="-20" />
-					<Anchor point="RIGHT" x="-2"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+				</KeyValues>
 			</Button>
 			<Frame name="ArenaEnemyBackground" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate">
 				<Size x="125" y="10"/>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="ArenaEnemyFrame1" x="-15" y="6"/>
 					<Anchor point="BOTTOMLEFT" x="0" y="0"/>

@@ -85,104 +85,6 @@ function UnitPopupRafRemoveRecruitButtonMixin:OnClick()
 	StaticPopup_Show("CONFIRM_RAF_REMOVE_RECRUIT", dropdownMenu.name, nil, dropdownMenu.wowAccountGUID);
 end
 
-UnitPopupSelectRoleButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
-function UnitPopupSelectRoleButtonMixin:GetText()
-	return SET_ROLE; 
-end 
-
-function UnitPopupSelectRoleButtonMixin:IsNested()
-	return true; 
-end
-
-function UnitPopupSelectRoleButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	local isLeader = UnitIsGroupLeader("player"); 
-	local isAssistant = UnitIsGroupAssistant("player"); 
-	if ( C_Scenario.IsInScenario() or not ( IsInGroup() and not HasLFGRestrictions() and (isLeader or isAssistant or UnitIsUnit(dropdownMenu.unit, "player")) ) ) then
-		return false; 
-	end
-	return true; 
-end
-
-function UnitPopupSelectRoleButtonMixin:GetButtons()
-	return { 
-		UnitPopupSetRoleTankButton,
-		UnitPopupSetRoleHealerButton,
-		UnitPopupSetRoleDpsButton,
-		UnitPopupSetRoleNoneButton,
-	}
-end 
-
-UnitPopupSetRoleNoneButton = CreateFromMixins(UnitPopupButtonBaseMixin);
-function UnitPopupSetRoleNoneButton:GetText()
-	return NO_ROLE; 
-end 
-
-function UnitPopupSetRoleNoneButton:IsCheckable()
-	return true; 
-end
-
-function UnitPopupSetRoleNoneButton:GetRole()
-	return "NONE";
-end
-
-function UnitPopupSetRoleNoneButton:OnClick()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	UnitSetRole(dropdownMenu.unit, self:GetRole());
-end 
-
-function UnitPopupSetRoleNoneButton:IsChecked()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	if ( UnitGroupRolesAssigned(dropdownMenu.unit) == self:GetRole()) then
-		return true
-	end
-end
-
-UnitPopupSetRoleTankButton = CreateFromMixins(UnitPopupSetRoleNoneButton);
-function UnitPopupSetRoleTankButton:GetText()
-	return INLINE_TANK_ICON.." "..TANK; 
-end 
-
-function UnitPopupSetRoleTankButton:GetRole()
-	return "TANK";
-end
-
-function UnitPopupSetRoleTankButton:IsEnabled()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownMenu.unit);
-	return canBeTank; 
-end
-
-UnitPopupSetRoleDpsButton = CreateFromMixins(UnitPopupSetRoleNoneButton);
-function UnitPopupSetRoleDpsButton:GetText()
-	return INLINE_DAMAGER_ICON.." "..DAMAGER; 
-end 
-
-function UnitPopupSetRoleDpsButton:GetRole()
-	return "DAMAGER";
-end
-
-function UnitPopupSetRoleDpsButton:IsEnabled()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownMenu.unit);
-	return canBeDamager; 
-end
-
-UnitPopupSetRoleHealerButton = CreateFromMixins(UnitPopupSetRoleNoneButton);
-function UnitPopupSetRoleHealerButton:GetText()
-	return INLINE_HEALER_ICON.." "..HEALER; 
-end 
-
-function UnitPopupSetRoleHealerButton:GetRole()
-	return "HEALER";
-end
-
-function UnitPopupSetRoleHealerButton:IsEnabled()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownMenu.unit);
-	return canBeHealer; 
-end
-
 UnitPopupGuildSettingButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupGuildSettingButtonMixin:GetText()
 	return GUILD_CONTROL_BUTTON_TEXT;
@@ -537,4 +439,40 @@ end
 
 function UnitPopupGarrisonVisitButtonMixin:CanShow()
 	return C_Garrison.IsVisitGarrisonAvailable() and (not C_PartyInfo.IsCrossFactionParty());
+end
+
+-- TODO: Uncomment once Edit Mode is complete for Unit Frames
+--[[
+-- UnitPopupEnterEditModeMixin is used instead
+function UnitPopupMovePlayerFrameButtonMixin:CanShow()
+	return false;
+end]]--
+
+-- TODO: Uncomment once Edit Mode is complete for Unit Frames
+--[[
+-- UnitPopupEnterEditModeMixin is used instead
+function UnitPopupMoveTargetFrameButtonMixin:CanShow()
+	return false;
+end]]--
+
+function UnitPopupEnterEditModeMixin:GetText()
+	return HUD_EDIT_MODE_MENU;
+end
+
+function UnitPopupEnterEditModeMixin:CanShow()
+	return true; 
+end
+
+function UnitPopupEnterEditModeMixin:OnClick()
+	ShowUIPanel(EditModeManagerFrame);
+end
+
+function UnitPopupSelectRoleButtonMixin:CanShow()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+	local isLeader = UnitIsGroupLeader("player"); 
+	local isAssistant = UnitIsGroupAssistant("player"); 
+	if ( C_Scenario.IsInScenario() or not ( IsInGroup() and not HasLFGRestrictions() and (isLeader or isAssistant or UnitIsUnit(dropdownMenu.unit, "player")) ) ) then
+		return false; 
+	end
+	return true; 
 end

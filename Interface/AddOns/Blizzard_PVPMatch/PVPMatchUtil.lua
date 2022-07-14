@@ -39,27 +39,12 @@ function PVPMatchUtil.GetCellColor(factionIndex, useAlternateColor)
 	return PVPMatchUtil.CellColors[index];
 end
 
-function PVPMatchUtil.SetupTableButtonColors(factionIndex, isFactionalMatch, scrollFrame)
-	local buttons = HybridScrollFrame_GetButtons(scrollFrame);
-	
-	if C_PvP.GetCustomVictoryStatID() == 0 then
-		local useAlternateColor = not isFactionalMatch;
-		for k, button in pairs(buttons) do
-			button:SetUseAlternateColor(useAlternateColor);
-		end
-	else
-		for k, button in pairs(buttons) do
-			button:SetBackgroundColor(PVPMatchStyle.PurpleColor);
-		end
-	end
-end
-
 PVPMatchStyle = {};
 PVPMatchStyle.PurpleColor = CreateColor(0.557, 0.0, 1.0);
 
 PVPMatchStyle.PanelColors = {
 	CreateColor(1.0, 0.0, 0.0),		-- Horde
-	PVPMatchStyle.PurpleColor,		-- Horde Alternate
+	PVPMatchStyle.PurpleColor,					-- Horde Alternate
 	CreateColor(0.0, .376, 1.0),	-- Alliance
 	CreateColor(1.0, 0.824, 0.0),	-- Alliance Alternate
 };
@@ -100,23 +85,43 @@ function PVPMatchUtil.UpdateMatchmakingText(fontString)
 	end
 end
 
-function PVPMatchUtil.UpdateTable(tableBuilder, scrollFrame)
-	local buttons = HybridScrollFrame_GetButtons(scrollFrame);
-	local buttonCount = #buttons;
-	local displayCount = GetNumBattlefieldScores();
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local populateCount = math.min(buttonCount, displayCount);
-	tableBuilder:Populate(offset, populateCount);
-	
-	for i = 1, buttonCount do
-		local visible = i <= displayCount;
-		buttons[i]:SetShown(visible);
-	end
+function PVPMatchUtil.UpdateDataProvider(scrollBox, forceNewDataProvider)
+	local scores = GetNumBattlefieldScores();
+	if not scrollBox:GetDataProviderSize() ~= scores or forceNewDataProvider then
+		local useAlternateColor = not C_PvP.IsMatchFactional();
+		local dataProvider = CreateDataProvider();
 
-	local buttonHeight = buttons[1]:GetHeight();
-	local visibleElementHeight = displayCount * buttonHeight;
-	local regionHeight = scrollFrame:GetHeight();
-	HybridScrollFrame_Update(scrollFrame, visibleElementHeight, regionHeight);
+		if C_PvP.GetCustomVictoryStatID() == 0 then
+			local useAlternateColor = not C_PvP.IsMatchFactional();
+			for index = 1, scores do 
+				dataProvider:Insert({index=index, useAlternateColor=useAlternateColor});
+			end
+		else
+			for index = 1, scores do 
+				dataProvider:Insert({index=index, backgroundColor=PVPMatchStyle.PurpleColor});
+			end
+		end
+
+		local retainScrollPosition = not forceNewDataProvider;
+		scrollBox:SetDataProvider(dataProvider, retainScrollPosition);
+	end
+end
+
+function PVPMatchUtil.InitScrollBox(scrollBox, scrollBar, tableBuilder)
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("PVPTableRowTemplate", function(button, elementData)
+		if elementData.backgroundColor then
+			button:SetBackgroundColor(elementData.backgroundColor);
+		else
+			button:SetUseAlternateColor(elementData.useAlternateColor);
+		end
+	end);
+	ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, view);
+
+	local function ElementDataTranslator(elementData)
+		return elementData.index;
+	end
+	ScrollUtil.RegisterTableBuilder(scrollBox, tableBuilder, ElementDataTranslator);
 end
 
 function PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor)

@@ -15,7 +15,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
 			<Button name="$parentPopoutButton" parentKey="popoutButton" inherits="EquipmentFlyoutPopoutButtonTemplate"/>
 		</Frames>
         <Scripts>
@@ -150,7 +150,7 @@
 		</Scripts>
 		<ButtonText name="$parentTitleText" inherits="GameFontNormalSmallLeft" justifyH="LEFT" parentKey="text">
 			<Anchors>
-				<Anchor point="LEFT" relativeTo="$parentCheck" relativePoint="RIGHT" x="3" y="0"/>
+				<Anchor point="LEFT" relativeKey="$parent.Check" relativePoint="RIGHT" x="3" y="0"/>
 				<Anchor point="RIGHT" x="-3" y="0"/>
 			</Anchors>
 		</ButtonText>
@@ -237,9 +237,7 @@
 
 		<Frames>
 			<Button name="$parentDeleteButton" parentKey="DeleteButton" hidden="true">
-				<Size>
-					<AbsDimension x="14" y="14"/>
-				</Size>
+				<Size x="14" y="14"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
 				</Anchors>
@@ -277,7 +275,7 @@
 			<DropDownToggleButton name="$parentEditButton" parentKey="EditButton" hidden="true">
 				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentDeleteButton" relativePoint="LEFT" x="-1"/>
+					<Anchor point="RIGHT" relativeKey="$parent.DeleteButton" relativePoint="LEFT" x="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -338,25 +336,14 @@
 
 	<CheckButton name="GearSetPopupButtonTemplate" inherits="SimplePopupButtonTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>
-				local name = self:GetName();
-				self.icon = _G[name .. "Icon"];
-				self.name = _G[name .. "Name"];
-			</OnLoad>
 			<OnClick>
 				GearSetPopupButton_OnClick(self, button, down);
 			</OnClick>
 		</Scripts>
-		<NormalTexture name="$parentIcon" nonBlocking="true">
-			<Size>
-				<AbsDimension x="36" y="36"/>
-			</Size>
+		<NormalTexture name="$parentIcon" nonBlocking="true" parentKey="Icon">
+			<Size x="36" y="36"/>
 			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="-1"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="CENTER" x="0" y="-1"/>
 			</Anchors>
 		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
@@ -428,26 +415,22 @@
 	</Button>
 
     <Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
-		<Layers>
-            <Layer level="ARTWORK">
-                <FontString name="CharacterLevelText" inherits="GameFontNormalSmall2" justifyV="MIDDLE" justifyH="CENTER" text="Level level race class">
-					<Size x="220" y="24"/>
-                </FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-                <FontString name="CharacterTrialLevelErrorText" inherits="GameFontNormalSmall" text="TRIAL_LEVEL_CAPPED" hidden="true">
-                    <Size x="0" y="0"/>
-					<Anchors>
-                        <Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM">
-                            <Offset>
-                                <AbsDimension x="0" y="0"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-					<Color r="1" g="0.1" b="0.1" a="1"/>
-                </FontString>
-            </Layer>
-        </Layers>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString name="CharacterLevelText" inherits="GameFontNormalSmall2" justifyV="MIDDLE" justifyH="CENTER" text="Level level race class">
+						<Size x="220" y="24"/>
+					</FontString>
+				</Layer>
+				<Layer level="OVERLAY">
+					<FontString name="CharacterTrialLevelErrorText" inherits="GameFontNormalSmall" text="TRIAL_LEVEL_CAPPED" hidden="true">
+						<Size x="0" y="0"/>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM" x="0" y="0"/>
+						</Anchors>
+						<Color r="1" g="0.1" b="0.1" a="1"/>
+					</FontString>
+				</Layer>
+			</Layers>
         <Frames>
 			<Frame parentKey="EditButtonDropdown" name="GearSetEditButtonDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame name="PaperDollSidebarTabs" parent="CharacterFrameInsetRight" hidden="true">
@@ -515,86 +498,87 @@
 					</Button>
 				</Frames>
 			</Frame>
-
-			<ScrollFrame name="PaperDollTitlesPane" inherits="HybridScrollFrameTemplate" hidden="true">
-				<Size x="172" y="354"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-4"/>
-				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate" parentKey="scrollBar">
+					<Frame parentKey="TitleManagerPane" hidden="true">
+						<Size x="172" y="354"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset x="4" y="-13"/>
-							</Anchor>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-								<Offset x="4" y="14"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-4"/>
 						</Anchors>
-					</Slider>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.scrollBar.doNotHide  = 1;
-						self:SetFrameLevel(CharacterFrameInsetRight:GetFrameLevel()+1);
-						PaperDollTitlesPane_OnLoad(self);
-					</OnLoad>
-					<OnShow>
-						PaperDollTitlesPane_Update();
-					</OnShow>
-				</Scripts>
-			</ScrollFrame>
-
-			<ScrollFrame name="PaperDollEquipmentManagerPane" inherits="HybridScrollFrameTemplate" hidden="true">
-				<Size x="172" y="354"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-4"/>
-				</Anchors>
-				<Frames>
-					<Button name="$parentEquipSet" text="EQUIPSET_EQUIP" parentKey="EquipSet" inherits="UIPanelButtonTemplate">
-						<Size x="87" y="22"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="0"/>
-						</Anchors>
+						<Frames>
+							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+								<Size x="172" y="354"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-4"/>
+								</Anchors>
+								<Scripts>
+									<OnShow>
+										PaperDollTitlesPane_Update();
+									</OnShow>
+								</Scripts>
+							</Frame>
+							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="0"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+								</Anchors>
+							</EventFrame>
+						</Frames>
 						<Scripts>
-							<OnClick function="PaperDollEquipmentManagerPaneEquipSet_OnClick"/>
+							<OnLoad>
+								PaperDollTitlesPane_OnLoad(self);
+							</OnLoad>
 						</Scripts>
-					</Button>
-					<Button name="$parentSaveSet" text="SAVE" parentKey="SaveSet" inherits="UIPanelButtonTemplate">
-						<Size x="87" y="22"/>
+					</Frame>
+					
+					<Frame parentKey="EquipmentManagerPane" hidden="true">
+						<Size x="172" y="331"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentEquipSet" relativePoint="RIGHT"/>
+							<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-4"/>
 						</Anchors>
-						<Scripts>
-							<OnClick function="PaperDollEquipmentManagerPaneSaveSet_OnClick"/>
-						</Scripts>
-					</Button>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate" parentKey="scrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset x="4" y="-13"/>
-							</Anchor>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-								<Offset x="4" y="14"/>
-							</Anchor>
-						</Anchors>
-					</Slider>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.scrollBar.doNotHide  = 1;
-						self:SetFrameLevel(CharacterFrameInsetRight:GetFrameLevel()+1);
-						self.EquipSet:SetFrameLevel(self:GetFrameLevel()+3);
-						self.SaveSet:SetFrameLevel(self:GetFrameLevel()+3);
-						PaperDollEquipmentManagerPane_OnLoad(self);
-					</OnLoad>
-					<OnShow function="PaperDollEquipmentManagerPane_OnShow"/>
-					<OnHide function="PaperDollEquipmentManagerPane_OnHide"/>
-					<OnEvent function="PaperDollEquipmentManagerPane_OnEvent"/>
-					<OnUpdate function="PaperDollEquipmentManagerPane_OnUpdate"/>
-				</Scripts>
-			</ScrollFrame>
+						<Frames>
+							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+								<Size x="172" y="331"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-27"/>
+								</Anchors>
+							</Frame>
+							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="23"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+								</Anchors>
+							</EventFrame>
 
+							<Button name="$parentEquipSet" text="EQUIPSET_EQUIP" parentKey="EquipSet" inherits="UIPanelButtonTemplate">
+								<Size x="87" y="22"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick function="PaperDollEquipmentManagerPaneEquipSet_OnClick"/>
+								</Scripts>
+							</Button>
+							<Button name="$parentSaveSet" text="SAVE" parentKey="SaveSet" inherits="UIPanelButtonTemplate">
+								<Size x="87" y="22"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.EquipSet" relativePoint="RIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnClick function="PaperDollEquipmentManagerPaneSaveSet_OnClick"/>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self.EquipSet:SetFrameLevel(self:GetFrameLevel()+3);
+								self.SaveSet:SetFrameLevel(self:GetFrameLevel()+3);
+								PaperDollEquipmentManagerPane_OnLoad(self);
+							</OnLoad>
+							<OnShow function="PaperDollEquipmentManagerPane_OnShow"/>
+							<OnHide function="PaperDollEquipmentManagerPane_OnHide"/>
+							<OnEvent function="PaperDollEquipmentManagerPane_OnEvent"/>
+							<OnUpdate function="PaperDollEquipmentManagerPane_OnUpdate"/>
+						</Scripts>
+					</Frame>
 			<PlayerModel name="CharacterModelFrame" mixin ="CharacterModelFrameMixin" inherits="ModelWithControlsTemplate">
 				<Size x="231" y="320"/>
 				<Anchors>
@@ -820,7 +804,7 @@
         </Scripts>
     </Frame>
 
-	<Frame name="GearManagerDialogPopup" hidden="true" frameLevel="50" parent="PaperDollFrame">
+	<Frame name="GearManagerDialogPopup" mixin="GearManagerDialogPopupMixin" hidden="true" frameLevel="50" parent="PaperDollFrame">
 		<Size x="525" y="495"/>
 		<Anchors>
 			<Anchor point="LEFT" relativePoint="RIGHT"/>
@@ -983,23 +967,16 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<ScrollFrame name="$parentScrollFrame" inherits="ListScrollFrameTemplate">
-				<Size x="489" y="386"/>
+			<Frame parentKey="IconSelector" inherits="ScrollBoxSelectorTemplate" frameStrata="HIGH">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-36" y="-71"/>
+					<Anchor point="TOPLEFT" x="21" y="-84"/>
 				</Anchors>
-				<Scripts>
-					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(self, offset, GEARSET_ICON_ROW_HEIGHT, GearManagerDialogPopup_Update);
-					</OnVerticalScroll>
-				</Scripts>
-			</ScrollFrame>
+			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GearManagerDialogPopup_OnLoad"/>
-			<OnShow function="GearManagerDialogPopup_OnShow"/>
-			<OnUpdate function="GearManagerDialogPopup_OnUpdate"/>
-			<OnHide function="GearManagerDialogPopup_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

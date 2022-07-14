@@ -54,7 +54,7 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="BG" atlas="GarrLanding-Mission-InProgress" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" x="-13"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -81,7 +81,7 @@
 				</FontString>
 				<FontString parentKey="TimeLeft" inherits="GameFontNormalLarge2" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-10" y="-7"/>
+						<Anchor point="TOPRIGHT" x="-34" y="-7"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Status" inherits="GameFontNormal" justifyH="RIGHT">
@@ -100,17 +100,17 @@
 			</Frame>
 			<Frame parentArray="Rewards" parentKey="Reward1" inherits="GarrisonLandingPageReportMissionRewardTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="RIGHT" x="-6" y="-2"/>
+					<Anchor point="RIGHT" x="-31" y="-2"/>
 				</Anchors>
 			</Frame>
 			<Frame parentArray="Rewards" parentKey="Reward2" inherits="GarrisonLandingPageReportMissionRewardTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Reward1" relativePoint="LEFT" x="-10" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Reward1" relativePoint="LEFT" x="-5" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame parentArray="Rewards" parentKey="Reward3" inherits="GarrisonLandingPageReportMissionRewardTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Reward2" relativePoint="LEFT" x="-10" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Reward2" relativePoint="LEFT" x="-5" y="0"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -294,26 +294,18 @@
 					<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
 				</Scripts>
 			</EditBox>
-			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-3" y="-4"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="9"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-18" y="-17"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-18" y="12"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.trackBG:Hide();
-								self.doNotHide = true;
-							</OnLoad>
-						</Scripts>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-23" y="-3"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="5"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 		<Scripts>
 			<OnShow method="OnShow"/>
@@ -529,27 +521,18 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 								<Anchors>
 									<Anchor point="TOPLEFT" x="5" y="-6"/>
 									<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
 								</Anchors>
-								<Frames>
-									<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-15"/>
-											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="12"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												self.trackBG:Show();
-												self.trackBG:SetVertexColor(0, 0, 0, 0.75);
-												self.doNotHide = true;
-											</OnLoad>
-										</Scripts>
-									</Slider>
-								</Frames>
-							</ScrollFrame>
+							</Frame>
+							<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-25" y="-6"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
+								</Anchors>
+							</EventFrame>
 						</Frames>
 						<Scripts>
 							<OnShow function="GarrisonLandingPageReportList_OnShow"/>
@@ -615,6 +598,7 @@
 				</Frames>
 				<Scripts>
 					<OnLoad function="GarrisonLandingPageReport_OnLoad"/>
+					<OnUpdate function="GarrisonLandingPageReport_OnUpdate"/>
 					<OnShow function="GarrisonLandingPageReport_OnShow"/>
 					<OnHide function="GarrisonLandingPageReport_OnHide"/>
 					<OnEvent function="GarrisonLandingPageReport_OnEvent"/>

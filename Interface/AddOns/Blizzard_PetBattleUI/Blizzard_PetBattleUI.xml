@@ -39,9 +39,7 @@
 					</Anchors>
 				</FontString>
 				<Texture parentKey="DebuffBorder" file="Interface\Buttons\UI-Debuff-Overlays">
-					<Size>
-						<AbsDimension x="33" y="32"/>
-					</Size>
+					<Size x="33" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 					</Anchors>
@@ -86,9 +84,7 @@
 					</Anchors>
 				</FontString>
 				<Texture parentKey="DebuffBorder" file="Interface\Buttons\UI-Debuff-Overlays">
-					<Size>
-						<AbsDimension x="33" y="32"/>
-					</Size>
+					<Size x="33" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 					</Anchors>
@@ -624,9 +620,7 @@
 		</Scripts>
 	</Frame>
 	<Button name="PetBattleActionButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="52" y="52"/>
-		</Size>
+		<Size x="52" y="52"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon"/>
@@ -1590,7 +1584,7 @@
 						<Scripts>
 							<OnShow>
 								UpdateMicroButtonsParent(self);
-								MoveMicroButtons("TOPLEFT", self, "TOPLEFT", -11.5, 7.5, true);
+								MoveMicroButtons("TOPLEFT", self, "TOPLEFT", 9, -4, true);
 							</OnShow>
 						</Scripts>
 					</Frame>
@@ -1600,9 +1594,6 @@
 		<Scripts>
 			<OnLoad function="PetBattleFrame_OnLoad"/>
 			<OnEvent function="PetBattleFrame_OnEvent"/>
-			<OnShow>
-				UIParent_ManageFramePositions();
-			</OnShow>
 		</Scripts>
 	</Frame>
 	<Frame name="PetBattlePrimaryUnitTooltip" inherits="PetBattleUnitTooltipTemplate"/>

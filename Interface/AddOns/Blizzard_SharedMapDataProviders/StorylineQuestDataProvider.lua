@@ -10,7 +10,7 @@ function StorylineQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local mapInfo = C_Map.GetMapInfo(mapID);
 	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
 		for _, questLineInfo in pairs(C_QuestLine.GetAvailableQuestLines(mapID)) do
-			if (not C_QuestLog.IsOnQuest(questLineInfo.questID) and (not questLineInfo.isHidden or IsTrackingHiddenQuests())) then
+			if (not C_QuestLog.IsOnQuest(questLineInfo.questID) and (not questLineInfo.isHidden or C_Minimap.IsTrackingHiddenQuests())) then
 				local pin = self:GetMap():AcquirePin("StorylineQuestPinTemplate", questLineInfo.questID);
 				pin:SetPosition(questLineInfo.x, questLineInfo.y);
 				pin:Show();

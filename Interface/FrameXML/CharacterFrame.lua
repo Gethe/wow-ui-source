@@ -171,7 +171,7 @@ function CharacterFrame_Collapse()
 	CharacterFrame:SetWidth(PANEL_DEFAULT_WIDTH);
 	CharacterFrame.Expanded = false;
 	for i = 1, #PAPERDOLL_SIDEBARS do
-		_G[PAPERDOLL_SIDEBARS[i].frame]:Hide();
+		GetPaperDollSideBarFrame(i):Hide();
 	end
 	CharacterFrame.InsetRight:Hide();
 	UpdateUIPanelPositions(CharacterFrame);

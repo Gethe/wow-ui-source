@@ -1,5 +1,6 @@
 
 local forceinsecure = forceinsecure;
+local issecure = issecure;
 
 MESSAGE_SCROLLBUTTON_INITIAL_DELAY = 0;
 MESSAGE_SCROLLBUTTON_SCROLL_DELAY = 0.05;
@@ -12,7 +13,14 @@ NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
 MAX_COUNTDOWN_SECONDS = 3600; -- One Hour
 
-CHAT_TIMESTAMP_FORMAT = nil;		-- gets set from Interface Options
+function GetChatTimestampFormat()
+	local value = Settings.GetValue("showTimestamps");
+	if value ~= "none" then
+		return value;
+	end
+	return nil;
+end
+
 CHAT_SHOW_IME = false;
 
 MAX_CHARACTER_NAME_BYTES = 305;
@@ -1262,7 +1270,8 @@ end
 SecureCmdList["EQUIP"] = function(msg)
 	local item = SecureCmdOptionParse(msg);
 	if ( item ) then
-		EquipItemByName((SecureCmdItemParse(item)));
+		local parsedItem = SecureCmdItemParse(item);
+		EquipItemByName(parsedItem);
 	end
 end
 
@@ -1272,7 +1281,8 @@ SecureCmdList["EQUIP_TO_SLOT"] = function(msg)
 		local slot, item = strmatch(action, "^(%d+)%s+(.*)");
 		if ( item ) then
 			if ( PaperDoll_IsEquippedSlot(slot) ) then
-				EquipItemByName(SecureCmdItemParse(item), slot);
+				local parsedItem = SecureCmdItemParse(item);
+				EquipItemByName(parsedItem, slot);
 			else
 				-- user specified a bad slot number (slot that you can't equip an item to)
 				ChatFrame_DisplayUsageError(format(ERROR_SLASH_EQUIP_TO_SLOT, EQUIPPED_FIRST, EQUIPPED_LAST));
@@ -2360,6 +2370,7 @@ end
 
 SlashCmdList["EVENTTRACE"] = function(msg)
 	UIParentLoadAddOn("Blizzard_EventTrace");
+	EventTrace:ProcessChatCommand(msg);
 end
 
 if IsGMClient() then
@@ -2678,9 +2689,13 @@ end
 
 function RegisterNewSlashCommand(callback, command, commandAlias)
 	local name = string.upper(command);
-	_G["SLASH_"..name.."1"] = "/"..command;
-	_G["SLASH_"..name.."2"] = "/"..commandAlias;
-	SlashCmdList[name] = callback;
+	if issecure() then
+		AddSecureCmdAliases(callback, "/"..command, "/"..commandAlias);
+	else
+		_G["SLASH_"..name.."1"] = "/"..command;
+		_G["SLASH_"..name.."2"] = "/"..commandAlias;
+		SlashCmdList[name] = callback;
+	end
 end
 
 SlashCmdList["COUNTDOWN"] = function(msg)
@@ -2785,6 +2800,7 @@ function ChatFrame_OnLoad(self)
 	self:SetJustifyH("LEFT");
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("SETTINGS_LOADED");
 	self:RegisterEvent("UPDATE_CHAT_COLOR");
 	self:RegisterEvent("UPDATE_CHAT_WINDOWS");
 	self:RegisterEvent("CHAT_MSG_CHANNEL");
@@ -2809,12 +2825,23 @@ function ChatFrame_OnLoad(self)
 	self.zoneChannelList = {};
 	self.messageTypeList = {};
 
-	self.defaultLanguage = GetDefaultLanguage(); --If PLAYER_ENTERING_WORLD hasn't been called yet, this is nil, but it'll be fixed whent he event is fired.
-	self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
-
 	-- Hook orginal AddMessage function for use in override function in order to keep calls secure
 	self.BaseAddMessage = self.AddMessage;
 	self.AddMessage = ChatFrame_AddMessage;
+
+	local function OnValueChanged(o, setting, value)
+		ChatFrame_UpdateChatFrames();
+	end
+	Settings.SetOnValueChangedCallback("chatStyle", OnValueChanged);
+end
+
+function ChatFrame_UpdateChatFrames()
+	for _, frameName in pairs(CHAT_FRAMES) do
+		local frame = _G[frameName];
+		ChatEdit_DeactivateChat(frame.editBox);
+	end
+	ChatEdit_ActivateChat(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK).editBox);
+	ChatEdit_DeactivateChat(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK).editBox);
 end
 
 function ChatFrame_RegisterForMessages(self, ...)
@@ -3208,6 +3235,8 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 			end
 		end
 		return true;
+	elseif ( event == "SETTINGS_LOADED" ) then
+		ChatFrame_UpdateChatFrames();
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self.defaultLanguage = GetDefaultLanguage();
 		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
@@ -3766,7 +3795,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
 				local accountInfo = C_BattleNet.GetAccountInfoByID(arg13);
 				if accountInfo and accountInfo.gameAccountInfo.clientProgram ~= "" then
-					local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram, 14);
+					local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedAtlas(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram, 14);
 					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterName);
 					local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
 					message = format(globalstring, playerLink);
@@ -3896,8 +3925,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 
 			--Add Timestamps
-			if ( CHAT_TIMESTAMP_FORMAT ) then
-				body = BetterDate(CHAT_TIMESTAMP_FORMAT, time())..body;
+			local chatTimestampFmt = GetChatTimestampFormat();
+			if ( chatTimestampFmt ) then
+				body = BetterDate(chatTimestampFmt, time())..body;
 			end
 
 			local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);

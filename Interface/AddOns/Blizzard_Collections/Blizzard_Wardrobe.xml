@@ -200,7 +200,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="WardrobeSetsScrollFrameButtonTemplate" virtual="true">
+	<Button name="WardrobeSetsScrollFrameButtonTemplate" mixin="WardrobeSetsScrollFrameButtonMixin" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
 		<Size x="208" y="46"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -262,19 +262,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnMouseUp>
-				if ( button == "LeftButton" ) then
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					self:GetParent():GetParent():GetParent():SelectSetFromButton(self.setID);
-				elseif ( button == "RightButton" ) then
-					local dropDown = self:GetParent():GetParent().FavoriteDropDown;
-					dropDown.baseSetID = self.setID;
-					ToggleDropDownMenu(1, nil, dropDown, self, 0, 0);
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				end
-			</OnMouseUp>
+			<OnClick method="OnClick"/>
 		</Scripts>
-	</Frame>
+	</Button>
 
 	<Frame name="WardrobeSetsDetailsItemFrameTemplate" mixin="WardrobeSetsDetailsItemMixin" virtual="true">
 		<Size x="32" y="32"/>
@@ -891,19 +881,20 @@
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate" mixin="WardrobeSetsCollectionScrollFrameMixin">
+					<Frame parentKey="ListContainer" mixin="WardrobeSetsCollectionContainerMixin" frameStrata="HIGH">
 						<Size x="255" y="499"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="3" y="-36"/>
 						</Anchors>
 						<Frames>
-							<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
+							<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBoxList"/>
+							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="20"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="8"/>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="3" y="36"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="3" y="-8"/>
 								</Anchors>
-							</Slider>
-							<Frame name="WardrobeSetsFavoriteDropDown" parentKey="FavoriteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
+							</EventFrame>
+							<Frame parentKey="FavoriteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
 						</Frames>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
@@ -911,7 +902,7 @@
 							<OnHide method="OnHide"/>
 							<OnEvent method="OnEvent"/>
 						</Scripts>
-					</ScrollFrame>
+					</Frame>
 					<DressUpModel parentKey="Model" mixin="WardrobeSetsDetailsModelMixin">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" x="3" y="-3"/>

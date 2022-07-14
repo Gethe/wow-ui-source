@@ -138,7 +138,7 @@ function CommunitiesGuildTextEditFrame_OnAccept()
 end
 
 function CommunitiesGuildLogFrame_OnLoad(self)
-	self.Container.ScrollFrame.Child.HTMLFrame:SetSpacing(2);
+	self.Container.ScrollFrame.Child.HTMLFrame:SetSpacing("P", 2);
 	ScrollBar_AdjustAnchors(self.Container.ScrollFrame.ScrollBar, 0, -2);
 	self:RegisterEvent("GUILD_EVENT_LOG_UPDATE");
 end

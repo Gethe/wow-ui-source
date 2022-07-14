@@ -1,3 +1,6 @@
+TooltipConstants = {
+	WrapText = true,
+}
 
 --[[ Optionals:
 	headerText - string
@@ -229,6 +232,9 @@ function GameTooltip_CalculatePadding(tooltip)
 	local isBottomFontStringShown = tooltip.BottomFontString and tooltip.BottomFontString:IsShown();
 
 	if not isItemTooltipShown and not isBottomFontStringShown then
+		if tooltip.SetPadding then
+			tooltip:SetPadding(0, 0, 0, 0);
+		end
 		return;
 	end
 
@@ -318,8 +324,8 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 		name = moneyFrame:GetName();
 		MoneyFrame_SetType(moneyFrame, "STATIC");
 	end
-	_G[name.."PrefixText"]:SetText(prefixText);
-	_G[name.."SuffixText"]:SetText(suffixText);
+	moneyFrame.PrefixText:SetText(prefixText);
+	moneyFrame.SuffixText:SetText(suffixText);
 	if ( type ) then
 		MoneyFrame_SetType(moneyFrame, type);
 	end

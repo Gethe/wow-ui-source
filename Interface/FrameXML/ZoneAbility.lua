@@ -56,27 +56,10 @@ local function HasZoneAbilitySpellOnBar(spellID)
 	return false;
 end
 
-local function CheckShowZoneAbilityTutorial(zoneAbilityButton)
-	local zoneAbilityInfo = zoneAbilityButton.zoneAbilityInfo;
-	if HelpTip:IsShowingAny(ZoneAbilityFrame) or GetCVarBitfield("closedExtraAbiltyTutorials", zoneAbilityInfo.zoneAbilityID) or not zoneAbilityInfo.tutorialText then
-		return;
-	end
-
-	local helpTipInfo = {
-		text = zoneAbilityInfo.tutorialText,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		cvarBitfield = "closedExtraAbiltyTutorials",
-		onAcknowledgeCallback = function() ZoneAbilityFrame:CheckForTutorial() end,
-		bitfieldFlag = zoneAbilityInfo.zoneAbilityID,
-		targetPoint = HelpTip.Point.TopEdgeCenter,
-		offsetY = 20,
-	};
-	HelpTip:Show(ZoneAbilityFrame, helpTipInfo, zoneAbilityButton);
-end
-
 local function HideZoneAbilityTutorial()
 	HelpTip:HideAll(ZoneAbilityFrame);
 end
+
 
 ZoneAbilityFrameUpdater = {};
 
@@ -110,13 +93,27 @@ function ZoneAbilityFrameMixin:OnLoad()
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 
+	self.variablesLoaded = false;
+	-- Will be unregistered once received.
+	self:RegisterEvent("VARIABLES_LOADED");
+
 	self.SpellButtonContainer:SetTemplate("Button", "ZoneAbilityFrameSpellButtonTemplate");
 
 	self:UpdateDisplayedZoneAbilities();
 end
 
 function ZoneAbilityFrameMixin:OnEvent(event, ...)
+	if event == "VARIABLES_LOADED" then
+		self:SetVariablesLoaded();
+	end
+
 	self:MarkDirty();
+end
+
+function ZoneAbilityFrameMixin:SetVariablesLoaded()
+	self:UnregisterEvent("VARIABLES_LOADED");
+	self.variablesLoaded = true;
+	self:CheckForTutorial();
 end
 
 function ZoneAbilityFrameMixin:MarkDirty()
@@ -221,6 +218,30 @@ function ZoneAbilityFrameMixin:CheckForTutorial()
 	end
 end
 
+function ZoneAbilityFrameMixin:CanShowTutorial(zoneAbilityInfo)
+	return self.variablesLoaded
+		and not HelpTip:IsShowingAny(self)
+		and not GetCVarBitfield("closedExtraAbiltyTutorials", zoneAbilityInfo.zoneAbilityID)
+		and zoneAbilityInfo.tutorialText;
+end
+
+function ZoneAbilityFrameMixin:CheckShowZoneAbilityTutorial(zoneAbilityButton)
+	local zoneAbilityInfo = zoneAbilityButton.zoneAbilityInfo;
+	if not self:CanShowTutorial(zoneAbilityInfo) then
+		return;
+	end
+
+	local helpTipInfo = {
+		text = zoneAbilityInfo.tutorialText,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedExtraAbiltyTutorials",
+		onAcknowledgeCallback = function() self:CheckForTutorial() end,
+		bitfieldFlag = zoneAbilityInfo.zoneAbilityID,
+		targetPoint = HelpTip.Point.TopEdgeCenter,
+		offsetY = 20,
+	};
+	HelpTip:Show(self, helpTipInfo, zoneAbilityButton);
+end
 
 ZoneAbilityFrameSpellButtonMixin = CreateFromMixins(ContentFrameMixin);
 
@@ -294,7 +315,7 @@ function ZoneAbilityFrameSpellButtonMixin:Refresh()
 end
 
 function ZoneAbilityFrameSpellButtonMixin:CheckForTutorial()
-	CheckShowZoneAbilityTutorial(self);
+	self:GetParent():GetParent():CheckShowZoneAbilityTutorial(self);
 end
 
 function ZoneAbilityFrameSpellButtonMixin:SetSpellID(spellID)

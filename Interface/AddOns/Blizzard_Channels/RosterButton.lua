@@ -335,11 +335,11 @@ end
 
 function ChannelRosterButtonMixin:UpdateRankPosition()
 	if self.showRank then
-		local nameOffset = self.Name:GetLeft() - self:GetLeft();
-		local nameWidth = self.Name:GetWidth();
-		local nameStringWidth = self.Name:GetStringWidth();
-		local rankOffset = (self.Name:IsTruncated() and nameWidth or (nameStringWidth + 4)) + nameOffset;
-		self.Rank:SetPoint("LEFT", self, "LEFT", rankOffset, 0);
+		if self.Name:IsTruncated() then
+			self.Rank:SetPoint("LEFT", self, "LEFT", 160, 0);
+		else
+			self.Rank:SetPoint("LEFT", self.Name, "LEFT", self.Name:GetStringWidth() + 4, 0);
+		end
 	end
 end
 
