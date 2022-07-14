@@ -806,10 +806,10 @@ function OpenMail_Delete()
 end
 
 function OpenMail_ReportSpam()
-	local dialog = StaticPopup_Show("CONFIRM_REPORT_SPAM_MAIL", InboxFrame.openMailSender);
-	if ( dialog ) then
-		dialog.data = InboxFrame.openMailID;
-	end
+	local reportInfo = ReportInfo:CreateMailReportInfo(Enum.ReportType.Mail, InboxFrame.openMailID);
+	if(reportInfo) then 
+		ReportFrame:InitiateReport(reportInfo, InboxFrame.openMailSender); 
+	end		
 	OpenMailReportSpamButton:Disable();
 end
 

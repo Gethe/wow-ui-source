@@ -93,6 +93,20 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "GetAuctionInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "auctionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "priceInfo", Type = "AuctionInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAuctionItemSubClasses",
 			Type = "Function",
 
@@ -146,6 +160,15 @@ local AuctionHouse =
 			Returns =
 			{
 				{ Name = "typeItemKey", Type = "ItemKey", Nilable = true },
+			},
+		},
+		{
+			Name = "GetBids",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "bids", Type = "table", InnerType = "BidInfo", Nilable = false },
 			},
 		},
 		{
@@ -489,6 +512,15 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "GetOwnedAuctions",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ownedAuctions", Type = "table", InnerType = "OwnedAuctionInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuoteDurationRemaining",
 			Type = "Function",
 
@@ -798,12 +830,18 @@ local AuctionHouse =
 			Arguments =
 			{
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
+				{ Name = "minLevelFilter", Type = "number", Nilable = true },
+				{ Name = "maxLevelFilter", Type = "number", Nilable = true },
 			},
 		},
 		{
 			Name = "ReplicateItems",
 			Type = "Function",
 			Documentation = { "This function should be used in place of an 'allItem' QueryAuctionItems call to query the entire auction house." },
+		},
+		{
+			Name = "RequestFavorites",
+			Type = "Function",
 		},
 		{
 			Name = "RequestMoreBrowseResults",
@@ -848,7 +886,7 @@ local AuctionHouse =
 
 			Returns =
 			{
-				{ Name = "bidderName", Type = "string", Nilable = true },
+				{ Name = "bidderName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -889,6 +927,8 @@ local AuctionHouse =
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
 				{ Name = "sorts", Type = "table", InnerType = "AuctionHouseSortType", Nilable = false },
 				{ Name = "separateOwnerItems", Type = "bool", Nilable = false },
+				{ Name = "minLevelFilter", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "maxLevelFilter", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
 		{
@@ -941,6 +981,15 @@ local AuctionHouse =
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_AUCTION_CREATED",
 			Documentation = { "This signal is not used in the base UI but is included for AddOn ease-of-use." },
+			Payload =
+			{
+				{ Name = "auctionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionHouseAuctionsExpired",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_AUCTIONS_EXPIRED",
 			Payload =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },
@@ -1008,6 +1057,44 @@ local AuctionHouse =
 			Name = "AuctionHouseShow",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SHOW",
+		},
+		{
+			Name = "AuctionHouseShowCommodityWonNotification",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION",
+			Payload =
+			{
+				{ Name = "commodityName", Type = "string", Nilable = false },
+				{ Name = "commodityQuantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionHouseShowError",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_SHOW_ERROR",
+			Payload =
+			{
+				{ Name = "error", Type = "AuctionHouseError", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionHouseShowFormattedNotification",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION",
+			Payload =
+			{
+				{ Name = "notification", Type = "AuctionHouseNotification", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionHouseShowNotification",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_SHOW_NOTIFICATION",
+			Payload =
+			{
+				{ Name = "notification", Type = "AuctionHouseNotification", Nilable = false },
+			},
 		},
 		{
 			Name = "AuctionHouseThrottledMessageDropped",
@@ -1262,7 +1349,7 @@ local AuctionHouse =
 			{
 				{ Name = "classID", Type = "number", Nilable = false },
 				{ Name = "subClassID", Type = "number", Nilable = true },
-				{ Name = "inventoryType", Type = "number", Nilable = true },
+				{ Name = "inventoryType", Type = "InventoryType", Nilable = true },
 			},
 		},
 		{
@@ -1272,6 +1359,19 @@ local AuctionHouse =
 			{
 				{ Name = "sortOrder", Type = "AuctionHouseSortOrder", Nilable = false },
 				{ Name = "reverseSort", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
+				{ Name = "itemLink", Type = "string", Nilable = true },
+				{ Name = "minBid", Type = "number", Nilable = true },
+				{ Name = "bidAmount", Type = "number", Nilable = true },
+				{ Name = "buyoutAmount", Type = "number", Nilable = true },
+				{ Name = "bidder", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -1311,6 +1411,7 @@ local AuctionHouse =
 				{ Name = "unitPrice", Type = "number", Nilable = false },
 				{ Name = "auctionID", Type = "number", Nilable = false },
 				{ Name = "owners", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "totalNumberOfOwners", Type = "number", Nilable = false },
 				{ Name = "timeLeftSeconds", Type = "number", Nilable = true },
 				{ Name = "numOwnerItems", Type = "number", Nilable = false },
 				{ Name = "containsOwnerItem", Type = "bool", Nilable = false },
@@ -1350,6 +1451,7 @@ local AuctionHouse =
 			{
 				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
 				{ Name = "owners", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "totalNumberOfOwners", Type = "number", Nilable = false },
 				{ Name = "timeLeft", Type = "AuctionHouseTimeLeftBand", Nilable = false },
 				{ Name = "auctionID", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },

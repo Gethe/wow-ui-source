@@ -250,6 +250,7 @@ info.leftPadding = [nil, NUMBER] -- Number of pixels to pad the button on the le
 info.minWidth = [nil, NUMBER] -- Minimum width for this line
 info.customFrame = frame -- Allows this button to be a completely custom frame, should inherit from UIDropDownCustomMenuEntryTemplate and override appropriate methods.
 info.icon = [TEXTURE] -- An icon for the button.
+info.iconXOffset = [nil, NUMBER] -- Number of pixels to shift the button's icon to the left or right (positive numbers shift right, negative numbers shift left).
 info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 info.ignoreAsMenuSelection [nil, true] -- Never set the menu text/icon to this, even when this button is checked
 ]]
@@ -398,9 +399,13 @@ function UIDropDownMenu_AddButton(info, level)
 		-- Set icon
 		if ( info.icon or info.mouseOverIcon ) then
 			icon:SetSize(16,16);
-			icon:SetTexture(info.icon);
+			if(info.icon and C_Texture.GetAtlasInfo(info.icon)) then
+				icon:SetAtlas(info.icon);
+			else
+				icon:SetTexture(info.icon);
+			end
 			icon:ClearAllPoints();
-			icon:SetPoint("RIGHT");
+			icon:SetPoint("RIGHT", info.iconXOffset or 0, 0);
 
 			if ( info.tCoordLeft ) then
 				icon:SetTexCoord(info.tCoordLeft, info.tCoordRight, info.tCoordTop, info.tCoordBottom);
@@ -471,6 +476,7 @@ function UIDropDownMenu_AddButton(info, level)
 	button.noClickSound = info.noClickSound;
 	button.padding = info.padding;
 	button.icon = info.icon;
+	button.iconXOffset = info.iconXOffset;
 	button.mouseOverIcon = info.mouseOverIcon;
 	button.ignoreAsMenuSelection = info.ignoreAsMenuSelection;
 
@@ -625,8 +631,15 @@ function UIDropDownMenu_AddButton(info, level)
 		listFrame.maxWidth = width;
 	end
 
+	local customFrameCount = listFrame.customFrames and #listFrame.customFrames or 0;
+	local height = ((index - customFrameCount) * UIDROPDOWNMENU_BUTTON_HEIGHT) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2);
+	for frameIndex = 1, customFrameCount do
+		local frame = listFrame.customFrames[frameIndex];
+		height = height + frame:GetPreferredEntryHeight();
+	end
+
 	-- Set the height of the listframe
-	listFrame:SetHeight((index * UIDROPDOWNMENU_BUTTON_HEIGHT) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2));
+	listFrame:SetHeight(height);
 end
 
 function UIDropDownMenu_CheckAddCustomFrame(self, button, info)
@@ -928,6 +941,8 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	UIDROPDOWNMENU_MENU_VALUE = value;
 	local listFrameName = "DropDownList"..level;
 	local listFrame = _G[listFrameName];
+	UIDropDownMenu_ClearCustomFrames(listFrame);
+
 	local tempFrame;
 	local point, relativePoint, relativeTo;
 	if ( not dropDownFrame ) then
@@ -1043,15 +1058,20 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame:SetPoint(point, anchorFrame, relativePoint, 0, 0);
 		end
 
-		-- Change list box appearance depending on display mode
-		if ( dropDownFrame and dropDownFrame.displayMode == "MENU" ) then
+		if dropDownFrame.hideBackdrops then
 			_G[listFrameName.."Backdrop"]:Hide();
-			_G[listFrameName.."MenuBackdrop"]:Show();
-		else
-			_G[listFrameName.."Backdrop"]:Show();
 			_G[listFrameName.."MenuBackdrop"]:Hide();
+		else
+			-- Change list box appearance depending on display mode
+			if ( dropDownFrame and dropDownFrame.displayMode == "MENU" ) then
+				_G[listFrameName.."Backdrop"]:Hide();
+				_G[listFrameName.."MenuBackdrop"]:Show();
+			else
+				_G[listFrameName.."Backdrop"]:Show();
+				_G[listFrameName.."MenuBackdrop"]:Hide();
+			end
 		end
-		dropDownFrame.menuList = menuList;
+
 		UIDropDownMenu_Initialize(dropDownFrame, dropDownFrame.initialize, nil, level, menuList);
 		-- If no items in the drop down don't show it
 		if ( listFrame.numButtons == 0 ) then
@@ -1199,6 +1219,10 @@ function UIDropDownMenu_OnHide(self)
 		UIDROPDOWNMENU_OPEN_MENU = nil;
 	end
 
+	UIDropDownMenu_ClearCustomFrames(self);
+end
+
+function UIDropDownMenu_ClearCustomFrames(self)
 	if self.customFrames then
 		for index, frame in ipairs(self.customFrames) do
 			frame:Hide();
@@ -1339,27 +1363,40 @@ function UIDropDownMenu_SetButtonClickable(level, id)
 end
 
 function UIDropDownMenu_DisableDropDown(dropDown)
-	local dropDownName = dropDown:GetName();
-	local label = GetChild(dropDown, dropDownName, "Label");
-	if label then
-		label:SetVertexColor(GRAY_FONT_COLOR:GetRGB());
-	end
-	GetChild(dropDown, dropDownName, "Icon"):SetVertexColor(GRAY_FONT_COLOR:GetRGB());
-	GetChild(dropDown, dropDownName, "Text"):SetVertexColor(GRAY_FONT_COLOR:GetRGB());
-	GetChild(dropDown, dropDownName, "Button"):Disable();
-	dropDown.isDisabled = 1;
+	UIDropDownMenu_SetDropDownEnabled(dropDown, false);
 end
 
 function UIDropDownMenu_EnableDropDown(dropDown)
+	UIDropDownMenu_SetDropDownEnabled(dropDown, true);
+end
+
+function UIDropDownMenu_SetDropDownEnabled(dropDown, enabled)
 	local dropDownName = dropDown:GetName();
 	local label = GetChild(dropDown, dropDownName, "Label");
 	if label then
-		label:SetVertexColor(NORMAL_FONT_COLOR:GetRGB());
+		label:SetVertexColor((enabled and NORMAL_FONT_COLOR or GRAY_FONT_COLOR):GetRGB());
 	end
-	GetChild(dropDown, dropDownName, "Icon"):SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-	GetChild(dropDown, dropDownName, "Text"):SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-	GetChild(dropDown, dropDownName, "Button"):Enable();
-	dropDown.isDisabled = nil;
+
+	local icon = GetChild(dropDown, dropDownName, "Icon");
+	if icon then
+		icon:SetVertexColor((enabled and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR):GetRGB());
+	end
+
+	local text = GetChild(dropDown, dropDownName, "Text");
+	if text then
+		text:SetVertexColor((enabled and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR):GetRGB());
+	end
+
+	local button = GetChild(dropDown, dropDownName, "Button");
+	if button then
+		button:SetEnabled(enabled);
+	end
+
+	if enabled then
+		dropDown.isDisabled = nil;
+	else
+		dropDown.isDisabled = 1;
+	end
 end
 
 function UIDropDownMenu_IsEnabled(dropDown)

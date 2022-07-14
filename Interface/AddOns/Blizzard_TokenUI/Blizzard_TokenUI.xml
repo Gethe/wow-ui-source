@@ -226,7 +226,7 @@
 			</OnLeave>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") ) then
-					HandleModifiedItemClick(GetCurrencyLink(self.currencyID));
+					HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyLink(self.currencyID));
 				end
 			</OnClick>
 		</Scripts>

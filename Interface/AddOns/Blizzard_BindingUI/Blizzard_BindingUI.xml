@@ -94,12 +94,11 @@
 		</Scripts>
 	</Button>
 	<Button name="KeybindingsDefaultsButtonTemplate" inherits="UIPanelButtonTemplate" text="RESET_TO_DEFAULT" virtual="true" mixin="KeybindingsDefaultsButtonMixin">
-		<Size x="150" y="22"/>
+		<Size x="165" y="22"/>
 		<Scripts>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	<Button name="KeybindingsPhantomFrameTemplate" inherits="QuickKeybindButtonTemplate" registerForClicks="AnyUp" virtual="true"/>
 
 	<Button name="KeyBindingFrame" parent="UIParent" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" enableKeyboard="true" mixin="KeyBindingFrameMixin">
 		<Size x="858" y="660"/>
@@ -166,12 +165,6 @@
 					<KeyValue key="buttonTemplate" value="KeyBindingsCategoryListButtonTemplate" type="string"/>
 				</KeyValues>
 			</Frame>
-			<Button parentKey="defaultsButton" inherits="KeybindingsDefaultsButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="16"/>
-					<Anchor point="LEFT" relativeKey="$parent.categoryList" relativePoint="LEFT"/>
-				</Anchors>
-			</Button>
 			<Frame parentKey="bindingsContainer" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.categoryList" relativePoint="TOPRIGHT" x="16" y="0"/>
@@ -184,7 +177,7 @@
 			</Frame>
 			<Button parentKey="cancelButton" inherits="KeybindsCancelButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.defaultsButton" relativePoint="BOTTOM"/>
+					<Anchor point="BOTTOM" x="0" y="16"/>
 					<Anchor point="RIGHT" relativeKey="$parent.bindingsContainer" relativePoint="RIGHT"/>
 				</Anchors>
 			</Button>
@@ -202,15 +195,29 @@
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="quickKeybindButton" inherits="UIPanelButtonTemplate" text="QUICK_KEYBIND_MODE_BUTTON" mixin="QuickKeybindButtonMixin">
-				<Size x="200" y="22"/>
+			<Button parentKey="clickCastingButton" inherits="UIPanelButtonTemplate" mixin="KeybindingsClickBindingsButtonMixin" text="CLICK_BIND_MODE">
+				<Size x="165" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.bindingsContainer" relativePoint="LEFT" x="0" y="0"/>
-					<Anchor point="BOTTOM" relativeKey="$parent.cancelButton" relativePoint="BOTTOM"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.categoryList" relativePoint="BOTTOM" x="0" y="10"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>
 				</Scripts>
+			</Button>
+			<Button parentKey="quickKeybindButton" inherits="UIPanelButtonTemplate" text="QUICK_KEYBIND_MODE_BUTTON" mixin="QuickKeybindButtonMixin">
+				<Size x="165" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.clickCastingButton" relativePoint="TOP" x="0" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="defaultsButton" inherits="KeybindingsDefaultsButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="16"/>
+					<Anchor point="LEFT" relativeKey="$parent.clickCastingButton" relativePoint="LEFT"/>
+				</Anchors>
 			</Button>
 			<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame" inherits="FauxScrollFrameTemplate" mixin="KeyBindingFrameScrollFrameMixin">
 				<Size x="560" y="554"/>
@@ -321,38 +328,6 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.defaultsButton" relativePoint="BOTTOMLEFT" x="-25" y="0"/>
 				</Anchors>
-			</Button>
-			<Button parentKey="phantomExtraActionButton" inherits="KeybindingsPhantomFrameTemplate" mixin="PhantomExtraActionButtonMixin">
-				<Size x="50" y="50"/>
-				<KeyValues>
-					<KeyValue key="commandName" value="EXTRAACTIONBUTTON1" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="UIParent" relativePoint="BOTTOM" x="0" y="150"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="HotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
-							<Size x="36" y="10"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-5" y="-8"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="normalTexture" file="Interface\Buttons\UI-Quickslot2">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-16" y="16"/>
-								<Anchor point="BOTTOMRIGHT" x="16" y="-16"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnUpdate method="OnUpdate"/>
-					<OnEvent method="OnEvent"/>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

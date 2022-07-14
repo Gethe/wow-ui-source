@@ -92,16 +92,14 @@ function MainMenuBarMicroButtonMixin:OnEnter()
 			if ( not self:IsEnabled() ) then
 				if ( self.factionGroup == "Neutral" ) then
 					GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-					GameTooltip:Show();
 				elseif ( self.minLevel ) then
 					GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-					GameTooltip:Show();
 				elseif ( self.disabledTooltip ) then
 					local disabledTooltipText = GetValueOrCallFunction(self, "disabledTooltip");
 					GameTooltip:AddLine(disabledTooltipText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-					GameTooltip:Show();
 				end
 			end
+			GameTooltip:Show();
 		end
 	end
 end
@@ -132,7 +130,7 @@ function SetKioskTooltip(frame)
 end
 
 local function GuildFrameIsOpen()
-	return ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) or ( LookingForGuildFrame and LookingForGuildFrame:IsShown() );
+	return ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() );
 end
 
 function UpdateMicroButtons()
@@ -289,7 +287,8 @@ function UpdateMicroButtons()
 			StoreMicroButton:Disable();
 		end
 	elseif C_PlayerInfo.IsPlayerNPERestricted() then
-		if Tutorials and Tutorials.Hide_StoreMicroButton and Tutorials.Hide_StoreMicroButton.IsActive then
+		local tutorials = TutorialLogic and TutorialLogic.Tutorials;
+		if tutorials and tutorials.UI_Watcher and tutorials.UI_Watcher.IsActive then
 			StoreMicroButton:Hide();
 		end
 	else
@@ -366,6 +365,8 @@ function GuildMicroButtonMixin:OnLoad()
 	self:RegisterEvent("BN_CONNECTED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CLUB_FINDER_COMMUNITY_OFFLINE_JOIN");
+	self:RegisterEvent("CHAT_DISABLED_CHANGED");
+	self:RegisterEvent("CHAT_DISABLED_CHANGE_FAILED");
 	self:UpdateTabard(true);
 	if ( IsCommunitiesUIDisabledByTrialAccount() ) then
 		self:Disable();
@@ -398,7 +399,7 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 		UpdateMicroButtons();
 	elseif ( event == "INITIAL_CLUBS_LOADED" ) then
 		self:UpdateNotificationIcon(GuildMicroButton);
-		previouslyDisplayedInvitations = DISPLAYED_COMMUNITIES_INVITATIONS;
+		local previouslyDisplayedInvitations = DISPLAYED_COMMUNITIES_INVITATIONS;
 		DISPLAYED_COMMUNITIES_INVITATIONS = {};
 		local invitations = C_Club.GetInvitationsForSelf();
 		for i, invitation in ipairs(invitations) do
@@ -413,6 +414,8 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 		self:SetNewClubId(newClubId);
 		self.showOfflineJoinAlert = true;
 		self:EvaluateAlertVisibility(); 
+	elseif ( event == "CHAT_DISABLED_CHANGE_FAILED" or event == "CHAT_DISABLED_CHANGED" ) then
+		self:UpdateNotificationIcon(GuildMicroButton);
 	end
 end
 
@@ -453,7 +456,7 @@ end
 
 function GuildMicroButtonMixin:UpdateNotificationIcon(self)
 	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
-		self.NotificationOverlay:SetShown(self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages());
+		self.NotificationOverlay:SetShown(not C_SocialRestrictions.IsChatDisabled() and (self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()));
 	else
 		self.NotificationOverlay:SetShown(false);
 	end
@@ -841,6 +844,7 @@ function TalentMicroButtonMixin:OnLoad()
 
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
 	self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
@@ -892,7 +896,8 @@ function TalentMicroButtonMixin:HasTalentAlertToShow()
 end
 
 function TalentMicroButtonMixin:HasPvpTalentAlertToShow()
-	if not IsPlayerInWorld() or not C_SpecializationInfo.CanPlayerUsePVPTalentUI() then
+	local isInterestedInPvP = C_PvP.IsWarModeDesired() or PVPUtil.IsInActiveBattlefield();
+	if not isInterestedInPvP or not IsPlayerInWorld() or not C_SpecializationInfo.CanPlayerUsePVPTalentUI() then
 		return nil, LOWEST_TALENT_FRAME_PRIORITY;
 	end
 
@@ -940,7 +945,7 @@ end
 
 --Talent button specific functions
 function TalentMicroButtonMixin:OnEvent(event, ...)
-	if ( event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_LEVEL_CHANGED" ) then
+	if ( event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_LEVEL_CHANGED" or event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		self:EvaluateAlertVisibility();
 	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" or event == "HONOR_LEVEL_UPDATE" ) then
 		UpdateMicroButtons();

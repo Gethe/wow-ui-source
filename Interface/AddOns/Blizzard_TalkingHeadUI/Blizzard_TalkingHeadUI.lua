@@ -6,7 +6,6 @@ function TalkingHeadFrame_OnLoad(self)
 	self:RegisterForClicks("RightButtonUp");
 
 	self.NameFrame.Name:SetPoint("TOPLEFT", self.PortraitFrame.Portrait, "TOPRIGHT", 2, -19);
-	self.TextFrame.Text:SetFontObjectsToTry(SystemFont_Shadow_Large, SystemFont_Shadow_Med2, SystemFont_Shadow_Med1);
 
 	local alertSystem = AlertFrame:AddExternallyAnchoredSubSystem(self);
 	AlertFrame:SetSubSystemAnchorPriority(alertSystem, 0);

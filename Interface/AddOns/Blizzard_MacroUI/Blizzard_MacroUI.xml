@@ -145,7 +145,7 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button name="MacroEditButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" text="CHANGE_MACRO_NAME_ICON">
+			<Button name="MacroEditButton" frameStrata="HIGH" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="CHANGE_MACRO_NAME_ICON">
 				<Size x="170" y="22"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" x="55" y="-30"/>
@@ -266,7 +266,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="MacroDeleteButton" inherits="UIPanelButtonTemplate" text="DELETE">
+			<Button name="MacroDeleteButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="DELETE">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="MacroFrame" x="4" y="4"/>
@@ -278,7 +278,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="MacroNewButton" inherits="UIPanelButtonTemplate" text="NEW">
+			<Button name="MacroNewButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="NEW">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-82" y="4"/>

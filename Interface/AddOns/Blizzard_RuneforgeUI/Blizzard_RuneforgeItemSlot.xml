@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_RuneforgeItemSlot.lua"/>
 
-	<ItemButton name="RuneforgeItemSlotTemplate" mixin="RuneforgeItemSlotMixin" registerForClicks="LeftButtonDown, RightButtonDown" virtual="true">
+	<ItemButton name="RuneforgeItemSlotTemplate" mixin="RuneforgeItemSlotMixin" registerForClicks="LeftButtonDown, RightButtonDown" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="60" y="60"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -12,6 +12,11 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="SelectedTexture" atlas="runecarving-icon-center-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ErrorTexture" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

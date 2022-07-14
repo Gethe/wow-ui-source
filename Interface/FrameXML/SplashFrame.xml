@@ -113,7 +113,10 @@
 								<Anchor point="BOTTOM" x="0" y="40"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Title" inherits="Game32Font"  mixin="ShrinkUntilTruncateFontStringMixin" justifyV="BOTTOM">
+						<FontString parentKey="Title" inherits="Game72Font"  mixin="AutoScalingFontStringMixin" justifyV="BOTTOM">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="18" type="number"/>
+							</KeyValues>
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOM" relativeKey="$parent.Description" relativePoint="TOP" x="0" y="10"/>

@@ -63,7 +63,7 @@
 						<Anchor point="RIGHT" x="-15" y="0"/>
 					</Anchors>
 					<Shadow>
-						<Color r="0.32" g="0.5" b="1.0"/>
+						<Color color="NEW_FEATURE_SHADOW_COLOR"/>
 					</Shadow>
 				</FontString>
 
@@ -967,25 +967,15 @@
 					<OnTextChanged function="PetJournal_OnSearchTextChanged"/>
 				</Scripts>
 			</EditBox>
-			<DropDownToggleButton name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
-				<Size x="93" y="22"/>
+			<DropDownToggleButton name="$parentFilterButton" inherits="UIResettableDropdownButtonTemplate" text="FILTER">
+				<KeyValues>
+					<KeyValue key="resetFunction" value="PetJournalFilterDropDown_ResetFilters" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parentLeftInset" x="-5" y="-9"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-							<Size x="10" y="12"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
-					<OnMouseDown>
-						UIMenuButtonStretchMixin.OnMouseDown(self, button);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					<OnMouseDown inherit="prepend">
 						ToggleDropDownMenu(1, nil, PetJournalFilterDropDown, "PetJournalFilterButton", 74, 15);
 					</OnMouseDown>
 				</Scripts>
@@ -1276,7 +1266,7 @@
 										<Anchor point="BOTTOMLEFT" relativeKey="$parent.name" relativePoint="BOTTOMLEFT" x="8" y="0"/>
 									</Anchors>
 									<Shadow>
-										<Color r="0.32" g="0.5" b="1.0"/>
+										<Color color="NEW_FEATURE_SHADOW_COLOR"/>
 									</Shadow>
 								</FontString>
 

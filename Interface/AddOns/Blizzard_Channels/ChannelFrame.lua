@@ -247,19 +247,19 @@ function ChannelFrameMixin:ShouldShowTutorial()
 end
 
 function ChannelFrameMixin:TryCreateVoiceChannel(channelName)
-	self:TryExecuteCommand(function()
+	return self:TryExecuteCommand(function()
 		self:CreateVoiceChannel(channelName);
 	end);
 end
 
 function ChannelFrameMixin:TryJoinVoiceChannelByType(channelType, autoActivate)
-	self:TryExecuteCommand(function()
+	return self:TryExecuteCommand(function()
 		C_VoiceChat.RequestJoinChannelByChannelType(channelType, autoActivate);
 	end);
 end
 
 function ChannelFrameMixin:TryJoinCommunityStreamChannel(clubId, streamId)
-	self:TryExecuteCommand(function()
+	return self:TryExecuteCommand(function()
 		C_VoiceChat.RequestJoinAndActivateCommunityStreamChannel(clubId, streamId);
 	end);
 end
@@ -301,9 +301,11 @@ end
 function ChannelFrameMixin:TryExecuteCommand(cmd)
 	if C_VoiceChat.IsLoggedIn() then
 		cmd();
-	else
-		self:QueueVoiceChannelCommand(cmd);
+		return true;
 	end
+
+	self:QueueVoiceChannelCommand(cmd);
+	return false;
 end
 
 function ChannelFrameMixin:Toggle()
@@ -408,7 +410,8 @@ function ChannelFrameMixin:OnVoiceChannelRemoved(channelID)
 		if button:ChannelIsCommunity() then
 			-- This is a community stream, so just remove the attached voice channel...we will try to re-join when they activate next
 			button:ClearVoiceChannel();
-		else
+		elseif not button:ChannelSupportsText() then
+			-- For other chat channels channels, they only need to update if they're voice-only.
 			button:SetActive(false);
 			button:SetRemoved(true);
 			button:Update();
@@ -481,13 +484,7 @@ local function CountActiveChannelMembers(channel)
 		end
 	end
 
-	-- TODO FIX: bug work-around, member active status not updated for local player when channel is initially activated.
-	-- If the channel is marked active, then the local player must be active in it:
-	if channel.isActive then
-		return count + 1;
-	else
-		return count;
-	end
+	return count;
 end
 
 function ChannelFrameMixin:ShowChannelAnnounce(channelID)
@@ -660,7 +657,7 @@ function ChannelFrameMixin:CheckNewcomerChannelJoin(channelIndex)
 		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
 		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER1:format(channelSlashCommand));
 		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER2:format(channelSlashCommand));
-	elseif IsActivePlayerMentor() then
+	elseif IsActivePlayerGuide() then
 		-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
 		-- then if you're not a newcomer, you must be a guide.
 		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));

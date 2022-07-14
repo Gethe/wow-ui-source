@@ -7,6 +7,15 @@ local WeeklyRewards =
 	Functions =
 	{
 		{
+			Name = "AreRewardsForCurrentRewardPeriod",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isCurrentPeriod", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanClaimRewards",
 			Type = "Function",
 
@@ -40,6 +49,21 @@ local WeeklyRewards =
 			Returns =
 			{
 				{ Name = "activities", Type = "table", InnerType = "WeeklyRewardActivityInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActivityEncounterInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "WeeklyRewardChestThresholdType", Nilable = false },
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", InnerType = "WeeklyRewardActivityEncounterInfo", Nilable = false },
 			},
 		},
 		{
@@ -81,6 +105,22 @@ local WeeklyRewards =
 			},
 		},
 		{
+			Name = "GetNextMythicPlusIncrease",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mythicPlusLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSeasonData", Type = "bool", Nilable = false },
+				{ Name = "nextMythicPlusLevel", Type = "number", Nilable = true },
+				{ Name = "itemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "HasAvailableRewards",
 			Type = "Function",
 
@@ -97,6 +137,19 @@ local WeeklyRewards =
 			{
 				{ Name = "hasGeneratedRewards", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "HasInteraction",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInteracting", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "OnUIInteract",
+			Type = "Function",
 		},
 	},
 
@@ -153,6 +206,17 @@ local WeeklyRewards =
 			},
 		},
 		{
+			Name = "WeeklyRewardActivityEncounterInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "encounterID", Type = "number", Nilable = false },
+				{ Name = "bestDifficulty", Type = "number", Nilable = false },
+				{ Name = "uiOrder", Type = "number", Nilable = false },
+				{ Name = "instanceID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "WeeklyRewardActivityInfo",
 			Type = "Structure",
 			Fields =
@@ -163,6 +227,8 @@ local WeeklyRewards =
 				{ Name = "progress", Type = "number", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "claimID", Type = "number", Nilable = true },
+				{ Name = "raidString", Type = "string", Nilable = true },
 				{ Name = "rewards", Type = "table", InnerType = "WeeklyRewardActivityRewardInfo", Nilable = false },
 			},
 		},

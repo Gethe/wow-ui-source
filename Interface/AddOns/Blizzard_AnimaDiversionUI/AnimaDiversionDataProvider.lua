@@ -193,6 +193,12 @@ end
 AnimaDiversionPinMixin = CreateFromMixins(MapCanvasPinMixin); 
 function AnimaDiversionPinMixin:OnLoad()
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_ANIMA_DIVERSION_PIN");
+	self:SetNudgeSourceRadius(1);
+
+	-- This map doesn't zoom so set them both the same.
+	local zoomedInNudge = 4;
+	local zoomedOutNudge = zoomedInNudge;
+	self:SetNudgeSourceMagnitude(zoomedInNudge, zoomedOutNudge);
 end 
 
 function AnimaDiversionPinMixin:SetupOrigin()
@@ -278,6 +284,29 @@ function AnimaDiversionPinMixin:OnMouseEnter()
 	self:RefreshTooltip();
 end
 
+function AnimaDiversionPinMixin:HaveEnoughAnimaToActivate()
+	local talentInfo = self.nodeData and self.nodeData.talentID and C_Garrison.GetTalentInfo(self.nodeData.talentID);
+
+	local animaCurrencyID = C_CovenantSanctumUI.GetAnimaInfo()
+	local animaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(animaCurrencyID);
+
+	if talentInfo and animaCurrencyInfo then
+		for _, researchCostInfo in ipairs(talentInfo.researchCurrencyCosts) do
+			if researchCostInfo.currencyType == animaCurrencyID then
+				if animaCurrencyInfo.quantity < researchCostInfo.currencyQuantity then 
+					return false;
+				else
+					return true;
+				end
+			end
+		end
+
+		return true;
+	end
+
+	return false;
+end 
+
 function AnimaDiversionPinMixin:RefreshTooltip()
 	GameTooltip:ClearLines();
 	self.UpdateTooltip = nil;
@@ -297,20 +326,28 @@ function AnimaDiversionPinMixin:RefreshTooltip()
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddColoredLine(GameTooltip, ANIMA_DIVERSION_POI_REINFORCED, GREEN_FONT_COLOR);
 		elseif self.nodeData.state == Enum.AnimaDiversionNodeState.Available then 
+			local notEnoughAnima = not self:HaveEnoughAnimaToActivate();
+
 			local talentInfo = C_Garrison.GetTalentInfo(self.nodeData.talentID);
 			if talentInfo then
-				local costString = GetGarrisonTalentCostString(talentInfo);
+				local abbreviateCost = false;
+				local colorCode = notEnoughAnima and RED_FONT_COLOR_CODE or nil;
+				local costString = GetGarrisonTalentCostString(talentInfo, abbreviateCost, colorCode);
 				if costString then
 					GameTooltip_AddBlankLineToTooltip(GameTooltip);
 					GameTooltip_AddHighlightLine(GameTooltip, costString);
 				end
 			end
-			GameTooltip_AddColoredLine(GameTooltip, ANIMA_DIVERSION_CLICK_CHANNEL, GREEN_FONT_COLOR);
+
+			if notEnoughAnima then
+				GameTooltip_AddErrorLine(GameTooltip, ANIMA_DIVERSION_NOT_ENOUGH_CURRENCY);
+			else
+				GameTooltip_AddColoredLine(GameTooltip, ANIMA_DIVERSION_CLICK_CHANNEL, GREEN_FONT_COLOR);
+			end
 		end
 		local worldQuestID = C_Garrison.GetTalentUnlockWorldQuest(self.nodeData.talentID);
 		if worldQuestID then
 			GameTooltip_AddQuestRewardsToTooltip(GameTooltip, worldQuestID);
-			GameTooltip.recalculatePadding = true;
 			if not HaveQuestRewardData(worldQuestID) then
 				self.UpdateTooltip = self.RefreshTooltip;
 			end
@@ -340,7 +377,7 @@ function AnimaDiversionPinMixin:OnClick(button)
 
 		AnimaDiversionFrame.ReinforceInfoFrame:SelectNodeToReinforce(self);
 	else
-		if self.nodeData.state == Enum.AnimaDiversionNodeState.Available then 
+		if self.nodeData.state == Enum.AnimaDiversionNodeState.Available and self:HaveEnoughAnimaToActivate() then 
 			StaticPopup_Show("ANIMA_DIVERSION_CONFIRM_CHANNEL", self.nodeData.name, nil, self);
 		end
 	end

@@ -7,7 +7,6 @@ function BarberShopMixin:OnLoad()
 	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 
 	CharCustomizeFrame:AttachToParentFrame(self);
-	CharCustomizeFrame.RandomizeAppearanceButton:Hide();
 
 	self.sexButtonPool = CreateFramePool("CHECKBUTTON", self.Sexes, "CharCustomizeSexButtonTemplate");
 end
@@ -56,7 +55,7 @@ function BarberShopMixin:UpdateSex()
 	if currentCharacterData then
 		CharCustomizeFrame:SetSelectedData(currentCharacterData.raceData, currentCharacterData.sex, C_BarberShop.IsViewingAlteredForm());
 
-		local sexes = {Enum.Unitsex.Male, Enum.Unitsex.Female};
+		local sexes = {Enum.UnitSex.Male, Enum.UnitSex.Female};
 		for index, sexID in ipairs(sexes) do
 			local button = self.sexButtonPool:Acquire();
 			button:SetSex(sexID, currentCharacterData.sex, index);
@@ -143,13 +142,25 @@ function BarberShopMixin:SetCustomizationChoice(optionID, choiceID)
 	self:UpdateCharCustomizationFrame();
 end
 
-function BarberShopMixin:ResetCustomizationPreview()
-	C_BarberShop.ClearPreviewChoices();
+function BarberShopMixin:ResetCustomizationPreview(clearSavedChoices)
+	C_BarberShop.ClearPreviewChoices(clearSavedChoices);
 end
 
 function BarberShopMixin:PreviewCustomizationChoice(optionID, choiceID)
 	-- It is important that we DON'T call UpdateCharCustomizationFrame here because we want to keep the current selections
 	C_BarberShop.PreviewCustomizationChoice(optionID, choiceID);
+end
+
+function BarberShopMixin:MarkCustomizationChoiceAsSeen(choiceID)
+	C_BarberShop.MarkCustomizationChoiceAsSeen(choiceID);
+end
+
+function BarberShopMixin:MarkCustomizationOptionAsSeen(optionID)
+	C_BarberShop.MarkCustomizationOptionAsSeen(optionID);
+end
+
+function BarberShopMixin:SaveSeenChoices()
+	C_BarberShop.SaveSeenChoices();
 end
 
 function BarberShopMixin:GetCurrentCameraZoom()
@@ -190,6 +201,11 @@ end
 
 function BarberShopMixin:SetCameraDistanceOffset(offset)
 	C_BarberShop.SetCameraDistanceOffset(offset);
+end
+
+function BarberShopMixin:RandomizeAppearance()
+	C_BarberShop.RandomizeCustomizationChoices();
+	self:UpdateCharCustomizationFrame();
 end
 
 function BarberShopMixin:SetCharacterSex(sexID)

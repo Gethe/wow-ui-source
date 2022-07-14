@@ -64,18 +64,17 @@ UIPanelWindows["GuildControlUI"] =				{ area = "left",			pushable = 1,	whileDead
 UIPanelWindows["CommunitiesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["CommunitiesGuildLogFrame"] =	{ area = "left",			pushable = 1,	whileDead = 1, 		yoffset = 4, };
 UIPanelWindows["CommunitiesGuildTextEditFrame"] = 			{ area = "left",			pushable = 1,	whileDead = 1 };
-UIPanelWindows["CommunitiesGuildRecruitmentFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["CommunitiesGuildNewsFiltersFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["ClubFinderGuildRecruitmentDialog"] =		{ area = "left",			pushable = 1,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
-UIPanelWindows["AnimaDiversionFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["AnimaDiversionFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
-UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
-UIPanelWindows["ChromieTimeFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
-UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
-UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
-UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["ChromieTimeFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
+UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 1,	ignoreControlLost = true, };
+UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["GarrisonShipyardFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
@@ -89,12 +88,12 @@ UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
 UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["CovenantMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
-UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 
 local function SetFrameAttributes(frame, attributes)
-	frame:SetAttribute("UIPanelLayout-defined", true);
+	frame:SetAttributeNoHandler("UIPanelLayout-defined", true);
 	for name, value in pairs(attributes) do
-		frame:SetAttribute("UIPanelLayout-"..name, value);
+		frame:SetAttributeNoHandler("UIPanelLayout-"..name, value);
 	end
 end
 
@@ -125,9 +124,9 @@ function SetUIPanelAttribute(frame, name, value)
 
 	if not frame:GetAttribute("UIPanelLayout-defined") then
 		SetFrameAttributes(frame, attributes);
-		end
+	end
 
-	frame:SetAttribute("UIPanelLayout-"..name, value);
+	frame:SetAttributeNoHandler("UIPanelLayout-"..name, value);
 end
 
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
@@ -139,16 +138,43 @@ UIChildWindows = {
 	"GearManagerDialog",
 };
 
--- Hooked by DesignerBar.lua if that addon is loaded
-function GetOffsetForDebugMenu()
-	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and DebugMenu.GetMenuHeight() or 0;
-	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and C_Reveal:GetTimeTrackHeight() or 0;
-	return debugMenuOffset + revealTimeTrackOffset;
+function GetNotchHeight()
+    local notchHeight = 0;
+
+    if (C_UI.ShouldUIParentAvoidNotch()) then
+        notchHeight = select(4, C_UI.GetTopLeftNotchSafeRegion());
+        if (notchHeight) then
+            local _, physicalHeight = GetPhysicalScreenSize();
+            local normalizedHeight = notchHeight / physicalHeight;
+            local _, uiParentHeight = UIParent:GetSize();
+            notchHeight = normalizedHeight * uiParentHeight;
+        end
+    end
+
+	return notchHeight;
 end
 
-function UpdateUIParentRelativeToDebugMenu()
-	local topOffset = GetOffsetForDebugMenu();
+-- Hooked by DesignerBar.lua if that addon is loaded
+function GetUIParentOffset()
+    local notchHeight = GetNotchHeight();
+	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and DebugMenu.GetMenuHeight() or 0;
+	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and C_Reveal:GetTimeTrackHeight() or 0;
+	return math.max(debugMenuOffset + revealTimeTrackOffset, notchHeight);
+end
+
+function UpdateUIParentPosition()
+	local topOffset = GetUIParentOffset();
 	UIParent:SetPoint("TOPLEFT", 0, -topOffset);
+end
+
+function UpdateUIElementsForClientScene(sceneType)
+	if sceneType == Enum.ClientSceneType.MinigameSceneType then
+		PlayerFrame:Hide();
+		TargetFrame:Hide();
+	else
+		PlayerFrame:SetShown(true);
+		TargetFrame_Update(TargetFrame);
+	end
 end
 
 UISpecialFrames = {
@@ -279,6 +305,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("LEAVING_TUTORIAL_AREA");
+	self:RegisterEvent("UI_ERROR_POPUP");
+	self:RegisterEvent("ALERT_REGIONAL_CHAT_DISABLED");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -396,6 +424,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_TALENT_NPC_OPENED");
 	self:RegisterEvent("SOULBIND_FORGE_INTERACTION_STARTED");
 	self:RegisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED");
+	self:RegisterEvent("BEHAVIORAL_NOTIFICATION");
 	self:RegisterEvent("COVENANT_RENOWN_INTERACTION_STARTED");
 
 	-- Shop (for Asia promotion)
@@ -469,6 +498,17 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Weekly Rewards UI
 	self:RegisterEvent("WEEKLY_REWARDS_SHOW");
+
+	-- Event(s) for the ScriptAnimationEffect System
+	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE");
+
+    -- Event(s) for Notched displays
+    self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED");
+
+    -- Event(s) for Client Scenes
+    self:RegisterEvent("CLIENT_SCENE_OPENED");
+    self:RegisterEvent("CLIENT_SCENE_CLOSED");
+
 end
 
 function UIParent_OnShow(self)
@@ -567,6 +607,10 @@ function KeyBindingFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_BindingUI");
 end
 
+function ClickBindingFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_ClickBindingUI");
+end
+
 function MacroFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_MacroUI");
 end
@@ -658,10 +702,6 @@ function GuildFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GuildUI");
 end
 
-function LookingForGuildFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_LookingForGuildUI");
-end
-
 function EncounterJournal_LoadUI()
 	UIParentLoadAddOn("Blizzard_EncounterJournal");
 end
@@ -675,11 +715,19 @@ function BlackMarket_LoadUI()
 end
 
 function ItemUpgrade_LoadUI()
-	UIParentLoadAddOn("Blizzard_ItemUpgradeUI");
+	-- ACHURCHILL TODO: remove once item upgrade testing is done
+	if not OldItemUpgradeFrame then
+		UIParentLoadAddOn("Blizzard_ItemUpgradeUI");
+	end
 end
 
 function PlayerChoice_LoadUI()
-	UIParentLoadAddOn("Blizzard_PlayerChoiceUI");
+	UIParentLoadAddOn("Blizzard_PlayerChoice");
+
+	-- ACHURCHILL TODO: remove once player choice refactor testing is done
+	if OldPlayerChoiceFrame then
+		PlayerChoiceFrame = OldPlayerChoiceFrame;
+	end
 end
 
 function Store_LoadUI()
@@ -720,6 +768,15 @@ end
 
 function WeeklyRewards_LoadUI()
 	UIParentLoadAddOn("Blizzard_WeeklyRewards");
+end
+
+function WeeklyRewards_ShowUI()
+	if not WeeklyRewardsFrame then
+		WeeklyRewards_LoadUI();
+	end
+
+	local force = true;	-- this could be called from the world map which might be in fullscreen mode
+	ShowUIPanel(WeeklyRewardsFrame, force);
 end
 
 --[[
@@ -859,6 +916,17 @@ function ToggleTalentFrame(suggestedTab)
 	if ( PlayerTalentFrame_Toggle ) then
 		PlayerTalentFrame_Toggle(suggestedTab);
 	end
+end
+
+function ToggleClickBindingFrame()
+	ClickBindingFrame_LoadUI();
+	if ( ClickBindingFrame_Toggle ) then
+		ClickBindingFrame_Toggle();
+	end
+end
+
+function InClickBindingMode()
+	return ClickBindingFrame and ClickBindingFrame:IsShown();
 end
 
 function ToggleBattlefieldMap()
@@ -1270,7 +1338,6 @@ function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		if ( SpellCanTargetGarrisonFollower(0) or SpellCanTargetGarrisonFollowerAbility(0, 0) ) then
-
 			local followerTypeID = GetFollowerTypeIDFromSpell();
 			local frame = _G[GarrisonFollowerOptions[followerTypeID].missionFrame];
 
@@ -1280,19 +1347,22 @@ function UIParent_OnEvent(self, event, ...)
 				end
 			else
 				local landingPageTabIndex;
+				local garrisonType = C_Garrison.GetLandingPageGarrisonType();
 				local garrTypeID = GarrisonFollowerOptions[followerTypeID].garrisonType;
-				if (C_Garrison.HasGarrison(garrTypeID)) then
-					if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
-						landingPageTabIndex = 3;
-					else
-						landingPageTabIndex = 2;
-					end
+				if(garrTypeID == garrisonType) then
+					if (C_Garrison.HasGarrison(garrTypeID)) then
+						if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+							landingPageTabIndex = 3;
+						else
+							landingPageTabIndex = 2;
+						end
 
-					ShowGarrisonLandingPage(garrTypeID);
+						ShowGarrisonLandingPage(garrTypeID);
 
-					-- switch to the followers tab
-					if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= landingPageTabIndex ) then
-						GarrisonLandingPageTab_SetTab(_G["GarrisonLandingPageTab"..landingPageTabIndex]);
+						-- switch to the followers tab
+						if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= landingPageTabIndex ) then
+							GarrisonLandingPageTab_SetTab(_G["GarrisonLandingPageTab"..landingPageTabIndex]);
+						end
 					end
 				end
 			end
@@ -1445,6 +1515,12 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif event == "LEAVING_TUTORIAL_AREA" then
 		StaticPopup_Show("LEAVING_TUTORIAL_AREA");
+	elseif event == "UI_ERROR_POPUP" then
+		local errorType, errorMessage = ...;
+		local systemPrefix = "UI_ERROR_";
+		StaticPopup_ShowNotification(systemPrefix, errorType, errorMessage);
+	elseif ( event == "ALERT_REGIONAL_CHAT_DISABLED" ) then
+		StaticPopup_Show("REGIONAL_CHAT_DISABLED");
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
 		FlashClientIcon();
 
@@ -1582,10 +1658,11 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		if(C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then
-			if(not PlayerChoiceFrame) then
+			if not PlayerChoiceFrame then
 				PlayerChoice_LoadUI();
 			end
-			PlayerChoiceToggleButton:TryShow();
+			PlayerChoiceToggle_TryShow();
+			PlayerChoiceTimeRemaining:TryShow();
 		end
 
 		if ( UnitIsGhost("player") ) then
@@ -1613,7 +1690,7 @@ function UIParent_OnEvent(self, event, ...)
 		-- display loot specialization setting
 		PrintLootSpecialization();
 
-		UpdateUIParentRelativeToDebugMenu();
+		UpdateUIParentPosition();
 
 		--Bonus roll/spell confirmation.
 		local spellConfirmations = GetSpellConfirmationPromptsInfo();
@@ -2161,13 +2238,10 @@ function UIParent_OnEvent(self, event, ...)
 				SetCVar("petJournalTab", 5);
 			end
 		end
-
-	-- Quest Choice trigger event
-
 	elseif ( event == "PLAYER_CHOICE_UPDATE" ) then
 		PlayerChoice_LoadUI();
 		PlayerChoiceFrame:TryShow();
-		PlayerChoiceToggleButton:TryShow();
+		PlayerChoiceToggle_TryShow();
 	elseif ( event == "LUA_WARNING" ) then
 		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_ARCHITECT_OPENED") then
@@ -2238,6 +2312,10 @@ function UIParent_OnEvent(self, event, ...)
 			CovenantSanctum_LoadUI();
 		end
 		CovenantSanctumFrame:OnEvent(event, ...);
+	elseif ( event == "BEHAVIORAL_NOTIFICATION") then
+		self:UnregisterEvent("BEHAVIORAL_NOTIFICATION");
+		LoadAddOn("Blizzard_BehavioralMessaging");
+		BehavioralMessagingTray:OnEvent(event, ...);
 	elseif ( event == "COVENANT_RENOWN_INTERACTION_STARTED" ) then
 		self:UnregisterEvent(event);
 		if not CovenantRenownFrame then
@@ -2294,9 +2372,16 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "SCENARIO_UPDATE") then
 		BoostTutorial_AttemptLoad();
 	elseif (event == "DEBUG_MENU_TOGGLED") then
-		UpdateUIParentRelativeToDebugMenu();
+		UpdateUIParentPosition();
 	elseif (event == "REVEAL_CAPTURE_TOGGLED") then
-		UpdateUIParentRelativeToDebugMenu();
+		UpdateUIParentPosition();
+    elseif (event == "NOTCHED_DISPLAY_MODE_CHANGED") then
+        UpdateUIParentPosition();
+	elseif (event == "CLIENT_SCENE_OPENED") then
+		local sceneType = ...;
+		UpdateUIElementsForClientScene(sceneType);
+	elseif (event == "CLIENT_SCENE_CLOSED") then
+		UpdateUIElementsForClientScene(nil);
 	elseif ( event == "GROUP_INVITE_CONFIRMATION" ) then
 		UpdateInviteConfirmationDialogs();
 	elseif ( event == "INVITE_TO_PARTY_CONFIRMATION" ) then
@@ -2360,10 +2445,7 @@ function UIParent_OnEvent(self, event, ...)
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
 		end
 	elseif (event == "WEEKLY_REWARDS_SHOW") then
-		if not WeeklyRewardsFrame then
-			WeeklyRewards_LoadUI();
-		end
-		ShowUIPanel(WeeklyRewardsFrame);
+		WeeklyRewards_ShowUI();
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
 
@@ -2371,6 +2453,7 @@ function UIParent_OnEvent(self, event, ...)
 		local mouseFocus = GetMouseFocus();
 		if not HandlesGlobalMouseEvent(mouseFocus, buttonID, event) then
 			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
+			SelectionPopouts:HandleGlobalMouseEvent(buttonID, event);
 		end
 
 		-- Clear keyboard focus.
@@ -2390,6 +2473,8 @@ function UIParent_OnEvent(self, event, ...)
  				end
 			end
 		end
+	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
+		ScriptedAnimationEffectsUtil.ReloadDB();
 	end
 end
 
@@ -2429,36 +2514,58 @@ end
 
 function UIParent_UpdateTopFramePositions()
 	local topOffset = 0;
-	local buffsAreaTopOffset = 0;
+	local yOffset = 0;
+	local xOffset = -180;
 
-	if (OrderHallCommandBar and OrderHallCommandBar:IsShown()) then
+	if OrderHallCommandBar and OrderHallCommandBar:IsShown() then
 		topOffset = 12;
-		buffsAreaTopOffset = OrderHallCommandBar:GetHeight();
+		yOffset = OrderHallCommandBar:GetHeight();
 	end
 
-	if (PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame)) then
+	if PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame) then
 		PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4 - topOffset)
 	end
 
-	if (TargetFrame and not TargetFrame:IsUserPlaced()) then
+	if TargetFrame and not TargetFrame:IsUserPlaced() then
 		TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4 - topOffset);
 	end
 
-	local ticketStatusFrameShown = TicketStatusFrame and TicketStatusFrame:IsShown();
+	local buffOffset = 0;
 	local gmChatStatusFrameShown = GMChatStatusFrame and GMChatStatusFrame:IsShown();
-	if (ticketStatusFrameShown) then
-		TicketStatusFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -180, 0 - buffsAreaTopOffset);
-		buffsAreaTopOffset = buffsAreaTopOffset + TicketStatusFrame:GetHeight();
-	end
-	if (gmChatStatusFrameShown) then
-		GMChatStatusFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -170, -5 - buffsAreaTopOffset);
-		buffsAreaTopOffset = buffsAreaTopOffset + GMChatStatusFrame:GetHeight() + 5;
-	end
-	if (not ticketStatusFrameShown and not gmChatStatusFrameShown) then
-		buffsAreaTopOffset = buffsAreaTopOffset + 13;
+	local ticketStatusFrameShown = TicketStatusFrame and TicketStatusFrame:IsShown();
+	local notificationAnchorTo = UIParent;
+	if gmChatStatusFrameShown then
+		GMChatStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
+
+		buffOffset = math.max(buffOffset, GMChatStatusFrame:GetHeight());
+		notificationAnchorTo = GMChatStatusFrame;
 	end
 
-	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, 0 - buffsAreaTopOffset);
+	if ticketStatusFrameShown then
+		if gmChatStatusFrameShown then
+			TicketStatusFrame:SetPoint("TOPRIGHT", GMChatStatusFrame, "TOPLEFT");
+		else
+			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
+		end
+
+		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
+		notificationAnchorTo = TicketStatusFrame;
+	end
+
+	local reportNotificationShown = BehavioralMessagingTray and BehavioralMessagingTray:IsShown();
+	if reportNotificationShown then
+		BehavioralMessagingTray:ClearAllPoints();
+		if notificationAnchorTo ~= UIParent then
+			BehavioralMessagingTray:SetPoint("TOPRIGHT", notificationAnchorTo, "TOPLEFT");
+		else
+			BehavioralMessagingTray:SetPoint("TOPRIGHT", xOffset, yOffset);
+		end
+
+		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
+	end
+
+	local y = -(buffOffset + 13)
+	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
 end
 
 UIPARENT_ALTERNATE_FRAME_POSITIONS = {
@@ -2479,7 +2586,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["UIWidgetPowerBarContainerFrame"] = {baseY = true, yOffset = 20, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraAbilityContainer = 1, talkingHeadFrame = 1, classResourceOverlayFrame = 1, classResourceOverlayOffset = 1};
 	["ClassResourceOverlayParentFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraAbilityContainer = 1, };
 	["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Bottom"];
-	["ExtraAbilityContainer"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, powerBarWidgets = 1};
+	["ExtraAbilityContainer"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndStance = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, bottomRight = actionBarOffset-8, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, watchBar = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["StanceBarFrame"] = {baseY = 0, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
@@ -3059,8 +3166,9 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		end
 		frame:Raise();
 	elseif ( not self:GetUIPanel("doublewide") ) then
-		if ( self:GetUIPanel("left") ) then
-			rightOffset = centerOffset + UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
+		local leftPanel = self:GetUIPanel("left");
+		if ( leftPanel ) then
+			rightOffset = GetUIPanelWidth(leftPanel) + (GetUIPanelAttribute(leftPanel,"xoffset") or 0);
 		else
 			rightOffset = leftOffset + UIParent:GetAttribute("DEFAULT_FRAME_WIDTH") * 2
 		end
@@ -3161,32 +3269,32 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			tinsert(yOffsetFrames, "pet");
 			hasPetBar = 1;
 		end
+	end
 
-		if ( TutorialFrameAlertButton:IsShown() ) then
-			tinsert(yOffsetFrames, "tutorialAlert");
+	if ( TutorialFrameAlertButton:IsShown() ) then
+		tinsert(yOffsetFrames, "tutorialAlert");
+	end
+	if ( PlayerPowerBarAlt:IsShown() and not PlayerPowerBarAlt:IsUserPlaced() ) then
+		local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
+		if ( not barInfo or not barInfo.anchorTop ) then
+			tinsert(yOffsetFrames, "playerPowerBarAlt");
 		end
-		if ( PlayerPowerBarAlt:IsShown() and not PlayerPowerBarAlt:IsUserPlaced() ) then
-			local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
-			if ( not barInfo or not barInfo.anchorTop ) then
-				tinsert(yOffsetFrames, "playerPowerBarAlt");
-			end
-		end
-		if UIWidgetPowerBarContainerFrame and UIWidgetPowerBarContainerFrame:GetNumWidgetsShowing() > 0 then
-			tinsert(yOffsetFrames, "powerBarWidgets");
-		end
-		if ( ExtraAbilityContainer and ExtraAbilityContainer:IsShown() ) then
-			tinsert(yOffsetFrames, "extraAbilityContainer");
-		end
-		if ( TalkingHeadFrame and TalkingHeadFrame:IsShown() ) then
-			tinsert(yOffsetFrames, "talkingHeadFrame");
-		end
-		if ( ClassResourceOverlayParentFrame and ClassResourceOverlayParentFrame:IsShown() ) then
-			tinsert(yOffsetFrames, "classResourceOverlayFrame");
-			tinsert(yOffsetFrames, "classResourceOverlayOffset");
-		end
-		if ( CastingBarFrame and not CastingBarFrame:GetAttribute("ignoreFramePositionManager") ) then
-			tinsert(yOffsetFrames, "castingBar");
-		end
+	end
+	if UIWidgetPowerBarContainerFrame and UIWidgetPowerBarContainerFrame:GetNumWidgetsShowing() > 0 then
+		tinsert(yOffsetFrames, "powerBarWidgets");
+	end
+	if ( ExtraAbilityContainer and ExtraAbilityContainer:IsShown() ) then
+		tinsert(yOffsetFrames, "extraAbilityContainer");
+	end
+	if ( TalkingHeadFrame and TalkingHeadFrame:IsShown() ) then
+		tinsert(yOffsetFrames, "talkingHeadFrame");
+	end
+	if ( ClassResourceOverlayParentFrame and ClassResourceOverlayParentFrame:IsShown() ) then
+		tinsert(yOffsetFrames, "classResourceOverlayFrame");
+		tinsert(yOffsetFrames, "classResourceOverlayOffset");
+	end
+	if ( CastingBarFrame and not CastingBarFrame:GetAttribute("ignoreFramePositionManager") ) then
+		tinsert(yOffsetFrames, "castingBar");
 	end
 
 	if ( menuBarTop == 55 ) then
@@ -3332,16 +3440,22 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		end
 	end
 
-	-- BelowMinimap Widgets - need to move below buffs/debuffs if at least 1 right action bar is showing
+	-- BelowMinimap Widgets - need to move below buffs/debuffs
 	if UIWidgetBelowMinimapContainerFrame and UIWidgetBelowMinimapContainerFrame:GetNumWidgetsShowing() > 0 then
-		if rightActionBars > 0 then
-			anchorY = min(anchorY, buffsAnchorY);
-		end
+		anchorY = min(anchorY, buffsAnchorY);
 
-		UIWidgetBelowMinimapContainerFrame:ClearAllPoints();
 		UIWidgetBelowMinimapContainerFrame:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 
 		anchorY = anchorY - UIWidgetBelowMinimapContainerFrame:GetHeight() - 4;
+	end
+
+	-- MawBuffsBelowMinimapFrame - need to move below buffs/debuffs
+	if MawBuffsBelowMinimapFrame and MawBuffsBelowMinimapFrame:IsShown() then
+		anchorY = min(anchorY, buffsAnchorY);
+
+		MawBuffsBelowMinimapFrame:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+
+		anchorY = anchorY - MawBuffsBelowMinimapFrame:GetHeight() - 4;
 	end
 
 	--Setup Vehicle seat indicator offset - needs to move below buffs/debuffs if both right action bars are showing
@@ -3488,6 +3602,14 @@ function HideUIPanel(frame, skipSetPoint)
 	FramePositionDelegate:SetAttribute("panel-hide", true);
 end
 
+function SetUIPanelShown(frame, shown, force)
+	if ( shown ) then
+		ShowUIPanel(frame, force);
+	else
+		HideUIPanel(frame, force);
+	end
+end
+
 function ShowOptionsPanel(optionsFrame, lastFrame, categoryToSelect)
 	-- NOTE: Toggle isn't currently necessary because showing an options panel hides everything else.
 	ShowUIPanel(optionsFrame);
@@ -3541,7 +3663,7 @@ end
 function CanShowRightUIPanel(frame)
 	local width = frame and GetUIPanelWidth(frame) or UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
 	local rightSide = UIParent:GetAttribute("RIGHT_OFFSET") + width;
-	return rightSide < GetMaxUIPanelsWidth();
+	return rightSide <= GetMaxUIPanelsWidth();
 end
 
 function CanShowCenterUIPanel(frame)
@@ -4341,6 +4463,8 @@ function ToggleGameMenu()
 		ChallengesKeystoneFrame:Hide();
 	elseif ( CanAutoSetGamePadCursorControl(false) and (not IsModifierKeyDown()) ) then
 		SetGamePadCursorControl(false);
+	elseif(ReportFrame and ReportFrame:IsShown()) then 
+		ReportFrame:Hide();
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);
@@ -4569,19 +4693,23 @@ function HandlePendingInviteConfirmation_QuestSession(invite)
 end
 
 function CreatePendingInviteConfirmationText(invite)
-	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(invite);
+	local confirmationType, name, guid, rolesInvalid, willConvertToRaid, _, _, _, isCrossFaction, playerFactionGroup, localizedFaction = GetInviteConfirmationInfo(invite);
 
 	if confirmationType == LE_INVITE_CONFIRMATION_REQUEST then
-		return CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid);
+		return CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction);
 	elseif confirmationType == LE_INVITE_CONFIRMATION_SUGGEST then
-		return CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid);
+		return CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction);
 	else
 		return CreatePendingInviteConfirmationText_AppendWarnings("", invite, name, guid, rolesInvalid, willConvertToRaid);
 	end
 end
 
-function CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid)
+function CreatePendingInviteConfirmationText_Request(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction)
 	local coloredName, coloredSuggesterName = CreatePendingInviteConfirmationNames(invite, name, guid, rolesInvalid, willConvertToRaid);
+
+	if isCrossFaction then
+		coloredName = CROSS_FACTION_PLAYER_NAME:format(coloredName, localizedFaction);
+	end
 
 	local suggesterGuid, _, relationship, isQuickJoin, clubId = C_PartyInfo.GetInviteReferralInfo(invite);
 
@@ -4647,10 +4775,14 @@ function CreatePendingInviteConfirmationNames(invite, name, guid, rolesInvalid, 
 	end
 end
 
-function CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid)
+function CreatePendingInviteConfirmationText_Suggest(invite, name, guid, rolesInvalid, willConvertToRaid, isCrossFaction, playerFactionGroup, localizedFaction)
 	local suggesterGuid, suggesterName, relationship, isQuickJoin = C_PartyInfo.GetInviteReferralInfo(invite);
 	suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
 	name = GetSocialColoredName(name, guid);
+
+	if isCrossFaction then
+		name = CROSS_FACTION_PLAYER_NAME:format(name, localizedFaction);
+	end
 
 	-- Only using a single string here, if somebody is suggesting a person to join the group, QuickJoin text doesn't apply.
 	local text = INVITE_CONFIRMATION_SUGGEST:format(suggesterName, name);

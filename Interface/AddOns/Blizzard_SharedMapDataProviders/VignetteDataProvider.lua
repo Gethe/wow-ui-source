@@ -221,23 +221,19 @@ function VignettePinMixin:UpdateFogOfWar(vignetteInfo)
 end
 
 function VignettePinMixin:UpdatePosition(bestUniqueVignette)
-	if self:IsUnique() and not bestUniqueVignette then
-		self:Hide();
-		return;
-	end
-
+	local showPin = false;
 	local position = C_VignetteInfo.GetVignettePosition(self.vignetteGUID, self:GetMap():GetMapID());
 	if position then
 		self:SetPosition(position:GetXY());
-		self:Show();
-	else
-		self:Hide();
+		showPin = not self:IsUnique() or bestUniqueVignette;
 	end
+	
+	self:SetShown(showPin);
 end
 
 function VignettePinMixin:UpdateSupertrackedHighlight()
 	local highlight = (self:GetVignetteType() == Enum.VignetteType.Treasure) and QuestSuperTracking_ShouldHighlightTreasures(self:GetMap():GetMapID());
-	MapPinSupertrackHighlight_CheckHighlightPin(highlight, self, self.Texture);
+	MapPinHighlight_CheckHighlightPin(highlight, self, self.Texture);
 end
 
 function VignettePinMixin:OnMouseEnter()
@@ -256,7 +252,7 @@ function VignettePinMixin:OnMouseEnter()
 		end
 
 		if hasValidTooltip and self.widgetSetID then
-			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID);
+			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, self:GetWidgetSetVerticalPadding());
 		elseif not hasValidTooltip then
 			GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA);
 		end
@@ -298,4 +294,12 @@ function VignettePinMixin:DisplayTorghastTooltip()
 	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 	GameTooltip_SetTitle(GameTooltip, self:GetVignetteName());
 	return true;
+end
+
+function VignettePinMixin:GetWidgetSetVerticalPadding()
+	if self:GetVignetteType() == Enum.VignetteType.Torghast then
+		return 0;
+	else
+		return 10;
+	end
 end

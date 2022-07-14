@@ -14,6 +14,7 @@ StaticPopupDialogs["CONFIRM_RUNEFORGE_LEGENDARY_CRAFT"] = {
 
 	hideOnEscape = 1,
 	hasItemFrame = 1,
+	acceptDelay = 5;
 };
 
 
@@ -21,10 +22,10 @@ RuneforgeCreateFrameMixin = CreateFromMixins(RuneforgeSystemMixin);
 
 local RuneforgeCreateFrameEvents = {
 	"UNIT_INVENTORY_CHANGED",
+	"CURRENCY_DISPLAY_UPDATE",
 };
 
 function RuneforgeCreateFrameMixin:OnLoad()
-	self.Cost:SetTextAnchorPoint("CENTER");
 	self:UpdateCost();
 end
 
@@ -44,7 +45,7 @@ function RuneforgeCreateFrameMixin:OnHide()
 end
 
 function RuneforgeCreateFrameMixin:OnEvent(event)
-	if event == "UNIT_INVENTORY_CHANGED" then
+	if event == "UNIT_INVENTORY_CHANGED" or event == "CURRENCY_DISPLAY_UPDATE" then
 		self:Refresh();
 	end
 end
@@ -57,14 +58,14 @@ function RuneforgeCreateFrameMixin:GetStaticPopupInfo()
 	if self:IsRuneforgeUpgrading() then
 		local upgradeItem = runeforgeFrame:GetUpgradeItem();
 		local itemLevel = C_Item.GetCurrentItemLevel(upgradeItem);
-		return RUNEFORGE_LEGENDARY_UPGRADING_CONFIRMATION, itemPreviewInfo.itemID, upgradeItem, quality, itemLevel, itemPreviewInfo.itemName, powerID, modifiers;
+		return RUNEFORGE_LEGENDARY_UPGRADING_CONFIRMATION, itemPreviewInfo.itemGUID, upgradeItem, quality, itemLevel, itemPreviewInfo.itemName, powerID, modifiers;
 	else
-		return RUNEFORGE_LEGENDARY_CRAFTING_CONFIRMATION, itemPreviewInfo.itemID, baseItem, quality, itemPreviewInfo.itemLevel, itemPreviewInfo.itemName, powerID, modifiers;
+		return RUNEFORGE_LEGENDARY_CRAFTING_CONFIRMATION, itemPreviewInfo.itemGUID, baseItem, quality, itemPreviewInfo.itemLevel, itemPreviewInfo.itemName, powerID, modifiers;
 	end
 end
 
 function RuneforgeCreateFrameMixin:ShowCraftConfirmation()
-	local popupTitleFormat, itemID, itemLocation, quality, itemLevel, itemName, powerID, modifiers = self:GetStaticPopupInfo();
+	local popupTitleFormat, itemGUID, itemLocation, quality, itemLevel, itemName, powerID, modifiers = self:GetStaticPopupInfo();
 
 	local function StaticPopupItemFrameCallback(itemFrame)
 		itemFrame:SetItemLocation(itemLocation);
@@ -76,7 +77,13 @@ function RuneforgeCreateFrameMixin:ShowCraftConfirmation()
 
 	local function StaticPopupItemFrameOnEnterCallback(itemFrame)
 		GameTooltip:SetOwner(itemFrame, "ANCHOR_RIGHT");
-		GameTooltip:SetRuneforgeResultItem(itemID, itemLevel, powerID, modifiers);
+
+		if self:IsRuneforgeUpgrading() then
+			GameTooltip:SetRuneforgeResultItem(itemGUID, itemLevel);
+		else
+			GameTooltip:SetRuneforgeResultItem(itemGUID, itemLevel, powerID, modifiers);
+		end
+
 		SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 		GameTooltip:Show();
 	end
@@ -110,19 +117,27 @@ end
 function RuneforgeCreateFrameMixin:Refresh()
 	local canCraft, errorString = self:GetRuneforgeFrame():CanCraftRuneforgeLegendary();
 	self.CraftItemButton:SetCraftState(canCraft, errorString);
-	self.CraftError:SetShown(errorString ~= nil);
-	self.CraftError:SetText(errorString);
 
 	self:UpdateCost();
 end
 
+
 function RuneforgeCreateFrameMixin:UpdateCost()
-	local currenciesCost = self:GetRuneforgeFrame():GetCost();
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	local currenciesCost = runeforgeFrame:GetCost();
 	local showCost = (currenciesCost ~= nil) and (#currenciesCost > 0);
 	self.Cost:SetShown(showCost);
 
 	if showCost then
-		self.Cost:SetCurrencies(currenciesCost, RUNEFORGE_LEGENDARY_COST_FORMAT);
+		for i, cost in ipairs(currenciesCost) do
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(cost.currencyID);
+			if cost.amount > currencyInfo.quantity then
+				cost.colorCode = RED_FONT_COLOR_CODE;
+			end
+		end
+
+		RuneforgeUtil.SetCurrencyCosts(self.Cost.Currencies, currenciesCost);
+		self.Cost:MarkDirty();
 	end
 end
 
@@ -157,4 +172,5 @@ end
 function RuneforgeCraftItemButtonMixin:SetCraftState(canCraft, errorString)
 	self:SetEnabled(canCraft);
 	self.errorString = errorString;
+	GlowEmitterFactory:SetShown(self, canCraft, GlowEmitterMixin.Anims.FaintFadeAnim);
 end

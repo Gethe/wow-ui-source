@@ -68,6 +68,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0] = {
 		ALERT_FRAME_TITLE = GARRISON_MISSION_COMPLETE,
 		FOLLOWERLIST_LABEL_TROOPS = FOLLOWERLIST_LABEL_TROOPS,
 		FOLLOWERLIST_LABEL_FOLLOWERS = FOLLOWERLIST_LABEL_CHAMPIONS,
+		FOLLOWER_ON_COMPLETED_MISSION = GARRISON_FOLLOWER_ON_MISSION_COMPLETE,
 	},
 	traitAbilitiesAreEquipment = false,
 	useAbilityTooltipStyleWithoutCounters = false,
@@ -130,6 +131,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_2] = {
 		ALERT_FRAME_TITLE = GARRISON_MISSION_COMPLETE,
 		FOLLOWERLIST_LABEL_TROOPS = nil,
 		FOLLOWERLIST_LABEL_FOLLOWERS = nil,
+		FOLLOWER_ON_COMPLETED_MISSION = GARRISON_FOLLOWER_ON_MISSION_COMPLETE,
 	},
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = false,
@@ -193,7 +195,8 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0] = {
 		TALENT_COMPLETE_TOAST_TITLE = GARRISON_TALENT_ORDER_ADVANCEMENT,
 		ALERT_FRAME_TITLE = GARRISON_MISSION_COMPLETE,
 		FOLLOWERLIST_LABEL_TROOPS = FOLLOWERLIST_LABEL_TROOPS,
-		FOLLOWERLIST_LABEL_FOLLOWERS = FOLLOWERLIST_LABEL_CHAMPIONS
+		FOLLOWERLIST_LABEL_FOLLOWERS = FOLLOWERLIST_LABEL_CHAMPIONS,
+		FOLLOWER_ON_COMPLETED_MISSION = GARRISON_FOLLOWER_ON_MISSION_COMPLETE,
 	},
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = true,
@@ -257,7 +260,8 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0] = {
 		TALENT_COMPLETE_TOAST_TITLE = GARRISON_TALENT_ORDER_ADVANCEMENT,
 		ALERT_FRAME_TITLE = GARRISON_MISSION_COMPLETE,
 		FOLLOWERLIST_LABEL_TROOPS = FOLLOWERLIST_LABEL_TROOPS,
-		FOLLOWERLIST_LABEL_FOLLOWERS = FOLLOWERLIST_LABEL_CHAMPIONS
+		FOLLOWERLIST_LABEL_FOLLOWERS = FOLLOWERLIST_LABEL_CHAMPIONS,
+		FOLLOWER_ON_COMPLETED_MISSION = GARRISON_FOLLOWER_ON_MISSION_COMPLETE,
 	},
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = true,
@@ -322,6 +326,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0] = {
 		ALERT_FRAME_TITLE = COVENANT_MISSIONS_ADVENTURE_COMPLETE,
 		FOLLOWERLIST_LABEL_TROOPS = FOLLOWERLIST_LABEL_TROOPS,
 		FOLLOWERLIST_LABEL_FOLLOWERS = COVENANT_MISSIONS_FOLLOWERS,
+		FOLLOWER_ON_COMPLETED_MISSION = COVENANT_FOLLOWER_MISSION_COMPLETE,
 	},
 	traitAbilitiesAreEquipment = true,
 	useAbilityTooltipStyleWithoutCounters = true,
@@ -501,7 +506,7 @@ end
 --- Talent Tree                                                               ---
 ---------------------------------------------------------------------------------
 
-function GetGarrisonTalentCostString(talentInfo, abbreviate)
+function GetGarrisonTalentCostString(talentInfo, abbreviate, colorCode)
 	local costString;
 
 	local function AddCost(cost)
@@ -512,13 +517,107 @@ function GetGarrisonTalentCostString(talentInfo, abbreviate)
 		end
 	end
 
-	local colorCode = nil;
 	for i, researchCostInfo in ipairs(talentInfo.researchCurrencyCosts) do
-		AddCost(GetCurrencyString(researchCostInfo.currencyType, researchCostInfo.currencyQuantity, colorCode, abbreviate));
+		local cost = researchCostInfo.currencyQuantity;
+		local currencyColorCode = colorCode;
+		if currencyColorCode == nil then
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(researchCostInfo.currencyType);
+			if currencyInfo and (currencyInfo.quantity < cost) then
+				currencyColorCode = RED_FONT_COLOR_CODE;
+			end
+		end
+		AddCost(GetCurrencyString(researchCostInfo.currencyType, cost, currencyColorCode, abbreviate));
 	end
 	if talentInfo.researchGoldCost > 0 then
 		AddCost(talentInfo.researchGoldCost.."|TINTERFACE\\MONEYFRAME\\UI-MoneyIcons.blp:16:16:2:0:64:16:0:16:0:16|t");
 	end
 
 	return costString;
+end
+
+---------------------------------------------------------------------------------
+--- Auto Combat Util                                                          ---
+---------------------------------------------------------------------------------
+
+GarrAutoCombatUtil = {};
+
+function GarrAutoCombatUtil.GetFollowerAutoCombatSpells(followerGUID, level, includeAutoAttack)
+	local spellInfo, autoAttack = C_Garrison.GetFollowerAutoCombatSpells(followerGUID, level);
+	if includeAutoAttack and (autoAttack ~= nil) then
+		table.insert(spellInfo, autoAttack);
+	end
+
+	return spellInfo;
+end
+
+function GarrAutoCombatUtil.CreateTextureMarkupForTooltipSpellIcon(icon)
+	return CreateTextureMarkup(icon, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0);
+end
+
+function GarrAutoCombatUtil.GetAuraTypeAtlasesFromPreviewMask(previewMask)
+	local atlases = {};
+	if FlagsUtil.IsSet(previewMask, Enum.GarrAutoPreviewTargetType.Buff) then
+		table.insert(atlases, "Adventure-buff-indicator-small");
+	end
+
+	if FlagsUtil.IsSet(previewMask, Enum.GarrAutoPreviewTargetType.Heal) then
+		table.insert(atlases, "Adventure-heal-indicator-small");
+	end
+
+	if FlagsUtil.IsSet(previewMask, Enum.GarrAutoPreviewTargetType.Debuff) then
+		table.insert(atlases, "Adventure-debuff-indicator-small");
+	end
+
+	return atlases;
+end
+
+function GarrAutoCombatUtil.GetAtlasMarkupFromPreviewMask(previewMask)
+	local previewTypeAtlases = GarrAutoCombatUtil.GetAuraTypeAtlasesFromPreviewMask(previewMask);
+	local output = "";
+	for i, atlas in ipairs(previewTypeAtlases) do
+		if i > 1 then
+			output = output.." ";
+		end
+
+		output = output..CreateAtlasMarkupWithAtlasSize(atlas);
+	end
+
+	return output;
+end
+
+function GarrAutoCombatUtil.AddAuraToTooltip(tooltip, auraSpellID, dynamicPreviewMask)
+	local autoCombatSpellInfo = C_Garrison.GetCombatLogSpellInfo(auraSpellID);
+	if autoCombatSpellInfo then
+		local iconMarkup = GarrAutoCombatUtil.CreateTextureMarkupForTooltipSpellIcon(autoCombatSpellInfo.icon);
+		local leftText = COVENANT_MISSIONS_AURA_TOOLTIP_ENTRY_FORMAT:format(iconMarkup, autoCombatSpellInfo.name);
+
+		local previewTypeMarkup = GarrAutoCombatUtil.GetAtlasMarkupFromPreviewMask(dynamicPreviewMask or autoCombatSpellInfo.previewMask);
+		
+		GameTooltip_AddColoredDoubleLine(tooltip, leftText, previewTypeMarkup, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
+	end
+end
+
+local AbilityEventTypes = {
+	Enum.GarrAutoMissionEventType.MeleeDamage,
+	Enum.GarrAutoMissionEventType.RangeDamage,
+	Enum.GarrAutoMissionEventType.SpellMeleeDamage,
+	Enum.GarrAutoMissionEventType.SpellRangeDamage,
+	Enum.GarrAutoMissionEventType.Heal,
+	Enum.GarrAutoMissionEventType.ApplyAura,
+};
+
+function GarrAutoCombatUtil.IsAbilityEvent(event)
+	local eventType = event.type;
+	if not tContains(AbilityEventTypes, eventType) then
+		return false;
+	end
+
+	-- Thorns damage effects apply outside the normal "turn" for the combatant so
+	-- we don't want to include them outside of the initial application of the thorns buff.
+	local spellInfo = C_Garrison.GetCombatLogSpellInfo(event.spellID);
+	if (spellInfo == nil) or (spellInfo.hasThornsEffect and (eventType ~= Enum.GarrAutoMissionEventType.ApplyAura)) then
+		return false;
+	end
+
+	return true;
 end

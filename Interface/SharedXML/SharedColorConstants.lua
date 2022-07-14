@@ -28,16 +28,20 @@ PASSIVE_SPELL_FONT_COLOR	= CreateColor(0.77, 0.64, 0.0);
 BATTLENET_FONT_COLOR 		= CreateColor(0.510, 0.773, 1.0);
 TRANSMOGRIFY_FONT_COLOR		= CreateColor(1, 0.5, 1);
 DISABLED_FONT_COLOR			= CreateColor(0.498, 0.498, 0.498);
+WARNING_FONT_COLOR			= CreateColor(1.0, 0.28125, 0); -- 72 / 256 = 0.28125
 BRIGHTBLUE_FONT_COLOR		= CreateColor(0.4, 0.733, 1.0);
 LIGHTBLUE_FONT_COLOR		= CreateColor(0.53, 0.67, 1.0);
 LIGHTGRAY_FONT_COLOR		= CreateColor(0.6, 0.6, 0.6);
+GOLD_FONT_COLOR				= CreateColor(0.949, 0.902, 0.6);
 PAPER_FRAME_EXPANDED_COLOR	= CreateColor(0.929, 0.788, 0.620);
 PAPER_FRAME_COLLAPSED_COLOR = CreateColor(0.827, 0.659, 0.463);
 PAPER_FRAME_DARK_COLOR		= CreateColor(0.25, 0.1484375, 0.02);
 PAPER_FRAME_TITLE_COLOR		= CreateColor(0.208, 0, 0);
 PAPER_FRAME_TEXT_COLOR		= CreateColor(0.208, 0, 0);
 INVALID_EQUIPMENT_COLOR		= CreateColor(.598, 0, 0);
+ACTIONBAR_HOTKEY_FONT_COLOR	= CreateColor(0.8, 0.8, 0.8);
 
+PURE_RED_COLOR				= CreateColor(0.8, 0, 0);
 ARTIFACT_BAR_COLOR 			= CreateColor(0.901, 0.8, 0.601);
 WARBOARD_OPTION_TEXT_COLOR	= CreateColor(0.28, 0.02, 0.02);
 DEFAULT_CHAT_CHANNEL_COLOR	= CreateColor(1.0, 0.753, 0.753);
@@ -52,9 +56,12 @@ RARE_MISSION_COLOR			= CreateColor(0, 0.012, 0.291);
 TUTORIAL_FONT_COLOR			= CreateColor(0.8, 0.8, 0.8);
 DARKGRAY_COLOR				= CreateColor(0.4, 0.4, 0.4);
 SCENARIO_STAGE_COLOR		= CreateColor(1.0, 0.914, 0.682);
+SCENARIO_SUBTITLE_COLOR		= CreateColor(1.0, 0.831, 0.381);
+CHALLENGE_MODE_TOAST_TITLE_COLOR = CreateColor(0.87, 0.80, 0.61);
 TRADESKILL_EXPERIENCE_COLOR	= CreateColor(90 / 255, 255 / 255, 33 / 255);
 SUBSCRIPTION_INTERSTITIAL_COLOR	= CreateColor(217 / 255, 213 / 255, 206 / 255);
 GLUE_DIALOG_FONT_COLOR		= CreateColor(0.208, 0.0, 0.0);
+NEW_FEATURE_SHADOW_COLOR	= CreateColor(0.32, 0.5, 1.0);
 
 QUEST_OBJECTIVE_FONT_COLOR = CreateColor(0.8, 0.8, 0.8);
 QUEST_OBJECTIVE_HIGHLIGHT_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
@@ -66,15 +73,19 @@ AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
 INVASION_FONT_COLOR = CreateColor(0.78, 1, 0);
 INVASION_DESCRIPTION_FONT_COLOR = CreateColor(1, 0.973, 0.035);
 
+FACTION_RED_COLOR		= CreateColor(0.8, 0.3, 0.22);
+FACTION_ORANGE_COLOR	= CreateColor(0.75, 0.27, 0);
+FACTION_YELLOW_COLOR	= CreateColor(0.9, 0.7, 0);
+FACTION_GREEN_COLOR		= CreateColor(0, 0.6, 0.1);
 FACTION_BAR_COLORS = {
-	[1] = {r = 0.8, g = 0.3, b = 0.22},
-	[2] = {r = 0.8, g = 0.3, b = 0.22},
-	[3] = {r = 0.75, g = 0.27, b = 0},
-	[4] = {r = 0.9, g = 0.7, b = 0},
-	[5] = {r = 0, g = 0.6, b = 0.1},
-	[6] = {r = 0, g = 0.6, b = 0.1},
-	[7] = {r = 0, g = 0.6, b = 0.1},
-	[8] = {r = 0, g = 0.6, b = 0.1},
+	[1] = FACTION_RED_COLOR,
+	[2] = FACTION_RED_COLOR,
+	[3] = FACTION_ORANGE_COLOR,
+	[4] = FACTION_YELLOW_COLOR,
+	[5] = FACTION_GREEN_COLOR,
+	[6] = FACTION_GREEN_COLOR,
+	[7] = FACTION_GREEN_COLOR,
+	[8] = FACTION_GREEN_COLOR,
 };
 
 MATERIAL_TEXT_COLOR_TABLE = {
@@ -82,9 +93,10 @@ MATERIAL_TEXT_COLOR_TABLE = {
 	["Stone"] = {1.0, 1.0, 1.0},
 	["Parchment"] = {0.18, 0.12, 0.06},
 	["Marble"] = {0, 0, 0},
-	["Silver"] = {0.12, 0.12, 0.12},
+	["Silver"] = {1, 1, 1},
 	["Bronze"] = {0.18, 0.12, 0.06},
-	["ParchmentLarge"] = {.141, 0, 0}
+	["ParchmentLarge"] = {.141, 0, 0},
+	["Progenitor"] = {1, 1, 1},
 };
 
 MATERIAL_TITLETEXT_COLOR_TABLE = {
@@ -94,7 +106,8 @@ MATERIAL_TITLETEXT_COLOR_TABLE = {
 	["Marble"] = {0.93, 0.82, 0},
 	["Silver"] = {0.93, 0.82, 0},
 	["Bronze"] = {0.93, 0.82, 0},
-	["ParchmentLarge"] = {.208, 0, 0}
+	["ParchmentLarge"] = {.208, 0, 0},
+	["Progenitor"] = {1, 1, 1},
 };
 
 FRIENDS_BNET_NAME_COLOR = CreateColor(0.510, 0.773, 1.0);
@@ -151,3 +164,6 @@ ENCOUNTER_JOURNAL_SCROLL_BAR_BACKGROUND_COLOR = CreateColor(0.2, 0.13, 0.08, 0.2
 
 -- b78f6a
 RUNEFORGE_LEGEDARY_SPEC_COLOR = CreateColor(0.718, 0.561, 0.416);
+
+-- 00ccff
+SOULBIND_CONDUIT_ENHANCED_COLOR = CreateColor(0.0, 0.8, 1.0);

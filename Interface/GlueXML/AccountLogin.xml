@@ -4,11 +4,17 @@
 
 	<Frame name="AccountLoginBackdropTemplate" inherits="TooltipBackdropTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_MIXED_TOOLTIP_16_16" type="global"/>
+			<KeyValue key="layoutType" value="TooltipMixedLayout" type="string"/>
 			<KeyValue key="backdropColor" value="GLUE_BACKDROP_COLOR" type="global"/>
 			<KeyValue key="backdropBorderColor" value="GLUE_BACKDROP_BORDER_COLOR" type="global"/>
 		</KeyValues>
 	</Frame>
+
+	<EditBox name="AccountLoginEditBoxBehaviorTemplate" mixin="AccountLoginEditBoxBehaviorMixin" virtual="true">
+		<Scripts>
+			<OnKeyDown method="OnKeyDown"/>
+		</Scripts>
+	</EditBox>
 
 	<Button name="AccountNameButton" virtual="true">
 		<Size x="250" y="20"/>
@@ -90,6 +96,46 @@
 			<OnShow function="KoreanRatings_OnShow"/>
 		</Scripts>
 	</Button>
+	<Button name="ChinaAgeAppropriatenessWarning" toplevel="true" setAllPoints="true" parent="GlueParent" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" hyperlinksEnabled="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="Interface\Glues\Login\Glues-CADPA16">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-80"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TextTitle" inherits="GlueFontNormalLarge" justifyH="CENTER" text="CHINA_AGE_APPROPRIATENESS_TEXT_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="GlueFontNormalLarge" justifyH="LEFT" text="CHINA_AGE_APPROPRIATENESS_TEXT">
+					<Size x="940" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.TextTitle" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button parentKey="OkayButton" inherits="GlueButtonTemplate" text="OKAY">
+				<Size x="150" y="30"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-50"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="ChinaAgeAppropriatenessWarning_Close"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnHyperlinkClick>
+				LoadURLIndex(tonumber(link));
+			</OnHyperlinkClick>
+		</Scripts>
+	</Button>
 	<Frame name="AccountLogin" toplevel="true" parent="GlueParentScreenFrame" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -104,14 +150,14 @@
 			</ModelFFX>
 			<Frame parentKey="UI" setAllPoints="true">
 				<Layers>
-					<Layer level="ARTWORK">
+					<Layer level="OVERLAY">
 						<Texture file="Interface\Glues\Mainmenu\Glues-BlizzardLogo">
 							<Size x="100" y="100"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="8"/>
 							</Anchors>
 						</Texture>
-						<FontString inherits="GlueFontNormalSmall" text="BLIZZ_DISCLAIMER">
+						<FontString parentKey="BlizzDisclaimer" inherits="GlueFontNormalSmall">
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="10"/>
 							</Anchors>
@@ -138,10 +184,10 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="AccountEditBox" parentArray="NormalLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
+					<EditBox parentKey="AccountEditBox" parentArray="ManualLoginRegions" letters="320" inherits="AccountLoginEditBoxBehaviorTemplate AccountLoginBackdropTemplate">
 						<Size x="200" y="37"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="345"/>
+							<Anchor point="BOTTOM" x="-2" y="345"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -170,7 +216,7 @@
 						</Layers>
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusPassword"/>
-							<OnEscapePressed function="AccountLogin_Exit"/>
+							<OnEscapePressed function="AccountLogin_OnEscapePressed"/>
 							<OnEnterPressed>
 								if ( C_Login.IsLoginReady() ) then
 									AccountLogin_Login();
@@ -197,10 +243,10 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="128" password="1" inherits="AccountLoginBackdropTemplate">
+					<EditBox parentKey="PasswordEditBox" parentArray="ManualLoginRegions" letters="128" password="1" inherits="AccountLoginEditBoxBehaviorTemplate AccountLoginBackdropTemplate">
 						<Size x="200" y="37"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="275"/>
+							<Anchor point="BOTTOM" x="-2" y="275"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -220,7 +266,7 @@
 						</Layers>
 						<Scripts>
 							<OnTabPressed function="AccountLogin_FocusAccount"/>
-							<OnEscapePressed function="AccountLogin_Exit"/>
+							<OnEscapePressed function="AccountLogin_OnEscapePressed"/>
 							<OnEnterPressed>
 								if ( C_Login.IsLoginReady() ) then
 									AccountLogin_Login();
@@ -234,7 +280,7 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
-					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplate" text="LOG_IN">
+					<Button parentKey="LoginButton" parentArray="ManualLoginRegions" inherits="GlueButtonTemplate" text="LOG_IN">
 						<Size x="200" y="30"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="185"/>
@@ -250,7 +296,7 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<CheckButton parentKey="SaveAccountNameCheckButton" parentArray="NormalLoginRegions">
+					<CheckButton parentKey="SaveAccountNameCheckButton" parentArray="ManualLoginRegions">
 						<Size x="20" y="20"/>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -298,6 +344,38 @@
 						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
+					<Button parentKey="ReconnectLoginButton" parentArray="ReconnectLoginRegions" inherits="GlueButtonTemplate" text="RECONNECT_BUTTON">
+						<Size x="226" y="48"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="300"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ReconnectLogin"/>
+							<OnUpdate>
+								if ( C_Login.IsLoginReady() ) then
+									self:Enable();
+								else
+									self:Disable();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Button parentKey="ReconnectSwitchButton" parentArray="ReconnectLoginRegions" inherits="GlueButtonSmallTemplate" text="SWITCH_ACCOUNTS_BUTTON">
+						<Size x="180" y="30"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="180"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ClearReconnectLogin"/>
+							<OnUpdate>
+								if ( C_Login.IsLoginReady() ) then
+									self:Enable();
+								else
+									self:Disable();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
 					<Button parentKey="ExitButton" inherits="GlueButtonSmallTemplate" text="QUIT">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-12" y="34"/>
@@ -396,13 +474,14 @@
 								</Layers>
 								<Frames>
 									<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-									<Frame parentKey="Container" inherits="BackdropTemplate">
+									<Frame parentKey="Container" inherits="TooltipBackdropTemplate">
 										<Anchors>
 											<Anchor point="TOPLEFT" x="12" y="-52"/>
 											<Anchor point="BOTTOMRIGHT" x="-16" y="36"/>
 										</Anchors>
 										<KeyValues>
-											<KeyValue key="backdropInfo" value="BACKDROP_GLUE_TOOLTIP_0_16" type="global"/>
+											<KeyValue key="layoutType" value="TooltipMixedLayout" type="string"/>
+											<KeyValue key="backdropColorAlpha" value="0" type="number"/>
 										</KeyValues>
 										<Frames>
 											<Button parentKey="Button1" parentArray="Buttons" inherits="AccountNameButton">
@@ -707,6 +786,7 @@
 			<OnLoad function="AccountLogin_OnLoad"/>
 			<OnEvent function="AccountLogin_OnEvent"/>
 			<OnShow function="AccountLogin_OnShow"/>
+			<OnKeyDown function="AccountLogin_OnKeyDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

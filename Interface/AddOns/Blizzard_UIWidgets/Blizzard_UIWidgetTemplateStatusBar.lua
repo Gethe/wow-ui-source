@@ -17,9 +17,14 @@ local textureKitRegionFormatStrings = {
 	["BGRight"] = "%s-BGRight",
 	["BGCenter"] = "%s-BGCenter",
 	["Spark"] = "%s-Spark",
+	["SparkMask"] = "%s-spark-mask",
+	["BackgroundGlow"] = "%s-BackgroundGlow",
+	["GlowLeft"] = "%s-Glow-BorderLeft",
+	["GlowRight"] = "%s-Glow-BorderRight",
+	["GlowCenter"] = "%s-Glow-BorderCenter",
 }
 
-local partitionTextureKitString = "%s-BorderTick";
+local backgroundGlowTextureKitString = "%s-BackgroundGlow";
 
 local barColorFromTintValue = {
 	[Enum.StatusBarColorTintValue.Black] = BLACK_FONT_COLOR,
@@ -35,41 +40,49 @@ local barColorFromTintValue = {
 local fillTextureKitFormatString = "%s-Fill-%s";
 local DEFAULT_BAR_WIDTH = 215;
 
+local function IsJailersTowerTextureKit(textureKit)
+	return string.sub(textureKit, 1, 21) == "jailerstower-scorebar";
+end
+
+function UIWidgetTemplateStatusBarMixin:SanitizeTextureKits(widgetInfo)
+	widgetInfo.frameTextureKit = widgetInfo.frameTextureKit or "widgetstatusbar";
+	widgetInfo.fillTextureKit = widgetInfo.textureKit or "white";
+end
+
 function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
-	local frameTextureKit = widgetInfo.frameTextureKit;
-	local fillTextureKit = widgetInfo.textureKit;
-	if frameTextureKit and fillTextureKit then
-		local fillAtlas = fillTextureKitFormatString:format(frameTextureKit, fillTextureKit);
+	self:SanitizeTextureKits(widgetInfo);
+
+	local fillAtlas = fillTextureKitFormatString:format(widgetInfo.frameTextureKit, widgetInfo.fillTextureKit);
+	local fillAtlasInfo = C_Texture.GetAtlasInfo(fillAtlas);
+	if fillAtlasInfo then
 		self.Bar:SetStatusBarAtlas(fillAtlas);
+		self.Bar:SetHeight(fillAtlasInfo.height);
+		self.Bar:GetStatusBarTexture():SetHorizTile(fillAtlasInfo.tilesHorizontally);
 	end
 
+	self.isJailersTowerBar = IsJailersTowerTextureKit(widgetInfo.frameTextureKit);
+
+	local overrideHeight = nil;
 	local barColor = barColorFromTintValue[widgetInfo.colorTint];
 	if(barColor) then 
 		self.Bar:SetStatusBarColor(barColor:GetRGB());
 		self.Bar.Spark:SetVertexColor(barColor:GetRGB());
 	end 
 
-	SetupTextureKitOnRegions(frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+
+	local borderXOffset = self.isJailersTowerBar and 13 or 8;
+	self.Bar.BorderLeft:SetPoint("LEFT", self.Bar,  -borderXOffset, 0);
+	self.Bar.BorderRight:SetPoint("RIGHT", self.Bar, borderXOffset , 0);
+	self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", 0, 0);
 
 	local barWidth = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_BAR_WIDTH;
 	self.Bar:SetWidth(barWidth);
 
-	local minVal, maxVal, barVal = widgetInfo.barMin, widgetInfo.barMax, widgetInfo.barValue;
-	if minVal > 0 and minVal == maxVal and barVal == maxVal then
-		-- If all 3 values are the same and greater than 0, show the bar as full
-		minVal, maxVal, barVal = 0, 1, 1;
-	end
-
-	self.Bar:Setup(widgetContainer, minVal, maxVal, barVal, widgetInfo.barValueTextType, widgetInfo.tooltip, widgetInfo.overrideBarText, widgetInfo.overrideBarTextShownType);
-
-	local showSpark = widgetInfo.barValue > widgetInfo.barMin and widgetInfo.barValue < widgetInfo.barMax;
-	self.Bar.Spark:SetShown(showSpark);
-	if showSpark then
-		self.Bar.Spark:ClearAllPoints();
-		self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", 0, 0);
-	end
+	self.Bar:Setup(widgetContainer, widgetInfo);
+	self.Bar:SetTooltipLocation(widgetInfo.tooltipLoc);
 
 	self.Label:SetText(widgetInfo.text);
 
@@ -84,40 +97,57 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 		self.Bar:SetPoint("TOP", self, "TOP", 0, -8);
 	end
 
-	self.partitionPool:ReleaseAll();
-
-	local paritionAtlas = partitionTextureKitString:format(frameTextureKit);
-	if C_Texture.GetAtlasInfo(paritionAtlas) then
-		for _, partitionValue in ipairs(widgetInfo.partitionValues) do
-			local partitionTexture = self.partitionPool:Acquire();
-
-			local useAtlasSize = true;
-			partitionTexture:SetAtlas(paritionAtlas, useAtlasSize);
-
-			local partitionPercent = ClampedPercentageBetween(partitionValue, minVal, maxVal);
-			local xOffset = barWidth * partitionPercent;
-
-			partitionTexture:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "LEFT", xOffset, 0)
-
-			partitionTexture:Show();
-		end
-	end
+	local backgroundGlowAtlas = backgroundGlowTextureKitString:format(widgetInfo.frameTextureKit);
+	local backgroundGlowAtlasInfo = C_Texture.GetAtlasInfo(backgroundGlowAtlas);
+	self.Bar.BackgroundGlow:SetShown(backgroundGlowAtlasInfo);
 
 	local totalWidth = math.max(self.Bar:GetWidth() + 16, labelWidth);
 	self:SetWidth(totalWidth);
 
-	local barHeight = self.Bar:GetHeight() + 16;
+	local barHeight = overrideHeight ~= nil and overrideHeight or (self.Bar:GetHeight() + 16);
 
 	local totalHeight = barHeight + labelHeight;
 	self:SetHeight(totalHeight);
+
+	self:EvaluateTutorials();
 end
 
-function UIWidgetTemplateStatusBarMixin:OnLoad()
-	UIWidgetBaseTemplateMixin.OnLoad(self);
-	self.partitionPool = CreateTexturePool(self.Bar, "OVERLAY");
-end
+function UIWidgetTemplateStatusBarMixin:EvaluateTutorials()
+	if self.isJailersTowerBar then
+		local evaluateTutorialsClosure = GenerateClosure(self.EvaluateTutorials, self);
+
+		local barHelpTipInfo = {
+			text = TORGHAST_DOMINANCE_BAR_TIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR,
+			checkCVars = true,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			onAcknowledgeCallback = evaluateTutorialsClosure,
+		};
+		
+		HelpTip:Show(self, barHelpTipInfo);
+
+		if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR_CUTOFF) then
+			local firstPartition = self.Bar.partitionPool and self.Bar.partitionPool:GetNextActive();
+			if firstPartition then
+				local cutoffHelpTipInfo = {
+					text = TORGHAST_DOMINANCE_BAR_CUTOFF_TIP,
+					buttonStyle = HelpTip.ButtonStyle.Close,
+					cvarBitfield = "closedInfoFrames",
+					bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR_CUTOFF,
+					checkCVars = true,
+					targetPoint = HelpTip.Point.BottomEdgeCenter,
+					alignment = HelpTip.Alignment.Right,
+				};
+		
+				HelpTip:Show(firstPartition, cutoffHelpTipInfo);
+			end
+		end
+	end
+end 
 
 function UIWidgetTemplateStatusBarMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
-	self.partitionPool:ReleaseAll();
+	self.Bar:OnReset();
 end

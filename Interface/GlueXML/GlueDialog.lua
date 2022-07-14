@@ -195,18 +195,32 @@ GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
 	OnAccept = function()
 		-- need to get desired faction in case of pandaren doing faction change to another pandaren
 		-- this will be nil in any other case
-
 		local noNPE = false;
-
-		-- TODO: Remove once the old Char Create is dead
-		if CharacterCreate_Old then
-			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), noNPE, PandarenFactionButtons_GetSelectedFaction());
-		else
-			C_CharacterCreation.CreateCharacter(CharacterCreateFrame:GetSelectedName(), noNPE, CharacterCreateFrame:GetCreateCharacterFaction());
-		end
+		C_CharacterCreation.CreateCharacter(CharacterCreateFrame:GetSelectedName(), noNPE, CharacterCreateFrame:GetCreateCharacterFaction());
 	end,
 	OnCancel = function()
 		CharacterCreateFrame:UpdateForwardButton();
+	end,
+}
+
+GlueDialogTypes["CONFIRM_VAS_FACTION_CHANGE"] = {
+	text = CONFIRM_PAID_SERVICE,
+	button1 = DONE,
+	button2 = CANCEL,
+	OnAccept = function()
+		CharacterCreateFrame:BeginVASTransaction();
+	end,
+	OnCancel = function()
+		CharacterCreateFrame:UpdateForwardButton();
+	end,
+}
+
+GlueDialogTypes["CHARACTER_CREATE_VAS_ERROR"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
+	OnAccept = function ()
+		CharacterCreateFrame:Exit();
 	end,
 }
 
@@ -232,13 +246,14 @@ GlueDialogTypes["QUEUED_NORMAL"] = {
 
 GlueDialogTypes["QUEUED_WITH_FCM"] = {
 	text = "",
-	button1 = CHANGE_REALM,
-	button2 = QUEUE_FCM_BUTTON,
+	button1 = QUEUE_FCM_BUTTON,
+	button2 = CHANGE_REALM,
+	darken = true,
 	OnAccept = function()
-		C_RealmList.RequestChangeRealmList();
+		ToggleStoreUI();
 	end,
 	OnCancel = function()
-		LaunchURL(QUEUE_FCM_URL)
+		C_RealmList.RequestChangeRealmList();
 	end,
 }
 
@@ -251,7 +266,7 @@ GlueDialogTypes["CHARACTER_BOOST_NO_CHARACTERS_WARNING"] = {
 
 	OnAccept = function ()
 		CharSelectServicesFlowFrame:Hide();
-		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal, true);
+		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal);
 	end,
 
 	OnCancel = function ()
@@ -364,7 +379,7 @@ function GlueDialog_Show(which, text, data)
 	else
 		GlueDialogBackground:SetPoint("CENTER");
 	end
-	
+
 	GlueDialog.data = data;
 	local glueText;
 	if ( dialogInfo.html ) then
@@ -441,8 +456,6 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogButton3:Hide();
 	end
 	
-	--Show/Hide the disable overlay on the rest of the screen
-	GlueDialog.Cover:SetShown(dialogInfo.cover);
 
 	-- Set the miscellaneous variables for the dialog
 	GlueDialog.which = which;
@@ -575,6 +588,9 @@ function GlueDialog_OnShow(self)
 	if ( OnShow ) then
 		OnShow();
 	end
+	if GlueDialogTypes[self.which].cover then
+		GlueParent_AddModalFrame(GlueDialog);
+	end
 end
 
 function GlueDialog_OnUpdate(self, elapsed)
@@ -599,8 +615,9 @@ function GlueDialog_OnUpdate(self, elapsed)
 	end
 end
 
-function GlueDialog_OnHide()
+function GlueDialog_OnHide(self)
 --	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	GlueParent_RemoveModalFrame(self);
 end
 
 function GlueDialog_OnClick(self, button, down)

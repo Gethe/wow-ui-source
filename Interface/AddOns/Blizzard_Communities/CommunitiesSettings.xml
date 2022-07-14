@@ -131,6 +131,39 @@
 					</OnLoad>
 				</Scripts>
 			</ScrollFrame>
+			<Frame parentKey="CrossFactionToggle" mixin="CommunitiesSettingsCrossFactionToggleMixin">
+				<Size x="230" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChangeAvatarButton" relativePoint="TOPLEFT" x="-8" y="0"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="CheckButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="COMMUNITIES_EDIT_DIALOG_CROSS_FACTION" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="125" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.CheckButton" x="35" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 			<Frame parentKey="ShouldListClub">
 				<Size x="300" y="32"/>
 				<Anchors>

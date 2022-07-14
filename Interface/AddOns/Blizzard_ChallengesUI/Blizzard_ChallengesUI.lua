@@ -2,34 +2,12 @@ local NUM_REWARDS_PER_MEDAL = 2;
 local MAXIMUM_REWARDS_LEVEL = 15;
 local MAX_PER_ROW = 9;
 
-local LEGENDARY_COMPLETION_LEVEL = 15;
-local EPIC_COMPLETION_LEVEL = 10;
-local RARE_COMPLETION_LEVEL = 7;
-local UNCOMMON_COMPLETION_LEVEL = 4;
-local COMMON_COMPLETION_LEVEL = 2;
-
 local CHEST_STATE_WALL_OF_TEXT = 1;
 local CHEST_STATE_INCOMPLETE = 2;
 local CHEST_STATE_COMPLETE = 3;
 local CHEST_STATE_COLLECT = 4;
 
 local SHADOWLANDS_FIRST_SEASON = 5;
-
-local function GetRunQualityBasedOnLevel(level)
-	if (level >= LEGENDARY_COMPLETION_LEVEL) then
-		return Enum.ItemQuality.Legendary; 
-	elseif (level < LEGENDARY_COMPLETION_LEVEL and level >= EPIC_COMPLETION_LEVEL) then
-		return Enum.ItemQuality.Epic;
-	elseif (level < EPIC_COMPLETION_LEVEL and level >= RARE_COMPLETION_LEVEL) then
-		return Enum.ItemQuality.Rare;
-	elseif (level < RARE_COMPLETION_LEVEL and level >= UNCOMMON_COMPLETION_LEVEL) then
-		return Enum.ItemQuality.Uncommon;
-	elseif (level < UNCOMMON_COMPLETION_LEVEL and level >= COMMON_COMPLETION_LEVEL) then
-		return Enum.ItemQuality.Common;
-	else 
-		return Enum.ItemQuality.Poor;
-	end
-end 
 
 local function CreateFrames(self, array, num, template)
     while (#self[array] < num) do
@@ -148,9 +126,6 @@ function ChallengesFrame_OnShow(self)
 
 	C_MythicPlus.RequestCurrentAffixes();
 	C_MythicPlus.RequestMapInfo();
-	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
-		C_MythicPlus.RequestRewards();
-	end
     for i = 1, #self.maps do
         C_ChallengeMode.RequestLeaders(self.maps[i]);
     end
@@ -167,34 +142,32 @@ end
 function ChallengesFrame_Update(self)
     local sortedMaps = {};
 
-    local hasWeeklyRun = false;
     for i = 1, #self.maps do
 		local inTimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(self.maps[i]);
-		local level, quality; 
-        if (not inTimeInfo) then
-			if(overtimeInfo) then 
-				level = overtimeInfo.level; 
-			else
-				level = 0; 
-			end
-			tinsert(sortedMaps, { id = self.maps[i], level = level, quality = Enum.ItemQuality.Poor});
-        else
-			level = inTimeInfo.level; 
-			quality = GetRunQualityBasedOnLevel(level);
-            hasWeeklyRun = true;
-			tinsert(sortedMaps, { id = self.maps[i], level = level, quality = quality, inTime = true});
+		local level = 0; 
+		local dungeonScore = 0;
+		if(inTimeInfo and overtimeInfo) then 
+			local inTimeScoreIsBetter = inTimeInfo.dungeonScore > overtimeInfo.dungeonScore; 
+			level = inTimeScoreIsBetter and inTimeInfo.level or overtimeInfo.level; 
+			dungeonScore = inTimeScoreIsBetter and inTimeInfo.dungeonScore or overtimeInfo.dungeonScore; 
+        elseif(inTimeInfo or overtimeInfo) then 
+			level = inTimeInfo and inTimeInfo.level or overtimeInfo.level; 
+			dungeonScore = inTimeInfo and inTimeInfo.dungeonScore or overtimeInfo.dungeonScore;
 		end
-
+		local name = C_ChallengeMode.GetMapUIInfo(self.maps[i]);
+		tinsert(sortedMaps, { id = self.maps[i], level = level, dungeonScore = dungeonScore, name = name});
     end
-	
-    table.sort(sortedMaps, 
-	function(a, b) 
-		if(a.inTime ~= b.inTime) then 
-			return a.inTime;
-		end 
-		return a.level > b.level; 
+
+    table.sort(sortedMaps,
+	function(a, b)
+		if(b.dungeonScore ~= a.dungeonScore) then 
+			return a.dungeonScore > b.dungeonScore; 
+		else 
+			return strcmputf8i(a.name, b.name) > 0;
+		end
 	end);
 
+	local hasWeeklyRun = false;
 	local weeklySortedMaps = {};
 	 for i = 1, #self.maps do
 		local _, weeklyLevel = C_MythicPlus.GetWeeklyBestForMap(self.maps[i])
@@ -233,23 +206,20 @@ function ChallengesFrame_Update(self)
 
     self.WeeklyInfo:SetUp(hasWeeklyRun, sortedMaps[1]);
 
-	local activeChest, inactiveChest;
-	if GetServerExpansionLevel() < LE_EXPANSION_SHADOWLANDS then
-		activeChest = self.WeeklyInfo.Child.LegacyWeeklyChest;
-		inactiveChest = self.WeeklyInfo.Child.WeeklyChest;
-	else
-		activeChest = self.WeeklyInfo.Child.WeeklyChest;
-		inactiveChest = self.WeeklyInfo.Child.LegacyWeeklyChest;
-	end
-
+	local chestFrame = self.WeeklyInfo.Child.WeeklyChest;
 	local bestMapID = weeklySortedMaps[1].id;
-	local chestState = activeChest:Update(bestMapID);
-
-	activeChest:SetShown(chestState ~= CHEST_STATE_WALL_OF_TEXT);	
-	inactiveChest:Hide();
+	local dungeonScore = C_ChallengeMode.GetOverallDungeonScore();
+	local chestState = chestFrame:Update(bestMapID, dungeonScore);
+	chestFrame:SetShown(chestState ~= CHEST_STATE_WALL_OF_TEXT); 
+	local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore); 
+	if(color) then 
+		self.WeeklyInfo.Child.DungeonScoreInfo.Score:SetVertexColor(color.r, color.g, color.b);
+	end 
+	self.WeeklyInfo.Child.DungeonScoreInfo.Score:SetText(dungeonScore);
+	self.WeeklyInfo.Child.DungeonScoreInfo:SetShown(chestFrame:IsShown());
 
 	if chestState == CHEST_STATE_COLLECT then
-		self.WeeklyInfo.Child.ThisWeekLabel:Hide();	
+		self.WeeklyInfo.Child.ThisWeekLabel:Hide();
 		self.WeeklyInfo.Child.Description:Hide();
 	elseif chestState == CHEST_STATE_COMPLETE then
 		self.WeeklyInfo.Child.ThisWeekLabel:Show();
@@ -266,8 +236,8 @@ function ChallengesFrame_Update(self)
 	end
 
 	local lastSeasonNumber = tonumber(GetCVar("newMythicPlusSeason"));
-	local currentSeason = C_MythicPlus.GetCurrentSeason(); 
-	if (currentSeason and lastSeasonNumber < currentSeason) then 
+	local currentSeason = C_MythicPlus.GetCurrentSeason();
+	if (currentSeason and lastSeasonNumber < currentSeason) then
 		local noticeFrame = self.SeasonChangeNoticeFrame;
 		if (currentSeason == SHADOWLANDS_FIRST_SEASON) then
 			noticeFrame.SeasonDescription:SetText(MYTHIC_PLUS_FIRST_SEASON);
@@ -282,40 +252,43 @@ function ChallengesFrame_Update(self)
 		local affixes = C_MythicPlus.GetCurrentAffixes();
 		if (affixes) then
 			for i, affix in ipairs(affixes) do
-				if(affix.seasonID == currentSeason) then 
+				if(affix.seasonID == currentSeason) then
 					noticeFrame.Affix:SetUp(affix.id);
 					local affixName = C_ChallengeMode.GetAffixInfo(affix.id);
 					noticeFrame.SeasonDescription3:SetText(MYTHIC_PLUS_SEASON_DESC3:format(affixName));
-					break; 
+					break;
 				end
 			end
 		end
-		self.SeasonChangeNoticeFrame:Show(); 
+		self.SeasonChangeNoticeFrame:Show();
 	end
 end
 
-ChallengeModeWeeklyChestMixin = { };
+ChallengeModeWeeklyChestMixin = CreateFromMixins(WeeklyRewardMixin);
 
-function ChallengeModeWeeklyChestMixin:Update(bestMapID)
+function ChallengeModeWeeklyChestMixin:Update(bestMapID, dungeonScore)
 	local chestState = CHEST_STATE_WALL_OF_TEXT;
 
 	if C_WeeklyRewards.HasAvailableRewards() then
 		chestState = CHEST_STATE_COLLECT;
 
 		self.Icon:SetAtlas("mythicplus-greatvault-collect", TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas("mythicplus-greatvault-collect", TextureKitConstants.UseAtlasSize);
 		self.RunStatus:SetText(MYTHIC_PLUS_COLLECT_GREAT_VAULT);
 		self.AnimTexture:Show();
 		self.AnimTexture.Anim:Play();
-	elseif self:HasUnlockedRewards() then
+	elseif self:HasUnlockedRewards(Enum.WeeklyRewardChestThresholdType.MythicPlus) then
 		chestState = CHEST_STATE_COMPLETE;
 
 		self.Icon:SetAtlas("mythicplus-greatvault-complete", TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas("mythicplus-greatvault-complete", TextureKitConstants.UseAtlasSize);
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
-	elseif C_MythicPlus.GetOwnedKeystoneLevel() then
+	elseif C_MythicPlus.GetOwnedKeystoneLevel() or (dungeonScore and dungeonScore > 0) then
 		chestState = CHEST_STATE_INCOMPLETE;
 
-		self.Icon:SetAtlas("mythicplus-greatvault-incomplete", TextureKitConstants.UseAtlasSize);	
+		self.Icon:SetAtlas("mythicplus-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas("mythicplus-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
 	end
@@ -323,16 +296,6 @@ function ChallengeModeWeeklyChestMixin:Update(bestMapID)
 	self.state = chestState;
 	return chestState;
 end
-
-function ChallengeModeWeeklyChestMixin:HasUnlockedRewards()
-	local activities = C_WeeklyRewards.GetActivities();
-	for i, activityInfo in ipairs(activities) do
-		if activityInfo.type == Enum.WeeklyRewardChestThresholdType.MythicPlus and activityInfo.progress >= activityInfo.threshold then
-			return true;
-		end
-	end
-	return false;
-end	
 
 local function GetLowestLevelInTopRuns(numRuns)
 	local runHistory = C_MythicPlus.GetRunHistory();
@@ -390,6 +353,7 @@ function ChallengeModeWeeklyChestMixin:OnEnter()
 		end
 	end
 
+	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 	GameTooltip:Show();
 end
 
@@ -468,8 +432,8 @@ function ChallengeModeLegacyWeeklyChestMixin:SetupChest(chestFrame)
 			self.rewardTooltipText2 = MYTHIC_PLUS_CHEST_LEVEL_ABOVE_15;
 			chestFrame.Level:SetVertexColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 		else
-			--This is a special case, if two levels share the same item level reward, we want to show the next highest level! 
-			self.rewardTooltipText2 = MYTHIC_PLUS_CHEST_LEVEL_BELOW_15:format(self.nextBestLevel, self.nextRewardLevel); 
+			--This is a special case, if two levels share the same item level reward, we want to show the next highest level!
+			self.rewardTooltipText2 = MYTHIC_PLUS_CHEST_LEVEL_BELOW_15:format(self.nextBestLevel, self.nextRewardLevel);
 			chestFrame.Level:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		end
 	elseif (chestFrame == self.MissingKeystoneChest) then
@@ -492,11 +456,11 @@ function ChallengeModeLegacyWeeklyChestMixin:OnEnter()
 	elseif (self.ownedKeystoneLevel) then
 		GameTooltip_SetTitle(GameTooltip, MYTHIC_PLUS_CHEST_KEYSTONE_LEVEL:format(self.ownedKeystoneLevel), HIGHLIGHT_FONT_COLOR);
 	end
-	if (self.rewardTooltipText) then 
+	if (self.rewardTooltipText) then
 		GameTooltip_AddNormalLine(GameTooltip, self.rewardTooltipText, true);
 	end
-	if (self.rewardTooltipText2) then 
-		GameTooltip:AddLine(" "); 
+	if (self.rewardTooltipText2) then
+		GameTooltip:AddLine(" ");
 		GameTooltip_AddNormalLine(GameTooltip, self.rewardTooltipText2, true);
 	end
     GameTooltip:Show();
@@ -516,7 +480,14 @@ function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
     self.Icon:SetTexture(texture);
     self.Icon:SetDesaturated(mapInfo.level == 0);
 
-	local color = ITEM_QUALITY_COLORS[mapInfo.quality]; 
+	local _, overAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(mapInfo.id);
+	local color;
+	if(overAllScore) then	
+		color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overAllScore);
+	end
+	if(not color) then 
+		color = HIGHLIGHT_FONT_COLOR; 
+	end		
 
     if (mapInfo.level > 0) then
         self.HighestLevel:SetText(mapInfo.level);
@@ -534,64 +505,40 @@ function ChallengesDungeonIconMixin:OnEnter()
     GameTooltip:SetText(name, 1, 1, 1);
 
     local inTimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(self.mapID);
-	local isOverTimeRun = false; 
+	local affixScores, overAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(self.mapID);
+	local isOverTimeRun = false;
 
-	local seasonBestDurationSec, seasonBestLevel, members; 
+	local seasonBestDurationSec, seasonBestLevel, members;
 
-	--If there is a best overtime run we want to show that as well. 
-	if(not inTimeInfo and overtimeInfo) then 
-		seasonBestDurationSec = overtimeInfo.durationSec; 
-		seasonBestLevel = overtimeInfo.level;
-		members = overtimeInfo.members;
-
-		isOverTimeRun = true; 
-	elseif(inTimeInfo) then 
-		seasonBestDurationSec = inTimeInfo.durationSec; 
-		seasonBestLevel = inTimeInfo.level; 
-		members = inTimeInfo.members;
-	end
-
-    if (seasonBestDurationSec and seasonBestLevel) then
-        if (addSpacer) then
-            GameTooltip:AddLine(" ");
-        end
-
-		-- Completed a higher key, but not in time. 
-		if (overtimeInfo and inTimeInfo and  overtimeInfo.level > inTimeInfo.level) then 
-			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_OVERTIME_SEASON_BEST);
-			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(overtimeInfo.level), HIGHLIGHT_FONT_COLOR);
-			GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(overtimeInfo.durationSec, true), HIGHLIGHT_FONT_COLOR);
-			GameTooltip_AddBlankLineToTooltip(GameTooltip); 
+	if(overAllScore and inTimeInfo or overtimeInfo) then 
+		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overAllScore);
+		if(not color) then 
+			color = HIGHLIGHT_FONT_COLOR;
 		end 
+		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_TOTAL_SCORE:format(color:WrapTextInColorCode(overAllScore)), GREEN_FONT_COLOR);
+	end 
 
-		-- If this is an overtime run we want to display a little bit differently. 
-		if (isOverTimeRun) then 
-			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_OVERTIME_SEASON_BEST);
-		else 
-			GameTooltip_AddNormalLine(GameTooltip, MYTHIC_PLUS_SEASON_BEST);
-		end 
-
-        GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(seasonBestLevel), HIGHLIGHT_FONT_COLOR);
-        GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(seasonBestDurationSec, true), HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddBlankLineToTooltip(GameTooltip); 
-
-		for i, member in ipairs(members) do
-			if (member.name) then
-				local role = GetSpecializationRoleByID(member.specID);
-				local classInfo = C_CreatureInfo.GetClassInfo(member.classID);
-				local color = (classInfo and RAID_CLASS_COLORS[classInfo.classFile]) or NORMAL_FONT_COLOR;
-				local texture;
-				if (role == "TANK") then
-					texture = CreateAtlasMarkup("roleicon-tiny-tank");
-				elseif (role == "DAMAGER") then
-					texture = CreateAtlasMarkup("roleicon-tiny-dps");
-				elseif (role == "HEALER") then
-					texture = CreateAtlasMarkup("roleicon-tiny-healer");
+	if(affixScores and #affixScores > 0) then 
+		for _, affixInfo in ipairs(affixScores) do 
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_BEST_AFFIX:format(affixInfo.name));
+			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(affixInfo.level), HIGHLIGHT_FONT_COLOR);
+			if(affixInfo.overTime) then 
+				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then 
+					GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, true)), LIGHTGRAY_FONT_COLOR);
+				else
+					GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, false)), LIGHTGRAY_FONT_COLOR);
 				end
-				  GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_LEADER_BOARD_NAME_ICON:format(texture, member.name), color);
+			else
+				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then 
+					GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(affixInfo.durationSec, true), HIGHLIGHT_FONT_COLOR);
+				else
+					GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(affixInfo.durationSec, false), HIGHLIGHT_FONT_COLOR);
+				end
 			end
-		end
-    end
+		end 
+	end		
+
     GameTooltip:Show();
 end
 
@@ -639,6 +586,8 @@ end
 function ChallengesKeystoneFrameMixin:OnShow()
     PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_SOCKET_PAGE_OPEN);
     self:Reset();
+
+	ItemButtonUtil.OpenAndFilterBags(self);
 end
 
 function ChallengesKeystoneFrameMixin:OnHide()
@@ -648,6 +597,8 @@ function ChallengesKeystoneFrameMixin:OnHide()
 	C_ChallengeMode.CloseKeystoneFrame();
 	C_ChallengeMode.ClearKeystone();
 	self:Reset();
+
+	ItemButtonUtil.CloseFilteredBags(self);
 end
 
 function ChallengesKeystoneFrameMixin:Reset()
@@ -879,20 +830,23 @@ end
 ChallengeModeCompleteBannerMixin = {};
 
 function ChallengeModeCompleteBannerMixin:OnLoad()
-    self.timeToHold = 5;
+    self.timeToHold = 8;
     self.unitTokens = { "player", "party1", "party2", "party3", "party4" };
     self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
 end
 
 function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
     if (event == "CHALLENGE_MODE_COMPLETED") then
-        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun = C_ChallengeMode.GetCompletionInfo();
+        local mapID, level, time, onTime, keystoneUpgradeLevels, practiceRun, oldDungeonScore, newDungeonScore, isAffixRecord, isMapRecord, primaryAffix, isEligibleForScore, upgradeMembers = C_ChallengeMode.GetCompletionInfo();
 
 		if not practiceRun then
-			TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, keystoneUpgradeLevels = keystoneUpgradeLevels });
+			TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, oldDungeonScore = oldDungeonScore, newDungeonScore = newDungeonScore, keystoneUpgradeLevels = keystoneUpgradeLevels, isMapRecord = isMapRecord, isAffixRecord = isAffixRecord, primaryAffix = primaryAffix, isEligibleForScore = isEligibleForScore, upgradeMembers = upgradeMembers });
 		end
     end
 end
+
+local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
+timeFormatter:Init(1, SecondsFormatter.Abbreviation.Truncate, false, true, true);
 
 function ChallengeModeCompleteBannerMixin:PlayBanner(data)
     local name, _, timeLimit = C_ChallengeMode.GetMapUIInfo(data.mapID);
@@ -908,18 +862,85 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
     end
 
 	self.Level:Show();
+	local timeRemaining = math.abs(timeLimit - (data.time / 1000));
+	local timeText = (data.time / 1000) >= SECONDS_PER_HOUR and SecondsToClock(data.time / 1000, true) or SecondsToClock(data.time / 1000, false);
 
     if (data.onTime) then
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_BEAT_TIMER);
         self.DescriptionLineTwo:SetFormattedText(CHALLENGE_MODE_COMPLETE_KEYSTONE_UPGRADED, data.keystoneUpgradeLevels);
         PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_KEYSTONE_UPGRADE);
+		local chatPrintText; 
+
+		if (data.isAffixRecord) then 
+			local affixName = C_ChallengeMode.GetAffixInfo(data.primaryAffix);
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_AFFIX_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true), affixName)
+		elseif (data.isMapRecord) then 
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
+		else
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
+		end		
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(chatPrintText, info.r, info.g, info.b, info.id);
     else
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_TIME_EXPIRED);
         self.DescriptionLineTwo:SetText(CHALLENGE_MODE_COMPLETE_TRY_AGAIN);
         PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_COMPLETE_NO_UPGRADE);
-    end
 
-    local sortedUnitTokens = self:GetSortedPartyMembers();
+		local chatPrintText; 
+		if (data.isAffixRecord) then 
+			local affixName = C_ChallengeMode.GetAffixInfo(data.primaryAffix);
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_AFFIX_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true), affixName)
+		elseif (data.isMapRecord) then 
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
+		else
+			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_OVERTIME_CHAT_LINK:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
+		end	
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(chatPrintText, info.r, info.g, info.b, info.id);
+    end
+	if(data.upgradeMembers and #data.upgradeMembers >= 1) then 
+		local formatString = nil;
+		for i, member in ipairs(data.upgradeMembers) do 
+			if(member.name) then 
+				local _, classFilename = UnitClass(member.memberGUID);	
+				local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
+				local playerString = classColor:WrapTextInColorCode(member.name);
+				if(not formatString) then 
+					formatString = playerString
+				else
+					formatString = formatString..PLAYER_LIST_DELIMITER..playerString;
+				end
+			end
+		end
+		if(formatString) then 
+			local chatString = DUNGEON_SCORE_INCREASE_PARTY_MEMBERS:format(formatString);
+			local info = ChatTypeInfo["SYSTEM"];
+			DEFAULT_CHAT_FRAME:AddMessage(chatString, info.r, info.g, info.b, info.id);
+		end
+	end		
+
+	local isOnlyRunThisSeason = #C_MythicPlus.GetRunHistory(true, true) <= 1; 
+	if (data.isEligibleForScore and ((data.oldDungeonScore and data.newDungeonScore) or (isOnlyRunThisSeason))) then
+		local gainedScore = data.newDungeonScore - data.oldDungeonScore;
+		local color = C_ChallengeMode.GetDungeonScoreRarityColor(data.newDungeonScore);
+		if (not color) then 
+			color = HIGHLIGHT_FONT_COLOR; 
+		end
+		self.DescriptionLineThree:SetText(CHALLENGE_COMPLETE_DUNGEON_SCORE:format(color:WrapTextInColorCode(CHALLENGE_COMPLETE_DUNGEON_SCORE_FORMAT_TEXT:format(data.newDungeonScore, gainedScore))));
+		
+		local showChatMessage = gainedScore or isOnlyRunThisSeason;
+		if(showChatMessage) then 
+			local chatString;
+			if(data.keystoneUpgradeLevels and data.keystoneUpgradeLevels > 0) then 
+				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_KEYSTONE_UPGRADE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore, data.keystoneUpgradeLevels);
+			else
+				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore);
+			end
+			local info = ChatTypeInfo["SYSTEM"];
+			DEFAULT_CHAT_FRAME:AddMessage(chatString, info.r, info.g, info.b, info.id);
+		end
+	end
+	local sortedUnitTokens = self:GetSortedPartyMembers();
 
     self:Show();
     self.AnimIn:Play();
@@ -929,15 +950,17 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
         self.PartyMembers[i]:SetUp(sortedUnitTokens[i]);
     end
 
-
-    C_Timer.After(self.timeToHold, function()
-        self:PerformAnimOut();
-    end);
+	self.AnimOutTimer = C_Timer.NewTimer(self.timeToHold, GenerateClosure(self.PerformAnimOut, self));
 end
 
 function ChallengeModeCompleteBannerMixin:StopBanner()
-    self.AnimIn:Stop();
-    self:Hide();
+	if self.AnimOutTimer then
+		self.AnimOutTimer:Cancel();
+		self.AnimOutTimer = nil;
+	end
+
+	self.AnimIn:Stop();
+	self:Hide();
 end
 
 function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()
@@ -983,7 +1006,7 @@ function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()
 end
 
 function ChallengeModeCompleteBannerMixin:CreateAndPositionPartyMembers(num)
-	local frameWidth, spacing, distance = 61, 22, -100;
+	local frameWidth, spacing, distance = 61, 22, -131;
 
     CreateFrames(self, "PartyMembers", num, "ChallengeModeBannerPartyMemberTemplate");
     ReanchorFrames(self.PartyMembers, "TOPLEFT", self.Title, "TOP", frameWidth, spacing, distance);
@@ -1035,9 +1058,31 @@ function ChallengeModeBannerPartyMemberMixin:SetUp(unitToken)
     self.AnimIn:Play();
 end
 
-
 function MythicPlusSeasonChangeNoticeOnCloseClick(self)
-	self:GetParent():Hide(); 
-	SetCVar("newMythicPlusSeason", C_MythicPlus.GetCurrentSeason()); 
+	self:GetParent():Hide();
+	SetCVar("newMythicPlusSeason", C_MythicPlus.GetCurrentSeason());
 	PlaySound(SOUNDKIT.UI_80_ISLANDS_TUTORIAL_CLOSE);
 end
+
+DungeonScoreInfoMixin = { }; 
+
+function DungeonScoreInfoMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+	GameTooltip_SetTitle(GameTooltip, DUNGEON_SCORE);
+	GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DESC);
+	GameTooltip:Show();
+end 
+
+function DungeonScoreInfoMixin:OnLeave()
+	GameTooltip:Hide(); 
+end 
+
+function DungeonScoreInfoMixin:OnClick() 
+	if( IsModifiedClick("CHATLINK")) then
+		local dungeonScore = C_ChallengeMode.GetOverallDungeonScore(); 
+		local link = GetDungeonScoreLink(dungeonScore, UnitName("player"));
+		if not ChatEdit_InsertLink(link) then
+			ChatFrame_OpenChat(link);
+		end
+	end 
+end		

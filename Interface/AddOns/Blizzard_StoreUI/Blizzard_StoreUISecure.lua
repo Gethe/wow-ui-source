@@ -9,10 +9,17 @@ local function Import(name)
 end
 
 Import("IsOnGlueScreen");
+Import("print");
 
 if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
 	Import("C_StoreGlue");
+	Import("C_Login");
+	Import("GlueParent_UpdateDialogs");
+	Import("GlueParent_AddModalFrame");
+	Import("GlueParent_RemoveModalFrame");
+	Import("LE_AURORA_STATE_NONE");
+	Import("LE_WOW_CONNECTION_STATE_IN_QUEUE");
 end
 
 setfenv(1, tbl);
@@ -148,6 +155,10 @@ Import("BLIZZARD_STORE_CURRENCY_FORMAT_AUD");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_JPY");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_CAD");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_NZD");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_GEL");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_TRY");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_KZT");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_UAH");
 Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 Import("BLIZZARD_STORE_CURRENCY_BETA");
 Import("BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR");
@@ -180,6 +191,10 @@ Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_AUD");
 Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_JPY");
 Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_CAD");
 Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_NZD");
+Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_GEL");
+Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_TRY");
+Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_KZT");
+Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_UAH");
 Import("BLIZZARD_STORE_REGION_LOCKED");
 Import("BLIZZARD_STORE_REGION_LOCKED_SUBTEXT");
 Import("BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE");
@@ -337,6 +352,7 @@ Import("BLIZZARD_STORE_VAS_REALM_NAME");
 Import("BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE");
 Import("BLIZZARD_STORE_VAS_EMAIL_ADDRESS");
+Import("ACCOUNT_NAME");
 Import("BLIZZARD_STORE_VAS_DESTINATION_BNET_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_AUTOCOMPLETE_AND_MORE");
 Import("BLIZZARD_STORE_VAS_REALMS_PREVIOUS");
@@ -408,6 +424,10 @@ local CURRENCY_BETA = 16;
 local CURRENCY_JPY = 28;
 local CURRENCY_CAD = 29;
 local CURRENCY_NZD = 30;
+local CURRENCY_GEL = 31;
+local CURRENCY_TRY = 32;
+local CURRENCY_KZT = 33;
+local CURRENCY_UAH = 34;
 local NUM_STORE_PRODUCT_CARDS = 8;
 local NUM_STORE_PRODUCT_CARD_ROWS = 2;
 local NUM_STORE_PRODUCT_CARDS_PER_ROW = 4;
@@ -523,6 +543,22 @@ end
 
 local function currencyFormatNZD(dollars, cents)
 	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_NZD, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatGEL(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_GEL, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatTRY(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_TRY, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatKZT(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_KZT, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatUAH(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_UAH, formatCurrency(dollars, cents, false));
 end
 
 local function GetFactionIcon(faction, returnOpposite)
@@ -1247,6 +1283,170 @@ local currencySpecific = {
 			},
 		},
 	},
+	[CURRENCY_GEL] = {
+		formatShort = currencyFormatGEL,
+		formatLong = currencyFormatGEL,
+		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
+		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_EUR,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
+		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_GEL,
+		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
+		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
+		requireLicenseAccept = true,
+		browseHasStar = true,
+		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
+		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
+		vasDisclaimerData = {
+			[Enum.VasServiceType.FactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.RaceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
+			},
+			[Enum.VasServiceType.AppearanceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
+			},
+			[Enum.VasServiceType.NameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.CharacterTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+		},
+	},
+	[CURRENCY_TRY] = {
+		formatShort = currencyFormatTRY,
+		formatLong = currencyFormatTRY,
+		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
+		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_EUR,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
+		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_TRY,
+		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
+		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
+		requireLicenseAccept = true,
+		browseHasStar = true,
+		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
+		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
+		vasDisclaimerData = {
+			[Enum.VasServiceType.FactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.RaceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
+			},
+			[Enum.VasServiceType.AppearanceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
+			},
+			[Enum.VasServiceType.NameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.CharacterTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+		},
+	},
+	[CURRENCY_KZT] = {
+		formatShort = currencyFormatKZT,
+		formatLong = currencyFormatKZT,
+		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
+		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_EUR,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
+		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_KZT,
+		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
+		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
+		requireLicenseAccept = true,
+		browseHasStar = true,
+		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
+		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
+		vasDisclaimerData = {
+			[Enum.VasServiceType.FactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.RaceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
+			},
+			[Enum.VasServiceType.AppearanceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
+			},
+			[Enum.VasServiceType.NameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.CharacterTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+		},
+	},
+	[CURRENCY_UAH] = {
+		formatShort = currencyFormatUAH,
+		formatLong = currencyFormatUAH,
+		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
+		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES_EUR,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
+		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_UAH,
+		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
+		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
+		requireLicenseAccept = true,
+		browseHasStar = true,
+		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
+		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
+		vasDisclaimerData = {
+			[Enum.VasServiceType.FactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.RaceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
+			},
+			[Enum.VasServiceType.AppearanceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
+			},
+			[Enum.VasServiceType.NameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.CharacterTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+		},
+	},
 };
 
 function StoreFrame_CurrencyInfo()
@@ -1264,206 +1464,6 @@ local function currencyFormatLong(...)
 	local info = StoreFrame_CurrencyInfo();
 	return info.formatLong(...);
 end
-
---Error message data
-local errorData = {
-	[Enum.StoreError.InvalidPaymentMethod] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
-		link = 11,
-	},
-	[Enum.StoreError.PaymentFailed] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_OTHER,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_OTHER,
-	},
-	[Enum.StoreError.WrongCurrency] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
-		link = 11,
-	},
-	[Enum.StoreError.BattlepayDisabled] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED,
-	},
-	[Enum.StoreError.InsufficientBalance] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_INSUFFICIENT_BALANCE,
-		link = 11,
-	},
-	[Enum.StoreError.Other] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_OTHER,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_OTHER,
-	},
-	[Enum.StoreError.AlreadyOwned] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_ALREADY_OWNED,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_ALREADY_OWNED,
-	},
-	[Enum.StoreError.ParentalControlsNoPurchase] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_PARENTAL_CONTROLS,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_PARENTAL_CONTROLS,
-	},
-	[Enum.StoreError.PurchaseDenied] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED,
-	},
-	[Enum.StoreError.ConsumableTokenOwned] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
-		msg = BLIZZARD_STORE_ERROR_MESSAGE_CONSUMABLE_TOKEN_OWNED,
-	},
-	[Enum.StoreError.TooManyTokens] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
-		msg = BLIZZARD_STORE_ERROR_YOU_OWN_TOO_MANY_OF_THIS,
-	},
-	[Enum.StoreError.ItemUnavailable] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
-		msg = BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE,
-	},
-	[Enum.StoreError.ClientRestricted] = {
-		title = BLIZZARD_STORE_ERROR_TITLE_CLIENT_RESTRICTED,
-		msg = BLIZZARD_STORE_ERROR_CLIENT_RESTRICTED,
-	},
-};
-
---VAS Error message data
-local vasErrorData = {
-	[Enum.VasError.CharacterHasVasPending] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_HAS_VAS_PENDING,
-		notUserFixable = true,
-	},
-	[Enum.VasError.InvalidDestinationAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT,
-	},
-	[Enum.VasError.InvalidSourceAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT,
-	},
-	[Enum.VasError.DisallowedSourceAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT,
-	},
-	[Enum.VasError.DisallowedDestinationAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT,
-	},
-	[Enum.VasError.LowerBoxLevel] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL,
-	},
-	[Enum.VasError.OperationAlreadyInProgress] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_OPERATION_ALREADY_IN_PROGRESS,
-	},
-	[Enum.VasError.LockedForVas] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LOCKED_FOR_VAS,
-	},
-	[Enum.VasError.RealmNotEligible] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE,
-	},
-	[Enum.VasError.CannotMoveGuildMaster] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER,
-	},
-	[Enum.VasError.MaxCharactersOnServer] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER,
-	},
-	[Enum.VasError.DuplicateCharacterName] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,
-	},
-	[Enum.VasError.HasMail] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_MAIL,
-	},
-	[Enum.VasError.MoveInProgress] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_MOVE_IN_PROGRESS,
-	},
-	[Enum.VasError.UnderMinLevelReq] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
-	},
-	[Enum.VasError.CharacterTransferTooSoon] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
-	},
-	[Enum.VasError.CharLocked] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
-		notUserFixable = true,
-	},
-	[Enum.VasError.TooMuchMoneyForLevel] = {
-		msg = function(character)
-			local str = "";
-			if (character.level >= 50) then
-				-- level 50+: one million gold
-				str = GetSecureMoneyString(1000000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level >= 40) then
-				-- level 10-49: two hundred fifty thousand gold
-				str = GetSecureMoneyString(250000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level >= 10) then
-				-- level 10-49: ten thousand gold
-				str = GetSecureMoneyString(10000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			end
-			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
-		end
-	},
-	[Enum.VasError.HasAuctions] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_AUCTIONS,
-	},
-	[Enum.VasError.LastSaveTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
-		notUserFixable = true,
-	},
-	[Enum.VasError.NameNotAvailable] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NAME_NOT_AVAILABLE,
-	},
-	[Enum.VasError.LastRenameTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT,
-	},
-	[Enum.VasError.AlreadyRenameFlagged] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_ALREADY_RENAME_FLAGGED,
-	},
-	[Enum.VasError.CustomizeAlreadyRequested] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED,
-	},
-	[Enum.VasError.LastCustomizeTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_CUSTOMIZE_TOO_SOON,
-	},
-	[Enum.VasError.FactionChangeTooSoon] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
-	},
-	[Enum.VasError.RaceClassComboIneligible] = { --We should still handle this one even though we shortcut it in case something slips through
-		msg = BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE,
-	},
-	[Enum.VasError.GuildRankInsufficient] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NOT_GUILD_MASTER,
-	},
-	[Enum.VasError.CharacterWithoutGuild] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NOT_IN_GUILD,
-	},
-	[Enum.VasError.GmSeniorityInsufficient] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_GM_SENORITY_INSUFFICIENT,
-	},
-	[Enum.VasError.AuthenticatorInsufficient] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_AUTHENTICATOR_INSUFFICIENT,
-	},
-	[Enum.VasError.IneligibleMapID] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,
-	},
-	[Enum.VasError.BattlepayDeliveryPending] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING,
-	},
-	[Enum.VasError.HasWoWToken] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN,
-	},
-	[Enum.VasError.HasHeirloom] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM,
-	},
-	[Enum.VasError.LastSaveTooDistant] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
-	},
-	[Enum.VasError.HasCagedBattlePet] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET,
-	},
-	[Enum.VasError.BoostedTooRecently] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
-		notUserFixable = true,
-	},
-	[Enum.VasError.NewLeaderInvalid] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NEW_LEADER_INVALID,
-	},
-	[Enum.VasError.NeedsLevelSquish] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
-	},
-};
 
 local factionColors = {
 	[0] = "ffe50d12",
@@ -1521,20 +1521,34 @@ local productCardTemplateData = {
 		poolSize = 2,
 		buyButton = true,
 	},
+	VerticalLargePageableStoreCardWithBuyButtonTemplate = {
+		cellGridSize = {width = 2, height = 2},
+		cellPixelSize = {width = 286, height = 433},
+		padding = {10 , -6 , 10 , 0}, --left, right, top, bottom
+		poolSize = 2,
+		buyButton = true,
+	},
 	HorizontalFullStoreCardWithBuyButtonTemplate = {
 		cellGridSize = {width = 4, height = 2},
 		cellPixelSize = {width = 576, height = 471},
 		padding = {12 , 0 , 9 , 0}, --left, right, top, bottom
 		poolSize = 1,
 		buyButton = true,
-	},	
+	},
 	VerticalFullStoreCardWithBuyButtonTemplate = {
 		cellGridSize = {width = 4, height = 2},
 		cellPixelSize = {width = 576, height = 471},
 		padding = {12 , 0 , 9 , 0}, --left, right, top, bottom
 		poolSize = 1,
 		buyButton = true,
-	}
+	},
+	HorizontalFullStoreCardWithNydusLinkButtonTemplate = {
+		cellGridSize = {width = 4, height = 2},
+		cellPixelSize = {width = 576, height = 471},
+		padding = {12 , 0 , 9 , 0}, --left, right, top, bottom
+		poolSize = 1,
+		buyButton = true
+	},
 };
 
 function StoreFrame_GetCellPixelSize(cardTemplate)
@@ -1591,7 +1605,7 @@ function StoreFrame_CheckAndUpdateEntryID(isSplash)
 	end
 end
 
-function StoreFrame_GetProductCardTemplate(cardType, flags)	
+function StoreFrame_GetProductCardTemplate(cardType, flags)
 	if cardType == Enum.BattlepayCardType.SmallCard then
 		return "SmallStoreCardTemplate"
 	elseif cardType == Enum.BattlepayCardType.MediumCard then
@@ -1606,6 +1620,10 @@ function StoreFrame_GetProductCardTemplate(cardType, flags)
 		return "HorizontalLargeStoreCardWithBuyButtonTemplate"
 	elseif cardType == Enum.BattlepayCardType.LargeVeritcalCardWithBuyButton then
 		return "VerticalLargeStoreCardWithBuyButtonTemplate"
+	elseif cardType == Enum.BattlepayCardType.FullCardWithNydusLinkButton then
+		return "HorizontalFullStoreCardWithNydusLinkButtonTemplate";
+	elseif cardType == Enum.BattlepayCardType.LargeVeritcalPageableCardWithBuyButton then
+		return "VerticalLargePageableStoreCardWithBuyButtonTemplate"
 	elseif cardType == Enum.BattlepayCardType.FullCardWithBuyButton then
 		if bit.band(flags, Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard) == Enum.BattlepayDisplayFlag.UseHorizontalLayoutForFullCard then
 			return "HorizontalFullStoreCardWithBuyButtonTemplate";
@@ -1650,6 +1668,20 @@ function StoreFrame_FilterEntries(entries)
 	return filteredEntries;
 end
 
+local function GetProductGroups()
+	local productGroups = C_StoreSecure.GetProductGroups();
+	local filteredProductGroups = {};
+
+	for _, groupId in ipairs(productGroups) do
+		local products = C_StoreSecure.GetProducts(groupId);
+		if #StoreFrame_FilterEntries(products) ~= 0 then
+			table.insert(filteredProductGroups, groupId);
+		end
+	end
+
+	return filteredProductGroups;
+end
+
 function StoreFrame_SetCategory(forceModelUpdate)
 	if not StoreFrame_CurrencyInfo() then
 		return;
@@ -1669,7 +1701,7 @@ function StoreFrame_SetCategory(forceModelUpdate)
 	end
 end
 
--- builds a table of pages: 
+-- builds a table of pages:
 -- the table contains each page, and a starting entry index
 function StoreFrame_GetPageInfo(entries)
 	local self = StoreFrame;
@@ -2034,7 +2066,7 @@ function StoreCategoryFrame_SetGroupID(self, groupID)
 end
 
 function StoreFrame_UpdateCategories(self)
-	local categories = C_StoreSecure.GetProductGroups();
+	local categories = GetProductGroups();
 
 	for i = 1, #categories do
 		local frame = self.CategoryFrames[i];
@@ -2090,6 +2122,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
+	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("DYNAMIC_BUNDLE_PRICE_UPDATED");
 
 	self.layoutGrid = CreateFromMixins(StoreLayoutGridMixin);
@@ -2122,25 +2155,13 @@ function StoreFrame_OnLoad(self)
 				end
 			end
 		);
-		-- block other clicks
-		local bgFrame = CreateForbiddenFrame("FRAME", nil);
-		bgFrame:SetParent(self);
-		bgFrame:SetAllPoints(_G.GlueParent);
-		bgFrame:SetFrameStrata("DIALOG");
-		bgFrame:EnableMouse(true);
-		-- background texture
-		local background = bgFrame:CreateTexture(nil, "BACKGROUND");
-		background:SetPoint("TOPLEFT", _G.GlueParent, "TOPLEFT", -1024, 0);
-		background:SetPoint("BOTTOMRIGHT", _G.GlueParent, "BOTTOMRIGHT", 1024, 0);
-
-		background:SetColorTexture(0, 0, 0, 0.75);
 	end
 	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
 	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 150);
 
 	self.productCardPoolCollection = CreateFixedSizeFramePoolCollection();
 
-	-- we preallocate all the card pools because if we create frames outside 
+	-- we preallocate all the card pools because if we create frames outside
 	-- of the LoadAddOn call, then the scripts aren't set properly due to scoped modifier issues
 	local forbidden = true;
 	local preallocate = true;
@@ -2164,7 +2185,7 @@ end
 local JustFinishedOrdering = false;
 
 function StoreFrame_GetDefaultCategory()
-	local productGroups = C_StoreSecure.GetProductGroups();
+	local productGroups = GetProductGroups();
 	local needsNewCategory = not StoreFrame_GetSelectedCategoryID() or StoreFrame_IsProductGroupDisabled(StoreFrame_GetSelectedCategoryID());
 	for i = 1, #productGroups do
 		local groupID = productGroups[i];
@@ -2194,11 +2215,11 @@ function StoreFrame_OnEvent(self, event, ...)
 	if ( event == "STORE_PRODUCTS_UPDATED" ) then
 		StoreFrame_UpdateSelectedCategory();
 		StoreFrame_UpdateCategories(self);
-		
+
 		if self:IsShown() then
 			C_StoreSecure.RequestAllDynamicPriceInfo();
 		end
-		
+
 		if StoreFrame_GetSelectedCategoryID() then
 			StoreFrame_SetCategory();
 		end
@@ -2283,6 +2304,13 @@ function StoreFrame_OnEvent(self, event, ...)
 			self:Hide();
 			_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
+	elseif (event == "LOGIN_STATE_CHANGED") then
+		if (IsOnGlueScreen()) then
+			local auroraState = C_Login.GetState();
+			if ( auroraState == LE_AURORA_STATE_NONE ) then
+				self:Hide();
+			end
+		end
 	elseif (event == "DYNAMIC_BUNDLE_PRICE_UPDATED") then
 		if StoreFrame_GetSelectedCategoryID() then
 			StoreFrame_SetCategory();
@@ -2298,6 +2326,8 @@ function StoreFrame_OnShow(self)
 	StoreFrame_UpdateActivePanel(self);
 	if ( not IsOnGlueScreen() ) then
 		Outbound.UpdateMicroButtons();
+	else
+		GlueParent_AddModalFrame(self);
 	end
 
 	BoostType = nil;
@@ -2322,12 +2352,15 @@ function StoreFrame_OnHide(self)
 	Outbound.HidePreviewFrame();
 	if ( not IsOnGlueScreen() ) then
 		Outbound.UpdateMicroButtons();
+	else
+		GlueParent_RemoveModalFrame(self);
+		GlueParent_UpdateDialogs();
 	end
 
 	StoreVASValidationFrame:Hide();
 	SimpleCheckout:Hide();
 	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_CLOSE_BUTTON);
-	
+
 	C_StoreSecure.ClearPreGeneratedExternalTransactionID();
 end
 
@@ -2525,10 +2558,10 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			local errors = data.errors;
 			local hasOther = false;
 			local hasNonUserFixable = false;
-			for i = 1, #errors do
-				if (not vasErrorData[errors[i]]) then
+			for index, errorID in ipairs(errors) do
+				if not VASErrorData_HasError(errorID) then
 					hasOther = true;
-				elseif (vasErrorData[errors[i]].notUserFixable) then
+				elseif not VASErrorData_IsUserFixableError(errorID) then
 					hasNonUserFixable = true;
 				end
 			end
@@ -2536,17 +2569,12 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			local desc;
 			if (hasOther) then
 				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-			elseif (hasNonUserFixable) then
-				desc = "";
-				for i = 1, #errors do
-					if (vasErrorData[errors[i]].notUserFixable) then
-						desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
-					end
-				end
 			else
-				desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
-				for i = 1, #errors do
-					desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
+				desc = hasNonUserFixable and "" or BLIZZARD_STORE_VAS_ERROR_LABEL;
+				for index, errorID in ipairs(errors) do
+					if hasNonUserFixable == not VASErrorData_IsUserFixableError(errorID) then
+						desc = StoreVASValidationFrame_AppendError(desc, errorID, character, index == 1);
+					end
 				end
 			end
 
@@ -2559,15 +2587,32 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 end
 
 function StoreFrame_OnError(self, errorID, needsAck, internalErr)
-	local info = errorData[errorID];
-	if ( not info ) then
-		info = errorData[Enum.StoreError.Other];
-	end
+	local title, msg, link = StoreErrorData_GetMessage(errorID);
+
 	if ( IsGMClient() and not HideGMOnly() ) then
-		StoreFrame_ShowError(self, info.title.." ("..internalErr..")", info.msg, info.link, needsAck);
+		StoreFrame_ShowError(self, title.." ("..internalErr..")", msg, link, needsAck);
 	else
-		StoreFrame_ShowError(self, info.title, info.msg, info.link, needsAck);
+		StoreFrame_ShowError(self, title, msg, link, needsAck);
 	end
+end
+
+function StoreFrame_IsLoading(self)
+	if ( not C_StoreSecure.HasProductList() ) then
+		return true;
+	end
+	if ( not C_StoreSecure.HasDistributionList() ) then
+		return true;
+	end
+	-- can open the store UI while in queue, but in that state we don't ask for, nor need the purchase list
+	if ( not C_StoreSecure.HasPurchaseList() ) then
+		if (IsOnGlueScreen()) then
+			local _, _, wowConnectionState = C_Login.GetState();
+			if ( wowConnectionState ~= LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
+				return true;
+			end
+		end
+	end
+	return false;
 end
 
 function StoreFrame_UpdateActivePanel(self)
@@ -2597,9 +2642,9 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_NOT_AVAILABLE, BLIZZARD_STORE_NOT_AVAILABLE_SUBTEXT);
 	elseif ( C_StoreSecure.IsRegionLocked() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_REGION_LOCKED, BLIZZARD_STORE_REGION_LOCKED_SUBTEXT);
-	elseif ( not C_StoreSecure.HasPurchaseList() or not C_StoreSecure.HasProductList() or not C_StoreSecure.HasDistributionList() ) then
+	elseif ( StoreFrame_IsLoading(self) ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_LOADING, BLIZZARD_STORE_PLEASE_WAIT);
-	elseif ( #C_StoreSecure.GetProductGroups() == 0 ) then
+	elseif ( #GetProductGroups() == 0 ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_NO_ITEMS, BLIZZARD_STORE_CHECK_BACK_LATER);
 	elseif ( not IsOnGlueScreen() and not StoreFrame_HasFreeBagSlots() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_BAG_FULL, BLIZZARD_STORE_BAG_FULL_DESC);
@@ -2711,7 +2756,9 @@ end
 function StoreFrameErrorFrame_OnShow(self)
 	StoreFrame_UpdateActivePanel(StoreFrame);
 	StoreFrame_UpdateCoverState();
-	self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
+
+	local aboveDisabledCardOverlayLevel = 1500;
+	self:SetFrameLevel(self:GetParent():GetFrameLevel() + aboveDisabledCardOverlayLevel);
 end
 
 function StoreFrameErrorFrame_OnHide(self)
@@ -2879,8 +2926,8 @@ end
 
 local function IsGuildVasServiceType(serviceType)
 	return	serviceType == Enum.VasServiceType.GuildNameChange or
-			serviceType == Enum.VasServiceType.GuildFactionChange or 
-			serviceType == Enum.VasServiceType.GuildTransfer or 
+			serviceType == Enum.VasServiceType.GuildFactionChange or
+			serviceType == Enum.VasServiceType.GuildTransfer or
 			serviceType == Enum.VasServiceType.GuildFactionTransfer;
 end
 
@@ -3144,15 +3191,17 @@ function StoreVASValidationFrame_OnLoad(self)
 	self.CharacterSelectionFrame.TransferRealmEditbox.Label:SetText(VAS_DESTINATION_REALM_LABEL);
 	self.CharacterSelectionFrame.TransferRealmEditbox.EmptyText:SetText(BLIZZARD_STORE_VAS_REALM_NAME);
 	self.CharacterSelectionFrame.TransferAccountCheckbox.Label:SetText(BLIZZARD_STORE_VAS_TRANSFER_ACCOUNT);
-	self.CharacterSelectionFrame.TransferBattlenetAccountEditbox.EmptyText:SetText(BLIZZARD_STORE_VAS_EMAIL_ADDRESS);
+	self.CharacterSelectionFrame.TransferBattlenetAccountEditbox.EmptyText:SetText(ACCOUNT_NAME);
 
 	self.CharacterSelectionFrame.FollowGuildCheckbox.Label:SetMaxLines(2);
 
-	SecureMixin(self.CharacterSelectionFrame.SelectedCharacterDescription, ShrinkUntilTruncateFontStringMixin);
-	self.CharacterSelectionFrame.SelectedCharacterDescription:SetFontObjectsToTry("GameFontHighlightSmall2", "GameFontWhiteTiny", "GameFontWhiteTiny2");
+	SecureMixin(self.CharacterSelectionFrame.SelectedCharacterDescription, AutoScalingFontStringMixin);
+	self.CharacterSelectionFrame.SelectedCharacterDescription:SetFontObject("GameFontHighlightSmall2");
+	self.CharacterSelectionFrame.SelectedCharacterDescription:SetMinLineHeight(8);
 
-	SecureMixin(self.CharacterSelectionFrame.FollowGuildErrorMessage, ShrinkUntilTruncateFontStringMixin);
-	self.CharacterSelectionFrame.FollowGuildErrorMessage:SetFontObjectsToTry("GameFontBlack", "GameFontBlackSmall", "GameFontBlackSmall2", "GameFontBlackTiny", "GameFontBlackTiny2");
+	SecureMixin(self.CharacterSelectionFrame.FollowGuildErrorMessage, AutoScalingFontStringMixin);
+	self.CharacterSelectionFrame.FollowGuildErrorMessage:SetFontObject("GameFontBlack");
+	self.CharacterSelectionFrame.FollowGuildErrorMessage:SetMinLineHeight(8);
 
 	local labelsToShrink = {
 		"FollowGuildCheckbox",
@@ -3162,8 +3211,9 @@ function StoreVASValidationFrame_OnLoad(self)
 	};
 
 	for i, checkbox in ipairs(labelsToShrink) do
-		SecureMixin(self.CharacterSelectionFrame[checkbox].Label, ShrinkUntilTruncateFontStringMixin);
-		self.CharacterSelectionFrame[checkbox].Label:SetFontObjectsToTry("GameFontBlack", "GameFontBlackSmall", "GameFontBlackSmall2", "GameFontBlackTiny", "GameFontBlackTiny2");
+		local label = self.CharacterSelectionFrame[checkbox].Label;
+		SecureMixin(label, AutoScalingFontStringMixin);
+		label:ScaleTextToFit();
 	end
 
 	if (IsOnGlueScreen()) then
@@ -3389,14 +3439,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 end
 
 function StoreVASValidationFrame_AppendError(desc, errorID, character, firstAppend)
-	local errorData = vasErrorData[errorID];
-	local str;
-	if (type(errorData.msg) == "function") then
-		str = errorData.msg(character);
-	else
-		str = errorData.msg;
-	end
-
+	local str = VASErrorData_GetMessage(errorID, character);
 	local sep = desc ~= "" and (firstAppend and "|n|n" or "|n") or "";
 	return desc .. sep .. str;
 end
@@ -3523,13 +3566,13 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		self:Hide();
 	elseif ( event == "STORE_GUILD_FOLLOW_INFO_RECEIVED" ) then
 		local characterGuid, guildFollowInfo = ...;
-		if CharacterWaitingOnGuildFollowInfo == characterGuid then 
+		if CharacterWaitingOnGuildFollowInfo == characterGuid then
 			CharacterWaitingOnGuildFollowInfo = nil;
 			VASCharacterSelectionCharacterSelector_Callback(SelectedCharacter, guildFollowInfo);
 		end
 	elseif ( event == "STORE_GUILD_MASTER_INFO_RECEIVED" ) then
 		local realmAddress = ...;
-		if RealmWaitingOnGuildMasterInfo == realmAddress then 
+		if RealmWaitingOnGuildMasterInfo == realmAddress then
 			RealmWaitingOnGuildMasterInfo = nil;
 			RealmWithGuildMasterInfo = realmAddress;
 			VASCharacterSelectionRealmSelector_Callback(SelectedRealm);
@@ -3542,10 +3585,10 @@ function StoreVASValidationFrame_SetErrors(errors)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	local hasOther = false;
 	local hasNonUserFixable = false;
-	for i = 1, #errors do
-		if (not vasErrorData[errors[i]]) then
+	for index, errorID in ipairs(errors) do
+		if not VASErrorData_HasError(errorID) then
 			hasOther = true;
-		elseif (vasErrorData[errors[i]].notUserFixable) then
+		elseif not VASErrorData_IsUserFixableError(errorID) then
 			hasNonUserFixable = true;
 		end
 	end
@@ -3553,19 +3596,15 @@ function StoreVASValidationFrame_SetErrors(errors)
 	local desc;
 	if (hasOther) then
 		desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-	elseif (hasNonUserFixable) then
-		desc = "";
-		for i = 1, #errors do
-			if (vasErrorData[errors[i]].notUserFixable) then
-				desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
+	else
+		desc = hasNonUserFixable and "" or BLIZZARD_STORE_VAS_ERROR_LABEL;
+		for index, errorID in ipairs(errors) do
+			if hasNonUserFixable == not VASErrorData_IsUserFixableError(errorID) then
+				desc = StoreVASValidationFrame_AppendError(desc, errorID, character, index == 1);
 			end
 		end
-	else
-		desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
-		for i = 1, #errors do
-			desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
-		end
 	end
+
 	frame.ChangeIconFrame:Hide();
 	if (VASServiceType == Enum.VasServiceType.GuildFactionChange) then
 		StoreVASValidationFrame_UpdateGuildFactionChangeValidationPosition();
@@ -4068,16 +4107,18 @@ function VASCharacterSelectionChangeIconFrame_OnEnter(self)
 
 	local descStr = "";
 	local seenAlliedRace = false;
-	for i = 1, #races do
-		local raceInfo = races[i];
-		if (raceInfo.isAlliedRace and not raceInfo.isHeritageArmorUnlocked) then
-			descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
-			seenAlliedRace = true;
-		else
-			descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE, raceInfo.raceName);
-		end
-		if (i ~= #races) then
-			descStr = descStr .. "|n";
+	if races then
+		for i = 1, #races do
+			local raceInfo = races[i];
+			if (raceInfo.isAlliedRace and not raceInfo.isHeritageArmorUnlocked) then
+				descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
+				seenAlliedRace = true;
+			else
+				descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE, raceInfo.raceName);
+			end
+			if (i ~= #races) then
+				descStr = descStr .. "|n";
+			end
 		end
 	end
 	if (seenAlliedRace) then
@@ -4144,7 +4185,6 @@ local function UpdateFactionTransferCheckBoxForFaction(self, faction)
 		local diffDollars = math.floor(diffPrice);
 		local diffCents = (diffPrice - diffDollars) * 100;
 		self.CharacterSelectionFrame.TransferFactionCheckbox.Label:SetText(string.format(BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE, newFaction, currencyFormatLong(diffDollars, diffCents)));
-		self.CharacterSelectionFrame.TransferFactionCheckbox.Label:ApplyFontObjects();
 		self.CharacterSelectionFrame.TransferFactionCheckbox:SetChecked(false);
 		self.CharacterSelectionFrame.TransferFactionCheckbox:Show();
 	else
@@ -4284,7 +4324,6 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.RenameGuildCheckbox:ClearAllPoints();
 		frame.RenameGuildCheckbox:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 5, -8);
 		frame.RenameGuildCheckbox:Show();
-		frame.RenameGuildCheckbox.Label:ApplyFontObjects();
 		frame.RenameGuildCheckbox:SetChecked(false);
 		frame.RenameGuildEditbox:ClearAllPoints();
 		frame.RenameGuildEditbox:SetPoint("TOPRIGHT", frame.SelectedCharacterFrame, "BOTTOMRIGHT", 8, -12);
@@ -4304,7 +4343,6 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.RenameGuildCheckbox:ClearAllPoints();
 		frame.RenameGuildCheckbox:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 5, -88);
 		frame.RenameGuildCheckbox:Show();
-		frame.RenameGuildCheckbox.Label:ApplyFontObjects();
 		frame.RenameGuildCheckbox:SetChecked(false);
 		frame.RenameGuildEditbox:ClearAllPoints();
 		frame.RenameGuildEditbox:SetPoint("TOPRIGHT", frame.SelectedCharacterFrame, "BOTTOMRIGHT", 8, -92);
@@ -4321,7 +4359,6 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
 		if (StoreVASValidationFrame.productInfo.sharedData.canChangeAccount and (StoreVASValidationFrame.productInfo.sharedData.canChangeBNetAccount or (#_G.C_Login.GetGameAccounts() > 1))) then
 			frame.TransferAccountCheckbox:Show();
-			frame.TransferAccountCheckbox.Label:ApplyFontObjects();
 			frame.TransferFactionCheckbox:ClearAllPoints();
 			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferAccountCheckbox, "BOTTOMLEFT", 0, -4);
 		else
@@ -4384,7 +4421,7 @@ function VASRealmList_BuildAutoCompleteLists()
 
 	if not RealmAutoCompleteList and (VASServiceType == Enum.VasServiceType.CharacterTransfer or VASServiceType == Enum.VasServiceType.GuildTransfer) then
 		local realms = C_StoreSecure.GetVASRealmList();
-		
+
 		local infoTable = {};
 		for _, realm in ipairs(realms) do
 			if (realm.virtualRealmAddress ~= character.currentServer) then
@@ -4427,6 +4464,9 @@ end
 function StoreGetAutoCompleteEntries(self, text, cursorPosition)
 	local autoCompleteList = GetStoreAutoCompleteList(self);
 	if not autoCompleteList or text == "" then
+		-- So this is slightly different in Classic. They still show the full list if text is empty
+		-- Mainline has far more realms so we probably want to keep the realm list empty in this case
+		-- and continue to require the user start typing at least 1 character
 		return {};
 	end
 	local entries = {};
@@ -5108,14 +5148,14 @@ end
 
 function VASCharacterSelectionTransferCheckEditBoxes()
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
-	
+
 	if not frame.TransferAccountCheckbox:GetChecked() and not(frame.TransferRealmEditbox:GetText() and frame.TransferRealmEditbox:GetText() ~= "") then
 		return false
 	end
 
 	if frame.TransferAccountCheckbox:GetChecked() and SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET then
 		local text = frame.TransferBattlenetAccountEditbox:GetText();
-		if not(text and text ~= "" and string.find(text, ".+@.+\...+")) then
+		if not (text and text ~= "") then
 			return false;
 		end
 	end
@@ -5257,6 +5297,15 @@ end
 function ServicesLogoutPopupCancelButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	ServicesLogoutPopup:Hide();
+end
+
+StoreTooltipBackdropMixin = {};
+
+function StoreTooltipBackdropMixin:StoreTooltipOnLoad()
+	NineSliceUtil.DisableSharpening(self);
+
+	local bgR, bgG, bgB = TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB();
+	self:SetCenterColor(bgR, bgG, bgB, 1);
 end
 
 --------------------------------------

@@ -38,6 +38,11 @@ local Cinematic =
 				{ Name = "movieID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "StopMovie",
+			Type = "Event",
+			LiteralName = "STOP_MOVIE",
+		},
 	},
 
 	Tables =

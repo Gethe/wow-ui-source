@@ -74,7 +74,7 @@ end
 
 function ClearClampedTextureRotation(texture)
 	if (texture.rotationDegrees) then
-		SetClampedTextureRotation(0);
+		SetClampedTextureRotation(texture, 0);
 		texture.origTexCoords = nil;
 		texture.origWidth = nil;
 		texture.origHeight = nil;
@@ -121,14 +121,33 @@ function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, r
 	);
 end
 
-function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY)
-	return ("|A:%s:%d:%d:%d:%d|a"):format(
-		  atlasName
-		, height or 0
-		, width or 0
-		, offsetX or 0
-		, offsetY or 0
-	);
+function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor)
+	-- Setting any vertex color will override existing colors
+	if ( rVertexColor or gVertexColor or bVertexColor ) then
+		return ("|A:%s:%d:%d:%d:%d:%d:%d:%d|a"):format(
+			  atlasName
+			, height or 0
+			, width or 0
+			, offsetX or 0
+			, offsetY or 0
+			, rVertexColor or 0
+			, gVertexColor or 0
+			, bVertexColor
+		);
+	else
+		return ("|A:%s:%d:%d:%d:%d|a"):format(
+			  atlasName
+			, height or 0
+			, width or 0
+			, offsetX or 0
+			, offsetY or 0
+		);
+	end
+end
+
+function CreateAtlasMarkupWithAtlasSize(atlasName, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor)
+	local atlasInfo = C_Texture.GetAtlasInfo(atlasName);
+	return CreateAtlasMarkup(atlasName, atlasInfo.width, atlasInfo.height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor);
 end
 
 -- NOTE: Many of the TextureKit functions below use the following parameters
@@ -219,6 +238,11 @@ function SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfReg
 	return SetupTextureKitOnFrames(textureKit, frames, setVisibilityOfRegions, useAtlasSize);
 end
 
+function SetupTextureKits(textureKitID, frame, regions, setVisibilityOfRegions, useAtlasSize)
+	local textureKit = GetUITextureKitInfo(textureKitID);
+	SetupTextureKitOnRegions(textureKit, frame, regions, setVisibilityOfRegions, useAtlasSize);
+end
+
 -- Pass in a TextureKit name, a frame and a table containing parentKeys (on frame) as keys and a table as values
 -- The values table should contain formatString as a member (setVisibility and useAtlasSize can also be added if desired)
 -- For each frame key in frames, the TextureKit name will be inserted into formatString (at the first %s). The resulting atlas name will be set on frame
@@ -231,4 +255,15 @@ function SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList)
 	for region, regionInfo in pairs(regionInfoList) do
 		SetupTextureKitOnFrame(textureKit, frame[region], regionInfo.formatString, regionInfo.setVisibility, regionInfo.useAtlasSize);
 	end
+end
+
+--Pass the texture and the textureKit, if the atlas exists in data then it will return the actual atlas name otherwise, return nil. 
+function GetFinalAtlasFromTextureKitIfExists(texture, textureKit)
+	if not texture or not textureKit then
+		return nil;
+	end
+
+	local atlas = GetFinalNameFromTextureKit(texture, textureKit);
+	local atlasInfo = C_Texture.GetAtlasInfo(atlas);
+	return atlasInfo and atlas or nil;
 end

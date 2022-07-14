@@ -172,14 +172,15 @@ local Console =
 		{
 			Name = "ConsoleCommandType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Cvar", Type = "ConsoleCommandType", EnumValue = 0 },
 				{ Name = "Command", Type = "ConsoleCommandType", EnumValue = 1 },
-				{ Name = "Script", Type = "ConsoleCommandType", EnumValue = 2 },
+				{ Name = "Macro", Type = "ConsoleCommandType", EnumValue = 2 },
+				{ Name = "Script", Type = "ConsoleCommandType", EnumValue = 3 },
 			},
 		},
 		{
@@ -192,6 +193,7 @@ local Console =
 				{ Name = "category", Type = "ConsoleCategory", Nilable = false },
 				{ Name = "commandType", Type = "ConsoleCommandType", Nilable = false },
 				{ Name = "scriptContents", Type = "string", Nilable = false },
+				{ Name = "scriptParameters", Type = "string", Nilable = false },
 			},
 		},
 	},

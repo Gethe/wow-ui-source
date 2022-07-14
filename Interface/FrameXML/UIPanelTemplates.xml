@@ -2171,8 +2171,8 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="CurrencyDisplayTemplate" mixin="CurrencyDisplayMixin" virtual="true">
-		<Size x="100" y="20"/>
+	<Frame name="CurrencyDisplayTemplate" mixin="CurrencyDisplayMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<Size x="1" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontNormal">
@@ -2189,6 +2189,7 @@
 	</Frame>
 
 	<Frame name="CurrencyDisplayGroupTemplate" mixin="CurrencyDisplayGroupMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<Size x="1" y="16"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

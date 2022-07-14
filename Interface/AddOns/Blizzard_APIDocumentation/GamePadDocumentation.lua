@@ -7,6 +7,21 @@ local GamePad =
 	Functions =
 	{
 		{
+			Name = "AddSDLMapping",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "platform", Type = "ClientPlatformType", Nilable = false },
+				{ Name = "mapping", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ApplyConfigs",
 			Type = "Function",
 		},
@@ -65,6 +80,10 @@ local GamePad =
 			{
 				{ Name = "configName", Type = "string", Nilable = true },
 			},
+		},
+		{
+			Name = "ClearLedColor",
+			Type = "Function",
 		},
 		{
 			Name = "DeleteConfig",
@@ -154,6 +173,29 @@ local GamePad =
 			},
 		},
 		{
+			Name = "GetLedColor",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPowerLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "deviceID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "powerLevel", Type = "GamePadPowerLevel", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEnabled",
 			Type = "Function",
 
@@ -172,6 +214,25 @@ local GamePad =
 			},
 		},
 		{
+			Name = "SetLedColor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "SetVibration",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "vibrationType", Type = "string", Nilable = false },
+				{ Name = "intensity", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "StickIndexToConfigName",
 			Type = "Function",
 
@@ -185,10 +246,23 @@ local GamePad =
 				{ Name = "configName", Type = "string", Nilable = true },
 			},
 		},
+		{
+			Name = "StopVibration",
+			Type = "Function",
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "GamePadActiveChanged",
+			Type = "Event",
+			LiteralName = "GAME_PAD_ACTIVE_CHANGED",
+			Payload =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "GamePadConfigsChanged",
 			Type = "Event",
@@ -203,6 +277,15 @@ local GamePad =
 			Name = "GamePadDisconnected",
 			Type = "Event",
 			LiteralName = "GAME_PAD_DISCONNECTED",
+		},
+		{
+			Name = "GamePadPowerChanged",
+			Type = "Event",
+			LiteralName = "GAME_PAD_POWER_CHANGED",
+			Payload =
+			{
+				{ Name = "powerLevel", Type = "GamePadPowerLevel", Nilable = false },
+			},
 		},
 	},
 
@@ -317,6 +400,8 @@ local GamePad =
 				{ Name = "axisX", Type = "string", Nilable = true },
 				{ Name = "axisY", Type = "string", Nilable = true },
 				{ Name = "deadzone", Type = "number", Nilable = true },
+				{ Name = "deadzoneX", Type = "number", Nilable = true },
+				{ Name = "deadzoneY", Type = "number", Nilable = true },
 				{ Name = "comment", Type = "string", Nilable = true },
 			},
 		},

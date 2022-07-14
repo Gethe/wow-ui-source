@@ -306,7 +306,7 @@ function TextureLoadingGroupMixin:AddTexture(texture)
 	self.textures[texture] = true;
 end
 
-function TextureLoadingGroupMixin:RemoveTexture()
+function TextureLoadingGroupMixin:RemoveTexture(texture)
 	if self.textures then
 		self.textures[texture] = nil;
 	end

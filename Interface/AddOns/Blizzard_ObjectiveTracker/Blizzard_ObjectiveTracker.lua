@@ -678,6 +678,7 @@ end
 function ObjectiveTrackerBlockHeader_OnLoad(self)
 
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self.GetDebugReportInfo = ObjectiveTrackerBlockHeader_GetDebugReportInfo;
 end
 
 function ObjectiveTrackerBlockHeader_OnClick(self, mouseButton)
@@ -693,6 +694,16 @@ end
 function ObjectiveTrackerBlockHeader_OnLeave(self)
 	local block = self:GetParent();
 	block.module:OnBlockHeaderLeave(block);
+end
+
+function ObjectiveTrackerBlockHeader_GetDebugReportInfo(self)
+	local block = self:GetParent();
+
+	if block.module.GetDebugReportInfo then
+		return block.module:GetDebugReportInfo(block);
+	end
+
+	return nil;
 end
 
 -- *****************************************************************************************************
@@ -950,7 +961,6 @@ ObjectiveTrackerHeaderMixin = {};
 
 function ObjectiveTrackerHeaderMixin:OnLoad()
 	self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
-	self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
 end
 
 function ObjectiveTrackerHeaderMixin:PlayAddAnimation()

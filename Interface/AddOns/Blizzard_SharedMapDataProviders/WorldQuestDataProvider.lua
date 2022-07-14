@@ -212,7 +212,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 
 	local mapID = mapCanvas:GetMapID();
 	if (mapID) then
-		taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+		taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
 		self.matchWorldMapFilters = MapUtil.MapShouldShowWorldQuestFilters(mapID);
 	end
 
@@ -366,7 +366,9 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 
 	pin:SetPosition(info.x, info.y);
 
-	C_TaskQuest.RequestPreloadRewardData(info.questId);
+	if not HaveQuestRewardData(info.questId) then
+		C_TaskQuest.RequestPreloadRewardData(info.questId);
+	end
 
 	return pin;
 end
@@ -418,7 +420,7 @@ function WorldQuestPinMixin:RefreshVisuals()
 	self:UpdateSupertrackedHighlight();
 
 	local inProgress = self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID);
-	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(self.worldQuestType, inProgress, tagInfo.tradeskillLineID);
+	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(self.worldQuestType, inProgress, tagInfo.tradeskillLineID, self.questID);
 	self.Texture:SetAtlas(atlas);
 	if self.worldQuestType == Enum.QuestTagType.PetBattle then
 		self.Texture:SetSize(26, 22);
@@ -429,7 +431,7 @@ end
 
 function WorldQuestPinMixin:UpdateSupertrackedHighlight()
 	local highlight = self.dataProvider:ShouldHighlightInfo(self.questID, self.tagInfo);
-	MapPinSupertrackHighlight_CheckHighlightPin(highlight, self, self.Background);
+	MapPinHighlight_CheckHighlightPin(highlight, self, self.Background);
 end
 
 function WorldQuestPinMixin:OnMouseEnter()
@@ -474,6 +476,10 @@ function WorldQuestPinMixin:OnMouseUpAction()
 	self.Background:Show();
 	self.PushedBackground:Hide();
 	self.Texture:SetPoint("CENTER", 0, 0);
+end
+
+function WorldQuestPinMixin:GetDebugReportInfo()
+	return { debugType = "WorldQuestPin", questID = self.questID, };
 end
 
 --[[ World Quest Spell Effect Pin ]]--

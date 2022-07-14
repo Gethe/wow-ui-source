@@ -106,10 +106,17 @@ function GarrisonMission:GetFollowerBuffsForMission(missionID)
 	self.followerSpells = C_Garrison.GetFollowersSpellsForMission(missionID);
 end
 
-function GarrisonMission:SetTitle(title)
+function GarrisonMission:SetTitle(title, ignoreTruncation)
 	local missionPage = self:GetMissionPage();
 	missionPage.Stage.Title:SetText(title);
-	GarrisonTruncationFrame_Check(missionPage.Stage.Title);
+	if(ignoreTruncation) then 
+		GarrisonTruncationFrame_Check(missionPage.Stage.Title);
+	end 
+end
+
+function GarrisonMission:GetNumTitleLines()
+	local missionPage = self:GetMissionPage();
+	return missionPage.Stage.Title:GetNumLines();
 end
 
 function GarrisonMission:SetEnvironmentTexture(environmentTexture)
@@ -650,6 +657,7 @@ function GarrisonMission:CloseMission()
 	end
 	self.followerCounters = nil;
 	self:GetMissionPage().missionInfo = nil;
+	self:ClearMouse();
 end
 
 function GarrisonMission:ClearParty()
@@ -854,7 +862,7 @@ function GarrisonMission:OnMouseUpMissionFollower(frame, button)
 		if ( info ) then
 			self:RemoveFollowerFromMission(frame, true);
 		else
-			self:GetMissionPage().CloseButton:Click();
+			GarrisonMissionPage_OnClick(self:GetMissionPage(), button);
 		end
 	end
 end
@@ -2071,7 +2079,7 @@ function GarrisonMissionFrameTab_OnLeave(self)
 end
 
 function GarrisonMissionFrame_SetItemRewardDetails(frame)
-	local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(frame.itemID);
+	local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(frame.itemLink or frame.itemID);
 	frame.Icon:SetTexture(itemTexture);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
 	if(color) then

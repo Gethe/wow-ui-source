@@ -418,29 +418,68 @@ function ContainerFrame_CloseTutorial(ownerFrame)
 	end
 end
 
--- Returns whether further buttons should be considered
-function ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID)
-	if itemID and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemID) then
-		if AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped() then
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT, true);
-			return false;
-		end
+function ContainerFrame_ShowTutorialForItemButton(itemButton, tutorialText, tutorialFlag)
+	local helpTipInfo = {
+		text = tutorialText,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = tutorialFlag,
+		targetPoint = HelpTip.Point.LeftEdgeCenter,
+		offsetX = -3,
+		system = CONTAINER_HELPTIP_SYSTEM,
+	};
+	HelpTip:Show(UIParent, helpTipInfo, itemButton);
+	local containerFrame = itemButton:GetParent();
+	containerFrame.helpTipSystem = CONTAINER_HELPTIP_SYSTEM;
+end
 
-		local helpTipInfo = {
-			text = AZERITE_TUTORIAL_ITEM_IN_SLOT,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT,
-			targetPoint = HelpTip.Point.LeftEdgeCenter,
-			offsetX = -3,
-			system = CONTAINER_HELPTIP_SYSTEM,
-		};
-		HelpTip:Show(UIParent, helpTipInfo, itemButton);
-		local containerFrame = itemButton:GetParent();
-		containerFrame.helpTipSystem = CONTAINER_HELPTIP_SYSTEM;
+function ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID)
+	if AzeriteUtil.AreAnyAzeriteEmpoweredItemsEquipped() then
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT, true);
 		return false;
 	end
-	return true;
+
+	return C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemID);
+end
+
+function ContainerFrame_ConsiderItemButtonForUpgradeTutorial(itemButton, itemID)
+	local containerFrame = itemButton:GetParent();
+	return C_ItemUpgrade.CanUpgradeItem(ItemLocation:CreateFromBagAndSlot(containerFrame:GetID(), itemButton:GetID()));
+end
+
+local ContainerFrameTutorialInfo = {
+	{ considerFunction = ContainerFrame_ConsiderItemButtonForAzeriteTutorial, tutorialText = AZERITE_TUTORIAL_ITEM_IN_SLOT, tutorialFlag = LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT, },
+	{ considerFunction = ContainerFrame_ConsiderItemButtonForUpgradeTutorial, tutorialText = ITEM_UPGRADE_TUTORIAL_ITEM_IN_SLOT, tutorialFlag = LE_FRAME_TUTORIAL_UPGRADEABLE_ITEM_IN_SLOT, },
+};
+
+function ContainerFrame_HasUnacknowledgedItemTutorial()
+	for i, tutorialInfo in ipairs(ContainerFrameTutorialInfo) do
+		if not GetCVarBitfield("closedInfoFrames", tutorialInfo.tutorialFlag) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function ContainerFrame_ShouldDoTutorialChecks()
+	return not Kiosk.IsEnabled() and not ContainerFrame_IsTutorialShown() and ContainerFrame_HasUnacknowledgedItemTutorial();
+end
+
+function ContainerFrame_CheckItemButtonForTutorials(itemButton, itemID)
+	if itemID == nil then
+		return false;
+	end
+
+	for i, tutorialInfo in ipairs(ContainerFrameTutorialInfo) do
+		local tutorialFlag = tutorialInfo.tutorialFlag;
+		if not GetCVarBitfield("closedInfoFrames", tutorialFlag) and tutorialInfo.considerFunction(itemButton, itemID) then
+			ContainerFrame_ShowTutorialForItemButton(itemButton, tutorialInfo.tutorialText, tutorialFlag)
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function ContainerFrame_UpdateItemUpgradeIcons(frame)
@@ -498,7 +537,7 @@ function ContainerFrame_Update(self)
 
 	ContainerFrame_CloseTutorial(self);
 
-	local shouldDoAzeriteChecks = not Kiosk.IsEnabled() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT) and not ContainerFrame_IsTutorialShown();
+	local shouldDoTutorialChecks = ContainerFrame_ShouldDoTutorialChecks();
 
 	for i=1, self.size, 1 do
 		itemButton = _G[name.."Item"..i];
@@ -592,8 +631,10 @@ function ContainerFrame_Update(self)
 		
 		itemButton:SetMatchesSearch(not isFiltered);
 		if ( not isFiltered ) then
-			if shouldDoAzeriteChecks then
-				shouldDoAzeriteChecks = ContainerFrame_ConsiderItemButtonForAzeriteTutorial(itemButton, itemID);
+			if shouldDoTutorialChecks then
+				if ContainerFrame_CheckItemButtonForTutorials(itemButton, itemID) then
+					shouldDoTutorialChecks = false;
+				end
 			end
 		end
 	end
@@ -757,8 +798,9 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			local remainingRows = extraRows;
 
 			-- Calculate the number of background textures we're going to need
-			bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
-			
+			local bgTextureCount = ceil(remainingRows/ROWS_IN_BG_TEXTURE);
+			local height;
+
 			-- Try to cycle all the middle bg textures
 			for i=1, bgTextureCount do
 				bgTextureMiddle = _G[name.."BackgroundMiddle"..i];
@@ -1028,6 +1070,12 @@ function ContainerFrameItemButton_OnLoad(self)
 
 	self.UpdateTooltip = ContainerFrameItemButton_OnUpdate;
 	self.timeSinceUpgradeCheck = 0;
+	self.GetDebugReportInfo = ContainerFrameItemButton_GetDebugReportInfo;
+end
+
+function ContainerFrameItemButton_GetDebugReportInfo(self)
+	local texture, itemCount, locked, quality, readable, _, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
+	return { debugType = "ContainerItem", itemLink = itemLink, };
 end
 
 function ContainerFrameItemButton_UpdateItemUpgradeIcon(self)
@@ -1243,8 +1291,8 @@ local function SplitStack(button, split)
 end
 
 function ContainerFrameItemButton_OnModifiedClick(self, button)
+	local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
 	if ( IsModifiedClick("EXPANDITEM") ) then
-		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
 		if C_Item.DoesItemExist(itemLocation) then
 			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) and C_Item.CanViewItemPowers(itemLocation) then
 				OpenAzeriteEmpoweredItemUIFromItemLocation(itemLocation);
@@ -1263,7 +1311,7 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 		end
 	end
 
-	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
+	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID()), itemLocation) ) then
 		return;
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
@@ -1526,19 +1574,21 @@ function IsAnyBagOpen()
 end
 
 function OpenAllBagsMatchingContext(frame)
-	if IsAnyBagOpen() then
-		return;
-	end
-
+	local count = 0;
 	for i = 0, NUM_BAG_FRAMES do
 		if ItemButtonUtil.GetItemContextMatchResultForContainer(i) == ItemButtonUtil.ItemContextMatchResult.Match then
-			OpenBag(i);
+			if not IsBagOpen(i) then
+				OpenBag(i);
+				count = count + 1;
+			end
 		end
 	end
 
 	if frame and not FRAME_THAT_OPENED_BAGS then
 		FRAME_THAT_OPENED_BAGS = frame:GetName();
 	end
+
+	return count;
 end
 
 function OpenAllBags(frame, forceUpdate)
@@ -1697,19 +1747,6 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 		info.checked = GetBagSlotFlag(id, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP);
 	end
 	UIDropDownMenu_AddButton(info);
-end
-
-function ContainerFrameUtil_IteratePlayerInventory(callback)
-	-- Only includes the backpack and primary 4 bag slots.
-	for bag = 0, NUM_BAG_FRAMES do
-		for slot = 1, MAX_CONTAINER_ITEMS do
-			local bagItem = ItemLocation:CreateFromBagAndSlot(bag, slot);
-			if C_Item.DoesItemExist(bagItem) then
-				callback(bagItem);
-			end
-
-		end
-	end
 end
 
 function ContainerFrameUtil_GetItemButtonAndContainer(bag, slot)

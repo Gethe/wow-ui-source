@@ -103,7 +103,7 @@ local function GetFormattedWoWTokenPrice(price)
 		return FormatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
 	else
 		local xOffset = 2;
-		return FormatLargeNumber(gold)..CreateAtlasMarkup("auctionhouse-icon-coin-gold", nil, nil, xOffset);
+		return FormatLargeNumber(gold)..CreateAtlasMarkup("coin-gold", nil, nil, xOffset);
 	end
 end
 

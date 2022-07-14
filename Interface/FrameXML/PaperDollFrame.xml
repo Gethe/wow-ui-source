@@ -3,7 +3,7 @@
 	<Include file="AzeritePaperDollItemOverlay.xml"/>
   <Script file="PaperDollFrame.lua"/>
 
-  <ItemButton name="PaperDollItemSlotButtonTemplate" inherits="PaperDollAzeriteItemOverlayTemplate" virtual="true">
+  <ItemButton name="PaperDollItemSlotButtonTemplate" inherits="PaperDollAzeriteItemOverlayTemplate" mixin="PaperDollItemSlotButtonMixin" virtual="true">
     <Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="ignoreTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent">

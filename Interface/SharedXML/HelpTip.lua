@@ -141,6 +141,10 @@ function HelpTip:SetHelpTipsEnabled(flag, enabled)
 end
 
 function HelpTip:AreHelpTipsEnabled()
+	if GetCVarBool("hideHelptips") then
+		return false;
+	end
+
 	for flagType, flagValue in pairs(self.supressHelpTips) do
 		if not flagValue then
 			return false;

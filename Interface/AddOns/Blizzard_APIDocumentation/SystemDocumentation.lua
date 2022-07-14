@@ -40,6 +40,11 @@ local System =
 			LiteralName = "ENABLE_TAXI_BENCHMARK",
 		},
 		{
+			Name = "FirstFrameRendered",
+			Type = "Event",
+			LiteralName = "FIRST_FRAME_RENDERED",
+		},
+		{
 			Name = "GenericError",
 			Type = "Event",
 			LiteralName = "GENERIC_ERROR",
@@ -160,6 +165,16 @@ local System =
 			Name = "UiErrorMessage",
 			Type = "Event",
 			LiteralName = "UI_ERROR_MESSAGE",
+			Payload =
+			{
+				{ Name = "errorType", Type = "number", Nilable = false },
+				{ Name = "message", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "UiErrorPopup",
+			Type = "Event",
+			LiteralName = "UI_ERROR_POPUP",
 			Payload =
 			{
 				{ Name = "errorType", Type = "number", Nilable = false },

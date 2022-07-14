@@ -25,7 +25,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent">
+	<Frame name="WorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent" frameBuffer="true">
 		<Frames>
 			<Frame parentKey="BlackoutFrame" frameStrata="LOW" enableMouse="true">
 				<Anchors>

@@ -192,7 +192,7 @@
 						<Color r="0" g="0" b="0"/>
 					</Shadow>
 					<Anchors>
-						<Anchor point="TOP" y="-71"/>
+						<Anchor point="TOP" y="-80"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="PreviewText" inherits="GameFontHighlight">
@@ -209,7 +209,7 @@
 					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="HeaderFrame" frameLevel="510">
+			<Frame parentKey="HeaderFrame" mixin="CovenantRenownHeaderFrameMixin" frameLevel="510">
 				<Size x="176" y="76"/>
 				<Anchors>
 					<Anchor point="TOP" y="12"/>
@@ -231,8 +231,17 @@
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</FontString>
+						<Texture parentKey="Icon">
+							<Anchors>
+								<Anchor point="BOTTOM" x="1" y="-20"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
 			</Frame>
 			<ModelScene parentKey="CelebrationModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
 				<Size x="500" y="500"/>

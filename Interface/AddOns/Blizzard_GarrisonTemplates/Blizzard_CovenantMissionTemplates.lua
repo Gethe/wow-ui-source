@@ -1,7 +1,7 @@
 function AddAutoCombatSpellToTooltip(tooltip, autoCombatSpell)
 	local str;
 	if (autoCombatSpell.icon) then
-		str = CreateTextureMarkup(autoCombatSpell.icon, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0);
+		str = GarrAutoCombatUtil.CreateTextureMarkupForTooltipSpellIcon(autoCombatSpell.icon);
 	else
 		str = "";
 	end
@@ -253,6 +253,9 @@ function CovenantMissionList_Sort(missionsList)
 	table.sort(missionsList, comparison);
 end
 
+local covenantMissionButtonBGTextureKit = "%s-ButtonBG";
+local covenantMissionButtonHighlightTextureKit = "%s-ButtonHighlight";
+
 CovenantMissionListMixin = { }
 
 function CovenantMissionListMixin:OnLoad()
@@ -337,19 +340,29 @@ function CovenantMissionListMixin:Update()
 			button.Title:SetWidth(0);
 			button.Title:SetText(mission.name);
 			button.Level:SetText(mission.missionScalar);
-			button.Summary:Show();
+			button.ButtonBG:SetAtlas("adventures_missionlist", TextureKitConstants.UseAtlasSize);
+			button.Highlight:SetAtlas("adventures_missionlist_highlight", TextureKitConstants.UseAtlasSize);
+
+			--Special case textures will use the locTextureKit to key off of, if they have a texture associated with that texture kit, then it will be set. 
+			if(mission.locTextureKit) then 
+				local buttonBGTexture = GetFinalNameFromTextureKit(covenantMissionButtonBGTextureKit, mission.locTextureKit);
+				local backgroundInfo = C_Texture.GetAtlasInfo(buttonBGTexture);
+				if(backgroundInfo) then 
+					button.ButtonBG:SetAtlas(buttonBGTexture, TextureKitConstants.UseAtlasSize);
+				end 
+
+				local highlightTexture = GetFinalNameFromTextureKit(covenantMissionButtonHighlightTextureKit, mission.locTextureKit);
+				local highlightInfo = C_Texture.GetAtlasInfo(highlightTexture);
+				if(highlightInfo) then 
+					button.Highlight:SetAtlas(highlightTexture, TextureKitConstants.UseAtlasSize);
+				end 
+			end 
+		
 			if not mission.encounterIconInfo then
 				mission.encounterIconInfo = C_Garrison.GetMissionEncounterIconInfo(mission.missionID);
 			end
 
 			button.info.encounterIconInfo = mission.encounterIconInfo;
-
-			if ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
-				local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
-				button.Summary:SetFormattedText(PARENS_TEMPLATE, duration);
-			else
-				button.Summary:SetFormattedText(PARENS_TEMPLATE, mission.duration);
-			end
 
 			button.LocBG:Hide();
 
@@ -361,14 +374,22 @@ function CovenantMissionListMixin:Update()
 			button.Overlay:Hide();
 			button.CompleteCheck:SetShown(mission.canBeCompleted);
 
-			if (mission.canBeCompleted) then
-				button.Summary:SetShown(false);
-			elseif (mission.inProgress) then
-				button.Overlay:Show();
-				button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR_CODE..GARRISON_MISSION_IN_PROGRESS..FONT_COLOR_CODE_CLOSE);
+			local showSummary = not mission.canBeCompleted;
+			button.Summary:SetShown(showSummary);
+			if (showSummary) then
+				if (mission.inProgress) then
+					button.Overlay:Show();
+					button.Summary:SetText(mission.timeLeft.." "..RED_FONT_COLOR:WrapTextInColorCode(GARRISON_MISSION_IN_PROGRESS));
+				elseif ( mission.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
+					local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, mission.duration);
+					button.Summary:SetText(COVENANT_MISSION_SUMMARY_FORMAT:format(duration, mission.xp));
+				else
+					button.Summary:SetText(COVENANT_MISSION_SUMMARY_FORMAT:format(mission.duration, mission.xp));
+				end
 			end
 
-			if ( button.Title:GetWidth() + button.Summary:GetWidth() + 8 < 655 - #mission.rewards * 65 ) then
+			local summaryWidth = showSummary and (button.Summary:GetWidth() + 8) or 0;
+			if ( (button.Title:GetWidth() + summaryWidth) < (655 - (#mission.rewards * 65)) ) then
 				button.Title:SetPoint("LEFT", 165, 0);
 				button.Summary:ClearAllPoints();
 				button.Summary:SetPoint("BOTTOMLEFT", button.Title, "BOTTOMRIGHT", 8, 0);
@@ -414,27 +435,12 @@ function CovenantMissionListMixin:ClearAdventureSelectTutorial()
 	HelpTip:Acknowledge(self, COVENANT_MISSIONS_TUTORIAL_MISSION_LIST);
 end
 
----------------------------------------------------------------------------------
---- Covenant Mission List Button Handlers									  ---
----------------------------------------------------------------------------------
 
-function CovenantMissionButton_OnClick(self)
-	local missionFrame = self:GetParent():GetParent():GetParent():GetParent():GetParent();
-	if (self.info.canBeCompleted) then
-		missionFrame:InitiateMissionCompletion(self.info);
-	else
-		missionFrame:OnClickMission(self.info);
-	end
-end
-
-function CovenantMissionButton_OnEnter(self)
+function CovenantMissionInfoTooltip_OnEnter(self)
 	local missionInfo = self.info;
-
 	if (missionInfo == nil) then
 		return;
 	end
-
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 
 	GameTooltip_SetTitle(GameTooltip, missionInfo.name);
 	if(missionInfo.canBeCompleted) then
@@ -442,6 +448,8 @@ function CovenantMissionButton_OnEnter(self)
 	elseif missionInfo.inProgress then
 		GameTooltip_AddHighlightLine(GameTooltip, IN_PROGRESS);
 	end
+
+	GameTooltip_AddHighlightLine(GameTooltip, COVENANT_MISSION_XP_TOOLTIP_FORMAT:format(missionInfo.xp));
 
 	if(missionInfo.description) then 
 		GameTooltip_AddNormalLine(GameTooltip, missionInfo.description);
@@ -482,6 +490,25 @@ function CovenantMissionButton_OnEnter(self)
 	end
 
 	GameTooltip:Show();
+end 
+
+---------------------------------------------------------------------------------
+--- Covenant Mission List Button Handlers									  ---
+---------------------------------------------------------------------------------
+
+function CovenantMissionButton_OnClick(self)
+	local missionFrame = self:GetParent():GetParent():GetParent():GetParent():GetParent();
+	if (self.info.canBeCompleted) then
+		missionFrame:InitiateMissionCompletion(self.info);
+	else
+		missionFrame:OnClickMission(self.info);
+	end
+end
+
+
+function CovenantMissionButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	CovenantMissionInfoTooltip_OnEnter(self);
 end
 
 ---------------------------------------------------------------------------------
@@ -494,6 +521,19 @@ function CovenantMissionEncounterIconMixin:SetEncounterInfo(encounterIconInfo)
 	self.PortraitBorder:SetShown( not encounterIconInfo.isRare and not encounterIconInfo.isElite);
 	self.RareOverlay:SetShown(encounterIconInfo.isRare);
 	self.EliteOverlay:SetShown(encounterIconInfo.isElite);
+
+	if self.LevelFrame ~= nil then
+		local useAtlasSize = false;
+		if encounterIconInfo.isElite then
+			self.LevelFrame:SetAtlas("adventures-mission-frame-elite", useAtlasSize);
+		elseif encounterIconInfo.isRare then
+			self.LevelFrame:SetAtlas("adventures-mission-frame-medium", useAtlasSize);
+		else
+			self.LevelFrame:SetAtlas("adventures-mission-frame-normal", useAtlasSize);
+		end
+		self.Level:SetText(encounterIconInfo.missionScalar);
+	end
+
 	GarrisonPortrait_Set(self.Portrait, encounterIconInfo.portraitFileDataID);
 end
 
@@ -700,6 +740,8 @@ end
 
 CovenantPortraitMixin = {};
 
+local CovenantTroopPortraitYAdjustment = -6;
+
 function CovenantPortraitMixin:SetupPortrait(followerInfo)
 	GarrisonPortrait_Set(self.Portrait, followerInfo.portraitIconID);
 	self.HealthBar:Show();
@@ -709,7 +751,21 @@ function CovenantPortraitMixin:SetupPortrait(followerInfo)
 	self.HealthBar:SetHealth(followerInfo.autoCombatantStats and followerInfo.autoCombatantStats.currentHealth or 1);
 	self.HealthBar:SetRole(followerInfo.role);
 	local puckBorderAtlas = followerInfo.isAutoTroop and "Adventurers-Followers-Frame-Troops" or "Adventurers-Followers-Frame";
+	self.TroopStackBorder1:SetShown(followerInfo.isAutoTroop);
+	self.TroopStackBorder2:SetShown(followerInfo.isAutoTroop);
 	self.PuckBorder:SetAtlas(puckBorderAtlas);
+
+	self:SetScale(followerInfo.isAutoTroop and 0.9 or 1.0);
+
+	local point, relativeTo, relativePoint, x, y = self:GetPoint();
+	if followerInfo.isAutoTroop and (self.yAnchorAdjustment == nil) then 
+		self.yAnchorAdjustment = CovenantTroopPortraitYAdjustment;
+		y = y + CovenantTroopPortraitYAdjustment;
+		self:SetPoint(point, relativeTo, relativePoint, x, y);
+	elseif not followerInfo.isAutoTroop and (self.yAnchorAdjustment ~= nil) then
+		self:SetPoint(point, relativeTo, relativePoint, x, y - self.yAnchorAdjustment);
+		self.yAnchorAdjustment = nil;
+	end
 end
 
 function CovenantPortraitMixin:SetQuality(followerInfo)
@@ -736,7 +792,7 @@ end
 function AdventuresPuckHealthBarMixin:UpdateHealthBar()
 	if self.health and self.maxHealth and self.maxHealth ~= 0 then
 		local healthPercent = math.min(self.health / self.maxHealth, 1);
-		local healthBarWidth = self.Background:GetWidth();
+		local healthBarWidth = self.Background:GetWidth() + HealthBarBorderSize;
 		self.Health:SetPoint("RIGHT", self.Background, "LEFT", healthBarWidth * healthPercent, 0);
 	end
 end

@@ -1,4 +1,33 @@
 
+RuneforgeCovenantSigilMixin = {};
+
+function RuneforgeCovenantSigilMixin:OnPowerSet(oldPowerID, powerID)
+	local hasPowerID = powerID ~= nil;
+	local powerInfo = hasPowerID and self:GetParent():GetPowerInfo();
+	local covenantID = powerInfo and (powerInfo.covenantID) or nil;
+	local isCovenantPower = covenantID ~= nil;
+	self:SetShown(isCovenantPower);
+	if isCovenantPower then
+		local isAvailable = (powerInfo.state == Enum.RuneforgePowerState.Available);
+		if isCovenantPower then
+			local sigilInfo = RuneforgeUtil.GetSigilInfoForCovenant(covenantID);
+			self:SetScale(sigilInfo.scale);
+			self.Icon:SetAtlas(sigilInfo.atlas, TextureKitConstants.UseAtlasSize);
+			self.Icon:SetDesaturated(not isAvailable or not powerInfo.matchesCovenant);
+			self.UnavailableMask:SetAtlas(sigilInfo.mask);
+
+			if isAvailable and powerInfo.matchesCovenant then
+				self.DimOverlay:SetAlpha(0);
+			elseif not isAvailable then
+				self.DimOverlay:SetAlpha(sigilInfo.uncollectedDim);
+			else -- not powerInfo.matchesCovenant
+				self.DimOverlay:SetAlpha(sigilInfo.inaccessibleDim);
+			end
+		end
+	end
+end
+
+
 RuneforgePowerBaseMixin = {};
 
 function RuneforgePowerBaseMixin:OnHide()
@@ -52,16 +81,22 @@ function RuneforgePowerBaseMixin:OnEnter()
 			GameTooltip_AddErrorLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_TOOLTIP_NOT_COLLECTED);
 		end
 
-		local powerInfo = self:GetPowerInfo();
-		local specName = powerInfo and powerInfo.specName or nil;
-		if specName ~= nil then
+		local specName = powerInfo.specName;
+		local isSpecPower = (specName ~= nil);
+		local isCovenantPower = (powerInfo.covenantID ~= nil);
+		if isSpecPower or isCovenantPower then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
-			if powerInfo.matchesSpec then
-				local requiresText = RUNEFORGE_LEGENDARY_POWER_REQUIRES_SPEC_FORMAT:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(specName));
+			local covenantData = isCovenantPower and C_Covenants.GetCovenantData(powerInfo.covenantID) or nil;
+			local covenantName = covenantData and covenantData.name or "";
+
+			local matchesRequirement = (isSpecPower and powerInfo.matchesSpec) or (isCovenantPower and powerInfo.matchesCovenant);
+			local requirementText = isCovenantPower and covenantName or specName;
+			if matchesRequirement then
+				local requiresText = RUNEFORGE_LEGENDARY_POWER_REQUIRES_SPEC_FORMAT:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(requirementText));
 				GameTooltip_AddNormalLine(GameTooltip, requiresText);
 			else
-				GameTooltip_AddErrorLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_REQUIRES_SPEC_FORMAT:format(specName));
+				GameTooltip_AddErrorLine(GameTooltip, RUNEFORGE_LEGENDARY_POWER_REQUIRES_SPEC_FORMAT:format(requirementText));
 			end
 		end
 
@@ -103,6 +138,10 @@ function RuneforgePowerBaseMixin:SetPowerID(powerID)
 	end
 
 	self:OnPowerSet(oldPowerID, powerID);
+
+	if self.CovenantSigil then
+		self.CovenantSigil:OnPowerSet(oldPowerID, powerID);
+	end
 end
 
 function RuneforgePowerBaseMixin:ShouldHideSource()
@@ -238,19 +277,6 @@ RuneforgeUtil.FlyoutType = {
 	UpgradeItem = 3,
 };
 
-function RuneforgeUtil.GetCostsString(costs)
-	local resultString = "";
-	for i, cost in ipairs(costs) do
-		local currencyInfo = C_CurrencyInfo.GetBasicCurrencyInfo(cost.currencyID);
-		if currencyInfo then
-			local currencyMarkup = CreateTextureMarkup(currencyInfo.icon, 64, 64, 14, 14, 0, 1, 0, 1);
-			resultString = resultString.." "..cost.amount.." "..currencyMarkup;
-		end
-	end
-
-	return resultString;
-end
-
 function RuneforgeUtil.IsUpgradeableRuneforgeLegendary(itemLocation)
 	return C_LegendaryCrafting.IsRuneforgeLegendary(itemLocation) and not C_LegendaryCrafting.IsRuneforgeLegendaryMaxLevel(itemLocation);
 end
@@ -274,6 +300,29 @@ function RuneforgeUtil.GetPreviewClassAndSpec()
 	return classID, specID;
 end
 
+local CovenantIDToPowerSigilInfo = {
+	[1] = { atlas = "sanctumupgrades-kyrian-32x32", mask = "runecarving-kyrian-32x32-mask", scale = 0.75, uncollectedDim = 0.4, inaccessibleDim = 0, },
+	[2] = { atlas = "sanctumupgrades-venthyr-32x32", mask = "runecarving-venthyr-32x32-mask", scale = 0.75, uncollectedDim = 0.4, inaccessibleDim = 0, },
+	[3] = { atlas = "sanctumupgrades-nightfae-32x32", mask = "runecarving-nightfae-32x32-mask", scale = 0.75, uncollectedDim = 0.6, inaccessibleDim = 0.25, },
+	[4] = { atlas = "sanctumupgrades-necrolord-32x32", mask = "runecarving-necrolord-32x32-mask", scale = 0.75, uncollectedDim = 0.4, inaccessibleDim = 0, },
+};
+
+function RuneforgeUtil.GetSigilInfoForCovenant(covenantID)
+	return CovenantIDToPowerSigilInfo[covenantID];
+end
+
+function RuneforgeUtil.SetCurrencyCosts(currencyFrame, costs)
+	local initFunction = nil;
+	local initialAnchor = AnchorUtil.CreateAnchor("TOPRIGHT", currencyFrame, "TOPRIGHT");
+	local stride = #costs;
+	local paddingX = 10;
+	local paddingY = nil;
+	local fixedWidth = 62;
+	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, stride, paddingX, paddingY, fixedWidth);
+	local tooltipAnchor = "ANCHOR_TOP";
+	currencyFrame:SetCurrencies(costs, initFunction, initialAnchor, layout, tooltipAnchor);
+end
+
 Enum.RuneforgePowerState =
 {
 	Available = 0,
@@ -284,6 +333,7 @@ Enum.RuneforgePowerState =
 Enum.RuneforgePowerFilter =
 {
 	All = 0,
-	Available = 1,
-	Unavailable = 2,
+	Relevant = 1,
+	Available = 2,
+	Unavailable = 3,
 };

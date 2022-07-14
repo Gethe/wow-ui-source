@@ -115,6 +115,26 @@ function IslandsQueueWeeklyQuestMixin:Refresh()
 	end
 end
 
+IslandsQueueWeeklyQuestRewardMixin = { };
+
+function IslandsQueueWeeklyQuestRewardMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	if self.Completed then
+		GameTooltip_AddInstructionLine(GameTooltip, GOAL_COMPLETED);
+	else
+		GameTooltip:SetAllowShowWithNoLines(true);
+		QuestUtils_AddQuestCurrencyRewardsToTooltip(self:GetParent().questID, GameTooltip, GameTooltip.ItemTooltip);
+	end
+
+	GameTooltip:Show();
+end
+
+function IslandsQueueWeeklyQuestRewardMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+
 IslandsQueueFrameMixin = { };
 
 local function SetWidgetFrameAnchors(frame, anchorFrame)
@@ -127,7 +147,8 @@ end
 local function WidgetInit(widgetFrame)
 	widgetFrame.Background:SetSize(451, 301);
 	widgetFrame.Text:SetSize(165, 50);
-	widgetFrame.Text:SetFontObjectsToTry(GameFontNormalLarge, GameFontNormalMed1, GameFontNormal);
+	widgetFrame.Text:SetFontObject(GameFontNormalLarge);
+	widgetFrame.Text:SetMinLineHeight(12);
 end
 
 local function WidgetsLayout(widgetContainer, sortedWidgets)

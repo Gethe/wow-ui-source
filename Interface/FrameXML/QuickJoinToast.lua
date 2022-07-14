@@ -363,6 +363,7 @@ function QuickJoinToastMixin:OnEnter()
 		else
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip_SetTitle(GameTooltip, MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL"));
+			GameTooltip:Show();
 		end
 	end
 end
@@ -534,11 +535,13 @@ function QuickJoinToast_GetPriorityFromQueue(queue)
 	local itemLevel = GetAverageItemLevel();
 	if ( queueData.queueType == "lfglist" ) then
 		local searchResultInfo = C_LFGList.GetSearchResultInfo(queueData.lfgListID);
-		local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel, showQuickJoin = C_LFGList.GetActivityInfo(searchResultInfo.activityID);
+		local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 		--Filter by activity flags
-		if ( not showQuickJoin ) then
+		if ( not activityInfo or not activityInfo.showQuickJoinToast ) then
 			return 0;
 		end
+
+		local iLevel = activityInfo.ilvlSuggestion;
 		if ( iLevel == 0 ) then
 			return QUICK_JOIN_CONFIG.THROTTLE_LFGLIST_PRIORITY_DEFAULT;
 		end

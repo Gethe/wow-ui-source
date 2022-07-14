@@ -193,7 +193,7 @@ function AdventuresRewardsFollowerMixin:UpdateExperience()
 			self.LevelUpAnimFrame.Anim:Stop(); --in case there's one playing already
 			self.LevelUpAnimFrame:Show();
 			self.LevelUpAnimFrame.Anim:Play();
-			PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_LEVEL_UP, nil, SOUNDKIT_ALLOW_DUPLICATES);
+			PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_LEVEL_UP);
 
 			storedExperience = storedExperience + progress;
 			totalLevelUps = totalLevelUps + 1;

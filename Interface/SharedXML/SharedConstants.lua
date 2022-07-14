@@ -15,6 +15,11 @@ FACTION_LABELS = {
 	[1] = FACTION_ALLIANCE,
 };
 
+FACTION_LABELS_FROM_STRING = {
+	["Horde"] = FACTION_HORDE, 
+	["Alliance"] = FACTION_ALLIANCE,
+}
+
 -- If you add a class here, you also need to add it to RAID_CLASS_COLORS, CHARCREATE_CLASS_INFO, and maybe to ALT_MANA_BAR_PAIR_DISPLAY_INFO
 CLASS_ICON_TCOORDS = {
 	["WARRIOR"]		= {0, 0.25, 0, 0.25},
@@ -51,9 +56,11 @@ function GetClassAtlas(className)
 	return ("classicon-%s"):format(className);
 end
 
-function GetGenderAtlas(sexID)
-	local genderName = (sexID == Enum.Unitsex.Male) and "male" or "female";
-	return ("charactercreate-gendericon-%s"):format(genderName);
+function GetGenderAtlases(sexID)
+	local genderName = (sexID == Enum.UnitSex.Male) and "male" or "female";
+	local baseAtlas = ("charactercreate-gendericon-%s"):format(genderName);
+	local selectedAtlas = ("%s-selected"):format(baseAtlas);
+	return baseAtlas, selectedAtlas;
 end
 
 WOW_GAMES_CATEGORY_ID = 33;

@@ -143,7 +143,7 @@ function MainMenuBarBackpackButton_OnLoad(self)
 
 	ItemAnim_OnLoad(self)
 	self:RegisterForClicks("AnyUp");
-	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
+	MainMenuBarBackpackButtonIconTexture:SetAtlas("hud-backpack", false);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("BAG_UPDATE");

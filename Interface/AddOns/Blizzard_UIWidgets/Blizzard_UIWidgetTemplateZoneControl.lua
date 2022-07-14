@@ -40,6 +40,7 @@ function UIWidgetTemplateZoneControlMixin:Setup(widgetInfo, widgetContainer)
 		entryFrame:Show();
 		local lastVals = (self.lastVals[index] and (self.lastVals[index].state == zoneInfo.state)) and self.lastVals[index] or nil;
 		entryFrame:Setup(widgetContainer, index, widgetInfo.mode, widgetInfo.leadingEdgeType, widgetInfo.dangerFlashType, zoneInfo, lastVals, widgetInfo.textureKit);
+		entryFrame:SetTooltipLocation(widgetInfo.tooltipLoc);
 		self:SetZoneAnchors(entryFrame, index);
 		self.lastVals[index] = zoneInfo;
 	end

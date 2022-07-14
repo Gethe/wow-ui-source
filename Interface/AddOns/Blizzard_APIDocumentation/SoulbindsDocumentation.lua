@@ -146,24 +146,6 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetConduitCharges",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "charges", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetConduitChargesCapacity",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "charges", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetConduitCollection",
 			Type = "Function",
 
@@ -267,21 +249,6 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetConduitItemLevel",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "conduitID", Type = "number", Nilable = false },
-				{ Name = "rank", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "itemLevel", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetConduitQuality",
 			Type = "Function",
 
@@ -297,7 +264,7 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetConduitRankFromCollection",
+			Name = "GetConduitRank",
 			Type = "Function",
 
 			Arguments =
@@ -368,16 +335,7 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "GetTotalConduitChargesPending",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "count", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetTotalConduitChargesPendingInSoulbind",
+			Name = "GetSpecsAssignedToSoulbind",
 			Type = "Function",
 
 			Arguments =
@@ -387,7 +345,7 @@ local Soulbinds =
 
 			Returns =
 			{
-				{ Name = "count", Type = "number", Nilable = false },
+				{ Name = "specIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -555,15 +513,6 @@ local Soulbinds =
 			},
 		},
 		{
-			Name = "SoulbindConduitChargesUpdated",
-			Type = "Event",
-			LiteralName = "SOULBIND_CONDUIT_CHARGES_UPDATED",
-			Payload =
-			{
-				{ Name = "charges", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "SoulbindConduitCollectionCleared",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_COLLECTION_CLEARED",
@@ -702,6 +651,7 @@ local Soulbinds =
 				{ Name = "tree", Type = "SoulbindTree", Nilable = false },
 				{ Name = "modelSceneData", Type = "SoulbindModelSceneData", Nilable = false },
 				{ Name = "activationSoundKitID", Type = "number", Nilable = false },
+				{ Name = "playerConditionReason", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -730,6 +680,7 @@ local Soulbinds =
 				{ Name = "conduitType", Type = "SoulbindConduitType", Nilable = true },
 				{ Name = "parentNodeIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "failureRenownRequirement", Type = "number", Nilable = true },
+				{ Name = "socketEnhanced", Type = "bool", Nilable = true },
 			},
 		},
 		{

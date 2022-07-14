@@ -1,3 +1,8 @@
+
+local type = type;
+
+local LOCAL_CHECK_Frame = CreateFrame("Frame");
+
 -- The "modified attribute" takes the form of: modifier-name-button
 -- The modifier is one of "shift-", "ctrl-", "alt-", and the button is a number from 1 through 5.
 --
@@ -59,7 +64,7 @@ end
 function SecureButton_GetModifierPrefix(frame)
     -- Handle optional frame modifiers attribute
     if ( frame ) then
-        local modlist = frame:GetAttribute("modifiers");
+        local modlist = LOCAL_CHECK_Frame.GetAttribute(frame, "modifiers");
         if ( modlist ) then
             local prefix = SecureButton_ParseModifierString(modlist);
             if ( prefix ) then
@@ -112,10 +117,10 @@ function SecureButton_GetModifiedAttribute(frame, name, button, prefix, suffix)
     if ( not suffix ) then
         suffix = SecureButton_GetButtonSuffix(button);
     end
-    local value = frame:GetAttribute(prefix, name, suffix);
-    if ( not value and (frame:GetAttribute("useparent-"..name) or
-                        frame:GetAttribute("useparent*")) ) then
-        local parent = frame:GetParent();
+    local value = LOCAL_CHECK_Frame.GetAttribute(frame, prefix, name, suffix);
+    if ( not value and (LOCAL_CHECK_Frame.GetAttribute(frame, "useparent-"..name) or
+                        LOCAL_CHECK_Frame.GetAttribute(frame, "useparent*")) ) then
+        local parent = LOCAL_CHECK_Frame.GetParent(frame);
         if ( parent ) then
             value = SecureButton_GetModifiedAttribute(parent, name, button, prefix, suffix);
         end
@@ -161,6 +166,20 @@ function SecureButton_GetModifiedUnit(self, button)
                 end
 
                 return unit;
+        end
+        if ( SecureButton_GetModifiedAttribute(self, "checkmouseovercast", button) ) then
+            local useMouseoverCasting = GetCVarBool("enableMouseoverCast") and (GetModifiedClick("MOUSEOVERCAST") == "NONE" or IsModifiedClick("MOUSEOVERCAST"));
+            if ( useMouseoverCasting and UnitExists("mouseover") ) then
+                local action = self:CalculateAction(button);
+                local targetIsFriendly = UnitIsFriend("player", "mouseover");
+                local useNeutral = true;
+                if ( (targetIsFriendly and C_ActionBar.IsHelpfulAction(action, useNeutral)) or (not targetIsFriendly and C_ActionBar.IsHarmfulAction(action, useNeutral)) ) then
+                    if ( SpellIsTargeting() ) then
+                        SpellStopTargeting();
+                    end
+                    return "mouseover";
+                end
+            end
         end
         if ( SecureButton_GetModifiedAttribute(self, "checkselfcast", button) ) then
                 if ( IsModifiedClick("SELFCAST") ) then
@@ -624,6 +643,10 @@ function SecureActionButton_OnClick(self, button, down)
         end
     end
 
+    if ( type(button) ~= "string" ) then
+        return;
+    end
+
     -- Don't do anything if our unit doesn't exist
     if ( unit and unit ~= "none" and not UnitExists(unit) ) then
         return;
@@ -677,6 +700,7 @@ function SecureActionButton_OnClick(self, button, down)
 end
 
 function SecureUnitButton_OnLoad(self, unit, menufunc)
+    self:RegisterForClicks("AnyUp");
     self:SetAttribute("*type1", "target");
     self:SetAttribute("*type2", "menu");
     self:SetAttribute("unit", unit);
@@ -684,12 +708,20 @@ function SecureUnitButton_OnLoad(self, unit, menufunc)
 end
 
 function SecureUnitButton_OnClick(self, button)
-    local type = SecureButton_GetModifiedAttribute(self, "type", button);
-    if ( type == "menu" or type == "togglemenu" ) then
-        if ( SpellIsTargeting() ) then
-            SpellStopTargeting();
-            return;
+    local modifiers = C_ClickBindings.MakeModifiers();
+    local bindingType = C_ClickBindings.GetBindingType(button, modifiers);
+    if ( (bindingType == Enum.ClickBindingType.Spell) or (bindingType == Enum.ClickBindingType.Macro) ) then
+        local unit = SecureButton_GetModifiedUnit(self);
+        C_ClickBindings.ExecuteBinding(unit, button, modifiers);
+    else
+        local effectiveButton = (bindingType == Enum.ClickBindingType.Interaction) and C_ClickBindings.GetEffectiveInteractionButton(button, modifiers) or button;
+        local type = SecureButton_GetModifiedAttribute(self, "type", effectiveButton);
+        if ( type == "menu" or type == "togglemenu" ) then
+            if ( SpellIsTargeting() ) then
+                SpellStopTargeting();
+                return;
+            end
         end
+        SecureActionButton_OnClick(self, effectiveButton);
     end
-    SecureActionButton_OnClick(self, button);
 end

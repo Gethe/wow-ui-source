@@ -84,7 +84,6 @@ end
 
 function BonusObjectiveTracker_OnHeaderLoad(self)
 	local module = CreateBonusObjectiveTrackerModule(self.ModuleName);
-    self.Text:SetFontObjectsToTry(GameFontNormalMed2, SystemFont_Shadow_Med1);
 
 	module.rewardsFrame = self.RewardsFrame;
 	module.ShowWorldQuests = self.ShowWorldQuests;
@@ -490,6 +489,7 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 
 	if ( not HaveQuestRewardData(questID) ) then
 		GameTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
 	else
 		local isWorldQuest = block.module.ShowWorldQuests;
 		if ( isWorldQuest ) then
@@ -501,10 +501,10 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 		GameTooltip:AddLine(isWorldQuest and WORLD_QUEST_TOOLTIP_DESCRIPTION or BONUS_OBJECTIVE_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
 		GameTooltip:AddLine(" ");
 		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, questID, TOOLTIP_QUEST_REWARDS_STYLE_NONE);
+		GameTooltip_SetTooltipWaitingForData(GameTooltip, false);
 	end
 
 	GameTooltip:Show();
-	GameTooltip.recalculatePadding = true;
 	block.module.tooltipBlock = block;
 end
 
@@ -759,7 +759,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 
 		if ( QuestUtils_IsQuestWorldQuest(questID) ) then
 			local info = C_QuestLog.GetQuestTagInfo(questID);
-			local inProgress = questLogIndex ~= 0;
+			local inProgress = questLogIndex ~= nil;
 			QuestUtil.SetupWorldQuestButton(block.TrackedQuest, info, inProgress, isSuperTracked, nil, nil, isTrackedWorldQuest);
 
 			block.TrackedQuest:SetScale(.9);
@@ -785,11 +785,11 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 						local line = block.currentLine;
 						line.Icon:SetAtlas("Tracker-Check", true);
 						if ( existingLine and not line.finished ) then
-							line.Glow.Anim:Play();
-							line.Sheen.Anim:Play();
+							BonusObjectiveTracker_TryPlayLineAnim(block, line.Glow.Anim);
+							BonusObjectiveTracker_TryPlayLineAnim(block, line.Sheen.Anim);	
 							if ( existingTask ) then
 								line.CheckFlash:Show();
-								line.CheckFlash.Anim:Play();
+								BonusObjectiveTracker_TryPlayLineAnim(block, line.CheckFlash.Anim);	
 							end
 						end
 						line.finished = true;
@@ -812,7 +812,7 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 
 					local progressBar = module:AddProgressBar(block, block.currentLine, questID, finished);
 					if ( playEnterAnim and (OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED or OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED) ) then
-						progressBar.Bar.AnimIn:Play();
+						BonusObjectiveTracker_TryPlayLineAnim(block, progressBar.Bar.AnimIn);
 					elseif not progressBar.Bar.AnimIn:IsPlaying() then
 						-- Bug ID: 495448, setToFinal doesn't always work properly with sibling animations, hackily fix up the state here
 						progressBar.Bar.BarGlow:SetAlpha(0);
@@ -849,9 +849,10 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 		if ( showAsCompleted ) then
 			for _, line in pairs(block.lines) do
 				if ( line.finished and line.state ~= "FADING" ) then
-					line.FadeOutAnim:Play();
-					line.state = "FADING";
-					line.block = block;
+					if BonusObjectiveTracker_TryPlayLineAnim(block, line.FadeOutAnim) then
+						line.state = "FADING";
+						line.block = block;
+					end
 				end
 			end
 		end
@@ -985,21 +986,26 @@ function BonusObjectiveTrackerModuleMixin:Update()
 	self:EndLayout();
 end
 
+function BonusObjectiveTracker_TryPlayLineAnim(block, anim)
+	-- When entering or leaving we're animating the whole block, don't allow line anims to play
+	if block.state == "ENTERING" or block.state == "LEAVING" then
+		return false;
+	end
+	anim:Play();
+	return true;
+end
+
 function BonusObjectiveTracker_SetBlockState(block, state, force)
 	if ( block.state == state ) then
 		return;
 	end
 
+	local doAnimOut = false;
 	if ( state == "LEAVING" ) then
 		-- only apply this state if block is PRESENT - let ENTERING anim finish
 		if ( block.state == "PRESENT" ) then
-			for _, line in pairs(block.lines) do
-				line.Glow.Anim:Stop();
-				line.Sheen.Anim:Stop();
-			end
-
 			-- animate out
-			block.AnimOut:Play();
+			doAnimOut = true;
 			block.state = "LEAVING";
 		end
 	elseif ( state == "ENTERING" ) then
@@ -1041,9 +1047,26 @@ function BonusObjectiveTracker_SetBlockState(block, state, force)
 	elseif ( state == "FINISHED" ) then
 		-- only apply this state if block is PRESENT
 		if ( block.state == "PRESENT" ) then
-			block.AnimOut:Play();
+			doAnimOut = true;
 			block.state = "FINISHED";
 		end
+	end
+
+	if doAnimOut then
+		-- First kill any anims in progress
+		-- Can't do it on block release, that doesn't happen until this anim ends
+		-- And can't have nested anims playing at the same time, bug WOW9-19015
+		for _, line in pairs(block.lines) do
+			line.Glow.Anim:Stop();
+			line.Sheen.Anim:Stop();
+		end
+		local progressBars = block.module.usedProgressBars[block];
+		if progressBars then
+			for line, bar in pairs(progressBars) do
+				BonusObjectiveTrackerProgressBar_ResetAnimations(bar);
+			end
+		end
+		block.AnimOut:Play();
 	end
 end
 
@@ -1177,14 +1200,25 @@ function BonusObjectiveTrackerProgressBar_UpdateReward(progressBar)
 	end
 end
 
-function BonusObjectiveTrackerProgressBar_PlayAnimation(self, overridePercent, overrideDelta, sparkHorizontalOffset)
+function BonusObjectiveTrackerProgressBar_ResetAnimations(self)
+	for i, frame in ipairs(self.AnimatableFrames) do
+		-- a progressbar animatable frame will have one of these two parentkey anims
+		local anim = frame.AnimIn or frame.FlareAnim;
+		anim:Stop();
+		for i, texture in ipairs(frame.AlphaTextures) do
+			texture:SetAlpha(0);
+		end
+	end
+end
+
+function BonusObjectiveTrackerProgressBar_PlayAnimation(self, overridePercent, overrideDelta)
 	local percent = overridePercent or self.finished and 100 or GetQuestProgressBarPercent(self.questID);
 	local delta = overrideDelta or percent - self.AnimValue;
-	BonusObjectiveTrackerProgressBar_PlayFlareAnim(self, delta, sparkHorizontalOffset);
+	BonusObjectiveTrackerProgressBar_PlayFlareAnim(self, delta);
 	BonusObjectiveTrackerProgressBar_SetValue(self, percent);
 end
 
-function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta, sparkHorizontalOffset)
+function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta)
 	if( progressBar.AnimValue >= 100 or delta == 0 ) then
 		return;
 	end
@@ -1192,8 +1226,8 @@ function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta, spar
 	animOffset = animOffset or 12;
 	local offset = progressBar.Bar:GetWidth() * (progressBar.AnimValue / 100) - animOffset;
 
-	local prefix = overridePrefix or "";
-	if( delta < 10 and not overridePrefix ) then
+	local prefix = "";
+	if delta < 10 then
 		prefix = "Small";
 	end
 
@@ -1207,7 +1241,7 @@ function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta, spar
 
 	if ( flare ) then
 		flare:SetPoint("LEFT", progressBar.Bar, "LEFT", offset, 0);
-		flare.FlareAnim:Play();
+		BonusObjectiveTracker_TryPlayLineAnim(progressBar.block, flare.FlareAnim);
 	end
 
 	local barFlare = progressBar["FullBarFlare1"];
@@ -1219,7 +1253,7 @@ function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta, spar
 	end
 
 	if ( barFlare ) then
-		barFlare.FlareAnim:Play();
+		BonusObjectiveTracker_TryPlayLineAnim(progressBar.block, barFlare.FlareAnim);
 	end
 end
 

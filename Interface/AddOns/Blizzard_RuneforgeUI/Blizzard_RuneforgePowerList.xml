@@ -38,6 +38,13 @@
 				</MaskTexture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="CovenantSigil" inherits="RuneforgeCovenantSigilTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="-12" y="12"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
@@ -55,6 +62,11 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="runecarving-icon-power-selected" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ErrorTexture" atlas="runecarving-icon-power-empty-error" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 					</Anchors>

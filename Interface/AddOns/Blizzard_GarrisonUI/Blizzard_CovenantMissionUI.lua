@@ -27,7 +27,7 @@ StaticPopupDialogs["COVENANT_MISSIONS_HEAL_CONFIRMATION"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		C_Garrison.RushHealFollower(self.data.followerID);
-		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -40,7 +40,7 @@ StaticPopupDialogs["COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION"] = {
 	button2 = CANCEL,
 	OnAccept = function(self)
 		C_Garrison.RushHealAllFollowers(self.data.followerType);
-		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_HEAL_FOLLOWER);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -126,11 +126,6 @@ function CovenantMission:OnLoadMainFrame()
 	self.FollowerList:SetSortFuncs(GarrisonFollowerList_DefaultSort, GarrisonFollowerList_InitializeDefaultSort);
 
 	self:GetMissionPage().Board:Reset();
-
-	self:GetMissionPage().Stage.EnemyPowerValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
-	self:GetMissionPage().Stage.EnemyHealthValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
-	self:GetMissionPage().Board.AllyPowerValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
-	self:GetMissionPage().Board.AllyHealthValue:SetFontObjectsToTry("GameFontHighlight", "GameFontHighlightSmall");
 
 	for followerFrame in self:GetMissionPage().Board:EnumerateFollowers() do
 		followerFrame:SetMainFrame(self);
@@ -220,7 +215,14 @@ function CovenantMission:SelectTab(id)
 	GarrisonFollowerMission.SelectTab(self, id);
 	self.BackgroundTile:SetShown(id ~= 3);
 	self:HideStaticPopups();
-	self:ClearQueuedTutorials();
+
+	self:UpdateMissionParty();
+
+	if self.MissionTab:IsShown() and self.queuedTutorials then
+		self.tutorialIndex = 1;
+		self.currentTutorial = nil;
+		self:ProcessTutorials();
+	end
 end
 
 function CovenantMission:CloseMission()
@@ -254,6 +256,10 @@ function CovenantMission:SetupTabs()
 		if (not defaultTab) then
 			defaultTab = 3;
 		end
+
+		self.MapTab:Show();
+	else
+		self.MapTab:Hide();
 	end
 
    self.Tab1:Hide();
@@ -293,11 +299,36 @@ function CovenantMission:ShowMission(missionInfo)
 		followerFrame:Show();
 	end
 
+	for enemySocket in missionPage.Board:EnumerateEnemySockets() do 
+		enemySocket:SetSocketTexture(missionInfo.locTextureKit, true);
+	end 
+
+	for followerSocket in missionPage.Board:EnumerateFollowerSockets() do 
+		followerSocket:SetSocketTexture(missionInfo.locTextureKit, false);
+	end 
+	self:GetMissionPage().Board:ResetBoardIndicators();
+
 	self:SetupShowMissionTutorials(missionInfo);
 
 	missionPage.missionInfo = missionInfo;
+	local missionDuration;
+	if ( missionInfo.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
+		local duration = format(GARRISON_LONG_MISSION_TIME_FORMAT, missionInfo.duration);
+		missionDuration = format(PARENS_TEMPLATE, duration); 
+	else
+		missionDuration = format(PARENS_TEMPLATE, missionInfo.duration);
+	end
 
-	self:SetTitle(missionInfo.name);
+	-- First we test if the title and duration fit on one line.
+	local ignoreTruncation = true;
+	self:SetTitle(COVENANT_MISSION_TITLE_FORMAT:format(missionInfo.name, missionDuration), ignoreTruncation);
+
+	local numLines = self:GetNumTitleLines();
+	if numLines > 1 then
+		self:SetTitle(COVENANT_MISSION_TITLE_FORMAT_WITH_XP:format(missionInfo.name, missionDuration, missionInfo.xp), ignoreTruncation);
+	else
+		self:SetTitle(COVENANT_MISSION_TITLE_FORMAT_WITH_XP_SECOND_LINE:format(missionInfo.name, missionDuration, missionInfo.xp), ignoreTruncation);
+	end
 	
 	local missionDeploymentInfo =  C_Garrison.GetMissionDeploymentInfo(missionInfo.missionID);
 	missionPage.environment = missionDeploymentInfo.environment;
@@ -305,11 +336,13 @@ function CovenantMission:ShowMission(missionInfo)
 	missionPage.EncounterIcon:SetEncounterInfo(missionInfo.encounterIconInfo);
 	missionInfo.environmentEffect = C_Garrison.GetAutoMissionEnvironmentEffect(missionInfo.missionID);
 	missionPage.Stage.EnvironmentEffectFrame:SetEnvironmentEffect(missionInfo.environmentEffect);
+	missionPage.Stage.info = missionInfo; 
 	local enemies = missionDeploymentInfo.enemies;
 	self:SetEnemies(missionPage, enemies);
 	self:UpdateEnemyPower(missionPage, enemies);
 	self:UpdateAllyPower(missionPage);
 	self:UpdateMissionData(missionPage);
+	CovenantMissionUpdateBoardTextures(missionPage, missionInfo.locTextureKit)
 end
 
 function CovenantMission:SetupShowMissionTutorials(missionInfo)
@@ -420,7 +453,7 @@ function CovenantMission:OnClickFollowerPlacerFrame(button, info)
 	end
 	
 	if soundKitToPlay then
-		PlaySound(soundKitToPlay, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(soundKitToPlay);
 	end
 	self:ClearMouse();
 end
@@ -430,9 +463,9 @@ function CovenantMission:SetPlacerFrame(placer, info, yOffset, soundKit)
 	self:LockPlacerToMouse(placer);
 
 	if soundKit then
-		PlaySound(soundKit, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(soundKit);
 	else
-		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SELECTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SELECTED);
 	end
 end
 
@@ -549,7 +582,7 @@ function CovenantMission:UpdateCurrencyInfo()
 	self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon:SetSize(18, 18);
 	self.FollowerTab.HealFollowerFrame.CostFrame.Cost:SetPoint("RIGHT", self.FollowerTab.HealFollowerFrame.CostFrame.CostIcon, "LEFT", -8, -1);
 
-	self.FollowerList.HealAllButton.currencyInfo = currencyInfo;
+	self.FollowerList.HealAllButton.currencyID = secondaryCurrency;
 
 	SetupMaterialFrame(self.FollowerList.MaterialFrame, secondaryCurrency, currencyTexture);
 	SetupMaterialFrame(self.MissionTab.MissionList.MaterialFrame, secondaryCurrency, currencyTexture);
@@ -646,7 +679,7 @@ function CovenantMission:AssignFollowerToMission(frame, info)
 	self:UpdateAllyPower(missionPage);
 	self:UpdateMissionData(missionPage);
 	self:ProcessTutorials();
-	PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SLOTTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_SLOTTED);
 
 	return true;
 end
@@ -679,7 +712,7 @@ function CovenantMission:RemoveFollowerFromMission(frame, updateValues)
 	self:UpdateMissionData(missionPage);
 
 	if updateValues then
-		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_UNSLOTTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(SOUNDKIT.UI_ADVENTURES_ADVENTURER_UNSLOTTED);
 	end
 
 	self:ClearQueuedTutorials();
@@ -747,7 +780,7 @@ function CovenantMission:QueueAutoTroopsTutorial()
 					checkCVars = true,
 				}
 
-				self:QueueTutorial(self, helpTipInfo, button);
+				self:QueueTutorial(helpTipInfo, button);
 				return;
 			end
 		end
@@ -773,7 +806,7 @@ function CovenantMission:QueueSingleTargetTutorial(abilityTargetInfos)
 					checkCVars = true,
 				}
 
-				self:QueueTutorial(self, helpTipInfo, anchorFrame);
+				self:QueueTutorial(helpTipInfo, anchorFrame);
 				return;
 			end
 		end
@@ -799,7 +832,7 @@ function CovenantMission:QueueTargetColumnTutorial(abilityTargetInfos)
 					checkCVars = true,
 				}
 				
-				self:QueueTutorial(self, helpTipInfo, anchorFrame);
+				self:QueueTutorial(helpTipInfo, anchorFrame);
 				return;
 			end
 		end
@@ -829,7 +862,7 @@ function CovenantMission:QueueTargetRowTutorial(abilityTargetInfos)
 			checkCVars = true,
 		}
 
-		self:QueueTutorial(self, helpTipInfo, anchorFrame);
+		self:QueueTutorial(helpTipInfo, anchorFrame);
 	end
 end
 
@@ -849,7 +882,7 @@ function CovenantMission:QueueTargetAllTutorial()
 			checkCVars = true,
 		}
 
-		self:QueueTutorial(self, helpTipInfo, anchorFrame);
+		self:QueueTutorial(helpTipInfo, anchorFrame);
 	end
 end
 
@@ -867,20 +900,36 @@ function CovenantMission:QueueTargetingTutorials(autoSpellInfos, abilityTargetIn
 	end
 end
 
-function CovenantMission:QueueTutorial(parentFrame, helptip, anchorFrame)
-	table.insert(self.queuedTutorials, {parent = parentFrame, helpTipInfo = helptip, anchor = anchorFrame});
+function CovenantMission:QueueTutorial(helptip, anchorFrame)
+	local missionPage = self:GetMissionPage();
+	if not missionPage:IsVisible() then
+		return;
+	end
+
+	for i, tutorialInfo in ipairs(self.queuedTutorials) do
+		if tutorialInfo.helpTipInfo.text == helptip.text then
+			return;
+		end
+	end
+
+	table.insert(self.queuedTutorials, {helpTipInfo = helptip, anchor = anchorFrame});
 end
 
 function CovenantMission:ClearQueuedTutorials()
 	self.queuedTutorials = {};
 	if self.currentTutorial then
-		HelpTip:Hide(self, self.currentTutorial);
+		HelpTip:Hide(self:GetMissionPage(), self.currentTutorial);
 	end
 	self.currentTutorial = nil;
 	self.tutorialIndex = 1;
 end
 
 function CovenantMission:ProcessTutorials()
+	local missionPage = self:GetMissionPage();
+	if HelpTip:IsShowingAnyInSystem("CovenantMissionStrategy") or not missionPage:IsVisible() then
+		return;
+	end
+
 	if self.currentTutorial then
 		HelpTip:Acknowledge(self.currentTutorial);
 	end
@@ -889,7 +938,7 @@ function CovenantMission:ProcessTutorials()
 		local nextTutorial = self.queuedTutorials[i];
 		if not GetCVarBitfield(nextTutorial.helpTipInfo.cvarBitfield, nextTutorial.helpTipInfo.bitfieldFlag) then
 			
-			HelpTip:Show(nextTutorial.parent, nextTutorial.helpTipInfo, nextTutorial.anchor);
+			HelpTip:Show(missionPage, nextTutorial.helpTipInfo, nextTutorial.anchor);
 			self.currentTutorial = nextTutorial.helpTipInfo.text;
 			self.tutorialIndex = i + 1;
 			return;
@@ -898,32 +947,40 @@ function CovenantMission:ProcessTutorials()
 end
 
 function CovenantMission:ShowStrategicPositioningTutorials()
+	local missionPage = self:GetMissionPage();
+
 	local showSecondTutorial = function () 
 		local secondAnchorIndex = Enum.GarrAutoBoardIndex.AllyRightFront;
-		local secondAnchorFrame = self:GetMissionPage().Board:GetSocketByBoardIndex(secondAnchorIndex);
+		local secondAnchorFrame = missionPage.Board:GetSocketByBoardIndex(secondAnchorIndex);
 		local secondHelpTip = {
 			text = COVENANT_MISSIONS_TUTORIAL_STRATEGY2,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			targetPoint = HelpTip.Point.RightEdgeCenter,
 			offsetX = 0,
 			offsetY = 0,
+			onHideCallback = GenerateClosure(self.ProcessTutorials, self); 
 		}
 
-		HelpTip:Show(self, secondHelpTip, secondAnchorFrame);
+		HelpTip:Show(missionPage, secondHelpTip, secondAnchorFrame);
 	end
 
 	local anchorIndex = Enum.GarrAutoBoardIndex.EnemyLeftBack;
-	local anchorFrame = self:GetMissionPage().Board:GetSocketByBoardIndex(anchorIndex);
+	local anchorFrame = missionPage.Board:GetSocketByBoardIndex(anchorIndex);
 	local helpTipInfo = {
 		text = COVENANT_MISSIONS_TUTORIAL_STRATEGY1,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		targetPoint = HelpTip.Point.RightEdgeCenter,
 		offsetX = 0,
 		offsetY = 0,
-		onHideCallback = function(acknowledged, closeFlag) showSecondTutorial(); end;
+		onHideCallback = function(acknowledged, closeFlag)
+			if missionPage:IsVisible() then
+				showSecondTutorial();
+			end;
+		end,
+		system = "CovenantMissionStrategy",
 	}
 
-	HelpTip:Show(self, helpTipInfo, anchorFrame);
+	HelpTip:Show(missionPage, helpTipInfo, anchorFrame);
 end
 
 function CovenantMission:ClearStrategicPositioningTutorials()
@@ -938,6 +995,12 @@ function CovenantMission:GetSystemSpecificStartMissionFailureMessage()
 		end
 	end
 end
+
+function CovenantMission:GetActiveMissionID()
+	local missionInfo = self:GetMissionPage().missionInfo;
+	return (missionInfo ~= nil) and missionInfo.missionID or nil;
+end
+
 ---------------------------------------------------------------------------------
 --- Mission Page Follower Mixin                                               ---
 ---------------------------------------------------------------------------------
@@ -948,7 +1011,9 @@ function CovenantFollowerMissionPageMixin:AddFollower(followerID)
 	local missionFrame = self:GetParent():GetParent();
 
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-	followerInfo.autoCombatSpells = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level);
+	local autoCombatSpells, autoCombatAutoAttack = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level);
+	followerInfo.autoCombatSpells = autoCombatSpells;
+	followerInfo.autoCombatAutoAttack = autoCombatAutoAttack;
 
 	for i, boardIndex in ipairs(AutoAssignmentFollowerOrder) do
 		local puck = self.Board:GetFrameByBoardIndex(boardIndex);
@@ -986,6 +1051,9 @@ function CovenantMissionPage_OnShow(self)
 	mainFrame.FollowerList.showUncollected = false;
 	mainFrame.FollowerList:Show();
 	mainFrame:UpdateStartButton(self);
+	if self.missionInfo then
+		mainFrame:SetupShowMissionTutorials(self.missionInfo);
+	end
 end
 
 function CovenantMissionPage_OnHide(self)
@@ -1056,7 +1124,6 @@ end
 function CovenantFollowerListMixin:CalculateHealAllFollowersCost()
 	local healAllCost = 0;
 	self.HealAllButton.tooltip = nil;
-	self:SetScript("OnUpdate", nil);
 
 	for _, follower in ipairs(self.followers) do
 		if follower.status ~= GARRISON_FOLLOWER_ON_MISSION then
@@ -1075,12 +1142,11 @@ function CovenantFollowerListMixin:CalculateHealAllFollowersCost()
 	if healAllCost == 0 then
 		self.HealAllButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_ALL_ADVENTURERS_FULL;
 		self.HealAllButton:SetEnabled(false);
-	elseif healAllCost > self.HealAllButton.currencyInfo.quantity then
-		self.HealAllButton.tooltip = COVENANT_MISSIONS_HEAL_ERROR_RESOURCES;
-		self.HealAllButton:SetEnabled(false)
-	else	
-		self:SetScript("OnUpdate", self.OnUpdate);
-		self.HealAllButton:SetEnabled(true);
+	else
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.HealAllButton.currencyID);
+		local healAllDisabled = currencyInfo and (healAllCost > currencyInfo.quantity);
+		self.HealAllButton.tooltip = healAllDisabled and COVENANT_MISSIONS_HEAL_ERROR_RESOURCES or nil;
+		self.HealAllButton:SetEnabled(not healAllDisabled)
 	end
 end
 
@@ -1101,6 +1167,149 @@ function CovenantMissionHealAllButton_OnLeave(self)
 end
 
 function CovenantMissionHealAllButton_OnClick(self)
-	local currencyString = CreateTextureMarkup(self.currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0)..format(CURRENCY_QUANTITY_TEMPLATE, self.healAllCost, self.currencyInfo.name);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currencyID);
+	local currencyString = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0)..format(CURRENCY_QUANTITY_TEMPLATE, self.healAllCost, currencyInfo.name);
 	StaticPopup_Show("COVENANT_MISSIONS_HEAL_ALL_CONFIRMATION", currencyString, "", {followerType = self.followerType});
 end
+
+ConvenantMissionPageMouseOverTitleMixin = { };
+function ConvenantMissionPageMouseOverTitleMixin:OnEnter()
+	self.info = self:GetParent().info; 
+	GameTooltip:SetOwner(self, "ANCHOR_CENTER", 320, 0);
+	CovenantMissionInfoTooltip_OnEnter(self);
+end 
+
+function ConvenantMissionPageMouseOverTitleMixin:OnLeave() 
+	GameTooltip:Hide(); 
+end 
+
+local defaultMissionPageTextureKit = "Adventures-Missions";
+local missionPageEnemyBGTexture = "%s-bg-01"; 
+local missionPageFollowerBGTexture = "%s-bg-02"; 
+
+local missionBoardTextureLayout = {
+	["defaultTextureKit"] = 
+	{
+		EnemyBackgroundYOffset = 0,
+		FollowerBackgroundYOffset = 0,
+		EnemyBackgroundXOffset = 0,
+		FollowerBackgroundXOffset = 0,
+		horzTile = false,
+		vertTile = false,
+		useAtlasSize = true,
+		showBorder = false,
+		showMedian = false,
+		showDropShadow = false,
+		showIconBG = false,
+		showHeader = false, 
+		showCloseButtonBorder = false, 
+		closeButtonOffsetX = 2,
+		closeButtonOffsetY = 3,
+	},
+
+	["GarrMissionLocation-Maw"] = 
+	{
+		EnemyBackgroundYOffset = -10,
+		FollowerBackgroundYOffset = 0,
+		EnemyBackgroundXOffset = 0,
+		FollowerBackgroundXOffset = 0,
+		horzTile = false,
+		vertTile = false,
+		useAtlasSize = true,
+		showBorder = false,
+		showMedian = false,
+		showDropShadow = false,
+		showIconBG = false,
+		showHeader = false, 
+		showCloseButtonBorder = false, 
+		closeButtonOffsetX = -2,
+		closeButtonOffsetY = 3,
+	},
+	["Adventures-Missions"] = 
+	{
+		EnemyBackgroundYOffset = 0,
+		FollowerBackgroundYOffset = 0,
+		EnemyBackgroundXOffset = 0,
+		FollowerBackgroundXOffset = 0,
+		horzTile = true,
+		vertTile = true,
+		useAtlasSize = false,
+		showBorder = true,
+		showMedian = true,
+		showDropShadow = true,
+		showIconBG = true,
+		showHeader = true,
+		showCloseButtonBorder = true, 
+		closeButtonOffsetX = 2,
+		closeButtonOffsetY = 3,
+	},
+};
+
+function CovenantMissionUpdateBoardTextures(frame, textureKit)
+	if(not frame) then 
+		return; 
+	end 
+
+	local textureKitFollowerAtlas = GetFinalAtlasFromTextureKitIfExists(missionPageFollowerBGTexture, textureKit);
+	local textureKitEnemyAtlas = GetFinalAtlasFromTextureKitIfExists(missionPageEnemyBGTexture, textureKit);
+
+	local defaultEnemyAtlas = GetFinalNameFromTextureKit(missionPageEnemyBGTexture, defaultMissionPageTextureKit);
+	local defaultFollowerAtlas = GetFinalNameFromTextureKit(missionPageFollowerBGTexture, defaultMissionPageTextureKit);
+
+	local followerBGAtlas = textureKitFollowerAtlas and textureKitFollowerAtlas or defaultFollowerAtlas; 
+	local enemyBGAtlas = textureKitEnemyAtlas and textureKitEnemyAtlas or defaultEnemyAtlas; 
+	
+	--Special case for the default atlas, we always want it to be the enemybg. 
+	if(enemyBGAtlas == defaultEnemyAtlas) then 
+		followerBGAtlas = enemyBGAtlas;
+	elseif(not followerBGAtlas and enemyBGAtlas) then
+		followerBGAtlas = enemyBGAtlas; 
+	elseif(not enemyBGAtlas and followerBGAtlas) then 
+		enemyBGAtlas = followerBGAtlas; 
+	end 
+	local layoutIndex = textureKitFollowerAtlas and textureKit or defaultMissionPageTextureKit;
+	local layoutInfo = missionBoardTextureLayout[layoutIndex] and missionBoardTextureLayout[layoutIndex] or missionBoardTextureLayout["defaultTextureKit"];
+
+	frame.NineSlice:SetShown(layoutInfo.showBorder); 
+	frame.Median:SetShown(layoutInfo.showMedian); 
+	frame.BoardDropShadow:SetShown(layoutInfo.showDropShadow);
+
+	if(frame.MissionInfo) then 
+		frame.MissionInfo.Header:SetShown(layoutInfo.showHeader);
+		frame.MissionInfo.IconBG:SetShown(layoutInfo.hideIconBG);	
+	end 
+
+	if(frame.IconBG) then 
+		frame.IconBG:SetShown(layoutInfo.hideIconBG);	
+	end 
+
+	if(frame.Stage) then 
+		frame.Stage.Header:SetShown(layoutInfo.showHeader);
+	end 
+
+	if(frame.CloseButton) then 
+		frame.CloseButton.CloseButtonBorder:SetShown(layoutInfo.showCloseButtonBorder);
+		frame.CloseButton:SetPoint("TOPRIGHT", layoutInfo.closeButtonOffsetX, layoutInfo.closeButtonOffsetY);
+	end
+	
+	frame.EnemyBackground:ClearAllPoints(); 
+	frame.EnemyBackground:SetHorizTile(layoutInfo.horzTile);
+	frame.EnemyBackground:SetVertTile(layoutInfo.vertTile);
+	frame.EnemyBackground:SetAtlas(enemyBGAtlas, layoutInfo.useAtlasSize, nil, true);
+
+	frame.FollowerBackground:ClearAllPoints(); 
+	frame.FollowerBackground:SetHorizTile(layoutInfo.horzTile);
+	frame.FollowerBackground:SetVertTile(layoutInfo.vertTile);
+	frame.FollowerBackground:SetAtlas(followerBGAtlas, layoutInfo.useAtlasSize, nil, true);
+
+
+	if(layoutInfo.useAtlasSize) then 
+		frame.EnemyBackground:SetPoint("BOTTOM", frame.Median, "TOP", layoutInfo.EnemyBackgroundXOffset, layoutInfo.EnemyBackgroundYOffset);
+		frame.FollowerBackground:SetPoint("TOP", frame.Median, "BOTTOM", layoutInfo.FollowerBackgroundXOffset, layoutInfo.FollowerBackgroundYOffset);
+	else 
+		frame.EnemyBackground:SetPoint("TOPLEFT", frame, "TOPLEFT", layoutInfo.EnemyBackgroundXOffset, layoutInfo.EnemyBackgroundYOffset);
+		frame.EnemyBackground:SetPoint("BOTTOMRIGHT", frame.Median, "TOPRIGHT", layoutInfo.FollowerBackgroundXOffset, layoutInfo.FollowerBackgroundYOffset);
+		frame.FollowerBackground:SetPoint("TOPLEFT", frame.Median, "BOTTOMLEFT", layoutInfo.EnemyBackgroundXOffset, layoutInfo.EnemyBackgroundYOffset);
+		frame.FollowerBackground:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", layoutInfo.FollowerBackgroundXOffset, layoutInfo.FollowerBackgroundYOffset);
+	end
+end 

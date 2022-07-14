@@ -5,4 +5,5 @@
 ## LoadOnDemand: 1
 Blizzard_EncounterJournal.xml
 Blizzard_LootJournal.xml
+Blizzard_LootJournalItems.xml
 Localization.lua

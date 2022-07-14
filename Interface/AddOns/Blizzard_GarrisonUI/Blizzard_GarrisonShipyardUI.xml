@@ -457,9 +457,6 @@
 		<Frames>
 			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
 				<Size x="100" y="100"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.RewardString" relativePoint="BOTTOMLEFT" x="6" y="-8"/>
-				</Anchors>
 				<KeyValues>
 					<KeyValue key="yspacing" value="8" type="number"/>
 				</KeyValues>

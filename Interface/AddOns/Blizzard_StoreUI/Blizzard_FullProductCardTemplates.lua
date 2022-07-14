@@ -93,16 +93,16 @@ function FullStoreCardMixin:GetCurrencyFormat(currencyInfo)
 	return currencyInfo.formatLong;
 end
 
-function FullStoreCardMixin:UpdateBannerText(discounted, discountPercentage, entryInfo)
-	if entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_NEW then
+function FullStoreCardMixin:UpdateBannerText(discounted, discountPercentage, displayInfo)
+	if displayInfo.bannerType == Enum.BattlepayBannerType.New then
 		self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_NEW);
-	elseif entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT then
+	elseif displayInfo.bannerType == Enum.BattlepayBannerType.Discount then
 		if discounted then
 			self.SplashBannerText:SetText(string.format(BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT, discountPercentage));
 		else
 			self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
 		end
-	elseif entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED then
+	elseif displayInfo.bannerType == Enum.BattlepayBannerType.Featured then
 		self.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
 	end
 end
@@ -197,7 +197,7 @@ function FullStoreCardMixin:GetTooltipOffsets()
 end
 
 function FullStoreCardMixin:ShouldShowIcon(entryInfo)
-	return StoreCardMixin.ShouldShowIcon(self, entryInfo) and entryInfo.sharedData.texture;
+	return StoreCardMixin.ShouldShowIcon(self, entryInfo) and (entryInfo.sharedData.texture or entryInfo.sharedData.overrideTexture);
 end
 
 function FullStoreCardMixin:ShowIcon(displayData)
@@ -214,21 +214,8 @@ function FullStoreCardMixin:ShowIcon(displayData)
 		self.IconBorder:Hide();
 		self.Icon:SetAtlas(overrideTexture, true);
 
-		local adjustX, adjustY;
-		local width, height = self.Icon:GetSize();
-		if (width > 64) then
-			adjustX = -(width - 64);
-		else
-			adjustX = 64 - width;
-		end
 
-		if (height > 64) then
-			adjustY = height - 64;
-		else
-			adjustY = -(64 - height);
-		end
-
-		self.Icon:SetPoint("TOPLEFT", 88 + math.floor(adjustX / 2), -99 + math.floor(adjustY / 2));
+		self.Icon:SetPoint("TOPLEFT", 4, -4);
 	else			
 		self.Icon:SetPoint("CENTER", self, "TOP", 0, -69);
 		self.Icon:SetSize(64, 64);
@@ -318,12 +305,10 @@ function FullStoreCardMixin:Layout()
 	self.SplashBanner:ClearAllPoints();
 	self.SplashBanner:SetSize(374, 77);
 	self.SplashBanner:SetPoint("TOP", 3, 2);
-	self.SplashBanner:Show();
 	
 	self.SplashBannerText:ClearAllPoints();
 	self.SplashBannerText:SetPoint("CENTER", self.SplashBanner, "CENTER", 0, 16);
 	self.SplashBannerText:SetTextColor(0.36, 0.18, 0.05);
-	self.SplashBannerText:Show();
 
 	self.Strikethrough:ClearAllPoints();
 	self.Strikethrough:SetPoint("TOPLEFT", self.NormalPrice, "TOPLEFT", 0, 0);
@@ -355,14 +340,24 @@ function FullStoreCardMixin:Layout()
 	self.Checkmark:Hide();
 end
 
-function FullStoreCardMixin:SetStyle(overrideBackground)
+function FullStoreCardMixin:SetStyle(entryInfo)
 	self.Card:ClearAllPoints();
+
+	local displayInfo =  entryInfo.sharedData;
+	if displayInfo.bannerType == Enum.BattlepayBannerType.None then
+		self.SplashBanner:Hide();
+		self.SplashBannerText:Hide();
+	else
+		self.SplashBanner:Show();
+		self.SplashBannerText:Show();
+	end
 	
 	self.DiscountMiddle:Hide();
 	self.DiscountLeft:Hide();
 	self.DiscountRight:Hide();
 	self.DiscountText:Hide();
 	
+	local overrideBackground = entryInfo.sharedData.overrideBackground;
 	if overrideBackground then
 		self.Card:SetPoint("CENTER");
 		self.Card:SetAtlas(overrideBackground, true);
@@ -384,16 +379,13 @@ function HorizontalFullStoreCardMixin:Layout()
 	self:SetSize(width, height);
 end
 
-function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
-	FullStoreCardMixin.SetStyle(self, overrideBackground);
+function HorizontalFullStoreCardMixin:SetStyle(entryInfo)
+	FullStoreCardMixin.SetStyle(self, entryInfo);
 
 	self.ModelScene:ClearAllPoints();
 	self.ModelScene:SetPoint("TOPLEFT", 4, -4);
 	self.ModelScene:SetPoint("BOTTOMRIGHT", -4, 4);
 	self.ModelScene:SetViewInsets(0, 0, 0, 0);
-
-	self.SplashBanner:Hide();
-	self.SplashBannerText:Hide();
 
 	self.ProductName:ClearAllPoints();
 	self.CurrentPrice:ClearAllPoints();
@@ -401,13 +393,14 @@ function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 	self.Description:ClearAllPoints();
 
 	if not self.ProductName.SetFontObjectsToTry then
-		SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
+		SecureMixin(self.ProductName, AutoScalingFontStringMixin);
 	end
 	self.ProductName:SetWidth(535);
 	self.ProductName:SetMaxLines(1);
 	self.ProductName:SetPoint("CENTER", 0, -63);
 	self.ProductName:SetJustifyH("CENTER");
-	self.ProductName:SetFontObjectsToTry("Game30Font", "GameFontNormalHuge2", "GameFontNormalLarge2");
+	self.ProductName:SetFontObject("Game30Font");
+	self.ProductName:SetMinLineHeight(18);
 	self.ProductName:SetShadowOffset(1, -1);
 	self.ProductName:SetShadowColor(0, 0, 0, 1);
 
@@ -436,6 +429,64 @@ function HorizontalFullStoreCardMixin:SetStyle(overrideBackground)
 end
 
 --------------------------------------------------
+-- HORIZONTAL FULL STORE CARD WITH NYDUS LINK MIXIN 
+HorizontalFullStoreCardWithNydusLinkMixin = CreateFromMixins(FullStoreCardMixin);
+
+function HorizontalFullStoreCardWithNydusLinkMixin:Layout()
+	FullStoreCardMixin.Layout(self);
+
+	local width, height = StoreFrame_GetCellPixelSize("HorizontalFullStoreCardWithBuyButtonTemplate");
+	self:SetSize(width, height);
+end
+
+function HorizontalFullStoreCardWithNydusLinkMixin:SetStyle(entryInfo)
+	FullStoreCardMixin.SetStyle(self, entryInfo);
+
+	self.ModelScene:ClearAllPoints();
+	self.ModelScene:SetPoint("TOPLEFT", 4, -4);
+	self.ModelScene:SetPoint("BOTTOMRIGHT", -4, 4);
+	self.ModelScene:SetViewInsets(0, 0, 0, 0);
+
+	self.ProductName:ClearAllPoints();
+	self.CurrentPrice:ClearAllPoints();
+	self.NormalPrice:ClearAllPoints();
+	self.Description:ClearAllPoints();
+
+	if not self.ProductName.SetFontObjectsToTry then
+		SecureMixin(self.ProductName, AutoScalingFontStringMixin);
+	end
+	self.ProductName:SetWidth(535);
+	self.ProductName:SetMaxLines(1);
+	self.ProductName:SetPoint("CENTER", 0, -63);
+	self.ProductName:SetJustifyH("CENTER");
+	self.ProductName:SetFontObject("Game30Font");
+	self.ProductName:SetMinLineHeight(18);
+	self.ProductName:SetShadowOffset(1, -1);
+	self.ProductName:SetShadowColor(0, 0, 0, 1);
+
+	self.CurrentPrice:Hide();
+	self.NormalPrice:Hide();
+
+	self.Description:SetPoint("TOP", self.ProductName, "BOTTOM", 0, -10);
+	self.Description:SetFontObject("GameFontNormalMed1");
+	self.Description:SetWidth(490);
+	self.Description:SetJustifyH("CENTER");
+
+	self.SalePrice:Hide();
+
+	self.PurchasedText:SetText(BLIZZARD_STORE_PURCHASED);
+	self.PurchasedText:ClearAllPoints();
+	self.PurchasedText:SetPoint("BOTTOM", 0, 33);
+	self.PurchasedText:Hide();
+
+	self.PurchasedMark:Hide();
+
+	self.NydusLinkButton:ClearAllPoints();
+	self.NydusLinkButton:SetPoint("BOTTOM", 0, 33);
+	self.NydusLinkButton:SetText(BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT);
+end
+
+--------------------------------------------------
 -- VERTICAL FULL STORE CARD MIXIN
 VerticalFullStoreCardMixin = CreateFromMixins(FullStoreCardMixin, ProductCardBuyButtonMixin);
 
@@ -446,11 +497,8 @@ function VerticalFullStoreCardMixin:Layout()
 	self:SetSize(width, height);
 end
 
-function VerticalFullStoreCardMixin:SetStyle(overrideBackground)
-	FullStoreCardMixin.SetStyle(self, overrideBackground);
-
-	self.SplashBanner:Show();
-	self.SplashBannerText:Show();
+function VerticalFullStoreCardMixin:SetStyle(entryInfo)
+	FullStoreCardMixin.SetStyle(self, entryInfo);
 
 	self.ProductName:ClearAllPoints();
 	self.CurrentPrice:ClearAllPoints();
@@ -458,13 +506,14 @@ function VerticalFullStoreCardMixin:SetStyle(overrideBackground)
 	self.Description:ClearAllPoints();
 
 	if not self.ProductName.SetFontObjectsToTry then
-		SecureMixin(self.ProductName, ShrinkUntilTruncateFontStringMixin);
+		SecureMixin(self.ProductName, AutoScalingFontStringMixin);
 	end
 	self.ProductName:SetWidth(300);
 	self.ProductName:SetMaxLines(1);
 	self.ProductName:SetPoint("TOPLEFT", self, "TOP", -83, -70);
 	self.ProductName:SetJustifyH("LEFT");
-	self.ProductName:SetFontObjectsToTry("GameFontNormalWTF2", "Game30Font", "GameFontNormalHuge3");
+	self.ProductName:SetFontObject("GameFontNormalWTF2");
+	self.ProductName:SetMinLineHeight(25);
 
 	self.CurrentPrice:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, -28);
 

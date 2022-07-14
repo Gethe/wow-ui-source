@@ -26,10 +26,21 @@ function RuneforgeLegendaryPowerLootJournalMixin:OnPowerSet(oldPowerID, newPower
 	self.Icon:SetTexture(powerInfo.iconFileID);
 
 	local isAvailable = powerInfo.state == Enum.RuneforgePowerState.Available;
-	self.Icon:SetDesaturation(isAvailable and 0 or 1);
+	if isAvailable then
+		self.Name:SetTextColor(LEGENDARY_ORANGE_COLOR:GetRGBA());
+		self.Icon:SetDesaturation(powerInfo.matchesCovenant and 0 or 0.75);
+	else
+		self.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGBA());
+		self.Icon:SetDesaturation(1);
+	end
+
 	self.UnavailableBackground:SetShown(not isAvailable);
 	self.Name:SetText(powerInfo.name);
-	self.Name:SetTextColor(LEGENDARY_ORANGE_COLOR:GetRGBA());
+
+	local showUnavailableOverlay = not isAvailable or not powerInfo.matchesCovenant;
+	self.UnavailableOverlay:SetShown(showUnavailableOverlay);
+	self.BackgroundOverlay:SetAtlas(isAvailable and "ui-ej-memory-darkring" or "ui-ej-memory-disabledring", TextureKitConstants.UseAtlasSize);
+	self.BackgroundOverlay:SetShown(showUnavailableOverlay);
 	
 	local alpha = isAvailable and 1.0 or 0.5;
 	self.Icon:SetAlpha(alpha);
@@ -187,8 +198,9 @@ function LootJournalMixin:UpdatePowers()
 	local specFilter = self:GetSpecFilter();
 	local classID = (classFilter ~= NO_CLASS_FILTER) and classFilter or nil;
 	local specID = (specFilter ~= NO_SPEC_FILTER) and specFilter or nil;
+	local covenantID = nil;
 	local runeforgePowerFilter = self:GetRuneforgePowerFilter();
-	self.powers = C_LegendaryCrafting.GetRuneforgePowersByClassAndSpec(classID, specID, runeforgePowerFilter);
+	self.powers = C_LegendaryCrafting.GetRuneforgePowersByClassSpecAndCovenant(classID, specID, covenantID, runeforgePowerFilter);
 	self:Refresh();
 end
 

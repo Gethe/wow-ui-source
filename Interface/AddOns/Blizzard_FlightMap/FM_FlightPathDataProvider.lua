@@ -62,6 +62,12 @@ function FlightMap_FlightPathDataProviderMixin:HighlightRouteToPin(pin)
 		local destinationSlotIndex = TaxiGetNodeSlot(slotIndex, routeIndex, false);
 
 		local startPin = self.slotIndexToPin[sourceSlotIndex];
+
+		-- Exit-only flight points don't show a preview.
+		if startPin == nil then
+			return;
+		end
+
 		local destinationPin = self.slotIndexToPin[destinationSlotIndex];
 
 		local lineContainer = self.highlightLinePool:Acquire();
@@ -88,6 +94,12 @@ function FlightMap_FlightPathDataProviderMixin:RemoveRouteToPin(pin)
 		local destinationSlotIndex = TaxiGetNodeSlot(slotIndex, routeIndex, false);
 
 		local startPin = self.slotIndexToPin[sourceSlotIndex];
+		
+		-- Exit-only flight points don't show a preview.
+		if startPin == nil then
+			return;
+		end
+
 		local destinationPin = self.slotIndexToPin[destinationSlotIndex];
 
 		startPin:SetShown(startPin:GetTaxiNodeState() ~= Enum.FlightPathState.Unreachable);
@@ -149,6 +161,7 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	pin.taxiNodeData = taxiNodeData;
 	pin.owner = self;
 	pin.linkedPins = {};
+	pin.useSpecialReachableIcon = taxiNodeData.useSpecialIcon and taxiNodeData.textureKit and not IsVindicaarTextureKit(taxiNodeData.textureKit);
 	pin:SetFlightPathStyle(taxiNodeData.textureKit, taxiNodeData.state);
 	
 	pin:UpdatePinSize(taxiNodeData.state);
@@ -203,21 +216,27 @@ function FlightMap_FlightPointPinMixin:OnMouseEnter()
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0);
 
-	GameTooltip:AddLine(self.taxiNodeData.name, nil, nil, nil, true);
+	GameTooltip_AddNormalLine(GameTooltip, self.taxiNodeData.name, true);
 
 	if self.taxiNodeData.state == Enum.FlightPathState.Current then
-		GameTooltip:AddLine(TAXINODEYOUAREHERE, 1.0, 1.0, 1.0, true);
+		GameTooltip_AddHighlightLine(GameTooltip, TAXINODEYOUAREHERE, true);
 	elseif self.taxiNodeData.state == Enum.FlightPathState.Reachable then
 		local cost = TaxiNodeCost(self.taxiNodeData.slotIndex);
 		if cost > 0 then
 			SetTooltipMoney(GameTooltip, cost);
+		elseif self.taxiNodeData.specialIconCostString then
+			if self.taxiNodeData.useSpecialIcon then
+				GameTooltip_AddHighlightLine(GameTooltip, self.taxiNodeData.specialIconCostString, true);
+			else
+				GameTooltip_AddErrorLine(GameTooltip, self.taxiNodeData.specialIconCostString, true);
+			end
 		end
 
 		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Yellow"));
 		
 		self.owner:HighlightRouteToPin(self);
 	elseif self.taxiNodeData.state == Enum.FlightPathState.Unreachable then
-		GameTooltip:AddLine(TAXI_PATH_UNREACHABLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		GameTooltip_AddErrorLine(GameTooltip, TAXI_PATH_UNREACHABLE, true);
 	end
 
 	GameTooltip:Show();
@@ -225,7 +244,11 @@ end
 
 function FlightMap_FlightPointPinMixin:OnMouseLeave()
 	if self.taxiNodeData.state == Enum.FlightPathState.Reachable then
-		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+		if self.useSpecialReachableIcon then
+			self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Special"));
+		else
+			self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+		end
 		self.owner:RemoveRouteToPin(self);
 	end
 	GameTooltip_Hide();
@@ -282,12 +305,16 @@ function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKit, taxiNodeTy
 	if taxiNodeType == Enum.FlightPathState.Current then
 		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Green"));
 		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
-	elseif taxiNodeType == Enum.FlightPathState.Reachable then
-		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
-		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
 	elseif taxiNodeType == Enum.FlightPathState.Unreachable then
 		self.Icon:SetAtlas(self.atlasFormat:format("UI-Taxi-Icon-Nub"));
 		self.IconHighlight:SetAtlas(self.atlasFormat:format("UI-Taxi-Icon-Nub"));
+	elseif taxiNodeType == Enum.FlightPathState.Reachable then
+		if self.useSpecialReachableIcon then
+			self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Special"));
+		else
+			self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+		end
+		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
 	end
 end
 

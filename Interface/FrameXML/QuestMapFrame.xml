@@ -601,7 +601,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture atlas="QuestDetailsBackgrounds" useAtlasSize="true">
+						<Texture parentKey="Bg" atlas="QuestDetailsBackgrounds" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>

@@ -58,6 +58,8 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("CHAR_CREATE_BEGIN_ANIMATIONS");
 	self:RegisterEvent("CHAR_CREATE_ANIM_KIT_FINISHED");
 	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
+	self:RegisterEvent("ASSIGN_VAS_RESPONSE");
 
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
@@ -156,6 +158,11 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" then
 		self:OnDisplaySizeChanged();
+	elseif event == "STORE_VAS_PURCHASE_ERROR" then
+		self:OnStoreVASPurchaseError();
+	elseif event == "ASSIGN_VAS_RESPONSE" then
+		local token, storeError, vasPurchaseResult = ...;
+		self:OnAssignVASResponse(token, storeError, vasPurchaseResult);
 	end
 
 	if showError then
@@ -168,8 +175,9 @@ function CharacterCreateMixin:OnShow()
 	C_CharacterCreation.SetInCharacterCreate(true);
 
 	local _, selectedFaction;
-	if self.paidServiceType then
-		C_CharacterCreation.CustomizeExistingCharacter(self.paidServiceCharacterID);
+	local existingCharacterID = self:GetExistingCharacterID();
+	if existingCharacterID then
+		C_CharacterCreation.CustomizeExistingCharacter(existingCharacterID);
 		self.currentPaidServiceName = C_PaidServices.GetName();
 		_, selectedFaction = C_PaidServices.GetCurrentFaction();
 		NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName);
@@ -195,7 +203,7 @@ local rafHelpTipInfo = {
 
 function CharacterCreateMixin:UpdateRecruitInfo()
 	local active, faction = C_RecruitAFriend.GetRecruitInfo();
-	if active and not self.paidServiceType and C_CharacterCreation.UseBeginnerMode() then
+	if active and not self:HasService() and C_CharacterCreation.UseBeginnerMode() then
 		local recruiterIsHorde = (PLAYER_FACTION_GROUP[faction] == "Horde");
 		rafHelpTipInfo.text = recruiterIsHorde and RECRUIT_A_FRIEND_FACTION_SUGGESTION_HORDE or RECRUIT_A_FRIEND_FACTION_SUGGESTION_ALLIANCE;
 		rafHelpTipInfo.targetPoint = recruiterIsHorde and HelpTip.Point.RightEdgeCenter or HelpTip.Point.LeftEdgeCenter;
@@ -210,6 +218,7 @@ function CharacterCreateMixin:OnHide()
 	C_CharacterCreation.SetInCharacterCreate(false);
 	RaceAndClassFrame:StopClassAnimations();
 	self:ClearPaidServiceInfo();
+	self:ClearVASInfo();
 	self.creatingCharacter = false;
 	self.currentMode = 0;
 end
@@ -223,9 +232,58 @@ function CharacterCreateMixin:SetPaidServiceInfo(serviceType, characterID)
 	self.paidServiceCharacterID = characterID;
 end
 
+function CharacterCreateMixin:SetVASInfo(vasType, info)
+	self.vasType = vasType;
+	self.vasInfo = info;
+end
+
 function CharacterCreateMixin:ClearPaidServiceInfo()
 	self.paidServiceType = nil;
 	self.paidServiceCharacterID = nil;
+end
+
+function CharacterCreateMixin:ClearVASInfo()
+	self.vasType = nil;
+	self.vasInfo = nil;	
+end
+
+function CharacterCreateMixin:BeginVASTransaction()
+	if self.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+		local noIsValidateOnly = false;
+		C_CharacterServices.AssignPFCDistribution(self.vasInfo.selectedCharacterGUID, CharacterCreateFrame:GetSelectedName(), noIsValidateOnly);
+	end
+end
+
+function CharacterCreateMixin:OnStoreVASPurchaseError()
+	if self.vasType then
+		local displayMsg = VASErrorData_GetCombinedMessage(self.vasInfo.selectedCharacterGUID);
+		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg);
+	end
+end
+
+function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchaseResult)
+	if self.vasType then
+		local purchaseComplete, errorMsg = IsVASAssignmentValid(storeError, vasPurchaseResult, self.vasInfo.selectedCharacterGUID);
+		if purchaseComplete then
+			CharacterSelect.selectGuid = self.vasInfo.selectedCharacterGUID;
+			CharacterCreateFrame:Exit();
+		else
+			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg);
+		end
+	end
+end
+
+function CharacterCreateMixin:HasService()
+	return (self.paidServiceType or self.vasType) and true or false;
+end
+
+function CharacterCreateMixin:GetExistingCharacterID()
+	if self.paidServiceType then
+		return self.paidServiceCharacterID;
+	elseif self.vasType then
+		return self.vasInfo.characterIndex;
+	end
+	return nil;
 end
 
 function CharacterCreateMixin:OnMouseDown(button)
@@ -469,12 +527,16 @@ function CharacterCreateMixin:NavBack()
 				CharacterUpgrade_ResetBoostData();
 			end
 
-			CharacterSelect.backFromCharCreate = true;
-			GlueParent_SetScreen("charselect");
+			self:Exit();
 		end
 	else
 		self:UpdateMode(-1);
 	end
+end
+
+function CharacterCreateMixin:Exit()
+	CharacterSelect.backFromCharCreate = true;
+	GlueParent_SetScreen("charselect");
 end
 
 local function SortBlockers(a, b)
@@ -525,6 +587,8 @@ end
 function CharacterCreateMixin:CreateCharacter()
 	if self.paidServiceType then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
+	elseif self.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
 		if Kiosk.IsEnabled() then
 			KioskModeSplash:SetAutoEnterWorld(true);
@@ -545,13 +609,25 @@ function CharacterCreateMixin:SetCustomizationChoice(optionID, choiceID)
 	self:UpdateCharCustomizationFrame();
 end
 
-function CharacterCreateMixin:ResetCustomizationPreview()
-	C_CharacterCreation.ClearPreviewChoices();
+function CharacterCreateMixin:ResetCustomizationPreview(clearSavedChoices)
+	C_CharacterCreation.ClearPreviewChoices(clearSavedChoices);
 end
 
 function CharacterCreateMixin:PreviewCustomizationChoice(optionID, choiceID)
 	-- It is important that we DON'T call UpdateCharCustomizationFrame here because we want to keep the current selections
 	C_CharacterCreation.PreviewCustomizationChoice(optionID, choiceID);
+end
+
+function CharacterCreateMixin:MarkCustomizationChoiceAsSeen(choiceID)
+	C_CharacterCreation.MarkCustomizationChoiceAsSeen(choiceID);
+end
+
+function CharacterCreateMixin:MarkCustomizationOptionAsSeen(optionID)
+	C_CharacterCreation.MarkCustomizationOptionAsSeen(optionID);
+end
+
+function CharacterCreateMixin:SaveSeenChoices()
+	C_CharacterCreation.SaveSeenChoices();
 end
 
 function CharacterCreateMixin:SetCameraZoomLevel(zoomLevel, keepCustomZoom)
@@ -720,7 +796,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 	self:SetIconAtlas(atlas);
 
 	local buttonEnabled;
-	if CharacterCreateFrame.paidServiceType then
+	if CharacterCreateFrame:HasService() then
 		buttonEnabled = (selectedClassID == classData.classID);
 	else
 		buttonEnabled = classData.enabled;
@@ -743,7 +819,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForNewPlayers then
 			tooltipDisabledReason = CHAR_CREATE_NEW_PLAYER;
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForSelectedRace then
-			local validRaces = C_CharacterCreation.GetValidRacesForClass(classData.classID, Enum.CharacterCreateRaceMode.AllRaces);
+			local validRaces = C_CharacterCreation.GetValidRacesForClass(classData.classID);
 			local validAllianceRaceNames = {};
 			local validHordeRaceNames = {};
 			for _, raceData in ipairs(validRaces) do
@@ -806,8 +882,8 @@ end
 
 function CharacterCreateClassButtonMixin:OnEnter()
 	CharCustomizeFrameWithTooltipMixin.OnEnter(self);
-	if not CharacterCreateFrame.paidServiceType and self:IsDisabledByRace() then
-		local validRaces = C_CharacterCreation.GetValidRacesForClass(self.classData.classID, Enum.CharacterCreateRaceMode.AllRaces);
+	if not CharacterCreateFrame:HasService() and self:IsDisabledByRace() then
+		local validRaces = C_CharacterCreation.GetValidRacesForClass(self.classData.classID);
 		local validRacesMap = {};
 		for _, raceData in ipairs(validRaces) do
 			validRacesMap[raceData.raceID] = true;
@@ -844,7 +920,7 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 	self.layoutIndex = layoutIndex;
 
 	local sexString;
-	if selectedSexID == Enum.Unitsex.Male then
+	if selectedSexID == Enum.UnitSex.Male then
 		sexString = "male";
 	else
 		sexString = "female";
@@ -855,7 +931,7 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selecte
 	self:SetIconAtlas(atlas);
 
 	local isValidRace = RaceAndClassFrame:IsRaceValid(raceData, self.faction);
-	self.allowSelectionOnDisable = not isValidRace and not CharacterCreateFrame.paidServiceType;
+	self.allowSelectionOnDisable = not isValidRace and not CharacterCreateFrame:HasService();
 	self:SetEnabledState(isValidRace);
 
 	if isValidRace and RaceAndClassFrame.classValidRaces then
@@ -973,6 +1049,78 @@ function CharacterCreateSpecButtonMixin:SetEnabledState(enabled)
 	self.RoleName:SetFontObject(enabled and "GameFontHighlight" or "GameFontDisable");
 end
 
+local function GetDruidCatModelInfo(race, sex)
+	if race == "NightElf" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 29405, spellVisualKitID = 131927 };
+		else
+			return { displayID = 892, spellVisualKitID = 131927 };
+		end
+	elseif race == "Tauren" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 29410, spellVisualKitID = 134580 };
+		else
+			return { displayID = 29412, spellVisualKitID = 134580 };
+		end
+	elseif race == "Worgen" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 33664, spellVisualKitID = 134578 };
+		else
+			return { displayID = 33661, spellVisualKitID = 134578 };
+		end
+	elseif race == "Troll" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 33665, spellVisualKitID = 134582 };
+		else
+			return { displayID = 33666, spellVisualKitID = 134582 };
+		end
+	elseif race == "HighmountainTauren" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 80597, spellVisualKitID = 134581 };
+		else
+			return { displayID = 80598, spellVisualKitID = 134581 };
+		end
+	elseif race == "ZandalariTroll" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 85195, spellVisualKitID = 134583 };
+		else
+			return { displayID = 85194, spellVisualKitID = 134583 };
+		end
+	elseif race == "KulTiran" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 86100, spellVisualKitID = 134579 };
+		else
+			return { displayID = 86524, spellVisualKitID = 134579 };
+		end
+	end
+end
+
+local function GetDHMetaModelInfo(race, sex)
+	local metaFormScale = 0.7;
+
+	if race == "NightElf" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 63247, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		else
+			return { displayID = 65312, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		end
+	elseif race == "BloodElf" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 67673, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		else
+			return { displayID = 67675, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		end
+	end
+end
+
+local function GetDHNormalModelInfo()
+	return { showPlayerModel = true, playerModelSpellVisualKitID = 131914, auxModelInfoFunc = GetDHMetaModelInfo, destroyAuxModel = true };
+end
+
+local function GetDruidNormalModelInfo()
+	return { showPlayerModel = true, playerModelSpellVisualKitID = 131928, auxModelInfoFunc = GetDruidCatModelInfo, destroyAuxModel = true };
+end
+
 CharacterCreateRaceAndClassMixin = {}
 
 function CharacterCreateRaceAndClassMixin:OnLoad()
@@ -996,15 +1144,38 @@ function CharacterCreateRaceAndClassMixin:OnLoad()
 	self.buttonPool:CreatePool("CHECKBUTTON", self.HordeRaces, "CharacterCreateHordeButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.HordeAlliedRaces, "CharacterCreateHordeAlliedRaceButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.Classes, "CharacterCreateClassButtonTemplate");
+
+	self.createdModelIndices = {};
+
+	self.spellVisualKitStartAction = 
+	{
+		-- Druid
+		[129374] = { auxModelInfoFunc = GetDruidCatModelInfo, createAuxModel = true, hideAuxModel = true },
+
+		-- Demon Hunter
+		[129051] = { auxModelInfoFunc = GetDHMetaModelInfo, createAuxModel = true, hideAuxModel = true },
+	};
+
+	self.spellVisualKitCompletionAction = 
+	{
+		-- Druid
+		[129374] = { hidePlayerModel = true, auxModelInfoFunc = GetDruidCatModelInfo, showAuxModel = true, startAuxModelAnim = true, onCompletionFunc = GetDruidNormalModelInfo },
+
+		-- Demon Hunter
+		[129051] = { hidePlayerModel = true, auxModelInfoFunc = GetDHMetaModelInfo, showAuxModel = true, startAuxModelAnim = true, onCompletionFunc = GetDHNormalModelInfo },
+	}
 end
 
 function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
-	if self.ClassTrialCheckButton.Button:GetChecked() then
+	if self.selectedRaceData.isNeutralRace and self.selectedClassData.earlyFactionChoice then
+		-- For neutral races, if the player selected an earlyFactionChoice class (DK) we ALWAYS need to pass back the selected faction, because the creation process will fail if we try to create a Neutral character of this class
+		return self.selectedFaction;
+	elseif self.ClassTrialCheckButton.Button:GetChecked() then
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
 	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or self.selectedClassData.earlyFactionChoice or ZoneChoiceFrame.useNPE or CharacterCreateFrame.paidServiceType then
-			-- For neutral races, if the player is using a character template, selected an earlyFactionChoice class (DK) or chose to start in the NPE we need to pass back the selected faction
+		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() then
+			-- For neutral races, if the player is using a character template, chose to start in the NPE or is using a paid service we need to pass back the selected faction
 			return self.selectedFaction;
 		else
 			-- Otherwise they start as neutral so pass back nil
@@ -1027,7 +1198,7 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
-	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not CharacterCreateFrame.paidServiceType and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
+	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not CharacterCreateFrame:HasService() and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()
@@ -1037,6 +1208,63 @@ function CharacterCreateRaceAndClassMixin:ClearTimer()
 	if self.Timer then
 		self.Timer:Cancel();
 	end
+end
+
+function CharacterCreateRaceAndClassMixin:PerformAnimAction(animAction)
+	if animAction then
+		if animAction.hidePlayerModel then
+			C_CharacterCreation.SetPlayerModelHiddenState(true);
+		elseif animAction.showPlayerModel then
+			C_CharacterCreation.SetPlayerModelHiddenState(false);
+		end
+
+		if animAction.auxModelInfoFunc then
+			local auxModelInfo = animAction.auxModelInfoFunc(self.selectedRaceData.fileName, self.selectedSexID);
+			if auxModelInfo then
+				if animAction.createAuxModel then
+					local needsAnim = true;
+					local useCharFacing = true;
+					self.createdModelIndices[auxModelInfo.displayID] = C_CharacterCreation.CreateAuxModel(auxModelInfo.displayID, needsAnim, useCharFacing, auxModelInfo.position, auxModelInfo.scale);
+				elseif animAction.destroyAuxModel and self.createdModelIndices[auxModelInfo.displayID] then
+					C_CharacterCreation.DestroyAuxModel(self.createdModelIndices[auxModelInfo.displayID]);
+					self.createdModelIndices[auxModelInfo.displayID] = nil;
+				end
+
+				if self.createdModelIndices[auxModelInfo.displayID] then
+					if auxModelInfo.equipWeapons then
+						C_CharacterCreation.EquipWeaponsOnAuxModel(self.createdModelIndices[auxModelInfo.displayID], auxModelInfo.weaponScale);
+					end
+
+					if animAction.startAuxModelAnim and auxModelInfo.spellVisualKitID then
+						local noBlending = true;
+						C_CharacterCreation.PlaySpellVisualKitOnAuxModel(self.createdModelIndices[auxModelInfo.displayID], auxModelInfo.spellVisualKitID, noBlending);
+						self.currentSpellVisualKitID = auxModelInfo.spellVisualKitID;
+
+						if animAction.onCompletionFunc then
+							self.spellVisualKitCompletionAction[auxModelInfo.spellVisualKitID] = animAction.onCompletionFunc();
+						end
+					end
+
+					if animAction.hideAuxModel then
+						C_CharacterCreation.SetAuxModelHiddenState(self.createdModelIndices[auxModelInfo.displayID], true);
+					elseif animAction.showAuxModel then
+						C_CharacterCreation.SetAuxModelHiddenState(self.createdModelIndices[auxModelInfo.displayID], false);
+					end
+				end
+			end
+		end
+
+		if animAction.playerModelSpellVisualKitID then
+			local doNotStartTargetingSequence = false;
+			local noBlending = true;
+			C_CharacterCreation.PlaySpellVisualKitOnCharacter(animAction.playerModelSpellVisualKitID, doNotStartTargetingSequence, noBlending);
+			self.currentSpellVisualKitID = animAction.playerModelSpellVisualKitID;
+		end
+
+		return true;
+	end
+
+	return false;
 end
 
 function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
@@ -1054,6 +1282,8 @@ function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
 			local startTargetingSequence = true;
 			local noBlending = (self.allowClassAnimationsAfterSeconds == 0);
 			C_CharacterCreation.PlaySpellVisualKitOnCharacter(spellVisualKitID, startTargetingSequence, noBlending);
+
+			self:PerformAnimAction(self.spellVisualKitStartAction[spellVisualKitID]);
 
 			if self.selectedClassData.groundSpellVisualKitID then
 				self.currentGroundSpellVisualKitID = self.selectedClassData.groundSpellVisualKitID;
@@ -1087,137 +1317,9 @@ function CharacterCreateRaceAndClassMixin:StopActiveGroundEffect()
 	end
 end
 
-local function GetDHMetaModelInfo(race, sex)
-	local metaFormScale = 0.7;
-
-	if race == "NightElf" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 63247, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
-		else
-			return { displayID = 65312, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
-		end
-	elseif race == "BloodElf" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 67673, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
-		else
-			return { displayID = 67675, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
-		end
-	end
-end
-
-local function GetDHNormalModelInfo()
-	return { showPlayerModel = true, playerModelSpellVisualKitID = 131914 , destroyModelFunc = GetDHMetaModelInfo };
-end
-
-local function GetDruidCatModelInfo(race, sex)
-	if race == "NightElf" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 29405, spellVisualKitID = 131927 };
-		else
-			return { displayID = 892, spellVisualKitID = 131927 };
-		end
-	elseif race == "Tauren" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 29410, spellVisualKitID = 134580 };
-		else
-			return { displayID = 29412, spellVisualKitID = 134580 };
-		end
-	elseif race == "Worgen" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 33664, spellVisualKitID = 134578 };
-		else
-			return { displayID = 33661, spellVisualKitID = 134578 };
-		end
-	elseif race == "Troll" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 33665, spellVisualKitID = 134582 };
-		else
-			return { displayID = 33666, spellVisualKitID = 134582 };
-		end
-	elseif race == "HighmountainTauren" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 80597, spellVisualKitID = 134581 };
-		else
-			return { displayID = 80598, spellVisualKitID = 134581 };
-		end
-	elseif race == "ZandalariTroll" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 85195, spellVisualKitID = 134583 };
-		else
-			return { displayID = 85194, spellVisualKitID = 134583 };
-		end
-	elseif race == "KulTiran" then
-		if sex == Enum.Unitsex.Female then
-			return { displayID = 86100, spellVisualKitID = 134579 };
-		else
-			return { displayID = 86524, spellVisualKitID = 134579 };
-		end
-	end
-end
-
-local function GetDruidNormalModelInfo()
-	return { showPlayerModel = true, playerModelSpellVisualKitID = 131928, destroyModelFunc = GetDruidCatModelInfo };
-end
-
-local spellVisualKitCompletionAction = 
-{
-	-- Druid
-	[129374] = { hidePlayerModel = true, createModelFunc = GetDruidCatModelInfo, onCompletionFunc = GetDruidNormalModelInfo },
-
-	-- Demon Hunter
-	[129051] = { hidePlayerModel = true, createModelFunc = GetDHMetaModelInfo, onCompletionFunc = GetDHNormalModelInfo },
-}
-
-local createdModelIndices = {};
-
 function CharacterCreateRaceAndClassMixin:OnAnimKitFinished(animKitID, spellVisualKitID)
 	if self.currentSpellVisualKitID == spellVisualKitID then
-		local nextAction = spellVisualKitCompletionAction[spellVisualKitID];
-		if nextAction then
-			self.currentSpellVisualKitID = nil;
-
-			if nextAction.hidePlayerModel then
-				C_CharacterCreation.SetPlayerModelHiddenState(true);
-			elseif nextAction.showPlayerModel then
-				C_CharacterCreation.SetPlayerModelHiddenState(false);
-			end
-
-			local modelSvkID;
-			if nextAction.createModelFunc then
-				local createModelInfo = nextAction.createModelFunc(self.selectedRaceData.fileName, self.selectedSexID);
-				if createModelInfo then
-					local needsAnim = (createModelInfo.spellVisualKitID ~= nil);
-					local useCharFacing = true;
-					createdModelIndices[createModelInfo.displayID] = C_CharacterCreation.CreateAuxModel(createModelInfo.displayID, needsAnim, useCharFacing, createModelInfo.position, createModelInfo.scale);
-					if createModelInfo.equipWeapons then
-						C_CharacterCreation.EquipWeaponsOnAuxModel(createdModelIndices[createModelInfo.displayID], createModelInfo.weaponScale);
-					end
-					if createModelInfo.spellVisualKitID then
-						C_CharacterCreation.PlaySpellVisualKitOnAuxModel(createdModelIndices[createModelInfo.displayID], createModelInfo.spellVisualKitID);
-						self.currentSpellVisualKitID = createModelInfo.spellVisualKitID;
-						modelSvkID = createModelInfo.spellVisualKitID;
-					end
-				end
-			end
-
-			if modelSvkID and nextAction.onCompletionFunc then
-				spellVisualKitCompletionAction[modelSvkID] = nextAction.onCompletionFunc();
-			end
-
-			if nextAction.destroyModelFunc then
-				local destroyModelInfo = nextAction.destroyModelFunc(self.selectedRaceData.fileName, self.selectedSexID);
-				if destroyModelInfo and createdModelIndices[destroyModelInfo.displayID] then
-					C_CharacterCreation.DestroyAuxModel(createdModelIndices[destroyModelInfo.displayID]);
-					createdModelIndices[destroyModelInfo.displayID] = nil;
-				end
-			end
-
-			if nextAction.playerModelSpellVisualKitID then
-				local doNotStartTargetingSequence = false;
-				C_CharacterCreation.PlaySpellVisualKitOnCharacter(nextAction.playerModelSpellVisualKitID, doNotStartTargetingSequence);
-				self.currentSpellVisualKitID = nextAction.playerModelSpellVisualKitID;
-			end
-		else
+		if not self:PerformAnimAction(self.spellVisualKitCompletionAction[spellVisualKitID]) then
 			local useBlending = true;
 			self:PlayClassIdleAnimation(useBlending);
 		end
@@ -1234,11 +1336,11 @@ function CharacterCreateRaceAndClassMixin:PlayClassIdleAnimation(useBlending, ov
 end
 
 function CharacterCreateRaceAndClassMixin:DestroyCreatedModels()
-	for _, modelIndex in pairs(createdModelIndices) do
+	for _, modelIndex in pairs(self.createdModelIndices) do
 		C_CharacterCreation.DestroyAuxModel(modelIndex);
 	end
 
-	createdModelIndices = {};
+	self.createdModelIndices = {};
 end
 
 function CharacterCreateRaceAndClassMixin:PlayCustomizationAnimation()
@@ -1272,10 +1374,16 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 		self.selectedFaction = self.selectedRaceData.factionInternalName;
 	end
 
-	if not self:IsRaceValid(self.selectedRaceData, self.selectedFaction) and CharacterCreateFrame.paidServiceType then
+	if not self:IsRaceValid(self.selectedRaceData, self.selectedFaction) and CharacterCreateFrame:HasService() then
 		local randomRaceData = self:GetRandomValidRaceData();
-		self:SetCharacterRace(randomRaceData.raceID, randomRaceData.factionInternalName)
-		return;
+		if randomRaceData then
+			self:SetCharacterRace(randomRaceData.raceID, randomRaceData.factionInternalName);
+			return;
+		else
+			CharacterCreateFrame:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PAID_SERVICE_NO_VALID_RACE, HIGH_PRIORITY);
+		end
+	else
+		CharacterCreateFrame:RemoveNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PAID_SERVICE_NO_VALID_RACE);
 	end
 
 	self.selectedClassData = C_CharacterCreation.GetSelectedClass();
@@ -1363,8 +1471,11 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
 		local _, currentFaction = C_PaidServices.GetCurrentFaction();
 		return (currentRace == raceData.raceID and currentFaction == faction);
-	elseif CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE then
+	elseif CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
 		local _, currentFaction = C_PaidServices.GetCurrentFaction();
+		if CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+			currentFaction = select(29, GetCharacterInfoByGUID(CharacterCreateFrame.vasInfo.selectedCharacterGUID));
+		end
 		local currentClass = C_PaidServices.GetCurrentClassID();
 		return (currentFaction ~= faction and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass));
 	elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE then
@@ -1381,7 +1492,7 @@ end
 function CharacterCreateRaceAndClassMixin:GetAllValidRaces()
 	local validRaces = {};
 
-	local races = C_CharacterCreation.GetAvailableRaces(Enum.CharacterCreateRaceMode.AllRaces);
+	local races = C_CharacterCreation.GetAvailableRaces();
 	for _, raceData in ipairs(races) do
 		if self:IsRaceValid(raceData, raceData.factionInternalName) then
 			table.insert(validRaces, raceData);
@@ -1393,7 +1504,8 @@ end
 
 function CharacterCreateRaceAndClassMixin:GetRandomValidRaceData()
 	local validRaces = self:GetAllValidRaces();
-	local randomIndex = math.random(1, #validRaces);
+	local numValidRaces = #validRaces;
+	local randomIndex = (numValidRaces > 1) and math.random(1, numValidRaces) or numValidRaces;
 	return validRaces[randomIndex];
 end
 
@@ -1402,7 +1514,7 @@ function CharacterCreateRaceAndClassMixin:UpdateSexButtons(releaseButtons)
 		self.buttonPool:ReleaseAllByTemplate("CharCustomizeSexButtonTemplate");
 	end
 
-	local sexes = {Enum.Unitsex.Male, Enum.Unitsex.Female};
+	local sexes = {Enum.UnitSex.Male, Enum.UnitSex.Female};
 	for index, sexID in ipairs(sexes) do
 		local button = self.buttonPool:Acquire("CharCustomizeSexButtonTemplate");
 		button:SetSex(sexID, self.selectedSexID, index);
@@ -1420,7 +1532,7 @@ function CharacterCreateRaceAndClassMixin:UpdateRaceButtons(releaseButtons)
 
 	local templateCount = {};
 
-	local races = C_CharacterCreation.GetAvailableRaces(Enum.CharacterCreateRaceMode.AllRaces);
+	local races = C_CharacterCreation.GetAvailableRaces();
 	for _, raceData in ipairs(races) do
 		local buttonTemplates = {self:GetRaceButtonTemplates(raceData)};
 		for _, buttonTemplate in pairs(buttonTemplates) do
@@ -1762,7 +1874,7 @@ end
 function CharacterCreateZoneChoiceMixin:Setup()
 	local firstZoneChoiceInfo, secondZoneChoiceInfo = C_CharacterCreation.GetStartingZoneChoices();
 
-	if not secondZoneChoiceInfo or CharacterCreateFrame.paidServiceType or (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Normal) then
+	if not secondZoneChoiceInfo or CharacterCreateFrame:HasService() or (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Normal) then
 		self:SetUseNPE(firstZoneChoiceInfo.isNPE);
 		self.shouldShow = false;
 		return;

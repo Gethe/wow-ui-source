@@ -170,8 +170,10 @@ local function GetCommandTypeDisplayName(commandInfo)
 		return "CVar", CreateColor(.3, .5, 1.0);
 	end
 
-	if commandInfo.commandType == Enum.ConsoleCommandType.Script then
-		return "Script", CreateColor(0.5, 1.0, .3);
+	if commandInfo.commandType == Enum.ConsoleCommandType.Macro then
+		return "Macro", CreateColor(0.5, 1.0, .3);
+	elseif commandInfo.commandType == Enum.ConsoleCommandType.Script then
+		return "Script", CreateColor(0, 1, 1);
 	end
 
 	return "Command", CreateColor(1.0, .5, .3);
@@ -198,9 +200,9 @@ local function GetCommandCategoryDisplayName(commandInfo)
 
 	if commandInfo.commandType == Enum.ConsoleCommandType.Cvar then
 		return "Debug";
-	end
-
-	if commandInfo.commandType == Enum.ConsoleCommandType.Script then
+	elseif commandInfo.commandType == Enum.ConsoleCommandType.Macro then
+		return "Macro";
+	elseif commandInfo.commandType == Enum.ConsoleCommandType.Script then
 		return "Script";
 	end
 
@@ -291,16 +293,16 @@ end
 function DeveloperConsoleAutoCompleteMixin:OnEntryEnter(entry)
 	local textTable = {};
 
-	if entry.Text:IsTruncated() then
-		table.insert(textTable, entry.commandInfo.command);
+	local commandCategoryName = GetCommandCategoryDisplayName(entry.commandInfo);
+	local commandCategoryText = BATTLENET_FONT_COLOR:WrapTextInColorCode(("[%s]"):format(commandCategoryName or "Uncategorized"));
+
+	table.insert(textTable, ("%s %s"):format(commandCategoryText, entry.commandInfo.command));
+	
+	if entry.commandInfo.help and (entry.commandInfo.help ~= '') then
+		table.insert(textTable, YELLOW_FONT_COLOR:WrapTextInColorCode(entry.commandInfo.help));
 	end
 
-	local commandCategoryName = GetCommandCategoryDisplayName(entry.commandInfo);
-	if commandCategoryName then
-		table.insert(textTable, BATTLENET_FONT_COLOR:WrapTextInColorCode(("%s Category"):format(commandCategoryName)));
-	else
-		table.insert(textTable, BATTLENET_FONT_COLOR:WrapTextInColorCode("Uncategorized"));
-	end
+	table.insert(textTable, '');
 
 	if entry.commandInfo.commandType == Enum.ConsoleCommandType.Cvar then
 		local value, defaultValue, server, character = GetCVarInfo(entry.commandInfo.command);
@@ -312,11 +314,7 @@ function DeveloperConsoleAutoCompleteMixin:OnEntryEnter(entry)
 		table.insert(textTable, ("Is Per Character: %s"):format(character and GREEN_FONT_COLOR:WrapTextInColorCode("true") or RED_FONT_COLOR:WrapTextInColorCode("false")));
 	end
 
-	if entry.Help:IsTruncated() then
-		table.insert(textTable, entry.commandInfo.help);
-	end
-	
-	if entry.commandInfo.scriptContents then
+	if (entry.commandInfo.commandType == Enum.ConsoleCommandType.Macro) then
 		table.insert(textTable, entry.commandInfo.scriptContents);
 	end
 

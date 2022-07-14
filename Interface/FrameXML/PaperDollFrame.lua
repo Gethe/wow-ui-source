@@ -1271,7 +1271,7 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 		return;
 	end
 
-	local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel();
+	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
 	local minItemLevel = C_PaperDollInfo.GetMinItemLevel();
 
 	local displayItemLevel = math.max(minItemLevel or 0, avgItemLevelEquipped);
@@ -1286,6 +1286,10 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 	end
 	statFrame.tooltip = statFrame.tooltip .. FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = STAT_AVERAGE_ITEM_LEVEL_TOOLTIP;
+
+	if ( avgItemLevel ~= avgItemLevelPvP ) then
+		statFrame.tooltip2 = statFrame.tooltip2.."\n\n"..STAT_AVERAGE_PVP_ITEM_LEVEL:format(avgItemLevelPvP);
+	end
 end
 
 function MovementSpeed_OnEnter(statFrame)
@@ -1564,8 +1568,8 @@ function PaperDollItemSlotButton_OnClick(self, button)
 end
 
 function PaperDollItemSlotButton_OnModifiedClick(self, button)
+	local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
 	if ( IsModifiedClick("EXPANDITEM") ) then
-		local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
 		if C_Item.DoesItemExist(itemLocation) then
 			if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then
 				if C_Item.CanViewItemPowers(itemLocation) then 
@@ -1586,7 +1590,7 @@ function PaperDollItemSlotButton_OnModifiedClick(self, button)
 		end
 		return;
 	end
-	if ( HandleModifiedItemClick(GetInventoryItemLink("player", self:GetID())) ) then
+	if ( HandleModifiedItemClick(GetInventoryItemLink("player", self:GetID()), itemLocation) ) then
 		return;
 	end
 end
@@ -2821,4 +2825,10 @@ end
 function PaperDollFrame_HideInventoryFixupComplete(self)
 	HelpTip:Hide(self, PAPERDOLL_INVENTORY_FIXUP_COMPLETE);
 	MicroButtonPulseStop(CharacterMicroButton);
+end
+
+PaperDollItemSlotButtonMixin = {}
+
+function PaperDollItemSlotButtonMixin:GetItemContextMatchResult()
+	return ItemButtonUtil.GetItemContextMatchResultForItem(ItemLocation:CreateFromEquipmentSlot(self:GetID()));
 end

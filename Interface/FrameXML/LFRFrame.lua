@@ -179,7 +179,7 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 		button.isCollapsed = false;
 	end
 
-	if ( not LFGLockList[dungeonID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_RAID_LOCKED) ) then
+	if ( not LFGLockList[dungeonID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[dungeonID].reason == LFG_INSTANCE_INVALID_RAID_LOCKED) ) then
 		if ( LFR_CanQueueForMultiple() ) then
 			button.enableButton:Show();
 			LFGSpecificChoiceEnableButton_SetIsRadio(button.enableButton, false);
@@ -255,7 +255,7 @@ end
 
 function LFRQueueFrame_QueueForInstanceIfEnabled(queueID)
 	if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and
-		(not LFGLockList[queueID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[queueID] == LFG_INSTANCE_INVALID_RAID_LOCKED)) ) then
+		(not LFGLockList[queueID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[queueID].reason == LFG_INSTANCE_INVALID_RAID_LOCKED)) ) then
 		SetLFGDungeon(LE_LFG_CATEGORY_LFR, queueID);
 		return true;
 	end
@@ -626,7 +626,7 @@ function LFRBrowseButton_OnEnter(self)
 	if ( encountersComplete > 0 or isIneligible ) then
 		GameTooltip:AddLine("\n"..BOSSES);
 		for i=1, encountersTotal do
-			local bossName, texture, isKilled, isIneligible = SearchLFGGetEncounterResults(self.index, i);
+			local bossName, _, isKilled, isIneligible = SearchLFGGetEncounterResults(self.index, i);
 			if ( isKilled ) then
 				GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			elseif ( isIneligible ) then
@@ -648,7 +648,7 @@ function InstanceLock_OnEnter(self)
 	if ( self.encountersComplete > 0 ) then
 		GameTooltip:SetText(BOSSES);
 		for i=1, self.encountersTotal do
-			local bossName, texture, isKilled = GetInstanceLockTimeRemainingEncounter(i);
+			local bossName, _, isKilled = GetInstanceLockTimeRemainingEncounter(i);
 			if ( isKilled ) then
 				GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			else

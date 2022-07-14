@@ -167,7 +167,6 @@ function SplashRightFeatureFrameMixin:Setup(screenInfo)
 	self.questID = self:GetQuestID(screenInfo);
 	self.Title:SetSize(310, 0);
 	self.Title:SetMaxLines(1);
-	self.Title:SetFontObjectsToTry("Game72Font", "Game60Font", "Game48Font", "Game46Font", "Game36Font", "Game32Font", "Game27Font", "Game24Font", "Game18Font");
 	self.Title:SetText(screenInfo.rightFeatureTitle);
 	self.Description:SetText(screenInfo.rightFeatureDesc);
 	self:SetStartQuestButtonDisplay(screenInfo);

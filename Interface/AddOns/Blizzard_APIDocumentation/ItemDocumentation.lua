@@ -7,6 +7,21 @@ local Item =
 	Functions =
 	{
 		{
+			Name = "CanItemTransmogAppearance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canTransmog", Type = "bool", Nilable = false },
+				{ Name = "errorCode", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "CanScrapItem",
 			Type = "Function",
 
@@ -77,6 +92,34 @@ local Item =
 			},
 		},
 		{
+			Name = "GetAppliedItemTransmogInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetBaseItemTransmogInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCurrentItemLevel",
 			Type = "Function",
 
@@ -88,6 +131,34 @@ local Item =
 			Returns =
 			{
 				{ Name = "currentItemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCurrentItemTransmogInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", Mixin = "ItemTransmogInfoMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemConversionOutputIcon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "icon", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -245,6 +316,41 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemUniquenessByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnique", Type = "bool", Nilable = false },
+				{ Name = "limitCategoryName", Type = "string", Nilable = true },
+				{ Name = "limitCategoryCount", Type = "number", Nilable = true },
+				{ Name = "limitCategoryID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetLimitedCurrencyItemInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "maxQuantity", Type = "number", Nilable = false },
+				{ Name = "totalEarned", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetStackCount",
 			Type = "Function",
 
@@ -287,6 +393,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsDressableItemByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isDressableItem", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemConduit",
 			Type = "Function",
 
@@ -298,6 +418,20 @@ local Item =
 			Returns =
 			{
 				{ Name = "isConduit", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemConvertibleAndValidForPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemConvertibleAndValidForPlayer", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -382,6 +516,20 @@ local Item =
 			Returns =
 			{
 				{ Name = "isKeystone", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemSpecificToPlayerClass",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemSpecificToPlayerClass", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -519,6 +667,15 @@ local Item =
 			{
 				{ Name = "previousHyperlink", Type = "string", Nilable = false },
 				{ Name = "newHyperlink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemConversionDataReady",
+			Type = "Event",
+			LiteralName = "ITEM_CONVERSION_DATA_READY",
+			Payload =
+			{
+				{ Name = "itemGUID", Type = "string", Nilable = false },
 			},
 		},
 		{

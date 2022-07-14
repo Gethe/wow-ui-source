@@ -504,6 +504,8 @@ end
 local COMMUNITIES_LIST_ENTRY_EVENTS = {
 	"STREAM_VIEW_MARKER_UPDATED",
 	"PLAYER_GUILD_UPDATE",
+	"CHAT_DISABLED_CHANGE_FAILED",
+	"CHAT_DISABLED_CHANGED",
 }
 
 CommunitiesListEntryMixin = {};
@@ -643,9 +645,13 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 end
 
 function CommunitiesListEntryMixin:UpdateUnreadNotification()
-	local isNewInvitation = self.isInvitation and not DISPLAYED_COMMUNITIES_INVITATIONS[self.clubId];
-	local hasUnread = not self.isTicket and self.clubId and CommunitiesUtil.DoesCommunityHaveUnreadMessages(self.clubId);
-	self.UnreadNotificationIcon:SetShown(isNewInvitation or hasUnread);
+	if C_SocialRestrictions.IsChatDisabled() then
+		self.UnreadNotificationIcon:SetShown(false);
+	else
+		local isNewInvitation = self.isInvitation and not DISPLAYED_COMMUNITIES_INVITATIONS[self.clubId];
+		local hasUnread = not self.isTicket and self.clubId and CommunitiesUtil.DoesCommunityHaveUnreadMessages(self.clubId);
+		self.UnreadNotificationIcon:SetShown(isNewInvitation or hasUnread);
+	end
 end
 
 function CommunitiesListEntryMixin:CheckForDisabledReason(clubType)
@@ -858,6 +864,8 @@ function CommunitiesListEntryMixin:OnEvent(event, ...)
 		end
 	elseif event == "PLAYER_GUILD_UPDATE" then
 		SetLargeGuildTabardTextures("player", self.GuildTabardEmblem, self.GuildTabardBackground, self.GuildTabardBorder);
+	elseif event == "CHAT_DISABLED_CHANGE_FAILED" or event == "CHAT_DISABLED_CHANGED" then
+		self:UpdateUnreadNotification();
 	end
 end
 

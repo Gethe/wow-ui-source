@@ -260,6 +260,7 @@ CombatPanelOptions = {
 	doNotFlashLowHealthWarning = { text = "FLASH_LOW_HEALTH_WARNING" },
 	lossOfControl = { text = "LOSS_OF_CONTROL" },
     enableFloatingCombatText = { text = "SHOW_COMBAT_TEXT_TEXT" },
+	enableMouseoverCast = { text = "ENABLE_MOUSEOVER_CAST" },
 }
 
 -- [[ Self Cast key dropdown ]] --
@@ -442,6 +443,113 @@ function InterfaceOptionsCombatPanelFocusCastKeyDropDown_Initialize()
 	info.tooltipTitle = NONE_KEY;
 	info.tooltipText = OPTION_TOOLTIP_FOCUS_CAST_NONE_KEY;
 	UIDropDownMenu_AddButton(info);
+end
+
+-- [[ Mouseover Cast Controls ]]
+EnableMouseoverCastCheckboxMixin = {};
+
+function EnableMouseoverCastCheckboxMixin:OnLoad()
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "enableMouseoverCast";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+end
+
+MouseoverCastKeyDropDownMixin = {};
+
+function MouseoverCastKeyDropDownMixin:Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = NONE_KEY;
+	info.func = function(info) self:SetValue(info.value) end;
+	info.value = "NONE";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NONE_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MOUSEOVER_CAST_NONE_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = ALT_KEY;
+	info.value = "ALT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = ALT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MOUSEOVER_CAST_ALT_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CTRL_KEY;
+	info.value = "CTRL";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = CTRL_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MOUSEOVER_CAST_CTRL_KEY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = SHIFT_KEY;
+	info.value = "SHIFT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = SHIFT_KEY;
+	info.tooltipText = OPTION_TOOLTIP_MOUSEOVER_CAST_SHIFT_KEY;
+	UIDropDownMenu_AddButton(info);
+end
+
+function MouseoverCastKeyDropDownMixin:OnLoad()
+	self.type = CONTROLTYPE_DROPDOWN;
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+	BlizzardOptionsPanel_SetupDependentControl(self:GetParent().EnableMouseoverCastCheckbox, self);
+	UIDropDownMenu_SetWidth(self, 90);
+	UIDropDownMenu_Initialize(self, GenerateClosure(self.Initialize, self));
+	UIDropDownMenu_SetSelectedValue(self, self.value);
+	self.defaultValue = "NONE";
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function MouseoverCastKeyDropDownMixin:OnEvent(event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.oldValue = GetModifiedClick("MOUSEOVERCAST");
+		self.value = self.oldValue or self.defaultValue;
+		self.tooltip = _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..self.value.."_KEY"];
+
+		self:UnregisterEvent(event);
+	end
+end
+
+function MouseoverCastKeyDropDownMixin:SetValue(value)
+	self.value = value;
+	UIDropDownMenu_SetSelectedValue(self, value);
+	SetModifiedClick("MOUSEOVERCAST", value);
+	SaveBindings(GetCurrentBindingSet());
+	self.tooltip = _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..value.."_KEY"];
+end
+
+function MouseoverCastKeyDropDownMixin:GetValue()
+	return UIDropDownMenu_GetSelectedValue(self);
+end
+
+function MouseoverCastKeyDropDownMixin:RefreshValue()
+	UIDropDownMenu_Initialize(self, GenerateClosure(self.Initialize, self));
+	UIDropDownMenu_SetSelectedValue(self, self.value);
+end
+
+function MouseoverCastKeyDropDownMixin:OnEnter()
+	if ( not self.isDisabled ) then
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+		GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+	end
 end
 
 function InterfaceOptionsCombatPanel_OnLoad(self)
@@ -778,8 +886,6 @@ TwitterData = {
 
 SocialPanelOptions = {
 	profanityFilter = { text = "PROFANITY_FILTER" },
-
-	spamFilter = { text="SPAM_FILTER" },
 	guildMemberNotify = { text="GUILDMEMBER_ALERT" },
 	blockTrades = { text = "BLOCK_TRADES" },
 	blockChannelInvites = { text = "BLOCK_CHAT_CHANNEL_INVITE" },
@@ -1347,7 +1453,7 @@ function InterfaceOptionsLargerNamePlate_OnShow(self)
 	if C_Commentator.IsSpectating() then
 		BlizzardOptionsPanel_CheckButton_Disable(self);
 	else
-		BlizzardOptionsPanel_CheckButton_Enable(self);
+		BlizzardOptionsPanel_CheckButton_Enable(self, true);
 	end
 end
 
@@ -1502,7 +1608,7 @@ end
 
 
 
--- Namplate Motion Dropdown ---
+-- Nameplate Motion Dropdown ---
 
 function InterfaceOptionsNameplateMotionDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
@@ -1967,12 +2073,13 @@ end
 AccessibilityPanelOptions = {
 	enableMovePad = { text = "MOVE_PAD" },
     movieSubtitle = { text = "CINEMATIC_SUBTITLES" },
-	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	motionSickness = { text = "MOTION_SICKNESS_DROPDOWN" },
 	shakeStrengthCamera = { text = "ADJUST_MOTION_SICKNESS_SHAKE" },
-	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
-	colorblindSimulator = { text = "COLORBLIND_FILTER" },
 	overrideScreenFlash = { text = "ALTERNATE_SCREEN_EFFECTS" },
+	speechToText = { text = "ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION" },
+	textToSpeech = { text = "ENABLE_TEXT_TO_SPEECH" },
+	remoteTextToSpeech = { text = "ENABLE_REMOTE_TEXT_TO_SPEECH" },
+	questTextContrast = { text = "ENABLE_QUEST_TEXT_CONTRAST" },
 }
 
 function InterfaceOptionsAccessibilityPanel_OnLoad(self)
@@ -1987,90 +2094,130 @@ function InterfaceOptionsAccessibilityPanel_OnEvent(self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 end
 
-function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent(self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self.cvar = "colorblindSimulator";
+function InterfaceOptionsAccessibilityPanelSpeechToTextCheckbox_OnLoad(self)
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "speechToText";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 
-		local value = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
-		self.defaultValue = GetCVarDefault(self.cvar);
-		self.value = value;
-		self.oldValue = value;
+	self:SetShown(C_VoiceChat.IsTranscriptionAllowed());
+end
 
-		UIDropDownMenu_SetWidth(self, 130);
-		UIDropDownMenu_Initialize(self,InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize);
-		UIDropDownMenu_SetSelectedValue(self, value);
+function InterfaceOptionsAccessibilityPanelTextToSpeechCheckbox_OnLoad(self)
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "textToSpeech";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 
-		function self:SetValue(value)
-			self.value = value;
-			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			UIDropDownMenu_SetSelectedValue(self, value);
-
-			if self.value == 0 then
-				InterfaceOptionsAccessibilityPanelColorblindStrengthSlider:Disable();
-			else
-				InterfaceOptionsAccessibilityPanelColorblindStrengthSlider:Enable();
-			end
-		end
-
-		function self:GetValue()
-			return UIDropDownMenu_GetSelectedValue(self);
-		end
-
-		function self:RefreshValue()
-			UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize);
-			UIDropDownMenu_SetSelectedValue(self, self.value);
-		end
-
-		self:UnregisterEvent(event);
-
-		-- create and set colorblind item quality display string
-		local self = InterfaceOptionsAccessibilityPanel;
-		local qualityIdTable = {2,3,4,5,7}; -- UNCOMMON, RARE, EPIC, LEGENDARY, HEIRLOOM
-		local examples = self.ColorblindFilterExamples;
-		for i = 1, #qualityIdTable do
-			local fontstring = examples.ItemQuality[i];
-			if ( not fontstring ) then
-				fontstring = examples:CreateFontString(nil, "ARTWORK", "ColorblindItemQualityTemplate");
-				fontstring:SetPoint("TOPLEFT", examples.ItemQuality[i-1], "TOPRIGHT", 8, 0);
-			end
-
-			local qualityId = qualityIdTable[i];
-			fontstring:SetText(_G["ITEM_QUALITY"..qualityId.."_DESC"]);
-			local color = ITEM_QUALITY_COLORS[qualityId];
-			fontstring:SetTextColor(color.r, color.g, color.b);
-		end
+	if not C_VoiceChat.IsTranscriptionAllowed() then
+		local parent = self:GetParent();
+		self:SetPoint("TOPLEFT", parent.SpeechToTextCheckbox, "TOPLEFT", 0);
 	end
 end
 
-function InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelColorFilterDropDown);
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.func = InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnClick;
-
-	info.text = COLORBLIND_OPTION_NONE;
-	info.value = 0;
-	info.checked = info.value == selectedValue;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = COLORBLIND_OPTION_PROTANOPIA;
-	info.value = 1;
-	info.checked = info.value == selectedValue;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = COLORBLIND_OPTION_DEUTERANOPIA;
-	info.value = 2;
-	info.checked = info.value == selectedValue;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = COLORBLIND_OPTION_TRITANOPIA;
-	info.value = 3;
-	info.checked = info.value == selectedValue;
-	UIDropDownMenu_AddButton(info);
+function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnLoad(self)
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("CVAR_UPDATE");
 end
 
-function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnClick(self)
-	InterfaceOptionsAccessibilityPanelColorFilterDropDown:SetValue(self.value);
+function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event == "VARIABLES_LOADED" or
+		(event == "CVAR_UPDATE" and arg1 == "ENABLE_TEXT_TO_SPEECH") ) then
+		self:SetEnabled(GetCVarBool("textToSpeech"));
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelConfigureTextToSpeechButton_OnClick(self)
+	ToggleTextToSpeechFrame();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnLoad(self)
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.cvar = "remoteTextToSpeech";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED");
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnShow(self)
+	InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_UpdateOptionsShown(self);
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_OnEvent(self, event, ...)
+	if event == "VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED" then
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_UpdateOptionsShown(self);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechCheckbox_UpdateOptionsShown(self)
+	local parent = self:GetParent();
+	local speakForMeAllowed = C_VoiceChat.IsSpeakForMeAllowed();
+	self:SetShown(speakForMeAllowed);
+	parent.RemoteTextToSpeechVoiceDropdown:SetShown(speakForMeAllowed);
+	parent.RemoteTextToSpeechVoicePlaySample:SetShown(speakForMeAllowed);
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_Initialize()
+	local selectedValue = tonumber(GetCVar("remoteTextToSpeechVoice"));
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnClick;
+
+	for index, voice in ipairs(C_VoiceChat.GetRemoteTtsVoices()) do
+		info.text = VOICE_GENERIC_FORMAT:format(voice.voiceID);
+		info.value = voice.voiceID;
+		info.checked = voice.voiceID == selectedValue;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_RefreshValue(self)
+	local value = GetCVar("remoteTextToSpeechVoice");
+	UIDropDownMenu_SetText(self, VOICE_GENERIC_FORMAT:format(value));
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self)
+	if ( C_VoiceChat.IsSpeakForMeActive() ) then
+		UIDropDownMenu_EnableDropDown(self);
+	else
+		UIDropDownMenu_DisableDropDown(self);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnClick(self)
+	SetCVar("remoteTextToSpeechVoice", self.value);
+	UIDropDownMenu_SetSelectedValue(InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown, self.value);
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_OnEvent(self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		UIDropDownMenu_SetWidth(self, 160);
+		UIDropDownMenu_SetInitializeFunction(self, InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_Initialize);
+		
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_RefreshValue(self);
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self);
+
+		self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED");
+		self:RegisterEvent("VARIABLES_LOADED");
+
+	elseif ( event == "VARIABLES_LOADED" or event == "VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED" ) then
+		InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoiceDropdown_UpdateEnabled(self);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnLoad(self)
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED");
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnEvent(self, event, ...)
+	if ( event == "VARIABLES_LOADED" or event == "VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED" ) then
+		self:SetEnabled(C_VoiceChat.IsSpeakForMeActive());
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelRemoteTextToSpeechVoicePlaySample_OnClick(self)
+	C_VoiceChat.SpeakRemoteTextSample(TEXT_TO_SPEECH_SAMPLE_TEXT);
 end
 
 local cameraKeepCharacterCentered = "CameraKeepCharacterCentered";
@@ -2203,4 +2350,174 @@ end
 
 function InterfaceOptionsAccessibilityPanelShakeIntensityDropdown_OnClick(self)
 	InterfaceOptionsAccessibilityPanelShakeIntensityDropdown:SetValue(self.value);
+end
+
+local cursorSizeOptions = {
+	{ text= DEFAULT, value = -1 },
+	{ text= "32x32", value = 0 },
+	{ text= "48x48", value = 1 },
+	{ text= "64x64", value = 2 },
+	{ text= "96x96", value = 3 },
+	{ text= "128x128", value = 4 },
+};
+
+function GetCursorSizeSelected()
+	local value = tonumber(GetCVar("cursorSizePreferred"));
+	for index, option in ipairs(cursorSizeOptions) do
+		if value == option.value then
+			return value;
+		end
+	end
+
+	return -1;
+end
+
+function InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnLoad(self)
+	self.type = CONTROLTYPE_DROPDOWN;
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	self.value = GetCursorSizeSelected();
+	self.oldValue = value;
+
+	UIDropDownMenu_SetWidth(self, 130);
+	UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelCursorSizeDropdown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, self.value);
+
+	self.SetValue =
+		function (self, value)
+			self.value = value;
+
+			BlizzardOptionsPanel_SetCVarSafe("cursorSizePreferred", value);
+			UIDropDownMenu_SetSelectedValue(self, value);
+		end
+
+	self.GetValue = GenerateClosure(UIDropDownMenu_GetSelectedValue, self);
+
+	self.RefreshValue =
+		function (self)
+			UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelCursorSizeDropdown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+end
+
+function InterfaceOptionsAccessibilityPanelCursorSizeDropdown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelCursorSizeDropdown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnClick;
+
+	for index, option in ipairs(cursorSizeOptions) do
+		info.text = option.text;
+		info.value = option.value;
+		info.checked = option.value == selectedValue;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnClick(self)
+	InterfaceOptionsAccessibilityPanelCursorSizeDropdown:SetValue(self.value);
+end
+
+ColorblindPanelOptions = {
+	colorblindMode = { text = "USE_COLORBLIND_MODE" },
+	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
+	colorblindSimulator = { text = "COLORBLIND_FILTER" },
+}
+
+function InterfaceOptionsColorblindPanel_OnLoad(self)
+	self.name = "   "..COLORBLIND_MODE_TAB;
+	self.options = ColorblindPanelOptions;
+	InterfaceOptionsPanel_OnLoad(self);
+
+	self:SetScript("OnEvent", InterfaceOptionsAccessibilityPanel_OnEvent);
+end
+
+function InterfaceOptionsColorblindPanel__OnEvent(self, event, ...)
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+end
+
+function InterfaceOptionsColorblindPanelColorFilterDropDown_OnEvent(self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.cvar = "colorblindSimulator";
+
+		local value = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self,InterfaceOptionsColorblindPanelColorFilterDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		function self:SetValue(value)
+			self.value = value;
+			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+			UIDropDownMenu_SetSelectedValue(self, value);
+
+			if self.value == 0 then
+				InterfaceOptionsColorblindPanelColorblindStrengthSlider:Disable();
+			else
+				InterfaceOptionsColorblindPanelColorblindStrengthSlider:Enable();
+			end
+		end
+
+		function self:GetValue()
+			return UIDropDownMenu_GetSelectedValue(self);
+		end
+
+		function self:RefreshValue()
+			UIDropDownMenu_Initialize(self, InterfaceOptionsColorblindPanelColorFilterDropDown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+
+		self:UnregisterEvent(event);
+
+		-- create and set colorblind item quality display string
+		local self = InterfaceOptionsColorblindPanel;
+		local qualityIdTable = {2,3,4,5,7}; -- UNCOMMON, RARE, EPIC, LEGENDARY, HEIRLOOM
+		local examples = self.ColorblindFilterExamples;
+		for i = 1, #qualityIdTable do
+			local fontstring = examples.ItemQuality[i];
+			if ( not fontstring ) then
+				fontstring = examples:CreateFontString(nil, "ARTWORK", "ColorblindItemQualityTemplate");
+				fontstring:SetPoint("TOPLEFT", examples.ItemQuality[i-1], "TOPRIGHT", 8, 0);
+			end
+
+			local qualityId = qualityIdTable[i];
+			fontstring:SetText(_G["ITEM_QUALITY"..qualityId.."_DESC"]);
+			local color = ITEM_QUALITY_COLORS[qualityId];
+			fontstring:SetTextColor(color.r, color.g, color.b);
+		end
+	end
+end
+
+function InterfaceOptionsColorblindPanelColorFilterDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsColorblindPanelColorFilterDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsColorblindPanelColorFilterDropDown_OnClick;
+
+	info.text = COLORBLIND_OPTION_NONE;
+	info.value = 0;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COLORBLIND_OPTION_PROTANOPIA;
+	info.value = 1;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COLORBLIND_OPTION_DEUTERANOPIA;
+	info.value = 2;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COLORBLIND_OPTION_TRITANOPIA;
+	info.value = 3;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsColorblindPanelColorFilterDropDown_OnClick(self)
+	InterfaceOptionsColorblindPanelColorFilterDropDown:SetValue(self.value);
 end

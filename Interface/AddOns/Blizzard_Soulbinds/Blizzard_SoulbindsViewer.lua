@@ -87,14 +87,14 @@ function SoulbindViewerMixin:OnShow()
 
 	self:UpdateButtons();
 
-	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_OPEN_UI);
 	
 	self:UpdateBackgrounds();
 
-	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
-	OpenAllBagsMatchingContext(self);
+	if C_Soulbinds.CanModifySoulbind() then
+		ItemButtonUtil.OpenAndFilterBags(self);
+	end
 
-	self.openedBags = IsAnyBagOpen();
 	self:CheckTutorials();
 end
 
@@ -102,35 +102,24 @@ function SoulbindViewerMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, SoulbindViewerEvents);
 	C_Soulbinds.CloseUI();
 
-	PlaySound(SOUNDKIT.SOULBINDS_CLOSE_UI, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_CLOSE_UI);
 	
 	if HelpTip:IsShowingAnyInSystem("soulbinds") then
 		HelpTip:HideAllSystem("soulbinds");
 	end
 	self.helpTipItemLocation = nil;
 
-	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
-	
-	if self.openedBags then
-		-- Only if opening the viewer caused bags to open will
-		-- we close the bags when closing the viewer.
-		local forceUpdate = true;
-		CloseAllBags(self, forceUpdate);
-		self.openedBags = nil;
-	end
+	ItemButtonUtil.CloseFilteredBags(self);
 	
 	StaticPopup_Hide("SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION");
-	StaticPopup_Hide("SOULBIND_CONDUIT_INSTALL_CONFIRM");
 end
 
 function SoulbindViewerMixin:SetSheenAnimationsPlaying(playing)
 	self.ForgeSheen.Anim:SetPlaying(playing);
-	self.BackgroundSheen1.Anim:SetPlaying(playing);
-	self.BackgroundSheen2.Anim:SetPlaying(playing);
+	self.BackgroundSheen.Anim:SetPlaying(playing);
 	self.GridSheen.Anim:SetPlaying(playing);
 	self.BackgroundRuneLeft.Anim:SetPlaying(playing);
 	self.BackgroundRuneRight.Anim:SetPlaying(playing);
-	self.ConduitList.Fx.ChargeSheen.Anim:SetPlaying(playing);
 end
 
 function SoulbindViewerMixin:UpdateButtons()
@@ -151,8 +140,6 @@ function SoulbindViewerMixin:SetBackgroundStateActive(active)
 end
 
 function SoulbindViewerMixin:OnPendingConduitChanged(nodeID)
-	StaticPopup_Hide("SOULBIND_CONDUIT_INSTALL_CONFIRM");
-	
 	self:UpdateButtons();
 
 	HelpTip:AcknowledgeSystem("soulbinds", SOULBIND_SLOT_CONDUIT_TUTORIAL_TEXT);
@@ -178,6 +165,11 @@ end
 
 function SoulbindViewerMixin:OnNodeChanged()
 	self:UpdateButtons();
+
+	if self.showingEnhancedConduitTutorialNode then
+		-- They might have chosen a different path, so re-evaluate
+		self:CheckEnhancedConduitTutorial();
+	end
 end
 
 function SoulbindViewerMixin:Open()
@@ -231,19 +223,21 @@ function SoulbindViewerMixin:OnSoulbindSelected(soulbindIDs, button, buttonIndex
 
 	self:UpdateBackgrounds();
 	self:UpdateButtons();
-	
+	self:CheckTutorials();
+
 	self:TriggerEvent(SoulbindViewerMixin.Event.OnSoulbindChanged, self.covenantData, soulbindData);
 
-	PlaySound(SOUNDKIT.SOULBINDS_SOULBIND_SELECTED, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_SOULBIND_SELECTED);
 end
 
 function SoulbindViewerMixin:OnSoulbindActivated(soulbindID)
 	local soulbindData = C_Soulbinds.GetSoulbindData(soulbindID);
 	self.Tree:Init(soulbindData);
+	self.SelectGroup:Init(self.covenantData, soulbindID);
 	self:UpdateButtons();
 
 	if soulbindData.activationSoundKitID then
-		PlaySound(soulbindData.activationSoundKitID, nil, SOUNDKIT_ALLOW_DUPLICATES);
+		PlaySound(soulbindData.activationSoundKitID);
 	end
 end
 
@@ -297,7 +291,7 @@ function SoulbindViewerMixin:OnActivateSoulbindClicked()
 
 	C_Soulbinds.ActivateSoulbind(openSoulbindID);
 
-	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.SOULBINDS_ACTIVATE_SOULBIND);
 	
 	self.Background2.ActivateAnim:Play();
 	self.ActivateFX.ActivateAnim:Play();
@@ -351,16 +345,9 @@ end
 
 function SoulbindViewerMixin:OnCommitConduitsClicked()
 	local soulbindID = self:GetOpenSoulbindID();
-	local onConfirm = function()
-		Soulbinds.SetConduitInstallPending(true);
-		C_Soulbinds.CommitPendingConduitsInSoulbind(soulbindID);
-		PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS, nil, SOUNDKIT_ALLOW_DUPLICATES);
-	end
-
-	local total = C_Soulbinds.GetTotalConduitChargesPendingInSoulbind(soulbindID);
-	local iconMarkup = CreateAtlasMarkup("soulbinds_collection_charge_dialog", 12, 12, 0, 0);
-	local text = string.format("%s\n\n", CONDUIT_CHARGE_CONFIRM:format(total, iconMarkup));
-	StaticPopup_Show("SOULBIND_CONDUIT_INSTALL_CONFIRM", text, nil, onConfirm);
+	Soulbinds.SetConduitInstallPending(true);
+	C_Soulbinds.CommitPendingConduitsInSoulbind(soulbindID);
+	PlaySound(SOUNDKIT.SOULBINDS_COMMIT_CONDUITS);
 end
 
 function SoulbindViewerMixin:OnCollectionConduitClick(conduitID)
@@ -383,8 +370,9 @@ function SoulbindViewerMixin:CheckTutorials()
 	-- Keep ordered.
 	if self:CheckPathSelectionTutorial() then
 	elseif self:CheckConduitLearnTutorial() then
-	else 
-		self:CheckConduitInstallTutorial() 
+	elseif self:CheckConduitInstallTutorial() then
+	else
+		self:CheckEnhancedConduitTutorial();
 	end
 end
 
@@ -458,6 +446,10 @@ function SoulbindViewerMixin:CheckConduitInstallTutorial()
 		return false;
 	end
 
+	if C_Soulbinds.GetConduitCollectionCount() >= CONDUITS_LEARNED_IN_TUTORIAL then
+		return false;
+	end
+
 	local _, conduitTutorialNode = FindInTableIf(self.Tree:GetNodes(), function(nodeFrame)
 		return nodeFrame:GetRow() == 1 and nodeFrame:IsSelected();
 	end);
@@ -487,23 +479,65 @@ function SoulbindViewerMixin:CheckConduitInstallTutorial()
 	return false;
 end
 
+function SoulbindViewerMixin:CheckEnhancedConduitTutorial()
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SOULBIND_ENHANCED_CONDUIT) then
+		return false;
+	end
+
+	if self.showingEnhancedConduitTutorialNode then
+		HelpTip:Hide(self.showingEnhancedConduitTutorialNode, SOULBIND_ENHANCED_CONDUIT_TUTORIAL);
+		self.showingEnhancedConduitTutorialNode = nil;
+	end
+
+	local enhancedConduitTutorialNode;
+	local numColumnsInTutorialRow = 0;
+	for _, nodeFrame in pairs(self.Tree:GetNodes()) do
+		if nodeFrame:IsConduit() and nodeFrame:IsEnhanced() and not nodeFrame:IsUnavailable() then
+			if enhancedConduitTutorialNode and (nodeFrame:GetRow() > enhancedConduitTutorialNode:GetRow()) then
+				-- This is an enhanced node but we already found one in a lower row, just move on
+			else
+				local isNewBest =	not enhancedConduitTutorialNode or 
+									(nodeFrame:GetRow() < enhancedConduitTutorialNode:GetRow()) or
+									(nodeFrame:IsSelected() and not enhancedConduitTutorialNode:IsSelected()) or
+									(nodeFrame:GetColumn() < enhancedConduitTutorialNode:GetColumn());
+
+				if isNewBest then
+					if enhancedConduitTutorialNode and (nodeFrame:GetRow() < enhancedConduitTutorialNode:GetRow()) then
+						-- Found one in a lower row, reset numColumnsInTutorialRow
+						numColumnsInTutorialRow = 0;
+					end
+
+					enhancedConduitTutorialNode = nodeFrame;
+					numColumnsInTutorialRow = numColumnsInTutorialRow + 1;
+				end
+			end
+		end
+	end
+
+	if enhancedConduitTutorialNode then
+		local alignedRight = (enhancedConduitTutorialNode:GetColumn() == numColumnsInTutorialRow);
+
+		local helpTipInfo = {
+			text = SOULBIND_ENHANCED_CONDUIT_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = alignedRight and HelpTip.Point.RightEdgeCenter or HelpTip.Point.LeftEdgeCenter,
+			offsetX = alignedRight and 10 or -10,
+			system = "soulbinds";
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_SOULBIND_ENHANCED_CONDUIT,
+		};
+
+		HelpTip:Show(enhancedConduitTutorialNode, helpTipInfo);
+		self.showingEnhancedConduitTutorialNode = enhancedConduitTutorialNode;
+		return true;
+	end
+
+	return false;
+end
+
 StaticPopupDialogs["SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION"] = {
 	text = CONDUIT_NO_CHANGES_CONFIRMATION,
 	button1 = LEAVE,
-	button2 = CANCEL,
-	enterClicksFirstButton = true,
-	whileDead = 1,
-	hideOnEscape = 1,
-	showAlert = 1,
-
-	OnButton1 = function(self, callback)
-		callback();
-	end,
-};
-
-StaticPopupDialogs["SOULBIND_CONDUIT_INSTALL_CONFIRM"] = {
-	text = "%s",
-	button1 = ACCEPT,
 	button2 = CANCEL,
 	enterClicksFirstButton = true,
 	whileDead = 1,

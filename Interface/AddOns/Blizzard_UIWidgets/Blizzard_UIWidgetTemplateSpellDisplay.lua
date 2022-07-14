@@ -13,10 +13,7 @@ function UIWidgetTemplateSpellDisplayMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 
 	self.Spell:Setup(widgetContainer, widgetInfo.spellInfo, widgetInfo.enabledState, widgetInfo.widgetSizeSetting, widgetInfo.textureKit);
-
-	if self.fontColor then
-		self.Spell:SetFontColor(self.fontColor);
-	end
+	self.Spell:SetTooltipLocation(widgetInfo.tooltipLoc);
 
 	self:SetWidth(self.Spell:GetWidth());
 	self:SetHeight(self.Spell:GetHeight() + 2);
@@ -24,9 +21,9 @@ end
 
 function UIWidgetTemplateSpellDisplayMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
-	self.fontColor = nil;
+	self.Spell:ClearOverrideNormalFontColor();
 end
 
 function UIWidgetTemplateSpellDisplayMixin:SetFontStringColor(fontColor)
-	self.fontColor = fontColor;
+	self.Spell:SetOverrideNormalFontColor(fontColor);
 end

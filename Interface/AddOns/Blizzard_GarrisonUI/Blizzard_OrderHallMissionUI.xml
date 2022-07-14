@@ -555,7 +555,7 @@
 									<Anchor point="TOPRIGHT" x="4" y="435"/>
 								</Anchors>
 							</Button>
-							<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
+							<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostWithTooltipTemplate">
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
 									<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />

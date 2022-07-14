@@ -171,7 +171,6 @@ local WarCampaign =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
-				{ Name = "orderIndex", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -106,6 +106,9 @@ end
 
 function AlertFrameQueueMixin:OnFrameHide(frame)
 	self.alertFramePool:Release(frame);
+	if frame.OnRelease then
+		frame:OnRelease();
+	end
 end
 
 function AlertFrameQueueMixin:AddAlert(...)
@@ -260,10 +263,12 @@ function AlertContainerMixin:OnLoad()
 	self.shouldQueueAlertsFlags = {
 		playerEnteredWorld = false,
 		variablesLoaded = false,
+		firstFrameRendered = false;
 	};
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("FIRST_FRAME_RENDERED");
 end
 
 function AlertContainerMixin:OnEvent(event, ...)
@@ -271,6 +276,8 @@ function AlertContainerMixin:OnEvent(event, ...)
 		self:SetPlayerEnteredWorld();
 	elseif event == "VARIABLES_LOADED" then
 		self:SetVariablesLoaded();
+	elseif event == "FIRST_FRAME_RENDERED" then
+		self:SetFirstFrameRendered();
 	end
 end
 
@@ -294,6 +301,12 @@ end
 function AlertContainerMixin:SetVariablesLoaded()
 	self:UnregisterEvent("VARIABLES_LOADED");
 	self:SetEnabledFlag("variablesLoaded", true);
+end
+
+function AlertContainerMixin:SetFirstFrameRendered()
+	self:UnregisterEvent("FIRST_FRAME_RENDERED");
+	-- The first frame immediately after a load can take a long time and miss alert frames, so we enable this flag the frame after
+	C_Timer.After(0, GenerateClosure(self.SetEnabledFlag, self, "firstFrameRendered", true));
 end
 
 function AlertContainerMixin:SetAlertsEnabled(enabled, reason)
@@ -443,6 +456,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("NEW_MOUNT_ADDED");
 	self:RegisterEvent("NEW_TOY_ADDED");
 	self:RegisterEvent("NEW_RUNEFORGE_POWER_ADDED");
+	self:RegisterEvent("TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED");
 end
 
 function CreateContinuableContainerForLFGRewards()
@@ -639,6 +653,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "NEW_RUNEFORGE_POWER_ADDED") then
 		local powerID = ...;
 		NewRuneforgePowerAlertSystem:AddAlert(powerID);
+	elseif ( event == "TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED") then
+		local itemModifiedAppearanceID = ...;
+		NewCosmeticAlertFrameSystem:AddAlert(itemModifiedAppearanceID);
 	end
 end
 

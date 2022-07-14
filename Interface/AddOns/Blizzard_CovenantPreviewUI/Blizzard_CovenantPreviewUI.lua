@@ -97,9 +97,6 @@ function CovenantPreviewFrameMixin:OnEvent(event, ...)
 end 
 
 function CovenantPreviewFrameMixin:HandleEscape()
-	if (self.showingFromPlayerChoice and PlayerChoiceFrame and PlayerChoiceFrame:IsShown()) then 
-		HideUIPanel(PlayerChoiceFrame);
-	end 
 	self:Hide();
 end 
 
@@ -176,6 +173,13 @@ function CovenantPreviewFrameMixin:TryShow(covenantInfo)
 		end);
 	end 
 
+	self:ClearAllPoints();
+	if self.showingFromPlayerChoice then
+		self:SetPoint("CENTER", PlayerChoiceFrame, "CENTER");
+	else
+		self:SetPoint("TOP", UIParent, "TOP", 0, -157);
+	end
+
 	self:SetupAbilityButtons(covenantInfo.covenantAbilities);
 	self:SetupSoulbindButtons(covenantInfo.covenantSoulbinds);
 	self:SetupCovenantInfoPanel(covenantInfo); 
@@ -243,7 +247,6 @@ function CovenantPreviewFrameMixin:SetupModelSceneFrame(transmogSetID, mountID)
 	SetUpTransmogAndMountDressupFrame(self.ModelSceneContainer, transmogSetID, mountID, 414, 432, "CENTER", "CENTER", 0 , 0, true); 
 	local sources = C_TransmogSets.GetAllSourceIDs(transmogSetID);
 	DressUpTransmogSet(sources, TransmogAndMountDressupFrame);
-	TransmogAndMountDressupFrame:RemoveWeapons();
 end 
 
 function CovenantPreviewFrameMixin:SetupCovenantInfoPanel(covenantInfo) 

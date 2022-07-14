@@ -17,6 +17,7 @@ function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer)
 	self.disableTooltip = widgetContainer.disableWidgetTooltips;
 	self:UpdateMouseEnabled();
 	self:SetMouseClickEnabled(false);
+	self:SetTooltipLocation(nil);
 end
 
 function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
@@ -33,8 +34,34 @@ function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
 	self:UpdateMouseEnabled();
 end
 
+local tooltipLocToAnchor = {
+	[Enum.UIWidgetTooltipLocation.BottomLeft]	= "ANCHOR_BOTTOMLEFT",
+	[Enum.UIWidgetTooltipLocation.Left]			= "ANCHOR_NONE",
+	[Enum.UIWidgetTooltipLocation.TopLeft]		= "ANCHOR_LEFT",
+	[Enum.UIWidgetTooltipLocation.Top]			= "ANCHOR_TOP",
+	[Enum.UIWidgetTooltipLocation.TopRight]		= "ANCHOR_RIGHT",
+	[Enum.UIWidgetTooltipLocation.Right]		= "ANCHOR_NONE",
+	[Enum.UIWidgetTooltipLocation.BottomRight]	= "ANCHOR_BOTTOMRIGHT",
+	[Enum.UIWidgetTooltipLocation.Bottom]		= "ANCHOR_BOTTOM",
+};
+
+function UIWidgetTemplateTooltipFrameMixin:SetTooltipLocation(tooltipLoc)
+	self.tooltipLoc = tooltipLoc;
+	self.tooltipAnchor = tooltipLocToAnchor[tooltipLoc] or self.defaultTooltipAnchor;
+end
+
 function UIWidgetTemplateTooltipFrameMixin:SetTooltipOwner()
-	EmbeddedItemTooltip:SetOwner(self, self.tooltipAnchor, self.tooltipXOffset, self.tooltipYOffset);
+	if self.tooltipAnchor == "ANCHOR_NONE" then
+		EmbeddedItemTooltip:SetOwner(self, self.tooltipAnchor);
+		EmbeddedItemTooltip:ClearAllPoints();
+		if self.tooltipLoc == Enum.UIWidgetTooltipLocation.Left then
+			EmbeddedItemTooltip:SetPoint("RIGHT", self, "LEFT", self.tooltipXOffset, self.tooltipYOffset);
+		elseif self.tooltipLoc == Enum.UIWidgetTooltipLocation.Right then
+			EmbeddedItemTooltip:SetPoint("LEFT", self, "RIGHT", self.tooltipXOffset, self.tooltipYOffset);
+		end
+	else
+		EmbeddedItemTooltip:SetOwner(self, self.tooltipAnchor, self.tooltipXOffset, self.tooltipYOffset);
+	end
 end
 
 function UIWidgetTemplateTooltipFrameMixin:OnEnter()
@@ -89,31 +116,85 @@ local function GetTextColorForEnabledState(enabledState, overrideNormalFontColor
 		return DISABLED_FONT_COLOR;
 	elseif enabledState == Enum.WidgetEnabledState.Red then
 		return RED_FONT_COLOR;
-	elseif enabledState == Enum.WidgetEnabledState.Highlight then
+	elseif enabledState == Enum.WidgetEnabledState.White then
 		return HIGHLIGHT_FONT_COLOR;
+	elseif enabledState == Enum.WidgetEnabledState.Green then
+		return GREEN_FONT_COLOR;
+	elseif enabledState == Enum.WidgetEnabledState.Gold then
+		return CHALLENGE_MODE_TOAST_TITLE_COLOR;
+	elseif enabledState == Enum.WidgetEnabledState.Black then
+		return BLACK_FONT_COLOR;
 	else
 		return overrideNormalFontColor or NORMAL_FONT_COLOR;
 	end
 end
 
-local function SetTextColorForEnabledState(fontString, enabledState, overrideNormalFontColor)
-	fontString:SetTextColor(GetTextColorForEnabledState(enabledState, overrideNormalFontColor):GetRGB());
+UIWidgetBaseEnabledFrameMixin = {}
+
+function UIWidgetBaseEnabledFrameMixin:SetOverrideNormalFontColor(overrideNormalFontColor)
+	self.overrideNormalFontColor = overrideNormalFontColor;
+	self:UpdateFontColors();
 end
 
-function UIWidgetTemplateTooltipFrameMixin:SetFontColor(overrideNormalFontColor)
+function UIWidgetBaseEnabledFrameMixin:ClearOverrideNormalFontColor()
+	self.overrideNormalFontColor = nil;
+	self:UpdateFontColors();
+end
+
+function UIWidgetBaseEnabledFrameMixin:UpdateFontColors()
+	if self.SetTextColor then
+		self:SetTextColor(GetTextColorForEnabledState(self.enabledState, self.overrideNormalFontColor):GetRGB());
+	end
+
 	if self.ColoredStrings then
 		for _, fontString in ipairs(self.ColoredStrings) do
-			SetTextColorForEnabledState(fontString, self.enabledState, overrideNormalFontColor);
+			fontString:SetTextColor(GetTextColorForEnabledState(self.enabledState, self.overrideNormalFontColor):GetRGB());
 		end
 	end
 end
 
-function UIWidgetTemplateTooltipFrameMixin:SetEnabledState(enabledState)
+function UIWidgetBaseEnabledFrameMixin:SetEnabledState(enabledState)
 	self.enabledState = enabledState;
-	self:SetFontColor();
+	self:UpdateFontColors();
 end
 
 UIWidgetBaseTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+
+function UIWidgetBaseTemplateMixin:ShouldApplyEffectsToSubFrames()
+	return false;
+end
+
+function UIWidgetBaseTemplateMixin:ClearEffects()
+	local frames = {self:GetChildren()};
+	table.insert(frames, self);
+	for _, frame in ipairs(frames) do
+		if frame.effectController then 
+			frame.effectController:CancelEffect();
+			frame.effectController = nil;
+		end	
+	end
+end 
+
+function UIWidgetBaseTemplateMixin:ApplyEffectToFrame(widgetInfo, widgetContainer, frame) 
+	if frame.effectController then 
+		frame.effectController:CancelEffect();
+		frame.effectController = nil;
+	end
+	if widgetInfo.scriptedAnimationEffectID and widgetInfo.modelSceneLayer ~= Enum.UIWidgetModelSceneLayer.None then
+		if widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Front then 
+			frame.effectController = widgetContainer.FrontModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
+		elseif widgetInfo.modelSceneLayer == Enum.UIWidgetModelSceneLayer.Back then 
+			frame.effectController = widgetContainer.BackModelScene:AddEffect(widgetInfo.scriptedAnimationEffectID, frame, frame);
+		end 
+	end
+end	
+
+function UIWidgetBaseTemplateMixin:ApplyEffects(widgetInfo)
+	local applyFrames = self:ShouldApplyEffectsToSubFrames() and {self:GetChildren()} or {self};
+	for _, frame in ipairs(applyFrames) do
+		self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, frame);
+	end
+end
 
 function UIWidgetBaseTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
@@ -199,6 +280,7 @@ end
 function UIWidgetBaseTemplateMixin:Setup(widgetInfo, widgetContainer)
 	self:SetScale(GetWidgetScale(widgetInfo.widgetScale));
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+	self:SetTooltipLocation(widgetInfo.tooltipLoc);
 	self.widgetContainer = widgetContainer;
 	self.orderIndex = widgetInfo.orderIndex;
 	self.layoutDirection = widgetInfo.layoutDirection; 
@@ -209,9 +291,10 @@ end
 function UIWidgetBaseTemplateMixin:OnReset()
 	self:Hide();
 	self:ClearAllPoints();
+	self:ClearEffects();
 end
 
-UIWidgetBaseResourceTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+UIWidgetBaseResourceTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin, UIWidgetBaseEnabledFrameMixin);
 
 function UIWidgetBaseResourceTemplateMixin:Setup(widgetContainer, resourceInfo)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
@@ -225,7 +308,7 @@ function UIWidgetBaseResourceTemplateMixin:Setup(widgetContainer, resourceInfo)
 	self:SetHeight(self.Icon:GetHeight());
 end
 
-UIWidgetBaseCurrencyTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+UIWidgetBaseCurrencyTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin, UIWidgetBaseEnabledFrameMixin);
 
 function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, enabledState, tooltipEnabledState)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
@@ -252,7 +335,7 @@ function UIWidgetBaseCurrencyTemplateMixin:Setup(widgetContainer, currencyInfo, 
 	self:SetHeight(self.Icon:GetHeight());
 end
 
-UIWidgetBaseSpellTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+UIWidgetBaseSpellTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin, UIWidgetBaseEnabledFrameMixin);
 
 local iconSizes =
 {
@@ -278,7 +361,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	local hasBorderTexture = self.Border:IsShown(); 
 
 	self.StackCount:ClearAllPoints();
-	if (hasAmountBorderTexture) then  
+	if hasAmountBorderTexture then  
 		self.StackCount:SetPoint("CENTER", self.AmountBorder);
 	else 
 		self.StackCount:SetPoint("BOTTOMRIGHT", self.Icon, -2, 2);
@@ -291,9 +374,9 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	local iconSize = GetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
 
-	if (not hasBorderTexture) then 
-		self.Border:SetAtlas("UI-Frame-IconBorder", false); 
-	end 
+	if not hasBorderTexture then 
+		self.Border:SetAtlas("UI-Frame-IconBorder", false);
+	end
 
 	local iconWidth = self.Icon:GetWidth();
 	local textWidth = 0;
@@ -308,18 +391,17 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	self.Text:SetShown(textShown);
 
 	if textShown then
-		if spellInfo.text ~= "" then
-			self.Text:SetText(spellInfo.text);
-		else
-			self.Text:SetText(name);
-		end
 		if textWidth == 0 then
 			textWidth = self.Text:GetWidth();
 		end
+		iconWidth = iconWidth + 5;
+
+		local text = (spellInfo.text == "") and name or spellInfo.text;
+		self.Text:Setup(text, spellInfo.textFontType, spellInfo.textSizeType, enabledState, spellInfo.hAlignType);
+
 		if self.Text:GetHeight() < self.Icon:GetHeight() then
 			self.Text:SetHeight(self.Icon:GetHeight());
 		end
-		iconWidth = iconWidth + 5;
 	end
 
 	if spellInfo.stackDisplay > 0 then
@@ -330,7 +412,8 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 		self.AmountBorder:Hide();
 	end
 
-	self.Border:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff or spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
+	local showBorder = (spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff) or ((spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular) and hasBorderTexture);
+	self.Border:SetShown(showBorder);
 	self.DebuffBorder:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
 	self.IconMask:SetShown(spellInfo.iconDisplayType ~= Enum.SpellDisplayIconDisplayType.Circular);
 	self.CircleMask:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular);
@@ -360,84 +443,174 @@ function UIWidgetBaseSpellTemplateMixin:SetMouse(disableMouse)
 	self:SetMouseClickEnabled(false);
 end
 
-UIWidgetBaseColoredTextMixin = {};
+UIWidgetBaseStatusBarPartitionTemplateMixin = {};
 
-function UIWidgetBaseColoredTextMixin:SetEnabledState(enabledState)
-	SetTextColorForEnabledState(self, enabledState);
+local partitionTextureKitString = "%s-BorderTick";
+local partitionFullTextureKitString = "%s-BorderTick-Full";
+local partitionFlashTextureKitString = "%s-BorderTick-Flash";
+
+function UIWidgetBaseStatusBarPartitionTemplateMixin:Setup(partitionValue, textureKit)
+	self.value = partitionValue;
+	self.textureKit = textureKit;
+	self.emptyAtlasName = partitionTextureKitString:format(textureKit);
+	self.fullAtlasName = partitionFullTextureKitString:format(textureKit);
+	self.hasFullAtlas = (C_Texture.GetAtlasInfo(self.fullAtlasName) ~= nil);
+
+	local flashAtlasName = partitionFlashTextureKitString:format(textureKit);
+	local useAtlasSize = true;
+	local setVisibility = true;
+	self.FlashOverlay:SetAtlas(flashAtlasName, useAtlasSize, setVisibility);
+end
+
+function UIWidgetBaseStatusBarPartitionTemplateMixin:UpdateForBarValue(barValue)
+	local useAtlasSize = true;
+
+	if not self.hasFullAtlas or barValue < self.value then
+		self.Tex:SetAtlas(self.emptyAtlasName, useAtlasSize);
+
+		if self.wasFull then
+			self.FlashAnim:Stop();
+			self.FlashOverlay:SetAlpha(0);
+		end
+
+		self.wasFull = false;
+	else
+		self.Tex:SetAtlas(self.fullAtlasName, useAtlasSize);
+
+		if self.wasFull == false then
+			self.FlashAnim:Play();
+		end
+
+		self.wasFull = true;
+	end
+
+	self:SetSize(self.Tex:GetWidth(), self.Tex:GetHeight());
 end
 
 UIWidgetBaseStatusBarTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
 
-function UIWidgetBaseStatusBarTemplateMixin:Setup(widgetContainer, barMin, barMax, barValue, barValueTextType, tooltip, overrideBarText, overrideBarTextShownType)
+function UIWidgetBaseStatusBarTemplateMixin:SanitizeAndSetStatusBarValues(barInfo)
+	self.value = barInfo.barValue;
+	self.barMin = barInfo.barMin;
+	self.barMax = barInfo.barMax;
+
+	if self.barMin > 0 and self.barMin == self.barMax and self.value == self.barMax then
+		-- If all 3 values are the same and greater than 0, show the bar as full
+		self.barMin, self.barMax, self.value = 0, 1, 1;
+	end
+
+	self.value = Clamp(self.value, self.barMin, self.barMax);
+	self.range = barInfo.barMax - barInfo.barMin;
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:Setup(widgetContainer, barInfo)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
-	barValue = Clamp(barValue, barMin, barMax);
 
-	self:SetMinMaxValues(barMin, barMax);
-	self:SetValue(barValue);
+	self:SanitizeAndSetStatusBarValues(barInfo);
+	self:SetMinMaxValues(self.barMin, self.barMax);
+	self:InitPartitions(barInfo.partitionValues, barInfo.frameTextureKit);
 
-	self:SetTooltip(tooltip);
+	self.barValueTextType = barInfo.barValueTextType;
+	self.barTextEnabledState = barInfo.barTextEnabledState;
+	self.barTextFontType = barInfo.barTextFontType;
+	self.barTextSizeType = barInfo.barTextSizeType;
+	self.barTextHasStyleSettings = self.barTextEnabledState and self.barTextFontType and self.barTextSizeType;
 
-	self.Label:SetShown(barValueTextType ~= Enum.StatusBarValueTextType.Hidden);
+	self.overrideBarText = barInfo.overrideBarText;
+	self.overrideBarTextShownType = barInfo.overrideBarTextShownType;
 
-	self.overrideBarText = overrideBarText;
-	self.overrideBarTextShownType = overrideBarTextShownType;
+	self:SetTooltip(barInfo.tooltip);
 
-	local maxTimeCount = self:GetMaxTimeCount(barValueTextType);
+	self.Label:SetShown(barInfo.barValueTextType ~= Enum.StatusBarValueTextType.Hidden);
+
+	local fillMotionType = barInfo.fillMotionType or Enum.UIWidgetMotionType.Instant;
+	if (fillMotionType == Enum.UIWidgetMotionType.Instant) or not self.displayedValue then
+		self.displayedValue = self.value;
+		self:DisplayBarValue()
+		self:SetScript("OnUpdate", nil);
+	else
+		self:SetScript("OnUpdate", self.UpdateBar);
+	end
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:UpdateBar(elapsed)
+	if self.value ~= self.displayedValue then
+		self.displayedValue = GetSmoothProgressChange(self.value, self.displayedValue, self.range, elapsed);
+	end
+
+	self:DisplayBarValue();
+
+	if self.value == self.displayedValue then
+		self:SetScript("OnUpdate", nil);
+	end
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:DisplayBarValue()
+	self:SetValue(self.displayedValue);
+	self:SetBarText(math.ceil(self.displayedValue));
+	self:UpdatePartitions(self.displayedValue);
+
+	if self.Spark then
+		local showSpark = self.displayedValue > self.barMin and self.displayedValue < self.barMax;
+		self.Spark:SetShown(showSpark);
+	end
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:SetBarText(barValue)
+	local maxTimeCount = self:GetMaxTimeCount();
 
 	if maxTimeCount then
 		self.barText = SecondsToTime(barValue, false, true, maxTimeCount, true);
-	elseif barValueTextType == Enum.StatusBarValueTextType.Value then
+	elseif self.barValueTextType == Enum.StatusBarValueTextType.Value then
 		self.barText = barValue;
-	elseif barValueTextType == Enum.StatusBarValueTextType.ValueOverMax then
-		self.barText = FormatFraction(barValue, barMax);
-	elseif barValueTextType == Enum.StatusBarValueTextType.ValueOverMaxNormalized then
-		self.barText = FormatFraction(barValue - barMin, barMax - barMin);
-	elseif barValueTextType == Enum.StatusBarValueTextType.Percentage then
-		local barPercent = PercentageBetween(barValue, barMin, barMax);
+	elseif self.barValueTextType == Enum.StatusBarValueTextType.ValueOverMax then
+		self.barText = FormatFraction(barValue, self.barMax);
+	elseif self.barValueTextType == Enum.StatusBarValueTextType.ValueOverMaxNormalized then
+		self.barText = FormatFraction(barValue - self.barMin, self.barMax - self.barMin);
+	elseif self.barValueTextType == Enum.StatusBarValueTextType.Percentage then
+		local barPercent = PercentageBetween(barValue, self.barMin, self.barMax);
 		self.barText = FormatPercentage(barPercent, true);
 	else
 		self.barText = "";
 	end
 
-	self:UpdateBarText();
+	self:UpdateLabel();
 end
 
-function UIWidgetBaseStatusBarTemplateMixin:GetMaxTimeCount(barValueTextType)
-	if barValueTextType == Enum.StatusBarValueTextType.Time then
+function UIWidgetBaseStatusBarTemplateMixin:GetMaxTimeCount()
+	if self.barValueTextType == Enum.StatusBarValueTextType.Time then
 		return 2;
-	elseif barValueTextType == Enum.StatusBarValueTextType.TimeShowOneLevelOnly then
+	elseif self.barValueTextType == Enum.StatusBarValueTextType.TimeShowOneLevelOnly then
 		return 1;
 	end
 end
 
 function UIWidgetBaseStatusBarTemplateMixin:OnEnter()
 	UIWidgetTemplateTooltipFrameMixin.OnEnter(self);
-	self:UpdateBarText();
+	self:UpdateLabel();
 end
 
 function UIWidgetBaseStatusBarTemplateMixin:OnLeave()
 	UIWidgetTemplateTooltipFrameMixin.OnLeave(self);
-	self:UpdateBarText();
+	self:UpdateLabel();
 end
 
-function UIWidgetBaseStatusBarTemplateMixin:UpdateBarText()
-	if self.overrideBarText then
-		local showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.Always);
-		if not showOverrideBarText then
-			if self.mouseOver then
-				showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.OnlyOnMouseover);
-			else
-				showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.OnlyNotOnMouseover);
-			end
-		end
-
-		if showOverrideBarText then
-			self.Label:SetText(self.overrideBarText);
+function UIWidgetBaseStatusBarTemplateMixin:UpdateLabel()
+	local showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.Always);
+	if not showOverrideBarText then
+		if self.mouseOver then
+			showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.OnlyOnMouseover);
 		else
-			self.Label:SetText(self.barText);
+			showOverrideBarText = (self.overrideBarTextShownType == Enum.StatusBarOverrideBarTextShownType.OnlyNotOnMouseover);
 		end
+	end
+
+	local shownText = showOverrideBarText and self.overrideBarText or self.barText;
+
+	if self.barTextHasStyleSettings then
+		self.Label:Setup(shownText, self.barTextFontType, self.barTextSizeType, self.barTextEnabledState);
 	else
-		self.Label:SetText(self.barText);
+		self.Label:SetText(shownText);
 	end
 end
 
@@ -445,6 +618,54 @@ function UIWidgetBaseStatusBarTemplateMixin:SetMouse(disableMouse)
 	local useMouse = ((self.tooltip and self.tooltip ~= "") or (self.overrideBarText and self.overrideBarText ~= "") or (self.barText and self.barText ~= "")) and not disableMouse;
 	self:EnableMouse(useMouse)
 	self:SetMouseClickEnabled(false);
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:InitPartitions(partitionValues, textureKit)
+	if self.partitionPool then
+		self.partitionPool:ReleaseAll();
+	elseif partitionValues then
+		self.partitionPool = CreateFramePool("Frame", self, "UIWidgetBaseStatusBarPartitionTemplate");
+	end
+
+	if not partitionValues or (#partitionValues == 0) then
+		return;
+	end
+
+	local paritionAtlasName = partitionTextureKitString:format(textureKit);
+	local partitionAtlasInfo =  C_Texture.GetAtlasInfo(paritionAtlasName);
+
+	if not partitionAtlasInfo then
+		return;
+	end
+
+	local barWidth = self:GetWidth();
+
+	for _, partitionValue in ipairs(partitionValues) do
+		partitionValue = Clamp(partitionValue, self.barMin, self.barMax);
+
+		local partitionFrame = self.partitionPool:Acquire();
+		partitionFrame:Setup(partitionValue, textureKit);
+
+		local partitionPercent = ClampedPercentageBetween(partitionValue, self.barMin, self.barMax);
+		local xOffset = barWidth * partitionPercent;
+
+		partitionFrame:SetPoint("CENTER", self:GetStatusBarTexture(), "LEFT", xOffset, 0);
+		partitionFrame:Show();
+	end
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:UpdatePartitions(barValue)
+	if self.partitionPool then
+		for partitionFrame in self.partitionPool:EnumerateActive() do
+			partitionFrame:UpdateForBarValue(barValue);
+		end
+	end
+end
+
+function UIWidgetBaseStatusBarTemplateMixin:OnReset()
+	if self.partitionPool then
+		self.partitionPool:ReleaseAll();
+	end
 end
 
 UIWidgetBaseStateIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
@@ -486,27 +707,31 @@ end
 
 function UIWidgetBaseTextureAndTextTemplateMixin:OnLoad()
 	UIWidgetTemplateTooltipFrameMixin.OnLoad(self);
-	self.Text:SetFontObjectsToTry();
 end
 
 function UIWidgetBaseTextureAndTextTemplateMixin:Setup(widgetContainer, text, tooltip, frameTextureKit, textureKit, textSizeType, layoutIndex)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	self.layoutIndex = layoutIndex;
 
-	local textureKitAppend = "";
+	local bgTextureKitFmt = "%s";
+	local fgTextureKitFmt = "%s";
 
 	if layoutIndex then
-		textureKitAppend = "_"..layoutIndex;
+		if frameTextureKit and C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit("%s_"..layoutIndex, frameTextureKit)) then 
+			bgTextureKitFmt = "%s_"..layoutIndex;
+		end
+
+		if textureKit and C_Texture.GetAtlasInfo(GetFinalNameFromTextureKit("%s_"..layoutIndex, textureKit)) then 
+			fgTextureKitFmt = "%s_"..layoutIndex;
+		end
 	end
 
 	self.Text:SetFontObject(GetTextSizeFont(textSizeType));
 
 	self.Text:SetText(text);
 	self:SetTooltip(tooltip);
-
-	SetupTextureKitOnFrame(frameTextureKit, self.Background, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-	SetupTextureKitOnFrame(textureKit, self.Foreground, "%s"..textureKitAppend, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-
+	SetupTextureKitOnFrame(frameTextureKit, self.Background, bgTextureKitFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnFrame(textureKit, self.Foreground, fgTextureKitFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 	self:MarkDirty(); -- The widget needs to resize based on whether the textures are shown or hidden
 end
 
@@ -717,12 +942,14 @@ local scenarioHeaderTextureKitRegions = {
 
 local scenarioHeaderTextureKitInfo =
 {
-	["jailerstower-scenario"] = {fontObjects = {GameFontNormalLarge, GameFontNormalHuge}, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
-	["EmberCourtScenario-Tracker"] = {fontObjects = {GameFontNormalMed3, GameFontNormal, GameFontNormalSmall}, headerTextHeight = 20},
+	["jailerstower-scenario"] = {fontObject = GameFontNormalLarge, fontMinLineHeight = 16, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
+	["jailerstower-scenario-nodeaths"] = {fontObject = GameFontNormalLarge, fontMinLineHeight = 16, fontColor = WHITE_FONT_COLOR, textAnchorOffsets = {xOffset = 33, yOffset = -8}},
+	["EmberCourtScenario-Tracker"] = {fontObject = GameFontNormalMed3, fontMinLineHeight = 10, headerTextHeight = 20},
 }
 
-local scenarioHeaderDefaultFontObjects = {QuestTitleFont, Fancy16Font, SystemFont_Med1};
+local scenarioHeaderDefaultFontObject = Game18Font;
 local scenarioHeaderDefaultFontColor = SCENARIO_STAGE_COLOR;
+local scenarioHeaderDefaultFontMinLineHeight = 12;
 local scenarioHeaderDefaultTextAnchorOffsets = {xOffset = 15, yOffset = -8};
 local scenarioHeaderDefaultHeaderTextHeight = 36;
 local scenarioHeaderStageChangeWaitTime = 1.5;
@@ -755,8 +982,11 @@ function UIWidgetBaseScenarioHeaderTemplateMixin:Setup(widgetInfo, widgetContain
 
 	local textureKitInfo = scenarioHeaderTextureKitInfo[widgetInfo.frameTextureKit];
 
-	local fontObjectsToTry = textureKitInfo and textureKitInfo.fontObjects or scenarioHeaderDefaultFontObjects;
-	self.HeaderText:SetFontObjectsToTry(unpack(fontObjectsToTry));
+	local fontObject = textureKitInfo and textureKitInfo.fontObject or scenarioHeaderDefaultFontObject;
+	self.HeaderText:SetFontObject(fontObject);
+
+	local minLineHeight = textureKitInfo and textureKitInfo.fontMinLineHeight or scenarioHeaderDefaultFontMinLineHeightLineHeight;
+	self.HeaderText.minLineHeight = minLineHeight;
 
 	local fontColor = textureKitInfo and textureKitInfo.fontColor or scenarioHeaderDefaultFontColor;
 	self.HeaderText:SetTextColor(fontColor:GetRGB());
@@ -824,4 +1054,61 @@ function UIWidgetBaseCircularStatusBarTemplateMixin:Setup(widgetContainer, barMi
 	self.Progress:SetSwipeTexture(swipeTextureName);
 
 	CooldownFrame_SetDisplayAsPercentage(self.Progress, 1 - currentPercent);
+end
+
+UIWidgetBaseTextMixin = CreateFromMixins(UIWidgetBaseEnabledFrameMixin);
+
+local normalFonts =
+{
+	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Med1",
+	[Enum.UIWidgetTextSizeType.Standard]= "SystemFont_Med3",
+	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Large",
+	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Huge2",
+	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Huge4",
+}
+
+local shadowFonts =
+{
+	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Shadow_Med1",
+	[Enum.UIWidgetTextSizeType.Standard]= "SystemFont_Shadow_Med3",
+	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Shadow_Large",
+	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Shadow_Huge2",
+	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4",
+}
+
+local outlineFonts =
+{
+	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Shadow_Med1_Outline",
+	[Enum.UIWidgetTextSizeType.Standard]= "SystemFont_Shadow_Med3_Outline",
+	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Shadow_Large_Outline",
+	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Shadow_Huge2_Outline",
+	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4_Outline",
+}
+
+local fontTypes = 
+{
+	[Enum.UIWidgetFontType.Normal]	= normalFonts,
+	[Enum.UIWidgetFontType.Shadow]	= shadowFonts,
+	[Enum.UIWidgetFontType.Outline]	= outlineFonts,
+}
+
+local function GetTextFont(fontType, textSizeType)
+	return fontTypes[fontType][textSizeType];
+end
+
+local function GetJustifyH(hAlignType)
+	if hAlignType == Enum.WidgetTextHorizontalAlignmentType.Left then
+		return "LEFT";
+	elseif hAlignType == Enum.WidgetTextHorizontalAlignmentType.Right then
+		return "RIGHT";
+	else
+		return "CENTER";
+	end
+end
+
+function UIWidgetBaseTextMixin:Setup(text, fontType, textSizeType, enabledState, hAlignType)
+	self:SetFontObject(GetTextFont(fontType, textSizeType));
+	self:SetJustifyH(GetJustifyH(hAlignType))
+	self:SetText(text);
+	self:SetEnabledState(enabledState);
 end

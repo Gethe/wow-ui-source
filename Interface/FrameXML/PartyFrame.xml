@@ -40,7 +40,7 @@
 			</Anchor>
 		</Anchors>
 	</Button>
-	<Frame name="PartyMemberBuffTooltip" frameStrata="TOOLTIP" hidden="true" inherits="BackdropTemplate">
+	<Frame name="PartyMemberBuffTooltip" frameStrata="TOOLTIP" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size>
 			<AbsDimension x="200" y="75"/>
 		</Size>
@@ -262,9 +262,6 @@
 				</Anchors>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad function="GameTooltip_OnLoad"/>
-		</Scripts>
 	</Frame>
 	<Frame name="PartyMemberBackground" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate">
 		<Size>

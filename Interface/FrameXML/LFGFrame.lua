@@ -1022,7 +1022,7 @@ function LFGDungeonReadyDialogInstanceInfo_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOM");
 	GameTooltip:AddLine(BOSSES)
 	for i=1, numBosses do
-		local bossName, texture, isKilled = GetLFGProposalEncounter(i);
+		local bossName, _, isKilled = GetLFGProposalEncounter(i);
 		if ( isKilled ) then
 			GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		else
@@ -1545,7 +1545,7 @@ function LFGRewardsFrameEncounterList_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:AddLine(string.format(ERR_LOOT_GONE, numCompleted, numEncounters), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		for i=1, numEncounters do
-			local bossName, texture, isKilled = GetLFGDungeonEncounterInfo(dungeonID, i);
+			local bossName, _, isKilled = GetLFGDungeonEncounterInfo(dungeonID, i);
 			if ( isKilled ) then
 				GameTooltip:AddLine(bossName, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			else

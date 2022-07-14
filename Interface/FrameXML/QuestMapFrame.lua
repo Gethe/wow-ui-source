@@ -377,6 +377,8 @@ function QuestSessionManagementMixin:ShowTooltip()
 		local failureReason = QuestSessionManager:GetSessionManagementFailureReason();
 		if failureReason == "inCombat" then
 			GameTooltip_AddErrorLine(GameTooltip, QUEST_SESSION_TOOLTIP_START_SESSION_NOT_IN_COMBAT);
+		elseif failureReason == "crossFaction" then
+			GameTooltip_AddErrorLine(GameTooltip, QUEST_SESSION_TOOLTIP_START_SESSION_NOT_IN_CROSS_FACTION_PARTY);
 		end
 
 		GameTooltip:Show();
@@ -557,6 +559,7 @@ function QuestMapFrame_AdjustPathButtons()
 end
 
 function QuestDetailsFrame_OnShow(self)
+	QuestMapFrame.DetailsFrame.Bg:SetAtlas(QuestUtil.GetDefaultQuestMapBackgroundTexture());
 	QuestMapFrame.QuestSessionManagement:SetSuppressed(true);
 end
 
@@ -583,9 +586,9 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:SetValue(0);
 
 	local mapFrame = QuestMapFrame:GetParent();
-	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestLogPortraitGiver();
+	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
 	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait() and (UIParent:GetRight() - mapFrame:GetRight() > QuestModelScene:GetWidth() + 6)) then
-		QuestFrame_ShowQuestPortrait(mapFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -2, -43);
+		QuestFrame_ShowQuestPortrait(mapFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -2, -43);
 		QuestModelScene:SetFrameLevel(mapFrame:GetFrameLevel() + 2);
 	else
 		QuestFrame_HideQuestPortrait();
@@ -1390,7 +1393,7 @@ function QuestLogQuests_Update(poiTable)
 		if displayState.campaignShown then
 			QuestScrollFrame.Contents.StoryHeader.topPadding = -18;
 		else
-			QuestScrollFrame.Contents.StoryHeader.topPadding = 0;
+			QuestScrollFrame.Contents.StoryHeader.topPadding = -4;
 		end
 
 		QuestScrollFrame.Contents.StoryHeader:Show();
@@ -1508,9 +1511,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 		QuestUtils_AddQuestTagLineToTooltip(GameTooltip, tagName, overrideQuestTag, tagInfo.worldQuestType, NORMAL_FONT_COLOR);
 	end
 
-	if C_QuestLog.IsQuestCalling(questID) then
-		WorldMap_AddQuestTimeToTooltip(questID);
-	end
+	GameTooltip_CheckAddQuestTimeToTooltip(GameTooltip, questID);
 
 	if ( info.frequency == Enum.QuestFrequency.Daily ) then
 		QuestUtils_AddQuestTagLineToTooltip(GameTooltip, DAILY, "DAILY", nil, NORMAL_FONT_COLOR);
@@ -1642,7 +1643,7 @@ function QuestMapLog_ShowStoryTooltip(self)
 	local maxWidth = 0;
 	local totalHeight = 0;
 
-	local mapInfo = C_Map.GetMapInfo(QuestMapFrame:GetParent():GetMapID());
+	local mapInfo = C_Map.GetMapInfo(storyMapID);
 	tooltip.Title:SetText(mapInfo.name);
 	totalHeight = totalHeight + tooltip.Title:GetHeight();
 	maxWidth = tooltip.Title:GetWidth();
@@ -1746,9 +1747,9 @@ function QuestLogPopupDetailFrame_Show(questLogIndex)
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 
 	-- portrait
-	local questPortrait, questPortraitText, questPortraitName, questPortraitMount = GetQuestLogPortraitGiver();
+	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
 	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
-		QuestFrame_ShowQuestPortrait(QuestLogPopupDetailFrame, questPortrait, questPortraitMount, questPortraitText, questPortraitName, -3, -42);
+		QuestFrame_ShowQuestPortrait(QuestLogPopupDetailFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
 	else
 		QuestFrame_HideQuestPortrait();
 	end

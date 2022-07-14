@@ -1,0 +1,49 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="TorghastGemsAnimationTemplate" mixin="TorghastGemsAnimationMixin" virtual="true">
+		<Size x="60" y="80"/>
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="FullGem" alpha="0" atlas="jailerstower-score-gem-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Sheen" alpha="0" alphaMode="BLEND" atlas="jailerstower-score-gem-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Glow" alpha="0" alphaMode="BLEND" atlas="jailerstower-score-gem-anim-flash" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="SheenMask" atlas="jailerstower-score-gem-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Sheen" x="-1" y="-16"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Sheen"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Alpha childKey="Glow" startDelay="0.25" endDelay=".1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Glow" duration="0.25" order="2" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1.6" toScaleY="1.6"/>
+				<Alpha childKey="Glow" duration="0.2" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="FullGem" duration="0.2" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Sheen" duration="0.25" order="3" fromAlpha="0" toAlpha="0.75"/>
+				<Translation childKey="Sheen" duration="0.25" order="4" offsetX="0" offsetY="-15"/>
+				<Alpha childKey="Sheen" duration="0.25" order="4" fromAlpha="0.75" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

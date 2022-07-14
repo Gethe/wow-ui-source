@@ -17,6 +17,7 @@ end
 function BonusObjectiveDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 	self:RegisterEvent("SUPER_TRACKING_CHANGED");
+	self:RegisterEvent("QUEST_LOG_UPDATE");
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.OnSetFocusedQuestID, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.OnClearFocusedQuestID, self);
@@ -51,7 +52,7 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 		return;
 	end
 
-	local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(mapID);
+	local taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
 
 	if taskInfo and #taskInfo > 0 then
 		self:CancelCallbacks();
@@ -66,7 +67,9 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 							info.x = x;
 							info.y = y;
 						end
-						self:GetMap():AcquirePin("ThreatObjectivePinTemplate", info);
+						local pin = self:GetMap():AcquirePin("ThreatObjectivePinTemplate", info);
+						local iconAtlas = QuestUtil.GetThreatPOIIcon(info.questId);
+						pin.Icon:SetAtlas(iconAtlas);
 					else
 						self:GetMap():AcquirePin("BonusObjectivePinTemplate", info);
 					end
@@ -86,6 +89,7 @@ end
 BonusObjectivePinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function BonusObjectivePinMixin:OnLoad()
+	self.UpdateTooltip = self.OnMouseEnter;
 	self:SetScalingLimits(1, 0.825, 0.85);
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_BONUS_OBJECTIVE");
 end
@@ -96,10 +100,8 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	self.numObjectives = taskInfo.numObjectives;
 	self.isQuestStart = taskInfo.isQuestStart;
 	self.isCombatAllyQuest = taskInfo.isCombatAllyQuest;
-	self.UpdateTooltip = nil;
 	if C_QuestLog.IsQuestCalling(self.questID) then
 		self.Texture:SetAtlas("Quest-DailyCampaign-Available", false);
-		self.UpdateTooltip = self.OnMouseEnter;
 	elseif taskInfo.isDaily then
 		self.Texture:SetAtlas("QuestDaily", false);
 	elseif taskInfo.isQuestStart then
@@ -114,6 +116,10 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	else
 		self:SetScalingLimits(1, 0.825, 0.85);
 		self.Texture:SetSize(30, 30);
+	end
+
+	if not HaveQuestRewardData(self.questID) then
+		C_TaskQuest.RequestPreloadRewardData(self.questID);
 	end
 end
 
@@ -146,6 +152,10 @@ function ThreatObjectivePinMixin:OnAcquired(taskInfo)
 		self.Texture:SetTexCoord(0.875, 1, 0.375, 0.5);
 		self.PushedTexture:SetTexCoord(0.750, 0.875, 0.375, 0.5);
 	end
+
+	if not HaveQuestRewardData(self.questID) then
+		C_TaskQuest.RequestPreloadRewardData(self.questID);
+	end
 end
 
 function ThreatObjectivePinMixin:OnMouseEnter()
@@ -159,7 +169,7 @@ end
 function ThreatObjectivePinMixin:OnMouseDownAction()
 	self.Texture:Hide();
 	self.PushedTexture:Show();
-	self.Icon:SetPoint("CENTER", 0, -1);
+	self.Icon:SetPoint("CENTER", 1, -1);
 	if self.moveHighlightOnMouseDown then
 		self.Highlight:SetPoint("CENTER", 2, -2);
 	end
@@ -168,7 +178,7 @@ end
 function ThreatObjectivePinMixin:OnMouseUpAction()
 	self.Texture:Show();
 	self.PushedTexture:Hide();
-	self.Icon:SetPoint("CENTER", -1, 0);
+	self.Icon:SetPoint("CENTER", 0, 0);
 	if self.moveHighlightOnMouseDown then
 		self.Highlight:SetPoint("CENTER", 0, 0);
 	end

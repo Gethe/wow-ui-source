@@ -309,19 +309,17 @@ function AuctionHouseUtil.GetTooltipTimeLeftBandText(rowData)
 	return "";
 end
 
-local MaxSellersListedExplicitly = 10;
-function AuctionHouseUtil.AddSellersToTooltip(tooltip, sellers)
+function AuctionHouseUtil.AddSellersToTooltip(tooltip, sellers, totalNumberOfSellers)
 	local sellersString = sellers[1] == "player" and GREEN_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_SELLER_YOU) or sellers[1];
 	local numSellers = #sellers;
 	if numSellers > 1 then
-		local numSellersListed = math.min(numSellers, MaxSellersListedExplicitly);
-		for i = 2, numSellersListed do
+		for i = 2, numSellers do
 			sellersString = sellersString..PLAYER_LIST_DELIMITER..sellers[i];
 		end
 
 		local wrap = true;
-		if numSellers > MaxSellersListedExplicitly then
-			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_OVERFLOW_SELLERS_FORMAT:format(sellersString, numSellers - MaxSellersListedExplicitly), wrap);
+		if totalNumberOfSellers > numSellers then
+			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_OVERFLOW_SELLERS_FORMAT:format(sellersString, totalNumberOfSellers - numSellers), wrap);
 		else
 			GameTooltip_AddNormalLine(tooltip, AUCTION_HOUSE_TOOLTIP_MULTIPLE_SELLERS_FORMAT:format(sellersString), wrap);
 		end
@@ -334,7 +332,7 @@ end
 function AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData, bidStatus)
 	GameTooltip_AddBlankLineToTooltip(tooltip);
 
-	AuctionHouseUtil.AddSellersToTooltip(tooltip, rowData.owners);
+	AuctionHouseUtil.AddSellersToTooltip(tooltip, rowData.owners, rowData.totalNumberOfOwners);
 
 	tooltip:AddLine(AUCTION_HOUSE_TOOLTIP_DURATION_FORMAT:format(AuctionHouseUtil.GetTooltipTimeLeftBandText(rowData)));
 
@@ -343,28 +341,43 @@ function AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData, bidStatus
 	end
 end
 
-function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, hideItemLevel)
+function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo)
+	local itemQuality = itemKeyInfo.quality;
 	local useEquipmentFormat = itemKeyInfo.isEquipment and not hideItemLevel;
 	local itemDisplayText = useEquipmentFormat and AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemKeyInfo.itemName, itemKey.itemLevel) or itemKeyInfo.itemName;
-	local itemQualityColor = ITEM_QUALITY_COLORS[itemKeyInfo.quality];
+	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
 	return itemQualityColor.color:WrapTextInColorCode(itemDisplayText);
+end
+
+function AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionData, itemKeyInfo)
+	if ownedAuctionData.status == Enum.AuctionStatus.Sold then
+		return GRAY_FONT_COLOR;
+	end
+
+	local itemQuality = itemKeyInfo.quality;
+	local itemLink = ownedAuctionData.itemLink;
+	if itemLink ~= nil then
+		if LinkUtil.IsLinkType(itemLink, "battlepet") then
+			itemQuality = select(3, BattlePetToolTip_UnpackBattlePetLink(itemLink)) or itemQuality;
+		else
+			itemQuality = select(3, GetItemInfo(itemLink)) or itemQuality;
+		end
+	end
+
+	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
+	return itemQualityColor.color;
 end
 
 function AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(ownedAuctionData, itemKeyInfo)
 	local itemKey = ownedAuctionData.itemKey;
 	local itemDisplayText = itemKeyInfo.isEquipment and AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemKeyInfo.itemName, itemKey.itemLevel) or itemKeyInfo.itemName;
-	local itemQualityColor = ITEM_QUALITY_COLORS[itemKeyInfo.quality];
-	local itemColor = itemQualityColor.color;
 
 	if ownedAuctionData.quantity > 1 then
 		itemDisplayText = AUCTION_HOUSE_ITEM_WITH_QUANTITY_FORMAT:format(itemDisplayText, BreakUpLargeNumbers(ownedAuctionData.quantity));
 	end
 
-	if ownedAuctionData.status == Enum.AuctionStatus.Sold then
-		itemColor = GRAY_FONT_COLOR;
-	end
-	
-	return itemColor:WrapTextInColorCode(itemDisplayText);
+	local itemQualityColor = AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionData, itemKeyInfo);
+	return itemQualityColor:WrapTextInColorCode(itemDisplayText);
 end
 
 function AuctionHouseUtil.GetSellersString(rowData)
@@ -374,7 +387,7 @@ function AuctionHouseUtil.GetSellersString(rowData)
 	elseif #sellers == 1 then
 		return rowData.containsOwnerItem and WHITE_FONT_COLOR:WrapTextInColorCode(AUCTION_HOUSE_SELLER_YOU) or sellers[1];
 	else
-		return AUCTION_HOUSE_NUM_SELLERS:format(#sellers);
+		return AUCTION_HOUSE_NUM_SELLERS:format(rowData.totalNumberOfOwners);
 	end
 end
 
@@ -585,19 +598,29 @@ function AuctionHouseUtil.GetItemLinkFromRowData(rowData)
 		return rowData.itemLink;
 	else
 		local itemID = rowData.itemID or rowData.itemKey.itemID;
-		local itemLink = select(2, GetItemInfo(itemID));
-		return itemLink;
+		if itemID ~= nil then
+			local itemLink = select(2, GetItemInfo(itemID));
+			return itemLink;
+		end
 	end
+
+	return nil;
 end
 
 function AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, selectionCallback)
 	local function RowSelectedCallback(rowData)
 		if rowData and IsModifiedClick("DRESSUP") then
-			DressUpLink(rowData.itemLink);
-			return false;
+			local itemLink = AuctionHouseUtil.GetItemLinkFromRowData(rowData);
+			if itemLink ~= nil then
+				DressUpLink(itemLink);
+				return false;
+			end
 		elseif rowData and IsModifiedClick("CHATLINK") then
-			ChatEdit_InsertLink(AuctionHouseUtil.GetItemLinkFromRowData(rowData));
-			return false;
+			local itemLink = AuctionHouseUtil.GetItemLinkFromRowData(rowData);
+			if itemLink ~= nil then
+				ChatEdit_InsertLink(itemLink);
+				return false;
+			end
 		end
 
 		selectionCallback(self, rowData);
@@ -658,4 +681,70 @@ end
 
 function AuctionHouseUtil.RowDataIsWoWToken(rowData)
 	return (rowData.itemID == AUCTIONABLE_TOKEN_ITEM_ID) or (rowData.itemKey and rowData.itemKey.itemID == AUCTIONABLE_TOKEN_ITEM_ID);
+end
+
+function AuctionHouseUtil.CreateVirtualRowData(virtualEntryText, isSelectedVirtualEntry)
+	return { isVirtualEntry = true, virtualEntryText = virtualEntryText, isSelectedVirtualEntry = isSelectedVirtualEntry, };
+end
+
+local AuctionHouseErrorToErrorText = {
+	[Enum.AuctionHouseError.NotEnoughMoney] = ERR_NOT_ENOUGH_MONEY,
+	[Enum.AuctionHouseError.HigherBid] = ERR_AUCTION_HIGHER_BID,
+	[Enum.AuctionHouseError.BidIncrement] = ERR_AUCTION_BID_INCREMENT,
+	[Enum.AuctionHouseError.BidOwn] = ERR_AUCTION_BID_OWN,
+	[Enum.AuctionHouseError.ItemNotFound] = ERR_ITEM_NOT_FOUND,
+	[Enum.AuctionHouseError.RestrictedAccountTrial] = ERR_RESTRICTED_ACCOUNT_TRIAL,
+	[Enum.AuctionHouseError.HasRestriction] = ERR_HAS_RESTRICTION,
+	[Enum.AuctionHouseError.IsBusy] = ERR_AUCTION_HOUSE_BUSY,
+	[Enum.AuctionHouseError.Unavailable] = ERR_AUCTION_HOUSE_UNAVAILABLE,
+	[Enum.AuctionHouseError.ItemHasQuote] = ERR_AUCTION_ITEM_HAS_QUOTE,
+	[Enum.AuctionHouseError.DatabaseError] = ERR_AUCTION_DATABASE_ERROR,
+	[Enum.AuctionHouseError.MinBid] = ERR_AUCTION_MIN_BID,
+	[Enum.AuctionHouseError.NotEnoughItems] = ERR_AUCTION_ENOUGH_ITEMS,
+	[Enum.AuctionHouseError.RepairItem] = ERR_AUCTION_REPAIR_ITEM,
+	[Enum.AuctionHouseError.UsedCharges] = ERR_AUCTION_USED_CHARGES,
+	[Enum.AuctionHouseError.QuestItem] = ERR_AUCTION_QUEST_ITEM,
+	[Enum.AuctionHouseError.BoundItem] = ERR_AUCTION_BOUND_ITEM,
+	[Enum.AuctionHouseError.ConjuredItem] = ERR_AUCTION_CONJURED_ITEM,
+	[Enum.AuctionHouseError.LimitedDurationItem] = ERR_AUCTION_LIMITED_DURATION_ITEM,
+	[Enum.AuctionHouseError.IsBag] = ERR_AUCTION_BAG,
+	[Enum.AuctionHouseError.EquippedBag] = ERR_AUCTION_EQUIPPED_BAG,
+	[Enum.AuctionHouseError.WrappedItem] = ERR_AUCTION_WRAPPED_ITEM,
+	[Enum.AuctionHouseError.LootItem] = ERR_AUCTION_LOOT_ITEM,
+};
+
+function AuctionHouseUtil.GetErrorText(auctionHouseError)
+	return AuctionHouseErrorToErrorText[auctionHouseError] or "";
+end
+
+function AuctionHouseUtil.GetNotificationText(auctionHouseNotification, formatArg)
+	if auctionHouseNotification == Enum.AuctionHouseNotification.BidPlaced then
+		return ERR_AUCTION_BID_PLACED;
+	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionRemoved then
+		return ERR_AUCTION_REMOVED;
+	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionWon then
+		return ERR_AUCTION_WON_S:format(formatArg);
+	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionOutbid then
+		return ERR_AUCTION_OUTBID_S:format(formatArg);
+	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionSold then
+		return ERR_AUCTION_SOLD_S:format(formatArg);
+	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionExpired then
+		return ERR_AUCTION_EXPIRED_S:format(formatArg);
+	end
+
+	return "";
+end
+
+local UniqueShadowlandsCraftedLimitCategoryID = 481;
+function AuctionHouseUtil.IsAuctionIDUniqueShadowlandsCrafted(auctionID)
+	local auctionInfo = C_AuctionHouse.GetAuctionInfoByID(auctionID);
+	local itemLink = (auctionInfo ~= nil) and auctionInfo.itemLink or nil;
+	if itemLink == nil then
+		return false;
+	end
+
+	local categoryName, categoryCount, uniqueLimitCategory = select(2, C_Item.GetItemUniquenessByID(itemLink));
+	categoryName = ((categoryName ~= nil) and (categoryCount ~= nil)) and ITEM_LIMIT_CATEGORY_MULTIPLE:format(categoryName, categoryCount) or categoryName;
+	local isUniqueShadowlandsCrafted = uniqueLimitCategory == UniqueShadowlandsCraftedLimitCategoryID;
+	return isUniqueShadowlandsCrafted, categoryName;
 end

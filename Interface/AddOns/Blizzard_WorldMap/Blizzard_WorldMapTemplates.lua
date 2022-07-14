@@ -317,7 +317,19 @@ function WorldMapNavBarMixin:Refresh()
 			id = mapInfo.mapID,
 			OnClick = WorldMapNavBarButtonMixin.OnClick,
 		};
-		if ( C_Map.IsMapValidForNavBarDropDown(mapInfo.mapID) ) then
+		-- Check if we are on a multifloor map belonging to a UIMapGroup, and if any map within the group should populate a dropdown
+		local mapGroupID = C_Map.GetMapGroupID(mapInfo.mapID);
+		if ( mapGroupID ) then
+			local mapGroupMembersInfo = C_Map.GetMapGroupMembersInfo(mapGroupID);
+			if ( mapGroupMembersInfo ) then
+				for i, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
+					if ( C_Map.IsMapValidForNavBarDropDown(mapGroupMemberInfo.mapID) ) then
+						buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropDownList;
+						break;
+					end
+				end
+			end	
+		elseif ( C_Map.IsMapValidForNavBarDropDown(mapInfo.mapID) ) then
 			buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropDownList;
 		end
 		tinsert(hierarchy, 1, buttonData);

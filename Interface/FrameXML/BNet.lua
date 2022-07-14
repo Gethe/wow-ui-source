@@ -21,6 +21,12 @@ BNET_CLIENT_COD_MW = "ODIN";
 BNET_CLIENT_COD_MW2 = "LAZR";
 BNET_CLIENT_COD_BOCW = "ZEUS";
 BNET_CLIENT_WC3 = "W3";
+BNET_CLIENT_ARCADE = "RTRO";
+BNET_CLIENT_CRASH4 = "WLBY";
+BNET_CLIENT_D2 = "OSI";
+BNET_CLIENT_COD_VANGUARD = "FORE";
+BNET_CLIENT_DI = "ANBS";
+BNET_CLIENT_ARCLIGHT = "GRY";
 
 WOW_PROJECT_MAINLINE = 1;
 WOW_PROJECT_CLASSIC = 2;
@@ -436,6 +442,18 @@ function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyBlackOpsColdWaricon";
 	elseif ( client == BNET_CLIENT_WC3 ) then
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Warcraft3Reforged";
+	elseif ( client == BNET_CLIENT_ARCADE ) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-BlizzardArcadeCollection";
+	elseif ( client == BNET_CLIENT_CRASH4 ) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CrashBandicoot4";
+	elseif ( client == BNET_CLIENT_D2 ) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-DiabloIIResurrected";
+	elseif ( client == BNET_CLIENT_COD_VANGUARD ) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyVanguard";
+	elseif ( client == BNET_CLIENT_DI) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-DiabloImmortal";
+	elseif ( client == BNET_CLIENT_ARCLIGHT) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-WarcraftArclightRumble";
 	else
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Battlenet";
 	end
@@ -469,6 +487,18 @@ function BNet_GetClientTexture(client)
 		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyBlackOpsColdWaricon";
 	elseif ( client == BNET_CLIENT_WC3 ) then
 		return "Interface\\FriendsFrame\\Battlenet-Warcraft3Reforged";
+	elseif ( client == BNET_CLIENT_ARCADE ) then
+		return "Interface\\FriendsFrame\\Battlenet-BlizzardArcadeCollectionicon";
+	elseif ( client == BNET_CLIENT_CRASH4 ) then
+		return "Interface\\FriendsFrame\\Battlenet-CrashBandicoot4icon";
+	elseif ( client == BNET_CLIENT_D2 ) then
+		return "Interface\\FriendsFrame\\Battlenet-DiabloIIResurrectedicon";
+	elseif ( client == BNET_CLIENT_COD_VANGUARD ) then
+		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyVanguardicon";
+	elseif ( client == BNET_CLIENT_DI) then
+		return "Interface\\FriendsFrame\\Battlenet-DiabloImmortalicon";
+	elseif ( client == BNET_CLIENT_ARCLIGHT) then
+		return "Interface\\FriendsFrame\\Battlenet-WarcraftArclightRumbleicon";
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end

@@ -12,10 +12,10 @@ VideoData["Graphics_Quality"]={
 				"Graphics_TextureResolutionDropDown",
 				"Graphics_SpellDensityDropDown",
 				"Graphics_LiquidDetailDropDown",
-				"Graphics_SunshaftsDropDown",
 				"Graphics_ProjectedTexturesDropDown",
 				"Graphics_SSAODropDown",
 				"Graphics_DepthEffectsDropDown",
+				"Graphics_ComputeEffectsDropDown",
 				"Graphics_OutlineModeDropDown",
 			},
 	numQualityLevels = 10,
@@ -123,10 +123,10 @@ VideoData["RaidGraphics_Quality"].childOptions = {
 				"RaidGraphics_TextureResolutionDropDown",
 				"RaidGraphics_SpellDensityDropDown",
 				"RaidGraphics_LiquidDetailDropDown",
-				"RaidGraphics_SunshaftsDropDown",
 				"RaidGraphics_ProjectedTexturesDropDown",
 				"RaidGraphics_SSAODropDown",
 				"RaidGraphics_DepthEffectsDropDown",
+				"RaidGraphics_ComputeEffectsDropDown",
 				"RaidGraphics_OutlineModeDropDown",
 			};
 VideoData["RaidGraphics_Quality"].numQualityLevels = 10;
@@ -286,6 +286,37 @@ VideoData["Display_VerticalSyncDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
+VideoData["Display_NotchModeDropDown"]={
+    name = NOTCH_MODE;
+    description = OPTION_TOOLTIP_NOTCH_MODE,
+
+    data = {
+        [1] = {
+            text = NOTCH_MODE_OVERLAP,
+            cvars =    {
+                NotchedDisplayMode = 0,
+            },
+            tooltip = VIDEO_OPTIONS_NOTCH_MODE_OVERLAP,
+        },
+        [2] = {
+            text = NOTCH_MODE_SHIFT_UI,
+            cvars =    {
+                NotchedDisplayMode = 1,
+            },
+            tooltip = VIDEO_OPTIONS_NOTCH_MODE_SHIFT_UI,
+        },
+        [3] = {
+            text = NOTCH_MODE_WINDOW_BELOW,
+            cvars =    {
+                NotchedDisplayMode = 2,
+            },
+            tooltip = VIDEO_OPTIONS_NOTCH_MODE_WINDOW_BELOW,
+        },
+    },
+    windowUpdate = true,
+}
+
+-------------------------------------------------------------------------------------------------------
 local function GenerateMSAAData(data, advanced, ...)
 	local lastSampleCount;
 	for i = 1, select("#", ...), 3 do
@@ -438,6 +469,8 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
+			warning = VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING,
+			skipForSlider = true;
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_LOW,
@@ -466,18 +499,23 @@ VideoData["RaidGraphics_ParticleDensityDropDown"]={
 	graphicsCVar =	"raidGraphicsParticleDensity",
 	data = {
 		[1] = {
-			text = VIDEO_OPTIONS_LOW,
+			text = VIDEO_OPTIONS_DISABLED,
+			warning = VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING,
+			skipForSlider = true;
 		},
 		[2] = {
-			text = VIDEO_OPTIONS_FAIR,
+			text = VIDEO_OPTIONS_LOW,
 		},
 		[3] = {
-			text = VIDEO_OPTIONS_MEDIUM,
+			text = VIDEO_OPTIONS_FAIR,
 		},
 		[4] = {
-			text = VIDEO_OPTIONS_HIGH,
+			text = VIDEO_OPTIONS_MEDIUM,
 		},
 		[5] = {
+			text = VIDEO_OPTIONS_HIGH,
+		},
+		[6] = {
 			text = VIDEO_OPTIONS_ULTRA,
 		},
 	},
@@ -668,6 +706,7 @@ VideoData["Graphics_ProjectedTexturesDropDown"]={
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
+			warning = VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ENABLED,
@@ -822,53 +861,6 @@ VideoData["RaidGraphics_LiquidDetailDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_SunshaftsDropDown"]={
-	name = SUNSHAFTS;
-	description = OPTION_TOOLTIP_SUNSHAFTS,
-	graphicsCVar =	"graphicsSunshafts",
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_DISABLED,
-			tooltip = VIDEO_OPTIONS_SUNSHAFTS_DISABLED,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_SUNSHAFTS_LOW,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_SUNSHAFTS_HIGH,
-		},
-	},
-	dependent = {
-		"Graphics_Quality",
-	},
-}
-
-VideoData["RaidGraphics_SunshaftsDropDown"]={
-	name = SUNSHAFTS;
-	description = OPTION_TOOLTIP_SUNSHAFTS,
-	graphicsCVar =	"raidGraphicsSunshafts",
-	data = {
-		[1] = {
-			text = VIDEO_OPTIONS_DISABLED,
-			tooltip = VIDEO_OPTIONS_SUNSHAFTS_DISABLED,
-		},
-		[2] = {
-			text = VIDEO_OPTIONS_LOW,
-			tooltip = VIDEO_OPTIONS_SUNSHAFTS_LOW,
-		},
-		[3] = {
-			text = VIDEO_OPTIONS_HIGH,
-			tooltip = VIDEO_OPTIONS_SUNSHAFTS_HIGH,
-		},
-	},
-	dependent = {
-		"RaidGraphics_Quality",
-	},
-}
-
--------------------------------------------------------------------------------------------------------
 VideoData["Graphics_DepthEffectsDropDown"]={
 	name = DEPTH_EFFECTS;
 	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
@@ -920,6 +912,69 @@ VideoData["RaidGraphics_DepthEffectsDropDown"]={
 	},
 	dependent = {
 		"RaidGraphics_Quality",
+	},
+}
+
+-------------------------------------------------------------------------------------------------------
+VideoData["Graphics_ComputeEffectsDropDown"]={
+	name = COMPUTE_EFFECTS;
+	description = OPTION_TOOLTIP_COMPUTE_EFFECTS,
+	graphicsCVar =	"graphicsComputeEffects",
+	data = {
+		[1] = {
+			text = VIDEO_OPTIONS_DISABLED,
+			tooltip = VIDEO_OPTIONS_COMPUTE_EFFECTS_DISABLED,
+		},
+		[2] = {
+			text = VIDEO_OPTIONS_LOW,
+			tooltip = VIDEO_OPTIONS_COMPUTE_EFFECTS_LOW,
+		},
+		[3] = {
+			text = VIDEO_OPTIONS_MEDIUM,
+			tooltip = VIDEO_OPTIONS_COMPUTE_EFFECTS_MEDIUM,
+		},
+		[4] = {
+			text = VIDEO_OPTIONS_HIGH,
+			tooltip = VIDEO_OPTIONS_COMPUTE_EFFECTS_HIGH,
+		},
+		[5] = {
+			text = VIDEO_OPTIONS_ULTRA,
+			tooltip = VIDEO_OPTIONS_COMPUTE_EFFECTS_ULTRA,
+		},
+	},
+	dependent = {
+		"Graphics_Quality",
+	},
+}
+
+VideoData["RaidGraphics_ComputeEffectsDropDown"]={
+	name = COMPUTE_EFFECTS;
+	description = OPTION_TOOLTIP_COMPUTE_EFFECTS,
+	graphicsCVar =	"raidGraphicsComputeEffects",
+	data = {
+		[1] = {
+			text = VIDEO_OPTIONS_DISABLED,
+			tooltip = VIDEO_OPTIONS_COMPUTE_EFFECTS_DISABLED,
+		},
+		[2] = {
+			text = VIDEO_OPTIONS_LOW,
+			tooltip = VIDEO_OPTIONS_COMPUTE_EFFECTS_LOW,
+		},
+		[3] = {
+			text = VIDEO_OPTIONS_MEDIUM,
+			tooltip = VIDEO_OPTIONS_COMPUTE_EFFECTS_MEDIUM,
+		},
+		[4] = {
+			text = VIDEO_OPTIONS_HIGH,
+			tooltip = VIDEO_OPTIONS_COMPUTE_EFFECTS_HIGH,
+		},
+		[5] = {
+			text = VIDEO_OPTIONS_ULTRA,
+			tooltip = VIDEO_OPTIONS_COMPUTE_EFFECTS_ULTRA,
+		},
+	},
+	dependent = {
+		"Graphics_Quality",
 	},
 }
 
@@ -1077,21 +1132,31 @@ VideoData["Advanced_ResampleQualityDropDown"]={
 
 	data = {
 		{
-			text = VIDEO_OPTIONS_NONE,
+			text = RESAMPLE_QUALITY_POINT,
+			tooltip = VIDEO_OPTIONS_RESAMPLE_QUALITY_POINT,
 			cvars =    {
 				resampleQuality = 0,
 			},
 		},
 		{
 			text = RESAMPLE_QUALITY_BILINEAR,
+			tooltip = VIDEO_OPTIONS_RESAMPLE_QUALITY_BILINEAR,
 			cvars =	{
 				resampleQuality = 1,
 			},
 		},
 		{
 			text = RESAMPLE_QUALITY_BICUBIC,
+			tooltip = VIDEO_OPTIONS_RESAMPLE_QUALITY_BICUBIC,
 			cvars =	{
 				resampleQuality = 2,
+			},
+		},
+		{
+			text = RESAMPLE_QUALITY_FSR,
+			tooltip = VIDEO_OPTIONS_RESAMPLE_QUALITY_FSR,
+			cvars =	{
+				resampleQuality = 3,
 			},
 		},
 	},
@@ -1219,6 +1284,11 @@ VideoData["Advanced_BrightnessSlider"]={
 VideoData["Advanced_GammaSlider"]={
 	name = GAMMA;
 	tooltip = OPTION_TOOLTIP_GAMMA,
+}
+
+VideoData["Advanced_ResampleSharpnessSlider"]={
+	name = RESAMPLE_SHARPNESS;
+	tooltip = OPTION_TOOLTIP_SHARPNESS,
 }
 
 VideoData["Advanced_MaxFPSCheckBox"]={

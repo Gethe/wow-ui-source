@@ -22,7 +22,7 @@ local function PlayArtifactTraitSound(sound)
 		ARTIFACT_TRAIT_SOUND_HANDLE = nil;
 	end
 	
-	local soundPlayed, handle = PlaySound(sound, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
+	local soundPlayed, handle = PlaySound(sound, "SFX");
 	if soundPlayed then
 		ARTIFACT_TRAIT_SOUND_HANDLE = handle;
 	end

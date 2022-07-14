@@ -44,9 +44,9 @@ RuneforgeFrameMixin:GenerateCallbackEvents(
 });
 
 local RuneforgeFrameEvents = {
-	"CURRENCY_DISPLAY_UPDATE",
 	"RUNEFORGE_LEGENDARY_CRAFTING_CLOSED",
 	"ITEM_CHANGED",
+	"CURRENCY_DISPLAY_UPDATE",
 };
 
 local RuneforgeFramePlayerEvents = {
@@ -69,9 +69,12 @@ function RuneforgeFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForUnitEvents(self, RuneforgeFramePlayerEvents, "player");
 	EventRegistry:RegisterCallback("CinematicFrame.CinematicStarting", self.OnCinematicStarting, self);
 	EventRegistry:RegisterCallback("CinematicFrame.CinematicStopped", self.OnCinematicStopped, self);
+	self:RegisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self.OnBaseItemChanged, self);
+	self:RegisterCallback(RuneforgeFrameMixin.Event.UpgradeItemChanged, self.OnUpgradeItemChanged, self);
+
+	self:SetStaticEffectsShown(true);
 
 	self:RefreshCurrencyDisplay();
-	self:SetStaticEffectsShown(true);
 
 	self.Title:SetText(self:IsRuneforgeUpgrading() and RUNEFORGE_LEGENDARY_CRAFTING_FRAME_UPGRADE_TITLE or RUNEFORGE_LEGENDARY_CRAFTING_FRAME_TITLE);
 
@@ -90,6 +93,8 @@ function RuneforgeFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, RuneforgeFramePlayerEvents, "player");
 	EventRegistry:UnregisterCallback("CinematicFrame.CinematicStarting", self);
 	EventRegistry:UnregisterCallback("CinematicFrame.CinematicStopped", self);
+	self:UnregisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self.OnBaseItemChanged, self);
+	self:UnregisterCallback(RuneforgeFrameMixin.Event.UpgradeItemChanged, self.OnUpgradeItemChanged, self);
 
 	C_LegendaryCrafting.CloseRuneforgeInteraction();
 
@@ -105,17 +110,10 @@ function RuneforgeFrameMixin:OnHide()
 end
 
 function RuneforgeFrameMixin:OnEvent(event, ...)
-	if event == "CURRENCY_DISPLAY_UPDATE" then
-		-- If this is a Runeforge currency, update.
-		local updatedCurrencyID = ...;
-		for i, currencyID in ipairs(C_LegendaryCrafting.GetRuneforgeLegendaryCurrencies()) do
-			if currencyID == updatedCurrencyID then
-				self:RefreshCurrencyDisplay();
-				break;
-			end
-		end
-	elseif event == "RUNEFORGE_LEGENDARY_CRAFTING_CLOSED" then
+	if event == "RUNEFORGE_LEGENDARY_CRAFTING_CLOSED" then
 		HideUIPanel(self);
+	elseif event == "CURRENCY_DISPLAY_UPDATE" then
+		self:RefreshCurrencyDisplay();
 	elseif event == "ITEM_CHANGED" then
 		local item = self:GetItem();
 		if item then
@@ -153,6 +151,14 @@ function RuneforgeFrameMixin:OnEvent(event, ...)
 	end
 end
 
+function RuneforgeFrameMixin:OnBaseItemChanged()
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+end
+
+function RuneforgeFrameMixin:OnUpgradeItemChanged()
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+end
+
 function RuneforgeFrameMixin:OnCinematicStarting()
 	self.cinematicShowing = true;
 	self:SetCastEffectShown(false);
@@ -164,6 +170,19 @@ function RuneforgeFrameMixin:OnCinematicStopped()
 	self.cinematicShowing = nil;
 	self.skipCloseSound = true;
 	self:OnHide();
+end
+
+function RuneforgeFrameMixin:RefreshCurrencyDisplay()
+	local currencies = C_LegendaryCrafting.GetRuneforgeLegendaryCurrencies();
+
+	local initialAnchor = AnchorUtil.CreateAnchor("TOPRIGHT", self.CurrencyDisplay, "TOPRIGHT");
+	local direction = GridLayoutMixin.Direction.TopRightToBottomLeftVertical;
+	local stride = #currencies;
+	local paddingX = 2;
+	local paddingY = 2;
+	local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
+	local tooltipAnchor = "ANCHOR_TOP";
+	self.CurrencyDisplay:SetCurrencies(currencies, initFunction, initialAnchor, layout, tooltipAnchor);
 end
 
 function RuneforgeFrameMixin:SetStaticEffectsShown(shown)
@@ -249,14 +268,6 @@ function RuneforgeFrameMixin:FlashRunes()
 	end
 end
 
-function RuneforgeFrameMixin:RefreshCurrencyDisplay()
-	local initFunction = nil;
-	local initialAnchor = nil;
-	local gridLayout = nil;
-	local tooltipAnchor = "ANCHOR_RIGHT";
-	return self.CurrencyDisplay:SetCurrencies(C_LegendaryCrafting.GetRuneforgeLegendaryCurrencies(), initFunction, initialAnchor, gridLayout, tooltipAnchor);
-end
-
 function RuneforgeFrameMixin:GetLegendaryCraftInfo()
 	local itemLocation = self:GetItem();
 	if itemLocation then
@@ -289,7 +300,12 @@ function RuneforgeFrameMixin:RefreshResultTooltip()
 		local upgradeItem = self:GetUpgradeItem();
 		local hasUpgradeItem = upgradeItem ~= nil;
 		local itemLevel = hasUpgradeItem and C_Item.GetCurrentItemLevel(upgradeItem) or itemPreviewInfo.itemLevel;
-		resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, itemLevel, powerID, modifiers);
+
+		if self:IsRuneforgeUpgrading() then
+			resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, itemLevel);
+		else
+			resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, itemLevel, powerID, modifiers);
+		end
 	end
 	
 	resultTooltip:SetShown(hasItem);
@@ -312,9 +328,8 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 
 	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 	GameTooltip:SetPoint("LEFT", self.CraftingFrame.BaseItemSlot, "RIGHT", 10, -6);
+	GameTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, itemPreviewInfo.itemLevel);
 
-	local itemID = C_Item.GetItemID(baseItem);
-	GameTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, itemPreviewInfo.itemLevel, powerID, modifiers);
 	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 	GameTooltip:Show();
 
@@ -322,7 +337,7 @@ function RuneforgeFrameMixin:ShowComparisonTooltip()
 	resultTooltip:SetOwner(self, "ANCHOR_NONE");
 	resultTooltip:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 4, 0);
 	local upgradeItemLevel = C_Item.GetCurrentItemLevel(upgradeItem);
-	resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemID, upgradeItemLevel, powerID, modifiers);
+	resultTooltip:SetRuneforgeResultItem(itemPreviewInfo.itemGUID, upgradeItemLevel);
 	resultTooltip:Show();
 
 	SetUIPanelAttribute(self, "width", self:GetWidth());
@@ -369,21 +384,21 @@ end
 function RuneforgeFrameMixin:GetPowers()
 	local item = self.CraftingFrame:GetItem();
 	if item then
-		return C_LegendaryCrafting.GetRuneforgePowers(item);
+		return C_LegendaryCrafting.GetRuneforgePowers(item, Enum.RuneforgePowerFilter.Relevant);
 	else
 		local classID, specID = RuneforgeUtil.GetPreviewClassAndSpec();
-		local specPowers = C_LegendaryCrafting.GetRuneforgePowersByClassAndSpec(classID, specID);
-		local otherSpecPowers = C_LegendaryCrafting.GetRuneforgePowersByClassAndSpec(classID);
+		local primaryPowers = C_LegendaryCrafting.GetRuneforgePowersByClassSpecAndCovenant(classID, specID, C_Covenants.GetActiveCovenantID(), Enum.RuneforgePowerFilter.Relevant);
+		local otherPowers = C_LegendaryCrafting.GetRuneforgePowersByClassSpecAndCovenant(classID, nil, nil, Enum.RuneforgePowerFilter.Relevant);
 
-		local invertedSpecPowers = tInvert(specPowers);
+		local invertedPrimaryPowers = tInvert(primaryPowers);
 		local function FilterPredicate(powerID)
-			return invertedSpecPowers[powerID] == nil;
+			return invertedPrimaryPowers[powerID] == nil;
 		end
 
 		local isIndexTable = true;
-		otherSpecPowers = tFilter(otherSpecPowers, FilterPredicate, isIndexTable);
+		otherPowers = tFilter(otherPowers, FilterPredicate, isIndexTable);
 
-		return specPowers, otherSpecPowers;
+		return primaryPowers, otherPowers;
 	end
 end
 
@@ -407,6 +422,22 @@ function RuneforgeFrameMixin:HasValidItemForRuneforgeState()
 		if not self:HasAnyItem(C_LegendaryCrafting.IsValidRuneforgeBaseItem) then
 			return false;
 		end
+	end
+
+	return true;
+end
+
+function RuneforgeFrameMixin:HasOnlyMaxLevelRuneforgeLegendaries()
+	if not self:HasAnyItem(C_LegendaryCrafting.IsRuneforgeLegendary) then
+		return false;
+	end
+
+	local function IsRuneforgeLegendaryNonMaxLevel(...)
+		return C_LegendaryCrafting.IsRuneforgeLegendary(...) and not C_LegendaryCrafting.IsRuneforgeLegendaryMaxLevel(...);
+	end
+
+	if self:HasAnyItem(IsRuneforgeLegendaryNonMaxLevel) then
+		return false;
 	end
 
 	return true;
@@ -448,11 +479,49 @@ function RuneforgeFrameMixin:GetNumAvailableModifierTypes()
 	return count;
 end
 
+function RuneforgeFrameMixin:CanAffordRuneforgeLegendary()
+	local baseItem, powerID, modifiers = self:GetLegendaryCraftInfo();
+	if baseItem == nil then
+		return false, nil;
+	end
+
+	local isUpgrading = self:IsRuneforgeUpgrading();
+
+	local upgradeItem = self:GetUpgradeItem();
+	if isUpgrading and (upgradeItem == nil) then
+		return false, nil;
+	end
+
+	local costs = isUpgrading and C_LegendaryCrafting.GetRuneforgeLegendaryUpgradeCost(baseItem, upgradeItem) or C_LegendaryCrafting.GetRuneforgeLegendaryCost(baseItem);
+	for i, cost in ipairs(costs) do
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(cost.currencyID);
+		if cost.amount > currencyInfo.quantity then
+			local formatString = isUpgrading and RUNEFORGE_LEGENDARY_ERROR_UPGRADE_INSUFFICIENT_CURRENCY_FORMAT or RUNEFORGE_LEGENDARY_ERROR_INSUFFICIENT_CURRENCY_FORMAT;
+			return false, formatString:format(currencyInfo.name);
+		end
+	end
+
+	return true, nil;
+end
+
+function RuneforgeFrameMixin:HasRuneforgeLegendaryForUpgrade()
+	if self:HasOnlyMaxLevelRuneforgeLegendaries() then
+		return false, RUNEFORGE_LEGENDARY_ERROR_ALL_MAX_LEVEL;
+	end
+
+	if not self:HasValidItemForRuneforgeState() then
+		return false, RUNEFORGE_LEGENDARY_ERROR_NO_LEGENDARY_AVAILABLE;
+	end
+
+	return true, nil;
+end
+
 function RuneforgeFrameMixin:CanCraftRuneforgeLegendary()
 	local isUpgrading = self:IsRuneforgeUpgrading();
 	if isUpgrading then
-		if not self:HasValidItemForRuneforgeState() then
-			return false, RUNEFORGE_LEGENDARY_ERROR_NO_LEGENDARY_AVAILABLE;
+		local hasRuneforgeLegendaryForUpgrade, errorText = self:HasRuneforgeLegendaryForUpgrade();
+		if not hasRuneforgeLegendaryForUpgrade then
+			return false, errorText;
 		end
 	else
 		if not self:HasValidItemForRuneforgeState() then
@@ -484,13 +553,9 @@ function RuneforgeFrameMixin:CanCraftRuneforgeLegendary()
 		return false, nil;
 	end
 
-	local costs = isUpgrading and C_LegendaryCrafting.GetRuneforgeLegendaryUpgradeCost(baseItem, upgradeItem) or C_LegendaryCrafting.GetRuneforgeLegendaryCost(baseItem);
-	for i, cost in ipairs(costs) do
-		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(cost.currencyID);
-		if cost.amount > currencyInfo.quantity then
-			local formatString = isUpgrading and RUNEFORGE_LEGENDARY_ERROR_UPGRADE_INSUFFICIENT_CURRENCY_FORMAT or RUNEFORGE_LEGENDARY_ERROR_INSUFFICIENT_CURRENCY_FORMAT;
-			return false, formatString:format(currencyInfo.name);
-		end
+	local canAfford, costError = self:CanAffordRuneforgeLegendary();
+	if not canAfford then
+		return false, costError;
 	end
 
 	-- We need exactly 2 modifiers, one for each secondary stat.
@@ -530,10 +595,20 @@ end
 function RuneforgeFrameMixin:GetItemContext()
 	local hasItem = self:HasItem();
 	if self:GetRuneforgeState() == RuneforgeUtil.RuneforgeState.Upgrade then
-		return self:HasItem() and ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem or ItemButtonUtil.ItemContextEnum.SelectRuneforgeItem;
+		if not self:HasItem() then
+			return ItemButtonUtil.ItemContextEnum.SelectRuneforgeItem;
+		end
+
+		if not self:HasUpgradeItem() then
+			return ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem;
+		end
 	else
-		return ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem;
+		if not self:HasItem() then
+			return ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem;
+		end
 	end
+
+	return nil;
 end
 
 function RuneforgeFrameMixin:GetCost()

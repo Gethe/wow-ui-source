@@ -147,15 +147,13 @@ function MoneyInputFrame_SetCompact(frame, width, expandOnDigits)
 	-- silver
 	coinFrame = CreateFrame("Frame", frameName.."FixedSilver", frame, "FixedCoinFrameTemplate");
 	coinFrame:SetPoint("LEFT", goldFrame, "RIGHT", 2, 0);
-	coinFrame.texture:SetTexture("Interface\\MoneyFrame\\UI-MoneyIcons");
-	coinFrame.texture:SetTexCoord(0.25, 0.5, 0, 1);
+	coinFrame.texture:SetAtlas("coin-silver");
 	coinFrame.label:SetText(SILVER_AMOUNT_SYMBOL);
 	frame.fixedSilver = coinFrame;
 	-- copper
 	coinFrame = CreateFrame("Frame", frameName.."FixedCopper", frame, "FixedCoinFrameTemplate");
 	coinFrame:SetPoint("LEFT", frame.fixedSilver, "RIGHT", 2, 0);
-	coinFrame.texture:SetTexture("Interface\\MoneyFrame\\UI-MoneyIcons");
-	coinFrame.texture:SetTexCoord(0.5, 0.75, 0, 1);
+	coinFrame.texture:SetAtlas("coin-copper");
 	coinFrame.label:SetText(COPPER_AMOUNT_SYMBOL);
 	frame.fixedCopper = coinFrame;
 end

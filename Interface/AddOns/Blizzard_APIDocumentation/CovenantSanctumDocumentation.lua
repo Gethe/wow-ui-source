@@ -116,10 +116,46 @@ local CovenantSanctum =
 				{ Name = "currencyIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "HasMaximumRenown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasMaxRenown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPlayerInRenownCatchUpMode",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInCatchUpMode", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsWeeklyRenownCapped",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isWeeklyCapped", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestCatchUpState",
+			Type = "Function",
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "CovenantRenownCatchUpStateUpdate",
+			Type = "Event",
+			LiteralName = "COVENANT_RENOWN_CATCH_UP_STATE_UPDATE",
+		},
 		{
 			Name = "CovenantRenownInteractionEnded",
 			Type = "Event",

@@ -322,6 +322,14 @@
 		</Scripts>
 	</Frame>
 
+	<Button name="GarrisonFollowerUpgradeClickTargetTemplate" virtual="true">
+		<Scripts>
+			<OnLoad function="GarrisionFollowerPageUpgradeTarget_OnLoad"/>
+			<OnEvent function="GarrisionFollowerPageUpgradeTarget_OnEvent"/>
+			<OnClick function="GarrisionFollowerPageUpgradeTarget_OnClick"/>
+		</Scripts>
+	</Button>
+
 	<Frame name="GarrisonLandingPage" parent="UIParent" enableMouse="true" toplevel="true" hidden="true" mixin="GarrisonLandingPageMixin">
 		<Size x="830" y="538"/>
 		<Anchors>
@@ -695,16 +703,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="UpgradeClickTarget" hidden="true">
+					<Button parentKey="UpgradeClickTarget" inherits="GarrisonFollowerUpgradeClickTargetTemplate" hidden=" true">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad function="GarrisionFollowerPageUpgradeTarget_OnLoad"/>
-							<OnEvent function="GarrisionFollowerPageUpgradeTarget_OnEvent"/>
-							<OnClick function="GarrisionFollowerPageUpgradeTarget_OnClick"/>
-						</Scripts>
 					</Button>
 					<Frame parentKey="QualityFrame">
 						<Size x="10" y="10"/>

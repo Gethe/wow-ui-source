@@ -11,6 +11,7 @@ end
 Import("IsOnGlueScreen");
 Import("BLIZZARD_STORE_PURCHASED");
 Import("GetUnscaledFrameRect");
+Import("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
 
 if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
@@ -127,4 +128,16 @@ end
 function StoreBuyButtonMixin:OnMouseUp()
 	StoreButtonMixin.OnMouseUp(self);
 	self.Discount:SetPoint("CENTER", 0, 0);
+end
+
+--------------------------------------------------
+-- STORE BUY BUTTON MIXIN
+StoreNydusLinkButtonMixin = CreateFromMixins(StoreButtonMixin);
+
+function StoreNydusLinkButtonMixin:OnClick()
+	local parent = self:GetParent();
+	local entryID = parent:GetID();
+
+	C_StoreSecure.OpenNydusLink(entryID);
+	PlaySound(SOUNDKIT.UI_IG_STORE_BUY_BUTTON);
 end

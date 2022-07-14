@@ -114,18 +114,6 @@ function KioskModeSplashMixin:GetMode()
 	return KioskModeSplash.mode;
 end
 
-function KioskModeSplashMixin:GetRaceList()
-	if (not kioskModeData or not kioskModeData[KioskModeSplash.mode]) then
-		return;
-	end
-
-	if (C_CharacterCreation.GetCurrentRaceMode() == Enum.CharacterCreateRaceMode.Normal) then
-		return kioskModeData[KioskModeSplash.mode].races;
-	else
-		return kioskModeData[KioskModeSplash.mode].alliedRaces;
-	end
-end
-
 function KioskModeSplashMixin:GetIDForSelection(type, selection)
 	if (type == "races") then
 		return C_CharacterCreation.GetRaceIDFromName(selection);

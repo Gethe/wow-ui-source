@@ -175,7 +175,7 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnHide method="OnHide"/>
@@ -258,6 +258,61 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="WeeklyRewardsNineSliceTemplate" inherits="NineSlicePanelTemplate" setAllPoints="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+			<KeyValue key="layoutTextureKit" value="Oribos" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="WeeklyRewardOverlayTemplate" mixin="WeeklyRewardOverlayMixin" frameStrata="HIGH" virtual="true">
+		<Size x="500" y="278"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTile" atlas="UI-Frame-Oribos-BackgroundTile" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="SystemFont_Large" justifyH="CENTER" text="WEEKLY_REWARDS_UNCLAIMED_TITLE">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-46"/>
+					</Anchors>
+					<Color color="GREEN_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="Text" inherits="GameFontNormalMed3" justifyH="CENTER" text="WEEKLY_REWARDS_UNCLAIMED_TEXT">
+					<Size x="370" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="78"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="WeeklyRewardsNineSliceTemplate"/>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" drawLayer="BACKGROUND"/>
+			<Frame setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Orb" atlas="weeklyrewards-orb-dialog" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="WeeklyRewardsFrame" mixin="WeeklyRewardsMixin" parent="UIParent" hidden="true" enableMouse="true" toplevel="true">
 		<Size x="1165" y="657"/>
 		<Anchors>
@@ -284,9 +339,35 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PreviousRewardNotification" inherits="SystemFont_Med3" justifyH="CENTER" hidden="true" text="WEEKLY_REWARDS_UNCLAIMED_REWARDS_FROM_PREVIOUS_TIME">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="41"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Frame parentKey="NineSlice" inherits="WeeklyRewardsNineSliceTemplate"/>
+
+			<Frame parentKey="Blackout" enableMouse="true" frameLevel="100">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-8"/>
+					<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Texture" setAllPoints="true">
+							<Color r="0" g="0" b="0" a=".5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown function="nop"/>
+				</Scripts>
+			</Frame>
+
 			<Frame parentKey="HeaderFrame">
 				<Size x="1056" y="85"/>
 				<Anchors>

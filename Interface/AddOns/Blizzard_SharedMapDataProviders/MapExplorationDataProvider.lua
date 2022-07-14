@@ -95,8 +95,9 @@ function MapExplorationPinMixin:OnUpdate(elapsed)
 end
 
 function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
+	local wasWaitingForLoad = self.isWaitingForLoad;
 	self:RemoveAllData();
-	if fullUpdate then
+	if fullUpdate or wasWaitingForLoad then
 		self.isWaitingForLoad = true;
 		self:SetAlpha(0);
 	end

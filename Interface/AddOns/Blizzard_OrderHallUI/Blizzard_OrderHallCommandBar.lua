@@ -25,6 +25,8 @@ function OrderHallCommandBarMixin:OnLoad()
 	self:EnableMouse(true);
 
 	self.AreaName:SetText(_G["ORDER_HALL_"..class]);
+ 
+    OrderHallUpdatePosition();
 end
 
 function OrderHallCommandBarMixin:OnShow()
@@ -41,6 +43,7 @@ function OrderHallCommandBarMixin:OnShow()
 	self:RegisterEvent("GARRISON_FOLLOWER_ADDED");
 	self:RegisterEvent("GARRISON_FOLLOWER_REMOVED");
 	self:RegisterEvent("UPDATE_BINDINGS");
+    self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED")
 
 	self:RequestCategoryInfo();
 	self:RefreshAll();
@@ -87,7 +90,18 @@ function OrderHallCommandBarMixin:OnEvent(event)
 	elseif (event == "UPDATE_BINDINGS") then
 		self.WorldMapButton.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");
 		self.WorldMapButton.newbieText = NEWBIE_TOOLTIP_WORLDMAP;
+    elseif (event == "NOTCHED_DISPLAY_MODE_CHANGED") then
+        OrderHallUpdatePosition();
 	end
+end
+
+function OrderHallUpdatePosition()
+    local topOffset = GetNotchHeight();
+	if (topOffset ~= 0) then
+		topOffset = topOffset + 1;
+	end
+    OrderHallCommandBar:ClearPointsOffset();
+    OrderHallCommandBar:AdjustPointsOffset(0, topOffset);
 end
 
 function OrderHallCommandBarMixin:RequestCategoryInfo()

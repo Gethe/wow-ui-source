@@ -21,7 +21,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad inherit="prepend" function="GameTooltip_OnLoad"/>
-			<OnHide function="GameTooltip_OnHide"/>;
+			<OnHide function="GameTooltip_OnHide"/>
 			<OnTooltipSetDefaultAnchor>
 				GameTooltip_SetDefaultAnchor(self, UIParent);
 			</OnTooltipSetDefaultAnchor>
@@ -45,7 +45,7 @@
 				</Texture>
 				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="5" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Text" inherits="GameTooltipText" justifyV="MIDDLE">
@@ -90,9 +90,6 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="0" y="10"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad inherit="prepend">
-						self:SetBackdrop(nil);
-					</OnLoad>
 					<OnSizeChanged>
 						EmbeddedItemTooltip_UpdateSize(self:GetParent());
 					</OnSizeChanged>
@@ -306,6 +303,7 @@
 					BattlePetTooltip:Hide();
 				end
 			</OnLoad>
+			<OnShow function="GameTooltip_CalculatePadding"/>
 			<OnTooltipSetUnit function="GameTooltip_OnTooltipSetUnit" />
 			<OnTooltipSetItem function="GameTooltip_OnTooltipSetItem" />
 			<OnTooltipSetSpell function="GameTooltip_OnTooltipSetSpell" />
@@ -339,20 +337,14 @@
 		<Scripts>
 			<OnLoad inherit="prepend">
 				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
-				self.updateTooltip = TOOLTIP_UPDATE_TIME;
 			</OnLoad>
 			<OnUpdate function="GameTooltip_OnUpdate"/>
-			<OnShow inherit="prepend">
-				self.recalculatePadding = true;
-			</OnShow>
+			<OnShow function="GameTooltip_CalculatePadding"/>
 			<OnHide inherit="prepend">
 				self.ItemTooltip:Hide();
 				self:SetPadding(0, 0, 0, 0);
 				self.BottomFontString:Hide();
 			</OnHide>
-			<OnSizeChanged inherit="prepend">
-				self.recalculatePadding = true;
-			</OnSizeChanged>
 		</Scripts>
 	</GameTooltip>
 
@@ -360,6 +352,15 @@
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameTooltipText" type="string"/>
 			<KeyValue key="textRight1Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameTooltipText" type="string"/>
+			<KeyValue key="textRight2Font" value="GameTooltipText" type="string"/>
+		</KeyValues>
+	</GameTooltip>
+
+	<GameTooltip name="GameSmallHeaderTooltip" inherits="GameTooltipTemplate" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="SystemFont_Med2" type="string"/>
+			<KeyValue key="textRight1Font" value="SystemFont_Med2" type="string"/>
 			<KeyValue key="textLeft2Font" value="GameTooltipText" type="string"/>
 			<KeyValue key="textRight2Font" value="GameTooltipText" type="string"/>
 		</KeyValues>

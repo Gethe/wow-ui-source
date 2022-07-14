@@ -182,7 +182,7 @@
 					</Slider>
 
 					<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.65" maxValue="1.15" valueStep=".05" obeyStepOnDrag="true">
-						<Size x="180" y="17"/>
+						<Size x="140" y="17"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentRenderScaleSlider" relativePoint="BOTTOMLEFT">
 								<Offset x="21" y="-21"/>
@@ -321,8 +321,30 @@
 								</FontString>
 							</Layer>
 						</Layers>
-					</Frame>
-
+					</Frame>   
+          <Frame name="$parentNotchModeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10" hidden="true">
+              <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="$parentVerticalSyncDropDown" relativePoint="BOTTOMLEFT"/>
+              </Anchors>
+              <Layers>
+                  <Layer level="BACKGROUND">
+                      <FontString name="$parentLabel" inherits="OptionsFontSmall" text="NOTCH_MODE">
+                          <Anchors>
+                              <Anchor point="RIGHT" relativePoint="LEFT">
+                              </Anchor>
+                          </Anchors>
+                      </FontString>
+                  </Layer>
+              </Layers>
+              <Scripts>
+                  <OnLoad>
+                      if (C_UI.DoesAnyDisplayHaveNotch()) then
+                          self:Show();
+                          VideoOptionsDropDown_OnLoad(self);
+                      end
+                  </OnLoad>
+              </Scripts>
+          </Frame>
 					<!-- Outside the box -->
 					<CheckButton name="$parentRaidSettingsEnabledCheckBox" inherits="VideoOptionsSmallCheckButtonTemplate" motionScriptsWhileDisabled="true">
 						<Anchors>
@@ -594,24 +616,9 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentSunshaftsDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentLiquidDetailDropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SUNSHAFTS">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
 					<Frame name="$parentParticleDensityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSunshaftsDropDown" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentLiquidDetailDropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -654,9 +661,24 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentOutlineModeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+					<Frame name="$parentComputeEffectsDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentDepthEffectsDropDown" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="COMPUTE_EFFECTS">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame name="$parentOutlineModeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentComputeEffectsDropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -806,7 +828,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ANISOTROPIC">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SPELL_DENSITY">
 									<Anchors>
 										<Anchor point="RIGHT" relativePoint="LEFT">
 											<Offset x="0" y="0"/>
@@ -930,24 +952,9 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentSunshaftsDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentLiquidDetailDropDown" relativePoint="BOTTOMLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SUNSHAFTS">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-
 					<Frame name="$parentParticleDensityDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentSunshaftsDropDown" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentLiquidDetailDropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -990,9 +997,24 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentOutlineModeDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
+					<Frame name="$parentComputeEffectsDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentDepthEffectsDropDown" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="COMPUTE_EFFECTS">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame name="$parentOutlineModeDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentComputeEffectsDropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1483,10 +1505,54 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentContrastSlider" inherits="VideoOptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1" obeyStepOnDrag="true">
+			<Slider name="$parentResampleSharpnessSlider" inherits="VideoOptionsSliderTemplate" minValue="0.0" maxValue="2.0" valueStep=".1" obeyStepOnDrag="true">
 				<Size x="180" y="17"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTargetFPSSlider" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-25"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "ResampleSharpness";
+						self.tooltip = OPTION_TOOLTIP_SHARPNESS;
+						self.name = RESAMPLE_SHARPNESS;
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						self.GetCurrentValue =
+							function (self)
+								return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+							end;
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+						_G[name.."Text"]:SetText(RESAMPLE_SHARPNESS);
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+						self.Label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+						VideoOptionsSlider_OnLoad(self);
+					</OnLoad>
+					<OnValueChanged>
+						if(userInput) then
+							Graphics_EnableApply(self);
+							self.newValue = value;
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value)
+							VideoOptions_OnClick(self, value);
+						end
+						self.Label:SetFormattedText(GAMMA_FORMAT, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentContrastSlider" inherits="VideoOptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentResampleSharpnessSlider" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-25"/>
 					</Anchor>
 				</Anchors>

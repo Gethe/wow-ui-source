@@ -8,11 +8,11 @@ RuneforgePowerButtonMixin = CreateFromMixins(RuneforgePowerBaseMixin);
 function RuneforgePowerButtonMixin:OnPowerSet(oldPowerID, powerID)
 	local hasPowerID = powerID ~= nil;
 	self.Icon:SetShown(hasPowerID);
+	self.CovenantSigil:SetShown(hasPowerID);
 	if hasPowerID then
 		self.Icon:SetTexture(self.powerInfo and self.powerInfo.iconFileID or QUESTION_MARK_ICON);
 
 		local isAvailable = self.powerInfo.state == Enum.RuneforgePowerState.Available;
-		local isActive = isAvailable and self:IsSelectionActive();
 		self.Icon:SetDesaturated(not isAvailable);
 	end
 end
@@ -56,6 +56,22 @@ function RuneforgePowerSlotMixin:OnHide()
 	self:GetRuneforgeFrame():UnregisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self);
 end
 
+function RuneforgePowerSlotMixin:OnEnter()
+	if self:HasError() then
+		local errorText, errorDescription = self:GetError();
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, errorText, RED_FONT_COLOR);
+		if errorDescription ~= nil then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, errorDescription);
+		end
+
+		GameTooltip:Show();
+	else
+		RuneforgePowerButtonMixin.OnEnter(self);
+	end
+end
+
 function RuneforgePowerSlotMixin:OnClick(buttonName)
 	if buttonName == "RightButton" then
 		self:Reset();
@@ -66,6 +82,23 @@ end
 
 function RuneforgePowerSlotMixin:IsSelectionActive()
 	return self:IsEnabled();
+end
+
+function RuneforgePowerSlotMixin:GetError()
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	if self:IsRuneforgeUpgrading() or (runeforgeFrame:GetItem() == nil) then
+		return nil;
+	end
+
+	if not runeforgeFrame:IsAnyPowerAvailable() then
+		return RUNEFORGE_LEGENDARY_ERROR_NO_POWER, RUNEFORGE_LEGENDARY_ERROR_NO_POWER_DESCRIPTION;
+	end
+
+	return nil;
+end
+
+function RuneforgePowerSlotMixin:HasError()
+	return self:GetError() ~= nil;
 end
 
 function RuneforgePowerSlotMixin:Reset()
@@ -79,7 +112,8 @@ function RuneforgePowerSlotMixin:UpdateState()
 
 	local isUpgrading = self:IsRuneforgeUpgrading();
 	local hasItem = self:GetRuneforgeFrame():GetItem() ~= nil;
-	local alpha = (not powerSelected and hasItem and not isUpgrading) and 1 or 0;
+	local hasError = self:HasError();
+	local alpha = (not powerSelected and hasItem and not isUpgrading and not hasError) and 1 or 0;
 	self:GetNormalTexture():SetAlpha(alpha);
 	self:GetPushedTexture():SetAlpha(alpha);
 
@@ -93,6 +127,8 @@ function RuneforgePowerSlotMixin:UpdateState()
 	self:SetEffectShown("primary", showEffects);
 	self:SetEffectShown("chains", showEffects);
 	self:SetEffectShown("chains2", showEffects);
+
+	self.ErrorTexture:SetShown(hasError);
 end
 
 function RuneforgePowerSlotMixin:OnPowerSet(oldPowerID, powerID)
@@ -160,7 +196,7 @@ function RuneforgePowerMixin:IsAvailable()
 end
 
 function RuneforgePowerMixin:OnSelected()
-	if not RuneforgePowerButtonMixin.OnSelected(self) and self:IsSelectionActive() and self:IsAvailable() then
+	if not RuneforgePowerButtonMixin.OnSelected(self) and self:IsSelectionActive() and self:IsAvailable() and self:GetPowerInfo().matchesCovenant then
 		self:GetPowerList():OnPowerSelected(self:GetListIndex());
 	end
 end
@@ -173,10 +209,23 @@ function RuneforgePowerMixin:OnPowerSet(oldPowerID, powerID)
 
 	if hasPower then
 		local isAvailable = self:IsAvailable();
-		self.UnavailableOverlay:SetShown(not isAvailable);
+		local matchesCovenant = self:GetPowerInfo().matchesCovenant;
 
-		local isActive = isAvailable and self:IsSelectionActive();
-		self:SetAlpha(isActive and 1.0 or 0.5);
+		local isActive = isAvailable and self:IsSelectionActive() and matchesCovenant;
+		local alpha = isActive and 1.0 or 0.5;
+		self.Icon:SetAlpha(alpha);
+
+		self.Border:SetDesaturated(not isAvailable);
+
+		if isAvailable then
+			self.UnavailableOverlay:SetShown(not matchesCovenant);
+			self.UnavailableOverlay:SetAlpha(0.25);
+			self.Icon:SetDesaturation(not matchesCovenant and 0.5 or 0);
+		else
+			self.UnavailableOverlay:Show();
+			self.UnavailableOverlay:SetAlpha(1.0);
+			self.Icon:SetDesaturation(1.0);
+		end
 	else
 		self.UnavailableOverlay:Hide();
 	end

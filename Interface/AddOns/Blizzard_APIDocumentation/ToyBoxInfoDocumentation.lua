@@ -16,6 +16,29 @@ local ToyBoxInfo =
 			},
 		},
 		{
+			Name = "IsToySourceValid",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "source", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isToySourceValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsUsingDefaultFilters",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUsingDefaultFilters", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "NeedsFanfare",
 			Type = "Function",
 
@@ -28,6 +51,10 @@ local ToyBoxInfo =
 			{
 				{ Name = "needsFanfare", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "SetDefaultFilters",
+			Type = "Function",
 		},
 	},
 

@@ -110,7 +110,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="QuestReward">
+			<Button parentKey="QuestReward" mixin="IslandsQueueWeeklyQuestRewardMixin">
 				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.OverlayFrame" relativePoint="RIGHT" x="35" y="0"/> 
@@ -140,54 +140,9 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Frame parentKey="Tooltip" inherits="VerticalLayoutFrame, TooltipBackdropTemplate" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="0" y="0"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="fixedWidth" value="100" type="number"/>
-							<KeyValue key="expand" value="true" type="boolean"/>
-							<KeyValue key="topPadding" value="10" type="number"/>
-							<KeyValue key="bottomPadding" value="12" type="number"/>
-							<KeyValue key="leftPadding" value="5" type="number"/>
-							<KeyValue key="rightPadding" value="5" type="number"/>
-							<KeyValue key="spacing" value="8" type="number"/>
-						</KeyValues>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT"/>
-						</Anchors>
-						<Frames>
-							<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
-								<KeyValues>
-									<KeyValue key="leftPadding" value="5" type="number"/>
-									<KeyValue key="layoutIndex" value="2" type="number"/>
-								</KeyValues>
-								<Size x="100" y="100"/>
-								<Scripts>
-									<OnSizeChanged inherit="prepend">
-										self:GetParent():Layout();
-									</OnSizeChanged>
-								</Scripts>
-							</Frame>
-						</Frames>
-					</Frame>
-				</Frames>
 				<Scripts>
-					<OnEnter>
-						if (self.Completed) then 
-							GameTooltip:SetOwner(self.Icon, "ANCHOR_TOPLEFT", 25, 0);
-							GameTooltip:SetText(GOAL_COMPLETED, GREEN_FONT_COLOR:GetRGB());
-							GameTooltip:Show();
-						else 
-							QuestUtils_AddQuestCurrencyRewardsToTooltip(self:GetParent().questID, self.Tooltip, self.Tooltip.ItemTooltip);
-							self.Tooltip:Show(); 
-						end
-					</OnEnter>
-					<OnLeave>
-						self.Tooltip:Hide(); 
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -240,9 +195,11 @@
 						GameTooltip_AddColoredLine(EmbeddedItemTooltip, self.notAvailableText, RED_FONT_COLOR, true);
 					end
 					if (HaveQuestData(self.questId) and HaveQuestRewardData(self.questId)) then
-						GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questId, TOOLTIP_QUEST_REWARDS_STYLE_ISLANDS_QUEUE); 
-					else 
+						GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questId, TOOLTIP_QUEST_REWARDS_STYLE_ISLANDS_QUEUE);
+						GameTooltip_SetTooltipWaitingForData(EmbeddedItemTooltip, false);
+					else
 						GameTooltip_AddColoredLine(EmbeddedItemTooltip, RETRIEVING_DATA, RED_FONT_COLOR, true);
+						GameTooltip_SetTooltipWaitingForData(EmbeddedItemTooltip, true);
 					end
 					EmbeddedItemTooltip:Show();
 				end

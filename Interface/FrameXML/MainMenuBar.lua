@@ -121,12 +121,13 @@ end
 function MainMenuBarVehicleLeaveButton_OnEnter(self)
 	if ( UnitOnTaxi("player") ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(TAXI_CANCEL, 1, 1, 1);
+		GameTooltip_SetTitle(GameTooltip, TAXI_CANCEL);
 		GameTooltip:AddLine(TAXI_CANCEL_DESCRIPTION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, LEAVE_VEHICLE);
+		GameTooltip:Show();
 	end
 end
 

@@ -389,7 +389,10 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="FriendsFont_Large" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin">
+								<FontString parentKey="Text" inherits="FriendsFont_Large" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+									<KeyValues>
+										<KeyValue key="minLineHeight" value="12" type="number"/>
+									</KeyValues>
 									<Size x="230" y="14"/>
 									<Color color="NORMAL_FONT_COLOR" />
 								</FontString>
@@ -402,7 +405,10 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin">
+								<FontString parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+									<KeyValues>
+										<KeyValue key="minLineHeight" value="10" type="number"/>
+									</KeyValues>
 									<Size x="230" y="12"/>
 								</FontString>
 							</Layer>

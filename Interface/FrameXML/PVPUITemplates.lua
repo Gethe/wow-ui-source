@@ -1,28 +1,4 @@
 PVPConquestRewardMixin = { };
-function PVPConquestRewardMixin:LegacySetup(questID)
-	self.questID = questID;
-	if questID == 0 then
-		self:SetTexture("Interface\\Icons\\inv_misc_bag_10", 0.2);
-		self.CheckMark:Show();
-		self.CheckMark:SetDesaturated(true);
-	else
-		if C_QuestLog.IsComplete(questID) then
-			self.CheckMark:Show();
-			self.CheckMark:SetDesaturated(false);
-		else
-			self.CheckMark:Hide();
-		end
-		local itemTexture;
-		if HaveQuestRewardData(questID) then
-			local itemIndex, rewardType = QuestUtils_GetBestQualityItemRewardIndex(questID);
-			if itemIndex and rewardType then
-				itemTexture = select(2, QuestUtils_GetQuestLogRewardInfo(itemIndex, questID, rewardType));
-			end
-		end
-		self:SetTexture(itemTexture, 1);
-	end
-end
-
 function PVPConquestRewardMixin:Setup()
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
 	local progress = weeklyProgress.progress;
@@ -64,72 +40,22 @@ function PVPConquestRewardMixin:SetTooltipAnchor(questTooltipAnchor)
 	self.questTooltipAnchor = questTooltipAnchor;
 end
 
-function PVPConquestRewardMixin:LegacyTryShowTooltip()
-	local WORD_WRAP = true;
-	if not ConquestFrame_HasActiveSeason() then
-		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR, WORD_WRAP);
-		EmbeddedItemTooltip:Show();
-	elseif self.questID == 0 then
-		EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_BAR_REWARD_DONE, NORMAL_FONT_COLOR, WORD_WRAP);
-		EmbeddedItemTooltip:Show();
-	elseif self.questID and self:IsMouseOver() then
-		EmbeddedItemTooltip:SetOwner(self, self.questTooltipAnchor);
-		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST);
-		if C_QuestLog.IsComplete(self.questID) then
-			GameTooltip_AddNormalLine(EmbeddedItemTooltip, CONQUEST_BAR_REWARD_COLLECT, WORD_WRAP);
-			GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		end
-		GameTooltip_AddNormalLine(EmbeddedItemTooltip, SAMPLE_REWARD_WITH_COLON);
-		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_NO_HEADER);
-		self.UpdateTooltip = self.OnEnter;
-
-		if IsModifiedClick("DRESSUP") then
-			ShowInspectCursor();
-		else
-			ResetCursor();
-		end
-		EmbeddedItemTooltip:Show();
-	end
-end
-
 function PVPConquestRewardMixin:TryShowTooltip()
-	if PVPUtil.ShouldShowLegacyRewards() then
-		self:LegacyTryShowTooltip();
-		return;
-	end
-
 	GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
 	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
-
-	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
-	local progress = weeklyProgress.progress;
-	local maxProgress = weeklyProgress.maxProgress;
-	local displayType = weeklyProgress.displayType;
-	local itemLink = weeklyProgress.sampleItemHyperlink;
-	local itemLevel = itemLink and GetDetailedItemLevelInfo(itemLink) or 0;
 
 	if not ConquestFrame_HasActiveSeason() then
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, CONQUEST_REQUIRES_PVP_SEASON, NORMAL_FONT_COLOR);
 	else
-		local unlocksCompleted = weeklyProgress.unlocksCompleted;
 		GameTooltip_SetTitle(EmbeddedItemTooltip, PVP_CONQUEST, HIGHLIGHT_FONT_COLOR);
-		local message;
-		if itemLevel == 0 and unlocksCompleted == 0 then
-			message = CONQUEST_PVP_WEEK_NO_CONQUEST;
-		elseif progress < maxProgress then
-			if displayType == Enum.ConquestProgressBarDisplayType.FirstChest then
-				message = CONQUEST_PVP_WEEK_FIRST_CHEST:format(maxProgress, itemLevel);
-			elseif displayType == Enum.ConquestProgressBarDisplayType.AdditionalChest then
-				message = CONQUEST_PVP_WEEK_ADDITIONAL_CHEST:format(maxProgress, itemLevel);
-			else
-				message = CONQUEST_PVP_WEEK_ADDITIONAL_CONQUEST;
-			end
-		else
+
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID);
+		local maxProgress = currencyInfo.maxQuantity;
+		local progress = math.min(currencyInfo.totalEarned, maxProgress);
+
+		-- these string names are not accurate because their contents were changed, but they were not renamed
+		local message = CONQUEST_PVP_WEEK_NO_CONQUEST; 
+		if progress == maxProgress then
 			message = CONQUEST_PVP_WEEK_CONQUEST_COMPLETE;
 		end
 		GameTooltip_AddColoredLine(EmbeddedItemTooltip, message, NORMAL_FONT_COLOR);

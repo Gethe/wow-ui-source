@@ -73,7 +73,7 @@
 		</Layers>
 	</Frame>
 
-	<CheckButton name="ChatConfigBaseCheckButtonTemplate" virtual="true">
+	<CheckButton name="ChatConfigBaseCheckButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="32" y="32"/>
 		<Scripts>
 			<OnClick>
@@ -89,9 +89,17 @@
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, (self.tooltipStyle or true));
 				end
+				
+				if self.onEnterCallback then
+					self.onEnterCallback();
+				end
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
+
+				if self.onLeaveCallback then
+					self.onLeaveCallback();
+				end
 			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
@@ -106,7 +114,7 @@
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="2"/>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -136,6 +144,9 @@
 				</Anchors>
 			</CheckButton>
 		</Frames>
+	</Frame>
+	<Frame name="ChatConfigCheckBoxSmallTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
+		<Size x="200" y="23"/>
 	</Frame>
 	<Frame name="ChatConfigCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxTemplate" virtual="true">
 		<Frames>
@@ -349,6 +360,25 @@
 							<Anchor point="TOPRIGHT" relativeTo="$parentButton3" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
 						</Anchors>
 					</Button>
+					<!-- Text to speech categories -->
+					<Button name="$parentButton5" inherits="ConfigCategoryButtonTemplate" text="SETTINGS" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-7"/>
+							<Anchor point="TOPRIGHT" x="-5" y="-7"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentButton6" inherits="ConfigCategoryButtonTemplate" text="CHAT" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentButton5" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentButton5" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentButton7" inherits="ConfigCategoryButtonTemplate" text="GLOBAL_CHANNELS" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentButton6" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+							<Anchor point="TOPRIGHT" relativeTo="$parentButton6" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+						</Anchors>
+					</Button>
 				</Frames>
 				<Scripts>
 					<OnShow>
@@ -439,6 +469,65 @@
 				</Frames>
 				<Scripts>
 					<OnShow function="ChatConfigOtherSettings_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Frame name="ChatConfigTextToSpeechSettings">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
+				</Anchors>
+				<Frames>
+					<Frame name="TextToSpeechFrame" inherits="TextToSpeechFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow function="ChatConfigTextToSpeechSettings_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Frame name="ChatConfigTextToSpeechMessageSettings">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentSubTitle" text="TEXT_TO_SPEECH_CHAT_MESSAGE_TYPES" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-16"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="ChatConfigTextToSpeechMessageSettingsChatTypeContainer">
+						<Size x="450" y="300"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="16" y="-32"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="ChatConfigTextToSpeechChannelSettings">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentLeft" inherits="ChatConfigBoxWithHeaderTemplate">
+						<Size x="10" y="10"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="13" y="-30"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow function="ChatConfigTextToSpeechChannelSettings_OnShow"/>
 				</Scripts>
 			</Frame>
 			<Frame name="ChatConfigCombatSettings">
@@ -538,6 +627,7 @@
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip_SetTitle(GameTooltip, MOVE_FILTER_UP);
+										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
@@ -560,6 +650,7 @@
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 										GameTooltip_SetTitle(GameTooltip, MOVE_FILTER_DOWN);
+										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
@@ -1396,6 +1487,15 @@
 					<OnLoad function="ChatConfigFrameRedockButton_OnLoad"/>
 				</Scripts>
 			</Button>
+			<Button parentKey="ToggleChatButton" inherits="UIPanelButtonTemplate" hidden="true">
+				<Size x="148" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RedockButton" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="ChatConfigFrameToggleChatButton_OnClick"/>
+				</Scripts>
+			</Button>
 			<Button name="CombatLogDefaultButton" inherits="UIPanelButtonTemplate" text="COMBATLOG_DEFAULTS">
 				<Size x="170" y="22"/>
 				<Anchors>
@@ -1407,6 +1507,29 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="TextToSpeechDefaultButton" inherits="UIPanelButtonTemplate" text="TEXT_TO_SPEECH_DEFAULTS">
+				<Size x="170" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentDefaultButton"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="TextToSpeechFrameDefaults_OnClick"/>
+				</Scripts>
+			</Button>
+			<CheckButton name="TextToSpeechCharacterSpecificButton" inherits="UICheckButtonTemplate" mixin="TextToSpeechCharacterSpecificButtonMixin">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="TextToSpeechDefaultButton" relativePoint="RIGHT" x="5" y ="0"/>
+				</Anchors>
+				<HitRectInsets left="0" right="-100" top="0" bottom="0"/>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnHide"/>
+				</Scripts>
+			</CheckButton>
 			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL" hidden="true">
 				<Size x="78" y="22"/>
 				<Anchors>

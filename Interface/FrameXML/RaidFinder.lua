@@ -190,8 +190,8 @@ end
 function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 
 	local sortedDungeons = { };
-	local function InsertDungeonData(id, name, mapName, isAvailable)
-		local t = { id = id, name = name, mapName = mapName, isAvailable = isAvailable };
+	local function InsertDungeonData(id, name, mapName, isAvailable, mapID)
+		local t = { id = id, name = name, mapName = mapName, isAvailable = isAvailable, mapID = mapID };
 		local foundMap = false;
 		for i = 1, #sortedDungeons do
 			if ( sortedDungeons[i].mapName == mapName ) then
@@ -212,10 +212,11 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 		local id = dungeonInfo[1];
 		local name = dungeonInfo[2];
 		local mapName = dungeonInfo[20];
-		local isAvailable, isAvailableToPlayer, hideIfUnmet = IsLFGDungeonJoinable(id);
-		if( not hideIfUnmet or isAvailable ) then
+		local mapID = dungeonInfo[23];
+		local isAvailable, isAvailableToPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
+		if( not hideIfNotJoinable or isAvailable ) then
 			if ( isAvailable or isAvailableToPlayer or isRaidFinderDungeonDisplayable(id) ) then
-				InsertDungeonData(id, name, mapName, isAvailable);
+				InsertDungeonData(id, name, mapName, isAvailable, mapID);
 			end
 		end
 	end
@@ -228,6 +229,8 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 			info.text = sortedDungeons[i].mapName;
 			info.isTitle = 1;
 			info.notCheckable = 1;
+			info.icon = nil;
+			info.iconXOffset = nil;
 			info.tooltipOnButton = nil;
 			UIDropDownMenu_AddButton(info);
 			info.notCheckable = nil;
@@ -256,19 +259,39 @@ function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 					encounters = colorCode..bossName..FONT_COLOR_CODE_CLOSE;
 				end
 			end
-			info.tooltipText = encounters;
+			local modifiedInstanceTooltipText = "";
+			if(sortedDungeons[i].mapID) then 
+				local modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(sortedDungeons[i].mapID)
+				if (modifiedInstanceInfo) then 
+					info.icon = GetFinalNameFromTextureKit("%s-small", modifiedInstanceInfo.uiTextureKit);
+					modifiedInstanceTooltipText = "|n|n" .. modifiedInstanceInfo.description;
+				end
+				info.iconXOffset = -6;
+			end 
+			info.tooltipText = encounters .. modifiedInstanceTooltipText;
 			UIDropDownMenu_AddButton(info);
 		else
 			info.text = sortedDungeons[i].name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
 			info.value = sortedDungeons[i].id;
 			info.isTitle = nil;
 			info.func = nil;
+			info.icon = nil; 
+			info.iconXOffset = nil;
+			local modifiedInstanceTooltipText = "";
+			if(sortedDungeons[i].mapID) then 
+				local modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(sortedDungeons[i].mapID)
+				if (modifiedInstanceInfo) then 
+					info.icon = GetFinalNameFromTextureKit("%s-small", modifiedInstanceInfo.uiTextureKit);
+					modifiedInstanceTooltipText = "|n|n" .. modifiedInstanceInfo.description;
+				end
+				info.iconXOffset = -6;
+			end 
 			info.disabled = 1;
 			info.checked = nil;
 			info.tooltipWhileDisabled = 1;
 			info.tooltipOnButton = 1;
 			info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
-			info.tooltipText = LFGConstructDeclinedMessage(sortedDungeons[i].id);
+			info.tooltipText = LFGConstructDeclinedMessage(sortedDungeons[i].id) .. modifiedInstanceTooltipText; 
 			UIDropDownMenu_AddButton(info);
 		end
 	end
@@ -393,13 +416,15 @@ function RaidFinderFrameFindRaidButton_Update()
 	local lfgListDisabled;
 	if ( C_LFGList.HasActiveEntryInfo() ) then
 		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	elseif(C_PartyInfo.IsCrossFactionParty()) then 
+		lfgListDisabled = CROSS_FACTION_RAID_DUNGEON_FINDER_ERROR;
 	end
 
 	if ( lfgListDisabled ) then
 		RaidFinderFrameFindRaidButton:Disable();
-		RaidFinderFrameFindRaidButton.tooltip = lfgListDisabled;
+		RaidFinderFrameFindRaidButton.disabledTooltip = lfgListDisabled;
 	else
-		RaidFinderFrameFindRaidButton.tooltip = nil;
+		RaidFinderFrameFindRaidButton.disabledTooltip = nil;
 	end
 
 	--Update the backfill enable state

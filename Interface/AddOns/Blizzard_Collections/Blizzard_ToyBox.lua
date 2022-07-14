@@ -379,6 +379,7 @@ end
 
 function ToyBoxFilterDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, ToyBoxFilterDropDown_Initialize, "MENU");
+	ToyBoxResetFiltersButton_UpdateVisibility();
 end
 
 function ToyBoxUpdateFilteredInformation()
@@ -387,119 +388,91 @@ function ToyBoxUpdateFilteredInformation()
 	ToyBox_UpdateButtons();
 end
 
+function ToyBoxFilterDropDown_ResetFilters()
+	C_ToyBoxInfo.SetDefaultFilters();
+	ToyBoxFilterButton.ResetButton:Hide();
+end
+
+function ToyBoxResetFiltersButton_UpdateVisibility()
+	ToyBoxFilterButton.ResetButton:SetShown(not C_ToyBoxInfo.IsUsingDefaultFilters());
+end
+
+function ToyBoxFilterDropDown_OnUpdate()
+	ToyBoxUpdateFilteredInformation();
+	ToyBoxResetFiltersButton_UpdateVisibility();
+end
+
+-- The global string for this filter reads "USABLE ONLY" (which would mean SetUnusableShown should be false when checked)
+function ToyBoxFilterDropDown_SetUsableOnlyShown(value)
+	C_ToyBox.SetUnusableShown(not value);
+end
+
+function ToyBoxFilterDropDown_GetUsableOnlyShown()
+	return not C_ToyBox.GetUnusableShown();
+end
+
+function ToyBoxFilterDropDown_SetAllSourceTypeFilters(value)
+	C_ToyBox.SetAllSourceTypeFilters(value);
+	UIDropDownMenu_Refresh(ToyBoxFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
+end
+
+function ToyBoxFilterDropDown_SetAllExpansionTypeFilters(value)
+	C_ToyBox.SetAllExpansionTypeFilters(value);
+	UIDropDownMenu_Refresh(ToyBoxFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
+end
+
 function ToyBoxFilterDropDown_Initialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;
+	local filterSystem = {
+		onUpdate = ToyBoxFilterDropDown_OnUpdate,		
+		filters = {
+			{ type = FilterComponent.Checkbox, text = COLLECTED, set = C_ToyBox.SetCollectedShown, isSet = C_ToyBox.GetCollectedShown },
+			{ type = FilterComponent.Checkbox, text = NOT_COLLECTED, set = C_ToyBox.SetUncollectedShown, isSet = C_ToyBox.GetUncollectedShown },
+			{ type = FilterComponent.Checkbox, text = PET_JOURNAL_FILTER_USABLE_ONLY, set = ToyBoxFilterDropDown_SetUsableOnlyShown, isSet = ToyBoxFilterDropDown_GetUsableOnlyShown },
+			{ type = FilterComponent.Submenu, text = SOURCES, value = 1, childrenInfo = {
+					filters = {
+						{ type = FilterComponent.TextButton, 
+						  text = CHECK_ALL,
+						  set = function() ToyBoxFilterDropDown_SetAllSourceTypeFilters(true); end,
+						},
+						{ type = FilterComponent.TextButton,
+						  text = UNCHECK_ALL,
+						  set = function() ToyBoxFilterDropDown_SetAllSourceTypeFilters(false); end,
+						},
+						{ type = FilterComponent.DynamicFilterSet,
+						  buttonType = FilterComponent.Checkbox, 
+						  set = C_ToyBox.SetSourceTypeFilter,
+						  isSet = C_ToyBox.IsSourceTypeFilterChecked,
+						  numFilters = C_PetJournal.GetNumPetSources,
+						  filterValidation = C_ToyBoxInfo.IsToySourceValid,
+						  globalPrepend = "BATTLE_PET_SOURCE_", 
+						},
+					},
+				},
+			},
+			{ type = FilterComponent.Submenu, text = EXPANSION_FILTER_TEXT, value = 2, childrenInfo = {
+					filters = {
+						{ type = FilterComponent.TextButton, 
+						  text = CHECK_ALL,
+						  set = function() ToyBoxFilterDropDown_SetAllExpansionTypeFilters(true); end,
+						},
+						{ type = FilterComponent.TextButton,
+						  text = UNCHECK_ALL,
+						  set = function() ToyBoxFilterDropDown_SetAllExpansionTypeFilters(false); end, 
+						},
+						{ type = FilterComponent.DynamicFilterSet,
+						  buttonType = FilterComponent.Checkbox, 
+						  set = C_ToyBox.SetExpansionTypeFilter,
+						  isSet = C_ToyBox.IsExpansionTypeFilterChecked,
+						  numFilters = GetNumExpansions,
+						  globalPrepend = "EXPANSION_NAME",
+						  -- We want to list all expansions up to i-1 since the global strings for expansions are 0 - Max Expansion
+						  globalPrependOffset = -1,
+						},
+					},
+				},
+			},
+		},
+	};
 
-	if level == 1 then
-		info.text = COLLECTED;
-		info.func = function(_, _, _, value)
-						C_ToyBox.SetCollectedShown(value);
-						ToyBoxUpdateFilteredInformation();
-					end
-		info.checked = C_ToyBox.GetCollectedShown();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = NOT_COLLECTED;
-		info.func = function(_, _, _, value)
-						C_ToyBox.SetUncollectedShown(value);
-						ToyBoxUpdateFilteredInformation();
-					end
-		info.checked = C_ToyBox.GetUncollectedShown();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = PET_JOURNAL_FILTER_USABLE_ONLY;
-		info.func = function(_, _, _, value)
-						C_ToyBox.SetUnusableShown(not value);
-						ToyBoxUpdateFilteredInformation();
-					end
-		info.checked = not C_ToyBox.GetUnusableShown();
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.checked = nil;
-		info.isNotRadio = nil;
-		info.func =  nil;
-		info.hasArrow = true;
-		info.notCheckable = true;
-
-		info.text = SOURCES;
-		info.value = 1;
-		UIDropDownMenu_AddButton(info, level);
-
-		info.text = EXPANSION_FILTER_TEXT;
-		info.value = 2;
-		UIDropDownMenu_AddButton(info, level);
-	else
-		if UIDROPDOWNMENU_MENU_VALUE == 1 then
-			info.hasArrow = false;
-			info.isNotRadio = true;
-			info.notCheckable = true;
-
-			info.text = CHECK_ALL;
-			info.func = function()
-							C_ToyBox.SetAllSourceTypeFilters(true);
-							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
-							ToyBoxUpdateFilteredInformation();
-						end
-			UIDropDownMenu_AddButton(info, level);
-
-			info.text = UNCHECK_ALL;
-			info.func = function()
-							C_ToyBox.SetAllSourceTypeFilters(false);
-							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
-							ToyBoxUpdateFilteredInformation();
-						end
-			UIDropDownMenu_AddButton(info, level);
-
-			info.notCheckable = false;
-			local numSources = C_PetJournal.GetNumPetSources();
-			for i=1,numSources do
-				if (i == 1 or i == 2 or i == 3 or i == 4 or i == 7 or i == 8) then -- Drop/Quest/Vendor/Profession/WorldEvent/Promotion
-					info.text = _G["BATTLE_PET_SOURCE_"..i];
-					info.func = function(_, _, _, value)
-								C_ToyBox.SetSourceTypeFilter(i, value);
-								ToyBoxUpdateFilteredInformation();
-							end
-					info.checked = function() return not C_ToyBox.IsSourceTypeFilterChecked(i) end;
-					UIDropDownMenu_AddButton(info, level);
-				end
-			end
-		end
-		if UIDROPDOWNMENU_MENU_VALUE == 2 then
-			info.hasArrow = false;
-			info.isNotRadio = true;
-			info.notCheckable = true;
-
-			info.text = CHECK_ALL;
-			info.func = function()
-							C_ToyBox.SetAllExpansionTypeFilters(true);
-							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
-							ToyBoxUpdateFilteredInformation();
-						end
-			UIDropDownMenu_AddButton(info, level);
-
-			info.text = UNCHECK_ALL;
-			info.func = function()
-							C_ToyBox.SetAllExpansionTypeFilters(false);
-							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
-							ToyBoxUpdateFilteredInformation();
-						end
-			UIDropDownMenu_AddButton(info, level);
-
-			info.notCheckable = false;
-			local numExpansions = GetNumExpansions();
-			for i=1,numExpansions do
-				info.text = _G["EXPANSION_NAME"..i-1]; --Since the global strings for expansion are 0 - Max Expansion
-				info.func = function(_, _, _, value)
-							C_ToyBox.SetExpansionTypeFilter(i, value);
-							ToyBoxUpdateFilteredInformation();
-						end
-				info.checked = function() return not C_ToyBox.IsExpansionTypeFilterChecked(i) end;
-				UIDropDownMenu_AddButton(info, level);
-			end
-		end
-	end
+	FilterDropDownSystem.Initialize(self, filterSystem, level);
 end

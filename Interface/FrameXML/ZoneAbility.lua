@@ -1,5 +1,5 @@
 
-local ZONE_SPELL_ABILITY_TEXTURES_BASE_FALLBACK = "Interface\\ExtraButton\\GarrZoneAbility-Armory";
+local ZoneAbilityFrameAtlasFallback = "revendreth-zone-ability";
 
 -- Include sound information based on texture kit for now.
 local TextureKitToSoundEffects = {
@@ -78,6 +78,29 @@ local function HideZoneAbilityTutorial()
 	HelpTip:HideAll(ZoneAbilityFrame);
 end
 
+ZoneAbilityFrameUpdater = {};
+
+function ZoneAbilityFrameUpdater:AddDirtyFrame(dirtyFrame)
+	if not self.dirtyFrames then
+		self.dirtyFrames = {};
+	end
+
+	self.dirtyFrames[dirtyFrame] = true;
+
+	if not self.isDirty then
+		self.isDirty = true;
+		C_Timer.After(0, function() self:Clean() end);
+	end
+end
+
+function ZoneAbilityFrameUpdater:Clean()
+	for frame in pairs(self.dirtyFrames) do
+		frame:UpdateDisplayedZoneAbilities();
+	end
+
+	self.dirtyFrames = {};
+	self.isDirty = false;
+end
 
 ZoneAbilityFrameMixin = {};
 
@@ -93,7 +116,11 @@ function ZoneAbilityFrameMixin:OnLoad()
 end
 
 function ZoneAbilityFrameMixin:OnEvent(event, ...)
-	self:UpdateDisplayedZoneAbilities();
+	self:MarkDirty();
+end
+
+function ZoneAbilityFrameMixin:MarkDirty()
+	ZoneAbilityFrameUpdater:AddDirtyFrame(self);
 end
 
 local function SortByUIPriority(lhs, rhs)
@@ -101,11 +128,9 @@ local function SortByUIPriority(lhs, rhs)
 end
 
 function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
-	HideZoneAbilityTutorial();
-
 	local zoneAbilities = GetActiveZoneAbilities();
 	table.sort(zoneAbilities, SortByUIPriority);
-	
+
 	local displayedZoneAbilities = {};
 	local activeAbilityIsDisplayedOnBar = {};
 	local displayedTextureKit = nil;
@@ -134,7 +159,7 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 			if previousZoneAbility.placedSoundEffect then
 				local spellID = previousZoneAbility.spellID;
 				if activeAbilityIsDisplayedOnBar[spellID] and not DoZoneAbilitiesIncludeSpellID(displayedZoneAbilities, spellID) then
-					PlaySound(previousZoneAbility.placedSoundEffect, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(previousZoneAbility.placedSoundEffect);
 				end
 			end
 		end
@@ -144,10 +169,18 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 		if displayZoneAbility.shownSoundEffect then
 			local spellID = displayZoneAbility.spellID;
 			if not self.previousZoneAbilities or not DoZoneAbilitiesIncludeSpellID(self.previousZoneAbilities, spellID) then
-				PlaySound(displayZoneAbility.shownSoundEffect, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				PlaySound(displayZoneAbility.shownSoundEffect);
 			end
 		end
 	end
+
+	-- don't update if nothing's changed, could screw up OnClick
+	local depth = 3;
+	if self.previousZoneAbilities and tCompare(self.previousZoneAbilities, displayedZoneAbilities, depth) then
+		return;
+	end
+
+	HideZoneAbilityTutorial();
 
 	self.previousZoneAbilities = displayedZoneAbilities;
 
@@ -215,7 +248,7 @@ end
 
 function ZoneAbilityFrameSpellButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self);
-	GameTooltip:SetSpellByID(self:GetSpellID());
+	GameTooltip:SetSpellByID(self:GetOverrideSpellID());
 end
 
 function ZoneAbilityFrameSpellButtonMixin:OnLeave()
@@ -233,12 +266,14 @@ function ZoneAbilityFrameSpellButtonMixin:OnDragStart()
 end
 
 function ZoneAbilityFrameSpellButtonMixin:Refresh()
-	local spellID = self:GetSpellID();
-	spellID = FindSpellOverrideByID(spellID) or spellID;
+	local spellID = self:GetOverrideSpellID();
 
 	local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(spellID);
 	local start, duration, enable = GetSpellCooldown(spellID);
 	local usesCount = GetSpellCount(spellID);
+
+	local texture = select(3, GetSpellInfo(spellID));
+	self.Icon:SetTexture(texture);
 
 	local spellCount = nil;
 	if maxCharges and maxCharges > 1 then
@@ -265,14 +300,16 @@ end
 function ZoneAbilityFrameSpellButtonMixin:SetSpellID(spellID)
 	self.spellID = spellID;
 
-	local texture = select(3, GetSpellInfo(spellID));
-	self.Icon:SetTexture(texture);
-
 	self:Refresh();
 end
 
 function ZoneAbilityFrameSpellButtonMixin:GetSpellID()
 	return self.spellID;
+end
+
+function ZoneAbilityFrameSpellButtonMixin:GetOverrideSpellID()
+	local spellID = self:GetSpellID();
+	return FindSpellOverrideByID(spellID) or spellID;
 end
 
 function ZoneAbilityFrameSpellButtonMixin:SetContent(zoneAbilityInfo)

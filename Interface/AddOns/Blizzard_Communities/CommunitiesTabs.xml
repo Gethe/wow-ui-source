@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesTabs.lua"/>
 
-	<CheckButton name="CommunitiesFrameTabTemplate" frameLevel="510" virtual="true">
+	<CheckButton name="CommunitiesFrameTabTemplate" mixin="CommunitiesFrameTabMixin" frameLevel="510" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -33,68 +33,13 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				self:SetChecked(true);
-			</OnClick>
-			<OnEnter function="CommunitiesFrameTab_OnEnter"/>
-			<OnLeave function="CommunitiesFrameTab_OnLeave"/>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<NormalTexture/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
-	</CheckButton>
-	
-	<CheckButton name="CommunitiesChatTabTemplate" hidden="true" inherits="CommunitiesFrameTabTemplate" virtual="true" motionScriptsWhileDisabled="true">
-		<KeyValues>
-			<KeyValue key="tooltip" value="COMMUNITIES_CHAT_TAB_TOOLTIP" type="global"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad>
-				self.Icon:SetTexture("Interface\\Icons\\UI_Chat");
-			</OnLoad>
-			<OnClick inherit="append">
-				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.CHAT);
-			</OnClick>
-		</Scripts>
-	</CheckButton>
-	<CheckButton name="CommunitiesRosterTabTemplate" hidden="true" inherits="CommunitiesFrameTabTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="tooltip" value="COMMUNITIES_ROSTER_TAB_TOOLTIP" type="global"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad>
-				self.Icon:SetTexture("Interface\\Icons\\achievement_guildperk_everybodysfriend");
-			</OnLoad>
-			<OnClick inherit="append">
-				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
-			</OnClick>
-		</Scripts>
-	</CheckButton>
-	<CheckButton name="CommunitiesGuildBenefitsTabTemplate" hidden="true" inherits="CommunitiesFrameTabTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="tooltip" value="COMMUNITIES_GUILD_BENEFITS_TAB_TOOLTIP" type="global"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad>
-				self.Icon:SetTexture("Interface\\Icons\\achievement_guildperk_honorablemention");
-			</OnLoad>
-			<OnClick inherit="append">
-				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS);
-			</OnClick>
-		</Scripts>
-	</CheckButton>
-	<CheckButton name="CommunitiesGuildInfoTabTemplate" hidden="true" inherits="CommunitiesFrameTabTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="tooltip" value="COMMUNITIES_GUILD_INFO_TAB_TOOLTIP" type="global"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad>
-				self.Icon:SetTexture("Interface\\Icons\\inv_misc_scrollunrolled01");
-			</OnLoad>
-			<OnClick inherit="append">
-				self:GetParent():SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO);
-			</OnClick>
-		</Scripts>
 	</CheckButton>
 </Ui>

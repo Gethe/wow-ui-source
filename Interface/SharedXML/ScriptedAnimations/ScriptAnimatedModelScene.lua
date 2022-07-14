@@ -26,11 +26,13 @@ function ScriptAnimatedModelSceneMixin:OnShow()
 	self:RefreshModelScene();
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:SetScript("OnSizeChanged", self.OnSizeChanged);
 end
 
 function ScriptAnimatedModelSceneMixin:OnHide()
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	self:UnregisterEvent("UI_SCALE_CHANGED");
+	self:SetScript("OnSizeChanged", nil);
 end
 
 function ScriptAnimatedModelSceneMixin:OnSizeChanged()
@@ -92,11 +94,11 @@ function ScriptAnimatedModelSceneMixin:ExecuteOrDelayUntilSceneSet(action)
 end
 
 function ScriptAnimatedModelSceneMixin:OnUpdate(elapsed, ...)
-	ModelSceneMixin.OnUpdate(self, elapsed, ...);
-
 	if #self.effectControllers == 0 then
 		return;
 	end
+
+	ModelSceneMixin.OnUpdate(self, elapsed, ...);
 
 	self.centerX, self.centerY = self:GetCenter();
 

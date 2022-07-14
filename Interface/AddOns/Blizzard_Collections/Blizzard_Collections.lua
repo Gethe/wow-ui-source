@@ -54,7 +54,7 @@ function CollectionsJournal_UpdateSelectedTab(self)
 	if ( WardrobeCollectionFrame:GetParent() == self or not WardrobeCollectionFrame:GetParent():IsShown() ) then
 		if ( selected == 5 ) then
 			HideUIPanel(WardrobeFrame);
-			WardrobeCollectionFrame_SetContainer(self);
+			WardrobeCollectionFrame:SetContainer(self);
 		else
 			WardrobeCollectionFrame:Hide();
 		end

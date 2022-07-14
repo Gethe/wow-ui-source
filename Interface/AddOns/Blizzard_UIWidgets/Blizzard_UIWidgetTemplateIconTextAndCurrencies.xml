@@ -10,13 +10,13 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" mixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipHeaderText">
+				<FontString parentKey="Text" mixin="UIWidgetBaseEnabledFrameMixin" inherits="GameTooltipHeaderText">
 					<Size x="178"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Description" mixin="UIWidgetBaseColoredTextMixin" inherits="GameTooltipText">
+				<FontString parentKey="Description" mixin="UIWidgetBaseEnabledFrameMixin" inherits="GameTooltipText">
 					<Size x="178"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-2"/>

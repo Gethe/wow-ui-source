@@ -22,6 +22,11 @@ local BarberShop =
 		{
 			Name = "ClearPreviewChoices",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clearSavedChoices", Type = "bool", Nilable = false, Default = false },
+			},
 		},
 		{
 			Name = "GetAvailableCustomizations",
@@ -78,8 +83,22 @@ local BarberShop =
 			},
 		},
 		{
-			Name = "OldBarberShopLoaded",
+			Name = "MarkCustomizationChoiceAsSeen",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "choiceID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "MarkCustomizationOptionAsSeen",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "optionID", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "PreviewCustomizationChoice",
@@ -90,6 +109,10 @@ local BarberShop =
 				{ Name = "optionID", Type = "number", Nilable = false },
 				{ Name = "choiceID", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "RandomizeCustomizationChoices",
+			Type = "Function",
 		},
 		{
 			Name = "ResetCameraRotation",
@@ -107,6 +130,10 @@ local BarberShop =
 			{
 				{ Name = "diffDegrees", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "SaveSeenChoices",
+			Type = "Function",
 		},
 		{
 			Name = "SetCameraDistanceOffset",

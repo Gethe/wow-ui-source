@@ -109,10 +109,14 @@ function PlayerFrame_UpdatePartyLeader()
 	end
 end
 
+function PlayerFrame_CanPlayPVPUpdateSound()
+	return not PlayerPVPIcon:IsShown() and not PlayerPrestigePortrait:IsShown();
+end
+
 function PlayerFrame_UpdatePvPStatus()
 	local factionGroup, factionName = UnitFactionGroup("player");
 	if ( UnitIsPVPFreeForAll("player") ) then
-		if ( not PlayerPVPIcon:IsShown() ) then
+		if ( PlayerFrame_CanPlayPVPUpdateSound() ) then
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
 		local honorLevel = UnitHonorLevel("player");
@@ -138,7 +142,7 @@ function PlayerFrame_UpdatePvPStatus()
 		PlayerPVPTimerText:Hide();
 		PlayerPVPTimerText.timeLeft = nil;
 	elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP("player") ) then
-		if ( not PlayerPVPIcon:IsShown() ) then
+		if ( PlayerFrame_CanPlayPVPUpdateSound() ) then
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 		end
 
@@ -359,10 +363,10 @@ function PlayerFrame_IsAnimatedOut(self)
 end
 
 function PlayerFrame_UpdateArt(self)
-	if ( self.animFinished and self.inSeat and self.inSequence) then
+	if ( self.inSeat ) then
 		if ( self:IsUserPlaced() ) then
 			PlayerFrame_SequenceFinished(PlayerFrame);
-		else
+		elseif ( self.animFinished and self.inSequence ) then
 			SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
 		end
 		if ( UnitHasVehiclePlayerFrameUI("player") ) then
@@ -378,6 +382,7 @@ function PlayerFrame_UpdateArt(self)
 end
 
 function PlayerFrame_SequenceFinished(self)
+	self.isAnimatedOut = false;
 	self.inSequence = false;
 	PetFrame_Update(PetFrame);
 end

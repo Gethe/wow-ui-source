@@ -23,20 +23,24 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 
 	if ( template.canHaveSealMaterial ) then
 		local questFrame = parentFrame:GetParent():GetParent();
-		local questID;
-		if ( template.questLog ) then
-			questID = questFrame.questID;
+		if QuestUtil.QuestTextContrastEnabled() then
+			questFrame.SealMaterialBG:Hide();
 		else
-			questID = GetQuestID();
-		end
+			local questID;
+			if ( template.questLog ) then
+				questID = questFrame.questID;
+			else
+				questID = GetQuestID();
+			end
 
-		local theme = C_QuestLog.GetQuestDetailsTheme(questID);
-		QuestInfoSealFrame.theme = theme;
+			local theme = C_QuestLog.GetQuestDetailsTheme(questID);
+			QuestInfoSealFrame.theme = theme;
 
-		local hasValidBackground = theme and theme.background;
-		questFrame.SealMaterialBG:SetShown(hasValidBackground);
-		if hasValidBackground then
-			questFrame.SealMaterialBG:SetAtlas(theme.background);
+			local hasValidBackground = theme and theme.background;
+			questFrame.SealMaterialBG:SetShown(hasValidBackground);
+			if hasValidBackground then
+				questFrame.SealMaterialBG:SetAtlas(theme.background);
+			end
 		end
 	end
 
@@ -748,10 +752,12 @@ function QuestInfo_ShowRewards()
 						local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
 						followerFrame.Name:SetText(followerInfo.name);
 
-						if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+						local adventureCompanion = followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0;
+						followerFrame.AdventuresFollowerPortraitFrame:SetShown(adventureCompanion);
+						followerFrame.PortraitFrame:SetShown(not adventureCompanion);
+
+						if adventureCompanion then
 							followerFrame.AdventuresFollowerPortraitFrame:SetupPortrait(followerInfo)
-							followerFrame.AdventuresFollowerPortraitFrame:Show()
-							followerFrame.PortraitFrame:Hide();
 						else
 							followerFrame.PortraitFrame:SetupPortrait(followerInfo);
 							followerFrame.Class:SetAtlas(followerInfo.classAtlas);
@@ -1053,19 +1059,22 @@ QUEST_TEMPLATE_MAP_REWARDS = { questLog = true, chooseItems = nil, contentWidth 
 function QuestInfoRewardItemCodeTemplate_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
+	local showCollectionText = false;
+
 	if (self.objectType == "questSessionBonusReward") then
 		GameTooltip:SetItemByID(self:GetID());
 		GameTooltip_ShowCompareItem(GameTooltip);
 	elseif ( QuestInfoFrame.questLog ) then
 		if (self.objectType == "item") then
-			GameTooltip:SetQuestLogItem(self.type, self:GetID());
+			local questID = nil;
+			GameTooltip:SetQuestLogItem(self.type, self:GetID(), questID, showCollectionText);
 			GameTooltip_ShowCompareItem(GameTooltip);
 		elseif (self.objectType == "currency") then
 			GameTooltip:SetQuestLogCurrency(self.type, self:GetID());
 		end
 	else
 		if (self.objectType == "item") then
-			GameTooltip:SetQuestItem(self.type, self:GetID());
+			GameTooltip:SetQuestItem(self.type, self:GetID(), showCollectionText);
 			GameTooltip_ShowCompareItem(GameTooltip);
 		elseif (self.objectType == "currency") then
 			GameTooltip:SetQuestCurrency(self.type, self:GetID());
@@ -1078,11 +1087,13 @@ end
 
 function QuestInfoRewardItemCodeTemplate_OnClick(self, button)
 	if ( IsModifiedClick() and self.objectType == "item") then
+		local link;
 		if ( QuestInfoFrame.questLog ) then
-			HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));
+			link = GetQuestLogItemLink(self.type, self:GetID());
 		else
-			HandleModifiedItemClick(GetQuestItemLink(self.type, self:GetID()));
+			link = GetQuestItemLink(self.type, self:GetID());
 		end
+		HandleModifiedItemClick(link);
 	else
 		if ( QuestInfoFrame.chooseItems ) then
 			QuestInfoItem_OnClick(self);

@@ -180,11 +180,12 @@ function LFDQueueFrame_UpdateRoleButtons()
 				end
 			end
 		end
-	elseif( dungeonID == "specific" and LFGEnabledList )then
+	elseif( dungeonID == "specific" and LFDDungeonList and LFGEnabledList )then
 		-- count the number of dungeons a role is locked
 		local dungeonCount = 0;
-		for id, isChecked in pairs(LFGEnabledList) do
-			if( isChecked and not LFGIsIDHeader(id) and not LFGLockList[id] ) then
+		for _, id in ipairs(LFDDungeonList) do
+			local isChecked = LFGEnabledList[id];
+			if isChecked and not LFGIsIDHeader(id) then
 				tankLocked, healerLocked, dpsLocked = GetLFDRoleRestrictions(id);
 				restrictedRoles[1].count = restrictedRoles[1].count + ((tankLocked and 1) or 0);
 				restrictedRoles[2].count = restrictedRoles[2].count + ((healerLocked and 1) or 0);
@@ -234,21 +235,25 @@ end
 
 --Role-check functions
 function LFDQueueCheckRoleSelectionValid(tank, healer, dps)
-	if ( not tank and not healer and not dps ) then
+	if not tank and not healer and not dps then
 		return false;
 	end
 
-	local dungeonID = LFDQueueFrame.type;
-	if ( dungeonID == "specific" and LFGEnabledList )then
-		local tankLocked, healerLocked, dpsLocked;
-		for id, isChecked in pairs(LFGEnabledList) do
-			if ( isChecked and not LFGIsIDHeader(id) and not LFGLockList[id] ) then
-				if ( LFDCheckRolesRestricted( id, tank, healer, dps ) ) then
+	if not LFDDungeonList or not LFGEnabledList then
+		return true;
+	end
+
+	if LFDQueueFrame.type == "specific" then
+		for _, id in ipairs(LFDDungeonList) do
+			local isChecked = LFGEnabledList[id];
+			if isChecked and not LFGIsIDHeader(id) then
+				if LFDCheckRolesRestricted( id, tank, healer, dps ) then
 					return false;
 				end
 			end
 		end
 	end
+
 	return true;
 end
 
@@ -382,9 +387,9 @@ function LFDQueueFrameTypeDropDown_Initialize()
 
 	for i=1, GetNumRandomDungeons() do
 		local id, name = GetLFGRandomDungeonInfo(i);
-		local isAvailableForAll, isAvailableForPlayer = IsLFGDungeonJoinable(id);
-		if ( isAvailableForPlayer ) then
-			if ( isAvailableForAll ) then
+		local isAvailableForAll, isAvailableForPlayer, hideIfNotJoinable = IsLFGDungeonJoinable(id);
+		if isAvailableForPlayer or not hideIfNotJoinable then
+			if isAvailableForAll then
 				info.text = name;
 				info.value = id;
 				info.isTitle = nil;
@@ -620,6 +625,8 @@ function LFDQueueFrameFindGroupButton_Update()
 	local lfgListDisabled;
 	if ( C_LFGList.HasActiveEntryInfo() ) then
 		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	elseif(C_PartyInfo.IsCrossFactionParty()) then 
+		lfgListDisabled = CROSS_FACTION_RAID_DUNGEON_FINDER_ERROR;
 	end
 
 	if ( lfgListDisabled ) then
@@ -672,7 +679,16 @@ LFD_CURRENT_FILTER = LFGList_DefaultFilterFunction;
 -----------LFD Role Check Popup Frame--------------
 ---------------------------------------------------
 function LFDFramePopupRoleCheckButton_OnClick(self)
+	LFGRoleCheckPopup_UpdatePvPRoles();
 	LFDRoleCheckPopup_UpdateAcceptButton();
+end
+
+function LFGRoleCheckPopup_UpdatePvPRoles()
+	local isBGRoleCheck = select(6, GetLFGRoleUpdate());
+	if ( isBGRoleCheck ) then
+		local tankChecked, healerChecked, dpsChecked = LFDRoleCheckPopup_GetRolesChecked();
+		SetPVPRoles(tankChecked, healerChecked, dpsChecked);
+	end
 end
 
 function LFGRoleCheckPopup_UpdateRoleButton(button)
@@ -753,7 +769,7 @@ function LFDRoleCheckPopup_Update()
 
 	local displayName;
 	if( isLFGList ) then
-		displayName = C_LFGList.GetActivityInfo(activityID);
+		displayName = C_LFGList.GetActivityFullName(activityID);
 	elseif ( bgQueue ) then
 		displayName = GetLFGRoleUpdateBattlegroundInfo();
 	elseif ( slots == 1 ) then
@@ -814,14 +830,19 @@ function LFDRoleCheckPopup_Update()
 	LFDRoleCheckPopup_UpdateAcceptButton();
 end
 
+function LFDRoleCheckPopup_GetRolesChecked()
+	local tankChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonTank);
+	local healerChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonHealer);
+	local dpsChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonDPS);
+	return tankChecked, healerChecked, dpsChecked;
+end
+
 function LFDRoleCheckPopupAccept_OnClick()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 
 	--Check if the role check is for a BG or not.
 	local _, _, _, _, _, isBGRoleCheck = GetLFGRoleUpdate();
-	local tankChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonTank);
-	local healerChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonHealer);
-	local dpsChecked = LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonDPS);
+	local tankChecked, healerChecked, dpsChecked = LFDRoleCheckPopup_GetRolesChecked();
 	if ( isBGRoleCheck ) then
 		SetPVPRoles(tankChecked, healerChecked, dpsChecked);
 	else

@@ -30,6 +30,8 @@ local COMMUNITIES_FRAME_EVENTS = {
 	"REQUIRED_GUILD_RENAME_RESULT",
 	"CLUB_FINDER_RECRUITMENT_POST_RETURNED",
 	"CLUB_FINDER_ENABLED_OR_DISABLED",
+	"CLUB_STREAM_SUBSCRIBED",
+	"CLUB_FINDER_CAN_WHISPER_APPLICANT",
 };
 
 local COMMUNITIES_STATIC_POPUPS = {
@@ -48,6 +50,7 @@ local COMMUNITIES_STATIC_POPUPS = {
 local CLUB_FINDER_APPLICANT_LIST_EVENTS = {
 	"GUILD_ROSTER_UPDATE",
 	"CLUB_FINDER_RECRUITS_UPDATED",
+	"CLUB_FINDER_APPLICATIONS_UPDATED",
 };
 
 
@@ -113,6 +116,8 @@ function CommunitiesFrameMixin:OnLoad()
 	table.insert(self.ReportFrames, self.GuildNameAlertFrame);
 
 	self.GuildNameAlertFrame:SetScript("OnClick", GenerateClosure(self.OnGuildNameAlertFrameClicked, self));
+
+	EventRegistry:RegisterCallback("AccountInfo.ChatDisabled", self.OnChatDisabledChanged, self);
 end
 
 function CommunitiesFrameMixin:OnShow()
@@ -259,7 +264,7 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		else
 			UIErrorsFrame:AddExternalErrorMessage(ERR_GUILD_NAME_INVALID);
 		end
-	elseif event == "CLUB_FINDER_RECRUITS_UPDATED" then
+	elseif event == "CLUB_FINDER_RECRUITS_UPDATED" or event == "CLUB_FINDER_APPLICATIONS_UPDATED" then
 		if(C_ClubFinder.IsEnabled()) then
 			local clubId = self:GetSelectedClubId();
 			if (clubId) then
@@ -302,6 +307,14 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		self:UnregisterEvent("ADDON_LOADED");
 
 		InitSeenApplicants();
+	elseif event == "CLUB_STREAM_SUBSCRIBED" then
+		local clubId, streamId = ...;
+		if clubId == self:GetSelectedClubId() and streamId == self:GetSelectedStreamId() then
+			self.Chat:RequestInitialMessages(clubId, streamId);
+		end
+	elseif event == "CLUB_FINDER_CAN_WHISPER_APPLICANT" then 
+		local applicantGUID = ...; 
+		ChatFrame_SendTell(ConcatinateServerNameToPlayerName(applicantGUID));
 	end
 end
 
@@ -466,8 +479,6 @@ function CommunitiesFrameMixin:ClubFinderHyperLinkClicked(clubFinderId)
 		ShowUIPanel(self);
 	end
 
-	self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION);
-	self:SelectClub(nil);
 	self.CommunityFinderFrame:ClubFinderOnClickHyperLink(clubFinderId);
 end
 
@@ -635,7 +646,10 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 end
 
 function CommunitiesFrameMixin:UpdateMaximizeMinimizeButton()
-	self.MaximizeMinimizeFrame.MinimizeButton:SetEnabled(self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION and self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER and self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER and not self.chatDisabled);
+	self.MaximizeMinimizeFrame.MinimizeButton:SetEnabled(self:IsChatAccessible() and
+		self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION and 
+		self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER and 
+		self.displayMode ~= COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
 end
 
 function CommunitiesFrameMixin:GetNeedsGuildNameChange()
@@ -883,23 +897,29 @@ function CommunitiesFrameMixin:DisplayReportedAlerts(clubId)
 	end
 end
 
+function CommunitiesFrameMixin:IsChatAccessible()
+	return not (self.accountMuted or self.accountChatDisabled);
+end
+
 function CommunitiesFrameMixin:ValidateDisplayMode()
 	local clubId = self:GetSelectedClubId();
 	if clubId then
 		local displayMode = self:GetDisplayMode();
 		local guildDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO;
 		local clubInfo = C_Club.GetClubInfo(clubId);
-		self.chatDisabled = C_Club.IsAccountMuted(clubId);
-		self.defaultMode = self.chatDisabled and COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or COMMUNITIES_FRAME_DISPLAY_MODES.CHAT;
+		self.accountMuted = C_Club.IsAccountMuted(clubId);
+		self.accountChatDisabled = C_SocialRestrictions.IsChatDisabled();
+
+		local chatAccessible = self:IsChatAccessible();
+		self.defaultMode = chatAccessible and COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER;
 		local isGuildCommunitySelected = clubInfo and clubInfo.clubType == Enum.ClubType.Guild;
 		if not isGuildCommunitySelected and guildDisplay then
 			self:SetDisplayMode(self.defaultMode);
 		elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.TICKET or self:IsShowingApplicantList() then
 			self:SetDisplayMode(self.defaultMode);
-		elseif self.chatDisabled and displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then
+		elseif not chatAccessible and displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then
 			self:SetDisplayMode(self.defaultMode);
-		elseif self.chatDisabled and displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED then
-			--self:SetDisplayMode(self.defaultMode);
+		elseif not chatAccessible and displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED then
 			self.MaximizeMinimizeFrame.MaximizeButton:Click();
 		elseif displayMode == nil then
 			self:SetDisplayMode(self.defaultMode);
@@ -914,10 +934,13 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 		local shouldShowCommunityMemberList = isRosterOrApplicantList and self:HasCommunityFinderPermissions(clubId, clubInfo);
 		self.CommunityMemberListDropDownMenu:SetShown(shouldShowCommunityMemberList);
 		self:DisplayReportedAlerts(clubId);
-		self.ChatTab:SetEnabled(not self.chatDisabled);
-		self.ChatTab.IconOverlay:SetShown(self.chatDisabled);
-		if self.chatDisabled then
+
+		self.ChatTab.IconOverlay:SetShown(not chatAccessible);
+		if self.accountMuted then
 			self.ChatTab.tooltip2 = ERR_PARENTAL_CONTROLS_CHAT_MUTED;
+		elseif self.accountChatDisabled then
+			local instruction = GREEN_FONT_COLOR:WrapTextInColorCode(RESTRICT_CHAT_COMMUNITIES_TOOLTIP_INSTRUCTION);
+			self.ChatTab.tooltip2 = string.format(RESTRICT_CHAT_TOOLTIP_FORMAT, RESTRICT_CHAT_MESSAGE_SUPPRESSED, instruction);
 		else
 			self.ChatTab.tooltip2 = nil;
 		end
@@ -1021,6 +1044,19 @@ function CommunitiesFrameMixin:CheckForTutorials()
 		return;
 	end
 
+	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() and isGuildOrCommunity) then 
+		if(self:TryShowCrossFactionCommunitiesTutorialForLeader()) then 
+			if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_GUILD_LINK) then
+				HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_GUILD_LINK);
+			end
+			return; 
+		end
+	else
+		if(HelpTip:IsShowing(self, CROSS_FACTION_COMMUNITIES_HELPTIP)) then
+			HelpTip:Hide(self, CROSS_FACTION_COMMUNITIES_HELPTIP);
+		end
+	end		
+
 	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT) and (self.CommunitiesControlFrame.CommunitiesSettingsButton:IsShown() or self.CommunitiesControlFrame.GuildRecruitmentButton:IsShown()) then
 		local clubPostingInfo = C_ClubFinder.GetRecruitingClubInfoFromClubID(clubId);
 		if clubPostingInfo then
@@ -1029,14 +1065,27 @@ function CommunitiesFrameMixin:CheckForTutorials()
 			end
 		else
 			if self:TryShowClubFinderRecruitmentTutorialForLeader(isGuild) then
+				-- The "ClubFinderLink" HelpTip overlaps with the "ClubFinderRecruitment" HelpTip we are now showing.
+				-- We hide but do not acknowledge that HelpTip so that it still pops up again when the Guild tab is opened.
+				if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_GUILD_LINK) then
+					HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_GUILD_LINK);
+				end
 				return;
 			end
 		end
+	else 
+		if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_POSTING) then
+			HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_POSTING);
+		end
 	end
-
 
 	if self.InviteButton:IsShown() and isGuild and clubId and C_ClubFinder.RequestPostingInformationFromClubId(clubId)then
 		if self:TryShowClubFinderLinkTutorialForLeader() then
+			-- The "ClubFinderRecruitment" HelpTip overlaps with the "ClubFinderLink" HelpTip we are now showing.
+			-- We hide but do not acknowledge that HelpTip so that it still pops up again when a Community tab is opened.
+			if HelpTip:IsShowing(self, CLUB_FINDER_TUTORIAL_POSTING) then
+				HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_POSTING);
+			end
 			return;
 		end
 	end
@@ -1109,6 +1158,25 @@ function CommunitiesFrameMixin:TryShowClubFinderRecruitmentTutorialForLeader(isG
 	return HelpTip:Show(self, helpTipInfo, button);
 end
 
+function CommunitiesFrameMixin:TryShowCrossFactionCommunitiesTutorialForLeader()
+	if (not self:IsCharacterCommunitySelected()) then
+		return false;
+	end 
+	
+	local button = self.CommunitiesControlFrame.CommunitiesSettingsButton;
+	local helpTipInfo = {
+		text = CROSS_FACTION_COMMUNITIES_HELPTIP,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_CROSS_FACTION_COMMUNITY,
+		targetPoint = HelpTip.Point.BottomEdgeCenter,
+		offsetX = -4,
+		useParentStrata = true,
+		checkCVars = true,
+	};
+	return HelpTip:Show(self, helpTipInfo, button);
+end 
+
 function CommunitiesFrameMixin:TryShowClubFinderLanguageFilterTutorialForLeader(isGuildSelected)
 	if not isGuildSelected and not self:IsCharacterCommunitySelected() then
 		return false;
@@ -1173,6 +1241,20 @@ function CommunitiesFrameMixin:UpdatePortrait()
 		SetLargeGuildTabardTextures("player", self.PortraitOverlay.TabardEmblem, self.PortraitOverlay.TabardBackground, self.PortraitOverlay.TabardBorder);
 	else
 		C_Club.SetAvatarTexture(self.PortraitOverlay.Portrait, clubInfo.avatarId, clubInfo.clubType);
+	end
+end
+
+function CommunitiesFrameMixin:OnChatDisabledChanged(disabled)
+	if disabled then
+		local displayMode = self:GetDisplayMode();
+		if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then
+			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+		elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.MINIMIZED then
+			self.MaximizeMinimizeFrame.MaximizeButton:Click();
+			self:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+		end
+	else
+		self:SelectClub(nil);
 	end
 end
 
@@ -1530,7 +1612,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 160);
 		ButtonFrameTemplateMinimizable_ShowPortrait(communitiesFrame);
 		communitiesFrame.PortraitOverlay:Show();
-		communitiesFrame.VoiceChatHeadset:SetPoint("TOPRIGHT", -8, -26);
+		communitiesFrame.VoiceChatHeadset:SetPoint("TOPRIGHT", -180, -26);
 		UpdateUIPanelPositions();
 	end
 
@@ -1551,7 +1633,7 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame.ChatEditBox:SetPoint("BOTTOMRIGHT", communitiesFrame, "BOTTOMRIGHT", -12, 0);
 		communitiesFrame.StreamDropDownMenu:ClearAllPoints();
 		communitiesFrame.StreamDropDownMenu:SetPoint("LEFT", communitiesFrame.CommunitiesListDropDownMenu, "RIGHT", -25, 0);
-		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 115);
+		UIDropDownMenu_SetWidth(communitiesFrame.StreamDropDownMenu, 90);
 		ButtonFrameTemplateMinimizable_HidePortrait(communitiesFrame);
 		communitiesFrame.PortraitOverlay:Hide();
 		communitiesFrame.VoiceChatHeadset:SetPoint("TOPRIGHT", -10, -26);

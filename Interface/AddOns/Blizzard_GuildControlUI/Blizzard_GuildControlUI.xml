@@ -208,19 +208,6 @@
 							</OnClick>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentUpdateInfoCheck" inherits="GuildPermissionCheckBoxTemplate" id="3" parentKey="infoCB">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentDepositCheck" relativePoint="BOTTOM" x="0" y="-3"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.text:SetText(GUILDCONTROL_UPDATE_TEXT);
-							</OnLoad>
-							<OnClick>
-								GuildControlUI_SetBankTabChange(self)	
-							</OnClick>
-						</Scripts>
-					</CheckButton>
 					<EditBox name="$parentStackBox" autoFocus="false" letters="6" historyLines="1" inherits="InputBoxTemplate" numeric="true"  id="5" parentKey="editBox">
 						<Size x="80" y="20"/>
 						<Anchors>

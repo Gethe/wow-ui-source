@@ -4,21 +4,21 @@
 --
 
 WORLD_QUEST_ICONS_BY_PROFESSION = {
-	[129] = "worldquest-icon-firstaid",
-	[164] = "worldquest-icon-blacksmithing",
-	[165] = "worldquest-icon-leatherworking",
-	[171] = "worldquest-icon-alchemy",
-	[182] = "worldquest-icon-herbalism",
-	[186] = "worldquest-icon-mining",
-	[202] = "worldquest-icon-engineering",
-	[333] = "worldquest-icon-enchanting",
-	[755] = "worldquest-icon-jewelcrafting",
-	[773] = "worldquest-icon-inscription",
-	[794] = "worldquest-icon-archaeology",
-	[356] = "worldquest-icon-fishing",
-	[185] = "worldquest-icon-cooking",
-	[197] = "worldquest-icon-tailoring",
-	[393] = "worldquest-icon-skinning",
+	[Constants.ProfessionIDs.PROFESSION_FIRST_AID] = "worldquest-icon-firstaid",
+	[Constants.ProfessionIDs.PROFESSION_BLACKSMITHING] = "worldquest-icon-blacksmithing",
+	[Constants.ProfessionIDs.PROFESSION_LEATHERWORKING] = "worldquest-icon-leatherworking",
+	[Constants.ProfessionIDs.PROFESSION_ALCHEMY] = "worldquest-icon-alchemy",
+	[Constants.ProfessionIDs.PROFESSION_HERBALISM] = "worldquest-icon-herbalism",
+	[Constants.ProfessionIDs.PROFESSION_MINING] = "worldquest-icon-mining",
+	[Constants.ProfessionIDs.PROFESSION_ENGINEERING] = "worldquest-icon-engineering",
+	[Constants.ProfessionIDs.PROFESSION_ENCHANTING] = "worldquest-icon-enchanting",
+	[Constants.ProfessionIDs.PROFESSION_JEWELCRAFTING] = "worldquest-icon-jewelcrafting",
+	[Constants.ProfessionIDs.PROFESSION_INSCRIPTION] = "worldquest-icon-inscription",
+	[Constants.ProfessionIDs.PROFESSION_ARCHAEOLOGY] = "worldquest-icon-archaeology",
+	[Constants.ProfessionIDs.PROFESSION_FISHING] = "worldquest-icon-fishing",
+	[Constants.ProfessionIDs.PROFESSION_COOKING] = "worldquest-icon-cooking",
+	[Constants.ProfessionIDs.PROFESSION_TAILORING] = "worldquest-icon-tailoring",
+	[Constants.ProfessionIDs.PROFESSION_SKINNING] = "worldquest-icon-skinning",
 };
 
 CHAT_FONT_HEIGHTS = {
@@ -64,15 +64,6 @@ WARLOCK_METAMORPHOSIS = 103958;
 WARLOCK_SOULBURN = 117198;
 WARLOCK_GREEN_FIRE = 101508;
 BATTLEGROUND_ENLISTMENT_BONUS = 241260;
-
-SCHOOL_MASK_NONE	= 0x00;
-SCHOOL_MASK_PHYSICAL	= 0x01;
-SCHOOL_MASK_HOLY	= 0x02;
-SCHOOL_MASK_FIRE	= 0x04;
-SCHOOL_MASK_NATURE	= 0x08;
-SCHOOL_MASK_FROST	= 0x10;
-SCHOOL_MASK_SHADOW	= 0x20;
-SCHOOL_MASK_ARCANE	= 0x40;
 
 SCHOOL_STRINGS = {
 	STRING_SCHOOL_PHYSICAL,
@@ -380,31 +371,6 @@ COMBATLOG_FILTER_EVERYTHING =	0xFFFFFFFF;
 -- Calendar
 --
 CALENDAR_FIRST_WEEKDAY			= 1;		-- 1=SUN 2=MON 3=TUE 4=WED 5=THU 6=FRI 7=SAT
-
--- Event Types
-CALENDAR_EVENTTYPE_RAID			= Enum.CalendarEventType.Raid;
-CALENDAR_EVENTTYPE_DUNGEON		= Enum.CalendarEventType.Dungeon;
-CALENDAR_EVENTTYPE_PVP			= Enum.CalendarEventType.PvP;
-CALENDAR_EVENTTYPE_MEETING		= Enum.CalendarEventType.Meeting;
-CALENDAR_EVENTTYPE_OTHER		= Enum.CalendarEventType.Other;
-CALENDAR_MAX_EVENTTYPE			= Enum.CalendarEventType.Other;
-
--- Invite Statuses
-CALENDAR_INVITESTATUS_INVITED		= 1;
-CALENDAR_INVITESTATUS_ACCEPTED		= 2;
-CALENDAR_INVITESTATUS_DECLINED		= 3;
-CALENDAR_INVITESTATUS_CONFIRMED		= 4;
-CALENDAR_INVITESTATUS_OUT			= 5;
-CALENDAR_INVITESTATUS_STANDBY		= 6;
-CALENDAR_INVITESTATUS_SIGNEDUP		= 7;
-CALENDAR_INVITESTATUS_NOT_SIGNEDUP	= 8;
-CALENDAR_INVITESTATUS_TENTATIVE		= 9;
-CALENDAR_MAX_INVITESTATUS			= CALENDAR_INVITESTATUS_TENTATIVE;
-
--- Invite Types
-CALENDAR_INVITETYPE_NORMAL		= 1;
-CALENDAR_INVITETYPE_SIGNUP		= 2;
-CALENDAR_MAX_INVITETYPE			= CALENDAR_INVITETYPE_SIGNUP;
 
 --
 -- Difficulty
@@ -772,9 +738,8 @@ TRANSMOG_INVALID_CODES = {
 
 TRANSMOG_SOURCE_BOSS_DROP = 1;
 
-FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionType.Wand + 1;
-LAST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionTypeMeta.NumValues;
-NO_TRANSMOG_SOURCE_ID = 0;
+FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionType.Wand;
+LAST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionTypeMeta.NumValues - 1;
 NO_TRANSMOG_VISUAL_ID = 0;
 REMOVE_TRANSMOG_ID = 0;
 
@@ -839,39 +804,39 @@ CALENDAR_INVITESTATUS_INFO = {
 		name		= UNKNOWN,
 		color		= NORMAL_FONT_COLOR,
 	},
-	[CALENDAR_INVITESTATUS_CONFIRMED] = {
+	[Enum.CalendarStatus.Confirmed] = {
 		name		= CALENDAR_STATUS_CONFIRMED,
 		color		= GREEN_FONT_COLOR,
 	},
-	[CALENDAR_INVITESTATUS_ACCEPTED] = {
+	[Enum.CalendarStatus.Available] = {
 		name		= CALENDAR_STATUS_ACCEPTED,
 		color		= GREEN_FONT_COLOR,
 	},
-	[CALENDAR_INVITESTATUS_DECLINED] = {
+	[Enum.CalendarStatus.Declined] = {
 		name		= CALENDAR_STATUS_DECLINED,
 		color		= RED_FONT_COLOR,
 	},
-	[CALENDAR_INVITESTATUS_OUT] = {
+	[Enum.CalendarStatus.Out] = {
 		name		= CALENDAR_STATUS_OUT,
 		color		= RED_FONT_COLOR,
 	},
-	[CALENDAR_INVITESTATUS_STANDBY] = {
+	[Enum.CalendarStatus.Standby] = {
 		name		= CALENDAR_STATUS_STANDBY,
 		color		= ORANGE_FONT_COLOR,
 	},
-	[CALENDAR_INVITESTATUS_INVITED] = {
+	[Enum.CalendarStatus.Invited] = {
 		name		= CALENDAR_STATUS_INVITED,
 		color		= NORMAL_FONT_COLOR,
 	},
-	[CALENDAR_INVITESTATUS_SIGNEDUP] = {
+	[Enum.CalendarStatus.Signedup] = {
 		name		= CALENDAR_STATUS_SIGNEDUP,
 		color		= GREEN_FONT_COLOR,
 	},
-	[CALENDAR_INVITESTATUS_NOT_SIGNEDUP] = {
+	[Enum.CalendarStatus.NotSignedup] = {
 		name		= CALENDAR_STATUS_NOT_SIGNEDUP,
 		color		= GRAY_FONT_COLOR,
 	},
-	[CALENDAR_INVITESTATUS_TENTATIVE] = {
+	[Enum.CalendarStatus.Tentative] = {
 		name		= CALENDAR_STATUS_TENTATIVE,
 		color		= ORANGE_FONT_COLOR,
 	},
@@ -937,7 +902,8 @@ KEY_PAD1_SHP			= "GamePad X";
 KEY_PAD2_SHP			= "GamePad O";
 KEY_PAD3_SHP			= "GamePad Square";
 KEY_PAD4_SHP			= "GamePad Triangle";
-KEY_PAD5_SHP			= "GamePad Mute";
+KEY_PAD5_SHP			= "GamePad Mic Mute";
+KEY_PAD6_SHP			= "GamePad R TouchPad";
 KEY_PADLSTICK_SHP		= "GamePad L3";
 KEY_PADRSTICK_SHP		= "GamePad R3";
 KEY_PADLSHOULDER_SHP	= "GamePad L1";
@@ -945,7 +911,7 @@ KEY_PADRSHOULDER_SHP	= "GamePad R1";
 KEY_PADLTRIGGER_SHP		= "GamePad L2";
 KEY_PADRTRIGGER_SHP		= "GamePad R2";
 KEY_PADFORWARD_SHP		= "GamePad Options";
-KEY_PADBACK_SHP			= "GamePad TouchPad";
+KEY_PADBACK_SHP			= "GamePad L TouchPad";
 KEY_PADSOCIAL_SHP		= "GamePad Share";
 
 -- "Generic" GamePad abbreviated button labels
@@ -1006,6 +972,8 @@ KEY_ABBR_PAD1_SHP			= "X";
 KEY_ABBR_PAD2_SHP			= "O";
 KEY_ABBR_PAD3_SHP			= "S";
 KEY_ABBR_PAD4_SHP			= "T";
+KEY_ABBR_PAD5_SHP			= "M";
+KEY_ABBR_PAD6_SHP			= "RP";
 KEY_ABBR_PADLSTICK_SHP		= "L3";
 KEY_ABBR_PADRSTICK_SHP		= "R3";
 KEY_ABBR_PADLSHOULDER_SHP	= "L1";
@@ -1013,5 +981,5 @@ KEY_ABBR_PADRSHOULDER_SHP	= "R1";
 KEY_ABBR_PADLTRIGGER_SHP	= "L2";
 KEY_ABBR_PADRTRIGGER_SHP	= "R2";
 KEY_ABBR_PADFORWARD_SHP		= "Op";
-KEY_ABBR_PADBACK_SHP		= "Tp";
+KEY_ABBR_PADBACK_SHP		= "LP";
 KEY_ABBR_PADSOCIAL_SHP		= "Sh";

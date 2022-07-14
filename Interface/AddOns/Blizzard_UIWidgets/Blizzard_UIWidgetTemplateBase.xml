@@ -3,7 +3,7 @@
 	<Frame name="UIWidgetTemplateTooltipFrame" virtual="true" mixin="UIWidgetTemplateTooltipFrameMixin">
 		<!--Change this on inheriting frames to adjust where the tooltip anchors to-->
 		<KeyValues>
-			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
+			<KeyValue key="defaultTooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
 			<KeyValue key="tooltipXOffset" value="0" type="number"/>
 			<KeyValue key="tooltipYOffset" value="0" type="number"/>
 		</KeyValues>
@@ -12,7 +12,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
-		</Frame>
+	</Frame>
 	<AnimationGroup name="UIWidgetInAnimation" virtual="true">
 		<Scripts>
 			<OnFinished>
@@ -106,7 +106,7 @@
 						<MaskedTexture childKey="Icon"/>
 					</MaskedTextures>
 				</MaskTexture>
-				<FontString parentKey="Text" inherits="GameFontNormal_NoShadow" justifyH="LEFT" justifyV="MIDDLE" parentArray="ColoredStrings">
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE" parentArray="ColoredStrings" mixin="UIWidgetBaseTextMixin">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="5" />
 					</Anchors>
@@ -141,6 +141,32 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="UIWidgetBaseStatusBarPartitionTemplate" mixin="UIWidgetBaseStatusBarPartitionTemplateMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Tex">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FlashOverlay" alphaMode="ADD" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlashAnim">
+				<Alpha childKey="FlashOverlay" fromAlpha="0" toAlpha="0.8" duration="1" order="1"/>
+				<Alpha childKey="FlashOverlay" fromAlpha="0.8" toAlpha="0" duration="1" order="2"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
 	<StatusBar name="UIWidgetBaseStatusBarTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseStatusBarTemplateMixin" virtual="true"/>
 	
 	<Frame name="UIWidgetBaseStateIconTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseStateIconTemplateMixin" virtual="true">
@@ -171,7 +197,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" mixin="ShrinkUntilTruncateFontStringMixin" inherits="GameFontNormalLarge">
+				<FontString parentKey="Text" mixin="AutoScalingFontStringMixin" inherits="GameFontNormalLarge">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -277,7 +303,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="HeaderText" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT" justifyV="MIDDLE" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="HeaderText" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT" justifyV="MIDDLE" mixin="AutoScalingFontStringMixin">
 					<Size x="172" y="36"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="15" y="-8"/>

@@ -122,6 +122,8 @@ local TaxiMap =
 				{ Name = "state", Type = "FlightPathState", Nilable = false },
 				{ Name = "slotIndex", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "useSpecialIcon", Type = "bool", Nilable = false },
+				{ Name = "specialIconCostString", Type = "string", Nilable = true },
 			},
 		},
 	},

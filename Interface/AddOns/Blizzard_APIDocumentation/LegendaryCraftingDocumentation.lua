@@ -163,18 +163,19 @@ local LegendaryCrafting =
 
 			Returns =
 			{
-				{ Name = "specRuneforgePowerIDs", Type = "table", InnerType = "number", Nilable = false },
-				{ Name = "otherSpecRuneforgePowerIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "primaryRuneforgePowerIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "otherRuneforgePowerIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
-			Name = "GetRuneforgePowersByClassAndSpec",
+			Name = "GetRuneforgePowersByClassSpecAndCovenant",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "classID", Type = "number", Nilable = true },
 				{ Name = "specID", Type = "number", Nilable = true },
+				{ Name = "covenantID", Type = "number", Nilable = true },
 				{ Name = "filter", Type = "RuneforgePowerFilter", Nilable = true },
 			},
 

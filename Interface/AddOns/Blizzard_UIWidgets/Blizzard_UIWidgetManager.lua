@@ -6,11 +6,36 @@ local WIDGET_CONTAINER_DEBUG_TEXTURE_SHOW = false;
 local WIDGET_CONTAINER_DEBUG_TEXTURE_COLOR = CreateColor(1.0, 0.1, 0.1, 0.6);
 local WIDGET_DEBUG_CUSTOM_TEXTURE_COLOR = CreateColor(1.0, 1.0, 0.0, 0.6);
 
-UIWidgetContainerMixin = {}
+UIWidgetHorizontalWidgetContainerMixin = {};
+
+function UIWidgetHorizontalWidgetContainerMixin:OnLoad()
+	self.parentWidgetContainer = self:GetParent();
+	self.childWidgets = {};
+end
+
+function UIWidgetHorizontalWidgetContainerMixin:ResetChildWidgets()
+	for _, widgetFrame in ipairs(self.childWidgets) do
+		widgetFrame:SetParent(self.parentWidgetContainer);
+	end
+
+	self.childWidgets = {};
+end
+
+function UIWidgetHorizontalWidgetContainerMixin:AddChildWidget(widgetFrame)
+	table.insert(self.childWidgets, widgetFrame);
+	widgetFrame:SetParent(self);
+end
+
+UIWidgetContainerMixin = {};
+
+local function ResetHorizontalWidgetContainer(framePool, frame)
+	frame:ResetChildWidgets();
+	FramePool_HideAndClearAnchors(framePool, frame);
+end
 
 function UIWidgetContainerMixin:OnLoad()
 	self.widgetPools = CreateFramePoolCollection();
-	self.horizontalRowContainerPool = CreateFramePool("FRAME", self, "UIWidgetHorizontalWidgetContainerTemplate");
+	self.horizontalRowContainerPool = CreateFramePool("FRAME", self, "UIWidgetHorizontalWidgetContainerTemplate", ResetHorizontalWidgetContainer);
 	if WIDGET_CONTAINER_DEBUG_TEXTURE_SHOW then
 		self._debugBGTex = self:CreateTexture()
 		self._debugBGTex:SetColorTexture(WIDGET_CONTAINER_DEBUG_TEXTURE_COLOR:GetRGBA());
@@ -41,6 +66,8 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 
 	widgetContainerFrame.horizontalRowContainerPool:ReleaseAll();
 	local widgetContainerFrameLevel = widgetContainerFrame:GetFrameLevel();
+	local horizontalRowAnchorPoint = widgetContainerFrame.horizontalRowAnchorPoint or widgetContainerFrame.verticalAnchorPoint;
+	local horizontalRowRelativePoint = widgetContainerFrame.horizontalRowRelativePoint or widgetContainerFrame.verticalRelativePoint;
 
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		widgetFrame:ClearAllPoints();
@@ -115,10 +142,10 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 				else 
 					-- This is not the first widget in the set, so anchor it to the previous widget (or the horizontalRowContainer if that exists)
 					local relative = horizontalRowContainer or sortedWidgets[index - 1];
-					newHorizontalRowContainer:SetPoint(widgetContainerFrame.verticalAnchorPoint, relative, widgetContainerFrame.verticalRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
+					newHorizontalRowContainer:SetPoint(horizontalRowAnchorPoint, relative, horizontalRowRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
 				end
 				widgetFrame:SetPoint("TOPLEFT", newHorizontalRowContainer);
-				widgetFrame:SetParent(newHorizontalRowContainer);
+				newHorizontalRowContainer:AddChildWidget(widgetFrame);
 				widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 
 				-- The old horizontalRowContainer is no longer needed for anchoring, so set it to newHorizontalRowContainer
@@ -126,7 +153,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 			else
 				-- horizontalRowContainer already existed, so we just keep going in it, anchoring to the previous widget
 				local relative = sortedWidgets[index - 1];
-				widgetFrame:SetParent(horizontalRowContainer);
+				horizontalRowContainer:AddChildWidget(widgetFrame);
 				widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 				widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, relative, widgetContainerFrame.horizontalRelativePoint, widgetContainerFrame.horizontalAnchorXOffset, 0);
 			end
@@ -139,14 +166,28 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 	widgetContainerFrame:Layout(); 
 end
 
+function UIWidgetContainerMixin:SetAttachedUnitAndType(attachedUnitInfo)
+	if type(attachedUnitInfo) == "table" then
+		self.attachedUnit = attachedUnitInfo.unit;
+		self.attachedUnitIsGuid = attachedUnitInfo.isGuid;
+	elseif attachedUnitInfo then
+		self.attachedUnit = attachedUnitInfo;
+		self.attachedUnitIsGuid = false;
+	else
+		self.attachedUnit = nil;
+		self.attachedUnitIsGuid = nil;
+	end
+end
+
 -- widgetLayoutFunction should take 2 arguments (this widget container and a sequence containing all widgetFrames belonging to that widgetSet, sorted by orderIndex). It can update the layout of the widgets & widgetContainer as it sees fit. 
 --		IMPORTANT: widgetLayoutFunction is called every time any widget in this container is shown, hidden or re-ordered. If nil is passed DefaultWidgetLayout is used
 -- widgetInitFunction should take 1 argument (the widgetFrame). It should do anything needed for initialization of widgets by the registering system. It is called only once, when a widget is initialized (when entering a new map/area/subarea/phase)
 -- Either can be nil if your system doesn't need that functionaility
+-- attachedUnitInfo is only used if this widget container is attached to a particular unit (it is displayed in a nameplate or in the player choice UI), and causes UnitAura data sources to look at the attached unit
 --
 -- Calling RegisterForWidgetSet on a container that is already registered to a different WidgetSet will cause the old WidgetSet to get unregistered and the new one to take its place
 -- Calling RegisterForWidgetSet with a nil widgetSetID is the same as just calling UnregisterForWidgetSet
-function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFunction, widgetInitFunction, attachedToUnit)
+function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFunction, widgetInitFunction, attachedUnitInfo)
 	if self.widgetSetID then
 		-- We are already registered to a WidgetSet
 		if self.widgetSetID == widgetSetID then
@@ -162,21 +203,25 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 		return;
 	end
 
+	local widgetSetInfo = C_UIWidgetManager.GetWidgetSetInfo(widgetSetID);
+	if not widgetSetInfo then
+		return;
+	end
+
 	self.widgetSetID = widgetSetID;
 	self.layoutFunc = widgetLayoutFunction or DefaultWidgetLayout;
 	self.initFunc = widgetInitFunction;
-	self.attachedToUnit = attachedToUnit;
 	self.widgetFrames = {};
 	self.timerWidgets = {};
 	self.numTimers = 0;
 	self.numWidgetsShowing = 0;
+	self:SetAttachedUnitAndType(attachedUnitInfo)
 
-	local widgetSetInfo = C_UIWidgetManager.GetWidgetSetInfo(widgetSetID);
 	self.widgetSetLayoutDirection = widgetSetInfo.layoutDirection;
 	self.verticalAnchorYOffset = -widgetSetInfo.verticalPadding;
 
-	if self.attachedToUnit then
-		C_UIWidgetManager.RegisterUnitForWidgetUpdates(self.attachedToUnit);
+	if self.attachedUnit then
+		C_UIWidgetManager.RegisterUnitForWidgetUpdates(self.attachedUnit, self.attachedUnitIsGuid);
 	end
 
 	self:ProcessAllWidgets();
@@ -211,13 +256,14 @@ function UIWidgetContainerMixin:UnregisterForWidgetSet()
 		self:Hide();
 	end
 
-	if self.attachedToUnit then
-		if UIWidgetManager.processingUnit == self.attachedToUnit then
+	if self.attachedUnit then
+		if UIWidgetManager.processingUnit == self.attachedUnit then
 			UIWidgetManager.processingUnit = nil;
 		end
 
-		C_UIWidgetManager.UnregisterUnitForWidgetUpdates(self.attachedToUnit);
-		self.attachedToUnit = nil;
+		C_UIWidgetManager.UnregisterUnitForWidgetUpdates(self.attachedUnit, self.attachedUnitIsGuid);
+
+		self:SetAttachedUnitAndType(nil);
 	end
 
 	self:UnregisterEvent("UPDATE_ALL_UI_WIDGETS");
@@ -323,9 +369,7 @@ end
 
 function UIWidgetContainerMixin:GetWidgetFromPools(templateInfo)
 	if templateInfo then
-		if not self.widgetPools:GetPool(templateInfo.frameTemplate) then
-			self.widgetPools:CreatePool(templateInfo.frameType, self, templateInfo.frameTemplate, ResetWidget);
-		end
+		self.widgetPools:CreatePoolIfNeeded(templateInfo.frameType, self, templateInfo.frameTemplate, ResetWidget);
 
 		local widgetFrame = self.widgetPools:Acquire(templateInfo.frameTemplate);
 		widgetFrame:SetParent(self);
@@ -345,6 +389,8 @@ function UIWidgetContainerMixin:CreateWidget(widgetID, widgetType, widgetTypeInf
 	widgetFrame.inAnimType = widgetInfo.inAnimType;
 	widgetFrame.outAnimType = widgetInfo.outAnimType;
 	widgetFrame.layoutDirection = widgetInfo.layoutDirection; 
+	widgetFrame.modelSceneLayer = widgetInfo.modelSceneLayer;
+	widgetFrame.scriptedAnimationEffectID = widgetInfo.scriptedAnimationEffectID;
 	widgetFrame.markedForRemove = nil;
 
 	-- If this is a widget with a timer, add it from the timer list
@@ -369,10 +415,7 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 		return;
 	end
 
-	if UIWidgetManager.processingUnit ~= self.attachedToUnit then
-		C_UIWidgetManager.SetProcessingUnit(self.attachedToUnit);
-		UIWidgetManager.processingUnit = self.attachedToUnit;
-	end
+	UIWidgetManager:UpdateProcessingUnit(self.attachedUnit, self.attachedUnitIsGuid);
 
 	local widgetInfo = widgetTypeInfo.visInfoDataFunction(widgetID);
 
@@ -414,7 +457,10 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 
 	-- Run the Setup function on the widget (could change the orderIndex and/or layoutDirection)
 	widgetFrame:Setup(widgetInfo, self);
-
+	if(isNewWidget) then 
+		--Only Apply the effects when the widget is first added.
+		widgetFrame:ApplyEffects(widgetInfo); 
+	end		
 	if WIDGET_DEBUG_TEXTURE_SHOW then
 		if not widgetFrame._debugBGTex then
 			widgetFrame._debugBGTex = widgetFrame:CreateTexture()
@@ -468,6 +514,10 @@ function UIWidgetContainerMixin:GetNumWidgetsShowing()
 	return self.numWidgetsShowing or 0;
 end
 
+function UIWidgetContainerMixin:HasAnyWidgetsShowing()
+	return (self:GetNumWidgetsShowing() > 0);
+end
+
 function UIWidgetContainerMixin:UpdateWidgetLayout()
 	local sortedWidgets = {};
 	for _, widget in pairs(self.widgetFrames) do
@@ -494,6 +544,18 @@ end
 
 function UIWidgetManagerMixin:OnWidgetContainerUnregistered(widgetContainer)
 	self.registeredWidgetContainers[widgetContainer] = nil;
+end
+
+function UIWidgetManagerMixin:UpdateProcessingUnit(attachedUnit, attachedUnitIsGuid)
+	if self.processingUnit ~= attachedUnit then
+		if attachedUnitIsGuid then
+			C_UIWidgetManager.SetProcessingUnitGuid(attachedUnit);
+		else
+			C_UIWidgetManager.SetProcessingUnit(attachedUnit);
+		end
+
+		self.processingUnit = attachedUnit;
+	end
 end
 
 function UIWidgetManagerMixin:GetWidgetTypeInfo(widgetType)
@@ -529,4 +591,3 @@ function UIWidgetManagerMixin:EnumerateWidgetsByWidgetTag(widgetTag)
 
 	return pairs(widgetFrames);
 end
-

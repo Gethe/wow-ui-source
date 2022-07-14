@@ -247,7 +247,8 @@
 						<Offset x="-8" y="8"/>
 					</Anchor>
 					<Anchor point="BOTTOMRIGHT" relativeTo="TicketStatusTime">
-						<Offset x="30" y="-8"/>		<!-- width added to accomodate the status button -->
+						<Offset x="30" y="-8"/>
+						<!-- width added to accomodate the status button -->
 					</Anchor>
 				</Anchors>
 				<Scripts>

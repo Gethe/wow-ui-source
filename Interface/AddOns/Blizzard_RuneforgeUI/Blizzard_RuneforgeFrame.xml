@@ -31,13 +31,7 @@
 
 			<Frame parentKey="CreateFrame" inherits="RuneforgeCreateFrameTemplate" frameLevel="1000">
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="98"/>
-				</Anchors>
-			</Frame>
-
-			<Frame parentKey="CurrencyDisplay" inherits="CurrencyDisplayGroupTemplate" frameLevel="1000">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-90"/>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="96"/>
 				</Anchors>
 			</Frame>
 
@@ -60,8 +54,7 @@
 
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" text="LEGENDARY_CRAFTING_EXIT">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.CurrencyDisplay" relativePoint="TOP"/>
-					<Anchor point="RIGHT" x="-55" y="0"/>
+					<Anchor point="TOPRIGHT" x="-55" y="-90"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -73,6 +66,13 @@
 					</Layer>
 				</Layers>
 			</Button>
+
+			<Frame parentKey="CurrencyDisplay" inherits="CurrencyDisplayGroupTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="RIGHT" x="-5" y="0"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.CreateFrame.CraftItemButton" relativePoint="BOTTOM" y="-16"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

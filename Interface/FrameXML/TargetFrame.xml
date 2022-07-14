@@ -135,7 +135,7 @@
 	<Button name="TargetFrameTemplate" frameStrata="LOW" toplevel="true" parent="UIParent" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Size x="232" y="100"/>
 		<HitRectInsets>
-			<AbsInset left="0" right="40" top="10" bottom="20"/>
+			<AbsInset left="0" right="30" top="4" bottom="9"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -181,7 +181,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentTextureFrame" parentKey="textureFrame" setAllPoints="true">
+			<Frame name="$parentTextureFrame" parentKey="textureFrame" setAllPoints="true" frameLevel="500">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentTexture" parentKey="texture"  file="Interface\TargetingFrame\UI-TargetingFrame">
@@ -302,7 +302,7 @@
 					<Anchor point="TOP" x="10" y="-60"/>
 				</Anchors>
 			</Frame>
-			<StatusBar name="$parentHealthBar" inherits="TextStatusBar" useParentLevel="true">
+			<StatusBar name="$parentHealthBar" inherits="TextStatusBar" frameLevel="400">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-106" y="-41"/>
@@ -325,7 +325,7 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="$parentManaBar" inherits="TextStatusBar" useParentLevel="true">
+			<StatusBar name="$parentManaBar" inherits="TextStatusBar" frameLevel="400">
 				<Size x="119" y="12"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-106" y="-52"/>
@@ -552,7 +552,6 @@
 				self.showPortrait = true;
 				self.showClassification = true;
 				self.showAuraCount = true;
-				self:SetHitRectInsets(96, 40, 10, 9);		-- allows mouseover over health and mana bars
 				TargetFrame_OnLoad(self, "target", TargetFrameDropDown_Initialize);
 				TargetFrame_CreateSpellbar(self, "PLAYER_TARGET_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "targettarget");

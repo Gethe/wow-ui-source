@@ -50,28 +50,23 @@ function UIWidgetTemplateDoubleStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	self.LeftBar:SetWidth(barWidth);
 	self.RightBar:SetWidth(barWidth);
 
-	self.LeftBar:Setup(widgetContainer, widgetInfo.leftBarMin, widgetInfo.leftBarMax, widgetInfo.leftBarValue, widgetInfo.barValueTextType, widgetInfo.leftBarTooltip);
-	self.RightBar:Setup(widgetContainer, widgetInfo.rightBarMin, widgetInfo.rightBarMax, widgetInfo.rightBarValue, widgetInfo.barValueTextType, widgetInfo.rightBarTooltip);
+	local leftBarInfo = CopyTable(widgetInfo);
+	leftBarInfo.barMin = widgetInfo.leftBarMin;
+	leftBarInfo.barMax = widgetInfo.leftBarMax;
+	leftBarInfo.barValue = widgetInfo.leftBarValue;
+	leftBarInfo.tooltip = widgetInfo.leftBarTooltip;
+	self.LeftBar:Setup(widgetContainer, leftBarInfo);
+	self.LeftBar:SetTooltipLocation(widgetInfo.leftBarTooltipLoc);
+	self.LeftBar.Spark:SetPoint("CENTER", self.LeftBar:GetStatusBarTexture(), "RIGHT", 0, 0);
 
-	local showSpark = widgetInfo.leftBarValue > widgetInfo.leftBarMin and widgetInfo.leftBarValue < widgetInfo.leftBarMax;
-	self.LeftBar.Spark:SetShown(showSpark);
-	if showSpark then
-		local leftBarPercent = PercentageBetween(widgetInfo.leftBarValue, widgetInfo.leftBarMin, widgetInfo.leftBarMax);
-		local sparkXOffset = barWidth * leftBarPercent;
-
-		self.LeftBar.Spark:ClearAllPoints();
-		self.LeftBar.Spark:SetPoint("CENTER", self.LeftBar, "LEFT", sparkXOffset, 0);
-	end
-
-	showSpark = widgetInfo.rightBarValue > widgetInfo.rightBarMin and widgetInfo.rightBarValue < widgetInfo.rightBarMax;
-	self.RightBar.Spark:SetShown(showSpark);
-	if showSpark then
-		local rightBarPercent = PercentageBetween(widgetInfo.rightBarValue, widgetInfo.rightBarMin, widgetInfo.rightBarMax);
-		local sparkXOffset = -barWidth * rightBarPercent;
-
-		self.RightBar.Spark:ClearAllPoints();
-		self.RightBar.Spark:SetPoint("CENTER", self.RightBar, "RIGHT", sparkXOffset, 0);
-	end
+	local rightBarInfo = CopyTable(widgetInfo);
+	rightBarInfo.barMin = widgetInfo.rightBarMin;
+	rightBarInfo.barMax = widgetInfo.rightBarMax;
+	rightBarInfo.barValue = widgetInfo.rightBarValue;
+	rightBarInfo.tooltip = widgetInfo.rightBarTooltip;
+	self.RightBar:Setup(widgetContainer, rightBarInfo);
+	self.RightBar:SetTooltipLocation(widgetInfo.rightBarTooltipLoc);
+	self.RightBar.Spark:SetPoint("CENTER", self.RightBar:GetStatusBarTexture(), "LEFT", 0, 0);
 
 	self.LeftBar.Icon:ClearAllPoints();
 	self.LeftBar.Icon:SetPoint("CENTER", self.LeftBar, "LEFT", -ICON_OFFSET, 0);
@@ -108,4 +103,10 @@ function UIWidgetTemplateDoubleStatusBarMixin:PlayBarGlow(playRightBarGlow)
 	else
 		self.LeftBar.Flash:Play();
 	end
+end
+
+function UIWidgetTemplateDoubleStatusBarMixin:OnReset()
+	UIWidgetBaseTemplateMixin.OnReset(self);
+	self.LeftBar:OnReset();
+	self.RightBar:OnReset();
 end

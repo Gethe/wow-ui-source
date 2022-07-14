@@ -27,19 +27,6 @@ local CharacterCustomizationShared =
 			},
 		},
 		{
-			Name = "Unitsex",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Male", Type = "Unitsex", EnumValue = 0 },
-				{ Name = "Female", Type = "Unitsex", EnumValue = 1 },
-				{ Name = "None", Type = "Unitsex", EnumValue = 2 },
-			},
-		},
-		{
 			Name = "CharCustomizationChoice",
 			Type = "Structure",
 			Fields =
@@ -47,6 +34,7 @@ local CharacterCustomizationShared =
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "ineligibleChoice", Type = "bool", Nilable = false },
+				{ Name = "isNew", Type = "bool", Nilable = false },
 				{ Name = "swatchColor1", Type = "table", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "swatchColor2", Type = "table", Mixin = "ColorMixin", Nilable = true },
 			},
@@ -62,6 +50,7 @@ local CharacterCustomizationShared =
 				{ Name = "optionType", Type = "ChrCustomizationOptionType", Nilable = false },
 				{ Name = "choices", Type = "table", InnerType = "CharCustomizationChoice", Nilable = false },
 				{ Name = "currentChoiceIndex", Type = "number", Nilable = false },
+				{ Name = "hasNewChoices", Type = "bool", Nilable = false },
 			},
 		},
 	},

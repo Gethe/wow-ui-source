@@ -138,7 +138,7 @@ function ModelFrameMixin:OnUpdate(elapsedTime)
 		end
 		-- settings
 		local settings;
-		local hasAlternateForm, inAlternateForm = HasAlternateForm();
+		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 		if ( hasAlternateForm and inAlternateForm ) then
 			settings = ModelSettings[playerRaceSex.."Alt"];
 		else

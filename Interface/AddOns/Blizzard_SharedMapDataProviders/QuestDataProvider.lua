@@ -201,6 +201,7 @@ function QuestPinMixin:OnMouseEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
 	GameTooltip:SetText(title);
 	QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
+	GameTooltip_CheckAddQuestTimeToTooltip(GameTooltip, questID);
 
 	local wouldShowWaypointText = questID == C_SuperTrack.GetSuperTrackedQuestID() or questID == QuestMapFrame_GetFocusedQuestID();
 	local waypointText = wouldShowWaypointText and C_QuestLog.GetNextWaypointText(questID);

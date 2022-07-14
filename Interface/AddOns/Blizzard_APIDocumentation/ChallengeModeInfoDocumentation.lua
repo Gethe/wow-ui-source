@@ -7,6 +7,20 @@ local ChallengeModeInfo =
 	Functions =
 	{
 		{
+			Name = "CanUseKeystoneInCurrentMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearKeystone",
 			Type = "Function",
 		},
@@ -62,6 +76,13 @@ local ChallengeModeInfo =
 				{ Name = "onTime", Type = "bool", Nilable = false },
 				{ Name = "keystoneUpgradeLevels", Type = "number", Nilable = false },
 				{ Name = "practiceRun", Type = "bool", Nilable = false },
+				{ Name = "oldOverallDungeonScore", Type = "number", Nilable = true },
+				{ Name = "newOverallDungeonScore", Type = "number", Nilable = true },
+				{ Name = "IsMapRecord", Type = "bool", Nilable = false },
+				{ Name = "IsAffixRecord", Type = "bool", Nilable = false },
+				{ Name = "PrimaryAffix", Type = "number", Nilable = false },
+				{ Name = "isEligibleForScore", Type = "bool", Nilable = false },
+				{ Name = "members", Type = "table", InnerType = "ChallengeModeCompletionMemberInfo", Nilable = false },
 			},
 		},
 		{
@@ -75,12 +96,51 @@ local ChallengeModeInfo =
 			},
 		},
 		{
+			Name = "GetDungeonScoreRarityColor",
+			Type = "Function",
+			Documentation = { "Returns a color value from the passed in overall season M+ rating." },
+
+			Arguments =
+			{
+				{ Name = "dungeonScore", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "scoreColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "GetGuildLeaders",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "topAttempt", Type = "table", InnerType = "ChallengeModeGuildTopAttempt", Nilable = false },
+			},
+		},
+		{
+			Name = "GetKeystoneLevelRarityColor",
+			Type = "Function",
+			Documentation = { "Returns a color value from the passed in keystone level." },
+
+			Arguments =
+			{
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "levelScore", Type = "table", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMapScoreInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "displayScores", Type = "table", InnerType = "MythicPlusRatingLinkInfo", Nilable = false },
 			},
 		},
 		{
@@ -111,6 +171,16 @@ local ChallengeModeInfo =
 			},
 		},
 		{
+			Name = "GetOverallDungeonScore",
+			Type = "Function",
+			Documentation = { "Gets the overall season mythic+ rating for the player." },
+
+			Returns =
+			{
+				{ Name = "overallDungeonScore", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPowerLevelDamageHealthMod",
 			Type = "Function",
 
@@ -134,6 +204,36 @@ local ChallengeModeInfo =
 				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "keystoneLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpecificDungeonOverallScoreRarityColor",
+			Type = "Function",
+			Documentation = { "Returns a color value from the passed in mythic+ rating from the combined affix scores for a specific dungeon" },
+
+			Arguments =
+			{
+				{ Name = "specificDungeonOverallScore", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specificDungeonOverallScoreColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpecificDungeonScoreRarityColor",
+			Type = "Function",
+			Documentation = { "Returns a color value from the passed in mythic+ rating for a specific dungeon." },
+
+			Arguments =
+			{
+				{ Name = "specificDungeonScore", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specificDungeonScoreColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -258,6 +358,15 @@ local ChallengeModeInfo =
 
 	Tables =
 	{
+		{
+			Name = "ChallengeModeCompletionMemberInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "memberGUID", Type = "string", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
 		{
 			Name = "ChallengeModeGuildAttemptMember",
 			Type = "Structure",

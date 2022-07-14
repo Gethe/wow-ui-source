@@ -23,6 +23,15 @@
 					<Color r="0" g="0" b="0"/>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="UnavailableOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.25"/>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<MaskTexture parentKey="CircleMask" file="Interface/CharacterFrame/TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
@@ -32,6 +41,7 @@
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon"/>
 						<MaskedTexture childKey="UnavailableBackground"/>
+						<MaskedTexture childKey="UnavailableOverlay"/>
 					</MaskedTextures>
 				</MaskTexture>
 
@@ -46,6 +56,7 @@
 					<Size x="250" y="0"/>
 					<Color color="LEGENDARY_ORANGE_COLOR"/>
 				</FontString>
+
 				<FontString parentKey="SpecName" inherits="GameFontNormal" maxLines="1" justifyH="LEFT">
 					<Size x="250" y="0"/>
 					<Anchors>
@@ -53,8 +64,21 @@
 					</Anchors>
 					<Color color="RUNEFORGE_LEGEDARY_SPEC_COLOR"/>
 				</FontString>
+
+				<Texture parentKey="BackgroundOverlay" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Background" relativePoint="LEFT" x="3" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="CovenantSigil" inherits="RuneforgeCovenantSigilTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="-12" y="12"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>

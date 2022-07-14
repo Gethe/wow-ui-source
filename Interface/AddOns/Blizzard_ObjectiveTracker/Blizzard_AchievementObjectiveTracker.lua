@@ -37,6 +37,10 @@ function ACHIEVEMENT_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 	end
 end
 
+function ACHIEVEMENT_TRACKER_MODULE:GetDebugReportInfo(block)
+	return { debugType = "TrackedAchievement", achievementID = block.id, };
+end
+
 -- *****************************************************************************************************
 -- ***** BLOCK DROPDOWN FUNCTIONS
 -- *****************************************************************************************************

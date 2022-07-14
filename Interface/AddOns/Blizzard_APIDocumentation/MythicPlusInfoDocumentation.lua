@@ -25,6 +25,17 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "GetCurrentSeasonValues",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "displaySeasonID", Type = "number", Nilable = false },
+				{ Name = "milestoneSeasonID", Type = "number", Nilable = false },
+				{ Name = "rewardSeasonID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLastWeeklyBestInformation",
 			Type = "Function",
 
@@ -50,6 +61,15 @@ local MythicPlusInfo =
 			Returns =
 			{
 				{ Name = "keyStoneLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOwnedKeystoneMapID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -97,6 +117,22 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "GetSeasonBestAffixScoreInfoForMap",
+			Type = "Function",
+			Documentation = { "Gets the active players best runs by the seasonal tracked affixes as well as their overall score for the current season." },
+
+			Arguments =
+			{
+				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "affixScores", Type = "table", InnerType = "MythicPlusAffixScoreInfo", Nilable = false },
+				{ Name = "bestOverAllScore", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSeasonBestForMap",
 			Type = "Function",
 
@@ -109,6 +145,16 @@ local MythicPlusInfo =
 			{
 				{ Name = "intimeInfo", Type = "MapSeasonBestInfo", Nilable = true },
 				{ Name = "overtimeInfo", Type = "MapSeasonBestInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSeasonBestMythicRatingFromThisExpansion",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "bestSeasonScore", Type = "number", Nilable = false },
+				{ Name = "bestSeason", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -127,6 +173,7 @@ local MythicPlusInfo =
 				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
+				{ Name = "dungeonScore", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -181,17 +228,6 @@ local MythicPlusInfo =
 			LiteralName = "MYTHIC_PLUS_CURRENT_AFFIX_UPDATE",
 		},
 		{
-			Name = "MythicPlusNewSeasonRecord",
-			Type = "Event",
-			LiteralName = "MYTHIC_PLUS_NEW_SEASON_RECORD",
-			Payload =
-			{
-				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
-				{ Name = "completionMilliseconds", Type = "number", Nilable = false },
-				{ Name = "level", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "MythicPlusNewWeeklyRecord",
 			Type = "Event",
 			LiteralName = "MYTHIC_PLUS_NEW_WEEKLY_RECORD",
@@ -216,6 +252,7 @@ local MythicPlusInfo =
 				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
 				{ Name = "affixIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "MythicPlusMember", Nilable = false },
+				{ Name = "dungeonScore", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -258,6 +295,7 @@ local MythicPlusInfo =
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "thisWeek", Type = "bool", Nilable = false },
 				{ Name = "completed", Type = "bool", Nilable = false },
+				{ Name = "runScore", Type = "number", Nilable = false },
 			},
 		},
 	},

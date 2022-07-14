@@ -59,17 +59,17 @@ end
 
 function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 	self:UpdateTabs();
-	if (C_Garrison.IsInvasionAvailable()) then
-		self.InvasionBadge:Show();
-		self.InvasionBadge.InvasionBadgeAnim:Play();
-	else
-		self.InvasionBadge:Hide();
-	end
 
 	local shouldShowFollowerTab = not (self.garrTypeID == Enum.GarrisonType.Type_9_0) or C_Garrison.HasAdventures();
 	self.FollowerTabButton:SetShown(shouldShowFollowerTab);
 
 	if (self.garrTypeID == Enum.GarrisonType.Type_6_0) then
+		if (C_Garrison.IsInvasionAvailable()) then
+			self.InvasionBadge:Show();
+			self.InvasionBadge.InvasionBadgeAnim:Play();
+		else
+			self.InvasionBadge:Hide();
+		end
 		self.Report.Background:SetAtlas("GarrLanding_Watermark-Tradeskill", true);
 		self.Report.Background:ClearAllPoints();
 		self.Report.Background:SetPoint("BOTTOMLEFT", 60, 40);
@@ -121,6 +121,7 @@ function GarrisonLandingPageMixin:OnShow()
 	end
 
 	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
+	self:RegisterEvent("COVENANT_CHOSEN");
 end
 
 function GarrisonLandingPageMixin:OnHide()
@@ -137,6 +138,7 @@ function GarrisonLandingPageMixin:OnHide()
 	self.abilityCountersForMechanicTypes = nil;
 
 	self:UnregisterEvent("GARRISON_HIDE_LANDING_PAGE");
+	self:UnregisterEvent("COVENANT_CHOSEN");
 end
 
 function GarrisonLandingPageMixin:GetFollowerList()
@@ -199,7 +201,7 @@ function GarrisonLandingPageMixin:SetupGardenweald()
 end
 
 function GarrisonLandingPageMixin:OnEvent(event)
-	if (event == "GARRISON_HIDE_LANDING_PAGE") then
+	if (event == "GARRISON_HIDE_LANDING_PAGE" or event == "COVENANT_CHOSEN") then
 		HideUIPanel(self);
 	end
 end
@@ -624,9 +626,12 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 				Reward.bonusAbilityDescription = nil;
 				Reward.currencyID = nil;
 				Reward.currencyQuantity = nil;
+				Reward.itemLink = nil;
+				SetItemButtonQuality(Reward, nil);
 				if (reward.itemID) then
 					Reward.itemID = reward.itemID;
-					local _, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
+					Reward.itemLink = reward.itemLink;
+					local _, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemLink or reward.itemID);
 					Reward.Icon:SetTexture(itemTexture);
 					SetItemButtonQuality(Reward, quality, reward.itemID);
 					if ( not quality ) then
@@ -930,6 +935,7 @@ end
 
 function GarrisonLandingPageReportMissionReward_OnEnter(self)
 	if (self.bonusAbilityID) then
+		self.UpdateTooltip = nil;
 		local tooltip = GarrisonBonusAreaTooltip;
 		GarrisonBonusArea_Set(tooltip.BonusArea, GARRISON_BONUS_EFFECT_TIME_ACTIVE, self.bonusAbilityDuration, self.bonusAbilityIcon, self.bonusAbilityName, self.bonusAbilityDescription);
 
@@ -940,6 +946,11 @@ function GarrisonLandingPageReportMissionReward_OnEnter(self)
 		return;
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		self.UpdateTooltip = GarrisonLandingPageReportMissionReward_OnEnter;
+		if (self.itemLink) then
+			GameTooltip:SetHyperlink(self.itemLink);
+			return;
+		end
 		if (self.itemID) then
 			GameTooltip:SetItemByID(self.itemID);
 			return;

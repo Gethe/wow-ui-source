@@ -129,6 +129,7 @@ local EXTRA_GUILD_COLUMN_ACHIEVEMENT = 1;
 local EXTRA_GUILD_COLUMN_PROFESSION = 2;
 local EXTRA_GUILD_COLUMN_APPLICANTS = 3;
 local EXTRA_GUILD_COLUMN_PENDING = 4;
+local EXTRA_GUILD_COLUMN_DUNGEON_SCORE = 5;
 
 local COMMUNITY_APPLICANT_LIST_VALUE = 2; 
 
@@ -159,6 +160,13 @@ local EXTRA_GUILD_COLUMNS = {
 		attribute = "pending",
 		width = 115,
 	};
+	[EXTRA_GUILD_COLUMN_DUNGEON_SCORE] = {
+		dropdownText = DUNGEON_SCORE,
+		title = DUNGEON_SCORE,
+		attribute = "dungeonScore",
+		width = 115,
+	};
+
 };
 
 CommunitiesMemberListMixin = {};
@@ -854,6 +862,16 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 				return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
 			end
 		end);
+	elseif sortAttribute == "dungeonScore" then 
+		table.sort(self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
+			if self.reverseActiveColumnSort then
+				lhsMemberInfo, rhsMemberInfo = rhsMemberInfo, lhsMemberInfo;
+			end
+			-- If the score somehow hasn't been populated yet, we want to treat it like a score of 0. 
+			local lhsSortScore = lhsMemberInfo.overallDungeonScore or 0;
+			local rhsSortScore = rhsMemberInfo.overallDungeonScore or 0; 
+			return lhsSortScore < rhsSortScore;
+		end);
 		return;
 	end
 
@@ -1087,6 +1105,10 @@ function CommunitiesMemberListEntryMixin:GetMemberId()
 	return self.memberInfo and self.memberInfo.memberId or nil;
 end
 
+function CommunitiesMemberListEntryMixin:GetFaction()
+	return  self.memberInfo and self.memberInfo.faction or nil;
+end 
+
 function CommunitiesMemberListEntryMixin:OnEnter()
 	if self.expanded then
 		if not self.NameFrame.Name:IsTruncated() and not self.Rank:IsTruncated() and not self.Note:IsTruncated() and not self.Zone:IsTruncated() then
@@ -1113,7 +1135,11 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 			local raceInfo = C_CreatureInfo.GetRaceInfo(memberInfo.race);
 			local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
 			if raceInfo and classInfo then
-				GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+				if(clubInfo and clubInfo.clubType == Enum.ClubType.Character and memberInfo.faction and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction])) then 
+					GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FACTION_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className, FACTION_LABELS[memberInfo.faction]), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+				else 
+					GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+				end
 			end
 		end
 
@@ -1152,6 +1178,7 @@ end
 
 function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	if not self.expanded then
+		self.FactionButton:SetShown(false);
 		return;
 	end
 
@@ -1171,6 +1198,9 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	if not clubInfo then
 		return;
 	end
+
+	local shouldShowFactionIcon = hasMemberInfo and memberInfo.faction and clubInfo.clubType == Enum.ClubType.Character and ((UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction]));
+	self.FactionButton:SetShown(shouldShowFactionIcon and not self.isInvitation);
 
 	if clubInfo.clubType == Enum.ClubType.BattleNet then
 		self.Level:Hide();
@@ -1236,6 +1266,16 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 	elseif self.guildColumnIndex == EXTRA_GUILD_COLUMN_PROFESSION then
 		local professionId = self:GetProfessionId();
 		self.GuildInfo:SetText(GUILD_VIEW_RECIPES_LINK);
+	elseif self.guildColumnIndex == EXTRA_GUILD_COLUMN_DUNGEON_SCORE then
+		if(memberInfo.overallDungeonScore) then 
+			local color = C_ChallengeMode.GetDungeonScoreRarityColor(memberInfo.overallDungeonScore);
+			if(not color) then 
+				color = HIGHLIGHT_FONT_COLOR; 
+			end 
+			self.GuildInfo:SetText(color:WrapTextInColorCode(memberInfo.overallDungeonScore));
+		else 
+			self.GuildInfo:SetText(NO_ROSTER_ACHIEVEMENT_POINTS); -- Display - if there is no dungeon score. 
+		end
 	end
 end
 
@@ -1529,6 +1569,7 @@ function GuildMemberListDropDownMenu_Initialize(self)
 	for i, extraColumnInfo in ipairs(EXTRA_GUILD_COLUMNS) do
 		info.text = extraColumnInfo.dropdownText;
 		info.value = i;
+		info.disabled = false; 
 		if i == EXTRA_GUILD_COLUMN_APPLICANTS then 
 			if (self.hasApplicants and canGuildInvite) then 
 				info.text = extraColumnInfo.dropdownText.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);
@@ -1664,4 +1705,30 @@ function CommunityMemberListDropDownMenu_Initialize(self)
 
 	UIDropDownMenu_AddButton(info);
 	self:UpdateNotificationFlash(communitiesFrame:HasNewClubApplications(memberList:GetSelectedClubId()) and hasFinderPermissions);
+end
+
+CommunitiesMemberListFactionButtonMixin = { }; 
+function CommunitiesMemberListFactionButtonMixin:OnShow()
+	local faction = self:GetParent():GetFaction(); 
+	if(not faction) then 
+		return; 
+	end 
+
+	if(PLAYER_FACTION_GROUP[faction] == "Horde") then 
+		self:SetNormalAtlas("communities-icon-faction-horde")
+	else 
+		self:SetNormalAtlas("communities-icon-faction-alliance");
+	end 
+end		
+
+function CommunitiesMemberListFactionButtonMixin:OnEnter()
+	local faction = self:GetParent():GetFaction(); 
+	if(not faction) then 
+		return; 
+	end 
+	
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, COMMUNITIES_CROSS_FACTION_BUTTON_TOOLTIP_TITLE:format(FACTION_LABELS[faction]));
+	GameTooltip_AddNormalLine(GameTooltip, CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS[faction])); 
+	GameTooltip:Show(); 
 end

@@ -19,6 +19,7 @@ function AlertFrameSystems_Register()
 	NewMountAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
 	NewToyAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewToyAlertFrameTemplate", NewToyAlertFrame_SetUp);
 	NewRuneforgePowerAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRuneforgePowerAlertFrameTemplate", NewRuneforgePowerAlertSystem_SetUp);
+	NewCosmeticAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewCosmeticAlertFrameTemplate", NewCosmeticAlertFrameSystem_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -297,107 +298,79 @@ end
 function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
 	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
 
-	local displayName = frame.Name;
 	local shieldPoints = frame.Shield.Points;
 	local shieldIcon = frame.Shield.Icon;
 	local unlocked = frame.Unlocked;
-	local oldCheevo = frame.OldAchievement;
 
-	displayName:SetText(name);
+	unlocked:SetPoint("TOP", 7, -23);
+
+	frame.Name:SetText(name);
 
 	AchievementShield_SetPoints(points, shieldPoints, GameFontNormal, GameFontNormalSmall);
-
 	if ( isGuildAch ) then
 		local guildName = frame.GuildName;
 		local guildBorder = frame.GuildBorder;
 		local guildBanner = frame.GuildBanner;
-		if ( not frame.guildDisplay or frame.oldCheevo) then
-			frame.oldCheevo = nil
-			shieldPoints:Show();
-			shieldIcon:Show();
-			oldCheevo:Hide();
-			frame.guildDisplay = true;
-			frame:SetHeight(104);
-			local background = frame.Background;
-			background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			background:SetTexCoord(0.00195313, 0.62890625, 0.00195313, 0.19140625);
-			background:SetPoint("TOPLEFT", -2, 2);
-			background:SetPoint("BOTTOMRIGHT", 8, 8);
-			local iconBorder = frame.Icon.Overlay;
-			iconBorder:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			iconBorder:SetTexCoord(0.25976563,0.40820313,0.50000000,0.64453125);
-			iconBorder:SetPoint("CENTER", 0, 1);
-			frame.Icon:SetPoint("TOPLEFT", -26, 2);
-			displayName:SetPoint("BOTTOMLEFT", 79, 37);
-			displayName:SetPoint("BOTTOMRIGHT", -79, 37);
-			frame.Shield:SetPoint("TOPRIGHT", -15, -28);
-			shieldPoints:SetPoint("CENTER", 7, 5);
-			shieldPoints:SetVertexColor(0, 1, 0);
-			shieldIcon:SetTexCoord(0, 0.5, 0.5, 1);
-			unlocked:SetPoint("TOP", -1, -36);
-			unlocked:SetText(GUILD_ACHIEVEMENT_UNLOCKED);
-			guildName:Show();
-			guildBanner:Show();
-			guildBorder:Show();
-			frame.glow:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			frame.glow:SetTexCoord(0.00195313, 0.74804688, 0.19531250, 0.49609375);
-			frame.shine:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
-			frame.shine:SetTexCoord(0.75195313, 0.91601563, 0.19531250, 0.35937500);
-			frame.shine:SetPoint("BOTTOMLEFT", 0, 16);
-		end
+
+		shieldPoints:Show();
+		shieldIcon:Show();
+		frame:SetHeight(104);
+		local background = frame.Background;
+		background:SetAtlas("ui-achievement-guild-background", TextureKitConstants.UseAtlasSize);
+		local iconBorder = frame.Icon.Overlay;
+		iconBorder:SetAtlas("ui-achievement-guild-iconframe", TextureKitConstants.UseAtlasSize);
+		iconBorder:SetPoint("CENTER", 0, 0);
+		frame.Icon:SetPoint("TOPLEFT", 0, -25);
+		frame.Icon.Texture:SetPoint("CENTER", -1, -2);
+		frame.Shield:SetPoint("TOPRIGHT", -12, -25);
+		shieldPoints:SetPoint("CENTER", 2, -2);
+		shieldPoints:SetVertexColor(0, 1, 0);
+		unlocked:SetPoint("TOP", 0, -38);
+		unlocked:SetText(GUILD_ACHIEVEMENT_UNLOCKED);
+		guildName:Show();
+		guildBanner:Show();
+		guildBorder:Show();
+		frame.glow:SetAtlas("ui-achievement-guild-glow", TextureKitConstants.UseAtlasSize);
+		frame.shine:SetAtlas("ui-achievement-guild-shine", TextureKitConstants.UseAtlasSize);
+		frame.shine:SetPoint("BOTTOMLEFT", 0, 16);
+
 		guildName:SetText(GetGuildInfo("player"));
 		SetSmallGuildTabardTextures("player", nil, guildBanner, guildBorder);
 	else
-		if ( frame.guildDisplay  or frame.oldCheevo) then
-			frame.oldCheevo = nil
-			shieldPoints:Show();
-			shieldIcon:Show();
-			oldCheevo:Hide();
-			frame.guildDisplay = nil;
-			frame:SetHeight(88);
-			local background = frame.Background;
-			background:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Background");
-			background:SetTexCoord(0, 0.605, 0, 0.703);
-			background:SetPoint("TOPLEFT", 0, 0);
-			background:SetPoint("BOTTOMRIGHT", 0, 0);
-			local iconBorder = frame.Icon.Overlay;
-			iconBorder:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
-			iconBorder:SetTexCoord(0, 0.5625, 0, 0.5625);
-			iconBorder:SetPoint("CENTER", -1, 2);
-			frame.Icon:SetPoint("TOPLEFT", -26, 16);
-			displayName:SetPoint("BOTTOMLEFT", 72, 36);
-			displayName:SetPoint("BOTTOMRIGHT", -60, 36);
-			frame.Shield:SetPoint("TOPRIGHT", -10, -13);
-			shieldPoints:SetPoint("CENTER", 7, 2);
-			shieldPoints:SetVertexColor(1, 1, 1);
-			shieldIcon:SetTexCoord(0, 0.5, 0, 0.45);
-			unlocked:SetPoint("TOP", 7, -23);
-			unlocked:SetText(ACHIEVEMENT_UNLOCKED);
-			frame.GuildName:Hide();
-			frame.GuildBorder:Hide();
-			frame.GuildBanner:Hide();
-			frame.glow:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Glow");
-			frame.glow:SetTexCoord(0, 0.78125, 0, 0.66796875);
-			frame.shine:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Alert-Glow");
-			frame.shine:SetTexCoord(0.78125, 0.912109375, 0, 0.28125);
-			frame.shine:SetPoint("BOTTOMLEFT", 0, 8);
-		end
+		shieldPoints:Show();
+		shieldIcon:Show();
+		frame:SetHeight(101);
+		local background = frame.Background;
+		background:SetAtlas("ui-achievement-alert-background", TextureKitConstants.UseAtlasSize);
+		local iconBorder = frame.Icon.Overlay;
+		iconBorder:SetAtlas("ui-achievement-iconframe", TextureKitConstants.UseAtlasSize);
+		iconBorder:SetPoint("CENTER", -1, 1);
+		frame.Icon:SetPoint("TOPLEFT", -4, -15);
+		frame.Shield:SetPoint("TOPRIGHT", -8, -15);
+		shieldPoints:SetPoint("CENTER", 2, -2);
+		shieldPoints:SetVertexColor(1, 1, 1);
+		unlocked:SetPoint("TOP", 7, -23);
+		unlocked:SetText(ACHIEVEMENT_UNLOCKED);
+		frame.GuildName:Hide();
+		frame.GuildBorder:Hide();
+		frame.GuildBanner:Hide();
+		frame.glow:SetAtlas("ui-achievement-glow-glow", TextureKitConstants.UseAtlasSize);
+		frame.shine:SetAtlas("ui-achievement-glow-shine", TextureKitConstants.UseAtlasSize);
+		frame.shine:SetPoint("BOTTOMLEFT", 0, 8);
 
+		shieldPoints:SetShown(not alreadyEarned);
+		shieldIcon:SetShown(not alreadyEarned);
+
+		-- Center all text horizontally if the achievement has been earned and there's no points display
 		if (alreadyEarned) then
-			frame.oldCheevo = true;
-			shieldPoints:Hide();
-			shieldIcon:Hide();
-			oldCheevo:Show();
-			displayName:SetPoint("BOTTOMLEFT", 72, 37);
-			displayName:SetPoint("BOTTOMRIGHT", -25, 37);
-			unlocked:SetPoint("TOP", 21, -23);
+			unlocked:SetPoint("TOP", 27, -23);
 		end
 	end
 
 	if ( points == 0 ) then
-		shieldIcon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
+		shieldIcon:SetAtlas("UI-Achievement-Shield-NoPoints", TextureKitConstants.UseAtlasSize);
 	else
-		shieldIcon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
+		shieldIcon:SetAtlas("ui-achievement-shield-2", TextureKitConstants.UseAtlasSize);
 	end
 
 	frame.Icon.Texture:SetTexture(icon);
@@ -698,13 +671,25 @@ function EntitlementDelivered_OnClick(self, button, down)
 			OpenBag(slot);
 		end
 	elseif (self.type == Enum.WoWEntitlementType.Mount) then
-		ToggleCollectionsJournal(1);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 	elseif (self.type == Enum.WoWEntitlementType.Battlepet) then
-		ToggleCollectionsJournal(2);
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	elseif (self.type == Enum.WoWEntitlementType.Toy) then
 		ToggleToyCollection(self.payloadID);
-	elseif (self.type == Enum.WoWEntitlementType.Appearance or self.type == Enum.WoWEntitlementType.AppearanceSet or self.type == Enum.WoWEntitlementType.Illusion) then
-		ToggleCollectionsJournal(5);
+	elseif (self.type == Enum.WoWEntitlementType.AppearanceSet) then
+		if(self.payloadID) then
+			TransmogUtil.OpenCollectionToSet(self.payloadID);
+		else
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+		end
+	elseif (self.type == Enum.WoWEntitlementType.Appearance) then
+		if(self.payloadID) then
+			TransmogUtil.OpenCollectionToItem(self.payloadID);
+		else
+			ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+		end
+	elseif (self.type == Enum.WoWEntitlementType.Illusion) then
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
 	end
 end
 
@@ -885,19 +870,36 @@ function GarrisonFollowerAlertFrame_OnClick(self, button, down)
 	if (not GarrisonLandingPage) then
 		Garrison_LoadUI();
 	end
-	ShowGarrisonLandingPage(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
+	local garrisonType = GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType;
+	if(garrisonType and C_Garrison.GetLandingPageGarrisonType() == garrisonType) then 
+		ShowGarrisonLandingPage(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
+	end 
 end
 
+-- Trees that override behaviors associated with their tree type
+local talentAlertOverrides =
+{
+	[474] = -- 9.2 Cypher Talents tree
+	{
+		suppressClick = true,
+		toastTitle = CYPHER_RESEARCH_TOAST,
+	},
+};
 function GarrisonAlertFrame_OnClick(self, button, down)
 	if( AlertFrame_OnClick(self, button, down) ) then
 		return;
 	end
 	self:Hide();
-	if (not GarrisonLandingPage) then
-		Garrison_LoadUI();
-	end
-	if (self.garrisonType) then
-		ShowGarrisonLandingPage(self.garrisonType);
+	local overrideInfo = talentAlertOverrides[self.treeID];
+	local suppressClick = overrideInfo ~= nil and overrideInfo.suppressClick;
+	if (self.garrisonType and not suppressClick) then
+		if (not GarrisonLandingPage) then
+			Garrison_LoadUI();
+		end
+
+		if(self.garrisonType and C_Garrison.GetLandingPageGarrisonType() == self.garrisonType) then 
+			ShowGarrisonLandingPage(self.garrisonType);
+		end 
 	end
 end
 
@@ -905,9 +907,11 @@ end
 function GarrisonTalentAlertFrame_SetUp(frame, garrisonType, talent)
 	local garrisonFollowerType = GetPrimaryGarrisonFollowerType(garrisonType);
     frame.Icon:SetTexture(talent.icon);
-	local toastTitle = GarrisonFollowerOptions[garrisonFollowerType].strings.TALENT_COMPLETE_TOAST_TITLE;
+	local overrideInfo = talentAlertOverrides[talent.treeID];
+	local toastTitle = overrideInfo ~= nil and overrideInfo.toastTitle or GarrisonFollowerOptions[garrisonFollowerType].strings.TALENT_COMPLETE_TOAST_TITLE;
 	frame.Title:SetText(toastTitle);
 	frame.garrisonType = garrisonType;
+	frame.treeID = talent.treeID;
 	PlaySound(SOUNDKIT.UI_ORDERHALL_TALENT_READY_TOAST);
 end
 
@@ -1071,11 +1075,17 @@ end
 
 ItemAlertFrameMixin = {};
 
-function ItemAlertFrameMixin:SetUpDisplay(icon, itemQuality, name, label)
+function ItemAlertFrameMixin:SetUpDisplay(icon, itemQuality, name, label, overlayAtlas)
 	self.Icon:SetTexture(icon);
 	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemQuality] or LOOT_BORDER_BY_QUALITY[Enum.ItemQuality.Uncommon]);
 	self.Name:SetText(ITEM_QUALITY_COLORS[itemQuality].hex..name.."|r");
 	self.Label:SetText(label);
+	if overlayAtlas then
+		self.IconOverlay:SetAtlas(overlayAtlas);
+		self.IconOverlay:Show();
+	else
+		self.IconOverlay:Hide();
+	end
 end
 
 -- [[ NewPetAlertFrame ]] --
@@ -1093,7 +1103,7 @@ function NewPetAlertFrameMixin:SetUp(petID)
 	local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(petID);
 	if speciesID ~= nil and health ~= nil then
 		local itemQuality = rarity - 1;
-		self:SetUpDisplay(icon, itemQuality, customName or name, YOU_EARNED_LABEL);
+		self:SetUpDisplay(icon, itemQuality, customName or name, YOU_COLLECTED_LABEL);
 	end
 end
 
@@ -1119,7 +1129,7 @@ function NewMountAlertFrameMixin:SetUp(mountID)
 
 	local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(mountID);
 	local itemQuality = Enum.ItemQuality.Epic; -- Mounts don't have an inherent concept of quality so we always use epic (for now).
-	self:SetUpDisplay(icon, itemQuality, creatureName, YOU_EARNED_LABEL);
+	self:SetUpDisplay(icon, itemQuality, creatureName, YOU_COLLECTED_LABEL);
 end
 
 function NewMountAlertFrameMixin:OnClick(button, down)
@@ -1143,7 +1153,7 @@ function NewToyAlertFrameMixin:SetUp(toyID)
 	self.toyID = toyID;
 
 	local itemID, toyName, icon, isFavorite, hasFanfare, itemQuality = C_ToyBox.GetToyInfo(self.toyID);
-	self:SetUpDisplay(icon, itemQuality, toyName, YOU_EARNED_LABEL);
+	self:SetUpDisplay(icon, itemQuality, toyName, YOU_COLLECTED_LABEL);
 end
 
 function NewToyAlertFrameMixin:OnClick(button, down)
@@ -1196,3 +1206,58 @@ function NewRuneforgePowerAlertFrameMixin:OnClick(button, down)
 	EncounterJournal_LoadUI();
 	EncounterJournal_OpenToPowerID(self:GetPowerID());
 end
+
+-- [[ NewCosmeticAlertFrameSystem ]] --
+
+function NewCosmeticAlertFrameSystem_SetUp(frame, itemModifiedAppearanceID)
+	frame:SetUp(itemModifiedAppearanceID);
+end
+
+NewCosmeticAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewCosmeticAlertFrameMixin:SetUp(itemModifiedAppearanceID)
+	PlaySound(SOUNDKIT.UI_COSMETIC_ITEM_TOAST_SHOW);
+	self.itemModifiedAppearanceID = itemModifiedAppearanceID;
+	local info = C_TransmogCollection.GetSourceInfo(itemModifiedAppearanceID);
+	local icon = C_TransmogCollection.GetSourceIcon(itemModifiedAppearanceID);
+	local name = "";
+	local quality = Enum.ItemQuality.Epic;	-- most cosmetics are epic
+	self:SetUpDisplay(icon, quality, name, YOU_COLLECTED_LABEL, "CosmeticIconFrame");
+
+	local item = Item:CreateFromItemID(info.itemID);
+	item:ContinueOnItemLoad(function()	
+		if self.itemModifiedAppearanceID == itemModifiedAppearanceID then
+			self:SetUpDisplay(icon, item:GetItemQuality(), item:GetItemName(), YOU_COLLECTED_LABEL, "CosmeticIconFrame");
+		end
+	end);
+
+	self.timers = { };
+	local effectID1 = 135;
+	local effectID2 = 136;
+
+	-- stagger effect timings
+	self.LeftModelScene:AddEffect(effectID1, self.LeftModelScene);
+	table.insert(self.timers, C_Timer.NewTimer(0.25, function() self.LeftModelScene:AddEffect(effectID2, self.LeftModelScene); end));
+	table.insert(self.timers, C_Timer.NewTimer(0.5, function() self.LeftModelScene:AddEffect(effectID1, self.LeftModelScene); end));
+
+	table.insert(self.timers, C_Timer.NewTimer(0.3, function() self.RightModelScene:AddEffect(effectID1, self.RightModelScene); end));
+	table.insert(self.timers, C_Timer.NewTimer(0.55, function() self.RightModelScene:AddEffect(effectID2, self.RightModelScene); end));
+	table.insert(self.timers, C_Timer.NewTimer(0.8, function() self.RightModelScene:AddEffect(effectID1, self.RightModelScene); end));
+end
+
+function NewCosmeticAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+
+	TransmogUtil.OpenCollectionToItem(self.itemModifiedAppearanceID);
+end
+ 
+function NewCosmeticAlertFrameMixin:OnRelease()
+	self.LeftModelScene:ClearEffects();
+	self.RightModelScene:ClearEffects();
+	for i, timer in ipairs(self.timers) do
+		timer:Cancel();
+	end
+	self.timers = { };
+ end

@@ -203,6 +203,7 @@ function ActionBarButtonEventsFrameMixin:OnLoad()
 	self:RegisterEvent("ACTIONBAR_HIDEGRID");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 	self:RegisterEvent("PET_BAR_UPDATE");
@@ -284,6 +285,7 @@ function ActionBarActionButtonMixin:OnLoad()
 	self:SetAttribute("type", "action");
 	self:SetAttribute("checkselfcast", true);
 	self:SetAttribute("checkfocuscast", true);
+	self:SetAttribute("checkmouseovercast", true);
 	self:SetAttribute("useparent-unit", true);
 	self:SetAttribute("useparent-actionpage", true);
 	self:RegisterForDrag("LeftButton", "RightButton");
@@ -411,7 +413,7 @@ function ActionBarActionButtonMixin:Update()
         if ( hotkey:GetText() == RANGE_INDICATOR ) then
 			hotkey:Hide();
 		else
-			hotkey:SetVertexColor(0.6, 0.6, 0.6);
+			hotkey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
 		end
 	end
 
@@ -595,7 +597,7 @@ end
 local numChargeCooldowns = 0;
 local function CreateChargeCooldownFrame(parent)
 	numChargeCooldowns = numChargeCooldowns + 1;
-	cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
+	local cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
 	cooldown:SetHideCountdownNumbers(true);
 	cooldown:SetDrawSwipe(false);
 
@@ -773,14 +775,14 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 		if ( not KeybindFrames_InQuickKeybindMode() ) then
 			self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 		end
-	elseif ( event == "UPDATE_BINDINGS" ) then
+	elseif ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
 		self:UpdateHotkeys(self.buttonType);
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
 		self.rangeTimer = -1;
 	elseif ( event == "UNIT_FLAGS" or event == "UNIT_AURA" or event == "PET_BAR_UPDATE" ) then
 		-- Pet actions can also change the state of action buttons.
-		self:UpdateState();
-		self:UpdateFlash();
+		self.flashDirty = true;
+		self.stateDirty = true;
 	elseif ( (event == "ACTIONBAR_UPDATE_STATE") or
 		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
 		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) ) then
@@ -875,6 +877,16 @@ function ActionBarActionButtonMixin:SetTooltip()
 end
 
 function ActionBarActionButtonMixin:OnUpdate(elapsed)
+	if ( self.stateDirty ) then
+		self:UpdateState();
+		self.stateDirty = nil;
+	end
+
+	if ( self.flashDirty ) then
+		self:UpdateFlash();
+		self.flashDirty = nil;
+	end
+
 	if ( self:IsFlashing() ) then
 		local flashtime = self.flashtime;
 		flashtime = flashtime - elapsed;
@@ -920,7 +932,7 @@ function ActionButton_UpdateRangeIndicator(self, checksRange, inRange)
 		if ( checksRange ) then
 			self.HotKey:Show();
 			if ( inRange ) then
-				self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+				self.HotKey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
 			else
 				self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB());
 			end
@@ -931,7 +943,7 @@ function ActionButton_UpdateRangeIndicator(self, checksRange, inRange)
 		if ( checksRange and not inRange ) then
 			self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB());
 		else
-			self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+			self.HotKey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
 		end
 	end
 end

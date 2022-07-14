@@ -113,7 +113,7 @@ function ContributionStatusMixin:Update()
 end
 
 function ContributionStatusMixin:PlayFlashAnimation()
-	PlaySound(SOUNDKIT.UI_72_BUILDINGS_CONTRIBUTE_RESOURCES, nil, SOUNDKIT_ALLOW_DUPLICATES);
+	PlaySound(SOUNDKIT.UI_72_BUILDINGS_CONTRIBUTE_RESOURCES);
 
 	-- Only play the animation if it isn't playing or is almost finished.
 	local progress = self.FlashAnim:GetProgress();
@@ -189,7 +189,7 @@ function ContributeButtonMixin:UpdateTooltip()
 			if currencyID then
 				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 				rcName = currencyInfo.name;
-				rcAvailable = currencyInfo.quantity > 0;
+				rcAvailable = currencyInfo.quantity;
 				rcAmount = currencyAmount;
 				rcFormatString = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT;
 			elseif itemID then

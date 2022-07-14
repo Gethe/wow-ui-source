@@ -145,11 +145,6 @@
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-235"/>
 							</Anchors>
-							<Scripts>
-								<OnLoad>
-									self.Anim:Play();
-								</OnLoad>
-							</Scripts>
 						</Frame>
 						<Button parentKey="RedeemButton" inherits="WowTokenButtonTemplate" text="TOKEN_REDEEM_GAME_TIME_BUTTON_LABEL" id="1">
 							<Size x="234" y="28"/>
@@ -210,11 +205,6 @@
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-235"/>
 							</Anchors>
-							<Scripts>
-								<OnLoad>
-									self.Anim:Play();
-								</OnLoad>
-							</Scripts>
 						</Frame>
 						<Button parentKey="RedeemButton" inherits="WowTokenButtonTemplate" text="TOKEN_REDEEM_BALANCE_BUTTON_LABEL" id="2">
 							<Size x="234" y="28"/>
@@ -301,11 +291,6 @@
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="16"/>
 					</Anchors>
-					<Scripts>
-						<OnLoad>
-							self.Anim:Play();
-						</OnLoad>
-					</Scripts>
 				</Frame>
 				<Button parentKey="Button1" inherits="WowTokenButtonTemplate" text="OKAY" id="1">
 					<Size x="120" y="22"/>

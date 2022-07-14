@@ -6,13 +6,10 @@ function RunforgeFrameTooltipMixin:OnLoad()
 	SharedTooltip_SetBackdropStyle(self, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 
 	local pulseStyle = CopyTable(GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
-	pulseStyle.bgFile = nil;
-	self.PulseOverlay:SetBackdrop(pulseStyle);
-	self.PulseOverlay.TopOverlay:SetAtlas(pulseStyle.overlayAtlasTop, true);
-	self.PulseOverlay.TopOverlay:SetScale(pulseStyle.overlayAtlasTopScale);
-	self.PulseOverlay.TopOverlay:SetPoint("CENTER", self.PulseOverlay, "TOP", 0, pulseStyle.overlayAtlasTopYOffset);
+	pulseStyle.padding = nil;
+	SharedTooltip_SetBackdropStyle(self.PulseOverlay, pulseStyle);
 
-	local regions = {self.PulseOverlay:GetRegions()};
+	local regions = {self.PulseOverlay.TopOverlay, self.PulseOverlay.NineSlice:GetRegions()};
 	for i, region in ipairs(regions) do
 		region:SetBlendMode("ADD");
 	end

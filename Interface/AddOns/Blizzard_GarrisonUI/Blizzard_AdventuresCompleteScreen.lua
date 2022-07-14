@@ -94,8 +94,12 @@ function AdventuresCompleteScreenMixin:SetCurrentMission(mission)
 	if not mission.completed then
    		C_Garrison.MarkMissionComplete(self.currentMission.missionID);
 	else
-		C_Garrison.RegenerateCombatLog(self.currentMission.missionID);
+		--If we have the ability to regenerate the combat log and can't, don't show the complete screen
+		if not C_Garrison.RegenerateCombatLog(self.currentMission.missionID) then
+			self:GetCovenantMissionFrame():CloseMissionComplete();
+		end
 	end
+
 end
 
 function AdventuresCompleteScreenMixin:ResetMissionDisplay()
@@ -103,10 +107,20 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
 
    	local board = self.Board;
    	board:Reset();
+	board:ResetBoardIndicators();
+	
+	for enemySocket in board:EnumerateEnemySockets() do 
+		enemySocket:SetSocketTexture(mission.locTextureKit, true);
+	end 
 
-   	local missionInfo = self.MissionInfo;
+	for followerSocket in board:EnumerateFollowerSockets() do 
+		followerSocket:SetSocketTexture(mission.locTextureKit, false);
+	end 
+
+	local missionInfo = self.MissionInfo;
    	missionInfo.Title:SetText(mission.name);
    	GarrisonTruncationFrame_Check(missionInfo.Title);
+	CovenantMissionUpdateBoardTextures(self, mission.locTextureKit);
    
    	-- rare
    	local color = mission.isRare and RARE_MISSION_COLOR or BLACK_FONT_COLOR;
@@ -120,7 +134,6 @@ function AdventuresCompleteScreenMixin:ResetMissionDisplay()
    		encounterFrame:Show();
    	end
    
-   	local encounterIndex = 1;
    	for i, followerGUID in ipairs(mission.followers) do
    		local missionCompleteInfo = self.followerGUIDToInfo[followerGUID];			
    		local followerFrame = self:GetFrameFromBoardIndex(missionCompleteInfo.boardIndex);
@@ -155,6 +168,7 @@ function AdventuresCompleteScreenMixin:StartMissionReplay()
 	self.AdventuresCombatLog:Clear();
 	self.replayTimeElapsed = 0;
 	self.replayRoundIndex = 1;
+	self.eventIndexToCooldownUpdates = {};
 	self:SetScript("OnUpdate", AdventuresCompleteScreenMixin.UpdateMissionReplay);
 	self.RewardsScreen:PopulateFollowerInfo(self.followerGUIDToInfo, self.currentMission, self.autoCombatResult.winner);
 
@@ -216,11 +230,47 @@ function AdventuresCompleteScreenMixin:IsReplayEventFinished()
 	return eventTime > 0.5;
 end
 
+function AdventuresCompleteScreenMixin:CalculateCooldownUpdates(roundIndex)
+	local round = self:GetReplayRound(roundIndex);
+
+	local castBoardIndexToAbilityEventIndex = {};
+	for eventIndex, event in ipairs(round.events) do
+		if GarrAutoCombatUtil.IsAbilityEvent(event) then
+			castBoardIndexToAbilityEventIndex[event.casterBoardIndex] = eventIndex;
+		end
+	end
+
+	local lastEventIndex = #round.events;
+
+	self.eventIndexToCooldownUpdates = {};
+
+	local function AddCooldownUpdate(puckFrame)
+		local boardIndex = puckFrame:GetBoardIndex();
+		local cooldownEventIndex = castBoardIndexToAbilityEventIndex[boardIndex] or lastEventIndex;
+
+		local cooldownUpdates = self.eventIndexToCooldownUpdates[cooldownEventIndex];
+		if cooldownUpdates == nil then
+			cooldownUpdates = {};
+			self.eventIndexToCooldownUpdates[cooldownEventIndex] = cooldownUpdates;
+		end
+
+		table.insert(cooldownUpdates, boardIndex);
+	end
+
+	for enemyFrame in self.Board:EnumerateEnemies() do
+		AddCooldownUpdate(enemyFrame);
+	end
+
+	for followerFrame in self.Board:EnumerateFollowers() do
+		AddCooldownUpdate(followerFrame);
+	end
+end
+
 function AdventuresCompleteScreenMixin:StartReplayRound(roundIndex)
 	self.replayRoundIndex = roundIndex;
 	self.roundStartTime = self:GetReplayTimeElapsed();
 	self.AdventuresCombatLog:AddCombatRoundHeader(roundIndex, self:GetNumReplayRounds());
-	self.Board:UpdateCooldownsFromNewRound();
+	self:CalculateCooldownUpdates(roundIndex);
 
 	local eventIndex = 1;
 	self:StartReplayEvent(roundIndex, eventIndex);
@@ -337,7 +387,7 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 
 		if combatLogEvent.type == Enum.GarrAutoMissionEventType.ApplyAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.Heal or combatLogEvent.type == Enum.GarrAutoMissionEventType.RemoveAura or combatLogEvent.type == Enum.GarrAutoMissionEventType.PeriodicHeal then
 			if #combatLogEvent.targetInfo > 2 then
-				PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER, nil, SOUNDKIT_ALLOW_DUPLICATES);
+				PlaySound(SOUNDKIT.UI_ADVENTURES_DEFENSIVE_SWEETENER);
 			end
 		end
 
@@ -358,9 +408,9 @@ function AdventuresCompleteScreenMixin:PlayReplayEffect(combatLogEvent)
 				end
 
 				if #combatLogEvent.targetInfo > 5 then
-					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_LARGE, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_LARGE);
 				elseif #combatLogEvent.targetInfo > 1 then		
-					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_MEDIUM, nil, SOUNDKIT_ALLOW_DUPLICATES);
+					PlaySound(SOUNDKIT.UI_ADVENTURES_DAMAGE_SWEETENER_MEDIUM);
 				end
 
 				return false;
@@ -402,9 +452,14 @@ function AdventuresCompleteScreenMixin:OnReplayEffectResolved()
 end
 
 function AdventuresCompleteScreenMixin:AdvanceReplay()
-	local currentRound = self:GetReplayRound(self.replayRoundIndex);
 	if self:IsReplayEventFinished() then
-		if self.replayEventIndex < #currentRound.events then
+		local cooldownUpdates = self.eventIndexToCooldownUpdates[self.replayEventIndex];
+		if cooldownUpdates ~= nil then
+			self.Board:AdvanceCooldowns(cooldownUpdates);
+		end
+
+		local currentRound = self:GetReplayRound(self.replayRoundIndex);
+		if (currentRound ~= nil) and (self.replayEventIndex < #currentRound.events) then
 			self:StartReplayEvent(self.replayRoundIndex, self.replayEventIndex + 1);
 		elseif self.replayRoundIndex < self:GetNumReplayRounds() then
 			self:StartReplayRound(self.replayRoundIndex + 1);

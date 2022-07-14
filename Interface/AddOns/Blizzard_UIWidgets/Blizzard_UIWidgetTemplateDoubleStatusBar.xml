@@ -36,6 +36,9 @@
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="Spark" alphaMode="ADD">
 					<Size x="16" y="39"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
@@ -88,7 +91,7 @@
 			</StatusBar>
 			<StatusBar parentKey="RightBar" inherits="UIWidgetTemplateDoubleStatusBar_StatusBarTemplate" reverseFill="true">
 				<KeyValues>
-					<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
+					<KeyValue key="defaultTooltipAnchor" value="ANCHOR_BOTTOMRIGHT" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOP" x="7" y="-5"/>

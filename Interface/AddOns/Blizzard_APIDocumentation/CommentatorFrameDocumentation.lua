@@ -1030,7 +1030,7 @@ local CommentatorFrame =
 			},
 		},
 		{
-			Name = "SetBlacklistedAuras",
+			Name = "SetBlocklistedAuras",
 			Type = "Function",
 
 			Arguments =
@@ -1039,7 +1039,7 @@ local CommentatorFrame =
 			},
 		},
 		{
-			Name = "SetBlacklistedCooldowns",
+			Name = "SetBlocklistedCooldowns",
 			Type = "Function",
 
 			Arguments =
@@ -1511,6 +1511,8 @@ local CommentatorFrame =
 				{ Name = "healingTaken", Type = "number", Nilable = false },
 				{ Name = "kills", Type = "number", Nilable = false },
 				{ Name = "deaths", Type = "number", Nilable = false },
+				{ Name = "soloShuffleRoundWins", Type = "number", Nilable = false },
+				{ Name = "soloShuffleRoundLosses", Type = "number", Nilable = false },
 			},
 		},
 		{

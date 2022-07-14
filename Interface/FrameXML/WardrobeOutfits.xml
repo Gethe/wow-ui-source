@@ -111,7 +111,7 @@
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local dropDown = self:GetParent();
-						dropDown:CheckOutfitForSave(UIDropDownMenu_GetText(dropDown));
+						WardrobeOutfitFrame:StartOutfitSave(dropDown, dropDown.selectedOutfitID);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -120,7 +120,7 @@
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
+			<OnHide method="WardrobeOutfitDropDown_OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -263,6 +263,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnUpdate method="OnUpdate"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>

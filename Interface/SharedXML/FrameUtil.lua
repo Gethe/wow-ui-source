@@ -56,7 +56,9 @@ end
 function GetUnscaledFrameRect(frame, scale)
 	local frameLeft, frameBottom, frameWidth, frameHeight = frame:GetScaledRect();
 	if frameLeft == nil then
-		return 1, 1, 1, 1;
+		-- Defaulted returned for diagnosing invalid rects in layout frames.
+		local defaulted = true;
+		return 1, 1, 1, 1, defaulted;
 	end
 
 	return frameLeft / scale, frameBottom / scale, frameWidth / scale, frameHeight / scale;
@@ -74,6 +76,17 @@ function ApplyDefaultScale(frame, minScale, maxScale)
 	end
 
 	frame:SetScale(scale);
+end
+
+function FitToParent(parent, frame)
+	local horizRatio = parent:GetWidth() / frame:GetWidth();
+	local vertRatio = parent:GetHeight() / frame:GetHeight();
+
+	if ( horizRatio < 1 or vertRatio < 1 ) then
+		frame:SetScale(min(horizRatio, vertRatio));
+		frame:SetPoint("CENTER", 0, 0);
+	end
+
 end
 
 function UpdateScaleForFit(frame)

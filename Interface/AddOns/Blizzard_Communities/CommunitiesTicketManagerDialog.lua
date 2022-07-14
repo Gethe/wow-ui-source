@@ -477,7 +477,8 @@ function CommunitiesTicketManagerDialogMixin:GenerateLink(overrideUses, override
 	
 	local streamId = overrideStreamId or self:GetStreamId();
 	local clubId = self:GetClubId();
-	C_Club.CreateTicket(clubId, uses, expirationTime, streamId);
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	C_Club.CreateTicket(clubId, uses, expirationTime, streamId, clubInfo.crossFaction);
 end
 
 function CommunitiesTicketManagerDialogMixin:GetFirstTicketInfo()

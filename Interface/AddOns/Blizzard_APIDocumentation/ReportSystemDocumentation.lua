@@ -35,31 +35,60 @@ local ReportSystem =
 			},
 		},
 		{
-			Name = "InitiateReportPlayer",
+			Name = "GetMajorCategoriesForReportType",
 			Type = "Function",
-			Documentation = { "Not allowed to be called by addons" },
 
 			Arguments =
 			{
-				{ Name = "complaintType", Type = "string", Nilable = false },
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
+				{ Name = "reportType", Type = "ReportType", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "token", Type = "number", Nilable = false },
+				{ Name = "majorCategories", Type = "table", InnerType = "ReportMajorCategory", Nilable = false },
 			},
 		},
 		{
-			Name = "OpenReportPlayerDialog",
+			Name = "GetMajorCategoryString",
 			Type = "Function",
-			Documentation = { "Addons should use this to open the ReportPlayer dialog. InitiateReportPlayer and SendReportPlayer are no longer accessible to addons." },
 
 			Arguments =
 			{
-				{ Name = "reportType", Type = "string", Nilable = false },
-				{ Name = "playerName", Type = "string", Nilable = false },
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
+				{ Name = "majorCategory", Type = "ReportMajorCategory", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "majorCategoryString", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMinorCategoriesForReportTypeAndMajorCategory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "reportType", Type = "ReportType", Nilable = false },
+				{ Name = "majorCategory", Type = "ReportMajorCategory", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "minorCategories", Type = "table", InnerType = "ReportMinorCategory", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMinorCategoryString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "minorCategory", Type = "ReportMinorCategory", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "minorCategoryString", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -71,73 +100,20 @@ local ReportSystem =
 			Type = "Function",
 		},
 		{
-			Name = "SendReportPlayer",
+			Name = "SendReport",
 			Type = "Function",
 			Documentation = { "Not allowed to be called by addons" },
 
 			Arguments =
 			{
-				{ Name = "token", Type = "number", Nilable = false },
-				{ Name = "comment", Type = "string", Nilable = true },
-			},
-		},
-		{
-			Name = "SetPendingReportPetTarget",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "target", Type = "string", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "set", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "SetPendingReportTarget",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "target", Type = "string", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "set", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "SetPendingReportTargetByGuid",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "guid", Type = "string", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "set", Type = "bool", Nilable = false },
+				{ Name = "reportInfo", Type = "table", Mixin = "ReportInfoMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
 			},
 		},
 	},
 
 	Events =
 	{
-		{
-			Name = "OpenReportPlayer",
-			Type = "Event",
-			LiteralName = "OPEN_REPORT_PLAYER",
-			Payload =
-			{
-				{ Name = "token", Type = "number", Nilable = false },
-				{ Name = "reportType", Type = "string", Nilable = false },
-				{ Name = "playerName", Type = "string", Nilable = false },
-			},
-		},
 		{
 			Name = "ReportPlayerResult",
 			Type = "Event",

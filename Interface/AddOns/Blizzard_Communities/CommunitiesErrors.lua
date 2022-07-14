@@ -82,6 +82,8 @@ local errorStrings =
 	[Enum.ClubErrorType.ErrorClubTicketCountAtMax] = "ERROR_CLUB_TICKET_COUNT_AT_MAX",
 	[Enum.ClubErrorType.ErrorClubTicketNoSuchTicket] = "ERROR_CLUB_TICKET_NO_SUCH_TICKET",
 	[Enum.ClubErrorType.ErrorClubTicketHasConsumedAllowedRedeemCount] = "ERROR_CLUB_TICKET_HAS_CONSUMED_ALLOWED_REDEEM_COUNT",
+	[Enum.ClubErrorType.ErrorClubDoesntAllowCrossFaction] = "ERROR_CLUB_DOESNT_ALLOW_CROSS_FACTION",
+	[Enum.ClubErrorType.ErrorClubEditHasCrossFactionMembers] = "COMMUNITIES_SETTING_CROSS_FACTION_TOOLTIP_ERROR",
 };
 
 local clubRemovedStrings = 

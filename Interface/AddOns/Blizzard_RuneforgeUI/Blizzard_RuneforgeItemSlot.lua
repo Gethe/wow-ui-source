@@ -73,6 +73,8 @@ function RuneforgeItemSlotMixin:OnEnter()
 	if self.onEnterEvent then
 		self:GetRuneforgeFrame():TriggerEvent(self.onEnterEvent);
 	end
+
+	self:CheckErrorTooltip();
 end
 
 function RuneforgeItemSlotMixin:OnLeave()
@@ -80,13 +82,13 @@ function RuneforgeItemSlotMixin:OnLeave()
 		self:GetRuneforgeFrame():TriggerEvent(self.onLeaveEvent);
 	end
 
+	GameTooltip_Hide();
+
 	self:UpdateEffectVisibility();
 end
 
 function RuneforgeItemSlotMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, RuneforgeItemSlotEvents);
-
-	self:UpdateEffectVisibility();
 
 	if self:IsRuneforgeUpgrading() then
 		self:SetNormalAtlas("runecarving-upgrade-icon-center-empty");
@@ -146,10 +148,49 @@ function RuneforgeItemSlotMixin:SetTextureAndEffects()
 
 	self:AddEffectData("primary", RuneforgeUtil.Effect.CenterRune, RuneforgeUtil.EffectTarget.None, RuneforgeUtil.Level.Overlay);
 	self:AddEffectData("primary-upgrade", RuneforgeUtil.Effect.UpgradeCenterRune, RuneforgeUtil.EffectTarget.None, RuneforgeUtil.Level.Overlay);
+
+	self:SetErrorTexture("runecarving-icon-center-empty-error");
+end
+
+function RuneforgeItemSlotMixin:SetErrorTexture(atlas)
+	self.ErrorTexture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+end
+
+function RuneforgeItemSlotMixin:CheckErrorTooltip()
+	if self:IsEnabled() then
+		return;
+	end
+
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	local isUpgrading = runeforgeFrame:IsRuneforgeUpgrading();
+	if isUpgrading then
+		local hasValidItem, errorText = runeforgeFrame:HasRuneforgeLegendaryForUpgrade();
+		if hasValidItem then
+			return;
+		end
+
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, errorText, RED_FONT_COLOR);
+		GameTooltip:Show();
+	else
+		local hasValidItem = runeforgeFrame:HasValidItemForRuneforgeState();
+		if hasValidItem then
+			return;
+		end
+
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, RUNEFORGE_LEGENDARY_ERROR_NO_BASE_ITEM_AVAILABLE, RED_FONT_COLOR);
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddNormalLine(GameTooltip, RUNEFORGE_LEGENDARY_ERROR_NO_BASE_ITEM_AVAILABLE_DESCRIPTION);
+		GameTooltip:Show();
+	end
 end
 
 function RuneforgeItemSlotMixin:Refresh()
-	self:SetEnabled(self:GetRuneforgeFrame():HasValidItemForRuneforgeState());
+	local hasValidItem = self:GetRuneforgeFrame():HasValidItemForRuneforgeState();
+	self:SetEnabled(hasValidItem);
+	self.ErrorTexture:SetShown(not hasValidItem);
+	self:UpdateEffectVisibility();
 end
 
 function RuneforgeItemSlotMixin:SetItemLocation(itemLocation)
@@ -214,7 +255,7 @@ end
 
 function RuneforgeItemSlotMixin:ShouldShowPrimaryEffect()
 	local hasItem = self:GetItem() ~= nil;
-	return self:IsShown() and not hasItem and not self.SelectingTexture:IsShown();
+	return self:IsShown() and not hasItem and not self.SelectingTexture:IsShown() and not self.ErrorTexture:IsShown();
 end
 
 function RuneforgeItemSlotMixin:GetEffectKeys()
@@ -257,6 +298,8 @@ function RuneforgeUpgradeItemSlotMixin:SetTextureAndEffects()
 	self.SelectedTexture:SetSize(57, 57);
 
 	self:AddEffectData("primary", RuneforgeUtil.Effect.UpgradeSubRune, RuneforgeUtil.EffectTarget.None, RuneforgeUtil.Level.Overlay);
+
+	self:SetErrorTexture("runecarving-icon-reagent-empty-error");
 end
 
 function RuneforgeUpgradeItemSlotMixin:OnClick(buttonName)
@@ -285,7 +328,6 @@ function RuneforgeUpgradeItemSlotMixin:OnReceiveDrag()
 end
 
 function RuneforgeUpgradeItemSlotMixin:OnShow()
-	self:UpdateEffectVisibility();
 	self:GetRuneforgeFrame():RegisterCallback(RuneforgeFrameMixin.Event.BaseItemChanged, self.ResetItemSlot, self);
 	self:Refresh();
 end
@@ -296,7 +338,11 @@ function RuneforgeUpgradeItemSlotMixin:OnHide()
 end
 
 function RuneforgeUpgradeItemSlotMixin:Refresh()
-	self:SetEnabled(self:GetRuneforgeFrame():HasValidUpgradeItem());
+	local runeforgeFrame = self:GetRuneforgeFrame();
+	self:SetEnabled(runeforgeFrame:HasValidUpgradeItem());
+
+	local hasValidUpgradeItem = runeforgeFrame:HasValidUpgradeItem();
+	self.ErrorTexture:SetShown(not hasValidUpgradeItem);
 end
 
 function RuneforgeUpgradeItemSlotMixin:GetEffectKeys()

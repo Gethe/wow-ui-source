@@ -15,6 +15,29 @@ local ItemInteractionUI =
 			Type = "Function",
 		},
 		{
+			Name = "GetChargeInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "chargeInfo", Type = "ItemInteractionChargeInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemConversionCurrencyCost",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "item", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "conversionCost", Type = "ConversionCurrencyCost", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemInteractionInfo",
 			Type = "Function",
 
@@ -49,6 +72,10 @@ local ItemInteractionUI =
 			Type = "Function",
 		},
 		{
+			Name = "SetItemConversionOutputTooltip",
+			Type = "Function",
+		},
+		{
 			Name = "SetPendingItem",
 			Type = "Function",
 
@@ -66,6 +93,11 @@ local ItemInteractionUI =
 
 	Events =
 	{
+		{
+			Name = "ItemInteractionChargeInfoUpdated",
+			Type = "Event",
+			LiteralName = "ITEM_INTERACTION_CHARGE_INFO_UPDATED",
+		},
 		{
 			Name = "ItemInteractionClose",
 			Type = "Event",
@@ -90,14 +122,22 @@ local ItemInteractionUI =
 	Tables =
 	{
 		{
-			Name = "ItemInteractionFrameType",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 0,
-			MaxValue = 0,
+			Name = "ConversionCurrencyCost",
+			Type = "Structure",
 			Fields =
 			{
-				{ Name = "CleanseCorruption", Type = "ItemInteractionFrameType", EnumValue = 0 },
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "amount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemInteractionChargeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "newChargeAmount", Type = "number", Nilable = false },
+				{ Name = "rechargeRate", Type = "number", Nilable = false },
+				{ Name = "timeToNextCharge", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -111,8 +151,11 @@ local ItemInteractionUI =
 				{ Name = "titleText", Type = "string", Nilable = false },
 				{ Name = "tutorialText", Type = "string", Nilable = false },
 				{ Name = "buttonText", Type = "string", Nilable = false },
-				{ Name = "frameType", Type = "ItemInteractionFrameType", Nilable = false },
+				{ Name = "interactionType", Type = "UIItemInteractionType", Nilable = false },
+				{ Name = "flags", Type = "number", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = true },
+				{ Name = "buttonTooltip", Type = "string", Nilable = true },
+				{ Name = "confirmationDescription", Type = "string", Nilable = true },
 				{ Name = "cost", Type = "number", Nilable = true },
 				{ Name = "currencyTypeId", Type = "number", Nilable = true },
 				{ Name = "dropInSlotSoundKitId", Type = "number", Nilable = true },

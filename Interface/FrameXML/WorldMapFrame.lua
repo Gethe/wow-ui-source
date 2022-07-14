@@ -44,7 +44,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 		local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
 		if ( itemID ) then
 			local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID = GetItemInfo(itemID);
-			if ( classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR or (classID == LE_ITEM_CLASS_GEM and subclassID == LE_ITEM_GEM_ARTIFACTRELIC) ) then
+			if ( classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor or (classID == Enum.ItemClass.Gem and subclassID == Enum.ItemGemSubclass.Artifactrelic) ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT);
 			end
 
@@ -52,7 +52,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER);
 			end
 
-			if ( classID == LE_ITEM_CLASS_TRADEGOODS ) then
+			if ( classID == Enum.ItemClass.Tradegoods ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_MATERIALS);
 			end
 
@@ -117,6 +117,11 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 				return false;
 			end
 		end
+	else
+		-- Even if we don't care about type filters, we still want to make sure reward data is up to date
+		if not HaveQuestRewardData(info.questId) then
+			C_TaskQuest.RequestPreloadRewardData(info.questId);
+		end
 	end
 
 	return true;
@@ -132,27 +137,20 @@ function WorldMap_GetQuestTimeForTooltip(questID)
 	end
 end
 
-function WorldMap_AddQuestTimeToTooltip(questID)
-	local formattedTime, color, secondsRemaining = WorldMap_GetQuestTimeForTooltip(questID);
-	if formattedTime and color then
-		GameTooltip_AddColoredLine(GameTooltip, formattedTime, color);
-	end
-end
-
 function CallingPOI_OnEnter(self)
 	local noWrap = false;
 	GameTooltip_SetTitle(GameTooltip, QuestUtils_GetQuestName(self.questID), nil, noWrap);
-	WorldMap_AddQuestTimeToTooltip(self.questID);
+	GameTooltip_AddQuestTimeToTooltip(GameTooltip, self.questID);
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddNormalLine(GameTooltip, CALLING_QUEST_TOOLTIP_DESCRIPTION);
 
 	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(self.questID);
-	if (widgetSetID) then 
+	if (widgetSetID) then
 		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
-	end 
+	end
 
 	GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, TOOLTIP_QUEST_REWARDS_STYLE_CALLING_REWARD);
-	GameTooltip.recalculatePadding = true;
+	GameTooltip:Show();
 end
 
 function TaskPOI_OnEnter(self, skipSetOwner)
@@ -161,103 +159,20 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 	end
 
 	if ( not HaveQuestData(self.questID) ) then
-		GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
+		GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
 		GameTooltip:Show();
 		return;
 	end
 
 	if C_QuestLog.IsQuestCalling(self.questID) then
 		CallingPOI_OnEnter(self);
-		GameTooltip:Show();
 		return;
 	end
 
-	local widgetSetAdded = false; 
-	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(self.questID);
+	GameTooltip_AddQuest(self);
 
-	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
-	if ( self.worldQuest ) then
-		local tagInfo = C_QuestLog.GetQuestTagInfo(self.questID);
-		local quality = tagInfo and tagInfo.quality or Enum.WorldQuestQuality.Common;
-		local color = WORLD_QUEST_QUALITY_COLORS[quality];
-		GameTooltip:SetText(title, color.r, color.g, color.b);
-		QuestUtils_AddQuestTypeToTooltip(GameTooltip, self.questID, NORMAL_FONT_COLOR);
-
-		local factionName = factionID and GetFactionInfoByID(factionID);
-		if (factionName) then
-			local reputationYieldsRewards = (not capped) or C_Reputation.IsFactionParagon(factionID);
-			if (reputationYieldsRewards) then
-				GameTooltip:AddLine(factionName);
-			else
-				GameTooltip:AddLine(factionName, GRAY_FONT_COLOR:GetRGB());
-			end
-		end
-
-		WorldMap_AddQuestTimeToTooltip(self.questID);
-	elseif ( self.isThreat ) then
-		GameTooltip_SetTitle(GameTooltip, title);
-		WorldMap_AddQuestTimeToTooltip(self.questID);
-	else
-		GameTooltip:SetText(title);
-	end
-
-	if (self.isCombatAllyQuest) then
-		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_FOLLOWER_QUEST, HIGHLIGHT_FONT_COLOR, true);
-		GameTooltip_AddColoredLine(GameTooltip, GRANTS_FOLLOWER_XP, GREEN_FONT_COLOR, true);
-	elseif (self.isQuestStart) then
-		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_QUEST, HIGHLIGHT_FONT_COLOR, true);
-	else
-		local questDescription;
-		local questCompleted = C_QuestLog.IsComplete(self.questID);
-
-		if (questCompleted and self.shouldShowObjectivesAsStatusBar) then
-			questDescription = QUEST_WATCH_QUEST_READY;
-			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
-		elseif (not questCompleted and self.shouldShowObjectivesAsStatusBar) then
-			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(self.questID);
-			questDescription = select(2, GetQuestLogQuestText(questLogIndex));
-			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
-		end
-
-		for objectiveIndex = 1, self.numObjectives do
-			local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, objectiveIndex, false);
-			local showObjective = not (finished and self.isThreat);
-			if showObjective then
-				if(self.shouldShowObjectivesAsStatusBar) then
-					local percent = math.floor((numFulfilled/numRequired) * 100);
-					GameTooltip_ShowProgressBar(GameTooltip, 0, numRequired, numFulfilled, PERCENTAGE_STRING:format(percent));
-				elseif ( objectiveText and #objectiveText > 0 ) then
-					local color = finished and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
-					GameTooltip:AddLine(QUEST_DASH .. objectiveText, color.r, color.g, color.b, true);
-				end
-			end
-		end
-		local objectiveText, objectiveType, finished, numFulfilled, numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
-		local percent = C_TaskQuest.GetQuestProgressBarInfo(self.questID);
-		local showObjective = not (finished and self.isThreat);
-		if ( percent  and showObjective ) then
-			GameTooltip_ShowProgressBar(GameTooltip, 0, 100, percent, PERCENTAGE_STRING:format(percent));
-		end
-		
-		if (widgetSetID) then
-			widgetSetAdded = true;
-			GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
-		end
-
-		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, self.questID, self.questRewardTooltipStyle);
-
-		if ( self.worldQuest and GameTooltip.AddDebugWorldQuestInfo ) then
-			GameTooltip:AddDebugWorldQuestInfo(self.questID);
-		end
-	end
-
-			
-	if (not widgetSetAdded and widgetSetID) then
-		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
-	end
-
-	GameTooltip:Show();
-	GameTooltip.recalculatePadding = true;
+	EventRegistry:TriggerEvent("TaskPOI.TooltipShown", self, self.questID);
 end
 
 function TaskPOI_OnLeave(self)

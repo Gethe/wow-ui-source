@@ -866,7 +866,6 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.Anim:Play();
 						self:SetPoint("TOP", self:GetParent().ViewButton, "BOTTOM", -self.Label:GetWidth()/2, 0);
 					</OnLoad>
 				</Scripts>
@@ -1359,7 +1358,6 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self.Anim:Play();
 						self:SetPoint("TOP", self:GetParent().NextMissionButton, "BOTTOM", -self.Label:GetWidth()/2, 4);
 					</OnLoad>
 				</Scripts>

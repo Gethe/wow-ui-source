@@ -48,7 +48,7 @@ function ObjectPoolMixin:Acquire()
 	end
 
 	local newObj = self.creationFunc(self);
-	if self.resetterFunc then
+	if self.resetterFunc and not self.disallowResetIfNew then
 		self.resetterFunc(self, newObj);
 	end
 	self.activeObjects[newObj] = true;
@@ -75,6 +75,10 @@ function ObjectPoolMixin:ReleaseAll()
 	for obj in pairs(self.activeObjects) do
 		self:Release(obj);
 	end
+end
+
+function ObjectPoolMixin:SetResetDisallowedIfNew(disallowed)
+	self.disallowResetIfNew = disallowed;
 end
 
 function ObjectPoolMixin:EnumerateActive()
@@ -170,6 +174,29 @@ function CreateTexturePool(parent, layer, subLayer, textureTemplate, resetterFun
 	return texturePool;
 end
 
+MaskPoolMixin = CreateFromMixins(ObjectPoolMixin);
+
+local function MaskPoolFactory(maskPool)
+	return maskPool.parent:CreateMaskTexture(nil, maskPool.layer, maskPool.maskTemplate, maskPool.subLayer);
+end
+
+function MaskPoolMixin:OnLoad(parent, layer, subLayer, maskTemplate, resetterFunc)
+	ObjectPoolMixin.OnLoad(self, MaskPoolFactory, resetterFunc);
+	self.parent = parent;
+	self.layer = layer;
+	self.subLayer = subLayer;
+	self.maskTemplate = maskTemplate;
+end
+
+MaskPool_Hide = FramePool_Hide;
+MaskPool_HideAndClearAnchors = FramePool_HideAndClearAnchors;
+
+function CreateMaskPool(parent, layer, subLayer, maskTemplate, resetterFunc)
+	local maskPool = CreateFromMixins(MaskPoolMixin);
+	maskPool:OnLoad(parent, layer, subLayer, maskTemplate, resetterFunc or MaskPool_HideAndClearAnchors);
+	return maskPool;
+end
+
 FontStringPoolMixin = CreateFromMixins(ObjectPoolMixin);
 
 local function FontStringPoolFactory(fontStringPool)
@@ -250,6 +277,12 @@ function FramePoolCollectionMixin:CreatePool(frameType, parent, template, resett
 	local pool = CreateFramePool(frameType, parent, template, resetterFunc, forbidden);
 	self.pools[template] = pool;
 	return pool;
+end
+
+function FramePoolCollectionMixin:CreatePoolIfNeeded(frameType, parent, template, resetterFunc, forbidden)
+	if not self:GetPool(template) then
+		self:CreatePool(frameType, parent, template, resetterFunc, forbidden);
+	end
 end
 
 function FramePoolCollectionMixin:GetPool(template)
@@ -345,6 +378,7 @@ function FramePoolCollectionMixin:EnumerateInactive()
 	end, nil;
 end
 
+
 FixedSizeFramePoolCollectionMixin = CreateFromMixins(FramePoolCollectionMixin);
 
 function CreateFixedSizeFramePoolCollection()
@@ -381,4 +415,49 @@ function FixedSizeFramePoolCollectionMixin:Acquire(template)
 		return pool:Acquire();
 	end
 	return nil;
+end
+
+
+FontStringPoolCollectionMixin = CreateFromMixins(FramePoolCollectionMixin);
+
+function CreateFontStringPoolCollection()
+	local poolCollection = CreateFromMixins(FontStringPoolCollectionMixin);
+	poolCollection:OnLoad();
+	return poolCollection;
+end
+
+function FontStringPoolCollectionMixin:GetOrCreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	local pool = self:GetPool(fontStringTemplate);
+	if not pool then
+		pool = self:CreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	end
+	return pool;
+end
+
+function FontStringPoolCollectionMixin:CreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	assert(self:GetPool(fontStringTemplate) == nil);
+	local pool = CreateFontStringPool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	self.pools[fontStringTemplate] = pool;
+	return pool;
+end
+
+function FontStringPoolCollectionMixin:CreatePoolIfNeeded(parent, layer, subLayer, fontStringTemplate, resetterFunc)
+	if not self:GetPool(fontStringTemplate) then
+		self:CreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	end
+end
+
+function FontStringPoolCollectionMixin:Acquire(fontStringTemplate, parent, layer, subLayer, resetterFunc)
+	local pool = self:GetOrCreatePool(parent, layer, subLayer, fontStringTemplate, resetterFunc);
+	local newString = pool:Acquire();
+
+	if parent then
+		newString:SetParent(parent);
+	end
+
+	if layer then
+		newString:SetDrawLayer(layer, subLayer);
+	end
+
+	return newString;
 end

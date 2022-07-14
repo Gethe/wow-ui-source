@@ -70,11 +70,6 @@ end
 
 function ChannelButtonBaseMixin:SetChannelRuleset(ruleset)
 	self.ruleset = ruleset;
-	self.activePlayerRole = nil;
-
-	if ruleset == Enum.ChatChannelRuleset.Mentor then
-		self.activePlayerRole = C_PlayerMentorship.GetMentorshipStatus(PlayerLocation:CreateFromUnit("player"));
-	end
 end
 
 function ChannelButtonBaseMixin:SetChannelIsRegional(isRegional)
@@ -86,7 +81,7 @@ function ChannelButtonBaseMixin:IsRegional()
 end
 
 function ChannelButtonBaseMixin:GetChannelRuleset()
-	return self.ruleset, self.activePlayerRole;
+	return self.ruleset;
 end
 
 function ChannelButtonBaseMixin:AllowedToLeave()

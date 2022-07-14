@@ -250,7 +250,7 @@ end
 MediumStoreCardWithBuyButtonMixin = CreateFromMixins(MediumStoreCardMixin, ProductCardBuyButtonMixin);
 
 function MediumStoreCardWithBuyButtonMixin:SetDefaultCardTexture()
-	self.Card:SetAtlas("shop-card-quarter", true);
+	self.Card:SetAtlas("store-card-quarter", true);
 	self.Card:SetTexCoord(0, 1, 0, 1);
 end
 

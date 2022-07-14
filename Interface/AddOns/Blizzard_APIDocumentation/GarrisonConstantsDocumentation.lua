@@ -3,6 +3,35 @@ local GarrisonConstants =
 	Tables =
 	{
 		{
+			Name = "ContributionState",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "ContributionState", EnumValue = 0 },
+				{ Name = "Building", Type = "ContributionState", EnumValue = 1 },
+				{ Name = "Active", Type = "ContributionState", EnumValue = 2 },
+				{ Name = "UnderAttack", Type = "ContributionState", EnumValue = 3 },
+				{ Name = "Destroyed", Type = "ContributionState", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "CovenantSkill",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 2730,
+			MaxValue = 2733,
+			Fields =
+			{
+				{ Name = "Kyrian", Type = "CovenantSkill", EnumValue = 2730 },
+				{ Name = "Venthyr", Type = "CovenantSkill", EnumValue = 2731 },
+				{ Name = "NightFae", Type = "CovenantSkill", EnumValue = 2732 },
+				{ Name = "Necrolord", Type = "CovenantSkill", EnumValue = 2733 },
+			},
+		},
+		{
 			Name = "CovenantType",
 			Type = "Enumeration",
 			NumValues = 5,
@@ -184,11 +213,12 @@ local GarrisonConstants =
 		{
 			Name = "GarrFollowerQuality",
 			Type = "Enumeration",
-			NumValues = 6,
-			MinValue = 1,
+			NumValues = 7,
+			MinValue = 0,
 			MaxValue = 6,
 			Fields =
 			{
+				{ Name = "None", Type = "GarrFollowerQuality", EnumValue = 0 },
 				{ Name = "Common", Type = "GarrFollowerQuality", EnumValue = 1 },
 				{ Name = "Uncommon", Type = "GarrFollowerQuality", EnumValue = 2 },
 				{ Name = "Rare", Type = "GarrFollowerQuality", EnumValue = 3 },
@@ -229,9 +259,9 @@ local GarrisonConstants =
 		{
 			Name = "GarrTalentFeatureType",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "Generic", Type = "GarrTalentFeatureType", EnumValue = 0 },
@@ -242,6 +272,7 @@ local GarrisonConstants =
 				{ Name = "SanctumUnique", Type = "GarrTalentFeatureType", EnumValue = 5 },
 				{ Name = "SoulBinds", Type = "GarrTalentFeatureType", EnumValue = 6 },
 				{ Name = "AnimaDiversionMap", Type = "GarrTalentFeatureType", EnumValue = 7 },
+				{ Name = "Cyphers", Type = "GarrTalentFeatureType", EnumValue = 8 },
 			},
 		},
 		{

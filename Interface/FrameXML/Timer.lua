@@ -98,6 +98,10 @@ function TimerTracker_OnEvent(self, event, ...)
 				end
 			end
 			
+			if(timer and timer.type == TIMER_TYPE_PLAYER_COUNTDOWN) then 
+				FreeTimerTrackerTimer(timer);
+			end 
+
 			if not timer then
 				timer = CreateFrame("FRAME", self:GetName().."Timer"..(#self.timerList+1), self, "StartTimerBar");
 				self.timerList[#self.timerList+1] = timer;
@@ -132,7 +136,7 @@ function TimerTracker_OnEvent(self, event, ...)
 		StartTimer_SetGoTexture(timer);
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		for a,timer in pairs(self.timerList) do
-			if(timer.type == "TIMER_TYPE_PVP") then 
+			if(timer.type == TIMER_TYPE_PVP) then 
 				FreeTimerTrackerTimer(timer);
 			end
 		end
@@ -244,7 +248,7 @@ function StartTimer_SetTexNumbers(self, ...)
 		if(TIMER_DATA[self.type].bigNumberSoundKitID and numShown < TIMER_DATA[self.type].largeMarker ) then 
 			PlaySound(TIMER_DATA[self.type].bigNumberSoundKitID); 
 		else 
-			PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_TIMER, "SFX", SOUNDKIT_ALLOW_DUPLICATES);
+			PlaySound(SOUNDKIT.UI_BATTLEGROUND_COUNTDOWN_TIMER, "SFX");
 		end 
 		digits[1]:ClearAllPoints();
 		if self.anchorCenter or C_Commentator.IsSpectating() then

@@ -34,6 +34,7 @@ function UIWidgetTemplateIconAndTextMixin:Setup(widgetInfo, widgetContainer)
 
 	self.Text:SetText(widgetInfo.text);
 	self:SetTooltip(widgetInfo.tooltip);
+	self.DynamicIconButton:SetTooltipLocation(widgetInfo.tooltipLoc);
 	self.DynamicIconButton:SetTooltip(widgetInfo.dynamicTooltip);
 
 	if ( widgetInfo.state == Enum.IconAndTextWidgetState.ShownWithDynamicIconFlashing ) then

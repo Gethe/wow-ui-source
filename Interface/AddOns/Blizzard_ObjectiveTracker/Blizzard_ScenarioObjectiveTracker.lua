@@ -56,10 +56,17 @@ end
 -- ***** SLIDING
 -- *****************************************************************************************************
 
+function ScenarioBlocksFrame_ExtraBlocksSetShown(shown)
+	TopScenarioWidgetContainerBlock:SetShown(shown);
+	BottomScenarioWidgetContainerBlock:SetShown(shown);
+	SCENARIO_TRACKER_MODULE.BlocksFrame.MawBuffsBlock:SetShown(shown and IsInJailersTower());
+end
+
 function ScenarioBlocksFrame_OnFinishSlideIn()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = nil;
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED);
+	ScenarioBlocksFrame_ExtraBlocksSetShown(true);
 end
 function ScenarioBlocksFrame_OnFinishSpellExpand()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = nil;
@@ -134,6 +141,7 @@ function ScenarioBlocksFrame_SlideOut()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = "OUT";
 	SLIDE_OUT_DATA.startHeight = ScenarioStageBlock.height;
 	ObjectiveTracker_SlideBlock(SCENARIO_TRACKER_MODULE.BlocksFrame, SLIDE_OUT_DATA);
+	ScenarioBlocksFrame_ExtraBlocksSetShown(false);
 end
 
 local showingEmberCourtHelpTip = false;
@@ -159,15 +167,32 @@ end
 -- *****************************************************************************************************
 
 local SCENARIO_TRACKER_WIDGET_SET = 252;
+local SCENARIO_TRACKER_TOP_WIDGET_SET = 514;
 
-local function WidgetsLayout(widgetContainerFrame, sortedWidgets)
+local function WidgetsLayoutWithOffset(widgetContainerFrame, sortedWidgets, containerOffset)
+	local containerBlock = widgetContainerFrame:GetParent(); 
 	DefaultWidgetLayout(widgetContainerFrame, sortedWidgets);
-	local blockHeight = widgetContainerFrame:GetHeight() + 15;
-	ScenarioWidgetContainerBlock.height = blockHeight;
-	ScenarioWidgetContainerBlock:SetHeight(blockHeight);
-	ScenarioWidgetContainerBlock:SetWidth(widgetContainerFrame:GetWidth());
-	ScenarioWidgetContainerBlock:Show();
+
+	local blockHeight;
+	if widgetContainerFrame:HasAnyWidgetsShowing() then
+		blockHeight = widgetContainerFrame:GetHeight() + containerOffset;
+		containerBlock:SetWidth(widgetContainerFrame:GetWidth());
+	else
+		blockHeight = 1;
+		containerBlock:SetWidth(1);
+	end
+
+	containerBlock.height = blockHeight;
+	containerBlock:SetHeight(blockHeight);
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);
+end
+
+local function TopWidgetLayout(widgetContainerFrame, sortedWidgets)
+	WidgetsLayoutWithOffset(widgetContainerFrame, sortedWidgets, 7);
+end
+
+local function BottomWidgetLayout(widgetContainerFrame, sortedWidgets)
+	WidgetsLayoutWithOffset(widgetContainerFrame, sortedWidgets, 15);
 end
 
 function ScenarioBlocksFrame_OnLoad(self)
@@ -182,8 +207,10 @@ function ScenarioBlocksFrame_OnLoad(self)
 	ScenarioProvingGroundsBlock.height = ScenarioProvingGroundsBlock:GetHeight();
 	self.MawBuffsBlock.module = SCENARIO_TRACKER_MODULE;
 	self.MawBuffsBlock.height = self.MawBuffsBlock:GetHeight();
-	ScenarioWidgetContainerBlock.module = SCENARIO_TRACKER_MODULE;
-	ScenarioWidgetContainerBlock.height = 0;
+	BottomScenarioWidgetContainerBlock.module = SCENARIO_TRACKER_MODULE;
+	BottomScenarioWidgetContainerBlock.height = 0;
+	TopScenarioWidgetContainerBlock.module = SCENARIO_TRACKER_MODULE;
+	TopScenarioWidgetContainerBlock.height = 0;
 
 	SCENARIO_TRACKER_MODULE.BlocksFrame = self;
 
@@ -202,7 +229,8 @@ end
 function ScenarioBlocksFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		ScenarioTimer_CheckTimers(GetWorldElapsedTimers());
-		ScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayout);
+		BottomScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, BottomWidgetLayout);
+		TopScenarioWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_TOP_WIDGET_SET, TopWidgetLayout);
 	elseif ( event == "WORLD_STATE_TIMER_START") then
 		local timerID = ...;
 		ScenarioTimer_CheckTimers(timerID);
@@ -233,28 +261,30 @@ function ScenarioObjectiveStageBlock_OnEnter(self)
 	GameTooltip:SetPoint("RIGHT", self, "LEFT", 0, 0);
 	local _, currentStage, numStages, flags, _, _, _, xp, money = C_Scenario.GetInfo();
 	local name, description = C_Scenario.GetStepInfo();
-	if( name and bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
-	  GameTooltip:SetText(name, 1, 0.914, 0.682, 1);
-	  GameTooltip:AddLine(description, 1, 1, 1, true);
+	if name and (bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
+		GameTooltip_SetTitle(GameTooltip, name);
+		GameTooltip_AddNormalLine(GameTooltip, description);
 
-	  local blankLineAdded = false;
-	  if ( xp > 0 and not IsPlayerAtEffectiveMaxLevel() ) then
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_EXPERIENCE_FORMAT, xp), 1, 1, 1);
-		blankLineAdded = true;
-	  end
-	  if ( money > 0 ) then
-		if not blankLineAdded then
+		local blankLineAdded = false;
+		if xp > 0 and not IsPlayerAtEffectiveMaxLevel() then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(xp));
+			blankLineAdded = true;
 		end
-		SetTooltipMoney(GameTooltip, money, nil);
-	  end
-	  GameTooltip:Show();
-	elseif( currentStage <= numStages ) then
-		GameTooltip:SetText(string.format(SCENARIO_STAGE_STATUS, currentStage, numStages), 1, 0.914, 0.682, 1);
-		GameTooltip:AddLine(name, 1, 0.831, 0.380, true);
+
+		if money > 0 then
+			if not blankLineAdded then
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			end
+			SetTooltipMoney(GameTooltip, money, nil);
+		end
+
+		GameTooltip:Show();
+	elseif currentStage <= numStages then
+		GameTooltip_SetTitle(GameTooltip, SCENARIO_STAGE_STATUS:format(currentStage, numStages));
+		GameTooltip_AddNormalLine(GameTooltip, name);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		GameTooltip:AddLine(description, 1, 1, 1, true);
+		GameTooltip_AddNormalLine(GameTooltip, description);
 		GameTooltip:Show();
 	end
 end
@@ -600,20 +630,6 @@ function Scenario_ProvingGrounds_CountdownAnim_OnFinished(self)
 end
 
 -- *****************************************************************************************************
--- ***** LEGION INVASION MODE
--- *****************************************************************************************************
-
-function ScenarioRewardButton_OnEnter(self)
-	EmbeddedItemTooltip_SetItemByID(ScenarioStepRewardTooltip.ItemTooltip, self.rewardID);
-	ScenarioStepRewardTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
-	ScenarioStepRewardTooltip:Show();
-end
-
-function ScenarioRewardButton_OnLeave(self)
-	ScenarioStepRewardTooltip:Hide();
-end
-
--- *****************************************************************************************************
 -- ***** SPELLS
 -- *****************************************************************************************************
 
@@ -890,7 +906,6 @@ end
 
 function ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKit)
 	stageBlock.widgetSetID = widgetSetID;
-	stageBlock.RewardButton:Hide();
 	stageBlock.Stage:Show();
 	stageBlock.NormalBG:Show();
 
@@ -987,7 +1002,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			end
 			if (not stageBlock.appliedAlready) then
 				-- Ugly hack to get around :IsTruncated failing if used during load
-				C_Timer.After(1, function() stageBlock.Stage:ApplyFontObjects(); end);
+				C_Timer.After(1, function() stageBlock.Stage:ScaleTextToFit(); end);
 				stageBlock.appliedAlready = true;
 			end
 			ScenarioStage_CustomizeBlock(stageBlock, scenarioType, widgetSetID, textureKit);
@@ -1031,10 +1046,12 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	end
 	ScenarioSpellButtons_UpdateCooldowns();
 
+	ObjectiveTracker_AddBlock(TopScenarioWidgetContainerBlock);
+
 	if IsInJailersTower() then
 		ObjectiveTracker_AddBlock(BlocksFrame.MawBuffsBlock);
 	end
-	ObjectiveTracker_AddBlock(ScenarioWidgetContainerBlock);
+	ObjectiveTracker_AddBlock(BottomScenarioWidgetContainerBlock);
 
 	-- add the scenario block
 	if ( BlocksFrame.currentBlock ) then
@@ -1053,7 +1070,6 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 					end
 				end
 			end
-			LevelUpDisplay_PlayScenario();
 			-- play sound if not the first stage
 			if ( currentStage > 1 and currentStage <= numStages ) then
 				PlaySound(SOUNDKIT.UI_SCENARIO_STAGE_END);
@@ -1066,6 +1082,9 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			-- Usually ScenarioStage_UpdateOptionWidgetRegistration is run at the beginning of the slide in
 			-- But if there is no slide in we need to just call it now
 			ScenarioStage_UpdateOptionWidgetRegistration(stageBlock, stageBlock.widgetSetID);
+
+			-- Same with ScenarioBlocksFrame_ExtraBlocksSetShown, which is usually run at the end of the slide in
+			ScenarioBlocksFrame_ExtraBlocksSetShown(true);
 		end
 
 		-- header

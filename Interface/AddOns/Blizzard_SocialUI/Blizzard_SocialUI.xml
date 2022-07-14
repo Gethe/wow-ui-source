@@ -49,7 +49,7 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="SocialScreenshotTooltip" parent="UIParent" inherits="TooltipBorderedFrameTemplate" hidden="true" frameStrata="TOOLTIP" clampedToScreen="true">
+	<Frame name="SocialScreenshotTooltip" parent="UIParent" inherits="TooltipBackdropTemplate" hidden="true" frameStrata="TOOLTIP" clampedToScreen="true">
 		<Size x="258" y="194"/>
 		<Layers>
 			<Layer level="BACKGROUND">

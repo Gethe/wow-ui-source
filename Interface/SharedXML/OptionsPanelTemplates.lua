@@ -105,7 +105,7 @@ end
 
 function BlizzardOptionsPanel_CheckButton_SetEnabled (checkBox, enabled)
 	if ( enabled ) then
-		BlizzardOptionsPanel_CheckButton_Enable(checkBox);
+		BlizzardOptionsPanel_CheckButton_Enable(checkBox, true);
 	else
 		BlizzardOptionsPanel_CheckButton_Disable(checkBox);
 	end

@@ -247,6 +247,11 @@ function TradeSkillDetailsMixin:CheckOptionalReagentTutorial(stageComplete)
 			HelpTip:Show(self, helpTipInfo, self.Contents.OptionalReagent1);
 		end
 	elseif self.tutorialStage == OptionalReagentTutorialStage.List then
+		local firstLine = self:GetParent():GetOptionalReagentListTutorialLine();
+		if not firstLine:IsShown() then
+			return;
+		end
+
 		self.hasShownSlotTutorial = true;
 
 		local helpTipInfo = {
@@ -258,7 +263,6 @@ function TradeSkillDetailsMixin:CheckOptionalReagentTutorial(stageComplete)
 			offsetY = 0,
 		};
 
-		local firstLine = self:GetParent():GetOptionalReagentListTutorialLine();
 		HelpTip:Show(self, helpTipInfo, firstLine);
 	elseif self.tutorialStage == OptionalReagentTutorialStage.Icon then
 		local function HelpTipHiddenCallback(acknowledged)
@@ -301,6 +305,9 @@ end
 
 function TradeSkillDetailsMixin:SetSelectedRecipeLevel(recipeLevel, skipRefresh)
 	self.selectedRecipeLevel = recipeLevel;
+
+	self:ClearOptionalReagents();
+	self:GetParent():CloseOptionalReagentSelection();
 
 	if not skipRefresh then
 		self:RefreshDisplay();
@@ -538,7 +545,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 			reagentButton:Hide();
 		end
 
-		local optionalReagentSlots = C_TradeSkillUI.GetOptionalReagentInfo(self.selectedRecipeID);
+		local optionalReagentSlots = C_TradeSkillUI.GetOptionalReagentInfo(self.selectedRecipeID, selectedRecipeLevel);
 		self.optionalReagentSlots = optionalReagentSlots;
 		local numOptionalReagentSlots = #optionalReagentSlots;
 		local hasOptionalReagentSlots = numOptionalReagentSlots > 0;
@@ -569,8 +576,14 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 				hasReagent = false;
 			end
 
-			local hasRequiredSkillRank = categorySkillRank >= slot.requiredSkillRank;
-			reagentButton:SetLocked(not hasRequiredSkillRank, slot.requiredSkillRank);
+			local requiredSkillRank = slot.requiredSkillRank;
+			local hasRequiredSkillRank = categorySkillRank >= requiredSkillRank;
+			local hasLockedReason = (slot.lockedReason ~= nil);
+			if hasLockedReason then
+				reagentButton:SetLocked(true, slot.lockedReason);
+			else
+				reagentButton:SetLocked(not hasRequiredSkillRank, OPTIONAL_REAGENT_TOOLTIP_SLOT_LOCKED_FORMAT:format(requiredSkillRank));
+			end
 
 			if hasReagent then
 				local isOptional = true;
@@ -579,11 +592,12 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 					craftable = false;
 				end
 			else
-				reagentButton.Icon:SetAtlas(hasRequiredSkillRank and "tradeskills-icon-add" or "tradeskills-icon-locked", TextureKitConstants.UseAtlasSize);
+				local isLocked = hasLockedReason or not hasRequiredSkillRank;
+				reagentButton.Icon:SetAtlas(isLocked and "tradeskills-icon-locked" or "tradeskills-icon-add", TextureKitConstants.UseAtlasSize);
 				reagentButton.Icon:SetVertexColor(1.0, 1.0, 1.0);
 				reagentButton.Count:SetText("");
 				reagentButton:SetReagentText(slot.slotText or OPTIONAL_REAGENT_POSTFIX);
-				reagentButton:SetReagentColor(hasRequiredSkillRank and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR);
+				reagentButton:SetReagentColor(isLocked and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR);
 			end
 
 			reagentButton.SelectedTexture:SetShown(optionalReagentIndex == selectedOptionalReagentIndex);
@@ -715,7 +729,7 @@ function TradeSkillDetailsMixin:ViewGuildCrafters()
 	local tradeSkillID, skillLineName, skillLineRank, skillLineMaxRank, skillLineModifier, parentSkillLineID = C_TradeSkillUI.GetTradeSkillLine();
 	local effectiveSkillLineID = parentSkillLineID or tradeSkillID;
 	if effectiveSkillLineID and self.selectedRecipeID then
-		self.GuildFrame:ShowGuildRecipe(effectiveSkillLineID, self.selectedRecipeID);
+		self.GuildFrame:ShowGuildRecipe(effectiveSkillLineID, self.selectedRecipeID, self:GetSelectedRecipeLevel());
 	end
 end
 
@@ -740,7 +754,7 @@ end
 function TradeSkillDetailsMixin:OnResultMouseEnter(resultButton)
 	if self.selectedRecipeID then
 		GameTooltip:SetOwner(resultButton, "ANCHOR_RIGHT");
-		GameTooltip:SetRecipeResultItem(self.selectedRecipeID, self:GetOptionalReagentsArray());
+		GameTooltip:SetRecipeResultItem(self.selectedRecipeID, self:GetOptionalReagentsArray(), self:GetSelectedRecipeLevel());
 		CursorUpdate(resultButton);
 		self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Icon)
 	end
@@ -771,7 +785,9 @@ function TradeSkillDetailsMixin:OnOptionalReagentMouseEnter(reagentButton)
 
 	if reagentButton:IsLocked() then
 		GameTooltip_SetTitle(GameTooltip, EMPTY_OPTIONAL_REAGENT_TOOLTIP_TITLE);
-		GameTooltip_AddErrorLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_SLOT_LOCKED_FORMAT:format(reagentButton:GetLockedSkillRank()));
+
+		local lockedReason = reagentButton:GetLockedTooltip();
+		GameTooltip_AddErrorLine(GameTooltip, lockedReason);
 	else
 		local reagentName, bonusText, reagentQuality, reagentTexture, reagentCount, playerReagentCount, itemID = self:GetOptionalReagent(reagentButton.optionalReagentIndex);
 		if reagentName then
@@ -803,7 +819,7 @@ function TradeSkillDetailsMixin:OnOptionalReagentClicked(reagentButton, button)
 
 	if button == "LeftButton" then
 		PlaySound(SOUNDKIT.UI_9_0_CRAFTING_CLICK_OPTIONAL_REAGENT_SLOT);
-		self:GetParent():OpenOptionalReagentSelection(self.selectedRecipeID, reagentButton.optionalReagentIndex);
+		self:GetParent():OpenOptionalReagentSelection(self.selectedRecipeID, self.selectedRecipeLevel, reagentButton.optionalReagentIndex);
 		self:CheckOptionalReagentTutorial(OptionalReagentTutorialStage.Slot);
 		self:Refresh();
 	elseif button == "RightButton" then
@@ -1000,11 +1016,15 @@ function TradeSkillGuildListingMixin:Clear()
 	self:Hide();
 end
 
-function TradeSkillGuildListingMixin:ShowGuildRecipe(skillLineID, recipeID)
-	self.skillLineID = skillLineID;
-	self.recipeID = recipeID;
-	self.waitingOnData = true;
-	QueryGuildMembersForRecipe(skillLineID, recipeID);
+function TradeSkillGuildListingMixin:ShowGuildRecipe(skillLineID, recipeID, recipeLevel)
+	local updatedRecipeID = C_GuildInfo.QueryGuildMembersForRecipe(skillLineID, recipeID, recipeLevel);
+	if not updatedRecipeID then
+		return;
+	else
+		self.skillLineID = skillLineID;
+		self.recipeID = updatedRecipeID;
+		self.waitingOnData = true;
+	end
 	
 	self:Refresh();
 
