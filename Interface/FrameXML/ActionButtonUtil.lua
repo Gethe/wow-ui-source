@@ -28,7 +28,7 @@ ActionButtonUtil = {};
 
 function ActionButtonUtil.ShowAllActionButtonGrids()
 	MainMenuBar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
-	MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_EVENT, true);
+	MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 end
 
 function ActionButtonUtil.HideAllActionButtonGrids()

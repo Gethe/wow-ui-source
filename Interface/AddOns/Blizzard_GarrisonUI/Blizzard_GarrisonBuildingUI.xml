@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonBuildingUI.lua"/>
 
 	<Frame name="GarrisonBuildingFollowerButtonTemplate" inherits="GarrisonMissionFollowerOrCategoryListButtonTemplate" virtual="true">
@@ -1222,7 +1222,7 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="BORDER" textureSubLevel="-1">>
+							<Layer level="BORDER" textureSubLevel="-1">
 								<Texture parentKey="Building" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="BOTTOM"/>

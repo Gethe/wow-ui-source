@@ -70,6 +70,7 @@ end
 
 function SettingsPanelMixin:OnTabSelected(tab, tabIndex)
 	self:GetCategoryList():SetCategorySet(tab.categorySet);
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
 function SettingsPanelMixin:OnCVarChanged(cvar, cvarValue)
@@ -150,7 +151,9 @@ end
 
 function SettingsPanelMixin:ExitWithoutCommit()
 	for setting, record in pairs(self.modified) do
-		if setting:HasCommitFlag(Settings.CommitFlag.Revertable) or setting:HasCommitFlag(Settings.CommitFlag.Apply) then
+		-- The settings under affect of IgnoreApply flag shouldn't be in the self.modified table after having been applied
+		-- Needs bug investigation
+		if (setting:HasCommitFlag(Settings.CommitFlag.Revertable) or setting:HasCommitFlag(Settings.CommitFlag.Apply)) and not setting:HasCommitFlag(Settings.CommitFlag.IgnoreApply) then
 			setting:Revert();
 		end
 	end
@@ -374,7 +377,7 @@ end
 
 function SettingsPanelMixin:HasUnappliedSettings()
 	for setting in pairs(self.modified) do
-		if setting:HasCommitFlag(Settings.CommitFlag.Apply) then
+		if setting:HasCommitFlag(Settings.CommitFlag.Apply) and not setting:HasCommitFlag(Settings.CommitFlag.IgnoreApply) then
 			return true;
 		end
 	end
@@ -558,7 +561,7 @@ function SettingsPanelMixin:OnSettingValueChanged(setting, value, oldValue, orig
 	end
 
 	self.modified[setting] = setting:IsModified() and setting or nil;
-
+	setting:UpdateIgnoreApplyFlag();
 	self:CheckApplyButton();
 end
 

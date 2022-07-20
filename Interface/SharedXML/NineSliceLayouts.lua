@@ -362,6 +362,6 @@ NineSliceLayouts =
 		threeSliceHorizontal = true,
 		["LeftEdge"] = { atlas = "%s-ThreeSlice-EdgeLeft" },
 		["RightEdge"] = { atlas = "%s-ThreeSlice-EdgeRight" },
-		["Center"] = { atlas = "!%s-ThreeSlice-Center" },
+		["Center"] = { atlas = "_%s-ThreeSlice-Center" },
 	};
 };

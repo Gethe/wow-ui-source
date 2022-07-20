@@ -9,7 +9,7 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="String" inherits="ChatBubbleFont"/>
 			</Layer>
-			<Layer level="ARTWORK" textureSublevel="8">
+			<Layer level="ARTWORK" textureSubLevel="7">
 				<Texture parentKey="Tail" atlas="ChatBubble-Tail" useAtlasSize="true"/>
 			</Layer>
 		</Layers>

@@ -1,7 +1,7 @@
 
 local SPELLFLYOUT_DEFAULT_SPACING = 4;
 local SPELLFLYOUT_INITIAL_SPACING = 7;
-local SPELLFLYOUT_FINAL_SPACING = 4;
+local SPELLFLYOUT_FINAL_SPACING = 9;
 
 
 function SpellFlyoutButton_OnClick(self)
@@ -146,6 +146,7 @@ end
 function SpellFlyout_OnLoad(self)
 	self.Toggle = SpellFlyout_Toggle;
 	self.SetBorderColor = SpellFlyout_SetBorderColor;
+	self.SetBorderSize = SpellFlyout_SetBorderSize;
 	self.eventsRegistered = false;
 end
 
@@ -251,12 +252,6 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			local button = _G["SpellFlyoutButton"..numButtons+1];
 			if (not button) then
 				button = CreateFrame("CHECKBUTTON", "SpellFlyoutButton"..numButtons+1, SpellFlyout, "SpellFlyoutButtonTemplate");
-
-				local point, relativeTo, relativePoint = button.IconMask:GetPoint(1);
-				button.IconMask:SetPoint(point, relativeTo, relativePoint, -11, 11);
-
-				point, relativeTo, relativePoint = button.IconMask:GetPoint(2);
-				button.IconMask:SetPoint(point, relativeTo, relativePoint, 12, -12);
 			end
 
 			button:ClearAllPoints();
@@ -331,10 +326,14 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	end
 
 	self.BgEnd:ClearAllPoints();
+	self.flyoutBottom:ClearAllPoints();
 	if (direction == "UP") then
 		self:SetPoint("BOTTOM", parent, "TOP", 0, 0);
 		self.BgEnd:SetPoint("TOP");
 		SetClampedTextureRotation(self.BgEnd, 0);
+		SetClampedTextureRotation(self.VertBg, 0);
+		self.flyoutBottom:SetPoint("TOP", self.VertBg, "BOTTOM");
+		SetClampedTextureRotation(self.flyoutBottom, 0);
 		self.HorizBg:Hide();
 		self.VertBg:Show();
 		self.VertBg:ClearAllPoints();
@@ -344,6 +343,9 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		self:SetPoint("TOP", parent, "BOTTOM", 0, 0);
 		self.BgEnd:SetPoint("BOTTOM");
 		SetClampedTextureRotation(self.BgEnd, 180);
+		SetClampedTextureRotation(self.VertBg, 180);
+		self.flyoutBottom:SetPoint("BOTTOM", self.VertBg, "TOP");
+		SetClampedTextureRotation(self.flyoutBottom, 180);
 		self.HorizBg:Hide();
 		self.VertBg:Show();
 		self.VertBg:ClearAllPoints();
@@ -353,6 +355,9 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		self:SetPoint("RIGHT", parent, "LEFT", 0, 0);
 		self.BgEnd:SetPoint("LEFT");
 		SetClampedTextureRotation(self.BgEnd, 270);
+		SetClampedTextureRotation(self.HorizBg, 0);
+		self.flyoutBottom:SetPoint("LEFT", self.HorizBg, "RIGHT");
+		SetClampedTextureRotation(self.flyoutBottom, 270);
 		self.VertBg:Hide();
 		self.HorizBg:Show();
 		self.HorizBg:ClearAllPoints();
@@ -362,6 +367,9 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		self:SetPoint("LEFT", parent, "RIGHT", 0, 0);
 		self.BgEnd:SetPoint("RIGHT");
 		SetClampedTextureRotation(self.BgEnd, 90);
+		SetClampedTextureRotation(self.HorizBg, 180);
+		self.flyoutBottom:SetPoint("RIGHT", self.HorizBg, "LEFT");
+		SetClampedTextureRotation(self.flyoutBottom, 90);
 		self.VertBg:Hide();
 		self.HorizBg:Show();
 		self.HorizBg:ClearAllPoints();
@@ -377,7 +385,9 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		self:SetWidth((prevButton:GetWidth()+SPELLFLYOUT_DEFAULT_SPACING) * numButtons - SPELLFLYOUT_DEFAULT_SPACING + SPELLFLYOUT_INITIAL_SPACING + SPELLFLYOUT_FINAL_SPACING);
 	end
 
+	self.direction = direction;
 	self:SetBorderColor(0.7, 0.7, 0.7);
+	self:SetBorderSize(47);
 
 	self:Show();
 
@@ -424,7 +434,22 @@ function SpellFlyout_OnHide(self)
 end
 
 function SpellFlyout_SetBorderColor(self, r, g, b)
+	self.flyoutBottom:SetVertexColor(r, g, b);
 	self.HorizBg:SetVertexColor(r, g, b);
 	self.VertBg:SetVertexColor(r, g, b);
 	self.BgEnd:SetVertexColor(r, g, b);
+end
+
+function SpellFlyout_SetBorderSize(self, size)
+	if (not self.direction or self.direction == "UP" or self.direction == "DOWN") then
+		self.flyoutBottom:SetWidth(size);
+		self.HorizBg:SetWidth(size);
+		self.VertBg:SetWidth(size);
+		self.BgEnd:SetWidth(size);
+	else
+		self.flyoutBottom:SetHeight(size);
+		self.HorizBg:SetHeight(size);
+		self.VertBg:SetHeight(size);
+		self.BgEnd:SetHeight(size);
+	end
 end

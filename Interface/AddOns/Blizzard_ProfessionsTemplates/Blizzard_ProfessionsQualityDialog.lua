@@ -124,9 +124,6 @@ end
 function ProfessionsQualityDialogMixin:Init(recipeID, reagentSlotSchematic, allocations)
 	self.reagentSlotSchematic = reagentSlotSchematic;
 	self.recipeID = recipeID;
-	if g_professionsShowDebugInfo then
-		Dump(reagentSlotSchematic, "ProfessionsQualityDialogMixin:Init");
-	end
 
 	self.allocations = allocations;
 

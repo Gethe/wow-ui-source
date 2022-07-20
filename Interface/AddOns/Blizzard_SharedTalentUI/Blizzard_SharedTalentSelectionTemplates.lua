@@ -104,6 +104,8 @@ end
 TalentSelectionChoiceMixin = {};
 
 function TalentSelectionChoiceMixin:OnClick(button)
+	EventRegistry:TriggerEvent("TalentButton.OnClick", self, button);
+	
 	local selectionChoiceFrame = self:GetParent();
 	if button == "LeftButton" then
 		if not self:IsChoiceAvailable() then

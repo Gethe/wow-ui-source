@@ -79,7 +79,7 @@ function CallbackRegistryMixin:RegisterCallback(event, func, owner, ...)
 		error("CallbackRegistryMixin::RegisterCallback 'func' requires function type.");
 	else
 		if owner == nil then
-			owner = securecallfunction(generateOwnerID);
+			owner = generateOwnerID();
 		elseif type(owner) == "number" then
 			error("CallbackRegistryMixin:RegisterCallback 'owner' as number is reserved internally.")
 		end

@@ -92,14 +92,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="10">
+			<Layer level="OVERLAY" textureSubLevel="6">
 				<Texture parentKey="FavoriteIcon" atlas="collections-icon-favorites" useAtlasSize="true" scale="0.75">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="5" y="-9"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="15">
+			<Layer level="OVERLAY" textureSubLevel="7">
 				<Texture parentKey="NewCommunityFlash" file="Interface\Common\bluemenu-main" alphaMode="ADD" hidden="true">
 					<Size x="0" y="80"/>
 					<Anchors>

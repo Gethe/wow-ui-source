@@ -718,6 +718,24 @@ local function Register()
 		end
 	end
 
+	-- Camera FOV
+	if C_CVar.GetCVar("cameraFov") then
+	do
+		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("cameraFov", Settings.VarType.Number);
+		local commitValue = setValue;
+		local _, minValue, maxValue = C_CameraDefaults.GetCameraFOVDefaults();
+		local setting = Settings.RegisterProxySetting(category, "PROXY_CAMERA_FOV", Settings.DefaultVarLocation, 
+			Settings.VarType.Number, CAMERA_FOV, getDefaultValue(), getValue, nil, commitValue);
+		setting:SetCommitFlags(Settings.CommitFlag.Apply);
+
+		local step = 5;
+		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Min, minValue);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Max, maxValue);
+		Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_CAMERA_FOV);
+	end
+	end
+
 	-- UI Scale
 	if not IsOnGlueScreen() then
 		do
@@ -1155,8 +1173,16 @@ local function Register()
 		listener:RegisterEvent("DISPLAY_SIZE_CHANGED");
 		listener:SetScript("OnEvent", function(self, event, ...)
 			if event == "DISPLAY_SIZE_CHANGED" then
+				local resSetting = Settings.GetSetting("PROXY_RESOLUTION");
+				local resScaleSetting = Settings.GetSetting("PROXY_RESOLUTION_RENDER_SCALE");
+				resSetting:SetIgnoreApplyOverride(true);
+				resScaleSetting:SetIgnoreApplyOverride(true);
+
 				local size = C_VideoOptions.GetCurrentGameWindowSize(monitorCVar:GetValue(), displayModeCVar:GetValue());
 				Settings.SetValue("PROXY_RESOLUTION", FormatScreenResolution(size.x, size.y));
+
+				resSetting:SetIgnoreApplyOverride(false);
+				resScaleSetting:SetIgnoreApplyOverride(false);
 			end
 		end);
 	end

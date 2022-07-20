@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_CovenantMissionTemplates.lua"/>
 
 	<Frame name="AdventuresPuckHealthBarTemplate" mixin="AdventuresPuckHealthBarMixin" virtual="true">
@@ -39,7 +39,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="HealthValue" inherits="TextStatusBarText" setAllPoints="true" justifyH="CENTER" justifyV="CENTER" hidden="true">
+				<FontString parentKey="HealthValue" inherits="TextStatusBarText" setAllPoints="true" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" x="14" y="3"/>
 					</Anchors>
@@ -62,7 +62,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<layer level="BORDER" textureSubLevel="-1">
+			<Layer level="BORDER" textureSubLevel="-1">
 				<Texture parentKey="TroopStackBorder1" atlas="Adventurers-Followers-Frame-Troops" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"  x="-4" y="2"/>
@@ -70,8 +70,8 @@
 					</Anchors>
 				<Color r="0.46" g=".345" b="0.254"/>
 				</Texture>
-			</layer>
-			<layer level="BORDER" textureSubLevel="-2">
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="-2">
 				<Texture parentKey="TroopStackBorder2" atlas="Adventurers-Followers-Frame-Troops" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"  x="-10" y="6"/>
@@ -79,7 +79,7 @@
 					</Anchors>
 				<Color r="0.254" g=".207" b="0.176"/>
 				</Texture>
-			</layer>
+			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="PuckBorder" atlas="Adventurers-Followers-Frame">
 					<Anchors>
@@ -286,7 +286,7 @@
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
-			<Layer level="ARTKWORK" textureSubLevel="1">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="SpellBorder" atlas="adventures-spell-border" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -603,7 +603,7 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="HealFollowerFrame" framelevel="100" setAllPoints="true">
+			<Frame parentKey="HealFollowerFrame" frameLevel="100" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="ButtonFrame" atlas="Adventures_MissionCostStartButtonBg" useAtlasSize="true">
@@ -652,11 +652,11 @@
 							</KeyValues>
 						</FontString>
 						<FontString parentKey="AbilitiesText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ABILITIES">
-							<Anchors>
+							<KeyValues>
 								<KeyValue key="layoutIndex" value="200" type="number"/>
 								<KeyValue key="topPadding" value="10" type="number"/>
 								<KeyValue key="bottomPadding" value="5" type="number"/>
-							</Anchors>
+							</KeyValues>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -758,9 +758,9 @@
 					</Layer>
 				</Layers>
 			</EventFrame>
-			<Frame parentKey="ElevatedFrame" framelevel="50" setAllPoints="true">
+			<Frame parentKey="ElevatedFrame" frameLevel="50" setAllPoints="true">
 				<Layers>
-					<Layer level="OVERLAY" textureSubLayer="5">
+					<Layer level="OVERLAY" textureSubLevel="5">
 						<Texture atlas="adventures-followers-frame" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
@@ -1037,7 +1037,7 @@
 					<Anchor point="TOPLEFT" x="68" y="-20"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Overlay" setAllPoints="true" hidden="true" framelevel="500">
+			<Frame parentKey="Overlay" setAllPoints="true" hidden="true" frameLevel="500">
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="Overlay">
@@ -1082,16 +1082,10 @@
 			<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true">
 				<Alpha childKey="TargetMarker" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
-			<AnimationGroup ParentKey="BobLoop" looping="REPEAT">
+			<AnimationGroup parentKey="BobLoop" looping="REPEAT">
 				<Translation childKey="TargetMarker" duration=".8" order="1" smoothing="IN_OUT" offsetY="10"/>
 				<Translation childKey="TargetMarker" duration=".9" order="2" smoothing="IN_OUT" offsetY="-10" />
 			</AnimationGroup>
-			<Scripts>
-				<OnPlay>
-						local indicatorFrame = self:GetParent();
-						indicatorFrame:ResetPositions()
-				</OnPlay>
-			</Scripts>
 		</Animations>
 		<Scripts>
 			<OnShow method="OnShow"/>
@@ -1128,12 +1122,6 @@
 				<Alpha parentKey="Fade" childKey="TargetMarker" duration="0.2" order="2" fromAlpha="1" toAlpha="0"/>
 				<Scale parentKey="Scale" childKey="TargetMarker" duration="0.2" order="2" fromScaleX="1.0" toScaleX="1.4" fromScaleY="1.0" toScaleY="1.4"/>
 			</AnimationGroup>
-			<Scripts>
-				<OnPlay>
-					local indicatorFrame = self:GetParent();
-					indicatorFrame:ResetPositions()
-				</OnPlay>
-			</Scripts>
 		</Animations>
 		<Scripts>
 			<OnShow method="OnShow"/>

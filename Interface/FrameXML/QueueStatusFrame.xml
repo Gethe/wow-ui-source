@@ -163,7 +163,7 @@
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="EyeInitialAnim" looping="NONE" duration="1.5" SetToFinalAlpha="true">
+					<AnimationGroup parentKey="EyeInitialAnim" looping="NONE" setToFinalAlpha="true">
 						<FlipBook startDelay="0" endDelay="0" smoothing="NONE" childKey="EyeInitialTexture" duration="1.5" order="1" flipBookRows="5" flipBookColumns="11" flipBookFrames="52" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 						<Alpha startDelay="0" endDelay="0" smoothing="NONE" childKey="GlowFront" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
 						<Alpha smoothing="NONE" childKey="GlowBack" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
@@ -191,7 +191,7 @@
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="EyeSearchingLoopAnim" looping="REPEAT" SetToFinalAlpha="true" hidden="true">
+					<AnimationGroup parentKey="EyeSearchingLoopAnim" looping="REPEAT" setToFinalAlpha="true">
 						<FlipBook smoothing="NONE" childKey="EyeSearchingTexture" duration="2" order="1" flipBookRows="8" flipBookColumns="11" flipBookFrames="80" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 					</AnimationGroup>
 				</Animations>
@@ -209,7 +209,7 @@
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="EyeMouseOverAnim" looping="NONE" SetToFinalAlpha="true">
+					<AnimationGroup parentKey="EyeMouseOverAnim" looping="NONE" setToFinalAlpha="true">
 						<FlipBook smoothing="NONE" childKey="EyeMouseOverTexture" duration=".4" order="1" flipBookRows="1" flipBookColumns="12" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 					</AnimationGroup>
 				</Animations>
@@ -247,7 +247,7 @@
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="EyeFoundInitialAnim" looping="NONE" SetToFinalAlpha="true">
+					<AnimationGroup parentKey="EyeFoundInitialAnim" looping="NONE" setToFinalAlpha="true">
 						<FlipBook startDelay="0" smoothing="NONE" childKey="SpriteShards" duration="2" order="1" flipBookRows="5" flipBookColumns="15" flipBookFrames="75" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 						<FlipBook smoothing="NONE" childKey="EyeFoundInitialTexture" duration="2" order="1" flipBookRows="7" flipBookColumns="11" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 						<Alpha smoothing="NONE" childKey="GlowFront" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -268,7 +268,7 @@
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="EyeFoundLoopAnim" looping="REPEAT" SetToFinalAlpha="true">
+					<AnimationGroup parentKey="EyeFoundLoopAnim" looping="REPEAT" setToFinalAlpha="true">
 						<FlipBook smoothing="NONE" childKey="EyeFoundLoopTexture" duration="1.5" order="1" flipBookRows="4" flipBookColumns="11" flipBookFrames="41" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 					</AnimationGroup>
 				</Animations>
@@ -285,7 +285,7 @@
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="GlowBackLoopAnim" looping="BOUNCE" SetToFinalAlpha="true">
+					<AnimationGroup parentKey="GlowBackLoopAnim" looping="BOUNCE" setToFinalAlpha="true">
 						<Alpha smoothing="NONE" childKey="GlowBack" duration="1.5" order="1" fromAlpha=".2" toAlpha=".4"/>
 					</AnimationGroup>
 				</Animations>
@@ -303,7 +303,7 @@
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="EyePokeInitialAnim" looping="NONE" SetToFinalAlpha="true">
+					<AnimationGroup parentKey="EyePokeInitialAnim" looping="NONE" setToFinalAlpha="true">
 						<FlipBook smoothing="NONE" childKey="EyePokeInitialTexture" duration="1.5" order="1" flipBookRows="6" flipBookColumns="11" flipBookFrames="66" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 					</AnimationGroup>
 				</Animations>
@@ -321,7 +321,7 @@
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="EyePokeLoopAnim" looping="REPEAT" SetToFinalAlpha="true">
+					<AnimationGroup parentKey="EyePokeLoopAnim" looping="REPEAT" setToFinalAlpha="true">
 						<FlipBook smoothing="NONE" childKey="EyePokeLoopTexture" duration="1.5" order="1" flipBookRows="6" flipBookColumns="11" flipBookFrames="62" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 					</AnimationGroup>
 				</Animations>
@@ -339,7 +339,7 @@
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="EyePokeEndAnim" looping="NONE" SetToFinalAlpha="true">
+					<AnimationGroup parentKey="EyePokeEndAnim" looping="NONE" setToFinalAlpha="true">
 						<FlipBook smoothing="NONE" childKey="EyePokeEndTexture" duration="1.2" order="1" flipBookRows="4" flipBookColumns="11" flipBookFrames="38" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 					</AnimationGroup>
 				</Animations>

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_SoulbindsNodeLink.lua"/>
 
 	<Frame name="SoulbindTreeNodeLinkTemplate" mixin="SoulbindTreeNodeLinkMixin" virtual="true">
@@ -61,16 +61,16 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="FlowAnim1" looping="REPEAT">
-				<Alpha childkey="Foreground1" duration="1.2" order="1" smoothing="in_out" fromalpha=".7" toalpha="1" />
-				<Alpha childKey="Foreground1" duration="1.0" order="2" smoothing="in_out" fromAlpha="1" toAlpha=".7" />
-				<Alpha childkey="Foreground2" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
-				<Alpha childKey="Foreground2" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
-				<Alpha childkey="Foreground3" duration="1.2" order="1" smoothing="in_out" fromalpha=".6" toalpha=".8" />
-				<Alpha childKey="Foreground3" duration="1.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha=".6" />
-				<Alpha childkey="Foreground4" duration="3.2" order="1" smoothing="in_out" fromalpha=".3" toalpha=".7" />
-				<Alpha childKey="Foreground4" duration="3.0" order="2" smoothing="in_out" fromAlpha=".7" toAlpha=".3" />
-				<Alpha childkey="Foreground5" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
-				<Alpha childKey="Foreground5" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
+				<Alpha childKey="Foreground1" duration="1.2" order="1" smoothing="IN_OUT" fromAlpha=".7" toAlpha="1" />
+				<Alpha childKey="Foreground1" duration="1.0" order="2" smoothing="IN_OUT" fromAlpha="1"  toAlpha=".7" />
+				<Alpha childKey="Foreground2" duration="2.2" order="1" smoothing="IN_OUT" fromAlpha="1"  toAlpha=".8" />
+				<Alpha childKey="Foreground2" duration="2.0" order="2" smoothing="IN_OUT" fromAlpha=".8" toAlpha="1" />
+				<Alpha childKey="Foreground3" duration="1.2" order="1" smoothing="IN_OUT" fromAlpha=".6" toAlpha=".8" />
+				<Alpha childKey="Foreground3" duration="1.0" order="2" smoothing="IN_OUT" fromAlpha=".8" toAlpha=".6" />
+				<Alpha childKey="Foreground4" duration="3.2" order="1" smoothing="IN_OUT" fromAlpha=".3" toAlpha=".7" />
+				<Alpha childKey="Foreground4" duration="3.0" order="2" smoothing="IN_OUT" fromAlpha=".7" toAlpha=".3" />
+				<Alpha childKey="Foreground5" duration="2.2" order="1" smoothing="IN_OUT" fromAlpha="1"  toAlpha=".8" />
+				<Alpha childKey="Foreground5" duration="2.0" order="2" smoothing="IN_OUT" fromAlpha=".8" toAlpha="1" />
 			</AnimationGroup>
 			<AnimationGroup parentKey="FlowAnim2" looping="REPEAT">
 				<TextureCoordTranslation childKey="Foreground1" duration="16" order="1" offsetU="0" offsetV="1" />

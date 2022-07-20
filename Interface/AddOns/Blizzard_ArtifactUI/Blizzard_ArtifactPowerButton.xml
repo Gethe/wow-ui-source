@@ -180,7 +180,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="6">
+			<Layer level="OVERLAY" textureSubLevel="5">
 				<Texture parentKey="StarBurst" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-StarBurst" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -222,7 +222,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="8">
+			<Layer level="OVERLAY" textureSubLevel="6">
 				<Texture parentKey="Tier2AnimatedBorder1" alpha="0" alphaMode="ADD" atlas="Artifacts-PerkRing-Final" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -249,7 +249,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="10">
+			<Layer level="OVERLAY" textureSubLevel="7">
 				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alpha="0" alphaMode="ADD" parentKey="Shine">
 					<Size x="67" y="1"/>
 					<Anchors>
@@ -270,7 +270,7 @@
 			<!-- Animation Textures -->
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="FirstPointWaitingAnimation" setToFinalAlpha="true" looping="repeat">
+			<AnimationGroup parentKey="FirstPointWaitingAnimation" setToFinalAlpha="true" looping="REPEAT">
 				<Alpha childKey="RingGlow" duration=".8" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="RingGlow" startDelay=".8" smoothing="IN_OUT" duration=".8" order="1" fromAlpha="1" toAlpha="0"/>
 

@@ -154,7 +154,7 @@
 			</OnDisable>
 		</Scripts>
     </Button>
-	<CheckButton name="SpellButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+	<CheckButton name="SpellButtonTemplate" inherits="SecureFrameTemplate" mixin="SpellButtonMixin" virtual="true">
 		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -180,7 +180,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentIconTexture" setAllPoints="true" hidden="true"/>
+				<Texture name="$parentIconTexture" parentKey="IconTexture" setAllPoints="true" hidden="true"/>
 				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="3" hidden="true" justifyH="LEFT" parentKey="SpellName">
 					<Size x="145" y="0"/>
 					<Anchors>
@@ -313,38 +313,19 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				SpellButton_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				SpellButton_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 			<PreClick>
 				self:SetChecked(false);
 			</PreClick>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					SpellButton_OnModifiedClick(self, button);
-				else
-					SpellButton_OnClick(self, button);
-				end
-			</OnClick>
-			<OnShow>
-				SpellButton_OnShow(self);
-			</OnShow>
-			<OnHide>
-				SpellButton_OnHide(self);
-			</OnHide>
-			<OnDragStart>
-				SpellButton_OnDragStart(self, button);
-			</OnDragStart>
-			<OnReceiveDrag>
-				SpellButton_OnReceiveDrag(self);
-			</OnReceiveDrag>
-			<OnEnter>
-				SpellButton_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave function="SpellButton_OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<Animations>
 			<AnimationGroup parentKey="GlyphActivateAnim" setToFinalAlpha="true">
@@ -371,73 +352,30 @@
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
-	<CheckButton name="ProfessionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+	<CheckButton name="ProfessionButtonTemplate" inherits="SecureFrameTemplate" mixin="SpellButtonMixin" virtual="true">
 		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="$parentIconTexture" setAllPoints="true" parentKey="iconTexture"/>
-				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="LEFT" parentKey="spellString">
-					<Size x="100" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="7"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSubSpellName" inherits="NewSubSpellFont" justifyH="LEFT" justifyV="TOP" parentKey="subSpellString">
-					<Size x="95" y="28"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentNameFrame" file="Interface\Spellbook\ProfessionsBook">
-					<Size x="108" y="41"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="1" y="0"/>
-					</Anchors>
-					<Color r="1.0" g="1.0" b="1.0" a="0.8"/>
-					<TexCoords left="0.00390625" right="0.42578125" top="0.14843750" bottom="0.46875000"/>
-				</Texture>
+				<Texture name="$parentIconTexture" setAllPoints="true" parentKey="IconTexture"/>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				SpellButton_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				SpellButton_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 			<PreClick>
 				self:SetChecked(false);
 			</PreClick>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					SpellButton_OnModifiedClick(self, button);
-				else
-					SpellButton_OnClick(self, button);
-				end
-			</OnClick>
-			<OnShow>
-				SpellButton_OnShow(self);
-			</OnShow>
-			<OnHide>
-				SpellButton_OnHide(self);
-			</OnHide>
-			<OnDragStart>
-				SpellButton_OnDrag(self, button);
-			</OnDragStart>
-			<OnReceiveDrag>
-				SpellButton_OnDrag(self);
-			</OnReceiveDrag>
-			<OnEnter>
-				SpellButton_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				SpellButton_OnLeave(self, motion);
-			</OnLeave>
+			<OnClick method="OnClick"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" parentKey="highlightTexture"/>
@@ -463,7 +401,7 @@
 		</Scripts>
 	</Frame>
 	<StatusBar name="ProfessionStatusBarTemplate" virtual="true">
-		<Size x="95" y="16"/>
+		<Size x="180" y="16"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString name="$parentRank" inherits="TextStatusBarText" parentKey ="rankText" text="0/0">
@@ -538,13 +476,7 @@
 				<FontString name="$parentProfessionName" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="professionName" text="TRADE_SKILLS">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"  x="100" y="-2"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSpecialization" inherits="GameFontNormal" justifyH="LEFT" parentKey="specialization" text="">
-					<Size x="0" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+						<Anchor point="TOPLEFT"  x="100" y="-30"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentMissing" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="missingHeader" text="PROFESSIONS_FIRST_PROFESSION">
@@ -564,7 +496,7 @@
 				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="rank" text="TRADE_SKILLS">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-33"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 
@@ -590,14 +522,14 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentSpellButtonTop" inherits="ProfessionButtonTemplate" parentKey="button2" id="2">
+			<CheckButton parentKey="SpellButton2" inherits="ProfessionButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-109" y="-3" />
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="0" y="-6" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentSpellButtonBottom" inherits="ProfessionButtonTemplate" parentKey="button1" id="1">
+			<CheckButton parentKey="SpellButton1" inherits="ProfessionButtonTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSpellButtonTop" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SpellButton2" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 			</CheckButton>
 			<StatusBar name="$parentStatusBar" inherits="ProfessionStatusBarTemplate" parentKey="statusBar">
@@ -605,6 +537,27 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
 				</Anchors>
 			</StatusBar>
+			<Button parentKey="UnlearnButton" inherits="ResizeLayoutFrame" mixin="ProfessionsUnlearnButtonMixin">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.professionName" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75">
+							<Size x="26" y="26"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -616,14 +569,14 @@
 	<Frame name="SecondaryProfessionTemplate" virtual="true">
 		<Size x="437" y="46"/>
 		<Frames>
-			<CheckButton name="$parentSpellButtonRight" inherits="ProfessionButtonTemplate" parentKey="button1" id="1">
+			<CheckButton parentKey="SpellButton2" inherits="ProfessionButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-109" y="-3"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="0" y="0" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentSpellButtonLeft" inherits="ProfessionButtonTemplate" parentKey="button2" id="2">
+			<CheckButton parentKey="SpellButton1" inherits="ProfessionButtonTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentSpellButtonRight" relativePoint="TOPLEFT" x="-109"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SpellButton2" relativePoint="TOPLEFT"/>
 				</Anchors>
 			</CheckButton>
 			<StatusBar name="$parentStatusBar" inherits="ProfessionStatusBarTemplate" parentKey="statusBar">

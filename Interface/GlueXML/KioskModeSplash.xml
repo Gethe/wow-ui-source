@@ -27,7 +27,7 @@
 						<Texture parentKey="Button" atlas="BlizzCon2019Splash-button-playexpansion" setAllPoints="true" nonBlocking="false"/>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontNormalHuge3" justifyH="CENTER" justifyV="CENTER">
+						<FontString parentKey="Text" inherits="GameFontNormalHuge3" justifyH="CENTER" justifyV="MIDDLE">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -52,7 +52,7 @@
 						<Texture parentKey="Button" atlas="BlizzCon2017Splash-button-newplayer" setAllPoints="true" nonBlocking="false"/>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" text="Create Level 1 Character" inherits="GameFontNormalSmall2" justifyH="CENTER" justifyV="CENTER">
+						<FontString parentKey="Text" text="Create Level 1 Character" inherits="GameFontNormalSmall2" justifyH="CENTER" justifyV="MIDDLE">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>

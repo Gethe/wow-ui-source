@@ -614,7 +614,7 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="NoItems" inherits="QuestFont_Super_Huge" justifyH="CENTER" hidden="true" text="BLACK_MARKET_NO_ITEMS">
 							<Anchors>
-								<Anchor point="TOP" x="" y="-20"/>
+								<Anchor point="TOP" x="0" y="-20"/>
 							</Anchors>
 						</FontString>
 					</Layer>

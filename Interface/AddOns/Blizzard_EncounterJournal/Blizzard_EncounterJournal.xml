@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_EncounterJournal.lua"/>
 
 	<!-- Tiled textures size=64,512-->
@@ -714,12 +714,8 @@
 			</Anchors>
 			<Color r="0.827" g="0.659" b="0.463"/>
 		</ButtonText>
-		<NormalFont style="GameFontNormalMed3">
-			<Color r="0.827" g="0.659" b="0.463"/>
-		</NormalFont>
-		<HighlightFont style="GameFontNormalMed3">
-			<Color r="0.973" g="0.902" b="0.581"/>
-		</HighlightFont>
+		<NormalFont style="GameFontNormalMed3"/>
+		<HighlightFont style="GameFontNormalMed3"/>
 		<DisabledFont style="GameFontHighlightMedium"/>
 		<Scripts>
 			<OnShow function="EncounterJournalBossButton_OnShow"/>
@@ -1179,7 +1175,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="text" font="QuestFont_Huge" justifyH="left" justifyV="top" wordwrap="false">
+								<FontString parentKey="text" font="QuestFont_Huge" justifyH="LEFT" justifyV="TOP" wordwrap="false">
 									<Size x="260" y="0"/>
 									<Color r="0" g="0" b="0"/>
 								</FontString>
@@ -1193,7 +1189,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="text" font="SystemFont_Med1" justifyH="left" justifyV="top" wordwrap="true" maxLines="4">
+								<FontString parentKey="text" font="SystemFont_Med1" justifyH="LEFT" justifyV="TOP" wordwrap="true" maxLines="4">
 									<Size x="240" y="0"/>
 									<Color r="0.2824" g="0.0157" b="0.0157"/>
 								</FontString>
@@ -2695,7 +2691,7 @@
 										</Anchors>
 										<Layers>
 											<Layer level="ARTWORK">
-												<FontString parentKey="text" font="DestinyFontHuge" justifyH="center" justifyV="top" maxLines="2">
+												<FontString parentKey="text" font="DestinyFontHuge" justifyH="CENTER" justifyV="TOP" maxLines="2">
 													<Size x="264" y="0"/>
 													<Color r="0" g="0" b="0"/>
 												</FontString>
@@ -2709,7 +2705,7 @@
 										</Anchors>
 										<Layers>
 											<Layer level="ARTWORK">
-												<FontString parentKey="text" font="GameTooltipHeader" justifyH="center" justifyV="top">
+												<FontString parentKey="text" font="GameTooltipHeader" justifyH="CENTER" justifyV="TOP">
 													<Size x="264" y="0"/>
 													<Color r="0.2824" g="0.0157" b="0.0157"/>
 												</FontString>
@@ -2726,12 +2722,8 @@
 								<Scripts>
 									<OnClick function="EJSuggestFrame_OnClick"/>
 								</Scripts>
-								<NormalFont style="GameFontNormalLarge">
-									<Color r="0.827" g="0.659" b="0.463"/>
-								</NormalFont>
-								<HighlightFont style="GameFontNormalLarge">
-									<Color r="0.973" g="0.902" b="0.581"/>
-								</HighlightFont>
+								<NormalFont style="GameFontNormalLarge"/>
+								<HighlightFont style="GameFontNormalLarge"/>
 								<DisabledFont style="GameFontHighlightMedium"/>
 								<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 							</Button>
@@ -2748,7 +2740,7 @@
 												<Anchor point="RIGHT" x="-7" y="0"/>
 											</Anchors>
 										</Texture>
-										<FontString parentKey="text" font="SystemFont_Med3" justifyH="right" justifyV="center" text="AJ_PRIMARY_REWARD_TEXT">
+										<FontString parentKey="text" font="SystemFont_Med3" justifyH="RIGHT" justifyV="MIDDLE" text="AJ_PRIMARY_REWARD_TEXT">
 											<Size x="0" y="0"/>
 											<Anchors>
 												<Anchor point="RIGHT" relativeKey="$parent.icon" relativePoint="LEFT" x="-12" y="0"/>
@@ -2889,7 +2881,7 @@
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
-				<FontString name="$parentClickText" parentKey="clickText" inherits="GameTooltipText" text="AJ_REWARD_CLICK_TEXT" visible="false">
+				<FontString name="$parentClickText" parentKey="clickText" inherits="GameTooltipText" text="AJ_REWARD_CLICK_TEXT">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="11" y="2"/>
 						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-11" y="30"/>
@@ -2916,7 +2908,7 @@
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="5" y="2"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentText" parentKey="text" inherits="GameTooltipText" justifyV="CENTER">
+						<FontString name="$parentText" parentKey="text" inherits="GameTooltipText" justifyV="MIDDLE">
 							<Size x="128" y="28"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="8" y="0"/>
@@ -2986,7 +2978,7 @@
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="5" y="2"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentText" parentKey="text" inherits="GameTooltipText" justifyV="CENTER">
+						<FontString name="$parentText" parentKey="text" inherits="GameTooltipText" justifyV="MIDDLE">
 							<Size x="0" y="28"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="8" y="0"/>

@@ -32,6 +32,7 @@ MinimalSliderWithSteppersMixin = CreateFromMixins(CallbackRegistryMixin);
 MinimalSliderWithSteppersMixin:GenerateCallbackEvents(
 	{
 		"OnValueChanged",
+		"OnMouseUp",
 	}
 );
 
@@ -57,6 +58,12 @@ function MinimalSliderWithSteppersMixin:OnStepperClicked(forward)
 	end
 end
 
+local function OnMouseUp(slider)
+	if slider:IsEnabled() then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
+end
+
 function MinimalSliderWithSteppersMixin:Init(value, minValue, maxValue, steps, formatters)
 	self.Slider:SetMinMaxValues(minValue, maxValue);
 	self.Slider:SetValueStep((maxValue - minValue) / steps);
@@ -71,6 +78,7 @@ function MinimalSliderWithSteppersMixin:Init(value, minValue, maxValue, steps, f
 		self:TriggerEvent(MinimalSliderWithSteppersMixin.Event.OnValueChanged, value);
 	end
 	self.Slider:SetScript("OnValueChanged", OnValueChanged);
+	self.Slider:SetScript("OnMouseUp", OnMouseUp);
 end
 
 function MinimalSliderWithSteppersMixin:FormatValue(value)

@@ -37,6 +37,8 @@ end
 
 function AllocationsMixin:Clear()
 	self.allocs = {};
+
+	self:OnChanged();
 end
 
 function AllocationsMixin:Enumerate(indexBegin, indexEnd)
@@ -91,12 +93,6 @@ end
 function AllocationsMixin:Overwrite(allocations)
 	self.allocs = CopyTable(allocations.allocs);
 	self:OnChanged();
-end
-
-function AllocationsMixin:Dump()
-	if g_professionsShowDebugInfo then
-		Dump(self.allocs);
-	end
 end
 
 function AllocationsMixin:GetTransaction()
@@ -312,16 +308,6 @@ function ProfessionsRecipeTransactionMixin:CreateCraftingReagentInfoTbl()
 		return reagentTbl.reagentSlotSchematic.mcrSlotIndex ~= nil;
 	end
 	return self:CreateCraftingReagentInfoTblIf(IsModifiedCraftingReagent);
-end
-
-function ProfessionsRecipeTransactionMixin:Dump()
-	if g_professionsShowDebugInfo then
-		print("ProfessionsRecipeTransactionMixin:Dump");
-		for slotIndex, reagentTbl in self:Enumerate() do
-			print("slotIndex", slotIndex);
-			reagentTbl.allocations:Dump();
-		end
-	end
 end
 
 function CreateProfessionsRecipeTransaction(recipeSchematic, onChangedFunc)

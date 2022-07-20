@@ -2,8 +2,14 @@
 ..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_Dracthyr.lua"/>
  		
-	<Frame name="ClassNameplateBarDracthyrFrame" inherits="EssenceFrameTemplate, ClassNameplateBarFrame" mixin="ClassNameplateBar, ComboPointPowerBar, ClassNameplateBarDracthyr" ignoreParentScale="true">
+	<Frame name="ClassNameplateBarDracthyrFrame" inherits="EssencePlayerFrameTemplate, ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarDracthyr" ignoreParentScale="true">
 		<Size x="160" y="20"/>
+		<KeyValues>
+			<KeyValue key="showBarFunc" value="ClassNameplateBarDracthyr.SetupDracthyr" type="global"/>
+			<KeyValue key="resourceBarMixin" value="ClassNameplateBar" type="global"/>
+			<KeyValue key="class" value="EVOKER" type="string"/>
+			<KeyValue key="unit" value="player" type="string"/>
+		</KeyValues>
 	</Frame>
 </Ui>
 

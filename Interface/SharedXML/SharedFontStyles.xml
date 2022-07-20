@@ -154,6 +154,7 @@
 	<Font name="GameFontHighlightSmall" inherits="GameFontNormalSmall" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	<Font name="GameFontNormalSmallLeft" inherits="GameFontNormalSmall" justifyH="LEFT" virtual="true"/>		
 	<Font name="GameFontHighlightSmallLeft" inherits="GameFontHighlightSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontDisableSmallLeft" inherits="GameFontDisableSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontHighlightSmall2" inherits="SystemFont_Small2" virtual="true">

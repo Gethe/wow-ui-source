@@ -6,6 +6,7 @@ function ProfessionsSalvageSlotMixin:Reset()
 	self.unallocatable = nil;
 	self.quantityAvailableCallback = nil;
 	self.CustomerState:Hide();
+	self.allocationItem = nil;
 end
 
 function ProfessionsSalvageSlotMixin:Init(transaction, quantityRequired)
@@ -17,7 +18,6 @@ function ProfessionsSalvageSlotMixin:Init(transaction, quantityRequired)
 	self.quantityRequired = quantityRequired;
 
 	self.Button:Reset();
-	self.Button.noQualityOverlay = true;
 	self.Button:SetLocked(false);
 
 	local function OnItemsLoaded()

@@ -1176,6 +1176,7 @@ do
 			elseif type == AuraUtil.AuraUpdateChangedType.Buff then
 				frame.buffs[aura.auraInstanceID] = aura;
 			elseif type == AuraUtil.AuraUpdateChangedType.Dispel then
+				frame.debuffs[aura.auraInstanceID] = aura;
 				frame.dispels[aura.dispelName][aura.auraInstanceID] = aura;
 			end
 		end
@@ -1210,6 +1211,8 @@ do
 						frame.buffs[aura.auraInstanceID] = aura;
 						buffsChanged = true;
 					elseif type == AuraUtil.AuraUpdateChangedType.Dispel then
+						frame.debuffs[aura.auraInstanceID] = aura;
+						debuffsChanged = true;
 						frame.dispels[aura.dispelName][aura.auraInstanceID] = aura;
 						dispelsChanged = true;
 					end
@@ -1226,14 +1229,7 @@ do
 						end
 						frame.debuffs[auraInstanceID] = newAura;
 						debuffsChanged = true;
-					elseif frame.buffs[auraInstanceID] ~= nil then
-						local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
-						if newAura ~= nil then
-							newAura.isBuff = true;
-						end
-						frame.buffs[auraInstanceID] = newAura;
-						buffsChanged = true;
-					else
+
 						for _, tbl in pairs(frame.dispels) do
 							if tbl[auraInstanceID] ~= nil then
 								tbl[auraInstanceID] = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
@@ -1241,6 +1237,13 @@ do
 								break;
 							end
 						end
+					elseif frame.buffs[auraInstanceID] ~= nil then
+						local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
+						if newAura ~= nil then
+							newAura.isBuff = true;
+						end
+						frame.buffs[auraInstanceID] = newAura;
+						buffsChanged = true;
 					end
 				end
 			end
@@ -1250,10 +1253,7 @@ do
 					if frame.debuffs[auraInstanceID] ~= nil then
 						frame.debuffs[auraInstanceID] = nil;
 						debuffsChanged = true;
-					elseif frame.buffs[auraInstanceID] ~= nil then
-						frame.buffs[auraInstanceID] = nil;
-						buffsChanged = true;
-					else
+
 						for _, tbl in pairs(frame.dispels) do
 							if tbl[auraInstanceID] ~= nil then
 								tbl[auraInstanceID] = nil;
@@ -1261,6 +1261,9 @@ do
 								break;
 							end
 						end
+					elseif frame.buffs[auraInstanceID] ~= nil then
+						frame.buffs[auraInstanceID] = nil;
+						buffsChanged = true;
 					end
 				end
 			end

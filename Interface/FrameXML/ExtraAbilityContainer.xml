@@ -7,6 +7,7 @@
 			<KeyValue key="spacing" value="-30" type="number"/>
 			<KeyValue key="fixedHeight" value="120" type="number"/>
 			<KeyValue key="layoutIndex" value="9" type="number"/>
+			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -15,7 +16,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ExtraAbilityContainer" inherits="ExtraAbilityContainerTemplate" topLevel="true" hidden="true">
+	<Frame name="ExtraAbilityContainer" inherits="ExtraAbilityContainerTemplate" toplevel="true" hidden="true">
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>

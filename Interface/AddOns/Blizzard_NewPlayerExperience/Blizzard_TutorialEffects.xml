@@ -1,4 +1,5 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TutorialEffects.lua" />
 
 	<Frame name="NPE_TutorialQuestBangGlowTemplate" virtual="true">
@@ -42,7 +43,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="NPE_TutorialDragAnimationFrame" frameStrate="DIALOG" hidden="true" alpha="0.6">
+	<Frame name="NPE_TutorialDragAnimationFrame" frameStrata="DIALOG" hidden="true" alpha="0.6">
 		<Size x="76" y="76"/>
 		<Layers>
 			<Layer level="BACKGROUND">

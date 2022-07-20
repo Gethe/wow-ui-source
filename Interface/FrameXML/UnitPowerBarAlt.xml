@@ -201,6 +201,7 @@
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="6" type="number"/>
+			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad>

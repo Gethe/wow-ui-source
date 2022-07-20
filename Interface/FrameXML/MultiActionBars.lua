@@ -47,31 +47,18 @@ function MultiActionBar_Update ()
 	EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
 end
 
-function MultiActionBar_ShowAllGrids (reason, force)
-	MultiActionBar_UpdateGrid("MultiBarBottomLeft", true, reason, force);
-	MultiActionBar_UpdateGrid("MultiBarBottomRight", true, reason, force);
-	MultiActionBar_UpdateGrid("MultiBarRight", true, reason, force);
-	MultiActionBar_UpdateGrid("MultiBarLeft", true, reason, force);
+function MultiActionBar_ShowAllGrids (reason)
+	MultiBarBottomLeft:SetShowGrid(true, reason);
+	MultiBarBottomRight:SetShowGrid(true, reason);
+	MultiBarRight:SetShowGrid(true, reason);
+	MultiBarLeft:SetShowGrid(true, reason);
 end
 
 function MultiActionBar_HideAllGrids (reason)
-	MultiActionBar_UpdateGrid("MultiBarBottomLeft", false, reason);
-	MultiActionBar_UpdateGrid("MultiBarBottomRight", false, reason);
-	MultiActionBar_UpdateGrid("MultiBarRight", false, reason);
-	MultiActionBar_UpdateGrid("MultiBarLeft", false, reason);
-end
-
-function MultiActionBar_UpdateGrid (barName, show, reason, force)
-	local bar = _G[barName];
-	bar:SetShowGrid(show or force, reason);
-end
-
-function MultiActionBar_UpdateGridVisibility ()
-	if MultibarGrid_IsVisible() then
-		MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
-	else
-		MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
-	end
+	MultiBarBottomLeft:SetShowGrid(false, reason);
+	MultiBarBottomRight:SetShowGrid(false, reason);
+	MultiBarRight:SetShowGrid(false, reason);
+	MultiBarLeft:SetShowGrid(false, reason);
 end
 
 function MultiActionBar_SetAllQuickKeybindModeEffectsShown(showEffects)
@@ -82,11 +69,7 @@ function MultiActionBar_SetAllQuickKeybindModeEffectsShown(showEffects)
 end
 
 function Multibar_EmptyFunc (show)
-	
-end
 
-function MultibarGrid_IsVisible ()
-	return Settings.GetValue("alwaysShowActionBars");
 end
 
 function MultiBar1_IsVisible ()

@@ -23,12 +23,12 @@
 			<Button parentKey="ZoneTextButton" mixin="MinimapZoneTextButtonMixin">
 				<Size x="135" y="12"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.BorderTop" x="8" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.BorderTop" x="4" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<FontString name="MinimapZoneText" inherits="GameFontNormal" nonspacewrap="true" justifyH="LEFT" justifyV="MIDDLE">
-							<Size x="135" y="12"/>
+							<Size x="130" y="12"/>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="1"/>
 							</Anchors>
@@ -46,11 +46,11 @@
 			<Frame parentKey="Tracking">
 				<Size x="17" y="17"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ZoneTextButton" relativePoint="LEFT" x="-8" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.BorderTop" relativePoint="LEFT" x="-2" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" alphaMode="BLEND" atlas="ui-hud-minimap-button"/>
+						<Texture parentKey="Background" atlas="ui-hud-minimap-button"/>
 					</Layer>
 				</Layers>
 				<Frames>

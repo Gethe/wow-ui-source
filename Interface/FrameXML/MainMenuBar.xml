@@ -76,7 +76,7 @@
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-4" y="4"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="9" y="-9"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="7" y="-7"/>
 				</Anchors>
 			</Frame>
 
@@ -96,28 +96,27 @@
 				<Layers>
 					<Layer level="OVERLAY" textureSubLevel="5">
 						<Texture parentKey="LeftEndCap" atlas="ui-hud-actionbar-gryphon-left">
-							<Size x="77" y="77"/>
+							<Size x="104.5" y="98"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="9" y="-22"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="RightEndCap" atlas="ui-hud-actionbar-gryphon-right">
-							<Size x="77" y="77"/>
+							<Size x="104.5" y="98"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-17"/>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-9" y="-22"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="ActionBarPageNumber" frameLevel="100">
-				<Size x="17" y="38"/>
+			<Frame parentKey="ActionBarPageNumber" inherits="ResizeLayoutFrame" frameLevel="100">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="-4" y="9"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY" textureSubLevel="5">
@@ -193,7 +192,7 @@
 
 		<Scripts>
 			<OnShow method="OnShow"/>
-			<OnLoad method="OnLoad" inherit="append"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

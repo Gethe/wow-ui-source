@@ -108,7 +108,7 @@
 			<Frame name="$parentDescription">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentText" justifyH="CENTER" wordWrap="true" inherits="GameFontHighlight">
+						<FontString name="$parentText" justifyH="CENTER" wordwrap="true" inherits="GameFontHighlight">
 							<Size x="280" y="0"/>
 							<Anchors>
 								<Anchor point="TOP"/>
@@ -116,7 +116,7 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="SubText" justifyH="CENTER" wordWrap="true" inherits="Game11Font">
+						<FontString parentKey="SubText" justifyH="CENTER" wordwrap="true" inherits="Game11Font">
 							<Size x="260" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" y="-4"/>

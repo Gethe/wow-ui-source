@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="ChannelButton.lua"/>
 
 	<Button name="VoiceChatSpeakerTemplate" hidden="true" virtual="true">
@@ -39,7 +39,7 @@
 		<HighlightTexture parentKey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Collapsed" atlas="voicechat-channellist-category-minus" hidden="true" useatlassize="true">
+				<Texture parentKey="Collapsed" atlas="voicechat-channellist-category-minus" hidden="true" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-8" y="-6"/>
 					</Anchors>

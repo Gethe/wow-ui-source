@@ -285,7 +285,7 @@ end
 
 function TalentFrameBaseMixin:SetZoomLevel(zoomLevel)
 	local treeInfo = self:GetTreeInfo();
-	zoomLevel = treeInfo and Clamp(zoomLevel, treeInfo.minZoom, treeInfo.maxZoom) or zoomLevel;
+	zoomLevel = Clamp(zoomLevel, treeInfo.minZoom, treeInfo.maxZoom);
 	self:SetZoomLevelInternal(zoomLevel);
 end
 
@@ -368,10 +368,6 @@ end
 
 function TalentFrameBaseMixin:GetPanExtents()
 	local treeInfo = self:GetTreeInfo();
-	if not treeInfo then
-		return self:GetPanViewSize();
-	end
-
 	local zoomLevel = self:GetZoomLevel();
 	local zoomLevelFactor = (1 / zoomLevel);
 
@@ -957,6 +953,7 @@ function TalentFrameBaseMixin:CommitConfig()
 	self.commitStarted = true;
 
 	-- TODO:: Replace this with a proper response. For now, we'll just assume things finish out in 0.5 or less.
+	-- Wait until we have server to client error messaging as well WOW10-27631
 	C_Timer.After(0.5, function()
 		self.commitStarted = false;
 	end);

@@ -80,17 +80,16 @@
 		</Anchors>
 		<Frames>
 			<CheckButton parentKey="CollapseAndExpandButton" mixin="CollapseAndExpandButtonMixin">
-				<Size x="32" y="32"/>
+				<Size x="13" y="50"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-31" y="26"/>
+					<Anchor point="BOTTOMRIGHT" x="-31" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>
 					<OnLoad method="OnLoad"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-				<CheckedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<NormalTexture parentKey="NormalTexture" atlas="CovenantSanctum-Renown-Arrow"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="CovenantSanctum-Renown-Arrow" alpha=".2" alphaMode="ADD"/>
 			</CheckButton>
 			<Frame parentKey="BuffsContainer">
 				<Size x="376" y="100"/>

@@ -1,92 +1,42 @@
-local HubPage = 1;
-local RecipesPage = 2;
 
-local ProfessionsFrameEvents = {
+local ProfessionsFrameEvents = 
+{
 	"TRADE_SKILL_NAME_UPDATE",
 	"TRADE_SKILL_DATA_SOURCE_CHANGED",
 	"TRADE_SKILL_LIST_UPDATE",
 	"TRADE_SKILL_CLOSE",
 };
 
+StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE"] = 
+{
+	text = PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE,
+	button1 = YES,
+	button2 = CANCEL,
+	OnAccept = function()
+		if ProfessionsFrame.SpecPage:HasAnyConfigChanges() then
+			ProfessionsFrame.SpecPage:RollbackConfig();
+		end
+		HideUIPanel(ProfessionsFrame);
+	end,
+	hideOnEscape = 1,
+};
+
 ProfessionsMixin = {};
 
 function ProfessionsMixin:InitializeButtons()
-    local function OnTabClicked(button, buttonName, down)
-		self:SelectPage(button.page);
-	end
-	self.tabsMap = {};
-	for index, button in ipairs(self.Tabs) do
-		button:SetScript("OnClick", OnTabClicked);
-		self.tabsMap[button.page] = button;
-	end
-
-	self.LinkButton:SetScript("OnClick", function()
-		if MacroFrameText and MacroFrameText:IsShown() and MacroFrameText:HasFocus() then
-			local link = C_TradeSkillUI.GetTradeSkillListLink();
-			if strlenutf8(MacroFrameText:GetText()) + strlenutf8(link) <= MacroFrameText:GetMaxLetters() then
-				MacroFrameText:Insert(link);
-			end
-		else
-			if ChatEdit_GetActiveWindow() then
-				local link = C_TradeSkillUI.GetTradeSkillListLink();
-				ChatEdit_InsertLink(link);
-			else
-				ToggleDropDownMenu(1, nil, self.LinkDropDown, self.LinkButton, 25, 25);
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			end
-		end
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	end);
-end
-
-function ProfessionsMixin:InitLinkDropdown()
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.text = TRADESKILL_POST;
-	info.isTitle = true;
-	UIDropDownMenu_AddButton(info);
-
-	info.isTitle = nil;
-	info.notCheckable = true;
-	info.func = function(_, channel)
-		local link = C_TradeSkillUI.GetTradeSkillListLink();
-		if link then
-			ChatFrame_OpenChat(channel.." "..link, DEFAULT_CHAT_FRAME);
-		end
-	end;
-
-	info.text = GUILD;
-	info.arg1 = SLASH_GUILD1;
-	info.disabled = not IsInGuild();
-	UIDropDownMenu_AddButton(info);
-
-	info.text = PARTY;
-	info.arg1 = SLASH_PARTY1;
-	info.disabled = (GetNumSubgroupMembers() == 0);
-	UIDropDownMenu_AddButton(info);
-
-	info.text = RAID;
-	info.disabled = not IsInRaid();
-	info.arg1 = SLASH_RAID1;
-	UIDropDownMenu_AddButton(info);
-
-	info.disabled = false
-
-	local channels = { GetChannelList() };
-	for i = 1, #channels, 3 do
-		info.text = ChatFrame_ResolveChannelName(channels[i + 1]);
-		info.arg1 = "/"..channels[i];
-		info.disabled = channels[i + 2];
-		UIDropDownMenu_AddButton(info);
-	end
+	self.CloseButton:SetScript("OnClick", function() self:CheckConfirmClose(); end);
 end
 
 function ProfessionsMixin:OnLoad()
+	FrameUtil.RegisterFrameForEvents(self, ProfessionsFrameEvents);
+
+	TabSystemOwnerMixin.OnLoad(self);
+	self:SetTabSystem(self.TabSystem);
+
+	self.recipesTabID = self:AddNamedTab("Recipes", self.CraftingPage);
+	self.specializationsTabID = self:AddNamedTab("Specializations", self.SpecPage);
+
 	self:InitializeButtons();
-
-	UIDropDownMenu_Initialize(self.LinkDropDown, GenerateClosure(self.InitLinkDropdown, self), "MENU");
-
-	self.RecipesTab:SetText(PROFESSIONS_RECIPES_TAB);
 
 	self:RegisterEvent("OPEN_RECIPE_RESPONSE");
 
@@ -113,7 +63,7 @@ function ProfessionsMixin:OnEvent(event, ...)
 			professionInfo = ProcessOpenRecipeResponse(openRecipeResponse);
 
 			ShowUIPanel(self);
-			self:SelectPage(self.Pages[RecipesPage].page);
+			self:SetTab(self.recipesTabID);
 		else
 			professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
 		end
@@ -153,7 +103,8 @@ function ProfessionsMixin:SetProfessionInfo(professionInfo)
 
 	EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
 
-	self:Refresh();
+	local forceTabChange = true;
+	self:Refresh(forceTabChange);
 end
 
 function ProfessionsMixin:SetTitle(skillLineName)
@@ -169,7 +120,7 @@ function ProfessionsMixin:SetTitle(skillLineName)
 	end
 end
 
-function ProfessionsMixin:Refresh()
+function ProfessionsMixin:GetProfessionInfo()
 	local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
 
 	-- Child profession info will be unavailable in some NPC crafting contexts. In these cases,
@@ -179,85 +130,81 @@ function ProfessionsMixin:Refresh()
 	end
 	professionInfo.displayName = professionInfo.parentProfessionName and professionInfo.parentProfessionName or professionInfo.professionName;
 
+	return professionInfo;
+end
+
+function ProfessionsMixin:Refresh(forceTabChange)
+	local professionInfo = self:GetProfessionInfo();
+
 	self:SetTitle(professionInfo.displayName);
-	self.HubTab:SetName(professionInfo.displayName);
 	self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(professionInfo.professionID));
-	self.LinkButton:SetShown(C_TradeSkillUI.CanTradeSkillListLink());
+
+	self:UpdateTabs(forceTabChange);
 
 	for _, page in ipairs(self.Pages) do
 		page:Refresh(professionInfo);
 	end
-
-	for index, frame in ipairs(self.Pages) do
-		if self.tabsMap[frame.page] == self.currentTab then
-			self:SetWidth(frame:GetDesiredPageWidth());
-			break;
-		end
-	end
-
-	self:UpdateTabs();
 end
 
-function ProfessionsMixin:UpdateTabs()
+function ProfessionsMixin:UpdateTabs(forceTabChange)
 	local onlyShowRecipes = not Professions.InLocalCraftingMode() or C_TradeSkillUI.IsRuneforging();
-	self:SetTabsShown(not onlyShowRecipes);
-
-	if onlyShowRecipes then
-		self:SelectPage(self.Pages[RecipesPage].page)
-	elseif not self.currentTab then
-		self:SelectPage(self.Pages[HubPage].page)
-	elseif self.currentPage then
-		self:SelectPage(self.currentPage);
+	for _, tabID in ipairs(self:GetTabSet()) do
+		self.TabSystem:SetTabShown(tabID, not onlyShowRecipes);
 	end
+
+	local shouldShowSpec = Professions.InLocalCraftingMode() and C_ProfSpecs.ShouldShowSpecTab();
+
+	local forceAwayFromSpec = not shouldShowSpec;
+	if not shouldShowSpec then
+		self.TabSystem:SetTabShown(self.specializationsTabID, false);
+	else
+		local specTabInfo = C_ProfSpecs.GetSpecTabInfo();
+		self.TabSystem:SetTabEnabled(self.specializationsTabID, specTabInfo.enabled, specTabInfo.errorReason);
+		forceAwayFromSpec = not specTabInfo.enabled;
+	end
+
+	local selectedTab = self:GetTab();
+	if not selectedTab or onlyShowRecipes or (selectedTab == self.specializationsTabID and forceAwayFromSpec) then
+		selectedTab = self.recipesTabID;
+	end
+	self:SetTab(selectedTab, forceTabChange);
 end
 
-function ProfessionsMixin:SelectPage(page)
-	for index, frame in ipairs(self.Pages) do
-		local show = (frame.page == page);
-		frame:SetShown(show);
-
-		local tab = self.tabsMap[frame.page];
-		if show then
-			self.currentTab = tab;
-			self.currentPage = page;
-
-			PanelTemplates_SelectTab(self.currentTab);
-
-			self:SetWidth(frame:GetDesiredPageWidth());
-			UpdateUIPanelPositions(self);
-		else
-			PanelTemplates_DeselectTab(tab);
-		end
+function ProfessionsMixin:SetTab(tabID, forceChange)
+	if tabID == self:GetTab() then
+		return;
 	end
-end
 
-function ProfessionsMixin:SetTabsShown(shown)
-	for index, tab in pairs(self.Tabs) do
-		tab:SetShown(shown);
+	local isSpecTab = (tabID == self.specializationsTabID);
+
+	if isSpecTab and not C_ProfSpecs.SkillLineHasSpecialization(self:GetProfessionInfo().professionID) then
+		C_TradeSkillUI.SetProfessionChildSkillLineID(C_ProfSpecs.GetDefaultSpecSkillLine());
+		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+		self:SetProfessionInfo(professionInfo);
+		self:Refresh();
 	end
+	TabSystemOwnerMixin.SetTab(self, tabID);
+	local selectedPage = self:GetElementsForTab(tabID)[1];
+	self:SetWidth(selectedPage:GetDesiredPageWidth());
 end
 
 function ProfessionsMixin:OnShow()
-	FrameUtil.RegisterFrameForEvents(self, ProfessionsFrameEvents);
-
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_OPEN);
-
-	self:UpdateTabs();
 end
 
 function ProfessionsMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, ProfessionsFrameEvents);
-
 	C_TradeSkillUI.CloseTradeSkill();
+	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
 	
 	C_Garrison.CloseGarrisonTradeskillNPC();
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_CLOSE);
 end
 
-ProfessionsFrameTabMixin = {};
-
-function ProfessionsFrameTabMixin:SetName(tabName)
-	self.Text:SetText(tabName);
-	-- Default min/max widths
-	PanelTemplates_TabResize(self, 0, nil, 36, 88);
+function ProfessionsMixin:CheckConfirmClose()
+	if self:GetTab() == self.specializationsTabID and C_Traits.ConfigHasStagedChanges(self.SpecPage:GetConfigID()) then
+		self.SpecPage:HideAllPopups();
+		StaticPopup_Show("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
+	else
+		HideUIPanel(self);
+	end
 end

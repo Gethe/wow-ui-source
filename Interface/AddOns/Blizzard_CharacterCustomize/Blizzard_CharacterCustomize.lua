@@ -644,6 +644,79 @@ function CharCustomizeOptionCheckButtonMixin:OnCheckButtonClick()
 	CharCustomizeFrame:SetCustomizationChoice(self.optionData.id, newChoiceData.id);
 end
 
+local function IsSoundMuted()
+	return not GetCVarBool("Sound_EnableSFX") or not GetCVarBool("Sound_EnableAllSound");
+end
+
+CharCustomizeAudioInterfacePlayButtonMixin = {};
+
+function CharCustomizeAudioInterfacePlayButtonMixin:OnClick()
+	if self:GetParent():IsPlaying() then
+		self:GetParent():StopAudio();
+	else
+		self:GetParent():PlayAudio();
+	end
+end
+
+CharCustomizeAudioInterfaceMuteButtonMixin = {};
+
+function CharCustomizeAudioInterfaceMuteButtonMixin:OnClick()
+	self.PulseAnim:Stop();
+	if (IsSoundMuted()) then
+		self:SetNormalAtlas("charactercreate-customize-speakeronbutton");
+		self:SetPushedAtlas("charactercreate-customize-speakeronbutton-down");
+		SetCVar("Sound_EnableSFX", 1);
+		SetCVar("Sound_EnableAllSound", 1);
+	else
+		self:SetNormalAtlas("charactercreate-customize-speakeroffbutton");
+		self:SetPushedAtlas("charactercreate-customize-speakeroffbutton-down");
+		SetCVar("Sound_EnableSFX", self:GetParent().previousSFXSetting or 0);
+		SetCVar("Sound_EnableAllSound", self:GetParent().previousAllSoundSetting or 0);
+		self:GetParent():StopAudio();
+	end	
+end
+
+CharCustomizeAudioInterfaceMixin = {};
+
+function CharCustomizeAudioInterfaceMixin:SetupAudio()
+	self.previousSFXSetting = GetCVar("Sound_EnableSFX");
+	self.previousAllSoundSetting = GetCVar("Sound_EnableAllSound");
+	self.isPlaying = false;
+	self.PlayWaveform.Waveform:SetValue(0);
+	self.MuteButton:SetShown(IsSoundMuted());
+	self.PlayButton:Show();
+
+	-- TODO add play on hover as well. Hover overrides selected and immediatley plays. Leaving hover resets to selected state without playing
+end
+
+function CharCustomizeAudioInterfaceMixin:IsPlaying()
+	return self.soundHandle and C_Sound.IsPlaying(self.soundHandle);
+end
+
+function CharCustomizeAudioInterfaceMixin:PlayAudio()
+	if IsSoundMuted() then
+		self.MuteButton.PulseAnim:Play();
+	else
+		self:SetScript("OnUpdate", self.OnAudioPlayingUpdate);
+		local _, soundHandle = PlaySound(SOUNDKIT.MENU_CREDITS07); -- TODO: Replace with actual soundkit, also play on a loop
+		self.soundHandle = soundHandle;
+		self.PlayButton:SetNormalAtlas("charactercreate-customize-speakeroffbutton");
+		self.PlayButton:SetPushedAtlas("charactercreate-customize-speakeroffbutton-down");
+	end
+end
+
+function CharCustomizeAudioInterfaceMixin:StopAudio()
+	self:SetScript("OnUpdate", nil);
+	self.PlayWaveform.Waveform:SetValue(0);
+	StopSound(self.soundHandle);
+	self.PlayButton:SetNormalAtlas("charactercreate-customize-playbutton");
+	self.PlayButton:SetPushedAtlas("charactercreate-customize-playbutton-down");
+end
+
+function CharCustomizeAudioInterfaceMixin:OnAudioPlayingUpdate()
+	self.PlayWaveform.Waveform:SetValue(C_Sound.GetSoundScaledVolume(self.soundHandle));
+end
+
 CharCustomizeOptionSelectionPopoutMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
 
 function CharCustomizeOptionSelectionPopoutMixin:OnLoad()
@@ -656,8 +729,19 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupAnchors(tooltip)
 	tooltip:SetPoint("BOTTOMRIGHT", self.Button, "TOPLEFT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
+function CharCustomizeOptionSelectionPopoutMixin:SetupAudio()
+	if self.optionData.isSound and self.optionData.currentChoiceIndex ~= 1 then
+		local audioInterface = CharCustomizeFrame.pools:Acquire("CharCustomizeAudioInterface");
+		audioInterface:SetParent(self);
+		audioInterface:SetPoint("RIGHT", self.Label, "LEFT", -40, 0);
+		audioInterface:Show();
+		audioInterface:SetupAudio();
+	end
+end
+
 function CharCustomizeOptionSelectionPopoutMixin:OnEntrySelected(entryData)
 	CharCustomizeFrame:OnOptionPopoutEntrySelected(self, entryData);
+	self:SetupAudio();
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
@@ -707,8 +791,9 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 	self.optionData = optionData;
 
 	self:SetupSelections(optionData.choices, optionData.currentChoiceIndex, optionData.name);
-
 	self.New:SetShown(optionData.hasNewChoices);
+
+	self:SetupAudio();
 
 	self:ClearTooltipLines();
 
@@ -958,6 +1043,7 @@ function CharCustomizeMixin:OnLoad()
 	self.pools:CreatePool("FRAME", self.Options, "CharCustomizeOptionCheckButtonTemplate");
 	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeShapeshiftFormButtonTemplate");
 	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeRidingDrakeButtonTemplate");
+	self.pools:CreatePool("FRAME", self, "CharCustomizeAudioInterface");
 
 	-- Keep the selectionPopout and sliders in different pools because we need to be careful not to release the option the player is interacting with
 	self.selectionPopoutPool = CreateFramePool("BUTTON", self.Options, "CharCustomizeOptionSelectionPopoutTemplate");

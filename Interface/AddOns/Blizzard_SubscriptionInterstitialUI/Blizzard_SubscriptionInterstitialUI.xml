@@ -43,7 +43,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="SubscriptionInterstitialFrame" mixin="SubscriptionInterstitialFrameMixin" inherits="DefaultPanelTemplate" parent="UIParent" topLevel="true" hidden="true">
+	<Frame name="SubscriptionInterstitialFrame" mixin="SubscriptionInterstitialFrameMixin" inherits="DefaultPanelTemplate" parent="UIParent" toplevel="true" hidden="true">
 		<Size x="816" y="536"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="100"/>
@@ -69,7 +69,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="FirstLine" inherits="Game58Font_Shadow2" mixin="AutoScalingFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_FIRST_LINE">
+						<FontString parentKey="FirstLine" inherits="Game58Font_Shadow2" mixin="AutoScalingFontStringMixin" justifyV="MIDDLE" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_FIRST_LINE">
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="40" type="number"/>
 							</KeyValues>
@@ -79,7 +79,7 @@
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="ThirdLine" inherits="Game69Font_Shadow2" mixin="AutoScalingFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_THIRD_LINE">
+						<FontString parentKey="ThirdLine" inherits="Game69Font_Shadow2" mixin="AutoScalingFontStringMixin" justifyV="MIDDLE" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_THIRD_LINE">
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="40" type="number"/>
 							</KeyValues>
@@ -89,7 +89,7 @@
 							</Anchors>
 							<Color color="SUBSCRIPTION_INTERSTITIAL_COLOR"/>
 						</FontString>
-						<FontString parentKey="SecondLine" inherits="Game52Font_Shadow2" mixin="AutoScalingFontStringMixin" justifyV="CENTER" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_SECOND_LINE">
+						<FontString parentKey="SecondLine" inherits="Game52Font_Shadow2" mixin="AutoScalingFontStringMixin" justifyV="MIDDLE" maxLines="1" text="SUBSCRIPTION_INTERSTITIAL_SUBSCRIBE_SECOND_LINE">
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="40" type="number"/>
 							</KeyValues>

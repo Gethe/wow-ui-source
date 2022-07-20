@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\FrameXML\UI.xsd">
 
 	<Frame name="EditModeSystemTemplate" mixin="EditModeSystemMixin" virtual="true" enableMouse="true" clampedToScreen="true">
 		<Scripts>
@@ -82,7 +82,7 @@
 		<FontString inherits="ChatFontNormal"/>
 	</EditBox>
 
-	<Button name="EditModeDialogButton" inherits="UIButtonTemplate, UIPanelButtonTemplate" virtual="true">
+	<Button name="EditModeDialogButton" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
 		<Size x="130" y="22"/>
 	</Button>
 	
@@ -183,7 +183,7 @@
 			</Frame>
 			<Button parentKey="AcceptButton" inherits="EditModeDialogButton" text="HUD_EDIT_MODE_IMPORT_LAYOUT">
 				<KeyValues>
-					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING" type="global"/>
+					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING_AND_NAME" type="global"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="25" y="25"/>
@@ -208,7 +208,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontHighlight">
+				<FontString parentKey="Title" inherits="GameFontHighlight" text="HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_TITLE">
 					<Size x="250"/>
 					<Anchors>
 						<Anchor point="TOP" y="-20"/>
@@ -234,6 +234,9 @@
 				</Anchors>
 			</Frame>
 			<Button parentKey="AcceptButton" inherits="EditModeDialogButton" text="HUD_EDIT_MODE_IMPORT_LAYOUT">
+				<KeyValues>
+					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_ENTER_NAME" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="25" y="25"/>
 				</Anchors>
@@ -332,7 +335,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="EditModeManagerFrameButtonTemplate" inherits="UIButtonTemplate, UIPanelButtonTemplate" virtual="true">
+	<Button name="EditModeManagerFrameButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
 		<Size x="220" y="28"/>
 	</Button>
 	
@@ -363,7 +366,8 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeSettingSliderTemplate" inherits="ResizeLayoutFrame" mixin="EditModeSettingSliderMixin" virtual="true">
+	<Frame name="EditModeSettingSliderTemplate" mixin="EditModeSettingSliderMixin" virtual="true">
+		<Size x="343" y="32"/>
 		<KeyValues>
 			<KeyValue key="widthPadding" value="30" type="number"/>
 			<KeyValue key="fixedHeight" value="32" type="number"/>
@@ -426,7 +430,7 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="EditModeManagerFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" mixin="EditModeManagerFrameMixin">
+	<Frame name="EditModeManagerFrame" parent="UIParent" hidden="true" enableMouse="true" movable="true" clampedToScreen="true" registerForDrag="LeftButton"  dontSavePosition="true" frameStrata="DIALOG" mixin="EditModeManagerFrameMixin">
 		<Size x="500" y="350"/>
 		<Anchors>
 			<Anchor point="TOP" y="-100"/>
@@ -475,14 +479,16 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
 		</Scripts>
 	</Frame>
 
-	<Button name="EditModeSystemSettingsDialogButtonTemplate" inherits="UIButtonTemplate, UIPanelButtonTemplate" virtual="true">
+	<Button name="EditModeSystemSettingsDialogButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
 		<Size x="180" y="28"/>
 	</Button>
 	
-	<Button name="EditModeSystemSettingsDialogExtraButtonTemplate" inherits="UIButtonTemplate, UIPanelButtonTemplate" virtual="true">
+	<Button name="EditModeSystemSettingsDialogExtraButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
 		<Size x="330" y="28"/>
 	</Button>
 

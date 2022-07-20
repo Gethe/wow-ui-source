@@ -1326,7 +1326,7 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<StatusBar name="$parentXPBar" parentKey="xpBar" frameStrata="MIDDLE">
+					<StatusBar name="$parentXPBar" parentKey="xpBar">
 						<Size x="504" y="11"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="6"/>

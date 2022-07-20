@@ -133,7 +133,7 @@
 				<Translation childKey="Shine" duration="0.5" order="1" offsetX="0" offsetY="180" smoothing="NONE"/>
 				<Alpha childKey="Shine" fromAlpha="0" toAlpha="1" duration="0.0"/>
 			</AnimationGroup>
-			<AnimationGroup parentKey="ChannelFinish" looping="NONE" SetToFinalAlpha="true">
+			<AnimationGroup parentKey="ChannelFinish" looping="NONE" setToFinalAlpha="true">
 				<Translation childKey="WispMask" duration="0.5" order="1" offsetX="50" offsetY="0" smoothing="NONE"/>
 				<Translation childKey="Sparkles01" duration="0.5" order="1" offsetX="40" offsetY="0" smoothing="IN"/>
 				<Translation childKey="Sparkles02" duration="0.5" order="1" offsetX="20" offsetY="0" startDelay="0.1" smoothing="IN_OUT"/>
@@ -153,18 +153,18 @@
 				<Alpha childKey="Sparkles02" duration="0.5" order="2" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
 				<Scale childKey="BaseGlow" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="4" toScaleY="1" smoothing="NONE"/>
 			</AnimationGroup>
-			<AnimationGroup parentKey="InterruptGlowAnim" looping="NONE" SetToFinalAlpha="true">
+			<AnimationGroup parentKey="InterruptGlowAnim" looping="NONE" setToFinalAlpha="true">
 				<Alpha childKey="InterruptGlow" duration="0.0" order="1" fromAlpha="0" toAlpha="1" smoothing="NONE"/>
 				<Alpha childKey="InterruptGlow" duration="1.0" order="2" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
 			</AnimationGroup>
-			<AnimationGroup parentKey="InterruptShakeAnim" looping="NONE" SetToFinalAlpha="true">
+			<AnimationGroup parentKey="InterruptShakeAnim" looping="NONE" setToFinalAlpha="true">
 				<Translation duration="0.1" order="1" offsetX="0" offsetY="0" smoothing="NONE"/>
 				<Translation duration="0.0" order="2" offsetX="-1" offsetY="1" startDelay="0.05" smoothing="NONE"/>
 				<Translation duration="0.0" order="3" offsetX="1" offsetY="-2" startDelay="0.05" smoothing="NONE"/>
 				<Translation duration="0.0" order="4" offsetX="1" offsetY="2" startDelay="0.05" smoothing="NONE"/>
 				<Translation duration="0.0" order="5" offsetX="-1" offsetY="-1" startDelay="0.05" smoothing="NONE"/>
 			</AnimationGroup>
-			<AnimationGroup parentKey="InterruptSparkAnim" looping="NONE" SetToFinalAlpha="true">
+			<AnimationGroup parentKey="InterruptSparkAnim" looping="NONE" setToFinalAlpha="true">
 				<Alpha childKey="Spark" duration="0.1" order="1" fromAlpha="1" toAlpha="1" smoothing="NONE"/>
 				<Scripts>
 					<OnFinished function="CastingBarAnim_OnInterruptSparkAnimFinish"/>

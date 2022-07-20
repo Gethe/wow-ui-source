@@ -17,7 +17,7 @@
 						<Anchor point="CENTER" relativeTo="$parentRing" relativePoint="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" justifyV="CENTER" parentKey="name">
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE" parentKey="name">
 					<Size x="115" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="7" y="0"/>
@@ -739,7 +739,7 @@
 										<Anchor point="TOPLEFT" x="5" y="-3"/>
 									</Anchors>
 								</Texture>
-								<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyH="BOTTOM" parentKey="specName">
+								<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyV="BOTTOM" parentKey="specName">
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="3" y="3"/>
 									</Anchors>
@@ -1224,7 +1224,7 @@
 			<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset.Bg" x="-2" y="0"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUNDBORDER">
+			<Layer level="BORDER">
 				<Texture name="$parentBottomLeftInner" file="Interface\GuildBankFrame\Corners" >
 					<Size x="32" y="32"/>
 					<Anchors>

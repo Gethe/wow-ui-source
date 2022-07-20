@@ -276,7 +276,6 @@ function ActionBarActionButtonMixin:OnLoad()
 
 	self.flashing = 0;
 	self.flashtime = 0;
-	self:SetAttribute("showgrid", 1);
 	self:SetAttribute("type", "action");
 	self:SetAttribute("typerelease", "actionrelease");
 	self:SetAttribute("checkselfcast", true);
@@ -472,10 +471,11 @@ function ActionBarActionButtonMixin:SetShowGrid(showGrid, reason)
 	assert(reason);
 
 	if ( issecure() and self:GetShowGrid() ~= showGrid ) then
+		local showGridAttribute = self:GetAttribute("showgrid");
 		if ( showGrid ) then
-			self:SetAttribute("showgrid", bit.bor(self:GetAttribute("showgrid"), reason));
+			self:SetAttribute("showgrid", bit.bor(showGridAttribute or 1, reason));
 		else
-			self:SetAttribute("showgrid", bit.band(self:GetAttribute("showgrid"), bit.bnot(reason)));
+			self:SetAttribute("showgrid", bit.band(showGridAttribute or 0, bit.bnot(reason)));
 		end
 	end
 end
@@ -1204,7 +1204,7 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		self.SlotArt:Show();
 		self.SlotBackground:Hide();
 		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame");
-		self.NormalTexture:SetSize(35, 35);
+		self.NormalTexture:SetSize(45, 45);
 		self.NormalTexture:ClearAllPoints();
 		self.NormalTexture:SetPoint("TOPLEFT");
 		self.NormalTexture:SetPoint("BOTTOMRIGHT");
@@ -1213,9 +1213,31 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		self.SlotArt:Hide();
 		self.SlotBackground:Show();
 		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow");
-		self.NormalTexture:SetSize(41, 41);
+		self.NormalTexture:SetSize(51, 51);
 		self.NormalTexture:ClearAllPoints();
 		self.NormalTexture:SetPoint("TOPLEFT", -1.5, 1.5);
 		self.NormalTexture:SetPoint("BOTTOMRIGHT", 5.5, -5.5);
 	end
+end
+
+SmallActionButtonMixin = {}
+
+function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
+	self.UpdateButtonArtBase = self.UpdateButtonArt;
+	self.UpdateButtonArt = self.UpdateButtonArtOverride;
+
+	self.HotKey:ClearAllPoints();
+	self.HotKey:SetPoint("TOPRIGHT", -4, -4);
+
+	self.IconMask:ClearAllPoints();
+	self.IconMask:SetPoint("TOPLEFT", -6.5, 6.5);
+	self.IconMask:SetPoint("BOTTOMRIGHT", 7, -7.5);
+end
+
+function SmallActionButtonMixin:UpdateButtonArtOverride(hideDivider)
+	self:UpdateButtonArtBase(hideDivider);
+
+	self.NormalTexture:ClearAllPoints();
+	self.NormalTexture:SetPoint("TOPLEFT", -1.5, 1.5);
+	self.NormalTexture:SetPoint("BOTTOMRIGHT", 4, -4);
 end

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="TabSystemTemplates.lua"/>
 
 	<Button name="TabSystemButtonArtTemplate" mixin="TabSystemButtonArtMixin" virtual="true">
@@ -22,28 +22,28 @@
 					</Anchors>
 					<TexCoords left="0.15625" right="0.84375" top="0" bottom="0.546875"/>
 				</Texture>
-				<Texture parentkey="RightDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab" parentArray="RotatedTextures">
+				<Texture parentKey="RightDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab" parentArray="RotatedTextures">
 					<Size x="20" y="35"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.MiddleDisabled" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.84375" right="1.0" top="0" bottom="0.546875"/>
 				</Texture>
-				<Texture parentkey="Left" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab" parentArray="RotatedTextures">
+				<Texture parentKey="Left" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab" parentArray="RotatedTextures">
 					<Size x="20" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="-1"/>
 					</Anchors>
 					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
 				</Texture>
-				<Texture parentkey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab" parentArray="RotatedTextures">
+				<Texture parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab" parentArray="RotatedTextures">
 					<Size x="88" y="32"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
 				</Texture>
-				<Texture parentkey="Right" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab" parentArray="RotatedTextures">
+				<Texture parentKey="Right" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab" parentArray="RotatedTextures">
 					<Size x="20" y="32"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
@@ -60,8 +60,7 @@
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontHighlightSmall"/>
-		<HighlightTexture parentkey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-RealHighlight" alphaMode="ADD" parentArray="RotatedTextures">
+		<HighlightTexture parentKey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-RealHighlight" alphaMode="ADD" parentArray="RotatedTextures">
 			<Anchors>
 				<Anchor point="TOPLEFT" x="3" y="5"/>
 				<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>

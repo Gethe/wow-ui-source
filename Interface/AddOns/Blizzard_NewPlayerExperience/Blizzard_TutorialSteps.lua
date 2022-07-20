@@ -3591,8 +3591,8 @@ function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE(args)
 
 	self:HidePointerTutorials();
 
-	if QueueStatusMinimapButton:IsVisible() then
-		self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "RIGHT", QueueStatusMinimapButton, 20, 0, nil, "RIGHT");
+	if QueueStatusButton:IsVisible() then
+		self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "RIGHT", QueueStatusButton, 20, 0, nil, "RIGHT");
 	end
 end
 

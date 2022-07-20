@@ -120,7 +120,7 @@ function ProfessionsReagentSlotMixin:UpdateQualityOverlay()
 		end
 
 		if foundMultiple then
-			self.Button.QualityOverlay:SetAtlas("Professions-Icon-Quality-Mixed_Small", TextureKitConstants.UseAtlasSize);
+			self.Button.QualityOverlay:SetAtlas("Professions-Icon-Quality-Mixed-Small", TextureKitConstants.UseAtlasSize);
 		elseif foundIndex then
 			self.Button.QualityOverlay:SetAtlas(("Professions-Icon-Quality-Tier%d-Small"):format(foundIndex), TextureKitConstants.UseAtlasSize);
 		else

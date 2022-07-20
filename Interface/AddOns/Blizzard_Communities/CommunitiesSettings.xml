@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesSettings.lua"/>
 	
-	<Frame name="CommunitiesSettingsDialog" frameStrata="HIGH" parent="UIParent" enableMouse="true" mixin="CommunitiesSettingsDialogMixin" topLevel="true" clampedToScreen="true" hidden="true">
+	<Frame name="CommunitiesSettingsDialog" frameStrata="HIGH" parent="UIParent" enableMouse="true" mixin="CommunitiesSettingsDialogMixin" toplevel="true" clampedToScreen="true" hidden="true">
 		<Size x="432" y="740"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>

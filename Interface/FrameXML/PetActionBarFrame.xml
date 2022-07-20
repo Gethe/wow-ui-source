@@ -1,32 +1,23 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PetActionBarFrame.lua"/>
-	<CheckButton name="PetActionButtonTemplate" inherits="QuickKeybindButtonTemplate, SecureFrameTemplate, ActionButtonTemplate" frameStrata="MEDIUM" mixin="PetActionButtonMixin" virtual="true">
-		<Size x="30" y="30"/>
+	<CheckButton name="PetActionButtonTemplate" inherits="QuickKeybindButtonTemplate, SecureFrameTemplate, SmallActionButtonTemplate" frameStrata="MEDIUM" mixin="PetActionButtonMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentAutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
-					<Size x="58" y="58"/>
+					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
+						<Anchor point="CENTER" x="0.5" y="0"/>
 					</Anchors>
 				</Texture>	
 				<Texture parentKey="SpellHighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" hidden="true">
-					<Size x="34" y="34"/>
+					<Size x="38" y="38"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame name="$parentShine" inherits="AutoCastShineTemplate">
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
-				<Size x="28" y="28"/>
-			</Frame>
-		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="SpellHighlightAnim" looping="REPEAT">
 				<Alpha childKey="SpellHighlightTexture" smoothing="OUT" duration=".35" order="1" fromAlpha="0" toAlpha="1"/>

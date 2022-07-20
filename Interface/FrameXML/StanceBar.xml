@@ -2,8 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="StanceBar.lua"/>
 	
-	<CheckButton name="StanceButtonTemplate" inherits="QuickKeybindButtonTemplate, SecureFrameTemplate, ActionButtonTemplate" mixin="StanceButtonMixin" virtual="true">
-		<Size x="30" y="30"/>
+	<CheckButton name="StanceButtonTemplate" inherits="QuickKeybindButtonTemplate, SecureFrameTemplate, SmallActionButtonTemplate" mixin="StanceButtonMixin" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
 			<OnClick method="OnClick" inherit="append"/>

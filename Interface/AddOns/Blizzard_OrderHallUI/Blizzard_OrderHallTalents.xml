@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_OrderHallTalents.lua"/>
 
 	<Button name="GarrisonTalentButtonTemplate" virtual="true" mixin="GarrisonTalentButtonMixin">
@@ -21,7 +21,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="CooldownTimerBackground" atlas="orderhalltalents-timer-bg" textureSubLevel="2">
+				<Texture parentKey="CooldownTimerBackground" atlas="orderhalltalents-timer-bg">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="-1"/>
 						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
@@ -73,9 +73,9 @@
 				</Anchors>
 				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
 				<Scripts>
-					<OnCoolDownDone>
+					<OnCooldownDone>
 						self:GetParent().CooldownFinishedTexture:Show();
-					</OnCoolDownDone>
+					</OnCooldownDone>
 				</Scripts>
 			</Cooldown>
 		</Frames>
@@ -163,8 +163,8 @@
 	<Texture name="GarrisonTalentChoiceTemplate" virtual="true" atlas="orderhalltalents-choice-talent-middle" useAtlasSize="true"/>
 	<Texture name="GarrisonTalentArrowTemplate" virtual="true" atlas="orderhalltalents-choice-arrow-large" useAtlasSize="true" alphaMode="ADD">
 		<Animations>
-			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
-				<Alpha fromAlpha="1" toAlpha="0" duration="1" setToFinalAlpha="1"/>
+			<AnimationGroup parentKey="Pulse" looping="BOUNCE" setToFinalAlpha="1">
+				<Alpha fromAlpha="1" toAlpha="0" duration="1"/>
 			</AnimationGroup>
 		</Animations>
 	</Texture>

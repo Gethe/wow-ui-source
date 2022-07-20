@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonSharedTemplates.lua"/>
 
 	<Frame name="GarrisonUITemplate" inherits="BaseBasicFrameTemplate" virtual="true">
@@ -598,7 +598,7 @@
 					</Anchors>
 					<Color r="0.1" g="1" b="0.1"/>
 				</FontString>
-				<FontString parentKey="TextInvalid" inherits="GameFontNormal" textwrap="true" text="GARRISON_FOLLOWER_UPGRADE_REQUIRES_MAX_LEVEL">
+				<FontString parentKey="TextInvalid" inherits="GameFontNormal" text="GARRISON_FOLLOWER_UPGRADE_REQUIRES_MAX_LEVEL">
 					<Size x="200" y="0"/>
 					<Anchors>
 						<Anchor point="BOTTOM"/>

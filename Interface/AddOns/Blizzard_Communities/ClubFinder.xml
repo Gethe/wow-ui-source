@@ -145,7 +145,7 @@
 				<Texture parentKey="Icon" hidden="true" file="Interface\CharacterFrame\TempPortraitAlphaMask">
 					<Size x="63" y="63"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.InvitationText" relaitvePoint="BOTTOM" x="0" y="-35"/>
+						<Anchor point="TOP" relativeKey="$parent.InvitationText" relativePoint="BOTTOM" x="0" y="-35"/>
 					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -764,7 +764,7 @@
 						<Anchor point="RIGHT" relativeKey="$parent.MemberCount" relativePoint="RIGHT" x="25" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="ReportedDescription" hidden="true" justifyH="TOP" inherits="GameFontHighlight" text="CLUB_FINDER_THANK_YOU_REPORTED">
+				<FontString parentKey="ReportedDescription" hidden="true" justifyV="TOP" inherits="GameFontHighlight" text="CLUB_FINDER_THANK_YOU_REPORTED">
 					<Size x="155" y="40"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.GuildBannerBorder" relativePoint="BOTTOM" x="0" y="-32"/>

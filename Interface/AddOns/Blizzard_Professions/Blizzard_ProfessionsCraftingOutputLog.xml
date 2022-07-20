@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsCraftingOutputLog.lua"/>
 
 	<Frame name="ProfessionsCraftingOutputLogElementTemplate" mixin="ProfessionsCraftingOutputLogElementMixin" virtual="true">
-		<size y="60"/>
+		<Size y="60"/>
 		<Frames>
 			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate">
 				<Anchors>
@@ -50,14 +50,12 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="ProfessionsCraftingOutputLogTemplate" mixin="ProfessionsCraftingOutputLogMixin" enableMouse="true" virtual="true">
+	<Frame name="ProfessionsCraftingOutputLogTemplate" mixin="ProfessionsCraftingOutputLogMixin" inherits="TooltipBackdropTemplate" enableMouse="true" virtual="true">
 		<Size x="420" y="350"/>
+		<KeyValues>
+			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture>
-					<Color r="0" g="0" b="0" a=".9"/>
-				</Texture>
-			</Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="Header" inherits="GameFontHighlight">
 					<Size x="300" y="-20" />
@@ -113,8 +111,8 @@
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 						<Anchors>
-							<Anchor point="TOPRIGHT" parentKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="-3" y="-1"/>
-							<Anchor point="BOTTOMRIGHT" parentKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="-3" y="-1"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>
@@ -141,7 +139,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad inherit="prepend" method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnHide method="OnHide"/>
 		</Scripts>

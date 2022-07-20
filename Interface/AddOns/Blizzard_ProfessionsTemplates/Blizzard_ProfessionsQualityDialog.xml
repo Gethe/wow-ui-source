@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsQualityDialog.lua"/>
 
 	<Frame name="ProfessionsQualityContainerTemplate" mixin="" virtual="true">
@@ -25,14 +25,12 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="ProfessionsQualityDialogTemplate" mixin="ProfessionsQualityDialogMixin" enableMouse="true" virtual="true">
+	<Frame name="ProfessionsQualityDialogTemplate" mixin="ProfessionsQualityDialogMixin" inherits="TooltipBackdropTemplate" enableMouse="true" virtual="true">
 		<Size x="450" y="240"/>
+		<KeyValues>
+			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture>
-					<Color r="0" g="0" b="0" a=".9"/>
-				</Texture>
-			</Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="Header" inherits="GameFontHighlight">
 					<Size x="300" y="-20" />
@@ -82,7 +80,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad inherit="prepend" method="OnLoad"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>

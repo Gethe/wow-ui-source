@@ -90,7 +90,9 @@ local function LineUpFrames(frames, anchorPoint, anchor, relativePoint, width)
 
 end
 
-function ChallengesFrame_OnLoad(self)
+ChallengesFrameMixin = {};
+
+function ChallengesFrameMixin:OnLoad()
 	-- events
 	self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE");
 	self:RegisterEvent("CHALLENGE_MODE_MEMBER_INFO_UPDATED");
@@ -102,7 +104,7 @@ function ChallengesFrame_OnLoad(self)
 	self.maps = C_ChallengeMode.GetMapTable();
 end
 
-function ChallengesFrame_OnEvent(self, event)
+function ChallengesFrameMixin:OnEvent(event)
 	if (event == "CHALLENGE_MODE_RESET") then
 		StaticPopup_Hide("RESURRECT");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
@@ -111,17 +113,18 @@ function ChallengesFrame_OnEvent(self, event)
         if (event == "CHALLENGE_MODE_LEADERS_UPDATE") then
             self.leadersAvailable = true;
         end
-        ChallengesFrame_Update(self);
+        self:Update();
 	end
 end
 
-function ChallengesFrame_OnShow(self)
+function ChallengesFrameMixin:OnShow()
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("WEEKLY_REWARDS_UPDATE");
 	self:RegisterEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE");
 
     PVEFrame:SetPortraitToAsset("Interface\\Icons\\achievement_bg_wineos_underxminutes");
-	PVEFrame.TitleText:SetText(CHALLENGES);
+
+	self:UpdateTitle();
 	PVEFrame_HideLeftInset();
 
 	C_MythicPlus.RequestCurrentAffixes();
@@ -129,17 +132,18 @@ function ChallengesFrame_OnShow(self)
     for i = 1, #self.maps do
         C_ChallengeMode.RequestLeaders(self.maps[i]);
     end
-    ChallengesFrame_Update(self);
+
+    self:Update();
 end
 
-function ChallengesFrame_OnHide(self)
+function ChallengesFrameMixin:OnHide()
     PVEFrame_ShowLeftInset();
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("WEEKLY_REWARDS_UPDATE");
 	self:UnregisterEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE");
 end
 
-function ChallengesFrame_Update(self)
+function ChallengesFrameMixin:Update()
     local sortedMaps = {};
 
     for i = 1, #self.maps do
@@ -262,6 +266,19 @@ function ChallengesFrame_Update(self)
 		end
 		self.SeasonChangeNoticeFrame:Show();
 	end
+end
+
+function ChallengesFrameMixin:UpdateTitle()
+	local currentDisplaySeason =  C_MythicPlus.GetCurrentUIDisplaySeason();
+	if ( not currentDisplaySeason ) then
+		PVEFrame.TitleText:SetText(CHALLENGES);
+		return;
+	end
+
+	local currExpID = GetExpansionLevel();
+	local expName = _G["EXPANSION_NAME"..currExpID];
+	local title = MYTHIC_DUNGEON_SEASON:format(expName, currentDisplaySeason);
+	PVEFrame.TitleText:SetText(title);
 end
 
 ChallengeModeWeeklyChestMixin = CreateFromMixins(WeeklyRewardMixin);

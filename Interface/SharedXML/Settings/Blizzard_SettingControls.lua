@@ -309,6 +309,11 @@ end
 
 function SettingsCheckBoxControlMixin:SetValue(value)
 	self.CheckBox:SetChecked(value);
+	if value then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else 
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
 end
 
 function SettingsCheckBoxControlMixin:EvaluateState()

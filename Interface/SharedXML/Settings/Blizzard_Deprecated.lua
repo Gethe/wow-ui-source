@@ -13,7 +13,7 @@ function InterfaceOptions_AddCategory(frame, addOn, position)
 		return subcategory, category;
 	else
 		local category, layout = Settings.RegisterCanvasLayoutCategory(frame, frame.name, frame.name);
-		Settings.RegisterCategory(category);
+		Settings.RegisterAddOnCategory(category);
 		return category;
 	end
 end

@@ -103,23 +103,21 @@
 	</Frame>
 
 	<CheckButton name="ActionButtonTemplate" parentArray="ActionButtons" mixin="BaseActionButtonMixin" virtual="true">
-		<Size x="35" y="35"/>
+		<Size x="45" y="45"/>
 
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon" parentKey="icon" />
 				<MaskTexture parentKey="IconMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="-14" y="14"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="15" y="-15"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="-9" y="8"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="10" y="-10"/>
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="icon"/>
 					</MaskedTextures>
 				</MaskTexture>
-				<Texture parentKey="SlotArt" atlas="ui-hud-actionbar-iconframe-slot">
-					<Size x="30" y="30"/>
-				</Texture>
+				<Texture parentKey="SlotArt" atlas="ui-hud-actionbar-iconframe-slot" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentFlash" parentKey="Flash" atlas="UI-HUD-ActionBar-IconFrame-Flash" hidden="true"/>
@@ -131,7 +129,7 @@
 				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" parentKey="HotKey" justifyH="RIGHT">
 					<Size x="32" y="10"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+						<Anchor point="TOPRIGHT" x="-5" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="Count" justifyH="RIGHT">
@@ -147,16 +145,14 @@
 						<Anchor point="BOTTOM" x="0" y="2"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentBorder" parentKey="Border" atlas="UI-HUD-ActionBar-IconFrame-Border" hidden="true">
-					<Size x="35" y="35"/>
-				</Texture>
+				<Texture name="$parentBorder" parentKey="Border" atlas="UI-HUD-ActionBar-IconFrame-Border" useAtlasSize="true" hidden="true"/>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="NewActionTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" hidden="true">
-					<Size x="35" y="35"/>
+					<Size x="45" y="45"/>
 				</Texture>
 				<Texture parentKey="SpellHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" hidden="true">
-					<Size x="35" y="35"/>
+					<Size x="45" y="45"/>
 				</Texture>
 				<Texture parentKey="AutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
 					<Size x="58" y="58"/>
@@ -186,6 +182,10 @@
 					<KeyValue key="layoutTextureKit" value="UI-HUD-ActionBar-Frame-Background" type="string"/>
 					<KeyValue key="layoutTextureLayer" value="BACKGROUND" type="string"/>
 				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+				</Anchors>
 			</Frame>
 
 			<Frame parentKey="FlyoutArrowContainer" setAllPoints="true">
@@ -221,32 +221,32 @@
 			</Frame>
 
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown">
-				<Size x="35" y="35"/>
+				<Size x="45" y="45"/>
 				<SwipeTexture>
 					<Color r="1" g="1" b="1" a="0.8"/>
 				</SwipeTexture>
 			</Cooldown>
 
 			<Frame parentKey="RightDivider" inherits="NineSliceCodeTemplate" hidden="true">
-				<Size x="7"/>
+				<Size x="12"/>
 				<KeyValues>
 					<KeyValue key="layoutType" value="ThreeSliceVerticalLayout" type="string"/>
 					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" x="-2"/>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-4"/>
 					<Anchor point="TOP"/>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="BottomDivider" inherits="NineSliceCodeTemplate" hidden="true">
-				<Size y="7"/>
+				<Size y="12"/>
 				<KeyValues>
 					<KeyValue key="layoutType" value="ThreeSliceHorizontalLayout" type="string"/>
-					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider-horizontal" type="string"/>
+					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" y="-2"/>
+					<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
 					<Anchor point="LEFT"/>
 					<Anchor point="RIGHT"/>
 				</Anchors>
@@ -279,4 +279,11 @@
 	</CheckButton>
 
 	<CheckButton name="ActionBarButtonTemplate" inherits="ActionButtonTemplate, ActionBarButtonCodeTemplate" virtual="true"/>
+
+	<CheckButton name="SmallActionButtonTemplate" inherits="ActionButtonTemplate" mixin="SmallActionButtonMixin" virtual="true">
+		<Size x="30" y="30"/>
+		<Scripts>
+			<OnLoad method="SmallActionButtonMixin_OnLoad" inherit="append"/>
+		</Scripts>
+	</CheckButton>
 </Ui>

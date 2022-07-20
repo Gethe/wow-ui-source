@@ -119,14 +119,7 @@ function ActionBarController_OnEvent(self, event, ...)
 			Settings.SetOnValueChangedCallback(variable, UpdateActionBar);
 		end
 
-		local function OnAlwaysShowValueChanged(o, setting, value)
-			MultiActionBar_UpdateGridVisibility();
-		end
-		
-		Settings.SetOnValueChangedCallback("alwaysShowActionBars", OnAlwaysShowValueChanged);
-
 		UpdateActionBar();
-		MultiActionBar_UpdateGridVisibility();
 	end
 end
 
@@ -190,10 +183,10 @@ function ValidateActionBarTransition()
 	if ActionBarBusy() then
 		return; --Don't evluate and action bar state durring animations or while in Pet Battles
 	end
-	
+
 	MultiActionBar_Update();
 	UIParent_ManageFramePositions();
-	
+
 	if CURRENT_ACTION_BAR_STATE == LE_ACTIONBAR_STATE_MAIN then
 		if OverrideActionBar:IsShown() then
 			BeginActionBarTransition(OverrideActionBar, nil);

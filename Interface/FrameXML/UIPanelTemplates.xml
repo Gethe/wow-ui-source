@@ -55,7 +55,7 @@
 		</Anchors>
 		<Size x="28" y="28"/>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="OVERLAY">
 				<Texture name="$parent1" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
 					<Size x="13" y="13"/>
 					<Anchors>

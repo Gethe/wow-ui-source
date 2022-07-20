@@ -262,7 +262,7 @@
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="ClaimGlowSpinAnim" looping="REPEAT">
-				<Rotation childKey="ClaimGlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+				<Rotation childKey="ClaimGlowSpin" degrees="-360" duration="15"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="ClaimGlowInAnim" setToFinalAlpha="true">
 				<Alpha childKey="ClaimGlow" fromAlpha="0" toAlpha="0.8" duration="0.4"/>
@@ -470,7 +470,7 @@
 						</Frames>
 						<Animations>
 							<AnimationGroup parentKey="ClaimGlowSpinAnim" looping="REPEAT">
-								<Rotation childKey="ClaimGlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+								<Rotation childKey="ClaimGlowSpin" degrees="-360" duration="15"/>
 							</AnimationGroup>
 							<AnimationGroup parentKey="ClaimGlowInAnim" setToFinalAlpha="true">
 								<Alpha childKey="ClaimGlow" fromAlpha="0" toAlpha="0.8" duration=".4"/>

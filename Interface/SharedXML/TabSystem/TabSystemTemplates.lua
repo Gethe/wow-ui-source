@@ -31,6 +31,8 @@ function TabSystemButtonArtMixin:GetTextYOffset(isSelected)
 end
 
 function TabSystemButtonArtMixin:SetTabSelected(isSelected)
+	self.isSelected = isSelected;
+
 	self.Left:SetShown(not isSelected);
 	self.Middle:SetShown(not isSelected);
 	self.Right:SetShown(not isSelected);
@@ -38,7 +40,10 @@ function TabSystemButtonArtMixin:SetTabSelected(isSelected)
 	self.MiddleDisabled:SetShown(isSelected);
 	self.RightDisabled:SetShown(isSelected);
 
-	self:SetEnabled(not isSelected);
+	self.HighlightTexture:SetShown(not isSelected);
+	self:SetNormalFontObject(isSelected and GameFontHighlightSmall or GameFontNormalSmall);
+
+	self:SetEnabled(not isSelected and not self.forceDisabled);
 
 	self.Text:SetPoint("CENTER", self, "CENTER", 0, self:GetTextYOffset(isSelected));
 
@@ -60,9 +65,14 @@ end
 TabSystemButtonMixin = {};
 
 function TabSystemButtonMixin:OnEnter()
-	if self.Text:IsTruncated() then
+	if not self:IsEnabled() and self.errorReason ~= nil then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
-		GameTooltip:SetText(self.Text:GetText());
+		GameTooltip_AddErrorLine(GameTooltip, self.errorReason);
+		GameTooltip:Show();
+	elseif self.Text:IsTruncated() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
+		GameTooltip_AddLine(self.Text:GetText());
+		GameTooltip:Show();
 	end
 end
 
@@ -78,9 +88,18 @@ end
 function TabSystemButtonMixin:Init(tabID, tabText)
 	self.tabID = tabID;
 	self:HandleRotation();
-	self.Text:SetText(tabText);
+	self.tabText = tabText;
+	self:SetText(tabText);
 	self:UpdateTabWidth();
 	self:SetTabSelected(false);
+end
+
+function TabSystemButtonMixin:SetTabEnabled(enabled, errorReason)
+	self.forceDisabled = not enabled;
+	self:SetEnabled(enabled and not self.isSelected);
+	local text = enabled and self.tabText or DISABLED_FONT_COLOR:WrapTextInColorCode(self.tabText);
+	self.Text:SetText(text);
+	self.errorReason = errorReason;
 end
 
 function TabSystemButtonMixin:UpdateTabWidth()
@@ -148,6 +167,11 @@ end
 
 function TabSystemMixin:SetTabShown(tabID, isShown)
 	self.tabs[tabID]:SetShown(isShown);
+	self:MarkDirty();
+end
+
+function TabSystemMixin:SetTabEnabled(tabID, enabled, errorReason)
+	self.tabs[tabID]:SetTabEnabled(enabled, errorReason);
 	self:MarkDirty();
 end
 

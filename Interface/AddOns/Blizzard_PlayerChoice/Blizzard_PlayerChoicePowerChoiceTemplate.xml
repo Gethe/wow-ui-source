@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 
 	<Frame name="PlayerChoicePowerChoiceTemplate" inherits="PlayerChoiceBaseOptionTemplate, VerticalLayoutFrame" mixin="PlayerChoicePowerChoiceTemplateMixin" virtual="true">
 		<KeyValues>
@@ -46,9 +46,11 @@
 			</AnimationGroup>
 			<AnimationGroup parentKey="FadeoutUnselected" setToFinalAlpha="true">
 				<Alpha duration=".25" fromAlpha="1" toAlpha="0"/>
-				<OnFinished>
-					self:GetParent():Hide();
-				</OnFinished>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():Hide();
+					</OnFinished>
+				</Scripts>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

@@ -1,5 +1,6 @@
 EditModeSettingDisplayInfoManager = {};
 
+-- The ordering of the setting display info tables in here affects the order settings show in the system setting dialog
 EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	-- Action Bar Settings
 	[Enum.EditModeSystem.ActionBar] =
@@ -40,9 +41,17 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeActionBarSetting.IconSize,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_ICON_SIZE,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 0,
-			maxValue = 6,
-			stepSize = 0,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = function(self, value, forDisplay)
+				if forDisplay then
+					return self:ClampValue((value * 10) + 50);
+				else
+					return (value - 50) / 10;
+				end
+			end,
+			formatter = function (percentage) percentage = percentage / 100; return FormatPercentage(percentage, true); end,
 		},
 
 		--Icon Padding
@@ -68,6 +77,13 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			},
 		},
 
+		-- Always Show Buttons
+		{
+			setting = Enum.EditModeActionBarSetting.AlwaysShowButtons,
+			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_ALWAYS_SHOW_BUTTONS,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
 		--Bar Art Visible Setting
 		{
 			setting = Enum.EditModeActionBarSetting.HideBarArt,
@@ -91,6 +107,51 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	}
 };
 
+local DefaultSettingDisplayInfo = {};
+
+function DefaultSettingDisplayInfo:ConvertValue(value, forDisplay)
+	if forDisplay then
+		return self:ClampValue(value);
+	else
+		return value;
+	end
+end
+
+function DefaultSettingDisplayInfo:ClampValue(value)
+	if self.type == Enum.EditModeSettingDisplayType.Dropdown then
+		return Clamp(value, 0, #self.options - 1);
+	elseif self.type == Enum.EditModeSettingDisplayType.Slider then
+		return Clamp(value, self.minValue, self.maxValue);
+	else
+		return Clamp(value, 0, 1);
+	end
+end
+
+function DefaultSettingDisplayInfo:ConvertValueForDisplay(value)
+	local forDisplay = true;
+	return self:ConvertValue(value, forDisplay);
+end
+
+-- Metatable used for all setting display info tables
+-- This provides ClampValue and ConvertValueForDisplay methods, in addition to a default version of the ConvertValue method
+local mt = {__index =  DefaultSettingDisplayInfo};
+
+-- Create a map from system/setting to displayInfo for easy access
+EditModeSettingDisplayInfoManager.displayInfoMap = {};
+for system, systemDisplayInfo in pairs(EditModeSettingDisplayInfoManager.systemSettingDisplayInfo) do
+	EditModeSettingDisplayInfoManager.displayInfoMap[system] = {};
+	for _, settingDisplayInfo in ipairs(systemDisplayInfo) do
+		-- Set the metatable on each of the display info tables
+		setmetatable(settingDisplayInfo, mt);
+		-- And then add it to the map
+		EditModeSettingDisplayInfoManager.displayInfoMap[system][settingDisplayInfo.setting] = settingDisplayInfo;
+	end
+end
+
 function EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfo(system)
 	return self.systemSettingDisplayInfo[system];
+end
+
+function EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(system)
+	return self.displayInfoMap[system];
 end

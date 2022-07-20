@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="AnimaDiversionDataProvider.lua"/>
 	<Frame name="AnimaDiversionPinTemplate" mixin="AnimaDiversionPinMixin" enableMouse="true" virtual="true">
 		<Layers>
@@ -67,8 +67,8 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="AlphaAnim" parentArray="animationGroups" looping="REPEAT">
-				<Alpha childkey="AnimaLink1" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
-				<Alpha childKey="AnimaLink1" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
+				<Alpha childKey="AnimaLink1" duration="2.2" order="1" smoothing="IN_OUT" fromAlpha="1" toAlpha=".8" />
+				<Alpha childKey="AnimaLink1" duration="2.0" order="2" smoothing="IN_OUT" fromAlpha=".8" toAlpha="1" />
 			</AnimationGroup>
 			<AnimationGroup parentKey="TranslateAnim1" parentArray="animationGroups" looping="REPEAT">
 				<TextureCoordTranslation childKey="AnimaLink1" duration="4" order="1" offsetU="0" offsetV="1" />

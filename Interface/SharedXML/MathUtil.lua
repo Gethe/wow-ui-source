@@ -27,12 +27,16 @@ MathUtil =
 	Epsilon = .000001;
 };
 
+local securecallfunction = securecallfunction;
 function CreateCounter(initialCount)
 	local count = initialCount or 0;
-	return function()
+	local counter = function()
 		count = count + 1;
 		return count;
-	end
+	end;
+    return function()
+        return securecallfunction(counter);
+    end;
 end
 
 function Lerp(startValue, endValue, amount)

@@ -823,7 +823,7 @@ function PlayerFrame_AttachCastBar()
 	castBar:ClearAllPoints();
 	castBar:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 78, 18);
 	-- pet
-	CastingBarFrame_SetLook(petCastBar, "UNITFRAME");
+	petCastBar:SetLook(petCastBar, "UNITFRAME");
 	petCastBar:SetWidth(150);
 	petCastBar:SetHeight(10);
 	petCastBar:ClearAllPoints();
@@ -843,7 +843,7 @@ function PlayerFrame_DetachCastBar()
 	castBar:SetLook("CLASSIC");
 	castBar:ClearAllPoints();
 	-- pet
-	CastingBarFrame_SetLook(petCastBar, "CLASSIC");
+	petCastBar:SetLook(petCastBar, "CLASSIC");
 	petCastBar:SetWidth(195);
 	petCastBar:SetHeight(13);
 	petCastBar:ClearAllPoints();

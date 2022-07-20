@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
   <Script file="MonkHarmonyBar.lua"/>		
  
-	<Frame name="MonkLightEnergyTemplate" parentArray="LightEnergy" virtual="true">
+	<Frame name="MonkLightEnergyTemplate" mixin="MonkLightEnergyMixin" virtual="true">
 		<Size x="18" y="17"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -55,8 +55,20 @@
 		</Scripts>
 	</Frame>
   
-	<Frame name="MonkHarmonyBarFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, MonkPowerBar">
+	<Frame name="MonkHarmonyBarFrame" inherits="ClassResourceBarTemplate" mixin="MonkPowerBar">
 		<Size x="1" y="60"/>
+		<KeyValues>
+			<KeyValue key="powerToken" value="CHI" type="string"/>
+			<KeyValue key="powerToken2" value="DARK_FORCE" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.Chi" type="global"/>
+			<KeyValue key="tooltip1" value="CHI_POWER" type="global"/>
+			<KeyValue key="tooltip2" value="CHI_TOOLTIP" type="global"/>
+			<KeyValue key="resourcePointTemplate" value="MonkLightEnergyTemplate" type="string"/>
+			<KeyValue key="resourcePointSetupFunc" value="MonkLightEnergyMixin.Setup" type="global"/>
+			<KeyValue key="spacing" value="-1" type="number"/>
+			<KeyValue key="class" value="MONK" type="string"/>
+			<KeyValue key="spec" value="SPEC_MONK_WINDWALKER" type="global"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOP" x="49" y="-46"/>
 		</Anchors>
@@ -76,13 +88,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame inherits="MonkLightEnergyTemplate">
-				<Anchors>
-					<Anchor point="LEFT" x="-43" y="1"/>
-				</Anchors>
-			</Frame>
-		</Frames>
 	</Frame>
 </Ui>
 

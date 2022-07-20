@@ -1501,8 +1501,8 @@ function PvPObjectiveBannerFrame_PlayBanner(self, data)
 	self.BonusLabel:SetText(description);
 
 	-- offsets for anims
-	local xOffset = QueueStatusMinimapButton:GetLeft() - self:GetLeft();
-	local yOffset = QueueStatusMinimapButton:GetTop() - self:GetTop() + 64;
+	local xOffset = QueueStatusButton:GetLeft() - self:GetLeft();
+	local yOffset = QueueStatusButton:GetTop() - self:GetTop() + 64;
 
 	self.Anim.BG1Translation:SetOffset(xOffset, yOffset);
 	self.Anim.TitleTranslation:SetOffset(xOffset, yOffset);

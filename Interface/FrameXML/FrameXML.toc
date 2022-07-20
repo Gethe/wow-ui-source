@@ -344,6 +344,7 @@ RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
 ClassPowerBar.xml
+ClassResourceBarTemplate.xml
 RuneFrame.xml
 ShardBar.xml
 ComboFramePlayer.xml

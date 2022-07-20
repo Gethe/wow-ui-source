@@ -32,6 +32,7 @@ function SettingMixin:Init(name, variable, variableType)
 	self.variable = variable;
 	self.variableType = variableType;
 	self.commitFlags = Settings.CommitFlag.None;
+	self.ignoreApplyOverride = nil;
 end
 
 function SettingMixin:GetName()
@@ -110,8 +111,26 @@ function SettingMixin:AddCommitFlag(flag)
 	self.commitFlags = bit.bor(self.commitFlags, flag);
 end
 
+function SettingMixin:RemoveCommitFlag(flag)
+	if self:HasCommitFlag(flag) then
+		self.commitFlags = bit.bxor(self.commitFlags, flag);
+	end
+end
+
 function SettingMixin:HasCommitFlag(flag)
 	return bit.band(self.commitFlags, flag) > 0;
+end
+
+function SettingMixin:SetIgnoreApplyOverride(state)
+	self.ignoreApplyOverride = state;
+end
+
+function SettingMixin:UpdateIgnoreApplyFlag()
+	if self.ignoreApplyOverride == true then
+		self:AddCommitFlag(Settings.CommitFlag.IgnoreApply);
+	elseif self.ignoreApplyOverride == false then
+		self:RemoveCommitFlag(Settings.CommitFlag.IgnoreApply);
+	end
 end
 
 function SettingMixin:IsModified()

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonLandingPage.lua"/>
 
 	<Frame name="GarrisonLandingPageReportMissionRewardTemplate" enableMouse="true" virtual="true">
@@ -181,10 +181,10 @@
 				</Anchors>
 				<SwipeTexture file="Interface\Garrison\GarrLanding-TradeskillTimerFill"/>
 				<Scripts>
-					<OnCoolDownDone>
+					<OnCooldownDone>
 						-- update via event
 						C_Garrison.RequestLandingPageShipmentInfo();
-					</OnCoolDownDone>
+					</OnCooldownDone>
 				</Scripts>
 			</Cooldown>
 		</Frames>

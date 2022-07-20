@@ -18,12 +18,29 @@ function ScrollBoxListViewMixin:Init()
 	self.initializerList = {};
 	self.templateInfos = {};
 
-	self.factory = function(frameTemplate, initializer)
-		local info = self:CreateTemplateInfoForTemplate(frameTemplate);
-		local pool = self.poolCollection:GetOrCreatePool(info.type, self:GetScrollTarget(), frameTemplate);
+	self.factory = function(frameTemplateOrFrameType, initializer)
+		local frameTemplate = nil;
+		local frameType = nil;
+		local specialization = nil;
+
+		local info = self:CreateTemplateInfoForTemplate(frameTemplateOrFrameType);
+		if info then
+			frameTemplate = frameTemplateOrFrameType;
+			frameType = info.type;
+		else
+			-- Couldn't obtain template info, so the presumption is that this is a basic frame type.
+			frameTemplate = "";
+			frameType = frameTemplateOrFrameType;
+			specialization = frameType;
+		end
+
+		-- The frame type is passed as a specialization argument if this is deduced to be a basic frame type (i.e. button, frame) to
+		-- enable the pool collection to support multiple buckets for untemplated frame types. We're not leveraging it to provide any
+		-- custom initialization of the frame, but only to define a distincy key for each frame bucket.
+		local pool = self.poolCollection:GetOrCreatePool(frameType, self:GetScrollTarget(), frameTemplate, nil, nil, specialization);
 		local frame, new = pool:Acquire();
 		if not frame then
-			error(string.format("ScrollBoxListViewMixin: Failed to create a frame from pool for frame template '%s'", frameTemplate));
+			error(string.format("ScrollBoxListViewMixin: Failed to create a frame from pool for frame template or frame type '%s'", frameTemplateOrFrameType));
 		end
 		
 		-- The frame and new values are captured here instead of being returned to prevent the callee from having
@@ -38,17 +55,11 @@ function ScrollBoxListViewMixin:Init()
 end
 
 function ScrollBoxListViewMixin:CreateTemplateInfoForTemplate(frameTemplate)
-	local info = self.templateInfos[frameTemplate];
-	if not info then
-		self.templateInfoDirty = true;
-
-		info = C_XMLUtil.GetTemplateInfo(frameTemplate);
-		if not info then
-			error(string.format("ScrollBoxListViewMixin: Failed to obtain template info for frame template '%s'", frameTemplate));
-		end
-
+	local info = self.templateInfos[frameTemplate] or C_XMLUtil.GetTemplateInfo(frameTemplate);
+	if info then
 		info.extent = self:IsHorizontal() and info.width or info.height;
 		self.templateInfos[frameTemplate] = info;
+		self.templateInfoDirty = true;
 	end
 	return info;
 end
@@ -308,14 +319,24 @@ function ScrollBoxListViewMixin:GetFrameCount()
 end
 
 --[[]
-	Use SetElementInitializer if using a single template type.
-	SetElementInitializer("MyButtonTemplate", function(button, elementData)
+	Use SetElementInitializer if using a single template type or basic frame type.
+	local function Initializer(button, elementData)
 		button:Init(elementData); 
-	end);
+	end
+	SetElementInitializer("MyButtonTemplate", Initializer);
+
+	local function Initializer(button, elementData)
+		if not button.created then
+			button.created = true;
+			-- one-time operations on the button
+		end
+		-- regular initialization on the button
+	end
+	SetElementInitializer("Button", Initializer);
 ]]
-function ScrollBoxListViewMixin:SetElementInitializer(frameTemplate, initializer)
+function ScrollBoxListViewMixin:SetElementInitializer(frameTemplateOrFrameType, initializer)
 	local function Factory(factory, elementData)
-		factory(frameTemplate, initializer);
+		factory(frameTemplateOrFrameType, initializer);
 	end;
 	self:SetElementFactory(Factory);
 
@@ -324,7 +345,7 @@ function ScrollBoxListViewMixin:SetElementInitializer(frameTemplate, initializer
 	-- after invoking the factory. See GetTemplateFromElementData for details on how this is
 	-- happening.
 	if not self.elementExtent and not self.elementExtentCalculator then
-		local extent = self:CreateTemplateExtent(frameTemplate);
+		local extent = self:CreateTemplateExtent(frameTemplateOrFrameType);
 		if extent and extent > 0 then
 			self:SetElementExtent(extent);
 		end
@@ -342,6 +363,15 @@ end
 			factory("MyFrameTemplate", function(frame, elementData)
 				frame:Init(elementData);
 			end);
+		elseif elementData.condition3 then
+			local function Initializer(frame, elementData)
+				if not frame.created then
+					frame.created = true;
+					-- one-time operations on the frame
+				end
+				-- regular initialization on the frame
+			end
+			factory("Frame", Initializer);
 		end
 
 		-- or if adding the template information to the element data is suitable:
@@ -399,6 +429,9 @@ end
 
 function ScrollBoxListViewMixin:CreateTemplateExtent(frameTemplate)
 	local info = self:CreateTemplateInfoForTemplate(frameTemplate);
+	if not info then
+		error(string.format("ScrollBoxListViewMixin: Failed to obtain template info for frame template '%s'", frameTemplate));
+	end
 	return info.extent;
 end
 

@@ -30,9 +30,14 @@ end
 function TalentDisplayMixin:OnLeave()
 	GameTooltip_Hide();
 
-	if self.spellLoadCancel ~= nil then
+	if self.spellLoadCancel then
 		self.spellLoadCancel();
 		self.spellLoadCancel = nil;
+	end
+
+	if self.overrideSpellLoadCancel then
+		self.overrideSpellLoadCancel();
+		self.overrideSpellLoadCancel = nil;
 	end
 end
 
@@ -177,9 +182,24 @@ function TalentDisplayMixin:AddTooltipTitle(tooltip)
 end
 
 function TalentDisplayMixin:AddTooltipInfo(tooltip)
-	local talentSubtext = self:GetSubtext();
-	if talentSubtext ~= nil then
-		GameTooltip_AddColoredLine(tooltip, talentSubtext, GRAY_FONT_COLOR);
+	if self:ShouldShowSubText() then
+		local talentSubtext = self:GetSubtext();
+		if talentSubtext then
+			GameTooltip_AddDisabledLine(tooltip, talentSubtext);
+		end
+	end
+
+	local spellID = self:GetSpellID();
+	if spellID then
+		local overrideSpellID = C_SpellBook.GetOverrideSpell(spellID);
+		if overrideSpellID ~= spellID then
+			local overrideSpell = Spell:CreateFromSpellID(overrideSpellID);
+			if overrideSpell and not overrideSpell:IsSpellDataCached() then
+				self.overrideSpellLoadCancel = overrideSpell:ContinueWithCancelOnSpellLoad(GenerateClosure(self.SetTooltipInternal, self));
+			elseif strcmputf8i(self:GetName(), overrideSpell:GetSpellName()) ~= 0 then
+				GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_REPLACED_BY_FORMAT:format(overrideSpell:GetSpellName()), SPELL_LINK_COLOR);
+			end
+		end
 	end
 end
 
@@ -221,6 +241,11 @@ end
 function TalentDisplayMixin:CalculateVisualState()
 	-- Implement in your derived mixin.
 	return TalentButtonUtil.BaseVisualState.Normal;
+end
+
+function TalentDisplayMixin:ShouldShowSubText()
+	-- Implement in your derived mixin.
+	return false;
 end
 
 function TalentDisplayMixin:AddTooltipCost(tooltip)

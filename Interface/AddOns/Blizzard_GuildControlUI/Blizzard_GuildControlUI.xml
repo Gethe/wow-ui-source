@@ -307,7 +307,7 @@
 	
 	
 	
-	<Frame name="GuildControlUI" inherits="TranslucentFrameTemplate" topLevel="true" frameStrata="DIALOG" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+	<Frame name="GuildControlUI" inherits="TranslucentFrameTemplate" toplevel="true" frameStrata="DIALOG" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size x="338" y="444"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">

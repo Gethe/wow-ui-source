@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AdventuresBoard.lua"/>
 
 	<Frame name="AdventuresBoardAuraIcon" mixin="AdventuresBoardAuraIconMixin" virtual="true">
@@ -71,7 +71,7 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="SocketTexture" useAtlasSize="true"/>
 			</Layer>
-			<Layer level="Overlay">
+			<Layer level="OVERLAY">
 				<Texture parentKey="TutorialRing" atlas="adventures-mission-follower-tutorial-ring" useAtlasSize="true" hidden="true"/>
 			</Layer>
 		</Layers>

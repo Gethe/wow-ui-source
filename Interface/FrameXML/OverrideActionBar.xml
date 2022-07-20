@@ -556,7 +556,7 @@
 			<OnLoad function="OverrideActionBar_OnLoad"/>
 			<OnEvent function="OverrideActionBar_OnEvent"/>
 			<OnShow function="OverrideActionBar_OnShow"/>
-			<OnHide function="UIParent_ManageFramePositions"/>
+			<OnHide function="OverrideActionBar_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

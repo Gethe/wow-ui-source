@@ -15,7 +15,7 @@ Frames are required to have OnCommit, OnDefault, and OnRefresh functions even if
 -- or a settings list:
 local category, layout = Settings.RegisterVerticalLayoutCategory("My Category Name");
 ... setting initializers assigned to layout.
-Settings.RegisterCategory(category);
+Settings.RegisterAddOnCategory(category);
 
 -- To assign a subcategory:
 local category = category or Settings.GetCategory("My Category Name");
@@ -27,7 +27,37 @@ local subcategory, layout = Settings.RegisterCanvasLayoutSubcategory(category, f
 -- or a settings list:
 local subcategory, layout = Settings.RegisterVerticalLayoutSubcategory(category, "My Subcategory Name");
 ... setting initializers assigned to layout.
-Settings.RegisterCategory(subcategory);
+Settings.RegisterAddOnCategory(subcategory);
 
+-- Sample setting creation and registration:
+local myVariableTable = {}; -- Saved in your .toc
 
+-- check box
+local variable, name, tooltip = "MyCheckBox", "My CheckBox", "My CheckBox Tooltip";
+local setting = Settings.RegisterProxySetting(category, variable, myVariableTable, Settings.VarType.Boolean, name, Settings.Default.True);
+Settings.CreateCheckBox(category, setting, tooltip);
+
+-- slider
+local variable, name, tooltip = "MySlider", "My Slider", "My Slider Tooltip";
+local minValue, maxValue, step = 1, 100, 1;
+local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
+local defaultValue = 50;
+local setting = Settings.RegisterProxySetting(category, variable, myVariableTable, Settings.VarType.Number, name, defaultValue);
+Settings.CreateSlider(category, setting, options, tooltip);
+
+-- dropdown
+local variable, name, tooltip = "MyDropDown", "My DropDown", "My DropDown Tooltip";
+local function GetOptions()
+    local container = Settings.CreateDropDownTextContainer();
+    container:Add(0, "Option A");
+    container:Add(1, "Option B");
+    container:Add(2, "Option C");
+    return container:GetData();
+end
+
+local defaultValue = 0;
+local setting = Settings.RegisterProxySetting(category, variable, myVariableTable, Settings.VarType.Number, name, defaultValue);
+Settings.CreateDropDown(category, setting, GetOptions, tooltip);
 ]]--

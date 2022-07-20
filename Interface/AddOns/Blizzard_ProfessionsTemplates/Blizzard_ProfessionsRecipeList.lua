@@ -143,7 +143,7 @@ function ProfessionsRecipeListMixin:OnLoad()
 	end
 
 	UIDropDownMenu_SetInitializeFunction(self.SkillLineDropDown, DropDownInitializer);
-	UIDropDownMenu_SetWidth(self.SkillLineDropDown, 217);
+	UIDropDownMenu_SetWidth(self.SkillLineDropDown, 277);
 	local function ProfessionSelectedCallback(_, professionInfo)
 		self.SkillLineDropDown.Text:SetText(professionInfo.professionName);
 		self.SkillLineDropDown:SetShown(not (C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsRuneforging()));

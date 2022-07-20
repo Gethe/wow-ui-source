@@ -38,6 +38,14 @@ function TabbedFrameMixin:GetTab()
 	return self.tabKey;
 end
 
+function TabbedFrameMixin:GetTabSet()
+	return GetKeysArray(self.tabKeyToElementSet);
+end
+
+function TabbedFrameMixin:GetElementsForTab(tabKey)
+	return GetKeysArray(self.tabKeyToElementSet[tabKey]);
+end
+
 
 TabSystemOwnerMixin = CreateFromMixins(TabbedFrameMixin);
 
@@ -54,10 +62,6 @@ function TabSystemOwnerMixin:AddNamedTab(tabName, ...)
 	local tabID = self.tabSystem:AddTab(tabName);
 	self.internalTabTracker:AddTab(tabID, ...);
 
-	for i = 1, select("#", ...) do
-		self.internalTabTracker:AddElementToTab(tabID, select(i, ...));
-	end
-
 	return tabID;
 end
 
@@ -68,4 +72,12 @@ end
 
 function TabSystemOwnerMixin:GetTab()
 	return self.internalTabTracker:GetTab();
+end
+
+function TabSystemOwnerMixin:GetTabSet()
+	return self.internalTabTracker:GetTabSet();
+end
+
+function TabSystemOwnerMixin:GetElementsForTab(tabKey)
+	return self.internalTabTracker:GetElementsForTab(tabKey);
 end

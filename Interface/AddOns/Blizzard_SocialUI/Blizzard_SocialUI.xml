@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
 	<Script file="Blizzard_SocialUI.lua"/>
 	<Script file="Blizzard_SocialUIInbound.lua" />
 
@@ -295,7 +295,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY" textureSubLevel="0">
-								<Texture parentKey="Texture" alphaMode="DISABLE">>
+								<Texture parentKey="Texture" alphaMode="DISABLE">
  									<Anchors>
 										<Anchor point="TOPLEFT" x="4" y="-4"/>
 										<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>

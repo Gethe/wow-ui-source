@@ -961,6 +961,7 @@ function ToggleTalentFrame(suggestedTab)
 		[4] = true, -- Rogue
 		[5] = true, -- Priest
 		[6] = true, -- DK
+		[7] = true, -- Shaman
 		[11] = true, -- Druid
 		[13] = true, -- Evoker
 	};
@@ -2680,13 +2681,25 @@ function UIParentManagedFrameContainerMixin:RemoveManagedFrame(frame)
 		self.showingFrames[frame] = nil; 
 	end 
 	frame:ClearAllPoints(); 
-	frame:SetParent(nil);
 	if(ObjectiveTrackerFrame) then
 		ObjectiveTracker_UpdateHeight(); 
 	end 
 	self:Layout(); 
 	self.BottomManagedLayoutContainer:Layout();
 end 
+
+function UIParentManagedFrameContainerMixin:UpdateManagedFramesAlphaState()
+	local isActionBarOverriden = OverrideActionBar and OverrideActionBar:IsShown();
+	for frame in pairs(self.showingFrames) do 
+		if(frame.hideWhenActionBarIsOverriden) then 
+			local setToAlpha = isActionBarOverriden and 0 or 1;
+			local currentFrameAlpha = frame:GetAlpha(); 
+			if(setToAlpha ~= currentFrameAlpha) then 
+				frame:SetAlpha(setToAlpha); 
+			end
+		end 
+	end
+end
 
 --Aubrie TODO determine if we want to actually apply a fade out for pet battles? 
 function UIParentManagedFrameContainerMixin:AnimOutManagedFrames()
@@ -3225,22 +3238,22 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		MainMenuBar:SetScale(barScale);
 	end
 
-	local anchor = EditModeUtil.GetBottomActionBarAnchor(); 
+	local anchor = EditModeUtil.GetBottomActionBarAnchor();
 	if (anchor) then
-		UIParentBottomManagedFrameContainer.fixedWidth = MainMenuBar:GetWidth() + 10; 
-		UIParentBottomManagedFrameContainer:ClearAllPoints(); 
-		anchor:SetPoint(UIParentBottomManagedFrameContainer, true); 
+		UIParentBottomManagedFrameContainer.fixedWidth = MainMenuBar:GetWidth() + 10;
+		UIParentBottomManagedFrameContainer:ClearAllPoints();
+		anchor:SetPoint(UIParentBottomManagedFrameContainer, true);
 		UIParentBottomManagedFrameContainer:Layout();
-		UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:Layout(); 
-	end 
+		UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:Layout();
+	end
 
-	local rightAnchor = EditModeUtil.GetRightContainerAnchor(); 
-	if(rightAnchor) then 
-		UIParentRightManagedFrameContainer:ClearAllPoints(); 
-		UIParentRightManagedFrameContainer.fixedHeight = UIParent:GetHeight() - MinimapCluster:GetHeight() - 100; 
-		rightAnchor:SetPoint(UIParentRightManagedFrameContainer, true); 
-		UIParentRightManagedFrameContainer:Layout(); 
-		UIParentRightManagedFrameContainer.BottomManagedLayoutContainer:Layout(); 
+	local rightAnchor = EditModeUtil.GetRightContainerAnchor();
+	if(rightAnchor) then
+		UIParentRightManagedFrameContainer:ClearAllPoints();
+		UIParentRightManagedFrameContainer.fixedHeight = UIParent:GetHeight() - MinimapCluster:GetHeight() - 100;
+		rightAnchor:SetPoint(UIParentRightManagedFrameContainer, true);
+		UIParentRightManagedFrameContainer:Layout();
+		UIParentRightManagedFrameContainer.BottomManagedLayoutContainer:Layout();
 	end 
 	if(ObjectiveTrackerFrame and ObjectiveTrackerFrame:IsShown()) then
 		ObjectiveTracker_UpdateHeight();
@@ -4147,8 +4160,8 @@ function ToggleGameMenu()
 	elseif ( SoulbindViewer and SoulbindViewer:HandleEscape()) then
 	elseif ( ClassTalentFrame and ClassTalentFrame:IsShown() ) then
 		ClassTalentFrame:CheckConfirmClose();
-	elseif ( ProfessionsSpecFrame and ProfessionsSpecFrame:IsShown() ) then
-		ProfessionsSpecFrame:CheckConfirmClose();
+	elseif ( ProfessionsFrame and ProfessionsFrame:IsShown() ) then
+		ProfessionsFrame:CheckConfirmClose();
 	elseif ( securecall("CloseAllWindows") ) then
 	elseif ( CovenantPreviewFrame and CovenantPreviewFrame:IsShown()) then
 		CovenantPreviewFrame:HandleEscape();

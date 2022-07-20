@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsGuildMemberList.lua"/>
 
 	<Button name="ProfessionsGuildCrafterButtonTemplate" mixin="ProfessionsGuildCrafterButtonMixin" virtual="true">
@@ -17,7 +17,7 @@
 	</Button>
 
 	<Frame name="ProfessionsGuildListingTemplate" inherits="TranslucentFrameTemplate" mixin="ProfessionsGuildListingMixin" virtual="true">
-		<Size x="190" y="218"/>
+		<Size x="260" y="353"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontNormal">
@@ -28,14 +28,9 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
-				</Anchors>
-			</Button>
 			<Frame parentKey="Container" inherits="TooltipBackdropTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="14" y="-36"/>
+					<Anchor point="TOPLEFT" x="14" y="-37"/>
 					<Anchor point="TOPRIGHT" x="-14" y="-36"/>
 					<Anchor point="BOTTOM" x="0" y="14"/>
 				</Anchors>
@@ -45,12 +40,12 @@
 				</KeyValues>
 				<Frames>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
-						<Size x="136" y="160" />
+						<Size x="215" y="293" />
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-4" />
+							<Anchor point="TOPLEFT" x="0" y="-5" />
 						</Anchors>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="3"/>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-3"/>

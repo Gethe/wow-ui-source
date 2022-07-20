@@ -128,6 +128,14 @@ function EditModeManagerFrameMixin:OnLoad()
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
 end
 
+function EditModeManagerFrameMixin:OnDragStart()
+	self:StartMoving();
+end
+
+function EditModeManagerFrameMixin:OnDragStop()
+	self:StopMovingOrSizing();
+end
+
 function EditModeManagerFrameMixin:ShowSystemSelections()
 	for _, systemFrame in ipairs(self.registeredSystemFrames) do
 		systemFrame:OnEditModeEnter();
@@ -314,10 +322,11 @@ end
 function EditModeManagerFrameMixin:OnSystemSettingChange(systemFrame, changedSetting, newValue)
 	local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
 	if systemInfo then
+		local rawNewValue = systemFrame:ConvertSettingDisplayValueToRawValue(changedSetting, newValue);
 		for _, settingInfo in pairs(systemInfo.settings) do
 			if settingInfo.setting == changedSetting then
-				if settingInfo.value ~= newValue then
-					settingInfo.value = newValue;
+				if settingInfo.value ~= rawNewValue then
+					settingInfo.value = rawNewValue;
 					systemFrame:UpdateSystem(systemInfo);
 				end
 				return;
@@ -455,10 +464,14 @@ function EditModeManagerFrameMixin:RemoveOldSystemsAndSettings(layoutInfo)
 	return removedSomething;
 end
 
-local function GetSettingMapFromSettings(settings)
+local function GetSettingMapFromSettings(settings, displayInfoMap)
 	local settingMap = {};
 	for _, settingInfo in ipairs(settings) do
-		settingMap[settingInfo.setting] = settingInfo.value;
+		settingMap[settingInfo.setting] = { value = settingInfo.value };
+
+		if displayInfoMap and displayInfoMap[settingInfo.setting] then
+			settingMap[settingInfo.setting].displayValue = displayInfoMap[settingInfo.setting]:ConvertValueForDisplay(settingInfo.value);
+		end
 	end
 	return settingMap;
 end
@@ -1014,11 +1027,10 @@ function EditModeImportLayoutDialogMixin:OnImportTextChanged(text)
 	self.importLayoutInfo = C_EditMode.ConvertStringToLayoutInfo(self.ImportBox.EditBox:GetText());
 	if self.importLayoutInfo then
 		self.LayoutNameEditBox:Enable();
-		self.LayoutNameEditBox:SetText(self.importLayoutInfo.layoutName);
 	else
-		self.LayoutNameEditBox:SetText("");
 		self.LayoutNameEditBox:Disable();
 	end
+	self.LayoutNameEditBox:SetText("");
 	self:UpdateAcceptButtonEnabledState();
 end
 
@@ -1039,8 +1051,7 @@ function EditModeImportLayoutLinkDialogMixin:ShowDialog(link)
 	local _, linkOptions = LinkUtil.ExtractLink(link);
 	local importLayoutInfo = C_EditMode.ConvertStringToLayoutInfo(linkOptions);
 	if importLayoutInfo then
-		self.Title:SetText(HUD_EDIT_MODE_IMPORT_LAYOUT_LINK_DIALOG_TITLE:format(importLayoutInfo.layoutName));
-		self.LayoutNameEditBox:SetText(importLayoutInfo.layoutName);
+		self.LayoutNameEditBox:SetText("");
 		self.CharacterSpecificLayoutCheckButton:SetControlChecked(false);
 		self.importLayoutInfo = importLayoutInfo;
 		StaticPopupSpecial_Show(self);
@@ -1223,16 +1234,16 @@ function EditModeSettingDropdownMixin:OnLoad()
 	self.Dropdown:SetOptionSelectedCallback(GenerateClosure(self.OnSettingSelected, self));
 end
 
-function EditModeSettingDropdownMixin:OnSettingSelected(value, isUserInput)
-	if isUserInput then
-		EditModeSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
-	end
-end
-
 function EditModeSettingDropdownMixin:SetupSetting(settingData)
 	self.setting = settingData.displayInfo.setting;
 	self.Label:SetText(settingData.settingName);
 	self.Dropdown:SetOptions(settingData.displayInfo.options, settingData.currentValue);
+end
+
+function EditModeSettingDropdownMixin:OnSettingSelected(value, isUserInput)
+	if isUserInput then
+		EditModeSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
+	end
 end
 
 EditModeSettingSliderMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -1242,16 +1253,15 @@ function EditModeSettingSliderMixin:OnLoad()
 
 	self.cbrHandles = EventUtil.CreateCallbackHandleContainer();
 	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, self.OnSliderValueChanged, self);
-
-	self.formatters = {};
-	self.formatters[MinimalSliderWithSteppersMixin.Label.Right] = CreateMinimalSliderFormatter(MinimalSliderWithSteppersMixin.Label.Right); -- Just show value on the right by default
 end
 
 function EditModeSettingSliderMixin:SetupSetting(settingData)
 	self.initInProgress = true;
+	self.formatters = {};
+	self.formatters[MinimalSliderWithSteppersMixin.Label.Right] = CreateMinimalSliderFormatter(MinimalSliderWithSteppersMixin.Label.Right, settingData.displayInfo.formatter); -- Just show value on the right by default
 	self.setting = settingData.displayInfo.setting;
 	self.Label:SetText(settingData.settingName);
-	local stepSize = settingData.stepSize or 1;
+	local stepSize = settingData.displayInfo.stepSize or 1;
 	local steps = (settingData.displayInfo.maxValue - settingData.displayInfo.minValue) / stepSize;
 	self.Slider:Init(settingData.currentValue, settingData.displayInfo.minValue, settingData.displayInfo.maxValue, steps, self.formatters);
 	self.initInProgress = false;
@@ -1292,7 +1302,16 @@ function EditModeSystemMixin:OnSystemLoad()
 	self.Selection:SetLabelText(self.systemName);
 	self:SetupSettingsDialogAnchor();
 
+	self.settingDisplayInfoMap = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(self.system);
 	self.settingMap = {};
+end
+
+function EditModeSystemMixin:ConvertSettingDisplayValueToRawValue(setting, value)
+	if self.settingDisplayInfoMap[setting] then
+		return self.settingDisplayInfoMap[setting]:ConvertValue(value);
+	else
+		return value;
+	end
 end
 
 function EditModeSystemMixin:UpdateSystem(systemInfo, savedData)
@@ -1303,7 +1322,7 @@ function EditModeSystemMixin:UpdateSystem(systemInfo, savedData)
 		self:SetHasActiveChanges(true);
 	end
 
-	self.settingMap = GetSettingMapFromSettings(systemInfo.settings);
+	self.settingMap = GetSettingMapFromSettings(systemInfo.settings, self.settingDisplayInfoMap);
 
 	self:ClearAllPoints();
 
@@ -1338,16 +1357,22 @@ function EditModeSystemMixin:HasSetting(setting)
 	return self.settingMap[setting] ~= nil;
 end
 
-function EditModeSystemMixin:GetSettingValue(setting)
-	return self.settingMap[setting];
+function EditModeSystemMixin:GetSettingValue(setting, useRawValue)
+	return useRawValue and self.settingMap[setting].value or self.settingMap[setting].displayValue;
 end
 
-function EditModeSystemMixin:GetSettingValueBool(setting)
-	return self.settingMap[setting] == 1;
+function EditModeSystemMixin:GetSettingValueBool(setting, useRawValue)
+	return self:GetSettingValue(setting, useRawValue) == 1;
 end
 
 function EditModeSystemMixin:DoesSettingValueEqual(setting, value)
-	return self.settingMap[setting] == value;
+	local useRawValue = true;
+	return self:GetSettingValue(setting, useRawValue) == value;
+end
+
+function EditModeSystemMixin:DoesSettingDisplayValueEqual(setting, value)
+	local useRawValueNo = false;
+	return self:GetSettingValue(setting, useRawValueNo) == value;
 end
 
 -- Override in inheriting mixins as needed
@@ -1545,27 +1570,14 @@ function EditModeActionBarSystemMixin:UpdateSystem(systemInfo, savedData)
 	if self:HasSetting(Enum.EditModeActionBarSetting.IconSize) then
 		local iconSizeSetting = self:GetSettingValue(Enum.EditModeActionBarSetting.IconSize);
 
-		local iconScale = 1;
-		if iconSizeSetting <= 0 then
-			iconScale = 0.5;
-		elseif iconSizeSetting == 1 then
-			iconScale = 0.8;
-		elseif iconSizeSetting == 3 then
-			iconScale = 1.2;
-		elseif iconSizeSetting == 4 then
-			iconScale = 1.5;
-		elseif iconSizeSetting == 5 then
-			iconScale = 1.7;
-		elseif iconSizeSetting == 6 then
-			iconScale = 2;
-		end
+		local iconScale = iconSizeSetting / 100;
 
 		if self.EditModeSetScale then
 			self:EditModeSetScale(iconScale);
 		end
 
-		for i, actionButton in pairs(self.ActionButtons) do
-			actionButton:SetScale(iconScale);
+		for i, buttonOrSpacer in pairs(self.buttonsAndSpacers) do
+			buttonOrSpacer:SetScale(iconScale);
 		end
 
 		-- Since size of buttons changed we'll want to update the grid layout so we can resize the bar's frame
@@ -1588,6 +1600,7 @@ function EditModeActionBarSystemMixin:UpdateSystem(systemInfo, savedData)
 
 		self:UpdateEndCaps(hideBarArt);
 		self.BorderArt:SetShown(not hideBarArt);
+		self.Background:SetShown(not hideBarArt);
 
 		for i, actionButton in pairs(self.ActionButtons) do
 			actionButton.showButtonArt = not hideBarArt;
@@ -1602,9 +1615,9 @@ function EditModeActionBarSystemMixin:UpdateSystem(systemInfo, savedData)
 
 	-- Update bar visibility
 	if self:HasSetting(Enum.EditModeActionBarSetting.VisibleSetting) then
-		if (self:DoesSettingValueEqual(Enum.EditModeActionBarSetting.VisibleSetting, Enum.ActionBarVisibleSetting.InCombat)) then
+		if self:DoesSettingValueEqual(Enum.EditModeActionBarSetting.VisibleSetting, Enum.ActionBarVisibleSetting.InCombat) then
 			self.visibility = "InCombat";
-		elseif (self:DoesSettingValueEqual(Enum.EditModeActionBarSetting.VisibleSetting, Enum.ActionBarVisibleSetting.OutOfCombat)) then
+		elseif self:DoesSettingValueEqual(Enum.EditModeActionBarSetting.VisibleSetting, Enum.ActionBarVisibleSetting.OutOfCombat) then
 			self.visibility = "OutOfCombat"
 		else
 			self.visibility = "Always";
@@ -1612,9 +1625,18 @@ function EditModeActionBarSystemMixin:UpdateSystem(systemInfo, savedData)
 		self:UpdateVisibility();
 	end
 
+	-- Update always show buttons
+	if self:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
+		local alwaysShowButtons = self:GetSettingValueBool(Enum.EditModeActionBarSetting.AlwaysShowButtons);
+		self:SetShowGrid(alwaysShowButtons, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
+	end
+
 	-- If we changed anything that could mess with the grid layout we should update it
 	if shouldUpdateGridLayout then
 		self:UpdateGridLayout();
+
+		-- Update frame positions since if we update the size of the action bars then we'll wanna update the position of things relative to those action bars
+		UIParent_ManageFramePositions();
 	end
 
 	-- If we changed anything that could mess with the button art then we should update it

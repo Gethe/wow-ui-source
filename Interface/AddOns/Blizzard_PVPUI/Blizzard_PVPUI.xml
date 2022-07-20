@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_PVPUI.lua"/>
 
 	<Frame name="SeasonRewardFrameTemplate" mixin="PVPAchievementRewardMixin" virtual="true">
@@ -23,7 +23,7 @@
 		</Scripts>
 	</Frame>
 
-	<FontString name="PVPSeasonChangesDescriptionTemplate" parentArray="SeasonDescriptions" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true" virtual="true">
+	<FontString name="PVPSeasonChangesDescriptionTemplate" parentArray="SeasonDescriptions" font="SystemFont_Med3" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true" virtual="true">
 		<Size x="380" y="0"/>
 		<Color r="0.2824" g="0.0157" b="0.0157"/>
 	</FontString>
@@ -140,7 +140,7 @@
 					</Anchors>
 					<Color r="0" g="0" b="0"/>
 				</FontString>
-				<FontString parentKey="SeasonDescriptionHeader" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
+				<FontString parentKey="SeasonDescriptionHeader" font="SystemFont_Med3" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true">
 					<Size x="380" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NewSeason" relativePoint="BOTTOM" y="-14"/>

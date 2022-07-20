@@ -69,7 +69,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="GameMenuButtonSettings" inherits="GameMenuButtonTemplate" text="GAMEMENU_SETTINGS">
+			<Button name="GameMenuButtonSettings" inherits="GameMenuButtonTemplate" text="GAMEMENU_OPTIONS">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="GameMenuButtonWhatsNew" relativePoint="BOTTOM" x="0" y="-16"/>
 				</Anchors>

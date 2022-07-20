@@ -262,7 +262,7 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="frame" value="GuildControlUI" type="Global"/>
+					<KeyValue key="frame" value="GuildControlUI" type="global"/>
 				</KeyValues>
 			</Button>
 			<Button parentKey="GuildRecruitmentButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="GUILD_RECRUITMENT">
@@ -597,7 +597,7 @@
 					<Anchor point="BOTTOMLEFT" x="190" y="5"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="frame" value="CommunitiesGuildLogFrame" type="Global"/>
+					<KeyValue key="frame" value="CommunitiesGuildLogFrame" type="global"/>
 				</KeyValues>
 			</Button>
 			<Frame parentKey="GuildMemberDetailFrame" frameLevel="1000" inherits="CommunitiesGuildMemberDetailFrameTemplate" hidden="true">

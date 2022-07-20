@@ -12,6 +12,7 @@ TALENT_BUTTON_TOOLTIP_SELECTION_CHOICE_ERROR = "Select another choice";
 TALENT_BUTTON_TOOLTIP_SELECTION_ERROR = "This node isn't active";
 TALENT_BUTTON_TOOLTIP_SELECT_TITLE = "Talent Slot";
 TALENT_BUTTON_TOOLTIP_NEXT_RANK = "Next Rank:";
+TALENT_BUTTON_TOOLTIP_REPLACED_BY_FORMAT = "Replaced by %s";
 TALENT_BUTTON_TOOLTIP_SELECT_INSTRUCTIONS = "Choose one option";
 TALENT_BUTTON_TOOLTIP_SELECT_CHANGE_INSTRUCTIONS = "Right click to unlearn";
 TALENT_BUTTON_TOOLTIP_SELECT_PREVIEW_INSTRUCTIONS = "Preview options";
@@ -147,7 +148,7 @@ function TalentButtonUtil.CalculateIconTexture(talentInfo, overrideSpellID)
 
 		local spellID = overrideSpellID or talentInfo.spellID;
 		if spellID ~= nil then
-			local spellIcon = select(3, GetSpellInfo(spellID));
+			local spellIcon = select(8, GetSpellInfo(spellID));
 			return spellIcon;
 		end
 	end

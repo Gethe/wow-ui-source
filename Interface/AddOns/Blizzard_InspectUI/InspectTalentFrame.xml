@@ -102,7 +102,7 @@
 								<Anchor point="TOPLEFT" x="5" y="-3"/>
 							</Anchors>
 						</Texture>
-						<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyH="BOTTOM" parentKey="specName">
+						<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyV="BOTTOM" parentKey="specName">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-3" y="1"/>
 							</Anchors>

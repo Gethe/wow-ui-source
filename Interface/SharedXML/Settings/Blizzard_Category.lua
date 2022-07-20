@@ -5,7 +5,7 @@ local orderCounter = CreateCounter();
 local securecallfunction = securecallfunction;
 function SettingsCategoryMixin:Init(name)
 	self.subcategories = {};
-	self.order = securecallfunction(orderCounter);
+	self.order = orderCounter();
 	self:SetName(name);
 end
 

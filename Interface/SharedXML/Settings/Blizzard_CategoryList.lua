@@ -131,6 +131,7 @@ function SettingsCategoryListMixin:OnLoad()
 				button:SetScript("OnClick", function(button, buttonName, down)
 					g_selectionBehavior:Select(button);
 					self:TriggerEvent(SettingsCategoryListMixin.Event.OnCategorySelected, elementData.data.category);
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 				end);
 				
 				local function OnToggle(button, buttonName, down)
@@ -317,7 +318,7 @@ function SettingsCategoryListMixin:GenerateElementList()
 		local indent = 0;
 		if self:GetCategorySet() == Settings.CategorySet.Game then
 			if groupText then
-				local headerIndex = ((securecallfunction(headerCounter) - 1) % 3) + 1;
+				local headerIndex = ((headerCounter() - 1) % 3) + 1;
 				table.insert(elementList, CreateHeaderInitializer(groupText, headerIndex));
 			end
 		end

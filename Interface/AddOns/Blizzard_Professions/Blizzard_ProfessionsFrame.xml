@@ -1,54 +1,28 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsFrame.lua"/>
 
-	<Button name="ProfessionsFrameTabTemplate" mixin="ProfessionsFrameTabMixin" inherits="CharacterFrameTabButtonTemplate" virtual="true">
-		<Size x="50" y="50"/>
-		<KeyValues>
-			<KeyValue key="selectedTextY" value="8" type="number"/>
-			<KeyValue key="deselectedTextY" value="10" type="number"/>
-		</KeyValues>
-	</Button>
-
-	<Frame name="ProfessionsFrame" mixin="ProfessionsMixin" inherits="PortraitFrameTemplate" parent="UIParent" toplevel="true" hidden="true" enableMouse="true">
-		<Size x="1" y="582"/>
+	<Frame name="ProfessionsFrame" mixin="ProfessionsMixin" inherits="PortraitFrameTemplateNoCloseButton, TabSystemOwnerTemplate" parent="UIParent" toplevel="true" hidden="true" enableMouse="true">
+		<Size x="1" y="658"/>
 		<Frames>
-			<Button name="$parentRecipesTab" parentArray="Tabs" parentKey="RecipesTab" inherits="ProfessionsFrameTabTemplate">
-				<KeyValues>
-					<KeyValue key="page" value="Crafting" type="string"/>
-				</KeyValues>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5" y="5"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentHubTab" parentArray="Tabs" parentKey="HubTab" inherits="ProfessionsFrameTabTemplate">
-				<KeyValues>
-					<KeyValue key="page" value="Hub" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RecipesTab" relativePoint="RIGHT" x="-16" y="0"/>
-				</Anchors>
-			</Button>
-			
 
-			<Button parentKey="LinkButton" mixin="DropDownToggleButtonMixin">
-				<Size x="30" y="30"/>
+			<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
+				<KeyValues>
+					<KeyValue key="minTabWidth" value="100" type="number"/>
+					<KeyValue key="maxTabWidth" value="150" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-22" y="-40"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="22" y="2"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
-						GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, true);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-LinkProfession-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-LinkProfession-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
-			<Frame parentKey="LinkDropDown" inherits="UIDropDownMenuTemplate"/>
+			</Frame>
+
+			<Frame parentKey="CraftingPage" inherits="ProfessionsCraftingPageTemplate" parentArray="Pages" frameLevel="100" hidden="true"/>
+			<Frame parentKey="SpecPage" inherits="ProfessionsSpecPageTemplate" parentArray="Pages" frameLevel="100" hidden="true"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

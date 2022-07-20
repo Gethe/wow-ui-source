@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonShipyardUI.lua"/>
 
 	<!-- This represents one of the naval mission icons on the naval map -->
@@ -191,8 +191,6 @@
 
 	<Frame name="GarrisonShipyardBonusAreaFrameTemplate" virtual="true" hidden="true">
 		<Size x="132" y="132"/>
-		<NormalTexture parentKey="Icon" atlas="ShipMissionIcon-Combat-Map" useAtlasSize="true"/>
-		<HighlightTexture parentKey="HighlightIcon" atlas="ShipMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="0">
 				<Texture parentKey="CircleTexture" alpha="1" alphaMode="BLEND" atlas="NavalMap-SmallBonusCircle" useAtlasSize="true">

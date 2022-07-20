@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsRecipeCrafterDetails.lua"/>
 
 	<Frame name="ProfessionsCrafterDetailsStatLineTemplate" mixin="ProfessionsCrafterDetailsStatLineMixin" virtual="true">
@@ -232,7 +232,7 @@
 						<FontString parentKey="Label" inherits="GameFontNormal" justifyH="CENTER">
 							<Size x="300" y="20"/>
 							<Anchors>
-								<Anchor point="TOP" y="-15"/>
+								<Anchor point="TOP" y="-20"/>
 							</Anchors>
 						</FontString>
 					</Layer>

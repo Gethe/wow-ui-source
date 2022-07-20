@@ -198,7 +198,7 @@ function BuffFrameMixin:SetupBuffs(expanded)
 	--Aubrie ToDO: The width and the layout will need to come from edit mode. 
 	local totalWidth = 376
 	local totalHeight = 200;
-	local anchor = AnchorUtil.CreateAnchor("RIGHT", self.CollapseAndExpandButton, "LEFT");
+	local anchor = AnchorUtil.CreateAnchor("RIGHT", self.CollapseAndExpandButton, "LEFT", -10);
 	AnchorUtil.GridLayoutFactory(BuffsFactoryFunction, anchor, totalWidth, totalHeight, GridLayoutMixin.Direction.TopRightToBottomLeft, 5, 15);
 end 
 
@@ -444,9 +444,15 @@ end
 CollapseAndExpandButtonMixin = { };
 function CollapseAndExpandButtonMixin:OnClick()
 	self:GetParent():SetBuffsExpandedState(self:GetChecked()); 
+	local collapseState = self:GetChecked() and math.pi or 0;
+	self:GetNormalTexture():SetRotation(collapseState);
+	self:GetHighlightTexture():SetRotation(collapseState);
 end
+
 function CollapseAndExpandButtonMixin:OnLoad()
 	self:SetChecked(true);
+	self:GetNormalTexture():SetRotation(math.pi);
+	self:GetHighlightTexture():SetRotation(math.pi);
 end
 
 DeadlyDebuffFrameMixin = { };

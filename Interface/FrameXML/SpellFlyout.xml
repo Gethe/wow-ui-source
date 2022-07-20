@@ -2,9 +2,8 @@
 ..\FrameXML\UI.xsd">
 	<Script file="SpellFlyout.lua"/>
 
-	<CheckButton name="SpellFlyoutButtonTemplate" inherits="ActionButtonTemplate,SecureFrameTemplate" virtual="true" motionScriptsWhileDisabled="true">
+	<CheckButton name="SpellFlyoutButtonTemplate" inherits="SmallActionButtonTemplate,SecureFrameTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<!-- This doesn't actually use any of the behavior of an ActionButtonTemplate, just the appearance -->
-		<Size x="28" y="28"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="GlyphIcon" hidden="true" alpha="1" alphaMode="BLEND" atlas="GlyphIcon-Spellbook" useAtlasSize="true">
@@ -32,7 +31,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="append">
 				self:RegisterForDrag("LeftButton");
 				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", 0, 0);
 				self.maxDisplayCount = 99;
@@ -77,14 +76,13 @@
 	<Frame name="SpellFlyout" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate" enableMouse="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="SpellFlyoutBackgroundEnd" atlas="UI-HUD-ActionBar-IconFrame-FlyoutButton" parentKey="BgEnd">
-					<Size x="37" y="22"/>
-				</Texture>
-				<Texture name="SpellFlyoutHorizontalBackground" parentKey="HorizBg" atlas="_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft" horizTile="true" hidden="true">
-					<Size x="32" y="37"/>
-				</Texture>
-				<Texture name="SpellFlyoutVerticalBackground" parentKey="VertBg" atlas="!UI-HUD-ActionBar-IconFrame-FlyoutMid" vertTile="true" hidden="true">
-					<Size x="37" y="32"/>
+				<Texture name="SpellFlyoutBackgroundEnd" atlas="UI-HUD-ActionBar-IconFrame-FlyoutButton" useAtlasSize="true" parentKey="BgEnd"/>
+				<Texture name="SpellFlyoutHorizontalBackground" parentKey="HorizBg" atlas="_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft" useAtlasSize="true" horizTile="true" hidden="true"/>
+				<Texture name="SpellFlyoutVerticalBackground" parentKey="VertBg" atlas="!UI-HUD-ActionBar-IconFrame-FlyoutMid" useAtlasSize="true" vertTile="true" hidden="true"/>
+				<Texture parentKey="flyoutBottom" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="SpellFlyoutVerticalBackground" relativePoint="BOTTOM"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>

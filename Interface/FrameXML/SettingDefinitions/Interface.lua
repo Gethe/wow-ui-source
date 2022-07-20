@@ -138,7 +138,7 @@ local function Register()
 		local defaultValue = false;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_LARGER_SETTINGS", Settings.DefaultVarLocation, 
 			Settings.VarType.Boolean, UNIT_NAMEPLATES_MAKE_LARGER, defaultValue, GetValue, SetValue);
-		local initializer = Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_UNIT_NAME_NONCOMBAT_CREATURE);
+		local initializer = Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_UNIT_NAMEPLATES_MAKE_LARGER);
 		initializer:AddModifyPredicate(function()
 			return not C_Commentator.IsSpectating();
 		end);
@@ -269,9 +269,6 @@ local function Register()
 		initializer:AddSearchTags(LOCK_ACTIONBAR_TEXT);
 		layout:AddInitializer(initializer);
 	end
-
-	-- Always Show Action Bars
-	Settings.SetupCVarCheckBox(category, "alwaysShowActionBars", ALWAYS_SHOW_MULTIBARS_TEXT, OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS);
 
 	-- Show Numbers for Cooldowns
 	Settings.SetupCVarCheckBox(category, "countdownForCooldowns", COUNTDOWN_FOR_COOLDOWNS_TEXT, OPTION_TOOLTIP_COUNTDOWN_FOR_COOLDOWNS);

@@ -19,7 +19,7 @@
 		<DisabledFont style="GameFontDisable"/>
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
-	<Frame name="CinematicFrame" setAllPoints="true" clampedtoscreen="true"  hidden="true" enableKeyboard="true" enableMouse="true">
+	<Frame name="CinematicFrame" setAllPoints="true" clampedToScreen="true"  hidden="true" enableKeyboard="true" enableMouse="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="UpperBlackBar" name="UpperBlackBar">

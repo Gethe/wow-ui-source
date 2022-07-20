@@ -385,7 +385,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" x="0" y="-15"/>
 					</Anchors>
-					<Color r="0.6" g="0.6" b="0.6"/>/>
+					<Color r="0.6" g="0.6" b="0.6"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -532,7 +532,7 @@
 	<Frame name="EventToastManagerNormalBlockTextTemplate" mixin="EventToastManagerNormalBlockTextMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" JustifyV="CENTER" justifyH="CENTER" inherits="GameFontNormalHuge">
+				<FontString parentKey="Title" justifyV="MIDDLE" justifyH="CENTER" inherits="GameFontNormalHuge">
 					<Size x="400" y="0"/>
 					<Anchors>
 						<Anchor point="CENTER" y="-3"/>

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonCapacitiveDisplay.lua"/>
 
 	<Button name="GarrisonCapacitiveItemButtonTemplate" parentArray="Reagents" virtual="true">
@@ -90,7 +90,7 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="CompletedOverlay" setAllPoints="true" hidden="true">
-					<Color r="255" g="210" b="0" a="0.5"/>
+					<Color r="1.0" g="0.82" b="0" a="0.5"/>
 				</Texture>
 				<Texture parentKey="QueuedOverlay" setAllPoints="true" hidden="true">
 					<Color r="0" g="0" b="0" a="0.5"/>
@@ -181,7 +181,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK" textureSubLevel="1">
-								<FontString parentKey="ShipmentName" inherits="GameFontNormal" justifyH="Left">
+								<FontString parentKey="ShipmentName" inherits="GameFontNormal" justifyH="LEFT">
 									<Size x="240" y="16"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeKey="$parent.$parent.IconBG" relativePoint="TOPLEFT" x="6" y="-6"/>

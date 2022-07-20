@@ -79,7 +79,7 @@
 		<HighlightFont style="GlueFontHighlightSmall"/>
 		<DisabledFont style="GlueFontDisableSmall"/>
 		<Layers>
-			<Layer frameStrata="ARTWORK">
+			<Layer level="ARTWORK">
 				<Texture parentKey="Selection" setAllPoints="true" hidden="true" atlas="CreditsScreen-Selected">
 					<Color a="0.8" r="1.0" g="1.0" b="1.0"/>
 				</Texture>

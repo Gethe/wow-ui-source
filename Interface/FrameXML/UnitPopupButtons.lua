@@ -455,6 +455,10 @@ function UnitPopupMoveTargetFrameButtonMixin:CanShow()
 	return false;
 end]]--
 
+function UnitPopupPlayerFrameShowCastBarButtonMixin:CanShow()
+	return false;
+end
+
 function UnitPopupEnterEditModeMixin:GetText()
 	return HUD_EDIT_MODE_MENU;
 end

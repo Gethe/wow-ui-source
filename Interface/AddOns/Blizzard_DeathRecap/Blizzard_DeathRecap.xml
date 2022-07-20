@@ -12,7 +12,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Amount" inherits="GameFontNormal" setAllPoints="true" justifyH="RIGHT" justifyV="CENTER" mixin="AutoScalingFontStringMixin">		
+						<FontString parentKey="Amount" inherits="GameFontNormal" setAllPoints="true" justifyH="RIGHT" justifyV="MIDDLE" mixin="AutoScalingFontStringMixin">		
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="9" type="number"/>
 							</KeyValues>
@@ -22,7 +22,7 @@
 							</Anchors>
 							<Color r="0.75" g="0.05" b="0.05" a="1"/>
 						</FontString>
-						<FontString parentKey="AmountLarge" inherits="GameFontNormalLarge2" setAllPoints="true" justifyH="RIGHT" justifyV="CENTER" hidden="true" mixin="AutoScalingFontStringMixin">
+						<FontString parentKey="AmountLarge" inherits="GameFontNormalLarge2" setAllPoints="true" justifyH="RIGHT" justifyV="MIDDLE" hidden="true" mixin="AutoScalingFontStringMixin">
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="12" type="number"/>
 							</KeyValues>
@@ -82,7 +82,7 @@
 		</Frames>
 	</Frame>
 	
-	<Frame name="DeathRecapFrame" FrameStrata="HIGH" movable="true" clampedToScreen="true" parent="UIParent" hidden="true">
+	<Frame name="DeathRecapFrame" frameStrata="HIGH" movable="true" clampedToScreen="true" parent="UIParent" hidden="true">
 		<Size x="380" y="326"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

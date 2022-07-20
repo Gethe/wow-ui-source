@@ -44,7 +44,7 @@
 					<Anchor point="CENTER" relativeKey="$parent.Link"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-100">
+					<Layer level="BACKGROUND" textureSubLevel="-8">
 						<Texture parentKey="Background">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="3" y="-2"/>
@@ -103,7 +103,7 @@
 		<Frames>
 			<Frame parentKey="ArtOverlay" frameLevel="300" setAllPoints="true">
 				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="100">
+					<Layer level="OVERLAY" textureSubLevel="7">
 						<Texture parentKey="TopLeft" atlas="macropopup-intersect-left" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
@@ -129,7 +129,7 @@
 					<Anchor point="BOTTOMRIGHT" x="-36" y="0"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-100">
+					<Layer level="BACKGROUND" textureSubLevel="-8">
 						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true"/>
 					</Layer>
 				</Layers>
@@ -189,7 +189,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="CommunitiesTicketManagerDialog" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesTicketManagerDialogMixin" topLevel="true" hidden="true">
+	<Frame name="CommunitiesTicketManagerDialog" frameStrata="DIALOG" parent="UIParent" mixin="CommunitiesTicketManagerDialogMixin" toplevel="true" hidden="true">
 		<Size x="633" y="484"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-140"/>

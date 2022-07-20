@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-../FrameXML/UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonMissionUI.lua"/>
 
 	<CinematicModel name="GarrisonCinematicModelBaseTemplate" virtual="true">
@@ -223,7 +223,7 @@
 				<Layers>
 					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture parentKey="LockBackground" setAllPoints="true" hidden="true">
-							<Color a="0.35" r="0.0" g="0.0" b="0.0b"/>
+							<Color a="0.35" r="0.0" g="0.0" b="0.0"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
@@ -1558,7 +1558,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="ItemWeapon" inherits="GarrisonFollowerItemButtonTemplate" hidden="true" frameLevel="20">>
+			<Frame parentKey="ItemWeapon" inherits="GarrisonFollowerItemButtonTemplate" hidden="true" frameLevel="20">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="38" y="110"/>
 				</Anchors>

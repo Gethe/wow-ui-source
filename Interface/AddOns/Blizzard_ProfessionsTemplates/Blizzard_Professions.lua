@@ -1,4 +1,3 @@
-g_professionsShowDebugInfo = false; -- FIXME remove
 
 Professions = {};
 
@@ -70,10 +69,7 @@ end
 
 function Professions.GetReagentQuantityInPossession(reagent)
 	if reagent.itemID then
-		local includeBank = true;
-		local ignoreUsable = true;
-		local includeReagentBank = true;
-		return GetItemCount(reagent.itemID, includeBank, ignoreUsable, includeReagentBank);
+		return ItemUtil.GetCraftingReagentCount(reagent.itemID);
 	elseif reagent.currencyID then
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
 		return currencyInfo.quantity;
@@ -181,7 +177,7 @@ function Professions.HasRecipeRanks(recipeInfo)
 end
 
 function Professions.InLocalCraftingMode()
-	return not (C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillLinked());
+	return not (C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember() or C_TradeSkillUI.IsTradeSkillLinked());
 end
 
 function Professions.SetupOutputIcon(outputIcon, transaction, outputItemInfo)
@@ -817,7 +813,7 @@ end
 
 function Professions.LayoutReagentSlots(reagentSlots, reagentsContainer, optionalReagentsSlots, optionalReagentsContainer, divider)
 	local stride = 1;
-	local spacing = 0;
+	local spacing = -5;
 	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing);
 	
 	local function Layout(slots, anchor, layout)
@@ -852,9 +848,9 @@ function Professions.LayoutFinishingSlots(finishingSlots, finishingSlotContainer
 			
 		local anchor;
 		if #finishingSlots == 1 then
-			anchor = CreateAnchor("TOP", finishingSlotContainer, "TOP", 60, -30)
+			anchor = CreateAnchor("TOP", finishingSlotContainer, "TOP", 60, -35)
 		else
-			anchor = CreateAnchor("TOPLEFT", finishingSlotContainer, "TOPLEFT", 70, -30)
+			anchor = CreateAnchor("TOPLEFT", finishingSlotContainer, "TOPLEFT", 70, -35)
 		end
 
 		AnchorUtil.GridLayout(finishingSlots, anchor, layout);
@@ -864,4 +860,10 @@ end
 function Professions.GetCreationCountMax(transaction)
 	-- IMPL
 	return 0;
+end
+
+function Professions.GetProfessionBackgroundAtlas(professionInfo)
+	local stylizedAtlasName = professionInfo ~= nil and professionInfo.parentProfessionName ~= nil and ("Professions-Recipe-Background-%s"):format(professionInfo.parentProfessionName);
+	local stylizedInfo = stylizedAtlasName and C_Texture.GetAtlasInfo(stylizedAtlasName);
+	return stylizedInfo and stylizedAtlasName or "Professions-Recipe-Background";
 end

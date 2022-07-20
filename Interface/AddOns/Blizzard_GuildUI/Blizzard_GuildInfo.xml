@@ -211,7 +211,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentHeader2" relativePoint="BOTTOMLEFT" x="14" y="-2"/>
 				</Anchors>
 				<ScrollChild>
-					<SimpleHTML name="GuildInfoMOTD" disallowFormatting="true">
+					<SimpleHTML name="GuildInfoMOTD">
 						<Size>
 							<AbsDimension x="284" y="42"/>
 						</Size>

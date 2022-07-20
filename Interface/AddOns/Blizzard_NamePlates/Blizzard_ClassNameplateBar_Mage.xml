@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_Mage.lua"/>
   
-	<Frame name="ClassNameplateBarArcaneChargeFrame" virtual="true">
+	<Frame name="ClassNameplateBarArcaneChargeFrame" mixin="ClassNameplateBarArcaneChargeMixin" virtual="true">
 		<Size x="22" y="22"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -19,30 +19,14 @@
 		</Animations>
 	</Frame>
 		
-	<Frame name="ClassNameplateBarMageFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarMage" ignoreParentScale="true">
+	<Frame name="ClassNameplateBarMageFrame" inherits="MageArcaneChargesFrameTemplate" mixin="ClassNameplateBar, ClassNameplateBarMage" ignoreParentScale="true">
 		<Size x="82" y="20"/>
-		<Frames>
-			<Frame parentKey="Charge1" parentArray="Charges" inherits="ClassNameplateBarArcaneChargeFrame">
-				<Anchors>
-					<Anchor point="LEFT" x="0" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Charge2" parentArray="Charges" inherits="ClassNameplateBarArcaneChargeFrame">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Charge1" relativePoint="RIGHT" x="-2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Charge3" parentArray="Charges" inherits="ClassNameplateBarArcaneChargeFrame">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Charge2" relativePoint="RIGHT" x="-2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Charge4" parentArray="Charges" inherits="ClassNameplateBarArcaneChargeFrame">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Charge3" relativePoint="RIGHT" x="-2" y="0"/>
-				</Anchors>
-			</Frame>
-		</Frames>
+		<KeyValues>
+			<KeyValue key="resourcePointTemplate" value="ClassNameplateBarArcaneChargeFrame" type="string"/>
+			<KeyValue key="resourcePointSetupFunc" value="ArcaneChargeMixin.Setup" type="global"/>
+			<KeyValue key="showBarFunc" value="ClassNameplateBarMage.Setup" type="global"/>
+			<KeyValue key="spacing" value="-1" type="number"/>
+		</KeyValues>
 	</Frame>
 </Ui>
 

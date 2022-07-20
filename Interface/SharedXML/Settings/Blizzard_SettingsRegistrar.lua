@@ -1,9 +1,4 @@
-local next = next;
 local securecallfunction = securecallfunction;
-
-local function SecureNext(elements, key)
-    return securecallfunction(next, elements, key);
-end
 
 SettingsRegistrar = {};
 
@@ -16,9 +11,10 @@ function SettingsRegistrar:OnLoad()
 		local function Callback()
 			self.allowCallRegistrants = true;
 
-			for index, registrant in SecureNext, self.registrants do
-				securecallfunction(registrant);
+			local function CallRegistrant(index, registrant)
+				registrant();
 			end
+			secureexecuterange(self.registrants, CallRegistrant);
 
 			C_EventUtils.NotifySettingsLoaded();
 		end

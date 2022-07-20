@@ -35,7 +35,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyV="MIDDLE" justifyH="MIDDLE">
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyV="MIDDLE" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.StatusBar" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TextBorder" relativePoint="BOTTOMRIGHT" x="0" y="2"/>

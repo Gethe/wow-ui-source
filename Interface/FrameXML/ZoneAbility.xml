@@ -64,7 +64,6 @@
 			</Anchors>
 		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</Button>
 
 	<Frame name="ZoneAbilityFrame" inherits="ZoneAbilityFrameTemplate" hidden="true"/>

@@ -30,7 +30,8 @@ Settings.CommitFlag = FlagsUtil.MakeFlags(
 	"UpdateWindow", 
 	"SaveBindings", 
 	"Revertable", 
-	"Apply"
+	"Apply",
+	"IgnoreApply"
 );
 Settings.CommitFlag.None = 0;
 
@@ -535,11 +536,10 @@ function Settings.CallWhenRegistered(variable, callback, owner)
 	else
 		local handle = nil;
 		local function OnInitialized(o, value)
-			callback(value);
-
 			if handle then
 				handle:Unregister();
 			end
+			callback(value);
 		end
 		handle = Settings.SetOnValueChangedCallback(variable, OnInitialized, owner);
 	end

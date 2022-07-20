@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsRecipeList.lua"/>
 
 	<Frame name="ProfessionsRecipeListTemplate" mixin="ProfessionsRecipeListMixin" virtual="true">
-		<Size x="240" y="505"/>
+		<Size x="300" y="505"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Backgroud" atlas="Professions-background-summarylist" setAllPoints="true"/>
@@ -21,7 +21,7 @@
 			</Frame>
 
 			<Frame name="ProfessionSkillLineDropDown" parentKey="SkillLineDropDown" inherits="UIDropDownMenuTemplate">
-				<Size x="238" y="30"/>
+				<Size x="298" y="30"/>
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
@@ -35,7 +35,7 @@
 			</DropDownToggleButton>
 
 			<EditBox parentKey="SearchBox" autoFocus="false" inherits="SearchBoxTemplate">
-				<Size x="120" y="20"/>
+				<Size x="180" y="20"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-3" y="0"/>
 				</Anchors>

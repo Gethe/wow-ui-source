@@ -244,7 +244,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="TokenDisplay" inherits="AuctionHouseItemDisplayTemplate">
+			<Button parentKey="TokenDisplay" mixin="WoWTokenDisplayMixin" inherits="AuctionHouseItemDisplayTemplate">
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-63"/>
 				</Anchors>

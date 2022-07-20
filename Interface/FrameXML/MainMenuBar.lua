@@ -19,6 +19,11 @@ function MainMenuBarMixin:OnLoad()
 	MainMenuBar.ActionBarPageNumber.Text:SetText(GetActionBarPage());
 	MicroButtonAndBagsBar:SetFrameLevel(self:GetFrameLevel()+2);
 	self:UpdateEndCaps();
+
+	-- Main bar always shows grid
+	for i, actionButton in ipairs(self.ActionButtons) do
+		actionButton:SetAttribute("showgrid", 1);
+	end
 end
 
 function MainMenuBarMixin:OnShow()
@@ -65,8 +70,6 @@ function MainMenuBarMixin:OnEvent(event, ...)
 		end
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
 		UpdateMicroButtons();
-	elseif ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
-		self:ChangeMenuBarSizeAndPosition(MultiBar2_IsVisible() and IsNormalActionBarState());
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self:UpdateEndCaps();
 	end

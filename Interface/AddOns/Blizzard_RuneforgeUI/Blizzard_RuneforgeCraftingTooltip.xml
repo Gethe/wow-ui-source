@@ -6,7 +6,7 @@
 		<Frames>
 			<Frame parentKey="PulseOverlay" inherits="TooltipBorderBackdropTemplate" useParentLevel="true" setAllPoints="true" hidden="true">
 				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="10">
+					<Layer level="OVERLAY" textureSubLevel="7">
 						<Texture parentKey="TopOverlay">
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="TOP" />

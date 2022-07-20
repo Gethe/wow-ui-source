@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonMissionTemplates.lua"/>
 
 	<Button name="GarrisonMissionFrameTabTemplate" virtual="true">
@@ -127,7 +127,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight" maxlines="3">
+				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight" maxLines="3">
 					<Size x="95" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.BG" x="10"/>
@@ -499,7 +499,7 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
-				<Alpha childKey="Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1" fromAlpha="0.75" toAlpha="0"/>
+				<Alpha childKey="Flash" duration="1.0" smoothing="IN_OUT" order="1" fromAlpha="0.75" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

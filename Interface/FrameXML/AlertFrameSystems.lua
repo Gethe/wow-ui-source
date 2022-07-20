@@ -970,7 +970,7 @@ function NewRecipeLearnedAlertFrame_OnClick(self, button, down)
 	local currentSkillLineInfo = C_TradeSkillUI.GetChildProfessionInfo();
 	if currentSkillLineInfo ~= nil and currentSkillLineInfo.professionID == self.skillLineID then
 		local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.recipeID);
-		ProfessionsFrame:SelectPage("Crafting");
+		ProfessionsFrame:SetTab(ProfessionsFrame.recipesTabID);
 		EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", recipeInfo);
 	elseif currBaseProfessionInfo ~= nil and currBaseProfessionInfo.professionID == self.tradeSkillID then
 		C_TradeSkillUI.SetProfessionChildSkillLineID(self.skillLineID);

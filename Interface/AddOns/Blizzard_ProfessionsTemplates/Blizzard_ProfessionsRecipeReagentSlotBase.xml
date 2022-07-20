@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 
 	<Script file="Blizzard_ProfessionsRecipeReagentSlotBase.lua"/>
 	
@@ -46,12 +46,6 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Animations>
-							<!-- HRO TODO: Remove? Seems unused -->
-							<AnimationGroup parentKey="AddIconPulseAnim" looping="BOUNCE">
-								<Alpha childKey="AddIcon" duration="0.8" fromAlpha="0" toAlpha="0.6"/>
-							</AnimationGroup>
-						</Animations>
 					</Frame>
 				</Frames>
 			</ItemButton>

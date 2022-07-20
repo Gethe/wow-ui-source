@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ChallengesUI.lua"/>
 	<Frame name="MythicPlusSeasonChangesNoticeTemplate" frameStrata="DIALOG" enableMouse="true" virtual="true">
 		<Layers>
@@ -119,21 +119,21 @@
 					</Anchors>
 					<Color r="0" g="0" b="0"/>
 				</FontString>
-				<FontString parentKey="SeasonDescription" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC1">
+				<FontString parentKey="SeasonDescription" font="SystemFont_Med3" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC1">
 					<Size x="380" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NewSeason" relativePoint="BOTTOM" y="-14"/>
 					</Anchors>
 					<Color r="0.2824" g="0.0157" b="0.0157"/>
 				</FontString>
-				<FontString parentKey="SeasonDescription2" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC2">
+				<FontString parentKey="SeasonDescription2" font="SystemFont_Med3" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true" text="MYTHIC_PLUS_SEASON_DESC2">
 					<Size x="380" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.SeasonDescription" relativePoint="BOTTOM" x="0" y="-14"/>
 					</Anchors>
 					<Color r="0.2824" g="0.0157" b="0.0157"/>
 				</FontString>
-				<FontString parentKey="SeasonDescription3" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
+				<FontString parentKey="SeasonDescription3" font="SystemFont_Med3" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true">
 					<Size x="380" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.SeasonDescription2" relativePoint="BOTTOM" x="0" y="-14"/>
@@ -418,7 +418,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="StartButton" inherits="UIPanelButtonTemplate" text="CHALLENGE_MODE_START_CHALLENGE" enabled="false">
+			<Button parentKey="StartButton" inherits="UIPanelButtonTemplate" text="CHALLENGE_MODE_START_CHALLENGE">
 				<Size x="120" y="24"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="20"/>
@@ -761,7 +761,7 @@
         </Scripts>
     </Frame>
 
-	<Frame name="ChallengesFrame" useParentLevel="true" setAllPoints="true" parent="PVEFrame" hidden="true">
+	<Frame name="ChallengesFrame" useParentLevel="true" setAllPoints="true" mixin="ChallengesFrameMixin" parent="PVEFrame" hidden="true">
 		<Frames>
 			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate">
 				<Anchors>
@@ -990,10 +990,10 @@
             </Layer>
         </Layers>
         <Scripts>
-            <OnLoad function="ChallengesFrame_OnLoad"/>
-            <OnEvent function="ChallengesFrame_OnEvent"/>
-            <OnShow function="ChallengesFrame_OnShow"/>
-            <OnHide function="ChallengesFrame_OnHide"/>
+            <OnLoad method="OnLoad"/>
+            <OnEvent method="OnEvent"/>
+            <OnShow method="OnShow"/>
+            <OnHide method="OnHide"/>
         </Scripts>
 	</Frame>
 </Ui>

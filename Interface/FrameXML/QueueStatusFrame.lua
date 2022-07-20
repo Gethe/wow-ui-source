@@ -102,7 +102,7 @@ function EyeTemplateMixin:StopAnimating()
 end
 
 ----------------------------------------------
----------QueueStatusMinimapButton-------------
+-------------QueueStatusButton----------------
 ----------------------------------------------
 
 QueueStatusButtonMixin = {};

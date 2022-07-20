@@ -37,7 +37,7 @@ function ProfessionsCrafterDetailsStatLineMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
-function ProfessionsCrafterDetailsStatLineMixin:InitBonusStat(label, desc, value, pctValue)
+function ProfessionsCrafterDetailsStatLineMixin:InitBonusStat(label, desc, value, pctValue, bonusPctValue)
 	self:SetLabel(label);
 	self:SetValue(self.displayAsPct and pctValue or value);
 
@@ -46,7 +46,7 @@ function ProfessionsCrafterDetailsStatLineMixin:InitBonusStat(label, desc, value
 		GameTooltip_SetTitle(GameTooltip, label);
 		GameTooltip_AddNormalLine(GameTooltip, desc);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_STAT_TT_FMT:format(label, value, pctValue));
+		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_STAT_TT_FMT:format(label, value, bonusPctValue));
 		GameTooltip:Show();
 	end);
 end
@@ -91,27 +91,25 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_CRAFTING_GENERIC_QUALITY_DESCRIPTION);
 		-- Item ID per quality
 		elseif self.recipeInfo.qualityItemIDs ~= nil then
-			-- HRO TODO: This should probably show the quality icon
-			GameTooltip:SetItemByID(self.recipeInfo.qualityItemIDs[qualityIndex]);
+			GameTooltip:SetItemByIDWithQuality(self.recipeInfo.qualityItemIDs[qualityIndex], self.recipeInfo.qualityIDs[qualityIndex]);
 		-- Item modified by quality
 		elseif self.recipeInfo.qualityIlvlBonuses ~= nil then
 			GameTooltip_SetTitle(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUSES:format(self.itemName));
-			for index, ilvlBonus in ipairs(self.recipeInfo.qualityIlvlBonuses) do
-				local atlasSize = 25;
-				local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(index), atlasSize, atlasSize);
-
-				local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeInfo.recipeID);
-				if outputItemInfo.hyperlink then
-					local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
-					if item:IsItemDataCached() then
+			local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeInfo.recipeID, self.transaction:CreateOptionalCraftingReagentInfoTbl());
+			if outputItemInfo.hyperlink then
+				local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
+				if item:IsItemDataCached() then
+					for index, ilvlBonus in ipairs(self.recipeInfo.qualityIlvlBonuses) do
+						local atlasSize = 25;
+						local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(index), atlasSize, atlasSize);
 						GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUS_INCR:format(atlasMarkup, item:GetCurrentItemLevel() + ilvlBonus, ilvlBonus));
-					else
-						local continuableContainer = ContinuableContainer:Create();
-						continuableContainer:AddContinuable(item);
-						continuableContainer:ContinueOnLoad(function()
-							OnCapEntered(cap, isRight);
-						end);
 					end
+				else
+					local continuableContainer = ContinuableContainer:Create();
+					continuableContainer:AddContinuable(item);
+					continuableContainer:ContinueOnLoad(function()
+						OnCapEntered(cap, isRight);
+					end);
 				end
 			end
 		end
@@ -131,47 +129,49 @@ UseTest1 = true;
 
 function ProfessionsRecipeCrafterDetailsMixin:OnEvent(event, ...)
 	if event == "TRADE_SKILL_ITEM_CRAFTED_RESULT" then
-		if UseTest1 then
-			self:TestMe1();
-		else
-			self:TestMe2();
-		end
+		local resultData = ...;
+		self:HandleCritAnimation(resultData);
 	end
 end
 
-function ProfessionsRecipeCrafterDetailsMixin:TestMe1()
+function ProfessionsRecipeCrafterDetailsMixin:QuickFinishAnimation()
 	self.QualityMeter.Center.Fill.Test1.Anim:Play();
 	self.QualityMeter.Center.Fill.Flare.Anim:Play();
 end
 
-function ProfessionsRecipeCrafterDetailsMixin:TestMe2()
+function ProfessionsRecipeCrafterDetailsMixin:HandleCritAnimation(resultData)
 	self.QualityMeter.Center.Fill.Test2:SetAlpha(1);
 	self.QualityMeter.Center.Fill.Flare2:SetAlpha(0);
 	self.QualityMeter.Center.Test2b:SetAlpha(0);
 
-	local width = self.QualityMeter.Center.Fill:GetWidth();
+	local startingWidth = self.QualityMeter.Center.Fill:GetWidth();
 	local unitsPerSecond = 375;
 
 	local sequence = CreateInterpolationSequence();
 	do
 		-- Resize primary fill left to right
 		local v1, v2 = 0, 1;
-		local t = math.min(1, width / unitsPerSecond);
+		local t = math.min(1, startingWidth / unitsPerSecond);
 		sequence:Add(v1, v2, t, InterpolatorUtil.InterpolateLinear, function(value)
-			self.QualityMeter.Center.Fill.Test2:SetWidth(width * value);
+			self.QualityMeter.Center.Fill.Test2:SetWidth(startingWidth * value);
 		end);
 	end
 
-	local crit = math.random(1, 2) == 2;
-	if crit then
+	if resultData.isCrit then
 		do
 			-- Resize secondary fill left ro right.
-			local critUnits = 25;
+			local skillRange = self.operationInfo.upperSkillTreshold - self.operationInfo.lowerSkillThreshold;
+			if skillRange == 0 then
+				return;
+			end
+			local finalSkillPct = math.min((self.operationInfo.baseSkill + self.operationInfo.bonusSkill + resultData.critBonusSkill - self.operationInfo.lowerSkillThreshold) / skillRange, 1.0);
+			local finalWidth = self.QualityMeter.Center:GetWidth() * finalSkillPct;
+			local extraCritWidth = finalWidth - startingWidth;
 			local modifier = .12;
 			local v1, v2 = 0, 1;
-			local t = (critUnits / unitsPerSecond) / modifier;
+			local t = (extraCritWidth / unitsPerSecond) / modifier;
 			sequence:Add(v1, v2, t, InterpolatorUtil.InterpolateEaseOut, function(value)
-				self.QualityMeter.Center.Fill.Test2:SetWidth(width + (value * critUnits));
+				self.QualityMeter.Center.Fill.Test2:SetWidth(startingWidth + (value * extraCritWidth));
 				self.QualityMeter.Center.Test2b:SetAlpha(value * .6);
 				self.QualityMeter.Center.Fill.Flare2:SetAlpha(value * .6);
 				self.QualityMeter.Center.Test2b:Show();
@@ -202,10 +202,16 @@ function ProfessionsRecipeCrafterDetailsMixin:TestMe2()
 	sequence:Play();
 end
 
+function ProfessionsRecipeCrafterDetailsMixin:SetTransaction(transaction)
+	self.transaction = transaction;
+end
+
 function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQualities)
 	if self.recipeInfo == nil or operationInfo == nil then
 		return;
 	end
+
+	self.operationInfo = operationInfo;
 
 	self.statLinePool:ReleaseAll();
 
@@ -225,7 +231,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 	local nextBonusStatYOfs = supportsQualities and 0 or -25;
 	for _, bonusStat in ipairs(operationInfo.bonusStats) do
 		local statLine = self.statLinePool:Acquire();
-		statLine:InitBonusStat(bonusStat.bonusStatName, bonusStat.ratingDescription, bonusStat.bonusStatValue, bonusStat.ratingPct);
+		statLine:InitBonusStat(bonusStat.bonusStatName, bonusStat.ratingDescription, bonusStat.bonusStatValue, bonusStat.ratingPct, bonusStat.bonusRatingPct);
 
 		statLine:SetPoint("TOPLEFT", nextBonusStatParent, "BOTTOMLEFT", 0, nextBonusStatYOfs);
 		statLine:SetPoint("TOPRIGHT", nextBonusStatParent, "BOTTOMRIGHT", 0, nextBonusStatYOfs);
@@ -238,10 +244,6 @@ end
 
 function ProfessionsRecipeCrafterDetailsMixin:SetOutputItemName(itemName)
 	self.itemName = itemName;
-end
-
-function ProfessionsRecipeCrafterDetailsMixin:SetQuality(quality)
-	self.QualityMeter:SetQuality(quality);
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:Reset()
@@ -284,8 +286,8 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 		self.Right.Icon:SetAtlas(Professions.GetIconForQuality(self.qualityInteger + 1), TextureKitConstants.UseAtlasSize);
 	end
 
-	local partialQuality = math.fmod(quality, 1);
-	local hasPartial = partialQuality ~= 0;
+	self.partialQuality = math.fmod(quality, 1);
+	local hasPartial = self.partialQuality ~= 0;
 	local centerWidth = self.Center:GetWidth();
 	self.Center.Fill:SetShown(hasPartial);
 	if hasPartial then
@@ -294,17 +296,10 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 	end
 
 	self.Border.Marker:ClearAllPoints();
-	self.Border.Marker:SetPoint("CENTER", self.Center.Fill, "LEFT", math.floor(centerWidth * partialQuality), 0);
+	self.Border.Marker:SetPoint("CENTER", self.Center.Fill, "LEFT", math.floor(centerWidth * self.partialQuality), 0);
 end
 
 function ProfessionsQualityMeterMixin:Reset()
 	self.Center.Fill2:SetMinMaxValues(0, 1);
 	self.Center.Fill2:SetValue(0);
-end
-
-function ProfessionsQualityMeterMixin:HandleCrit()
-	local seconds = .5;
-	self.interpolator:Interpolate(0, 1.0, seconds, function(percentage)
-		self.Center.Fill2:SetValue(percentage);
-	end);
 end

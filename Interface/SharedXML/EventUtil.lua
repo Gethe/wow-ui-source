@@ -70,8 +70,8 @@ function EventUtil.RegisterOnceFrameEventAndCallback(frameEvent, callback, ...)
 			end
 		end
 
-		callback(...);
 		handle:Unregister();
+		callback(...);
 	end
 
 	handle = EventRegistry:RegisterFrameEventAndCallbackWithHandle(frameEvent, CallbackWrapper);

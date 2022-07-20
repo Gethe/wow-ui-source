@@ -702,23 +702,19 @@ function GlueDialog_OnHide(self)
 end
 
 function GlueDialog_OnClick(self, button, down)
-	local index = self:GetID();
 	GlueDialog:Hide();
+	local index = self:GetID();
+	local info = GlueDialogTypes[GlueDialog.which]
+	local func;
 	if ( index == 1 ) then
-		local OnAccept = GlueDialogTypes[GlueDialog.which].OnAccept;
-		if ( OnAccept ) then
-			OnAccept();
-		end
+		func = info.OnAccept or info.OnButton1;
 	elseif ( index == 2 ) then
-		local OnCancel = GlueDialogTypes[GlueDialog.which].OnCancel;
-		if ( OnCancel ) then
-			OnCancel();
-		end
+		func = info.OnCancel or info.OnButton2;
 	elseif ( index == 3 ) then
-		local OnAlt = GlueDialogTypes[GlueDialog.which].OnAlt;
-		if ( OnAlt ) then
-			OnAlt();
-		end
+		func = info.OnAlt or info.OnButton3;
+	end
+	if ( func ) then 
+		func();
 	end
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end

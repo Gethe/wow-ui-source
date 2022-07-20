@@ -45,6 +45,7 @@
 		<KeyValues>
 			<KeyValue key="layoutParent" value="UIParentBottomManagedFrameContainer" type="global"/>
 			<KeyValue key="align" value="center" type="string"/>
+			<KeyValue key="hideWhenActionBarIsOverriden" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>
 
@@ -52,6 +53,7 @@
 		<KeyValues>
 			<KeyValue key="layoutParent" value="UIParentRightManagedFrameContainer" type="global"/>
 			<KeyValue key="align" value="right" type="string"/>
+			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
 		</KeyValues>
 	</Frame>
 

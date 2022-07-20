@@ -118,7 +118,7 @@
 		<Size x="286" y="222"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="OtherSpecializationsLabel" inherits="GameFontNormal" text="RUNEFORGE_LEGENDARY_POWER_LIST_OTHER_SPEC_LABEL" hidde="true">
+				<FontString parentKey="OtherSpecializationsLabel" inherits="GameFontNormal" text="RUNEFORGE_LEGENDARY_POWER_LIST_OTHER_SPEC_LABEL" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

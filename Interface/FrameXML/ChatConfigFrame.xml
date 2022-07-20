@@ -187,7 +187,7 @@
 			</Button>
 			<Frame parentKey="ArtOverlay" setAllPoints="true">
 				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="100">
+					<Layer level="OVERLAY" textureSubLevel="7">
 						<Texture parentKey="GrayedOut" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="6"/>

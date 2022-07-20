@@ -115,10 +115,10 @@ local function CreateSampleOrders(quantity, ...)
 end
 
 do
-	local orders = CreateSampleOrders(20, 364044, 367623, 367601, 367605); 
-	for index, order in ipairs(orders) do
-		C_TradeSkillUI.ListCraftingOrder(order);
-	end
+	--local orders = CreateSampleOrders(20, 364044, 367623, 367601, 367605); 
+	--for index, order in ipairs(orders) do
+	--	C_TradeSkillUI.ListCraftingOrder(order);
+	--end
 end
 
 do

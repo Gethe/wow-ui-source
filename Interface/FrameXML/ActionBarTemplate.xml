@@ -3,7 +3,7 @@
 	<Script file="ActionBar.lua"/>
 
 	<Frame name="ActionBarButtonSpacerTemplate" parentArray="ButtonSpacers" hidden="true" virtual="true">
-		<Size x="35" y="35"/>
+		<Size x="45" y="45"/>
 	</Frame>
 
 	<Frame name="ActionBarTemplate" inherits="ResizeLayoutFrame" virtual="true" mixin="ActionBarMixin">

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_Wardrobe.lua"/>
 
 	<DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemsModelMixin" virtual="true">
@@ -289,7 +289,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 					<Animations>
-						<AnimationGroup parentKey="Anim" looping="repeat">
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
 							<Alpha duration="1" order="1" fromAlpha="0.8" toAlpha="1"/>
 							<Alpha duration="1" order="2" fromAlpha="1" toAlpha="0.8"/>
 						</AnimationGroup>
@@ -779,7 +779,7 @@
 							</Layer>
 						</Layers>
 						<Animations>
-							<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="REPEAT">
 								<Translation childKey="Wisp1" duration="2" order="1" offsetX="-70" offsetY="0"/>
 								<Alpha childKey="Wisp1" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp1" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -811,11 +811,11 @@
 								<Alpha childKey="Wisp8" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp8" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0" endDelay="0.4"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="REPEAT">
 								<Alpha childKey="Glowframe" duration="1.2" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Glowframe" startDelay="1.2" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="REPEAT">
 								<Translation childKey="Wisp9" duration="4.4" order="1" offsetX="-70" offsetY="0"/>
 								<Alpha childKey="Wisp9" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp9" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -832,7 +832,7 @@
 								<Alpha childKey="Wisp12" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp12" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="REPEAT">
 								<Scale childKey="Smoke1" duration="3.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
 								<Alpha childKey="Smoke1" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
 								<Alpha childKey="Smoke1" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
@@ -840,7 +840,7 @@
 								<Alpha childKey="Smoke2" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
 								<Alpha childKey="Smoke2" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="REPEAT">
 								<Scale childKey="Smoke3" duration="5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
 								<Alpha childKey="Smoke3" duration="1.4" order="1" fromAlpha="0" toAlpha="0.5"/>
 								<Alpha childKey="Smoke3" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
@@ -1206,7 +1206,7 @@
 							</Layer>
 						</Layers>
 						<Animations>
-							<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="REPEAT">
 								<Translation childKey="Wisp1" duration="2" order="1" offsetX="-121" offsetY="0"/>
 								<Alpha childKey="Wisp1" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp1" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -1238,11 +1238,11 @@
 								<Alpha childKey="Wisp8" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp8" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0" endDelay="0.4"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="REPEAT">
 								<Alpha childKey="Glowframe" duration="1.2" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Glowframe" startDelay="1.2" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="REPEAT">
 								<Translation childKey="Wisp9" duration="4.4" order="1" offsetX="-121" offsetY="0"/>
 								<Alpha childKey="Wisp9" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp9" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -1259,7 +1259,7 @@
 								<Alpha childKey="Wisp12" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp12" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="REPEAT">
 								<Scale childKey="Smoke1" duration="3.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
 								<Alpha childKey="Smoke1" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
 								<Alpha childKey="Smoke1" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
@@ -1267,7 +1267,7 @@
 								<Alpha childKey="Smoke2" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
 								<Alpha childKey="Smoke2" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="REPEAT">
 								<Scale childKey="Smoke3" duration="5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
 								<Alpha childKey="Smoke3" duration="1.4" order="1" fromAlpha="0" toAlpha="0.5"/>
 								<Alpha childKey="Smoke3" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
@@ -1608,10 +1608,7 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="Anim">
-						<Alpha childKey="OuterGlow" duration="0.15" change="1" order="1"/>
-						<Alpha childKey="OuterGlow" duration="0.15" change="-1" order="2"/>
 						<Scale childKey="Transition" duration="0.2" scaleX="1.381" scaleY="1.381" order="2"/>
-						<Alpha childKey="Glow" change="-1.0" duration="0.2" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():GetParent():OnAnimFinished();

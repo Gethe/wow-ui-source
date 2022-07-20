@@ -1152,7 +1152,7 @@ function UIButtonMixin:OnEnter()
 
 	local defaultTooltipAnchor = "ANCHOR_RIGHT";
 	if self:IsEnabled() then
-		if self.tooltipTitl or self.tooltipText then
+		if self.tooltipTitle or self.tooltipText then
 			local tooltip = GetAppropriateTooltip();
 			tooltip:SetOwner(self, self.tooltipAnchor or defaultTooltipAnchor, self.tooltipOffsetX, self.tooltipOffsetY);
 

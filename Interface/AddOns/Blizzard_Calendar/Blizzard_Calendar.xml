@@ -952,8 +952,8 @@
 							<KeyValue key="hideBackground" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPRIGHT" parentKey="$parent.ScrollingEditBox" relativePoint="TOPRIGHT" x="-2" y="-1"/>
-							<Anchor point="BOTTOMRIGHT" parentKey="$parent.ScrollingEditBox" relativePoint="BOTTOMRIGHT"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.ScrollingEditBox" relativePoint="TOPRIGHT" x="-2" y="-1"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollingEditBox" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>

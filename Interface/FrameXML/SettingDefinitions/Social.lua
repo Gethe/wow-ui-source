@@ -11,6 +11,12 @@ end
 
 TwitterPanelMixin = CreateFromMixins(SettingsCheckBoxControlMixin);
 
+function TwitterPanelMixin:OnLoad()
+	SettingsCheckBoxControlMixin.OnLoad(self);
+	self.Button:SetPoint("TOPLEFT", self.CheckBox, "BOTTOMLEFT");
+	self.LoginStatus:SetPoint("LEFT", self.CheckBox, "RIGHT");
+end
+
 function TwitterPanelMixin:Init(initializer)
 	SettingsCheckBoxControlMixin.Init(self, initializer);
 	
@@ -196,7 +202,7 @@ local function Register()
 					local enabled, linked, screenName = ...;
 					if enabled then
 						listener.linked = linked;
-						if (linked) then
+						if linked then
 							listener.screenName = "@"..screenName;
 						end
 						

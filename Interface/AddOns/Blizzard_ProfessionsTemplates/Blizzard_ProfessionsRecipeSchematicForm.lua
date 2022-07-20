@@ -5,7 +5,7 @@ cooldownFormatter:Init(
 	SecondsFormatterConstants.DontRoundUpLastUnit, 
 	SecondsFormatterConstants.DontConvertToLower);
 
-local LayoutEntry = EnumUtil.MakeEnum("Cooldown", "Description", "NextRank", "Source", "Reagents");
+local LayoutEntry = EnumUtil.MakeEnum("Cooldown", "Description", "Source");
 
 ProfessionsRecipeSchematicFormMixin = CreateFromMixins(CallbackRegistryMixin);
 
@@ -32,10 +32,11 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		FramePool_HideAndClearAnchors(pool, slot);
 	end
 
+	self.Stars:SetPoint("LEFT", self.OutputText, "RIGHT", 10, -1);
+	self.RecipeLevelBar:SetPoint("LEFT", self.OutputText, "RIGHT", 10, -1);
+
 	self.reagentSlotPool = CreateFramePool("FRAME", self, "ProfessionsReagentSlotTemplate", PoolReset);
 	self.selectedRecipeLevels = {};
-
-	self.NextRankText:SetText(TRADESKILL_NEXT_RANK_HEADER);
 
 	self.AllocateBestQualityCheckBox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
 	self.AllocateBestQualityCheckBox:SetScript("OnClick", function(button, buttonName, down)
@@ -45,7 +46,23 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.UseBestQualityModified, checked);
 		
 		self:UpdateAllSlots();
+
+		-- Trick to re-fire the OnEnter script to update the tooltip.
+		self:Hide();
+		self:Show();
 	end);
+
+	self.AllocateBestQualityCheckBox:SetScript("OnEnter", function(button)
+		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+		local checked = button:GetChecked();
+		if checked then
+			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_USE_LOWEST_QUALITY_REAGENTS);
+		else
+			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_USE_HIGHEST_QUALITY_REAGENTS);
+		end
+		GameTooltip:Show();
+	end);
+	self.AllocateBestQualityCheckBox:SetScript("OnLeave", GameTooltip_Hide);
 
 	self.TrackRecipeCheckBox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_TRACK_RECIPE));
 	self.TrackRecipeCheckBox:SetScript("OnClick", function(button, buttonName, down)
@@ -64,6 +81,8 @@ end
 
 function ProfessionsRecipeSchematicFormMixin:OnShow()
     FrameUtil.RegisterFrameForEvents(self, ProfessionsRecipeFormEvents);
+
+	self:UpdateDetailsStats();
 end
 
 function ProfessionsRecipeSchematicFormMixin:OnHide()
@@ -90,7 +109,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	local stride = 1;
 	local xPadding = 0;
 	local yPadding = 0;
-	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self, "TOPLEFT", 26, -130);
+	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self.OutputIcon, "BOTTOMLEFT", 7, -10);
 	local organizer = AnchorUtil.CreateGridLayoutOrganizer(stride, anchor, xPadding, yPadding);
 
 	self.OutputSubText:Hide();
@@ -102,10 +121,20 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	self.RecipeLevelSelector:Hide();
 	self.Cooldown:Hide();
 	self.Cooldown:SetText("");
-	self.NextRankText:Hide();
-	self.SourceText:Hide();
+	self.RecipeSourceButton:Hide();
 
 	self.currentRecipeInfo = recipeInfo;
+
+	local hasRecipe = recipeInfo ~= nil;
+
+	for _, frame in ipairs(self.recipeInfoFrames) do
+		frame:SetShown(hasRecipe);
+	end
+
+	if not hasRecipe then
+		return;
+	end
+
 	local recipeID = recipeInfo.recipeID;
 	self.recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, self:GetCurrentRecipeLevel());
 
@@ -139,7 +168,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		return true;
 	end
 
-	local canTrack = Professions.InLocalCraftingMode() and not C_TradeSkillUI.IsRuneforging();
 	self.TrackRecipeCheckBox:SetShown(CanTrack());
 	self.TrackRecipeCheckBox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeInfo.recipeID));
 
@@ -149,14 +177,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		-- auto-allocate the reagents. We can recalculate new allocations for this.
 		Professions.AllocateAllBasicReagents(self.transaction, Professions.ShouldAllocateBestQualityReagents());
 		self:SetManuallyAllocated(false);
-	end
-
-	local requiredToolsString = BuildColoredListString(C_TradeSkillUI.GetRecipeTools(recipeID));
-	if requiredToolsString then
-		self.RequiredTools:SetFormattedText(PROFESSIONS_REQUIRED_TOOLS, requiredToolsString);
-		self.RequiredTools:Show();
-	else
-		self.RequiredTools:Hide();
 	end
 
 	local cooldown, isDayCooldown, charges, maxCharges = C_TradeSkillUI.GetRecipeCooldown(recipeID);
@@ -191,6 +211,32 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		organizer:Add(self.Cooldown, LayoutEntry.Cooldown);
 	end
 
+	local sourceText, sourceTextIsForNextRank;
+	if not recipeInfo.learned then
+		sourceText = C_TradeSkillUI.GetRecipeSourceText(recipeID);
+	elseif recipeInfo.nextRecipeID then
+		sourceText = C_TradeSkillUI.GetRecipeSourceText(recipeInfo.nextRecipeID);
+		sourceTextIsForNextRank = true;
+	end
+
+	if sourceText then
+		if sourceTextIsForNextRank then
+			self.RecipeSourceButton.Text:SetText(TRADESKILL_NEXT_RANK_HEADER);
+		else
+			self.RecipeSourceButton.Text:SetText(TRADESKILL_UNLEARNED_RECIPE_HEADER);
+		end
+
+		self.RecipeSourceButton:SetScript("OnEnter", function()
+			GameTooltip:SetOwner(self.RecipeSourceButton, "ANCHOR_RIGHT");
+			GameTooltip_AddHighlightLine(GameTooltip, sourceText);
+			GameTooltip:SetMinimumWidth(400);
+			GameTooltip:Show();
+		end);
+
+		self.RecipeSourceButton:Show();
+		organizer:Add(self.RecipeSourceButton, LayoutEntry.Source);
+	end
+
 	if self.loader then
 		self.loader:Cancel();
 	end
@@ -212,9 +258,13 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		if outputItemInfo.hyperlink then
 			local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 			self.OutputText:SetText(item:GetItemName());
+			self.OutputText:SetWidth(300);
+			self.OutputText:SetWidth(self.OutputText:GetStringWidth());
 			self.OutputText:SetTextColor(item:GetItemQualityColorRGB());
 		else
 			self.OutputText:SetText(self.recipeSchematic.name);
+			self.OutputText:SetWidth(300);
+			self.OutputText:SetWidth(self.OutputText:GetStringWidth());
 			self.OutputText:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		end
 
@@ -226,7 +276,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	self.OutputIcon:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(self.OutputIcon, "ANCHOR_RIGHT");
 
-		local optionalReagents = self.transaction:CreateOptionalCraftingReagentInfoTbl();
+		local optionalReagents = self.transaction:CreateCraftingReagentInfoTbl();
 		GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, optionalReagents, self:GetCurrentRecipeLevel());
 	end);
 	self.OutputIcon:SetScript("OnLeave", GameTooltip_Hide);
@@ -236,32 +286,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		local link = C_TradeSkillUI.GetRecipeItemLink(recipeID);
 		HandleModifiedItemClick(link);
 	end);
-
-	local sourceText, sourceTextIsForNextRank;
-	if not recipeInfo.learned then
-		sourceText = C_TradeSkillUI.GetRecipeSourceText(recipeID);
-	elseif recipeInfo.nextRecipeID then
-		sourceText = C_TradeSkillUI.GetRecipeSourceText(recipeInfo.nextRecipeID);
-		if sourceText then
-			sourceTextIsForNextRank = true;
-			-- replace the color at the beginning of the sourceText
-			sourceText = string.gsub(sourceText, "^|c%x%x%x%x%x%x", "|cC79C6E");
-			-- replace color after a newline
-			sourceText = string.gsub(sourceText, "|n|c%x%x%x%x%x%x", "|n|cC79C6E");
-		end
-	end
-
-	if sourceText then
-		self.SourceText:SetText(sourceText);
-		self.SourceText:Show();
-		
-		if sourceTextIsForNextRank then
-			self.NextRankText:Show();
-			organizer:Add(self.NextRankText, LayoutEntry.NextRank);
-		end
-
-		organizer:Add(self.SourceText, LayoutEntry.Source);
-	end
 
 	if Professions.HasRecipeRanks(recipeInfo) then
 		local rank = Professions.GetRecipeRankLearned(recipeInfo);
@@ -273,7 +297,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		end);
 
 		for index, star in ipairs(self.Stars.Stars) do
-			star.Earned:SetShown(index <= rank);	
+			star.Earned:SetShown(index <= rank);
 		end
 
 		self.Stars:Show();
@@ -289,9 +313,20 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		self.RecipeLevelBar:Show();
 	end
 
+	local requiredToolsString = BuildColoredListString(C_TradeSkillUI.GetRecipeTools(recipeID));
+	if requiredToolsString then
+		self.RequiredTools:SetFormattedText(PROFESSIONS_REQUIRED_TOOLS, requiredToolsString);
+		self.RequiredTools:Show();
+	else
+		self.RequiredTools:Hide();
+	end
+
 	self.reagentSlotPool:ReleaseAll();
 	self.reagentSlots = {};
-	
+	if self.salvageSlot then
+		self.salvageSlot:Hide();
+	end
+
 	local slotParents =
 	{
 		[Enum.CraftingReagentType.Basic] = self.Reagents, 
@@ -319,7 +354,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		slot:Show();
 
 		if reagentType == Enum.CraftingReagentType.Basic then
-			if Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
+			if Professions.InLocalCraftingMode() and Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
 				slot.Button:SetScript("OnClick", function(button, buttonName, down)
 					if IsShiftKeyDown() then
 						local qualityIndex = Professions.FindFirstQualityAllocated(self.transaction, reagentSlotSchematic) or 1;
@@ -399,6 +434,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 						local flyout = ToggleProfessionsItemFlyout(slot.Button);
 						if flyout then
 							local function OnFlyoutItemSelected(o, flyout, item)
+								if ItemUtil.GetCraftingReagentCount(item:GetItemID()) == 0 then
+									return;
+								end
+
 								local reagent = Professions.CreateCraftingReagent(item:GetItemID(), nil);
 								self.transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
 								self:SetManuallyAllocated(true);
@@ -438,6 +477,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 				local flyout = ToggleProfessionsItemFlyout(self.salvageSlot.Button);
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, item)
+						if ItemUtil.GetCraftingReagentCount(item:GetItemID()) == 0 then
+							return;
+						end
+
 						self.transaction:SetSalvageAllocation(item);
 						self:SetManuallyAllocated(true);
 
@@ -446,16 +489,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 						self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
 					end
 		
-					local flyoutItemIDs = {};
 					local itemIDs = C_TradeSkillUI.GetSalvagableItemIDs(recipeID);
-					ItemUtil.IteratePlayerInventory(function(itemLocation)
-						local item = Item:CreateFromItemLocation(itemLocation);
-						if tContains(itemIDs, item:GetItemID()) then
-							table.insert(flyoutItemIDs, item:GetItemID());
-						end
-					end);
-		
-					flyout:Init(self.salvageSlot.Button, nilTransaction, recipeID, flyoutItemIDs);
+					flyout:Init(self.salvageSlot.Button, nilTransaction, recipeID, itemIDs);
 					flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
 				end
 			elseif buttonName == "RightButton" then
@@ -508,17 +543,19 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	
 	if basicSlots and #basicSlots > 0 then
 		self.Reagents:Show();
-		organizer:Add(self.Reagents, LayoutEntry.Reagents);
 	else
 		self.Reagents:Hide();
 	end
 
 	-- fixme learned
-	if learned and recipeInfo.supportsCraftingStats then
-		Professions.LayoutFinishingSlots(self:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing), self.Details.FinishingReagentSlotContainer);
+	local operationInfo = C_TradeSkillUI.GetCraftingOperationInfo(self.currentRecipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl());
+	local finishingSlots = self:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing);
+	local hasFinishingSlots = finishingSlots ~= nil;
+	if learned and Professions.InLocalCraftingMode() and recipeInfo.supportsCraftingStats and ((operationInfo ~= nil and #operationInfo.bonusStats > 0) or recipeInfo.supportsQualities or hasFinishingSlots) then
+		Professions.LayoutFinishingSlots(finishingSlots, self.Details.FinishingReagentSlotContainer);
 		
 		self.Details:SetOutputItemName(recipeInfo.name);
-		self.Details.FinishingReagentSlotContainer:SetShown(self:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing) ~= nil);
+		self.Details.FinishingReagentSlotContainer:SetShown(hasFinishingSlots);
 		self.Details:SetRecipeInfo(recipeInfo);
 		
 		if not self.transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
@@ -529,6 +566,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		end
 
 		self.Details:Show();
+
+		self.Details:SetTransaction(self.transaction);
 		self:UpdateDetailsStats();
 	else
 		self.AllocateBestQualityCheckBox:Hide();

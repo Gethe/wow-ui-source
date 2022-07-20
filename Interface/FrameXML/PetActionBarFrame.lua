@@ -327,8 +327,6 @@ end
 PetActionButtonMixin = {}
 
 function PetActionButtonMixin:OnLoad()
-	self.HotKey:ClearAllPoints();
-	self.HotKey:SetPoint("TOPRIGHT", -2, -2);
 	self:RegisterForDrag("LeftButton", "RightButton");
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
