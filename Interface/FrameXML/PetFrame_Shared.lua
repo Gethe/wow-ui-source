@@ -38,6 +38,10 @@ function PetFrame_OnLoad (self)
 		ToggleDropDownMenu(1, nil, PetFrameDropDown, "PetFrame", 44, 8);
 	end
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
+
+	if( PetFrame_AdjustPoint ) then
+		PetFrame_AdjustPoint(self);
+	end
 end
 
 function PetFrame_Update (self, override)

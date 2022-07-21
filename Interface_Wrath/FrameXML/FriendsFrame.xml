@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="../../Interface/FrameXML/FriendsFrame_Shared.lua"/>
-	<Script file="FriendsFrame_Vanilla.lua"/>
+	<Script file="FriendsFrame_Wrath.lua"/>
 
 <!-- Patchwerk
 TRAVEL PASS
@@ -642,7 +642,7 @@ TRAVEL PASS
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT">
 							<Offset>
@@ -670,6 +670,64 @@ TRAVEL PASS
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
+	<Button name="GuildBankTabPermissionsTabTemplate" virtual="true">
+		<Size x="26" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\GuildBankFrame\UI-GuildFrame-PermissionTab">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				GuildBankTabPermissionsTab_OnClick(self:GetID());
+			</OnClick>
+			<OnEnter>
+				if(self.tooltip) then
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(self.tooltip);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<ButtonText name="$parentText" parentKey="Text">
+			<Size>
+				<AbsDimension x="50" y="8"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER" relativeTo="$parentBackground">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentBackground">
+					<Offset>
+						<AbsDimension x="6" y="0"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parentBackground">
+					<Offset>
+						<AbsDimension x="-7" y="-7"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
 	<Button name="FriendsFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
@@ -2631,17 +2689,18 @@ TRAVEL PASS
 					<OnHide>
 						GuildControlPopupFrame:Hide();
 						GuildMemberDetailFrame:Hide();
+						GuildEventLogFrame:Hide();
 					</OnHide>
 				</Scripts>
 			</Frame>
 			<Frame name="GuildControlPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 				<Size>
-					<AbsDimension x="297" y="298"/>
+					<AbsDimension x="320" y="457"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-1" y="-52"/>
+							<AbsDimension x="-1" y="6"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2660,11 +2719,7 @@ TRAVEL PASS
 								<AbsDimension x="64" y="256"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="256" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPRIGHT"/>
 							</Anchors>
 						</Texture>
 						<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
@@ -2672,11 +2727,7 @@ TRAVEL PASS
 								<AbsDimension x="256" y="64"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-256"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
 						<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
@@ -2684,13 +2735,38 @@ TRAVEL PASS
 								<AbsDimension x="64" y="64"/>
 							</Size>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="256" y="-256"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
+						<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
+							<Size>
+								<AbsDimension x="256" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="0" y="-256"/>
+								</Anchor>
+								<Anchor point="BOTTOMLEFT">
+									<Offset x="0" y="64"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0.3125" bottom="1"/>
+						</Texture>
+						<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
+							<Size>
+								<AbsDimension x="64" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset x="0" y="-256"/>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset x="0" y="64"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0.3125" bottom="1"/>
+						</Texture>
+
 						<FontString inherits="GameFontNormal" text="GUILDCONTROL_SELECTRANK">
 							<Anchors>
 								<Anchor point="TOP">
@@ -2719,7 +2795,7 @@ TRAVEL PASS
 						<Anchors>
 							<Anchor point="TOPRIGHT">
 								<Offset>
-									<AbsDimension x="0" y="0"/>
+									<AbsDimension x="-22" y="1"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2863,6 +2939,67 @@ TRAVEL PASS
 									</Anchor>
 								</Anchors>
 							</CheckButton>
+							<Frame name="GuildControlWithdrawGold">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildControlPopupFrameCheckbox13" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="-16"/>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="GuildControlWithdrawGoldText" inherits="GameFontNormalSmall" text="GUILDCONTROL_WITHDRAW_GOLD">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</FontString>
+										<FontString name="GuildControlWithdrawGoldAmountText" inherits="GameFontNormalSmall" text="GOLD_PER_DAY">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="GuildControlWithdrawGoldText" relativePoint="BOTTOMLEFT">
+													<Offset x="0" y="-13"/>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<EditBox name="GuildControlWithdrawGoldEditBox" autoFocus="false" historyLines="1" inherits="InputBoxTemplate" numeric="true">
+										<Size>
+											<AbsDimension x="70" y="32"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="GuildControlWithdrawGoldAmountText" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="11" y="-1"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Frames>
+											<Frame name="$parentMask" enableMouse="true" hidden="true" setAllPoints="true"/>
+										</Frames>
+										<Scripts>
+											<OnTextChanged>
+												if ( self:GetText() ~= UNLIMITED ) then
+													GuildControlPopupAcceptButton:Enable();
+													GuildControlPopupFrame.goldChanged = 1;
+												end
+											</OnTextChanged>
+											<OnEditFocusGained>
+												GuildControlPopupAcceptButton:Enable();
+											</OnEditFocusGained>
+											<OnEnterPressed>
+												self:ClearFocus();
+												GuildControlPopupAcceptButton:Enable();
+											</OnEnterPressed>
+											<OnEscapePressed>
+												self:ClearFocus();
+											</OnEscapePressed>
+										</Scripts>
+									</EditBox>
+								</Frames>
+							</Frame>
 							<CheckButton name="GuildControlPopupFrameCheckbox2" inherits="GuildControlPopupFrameCheckboxTemplate" id="2">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="GuildControlPopupFrameCheckbox1" relativePoint="RIGHT">
@@ -2917,6 +3054,58 @@ TRAVEL PASS
 									</Anchor>
 								</Anchors>
 							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox16" inherits="GuildControlPopupFrameCheckboxTemplate" id="16">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildControlWithdrawGoldText" relativePoint="RIGHT">
+										<Offset x="4" y="-1"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										if ( self:GetChecked() ) then
+											PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+										else
+											PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+										end
+										GuildControlSetRankFlag(self:GetID(), self:GetChecked());
+										GuildControlPopupAcceptButton:Enable();
+										WithdrawGoldEditBox_Update();
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetText(GUILDCONTROL_OPTION16_TOOLTIP, nil, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="GuildControlPopupFrameCheckbox15" inherits="GuildControlPopupFrameCheckboxTemplate" id="15">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildControlPopupFrameCheckbox16Text" relativePoint="RIGHT">
+										<Offset x="12" y="-1"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										if ( self:GetChecked() ) then
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+										else
+										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+										end
+										GuildControlSetRankFlag(self:GetID(), self:GetChecked());
+										GuildControlPopupAcceptButton:Enable();
+										WithdrawGoldEditBox_Update();
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetText(GUILDCONTROL_OPTION15_TOOLTIP, nil, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</CheckButton>
 						</Frames>
 					</Frame>
 					<Button name="GuildControlPopupFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
@@ -2926,7 +3115,7 @@ TRAVEL PASS
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="GuildControlPopupFrame">
 								<Offset>
-									<AbsDimension x="-11" y="13"/>
+									<AbsDimension x="-33" y="34"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -3021,6 +3210,171 @@ TRAVEL PASS
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
+					<Frame name="GuildControlPopupFrameTabPermissions" inherits="TooltipBackdropTemplate">
+						<Size>
+							<AbsDimension x="268" y="62"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="GuildControlPopupFrame" relativePoint="BOTTOMLEFT">
+								<Offset x="13" y="58"/>
+							</Anchor>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
+							<KeyValue key="backdropBorderColor" value="DARKGRAY_COLOR" type="global"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="GuildBankTabLabel" inherits="GameFontHighlightSmall" text="GUILDBANK_TAB_COLON">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="GuildControlPopupFrameTabPermissions" relativePoint="TOPLEFT">
+											<Offset x="9" y="13"/>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<CheckButton name="GuildControlTabPermissionsViewTab" inherits="GuildControlPopupFrameCheckboxTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildControlPopupFrameTabPermissions" relativePoint="TOPLEFT">
+										<Offset x="10" y="-6"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
+										GuildControlPopupAcceptButton:Enable();
+										GuildControlPopup_UpdateDepositCheckBox();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="GuildControlTabPermissionsDepositItems" inherits="GuildControlPopupFrameCheckboxTemplate" id="2">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildControlTabPermissionsViewTabText" relativePoint="RIGHT">
+										<Offset x="45" y="-1"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
+										GuildControlPopupAcceptButton:Enable();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="GuildControlTabPermissionsUpdateText" inherits="GuildControlPopupFrameCheckboxTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildControlTabPermissionsViewTab" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="4"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										SetPendingGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab, self:GetID(), self:GetChecked());
+										GuildControlPopupAcceptButton:Enable();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<Frame name="GuildControlTabPermissionsWithdrawItems">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildControlTabPermissionsViewTab" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-16"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="GuildControlTabPermissionsWithdrawItemsText" inherits="GameFontNormalSmall" text="GUILDCONTROL_WITHDRAW_ITEMS">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<EditBox name="GuildControlWithdrawItemsEditBox" autoFocus="false" historyLines="1" letters="15" inherits="InputBoxTemplate" numeric="true">
+										<Size>
+											<AbsDimension x="70" y="32"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="GuildControlTabPermissionsWithdrawItemsText" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="20" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Frames>
+											<Frame name="$parentMask" enableMouse="true" hidden="true" setAllPoints="true"/>
+										</Frames>
+										<Scripts>
+											<OnEditFocusGained>
+												GuildControlPopupAcceptButton:Enable();
+											</OnEditFocusGained>
+											<OnTextChanged>
+												local amount = self:GetText();
+												if(amount and amount ~= "" and amount ~= UNLIMITED) then
+												SetPendingGuildBankTabWithdraw(GuildControlPopupFrameTabPermissions.selectedTab, amount);
+												end
+											</OnTextChanged>
+											<OnEnterPressed>
+												self:ClearFocus();
+												GuildControlPopupAcceptButton:Enable();
+											</OnEnterPressed>
+											<OnEscapePressed>
+												self:ClearFocus();
+											</OnEscapePressed>
+										</Scripts>
+									</EditBox>
+								</Frames>
+							</Frame>
+							<Button name="GuildBankTabPermissionsTab6" inherits="GuildBankTabPermissionsTabTemplate" id="6" text="6">
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="GuildControlPopupFrameTabPermissions" relativePoint="TOPRIGHT">
+										<Offset x="-4" y="27"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildBankTabPermissionsTab5" inherits="GuildBankTabPermissionsTabTemplate" id="5" text="5">
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="GuildBankTabPermissionsTab6" relativePoint="LEFT">
+										<Offset x="4" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildBankTabPermissionsTab4" inherits="GuildBankTabPermissionsTabTemplate" id="4" text="4">
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="GuildBankTabPermissionsTab5" relativePoint="LEFT">
+										<Offset x="4" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildBankTabPermissionsTab3" inherits="GuildBankTabPermissionsTabTemplate" id="3"  text="3">
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="GuildBankTabPermissionsTab4" relativePoint="LEFT">
+										<Offset x="4" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildBankTabPermissionsTab2" inherits="GuildBankTabPermissionsTabTemplate" id="2"  text="2">
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="GuildBankTabPermissionsTab3" relativePoint="LEFT">
+										<Offset x="4" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="GuildBankTabPermissionsTab1" inherits="GuildBankTabPermissionsTabTemplate" id="1"  text="1">
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="GuildBankTabPermissionsTab2" relativePoint="LEFT">
+										<Offset x="4" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+						</Frames>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -3071,18 +3425,6 @@ TRAVEL PASS
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<Texture file="Interface\FriendsFrame\UI-GuildMember-Patch">
-							<Size>
-								<AbsDimension x="375" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="12" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -3110,18 +3452,22 @@ TRAVEL PASS
 									</Anchor>
 								</Anchors>
 								<Scripts>
+									<OnLoad inherit="prepend">
+										self.scrollBarHideable = 1;
+										self.ScrollBar:Hide();
+									</OnLoad>
 									<OnMouseDown>
 										if ( CanEditGuildInfo() ) then
-											GuildInfoEditBox:SetFocus();
+										GuildInfoEditBox:SetFocus();
 										else
-											GuildInfoEditBox:ClearFocus();
+										GuildInfoEditBox:ClearFocus();
 										end
 									</OnMouseDown>
 									<OnMouseUp>
 										if ( CanEditGuildInfo() ) then
-											GuildInfoEditBox:SetFocus();
+										GuildInfoEditBox:SetFocus();
 										else
-											GuildInfoEditBox:ClearFocus();
+										GuildInfoEditBox:ClearFocus();
 										end
 									</OnMouseUp>
 								</Scripts>
@@ -3186,12 +3532,12 @@ TRAVEL PASS
 					</Button>
 					<Button name="GuildInfoSaveButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 						<Size>
-							<AbsDimension x="139" y="22"/>
+							<AbsDimension x="90" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="10" y="12"/>
+									<AbsDimension x="108" y="12"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -3207,7 +3553,7 @@ TRAVEL PASS
 					</Button>
 					<Button name="GuildInfoCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 						<Size>
-							<AbsDimension x="139" y="22"/>
+							<AbsDimension x="90" y="22"/>
 						</Size>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="GuildInfoSaveButton" relativePoint="RIGHT">
@@ -3220,6 +3566,22 @@ TRAVEL PASS
 							<OnClick>
 								GuildInfoFrame:Hide();
 							</OnClick>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+					</Button>
+					<Button name="GuildInfoGuildEventButton" inherits="UIPanelButtonTemplate" text="GUILD_EVENT_LOG">
+						<Size>
+							<AbsDimension x="65" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="GuildInfoSaveButton" relativePoint="LEFT">
+								<Offset x="-32" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="ToggleGuildEventLog"/>
 						</Scripts>
 						<NormalFont style="GameFontNormalSmall"/>
 						<HighlightFont style="GameFontHighlightSmall"/>
@@ -3567,6 +3929,125 @@ TRAVEL PASS
 						</Scripts>
 					</Frame>
 				</Frames>
+			</Frame>
+			<Frame name="GuildEventLogFrame" inherits="BackdropTemplate" toplevel="true" enableMouse="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+				</KeyValues>
+				<Size>
+					<AbsDimension x="395" y="435"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildControlPopupFrame">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="GuildEventLogCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-6" y="-7"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="GuildEventLogTitle" inherits="GameFontNormal" text="GUILD_EVENT_LOG">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="17" y="-17"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="GuildEventFrame" inherits="TooltipBackdropTemplate">
+						<Size>
+							<AbsDimension x="375" y="370"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="11" y="-32"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<ScrollFrame name="GuildEventLogScrollFrame" inherits="UIPanelScrollFrameTemplate">
+								<Size>
+									<AbsDimension x="340" y="359"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="GuildEventFrame" relativePoint="TOPRIGHT">
+										<Offset x="-28" y="-6"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad inherit="prepend">
+										self.scrollBarHideable = 1;
+										self.ScrollBar:Hide();
+									</OnLoad>
+								</Scripts>
+								<ScrollChild>
+									<Frame name="GuildEventLogScrollChildFrame">
+										<Size>
+											<AbsDimension x="340" y="359"/>
+										</Size>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="GuildEventMessage" inherits="ChatFontNormal" justifyH="LEFT">
+													<Size>
+														<AbsDimension x="340" y="0"/>
+													</Size>
+													<Anchors>
+														<Anchor point="TOPLEFT" />
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+								</ScrollChild>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+					<Button name="GuildEventLogCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-3" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="GuildEventLogCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size>
+							<AbsDimension x="139" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildEventLogFrame" relativePoint="BOTTOMRIGHT">
+								<Offset x="-9" y="13"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="HideParentPanel"/>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow function="QueryGuildEventLog"/>
+				</Scripts>
 			</Frame>
 			<Button name="FriendsFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="FRIENDS" motionScriptsWhileDisabled="false">
 				<Anchors>

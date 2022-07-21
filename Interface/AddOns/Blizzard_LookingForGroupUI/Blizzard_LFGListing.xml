@@ -461,11 +461,17 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 								InputScrollFrame_OnLoad(self);
 
 								self.EditBox:SetScript("OnTextChanged", function(self, userInput)
-									LFGListingComment_OnTextChanged(self, userInput);
+									LFGListingComment_OnTextChanged(self:GetParent(), userInput);
 									InputScrollFrame_OnTextChanged(self, userInput);
+								end);
+								self.EditBox:SetScript("OnMouseDown", function(self, button)
+									LFGListingComment_OnMouseDown(self:GetParent(), button);
 								end);
 								self.EditBox:SetScript("OnEscapePressed", function(self) self:ClearFocus(); end);
 							</OnLoad>
+							<OnMouseDown inherit="prepend">
+								LFGListingComment_OnMouseDown(self, button);
+							</OnMouseDown>
 						</Scripts>
 					</ScrollFrame>
 				</Frames>

@@ -224,8 +224,9 @@ function SetCharacterRace(id)
 end
 
 function SetDefaultClass()
-	local classData = C_CharacterCreation.GetSelectedClass();
-	SetCharacterClass(classData.classID);
+	local class = GetDefaultClass();
+	SetCharacterClass(class);
+	C_CharacterCreation.SetSelectedClass(class);
 end
 
 function SetCharacterClass(id)

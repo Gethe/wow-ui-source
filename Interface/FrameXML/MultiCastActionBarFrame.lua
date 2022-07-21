@@ -265,9 +265,7 @@ function MultiCastActionBarFrame_OnUpdate(self, elapsed)
 end
 
 function ShowMultiCastActionBar(doNotSlide)
-	--TODO: Vehicle UI
-	--[[if ( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) then --Don't change while we're animating out MainMenuBar for vehicle UI --]]
-	if (not MainMenuBar.busy) then
+	if ( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) then --Don't change while we're animating out MainMenuBar for vehicle UI
 		if ( (MultiCastActionBarFrame.mode ~= "show" and MultiCastActionBarFrame.state ~= "top") or (not UIParent:IsShown())) then
 			MultiCastActionBarFrame:Show();
 			if ( MultiCastActionBarFrame.completed ) then
@@ -280,9 +278,7 @@ function ShowMultiCastActionBar(doNotSlide)
 end
 
 function HideMultiCastActionBar()
-	--TODO: Vehicle UI
-	--[[if ( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) then --Don't change while we're animating out MainMenuBar for vehicle UI --]]
-	if (not MainMenuBar.busy) then
+	if ( (not MainMenuBar.busy) and (not UnitHasVehicleUI("player")) ) then --Don't change while we're animating out MainMenuBar for vehicle UI
 		if ( (MultiCastActionBarFrame:IsShown()) or (not UIParent:IsShown())) then
 			if ( MultiCastActionBarFrame.completed ) then
 				MultiCastActionBarFrame.slideTimer = 0;
@@ -501,7 +497,7 @@ function MultiCastActionButtonDown(id)
 	end
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
 		SecureActionButton_OnClick(button, "LeftButton");
-		button:UpdateState();
+		ActionButton_UpdateState(button);
 	end
 end
 
@@ -511,7 +507,7 @@ function MultiCastActionButtonUp(id)
 		button:SetButtonState("NORMAL");
 		if (not GetCVarBool("ActionButtonUseKeyDown")) then
 			SecureActionButton_OnClick(button, "LeftButton");
-			button:UpdateState();
+			ActionButton_UpdateState(button);
 		end
 	end
 	MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);

@@ -16,6 +16,7 @@ function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
 	CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield);
 
 	self.showCastbar = true;
+	self.notInterruptible = false;
 
 	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint();
 	if ( point == "CENTER" ) then
@@ -138,6 +139,8 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	
 	if ( event == "UNIT_SPELLCAST_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
+		self.notInterruptible = notInterruptible;
+
 		if( notInterruptible ) then
 			CastingBarFrame_SetUseStartColorForFinished(self, false);
 		end
@@ -244,6 +247,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_SPELLCAST_DELAYED" ) then
 		if ( self:IsShown() ) then
 			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
+			self.notInterruptible = notInterruptible;
 
 			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 				-- if there is no name, there is no bar
@@ -270,6 +274,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID = UnitChannelInfo(unit);
+		self.notInterruptible = notInterruptible;
 
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			-- if there is no name, there is no bar

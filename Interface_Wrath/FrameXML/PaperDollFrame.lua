@@ -26,7 +26,7 @@ CR_EXPERTISE = 24;
 CR_ARMOR_PENETRATION = 25;
 
 ATTACK_POWER_MAGIC_NUMBER = 14;
-BLOCK_PER_STRENGTH = 0.05;
+BLOCK_PER_STRENGTH = 0.5;
 HEALTH_PER_STAMINA = 10;
 ARMOR_PER_AGILITY = 2;
 MANA_PER_INTELLECT = 15;
@@ -517,7 +517,7 @@ function PaperDollFrame_SetStat(statFrame, statIndex)
 		local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
 		statFrame.tooltip2 = format(statFrame.tooltip2, attackPower);
 		if ( unitClass == "WARRIOR" or unitClass == "SHAMAN" or unitClass == "PALADIN" ) then
-			statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format( STAT_BLOCK_TOOLTIP, effectiveStat*BLOCK_PER_STRENGTH );
+			statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format( STAT_BLOCK_TOOLTIP, effectiveStat*BLOCK_PER_STRENGTH-10 );
 		end
 	elseif ( statIndex == 3 ) then
 		local baseStam = min(20, effectiveStat);

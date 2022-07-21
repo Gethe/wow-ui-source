@@ -2778,7 +2778,7 @@
 					</OnHide>
 				</Scripts>
 			</CheckButton>	
-			<!-- <CheckButton name="$parentPreviewTalentChanges" inherits="InterfaceOptionsCheckButtonTemplate">
+			<!--<CheckButton name="$parentPreviewTalentChanges" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentEquipmentManagerDescription" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -2814,7 +2814,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton> -->
+			</CheckButton>-->
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -2824,129 +2824,6 @@
 			</OnLoad>
     </Scripts>
   </Frame>
-
-	<Frame name="InterfaceOptionsFeaturesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" text="FEATURES_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="16" y="-16"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSubText" text="FEATURES_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
-					<Size>
-						<AbsDimension y="32" x="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-8"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-32" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton name="$parentEquipmentManager"  inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-2" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentDescription" inherits="GameFontHighlight" text="OPTION_USE_EQUIPMENT_MANAGER_DESCRIPTION" justifyH="LEFT" justifyV="TOP">
-							<Size>
-								<AbsDimension x="350" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="35" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetFontObject(GameFontNormal);
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "equipmentManager";
-						self.setFunc = 
-							function(value) 
-								if ( value == "1" ) then 
-									GearManagerToggleButton:Show() 
-								else 
-									GearManagerToggleButton:Hide() 
-								end 
-							end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnHide>
-						C_EquipmentSet.CanUseEquipmentSets();
-					</OnHide>
-				</Scripts>
-			</CheckButton>	
-			<CheckButton name="$parentPreviewTalentChanges" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentEquipmentManagerDescription" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-35" y="-25"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentDescription" inherits="GameFontHighlight" text="OPTION_PREVIEW_TALENT_CHANGES_DESCRIPTION" justifyH="LEFT" justifyV="TOP">
-							<Size>
-								<AbsDimension x="350" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="35" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetFontObject(GameFontNormal);
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "previewTalents";
-						self.setFunc = 
-							function (value) 
-								InterfaceOptionsDisplayPanelPreviewTalentChanges_SetFunc(); 
-							end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.name = FEATURES_LABEL;
-				self.options = FeaturesPanelOptions;
-				InterfaceOptionsPanel_OnLoad(self);
-			</OnLoad>
-		</Scripts>
-	</Frame>
 
   <!-- Accessibility panel -->
 

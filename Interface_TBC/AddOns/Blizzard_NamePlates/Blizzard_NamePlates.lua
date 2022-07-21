@@ -394,4 +394,14 @@ function Nameplate_CastBar_AdjustPosition(self)
 
 	self.Flash:SetTexCoord(0,0,0,0);
 	self.Text:Hide();
+
+	if(self.notInterruptible) then
+		self.Icon:SetPoint("RIGHT", self, "LEFT", -5, 2);
+
+		self.BorderShield:ClearAllPoints();
+		self.BorderShield:SetWidth(25);
+		self.BorderShield:SetHeight(45);
+		self.BorderShield:SetPoint("TOPLEFT", -23, 18);
+		self.BorderShield:SetPoint("TOPRIGHT", 17, 17);
+	end
 end

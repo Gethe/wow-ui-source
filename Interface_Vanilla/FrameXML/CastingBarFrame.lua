@@ -17,6 +17,7 @@ function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
 	CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield);
 
 	self.showCastbar = true;
+	self.notInterruptible = false;
 
 	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint();
 	if ( point == "CENTER" ) then

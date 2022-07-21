@@ -671,9 +671,9 @@
 							<OnClick>
 								FactionToggleAtWar(GetSelectedFaction());
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								end
 								ReputationFrame_Update();
 							</OnClick>
@@ -720,10 +720,10 @@
 							</OnLoad>
 							<OnClick>
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 									SetFactionInactive(GetSelectedFaction());
 								else
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 									SetFactionActive(GetSelectedFaction());
 								end
 							</OnClick>

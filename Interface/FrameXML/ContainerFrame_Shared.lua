@@ -1,3 +1,5 @@
+-- See ContainerFrame_Vanilla, ContainerFrame_Wrath, etc for expansion-specific functions
+
 NUM_CONTAINER_FRAMES = 13;
 NUM_BAG_FRAMES = 4;
 MAX_CONTAINER_ITEMS = 36;
@@ -29,17 +31,6 @@ CONTAINER_BOTTOM_TEXTURE_DEFAULT_BOTTOM_COORD = 0.349609375;
 TUTORIAL_BAG_SLOTS_AUTHENTICATOR = 51;
 
 ADVERTISE_SLOTS_LEVEL = 20; -- Don't show the "Add Slots" button below this level
-
-function ContainerFrame_OnLoad(self)
-	self:RegisterEvent("BAG_OPEN");
-	self:RegisterEvent("BAG_CLOSED");
-	self:RegisterEvent("QUEST_ACCEPTED");
-	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
-	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
-	ContainerFrame1.bagsShown = 0;
-	ContainerFrame1.bags = {};
-	ContainerFrame1.forceExtended = false;
-end
 
 function ContainerFrame_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
@@ -301,9 +292,9 @@ function ContainerFrame_OnShow(self)
  	ContainerFrame_Update(self);
 	UpdateContainerFrameAnchors();
 	-- If there are tokens watched then decide if we should show the bar
-	--[[if ( ManageBackpackTokenFrame ) then
+	if ( ManageBackpackTokenFrame ) then
 		ManageBackpackTokenFrame();
-	end]]
+	end
 end
 
 function OpenBag(id, force)
@@ -501,7 +492,6 @@ function ContainerFrame_Update(frame)
 	local itemButton;
 	local texture, itemCount, locked, quality, readable, _, isFiltered, noValue, itemID;
 --[[
-	local isQuestItem, questId, isActive, questTexture;
 	local battlepayItemTexture, newItemTexture, flash, newItemAnim;
 --]]
 	local tooltipOwner = GameTooltip:GetOwner();
@@ -550,9 +540,6 @@ function ContainerFrame_Update(frame)
 		itemButton = _G[name.."Item"..i];
 		
 		texture, itemCount, locked, quality, readable, _, _, isFiltered, noValue, itemID = GetContainerItemInfo(id, itemButton:GetID());
---[[
-		isQuestItem, questId, isActive = GetContainerItemQuestInfo(id, itemButton:GetID());
---]]
 		
 		SetItemButtonTexture(itemButton, texture);
 		SetItemButtonQuality(itemButton, quality, itemID);
@@ -561,20 +548,8 @@ function ContainerFrame_Update(frame)
 		
 		ContainerFrameItemButton_SetForceExtended(itemButton, itemButton:GetID() > baseSize);
 
-		questTexture = _G[name.."Item"..i.."IconQuestTexture"];
---[[
-		if ( questId and not isActive ) then
-			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
-			questTexture:Show();
-		elseif ( questId or isQuestItem ) then
-			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
-			questTexture:Show();		
-		else
-			questTexture:Hide();
-		end
---]]
-		questTexture:Hide();
-		
+		ContainerFrame_UpdateQuestItem(frame, i, itemButton);
+
 --[[
 		local isNewItem = C_NewItems.IsNewItem(id, itemButton:GetID());
 		local isBattlePayItem = IsBattlePayItem(id, itemButton:GetID());
@@ -823,7 +798,10 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 		BACKPACK_HEIGHT = BACKPACK_BASE_HEIGHT + middleBgHeight;
 		frame:SetHeight(BACKPACK_HEIGHT);
-		--ManageBackpackTokenFrame(frame);
+
+		if(ManageBackpackTokenFrame) then
+			ManageBackpackTokenFrame(frame);
+		end
 	else
 		bgTextureBottom:SetHeight(CONTAINER_BOTTOM_TEXTURE_DEFAULT_HEIGHT);
 		bgTextureBottom:SetTexCoord(0, 1, CONTAINER_BOTTOM_TEXTURE_DEFAULT_TOP_COORD, CONTAINER_BOTTOM_TEXTURE_DEFAULT_BOTTOM_COORD);

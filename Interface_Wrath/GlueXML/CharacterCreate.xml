@@ -85,7 +85,7 @@
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
 	</CheckButton>
-	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CharacterCreateIconButtonTemplate" virtual="true">
+	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CharacterCreateIconButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Layers>
 		</Layers>
 		<Scripts>
@@ -93,16 +93,8 @@
 				CharacterClass_OnClick(self, self.classID);	
 				GlueTooltip:Hide();
 			</OnClick>
-			<OnEnter>
-				if ( CharacterCreate.selectedClass == self:GetID() ) then
-					return;
-				end
-				GlueTooltip_SetOwner(nil,nil, -3, -5);
-				GlueTooltip:SetText(self.tooltip, nil, 1.0, 1.0, 1.0);
-			</OnEnter>
-			<OnLeave>
-				GlueTooltip:Hide();
-			</OnLeave>
+			<OnEnter function="CharacterCreateClassButton_OnEnter"/>
+			<OnLeave function="CharacterCreateClassButton_OnLeave"/>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes"/>
 	</CheckButton>
@@ -828,7 +820,7 @@
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton3" relativePoint="RIGHT">
 										<Offset>
-											<AbsDimension x="0" y="0"/>
+											<AbsDimension x="4" y="0"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -869,7 +861,7 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton9" inherits="CharacterCreateClassButtonTemplate" id="8">
+							<CheckButton name="CharacterCreateClassButton9" inherits="CharacterCreateClassButtonTemplate" id="9">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton8" relativePoint="RIGHT">
 										<Offset>
@@ -878,7 +870,7 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton10" inherits="CharacterCreateClassButtonTemplate" id="8">
+							<CheckButton name="CharacterCreateClassButton10" inherits="CharacterCreateClassButtonTemplate" id="11">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton9" relativePoint="RIGHT">
 										<Offset>

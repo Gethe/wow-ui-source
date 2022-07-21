@@ -219,6 +219,7 @@ QuestTimerFrame.xml
 ..\..\Interface_TBC\FrameXML\QuestInfo.xml
 ..\..\Interface_TBC\FrameXML\MerchantFrame.xml
 TradeFrame.xml
+..\..\Interface_Vanilla\FrameXML\ContainerFrame_Vanilla.lua
 ContainerFrame.xml
 LootFrame.xml
 ItemTextFrame.xml

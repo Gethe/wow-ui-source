@@ -357,21 +357,32 @@ function LFGListingMixin:UpdatePostButtonEnableState()
 	end
 
 	-- Check party size state.
+	local hasSpaceForAtLeastOneActivity = false;
+	local maxPlayerCountForActivities = 0;
 	if (IsInGroup(LE_PARTY_CATEGORY_HOME)) then
 		local groupCount = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME);
 		for activityID, selected in pairs(self.activities) do
 			if (selected) then
 				local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
 				local maxPlayers = activityInfo.maxNumPlayers;
-				if (maxPlayers > 0 and groupCount >= maxPlayers) then
-					self.PostButton.errorText = string.format(LFG_LIST_TOO_MANY_FOR_ACTIVITY, maxPlayers);
-					self.PostButton:SetEnabled(false);
-					return;
+				if (maxPlayers > maxPlayerCountForActivities) then
+					maxPlayerCountForActivities = maxPlayers;
+				end
+				if (maxPlayers == 0 or groupCount < maxPlayers) then
+					hasSpaceForAtLeastOneActivity = true;
+					break;
 				end
 			end
 		end
+
+		if (not hasSpaceForAtLeastOneActivity) then
+			self.PostButton.errorText = string.format(LFG_LIST_TOO_MANY_FOR_ACTIVITY, maxPlayerCountForActivities);
+			self.PostButton:SetEnabled(false);
+			return;
+		end
 	end
 
+	-- Success! Enable the button.
 	self.PostButton.errorText = nil;
 	self.PostButton:SetEnabled(true);
 end
@@ -665,6 +676,7 @@ end
 function LFGListingActivityView_OnShow(self)
 	local categoryID = LFGListingFrame:GetCategorySelection();
 	local _, _, autoChooseActivity = C_LFGList.GetCategoryInfo(categoryID);
+	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(categoryID);
 	self.Comment.EditBox:ClearFocus();
 	if (autoChooseActivity) then
 		-- For auto-choose activity categories, we're going to check everything, so only show the comment.
@@ -675,7 +687,8 @@ function LFGListingActivityView_OnShow(self)
 		self.Comment:ClearAllPoints();
 		self.Comment:SetPoint("CENTER", 0, 20);
 		self.Comment:SetHeight(110);
-		self.Comment.EditBox.Instructions:SetText(DESCRIPTION_OF_YOUR_GROUP_MANDATORY);
+		self.Comment.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP_MANDATORY or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
+		self.Comment.EditBox:SetEnabled(isAccountSecured);
 		if (IN_SET_CATEGORY_SELECTION) then -- If this is being invoked because the user is choosing a category, auto-select the comment box.
 			self.Comment.EditBox:SetFocus();
 		end
@@ -687,7 +700,8 @@ function LFGListingActivityView_OnShow(self)
 		self.Comment:ClearAllPoints();
 		self.Comment:SetPoint("BOTTOM", 0, 19);
 		self.Comment:SetHeight(47);
-		self.Comment.EditBox.Instructions:SetText(DESCRIPTION_OF_YOUR_GROUP);
+		self.Comment.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
+		self.Comment.EditBox:SetEnabled(isAccountSecured);
 	end
 
 	LFGListingActivityView_UpdateActivities(self, categoryID);
@@ -847,6 +861,12 @@ end
 function LFGListingComment_OnTextChanged(self, userInput)
 	if (userInput) then
 		LFGListingFrame:SetDirty(true);
+	end
+end
+
+function LFGListingComment_OnMouseDown(self, button)
+	if (not self.EditBox:IsEnabled() and not C_LFGList.IsPlayerAuthenticatedForLFG(LFGListingFrame:GetCategorySelection())) then
+		StaticPopup_Show("GROUP_FINDER_AUTHENTICATOR_POPUP");
 	end
 end
 

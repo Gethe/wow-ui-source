@@ -47,6 +47,22 @@ function CharacterCreateRaceButton_OnLeave(self)
 	GlueTooltip:Hide();
 end
 
+function CharacterCreateClassButton_OnEnter(self)
+	if(self.tooltip == nil or string.len(self.tooltip) == 0) then
+		return;
+	end
+	if ( CharacterCreate.selectedClass == self:GetID() ) then
+		return;
+	end
+	GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
+	GlueTooltip:SetText(self.tooltip, nil, 1.0, 1.0, 1.0);
+	GlueTooltip:Show();
+end
+
+function CharacterCreateClassButton_OnLeave(self)
+	GlueTooltip:Hide();
+end
+
 function CharacterCreateEnumerateRaces()
 	local races = C_CharacterCreation.GetAvailableRaces();
 	CharacterCreate.numRaces = #races;
@@ -110,16 +126,19 @@ function CharacterCreateEnumerateClasses()
 		_G["CharacterCreateClassButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button = _G["CharacterCreateClassButton"..index];
 
-		if (not classData.enabled or (isBoostedCharacter and CharacterUpgradeFlow and CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.boostType and C_CharacterServices.DoesBoostTypeRestrictClass(CharacterUpgradeFlow.data.boostType, classData.classID))) then 
-			button.enable = false;
+		if (isBoostedCharacter and CharacterUpgradeFlow and CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.boostType and C_CharacterServices.DoesBoostTypeRestrictClass(CharacterUpgradeFlow.data.boostType, classData.classID)) then
 			button:Disable();
 			_G["CharacterCreateClassButton"..index.."DisableTexture"]:Show();
+			button.tooltip = CHAR_CREATE_NO_BOOST_CLASS;
+		elseif (not classData.enabled) then 
+			button:Disable();
+			_G["CharacterCreateClassButton"..index.."DisableTexture"]:Show();
+			button.tooltip = nil;
 		else
-			button.enable = true;
 			button:Enable();
 			_G["CharacterCreateClassButton"..index.."DisableTexture"]:Hide();
+			button.tooltip = classData.name;
 		end
-		button.tooltip = classData.name;
 		button.classID = classData.classID;
 	end
 	for i=CharacterCreate.numClasses+1, MAX_CLASSES_PER_RACE, 1 do
@@ -205,8 +224,9 @@ function SetCharacterRace(id)
 end
 
 function SetDefaultClass()
-	local classData = C_CharacterCreation.GetSelectedClass();
-	SetCharacterClass(classData.classID);
+	local class = GetDefaultClass();
+	SetCharacterClass(class);
+	C_CharacterCreation.SetSelectedClass(class);
 end
 
 function SetCharacterClass(id)

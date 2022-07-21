@@ -53,7 +53,7 @@
 						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
 							<Offset>
 								<AbsDimension x="-5" y="0"/>
-							</Offset>
+												</Offset>
 						</Anchor>
 					</Anchors>
 				</Texture>
@@ -112,16 +112,7 @@
 						<Anchor point="TOPRIGHT" x="23" y="20"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
-					<Size>
-						<AbsDimension x="0" y="49"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-28" y="20"/>
-						<Anchor point="TOPRIGHT" x="18" y="20"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Text" inherits="SystemFont_Shadow_Small">
+								<FontString parentKey="Text" inherits="SystemFont_Shadow_Small">
 					<Size>
 						<AbsDimension x="0" y="16"/>
 					</Size>
@@ -132,6 +123,15 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
+					<Size>
+						<AbsDimension x="0" y="49"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-28" y="20"/>
+						<Anchor point="TOPRIGHT" x="18" y="20"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="Icon">
 					<Size>
 						<AbsDimension x="16" y="16"/>

@@ -13,8 +13,7 @@ StaticPopupDialogs["CONFIRM_LEARN_PREVIEW_TALENTS"] = {
 	exclusive = 1,
 }
 
-UIPanelWindows["PlayerTalentFrame"] = { area = "left", pushable = 6, whileDead = 1 };
-
+UIPanelWindows["PlayerTalentFrame"] = { area = "left", pushable = 6, xoffset = -16, yoffset = 12, bottomClampOverride = 140+12, width = 353, height = 424, whileDead = 1 };
 
 -- global constants
 GLYPH_TALENT_TAB = 4;

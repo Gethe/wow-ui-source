@@ -360,7 +360,9 @@ function PVPTeam_OnEnter(self)
 		highlight:Show();
 		GameTooltip_AddNewbieTip(self, ARENA_TEAM, 1.0, 1.0, 1.0, CLICK_FOR_DETAILS, 1);
 	else
-		GameTooltip_AddNewbieTip(self, ARENA_TEAM, 1.0, 1.0, 1.0, ARENA_TEAM_LEAD_IN, 1);
+		if ( GetCurrentArenaSeasonUsesTeams() ) then
+			GameTooltip_AddNewbieTip(self, ARENA_TEAM, 1.0, 1.0, 1.0, ARENA_TEAM_LEAD_IN, 1);
+		end
 	end		
 end
 

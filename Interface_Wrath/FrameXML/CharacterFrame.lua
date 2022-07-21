@@ -5,6 +5,10 @@ function ToggleCharacter(tab, onlyShow)
 	if ( tab == "PetPaperDollFrame" and not HasPetUI() and not PetPaperDollFrame:IsVisible() and (GetNumCompanions("CRITTER") == 0) and (GetNumCompanions("MOUNT") == 0)) then
 		return;
 	end
+	if ( tab == "TokenFrame" and GetCurrencyListSize() == 0) then
+		return;
+	end
+
 	local subFrame = _G[tab];
 	if ( subFrame ) then
 		if (not subFrame.hidden) then

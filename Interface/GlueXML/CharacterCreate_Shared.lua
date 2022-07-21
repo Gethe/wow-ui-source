@@ -55,7 +55,7 @@ function CharacterCreate_OnShow(self)
 	C_CharacterCreation.ResetCharCustomize();
 
 	CharacterCreateEnumerateRaces();
-	SetCharacterRace(C_CharacterCreation.GetSelectedRace());
+	SetDefaultRace();
 
 	CharacterCreateEnumerateClasses();
 	SetDefaultClass();
@@ -258,4 +258,87 @@ function CharacterCreate_UpdateCustomizationOptions()
 	for i=Enum.CharCustomizationTypeMeta.MinValue, NUM_CHAR_CUSTOMIZATIONS-1 do
 		_G["CharacterCustomizationButtonFrame"..(i+1).."Text"]:SetText(C_CharacterCreation.GetCustomizationDetails(i));
 	end
+end
+
+function CharacterCreate_getRandomValidRace()
+	local races = C_CharacterCreation.GetAvailableRaces();
+	local validRaces = {};
+	local validItr = 1;
+	for index, raceData in pairs(races) do
+		local button = _G["CharacterCreateRaceButton"..index];
+		if(button:IsEnabled()) then
+			validRaces[validItr] = button.raceID;
+			validItr = validItr + 1;
+		end
+	end
+
+	local validRace = 1;
+	if(#validRaces > 0) then
+		validRace = validRaces[math.random(1, #validRaces)];
+	end
+
+	return validRace;
+end
+
+function CharacterCreate_getRandomValidClass()
+	local classes = C_CharacterCreation.GetAvailableClasses();
+	local validClasses = {};
+	local validItr = 1;
+	for index, classData in pairs(classes) do
+		local button = _G["CharacterCreateClassButton"..index];
+		if(button:IsEnabled()) then
+			validClasses[validItr] = button.classID;
+			validItr = validItr + 1;
+		end
+	end
+
+	local validClass = 1;
+	if(#validClasses > 0) then
+		validClass = validClasses[math.random(1, #validClasses)];
+	end
+
+	return validClass;
+end
+
+function SetDefaultRace()
+	local defaultRace = C_CharacterCreation.GetSelectedRace();
+	if (not CharacterCreate_isRaceEnabled(defaultRace)) then
+		defaultRace = CharacterCreate_getRandomValidRace();
+		C_CharacterCreation.SetSelectedRace(defaultRace);
+	end
+	SetCharacterRace(defaultRace);
+end
+
+function GetDefaultClass()
+	local classData = C_CharacterCreation.GetSelectedClass();
+	local classID = classData.classID;
+	if (not CharacterCreate_isClassEnabled(classID)) then
+		classID = CharacterCreate_getRandomValidClass();
+	end
+
+	return classID;
+end
+
+function CharacterCreate_isRaceEnabled(race)
+	local races = C_CharacterCreation.GetAvailableRaces();
+	for index, raceData in pairs(races) do
+		local button = _G["CharacterCreateRaceButton"..index];
+		if(button.raceID == race) then
+			return button:IsEnabled();
+		end
+	end
+
+	return false;
+end
+
+function CharacterCreate_isClassEnabled(class)
+	local classes = C_CharacterCreation.GetAvailableClasses();
+	for index, classData in pairs(classes) do
+		local button = _G["CharacterCreateClassButton"..index];
+		if(button.classID == class) then
+			return button:IsEnabled();
+		end
+	end
+
+	return false;
 end

@@ -60,8 +60,8 @@
 			<StatusBar parentKey="CastBar" inherits="SmallCastingBarFrameTemplate" hidden="true">
 				<Size x="102" y="10"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.healthBar" relativePoint="BOTTOM" x="17" y="-6"/>
-				</Anchors>
+					<Anchor point="TOP" relativeKey="$parent.healthBar" relativePoint="BOTTOM" x="17" y="-9"/>
+									</Anchors>
 				<Scripts>
 					<OnShow function="Nameplate_CastBar_AdjustPosition"/>
 				</Scripts>

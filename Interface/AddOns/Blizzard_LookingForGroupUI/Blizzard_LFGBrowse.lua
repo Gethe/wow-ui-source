@@ -5,6 +5,7 @@ local LFGBROWSE_TOOLTIP_MIN_WIDTH = 200;
 local LFGBROWSE_DELISTED_FONT_COLOR = {r=0.3, g=0.3, b=0.3};
 local LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR = GRAY_FONT_COLOR;
 local LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR = BRIGHTBLUE_FONT_COLOR;
+local LFGBROWSE_SELF_FONT_COLOR = LIGHTGREEN_FONT_COLOR;
 local LFGBROWSE_GROUPDATA_ROLE_ORDER = { "TANK", "HEALER", "DAMAGER" };
 local LFGBROWSE_GROUPDATA_CLASS_ORDER = CLASS_SORT_ORDER;
 local LFGBROWSE_GROUPDATA_ATLASES = {
@@ -17,6 +18,20 @@ local LFGBROWSE_GROUPDATA_ATLASES = {
 for i=1, #CLASS_SORT_ORDER do
 	LFGBROWSE_GROUPDATA_ATLASES[CLASS_SORT_ORDER[i]] = "groupfinder-icon-class-"..string.lower(CLASS_SORT_ORDER[i]);
 end
+
+local LFGBROWSE_DUNGEON_NUM_TANKS_EXPECTED = 1;
+local LFGBROWSE_DUNGEON_NUM_HEALERS_EXPECTED = 1;
+local LFGBROWSE_DUNGEON_NUM_DPS_EXPECTED = 3;
+
+-- If a listing is queued for multiple activities with disparate displayTypes, pick the "best" one (i.e. most flexible/informative) based off this priority.
+local LFGBROWSE_DISPLAYTYPE_PRIORITY = {
+	[Enum.LFGListDisplayType.Comment] = 6, -- Highest priority.
+	[Enum.LFGListDisplayType.RoleCount] = 5,
+	[Enum.LFGListDisplayType.PlayerCount] = 4,
+	[Enum.LFGListDisplayType.RoleEnumerate] = 3,
+	[Enum.LFGListDisplayType.ClassEnumerate] = 2,
+	[Enum.LFGListDisplayType.HideAll] = 1, -- Lowest priority.
+};
 
 -------------------------------------------------------
 ----------LFGBrowseMixin
@@ -246,6 +261,7 @@ function LFGBrowseSearchEntry_Update(self)
 	end
 
 	self.isDelisted = searchResultInfo.isDelisted;
+	self.hasSelf = searchResultInfo.hasSelf;
 
 	local matchingActivities = {};
 	local hasMatchingActivity = false;
@@ -260,7 +276,9 @@ function LFGBrowseSearchEntry_Update(self)
 	local activitiesToDisplay = hasMatchingActivity and matchingActivities or searchResultInfo.activityIDs;
 
 	local activityText = "";
-	if (#activitiesToDisplay == 1) then
+	if ( searchResultInfo.hasSelf ) then
+		activityText = LFG_SELF_LISTING;
+	elseif ( #activitiesToDisplay == 1 ) then
 		local activityInfo = C_LFGList.GetActivityInfoTable(activitiesToDisplay[1]);
 		activityText = activityInfo.fullName;
 	else
@@ -275,6 +293,8 @@ function LFGBrowseSearchEntry_Update(self)
 		nameColor = LFGBROWSE_DELISTED_FONT_COLOR;
 		levelColor = LFGBROWSE_DELISTED_FONT_COLOR;
 		activityColor = LFGBROWSE_DELISTED_FONT_COLOR;
+	elseif ( searchResultInfo.hasSelf ) then
+		activityColor = LFGBROWSE_SELF_FONT_COLOR;
 	elseif (hasMatchingActivity) then
 		activityColor = LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR;
 	end
@@ -292,7 +312,8 @@ function LFGBrowseSearchEntry_Update(self)
 	self.ActivityName:SetWidth(176);
 
 	local displayData = C_LFGList.GetSearchResultMemberCounts(self.resultID);
-	LFGBrowseGroupDataDisplay_Update(self.DataDisplay, searchResultInfo.activityIDs[1], displayData, searchResultInfo.isDelisted, isSolo, searchResultInfo.comment);
+	local displayType, maxNumPlayers = LFGBrowseUtil_GetBestDisplayTypeForActivityIDs(searchResultInfo.activityIDs);
+	LFGBrowseGroupDataDisplay_Update(self.DataDisplay, displayType, maxNumPlayers, displayData, searchResultInfo.isDelisted, isSolo, searchResultInfo.comment);
 
 	local mouseFocus = GetMouseFocus();
 	if ( mouseFocus == self ) then
@@ -316,7 +337,7 @@ function LFGBrowseSearchEntry_OnEvent(self, event, ...)
 end
 
 function LFGBrowseSearchEntry_OnClick(self, button)
-	if (self.isDelisted) then
+	if (self.isDelisted or self.hasSelf) then
 		return;
 	end
 
@@ -587,9 +608,8 @@ end
 -------------------------------------------------------
 ----------Group Data Display
 -------------------------------------------------------
-function LFGBrowseGroupDataDisplay_Update(self, activityID, displayData, disabled, isSolo, comment)
-	local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
-	if(not activityInfo) then 
+function LFGBrowseGroupDataDisplay_Update(self, displayType, maxNumPlayers, displayData, disabled, isSolo, comment)
+	if(not displayType) then 
 		return;
 	end
 
@@ -599,25 +619,25 @@ function LFGBrowseGroupDataDisplay_Update(self, activityID, displayData, disable
 	self.PlayerCount:Hide();
 	self.Comment:Hide();
 	
-	if ( activityInfo.displayType == Enum.LFGListDisplayType.Comment ) then
+	if ( displayType == Enum.LFGListDisplayType.Comment ) then
 		self.Comment:Show();
 		LFGBrowseGroupDataDisplayComment_Update(self.Comment, comment, disabled);
 	elseif ( isSolo ) then
 		self.Solo:Show();
 		LFGBrowseGroupDataDisplaySolo_Update(self.Solo, displayData, disabled);
-	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.RoleCount ) then
+	elseif ( displayType == Enum.LFGListDisplayType.RoleCount ) then
 		self.RoleCount:Show();
 		LFGBrowseGroupDataDisplayRoleCount_Update(self.RoleCount, displayData, disabled);
-	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.RoleEnumerate ) then
+	elseif ( displayType == Enum.LFGListDisplayType.RoleEnumerate ) then
 		self.Enumerate:Show();
-		LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, activityInfo.maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_ROLE_ORDER);
-	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.ClassEnumerate ) then
+		LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_ROLE_ORDER);
+	elseif ( displayType == Enum.LFGListDisplayType.ClassEnumerate ) then
 		self.Enumerate:Show();
-		LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, activityInfo.maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_CLASS_ORDER);
-	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.PlayerCount ) then
+		LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_CLASS_ORDER);
+	elseif ( displayType == Enum.LFGListDisplayType.PlayerCount ) then
 		self.PlayerCount:Show();
 		LFGBrowseGroupDataDisplayPlayerCount_Update(self.PlayerCount, displayData, disabled);
-	elseif ( activityInfo.displayType ~= Enum.LFGListDisplayType.HideAll ) then
+	elseif ( displayType ~= Enum.LFGListDisplayType.HideAll ) then
 		GMError("Unknown display type");
 	end
 end
@@ -1056,22 +1076,57 @@ end
 -------------------------------------------------------
 ----------Util
 -------------------------------------------------------
-local roleRemainingKeyLookup = {
-	["TANK"] = "TANK_REMAINING",
-	["HEALER"] = "HEALER_REMAINING",
-	["DAMAGER"] = "DAMAGER_REMAINING",
-};
-
 local function HasRemainingSlotsForLocalPlayerRole(lfgSearchResultID)
 	local roles = C_LFGList.GetSearchResultMemberCounts(lfgSearchResultID);
-	local playerRole = "DAMAGER"; -- TODO: IMPLEMENT ONCE SOLO ROLES ARE IN
-	return roles[roleRemainingKeyLookup[playerRole]] > 0;
+	local playerRoles = C_LFGList.GetRoles();
+	local canTank = roles["TANK_REMAINING"] > 0 and playerRoles.tank;
+	local canHeal = roles["HEALER_REMAINING"] > 0 and playerRoles.healer;
+	local canDPS = roles["DAMAGER_REMAINING"] > 0 and playerRoles.dps;
+	local hasSlotForRole = canTank or canHeal or canDPS;
+	return hasSlotForRole, canTank, canHeal, canDPS;
 end
 
 function LFGBrowseUtil_SortSearchResults(results)
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+	local activeEntryUseDungeonRoles = false;
+	if (activeEntryInfo) then
+		for _, activityID in ipairs(activeEntryInfo.activityIDs) do
+			local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+			if (activityInfo and activityInfo.useDungeonRoleExpectations) then
+				activeEntryUseDungeonRoles = true;
+				break;
+			end
+		end
+	end
+	local groupMemberCounts = GetGroupMemberCounts();
+
 	local function SortCB(searchResultID1, searchResultID2)
 		local searchResultInfo1 = C_LFGList.GetSearchResultInfo(searchResultID1);
 		local searchResultInfo2 = C_LFGList.GetSearchResultInfo(searchResultID2);
+
+		local hasSelf1 = searchResultInfo1.hasSelf;
+		local hasSelf2 = searchResultInfo2.hasSelf;
+		if (hasSelf1 ~= hasSelf2) then
+			return hasSelf1; -- Always put self at the top.
+		end
+
+		-- Prioritize results that have a match.
+		if (activeEntryInfo) then
+			local matchingActivity1 = false;
+			local matchingActivity2 = false;
+			for _, activityID in ipairs(activeEntryInfo.activityIDs) do
+				if (not matchingActivity1 and tContains(searchResultInfo1.activityIDs, activityID)) then
+					matchingActivity1 = true;
+				end
+				if (not matchingActivity2 and tContains(searchResultInfo2.activityIDs, activityID)) then
+					matchingActivity2 = true;
+				end
+			end
+
+			if (matchingActivity1 ~= matchingActivity2) then
+				return matchingActivity1;
+			end
+		end
 
 		local isSolo1 = searchResultInfo1.numMembers == 1;
 		local isSolo2 = searchResultInfo2.numMembers == 1;
@@ -1079,21 +1134,69 @@ function LFGBrowseUtil_SortSearchResults(results)
 			if (IsInGroup()) then
 				return isSolo1; -- When in a group, solo players go to the top.
 			else
-				return isSolo2 -- When solo, groups go to the top.
+				return isSolo2; -- When solo, groups go to the top.
 			end
 		end
 
 		if (isSolo1) then
-			-- For solo players, numRoles > canTank > canHeal > canDPS > timeInQueue.
-			-- TODO: IMPLEMENT ONCE SOLO ROLES ARE IN
-		else
-			-- For groups, hasSlotForOurRoles > groupSize > timeInQueue
-			local hasSlotForRole1 = HasRemainingSlotsForLocalPlayerRole(searchResultID1);
-			local hasSlotForRole2 = HasRemainingSlotsForLocalPlayerRole(searchResultID2);
-			-- Groups with your current role available are preferred
-			if (hasSlotForRole1 ~= hasSlotForRole2) then
-				return hasRemainingRole1;
+			-- For solo players, canTank > canHeal > canDPS > timeInQueue.
+			-- Role ordering will change based on party if we're listed for a dungeon.
+			local roleOrderings = {"TANK", "HEALER", "DAMAGER"};
+			if (activeEntryUseDungeonRoles and groupMemberCounts) then
+				if (groupMemberCounts["TANK"] >= LFGBROWSE_DUNGEON_NUM_TANKS_EXPECTED) then
+					tDeleteItem(roleOrderings, "TANK");
+					tinsert(roleOrderings, "TANK");
+				end
+				if (groupMemberCounts["HEALER"] >= LFGBROWSE_DUNGEON_NUM_HEALERS_EXPECTED) then
+					tDeleteItem(roleOrderings, "HEALER");
+					tinsert(roleOrderings, "HEALER");
+				end
+				if (groupMemberCounts["DAMAGER"] >= LFGBROWSE_DUNGEON_NUM_DPS_EXPECTED) then
+					tDeleteItem(roleOrderings, "DAMAGER");
+					tinsert(roleOrderings, "DAMAGER");
+				end
 			end
+
+			local roles1 = C_LFGList.GetSearchResultMemberCounts(searchResultID1);
+			local roles2 = C_LFGList.GetSearchResultMemberCounts(searchResultID2);
+			for _, desiredRole in ipairs(roleOrderings) do
+				local canPerformRole1 = roles1["LEADER_ROLE_" .. desiredRole];
+				local canPerformRole2 = roles2["LEADER_ROLE_" .. desiredRole];
+				if (canPerformRole1 ~= canPerformRole2) then
+					return canPerformRole1;
+				end
+				if (canPerformRole1) then
+					-- If we found a role that both players can perform, then they're both equally desired as far as role diffentiation goes.
+					break;
+				end
+			end
+		else
+			-- For groups, hasSlotForRole > groupSize > canTank > canHeal > timeInQueue.
+			
+			-- Groups with one of your current roles available are preferred.
+			local hasSlotForRole1, canTank1, canHeal1, canDPS1 = HasRemainingSlotsForLocalPlayerRole(searchResultID1);
+			local hasSlotForRole2, canTank2, canHeal2, canDPS2 = HasRemainingSlotsForLocalPlayerRole(searchResultID2);
+			if (hasSlotForRole1 ~= hasSlotForRole2) then
+				return hasSlotForRole1;
+			end
+
+			-- If both groups can accommodate one or more of our roles, prioritize the larger group.
+			if (searchResultInfo1.numMembers ~= searchResultInfo2.numMembers) then
+				return searchResultInfo1.numMembers > searchResultInfo2.numMembers;
+			end
+
+			-- If both groups are the same size... we'll start looking at the particular roles. Groups that need more in-demand roles should be higher.
+			if (canTank1 ~= canTank2) then
+				return canTank1;
+			end
+			if (canHeal1 ~= canHeal2) then
+				return canHeal1;
+			end
+		end
+
+		-- If we've gotten this far, prioritize the older one.
+		if (searchResultInfo1.age ~= searchResultInfo2.age) then
+			return searchResultInfo1.age > searchResultInfo2.age;
 		end
 
 		--If we aren't sorting by anything else, just go by ID
@@ -1161,4 +1264,27 @@ function LFGBrowseUtil_ReportAdvertisement(searchResultID, leaderName)
 	ReportFrame:SetMajorType(Enum.ReportMajorCategory.InappropriateCommunication);
 	local sendReportWithoutDialog = true; 
 	ReportFrame:InitiateReport(reportInfo, leaderName, nil, nil, sendReportWithoutDialog); 
+end
+
+function LFGBrowseUtil_GetBestDisplayTypeForActivityIDs(activityIDs)
+	local bestDisplayType = nil;
+	local bestDisplayTypePriority = 0;
+	local maxNumPlayers = 0;
+
+	for _, activityID in ipairs(activityIDs) do
+		local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+		if (activityInfo) then
+			local displayTypePriority = LFGBROWSE_DISPLAYTYPE_PRIORITY[activityInfo.displayType];
+			if (displayTypePriority and displayTypePriority > bestDisplayTypePriority) then
+				bestDisplayType = activityInfo.displayType;
+				bestDisplayTypePriority = displayTypePriority;
+			end
+			if (activityInfo.maxNumPlayers > maxNumPlayers) then
+				maxNumPlayers = activityInfo.maxNumPlayers;
+			end
+		end
+	end
+
+
+	return bestDisplayType, maxNumPlayers;
 end
