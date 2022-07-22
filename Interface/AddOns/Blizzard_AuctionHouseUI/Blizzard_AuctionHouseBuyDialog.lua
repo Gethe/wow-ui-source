@@ -101,9 +101,11 @@ local BuyState = {
 
 function AuctionHouseBuyDialogMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, AUCTION_HOUSE_BUY_DIALOG_EVENTS);
+	self:GetAuctionHouseFrame():SetDialogOverlayShown(true);
 end
 
 function AuctionHouseBuyDialogMixin:OnHide()
+	self:GetAuctionHouseFrame():SetDialogOverlayShown(false);
 	FrameUtil.UnregisterFrameForEvents(self, AUCTION_HOUSE_BUY_DIALOG_EVENTS);
 
 	C_AuctionHouse.CancelCommoditiesPurchase();
@@ -139,7 +141,7 @@ function AuctionHouseBuyDialogMixin:OnEvent(event, ...)
 			self:SetState(BuyState.PriceUnavailable);
 		elseif updatedUnitPrice > currentUnitPrice then
 			local totalPriceIncrease = updatedTotalPrice - currentTotalPrice;
-			local unitPriceIncrease = math.ceil(totalPriceIncrease / self.quantity); -- Using math.ceil directly because we want to show copper. 
+			local unitPriceIncrease = math.ceil(totalPriceIncrease / self.quantity); -- Using math.ceil directly because we want to show copper.
 			self.Notification:SetPriceIncreases(unitPriceIncrease, totalPriceIncrease);
 			self.PriceFrame:SetAmount(updatedTotalPrice);
 			self:SetState(BuyState.PriceUpdated);

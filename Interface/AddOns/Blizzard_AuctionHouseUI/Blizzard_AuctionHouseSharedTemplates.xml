@@ -63,6 +63,11 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
+			<Button parentKey="FavoriteButton" inherits="AuctionHouseFavoriteButtonBaseTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-6" y="-6"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -70,7 +75,7 @@
 					<Size x="0" y="64"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.ItemButton" relativePoint="RIGHT" x="11" y="1"/>
-						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="1"/>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-31" y="1"/>
 					</Anchors>
 					<Shadow x="1" y="-1">
 						<Color r="0" g="0" b="0"/>
@@ -197,4 +202,15 @@
 			</Button>
 		</Frames>
 	</Frame>
+
+	<Button name="AuctionHouseFavoriteButtonBaseTemplate" mixin="AuctionHouseFavoriteButtonBaseMixin" frameStrata="HIGH" virtual="true">
+		<Size x="20" y="18"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-icon-favorite"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-icon-favorite-off" alphaMode="ADD"/>
+	</Button>
 </Ui>

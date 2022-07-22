@@ -419,7 +419,7 @@ function AuctionHouseItemSellFrameMixin:GetDepositAmount()
 	if not item then
 		return 0;
 	end
-	
+
 	local duration = self:GetDuration();
 	local quantity = self:GetQuantity();
 	local deposit = C_AuctionHouse.CalculateItemDeposit(item, duration, quantity);
@@ -450,7 +450,7 @@ function AuctionHouseItemSellFrameMixin:CanPostItem()
 	if self.multisellInProgress then
 		return false, nil;
 	end
-	
+
 	local canPostItem, reasonTooltip = AuctionHouseSellFrameMixin.CanPostItem(self);
 	if not canPostItem then
 		return canPostItem, reasonTooltip;
@@ -468,18 +468,47 @@ function AuctionHouseItemSellFrameMixin:CanPostItem()
 	return true, nil;
 end
 
-function AuctionHouseItemSellFrameMixin:PostItem()
-	if not self:CanPostItem() then
-		return;
-	end
-
+function AuctionHouseItemSellFrameMixin:GetPostDetails()
 	local item = self:GetItem();
 	local duration = self:GetDuration();
 	local quantity = self:GetQuantity();
 	local bidPrice, buyoutPrice = self:GetPrice();
-	C_AuctionHouse.PostItem(item, duration, quantity, bidPrice, buyoutPrice);
 
-	if quantity == 1 then
+	return item, duration, quantity, bidPrice, buyoutPrice;
+end
+
+function AuctionHouseItemSellFrameMixin:StartPost(...)
+	if not self:CanPostItem() then
+		return;
+	end
+
+	if not C_AuctionHouse.PostItem(...) then
+		self:ClearPost();
+	else
+		self:CachePendingPost(...);
+	end
+end
+
+function AuctionHouseItemSellFrameMixin:PostItem()
+	self:StartPost(self:GetPostDetails());
+end
+
+function AuctionHouseItemSellFrameMixin:ConfirmPost()
+	if self.pendingPost then
+		C_AuctionHouse.ConfirmPostItem(SafeUnpack(self.pendingPost));
+		self:ClearPost();
+		return true;
+	end
+end
+
+function AuctionHouseItemSellFrameMixin:CachePendingPost(...)
+	self.pendingPost = SafePack(...);
+end
+
+function AuctionHouseItemSellFrameMixin:ClearPost()
+	self.pendingPost = nil;
+
+	if self:GetQuantity() == 1 then
 		local fromItemDisplay = nil;
 		local refreshListWithPreviousItem = true;
 		self:SetItem(nil, fromItemDisplay, refreshListWithPreviousItem);

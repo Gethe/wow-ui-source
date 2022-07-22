@@ -214,29 +214,12 @@ function AuctionHouseTableCellFavoriteMixin:OnLineLeave()
 end
 
 
-AuctionHouseTableCellFavoriteButtonMixin = CreateFromMixins(AuctionHouseTableCellMixin);
-
-function AuctionHouseTableCellFavoriteButtonMixin:OnClick()
-	if not self:IsInteractionAvailable() then
-		return;
-	end
-	
-	local setToFavorite = not self:IsFavorite();
-	C_AuctionHouse.SetFavoriteItem(self.itemKey, setToFavorite);
-	self:UpdateFavoriteState();
-end
-
-function AuctionHouseTableCellFavoriteButtonMixin:IsInteractionAvailable()
-	return C_AuctionHouse.FavoritesAreAvailable() and (self:IsFavorite() or not C_AuctionHouse.HasMaxFavorites());
-end
+AuctionHouseTableCellFavoriteButtonMixin = CreateFromMixins(AuctionHouseTableCellMixin, AuctionHouseFavoriteButtonBaseMixin);
 
 function AuctionHouseTableCellFavoriteButtonMixin:OnEnter()
 	if not self:IsInteractionAvailable() then
+		self:ShowMaxedFavoritesTooltip();
 		self:LockTexture();
-
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_AddErrorLine(GameTooltip, AUCTION_HOUSE_FAVORITES_MAXED_TOOLTIP);
-		GameTooltip:Show();
 	else
 		local row = self:GetParent():GetParent();
 		ExecuteFrameScript(row, "OnEnter");
@@ -251,17 +234,16 @@ function AuctionHouseTableCellFavoriteButtonMixin:OnLeave()
 	ExecuteFrameScript(row, "OnLeave");
 end
 
-function AuctionHouseTableCellFavoriteButtonMixin:SetItemKey(itemKey)
-	self.itemKey = itemKey;
-	self:UpdateFavoriteState();
-end
-
 function AuctionHouseTableCellFavoriteButtonMixin:UpdateFavoriteState()
 	local isFavorite = self:IsFavorite();
 	local defaultTexture = self.textureLocked and "auctionhouse-icon-favorite-off" or nil;
 	self.NormalTexture:SetAtlas(isFavorite and "auctionhouse-icon-favorite" or defaultTexture);
 	self.HighlightTexture:SetAtlas(isFavorite and "auctionhouse-icon-favorite" or "auctionhouse-icon-favorite-off");
 	self.HighlightTexture:SetAlpha(isFavorite and 0.2 or 0.4);
+end
+
+function AuctionHouseTableCellFavoriteButtonMixin:UpdateState()
+	self:UpdateFavoriteState();
 end
 
 function AuctionHouseTableCellFavoriteButtonMixin:LockTexture()
@@ -279,15 +261,6 @@ function AuctionHouseTableCellFavoriteButtonMixin:UnlockTexture()
 		self.NormalTexture:SetAtlas(nil);
 	end
 end
-
-function AuctionHouseTableCellFavoriteButtonMixin:IsFavorite()
-	return self.itemKey and C_AuctionHouse.IsFavoriteItem(self.itemKey);
-end
-
-function AuctionHouseTableCellFavoriteButtonMixin:UpdateState()
-	self:UpdateFavoriteState();
-end
-
 
 AuctionHouseTableCellBidMixin = CreateFromMixins(AuctionHouseTablePriceDisplayMixin);
 

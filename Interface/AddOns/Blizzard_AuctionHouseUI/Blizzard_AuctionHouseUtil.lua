@@ -711,6 +711,7 @@ local AuctionHouseErrorToErrorText = {
 	[Enum.AuctionHouseError.EquippedBag] = ERR_AUCTION_EQUIPPED_BAG,
 	[Enum.AuctionHouseError.WrappedItem] = ERR_AUCTION_WRAPPED_ITEM,
 	[Enum.AuctionHouseError.LootItem] = ERR_AUCTION_LOOT_ITEM,
+	[Enum.AuctionHouseError.DoubleBid] = ERR_AUCTION_DOUBLE_BID,
 };
 
 function AuctionHouseUtil.GetErrorText(auctionHouseError)

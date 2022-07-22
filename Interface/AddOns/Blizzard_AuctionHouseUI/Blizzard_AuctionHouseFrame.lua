@@ -55,7 +55,6 @@ StaticPopupDialogs["PURCHASE_AUCTION_UNIQUE"] = {
 	acceptDelay = 3,
 };
 
-
 StaticPopupDialogs["CANCEL_AUCTION"] = {
 	text = CANCEL_AUCTION_CONFIRMATION,
 	button1 = ACCEPT,
@@ -79,10 +78,43 @@ StaticPopupDialogs["CANCEL_AUCTION"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["AUCTION_HOUSE_POST_WARNING"] = {
+	text = NORMAL_FONT_COLOR:WrapTextInColorCode(CONFIRM_AUCTION_POSTING_TEXT),
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function ()
+		if not AuctionHouseFrame.CommoditiesSellFrame:ConfirmPost() then
+			AuctionHouseFrame.ItemSellFrame:ConfirmPost();
+		end
+	end,
+	OnHide = function()
+		AuctionHouseFrame:SetDialogOverlayShown(false);
+	end,
+
+	showAlert = true,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["AUCTION_HOUSE_POST_ERROR"] = {
+	text = NORMAL_FONT_COLOR:WrapTextInColorCode(AUCTION_POSTING_ERROR_TEXT),
+	button1 = OKAY,
+	OnHide = function()
+		AuctionHouseFrame:SetDialogOverlayShown(false);
+	end,
+	showAlert = true,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
 AUCTION_HOUSE_STATIC_POPUPS = {
 	"BUYOUT_AUCTION",
 	"BID_AUCTION",
 	"CANCEL_AUCTION",
+	"AUCTION_HOUSE_POST_WARNING",
+	"AUCTION_HOUSE_POST_ERROR",
 };
 
 
@@ -94,7 +126,7 @@ AuctionHouseSortOrderState = tInvert({
 	"PrimarySorted",
 	"PrimaryReversed",
 	"Sorted",
-	"Reversed",	
+	"Reversed",
 });
 
 
@@ -155,7 +187,7 @@ local function InitAuctionHouseSortsBySearchContext()
 				g_auctionHouseSortsBySearchContext[searchContext][2] = { sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false };
 			end
 		end
-		
+
 	end
 end
 
@@ -319,7 +351,9 @@ function AuctionHouseFrameMixin:OnLoad()
 	end
 
 	self:RegisterEvent("ADDON_LOADED");
-	
+	self:RegisterEvent("AUCTION_HOUSE_POST_WARNING");
+	self:RegisterEvent("AUCTION_HOUSE_POST_ERROR");
+
 	PanelTemplates_SetNumTabs(self, #self.Tabs);
 
 	self.tabsForDisplayMode = {};
@@ -337,7 +371,7 @@ end
 
 function AuctionHouseFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, AUCTION_HOUSE_FRAME_EVENTS);
-	
+
 	self:SetPortraitToUnit("npc");
 
 	self:SetDisplayMode(AuctionHouseFrameDisplayMode.Buy);
@@ -347,6 +381,8 @@ function AuctionHouseFrameMixin:OnShow()
 	if C_AuctionHouse.HasFavorites() then
 		self:QueryAll(AuctionHouseSearchContext.AllFavorites);
 	end
+
+	OpenAllBags(self);
 
 	PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN);
 end
@@ -388,6 +424,10 @@ function AuctionHouseFrameMixin:OnEvent(event, ...)
 	elseif event == "AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION" then
 		local commodityName, commodityQuantity = ...;
 		Chat_AddSystemMessage(ERR_AUCTION_COMMODITY_WON_S:format(commodityName, commodityQuantity));
+	elseif event == "AUCTION_HOUSE_POST_WARNING" then
+		self:ShowPostConfirmationDialog("AUCTION_HOUSE_POST_WARNING");
+	elseif event == "AUCTION_HOUSE_POST_ERROR" then
+		self:ShowPostConfirmationDialog("AUCTION_HOUSE_POST_ERROR");
 	end
 end
 
@@ -397,12 +437,15 @@ function AuctionHouseFrameMixin:OnHide()
 	AuctionHouseMultisellProgressFrame:Hide();
 
 	self.BrowseResultsFrame:Reset();
+	self:SetDialogOverlayShown(false);
 
 	self:ClearPostItem();
 
 	C_AuctionHouse.CloseAuctionHouse();
 
 	self:CloseStaticPopups();
+
+	CloseAllBags(self);
 
 	PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE);
 end
@@ -449,7 +492,7 @@ AuctionHouseFrameDisplayMode = {
 		"SearchBar",
 		"ItemBuyFrame",
 	},
-	
+
 	CommoditiesSell = {
 		"CommoditiesSellFrame",
 		"CommoditiesSellList",
@@ -582,7 +625,7 @@ end
 
 function AuctionHouseFrameMixin:UpdateTitle()
 	local tab = PanelTemplates_GetSelectedTab(self);
-	
+
 	local title = AUCTION_HOUSE_FRAME_TITLE_BUY;
 	if tab == 2 then
 		title = AUCTION_HOUSE_FRAME_TITLE_SELL;
@@ -633,6 +676,7 @@ function AuctionHouseFrameMixin:SelectBrowseResult(browseResult)
 	local searchContext = itemKeyInfo.isCommodity and AuctionHouseSearchContext.BuyCommodities or AuctionHouseSearchContext.BuyItems;
 	if itemKeyInfo.isCommodity then
 		self.CommoditiesBuyFrame:SetItemIDAndPrice(itemKey.itemID, browseResult.minPrice);
+		self.CommoditiesBuyFrame.BuyDisplay.ItemDisplay.FavoriteButton:SetItemKey(itemKey);
 		self:SetDisplayMode(AuctionHouseFrameDisplayMode.CommoditiesBuy);
 	else
 		self.ItemBuyFrame:SetItemKey(itemKey);
@@ -851,4 +895,13 @@ function AuctionHouseFrameMixin:GetBidStatus(bidInfo)
 	else
 		return AuctionHouseBidStatus.OtherBid;
 	end
+end
+
+function AuctionHouseFrameMixin:SetDialogOverlayShown(shown)
+	self.DialogOverlay:SetShown(shown);
+end
+
+function AuctionHouseFrameMixin:ShowPostConfirmationDialog(which)
+	self:SetDialogOverlayShown(true);
+	StaticPopup_Show(which);
 end
