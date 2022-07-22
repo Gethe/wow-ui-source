@@ -84,6 +84,31 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "ConfirmPostCommodity",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "item", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "unitPrice", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ConfirmPostItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "item", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "bid", Type = "number", Nilable = true },
+				{ Name = "buyout", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "FavoritesAreAvailable",
 			Type = "Function",
 
@@ -781,6 +806,11 @@ local AuctionHouse =
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "unitPrice", Type = "number", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "needsConfirmation", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "PostItem",
@@ -793,6 +823,11 @@ local AuctionHouse =
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "bid", Type = "number", Nilable = true },
 				{ Name = "buyout", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "needsConfirmation", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1047,6 +1082,16 @@ local AuctionHouse =
 			{
 				{ Name = "itemKey", Type = "ItemKey", Nilable = true },
 			},
+		},
+		{
+			Name = "AuctionHousePostError",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_POST_ERROR",
+		},
+		{
+			Name = "AuctionHousePostWarning",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_POST_WARNING",
 		},
 		{
 			Name = "AuctionHouseScriptDeprecated",

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Script file="Blizzard_AuctionHouseFrame.lua"/>	
-	
+	<Script file="Blizzard_AuctionHouseFrame.lua"/>
+
 	<Frame name="AuctionHouseFrame" toplevel="true" enableMouse="true" parent="UIParent" mixin="AuctionHouseFrameMixin" inherits="PortraitFrameTemplate" hidden="true">
 		<Size x="800" y="538"/>
 		<Anchors>
@@ -67,7 +67,7 @@
 				</Anchors>
 			</Button>
 			<!-- Tabs -->
-			
+
 			<!-- DropDowns -->
 			<!-- DropDowns need to be loaded first to be referenced by other subframes. -->
 			<Frame parentKey="FavoriteDropDown" inherits="FavoriteDropDownTemplate" hidden="true"/>
@@ -109,7 +109,7 @@
 					<Anchor point="RIGHT" x="-1" y="0"/>
 				</Anchors>
 			</Frame>
-			
+
 			<Frame parentKey="ItemBuyFrame" inherits="AuctionHouseItemBuyFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.CategoriesList" relativePoint="RIGHT" x="0" y="0"/>
@@ -119,7 +119,7 @@
 				</Anchors>
 			</Frame>
 			<!-- Buy frames -->
-			
+
 			<!-- Sell frames -->
 			<Frame parentKey="ItemSellFrame" inherits="AuctionHouseItemSellFrameTemplate" hidden="true">
 				<Size x="363" y="0"/>
@@ -141,7 +141,7 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ItemSellFrame" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
 				</Anchors>
 			</Frame>
-			
+
 			<Frame parentKey="CommoditiesSellFrame" inherits="AuctionHouseCommoditiesSellFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ItemSellFrame" relativePoint="TOPLEFT"/>
@@ -173,8 +173,15 @@
 				</Anchors>
 			</Frame>
 			<!-- Auctions frames -->
-			
+
 			<!-- Dialogs -->
+			<Button parentKey="DialogOverlay" frameLevel="1000" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="-22"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</Button>
+
 			<Frame parentKey="BuyDialog" inherits="AuctionHouseBuyDialogTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="50"/>
