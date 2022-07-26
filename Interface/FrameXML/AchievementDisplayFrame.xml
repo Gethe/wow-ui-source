@@ -70,7 +70,7 @@
 				<FontString parentKey="Description" inherits="GameFontBlack" justifyH="LEFT">
 					<Size x="260" y="30"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.HeaderBackground" x="=-20" y="-9"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.HeaderBackground" x="-20" y="-9"/>
 					</Anchors>
 					<Color color="PAPER_FRAME_DARK_COLOR"/>
 				</FontString>

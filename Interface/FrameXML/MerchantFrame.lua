@@ -798,7 +798,6 @@ end
 
 function MerchantFrame_ConfirmLimitedCurrencyPurchase(itemButton, currencyInfo, numToPurchase, totalCurrencyCost)
 	local currencyIcon = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1, 0, 0);
-	local currencyString = currencyIcon .. currencyInfo.name;
 	local costString = currencyIcon .. totalCurrencyCost .. " " .. currencyInfo.name;
 
 	local alreadySpent = currencyInfo.totalEarned - currencyInfo.quantity;
@@ -811,7 +810,7 @@ function MerchantFrame_ConfirmLimitedCurrencyPurchase(itemButton, currencyInfo, 
 	if isFinalPurchase then
 		popupData.confirmationText = LIMITED_CURRENCY_PURCHASE_FINAL:format(currencyInfo.name, currencyInfo.name, costString);
 	else
-		popupData.confirmationText = LIMITED_CURRENCY_PURCHASE:format(costString, unusedAmount - totalCurrencyCost, currencyString, costString)
+		popupData.confirmationText = LIMITED_CURRENCY_PURCHASE:format(costString, unusedAmount - totalCurrencyCost, currencyInfo.name, costString)
 	end
 
 	StaticPopup_Show("CONFIRM_PURCHASE_ITEM_DELAYED", nil, nil, popupData);

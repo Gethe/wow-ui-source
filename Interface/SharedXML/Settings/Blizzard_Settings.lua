@@ -235,12 +235,12 @@ function Settings.WrapTooltipWithBinding(tooltipString, action)
 end
 
 function Settings.InitTooltip(name, tooltip)
-	GameTooltip_AddNormalLine(SettingsTooltip, name);
+	GameTooltip_AddHighlightLine(SettingsTooltip, name);
 	if tooltip then
 		if type(tooltip) == "function" then
-			GameTooltip_AddHighlightLine(SettingsTooltip, tooltip());
+			GameTooltip_AddNormalLine(SettingsTooltip, tooltip());
 		else
-			GameTooltip_AddHighlightLine(SettingsTooltip, tooltip);
+			GameTooltip_AddNormalLine(SettingsTooltip, tooltip);
 		end
 	end
 end
@@ -387,7 +387,7 @@ function Settings.CreateDropDownInitTooltip(setting, name, tooltip, options)
 				if option.disabled then
 					optionLabel = DISABLED_FONT_COLOR:WrapTextInColorCode(option.label);
 				else
-					optionLabel = NORMAL_FONT_COLOR:WrapTextInColorCode(option.label);
+					optionLabel = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(option.label);
 				end
 
 				if option.disabled then
@@ -395,7 +395,7 @@ function Settings.CreateDropDownInitTooltip(setting, name, tooltip, options)
 				elseif default and option.recommend then
 					optionTooltip = GREEN_FONT_COLOR:WrapTextInColorCode(option.tooltip);
 				else
-					optionTooltip = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(option.tooltip);
+					optionTooltip = NORMAL_FONT_COLOR:WrapTextInColorCode(option.tooltip);
 				end
 				GameTooltip_AddDisabledLine(SettingsTooltip, string.format("%s: %s", optionLabel, optionTooltip));
 

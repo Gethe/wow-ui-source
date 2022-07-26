@@ -207,9 +207,7 @@
 				<Alpha childKey="AnimBarGlow" startDelay="0.3" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
 				<Translation parentKey="TransAnim3" childKey="AnimBarGlow" duration="0.25" order="1" offsetX="5" offsetY="0"/>
 				<Scale childKey="AnimBarGlow" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="0.75" toScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="20" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 			</AnimationGroup>
 		</Animations>
@@ -256,9 +254,7 @@
 				<Alpha childKey="BarGlow" startDelay="0.3" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
 				<Translation parentKey="TransAnim" childKey="BarGlow" duration="0.25" order="1" offsetX="2" offsetY="0"/>
 				<Scale childKey="BarGlow" duration="0.25" order="1" fromScaleX="0.15" fromScaleY="1" toScaleX="0.2" toScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="20" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 			</AnimationGroup>
 		</Animations>

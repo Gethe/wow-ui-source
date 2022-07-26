@@ -7,18 +7,19 @@ function ProfessionsSalvageSlotMixin:Reset()
 	self.quantityAvailableCallback = nil;
 	self.CustomerState:Hide();
 	self.allocationItem = nil;
+	self.Button:Reset();
+	self.Button:SetLocked(false);
 end
 
 function ProfessionsSalvageSlotMixin:Init(transaction, quantityRequired)
+	self:Reset();
+
 	if self.continuableContainer then
 		self.continuableContainer:Cancel();
 	end
 	self.continuableContainer = ContinuableContainer:Create();
 
 	self.quantityRequired = quantityRequired;
-
-	self.Button:Reset();
-	self.Button:SetLocked(false);
 
 	local function OnItemsLoaded()
 		local item = transaction:GetSalvageAllocation();

@@ -21,7 +21,7 @@ function MainMenuBarMixin:OnLoad()
 	self:UpdateEndCaps();
 
 	-- Main bar always shows grid
-	for i, actionButton in ipairs(self.ActionButtons) do
+	for i, actionButton in ipairs(self.actionButtons) do
 		actionButton:SetAttribute("showgrid", 1);
 	end
 end

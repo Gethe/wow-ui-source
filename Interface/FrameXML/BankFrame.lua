@@ -67,7 +67,7 @@ function BankFrameItemButton_OnEnter (self)
 	end
 
 	if (self.isBag) then
-		if (not IsInventoryItemProfessionBag("player", self:GetInventorySlot())) then
+		if ContainerFrame_CanContainerUseFilterMenu(self:GetBagID()) then
 			for i, flag in ContainerFrameUtil_EnumerateBagGearFilters() do
 				if C_Container.GetBagSlotFlag(self:GetID() + NUM_BAG_SLOTS, flag) then -- [NB] TODO: Bank bags should use actual bank bag ids rather than translating in place or using a different API.
 					GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[flag]));

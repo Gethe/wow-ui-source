@@ -257,28 +257,30 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 		self.CreateButton:Show();
 		self.ViewGuildCraftersButton:Hide();
 
-		local alternateVerb = currentRecipeInfo.alternateVerb;
-		if alternateVerb and alternateVerb ~= "" then
-			self.CreateButton:SetText(alternateVerb);
-			self.CreateAllButton:Hide();
-			self.CreateMultipleInputBox:Hide();
-		else
-			self.CreateButton:SetText(CREATE_PROFESSION);
-			self.CreateAllButton:SetText(CREATE_ALL);
+		if currentRecipeInfo.createsItem then
 			self.CreateAllButton:Show();
 			self.CreateMultipleInputBox:Show();
+		else
+			self.CreateAllButton:Hide();
+			self.CreateMultipleInputBox:Hide();
 		end
 
-		-- local transaction = self.SchematicForm:GetTransaction();
-		-- local countMax = Professions.GetCreationCountMax(transaction);
-		-- local createAllText = PROFESSIONS_CREATE_ALL_COUNT:format(countMax);
-		-- self.CreateAllButton:SetTextToFit(createAllText);
-		local countMax = self:GetCraftableCount();
-		self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_COUNT:format(countMax));
-		self.CreateAllButton:Show();
+		if currentRecipeInfo.abilityVerb then
+			-- abilityVerb is recipe-level override
+			self.CreateButton:SetText(currentRecipeInfo.abilityVerb);
+		elseif currentRecipeInfo.alternateVerb then
+			-- alternateVerb is profession-level override
+			self.CreateButton:SetText(currentRecipeInfo.alternateVerb);
+		else
+			self.CreateButton:SetText(CREATE_PROFESSION);
+		end
 
-		local function OnCooldown(recipeID)
-			return C_TradeSkillUI.GetRecipeCooldown(recipeID) ~= nil;
+		local countMax = self:GetCraftableCount();
+		if currentRecipeInfo.abilityAllVerb then
+			-- abilityAllVerb is recipe-level override
+			self.CreateAllButton:SetTextToFit(currentRecipeInfo.abilityAllVerb:format(countMax));
+		else
+			self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_COUNT:format(countMax));
 		end
 
 		-- CAIS not relevant anymore since the client is denied login. Nevertheless, this is carried over from the
@@ -294,7 +296,7 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 			self.CreateButton.tooltipText = reasonText;
 			self.CreateAllButton.tooltipText = reasonText;
 			enabled = false;
-		elseif OnCooldown(currentRecipeInfo.recipeID) then
+		elseif C_TradeSkillUI.GetRecipeCooldown(currentRecipeInfo.recipeID) ~= nil then
 			self.CreateButton.tooltipText = PROFESSIONS_RECIPE_COOLDOWN;
 			self.CreateAllButton.tooltipText = PROFESSIONS_RECIPE_COOLDOWN;
 			enabled = false;

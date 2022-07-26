@@ -244,19 +244,12 @@ function TargetFrame_OnEvent (self, event, ...)
 			self:Show();
 			TargetFrame_Update(self);
 			TargetFrame_UpdateRaidTargetIcon(self);
+			TargetFrame_UpdateAuras(self);
 		else
 			self:Hide();
 		end
 		CloseDropDownMenus();
 	end
-end
-
-function TargetFrame_OnVariablesLoaded()
-	TargetFrame_SetLocked(not TARGET_FRAME_UNLOCKED);
-	TargetFrame_UpdateBuffsOnTop();
-
-	FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
-	FocusFrame_UpdateBuffsOnTop();
 end
 
 function TargetFrame_OnHide (self)
@@ -655,10 +648,10 @@ function TargetFrame_UpdateAuras(self, unitAuraUpdateInfo)
 	local maxRowWidth;
 	-- update buff positions
 	maxRowWidth = ( haveTargetofTarget and self.TOT_AURA_ROW_WIDTH ) or AURA_ROW_WIDTH;
-	TargetFrame_UpdateAuraFrames(self, self.activeBuffs, numDebuffs, UpdateAuraFrame, TargetFrame_UpdateBuffAnchor, maxRowWidth, 3, mirrorAurasVertically);
+	TargetFrame_UpdateAuraFrames(self, self.activeBuffs, numBuffs, numDebuffs, UpdateAuraFrame, TargetFrame_UpdateBuffAnchor, maxRowWidth, 3, mirrorAurasVertically);
 	-- update debuff positions
 	maxRowWidth = ( haveTargetofTarget and self.auraRows < NUM_TOT_AURA_ROWS and self.TOT_AURA_ROW_WIDTH ) or AURA_ROW_WIDTH;
-	TargetFrame_UpdateAuraFrames(self, self.activeDebuffs, numBuffs, UpdateAuraFrame, TargetFrame_UpdateDebuffAnchor, maxRowWidth, 4, mirrorAurasVertically);
+	TargetFrame_UpdateAuraFrames(self, self.activeDebuffs, numDebuffs, numBuffs, UpdateAuraFrame, TargetFrame_UpdateDebuffAnchor, maxRowWidth, 4, mirrorAurasVertically);
 	-- update the spell bar position
 	if self.spellbar ~= nil then
 		Target_Spellbar_AdjustPosition(self.spellbar);
@@ -695,7 +688,7 @@ function TargetFrame_ShouldShowDebuffs(unit, caster, nameplateShowAll, casterIsA
     return true;
 end
 
-function TargetFrame_UpdateAuraFrames(self, auraList, numOppositeAuras, setupFunc, anchorFunc, maxRowWidth, offsetX, mirrorAurasVertically)
+function TargetFrame_UpdateAuraFrames(self, auraList, numAuras, numOppositeAuras, setupFunc, anchorFunc, maxRowWidth, offsetX, mirrorAurasVertically)
 	-- a lot of this complexity is in place to allow the auras to wrap around the target of target frame if it's shown
 	
 	-- Position auras
@@ -703,11 +696,15 @@ function TargetFrame_UpdateAuraFrames(self, auraList, numOppositeAuras, setupFun
 	local offsetY = AURA_OFFSET_Y;
 	-- current width of a row, increases as auras are added and resets when a new aura's width exceeds the max row width
 	local rowWidth = 0;
-	local i = 1;
+	local i = 0;
 	local firstIndexOnRow = 1;
 	local firstBuffOnRow;
 	local lastBuff;
 	auraList:Iterate(function(auraInstanceID, aura)
+		i = i + 1;
+		if i > numAuras then
+			return true;
+		end
 		local template = aura.isHarmful and "TargetDebuffFrameTemplate" or "TargetBuffFrameTemplate";
 		local pool = self.auraPools:GetPool(template);
 		local frame = pool:Acquire();
@@ -750,7 +747,7 @@ function TargetFrame_UpdateAuraFrames(self, auraList, numOppositeAuras, setupFun
 		end
 
 		lastBuff = frame;
-		i = i + 1;
+		return false;
 	end);
 end
 
@@ -1155,42 +1152,6 @@ function Target_Spellbar_AdjustPosition(self)
 	end
 end
 
-function TargetFrame_OnDragStart(self)
-	self:StartMoving();
-	self:SetUserPlaced(true);
-	self:SetClampedToScreen(true);
-end
-
-function TargetFrame_OnDragStop(self)
-	self:StopMovingOrSizing();
-end
-
-function TargetFrame_SetLocked(locked)
-	TARGET_FRAME_UNLOCKED = not locked;
-	if ( locked ) then
-		TargetFrame:RegisterForDrag();	--Unregister all buttons.
-	else
-		TargetFrame:RegisterForDrag("LeftButton");
-	end
-end
-
-function TargetFrame_ResetUserPlacedPosition()
-	TargetFrame:ClearAllPoints();
-	TargetFrame:SetUserPlaced(false);
-	TargetFrame:SetClampedToScreen(false);
-	TargetFrame_SetLocked(true);
-	UIParent_UpdateTopFramePositions();
-end
-
-function TargetFrame_UpdateBuffsOnTop()
-	if ( TARGET_FRAME_BUFFS_ON_TOP ) then
-		TargetFrame.buffsOnTop = true;
-	else
-		TargetFrame.buffsOnTop = false;
-	end
-	TargetFrame_UpdateAuras(TargetFrame);
-end
-
 -- *********************************************************************************
 -- Boss Frames
 -- *********************************************************************************
@@ -1203,6 +1164,7 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
 	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
+	self:UnregisterEvent("UNIT_AURA"); -- Boss frames do not display auras
 	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
 	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint(1)));
@@ -1264,10 +1226,8 @@ function FocusFrame_OnDragStop(self)
 	end
 end
 
-function FocusFrame_SetSmallSize(smallSize, onChange)
+function FocusFrame_SetSmallSize(smallSize)
 	if ( smallSize and not FocusFrame.smallSize ) then
-		local x = FocusFrame:GetLeft();
-		local y = FocusFrame:GetTop();
 		FocusFrame.smallSize = true;
 		FocusFrame.maxBuffs = 0;
 		FocusFrame.maxDebuffs = 8;
@@ -1280,11 +1240,6 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 		FocusFrameHealthBar.TextString:SetFontObject(TextStatusBarTextLarge);
 		FocusFrameHealthBar.TextString:SetPoint("CENTER", -50, 4)
 		FocusFrameTextureFrameName:SetWidth(120);
-		if ( onChange ) then
-			-- the frame needs to be repositioned because anchor offsets get adjusted with scale
-			FocusFrame:ClearAllPoints();
-			FocusFrame:SetPoint("TOPLEFT", x * SMALL_FOCUS_UPSCALE + 29, (y - GetScreenHeight()) * SMALL_FOCUS_UPSCALE - 13);
-		end
 		FocusFrame:UnregisterEvent("UNIT_CLASSIFICATION_CHANGED");
 		FocusFrame.showClassification = true;
 		FocusFrame:UnregisterEvent("PLAYER_FLAGS_CHANGED");
@@ -1298,8 +1253,6 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 --		TargetFrame_CheckClassification(FocusFrame, true);
 		TargetFrame_Update(FocusFrame);
 	elseif ( not smallSize and FocusFrame.smallSize ) then
-		local x = FocusFrame:GetLeft();
-		local y = FocusFrame:GetTop();
 		FocusFrame.smallSize = false;
 		FocusFrame.maxBuffs = nil;
 		FocusFrame.maxDebuffs = nil;
@@ -1312,11 +1265,6 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 		FocusFrameHealthBar.TextString:SetFontObject(TextStatusBarText);
 		FocusFrameHealthBar.TextString:SetPoint("CENTER", -50, 3)
 		FocusFrameTextureFrameName:SetWidth(100);
-		if ( onChange ) then
-			-- the frame needs to be repositioned because anchor offsets get adjusted with scale
-			FocusFrame:ClearAllPoints();
-			FocusFrame:SetPoint("TOPLEFT", (x - 29) / SMALL_FOCUS_UPSCALE, (y + 13) / SMALL_FOCUS_UPSCALE - GetScreenHeight());
-		end
 		FocusFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
 		FocusFrame.showClassification = true;
 		FocusFrame:RegisterEvent("PLAYER_FLAGS_CHANGED");
@@ -1325,15 +1273,6 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 		FocusFrame.showAuraCount = true;
 		TargetFrame_Update(FocusFrame);
 	end
-end
-
-function FocusFrame_UpdateBuffsOnTop()
-	if ( FOCUS_FRAME_BUFFS_ON_TOP ) then
-		FocusFrame.buffsOnTop = true;
-	else
-		FocusFrame.buffsOnTop = false;
-	end
-	TargetFrame_UpdateAuras(FocusFrame);
 end
 
 BossTargetFrameContainerMixin = { };

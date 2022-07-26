@@ -33,12 +33,10 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
-	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("PVP_TIMER_UPDATE");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
-	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
 	self:RegisterEvent("QUEST_SESSION_JOINED");
 	self:RegisterEvent("QUEST_SESSION_LEFT");
@@ -209,7 +207,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerFrame_UpdatePvPStatus();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		PlayerFrame_ResetPosition(self);
 		PlayerFrame_ToPlayerArt(self);
 --		if ( UnitHasVehicleUI("player") ) then
 --			UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
@@ -255,16 +252,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateReadyCheck();
 	elseif ( event == "READY_CHECK_FINISHED" ) then
 		ReadyCheck_Finish(PlayerFrameReadyCheck, DEFAULT_READY_CHECK_STAY_TIME);
-	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
-		if ( arg1 == "player" ) then
-			if ( arg2 ) then
-				PlayerFrame_AnimateOut(self);
-			else
-				if ( PlayerFrame.state == "vehicle" ) then
-					PlayerFrame_AnimateOut(self);
-				end
-			end
-		end
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			self.inSeat = true;
@@ -276,7 +263,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_EXITING_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			if ( self.state == "vehicle" ) then
-				PlayerFrame_AnimateOut(self);
+				self.inSeat = false;
+				PlayerFrame_UpdateArt(self);
 			else
 				self.updatePetFrame = true;
 			end
@@ -297,11 +285,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
 		PlayerFrame_UpdateRolesAssigned();
-	elseif ( event == "VARIABLES_LOADED" ) then
-		PlayerFrame_SetLocked(not PLAYER_FRAME_UNLOCKED);
-		if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
-			PlayerFrame_AttachCastBar();
-		end
 	elseif ( event == "HONOR_LEVEL_UPDATE" ) then
 		PlayerFrame_UpdatePvPStatus();
 	elseif ( event == "QUEST_SESSION_JOINED" ) then
@@ -324,51 +307,9 @@ function PlayerFrame_UpdateRolesAssigned()
 	end
 end
 
-local function PlayerFrame_AnimPos(self, fraction)
-	return "TOPLEFT", UIParent, "TOPLEFT", -19, fraction*140-4;
-end
-
-function PlayerFrame_ResetPosition(self)
-	CancelAnimations(PlayerFrame);
-	self.isAnimatedOut = false;
-	UIParent_UpdateTopFramePositions();
-	self.inSequence = false;
-	PetFrame_Update(PetFrame);
-end
-
-local PlayerFrameAnimTable = {
-	totalTime = 0.3,
-	updateFunc = "SetPoint",
-	getPosFunc = PlayerFrame_AnimPos,
-	}
-function PlayerFrame_AnimateOut(self)
-	self.inSeat = false;
-	self.animFinished = false;
-	self.inSequence = true;
-	self.isAnimatedOut = true;
-	if ( self:IsUserPlaced() ) then
-		PlayerFrame_AnimFinished(PlayerFrame);
-	else
-		SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_AnimFinished, false)
-	end
-end
-
-function PlayerFrame_AnimFinished(self)
-	self.animFinished = true;
-	PlayerFrame_UpdateArt(self);
-end
-
-function PlayerFrame_IsAnimatedOut(self)
-	return self.isAnimatedOut;
-end
-
 function PlayerFrame_UpdateArt(self)
 	if ( self.inSeat ) then
-		if ( self:IsUserPlaced() ) then
-			PlayerFrame_SequenceFinished(PlayerFrame);
-		elseif ( self.animFinished and self.inSequence ) then
-			SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
-		end
+		PetFrame_Update(PetFrame);
 		if ( UnitHasVehiclePlayerFrameUI("player") ) then
 			PlayerFrame_ToVehicleArt(self, UnitVehicleSkin("player"));
 		else
@@ -379,12 +320,6 @@ function PlayerFrame_UpdateArt(self)
 		self.updatePetFrame = false;
 		PetFrame_Update(PetFrame);
 	end
-end
-
-function PlayerFrame_SequenceFinished(self)
-	self.isAnimatedOut = false;
-	self.inSequence = false;
-	PetFrame_Update(PetFrame);
 end
 
 function PlayerFrame_ToVehicleArt(self, vehicleType)
@@ -782,33 +717,6 @@ function PlayerFrame_HideVehicleTexture()
 	EssencePlayerFrame:Setup();
 end
 
-function PlayerFrame_OnDragStart(self)
-	self:StartMoving();
-	self:SetUserPlaced(true);
-	self:SetClampedToScreen(true);
-end
-
-function PlayerFrame_OnDragStop(self)
-	self:StopMovingOrSizing();
-end
-
-function PlayerFrame_SetLocked(locked)
-	PLAYER_FRAME_UNLOCKED = not locked;
-	if ( locked ) then
-		PlayerFrame:RegisterForDrag();	--Unregister all buttons.
-	else
-		PlayerFrame:RegisterForDrag("LeftButton");
-	end
-end
-
-function PlayerFrame_ResetUserPlacedPosition()
-	PlayerFrame:ClearAllPoints();
-	PlayerFrame:SetUserPlaced(false);
-	PlayerFrame:SetClampedToScreen(false);
-	PlayerFrame_SetLocked(true);
-	UIParent_UpdateTopFramePositions();
-end
-
 --
 -- Functions for having the cast bar underneath the player frame
 --
@@ -853,9 +761,12 @@ function PlayerFrame_DetachCastBar()
 end
 
 function PlayerFrame_AdjustAttachments()
-	if ( not PLAYER_FRAME_CASTBARS_SHOWN ) then
+	if not EditModeManagerFrame:IsInitialized() or not EditModeManagerFrame:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Player, Enum.EditModeUnitFrameSetting.CastBarUnderneath) then
 		return;
 	end
+	
+	CastingBarFrame:ClearAllPoints();
+
 	if ( PetFrame and PetFrame:IsShown() ) then
 		CastingBarFrame:SetPoint("TOP", PetFrame, "BOTTOM", 0, -4);
 	elseif ( TotemFrame and TotemFrame:IsShown() ) then

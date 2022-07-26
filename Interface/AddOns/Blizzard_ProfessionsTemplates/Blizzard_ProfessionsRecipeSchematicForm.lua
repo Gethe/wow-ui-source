@@ -82,7 +82,12 @@ end
 function ProfessionsRecipeSchematicFormMixin:OnShow()
     FrameUtil.RegisterFrameForEvents(self, ProfessionsRecipeFormEvents);
 
-	self:UpdateDetailsStats();
+	local recipeInfo = self:GetRecipeInfo();
+	if recipeInfo then
+		-- Details may have changed due to purchasing specialization points
+		self:Init(recipeInfo);
+		self:UpdateDetailsStats();
+	end
 end
 
 function ProfessionsRecipeSchematicFormMixin:OnHide()
@@ -122,6 +127,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	self.Cooldown:Hide();
 	self.Cooldown:SetText("");
 	self.RecipeSourceButton:Hide();
+	self.QualityDialog:Close();
 
 	self.currentRecipeInfo = recipeInfo;
 

@@ -74,6 +74,10 @@ function ScrollBoxBaseMixin:SetView(view)
 	if oldDataProvider then
 		view:SetDataProvider(oldDataProvider);
 	end
+	
+	if oldView then
+		self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
+	end
 end
 
 function ScrollBoxBaseMixin:GetView()
@@ -458,6 +462,7 @@ ScrollBoxListMixin:GenerateCallbackEvents(
 		"OnInitializedFrame",
 		"OnReleasedFrame",
 		"OnDataRangeChanged",
+		"OnUpdate",
 	}
 );
 
@@ -646,6 +651,8 @@ function ScrollBoxListMixin:Update(forceLayout)
 		self:TriggerEvent(ScrollBoxListMixin.Event.OnDataRangeChanged);
 	end
 
+	self:TriggerEvent(ScrollBoxListMixin.Event.OnUpdate);
+	
 	self:SetUpdateLocked(false);
 end
 

@@ -20,7 +20,12 @@ function SettingsPanelMixin:OnLoad()
 	self.NineSlice.Text:SetText(SETTINGS_TITLE);
 
 	self.tabsGroup = CreateRadioButtonGroup();
-	self.tabsGroup:AddButtons({self.GameTab, self.AddOnsTab});
+	if ( GetNumAddOns() == 0 ) then
+		self.GameTab:Hide();
+	else
+		self.tabsGroup:AddButtons({self.GameTab, self.AddOnsTab});
+	end
+
 	self.tabsGroup:SelectAtIndex(1);
 	self.tabsGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.OnTabSelected, self);
 
@@ -106,6 +111,10 @@ function SettingsPanelMixin:OnShow()
 	if IsOnGlueScreen() then
 		self:SetFrameStrata("DIALOG");
 		GlueParent_AddModalFrame(self);
+
+		self.NineSlice.Text:SetText(SYSTEMOPTIONS_MENU);
+	else
+		self.NineSlice.Text:SetText(SETTINGS_TITLE);
 	end
 
 	self:CheckApplyButton();
@@ -393,7 +402,7 @@ function SettingsPanelMixin:ForEachCanvas(func)
 		for _, category in ipairs(categories) do
 			local layout = self:GetLayout(category);
 		   	if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Canvas then
-		   		func(layout:GetFrame());
+		   		xpcall(func, CallErrorHandler, layout:GetFrame());
 		   	end
 
 			CallOnCanvases(category:GetSubcategories(), func);

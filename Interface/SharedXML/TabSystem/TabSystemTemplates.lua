@@ -178,3 +178,7 @@ end
 function TabSystemMixin:GetTabWidthConstraints()
 	return self.minTabWidth, self.maxTabWidth;
 end
+
+function TabSystemMixin:GetTabButton(tabID)
+	return self.tabs[tabID];
+end

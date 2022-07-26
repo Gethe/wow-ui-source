@@ -14,7 +14,7 @@ local modernSystemMap =
 	},
 
 	[Enum.EditModeSystem.ActionBar] = {
-		[1] = {
+		[Enum.EditModeActionBarSystemIndices.MainBar] = {
 			settings = {
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
@@ -33,7 +33,7 @@ local modernSystemMap =
 			},
 		},
 
-		[2] = {
+		[Enum.EditModeActionBarSystemIndices.Bar2] = {
 			settings = {
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
@@ -52,7 +52,7 @@ local modernSystemMap =
 			},
 		},
 
-		[3] = {
+		[Enum.EditModeActionBarSystemIndices.Bar3] = {
 			settings = {
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
@@ -71,7 +71,181 @@ local modernSystemMap =
 			},
 		},
 
-		[4] = {
+		[Enum.EditModeActionBarSystemIndices.RightBar1] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Vertical,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
+				[Enum.EditModeActionBarSetting.SnapToSide] = 1,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
+			},
+			anchorInfo = {
+				point = "RIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "RIGHT",
+				offsetX = -55,
+				offsetY = -77,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.RightBar2] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Vertical,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
+				[Enum.EditModeActionBarSetting.SnapToSide] = 1,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
+			},
+			anchorInfo = {
+				point = "RIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "RIGHT",
+				offsetX = -5,
+				offsetY = -77,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.StanceBar] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+			},
+			anchorInfo = {
+				point = "BOTTOMLEFT",
+				relativeTo = "MainMenuBar",
+				relativePoint = "TOPLEFT",
+				offsetX = 0,
+				offsetY = 5,
+			},
+		},
+	},
+
+	[Enum.EditModeSystem.UnitFrame] = {
+		[Enum.EditModeUnitFrameSystemIndices.Player] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.HidePortrait] = 0,
+				[Enum.EditModeUnitFrameSetting.CastBarUnderneath] = 0,
+			},
+			anchorInfo = {
+				point = "BOTTOMRIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
+				offsetX = -300,
+				offsetY = 250,
+			},
+		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Target] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.BuffsOnTop] = 0,
+			},
+			anchorInfo = {
+				point = "BOTTOMLEFT",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
+				offsetX = 300,
+				offsetY = 250,
+			},
+		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Focus] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.BuffsOnTop] = 0,
+				[Enum.EditModeUnitFrameSetting.UseLargerFrame] = 0,
+			},
+			anchorInfo = {
+				point = "LEFT",
+				relativeTo = "TargetFrame",
+				relativePoint = "RIGHT",
+				offsetX = 10,
+				offsetY = 0,
+			},
+		},
+	},
+};
+
+local classicSystemMap =
+{
+	[Enum.EditModeSystem.CastBar] = {
+		settings = {
+			[Enum.EditModeCastBarSetting.BarSize] = Enum.CastBarSize.Small,
+		},
+		anchorInfo = {
+			point = "CENTER",
+			relativeTo = "UIParent",
+			relativePoint = "CENTER",
+			offsetX = 0,
+			offsetY = 100,
+		},
+	},
+
+	[Enum.EditModeSystem.ActionBar] = {
+		[Enum.EditModeActionBarSystemIndices.MainBar] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.HideBarArt] = 0,
+				[Enum.EditModeActionBarSetting.HideBarScrolling] = 0,
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 25,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.Bar2] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "MainMenuBar",
+				relativePoint = "TOP",
+				offsetX = 0,
+				offsetY = 5,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.Bar3] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "MultiBarBottomLeft",
+				relativePoint = "TOP",
+				offsetX = 0,
+				offsetY = 5,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.RightBar1] = {
 			settings = {
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Vertical,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
@@ -91,7 +265,7 @@ local modernSystemMap =
 			},
 		},
 
-		[5] = {
+		[Enum.EditModeActionBarSystemIndices.RightBar2] = {
 			settings = {
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Vertical,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
@@ -108,6 +282,65 @@ local modernSystemMap =
 				relativePoint = "RIGHT",
 				offsetX = -5,
 				offsetY = -77,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.StanceBar] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+			},
+			anchorInfo = {
+				point = "BOTTOMLEFT",
+				relativeTo = "MainMenuBar",
+				relativePoint = "TOPLEFT",
+				offsetX = 0,
+				offsetY = 5,
+			},
+		},
+	},
+
+	[Enum.EditModeSystem.UnitFrame] = {
+		[Enum.EditModeUnitFrameSystemIndices.Player] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.HidePortrait] = 0,
+				[Enum.EditModeUnitFrameSetting.CastBarUnderneath] = 0,
+			},
+			anchorInfo = {
+				point = "TOPLEFT",
+				relativeTo = "UIParent",
+				relativePoint = "TOPLEFT",
+				offsetX = -19,
+				offsetY = -4,
+			},
+		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Target] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.BuffsOnTop] = 0,
+			},
+			anchorInfo = {
+				point = "TOPLEFT",
+				relativeTo = "UIParent",
+				relativePoint = "TOPLEFT",
+				offsetX = 250,
+				offsetY = -4,
+			},
+		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Focus] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.BuffsOnTop] = 0,
+				[Enum.EditModeUnitFrameSetting.UseLargerFrame] = 0,
+			},
+			anchorInfo = {
+				point = "TOPLEFT",
+				relativeTo = "TargetFrame",
+				relativePoint = "TOPLEFT",
+				offsetX = 250,
+				offsetY = -240,
 			},
 		},
 	},
@@ -154,12 +387,11 @@ EditModePresetLayoutManager.presetLayoutInfo =
 		systems = GetSystems(modernSystemMap),
 	},
 
-	-- TODO: Update to new settings once we decide on them. For now this is a dupe of the Modern preset
 	{
 		layoutIndex = Enum.EditModePresetLayouts.Classic;
 		layoutName = LAYOUT_STYLE_CLASSIC,
 		layoutType = Enum.EditModeLayoutType.Preset,
-		systems = GetSystems(modernSystemMap),
+		systems = GetSystems(classicSystemMap),
 	},
 };
 

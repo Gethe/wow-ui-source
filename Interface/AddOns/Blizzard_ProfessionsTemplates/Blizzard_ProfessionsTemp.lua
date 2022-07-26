@@ -103,16 +103,16 @@ function C_TradeSkillUI.CompleteCraftingOrder(order, message)
 	EventRegistry:TriggerEvent("Professions.OrderCompleted", order);
 end
 
-local function CreateSampleOrders(quantity, ...)
-	local tbl = {};
-	for e = 1, select("#", ...) do
-		local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(select(e, ...));
-		for index = 1, quantity do
-			table.insert(tbl, Professions.CreateSampleOrderBySchematic(recipeSchematic));
-		end
-	end
-	return tbl;
-end
+--local function CreateSampleOrders(quantity, ...)
+--	local tbl = {};
+--	for e = 1, select("#", ...) do
+--		local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(select(e, ...));
+--		for index = 1, quantity do
+--			table.insert(tbl, Professions.CreateSampleOrderBySchematic(recipeSchematic));
+--		end
+--	end
+--	return tbl;
+--end
 
 do
 	--local orders = CreateSampleOrders(20, 364044, 367623, 367601, 367605); 

@@ -29,7 +29,7 @@
 					<KeyValue key="noQualityOverlay" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="15" y="-15"/>
+					<Anchor point="TOPLEFT" x="20" y="-20"/>
 				</Anchors>
 			</Button>
 
@@ -59,19 +59,13 @@
 					<Anchor point="TOP" relativeKey="$parent.OutputIcon" relativePoint="BOTTOM" x="75" y="-65"/>
 				</Anchors>
 			</Frame>
-
-			<Frame parentKey="VerticalDivider" inherits="ProfessionsVerticalDividerTemplate" parentArray="recipeInfoFrames">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="TOPRIGHT" x="28" y="0"/>
-				</Anchors>
-			</Frame>
 			
 			<Frame parentKey="OptionalReagents" inherits="ProfessionsReagentContainerTemplate" parentArray="recipeInfoFrames">
 				<KeyValues>
 					<KeyValue key="labelText" value="PROFESSIONS_OPTIONAL_REAGENT_CONTAINER_LABEL" type="global"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.VerticalDivider" relativePoint="TOPRIGHT" x="28"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="TOPRIGHT" x="56"/>
 				</Anchors>
 			</Frame>
 
@@ -106,7 +100,7 @@
 			
 			<Frame parentKey="Details" inherits="ProfessionsRecipeCrafterDetailsTemplate" parentArray="recipeInfoFrames">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-10" y="-85"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-20" y="-85"/>
 				</Anchors>
 			</Frame>
 

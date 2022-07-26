@@ -625,16 +625,12 @@
 						<Alpha childKey="StarBurst" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 						<Alpha childKey="PointBurstLeft" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 						<Scale childKey="PointBurstLeft" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.5" fromScaleY="1.5" toScaleX="3" toScaleY="2">
-							<Origin point="RIGHT">
-								<Offset x="-4" y="0"/>
-							</Origin>
+							<Origin point="RIGHT"/>
 						</Scale>
 						<Alpha childKey="PointBurstLeft" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 						<Alpha childKey="PointBurstRight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 						<Scale childKey="PointBurstRight" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.5" fromScaleY="1.5" toScaleX="3" toScaleY="2.0">
-							<Origin point="LEFT">
-								<Offset x="4" y="0"/>
-							</Origin>
+							<Origin point="LEFT"/>
 						</Scale>
 						<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 					</AnimationGroup>

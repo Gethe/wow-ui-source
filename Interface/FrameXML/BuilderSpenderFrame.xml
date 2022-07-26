@@ -45,14 +45,10 @@
 					<AnimationGroup parentKey="SpikeAnim" setToFinalAlpha="true">
 						<Alpha childKey="BigSpikeGlow" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 						<Scale childKey="BigSpikeGlow" smoothing="NONE" duration="0.1" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.4" toScaleY="0.75">
-							<Origin point="LEFT">
-								<Offset x="2" y="0"/>
-							</Origin>
+							<Origin point="LEFT"/>
 						</Scale>
 						<Scale childKey="BigSpikeGlow" startDelay="0.2" smoothing="IN" duration="0.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="1">
-							<Origin point="LEFT">
-								<Offset x="6" y="0"/>
-							</Origin>
+							<Origin point="LEFT"/>
 						</Scale>
 						<Alpha childKey="BigSpikeGlow" startDelay="0.3" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
 						<Alpha name="Spikey" childKey="AlertSpikeStay" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>

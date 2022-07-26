@@ -1923,7 +1923,7 @@
 			<Frame parentKey="EncounterIcon" virtual="true">
 				<Size x="40" y="40"/>
 				<Anchors>
-					<Anchor poinnt="TOPLEFT" x="10" y="-8"/>
+					<Anchor point="TOPLEFT" x="10" y="-8"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

@@ -675,16 +675,12 @@
 				<Alpha childKey="RightFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="37" offsetY="0"/>
 				<Scale childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
-					<Origin point="BOTTOMLEFT">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="BOTTOMLEFT"/>
 				</Scale>
 				<Alpha childKey="LeftFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="LeftFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="-37" offsetY="0"/>
 				<Scale childKey="LeftFillagree" startDelay="0.15" duration="0.15" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
-					<Origin point="BOTTOMRIGHT">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="BOTTOMRIGHT"/>
 				</Scale>
 				<Alpha childKey="BannerTopGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BannerTopGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>

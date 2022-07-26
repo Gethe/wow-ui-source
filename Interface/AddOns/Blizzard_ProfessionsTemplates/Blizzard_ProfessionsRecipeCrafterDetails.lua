@@ -71,16 +71,23 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 	self.Label:SetText(PROFESSIONS_CRAFTING_DETAILS_HEADER);
 	self.FinishingReagentSlotContainer.Label:SetText(PROFESSIONS_CRAFTING_FINISHING_HEADER);
 
-	self.QualityMeter.Center.Fill:SetScript("OnEnter", function(fill)
+	self.QualityMeter.Center:SetScript("OnEnter", function(fill)
 		GameTooltip:SetOwner(fill, "ANCHOR_RIGHT");
 
 		local atlasSize = 25;
 		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(self.QualityMeter.qualityInteger), atlasSize, atlasSize);
-		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_EXPECTED_QUALITY:format(atlasMarkup));
+		local hasNextQuality = self.operationInfo.upperSkillTreshold > self.operationInfo.lowerSkillThreshold;
+		if hasNextQuality then
+			atlasSize = 20;
+			local nextAtlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(self.QualityMeter.qualityInteger + 1), atlasSize, atlasSize);
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_EXPECTED_QUALITY_WITH_NEXT_SKILL:format(atlasMarkup, self.operationInfo.upperSkillTreshold, nextAtlasMarkup));
+		else
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_EXPECTED_QUALITY:format(atlasMarkup));
+		end
 		GameTooltip:Show();
 	end);
 
-	self.QualityMeter.Center.Fill:SetScript("OnLeave", GameTooltip_Hide);
+	self.QualityMeter.Center:SetScript("OnLeave", GameTooltip_Hide);
 
 	local function OnCapEntered(cap, isRight)
 		local qualityIndex = self.QualityMeter.qualityInteger + (isRight and 1 or 0);
@@ -170,12 +177,18 @@ function ProfessionsRecipeCrafterDetailsMixin:HandleCritAnimation(resultData)
 			local modifier = .12;
 			local v1, v2 = 0, 1;
 			local t = (extraCritWidth / unitsPerSecond) / modifier;
-			sequence:Add(v1, v2, t, InterpolatorUtil.InterpolateEaseOut, function(value)
+
+			if t > 0 then
+				local function SetAnimState(value)
 				self.QualityMeter.Center.Fill.Test2:SetWidth(startingWidth + (value * extraCritWidth));
-				self.QualityMeter.Center.Test2b:SetAlpha(value * .6);
-				self.QualityMeter.Center.Fill.Flare2:SetAlpha(value * .6);
-				self.QualityMeter.Center.Test2b:Show();
-			end);
+					self.QualityMeter.Center.Test2b:SetAlpha(value * .6);
+					self.QualityMeter.Center.Fill.Flare2:SetAlpha(value * .6);
+					self.QualityMeter.Center.Test2b:Show();
+				end
+				sequence:Add(v1, v2, t, InterpolatorUtil.InterpolateEaseOut, SetAnimState);
+			else
+				SetAnimState(v2);
+			end
 		end
 
 		do
@@ -291,12 +304,12 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 	local centerWidth = self.Center:GetWidth();
 	self.Center.Fill:SetShown(hasPartial);
 	if hasPartial then
-		self.Center.Fill:SetWidth(math.fmod(quality, 1) * centerWidth);
+		self.Center.Fill:SetWidth((math.fmod(quality, 1) * centerWidth) - 5);
 		self.Center.Fill.Background:SetColorTexture(GetColorRGBA(self.qualityInteger));
 	end
 
 	self.Border.Marker:ClearAllPoints();
-	self.Border.Marker:SetPoint("CENTER", self.Center.Fill, "LEFT", math.floor(centerWidth * self.partialQuality), 0);
+	self.Border.Marker:SetPoint("CENTER", self.Center.Fill, "LEFT", math.floor(centerWidth * self.partialQuality) - 5, 0);
 end
 
 function ProfessionsQualityMeterMixin:Reset()

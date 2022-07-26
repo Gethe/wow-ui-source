@@ -2771,24 +2771,37 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 		AbandonSkill(index);
 		HideUIPanel(ProfessionsFrame);
 	end,
-	timeout = STATICPOPUP_TIMEOUT,
-	exclusive = 1,
-	whileDead = 1,
-	showAlert = 1,
-	hideOnEscape = 1
-};
-StaticPopupDialogs["UNLEARN_SPECIALIZATION"] = {
-	text = UNLEARN_SKILL,
-	button1 = UNLEARN,
-	button2 = CANCEL,
-	OnAccept = function(self, index)
-		UnlearnSpecialization(index);
+	OnShow = function(self)
+		self.button1:Disable();
+		self.button2:Enable();
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		self.editBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self, index)
+		local parent = self:GetParent();
+		if parent.button1:IsEnabled() then
+			AbandonSkill(index);
+			HideUIPanel(ProfessionsFrame);
+			parent:Hide();
+		end
+	end,
+	EditBoxOnTextChanged = function(self)
+		local parent = self:GetParent();
+		StaticPopup_StandardConfirmationTextHandler(self, UNLEARN_SKILL_CONFIRMATION);
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+		ClearCursor();
 	end,
 	timeout = STATICPOPUP_TIMEOUT,
 	exclusive = 1,
 	whileDead = 1,
 	showAlert = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	hasEditBox = 1,
+	maxLetters = 32,
 };
 StaticPopupDialogs["XP_LOSS"] = {
 	text = CONFIRM_XP_LOSS,

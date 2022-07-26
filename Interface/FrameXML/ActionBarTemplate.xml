@@ -22,6 +22,9 @@
 			- This is the numRows. If this bar is vertical this will be the number of columns.
 			<KeyValue key="numRows" value="1" type="number"/>
 
+			- Max number of buttons this bar can show
+			<KeyValue key="numButtons" value="12" type="number"/>
+
 			- This is the direction the bar grows as it adds buttons horizontally. If true, new buttons will be added to the right. If false, new buttons will be added to the left.
 			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
 

@@ -1,5 +1,5 @@
 
-local TalentSelectionChoiceFramePadding = 10;
+local TalentSelectionChoiceFramePadding = 0;
 
 
 TalentSelectionChoiceFrameMixin = {};
@@ -42,7 +42,9 @@ function TalentSelectionChoiceFrameMixin:SetSelectionOptions(baseButton, selecti
 
 	for i, entryID in ipairs(selectionOptions) do
 		local entryInfo = talentFrame:GetAndCacheEntryInfo(entryID);
-		local newSelectionFrame = talentFrame:AcquireTalentDisplayFrame(entryInfo.type, TalentSelectionChoiceMixin);
+
+		local useLargeButton = true;
+		local newSelectionFrame = talentFrame:AcquireTalentDisplayFrame(entryInfo.type, TalentSelectionChoiceMixin, useLargeButton);
 
 		newSelectionFrame:SetParent(self);
 
@@ -75,8 +77,8 @@ end
 
 function TalentSelectionChoiceFrameMixin:UpdateTrayLayout()
 	local stride = 5;
-	local xPadding = 10;
-	local yPadding = 5;
+	local xPadding = 5;
+	local yPadding = 0;
 	local layout = GridLayoutUtil.CreateStandardGridLayout(stride, xPadding, yPadding);
 
 	local anchorOffset = TalentSelectionChoiceFramePadding;
@@ -175,6 +177,17 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 		return TalentButtonUtil.BaseVisualState.Maxed;
 	end
 
+	local selectionChoiceFrame = self:GetParent();
+	local selectionBaseButton = selectionChoiceFrame:GetBaseButton();
+	local selectionVisualState = selectionBaseButton:GetVisualState();
+	if selectionVisualState == TalentButtonUtil.BaseVisualState.Gated then
+		return TalentButtonUtil.BaseVisualState.Gated;
+	end
+
+	if selectionVisualState == TalentButtonUtil.BaseVisualState.Locked then
+		return TalentButtonUtil.BaseVisualState.Locked;
+	end
+	
 	return self:IsChoiceAvailable() and TalentButtonUtil.BaseVisualState.Selectable or TalentButtonUtil.BaseVisualState.Disabled;
 end
 

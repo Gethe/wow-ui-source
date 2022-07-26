@@ -7,69 +7,104 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeSystemSelectionTemplate" mixin="EditModeSystemSelectionMixin" enableMouse="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
+	<Frame name="EditModeSystemSelectionBaseTemplate" inherits="NineSliceCodeTemplate" mixin="EditModeSystemSelectionBaseMixin" frameLevel="100" enableMouse="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="highlightTextureKit" value="editmode-actionbar-highlight" type="string"/>
+			<KeyValue key="selectedTextureKit" value="editmode-actionbar-selected" type="string"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="EditModeSystemSelectionTemplate" inherits="EditModeSystemSelectionBaseTemplate" mixin="EditModeSystemSelectionMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="HorizontalLabel" inherits="GameFontHighlightLarge" hidden="true">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge" ignoreParentScale="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
 				</FontString>
-				<FontString parentKey="VerticalLabel" inherits="GameFontHighlightLarge" degrees="90" hidden="true">
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="EditModeActionBarSystemSelectionTemplate" inherits="EditModeSystemSelectionBaseTemplate" mixin="EditModeActionBarSystemSelectionMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="HorizontalLabel" inherits="GameFontHighlightLarge" ignoreParentScale="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="VerticalLabel" inherits="GameFontHighlightLarge" degrees="90" ignoreParentScale="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" x="-8" />
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnDragStart method="OnDragStart"/>
-			<OnDragStop method="OnDragStop"/>
-		</Scripts>
-	</Frame>
-
-	<Frame name="EditModeActionBarSystemSelectionTemplate" inherits="NineSlicePanelTemplate, EditModeSystemSelectionTemplate" mixin="EditModeActionBarSystemSelectionMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="highlightTextureKit" value="editmode-actionbar-highlight" type="string"/>
-			<KeyValue key="selectedTextureKit" value="editmode-actionbar-selected" type="string"/>
-		</KeyValues>
 	</Frame>
 
 	<Frame name="EditModeActionBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeActionBarSystemMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="system" value="Enum.EditModeSystem.ActionBar" type="number"/>
+			<KeyValue key="system" value="Enum.EditModeSystem.ActionBar" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ACTION_BAR_LABEL" type="global"/>
+			<KeyValue key="addSystemIndexToName" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="Selection" inherits="EditModeActionBarSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
-		<Scripts>
-			<OnLoad method="EditModeActionBarSystem_OnLoad" inherit="append"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="CharacterSpecificLayoutCheckButtonTemplate" inherits="ResizeCheckButtonBehaviorTemplate" virtual="true">
+	<Frame name="EditModeUnitFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeUnitFrameSystemMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="labelText" value="HUD_EDIT_MODE_CHARACTER_SPECIFIC_LAYOUT" type="global"/>
+			<KeyValue key="system" value="Enum.EditModeSystem.UnitFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ACTION_BAR_LABEL" type="global"/>
 		</KeyValues>
 		<Frames>
-			<CheckButton parentKey="Button" inherits="UICheckButtonArtTemplate">
-				<Size x="20" y="20"/>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeCheckButtonTemplate" inherits="ResizeCheckButtonBehaviorTemplate" virtual="true">
+		<Frames>
+			<CheckButton parentKey="Button">
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
+					<Anchor point="LEFT"/>
 				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCheckButtonClick();
+					</OnClick>
+				</Scripts>
 			</CheckButton>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameFontHighlight">
+				<FontString parentKey="Label" inherits="GameFontHighlightMedium">
+					<Size y="32"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="2" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+	</Frame>
+
+	<Frame name="CharacterSpecificLayoutCheckButtonTemplate" inherits="EditModeCheckButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="labelText" value="HUD_EDIT_MODE_CHARACTER_SPECIFIC_LAYOUT" type="global"/>
+		</KeyValues>
 	</Frame>
 
 	<EditBox name="EditModeDialogLayoutNameEditBoxTemplate" inherits="InputBoxTemplate" letters="30" mixin="EditModeDialogNameEditBoxMixin" virtual="true">
@@ -339,7 +374,7 @@
 		<Size x="220" y="28"/>
 	</Button>
 	
-	<Frame name="EditModeSettingDropdownTemplate" inherits="ResizeLayoutFrame" mixin="EditModeSettingDropdownMixin" virtual="true">
+	<Frame name="EditModeSettingDropdownTemplate" inherits="ResizeLayoutFrame" mixin="EditModeSettingDropdownMixin" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedHeight" value="32" type="number"/>
 		</KeyValues>
@@ -366,7 +401,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeSettingSliderTemplate" mixin="EditModeSettingSliderMixin" virtual="true">
+	<Frame name="EditModeSettingSliderTemplate" mixin="EditModeSettingSliderMixin" hidden="true" virtual="true">
 		<Size x="343" y="32"/>
 		<KeyValues>
 			<KeyValue key="widthPadding" value="30" type="number"/>
@@ -395,7 +430,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeSettingCheckboxTemplate" inherits="ResizeLayoutFrame" mixin="EditModeSettingCheckboxMixin" virtual="true">
+	<Frame name="EditModeSettingCheckboxTemplate" inherits="ResizeLayoutFrame" mixin="EditModeSettingCheckboxMixin" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="-5" type="number"/>
 			<KeyValue key="fixedHeight" value="32" type="number"/>
@@ -430,6 +465,8 @@
 		</Layers>
 	</Frame>
 	
+	<Line name="EditModeGridLineTemplate" mixin="EditModeGridLineMixin" virtual="true" />
+
 	<Frame name="EditModeManagerFrame" parent="UIParent" hidden="true" enableMouse="true" movable="true" clampedToScreen="true" registerForDrag="LeftButton"  dontSavePosition="true" frameStrata="DIALOG" mixin="EditModeManagerFrameMixin">
 		<Size x="500" y="350"/>
 		<Anchors>
@@ -437,7 +474,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontHighlight" text="HUD_EDIT_MODE_TITLE">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge" text="HUD_EDIT_MODE_TITLE">
 					<Anchors>
 						<Anchor point="TOP" y="-15"/>
 					</Anchors>
@@ -458,10 +495,55 @@
 				</Anchors>
 			</Button>
 			<Frame parentKey="LayoutDropdown" inherits="DropDownControlTemplate">
-				<Size x="180" y="30"/>
+				<Size x="220" y="30"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-40"/>
 				</Anchors>
+			</Frame>
+			<Frame parentKey="Grid" frameStrata="BACKGROUND" mixin="EditModeGridMixin" ignoreParentScale="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" />
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="UpdateGrid"/>
+					<OnEvent method="UpdateGrid"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="ShowGridCheckButton" inherits="EditModeCheckButtonTemplate">
+				<KeyValues>
+					<KeyValue key="labelText" value="HUD_EDIT_MODE_SHOW_GRID" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.LayoutDropdown" relativePoint="RIGHT" x="35" y="-5"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GridSpacingSlider" inherits="ResizeLayoutFrame" mixin="EditModeGridSpacingSliderMixin">
+				<Anchors>
+					<Anchor point="TOP" y="-85"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="RIGHT" text="HUD_EDIT_MODE_GRID_SPACING">
+							<Size y="32"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Slider" inherits="MinimalSliderWithSteppersTemplate" >
+						<Size x="300" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="5" />
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
 			</Frame>
 			<Button parentKey="SaveChangesButton" inherits="EditModeManagerFrameButtonTemplate" text="HUD_EDIT_MODE_SAVE_LAYOUT">
 				<Anchors>
@@ -494,6 +576,9 @@
 
 	<Frame name="EditModeSystemSettingsDialog" inherits="ResizeLayoutFrame" parent="UIParent" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" frameStrata="DIALOG"  frameLevel="200" mixin="EditModeSystemSettingsDialogMixin" hidden="true">
 		<Size x="300" y="350"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
 		<KeyValues>
 			<KeyValue key="widthPadding" value="40" type="number"/>
 			<KeyValue key="heightPadding" value="40" type="number"/>

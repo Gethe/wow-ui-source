@@ -365,6 +365,9 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
     end
     
     local numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
+    PTR_IssueReporter.StandaloneSurvey.submitButton.forceSelection = forceSelection
+    PTR_IssueReporter.StandaloneSurvey.submitButton.questionFrame = questionFrame
+    
     
     if  numberOfUnusedFrames > 0 then -- Check if there is a frame we should reuse
         newCheckBox = PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames]
@@ -393,18 +396,7 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
                 end
             end
             
-            local submitEnabled = false
-            
-            if (forceSelection) then
-                for key, checkbox in pairs (questionFrame.Checkboxes) do
-                    if (checkbox:GetChecked()) then
-                        submitEnabled = true
-                    end
-                end
-                if (PTR_IssueReporter.StandaloneSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) then
-                    PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(submitEnabled)
-                end
-            end
+            PTR_IssueReporter.SetSurveyButtonEnabledState()
         end)
     end
     
@@ -428,6 +420,23 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
     table.insert(questionFrame.Checkboxes, newCheckBox)
     return newCheckBox:GetHeight() + newCheckBox.text:GetHeight()
 end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetSurveyButtonEnabledState()
+    if (PTR_IssueReporter.StandaloneSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) and (PTR_IssueReporter.StandaloneSurvey.submitButton.forceSelection) then
+        submitEnabled = false
+        
+        for key, checkbox in pairs (PTR_IssueReporter.StandaloneSurvey.submitButton.questionFrame.Checkboxes) do
+            if (checkbox:GetChecked()) then
+                submitEnabled = true
+            end
+        end
+        
+        PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(submitEnabled)
+    else
+        PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(true)
+    end
+end
+
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AttachModelViewer(surveyFrame, survey, dataPackage)
 
@@ -527,6 +536,9 @@ function PTR_IssueReporter.AttachIconViewer(surveyFrame, survey, dataPackage)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.CleanReportFrame(frame)
+    PTR_IssueReporter.StandaloneSurvey.submitButton.forceSelection = false
+    PTR_IssueReporter.SetSurveyButtonEnabledState()
+    
     if (frame) and (frame.FrameComponents) then
         for key, component in pairs (frame.FrameComponents) do
             if (component.FrameType) then
@@ -613,12 +625,7 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
         surveyFrame:SetScript("OnHide", function() titleBox:Hide() end)
         
         titleBox:SetScript("OnShow", showFunction)
-        showFunction()
-        
-        local buttonOnShow = function(self)
-            self:SetEnabled(true)
-        end
-        
+        showFunction()        
         
         local submitButton = CreateFrame("Button", nil, surveyFrame, "UIPanelButtonTemplate")
         submitButton:SetPoint("TOP", surveyFrame, "BOTTOM")

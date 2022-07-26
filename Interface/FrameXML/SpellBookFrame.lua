@@ -1326,12 +1326,14 @@ function SpellBookFrame_UpdateSkillLineTabs()
 				skillLineTab:Hide();
 			else
 				local isOffSpec = (offSpecID ~= 0);
-				skillLineTab:SetNormalTexture(texture);
 				skillLineTab.tooltip = name;
 				skillLineTab:Show();
 				skillLineTab.isOffSpec = isOffSpec;
 				if(texture) then
+					skillLineTab:SetNormalTexture(texture);
 					skillLineTab:GetNormalTexture():SetDesaturated(isOffSpec);
+				else
+					skillLineTab:ClearNormalTexture();
 				end
 
 				-- Guild tab gets additional space

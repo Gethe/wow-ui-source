@@ -1,59 +1,56 @@
-
-NUM_STANCE_SLOTS = 10;
-
-
 -------------------------------------------------------
 ------- StanceBar (Shapsfit,Auras,Aspects) Code -------
 -------------------------------------------------------
+StanceBarMixin = {};
 
-function StanceBar_OnLoad(self)
+function StanceBarMixin:OnLoad()
 	self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN");
 end
 
-function StanceBar_OnEvent(self, event)
+function StanceBarMixin:OnEvent(event)
 	if(event == "UPDATE_SHAPESHIFT_COOLDOWN") then
-		StanceBar_UpdateState();
+		self:UpdateState();
 	end
 end
 
-function StanceBar_Update()
+function StanceBarMixin:Update()
 	local numForms = GetNumShapeshiftForms();
 	local needFrameMgrUpdate = false;
 	if ( numForms > 0 and not IsPossessBarVisible()) then
-		if ( StanceBarFrame.numForms ~= numForms ) then
-			StanceBarFrame.numForms = numForms;
+		if ( self.numForms ~= numForms ) then
+			self.numForms = numForms;
 			needFrameMgrUpdate = true;
 		end
-		
-		if ( not StanceBarFrame:IsShown() ) then
-			StanceBarFrame:Show();
+
+		if ( not self:IsShown() ) then
+			self:Show();
 			needFrameMgrUpdate = true;
 		end
-		StanceBar_UpdateState();
-	elseif (StanceBarFrame:IsShown() ) then
-		StanceBarFrame:Hide();
+		self:UpdateState();
+	elseif (self:IsShown() ) then
+		self:Hide();
 		needFrameMgrUpdate = true;
-		StanceBarFrame.numForms = nil;
+		self.numForms = nil;
 	end
-	
+
 	if ( needFrameMgrUpdate ) then
 		UIParent_ManageFramePositions();
 	end
 end
 
-function StanceBar_UpdateState ()
+function StanceBarMixin:UpdateState()
 	local numForms = GetNumShapeshiftForms();
 	local texture, isActive, isCastable;
-	local button, icon, cooldown;
+	local icon, cooldown;
 	local start, duration, enable;
-	local numStancesShown = 1; 
-	for i=1, NUM_STANCE_SLOTS do
-		button = StanceBarFrame.StanceButtons[i];
+	self.numShowingButtons = 0;
+
+	for i, button in pairs(self.actionButtons) do
 		icon = button.icon;
 		if ( i <= numForms ) then
 			texture, isActive, isCastable = GetShapeshiftFormInfo(i);
 			icon:SetTexture(texture);
-			
+
 			--Cooldown stuffs
 			cooldown = button.cooldown;
 			if ( texture ) then
@@ -63,9 +60,9 @@ function StanceBar_UpdateState ()
 			end
 			start, duration, enable = GetShapeshiftFormCooldown(i);
 			CooldownFrame_Set(cooldown, start, duration, enable);
-			
+
 			if ( isActive ) then
-				StanceBarFrame.lastSelected = button:GetID();
+				self.lastSelected = button:GetID();
 				button:SetChecked(true);
 			else
 				button:SetChecked(false);
@@ -77,18 +74,16 @@ function StanceBar_UpdateState ()
 				icon:SetVertexColor(0.4, 0.4, 0.4);
 			end
 
-			button:Show();
-			numStancesShown = numStancesShown + 1; 
-		else
-			button:Hide();
+			self.numShowingButtons = self.numShowingButtons + 1;
 		end
 	end
-	local frameWidth = 29 * numStancesShown;
-	StanceBarFrame:SetWidth(frameWidth);
+
+	self:UpdateShownButtons();
+	self:UpdateGridLayout();
 end
 
-function StanceBar_Select(id)
-	StanceBarFrame.lastSelected = id;
+function StanceBarMixin:Select(id)
+	self.lastSelected = id;
 	CastShapeshiftForm(id);
 end
 
@@ -102,7 +97,7 @@ end
 function StanceButtonMixin:OnClick()
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		self:SetChecked(not self:GetChecked());
-		StanceBar_Select(self:GetID());
+		StanceBar:Select(self:GetID());
 	end
 end
 
@@ -118,4 +113,13 @@ end
 
 function StanceButtonMixin:OnLeave()
 	GameTooltip_Hide();
+end
+
+-- Used by action bar template
+function StanceButtonMixin:GetShowGrid()
+	return true;
+end
+
+-- Used by action bar template
+function StanceButtonMixin:SetShowGrid()
 end

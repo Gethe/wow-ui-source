@@ -590,14 +590,10 @@
 										self:GetParent():GetParent():Show();
 									</OnFinished>
 								</Scripts>
-								<Origin point="BOTTOM">
-									<Offset x="0" y="0"/>
-								 </Origin>
+								<Origin point="BOTTOM"/>
 							</Scale>
 							<Scale scaleX="1.0" scaleY="1000.0" startDelay="0.25" duration="0.15" order="2">
-								 <Origin point="BOTTOM">
-									<Offset x="0" y="0"/>
-								 </Origin>
+								 <Origin point="BOTTOM"/>
 							</Scale>
 						</AnimationGroup>
 					</Animations>

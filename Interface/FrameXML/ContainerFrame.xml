@@ -351,6 +351,12 @@
 		</KeyValues>
 	</Frame>
 
+	<Frame name="ContainerFrameReagentBagTemplate" inherits="ContainerFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="canUseForReagentBag" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
 	<Frame name="ContainerFrameBackpackTemplate" inherits="ContainerFrameTemplate" mixin="ContainerFrameBackpackMixin" virtual="true">
 		<Scripts>
 			<OnHide method="OnHide"/>
@@ -363,7 +369,7 @@
 	<Frame name="ContainerFrame3" inherits="ContainerFrameTemplate"/>
 	<Frame name="ContainerFrame4" inherits="ContainerFrameTemplate"/>
 	<Frame name="ContainerFrame5" inherits="ContainerFrameTemplate"/>
-	<Frame name="ContainerFrame6" inherits="ContainerFrameTemplate"/>
+	<Frame name="ContainerFrame6" inherits="ContainerFrameReagentBagTemplate"/>
 	<Frame name="ContainerFrame7" inherits="ContainerFrameBankTemplate"/>
 	<Frame name="ContainerFrame8" inherits="ContainerFrameBankTemplate"/>
 	<Frame name="ContainerFrame9" inherits="ContainerFrameBankTemplate"/>

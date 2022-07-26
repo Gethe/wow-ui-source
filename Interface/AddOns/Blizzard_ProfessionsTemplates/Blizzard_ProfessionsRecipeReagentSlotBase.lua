@@ -20,9 +20,11 @@ function ProfessionsReagentSlotButtonMixin:SetLocked(locked)
 end
 
 function ProfessionsReagentSlotButtonMixin:UpdateCursor()
-	local onEnterScript = self:GetScript("OnEnter");
-	if onEnterScript ~= nil then
-		onEnterScript(self);
+	if GetMouseFocus() == self then
+		local onEnterScript = self:GetScript("OnEnter");
+		if onEnterScript ~= nil then
+			onEnterScript(self);
+		end
 	end
 end
 

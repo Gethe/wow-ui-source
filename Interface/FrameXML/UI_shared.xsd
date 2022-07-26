@@ -166,15 +166,15 @@
 
 	<xs:element name="AbsDimension">
 		<xs:complexType>
-			<xs:attribute name="x" type="xs:float" use="required"/>
-			<xs:attribute name="y" type="xs:float" use="required"/>
+			<xs:attribute name="x" type="xs:float" use="optional"/>
+			<xs:attribute name="y" type="xs:float" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 
 	<xs:element name="RelDimension">
 		<xs:complexType>
-			<xs:attribute name="x" type="xs:float" use="required"/>
-			<xs:attribute name="y" type="xs:float" use="required"/>
+			<xs:attribute name="x" type="xs:float" use="optional"/>
+			<xs:attribute name="y" type="xs:float" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 
@@ -1370,10 +1370,11 @@
 	</xs:complexType>
 
 	<xs:complexType name="AnimOriginType">
-		<xs:sequence minOccurs="0">
-			<xs:element name="Offset" type="Dimension"/>
-		</xs:sequence>
-		<xs:attribute name="point" type="FRAMEPOINT" default="CENTER"/>
+		<xs:complexContent>
+			<xs:extension base="Dimension">
+				<xs:attribute name="point" type="FRAMEPOINT" default="CENTER"/>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="AnimationType">
@@ -1534,5 +1535,6 @@
 	<xs:element name="EventEditBox" type="EditBoxType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventFrame" type="FrameType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>
-	<xs:element name="ItemButton" type="CheckButtonType" substitutionGroup="ui:FrameRef"/>
+	<xs:element name="ItemButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>
+	<xs:element name="TestFrame" type="FrameType" substitutionGroup="ui:FrameRef"/>
 </xs:schema>

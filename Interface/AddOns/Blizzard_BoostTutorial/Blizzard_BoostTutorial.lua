@@ -130,7 +130,7 @@ function BoostTutorial:HighlightSpell(spellID, textID)
 		for i = 1, GetNumShapeshiftForms() do
 			local id = select(4, GetShapeshiftFormInfo(i));
 			if (id == spellID) then
-				frame = _G["StanceButton" .. i];
+				frame = StanceBar.actionButtons[i];
 				exists = true;
 				break;
 			end

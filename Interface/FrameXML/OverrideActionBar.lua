@@ -99,15 +99,23 @@ end
 
 function OverrideActionBar_OnShow(self)
 	OverrideActionBar_UpdateMicroButtons();
-	UIParentBottomManagedFrameContainer:UpdateManagedFramesAlphaState(); 
-	UIParentRightManagedFrameContainer:UpdateManagedFramesAlphaState(); 
+
+	self.wasStanceBarShown = StanceBar:IsShown();
+	StanceBar:Hide();
+
+	UIParentBottomManagedFrameContainer:UpdateManagedFramesAlphaState();
+	UIParentRightManagedFrameContainer:UpdateManagedFramesAlphaState();
 end
 
 function OverrideActionBar_OnHide(self)
-	UIParentBottomManagedFrameContainer:UpdateManagedFramesAlphaState(); 
-	UIParentRightManagedFrameContainer:UpdateManagedFramesAlphaState(); 
-	UIParent_ManageFramePositions(); 
-end		
+	if (self.wasStanceBarShown) then
+		StanceBar:Show();
+	end
+
+	UIParentBottomManagedFrameContainer:UpdateManagedFramesAlphaState();
+	UIParentRightManagedFrameContainer:UpdateManagedFramesAlphaState();
+	UIParent_ManageFramePositions();
+end
 
 function OverrideActionBar_UpdateMicroButtons()
 	if ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_OVERRIDE then

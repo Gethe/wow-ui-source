@@ -12,27 +12,23 @@
 		</Scripts>
 		<Frames>
 			<Button parentKey="ApplyButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_FRAME_APPLY_BUTTON_TEXT">
-				<Size x="160" y="22"/>
+				<Size x="164" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="18"/>
 				</Anchors>
 			</Button>
 
-			<Button parentKey="UndoButton" inherits="RefreshButtonTemplate">
+			<Button parentKey="UndoButton" inherits="IconButtonTemplate">
 				<KeyValues>
-					<KeyValue key="iconSize" value="24" type="number"/>
+					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
+					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
 					<KeyValue key="tooltipText" value="TALENT_FRAME_DISCARD_CHANGES_BUTTON_TOOLTIP" type="global"/>
+					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
 				</KeyValues>
-				<Size x="48" y="48"/>
+				<Size x="25" y="25"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ApplyButton" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</Button>
-
-			<Button parentKey="UnlockTabButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_SPECIALIZATION_UNLOCK_TAB" motionScriptsWhileDisabled="true">
-				<Size x="180" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="18"/>
+					<Anchor point="LEFT" relativeKey="$parent.ApplyButton" relativePoint="RIGHT" x="14" y="0"/>
 				</Anchors>
 			</Button>
 
@@ -52,11 +48,11 @@
 						<FontString parentKey="TreeName" inherits="GameFontHighlightLarge" justifyH="LEFT">
 							<Size x="250" y="30"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="50" y="-43"/>
+								<Anchor point="TOPLEFT" x="20" y="-15"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="TreeDescription" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP">
-							<Size x="0" y="250"/>
+						<FontString parentKey="TreeDescription" inherits="GameFontNormalSmall" justifyH="LEFT" wordwrap="true">
+							<Size x="250" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.TreeName" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 							</Anchors>
@@ -86,6 +82,13 @@
 				</Frames>
 			</Frame>
 
+			<Button parentKey="UnlockTabButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_SPECIALIZATION_UNLOCK_TAB" motionScriptsWhileDisabled="true" frameStrata="HIGH">
+				<Size x="180" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TreeView.TreeDescription" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+			</Button>
+
 			<Frame parentKey="DetailedView">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.TreeView" relativePoint="TOPRIGHT" x="0" y="0"/>
@@ -94,31 +97,6 @@
 				<KeyValues>
 					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
 				</KeyValues>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="Professions-Recipe-Background" useAtlasSize="false"/>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="PathName" inherits="GameFontHighlightLarge" justifyH="CENTER" wordwrap="false">
-							<Size x="400" y="1"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="-24"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="PointsText" inherits="GameFontHighlight" justifyH="CENTER" wordwrap="false">
-							<Size x="62" y="1"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.PathName" x="0" y="-335"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="NextPerkText" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
-							<Size x="270" y="110"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.PointsText" x="0" y="-89"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
 					<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
 					<Button parentKey="Path" inherits="ProfessionsSpecPathTemplate" mixin="ProfessionsSpecPathMixin" frameStrata="HIGH">
@@ -129,28 +107,47 @@
 							<KeyValue key="isDetailedView" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-62"/>
+							<Anchor point="TOP" x="0" y="-40"/>
 						</Anchors>
 					</Button>
-					<Button parentKey="SpendPointsButton" inherits="UIPanelButtonTemplate" text="+">
-						<Size x="24" y="24"/>
+					<Button parentKey="SpendPointsButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="PROFESSIONS_SPECS_ADD_KNOWLEDGE">
+						<Size x="200" y="22"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.PointsText" relativePoint="RIGHT"/>
-						</Anchors>
-					</Button>
-					<Button parentKey="RefundPointsButton" inherits="UIPanelButtonTemplate" text="-">
-						<Size x="24" y="24"/>
-						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.PointsText" relativePoint="LEFT"/>
+							<Anchor point="TOP" relativeKey="$parent.Path" relativePoint="BOTTOM" x="0" y="-95"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="UnlockPathButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_SPECIALIZATION_UNLOCK_PATH" motionScriptsWhileDisabled="true">
 						<Size x="200" y="22"/>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.Path" relativePoint="BOTTOM" x="0" y="-68"/>
+							<Anchor point="CENTER" relativeKey="$parent.SpendPointsButton"/>
 						</Anchors>
 					</Button>
 				</Frames>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="Professions-Recipe-Background" useAtlasSize="false"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="PathName" inherits="GameFontHighlightLarge" justifyH="CENTER" wordwrap="false">
+							<Size x="400" y="1"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Path" relativePoint="BOTTOM" x="0" y="-55"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="PointsText" inherits="GameFontHighlightLarge" justifyH="CENTER" wordwrap="false">
+							<Size x="62" y="1"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.PathName" x="0" y="-20"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="NextPerkText" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Size x="270" y="110"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.PointsText" x="0" y="-128"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Frame>
 		</Frames>
 		<Layers>

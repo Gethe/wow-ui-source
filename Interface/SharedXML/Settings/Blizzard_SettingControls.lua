@@ -22,6 +22,11 @@ function DefaultTooltipMixin:InitDefaultTooltipScriptHandlers()
 end
 
 function DefaultTooltipMixin:OnLoad()
+	self.tooltipAnchorParent = nil;
+	self.tooltipAnchoring = "ANCHOR_RIGHT";
+	self.tooltipXOffset = 0;
+	self.tooltipYOffset = 0;
+
 	self:InitDefaultTooltipScriptHandlers();
 end
 
@@ -30,7 +35,12 @@ function DefaultTooltipMixin:SetTooltipFunc(tooltipFunc)
 end
 
 function DefaultTooltipMixin:OnEnter()
-	SettingsTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if self.tooltipAnchorParent then
+		SettingsTooltip:SetOwner(self.tooltipAnchorParent, self.tooltipAnchoring, self.tooltipXOffset, self.tooltipYOffset);
+	else
+		SettingsTooltip:SetOwner(self, self.tooltipAnchoring, self.tooltipXOffset, self.tooltipYOffset);
+	end
+
 	if self.tooltipFunc then
 		self.tooltipFunc();
 	elseif self.tooltipText then
@@ -41,6 +51,13 @@ end
 
 function DefaultTooltipMixin:OnLeave()
 	SettingsTooltip:Hide();
+end
+
+function DefaultTooltipMixin:SetCustomTooltipAnchoring(parent, anchoring, xOffset, yOffset)
+	self.tooltipAnchorParent = parent;
+	self.tooltipAnchoring = anchoring;
+	self.tooltipXOffset = xOffset;
+	self.tooltipYOffset = yOffset;
 end
 
 SettingsElementHierarchyMixin = {};
@@ -338,6 +355,7 @@ function SettingsSliderControlMixin:OnLoad()
 
 	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
 	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
+	self.SliderWithSteppers.Slider:SetCustomTooltipAnchoring(self.SliderWithSteppers.Slider, "ANCHOR_RIGHT", 20, 0);
 end
 
 function SettingsSliderControlMixin:Init(initializer)
@@ -584,7 +602,7 @@ function SettingsCheckBoxSliderControlMixin:Init(initializer)
 	local sliderTooltip = initializer.data.sliderTooltip;
 
 	local cbInitTooltip = GenerateClosure(Settings.InitTooltip, cbLabel, cbTooltip);
-	self:SetTooltipFunc(initTooltip);
+	self:SetTooltipFunc(cbInitTooltip);
 	
 	self.CheckBox:Init(cbSetting:GetValue(), cbInitTooltip);
 	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
@@ -763,7 +781,7 @@ function SettingsSelectionPopoutEntryMixin:OnLeave()
 
 		local fontColor = nil;
 		if self.selectionData.disabled == nil then
-			fontColor = HIGHLIGHT_FONT_COLOR;
+			fontColor = GRAY_FONT_COLOR;
 		else
 			fontColor = DISABLED_FONT_COLOR;
 		end
@@ -810,7 +828,7 @@ function SettingsSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, 
 		elseif selectionData.disabled then
 			fontColor = DISABLED_FONT_COLOR;
 		else
-			fontColor = HIGHLIGHT_FONT_COLOR;
+			fontColor = GRAY_FONT_COLOR;
 		end
 		self.SelectionName:SetTextColor(fontColor:GetRGB());
 	end

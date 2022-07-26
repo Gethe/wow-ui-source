@@ -548,9 +548,11 @@ function PTR_IssueReporter.BuildSurveyFrameFromSurveyData(surveyFrame, survey, d
         if (collector.collectorType == types.RunFunction) then
             if (collector.collectorFunction) and (type(collector.collectorFunction) == "function") then
                 newString = "%s"
-                PTR_IssueReporter.AttachEmptyFunctionComponent(surveyFrame, collector.collectorFunction)
+                PTR_IssueReporter.AttachEmptyFunctionComponent(surveyFrame, 
+                function() 
+                    return collector.collectorFunction(dataPackage) 
+                end)
             end
-            
         elseif (collector.collectorType == types.FromDataPackage) then
             local data = tostring(dataPackage[collector.dataPackageKey])
             if (data) then
@@ -654,7 +656,8 @@ local function CustomizationScreenExit()
 end
 
 if IsOnGlueScreen() then
-    CharCustomizeFrame:HookScript("OnShow", PlayerEnteringCharacterCustomization)
+    -- Temporarily hiding until functionality built properly
+    -- CharCustomizeFrame:HookScript("OnShow", PlayerEnteringCharacterCustomization)
     CharCustomizeFrame:HookScript("OnHide", CustomizationScreenExit)
 end
 ----------------------------------------------------------------------------------------------------

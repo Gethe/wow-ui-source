@@ -17,6 +17,14 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Glow" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="StateIcon">
 					<Size x="18" y="24"/>
@@ -26,10 +34,16 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" looping="BOUNCE">
+				<Alpha childKey="Glow" smoothing="NONE" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Glow" smoothing="NONE" duration="1" startDelay="0.3" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 	</Button>
 
 	<Frame name="ProfessionsSpecPerkTemplate" mixin="ProfessionsSpecPerkMixin" enableMouse="true" virtual="true" frameStrata="HIGH" frameLevel="300">
-		<Size x="32" y="32"/>
+		<Size x="22" y="22"/>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
@@ -93,50 +107,13 @@
 					<Color r="0" g="0" b="0" a="1"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="3">
-				<MaskTexture parentKey="IconMask" file="Interface\AddOns\Blizzard_SharedTalentUI\talents-diamond-mask.png" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" parentArray="RotatedTextures">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="Icon"/>
-					</MaskedTextures>
-				</MaskTexture>
-
-				<MaskTexture parentKey="BorderMask" file="Interface\AddOns\Blizzard_SharedTalentUI\talents-diamond-mask.png" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" parentArray="RotatedTextures">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Border" relativePoint="CENTER"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="Border"/>
-					</MaskedTextures>
-				</MaskTexture>
-
-				<MaskTexture parentKey="Border2Mask" file="Interface\AddOns\Blizzard_SharedTalentUI\talents-diamond-mask.png" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" parentArray="RotatedTextures">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Border2" relativePoint="CENTER"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="Border2"/>
-						<MaskedTexture childKey="StateBorder"/>
-						<MaskedTexture childKey="DisabledOverlay"/>
-					</MaskedTextures>
-				</MaskTexture>
-
-				<MaskTexture parentKey="BorderShadowMask" file="Interface\AddOns\Blizzard_SharedTalentUI\talents-diamond-mask.png" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" parentArray="RotatedTextures">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.BorderShadow" relativePoint="CENTER"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="BorderShadow"/>
-					</MaskedTextures>
-				</MaskTexture>
-			</Layer>
 		</Layers>
 	</Frame> 
 
+	<Frame name="ProfessionSpecEdgeArrowTemplate" mixin="ProfessionSpecEdgeArrowMixin" inherits="TalentEdgeArrowTemplate" virtual="true"/>
+
 	<Button name="ProfessionsSpecPathTemplate" inherits="TalenButtonOldCircleTemplate" enableMouse="true" virtual="true">
-		<Size x="60" y="60"/>
+		<Size x="55" y="55"/>
 		<!--
 		iconSize: size for the path icon.
 		progressBarSize: size for the progress bar.

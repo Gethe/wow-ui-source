@@ -726,6 +726,7 @@ function CastingBarMixin:AddStages(numStages)
 
 				if stagePip then
 					table.insert(self.StagePips, stagePip);
+					stagePip:ClearAllPoints();
 					stagePip:SetPoint("TOP", offset, 0.5);
 					stagePip:SetPoint("BOTTOM", offset, 0);
 					if i == self.NumStages then

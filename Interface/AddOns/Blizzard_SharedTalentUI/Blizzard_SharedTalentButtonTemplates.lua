@@ -488,11 +488,15 @@ TalentButtonBasicArtMixin.SizingAdjustment = {
 		{ region = "StateBorder", adjust = 0, },
 		{ region = "Border2", adjust = 0, },
 		{ region = "Border", adjust = -3, },
-		{ region = "IconMask", adjust = -4, },
-		{ region = "BorderMask", adjust = -3, },
-		{ region = "Border2Mask", adjust = 0, },
-		{ region = "BorderShadowMask", adjust = 2, },
 	},
+
+	Large = {
+		{ region = "Icon", adjust = 0, },
+		{ region = "IconMask", adjust = 0, },
+		{ region = "DisabledOverlay", adjust = 0, },
+		{ region = "DisabledOverlayMask", adjust = 0, },
+		{ region = "StateBorder", adjust = 0, },
+	}
 };
 
 function TalentButtonBasicArtMixin:OnLoad()
@@ -562,6 +566,25 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-choice-green",
 		maxed = "talents-node-choice-yellow",
 		locked = "talents-node-choice-locked",
+	},
+
+	LargeSquare = {
+		iconMask = "talents-node-choiceflyout-mask",
+		shadow = "talents-node-choiceflyout-square-shadow",
+		normal = "talents-node-choiceflyout-square-gray",
+		selectable = "talents-node-choiceflyout-square-green",
+		maxed = "talents-node-choiceflyout-square-yellow",
+		locked = "talents-node-choiceflyout-square-locked",
+	},
+
+	
+	LargeCircle = {
+		iconMask = "talents-node-circle-mask",
+		shadow = "talents-node-choiceflyout-circle-shadow",
+		normal = "talents-node-choiceflyout-circle-gray",
+		selectable = "talents-node-choiceflyout-circle-green",
+		maxed = "talents-node-choiceflyout-circle-yellow",
+		locked = "talents-node-choiceflyout-circle-locked",
 	},
 };
 

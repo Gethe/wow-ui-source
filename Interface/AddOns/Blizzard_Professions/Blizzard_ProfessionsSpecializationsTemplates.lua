@@ -28,33 +28,20 @@ end
 
 function ProfessionSpecTabMixin:OnClick()
 	if not self:GetParent():AnyPopupShown() then
-		local talentFrame = self:GetParent();
-		if talentFrame:HasAnyConfigChanges() then
-			local info = {};
-			info.onAccept = function()
-				talentFrame:CommitConfig();
-				EventRegistry:TriggerEvent("ProfessionsSpecializations.TabSelected", self.traitTreeID);
-			end
-			info.onCancel = function()
-				talentFrame:RollbackConfig();
-				EventRegistry:TriggerEvent("ProfessionsSpecializations.TabSelected", self.traitTreeID);
-			end
-			StaticPopup_Show("PROFESSIONS_SPECIALIZATION_ASK_TO_SAVE", nil, nil, info);
-		else
-			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-			EventRegistry:TriggerEvent("ProfessionsSpecializations.TabSelected", self.traitTreeID);
-		end
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+		EventRegistry:TriggerEvent("ProfessionsSpecializations.TabSelected", self.traitTreeID);
 	end
 end
 
 function ProfessionSpecTabMixin:OnLoad()
 	local function TabSelectedCallback(_, selectedID)
-		self:SetTabSelected(selectedID == self.traitTreeID);
+		local isSelected = (selectedID == self.traitTreeID);
+		self:SetTabSelected(isSelected);
+		self.Glow:SetShown(not isSelected);
 	end
 	EventRegistry:RegisterCallback("ProfessionsSpecializations.TabSelected", TabSelectedCallback, self);
 
 	self:HandleRotation();
-	self:SetTabWidth(180);
 end
 
 function ProfessionSpecTabMixin:SetState(state)
@@ -70,6 +57,13 @@ function ProfessionSpecTabMixin:SetState(state)
 		local canUnlock = state == Enum.ProfessionsSpecTabState.Unlockable;
 		-- HRO TODO: Different asset when unlockable
 		self.StateIcon:SetAtlas(canUnlock and "AdventureMapIcon-Lock" or "AdventureMapIcon-Lock", TextureKitConstants.IgnoreAtlasSize);
+	end
+
+	local unlockable = (state == Enum.ProfessionsSpecTabState.Unlockable);
+	if unlockable then
+		self.GlowAnim:Play();
+	else
+		self.GlowAnim:Stop();
 	end
 end
 
@@ -130,9 +124,16 @@ function ProfessionSpecTabMixin:Init(traitTreeID)
 	self.tabInfo = tabInfo;
 	self.state = nil;
 
+	self.GlowAnim:Restart();
+	self.Text:SetText(tabInfo.name);
 	self:SetTabSelected(false);
 	self:UpdateState();
 	self:Show();
+
+	local minWidth = 180;
+	local bufferWidth = 40;
+	local stretchWidth = self.Text:GetWidth() + (self.StateIcon:GetWidth() * 2) + bufferWidth;
+	self:SetTabWidth(math.max(minWidth, stretchWidth));
 
 	return true;
 end
@@ -168,15 +169,15 @@ function ProfessionsSpecPathMixin:OnClick(button, down) -- Override
 	if not self.isDetailedView and not self:GetTalentFrame():AnyPopupShown() then
 		if not self.selected then
 			EventRegistry:TriggerEvent("ProfessionsSpecializations.PathSelected", self:GetTalentNodeID());
-		elseif self.state == Enum.ProfessionsSpecPathState.Locked and self:CanAfford() and button == "LeftButton" then
+		elseif button == "LeftButton" and IsShiftKeyDown() then
 			local talentFrame = self:GetTalentFrame();
-			if talentFrame:GetRootNodeID() == self:GetTalentNodeID() then
+			if talentFrame:GetRootNodeID() == self:GetTalentNodeID() and self.state == Enum.ProfessionsSpecPathState.Locked then
 				talentFrame:CheckConfirmPurchaseTab();
 			else
-				talentFrame:CheckConfirmPurchasePath();
+				if self:CanPurchaseRank() then
+					self:PurchaseRank();
+				end
 			end
-		else
-			TalentButtonSpendMixin.OnClick(self, button, down);
 		end
 		self:OnEnter();
 	end
@@ -273,6 +274,7 @@ function ProfessionsSpecPathMixin:AddTooltipNextPerk(tooltip)
 	local descriptionText = self:GetNextPerkDescription();
 	if descriptionText ~= nil then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
+		descriptionText = descriptionText:gsub("\|cffffffff(.-)\|r", "%1");
 		GameTooltip_AddNormalLine(tooltip, descriptionText);
 	end
 end
@@ -309,16 +311,10 @@ function ProfessionsSpecPathMixin:AddTooltipInstructions(tooltip) -- Override
 			GameTooltip_AddInstructionLine(tooltip, PROFESSIONS_SPECIALIZATION_VIEW_DETAILS);
 		else
 			local canPurchase = self:CanPurchaseRank();
-			local canRefund = self:CanRefundRank();
-			if canPurchase or canRefund then
-				GameTooltip_AddBlankLineToTooltip(tooltip);
-			end
-
 			if canPurchase then
+				GameTooltip_AddBlankLineToTooltip(tooltip);
 				local spendInstruction = self.state == Enum.ProfessionsSpecPathState.Locked and PROFESSIONS_SPECS_TOOLTIP_UNLOCK or PROFESSIONS_SPECS_TOOLTIP_SPEND;
 				GameTooltip_AddInstructionLine(tooltip, spendInstruction);
-			elseif canRefund then
-				GameTooltip_AddDisabledLine(tooltip, PROFESSIONS_SPECS_TOOLTIP_REFUND);
 			end
 		end
 	end
@@ -379,6 +375,11 @@ function ProfessionsSpecPathMixin:SetVisualState(state) -- Override
 	self.SpendText:SetShown(stateInfo.showPoints and not self.isDetailedView);
 	self.ProgressBar:SetShown(stateInfo.showProgressBar or self.isDetailedView);
 	self.LockedIcon:SetShown(stateInfo.showLock);
+
+	if not self.isDetailedView then
+		local overrideSize = stateInfo.showProgressBar and 55 or 50;
+		self:SetSize(overrideSize, overrideSize);
+	end
 end
 
 function ProfessionsSpecPathMixin:UpdateProgressBar()
@@ -424,6 +425,7 @@ function ProfessionsSpecPerkMixin:SetPerkID(perkID)
 	local rotation = self:GetRotation();
 	-- Convert rotation to counter-clockwise rotation
 	rotation = (math.pi * 2) - rotation;
+	rotation = rotation + math.pi / 4;
 	for _, texture in ipairs(self.RotatedTextures) do
 		texture:SetRotation(rotation);
 	end
@@ -437,7 +439,7 @@ function ProfessionsSpecPerkMixin:IsEarned()
 end
 
 function ProfessionsSpecPerkMixin:UpdateIconTexture() -- Override
-	local color = self:IsEarned() and HIGHLIGHT_FONT_COLOR or BLACK_FONT_COLOR;
+	local color = self:IsEarned() and HIGHLIGHT_FONT_COLOR or VERY_DARK_GRAY_COLOR;
 	local r, g, b = color:GetRGB();
 	local a = 1;
 	self.Icon:SetColorTexture(r, g, b, a);
@@ -452,7 +454,9 @@ end
 function ProfessionsSpecPerkMixin:OnEnter() -- Override
 	local tooltip = self:AcquireTooltip();
 
-	GameTooltip_AddHighlightLine(tooltip, C_ProfSpecs.GetDescriptionForPerk(self.perkID));
+	local descriptionText = C_ProfSpecs.GetDescriptionForPerk(self.perkID);
+	descriptionText = descriptionText:gsub("\|cffffffff(.-)\|r", "%1");
+	GameTooltip_AddNormalLine(tooltip, descriptionText);
 	if not self:IsEarned() then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
 
@@ -476,4 +480,23 @@ function ProfessionsSpecPerkMixin:OnLeave()
 	GameTooltip_Hide();
 	self:SetScript("OnEvent", nil);
 	self:UnregisterEvent("SPELL_TEXT_UPDATE");
+end
+
+
+ProfessionSpecEdgeArrowMixin = {};
+
+function ProfessionSpecEdgeArrowMixin:UpdateState() -- Override
+	local endButton = self:GetEndButton();
+	endButton:CanPurchaseUnlock();
+	
+	if endButton.state ~= Enum.ProfessionsSpecPathState.Locked  then
+		self.Line:SetAtlas("talents-arrow-line-yellow", TextureKitConstants.IgnoreAtlasSize);
+		self.ArrowHead:SetAtlas("talents-arrow-head-yellow", TextureKitConstants.IgnoreAtlasSize);
+	elseif endButton:CanPurchaseUnlock() then
+		self.Line:SetAtlas("talents-arrow-line-gray", TextureKitConstants.IgnoreAtlasSize);
+		self.ArrowHead:SetAtlas("talents-arrow-head-gray", TextureKitConstants.IgnoreAtlasSize);
+	else
+		self.Line:SetAtlas("talents-arrow-line-locked", TextureKitConstants.IgnoreAtlasSize);
+		self.ArrowHead:SetAtlas("talents-arrow-head-locked", TextureKitConstants.IgnoreAtlasSize);
+	end
 end

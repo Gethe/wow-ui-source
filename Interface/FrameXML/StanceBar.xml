@@ -11,99 +11,27 @@
 		</Scripts>
 	</CheckButton>
 	
-	<Frame name="StanceBarFrame" inherits="UIParentBottomManagedFrameTemplate" enableMouse="true" hidden="true">
+	<Frame name="StanceBar" parent="UIParent" inherits="EditModeActionBarTemplate" mixin="StanceBarMixin" enableMouse="true" hidden="true">
 		<Size x="29" y="32"/>
+		<Anchors>
+			<Anchor point="BOTTOM"/>
+		</Anchors>
+
 		<KeyValues>
-			<KeyValue key="layoutIndex" value="200" type="number"/>
-			<KeyValue key="align" value="left" type="string"/>
-			<KeyValue key="leftPadding" value="-5" type="number"/>
-			<KeyValue key="layoutOnBottom" value="true" type="boolean"/>
+			<KeyValue key="buttonTemplate" value="StanceButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="SHAPESHIFT" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="10" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.StanceBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_STANCE_BAR_LABEL" type="global"/>
 		</KeyValues>
-		<Frames>
-			<CheckButton name="StanceButton1" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="1">
-				<KeyValues>
-					<KeyValue key="commandName" value="SHAPESHIFTBUTTON1" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="11" y="3"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StanceButton2" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="2">
-				<KeyValues>
-					<KeyValue key="commandName" value="SHAPESHIFTBUTTON2" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="StanceButton1" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StanceButton3" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="3">
-				<KeyValues>
-					<KeyValue key="commandName" value="SHAPESHIFTBUTTON3" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="StanceButton2" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StanceButton4" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="4">
-				<KeyValues>
-					<KeyValue key="commandName" value="SHAPESHIFTBUTTON4" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="StanceButton3" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StanceButton5" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="5">
-				<KeyValues>
-					<KeyValue key="commandName" value="SHAPESHIFTBUTTON5" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="StanceButton4" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StanceButton6" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="6">
-				<KeyValues>
-					<KeyValue key="commandName" value="SHAPESHIFTBUTTON6" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="StanceButton5" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StanceButton7" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="7">
-				<KeyValues>
-					<KeyValue key="commandName" value="SHAPESHIFTBUTTON7" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="StanceButton6" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StanceButton8" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="8">
-				<KeyValues>
-					<KeyValue key="commandName" value="SHAPESHIFTBUTTON8" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="StanceButton7" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StanceButton9" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="9">
-				<KeyValues>
-					<KeyValue key="commandName" value="SHAPESHIFTBUTTON9" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="StanceButton8" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="StanceButton10" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="10">
-				<KeyValues>
-					<KeyValue key="commandName" value="SHAPESHIFTBUTTON10" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="StanceButton9" relativePoint="RIGHT" x="7" y="0"/>
-				</Anchors>
-			</CheckButton>
-		</Frames>
+
 		<Scripts>
-			<OnLoad function="StanceBar_OnLoad"/>
-			<OnEvent function="StanceBar_OnEvent"/>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnEvent method="OnEvent" inherit="append"/>
 		</Scripts>
 	</Frame>
 </Ui>

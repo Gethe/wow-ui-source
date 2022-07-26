@@ -247,7 +247,14 @@ function ProfessionsRecipeTransactionMixin:HasAllocatedSalvageRequirements()
 		return false;
 	end
 
-	return self.salvageItem ~= nil;
+	if not self.salvageItem then
+		return false;
+	end
+
+	local recipeSchematic = self:GetRecipeSchematic();
+	local quantityRequired = recipeSchematic.quantityMax;
+	local count = ItemUtil.GetCraftingReagentCount(self.salvageItem:GetItemID());
+	return count >= quantityRequired;
 end
 
 function ProfessionsRecipeTransactionMixin:HasAllocatedReagentRequirements()

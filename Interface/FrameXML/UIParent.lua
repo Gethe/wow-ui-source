@@ -515,6 +515,9 @@ function UIParent_OnLoad(self)
 	-- Event(s) for Runeforge UI
 	self:RegisterEvent("RUNEFORGE_LEGENDARY_CRAFTING_OPENED");
 
+	 -- Events for Trait Systems
+    self:RegisterEvent("TRAIT_SYSTEM_INTERACTION_STARTED");
+
 	-- Event(s) for Weekly Rewards UI
 	self:RegisterEvent("WEEKLY_REWARDS_SHOW");
 
@@ -898,6 +901,10 @@ function RuneforgeFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_RuneforgeUI");
 end
 
+function GenericTraitUI_LoadUI()
+	UIParentLoadAddOn("Blizzard_GenericTraitUI");
+end
+
 function SubscriptionInterstitial_LoadUI()
 	LoadAddOn("Blizzard_SubscriptionInterstitialUI");
 end
@@ -957,11 +964,13 @@ function ToggleTalentFrame(suggestedTab)
 	end
 
 	local newTalentClassIDSet = {
+		[2] = true, -- Paladin
 		[3] = true, -- Hunter
 		[4] = true, -- Rogue
 		[5] = true, -- Priest
 		[6] = true, -- DK
 		[7] = true, -- Shaman
+		[8] = true, -- Mage
 		[11] = true, -- Druid
 		[13] = true, -- Evoker
 	};
@@ -1510,7 +1519,6 @@ function UIParent_OnEvent(self, event, ...)
 			GMChatFrameEditBox:SetAttribute("tellTarget", lastTalkedToGM);
 			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 		end
-		TargetFrame_OnVariablesLoaded();
 
 		NPETutorial_AttemptToBegin(event);
 
@@ -2523,6 +2531,12 @@ function UIParent_OnEvent(self, event, ...)
 		RuneforgeFrame:SetRuneforgeState(isUpgrade and RuneforgeUtil.RuneforgeState.Upgrade or RuneforgeUtil.RuneforgeState.Craft);
 
 		ShowUIPanel(RuneforgeFrame);
+	elseif (event == "TRAIT_SYSTEM_INTERACTION_STARTED") then
+		GenericTraitUI_LoadUI();
+
+		local traitSystemID = ...;
+		GenericTraitFrame:SetSystemID(traitSystemID);
+		ShowUIPanel(GenericTraitFrame);
 	-- Events for Reporting system
 	elseif (event == "REPORT_PLAYER_RESULT") then
 		local success = ...;
@@ -2569,21 +2583,11 @@ end
 
 --Aubrie TODO.. Convert these into horizontal layout frames? It's fine for now tho..
 function UIParent_UpdateTopFramePositions()
-	local topOffset = 0;
 	local yOffset = 0;
 	local xOffset = -180;
 
 	if OrderHallCommandBar and OrderHallCommandBar:IsShown() then
-		topOffset = 12;
 		yOffset = OrderHallCommandBar:GetHeight();
-	end
-
-	if PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame) then
-		PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4 - topOffset)
-	end
-
-	if TargetFrame and not TargetFrame:IsUserPlaced() then
-		TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4 - topOffset);
 	end
 
 	local buffOffset = 0;
@@ -3238,16 +3242,15 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		MainMenuBar:SetScale(barScale);
 	end
 
-	local anchor = EditModeUtil.GetBottomActionBarAnchor();
-	if (anchor) then
-		UIParentBottomManagedFrameContainer.fixedWidth = MainMenuBar:GetWidth() + 10;
-		UIParentBottomManagedFrameContainer:ClearAllPoints();
-		anchor:SetPoint(UIParentBottomManagedFrameContainer, true);
-		UIParentBottomManagedFrameContainer:Layout();
-		UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:Layout();
-	end
+	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight(true);
+	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight or 25;
+	UIParentBottomManagedFrameContainer.fixedWidth = 573;
+	UIParentBottomManagedFrameContainer:ClearAllPoints();
+	UIParentBottomManagedFrameContainer:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, bottomActionBarHeight + 5);
+	UIParentBottomManagedFrameContainer:Layout();
+	UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:Layout();
 
-	local rightAnchor = EditModeUtil.GetRightContainerAnchor();
+	local rightAnchor = EditModeUtil:GetRightContainerAnchor();
 	if(rightAnchor) then
 		UIParentRightManagedFrameContainer:ClearAllPoints();
 		UIParentRightManagedFrameContainer.fixedHeight = UIParent:GetHeight() - MinimapCluster:GetHeight() - 100;

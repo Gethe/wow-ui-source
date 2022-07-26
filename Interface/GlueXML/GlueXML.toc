@@ -50,6 +50,7 @@
 ..\SharedXML\ButtonGroup.lua
 ..\SharedXML\Frame\EventFrame.xml
 ..\SharedXML\Frame\EventButton.xml
+..\SharedXML\Frame\EventEditBox.xml
 ..\SharedXML\DataProvider.lua
 ..\SharedXML\Interpolator.lua
 ..\SharedXML\ButtonStateBehavior.lua

@@ -68,7 +68,6 @@
 				BankFrameItemButtonBag_OnClick(self, nil);
 			</OnReceiveDrag>
 		</Scripts>
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</ItemButton>
 	<ItemButton name="ReagentBankItemButtonGenericTemplate" inherits="BankItemButtonGenericTemplate" virtual="true">
 		<Scripts>

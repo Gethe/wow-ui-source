@@ -314,9 +314,7 @@
 				<Alpha childKey="Glow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Glow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scale childKey="Glow" duration="0.25" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.75">
-					<Origin point="BOTTOM">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="BOTTOM"/>
 				</Scale>
 				<Translation childKey="Glow" duration="0.5" order="1" offsetX="0" offsetY="25"/>
 			</AnimationGroup>

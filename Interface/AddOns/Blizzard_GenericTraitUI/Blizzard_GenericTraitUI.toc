@@ -1,0 +1,6 @@
+## Title: Blizzard Generic Trait UI
+## LoadOnDemand: 1
+## Dependencies: Blizzard_SharedTalentUI
+
+Blizzard_GenericTraitUtil.lua
+Blizzard_GenericTraitFrame.xml

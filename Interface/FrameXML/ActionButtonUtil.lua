@@ -44,7 +44,7 @@ function ActionButtonUtil.SetAllQuickKeybindButtonHighlights(show)
 	end
 	for i = 1, NumSpecialActionButtons do
 		_G["PetActionButton"..i].QuickKeybindHighlightTexture:SetShown(show);
-		_G["StanceButton"..i].QuickKeybindHighlightTexture:SetShown(show);
+		StanceBar.actionButtons[i].QuickKeybindHighlightTexture:SetShown(show);
 	end
 	ExtraActionButton1.QuickKeybindHighlightTexture:SetShown(show);
 	MainMenuBar.ActionBarPageNumber.UpButton.QuickKeybindHighlightTexture:SetShown(show);

@@ -4,12 +4,15 @@
 	<!--IMPORTANT
 		If you change anything in this file, be sure to change the equivalent data in PlayerFrame.lua, function PlayerFrame_ToPlayerArt
 		IMPORTANT-->
-	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
+	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate, EditModeUnitFrameSystemTemplate" parent="UIParent">
 		<Size x="232" y="100"/>
-		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
 		<HitRectInsets>
 			<AbsInset left="6" right="0" top="4" bottom="9"/>
 		</HitRectInsets>
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Player" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PLAYER_FRAME_LABEL" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="PlayerFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
@@ -41,9 +44,9 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame setAllPoints="true">
+			<Frame parentKey="FrameArt" setAllPoints="true">
 				<Frames>
-					<Frame setAllPoints="true">
+					<Frame parentKey="Textures" setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="PlayerFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
@@ -415,14 +418,12 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="PlayerFrame_OnLoad"/>
+			<OnLoad function="PlayerFrame_OnLoad" inherit="append"/>
 			<OnEvent function="PlayerFrame_OnEvent"/>
 			<OnUpdate function="PlayerFrame_OnUpdate"/>
 			<OnEnter function="UnitFrame_OnEnter"/>
 			<OnLeave function="UnitFrame_OnLeave"/>
 			<OnReceiveDrag function="PlayerFrame_OnReceiveDrag"/>
-			<OnDragStart function="PlayerFrame_OnDragStart"/>
-			<OnDragStop function="PlayerFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
 </Ui>

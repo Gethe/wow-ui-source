@@ -29,9 +29,7 @@
 			</AnimationGroup>
 			<AnimationGroup parentKey="spin">
 				<Rotation radians="6.28318531" duration="0.7" order="1">
-					<Origin point="BOTTOMRIGHT">
-						<Offset x="-6" y="6"/>
-					</Origin>
+					<Origin point="BOTTOMRIGHT"/>
 				</Rotation>
 				<Scripts>
 					<OnFinished>

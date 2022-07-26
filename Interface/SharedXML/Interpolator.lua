@@ -22,10 +22,11 @@ function InterpolatorMixin:Interpolate(v1, v2, time, setter, finished)
 		self.timer = nil;
 	end
 
+	time = math.max(0, time);
 	local elapsed = 0;
 	local interpolate = function()
 		elapsed = elapsed + GetTickTime();
-		local u = Saturate(elapsed / time);
+		local u = (time > 0) and Saturate(elapsed / time) or 1;
 		setter(self.interpolateFunc(v1, v2, u));
 		if u >= 1 then
 			if finished then

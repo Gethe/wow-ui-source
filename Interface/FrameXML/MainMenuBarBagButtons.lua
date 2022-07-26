@@ -109,7 +109,7 @@ function BaseBagSlotButtonMixin:OnEnterInternal()
 				GameTooltip:AppendText(NORMAL_FONT_COLOR:WrapTextInColorCode(" ("..bindingKey..")"));
 			end
 			local bagID = self:GetBagID();
-			if not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(bagID)) then
+			if ContainerFrame_CanContainerUseFilterMenu(bagID) then
 				for i, flag in ContainerFrameUtil_EnumerateBagGearFilters() do
 					if C_Container.GetBagSlotFlag(bagID, flag) then
 						GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[flag]));

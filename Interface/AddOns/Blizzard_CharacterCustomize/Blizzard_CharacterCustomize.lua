@@ -464,7 +464,11 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 	self.New:SetShown(categoryData.hasNewChoices);
 	local selected = false;
 	if categoryData.chrModelID then
-		selected = categoryData.chrModelID == CharCustomizeFrame.viewingChrModelID;
+		if CharCustomizeFrame.viewingChrModelID then
+			selected = categoryData.chrModelID == CharCustomizeFrame.viewingChrModelID;
+		else
+			selected = categoryData.chrModelID == CharCustomizeFrame.firstChrModelID;
+		end
 	else
 		selected = selectedCategoryID == categoryData.id;
 	end
@@ -730,7 +734,7 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupAnchors(tooltip)
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:SetupAudio()
-	if self.optionData.isSound and self.optionData.currentChoiceIndex ~= 1 then
+	if self.optionData.isSound and self.optionData.currentChoiceIndex then
 		local audioInterface = CharCustomizeFrame.pools:Acquire("CharCustomizeAudioInterface");
 		audioInterface:SetParent(self);
 		audioInterface:SetPoint("RIGHT", self.Label, "LEFT", -40, 0);
@@ -933,6 +937,21 @@ function CharCustomizeSelectionPopoutDetailsMixin:UpdateText(selectionData, isSe
 end
 
 function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq)
+	if not index then
+		self.SelectionName:SetText(CHARACTER_CUSTOMIZE_POPOUT_UNSELECTED_OPTION);
+		self.SelectionName:Show();
+		self.SelectionName:SetWidth(0);
+		self.SelectionName:SetPoint("LEFT", self, "LEFT", 0, 0);
+		self.SelectionNumber:Hide();
+		self.SelectionNumberBG:Hide();
+		self.ColorSwatch1:Hide();
+		self.ColorSwatch1Glow:Hide();
+		self.ColorSwatch2:Hide();
+		self.ColorSwatch2Glow:Hide();
+		self:SetShowAsNew(false);
+		return;
+	end
+
 	self.name = selectionData.name;
 	self.index = index;
 
@@ -1217,6 +1236,18 @@ function CharCustomizeMixin:RefreshCustomizations()
 	end
 end
 
+function CharCustomizeMixin:GetFirstValidCategory()
+	-- This filters out any categories with a charmodel id, since we don't want to auto select those
+
+	for i, category in ipairs(self.categories) do
+		if not category.chrModelID then
+			return category;
+		end
+	end
+
+	return self.categories[1];
+end
+
 function CharCustomizeMixin:SetCustomizations(categories)
 	self.categories = categories;
 
@@ -1224,7 +1255,7 @@ function CharCustomizeMixin:SetCustomizations(categories)
 
 	if self:NeedsCategorySelected() then
 		table.sort(self.categories, SortCategories);
-		self:SetSelectedCategory(self.categories[1], keepState);
+		self:SetSelectedCategory(self:GetFirstValidCategory(), keepState);
 	else
 		self:SetSelectedCategory(self.selectedCategoryData, keepState);
 	end
@@ -1308,6 +1339,7 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 
 	self.hasShapeshiftForms = false;
 	self.hasChrModels = false;	-- nothing using this right now, tracking it anyway
+	self.firstChrModelID = nil;
 	self.numNormalCategories = 0;
 
 	local optionsToSetup = {};
@@ -1318,16 +1350,20 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 		if showCategory then
 			local categoryPool = self:GetCategoryPool(categoryData);
 			local button = categoryPool:Acquire();
-			button:SetCategory(categoryData, self.selectedCategoryData.id);
-			button:Show();
 
 			if categoryData.chrModelID then
 				self.hasChrModels = true;
+				if not self.firstChrModelID then
+					self.firstChrModelID = categoryData.chrModelID;
+				end
 			elseif categoryData.spellShapeshiftFormID then
 				self.hasShapeshiftForms = true;
 			else
 				self.numNormalCategories = self.numNormalCategories + 1;
 			end
+
+			button:SetCategory(categoryData, self.selectedCategoryData.id);
+			button:Show();
 
 			if self.selectedCategoryData.id == categoryData.id then
 				for _, optionData in ipairs(categoryData.options) do

@@ -214,6 +214,10 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 		local initTooltip = Settings.CreateDropDownInitTooltip(setting, name, tooltip, options);
 		Settings.InitSelectionDropDown(dropDown, setting, options, 200, initTooltip);
 
+		local tooltipFunc = GenerateClosure(Settings.InitTooltip, name, tooltip);
+		dropDown.Button:SetTooltipFunc(tooltipFunc);
+		control:SetTooltipFunc(tooltipFunc);
+
 		local function OnSettingValueChanged(o, setting, value)
 			local index = dropDown.Button:FindIndex(function(data)
 				return data.value == value;
@@ -231,12 +235,13 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 			setting:SetValue(value);
 		end
 
-		local initTooltip = GenerateClosure(Settings.InitTooltip, name, tooltip);
 		local sliderWithSteppers = control.SliderWithSteppers;
 		sliderWithSteppers:Init(setting:GetValue(), options.minValue, options.maxValue, options.steps, options.formatters);
 
-		sliderWithSteppers.Slider:SetTooltipFunc(GenerateClosure(Settings.InitTooltip, name, tooltip));
-		
+		local initTooltip = GenerateClosure(Settings.InitTooltip, name, tooltip);
+		sliderWithSteppers.Slider:SetTooltipFunc(initTooltip);
+		control:SetTooltipFunc(initTooltip);
+
 		self.cbrHandles:RegisterCallback(sliderWithSteppers, MinimalSliderWithSteppersMixin.Event.OnValueChanged, OnSliderValueChanged);
 
 		local function OnSettingValueChanged(o, setting, value)
@@ -318,11 +323,24 @@ function SettingsAdvancedQualitySectionMixin:EvaluateVisibility(expanded)
 	end
 end
 
-SettingsAdvancedSliderMixin = {};
+SettingsAdvancedSliderMixin = CreateFromMixins(DefaultTooltipMixin);
 
 function SettingsAdvancedSliderMixin:OnLoad()
 	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
+	DefaultTooltipMixin.OnLoad(self);
+	self:SetCustomTooltipAnchoring(self.SliderWithSteppers, "ANCHOR_TOPLEFT", -40, 0);
+
 	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
+end
+
+SettingsAdvancedDropdownMixin = CreateFromMixins(DefaultTooltipMixin);
+
+function SettingsAdvancedDropdownMixin:OnLoad()
+	Mixin(self.DropDown.Button, DefaultTooltipMixin);
+	DefaultTooltipMixin.OnLoad(self);
+	self:SetCustomTooltipAnchoring(self.DropDown, "ANCHOR_TOPLEFT", -40, 0);
+
+	self.DropDown.Button:InitDefaultTooltipScriptHandlers();
 end
 
 local SettingsAdvancedQualitySectionInitializer = CreateFromMixins(SettingsExpandableSectionInitializer, SettingsSearchableElementMixin);
@@ -720,20 +738,19 @@ local function Register()
 
 	-- Camera FOV
 	if C_CVar.GetCVar("cameraFov") then
-	do
-		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("cameraFov", Settings.VarType.Number);
-		local commitValue = setValue;
-		local _, minValue, maxValue = C_CameraDefaults.GetCameraFOVDefaults();
-		local setting = Settings.RegisterProxySetting(category, "PROXY_CAMERA_FOV", Settings.DefaultVarLocation, 
-			Settings.VarType.Number, CAMERA_FOV, getDefaultValue(), getValue, nil, commitValue);
-		setting:SetCommitFlags(Settings.CommitFlag.Apply);
+		do
+			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("cameraFov", Settings.VarType.Number);
+			local commitValue = setValue;
+			local _, minValue, maxValue = C_CameraDefaults.GetCameraFOVDefaults();
+			local setting = Settings.RegisterProxySetting(category, "PROXY_CAMERA_FOV", Settings.DefaultVarLocation, 
+				Settings.VarType.Number, CAMERA_FOV, getDefaultValue(), getValue, nil, commitValue);
+			setting:SetCommitFlags(Settings.CommitFlag.Apply);
 
-		local step = 5;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Min, minValue);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Max, maxValue);
-		Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_CAMERA_FOV);
-	end
+			local step = 5;
+			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+			Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_CAMERA_FOV);
+		end
 	end
 
 	-- UI Scale

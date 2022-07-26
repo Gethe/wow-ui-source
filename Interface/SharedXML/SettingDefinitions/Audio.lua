@@ -367,6 +367,9 @@ end
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(AUDIO_LABEL);
 
+	-- Enable Sound
+	Settings.SetupCVarCheckBox(category, "Sound_EnableAllSound", ENABLE_SOUND, OPTION_TOOLTIP_ENABLE_SOUND);
+
 	-- Game Sound Ouptut
 	do
 		local function GetOptions()
@@ -405,9 +408,6 @@ local function Register()
 
 		Settings.SetupCVarDropDown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
 	end
-
-	-- Enable Sound
-	Settings.SetupCVarCheckBox(category, "Sound_EnableAllSound", ENABLE_SOUND, OPTION_TOOLTIP_ENABLE_SOUND);
 	
 	do
 		local minValue, maxValue, step = 0, 1, .05;

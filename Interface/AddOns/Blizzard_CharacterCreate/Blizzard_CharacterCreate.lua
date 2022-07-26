@@ -775,6 +775,11 @@ function CharacterCreateNavButtonMixin:OnEnter()
 	end
 end
 
+function CharacterCreateNavButtonMixin:OnLeave()
+	local tooltip = self:GetAppropriateTooltip();
+	tooltip:Hide();
+end
+
 function CharacterCreateNavButtonMixin:UpdateText(text, arrow)
 	local appendArrowName = self:IsEnabled() and "" or "-disable";
 
@@ -1205,13 +1210,14 @@ end
 
 function CharacterCreateRaceAndClassMixin:OnShow()
 	local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
+	local isTrialRestricted = C_CharacterCreation.IsTrialAccountRestricted();
 	local useNewPlayerMode = C_CharacterCreation.UseBeginnerMode();
 	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode);
 	self.HordeAlliedRaces:SetShown(not useNewPlayerMode);
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
-	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not CharacterCreateFrame:HasService() and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
+	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not isTrialRestricted and not CharacterCreateFrame:HasService() and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()

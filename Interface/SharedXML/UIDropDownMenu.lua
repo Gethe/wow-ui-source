@@ -888,7 +888,7 @@ function UIDropDownMenu_GetSelectedValue(frame)
 	return frame.selectedValue;
 end
 
-function UIDropDownMenuButton_OnClick(self)
+function UIDropDownMenuButton_OnClick(self, mouseButton)
 	local checked = self.checked;
 	if ( type (checked) == "function" ) then
 		checked = checked(self);
@@ -923,7 +923,7 @@ function UIDropDownMenuButton_OnClick(self)
 
 	local func = self.func;
 	if ( func ) then
-		func(self, self.arg1, self.arg2, checked);
+		func(self, self.arg1, self.arg2, checked, mouseButton);
 	else
 		return;
 	end

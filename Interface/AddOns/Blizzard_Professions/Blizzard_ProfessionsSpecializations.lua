@@ -2,24 +2,6 @@
 g_professionsSpecsSelectedTabs = {};
 g_professionsSpecsSelectedPaths = {};
 
-
-StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_ASK_TO_SAVE"] = 
-{
-	text = PROFESSIONS_SPECIALIZATION_ASK_TO_SAVE,
-	button1 = YES,
-	button2 = NO,
-
-	OnAccept = function(self, info)
-		info.onAccept();
-	end,
-
-	OnCancel = function(self, info)
-		info.onCancel();
-	end,
-
-	hideOnEscape = 1,
-};
-
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB"] = 
 {
 	text = PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_TITLE,
@@ -32,24 +14,6 @@ StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB"] =
 
 	OnShow = function(self, info)
 		self.SubText:SetText(PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB:format(info.specName, info.profName));
-		self.SubText:Show();
-	end,
-
-	hideOnEscape = 1,
-};
-
-StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_PATH"] = 
-{
-	text = PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_PATH_TITLE,
-	button1 = YES,
-	button2 = CANCEL,
-
-	OnAccept = function(self, info)
-		info.onAccept();
-	end,
-
-	OnShow = function(self, info)
-		self.SubText:SetText(PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_PATH:format(info.pathName));
 		self.SubText:Show();
 	end,
 
@@ -76,30 +40,26 @@ function ProfessionsSpecFrameMixin:ConfigureButtons()
 		self:PurchaseRank(self:GetDetailedPanelNodeID(), C_ProfSpecs.GetSpendEntryForPath(self:GetDetailedPanelNodeID()));
 	end);
 
-	self.DetailedView.RefundPointsButton:SetScript("OnClick", function()
-		self:AttemptConfigOperation(C_Traits.RefundRank, self:GetDetailedPanelNodeID());
-	end);
-
 	self.DetailedView.UnlockPathButton:SetScript("OnClick", function()
-		self:CheckConfirmPurchasePath();
+		self:PurchaseRank(self:GetDetailedPanelNodeID(), C_ProfSpecs.GetUnlockEntryForPath(self:GetDetailedPanelNodeID()));
 	end);
 	self.DetailedView.UnlockPathButton:SetScript("OnLeave", GameTooltip_Hide);
-end
 
-function ProfessionsSpecFrameMixin:CheckConfirmPurchasePath()
-	if not self:AnyPopupShown() then
-		local info = {};
-		info.onAccept = function()
-			self:PurchaseRank(self:GetDetailedPanelNodeID(), C_ProfSpecs.GetUnlockEntryForPath(self:GetDetailedPanelNodeID()));
-			local configID = self:GetConfigID();
-			self:CommitConfig();
-			C_Traits.StageConfig(configID);
-		end;
-
-		info.pathName = self.DetailedView.Path:GetName();
-
-		StaticPopup_Show("PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_PATH", info.pathName, nil, info);
-	end
+	self.DetailedView.SpendPointsButton:SetScript("OnEnter", function()
+		local spendCurrency = C_ProfSpecs.GetSpendCurrencyForPath(self:GetDetailedPanelNodeID());
+		if spendCurrency ~= nil then
+			local _, _, currencyTypesID = C_Traits.GetTraitCurrencyInfo(spendCurrency);
+			if currencyTypesID then
+				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyTypesID);
+				if self.treeCurrencyInfoMap[spendCurrency] ~= nil and self.treeCurrencyInfoMap[spendCurrency].quantity == 0 then
+					GameTooltip:SetOwner(self.DetailedView.SpendPointsButton, "ANCHOR_RIGHT", 0, 0);
+					GameTooltip_AddErrorLine(GameTooltip, PROFESSIONS_SPECS_OUT_OF_KNOWLEDGE:format(currencyInfo.name));
+					GameTooltip:Show();
+				end
+			end
+		end
+	end);
+	self.DetailedView.SpendPointsButton:SetScript("OnLeave", GameTooltip_Hide);
 end
 
 function ProfessionsSpecFrameMixin:CheckConfirmPurchaseTab()
@@ -165,16 +125,11 @@ function ProfessionsSpecFrameMixin:OnShow()
 	for tab, _ in self.tabsPool:EnumerateActive() do
 		tab:UpdateState();
 	end
-
-	-- HRO TODO: Remove. Traits API should send an update here.
-	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 end
 
 local staticPopups =
 {
-	"PROFESSIONS_SPECIALIZATION_ASK_TO_SAVE",
 	"PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB",
-	"PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_PATH",
 };
 
 function ProfessionsSpecFrameMixin:HideAllPopups()
@@ -203,9 +158,6 @@ function ProfessionsSpecFrameMixin:OnHide()
 	TalentFrameBaseMixin.OnHide(self);
 
 	self:HideAllPopups();
-
-	-- HRO TODO: Remove. Traits API should send an update here.
-	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
 end
 
 
@@ -226,17 +178,6 @@ function ProfessionsSpecFrameMixin:OnEvent(event, ...) -- Override
 		end
 	elseif event == "TRAIT_CONFIG_UPDATED" then
 		self:UpdateDetailedPanel();
-	-- HRO TODO: Remove. Traits API should send an update here.
-	elseif event == "CURRENCY_DISPLAY_UPDATE" then
-		local updatedCurrencyTypesID = ...;
-		if self.tabSpendCurrency then
-			local _, _, currencyTypesID = C_Traits.GetTraitCurrencyInfo(self.tabSpendCurrency);
-			if currencyTypesID == updatedCurrencyTypesID then
-				self:UpdateTreeCurrencyInfo();
-				self:MarkTreeDirty();
-				self:UpdateDetailedPanel();
-			end
-		end
 	end
 end
 
@@ -270,22 +211,34 @@ function ProfessionsSpecFrameMixin:InitializeTabs()
 	local professionID = self:GetProfessionID();
 	local tabTreeIDs = C_ProfSpecs.GetSpecTabIDsForSkillLine(professionID);
 
-	local tabs = {};
+	local lastTab;
 	for _, traitTreeID in ipairs(tabTreeIDs) do
 		local tab = self.tabsPool:Acquire();
 		if tab:Init(traitTreeID) then
-			table.insert(tabs, tab);
+			tab:ClearAllPoints();
+
+			if lastTab then
+				tab:SetPoint("LEFT", lastTab, "RIGHT", -10, 0);
+			else
+				tab:SetPoint("BOTTOMLEFT", self.TreeView, "TOPLEFT", 60, 0);
+			end
+
+			lastTab = tab;
 		end
 	end
 
-	local rowSize = 9;
-	local xPadding = -10;
-	local yPadding = 0;
-	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, rowSize, xPadding, yPadding);
-	local initialAnchor = AnchorUtil.CreateAnchor("BOTTOMLEFT", self.TreeView, "TOPLEFT", 60, 0);
-	AnchorUtil.GridLayout(tabs, initialAnchor, layout);
-
 	EventRegistry:TriggerEvent("ProfessionsSpecializations.TabSelected", self:GetDefaultTab(tabTreeIDs));
+end
+
+function ProfessionsSpecFrameMixin:HasUnlockableTab()
+	for tab, _ in self.tabsPool:EnumerateActive() do
+		tab:UpdateState();
+		if tab:GetState() == Enum.ProfessionsSpecTabState.Unlockable then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function ProfessionsSpecFrameMixin:UpdateTreeCurrencyInfo() -- Override
@@ -301,6 +254,10 @@ end
 
 function ProfessionsSpecFrameMixin.getSpecializedMixin(nodeInfo, talentType)
 	return ProfessionsSpecPathMixin;
+end
+
+function ProfessionsSpecFrameMixin.getEdgeTemplateType()
+	return "ProfessionSpecEdgeArrowTemplate";
 end
 
 function ProfessionsSpecFrameMixin:InstantiateTalentButton(nodeID, xPos, yPos) -- Override
@@ -510,9 +467,6 @@ function ProfessionsSpecFrameMixin:UpdateSelectedTabState()
 			self.UnlockTabButton:SetScript("OnEnter", nil);
 		end
 	end
-
-	self.ApplyButton:SetShown(not isLocked);
-	self.UndoButton:SetShown(not isLocked);
 end
 
 function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
@@ -631,13 +585,10 @@ function ProfessionsSpecFrameMixin:UpdateDetailedPanel()
 	local state = C_ProfSpecs.GetStateForPath(nodeID, self:GetConfigID());
 	local canPurchase = detailedViewPath:GetNextEntry() ~= nil and C_Traits.CanPurchaseRank(self:GetConfigID(), nodeID, detailedViewPath:GetNextEntry()) and detailedViewPath:CanAfford();
 
-	local canRefund = C_ProfSpecs.CanRefundPath(nodeID, self:GetConfigID());
 	local showPointsButtons = (state == Enum.ProfessionsSpecPathState.Progressing) or (state == Enum.ProfessionsSpecPathState.Completed);
-	self.DetailedView.RefundPointsButton:SetShown(showPointsButtons);
 	self.DetailedView.SpendPointsButton:SetShown(showPointsButtons);
 	self.DetailedView.PointsText:SetShown(showPointsButtons);
 	if showPointsButtons then
-		self.DetailedView.RefundPointsButton:SetEnabled(canRefund);
 		self.DetailedView.SpendPointsButton:SetEnabled(canPurchase);
 	end
 
@@ -687,7 +638,6 @@ function ProfessionsSpecFrameMixin:CommitConfig() -- Override
 	TalentFrameBaseMixin.CommitConfig(self);
 
 	self:UpdateConfigButtonsState();
-	self.DetailedView.RefundPointsButton:SetEnabled(false);
 end
 
 function ProfessionsSpecFrameMixin:RollbackConfig() -- Override
@@ -729,5 +679,8 @@ end
 
 function ProfessionsSpecFrameMixin:UpdateNextPerkText()
 	local descriptionText = self:GetDetailedPanelPath():GetNextPerkDescription();
+	if descriptionText then
+		descriptionText = descriptionText:gsub("\|cffffffff(.-)\|r", "%1");
+	end
 	self.DetailedView.NextPerkText:SetText(descriptionText);
 end

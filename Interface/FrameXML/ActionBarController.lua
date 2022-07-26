@@ -78,13 +78,13 @@ function ActionBarController_OnEvent(self, event, ...)
 	if (   event == "UPDATE_SHAPESHIFT_FORM" 
 		or event == "UPDATE_SHAPESHIFT_FORMS" 
 		or event == "UPDATE_SHAPESHIFT_USABLE" ) then
-		StanceBar_Update();
+		StanceBar:Update();
 	end
 	
 	--possess
 	if ( event == "UPDATE_POSSESS_BAR" ) then
 		PossessBar_Update();
-		StanceBar_Update();
+		StanceBar:Update();
 	end
 	
 	--Extra Action Bar
@@ -125,7 +125,7 @@ end
 
 function ActionBarController_UpdateAll(force)
 	PossessBar_Update();
-	StanceBar_Update();
+	StanceBar:Update();
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
 	
 	-- If we have a skinned vehicle bar or skinned override bar, display the OverrideActionBar

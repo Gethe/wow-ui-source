@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Graphics.lua"/>
 
-	<Frame name="SettingsAdvancedDropdownTemplate" virtual="true">
+	<Frame name="SettingsAdvancedDropdownTemplate" mixin="SettingsAdvancedDropdownMixin" virtual="true">
 		<Size y="26"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT"/>
@@ -23,6 +23,9 @@
 				</Anchors>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="SettingsAdvancedSliderTemplate" mixin="SettingsAdvancedSliderMixin" virtual="true">

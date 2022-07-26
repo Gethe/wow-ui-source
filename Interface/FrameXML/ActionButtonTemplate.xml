@@ -102,7 +102,7 @@
 		</Scripts>
 	</Frame>
 
-	<CheckButton name="ActionButtonTemplate" parentArray="ActionButtons" mixin="BaseActionButtonMixin" virtual="true">
+	<CheckButton name="ActionButtonTemplate" mixin="BaseActionButtonMixin" virtual="true">
 		<Size x="45" y="45"/>
 
 		<Layers>

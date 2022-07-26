@@ -5,7 +5,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	-- Action Bar Settings
 	[Enum.EditModeSystem.ActionBar] =
 	{
-		--Orientation
+		-- Orientation
 		{
 			setting = Enum.EditModeActionBarSetting.Orientation,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_ORIENTATION,
@@ -17,7 +17,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			},
 		},
 
-		--Num Rows/Columns
+		-- Num Rows/Columns
 		{
 			setting = Enum.EditModeActionBarSetting.NumRows,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_NUM_ROWS,
@@ -27,7 +27,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 4,
 		},
 
-		--Num Icons
+		-- Num Icons
 		{
 			setting = Enum.EditModeActionBarSetting.NumIcons,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_NUM_ICONS,
@@ -36,7 +36,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 12,
 		},
 
-		--Icon Size
+		-- Icon Size
 		{
 			setting = Enum.EditModeActionBarSetting.IconSize,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_ICON_SIZE,
@@ -54,7 +54,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			formatter = function (percentage) percentage = percentage / 100; return FormatPercentage(percentage, true); end,
 		},
 
-		--Icon Padding
+		-- Icon Padding
 		{
 			setting = Enum.EditModeActionBarSetting.IconPadding,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_ICON_PADDING,
@@ -64,7 +64,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			stepSize = 1,
 		},
 
-		--Visible Setting
+		-- Visible Setting
 		{
 			setting = Enum.EditModeActionBarSetting.VisibleSetting,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING,
@@ -84,27 +84,59 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
-		--Bar Art Visible Setting
+		-- Bar Art Visible Setting
 		{
 			setting = Enum.EditModeActionBarSetting.HideBarArt,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_HIDE_BAR_ART,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
-		--Bar Scrolling Visible Setting
+		-- Bar Scrolling Visible Setting
 		{
 			setting = Enum.EditModeActionBarSetting.HideBarScrolling,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_HIDE_BAR_SCROLLING,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
-		--Snap To Side
-		-- {
-		-- 	setting = Enum.EditModeActionBarSetting.SnapToSide,
-		-- 	name = HUD_EDIT_MODE_SETTING_ACTION_BAR_SNAP_TO_RIGHT_SIDE,
-		-- 	type = Enum.EditModeSettingDisplayType.Checkbox,
-		-- },
-	}
+		-- Snap To Side
+		{
+			setting = Enum.EditModeActionBarSetting.SnapToSide,
+			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_SNAP_TO_RIGHT_SIDE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
+
+	-- Unit Frame Settings
+	[Enum.EditModeSystem.UnitFrame] =
+	{
+		-- Hide Portrait
+		--[[{
+			setting = Enum.EditModeUnitFrameSetting.HidePortrait,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_HIDE_PORTRAIT,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},]]--
+
+		-- Cast Bar Underneath
+		--[[{
+			setting = Enum.EditModeUnitFrameSetting.CastBarUnderneath,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_CAST_BAR_UNDERNEATH,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},]]--
+
+		-- Buffs On Top
+		{
+			setting = Enum.EditModeUnitFrameSetting.BuffsOnTop,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_BUFFS_ON_TOP,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Use Larger Frame
+		{
+			setting = Enum.EditModeUnitFrameSetting.UseLargerFrame,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_USE_LARGER_FRAME,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
 };
 
 local DefaultSettingDisplayInfo = {};

@@ -81,3 +81,7 @@ end
 function TabSystemOwnerMixin:GetElementsForTab(tabKey)
 	return self.internalTabTracker:GetElementsForTab(tabKey);
 end
+
+function TabSystemOwnerMixin:GetTabButton(tabID)
+	return self.tabSystem:GetTabButton(tabID);
+end

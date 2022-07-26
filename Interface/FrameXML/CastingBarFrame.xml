@@ -456,9 +456,6 @@
 			<KeyValue key="layoutIndex" value="2" type="number"/>
 			<KeyValue key="bottomPadding" value="8" type="number"/>
 		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOM" x="0" y="55" />
-		</Anchors>
 		<Scripts>
 			<OnLoad>
 				self:OnLoad("player", true, false);

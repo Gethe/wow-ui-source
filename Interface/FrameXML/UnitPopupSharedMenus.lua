@@ -354,6 +354,7 @@ function UnitPopupMenuFocus:GetMenuButtons()
 		UnitPopupVoiceChatButtonMixin,
 		UnitPopupLargeFocusButtonMixin,
 		UnitPopupMoveFocusButtonMixin,
+		UnitPopupEnterEditModeMixin,
 		UnitPopupCancelButtonMixin, 
 	}
 end

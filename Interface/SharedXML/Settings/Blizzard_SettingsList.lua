@@ -30,7 +30,7 @@ SettingsListMixin = {};
 function SettingsListMixin:OnLoad(elementData)
 	local verticalPad = 10;
 	local pad = 0;
-	local spacing = 15;
+	local spacing = 9;
 	local view = CreateScrollBoxListLinearView(verticalPad, verticalPad, pad, pad, spacing);
 
 	local function Factory(factory, elementData)

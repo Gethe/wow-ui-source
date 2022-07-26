@@ -99,7 +99,7 @@ function PetActionBar_OnEvent(self, event, ...)
 end
 
 function PetActionBarFrame_IsAboveStance(ignoreShowing)
-	return ( ((StanceBarFrame and GetNumShapeshiftForms() > 0) or (MultiCastActionBarFrame and HasMultiCastActionBar()) or
+	return ( ((StanceBar and GetNumShapeshiftForms() > 0) or (MultiCastActionBarFrame and HasMultiCastActionBar()) or
 		(MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown())) and
 		(not MultiBarBottomLeft:IsShown() and MultiBarBottomRight:IsShown()) and
 		(ignoreShowing or (PetActionBarFrame and PetActionBarFrame:IsShown())))
@@ -226,7 +226,7 @@ function PetActionBar_UpdatePositionValues()
 		PETACTIONBAR_XPOS = 36;
 	elseif ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
 		PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
-	elseif ( StanceBarFrame and GetNumShapeshiftForms() > 0 ) then
+	elseif ( StanceBar and GetNumShapeshiftForms() > 0 ) then
 		PETACTIONBAR_XPOS = 500;
 	elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
 		PETACTIONBAR_XPOS = 500;

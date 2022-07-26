@@ -2,24 +2,29 @@
 local ProfessionsFrameEvents = 
 {
 	"TRADE_SKILL_NAME_UPDATE",
-	"TRADE_SKILL_DATA_SOURCE_CHANGED",
 	"TRADE_SKILL_LIST_UPDATE",
 	"TRADE_SKILL_CLOSE",
 };
 
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE"] = 
 {
-	text = PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE,
+	text = PROFESSIONS_SPECS_CONFIRM_CLOSE,
 	button1 = YES,
-	button2 = CANCEL,
+	button2 = NO,
 	OnAccept = function()
 		if ProfessionsFrame.SpecPage:HasAnyConfigChanges() then
-			ProfessionsFrame.SpecPage:RollbackConfig();
+			ProfessionsFrame.SpecPage:CommitConfig();
 		end
+		HideUIPanel(ProfessionsFrame);
+	end,
+	OnCancel = function()
 		HideUIPanel(ProfessionsFrame);
 	end,
 	hideOnEscape = 1,
 };
+
+local helptipSystemName = "Professions";
+
 
 ProfessionsMixin = {};
 
@@ -69,7 +74,6 @@ function ProfessionsMixin:OnEvent(event, ...)
 		end
 		
 		self:SetProfessionInfo(professionInfo);
-	elseif event == "TRADE_SKILL_DATA_SOURCE_CHANGED" then
 	elseif event == "TRADE_SKILL_CLOSE" or event == "GARRISON_TRADESKILL_NPC_CLOSED" then
 		HideUIPanel(self);
 	elseif event == "OPEN_RECIPE_RESPONSE" then
@@ -103,8 +107,7 @@ function ProfessionsMixin:SetProfessionInfo(professionInfo)
 
 	EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
 
-	local forceTabChange = true;
-	self:Refresh(forceTabChange);
+	self:Refresh();
 end
 
 function ProfessionsMixin:SetTitle(skillLineName)
@@ -133,20 +136,20 @@ function ProfessionsMixin:GetProfessionInfo()
 	return professionInfo;
 end
 
-function ProfessionsMixin:Refresh(forceTabChange)
+function ProfessionsMixin:Refresh()
 	local professionInfo = self:GetProfessionInfo();
 
 	self:SetTitle(professionInfo.displayName);
 	self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(professionInfo.professionID));
 
-	self:UpdateTabs(forceTabChange);
-
 	for _, page in ipairs(self.Pages) do
 		page:Refresh(professionInfo);
 	end
+
+	self:UpdateTabs();
 end
 
-function ProfessionsMixin:UpdateTabs(forceTabChange)
+function ProfessionsMixin:UpdateTabs()
 	local onlyShowRecipes = not Professions.InLocalCraftingMode() or C_TradeSkillUI.IsRuneforging();
 	for _, tabID in ipairs(self:GetTabSet()) do
 		self.TabSystem:SetTabShown(tabID, not onlyShowRecipes);
@@ -167,15 +170,67 @@ function ProfessionsMixin:UpdateTabs(forceTabChange)
 	if not selectedTab or onlyShowRecipes or (selectedTab == self.specializationsTabID and forceAwayFromSpec) then
 		selectedTab = self.recipesTabID;
 	end
-	self:SetTab(selectedTab, forceTabChange);
+	self:SetTab(selectedTab);
 end
 
-function ProfessionsMixin:SetTab(tabID, forceChange)
+local unlockableSpecHelpTipInfo = 
+{
+	text = PROFESSIONS_SPECS_CAN_UNLOCK_SPEC,
+	buttonStyle = HelpTip.ButtonStyle.Close,
+	targetPoint = HelpTip.Point.BottomEdgeCenter,
+	system = helptipSystemName,
+	autoHorizontalSlide = true,
+	onAcknowledgeCallback = function() ProfessionsFrame.unlockSpecHelptipAcknowledged = true; end,
+};
+
+local unspentPointsHelpTipInfo = 
+{
+	text = PROFESSIONS_SPECS_PENDING_POINTS,
+	buttonStyle = HelpTip.ButtonStyle.Close,
+	targetPoint = HelpTip.Point.BottomEdgeCenter,
+	system = helptipSystemName,
+	autoHorizontalSlide = true,
+	onAcknowledgeCallback = function() ProfessionsFrame.pendingPointsHelptipAcknowledged = true; end,
+};
+
+function ProfessionsMixin:SetTab(tabID)
+	local isSpecTab = (tabID == self.specializationsTabID);
+
+	local hasPendingSpecChanges = self.SpecPage:HasAnyConfigChanges();
+	local hasUnlockableTab = self.SpecPage:HasUnlockableTab();
+	local specializationTab = self:GetTabButton(self.specializationsTabID);
+	specializationTab.Glow:SetShown(not isSpecTab);
+	local shouldPlaySpecGlow = specializationTab:IsShown() and (not isSpecTab) and (hasPendingSpecChanges or hasUnlockableTab);
+	specializationTab.GlowAnim:SetPlaying(shouldPlaySpecGlow);
+
+	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
+
+	HelpTip:HideAllSystem(helptipSystemName);
+	if hasUnlockableTab or hasPendingSpecChanges then
+		local shouldShowUnlockHelptip = hasUnlockableTab and not self.unlockSpecHelptipAcknowledged;
+		local shouldShowPendingHelptip = hasPendingSpecChanges and not self.pendingPointsHelptipAcknowledged and not shouldShowUnlockHelptip;
+		if isSpecTab then
+			if shouldShowUnlockHelptip then
+				self.unlockSpecHelptipAcknowledged = true;
+			elseif shouldShowPendingHelptip then
+				self.pendingPointsHelptipAcknowledged = true;
+			end
+		else
+			local helpTipInfo;
+			if shouldShowUnlockHelptip then
+				helpTipInfo = unlockableSpecHelpTipInfo;
+			elseif shouldShowPendingHelptip then
+				helpTipInfo = unspentPointsHelpTipInfo;
+			end
+			if helpTipInfo then
+				HelpTip:Show(UIParent, helpTipInfo, self:GetTabButton(self.specializationsTabID));
+			end
+		end
+	end
+
 	if tabID == self:GetTab() then
 		return;
 	end
-
-	local isSpecTab = (tabID == self.specializationsTabID);
 
 	if isSpecTab and not C_ProfSpecs.SkillLineHasSpecialization(self:GetProfessionInfo().professionID) then
 		C_TradeSkillUI.SetProfessionChildSkillLineID(C_ProfSpecs.GetDefaultSpecSkillLine());
@@ -195,6 +250,7 @@ end
 function ProfessionsMixin:OnHide()
 	C_TradeSkillUI.CloseTradeSkill();
 	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
+	HelpTip:HideAllSystem(helptipSystemName);
 	
 	C_Garrison.CloseGarrisonTradeskillNPC();
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_CLOSE);
@@ -202,8 +258,10 @@ end
 
 function ProfessionsMixin:CheckConfirmClose()
 	if self:GetTab() == self.specializationsTabID and C_Traits.ConfigHasStagedChanges(self.SpecPage:GetConfigID()) then
-		self.SpecPage:HideAllPopups();
-		StaticPopup_Show("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
+		if not StaticPopup_Visible("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE") then
+			self.SpecPage:HideAllPopups();
+			StaticPopup_Show("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
+		end
 	else
 		HideUIPanel(self);
 	end

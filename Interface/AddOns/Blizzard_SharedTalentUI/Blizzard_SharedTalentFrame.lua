@@ -109,6 +109,7 @@ local TalentFrameBaseEvents = {
 	"TRAIT_NODE_ENTRY_UPDATED",
 	"TRAIT_TREE_CHANGED",
 	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
+	"TRAIT_CONFIG_UPDATED",
 };
 
 TalentFrameBaseMixin:GenerateCallbackEvents(
@@ -250,7 +251,16 @@ function TalentFrameBaseMixin:OnEvent(event, ...)
 		end
 	elseif event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" then
 		local treeID = ...;
-		if treeID == self:GetTalentTreeID() then
+		if treeID == self:GetTalentTreeID() and not self:IsCommitInProgress() then
+			self:UpdateTreeCurrencyInfo();
+		end
+	elseif event == "TRAIT_CONFIG_UPDATED" then
+		local configID = ...;
+		if self:IsCommitInProgress() and configID == self.commitedConfigID then
+			self.commitTimerCallback:Cancel();
+			self.commitedConfigID = nil;
+			self.commitTimerCallback = nil;
+			self.commitStarted = false;
 			self:UpdateTreeCurrencyInfo();
 		end
 	end
@@ -447,11 +457,11 @@ function TalentFrameBaseMixin:AcquireTalentButton(nodeInfo, talentType, offsetX,
 	return newTalentButton;
 end
 
-function TalentFrameBaseMixin:AcquireTalentDisplayFrame(talentType, specializedMixin)
+function TalentFrameBaseMixin:AcquireTalentDisplayFrame(talentType, specializedMixin, useLarge)
 	specializedMixin = specializedMixin or nil;
 
 	local nodeInfo = nil;
-	local templateType = self.getTemplateType(nodeInfo, talentType);
+	local templateType = self.getTemplateType(nodeInfo, talentType, useLarge);
 	local resetterFunction = nil;
 	local forbidden = false;
 	local pool = self.talentDislayFramePool:GetOrCreatePool("BUTTON", self, templateType, resetterFunction, forbidden, specializedMixin);
@@ -475,7 +485,7 @@ function TalentFrameBaseMixin:ToggleSelections(button, selectionOptions, canSele
 end
 
 function TalentFrameBaseMixin:ShowSelections(button, selectionOptions, canSelectChoice, currentSelection, baseCost)
-	self.SelectionChoiceFrame:SetPoint("BOTTOM", button, "TOP", 0, 0);
+	self.SelectionChoiceFrame:SetPoint("BOTTOM", button, "TOP", 0, -5);
 	self.SelectionChoiceFrame:SetSelectionOptions(button, selectionOptions, canSelectChoice, currentSelection, baseCost);
 	self.SelectionChoiceFrame:Show();
 end
@@ -954,9 +964,13 @@ function TalentFrameBaseMixin:CommitConfig()
 
 	-- TODO:: Replace this with a proper response. For now, we'll just assume things finish out in 0.5 or less.
 	-- Wait until we have server to client error messaging as well WOW10-27631
-	C_Timer.After(0.5, function()
+	self.commitedConfigID = self:GetConfigID();
+	self.commitTimerCallback = C_FunctionContainers.CreateCallback(function()
+		self.commitTimerCallback = nil;
+		self.commitedConfigID = nil;
 		self.commitStarted = false;
 	end);
+	C_Timer.After(0.5, self.commitTimerCallback);
 
 	return self:CommitConfigInternal();
 end
@@ -992,17 +1006,23 @@ function TalentFrameBaseMixin:GetConfigCommitErrorString()
 end
 
 function TalentFrameBaseMixin:ReportConfigCommitError()
-	UIErrorsFrame:AddExternalErrorMessage(self:GetConfigCommitErrorString());
+	local errorString = self:GetConfigCommitErrorString();
+	if errorString then
+		UIErrorsFrame:AddExternalErrorMessage(errorString);
+	end
 end
 
 function TalentFrameBaseMixin:AttemptConfigOperation(operation, ...)
 	if not self:CheckAndReportCommitOperation() then
-		return;
+		return false;
 	end
 
 	if not operation(self:GetConfigID(), ...) then
 		UIErrorsFrame:AddExternalErrorMessage("Trait operation failed.");
+		return false;
 	end
+
+	return true;
 end
 
 function TalentFrameBaseMixin:PurchaseRank(nodeID, entryID)
@@ -1041,6 +1061,17 @@ function TalentFrameBaseMixin:AddCostToTooltip(tooltip, traitCurrenciesCost)
 		return;
 	end
 
+	local costStrings = self:GetCostStrings(traitCurrenciesCost);
+
+	if #costStrings > 0 then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+
+		local costString = TALENT_BUTTON_TOOLTIP_COST_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
+		GameTooltip_AddHighlightLine(tooltip, costString);
+	end
+end
+
+function TalentFrameBaseMixin:GetCostStrings(traitCurrenciesCost)
 	local costStrings = {};
 	for i, traitCurrencyCost in ipairs(traitCurrenciesCost) do
 		local treeCurrency = self.treeCurrencyInfoMap[traitCurrencyCost.ID];
@@ -1055,13 +1086,7 @@ function TalentFrameBaseMixin:AddCostToTooltip(tooltip, traitCurrenciesCost)
 			table.insert(costStrings, costEntryString);
 		end
 	end
-
-	if #costStrings > 0 then
-		GameTooltip_AddBlankLineToTooltip(tooltip);
-
-		local costString = TALENT_BUTTON_TOOLTIP_COST_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
-		GameTooltip_AddHighlightLine(tooltip, costString);
-	end
+	return costStrings;
 end
 
 function TalentFrameBaseMixin:DisableZoomAndPan()

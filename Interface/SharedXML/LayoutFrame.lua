@@ -54,7 +54,7 @@ function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 	end
 end
 
-local function LayoutIndexComparator(left, right)
+function LayoutIndexComparator(left, right)
 	if (left.layoutIndex == right.layoutIndex and left ~= right) then
 		GMError("Duplicate layoutIndex found: " .. left.layoutIndex);
 	end

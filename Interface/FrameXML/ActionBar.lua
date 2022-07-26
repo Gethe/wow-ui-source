@@ -1,24 +1,27 @@
-local NUM_ACTION_BUTTONS = 12;
 local MIN_BUTTON_PADDING = 3;
 
 ActionBarMixin = {}
 
 function ActionBarMixin:ActionBar_OnLoad()
-    self.numShowingButtons = NUM_ACTION_BUTTONS;
+    self.numShowingButtons = self.numButtons;
     self.buttonPadding = MIN_BUTTON_PADDING;
-    self.buttonsAndSpacers = {}
+    self.actionButtons = {};
+    self.buttonsAndSpacers = {};
 
     -- Create action buttons
-    for i=1, NUM_ACTION_BUTTONS do
+    for i=1, self.numButtons do
 		local name = (self == MainMenuBar) and "ActionButton"..i or self:GetName().."Button"..i;
 		local actionButton = CreateFrame("CheckButton", name, self, self.buttonTemplate, i);
         actionButton.commandName = self.commandNamePrefix.."BUTTON"..i;
-        actionButton.isLastActionButton = i == NUM_ACTION_BUTTONS;
+        actionButton.isLastActionButton = i == self.numButtons;
+
+        self.actionButtons[#self.actionButtons + 1] = actionButton;
         self.buttonsAndSpacers[#self.buttonsAndSpacers + 1] = actionButton;
 
         -- Create button spacer
         -- Spacers are used to keep size of bar the same when we aren't showing the grid
         local spacer = CreateFrame("Frame", "ActionBarButtonSpacer"..i, self, "ActionBarButtonSpacerTemplate", i);
+        spacer:SetSize(actionButton:GetWidth(), actionButton:GetHeight()); -- Spacer size should match the size of the action buttons
         self.buttonsAndSpacers[#self.buttonsAndSpacers + 1] = spacer;
     end
 
@@ -95,7 +98,7 @@ function ActionBarMixin:SetShowGrid(showGrid, reason)
         self.ShowAllButtons = showGrid;
     end
 
-    for i, actionButton in pairs(self.ActionButtons) do
+    for i, actionButton in pairs(self.actionButtons) do
         actionButton:SetShowGrid(showGrid, reason);
     end
 
@@ -105,7 +108,7 @@ function ActionBarMixin:SetShowGrid(showGrid, reason)
 end
 
 function ActionBarMixin:UpdateShownButtons()
-    for i, actionButton in pairs(self.ActionButtons) do
+    for i, actionButton in pairs(self.actionButtons) do
         local isWithinNumShowingButtons = i <= self.numShowingButtons;
         local showButton = isWithinNumShowingButtons  -- Show button if it is within the num shown buttons
                     and not actionButton:GetAttribute("statehidden") -- and it isn't being hidden by an attribute
@@ -126,7 +129,6 @@ EditModeActionBarMixin = {}
 function EditModeActionBarMixin:EditModeActionBar_OnLoad()
     self:ActionBar_OnLoad();
 	self:OnSystemLoad();
-    self:EditModeActionBarSystem_OnLoad();
 
     self.isShownExternal = self:IsShown();
 

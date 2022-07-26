@@ -1481,7 +1481,6 @@ function UIParent_OnEvent(self, event, ...)
 			GMChatFrameEditBox:SetAttribute("tellTarget", lastTalkedToGM);
 			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 		end
-		TargetFrame_OnVariablesLoaded();
 
 		NPETutorial_AttemptToBegin(event);
 
@@ -2576,16 +2575,7 @@ function UIParent_UpdateTopFramePositions()
 	local xOffset = -180;
 
 	if OrderHallCommandBar and OrderHallCommandBar:IsShown() then
-		topOffset = 12;
 		yOffset = OrderHallCommandBar:GetHeight();
-	end
-
-	if PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame) then
-		PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4 - topOffset)
-	end
-
-	if TargetFrame and not TargetFrame:IsUserPlaced() then
-		TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4 - topOffset);
 	end
 
 	local buffOffset = 0;
@@ -2645,7 +2635,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["ExtraAbilityContainer"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, justBottomRightAndStance = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, watchBar = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
-	["StanceBarFrame"] = {baseY = 0, bottomEither = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
+	["StanceBar"] = {baseY = 0, bottomEither = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["PossessBarFrame"] = {baseY = 0, bottomEither = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["MultiCastActionBarFrame"] = {baseY = 8, bottomEither = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["AuctionHouseMultisellProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
@@ -3319,7 +3309,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance()) then
 			tinsert(yOffsetFrames, "justBottomRightAndStance");
 		end
-		if ( ( PetActionBarFrame and PetActionBarFrame:IsShown() ) or ( StanceBarFrame and StanceBarFrame:IsShown() ) or
+		if ( ( PetActionBarFrame and PetActionBarFrame:IsShown() ) or ( StanceBar and StanceBar:IsShown() ) or
 			 ( MultiCastActionBarFrame and MultiCastActionBarFrame:IsShown() ) or ( PossessBarFrame and PossessBarFrame:IsShown() ) or
 			 ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) ) then
 			tinsert(yOffsetFrames, "pet");
@@ -3414,7 +3404,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	-- we'll have to figure out what we should do in this case if it ever really becomes a problem
 	-- HACK 2: if the possession bar is shown then hide the multi-cast bar
 	-- yeah, way too many bars...
-	if ( ( StanceBarFrame and StanceBarFrame:IsShown() ) or
+	if ( ( StanceBar and StanceBar:IsShown() ) or
 		 ( PossessBarFrame and PossessBarFrame:IsShown() ) ) then
 		HideMultiCastActionBar();
 	elseif ( HasMultiCastActionBar and HasMultiCastActionBar() ) then

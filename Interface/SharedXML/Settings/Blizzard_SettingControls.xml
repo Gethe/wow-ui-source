@@ -40,7 +40,7 @@
 		</Frames>
 	</Frame>
 
-	<CheckButton name="SettingsCheckBoxTemplate" mixin="SettingsCheckBoxMixin" virtual="true">
+	<CheckButton name="SettingsCheckBoxTemplate" mixin="SettingsCheckBoxMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="30" y="29"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -106,7 +106,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="SettingsSelectionPopoutEntryTemplate" inherits="SelectionPopoutEntryTemplate" mixin="SettingsSelectionPopoutEntryMixin" virtual="true">
+	<Button name="SettingsSelectionPopoutEntryTemplate" inherits="SelectionPopoutEntryTemplate" motionScriptsWhileDisabled="true" mixin="SettingsSelectionPopoutEntryMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="defaultWidth" value="225" type="number"/>
 		</KeyValues>

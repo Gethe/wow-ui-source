@@ -92,11 +92,11 @@ function FrameUtil.ReflectStandardScriptHandlers(frame)
 		end
 	end
 
-	if frame.OnLoad ~= nil then
+	if frame.OnLoad then
 		frame:OnLoad();
 	end
 
-	if frame.OnShow ~= nil then
+	if frame.OnShow and frame:IsVisible() then
 		frame:OnShow();
 	end
 end

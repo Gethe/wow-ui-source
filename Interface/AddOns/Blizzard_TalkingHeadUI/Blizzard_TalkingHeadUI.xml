@@ -184,31 +184,23 @@
 						<Alpha childKey="Overlay.Glow_LeftBar" startDelay="0.35" duration="0.25" order="1" fromAlpha="0" toAlpha="0.7"/>
 						<Translation childKey="Overlay.Glow_LeftBar" startDelay="0.35" duration="0.8" order="1" offsetX="0" offsetY="-10"/>
 						<Scale childKey="Overlay.Glow_LeftBar" startDelay="0.35" duration="0.7" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1.6">
-							<Origin point="TOP">
-								<Offset x="0" y="0"/>
-							</Origin>
+							<Origin point="TOP"/>
 						</Scale>
 						<Alpha childKey="Overlay.Glow_LeftBar" startDelay="0.85" duration="0.25" order="1" fromAlpha="0.7" toAlpha="0"/>
 						<Alpha childKey="Overlay.Glow_RightBar" startDelay="0.35" duration="0.25" order="1" fromAlpha="0" toAlpha="0.7"/>
 						<Translation childKey="Overlay.Glow_RightBar" startDelay="0.35" duration="0.8" order="1" offsetX="0" offsetY="-10"/>
 						<Scale childKey="Overlay.Glow_RightBar" startDelay="0.35" duration="0.7" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1.6">
-							<Origin point="TOP">
-								<Offset x="0" y="0"/>
-							</Origin>
+							<Origin point="TOP"/>
 						</Scale>
 						<Alpha childKey="Overlay.Glow_RightBar" startDelay="0.95" duration="0.25" order="1" fromAlpha="0.7" toAlpha="0"/>
 						<Alpha childKey="Sheen" startDelay="0.5" duration="0.5" order="1" fromAlpha="0" toAlpha="0.7"/>
 						<Scale childKey="Sheen" startDelay="0.5" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1">
-							<Origin point="LEFT">
-								<Offset x="0" y="0"/>
-							</Origin>
+							<Origin point="LEFT"/>
 						</Scale>
 						<Alpha childKey="Sheen" startDelay="1" duration="0.5" order="1" fromAlpha="0.7" toAlpha="0"/>
 						<Alpha childKey="TextSheen" startDelay="0.75" duration="0.5" order="1" fromAlpha="0" toAlpha="0.7"/>
 						<Scale childKey="TextSheen" startDelay="0.75" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1">
-							<Origin point="LEFT">
-								<Offset x="0" y="0"/>
-							</Origin>
+							<Origin point="LEFT"/>
 						</Scale>
 						<Alpha childKey="TextSheen" startDelay="1.25" duration="0.5" order="1" fromAlpha="0.7" toAlpha="0"/>
 						<Alpha childKey="Model" duration="0.75" order="1" fromAlpha="0" toAlpha="1"/>

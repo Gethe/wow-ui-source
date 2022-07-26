@@ -441,19 +441,25 @@ function UnitPopupGarrisonVisitButtonMixin:CanShow()
 	return C_Garrison.IsVisitGarrisonAvailable() and (not C_PartyInfo.IsCrossFactionParty());
 end
 
--- TODO: Uncomment once Edit Mode is complete for Unit Frames
---[[
 -- UnitPopupEnterEditModeMixin is used instead
 function UnitPopupMovePlayerFrameButtonMixin:CanShow()
 	return false;
-end]]--
+end
 
--- TODO: Uncomment once Edit Mode is complete for Unit Frames
---[[
 -- UnitPopupEnterEditModeMixin is used instead
 function UnitPopupMoveTargetFrameButtonMixin:CanShow()
 	return false;
-end]]--
+end
+
+-- UnitPopupEnterEditModeMixin is used instead
+function UnitPopupMoveFocusButtonMixin:CanShow()
+	return false;
+end
+
+-- UnitPopupEnterEditModeMixin is used instead
+function UnitPopupLargeFocusButtonMixin:CanShow()
+	return false;
+end
 
 function UnitPopupPlayerFrameShowCastBarButtonMixin:CanShow()
 	return false;

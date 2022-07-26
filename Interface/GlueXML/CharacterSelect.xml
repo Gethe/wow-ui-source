@@ -442,7 +442,7 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
-						<Rotation order="1" duration="15" degrees="-360" x="2" y="-4"/>
+						<Rotation order="1" duration="15" degrees="-360"/>
 					</AnimationGroup>
 				</Animations>
 			</Frame>
@@ -1299,7 +1299,7 @@
 									</OnSizeChanged>
 								</Scripts>
 							</Button>
-							<Button parentKey="FinishButton" inherits="UIPanelGoldButtonTemplate" enabled="true">
+							<Button parentKey="FinishButton" inherits="UIPanelGoldButtonTemplate">
 								<Size x="164" y="32"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-28" y="53"/>
@@ -1453,13 +1453,13 @@
 									</Anchors>
 									<Color r="0.29" g="0.33" b="0.91"/>
 								</FontString>
-								<FontString inherits="GlueFontNormal" text="0" justifyH="right" parentKey="HordeCount">
+								<FontString inherits="GlueFontNormal" text="0" justifyH="RIGHT" parentKey="HordeCount">
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" x="-24" y="38"/>
 									</Anchors>
 									<Color r="0.90" g="0.05" b="0.07"/>
 								</FontString>
-								<FontString inherits="GlueFontNormal" text="0" justifyH="right" parentKey="AllianceCount">
+								<FontString inherits="GlueFontNormal" text="0" justifyH="RIGHT" parentKey="AllianceCount">
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" x="-24" y="15"/>
 									</Anchors>

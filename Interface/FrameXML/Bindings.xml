@@ -239,34 +239,34 @@
 	</Binding>
 
 	<Binding name="SHAPESHIFTBUTTON1" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(1)
+		StanceBar:Select(1)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON2" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(2)
+		StanceBar:Select(2)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON3" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(3)
+		StanceBar:Select(3)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON4" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(4)
+		StanceBar:Select(4)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON5" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(5)
+		StanceBar:Select(5)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON6" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(6)
+		StanceBar:Select(6)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON7" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(7)
+		StanceBar:Select(7)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON8" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(8)
+		StanceBar:Select(8)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON9" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(9)
+		StanceBar:Select(9)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON10" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(10)
+		StanceBar:Select(10)
 	</Binding>
 
 	<Binding name="BONUSACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">

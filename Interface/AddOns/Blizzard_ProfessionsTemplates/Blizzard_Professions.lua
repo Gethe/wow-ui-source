@@ -241,6 +241,8 @@ function Professions.SetupQualityReagentTooltip(slot, transaction)
 			quantities[1], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier1-Small"), 
 			quantities[2], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier2-Small"),  
 			quantities[3], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier3-Small")));
+		
+		GameTooltip_AddInstructionLine(GameTooltip, BASIC_REAGENT_TOOLTIP_CLICK_TO_ALLOCATE);
 	end
 end
 
@@ -252,10 +254,24 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, sl
 		GameTooltip_SetTitle(GameTooltip, item:GetItemName(), colorData.color);
 	
 		local reagents = Professions.CreateCraftingReagentInfoBonusTbl(itemID);
-		local bonusText = C_TradeSkillUI.GetCraftingReagentBonusText(recipeID, 1, reagents);
 
+		local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, reagents);
+		if difficultyText and difficultyText ~= "" then
+			GameTooltip_AddHighlightLine(GameTooltip, difficultyText);
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		end
+
+		local bonusText = C_TradeSkillUI.GetCraftingReagentBonusText(recipeID, 1, reagents);
 		for _, str in ipairs(bonusText) do
 			GameTooltip_AddHighlightLine(GameTooltip, str);
+		end
+
+		local quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(item:GetItemID());
+		if quality then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			local atlasSize = 26;
+			local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(quality, true), atlasSize, atlasSize);
+			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY:format(atlasMarkup));
 		end
 		
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
@@ -836,7 +852,9 @@ function Professions.LayoutReagentSlots(reagentSlots, reagentsContainer, optiona
 			optionalReagentsContainer:Layout();
 		end
 		optionalReagentsContainer:SetShown(optionalShown);
-		divider:SetShown(optionalShown);
+		if divider then
+			divider:SetShown(optionalShown);
+		end
 	end
 end
 
@@ -855,11 +873,6 @@ function Professions.LayoutFinishingSlots(finishingSlots, finishingSlotContainer
 
 		AnchorUtil.GridLayout(finishingSlots, anchor, layout);
 	end
-end
-
-function Professions.GetCreationCountMax(transaction)
-	-- IMPL
-	return 0;
 end
 
 function Professions.GetProfessionBackgroundAtlas(professionInfo)

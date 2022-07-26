@@ -268,4 +268,20 @@
 		</KeyValues>
 		<Size x="40" y="40"/>
 	</Button>
+
+	<Button name="TalentButtonLargeSquareTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LargeSquare" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonBasicArtMixin.SizingAdjustment.Large" type="global"/>
+		</KeyValues>
+		<Size x="64" y="64"/>
+	</Button>
+
+	<Button name="TalentButtonLargeCircleTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LargeCircle" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonBasicArtMixin.SizingAdjustment.Large" type="global"/>
+		</KeyValues>
+		<Size x="64" y="64"/>
+	</Button>
 </Ui>

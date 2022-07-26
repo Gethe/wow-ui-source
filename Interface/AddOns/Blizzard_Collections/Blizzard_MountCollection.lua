@@ -154,6 +154,8 @@ function MountJournal_OnLoad(self)
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
+	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnUpdate, MountJournal_EvaluateListHelpTip, self);
+
 	UIDropDownMenu_Initialize(self.mountOptionsMenu, MountOptionsMenu_Init, "MENU");
 
 	local bottomLeftInset = self.BottomLeftInset;
@@ -192,13 +194,25 @@ function MountJournal_ResetMountButton(button)
 end
 
 function MountJournal_InitMountButton(button, elementData)
-	local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, isFiltered, isCollected, mountID = C_MountJournal.GetDisplayedMountInfo(elementData.index);
+	local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, isFiltered, isCollected, mountID, isForDragonriding = C_MountJournal.GetDisplayedMountInfo(elementData.index);
 	local needsFanfare = C_MountJournal.NeedsFanfare(mountID);
 
 	button.name:SetText(creatureName);
 	button.icon:SetTexture(needsFanfare and COLLECTIONS_FANFARE_ICON or icon);
 	button.new:SetShown(needsFanfare);
 	button.newGlow:SetShown(needsFanfare);
+
+	local yOffset = 1;
+	if isForDragonriding then
+		if button.name:GetNumLines() == 1 then
+			yOffset = 6;
+		else
+			yOffset = 5;
+		end
+	end
+	button.name:SetPoint("LEFT", button.icon, "RIGHT", 10, yOffset);
+
+	button.DragonRidingLabel:SetShown(isForDragonriding);
 
 	button.index = elementData.index;
 	button.spellID = spellID;
@@ -464,7 +478,7 @@ function MountJournal_FullUpdate(self)
 		MountJournal_UpdateMountList();
 
 		if (not MountJournal.selectedSpellID) then
-			MountJournal_Select(1);
+			MountJournal_Select(self.dragonridingHelpTipMountIndex or 1);
 		end
 
 		MountJournal_UpdateMountDisplay();
@@ -472,7 +486,26 @@ function MountJournal_FullUpdate(self)
 end
 
 function MountJournal_OnShow(self)
+	self.needsDragonridingHelpTip = not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_COLLECTION_DRAGONRIDING);
+	if self.needsDragonridingHelpTip then
+		-- Force this to clear right now. There could be one done at end of frame due to the MountJournal_ClearSearch that ran last time
+		-- the UI was closed, and if so that could change the number of entries after the automatic scroll to a dragonriding mount
+		C_MountJournal.SetSearch("");
+	end
+
 	MountJournal_FullUpdate(self);
+
+	-- If no dragonriding mounts are visible in the list when there are some collected, reset the filters to force them
+	if self.needsDragonridingHelpTip and not self.dragonridingHelpTipMountIndex then
+		-- this will do an update
+		MountJournalFilterDropdown_ResetFilters();
+	end
+
+	-- Finally, if there is one, scroll to it
+	if self.dragonridingHelpTipMountIndex then
+		MountJournal.ScrollBox:ScrollToElementDataIndex(self.dragonridingHelpTipMountIndex);
+	end
+
 	MountJournal_UpdateEquipment(self);
 	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\MountJournalPortrait");
 
@@ -488,12 +521,25 @@ function MountJournal_OnHide(self)
 end
 
 function MountJournal_UpdateMountList()
+	local dragonridingMounts = nil;
+	local dragonridingHelpTipMountIndex = nil;
+	if MountJournal.needsDragonridingHelpTip then
+		dragonridingMounts = C_MountJournal.GetCollectedDragonridingMounts();
+	end
+
 	local newDataProvider = CreateDataProvider();
 	for index = 1, C_MountJournal.GetNumDisplayedMounts() do
 		local mountID = C_MountJournal.GetDisplayedMountID(index);
 		newDataProvider:Insert({index = index, mountID = mountID});
+		if dragonridingMounts and not dragonridingHelpTipMountIndex then
+			if tContains(dragonridingMounts, mountID) then
+				dragonridingHelpTipMountIndex = index;
+			end
+		end
 	end
 	MountJournal.ScrollBox:SetDataProvider(newDataProvider, ScrollBoxConstants.RetainScrollPosition);
+
+	MountJournal.dragonridingHelpTipMountIndex = dragonridingHelpTipMountIndex;
 
 	local numMounts = C_MountJournal.GetNumMounts();
 	MountJournal.numOwned = 0;
@@ -520,6 +566,31 @@ function MountJournal_UpdateMountList()
 		MountJournal.selectedMountID = nil;
 		MountJournal_UpdateMountDisplay();
 		MountJournal.MountCount.Count:SetText(0);
+	end
+
+	MountJournal_EvaluateListHelpTip(MountJournal);
+end
+
+function MountJournal_EvaluateListHelpTip(self)
+	HelpTip:Hide(self, MOUNT_JOURNAL_DRAGONRIDING_HELPTIP);
+
+	if self.dragonridingHelpTipMountIndex then
+		local frame = self.ScrollBox:FindFrameByPredicate(function(entry)
+			return entry.index == self.dragonridingHelpTipMountIndex;
+		end);
+		if frame and frame:GetTop() <= self.ScrollBox:GetTop() + 4 and frame:GetBottom() >= self.ScrollBox:GetBottom() - 4 then
+			local helpTipInfo = {
+				text = MOUNT_JOURNAL_DRAGONRIDING_HELPTIP,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_MOUNT_COLLECTION_DRAGONRIDING,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				offsetX = -4,
+				onAcknowledgeCallback = function() self.dragonridingHelpTipMountIndex = nil; end;
+			};
+			HelpTip:Show(self, helpTipInfo, frame);
+			return;
+		end
 	end
 end
 

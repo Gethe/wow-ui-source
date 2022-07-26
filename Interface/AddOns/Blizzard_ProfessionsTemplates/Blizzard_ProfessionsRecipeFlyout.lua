@@ -43,15 +43,29 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 		button:Init(item);
 
 		button:SetScript("OnEnter", function()
-			local optionalReagentIndex = index;
 			GameTooltip:SetOwner(button, "ANCHOR_TOPLEFT");
-			GameTooltip:SetItemByID(item:GetItemID());
-
+			local colorData = item:GetItemQualityColor();
+			GameTooltip_SetTitle(GameTooltip, item:GetItemName(), colorData.color);
+		
 			local reagents = Professions.CreateCraftingReagentInfoBonusTbl(item:GetItemID());
-			local bonusText = C_TradeSkillUI.GetCraftingReagentBonusText(self.recipeID, 1, reagents);
 
-			for _, text in ipairs(bonusText) do
-				GameTooltip_AddHighlightLine(GameTooltip, text, TooltipConstants.WrapText);
+			local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, reagents);
+			if difficultyText and difficultyText ~= "" then
+				GameTooltip_AddHighlightLine(GameTooltip, difficultyText);
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			end
+
+			local bonusText = C_TradeSkillUI.GetCraftingReagentBonusText(self.recipeID, 1, reagents);
+			for _, str in ipairs(bonusText) do
+				GameTooltip_AddHighlightLine(GameTooltip, str);
+			end
+
+			local quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(item:GetItemID());
+			if quality then
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
+				local atlasSize = 26;
+				local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(quality, true), atlasSize, atlasSize);
+				GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY:format(atlasMarkup));
 			end
 
 			local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());

@@ -41,10 +41,18 @@ TALENT_FRAME_CONFIRM_CLOSE = "You will lose any pending changes if you continue.
 
 TALENT_FRAME_GATE_TOOLTIP_FORMAT = "Spend %d more |4point:points; to unlock this row";
 
+GENERIC_TRAIT_FRAME_CURRENCY_TEXT = "%d %s";
+GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT = "Are you sure you want to spend %s to unlock this talent?";
+
 
 local TemplatesByTalentType = {
 	[Enum.TraitNodeEntryType.SpendSquare] = "TalentButtonSquareTemplate",
 	[Enum.TraitNodeEntryType.SpendCircle] = "TalentButtonCircleTemplate",
+};
+
+local LargeTemplatesByTalentType = {
+	[Enum.TraitNodeEntryType.SpendSquare] = "TalentButtonLargeSquareTemplate",
+	[Enum.TraitNodeEntryType.SpendCircle] = "TalentButtonLargeCircleTemplate",
 };
 
 local TemplatesByEdgeVisualization = {
@@ -77,11 +85,15 @@ TalentButtonUtil.BaseVisualState = {
 	Invisible = 7,
 };
 
-function TalentButtonUtil.GetTemplateForTalentType(nodeInfo, talentType)
+function TalentButtonUtil.GetTemplateForTalentType(nodeInfo, talentType, useLarge)
 	if nodeInfo and (nodeInfo.type == Enum.TraitNodeType.Selection) then
 		if FlagsUtil.IsSet(nodeInfo.flags, Enum.TraitNodeFlag.ShowMultipleIcons) then
 			return "TalentButtonChoiceTemplate";
 		end
+	end
+
+	if useLarge then
+		return LargeTemplatesByTalentType[talentType] or "TalentButtonLargeCircleTemplate";
 	end
 
 	-- Anything without a specific shared template will be a circle for now.

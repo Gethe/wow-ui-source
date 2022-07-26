@@ -538,8 +538,11 @@
 		</Scripts>
 	</StatusBar>
 
-	<Button name="TargetFrame" inherits="TargetFrameTemplate" movable="true">
-		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
+	<Button name="TargetFrame" inherits="TargetFrameTemplate, EditModeUnitFrameSystemTemplate" movable="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Target" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_TARGET_FRAME_LABEL" type="global"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
@@ -553,7 +556,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="append">
 				self.noTextPrefix = true;
 				self.showLevel = true;
 				self.showPVP = true;
@@ -568,16 +571,14 @@
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
 				self.threatNumericIndicator:SetScript("OnShow", function() TargetFrame_UpdateAuras(self) end);
 				self.threatNumericIndicator:SetScript("OnHide", function() TargetFrame_UpdateAuras(self) end);
-				UIParent_UpdateTopFramePositions();
 			</OnLoad>
-			<OnDragStart function="TargetFrame_OnDragStart"/>
-			<OnDragStop function="TargetFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
-	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
-		<Anchors>
-			<Anchor point="TOPLEFT" x="250" y="-240"/>
-		</Anchors>
+	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate, EditModeUnitFrameSystemTemplate" clampedToScreen="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Focus" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_FOCUS_FRAME_LABEL" type="global"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
@@ -591,7 +592,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="append">
 				self.noTextPrefix = true;
 				self.showLevel = true;
 				self.showPVP = true;
@@ -604,10 +605,7 @@
 				TargetFrame_CreateSpellbar(self, "PLAYER_FOCUS_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "focus-target");
 				self:RegisterEvent("PLAYER_FOCUS_CHANGED");
-				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnDragStart function="FocusFrame_OnDragStart"/>
-			<OnDragStop function="FocusFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
 	<Frame name="BossTargetFrameContainer" parent ="UIParent" inherits="VerticalLayoutFrame, UIParentRightManagedFrameTemplate" mixin="BossTargetFrameContainerMixin" hidden="false">

@@ -7,7 +7,7 @@ VERTICAL_MULTI_BAR_MIN_SCALE = 0.8333;
 
 function MultiActionButtonDown (bar, id)
 	local bar = _G[bar];
-	local button = bar.ActionButtons[id];
+	local button = bar.actionButtons[id];
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
@@ -16,7 +16,7 @@ end
 
 function MultiActionButtonUp (bar, id)
 	local bar = _G[bar];
-	local button = bar.ActionButtons[id];
+	local button = bar.actionButtons[id];
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
 		TryUseActionButton(button, false);
@@ -72,18 +72,18 @@ function Multibar_EmptyFunc (show)
 
 end
 
-function MultiBar1_IsVisible ()
+function MultiBar1_IsVisible()
 	return Settings.GetValue("PROXY_SHOW_MULTI_ACTIONBAR_1");
 end
 
-function MultiBar2_IsVisible ()
-	return Settings.GetValue("PROXY_SHOW_MULTI_ACTIONBAR_2");
+function MultiBar2_IsVisible()
+	return MultiBar1_IsVisible() and Settings.GetValue("PROXY_SHOW_MULTI_ACTIONBAR_2");
 end
 
-function MultiBar3_IsVisible ()
+function MultiBar3_IsVisible()
 	return Settings.GetValue("PROXY_SHOW_MULTI_ACTIONBAR_3");
 end
 
-function MultiBar4_IsVisible ()
-	return Settings.GetValue("PROXY_SHOW_MULTI_ACTIONBAR_4");
+function MultiBar4_IsVisible()
+	return MultiBar3_IsVisible() and Settings.GetValue("PROXY_SHOW_MULTI_ACTIONBAR_4");
 end

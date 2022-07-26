@@ -3,17 +3,6 @@
 	<Script file="Blizzard_SharedTalentSelectionTemplates.lua"/>
 	
 	<Frame name="TalentSelectionChoiceFrameTemplate" mixin="TalentSelectionChoiceFrameMixin" inherits="ResizeLayoutFrame" virtual="true">
-		<KeyValues>
-			<KeyValue key="widthPadding" value="20" type="number"/>
-			<KeyValue key="heightPadding" value="20" type="number"/>
-		</KeyValues>
-		<Frames>
-			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
-				<KeyValues>
-					<KeyValue key="layoutType" value="ChatBubble" type="string"/>
-				</KeyValues>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

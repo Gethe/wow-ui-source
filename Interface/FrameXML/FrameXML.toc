@@ -247,6 +247,7 @@ ActionBarController.xml
 TutorialFrame.xml
 Minimap.xml
 GameTime.xml
+AddonCompartment.xml
 ##ActionWindow.xml
 EquipmentFlyout.xml
 BuffFrame.xml

@@ -119,8 +119,10 @@ ClassTalentTalentsTabMixin:GenerateCallbackEvents(
 function ClassTalentTalentsTabMixin:OnLoad()
 	-- TODO:: Replace this temporary fix up.
 	local classIDToOffsets = {
+		[2] = { extraOffsetX = -60, extraOffsetY = -29, }, -- Paladin
 		[4] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Rogue
 		[5] = { extraOffsetX = -30, extraOffsetY = -29, }, -- Priest
+		[8] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Mage
 		[11] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Druid
 		[13] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Evoker
 	};

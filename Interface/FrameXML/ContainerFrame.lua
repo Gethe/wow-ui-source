@@ -79,8 +79,20 @@ local function ContainerFrame_IsBackpack(id)
 	return id == 0;
 end
 
+local function ContainerFrame_IsReagentBag(id)
+	return id == 5;
+end
+
 local function ContainerFrame_IsProfessionBag(id)
-	return id > 0 and IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id));
+	return not ContainerFrame_IsBackpack(id) and IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id));
+end
+
+function ContainerFrame_CanContainerUseFilterMenu(id)
+	if ContainerFrame_IsMainBank(id) then
+		return false;
+	end
+
+	return not (ContainerFrame_IsProfessionBag(id) or ContainerFrame_IsReagentBag(id));
 end
 
 function ContainerFrame_GetContainerNumSlotsWithBase(id)
@@ -160,7 +172,7 @@ function ToggleBag(id)
 		return;
 	end
 
-	if ContainerFrameSettingsManager:IsUsingCombinedBags() and ContainerFrame_IsHeldBag(id) then
+	if ContainerFrameSettingsManager:IsUsingCombinedBags(id) then
 		ToggleBag_Combined(id);
 	else
 		ToggleBag_Individual(id);
@@ -184,7 +196,7 @@ do
 			return filterFlag;
 		end
 
-		if not ContainerFrame_IsMainBank(id) and not ContainerFrame_IsProfessionBag(id) then
+		if ContainerFrame_CanContainerUseFilterMenu(id) then
 			for i, flag in ContainerFrameUtil_EnumerateBagGearFilters() do
 				if C_Container.GetBagSlotFlag(id, flag) then
 					return flag;
@@ -226,7 +238,7 @@ function OpenBag(id, force)
 		return;
 	end
 
-	if ContainerFrameSettingsManager:IsUsingCombinedBags() and ContainerFrame_IsGenericHeldBag(id) then
+	if ContainerFrameSettingsManager:IsUsingCombinedBags(id) then
 		OpenBag_Combined(id, force);
 	else
 		OpenBag_Individual(id, force);
@@ -268,17 +280,9 @@ local function CloseBag_Individual(id)
 	return false;
 end
 
-local function CloseBag_Combined(id)
-	if ContainerFrame_IsBankBag(id) then
-		return CloseBag_Individual(id);
-	else
-		return CloseBackpack_Combined();
-	end
-end
-
 function CloseBag(id)
-	if ContainerFrameSettingsManager:IsUsingCombinedBags() then
-		return CloseBag_Combined(id);
+	if ContainerFrameSettingsManager:IsUsingCombinedBags(id) then
+		return CloseBackpack_Combined();
 	else
 		return CloseBag_Individual(id);
 	end
@@ -449,14 +453,6 @@ do
 		ContainerFrameSettingsManager:SetFilterFlag(bagID, filterID, value);
 	end
 
-	local function CanContainerUseFilterMenu(bagID)
-		if ContainerFrame_IsMainBank(bagID) then
-			return false;
-		end
-
-		return not ContainerFrame_IsProfessionBag(bagID);
-	end
-
 	local function AddButtons_BagFilters(bagID, level)
 		local info = UIDropDownMenu_CreateInfo();
 		info.text = BAG_FILTER_ASSIGN_TO;
@@ -528,7 +524,7 @@ do
 	end
 
 	local function AddButtons_BagModeToggle(containerFrame, level)
-		if not containerFrame:IsBankBag() and ContainerFrame_IsHeldBag(containerFrame:GetBagID()) then
+		if ContainerFrame_IsGenericHeldBag(containerFrame:GetBagID()) then
 			local info = UIDropDownMenu_CreateInfo();
 			info.text = ContainerFrameSettingsManager:IsUsingCombinedBags() and BAG_COMMAND_CONVERT_TO_INDIVIDUAL or BAG_COMMAND_CONVERT_TO_COMBINED;
 			info.notCheckable = 1;
@@ -551,7 +547,7 @@ do
 
 		AddButtons_BagAutoCleanup(level);
 
-		if CanContainerUseFilterMenu(id) then
+		if ContainerFrame_CanContainerUseFilterMenu(id) then
 			AddButtons_BagFilters(id, level);
 		end
 
@@ -793,6 +789,10 @@ end
 function ContainerFrameMixin:CanUseForBagID(id)
 	if ContainerFrame_IsBankBag(id) then
 		return self.canUseForBankBag;
+	end
+
+	if ContainerFrame_IsReagentBag(id) then
+		return self.canUseForReagentBag;
 	end
 
 	return true; -- NOTE: Bank bags can still be used for regular bags.
@@ -1886,7 +1886,7 @@ function ContainerFramePortraitButtonMixin:OnEnter()
 			waitingOnData = true;
 		end
 
-		if not ContainerFrame_IsProfessionBag(id) then
+		if ContainerFrame_CanContainerUseFilterMenu(id) then
 			local filterFlag = ContainerFrameSettingsManager:GetFilterFlag(id);
 			if filterFlag then
 				GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[filterFlag]));
@@ -1951,12 +1951,15 @@ function ToggleAllBags()
 		CloseBackpack();
 	end
 
-	if not ContainerFrameSettingsManager:IsUsingCombinedBags() then
-		for i=1, NUM_TOTAL_BAG_FRAMES, 1 do
-			if ( GetContainerNumSlots(i) > 0 ) then
+	-- We need to close individual bags only if we're using individual bags, or the bag in question is always shown individually.
+	local isUsingCombinedBags = ContainerFrameSettingsManager:IsUsingCombinedBags();
+	for i = 1, NUM_TOTAL_BAG_FRAMES, 1 do
+		if not (isUsingCombinedBags and ContainerFrame_IsGenericHeldBag(i)) then
+			if GetContainerNumSlots(i) > 0 then
 				totalBags = totalBags + 1;
 			end
-			if ( IsBagOpen(i) ) then
+
+			if IsBagOpen(i) then
 				CloseBag(i);
 				bagsOpen = bagsOpen + 1;
 			end
@@ -2174,7 +2177,13 @@ function ContainerFrameSettingsManager:OnAddonLoaded(addonName)
 	end
 end
 
-function ContainerFrameSettingsManager:IsUsingCombinedBags()
+function ContainerFrameSettingsManager:IsUsingCombinedBags(optionalID)
+	if optionalID then
+		if not ContainerFrame_IsGenericHeldBag(optionalID) or ContainerFrame_IsBankBag(optionalID) then
+			return false;
+		end
+	end
+
 	return self.isUsingCombinedBags;
 end
 
@@ -2518,7 +2527,7 @@ function ContainerFrameCombinedBagsMixin:SetBagID(id)
 end
 
 function ContainerFrameCombinedBagsMixin:MatchesBagID(id)
-	return ContainerFrame_IsHeldBag(id);
+	return ContainerFrame_IsGenericHeldBag(id);
 end
 
 function ContainerFrameCombinedBagsMixin:GetContainedBagIDs(outContainedBagIDs)
