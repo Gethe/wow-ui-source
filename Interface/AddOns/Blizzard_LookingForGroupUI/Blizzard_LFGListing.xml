@@ -287,7 +287,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchor point="TOPLEFT" x="82" y="-60"/>
 				</Anchors>
 				<Frames>
-					<Button name="$parentRoleButtonTank" parentKey="Tank" inherits="LFGListingRoleButtonTemplate">
+					<Button name="$parentRoleButtonTank" parentKey="Tank" parentArray="RoleButtons" inherits="LFGListingRoleButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
@@ -300,7 +300,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonHealer" parentKey="Healer" inherits="LFGListingRoleButtonTemplate">
+					<Button name="$parentRoleButtonHealer" parentKey="Healer" parentArray="RoleButtons" inherits="LFGListingRoleButtonTemplate">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="45" y="0"/>
 						</Anchors>
@@ -313,7 +313,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonDPS" parentKey="DPS" inherits="LFGListingRoleButtonTemplate">
+					<Button name="$parentRoleButtonDPS" parentKey="DPS" parentArray="RoleButtons" inherits="LFGListingRoleButtonTemplate">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="43" y="0"/>
 						</Anchors>

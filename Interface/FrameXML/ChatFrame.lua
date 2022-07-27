@@ -1660,7 +1660,7 @@ SecureCmdList["GUILD_DISBAND"] = function(msg)
 end
 
 SecureCmdList["TEAM_INVITE"] = function(msg)
-	if ( msg ~= "" ) then
+	if ( msg ~= "" and GetCurrentArenaSeasonUsesTeams() ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
 		if ( team and name ) then
 			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then

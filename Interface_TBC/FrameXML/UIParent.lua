@@ -229,7 +229,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("QUEST_ACCEPT_CONFIRM");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
-	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("CURSOR_CHANGED");
 	self:RegisterEvent("LOCALPLAYER_PET_RENAMED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("MIRROR_TIMER_START");
@@ -860,7 +860,7 @@ function UIParent_OnEvent(self, event, ...)
 				button:Disable();
 			end
 		end
-	elseif ( event == "CURSOR_UPDATE" ) then
+	elseif ( event == "CURSOR_CHANGED" ) then
 		if ( not CursorHasItem() ) then
 			StaticPopup_Hide("EQUIP_BIND");
 			StaticPopup_Hide("EQUIP_BIND_TRADEABLE");

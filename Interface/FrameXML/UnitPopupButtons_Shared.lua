@@ -1,8 +1,36 @@
 UnitPopupLootMethodButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
+function UnitPopupLootMethodButtonMixin:GetSelectedLootMixin()
+	local menuButtons = self:GetButtons();
+	local lootMethod = GetLootMethod();
+	for index, buttonMixin in ipairs(menuButtons) do
+		if( buttonMixin and not buttonMixin:IsCloseCommand() and buttonMixin:GetLootMethod() == lootMethod ) then
+			return buttonMixin;
+		end
+	end
+
+	return nil;
+end
+
 function UnitPopupLootMethodButtonMixin:GetText()
+	-- Display selected loot method name
+	local selectedLootMixin = self:GetSelectedLootMixin();
+	if( selectedLootMixin ) then
+		return selectedLootMixin:GetText();
+	end
+	
 	return LOOT_METHOD;
 end
+
+function UnitPopupLootMethodButtonMixin:GetTooltipText()
+	-- Display selected loot method tooltip
+	local selectedLootMixin = self:GetSelectedLootMixin();
+	if( selectedLootMixin ) then
+		return selectedLootMixin:GetTooltipText();
+	end
+
+	return nil;
+end 
 
 function UnitPopupLootMethodButtonMixin:IsNested()
 	return true; 
@@ -14,6 +42,15 @@ end
 
 function UnitPopupLootMethodButtonMixin:IsEnabled()
 	return UnitIsGroupLeader("player");
+end
+
+-- Specifically providing loot tooltip for non-leader players so they can read the selected loot method rules
+-- Meanwhile the group leader gets all the rule tooltips as part of the dropdown being enabled
+function UnitPopupLootMethodButtonMixin:TooltipWhileDisabled()
+	return true;
+end
+function UnitPopupLootMethodButtonMixin:NoTooltipWhileEnabled()
+	return true;
 end
 
 function UnitPopupLootMethodButtonMixin:GetButtons()
@@ -33,6 +70,10 @@ function UnitPopupLootFreeForAllButtonMixin:GetText()
 	return LOOT_FREE_FOR_ALL;
 end
 
+function UnitPopupLootFreeForAllButtonMixin:IsCheckable()
+	return true;
+end
+
 function UnitPopupLootFreeForAllButtonMixin:GetTooltipText()
 	return NEWBIE_TOOLTIP_UNIT_FREE_FOR_ALL;
 end 
@@ -41,14 +82,16 @@ function UnitPopupLootFreeForAllButtonMixin:GetLootMethod()
 	return "freeforall";
 end	
 
+function UnitPopupLootFreeForAllButtonMixin:IsChecked()
+	return GetLootMethod() == self:GetLootMethod();
+end
+
 function UnitPopupLootFreeForAllButtonMixin:CanShow()
 	if(not IsInGroup()) then 
 		return false; 
 	elseif (not UnitIsGroupLeader("player")) then
 		return false; 
-	elseif (GetLootMethod() == self:GetLootMethod()) then 
-		return false;
-	end 
+	end
 	return true; 
 end
 

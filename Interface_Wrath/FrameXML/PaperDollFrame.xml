@@ -914,6 +914,7 @@
 						</Frames>
 						<Scripts>
 							<OnLoad>
+								self.maxDisplayCount = 999;
 								PaperDollItemSlotButton_OnLoad(self);
 							</OnLoad>
 							<OnEvent>

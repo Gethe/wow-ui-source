@@ -1383,7 +1383,7 @@ function PaperDollItemSlotButton_OnShow(self, isBag)
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("ITEM_LOCK_CHANGED");
-	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("CURSOR_CHANGED");
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
 	if ( not isBag ) then
 		self:RegisterEvent("BAG_UPDATE_COOLDOWN");
@@ -1396,7 +1396,7 @@ function PaperDollItemSlotButton_OnHide(self)
 	self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("ITEM_LOCK_CHANGED");
-	self:UnregisterEvent("CURSOR_UPDATE");
+	self:UnregisterEvent("CURSOR_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
 	self:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
 end
@@ -1421,7 +1421,7 @@ function PaperDollItemSlotButton_OnEvent(self, event, ...)
 		end
 	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
 		PaperDollItemSlotButton_Update(self);
-	elseif ( event == "CURSOR_UPDATE" ) then
+	elseif ( event == "CURSOR_CHANGED" ) then
 		if ( CursorCanGoInSlot(self:GetID()) ) then
 			self:LockHighlight();
 		else

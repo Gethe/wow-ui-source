@@ -637,7 +637,9 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 	autoCompleteParams = AUTOCOMPLETE_LIST.TEAM_INVITE,
 	maxLetters = 77,
 	OnAccept = function(self)
-		ArenaTeamInviteByName(PVPTeamDetails.team, self.editBox:GetText());
+		if( GetCurrentArenaSeasonUsesTeams() ) then
+			ArenaTeamInviteByName(PVPTeamDetails.team, self.editBox:GetText());
+		end
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -647,9 +649,11 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 		self.editBox:SetText("");
 	end,
 	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		ArenaTeamInviteByName(PVPTeamDetails.team, parent.editBox:GetText());
-		parent:Hide();
+		if( GetCurrentArenaSeasonUsesTeams() ) then
+			local parent = self:GetParent();
+			ArenaTeamInviteByName(PVPTeamDetails.team, parent.editBox:GetText());
+			parent:Hide();
+		end
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
@@ -4923,10 +4927,18 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
-				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, SECONDS);
-				else
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), ceil(timeleft / 60), MINUTES);
+				if( GetClassicExpansionLevel() < LE_EXPANSION_NORTHREND ) then
+					if ( timeleft < 60 ) then
+						text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, SECONDS);
+					else
+						text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), ceil(timeleft / 60), MINUTES);
+					end
+				else -- In Wrath+ player is booted to graveyard rather than bind location, so one less format param
+					if ( timeleft < 60 ) then
+						text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
+					else
+						text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
+					end
 				end
 			elseif ( which == "CONFIRM_SUMMON" or which == "CONFIRM_SUMMON_SCENARIO" or which == "CONFIRM_SUMMON_STARTING_AREA" ) then
 				if ( timeleft < 60 ) then

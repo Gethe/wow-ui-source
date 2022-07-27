@@ -42,6 +42,7 @@ function LFGListingMixin:OnLoad()
 	self.viewState = LFGLISTING_VIEWSTATE_ACTIVITIES;
 
 	self:ClearUI();
+	self:LoadSoloRolesFromTalentGroups();
 	self:UpdateFrameView();
 end
 
@@ -350,7 +351,13 @@ end
 function LFGListingMixin:UpdatePostButtonEnableState()
 	-- If our dirty flag is not set, disable the Post button.
 	-- Alternatively, if we do not have an activeEntry, and also do not have any activities set, disable the Post button. (An initial listing needs at least one activity.)
-	if (not self.dirty or (not C_LFGList.HasActiveEntryInfo() and not LFGListingFrame:IsAnyActivitySelected())) then
+	if (not self.dirty or (not C_LFGList.HasActiveEntryInfo() and not self:IsAnyActivitySelected())) then
+		self.PostButton.errorText = nil;
+		self.PostButton:SetEnabled(false);
+		return;
+	end
+
+	if (not LFGListingActivityView_CanPostWithCurrentComment(self.ActivityView)) then
 		self.PostButton.errorText = nil;
 		self.PostButton:SetEnabled(false);
 		return;
@@ -394,6 +401,17 @@ end
 -------------------------------------------------------
 ----------Solo Role UI
 -------------------------------------------------------
+function LFGListingMixin:LoadSoloRolesFromTalentGroups()
+	for i=1,GetNumTalentGroups() do
+		for _,roleButton in ipairs(self.SoloRoleButtons.RoleButtons) do
+			if (GetTalentGroupRole(i) == roleButton.roleID) then
+				roleButton.CheckButton:SetChecked(true);
+			end
+		end
+	end
+	self:SaveSoloRoles();
+end
+
 function LFGListingMixin:LoadSoloRoles()
 	local roles = C_LFGList.GetRoles();
 	self.SoloRoleButtons.Tank.CheckButton:SetChecked(roles.tank);
@@ -416,7 +434,7 @@ function LFGListingRoleDropDown_Initialize(self)
 	local info = UIDropDownMenu_CreateInfo();
 	local currentRole = UnitGroupRolesAssigned("player");
 
-	info.func = LFGListingRoleButton_OnClick;
+	info.func = LFGListingRoleDropDownButton_OnClick;
 	info.classicChecks = true;
 
 	local buttons = {
@@ -438,7 +456,7 @@ function LFGListingRoleDropDown_Initialize(self)
 	end
 end
 
-function LFGListingRoleButton_OnClick(self)
+function LFGListingRoleDropDownButton_OnClick(self)
 	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
 	UnitSetRole("player", self.value);
 end
@@ -605,6 +623,8 @@ end
 ----------Activity Selection
 -------------------------------------------------------
 function LFGListingActivityView_OnLoad(self)
+	self.commentRequired = false;
+
 	local view = CreateScrollBoxListTreeListView(0);
 
 	view:SetElementFactory(function(factory, node)
@@ -684,6 +704,7 @@ function LFGListingActivityView_OnShow(self)
 		self.BarMiddle:Hide();
 		self.BarRight:Hide();
 		self.ScrollBox:Hide();
+		self.commentRequired = true;
 		self.Comment:ClearAllPoints();
 		self.Comment:SetPoint("CENTER", 0, 20);
 		self.Comment:SetHeight(110);
@@ -697,6 +718,7 @@ function LFGListingActivityView_OnShow(self)
 		self.BarMiddle:Show();
 		self.BarRight:Show();
 		self.ScrollBox:Show();
+		self.commentRequired = false;
 		self.Comment:ClearAllPoints();
 		self.Comment:SetPoint("BOTTOM", 0, 19);
 		self.Comment:SetHeight(47);
@@ -855,6 +877,15 @@ function LFGListingActivityView_InitActivityButton(button, elementData)
 	end
 end
 
+function LFGListingActivityView_CanPostWithCurrentComment(self)
+	if (self.commentRequired) then
+		local commentText = LFGListingComment_GetComment(self.Comment);
+		return commentText and commentText ~= "";
+	end
+
+	return true;
+end
+
 -------------------------------------------------------
 ----------Comment
 -------------------------------------------------------
@@ -868,6 +899,10 @@ function LFGListingComment_OnMouseDown(self, button)
 	if (not self.EditBox:IsEnabled() and not C_LFGList.IsPlayerAuthenticatedForLFG(LFGListingFrame:GetCategorySelection())) then
 		StaticPopup_Show("GROUP_FINDER_AUTHENTICATOR_POPUP");
 	end
+end
+
+function LFGListingComment_GetComment(self)
+	return self.EditBox:GetText();
 end
 
 -------------------------------------------------------

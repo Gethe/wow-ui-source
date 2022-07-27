@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="CharacterSelect.lua"/>
+	<Script file="../../Interface/GlueXML/CharacterSelect_Shared.lua"/>
+	<Script file="CharacterSelect_TBC.lua"/>
 	<Frame name="CharacterServicesProcessingIconTemplate" virtual="true">
 		<Size x="42" y="37"/>
 		<Layers>
@@ -492,7 +493,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="CharacterBoostTemplate" parentArray="CharacterBoosts" frameStrata="HIGH" hidden="true" virtual="true">
+	<Button name="CharacterBoostTemplate" parentArray="CharacterBoosts" frameStrata="HIGH" hidden="true" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="59" y="60"/>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="3">
@@ -1331,8 +1332,10 @@
 								</Layers>
 								<Scripts>
 									<OnEnter>
-										GlueTooltip:SetOwner(self);
-										GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+										if (self.tooltip) then
+											GlueTooltip:SetOwner(self);
+											GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+										end
 									</OnEnter>
 									<OnLeave>
 										GlueTooltip:Hide();
@@ -1723,7 +1726,7 @@
 								</Scripts>
 							</Button>
 							<Frame name="CharacterUpgradeSecondChanceWarningFrame" frameStrata="DIALOG" hidden="true">
-								<Size x="480" y="199"/>
+								<Size x="480" y="260"/>
 								<Anchors>
 									<Anchor point="CENTER" relativeTo="GlueParent" relativePoint="CENTER" x="0" y="0"/>
 								</Anchors>
@@ -1732,7 +1735,7 @@
 										<KeyValues>
 											<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
 										</KeyValues>
-										<Size x="480" y="199"/>
+										<Size x="480" y="261"/>
 										<Anchors>
 											<Anchor point="CENTER" x="0" y="0"/>
 										</Anchors>
@@ -1750,7 +1753,6 @@
 													<Anchors>
 														<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-23"/>
 													</Anchors>
-													<Color r="1" g="1" b="1"/>
 												</FontString>
 											</Layer>
 										</Layers>

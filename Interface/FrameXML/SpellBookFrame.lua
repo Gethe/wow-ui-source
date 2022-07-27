@@ -295,7 +295,7 @@ function SpellButton_OnEvent(self, event, ...)
 		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 			SpellButton_UpdateButton(self);
 		end
-	elseif ( event == "CURSOR_UPDATE" ) then
+	elseif ( event == "CURSOR_CHANGED" ) then
 		if ( self.spellGrabbed ) then
 			SpellButton_UpdateButton(self);
 			self.spellGrabbed = false;
@@ -313,7 +313,7 @@ function SpellButton_OnShow(self)
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
 	self:RegisterEvent("PET_BAR_UPDATE");
-	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("CURSOR_CHANGED");
 end
 
 function SpellButton_OnHide(self)
@@ -326,7 +326,7 @@ function SpellButton_OnHide(self)
 	self:UnregisterEvent("TRADE_SKILL_SHOW");
 	self:UnregisterEvent("TRADE_SKILL_CLOSE");
 	self:UnregisterEvent("PET_BAR_UPDATE");
-	self:UnregisterEvent("CURSOR_UPDATE");
+	self:UnregisterEvent("CURSOR_CHANGED");
 end
  
 function SpellButton_OnEnter(self)

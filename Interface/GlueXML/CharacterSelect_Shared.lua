@@ -29,8 +29,6 @@ FRAME_TYPE_TBC_INFO_PANE = "FrameType_InfoPane";
 INFO_PANE_MAX_SCALE = 0.75;
 CHOICE_PANE_MAX_SCALE = 0.75;
 
-local translationTable = { };	-- for character reordering: key = button index, value = character ID
-
 local STORE_IS_LOADED = false;
 local ADDON_LIST_RECEIVED = false;
 CAN_BUY_RESULT_FOUND = false;
@@ -38,15 +36,6 @@ TOKEN_COUNT_UPDATED = false;
 REALM_CHANGE_IS_AUTO = false;
 
 CharacterSelectLockedButtonMixin = {};
-
--- These are purposely different for Classic Era and TBC
-local characterCopyRegions = {
-	[81] = NORTH_AMERICA,
-	[82] = KOREA,
-	[83] = EUROPE,
-	[84] = TAIWAN,
-	[85] = CHINA,
-};
 
 local localizedAtlasMembers = {};
 
@@ -176,341 +165,7 @@ function CharacterSelect_OnLoad(self)
     CHARACTER_LIST_OFFSET = 0;
 end
 
-function CharacterSelect_OnShow(self)
-    DebugLog("Select_OnShow");
-    InitializeCharacterScreenData();
-    SetInCharacterSelect(true);
-    CHARACTER_LIST_OFFSET = 0;
-    CharacterSelect_ResetVeteranStatus();
-
-    if ( #translationTable == 0 ) then
-        for i = 1, GetNumCharacters() do
-            tinsert(translationTable, i);
-        end
-    end
-
-    -- request account data times from the server (so we know if we should refresh keybindings, etc...)
-    CheckCharacterUndeleteCooldown();
-
-    UpdateAddonButton();
-
-    CharacterSelect_SetAutoSwitchRealm(false);
-
-    local FROM_LOGIN_STATE_CHANGE = false;
-    CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
-
-    -- Gameroom billing stuff (For Korea and China only)
-    if ( SHOW_GAMEROOM_BILLING_FRAME ) then
-        local paymentPlan, hasFallBackBillingMethod, isGameRoom = GetBillingPlan();
-        if ( paymentPlan == 0 or ( ( paymentPlan == 1 or paymentPlan == 3 ) and ONLY_SHOW_GAMEROOM_BILLING_FRAME_ON_PERSONAL_TIME ) ) then
-            -- No payment plan or should only show when using consumption time
-            GameRoomBillingFrame:Hide();
-        else
-            local billingTimeLeft = GetBillingTimeRemaining();
-            -- Set default text for the payment plan
-            local billingText = _G["BILLING_TEXT"..paymentPlan];
-            if ( paymentPlan == 1 ) then
-                -- Recurring account
-                billingTimeLeft = ceil(billingTimeLeft/(60 * 24));
-                if ( billingTimeLeft == 1 ) then
-                    billingText = BILLING_TIME_LEFT_LAST_DAY;
-                end
-            elseif ( paymentPlan == 2 ) then
-                -- Free account
-                if ( billingTimeLeft < (24 * 60) ) then
-                    billingText = format(BILLING_FREE_TIME_EXPIRE, format(MINUTES_ABBR, billingTimeLeft));
-                end
-            elseif ( paymentPlan == 3 ) then
-                -- Fixed but not recurring
-                if ( isGameRoom == 1 ) then
-                    if ( billingTimeLeft <= 30 ) then
-                        billingText = BILLING_GAMEROOM_EXPIRE;
-                    else
-                        billingText = format(BILLING_FIXED_IGR, MinutesToTime(billingTimeLeft, 1));
-                    end
-                else
-                    -- personal fixed plan
-                    if ( billingTimeLeft < (24 * 60) ) then
-                        billingText = BILLING_FIXED_LASTDAY;
-                    else
-                        billingText = format(billingText, MinutesToTime(billingTimeLeft));
-                    end
-                end
-            elseif ( paymentPlan == 4 ) then
-                -- Usage plan
-                if ( isGameRoom == 1 ) then
-                    -- game room usage plan
-                    if ( billingTimeLeft <= 600 ) then
-                        billingText = BILLING_GAMEROOM_EXPIRE;
-                    else
-                        billingText = BILLING_IGR_USAGE;
-                    end
-                else
-                    -- personal usage plan
-                    if ( billingTimeLeft <= 30 ) then
-                        billingText = BILLING_TIME_LEFT_30_MINS;
-                    else
-                        billingText = format(billingText, billingTimeLeft);
-                    end
-                end
-            end
-            -- If fallback payment method add a note that says so
-            if ( hasFallBackBillingMethod == 1 ) then
-                billingText = billingText.."\n\n"..BILLING_HAS_FALLBACK_PAYMENT;
-            end
-            GameRoomBillingFrameText:SetText(billingText);
-            GameRoomBillingFrame:SetHeight(GameRoomBillingFrameText:GetHeight() + 26);
-            GameRoomBillingFrame:Show();
-        end
-    end
-
-    -- fadein the character select ui
-    CharacterSelectUI.FadeIn:Play();
-
-    --Clear out the addons selected item
-    GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, true);
-
-    AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
-
-    if( IsKioskGlueEnabled() ) then
-        CharacterSelectUI:Hide();
-    end
-
-    -- character templates
-    CharacterTemplatesFrame_Update();
-
-    PlayersOnServer_Update();
-
-    CharacterSelect_UpdateStoreButton();
-
-    CharacterServicesMaster_UpdateServiceButton();
-
-	TBCInfoPane_Update();
-
-    C_StoreSecure.GetPurchaseList();
-    C_StoreSecure.GetProductList();
-    C_StoreGlue.UpdateVASPurchaseStates();
-
-    if (not STORE_IS_LOADED) then
-        STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
-        LoadAddOn("Blizzard_AuthChallengeUI");
-    end
-
-    CharacterSelect_CheckVeteranStatus();
-
-    if (C_StoreGlue.GetDisconnectOnLogout()) then
-        C_StoreSecure.SetDisconnectOnLogout(false);
-        GlueDialog_Hide();
-        C_Login.DisconnectFromServer();
-    end
-
-    if (not HasCheckedSystemRequirements()) then
-        CheckSystemRequirements();
-        SetCheckedSystemRequirements(true);
-    end
-	
-	if not self.showSocialContract then
-		C_SocialContractGlue.GetShouldShowSocialContract();
-	end
-
-	local includeSeenWarnings = true;
-	CharacterSelectUI.ConfigurationWarnings:SetShown(#C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings) > 0);
-end
-
-function CharacterSelect_OnHide(self)
-    -- the user may have gotten d/c while dragging
-    if ( CharacterSelect.draggedIndex ) then
-        local button = _G["CharSelectCharacterButton"..(CharacterSelect.draggedIndex - CHARACTER_LIST_OFFSET)];
-        CharacterSelectButton_OnDragStop(button);
-    end
-    CharacterSelect_SaveCharacterOrder();
-    CharacterDeleteDialog:Hide();
-    CharacterRenameDialog:Hide();
-    AccountReactivate_CloseDialogs();
-
-    if ( DeclensionFrame ) then
-        DeclensionFrame:Hide();
-    end
-
-    PromotionFrame_Hide();
-    C_AuthChallenge.Cancel();
-    if ( StoreFrame ) then
-        StoreFrame:Hide();
-    end
-    CopyCharacterFrame:Hide();
-    if ( AddonDialog:IsShown() ) then
-        AddonDialog:Hide();
-        HasShownAddonOutOfDateDialog = false;
-    end
-
-    if ( self.undeleting ) then
-        CharacterSelect_EndCharacterUndelete();
-    end
-
-    if ( CharSelectServicesFlowFrame:IsShown() ) then
-        CharSelectServicesFlowFrame:Hide();
-    end
-	
-	SocialContractFrame:Hide();
-
-    AccountReactivate_CloseDialogs();
-    SetInCharacterSelect(false);
-
-	GlowEmitterFactory:Hide(CharSelectChangeRealmButton);
-end
-
-function CharacterSelect_GetCharacterListUpdate()
-	CharacterSelect.waitingForCharacterList = true;
-	GetCharacterListUpdate();
-end
-
-function CharacterSelect_SetAutoSwitchRealm(isAuto)
-    REALM_CHANGE_IS_AUTO = isAuto;
-end
-
-function CharacterSelect_UpdateState(fromLoginState)
-    local serverName, isPVP, isRP = GetServerName();
-    local connected = IsConnectedToServer();
-    local serverType = "";
-    if ( serverName ) then
-        if( not connected ) then
-            serverName = serverName.."\n("..SERVER_DOWN..")";
-        end
-        if ( isPVP ) then
-            if ( isRP ) then
-                serverType = RPPVP_PARENTHESES;
-            else
-                serverType = PVP_PARENTHESES;
-            end
-        elseif ( isRP ) then
-            serverType = RP_PARENTHESES;
-        end
-        CharSelectRealmName:SetText(serverName.." "..serverType);
-        CharSelectRealmName:Show();
-    else
-        CharSelectRealmName:Hide();
-    end
-
-    if (fromLoginState == REALM_CHANGE_IS_AUTO) then
-        if ( connected ) then
-            if (fromLoginState) then
-                if (IsKioskGlueEnabled()) then
-                    GlueParent_SetScreen("kioskmodesplash");
-                else
-                    CharacterSelectUI:Hide();
-                    CharacterSelectUI:Show();
-                end
-            end
-			if (not IsCharacterListUpdateRequested()) then
-	            CharacterSelect_GetCharacterListUpdate();
-			end
-        else
-            UpdateCharacterList();
-        end
-    end
-end
-
-function CharacterSelect_SaveCharacterOrder()
-    if ( CharacterSelect.orderChanged ) then
-        SaveCharacterOrder(translationTable);
-        CharacterSelect.orderChanged = nil;
-    end
-end
-
-function CharacterSelect_SetRetrievingCharacters(retrieving, success)
-    if ( retrieving ~= CharacterSelect.retrievingCharacters ) then
-        CharacterSelect.retrievingCharacters = retrieving;
-
-        if ( retrieving ) then
-            GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
-        else
-            if ( success ) then
-                GlueDialog_Hide("RETRIEVING_CHARACTER_LIST");
-            else
-                GlueDialog_Show("OKAY", CHAR_LIST_FAILED);
-            end
-        end
-
-        CharacterSelect_UpdateButtonState();
-    end
-end
-
-function CharacterSelect_IsRetrievingCharacterList()
-    return CharacterSelect.retrievingCharacters;
-end
-
-function CharacterSelect_OnUpdate(self, elapsed)
-    if ( self.undeleteFailed ) then
-        if (not GlueDialog:IsShown()) then
-			if ( self.undeleteFailed == "pvp" ) then
-				GlueDialog_Show("UNDELETE_FAILED_PVP");
-			else
-				GlueDialog_Show(self.undeleteFailed == "name" and "UNDELETE_NAME_TAKEN" or "UNDELETE_FAILED");
-			end
-			self.undeleteFailed = false;
-        end
-    end
-
-    if ( self.undeleteSucceeded ) then
-        if (not GlueDialog:IsShown()) then
-            GlueDialog_Show(self.undeletePendingRename and "UNDELETE_SUCCEEDED_NAME_TAKEN" or "UNDELETE_SUCCEEDED");
-            self.undeleteSucceeded = false;
-            self.undeletePendingRename = false;
-        end
-    end
-
-    if ( self.pressDownButton ) then
-        self.pressDownTime = self.pressDownTime + elapsed;
-        if ( self.pressDownTime >= AUTO_DRAG_TIME ) then
-            CharacterSelectButton_OnDragStart(self.pressDownButton);
-        end
-    end
-
-    if ( C_CharacterServices.HasQueuedUpgrade() or C_StoreGlue.GetVASProductReady() ) then
-        CharacterServicesMaster_OnCharacterListUpdate();
-    end
-
-    if (STORE_IS_LOADED and StoreFrame_WaitingForCharacterListUpdate()) then
-        StoreFrame_OnCharacterListUpdate();
-    end
-
-	GlueDialog_CheckQueuedDialogs();
-end
-
-function CharacterSelect_OnKeyDown(self,key)
-    if ( key == "ESCAPE" ) then
-        if ( C_Login.IsLauncherLogin() ) then
-            GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
-        elseif (CharSelectServicesFlowFrame:IsShown()) then
-            CharSelectServicesFlowFrame:Hide();
-        elseif ( CopyCharacterFrame:IsShown() ) then
-            CopyCharacterFrame:Hide();
-        elseif (CharacterSelect.undeleting) then
-            CharacterSelect_EndCharacterUndelete();
-		elseif ( GlobalGlueContextMenu_IsShown() ) then
-			GlobalGlueContextMenu_Release();
-        else
-            CharacterSelect_Exit();
-        end
-    elseif ( key == "ENTER" ) then
-        if (CharacterSelect_AllowedToEnterWorld()) then
-            CharacterSelect_EnterWorld();
-        end
-    elseif ( key == "PRINTSCREEN" ) then
-        Screenshot();
-    elseif ( key == "UP" or key == "LEFT" ) then
-        if (CharSelectServicesFlowFrame:IsShown()) then
-            return;
-        end
-        CharacterSelectScrollUp_OnClick();
-    elseif ( key == "DOWN" or key == "RIGHT" ) then
-        if (CharSelectServicesFlowFrame:IsShown()) then
-            return;
-        end
-        CharacterSelectScrollDown_OnClick();
-    end
-end
-
+local translationTable = { };	-- for character reordering: key = button index, value = character ID
 VAS_QUEUE_TIMES = {};
 function CharacterSelect_OnEvent(self, event, ...)
     if ( event == "CHARACTER_LIST_UPDATE" ) then
@@ -686,6 +341,299 @@ function CharacterSelect_OnEvent(self, event, ...)
 	end
 end
 
+function CharacterSelect_OnShow(self)
+    DebugLog("Select_OnShow");
+    InitializeCharacterScreenData();
+    SetInCharacterSelect(true);
+    CHARACTER_LIST_OFFSET = 0;
+    CharacterSelect_ResetVeteranStatus();
+
+    if ( #translationTable == 0 ) then
+        for i = 1, GetNumCharacters() do
+            tinsert(translationTable, i);
+        end
+    end
+
+    -- request account data times from the server (so we know if we should refresh keybindings, etc...)
+    CheckCharacterUndeleteCooldown();
+
+    UpdateAddonButton();
+
+    CharacterSelect_SetAutoSwitchRealm(false);
+
+    local FROM_LOGIN_STATE_CHANGE = false;
+    CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
+
+    -- Gameroom billing stuff (For Korea and China only)
+    if ( SHOW_GAMEROOM_BILLING_FRAME ) then
+        local paymentPlan, hasFallBackBillingMethod, isGameRoom = GetBillingPlan();
+        if ( paymentPlan == 0 or ( ( paymentPlan == 1 or paymentPlan == 3 ) and ONLY_SHOW_GAMEROOM_BILLING_FRAME_ON_PERSONAL_TIME ) ) then
+            -- No payment plan or should only show when using consumption time
+            GameRoomBillingFrame:Hide();
+        else
+            local billingTimeLeft = GetBillingTimeRemaining();
+            -- Set default text for the payment plan
+            local billingText = _G["BILLING_TEXT"..paymentPlan];
+            if ( paymentPlan == 1 ) then
+                -- Recurring account
+                billingTimeLeft = ceil(billingTimeLeft/(60 * 24));
+                if ( billingTimeLeft == 1 ) then
+                    billingText = BILLING_TIME_LEFT_LAST_DAY;
+                end
+            elseif ( paymentPlan == 2 ) then
+                -- Free account
+                if ( billingTimeLeft < (24 * 60) ) then
+                    billingText = format(BILLING_FREE_TIME_EXPIRE, format(MINUTES_ABBR, billingTimeLeft));
+                end
+            elseif ( paymentPlan == 3 ) then
+                -- Fixed but not recurring
+                if ( isGameRoom == 1 ) then
+                    if ( billingTimeLeft <= 30 ) then
+                        billingText = BILLING_GAMEROOM_EXPIRE;
+                    else
+                        billingText = format(BILLING_FIXED_IGR, MinutesToTime(billingTimeLeft, 1));
+                    end
+                else
+                    -- personal fixed plan
+                    if ( billingTimeLeft < (24 * 60) ) then
+                        billingText = BILLING_FIXED_LASTDAY;
+                    else
+                        billingText = format(billingText, MinutesToTime(billingTimeLeft));
+                    end
+                end
+            elseif ( paymentPlan == 4 ) then
+                -- Usage plan
+                if ( isGameRoom == 1 ) then
+                    -- game room usage plan
+                    if ( billingTimeLeft <= 600 ) then
+                        billingText = BILLING_GAMEROOM_EXPIRE;
+                    else
+                        billingText = BILLING_IGR_USAGE;
+                    end
+                else
+                    -- personal usage plan
+                    if ( billingTimeLeft <= 30 ) then
+                        billingText = BILLING_TIME_LEFT_30_MINS;
+                    else
+                        billingText = format(billingText, billingTimeLeft);
+                    end
+                end
+            end
+            -- If fallback payment method add a note that says so
+            if ( hasFallBackBillingMethod == 1 ) then
+                billingText = billingText.."\n\n"..BILLING_HAS_FALLBACK_PAYMENT;
+            end
+            GameRoomBillingFrameText:SetText(billingText);
+            GameRoomBillingFrame:SetHeight(GameRoomBillingFrameText:GetHeight() + 26);
+            GameRoomBillingFrame:Show();
+        end
+    end
+
+    -- fadein the character select ui
+    CharacterSelectUI.FadeIn:Play();
+
+    --Clear out the addons selected item
+    GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, true);
+
+    AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+
+    if( IsKioskGlueEnabled() ) then
+        CharacterSelectUI:Hide();
+    end
+
+    -- character templates
+    CharacterTemplatesFrame_Update();
+
+    PlayersOnServer_Update();
+
+    CharacterSelect_UpdateStoreButton();
+
+    CharacterServicesMaster_UpdateServiceButton();
+
+	TBCInfoPane_Update();
+
+    C_StoreSecure.GetPurchaseList();
+    C_StoreSecure.GetProductList();
+    C_StoreGlue.UpdateVASPurchaseStates();
+
+    if (not STORE_IS_LOADED) then
+        STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
+        LoadAddOn("Blizzard_AuthChallengeUI");
+    end
+
+    CharacterSelect_CheckVeteranStatus();
+
+    if (C_StoreGlue.GetDisconnectOnLogout()) then
+        C_StoreSecure.SetDisconnectOnLogout(false);
+        GlueDialog_Hide();
+        C_Login.DisconnectFromServer();
+    end
+
+    if (not HasCheckedSystemRequirements()) then
+        CheckSystemRequirements();
+        SetCheckedSystemRequirements(true);
+    end
+	
+	if not self.showSocialContract then
+		C_SocialContractGlue.GetShouldShowSocialContract();
+	end
+
+	local includeSeenWarnings = true;
+	CharacterSelectUI.ConfigurationWarnings:SetShown(#C_ConfigurationWarnings.GetConfigurationWarnings(includeSeenWarnings) > 0);
+end
+
+function CharacterSelect_GetCharacterListUpdate()
+	CharacterSelect.waitingForCharacterList = true;
+	GetCharacterListUpdate();
+end
+
+function CharacterSelect_SetAutoSwitchRealm(isAuto)
+    REALM_CHANGE_IS_AUTO = isAuto;
+end
+
+function CharacterSelect_UpdateState(fromLoginState)
+    local serverName, isPVP, isRP = GetServerName();
+    local connected = IsConnectedToServer();
+    local serverType = "";
+    if ( serverName ) then
+        if( not connected ) then
+            serverName = serverName.."\n("..SERVER_DOWN..")";
+        end
+        if ( isPVP ) then
+            if ( isRP ) then
+                serverType = RPPVP_PARENTHESES;
+            else
+                serverType = PVP_PARENTHESES;
+            end
+        elseif ( isRP ) then
+            serverType = RP_PARENTHESES;
+        end
+        CharSelectRealmName:SetText(serverName.." "..serverType);
+        CharSelectRealmName:Show();
+    else
+        CharSelectRealmName:Hide();
+    end
+
+    if (fromLoginState == REALM_CHANGE_IS_AUTO) then
+        if ( connected ) then
+            if (fromLoginState) then
+                if (IsKioskGlueEnabled()) then
+                    GlueParent_SetScreen("kioskmodesplash");
+                else
+                    CharacterSelectUI:Hide();
+                    CharacterSelectUI:Show();
+                end
+            end
+			if (not IsCharacterListUpdateRequested()) then
+	            CharacterSelect_GetCharacterListUpdate();
+			end
+        else
+            UpdateCharacterList();
+        end
+    end
+end
+
+function CharacterSelect_SaveCharacterOrder()
+    if ( CharacterSelect.orderChanged ) then
+        SaveCharacterOrder(translationTable);
+        CharacterSelect.orderChanged = nil;
+    end
+end
+
+function CharacterSelect_SetRetrievingCharacters(retrieving, success)
+    if ( retrieving ~= CharacterSelect.retrievingCharacters ) then
+        CharacterSelect.retrievingCharacters = retrieving;
+
+        if ( retrieving ) then
+            GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
+        else
+            if ( success ) then
+                GlueDialog_Hide("RETRIEVING_CHARACTER_LIST");
+            else
+                GlueDialog_Show("OKAY", CHAR_LIST_FAILED);
+            end
+        end
+
+        CharacterSelect_UpdateButtonState();
+    end
+end
+
+function CharacterSelect_IsRetrievingCharacterList()
+    return CharacterSelect.retrievingCharacters;
+end
+
+function CharacterSelect_OnUpdate(self, elapsed)
+    if ( self.undeleteFailed ) then
+        if (not GlueDialog:IsShown()) then
+			if ( self.undeleteFailed == "pvp" ) then
+				GlueDialog_Show("UNDELETE_FAILED_PVP");
+			else
+				GlueDialog_Show(self.undeleteFailed == "name" and "UNDELETE_NAME_TAKEN" or "UNDELETE_FAILED");
+			end
+			self.undeleteFailed = false;
+        end
+    end
+
+    if ( self.undeleteSucceeded ) then
+        if (not GlueDialog:IsShown()) then
+            GlueDialog_Show(self.undeletePendingRename and "UNDELETE_SUCCEEDED_NAME_TAKEN" or "UNDELETE_SUCCEEDED");
+            self.undeleteSucceeded = false;
+            self.undeletePendingRename = false;
+        end
+    end
+
+    if ( self.pressDownButton ) then
+        self.pressDownTime = self.pressDownTime + elapsed;
+        if ( self.pressDownTime >= AUTO_DRAG_TIME ) then
+            CharacterSelectButton_OnDragStart(self.pressDownButton);
+        end
+    end
+
+    if ( C_CharacterServices.HasQueuedUpgrade() or C_StoreGlue.GetVASProductReady() ) then
+        CharacterServicesMaster_OnCharacterListUpdate();
+    end
+
+    if (STORE_IS_LOADED and StoreFrame_WaitingForCharacterListUpdate()) then
+        StoreFrame_OnCharacterListUpdate();
+    end
+
+	GlueDialog_CheckQueuedDialogs();
+end
+
+function CharacterSelect_OnKeyDown(self,key)
+    if ( key == "ESCAPE" ) then
+        if ( C_Login.IsLauncherLogin() ) then
+            GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
+        elseif (CharSelectServicesFlowFrame:IsShown()) then
+            CharSelectServicesFlowFrame:Hide();
+        elseif ( CopyCharacterFrame:IsShown() ) then
+            CopyCharacterFrame:Hide();
+        elseif (CharacterSelect.undeleting) then
+            CharacterSelect_EndCharacterUndelete();
+		elseif ( GlobalGlueContextMenu_IsShown() ) then
+			GlobalGlueContextMenu_Release();
+        else
+            CharacterSelect_Exit();
+        end
+    elseif ( key == "ENTER" ) then
+        if (CharacterSelect_AllowedToEnterWorld()) then
+            CharacterSelect_EnterWorld();
+        end
+    elseif ( key == "PRINTSCREEN" ) then
+        Screenshot();
+    elseif ( key == "UP" or key == "LEFT" ) then
+        if (CharSelectServicesFlowFrame:IsShown()) then
+            return;
+        end
+        CharacterSelectScrollUp_OnClick();
+    elseif ( key == "DOWN" or key == "RIGHT" ) then
+        if (CharSelectServicesFlowFrame:IsShown()) then
+            return;
+        end
+        CharacterSelectScrollDown_OnClick();
+    end
+end
+
 function CharacterSelect_UpdateIfUpdateIsNotPending()
 	if ( not IsCharacterListUpdatePending() ) then
 		UpdateCharacterList();
@@ -793,7 +741,7 @@ function UpdateCharacterList(skipSelect)
 		SocialContractFrame:Show();
 		CharacterSelect.showSocialContract = false;
 	end
-	
+
     local numChars = GetNumVisibleCharacters();
     local coords;
 
@@ -1035,7 +983,7 @@ function UpdateCharacterList(skipSelect)
         elseif ( CharacterSelect.undeleting ) then
             paidServiceButton:Hide();
             paidServiceButton.serviceType = nil;
-		elseif ( IsEraChoiceStateLocked(eraChoiceState) ) then
+		elseif ( IsEraChoiceStateLocked(eraChoiceState) and not CharSelectServicesFlowFrame:IsShown() ) then
             serviceType = PAID_CHARACTER_CLONE;
             paidServiceButton.GoldBorder:Hide();
 			paidServiceButton.VASIcon:SetAtlas("ui-paidcharactercustomization-button-activatecharacter");
@@ -1204,6 +1152,7 @@ function UpdateCharacterList(skipSelect)
     end
 end
 
+
 function CharacterSelectButton_OnClick(self)
     PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
     local id = self:GetID() + CHARACTER_LIST_OFFSET;
@@ -1224,7 +1173,7 @@ function CharacterSelectButton_OnDoubleClick(self)
 end
 
 function CharacterSelectButton_ShowMoveButtons(button)
-    if (CharacterSelect.undeleting) then return end;
+    if (CharacterSelect.undeleting or isInBoostFlow()) then return end;
     local numCharacters = GetNumVisibleCharacters();
     if ( numCharacters <= 1 ) then
         return;
@@ -1302,7 +1251,6 @@ function CharacterSelect_SelectCharacter(index, noCreate)
         CharSelectEnterWorldButton:SetText(text);
     end
 end
-
 
 function CharacterSelect_SelectCharacterByGUID(guid)
     local num = math.min(GetNumVisibleCharacters(), MAX_CHARACTERS_DISPLAYED);
@@ -2002,7 +1950,7 @@ function CharacterSelect_UpdateButtonState()
     CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
     CharacterSelectDeleteButton:SetEnabled(hasCharacters and servicesEnabled and not undeleting and not redemptionInProgress and not CharacterSelect_IsRetrievingCharacterList());
     CharSelectChangeRealmButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
-    CharSelectUndeleteCharacterButton:SetEnabled(canCreateCharacter and servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress);
+    CharSelectUndeleteCharacterButton:SetEnabled(canCreateCharacter and servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress and not boostInProgress);
     CharacterSelectAddonsButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not inKioskMode);
     CopyCharacterButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
     ActivateFactionChange:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
@@ -2212,6 +2160,49 @@ function DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo)
 			frame.NumberBackground:Hide();
 			frame.Number:Hide();
 		end
+
+		if not C_CharacterServices.IsBoostEnabled() then
+			frame:Disable();
+			if ( frame.Icon ) then
+				frame.Icon:SetDesaturated(true);
+			end
+			if ( frame.IconBorder ) then
+				frame.IconBorder:SetDesaturated(true);
+			end
+			if ( frame.Highlight.Icon ) then
+				frame.Highlight.Icon:SetDesaturated(true);
+			end
+			if ( frame.Highlight.IconBorder ) then
+				frame.Highlight.IconBorder:SetDesaturated(true);
+			end
+			if ( frame.Ring ) then
+				frame.Ring:SetDesaturated(true);
+			end
+			if ( frame.Number ) then
+				frame.Number:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			end
+		else
+			frame:Enable();
+			if ( frame.Icon ) then
+				frame.Icon:SetDesaturated(false);
+			end
+			if ( frame.IconBorder ) then
+				frame.IconBorder:SetDesaturated(false);
+			end
+			if ( frame.Highlight.Icon ) then
+				frame.Highlight.Icon:SetDesaturated(false);
+			end
+			if ( frame.Highlight.IconBorder ) then
+				frame.Highlight.IconBorder:SetDesaturated(false);
+			end
+			if ( frame.Ring ) then
+				frame.Ring:SetDesaturated(false);
+			end
+			if ( frame.Number ) then
+				frame.Number:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			end
+		end
+
 		frame:Show();
 	end
 end
@@ -2286,14 +2277,6 @@ function TBCInfoPane_CheckVisible()
 	TBCInfoPane:SetShown(GetTBCInfoPaneEnabled() and GetCVar("seenTBCInfoPane") == "0");
 end
 
--- Global because of localization
-tbcInfoIconAtlas = "classic-burningcrusade-infoicon";
-function TBCInfoPaneTemplate_OnLoad(self)
-	DefaultScaleFrameMixin.OnDefaultScaleFrameLoad(self);
-	self.TBCIcon:SetAtlas(tbcInfoIconAtlas, true);
-	self.TBCIconHighlight:SetAtlas(tbcInfoIconAtlas, true);
-end
-
 function TBCInfoPaneTemplate_OnEnter(self)
 	GlueTooltip:SetOwner(self);
 	if ( self:IsEnabled() ) then
@@ -2308,77 +2291,11 @@ function TBCInfoPaneTemplate_OnLeave(self)
 end
 
 -- Global because of localization
-tbcInfoPaneInfographicAtlas = "classic-announcementpopup-bcinfographic";
-function TBCInfoPane_OnShow(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-	self.TBCInfoPaneDiagram:SetAtlas(tbcInfoPaneInfographicAtlas, true);
-end
-
-function TBCInfoPane_OnHide(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-end
-
-function TBCInfoPane_RefreshPrice()
-	local formattedPrice = BURNING_CRUSADE_TRANSITION_DEFAULT_PRICE;
-	if ( GetTBCInfoPanePriceEnabled() ) then
-		formattedPrice = GetFormattedClonePrice();
-	end
-
-	local formatString = BURNING_CRUSADE_PREVIEW_DESCRIPTION2;
-	if ( GetCurrentRegionName() == "CN" ) then
-		formatString = BURNING_CRUSADE_PREVIEW_DESCRIPTION2_CN;
-	end
-	TBCInfoPane.TBCInfoPaneHTMLDesc:SetText(string.format(formatString, formattedPrice));
-end
-
-function TBCInfoPaneHTMLDesc_OnLoad(self)
-	TBCInfoPane_RefreshPrice();
-end
-
-local cloneServiceProductId = 682
-function GetFormattedClonePrice()
-	local formattedPrice = SecureCurrencyUtil.GetFormattedPrice(cloneServiceProductId);
-
-	if not formattedPrice then
-		formattedPrice = BURNING_CRUSADE_TRANSITION_DEFAULT_PRICE;
-	end
-
-	return formattedPrice;
-end
-
-function ChoicePane_OnPlay()
-	if (GetCVar("heardChoiceSFX") == "0") then
-		PlaySound(SOUNDKIT.LET_THE_GAMES_BEGIN);
-		PlaySound(SOUNDKIT.UI_CHOICE_CLASSIC_ERA);
-	else
-		PlaySound(SOUNDKIT.UI_CHOICE_CLASSIC_ERA);
-	end
-	ChoiceConfirmation:Show();
-	ChoicePane:Hide();
-end
-
-function ChoicePane_OnExitGame()
-	CharacterSelect_SaveCharacterOrder();
-	QuitGame();
-end
-
-function ChoicePane_Toggle()
-	ChoicePane:SetShown(not ChoicePane:IsShown());
-end
-
--- Global because of localization
-choicePaneCurrentLogoAtlas = "classic-burningcrusadetransition-choice-logo-classic";
-choicePaneOtherLogoAtlas = "classic-burningcrusadetransition-choice-logo-bc";
-function ChoicePane_OnShow(self)
-	PlaySound(SOUNDKIT.UI_CHOICE_OPEN);
-
-	local selectedCharName = GetCharacterInfo(GetCharacterSelection());
-	ChoicePaneCurrentDesc:SetText(string.format(BURNING_CRUSADE_TRANSITION_CHOICE_CLASSIC_DESCRIPTION, selectedCharName, selectedCharName, GetFormattedClonePrice()));
-
-	self.CurrentLogo:SetAtlas(choicePaneCurrentLogoAtlas);
-	self.OtherLogo:SetAtlas(choicePaneOtherLogoAtlas);
-
-	FitToParent(GlueParent, self);
+tbcInfoIconAtlas = "classic-burningcrusade-infoicon";
+function TBCInfoPaneTemplate_OnLoad(self)
+	DefaultScaleFrameMixin.OnDefaultScaleFrameLoad(self);
+	self.TBCIcon:SetAtlas(tbcInfoIconAtlas, true);
+	self.TBCIconHighlight:SetAtlas(tbcInfoIconAtlas, true);
 end
 
 function ChoicePane_OnClose(self)
@@ -2420,18 +2337,6 @@ function ChoiceConfirmation_OnShow(self)
 	selectedCharName = GetCharacterInfo(GetCharacterSelection());
 	self.ConfirmationLogo:SetAtlas(choicePaneCurrentLogoAtlas);
 	self.ChoiceConfirmationTitle:SetText(string.format(BURNING_CRUSADE_TRANSITION_CHOICE_CONFIRM, selectedCharName));
-end
-
-function ChoiceConfirmation_OnConfirm(self)
-	if (GetCVar("heardChoiceSFX") == "0") then
-		PlaySound(SOUNDKIT.UI_CHOICE_ENTER_WORLD_MURLOC);
-		SetCVar("heardChoiceSFX", 1);
-	else
-		PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ENTER_WORLD);
-	end
-    StopGlueAmbience();
-	ChoiceConfirmation:Hide();
-    EnterWorldWithTransitionChoice();
 end
 
 function ChoiceConfirmation_OnCancel(self)
@@ -2586,6 +2491,7 @@ function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, guid)
     CharacterUpgradeFlow:SetTarget(data);
     CharSelectServicesFlowFrame:Show();
 	CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
+	UpdateCharacterUndeleteStatus();
 end
 
 function CharacterUpgradePopup_OnStartClick(self)
@@ -2619,7 +2525,9 @@ function CharacterUpgradePopup_OnTryNewClick(self)
 end
 
 function CharacterServicesTokenBoost_OnClick(self)
-	if self.data.isExpansionTrial then
+	if not C_CharacterServices.IsBoostEnabled() then
+		return;
+	elseif self.data.isExpansionTrial then
 		if UpgradePopupFrame:IsShown() then
 			UpgradePopupFrame:Hide();
 		else
@@ -2914,8 +2822,12 @@ function CharacterServicesTokenBoost_OnEnter(self)
 		GlueTooltip:AddLine(self.data.popupInfo.title, 1.0, 1.0, 1.0);
 		GlueTooltip:AddLine(self.data.popupInfo.description, nil, nil, nil, true);
 	else
-    GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_TITLE:format(self.data.level), 1.0, 1.0, 1.0);
-		GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level), nil, nil, nil, true);
+		if not C_CharacterServices.IsBoostEnabled() then
+			GlueTooltip:SetText(BOOST_REALM_RESTRICTED);
+		else
+			GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_TITLE:format(self.data.level), 1.0, 1.0, 1.0);
+			GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level), nil, nil, nil, true);
+		end
 	end
     GlueTooltip:Show();
 end
@@ -2939,6 +2851,21 @@ function CharacterUpgradeSecondChanceWarningFrameCancelButton_OnClick(self)
     CharacterUpgradeSecondChanceWarningFrame:Hide();
 
     CharacterUpgradeSecondChanceWarningFrame.warningAccepted = false;
+end
+
+function CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnShow(self)
+	self.hideTimer = 0;
+end
+
+BOOST_BUTTON_DELAY = 2;
+function CharacterUpgradeSecondChanceWarningFrameConfirmButton_Update(self, elapsed)
+	GlueParent_DeathKnightButtonSwap(self);
+
+	if(self.hideTimer == nil) then self.hideTimer = 0 end;
+	self.hideTimer = math.min(self.hideTimer + elapsed, BOOST_BUTTON_DELAY);
+	if(self.hideTimer >= BOOST_BUTTON_DELAY and not CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:IsEnabled()) then
+		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:Enable();
+	end
 end
 
 -- CHARACTER UNDELETE
@@ -3036,8 +2963,10 @@ function UpdateCharacterUndeleteStatus()
 	CHARACTER_UNDELETE_COOLDOWN = cooldown;
 	CHARACTER_UNDELETE_COOLDOWN_REMAINING = remaining;
 
-	CharSelectUndeleteCharacterButton:SetEnabled(enabled and not onCooldown and canCreateCharacter);
-	if (not enabled) then
+	CharSelectUndeleteCharacterButton:SetEnabled(enabled and not onCooldown and canCreateCharacter and not isInBoostFlow());
+	if (isInBoostFlow()) then
+		CharSelectUndeleteCharacterButton.tooltip = nil;
+	elseif (not enabled) then
 		CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP_DISABLED;
 	elseif (onCooldown) then
 		local timeStr = SecondsToTime(remaining, false, true, 1, false);
@@ -3388,17 +3317,6 @@ function CharacterSelect_ShowBoostUnlockDialog(guid)
     return false;
 end
 
-function CharacterSelect_ShowSeasonNotification()
-	if(GetSoMNotificationEnabled() and GetCVar("seenSoMNotification") == "0" and not C_Seasons.HasActiveSeason()) then
-		RealmCallout:Show();
-		GlowEmitterFactory:SetOffset(3, 1);
-		GlowEmitterFactory:Show(CharSelectChangeRealmButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
-		RealmCallout.Text:SetText(SEASON_CHARACTER_SELECT_NOTIFICATIONS[Enum.SeasonID.SeasonOfMastery]);
-	else
-		RealmCallout:Hide();
-	end
-end
-
 function CharSelectEnterWorldButton_OnEnter(button)
 	GlueTooltip:SetOwner(button, "ANCHOR_LEFT", 4, -8);
 	if ( not button:IsEnabled() and IsNameReservationOnly() ) then
@@ -3417,4 +3335,23 @@ end
 
 function CharSelectEnterWorldButton_OnLeave(button)
 	GlueTooltip:Hide();
+end
+
+function CharacterSelect_ShowSeasonNotification()
+	if(not RealmCallout) then
+		return;
+	end
+
+	if(GetSoMNotificationEnabled() and GetCVar("seenSoMNotification") == "0" and not C_Seasons.HasActiveSeason()) then
+		RealmCallout:Show();
+		GlowEmitterFactory:SetOffset(3, 1);
+		GlowEmitterFactory:Show(CharSelectChangeRealmButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
+		RealmCallout.Text:SetText(SEASON_CHARACTER_SELECT_NOTIFICATIONS[Enum.SeasonID.SeasonOfMastery]);
+	else
+		RealmCallout:Hide();
+	end
+end
+
+function isInBoostFlow()
+	return CharSelectServicesFlowFrame:IsShown();
 end

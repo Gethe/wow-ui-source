@@ -43,7 +43,7 @@ function LFGBrowseMixin:OnLoad()
 	self:RegisterEvent("LFG_LIST_AVAILABILITY_UPDATE");
 	self:RegisterEvent("LFG_LIST_SEARCH_FAILED");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED");
-	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
+	self:RegisterEvent("REPORT_PLAYER_RESULT");
 
 	self.results = {};
 	self.searchFailed = false;
@@ -99,6 +99,11 @@ function LFGBrowseMixin:OnEvent(event, ...)
 		self.searching = false;
 		self.searchFailed = true;
 		self:UpdateResultList();
+	elseif ( event == "REPORT_PLAYER_RESULT") then
+		local success, reportType = ...;
+		if (success and reportType == Enum.ReportType.GroupFinderPosting) then
+			LFGBrowseFrame:UpdateResultList();
+		end
 	end
 end
 
@@ -418,12 +423,8 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 			self.Leader.Roles[1]:SetSize(14, 14);
 		else
 			-- If we're in a party, just show our party-level role.
-			self.Leader.Roles[1]:SetAtlas(LFGBROWSE_GROUPDATA_ATLASES[role], false);
+			LFGBrowseUtil_MapRoleStatesToRoleIcons(self.Leader.Roles, role == "TANK", role == "HEALER", role == "DAMAGER", false);
 			self.Leader.Roles[1]:SetSize(16, 16);
-			self.Leader.Roles[1]:Show();
-			for i = 2,#self.Leader.Roles do
-				self.Leader.Roles[i]:Hide();
-			end
 		end
 		self.Leader:Show();
 
@@ -769,7 +770,6 @@ local LFGBROWSE_SEARCH_ENTRY_MENU = {
 		func = function(_, id, name) 
 			CloseDropDownMenus();
 			LFGBrowseUtil_ReportListing(id, name);
-			LFGBrowseFrame:UpdateResultList();
 		end,
 	},
 	{
@@ -780,7 +780,6 @@ local LFGBROWSE_SEARCH_ENTRY_MENU = {
 		func = function(_, id, name) 
 			CloseDropDownMenus();
 			LFGBrowseUtil_ReportAdvertisement(id, name);
-			LFGBrowseFrame:UpdateResultList();
 		end;
 	},
 	{
@@ -926,7 +925,7 @@ function LFGBrowseActivityDropDown_Initialize(self, level, menuList)
 							buttonInfo.keepShownOnClick = true;
 							buttonInfo.classicChecks = true;
 
-							buttonInfo.text = "  "..activityInfo.shortName; -- Extra spacing to "indent" this from the group title.
+							buttonInfo.text = string.format(LFG_LIST_INDENT, activityInfo.shortName); -- Extra spacing to "indent" this from the group title.
 							buttonInfo.value = activityID;
 							buttonInfo.checked = function(self)
 								return LFGBrowseActivityDropDown_ValueIsSelected(LFGBrowseFrame.ActivityDropDown, self.value);
@@ -1236,11 +1235,11 @@ function LFGBrowseUtil_MapRoleStatesToRoleIcons(iconArray, isTank, isHealer, isD
 			if (useSimple) then
 				iconArray[roleButtonIndex]:SetTexture("Interface\\LFGFrame\\LFGROLE.BLP");
 				iconArray[roleButtonIndex]:SetTexCoord(GetTexCoordsForRoleSmall(LFGBROWSE_GROUPDATA_ROLE_ORDER[i]));
-				iconArray[roleButtonIndex]:SetDesaturated(useDisabled);
 			else
 				iconArray[roleButtonIndex]:SetAtlas(LFGBROWSE_GROUPDATA_ATLASES[LFGBROWSE_GROUPDATA_ROLE_ORDER[i]], false);
-				iconArray[roleButtonIndex]:SetDesaturated(useDisabled);
+				iconArray[roleButtonIndex]:SetTexCoord(0, 1, 0, 1);
 			end
+			iconArray[roleButtonIndex]:SetDesaturated(useDisabled);
 			iconArray[roleButtonIndex]:Show();
 			roleButtonIndex = roleButtonIndex+1;
 		end
