@@ -13,29 +13,19 @@ function StanceBarMixin:OnEvent(event)
 	end
 end
 
+function StanceBarMixin:ShouldShow()
+	return self.numForms > 0
+		and not IsPossessBarVisible()
+		and ActionBarController_GetCurrentActionBarState() ~= LE_ACTIONBAR_STATE_OVERRIDE;
+end
+
 function StanceBarMixin:Update()
-	local numForms = GetNumShapeshiftForms();
-	local needFrameMgrUpdate = false;
-	if ( numForms > 0 and not IsPossessBarVisible()) then
-		if ( self.numForms ~= numForms ) then
-			self.numForms = numForms;
-			needFrameMgrUpdate = true;
-		end
-
-		if ( not self:IsShown() ) then
-			self:Show();
-			needFrameMgrUpdate = true;
-		end
+	self.numForms = GetNumShapeshiftForms();
+	if ( self.numForms > 0) then
 		self:UpdateState();
-	elseif (self:IsShown() ) then
-		self:Hide();
-		needFrameMgrUpdate = true;
-		self.numForms = nil;
 	end
 
-	if ( needFrameMgrUpdate ) then
-		UIParent_ManageFramePositions();
-	end
+	self:SetShown(self:ShouldShow());
 end
 
 function StanceBarMixin:UpdateState()
@@ -43,7 +33,6 @@ function StanceBarMixin:UpdateState()
 	local texture, isActive, isCastable;
 	local icon, cooldown;
 	local start, duration, enable;
-	self.numShowingButtons = 0;
 
 	for i, button in pairs(self.actionButtons) do
 		icon = button.icon;
@@ -73,8 +62,6 @@ function StanceBarMixin:UpdateState()
 			else
 				icon:SetVertexColor(0.4, 0.4, 0.4);
 			end
-
-			self.numShowingButtons = self.numShowingButtons + 1;
 		end
 	end
 
@@ -116,10 +103,6 @@ function StanceButtonMixin:OnLeave()
 end
 
 -- Used by action bar template
-function StanceButtonMixin:GetShowGrid()
-	return true;
-end
-
--- Used by action bar template
-function StanceButtonMixin:SetShowGrid()
+function StanceButtonMixin:HasAction()
+    return GetShapeshiftFormInfo(self.index);
 end

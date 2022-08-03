@@ -6,6 +6,8 @@ local TotalFrameLevelSpread = 500;
 local BaseYOffset = 1500;
 local BaseRowHeight = 600;
 
+local GENERIC_TRAIT_FRAME_DEFAULT_PORTRIAT_TEXTURE = "Interface\\ICONS\\Ability_DragonRiding_Launch01";
+
 
 GenericTraitFrameMixin = {};
 
@@ -46,7 +48,8 @@ function GenericTraitFrameMixin:OnShow()
 	if UnitExists("npc") then
 		SetPortraitTexture(self.PortraitOverlay.Portrait, "npc");
 	else
-		SetPortraitTexture(self.PortraitOverlay.Portrait, "Interface\\QuestFrame\\UI-QuestLog-BookIcon");
+		-- TODO: get from data
+		self.PortraitOverlay.Portrait:SetTexture(GENERIC_TRAIT_FRAME_DEFAULT_PORTRIAT_TEXTURE);
 	end
 end
 

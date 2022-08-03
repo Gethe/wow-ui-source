@@ -126,6 +126,39 @@ local modernSystemMap =
 				offsetY = 5,
 			},
 		},
+
+		[Enum.EditModeActionBarSystemIndices.PetActionBar] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
+			},
+			anchorInfo = {
+				point = "BOTTOMLEFT",
+				relativeTo = "MainMenuBar",
+				relativePoint = "TOPLEFT",
+				offsetX = 0,
+				offsetY = 5,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.PossessActionBar] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+			},
+			anchorInfo = {
+				point = "BOTTOMLEFT",
+				relativeTo = "MainMenuBar",
+				relativePoint = "TOPLEFT",
+				offsetX = 0,
+				offsetY = 5,
+			},
+		},
 	},
 
 	[Enum.EditModeSystem.UnitFrame] = {
@@ -286,6 +319,39 @@ local classicSystemMap =
 		},
 
 		[Enum.EditModeActionBarSystemIndices.StanceBar] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+			},
+			anchorInfo = {
+				point = "BOTTOMLEFT",
+				relativeTo = "MainMenuBar",
+				relativePoint = "TOPLEFT",
+				offsetX = 0,
+				offsetY = 5,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.PetActionBar] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
+			},
+			anchorInfo = {
+				point = "BOTTOMLEFT",
+				relativeTo = "MainMenuBar",
+				relativePoint = "TOPLEFT",
+				offsetX = 0,
+				offsetY = 5,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.PossessActionBar] = {
 			settings = {
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,

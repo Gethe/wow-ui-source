@@ -99,6 +99,7 @@ UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		while
 UIPanelWindows["CovenantMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
 UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 830, 	yoffset = 9,	allowOtherPanels = 1};
 
 CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
 CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
@@ -340,6 +341,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CRAFTINGORDERS_HIDE_CUSTOMER");
 	self:RegisterEvent("CRAFTINGORDERS_SHOW_CRAFTER");
 	self:RegisterEvent("CRAFTINGORDERS_HIDE_CRAFTER");
+	self:RegisterEvent("PROFESSION_EQUIPMENT_CHANGED");
 
 	-- Events for Item socketing UI
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
@@ -789,6 +791,10 @@ function OrderHall_LoadUI()
 	UIParentLoadAddOn("Blizzard_OrderHallUI");
 end
 
+function ExpansionLandingPage_LoadUI()
+	UIParentLoadAddOn("Blizzard_ExpansionLandingPage");
+end
+
 function TalkingHead_LoadUI()
 	UIParentLoadAddOn("Blizzard_TalkingHeadUI");
 end
@@ -964,6 +970,7 @@ function ToggleTalentFrame(suggestedTab)
 	end
 
 	local newTalentClassIDSet = {
+		[1] = true, -- Warrior
 		[2] = true, -- Paladin
 		[3] = true, -- Hunter
 		[4] = true, -- Rogue
@@ -1322,6 +1329,13 @@ function ToggleCovenantRenown()
 		CovenantRenown_LoadUI();
 	end
 	ToggleFrame(CovenantRenownFrame);
+end
+
+function ToggleExpansionLandingPage()
+	if (not ExpansionLandingPage) then
+		ExpansionLandingPage_LoadUI();
+	end
+	ToggleFrame(ExpansionLandingPage);
 end
 
 function OpenDeathRecapUI(id)
@@ -2086,6 +2100,29 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "CRAFTINGORDERS_HIDE_CRAFTER" ) then
 		if ( ProfessionsCrafterOrdersFrame ) then
 			HideUIPanel(ProfessionsCrafterOrdersFrame);
+		end
+	elseif ( event == "PROFESSION_EQUIPMENT_CHANGED" ) then
+		if not GetCVarBool("professionGearSlotsExampleShown") then
+			SetCVar("professionGearSlotsExampleShown", "1");
+			ProfessionsFrame_LoadUI();
+			local skillLineID = ...;
+			local currBaseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
+			if currBaseProfessionInfo == nil or currBaseProfessionInfo.professionID ~= skillLineID then
+				C_TradeSkillUI.OpenTradeSkill(skillLineID);
+			end
+			ProfessionsFrame:SetTab(ProfessionsFrame.recipesTabID);
+			ShowUIPanel(ProfessionsFrame);
+
+			local helpTipInfo =
+			{
+				text = PROFESSION_EQUIPMENT_LOCATION_HELPTIP,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				targetPoint = HelpTip.Point.RightEdgeTop,
+				alignment = HelpTip.Alignment.Left,
+				autoHorizontalSlide = true,
+				offsetY = -48,
+			};
+			HelpTip:Show(ProfessionsFrame.CraftingPage, helpTipInfo, ProfessionsFrame.CraftingPage);
 		end
 	-- Event for item socketing handling
 	elseif ( event == "SOCKET_INFO_UPDATE" ) then

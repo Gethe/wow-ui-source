@@ -501,7 +501,7 @@ end
 function GarrisonLandingPageReportList_OnShow(self)
 	GarrisonLandingPageReport:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 
-	GarrisonMinimap_ClearPulse();
+	ExpansionLandingPageMinimapButton:ClearPulses();
 	if ( GarrisonLandingPageReport.selectedTab ) then
 		GarrisonLandingPageReportList_UpdateItems()
 	end

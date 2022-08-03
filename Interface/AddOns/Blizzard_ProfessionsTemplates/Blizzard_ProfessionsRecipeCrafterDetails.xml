@@ -31,7 +31,7 @@
 	</Frame>
 
 	<Frame name="ProfessionsQualityMeterCapTemplate" virtual="true">
-		<Size x="30" y="30"/>
+		<Size x="26" y="26"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" scale=".6">
@@ -43,25 +43,34 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="ProfessionsRecipeCrafterDetailsTemplate" mixin="ProfessionsRecipeCrafterDetailsMixin" virtual="true">
-		<Size x="260" y="353"/>
+	<Frame name="ProfessionsRecipeCrafterDetailsTemplate" mixin="ProfessionsRecipeCrafterDetailsMixin" inherits="VerticalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="260" type="number"/>
+			<KeyValue key="minimumHeight" value="199" type="number"/>
+			<KeyValue key="bottomPadding" value="12" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="BackgroundTop" atlas="Professions-QualityPane-bg-top" useAtlasSize="true">
-					<Size y="100"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="TOPRIGHT"/>
+						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BackgroundBottom" atlas="Professions-QualityPane-bg-bottom" useAtlasSize="true">
-					<Size y="99"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOM"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BackgroundMiddle" atlas="Professions-QualityPane-bg-middle" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundTop" relativePoint="BOTTOMLEFT"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.BackgroundTop" relativePoint="BOTTOMRIGHT"/>
@@ -69,46 +78,55 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundBottom" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Line" atlas="Professions-QualityPane-Divider" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP" y="-55"/>
-					</Anchors>
-				</Texture>
 				<FontString parentKey="Label" inherits="GameFontHighlight" justifyH="CENTER">
 					<Size x="350" y="20"/>
-					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.Line" relativePoint="TOP"/>
-					</Anchors>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="topPadding" value="25" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
 				</FontString>
+				<Texture parentKey="Line" atlas="Professions-QualityPane-Divider" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DifficultyStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
+			<Frame parentKey="StatLines" inherits="VerticalLayoutFrame">
 				<KeyValues>
-					<KeyValue key="statLineType" value="CraftingQualityStatLine.Difficulty" type="global"/>
-					<KeyValue key="displayAsPct" value="false" type="boolean"/>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="topPadding" value="15" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="minimumHeight" value="65" type="number"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Line" relativePoint="BOTTOMLEFT" y="-15"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.Line" relativePoint="BOTTOMRIGHT" y="-15"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="SkillStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
-				<KeyValues>
-					<KeyValue key="statLineType" value="CraftingQualityStatLine.Skill" type="global"/>
-					<KeyValue key="displayAsPct" value="false" type="boolean"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.DifficultyStatLine" relativePoint="BOTTOMLEFT"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.DifficultyStatLine" relativePoint="BOTTOMRIGHT"/>
-				</Anchors>
+				<Frames>
+					<Frame parentKey="DifficultyStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="statLineType" value="CraftingQualityStatLine.Difficulty" type="global"/>
+							<KeyValue key="displayAsPct" value="false" type="boolean"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="SkillStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="statLineType" value="CraftingQualityStatLine.Skill" type="global"/>
+							<KeyValue key="displayAsPct" value="false" type="boolean"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
 			</Frame>
 			
 			<Frame parentKey="QualityMeter" mixin="ProfessionsQualityMeterMixin">
 				<Size x="250" y="75"/>
-				<Anchors>
-					<Anchor point="TOP" y="-200"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+					<KeyValue key="topPadding" value="15" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
 				<Frames>
 					<Frame parentKey="Center">
 						<Size x="193" y="36"/>
@@ -131,7 +149,7 @@
 								<Anchors>
 									<Anchor point="TOP" y="-3"/>
 									<Anchor point="BOTTOM" y="7"/>
-									<Anchor point="LEFT" x="5"/>
+									<Anchor point="LEFT" x="3"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK" textureSubLevel="1">
@@ -222,14 +240,17 @@
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
+			
 			<Frame parentKey="FinishingReagentSlotContainer">
-				<Size x="260" y="100"/>
-				<Anchors>
-					<Anchor point="BOTTOM" y="5"/>
-				</Anchors>
+				<Size x="260" y="126"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+					<KeyValue key="topPadding" value="-18" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString parentKey="Label" inherits="GameFontNormal" justifyH="CENTER">
+						<FontString parentKey="Label" inherits="GameFontNormalSmall" justifyH="CENTER">
 							<Size x="300" y="20"/>
 							<Anchors>
 								<Anchor point="TOP" y="-20"/>

@@ -699,69 +699,173 @@ function GuildInstanceDifficultyMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-GarrisonLandingPageMinimapButtonMixin = { };
+ExpansionLandingPageMinimapButtonMixin = { };
 
-function GarrisonLandingPageMinimapButtonMixin:OnLoad()
+local GarrisonLandingPageEvents = {
+	"GARRISON_SHOW_LANDING_PAGE",
+	"GARRISON_HIDE_LANDING_PAGE",
+	"GARRISON_BUILDING_ACTIVATABLE",
+	"GARRISON_BUILDING_ACTIVATED",
+	"GARRISON_ARCHITECT_OPENED",
+	"GARRISON_MISSION_FINISHED",
+	"GARRISON_MISSION_NPC_OPENED",
+	"GARRISON_SHIPYARD_NPC_OPENED",
+	"GARRISON_INVASION_AVAILABLE",
+	"GARRISON_INVASION_UNAVAILABLE",
+	"SHIPMENT_UPDATE",
+	"PLAYER_ENTERING_WORLD",
+};
+
+function ExpansionLandingPageMinimapButtonMixin:OnLoad()
+	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.RefreshButton, self);	
+
+	if not ExpansionLandingPage then
+		ExpansionLandingPage_LoadUI();
+	end
+
 	self.pulseLocks = {};
-	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
-	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
-	self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE");
-	self:RegisterEvent("GARRISON_BUILDING_ACTIVATED");
-	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
-	self:RegisterEvent("GARRISON_MISSION_FINISHED");
-	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
-	self:RegisterEvent("GARRISON_SHIPYARD_NPC_OPENED");
-	self:RegisterEvent("GARRISON_INVASION_AVAILABLE");
-	self:RegisterEvent("GARRISON_INVASION_UNAVAILABLE");
-	self:RegisterEvent("SHIPMENT_UPDATE");
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	self:RegisterEvent("ZONE_CHANGED");
-	self:RegisterEvent("ZONE_CHANGED_INDOORS");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+
+	FrameUtil.RegisterFrameForEvents(self, GarrisonLandingPageEvents);
+	self.garrisonMode = true;
 end
 
-function GarrisonLandingPageMinimapButtonMixin:OnEvent(event, ...)
-	if (event == "GARRISON_HIDE_LANDING_PAGE") then
+function ExpansionLandingPageMinimapButtonMixin:RefreshButton()
+	if ExpansionLandingPage:IsOverlayApplied() then
+		if self.garrisonMode then
+			if (GarrisonLandingPage and GarrisonLandingPage:IsShown()) then
+				HideUIPanel(GarrisonLandingPage);
+			end
+			self:ClearPulses();
+			FrameUtil.UnregisterFrameForEvents(self, GarrisonLandingPageEvents);
+			self.garrisonMode = false;
+		end
+		
 		self:Hide();
-	elseif (event == "GARRISON_SHOW_LANDING_PAGE") then
 		self:UpdateIcon();
 		self:Show();
-	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
-		local buildingName, garrisonType = ...;
-		if ( garrisonType == C_Garrison.GetLandingPageGarrisonType() ) then
-			GarrisonMinimapBuilding_ShowPulse(self);
-		end
-	elseif ( event == "GARRISON_BUILDING_ACTIVATED" or event == "GARRISON_ARCHITECT_OPENED") then
-		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_BUILDING);
-	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
-		local followerType = ...;
-		if ( DoesFollowerMatchCurrentGarrisonType(followerType) ) then
-			GarrisonMinimapMission_ShowPulse(self, followerType);
-		end
-	elseif ( event == "GARRISON_MISSION_NPC_OPENED" ) then
-		local followerType = ...;
-		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[followerType]);
-	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED" ) then
-		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[Enum.GarrisonFollowerType.FollowerType_6_2]);
-	elseif (event == "GARRISON_INVASION_AVAILABLE") then
-		if ( C_Garrison.GetLandingPageGarrisonType() == Enum.GarrisonType.Type_6_0 ) then
-			GarrisonMinimapInvasion_ShowPulse(self);
-		end
-	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
-		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_INVASION);
-	elseif (event == "SHIPMENT_UPDATE") then
-		local shipmentStarted, isTroop = ...;
-		if (shipmentStarted) then
-			GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop);
-		end
-	elseif (event == "PLAYER_ENTERING_WORLD") then
-		self.isInitialLogin = ...;
-		if self.isInitialLogin then
-			EventRegistry:RegisterCallback("CovenantCallings.CallingsUpdated", GarrisonMinimap_OnCallingsUpdated, self);
-			CovenantCalling_CheckCallings();
-		end
 	end
 end
+
+function ExpansionLandingPageMinimapButtonMixin:OnShow()
+	EventRegistry:RegisterCallback("ExpansionLandingPage.TriggerPulseLock", self.TriggerPulseLock, self);
+	EventRegistry:RegisterCallback("ExpansionLandingPage.HidePulse", self.HidePulse, self);
+	EventRegistry:RegisterCallback("ExpansionLandingPage.ClearPulses", self.ClearPulses, self);
+	EventRegistry:RegisterCallback("ExpansionLandingPage.TriggerAlert", self.TriggerAlert, self);
+end
+
+function ExpansionLandingPageMinimapButtonMixin:OnHide()
+	EventRegistry:UnregisterCallback("ExpansionLandingPage.TriggerPulseLock", self);
+	EventRegistry:UnregisterCallback("ExpansionLandingPage.HidePulse", self);
+	EventRegistry:UnregisterCallback("ExpansionLandingPage.ClearPulses", self);
+	EventRegistry:UnregisterCallback("ExpansionLandingPage.TriggerAlert", self);
+end
+
+
+function ExpansionLandingPageMinimapButtonMixin:OnEvent(event, ...)
+	if self.garrisonMode and tContains(GarrisonLandingPageEvents, event) then
+		self:HandleGarrisonEvent(event, ...);
+	end
+end
+
+local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow)
+	local info = C_Texture.GetAtlasInfo(up);
+	self:SetSize(info and info.width or 0, info and info.height or 0);
+	self:GetNormalTexture():SetAtlas(up, TextureKitConstants.UseAtlasSize);
+	self:GetPushedTexture():SetAtlas(down, TextureKitConstants.UseAtlasSize);
+	self:GetHighlightTexture():SetAtlas(highlight, TextureKitConstants.UseAtlasSize);
+	self.LoopingGlow:SetAtlas(glow, TextureKitConstants.UseAtlasSize);
+end
+
+function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
+	if self.garrisonMode then
+		self:UpdateIconForGarrison();
+	else
+		local minimapDisplayInfo = ExpansionLandingPage:GetOverlayMinimapDisplayInfo();
+		SetLandingPageIconFromAtlases(self, minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas);
+		self.title = minimapDisplayInfo.title;
+		self.description = minimapDisplayInfo.description;
+	end
+end
+
+function ExpansionLandingPageMinimapButtonMixin:OnClick(button)
+	self:ToggleLandingPage();
+end
+
+function ExpansionLandingPageMinimapButtonMixin:ToggleLandingPage()
+	if self.garrisonMode then
+		GarrisonLandingPage_Toggle();
+		GarrisonMinimap_HideHelpTip(self);
+	else
+		ToggleExpansionLandingPage();
+	end
+end
+
+function ExpansionLandingPageMinimapButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip:SetText(self.title, 1, 1, 1);
+	GameTooltip:AddLine(self.description, nil, nil, nil, true);
+	GameTooltip:Show();
+end
+
+function ExpansionLandingPageMinimapButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function ExpansionLandingPageMinimapButtonMixin:SetPulseLock(lock, enabled)
+	self.pulseLocks[lock] = enabled;
+end
+
+function ExpansionLandingPageMinimapButtonMixin:TriggerPulseLock(lock)
+	local enabled = true;
+	self:SetPulseLock(lock, enabled)
+	self.MinimapLoopPulseAnim:Play();
+end
+
+-- We play an animation on the minimap icon for a number of reasons, but only want to turn the
+-- animation off if the user handles all actions related to that alert. For example if we play the animation
+-- because a garrison building can be activated and then another because a garrison invasion has occurred,  we want to
+-- turn off the animation after they handle both the building and invasion, but not if they handle only one.
+-- We always stop the pulse when they click on the landing page icon.
+
+function ExpansionLandingPageMinimapButtonMixin:HidePulse(lock)
+	self:SetPulseLock(lock, false);
+	local enabled = false;
+	for k, v in pairs(self.pulseLocks) do
+		if ( v ) then
+			enabled = true;
+			break;
+		end
+	end
+
+	-- If there are no other reasons to show the pulse, hide it
+	if (not enabled) then
+		self.MinimapLoopPulseAnim:Stop();
+	end
+end
+
+function ExpansionLandingPageMinimapButtonMixin:ClearPulses()
+	for k, v in pairs(self.pulseLocks) do
+		self.pulseLocks[k] = false;
+	end
+	self.MinimapLoopPulseAnim:Stop();
+end
+
+function ExpansionLandingPageMinimapButtonMixin:TriggerAlert(text)
+	self.AlertText:SetText(text);
+	self:JustifyText(self.AlertText);
+	self.MinimapAlertAnim:Play();
+end
+
+function ExpansionLandingPageMinimapButtonMixin:JustifyText(text)
+	--Center justify if we're on more than one line
+	if ( text:GetNumLines() > 1 ) then
+		text:SetJustifyH("CENTER");
+	else
+		text:SetJustifyH("RIGHT");
+	end
+end
+
+-------------------- Garrison Specific ------------------------
 
 local function GetMinimapAtlases_GarrisonType8_0(faction)
 	if faction == "Horde" then
@@ -801,16 +905,50 @@ local function GetMinimapAtlases_GarrisonType9_0(covenantData)
 	end
 end
 
-local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow)
-	local info = C_Texture.GetAtlasInfo(up);
-	self:SetSize(info and info.width or 0, info and info.height or 0);
-	self:GetNormalTexture():SetAtlas(up, true);
-	self:GetPushedTexture():SetAtlas(down, true);
-	self:GetHighlightTexture():SetAtlas(highlight, true);
-	self.LoopingGlow:SetAtlas(glow, true);
+function ExpansionLandingPageMinimapButtonMixin:HandleGarrisonEvent(event, ...)
+	if (event == "GARRISON_HIDE_LANDING_PAGE") then
+		self:Hide();
+	elseif (event == "GARRISON_SHOW_LANDING_PAGE") then
+		self:UpdateIcon();
+		self:Show();
+	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
+		local buildingName, garrisonType = ...;
+		if ( garrisonType == C_Garrison.GetLandingPageGarrisonType() ) then
+			GarrisonMinimapBuilding_ShowPulse(self);
+		end
+	elseif ( event == "GARRISON_BUILDING_ACTIVATED" or event == "GARRISON_ARCHITECT_OPENED") then
+		self:HidePulse(GARRISON_ALERT_CONTEXT_BUILDING);
+	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
+		local followerType = ...;
+		if ( DoesFollowerMatchCurrentGarrisonType(followerType) ) then
+			GarrisonMinimapMission_ShowPulse(self, followerType);
+		end
+	elseif ( event == "GARRISON_MISSION_NPC_OPENED" ) then
+		local followerType = ...;
+		self:HidePulse(GARRISON_ALERT_CONTEXT_MISSION[followerType]);
+	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED" ) then
+		self:HidePulse(GARRISON_ALERT_CONTEXT_MISSION[Enum.GarrisonFollowerType.FollowerType_6_2]);
+	elseif (event == "GARRISON_INVASION_AVAILABLE") then
+		if ( C_Garrison.GetLandingPageGarrisonType() == Enum.GarrisonType.Type_6_0 ) then
+			GarrisonMinimapInvasion_ShowPulse(self);
+		end
+	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
+		self:HidePulse(GARRISON_ALERT_CONTEXT_INVASION);
+	elseif (event == "SHIPMENT_UPDATE") then
+		local shipmentStarted, isTroop = ...;
+		if (shipmentStarted) then
+			GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop);
+		end
+	elseif (event == "PLAYER_ENTERING_WORLD") then
+		self.isInitialLogin = ...;
+		if self.isInitialLogin then
+			EventRegistry:RegisterCallback("CovenantCallings.CallingsUpdated", GarrisonMinimap_OnCallingsUpdated, self);
+			CovenantCalling_CheckCallings();
+		end
+	end
 end
 
-function GarrisonLandingPageMinimapButtonMixin:UpdateIcon()
+function ExpansionLandingPageMinimapButtonMixin:UpdateIconForGarrison()
 	local garrisonType = C_Garrison.GetLandingPageGarrisonType();
 	self.garrisonType = garrisonType;
 
@@ -849,22 +987,6 @@ function GarrisonLandingPageMinimapButtonMixin:UpdateIcon()
 	end
 end
 
-function GarrisonLandingPageMinimapButtonMixin:OnClick(button)
-	GarrisonLandingPage_Toggle();
-	GarrisonMinimap_HideHelpTip(self);
-end
-
-function GarrisonLandingPageMinimapButtonMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(self.title, 1, 1, 1);
-	GameTooltip:AddLine(self.description, nil, nil, nil, true);
-	GameTooltip:Show();
-end
-
-function GarrisonLandingPageMinimapButtonMixin:OnLeave()
-	GameTooltip:Hide();
-end
-
 function GarrisonLandingPage_Toggle()
 	if (GarrisonLandingPage and GarrisonLandingPage:IsShown()) then
 		HideUIPanel(GarrisonLandingPage);
@@ -873,64 +995,21 @@ function GarrisonLandingPage_Toggle()
 	end
 end
 
-function GarrisonMinimap_SetPulseLock(self, lock, enabled)
-	self.pulseLocks[lock] = enabled;
-end
-
--- We play an animation on the garrison minimap icon for a number of reasons, but only want to turn the
--- animation off if the user handles all actions related to that alert. For example if we play the animation
--- because a building can be activated and then another because a garrison invasion has occurred,  we want to
--- turn off the animation after they handle both the building and invasion, but not if they handle only one.
--- We always stop the pulse when they click on the landing page icon.
-
-function GarrisonMinimap_HidePulse(self, lock)
-	GarrisonMinimap_SetPulseLock(self, lock, false);
-	local enabled = false;
-	for k, v in pairs(self.pulseLocks) do
-		if ( v ) then
-			enabled = true;
-			break;
-		end
-	end
-
-	-- If there are no other reasons to show the pulse, hide it
-	if (not enabled) then
-		GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Stop();
-	end
-end
-
-function GarrisonMinimap_ClearPulse()
-	local self = GarrisonLandingPageMinimapButton;
-	for k, v in pairs(self.pulseLocks) do
-		self.pulseLocks[k] = false;
-	end
-	self.MinimapLoopPulseAnim:Stop();
-end
-
 function GarrisonMinimapBuilding_ShowPulse(self)
-	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_BUILDING, true);
+	self:SetPulseLock(GARRISON_ALERT_CONTEXT_BUILDING, true);
 	self.MinimapLoopPulseAnim:Play();
 end
 
 function GarrisonMinimapMission_ShowPulse(self, followerType)
-	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_MISSION[followerType], true);
+	self:SetPulseLock(GARRISON_ALERT_CONTEXT_MISSION[followerType], true);
 	self.MinimapLoopPulseAnim:Play();
-end
-
-function GarrisonMinimap_Justify(text)
-	--Center justify if we're on more than one line
-	if ( text:GetNumLines() > 1 ) then
-		text:SetJustifyH("CENTER");
-	else
-		text:SetJustifyH("RIGHT");
-	end
 end
 
 function GarrisonMinimapInvasion_ShowPulse(self)
 	PlaySound(SOUNDKIT.UI_GARRISON_TOAST_INVASION_ALERT);
 	self.AlertText:SetText(GARRISON_LANDING_INVASION_ALERT);
-	GarrisonMinimap_Justify(self.AlertText);
-	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_INVASION, true);
+	self:JustifyText(self.AlertText);
+	self:SetPulseLock(GARRISON_ALERT_CONTEXT_INVASION, true);
 	self.MinimapAlertAnim:Play();
 	self.MinimapLoopPulseAnim:Play();
 end
@@ -944,13 +1023,13 @@ function GarrisonMinimapShipmentCreated_ShowPulse(self, isTroop)
     end
 
 	self.AlertText:SetText(text);
-	GarrisonMinimap_Justify(self.AlertText);
+	self:JustifyText(self.AlertText);
 	self.MinimapAlertAnim:Play();
 end
 
 function GarrisonMinimap_ShowCovenantCallingsNotification(self)
 	self.AlertText:SetText(COVENANT_CALLINGS_AVAILABLE);
-	GarrisonMinimap_Justify(self.AlertText);
+	self:JustifyText(self.AlertText);
 	self.MinimapAlertAnim:Play();
 	self.MinimapLoopPulseAnim:Play();
 

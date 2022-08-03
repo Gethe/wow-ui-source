@@ -7,7 +7,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeSystemSelectionBaseTemplate" inherits="NineSliceCodeTemplate" mixin="EditModeSystemSelectionBaseMixin" frameLevel="100" enableMouse="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
+	<Frame name="EditModeSystemSelectionBaseTemplate" inherits="NineSliceCodeTemplate" mixin="EditModeSystemSelectionBaseMixin" frameStrata="MEDIUM" frameLevel="100" enableMouse="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="highlightTextureKit" value="editmode-actionbar-highlight" type="string"/>
 			<KeyValue key="selectedTextureKit" value="editmode-actionbar-selected" type="string"/>
@@ -467,11 +467,13 @@
 	
 	<Line name="EditModeGridLineTemplate" mixin="EditModeGridLineMixin" virtual="true" />
 
-	<Frame name="EditModeManagerFrame" parent="UIParent" hidden="true" enableMouse="true" movable="true" clampedToScreen="true" registerForDrag="LeftButton"  dontSavePosition="true" frameStrata="DIALOG" mixin="EditModeManagerFrameMixin">
-		<Size x="500" y="350"/>
+	<Frame name="EditModeManagerFrame" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" enableMouse="true" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" frameStrata="DIALOG" mixin="EditModeManagerFrameMixin">
 		<Anchors>
 			<Anchor point="TOP" y="-100"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="500" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontHighlightLarge" text="HUD_EDIT_MODE_TITLE">
@@ -479,17 +481,18 @@
 						<Anchor point="TOP" y="-15"/>
 					</Anchors>
 				</FontString>
-
-				<FontString parentKey="WIP" inherits="GameFontHighlightLarge" text="WORK IN PROGRESS">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-5" y="-5"/>
 				</Anchors>
@@ -501,6 +504,9 @@
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Grid" frameStrata="BACKGROUND" mixin="EditModeGridMixin" ignoreParentScale="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="UIParent" />
 					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" />
@@ -539,6 +545,83 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="5" />
 						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="AccountSettings" inherits="VerticalLayoutFrame" mixin="EditModeAccountSettingsMixin">
+				<Anchors>
+					<Anchor point="TOP" y="-125"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Settings" inherits="ResizeLayoutFrame" hidden="true" >
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="fixedWidth" value="450" type="number"/>
+						</KeyValues>
+						<Frames>
+							<Frame parentKey="TargetAndFocus" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_TARGET_AND_FOCUS" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="StanceBar" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_STANCE_BAR_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.TargetAndFocus" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="PetActionBar" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_PET_ACTION_BAR_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.StanceBar" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="PossessActionBar" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_POSSESS_ACTION_BAR_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.PetActionBar" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame parentKey="Expander" inherits="ResizeLayoutFrame">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="heightPadding" value="10" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Divider" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider">
+									<Size x="330" y="16"/>
+									<Anchors>
+										<Anchor point="TOP"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Label" inherits="GameFontHighlightMedium" text="HUD_EDIT_MODE_EXPAND_OPTIONS">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" y="5" />
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnMouseUp>
+									self:GetParent():ToggleExpandedState();
+							</OnMouseUp>
+						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -631,7 +714,7 @@
 				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Divider" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" setAllPoints="true" hidden="true">
+						<Texture parentKey="Divider" file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" hidden="true">
 							<Size x="330" y="16"/>
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="2" type="number"/>

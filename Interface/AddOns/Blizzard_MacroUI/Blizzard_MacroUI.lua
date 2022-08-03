@@ -292,13 +292,13 @@ end
 
 function MacroNewButton_OnClick(self, button)
 	MacroFrame:SaveMacro();
-	MacroPopupFrame.mode = "new";
+	MacroPopupFrame.mode = IconSelectorPopupFrameModes.New;
 	MacroPopupFrame:Show();
 end
 
 function MacroEditButton_OnClick(self, button)
 	MacroFrame:SaveMacro();
-	MacroPopupFrame.mode = "edit";
+	MacroPopupFrame.mode = IconSelectorPopupFrameModes.Edit;
 	MacroPopupFrame:Show();
 end
 
@@ -307,6 +307,7 @@ function MacroFrameMixin:HideDetails()
 	MacroFrameCharLimitText:Hide();
 	MacroFrameText:Hide();
 	MacroFrameSelectedMacroBackground:Hide();
+	MacroFrameSelectedMacroName:Hide();
 	self.SelectedMacroButton:Hide();
 end
 
@@ -316,6 +317,7 @@ function MacroFrameMixin:ShowDetails()
 	MacroFrameEnterMacroText:Show();
 	MacroFrameText:Show();
 	MacroFrameSelectedMacroBackground:Show();
+	MacroFrameSelectedMacroName:Show();
 	self.SelectedMacroButton:Show();
 end
 

@@ -182,7 +182,7 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_EQUIPMENT_SET"] = {
 	text = CONFIRM_OVERWRITE_EQUIPMENT_SET,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) C_EquipmentSet.SaveEquipmentSet(self.data, self.selectedIcon); GearManagerDialogPopup:Hide(); end,
+	OnAccept = function (self) C_EquipmentSet.SaveEquipmentSet(self.data, self.selectedIcon); GearManagerPopupFrame:Hide(); end,
 	OnCancel = function (self) end,
 	OnHide = function (self) self.data = nil; self.selectedIcon = nil; end,
 	hideOnEscape = 1,
@@ -4588,6 +4588,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 
 	-- Set the text of the dialog
 	local text = _G[dialog:GetName().."Text"];
+	text:Show();
 	if ( (which == "DEATH") or
 	     (which == "CAMP") or
 		 (which == "QUIT") or
@@ -4908,6 +4909,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		alertIcon:Hide();
 	end
 
+	dialog.LoadingSpinner:Hide();
+	dialog.SpinnerAnim:Stop();
+
 	if ( info.StartDelay ) then
 		dialog.startDelay = info.StartDelay(dialog);
 		if (not dialog.startDelay or dialog.startDelay <= 0) then
@@ -4931,6 +4935,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	else
 		AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
 	end
+
+	dialog.DarkOverlay:Hide();
 
 	-- Finally size and show the dialog
 	StaticPopup_SetUpPosition(dialog);

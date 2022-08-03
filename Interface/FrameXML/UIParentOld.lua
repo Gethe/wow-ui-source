@@ -2636,7 +2636,6 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["ChatFrame1"] = {baseY = true, yOffset = 40, justBottomRightAndStance = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
 	["ChatFrame2"] = {baseY = true, yOffset = 40, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, rightLeft = -2*actionBarOffset, rightRight = -actionBarOffset, watchBar = 1, maxLevel = 1, point = "BOTTOMRIGHT", rpoint = "BOTTOMRIGHT", xOffset = -32};
 	["StanceBar"] = {baseY = 0, bottomEither = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
-	["PossessBarFrame"] = {baseY = 0, bottomEither = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["MultiCastActionBarFrame"] = {baseY = 8, bottomEither = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["AuctionHouseMultisellProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["TalkingHeadFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, powerBarWidgets = 1, extraAbilityContainer = 1, classResourceOverlayFrame = 1};
@@ -2647,7 +2646,6 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	-- variable so that other modules can use the most up-to-date value of FOO without having knowledge of the UIPARENT_MANAGED_FRAME_POSITIONS table.
 	["CONTAINER_OFFSET_X"] = {baseX = 0, rightActionBarsX = "variable", isVar = "xAxis"};
 	["CONTAINER_OFFSET_Y"] = {baseY = true, yOffset = 10, bottomEither = actionBarOffset, watchBar = 1, isVar = "yAxis"};
-	["PETACTIONBAR_YPOS"] = {baseY = 89, bottomEither = actionBarOffset + 3, justBottomRightAndStance = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["MULTICASTACTIONBAR_YPOS"] = {baseY = 0, bottomEither = actionBarOffset, watchBar = 1, maxLevel = 1, isVar = "yAxis"};
 	["OBJTRACKER_OFFSET_X"] = {baseX = 12, rightActionBarsX = "variable", isVar = "xAxis"};
 	["BATTLEFIELD_TAB_OFFSET_Y"] = {baseY = 260, bottomRight = actionBarOffset, watchBar = 1, isVar = "yAxis"};
@@ -3306,15 +3304,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( MultiBarRight:IsShown() ) then
 			tinsert(xOffsetFrames, "rightActionBarsX");
 		end
-		if (PetActionBarFrame_IsAboveStance and PetActionBarFrame_IsAboveStance()) then
-			tinsert(yOffsetFrames, "justBottomRightAndStance");
-		end
-		if ( ( PetActionBarFrame and PetActionBarFrame:IsShown() ) or ( StanceBar and StanceBar:IsShown() ) or
-			 ( MultiCastActionBarFrame and MultiCastActionBarFrame:IsShown() ) or ( PossessBarFrame and PossessBarFrame:IsShown() ) or
-			 ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) ) then
-			tinsert(yOffsetFrames, "pet");
-			hasPetBar = 1;
-		end
 	end
 
 	if ( TutorialFrameAlertButton:IsShown() ) then
@@ -3405,16 +3394,10 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	-- HACK 2: if the possession bar is shown then hide the multi-cast bar
 	-- yeah, way too many bars...
 	if ( ( StanceBar and StanceBar:IsShown() ) or
-		 ( PossessBarFrame and PossessBarFrame:IsShown() ) ) then
+		 ( PossessActionBar and PossessActionBar:IsShown() ) ) then
 		HideMultiCastActionBar();
 	elseif ( HasMultiCastActionBar and HasMultiCastActionBar() ) then
 		ShowMultiCastActionBar();
-	end
-
-	-- If petactionbar is already shown, set its point in addition to changing its y target
-	if ( PetActionBarFrame:IsShown() ) then
-		PetActionBar_UpdatePositionValues();
-		PetActionBarFrame:SetPoint("TOPLEFT", MainMenuBar, "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 	end
 
 	-- Set battlefield minimap position

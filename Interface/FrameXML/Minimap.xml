@@ -98,7 +98,7 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
-			<Minimap name="Minimap" mixin="MinimapMixin" enableMouse="true" enableMouseWheel="true">
+			<Minimap name="Minimap" mixin="MinimapMixin" enableMouse="true">
 				<Size x="198" y="198"/>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP" x="10" y="-140"/>
@@ -156,7 +156,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button name="GarrisonLandingPageMinimapButton" mixin="GarrisonLandingPageMinimapButtonMixin" hidden="true">
+							<Button name="ExpansionLandingPageMinimapButton" mixin="ExpansionLandingPageMinimapButtonMixin" hidden="true">
 								<Size x="53" y="53"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="-3" y="-150"/>
@@ -283,6 +283,8 @@
 								</Animations>
 								<Scripts>
 									<OnLoad  method="OnLoad"/>
+									<OnShow method="OnShow"/>
+									<OnHide method="OnHide"/>
 									<OnEvent method="OnEvent"/>
 									<OnClick method="OnClick"/>
 									<OnEnter method="OnEnter"/>

@@ -2170,6 +2170,98 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
+	<!-- HRO TODO: Get design -->
+	<ContainedAlertFrame name="SkillLineSpecsUnlockedAlertFrameTemplate" mixin="SkillLineSpecsUnlockedAlertFrameMixin" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+		<Size x="312" y="89"/>
+		<Animations>
+			<AnimationGroup parentKey="animIn">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="waitAndAnimOut">
+				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							self:GetRegionParent():Hide();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="recipetoast-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="LEFT" x="18" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP" x="31" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="98" y="-34"/>
+						<Anchor point="BOTTOMRIGHT" x="-32" y="17"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
+					<Size x="400" y="171"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="animIn">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+				</Texture>
+				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
+					<Size x="67" y="82"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="3"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="animIn">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+							<Translation offsetX="240" offsetY="0" duration="0.65" order="2"/>
+							<Alpha startDelay="0.25" fromAlpha="1" toAlpha="0" duration="0.45" order="2"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</ContainedAlertFrame>
+
 	<ContainedAlertFrame name="WorldQuestCompleteAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="337" y="78"/>
 		<Anchors>

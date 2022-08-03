@@ -53,6 +53,8 @@ function ProfessionsMixin:OnEvent(event, ...)
 		C_TradeSkillUI.SetProfessionChildSkillLineID(openRecipeResponse.skillLineID);
 		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
 		professionInfo.openRecipeID = openRecipeResponse.recipeID;
+		professionInfo.openSpecTab = openRecipeResponse.openSpecTab;
+		self:Refresh();
 		return professionInfo;
 	end
 
@@ -68,7 +70,8 @@ function ProfessionsMixin:OnEvent(event, ...)
 			professionInfo = ProcessOpenRecipeResponse(openRecipeResponse);
 
 			ShowUIPanel(self);
-			self:SetTab(self.recipesTabID);
+			local forcedOpen = true;
+			self:SetTab(professionInfo.openSpecTab and self.specializationsTabID or self.recipesTabID, forcedOpen);
 		else
 			professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
 		end
@@ -98,8 +101,8 @@ function ProfessionsMixin:OnEvent(event, ...)
 	end
 end
 
-function ProfessionsMixin:SetOpenRecipeResponse(skillLineID, recipeID)
-	self.openRecipeResponse = {skillLineID = skillLineID, recipeID = recipeID};
+function ProfessionsMixin:SetOpenRecipeResponse(skillLineID, recipeID, openSpecTab)
+	self.openRecipeResponse = {skillLineID = skillLineID, recipeID = recipeID, openSpecTab = openSpecTab};
 end
 
 function ProfessionsMixin:SetProfessionInfo(professionInfo)
@@ -193,26 +196,30 @@ local unspentPointsHelpTipInfo =
 	onAcknowledgeCallback = function() ProfessionsFrame.pendingPointsHelptipAcknowledged = true; end,
 };
 
-function ProfessionsMixin:SetTab(tabID)
+function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	local isSpecTab = (tabID == self.specializationsTabID);
 
 	local hasPendingSpecChanges = self.SpecPage:HasAnyConfigChanges();
 	local hasUnlockableTab = self.SpecPage:HasUnlockableTab();
 	local specializationTab = self:GetTabButton(self.specializationsTabID);
-	specializationTab.Glow:SetShown(not isSpecTab);
-	local shouldPlaySpecGlow = specializationTab:IsShown() and (not isSpecTab) and (hasPendingSpecChanges or hasUnlockableTab);
+	local specTabInfo = C_ProfSpecs.GetSpecTabInfo();
+	local specTabEnabled = specTabInfo.enabled;
+	specializationTab.Glow:SetShown(specTabEnabled and not isSpecTab);
+	local shouldPlaySpecGlow = specTabEnabled and (not isSpecTab) and (hasPendingSpecChanges or hasUnlockableTab);
 	specializationTab.GlowAnim:SetPlaying(shouldPlaySpecGlow);
 
 	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
 
+	local tabAlreadyShown = tabID == self:GetTab();
+
 	HelpTip:HideAllSystem(helptipSystemName);
-	if hasUnlockableTab or hasPendingSpecChanges then
+	if (hasUnlockableTab or hasPendingSpecChanges) and specTabEnabled then
 		local shouldShowUnlockHelptip = hasUnlockableTab and not self.unlockSpecHelptipAcknowledged;
 		local shouldShowPendingHelptip = hasPendingSpecChanges and not self.pendingPointsHelptipAcknowledged and not shouldShowUnlockHelptip;
 		if isSpecTab then
-			if shouldShowUnlockHelptip then
+			if shouldShowUnlockHelptip and not forcedOpen and not tabAlreadyShown then
 				self.unlockSpecHelptipAcknowledged = true;
-			elseif shouldShowPendingHelptip then
+			elseif shouldShowPendingHelptip and not forcedOpen and not tabAlreadyShown then
 				self.pendingPointsHelptipAcknowledged = true;
 			end
 		else
@@ -223,12 +230,14 @@ function ProfessionsMixin:SetTab(tabID)
 				helpTipInfo = unspentPointsHelpTipInfo;
 			end
 			if helpTipInfo then
-				HelpTip:Show(UIParent, helpTipInfo, self:GetTabButton(self.specializationsTabID));
+				HelpTip:Show(self, helpTipInfo, specializationTab);
 			end
 		end
 	end
 
-	if tabID == self:GetTab() then
+	local selectedPage = self:GetElementsForTab(tabID)[1];
+	local pageWidth = selectedPage:GetDesiredPageWidth();
+	if tabAlreadyShown and selectedPage:GetDesiredPageWidth() == self:GetWidth() then
 		return;
 	end
 
@@ -239,7 +248,6 @@ function ProfessionsMixin:SetTab(tabID)
 		self:Refresh();
 	end
 	TabSystemOwnerMixin.SetTab(self, tabID);
-	local selectedPage = self:GetElementsForTab(tabID)[1];
 	self:SetWidth(selectedPage:GetDesiredPageWidth());
 end
 
@@ -250,7 +258,6 @@ end
 function ProfessionsMixin:OnHide()
 	C_TradeSkillUI.CloseTradeSkill();
 	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
-	HelpTip:HideAllSystem(helptipSystemName);
 	
 	C_Garrison.CloseGarrisonTradeskillNPC();
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_CLOSE);

@@ -46,6 +46,8 @@
 			<KeyValue key="numButtons" value="12" type="number"/>
 			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
 			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar2" type="global"/>
 		</KeyValues>
 		<Attributes>
@@ -72,6 +74,8 @@
 			<KeyValue key="numButtons" value="12" type="number"/>
 			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
 			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar3" type="global"/>
 		</KeyValues>
 		<Attributes>
@@ -98,21 +102,11 @@
 			<KeyValue key="numButtons" value="12" type="number"/>
 			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
 			<KeyValue key="addButtonsToTop" value="false" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.RightBar1" type="global"/>
 			<KeyValue key="layoutIndex" value="2" type="number"/>
 		</KeyValues>
-		<Animations>
-			<AnimationGroup parentKey="slideOut">
-				<Translation offsetX="200" offsetY="0" duration="0.7" order="1"/>
-				<Scripts>
-					<OnFinished>
-						if not MainMenuBar:IsShown() then
-						MultiBarLeft:Hide();
-						end
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="4"/>
 		</Attributes>
@@ -137,21 +131,11 @@
 			<KeyValue key="numButtons" value="12" type="number"/>
 			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
 			<KeyValue key="addButtonsToTop" value="false" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.RightBar2" type="global"/>
 			<KeyValue key="layoutIndex" value="1" type="number"/>
 		</KeyValues>
-		<Animations>
-			<AnimationGroup parentKey="slideOut">
-				<Translation offsetX="200" offsetY="0" duration="0.7" order="1"/>
-				<Scripts>
-					<OnFinished>
-						if not MainMenuBar:IsShown() then
-							MultiBarRight:Hide();
-						end
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="3"/>
 		</Attributes>

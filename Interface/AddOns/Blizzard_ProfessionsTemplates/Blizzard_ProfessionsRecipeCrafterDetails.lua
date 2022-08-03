@@ -66,7 +66,7 @@ end
 ProfessionsRecipeCrafterDetailsMixin = {};
 
 function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
-	self.statLinePool = CreateFramePool("FRAME", self, "ProfessionsCrafterDetailsStatLineTemplate");
+	self.statLinePool = CreateFramePool("FRAME", self.StatLines, "ProfessionsCrafterDetailsStatLineTemplate");
 
 	self.Label:SetText(PROFESSIONS_CRAFTING_DETAILS_HEADER);
 	self.FinishingReagentSlotContainer.Label:SetText(PROFESSIONS_CRAFTING_FINISHING_HEADER);
@@ -232,27 +232,26 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 	self.QualityMeter.Center.Fill.Flare2:SetAlpha(0);
 
 	self.QualityMeter:SetShown(supportsQualities);
-	self.DifficultyStatLine:SetShown(supportsQualities);
-	self.SkillStatLine:SetShown(supportsQualities);
+	self.StatLines.DifficultyStatLine:SetShown(supportsQualities);
+	self.StatLines.SkillStatLine:SetShown(supportsQualities);
 	if supportsQualities then
 		self.QualityMeter:SetQuality(operationInfo.quality, self.recipeInfo.maxQuality);
-		self.DifficultyStatLine:SetValue(operationInfo.baseDifficulty, operationInfo.bonusDifficulty);
-		self.SkillStatLine:SetValue(operationInfo.baseSkill, operationInfo.bonusSkill);
+		self.StatLines.DifficultyStatLine:SetValue(operationInfo.baseDifficulty, operationInfo.bonusDifficulty);
+		self.StatLines.SkillStatLine:SetValue(operationInfo.baseSkill, operationInfo.bonusSkill);
 	end
 
-	local nextBonusStatParent = supportsQualities and self.SkillStatLine or self.Line;
-	local nextBonusStatYOfs = supportsQualities and 0 or -25;
+	local nextStatLineIndex = 3;
 	for _, bonusStat in ipairs(operationInfo.bonusStats) do
 		local statLine = self.statLinePool:Acquire();
 		statLine:InitBonusStat(bonusStat.bonusStatName, bonusStat.ratingDescription, bonusStat.bonusStatValue, bonusStat.ratingPct, bonusStat.bonusRatingPct);
-
-		statLine:SetPoint("TOPLEFT", nextBonusStatParent, "BOTTOMLEFT", 0, nextBonusStatYOfs);
-		statLine:SetPoint("TOPRIGHT", nextBonusStatParent, "BOTTOMRIGHT", 0, nextBonusStatYOfs);
+		statLine.layoutIndex = nextStatLineIndex;
 		statLine:Show();
 
-		nextBonusStatParent = statLine;
-		nextBonusStatYOfs = 0;
+		nextStatLineIndex = nextStatLineIndex + 1;
 	end
+
+	self.StatLines:Layout();
+	self:Layout();
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:SetOutputItemName(itemName)
@@ -304,12 +303,16 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 	local centerWidth = self.Center:GetWidth();
 	self.Center.Fill:SetShown(hasPartial);
 	if hasPartial then
-		self.Center.Fill:SetWidth((math.fmod(quality, 1) * centerWidth) - 5);
+		self.Center.Fill:SetWidth((math.fmod(quality, 1) * centerWidth) - 3);
 		self.Center.Fill.Background:SetColorTexture(GetColorRGBA(self.qualityInteger));
 	end
 
 	self.Border.Marker:ClearAllPoints();
-	self.Border.Marker:SetPoint("CENTER", self.Center.Fill, "LEFT", math.floor(centerWidth * self.partialQuality) - 5, 0);
+	if hasPartial then
+		self.Border.Marker:SetPoint("CENTER", self.Center.Fill, "RIGHT", 0, 0);
+	else
+		self.Border.Marker:SetPoint("CENTER", self.Center, "LEFT", 3, 2);
+	end
 end
 
 function ProfessionsQualityMeterMixin:Reset()

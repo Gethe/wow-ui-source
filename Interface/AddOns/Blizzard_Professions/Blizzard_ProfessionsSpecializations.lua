@@ -303,10 +303,10 @@ local PathLayoutInfo =
 		[2] =
 		{
 			[1] = { rotationBetweenChildren = 90, distanceToChild = 1300 },
-			[2] = { rotationBetweenChildren = 90, distanceToChild = 1300 },
-			[3] = { rotationBetweenChildren = 90, distanceToChild = 1300 },
+			[2] = { rotationBetweenChildren = 80, distanceToChild = 1300 },
+			[3] = { rotationBetweenChildren = 80, distanceToChild = 1300 },
 			[4] = { rotationBetweenChildren = 90, distanceToChild = 1300 },
-			[5] = { rotationBetweenChildren = 90, distanceToChild = 1300 },
+			[5] = { rotationBetweenChildren = 100, distanceToChild = 1300 },
 		},
 		[3] =
 		{
@@ -314,6 +314,7 @@ local PathLayoutInfo =
 			[2] = { rotationBetweenChildren = 70, distanceToChild = 1300 },
 			[3] = { rotationBetweenChildren = 70, distanceToChild = 1300 },
 			[4] = { rotationBetweenChildren = 80, distanceToChild = 1300 },
+			[5] = { rotationBetweenChildren = 70, distanceToChild = 1300 },
 		},
 		[4] =
 		{
@@ -333,36 +334,37 @@ local PathLayoutInfo =
 		[1] =
 		{
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1000 },
-			[2] = { rotationBetweenChildren = 90, distanceToChild = 1000 },
-			[3] = { rotationBetweenChildren = 40, distanceToChild = 1000 },
-			[4] = { rotationBetweenChildren = 40, distanceToChild = 1000 },
+			[2] = { rotationBetweenChildren = 80, distanceToChild = 1000 },
+			[3] = { rotationBetweenChildren = 60, distanceToChild = 1000 },
+			[4] = { rotationBetweenChildren = 50, distanceToChild = 1000 },
 			[5] = { rotationBetweenChildren = 40, distanceToChild = 1000 },
 		},
 		[2] =
 		{
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1000 },
-			[2] = { rotationBetweenChildren = 90, distanceToChild = 1000 },
-			[3] = { rotationBetweenChildren = 40, distanceToChild = 1000 },
-			[4] = { rotationBetweenChildren = 40, distanceToChild = 1000 },
+			[2] = { rotationBetweenChildren = 80, distanceToChild = 1000 },
+			[3] = { rotationBetweenChildren = 60, distanceToChild = 1000 },
+			[4] = { rotationBetweenChildren = 50, distanceToChild = 1000 },
 			[5] = { rotationBetweenChildren = 40, distanceToChild = 1000 },
 		},
 		[3] =
 		{
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1000 },
-			[2] = { rotationBetweenChildren = 90, distanceToChild = 1000 },
-			[3] = { rotationBetweenChildren = 40, distanceToChild = 1000 },
-			[4] = { rotationBetweenChildren = 40, distanceToChild = 1000 },
+			[2] = { rotationBetweenChildren = 80, distanceToChild = 1000 },
+			[3] = { rotationBetweenChildren = 50, distanceToChild = 1000 },
+			[4] = { rotationBetweenChildren = 50, distanceToChild = 1000 },
+			[5] = { rotationBetweenChildren = 30, distanceToChild = 1300 },
 		},
 		[4] =
 		{
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1000 },
-			[2] = { rotationBetweenChildren = 90, distanceToChild = 1000 },
+			[2] = { rotationBetweenChildren = 80, distanceToChild = 1000 },
 			[3] = { rotationBetweenChildren = 30, distanceToChild = 1000 },
 		},
 		[5] =
 		{
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1000 },
-			[2] = { rotationBetweenChildren = 90, distanceToChild = 1000 },
+			[2] = { rotationBetweenChildren = 80, distanceToChild = 1000 },
 		},
 		--forceNumChildren = 3,
 	},
@@ -509,8 +511,14 @@ end
 
 function ProfessionsSpecFrameMixin:Refresh(professionInfo)
 	if not Professions.InLocalCraftingMode() 
-	   or not C_ProfSpecs.SkillLineHasSpecialization(professionInfo.professionID)
-	   or (self.professionInfo ~= nil and self.professionInfo.professionID == professionInfo.professionID) then
+	   or not C_ProfSpecs.SkillLineHasSpecialization(professionInfo.professionID) then
+		self:SetConfigID(nil);
+		self.tabsPool:ReleaseAll();
+		self.professionInfo = nil;
+		return;
+	end
+
+	if self.professionInfo ~= nil and self.professionInfo.professionID == professionInfo.professionID then
 		return;
 	end
 

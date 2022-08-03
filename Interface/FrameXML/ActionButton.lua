@@ -449,7 +449,7 @@ end
 function SharedActionButton_RefreshSpellHighlight(button, shown)
 	if ( shown ) then
 		button.SpellHighlightTexture:Show();
-		button.SpellHighlightAnim:Play();
+	button.SpellHighlightAnim:Play();
 	else
 		button.SpellHighlightTexture:Hide();
 		button.SpellHighlightAnim:Stop();
@@ -462,22 +462,8 @@ function ActionBarActionButtonMixin:UpdateSpellHighlightMark()
 	end
 end
 
-function ActionBarActionButtonMixin:GetShowGrid()
-	local showGridAttribute = self:GetAttribute("showgrid");
-	return showGridAttribute and showGridAttribute > 0 or false;
-end
-
-function ActionBarActionButtonMixin:SetShowGrid(showGrid, reason)
-	assert(reason);
-
-	if ( issecure() and self:GetShowGrid() ~= showGrid ) then
-		local showGridAttribute = self:GetAttribute("showgrid");
-		if ( showGrid ) then
-			self:SetAttribute("showgrid", bit.bor(showGridAttribute or 1, reason));
-		else
-			self:SetAttribute("showgrid", bit.band(showGridAttribute or 0, bit.bnot(reason)));
-		end
-	end
+function ActionBarActionButtonMixin:HasAction()
+    return HasAction(self.action);
 end
 
 function ActionBarActionButtonMixin:UpdateState()
@@ -1135,8 +1121,11 @@ end
 
 function ActionBarActionButtonMixin:OnDragStart()
 	if ( not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION") ) then
+		-- If an IconSelectorPopupFrame is active, we do not want to remove the action from the bar, just copy it to the mouse.
+		local ignoreActionRemoval = IsAnyIconSelectorPopupFrameShown();
+		PickupAction(self.action, ignoreActionRemoval);
+
 		SpellFlyout:Hide();
-		PickupAction(self.action);
 		self:UpdateState();
 		self:UpdateFlash();
 	end
@@ -1170,6 +1159,24 @@ BaseActionButtonMixin = {}
 
 function BaseActionButtonMixin:BaseActionButtonMixin_OnLoad()
 	self:UpdateButtonArt(self.isLastActionButton);
+end
+
+function BaseActionButtonMixin:GetShowGrid()
+	local showGridAttribute = self:GetAttribute("showgrid");
+	return showGridAttribute and showGridAttribute > 0 or false;
+end
+
+function BaseActionButtonMixin:SetShowGrid(showGrid, reason)
+	assert(reason);
+
+	if ( issecure() and self:GetShowGrid() ~= showGrid ) then
+		local showGridAttribute = self:GetAttribute("showgrid");
+		if ( showGrid ) then
+			self:SetAttribute("showgrid", bit.bor(showGridAttribute or 0, reason));
+		else
+			self:SetAttribute("showgrid", bit.band(showGridAttribute or 0, bit.bnot(reason)));
+		end
+	end
 end
 
 function BaseActionButtonMixin:UpdateButtonArt(hideDivider)

@@ -92,7 +92,7 @@ function EditModeManagerFrameMixin:OnLoad()
 			dropDownButtonInfo.notCheckable = true;
 		else
 			local newButton = self.layoutEntryPool:Acquire();
-			newButton:Init(dropDownButtonInfo.value, dropDownButtonInfo.data, self.editModeInfo.activeLayout == dropDownButtonInfo.value, selectLayout);
+			newButton:Init(dropDownButtonInfo.value, dropDownButtonInfo.data, self.layoutInfo.activeLayout == dropDownButtonInfo.value, selectLayout);
 			dropDownButtonInfo.customFrame = newButton;
 		end
 	end
@@ -129,7 +129,7 @@ function EditModeManagerFrameMixin:OnLoad()
 	self.SaveChangesButton:SetOnClickHandler(GenerateClosure(self.SaveLayoutChanges, self));
 	self.RevertAllChangesButton:SetOnClickHandler(GenerateClosure(self.RevertAllChanges, self));
 
-	self:RegisterEvent("EDIT_MODE_DATA_UPDATED");
+	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
@@ -154,6 +154,7 @@ function EditModeManagerFrameMixin:EnterEditMode()
 	self:ClearActiveChangesFlags();
 	self:UpdateDropdownOptions();
 	self:ShowSystemSelections();
+	self.AccountSettings:OnEditModeEnter();
 end
 
 function EditModeManagerFrameMixin:HideSystemSelections()
@@ -166,6 +167,7 @@ function EditModeManagerFrameMixin:ExitEditMode()
 	self.editModeActive = false;
 	self:RevertAllChanges();
 	self:HideSystemSelections();
+	self.AccountSettings:OnEditModeExit();
 end
 
 function EditModeManagerFrameMixin:OnShow()
@@ -176,6 +178,7 @@ function EditModeManagerFrameMixin:OnShow()
 	end
 
 	self:ClearEditModeLockState();
+	self:Layout();
 end
 
 function EditModeManagerFrameMixin:OnHide()
@@ -207,13 +210,14 @@ function EditModeManagerFrameMixin:IsEditModeLocked()
 end
 
 function EditModeManagerFrameMixin:OnEvent(event, ...)
-	if event == "EDIT_MODE_DATA_UPDATED" then
-		local editModeInfo, reconcileLayouts = ...;
-		self:UpdateEditModeInfo(editModeInfo, reconcileLayouts);
+	if event == "EDIT_MODE_LAYOUTS_UPDATED" then
+		local layoutInfo, reconcileLayouts = ...;
+		self:UpdateLayoutInfo(layoutInfo, reconcileLayouts);
+		self:InitializeAccountSettings();
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
-		local editModeInfo = C_EditMode.GetEditModeInfo();
-		local activeLayoutChanged = (editModeInfo.activeLayout ~= self.editModeInfo.activeLayout);
-		self:UpdateEditModeInfo(editModeInfo);
+		local layoutInfo = C_EditMode.GetLayouts();
+		local activeLayoutChanged = (layoutInfo.activeLayout ~= self.layoutInfo.activeLayout);
+		self:UpdateLayoutInfo(layoutInfo);
 		if activeLayoutChanged then
 			self:NotifyChatOfLayoutChange();
 		end
@@ -223,7 +227,7 @@ function EditModeManagerFrameMixin:OnEvent(event, ...)
 end
 
 function EditModeManagerFrameMixin:IsInitialized()
-	return self.editModeInfo ~= nil;
+	return self.layoutInfo ~= nil;
 end
 
 function EditModeManagerFrameMixin:RegisterSystemFrame(systemFrame)
@@ -308,26 +312,18 @@ local function UpdateSystemAnchorInfo(systemInfo, systemFrame)
 	return false;
 end
 
-local function IsRightAnchoredActionBar(systemFrame)
-	return (systemFrame == MultiBarRight) or (systemFrame == MultiBarLeft);
-end
-
-local function IsBottomAnchoredActionBar(systemFrame)
-	return (systemFrame == MultiBarBottomRight) or (systemFrame == MultiBarBottomLeft) or (systemFrame == MainMenuBar) or (systemFrame == StanceBar);
-end
-
 function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame)
 	local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
 	if systemInfo then
 		if UpdateSystemAnchorInfo(systemInfo, systemFrame) then
 			systemFrame:SetHasActiveChanges(true);
 
-			if IsRightAnchoredActionBar(systemFrame) then
+			if EditModeUtil:IsRightAnchoredActionBar(systemFrame) then
 				self:UpdateRightAnchoredActionBarWidth();
 				self:UpdateRightAnchoredActionBarScales();
 			end
 
-			if IsBottomAnchoredActionBar(systemFrame) then
+			if EditModeUtil:IsBottomAnchoredActionBar(systemFrame) then
 				self:UpdateBottomAnchoredActionBarHeight();
 			end
 
@@ -359,8 +355,7 @@ function EditModeManagerFrameMixin:RevertSystemChanges(systemFrame)
 			if systemInfo.system == systemFrame.system and systemInfo.systemIndex == systemFrame.systemIndex then
 				activeLayoutInfo.systems[index] = systemFrame.savedSystemInfo;
 
-				local savedData = true;
-				systemFrame:UpdateSystem(systemFrame.savedSystemInfo, savedData);
+				systemFrame:UpdateSystem(systemFrame.savedSystemInfo);
 				self:CheckForSystemActiveChanges();
 				return;
 			end
@@ -433,21 +428,33 @@ end
 function EditModeManagerFrameMixin:UpdateBottomAnchoredActionBarHeight(includeMainMenuBar)
 	self.bottomAnchoredActionBarHeight =  EditModeUtil:GetBottomActionBarHeight(includeMainMenuBar);
 
-	-- Update stance bar anchoring since if other bottom bars changed we may wanna change the stance bar too.
-	local point, relativeTo, relativePoint, offsetX, offsetY = StanceBar:GetPoint(1);
-	if IsBottomAnchoredActionBar(relativeTo) then
-		local topMostBottomAnchoredBar = nil;
-		if MultiBar2_IsVisible() and MultiBarBottomRight:IsCurrentlyBottomAnchored() then
-			topMostBottomAnchoredBar = MultiBarBottomRight;
-		elseif MultiBar1_IsVisible() and MultiBarBottomLeft:IsCurrentlyBottomAnchored() then
-			topMostBottomAnchoredBar = MultiBarBottomLeft;
-		elseif MainMenuBar:IsCurrentlyBottomAnchored() then
-			topMostBottomAnchoredBar = MainMenuBar;
-		end
+	-- Update bottom anchoring bars which show on top of other bars since if other bottom bars changed we may wanna change those bars too
+	local bottomAnchoredActionBarsToUpdate = { StanceBar, PetActionBar, PossessActionBar};
 
-		if topMostBottomAnchoredBar and relativeTo ~= topMostBottomAnchoredBar then
-			StanceBar:SetPoint("BOTTOMLEFT", topMostBottomAnchoredBar, "TOPLEFT", 0, 5);
-			EditModeManagerFrame:OnSystemPositionChange(StanceBar);
+	local topMostBottomAnchoredBar = nil;
+	if MultiBar2_IsVisible() and MultiBarBottomRight:IsCurrentlyBottomAnchored() then
+		topMostBottomAnchoredBar = MultiBarBottomRight;
+	elseif MultiBar1_IsVisible() and MultiBarBottomLeft:IsCurrentlyBottomAnchored() then
+		topMostBottomAnchoredBar = MultiBarBottomLeft;
+	elseif MainMenuBar:IsCurrentlyBottomAnchored() then
+		topMostBottomAnchoredBar = MainMenuBar;
+	end
+
+	for index, bar in ipairs(bottomAnchoredActionBarsToUpdate) do
+		if (bar and bar:IsShown()) then
+			-- Only update bar's anchor if it was already bottom anchored
+			local point, relativeTo, relativePoint, offsetX, offsetY = bar:GetPoint(1);
+			if EditModeUtil:IsBottomAnchoredActionBar(relativeTo) then
+				if topMostBottomAnchoredBar and relativeTo ~= topMostBottomAnchoredBar then
+					bar:SetPoint("BOTTOMLEFT", topMostBottomAnchoredBar, "TOPLEFT", 0, 5);
+					EditModeManagerFrame:OnSystemPositionChange(bar);
+				end
+
+				if bar:IsCurrentlyBottomAnchored() then
+					-- This bar is now the new topmost bar
+					topMostBottomAnchoredBar = bar;
+				end
+			end
 		end
 	end
 
@@ -597,7 +604,7 @@ end
 -- This method handles adding any missing systems/settings and removing any existing systems/settings from the saved layout data
 function EditModeManagerFrameMixin:ReconcileLayoutsWithModern()
 	local somethingChanged = false;
-	for _, layoutInfo in ipairs(self.editModeInfo.layouts) do
+	for _, layoutInfo in ipairs(self.layoutInfo.layouts) do
 		if self:ReconcileWithModern(layoutInfo) then
 			somethingChanged = true;
 		end
@@ -605,20 +612,63 @@ function EditModeManagerFrameMixin:ReconcileLayoutsWithModern()
 
 	if somethingChanged then
 		-- Something changed, so we need to send the updated edit mode info up to be saved on logout
-		C_EditMode.SaveEditModeInfo(self.editModeInfo);
+		C_EditMode.SaveLayouts(self.layoutInfo);
 	end
 end
 
-function EditModeManagerFrameMixin:UpdateEditModeInfo(editModeInfo, reconcileLayouts)
-	self.editModeInfo = editModeInfo;
+function EditModeManagerFrameMixin:UpdateAccountSettingMap()
+	self.accountSettingMap = GetSettingMapFromSettings(self.accountSettings);
+end
+
+function EditModeManagerFrameMixin:GetAccountSettingValue(setting)
+	return self.accountSettingMap[setting].value;
+end
+
+function EditModeManagerFrameMixin:GetAccountSettingValueBool(setting)
+	return self:GetAccountSettingValue(setting) == 1;
+end
+
+function EditModeManagerFrameMixin:InitializeAccountSettings()
+	self.accountSettings = C_EditMode.GetAccountSettings();
+	self:UpdateAccountSettingMap();
+
+	self:SetGridShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowGrid));
+	self:SetGridSpacing(self:GetAccountSettingValue(Enum.EditModeAccountSetting.GridSpacing));
+	self.AccountSettings:SetExpandedState(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.SettingsExpanded));
+	self.AccountSettings:SetTargetAndFocusShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowTargetAndFocus));
+	self.AccountSettings:SetActionBarShown(StanceBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowStanceBar));
+	self.AccountSettings:SetActionBarShown(PetActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetActionBar));
+	self.AccountSettings:SetActionBarShown(PossessActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPossessActionBar));
+end
+
+function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
+	if type(newValue) == "boolean" then
+		newValue = newValue and 1 or 0;
+	end
+
+	for _, settingInfo in pairs(self.accountSettings) do
+		if settingInfo.setting == changedSetting then
+			if settingInfo.value ~= newValue then
+				settingInfo.value = newValue;
+				self:UpdateAccountSettingMap();
+				C_EditMode.SetAccountSetting(changedSetting, newValue);
+			end
+			return;
+		end
+	end
+end
+
+
+function EditModeManagerFrameMixin:UpdateLayoutInfo(layoutInfo, reconcileLayouts)
+	self.layoutInfo = layoutInfo;
 
 	if reconcileLayouts then
 		self:ReconcileLayoutsWithModern();
 	end
 
-	local savedLayouts = self.editModeInfo.layouts;
-	self.editModeInfo.layouts = EditModePresetLayoutManager:GetCopyOfPresetLayouts();
-	tAppendAll(self.editModeInfo.layouts, savedLayouts);
+	local savedLayouts = self.layoutInfo.layouts;
+	self.layoutInfo.layouts = EditModePresetLayoutManager:GetCopyOfPresetLayouts();
+	tAppendAll(self.layoutInfo.layouts, savedLayouts);
 
 	self:UpdateSystems();
 	self:ClearActiveChangesFlags();
@@ -626,9 +676,6 @@ function EditModeManagerFrameMixin:UpdateEditModeInfo(editModeInfo, reconcileLay
 	if self:IsShown() then
 		self:UpdateDropdownOptions();
 	end
-
-	self:SetGridShown(editModeInfo.gridShown);
-	self:SetGridSpacing(editModeInfo.gridSpacing);
 end
 
 function EditModeManagerFrameMixin:SetGridShown(gridShown, isUserInput)
@@ -636,8 +683,7 @@ function EditModeManagerFrameMixin:SetGridShown(gridShown, isUserInput)
 	self.GridSpacingSlider:SetEnabled(gridShown);
 
 	if isUserInput then
-		self.editModeInfo.gridShown = gridShown;
-		C_EditMode.SetGridShown(gridShown);
+		self:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowGrid, gridShown);
 	else
 		self.ShowGridCheckButton:SetControlChecked(gridShown);
 	end
@@ -648,8 +694,7 @@ function EditModeManagerFrameMixin:SetGridSpacing(gridSpacing, isUserInput)
 	self.GridSpacingSlider:SetupSlider(gridSpacing);
 
 	if isUserInput then
-		self.editModeInfo.gridSpacing = gridSpacing;
-		C_EditMode.SetGridSpacing(gridSpacing);
+		self:OnAccountSettingChanged(Enum.EditModeAccountSetting.GridSpacing, gridSpacing);
 	end
 end
 
@@ -672,7 +717,7 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 	local options = {};
 
 	local hasCharacterLayouts = false;
-	for index, layoutInfo in ipairs(self.editModeInfo.layouts) do
+	for index, layoutInfo in ipairs(self.layoutInfo.layouts) do
 		local dropdownText = (layoutInfo.layoutType == Enum.EditModeLayoutType.Preset) and HUD_EDIT_MODE_PRESET_LAYOUT:format(layoutInfo.layoutName) or layoutInfo.layoutName;
 
 		table.insert(options, { value = index, selectedText = layoutInfo.layoutName, data = layoutInfo });
@@ -718,15 +763,14 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 	table.insert(options, { value = "copyToClipboard", text = HUD_EDIT_MODE_COPY_TO_CLIPBOARD, level = 3 });
 	table.insert(options, { value = "postInChat", text = HUD_EDIT_MODE_POST_IN_CHAT, level = 3 });
 
-	self.LayoutDropdown:SetOptions(options, self.editModeInfo.activeLayout);
+	self.LayoutDropdown:SetOptions(options, self.layoutInfo.activeLayout);
 end
 
 function EditModeManagerFrameMixin:UpdateSystems()
 	for _, systemFrame in ipairs(self.registeredSystemFrames) do
 		local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
 		if systemInfo then
-			local savedData = true;
-			systemFrame:UpdateSystem(systemInfo, savedData);
+			systemFrame:UpdateSystem(systemInfo);
 		end
 	end
 
@@ -736,7 +780,7 @@ function EditModeManagerFrameMixin:UpdateSystems()
 end
 
 function EditModeManagerFrameMixin:GetActiveLayoutInfo()
-	return self.editModeInfo and self.editModeInfo.layouts[self.editModeInfo.activeLayout];
+	return self.layoutInfo and self.layoutInfo.layouts[self.layoutInfo.activeLayout];
 end
 
 function EditModeManagerFrameMixin:GetActiveLayoutSystemInfo(system, systemIndex)
@@ -756,7 +800,7 @@ function EditModeManagerFrameMixin:IsActiveLayoutPreset()
 end
 
 function EditModeManagerFrameMixin:SelectLayout(layoutIndex)
-	if layoutIndex ~= self.editModeInfo.activeLayout then
+	if layoutIndex ~= self.layoutInfo.activeLayout then
 		self:ClearSelectedSystem();
 		C_EditMode.SetActiveLayout(layoutIndex);
 		self:NotifyChatOfLayoutChange();
@@ -777,16 +821,16 @@ function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layo
 			newLayoutIndex = Enum.EditModePresetLayoutsMeta.NumValues + 1;
 		end
 
-		table.insert(self.editModeInfo.layouts, newLayoutIndex, newLayoutInfo);
+		table.insert(self.layoutInfo.layouts, newLayoutIndex, newLayoutInfo);
 		self:SaveLayouts();
 		C_EditMode.OnLayoutAdded(newLayoutIndex);
 	end
 end
 
 function EditModeManagerFrameMixin:DeleteLayout(layoutIndex)
-	local deleteLayoutInfo = self.editModeInfo.layouts[layoutIndex];
+	local deleteLayoutInfo = self.layoutInfo.layouts[layoutIndex];
 	if deleteLayoutInfo and deleteLayoutInfo.layoutType ~= Enum.EditModeLayoutType.Preset then
-		table.remove(self.editModeInfo.layouts, layoutIndex);
+		table.remove(self.layoutInfo.layouts, layoutIndex);
 		self:SaveLayouts();
 		C_EditMode.OnLayoutDeleted(layoutIndex);
 	end
@@ -794,7 +838,7 @@ end
 
 function EditModeManagerFrameMixin:RenameLayout(layoutIndex, layoutName)
 	if layoutName ~= "" then
-		local renameLayoutInfo = self.editModeInfo.layouts[layoutIndex];
+		local renameLayoutInfo = self.layoutInfo.layouts[layoutIndex];
 		if renameLayoutInfo and renameLayoutInfo.layoutType ~= Enum.EditModeLayoutType.Preset then
 			renameLayoutInfo.layoutName = layoutName;
 			self:SaveLayouts();
@@ -831,7 +875,7 @@ function EditModeManagerFrameMixin:ImportLayout(newLayoutInfo, layoutType, layou
 end
 
 function EditModeManagerFrameMixin:SaveLayouts()
-	C_EditMode.SaveEditModeInfo(self.editModeInfo);
+	C_EditMode.SaveLayouts(self.layoutInfo);
 	self:ClearActiveChangesFlags();
 end
 
@@ -845,7 +889,7 @@ end
 
 function EditModeManagerFrameMixin:RevertAllChanges()
 	self:ClearSelectedSystem();
-	self:UpdateEditModeInfo(C_EditMode.GetEditModeInfo());
+	self:UpdateLayoutInfo(C_EditMode.GetLayouts());
 	UIParent_ManageFramePositions();
 end
 
@@ -1447,7 +1491,6 @@ function EditModeSystemMixin:OnSystemLoad()
 	self:SetupSettingsDialogAnchor();
 
 	self.settingDisplayInfoMap = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(self.system);
-	self.settingMap = {};
 end
 
 -- Override in inheriting mixins as needed
@@ -1467,35 +1510,58 @@ function EditModeSystemMixin:ConvertSettingDisplayValueToRawValue(setting, value
 	end
 end
 
-function EditModeSystemMixin:UpdateSystem(systemInfo, savedData)
-	if savedData then
-		self.savedSystemInfo = CopyTable(systemInfo);
-		self:SetHasActiveChanges(false);
-	else
-		self:SetHasActiveChanges(true);
+function EditModeSystemMixin:UpdateSettingMap(updateDirtySettings)
+	local oldSettingsMap = self.settingMap;
+	self.settingMap = GetSettingMapFromSettings(self.systemInfo.settings, self.settingDisplayInfoMap);
+
+	if updateDirtySettings then
+		self:UpdateDirtySettings(oldSettingsMap)
 	end
+end
 
-	self.settingMap = GetSettingMapFromSettings(systemInfo.settings, self.settingDisplayInfoMap);
+function EditModeSystemMixin:UpdateDirtySettings(oldSettingsMap)
+	-- Mark changed settings as dirty
+	self.dirtySettings = {};
+	for setting, settingInfo in pairs(self.settingMap) do
+		if not oldSettingsMap or oldSettingsMap[setting].value ~= settingInfo.value then
+			self.dirtySettings[setting] = true;
+		end
+	end
+end
 
-	self:ClearAllPoints();
+function EditModeSystemMixin:IsSettingDirty(setting)
+	return self.dirtySettings[setting];
+end
+
+function EditModeSystemMixin:ClearDirtySetting(setting)
+	self.dirtySettings[setting] = nil;
+end
+
+function EditModeSystemMixin:UpdateSystem(systemInfo)
+	self.savedSystemInfo = CopyTable(systemInfo);
+	self:SetHasActiveChanges(false);
 
 	self.systemInfo = systemInfo;
+
+	local updateDirtySettings = true;
+	self:UpdateSettingMap(updateDirtySettings);
+
+	self:ClearAllPoints();
 	self:SetPoint(self.systemInfo.anchorInfo.point, self.systemInfo.anchorInfo.relativeTo, self.systemInfo.anchorInfo.relativePoint, self.systemInfo.anchorInfo.offsetX, self.systemInfo.anchorInfo.offsetY);
 
 	EditModeSystemSettingsDialog:UpdateDialog(self);
 
-	-- Update all settings
-	-- Skip map update since we already did that
-	local skipSettingMapUpdate = true;
+	local entireSystemUpdate = true;
 	for _, settingInfo in ipairs(systemInfo.settings) do
-		self:UpdateSystemSetting(settingInfo.setting, skipSettingMapUpdate);
+		self:UpdateSystemSetting(settingInfo.setting, entireSystemUpdate);
 	end
 end
 
-function EditModeSystemMixin:UpdateSystemSetting(setting, skipSettingMapUpdate)
-	if not skipSettingMapUpdate then
+function EditModeSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	if not entireSystemUpdate then
+		self.dirtySettings[setting] = true;
 		self:SetHasActiveChanges(true);
-		self.settingMap = GetSettingMapFromSettings(self.systemInfo.settings, self.settingDisplayInfoMap);
+		self:UpdateSettingMap();
 		EditModeSystemSettingsDialog:UpdateDialog(self);
 	end
 end
@@ -1601,6 +1667,18 @@ end
 
 EditModeActionBarSystemMixin = {};
 
+function EditModeActionBarSystemMixin:UpdateSystem(systemInfo)
+	EditModeSystemMixin.UpdateSystem(self, systemInfo);
+	self:RefreshGridLayout();
+	self:RefreshButtonArt();
+
+	if EditModeUtil:IsBottomAnchoredActionBar(self) then
+		EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
+	elseif EditModeUtil:IsRightAnchoredActionBar(self) then
+		EditModeManagerFrame:UpdateRightActionBarsLayout();
+	end
+end
+
 function EditModeActionBarSystemMixin:OnDragStart()
 	EditModeSystemMixin.OnDragStart(self);
 
@@ -1664,7 +1742,7 @@ function EditModeActionBarSystemMixin:IsCurrentlyBottomAnchored()
 		return false;
 	end
 
-	if (self == StanceBar) then
+	if (self == StanceBar or self == PetActionBar or self == PossessActionBar) then
 		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(1);
 		return relativeTo and relativeTo.IsCurrentlyBottomAnchored and relativeTo:IsCurrentlyBottomAnchored();
 	end
@@ -1694,6 +1772,17 @@ function EditModeActionBarSystemMixin:GetBottomAnchoredHeight()
 	return 0;
 end
 
+function EditModeActionBarSystemMixin:MarkGridLayoutDirty()
+	self.gridLayoutDirty = true;
+end
+
+function EditModeActionBarSystemMixin:RefreshGridLayout()
+	if self.gridLayoutDirty then
+		self:UpdateGridLayout()
+		self.gridLayoutDirty = false;
+	end
+end
+
 function EditModeActionBarSystemMixin:UpdateGridLayout()
 	ActionBarMixin.UpdateGridLayout(self);
 
@@ -1706,14 +1795,25 @@ function EditModeActionBarSystemMixin:UpdateGridLayout()
 		EditModeManagerFrame:UpdateRightActionBarsLayout();
 	end
 
-	if IsBottomAnchoredActionBar(self) then
-		EditModeManagerFrameMixin:UpdateBottomAnchoredActionBarHeight();
-	elseif IsRightAnchoredActionBar(self) then
+	if EditModeUtil:IsBottomAnchoredActionBar(self) then
+		EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
+	elseif EditModeUtil:IsRightAnchoredActionBar(self) then
 		EditModeManagerFrame:UpdateRightActionBarsLayout();
 	end
 
 	-- Update frame positions since if we update the size of the action bars then we'll wanna update the position of things relative to those action bars
 	UIParent_ManageFramePositions();
+end
+
+function EditModeActionBarSystemMixin:MarkButtonArtDirty()
+	self.buttonArtDirty = true;
+end
+
+function EditModeActionBarSystemMixin:RefreshButtonArt()
+	if self.buttonArtDirty then
+		self:UpdateButtonArt()
+		self.buttonArtDirty = false;
+	end
 end
 
 function EditModeActionBarSystemMixin:UpdateButtonArt()
@@ -1740,10 +1840,10 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingOrientation()
 	end
 
 	-- Since the orientation changed we'll want to update the grid layout
-	self:UpdateGridLayout();
+	self:MarkGridLayoutDirty();
 
 	-- Update the art since we'll possibly be switching from horizontal to vertical dividers
-	self:UpdateButtonArt();
+	self:MarkButtonArtDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingNumRows()
@@ -1757,21 +1857,21 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingNumRows()
 	end
 
 	-- Since the num rows changed we'll want to update the grid layout
-	self:UpdateGridLayout();
+	self:MarkGridLayoutDirty();
 
 	-- Update the art since we hide dividers when num rows > 1
-	self:UpdateButtonArt();
+	self:MarkButtonArtDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingNumIcons()
 	self.numShowingButtons = self:GetSettingValue(Enum.EditModeActionBarSetting.NumIcons);
 	self:UpdateShownButtons();
 
-	-- Since the num rows changed we'll want to update the grid layout
-	self:UpdateGridLayout();
+	-- Since the num icons changed we'll want to update the grid layout
+	self:MarkGridLayoutDirty();
 
 	-- Update the art since we'll need to change what dividers are shown specifically for the new last button
-	self:UpdateButtonArt();
+	self:MarkButtonArtDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingIconSize()
@@ -1788,17 +1888,17 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingIconSize()
 	end
 
 	-- Since size of buttons changed we'll want to update the grid layout so we can resize the bar's frame
-	self:UpdateGridLayout();
+	self:MarkGridLayoutDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingIconPadding()
 	self.buttonPadding = self:GetSettingValue(Enum.EditModeActionBarSetting.IconPadding);
 
 	-- Since the icon padding changed we'll want to update the grid layout
-	self:UpdateGridLayout();
+	self:MarkGridLayoutDirty();
 
 	-- Update art since we will hide dividers if padding is changed
-	self:UpdateButtonArt();
+	self:MarkButtonArtDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarArt()
@@ -1811,7 +1911,8 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarArt()
 	for i, actionButton in pairs(self.actionButtons) do
 		actionButton.showButtonArt = not hideBarArt;
 	end
-	self:UpdateButtonArt();
+
+	self:MarkButtonArtDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarScrolling()
@@ -1847,8 +1948,13 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingSnapToSide()
 	end
 end
 
-function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, skipSettingMapUpdate)
-	EditModeSystemMixin.UpdateSystemSetting(self, setting, skipSettingMapUpdate);
+function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
 
 	if setting == Enum.EditModeActionBarSetting.Orientation and self:HasSetting(Enum.EditModeActionBarSetting.Orientation) then
 		self:UpdateSystemSettingOrientation();
@@ -1871,6 +1977,13 @@ function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, skipSettingMa
 	elseif setting == Enum.EditModeActionBarSetting.SnapToSide and self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide) then
 		self:UpdateSystemSettingSnapToSide();
 	end
+
+	if not entireSystemUpdate then
+		self:RefreshGridLayout();
+		self:RefreshButtonArt();
+	end
+
+	self:ClearDirtySetting(setting);
 end
 
 function EditModeActionBarSystemMixin:UseSettingAltName(setting)
@@ -1900,7 +2013,9 @@ function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
 	quickKeybindModeButton:SetOnClickHandler(enterQuickKeybindMode);
 	quickKeybindModeButton:Show();
 
-	if self.systemIndex ~= Enum.EditModeActionBarSystemIndices.StanceBar then
+	if self.systemIndex ~= Enum.EditModeActionBarSystemIndices.StanceBar
+		and self.systemIndex ~= Enum.EditModeActionBarSystemIndices.PetActionBar
+		and self.systemIndex ~= Enum.EditModeActionBarSystemIndices.PossessActionBar then
 		local actionBarSettingsButton = extraButtonPool:Acquire();
 		actionBarSettingsButton.layoutIndex = 4;
 		actionBarSettingsButton:SetText(HUD_EDIT_MODE_ACTION_BAR_SETTINGS);
@@ -1963,8 +2078,13 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseLargerFrame()
 	FocusFrame_SetSmallSize(not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame));
 end
 
-function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, skipSettingMapUpdate)
-	EditModeSystemMixin.UpdateSystemSetting(self, setting, skipSettingMapUpdate);
+function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
 
 	if setting == Enum.EditModeUnitFrameSetting.HidePortrait and self:HasSetting(Enum.EditModeUnitFrameSetting.HidePortrait) then
 		self:UpdateSystemSettingHidePortrait();
@@ -1975,6 +2095,8 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, skipSettingMa
 	elseif setting == Enum.EditModeUnitFrameSetting.UseLargerFrame and self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) then
 		self:UpdateSystemSettingUseLargerFrame();
 	end
+
+	self:ClearDirtySetting(setting);
 end
 
 local EditModeSystemSelectionLayout =
@@ -2167,7 +2289,167 @@ function EditModeGridSpacingSliderMixin:OnSliderValueChanged(value)
 	EditModeManagerFrame:SetGridSpacing(value, isUserInput);
 end
 
+EditModeAccountSettingsMixin = {};
+
+function EditModeAccountSettingsMixin:OnLoad()
+	local function onTargetAndFocusCheckboxChecked(isChecked, isUserInput)
+		self:SetTargetAndFocusShown(isChecked, isUserInput);
+	end
+	self.Settings.TargetAndFocus:SetCallback(onTargetAndFocusCheckboxChecked);
+
+	local function onStanceBarCheckboxChecked(isChecked, isUserInput)
+		self:SetActionBarShown(StanceBar, isChecked, isUserInput);
+	end
+	self.Settings.StanceBar:SetCallback(onStanceBarCheckboxChecked);
+
+	local function onPetActionBarCheckboxChecked(isChecked, isUserInput)
+		self:SetActionBarShown(PetActionBar, isChecked, isUserInput);
+	end
+	self.Settings.PetActionBar:SetCallback(onPetActionBarCheckboxChecked);
+
+	local function onPossessActionBarCheckboxChecked(isChecked, isUserInput)
+		self:SetActionBarShown(PossessActionBar, isChecked, isUserInput);
+	end
+	self.Settings.PossessActionBar:SetCallback(onPossessActionBarCheckboxChecked);
+end
+
+function EditModeAccountSettingsMixin:OnEditModeEnter()
+	self.oldTargetName = UnitName("target");
+	self.oldFocusName = UnitName("focus");
+	self:RefreshTargetAndFocus();
+
+	self.oldActionBarSettings = {};
+	local function SetupActionBar(bar)
+		self.oldActionBarSettings[bar] = {
+			isShown = bar:IsShown();
+			numShowingButtons = bar.numShowingButtons;
+		}
+		self:RefreshActionBarShown(bar);
+	end
+	SetupActionBar(StanceBar);
+	SetupActionBar(PetActionBar);
+	SetupActionBar(PossessActionBar);
+end
+
+function EditModeAccountSettingsMixin:OnEditModeExit()
+	local clearSavedTargetAndFocus = true;
+	self:ResetTargetAndFocus(clearSavedTargetAndFocus);
+	self:ResetActionBarShown(StanceBar);
+	self:ResetActionBarShown(PetActionBar);
+	self:ResetActionBarShown(PossessActionBar);
+end
+
+function EditModeAccountSettingsMixin:ResetTargetAndFocus(clearSavedTargetAndFocus)
+	if self.oldTargetName then
+		TargetUnit(self.oldTargetName);
+	else
+		ClearTarget();
+	end
+
+	if self.oldFocusName then
+		FocusUnit(self.oldFocusName);
+	else
+		ClearFocus();
+	end
+
+	if clearSavedTargetAndFocus then
+		self.oldTargetName = nil;
+		self.oldFocusName = nil;
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshTargetAndFocus()
+	local showTargetAndFocus = self.Settings.TargetAndFocus:IsControlChecked();
+	if showTargetAndFocus then
+		if not TargetFrame:IsShown() then
+			TargetUnit("player");
+		end
+
+		if not FocusFrame:IsShown() then
+			FocusUnit("player");
+		end
+	else
+		self:ResetTargetAndFocus();
+	end
+end
+
+function EditModeAccountSettingsMixin:SetTargetAndFocusShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowTargetAndFocus, shown);
+		self:RefreshTargetAndFocus();
+	else
+		self.Settings.TargetAndFocus:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:ResetActionBarShown(bar)
+	bar.numShowingButtons = self.oldActionBarSettings[bar].numShowingButtons;
+	bar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+	bar:SetShown(self.oldActionBarSettings[bar].isShown);
+end
+
+function EditModeAccountSettingsMixin:RefreshActionBarShown(bar)
+	local barName = bar:GetName();
+	local show = self.Settings[barName]:IsControlChecked();
+
+	if show then
+		if not bar:IsShown() then
+			bar.numShowingButtons = bar.numButtons;
+			bar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+			bar:Show();
+		end
+	else
+		self:ResetActionBarShown(bar);
+	end
+
+	if EditModeUtil:IsBottomAnchoredActionBar(bar) then
+		EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
+	elseif EditModeUtil:IsRightAnchoredActionBar(bar) then
+		EditModeManagerFrame:UpdateRightAnchoredActionBarWidth();
+	end
+end
+
+function EditModeAccountSettingsMixin:SetActionBarShown(bar, shown, isUserInput)
+	local barName = bar:GetName();
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting["Show"..barName], shown);
+		self:RefreshActionBarShown(bar);
+	else
+		self.Settings[barName]:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)
+	self.expanded = expanded;
+	self.Expander.Label:SetText(expanded and HUD_EDIT_MODE_COLLAPSE_OPTIONS or HUD_EDIT_MODE_EXPAND_OPTIONS);
+	self.Settings:SetShown(self.expanded);
+	EditModeManagerFrame:Layout();
+
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.SettingsExpanded, expanded);
+	end
+end
+
+function EditModeAccountSettingsMixin:ToggleExpandedState()
+	local isUserInput = true;
+	self:SetExpandedState(not self.expanded, isUserInput);
+end
+
 EditModeUtil = { };
+
+function EditModeUtil:IsRightAnchoredActionBar(systemFrame)
+	return (systemFrame == MultiBarRight)
+		or (systemFrame == MultiBarLeft);
+end
+
+function EditModeUtil:IsBottomAnchoredActionBar(systemFrame)
+	return (systemFrame == MultiBarBottomRight)
+		or (systemFrame == MultiBarBottomLeft)
+		or (systemFrame == MainMenuBar)
+		or (systemFrame == StanceBar)
+		or (systemFrame == PetActionBar)
+		or (systemFrame == PossessActionBar);
+end
 
 function EditModeUtil:GetRightActionBarWidth()
 	local offset = 0;
@@ -2190,6 +2472,8 @@ function EditModeUtil:GetBottomActionBarHeight(includeMainMenuBar)
 	actionBarHeight = actionBarHeight + MultiBarBottomLeft:GetBottomAnchoredHeight();
 	actionBarHeight = actionBarHeight + MultiBarBottomRight:GetBottomAnchoredHeight();
 	actionBarHeight = actionBarHeight + StanceBar:GetBottomAnchoredHeight();
+	actionBarHeight = actionBarHeight + (PetActionBar and PetActionBar:GetBottomAnchoredHeight() or 0);
+	actionBarHeight = actionBarHeight + PossessActionBar:GetBottomAnchoredHeight();
 	return actionBarHeight;
 end
 

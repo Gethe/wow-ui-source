@@ -42,6 +42,17 @@ function PTR_IssueReporter.SetupSpellTooltips()
 
     GameTooltip:HookScript("OnTooltipSetSpell", onTooltipSetSpellFunction)
     EmbeddedItemTooltip:HookScript("OnTooltipSetSpell", onTooltipSetSpellFunction)
+    
+    local bindingFunc = function(self, talentFrame, tooltip)
+        if (talentFrame) and (tooltip) then
+            local spellID = talentFrame:GetSpellID()
+            local name = GetSpellInfo(spellID)
+            
+            PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.spell, spellID, name)
+        end
+    end
+    
+    EventRegistry:RegisterCallback("TalentDisplay.TooltipCreated", bindingFunc, "PTR_IssueReporter")
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupItemTooltips()

@@ -25,6 +25,7 @@ function TalentDisplayMixin:OnEnter()
 	else
 		self:SetTooltipInternal();
 	end
+    
 end
 
 function TalentDisplayMixin:OnLeave()
@@ -63,8 +64,11 @@ function TalentDisplayMixin:SetTooltipInternal()
 	self:AddTooltipDescription(tooltip);
 	self:AddTooltipCost(tooltip);
 	self:AddTooltipInstructions(tooltip);
-	self:AddTooltipErrors(tooltip);
+	self:AddTooltipErrors(tooltip);    
 	tooltip:Show();
+    
+    -- Used client issue submission tools
+    EventRegistry:TriggerEvent("TalentDisplay.TooltipCreated", self, tooltip);
 end
 
 function TalentDisplayMixin:AcquireTooltip()
@@ -796,8 +800,8 @@ function TalentButtonSelectMixin:OnLeave()
 	self.isMouseOver = false;
 end
 
-local TimeToHideSeconds = 0.5;
-local TimeToShowSelections = 0.2;
+local TimeToHideSeconds = 0;
+local TimeToShowSelections = 0.1;
 function TalentButtonSelectMixin:OnUpdate(dt)
 	local talentFrame = self:GetTalentFrame();
 	if not talentFrame:IsMouseOverSelections() and (GetMouseFocus() ~= self) then

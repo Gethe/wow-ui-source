@@ -429,7 +429,7 @@ end
 function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
 
-	local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting();
+	local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsRuneforging();
 	local schematicWidth = useCondensedPanel and 500 or 793;
 	self.SchematicForm:SetWidth(schematicWidth);
 	

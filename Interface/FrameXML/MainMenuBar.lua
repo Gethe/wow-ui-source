@@ -1,6 +1,3 @@
-local MAINMENU_SLIDETIME = 0.30;
-local MAINMENU_GONEYPOS = 130;	--Distance off screen for MainMenuBar to be completely hidden
-local MAINMENU_XPOS = 0;
 MAIN_MENU_BAR_MARGIN = 75;		-- number of art pixels on one side, used by UIParent_ManageFramePositions. It's not the art's full size, don't care about the gryphon's tail.
 
 MainMenuBarMixin = { };
@@ -104,12 +101,16 @@ function MainMenuBarVehicleLeaveButton_Update()
 	if ( CanExitVehicle() and ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_MAIN ) then
 		MainMenuBarVehicleLeaveButton:Show();
 		MainMenuBarVehicleLeaveButton:Enable();
-		ShowPetActionBar(true);
+		if (PetHasActionBar()) then
+			PetActionBar:Show();
+		end
 	else
 		MainMenuBarVehicleLeaveButton:SetHighlightTexture([[Interface\Buttons\ButtonHilight-Square]], "ADD");
 		MainMenuBarVehicleLeaveButton:UnlockHighlight();
 		MainMenuBarVehicleLeaveButton:Hide();
-		ShowPetActionBar(true);
+		if (PetHasActionBar()) then
+			PetActionBar:Show();
+		end
 	end
 end
 

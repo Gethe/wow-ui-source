@@ -1,0 +1,172 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_DragonflightLandingPage.lua"/>
+	
+	<Frame name="LandingPageDragonridingPanelTemplate" inherits="ResizeLayoutFrame" mixin="LandingPageDragonridingPanelMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="350" type="number"/>
+			<KeyValue key="minimumHeight" value="200" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Header" inherits="Fancy20Font" text="LANDING_DRAGONRIDING_PANEL_TITLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="32" y="0"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="TalentTreeButton" enableMouse="true" mixin="DragonridingPanelTalentButtonMixin">
+				<Size x="241" y="63"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="-6" y="-16"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Label" inherits="SystemFont_Shadow_Med3" text="LANDING_DRAGONRIDING_TREE_BUTTON">
+							<Anchors>
+								<Anchor point="LEFT" x="24"/>
+							</Anchors>
+							<Color color="HIGHLIGHT_FONT_COLOR"/>
+						</FontString>
+
+						<Texture parentKey="PushedImage" setAllPoints="true" hidden="true"/>
+							
+						<Texture parentKey="Divider">
+							<Size x="260" y="2"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="6" y="-32"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="0.6"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+				<NormalTexture atlas="shadowlands-landingpage-renownbutton-venthyr"/>
+				<PushedTexture atlas="shadowlands-landingpage-renownbutton-venthyr"/>
+				<HighlightTexture atlas="shadowlands-landingpage-soulbindsbutton-highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="DragonflightLandingOverlayTemplate" mixin="DragonflightLandingOverlayMixin" inherits="LandingPageExpansionOverlayTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture atlas="GarrLanding-MiddleTile" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="25" y="-25"/>
+						<Anchor point="BOTTOMRIGHT" x="-25" y="25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="TL" atlas="GarrLanding-upperleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="1"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="TR" atlas="GarrLanding-upperright" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" y="1"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="BL" atlas="GarrLanding-lowerleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="BR" atlas="GarrLanding-lowerright" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" y="-2"/>
+					</Anchors>
+				</Texture>
+
+				<Texture atlas="GarrLanding-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TL" relativePoint="TOPRIGHT" y="-1"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TR" relativePoint="TOPLEFT" y="-1"/>
+					</Anchors>
+				</Texture>
+
+				<Texture atlas="GarLanding-Bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BL" relativePoint="BOTTOMRIGHT" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BR" relativePoint="BOTTOMLEFT" y="2"/>
+					</Anchors>
+				</Texture>
+
+				<Texture atlas="GarLanding-Left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TL" relativePoint="BOTTOMLEFT" x="2"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BL" relativePoint="TOPLEFT" x="2"/>
+					</Anchors>
+				</Texture>
+
+				<Texture atlas="GarLanding-Right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TR" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BR" relativePoint="TOPRIGHT" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Header">
+				<Size x="830" y="32"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-50"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="HeaderBar" atlas="GarrLanding-HeaderBar" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="QuestFont_Super_Huge" text="DRAGONFLIGHT_LANDING_PAGE_TITLE">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.HeaderBar" x="38"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<!-- TODO:: Remove WIP text. -->
+						<FontString parentKey="WIPText" inherits="GameFontNormalLarge" text="Work In Progress UI Art">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.HeaderBar" relativePoint="BOTTOM" x="0" y="-12"/>
+							</Anchors>
+							<Color color="RED_FONT_COLOR"/>
+							<Shadow x="1" y="-1">
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="DragonridingPanel" inherits="LandingPageDragonridingPanelTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header.HeaderBar" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

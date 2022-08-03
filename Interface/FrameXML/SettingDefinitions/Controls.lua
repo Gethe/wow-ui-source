@@ -1,6 +1,9 @@
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(CONTROLS_LABEL);
 
+	-- Order set in GameplaySettingsGroup.lua
+	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[CONTROLS_LABEL]);
+
 	---- Controls
 
 	-- Sticky Targeting

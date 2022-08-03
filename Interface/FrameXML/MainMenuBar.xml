@@ -22,22 +22,10 @@
 			<KeyValue key="numButtons" value="12" type="number"/>
 			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
 			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.MainBar" type="global"/>
 		</KeyValues>
-
-		<Animations>
-			<AnimationGroup parentKey="slideOut">
-				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>
-				<Scripts>
-					<OnFinished>
-						if MainMenuBar.hideOnFinish then
-							MainMenuBar:Hide();
-						end
-						ValidateActionBarTransition();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-2">

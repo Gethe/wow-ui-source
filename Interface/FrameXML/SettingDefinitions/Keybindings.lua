@@ -197,6 +197,9 @@ local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(SETTINGS_KEYBINDINGS_LABEL);
 	Settings.SetKeybindingsCategory(category);
 
+	-- Order set in GameplaySettingsGroup.lua
+	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[SETTINGS_KEYBINDINGS_LABEL]);
+
 	-- Binding set
 	do
 		local function GetValue()

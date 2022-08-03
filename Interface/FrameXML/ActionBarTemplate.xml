@@ -30,6 +30,15 @@
 
 			- This is the direction the bar grows as it adds buttons vertically. If true, new buttons will be added to the top. If false, new buttons will be added to the bottom.
 			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+
+			- This is the name of the event which is used to show the action bar grid. Can be nil if this isn't needed
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+
+			- This is the name of the event which is used to hide the action bar grid. Can be nil if this isn't needed
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+
+			- This is used to determine if spacers should be used when hiding buttons. Spacers help keep the bar a static size when buttons are hidden. If this is true then spacers won't be used.
+			<KeyValue key="noSpacers" value="false" type="boolean"/>
 		-->
 
 		<Scripts>

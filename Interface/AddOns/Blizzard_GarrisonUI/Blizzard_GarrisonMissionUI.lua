@@ -332,7 +332,7 @@ function GarrisonFollowerMission:OnClickStartMissionButton()
 
 	local helpTipInfo = self:GenerateHelpTipInfo();
 
-	HelpTip:Show(GarrisonLandingPageMinimapButton, helpTipInfo);
+	HelpTip:Show(ExpansionLandingPageMinimapButton, helpTipInfo);
 end
 
 function GarrisonFollowerMission:GenerateHelpTipInfo()

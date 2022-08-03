@@ -2575,3 +2575,220 @@ end
 function NumericInputBoxMixin:SetOnValueFinalizedCallback(valueFinalizedCallback)
 	self.valueFinalizedCallback = valueFinalizedCallback;
 end
+
+IconSelectorPopupFrameTemplateMixin = {};
+
+IconSelectorPopupFrameModes = EnumUtil.MakeEnum(
+	"New",
+	"Edit"
+);
+
+local ValidIconSelectorCursorTypes = {
+	"item",
+	"spell",
+	"mount",
+	"battlepet",
+	"macro"
+};
+
+local IconSelectorPopupFramesShown = 0;
+
+function IconSelectorPopupFrameTemplateMixin:OnLoad()
+	local function IconButtonInitializer(button, selectionIndex, icon)
+		button:SetIconTexture(icon);
+	end
+	self.IconSelector:SetSetupCallback(IconButtonInitializer);
+	self.IconSelector:AdjustScrollBarOffsets(0, 18, -1);
+
+	self.BorderBox.OkayButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+		self:OkayButton_OnClick();
+	end);
+
+	self.BorderBox.CancelButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+		self:CancelButton_OnClick();
+	end);
+
+	self.BorderBox.EditBoxHeaderText:SetText(self.editBoxHeaderText);
+end
+
+-- Usually overridden by inheriting frame.
+function IconSelectorPopupFrameTemplateMixin:OnShow()
+	IconSelectorPopupFramesShown = IconSelectorPopupFramesShown + 1;
+
+	self:RegisterEvent("CURSOR_CHANGED");
+	self:RegisterEvent("GLOBAL_MOUSE_UP");
+
+	self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconSelector(self);
+	self.BorderBox.IconSelectorEditBox:SetIconSelector(self);
+end
+
+-- Usually overridden by inheriting frame.
+function IconSelectorPopupFrameTemplateMixin:OnHide()
+	IconSelectorPopupFramesShown = IconSelectorPopupFramesShown - 1;
+	self:UnregisterEvent("CURSOR_CHANGED");
+	self:UnregisterEvent("GLOBAL_MOUSE_UP");
+end
+
+-- Usually overridden by inheriting frame.
+function IconSelectorPopupFrameTemplateMixin:Update()
+end
+
+function IconSelectorPopupFrameTemplateMixin:OnEvent(event, ...)
+	if ( event == "CURSOR_CHANGED" ) then
+		local cursorType = GetCursorInfo();
+		local isValidCursorType = false;
+		for _, validType in ipairs(ValidIconSelectorCursorTypes) do
+			if ( cursorType == validType ) then
+				isValidCursorType = true;
+				break;
+			end
+		end
+
+		self.BorderBox.IconDragArea:SetShown(isValidCursorType);
+		self.BorderBox.IconSelectionText:SetShown(not isValidCursorType);
+		self.IconSelector:SetShown(not isValidCursorType);
+	elseif ( event == "GLOBAL_MOUSE_UP" and DoesAncestryInclude(self, GetMouseFocus())) then
+		self:SetIconFromMouse();
+	end
+end
+
+function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()
+	local cursorType, ID = GetCursorInfo();
+	for _, validType in ipairs(ValidIconSelectorCursorTypes) do
+		if ( cursorType == validType ) then
+			local icon;
+			if ( cursorType == "item" ) then
+				icon = select(10, GetItemInfo(ID));
+			elseif ( cursorType == "spell" ) then
+				-- 'ID' field for spells would actually be the slot number, not the actual spellID, so we get this separately.
+				local spellID = select(4, GetCursorInfo());
+				icon = select(3, GetSpellInfo(spellID));
+			elseif ( cursorType == "mount" ) then
+				icon = select(3, C_MountJournal.GetMountInfoByID(ID));
+			elseif ( cursorType == "battlepet" ) then
+				icon = select(9, C_PetJournal.GetPetInfoByPetID(ID));
+			elseif ( cursorType == "macro" ) then
+				icon = select(2, GetMacroInfo(ID));
+			end
+
+			self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(icon));
+			self.IconSelector:ScrollToSelectedIndex();
+			ClearCursor();
+
+			if ( icon ) then
+				self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(icon);
+				self.BorderBox.SelectedIconArea.SelectedIconButton:SetSelectedTexture();
+			end
+
+			self:SetSelectedIconText();
+			break;
+		end
+	end
+end
+
+function IconSelectorPopupFrameTemplateMixin:SetSelectedIconText()
+	if ( self:GetSelectedIndex() ) then
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconHeader:SetText(ICON_SELECTION_TITLE_CURRENT);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_CLICK);
+	else
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconHeader:SetText(ICON_SELECTION_TITLE_CUSTOM);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_NOTINLIST);
+	end
+
+	self.BorderBox.SelectedIconArea.SelectedIconText:Layout();
+end
+
+-- Usually overridden by inheriting frame.
+function IconSelectorPopupFrameTemplateMixin:OkayButton_OnClick()
+	self:Hide();
+end
+
+-- Usually overridden by inheriting frame.
+function IconSelectorPopupFrameTemplateMixin:CancelButton_OnClick()
+	self:Hide();
+end
+
+function IconSelectorPopupFrameTemplateMixin:GetIconByIndex(index)
+	return self.iconDataProvider:GetIconByIndex(index);
+end
+
+function IconSelectorPopupFrameTemplateMixin:GetIndexOfIcon(icon)
+	return self.iconDataProvider:GetIndexOfIcon(icon);
+end
+
+function IconSelectorPopupFrameTemplateMixin:GetNumIcons()
+	return self.iconDataProvider:GetNumIcons();
+end
+
+function IconSelectorPopupFrameTemplateMixin:GetSelectedIndex()
+	return self.IconSelector:GetSelectedIndex();
+end
+
+function IsAnyIconSelectorPopupFrameShown()
+	return IconSelectorPopupFramesShown and IconSelectorPopupFramesShown > 0;
+end
+
+SelectedIconButtonMixin = {};
+
+function SelectedIconButtonMixin:SetIconTexture(iconTexture)
+	self.Icon:SetTexture(iconTexture);
+end
+
+function SelectedIconButtonMixin:GetIconTexture()
+	return self.Icon:GetTexture();
+end
+
+function SelectedIconButtonMixin:SetSelectedTexture()
+	self.SelectedTexture:SetShown(self:GetIconSelectorPopupFrame():GetSelectedIndex() == nil);
+end
+
+function SelectedIconButtonMixin:OnClick()
+	if ( self:GetIconSelectorPopupFrame():GetSelectedIndex() == nil ) then
+		return;
+	end
+
+	self:GetIconSelectorPopupFrame().IconSelector:ScrollToSelectedIndex();
+end
+
+function SelectedIconButtonMixin:GetIconSelectorPopupFrame()
+	return self.selectedIconButtonIconSelector;
+end
+
+function SelectedIconButtonMixin:SetIconSelector(iconSelector)
+	self.selectedIconButtonIconSelector = iconSelector;
+end
+
+IconSelectorEditBoxMixin = {};
+
+function IconSelectorEditBoxMixin:OnTextChanged()
+	local iconSelectorPopupFrame = self:GetIconSelectorPopupFrame();
+	local text = self:GetText();
+	text = string.gsub(text, "\"", "");
+	if #text > 0 then
+		iconSelectorPopupFrame.BorderBox.OkayButton:Enable();
+	else
+		iconSelectorPopupFrame.BorderBox.OkayButton:Disable();
+	end
+end
+
+function IconSelectorEditBoxMixin:OnEnterPressed()
+	local text = self:GetText();
+	text = string.gsub(text, "\"", "");
+	if #text > 0 then
+		self:GetIconSelectorPopupFrame():OkayButton_OnClick();
+	end
+end
+
+function IconSelectorEditBoxMixin:OnEscapePressed()
+	self:GetIconSelectorPopupFrame():CancelButton_OnClick();
+end
+
+function IconSelectorEditBoxMixin:GetIconSelectorPopupFrame()
+	return self.editBoxIconSelector;
+end
+
+function IconSelectorEditBoxMixin:SetIconSelector(iconSelector)
+	self.editBoxIconSelector = iconSelector;
+end

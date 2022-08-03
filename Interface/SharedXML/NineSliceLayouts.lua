@@ -169,7 +169,6 @@ NineSliceLayouts =
 		RightEdge = { atlas = "!Neutral-NineSlice-EdgeRight", mirrorLayout = false, },
 	},
 
-
 	Runeforge =
 	{
 		TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
@@ -218,6 +217,18 @@ NineSliceLayouts =
 		LeftEdge = { atlas = "!ChatBubble-NineSlice-EdgeLeft", },
 		RightEdge = { atlas = "!ChatBubble-NineSlice-EdgeRight", },
 		Center = { atlas = "ChatBubble-NineSlice-Center", },
+	},
+
+	SelectionFrameTemplate =
+	{
+		TopLeftCorner =	{ atlas = "macropopup-topleft", },
+		TopRightCorner =	{ atlas = "macropopup-topright", },
+		BottomLeftCorner =	{ atlas = "macropopup-bottomleft", },
+		BottomRightCorner =	{ atlas = "macropopup-bottomright", },
+		TopEdge = { atlas = "_macropopup-top", },
+		BottomEdge = { atlas = "_macropopup-bottom", },
+		LeftEdge = { atlas = "!macropopup-left", },
+		RightEdge = { atlas = "!macropopup-right", },
 	},
 
 	UniqueCornersLayout =

@@ -1064,6 +1064,7 @@ end
 
 CONQUEST_BUTTONS = {};
 local RATED_BG_ID = 3;
+local RATED_SOLO_SHUFFLE_BUTTON_ID = 4;
 
 function ConquestFrame_OnLoad(self)
 
@@ -1296,7 +1297,19 @@ function ConquestFrame_UpdateJoinButton()
 	--Check whether they have a valid button selected
 	if ( ConquestFrame.selectedButton ) then
 		if ( groupSize == 0 ) then
-			button.tooltip = PVP_NO_QUEUE_GROUP;
+			if ( ConquestFrame.selectedButton.id == RATED_SOLO_SHUFFLE_BUTTON_ID) then
+				local minItemLevel = C_PvP.GetRatedSoloShuffleMinItemLevel();
+				local _, _, playerPvPItemLevel = GetAverageItemLevel();
+				if (playerPvPItemLevel < minItemLevel) then
+					button.tooltip = format(_G["INSTANCE_UNAVAILABLE_SELF_PVP_GEAR_TOO_LOW"], "", minItemLevel, playerPvPItemLevel);
+				else
+					button.tooltip = nil;
+					button:Enable();
+					return;
+				end
+			else
+				button.tooltip = PVP_NO_QUEUE_GROUP;
+			end
 		elseif ( not UnitIsGroupLeader("player") ) then
 			button.tooltip = PVP_NOT_LEADER;
 		else
@@ -1378,8 +1391,10 @@ function ConquestFrameButton_OnClick(self, button)
 	end
 end
 
-function ConquestFrameJoinButton_OnClick(self)
-	if (ConquestFrame.selectedButton.id == RATED_BG_ID) then
+function ConquestFrameJoinButton_OnClick(self) 
+	if (ConquestFrame.selectedButton.id == RATED_SOLO_SHUFFLE_BUTTON_ID) then
+		JoinRatedSoloShuffle();
+	elseif (ConquestFrame.selectedButton.id == RATED_BG_ID) then
 		JoinRatedBattlefield();
 	else
 		JoinArena();

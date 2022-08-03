@@ -2,7 +2,6 @@ local flyout = CreateFrame("FRAME", nil, nil, "ProfessionsItemFlyoutTemplate");
 flyout:Hide();
 
 function CloseItemFlyout()
-	flyout:SetParent(nil);
 	flyout:ClearAllPoints();
 	flyout:Hide();
 end

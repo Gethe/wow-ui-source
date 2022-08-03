@@ -1969,7 +1969,7 @@ function PaperDollFrameItemFlyout_GetItems(paperDollItemSlot, itemTable)
 end
 
 function PaperDollFrameItemFlyout_PostGetItems(itemSlotButton, itemDisplayTable, numItems)
-	if (PaperDollFrame.EquipmentManagerPane:IsShown() and (PaperDollFrame.EquipmentManagerPane.selectedSetID or GearManagerDialogPopup:IsShown())) then
+	if (PaperDollFrame.EquipmentManagerPane:IsShown() and (PaperDollFrame.EquipmentManagerPane.selectedSetID or GearManagerPopupFrame:IsShown())) then
 		if ( not itemSlotButton.ignored ) then
 			tinsert(itemDisplayTable, 1, EQUIPMENTFLYOUT_IGNORESLOT_LOCATION);
 		else
@@ -2042,14 +2042,6 @@ function GearSetEditButtonDropDown_Initialize(dropdownFrame, level, menuList)
 	end
 end
 
-function GearSetButton_OpenPopup(self)
-	GearManagerDialogPopup:Show();
-	GearManagerDialogPopup.isEdit = true;
-	GearManagerDialogPopup.setID = self.setID;
-	GearManagerDialogPopup.origName = self.text:GetText();
-	GearManagerDialogPopup:Recalculate(self.text:GetText(), self.icon:GetTexture());
-end
-
 function GearSetButton_SetSpecInfo(self, specID)
 	if ( specID and specID > 0 ) then
 		self.specID = specID;
@@ -2089,10 +2081,11 @@ function GearSetButton_OnClick(self, button, down)
 		PaperDollFrame_ClearIgnoredSlots();
 		PaperDollFrame_IgnoreSlotsForSet(self.setID);
 		PaperDollEquipmentManagerPane_Update();
-		GearManagerDialogPopup:Hide();
+		GearManagerPopupFrame:Hide();
 	else
 		-- This is the "New Set" button
-		GearManagerDialogPopup:Show();
+		GearManagerPopupFrame.mode = IconSelectorPopupFrameModes.New;
+		GearManagerPopupFrame:Show();
 		PaperDollFrame.EquipmentManagerPane.selectedSetID = nil;
 		PaperDollFrame_ClearIgnoredSlots();
 		PaperDollEquipmentManagerPane_Update();
@@ -2111,36 +2104,39 @@ function GearSetButton_OnEnter(self)
 	end
 end
 
-GearManagerDialogPopupMixin = {};
-
-function GearManagerDialogPopupMixin:OnLoad()
-	local function GearManagerIconSelectorSetup(button, selectionIndex, icon)
-		button:SetIconTexture(icon);
-	end
-
-	self.IconSelector:SetSetupCallback(GearManagerIconSelectorSetup);
-	self.IconSelector:AdjustScrollBarOffsets(0, 18, -1);
-	self.IconSelector:SetSelectedCallback(GearManagerDialogPopupOkay_Update);
+function GearSetButton_OpenPopup(self)
+	GearManagerPopupFrame.mode = IconSelectorPopupFrameModes.Edit;
+	GearManagerPopupFrame.setID = self.setID;
+	GearManagerPopupFrame.origName = self.text:GetText();
+	GearManagerPopupFrame:Show();
 end
 
-function GearManagerDialogPopupMixin:OnShow()
+GearManagerPopupFrameMixin = {};
+
+function GearManagerPopupFrameMixin:OnShow()
+	IconSelectorPopupFrameTemplateMixin.OnShow(self);
+	self.BorderBox.IconSelectorEditBox:SetFocus();
+
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-	self.setID = nil;
-	self.isEdit = false;
-
 	self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Equipment);
+	self:Update();
+	self.BorderBox.IconSelectorEditBox:OnTextChanged();
 
-	local getSelection = GenerateClosure(self.iconDataProvider.GetIconByIndex, self.iconDataProvider);
-	local getNumSelections = GenerateClosure(self.iconDataProvider.GetNumIcons, self.iconDataProvider);
-	self.IconSelector:SetSelectionsDataProvider(getSelection, getNumSelections);
+	local function OnIconSelected(selectionIndex, icon)
+		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(icon);
 
-	self:Recalculate();
+		-- Index is not yet set, but we know if an icon in IconSelector was selected it was in the list, so set directly.
+		self.BorderBox.SelectedIconArea.SelectedIconButton.SelectedTexture:SetShown(false);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconHeader:SetText(ICON_SELECTION_TITLE_CURRENT);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_CLICK);
+	end
+    self.IconSelector:SetSelectedCallback(OnIconSelected);
 end
 
-function GearManagerDialogPopupMixin:OnHide()
+function GearManagerPopupFrameMixin:OnHide()
+	IconSelectorPopupFrameTemplateMixin.OnHide(self);
+
 	self.setID = nil;
-	self.IconSelector:SetSelectedIndex(nil);
-	GearManagerDialogPopupEditBox:SetText("");
 	if PaperDollFrame.EquipmentManagerPane.selectedSetID == nil then
 		PaperDollFrame_ClearIgnoredSlots();
 	end
@@ -2149,68 +2145,69 @@ function GearManagerDialogPopupMixin:OnHide()
 	self.iconDataProvider = nil;
 end
 
-function GearManagerDialogPopupMixin:Recalculate(setName, iconTexture)
-	if setName and (setName ~= "") then
-		GearManagerDialogPopupEditBox:SetText(setName);
-		GearManagerDialogPopupEditBox:HighlightText(0);
-	else
-		GearManagerDialogPopupEditBox:SetText("");
+function GearManagerPopupFrameMixin:Update()
+	if ( self.mode == IconSelectorPopupFrameModes.New ) then
+		self.origName = "";
+		self.BorderBox.IconSelectorEditBox:SetText("");
+		local initialIndex = 1;
+		self.IconSelector:SetSelectedIndex(initialIndex);
+		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(self:GetIconByIndex(initialIndex));
+	elseif ( self.mode == IconSelectorPopupFrameModes.Edit ) then
+		local name, texture = C_EquipmentSet.GetEquipmentSetInfo(PaperDollFrame.EquipmentManagerPane.selectedSetID);
+		self.BorderBox.IconSelectorEditBox:SetText(name);
+		self.BorderBox.IconSelectorEditBox:HighlightText();
+
+		self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(texture));
+		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(texture);
 	end
 
-	local selectionIndex = self.iconDataProvider:GetIndexOfIcon(iconTexture);
-	self.IconSelector:SetSelectedIndex(selectionIndex);
+	local getSelection = GenerateClosure(self.GetIconByIndex, self);
+	local getNumSelections = GenerateClosure(self.GetNumIcons, self);
+	self.IconSelector:SetSelectionsDataProvider(getSelection, getNumSelections);
 	self.IconSelector:ScrollToSelectedIndex();
+
+	self.BorderBox.SelectedIconArea.SelectedIconButton:SetSelectedTexture();
+	self:SetSelectedIconText();
 end
 
-function GearManagerDialogPopupMixin:GetSelectedIndex()
-	return self.IconSelector:GetSelectedIndex();
-end
+function GearManagerPopupFrameMixin:OkayButton_OnClick()
+	IconSelectorPopupFrameTemplateMixin.OkayButton_OnClick(self);
 
-function GearManagerDialogPopupMixin:GetIconForSaving()
-	return self.iconDataProvider:GetIconForSaving(self:GetSelectedIndex());
-end
+	local iconTexture = self.BorderBox.SelectedIconArea.SelectedIconButton:GetIconTexture();
 
-function GearManagerDialogPopupOkay_Update()
-	local popup = GearManagerDialogPopup;
-	local button = GearManagerDialogPopupOkay;
-	button:SetEnabled(((popup:GetSelectedIndex() ~= nil) or popup.isEdit) and popup.name);
-end
+	if type(iconTexture) == "string" then
+		iconTexture = string.gsub(iconTexture, [[INTERFACE\ICONS\]], "");
+	end
 
-function GearManagerDialogPopupOkay_OnClick(self, button, pushed)
-	local popup = GearManagerDialogPopup;
-	local iconTexture = popup:GetIconForSaving();
-
-	if ( C_EquipmentSet.GetEquipmentSetID(popup.name) ) then
-		if (popup.isEdit and popup.name ~= popup.origName)  then
+	local text = self.BorderBox.IconSelectorEditBox:GetText();
+	local setID = C_EquipmentSet.GetEquipmentSetID(text);
+	if ( setID ) then
+		if (self.mode == IconSelectorPopupFrameModes.Edit and text ~= self.origName)  then
 			-- Not allowed to overwrite an existing set by doing a rename
 			UIErrorsFrame:AddMessage(EQUIPMENT_SETS_CANT_RENAME, 1.0, 0.1, 0.1, 1.0);
 			return;
-		elseif (not popup.isEdit) then
-			local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name);
+		elseif ( self.mode == IconSelectorPopupFrameModes.New ) then
+			local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", text);
 			if ( dialog ) then
-				dialog.data = C_EquipmentSet.GetEquipmentSetID(popup.name);
+				dialog.data = setID;
 				dialog.selectedIcon = iconTexture;
 			else
 				UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 			end
 			return;
 		end
-	elseif ( C_EquipmentSet.GetNumEquipmentSets() >= MAX_EQUIPMENT_SETS_PER_PLAYER and not popup.isEdit) then
+	elseif ( C_EquipmentSet.GetNumEquipmentSets() >= MAX_EQUIPMENT_SETS_PER_PLAYER and self.mode == IconSelectorPopupFrameModes.New ) then
 		UIErrorsFrame:AddMessage(EQUIPMENT_SETS_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
 
-	if (popup.isEdit) then
-		PaperDollFrame.EquipmentManagerPane.selectedSetID = popup.setID;
-		C_EquipmentSet.ModifyEquipmentSet(popup.setID, popup.name, iconTexture);
+	if ( self.mode == IconSelectorPopupFrameModes.New ) then
+		C_EquipmentSet.CreateEquipmentSet(text, iconTexture);
 	else
-		C_EquipmentSet.CreateEquipmentSet(popup.name, iconTexture);
+		local selectedSetID = C_EquipmentSet.GetEquipmentSetID(self.origName);
+		PaperDollFrame.EquipmentManagerPane.selectedSetID = selectedSetID;
+		C_EquipmentSet.ModifyEquipmentSet(selectedSetID, text, iconTexture);
 	end
-	popup:Hide();
-end
-
-function GearManagerDialogPopupCancel_OnClick()
-	GearManagerDialogPopup:Hide();
 end
 
 function PaperDollEquipmentManagerPane_OnLoad(self)
@@ -2284,7 +2281,7 @@ end
 function PaperDollEquipmentManagerPane_OnHide(self)
 	EquipmentFlyoutPopoutButton_HideAll();
 	PaperDollFrame_ClearIgnoredSlots();
-	GearManagerDialogPopup:Hide();
+	GearManagerPopupFrame:Hide();
 	StaticPopup_Hide("CONFIRM_SAVE_EQUIPMENT_SET");
 	StaticPopup_Hide("CONFIRM_OVERWRITE_EQUIPMENT_SET");
 end
@@ -2469,6 +2466,7 @@ function PaperDollTitlesPane_SetButtonSelected(button, selected)
 		button.SelectedBar:Hide();
 	end
 end
+
 function PaperDollTitlesPane_InitButton(button, elementData)
 	local index = elementData.index;
 	local playerTitle = elementData.playerTitle;

@@ -1,6 +1,9 @@
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(INTERFACE_LABEL);
 
+	-- Order set in GameplaySettingsGroup.lua
+	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[INTERFACE_LABEL]);
+
 	-- My name
 	Settings.SetupCVarCheckBox(category, "UnitNameOwn", UNIT_NAME_OWN, OPTION_TOOLTIP_UNIT_NAME_OWN);
 

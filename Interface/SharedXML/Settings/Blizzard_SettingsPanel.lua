@@ -20,12 +20,8 @@ function SettingsPanelMixin:OnLoad()
 	self.NineSlice.Text:SetText(SETTINGS_TITLE);
 
 	self.tabsGroup = CreateRadioButtonGroup();
-	if ( GetNumAddOns() == 0 ) then
-		self.GameTab:Hide();
-	else
-		self.tabsGroup:AddButtons({self.GameTab, self.AddOnsTab});
-	end
 
+	self.tabsGroup:AddButtons({self.GameTab, self.AddOnsTab});
 	self.tabsGroup:SelectAtIndex(1);
 	self.tabsGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.OnTabSelected, self);
 
@@ -105,6 +101,21 @@ end
 function SettingsPanelMixin:OnShow()
 	if not self:GetCurrentCategory() then
 		self:SelectFirstCategory();
+	end
+
+	-- Checks for if there are any categories to show on the AddOnsTab 
+	local categories = self:GetCategoryList();
+	local showTabs = false;
+	for _, category in ipairs(categories.allCategories) do
+		if category.categorySet == Settings.CategorySet.AddOns then
+			showTabs = true;
+			break;
+		end
+	end
+
+	if not showTabs then
+		self.GameTab:Hide();
+		self.AddOnsTab:Hide();
 	end
 
 	-- WOW10-16900

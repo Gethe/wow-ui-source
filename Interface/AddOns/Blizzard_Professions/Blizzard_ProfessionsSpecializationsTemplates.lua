@@ -99,6 +99,8 @@ function ProfessionSpecTabMixin:OnEnter()
 	self:AddTooltipSource(GameTooltip, true);
 
 	GameTooltip:Show();
+
+	EventRegistry:TriggerEvent("ProfessionSpecs.SpecTabEntered", self.traitTreeID);
 end
 
 function ProfessionSpecTabMixin:OnLeave()
@@ -240,6 +242,8 @@ function ProfessionsSpecPathMixin:OnEnter() -- Override
 
 	self:SetScript("OnEvent", self.OnEvent);
 	self:RegisterEvent("SPELL_TEXT_UPDATE");
+
+	EventRegistry:TriggerEvent("ProfessionSpecs.SpecPathEntered", self.talentNodeInfo.ID);
 end
 
 function ProfessionsSpecPathMixin:OnLeave() -- Override
@@ -474,6 +478,8 @@ function ProfessionsSpecPerkMixin:OnEnter() -- Override
 
 	self:SetScript("OnEvent", self.OnEvent);
 	self:RegisterEvent("SPELL_TEXT_UPDATE");
+
+	EventRegistry:TriggerEvent("ProfessionSpecs.SpecPerkEntered", self.perkID);
 end
 
 function ProfessionsSpecPerkMixin:OnLeave()

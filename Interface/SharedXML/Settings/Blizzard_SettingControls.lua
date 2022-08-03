@@ -588,6 +588,7 @@ function SettingsCheckBoxSliderControlMixin:OnLoad()
 
 	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
 	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
+	self.SliderWithSteppers.Slider:SetCustomTooltipAnchoring(self.SliderWithSteppers.Slider, "ANCHOR_RIGHT", 20, 0);
 end
 
 function SettingsCheckBoxSliderControlMixin:Init(initializer)

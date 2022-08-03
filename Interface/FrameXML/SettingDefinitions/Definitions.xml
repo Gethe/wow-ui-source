@@ -3,8 +3,8 @@
 	
 	<Script file="..\..\SharedXML\SettingDefinitions\Groups.lua"/>
 	<Script file="Groups.lua"/>
-	<Include file="..\..\SharedXML\SettingDefinitions\Audio.xml"/>
 	<Include file="..\..\SharedXML\SettingDefinitions\Graphics.xml"/>
+	<Include file="..\..\SharedXML\SettingDefinitions\Audio.xml"/>
 	<Include file="..\..\SharedXML\SettingDefinitions\Languages.xml"/>
 	<Script file="..\..\SharedXML\SettingDefinitions\Network.lua"/>
 	<Script file="..\..\SharedXML\SettingDefinitions\Mac.lua"/>

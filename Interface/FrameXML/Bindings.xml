@@ -272,90 +272,90 @@
 	<Binding name="BONUSACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if (PetHasActionBar()) then
 			if ( keystate == "down" ) then
-				PetActionButtonDown(1);
+				PetActionBar:PetActionButtonDown(1);
 			else
-				PetActionButtonUp(1);
+				PetActionBar:PetActionButtonUp(1);
 			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if (PetHasActionBar()) then
 			if ( keystate == "down" ) then
-				PetActionButtonDown(2);
+				PetActionBar:PetActionButtonDown(2);
 			else
-				PetActionButtonUp(2);
+				PetActionBar:PetActionButtonUp(2);
 			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if (PetHasActionBar()) then
 			if ( keystate == "down" ) then
-				PetActionButtonDown(3);
+				PetActionBar:PetActionButtonDown(3);
 			else
-				PetActionButtonUp(3);
+				PetActionBar:PetActionButtonUp(3);
 			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON4" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if (PetHasActionBar()) then
 			if ( keystate == "down" ) then
-				PetActionButtonDown(4);
+				PetActionBar:PetActionButtonDown(4);
 			else
-				PetActionButtonUp(4);
+				PetActionBar:PetActionButtonUp(4);
 			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON5" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if (PetHasActionBar()) then
 			if ( keystate == "down" ) then
-				PetActionButtonDown(5);
+				PetActionBar:PetActionButtonDown(5);
 			else
-				PetActionButtonUp(5);
+				PetActionBar:PetActionButtonUp(5);
 			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON6" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if (PetHasActionBar()) then
 			if ( keystate == "down" ) then
-				PetActionButtonDown(6);
+				PetActionBar:PetActionButtonDown(6);
 			else
-				PetActionButtonUp(6);
+				PetActionBar:PetActionButtonUp(6);
 			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON7" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if (PetHasActionBar()) then
 			if ( keystate == "down" ) then
-				PetActionButtonDown(7);
+				PetActionBar:PetActionButtonDown(7);
 			else
-				PetActionButtonUp(7);
+				PetActionBar:PetActionButtonUp(7);
 			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON8" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if (PetHasActionBar()) then
 			if ( keystate == "down" ) then
-				PetActionButtonDown(8);
+				PetActionBar:PetActionButtonDown(8);
 			else
-				PetActionButtonUp(8);
+				PetActionBar:PetActionButtonUp(8);
 			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON9" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if (PetHasActionBar()) then
 			if ( keystate == "down" ) then
-				PetActionButtonDown(9);
+				PetActionBar:PetActionButtonDown(9);
 			else
-				PetActionButtonUp(9);
+				PetActionBar:PetActionButtonUp(9);
 			end
 		end
 	</Binding>
 	<Binding name="BONUSACTIONBUTTON10" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if (PetHasActionBar()) then
 			if ( keystate == "down" ) then
-				PetActionButtonDown(10);
+				PetActionBar:PetActionButtonDown(10);
 			else
-				PetActionButtonUp(10);
+				PetActionBar:PetActionButtonUp(10);
 			end
 		end
 	</Binding>
@@ -1077,8 +1077,8 @@
 		ToggleEncounterJournal();
 	</Binding>
 	<Binding name="TOGGLEGARRISONLANDINGPAGE" category="BINDING_HEADER_INTERFACE">
-		if ( GarrisonLandingPageMinimapButton:IsShown() ) then
-			GarrisonLandingPage_Toggle();
+		if ( ExpansionLandingPageMinimapButton:IsShown() ) then
+			ExpansionLandingPageMinimapButton:ToggleLandingPage();
 		end
 	</Binding>
 

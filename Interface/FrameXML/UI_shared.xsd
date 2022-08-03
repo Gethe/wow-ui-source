@@ -680,7 +680,6 @@
 		<xs:attribute name="propagateKeyboardInput" type="xs:boolean" default="false"/>
 		<xs:attribute name="ignoreParentAlpha" type="xs:boolean" default="false"/>
 		<xs:attribute name="ignoreParentScale" type="xs:boolean" default="false"/>
-		<xs:attribute name="enableMouseWheel" type="xs:boolean" default="false"/>
 		<xs:attribute name="intrinsic" type="xs:boolean" default="false"/>
 		<xs:attribute name="clipChildren" type="xs:boolean" default="false"/>
 		<xs:attribute name="propagateHyperlinksToParent" type="xs:boolean" default="false"/>

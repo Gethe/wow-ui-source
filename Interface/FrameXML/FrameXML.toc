@@ -217,6 +217,8 @@ AutoComplete.xml
 StaticPopup.xml
 ..\SharedXML\DialogUtil.lua
 
+
+..\SharedXML\Settings\GameplaySettingsGroup.lua
 ..\SharedXML\Settings\Settings.xml
 SettingDefinitions\Definitions.xml
 
@@ -308,7 +310,7 @@ TextToSpeech.xml
 FriendsFrame.xml
 QuickJoin.xml
 RaidFrame.xml
-PetActionBarFrame.xml
+PetActionBar.xml
 MultiCastActionBarFrame.xml
 MainMenuBarBagButtons.xml
 UnitPositionFrameTemplates.xml

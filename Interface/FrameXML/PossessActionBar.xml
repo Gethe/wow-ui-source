@@ -2,45 +2,31 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PossessActionBar.lua"/>
 	
-	<CheckButton name="PossessButtonTemplate" inherits="SecureFrameTemplate, ActionButtonTemplate" virtual="true">
+	<CheckButton name="PossessButtonTemplate" inherits="SecureFrameTemplate, SmallActionButtonTemplate" mixin="PossessButtonMixin" virtual="true">
 		<Size x="30" y="30"/>
 		<Scripts>
-			<OnLoad inherit="append">
-				self.cooldown:SetSwipeColor(0, 0, 0);
-			</OnLoad>
-			<OnClick>
-				PossessButton_OnClick(self, button, down);
-			</OnClick>
-			<OnEnter>
-				PossessButton_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</CheckButton>
 
-	<Frame name="PossessBarFrame" parent="MainMenuBar" inherits="UIParentBottomManagedFrameTemplate" enableMouse="true" hidden="true">
-		<Size x="29" y="32"/>
-		<KeyValues>
-			<KeyValue key="layoutIndex" value="201" type="number"/>
-			<KeyValue key="align" value="left" type="string"/>
-			<KeyValue key="layoutOnBottom" value="true" type="boolean"/>
-		</KeyValues>
+	<Frame name="PossessActionBar" parent="UIParent" inherits="EditModeActionBarTemplate" mixin="PossessActionBarMixin" enableMouse="true" hidden="true">
+		<Size x="30" y="30"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBar" relativePoint="TOPLEFT" x="30" y="0"/>
+			<Anchor point="BOTTOM"/>
 		</Anchors>
-		<Frames>
-			<CheckButton name="PossessButton1" inherits="PossessButtonTemplate" id="1">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="10" y="3"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="PossessButton2" inherits="PossessButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="PossessButton1" relativePoint="RIGHT" x="8" y="0"/>
-				</Anchors>
-			</CheckButton>
-		</Frames>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="PossessButtonTemplate" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="2" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="noSpacers" value="true" type="boolean"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.PossessActionBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_POSSESS_ACTION_BAR_LABEL" type="global"/>
+		</KeyValues>
 	</Frame>
 </Ui>

@@ -436,6 +436,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("NEW_TOY_ADDED");
 	self:RegisterEvent("NEW_RUNEFORGE_POWER_ADDED");
 	self:RegisterEvent("TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED");
+	self:RegisterEvent("SKILL_LINE_SPECS_UNLOCKED");
 end
 
 function CreateContinuableContainerForLFGRewards()
@@ -598,6 +599,8 @@ function AlertFrameMixin:OnEvent(event, ...)
 		GarrisonRandomMissionAlertSystem:AddAlert(missionInfo);
 	elseif ( event == "NEW_RECIPE_LEARNED" ) then
 		NewRecipeLearnedAlertSystem:AddAlert(...);
+	elseif ( event == "SKILL_LINE_SPECS_UNLOCKED" ) then
+		SkillLineSpecsUnlockedAlertSystem:AddAlert(...);
 	elseif ( event == "SHOW_LOOT_TOAST_LEGENDARY_LOOTED") then
 		local itemLink = ...;
 		LegendaryItemAlertSystem:AddAlert(itemLink);

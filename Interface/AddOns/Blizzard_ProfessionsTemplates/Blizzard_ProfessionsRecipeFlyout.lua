@@ -102,6 +102,7 @@ function ProfessionsItemFlyoutMixin:OnHide()
 	self:UnregisterEvents();
 
 	self.owner = nil;
+	self:SetParent(nil);
 	self.recipeID = nil;
 	self.itemIDs = nil;
 end

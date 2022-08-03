@@ -13,27 +13,33 @@ TwitterPanelMixin = CreateFromMixins(SettingsCheckBoxControlMixin);
 
 function TwitterPanelMixin:OnLoad()
 	SettingsCheckBoxControlMixin.OnLoad(self);
-	self.Button:SetPoint("TOPLEFT", self.CheckBox, "BOTTOMLEFT");
-	self.LoginStatus:SetPoint("LEFT", self.CheckBox, "RIGHT");
+	self.Button:SetPoint("LEFT", self.LoginStatus, "RIGHT", 16, 0);
+	self.LoginStatus:SetPoint("LEFT", self.CheckBox, "RIGHT", 16, 0);
+end
+
+function TwitterPanelMixin:UpdateControls()
+	local state = self.data.state;
+	local linked = state.linked;
+	local twitterEnabled = GetCVarBool("enableTwitter");
+
+	if state.linked then
+		local name = SOCIAL_TWITTER_STATUS_CONNECTED:format(state.screenName);
+		local color = twitterEnabled and GREEN_FONT_COLOR or GRAY_FONT_COLOR;
+		self.LoginStatus:SetText(color:WrapTextInColorCode(name));
+		self.Button:SetText(SOCIAL_TWITTER_DISCONNECT);
+	else
+		local color = twitterEnabled and RED_FONT_COLOR or GRAY_FONT_COLOR;
+		self.LoginStatus:SetText(color:WrapTextInColorCode(SOCIAL_TWITTER_STATUS_NOT_CONNECTED));
+		self.Button:SetText(SOCIAL_TWITTER_SIGN_IN);
+	end
+
+	self.Button:SetWidth(self.Button:GetTextWidth() + 30);
 end
 
 function TwitterPanelMixin:Init(initializer)
 	SettingsCheckBoxControlMixin.Init(self, initializer);
 	
 	local state = self.data.state;
-	local function Update()
-		local linked = state.linked;
-		if state.linked then
-			local name = SOCIAL_TWITTER_STATUS_CONNECTED:format(state.screenName);
-			self.LoginStatus:SetText(GREEN_FONT_COLOR:WrapTextInColorCode(name));
-			self.Button:SetText(SOCIAL_TWITTER_DISCONNECT);
-		else
-			self.LoginStatus:SetText(GRAY_FONT_COLOR:WrapTextInColorCode(SOCIAL_TWITTER_STATUS_NOT_CONNECTED));
-			self.Button:SetText(SOCIAL_TWITTER_SIGN_IN);
-		end
-		self.Button:SetWidth(self.Button:GetTextWidth() + 30);
-	end
-
 	self.Button:SetScript("OnClick", function(button, buttonName, down)
 		if state.linked then
 			C_Social.TwitterDisconnect();
@@ -43,10 +49,10 @@ function TwitterPanelMixin:Init(initializer)
 		end
 	end);
 
-	state:RegisterCallback(state.Event.StatusUpdate, Update, self);
-	state:RegisterCallback(state.Event.LinkResult, Update, self);
+	state:RegisterCallback(state.Event.StatusUpdate, GenerateClosure(self.UpdateControls, self), self);
+	state:RegisterCallback(state.Event.LinkResult, GenerateClosure(self.UpdateControls, self), self);
 
-	Update();
+	self:UpdateControls();
 end
 
 function TwitterPanelMixin:Release(initializer)
@@ -59,8 +65,17 @@ function TwitterPanelMixin:Release(initializer)
 	SettingsCheckBoxControlMixin.Release(self);
 end
 
+function TwitterPanelMixin:OnCheckBoxValueChanged(twitterEnabled)
+	SettingsCheckBoxControlMixin.OnCheckBoxValueChanged(self, twitterEnabled);
+
+	self:UpdateControls();
+end
+
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(SOCIAL_LABEL);
+
+	-- Order set in GameplaySettingsGroup.lua
+	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[SOCIAL_LABEL]);
 
 	-- Mature Language
 	do

@@ -1,6 +1,3 @@
-PETACTIONBAR_SLIDETIME = 0.09;
-PETACTIONBAR_YPOS = 89;
-PETACTIONBAR_XPOS = 36;
 NUM_PET_ACTION_SLOTS = 10;
 
 PET_DEFENSIVE_TEXTURE = "Interface\\Icons\\Ability_Defend";
@@ -16,39 +13,40 @@ PET_MOVE_TO_TEXTURE = "Interface\\Icons\\Ability_Hunter_Pet_Goto";
 
 PET_ACTION_HIGHLIGHT_MARKS = {};
 
-function ClearPetActionHighlightMarks()
-	PET_ACTION_HIGHLIGHT_MARKS = {};
-end
+PetActionBarMixin = {};
 
-function HasPetActionHighlightMark(index)
+local function HasPetActionHighlightMark(index)
 	return PET_ACTION_HIGHLIGHT_MARKS[index];
 end
 
-function UpdatePetActionHighlightMarks(petAction)
-	local petBarIndices = C_ActionBar.GetPetActionPetBarIndices(petAction);
-	if petBarIndices then
-		PET_ACTION_HIGHLIGHT_MARKS = tInvert(petBarIndices);
-	else
-		ClearPetActionHighlightMarks();
-	end
-end
-
-local function PetActionBar_CancelSpellLoadCallback(button)
+local function CancelSpellLoadCallback(button)
 	if button.spellDataLoadedCancelFunc then
 		button.spellDataLoadedCancelFunc();
 		button.spellDataLoadedCancelFunc = nil;
 	end
 end
 
-function PetActionBar_OnHide(self)
-	self.mode = "none";
-	for i=1, NUM_PET_ACTION_SLOTS, 1 do
-		PetActionBar_CancelSpellLoadCallback(_G["PetActionButton" .. i]);
-	end
-	UIParentManagedFrameMixin.OnHide(self)
+function PetActionBarMixin:ClearPetActionHighlightMarks()
+	PET_ACTION_HIGHLIGHT_MARKS = {};
 end
 
-function PetActionBar_OnLoad (self)
+function PetActionBarMixin:UpdatePetActionHighlightMarks(petAction)
+	local petBarIndices = C_ActionBar.GetPetActionPetBarIndices(petAction);
+	if petBarIndices then
+		PET_ACTION_HIGHLIGHT_MARKS = tInvert(petBarIndices);
+	else
+		self:ClearPetActionHighlightMarks();
+	end
+end
+
+function PetActionBarMixin:OnHide()
+	self.mode = "none";
+	for i=1, NUM_PET_ACTION_SLOTS, 1 do
+		CancelSpellLoadCallback(self.actionButtons[i]);
+	end
+end
+
+function PetActionBarMixin:OnLoad()
 	self:RegisterEvent("PLAYER_CONTROL_LOST");
 	self:RegisterEvent("PLAYER_CONTROL_GAINED");
 	self:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED");
@@ -56,57 +54,44 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("PET_BAR_UPDATE");
 	self:RegisterEvent("PET_BAR_UPDATE_COOLDOWN");
-	self:RegisterEvent("PET_BAR_SHOWGRID");
-	self:RegisterEvent("PET_BAR_HIDEGRID");
 	self:RegisterEvent("PET_BAR_UPDATE_USABLE");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 	self:RegisterUnitEvent("UNIT_AURA", "pet");
-	self.showgrid = 0;
-	PetActionBar_Update(self);
+	self:Update();
 	if ( PetHasActionBar() ) then
-		ShowPetActionBar();
-		LockPetActionBar();
+		self:Show();
+		self:LockPetActionBar();
 	end
 end
 
-function PetActionBar_OnEvent(self, event, ...)
+function PetActionBarMixin:OnEvent(event, ...)
 	local arg1 = ...;
 	if ( event == "PET_BAR_UPDATE" or (event == "UNIT_PET" and arg1 == "player") or event == "PET_UI_UPDATE" or event == "UPDATE_VEHICLE_ACTIONBAR") then
 		if ( PetHasActionBar() and UnitIsVisible("pet") ) then
-			PetActionBar_Update(self);
-			ShowPetActionBar();
-			LockPetActionBar();
+			self:Update();
+			self:Show();
+			self:LockPetActionBar();
+			self:UpdateShownButtons();
+			self:UpdateGridLayout();
 		else
-			UnlockPetActionBar();
-			HidePetActionBar();
+			self:UnlockPetActionBar();
+			self:Hide();
 		end
 	elseif ( event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" or event == "PET_BAR_UPDATE_USABLE" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
-		PetActionBar_Update(self);
+		self:Update(self);
 	elseif ( (event == "UNIT_FLAGS") or (event == "UNIT_AURA") ) then
 		if ( arg1 == "pet" ) then
-			PetActionBar_Update(self);
+			self:Update();
 		end
 	elseif ( event =="PET_BAR_UPDATE_COOLDOWN" ) then
-		PetActionBar_UpdateCooldowns();
-	elseif ( event =="PET_BAR_SHOWGRID" ) then
-		PetActionBar_ShowGrid();
-	elseif ( event =="PET_BAR_HIDEGRID" ) then
-		PetActionBar_HideGrid();
+		self:UpdateCooldowns();
 	end
 end
 
-function PetActionBarFrame_IsAboveStance(ignoreShowing)
-	return ( ((StanceBar and GetNumShapeshiftForms() > 0) or (MultiCastActionBarFrame and HasMultiCastActionBar()) or
-		(MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown())) and
-		(not MultiBarBottomLeft:IsShown() and MultiBarBottomRight:IsShown()) and
-		(ignoreShowing or (PetActionBarFrame and PetActionBarFrame:IsShown())))
-end
-
-function PetActionBarFrame_OnUpdate(self, elapsed)
-	local yPos;
+function PetActionBarMixin:OnUpdate(elapsed)
 	if ( self.slideTimer and (self.slideTimer < self.timeToSlide) ) then
 		self.completed = nil;
 		self.slideTimer = self.slideTimer + elapsed;
@@ -124,7 +109,7 @@ function PetActionBarFrame_OnUpdate(self, elapsed)
 		if ( rangeTimer <= 0 ) then
 			for i=1, NUM_PET_ACTION_SLOTS, 1 do
 				local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID, checksRange, inRange = GetPetActionInfo(i);
-				ActionButton_UpdateRangeIndicator(_G["PetActionButton" .. i], checksRange, inRange);
+				ActionButton_UpdateRangeIndicator(self.actionButtons[i], checksRange, inRange);
 			end
 			rangeTimer = TOOLTIP_UPDATE_TIME;
 		end
@@ -132,14 +117,13 @@ function PetActionBarFrame_OnUpdate(self, elapsed)
 	end
 end
 
-function PetActionBar_Update(self)
+function PetActionBarMixin:Update()
 	local petActionButton, petActionIcon, petAutoCastableTexture, petAutoCastShine;
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
-		local buttonName = "PetActionButton" .. i;
-		petActionButton = _G[buttonName];
-		petActionIcon = _G[buttonName.."Icon"];
-		petAutoCastableTexture = _G[buttonName.."AutoCastable"];
-		petAutoCastShine = _G[buttonName.."Shine"];
+		petActionButton = self.actionButtons[i];
+		petActionIcon = petActionButton.icon;
+		petAutoCastableTexture = petActionButton.AutoCastableTexture;
+		petAutoCastShine = petActionButton.AutoCastShine;
 		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(i);
 		if ( not isToken ) then
 			petActionIcon:SetTexture(texture);
@@ -179,13 +163,6 @@ function PetActionBar_Update(self)
 		else
 			AutoCastShine_AutoCastStop(petAutoCastShine);
 		end
-		if ( name ) then
-			petActionButton:Show();
-		else
-			if ( PetActionBarFrame.showgrid == 0 ) then
-				petActionButton:Hide();
-			end
-		end
 		if ( texture ) then
 			if ( GetPetActionSlotUsable(i) ) then
 				petActionIcon:SetVertexColor(1, 1, 1);
@@ -199,105 +176,30 @@ function PetActionBar_Update(self)
 
 		SharedActionButton_RefreshSpellHighlight(petActionButton, HasPetActionHighlightMark(i));
 	end
-	PetActionBar_UpdateCooldowns();
+	self:UpdateCooldowns();
 	if ( not PetHasActionBar() ) then
 		--ControlReleased();
-		HidePetActionBar();
+		self:Hide();
 	end
-	PetActionBarFrame.rangeTimer = -1;
+	self.rangeTimer = -1;
 end
 
-function PetActionBar_UpdateCooldowns()
+function PetActionBarMixin:UpdateCooldowns()
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
-		local cooldown = _G["PetActionButton"..i.."Cooldown"];
+		local cooldown = self.actionButtons[i].cooldown;
 		local start, duration, enable = GetPetActionCooldown(i);
 		CooldownFrame_Set(cooldown, start, duration, enable);
-		
+
 		-- Update tooltip
-		local actionButton = _G["PetActionButton"..i];
+		local actionButton = self.actionButtons[i];
 		if ( GameTooltip:GetOwner() == actionButton ) then
 			actionButton:OnEnter(actionButton);
 		end
 	end
 end
 
-function PetActionBar_UpdatePositionValues()
-	if ( PetActionBarFrame_IsAboveStance(true) ) then
-		PETACTIONBAR_XPOS = 36;
-	elseif ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
-		PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
-	elseif ( StanceBar and GetNumShapeshiftForms() > 0 ) then
-		PETACTIONBAR_XPOS = 500;
-	elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
-		PETACTIONBAR_XPOS = 500;
-	else
-		PETACTIONBAR_XPOS = 36;
-	end
-end
-
-function ShowPetActionBar(doNotSlide)
-	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and (not PetActionBarFrame.locked or doNotSlide) and not PetActionBarFrame.ctrlPressed ) then
-		PetActionBar_UpdatePositionValues();
-		if ( MainMenuBar.busy or UnitHasVehicleUI("player") or doNotSlide ) then
-			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
-			PetActionBarFrame.state = "top";
-			PetActionBarFrame:Show();
-		else
-			PetActionBarFrame:Show();
-			if ( PetActionBarFrame.completed ) then
-				PetActionBarFrame.slideTimer = 0;
-			end
-			PetActionBarFrame.timeToSlide = PETACTIONBAR_SLIDETIME;
-			PetActionBarFrame.mode = "show";
-		end
-		UIParent_ManageFramePositions();
-	end
-end
-
-function HidePetActionBar()
-	if ( PetActionBarFrame.showgrid == 0 and PetActionBarFrame:IsShown() and not PetActionBarFrame.locked and not PetActionBarFrame.ctrlPressed ) then
-		if ( MainMenuBar.busy or UnitHasVehicleUI("player") ) then
-			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, 0);
-			PetActionBarFrame.state = "bottom";
-			PetActionBarFrame:Hide();
-		else
-			if ( PetActionBarFrame.completed ) then
-				PetActionBarFrame.slideTimer = 0;
-			end
-			PetActionBarFrame.timeToSlide = PETACTIONBAR_SLIDETIME;
-			PetActionBarFrame.mode = "hide";
-		end
-	end
-end
-
-function PetActionBar_ShowGrid()
-	ShowPetActionBar();
-	PetActionBarFrame.showgrid = PetActionBarFrame.showgrid + 1;
-	for i=1, NUM_PET_ACTION_SLOTS do
-		_G["PetActionButton"..i]:Show();
-	end
-	PetActionBarFrame:Layout(); 
-end
-
-function PetActionBar_HideGrid()
-	if ( PetActionBarFrame.showgrid > 0 ) then
-		PetActionBarFrame.showgrid = PetActionBarFrame.showgrid - 1;
-	end
-	if ( PetActionBarFrame.showgrid == 0 ) then
-		HidePetActionBar();
-		local name;
-		for i=1, NUM_PET_ACTION_SLOTS, 1 do
-			name = GetPetActionInfo(i);
-			if ( not name ) then
-				_G["PetActionButton"..i]:Hide();
-			end
-		end
-	end
-	PetActionBarFrame:Layout(); 
-end
-
-function PetActionButtonDown(id)
-	local button = _G["PetActionButton"..id];
+function PetActionBarMixin:PetActionButtonDown(id)
+	local button = self.actionButtons[id];
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
@@ -306,8 +208,8 @@ function PetActionButtonDown(id)
 	end
 end
 
-function PetActionButtonUp (id)
-	local button = _G["PetActionButton"..id];
+function PetActionBarMixin:PetActionButtonUp(id)
+	local button = self.actionButtons[id];
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
 		if(not GetCVarBool("ActionButtonUseKeyDown")) then
@@ -316,12 +218,12 @@ function PetActionButtonUp (id)
 	end
 end
 
-function LockPetActionBar()
-	PetActionBarFrame.locked = 1;
+function PetActionBarMixin:LockPetActionBar()
+	self.locked = 1;
 end
 
-function UnlockPetActionBar()
-	PetActionBarFrame.locked = nil;
+function PetActionBarMixin:UnlockPetActionBar()
+	self.locked = nil;
 end
 
 PetActionButtonMixin = {}
@@ -331,10 +233,10 @@ function PetActionButtonMixin:OnLoad()
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
 	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
-	_G[self:GetName().."Cooldown"]:ClearAllPoints();
-	_G[self:GetName().."Cooldown"]:SetWidth(33);
-	_G[self:GetName().."Cooldown"]:SetHeight(33);
-	_G[self:GetName().."Cooldown"]:SetPoint("CENTER", self, "CENTER", -2, -1);
+	self.cooldown:ClearAllPoints();
+	self.cooldown:SetWidth(33);
+	self.cooldown:SetHeight(33);
+	self.cooldown:SetPoint("CENTER", self, "CENTER", -2, -1);
 	self:SetHotkeys();
 	self.cooldown:SetSwipeColor(0, 0, 0);
 end
@@ -369,7 +271,7 @@ function PetActionButtonMixin:OnDragStart()
 	if ( not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
 		self:SetChecked(false);
 		PickupPetAction(self:GetID());
-		PetActionBar_Update();
+		PetActionBar:Update();
 	end
 end
 
@@ -378,7 +280,7 @@ function PetActionButtonMixin:OnReceiveDrag()
 	if (cursorType == "petaction") then
 		self:SetChecked(false);
 		PickupPetAction(self:GetID());
-		PetActionBar_Update();
+		PetActionBar:Update();
 	end
 end
 
@@ -427,7 +329,7 @@ function PetActionButtonMixin:OnUpdate(elapsed)
 			end
 			flashtime = ATTACK_BUTTON_FLASH_TIME - overtime;
 
-			local flashTexture = _G[self:GetName().."Flash"];
+			local flashTexture = self.Flash;
 			if ( flashTexture:IsShown() ) then
 				flashTexture:Hide();
 			else
@@ -441,7 +343,7 @@ end
 
 function PetActionButtonMixin:SetHotkeys()
 	local binding = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), true);
-	local hotkey = _G[self:GetName().."HotKey"];
+	local hotkey = self.HotKey;
 	if ( binding == "" ) then
 		hotkey:SetText(RANGE_INDICATOR);
 		hotkey:Hide();
@@ -458,8 +360,13 @@ end
 
 function PetActionButtonMixin:StopFlash()
 	self.flashing = false;
-	_G[self:GetName().."Flash"]:Hide();
+	self.Flash:Hide();
 end
+
 function PetActionButtonMixin:IsFlashing()
 	return self.flashing;
+end
+
+function PetActionButtonMixin:HasAction()
+    return GetPetActionInfo(self.index);
 end

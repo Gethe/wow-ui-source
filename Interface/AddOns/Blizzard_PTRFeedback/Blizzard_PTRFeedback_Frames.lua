@@ -365,9 +365,11 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
     end
     
     local numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
-    PTR_IssueReporter.StandaloneSurvey.submitButton.forceSelection = forceSelection
-    PTR_IssueReporter.StandaloneSurvey.submitButton.questionFrame = questionFrame
     
+    if (PTR_IssueReporter.StandaloneSurvey) and (PTR_IssueReporter.StandaloneSurvey.forceSelection) then
+        PTR_IssueReporter.StandaloneSurvey.submitButton.forceSelection = forceSelection
+        PTR_IssueReporter.StandaloneSurvey.submitButton.questionFrame = questionFrame
+    end    
     
     if  numberOfUnusedFrames > 0 then -- Check if there is a frame we should reuse
         newCheckBox = PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames]
@@ -536,8 +538,11 @@ function PTR_IssueReporter.AttachIconViewer(surveyFrame, survey, dataPackage)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.CleanReportFrame(frame)
-    PTR_IssueReporter.StandaloneSurvey.submitButton.forceSelection = false
-    PTR_IssueReporter.SetSurveyButtonEnabledState()
+    
+    if (PTR_IssueReporter.StandaloneSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) then
+        PTR_IssueReporter.StandaloneSurvey.submitButton.forceSelection = false
+        PTR_IssueReporter.SetSurveyButtonEnabledState()
+    end
     
     if (frame) and (frame.FrameComponents) then
         for key, component in pairs (frame.FrameComponents) do

@@ -866,9 +866,9 @@ function Professions.LayoutFinishingSlots(finishingSlots, finishingSlotContainer
 			
 		local anchor;
 		if #finishingSlots == 1 then
-			anchor = CreateAnchor("TOP", finishingSlotContainer, "TOP", 60, -35)
+			anchor = CreateAnchor("TOP", finishingSlotContainer, "TOP", 60, -48)
 		else
-			anchor = CreateAnchor("TOPLEFT", finishingSlotContainer, "TOPLEFT", 70, -35)
+			anchor = CreateAnchor("TOPLEFT", finishingSlotContainer, "TOPLEFT", 70, -48)
 		end
 
 		AnchorUtil.GridLayout(finishingSlots, anchor, layout);

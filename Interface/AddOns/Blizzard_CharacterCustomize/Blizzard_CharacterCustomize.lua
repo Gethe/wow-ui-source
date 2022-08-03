@@ -655,10 +655,11 @@ end
 CharCustomizeAudioInterfacePlayButtonMixin = {};
 
 function CharCustomizeAudioInterfacePlayButtonMixin:OnClick()
-	if self:GetParent():IsPlaying() then
-		self:GetParent():StopAudio();
+	local parent = self:GetParent();
+	if parent:IsPlaying() then
+		parent:StopAudio();
 	else
-		self:GetParent():PlayAudio();
+		parent:PlayAudio(parent.soundKit);
 	end
 end
 
@@ -682,37 +683,46 @@ end
 
 CharCustomizeAudioInterfaceMixin = {};
 
-function CharCustomizeAudioInterfaceMixin:SetupAudio()
+function CharCustomizeAudioInterfaceMixin:SetupAudio(soundKit)
+	local isMuted = IsSoundMuted();
 	self.previousSFXSetting = GetCVar("Sound_EnableSFX");
 	self.previousAllSoundSetting = GetCVar("Sound_EnableAllSound");
-	self.isPlaying = false;
+	self.soundKit = soundKit;
 	self.PlayWaveform.Waveform:SetValue(0);
-	self.MuteButton:SetShown(IsSoundMuted());
 	self.PlayButton:Show();
-
-	-- TODO add play on hover as well. Hover overrides selected and immediatley plays. Leaving hover resets to selected state without playing
+	self.MuteButton:SetShown(isMuted);
+	self.PlayButton:SetEnabled(soundKit);
 end
 
 function CharCustomizeAudioInterfaceMixin:IsPlaying()
 	return self.soundHandle and C_Sound.IsPlaying(self.soundHandle);
 end
 
-function CharCustomizeAudioInterfaceMixin:PlayAudio()
+function CharCustomizeAudioInterfaceMixin:PlayAudio(soundKit)
 	if IsSoundMuted() then
 		self.MuteButton.PulseAnim:Play();
 	else
-		self:SetScript("OnUpdate", self.OnAudioPlayingUpdate);
-		local _, soundHandle = PlaySound(SOUNDKIT.MENU_CREDITS07); -- TODO: Replace with actual soundkit, also play on a loop
-		self.soundHandle = soundHandle;
-		self.PlayButton:SetNormalAtlas("charactercreate-customize-speakeroffbutton");
-		self.PlayButton:SetPushedAtlas("charactercreate-customize-speakeroffbutton-down");
+		if self.soundHandle then
+			StopSound(self.soundHandle);
+			self.soundHandle = nil;
+		end
+		if soundKit then
+			local _, soundHandle = PlaySound(soundKit);
+			self.soundHandle = soundHandle;
+			self.PlayButton:SetNormalAtlas("charactercreate-customize-speakeroffbutton");
+			self.PlayButton:SetPushedAtlas("charactercreate-customize-speakeroffbutton-down");
+			self:SetScript("OnUpdate", self.OnAudioPlayingUpdate);
+		end
 	end
 end
 
 function CharCustomizeAudioInterfaceMixin:StopAudio()
 	self:SetScript("OnUpdate", nil);
 	self.PlayWaveform.Waveform:SetValue(0);
-	StopSound(self.soundHandle);
+	if self.soundHandle then
+		StopSound(self.soundHandle);
+		self.soundHandle = nil;
+	end
 	self.PlayButton:SetNormalAtlas("charactercreate-customize-playbutton");
 	self.PlayButton:SetPushedAtlas("charactercreate-customize-playbutton-down");
 end
@@ -734,12 +744,13 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupAnchors(tooltip)
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:SetupAudio()
-	if self.optionData.isSound and self.optionData.currentChoiceIndex then
+	if self.optionData.isSound then
 		local audioInterface = CharCustomizeFrame.pools:Acquire("CharCustomizeAudioInterface");
 		audioInterface:SetParent(self);
 		audioInterface:SetPoint("RIGHT", self.Label, "LEFT", -40, 0);
 		audioInterface:Show();
-		audioInterface:SetupAudio();
+		audioInterface:SetupAudio(self.optionData.currentChoiceIndex and SOUNDKIT.MENU_CREDITS07 or nil);
+		self.audioInterface = audioInterface;
 	end
 end
 
@@ -772,6 +783,10 @@ function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
 
 		tooltip:Show();
 	end
+
+	if self.optionData.isSound and not entry.isSelected then
+		self.audioInterface:PlayAudio(SOUNDKIT.MENU_CREDITS07);
+	end
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseLeave(entry)
@@ -779,6 +794,7 @@ function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseLeave(entry)
 
 	local tooltip = self:GetAppropriateTooltip();
 	tooltip:Hide();
+	self.audioInterface:StopAudio();
 end
 
 local POPOUT_CLEARANCE = 100;

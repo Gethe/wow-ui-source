@@ -631,8 +631,8 @@ function GuildBankTabMixin:OnClick(button, down)
 	SetCurrentGuildBankTab(currentTab);
 	guildBankFrame:UpdateTabs();
 	if ( CanEditGuildBankTabInfo() and button == "RightButton" and currentTab ~= (GetNumGuildBankTabs() + 1) ) then
+		GuildBankPopupFrame.mode = IconSelectorPopupFrameModes.Edit;
 		GuildBankPopupFrame:Show();
-		GuildBankPopupFrame:SetSelectedTexture(self.Button.IconTexture:GetTexture());
 	end
 	guildBankFrame:Update();
 	if ( guildBankFrame.Log:IsShown() ) then
@@ -836,37 +836,10 @@ end
 
 GuildBankPopupFrameMixin = {};
 
-function GuildBankPopupFrameMixin:RefreshIconList()
-	self.iconDataProvider = GuildBankFrame:RefreshIconList();
-end
-
-function GuildBankPopupFrameMixin:SetSelectedTexture(icon)
-	self:Update();
-	self.IconSelector:SetSelectedIndex(self.iconDataProvider:GetIndexOfIcon(icon));
-	self.IconSelector:ScrollToSelectedIndex();
-end
-
-function GuildBankPopupFrameMixin:Update()
-	local name = GetGuildBankTabInfo(GetCurrentGuildBankTab());
-	self.EditBox:SetText(name);
-	
-	self:RefreshIconList();
-	local getSelection = GenerateClosure(self.iconDataProvider.GetIconByIndex, self.iconDataProvider);
-	local getNumSelections = GenerateClosure(self.iconDataProvider.GetNumIcons, self.iconDataProvider);
-	self.IconSelector:SetSelectionsDataProvider(getSelection, getNumSelections);
-end
-
-function GuildBankPopupFrameMixin:OnLoad()
-	local function GuildBankPopupIconInitializer(button, selectionIndex, icon)
-		button:SetIconTexture(icon);
-	end
-
-	self.IconSelector:SetSetupCallback(GuildBankPopupIconInitializer);
-	self.IconSelector:AdjustScrollBarOffsets(0, 18, -1);
-end
-
 local GUILD_BANK_POPUP_FRAME_MINIMUM_PADDING = 40;
 function GuildBankPopupFrameMixin:OnShow()
+	IconSelectorPopupFrameTemplateMixin.OnShow(self);
+
 	local rightPos = GuildBankFrame:GetRight();
 	local space = GetScreenWidth() - rightPos;
 	self:ClearAllPoints();
@@ -875,61 +848,77 @@ function GuildBankPopupFrameMixin:OnShow()
 	else
 		self:SetPoint("TOPLEFT", GuildBankFrame, "TOPRIGHT", 38, 0);
 	end
-	
-	local name = GetGuildBankTabInfo(GetCurrentGuildBankTab());
-	if ( not name or name == "" ) then
-		name = format(GUILDBANK_TAB_NUMBER, GetCurrentGuildBankTab());
+
+	self.BorderBox.IconSelectorEditBox:SetFocus();
+
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	self.iconDataProvider = GuildBankFrame:RefreshIconList();
+	self:Update();
+	self.BorderBox.IconSelectorEditBox:OnTextChanged();
+
+	local function OnIconSelected(selectionIndex, icon)
+		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(icon);
+
+		-- Index is not yet set, but we know if an icon in IconSelector was selected it was in the list, so set directly.
+		self.BorderBox.SelectedIconArea.SelectedIconButton.SelectedTexture:SetShown(false);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconHeader:SetText(ICON_SELECTION_TITLE_CURRENT);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_CLICK);
 	end
-	
-	self:RefreshIconList();
+    self.IconSelector:SetSelectedCallback(OnIconSelected);
 end
 
 function GuildBankPopupFrameMixin:OnHide()
+	IconSelectorPopupFrameTemplateMixin.OnHide(self);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
-function GuildBankPopupFrameMixin:ConfirmEdit()
-	local name = self.EditBox:GetText();
+function GuildBankPopupFrameMixin:Update()
+	-- Guild bank tabs are unique from other icon selections because an initial name and texture are created for them, and all flows are 'edit' cases.
+	local name, texture = GetGuildBankTabInfo(GetCurrentGuildBankTab());
+	self.BorderBox.IconSelectorEditBox:SetText(name);
+	self.BorderBox.IconSelectorEditBox:HighlightText();
+
+	-- Initial state of guild bank tab
+	if ( texture == "Interface\\Icons\\INV_Misc_QuestionMark" ) then
+		local initialIndex = 1;
+		self.IconSelector:SetSelectedIndex(initialIndex);
+		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(self:GetIconByIndex(initialIndex));
+	else
+		self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(texture));
+		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(texture);
+	end
+
+	local getSelection = GenerateClosure(self.iconDataProvider.GetIconByIndex, self.iconDataProvider);
+	local getNumSelections = GenerateClosure(self.iconDataProvider.GetNumIcons, self.iconDataProvider);
+	self.IconSelector:SetSelectionsDataProvider(getSelection, getNumSelections);
+	self.IconSelector:ScrollToSelectedIndex();
+
+	self.BorderBox.SelectedIconArea.SelectedIconButton:SetSelectedTexture();
+	self:SetSelectedIconText();
+end
+
+function GuildBankPopupFrameMixin:CancelButton_OnClick()
+	IconSelectorPopupFrameTemplateMixin.CancelButton_OnClick(self);
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+end
+
+function GuildBankPopupFrameMixin:OkayButton_OnClick()
+	IconSelectorPopupFrameTemplateMixin.OkayButton_OnClick(self);
+
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+	local iconTexture = self.BorderBox.SelectedIconArea.SelectedIconButton:GetIconTexture();
+
+	if type(iconTexture) == "string" then
+		iconTexture = string.gsub(iconTexture, [[INTERFACE\ICONS\]], "");
+	end
+
+	local text = self.BorderBox.IconSelectorEditBox:GetText();
 	local tab = GetCurrentGuildBankTab();
-	if ( not name or name == "" ) then
-		name = format(GUILDBANK_TAB_NUMBER, tab);
+
+	text = string.gsub(text, "\"", "");
+	if ( not text or text == "" ) then
+		text = format(GUILDBANK_TAB_NUMBER, tab);
 	end
-	local iconTexture = self.iconDataProvider:GetIconForSaving(self.IconSelector:GetSelectedIndex());
-	SetGuildBankTabInfo(tab, name, iconTexture);
-	self:Hide();
-end
 
-function GuildBankPopupFrameMixin:CancelEdit()
-	self:Hide();
-end
-
-
-GuildBankPopupCancelButtonMixin = {};
-
-function GuildBankPopupCancelButtonMixin:OnClick(button, down)
-	self:GetParent():CancelEdit();
-	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-end
-
-
-GuildBankPopupOkayButtonMixin = {};
-
-function GuildBankPopupOkayButtonMixin:OnClick(button, down)
-	self:GetParent():ConfirmEdit();
-	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-end
-
-
-GuildBankPopupEditBoxMixin = {};
-
-function GuildBankPopupEditBoxMixin:OnEscapePressed()
-	self:GetParent():CancelEdit();
-end
-
-function GuildBankPopupEditBoxMixin:OnEnterPressed()
-	local popupFrame = self:GetParent();
-	if ( popupFrame.OkayButton:IsEnabled() ) then
-		popupFrame:ConfirmEdit();
-	end
-	self:ClearFocus();
+	SetGuildBankTabInfo(tab, text, iconTexture);
 end

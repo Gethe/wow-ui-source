@@ -440,12 +440,12 @@ function ItemInteractionMixin:UpdateCurrency()
 	local amount = currencyInfo.quantity;
 	local currencyTexture = currencyInfo.iconFileID;
 	self.ButtonFrame.Currency.currencyID = self.currencyTypeId;
-	self.ButtonFrame.Currency.icon:SetTexture(currencyTexture);
-	self.ButtonFrame.Currency.count:SetText(self.cost);
+	self.ButtonFrame.Currency.Icon:SetTexture(currencyTexture);
+	self.ButtonFrame.Currency.Count:SetText(self.cost);
 	if (self.cost > amount) then
-		self.ButtonFrame.Currency.count:SetTextColor(RED_FONT_COLOR:GetRGB());
+		self.ButtonFrame.Currency.Count:SetTextColor(RED_FONT_COLOR:GetRGB());
 	else
-		self.ButtonFrame.Currency.count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.ButtonFrame.Currency.Count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	end
 	self:UpdateActionButtonState();
 end

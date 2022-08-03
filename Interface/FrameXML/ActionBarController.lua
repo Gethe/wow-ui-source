@@ -83,7 +83,7 @@ function ActionBarController_OnEvent(self, event, ...)
 	
 	--possess
 	if ( event == "UPDATE_POSSESS_BAR" ) then
-		PossessBar_Update();
+		PossessActionBar:Update();
 		StanceBar:Update();
 	end
 	
@@ -124,13 +124,13 @@ function ActionBarController_OnEvent(self, event, ...)
 end
 
 function ActionBarController_UpdateAll(force)
-	PossessBar_Update();
+	PossessActionBar:Update();
 	StanceBar:Update();
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
-	
+
 	-- If we have a skinned vehicle bar or skinned override bar, display the OverrideActionBar
 	if ((HasVehicleActionBar() and UnitVehicleSkin("player") and UnitVehicleSkin("player") ~= "")
-	or (HasOverrideActionBar() and GetOverrideBarSkin() and GetOverrideBarSkin() ~= 0)) then
+		or (HasOverrideActionBar() and GetOverrideBarSkin() and GetOverrideBarSkin() ~= 0)) then
 		OverrideActionBar_UpdateSkin();
 		CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_OVERRIDE;
 	-- If we have a non-skinned override bar of some sort, use the MainMenuBar
@@ -146,7 +146,7 @@ function ActionBarController_UpdateAll(force)
 		else
 			MainMenuBar:SetAttribute("actionpage", GetActionBarPage());
 		end
-		
+
 		for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
 			frame:UpdateAction(force);
 		end
@@ -154,7 +154,7 @@ function ActionBarController_UpdateAll(force)
 		-- Otherwise, display the normal action bar
 		ActionBarController_ResetToDefault(force);
 	end
-	
+
 	ValidateActionBarTransition();
 end
 
@@ -170,7 +170,7 @@ end
 ----------------------------------------------------
 
 function ActionBarBusy()
-	return MainMenuBar.slideOut:IsPlaying() or OverrideActionBar.slideOut:IsPlaying() or C_PetBattles.IsInBattle();
+	return OverrideActionBar.slideOut:IsPlaying() or C_PetBattles.IsInBattle();
 end
 
 function BeginActionBarTransition(bar, animIn)
@@ -184,32 +184,25 @@ function ValidateActionBarTransition()
 		return; --Don't evluate and action bar state durring animations or while in Pet Battles
 	end
 
-	MultiActionBar_Update();
-	UIParent_ManageFramePositions();
-
 	if CURRENT_ACTION_BAR_STATE == LE_ACTIONBAR_STATE_MAIN then
+		MainMenuBar:Show();
+
+		if StanceBar:ShouldShow() then
+			StanceBar:Show();
+		end
+
 		if OverrideActionBar:IsShown() then
 			BeginActionBarTransition(OverrideActionBar, nil);
-		elseif not MainMenuBar:IsShown() then
-			BeginActionBarTransition(MainMenuBar, 1);
-			if MultiBar3_IsVisible() and MultiBarRight:IsCurrentlyRightAnchored() then
-				BeginActionBarTransition(MultiBarRight, 1);
-			end
-			if MultiBar4_IsVisible() and MultiBarLeft:IsCurrentlyRightAnchored() then
-				BeginActionBarTransition(MultiBarLeft, 1);
-			end
 		end
 	elseif CURRENT_ACTION_BAR_STATE == LE_ACTIONBAR_STATE_OVERRIDE then
-		if MainMenuBar:IsShown() then
-			BeginActionBarTransition(MainMenuBar, nil);
-			if MultiBar3_IsVisible() and MultiBarRight:IsCurrentlyRightAnchored()  then
-				BeginActionBarTransition(MultiBarRight, nil);
-			end
-			if MultiBar4_IsVisible() and MultiBarLeft:IsCurrentlyRightAnchored() then
-				BeginActionBarTransition(MultiBarLeft, nil);
-			end
-		elseif not OverrideActionBar:IsShown() then
+		MainMenuBar:Hide();
+		StanceBar:Hide();
+
+		if not OverrideActionBar:IsShown() then
 			BeginActionBarTransition(OverrideActionBar, 1);
 		end
 	end
+
+	MultiActionBar_Update();
+	UIParent_ManageFramePositions();
 end

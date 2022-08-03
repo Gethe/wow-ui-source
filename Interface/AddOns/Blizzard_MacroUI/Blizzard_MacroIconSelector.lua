@@ -1,27 +1,27 @@
-
 MacroPopupFrameMixin = {};
 
-function MacroPopupFrameMixin:OnLoad()
-	local function MacroPopupFrameIconButtonInitializer(button, selectionIndex, icon)
-		button:SetIconTexture(icon);
-	end
-
-	self.IconSelector:SetSetupCallback(MacroPopupFrameIconButtonInitializer);
-
-	self.IconSelector:AdjustScrollBarOffsets(0, 18, -1);
-end
-
 function MacroPopupFrameMixin:OnShow()
-	MacroPopupEditBox:SetFocus();
+	IconSelectorPopupFrameTemplateMixin.OnShow(self);
+	self.BorderBox.IconSelectorEditBox:SetFocus();
 
-	if ( self.mode == "new" ) then
+	if ( self.mode == IconSelectorPopupFrameModes.New ) then
 		MacroFrameText:Hide();
 	end
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.iconDataProvider = self:GetMacroFrame():RefreshIconDataProvider();
 	self:Update();
-	MacroPopupOkayButton_Update();
+	self.BorderBox.IconSelectorEditBox:OnTextChanged();
+
+	local function OnIconSelected(selectionIndex, icon)
+		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(icon);
+
+		-- Index is not yet set, but we know if an icon in IconSelector was selected it was in the list, so set directly.
+		self.BorderBox.SelectedIconArea.SelectedIconButton.SelectedTexture:SetShown(false);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconHeader:SetText(ICON_SELECTION_TITLE_CURRENT);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_CLICK);
+	end
+    self.IconSelector:SetSelectedCallback(OnIconSelected);
 
 	-- Disable Buttons
 	MacroEditButton:Disable();
@@ -32,9 +32,10 @@ function MacroPopupFrameMixin:OnShow()
 end
 
 function MacroPopupFrameMixin:OnHide()
+	IconSelectorPopupFrameTemplateMixin.OnHide(self);
 	local macroFrame = self:GetMacroFrame();
 
-	if ( self.mode == "new" ) then
+	if ( self.mode == IconSelectorPopupFrameModes.New ) then
 		MacroFrameText:Show();
 		MacroFrameText:SetFocus();
 	end
@@ -53,88 +54,65 @@ end
 
 function MacroPopupFrameMixin:Update()
 	-- Determine whether we're creating a new macro or editing an existing one
-	if self.mode == "new" then
-		MacroPopupEditBox:SetText("");
-		self.IconSelector:SetSelectedIndex(1);
-	elseif self.mode == "edit" then
+	if ( self.mode == IconSelectorPopupFrameModes.New ) then
+		self.BorderBox.IconSelectorEditBox:SetText("");
+		local initialIndex = 1;
+		self.IconSelector:SetSelectedIndex(initialIndex);
+		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(self:GetIconByIndex(initialIndex));
+	elseif ( self.mode == IconSelectorPopupFrameModes.Edit ) then
 		local macroFrame = self:GetMacroFrame();
 		local actualIndex = macroFrame:GetMacroDataIndex(macroFrame:GetSelectedIndex());
 		local name = GetMacroInfo(actualIndex);
-		MacroPopupEditBox:SetText(name);
-		MacroPopupEditBox:HighlightText();
+		self.BorderBox.IconSelectorEditBox:SetText(name);
+		self.BorderBox.IconSelectorEditBox:HighlightText();
 
-		local texture = MacroFrame.SelectedMacroButton:GetIconTexture();
+		local texture = macroFrame.SelectedMacroButton:GetIconTexture();
 		self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(texture));
+		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(texture);
 	end
 
 	local getSelection = GenerateClosure(self.GetIconByIndex, self);
 	local getNumSelections = GenerateClosure(self.GetNumIcons, self);
 	self.IconSelector:SetSelectionsDataProvider(getSelection, getNumSelections);
 	self.IconSelector:ScrollToSelectedIndex();
+
+	self.BorderBox.SelectedIconArea.SelectedIconButton:SetSelectedTexture();
+	self:SetSelectedIconText();
 end
 
-function MacroPopupFrameMixin:GetIconByIndex(index)
-	return self.iconDataProvider:GetIconByIndex(index);
+function MacroPopupFrameMixin:CancelButton_OnClick()
+	IconSelectorPopupFrameTemplateMixin.CancelButton_OnClick(self);
+	self:GetMacroFrame():UpdateButtons();
 end
 
-function MacroPopupFrameMixin:GetIndexOfIcon(icon)
-	return self.iconDataProvider:GetIndexOfIcon(icon);
-end
+function MacroPopupFrameMixin:OkayButton_OnClick()
+	IconSelectorPopupFrameTemplateMixin.OkayButton_OnClick(self);
 
-function MacroPopupFrameMixin:GetNumIcons()
-	return self.iconDataProvider:GetNumIcons();
-end
+	local index = 1
+	local iconTexture = self.BorderBox.SelectedIconArea.SelectedIconButton:GetIconTexture();
 
-function MacroPopupFrameMixin:GetSelectedIndex()
-	return self.IconSelector:GetSelectedIndex();
+	-- When saving macro textures, we strip off the leading folder structure.
+	if ( type(iconTexture) == "string" ) then
+		iconTexture = string.gsub(iconTexture, [[INTERFACE\ICONS\]], "");
+	end
+
+	local macroFrame = self:GetMacroFrame();
+	local text = self.BorderBox.IconSelectorEditBox:GetText();
+	text = string.gsub(text, "\"", "");
+	if ( self.mode == IconSelectorPopupFrameModes.New ) then
+		local isCharacterMacro = macroFrame.macroBase > 0;
+		index = CreateMacro(text, iconTexture, nil, isCharacterMacro) - macroFrame.macroBase;
+	elseif ( self.mode == IconSelectorPopupFrameModes.Edit ) then
+		local actualIndex = macroFrame:GetMacroDataIndex(macroFrame:GetSelectedIndex());
+		index = EditMacro(actualIndex, text, iconTexture) - macroFrame.macroBase;
+	end
+
+	macroFrame:SelectMacro(index);
+
+	local retainScrollPosition = true;
+	macroFrame:Update(retainScrollPosition);
 end
 
 function MacroPopupFrameMixin:GetMacroFrame()
 	return MacroFrame;
-end
-
-function MacroPopupFrame_CancelEdit()
-	MacroPopupFrame:Hide();
-
-	MacroFrame:UpdateButtons();
-end
-
-function MacroPopupOkayButton_Update()
-	local text = MacroPopupEditBox:GetText();
-	text = string.gsub(text, "\"", "");
-	if strlen(text) > 0 then
-		MacroPopupFrame.BorderBox.OkayButton:Enable();
-	else
-		MacroPopupFrame.BorderBox.OkayButton:Disable();
-	end
-	if MacroPopupFrame.mode == "edit" and (strlen(text) > 0) then
-		MacroPopupFrame.BorderBox.OkayButton:Enable();
-	end
-end
-
-function MacroPopupOkayButton_OnClick(self, button)
-	local index = 1
-	local iconTexture = MacroPopupFrame:GetIconByIndex(MacroPopupFrame:GetSelectedIndex());
-
-	-- When saving macro textures, we strip off the leading folder structure.
-	if type(iconTexture) == "string" then
-		iconTexture = string.gsub(iconTexture, [[INTERFACE\ICONS\]], "");
-	end
-
-	local text = MacroPopupEditBox:GetText();
-	text = string.gsub(text, "\"", "");
-	if ( MacroPopupFrame.mode == "new" ) then
-		local isCharacterMacro = MacroFrame.macroBase > 0;
-		index = CreateMacro(text, iconTexture, nil, isCharacterMacro) - MacroFrame.macroBase;
-	elseif ( MacroPopupFrame.mode == "edit" ) then
-		local actualIndex = MacroFrame:GetMacroDataIndex(MacroFrame:GetSelectedIndex());
-		index = EditMacro(actualIndex, text, iconTexture) - MacroFrame.macroBase;
-	end
-
-	MacroPopupFrame:Hide();
-
-	MacroFrame:SelectMacro(index);
-
-	local retainScrollPosition = true;
-	MacroFrame:Update(retainScrollPosition);
 end

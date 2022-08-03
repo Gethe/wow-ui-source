@@ -616,7 +616,7 @@ function SpellButtonMixin:OnEnter()
 	end
 
 	ClearOnBarHighlightMarks();
-	ClearPetActionHighlightMarks();
+	PetActionBar:ClearPetActionHighlightMarks();
 	local slotType, actionID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
 	if ( slotType == "SPELL" ) then
 		UpdateOnBarHighlightMarksBySpell(actionID);
@@ -624,8 +624,8 @@ function SpellButtonMixin:OnEnter()
 		UpdateOnBarHighlightMarksByFlyout(actionID);
 	elseif ( slotType == "PETACTION" ) then
 		UpdateOnBarHighlightMarksByPetAction(actionID);
-		UpdatePetActionHighlightMarks(actionID);
-		PetActionBar_Update(PetActionBarFrame);
+		PetActionBar:UpdatePetActionHighlightMarks(actionID);
+		PetActionBar:Update();
 	end
 
 	if ( self.SpellHighlightTexture and self.SpellHighlightTexture:IsShown() ) then
@@ -639,11 +639,11 @@ end
 
 function SpellButtonMixin:OnLeave()
 	ClearOnBarHighlightMarks();
-	ClearPetActionHighlightMarks();
+	PetActionBar:ClearPetActionHighlightMarks();
 
 	-- Update action bar highlights
 	ActionBarController_UpdateAll(true);
-	PetActionBar_Update(PetActionBarFrame);
+	PetActionBar:Update();
 	GameTooltip:Hide();
 end
 
