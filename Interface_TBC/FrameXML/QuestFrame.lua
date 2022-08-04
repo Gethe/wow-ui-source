@@ -52,7 +52,7 @@ function QuestFrame_OnEvent(self, event, ...)
 		HideUIPanel(QuestLogPopupDetailFrame);
 		QuestFrameDetailPanel:Hide();
 		QuestFrameDetailPanel:Show();
-	elseif ( event == "QUEST_PROGRESS" ) then
+	elseif ( event == "QUEST_PROGRESS" ) then	
 		HideUIPanel(QuestLogPopupDetailFrame);
 		QuestFrameProgressPanel:Hide();
 		QuestFrameProgressPanel:Show();

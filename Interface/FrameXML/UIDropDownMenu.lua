@@ -275,7 +275,7 @@ info.justifyH = [nil, "CENTER"] -- Justify button text
 info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
 info.fontObject = [FONT] -- font object replacement for Normal and Highlight
-info.menuTable = [TABLE] -- This contains an array of info tables to be displayed as a child menu
+info.menuList = [TABLE] -- This contains an array of info tables to be displayed as a child menu
 info.noClickSound = [nil, 1]  --  Set to 1 to suppress the sound when clicking the button. The sound only plays if .func is set.
 info.padding = [nil, NUMBER] -- Number of pixels to pad the text on the right side
 info.leftPadding = [nil, NUMBER] -- Number of pixels to pad the button on the left side
@@ -660,6 +660,8 @@ function UIDropDownMenu_AddButton(info, level)
 
 	-- Set the height of the listframe
 	listFrame:SetHeight((index * UIDROPDOWNMENU_BUTTON_HEIGHT) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2));
+
+	return button;
 end
 
 function UIDropDownMenu_CheckAddCustomFrame(self, button, info)
@@ -1314,11 +1316,19 @@ function UIDropDownMenuButton_OpenColorPicker(self, button)
 end
 
 function UIDropDownMenu_DisableButton(level, id)
-	_G["DropDownList"..level.."Button"..id]:Disable();
+	UIDropDownMenu_SetDropdownButtonEnabled(_G["DropDownList"..level.."Button"..id], false);
 end
 
 function UIDropDownMenu_EnableButton(level, id)
-	_G["DropDownList"..level.."Button"..id]:Enable();
+	UIDropDownMenu_SetDropdownButtonEnabled(_G["DropDownList"..level.."Button"..id], true);
+end
+
+function UIDropDownMenu_SetDropdownButtonEnabled(button, enabled)
+	if enabled then
+		button:Enable();
+	else
+		button:Disable();
+	end
 end
 
 function UIDropDownMenu_SetButtonText(level, id, text, colorCode)

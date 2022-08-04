@@ -24,11 +24,7 @@ local function UnassignAccessors(frame)
 	frame.SetOrderIndex = nil;
 end
 
-local InvalidationReason =
-{
-	DataProviderAssigned = 1,
-	DataProviderContentsChanged = 2,
-};
+local InvalidationReason = EnumUtil.MakeEnum("DataProviderReassigned", "DataProviderContentsChanged"); 
 
 ScrollBoxListViewMixin = CreateFromMixins(ScrollBoxViewMixin, CallbackRegistryMixin);
 ScrollBoxListViewMixin:GenerateCallbackEvents(
@@ -141,16 +137,18 @@ function ScrollBoxListViewMixin:EnumerateDataProvider(indexBegin, indexEnd)
 end
 
 function ScrollBoxListViewMixin:ClearDataProviderInternal()
-	local oldDataProvider = self:GetDataProvider();
-	if oldDataProvider then
-		oldDataProvider:UnregisterCallback(DataProviderMixin.Event.OnSizeChanged, self);
-		oldDataProvider:UnregisterCallback(DataProviderMixin.Event.OnSort, self);
+	local dataProvider = self:GetDataProvider();
+	if dataProvider then
+		dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSizeChanged, self);
+		dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSort, self);
 	end
+
+	self.dataProvider = nil;
 end
 
 function ScrollBoxListViewMixin:ClearDataProvider()
 	self:ClearDataProviderInternal();
-	self:SignalDataChangeEvent(InvalidationReason.DataProviderAssigned);
+	self:SignalDataChangeEvent(InvalidationReason.DataProviderReassigned);
 end
 
 function ScrollBoxListViewMixin:GetDataProviderSize()
@@ -174,7 +172,7 @@ function ScrollBoxListViewMixin:SetDataProvider(dataProvider, retainScrollPositi
 		dataProvider:RegisterCallback(DataProviderMixin.Event.OnSort, self.OnDataProviderSort, self);
 	end
 	
-	self:SignalDataChangeEvent(InvalidationReason.DataProviderAssigned);
+	self:SignalDataChangeEvent(InvalidationReason.DataProviderReassigned);
 end
 
 function ScrollBoxListViewMixin:OnDataProviderSizeChanged(pendingSort)
@@ -526,7 +524,7 @@ function ScrollBoxListViewMixin:ValidateDataRange(scrollBox)
 
 		-- Frames are generally recyclable when the element data is a table because we can uniquely identify it.
 		-- Note that if an invalidation occurred due to the data provider being exchanged, we never try and recycle.
-		local canRecycle = not invalidated or self:GetInvalidationReason() ~= InvalidationReason.DataProviderAssigned;
+		local canRecycle = not invalidated or self:GetInvalidationReason() ~= InvalidationReason.DataProviderReassigned;
 		if canRecycle then
 			for index, frame in ipairs(self:GetFrames()) do
 				if type(frame:GetElementData()) ~= "table" then

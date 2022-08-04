@@ -95,6 +95,15 @@ function GameTooltip_SetTitle(tooltip, text, overrideColor, wrap)
 	GameTooltip_AddColoredLine(tooltip, text, overrideColor or HIGHLIGHT_FONT_COLOR, wrap)
 end
 
+function GameTooltip_ShowDisabledTooltip(tooltip, owner, text, tooltipAnchor)
+	tooltip:SetOwner(owner, tooltipAnchor);
+
+	local wrap = true;
+	GameTooltip_SetTitle(tooltip, text, RED_FONT_COLOR, wrap);
+
+	tooltip:Show();
+end
+
 function GameTooltip_AddNormalLine(tooltip, text, wrap, leftOffset)
 	GameTooltip_AddColoredLine(tooltip, text, NORMAL_FONT_COLOR, wrap, leftOffset);
 end
@@ -193,4 +202,34 @@ end
 
 function TooltipBackdropTemplateMixin:SetBorderBlendMode(blendMode)
 	self.NineSlice:SetBorderBlendMode(blendMode);
+end
+
+DisabledTooltipButtonMixin = {};
+
+function DisabledTooltipButtonMixin:OnEnter()
+	if not self:IsEnabled() then
+		local disabledTooltip, disabledTooltipAnchor = self:GetDisabledTooltip();
+		if disabledTooltip ~= nil then
+			GameTooltip_ShowDisabledTooltip(GetAppropriateTooltip(), self, disabledTooltip, disabledTooltipAnchor);
+		end
+	end
+end
+
+function DisabledTooltipButtonMixin:OnLeave()
+	local tooltip = GetAppropriateTooltip();
+	tooltip:Hide();
+end
+
+function DisabledTooltipButtonMixin:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor)
+	self.disabledTooltip = disabledTooltip;
+	self.disabledTooltipAnchor = disabledTooltipAnchor;
+end
+
+function DisabledTooltipButtonMixin:GetDisabledTooltip()
+	return self.disabledTooltip, self.disabledTooltipAnchor;
+end
+
+function DisabledTooltipButtonMixin:SetDisabledState(disabled, disabledTooltip, disabledTooltipAnchor)
+	self:SetEnabled(not disabled);
+	self:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor);
 end

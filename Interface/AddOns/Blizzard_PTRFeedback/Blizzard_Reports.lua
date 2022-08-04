@@ -176,6 +176,17 @@ function PTR_IssueReporter.CreateReports()
     classicSkillsReport:AddDataCollection(baseCollectors + 3, collector.OpenEndedQuestion, "What was the issue with this skill?")
 
     classicSkillsReport:RegisterPopEvent(event.Tooltip, tooltips.skill)
+
+    ---------------------------------- Classic Glyph Reporting -------------------------------------------   
+    local classicGlyphReport = PTR_IssueReporter.CreateSurvey(classicReportOffset + 11, "Bug Report: %s")
+
+    classicGlyphReport:PopulateDynamicTitleToken(1, "Name")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(classicGlyphReport)
+    
+    classicGlyphReport:AddDataCollection(baseCollectors + 1, collector.RunFunction, "ID")
+    classicGlyphReport:AddDataCollection(baseCollectors + 2, collector.OpenEndedQuestion, "What was the issue with this glyph?")
+
+    classicGlyphReport:RegisterPopEvent(event.Tooltip, tooltips.glyph)
     
     ----------------------------------------------------------------------------------------------------
 end

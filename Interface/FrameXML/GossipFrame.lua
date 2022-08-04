@@ -5,11 +5,13 @@ function GossipFrame_OnLoad(self)
 	self:RegisterEvent("GOSSIP_SHOW");
 	self:RegisterEvent("GOSSIP_CLOSED");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("QUEST_COMPLETE");
 end
 
 function GossipFrame_OnEvent(self, event, ...)
 	if ( event == "GOSSIP_SHOW" ) then
 		-- if there is only a non-gossip option, then go to it directly
+		CloseQuest();
 		if ( (GetNumGossipAvailableQuests() == 0) and (GetNumGossipActiveQuests() == 0) and (GetNumGossipOptions() == 1) and not ForceGossip() ) then
 			local text, gossipType = GetGossipOptions();
 			if ( gossipType ~= "gossip" ) then
@@ -31,6 +33,8 @@ function GossipFrame_OnEvent(self, event, ...)
 		HideUIPanel(self);
 	elseif ( event == "QUEST_LOG_UPDATE" and GossipFrame.hasActiveQuests ) then
 		GossipFrameUpdate();
+	elseif ( event == "QUEST_COMPLETE") then
+		HideUIPanel(self);
 	end
 end
 

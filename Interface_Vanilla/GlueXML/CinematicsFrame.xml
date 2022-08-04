@@ -120,7 +120,7 @@
 		<PushedTextOffset x="-3" y="-3"/> 
 	</Button>
 	
-	<Frame name="CinematicsFrame" inherits="GlueModalFrameTemplate, BackdropTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" propagateKeyboardInput="false">
+	<Frame name="CinematicsFrame" inherits="BackdropTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" propagateKeyboardInput="false">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_EDGE_32" type="global"/>
 		</KeyValues>
@@ -190,6 +190,7 @@
 		<Scripts>
 			<OnLoad inherit="prepend" function="CinematicsFrame_OnLoad"/>
 			<OnShow function="CinematicsFrame_OnShow"/>
+			<OnHide function="CinematicsFrame_OnHide"/>
 			<OnKeyDown function="CinematicsFrame_OnKeyDown"/>
 			<OnChar function="nop"/>
 		</Scripts>

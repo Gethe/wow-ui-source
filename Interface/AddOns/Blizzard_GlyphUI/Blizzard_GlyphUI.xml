@@ -1,0 +1,221 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_GlyphUI.lua"/>
+
+	<Button name="GlyphTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="72" y="72"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentSetting" file="Interface\Spellbook\UI-GlyphFrame">
+					<Size x="86" y="86"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.765625" right="0.927734375" top="0.15625" bottom="0.31640625"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentHighlight" file="Interface\Spellbook\UI-GlyphFrame" hidden="true" alphaMode="ADD">
+					<Size x="86" y="86"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.765625" right="0.927734375" top="0.15625" bottom="0.31640625"/>
+					<Color r="1" g="1" b="1" a=".25"/>
+				</Texture>
+				<Texture name="$parentBackground" file="Interface\Spellbook\UI-GlyphFrame">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.78125" right="0.91015625" top="0.69921875" bottom="0.828125"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentGlyph" file="Interface\Spellbook\UI-Glyph-Rune1">
+					<Size x="53" y="53"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentRing" file="Interface\Spellbook\UI-GlyphFrame">
+					<Size x="62" y="62"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="1"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.787109375" right="0.908203125" top="0.033203125" bottom="0.154296875"/>
+				</Texture>
+				<Texture name="$parentShine" file="Interface\Spellbook\UI-GlyphFrame">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="-9" y="12"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.9609375" right="1" top="0.921875" bottom="0.9609375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				GlyphFrameGlyph_OnLoad(self);
+			</OnLoad>
+			<OnShow>
+				GlyphFrameGlyph_UpdateSlot(self);
+			</OnShow>
+			<OnClick>
+				GlyphFrameGlyph_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				GlyphFrameGlyph_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GlyphFrameGlyph_OnLeave(self, motion);
+			</OnLeave>
+			<OnUpdate>
+				GlyphFrameGlyph_OnUpdate(self, elapsed);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Texture name="GlyphSparkleTexture" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true" virtual="true">
+		<Size x="13" y="13"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup name="$parentAnimGroup" parentKey="animGroup">
+				<Translation name="$parentTranslate" parentKey="translate"/>
+			</AnimationGroup>
+		</Animations>
+		<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+	</Texture>
+
+	<Frame name="GlyphFrame" hidden="true">
+		<Size x="384" y="512"/>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset x="0" y="0"/>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBackground" file="Interface\Spellbook\UI-GlyphFrame">
+					<Size x="352" y="441"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.6875" top="0" bottom="0.861328125"/>
+				</Texture>
+				<FontString name="$parentTitleText" inherits="GameFontNormal" text="GLYPHS">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-18"/>
+						</Anchor>
+					</Anchors>
+				</FontString>	
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentGlow" parentKey="glow" file="Interface\Spellbook\UI-GlyphFrame-Glow" hidden="true">
+					<Size x="352" y="441"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="-9" y="-38"/>
+						</Anchor>
+					</Anchors>
+					<Animations>
+						<AnimationGroup name="$parentPulse" parentKey="pulse">
+							<Alpha name="$parentIn" change="1" duration="0.1"/>
+							<Alpha name="$parentOut" change="-1" duration="1.5"/>
+							<Scripts>
+								<OnStop>
+									self:GetParent():Hide();
+								</OnStop>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<TexCoords left="0" right="0.6875" top="0" bottom="0.861328125"/>
+					<Color r="1.0" g="1.0" b="1.0" a="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentGlyph1" inherits="GlyphTemplate" id="1">
+				<Size x="90" y="90"/>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="-15" y="140"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentGlyph4" inherits="GlyphTemplate" id="4">
+				<Size x="90" y="90"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-56" y="168"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentGlyph6" inherits="GlyphTemplate" id="6">
+				<Size x="90" y="90"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="26" y="168"/>
+					</Anchor>
+				</Anchors>
+			</Button>	
+			<Button name="$parentGlyph2" inherits="GlyphTemplate" id="2">
+				<Size x="90" y="90"/>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="-14" y="-103"/>
+					</Anchor>
+				</Anchors>
+			</Button>			
+			<Button name="$parentGlyph5" inherits="GlyphTemplate" id="5">
+				<Size x="90" y="90"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-56" y="-133"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentGlyph3" inherits="GlyphTemplate" id="3">
+				<Size x="90" y="90"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="28" y="-133"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GlyphFrame_OnLoad"/>
+			<OnUpdate function="GlyphFrame_OnUpdate"/>
+			<OnShow function="GlyphFrame_OnShow"/>
+			<OnEnter function="GlyphFrame_OnEnter"/>
+			<OnLeave function="GlyphFrame_OnLeave"/>
+			<OnEvent function="GlyphFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

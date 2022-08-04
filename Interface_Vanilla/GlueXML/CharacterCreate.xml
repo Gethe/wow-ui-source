@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="CharacterCreate.lua"/>
+	<Script file="CharacterCreate_Vanilla.lua"/>
+	<Script file="../../Interface/GlueXML/CharacterCreate_Shared.lua"/>
 	<CheckButton name="CharacterCreateIconButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="48" y="48"/>

@@ -148,9 +148,9 @@ function MiniMapLFGFrame_OnEnter(self)
 	if (activeEntryInfo) then
 		local text = "";
 		for i=1, #activeEntryInfo.activityIDs do
-			local name = C_LFGList.GetActivityInfo(activeEntryInfo.activityIDs[i]);
-			if (name and name ~= "") then
-				text = text .. name .. "\n"
+			local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityIDs[i]);
+			if (activityInfo and activityInfo.fullName ~= "") then
+				text = text .. activityInfo.fullName .. "\n"
 			end
 		end
 
@@ -166,7 +166,7 @@ end
 
 function EyeTemplate_OnUpdate(self, elapsed)
 	local textureInfo = LFG_EYE_TEXTURES[self.queueType or "default"];
-	AnimateTexCoords(self.texture, textureInfo.width, textureInfo.height, textureInfo.iconSize, textureInfo.iconSize, textureInfo.frames, elapsed, textureInfo.delay)
+	AnimateTexCoords(self.Texture, textureInfo.width, textureInfo.height, textureInfo.iconSize, textureInfo.iconSize, textureInfo.frames, elapsed, textureInfo.delay)
 end
 
 function EyeTemplate_StartAnimating(eye)
@@ -175,11 +175,11 @@ end
 
 function EyeTemplate_StopAnimating(eye)
 	eye:SetScript("OnUpdate", nil);
-	if ( eye.texture.frame ) then
-		eye.texture.frame = 1;	--To start the animation over.
+	if ( eye.Texture.frame ) then
+		eye.Texture.frame = 1;	--To start the animation over.
 	end
 	local textureInfo = LFG_EYE_TEXTURES[eye.queueType or "default"];
-	eye.texture:SetTexCoord(0, textureInfo.iconSize / textureInfo.width, 0, textureInfo.iconSize / textureInfo.height);
+	eye.Texture:SetTexCoord(0, textureInfo.iconSize / textureInfo.width, 0, textureInfo.iconSize / textureInfo.height);
 end
 
 function MinimapButton_OnMouseDown(self, button)
@@ -545,12 +545,14 @@ function MiniMapLFGDropDown_OnLoad(self)
 end
 
 function MiniMapLFGDropDown_Initialize()
-	if (C_LFGList.HasActiveEntryInfo()) then
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = CLEAR_ALL;
-		info.func = wrapFunc(C_LFGList.RemoveListing);
-		info.disabled = not C_LFGList.HasActiveEntryInfo();
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
+	if (IsAddOnLoaded("Blizzard_LookingForGroupUI")) then
+		if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = LFG_LIST_UNLIST;
+			info.func = wrapFunc(C_LFGList.RemoveListing);
+			info.disabled = not C_LFGList.HasActiveEntryInfo();
+			info.notCheckable = 1;
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 end

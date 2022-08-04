@@ -221,6 +221,18 @@ function SpellBookFrame_UpdatePages()
 		SpellBookNextPageButton:Enable();
 	end
 	SpellBookPageText:SetFormattedText(PAGE_NUMBER, currentPage);
+
+	-- Hide spell rank checkbox if the player is a rogue or warrior
+	local _, class = UnitClass("player");
+	local showSpellRanks = true;
+	if ( class == "ROGUE" or class == "WARRIOR" ) then
+		showSpellRanks = false;
+	end
+	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL and showSpellRanks ) then
+		ShowAllSpellRanksCheckBox:Show();
+	else
+		ShowAllSpellRanksCheckBox:Hide();
+	end
 end
 
 function SpellBookFrame_PlayOpenSound()
@@ -283,7 +295,7 @@ function SpellButton_OnEvent(self, event, ...)
 		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
 			SpellButton_UpdateButton(self);
 		end
-	elseif ( event == "CURSOR_UPDATE" ) then
+	elseif ( event == "CURSOR_CHANGED" ) then
 		if ( self.spellGrabbed ) then
 			SpellButton_UpdateButton(self);
 			self.spellGrabbed = false;
@@ -301,7 +313,7 @@ function SpellButton_OnShow(self)
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
 	self:RegisterEvent("PET_BAR_UPDATE");
-	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("CURSOR_CHANGED");
 end
 
 function SpellButton_OnHide(self)
@@ -314,7 +326,7 @@ function SpellButton_OnHide(self)
 	self:UnregisterEvent("TRADE_SKILL_SHOW");
 	self:UnregisterEvent("TRADE_SKILL_CLOSE");
 	self:UnregisterEvent("PET_BAR_UPDATE");
-	self:UnregisterEvent("CURSOR_UPDATE");
+	self:UnregisterEvent("CURSOR_CHANGED");
 end
  
 function SpellButton_OnEnter(self)

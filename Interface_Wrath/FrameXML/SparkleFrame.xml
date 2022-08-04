@@ -1,0 +1,29 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="SparkleFrame.lua"/>
+	<Texture name="SparkleTextureNormal" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="13" y="13"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
+	</Texture>
+	<Texture name="SparkleTextureKindaSmall" inherits="SparkleTextureNormal" virtual="true">
+		<Size x="10" y="10"/>
+	</Texture>	
+	<Texture name="SparkleTextureSmall" inherits="SparkleTextureNormal" virtual="true">
+		<Size x="7" y="7"/>
+	</Texture>	
+	<Texture name="SparkleTextureTiny" inherits="SparkleTextureNormal" virtual="true">
+		<Size x="4" y="4"/>
+	</Texture>		
+	<Texture name="SparkleTextureSuperHuge" inherits="SparkleTextureNormal" virtual="true">
+		<Size x="64" y="64"/>
+	</Texture>
+</Ui>

@@ -1,0 +1,8 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GlueLocalization.lua"/> 
+	<!-- This frame exists only to load the script and execute it, inline script has some issues -->
+	<Script>
+		Localize();
+	</Script>
+</Ui>

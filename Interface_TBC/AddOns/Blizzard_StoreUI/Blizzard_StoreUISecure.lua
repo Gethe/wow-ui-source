@@ -15,6 +15,8 @@ if ( tbl.IsOnGlueScreen() ) then
 	Import("C_StoreGlue");
 	Import("C_Login");
 	Import("GlueParent_UpdateDialogs");
+	Import("GlueParent_AddModalFrame");
+	Import("GlueParent_RemoveModalFrame");
 	Import("LE_WOW_CONNECTION_STATE_NONE");
 end
 
@@ -1386,18 +1388,6 @@ function StoreFrame_OnLoad(self)
 				end
 			end
 		);
-		-- block other clicks
-		local bgFrame = CreateForbiddenFrame("FRAME", nil);
-		bgFrame:SetParent(self);
-		bgFrame:SetAllPoints(_G.GlueParent);
-		bgFrame:SetFrameStrata("DIALOG");
-		bgFrame:EnableMouse(true);
-		-- background texture
-		local background = bgFrame:CreateTexture(nil, "BACKGROUND");
-		background:SetPoint("TOPLEFT", _G.GlueParent, "TOPLEFT", -1024, 0);
-		background:SetPoint("BOTTOMRIGHT", _G.GlueParent, "BOTTOMRIGHT", 1024, 0);
-
-		background:SetColorTexture(0, 0, 0, 0.75);
 	end
 	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
 	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 150);
@@ -1555,6 +1545,8 @@ function StoreFrame_OnShow(self)
 	StoreFrame_UpdateActivePanel(self);
 	if ( not IsOnGlueScreen() ) then
 		Outbound.UpdateMicroButtons();
+	else
+		GlueParent_AddModalFrame(self);
 	end
 
 	if showExclusiveCategory then
@@ -1584,6 +1576,8 @@ function StoreFrame_OnHide(self)
 	Outbound.HidePreviewFrame();
 	if ( not IsOnGlueScreen() ) then
 		Outbound.UpdateMicroButtons();
+	else
+		GlueParent_RemoveModalFrame(self);
 	end
 
 	StoreVASValidationFrame:Hide();
@@ -3253,11 +3247,8 @@ function StoreProductCardMagnifyingGlass_OnClick(self, button, down)
 	local card = self:GetParent();
 	local entryID = card:GetID();
 	local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
-	if #entryInfo.sharedData.cards > 1 then
+	if #entryInfo.sharedData.cards > 0 then
 		StoreFrame_ShowPreviews(entryInfo.sharedData.cards);
-	elseif #entryInfo.sharedData.cards > 0 then
-		local card = entryInfo.sharedData.cards[1];
-		StoreFrame_ShowPreview(card.name, card.creatureDisplayInfoID, card.modelSceneID);
 	end
 end
 

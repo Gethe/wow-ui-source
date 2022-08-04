@@ -171,11 +171,13 @@ FadingFrame.xml
 ZoneText.xml
 UnitFrame.xml
 Cooldown.xml
+MainMenuBarMicroButtons.xml
 ActionBarController.xml
 ..\..\Interface_Vanilla\FrameXML\StanceBar.xml
+PossessActionBar.xml
 TutorialFrame.xml
 ..\..\Interface_Vanilla\FrameXML\Minimap.xml
-GameTime.xml
+..\..\Interface_Vanilla\FrameXML\GameTime.xml
 BuffFrame.xml
 LowHealthFrame.xml
 CombatFeedback.xml
@@ -184,7 +186,16 @@ VoiceChatHeadsetButton.xml
 VoiceToggleButton.xml
 UnitPopupSlider.xml
 UnitPopupCustomControls.xml
-..\..\Interface_Vanilla\FrameXML\UnitPopup.xml
+ReportFrame.xml
+UnitPopupSharedUtils.lua
+UnitPopupUtils.lua
+UnitPopupShared.xml
+UnitPopupSharedMenus.lua
+UnitPopupSharedButtonMixins.lua
+UnitPopupButtons_Shared.lua
+..\..\Interface_Vanilla\FrameXML\UnitPopupButtons.lua
+..\..\Interface_Vanilla\FrameXML\UnitPopupMenus.lua
+..\..\Interface_Vanilla\FrameXML\UnitPopup.lua
 HistoryKeeper.lua
 ChatFrame.xml
 FloatingChatFrame.xml
@@ -193,6 +204,7 @@ ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
 ..\..\Interface_Vanilla\FrameXML\TargetFrame.xml
+..\..\Interface_Vanilla\FrameXML\PetFrame_Vanilla.lua
 PetFrame.xml
 StatsFrame.xml
 SpellBookFrame.xml
@@ -208,6 +220,7 @@ QuestTimerFrame.xml
 ..\..\Interface_Vanilla\FrameXML\QuestInfo.xml
 ..\..\Interface_Vanilla\FrameXML\MerchantFrame.xml
 TradeFrame.xml
+..\..\Interface_Vanilla\FrameXML\ContainerFrame_Vanilla.lua
 ContainerFrame.xml
 LootFrame.xml
 ItemTextFrame.xml
@@ -241,6 +254,7 @@ TextToSpeechFrame.xml
 TextToSpeech.xml
 VoiceChatTranscriptionFrame.xml
 VoiceChatTranscriptionButton.xml
+..\..\Interface_Vanilla\FrameXML\ChatConfigFrame_Vanilla.lua
 ChatConfigFrame.xml
 MovieFrame.xml
 AnimationSystem.lua

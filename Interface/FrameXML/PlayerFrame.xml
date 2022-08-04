@@ -12,6 +12,13 @@
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<Texture name="PlayerFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
+					<Size x="242" y="93"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="13" y="0"/>
+					</Anchors>
+					<TexCoords left="0.9453125" right="0" top="0" bottom="0.181640625"/>
+				</Texture>
 				<Texture name="PlayerFrameBackground">
 					<Size x="119" y="41"/>
 					<Anchors>

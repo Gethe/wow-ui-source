@@ -465,9 +465,6 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogButton3:Hide();
 	end
 	
-	--Show/Hide the disable overlay on the rest of the screen
-	GlueDialog.Cover:SetShown(dialogInfo.cover);
-
 	-- Set the miscellaneous variables for the dialog
 	GlueDialog.which = which;
 	GlueDialog.timeleft = dialogInfo.timeout or 0;
@@ -599,6 +596,9 @@ function GlueDialog_OnShow(self)
 	if ( OnShow ) then
 		OnShow();
 	end
+	if GlueDialogTypes[self.which].cover then
+		GlueParent_AddModalFrame(GlueDialog);
+	end
 end
 
 function GlueDialog_OnUpdate(self, elapsed)
@@ -623,8 +623,9 @@ function GlueDialog_OnUpdate(self, elapsed)
 	end
 end
 
-function GlueDialog_OnHide()
+function GlueDialog_OnHide(self)
 --	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	GlueParent_RemoveModalFrame(self);
 end
 
 function GlueDialog_OnClick(self, button, down)

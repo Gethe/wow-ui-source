@@ -346,6 +346,9 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 14) == "aadcopenconfig" ) then
 		ShowUIPanel(ChatConfigFrame);
 		return;
+	elseif ( strsub(link, 1, 10) == "lfglisting" ) then
+		ShowLFGParentFrame(1);
+		return;
 	end
 
 	if ( IsModifiedClick() ) then

@@ -226,7 +226,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("QUEST_ACCEPT_CONFIRM");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
-	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("CURSOR_CHANGED");
 	self:RegisterEvent("LOCALPLAYER_PET_RENAMED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("MIRROR_TIMER_START");
@@ -261,6 +261,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("INSTANCE_LOCK_STOP");
 	self:RegisterEvent("INSTANCE_LOCK_WARNING");
 	self:RegisterEvent("CONFIRM_TALENT_WIPE");
+	self:RegisterEvent("CONFIRM_BARBERS_CHOICE");
 	self:RegisterEvent("CONFIRM_PET_UNLEARN");
 	self:RegisterEvent("CONFIRM_BINDER");
 	self:RegisterEvent("CONFIRM_SUMMON");
@@ -283,6 +284,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
 	self:RegisterEvent("ALERT_REGIONAL_CHAT_DISABLED");
+	self:RegisterEvent("BARBER_SHOP_OPEN");
+	self:RegisterEvent("BARBER_SHOP_CLOSE");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -338,6 +341,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for PVP
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+
+	-- Events for Reporting SYSTEM
+	self:RegisterEvent("REPORT_PLAYER_RESULT");
 end
 
 function UIParent_OnShow(self)
@@ -396,6 +402,10 @@ function Commentator_LoadUI()
 	UIParentLoadAddOn("Blizzard_Commentator");
 end
 
+function BarberShopFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_BarberShopUI");
+end
+
 function InspectFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_InspectUI");
 end
@@ -452,7 +462,7 @@ function Store_LoadUI()
 end
 
 function APIDocumentation_LoadUI()
-	UIParentLoadAddOn("Blizzard_APIDocumentation");
+	UIParentLoadAddOn("Blizzard_APIDocumentationGenerated");
 end
 
 --[[
@@ -815,7 +825,7 @@ function UIParent_OnEvent(self, event, ...)
 				button:Disable();
 			end
 		end
-	elseif ( event == "CURSOR_UPDATE" ) then
+	elseif ( event == "CURSOR_CHANGED" ) then
 		if ( not CursorHasItem() ) then
 			StaticPopup_Hide("EQUIP_BIND");
 			StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
@@ -1046,6 +1056,13 @@ function UIParent_OnEvent(self, event, ...)
 --			if ( PlayerTalentFrame_Open ) then
 --				PlayerTalentFrame_Open(GetActiveSpecGroup());
 --			end
+		end
+	elseif ( event == "CONFIRM_BARBERS_CHOICE" ) then
+		HideUIPanel(GossipFrame);
+		StaticPopupDialogs["CONFIRM_BARBERS_CHOICE"].text = _G["BARBERS_CHOICE_CONFIRM"];
+		local dialog = StaticPopup_Show("CONFIRM_BARBERS_CHOICE");
+		if ( dialog ) then
+			MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg1);
 		end
 	elseif ( event == "CONFIRM_PET_UNLEARN" ) then
 		HideUIPanel(GossipFrame);
@@ -1534,6 +1551,16 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
 		IslandsQueue_LoadUI(); 
 		ShowUIPanel(IslandsQueueFrame); 
+	-- Events for Reporting system
+	elseif (event == "REPORT_PLAYER_RESULT") then
+		local success = ...;
+		if (success) then
+			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMITTED_SUCCESSFULLY);
+			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
+		else
+			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMISSION_FAILED);
+			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
+		end
 	end
 end
 
@@ -1595,7 +1622,7 @@ function UIParent_UpdateTopFramePositions()
 	local notificationAnchorTo = UIParent;
 	if gmChatStatusFrameShown then
 		GMChatStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
-		
+
 		buffOffset = math.max(buffOffset, GMChatStatusFrame:GetHeight());
 		notificationAnchorTo = GMChatStatusFrame;
 	end
@@ -1606,7 +1633,7 @@ function UIParent_UpdateTopFramePositions()
 		else
 			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
 		end
-		
+
 		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
 		notificationAnchorTo = TicketStatusFrame;
 	end
@@ -1622,7 +1649,7 @@ function UIParent_UpdateTopFramePositions()
 
 		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
 	end
-	
+
 	local y = -(buffOffset + 13)
 	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
 end
@@ -3638,73 +3665,22 @@ function UpdateInviteConfirmationDialogs()
 		return;
 	end
 
-	local confirmationType, name, guid, rolesInvalid, willConvertToRaid = GetInviteConfirmationInfo(firstInvite);
+	local confirmationType, name, guid, roles, willConvertToRaid = GetInviteConfirmationInfo(firstInvite);
 	local text = "";
 	if ( confirmationType == LE_INVITE_CONFIRMATION_REQUEST ) then
 		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
 
-		--If we ourselves have a relationship with this player, we'll just act as if they asked through us.
-		local _, color, selfRelationship, playerLink = SocialQueueUtil_GetRelationshipInfo(guid, name);
+		local playerLink = GetPlayerLink(name, name);
 		local safeLink = playerLink and "["..playerLink.."]" or name;
 
-		if ( selfRelationship ) then
-			if ( isQuickJoin ) then
-				text = text..INVITE_CONFIRMATION_REQUEST_QUICKJOIN:format(color..safeLink..FONT_COLOR_CODE_CLOSE);
-			else
-				text = text..INVITE_CONFIRMATION_REQUEST:format(color..name..FONT_COLOR_CODE_CLOSE);
-			end
-		elseif ( suggesterGuid ) then
-			suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
-
-			if ( relationship == LE_INVITE_CONFIRMATION_RELATION_FRIEND ) then
-				if ( isQuickJoin ) then
-					text = text..INVITE_CONFIRMATION_REQUEST_FRIEND_QUICKJOIN:format(suggesterName, color..safeLink..FONT_COLOR_CODE_CLOSE);
-				else
-					text = text..INVITE_CONFIRMATION_REQUEST_FRIEND:format(suggesterName, name);
-				end
-			elseif ( relationship == LE_INVITE_CONFIRMATION_RELATION_GUILD ) then
-				if ( isQuickJoin ) then
-					text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD_QUICKJOIN, suggesterName, color..safeLink..FONT_COLOR_CODE_CLOSE);
-				else
-					text = text..string.format(INVITE_CONFIRMATION_REQUEST_GUILD, suggesterName, name);
-				end
-			else
-				if ( isQuickJoin ) then
-					text = text..string.format(INVITE_CONFIRMATION_REQUEST, color..safeLink..FONT_COLOR_CODE_CLOSE);
-				else
-					text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
-				end
-			end
+		if ( isQuickJoin ) then
+			text = text..string.format(INVITE_CONFIRMATION_REQUEST_GROUPFINDER, FRIENDS_WOW_NAME_COLOR_CODE..safeLink..FONT_COLOR_CODE_CLOSE);
 		else
-			if ( isQuickJoin ) then
-				text = text..string.format(INVITE_CONFIRMATION_REQUEST_QUICKJOIN, color..safeLink..FONT_COLOR_CODE_CLOSE);
-			else
-				text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
-			end
+			text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
 		end
 	elseif ( confirmationType == LE_INVITE_CONFIRMATION_SUGGEST ) then
 		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
-		suggesterName = GetSocialColoredName(suggesterName, suggesterGuid);
-		name = GetSocialColoredName(name, guid);
-
-		-- Only using a single string here, if somebody is suggesting a person to join the group, QuickJoin text doesn't apply.
 		text = text..string.format(INVITE_CONFIRMATION_SUGGEST, suggesterName, name);
-	end
-
-	local invalidQueues = C_PartyInfo.GetInviteConfirmationInvalidQueues(firstInvite);
-	if ( invalidQueues and #invalidQueues > 0 ) then
-		if ( text ~= "" ) then
-			text = text.."\n\n"
-		end
-
-		if ( rolesInvalid ) then
-			text = text..string.format(INSTANCE_UNAVAILABLE_OTHER_NO_VALID_ROLES, name).."\n";
-		end
-		text = text..string.format(INVITE_CONFIRMATION_QUEUE_WARNING, name);
-		for i=1, #invalidQueues do
-			local queueName = SocialQueueUtil_GetQueueName(invalidQueues[i]);
-			text = text.."\n"..NORMAL_FONT_COLOR_CODE..queueName..FONT_COLOR_CODE_CLOSE;
-		end
 	end
 
 	if ( willConvertToRaid ) then

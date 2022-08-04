@@ -263,25 +263,6 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			
-			<Frame name="$parentBackdrop" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GlueParent" relativePoint="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="GlueParent" relativePoint="BOTTOMRIGHT"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture setAllPoints="true">
-							<Color r="0" g="0" b="0" a=".75"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
-					</OnLoad>
-				</Scripts>
-			</Frame>
 			<Frame name="$parentCategoryFrame" inherits="OptionsFrameListTemplate">
 				<KeyValues>
 					<KeyValue key="update" value="OptionsCategoryFrame_Update" type="global"/>

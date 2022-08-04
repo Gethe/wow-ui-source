@@ -72,9 +72,22 @@ GlueContextMenu.xml
 ..\SharedXML\BulletPoint.xml
 ..\SharedXML\GameTooltipTemplate.xml
 ..\SharedXML\FrameStack.lua
+..\SharedXML\Frame\EventFrame.xml
+..\SharedXML\Frame\EventButton.xml
+..\SharedXML\Frame\EventEditBox.xml
+..\SharedXML\DataProviders.xml
+..\SharedXML\Interpolator.lua
+..\SharedXML\Scroll\ScrollUtil.lua
+..\SharedXML\Scroll\ScrollController.lua
+..\SharedXML\Scroll\ScrollBox.xml
+..\SharedXML\Scroll\ScrollBar.xml
+..\SharedXML\Scroll\ScrollTemplates.xml
+..\SharedXML\Scroll\TrimScrollBar.xml
+..\SharedXML\Scroll\ClassicTrimScrollBar.xml
 
 ##New stuff!!!
 GlueAddons.lua
+GlueParentUtil.lua
 GlueParent.xml
 ## These SharedXML files need to be loaded after GlueParent.xml
 ..\SharedXML\IME.xml
@@ -105,6 +118,7 @@ MovieFrame.xml
 ..\..\Interface_Vanilla\GlueXML\CinematicsFrame.xml
 ..\..\Interface_Vanilla\GlueXML\CreditsFrame.xml
 GlueMenuFrame.xml
+SocialContract.xml
 
 ## Should only load internally
 DesignerMenu.xml

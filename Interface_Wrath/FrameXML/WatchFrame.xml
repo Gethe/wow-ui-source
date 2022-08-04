@@ -1,0 +1,238 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	
+	<Script file="WatchFrame.lua"/>
+		
+	<FontString name="WatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="MIDDLE">
+		<Size>
+			<AbsDimension x="0" y="16"/>
+		</Size>
+	</FontString>
+	
+	<Button name="WatchFrameLinkButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad> self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); </OnLoad>
+			<OnClick> WatchFrameLinkButtonTemplate_OnClick(self, button, down); </OnClick>
+			<OnEnter> WatchFrameLinkButtonTemplate_Highlight(self, true); </OnEnter>
+			<OnLeave> WatchFrameLinkButtonTemplate_Highlight(self, false); </OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Button name="WatchFrameItemButtonTemplate" virtual="true">
+		<Size x="26" y="26"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="LEFT" text="RANGE_INDICATOR">
+					<Size>
+						<AbsDimension x="29" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="16" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture"/>
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>			
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				WatchFrameItem_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				WatchFrameItem_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				WatchFrameItem_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnShow>
+				WatchFrameItem_OnShow(self);
+			</OnShow>
+			<OnHide>
+				WatchFrameItem_OnHide(self);
+			</OnHide>
+			<OnEnter>
+				WatchFrameItem_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				WatchFrameItem_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Size x="42" y="42"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>		
+	</Button>
+	
+	<Frame name="WatchFrameLineTemplate" virtual="true">
+		<Size x="150" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset x="-3" y="-1"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentDash" inherits="WatchFontTemplate" justifyV="TOP" parentKey="dash">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="-1"/>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>				
+				<FontString name="$parentText" inherits="WatchFontTemplate" parentKey="text">
+					<Size x="160" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentDash" relativePoint="RIGHT" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" hidden="true">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="CENTER">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				WatchFrameLineTemplate_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="WatchFrame" parent="UIParent" clampedToScreen="true" hidden="false" frameStrata="LOW">
+		<Size x="204" y="140"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
+				<Offset x="0" y="0"/>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="$parentHeader">
+				<Size>
+					<AbsDimension x="160" y="16"/>
+				</Size>			
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="0" y="-6"/>
+					</Anchor>
+				</Anchors>
+				<Layers>		
+					<Layer level="OVERLAY">
+						<FontString name="WatchFrameTitle" inherits="GameFontNormal" text="OBJECTIVES_TRACKER_LABEL">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>				
+				<Scripts>
+					<OnLoad> self:RegisterForClicks("RightButtonUp"); </OnLoad>
+					<OnClick function="WatchFrameHeader_OnClick" />
+				</Scripts>
+			</Button>
+			<Button name="$parentCollapseExpandButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-12" y="-5"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WatchFrame_CollapseExpandButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
+					<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
+					<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
+				</PushedTexture>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
+				<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
+			</Button>
+			<Frame name="WatchFrameLines" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WatchFrame" relativePoint="TOPLEFT">
+						<Offset x="0" y="-30"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="WatchFrame" relativePoint="BOTTOMRIGHT">
+						<Offset x="-24" y="12"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameStrata("LOW");
+						self.updateFunctions = {};
+						self.numFunctions = 0;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>		
+		<Scripts>
+			<OnLoad function="WatchFrame_OnLoad"/>
+			<OnEvent function="WatchFrame_OnEvent"/>
+			<OnUpdate function="WatchFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WatchFrameHeaderDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Scripts>
+			<OnLoad function="WatchFrameHeaderDropDown_OnLoad"/>
+		</Scripts>
+	</Frame>	
+	<Frame name="WatchFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Scripts>
+			<OnLoad function="WatchFrameDropDown_OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>
