@@ -28,6 +28,9 @@ function ActionBarController_OnLoad(self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_USABLE");
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");	-- Wha?? Still Wha...
 
+	-- Possess Bar
+	self:RegisterEvent("UPDATE_POSSESS_BAR");
+
 	-- MultiBarBottomLeft
 	self:RegisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT");
 	
@@ -88,6 +91,7 @@ end
 
 
 function ActionBarController_UpdateAll(force)
+	PossessBar_Update();
 	StanceBar_Update();
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
 
@@ -97,7 +101,7 @@ function ActionBarController_UpdateAll(force)
 		OverrideActionBar_UpdateSkin();
 		CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_OVERRIDE;
 	-- If we have a non-skinned override bar of some sort, use the MainMenuBarArtFrame
-	elseif ( HasBonusActionBar() or HasTempShapeshiftActionBar() ) then
+	elseif ( HasBonusActionBar() or HasOverrideActionBar() or HasVehicleActionBar() or HasTempShapeshiftActionBar() ) then
 		if (HasVehicleActionBar()) then
 			MainMenuBarArtFrame:SetAttribute("actionpage", GetVehicleBarIndex());
 		elseif (HasOverrideActionBar()) then

@@ -44,7 +44,7 @@ GlueCheck.lua
 ..\..\Interface_Wrath\GlueXML\Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
-..\..\Interface_TBC\GlueXML\GlueLocalization.xml
+..\..\Interface_Wrath\GlueXML\GlueLocalization.xml
 ..\SharedXML\SecureCurrencyUtil.lua
 ..\SharedXML\TextureUtil.lua
 ..\SharedXML\Backdrop.xml

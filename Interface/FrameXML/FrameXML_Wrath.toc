@@ -176,6 +176,7 @@ Cooldown.xml
 ActionBarController.xml
 ..\..\Interface_TBC\FrameXML\StanceBar.xml
 OverrideActionBar.xml
+PossessActionBar.xml
 TutorialFrame.xml
 ..\..\Interface_Wrath\FrameXML\Minimap.xml
 ..\..\Interface_Wrath\FrameXML\GameTime.xml

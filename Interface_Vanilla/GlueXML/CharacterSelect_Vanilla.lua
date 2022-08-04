@@ -1,5 +1,5 @@
 -- These are purposely different for Classic Era and TBC
-local characterCopyRegions = {
+characterCopyRegions = {
 	[81] = NORTH_AMERICA,
 	[82] = KOREA,
 	[83] = EUROPE,

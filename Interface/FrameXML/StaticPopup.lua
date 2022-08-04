@@ -4378,6 +4378,46 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	exclusive = 1,
 };
 
+StaticPopupDialogs["ON_BATTLEFIELD_AUTO_QUEUE"] = {
+	button1 = JOIN,
+	button2 = BATTLEFIELD_GROUP_JOIN,
+	button3 = CANCEL,
+	selectCallbackByIndex = true,
+	OnShow = function(self)
+		self.text:SetText(WORLD_PVP_INVITED_WARMUP:format(GetBattlefieldAutoQueueMapName()));
+		if ( not IsInGroup() ) then
+			self.button2:Disable();
+		end
+	end,
+	OnButton1 = function(self)
+		JoinBattlefieldAutoQueue(0);
+	end,
+	OnButton2 = function(self, data, reason)
+		JoinBattlefieldAutoQueue(1);
+	end,
+	OnButton3 = function()
+
+	end,
+	timeout = 15,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = false,
+	exclusive = 1,
+};
+
+StaticPopupDialogs["ON_BATTLEFIELD_AUTO_QUEUE_EJECT"] = {
+	button1 = OKAY,
+	OnShow = function(self)
+		self.text:SetText(WORLD_PVP_AUTO_QUEUE_EJECT:format(GetBattlefieldAutoQueueMapName()));
+	end,
+	OnButton1 = function()
+	end,
+	timeout = 15,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = false,
+};
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -4609,7 +4649,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "BFMGR_INVITED_TO_ENTER") or
 		 (which == "AREA_SPIRIT_HEAL") or
 		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
-		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") ) then
+		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") or
+		 (which == "ON_BATTLEFIELD_AUTO_QUEUE") or
+		 (which == "ON_BATTLEFIELD_AUTO_QUEUE_EJECT") ) then
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;

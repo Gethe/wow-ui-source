@@ -290,6 +290,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("ALERT_REGIONAL_CHAT_DISABLED");
 	self:RegisterEvent("BARBER_SHOP_OPEN");
 	self:RegisterEvent("BARBER_SHOP_CLOSE");
+	self:RegisterEvent("RAISED_AS_GHOUL");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -2540,6 +2541,18 @@ function FramePositionDelegate:UIParentManageFramePositions()
 				_G["StanceButton"..i]:GetNormalTexture():SetHeight(64);
 			end
 		end
+	end
+
+	-- HACK: we have too many bars in this game now...
+	-- if the Stance bar is shown then hide the multi-cast bar
+	-- we'll have to figure out what we should do in this case if it ever really becomes a problem
+	-- HACK 2: if the possession bar is shown then hide the multi-cast bar
+	-- yeah, way too many bars...
+	if ( ( StanceBarFrame and StanceBarFrame:IsShown() ) or
+		 ( PossessBarFrame and PossessBarFrame:IsShown() ) ) then
+		HideMultiCastActionBar();
+	elseif ( HasMultiCastActionBar and HasMultiCastActionBar() ) then
+		ShowMultiCastActionBar();
 	end
 
 	-- If petactionbar is already shown, set its point in addition to changing its y target

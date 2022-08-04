@@ -3,7 +3,8 @@ MAX_CLASSES_PER_RACE = 10;
 
 FRAMES_TO_BACKDROP_COLOR = { 
 	"CharacterCreateCharacterRace",
-	"CharacterCreateCharacterClass"
+	"CharacterCreateCharacterClass",
+	"CharacterCreateNameEdit",
 };
 
 RACE_ICON_TCOORDS = {
@@ -45,6 +46,10 @@ end
 
 function CharacterCreateRaceButton_OnLeave(self)
 	GlueTooltip:Hide();
+end
+
+function CharacterCreateWrath_OnShow()
+	CharacterCreateGender:SetText(BODY_TYPE);
 end
 
 function CharacterCreateClassButton_OnEnter(self)
@@ -191,16 +196,15 @@ function SetCharacterRace(id)
 			abilityIndex = abilityIndex + 1;
 			tempText = _G["ABILITY_INFO_"..fileString..abilityIndex];
 		end
-		abilityText = abilityText.."\n"; -- A bit of spacing at the bottom (to match Classic).
 	end
 
 
 	CharacterCreateRaceScrollFrameScrollBar:SetValue(0);
 	if ( abilityText and abilityText ~= "" ) then
-		CharacterCreateRaceText:SetText(_G["RACE_INFO_"..fileString]);
+		CharacterCreateRaceText:SetText(_G["RACE_INFO_"..fileString] .. "\n\n");
 		CharacterCreateRaceAbilityText:SetText(abilityText);
 	else
-		CharacterCreateRaceText:SetText(_G["RACE_INFO_"..fileString]);
+		CharacterCreateRaceText:SetText(_G["RACE_INFO_"..fileString] .. "\n\n");
 		CharacterCreateRaceAbilityText:SetText("");
 	end
 	CharacterCreateRaceScrollFrame:UpdateScrollChildRect();
@@ -248,11 +252,21 @@ function SetCharacterClass(id)
 	
 	--twain SetSelectedClass(id);
 	local classData = C_CharacterCreation.GetSelectedClass();
+	local abilityIndex = 0;
+	local tempText = _G["CLASS_INFO_"..classData.fileName..abilityIndex];
+	abilityText = "";
+	while ( tempText ) do
+		abilityText = abilityText..tempText.."\n\n";
+		abilityIndex = abilityIndex + 1;
+		tempText = _G["CLASS_INFO_"..classData.fileName..abilityIndex];
+	end
+	local classData = C_CharacterCreation.GetSelectedClass();
 	local coords = CLASS_ICON_TCOORDS[strupper(classData.fileName)];
 	CharacterCreateClassIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 	CharacterCreateClassLabel:SetText(classData.name);
 	CharacterCreateClassScrollFrameScrollBar:SetValue(0);
-	CharacterCreateClassText:SetText(_G["CLASS_"..strupper(classData.fileName)]);
+	CharacterCreateClassRolesText:SetText(abilityText);	
+	CharacterCreateClassText:SetText(_G["CLASS_"..strupper(classData.fileName)] .. "\n\n");
 	CharacterCreateClassScrollFrame:UpdateScrollChildRect();
 	--CharacterCreateCharacterClass:SetHeight(CharacterCreateClassText:GetHeight() + 45);
 
@@ -264,12 +278,10 @@ function SetCharacterGender(sex)
 	C_CharacterCreation.SetSelectedSex(sex);
 	if ( sex == Enum.UnitSex.Male ) then
 		gender = "MALE";
-		CharacterCreateGender:SetText(MALE);
 		CharacterCreateGenderButtonMale:SetChecked(1);
 		CharacterCreateGenderButtonFemale:SetChecked(nil);
 	else
 		gender = "FEMALE";
-		CharacterCreateGender:SetText(FEMALE);
 		CharacterCreateGenderButtonMale:SetChecked(nil);
 		CharacterCreateGenderButtonFemale:SetChecked(1);
 	end

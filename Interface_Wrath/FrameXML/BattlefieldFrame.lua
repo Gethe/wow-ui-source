@@ -23,6 +23,7 @@ function BattlefieldFrame_OnLoad(self)
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
 	self:RegisterEvent("BATTLEFIELDS_CLOSED");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	RequestPVPRewards();
 
 	BattlefieldFrame.timerDelay = 0;
 end
@@ -32,6 +33,8 @@ function BattlefieldFrame_OnEvent(self, event, ...)
 		local isArena = ...;
 		if(not isArena) then
 			self.currentData = true;
+			RequestPVPRewards();
+			PVPBattleground_ResetInfo();
 			ShowUIPanel(BattlefieldFrame);
 			BattlefieldFrame_UpdateStatus(false);
 		end
@@ -41,8 +44,7 @@ function BattlefieldFrame_OnEvent(self, event, ...)
 		PVPBattleground_UpdateQueueStatus();
 		BattlefieldFrame_UpdateStatus(false);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
-		
+		RequestPVPRewards();
 		FauxScrollFrame_SetOffset(BattlefieldFrameTypeScrollFrame, 0);
 		FauxScrollFrame_OnVerticalScroll(BattlefieldFrameTypeScrollFrame, 0, 16, PVPBattleground_UpdateBattlegrounds); --We may be changing brackets, so we don't want someone to see an outdated version of the data.
 		if ( self.selectedBG ) then
@@ -128,14 +130,52 @@ function BattlefieldTimerFrame_OnUpdate(self, elapsed)
 	end
 end
 
-
---TODO : implement these 2 bonuses functions. Figure out what rewards will actually be!
 function GetRandomBGHonorCurrencyBonuses()
-	return true, 100, 50, 25, 0;
+	local honorWin,_,_, currencyRewardsWin = C_PvP.GetRandomBGRewards();
+	local honorLoss,_,_, currencyRewardsLoss = C_PvP.GetRandomBGLossRewards();
+	local conquestWin, conquestLoss = 0, 0;
+
+	if(currencyRewardsWin) then
+		for i, reward in ipairs(currencyRewardsWin) do
+			if reward.id == Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID then
+				conquestWin = reward.quantity;
+			end
+		end
+	end
+
+	if(currencyRewardsLoss) then
+		for i, reward in ipairs(currencyRewardsLoss) do
+			if reward.id == Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID then
+				conquestLoss = reward.quantity;
+			end
+		end
+	end
+
+	return true, honorWin, conquestWin, honorLoss, conquestLoss;
 end
 
 function GetHolidayBGHonorCurrencyBonuses()
-	return true, 100, 50, 25, 0;
+	local honorWin,_,_, currencyRewardsWin = C_PvP.GetRandomBGRewards();
+	local honorLoss,_,_, currencyRewardsLoss = C_PvP.GetRandomBGLossRewards();
+	local conquestWin, conquestLoss = 0, 0;
+
+	if(currencyRewardsWin) then
+		for i, reward in ipairs(currencyRewardsWin) do
+			if reward.id == Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID then
+				conquestWin = reward.quantity;
+			end
+		end
+	end
+
+	if(currencyRewardsLoss) then
+		for i, reward in ipairs(currencyRewardsLoss) do
+			if reward.id == Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID then
+				conquestLoss = reward.quantity;
+			end
+		end
+	end
+
+	return true, honorWin, conquestWin, honorLoss, conquestLoss;
 end
 
 function PVPQueue_UpdateRandomInfo(base, infoFunc)
@@ -373,6 +413,9 @@ function PVPBattleground_UpdateQueueStatus()
 end
 
 function PVPBattleground_ResetInfo()	
+	if ( BattlefieldFrame.selectedBG == nil ) then 
+		BattlefieldFrame.selectedBG = 1; 
+	end
 	RequestBattlegroundInstanceInfo(BattlefieldFrame.selectedBG);
 	
 	PVPBattleground_UpdateInfo();
