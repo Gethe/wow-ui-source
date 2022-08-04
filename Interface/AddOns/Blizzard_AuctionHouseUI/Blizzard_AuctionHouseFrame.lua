@@ -7,8 +7,52 @@ StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	text = BUYOUT_AUCTION_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
+
 	OnAccept = function(self)
 		C_AuctionHouse.PlaceBid(self.data.auctionID, self.data.buyout);
+		self.button1:Disable();
+		self.button2:Disable();
+
+		local spinnerTimer = C_Timer.NewTimer(2, function()
+			self.DarkOverlay:Show();
+			self.LoadingSpinner:Show();
+			self.SpinnerAnim:Play();
+		end);
+
+		self:RegisterEvent("AUCTION_HOUSE_PURCHASE_COMPLETED");
+		self:RegisterEvent("AUCTION_HOUSE_SHOW_ERROR");
+		local oldOnEvent = self:GetScript("OnEvent");
+		local oldOnHide = self:GetScript("OnHide");
+		local function OnComplete()
+			spinnerTimer:Cancel();
+			self.LoadingSpinner:Hide();
+			self.SpinnerAnim:Stop();
+			self:SetScript("OnEvent", oldOnEvent);
+			self:SetScript("OnHide", oldOnHide);
+			self:Hide();
+		end
+		self:SetScript("OnEvent", function(self, event, ...)
+			if oldOnEvent then
+				oldOnEvent(self, event, ...);
+			end
+
+			if event == "AUCTION_HOUSE_PURCHASE_COMPLETED" then
+				local auctionID = ...;
+				if auctionID == self.data.auctionID then
+					OnComplete();
+				end
+			elseif event == "AUCTION_HOUSE_SHOW_ERROR" then
+				OnComplete();
+			end
+		end);
+		self:SetScript("OnHide", function()
+			if oldOnHide then
+				oldOnHide();
+			end
+			OnComplete();
+		end);
+
+		return true;
 	end,
 	OnShow = function(self)
 		MoneyFrame_Update(self.moneyFrame, self.data.buyout);
