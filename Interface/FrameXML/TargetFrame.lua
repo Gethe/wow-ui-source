@@ -1227,7 +1227,7 @@ function FocusFrame_OnDragStop(self)
 end
 
 function FocusFrame_SetSmallSize(smallSize)
-	if ( smallSize and not FocusFrame.smallSize ) then
+	if smallSize then
 		FocusFrame.smallSize = true;
 		FocusFrame.maxBuffs = 0;
 		FocusFrame.maxDebuffs = 8;
@@ -1245,14 +1245,12 @@ function FocusFrame_SetSmallSize(smallSize)
 		FocusFrame:UnregisterEvent("PLAYER_FLAGS_CHANGED");
 		FocusFrame.showLeader = nil;
 		FocusFrame.showPVP = nil;
+		FocusFrame.showAuraCount = nil;
 		FocusFrame.pvpIcon:Hide();
 		FocusFrame.prestigePortrait:Hide();
 		FocusFrame.prestigeBadge:Hide();
 		FocusFrame.leaderIcon:Hide();
-		FocusFrame.showAuraCount = nil;
---		TargetFrame_CheckClassification(FocusFrame, true);
-		TargetFrame_Update(FocusFrame);
-	elseif ( not smallSize and FocusFrame.smallSize ) then
+	else
 		FocusFrame.smallSize = false;
 		FocusFrame.maxBuffs = nil;
 		FocusFrame.maxDebuffs = nil;
@@ -1268,11 +1266,13 @@ function FocusFrame_SetSmallSize(smallSize)
 		FocusFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
 		FocusFrame.showClassification = true;
 		FocusFrame:RegisterEvent("PLAYER_FLAGS_CHANGED");
-		FocusFrame.showPVP = true;
 		FocusFrame.showLeader = true;
+		FocusFrame.showPVP = true;
 		FocusFrame.showAuraCount = true;
-		TargetFrame_Update(FocusFrame);
 	end
+
+	TargetFrame_Update(FocusFrame);
+	TargetFrame_UpdateAuras(FocusFrame);
 end
 
 BossTargetFrameContainerMixin = { };

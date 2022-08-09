@@ -88,16 +88,12 @@ end
 function MacroPopupFrameMixin:OkayButton_OnClick()
 	IconSelectorPopupFrameTemplateMixin.OkayButton_OnClick(self);
 
+	local macroFrame = self:GetMacroFrame();
+
 	local index = 1
 	local iconTexture = self.BorderBox.SelectedIconArea.SelectedIconButton:GetIconTexture();
-
-	-- When saving macro textures, we strip off the leading folder structure.
-	if ( type(iconTexture) == "string" ) then
-		iconTexture = string.gsub(iconTexture, [[INTERFACE\ICONS\]], "");
-	end
-
-	local macroFrame = self:GetMacroFrame();
 	local text = self.BorderBox.IconSelectorEditBox:GetText();
+
 	text = string.gsub(text, "\"", "");
 	if ( self.mode == IconSelectorPopupFrameModes.New ) then
 		local isCharacterMacro = macroFrame.macroBase > 0;

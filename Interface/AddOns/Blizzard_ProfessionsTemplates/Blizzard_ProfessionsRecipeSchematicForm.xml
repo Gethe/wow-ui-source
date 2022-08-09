@@ -136,14 +136,28 @@
 		
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="OutputText" inherits="GameFontNormalMed2" justifyH="LEFT" parentArray="recipeInfoFrames">
+				<FontString parentKey="OutputText" inherits="GameFontHighlightMed2" justifyH="LEFT" parentArray="recipeInfoFrames">
 					<Size x="400" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.OutputIcon" relativePoint="RIGHT" x="14" y="0"/>
 						<Anchor point="TOP" x="0" y="-22"/>
 					</Anchors>
 				</FontString>
- 
+
+				<FontString parentKey="RecraftingOutputText" inherits="GameFontHighlightMed2" justifyH="LEFT" parentArray="recipeInfoFrames">
+					<Size x="400" y="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="28" y="-25"/>
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="RecraftingDescription" inherits="GameFontHighlight" text="PROFESSIONS_RECRAFT_RECIPE_INSTRUCTION" justifyV="TOP" justifyH="LEFT">
+					<Size x="280" y="72"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="28" y="-250"/>
+					</Anchors>
+				</FontString>
+				
 				<!-- HRO TODO: Fix this up for crafting orders -->
 				<FontString parentKey="OutputSubText" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="300" y="20"/>
@@ -158,7 +172,11 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.OutputText" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
-
+				
+				<FontString parentKey="RecraftingRequiredTools" inherits="GameFontHighlightSmall2" justifyH="LEFT">
+					<Size x="400" y="20"/>
+				</FontString>
+				
 				<FontString parentKey="Cooldown" inherits="GameFontRedSmall" justifyH="LEFT">
 					<Size x="400" y="0"/>
 				</FontString>

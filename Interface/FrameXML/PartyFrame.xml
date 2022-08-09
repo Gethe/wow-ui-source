@@ -1,34 +1,40 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PartyMemberFrame.lua"/>
+	<Script file="PartyFrame.lua"/>
 	<Script file="TextStatusBar.lua"/>
 	<Include file="PartyFrameTemplates.xml"/>
-	<Button name="PartyMemberFrame1" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="1">
-		<!-- This frame is now anchored by and to the CompactRaidFrameManager.
+	<Frame name="PartyFrame" mixin="PartyFrameMixin" inherits="VerticalLayoutFrame" frameStrata="LOW" parent="UIParent" toplevel="true">
+		<Frames>
+			<Frame parentKey="Background" mixin="PartyMemberBackgroundMixin" hidden="true" inherits="BackdropTemplate">
+				<Size x="144" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-5" y="6"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_PARTY_32_32" type="global"/>,
+				</KeyValues>
+				<Scripts>
+					<OnLoad inherit="prepend" method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnEvent method="OnEvent"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="10" y="-160"/>
-				</Offset>
-			</Anchor>
-		</Anchors>-->
-	</Button>
-	<Button name="PartyMemberFrame2" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="2">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame1PetFrame" relativePoint="BOTTOMLEFT" x="-23" y="-10"/>
+			<Anchor point="TOPLEFT"/>
 		</Anchors>
-	</Button>
-	<Button name="PartyMemberFrame3" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="3">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame2PetFrame" relativePoint="BOTTOMLEFT" x="-23" y="-10"/>
-		</Anchors>
-	</Button>
-	<Button name="PartyMemberFrame4" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="4">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame3PetFrame" relativePoint="BOTTOMLEFT" x="-23" y="-10"/>
-		</Anchors>
-	</Button>
-	<Frame name="PartyMemberBuffTooltip" frameStrata="TOOLTIP" hidden="true" inherits="TooltipBackdropTemplate">
+		<KeyValues>
+			<KeyValue key="spacing" value="10" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+	<Frame name="PartyMemberBuffTooltip" mixin="PartyMemberBuffTooltipMixin" frameStrata="TOOLTIP" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="200" y="75"/>
 		<Frames>
 			<Frame name="$parentBuff1" parentArray="Buff" inherits="PartyBuffFrameTemplate">
@@ -153,35 +159,5 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Frame name="PartyMemberBackground" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate">
-		<Size x="134" y="10"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame1" x="-5" y="6"/>
-			<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-		</Anchors>
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_PARTY_32_32" type="global"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad inherit="prepend">
-				self:RegisterEvent("VARIABLES_LOADED");
-			</OnLoad>
-			<OnShow>
-				self:SetFrameLevel(1);
-			</OnShow>
-			<OnEvent>
-				if ( event == "VARIABLES_LOADED" ) then
-					UpdatePartyMemberBackground();
-					OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
-					PartyMemberBackground_SetOpacity();
-				end
-			</OnEvent>
-			<OnMouseUp>
-				if ( button == "RightButton" ) then
-					PartyMemberBackground_ToggleOpacity();
-				end
-			</OnMouseUp>
-		</Scripts>
-	</Frame>
-
+	
 </Ui>

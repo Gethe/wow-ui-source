@@ -907,11 +907,6 @@ function GuildBankPopupFrameMixin:OkayButton_OnClick()
 
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 	local iconTexture = self.BorderBox.SelectedIconArea.SelectedIconButton:GetIconTexture();
-
-	if type(iconTexture) == "string" then
-		iconTexture = string.gsub(iconTexture, [[INTERFACE\ICONS\]], "");
-	end
-
 	local text = self.BorderBox.IconSelectorEditBox:GetText();
 	local tab = GetCurrentGuildBankTab();
 

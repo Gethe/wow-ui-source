@@ -78,7 +78,7 @@
 	<Frame name="TotemFrame" toplevel="true" parent="PlayerFrame" hidden="true">
 		<Size x="128" y="53"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="99" y="38"/>
+			<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" y="20"/>
 		</Anchors>
 		<Frames>
 			<Button name="$parentTotem1" inherits="TotemButtonTemplate" id="1">

@@ -114,7 +114,7 @@ function PTR_IssueReporter.AttachStandaloneQuestion(frame, question, characterLi
     table.insert(frame.FrameComponents, questionFrame) 
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.AttachMultipleChoiceNoQuestion(frame, answers, canSelectMultiple, displayVertically)
+function PTR_IssueReporter.AttachMultipleChoiceNoQuestion(frame, answers, canSelectMultiple, displayVertically, forceSelection)
     local questionFrame    
     local editboxHeight = 50 -- 25 min number of characters on a line, 14 is line height, 15 is extra pad to allow for the character counter 
     local headerHeight = 20
@@ -366,7 +366,7 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
     
     local numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
     
-    if (PTR_IssueReporter.StandaloneSurvey) and (PTR_IssueReporter.StandaloneSurvey.forceSelection) then
+    if (PTR_IssueReporter.StandaloneSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) and (forceSelection) then
         PTR_IssueReporter.StandaloneSurvey.submitButton.forceSelection = forceSelection
         PTR_IssueReporter.StandaloneSurvey.submitButton.questionFrame = questionFrame
     end    
@@ -424,18 +424,20 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetSurveyButtonEnabledState()
-    if (PTR_IssueReporter.StandaloneSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) and (PTR_IssueReporter.StandaloneSurvey.submitButton.forceSelection) then
-        submitEnabled = false
-        
-        for key, checkbox in pairs (PTR_IssueReporter.StandaloneSurvey.submitButton.questionFrame.Checkboxes) do
-            if (checkbox:GetChecked()) then
-                submitEnabled = true
+    if (PTR_IssueReporter.StandaloneSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) then        
+        if (PTR_IssueReporter.StandaloneSurvey.submitButton.forceSelection) then        
+            submitEnabled = false
+            
+            for key, checkbox in pairs (PTR_IssueReporter.StandaloneSurvey.submitButton.questionFrame.Checkboxes) do
+                if (checkbox:GetChecked()) then
+                    submitEnabled = true
+                end
             end
+            
+            PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(submitEnabled)
+        else
+            PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(true)
         end
-        
-        PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(submitEnabled)
-    else
-        PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(true)
     end
 end
 
@@ -1013,7 +1015,7 @@ function PTR_IssueReporter.TooltipHidden(tooltip)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, tooltipID, tooltipName, noExtraLine, clearAllLines, tooltipAdditional)    
-    if (tooltipType) then        
+    if (tooltipType) and (tooltipID) then        
         local tooltipText
 
         if (PTR_IssueReporter.GetKeybind() ~= "") then

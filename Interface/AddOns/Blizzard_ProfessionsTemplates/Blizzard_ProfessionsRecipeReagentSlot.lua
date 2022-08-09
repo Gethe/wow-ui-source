@@ -4,20 +4,29 @@ function ProfessionsReagentSlotMixin:Reset()
 	self.Button.QualityOverlay:SetAtlas(nil);
 	self:SetAllocateIconShown(false);
 	self.unallocatable = nil;
+	self.originalItem = nil;
+	self.UndoButton:Hide();
 	self.quantityAvailableCallback = nil;
 	self.CustomerState:Hide();
-end
-
-function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
+	self.Button:Reset();
 	if self.continuableContainer then
 		self.continuableContainer:Cancel();
 	end
 	self.continuableContainer = ContinuableContainer:Create();
-	
-	self.Button:Reset();
+end
 
+function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
+	self:Reset();
+	
 	self:SetTransaction(transaction);
 	self:SetReagentSlotSchematic(reagentSlotSchematic);
+
+	for index, reagent in ipairs(reagentSlotSchematic.reagents) do
+		if reagent.itemID then
+			local item = Item:CreateFromItemID(reagent.itemID);
+			self.continuableContainer:AddContinuable(item);
+		end
+	end
 
 	local function OnItemsLoaded()
 		self.Name:Show();
@@ -29,6 +38,11 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 				self:SetItem(Item:CreateFromItemID(reagent.itemID));
 				break;
 			end
+		end
+		
+		local modification = transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
+		if modification then
+			self.originalItem = Item:CreateFromItemID(modification.itemID);
 		end
 
 		local reagentType = reagentSlotSchematic.reagentType;
@@ -53,12 +67,6 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 		self:Update();
 	end
 
-	for index, reagent in ipairs(reagentSlotSchematic.reagents) do
-		if reagent.itemID then
-			local item = Item:CreateFromItemID(reagent.itemID);
-			self.continuableContainer:AddContinuable(item);
-		end
-	end
 	self.continuableContainer:ContinueOnLoad(OnItemsLoaded);
 
 	self.Button:SetScript("OnLeave", function()
@@ -151,9 +159,23 @@ function ProfessionsReagentSlotMixin:ClearItem()
 	self:Update();
 end
 
+function ProfessionsReagentSlotMixin:RestoreOriginalItem()
+	self:SetItem(self.originalItem);
+end
+
+function ProfessionsReagentSlotMixin:SetOriginalItem(item)
+	self.originalItem = item;
+end
+
 function ProfessionsReagentSlotMixin:SetItem(item)
 	self.Button:SetItem(item:GetItemID());
 	self:SetNameText(item:GetItemName());
+
+	if self.originalItem and self.originalItem:GetItemID() ~= item:GetItemID() then
+		self.UndoButton:Show();
+	else
+		self.UndoButton:Hide();
+	end
 
 	self:Update();
 end

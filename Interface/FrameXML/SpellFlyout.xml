@@ -73,20 +73,21 @@
 		</Animations>
 	</CheckButton>
 
-	<Frame name="SpellFlyout" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate" enableMouse="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="SpellFlyoutBackgroundEnd" atlas="UI-HUD-ActionBar-IconFrame-FlyoutButton" useAtlasSize="true" parentKey="BgEnd"/>
-				<Texture name="SpellFlyoutHorizontalBackground" parentKey="HorizBg" atlas="_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft" useAtlasSize="true" horizTile="true" hidden="true"/>
-				<Texture name="SpellFlyoutVerticalBackground" parentKey="VertBg" atlas="!UI-HUD-ActionBar-IconFrame-FlyoutMid" useAtlasSize="true" vertTile="true" hidden="true"/>
-				<Texture parentKey="flyoutBottom" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBottom" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="SpellFlyoutVerticalBackground" relativePoint="BOTTOM"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Frame name="SpellFlyout" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate, ResizeLayoutFrame" enableMouse="true">
 		<Frames>
+			<Frame parentKey="Background" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="End" atlas="UI-HUD-ActionBar-IconFrame-FlyoutButton" useAtlasSize="true"/>
+						<Texture parentKey="HorizontalMiddle" atlas="_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft" useAtlasSize="true" horizTile="true" hidden="true"/>
+						<Texture parentKey="VerticalMiddle" atlas="!UI-HUD-ActionBar-IconFrame-FlyoutMid" useAtlasSize="true" vertTile="true" hidden="true"/>
+						<Texture parentKey="Start" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBottom" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+				<KeyValues>
+					<KeyValue key="ignoreInlayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
 			<CheckButton name="SpellFlyoutButton1" inherits="SpellFlyoutButtonTemplate"/>
 		</Frames>
 		<Scripts>

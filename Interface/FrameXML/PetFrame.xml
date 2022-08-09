@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PetFrame.lua"/>
-	<Button name="PetFrame" frameStrata="LOW" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
+	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
 		<Size x="128" y="53"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="80" y="-60"/>
@@ -180,19 +180,15 @@
 				UnitFrame_Update(self);
 				PetFrame_Update(self);
 				TotemFrame_Update(self);
-				-- this will happen in TotemFrame_Update
-				--PlayerFrame_AdjustAttachments();
 			</OnShow>
 			<OnHide>
 				TotemFrame_Update(self);
-				-- this will happen in TotemFrame_Update
-				--PlayerFrame_AdjustAttachments();
 			</OnHide>
 			<OnUpdate function="PetFrame_OnUpdate"/>
 			<OnEnter>
 				UnitFrame_OnEnter(self);
 				PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 60, -35);
-				PartyMemberBuffTooltip_Update(self);
+				PartyMemberBuffTooltip:UpdateTooltip(self);
 			</OnEnter>
 			<OnLeave>
 				UnitFrame_OnLeave(self);
@@ -203,7 +199,7 @@
 	<StatusBar name="PetCastingBarFrame" mixin="CastingBarMixin" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">
 		<Size x="209" y="11"/>
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="TOP" x="0" y="12"/>
+			<Anchor point="BOTTOM" relativeTo="PlayerCastingBarFrame" relativePoint="TOP" x="0" y="18"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad function="PetCastingBarFrame_OnLoad"/>

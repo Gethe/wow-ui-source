@@ -11,9 +11,11 @@ function ProfessionsItemFlyoutButtonMixin:Init(item)
 	-- FIXME - Allow initializer to be installed so we can have elective behavior in either crafting order or crafting UI.
 	-- Temp disabled appearance
 	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
-	local disable = count <= 0;
-	self:DesaturateHierarchy(disable and 1 or 0);
-	self:SetItemButtonCount(count);
+	local stackable = C_Item.GetItemMaxStackSizeByID(item:GetItemID()) > 1;
+	self:SetItemButtonCount(stackable and count or 1);
+	
+	local disabled = count <= 0;
+	self:DesaturateHierarchy(disabled and 1 or 0);
 end
 
 ProfessionsItemFlyoutMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -35,59 +37,29 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 	self.HideUnownedCheckBox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
 		SetCVar(HideUnownedCvar, checked);
-		self:InitializeContents(self.itemIDs);
+		self:InitializeContents();
 	end);
 
 	local view = CreateScrollBoxListGridView(MaxColumns);
-	view:SetElementInitializer("ProfessionsItemFlyoutButtonTemplate", function(button, item)
+	view:SetElementInitializer("ProfessionsItemFlyoutButtonTemplate", function(button, elementData)
+		local item = elementData.item;
 		button:Init(item);
 
-		button:SetScript("OnEnter", function()
-			GameTooltip:SetOwner(button, "ANCHOR_TOPLEFT");
-			local colorData = item:GetItemQualityColor();
-			GameTooltip_SetTitle(GameTooltip, item:GetItemName(), colorData.color);
-		
-			local reagents = Professions.CreateCraftingReagentInfoBonusTbl(item:GetItemID());
-
-			local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, reagents);
-			if difficultyText and difficultyText ~= "" then
-				GameTooltip_AddHighlightLine(GameTooltip, difficultyText);
-				GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			end
-
-			local bonusText = C_TradeSkillUI.GetCraftingReagentBonusText(self.recipeID, 1, reagents);
-			for _, str in ipairs(bonusText) do
-				GameTooltip_AddHighlightLine(GameTooltip, str);
-			end
-
-			local quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(item:GetItemID());
-			if quality then
-				GameTooltip_AddBlankLineToTooltip(GameTooltip);
-				local atlasSize = 26;
-				local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(quality, true), atlasSize, atlasSize);
-				GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY:format(atlasMarkup));
-			end
-
-			local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
-			if count <= 0 then
-				GameTooltip_AddErrorLine(GameTooltip, OPTIONAL_REAGENT_NONE_AVAILABLE);
-			end
-
+		button:SetScript("OnEnter", function(button)
+			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+			self.OnElementEnterImplementation(elementData, GameTooltip);
 			GameTooltip:Show();
 		end);
 
-		button:SetScript("OnLeave", function()
-			GameTooltip:Hide();
-		end);
+		button:SetScript("OnLeave", GameTooltip_Hide);
 
 		button:SetScript("OnClick", function()
 			if not disable then
-				self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ItemSelected, self, item);
+				self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ItemSelected, self, elementData);
 				CloseItemFlyout();
 			end
 		end);
 	end);
-	view:SetPadding(0,0,0,0,0,0);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
@@ -103,8 +75,6 @@ function ProfessionsItemFlyoutMixin:OnHide()
 
 	self.owner = nil;
 	self:SetParent(nil);
-	self.recipeID = nil;
-	self.itemIDs = nil;
 end
 
 function ProfessionsItemFlyoutMixin:OnEvent(event, ...)
@@ -128,30 +98,19 @@ function ProfessionsItemFlyoutMixin:ShouldHideUnownedItems()
 end
 
 function ProfessionsItemFlyoutMixin:InitializeContents()
-	local filteredItemIDs = {};
-	if self:ShouldHideUnownedItems() then
-		ItemUtil.IteratePlayerInventory(function(itemLocation)
-			local item = Item:CreateFromItemLocation(itemLocation);
-			if tContains(self.itemIDs, item:GetItemID()) then
-				table.insert(filteredItemIDs, item:GetItemID());
-			end
-		end);
-	else
-		filteredItemIDs = self.itemIDs;
-	end
+	local filterOwned = self.canFilter and self:ShouldHideUnownedItems();
+	local elements = self:GetElementsImplementation(filterOwned);
+	self.HideUnownedCheckBox:SetShown(self.canFilter);
 
-	local count = #filteredItemIDs;
-	self.HideUnownedCheckBox:SetShown(self.canShowCheckBox);
-
+	local count = #elements.items;
 	if count > 0 then
 		self.Text:Hide();
 		
 		local continuableContainer = ContinuableContainer:Create();
-		local items = ItemUtil.TransformItemIDsToItems(filteredItemIDs);
-		continuableContainer:AddContinuables(items);
+		continuableContainer:AddContinuables(elements.items);
 		continuableContainer:ContinueOnLoad(function()
 			local rows = math.min(MaxRows, math.ceil(count / MaxColumns));
-			local columns = self.canShowCheckBox and MaxColumns or (math.max(1, math.min(MaxColumns, count)));
+			local columns = self.canFilter and MaxColumns or (math.max(1, math.min(MaxColumns, count)));
 
 			local padding = 0;
 			local elementHeight = 37;
@@ -169,13 +128,23 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 			end
 
 			local totalHeight = height + adjustment;
-			if self.canShowCheckBox then
+			if self.canFilter then
 				totalHeight = totalHeight + 25;
 			end
 
 			self.ScrollBar:SetShown(canShowScrollBar);
 
-			local dataProvider = CreateDataProvider(items);
+			local dataProvider = CreateDataProvider();
+			for index, item in ipairs(elements.items) do
+				-- Expected that some of these fields will be missing depending on the implementation
+				-- of the GetElementsImplementation function. "item" is required. 
+				local elementData = {
+					item = item,
+					itemGUID = elements.itemGUIDs and elements.itemGUIDs[index] or nil,
+					itemLocation = elements.itemLocation and elements.itemLocation[index] or nil,
+				};
+				dataProvider:Insert(elementData);
+			end
 			self.ScrollBox:SetDataProvider(dataProvider);
 
 			self:SetSize(totalWidth, totalHeight);
@@ -191,11 +160,9 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 end
 
 -- FIXME Visual states required for reagents already in transaction.
-function ProfessionsItemFlyoutMixin:Init(owner, transaction, recipeID, itemIDs, cannotFilter)
+function ProfessionsItemFlyoutMixin:Init(owner, transaction, cannotFilter)
 	self.owner = owner;
-	self.recipeID = recipeID;
-	self.itemIDs = itemIDs;
-	self.canShowCheckBox = not cannotFilter;
+	self.canFilter = not cannotFilter;
 
 	self.HideUnownedCheckBox:SetChecked(self:ShouldHideUnownedItems());
 

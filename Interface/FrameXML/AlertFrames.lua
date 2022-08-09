@@ -477,7 +477,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 		if ( C_Scenario.IsInScenario() and not C_Scenario.TreatScenarioAsDungeon() ) then
 			local scenarioType = select(10, C_Scenario.GetInfo());
 			if scenarioType ~= LE_SCENARIO_TYPE_LEGION_INVASION then
-				if (not self:ShouldSupressDungeonOrScenarioAlert()) then 
+				if (not self:ShouldSupressDungeonOrScenarioAlert()) then
 					local continuableContainer = CreateContinuableContainerForLFGRewards();
 					if continuableContainer then
 						continuableContainer:ContinueOnLoad(function()
@@ -487,7 +487,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 				end
 			end
 		else
-			if (not self:ShouldSupressDungeonOrScenarioAlert()) then 
+			if (not self:ShouldSupressDungeonOrScenarioAlert()) then
 				local continuableContainer = CreateContinuableContainerForLFGRewards();
 				if continuableContainer then
 					continuableContainer:ContinueOnLoad(function()
@@ -552,7 +552,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 		local buildingName, garrisonType = ...;
 		if ( garrisonType == C_Garrison.GetLandingPageGarrisonType() ) then
 			GarrisonBuildingAlertSystem:AddAlert(buildingName, garrisonType);
-			GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
+			ExpansionLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
 		end
     elseif ( event == "GARRISON_TALENT_COMPLETE") then
     	local garrisonType, doAlert = ...;
@@ -573,7 +573,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 			if ( validInstance and not UnitAffectingCombat("player") ) then
 				local missionFrame = _G[GarrisonFollowerOptions[followerTypeID].missionFrame];
 				if (not missionFrame or not missionFrame:IsShown()) then
-					GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
+					ExpansionLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
 
 					local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
 
@@ -710,12 +710,12 @@ function AlertFrameMixin:BuildQuestData(questID)
 end
 
 function AlertFrameMixin:ShouldSupressDungeonOrScenarioAlert()
-	if	(IslandsPartyPoseFrame) then 
-		if (IslandsPartyPoseFrame:IsVisible()) then 
-			return true; 
+	if	(IslandsPartyPoseFrame) then
+		if (IslandsPartyPoseFrame:IsVisible()) then
+			return true;
 		end
-	elseif (WarfrontsPartyPoseFrame) then 
-		if(WarfrontsPartyPoseFrame:IsVisible()) then 
+	elseif (WarfrontsPartyPoseFrame) then
+		if(WarfrontsPartyPoseFrame:IsVisible()) then
 			return true;
 		end
 	end

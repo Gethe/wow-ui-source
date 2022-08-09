@@ -49,6 +49,9 @@ CASTING_BAR_TYPES = {
 CastingBarMixin = {};
 
 function CastingBarMixin:OnLoad(unit, showTradeSkills, showShield)
+	self.StagePoints = {};
+	self.StagePips = {};
+
 	self:SetUnit(unit, showTradeSkills, showShield);
 
 	self.showCastbar = true;
@@ -58,8 +61,6 @@ function CastingBarMixin:OnLoad(unit, showTradeSkills, showShield)
 		self.Spark.offsetY = offsetY;
 	end
 	
-	self.StagePoints = {};
-	self.StagePips = {};
 end
 
 -- Fades additional widgets along with the cast bar, in case these widgets are not parented or use ignoreParentAlpha
@@ -140,6 +141,11 @@ function CastingBarAnim_OnInterruptSparkAnimFinish(self)
 	local castingBar = self:GetParent();
 	castingBar:SetValue(castingBar.maxValue);
 	castingBar:HideSpark();
+end
+
+function CastingBarAnim_OnFadeOutFinish(self)
+	local castingBar = self:GetParent();
+	castingBar:Hide();
 end
 
 function CastingBarMixin:GetEffectiveType(isChannel, notInterruptible, isTradeSkill, isEmpowered)
@@ -238,7 +244,6 @@ function CastingBarMixin:OnEvent(event, ...)
 		if ( self.showCastbar ) then
 			self:Show();
 		end
-
 	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP") then
 		if ( not self:IsVisible() ) then
 			self:Hide();
@@ -847,4 +852,18 @@ function CastingBarMixin:ClearStages()
 	end
 	self.NumStages = 0;
 	table.wipe(self.StagePoints);
+end
+
+PlayerCastingBarMixin = {};
+
+function PlayerCastingBarMixin:OnLoad()
+	local showTradeSkills = true;
+	local showShieldNo = false;
+	CastingBarMixin.OnLoad(self, "player", showTradeSkills, showShieldNo);
+	self.Icon:Hide();
+end
+
+function PlayerCastingBarMixin:OnShow()
+	CastingBarMixin.OnShow(self);
+	UIParentManagedFrameMixin.OnShow(self); 
 end

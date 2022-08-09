@@ -57,15 +57,15 @@
 		</Layers>
 
 		<Frames>
-			<Frame parentKey="BorderArt" inherits="NineSliceCodeTemplate">
+			<Frame parentKey="BorderArt" inherits="NineSliceCodeTemplate" frameLevel="52">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
 					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-4" y="4"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="7" y="-7"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="8" y="-7"/>
 				</Anchors>
 			</Frame>
 
@@ -93,7 +93,7 @@
 						<Texture parentKey="RightEndCap" atlas="ui-hud-actionbar-gryphon-right">
 							<Size x="104.5" y="98"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-9" y="-22"/>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-8" y="-22"/>
 							</Anchors>
 						</Texture>
 					</Layer>

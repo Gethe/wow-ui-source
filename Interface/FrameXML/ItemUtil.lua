@@ -13,6 +13,7 @@ ItemButtonUtil.ItemContextEnum = {
 	UpgradableItem = 9,
 	RunecarverScrapping = 10,
 	ItemConversion = 11,
+	ItemRecrafting = 12,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -51,6 +52,8 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.RunecarverScrapping;
 	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.ItemConversion then
 		return ItemButtonUtil.ItemContextEnum.ItemConversion;
+	elseif ProfessionsFrame and ProfessionsFrame:IsShown() and ProfessionsFrame:GetCurrentRecraftingRecipeID() ~= nil then
+		return ItemButtonUtil.ItemContextEnum.ItemRecrafting;
 	elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
 		return RuneforgeFrame:GetItemContext();
 	elseif TargetSpellReplacesBonusTree() then
@@ -123,6 +126,12 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.UpgradableItem then
 			if C_ItemUpgrade.CanUpgradeItem(itemLocation) then
+				return ItemButtonUtil.ItemContextMatchResult.Match;
+			end
+			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.ItemRecrafting then
+			local recipeID = ProfessionsFrame:GetCurrentRecraftingRecipeID();
+			if recipeID and C_TradeSkillUI.IsItemRecraftCandidate(itemLocation, recipeID) then
 				return ItemButtonUtil.ItemContextMatchResult.Match;
 			end
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
@@ -214,6 +223,17 @@ function ItemUtil.IteratePlayerInventoryAndEquipment(callback)
 	end
 end
 
+function ItemUtil.FilterOwnedItems(itemIDs)
+	local ownedItemIDs = {};
+	ItemUtil.IteratePlayerInventory(function(itemLocation)
+		local item = Item:CreateFromItemLocation(itemLocation);
+		if tContains(itemIDs, item:GetItemID()) then
+			table.insert(ownedItemIDs, item:GetItemID());
+		end
+	end);
+	return ownedItemIDs;
+end
+
 function ItemUtil.DoesAnyItemSlotMatchItemContext()
 	local matchFound = false;
 	local function ItemSlotMatchItemContextCallback(itemLocation)
@@ -239,6 +259,35 @@ function ItemUtil.TransformItemIDsToItems(itemIDs)
 	return items;
 end
 
+function ItemUtil.TransformItemLocationsToItems(itemLocations)
+	local items = {};
+	for index, itemLocation in ipairs(itemLocations) do
+		table.insert(items, Item:CreateFromItemLocation(itemLocation));
+	end
+	return items;
+end
+
+function ItemUtil.TransformItemGUIDsToItemIDs(itemGUIDs)
+	local itemIDs = {};
+	for index, itemGUID in ipairs(itemGUIDs) do
+		local itemID = C_Item.GetItemIDByGUID(itemGUID);
+		table.insert(itemIDs, itemID);
+	end
+	return itemIDs;
+end
+
+function ItemUtil.TransformItemGUIDToItem(itemGUID)
+	if itemGUID and C_Item.IsItemGUIDInInventory(itemGUID) then
+		local itemLocation = C_Item.GetItemLocation(itemGUID);
+		return Item:CreateFromItemLocation(itemLocation);
+	end
+	return nil;
+end
+
+function ItemUtil.TransformItemGUIDsToItems(itemGUIDs)
+	local itemIDs = ItemUtil.TransformItemGUIDsToItemIDs(itemGUIDs);
+	return ItemUtil.TransformItemIDsToItems(itemIDs);
+end
 
 ItemTransmogInfoMixin = {};
 

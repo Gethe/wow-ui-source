@@ -122,9 +122,8 @@ function ProfessionsSpecFrameMixin:OnShow()
 	C_Traits.StageConfig(self:GetConfigID());
 	self:UpdateTreeCurrencyInfo();
 
-	for tab, _ in self.tabsPool:EnumerateActive() do
-		tab:UpdateState();
-	end
+	self:UpdateTabs();
+	self:UpdateSelectedTabState();
 end
 
 local staticPopups =
@@ -176,8 +175,15 @@ function ProfessionsSpecFrameMixin:OnEvent(event, ...) -- Override
 			self.detailedViewDirty = true;
 			self:RegisterOnUpdate();
 		end
-	elseif event == "TRAIT_CONFIG_UPDATED" then
+	end
+end
+
+function ProfessionsSpecFrameMixin:OnTraitConfigUpdated(configID)
+	TalentFrameBaseMixin.OnTraitConfigUpdated(self, configID);
+
+	if self:IsVisible() then
 		self:UpdateDetailedPanel();
+		self:UpdateTabs();
 	end
 end
 
@@ -230,15 +236,26 @@ function ProfessionsSpecFrameMixin:InitializeTabs()
 	EventRegistry:TriggerEvent("ProfessionsSpecializations.TabSelected", self:GetDefaultTab(tabTreeIDs));
 end
 
-function ProfessionsSpecFrameMixin:HasUnlockableTab()
+function ProfessionsSpecFrameMixin:UpdateTabs(tabCallback)
 	for tab, _ in self.tabsPool:EnumerateActive() do
 		tab:UpdateState();
-		if tab:GetState() == Enum.ProfessionsSpecTabState.Unlockable then
-			return true;
+		if tabCallback then
+			tabCallback(tab);
 		end
 	end
 
 	return false;
+end
+
+function ProfessionsSpecFrameMixin:HasUnlockableTab()
+	local hasUnlockable = false;
+	self:UpdateTabs(function(tab)
+		if tab:GetState() == Enum.ProfessionsSpecTabState.Unlockable then
+			hasUnlockable = true;
+		end
+	end);
+
+	return hasUnlockable;
 end
 
 function ProfessionsSpecFrameMixin:UpdateTreeCurrencyInfo() -- Override
@@ -510,8 +527,10 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 end
 
 function ProfessionsSpecFrameMixin:Refresh(professionInfo)
+	local configID = C_ProfSpecs.GetConfigIDForSkillLine(professionInfo.professionID);
 	if not Professions.InLocalCraftingMode() 
-	   or not C_ProfSpecs.SkillLineHasSpecialization(professionInfo.professionID) then
+	   or not C_ProfSpecs.SkillLineHasSpecialization(professionInfo.professionID)
+	   or configID == 0 then
 		self:SetConfigID(nil);
 		self.tabsPool:ReleaseAll();
 		self.professionInfo = nil;
@@ -525,7 +544,7 @@ function ProfessionsSpecFrameMixin:Refresh(professionInfo)
 	self:ClearInfoCaches();
 
 	self.professionInfo = professionInfo;
-	self:SetConfigID(C_ProfSpecs.GetConfigIDForSkillLine(professionInfo.professionID));
+	self:SetConfigID(configID);
 	self:InitializeTabs();
 	self.TreeView.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.UseAtlasSize);
 	self.TreeView.ProfessionName:SetText(string.upper(professionInfo.parentProfessionName));

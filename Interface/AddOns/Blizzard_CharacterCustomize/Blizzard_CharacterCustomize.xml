@@ -449,6 +449,10 @@
 	</Frame>
 
 	<Frame name="CharCustomizeAudioInterface" hidden="true" mixin="CharCustomizeAudioInterfaceMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 		<Size x="144" y="38" />
 		<Frames>
 			<Button parentKey="MuteButton" inherits="AlphaHighlightButtonTemplate" hidden="true" mixin="CharCustomizeAudioInterfaceMuteButtonMixin">

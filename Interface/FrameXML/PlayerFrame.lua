@@ -722,69 +722,60 @@ end
 --
 
 function PlayerFrame_AttachCastBar()
-	local castBar = CastingBarFrame;
-	local petCastBar = PetCastingBarFrame;
-	-- player
-	castBar.ignoreFramePositionManager = true;
-	castBar:SetAttribute("ignoreFramePositionManager", true);
-	castBar:SetLook("UNITFRAME");
-	castBar:ClearAllPoints();
-	castBar:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 78, 18);
 	-- pet
-	petCastBar:SetLook(petCastBar, "UNITFRAME");
-	petCastBar:SetWidth(150);
-	petCastBar:SetHeight(10);
-	petCastBar:ClearAllPoints();
-	petCastBar:SetPoint("LEFT", castBar, 0, 0);
-	petCastBar:SetPoint("TOP", PetFrame, "BOTTOM", 0, -8);
+	PetCastingBarFrame:SetLook("UNITFRAME");
+	PetCastingBarFrame:SetWidth(150);
+	PetCastingBarFrame:SetHeight(10);
 
+	-- player
+	PlayerCastingBarFrame.ignoreFramePositionManager = true;
+	UIParentBottomManagedFrameContainer:RemoveManagedFrame(PlayerCastingBarFrame);
+	PlayerCastingBarFrame.attachedToPlayerFrame = true;
+	PlayerCastingBarFrame:SetLook("UNITFRAME");
+	PlayerCastingBarFrame:SetParent(PlayerFrame);
 	PlayerFrame_AdjustAttachments();
-	UIParent_ManageFramePositions();
 end
 
 function PlayerFrame_DetachCastBar()
-	local castBar = CastingBarFrame;
-	local petCastBar = PetCastingBarFrame;
-	-- player
-	castBar.ignoreFramePositionManager = nil;
-	castBar:SetAttribute("ignoreFramePositionManager", false);
-	castBar:SetLook("CLASSIC");
-	castBar:ClearAllPoints();
 	-- pet
-	petCastBar:SetLook(petCastBar, "CLASSIC");
-	petCastBar:SetWidth(195);
-	petCastBar:SetHeight(13);
-	petCastBar:ClearAllPoints();
-	petCastBar:SetPoint("BOTTOM", castBar, "TOP", 0, 12);
+	PetCastingBarFrame:SetLook("CLASSIC");
+	PetCastingBarFrame:SetWidth(195);
+	PetCastingBarFrame:SetHeight(13);
 
-	UIParent_ManageFramePositions();
+	-- player
+	PlayerCastingBarFrame.ignoreFramePositionManager = nil;
+	PlayerCastingBarFrame.attachedToPlayerFrame = false;
+	PlayerCastingBarFrame:SetLook("CLASSIC");
+	-- Will be re-anchored via edit mode
 end
 
 function PlayerFrame_AdjustAttachments()
-	if not EditModeManagerFrame:IsInitialized() or not EditModeManagerFrame:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Player, Enum.EditModeUnitFrameSetting.CastBarUnderneath) then
+	if not PlayerCastingBarFrame.attachedToPlayerFrame then
 		return;
 	end
 	
-	CastingBarFrame:ClearAllPoints();
+	local yOffset;
+	if PetFrame and PetFrame:IsShown() then
+		yOffset = PetFrame:GetBottom() - PlayerFrame:GetBottom();
 
-	if ( PetFrame and PetFrame:IsShown() ) then
-		CastingBarFrame:SetPoint("TOP", PetFrame, "BOTTOM", 0, -4);
-	elseif ( TotemFrame and TotemFrame:IsShown() ) then
-		CastingBarFrame:SetPoint("TOP", TotemFrame, "BOTTOM", 0, 2);
+		if PetCastingBarFrame.showCastbar then
+			yOffset = yOffset - 30;
+		end
+	elseif TotemFrame and TotemFrame:IsShown() then
+		yOffset = TotemFrame:GetBottom() - PlayerFrame:GetBottom();
 	else
 		local _, class = UnitClass("player");
-		if ( class == "PALADIN" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -6);
-		elseif ( class == "DRUID" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
-		elseif ( class == "PRIEST" and PriestBarFrame:IsShown() ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -2);
-		elseif ( class == "DEATHKNIGHT" or class == "WARLOCK" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 4);
-		elseif ( class == "MONK" ) then
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -1);
+		if class == "PALADIN" then
+			yOffset = -6;
+		elseif class == "PRIEST" and PriestBarFrame:IsShown() then
+			yOffset = -2;
+		elseif class == "DEATHKNIGHT" or class == "WARLOCK" then
+			yOffset = 4;
 		else
-			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
+			yOffset = 10;
 		end
 	end
+
+	PlayerCastingBarFrame:ClearAllPoints();
+	PlayerCastingBarFrame:SetPoint("TOPRIGHT", PlayerFrame, "BOTTOMRIGHT", 0, yOffset);
 end

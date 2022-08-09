@@ -31,14 +31,25 @@ function PvPTalentListButtonMixin:Update(selectedHere, selectedOther)
 			self.New:Show();
 			self.NewGlow:Show();
 		end
-		self.Name:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		if selectedHere or selectedOther then
+			self.Name:SetTextColor(YELLOW_FONT_COLOR:GetRGB());
+		else
+			self.Name:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		end
 		self.Icon:SetDesaturated(false);
 		self.Selected:SetShown(selectedHere);
 		self.disallowNormalClicks = false; 
 	end
 
 	self.SelectedOtherCheck:SetShown(selectedOther);
-	self.SelectedOtherCheck:SetDesaturated(not unlocked);
+
+	if selectedOther then
+		self:SetAlpha(0.4);
+	else
+		self:SetAlpha(1);
+	end
+
+	self.Border:SetShown(not selectedHere and not selectedOther);
 
 	self.Name:SetText(name);
 	self.Icon:SetTexture(icon);
@@ -91,9 +102,6 @@ end
 PvPTalentListMixin = {};
 
 function PvPTalentListMixin:OnLoad()
-	ButtonFrameTemplate_ShowButtonBar(self);
-	FrameTemplate_SetAtticHeight(self, 8);
-
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("PvPTalentListButtonTemplate", function(button, elementData)
 		button:Init(elementData);
@@ -123,6 +131,10 @@ function PvPTalentListMixin:OnShow()
 
 	self.ScrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 	self:Update();
+
+	local view = self.ScrollBox:GetView();
+	local viewHeight = view:GetExtent();
+	self:SetSize(self:GetWidth(), viewHeight);
 end
 
 function PvPTalentListMixin:OnHide()
@@ -134,10 +146,11 @@ function PvPTalentListMixin:OnHide()
 	end
 end
 
-function PvPTalentListMixin:OnOpenPvPTalentList(slotIndex)
+function PvPTalentListMixin:OnOpenPvPTalentList(slotIndex, slotFrame)
 	self.slotIndex = slotIndex;
 
 	self:Show();
+	self:SetPoint("BOTTOM", slotFrame, "TOP", 0, 0);
 end
 
 function PvPTalentListMixin:OnClosePvPTalentList()

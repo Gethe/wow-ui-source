@@ -90,7 +90,7 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
 	survey:AddDataCollection(collector.RunFunction, GetCurrentConduits)
 	survey:AddDataCollection(collector.RunFunction, GetCurrentSoulbindTraits)
     if not (ignoreTypeQuestion) then
-        survey:AddDataCollection(collector.SelectOne_MessageKeyUpdater, { { Choice = "Bug", Key = PTR_IssueReporter.Data.Message_Key }, { Choice = "Feedback", Key = PTR_IssueReporter.Data.Feedback_Message_Key }})
+        survey:AddDataCollection(collector.SelectOne_MessageKeyUpdater, { { Choice = "Bug", Key = PTR_IssueReporter.Data.Message_Key }, { Choice = "Feedback", Key = PTR_IssueReporter.Data.Feedback_Message_Key }}, nil, true)
     end
 end
 --------------------------------------------------------------------------------------------------------
@@ -435,6 +435,21 @@ function PTR_IssueReporter.CreateReports()
     garrTalentReport:AddDataCollection(collector.RunFunction, GetCurrentTalentTreeStateFromTalentID) 
     
     garrTalentReport:RegisterPopEvent(event.Tooltip, tooltips.talent)
+
+    --------------------------------------- Recipe Issue Reporting ----------------------------------------------
+    local GetIconFromRecipeID = function(value)
+        return value
+    end
+    
+    local recipeReport = PTR_IssueReporter.CreateSurvey(15, "Issue Report: %s")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(recipeReport)
+    recipeReport:PopulateDynamicTitleToken(1, "Name")
+    recipeReport:AttachIconViewer("Additional", GetIconFromRecipeID)
+    
+    recipeReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this Recipe?")
+    recipeReport:AddDataCollection(collector.FromDataPackage, "ID")
+    
+    recipeReport:RegisterPopEvent(event.Tooltip, tooltips.recipe)
     
     --------------------------------------- Character Customization Issue Reporting ----------------------------------------------
     local barberShopReport = PTR_IssueReporter.CreateSurvey(3001, "Issue Report")

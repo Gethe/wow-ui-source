@@ -71,9 +71,10 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 
 	local function Layout()
 		local colorStyle = OBJECTIVE_TRACKER_COLOR["Normal"];
-		
+		local isRecraft = false;
+
 		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked()) do
-			local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID);
+			local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft);
 			local block = self:GetBlock(recipeID);
 			self:SetBlockHeader(block, recipeSchematic.name);
 

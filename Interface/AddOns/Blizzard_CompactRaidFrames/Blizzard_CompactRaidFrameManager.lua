@@ -531,8 +531,8 @@ function CompactRaidFrameManager_UpdateContainerVisibility()
 end
 
 function CompactRaidFrameManager_AttachPartyFrames(manager)
-	PartyMemberFrame1:ClearAllPoints();
-	PartyMemberFrame1:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, -20);
+	PartyFrame:ClearAllPoints();
+	PartyFrame:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, -20);
 end
 
 function CompactRaidFrameManager_ResetContainerPosition()

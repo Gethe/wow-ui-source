@@ -41,14 +41,14 @@ function ProfessionsCraftingOutputDialogMixin:Init(transaction, quality)
 	local recipeID = transaction:GetRecipeID();
 
 	local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID);
-		if outputItemInfo.hyperlink then
-			local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
-			self.RecipeName:SetText(item:GetItemName());
-			self.RecipeName:SetTextColor(item:GetItemQualityColorRGB());
-		else
-			self.RecipeName:SetText(self.recipeSchematic.name);
-			self.RecipeName:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-		end
+	if outputItemInfo.hyperlink then
+		local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
+		self.RecipeName:SetText(item:GetItemName());
+		self.RecipeName:SetTextColor(item:GetItemQualityColorRGB());
+	else
+		self.RecipeName:SetText(self.recipeSchematic.name);
+		self.RecipeName:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	end
 
 	Professions.SetupOutputIcon(self.OutputIcon, transaction, outputItemInfo);
 

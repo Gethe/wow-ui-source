@@ -492,9 +492,6 @@ local function Register()
 
 	-- Enable Reverb
 	Settings.SetupCVarCheckBox(category, "Sound_EnableReverb", ENABLE_REVERB, OPTION_TOOLTIP_ENABLE_REVERB);
-
-	-- Sound at Character
-	Settings.SetupCVarCheckBox(category, "Sound_ListenerAtCharacter", ENABLE_SOUND_AT_CHARACTER, OPTION_TOOLTIP_ENABLE_SOUND_AT_CHARACTER);
 	
 	-- Distance Filtering
 	Settings.SetupCVarCheckBox(category, "Sound_EnablePositionalLowPassFilter", ENABLE_SOFTWARE_HRTF, OPTION_TOOLTIP_ENABLE_SOFTWARE_HRTF);

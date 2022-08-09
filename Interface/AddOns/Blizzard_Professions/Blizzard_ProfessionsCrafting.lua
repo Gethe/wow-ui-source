@@ -253,11 +253,12 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
-	if currentRecipeInfo ~= nil and currentRecipeInfo.learned and (Professions.InLocalCraftingMode() or isRuneforging) then
+	if currentRecipeInfo ~= nil and currentRecipeInfo.learned and (Professions.InLocalCraftingMode() or isRuneforging) and not currentRecipeInfo.isRecraft then
 		self.CreateButton:Show();
 		self.ViewGuildCraftersButton:Hide();
 
-		if currentRecipeInfo.createsItem then
+		local transaction = self.SchematicForm:GetTransaction();
+		if currentRecipeInfo.createsItem and not transaction:HasRecraftAllocation() then
 			self.CreateAllButton:Show();
 			self.CreateMultipleInputBox:Show();
 		else
@@ -283,6 +284,19 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 			self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_COUNT:format(countMax));
 		end
 
+		local function IsRecipeOnCooldown(recipeID)
+			local cooldown, isDayCooldown, charges, maxCharges = C_TradeSkillUI.GetRecipeCooldown(recipeID);
+			if not cooldown then
+				return false;
+			end
+
+			if charges > 0 then
+				return false;
+			end
+
+			return true;
+		end
+
 		-- CAIS not relevant anymore since the client is denied login. Nevertheless, this is carried over from the
 		-- previous implementation in case the CAIS system changes.
 		local enabled = nil;
@@ -296,7 +310,7 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 			self.CreateButton.tooltipText = reasonText;
 			self.CreateAllButton.tooltipText = reasonText;
 			enabled = false;
-		elseif C_TradeSkillUI.GetRecipeCooldown(currentRecipeInfo.recipeID) ~= nil then
+		elseif IsRecipeOnCooldown(currentRecipeInfo.recipeID) then
 			self.CreateButton.tooltipText = PROFESSIONS_RECIPE_COOLDOWN;
 			self.CreateAllButton.tooltipText = PROFESSIONS_RECIPE_COOLDOWN;
 			enabled = false;
@@ -307,7 +321,6 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 		end
 
 		if enabled then
-			local transaction = self.SchematicForm:GetTransaction();
 			if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 				enabled = transaction:HasAllocatedSalvageRequirements();
 				if enabled then
@@ -349,12 +362,10 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	local oldProfessionInfo = self.professionInfo;
 	self.professionInfo = professionInfo;
 
-	local organizeInGroups = true;
 	local noStripCategories;
 	if C_TradeSkillUI.IsRuneforging() then
 		professionInfo.professionID = Constants.ProfessionConsts.RUNEFORGING_SKILL_LINE_ID;
 		noStripCategories = {Constants.ProfessionConsts.RUNEFORGING_ROOT_CATEGORY_ID};
-		organizeInGroups = false;
 		self.RecipeList.FilterButton:Hide();
 	else
 		self.RecipeList.FilterButton:Show();
@@ -365,7 +376,7 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	self.RankBar:SetShown(Professions.InLocalCraftingMode());
 
 	local searching = self.RecipeList.SearchBox:HasText();
-	local dataProvider = Professions.GenerateCraftingDataProvider(self.professionInfo.professionID, organizeInGroups, searching, noStripCategories);
+	local dataProvider = Professions.GenerateCraftingDataProvider(self.professionInfo.professionID, searching, noStripCategories);
 	
 	if searching or changedProfessionID then
 		self.RecipeList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.DiscardScrollPosition);
@@ -440,6 +451,7 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	self:ConfigureInventorySlots(professionInfo);
 
 	self.LinkButton:SetShown(C_TradeSkillUI.CanTradeSkillListLink() and Professions.InLocalCraftingMode());
+	self:UpdateFilterResetVisibility();
 end
 
 function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLevel)
@@ -462,7 +474,17 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 		end
 	else
 		local reagentsTbl = transaction:CreateCraftingReagentInfoTbl();
-		C_TradeSkillUI.CraftRecipe(recipeID, count, reagentsTbl, recipeLevel);
+		if transaction:HasRecraftAllocation() then
+			local result = C_TradeSkillUI.RecraftRecipe(transaction:GetRecraftAllocation(), reagentsTbl);
+			if result then
+				-- Create an expected table of item modifications so that we don't incorrectly deallocate
+				-- an item modification slot on form refresh that has just been installed but hasn't been stamped
+				-- with the item modification yet.
+				transaction:GenerateExpectedItemModifications();
+			end
+		else
+			C_TradeSkillUI.CraftRecipe(recipeID, count, reagentsTbl, recipeLevel);
+		end
 	end
 
 	local successive = count > 1;
@@ -503,6 +525,14 @@ function ProfessionsCraftingPageMixin:ConfigureInventorySlots(info)
 			inventorySlot:SetShown(show);
 		end
 	end
+end
+
+function ProfessionsCraftingPageMixin:GetCurrentRecraftingRecipeID()
+	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
+	if currentRecipeInfo and currentRecipeInfo.isRecraft then
+		return currentRecipeInfo.recipeID;
+	end
+	return nil;
 end
 
 function ProfessionsCraftingPageMixin:HideInventorySlots()

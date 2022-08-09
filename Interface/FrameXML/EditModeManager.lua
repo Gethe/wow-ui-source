@@ -250,7 +250,8 @@ local function AreAnchorsEqual(anchorInfo, otherAnchorInfo)
 		and anchorInfo.relativeTo == otherAnchorInfo.relativeTo
 		and anchorInfo.relativePoint == otherAnchorInfo.relativePoint
 		and anchorInfo.offsetX == otherAnchorInfo.offsetX
-		and anchorInfo.offsetY == otherAnchorInfo.offsetY;
+		and anchorInfo.offsetY == otherAnchorInfo.offsetY
+		and anchorInfo.isDefaultPosition == otherAnchorInfo.isDefaultPosition;
 	end
 
 	return anchorInfo == otherAnchorInfo;
@@ -263,10 +264,11 @@ local function CopyAnchorInfo(anchorInfo, otherAnchorInfo)
 		anchorInfo.relativePoint = otherAnchorInfo.relativePoint;
 		anchorInfo.offsetX = otherAnchorInfo.offsetX;
 		anchorInfo.offsetY = otherAnchorInfo.offsetY;
+		anchorInfo.isDefaultPosition = otherAnchorInfo.isDefaultPosition;
 	end
 end
 
-local function ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY)
+local function ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY, isDefaultPosition)
 	if point then
 		local anchorInfo = {};
 		anchorInfo.point = point;
@@ -274,6 +276,7 @@ local function ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, of
 		anchorInfo.relativePoint = relativePoint;
 		anchorInfo.offsetX = offsetX;
 		anchorInfo.offsetY = offsetY;
+		anchorInfo.isDefaultPosition = isDefaultPosition or false;
 		return anchorInfo;
 	end
 
@@ -302,8 +305,9 @@ function EditModeManagerFrameMixin:HasActiveChanges()
 	return self.hasActiveChanges;
 end
 
-local function UpdateSystemAnchorInfo(systemInfo, systemFrame)
-	local newAnchorInfo = ConvertToAnchorInfo(systemFrame:GetPoint(1));
+local function UpdateSystemAnchorInfo(systemInfo, systemFrame, isDefaultPosition)
+	local point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(1);
+	local newAnchorInfo = ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY, isDefaultPosition);
 	if not AreAnchorsEqual(systemInfo.anchorInfo, newAnchorInfo) then
 		CopyAnchorInfo(systemInfo.anchorInfo, newAnchorInfo);
 		return true;
@@ -312,14 +316,18 @@ local function UpdateSystemAnchorInfo(systemInfo, systemFrame)
 	return false;
 end
 
-function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame)
+function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame, isDefaultPosition)
 	local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
 	if systemInfo then
-		if UpdateSystemAnchorInfo(systemInfo, systemFrame) then
+		if UpdateSystemAnchorInfo(systemInfo, systemFrame, isDefaultPosition) then
 			systemFrame:SetHasActiveChanges(true);
 
-			if EditModeUtil:IsRightAnchoredActionBar(systemFrame) then
+			local isRightActionBar = EditModeUtil:IsRightAnchoredActionBar(systemFrame);
+			if isRightActionBar then
 				self:UpdateRightAnchoredActionBarWidth();
+			end
+
+			if isRightActionBar or systemFrame == MinimapCluster then
 				self:UpdateRightAnchoredActionBarScales();
 			end
 
@@ -327,7 +335,23 @@ function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame)
 				self:UpdateBottomAnchoredActionBarHeight();
 			end
 
+			if systemFrame.isBottomManagedFrame then
+				UIParent_ManageFramePositions();
+			end
+
 			EditModeSystemSettingsDialog:UpdateDialog(systemFrame);
+		end
+	end
+end
+
+function EditModeManagerFrameMixin:MirrorSetting(system, systemIndex, setting, value)
+	local mirroredSettings = EditModeSettingDisplayInfoManager:GetMirroredSettings(system, systemIndex, setting);
+	if mirroredSettings then
+		for _, mirroredSettingInfo in ipairs(mirroredSettings) do
+			local systemFrame = self:GetRegisteredSystemFrame(mirroredSettingInfo.system, mirroredSettingInfo.systemIndex);
+			if systemFrame then
+				systemFrame:UpdateSystemSettingValue(setting, value);
+			end
 		end
 	end
 end
@@ -335,16 +359,7 @@ end
 function EditModeManagerFrameMixin:OnSystemSettingChange(systemFrame, changedSetting, newValue)
 	local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
 	if systemInfo then
-		local rawNewValue = systemFrame:ConvertSettingDisplayValueToRawValue(changedSetting, newValue);
-		for _, settingInfo in pairs(systemInfo.settings) do
-			if settingInfo.setting == changedSetting then
-				if settingInfo.value ~= rawNewValue then
-					settingInfo.value = rawNewValue;
-					systemFrame:UpdateSystemSetting(settingInfo.setting);
-				end
-				return;
-			end
-		end
+		systemFrame:UpdateSystemSettingValue(changedSetting, newValue);
 	end
 end
 
@@ -409,7 +424,7 @@ function EditModeManagerFrameMixin:UpdateRightAnchoredActionBarScales()
 		return;
 	end
 
-	local topLimit = MinimapCluster:GetBottom() - 10;
+	local topLimit = MinimapCluster:IsInDefaultPosition() and (MinimapCluster:GetBottom() - 10) or UIParent:GetTop();
 	local bottomLimit = MicroButtonAndBagsBar:GetTop() + 24;
 	local availableSpace = topLimit - bottomLimit;
 	local multiBarHeight = MultiBarRight:GetHeight();
@@ -432,11 +447,11 @@ function EditModeManagerFrameMixin:UpdateBottomAnchoredActionBarHeight(includeMa
 	local bottomAnchoredActionBarsToUpdate = { StanceBar, PetActionBar, PossessActionBar};
 
 	local topMostBottomAnchoredBar = nil;
-	if MultiBar2_IsVisible() and MultiBarBottomRight:IsCurrentlyBottomAnchored() then
+	if MultiBar2_IsVisible() and MultiBarBottomRight:IsInDefaultPosition() then
 		topMostBottomAnchoredBar = MultiBarBottomRight;
-	elseif MultiBar1_IsVisible() and MultiBarBottomLeft:IsCurrentlyBottomAnchored() then
+	elseif MultiBar1_IsVisible() and MultiBarBottomLeft:IsInDefaultPosition() then
 		topMostBottomAnchoredBar = MultiBarBottomLeft;
-	elseif MainMenuBar:IsCurrentlyBottomAnchored() then
+	elseif MainMenuBar:IsInDefaultPosition() then
 		topMostBottomAnchoredBar = MainMenuBar;
 	end
 
@@ -447,10 +462,12 @@ function EditModeManagerFrameMixin:UpdateBottomAnchoredActionBarHeight(includeMa
 			if EditModeUtil:IsBottomAnchoredActionBar(relativeTo) then
 				if topMostBottomAnchoredBar and relativeTo ~= topMostBottomAnchoredBar then
 					bar:SetPoint("BOTTOMLEFT", topMostBottomAnchoredBar, "TOPLEFT", 0, 5);
-					EditModeManagerFrame:OnSystemPositionChange(bar);
+					
+					local isDefaultPosition = true;
+					EditModeManagerFrame:OnSystemPositionChange(bar, isDefaultPosition);
 				end
 
-				if bar:IsCurrentlyBottomAnchored() then
+				if bar:IsInDefaultPosition() then
 					-- This bar is now the new topmost bar
 					topMostBottomAnchoredBar = bar;
 				end
@@ -467,7 +484,10 @@ function EditModeManagerFrameMixin:SelectSystem(selectFrame)
 			if systemFrame == selectFrame then
 				systemFrame:SelectSystem();
 			else
-				systemFrame:HighlightSystem();
+				-- Only highlight a system if it was already highlighted
+				if systemFrame.isHighlighted then
+					systemFrame:HighlightSystem();
+				end
 			end
 		end
 	end
@@ -475,7 +495,10 @@ end
 
 function EditModeManagerFrameMixin:ClearSelectedSystem()
 	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		systemFrame:HighlightSystem();
+		-- Only highlight a system if it was already highlighted
+		if systemFrame.isHighlighted then
+			systemFrame:HighlightSystem();
+		end
 	end
 	EditModeSystemSettingsDialog:Hide();
 end
@@ -639,6 +662,8 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetActionBarShown(StanceBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowStanceBar));
 	self.AccountSettings:SetActionBarShown(PetActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetActionBar));
 	self.AccountSettings:SetActionBarShown(PossessActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPossessActionBar));
+	self.AccountSettings:SetCastBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowCastBar));
+	self.AccountSettings:SetEncounterBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterBar));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -977,17 +1002,16 @@ function EditModeManagerFrameMixin:IsLayoutButtonLocked(layoutButton)
 	return self.lockedLayoutButton == layoutButton;
 end
 
-function EditModeManagerFrameMixin:TryAddRightActionBarToLayout(barToAdd)
+function EditModeManagerFrameMixin:AddRightActionBarToLayout(barToAdd)
 	for i, bar in pairs(self.RightActionBarsInLayout) do
 		if bar == barToAdd then
-			return false;
+			return;
 		end
 	end
 
 	table.insert(self.RightActionBarsInLayout, barToAdd);
 	table.sort(self.RightActionBarsInLayout, LayoutIndexComparator);
 	self:UpdateRightActionBarsLayout();
-	return true;
 end
 
 function EditModeManagerFrameMixin:RemoveRightActionBarFromLayout(barToRemove)
@@ -1014,7 +1038,8 @@ function EditModeManagerFrameMixin:UpdateRightActionBarsLayout()
 		bar:ClearAllPoints();
 		bar:SetPoint("RIGHT", UIParent, "RIGHT", offsetX, -77);
 
-		self:OnSystemPositionChange(bar);
+		local isDefaultPosition = true;
+		self:OnSystemPositionChange(bar, isDefaultPosition);
 
 		leftMostBar = bar;
 	end
@@ -1355,7 +1380,7 @@ function EditModeSystemSettingsDialogMixin:UpdateSettings(systemFrame)
 
 		local systemSettingDisplayInfo = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfo(self.attachedToSystem.system);
 		for index, displayInfo in ipairs(systemSettingDisplayInfo) do
-			if self.attachedToSystem:HasSetting(displayInfo.setting) then 
+			if self.attachedToSystem:ShouldShowSetting(displayInfo.setting) then 
 				local settingPool = self:GetSettingPool(displayInfo.type);
 				if settingPool then
 					local settingFrame;
@@ -1484,13 +1509,18 @@ function EditModeSystemMixin:OnSystemLoad()
 	end
 
 	EditModeManagerFrame:RegisterSystemFrame(self);
-	self:AnchorSelectionFrame();
 
 	self.systemName = (self.addSystemIndexToName and self.systemIndex) and self.systemNameString:format(self.systemIndex) or self.systemNameString;
 	self.Selection:SetLabelText(self.systemName);
 	self:SetupSettingsDialogAnchor();
 
 	self.settingDisplayInfoMap = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(self.system);
+end
+
+function EditModeSystemMixin:OnSystemHide()
+	if self.isSelected then
+		EditModeManagerFrame:ClearSelectedSystem();
+	end
 end
 
 -- Override in inheriting mixins as needed
@@ -1537,6 +1567,52 @@ function EditModeSystemMixin:ClearDirtySetting(setting)
 	self.dirtySettings[setting] = nil;
 end
 
+function EditModeSystemMixin:UpdateSystemSettingValue(setting, newValue)
+	if not self:IsInitialized() then
+		return;
+	end
+
+	for _, settingInfo in pairs(self.systemInfo.settings) do
+		if settingInfo.setting == setting then
+			local rawNewValue = self:ConvertSettingDisplayValueToRawValue(setting, newValue);
+			if settingInfo.value ~= rawNewValue then
+				settingInfo.value = rawNewValue;
+				self:UpdateSystemSetting(setting);
+			end
+			return;
+		end
+	end
+end
+
+function EditModeSystemMixin:ResetToDefaultPosition()
+	self.systemInfo.anchorInfo.isDefaultPosition = true;
+	self:ApplySystemAnchor();
+	EditModeSystemSettingsDialog:UpdateDialog(self);
+	self:SetHasActiveChanges(true);
+end
+
+function EditModeSystemMixin:ApplySystemAnchor()
+	if self.isBottomManagedFrame then
+		if self:IsInDefaultPosition() then
+			self.ignoreFramePositionManager = nil;
+			UIParentBottomManagedFrameContainer:AddManagedFrame(self);
+			return;
+		else
+			self.ignoreFramePositionManager = true;
+			UIParentBottomManagedFrameContainer:RemoveManagedFrame(self);
+			self:SetParent(UIParent);
+		end
+	elseif EditModeUtil:IsRightAnchoredActionBar(self) then
+		if self:IsInDefaultPosition() then
+			EditModeManagerFrame:AddRightActionBarToLayout(self);
+			return;
+		end
+	end
+
+	self:ClearAllPoints();
+	self:SetPoint(self.systemInfo.anchorInfo.point, self.systemInfo.anchorInfo.relativeTo, self.systemInfo.anchorInfo.relativePoint, self.systemInfo.anchorInfo.offsetX, self.systemInfo.anchorInfo.offsetY);
+end
+
 function EditModeSystemMixin:UpdateSystem(systemInfo)
 	self.savedSystemInfo = CopyTable(systemInfo);
 	self:SetHasActiveChanges(false);
@@ -1546,9 +1622,9 @@ function EditModeSystemMixin:UpdateSystem(systemInfo)
 	local updateDirtySettings = true;
 	self:UpdateSettingMap(updateDirtySettings);
 
-	self:ClearAllPoints();
-	self:SetPoint(self.systemInfo.anchorInfo.point, self.systemInfo.anchorInfo.relativeTo, self.systemInfo.anchorInfo.relativePoint, self.systemInfo.anchorInfo.offsetX, self.systemInfo.anchorInfo.offsetY);
+	self:ApplySystemAnchor();
 
+	self:AnchorSelectionFrame();
 	EditModeSystemSettingsDialog:UpdateDialog(self);
 
 	local entireSystemUpdate = true;
@@ -1562,7 +1638,12 @@ function EditModeSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 		self.dirtySettings[setting] = true;
 		self:SetHasActiveChanges(true);
 		self:UpdateSettingMap();
+		self:AnchorSelectionFrame();
 		EditModeSystemSettingsDialog:UpdateDialog(self);
+	end
+
+	if self:IsSettingDirty(setting) then
+		EditModeManagerFrame:MirrorSetting(self.system, self.systemIndex, setting, self:GetSettingValue(setting));
 	end
 end
 
@@ -1614,6 +1695,11 @@ function EditModeSystemMixin:UseSettingAltName(setting)
 	return false;
 end
 
+-- Override in inheriting mixins as needed
+function EditModeSystemMixin:ShouldShowSetting(setting)
+	return self:HasSetting(setting);
+end
+
 function EditModeSystemMixin:GetSettingsDialogAnchor()
 	return self.settingsDialogAnchor;
 end
@@ -1626,11 +1712,13 @@ end
 function EditModeSystemMixin:ClearHighlight()
 	self.Selection:Hide();
 	self.isSelected = false;
+	self.isHighlighted = false;
 end
 
 function EditModeSystemMixin:HighlightSystem()
 	self:SetMovable(false);
 	self.Selection:ShowHighlighted();
+	self.isHighlighted = true;
 	self.isSelected = false;
 end
 
@@ -1644,7 +1732,9 @@ function EditModeSystemMixin:SelectSystem()
 end
 
 function EditModeSystemMixin:OnEditModeEnter()
-	self:HighlightSystem();
+	if not self.defaultHideSelection then
+		self:HighlightSystem();
+	end
 end
 
 function EditModeSystemMixin:OnEditModeExit()
@@ -1652,14 +1742,22 @@ function EditModeSystemMixin:OnEditModeExit()
 	EditModeSystemSettingsDialog:Hide();
 end
 
+function EditModeSystemMixin:CanBeMoved()
+	return self.isSelected and not self.isLocked;
+end
+
+function EditModeSystemMixin:IsInDefaultPosition()
+	return self:IsInitialized() and self.systemInfo.anchorInfo.isDefaultPosition;
+end
+
 function EditModeSystemMixin:OnDragStart()
-	if self.isSelected then
+	if self:CanBeMoved() then
 		self:StartMoving();
 	end
 end
 
 function EditModeSystemMixin:OnDragStop()
-	if self.isSelected then
+	if self:CanBeMoved() then
 		self:StopMovingOrSizing();
 		EditModeManagerFrame:OnSystemPositionChange(self);
 	end
@@ -1701,24 +1799,21 @@ function EditModeActionBarSystemMixin:OnEditModeExit()
 	self:UpdateVisibility();
 end
 
-function EditModeActionBarSystemMixin:IsCurrentlyRightAnchored()
+function EditModeActionBarSystemMixin:IsInDefaultPosition()
 	if not self:IsInitialized() then
 		return false;
 	end
 
-	if self.systemInfo.anchorInfo.point == "RIGHT" then
-		if self == MultiBarRight and self.systemInfo.anchorInfo.relativeTo == "UIParent" then
-			return self.systemInfo.anchorInfo.offsetX == 0;
-		elseif self == MultiBarLeft and self.systemInfo.anchorInfo.relativeTo == "MultiBarRight" then
-			return MultiBarRight:IsCurrentlyRightAnchored();
-		end
+	local _, relativeTo = self:GetPoint(1);
+	if relativeTo and relativeTo.IsInDefaultPosition and not relativeTo:IsInDefaultPosition() then
+		return false;
 	end
 
-	return false;
+	return EditModeSystemMixin.IsInDefaultPosition(self);
 end
 
 function EditModeActionBarSystemMixin:SetScaleIfRightAnchored(scale)
-	if self:IsCurrentlyRightAnchored() then
+	if self:IsInDefaultPosition() then
 		self:SetScale(scale);
 	else
 		self:SetScale(1);
@@ -1730,34 +1825,11 @@ function EditModeActionBarSystemMixin:GetRightAnchoredWidth()
 		return 0;
 	end
 
-	if self:IsShown() and self:IsCurrentlyRightAnchored() then
+	if self:IsShown() and self:IsInDefaultPosition() then
 		return self:GetWidth() + -self.systemInfo.anchorInfo.offsetX;
 	end
 
 	return 0;
-end
-
-function EditModeActionBarSystemMixin:IsCurrentlyBottomAnchored()
-	if not self:IsInitialized() then
-		return false;
-	end
-
-	if (self == StanceBar or self == PetActionBar or self == PossessActionBar) then
-		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(1);
-		return relativeTo and relativeTo.IsCurrentlyBottomAnchored and relativeTo:IsCurrentlyBottomAnchored();
-	end
-
-	if self.systemInfo.anchorInfo.point == "BOTTOM" then
-		if self == MainMenuBar and self.systemInfo.anchorInfo.relativeTo == "UIParent" then
-			return self.systemInfo.anchorInfo.offsetY <= 100;
-		elseif self == MultiBarBottomLeft and self.systemInfo.anchorInfo.relativeTo == "MainMenuBar" then
-			return MainMenuBar:IsCurrentlyBottomAnchored();
-		elseif self == MultiBarBottomRight and self.systemInfo.anchorInfo.relativeTo == "MultiBarBottomLeft" then
-			return MultiBarBottomLeft:IsCurrentlyBottomAnchored();
-		end
-	end
-
-	return false;
 end
 
 function EditModeActionBarSystemMixin:GetBottomAnchoredHeight()
@@ -1765,7 +1837,7 @@ function EditModeActionBarSystemMixin:GetBottomAnchoredHeight()
 		return 0;
 	end
 
-	if self:IsShown() and self:IsCurrentlyBottomAnchored() then
+	if self:IsShown() and self:IsInDefaultPosition() then
 		return self:GetHeight() + self.systemInfo.anchorInfo.offsetY;
 	end
 
@@ -1937,15 +2009,17 @@ end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingSnapToSide()
 	if self:GetSettingValueBool(Enum.EditModeActionBarSetting.SnapToSide) then
-		-- If you were added to the right action bar layout
-		if EditModeManagerFrame:TryAddRightActionBarToLayout(self) then
-			-- Force vertical with 1 column when snapped to side
-			EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.Orientation, Enum.ActionBarOrientation.Vertical);
-			EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.NumRows, 1);
-		end
+		self:ResetToDefaultPosition();
+
+		-- Force vertical with 1 column when snapped to side
+		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.Orientation, Enum.ActionBarOrientation.Vertical);
+		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.NumRows, 1);
 	else
+		self.systemInfo.anchorInfo.isDefaultPosition = false;
 		EditModeManagerFrame:RemoveRightActionBarFromLayout(self);
 	end
+
+	EditModeManagerFrame:UpdateRightAnchoredActionBarScales();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -2035,8 +2109,8 @@ end
 function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
 	self.Selection:ClearAllPoints();
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Player then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 35, 10);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 35, -10);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 20);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 10);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -35, 0);
@@ -2060,15 +2134,6 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingHidePortrait()
 	--TODO
 end
 
-function EditModeUnitFrameSystemMixin:UpdateSystemSettingCastBarUnderneath()
-	local castBarUnderneath = self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.CastBarUnderneath);
-	if castBarUnderneath then
-		PlayerFrame_AttachCastBar();
-	else
-		PlayerFrame_DetachCastBar();
-	end
-end
-
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingBuffsOnTop()
 	self.buffsOnTop = self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.BuffsOnTop);
 	TargetFrame_UpdateAuras(self);
@@ -2089,7 +2154,7 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 	if setting == Enum.EditModeUnitFrameSetting.HidePortrait and self:HasSetting(Enum.EditModeUnitFrameSetting.HidePortrait) then
 		self:UpdateSystemSettingHidePortrait();
 	elseif setting == Enum.EditModeUnitFrameSetting.CastBarUnderneath and self:HasSetting(Enum.EditModeUnitFrameSetting.CastBarUnderneath) then
-		self:UpdateSystemSettingCastBarUnderneath();
+		-- Nothing to do, this setting is mirrored by Enum.EditModeCastBarSetting.LockToPlayerFrame 
 	elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop and self:HasSetting(Enum.EditModeUnitFrameSetting.BuffsOnTop) then
 		self:UpdateSystemSettingBuffsOnTop();
 	elseif setting == Enum.EditModeUnitFrameSetting.UseLargerFrame and self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) then
@@ -2097,6 +2162,146 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 	end
 
 	self:ClearDirtySetting(setting);
+end
+
+EditModeMinimapSystemMixin = {};
+
+function EditModeMinimapSystemMixin:UpdateSystemSettingHeaderUnderneath()
+	self:SetHeaderUnderneath(self:GetSettingValueBool(Enum.EditModeMinimapSetting.HeaderUnderneath));
+end
+
+function EditModeMinimapSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeMinimapSetting.HeaderUnderneath and self:HasSetting(Enum.EditModeMinimapSetting.HeaderUnderneath) then
+		self:UpdateSystemSettingHeaderUnderneath();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeCastBarSystemMixin = {};
+
+local function CreateResetToDefaultPositionButton(systemFrame, extraButtonPool)
+	local resetPositionButton = extraButtonPool:Acquire();
+	resetPositionButton.layoutIndex = 3;
+	resetPositionButton:SetText(HUD_EDIT_MODE_RESET_POSITION);
+	resetPositionButton:SetOnClickHandler(GenerateClosure(systemFrame.ResetToDefaultPosition, systemFrame));
+	resetPositionButton:SetEnabled(not systemFrame:IsInDefaultPosition());
+	resetPositionButton:Show();
+end
+
+function EditModeCastBarSystemMixin:ApplySystemAnchor()
+	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
+	if lockToPlayerFrame then
+		-- Nothing to do, it's already anchored to the player frame
+	else
+		EditModeSystemMixin.ApplySystemAnchor(self);
+	end
+end
+
+function EditModeCastBarSystemMixin:OnDragStop()
+	if self:CanBeMoved() then
+		self:StopMovingOrSizing();
+		self:SetParent(UIParent);
+		EditModeManagerFrame:OnSystemPositionChange(self);
+	end
+end
+
+function EditModeCastBarSystemMixin:ShouldResetSettingsDialogAnchors(oldSelectedSystemFrame)
+	return true;
+end
+
+function EditModeCastBarSystemMixin:ShouldShowSetting(setting)
+	if setting == Enum.EditModeCastBarSetting.BarSize then
+		return not self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
+	end
+
+	return true;
+end
+
+function EditModeCastBarSystemMixin:SetupSettingsDialogAnchor()
+	self.settingsDialogAnchor = AnchorUtil.CreateAnchor("LEFT", UIParent, "CENTER", 100);
+end
+
+function EditModeCastBarSystemMixin:AddExtraButtons(extraButtonPool)
+	if not self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
+		CreateResetToDefaultPositionButton(self, extraButtonPool);
+		return true;
+	end
+
+	return false;
+end
+
+function EditModeCastBarSystemMixin:AnchorSelectionFrame()
+	self.Selection:ClearAllPoints();
+	if self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -20, 0);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
+	else
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
+	end
+end
+
+function EditModeCastBarSystemMixin:UpdateSystemSettingLockToPlayerFrame()
+	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
+	if lockToPlayerFrame then
+		PlayerFrame_AttachCastBar();
+		self.isLocked = true;
+	else
+		PlayerFrame_DetachCastBar();
+		self:ApplySystemAnchor();
+		self.isLocked = false;
+	end
+
+	self:UpdateSystemSettingBarSize();
+end
+
+function EditModeCastBarSystemMixin:UpdateSystemSettingBarSize()
+	if self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
+		self:SetScale(1);
+	else
+		local barSizeSetting = self:GetSettingValue(Enum.EditModeCastBarSetting.BarSize);
+		local barScale = barSizeSetting / 100;
+		self:SetScale(barScale);
+	end
+end
+
+function EditModeCastBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeCastBarSetting.BarSize then
+		self:UpdateSystemSettingBarSize();
+	elseif setting == Enum.EditModeCastBarSetting.LockToPlayerFrame then
+		self:UpdateSystemSettingLockToPlayerFrame();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeEncounterBarSystemMixin = {};
+
+function EditModeEncounterBarSystemMixin:AddExtraButtons(extraButtonPool)
+	CreateResetToDefaultPositionButton(self, extraButtonPool);
+	return true;
+end
+
+function EditModeEncounterBarSystemMixin:OnDragStart()
+	if self:CanBeMoved() then
+		self:SetParent(UIParent);
+		self:StartMoving();
+	end
 end
 
 local EditModeSystemSelectionLayout =
@@ -2120,14 +2325,14 @@ end
 
 function EditModeSystemSelectionBaseMixin:ShowHighlighted()
 	NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.highlightTextureKit);
-	self.isSelected = false;	
+	self.isSelected = false;
 	self:UpdateLabelVisibility();
 	self:Show();
 end
 
 function EditModeSystemSelectionBaseMixin:ShowSelected()
 	NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.selectedTextureKit);
-	self.isSelected = true;	
+	self.isSelected = true;
 	self:UpdateLabelVisibility();
 	self:Show();
 end
@@ -2311,6 +2516,16 @@ function EditModeAccountSettingsMixin:OnLoad()
 		self:SetActionBarShown(PossessActionBar, isChecked, isUserInput);
 	end
 	self.Settings.PossessActionBar:SetCallback(onPossessActionBarCheckboxChecked);
+
+	local function onCastBarCheckboxChecked(isChecked, isUserInput)
+		self:SetCastBarShown(isChecked, isUserInput);
+	end
+	self.Settings.CastBar:SetCallback(onCastBarCheckboxChecked);
+
+	local function onEncounterBarCheckboxChecked(isChecked, isUserInput)
+		self:SetEncounterBarShown(isChecked, isUserInput);
+	end
+	self.Settings.EncounterBar:SetCallback(onEncounterBarCheckboxChecked);
 end
 
 function EditModeAccountSettingsMixin:OnEditModeEnter()
@@ -2329,6 +2544,9 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	SetupActionBar(StanceBar);
 	SetupActionBar(PetActionBar);
 	SetupActionBar(PossessActionBar);
+
+	self:RefreshCastBar();
+	self:RefreshEncounterBar();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
@@ -2419,6 +2637,41 @@ function EditModeAccountSettingsMixin:SetActionBarShown(bar, shown, isUserInput)
 	end
 end
 
+function EditModeAccountSettingsMixin:SetCastBarShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowCastBar, shown);
+		self:RefreshCastBar();
+	else
+		self.Settings.CastBar:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshCastBar()
+	local showCastBar = self.Settings.CastBar:IsControlChecked();
+	PlayerCastingBarFrame:StopAnims();
+	PlayerCastingBarFrame:SetAlpha(0);
+	PlayerCastingBarFrame:SetShown(showCastBar);
+	UIParent_ManageFramePositions();
+end
+
+function EditModeAccountSettingsMixin:SetEncounterBarShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowEncounterBar, shown);
+		self:RefreshEncounterBar();
+	else
+		self.Settings.EncounterBar:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshEncounterBar()
+	local showEncounterbar = self.Settings.EncounterBar:IsControlChecked();
+	if showEncounterbar then
+		EncounterBar:HighlightSystem();
+	else
+		EncounterBar:ClearHighlight();
+	end
+end
+
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)
 	self.expanded = expanded;
 	self.Expander.Label:SetText(expanded and HUD_EDIT_MODE_COLLAPSE_OPTIONS or HUD_EDIT_MODE_EXPAND_OPTIONS);
@@ -2453,12 +2706,12 @@ end
 
 function EditModeUtil:GetRightActionBarWidth()
 	local offset = 0;
-	if (MultiBar3_IsVisible and MultiBar3_IsVisible() and MultiBarRight:GetSettingValueBool(Enum.EditModeActionBarSetting.SnapToSide)) then
+	if MultiBar3_IsVisible and MultiBar3_IsVisible() and MultiBarRight:IsInDefaultPosition() then
 		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarRight:GetPoint(1);
 		offset = MultiBarRight:GetWidth() - offsetX; -- Subtract x offset since it will be a negative value due to us anchoring to the right side and anchoring towards the middle
 	end
 
-	if (MultiBar4_IsVisible and MultiBar4_IsVisible() and MultiBarLeft:GetSettingValueBool(Enum.EditModeActionBarSetting.SnapToSide)) then
+	if MultiBar4_IsVisible and MultiBar4_IsVisible() and MultiBarLeft:IsInDefaultPosition() then
 		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarLeft:GetPoint(1);
 		offset = MultiBarLeft:GetWidth() - offsetX;
 	end
@@ -2478,13 +2731,7 @@ function EditModeUtil:GetBottomActionBarHeight(includeMainMenuBar)
 end
 
 function EditModeUtil:GetRightContainerAnchor()
-	local anchor;
 	local rightBarOffset = EditModeUtil:GetRightActionBarWidth();
-
-	if(not Minimap:IsUserPlaced()) then
-		anchor = AnchorUtil.CreateAnchor("TOP", MinimapCluster, "BOTTOM", -rightBarOffset, -5);
-	else
-		anchor = AnchorUtil.CreateAnchor("TOP", UIParent, "TOP", -rightBarOffset, -60);
-	end
+	local anchor = AnchorUtil.CreateAnchor("TOPRIGHT", UIParent, "TOPRIGHT", -rightBarOffset, -260);
 	return anchor;
 end

@@ -99,7 +99,6 @@ ClassTalentTalentsTabMixin = CreateFromMixins(TalentFrameBaseMixin);
 local ClassTalentTalentsTabEvents = {
 	"TRAIT_CONFIG_CREATED",
 	"ACTIVE_COMBAT_CONFIG_CHANGED",
-	"TRAIT_CONFIG_UPDATED",
 	"PLAYER_REGEN_ENABLED",
 	"PLAYER_REGEN_DISABLED",
 };
@@ -119,6 +118,7 @@ ClassTalentTalentsTabMixin:GenerateCallbackEvents(
 function ClassTalentTalentsTabMixin:OnLoad()
 	-- TODO:: Replace this temporary fix up.
 	local classIDToOffsets = {
+		[1] = { extraOffsetX = 30, extraOffsetY = 0, }, -- Warrior
 		[2] = { extraOffsetX = -60, extraOffsetY = -29, }, -- Paladin
 		[4] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Rogue
 		[5] = { extraOffsetX = -30, extraOffsetY = -29, }, -- Priest
@@ -160,14 +160,15 @@ function ClassTalentTalentsTabMixin:OnUpdate()
 end
 
 function ClassTalentTalentsTabMixin:OnShow()
+	self:UpdateSpecBackground();
+	self:RefreshConfigID();
+	self:CheckSetSelectedConfigID();
+
 	TalentFrameBaseMixin.OnShow(self);
 
 	FrameUtil.RegisterFrameForEvents(self, ClassTalentTalentsTabEvents);
 	FrameUtil.RegisterFrameForUnitEvents(self, ClassTalentTalentsTabUnitEvents, "player");
 
-	self:UpdateSpecBackground();
-	self:RefreshConfigID();
-	self:CheckSetSelectedConfigID();
 	self:UpdateConfigButtonsState();
 end
 
@@ -207,25 +208,27 @@ function ClassTalentTalentsTabMixin:OnHide()
 end
 
 function ClassTalentTalentsTabMixin:OnEvent(event, ...)
-	TalentFrameBaseMixin.OnEvent(self, event, ...);
+	-- Overrides TalentFrameBaseMixin. The base method happens after because TRAIT_CONFIG_UPDATED requires self.commitedConfigID.
 
 	if event == "TRAIT_CONFIG_CREATED" then
 		local configInfo = ...;
 		if configInfo.type == Enum.TraitConfigType.Combat then
 			self:RefreshLoadoutOptions();
-			self:SetSelectedSavedConfigID(configInfo.ID);
+
+			local configID = configInfo.ID;
+			if C_ClassTalents.IsConfigReady(configID) then
+				local autoApply = true;
+				self:SetSelectedSavedConfigID(configID, autoApply);
+			else
+				-- We'll get an update when the config is ready later.
+				self.autoLoadNewConfigID = configID;
+			end
 		end
 	elseif event == "ACTIVE_COMBAT_CONFIG_CHANGED" then
 		local configID = ...;
 		self:SetConfigID(configID);
-	elseif event == "TRAIT_CONFIG_UPDATED" then
-		self:RefreshLoadoutOptions();
-
-		local configID = ...;
-		if configID == self:GetConfigID() then
-			local forceUpdate = true;
-			self:SetConfigID(configID, forceUpdate);
-		end
+	elseif event == "CONFIG_COMMIT_FAILED" then
+		self:SetSelectedSavedConfigID(self.lastSelectedConfigID);
 	elseif event == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" then
 		self:UpdateSpecBackground();
 		self:RefreshLoadoutOptions();
@@ -238,6 +241,41 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 	-- TODO:: Replace this events with more proper "CanChangeTalent" signal(s).
 	elseif (event == "PLAYER_REGEN_ENABLED") or (event == "PLAYER_REGEN_DISABLED") or (event == "UNIT_AURA") then
 		self:UpdateConfigButtonsState();
+	end
+
+	TalentFrameBaseMixin.OnEvent(self, event, ...);
+end
+
+function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
+	-- Overrides TalentFrameBaseMixin.
+
+	self:RefreshLoadoutOptions();
+
+	if configID == self:GetConfigID() then
+		local forceUpdate = true;
+		self:SetConfigID(configID, forceUpdate);
+
+		local commitedConfigID = self.commitedConfigID;
+
+		self:SetCommitStarted(nil);
+
+		if commitedConfigID then
+			local autoApply = false;
+			local skipLoad = true;
+			self:SetSelectedSavedConfigID(commitedConfigID, autoApply, skipLoad);
+		end
+
+		self:UpdateTreeCurrencyInfo();
+	elseif configID == self.autoLoadNewConfigID then
+		local autoApply = true;
+		self:SetSelectedSavedConfigID(self.autoLoadNewConfigID, autoApply);
+		self.autoLoadNewConfigID = nil;
+	else
+		-- There was an error, reset.
+		self:SetCommitStarted(nil);
+
+		local forceUpdate = true;
+		self:SetConfigID(self:GetConfigID(), forceUpdate);
 	end
 end
 
@@ -264,11 +302,9 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 	local function LoadConfiguration(configID, isUserInput)
 		if isUserInput then
 			local function FinishLoadConfiguration()
-				self:UpdateLastSelectedConfigIDForSpec(configID);
-
 				-- Eventually, this should probably check if we're previewing talents somewhere we can't change them.
 				local autoApply = true;
-				C_ClassTalents.LoadConfig(configID, autoApply);
+				self:LoadConfigInternal(configID, autoApply);
 			end
 
 			self:GetParent():CheckConfirmResetAction(FinishLoadConfiguration);
@@ -278,7 +314,9 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 	self.LoadoutDropDown:SetLoadCallback(LoadConfiguration);
 end
 
-function ClassTalentTalentsTabMixin:UpdateLastSelectedConfigIDForSpec(configID)
+function ClassTalentTalentsTabMixin:UpdateLastSelectedConfigID(configID)
+	self.lastSelectedConfigID = configID;
+
 	local currentSpecID = PlayerUtil.GetCurrentSpecID();
 	if currentSpecID then
 		g_classTalentConfigIDBySpec[currentSpecID] = configID;
@@ -374,13 +412,14 @@ function ClassTalentTalentsTabMixin:LoadTalentTreeInternal()
 	self:UpdateConfigButtonsState();
 end
 
-function ClassTalentTalentsTabMixin:SetSelectedSavedConfigID(configID)
+function ClassTalentTalentsTabMixin:SetSelectedSavedConfigID(configID, autoApply, skipLoad)
 	self.LoadoutDropDown:SetSelectionID(configID);
 
-	self:UpdateLastSelectedConfigIDForSpec(configID);
+	self:UpdateLastSelectedConfigID(configID);
 
-	local autoApply = false;
-	C_ClassTalents.LoadConfig(configID, autoApply);
+	if not skipLoad then
+		self:LoadConfigInternal(configID, not not autoApply);
+	end
 end
 
 function ClassTalentTalentsTabMixin:RefreshConfigID()
@@ -409,6 +448,19 @@ end
 function ClassTalentTalentsTabMixin:SetTalentTreeID(talentTreeID, forceUpdate)
 	if TalentFrameBaseMixin.SetTalentTreeID(self, talentTreeID, forceUpdate) then
 		self:UpdateConfigButtonsState();
+	end
+end
+
+function ClassTalentTalentsTabMixin:SetCommitStarted(configID)
+	TalentFrameBaseMixin.SetCommitStarted(self, configID);
+
+	self:UpdateConfigButtonsState();
+end
+
+function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply)
+	local loadResult = C_ClassTalents.LoadConfig(configID, autoApply);
+	if (loadResult == Enum.LoadConfigResult.LoadInProgress) and autoApply then
+		self:SetCommitStarted(configID);
 	end
 end
 
@@ -471,7 +523,7 @@ function ClassTalentTalentsTabMixin:UpdateConfigButtonsState()
 
 	self.UndoButton:SetShown(hasAnyChanges);
 	self.ResetButton:SetShown(not hasAnyChanges);
-	self.ResetButton:SetEnabledState(self:HasValidConfig() and self:HasAnyPurchasedRanks());
+	self.ResetButton:SetEnabledState(self:HasValidConfig() and self:HasAnyPurchasedRanks() and not self:IsCommitInProgress());
 end
 
 function ClassTalentTalentsTabMixin:HasAnyPurchasedRanks()
@@ -486,6 +538,10 @@ function ClassTalentTalentsTabMixin:HasAnyPurchasedRanks()
 end
 
 function ClassTalentTalentsTabMixin:CanSetDropDownValue(selectedValue)
+	if self:IsCommitInProgress() and (selectedValue ~= self.lastSelectedConfigID) then
+		return false, false;
+	end
+
 	if selectedValue == nil then
 		return true; -- The dropdown can always be cleared.
 	end
@@ -499,5 +555,9 @@ function ClassTalentTalentsTabMixin:CanSetDropDownValue(selectedValue)
 end
 
 function ClassTalentTalentsTabMixin:CanChangeTalents()
+	if self:IsCommitInProgress() then
+		return false, false;
+	end
+
 	return C_ClassTalents.CanChangeTalents();
 end

@@ -7,7 +7,8 @@ function CloseItemFlyout()
 end
 
 function OpenItemFlyout(owner)
-	flyout:SetParent(owner);
+	-- Avoiding parenting to a scaled item slot (recraft).
+	flyout:SetParent(ProfessionsFrame);
 	flyout:SetPoint("TOPLEFT", owner, "TOPRIGHT", 5, 0);
 	flyout:SetFrameStrata("HIGH");
 	flyout:Show();

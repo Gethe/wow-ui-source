@@ -49,7 +49,7 @@ ProfessionsCraftingOutputLogMixin:GenerateCallbackEvents(
 
 function ProfessionsCraftingOutputLogMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
-
+	
 	local view = CreateScrollBoxListLinearView();
 	
 	local function Initializer(frame, elementData)
@@ -105,6 +105,8 @@ end
 
 function ProfessionsCraftingOutputLogMixin:StartListening(successive)
 	if successive then
+		self.RecraftButton:Hide();
+
 		self.resultHandler = self.ProcessSuccessiveCraftingResult;
 
 		self.ResultContainer:Hide();
@@ -128,7 +130,7 @@ function ProfessionsCraftingOutputLogMixin:ProcessSingleCraftingResult(resultDat
 	self.resourcesFramePool:ReleaseAll();
 
 	local continuableContainer = ContinuableContainer:Create();
-	local item = Item:CreateFromItemID(resultData.itemID);
+	local item = Item:CreateFromItemLink(resultData.hyperlink);
 	continuableContainer:AddContinuable(item);
 
 	local frames = nil;
@@ -188,6 +190,20 @@ function ProfessionsCraftingOutputLogMixin:ProcessSingleCraftingResult(resultDat
 	end
 
 	continuableContainer:ContinueOnLoad(OnItemsLoaded);
+
+	if resultData.recraftable then
+		self.RecraftButton:Show();
+		self.RecraftButton:Enable();
+		self.RecraftButton:SetScript("OnClick", function(button)
+			Professions.TransitionToRecraft(resultData.itemGUID);
+			self:Hide();
+		end);
+	else
+		self.RecraftButton:Hide();
+	end
+	
+	-- Temporarily hiding in all cases.
+	self.RecraftButton:Hide();
 end
 
 function ProfessionsCraftingOutputLogMixin:ProcessSuccessiveCraftingResult(data)

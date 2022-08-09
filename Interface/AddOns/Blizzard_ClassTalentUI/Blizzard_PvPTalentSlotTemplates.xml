@@ -7,22 +7,28 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Texture">
-					<Size x="45" y="45"/>
+					<Size x="42" y="42"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="Arrow" atlas="pvptalents-selectedarrow" hidden="true">
-					<Size x="28" y="29"/>
+				<MaskTexture parentKey="TextureMask" atlas="talents-node-choice-mask" useAtlasSize="false">
+					<Size x="45" y="45"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Border" relativePoint="RIGHT" x="-8" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-				</Texture>
+					<MaskedTextures>
+						<MaskedTexture childKey="Texture"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Border" atlas="pvptalents-talentborder" setAllPoints="true"/>
+				<Texture parentKey="Border" atlas="pvptalents-talentborder">
+					<Size x="61" y="61"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="New" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">

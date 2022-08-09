@@ -1,0 +1,135 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsRecipeRecraftSlot.lua"/>
+	
+	<Frame name="ProfessionsReagentRecraftTemplate" scale=".8" mixin="ProfessionsRecraftSlotMixin" virtual="true">
+		<Size x="260" y="105"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Color r="0" g="0" b="0" a=".5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ItemButton parentKey="InputSlot" mixin="ProfessionsRecraftInputSlotMixin">
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="30" y="-30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="ButtonFrame">
+							<Anchors>
+								<Anchor point="CENTER" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="InputSlot_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InputSlot_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Glow">
+						<Size x="50" y="50"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="EmptySlotGlow" atlas="cyphersetupgrade-leftitem-slotinnerglow" useAtlasSize="false" alphaMode="ADD">
+									<Size x="50" y="50"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="PulseEmptySlotGlow" looping="BOUNCE">
+								<Alpha childKey="EmptySlotGlow" duration="1" fromAlpha="0.4" toAlpha="1"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnReceiveDrag method="OnReceiveDrag"/>
+				</Scripts>
+			</ItemButton>
+			<Frame parentKey="AnimatedArrow">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.InputSlot" relativePoint="RIGHT" x="20" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="arrow" atlas="ItemUpgrade_HelpTipArrow" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+						<Alpha childKey="arrow" smoothing="IN"  duration="0.5" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="arrow" startDelay="0.5" smoothing="OUT"  duration="0.5" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="arrow" endDelay="0.25" smoothing="NONE"  duration="1" offsetX="45" offsetY="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="DimArrow">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="arrow" atlas="cyphersetupgrade-arrow-empty" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<ItemButton parentKey="OutputSlot" mixin="ProfessionsRecraftOutputSlotMixin">
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="180" y="-30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ButtonFrame">
+							<Anchors>
+								<Anchor point="CENTER" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="OutputSlot_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="OutputSlot_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</ItemButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

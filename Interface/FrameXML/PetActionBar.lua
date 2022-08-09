@@ -122,7 +122,7 @@ function PetActionBarMixin:Update()
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
 		petActionButton = self.actionButtons[i];
 		petActionIcon = petActionButton.icon;
-		petAutoCastableTexture = petActionButton.AutoCastableTexture;
+		petAutoCastableTexture = petActionButton.AutoCastable;
 		petAutoCastShine = petActionButton.AutoCastShine;
 		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(i);
 		if ( not isToken ) then
@@ -233,10 +233,6 @@ function PetActionButtonMixin:OnLoad()
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
 	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
-	self.cooldown:ClearAllPoints();
-	self.cooldown:SetWidth(33);
-	self.cooldown:SetHeight(33);
-	self.cooldown:SetPoint("CENTER", self, "CENTER", -2, -1);
 	self:SetHotkeys();
 	self.cooldown:SetSwipeColor(0, 0, 0);
 end

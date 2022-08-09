@@ -978,6 +978,7 @@ function ToggleTalentFrame(suggestedTab)
 		[6] = true, -- DK
 		[7] = true, -- Shaman
 		[8] = true, -- Mage
+		[9] = true, -- Warlock
 		[11] = true, -- Druid
 		[13] = true, -- Evoker
 	};
@@ -2690,17 +2691,12 @@ function UIParentManagedFrameContainerMixin:UpdateFrame(frame)
 end		
 
 function UIParentManagedFrameContainerMixin:AddManagedFrame(frame)
-	if(self.showingFrames[frame]) then 
+	if frame.ignoreFramePositionManager then
 		return;
-	end 
-	self.showingFrames[frame] = frame; 
-	frame:ClearAllPoints(); 
-	frame:SetParent(frame.layoutOnBottom and self.BottomManagedLayoutContainer or self); 
-	if(ObjectiveTrackerFrame) then
-		ObjectiveTracker_UpdateHeight(); 
-	end 
-	self:Layout(); 
-	self.BottomManagedLayoutContainer:Layout();
+	end
+
+	self.showingFrames[frame] = frame;
+	self:UpdateFrame(frame);
 end	
 
 function UIParentManagedFrameContainerMixin:UpdateManagedFrames()
@@ -2718,6 +2714,9 @@ function UIParentManagedFrameContainerMixin:ClearManagedFrames()
 end
 
 function UIParentManagedFrameContainerMixin:RemoveManagedFrame(frame)
+	if(not self.showingFrames[frame]) then
+		return;
+	end
 	if(self:GetParent():IsShown()) then 
 		self.showingFrames[frame] = nil; 
 	end 

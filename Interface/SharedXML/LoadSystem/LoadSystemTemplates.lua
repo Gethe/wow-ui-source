@@ -116,6 +116,24 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 		dropDownButtonInfo.fontObject = "GameFontNormal";
 		dropDownButtonInfo.topPadding = 2;
 
+		local hasRightClickCallback = (self.rightClickCallback ~= nil);
+		dropDownButtonInfo.registerForRightClick = hasRightClickCallback;
+		if hasRightClickCallback then
+			local originalFunc = standardFunc;
+			standardFunc = function (button, arg1, arg2, checked, mouseButton)
+				if mouseButton == "RightButton" then
+					local shouldCallDefault = self.rightClickCallback(dropDownButtonInfo.value);
+					if shouldCallDefault and originalFunc then
+						originalFunc(button, arg1, arg2, checked, mouseButton);
+					end
+				elseif originalFunc then
+					originalFunc(button, arg1, arg2, checked, mouseButton);
+				end
+			end;
+
+			dropDownButtonInfo.func = standardFunc;
+		end
+
 		local sentinelkey, sentinelInfo = self:GetSentinelKeyInfoFromSelectionID(dropDownButtonInfo.value);
 		if sentinelInfo then
 			dropDownButtonInfo.customCheckIconAtlas = sentinelInfo.icon;
@@ -175,6 +193,13 @@ function DropDownLoadSystemMixin:SetLoadCallback(loadCallback)
 	self.loadCallback = loadCallback;
 end
 
+-- rightClickCallback: handle a right-click in the dropdown. Returns whether or not to call the standard loadCallback. (selectionID) -> shouldCallLoad
+-- Note: commonly used for deletion.
+function DropDownLoadSystemMixin:SetRightClickCallback(rightClickCallback)
+	self.rightClickCallback = rightClickCallback;
+end
+
+-- enabledCallback: called before a selection is allowed (in case enabled state changed while the dropdown list is open). ([selectionID]) -> shouldBeEnabled
 function DropDownLoadSystemMixin:SetEnabledCallback(enabledCallback)
 	self.DropDownControl:SetEnabledCallback(enabledCallback);
 end

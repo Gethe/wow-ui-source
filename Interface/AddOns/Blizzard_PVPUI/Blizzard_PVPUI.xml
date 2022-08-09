@@ -660,27 +660,27 @@
 	</Button>
 
 	<Button name="PVPRatedActivityButtonTemplate" virtual="true">
-		<Size x="365" y="91"/>
+		<Size x="365" y="62"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="pvpqueue-button-selected" setAllPoints="true" alphaMode="ADD" hidden="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Anchor">
-					<Size x="365" y="91"/>
+					<Size x="365" y="62"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="TeamSizeText" inherits="GameFontNormalHuge2">
+				<FontString parentKey="TeamSizeText" inherits="GameFontNormalHuge">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="20" y="9"/>
+						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="20" y="7"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="TeamTypeText" inherits="GameFontDisable">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="19" y="0"/>
-						<Anchor point="TOP" relativeKey="$parent.TeamSizeText" relativePoint="BOTTOM" x="0" y="-4"/>
+						<Anchor point="TOP" relativeKey="$parent.TeamSizeText" relativePoint="BOTTOM" x="0" y="-3"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="TierIcon">
@@ -1215,7 +1215,7 @@
 									<OnEnter>
 										if ( self.tooltip ) then
 											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-											GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+											GameTooltip:SetText(self.tooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
 											GameTooltip:Show();
 										end
 									</OnEnter>
@@ -1301,28 +1301,37 @@
 									</OnLoad>
 								</Scripts>
 							</Button>
-							<Button parentKey="Arena2v2" inherits="PVPRatedActivityButtonTemplate" id="1">
+							<Button parentKey="RatedSoloShuffle" inherits="PVPRatedActivityButtonTemplate" id="1">
+								<KeyValues>
+									 <KeyValue key="toolTipTitle" value="PVP_RATED_SOLO_SHUFFLE" type="global"/>
+									 <KeyValue key="modeDescription" value="RATED_SOLO_SHUFFLE_MODE_DESCRIPTION" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Inset" y="-13"/>
+								</Anchors>
+							</Button>
+							<Button parentKey="Arena2v2" inherits="PVPRatedActivityButtonTemplate" id="2">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_2V2" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Inset" y="-9"/>
+									<Anchor point="TOP" relativeKey="$parent.RatedSoloShuffle" relativePoint="BOTTOM" y="-8"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="Arena3v3" inherits="PVPRatedActivityButtonTemplate" id="2">
+							<Button parentKey="Arena3v3" inherits="PVPRatedActivityButtonTemplate" id="3">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_3V3" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Arena2v2" relativePoint="BOTTOM" y="-1"/>
+									<Anchor point="TOP" relativeKey="$parent.Arena2v2" relativePoint="BOTTOM" y="-8"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="RatedBG" inherits="PVPRatedActivityButtonTemplate" id="3">
+							<Button parentKey="RatedBG" inherits="PVPRatedActivityButtonTemplate" id="4">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="PVP_RATED_BATTLEGROUNDS" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Arena3v3" relativePoint="BOTTOM" y="-1"/>
+									<Anchor point="TOP" relativeKey="$parent.Arena3v3" relativePoint="BOTTOM" y="-8"/>
 								</Anchors>
 							</Button>
 							<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
@@ -1704,8 +1713,12 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ConquestTooltip" parent="UIParent" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" inherits="TooltipBackdropTemplate">
-		<Size x="200" y="199"/>
+	<Frame name="ConquestTooltip" parent="UIParent" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" inherits="TooltipBackdropTemplate, ResizeLayoutFrame">
+		<KeyValues>
+			<KeyValue key="minimumWidth" value="152" type="number"/>
+			<KeyValue key="widthPadding" value="10" type="number"/>
+			<KeyValue key="heightPadding" value="16" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" parentArray="Content" inherits="GameFontNormalMed3">
@@ -1756,6 +1769,11 @@
 				<FontString parentKey="SeasonGamesPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonWon" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ModeDescription" parentArray="Content" wordwrap="true" inherits="GameFontNormal" text="" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
 			</Layer>

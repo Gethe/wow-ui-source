@@ -10,6 +10,7 @@ PTR_IssueReporter.TooltipTypes = {
     petBattleCreature = "Pet Battle Creature",
     azerite = "Azerite Essence",
     talent = "Talent",
+    recipe = "Recipe",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSpellTooltips()
@@ -107,7 +108,7 @@ function PTR_IssueReporter.SetupQuestTooltips()
             PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, questID, title, true)
             GameTooltip:Show()
         else
-            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, tooltipData)
+            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, questID, title)
         end
     end
 
@@ -124,7 +125,7 @@ function PTR_IssueReporter.SetupAchievementTooltips()
         
         GameTooltip:ClearAllPoints();
         GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);
-        GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");            
+        GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
         PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.achievement, achievementID, achievementTitle, true)        GameTooltip:Show()
     end
     
@@ -184,6 +185,20 @@ function PTR_IssueReporter.SetupGarrisonTalentTooltips()
     EventRegistry:RegisterCallback("GarrisonTalentButtonMixin.TalentTooltipShown", bindingFunc, "PTR_IssueReporter")
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupReagentListTooltips()
+    local bindingFunc = function(sender, self, recipeID, recipeName, iconID)
+        if (recipeID) and (recipeName) and (iconID) then
+            GameTooltip:ClearAllPoints();
+            GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);
+            GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");  
+            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.recipe, recipeID, recipeName, true, nil, iconID)
+            GameTooltip:Show()
+        end
+    end
+
+    EventRegistry:RegisterCallback("Professions.RecipeListOnEnter", bindingFunc, "PTR_IssueReporter")
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupSpellTooltips()
     PTR_IssueReporter.SetupItemTooltips()
@@ -194,5 +209,6 @@ function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupAzeriteTooltips()
     PTR_IssueReporter.SetupMapPinTooltips()
     PTR_IssueReporter.SetupGarrisonTalentTooltips()
+    PTR_IssueReporter.SetupReagentListTooltips()
 end
 ----------------------------------------------------------------------------------------------------

@@ -5,12 +5,6 @@
 	<CheckButton name="PetActionButtonTemplate" inherits="QuickKeybindButtonTemplate, SecureFrameTemplate, SmallActionButtonTemplate" mixin="PetActionButtonMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="AutoCastableTexture" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0.5" y="0"/>
-					</Anchors>
-				</Texture>	
 				<Texture parentKey="SpellHighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" hidden="true">
 					<Size x="38" y="38"/>
 					<Anchors>

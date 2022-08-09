@@ -235,6 +235,11 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		direction = "UP";
 	end
 
+	-- If you're on an action bar then base your direction on the action bar's orientation
+	if (isActionBar) then
+		direction = actionBar.isHorizontal and "UP" or "LEFT";
+	end
+
 	-- Update all spell buttons for this flyout
 	local prevButton = nil;
 	local numButtons = 0;
@@ -325,65 +330,59 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		distance = 0;
 	end
 
-	self.BgEnd:ClearAllPoints();
-	self.flyoutBottom:ClearAllPoints();
+	self.Background.End:ClearAllPoints();
+	self.Background.Start:ClearAllPoints();
 	if (direction == "UP") then
-		self:SetPoint("BOTTOM", parent, "TOP", 0, 0);
-		self.BgEnd:SetPoint("TOP");
-		SetClampedTextureRotation(self.BgEnd, 0);
-		SetClampedTextureRotation(self.VertBg, 0);
-		self.flyoutBottom:SetPoint("TOP", self.VertBg, "BOTTOM");
-		SetClampedTextureRotation(self.flyoutBottom, 0);
-		self.HorizBg:Hide();
-		self.VertBg:Show();
-		self.VertBg:ClearAllPoints();
-		self.VertBg:SetPoint("TOP", self.BgEnd, "BOTTOM");
-		self.VertBg:SetPoint("BOTTOM", 0, distance);
+		self:SetPoint("BOTTOM", parent, "TOP");
+		self.Background.End:SetPoint("TOP", 0, SPELLFLYOUT_INITIAL_SPACING);
+		SetClampedTextureRotation(self.Background.End, 0);
+		SetClampedTextureRotation(self.Background.VerticalMiddle, 0);
+		self.Background.Start:SetPoint("TOP", self.Background.VerticalMiddle, "BOTTOM");
+		SetClampedTextureRotation(self.Background.Start, 0);
+		self.Background.HorizontalMiddle:Hide();
+		self.Background.VerticalMiddle:Show();
+		self.Background.VerticalMiddle:ClearAllPoints();
+		self.Background.VerticalMiddle:SetPoint("TOP", self.Background.End, "BOTTOM");
+		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, distance);
 	elseif (direction == "DOWN") then
-		self:SetPoint("TOP", parent, "BOTTOM", 0, 0);
-		self.BgEnd:SetPoint("BOTTOM");
-		SetClampedTextureRotation(self.BgEnd, 180);
-		SetClampedTextureRotation(self.VertBg, 180);
-		self.flyoutBottom:SetPoint("BOTTOM", self.VertBg, "TOP");
-		SetClampedTextureRotation(self.flyoutBottom, 180);
-		self.HorizBg:Hide();
-		self.VertBg:Show();
-		self.VertBg:ClearAllPoints();
-		self.VertBg:SetPoint("BOTTOM", self.BgEnd, "TOP");
-		self.VertBg:SetPoint("TOP", 0, -distance);
+		self:SetPoint("TOP", parent, "BOTTOM");
+		self.Background.End:SetPoint("BOTTOM", 0, -SPELLFLYOUT_INITIAL_SPACING);
+		SetClampedTextureRotation(self.Background.End, 180);
+		SetClampedTextureRotation(self.Background.VerticalMiddle, 180);
+		self.Background.Start:SetPoint("BOTTOM", self.Background.VerticalMiddle, "TOP");
+		SetClampedTextureRotation(self.Background.Start, 180);
+		self.Background.HorizontalMiddle:Hide();
+		self.Background.VerticalMiddle:Show();
+		self.Background.VerticalMiddle:ClearAllPoints();
+		self.Background.VerticalMiddle:SetPoint("BOTTOM", self.Background.End, "TOP");
+		self.Background.VerticalMiddle:SetPoint("TOP", 0, -distance);
 	elseif (direction == "LEFT") then
-		self:SetPoint("RIGHT", parent, "LEFT", 0, 0);
-		self.BgEnd:SetPoint("LEFT");
-		SetClampedTextureRotation(self.BgEnd, 270);
-		SetClampedTextureRotation(self.HorizBg, 0);
-		self.flyoutBottom:SetPoint("LEFT", self.HorizBg, "RIGHT");
-		SetClampedTextureRotation(self.flyoutBottom, 270);
-		self.VertBg:Hide();
-		self.HorizBg:Show();
-		self.HorizBg:ClearAllPoints();
-		self.HorizBg:SetPoint("LEFT", self.BgEnd, "RIGHT");
-		self.HorizBg:SetPoint("RIGHT", -distance, 0);
+		self:SetPoint("RIGHT", parent, "LEFT");
+		self.Background.End:SetPoint("LEFT", -SPELLFLYOUT_INITIAL_SPACING, 0);
+		SetClampedTextureRotation(self.Background.End, 270);
+		SetClampedTextureRotation(self.Background.HorizontalMiddle, 180);
+		self.Background.Start:SetPoint("LEFT", self.Background.HorizontalMiddle, "RIGHT");
+		SetClampedTextureRotation(self.Background.Start, 270);
+		self.Background.VerticalMiddle:Hide();
+		self.Background.HorizontalMiddle:Show();
+		self.Background.HorizontalMiddle:ClearAllPoints();
+		self.Background.HorizontalMiddle:SetPoint("LEFT", self.Background.End, "RIGHT");
+		self.Background.HorizontalMiddle:SetPoint("RIGHT", -distance, 0);
 	elseif (direction == "RIGHT") then
-		self:SetPoint("LEFT", parent, "RIGHT", 0, 0);
-		self.BgEnd:SetPoint("RIGHT");
-		SetClampedTextureRotation(self.BgEnd, 90);
-		SetClampedTextureRotation(self.HorizBg, 180);
-		self.flyoutBottom:SetPoint("RIGHT", self.HorizBg, "LEFT");
-		SetClampedTextureRotation(self.flyoutBottom, 90);
-		self.VertBg:Hide();
-		self.HorizBg:Show();
-		self.HorizBg:ClearAllPoints();
-		self.HorizBg:SetPoint("RIGHT", self.BgEnd, "LEFT");
-		self.HorizBg:SetPoint("LEFT", distance, 0);
+		self:SetPoint("LEFT", parent, "RIGHT");
+		self.Background.End:SetPoint("RIGHT", SPELLFLYOUT_INITIAL_SPACING, 0);
+		SetClampedTextureRotation(self.Background.End, 90);
+		SetClampedTextureRotation(self.Background.HorizontalMiddle, 0);
+		self.Background.Start:SetPoint("RIGHT", self.Background.HorizontalMiddle, "LEFT");
+		SetClampedTextureRotation(self.Background.Start, 90);
+		self.Background.VerticalMiddle:Hide();
+		self.Background.HorizontalMiddle:Show();
+		self.Background.HorizontalMiddle:ClearAllPoints();
+		self.Background.HorizontalMiddle:SetPoint("RIGHT", self.Background.End, "LEFT");
+		self.Background.HorizontalMiddle:SetPoint("LEFT", distance, 0);
 	end
 
-	if (direction == "UP" or direction == "DOWN") then
-		self:SetWidth(prevButton:GetWidth());
-		self:SetHeight((prevButton:GetHeight()+SPELLFLYOUT_DEFAULT_SPACING) * numButtons - SPELLFLYOUT_DEFAULT_SPACING + SPELLFLYOUT_INITIAL_SPACING + SPELLFLYOUT_FINAL_SPACING);
-	else
-		self:SetHeight(prevButton:GetHeight());
-		self:SetWidth((prevButton:GetWidth()+SPELLFLYOUT_DEFAULT_SPACING) * numButtons - SPELLFLYOUT_DEFAULT_SPACING + SPELLFLYOUT_INITIAL_SPACING + SPELLFLYOUT_FINAL_SPACING);
-	end
+	self:Layout();
 
 	self.direction = direction;
 	self:SetBorderColor(0.7, 0.7, 0.7);
@@ -392,7 +391,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	self:Show();
 
 	if (oldParent and oldIsActionBar) then
-		ActionButton_UpdateFlyout(oldParent);
+		oldParent:UpdateFlyout();
 	end
 end
 
@@ -409,7 +408,7 @@ function SpellFlyout_OnShow(self)
 		self.eventsRegistered = true;
 	end
 	if (self.isActionBar) then
-		ActionButton_UpdateFlyout(self:GetParent());
+		self:GetParent():UpdateFlyout();
 	end
 end
 
@@ -429,27 +428,27 @@ function SpellFlyout_OnHide(self)
 		self:Hide();
 	end
 	if (self.isActionBar) then
-		ActionButton_UpdateFlyout(self:GetParent());
+		self:GetParent():UpdateFlyout();
 	end
 end
 
 function SpellFlyout_SetBorderColor(self, r, g, b)
-	self.flyoutBottom:SetVertexColor(r, g, b);
-	self.HorizBg:SetVertexColor(r, g, b);
-	self.VertBg:SetVertexColor(r, g, b);
-	self.BgEnd:SetVertexColor(r, g, b);
+	self.Background.Start:SetVertexColor(r, g, b);
+	self.Background.HorizontalMiddle:SetVertexColor(r, g, b);
+	self.Background.VerticalMiddle:SetVertexColor(r, g, b);
+	self.Background.End:SetVertexColor(r, g, b);
 end
 
 function SpellFlyout_SetBorderSize(self, size)
 	if (not self.direction or self.direction == "UP" or self.direction == "DOWN") then
-		self.flyoutBottom:SetWidth(size);
-		self.HorizBg:SetWidth(size);
-		self.VertBg:SetWidth(size);
-		self.BgEnd:SetWidth(size);
+		self.Background.Start:SetWidth(size);
+		self.Background.HorizontalMiddle:SetWidth(size);
+		self.Background.VerticalMiddle:SetWidth(size);
+		self.Background.End:SetWidth(size);
 	else
-		self.flyoutBottom:SetHeight(size);
-		self.HorizBg:SetHeight(size);
-		self.VertBg:SetHeight(size);
-		self.BgEnd:SetHeight(size);
+		self.Background.Start:SetHeight(size);
+		self.Background.HorizontalMiddle:SetHeight(size);
+		self.Background.VerticalMiddle:SetHeight(size);
+		self.Background.End:SetHeight(size);
 	end
 end

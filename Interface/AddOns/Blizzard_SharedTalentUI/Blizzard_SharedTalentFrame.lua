@@ -109,7 +109,6 @@ local TalentFrameBaseEvents = {
 	"TRAIT_NODE_ENTRY_UPDATED",
 	"TRAIT_TREE_CHANGED",
 	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
-	"TRAIT_CONFIG_UPDATED",
 };
 
 TalentFrameBaseMixin:GenerateCallbackEvents(
@@ -126,6 +125,8 @@ function TalentFrameBaseMixin:OnLoad()
 	if not self.enableZoomAndPan then
 		self:DisableZoomAndPan();
 	end
+	
+	self.DisabledOverlay.GrayOverlay:SetAlpha(self.disabledOverlayAlpha);
 
 	self:UpdatePadding();
 
@@ -146,6 +147,10 @@ function TalentFrameBaseMixin:OnLoad()
 	self.dirtyCondIDSet = {};
 	self.panOffsetX = 0;
 	self.panOffsetY = 0;
+
+	-- These need to always be registered so that the entire loadout change process is always captured.
+	self:RegisterEvent("TRAIT_CONFIG_UPDATED");
+	self:RegisterEvent("CONFIG_COMMIT_FAILED");
 end
 
 function TalentFrameBaseMixin:RegisterOnUpdate()
@@ -256,13 +261,19 @@ function TalentFrameBaseMixin:OnEvent(event, ...)
 		end
 	elseif event == "TRAIT_CONFIG_UPDATED" then
 		local configID = ...;
-		if self:IsCommitInProgress() and configID == self.commitedConfigID then
-			self.commitTimerCallback:Cancel();
-			self.commitedConfigID = nil;
-			self.commitTimerCallback = nil;
-			self.commitStarted = false;
+		self:OnTraitConfigUpdated(configID);
+	elseif event == "CONFIG_COMMIT_FAILED" then
+		if self:IsCommitInProgress() then
+			self:SetCommitStarted(nil);
 			self:UpdateTreeCurrencyInfo();
 		end
+	end
+end
+
+function TalentFrameBaseMixin:OnTraitConfigUpdated(configID)
+	if (configID == self.commitedConfigID) and self:IsCommitInProgress() then
+		self:SetCommitStarted(nil);
+		self:UpdateTreeCurrencyInfo();
 	end
 end
 
@@ -955,22 +966,38 @@ function TalentFrameBaseMixin:SetTreeCurrencyDisplayTextCallback(getDisplayTextF
 	self.getDisplayTextFromTreeCurrency = getDisplayTextFromTreeCurrency;
 end
 
+function TalentFrameBaseMixin:SetDisabledOverlayShown(shown)
+	self.DisabledOverlay:SetShown(shown);
+end
+
+function TalentFrameBaseMixin:SetCommitStarted(configID)
+	local isCommitStarted = (configID ~= nil);
+	self.commitedConfigID = configID;
+
+	self.DisabledOverlay:SetShown(isCommitStarted);
+
+	if not isCommitStarted and self.commitTimer then
+		self.commitTimer:Cancel();
+		self.commitTimer = nil;
+	end
+end
+
+function TalentFrameBaseMixin:GetMaximumCommitTime()
+	return self.maximumCommitTime;
+end
+
 function TalentFrameBaseMixin:CommitConfig()
-	if not self:CheckAndReportCommitOperation() then
+	if self:IsCommitInProgress() or not self:CheckAndReportCommitOperation() then
 		return;
 	end
 
-	self.commitStarted = true;
+	self:SetCommitStarted(self:GetConfigID());
 
-	-- TODO:: Replace this with a proper response. For now, we'll just assume things finish out in 0.5 or less.
+	-- TODO:: Replace this backup once we're confident with the proper flow.
 	-- Wait until we have server to client error messaging as well WOW10-27631
-	self.commitedConfigID = self:GetConfigID();
-	self.commitTimerCallback = C_FunctionContainers.CreateCallback(function()
-		self.commitTimerCallback = nil;
-		self.commitedConfigID = nil;
-		self.commitStarted = false;
+	self.commitTimer = C_Timer.NewTimer(self:GetMaximumCommitTime(), function()
+		self:SetCommitStarted(nil);
 	end);
-	C_Timer.After(0.5, self.commitTimerCallback);
 
 	return self:CommitConfigInternal();
 end
@@ -988,7 +1015,7 @@ function TalentFrameBaseMixin:RollbackConfig()
 end
 
 function TalentFrameBaseMixin:IsCommitInProgress()
-	return self.commitStarted;
+	return self.commitedConfigID ~= nil;
 end
 
 function TalentFrameBaseMixin:CheckAndReportCommitOperation()
@@ -1123,4 +1150,45 @@ function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shou
 			GameTooltip_AddHighlightLine(tooltip, condInfo.tooltipText);
 		end
 	end
+end
+
+function TalentFrameBaseMixin:AddEdgeRequirementsToTooltip(tooltip, nodeID, shouldAddSpacer)
+
+	local incomingEdges = self:GetIncomingEdgeInfoForNode(nodeID);
+
+	local requiresAllPrecedingTraits = true;
+	local areAllPrecedingEdgesActive = true;
+	local numOfEdges = 0;
+	for _, edgeVisualInfo in ipairs(incomingEdges) do
+		numOfEdges = numOfEdges + 1;
+		if edgeVisualInfo.type ~= Enum.TraitEdgeType.RequiredForAvailability then
+			requiresAllPrecedingTraits = false;
+		end
+
+		if not edgeVisualInfo.isActive then
+			areAllPrecedingEdgesActive = false;
+		end
+	end
+
+	if requiresAllPrecedingTraits and numOfEdges > 1 and not areAllPrecedingEdgesActive  then
+		if shouldAddSpacer then
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+		end
+
+		GameTooltip_AddErrorLine(tooltip, GENERIC_TRAIT_FRAME_EDGE_REQUIREMENTS_BUTTON_TOOLTIP);
+	end
+	
+end
+
+function TalentFrameBaseMixin:GetIncomingEdgeInfoForNode(nodeID)
+	local incomingEdges = {};
+	local i = 1;
+	for edgeFrame in self.edgePool:EnumerateActive() do
+		local edgeInfo = edgeFrame.edgeInfo;
+		if edgeInfo.targetNode == nodeID then
+			incomingEdges[i] = edgeInfo;
+			i = i + 1;
+		end
+	end
+	return incomingEdges;
 end

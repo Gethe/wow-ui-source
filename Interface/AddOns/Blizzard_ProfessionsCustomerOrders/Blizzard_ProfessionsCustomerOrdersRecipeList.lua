@@ -39,7 +39,8 @@ function ProfessionsCustomerOrdersRecipeListElementMixin:OnClick()
 	elseif IsModifiedClick("CHATLINK") then
 		UseItemLink(ChatEdit_InsertLink);
 	else
-		EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", C_TradeSkillUI.GetRecipeSchematic(self.option.spellID));
+		local isRecraft = false;
+		EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", C_TradeSkillUI.GetRecipeSchematic(self.option.spellID, isRecraft));
 	end
 end
 

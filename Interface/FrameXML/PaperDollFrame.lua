@@ -2174,12 +2174,8 @@ function GearManagerPopupFrameMixin:OkayButton_OnClick()
 	IconSelectorPopupFrameTemplateMixin.OkayButton_OnClick(self);
 
 	local iconTexture = self.BorderBox.SelectedIconArea.SelectedIconButton:GetIconTexture();
-
-	if type(iconTexture) == "string" then
-		iconTexture = string.gsub(iconTexture, [[INTERFACE\ICONS\]], "");
-	end
-
 	local text = self.BorderBox.IconSelectorEditBox:GetText();
+
 	local setID = C_EquipmentSet.GetEquipmentSetID(text);
 	if ( setID ) then
 		if (self.mode == IconSelectorPopupFrameModes.Edit and text ~= self.origName)  then

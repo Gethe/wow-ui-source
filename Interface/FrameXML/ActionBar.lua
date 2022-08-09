@@ -1,4 +1,4 @@
-local MIN_BUTTON_PADDING = 3;
+local MIN_BUTTON_PADDING = 2;
 
 ActionBarMixin = {}
 
@@ -107,6 +107,11 @@ function ActionBarMixin:UpdateGridLayout()
     for i, buttonOrSpacer in pairs(self.buttonsAndSpacers) do
         if (buttonOrSpacer:IsShown()) then
             shownButtonsAndSpacers[#shownButtonsAndSpacers + 1] = buttonOrSpacer;
+        end
+
+        -- We will want to update our flyout if our orientation changes
+        if (buttonOrSpacer.UpdateFlyout) then
+            buttonOrSpacer:UpdateFlyout()
         end
     end
 

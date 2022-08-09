@@ -1,5 +1,10 @@
 EditModeSettingDisplayInfoManager = {};
 
+local function showAsPercentage(value)
+	local roundToNearestInteger = true;
+	return FormatPercentage(value / 100, roundToNearestInteger);
+end
+
 -- The ordering of the setting display info tables in here affects the order settings show in the system setting dialog
 EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	-- Action Bar Settings
@@ -51,7 +56,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 					return (value - 50) / 10;
 				end
 			end,
-			formatter = function (percentage) percentage = percentage / 100; return FormatPercentage(percentage, true); end,
+			formatter = showAsPercentage,
 		},
 
 		-- Icon Padding
@@ -59,7 +64,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeActionBarSetting.IconPadding,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_ICON_PADDING,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 3,
+			minValue = 2,
 			maxValue = 10,
 			stepSize = 1,
 		},
@@ -106,6 +111,45 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 		},
 	},
 
+	[Enum.EditModeSystem.Minimap] =
+	{
+		-- Header Underneath
+		{
+			setting = Enum.EditModeMinimapSetting.HeaderUnderneath,
+			name = HUD_EDIT_MODE_SETTING_MINIMAP_HEADER_UNDERNEATH,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
+
+	-- Cast Bar Settings
+	[Enum.EditModeSystem.CastBar] =
+	{
+		-- Bar Size
+		{
+			setting = Enum.EditModeCastBarSetting.BarSize,
+			name = HUD_EDIT_MODE_SETTING_CAST_BAR_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 100,
+			maxValue = 150,
+			stepSize = 10,
+			ConvertValue = function(self, value, forDisplay)
+				if forDisplay then
+					return self:ClampValue((value * 10) + 100);
+				else
+					return (value - 100) / 10;
+				end
+			end,
+			formatter = showAsPercentage,
+		},
+
+		-- Lock To Player Frame
+		{
+			setting = Enum.EditModeCastBarSetting.LockToPlayerFrame,
+			name = HUD_EDIT_MODE_SETTING_CAST_BAR_LOCK_TO_PLAYER_FRAME,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
+
 	-- Unit Frame Settings
 	[Enum.EditModeSystem.UnitFrame] =
 	{
@@ -117,11 +161,11 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 		},]]--
 
 		-- Cast Bar Underneath
-		--[[{
+		{
 			setting = Enum.EditModeUnitFrameSetting.CastBarUnderneath,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_CAST_BAR_UNDERNEATH,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
-		},]]--
+		},
 
 		-- Buffs On Top
 		{
@@ -136,6 +180,11 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_USE_LARGER_FRAME,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
+	},
+
+	[Enum.EditModeSystem.EncounterBar] =
+	{
+
 	},
 };
 
@@ -186,4 +235,48 @@ end
 
 function EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(system)
 	return self.displayInfoMap[system];
+end
+
+local mirroredSettings = {
+	-- CastBar-LockToPlayerFrame and PlayerFrame-CastBarUnderneath are mirrored
+	{
+		{system = Enum.EditModeSystem.CastBar, setting = Enum.EditModeCastBarSetting.LockToPlayerFrame},
+		{system = Enum.EditModeSystem.UnitFrame, systemIndex = Enum.EditModeUnitFrameSystemIndices.Player, setting = Enum.EditModeUnitFrameSetting.CastBarUnderneath},
+	}
+};
+
+-- Create a mirrored settings map for easy access
+EditModeSettingDisplayInfoManager.mirroredSettingsMap = {};
+for _, mirrors in ipairs(mirroredSettings) do
+	for _, mirroredSetting in ipairs(mirrors) do
+		if not EditModeSettingDisplayInfoManager.mirroredSettingsMap[mirroredSetting.system] then
+			EditModeSettingDisplayInfoManager.mirroredSettingsMap[mirroredSetting.system] = {};
+		end
+
+		if mirroredSetting.systemIndex and not EditModeSettingDisplayInfoManager.mirroredSettingsMap[mirroredSetting.system][mirroredSetting.systemIndex] then
+			EditModeSettingDisplayInfoManager.mirroredSettingsMap[mirroredSetting.system][mirroredSetting.systemIndex] = {};
+		end
+
+		local systemMirrors = mirroredSetting.systemIndex and EditModeSettingDisplayInfoManager.mirroredSettingsMap[mirroredSetting.system][mirroredSetting.systemIndex] or EditModeSettingDisplayInfoManager.mirroredSettingsMap[mirroredSetting.system];
+
+		if not systemMirrors[mirroredSetting.setting] then
+			systemMirrors[mirroredSetting.setting] = {};
+		end
+
+		for _, otherSetting in ipairs(mirrors) do
+			if mirroredSetting ~= otherSetting then
+				table.insert(systemMirrors[mirroredSetting.setting], otherSetting);
+			end
+		end
+	end
+end
+
+function EditModeSettingDisplayInfoManager:GetMirroredSettings(system, systemIndex, setting)
+	local systemMirrors;
+	if systemIndex then
+		systemMirrors = EditModeSettingDisplayInfoManager.mirroredSettingsMap[system] and EditModeSettingDisplayInfoManager.mirroredSettingsMap[system][systemIndex];
+	else
+		systemMirrors = EditModeSettingDisplayInfoManager.mirroredSettingsMap[system];
+	end
+	return systemMirrors and systemMirrors[setting];
 end

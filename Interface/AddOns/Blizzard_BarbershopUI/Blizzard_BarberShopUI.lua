@@ -18,7 +18,7 @@ function BarberShopMixin:OnEvent(event, ...)
 			PlaySound(SOUNDKIT.BARBERSHOP_HAIRCUT);
 		end
 	elseif event == "BARBER_SHOP_COST_UPDATE" then
-		self:UpdatePrice();
+		self:UpdateButtons();
 	elseif event == "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE" then
 		self:UpdateCharCustomizationFrame();
 	elseif event == "BARBER_SHOP_APPEARANCE_APPLIED" then
@@ -103,16 +103,7 @@ function BarberShopMixin:ApplyChanges()
 	C_BarberShop.ApplyCustomizationChoices();
 end
 
-function BarberShopMixin:UpdatePrice()
-	local currentCost = C_BarberShop.GetCurrentCost();
-	local copperCost = currentCost % 100;
-	if copperCost > 0 then
-		-- Round any copper cost up to the next silver
-		currentCost = currentCost - copperCost + 100;
-	end
-
-	self.PriceFrame:SetAmount(currentCost);
-
+function BarberShopMixin:UpdateButtons()
 	local hasAnyChanges = C_BarberShop.HasAnyChanges();
 	self.AcceptButton:SetEnabled(hasAnyChanges);
 	self.ResetButton:SetEnabled(hasAnyChanges);
@@ -131,7 +122,7 @@ function BarberShopMixin:UpdateCharCustomizationFrame(alsoReset)
 
 	CharCustomizeFrame:SetCustomizations(customizationCategoryData);
 
-	self:UpdatePrice();
+	self:UpdateButtons();
 end
 
 function BarberShopMixin:SetCustomizationChoice(optionID, choiceID)

@@ -8,6 +8,9 @@ function NamePlateDriverMixin:OnLoad()
 	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED");
 	self:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_REMOVED");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
+	self:RegisterEvent("PLAYER_SOFT_FRIEND_CHANGED");
+	self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("VARIABLES_LOADED");
@@ -59,6 +62,8 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 		self:OnNamePlateRemoved(namePlateUnitToken);
 	elseif event == "PLAYER_TARGET_CHANGED" then
 		self:OnTargetChanged();
+	elseif ((event == "PLAYER_SOFT_INTERACT_CHANGED") or (event == "PLAYER_SOFT_FRIEND_CHANGED") or (event == "PLAYER_SOFT_ENEMY_CHANGED")) then
+		self:OnSoftTargetUpdate();
 	elseif event == "DISPLAY_SIZE_CHANGED" then
 		self:UpdateNamePlateOptions();
 	elseif event == "UNIT_AURA" then
@@ -120,6 +125,7 @@ function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
 
 	self:OnUnitAuraUpdate(namePlateUnitToken);
 	self:OnRaidTargetUpdate();
+	self:OnSoftTargetUpdate();
 end
 
 function NamePlateDriverMixin:GetNamePlateTypeFromUnit(unit)
@@ -240,6 +246,34 @@ function NamePlateDriverMixin:OnRaidTargetUpdate()
 		end
 	end
 
+end
+
+function NamePlateDriverMixin:OnSoftTargetUpdate()
+	local iconSize = tonumber(GetCVar("SoftTargetNameplateSize"));
+	local doEnemyIcon = GetCVarBool("SoftTargetIconEnemy");
+	local doFriendIcon = GetCVarBool("SoftTargetIconFriend");
+	local doInteractIcon = GetCVarBool("SoftTargetIconInteract");
+	for _, frame in pairs(C_NamePlate.GetNamePlates(issecure())) do
+		local icon = frame.UnitFrame.SoftTargetFrame.Icon;
+		local iconTexture = nil;
+		if (iconSize > 0) then
+			if ((doEnemyIcon and UnitIsUnit(frame.namePlateUnitToken, "softenemy")) or
+				(doFriendIcon and UnitIsUnit(frame.namePlateUnitToken, "softfriend")) or
+				(doInteractIcon and UnitIsUnit(frame.namePlateUnitToken, "softinteract"))
+				) then
+				iconTexture = UnitCursor(frame.namePlateUnitToken);
+			end
+		end
+
+		if (iconTexture) then
+			local iconFrame = frame.UnitFrame.SoftTargetFrame;
+			iconFrame:SetSize(iconSize, iconSize);
+			icon:SetTexture(iconTexture);
+			icon:Show();
+		else
+			icon:Hide();
+		end
+	end
 end
 
 function NamePlateDriverMixin:OnUnitFactionChanged(unit)
@@ -770,6 +804,16 @@ function NamePlateBorderTemplateMixin:SetVertexColor(r, g, b, a)
 	for i, texture in ipairs(self.Textures) do
 		texture:SetVertexColor(r, g, b, a);
 	end
+end
+
+function NamePlateBorderTemplateMixin:SetUnderlineColor(r, g, b, a)
+	if self.Top == nil then
+		return;
+	end
+	self.Top:SetVertexColor(0, 0, 0, 0);
+	self.Bottom:SetVertexColor(r, g, b, a);
+	self.Left:SetGradient("VERTICAL", CreateColor(r, g, b, a), CreateColor(r, g, b, 0));
+	self.Right:SetGradient("VERTICAL", CreateColor(r, g, b, a), CreateColor(r, g, b, 0));
 end
 
 function NamePlateBorderTemplateMixin:SetBorderSizes(borderSize, borderSizeMinPixels, upwardExtendHeightPixels, upwardExtendHeightMinPixels)

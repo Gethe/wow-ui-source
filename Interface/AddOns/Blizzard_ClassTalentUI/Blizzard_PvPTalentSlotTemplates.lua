@@ -82,11 +82,15 @@ function PvPTalentSlotButtonMixin:Update()
 
 	local showNewLabel = false;
 	if (slotInfo and slotInfo.enabled) then
-		self.Border:SetAtlas("pvptalents-talentborder");
+		if (selectedTalentID) then
+			self.Border:SetAtlas("talents-node-pvp-filled");
+		else
+			self.Border:SetAtlas("talents-node-pvp-green");
+		end
 		self:Enable();
 		showNewLabel = self.slotNewState == SLOT_NEW_STATE_SHOW_IF_ENABLED;
 	else
-		self.Border:SetAtlas("pvptalents-talentborder-locked");
+		self.Border:SetAtlas("talents-node-pvp-locked");
 		self:Disable();
 		self.Texture:Hide();
 		if slotInfo and not slotInfo.enabled and self.slotNewState == SLOT_NEW_STATE_OFF then
@@ -258,9 +262,8 @@ function PvPTalentSlotTrayMixin:SelectSlot(slot)
 	end
 
 	self.selectedSlotIndex = slot.slotIndex;
-	slot.Arrow:Show();
 
-	talentFrame:TriggerEvent(ClassTalentTalentsTabMixin.Event.OpenPvPTalentList, self.selectedSlotIndex);
+	talentFrame:TriggerEvent(ClassTalentTalentsTabMixin.Event.OpenPvPTalentList, self.selectedSlotIndex, self.Slots[self.selectedSlotIndex]);
 end
 
 function PvPTalentSlotTrayMixin:UnselectSlot()
@@ -283,7 +286,6 @@ function PvPTalentSlotTrayMixin:ClearSlotSelection()
 
 	local slot = self.Slots[self.selectedSlotIndex];
 
-	slot.Arrow:Hide();
 	self.selectedSlotIndex = nil;
 	return true;
 end

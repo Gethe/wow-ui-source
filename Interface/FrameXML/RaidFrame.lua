@@ -130,13 +130,13 @@ end
 
 -- Function for raid options
 function RaidOptionsFrame_UpdatePartyFrames()
-	HidePartyFrame();
+	PartyFrame:HidePartyFrame();
 
 	if ( GetDisplayedAllyFrames() == "party" ) then
-		ShowPartyFrame();
+		PartyFrame:ShowPartyFrame();
 	end
 
-	UpdatePartyMemberBackground();
+	PartyFrame:UpdatePartyMemberBackground();
 end
 
 function RaidInfoFrame_InitButton(button, elementData)

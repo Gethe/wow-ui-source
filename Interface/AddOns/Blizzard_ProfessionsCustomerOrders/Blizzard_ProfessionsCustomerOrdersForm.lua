@@ -380,7 +380,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 							local flyout = ToggleProfessionsItemFlyout(slot.Button);
 							if flyout then
 								local function OnFlyoutItemSelected(o, flyout, item)
-									local reagent = Professions.CreateCraftingReagent(item:GetItemID(), nil);
+									local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
 									transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
 
 									slot:SetItem(item);

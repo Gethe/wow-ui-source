@@ -103,26 +103,29 @@
 	</Frame>
 
 	<CheckButton name="ActionButtonTemplate" mixin="BaseActionButtonMixin" virtual="true">
-		<Size x="45" y="45"/>
+		<Size x="43.5" y="43.5"/>
 
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon" parentKey="icon" />
 				<MaskTexture parentKey="IconMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="-9" y="8"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="10" y="-10"/>
+						<Anchor point="CENTER" relativeKey="$parent.icon"/>
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="icon"/>
 					</MaskedTextures>
 				</MaskTexture>
+				<Texture parentKey="SlotBackground" atlas="UI-HUD-ActionBar-IconFrame-Background" setAllPoints="true"/>
 				<Texture parentKey="SlotArt" atlas="ui-hud-actionbar-iconframe-slot" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentFlash" parentKey="Flash" atlas="UI-HUD-ActionBar-IconFrame-Flash" hidden="true"/>
 				<Texture name="$parentFlyoutBorderShadow" parentKey="FlyoutBorderShadow" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBorderShadow" hidden="true">
-					<Size x="39" y="39"/>
+					<Size x="52" y="52"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon" x="0.2" y="0.5"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
@@ -149,15 +152,15 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="NewActionTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" hidden="true">
-					<Size x="45" y="45"/>
+					<Size x="46" y="45"/>
 				</Texture>
 				<Texture parentKey="SpellHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" hidden="true">
-					<Size x="45" y="45"/>
+					<Size x="46" y="45"/>
 				</Texture>
 				<Texture parentKey="AutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
-					<Size x="58" y="58"/>
+					<Size x="80" y="80"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
+						<Anchor point="CENTER" x="1" y="-1"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="LevelLinkLockIcon" atlas="QuestSharing-Padlock" useAtlasSize="true" hidden="true">
@@ -176,18 +179,6 @@
 		</Animations>
 
 		<Frames>
-			<Frame parentKey="SlotBackground" inherits="NineSliceCodeTemplate" frameLevel="1" setAllPoints="true">
-				<KeyValues>
-					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
-					<KeyValue key="layoutTextureKit" value="UI-HUD-ActionBar-Frame-Background" type="string"/>
-					<KeyValue key="layoutTextureLayer" value="BACKGROUND" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="2" y="-2"/>
-					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
-				</Anchors>
-			</Frame>
-
 			<Frame parentKey="FlyoutArrowContainer" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK" textureSubLevel="2">
@@ -217,11 +208,11 @@
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Size x="28" y="28"/>
+				<Size x="40" y="40"/>
 			</Frame>
 
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown">
-				<Size x="45" y="45"/>
+				<Size x="44" y="44"/>
 				<SwipeTexture>
 					<Color r="1" g="1" b="1" a="0.8"/>
 				</SwipeTexture>
@@ -234,7 +225,7 @@
 					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" x="-4"/>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-5"/>
 					<Anchor point="TOP"/>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
@@ -246,7 +237,7 @@
 					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" y="4"/>
+					<Anchor point="TOP" relativePoint="BOTTOM" y="5"/>
 					<Anchor point="LEFT"/>
 					<Anchor point="RIGHT"/>
 				</Anchors>
@@ -257,10 +248,30 @@
 			<OnLoad method="BaseActionButtonMixin_OnLoad" inherit="append"/>
 		</Scripts>
 
-		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" atlas="UI-HUD-ActionBar-IconFrame"/>
-		<PushedTexture atlas="UI-HUD-ActionBar-IconFrame-Down" parentKey="PushedTexture"/>
-		<HighlightTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="HighlightTexture"/>
-		<CheckedTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="CheckedTexture"/>
+		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" atlas="UI-HUD-ActionBar-IconFrame">
+			<Size x="46" y="45"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="UI-HUD-ActionBar-IconFrame-Down" parentKey="PushedTexture">
+			<Size x="46" y="45"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="HighlightTexture">
+			<Size x="46" y="45"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</HighlightTexture>
+		<CheckedTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="CheckedTexture">
+			<Size x="46" y="45"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</CheckedTexture>
 	</CheckButton>
 
 	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate" virtual="true" mixin="ActionBarActionButtonMixin">

@@ -60,6 +60,10 @@ function WrapTextInColorCode(text, colorHexString)
 	return ("|c%s%s|r"):format(colorHexString, text);
 end
 
+function WrapTextInColor(text, color)
+	return WrapTextInColorCode(text, color:GenerateHexColor());
+end
+
 do
 	local DBColors = C_UIColor.GetColors();
 	for _, dbColor in ipairs(DBColors) do

@@ -60,7 +60,9 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 	local professionChanged = self.lastParentProfessionName ~= professionInfo.parentProfessionName;
 	if professionChanged then
 		self.lastParentProfessionName = professionInfo.parentProfessionName;
-		self.Fill:SetAtlas(("Professions_ProgBar_Static_%s"):format(professionInfo.parentProfessionName));
+		if professionInfo.parentProfessionName then
+			self.Fill:SetAtlas(("Professions_ProgBar_Static_%s"):format(professionInfo.parentProfessionName));
+		end
 	end
 	
 	local function UpdateBar(u, width)

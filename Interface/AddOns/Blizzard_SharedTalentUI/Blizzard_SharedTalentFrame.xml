@@ -14,6 +14,8 @@
 		basePanOffsetY: offset Y in the zoom area to start anchoring buttons from.
 		enableZoomAndPan: if zooming and panning should be enabled.
 		excludeStagedChangesForCurrencies: if staged changes should be excluded for currency calculations.
+		maximumCommitTime: temporarily configuration parameter for commits until we replace with an event-driven system.
+		disabledOverlayAlpha: alpha to set the disabled overlay to. It is shown while a commit is in progress.
 		-->
 		<KeyValues>
 			<KeyValue key="getTemplateType" value="TalentButtonUtil.GetTemplateForTalentType" type="global"/>
@@ -27,6 +29,8 @@
 			<KeyValue key="basePanOffsetY" value="0" type="number"/>
 			<KeyValue key="enableZoomAndPan" value="true" type="boolean"/>
 			<KeyValue key="excludeStagedChangesForCurrencies" value="false" type="boolean"/>
+			<KeyValue key="maximumCommitTime" value="0.5" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.4" type="number"/>
 		</KeyValues>
 		<Frames>			
 			<Frame parentKey="ButtonsParent" mixin="TalentFrameBaseButtonsParentMixin" clipChildren="true" frameLevel="1000">
@@ -37,7 +41,20 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="SelectionChoiceFrame" inherits="TalentSelectionChoiceFrameTemplate" enableMouse="true" frameLevel="5000">
+			<Frame parentKey="SelectionChoiceFrame" inherits="TalentSelectionChoiceFrameTemplate" enableMouse="true" frameLevel="2000"/>
+			
+			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="5000" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GrayOverlay">
+							<Color r="0" g="0" b="0" a="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>

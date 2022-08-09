@@ -260,10 +260,59 @@ function MinimapClusterMixin:OnLoad()
 	MiniMapInstanceDifficulty:SetFrameLevel(raisedFrameLevel);
 	GuildInstanceDifficulty:SetFrameLevel(raisedFrameLevel);
 	MiniMapChallengeMode:SetFrameLevel(raisedFrameLevel);
+
+	-- Cache minimap piece points so we can reset them if needed
+	local function CacheFramePoints(frame)
+		frame.defaultFramePoints = {};
+		for i = 1, frame:GetNumPoints() do
+			local point, relativeTo, relativePoint, offsetX, offsetY = frame:GetPoint(i);
+			frame.defaultFramePoints[i] = { point = point, relativeTo = relativeTo, relativePoint = relativePoint, offsetX = offsetX, offsetY = offsetY };
+		end
+	end
+	CacheFramePoints(self.Minimap);
+	CacheFramePoints(self.BorderTop);
+	CacheFramePoints(self.InstanceDifficulty);
+	CacheFramePoints(self.ChallengeMode);
+	CacheFramePoints(self.GuildInstanceDifficulty);
 end
 
 function MinimapClusterMixin:OnEvent(event, ...)
 	Minimap_Update();
+end
+
+local function ResetFramePoints(frame)
+	frame:ClearAllPoints();
+	for i, value in ipairs(frame.defaultFramePoints) do
+		frame:SetPoint(value.point, value.relativeTo, value.relativePoint, value.offsetX, value.offsetY);
+	end
+end
+
+function MinimapClusterMixin:SetHeaderUnderneath(headerUnderneath)
+	if (headerUnderneath) then
+		self.Minimap:ClearAllPoints();
+		self.Minimap:SetPoint("TOP", self, "TOP", 10, -13);
+
+		self.BorderTop:ClearAllPoints();
+		self.BorderTop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -24, 2);
+
+		self.InstanceDifficulty:ClearAllPoints();
+		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 10);
+
+		self.InstanceDifficulty:ClearAllPoints();
+		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 6);
+
+		self.ChallengeMode:ClearAllPoints();
+		self.ChallengeMode:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 20);
+
+		self.GuildInstanceDifficulty:ClearAllPoints();
+		self.GuildInstanceDifficulty:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -3, 20);
+	else
+		ResetFramePoints(self.Minimap);
+		ResetFramePoints(self.BorderTop);
+		ResetFramePoints(self.InstanceDifficulty);
+		ResetFramePoints(self.ChallengeMode);
+		ResetFramePoints(self.GuildInstanceDifficulty);
+	end
 end
 
 function ToggleMiniMapRotation()

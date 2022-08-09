@@ -156,6 +156,30 @@ function ProfessionsCrafterOrdersBrowseOrdersMixin:SetupRecipeList()
 				end);
 			end
 			factory("ProfessionsRecipeListRecipeTemplate", Initializer);
+		else
+			factory("Frame");
+		end
+	end);
+	
+	view:SetElementExtentCalculator(function(dataIndex, node)
+		local elementData = node:GetData();
+		local baseElementHeight = 20;
+		local categoryPadding = 5;
+
+		if elementData.recipeInfo then
+			return baseElementHeight;
+		end
+
+		if elementData.categoryInfo then
+			return baseElementHeight + categoryPadding;
+		end
+
+		if elementData.topPadding then
+			return 1;
+		end
+
+		if elementData.bottomPadding then
+			return 10;
 		end
 	end);
 

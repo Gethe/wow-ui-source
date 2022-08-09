@@ -1,18 +1,5 @@
 local modernSystemMap =
 {
-	[Enum.EditModeSystem.CastBar] = {
-		settings = {
-			[Enum.EditModeCastBarSetting.BarSize] = Enum.CastBarSize.Small,
-		},
-		anchorInfo = {
-			point = "CENTER",
-			relativeTo = "UIParent",
-			relativePoint = "CENTER",
-			offsetX = 0,
-			offsetY = 100,
-		},
-	},
-
 	[Enum.EditModeSystem.ActionBar] = {
 		[Enum.EditModeActionBarSystemIndices.MainBar] = {
 			settings = {
@@ -20,7 +7,7 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.NumIcons] = 12,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.HideBarArt] = 0,
 				[Enum.EditModeActionBarSetting.HideBarScrolling] = 0,
 			},
@@ -39,7 +26,7 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.NumIcons] = 12,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
@@ -58,7 +45,7 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.NumIcons] = 12,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
@@ -77,7 +64,7 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.NumIcons] = 12,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
 				[Enum.EditModeActionBarSetting.SnapToSide] = 1,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
@@ -97,7 +84,7 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.NumIcons] = 12,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
 				[Enum.EditModeActionBarSetting.SnapToSide] = 1,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
@@ -116,7 +103,7 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 			},
 			anchorInfo = {
 				point = "BOTTOMLEFT",
@@ -132,7 +119,7 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
 			},
 			anchorInfo = {
@@ -149,7 +136,7 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 			},
 			anchorInfo = {
 				point = "BOTTOMLEFT",
@@ -158,6 +145,22 @@ local modernSystemMap =
 				offsetX = 0,
 				offsetY = 5,
 			},
+		},
+	},
+
+	-- Note: The anchorInfo here doesn't actually get applied because cast bar is a bottom managed frame
+	-- We still need to include it though, and if the player moves the cast bar it is updated and used
+	[Enum.EditModeSystem.CastBar] = {
+		settings = {
+			[Enum.EditModeCastBarSetting.BarSize] = 0,
+			[Enum.EditModeCastBarSetting.LockToPlayerFrame] = 0,
+		},
+		anchorInfo = {
+			point = "CENTER",
+			relativeTo = "UIParent",
+			relativePoint = "CENTER",
+			offsetX = 0,
+			offsetY = 0,
 		},
 	},
 
@@ -203,23 +206,35 @@ local modernSystemMap =
 			},
 		},
 	},
+
+	[Enum.EditModeSystem.Minimap] = {
+		settings = {
+			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
+		},
+		anchorInfo = {
+			point = "TOPRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "TOPRIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.EncounterBar] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOM",
+			relativeTo = "MainMenuBar",
+			relativePoint = "TOP",
+			offsetX = 0,
+			offsetY = 5,
+		},
+	},
 };
 
 local classicSystemMap =
 {
-	[Enum.EditModeSystem.CastBar] = {
-		settings = {
-			[Enum.EditModeCastBarSetting.BarSize] = Enum.CastBarSize.Small,
-		},
-		anchorInfo = {
-			point = "CENTER",
-			relativeTo = "UIParent",
-			relativePoint = "CENTER",
-			offsetX = 0,
-			offsetY = 100,
-		},
-	},
-
 	[Enum.EditModeSystem.ActionBar] = {
 		[Enum.EditModeActionBarSystemIndices.MainBar] = {
 			settings = {
@@ -227,7 +242,7 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.NumIcons] = 12,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.HideBarArt] = 0,
 				[Enum.EditModeActionBarSetting.HideBarScrolling] = 0,
 			},
@@ -246,7 +261,7 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.NumIcons] = 12,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
@@ -265,7 +280,7 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.NumIcons] = 12,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
@@ -284,7 +299,7 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.NumIcons] = 12,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
 				[Enum.EditModeActionBarSetting.SnapToSide] = 1,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
@@ -304,7 +319,7 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.NumIcons] = 12,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
 				[Enum.EditModeActionBarSetting.SnapToSide] = 1,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
@@ -323,7 +338,7 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 			},
 			anchorInfo = {
 				point = "BOTTOMLEFT",
@@ -339,7 +354,7 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
 			},
 			anchorInfo = {
@@ -356,7 +371,7 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
 				[Enum.EditModeActionBarSetting.NumRows] = 1,
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 3,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 			},
 			anchorInfo = {
 				point = "BOTTOMLEFT",
@@ -365,6 +380,22 @@ local classicSystemMap =
 				offsetX = 0,
 				offsetY = 5,
 			},
+		},
+	},
+
+	-- Note: The anchorInfo here doesn't actually get applied because cast bar is a bottom managed frame
+	-- We still need to include it though, and if the player moves the cast bar it is updated and used
+	[Enum.EditModeSystem.CastBar] = {
+		settings = {
+			[Enum.EditModeCastBarSetting.BarSize] = 0,
+			[Enum.EditModeCastBarSetting.LockToPlayerFrame] = 0,
+		},
+		anchorInfo = {
+			point = "CENTER",
+			relativeTo = "UIParent",
+			relativePoint = "CENTER",
+			offsetX = 0,
+			offsetY = 0,
 		},
 	},
 
@@ -410,9 +441,36 @@ local classicSystemMap =
 			},
 		},
 	},
+
+	[Enum.EditModeSystem.Minimap] = {
+		settings = {
+			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
+		},
+		anchorInfo = {
+			point = "TOPRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "TOPRIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.EncounterBar] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOM",
+			relativeTo = "MainMenuBar",
+			relativePoint = "TOP",
+			offsetX = 0,
+			offsetY = 5,
+		},
+	},
 };
 
 local function AddSystem(systems, system, systemIndex, anchorInfo, settings)
+	anchorInfo.isDefaultPosition = true;
+
 	table.insert(systems, {
 		system = system,
 		systemIndex = systemIndex,

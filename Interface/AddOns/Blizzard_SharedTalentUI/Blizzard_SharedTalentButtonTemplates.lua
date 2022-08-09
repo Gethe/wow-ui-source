@@ -423,6 +423,7 @@ function TalentButtonBaseMixin:AddTooltipErrors(tooltip)
 
 	local shouldAddSpacer = true;
 	self:GetTalentFrame():AddConditionsToTooltip(tooltip, self.talentNodeInfo.conditionIDs, shouldAddSpacer);
+	self:GetTalentFrame():AddEdgeRequirementsToTooltip(tooltip, self:GetTalentNodeID(), shouldAddSpacer);
 end
 
 function TalentButtonBaseMixin:ShouldBeVisible()
@@ -889,7 +890,7 @@ function TalentButtonSelectMixin:CanSelectChoice()
 		return true;
 	end
 
-	if self:IsLocked() then
+	if self:IsLocked() or not self:CanAfford() then
 		return false;
 	end
 

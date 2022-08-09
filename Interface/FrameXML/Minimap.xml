@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Minimap.lua"/>
-	<Frame name="MinimapCluster" mixin="MinimapClusterMixin" frameStrata="LOW" toplevel="true" enableMouse="true" parent="UIParent">
+	<Frame name="MinimapCluster" inherits="EditModeMinimapSystemTemplate" mixin="MinimapClusterMixin" frameStrata="LOW" toplevel="true" enableMouse="true" parent="UIParent">
 		<Size x="256" y="256"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT"/>
@@ -98,7 +98,7 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
-			<Minimap name="Minimap" mixin="MinimapMixin" enableMouse="true">
+			<Minimap name="Minimap" parentKey="Minimap" mixin="MinimapMixin" enableMouse="true">
 				<Size x="198" y="198"/>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="TOP" x="10" y="-140"/>
@@ -306,7 +306,7 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Minimap>
-			<Frame name="MiniMapInstanceDifficulty" mixin="MiniMapInstanceDifficultyMixin" hidden="true">
+			<Frame name="MiniMapInstanceDifficulty" parentKey="InstanceDifficulty" mixin="MiniMapInstanceDifficultyMixin" hidden="true">
 				<Size x="38" y="46"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="0" y="-24"/>
@@ -334,10 +334,10 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
-			<Frame name="GuildInstanceDifficulty" mixin="GuildInstanceDifficultyMixin" hidden="true" enableMouse="true">
+			<Frame name="GuildInstanceDifficulty" parentKey="GuildInstanceDifficulty" mixin="GuildInstanceDifficultyMixin" hidden="true" enableMouse="true">
 				<Size x="38" y="46"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="22" y="-17"/>
+					<Anchor point="TOPRIGHT" x="-3" y="-20"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -413,10 +413,10 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
-			<Frame name="MiniMapChallengeMode" hidden="true" enableMouse="true">
+			<Frame name="MiniMapChallengeMode" parentKey="ChallengeMode" hidden="true" enableMouse="true">
 				<Size x="27" y="36"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="28" y="-23"/>
+					<Anchor point="TOPRIGHT" x="-6" y="-29"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -431,7 +431,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

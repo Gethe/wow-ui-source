@@ -16,6 +16,8 @@ function CompactUnitFrame_OnLoad(self)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_SOFT_FRIEND_CHANGED");
+	self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
@@ -48,7 +50,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		CompactUnitFrame_UpdateAll(self);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		CompactUnitFrame_UpdateAll(self);
-	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
+	elseif ( event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_SOFT_ENEMY_CHANGED" or event == "PLAYER_SOFT_FRIEND_CHANGED" ) then
 		CompactUnitFrame_UpdateSelectionHighlight(self);
 		CompactUnitFrame_UpdateName(self);
 		CompactUnitFrame_UpdateWidgetsOnlyMode(self);
@@ -338,6 +340,14 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
 		CompactUnitFrame_UpdateClassificationIndicator(frame);
 		CompactUnitFrame_UpdateWidgetSet(frame);
+	elseif (UnitIsGameObject(frame.displayedUnit) ) then -- Interactable GameObject
+		CompactUnitFrame_HideHealth(frame);
+		CompactUnitFrame_UpdateName(frame);
+		CompactUnitFrame_UpdateWidgetsOnlyMode(frame);
+		CompactUnitFrame_UpdateInRange(frame);
+		CompactUnitFrame_UpdateStatusText(frame);
+		CompactUnitFrame_UpdateCenterStatusIcon(frame);
+		CompactUnitFrame_UpdateWidgetSet(frame);
 	end
 end
 
@@ -410,6 +420,11 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 	if ( not UnitIsConnected(frame.unit) ) then
 		--Color it gray
 		r, g, b = 0.5, 0.5, 0.5;
+	elseif (UnitIsDead(frame.unit)) then
+		--Color it gray
+		r, g, b = 0.5, 0.5, 0.5;
+		-- Also hide the health bar
+		frame.hideHealthbar = true;
 	else
 		if ( frame.optionTable.healthBarColorOverride ) then
 			local healthBarColorOverride = frame.optionTable.healthBarColorOverride;
@@ -455,6 +470,12 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 
 		frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
 	end
+end
+
+function CompactUnitFrame_HideHealth(frame)
+	frame:Show();
+	frame.hideHealthbar = true;
+	frame.healthBar:SetShown(false);
 end
 
 function CompactUnitFrame_UpdateMaxHealth(frame)
@@ -617,7 +638,7 @@ function CompactUnitFrame_UpdateName(frame)
 
 		frame.name:SetText(name);
 
-		if ( CompactUnitFrame_IsTapDenied(frame) ) then
+		if ( CompactUnitFrame_IsTapDenied(frame) or UnitIsDead(frame.unit) ) then
 			-- Use grey if not a player and can't get tap on unit
 			frame.name:SetVertexColor(0.5, 0.5, 0.5);
 		elseif ( frame.optionTable.colorNameBySelection ) then
@@ -679,13 +700,36 @@ local function SetBorderColor(frame, r, g, b, a)
 	end
 end
 
+local function SetBorderUnderline(frame, r, g, b, a)
+	frame.healthBar.border:SetUnderlineColor(r, g, b, a);
+	if frame.castBar and frame.castBar.border then
+		frame.castBar.border:SetVertexColor(r, g, b, a);
+	end
+end
+
 function CompactUnitFrame_UpdateHealthBorder(frame)
 	if frame.UpdateHealthBorderOverride and frame:UpdateHealthBorderOverride() then
 		return;
 	end
 
+	-- If loose target is forced to match soft target, show soft target colored outline.
+	local softTargetForce = GetCVarBool("SoftTargetForce");
+	if softTargetForce and IsTargetLoose() and frame.optionTable.softTargetBorderColor and
+		(UnitIsUnit(frame.displayedUnit, "softenemy") or UnitIsUnit(frame.displayedUnit, "softfriend")) then
+		SetBorderColor(frame, frame.optionTable.softTargetBorderColor:GetRGBA());
+		return;
+	end
+
+	-- Locked target outline
 	if frame.optionTable.selectedBorderColor and UnitIsUnit(frame.displayedUnit, "target") then
 		SetBorderColor(frame, frame.optionTable.selectedBorderColor:GetRGBA());
+		return;
+	end
+
+-- If soft target, but not forced to match locked, do "underline" border
+	if frame.optionTable.softTargetBorderColor and 
+		(UnitIsUnit(frame.displayedUnit, "softenemy") or UnitIsUnit(frame.displayedUnit, "softfriend")) then
+		SetBorderUnderline(frame, frame.optionTable.softTargetBorderColor:GetRGBA());
 		return;
 	end
 
@@ -1837,6 +1881,7 @@ DefaultCompactNamePlateFriendlyFrameOptions = {
 	showPvPClassificationIndicator = true,
 
 	selectedBorderColor = CreateColor(1, 1, 1, .35),
+	softTargetBorderColor = CreateColor(.9, 1, .9, .25),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
 	defaultBorderColor = CreateColor(0, 0, 0, .8),
 }
@@ -1859,6 +1904,7 @@ DefaultCompactNamePlateEnemyFrameOptions = {
 	showPvPClassificationIndicator = true,
 
 	selectedBorderColor = CreateColor(1, 1, 1, .9),
+	softTargetBorderColor = CreateColor(1, 1, 1, .4),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
 	defaultBorderColor = CreateColor(0, 0, 0, 1),
 }

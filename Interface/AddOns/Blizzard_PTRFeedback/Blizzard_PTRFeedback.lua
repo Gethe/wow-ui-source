@@ -258,7 +258,7 @@ function PTR_IssueReporter.AddDataCollectorToReport(survey, collectorType, ...)
             end
         
         elseif (collectorType == types.SelectOne_MessageKeyUpdater) then
-            local choices, displayVertically = ...
+            local choices, displayVertically, forceSelection = ...
             if (choices) and ((type(choices) == "table")) then                
                 if (displayVertically == null) then
                     displayVertically = false
@@ -268,6 +268,7 @@ function PTR_IssueReporter.AddDataCollectorToReport(survey, collectorType, ...)
                     collectorType = collectorType,
                     choices = choices,
                     displayVertically = displayVertically,
+                    forceSelection = forceSelection,
                 }
                 table.insert(survey.Collectors, newDataCollector)
             end           
@@ -565,7 +566,7 @@ function PTR_IssueReporter.BuildSurveyFrameFromSurveyData(surveyFrame, survey, d
             PTR_IssueReporter.AttachMultipleChoiceQuestion(surveyFrame, collector.question, collector.choices, (collector.collectorType == types.SelectMultiple_MultipleChoiceQuestion), collector.displayVertically)
             newString = "%s"
         elseif (collector.collectorType == types.SelectOne_MessageKeyUpdater) then
-            PTR_IssueReporter.AttachMultipleChoiceNoQuestion(surveyFrame, collector.choices, (collector.collectorType == types.SelectMultiple_MultipleChoiceQuestion), collector.displayVertically)
+            PTR_IssueReporter.AttachMultipleChoiceNoQuestion(surveyFrame, collector.choices, (collector.collectorType == types.SelectMultiple_MultipleChoiceQuestion), collector.displayVertically, collector.forceSelection)
             skipExpandingString = true
         elseif (collector.collectorType == types.SurveyID) then
             newString = survey.ID

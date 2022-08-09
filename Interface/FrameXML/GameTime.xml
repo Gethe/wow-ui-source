@@ -4,7 +4,7 @@
 	<Button name="GameTimeFrame" parent="MinimapCluster">
 		<Size x="19" y="18"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+			<Anchor point="TOPLEFT" relativeKey="$parent.BorderTop" relativePoint="TOPRIGHT" x="1" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">

@@ -419,7 +419,7 @@
 					</OnEvent>
 					<OnMouseUp>
 						if ( button == "RightButton" ) then
-							PartyMemberBackground_ToggleOpacity(self);
+							PartyFrame.Background:ToggleOpacity(self);
 						end
 					</OnMouseUp>
 				</Scripts>
@@ -492,7 +492,7 @@
 					</OnEvent>
 					<OnMouseUp>
 						if ( button == "RightButton" ) then
-							PartyMemberBackground_ToggleOpacity(self);
+							PartyFrame.Background:ToggleOpacity(self);
 						end
 					</OnMouseUp>
 				</Scripts>

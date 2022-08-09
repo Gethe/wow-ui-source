@@ -168,6 +168,7 @@ function ProfessionsMixin:UpdateTabs()
 		self.TabSystem:SetTabEnabled(self.specializationsTabID, specTabInfo.enabled, specTabInfo.errorReason);
 		forceAwayFromSpec = not specTabInfo.enabled;
 	end
+	self.TabSystem:Layout();
 
 	local selectedTab = self:GetTab();
 	if not selectedTab or onlyShowRecipes or (selectedTab == self.specializationsTabID and forceAwayFromSpec) then
@@ -237,7 +238,7 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 
 	local selectedPage = self:GetElementsForTab(tabID)[1];
 	local pageWidth = selectedPage:GetDesiredPageWidth();
-	if tabAlreadyShown and selectedPage:GetDesiredPageWidth() == self:GetWidth() then
+	if tabAlreadyShown and pageWidth == self:GetWidth() then
 		return;
 	end
 
@@ -248,7 +249,7 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 		self:Refresh();
 	end
 	TabSystemOwnerMixin.SetTab(self, tabID);
-	self:SetWidth(selectedPage:GetDesiredPageWidth());
+	self:SetWidth(pageWidth);
 end
 
 function ProfessionsMixin:OnShow()
@@ -272,4 +273,8 @@ function ProfessionsMixin:CheckConfirmClose()
 	else
 		HideUIPanel(self);
 	end
+end
+
+function ProfessionsMixin:GetCurrentRecraftingRecipeID()
+	return self.CraftingPage:GetCurrentRecraftingRecipeID();
 end

@@ -13,6 +13,7 @@ GenericTraitFrameMixin = {};
 
 local GenericTraitFrameEvents = {
 	"TRAIT_SYSTEM_NPC_CLOSED",
+	"TRAIT_TREE_CURRENCY_INFO_UPDATED"
 };
 
 function GenericTraitFrameMixin:OnLoad()
@@ -66,6 +67,18 @@ function GenericTraitFrameMixin:OnEvent(event, ...)
 
 	if event == "TRAIT_SYSTEM_NPC_CLOSED" then
 		HideUIPanel(self);
+	elseif event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" then
+		-- Hack: traitNodeInfo.canPurchaseRank is not getting updated after currency changes, so button state does not get updated.
+		-- This is a temp fix to dirty all nodes to force it to get latest node info.
+		local treeID = ...;
+		if treeID == self:GetTalentTreeID() then
+			for talentButton in self:EnumerateAllTalentButtons() do
+				local nodeID = talentButton:GetTalentNodeID();
+				if nodeID then
+					self:MarkTalentNodeInfoCacheDirty(nodeID);
+				end
+			end
+		end
 	end
 end
 

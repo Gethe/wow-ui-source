@@ -194,42 +194,34 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="PlayerPowerBarAlt" parent="UIParent" inherits="UnitPowerBarAltTemplate, UIParentBottomManagedFrameTemplate">
+
+	<Frame name="EncounterBar" parent="UIParent" inherits="VerticalLayoutFrame, UIParentBottomManagedFrameTemplate, EditModeEncounterBarSystemTemplate">
+		<Size x="250" y="50"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="minimumWidth" value="250" type="number"/>
+			<KeyValue key="minimumHeight" value="50" type="number"/>
+			<KeyValue key="layoutIndex" value="6" type="number"/>
+			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="PlayerPowerBarAlt" parent="EncounterBar" inherits="UnitPowerBarAltTemplate" mixin="PlayerPowerBarAltMixin">
 		<Size x="10" y="10"/>
 		<Anchors>
 			<Anchor point="TOP" relativePoint="TOP" x="0" y="-30"/>
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="6" type="number"/>
-			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
 		</KeyValues>
 		<Scripts>
-			<OnLoad>
-				self.isPlayerBar = true;
-				UnitPowerBarAlt_Initialize(self, "player", 1);
-			</OnLoad>
-			<OnShow>
-				local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
-				if(barInfo and barInfo.anchorTop) then
-					self:SetParent(UIParent); 
-					self:ClearAllPoints(); 
-					self:SetPoint("TOP", 0, -30);
-					return; 
-				end
-				UIParentManagedFrameMixin.OnShow(self);
-			</OnShow>
-			<OnHide>
-				if(barInfo and barInfo.anchorTop) then
-					self:SetParent(UIParent);
-					self:ClearAllPoints();
-					self:SetPoint("TOP", 0, -30);
-					return;
-				end
-				UIParentManagedFrameMixin.OnHide(self);
-			</OnHide>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	
 	
 	<!-- Timer manager -->
 	<Frame name="PlayerBuffTimerManager" parent="UIParent" frameStrata="LOW" hidden="true">

@@ -25,6 +25,7 @@
 			<KeyValue key="rightPadding" value="0" type="number"/>
 			<KeyValue key="basePanOffsetX" value="4" type="number"/>
 			<KeyValue key="basePanOffsetY" value="-30" type="number"/>
+			<KeyValue key="maximumCommitTime" value="6" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -109,9 +110,6 @@
 			</Frame>
 
 			<Frame parentKey="PvPTalentList" inherits="PvPTalentListTemplate" frameLevel="1000" hidden="true">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.PvPTalentSlotTray" relativePoint="BOTTOMRIGHT" x="14" y="0"/>
-				</Anchors>
 			</Frame>
 		</Frames>
 		<Scripts>

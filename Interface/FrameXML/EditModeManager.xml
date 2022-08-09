@@ -3,11 +3,12 @@
 
 	<Frame name="EditModeSystemTemplate" mixin="EditModeSystemMixin" virtual="true" enableMouse="true" clampedToScreen="true">
 		<Scripts>
-			<OnLoad inherit="prepend" method="OnSystemLoad"/>
+			<OnLoad method="OnSystemLoad"/>
+			<OnHide method="OnSystemHide"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeSystemSelectionBaseTemplate" inherits="NineSliceCodeTemplate" mixin="EditModeSystemSelectionBaseMixin" frameStrata="MEDIUM" frameLevel="100" enableMouse="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
+	<Frame name="EditModeSystemSelectionBaseTemplate" inherits="NineSliceCodeTemplate" mixin="EditModeSystemSelectionBaseMixin" ignoreParentAlpha="true" frameStrata="MEDIUM" frameLevel="100" enableMouse="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="highlightTextureKit" value="editmode-actionbar-highlight" type="string"/>
 			<KeyValue key="selectedTextureKit" value="editmode-actionbar-selected" type="string"/>
@@ -64,6 +65,37 @@
 		<KeyValues>
 			<KeyValue key="system" value="Enum.EditModeSystem.UnitFrame" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ACTION_BAR_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeMinimapSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeMinimapSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.Minimap" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_MINIMAP_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeCastBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeCastBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.CastBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_CAST_BAR_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeEncounterBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeEncounterBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.EncounterBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ENCOUNTER_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
@@ -592,6 +624,22 @@
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.PetActionBar" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="CastBar" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_CAST_BAR_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOP"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="EncounterBar" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_ENCOUNTER_BAR_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.CastBar" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
 						</Frames>

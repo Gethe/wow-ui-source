@@ -49,6 +49,18 @@
 					</Frame>
 				</Frames>
 			</ItemButton>
+
+			<Button parentKey="UndoButton" hidden="true" inherits="IconButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
+					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="14" y="0"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -61,7 +73,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT">
+				<FontString parentKey="Name" inherits="GameFontHighlight_NoShadow" justifyH="LEFT">
 					<Size x="110" y="36" />
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="10" y="0" />

@@ -258,6 +258,7 @@ info.icon = [TEXTURE] -- An icon for the button.
 info.iconXOffset = [nil, NUMBER] -- Number of pixels to shift the button's icon to the left or right (positive numbers shift right, negative numbers shift left).
 info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 info.ignoreAsMenuSelection [nil, true] -- Never set the menu text/icon to this, even when this button is checked
+info.registerForRightClick [nil, true] -- Register dropdown buttons for right clicks
 ]]
 
 function UIDropDownMenu_CreateInfo()
@@ -367,6 +368,12 @@ function UIDropDownMenu_AddButton(info, level)
 	button:SetDisabledFontObject(GameFontDisableSmallLeft);
 	invisibleButton:Hide();
 	button:Enable();
+
+	if ( info.registerForRightClick ) then
+		button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	else
+		button:RegisterForClicks("LeftButtonUp");
+	end
 
 	-- If not clickable then disable the button and set it white
 	if ( info.notClickable ) then

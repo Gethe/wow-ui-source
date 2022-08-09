@@ -43,6 +43,7 @@ TALENT_FRAME_GATE_TOOLTIP_FORMAT = "Spend %d more |4point:points; to unlock this
 
 GENERIC_TRAIT_FRAME_CURRENCY_TEXT = "%d %s";
 GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT = "Are you sure you want to spend %s to unlock this talent?";
+GENERIC_TRAIT_FRAME_EDGE_REQUIREMENTS_BUTTON_TOOLTIP = "Requires all preceding talents";
 
 
 local TemplatesByTalentType = {

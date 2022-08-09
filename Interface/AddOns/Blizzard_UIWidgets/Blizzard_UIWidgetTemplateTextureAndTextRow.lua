@@ -29,26 +29,27 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 	self.spacing = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_SPACING;
 	self.fixedWidth = widgetInfo.fixedWidth;
 
-	local isShown = {};
 	self.animationInfo = texturekitAnimationTemplatesInfo[widgetInfo.frameTextureKit];
-	self.animatedEntries = self.animationInfo and {} or nil;
+	local shownEntries = {};
+	local animateEntries = {};
 	for index, entryInfo in ipairs(widgetInfo.entries) do
 		local entryFrame = self.entryPool:Acquire();
 		entryFrame:Setup(widgetContainer, entryInfo.text, entryInfo.tooltip, widgetInfo.frameTextureKit, widgetInfo.textureKit, widgetInfo.textSizeType, index);
 		entryFrame:SetTooltipLocation(widgetInfo.tooltipLoc);
-		entryFrame:SetAlpha(1);
-		entryFrame:Show();
 
 		if self.animationInfo then
-			if not self.wasShown[index] then
-				table.insert(self.animatedEntries, entryFrame);
+			if not self.lastShownEntries[index] then
+				table.insert(animateEntries, entryFrame);
 			end
+		else
+			entryFrame:SetAlpha(1);
 		end
 
-		isShown[index] = true;
-	end
+		entryFrame:Show();
 
-	self.wasShown = isShown;
+		shownEntries[index] = true;
+	end
+	self.lastShownEntries = shownEntries;
 
 	if #widgetInfo.entries == 0 then
 		self:Hide();
@@ -57,15 +58,15 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 		self:Layout(); -- Layout visible entries horizontally
 	end
 
-	self:PlayAnimations(widgetInfo);
+	if self.animationInfo then
+		self:PlayAnimations(widgetInfo, animateEntries);
+	end
 end
 
-function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimations(widgetInfo)
-	if self.animatedEntries then
-		for index, entryFrame in ipairs(self.animatedEntries) do
-			entryFrame:SetAlpha(0);
-			self:PlayAnimOnEntryFrame(widgetInfo, entryFrame, index);
-		end
+function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimations(widgetInfo, animateEntries)
+	for index, entryFrame in ipairs(animateEntries) do
+		entryFrame:SetAlpha(0);
+		self:PlayAnimOnEntryFrame(widgetInfo, entryFrame, index);
 	end
 end
 
@@ -81,6 +82,7 @@ function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimOnEntryFrame(widgetInfo,
 
 			local function applyEffectAndClearAnim()
 				self:ApplyEffectToFrame(widgetInfo, self.widgetContainer, entryFrame);
+				entryFrame:SetAlpha(1);
 				entryFrame.animationFrame = nil;
 			end
 
@@ -95,31 +97,30 @@ function UIWidgetTemplateTextureAndTextRowMixin:PlayAnimOnEntryFrame(widgetInfo,
 end
 
 function UIWidgetTemplateTextureAndTextRowMixin:ApplyEffects(widgetInfo)
-	if not self.animatedEntries then
+	if not self.animationInfo then
 		UIWidgetBaseTemplateMixin.ApplyEffects(self, widgetInfo);
 	end
 end
 
+function UIWidgetTemplateTextureAndTextRowMixin:ClearAllAnimations()
+	for entryFrame in self.entryPool:EnumerateActive() do
+		if entryFrame.animTimer then
+			entryFrame.animTimer:Cancel();
+		end
+		if entryFrame.animationFrame then
+			entryFrame.animationFrame:Reset();
+			entryFrame.animationFrame = nil;
+		end
+	end
+
+	self.animationPools:ReleaseAll();
+	self.lastShownEntries = {};
+end
+
 function UIWidgetTemplateTextureAndTextRowMixin:OnReset()
 	UIWidgetBaseTemplateMixin.OnReset(self);
-	if(self.animatedEntries) then 
-		for _, entryFrame in ipairs(self.animatedEntries) do
-			entryFrame:SetAlpha(1);
-
-			if entryFrame.animTimer then
-				entryFrame.animTimer:Cancel();
-			end
-
-			if entryFrame.animationFrame then
-				entryFrame.animationFrame:Reset();
-				entryFrame.animationFrame = nil;
-			end
-		end	
-	end	
+	self:ClearAllAnimations();
 	self.entryPool:ReleaseAll();
-	self.animationPools:ReleaseAll();
 	self.animationInfo = nil;
-	self.animatedEntries = nil;
-	self.wasShown = {};
 	self.fixedWidth = nil;
 end

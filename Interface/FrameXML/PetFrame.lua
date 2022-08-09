@@ -1,6 +1,11 @@
 --PET_WARNING_TIME = 55;
 --PET_FLASH_ON_TIME = 0.5;
 --PET_FLASH_OFF_TIME = 0.5;
+PetFrameMixin=CreateFromMixins(PartyMemberAuraMixin);
+
+function PetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
+	self:UpdateMemberAuras(unitAuraUpdateInfo);
+end
 
 function PetFrame_OnLoad (self)
 	self.noTextPrefix = true;
@@ -76,13 +81,14 @@ function PetFrame_Update (self, override)
 			end
 			PetAttackModeTexture:Hide();
 
-			PartyMemberFrame_UpdateAuras(self);
+			self:UpdateAuras();
 		else
 			self:Hide();
 		end
 	end
 	
-	PetFrame_UpdateAnchoring(self)
+	PetFrame_UpdateAnchoring(self);
+	PlayerFrame_AdjustAttachments();
 end
 
 function PetFrame_OnEvent (self, event, ...)
@@ -108,7 +114,7 @@ function PetFrame_OnEvent (self, event, ...)
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == self.unit ) then
 			local unitAuraUpdateInfo = arg2;
-			PartyMemberFrame_UpdateAuras(self, unitAuraUpdateInfo);
+			self:UpdateAuras(unitAuraUpdateInfo);
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
@@ -139,29 +145,6 @@ function PetFrame_OnUpdate (self, elapsed)
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, alpha);
 	end
 	CombatFeedback_OnUpdate(self, elapsed);
-	-- Expiration flash stuff
-	--local petTimeRemaining = nil;
-	--if ( GetPetTimeRemaining() ) then
-	---	if ( self.flashState == 1 ) then
-	--		self:SetAlpha(this.flashTimer/PET_FLASH_ON_TIME);
-	--	else
-	--		self:SetAlpha((PET_FLASH_OFF_TIME - this.flashTimer)/PET_FLASH_OFF_TIME);
-	--	end
-	--	petTimeRemaining = GetPetTimeRemaining() / 1000;
-	--end
-	--if ( petTimeRemaining and (petTimeRemaining < PET_WARNING_TIME) ) then
-	--	PetFrame.flashTimer = PetFrame.flashTimer - elapsed;
-	--	if ( PetFrame.flashTimer <= 0 ) then
-	--		if ( PetFrame.flashState == 1 ) then
-	--			PetFrame.flashState = 0;
-	--			PetFrame.flashTimer = PET_FLASH_OFF_TIME;
-	--		else
-	--			PetFrame.flashState = 1;
-	--			PetFrame.flashTimer = PET_FLASH_ON_TIME;
-	--		end
-	--	end
-	--end
-	
 end
 
 function PetFrameDropDown_OnLoad (self)

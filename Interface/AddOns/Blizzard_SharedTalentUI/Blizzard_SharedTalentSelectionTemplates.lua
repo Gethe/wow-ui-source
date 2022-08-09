@@ -158,7 +158,7 @@ function TalentSelectionChoiceMixin:AddTooltipErrors(tooltip)
 	if self.isCurrentSelection then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
 		GameTooltip_AddDisabledLine(tooltip, TALENT_BUTTON_TOOLTIP_SELECTION_CURRENT_INSTRUCTIONS);
-	elseif not self:CanAffordChoice() then
+	elseif not self.canSelectChoice and not self:CanAffordChoice() then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
 		GameTooltip_AddErrorLine(tooltip, TALENT_BUTTON_TOOLTIP_SELECTION_COST_ERROR);
 	elseif not self.canSelectChoice then
@@ -187,7 +187,7 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 	if selectionVisualState == TalentButtonUtil.BaseVisualState.Locked then
 		return TalentButtonUtil.BaseVisualState.Locked;
 	end
-	
+
 	return self:IsChoiceAvailable() and TalentButtonUtil.BaseVisualState.Selectable or TalentButtonUtil.BaseVisualState.Disabled;
 end
 
@@ -200,7 +200,7 @@ function TalentSelectionChoiceMixin:CanAffordChoice()
 end
 
 function TalentSelectionChoiceMixin:IsChoiceAvailable()
-	return self.canSelectChoice and self.entryInfo.isAvailable and self:CanAffordChoice();
+	return self.canSelectChoice and self.entryInfo.isAvailable;
 end
 
 function TalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection)

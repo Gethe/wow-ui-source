@@ -110,10 +110,16 @@
 			</AnimationGroup>
 			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" startDelay="0.2"/>
+				<Scripts>
+					<OnFinished function="CastingBarAnim_OnFadeOutFinish"/>
+				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="HoldFadeOutAnim" setToFinalAlpha="true">
 				<Alpha fromAlpha="1" toAlpha="1" duration="1.0" order="1"/>
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="2"/>
+				<Scripts>
+					<OnFinished function="CastingBarAnim_OnFadeOutFinish"/>
+				</Scripts>
 			</AnimationGroup>
 		</Animations>
 	</StatusBar>
@@ -450,21 +456,15 @@
 		</Scripts>
 	</StatusBar>
 
-	<StatusBar name="CastingBarFrame" toplevel="true" hidden="true" inherits="CastingBarFrameTemplate, UIParentBottomManagedFrameTemplate" frameStrata="HIGH">
+	<StatusBar name="PlayerCastingBarFrame" toplevel="true" inherits="CastingBarFrameTemplate, UIParentBottomManagedFrameTemplate, EditModeCastBarSystemTemplate" frameStrata="HIGH" mixin="PlayerCastingBarMixin">
 		<Size x="209" y="11"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="2" type="number"/>
 			<KeyValue key="bottomPadding" value="8" type="number"/>
 		</KeyValues>
 		<Scripts>
-			<OnLoad>
-				self:OnLoad("player", true, false);
-				self.Icon:Hide();
-			</OnLoad>
-			<OnShow>
-				CastingBarMixin.OnShow(self);
-				UIParentManagedFrameMixin.OnShow(self); 
-			</OnShow>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</StatusBar>
 </Ui>

@@ -375,7 +375,7 @@ function ActionBarActionButtonMixin:Update()
 		buttonCooldown:Hide();
 
 		ClearChargeCooldown(self);
-		
+
 		self:ClearFlash();
 		self:SetChecked(false);
 
@@ -385,7 +385,7 @@ function ActionBarActionButtonMixin:Update()
 	end
 
 	self:UpdatePressAndHoldAction();
-	
+
 	-- Add a green border if button is an equipped item
 	local border = self.Border;
 	if border then
@@ -427,7 +427,7 @@ function ActionBarActionButtonMixin:Update()
 	end
 
 	-- Update flyout appearance
-	ActionButton_UpdateFlyout(self);
+	self:UpdateFlyout();
 
 	self:UpdateOverlayGlow();
 
@@ -468,7 +468,7 @@ end
 
 function ActionBarActionButtonMixin:UpdateState()
 	local action = self.action;
-	local isChecked = IsCurrentAction(action) or IsAutoRepeatAction(action);
+	local isChecked = (IsCurrentAction(action) or IsAutoRepeatAction(action)) and not C_ActionBar.IsAutoCastPetAction(action);
 	self:SetChecked(isChecked);
 end
 
@@ -616,7 +616,6 @@ local function CreateChargeCooldownFrame(parent)
 	cooldown:SetHideCountdownNumbers(true);
 	cooldown:SetDrawSwipe(false);
 
-	cooldown:SetAllPoints(parent);
 	cooldown:SetFrameStrata("TOOLTIP");
 
 	return cooldown;
@@ -1017,7 +1016,7 @@ function ActionBarActionButtonMixin:IsFlashing()
 end
 
 -- Shared between action bar buttons and spell flyout buttons
-function ActionButton_UpdateFlyout(self, isButtonDownOverride)
+function ActionBarActionButtonMixin:UpdateFlyout(isButtonDownOverride)
 	if (not self.FlyoutArrowContainer or
 		not self.FlyoutBorderShadow) then
 		return;
@@ -1071,6 +1070,12 @@ function ActionButton_UpdateFlyout(self, isButtonDownOverride)
 	local arrowDirection = self:GetAttribute("flyoutDirection");
 	local arrowDistance = isFlyoutShown and 1 or 4;
 
+	-- If you are on an action bar then base your direction based on the action bar's orientation
+	local actionBar = self:GetParent();
+	if (actionBar.actionButtons) then
+		arrowDirection = actionBar.isHorizontal and "UP" or "LEFT";
+	end
+
 	if (arrowDirection == "LEFT") then
 		SetClampedTextureRotation(flyoutArrowTexture, isFlyoutShown and 90 or 270);
 		flyoutArrowTexture:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0);
@@ -1088,7 +1093,7 @@ end
 
 function ActionBarActionButtonMixin:SetButtonStateOverride(state)
 	self:SetButtonStateBase(state);
-	ActionButton_UpdateFlyout(self);
+	self:UpdateFlyout();
 end
 
 function ActionBarActionButtonMixin:OnClick(button, down)
@@ -1100,7 +1105,9 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 		end
 	else
 		if button == "RightButton" and C_ActionBar.IsAutoCastPetAction(self.action) then
-			C_ActionBar.ToggleAutoCastPetAction(self.action);
+			if not down then
+				C_ActionBar.ToggleAutoCastPetAction(self.action);
+			end
 		else
 			local useKeyDownCvar = GetCVarBool("ActionButtonUseKeyDown");
 			local actionBarLocked = Settings.GetValue("lockActionBars");
@@ -1116,7 +1123,7 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 		end
 	end
 
-	ActionButton_UpdateFlyout(self, down);
+	self:UpdateFlyout(down);
 end
 
 function ActionBarActionButtonMixin:OnDragStart()
@@ -1145,14 +1152,14 @@ function ActionBarActionButtonMixin:OnEnter()
 	self:SetTooltip();
 	ActionBarButtonEventsFrame.tooltipOwner = self;
 	ActionBarActionEventsFrame.tooltipOwner = self;
-	ActionButton_UpdateFlyout(self);
+	self:UpdateFlyout();
 end
 
 function ActionBarActionButtonMixin:OnLeave()
 	GameTooltip:Hide();
 	ActionBarButtonEventsFrame.tooltipOwner = nil;
 	ActionBarActionEventsFrame.tooltipOwner = nil;
-	ActionButton_UpdateFlyout(self);
+	self:UpdateFlyout();
 end
 
 BaseActionButtonMixin = {}
@@ -1210,41 +1217,52 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		SetDividerShown(not hideDivider);
 		self.SlotArt:Show();
 		self.SlotBackground:Hide();
+
 		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame");
-		self.NormalTexture:SetSize(45, 45);
-		self.NormalTexture:ClearAllPoints();
-		self.NormalTexture:SetPoint("TOPLEFT");
-		self.NormalTexture:SetPoint("BOTTOMRIGHT");
+		self.NormalTexture:SetSize(46, 45);
+
+		self:SetPushedAtlas("UI-HUD-ActionBar-IconFrame-Down");
+		self.PushedTexture:SetSize(46, 45);
 	else
 		SetDividerShown(false);
 		self.SlotArt:Hide();
 		self.SlotBackground:Show();
+
 		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow");
-		self.NormalTexture:SetSize(51, 51);
-		self.NormalTexture:ClearAllPoints();
-		self.NormalTexture:SetPoint("TOPLEFT", -1.5, 1.5);
-		self.NormalTexture:SetPoint("BOTTOMRIGHT", 5.5, -5.5);
+		self.NormalTexture:SetSize(50, 50);
+
+		self:SetPushedAtlas("UI-HUD-ActionBar-IconFrame-AddRow-Down");
+		self.PushedTexture:SetSize(50, 50);
 	end
 end
 
 SmallActionButtonMixin = {}
 
 function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
-	self.UpdateButtonArtBase = self.UpdateButtonArt;
-	self.UpdateButtonArt = self.UpdateButtonArtOverride;
-
 	self.HotKey:ClearAllPoints();
 	self.HotKey:SetPoint("TOPRIGHT", -4, -4);
 
+	self.IconMask:SetSize(45, 45);
 	self.IconMask:ClearAllPoints();
-	self.IconMask:SetPoint("TOPLEFT", -6.5, 6.5);
-	self.IconMask:SetPoint("BOTTOMRIGHT", 7, -7.5);
+	self.IconMask:SetPoint("CENTER", 0.5, -0.5);
+
+	self.AutoCastable:SetSize(56, 56);
+	self.AutoCastable:ClearAllPoints();
+	self.AutoCastable:SetPoint("CENTER", 0.5, -0.5);
+
+	self.AutoCastShine:SetSize(27, 27);
+	self.AutoCastShine:ClearAllPoints();
+	self.AutoCastShine:SetPoint("CENTER", 0.5, -0.5);
+
+	self.HighlightTexture:SetSize(31.7, 31);
+
+	self.CheckedTexture:SetSize(31.7, 31);
 end
 
-function SmallActionButtonMixin:UpdateButtonArtOverride(hideDivider)
-	self:UpdateButtonArtBase(hideDivider);
+function SmallActionButtonMixin:UpdateButtonArt(hideDivider)
+	BaseActionButtonMixin.UpdateButtonArt(self, hideDivider);
 
-	self.NormalTexture:ClearAllPoints();
-	self.NormalTexture:SetPoint("TOPLEFT", -1.5, 1.5);
-	self.NormalTexture:SetPoint("BOTTOMRIGHT", 4, -4);
+	-- Gotta set these texture sizes here since BaseActionButtonMixin.UpdateButtonArt changes their size
+	self.NormalTexture:SetSize(35, 35);
+	self.PushedTexture:SetSize(35, 35);
 end

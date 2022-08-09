@@ -683,6 +683,19 @@ end
 
 CharCustomizeAudioInterfaceMixin = {};
 
+function CharCustomizeAudioInterfaceMixin:OnLoad()
+	self:RegisterEvent("SOUNDKIT_FINISHED");
+end
+
+function CharCustomizeAudioInterfaceMixin:OnEvent(event, ...)
+	if ( event == "SOUNDKIT_FINISHED" ) then
+		local soundHandle = ...;
+		if ( self.soundHandle == soundHandle ) then
+			self.audioInterface:StopAudio();
+		end
+	end
+end
+
 function CharCustomizeAudioInterfaceMixin:SetupAudio(soundKit)
 	local isMuted = IsSoundMuted();
 	self.previousSFXSetting = GetCVar("Sound_EnableSFX");
@@ -707,17 +720,23 @@ function CharCustomizeAudioInterfaceMixin:PlayAudio(soundKit)
 			self.soundHandle = nil;
 		end
 		if soundKit then
-			local _, soundHandle = PlaySound(soundKit);
+			local runFinishCallback = true;
+			local _, soundHandle = PlaySound(soundKit, nil, nil, runFinishCallback);
 			self.soundHandle = soundHandle;
 			self.PlayButton:SetNormalAtlas("charactercreate-customize-speakeroffbutton");
 			self.PlayButton:SetPushedAtlas("charactercreate-customize-speakeroffbutton-down");
-			self:SetScript("OnUpdate", self.OnAudioPlayingUpdate);
+			self.waveformTicker = C_Timer.NewTicker(.05, function()
+				self:OnAudioPlayingTick();
+			end);
 		end
 	end
 end
 
 function CharCustomizeAudioInterfaceMixin:StopAudio()
-	self:SetScript("OnUpdate", nil);
+	if self.waveformTicker then
+		self.waveformTicker:Cancel();
+		self.waveformTicker = nil;
+	end
 	self.PlayWaveform.Waveform:SetValue(0);
 	if self.soundHandle then
 		StopSound(self.soundHandle);
@@ -727,8 +746,8 @@ function CharCustomizeAudioInterfaceMixin:StopAudio()
 	self.PlayButton:SetPushedAtlas("charactercreate-customize-playbutton-down");
 end
 
-function CharCustomizeAudioInterfaceMixin:OnAudioPlayingUpdate()
-	self.PlayWaveform.Waveform:SetValue(C_Sound.GetSoundScaledVolume(self.soundHandle));
+function CharCustomizeAudioInterfaceMixin:OnAudioPlayingTick()
+	self.PlayWaveform.Waveform:SetValue(math.random(65, 80)/100);
 end
 
 CharCustomizeOptionSelectionPopoutMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
@@ -794,7 +813,9 @@ function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseLeave(entry)
 
 	local tooltip = self:GetAppropriateTooltip();
 	tooltip:Hide();
-	self.audioInterface:StopAudio();
+	if self.audioInterface then
+		self.audioInterface:StopAudio();
+	end
 end
 
 local POPOUT_CLEARANCE = 100;

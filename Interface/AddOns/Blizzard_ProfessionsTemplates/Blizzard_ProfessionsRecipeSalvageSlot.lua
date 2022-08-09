@@ -9,18 +9,21 @@ function ProfessionsSalvageSlotMixin:Reset()
 	self.allocationItem = nil;
 	self.Button:Reset();
 	self.Button:SetLocked(false);
+	
+	if self.continuableContainer then
+		self.continuableContainer:Cancel();
+	end
+	self.continuableContainer = ContinuableContainer:Create();
 end
 
 function ProfessionsSalvageSlotMixin:Init(transaction, quantityRequired)
 	self:Reset();
 
-	if self.continuableContainer then
-		self.continuableContainer:Cancel();
-	end
-	self.continuableContainer = ContinuableContainer:Create();
-
 	self.quantityRequired = quantityRequired;
 
+	self:SetNameText(PROFESSIONS_ADD_SALVAGE);
+	self:Update();
+	
 	local function OnItemsLoaded()
 		local item = transaction:GetSalvageAllocation();
 		if item then
@@ -29,16 +32,10 @@ function ProfessionsSalvageSlotMixin:Init(transaction, quantityRequired)
 
 		self:Update();
 	end
-
-	self:SetNameText(PROFESSIONS_ADD_SALVAGE);
-
-	self:Update();
-
+	
 	self.continuableContainer:ContinueOnLoad(OnItemsLoaded);
 
-	self.Button:SetScript("OnLeave", function()
-		GameTooltip:Hide();
-	end);
+	self.Button:SetScript("OnLeave", GameTooltip_Hide);
 end
 
 function ProfessionsSalvageSlotMixin:Update()

@@ -3,11 +3,8 @@
 	<Script file="Blizzard_PvPTalentListTemplates.lua"/>
 
 	<Button name="PvPTalentListButtonTemplate" mixin="PvPTalentListButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="147" y="40"/>
+		<Size x="220" y="40"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture atlas="pvptalents-list-background" setAllPoints="true"/>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
 					<Size x="36" y="36"/>
@@ -16,19 +13,33 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size x="100" y="12"/>
+					<Size x="150" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT"  relativeKey="$parent.Icon" relativePoint="RIGHT" x="4" y="0"/>
+						<Anchor point="LEFT"  relativeKey="$parent.Icon" relativePoint="RIGHT" x="20" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Selected" atlas="pvptalents-list-background-selected"  hidden="true" alphaMode="ADD" setAllPoints="true"/>
+				<Texture parentKey="Border" atlas="talents-node-pvpflyout-green" >
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Selected" atlas="talents-node-pvpflyout-yellow"  hidden="true" >
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="SelectedOtherCheck" atlas="pvptalents-list-checkmark" useAtlasSize="true" hidden="true">
+				<Texture parentKey="SelectedOtherCheck" atlas="talents-node-pvpflyout-yellow" hidden="true">
+					<Size x="36" y="36"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -50,7 +61,7 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<HighlightTexture atlas="pvptalents-list-background-mouseover" alphaMode="ADD"/>
+		<HighlightTexture atlas="talents-pvpflyout-rowhighlight" alphaMode="ADD"/>
 		<Scripts>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
@@ -58,34 +69,42 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="PvPTalentListTemplate" mixin="PvPTalentListMixin" inherits="SimplePanelTemplate, CallbackRegistrantTemplate" virtual="true">
-		<Size x="187" y="404"/>
+	<Frame name="PvPTalentListTemplate" mixin="PvPTalentListMixin" inherits="CallbackRegistrantTemplate" virtual="true">
+		<Size x="220" y="404"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Top" atlas="talents-pvpflyout-background-top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="25"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="talents-pvpflyout-background-middle" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Bottom" atlas="talents-pvpflyout-background-bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-30"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="5" y="-3"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-20" y="3"/>
+					<Anchor point="TOPLEFT"  x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT"  x="0" y="0"/>
 				</Anchors>
 			</Frame>
 
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" hidden="true" frameStrata="HIGH">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
 				</Anchors>
 			</EventFrame>
-
-			<Button inherits="MagicButtonTemplate" text="CLOSE">
-				<Size x="100" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
-					</OnClick>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

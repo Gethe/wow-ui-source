@@ -6,6 +6,7 @@
 		<KeyValues>
 			<KeyValue key="enableZoomAndPan" value="false" type="boolean"/>
 			<KeyValue key="excludeStagedChangesForCurrencies" value="false" type="boolean"/>
+			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
