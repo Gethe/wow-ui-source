@@ -176,7 +176,7 @@ function UnitPopupInviteButtonMixin:CanShow()
 end
 
 function UnitPopupDungeonDifficultyButtonMixin:CanShow()
-	if ( GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE or (UnitLevel("player") < 65 and GetDungeonDifficultyID() == 1 )) then
+	if ( GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE or (UnitLevel("player") < 70 and GetDungeonDifficultyID() == 1 )) then
 		return false
 	end
 	return true; 

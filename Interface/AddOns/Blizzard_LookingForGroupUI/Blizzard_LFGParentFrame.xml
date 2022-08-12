@@ -26,7 +26,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					<Anchor point="TOPRIGHT" x="-26" y="-8"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="LFG_LIST_TAB_1">
+			<Button name="$parentTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="LFG_LIST_TAB_1"> <!-- Text updated in script.-->
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="16" y="45"/> <!-- Reanchored in code. -->
 				</Anchors>
@@ -43,14 +43,18 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						LFGParentFrameTab1_OnClick();
 					</OnClick>
 					<OnEnter>
-						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFG_LIST_TAB_1, "TOGGLELFGTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFG_LIST_TAB_1, 1);
+						if (C_LFGList.HasActiveEntryInfo()) then
+							GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFG_LIST_EDIT, "TOGGLELFGTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFG_LIST_EDIT, 1);
+						else
+							GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(LFG_LIST_TAB_1, "TOGGLELFGTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LFG_LIST_TAB_1, 1);
+						end
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="LFG_LIST_TAB_2">
+			<Button name="$parentTab2" parentKey="Tab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="LFG_LIST_TAB_2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="LFGParentFrameTab1" relativePoint="RIGHT" x="-14" y="0"/> <!-- Reanchored in code. -->
 				</Anchors>

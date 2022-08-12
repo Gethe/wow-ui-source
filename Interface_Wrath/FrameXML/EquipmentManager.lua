@@ -287,7 +287,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		durability, maxDurability = GetContainerItemDurability(bag, slot);
 		
 		setTooltip = function () GameTooltip:SetBagItem(bag, slot); end;
-		-- gem1, gem2, gem3 = GetContainerItemGems(bag, slot);
+		gem1, gem2, gem3 = GetContainerItemGems(bag, slot);
 	end
 	
 	return id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3;

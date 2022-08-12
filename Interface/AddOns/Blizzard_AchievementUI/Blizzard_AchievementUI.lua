@@ -987,6 +987,7 @@ function AchievementButton_ToggleTracking (id)
 	if ( trackedAchievements[id] ) then
 		RemoveTrackedAchievement(id);
 		AchievementFrameAchievements_ForceUpdate();
+		WatchFrame_Update();
 		return;
 	end
 	
@@ -1005,6 +1006,7 @@ function AchievementButton_ToggleTracking (id)
 	
 	AddTrackedAchievement(id);
 	AchievementFrameAchievements_ForceUpdate();
+	WatchFrame_Update();
 	
 	return true;
 end

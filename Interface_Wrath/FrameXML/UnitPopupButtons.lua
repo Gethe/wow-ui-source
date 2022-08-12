@@ -204,7 +204,7 @@ function UnitPopupInviteButtonMixin:CanShow()
 end
 
 function UnitPopupDungeonDifficultyButtonMixin:CanShow()
-	if ((UnitLevel("player") < 65 and GetDungeonDifficultyID() == 1 )) then
+	if ((UnitLevel("player") < 70 and GetDungeonDifficultyID() == 1 )) then
 		return false
 	end
 	return true; 
@@ -236,4 +236,24 @@ function UnitPopupSelectRoleButtonMixin:CanShow()
 		return false; 
 	end
 	return true; 
+end
+
+function UnitPopupSelectRoleButtonMixin:GetButtons()
+	return {
+		UnitPopupSetRoleTankButton,
+		UnitPopupSetRoleHealerButton,
+		UnitPopupSetRoleDpsButton,
+	}
+end
+
+function UnitPopupSetRoleTankButton:IsEnabled()
+	return true;
+end
+
+function UnitPopupSetRoleHealerButton:IsEnabled()
+	return true;
+end
+
+function UnitPopupSetRoleDpsButton:IsEnabled()
+	return true;
 end
