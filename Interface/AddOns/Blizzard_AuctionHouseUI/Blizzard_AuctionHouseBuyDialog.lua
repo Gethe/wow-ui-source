@@ -91,13 +91,14 @@ local AUCTION_HOUSE_BUY_DIALOG_EVENTS = {
 	"COMMODITY_PURCHASE_FAILED",
 };
 
-local BuyState = {
-	WaitingForQuote = 1,
-	PriceConfirmed = 2,
-	PriceUpdated = 3,
-	PriceUnavailable = 4,
-	Purchasing = 5,
-};
+local BuyState = EnumUtil.MakeEnum(
+	"WaitingForQuote",
+	"PriceConfirmed",
+	"PriceUpdated",
+	"PriceUnavailable",
+	"Purchasing",
+	"Waiting"
+);
 
 function AuctionHouseBuyDialogMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, AUCTION_HOUSE_BUY_DIALOG_EVENTS);
@@ -111,6 +112,10 @@ function AuctionHouseBuyDialogMixin:OnHide()
 	C_AuctionHouse.CancelCommoditiesPurchase();
 
 	self:GetAuctionHouseFrame():RefreshSearchResults(AuctionHouseSearchContext.BuyCommodities, C_AuctionHouse.MakeItemKey(self.itemID));
+
+	if self.purchaseTimer then
+		self.purchaseTimer:Cancel();
+	end
 end
 
 function AuctionHouseBuyDialogMixin:OnUpdate()
@@ -163,6 +168,8 @@ function AuctionHouseBuyDialogMixin:SetState(buyState)
 	local buyNowShown = false;
 	local buyNowEnabled = false;
 	local okayShown = false;
+	local spinnerShown = false;
+	local darkOverlayShown = false;
 	local notificationText = nil;
 	local notificationFontObject = GameFontNormal;
 	local showNotificationIcon = false;
@@ -196,6 +203,11 @@ function AuctionHouseBuyDialogMixin:SetState(buyState)
 	elseif buyState == BuyState.Purchasing then
 		buyNowShown = true;
 		itemDisplayShown = true;
+	elseif buyState == BuyState.Waiting then
+		buyNowShown = true;
+		itemDisplayShown = true;
+		spinnerShown = true;
+		darkOverlayShown = true;
 	else
 		self:Cancel();
 	end
@@ -206,6 +218,9 @@ function AuctionHouseBuyDialogMixin:SetState(buyState)
 	self.CancelButton:SetShown(buyNowShown);
 	self.CancelButton:SetEnabled(buyNowEnabled);
 	self.OkayButton:SetShown(okayShown);
+	self.LoadingSpinner:SetShown(spinnerShown);
+	self.SpinnerAnim:SetPlaying(spinnerShown);
+	self.DarkOverlay:SetShown(darkOverlayShown);
 	self.Notification:SetShown(notificationText ~= nil);
 	self.Notification:SetNotificationText(notificationText or "", notificationFontObject, showNotificationIcon);
 	self.Notification:ClearAllPoints();
@@ -245,6 +260,10 @@ end
 function AuctionHouseBuyDialogMixin:BuyNow()
 	self:SetState(BuyState.Purchasing);
 	C_AuctionHouse.ConfirmCommoditiesPurchase(self.itemID, self.quantity);
+
+	self.purchaseTimer = C_Timer.NewTimer(2, function()
+		self:SetState(BuyState.Waiting);
+	end);
 end
 
 function AuctionHouseBuyDialogMixin:Cancel()

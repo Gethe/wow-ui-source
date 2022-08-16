@@ -70,18 +70,11 @@
 
 	<Frame name="AuctionHouseTableCellFavoriteTemplate" mixin="AuctionHouseTableCellFavoriteMixin" virtual="true">
 		<Frames>
-			<Button parentKey="FavoriteButton" mixin="AuctionHouseTableCellFavoriteButtonMixin">
-				<Size x="14" y="14"/>
+			<Button parentKey="FavoriteButton" mixin="AuctionHouseTableCellFavoriteButtonMixin" inherits="AuctionHouseFavoriteButtonBaseTemplate">
+				<Size x="13" y="12"/>
 				<Anchors>
-					<Anchor point="CENTER"/>
+					<Anchor point="CENTER" relativePoint="CENTER" y="1"/>
 				</Anchors>
-				<Scripts>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-				<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-icon-favorite"/>
-				<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-icon-favorite-off" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>

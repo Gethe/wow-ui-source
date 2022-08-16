@@ -293,7 +293,7 @@ function GlueParent_EnsureValidScreen()
 	if ( not GlueParent_IsScreenValid(currentScreen) ) then
 		local bestScreen = GlueParent_GetBestScreen();
 
-		LogAuroraClient("ae", "Screen invalid. Changing",
+		LogAuroraClient("ae", "Screen invalid. Changing ",
 			"changingFrom", currentScreen,
 			"changingTo", bestScreen);
 
@@ -302,7 +302,7 @@ function GlueParent_EnsureValidScreen()
 end
 
 local function GlueParent_ChangeScreen(screenInfo, screenTable)
-	LogAuroraClient("ae", "Switching to screen",
+	LogAuroraClient("ae", "Switching to screen ",
 			"screen", screenInfo.frame);
 
 	--Hide all other screens

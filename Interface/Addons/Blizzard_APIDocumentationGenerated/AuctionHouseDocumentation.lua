@@ -1094,6 +1094,24 @@ local AuctionHouse =
 			LiteralName = "AUCTION_HOUSE_POST_WARNING",
 		},
 		{
+			Name = "AuctionHousePurchaseCompleted",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_PURCHASE_COMPLETED",
+			Payload =
+			{
+				{ Name = "auctionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AuctionHousePurchaseDeliveryDelayUpdate",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_PURCHASE_DELIVERY_DELAY_UPDATE",
+			Payload =
+			{
+				{ Name = "purchasedItemDeliveryDelay", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "AuctionHouseScriptDeprecated",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_SCRIPT_DEPRECATED",
@@ -1130,6 +1148,7 @@ local AuctionHouse =
 			{
 				{ Name = "notification", Type = "AuctionHouseNotification", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "auctionID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -1479,6 +1498,8 @@ local AuctionHouse =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "battlePetSpeciesID", Type = "number", Nilable = false },
 				{ Name = "itemName", Type = "string", Nilable = false },
 				{ Name = "battlePetLink", Type = "string", Nilable = true },
 				{ Name = "appearanceLink", Type = "string", Nilable = true },

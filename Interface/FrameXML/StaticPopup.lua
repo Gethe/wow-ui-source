@@ -4558,6 +4558,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 
 	-- Set the text of the dialog
 	local text = _G[dialog:GetName().."Text"];
+	text:Show();
 	if ( (which == "DEATH") or
 	     (which == "CAMP") or
 		 (which == "QUIT") or
@@ -4859,6 +4860,9 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		alertIcon:Hide();
 	end
 
+	dialog.LoadingSpinner:Hide();
+	dialog.SpinnerAnim:Stop();
+
 	if ( info.StartDelay ) then
 		dialog.startDelay = info.StartDelay(dialog);
 		if (not dialog.startDelay or dialog.startDelay <= 0) then
@@ -4882,6 +4886,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	else
 		AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
 	end
+
+	dialog.DarkOverlay:Hide();
 
 	-- Finally size and show the dialog
 	StaticPopup_SetUpPosition(dialog);

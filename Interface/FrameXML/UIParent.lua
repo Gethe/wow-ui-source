@@ -755,7 +755,7 @@ function FlightMap_LoadUI()
 end
 
 function APIDocumentation_LoadUI()
-	UIParentLoadAddOn("Blizzard_APIDocumentation");
+	UIParentLoadAddOn("Blizzard_APIDocumentationGenerated");
 end
 
 function CovenantSanctum_LoadUI()
@@ -4463,7 +4463,7 @@ function ToggleGameMenu()
 		ChallengesKeystoneFrame:Hide();
 	elseif ( CanAutoSetGamePadCursorControl(false) and (not IsModifierKeyDown()) ) then
 		SetGamePadCursorControl(false);
-	elseif(ReportFrame and ReportFrame:IsShown()) then 
+	elseif(ReportFrame and ReportFrame:IsShown()) then
 		ReportFrame:Hide();
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);

@@ -220,7 +220,9 @@ GlueDialogTypes["CHARACTER_CREATE_VAS_ERROR"] = {
 	button1 = OKAY,
 	button2 = nil,
 	OnAccept = function ()
-		CharacterCreateFrame:Exit();
+		if GlueDialog.data then
+			CharacterCreateFrame:Exit();
+		end
 	end,
 }
 

@@ -261,6 +261,15 @@ function WoWTokenSellFrameMixin:Refresh()
 	end
 end
 
+WoWTokenDisplayMixin = CreateFromMixins(AuctionHouseItemDisplayMixin);
+
+function WoWTokenDisplayMixin:OnLoad()
+	AuctionHouseItemDisplayMixin.OnLoad(self);
+
+	--Hides the FavoriteButton for this frame since the WoW token can't be favorited
+	self.FavoriteButton:Hide();
+end
+
 local WowTokenUpdateInfo = {};
 
 function WowTokenUpdateInfo.AreWowTokenResultsVisible()

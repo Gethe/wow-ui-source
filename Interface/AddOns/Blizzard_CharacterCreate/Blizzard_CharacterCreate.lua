@@ -254,10 +254,22 @@ function CharacterCreateMixin:BeginVASTransaction()
 	end
 end
 
+function CharacterCreateMixin:IsVASErrorUserFixable(errorID)
+	return errorID == Enum.VasError.NameNotAvailable or errorID == Enum.VasError.DuplicateCharacterName;
+end
+
 function CharacterCreateMixin:OnStoreVASPurchaseError()
 	if self.vasType then
 		local displayMsg = VASErrorData_GetCombinedMessage(self.vasInfo.selectedCharacterGUID);
-		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg);
+		local errors = C_StoreSecure.GetVASErrors();
+		local exitAfterError = false;
+		for index, errorID in ipairs(errors) do
+			if not self:IsVASErrorUserFixable(errorID) then
+				exitAfterError = true;
+				break;
+			end
+		end
+		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, exitAfterError);
 	end
 end
 
@@ -268,7 +280,8 @@ function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchase
 			CharacterSelect.selectGuid = self.vasInfo.selectedCharacterGUID;
 			CharacterCreateFrame:Exit();
 		else
-			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg);
+			local exitAfterError = not self:IsVASErrorUserFixable(vasPurchaseResult);
+			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, exitAfterError);
 		end
 	end
 end
@@ -1192,13 +1205,14 @@ end
 
 function CharacterCreateRaceAndClassMixin:OnShow()
 	local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
+	local isTrialRestricted = C_CharacterCreation.IsTrialAccountRestricted();
 	local useNewPlayerMode = C_CharacterCreation.UseBeginnerMode();
 	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode);
 	self.HordeAlliedRaces:SetShown(not useNewPlayerMode);
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
-	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not CharacterCreateFrame:HasService() and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
+	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not isTrialRestricted and not CharacterCreateFrame:HasService() and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()

@@ -910,9 +910,18 @@ function UnitPopupReportGroupMemberButtonMixin:CanShow()
 	return UnitPopupReportButtonMixin.CanShow(self);
 end 
 
+UnitPopupReportPvpScoreboardButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
+function UnitPopupReportPvpScoreboardButtonMixin:GetText()
+	return REPORT_PVP_SCOREBOARD;
+end 
+
+function UnitPopupReportPvpScoreboardButtonMixin:GetReportType()
+	return Enum.ReportType.PvPScoreboard;
+end
+
 UnitPopupReportInWorldButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
 function UnitPopupReportInWorldButtonMixin:GetText()
-	return REPORT_IN_WORLD_PLAYER; 
+	return REPORT_IN_WORLD_PLAYER;
 end 
 
 function UnitPopupReportInWorldButtonMixin:GetReportType()

@@ -92,7 +92,7 @@ function ScrollControllerMixin:SetScrollPercentage(scrollPercentage)
 end
 
 function ScrollControllerMixin:CanInterpolateScroll()
-	return self.canInterpolateScroll or false;
+	return self.canInterpolateScroll;
 end
 
 function ScrollControllerMixin:SetInterpolateScroll(canInterpolateScroll)

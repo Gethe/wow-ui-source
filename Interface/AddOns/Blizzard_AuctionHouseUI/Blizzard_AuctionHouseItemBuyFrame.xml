@@ -14,7 +14,7 @@
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="ItemDisplay" inherits="AuctionHouseItemDisplayTemplate">
+			<Button parentKey="ItemDisplay" inherits="AuctionHouseItemDisplayTemplate" mixin="AuctionHouseItemBuyItemDisplayMixin">
 				<Size x="622" y="86"/>
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-noncommodities-header" type="string"/>
@@ -26,6 +26,7 @@
 					<Anchor point="LEFT"/>
 				</Anchors>
 			</Button>
+			
 			<Frame parentKey="BuyoutFrame" inherits="AuctionHouseBuyoutFrameTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT"/>
