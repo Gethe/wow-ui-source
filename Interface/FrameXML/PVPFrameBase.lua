@@ -14,6 +14,7 @@ function PVPFrame_OnLoad(self)
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
 	self:RegisterEvent("BATTLEFIELD_AUTO_QUEUE");
 	self:RegisterEvent("BATTLEFIELD_AUTO_QUEUE_EJECT");
+	self:RegisterEvent("WORLD_PVP_QUEUE");
 
 	if ( not GetCurrentArenaSeasonUsesTeams() ) then
 		RequestRatedInfo();
@@ -68,6 +69,8 @@ function PVPFrame_OnEvent(self, event, ...)
 		StaticPopup_Show("ON_BATTLEFIELD_AUTO_QUEUE");
 	elseif ( event == "BATTLEFIELD_AUTO_QUEUE_EJECT" ) then
 		StaticPopup_Show("ON_BATTLEFIELD_AUTO_QUEUE_EJECT");
+	elseif ( event == "WORLD_PVP_QUEUE" ) then
+		StaticPopup_Show("ON_WORLD_PVP_QUEUE");
 	end
 end
 

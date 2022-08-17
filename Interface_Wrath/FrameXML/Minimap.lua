@@ -455,7 +455,6 @@ end
 function MiniMapBattlefieldDropDown_Initialize()
 	local info;
 	local numShown = 0;
-	local shownHearthAndRes;
 
 	for i=1, MAX_BATTLEFIELD_QUEUES do
 		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, isRankedArena, _, _, _, _, _, asGroup = GetBattlefieldStatus(i);
@@ -485,17 +484,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 			end
 			info.isTitle = 1;
 			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);	
-			
-			if ( CanHearthAndResurrectFromArea() and not shownHearthAndRes and GetRealZoneText() == mapName ) then
-				info = UIDropDownMenu_CreateInfo();
-				info.text = format(LEAVE_ZONE, GetRealZoneText());			
-				
-				info.func = HearthAndResurrectFromArea;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-				shownHearthAndRes = true;
-			end
+			UIDropDownMenu_AddButton(info);
 
 			if ( status == "queued" ) then
 				-- FIXME: r855580
@@ -557,85 +546,6 @@ function MiniMapBattlefieldDropDown_Initialize()
 			end		
 	end
 
-	for i=1, MAX_WORLD_PVP_QUEUES do
-		status, mapName, queueID = GetWorldPVPQueueStatus(i);
-
-		-- Inserts a spacer if it's not the first option... to make it look nice.
-		if ( status ~= "none" ) then
-			numShown = numShown + 1;
-			if ( numShown > 1 ) then
-				info = UIDropDownMenu_CreateInfo();
-				info.isTitle = 1;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
-		
-		if ( status == "queued" or status == "confirm" ) then
-			numQueued = numQueued + 1;
-			-- Add a spacer if there were dropdown items before this
-			
-			info = UIDropDownMenu_CreateInfo();
-			info.text = mapName;
-			info.isTitle = 1;
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);			
-			
-			if ( CanHearthAndResurrectFromArea() and not shownHearthAndRes and GetRealZoneText() == mapName ) then
-				info = UIDropDownMenu_CreateInfo();
-				info.text = format(LEAVE_ZONE, GetRealZoneText());			
-				
-				info.func = HearthAndResurrectFromArea;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-				shownHearthAndRes = true;
-			end
-			
-			if ( status == "queued" ) then
-			
-				info = UIDropDownMenu_CreateInfo();
-				info.text = LEAVE_QUEUE;
-				info.func = function (self, ...) BattlefieldMgrExitRequest(...) end;
-				info.arg1 = queueID;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-				
-			elseif ( status == "confirm" ) then
-			
-				info = UIDropDownMenu_CreateInfo();
-				info.text = ENTER_BATTLE;
-				info.func = function (self, ...) BattlefieldMgrEntryInviteResponse(...) end;
-				info.arg1 = queueID;
-				info.arg2 = 1;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-				
-				info = UIDropDownMenu_CreateInfo();
-				info.text = LEAVE_QUEUE;
-				info.func = function (self, ...) BattlefieldMgrEntryInviteResponse(...) end;
-				info.arg1 = i;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
-	end
-	
-	if ( CanHearthAndResurrectFromArea() and not shownHearthAndRes ) then
-		numShown = numShown + 1;
-		info = UIDropDownMenu_CreateInfo();
-		info.text = GetRealZoneText();
-		info.isTitle = 1;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-
-		info = UIDropDownMenu_CreateInfo();
-		info.text = format(LEAVE_ZONE, GetRealZoneText());			
-		
-		info.func = HearthAndResurrectFromArea;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
-	end
-
 end
 
 function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
@@ -660,22 +570,9 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 		CURRENT_BATTLEFIELD_QUEUES = {};
 	end
 
-	if ( CanHearthAndResurrectFromArea() ) then
-		if ( not MiniMapBattlefieldFrame.inWorldPVPArea ) then
-			MiniMapBattlefieldFrame.inWorldPVPArea = true;
-			UIFrameFadeIn(MiniMapBattlefieldFrame, BATTLEFIELD_FRAME_FADE_TIME);
-			BattlegroundShineFadeIn();
-		end
-	else
-		MiniMapBattlefieldFrame.inWorldPVPArea = false;
-	end
-
 	for i=1, MAX_BATTLEFIELD_QUEUES do
 		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, isRankedArena, _, _, bgtype = GetBattlefieldStatus(i);
 		if ( mapName ) then
-			if (  instanceID ~= 0 ) then
-				mapName = mapName.." "..instanceID;
-			end
 			if ( teamSize ~= 0 ) then
 				if ( isRankedArena ) then
 					mapName = ARENA_RATED_MATCH.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
@@ -744,6 +641,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 			elseif ( status == "error" ) then
 				-- Should never happen haha
 			end
+
 			if ( tooltip ) then
 				if ( MiniMapBattlefieldFrame.tooltip ) then
 					MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..tooltip;
@@ -753,34 +651,9 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 			end
 		end
 	end
-
-	for i=1, MAX_WORLD_PVP_QUEUES do
-		status, mapName, queueID = GetWorldPVPQueueStatus(i);
-		if ( status ~= "none" ) then
-			numberQueues = numberQueues + 1;
-		end
-		if ( status == "queued" or status == "confirm" ) then
-			if ( status == "queued" ) then
-				tooltip = format(BATTLEFIELD_IN_QUEUE_SIMPLE, mapName);
-			elseif ( status == "confirm" ) then
-				tooltip = format(BATTLEFIELD_QUEUE_CONFIRM_SIMPLE, mapName);
-			end
-			
-			if ( MiniMapBattlefieldFrame.tooltip ) then
-				MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n\n"..tooltip;
-			else
-				MiniMapBattlefieldFrame.tooltip = tooltip;
-			end
-		end
-	end
-
-	-- See if should add right click message
-	if ( MiniMapBattlefieldFrame.tooltip and showRightClickText ) then
-		MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n"..RIGHT_CLICK_MESSAGE;
-	end
 	
 	if ( not tooltipOnly ) then
-		if ( numberQueues == 0 and (not CanHearthAndResurrectFromArea()) ) then
+		if ( numberQueues == 0 ) then
 			-- Clear everything out
 			MiniMapBattlefieldFrame:Hide();
 		else

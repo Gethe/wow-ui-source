@@ -15,7 +15,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<FontString parentKey="RolesText" inherits="GameFontHighlightSmall" justifyH="CENTER" text="LFG_TOOLTIP_ROLES">
 							<Size x="0" y="14"/>
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-70" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-90" y="0"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="Role1" parentArray="Roles">
@@ -124,13 +124,18 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<FontString parentKey="Level" inherits="GameFontDisableSmallLeft" maxLines="1">
 					<Size x="0" y="14"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMRIGHT" x="2" y="-1"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMRIGHT" x="4" y="-1"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="ClassIcon" atlas="groupfinder-icon-class-warrior" hidden="true">
 					<Size x="18" y="18"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Level" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Level" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NewPlayerFriendlyIcon" atlas="newplayerchat-chaticon-newcomer" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ClassIcon" relativePoint="RIGHT" x="2" y="0"/> <!-- Reanchored in code. -->
 					</Anchors>
 				</Texture>
 				<FontString parentKey="ActivityName" inherits="GameFontDisableSmallLeft">
@@ -226,6 +231,16 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<FontString parentKey="Delisted" inherits="GameFontRed" justifyH="LEFT" text="LFG_LIST_ENTRY_DELISTED">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="11" y="-10"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="NewPlayerFriendlyIcon" atlas="newplayerchat-chaticon-newcomer" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="11" y="-10"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="NewPlayerFriendlyText" inherits="GameFontGreen" justifyH="LEFT" text="LFG_LIST_NEW_PLAYER_FRIENDLY_HEADER">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NewPlayerFriendlyIcon" relativePoint="TOPRIGHT" x="1" y="-2"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="LeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon">

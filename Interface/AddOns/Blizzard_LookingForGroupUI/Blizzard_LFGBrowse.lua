@@ -257,12 +257,13 @@ function LFGBrowseSearchEntry_Update(self)
 			self.ClassIcon:Hide();
 		end
 		self.Name:SetPoint("TOPLEFT", self.PartyIcon, "TOPLEFT", 1, -2);
+		self.NewPlayerFriendlyIcon:SetPoint("LEFT", self.ClassIcon, "RIGHT", 2, 0);
 	else
 		self.PartyIcon:Show();
-		self.ClassIcon:Hide();
 		self.Level:Hide();
 		self.ClassIcon:Hide();
 		self.Name:SetPoint("TOPLEFT", self.PartyIcon, "TOPRIGHT", 0, -2);
+		self.NewPlayerFriendlyIcon:SetPoint("LEFT", self.Name, "RIGHT", 2, 0);
 	end
 
 	self.isDelisted = searchResultInfo.isDelisted;
@@ -300,7 +301,7 @@ function LFGBrowseSearchEntry_Update(self)
 		activityColor = LFGBROWSE_DELISTED_FONT_COLOR;
 	elseif ( searchResultInfo.hasSelf ) then
 		activityColor = LFGBROWSE_SELF_FONT_COLOR;
-	elseif (hasMatchingActivity) then
+	elseif ( hasMatchingActivity ) then
 		activityColor = LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR;
 	end
 
@@ -314,7 +315,13 @@ function LFGBrowseSearchEntry_Update(self)
 	self.ClassIcon:SetDesaturated(searchResultInfo.isDelisted);
 	self.ActivityName:SetText(activityText);
 	self.ActivityName:SetTextColor(activityColor.r, activityColor.g, activityColor.b);
-	self.ActivityName:SetWidth(176);
+
+	if ( searchResultInfo.newPlayerFriendly ) then
+		self.NewPlayerFriendlyIcon:Show();
+	else
+		self.NewPlayerFriendlyIcon:Hide();
+	end
+	self.NewPlayerFriendlyIcon:SetDesaturated(searchResultInfo.isDelisted);
 
 	local displayData = C_LFGList.GetSearchResultMemberCounts(self.resultID);
 	local displayType, maxNumPlayers = LFGBrowseUtil_GetBestDisplayTypeForActivityIDs(searchResultInfo.activityIDs);
@@ -395,13 +402,27 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	-- Delisted Alert
 	if (searchResultInfo.isDelisted) then
 		self.Delisted:Show();
-		self.LeaderIcon:SetPoint("TOPLEFT", self.Delisted, "BOTTOMLEFT", 0, -8);
 	else
 		self.Delisted:Hide();
-		self.LeaderIcon:SetPoint("TOPLEFT", 11, -10);
+	end
+
+	-- New Player Friendly
+	if (searchResultInfo.newPlayerFriendly and not self.Delisted:IsShown()) then
+		self.NewPlayerFriendlyIcon:Show();
+		self.NewPlayerFriendlyText:Show();
+	else
+		self.NewPlayerFriendlyIcon:Hide();
+		self.NewPlayerFriendlyText:Hide();
 	end
 
 	-- Leader
+	if (self.NewPlayerFriendlyIcon:IsShown()) then
+		self.LeaderIcon:SetPoint("TOPLEFT", self.NewPlayerFriendlyIcon, "BOTTOMLEFT", 0, -5);
+	elseif (self.Delisted:IsShown()) then
+		self.LeaderIcon:SetPoint("TOPLEFT", self.Delisted, "BOTTOMLEFT", 0, -8);
+	else
+		self.LeaderIcon:SetPoint("TOPLEFT", 11, -10);
+	end
 	local lastMemberFrame = self.Leader;
 	local maxNameWidth = 0;
 	if (numMembers > 1) then
@@ -588,6 +609,10 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	local contentHeight = 40;
 	if ( self.Delisted:IsShown() ) then
 		contentHeight = contentHeight + self.Delisted:GetHeight();
+		contentHeight = contentHeight + 8;
+	end
+	if ( self.NewPlayerFriendlyText:IsShown() ) then
+		contentHeight = contentHeight + self.NewPlayerFriendlyText:GetHeight();
 		contentHeight = contentHeight + 8;
 	end
 	contentHeight = contentHeight + self.Leader:GetHeight();

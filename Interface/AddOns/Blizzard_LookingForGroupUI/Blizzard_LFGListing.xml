@@ -22,6 +22,12 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.roleID], nil, nil, nil, nil, 1);
+				
+				local recommendedTank, recommendedHealer, recommendedDPS = UnitGetAvailableRoles("player");
+				if ((self.roleID == "TANK" and not recommendedTank) or (self.roleID == "HEALER" and not recommendedHealer) or (self.roleID == "DAMAGER" and not recommendedDPS)) then
+					GameTooltip:AddLine(CLASS_ROLE_NOT_RECOMMENDED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+				end
+
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
@@ -282,9 +288,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Scripts>
 			</Button>
 			<Frame name="$parentSoloRoleButtons" parentKey="SoloRoleButtons">
-				<Size x="230" y="48"/>
+				<Size x="194" y="48"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="82" y="-60"/>
+					<Anchor point="TOPLEFT" x="67" y="-60"/>
 				</Anchors>
 				<Frames>
 					<Button name="$parentRoleButtonTank" parentKey="Tank" parentArray="RoleButtons" inherits="LFGListingRoleButtonTemplate">
@@ -302,7 +308,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Button>
 					<Button name="$parentRoleButtonHealer" parentKey="Healer" parentArray="RoleButtons" inherits="LFGListingRoleButtonTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="45" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="25" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -315,7 +321,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Button>
 					<Button name="$parentRoleButtonDPS" parentKey="DPS" parentArray="RoleButtons" inherits="LFGListingRoleButtonTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="43" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="25" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -329,14 +335,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Frames>
 			</Frame>
 			<Frame name="$parentGroupRoleButtons" parentKey="GroupRoleButtons" hidden="true">
-				<Size x="230" y="48"/>
+				<Size x="192" y="48"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="82" y="-57"/>
+					<Anchor point="TOPLEFT" x="67" y="-60"/>
 				</Anchors>
 				<Frames>
 					<Button name="$parentRole" parentKey="RoleIcon" inherits="LFGListingRoleTemplate">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-16" y="-2"/>
+							<Anchor point="TOPRIGHT" x="0" y="-2"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -346,9 +352,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Scripts>
 					</Button>
 					<Button name="$parentInitiateRolePoll" parentkey="RolePollButton" inherits="UIPanelButtonTemplate" text="ROLE_POLL" motionScriptsWhileDisabled="true">
-						<Size x="130" y="22"/>
+						<Size x="120" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="2"/>
+							<Anchor point="TOPLEFT" x="6" y="2"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="LFGListingRolePollButton_OnLoad"/>
@@ -372,7 +378,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								UIDropDownMenu_SetWidth(self, 112);
+								UIDropDownMenu_SetWidth(self, 102);
 								UIDropDownMenu_Initialize(self, LFGListingRoleDropDown_Initialize);
 								UIDropDownMenu_SetAnchor(self, -15, 10, "TOPRIGHT", self, "BOTTOMRIGHT");
 							</OnLoad>
@@ -380,6 +386,68 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 					</Button>
 				</Frames>
 			</Frame>
+			<Button name="$parentNewPlayerFriendlyButton" parentKey="NewPlayerFriendlyButton" motionScriptsWhileDisabled="true">
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-47" y="-60"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
+							<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture atlas="newplayerchat-chaticon-newcomer">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton parentKey="CheckButton">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnShow function="LFGListingNewPlayerFriendlyButtonCheckButton_OnShow"/>
+							<OnClick function="LFGListingNewPlayerFriendlyButtonCheckButton_OnClick"/>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("GUIDE"));
+					</OnLoad>
+					<OnEnter>
+						if ( self.CheckButton:IsEnabled() ) then
+							self.CheckButton:LockHighlight();
+						end
+
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(LFG_LIST_NEW_PLAYER_FRIENDLY_TOOLTIP, nil, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnClick>
+						if ( self.CheckButton:IsEnabled() ) then
+							self.CheckButton:Click();
+						end
+					</OnClick>
+					<OnLeave>
+						self.CheckButton:UnlockHighlight();
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
+			</Button>
 			<Frame name="$parentCategoryView" parentKey="CategoryView">
 				<Size x="324" y="282"/>
 				<Anchors>

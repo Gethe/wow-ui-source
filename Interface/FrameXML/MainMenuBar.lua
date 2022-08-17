@@ -122,7 +122,8 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	if ( not newLevel ) then
 		newLevel = UnitLevel("player");
 	end
-	local showXP = newLevel < GetMaxPlayerLevel();
+	--local showXP = not (newLevel >= GetMaxPlayerLevel() or IsXPUserDisabled());
+	local showXP = newLevel < GetMaxPlayerLevel() and not IsXPUserDisabled();
 	local showRep = name;
 	local numBarsShowing = 0;
 	--******************* EXPERIENCE **************************************

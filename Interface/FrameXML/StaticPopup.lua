@@ -4384,16 +4384,16 @@ StaticPopupDialogs["ON_BATTLEFIELD_AUTO_QUEUE"] = {
 	button3 = CANCEL,
 	selectCallbackByIndex = true,
 	OnShow = function(self)
-		self.text:SetText(WORLD_PVP_INVITED_WARMUP:format(GetBattlefieldAutoQueueMapName()));
+		self.text:SetText(WORLD_PVP_INVITED_WARMUP:format(GetWorldPVPQueueMapName(true)));
 		if ( not IsInGroup() ) then
 			self.button2:Disable();
 		end
 	end,
 	OnButton1 = function(self)
-		JoinBattlefieldAutoQueue(0);
+		JoinWorldPVPQueue(true, false);
 	end,
 	OnButton2 = function(self, data, reason)
-		JoinBattlefieldAutoQueue(1);
+		JoinWorldPVPQueue(true, true);
 	end,
 	OnButton3 = function()
 
@@ -4408,12 +4408,36 @@ StaticPopupDialogs["ON_BATTLEFIELD_AUTO_QUEUE"] = {
 StaticPopupDialogs["ON_BATTLEFIELD_AUTO_QUEUE_EJECT"] = {
 	button1 = OKAY,
 	OnShow = function(self)
-		self.text:SetText(WORLD_PVP_AUTO_QUEUE_EJECT:format(GetBattlefieldAutoQueueMapName()));
+		self.text:SetText(WORLD_PVP_AUTO_QUEUE_EJECT:format(GetWorldPVPQueueMapName(true)));
 	end,
 	OnButton1 = function()
 	end,
 	timeout = 15,
 	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = false,
+};
+
+StaticPopupDialogs["ON_WORLD_PVP_QUEUE"] = {
+	button1 = JOIN,
+	button2 = BATTLEFIELD_GROUP_JOIN,
+	button3 = CANCEL,
+	selectCallbackByIndex = true,
+	OnShow = function(self)
+		self.text:SetText(WORLD_PVP_INVITED_WARMUP:format(GetWorldPVPQueueMapName(false)));
+		if ( not IsInGroup() ) then
+			self.button2:Disable();
+		end
+	end,
+	OnButton1 = function(self)
+		JoinWorldPVPQueue(false, false);
+	end,
+	OnButton2 = function(self, data, reason)
+		JoinWorldPVPQueue(false, true);
+	end,
+	OnButton3 = function()
+
+	end,
 	showAlert = 1,
 	hideOnEscape = false,
 };
@@ -4651,7 +4675,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
 		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") or
 		 (which == "ON_BATTLEFIELD_AUTO_QUEUE") or
-		 (which == "ON_BATTLEFIELD_AUTO_QUEUE_EJECT") ) then
+		 (which == "ON_BATTLEFIELD_AUTO_QUEUE_EJECT") or
+		 (which == "ON_WORLD_PVP_QUEUE") ) then
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;

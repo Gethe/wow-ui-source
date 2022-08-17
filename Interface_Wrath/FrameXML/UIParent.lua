@@ -320,6 +320,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GUILDBANKFRAME_OPENED");
 	self:RegisterEvent("GUILDBANKFRAME_CLOSED");
 
+	-- Events for Glyphs!
+	self:RegisterEvent("USE_GLYPH");
+
 	--Events for GMChatUI
 	self:RegisterEvent("CHAT_MSG_WHISPER");
 
@@ -498,7 +501,7 @@ function Store_LoadUI()
 end
 
 function APIDocumentation_LoadUI()
-	UIParentLoadAddOn("Blizzard_APIDocumentation");
+	UIParentLoadAddOn("Blizzard_APIDocumentationGenerated");
 end
 
 --[[
@@ -1151,10 +1154,10 @@ function UIParent_OnEvent(self, event, ...)
 			MoneyFrame_Update(dialog:GetName().."MoneyFrame", arg1);
 			-- open the talent UI to the player's active talent group...just so the player knows
 			-- exactly which talent spec he is wiping
---			TalentFrame_LoadUI();
---			if ( PlayerTalentFrame_Open ) then
---				PlayerTalentFrame_Open(GetActiveSpecGroup());
---			end
+			TalentFrame_LoadUI();
+			if ( PlayerTalentFrame_Open ) then
+				PlayerTalentFrame_Open(false, GetActiveTalentGroup());
+			end
 		end
 	elseif ( event == "CONFIRM_BARBERS_CHOICE" ) then
 		HideUIPanel(GossipFrame);
@@ -1315,6 +1318,11 @@ function UIParent_OnEvent(self, event, ...)
 		if ( GuildBankFrame ) then
 			HideUIPanel(GuildBankFrame);
 		end
+
+	-- Events for Glyphs
+	elseif ( event == "USE_GLYPH" ) then
+		OpenGlyphFrame();
+		return;
 
 	-- Display instance reset info
 	elseif ( event == "RAID_INSTANCE_WELCOME" ) then

@@ -423,6 +423,14 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame()
         titleBox:Hide()
         PTR_IssueReporter.StandaloneSurvey = titleBox
     end
+
+    if PTR_IssueReporter.InBarbershop then
+        PTR_IssueReporter.StandaloneSurvey:SetParent(CharCustomizeFrame)
+        PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(CharCustomizeFrame)
+	else
+        PTR_IssueReporter.StandaloneSurvey:SetParent(GetAppropriateTopLevelParent())
+        PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(GetAppropriateTopLevelParent())
+	end      
     
     return PTR_IssueReporter.StandaloneSurvey
 end

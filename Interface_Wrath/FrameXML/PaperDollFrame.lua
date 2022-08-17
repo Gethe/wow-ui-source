@@ -32,6 +32,8 @@ ARMOR_PER_AGILITY = 2;
 MANA_PER_INTELLECT = 15;
 MANA_REGEN_PER_SPIRIT = 0.2;
 DODGE_PARRY_BLOCK_PERCENT_PER_DEFENSE = 0.04;
+RESILIENCE_CRIT_CHANCE_TO_DAMAGE_REDUCTION_MULTIPLIER = 2.2;
+RESILIENCE_CRIT_CHANCE_TO_CONSTANT_DAMAGE_REDUCTION_MULTIPLIER = 2.0;
 BASE_MOVEMENT_SPEED = 7;
 
 --Pet scaling:
@@ -144,6 +146,7 @@ function PaperDollFrame_OnLoad(self)
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
+	self:RegisterEvent("UNIT_POWER_UPDATE");
 end
 
 function PaperDollFrame_OnShow(self)
@@ -237,7 +240,8 @@ function PaperDollFrame_OnEvent(self, event, ...)
 				event == "UNIT_ATTACK_POWER" or
 				event == "UNIT_RANGED_ATTACK_POWER" or
 				event == "SKILL_LINES_CHANGED" or
-				event == "COMBAT_RATING_UPDATE") then
+				event == "COMBAT_RATING_UPDATE" or
+				event == "UNIT_POWER_UPDATE") then
 			self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 		end
 	end
@@ -738,10 +742,11 @@ end
 function PaperDollFrame_SetResilience(statFrame)
 	local resilience = GetCombatRating(CR_RESILIENCE_CRIT_TAKEN);
 	local bonus = GetCombatRatingBonus(CR_RESILIENCE_CRIT_TAKEN);
+	local maxBonus = GetMaxCombatRatingBonus(CR_RESILIENCE_CRIT_TAKEN);
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_RESILIENCE, resilience);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..STAT_RESILIENCE.." "..resilience..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, bonus, min(bonus * 2, 25.00), bonus);
+	statFrame.tooltip2 = format(RESILIENCE_TOOLTIP, bonus, min(bonus * RESILIENCE_CRIT_CHANCE_TO_DAMAGE_REDUCTION_MULTIPLIER, maxBonus), bonus * RESILIENCE_CRIT_CHANCE_TO_CONSTANT_DAMAGE_REDUCTION_MULTIPLIER);
 end
 
 function PaperDollFrame_SetDamage(statFrame, unit)

@@ -154,16 +154,7 @@ end
 function SetCharacterRace(id)
 	CharacterCreate.selectedRace = id;
 
-	for i=1, CharacterCreate.numRaces, 1 do
-		local button = _G["CharacterCreateRaceButton"..i];
-		if ( button.raceID == id ) then
-			_G["CharacterCreateRaceButton"..i.."Text"]:SetText(button.tooltip);
-			button:SetChecked(1);
-		else
-			_G["CharacterCreateRaceButton"..i.."Text"]:SetText("");
-			button:SetChecked(nil);
-		end
-	end
+	UpdateCharacterRaceLabelText();
 
 	--twain SetSelectedRace(id);
 	local name, faction = C_CharacterCreation.GetFactionForRace(CharacterCreate.selectedRace);
@@ -227,6 +218,19 @@ function SetCharacterRace(id)
 	CharacterCreate_UpdateCustomizationOptions();
 end
 
+function UpdateCharacterRaceLabelText()
+	for i=1, CharacterCreate.numRaces, 1 do
+		local button = _G["CharacterCreateRaceButton"..i];
+		if ( button.raceID == CharacterCreate.selectedRace ) then
+			_G["CharacterCreateRaceButton"..i.."Text"]:SetText(button.tooltip);
+			button:SetChecked(1);
+		else
+			_G["CharacterCreateRaceButton"..i.."Text"]:SetText("");
+			button:SetChecked(nil);
+		end
+	end
+end
+
 function SetDefaultClass()
 	local class = GetDefaultClass();
 	SetCharacterClass(class);
@@ -285,6 +289,9 @@ function SetCharacterGender(sex)
 		CharacterCreateGenderButtonMale:SetChecked(nil);
 		CharacterCreateGenderButtonFemale:SetChecked(1);
 	end
+	if (SetCharacterGenderAppend) then
+		SetCharacterGenderAppend(sex);
+	end
 	
 	--twain SetSelectedSex(id);
 	-- Update race images to reflect gender
@@ -300,6 +307,13 @@ function SetCharacterGender(sex)
 	fileString = strupper(fileString);
 	local coords = RACE_ICON_TCOORDS[fileString.."_"..gender];
 	CharacterCreateRaceIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+	UpdateCharacterRaceLabelText();
+	-- Update class labels to reflect gender change
+	-- Set Class
+	local classData = C_CharacterCreation.GetSelectedClass();
+	CharacterCreateClassLabel:SetText(classData.name);
+	CharacterCreateClassName:SetText(classData.name);
+	CharacterCreateEnumerateClasses(); -- Update class tooltips.
 end
 
 function CharacterCreate_UpdateFacialHairCustomization()

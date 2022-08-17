@@ -143,6 +143,7 @@ function LFGListingMixin:UpdateFrameView()
 	-- Buttons.
 	self:UpdatePostButtonEnableState();
 	self:UpdateBackButtonEnableState();
+	self:UpdateNewPlayerFriendlyButtonEnableState();
 end
 
 function LFGListingMixin:ClearUI()
@@ -168,6 +169,8 @@ function LFGListingMixin:LoadActiveEntry()
 		local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityIDs[1]);
 		self:SetCategorySelection(activityInfo.categoryID); -- This will call UpdateActivities.
 		C_LFGList.CopyActiveEntryInfoToCreationFields();
+		self.NewPlayerFriendlyButton.CheckButton:SetChecked(activeEntryInfo.newPlayerFriendly);
+
 		self:SetDirty(false);
 	end
 end
@@ -187,13 +190,14 @@ function LFGListingMixin:CreateOrUpdateListing()
 			i = i+1;
 		end
 	end
+	local newPlayerFriendlyEnabled = self.NewPlayerFriendlyButton.CheckButton:GetChecked();
 
 	local saveSoloRoles = false;
 	if (C_LFGList.HasActiveEntryInfo()) then
 		if (hasSelectedActivity) then
 			-- Update.
 			PENDING_LISTING_UPDATE = true;
-			C_LFGList.UpdateListing(selectedActivityIDs);
+			C_LFGList.UpdateListing(selectedActivityIDs, newPlayerFriendlyEnabled);
 			saveSoloRoles = true;
 		else
 			-- Delete.
@@ -204,7 +208,7 @@ function LFGListingMixin:CreateOrUpdateListing()
 		if (hasSelectedActivity) then
 			-- Create.
 			PENDING_LISTING_UPDATE = true;
-			C_LFGList.CreateListing(selectedActivityIDs);
+			C_LFGList.CreateListing(selectedActivityIDs, newPlayerFriendlyEnabled);
 			saveSoloRoles = true;
 		end
 	end
@@ -398,6 +402,10 @@ function LFGListingMixin:UpdateBackButtonEnableState()
 	self.BackButton:SetEnabled(self.viewState == LFGLISTING_VIEWSTATE_ACTIVITIES);
 end
 
+function LFGListingMixin:UpdateNewPlayerFriendlyButtonEnableState()
+	self.NewPlayerFriendlyButton.CheckButton:SetEnabled(LFGListingUtil_CanEditListing());
+end
+
 -------------------------------------------------------
 ----------Solo Role UI
 -------------------------------------------------------
@@ -441,7 +449,6 @@ function LFGListingRoleDropDown_Initialize(self)
 		{ text = TANK, value = "TANK", },
 		{ text = HEALER, value = "HEALER", },
 		{ text = DAMAGER, value = "DAMAGER", },
-		{ text = NO_ROLE, value = "NONE", },
 	};
 
 	for i, button in ipairs(buttons) do
@@ -501,6 +508,26 @@ function LFGListingRolePollButton_UpdateEnableState(self)
 	else
 		self:Disable();
 	end
+end
+
+-------------------------------------------------------
+----------New Player Friendly Button
+-------------------------------------------------------
+function LFGListingNewPlayerFriendlyButtonCheckButton_OnShow(self)
+	if (not C_LFGList.HasActiveEntryInfo()) then
+		self:SetChecked(GetCVarBool("lfgNewPlayerFriendly"));
+	end
+end
+
+function LFGListingNewPlayerFriendlyButtonCheckButton_OnClick(self, button)
+	if ( self:GetChecked() ) then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		SetCVar("lfgNewPlayerFriendly", "1");
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		SetCVar("lfgNewPlayerFriendly", "0");
+	end
+	LFGListingFrame:SetDirty(true);
 end
 
 -------------------------------------------------------
@@ -866,7 +893,7 @@ function LFGListingActivityView_InitActivityButton(button, elementData)
 
 	-- Level
 	button.Level:Show();
-	if ( elementData.minLevel == elementData.maxLevel ) then
+	if ( elementData.minLevel == elementData.maxLevel or elementData.maxLevel == 0 ) then
 		if (elementData.minLevel == 0) then
 			button.Level:SetText("");
 		else

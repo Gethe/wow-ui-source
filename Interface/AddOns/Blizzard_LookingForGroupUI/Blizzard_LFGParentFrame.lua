@@ -22,8 +22,18 @@ function LFGParentFrameMixin:OnEvent(event, ...)
 	if (event == "PLAYER_LEVEL_UP") then
 		C_LFGList.RequestAvailableActivities();
 	elseif (event == "LFG_LIST_ACTIVE_ENTRY_UPDATE") then
+		self:UpdateTabs();
 		self:UpdateEyePortrait();
 	end
+end
+
+function LFGParentFrameMixin:UpdateTabs()
+	if (C_LFGList.HasActiveEntryInfo()) then
+		self.Tab1:SetText(LFG_LIST_EDIT);
+	else
+		self.Tab1:SetText(LFG_LIST_TAB_1);
+	end
+	PanelTemplates_TabResize(self.Tab1, 0);
 end
 
 function LFGParentFrameMixin:UpdateEyePortrait()

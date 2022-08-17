@@ -261,6 +261,8 @@ function CharacterSelect_OnEvent(self, event, ...)
 				self.undeleteFailed = "pvp";
 			elseif ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_NAME_TAKEN_BY_THIS_ACCOUNT ) then
                 self.undeleteFailed = "name";
+			elseif ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_DEATHKNIGHT_LEVEL_REQUIREMENT ) then
+				self.undeleteFailed = "deathknight";
             else
                 self.undeleteFailed = "other";
             end
@@ -567,8 +569,12 @@ function CharacterSelect_OnUpdate(self, elapsed)
         if (not GlueDialog:IsShown()) then
 			if ( self.undeleteFailed == "pvp" ) then
 				GlueDialog_Show("UNDELETE_FAILED_PVP");
+			elseif (self.undeleteFailed == "name") then
+				GlueDialog_Show("UNDELETE_NAME_TAKEN");
+			elseif (self.undeleteFailed == "deathknight") then
+				GlueDialog_Show("UNDELETE_DEATHKNIGHT_LEVEL_REQUIREMENT");
 			else
-				GlueDialog_Show(self.undeleteFailed == "name" and "UNDELETE_NAME_TAKEN" or "UNDELETE_FAILED");
+				GlueDialog_Show("UNDELETE_FAILED");
 			end
 			self.undeleteFailed = false;
         end
@@ -2880,6 +2886,12 @@ GlueDialogTypes["UNDELETE_NAME_TAKEN"] = {
     text = UNDELETE_NAME_TAKEN,
     button1 = OKAY,
     escapeHides = true,
+}
+
+GlueDialogTypes["UNDELETE_DEATHKNIGHT_LEVEL_REQUIREMENT"] = {
+	text = UNDELETE_DEATHKNIGHT_LEVEL_REQUIREMENT,
+	button1 = OKAY,
+	escapeHides = true,
 }
 
 GlueDialogTypes["UNDELETE_NO_CHARACTERS"] = {
