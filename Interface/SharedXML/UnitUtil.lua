@@ -64,8 +64,3 @@ end
 function PlayerUtil.CanUseClassTalents()
 	return C_SpecializationInfo.CanPlayerUseTalentUI() and not IsPlayerInitialSpec();
 end
-
-function PlayerUtil.ShouldUseNativeFormInModelScene()
-	local _, raceFilename = UnitRace("player");
-	return raceFilename and raceFilename ~= "Dracthyr" or false;
-end

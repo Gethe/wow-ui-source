@@ -401,7 +401,7 @@
 						</Anchors>
 					</Frame>
 					<Frame parentKey="Classes">
-						<Size x="969" y="67" />
+						<Size x="1051" y="67" />
 						<Anchors>
 							<Anchor point="BOTTOM" y="62"/>
 						</Anchors>

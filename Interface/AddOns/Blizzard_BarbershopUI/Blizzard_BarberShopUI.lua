@@ -63,8 +63,12 @@ function BarberShopMixin:UpdateSex()
 		end
 	end
 
-	self.BodyTypes:MarkDirty();
-	self.BodyTypes:Show();
+	if C_BarberShop.GetViewingChrModel() then
+		self.BodyTypes:Hide();
+	else
+		self.BodyTypes:MarkDirty();
+		self.BodyTypes:Show();
+	end
 end
 
 function BarberShopMixin:OnHide()

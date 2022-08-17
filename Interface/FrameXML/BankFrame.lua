@@ -227,8 +227,6 @@ function BankSlotsFrame_OnLoad(self)
 end
 
 function BankFrame_OnLoad (self)
-	self:RegisterEvent("BANKFRAME_OPENED");
-	self:RegisterEvent("BANKFRAME_CLOSED");
 	self:SetBagSize(28);
 	self:SetID(BANK_CONTAINER);
 
@@ -281,17 +279,17 @@ function CloseBankBagFrames ()
 	end
 end
 
+function BankFrame_Open()
+	BankFrame_ShowPanel(BANK_PANELS[1].name);
+	SetPortraitTexture(BankPortraitTexture,"npc");
+	ShowUIPanel(BankFrame);
+	if ( not BankFrame:IsShown() ) then
+		CloseBankFrame();
+	end
+end		
+
 function BankFrame_OnEvent (self, event, ...)
-	if ( event == "BANKFRAME_OPENED" ) then
-		BankFrame_ShowPanel(BANK_PANELS[1].name);
-		SetPortraitTexture(BankPortraitTexture,"npc");
-		ShowUIPanel(self);
-		if ( not self:IsShown() ) then
-			CloseBankFrame();
-		end
-	elseif ( event == "BANKFRAME_CLOSED" ) then
-		HideUIPanel(self);
-	elseif ( event == "ITEM_LOCK_CHANGED" ) then
+	if ( event == "ITEM_LOCK_CHANGED" ) then
 		local bag, slot = ...;
 		if ( bag == BANK_CONTAINER ) then
 			if ( slot <= NUM_BANKGENERIC_SLOTS ) then

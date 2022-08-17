@@ -2813,17 +2813,14 @@ StaticPopupDialogs["XP_LOSS"] = {
 			self.data = nil;
 			return 1;
 		else
-			AcceptXPLoss();
+			C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			C_GossipInfo.CloseGossip();
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
-	end,
-	OnCancel = function(self)
-		C_GossipInfo.CloseGossip();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2837,16 +2834,14 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		AcceptXPLoss();
+		C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer);
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 	end,
 	OnUpdate = function(self, dialog)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			C_GossipInfo.CloseGossip();
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			self:Hide(); 
 		end
-	end,
-	OnCancel = function(self)
-		C_GossipInfo.CloseGossip();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3177,13 +3172,19 @@ StaticPopupDialogs["CONFIRM_BINDER"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ConfirmBinder();
+		C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.Binder);
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( not CheckBinderDist() ) then
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.Binder) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
 			self:Hide();
 		end
 	end,
+	OnCancel = function(self)
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
+		self:Hide();
+	end,	
 	timeout = 0,
 	hideOnEscape = 1
 };

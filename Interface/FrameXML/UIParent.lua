@@ -329,14 +329,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
 	self:RegisterEvent("AUCTION_HOUSE_DISABLED");
 
-	-- Events for trainer UI handling
-	self:RegisterEvent("TRAINER_SHOW");
-	self:RegisterEvent("TRAINER_CLOSED");
-
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
-	self:RegisterEvent("OBLITERUM_FORGE_SHOW");
-	self:RegisterEvent("SCRAPPING_MACHINE_SHOW");
 	self:RegisterEvent("CRAFTINGORDERS_SHOW_CUSTOMER");
 	self:RegisterEvent("CRAFTINGORDERS_HIDE_CUSTOMER");
 	self:RegisterEvent("CRAFTINGORDERS_SHOW_CRAFTER");
@@ -362,10 +356,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("BARBER_SHOP_OPEN");
 	self:RegisterEvent("BARBER_SHOP_CLOSE");
 
-	-- Events for Guild bank UI
-	self:RegisterEvent("GUILDBANKFRAME_OPENED");
-	self:RegisterEvent("GUILDBANKFRAME_CLOSED");
-
 	--Events for GMChatUI
 	self:RegisterEvent("CHAT_MSG_WHISPER");
 
@@ -382,32 +372,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("ARCHAEOLOGY_TOGGLE");
 	self:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 
-	-- Events for transmogrify
-	self:RegisterEvent("TRANSMOGRIFY_OPEN");
-	self:RegisterEvent("TRANSMOGRIFY_CLOSE");
-
-	-- Events for Adventure Journal
-	self:RegisterEvent("AJ_OPEN");
-
-	-- Events for void storage
-	self:RegisterEvent("VOID_STORAGE_OPEN");
-	self:RegisterEvent("VOID_STORAGE_CLOSE");
-
-	-- Events for contributions
-	self:RegisterEvent("CONTRIBUTION_COLLECTOR_OPEN");
-	self:RegisterEvent("CONTRIBUTION_COLLECTOR_CLOSE");
-
 	-- Events for Trial caps
 	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
 	self:RegisterEvent("TRIAL_CAP_REACHED_LEVEL");
-
-	-- Events for black market
-	self:RegisterEvent("BLACK_MARKET_OPEN");
-	self:RegisterEvent("BLACK_MARKET_CLOSE");
-
-	-- Events for item upgrades
-	self:RegisterEvent("ITEM_UPGRADE_MASTER_OPENED");
-	self:RegisterEvent("ITEM_UPGRADE_MASTER_CLOSED");
 
 	-- Events for Toy Box
 	self:RegisterEvent("TOYS_UPDATED");
@@ -432,8 +399,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("REVEAL_CAPTURE_TOGGLED");
 
 	-- Garrison
-	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
-	self:RegisterEvent("GARRISON_ARCHITECT_CLOSED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_CLOSED");
 	self:RegisterEvent("GARRISON_SHIPYARD_NPC_OPENED");
@@ -443,10 +408,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_MONUMENT_SHOW_UI");
 	self:RegisterEvent("GARRISON_RECRUITMENT_NPC_OPENED");
 	self:RegisterEvent("GARRISON_TALENT_NPC_OPENED");
-	self:RegisterEvent("SOULBIND_FORGE_INTERACTION_STARTED");
-	self:RegisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED");
 	self:RegisterEvent("BEHAVIORAL_NOTIFICATION");
-	self:RegisterEvent("COVENANT_RENOWN_INTERACTION_STARTED");
 
 	-- Shop (for Asia promotion)
 	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
@@ -484,16 +446,9 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for Islands
 	self:RegisterEvent("ISLAND_COMPLETED");
-	self:RegisterEvent("ISLANDS_QUEUE_OPEN");
 
 	-- Event(s) for Warfronts
 	self:RegisterEvent("WARFRONT_COMPLETED");
-
-	-- Event(s) for Azerite Empowered Items
-	self:RegisterEvent("RESPEC_AZERITE_EMPOWERED_ITEM_OPENED");
-
-	-- Event(s) for Heart of Azeroth forge
-	self:RegisterEvent("AZERITE_ESSENCE_FORGE_OPEN");
 
 	-- Events for Reporting SYSTEM
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
@@ -501,12 +456,6 @@ function UIParent_OnLoad(self)
 	-- Events for Global Mouse Down
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 	self:RegisterEvent("GLOBAL_MOUSE_UP");
-
-	-- Event(s) for Item Interaction
-    self:RegisterEvent("ITEM_INTERACTION_OPEN");
-
-	-- Event(s) for Chromie Time UI
-	self:RegisterEvent("CHROMIE_TIME_OPEN");
 
 	-- Event(s) for Covenant Preview UI
 	self:RegisterEvent("COVENANT_PREVIEW_OPEN");
@@ -519,9 +468,6 @@ function UIParent_OnLoad(self)
 
 	 -- Events for Trait Systems
     self:RegisterEvent("TRAIT_SYSTEM_INTERACTION_STARTED");
-
-	-- Event(s) for Weekly Rewards UI
-	self:RegisterEvent("WEEKLY_REWARDS_SHOW");
 
 	-- Event(s) for the ScriptAnimationEffect System
 	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE");
@@ -795,6 +741,10 @@ function ExpansionLandingPage_LoadUI()
 	UIParentLoadAddOn("Blizzard_ExpansionLandingPage");
 end
 
+function MajorFactions_LoadUI()
+	UIParentLoadAddOn("Blizzard_MajorFactions");
+end
+
 function TalkingHead_LoadUI()
 	UIParentLoadAddOn("Blizzard_TalkingHeadUI");
 end
@@ -979,6 +929,7 @@ function ToggleTalentFrame(suggestedTab)
 		[7] = true, -- Shaman
 		[8] = true, -- Mage
 		[9] = true, -- Warlock
+		[10] = true, -- Monk
 		[11] = true, -- Druid
 		[13] = true, -- Evoker
 	};
@@ -1330,6 +1281,13 @@ function ToggleCovenantRenown()
 		CovenantRenown_LoadUI();
 	end
 	ToggleFrame(CovenantRenownFrame);
+end
+
+function ToggleMajorFactionRenown()
+	if (not MajorFactionRenownFrame) then
+		MajorFactions_LoadUI();
+	end
+	ToggleFrame(MajorFactionRenownFrame);
 end
 
 function ToggleExpansionLandingPage()
@@ -1866,7 +1824,6 @@ function UIParent_OnEvent(self, event, ...)
 				dialog.data = resSicknessTime;
 			end
 		end
-		HideUIPanel(GossipFrame);
 	elseif ( event == "CORPSE_IN_RANGE" ) then
 		StaticPopup_Show("RECOVER_CORPSE");
 	elseif ( event == "CORPSE_IN_INSTANCE" ) then
@@ -2059,27 +2016,10 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "AUCTION_HOUSE_DISABLED" ) then
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
 
-	-- Events for trainer UI handling
-	elseif ( event == "TRAINER_SHOW" ) then
-		ClassTrainerFrame_LoadUI();
-		if ( ClassTrainerFrame_Show ) then
-			ClassTrainerFrame_Show();
-		end
-	elseif ( event == "TRAINER_CLOSED" ) then
-		if ( ClassTrainerFrame_Hide ) then
-			ClassTrainerFrame_Hide();
-		end
-
 	-- Events for trade skill UI handling
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
 		ProfessionsFrame_LoadUI();
 		ShowUIPanel(ProfessionsFrame);
-	elseif ( event == "OBLITERUM_FORGE_SHOW" ) then
-		ObliterumForgeFrame_LoadUI();
-		ShowUIPanel(ObliterumForgeFrame);
-	elseif ( event == "SCRAPPING_MACHINE_SHOW" ) then
-		ScrappingMachineFrame_LoadUI();
-		ShowUIPanel(ScrappingMachineFrame);
 	elseif ( event == "CRAFTINGORDERS_SHOW_CUSTOMER" ) then
 		if ( GameLimitedMode_IsActive() ) then
 			UIErrorsFrame:AddExternalErrorMessage(ERR_FEATURE_RESTRICTED_TRIAL);
@@ -2152,13 +2092,6 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "ARTIFACT_RELIC_FORGE_UPDATE" ) then
 		ArtifactFrame_LoadUI();
 		ShowUIPanel(ArtifactRelicForgeFrame);
-
-	elseif ( event == "AZERITE_ESSENCE_FORGE_OPEN" ) then
-		UIParentLoadAddOn("Blizzard_AzeriteEssenceUI");
-		if AzeriteEssenceUI and AzeriteEssenceUI:TryShow() and AzeriteEssenceUI:ShouldOpenBagsOnShow() then
-			OpenAllBags(AzeriteEssenceUI);
-		end
-
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		Garrison_LoadUI();
 		local followerTypeID = ...;
@@ -2181,21 +2114,6 @@ function UIParent_OnEvent(self, event, ...)
 		if ( BarberShopFrame and BarberShopFrame:IsVisible() ) then
 			HideUIPanel(BarberShopFrame);
 		end
-
-	-- Event for guildbank handling
-	elseif ( event == "GUILDBANKFRAME_OPENED" ) then
-		GuildBankFrame_LoadUI();
-		if ( GuildBankFrame ) then
-			ShowUIPanel(GuildBankFrame);
-			if ( not GuildBankFrame:IsVisible() ) then
-				CloseGuildBankFrame();
-			end
-		end
-	elseif ( event == "GUILDBANKFRAME_CLOSED" ) then
-		if ( GuildBankFrame ) then
-			HideUIPanel(GuildBankFrame);
-		end
-
 	-- Display instance reset info
 	elseif ( event == "RAID_INSTANCE_WELCOME" ) then
 		local dungeonName = arg1;
@@ -2265,66 +2183,11 @@ function UIParent_OnEvent(self, event, ...)
 		ArchaeologyFrame_LoadUI();
 		ArcheologyDigsiteProgressBar_OnEvent(ArcheologyDigsiteProgressBar, event, ...);
 		self:UnregisterEvent("ARCHAEOLOGY_SURVEY_CAST");
-
-	-- Events for Transmogrify UI handling
-	elseif ( event == "TRANSMOGRIFY_OPEN" ) then
-		CollectionsJournal_LoadUI();
-		if ( WardrobeFrame ) then
-			ShowUIPanel(WardrobeFrame);
-		end
-	elseif ( event == "TRANSMOGRIFY_CLOSE" ) then
-		if ( WardrobeFrame ) then
-			HideUIPanel(WardrobeFrame);
-		end
-
-	-- Events for adventure journal
-	elseif ( event == "AJ_OPEN" ) then
-		if (C_AdventureJournal.CanBeShown()) then
-			if ( not EncounterJournal ) then
-				EncounterJournal_LoadUI();
-			end
-			ShowUIPanel(EncounterJournal);
-			EJSuggestFrame_OpenFrame();
-		end
-	-- Events for Void Storage UI handling
-	elseif ( event == "VOID_STORAGE_OPEN" ) then
-		VoidStorage_LoadUI();
-		if ( VoidStorageFrame_Show ) then
-			VoidStorageFrame_Show();
-		end
-	elseif ( event == "VOID_STORAGE_CLOSE" ) then
-		if ( VoidStorageFrame_Hide ) then
-			VoidStorageFrame_Hide();
-		end
-
 	--Events for Trial caps
 	elseif ( event == "TRIAL_CAP_REACHED_MONEY" ) then
 		TrialAccountCapReached_Inform("money");
 	elseif ( event == "TRIAL_CAP_REACHED_LEVEL" ) then
 		TrialAccountCapReached_Inform("level");
-
-	-- Events for Black Market UI handling
-	elseif ( event == "BLACK_MARKET_OPEN" ) then
-		BlackMarket_LoadUI();
-		if ( BlackMarketFrame_Show ) then
-			BlackMarketFrame_Show();
-		end
-	elseif ( event == "BLACK_MARKET_CLOSE" ) then
-		if ( BlackMarketFrame_Hide ) then
-			BlackMarketFrame_Hide();
-		end
-
-	-- Events for Item Upgrading
-	elseif ( event == "ITEM_UPGRADE_MASTER_OPENED" ) then
-		ItemUpgrade_LoadUI();
-		if ( ItemUpgradeFrame_Show ) then
-			ItemUpgradeFrame_Show();
-		end
-	elseif ( event == "ITEM_UPGRADE_MASTER_CLOSED" ) then
-		if ( ItemUpgradeFrame_Hide ) then
-			ItemUpgradeFrame_Hide();
-		end
-
 	-- Events for Toy Box
 	elseif ( event == "TOYS_UPDATED" ) then
 		if ( not CollectionsJournal ) then
@@ -2379,15 +2242,6 @@ function UIParent_OnEvent(self, event, ...)
 		PlayerChoiceToggle_TryShow();
 	elseif ( event == "LUA_WARNING" ) then
 		HandleLuaWarning(...);
-	elseif ( event == "GARRISON_ARCHITECT_OPENED") then
-		if (not GarrisonBuildingFrame) then
-			Garrison_LoadUI();
-		end
-		ShowUIPanel(GarrisonBuildingFrame);
-	elseif ( event == "GARRISON_ARCHITECT_CLOSED" ) then
-		if ( GarrisonBuildingFrame ) then
-			HideUIPanel(GarrisonBuildingFrame);
-		end
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED") then
 		local followerType = ...;
 		if followerType ~= Enum.GarrisonFollowerType.FollowerType_7_0 then
@@ -2424,11 +2278,7 @@ function UIParent_OnEvent(self, event, ...)
 		if (not GarrisonCapacitiveDisplayFrame) then
 			Garrison_LoadUI();
 		end
-	elseif ( event == "GARRISON_MONUMENT_SHOW_UI") then
-		if(not GarrisonMonumentFrame)then
-			Garrison_LoadUI();
-		end
-		GarrisonMonuntmentFrame_OnEvent(GarrisonMonumentFrame, event, ...);
+		ShowUIPanel(GarrisonCapacitiveDisplayFrame);
 	elseif ( event == "GARRISON_RECRUITMENT_NPC_OPENED") then
 		if(not GarrisonRecruiterFrame)then
 			Garrison_LoadUI();
@@ -2438,25 +2288,10 @@ function UIParent_OnEvent(self, event, ...)
 		OrderHall_LoadUI();
 		OrderHallTalentFrame:SetGarrisonType(...);
 		ToggleOrderHallTalentUI();
-	elseif ( event == "SOULBIND_FORGE_INTERACTION_STARTED") then
-		self:UnregisterEvent(event);
-		LoadAddOn("Blizzard_Soulbinds");
-		Soulbinds.OnAddonLoaded(event, ...);
-	elseif ( event == "COVENANT_SANCTUM_INTERACTION_STARTED" ) then
-		if not CovenantSanctumFrame then
-			CovenantSanctum_LoadUI();
-		end
-		CovenantSanctumFrame:OnEvent(event, ...);
 	elseif ( event == "BEHAVIORAL_NOTIFICATION") then
 		self:UnregisterEvent("BEHAVIORAL_NOTIFICATION");
 		LoadAddOn("Blizzard_BehavioralMessaging");
 		BehavioralMessagingTray:OnEvent(event, ...);
-	elseif ( event == "COVENANT_RENOWN_INTERACTION_STARTED" ) then
-		self:UnregisterEvent(event);
-		if not CovenantRenownFrame then
-			CovenantRenown_LoadUI();
-		end
-		ShowUIPanel(CovenantRenownFrame);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
 	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
@@ -2521,13 +2356,6 @@ function UIParent_OnEvent(self, event, ...)
 		UpdateInviteConfirmationDialogs();
 	elseif ( event == "INVITE_TO_PARTY_CONFIRMATION" ) then
 		OnInviteToPartyConfirmation(...);
-	elseif ( event == "CONTRIBUTION_COLLECTOR_OPEN" ) then
-		UIParentLoadAddOn("Blizzard_Contribution");
-		ContributionCollectionUI_Show();
-	elseif (event == "CONTRIBUTION_COLLECTOR_CLOSE" ) then
-		if ( ContributionCollectionUI_Hide ) then
-			ContributionCollectionUI_Hide();
-		end
 	elseif (event == "ALLIED_RACE_OPEN") then
 		AlliedRaces_LoadUI();
 		local raceID = ...;
@@ -2543,22 +2371,9 @@ function UIParent_OnEvent(self, event, ...)
 		local mapID, winner = ...;
 		WarfrontsPartyPoseFrame:LoadScreen(mapID, winner);
 		ShowUIPanel(WarfrontsPartyPoseFrame);
-	-- Event(s) for Azerite Respec
-	elseif (event == "RESPEC_AZERITE_EMPOWERED_ITEM_OPENED") then
-		AzeriteRespecFrame_LoadUI();
-		ShowUIPanel(AzeriteRespecFrame);
-	elseif (event == "ISLANDS_QUEUE_OPEN") then
-		IslandsQueue_LoadUI();
-		ShowUIPanel(IslandsQueueFrame);
-	elseif (event == "ITEM_INTERACTION_OPEN") then
-		ItemInteraction_LoadUI();
-		ShowUIPanel(ItemInteractionFrame);
-	elseif (event =="COVENANT_PREVIEW_OPEN") then
+	elseif (event == "COVENANT_PREVIEW_OPEN") then
 		CovenantPreviewFrame_LoadUI();
 		CovenantPreviewFrame:TryShow(...);
-	elseif (event =="CHROMIE_TIME_OPEN") then
-		ChromieTimeFrame_LoadUI();
-		ShowUIPanel(ChromieTimeFrame);
 	elseif (event == "ANIMA_DIVERSION_OPEN") then
 		AnimaDiversionFrame_LoadUI();
 		AnimaDiversionFrame:TryShow(...);
@@ -2572,8 +2387,8 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "TRAIT_SYSTEM_INTERACTION_STARTED") then
 		GenericTraitUI_LoadUI();
 
-		local traitSystemID = ...;
-		GenericTraitFrame:SetSystemID(traitSystemID);
+		local traitTreeID = ...;
+		GenericTraitFrame:SetTreeID(traitTreeID);
 		ShowUIPanel(GenericTraitFrame);
 	-- Events for Reporting system
 	elseif (event == "REPORT_PLAYER_RESULT") then
@@ -2585,8 +2400,6 @@ function UIParent_OnEvent(self, event, ...)
 			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMISSION_FAILED);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
 		end
-	elseif (event == "WEEKLY_REWARDS_SHOW") then
-		WeeklyRewards_ShowUI();
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
 

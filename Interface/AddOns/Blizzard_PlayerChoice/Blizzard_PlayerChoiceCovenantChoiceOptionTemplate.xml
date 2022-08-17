@@ -60,7 +60,7 @@
 				<NormalTexture atlas="UI-Frame-Oribos-ExtraButton" useAtlasSize="true"/>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
-					<OnClick method="OnClick"/>
+					<OnClick method="OnConfirm"/>
 				</Scripts>
 			</Button>
 		</Frames>

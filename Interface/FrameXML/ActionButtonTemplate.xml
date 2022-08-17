@@ -103,7 +103,7 @@
 	</Frame>
 
 	<CheckButton name="ActionButtonTemplate" mixin="BaseActionButtonMixin" virtual="true">
-		<Size x="43.5" y="43.5"/>
+		<Size x="45" y="45"/>
 
 		<Layers>
 			<Layer level="BACKGROUND">

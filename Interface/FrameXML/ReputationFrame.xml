@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ReputationFrame.lua"/>
 
-	<Button name="ReputationBarTemplate" virtual="true">
+	<Button name="ReputationBarTemplate" mixin="ReputationBarMixin" virtual="true">
 		<Size y="20"/>
 		<Frames>
 			<Frame parentKey="Container" setAllPoints="false">
@@ -198,40 +198,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.Container.ReputationBar.Highlight1:SetPoint("TOPLEFT",self.Container,"TOPLEFT",-2, 4);
-				self.Container.ReputationBar.Highlight1:SetPoint("BOTTOMRIGHT",self.Container,"BOTTOMRIGHT",-10, -4);
-				self.Container.ReputationBar.AtWarHighlight1:SetPoint("TOPLEFT",self.Container,"TOPLEFT",3,-2);
-				self.Container.ReputationBar.AtWarHighlight2:SetPoint("TOPRIGHT",self.Container,"TOPRIGHT",-1,-2);
-				self.Container.ReputationBar.AtWarHighlight1:SetAlpha(0.2);
-				self.Container.ReputationBar.AtWarHighlight2:SetAlpha(0.2);
-				self.Container.Background:SetPoint("TOPRIGHT", self.Container.ReputationBar.LeftTexture, "TOPLEFT", 0, 0);
-			</OnLoad>
-			<OnClick>
-				ReputationBar_OnClick(self, button, down);
-			</OnClick>
-			<OnEnter>
-				if (self.rolloverText) then
-				self.Container.ReputationBar.FactionStanding:SetText(self.rolloverText);
-				end
-				self.Container.ReputationBar.Highlight1:Show();
-				self.Container.ReputationBar.Highlight2:Show();
-				if ( self.friendshipID ) then
-				ShowFriendshipReputationTooltip(self.friendshipID, self, "ANCHOR_BOTTOMRIGHT");
-				elseif self.Container.Name:IsTruncated() then
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(self.Container.Name:GetText(), nil, nil, nil, nil, true);
-				GameTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave>
-				self.Container.ReputationBar.FactionStanding:SetText(self.standingText);
-				if ((GetSelectedFaction() ~= self.index) or (not ReputationDetailFrame:IsShown())) then
-				self.Container.ReputationBar.Highlight1:Hide();
-				self.Container.ReputationBar.Highlight2:Hide();
-				end
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 
@@ -424,6 +394,18 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
+					<Button name="ReputationDetailViewRenownButton" mixin="ReputationDetailViewRenownButtonMixin" inherits="SharedGoldRedButtonSmallTemplate" text="VIEW_RENOWN_BUTTON_LABEL">
+						<Size x="120" y="16"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="18"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontWhiteSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+					</Button>
 				</Frames>
 			</Frame>
 		</Frames>

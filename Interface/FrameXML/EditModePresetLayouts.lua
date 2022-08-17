@@ -231,6 +231,18 @@ local modernSystemMap =
 			offsetY = 5,
 		},
 	},
+
+	[Enum.EditModeSystem.ExtraAbilities] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "MainMenuBar",
+			relativePoint = "TOPLEFT",
+			offsetX = 0,
+			offsetY = 5,
+		},
+	},
 };
 
 local classicSystemMap =
@@ -462,6 +474,18 @@ local classicSystemMap =
 			point = "BOTTOM",
 			relativeTo = "MainMenuBar",
 			relativePoint = "TOP",
+			offsetX = 0,
+			offsetY = 5,
+		},
+	},
+
+	[Enum.EditModeSystem.ExtraAbilities] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "MainMenuBar",
+			relativePoint = "TOPLEFT",
 			offsetX = 0,
 			offsetY = 5,
 		},

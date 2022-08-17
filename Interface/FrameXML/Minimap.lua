@@ -379,8 +379,6 @@ end
 function MiniMapTrackingButtonMixin:OnEvent(event, arg1)
 	if event == "MINIMAP_UPDATE_TRACKING" then
 		self:Update();
-	elseif event == "VARIABLES_LOADED" or (event == "CVAR_UPDATE" and arg1 == "minimapTrackingDropdown") then
-		self:Show(GetCVarBool("minimapTrackingDropdown"));
 	end
 end
 
@@ -457,37 +455,32 @@ local ALWAYS_ON_FILTERS = {
 	[Enum.MinimapTrackingFilter.QuestPoIs] = true,
 	[Enum.MinimapTrackingFilter.TaxiNode] = true,
 	[Enum.MinimapTrackingFilter.Innkeeper] = true,
-	[Enum.MinimapTrackingFilter.Banker] = true,
-	[Enum.MinimapTrackingFilter.Auctioneer] = true,
-	[Enum.MinimapTrackingFilter.Barber] = true,
 	[Enum.MinimapTrackingFilter.ItemUpgrade] = true,
-	[Enum.MinimapTrackingFilter.Transmogrifier] = true,
 	[Enum.MinimapTrackingFilter.Battlemaster] = true,
 	[Enum.MinimapTrackingFilter.Stablemaster] = true,
 };
 
 local CONDITIONAL_FILTERS = {
-	[Enum.MinimapTrackingFilter.Mailbox] = true,
 	[Enum.MinimapTrackingFilter.Target] = true,
 	[Enum.MinimapTrackingFilter.Digsites] = true,
 	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
 	[Enum.MinimapTrackingFilter.Repair] = true,
 };
 
-local WORLD_MAP_FILTERS = {
+local OPTIONAL_FILTERS = {
+	[Enum.MinimapTrackingFilter.Banker] = true,
+	[Enum.MinimapTrackingFilter.Auctioneer] = true,
+	[Enum.MinimapTrackingFilter.Barber] = true,
 	[Enum.MinimapTrackingFilter.TrivialQuests] = true,
+	[Enum.MinimapTrackingFilter.Transmogrifier] = true,
+	[Enum.MinimapTrackingFilter.Mailbox] = true,
 };
 
-function MiniMapTracking_FilterIsDefaultValue(id, active)
+function MiniMapTracking_FilterIsVisible(id)
 	local filter = C_Minimap.GetTrackingFilter(id);
-	local removedFilter = filter and REMOVED_FILTERS[filter.filterID];
-	local alwaysOnFilter = filter and ALWAYS_ON_FILTERS[filter.filterID];
-	local worldMapFilter = filter and WORLD_MAP_FILTERS[filter.filterID];
-	local conditionalFilter = filter and CONDITIONAL_FILTERS[filter.filterID];
-	local filterTypeIsDefaultValue = (not active and removedFilter) or (active and alwaysOnFilter) or (active and conditionalFilter) or (not active and worldMapFilter);
-	local filterIsSpell = filter and filter.spellID;
-	local filterIsDefaultValue = filterTypeIsDefaultValue or filterIsSpell;
-	return filterIsDefaultValue;
+	local optionalFilter = filter and OPTIONAL_FILTERS[filter.filterID];
+	local filterTypeIsVisible = optionalFilter;
+	return filterTypeIsVisible;
 end
 
 function MiniMapTrackingDropDown_Initialize(self, level)
@@ -495,6 +488,8 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 	local count = C_Minimap.GetNumTrackingTypes();
 	local info;
 	local _, class = UnitClass("player");
+
+	local showAll = GetCVarBool("minimapTrackingShowAll");
 
 	if (level == 1) then
 		info = UIDropDownMenu_CreateInfo();
@@ -506,7 +501,10 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		info.isNotRadio = true;
 		info.keepShownOnClick = true;
 		UIDropDownMenu_AddButton(info, level);
+		UIDropDownMenu_AddSeparator(level);
+	end
 
+	if (level == 1 and showAll) then
 		if (class == "HUNTER") then --only show hunter dropdown for hunters
 			numTracking = 0;
 			-- make sure there are at least two options in dropdown
@@ -539,37 +537,40 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 	for id=1, count do
 		name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
 
-		info = UIDropDownMenu_CreateInfo();
-		info.text = name;
-		info.checked = MiniMapTrackingDropDown_IsActive;
-		info.func = MiniMapTrackingDropDown_SetTracking;
-		info.icon = texture;
-		info.arg1 = id;
-		info.isNotRadio = true;
-		info.keepShownOnClick = true;
+		if showAll or MiniMapTracking_FilterIsVisible(id) then
+			-- Remove nesting unless showing all
+			if not showAll then
+				nested = -1;
+			end
 
-		if not MiniMapTracking_FilterIsDefaultValue(id, active) then
-			info.colorCode = RED_FONT_COLOR_CODE;
-		end
+			info = UIDropDownMenu_CreateInfo();
+			info.text = name;
+			info.checked = MiniMapTrackingDropDown_IsActive;
+			info.func = MiniMapTrackingDropDown_SetTracking;
+			info.icon = texture;
+			info.arg1 = id;
+			info.isNotRadio = true;
+			info.keepShownOnClick = true;
 
-		if ( category == "spell" ) then
-			info.tCoordLeft = 0.0625;
-			info.tCoordRight = 0.9;
-			info.tCoordTop = 0.0625;
-			info.tCoordBottom = 0.9;
-		else
-			info.tCoordLeft = 0;
-			info.tCoordRight = 1;
-			info.tCoordTop = 0;
-			info.tCoordBottom = 1;
-		end
-		if (level == 1 and
-			(nested < 0 or -- this tracking shouldn't be nested
-			(nested == HUNTER_TRACKING and class ~= "HUNTER") or
-			(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
-			UIDropDownMenu_AddButton(info, level);
-		elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
-			UIDropDownMenu_AddButton(info, level);
+			if ( category == "spell" ) then
+				info.tCoordLeft = 0.0625;
+				info.tCoordRight = 0.9;
+				info.tCoordTop = 0.0625;
+				info.tCoordBottom = 0.9;
+			else
+				info.tCoordLeft = 0;
+				info.tCoordRight = 1;
+				info.tCoordTop = 0;
+				info.tCoordBottom = 1;
+			end
+			if (level == 1 and
+				(nested < 0 or -- this tracking shouldn't be nested
+				(nested == HUNTER_TRACKING and class ~= "HUNTER") or
+				(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
+				UIDropDownMenu_AddButton(info, level);
+			elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
+				UIDropDownMenu_AddButton(info, level);
+			end
 		end
 	end
 

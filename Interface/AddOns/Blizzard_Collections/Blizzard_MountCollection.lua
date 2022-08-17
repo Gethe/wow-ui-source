@@ -663,8 +663,7 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 				if not disablePlayerMountPreview and not showPlayer then
 					disablePlayerMountPreview = true;
 				end
-				local useNativeForm = PlayerUtil.ShouldUseNativeFormInModelScene();
-				MountJournal.MountDisplay.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID, useNativeForm);
+				MountJournal.MountDisplay.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID);
 			end
 		end
 

@@ -186,6 +186,11 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	{
 
 	},
+
+	[Enum.EditModeSystem.ExtraAbilities] =
+	{
+
+	},
 };
 
 local DefaultSettingDisplayInfo = {};

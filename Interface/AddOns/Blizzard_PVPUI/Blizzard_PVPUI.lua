@@ -143,7 +143,7 @@ end
 function PVPUIFrame_OnEvent(self, event, ...)
 	if (event == "BATTLEFIELDS_CLOSED") then
 		if (self:IsShown()) then
-			self:Hide();
+			self:GetParent():Hide();
 		end
 	elseif ( event == "VARIABLES_LOADED" or event == "PVP_ROLE_UPDATE" ) then
 		PVPUIFrame_UpdateSelectedRoles();

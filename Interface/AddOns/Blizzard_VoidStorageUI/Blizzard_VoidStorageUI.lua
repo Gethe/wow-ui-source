@@ -14,21 +14,10 @@ local voidStorageTutorials = {
 	[3] = { text1 = VOID_STORAGE_TUTORIAL4, text2 = VOID_STORAGE_TUTORIAL5, region = "VoidStorageTransferButton", offsetY = 0 },
 }
 
-function VoidStorageFrame_Show()
-	ShowUIPanel(VoidStorageFrame);
-	if ( not VoidStorageFrame:IsShown() ) then
-		CloseVoidStorageFrame();
-	end
-end
-
-function VoidStorageFrame_Hide()
-	HideUIPanel(VoidStorageFrame);
-end
-
 function VoidStorageFrame_OnLoad(self)
 	-- The close button comes from the BasicFrameTemplate but VoidStorageBorderFrame is not the main
 	-- frame, so click function must change to close the proper frame
-	VoidStorageBorderFrame.CloseButton:SetScript("OnClick", function () VoidStorageFrame_Hide(); end);
+	VoidStorageBorderFrame.CloseButton:SetScript("OnClick", function () C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.VoidStorageBanker); end);
 	VoidStorageBorderFrame.TopTileStreaks:Hide();
 	VoidStorageBorderFrame.Bg:SetTexture(nil);
 	local button, lastButton, texture;
@@ -218,7 +207,6 @@ end
 function VoidStorageFrame_OnHide(self)
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_CLOSE);
 	StaticPopup_Hide("VOID_DEPOSIT_CONFIRM");
-	CloseVoidStorageFrame();
 	CloseSideDressUpFrame(self);
 end
 

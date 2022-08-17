@@ -1,4 +1,12 @@
 
+local dialBaseAngle = 1.4;
+
+function ProfessionDial_GetRelativeRotation(currRank, maxRank, inPct)
+	local rads = (currRank / maxRank) * (2 * math.pi - dialBaseAngle) + (dialBaseAngle / 2);
+	return inPct and rads / (2 * math.pi) or rads;
+end
+
+
 ProfessionSpecTabMixin = {};
 
 local ProfessionSpecTabEvents =
@@ -144,11 +152,10 @@ end
 ProfessionsSpecPathMixin = CreateFromMixins(TalentButtonSpendMixin);
 
 function ProfessionsSpecPathMixin:OnLoad()
-	TalentButtonBasicArtMixin.OnLoad(self);
+	TalentButtonArtMixin.OnLoad(self);
 
 	self:SetAndApplySize(self.iconSize, self.iconSize);
-	self.ProgressBar:SetSize(self.progressBarSize, self.progressBarSize);
-	self.ProgressBar.Background:SetSize(self.progressBarSize, self.progressBarSize);
+	self.ProgressBar:SetSize(self.progressBarSizeX, self.progressBarSizeY);
 	self.StateBorder:SetShown(false);
 
 	if not self.isDetailedView then
@@ -160,7 +167,9 @@ function ProfessionsSpecPathMixin:OnLoad()
 end
 
 function ProfessionsSpecPathMixin:SetAndApplySize(width, height) -- Override
-	self:ApplySize(width, height);
+	self.Icon:SetSize(width, height);
+	local maskOffset = -7;
+	self.IconMask:SetSize(width + maskOffset, height + maskOffset);
 	local displayWidth, displayHeight = self:GetSize();
 	local dx = (displayWidth - width) / 2;
 	local dy = (displayHeight - height) / 2;
@@ -177,6 +186,11 @@ function ProfessionsSpecPathMixin:OnClick(button, down) -- Override
 				talentFrame:CheckConfirmPurchaseTab();
 			else
 				if self:CanPurchaseRank() then
+					if self.state == Enum.ProfessionsSpecPathState.Locked then
+						talentFrame:PlayDialLockInAnimation();
+					else
+						PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_SPEND);
+					end
 					self:PurchaseRank();
 				end
 			end
@@ -227,6 +241,10 @@ function ProfessionsSpecPathMixin:OnEvent(event, ...)
 end
 
 function ProfessionsSpecPathMixin:OnEnter() -- Override
+	if GetMouseFocus() ~= self then
+		return;
+	end
+
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_NONE");
 	tooltip:SetPoint("BOTTOMLEFT", self.Icon, "TOPRIGHT");
@@ -259,7 +277,7 @@ end
 function ProfessionsSpecPathMixin:GetNextPerkDescription()
 	local perkIDs = C_ProfSpecs.GetPerksForPath(self.talentNodeInfo.ID);
 	for _, perkID in ipairs(perkIDs) do
-		if not C_ProfSpecs.PerkIsEarned(perkID, self:GetConfigID()) then
+		if C_ProfSpecs.GetStateForPerk(perkID, self:GetConfigID()) == Enum.ProfessionsSpecPerkState.Unearned then
 			local unlockRank = C_ProfSpecs.GetUnlockRankForPerk(perkID);
 			local perkDescription = C_ProfSpecs.GetDescriptionForPerk(perkID);
 			local descriptionText;
@@ -339,19 +357,16 @@ local PathStateInfo =
 	[Enum.ProfessionsSpecPathState.Locked] =
 	{
 		showPoints = false,
-		showProgressBar = false,
 		showLock = true,
 	},
 	[Enum.ProfessionsSpecPathState.Progressing] =
 	{
 		showPoints = true,
-		showProgressBar = true,
 		showLock = false,
 	},
 	[Enum.ProfessionsSpecPathState.Completed] =
 	{
 		showPoints = true,
-		showProgressBar = true,
 		showLock = false,
 	},
 };
@@ -377,11 +392,11 @@ function ProfessionsSpecPathMixin:SetVisualState(state) -- Override
 
 	local stateInfo = PathStateInfo[state];
 	self.SpendText:SetShown(stateInfo.showPoints and not self.isDetailedView);
-	self.ProgressBar:SetShown(stateInfo.showProgressBar or self.isDetailedView);
 	self.LockedIcon:SetShown(stateInfo.showLock);
+	self.ProgressBarBackground:SetShown(not self.isDetailedView)
 
 	if not self.isDetailedView then
-		local overrideSize = stateInfo.showProgressBar and 55 or 50;
+		local overrideSize = 60;
 		self:SetSize(overrideSize, overrideSize);
 	end
 end
@@ -389,7 +404,9 @@ end
 function ProfessionsSpecPathMixin:UpdateProgressBar()
 	if self.ProgressBar:IsShown() then
 		local currRank, maxRank = self:GetRanks();
-		CooldownFrame_SetDisplayAsPercentage(self.ProgressBar, currRank / maxRank);
+		local inPct = true;
+		local progress = self.isDetailedView and ProfessionDial_GetRelativeRotation(currRank, maxRank, inPct) or (currRank / maxRank);
+		CooldownFrame_SetDisplayAsPercentage(self.ProgressBar, progress);
 	end
 end
 
@@ -415,23 +432,37 @@ ProfessionsSpecPathMixin.UpdateEntryInfo = TalentDisplayMixin.UpdateEntryInfo;
 
 ProfessionsSpecPerkMixin = CreateFromMixins(TalentButtonBasicArtMixin, TalentDisplayMixin);
 
-function ProfessionsSpecPerkMixin:GetRotation()
-	local _, parentMaxRank = self:GetTalentFrame():GetDetailedPanelPath():GetRanks();
+function ProfessionsSpecPerkMixin:OnLoad()
+	TalentButtonBasicArtMixin.OnLoad(self);
 
-	-- HRO TODO: (math.pi / 180) is a hack to sidestep issues at exactly 1/3-quarter rotation
-	return (self.unlockRank / parentMaxRank) * 2 * math.pi + (math.pi / 180);
+	self.PipLockinAnim:SetScript("OnFinished", function() self:UpdateIconTexture(true); end);
+end
+
+function ProfessionsSpecPerkMixin:GetParentMaxRank()
+	local _, parentMaxRank = self:GetTalentFrame():GetDetailedPanelPath():GetRanks();
+	return parentMaxRank;
+end
+
+function ProfessionsSpecPerkMixin:GetRotation()
+	return ProfessionDial_GetRelativeRotation(self.unlockRank, self:GetParentMaxRank());
 end
 
 function ProfessionsSpecPerkMixin:SetPerkID(perkID)
+	self.PipLockinAnim:Stop();
+	self.state = nil;
 	self.perkID = perkID;
 	self.unlockRank = C_ProfSpecs.GetUnlockRankForPerk(self.perkID);
+
+	self:UpdateAssets();
 
 	local rotation = self:GetRotation();
 	-- Convert rotation to counter-clockwise rotation
 	rotation = (math.pi * 2) - rotation;
-	rotation = rotation + math.pi / 4;
+	-- Asset starts facting up, but we rotate from the bottom
+	rotation = rotation + math.pi;
 	for _, texture in ipairs(self.RotatedTextures) do
-		texture:SetRotation(rotation);
+		-- Final perk assets are pre-rotated
+		texture:SetRotation(self.unlockRank ~= self:GetParentMaxRank() and rotation or 0);
 	end
 
 	local entryID = C_ProfSpecs.GetEntryIDForPerk(perkID);
@@ -439,20 +470,52 @@ function ProfessionsSpecPerkMixin:SetPerkID(perkID)
 end
 
 function ProfessionsSpecPerkMixin:IsEarned()
-	return C_ProfSpecs.PerkIsEarned(self.perkID, self:GetTalentFrame():GetConfigID());
+	return self.state ~= Enum.ProfessionsSpecPerkState.Unearned;
 end
 
-function ProfessionsSpecPerkMixin:UpdateIconTexture() -- Override
-	local color = self:IsEarned() and HIGHLIGHT_FONT_COLOR or VERY_DARK_GRAY_COLOR;
-	local r, g, b = color:GetRGB();
-	local a = 1;
-	self.Icon:SetColorTexture(r, g, b, a);
+function ProfessionsSpecPerkMixin:UpdateIconTexture(fromAnimEnded) -- Override
+	local newState = C_ProfSpecs.GetStateForPerk(self.perkID, self:GetTalentFrame():GetConfigID());
+	if newState == self.state and not fromAnimEnded then
+		return;
+	end
+
+	self.PipLockinAnim:Stop();
+	self.PendingGlow:SetShown(newState == Enum.ProfessionsSpecPerkState.Pending);
+
+	if newState == Enum.ProfessionsSpecPerkState.Unearned then
+		self.Artwork:SetTexCoord(self.initialLeft, self.initialRight, self.initialTop, self.initialBottom);
+	elseif newState == Enum.ProfessionsSpecPerkState.Pending then
+		self.Artwork:SetTexCoord(self.initialLeft, self.initialRight, self.initialTop, self.initialBottom);
+		if self.state == Enum.ProfessionsSpecPerkState.Unearned then
+			PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PERK_EARNED);
+		end
+	elseif newState == Enum.ProfessionsSpecPerkState.Earned then
+		if fromAnimEnded or self.state == nil then
+			self.Artwork:SetTexCoord(self.finalLeft, self.finalRight, self.finalTop, self.finalBottom);
+		else
+			PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PIP_LOCKIN);
+			self.PipLockinAnim:Restart();
+			if self.unlockRank == self:GetParentMaxRank() then
+				self:GetTalentFrame():PlayCompleteDialAnimation();
+			end
+			local delay = 0.2;
+			self:GetTalentFrame():StartShake(delay);
+		end
+	end
+
+	self.state = newState;
 end
 
 function ProfessionsSpecPerkMixin:OnEvent(event, ...)
 	if event == "SPELL_TEXT_UPDATE" then
 		self:OnEnter();
 	end
+end
+
+function ProfessionsSpecPerkMixin:AcquireTooltip() -- Override
+	local tooltip = GameTooltip;
+	tooltip:SetOwner(self, "ANCHOR_RIGHT", -25, -25);
+	return tooltip;
 end
 
 function ProfessionsSpecPerkMixin:OnEnter() -- Override
@@ -486,6 +549,39 @@ function ProfessionsSpecPerkMixin:OnLeave()
 	GameTooltip_Hide();
 	self:SetScript("OnEvent", nil);
 	self:UnregisterEvent("SPELL_TEXT_UPDATE");
+end
+
+function ProfessionsSpecPerkMixin:UpdateAssets()
+	local kitSpecifier = Professions.GetAtlasKitSpecifier(self:GetTalentFrame().professionInfo);
+	local isFinalPip = self.unlockRank == self:GetParentMaxRank();
+	local pipArtAtlasFormat = isFinalPip and "SpecDial_EndPip_Flipbook_%s" or "SpecDial_Pip_Flipbook_%s";
+	local stylizedAtlasName = kitSpecifier and pipArtAtlasFormat:format(kitSpecifier);
+	local stylizedInfo = stylizedAtlasName and C_Texture.GetAtlasInfo(stylizedAtlasName);
+	if not stylizedInfo then
+		stylizedAtlasName = pipArtAtlasFormat:format("Blacksmithing");
+		stylizedInfo = C_Texture.GetAtlasInfo(stylizedAtlasName);
+	end
+
+	self.Artwork:SetAtlas(stylizedAtlasName, TextureKitConstants.IgnoreAtlasSize);
+
+	local frameSize = 90;
+	local numRows = stylizedInfo.height / frameSize;
+	local numCols = stylizedInfo.width / frameSize;
+	local numFrames = numRows * numCols; -- Expected that all rows are filled
+	self.PipLockinAnim.FlipBook:SetFlipBookRows(numRows);
+	self.PipLockinAnim.FlipBook:SetFlipBookColumns(numCols);
+	self.PipLockinAnim.FlipBook:SetFlipBookFrames(numFrames);
+
+	self.initialLeft = 0;
+	self.initialRight = 1 / numCols;
+	self.initialTop = 0;
+	self.initialBottom = 1 / numRows;
+	self.finalLeft = 1 - self.initialRight;
+	self.finalRight = 1;
+	self.finalTop = 1 - self.initialBottom;
+	self.finalBottom = 1;
+
+	self.PendingGlow:SetAtlas(isFinalPip and "SpecDial_LastPip_BorderGlow" or "SpecDial_Pip_BorderGlow", TextureKitConstants.UseAtlasSize);
 end
 
 

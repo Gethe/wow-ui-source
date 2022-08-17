@@ -2356,8 +2356,8 @@ function Class_GossipQuestPointer:OnBegin()
 
 	-- Try to find the actual gossip button
 	if (questText) then
-		for i=1, GossipFrame_GetTitleButtonCount() do
-			local btn = GossipFrame_GetTitleButton(i);
+		for i=1, GossipFrame:GetTitleButtonCount() do
+			local btn =GossipFrame:GetTitleButton(i);
 			if (btn) then
 				local text = btn:GetText();
 				if (text and string.match(text, questText)) then
@@ -2405,15 +2405,15 @@ function Class_GossipBindPointer:OnBegin()
 
 	if (bindButtonIndex) then
 		-- offset the index by the first gossip button
-		for i=1, GossipFrame_GetTitleButtonCount() do
-			local btn = GossipFrame_GetTitleButton(i);
+		for i=1, GossipFrame:GetTitleButtonCount()) do
+			local btn = GossipFrame:GetTitleButton(i);
 			if btn and btn.type == "Gossip" then
 				bindButtonIndex = bindButtonIndex + (i - 1);
 				break;
 			end
 		end
 
-		local button = GossipFrame_GetTitleButton(bindButtonIndex);
+		local button = GossipFrame:GetTitleButton(bindButtonIndex);
 
 		if button then
 			local x, y = TutorialHelper:GetFrameButtonEdgeOffset(GossipFrame, button);

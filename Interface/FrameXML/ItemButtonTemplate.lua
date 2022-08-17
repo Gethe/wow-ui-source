@@ -115,15 +115,20 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 	button.SlotTexture:SetVertexColor(r, g, b);
 end
 
-function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, isBound)
-	button.IconOverlay:Hide();
-	if button.IconOverlay2 then
-		button.IconOverlay2:Hide();
+local OverlayKeys = {"IconOverlay", "IconOverlay2", "ProfessionQualityOverlay"};
+function ClearItemButtonOverlay(button)
+	for _, key in ipairs(OverlayKeys) do
+		local overlay = button[key];
+		if overlay then
+			overlay:SetVertexColor(1,1,1);
+			overlay:SetAtlas(nil);
+			overlay:Hide();
+		end
 	end
+end
 
-	if button.ProfessionQualityOverlay then
-		button.ProfessionQualityOverlay:Hide();
-	end
+function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, isBound)
+	ClearItemButtonOverlay(button);
 
 	if button.useCircularIconBorder then
 		button.IconBorder:Show();
@@ -179,15 +184,9 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, i
 	end
 end
 
+-- Remember to update the OverlayKeys table if adding an overlay texture here.
 function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
-	button.IconOverlay:SetVertexColor(1,1,1);
-	if button.IconOverlay2 then
-		button.IconOverlay2:Hide();
-	end
-
-	if button.ProfessionQualityOverlay then
-		button.ProfessionQualityOverlay:Hide();
-	end
+	ClearItemButtonOverlay(button);
 
 	if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("AzeriteIconFrame");
@@ -213,8 +212,6 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 			button.IconOverlay2:Show();
 		end
 	else
-		button.IconOverlay:Hide();
-
 		-- The reagent slots contain this button/mixin, however there's a nuance in the button behavior that the overlay needs to be
 		-- hidden if more than 1 quality of reagent is assigned to the slot. Those slots have a separate overlay that is
 		-- managed independently of this, though it still uses the rest of this button's behaviors.
@@ -223,10 +220,11 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 			if quality then
 				if not button.ProfessionQualityOverlay then
 					button.ProfessionQualityOverlay = button:CreateTexture(nil, "OVERLAY");
-					button.ProfessionQualityOverlay:SetPoint("TOPLEFT", 0, -2);
+					button.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2);
+					button.ProfessionQualityOverlay:SetDrawLayer("OVERLAY", 7);
 				end
 
-				local atlas = ("Professions-Icon-Quality-Tier%d-Small"):format(quality);
+				local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);
 				button.ProfessionQualityOverlay:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 				button.ProfessionQualityOverlay:Show();
 			end
@@ -336,10 +334,19 @@ function ItemButtonMixin:UpdateItemContextOverlay()
 
 	self.ItemContextOverlay:Hide();
 
+	local function SetProfessionsQualityShown(shown)
+		if self.ProfessionQualityOverlay then
+			shown = shown and self.ProfessionQualityOverlay:GetAtlas() ~= nil;
+			self.ProfessionQualityOverlay:SetShown(shown);
+		end
+	end
+
 	if not matchesSearch or (contextApplies and not matchesContext) then
 		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
 		self.ItemContextOverlay:SetAllPoints(true);
 		self.ItemContextOverlay:Show();
+
+		SetProfessionsQualityShown(false);
 	elseif matchesContext and self.showMatchHighlight then
 		local itemContext = ItemButtonUtil.GetItemContext();
 		if itemContext == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem or itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeItem or itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then
@@ -349,6 +356,10 @@ function ItemButtonMixin:UpdateItemContextOverlay()
 			self.ItemContextOverlay:SetPoint("CENTER");
 			self.ItemContextOverlay:Show();
 		end
+
+		SetProfessionsQualityShown(true);
+	elseif not contextApplies then
+		SetProfessionsQualityShown(true);
 	end
 end
 

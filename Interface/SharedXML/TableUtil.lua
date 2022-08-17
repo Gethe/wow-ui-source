@@ -190,6 +190,23 @@ function AccumulateOp(tbl, op)
 	return count;
 end
 
+function TableUtil.Execute(tbl, op)
+	for k, v in pairs(tbl) do
+		op(v);
+	end
+end
+
+function TableUtil.ExecuteUntil(tbl, op)
+	for k, v in pairs(tbl) do
+		local operationResult = op(v);
+		if operationResult then
+			return operationResult;
+		end
+	end
+
+	return nil;
+end
+
 function ContainsIf(tbl, pred)
 	for k, v in pairs(tbl) do
 		if (pred(v)) then
@@ -294,7 +311,7 @@ function GetOrCreateTableEntryByCallback(table, key, callback)
 	local currentValue = table[key];
 	local isNewValue = (currentValue == nil);
 	if isNewValue then
-		currentValue = callback();
+		currentValue = callback(key);
 		table[key] = currentValue;
 	end
 
@@ -336,6 +353,15 @@ function GetValuesArray(tbl)
 	return valuesArray;
 end
 
+function GetPairsArray(tbl)
+	local pairsArray = {};
+	for key, value in pairs(tbl) do
+		tInsert(pairsArray, { key = key, value = value, });
+	end
+
+	return pairsArray;
+end
+
 function SwapTableEntries(lhsTable, rhsTable, key)
 	local lhsValue = lhsTable[key];
 	lhsTable[key] = rhsTable[key];
@@ -346,6 +372,15 @@ function TableUtil.OperateOnKeys(tbl, operation)
 	for key, value in pairs(tbl) do
 		operation(key);
 	end
+end
+
+function TableUtil.GetTableValueListFromEnumeration(tableKey, ...)
+	local values = {};
+	for enumerationKey, tbl in ... do
+		table.insert(values, tbl[tableKey]);
+	end
+
+	return values;
 end
 
 --[[

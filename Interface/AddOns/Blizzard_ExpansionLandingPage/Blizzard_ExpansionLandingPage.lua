@@ -59,7 +59,7 @@ function ExpansionLandingPageMixin:RefreshExpansionOverlay(completedQuestID)
 		newestOverlay.CreateOverlay(self.Overlay);
 
 		local minimapAnimationEvents = self.overlay.GetMinimapAnimationEvents();
-		if self.overlay.MinimapAnimationEvents then
+		if minimapAnimationEvents then
 			FrameUtil.RegisterFrameForEvents(self, minimapAnimationEvents);
 		end
 

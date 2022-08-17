@@ -19,8 +19,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="TalentTreeButton" enableMouse="true" mixin="DragonridingPanelTalentButtonMixin">
+			<Button parentKey="TalentTreeButton" enableMouse="true" mixin="DragonridingPanelTalentButtonMixin" inherits="DisabledTooltipButtonTemplate">
 				<Size x="241" y="63"/>
+				<KeyValues>
+					<KeyValue key="disabledTooltip" value="LANDING_DRAGONRIDING_TREE_BUTTON_DISABLED" type="global"/>
+					<KeyValue key="disabledTooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="-6" y="-16"/>
 				</Anchors>
@@ -46,12 +50,16 @@
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
 					<OnMouseDown method="OnMouseDown"/>
 					<OnMouseUp method="OnMouseUp"/>
 					<OnClick method="OnClick"/>
 				</Scripts>
 				<NormalTexture atlas="shadowlands-landingpage-renownbutton-venthyr"/>
 				<PushedTexture atlas="shadowlands-landingpage-renownbutton-venthyr"/>
+				<DisabledTexture atlas="shadowlands-landingpage-renownbutton-venthyr">
+					<Color r="0.4" g="0.4" b="0.4" a="1"/>
+				</DisabledTexture>
 				<HighlightTexture atlas="shadowlands-landingpage-soulbindsbutton-highlight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
@@ -148,7 +156,7 @@
 						<!-- TODO:: Remove WIP text. -->
 						<FontString parentKey="WIPText" inherits="GameFontNormalLarge" text="Work In Progress UI Art">
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.HeaderBar" relativePoint="BOTTOM" x="0" y="-12"/>
+								<Anchor point="LEFT" relativeKey="$parent.HeaderBar" relativePoint="CENTER" x="0" y="0"/>
 							</Anchors>
 							<Color color="RED_FONT_COLOR"/>
 							<Shadow x="1" y="-1">

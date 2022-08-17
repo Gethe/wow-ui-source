@@ -201,8 +201,6 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="minimumWidth" value="250" type="number"/>
-			<KeyValue key="minimumHeight" value="50" type="number"/>
 			<KeyValue key="layoutIndex" value="6" type="number"/>
 			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
 		</KeyValues>

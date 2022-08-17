@@ -99,7 +99,6 @@ function WorldMapMixin:OnLoad()
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("WORLD_MAP_OPEN");
-	self:RegisterEvent("WORLD_MAP_CLOSE");
 
 	self:AttachQuestLog();
 
@@ -122,8 +121,6 @@ function WorldMapMixin:OnEvent(event, ...)
 	elseif event == "WORLD_MAP_OPEN" then
 		local mapID = ...;
 		OpenWorldMap(mapID);
-	elseif event == "WORLD_MAP_CLOSE" then
-		HideUIPanel(self);
 	end
 end
 

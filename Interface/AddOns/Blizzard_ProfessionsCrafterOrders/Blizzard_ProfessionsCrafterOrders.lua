@@ -70,8 +70,8 @@ end
 function ProfessionsCrafterOrdersMixin:OnHide()
     FrameUtil.UnregisterFrameForEvents(self, ProfessionsCrafterOrdersEvents);
     
-	C_TradeSkillUI.CloseTradeSkill();
-	C_TradeSkillUI.CloseCraftingOrders();
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Professions);
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.ProfessionCraftingOrder);
 
 	EventRegistry:UnregisterCallback("Professions.RecipeSelected", self);
 end

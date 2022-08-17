@@ -157,12 +157,12 @@ PVPUtil.lua
 TransmogUtil.lua
 ActionButtonUtil.lua
 DifficultyUtil.lua
-CovenantUtil.lua
+RenownRewardUtil.lua
+RewardTrackTemplates.xml
 TitleUtil.lua
 CollectionsUtil.lua
 ItemDisplay.xml
 ..\SharedXML\HelpTip.xml
-ExtraAbilityContainer.xml
 CurrencyContainer.lua
 MoneyFrame.lua
 MoneyFrame.xml
@@ -225,8 +225,16 @@ SettingDefinitions\Definitions.xml
 QuickKeybind.xml
 EditModePresetLayouts.lua
 EditModeSettingDisplayInfo.lua
+EditModeUtil.lua
+EditModeTemplates.lua
+EditModeTemplates.xml
+EditModeSystemTemplates.lua
+EditModeSystemTemplates.xml
+EditModeDialogs.lua
+EditModeDialogs.xml
 EditModeManager.lua
 EditModeManager.xml
+ExtraAbilityContainer.xml
 Sound.lua
 UIOptions.xml
 ..\SharedXML\DeprecatedTemplates.xml
@@ -289,6 +297,7 @@ SpellBookFrame.xml
 CharacterFrame.xml
 PaperDollFrame.xml
 ReputationFrame.xml
+FriendshipStatusBar.xml
 QuestFrame.xml
 QuestPOI.xml
 QuestInfo.xml
@@ -328,8 +337,9 @@ GuildRegistrarFrame.xml
 PetitionFrame.xml
 HelpFrame.xml
 ColorPickerFrame.xml
-GossipFrame.xml
 CustomGossipFrameBase.xml
+GossipFrameShared.xml
+GossipFrame.xml
 MailFrame.xml
 PetStable.xml
 VehicleSeatIndicator.xml
@@ -398,6 +408,7 @@ GuildUtil.lua
 QuestSession.xml
 ActionStatus.xml
 WeeklyReward.lua
+PlayerInteractionFrameManager.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

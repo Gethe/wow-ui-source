@@ -391,7 +391,7 @@ function QuestFrame_OnShow()
 	if (TutorialFrame.id == 1 or TutorialFrame.id == 55 or TutorialFrame.id == 57) then
 		TutorialFrame_Hide();
 	end
-	NPCFriendshipStatusBar_Update(QuestFrame);
+	QuestFrame.FriendshipStatusBar:Update();
 end
 
 function QuestFrame_OnHide()

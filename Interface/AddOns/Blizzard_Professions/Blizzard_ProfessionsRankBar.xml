@@ -14,15 +14,15 @@
 				</Layer>
 				
 				<Layer level="ARTWORK" textureSubLevel="2">
-					<Texture parentKey="Fill" atlas="Professions_ProgBar_Static_Blacksmithing" useAtlasSize="true">
+					<Texture parentKey="Fill">
+						<Size x="441" y="18"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-2"/>
-						</Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-3"/>
+						</Anchors>						
 					</Texture>
-					
-					<MaskTexture parentKey="Mask" atlas="Professions-skillbar-mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<MaskTexture parentKey="Mask" atlas="Professions-skillbar-mask" useAtlasSize="true" hWrapMode="REPEAT" vWrapMode="REPEAT">
 						<Anchors>
-							<Anchor point="TOPLEFT"/>
+							<Anchor point="LEFT" relativeKey="$parent.Fill"/>
 						</Anchors>
 						<MaskedTextures>
 							<MaskedTexture childKey="Fill"/>
@@ -94,6 +94,11 @@
 				</Layers>
 			</Frame>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="BarAnimation" looping="REPEAT" setToFinalAlpha="true">
+				<FlipBook smoothing="NONE" childKey="Fill" duration="5" order="1" flipBookRows="30" flipBookColumns="2" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

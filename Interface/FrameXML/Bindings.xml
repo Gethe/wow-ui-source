@@ -909,12 +909,12 @@
 		end
 	</Binding>
 	<Binding name="INTERACTMOUSEOVER" category="BINDING_HEADER_TARGETING">
-		if ( not InteractUnit("mouseover") ) then
-			InteractUnit("anyinteract");
+		if ( not C_PlayerInteractionManager.InteractUnit("mouseover") ) then
+		C_PlayerInteractionManager.InteractUnit("anyinteract");
 		end
 	</Binding>
 	<Binding name="INTERACTTARGET" category="BINDING_HEADER_TARGETING">
-		InteractUnit("anyinteract");
+		C_PlayerInteractionManager.InteractUnit("anyinteract");
 	</Binding>
 	<Binding name="ASSISTTARGET" category="BINDING_HEADER_TARGETING">
 		AssistUnit("target");

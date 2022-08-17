@@ -239,6 +239,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<StatusBar parentKey="FriendshipStatusBar" inherits="NPCFriendshipStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="80" y="-41"/>
+				</Anchors>
+			</StatusBar>
 			<Frame parentKey="OverlayElements" frameLevel="510" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
@@ -300,7 +305,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						ReopenInteraction();
+						C_PlayerInteractionManager.ReopenInteraction();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -322,6 +327,11 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
+			<StatusBar parentKey="FriendshipStatusBar" inherits="NPCFriendshipStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="86" y="-42"/> 
+				</Anchors>
+			</StatusBar>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">

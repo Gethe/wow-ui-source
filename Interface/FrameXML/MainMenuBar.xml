@@ -24,6 +24,7 @@
 			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="noSpacers" value="true" type="boolean"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.MainBar" type="global"/>
 		</KeyValues>
 
@@ -64,8 +65,8 @@
 					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="3"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="8" y="-7"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-4" y="4"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="7" y="-7"/>
 				</Anchors>
 			</Frame>
 

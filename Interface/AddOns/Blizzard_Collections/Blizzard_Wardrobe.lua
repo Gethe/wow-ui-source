@@ -162,7 +162,7 @@ function TransmogFrameMixin:OnHide()
 	StaticPopup_Hide("TRANSMOG_APPLY_WARNING");
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
-	C_Transmog.Close();
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Transmogrifier);
 	WardrobeFrame:UnregisterCallback(WardrobeFrameMixin.Event.OnCollectionTabChanged, self);
 end
 

@@ -165,16 +165,14 @@ function ModelSceneMixin:GetActorByTag(tag)
 	return self.tagToActor[tag];
 end
 
-function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID, usePlayerNativeForm)
+function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID)
 	local playerActor = self:GetPlayerActor("player-rider");
 	if (playerActor) then
 		if disablePlayerMountPreview or isSelfMount then
 			playerActor:ClearModel();
 		else
 			local sheathWeapons = true;
-			local autoDress = true;
-			local hieWeapons = false;
-			if (playerActor:SetModelByUnit("player", sheathWeapons, autoDress, hideWeapons, usePlayerNativeForm)) then
+			if (playerActor:SetModelByUnit("player", sheathWeapons)) then
 				local calcMountScale = mountActor:CalculateMountScale(playerActor);
 				local inverseScale = 1 / calcMountScale; 
 				playerActor:SetRequestedScale( inverseScale );

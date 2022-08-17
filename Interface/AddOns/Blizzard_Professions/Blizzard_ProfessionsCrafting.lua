@@ -50,6 +50,8 @@ function ProfessionsCraftingPageMixin:OnLoad()
 
 	self.ViewGuildCraftersButton:SetScript("OnClick", function() self:OnViewGuildCraftersClicked(); end);
 
+	self.TutorialButton:SetScript("OnClick", function() self:ToggleTutorial(); end);
+
 	local function OnUseBestQualityModified(o, checked)
 		local transaction = self.SchematicForm:GetTransaction();
 		Professions.AllocateAllBasicReagents(transaction, checked);
@@ -71,6 +73,21 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	EventRegistry:RegisterCallback("Professions.TransactionUpdated", self.SetupCraftingButtons, self);
 
 	UIDropDownMenu_Initialize(self.LinkDropDown, GenerateClosure(self.InitLinkDropdown, self), "MENU");
+
+	self.flyoutSettings = 
+	{
+		onClickFunc = PaperDollFrameItemFlyoutButton_OnClick,
+		getItemsFunc = PaperDollFrameItemFlyout_GetItems,
+		postGetItemsFunc = PaperDollFrameItemFlyout_PostGetItems,
+		hasPopouts = true,
+		anchorX = 0,
+		anchorY = -3,
+		verticalAnchorX = 0,
+		verticalAnchorY = 0,
+		highlightSizeX = 45,
+		highlightSizeY = 45,
+		highlightOfsY = 3,
+	};
 end
 
 function ProfessionsCraftingPageMixin:OnEvent(event, ...)
@@ -135,6 +152,9 @@ function ProfessionsCraftingPageMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ProfessionsCraftingPageEvents);
 
 	self.CraftingOutputLog:Close();
+	if self:IsTutorialShown() then
+		HelpPlate_Hide(false);
+	end
 
 	self:Reset();
 end
@@ -253,7 +273,9 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
-	if currentRecipeInfo ~= nil and currentRecipeInfo.learned and (Professions.InLocalCraftingMode() or isRuneforging) and not currentRecipeInfo.isRecraft then
+	if currentRecipeInfo ~= nil and currentRecipeInfo.learned and (Professions.InLocalCraftingMode() or C_TradeSkillUI.IsNPCCrafting() or isRuneforging)
+	   and not currentRecipeInfo.isRecraft
+	   and not currentRecipeInfo.isDummyRecipe and not currentRecipeInfo.isGatheringRecipe then
 		self.CreateButton:Show();
 		self.ViewGuildCraftersButton:Hide();
 
@@ -366,9 +388,6 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	if C_TradeSkillUI.IsRuneforging() then
 		professionInfo.professionID = Constants.ProfessionConsts.RUNEFORGING_SKILL_LINE_ID;
 		noStripCategories = {Constants.ProfessionConsts.RUNEFORGING_ROOT_CATEGORY_ID};
-		self.RecipeList.FilterButton:Hide();
-	else
-		self.RecipeList.FilterButton:Show();
 	end
 
 	local changedProfessionID = not oldProfessionInfo or oldProfessionInfo.professionID ~= self.professionInfo.professionID;
@@ -440,7 +459,8 @@ end
 function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
 
-	local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsRuneforging();
+	local isRuneforging = C_TradeSkillUI.IsRuneforging();
+	local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or isRuneforging;
 	local schematicWidth = useCondensedPanel and 500 or 793;
 	self.SchematicForm:SetWidth(schematicWidth);
 	
@@ -451,6 +471,10 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	self:ConfigureInventorySlots(professionInfo);
 
 	self.LinkButton:SetShown(C_TradeSkillUI.CanTradeSkillListLink() and Professions.InLocalCraftingMode());
+	self.TutorialButton:SetShown(not isRuneforging);
+	if self:IsTutorialShown() then
+		HelpPlate_Hide(false);
+	end
 	self:UpdateFilterResetVisibility();
 end
 
@@ -538,5 +562,137 @@ end
 function ProfessionsCraftingPageMixin:HideInventorySlots()
 	for index, inventorySlot in ipairs(self.InventorySlots) do
 		inventorySlot:Hide();
+	end
+end
+
+function ProfessionsCraftingPageMixin:AnyInventorySlotShown()
+	for index, inventorySlot in ipairs(self.InventorySlots) do
+		if inventorySlot:IsShown() then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+ProfessionsCraftingPage_HelpPlate = 
+{
+	FramePos = { x = 5,	y = -22 },
+	[1] = { ButtonPos = { x = 125,	y = -44 }, HighLightBox = { x = 0, y = -52, width = 297, height = 30 }, ToolTipDir = "DOWN", ToolTipText = PROFESSIONS_CRAFTING_HELP_FILTERS },
+};
+
+function ProfessionsCraftingPageMixin:UpdateTutorial()
+	ProfessionsCraftingPage_HelpPlate.FrameSize = { width = self:GetDesiredPageWidth(), height = 635 };
+
+	local numStaticAreas = 1;
+	local maxTutorializedAreas = 7;
+	for i = (numStaticAreas + 1), maxTutorializedAreas do
+		ProfessionsCraftingPage_HelpPlate[i] = nil;
+	end
+
+
+	if self.SchematicForm.Reagents:IsShown() then
+		local reagentsTopPoint = self.SchematicForm.Reagents:GetTop() - self:GetTop() + 30;
+		local reagentsLeftPoint = self.SchematicForm.Reagents:GetLeft() - self:GetLeft() - 20;
+		local basicReagentsBoxLeft = reagentsLeftPoint;
+		local basicReagentsBoxTop = reagentsTopPoint;
+		local reagentsBoxWidth = 225;
+		local reagentsBoxHeight = 360;
+		local reagentsButtonXOfs = 150;
+		local reagentsButtonYOfs = -5;
+
+		local basicReagentsSection =
+		{
+			ButtonPos = { x = basicReagentsBoxLeft + reagentsButtonXOfs, y = basicReagentsBoxTop + reagentsButtonYOfs },
+			HighLightBox = { x = basicReagentsBoxLeft, y = basicReagentsBoxTop, width = reagentsBoxWidth, height = reagentsBoxHeight },
+			ToolTipDir = "UP",
+			ToolTipText = PROFESSIONS_CRAFTING_HELP_BASIC_REAGENTS,
+		};
+		table.insert(ProfessionsCraftingPage_HelpPlate, basicReagentsSection);
+
+		if self.SchematicForm.OptionalReagents:IsShown() then
+			local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
+			local padding = 5;
+			local optionalReagentsSection =
+			{
+				ButtonPos = { x = basicReagentsBoxLeft + reagentsBoxWidth + padding + reagentsButtonXOfs, y = basicReagentsBoxTop + reagentsButtonYOfs },
+				HighLightBox = { x = basicReagentsBoxLeft + reagentsBoxWidth + padding, y = basicReagentsBoxTop, width = reagentsBoxWidth, height = reagentsBoxHeight },
+				ToolTipDir = "UP",
+				ToolTipText = (currentRecipeInfo and currentRecipeInfo.supportsQualities and C_TradeSkillUI.RecipeCanBeRecrafted(currentRecipeInfo.recipeID)) and PROFESSIONS_CRAFTING_HELP_OPTIONAL_REAGENTS_RECRAFTABLE or PROFESSIONS_CRAFTING_HELP_OPTIONAL_REAGENTS,
+			};
+			table.insert(ProfessionsCraftingPage_HelpPlate, optionalReagentsSection);
+		end
+
+		if self.SchematicForm.AllocateBestQualityCheckBox:IsShown() then
+			local width = 210;
+			local y = basicReagentsBoxTop - reagentsBoxHeight - 5;
+			local bestQualityCheckboxSection =
+			{
+				ButtonPos = { x = basicReagentsBoxLeft + width - 25, y = y },
+				HighLightBox = { x = basicReagentsBoxLeft, y = y, width = width, height = 60 },
+				ToolTipDir = "RIGHT",
+				ToolTipText = PROFESSIONS_CRAFTING_HELP_BEST_QUALITY,
+			};
+			table.insert(ProfessionsCraftingPage_HelpPlate, bestQualityCheckboxSection);
+		end
+	end
+
+	local detailsShown = self.SchematicForm.Details:IsShown();
+	local qualityMeter = self.SchematicForm.Details.QualityMeter;
+	if detailsShown and qualityMeter:IsShown() then
+		local qualityMeterTopPoint = qualityMeter:GetTop() - self:GetTop() + 14;
+		local qualityMeterLeftPoint = qualityMeter:GetLeft() - self:GetLeft() - 5;
+		local qualityMeterBoxWidth = 250;
+		local qualityMeterSection =
+		{
+			ButtonPos = { x = qualityMeterLeftPoint + qualityMeterBoxWidth - 25, y = qualityMeterTopPoint },
+			HighLightBox = { x = qualityMeterLeftPoint, y = qualityMeterTopPoint, width = qualityMeterBoxWidth, height = 60 },
+			ToolTipDir = "RIGHT",
+			ToolTipText = PROFESSIONS_CRAFTING_HELP_BAR,
+		};
+		table.insert(ProfessionsCraftingPage_HelpPlate, qualityMeterSection);
+	end
+
+	local finishingReagents = self.SchematicForm.Details.FinishingReagentSlotContainer;
+	if detailsShown and finishingReagents:IsShown() then
+		local finishingReagentsTopPoint = finishingReagents:GetTop() - self:GetTop();
+		local finishingReagentsLeftPoint = finishingReagents:GetLeft() - self:GetLeft() + 50;
+		local width = 150;
+		local finishingReagentsSection =
+		{
+			ButtonPos = { x = finishingReagentsLeftPoint + width - 25, y = finishingReagentsTopPoint - 25 },
+			HighLightBox = { x = finishingReagentsLeftPoint, y = finishingReagentsTopPoint, width = width, height = 80 },
+			ToolTipDir = "RIGHT",
+			ToolTipText = PROFESSIONS_CRAFTING_HELP_FINISHING_REAGENTS,
+		};
+		table.insert(ProfessionsCraftingPage_HelpPlate, finishingReagentsSection);
+	end
+
+	if self:AnyInventorySlotShown() then
+		local gearSection =
+		{
+			ButtonPos = { x = 1066, y = -3 },
+			HighLightBox = { x = 937, y = 1, width = 153, height = 56 },
+			ToolTipDir = "RIGHT",
+			ToolTipText = PROFESSIONS_CRAFTING_HELP_GEAR,
+		};
+		table.insert(ProfessionsCraftingPage_HelpPlate, gearSection);
+	end
+end
+
+function ProfessionsCraftingPageMixin:ShowTutorial()
+	self:UpdateTutorial();
+	HelpPlate_Show(ProfessionsCraftingPage_HelpPlate, self, self.TutorialButton);
+end
+
+function ProfessionsCraftingPageMixin:IsTutorialShown()
+	return HelpPlate_IsShowing(ProfessionsCraftingPage_HelpPlate);
+end
+
+function ProfessionsCraftingPageMixin:ToggleTutorial()
+	if not self:IsTutorialShown() then
+		self:ShowTutorial();
+	else
+		HelpPlate_Hide(true);
 	end
 end

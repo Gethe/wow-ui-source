@@ -5,21 +5,11 @@ function ChromieTimeFrameMixin:OnLoad()
 	self.ExpansionOptionsPool = CreateFramePool("BUTTON", self.OptionsFrame, "ChromieTimeExpansionButtonTemplate");
 end 
 
-function ChromieTimeFrameMixin:OnEvent(event, ...) 
-	if (event == "CHROMIE_TIME_CLOSE") then
-		self.selectedNewExpansion = true;
-		HideUIPanel(self);
-	end 
-end 
-
 function ChromieTimeFrameMixin:OnShow()
-	self:RegisterEvent("CHROMIE_TIME_CLOSE");
 	self:SetupExpansionButtons(); 
 end
 
 function ChromieTimeFrameMixin:OnHide()
-	self:UnregisterEvent("CHROMIE_TIME_CLOSE");
-
 	if (self.currentExpansionSelection) then 
 		self.currentExpansionSelection:ClearSelection(); 
 	end 

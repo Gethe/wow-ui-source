@@ -14,6 +14,7 @@ function GarrisonCapacitiveDisplayFrame_OnLoad(self)
     self:RegisterEvent("SHIPMENT_CRAFTER_INFO");
     self:RegisterEvent("SHIPMENT_CRAFTER_REAGENT_UPDATE");
     self:RegisterEvent("SHIPMENT_UPDATE");
+	self.available = 0; 
 end
 
 local shipmentUpdater;

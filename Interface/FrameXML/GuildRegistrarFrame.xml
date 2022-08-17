@@ -223,20 +223,6 @@
 			</Frame>
  		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("GUILD_REGISTRAR_SHOW");
-				self:RegisterEvent("GUILD_REGISTRAR_CLOSED");
-			</OnLoad>
-			<OnEvent>
-				if ( event == "GUILD_REGISTRAR_SHOW" ) then
-					ShowUIPanel(GuildRegistrarFrame);
-					if ( not GuildRegistrarFrame:IsShown() ) then
-						CloseGuildRegistrar();
-					end
-				elseif ( event == "GUILD_REGISTRAR_CLOSED" ) then
-					HideUIPanel(GuildRegistrarFrame);
-				end
-			</OnEvent>
 			<OnShow>
 				GuildRegistrar_OnShow();
 				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);

@@ -147,7 +147,7 @@ function ActionBarMixin:UpdateShownButtons()
         actionButton:SetShown(showButton);
 
         if (not self.noSpacers) then
-            if  (not showButton) then
+            if  (not showButton and i <= self.numShowingButtons) then
                 self.ButtonSpacers[i]:Show();
             else
                 self.ButtonSpacers[i]:Hide();

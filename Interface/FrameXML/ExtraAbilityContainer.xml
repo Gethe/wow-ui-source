@@ -2,23 +2,21 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ExtraAbilityContainer.lua"/>
 
-	<Frame name="ExtraAbilityContainerTemplate" mixin="ExtraAbilityContainerMixin" inherits="HorizontalLayoutFrame, UIParentBottomManagedFrameTemplate" virtual="true">
+	<Frame name="ExtraAbilityContainer" inherits="HorizontalLayoutFrame, UIParentBottomManagedFrameTemplate, EditModeExtraAbilitiesSystemTemplate" mixin="ExtraAbilityContainerMixin" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
 		<KeyValues>
 			<KeyValue key="spacing" value="-30" type="number"/>
+			<KeyValue key="minimumWidth" value="250" type="number"/>
 			<KeyValue key="fixedHeight" value="120" type="number"/>
 			<KeyValue key="layoutIndex" value="9" type="number"/>
 			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
 		</KeyValues>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
-	</Frame>
-
-	<Frame name="ExtraAbilityContainer" inherits="ExtraAbilityContainerTemplate" toplevel="true" hidden="true">
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
 	</Frame>
 </Ui>

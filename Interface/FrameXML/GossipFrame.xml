@@ -8,7 +8,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="$parentMaterialTopLeft">
+				<Texture parentKey="MaterialTopLeft">
 					<Size x="239" y="241"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="21" y="-75"/>
@@ -17,65 +17,37 @@
 				<Texture name="$parentMaterialTopRight">
 					<Size x="64" y="241"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MaterialTopLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialBotLeft">
 					<Size x="239" y="128"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MaterialTopLeft" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentMaterialBotRight">
 					<Size x="64" y="128"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>
-	<Button name="GossipTitleButtonTemplate" virtual="true" mixin="GossipTitleButtonMixin" hidden="false">
-		<Size x="300" y="16"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentGossipIcon" parentKey="Icon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="1"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnClick>
-				GossipTitleButton_OnClick(self, button, down);
-			</OnClick>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
-		<ButtonText>
-			<Size x="275" y="0"/>
-			<Anchors>
-				<Anchor point="LEFT" x="20" y="0"/>
-			</Anchors>
-		</ButtonText>
-		<NormalFont style="QuestFontLeft"/>
-	</Button>
-	<Frame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+	<Frame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="GossipFrameMixin">
 		<Size x="338" y="496"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="GossipFramePortrait">
+				<Texture parentKey="Portrait">
 					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-6"/>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="GossipFrameBg" parentKey="Background">
+				<Texture parentKey="Background">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
@@ -83,16 +55,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="GossipNpcNameFrame">
+			<Frame parentKey="NameFrame">
 				<Size x="0" y="14"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GossipFrame" relativePoint="TOP" x="0" y="-4"/>
-					<Anchor point="LEFT" relativeTo="GossipFramePortrait" relativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="TOP" relativePoint="TOP" x="0" y="-4"/>
+					<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="10" y="0"/>
 					<Anchor point="RIGHT" x="-58" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="GossipFrameNpcNameText" inherits="GameFontHighlight">
+						<FontString parentKey="Name" inherits="GameFontHighlight">
 							<Size x="235" y="20"/>
 							<Anchors>
 								<Anchor point="LEFT"/>
@@ -105,9 +77,9 @@
 					<OnLoad function="RaiseFrameLevelByTwo"/>
 				</Scripts>
 			</Frame>
-			<Frame name="GossipFrameGreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
+			<Frame parentKey="GreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
 				<Frames>
-					<Button name="GossipFrameGreetingGoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">
+					<Button parentKey="GoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">
 						<Size x="78" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="GossipFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
@@ -118,163 +90,32 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<ScrollFrame name="GossipGreetingScrollFrame" inherits="UIPanelScrollFrameTemplate">
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Size x="300" y="403"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="GossipFrame" x="5" y="-65"/>
+							<Anchor point="TOPLEFT" x="8" y="-65"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="102"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
-								</Texture>
-								<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="106"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-								<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="1"/>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-										<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<ScrollChild>
-							<Frame name="GossipGreetingScrollChildFrame">
-								<Size x="300" y="403"/>
-								<Layers>
-									<Layer>
-										<FontString name="GossipGreetingText" inherits="QuestFont" text="Filler Text" justifyH="LEFT">
-											<Size x="270" y="0"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" x="10" y="-10"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Frame name="GossipSpacerFrame">
-										<Size x="5" y="15"/>
-										<Anchors>
-											<Anchor point="TOP" x="0" y="0"/>
-										</Anchors>
-									</Frame>
-								</Frames>
-							</Frame>
-						</ScrollChild>
-					</ScrollFrame>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="-2" y="2"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="2" y="-2"/>
+						</Anchors>
+					</EventFrame>
 				</Frames>
 			</Frame>
+			<StatusBar parentKey="FriendshipStatusBar" inherits="NPCFriendshipStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="80" y="-41"/>
+				</Anchors>
+			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GossipFrame_OnLoad"/>
-			<OnShow>
-				PlaySound(SOUNDKIT.IG_QUEST_LIST_OPEN);
-				if ( StaticPopup_Visible("XP_LOSS") ) then
-					StaticPopup_Hide("XP_LOSS");
-				end
-			</OnShow>
-			<OnEvent function="GossipFrame_OnEvent"/>
-			<OnHide>
-				PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
-				C_GossipInfo.CloseGossip();
-			</OnHide>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
 			<OnMouseWheel function=""/>
 		</Scripts>
 	</Frame>
-	<StatusBar name="NPCFriendshipStatusBar" parent="GossipFrame" hidden="true">
-		<Size x="230" y="14"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="80" y="-41"/>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="-25" right="0" top="-15" bottom="0"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="-2">
-				<Texture parentKey="BarBorder" atlas="friendship-parts-bar" useAtlasSize="true"> <!-- the bar's border -->
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-26" y="5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="-1">
-				<Texture parentKey="BarRingBackground" atlas="friendship-parts-background" useAtlasSize="true"> <!-- the bar's ring's background -->
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-24" y="13"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="0">
-				<Texture file="Interface\Common\friendship-heart" parentKey="icon">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-27" y="16"/>
-					</Anchors>
-				</Texture>
-				<MaskTexture parentKey="FriendshipIconMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="1" y="-1"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-1" y="1"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="icon"/>
-					</MaskedTextures>
-				</MaskTexture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="BarCircle" atlas="friendship-parts-circle" useAtlasSize="true"> <!-- the bar's ring -->
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-32" y="19"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Notch1" atlas="friendship-parts-divider" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="43" y="2"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Notch2" atlas="friendship-parts-divider" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Notch1" x="47" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Notch3" atlas="friendship-parts-divider" useAtlasSize="true">
-					<Size x="4" y="17"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Notch2" x="47" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Notch4" atlas="friendship-parts-divider" useAtlasSize="true">
-					<Size x="4" y="17"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Notch3" x="47" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture setAllPoints="true">  <!-- bar fill background -->
-					<Color r="0" g="0" b="0" a="0.5"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:SetStatusBarTexture(1, 1, 1, "BORDER", -1);
-			</OnLoad>
-			<OnEnter function="NPCFriendshipStatusBar_OnEnter"/>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</StatusBar>
 </Ui>

@@ -1229,10 +1229,10 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		self.SlotBackground:Show();
 
 		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow");
-		self.NormalTexture:SetSize(50, 50);
+		self.NormalTexture:SetSize(51, 51);
 
 		self:SetPushedAtlas("UI-HUD-ActionBar-IconFrame-AddRow-Down");
-		self.PushedTexture:SetSize(50, 50);
+		self.PushedTexture:SetSize(51, 51);
 	end
 end
 

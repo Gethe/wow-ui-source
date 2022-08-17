@@ -88,8 +88,8 @@ function ProfessionsCustomerOrdersMixin:OnHide()
     FrameUtil.UnregisterFrameForEvents(self, ProfessionsCustomerOrdersEvents);
 
     C_CraftingOrders.CloseCustomerCraftingOrders();
-	C_TradeSkillUI.CloseTradeSkill();
-	C_TradeSkillUI.CloseCustomerOrders();
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Professions);
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.ProfessionsCustomerOrders);
 end
 
 function ProfessionsCustomerOrdersMixin:ShowCurrentPage()

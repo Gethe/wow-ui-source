@@ -507,11 +507,3 @@ end
 function ContributionCollectionMixin:ReleaseReward(reward)
 	self.rewardPool:Release(reward);
 end
-
-function ContributionCollectionUI_Show()
-	ShowUIPanel(ContributionCollectionFrame);
-end
-
-function ContributionCollectionUI_Hide()
-	HideUIPanel(ContributionCollectionFrame);
-end

@@ -232,6 +232,7 @@ function BuffFrameMixin:UpdateAllBuffAnchors()
 	self:SetupBuffs(self:GetExpanded());
 	self:SetupDebuffs(false);
 	self:SetupDebuffs(true);
+	self.CollapseAndExpandButton:SetShown(self.buffInfo and (#self.buffInfo >= 1));
 end
 
 AuraButtonMixin = { }; 

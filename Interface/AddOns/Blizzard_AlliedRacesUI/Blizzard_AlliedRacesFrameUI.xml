@@ -270,7 +270,6 @@
 		</Layers>
 		<Scripts>
 			<OnLoad  method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
 			<OnHide  method="OnHide"/>
 			<OnShow  method="OnShow"/>
 		</Scripts>

@@ -47,7 +47,7 @@ StaticPopupDialogs["BUYOUT_AUCTION"] = {
 		end);
 		self:SetScript("OnHide", function()
 			if oldOnHide then
-				oldOnHide();
+				oldOnHide(self);
 			end
 			OnComplete();
 		end);

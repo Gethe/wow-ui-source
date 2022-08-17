@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsCrafting.lua"/>
 
-	<ItemButton name="ProfessionsGearSlotTemplate" mixin="ProfessionsGearSlotTemplateMixin" parentArray="GearSlots" virtual="true">
+	<ItemButton name="ProfessionsGearSlotTemplate" mixin="ProfessionsGearSlotTemplateMixin" parentArray="InventorySlots" virtual="true">
 		<Scripts>
 			<OnLoad>
 				PaperDollItemSlotButton_OnLoad(self);
@@ -18,9 +18,9 @@
 			</OnHide>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-				PaperDollItemSlotButton_OnModifiedClick(self, button);
+					PaperDollItemSlotButton_OnModifiedClick(self, button);
 				else
-				PaperDollItemSlotButton_OnClick(self, button);
+					PaperDollItemSlotButton_OnClick(self, button);
 				end
 			</OnClick>
 			<OnDragStart>
@@ -40,6 +40,12 @@
 	
 	<Frame name="ProfessionsCraftingPageTemplate" parent="ProfessionsFrame" setAllPoints="true" mixin="ProfessionsCraftingPageMixin" virtual="true">
 		<Frames>
+			<Button parentKey="TutorialButton" inherits="MainHelpPlateButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="39" y="20" />
+				</Anchors>
+			</Button>
+
 			<Frame parentKey="RecipeList" inherits="ProfessionsRecipeListTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-72"/>
@@ -112,7 +118,7 @@
 				</Anchors>
 			</Frame>
 
-			<ItemButton parentKey="Prof0ToolSlot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="Prof0ToolSlot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="Prof0ToolSlot" type="string"/>
 					<KeyValue key="slotID" value="20" type="number"/>
@@ -121,7 +127,7 @@
 					<Anchor point="TOPRIGHT" x="-110" y="-31"/>
 				</Anchors>
 			</ItemButton>
-			<ItemButton parentKey="Prof0Gear0Slot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="Prof0Gear0Slot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="Prof0Gear0Slot" type="string"/>
 					<KeyValue key="slotID" value="21" type="number"/>
@@ -130,7 +136,7 @@
 					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Prof0ToolSlot" x="5" y="0"/>
 				</Anchors>
 			</ItemButton>
-			<ItemButton parentKey="Prof0Gear1Slot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="Prof0Gear1Slot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="Prof0Gear1Slot" type="string"/>
 					<KeyValue key="slotID" value="22" type="number"/>
@@ -140,7 +146,7 @@
 				</Anchors>
 			</ItemButton>
 
-			<ItemButton parentKey="Prof1ToolSlot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="Prof1ToolSlot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="Prof1ToolSlot" type="string"/>
 					<KeyValue key="slotID" value="23" type="number"/>
@@ -149,7 +155,7 @@
 					<Anchor point="TOPRIGHT" x="-110" y="-31"/>
 				</Anchors>
 			</ItemButton>
-			<ItemButton parentKey="Prof1Gear0Slot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="Prof1Gear0Slot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="Prof1Gear0Slot" type="string"/>
 					<KeyValue key="slotID" value="24" type="number"/>
@@ -158,7 +164,7 @@
 					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Prof1ToolSlot" x="5" y="0"/>
 				</Anchors>
 			</ItemButton>
-			<ItemButton parentKey="Prof1Gear1Slot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="Prof1Gear1Slot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="Prof1Gear1Slot" type="string"/>
 					<KeyValue key="slotID" value="25" type="number"/>
@@ -168,7 +174,7 @@
 				</Anchors>
 			</ItemButton>
 
-			<ItemButton parentKey="CookingToolSlot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="CookingToolSlot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="CookingToolSlot" type="string"/>
 					<KeyValue key="slotID" value="26" type="number"/>
@@ -177,7 +183,7 @@
 					<Anchor point="TOPRIGHT" x="-74" y="-31"/>
 				</Anchors>
 			</ItemButton>
-			<ItemButton parentKey="CookingGear0Slot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="CookingGear0Slot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="CookingGear0Slot" type="string"/>
 					<KeyValue key="slotID" value="27" type="number"/>
@@ -187,7 +193,7 @@
 				</Anchors>
 			</ItemButton>
 
-			<ItemButton parentKey="FishingToolSlot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="FishingToolSlot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="FishingToolSlot" type="string"/>
 					<KeyValue key="slotID" value="28" type="number"/>
@@ -196,7 +202,7 @@
 					<Anchor point="TOPRIGHT" x="-110" y="-31"/>
 				</Anchors>
 			</ItemButton>
-			<ItemButton parentKey="FishingGear0Slot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="FishingGear0Slot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="FishingGear0Slot" type="string"/>
 					<KeyValue key="slotID" value="29" type="number"/>
@@ -205,7 +211,7 @@
 					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.FishingToolSlot" x="5" y="0"/>
 				</Anchors>
 			</ItemButton>
-			<ItemButton parentKey="FishingGear1Slot" parentArray="InventorySlots" inherits="ProfessionsGearSlotTemplate">
+			<ItemButton parentKey="FishingGear1Slot" inherits="ProfessionsGearSlotTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="FishingGear1Slot" type="string"/>
 					<KeyValue key="slotID" value="30" type="number"/>

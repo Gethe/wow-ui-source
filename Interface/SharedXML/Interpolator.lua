@@ -33,11 +33,7 @@ function InterpolatorMixin:Interpolate(v1, v2, time, setter, finished)
 				finished();
 			end
 
-			self.interpolateTo = nil;
-			if self.timer then
-				self.timer:Cancel();
-				self.timer = nil;
-			end
+			self:Cancel();
 			return false;
 		end
 
@@ -52,6 +48,14 @@ end
 
 function InterpolatorMixin:GetInterpolateTo()
 	return self.interpolateTo;
+end
+
+function InterpolatorMixin:Cancel()
+	self.interpolateTo = nil;
+	if self.timer then
+		self.timer:Cancel();
+		self.timer = nil;
+	end
 end
 
 function CreateInterpolator(interpolateFunc)

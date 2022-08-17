@@ -43,76 +43,38 @@
 	</Button>
 
 	<Frame name="ProfessionsSpecPerkTemplate" mixin="ProfessionsSpecPerkMixin" enableMouse="true" virtual="true" frameStrata="HIGH" frameLevel="300">
-		<Size x="22" y="22"/>
+		<Size x="90" y="90"/>
+		<HitRectInsets>
+			<AbsInset left="10" right="10" top="10" bottom="10"/>
+		</HitRectInsets>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
-		<!-- NOTE: This is mostly copied from TalentTestButtonDiamondTemplate until art/design is ready. !-->
-		<KeyValues>
-			<KeyValue key="sizingAdjustment" value="TalentButtonBasicArtMixin.SizingAdjustment.ProfessionPerk" type="global"/>
-		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" parentArray="RotatedTextures">
+				<Texture parentKey="Artwork" parentArray="RotatedTextures">
+					<Size x="90" y="90"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="BorderShadow" parentArray="RotatedTextures">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<Color r="0" g="0" b="0"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="3">
-				<Texture parentKey="StateBorder">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="2">
-				<Texture parentKey="Border2" parentArray="RotatedTextures">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<Color r="0.4" g="0.4" b="0.4"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="3">
-				<Texture parentKey="Border" parentArray="RotatedTextures">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<Color r="0.7" g="0.7" b="0.7"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="SpendText" inherits="SystemFont18_Shadow_ThickOutline" justifyH="CENTER">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="5"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="DisabledOverlay" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="1"/>
-				</Texture>
+				<Texture parentKey="PendingGlow" parentArray="RotatedTextures"/>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PipLockinAnim" looping="NONE">
+				<FlipBook parentKey="FlipBook" startDelay="0" endDelay="0" smoothing="NONE" childKey="Artwork" duration="0.5" order="1" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame> 
 
 	<Frame name="ProfessionSpecEdgeArrowTemplate" mixin="ProfessionSpecEdgeArrowMixin" inherits="TalentEdgeArrowTemplate" virtual="true"/>
 
-	<Button name="ProfessionsSpecPathTemplate" inherits="TalenButtonOldCircleTemplate" enableMouse="true" virtual="true">
+	<Button name="ProfessionsSpecPathTemplate" inherits="TalentButtonCircleTemplate" enableMouse="true" virtual="true">
 		<Size x="55" y="55"/>
 		<!--
 		iconSize: size for the path icon.
@@ -120,8 +82,9 @@
 		isDetailedView: If the path is shown in the detailed view panel. Controls interactibility and updates.
 		-->
 		<KeyValues>
-			<KeyValue key="iconSize" value="50" type="number"/>
-			<KeyValue key="progressBarSize" value="60" type="number"/>
+			<KeyValue key="iconSize" value="46" type="number"/>
+			<KeyValue key="progressBarSizeX" value="60" type="number"/>
+			<KeyValue key="progressBarSizeY" value="60" type="number"/>
 			<KeyValue key="isDetailedView" value="false" type="boolean"/>
 		</KeyValues>
 		<Scripts>
@@ -133,20 +96,18 @@
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture parentKey="Background" atlas="orderhalltalents-timer-bg" useAtlasSize="false">
-							<Size x="60" y="60"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="-1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
 			</Cooldown>
 		</Frames>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ProgressBarBackground" atlas="orderhalltalents-timer-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ProgressBar" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ProgressBar" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="SpendText" inherits="SystemFont18_Shadow_ThickOutline" justifyH="CENTER">
 					<Anchors>
@@ -154,6 +115,10 @@
 					</Anchors>
 				</FontString>
 				<Texture parentKey="SelectedOverlay" alphaMode="ADD" alpha="0.2" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
 					<KeyValues>
 						<KeyValue key="selected" type="boolean" value="true"/>
 					</KeyValues>

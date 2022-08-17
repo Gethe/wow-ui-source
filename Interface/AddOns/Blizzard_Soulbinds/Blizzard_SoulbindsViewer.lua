@@ -2,7 +2,6 @@ local CONDUITS_LEARNED_IN_TUTORIAL = 3;
 
 local SoulbindViewerEvents =
 {
-	"SOULBIND_FORGE_INTERACTION_ENDED",
 	"SOULBIND_ACTIVATED",
 	"SOULBIND_PENDING_CONDUIT_CHANGED",
 	"SOULBIND_CONDUIT_INSTALLED",
@@ -22,8 +21,6 @@ SoulbindViewerMixin:GenerateCallbackEvents(
 
 function SoulbindViewerMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
-
-	self:RegisterEvent("SOULBIND_FORGE_INTERACTION_STARTED");
 
 	self.ActivateSoulbindButton:SetScript("OnClick", GenerateClosure(self.OnActivateSoulbindClicked, self));
 	self.ActivateSoulbindButton:SetScript("OnEnter", GenerateClosure(self.OnActivateSoulbindEnter, self));
@@ -58,11 +55,7 @@ function SoulbindViewerMixin:ShowChangesPendingDialog()
 end
 
 function SoulbindViewerMixin:OnEvent(event, ...)
-	if event == "SOULBIND_FORGE_INTERACTION_STARTED" then
-		self:Open();
-	elseif event == "SOULBIND_FORGE_INTERACTION_ENDED" then
-		HideUIPanel(self);
-	elseif event == "SOULBIND_ACTIVATED" then
+	if event == "SOULBIND_ACTIVATED" then
 		Soulbinds.SetSoulbindIDActivationPending(nil);
 		local soulbindID = ...;
 		self:OnSoulbindActivated(...);

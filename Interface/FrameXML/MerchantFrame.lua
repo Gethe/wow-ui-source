@@ -6,8 +6,6 @@ local MAX_MONEY_DISPLAY_WIDTH = 120;
 
 function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_UPDATE");
-	self:RegisterEvent("MERCHANT_CLOSED");
-	self:RegisterEvent("MERCHANT_SHOW");
 	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterEvent("BAG_UPDATE");
@@ -25,22 +23,25 @@ function MerchantFrame_OnLoad(self)
 	UIDropDownMenu_Initialize(self.lootFilter, MerchantFrame_InitFilter);
 end
 
+function MerchantFrame_MerchantShow()
+	ShowUIPanel(MerchantFrame);
+	if ( not MerchantFrame:IsShown() ) then
+		CloseMerchant();
+		return;
+	end
+	MerchantFrame.page = 1;
+	MerchantFrame_UpdateCurrencies();
+	MerchantFrame_Update();
+end	
+
+function MerchantFrame_MerchantClosed()
+	MerchantFrame:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+	StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL");
+	HideUIPanel(MerchantFrame);
+end		
 function MerchantFrame_OnEvent(self, event, ...)
 	if ( event == "MERCHANT_UPDATE" and "MERCHANT_FILTER_ITEM_UPDATE" ) then
 		self.update = true;
-	elseif ( event == "MERCHANT_CLOSED" ) then
-		self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
-		StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL");
-		HideUIPanel(self);
-	elseif ( event == "MERCHANT_SHOW" ) then
-		ShowUIPanel(self);
-		if ( not self:IsShown() ) then
-			CloseMerchant();
-			return;
-		end
-		self.page = 1;
-		MerchantFrame_UpdateCurrencies();
-		MerchantFrame_Update();
 	elseif ( event == "PLAYER_MONEY" or event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
 		MerchantFrame_UpdateCanRepairAll();
 		MerchantFrame_UpdateRepairButtons();

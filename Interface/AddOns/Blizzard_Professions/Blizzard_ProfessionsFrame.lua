@@ -4,6 +4,7 @@ local ProfessionsFrameEvents =
 	"TRADE_SKILL_NAME_UPDATE",
 	"TRADE_SKILL_LIST_UPDATE",
 	"TRADE_SKILL_CLOSE",
+	"GARRISON_TRADESKILL_NPC_CLOSED",
 };
 
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE"] = 
@@ -38,8 +39,8 @@ function ProfessionsMixin:OnLoad()
 	TabSystemOwnerMixin.OnLoad(self);
 	self:SetTabSystem(self.TabSystem);
 
-	self.recipesTabID = self:AddNamedTab("Recipes", self.CraftingPage);
-	self.specializationsTabID = self:AddNamedTab("Specializations", self.SpecPage);
+	self.recipesTabID = self:AddNamedTab(PROFESSIONS_RECIPES_TAB_NAME, self.CraftingPage);
+	self.specializationsTabID = self:AddNamedTab(PROFESSIONS_SPECIALIZATIONS_TAB_NAME, self.SpecPage);
 
 	self:InitializeButtons();
 
@@ -139,11 +140,16 @@ function ProfessionsMixin:GetProfessionInfo()
 	return professionInfo;
 end
 
+function ProfessionsMixin:SetProfessionType(professionType)
+	self.professionType = professionType;
+end
+
 function ProfessionsMixin:Refresh()
 	local professionInfo = self:GetProfessionInfo();
 
 	self:SetTitle(professionInfo.displayName);
 	self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(professionInfo.professionID));
+	self:SetProfessionType(Professions.GetProfessionType(professionInfo));
 
 	for _, page in ipairs(self.Pages) do
 		page:Refresh(professionInfo);
@@ -152,11 +158,20 @@ function ProfessionsMixin:Refresh()
 	self:UpdateTabs();
 end
 
+
+local recipeTabName =
+{
+	[Professions.ProfessionType.Crafting] = PROFESSIONS_RECIPES_TAB_NAME,
+	[Professions.ProfessionType.Gathering] = PROFESSIONS_JOURNAL_TAB_NAME,
+};
 function ProfessionsMixin:UpdateTabs()
 	local onlyShowRecipes = not Professions.InLocalCraftingMode() or C_TradeSkillUI.IsRuneforging();
 	for _, tabID in ipairs(self:GetTabSet()) do
 		self.TabSystem:SetTabShown(tabID, not onlyShowRecipes);
 	end
+
+	local recipesTab = self:GetTabButton(self.recipesTabID);
+	recipesTab.Text:SetText(recipeTabName[self.professionType]);
 
 	local shouldShowSpec = Professions.InLocalCraftingMode() and C_ProfSpecs.ShouldShowSpecTab();
 
@@ -257,7 +272,7 @@ function ProfessionsMixin:OnShow()
 end
 
 function ProfessionsMixin:OnHide()
-	C_TradeSkillUI.CloseTradeSkill();
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Professions);
 	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
 	
 	C_Garrison.CloseGarrisonTradeskillNPC();

@@ -50,42 +50,47 @@ function EditModeManagerFrameMixin:OnLoad()
 		UIDropDownMenuButton_OnClick(layoutButton.owningButton);
 	end
 
-	local newLayoutButtonText = HUD_EDIT_MODE_NEW_LAYOUT:format(CreateSimpleTextureMarkup("Interface\\PaperDollInfoFrame\\Character-Plus", 16));
+	local newLayoutButtonText = HUD_EDIT_MODE_NEW_LAYOUT:format(CreateAtlasMarkup("editmode-new-layout-plus"));
+	local newLayoutButtonTextDisabled = HUD_EDIT_MODE_NEW_LAYOUT_DISABLED:format(CreateAtlasMarkup("editmode-new-layout-plus-disabled"));
 	local dropdownButtonWidth = 210;
 	local shareDropdownButtonMaxTextWidth = 190;
 	local shareSubDropdownButtonWidth = 220;
 	local copyRenameSubDropdownButtonWidth = 150;
 	local subMenuButton = true;
+	local disableOnMaxLayouts = true;
+	local disableOnMaxLayoutsNo = false;
+	local disableOnActiveChanges = true;
+	local disableOnActiveChangesNo = false;
 
 	local function layoutEntryCustomSetup(dropDownButtonInfo, standardFunc)
 		if dropDownButtonInfo.value == "newLayout" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(newLayoutButtonText, createNewLayout, dropdownButtonWidth);
+			newButton:Init(newLayoutButtonText, createNewLayout, disableOnMaxLayouts, disableOnActiveChangesNo, dropdownButtonWidth, nil, nil, nil, newLayoutButtonTextDisabled);
 			dropDownButtonInfo.customFrame = newButton;
 		elseif dropDownButtonInfo.value == "import" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_IMPORT_LAYOUT, importLayout, dropdownButtonWidth);
+			newButton:Init(HUD_EDIT_MODE_IMPORT_LAYOUT, importLayout, disableOnMaxLayouts, disableOnActiveChanges, dropdownButtonWidth);
 			dropDownButtonInfo.customFrame = newButton;
 		elseif dropDownButtonInfo.value == "share" then
 			local newButton = self.buttonEntryPool:Acquire();
 			local showArrow = true;
-			newButton:Init(HUD_EDIT_MODE_SHARE_LAYOUT, shareLayout, dropdownButtonWidth, shareDropdownButtonMaxTextWidth, showArrow);
+			newButton:Init(HUD_EDIT_MODE_SHARE_LAYOUT, shareLayout, disableOnMaxLayoutsNo, disableOnActiveChangesNo, dropdownButtonWidth, shareDropdownButtonMaxTextWidth, showArrow);
 			dropDownButtonInfo.customFrame = newButton;
 		elseif dropDownButtonInfo.value == "copyToClipboard" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, copyToClipboard, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
+			newButton:Init(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, copyToClipboard, disableOnMaxLayoutsNo, disableOnActiveChangesNo, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;
 		elseif dropDownButtonInfo.value == "postInChat" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_POST_IN_CHAT, postInChat, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
+			newButton:Init(HUD_EDIT_MODE_POST_IN_CHAT, postInChat, disableOnMaxLayoutsNo, disableOnActiveChangesNo, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;
 		elseif dropDownButtonInfo.value == "copyLayout" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_COPY_LAYOUT, copyLayout, copyRenameSubDropdownButtonWidth, nil, nil, subMenuButton);
+			newButton:Init(HUD_EDIT_MODE_COPY_LAYOUT, copyLayout, disableOnMaxLayouts, disableOnActiveChangesNo, copyRenameSubDropdownButtonWidth, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;
 		elseif dropDownButtonInfo.value == "renameLayout" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_RENAME_LAYOUT, renameLayout, copyRenameSubDropdownButtonWidth, nil, nil, subMenuButton);
+			newButton:Init(HUD_EDIT_MODE_RENAME_LAYOUT, renameLayout, disableOnMaxLayoutsNo, disableOnActiveChangesNo, copyRenameSubDropdownButtonWidth, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;
 		elseif dropDownButtonInfo.value == "header" then
 			dropDownButtonInfo.isTitle = true;
@@ -558,18 +563,6 @@ function EditModeManagerFrameMixin:RemoveOldSystemsAndSettings(layoutInfo)
 	return removedSomething;
 end
 
-local function GetSettingMapFromSettings(settings, displayInfoMap)
-	local settingMap = {};
-	for _, settingInfo in ipairs(settings) do
-		settingMap[settingInfo.setting] = { value = settingInfo.value };
-
-		if displayInfoMap and displayInfoMap[settingInfo.setting] then
-			settingMap[settingInfo.setting].displayValue = displayInfoMap[settingInfo.setting]:ConvertValueForDisplay(settingInfo.value);
-		end
-	end
-	return settingMap;
-end
-
 -- This method handles adding any missing systems/settings to a saved layout data table
 function EditModeManagerFrameMixin:AddNewSystemsAndSettings(layoutInfo)
 	local addedSomething = false;
@@ -577,7 +570,7 @@ function EditModeManagerFrameMixin:AddNewSystemsAndSettings(layoutInfo)
 	-- Create a system/setting map to allow for efficient checking of each system & setting below
 	local layoutSystemMap = {};
 	for _, layoutSystemInfo in ipairs(layoutInfo.systems) do
-		local settingMap = GetSettingMapFromSettings(layoutSystemInfo.settings);
+		local settingMap = EditModeUtil:GetSettingMapFromSettings(layoutSystemInfo.settings);
 
 		if layoutSystemInfo.systemIndex then
 			if not layoutSystemMap[layoutSystemInfo.system] then
@@ -640,7 +633,7 @@ function EditModeManagerFrameMixin:ReconcileLayoutsWithModern()
 end
 
 function EditModeManagerFrameMixin:UpdateAccountSettingMap()
-	self.accountSettingMap = GetSettingMapFromSettings(self.accountSettings);
+	self.accountSettingMap = EditModeUtil:GetSettingMapFromSettings(self.accountSettings);
 end
 
 function EditModeManagerFrameMixin:GetAccountSettingValue(setting)
@@ -664,6 +657,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetActionBarShown(PossessActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPossessActionBar));
 	self.AccountSettings:SetCastBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowCastBar));
 	self.AccountSettings:SetEncounterBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterBar));
+	self.AccountSettings:SetExtraAbilitiesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowExtraAbilities));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -683,6 +677,24 @@ function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newVa
 	end
 end
 
+function EditModeManagerFrameMixin:UpdateLayoutCounts(savedLayouts)
+	self.numLayouts = {
+		[Enum.EditModeLayoutType.Account] = 0,
+		[Enum.EditModeLayoutType.Character] = 0,
+	};
+
+	for _, layoutInfo in ipairs(savedLayouts) do
+		self.numLayouts[layoutInfo.layoutType] = self.numLayouts[layoutInfo.layoutType] + 1;
+	end
+end
+
+function EditModeManagerFrameMixin:AreLayoutsOfTypeMaxed(layoutType)
+	return self.numLayouts[layoutType] >= Constants.EditModeConsts.EditModeMaxLayoutsPerType;
+end
+
+function EditModeManagerFrameMixin:AreLayoutsFullyMaxed()
+	return self:AreLayoutsOfTypeMaxed(Enum.EditModeLayoutType.Account) and self:AreLayoutsOfTypeMaxed(Enum.EditModeLayoutType.Character);
+end
 
 function EditModeManagerFrameMixin:UpdateLayoutInfo(layoutInfo, reconcileLayouts)
 	self.layoutInfo = layoutInfo;
@@ -694,6 +706,8 @@ function EditModeManagerFrameMixin:UpdateLayoutInfo(layoutInfo, reconcileLayouts
 	local savedLayouts = self.layoutInfo.layouts;
 	self.layoutInfo.layouts = EditModePresetLayoutManager:GetCopyOfPresetLayouts();
 	tAppendAll(self.layoutInfo.layouts, savedLayouts);
+
+	self:UpdateLayoutCounts(savedLayouts);
 
 	self:UpdateSystems();
 	self:ClearActiveChangesFlags();
@@ -959,17 +973,7 @@ function EditModeManagerFrameMixin:ShowDeleteLayoutDialog(layoutButton)
 end
 
 function EditModeManagerFrameMixin:ShowRevertWarningDialog(selectedLayoutIndex)
-	local function onAcceptCallback()
-		if selectedLayoutIndex then
-			self:SelectLayout(selectedLayoutIndex);
-		else
-			StaticPopup_Hide("GENERIC_CONFIRMATION");
-			HideUIPanel(self);
-		end
-	end
-
-	local data = {text = HUD_EDIT_MODE_UNSAVED_CHANGES_DIALOG_TITLE, callback = onAcceptCallback }
-	StaticPopup_ShowCustomGenericConfirmation(data);
+	EditModeUnsavedChangesDialog:ShowDialog(selectedLayoutIndex);
 end
 
 function EditModeManagerFrameMixin:ToggleSubDropdown(level, layoutButton)
@@ -1047,1348 +1051,15 @@ function EditModeManagerFrameMixin:UpdateRightActionBarsLayout()
 	self:UpdateRightAnchoredActionBarWidth();
 end
 
-EditModeDropdownEntryMixin = {};
-
-function EditModeDropdownEntryMixin:Init(text, onClick, width, maxTextWidth, showArrow, isSubmenuButton)
-	if width then	
-		self:SetWidth(width);
-		maxTextWidth = maxTextWidth or width;
-	end
-
-	self.Text:SetWidth(0);
-	self.Text:SetText(text);
-
-	if maxTextWidth and self.Text:GetStringWidth() > maxTextWidth then
-		self.Text:SetWidth(maxTextWidth);
-	end
-
-	self.Arrow:SetShown(showArrow or false);
-	self.isSubmenuButton = isSubmenuButton;
-
-	self.onClick = onClick;
-end
-
-function EditModeDropdownEntryMixin:OnEnter()
-	if not self.isSubmenuButton then
-		EditModeManagerFrame:ClearLockedLayoutButton(self);
-	end
-
-	self.Highlight:Show();
-end
-
-function EditModeDropdownEntryMixin:OnLeave()
-	self.Highlight:Hide();
-end
-
-function EditModeDropdownEntryMixin:OnMouseDown()
-	self.Text:SetPoint("LEFT", self, "LEFT", 2, -1);
-end
-
-function EditModeDropdownEntryMixin:OnMouseUp()
-	self.Text:SetPoint("LEFT", self, "LEFT", 0, 0);
-	self:onClick();
-end
-
-EditModeDropdownLayoutEntryMixin = CreateFromMixins(EditModeDropdownEntryMixin);
-
-function EditModeDropdownLayoutEntryMixin:OnLoad()
-	self.CopyLayoutButton:SetOnClickHandler(GenerateClosure(EditModeManagerFrame.ShowNewLayoutDialog, EditModeManagerFrame, self.layoutData));
-	self.RenameOrCopyLayoutButton:SetOnClickHandler(GenerateClosure(EditModeManagerFrame.ToggleRenameOrCopyLayoutDropdown, EditModeManagerFrame, self));
-	self.DeleteLayoutButton:SetOnClickHandler(GenerateClosure(EditModeManagerFrame.ShowDeleteLayoutDialog, EditModeManagerFrame, self));
-end
-
-local layoutEntryMaxTextWidth = 150;
-
-function EditModeDropdownLayoutEntryMixin:Init(layoutIndex, layoutData, isSelected, onClick)
-	local text = (layoutData.layoutType == Enum.EditModeLayoutType.Preset) and HUD_EDIT_MODE_PRESET_LAYOUT:format(layoutData.layoutName) or layoutData.layoutName;
-	EditModeDropdownEntryMixin.Init(self, text, onClick, nil, layoutEntryMaxTextWidth);
-
-	self.layoutIndex = layoutIndex;
-	self.layoutData = layoutData;
-	self.SelectedCheck:SetShown(isSelected);
-	self.onClick = onClick;
-	self.isPresetLayout = (layoutData.layoutType == Enum.EditModeLayoutType.Preset);
-end
-
-function EditModeDropdownLayoutEntryMixin:OnUpdate()
-	local mouseOver = EditModeManagerFrame:IsLayoutButtonLocked(self) or RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self);
-	self.Highlight:SetShown(mouseOver);
-	self.CopyLayoutButton:SetShown(mouseOver and self.isPresetLayout);
-	self.RenameOrCopyLayoutButton:SetShown(mouseOver and not self.isPresetLayout);
-	self.DeleteLayoutButton:SetShown(mouseOver and not self.isPresetLayout);
-
-	local hasActiveChanges = EditModeManagerFrame:HasActiveChanges();
-	self.CopyLayoutButton:SetEnabled(not hasActiveChanges);
-	self.RenameOrCopyLayoutButton:SetEnabled(not hasActiveChanges);
-
-	if not mouseOver then
-		self:SetScript("OnUpdate", nil);
-	end
-end
-
-function EditModeDropdownLayoutEntryMixin:OnEnter()
-	EditModeManagerFrame:ClearLockedLayoutButton(self);
-	self:SetScript("OnUpdate", self.OnUpdate);
-end
-
-function EditModeDropdownLayoutEntryMixin:OnLeave()
-	-- Intentionally empty, OnUpdate handles this
-end
-
-EditModeNewLayoutDialogMixin = {};
-
-function EditModeNewLayoutDialogMixin:OnLoad()
-	self.exclusive = true;
-	self.AcceptButton:SetOnClickHandler(GenerateClosure(self.OnAccept, self))
-	self.CancelButton:SetOnClickHandler(GenerateClosure(self.OnCancel, self))
-end
-
-function EditModeNewLayoutDialogMixin:OnHide()
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-end
-
-function EditModeNewLayoutDialogMixin:ShowDialog(copyLayoutInfo)
-	self.copyLayoutInfo = copyLayoutInfo;
-	self.LayoutNameEditBox:SetText("");
-
-	local isCharacterSpecific = (copyLayoutInfo.layoutType == Enum.EditModeLayoutType.Character);
-	self.CharacterSpecificLayoutCheckButton:SetControlChecked(isCharacterSpecific);
-
-	StaticPopupSpecial_Show(self);
-end
-
-function EditModeNewLayoutDialogMixin:OnAccept()
-	if self.AcceptButton:IsEnabled() then
-		local layoutType = self.CharacterSpecificLayoutCheckButton:IsControlChecked() and Enum.EditModeLayoutType.Character or Enum.EditModeLayoutType.Account;
-		local newLayoutInfo = CopyTable(self.copyLayoutInfo);
-		EditModeManagerFrame:RevertAllChanges();
-		EditModeManagerFrame:MakeNewLayout(newLayoutInfo, layoutType, self.LayoutNameEditBox:GetText());
-		StaticPopupSpecial_Hide(self);
-	end
-end
-
-function EditModeNewLayoutDialogMixin:UpdateAcceptButtonEnabledState()
-	self.AcceptButton:SetEnabled(UserEditBoxNonEmpty(self.LayoutNameEditBox));
-end
-
-function EditModeNewLayoutDialogMixin:OnCancel()
-	StaticPopupSpecial_Hide(self);
-end
-
-EditModeDialogNameEditBoxMixin = {};
-
-function EditModeDialogNameEditBoxMixin:OnEnterPressed()
-	self:GetParent():OnAccept();
-end
-
-function EditModeDialogNameEditBoxMixin:OnEscapePressed()
-	self:GetParent():OnCancel();
-end
-
-function EditModeDialogNameEditBoxMixin:OnTextChanged()
-	self:GetParent():UpdateAcceptButtonEnabledState();
-end
-
-EditModeImportLayoutDialogMixin = {};
-
-function EditModeImportLayoutDialogMixin:OnLoad()
-	self.exclusive = true;
-	self.AcceptButton:SetOnClickHandler(GenerateClosure(self.OnAccept, self))
-	self.CancelButton:SetOnClickHandler(GenerateClosure(self.OnCancel, self))
-	self.ImportBox.EditBox:SetScript("OnTextChanged", GenerateClosure(self.OnImportTextChanged, self));
-	self.ImportBox.EditBox:SetScript("OnEnterPressed", GenerateClosure(self.OnAccept, self));
-	self.ImportBox.EditBox:SetScript("OnEscapePressed", GenerateClosure(self.OnCancel, self));
-end
-
-function EditModeImportLayoutDialogMixin:OnHide()
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-end
-
-function EditModeImportLayoutDialogMixin:ShowDialog()
-	self.ImportBox.EditBox:SetText("");
-	self.CharacterSpecificLayoutCheckButton:SetControlChecked(false);
-	self.ImportBox.EditBox:SetFocus();
-	StaticPopupSpecial_Show(self);
-end
-
-function EditModeImportLayoutDialogMixin:OnAccept()
-	if self.AcceptButton:IsEnabled() then
-		local layoutType = self.CharacterSpecificLayoutCheckButton:IsControlChecked() and Enum.EditModeLayoutType.Character or Enum.EditModeLayoutType.Account;
-		EditModeManagerFrame:ImportLayout(self.importLayoutInfo, layoutType, self.LayoutNameEditBox:GetText());
-		StaticPopupSpecial_Hide(self);
-	end
-end
-
-function EditModeImportLayoutDialogMixin:OnCancel()
-	StaticPopupSpecial_Hide(self);
-end
-
-function EditModeImportLayoutDialogMixin:UpdateAcceptButtonEnabledState()
-	self.AcceptButton:SetEnabled((self.importLayoutInfo ~= nil) and UserEditBoxNonEmpty(self.LayoutNameEditBox));
-end
-
-function EditModeImportLayoutDialogMixin:OnImportTextChanged(text)
-	self.importLayoutInfo = C_EditMode.ConvertStringToLayoutInfo(self.ImportBox.EditBox:GetText());
-	if self.importLayoutInfo then
-		self.LayoutNameEditBox:Enable();
-	else
-		self.LayoutNameEditBox:Disable();
-	end
-	self.LayoutNameEditBox:SetText("");
-	self:UpdateAcceptButtonEnabledState();
-end
-
-EditModeImportLayoutLinkDialogMixin = {};
-
-function EditModeImportLayoutLinkDialogMixin:OnLoad()
-	self.exclusive = true;
-	self.AcceptButton:SetOnClickHandler(GenerateClosure(self.OnAccept, self))
-	self.CancelButton:SetOnClickHandler(GenerateClosure(self.OnCancel, self))
-end
-
-function EditModeImportLayoutLinkDialogMixin:OnHide()
-	self.importLayoutInfo = nil;
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-end
-
-function EditModeImportLayoutLinkDialogMixin:ShowDialog(link)
-	local _, linkOptions = LinkUtil.ExtractLink(link);
-	local importLayoutInfo = C_EditMode.ConvertStringToLayoutInfo(linkOptions);
-	if importLayoutInfo then
-		self.LayoutNameEditBox:SetText("");
-		self.CharacterSpecificLayoutCheckButton:SetControlChecked(false);
-		self.importLayoutInfo = importLayoutInfo;
-		StaticPopupSpecial_Show(self);
-	end
-end
-
-function EditModeImportLayoutLinkDialogMixin:OnAccept()
-	if self.AcceptButton:IsEnabled() then
-		local layoutType = self.CharacterSpecificLayoutCheckButton:IsControlChecked() and Enum.EditModeLayoutType.Character or Enum.EditModeLayoutType.Account;	
-		EditModeManagerFrame:ImportLayout(self.importLayoutInfo, layoutType, self.LayoutNameEditBox:GetText());
-		StaticPopupSpecial_Hide(self);
-	end
-end
-
-function EditModeImportLayoutLinkDialogMixin:OnCancel()
-	StaticPopupSpecial_Hide(self);
-end
-
-function EditModeImportLayoutLinkDialogMixin:UpdateAcceptButtonEnabledState()
-	self.AcceptButton:SetEnabled(UserEditBoxNonEmpty(self.LayoutNameEditBox));
-end
-
-EditModeSystemSettingsDialogMixin = {};
-
-function EditModeSystemSettingsDialogMixin:OnLoad()
-	local function onCloseCallback()
-		EditModeManagerFrame:ClearSelectedSystem();
-	end
-
-	self.Buttons.RevertChangesButton:SetOnClickHandler(GenerateClosure(self.RevertChanges, self));
-
-	self.onCloseCallback = onCloseCallback;
-
-	self.pools = CreateFramePoolCollection();
-	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingDropdownTemplate");
-	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingSliderTemplate");
-	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingCheckboxTemplate");
-	self.pools:CreatePool("BUTTON", self.Buttons, "EditModeSystemSettingsDialogExtraButtonTemplate");
-end
-
-function EditModeSystemSettingsDialogMixin:OnHide()
-	self.attachedToSystem = nil;
-end
-
-function EditModeSystemSettingsDialogMixin:OnDragStart()
-	self:StartMoving();
-end
-
-function EditModeSystemSettingsDialogMixin:OnDragStop()
-	self:StopMovingOrSizing();
-end
-
-function EditModeSystemSettingsDialogMixin:AttachToSystemFrame(systemFrame)
-	self.resetDialogAnchors = systemFrame:ShouldResetSettingsDialogAnchors(self.attachedToSystem);
-	self.attachedToSystem = systemFrame;
-	self.Title:SetText(systemFrame.systemName);
-	self:UpdateDialog(systemFrame);
-	self:Show();
-end
-
-local edgePercentage = 2 / 5;
-local edgePercentageInverse =  1 - edgePercentage;
-
-function EditModeSystemSettingsDialogMixin:UpdateSizeAndAnchors(systemFrame)
-	if systemFrame == self.attachedToSystem then
-		if self.resetDialogAnchors then
-			local clearAllPoints = true;
-			systemFrame:GetSettingsDialogAnchor():SetPoint(self, clearAllPoints);
-			self.resetDialogAnchors = false;
-		end
-		self:Layout();
-	end
-end
-
-function EditModeSystemSettingsDialogMixin:UpdateDialog(systemFrame)
-	self:UpdateSettings(systemFrame);
-	self:UpdateButtons(systemFrame);
-	self:UpdateExtraButtons(systemFrame);
-	self:UpdateSizeAndAnchors(systemFrame);
-end
-
-function EditModeSystemSettingsDialogMixin:GetSettingPool(settingType)
-	if settingType == Enum.EditModeSettingDisplayType.Dropdown then
-		return self.pools:GetPool("EditModeSettingDropdownTemplate");
-	elseif settingType == Enum.EditModeSettingDisplayType.Slider then
-		return self.pools:GetPool("EditModeSettingSliderTemplate");
-	elseif settingType == Enum.ChrCustomizationOptionType.Checkbox then
-		return self.pools:GetPool("EditModeSettingCheckboxTemplate");
-	end
-end
-
-function EditModeSystemSettingsDialogMixin:ReleaseAllNonSliders()
-	self.pools:ReleaseAllByTemplate("EditModeSettingDropdownTemplate");
-	self.pools:ReleaseAllByTemplate("EditModeSettingCheckboxTemplate");
-end
-
-function EditModeSystemSettingsDialogMixin:ReleaseNonDraggingSliders()
-	local draggingSlider;
-	local releaseSliders = {};
-
-	for settingSlider in self.pools:EnumerateActiveByTemplate("EditModeSettingSliderTemplate") do
-		if settingSlider.Slider.Slider:IsDraggingThumb() then
-			draggingSlider = settingSlider;
-		else
-			table.insert(releaseSliders, settingSlider);
-		end
-	end
-
-	for _, releaseSlider in ipairs(releaseSliders) do
-		self.pools:Release(releaseSlider);
-	end
-
-	return draggingSlider;
-end
-
-function EditModeSystemSettingsDialogMixin:UpdateSettings(systemFrame)
-	if systemFrame == self.attachedToSystem then
-		self:ReleaseAllNonSliders();
-		local draggingSlider = self:ReleaseNonDraggingSliders();
-
-		local settingsToSetup = {};
-
-		local systemSettingDisplayInfo = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfo(self.attachedToSystem.system);
-		for index, displayInfo in ipairs(systemSettingDisplayInfo) do
-			if self.attachedToSystem:ShouldShowSetting(displayInfo.setting) then 
-				local settingPool = self:GetSettingPool(displayInfo.type);
-				if settingPool then
-					local settingFrame;
-
-					if draggingSlider and draggingSlider.setting == displayInfo.setting then
-						-- This is a slider that is being interacted with and so was not released.
-						settingFrame = draggingSlider;
-					else
-						settingFrame = settingPool:Acquire();
-					end
-
-					settingFrame:SetPoint("TOPLEFT");
-					settingFrame.layoutIndex = index;
-					local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name;
-					settingsToSetup[settingFrame] = { displayInfo = displayInfo, currentValue = self.attachedToSystem:GetSettingValue(displayInfo.setting), settingName = settingName },
-					settingFrame:Show();
-				end
-			end
-		end
-
-		self.Buttons:ClearAllPoints();
-
-		if not next(settingsToSetup) then
-			self.Settings:Hide();
-			self.Buttons:SetPoint("TOP", self.Title, "BOTTOM", 0, -12);
-		else
-			self.Settings:Show();
-			self.Settings:Layout();
-			for settingFrame, settingData in pairs(settingsToSetup) do
-				settingFrame:SetupSetting(settingData);
-			end
-			self.Buttons:SetPoint("TOPLEFT", self.Settings, "BOTTOMLEFT", 0, -12);
-		end
-	end
-end
-
-function EditModeSystemSettingsDialogMixin:UpdateButtons(systemFrame)
-	if systemFrame == self.attachedToSystem then
-		self.Buttons.RevertChangesButton:SetEnabled(self.attachedToSystem:HasActiveChanges());
-	end
-end
-
-function EditModeSystemSettingsDialogMixin:UpdateExtraButtons(systemFrame)
-	if systemFrame == self.attachedToSystem then
-		self.pools:ReleaseAllByTemplate("EditModeSystemSettingsDialogExtraButtonTemplate");
-		local addedButtons = systemFrame:AddExtraButtons(self.pools:GetPool("EditModeSystemSettingsDialogExtraButtonTemplate"));
-		self.Buttons.Divider:SetShown(addedButtons);
-	end
-end
-
-function EditModeSystemSettingsDialogMixin:OnSettingValueChanged(setting, value)
-	EditModeManagerFrame:OnSystemSettingChange(self.attachedToSystem, setting, value);
-end
-
-function EditModeSystemSettingsDialogMixin:RevertChanges()
-	EditModeManagerFrame:RevertSystemChanges(self.attachedToSystem);
-end
-
-EditModeSettingDropdownMixin = {};
-
-function EditModeSettingDropdownMixin:OnLoad()
-	self.Dropdown:SetTextJustifyH("LEFT");
-	self.Dropdown:SetOptionSelectedCallback(GenerateClosure(self.OnSettingSelected, self));
-end
-
-function EditModeSettingDropdownMixin:SetupSetting(settingData)
-	self.setting = settingData.displayInfo.setting;
-	self.Label:SetText(settingData.settingName);
-	self.Dropdown:SetOptions(settingData.displayInfo.options, settingData.currentValue);
-end
-
-function EditModeSettingDropdownMixin:OnSettingSelected(value, isUserInput)
-	if isUserInput then
-		EditModeSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
-	end
-end
-
-EditModeSettingSliderMixin = CreateFromMixins(CallbackRegistryMixin);
-
-function EditModeSettingSliderMixin:OnLoad()
-	CallbackRegistryMixin.OnLoad(self);
-
-	self.cbrHandles = EventUtil.CreateCallbackHandleContainer();
-	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, self.OnSliderValueChanged, self);
-end
-
-function EditModeSettingSliderMixin:SetupSetting(settingData)
-	self.initInProgress = true;
-	self.formatters = {};
-	self.formatters[MinimalSliderWithSteppersMixin.Label.Right] = CreateMinimalSliderFormatter(MinimalSliderWithSteppersMixin.Label.Right, settingData.displayInfo.formatter); -- Just show value on the right by default
-	self.setting = settingData.displayInfo.setting;
-	self.Label:SetText(settingData.settingName);
-	local stepSize = settingData.displayInfo.stepSize or 1;
-	local steps = (settingData.displayInfo.maxValue - settingData.displayInfo.minValue) / stepSize;
-	self.Slider:Init(settingData.currentValue, settingData.displayInfo.minValue, settingData.displayInfo.maxValue, steps, self.formatters);
-	self.initInProgress = false;
-end
-
-function EditModeSettingSliderMixin:OnSliderValueChanged(value)
-	if not self.initInProgress then
-		EditModeSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
-	end
-end
-
-EditModeSettingCheckboxMixin = {};
-
-function EditModeSettingCheckboxMixin:SetupSetting(settingData)
-	self.setting = settingData.displayInfo.setting;
-	self.checked = (settingData.currentValue == 1);
-	self.Label:SetText(settingData.settingName);
-	self.Button:SetChecked(self.checked);
-end
-
-function EditModeSettingCheckboxMixin:OnCheckButtonClick()
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	self.checked = not self.checked;
-	EditModeSystemSettingsDialog:OnSettingValueChanged(self.setting, self.checked and 1 or 0);
-end
-
-EditModeSystemMixin = {};
-
-function EditModeSystemMixin:OnSystemLoad()
-	if not self.system then
-		-- All systems must have self.system set on them
-		return;
-	end
-
-	EditModeManagerFrame:RegisterSystemFrame(self);
-
-	self.systemName = (self.addSystemIndexToName and self.systemIndex) and self.systemNameString:format(self.systemIndex) or self.systemNameString;
-	self.Selection:SetLabelText(self.systemName);
-	self:SetupSettingsDialogAnchor();
-
-	self.settingDisplayInfoMap = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(self.system);
-end
-
-function EditModeSystemMixin:OnSystemHide()
-	if self.isSelected then
-		EditModeManagerFrame:ClearSelectedSystem();
-	end
-end
-
--- Override in inheriting mixins as needed
-function EditModeSystemMixin:AnchorSelectionFrame()
-end
-
--- Override in inheriting mixins as needed
-function EditModeSystemMixin:ShouldResetSettingsDialogAnchors(oldSelectedSystemFrame)
-	return not oldSelectedSystemFrame or oldSelectedSystemFrame.system ~= self.system;
-end
-
-function EditModeSystemMixin:ConvertSettingDisplayValueToRawValue(setting, value)
-	if self.settingDisplayInfoMap[setting] then
-		return self.settingDisplayInfoMap[setting]:ConvertValue(value);
-	else
-		return value;
-	end
-end
-
-function EditModeSystemMixin:UpdateSettingMap(updateDirtySettings)
-	local oldSettingsMap = self.settingMap;
-	self.settingMap = GetSettingMapFromSettings(self.systemInfo.settings, self.settingDisplayInfoMap);
-
-	if updateDirtySettings then
-		self:UpdateDirtySettings(oldSettingsMap)
-	end
-end
-
-function EditModeSystemMixin:UpdateDirtySettings(oldSettingsMap)
-	-- Mark changed settings as dirty
-	self.dirtySettings = {};
-	for setting, settingInfo in pairs(self.settingMap) do
-		if not oldSettingsMap or oldSettingsMap[setting].value ~= settingInfo.value then
-			self.dirtySettings[setting] = true;
-		end
-	end
-end
-
-function EditModeSystemMixin:IsSettingDirty(setting)
-	return self.dirtySettings[setting];
-end
-
-function EditModeSystemMixin:ClearDirtySetting(setting)
-	self.dirtySettings[setting] = nil;
-end
-
-function EditModeSystemMixin:UpdateSystemSettingValue(setting, newValue)
-	if not self:IsInitialized() then
-		return;
-	end
-
-	for _, settingInfo in pairs(self.systemInfo.settings) do
-		if settingInfo.setting == setting then
-			local rawNewValue = self:ConvertSettingDisplayValueToRawValue(setting, newValue);
-			if settingInfo.value ~= rawNewValue then
-				settingInfo.value = rawNewValue;
-				self:UpdateSystemSetting(setting);
-			end
-			return;
-		end
-	end
-end
-
-function EditModeSystemMixin:ResetToDefaultPosition()
-	self.systemInfo.anchorInfo.isDefaultPosition = true;
-	self:ApplySystemAnchor();
-	EditModeSystemSettingsDialog:UpdateDialog(self);
-	self:SetHasActiveChanges(true);
-end
-
-function EditModeSystemMixin:ApplySystemAnchor()
-	if self.isBottomManagedFrame then
-		if self:IsInDefaultPosition() then
-			self.ignoreFramePositionManager = nil;
-			UIParentBottomManagedFrameContainer:AddManagedFrame(self);
-			return;
-		else
-			self.ignoreFramePositionManager = true;
-			UIParentBottomManagedFrameContainer:RemoveManagedFrame(self);
-			self:SetParent(UIParent);
-		end
-	elseif EditModeUtil:IsRightAnchoredActionBar(self) then
-		if self:IsInDefaultPosition() then
-			EditModeManagerFrame:AddRightActionBarToLayout(self);
-			return;
-		end
-	end
-
-	self:ClearAllPoints();
-	self:SetPoint(self.systemInfo.anchorInfo.point, self.systemInfo.anchorInfo.relativeTo, self.systemInfo.anchorInfo.relativePoint, self.systemInfo.anchorInfo.offsetX, self.systemInfo.anchorInfo.offsetY);
-end
-
-function EditModeSystemMixin:UpdateSystem(systemInfo)
-	self.savedSystemInfo = CopyTable(systemInfo);
-	self:SetHasActiveChanges(false);
-
-	self.systemInfo = systemInfo;
-
-	local updateDirtySettings = true;
-	self:UpdateSettingMap(updateDirtySettings);
-
-	self:ApplySystemAnchor();
-
-	self:AnchorSelectionFrame();
-	EditModeSystemSettingsDialog:UpdateDialog(self);
-
-	local entireSystemUpdate = true;
-	for _, settingInfo in ipairs(systemInfo.settings) do
-		self:UpdateSystemSetting(settingInfo.setting, entireSystemUpdate);
-	end
-end
-
-function EditModeSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
-	if not entireSystemUpdate then
-		self.dirtySettings[setting] = true;
-		self:SetHasActiveChanges(true);
-		self:UpdateSettingMap();
-		self:AnchorSelectionFrame();
-		EditModeSystemSettingsDialog:UpdateDialog(self);
-	end
-
-	if self:IsSettingDirty(setting) then
-		EditModeManagerFrame:MirrorSetting(self.system, self.systemIndex, setting, self:GetSettingValue(setting));
-	end
-end
-
-function EditModeSystemMixin:IsInitialized()
-	return self.systemInfo ~= nil;
-end
-
--- Override in inheriting mixins as needed
-function EditModeSystemMixin:SetupSettingsDialogAnchor()
-	self.settingsDialogAnchor = AnchorUtil.CreateAnchor("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -250, 200);
-end
-
-function EditModeSystemMixin:SetHasActiveChanges(hasActiveChanges)
-	self.hasActiveChanges = hasActiveChanges;
-	if hasActiveChanges then
-		EditModeManagerFrame:SetHasActiveChanges(true);
-	end
-	EditModeSystemSettingsDialog:UpdateButtons(self);
-end
-
-function EditModeSystemMixin:HasActiveChanges()
-	return self.hasActiveChanges;
-end
-
-function EditModeSystemMixin:HasSetting(setting)
-	return self.settingMap[setting] ~= nil;
-end
-
-function EditModeSystemMixin:GetSettingValue(setting, useRawValue)
-	return useRawValue and self.settingMap[setting].value or self.settingMap[setting].displayValue;
-end
-
-function EditModeSystemMixin:GetSettingValueBool(setting, useRawValue)
-	return self:GetSettingValue(setting, useRawValue) == 1;
-end
-
-function EditModeSystemMixin:DoesSettingValueEqual(setting, value)
-	local useRawValue = true;
-	return self:GetSettingValue(setting, useRawValue) == value;
-end
-
-function EditModeSystemMixin:DoesSettingDisplayValueEqual(setting, value)
-	local useRawValueNo = false;
-	return self:GetSettingValue(setting, useRawValueNo) == value;
-end
-
--- Override in inheriting mixins as needed
-function EditModeSystemMixin:UseSettingAltName(setting)
-	return false;
-end
-
--- Override in inheriting mixins as needed
-function EditModeSystemMixin:ShouldShowSetting(setting)
-	return self:HasSetting(setting);
-end
-
-function EditModeSystemMixin:GetSettingsDialogAnchor()
-	return self.settingsDialogAnchor;
-end
-
--- Override in inheriting mixins as needed
-function EditModeSystemMixin:AddExtraButtons(extraButtonPool)
-	return false;
-end
-
-function EditModeSystemMixin:ClearHighlight()
-	self.Selection:Hide();
-	self.isSelected = false;
-	self.isHighlighted = false;
-end
-
-function EditModeSystemMixin:HighlightSystem()
-	self:SetMovable(false);
-	self.Selection:ShowHighlighted();
-	self.isHighlighted = true;
-	self.isSelected = false;
-end
-
-function EditModeSystemMixin:SelectSystem()
-	if not self.isSelected then
-		self:SetMovable(true);
-		self.Selection:ShowSelected();
-		EditModeSystemSettingsDialog:AttachToSystemFrame(self);
-		self.isSelected = true;
-	end
-end
-
-function EditModeSystemMixin:OnEditModeEnter()
-	if not self.defaultHideSelection then
-		self:HighlightSystem();
-	end
-end
-
-function EditModeSystemMixin:OnEditModeExit()
-	self:ClearHighlight();
-	EditModeSystemSettingsDialog:Hide();
-end
-
-function EditModeSystemMixin:CanBeMoved()
-	return self.isSelected and not self.isLocked;
-end
-
-function EditModeSystemMixin:IsInDefaultPosition()
-	return self:IsInitialized() and self.systemInfo.anchorInfo.isDefaultPosition;
-end
-
-function EditModeSystemMixin:OnDragStart()
-	if self:CanBeMoved() then
-		self:StartMoving();
-	end
-end
-
-function EditModeSystemMixin:OnDragStop()
-	if self:CanBeMoved() then
-		self:StopMovingOrSizing();
-		EditModeManagerFrame:OnSystemPositionChange(self);
-	end
-end
-
-EditModeActionBarSystemMixin = {};
-
-function EditModeActionBarSystemMixin:UpdateSystem(systemInfo)
-	EditModeSystemMixin.UpdateSystem(self, systemInfo);
-	self:RefreshGridLayout();
-	self:RefreshButtonArt();
-
-	if EditModeUtil:IsBottomAnchoredActionBar(self) then
-		EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
-	elseif EditModeUtil:IsRightAnchoredActionBar(self) then
-		EditModeManagerFrame:UpdateRightActionBarsLayout();
-	end
-end
-
-function EditModeActionBarSystemMixin:OnDragStart()
-	EditModeSystemMixin.OnDragStart(self);
-
-	if self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide) then
-		EditModeSystemSettingsDialog:OnSettingValueChanged(Enum.EditModeActionBarSetting.SnapToSide, 0);
-	end
-end
-
-function EditModeActionBarSystemMixin:OnEditModeEnter()
-	EditModeSystemMixin.OnEditModeEnter(self);
-
-	-- Some action bars have special visibility rules so use their method for whether to turn them on/off on enter
-	self:UpdateVisibility();
-end
-
-function EditModeActionBarSystemMixin:OnEditModeExit()
-	EditModeSystemMixin.OnEditModeExit(self);
-
-	-- Some action bars have special visibility rules so use their method for whether to turn them on/off on exit
-	self:UpdateVisibility();
-end
-
-function EditModeActionBarSystemMixin:IsInDefaultPosition()
-	if not self:IsInitialized() then
-		return false;
-	end
-
-	local _, relativeTo = self:GetPoint(1);
-	if relativeTo and relativeTo.IsInDefaultPosition and not relativeTo:IsInDefaultPosition() then
-		return false;
-	end
-
-	return EditModeSystemMixin.IsInDefaultPosition(self);
-end
-
-function EditModeActionBarSystemMixin:SetScaleIfRightAnchored(scale)
-	if self:IsInDefaultPosition() then
-		self:SetScale(scale);
-	else
-		self:SetScale(1);
-	end
-end
-
-function EditModeActionBarSystemMixin:GetRightAnchoredWidth()
-	if not self:IsInitialized() then
-		return 0;
-	end
-
-	if self:IsShown() and self:IsInDefaultPosition() then
-		return self:GetWidth() + -self.systemInfo.anchorInfo.offsetX;
-	end
-
-	return 0;
-end
-
-function EditModeActionBarSystemMixin:GetBottomAnchoredHeight()
-	if not self:IsInitialized() then
-		return 0;
-	end
-
-	if self:IsShown() and self:IsInDefaultPosition() then
-		return self:GetHeight() + self.systemInfo.anchorInfo.offsetY;
-	end
-
-	return 0;
-end
-
-function EditModeActionBarSystemMixin:MarkGridLayoutDirty()
-	self.gridLayoutDirty = true;
-end
-
-function EditModeActionBarSystemMixin:RefreshGridLayout()
-	if self.gridLayoutDirty then
-		self:UpdateGridLayout()
-		self.gridLayoutDirty = false;
-	end
-end
-
-function EditModeActionBarSystemMixin:UpdateGridLayout()
-	ActionBarMixin.UpdateGridLayout(self);
-
-	if not self:IsInitialized() then
-		return;
-	end
-
-	-- If you can be in a right action bar layout then update the layout
-	if self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide) then
-		EditModeManagerFrame:UpdateRightActionBarsLayout();
-	end
-
-	if EditModeUtil:IsBottomAnchoredActionBar(self) then
-		EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
-	elseif EditModeUtil:IsRightAnchoredActionBar(self) then
-		EditModeManagerFrame:UpdateRightActionBarsLayout();
-	end
-
-	-- Update frame positions since if we update the size of the action bars then we'll wanna update the position of things relative to those action bars
-	UIParent_ManageFramePositions();
-end
-
-function EditModeActionBarSystemMixin:MarkButtonArtDirty()
-	self.buttonArtDirty = true;
-end
-
-function EditModeActionBarSystemMixin:RefreshButtonArt()
-	if self.buttonArtDirty then
-		self:UpdateButtonArt()
-		self.buttonArtDirty = false;
-	end
-end
-
-function EditModeActionBarSystemMixin:UpdateButtonArt()
-	for i, actionButton in pairs(self.actionButtons) do
-		actionButton:UpdateButtonArt(i >= self.numShowingButtons);
-	end
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSettingOrientation()
-	self.isHorizontal = self:DoesSettingValueEqual(Enum.EditModeActionBarSetting.Orientation, Enum.ActionBarOrientation.Horizontal);
-	self.Selection:SetVerticalState(not self.isHorizontal);
-
-	self.addButtonsToRight = true;
-	if self.isHorizontal then
-		self.addButtonsToTop = true;
-	else
-		self.addButtonsToTop = false;
-	end
-
-	if (self.isHorizontal
-		and self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide)
-		and self:GetSettingValueBool(Enum.EditModeActionBarSetting.SnapToSide)) then
-		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.SnapToSide, 0);
-	end
-
-	-- Since the orientation changed we'll want to update the grid layout
-	self:MarkGridLayoutDirty();
-
-	-- Update the art since we'll possibly be switching from horizontal to vertical dividers
-	self:MarkButtonArtDirty();
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSettingNumRows()
-	self.numRows = self:GetSettingValue(Enum.EditModeActionBarSetting.NumRows);
-
-	-- If num rows > 1 and we can snap to the side then make sure snap to side is disabled
-	if self.numRows > 1
-		and self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide)
-		and self:GetSettingValueBool(Enum.EditModeActionBarSetting.SnapToSide) then
-		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.SnapToSide, 0);
-	end
-
-	-- Since the num rows changed we'll want to update the grid layout
-	self:MarkGridLayoutDirty();
-
-	-- Update the art since we hide dividers when num rows > 1
-	self:MarkButtonArtDirty();
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSettingNumIcons()
-	self.numShowingButtons = self:GetSettingValue(Enum.EditModeActionBarSetting.NumIcons);
-	self:UpdateShownButtons();
-
-	-- Since the num icons changed we'll want to update the grid layout
-	self:MarkGridLayoutDirty();
-
-	-- Update the art since we'll need to change what dividers are shown specifically for the new last button
-	self:MarkButtonArtDirty();
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSettingIconSize()
-	local iconSizeSetting = self:GetSettingValue(Enum.EditModeActionBarSetting.IconSize);
-
-	local iconScale = iconSizeSetting / 100;
-
-	if self.EditModeSetScale then
-		self:EditModeSetScale(iconScale);
-	end
-
-	for i, buttonOrSpacer in pairs(self.buttonsAndSpacers) do
-		buttonOrSpacer:SetScale(iconScale);
-	end
-
-	-- Since size of buttons changed we'll want to update the grid layout so we can resize the bar's frame
-	self:MarkGridLayoutDirty();
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSettingIconPadding()
-	self.buttonPadding = self:GetSettingValue(Enum.EditModeActionBarSetting.IconPadding);
-
-	-- Since the icon padding changed we'll want to update the grid layout
-	self:MarkGridLayoutDirty();
-
-	-- Update art since we will hide dividers if padding is changed
-	self:MarkButtonArtDirty();
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarArt()
-	local hideBarArt = self:GetSettingValueBool(Enum.EditModeActionBarSetting.HideBarArt);
-
-	self:UpdateEndCaps(hideBarArt);
-	self.BorderArt:SetShown(not hideBarArt);
-	self.Background:SetShown(not hideBarArt);
-
-	for i, actionButton in pairs(self.actionButtons) do
-		actionButton.showButtonArt = not hideBarArt;
-	end
-
-	self:MarkButtonArtDirty();
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarScrolling()
-	self.ActionBarPageNumber:SetShown(not self:GetSettingValueBool(Enum.EditModeActionBarSetting.HideBarScrolling));
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSettingVisibleSetting()
-	if self:DoesSettingValueEqual(Enum.EditModeActionBarSetting.VisibleSetting, Enum.ActionBarVisibleSetting.InCombat) then
-		self.visibility = "InCombat";
-	elseif self:DoesSettingValueEqual(Enum.EditModeActionBarSetting.VisibleSetting, Enum.ActionBarVisibleSetting.OutOfCombat) then
-		self.visibility = "OutOfCombat"
-	else
-		self.visibility = "Always";
-	end
-	self:UpdateVisibility();
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSettingAlwaysShowButtons()
-	local alwaysShowButtons = self:GetSettingValueBool(Enum.EditModeActionBarSetting.AlwaysShowButtons);
-	self:SetShowGrid(alwaysShowButtons, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSettingSnapToSide()
-	if self:GetSettingValueBool(Enum.EditModeActionBarSetting.SnapToSide) then
-		self:ResetToDefaultPosition();
-
-		-- Force vertical with 1 column when snapped to side
-		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.Orientation, Enum.ActionBarOrientation.Vertical);
-		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.NumRows, 1);
-	else
-		self.systemInfo.anchorInfo.isDefaultPosition = false;
-		EditModeManagerFrame:RemoveRightActionBarFromLayout(self);
-	end
-
-	EditModeManagerFrame:UpdateRightAnchoredActionBarScales();
-end
-
-function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
-	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
-
-	if not self:IsSettingDirty(setting) then
-		-- If the setting didn't change we have nothing to do
-		return;
-	end
-
-	if setting == Enum.EditModeActionBarSetting.Orientation and self:HasSetting(Enum.EditModeActionBarSetting.Orientation) then
-		self:UpdateSystemSettingOrientation();
-	elseif setting == Enum.EditModeActionBarSetting.NumRows and self:HasSetting(Enum.EditModeActionBarSetting.NumRows) then
-		self:UpdateSystemSettingNumRows();
-	elseif setting == Enum.EditModeActionBarSetting.NumIcons and self:HasSetting(Enum.EditModeActionBarSetting.NumIcons) then
-		self:UpdateSystemSettingNumIcons();
-	elseif setting == Enum.EditModeActionBarSetting.IconSize and self:HasSetting(Enum.EditModeActionBarSetting.IconSize) then
-		self:UpdateSystemSettingIconSize();
-	elseif setting == Enum.EditModeActionBarSetting.IconPadding and self:HasSetting(Enum.EditModeActionBarSetting.IconPadding) then
-		self:UpdateSystemSettingIconPadding();
-	elseif setting == Enum.EditModeActionBarSetting.HideBarArt and self:HasSetting(Enum.EditModeActionBarSetting.HideBarArt) then
-		self:UpdateSystemSettingHideBarArt();
-	elseif setting == Enum.EditModeActionBarSetting.HideBarScrolling and self:HasSetting(Enum.EditModeActionBarSetting.HideBarScrolling) then
-		self:UpdateSystemSettingHideBarScrolling();
-	elseif setting == Enum.EditModeActionBarSetting.VisibleSetting and self:HasSetting(Enum.EditModeActionBarSetting.VisibleSetting) then
-		self:UpdateSystemSettingVisibleSetting();
-	elseif setting == Enum.EditModeActionBarSetting.AlwaysShowButtons and self:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
-		self:UpdateSystemSettingAlwaysShowButtons();
-	elseif setting == Enum.EditModeActionBarSetting.SnapToSide and self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide) then
-		self:UpdateSystemSettingSnapToSide();
-	end
-
-	if not entireSystemUpdate then
-		self:RefreshGridLayout();
-		self:RefreshButtonArt();
-	end
-
-	self:ClearDirtySetting(setting);
-end
-
-function EditModeActionBarSystemMixin:UseSettingAltName(setting)
-	if setting == Enum.EditModeActionBarSetting.NumRows then
-		return self:DoesSettingValueEqual(Enum.EditModeActionBarSetting.Orientation, Enum.ActionBarOrientation.Vertical);
-	end
-	return false;
-end
-
-local function enterQuickKeybindMode()
-	EditModeManagerFrame:ClearSelectedSystem();
-	EditModeManagerFrame:SetEditModeLockState("hideSelections");
-	HideUIPanel(EditModeManagerFrame);
-	QuickKeybindFrame:Show();
-end
-
-local function openActionBarSettings()
-	EditModeManagerFrame:ClearSelectedSystem();
-	EditModeManagerFrame:SetEditModeLockState("showSelections");
-	Settings.OpenToCategory("Interface", ACTIONBARS_LABEL);
-end
-
-function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
-	local quickKeybindModeButton = extraButtonPool:Acquire();
-	quickKeybindModeButton.layoutIndex = 3;
-	quickKeybindModeButton:SetText(QUICK_KEYBIND_MODE);
-	quickKeybindModeButton:SetOnClickHandler(enterQuickKeybindMode);
-	quickKeybindModeButton:Show();
-
-	if self.systemIndex ~= Enum.EditModeActionBarSystemIndices.StanceBar
-		and self.systemIndex ~= Enum.EditModeActionBarSystemIndices.PetActionBar
-		and self.systemIndex ~= Enum.EditModeActionBarSystemIndices.PossessActionBar then
-		local actionBarSettingsButton = extraButtonPool:Acquire();
-		actionBarSettingsButton.layoutIndex = 4;
-		actionBarSettingsButton:SetText(HUD_EDIT_MODE_ACTION_BAR_SETTINGS);
-		actionBarSettingsButton:SetOnClickHandler(openActionBarSettings);
-		actionBarSettingsButton:Show();
-	end
-
-	return true;
-end
-
-EditModeUnitFrameSystemMixin = {};
-
-function EditModeUnitFrameSystemMixin:ShouldResetSettingsDialogAnchors(oldSelectedSystemFrame)
-	return true;
-end
-
-function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
-	self.Selection:ClearAllPoints();
-	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Player then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 35, -10);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 20);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 10);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -35, 0);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 10);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -35, 0);
-	end
-end
-
-function EditModeUnitFrameSystemMixin:SetupSettingsDialogAnchor()
-	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Player then
-		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("LEFT", UIParent, "LEFT", 250);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
-		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("RIGHT", UIParent, "RIGHT", -250);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
-		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("RIGHT", UIParent, "RIGHT", -250);
-	end
-end
-
-function EditModeUnitFrameSystemMixin:UpdateSystemSettingHidePortrait()
-	--TODO
-end
-
-function EditModeUnitFrameSystemMixin:UpdateSystemSettingBuffsOnTop()
-	self.buffsOnTop = self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.BuffsOnTop);
-	TargetFrame_UpdateAuras(self);
-end
-
-function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseLargerFrame()
-	FocusFrame_SetSmallSize(not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame));
-end
-
-function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
-	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
-
-	if not self:IsSettingDirty(setting) then
-		-- If the setting didn't change we have nothing to do
-		return;
-	end
-
-	if setting == Enum.EditModeUnitFrameSetting.HidePortrait and self:HasSetting(Enum.EditModeUnitFrameSetting.HidePortrait) then
-		self:UpdateSystemSettingHidePortrait();
-	elseif setting == Enum.EditModeUnitFrameSetting.CastBarUnderneath and self:HasSetting(Enum.EditModeUnitFrameSetting.CastBarUnderneath) then
-		-- Nothing to do, this setting is mirrored by Enum.EditModeCastBarSetting.LockToPlayerFrame 
-	elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop and self:HasSetting(Enum.EditModeUnitFrameSetting.BuffsOnTop) then
-		self:UpdateSystemSettingBuffsOnTop();
-	elseif setting == Enum.EditModeUnitFrameSetting.UseLargerFrame and self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) then
-		self:UpdateSystemSettingUseLargerFrame();
-	end
-
-	self:ClearDirtySetting(setting);
-end
-
-EditModeMinimapSystemMixin = {};
-
-function EditModeMinimapSystemMixin:UpdateSystemSettingHeaderUnderneath()
-	self:SetHeaderUnderneath(self:GetSettingValueBool(Enum.EditModeMinimapSetting.HeaderUnderneath));
-end
-
-function EditModeMinimapSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
-	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
-
-	if not self:IsSettingDirty(setting) then
-		-- If the setting didn't change we have nothing to do
-		return;
-	end
-
-	if setting == Enum.EditModeMinimapSetting.HeaderUnderneath and self:HasSetting(Enum.EditModeMinimapSetting.HeaderUnderneath) then
-		self:UpdateSystemSettingHeaderUnderneath();
-	end
-
-	self:ClearDirtySetting(setting);
-end
-
-EditModeCastBarSystemMixin = {};
-
-local function CreateResetToDefaultPositionButton(systemFrame, extraButtonPool)
-	local resetPositionButton = extraButtonPool:Acquire();
-	resetPositionButton.layoutIndex = 3;
-	resetPositionButton:SetText(HUD_EDIT_MODE_RESET_POSITION);
-	resetPositionButton:SetOnClickHandler(GenerateClosure(systemFrame.ResetToDefaultPosition, systemFrame));
-	resetPositionButton:SetEnabled(not systemFrame:IsInDefaultPosition());
-	resetPositionButton:Show();
-end
-
-function EditModeCastBarSystemMixin:ApplySystemAnchor()
-	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
-	if lockToPlayerFrame then
-		-- Nothing to do, it's already anchored to the player frame
-	else
-		EditModeSystemMixin.ApplySystemAnchor(self);
-	end
-end
-
-function EditModeCastBarSystemMixin:OnDragStop()
-	if self:CanBeMoved() then
-		self:StopMovingOrSizing();
-		self:SetParent(UIParent);
-		EditModeManagerFrame:OnSystemPositionChange(self);
-	end
-end
-
-function EditModeCastBarSystemMixin:ShouldResetSettingsDialogAnchors(oldSelectedSystemFrame)
-	return true;
-end
-
-function EditModeCastBarSystemMixin:ShouldShowSetting(setting)
-	if setting == Enum.EditModeCastBarSetting.BarSize then
-		return not self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
-	end
-
-	return true;
-end
-
-function EditModeCastBarSystemMixin:SetupSettingsDialogAnchor()
-	self.settingsDialogAnchor = AnchorUtil.CreateAnchor("LEFT", UIParent, "CENTER", 100);
-end
-
-function EditModeCastBarSystemMixin:AddExtraButtons(extraButtonPool)
-	if not self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
-		CreateResetToDefaultPositionButton(self, extraButtonPool);
+function EditModeManagerFrameMixin:TryShowUnsavedChangesGlow()
+	if self:HasActiveChanges() then
+		GlowEmitterFactory:Show(self.SaveChangesButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
 		return true;
 	end
-
-	return false;
 end
 
-function EditModeCastBarSystemMixin:AnchorSelectionFrame()
-	self.Selection:ClearAllPoints();
-	if self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -20, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
-	else
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
-	end
-end
-
-function EditModeCastBarSystemMixin:UpdateSystemSettingLockToPlayerFrame()
-	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
-	if lockToPlayerFrame then
-		PlayerFrame_AttachCastBar();
-		self.isLocked = true;
-	else
-		PlayerFrame_DetachCastBar();
-		self:ApplySystemAnchor();
-		self.isLocked = false;
-	end
-
-	self:UpdateSystemSettingBarSize();
-end
-
-function EditModeCastBarSystemMixin:UpdateSystemSettingBarSize()
-	if self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
-		self:SetScale(1);
-	else
-		local barSizeSetting = self:GetSettingValue(Enum.EditModeCastBarSetting.BarSize);
-		local barScale = barSizeSetting / 100;
-		self:SetScale(barScale);
-	end
-end
-
-function EditModeCastBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
-	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
-
-	if not self:IsSettingDirty(setting) then
-		-- If the setting didn't change we have nothing to do
-		return;
-	end
-
-	if setting == Enum.EditModeCastBarSetting.BarSize then
-		self:UpdateSystemSettingBarSize();
-	elseif setting == Enum.EditModeCastBarSetting.LockToPlayerFrame then
-		self:UpdateSystemSettingLockToPlayerFrame();
-	end
-
-	self:ClearDirtySetting(setting);
-end
-
-EditModeEncounterBarSystemMixin = {};
-
-function EditModeEncounterBarSystemMixin:AddExtraButtons(extraButtonPool)
-	CreateResetToDefaultPositionButton(self, extraButtonPool);
-	return true;
-end
-
-function EditModeEncounterBarSystemMixin:OnDragStart()
-	if self:CanBeMoved() then
-		self:SetParent(UIParent);
-		self:StartMoving();
-	end
-end
-
-local EditModeSystemSelectionLayout =
-{
-	["TopRightCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, x=8, y=8 },
-	["TopLeftCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, x=-8, y=8 },
-	["BottomLeftCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, x=-8, y=-8 },
-	["BottomRightCorner"] = { atlas = "%s-NineSlice-Corner",  mirrorLayout = true, x=8, y=-8 },
-	["TopEdge"] = { atlas = "_%s-NineSlice-EdgeTop" },
-	["BottomEdge"] = { atlas = "_%s-NineSlice-EdgeBottom" },
-	["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
-	["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
-	["Center"] = { atlas = "%s-NineSlice-Center", x = -8, y = 8, x1 = 8, y1 = -8, },
-};
-
-EditModeSystemSelectionBaseMixin = {};
-
-function EditModeSystemSelectionBaseMixin:OnLoad()
-	self.parent = self:GetParent();
-end
-
-function EditModeSystemSelectionBaseMixin:ShowHighlighted()
-	NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.highlightTextureKit);
-	self.isSelected = false;
-	self:UpdateLabelVisibility();
-	self:Show();
-end
-
-function EditModeSystemSelectionBaseMixin:ShowSelected()
-	NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.selectedTextureKit);
-	self.isSelected = true;
-	self:UpdateLabelVisibility();
-	self:Show();
-end
-
-function EditModeSystemSelectionBaseMixin:OnDragStart()
-	self.parent:OnDragStart();
-end
-
-function EditModeSystemSelectionBaseMixin:OnDragStop()
-	self.parent:OnDragStop();
-end
-
-function EditModeSystemSelectionBaseMixin:OnMouseDown()
-	EditModeManagerFrame:SelectSystem(self.parent);
-end
-
-EditModeSystemSelectionMixin = {};
-
-function EditModeSystemSelectionMixin:SetLabelText(text)
-	self.Label:SetText(text);
-end
-
-function EditModeSystemSelectionMixin:UpdateLabelVisibility()
-	self.Label:SetShown(self.isSelected);
-end
-
-EditModeActionBarSystemSelectionMixin = {};
-
-function EditModeActionBarSystemSelectionMixin:SetLabelText(text)
-	self.HorizontalLabel:SetText(text);
-	self.VerticalLabel:SetText(text);
-end
-
-function EditModeActionBarSystemSelectionMixin:SetVerticalState(vertical)
-	self.isVertical = vertical;
-	self:UpdateLabelVisibility();
-end
-
-function EditModeActionBarSystemSelectionMixin:UpdateLabelVisibility()
-	self.HorizontalLabel:SetShown(self.isSelected and not self.isVertical);
-	self.VerticalLabel:SetShown(self.isSelected and self.isVertical);
-end
-
-EditModeGridLineMixin = {};
-
-local linePixelWidth = 1.2;
-
-function EditModeGridLineMixin:SetupLine(centerLine, verticalLine, xOffset, yOffset)
-	local color = centerLine and EDIT_MODE_GRID_CENTER_LINE_COLOR or EDIT_MODE_GRID_LINE_COLOR;
-	self:SetColorTexture(color:GetRGBA());
-
-	self:SetStartPoint(verticalLine and "TOP" or "LEFT", EditModeManagerFrame.Grid, xOffset, yOffset);
-	self:SetEndPoint(verticalLine and "BOTTOM" or "RIGHT", EditModeManagerFrame.Grid, xOffset, yOffset);
-
-	local lineThickness = PixelUtil.GetNearestPixelSize(linePixelWidth, self:GetEffectiveScale(), linePixelWidth);
-	self:SetThickness(lineThickness);
+function EditModeManagerFrameMixin:ClearUnsavedChangesGlow()
+	GlowEmitterFactory:Hide(self.SaveChangesButton);
 end
 
 EditModeGridMixin = {}
@@ -2526,6 +1197,11 @@ function EditModeAccountSettingsMixin:OnLoad()
 		self:SetEncounterBarShown(isChecked, isUserInput);
 	end
 	self.Settings.EncounterBar:SetCallback(onEncounterBarCheckboxChecked);
+
+	local function onExtraAbilitiesCheckboxChecked(isChecked, isUserInput)
+		self:SetExtraAbilitiesShown(isChecked, isUserInput);
+	end
+	self.Settings.ExtraAbilities:SetCallback(onExtraAbilitiesCheckboxChecked);
 end
 
 function EditModeAccountSettingsMixin:OnEditModeEnter()
@@ -2547,6 +1223,9 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 
 	self:RefreshCastBar();
 	self:RefreshEncounterBar();
+
+	ExtraAbilityContainer.editModeEnterShown = ExtraAbilityContainer:IsShown();
+	self:RefreshExtraAbilities();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
@@ -2555,6 +1234,14 @@ function EditModeAccountSettingsMixin:OnEditModeExit()
 	self:ResetActionBarShown(StanceBar);
 	self:ResetActionBarShown(PetActionBar);
 	self:ResetActionBarShown(PossessActionBar);
+
+	-- Undo encounter bar min size stuff so we don't have extra spacing in bottom managed container
+	EncounterBar.minimumWidth = nil;
+	EncounterBar.minimumHeight = nil;
+	EncounterBar:Layout();
+	UIParent_ManageFramePositions();
+
+	ExtraAbilityContainer:SetShown(ExtraAbilityContainer.editModeEnterShown);
 end
 
 function EditModeAccountSettingsMixin:ResetTargetAndFocus(clearSavedTargetAndFocus)
@@ -2666,9 +1353,38 @@ end
 function EditModeAccountSettingsMixin:RefreshEncounterBar()
 	local showEncounterbar = self.Settings.EncounterBar:IsControlChecked();
 	if showEncounterbar then
+		EncounterBar.minimumWidth = 230;
+		EncounterBar.minimumHeight = 30;
+
 		EncounterBar:HighlightSystem();
 	else
+		EncounterBar.minimumWidth = nil;
+		EncounterBar.minimumHeight = nil;
+
 		EncounterBar:ClearHighlight();
+	end
+
+	EncounterBar:Layout();
+	UIParent_ManageFramePositions();
+end
+
+function EditModeAccountSettingsMixin:SetExtraAbilitiesShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowExtraAbilities, shown);
+		self:RefreshExtraAbilities();
+	else
+		self.Settings.ExtraAbilities:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshExtraAbilities()
+	local showExtraAbilities = self.Settings.ExtraAbilities:IsControlChecked();
+	if showExtraAbilities then
+		ExtraAbilityContainer:Show();
+		ExtraAbilityContainer:HighlightSystem();
+	else
+		ExtraAbilityContainer:SetShown(ExtraAbilityContainer.editModeEnterShown);
+		ExtraAbilityContainer:ClearHighlight();
 	end
 end
 
@@ -2686,52 +1402,4 @@ end
 function EditModeAccountSettingsMixin:ToggleExpandedState()
 	local isUserInput = true;
 	self:SetExpandedState(not self.expanded, isUserInput);
-end
-
-EditModeUtil = { };
-
-function EditModeUtil:IsRightAnchoredActionBar(systemFrame)
-	return (systemFrame == MultiBarRight)
-		or (systemFrame == MultiBarLeft);
-end
-
-function EditModeUtil:IsBottomAnchoredActionBar(systemFrame)
-	return (systemFrame == MultiBarBottomRight)
-		or (systemFrame == MultiBarBottomLeft)
-		or (systemFrame == MainMenuBar)
-		or (systemFrame == StanceBar)
-		or (systemFrame == PetActionBar)
-		or (systemFrame == PossessActionBar);
-end
-
-function EditModeUtil:GetRightActionBarWidth()
-	local offset = 0;
-	if MultiBar3_IsVisible and MultiBar3_IsVisible() and MultiBarRight:IsInDefaultPosition() then
-		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarRight:GetPoint(1);
-		offset = MultiBarRight:GetWidth() - offsetX; -- Subtract x offset since it will be a negative value due to us anchoring to the right side and anchoring towards the middle
-	end
-
-	if MultiBar4_IsVisible and MultiBar4_IsVisible() and MultiBarLeft:IsInDefaultPosition() then
-		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarLeft:GetPoint(1);
-		offset = MultiBarLeft:GetWidth() - offsetX;
-	end
-
-	return offset;
-end
-
-function EditModeUtil:GetBottomActionBarHeight(includeMainMenuBar)
-	local actionBarHeight = 0;
-	actionBarHeight = includeMainMenuBar and MainMenuBar:GetBottomAnchoredHeight() or 0;
-	actionBarHeight = actionBarHeight + MultiBarBottomLeft:GetBottomAnchoredHeight();
-	actionBarHeight = actionBarHeight + MultiBarBottomRight:GetBottomAnchoredHeight();
-	actionBarHeight = actionBarHeight + StanceBar:GetBottomAnchoredHeight();
-	actionBarHeight = actionBarHeight + (PetActionBar and PetActionBar:GetBottomAnchoredHeight() or 0);
-	actionBarHeight = actionBarHeight + PossessActionBar:GetBottomAnchoredHeight();
-	return actionBarHeight;
-end
-
-function EditModeUtil:GetRightContainerAnchor()
-	local rightBarOffset = EditModeUtil:GetRightActionBarWidth();
-	local anchor = AnchorUtil.CreateAnchor("TOPRIGHT", UIParent, "TOPRIGHT", -rightBarOffset, -260);
-	return anchor;
 end

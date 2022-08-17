@@ -17,10 +17,7 @@ function MainMenuBarMixin:OnLoad()
 	MicroButtonAndBagsBar:SetFrameLevel(self:GetFrameLevel()+2);
 	self:UpdateEndCaps();
 
-	-- Main bar always shows grid
-	for i, actionButton in ipairs(self.actionButtons) do
-		actionButton:SetAttribute("showgrid", 1);
-	end
+	self:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 end
 
 function MainMenuBarMixin:OnShow()

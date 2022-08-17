@@ -253,41 +253,40 @@ Class_GossipFrameWatcher = class("GossipFrameWatcher", Class_TutorialBase);
 function Class_GossipFrameWatcher:OnBegin()
 	Dispatcher:RegisterEvent("GOSSIP_SHOW", self);
 	Dispatcher:RegisterEvent("GOSSIP_CLOSED", self);
+	GossipFrame:SetGossipTutorialMode(true);
 end
 
 function Class_GossipFrameWatcher:GOSSIP_SHOW()
 	local firstQuestButton = nil;
-	local questCount = 0;
-	for i = 1, GossipFrame_GetTitleButtonCount() do
-		local button = GossipFrame_GetTitleButton(i);
-		if button and button:IsShown() and button.type == "Available" then
-			questCount = questCount + 1;
-			if not firstQuestButton then
-				firstQuestButton = button;
-			end
-			NPE_TutorialQuestBangGlow:Show(button);
+	local tutorialButtons = GossipFrame:GetTutorialButtons(); 
+	if(not tutorialButtons) then 
+		return; 
+	end 
+
+	for _, button in ipairs(tutorialButtons) do
+		if not firstQuestButton then
+			firstQuestButton = button;
 		end
+		NPE_TutorialQuestBangGlow:Show(button);
 	end
-	GossipFrameGreetingGoodbyeButton:Hide();
-	if firstQuestButton and questCount > 1 then
+	if firstQuestButton and #tutorialButtons > 1 then
 		self:ShowPointerTutorial(NPEV2_MULTIPLE_QUESTS_OFFERED, "LEFT", firstQuestButton, 0, 0, "RIGHT");
 	end
 end
 
 function Class_GossipFrameWatcher:GOSSIP_CLOSED()
-	for i = 1, GossipFrame_GetTitleButtonCount() do
-		local button = GossipFrame_GetTitleButton(i);
-		if button and button:IsShown() and button.type == "Available" then
-			NPE_TutorialQuestBangGlow:Hide(button);
-		end
+	local tutorialButtons = GossipFrame:GetTutorialButtons(); 
+	for _, button in ipairs(tutorialButtons) do
+		NPE_TutorialQuestBangGlow:Hide(button);
 	end
-	GossipFrameGreetingGoodbyeButton:Show();
+	GossipFrame:SetGossipTutorialMode(false);
 	self:HidePointerTutorials();
 end
 
 function Class_GossipFrameWatcher:OnInterrupt(interruptedBy)
 	self:HidePointerTutorials();
 	self:Complete();
+	GossipFrame:SetGossipTutorialMode(false);
 end
 
 function Class_GossipFrameWatcher:OnComplete()

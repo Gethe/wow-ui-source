@@ -13,7 +13,7 @@
 					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_PARTY_32_32" type="global"/>,
+					<KeyValue key="backdropInfo" value="BACKDROP_PARTY_32_32" type="global"/>
 				</KeyValues>
 				<Scripts>
 					<OnLoad inherit="prepend" method="OnLoad"/>

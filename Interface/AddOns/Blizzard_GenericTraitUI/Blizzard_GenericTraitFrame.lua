@@ -59,7 +59,7 @@ function GenericTraitFrameMixin:OnHide()
 
 	FrameUtil.UnregisterFrameForEvents(self, GenericTraitFrameEvents);
 
-	C_Traits.CloseTraitSystemInteraction();
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.TraitSystem);
 end
 
 function GenericTraitFrameMixin:OnEvent(event, ...)
@@ -82,10 +82,10 @@ function GenericTraitFrameMixin:OnEvent(event, ...)
 	end
 end
 
-function GenericTraitFrameMixin:SetSystemID(traitSystemID)
-	self.traitSystemID = traitSystemID;
+function GenericTraitFrameMixin:SetTreeID(traitTreeID)
+	self.traitTreeID = traitTreeID;
 
-	local configID = C_Traits.GetConfigIDBySystemID(traitSystemID);
+	local configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
 	self:SetConfigID(configID);
 end
 

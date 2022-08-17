@@ -57,18 +57,20 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 	local rankText = GenerateRankText(professionInfo.professionName, professionInfo.skillLevel, professionInfo.maxSkillLevel, professionInfo.skillModifier);
 	self.Rank.Text:SetText(rankText);
 
-	local professionChanged = self.lastParentProfessionName ~= professionInfo.parentProfessionName;
+	local professionChanged = self.lastProfession ~= professionInfo.profession;
 	if professionChanged then
-		self.lastParentProfessionName = professionInfo.parentProfessionName;
-		if professionInfo.parentProfessionName then
-			self.Fill:SetAtlas(("Professions_ProgBar_Static_%s"):format(professionInfo.parentProfessionName));
+		self.lastProfession = professionInfo.profession;
+		
+		local kitSpecifier = Professions.GetAtlasKitSpecifier(professionInfo);
+		local fillArtAtlasFormat = "Skillbar_Fill_Flipbook_%s";
+		local stylizedFillAtlasName = kitSpecifier and fillArtAtlasFormat:format(kitSpecifier);
+		local stylizedFillInfo = stylizedFillAtlasName and C_Texture.GetAtlasInfo(stylizedFillAtlasName);
+		if not stylizedFillInfo then
+			stylizedFillAtlasName = fillArtAtlasFormat:format("Blacksmithing");
+			stylizedFillInfo = C_Texture.GetAtlasInfo(stylizedFillAtlasName);
 		end
-	end
-	
-	local function UpdateBar(u, width)
-		self.Fill:SetTexCoord(1.0 - u, 1, 0, 1);
-		self.Fill:SetWidth(width);
-		self.Fill:SetShown(width ~= 0); -- Workaround for a bug where setting the Fill's width to 0 causes it to appear at 512 width.
+		self.Fill:SetAtlas(stylizedFillAtlasName, TextureKitConstants.IgnoreAtlasSize);
+		self.BarAnimation:Restart();
 	end
 
 	local newRatio = 0;
@@ -76,20 +78,31 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 		newRatio = professionInfo.skillLevel / professionInfo.maxSkillLevel;
 	end
 
-	local width = self:GetWidth();
-	local newFillWidth = width * newRatio;
+	if self.ratio == newRatio then
+		return;
+	end
+
+	if self.interpolator then
+		self.interpolator:Cancel();
+		self.interpolator = nil;
+	end
+
+	local width = self.Fill:GetWidth();
+
+	local function UpdateBar(progress)
+		self.Mask:SetWidth(width * progress);
+	end
 
 	if professionChanged then
-		UpdateBar(newRatio, newFillWidth);
+		UpdateBar(newRatio);
 	else
-		local oldFillWidth = self.Fill:GetWidth();
-		local oldRatio = (oldFillWidth / width);
-
-		local interpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseOut);
-		interpolator:Interpolate(0, 1, .5, function(value)
+		self.interpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseOut);
+		local oldRatio = self.ratio or 0;
+		self.interpolator:Interpolate(0, 1, .5, function(value)
 			local u = InterpolatorUtil.InterpolateLinear(oldRatio, newRatio, value);
-			local width = InterpolatorUtil.InterpolateLinear(oldFillWidth, newFillWidth, value);
-			UpdateBar(u, width);
-		end);
+			UpdateBar(u);
+		end, function() self.interpolator = nil; end);
 	end
+
+	self.ratio = newRatio;
 end

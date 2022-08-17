@@ -105,7 +105,6 @@ local FrameSpecificOverrides = {
 ------------- Frame and Unit Events -------------
 local ITEM_INTERACTION_FRAME_EVENTS = {
 	"PLAYER_MONEY",
-	"ITEM_INTERACTION_CLOSE",
 	"ITEM_INTERACTION_ITEM_SELECTION_UPDATED",
 	"ITEM_INTERACTION_CHARGE_INFO_UPDATED",
 	"GLOBAL_MOUSE_DOWN",
@@ -188,8 +187,6 @@ function ItemInteractionMixin:OnEvent(event, ...)
 		if (self.castLineID and self.castLineID == lineID) then
 			C_ItemInteraction.ClearPendingItem();
 		end
-	elseif (event == "ITEM_INTERACTION_CLOSE") then
-		HideUIPanel(self);
 	elseif (event == "GLOBAL_MOUSE_DOWN") then
 		if (self.clickShowsFlyout) then
 			local buttonName = ...;

@@ -25,9 +25,7 @@ function MailFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
 	-- Register for events
-	self:RegisterEvent("MAIL_SHOW");
 	self:RegisterEvent("MAIL_INBOX_UPDATE");
-	self:RegisterEvent("MAIL_CLOSED");
 	self:RegisterEvent("MAIL_SEND_INFO_UPDATE");
 	self:RegisterEvent("MAIL_SEND_SUCCESS");
 	self:RegisterEvent("MAIL_FAILED");
@@ -49,25 +47,35 @@ function MailFrame_UpdateTrialState(self)
 	self.trialError:SetShown(isTrialOrVeteran);
 end
 
+function MailFrame_Show()
+	ShowUIPanel(MailFrame);
+	if ( not MailFrame:IsShown() ) then
+		CloseMail();
+		return;
+	end
+
+	-- Update the roster so auto-completion works
+	if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
+		C_GuildInfo.GuildRoster();
+	end
+
+	OpenAllBags(MailFrame);
+	SendMailFrame_Update();
+	MailFrameTab_OnClick(nil, 1);
+	MailFrame_RefreshInbox(MailFrame);
+	DoEmote("READ", nil, true);
+end		
+
+function MailFrame_Hide() 
+	CancelEmote();
+	HideUIPanel(MailFrame);
+	CloseAllBags(self);
+	SendMailFrameLockSendMail:Hide();
+	StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
+end	
+
 function MailFrame_OnEvent(self, event, ...)
-	if ( event == "MAIL_SHOW" ) then
-		ShowUIPanel(MailFrame);
-		if ( not MailFrame:IsShown() ) then
-			CloseMail();
-			return;
-		end
-
-		-- Update the roster so auto-completion works
-		if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
-			C_GuildInfo.GuildRoster();
-		end
-
-		OpenAllBags(self);
-		SendMailFrame_Update();
-		MailFrameTab_OnClick(nil, 1);
-		MailFrame_RefreshInbox(self);
-		DoEmote("READ", nil, true);
-	elseif ( event == "MAIL_INBOX_UPDATE" ) then
+	if ( event == "MAIL_INBOX_UPDATE" ) then
 		InboxFrame_Update();
 		OpenMail_Update();
 		self.inboxBeingChecked = false;
@@ -87,12 +95,6 @@ function MailFrame_OnEvent(self, event, ...)
 		if ( InboxNextPageButton:IsEnabled() ) then
 			InboxGetMoreMail();
 		end
-	elseif ( event == "MAIL_CLOSED" ) then
-		CancelEmote();
-		HideUIPanel(MailFrame);
-		CloseAllBags(self);
-		SendMailFrameLockSendMail:Hide();
-		StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
 	elseif ( event == "CLOSE_INBOX_ITEM" ) then
 		local mailID = ...;
 		if ( mailID == InboxFrame.openMailID ) then
