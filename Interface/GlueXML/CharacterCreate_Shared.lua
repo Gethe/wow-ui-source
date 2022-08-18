@@ -105,9 +105,9 @@ function CharacterCreate_OnEvent(self, event, ...)
 			CharacterCreateEnumerateClasses();
 		end
 	elseif ( event == "CHARACTER_CREATION_RESULT" ) then
-		local success, errorCode = ...;
+		local success, errorCode, guid = ...;
 		if ( success ) then
-			CharacterSelect.selectLast = true;
+			CharacterSelect.selectGuid = guid;
 			GlueParent_SetScreen("charselect");
 		else
 			GlueDialog_Show("OKAY", _G[errorCode]);

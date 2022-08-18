@@ -767,7 +767,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	self:ClearResultInfo();
 	self.lastSelectedIndex = CharacterSelect.selectedIndex;
 
-	local numCharacters = GetNumCharacters();
+	local numCharacters = GetNumCharactersActiveForEra();
 	local numDisplayedCharacters = math.min(numCharacters, MAX_CHARACTERS_DISPLAYED);
 
 	if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
@@ -775,8 +775,6 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		CHARACTER_LIST_OFFSET = max(numCharacters - MAX_CHARACTERS_DISPLAYED, 0);
 
 		if (self.createNum < numCharacters) then
-			CharacterSelect.selectedIndex = GetNumCharactersActiveForEra();
-
 			CharacterSelectCharacterFrame.scrollBar.blockUpdates = true;
 			CharacterSelectCharacterFrame.scrollBar:SetValue(CHARACTER_LIST_OFFSET);
 			CharacterSelectCharacterFrame.scrollBar.blockUpdates = nil;

@@ -573,9 +573,6 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
 	for i=1, MAX_BATTLEFIELD_QUEUES do
 		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, isRankedArena, _, _, bgtype = GetBattlefieldStatus(i);
 		if ( mapName ) then
-			if (  instanceID ~= 0 ) then
-				mapName = mapName.." "..instanceID;
-			end
 			if ( teamSize ~= 0 ) then
 				if ( isRankedArena ) then
 					mapName = ARENA_RATED_MATCH.." "..format(PVP_TEAMSIZE, teamSize, teamSize);

@@ -461,7 +461,7 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
-								<FontString inherits="FactionName_Shadow_Huge" text="ALLIANCE">
+								<FontString inherits="FactionName_Shadow_Huge" parentKey="AllianceText" text="ALLIANCE">
 									<Anchors>
 										<Anchor point="TOP" relativeTo="CharacterCreateBanners" relativePoint="TOP">
 											<Offset>
@@ -470,7 +470,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString inherits="FactionName_Shadow_Huge" text="HORDE">
+								<FontString inherits="FactionName_Shadow_Huge" parentKey="HordeText" text="HORDE">
 									<Anchors>
 										<Anchor point="TOP" relativeTo="CharacterCreateBanners" relativePoint="TOP">
 											<Offset>
