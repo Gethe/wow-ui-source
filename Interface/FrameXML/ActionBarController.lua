@@ -17,7 +17,7 @@ function ActionBarController_OnLoad(self)
 	--MainBar Only
 	
 	--Alternate Only
-	if ClassicExpansionAtLeast(LE_EXPANSION_NORTHREND) then
+	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
 		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
 		self:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR");
 	end

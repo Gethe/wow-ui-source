@@ -375,7 +375,8 @@ function QuestLog_SetSelection(questIndex)
 end
 
 function QuestLog_UpdateQuestDetails(doNotScroll)
-	QuestInfo_Display(QUEST_TEMPLATE_LOG, QuestLogDetailScrollChildFrame)
+	QuestInfo_Display(QUEST_TEMPLATE_LOG, QuestLogDetailScrollChildFrame);
+	QuestInfoDescriptionText:SetAlphaGradient(1024, QUEST_DESCRIPTION_GRADIENT_LENGTH);
 	local numEntries, numQuests = GetNumQuestLogEntries();
 	if (not doNotScroll ) then
 		QuestLogDetailScrollFrameScrollBar:SetValue(0);

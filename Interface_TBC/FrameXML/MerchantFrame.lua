@@ -6,6 +6,7 @@ local MAX_MONEY_DISPLAY_WIDTH = 120;
 
 function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_UPDATE");
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("MERCHANT_CLOSED");
 	self:RegisterEvent("MERCHANT_SHOW");
 	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
@@ -21,7 +22,7 @@ function MerchantFrame_OnLoad(self)
 end
 
 function MerchantFrame_OnEvent(self, event, ...)
-	if ( event == "MERCHANT_UPDATE" ) then
+	if ( event == "MERCHANT_UPDATE" or event == "CURRENCY_DISPLAY_UPDATE") then
 		self.update = true;
 	elseif ( event == "MERCHANT_CLOSED" ) then
 		StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL");

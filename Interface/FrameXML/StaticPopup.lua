@@ -4994,7 +4994,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
-				if( GetClassicExpansionLevel() < LE_EXPANSION_NORTHREND ) then
+				if( GetClassicExpansionLevel() < LE_EXPANSION_WRATH_OF_THE_LICH_KING ) then
 					if ( timeleft < 60 ) then
 						text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, SECONDS);
 					else

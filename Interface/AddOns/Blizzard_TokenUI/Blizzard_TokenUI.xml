@@ -271,6 +271,7 @@
 		<Scripts>
 			<OnLoad function="TokenFrame_OnLoad"/>
 			<OnShow function="TokenFrame_OnShow"/>
+			<OnEvent function="TokenFrame_OnEvent"/>
 			<OnHide>
 				TokenFramePopup:Hide();
 			</OnHide>
