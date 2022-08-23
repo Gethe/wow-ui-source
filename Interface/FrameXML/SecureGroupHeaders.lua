@@ -1027,9 +1027,10 @@ function SecureAuraHeader_Update(self)
 			-- Mainline iteration-style.
 			AuraUtil.ForEachAura(unit, fullFilter, nil, function(...)
 				local aura, _, duration = freshTable();
-				aura.name, _, _, _, duration, aura.expires, aura.caster, _, aura.shouldConsolidate, _ = ...;
+				aura.name, _, _, _, duration, aura.expires, aura.caster, _, _, _ = ...;
 				aura.filter = fullFilter;
 				aura.index = i;
+				aura.shouldConsolidate = false; -- Deprecated for mainline.
 				local targetList = sortingTable;
 				if ( consolidateTable and aura.shouldConsolidate ) then
 					if ( not aura.expires or duration > consolidateDuration or (aura.expires - time >= max(consolidateThreshold, duration * consolidateFraction)) ) then
@@ -1044,7 +1045,7 @@ function SecureAuraHeader_Update(self)
 			-- Classic iteration-style. (TODO: Unify me!)
 			repeat
 				local aura, _, duration = freshTable();
-				aura.name, _, _, _, duration, aura.expires, aura.caster, _, aura.shouldConsolidate, _ = UnitAura(unit, i, fullFilter);
+				aura.name, _, _, _, duration, aura.expires, aura.caster, _, _, _, _, _, _, _, _, aura.shouldConsolidate = UnitAura(unit, i, fullFilter);
 				if ( aura.name ) then
 					aura.filter = fullFilter;
 					aura.index = i;

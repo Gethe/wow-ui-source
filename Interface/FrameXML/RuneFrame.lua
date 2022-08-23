@@ -50,7 +50,7 @@ function RuneButton_OnUpdate (self, elapsed, ...)
 	
 	local displayCooldown = (runeReady and 0) or 1;
 	
-	if displayCooldown and start > 0 and duration > 0 then
+	if ( displayCooldown and start and start > 0 and duration and duration > 0) then
 		CooldownFrame_Set(cooldown, start, duration, displayCooldown, true);
 	end
 ;

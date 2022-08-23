@@ -564,7 +564,8 @@ DisplayPanelOptions = {
 	displayFreeBagSlots = { text = "DISPLAY_FREE_BAG_SLOTS" },
     showTutorials = { text = "SHOW_TUTORIALS" },
 	displayAggroWarning =  { text = "DISPLAY_AGGRO_WARNING" },
-	threatShowNumeric = { text = "SHOW_AGGRO_PERCENTAGES", tooltip = OPTION_TOOLTIP_SHOW_NUMERIC_THREAT }
+	threatShowNumeric = { text = "SHOW_AGGRO_PERCENTAGES", tooltip = OPTION_TOOLTIP_SHOW_NUMERIC_THREAT },
+	consolidateBuffs = { text = "CONSOLIDATE_BUFFS_TEXT" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
