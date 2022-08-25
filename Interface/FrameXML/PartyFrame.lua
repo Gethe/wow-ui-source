@@ -4,16 +4,29 @@ PartyFrameMixin={};
 
 function PartyFrameMixin:OnLoad()
 	self.PartyMemberFramePool = CreateFramePool("BUTTON", self, "PartyMemberFrameTemplate");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 end
 
 function PartyFrameMixin:OnShow()
 	self:InitializePartyMemberFrames();
-	self:HidePartyFrame();
-	self:ShowPartyFrame();
+	self:UpdatePartyFrame();
+end
+
+function PartyFrameMixin:OnEvent(event, ...)
+	if IsInRaid() then
+		self.fixedWidth = 120;
+		self.fixedHeight = 242;
+	else
+		self.fixedWidth = nil;
+		self.fixedHeight = nil;
+	end
+
+	self:Layout();
 end
 
 function PartyFrameMixin:InitializePartyMemberFrames()
 	local memberFramesToSetup = {};
+	local usePlayerOverride = true;
 	
 	self.PartyMemberFramePool:ReleaseAll();
 	for i = 1, MAX_PARTY_MEMBERS do 	
@@ -22,28 +35,42 @@ function PartyFrameMixin:InitializePartyMemberFrames()
 		 memberFrame.layoutIndex = i;
 		 memberFramesToSetup[i] = memberFrame;
 		 memberFrame:Show();
+
+		 local fakeMemberFrame = self.PartyMemberFramePool:Acquire();
+		 fakeMemberFrame:SetPoint("TOPLEFT");
+		 fakeMemberFrame.layoutIndex = MAX_PARTY_MEMBERS + i;
+		 fakeMemberFrame.realPartyMemberToken = "party"..i;
+		 fakeMemberFrame:Setup(usePlayerOverride);
 	end
 	self:Layout();
-	for index, frame in ipairs(memberFramesToSetup) do 
+	for _, frame in ipairs(memberFramesToSetup) do 
 		frame:Setup();
 	end
 end
 
-function PartyFrameMixin:HidePartyFrame()
+function PartyFrameMixin:UpdateMemberFrames()
 	for memberFrame in self.PartyMemberFramePool:EnumerateActive() do
-		memberFrame:Hide();
+		memberFrame:UpdateMember();
 	end
+
+	self:Layout();
 end
 
 function PartyFrameMixin:UpdatePartyMemberBackground()
-	if ( not self.Background ) then
+	if not self.Background then
 		return;
 	end
-	local numMembers = GetNumSubgroupMembers();
-	if ( numMembers > 0 and CVarCallbackRegistry:GetCVarValueBool("showPartyBackground") and GetDisplayedAllyFrames() == "party" ) then
+
+	if ShowingRaidFrames() or not EditModeManagerFrame:ShouldShowPartyFrameBackground() then
+		self.Background:Hide();
+		return;
+	end
+
+	local numMembers = EditModeManagerFrame:ArePartyFramesForcedShown() and MAX_PARTY_MEMBERS or GetNumSubgroupMembers();
+	if numMembers > 0 then
 		for memberFrame in self.PartyMemberFramePool:EnumerateActive() do 
 			if memberFrame.layoutIndex == numMembers then
-				if (memberFrame.PetFrame:IsShown() ) then
+				if memberFrame.PetFrame:IsShown() then
 					self.Background:SetPoint("BOTTOMLEFT", memberFrame, "BOTTOMLEFT", -5, -21);
 				else
 					self.Background:SetPoint("BOTTOMLEFT", memberFrame, "BOTTOMLEFT", -5, -5);
@@ -56,12 +83,25 @@ function PartyFrameMixin:UpdatePartyMemberBackground()
 	end
 end
 
-function PartyFrameMixin:ShowPartyFrame()
+function PartyFrameMixin:HidePartyFrames()
 	for memberFrame in self.PartyMemberFramePool:EnumerateActive() do
-		if ( UnitExists(memberFrame.unit) ) then
+		memberFrame:Hide();
+	end
+end
+
+function PartyFrameMixin:UpdatePartyFrame()
+	local showingPartyFrames = ShowingPartyFrames();
+	for memberFrame in self.PartyMemberFramePool:EnumerateActive() do
+		if showingPartyFrames and UnitExists(memberFrame.unit) then
 			memberFrame:Show();
+			memberFrame:UpdateMember();
+		else
+			memberFrame:Hide();
 		end
 	end
+
+	self:UpdatePartyMemberBackground();
+	self:Layout();
 end
 
 PartyMemberBuffTooltipMixin={};

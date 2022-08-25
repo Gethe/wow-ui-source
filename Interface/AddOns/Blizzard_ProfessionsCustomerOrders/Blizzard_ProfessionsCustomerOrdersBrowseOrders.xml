@@ -21,11 +21,8 @@
 				<Frames>
 					<Button parentKey="FavoritesSearchButton" inherits="SquareIconButtonTemplate" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true">
 						<Anchors>
-							<Anchor point="LEFT" x="0" y="0"/>
+							<Anchor point="LEFT"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad method="OnLoad"/>
-						</Scripts>
 					</Button>
 					<EditBox parentKey="SearchBox" autoFocus="false" historyLines="1" bytes="64" inherits="SearchBoxTemplate">
 						<Size x="241" y="22"/>
@@ -39,7 +36,7 @@
 							<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 					</Button>
-					<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER" virtual="true">
+					<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" registerForClicks="LeftButtonDown" text="FILTER">
 						<Size x="93" y="22"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.SearchButton" relativePoint="LEFT" x="-10" y="0"/>
@@ -54,6 +51,20 @@
 								</Texture>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame parentKey="LevelRangeFrame" inherits="AuctionHouseLevelRangeFrameTemplate"/>
+							<Button parentKey="ClearFiltersButton">
+								<Size x="23" y="23"/>
+								<Anchors>
+									<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-3" y="0"/>
+								</Anchors>
+								<NormalTexture atlas="auctionhouse-ui-filter-redx">
+									<Size x="23" y="23"/>
+								</NormalTexture>
+							</Button>
+							<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
+							<Frame parentKey="LevelRangeFrame" inherits="AuctionHouseLevelRangeFrameTemplate"/>
+						</Frames>
 					</DropDownToggleButton>
 				</Frames>
 			</Frame>

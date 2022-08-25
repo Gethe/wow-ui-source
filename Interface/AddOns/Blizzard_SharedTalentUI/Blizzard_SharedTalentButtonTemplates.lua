@@ -408,7 +408,12 @@ function TalentButtonBaseMixin:CalculateVisualState()
 end
 
 function TalentButtonBaseMixin:GetTraitCurrenciesCost()
-	return self:GetTalentFrame():GetNodeCost(self.talentNodeID);
+	local nodeCost = self:GetTalentFrame():GetNodeCost(self.talentNodeID);
+	if self.talentNodeInfo and (self.talentNodeInfo.type == Enum.TraitNodeType.Tiered) then
+		return TalentUtil.CombineCostArrays(nodeCost, self:GetEntryInfo().entryCost);
+	end
+
+	return nodeCost;
 end
 
 function TalentButtonBaseMixin:AddTooltipCost(tooltip)
@@ -468,6 +473,17 @@ function TalentButtonBaseMixin:IsSelectable()
 	return not self:IsMaxed() and not self:IsLocked() and self:CanAfford();
 end
 
+function TalentButtonBaseMixin:PlaySelectSound()
+	if self.selectSound then
+		PlaySound(self.selectSound);
+	end
+end
+
+function TalentButtonBaseMixin:PlayDeselectSound()
+	if self.deselectSound then
+		PlaySound(self.deselectSound);
+	end
+end
 
 TalentButtonBasicArtMixin = {};
 
@@ -721,12 +737,14 @@ function TalentButtonSpendMixin:CanRefundRank()
 end
 
 function TalentButtonSpendMixin:PurchaseRank()
+	self:PlaySelectSound();
 	self:GetTalentFrame():PurchaseRank(self:GetTalentNodeID());
 	self:CheckTooltip();
 end
 
 function TalentButtonSpendMixin:RefundRank()
-	self:GetTalentFrame():RefundRank(self:GetTalentNodeID(), self:GetEntryID());
+	self:PlayDeselectSound();
+	self:GetTalentFrame():RefundRank(self:GetTalentNodeID());
 	self:CheckTooltip();
 end
 
@@ -983,6 +1001,12 @@ end
 function TalentButtonSelectMixin:UpdateSelectedEntryID(selectedEntryID, selectedTalentInfo)
 	if self.selectedEntryID == selectedEntryID then
 		return false;
+	end
+
+	if selectedEntryID == nil then
+		self:PlayDeselectSound();
+	else
+		self:PlaySelectSound();
 	end
 
 	self.selectedEntryID = selectedEntryID;

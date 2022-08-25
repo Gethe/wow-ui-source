@@ -104,12 +104,28 @@
 									<Anchor point="TOPLEFT"/>
 								</Anchors>
 							</Frame>
+							<Frame parentKey="PartyFrames" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_PARTY_FRAMES_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.TargetAndFocus" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<!--<Frame parentKey="RaidFrames" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_RAID_FRAMES_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.PartyFrames" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>-->
 							<Frame parentKey="StanceBar" inherits="EditModeCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_STANCE_BAR_LABEL" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TargetAndFocus" relativePoint="BOTTOMLEFT"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.PartyFrames" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
 							<Frame parentKey="PetActionBar" inherits="EditModeCheckButtonTemplate">
@@ -150,6 +166,22 @@
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.EncounterBar" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="BuffFrame" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_BUFF_FRAME_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.PossessActionBar" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="DebuffFrame" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_DEBUFF_FRAME_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.BuffFrame" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
 						</Frames>

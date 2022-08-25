@@ -33,7 +33,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="EditModeActionBarSystemSelectionTemplate" inherits="EditModeSystemSelectionBaseTemplate" mixin="EditModeActionBarSystemSelectionMixin" virtual="true">
+	<Frame name="EditModeSystemSelectionDoubleLabelTemplate" inherits="EditModeSystemSelectionBaseTemplate" mixin="EditModeSystemSelectionDoubleLabelMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="HorizontalLabel" inherits="GameFontHighlightLarge" ignoreParentScale="true" hidden="true">
@@ -57,17 +57,16 @@
 			<KeyValue key="addSystemIndexToName" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="Selection" inherits="EditModeActionBarSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionDoubleLabelTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
 
 	<Frame name="EditModeUnitFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeUnitFrameSystemMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="system" value="Enum.EditModeSystem.UnitFrame" type="global"/>
-			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ACTION_BAR_LABEL" type="global"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionDoubleLabelTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
 
@@ -106,6 +105,16 @@
 		<KeyValues>
 			<KeyValue key="system" value="Enum.EditModeSystem.ExtraAbilities" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_EXTRA_ABILITIES_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeAuraFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeAuraFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.AuraFrame" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>

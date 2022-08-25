@@ -209,11 +209,9 @@ function DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys)
 		if hasNonMetaKey then
 			if not MacOptions_IsInputMonitoringEnabled() then
 				ShowAppropriateDialog("MAC_OPEN_INPUT_MONITORING");
-				return true;
 			end
 		end
 	end
-	return false;
 end
 
 function CreateVoicePushToTalkBindingHandler()
@@ -227,22 +225,19 @@ function CreateVoicePushToTalkBindingHandler()
 	end);
 
 	handler:SetOnBindingCompletedCallback(function(completedSuccessfully, keys)
+		SettingsPanel:OnKeybindStoppedListening("TOGGLE_VOICE_PUSH_TO_TALK");
+
 		if completedSuccessfully then
 			SettingsPanel:OnKeybindRebindSuccess("TOGGLE_VOICE_PUSH_TO_TALK");
 		else
 			SettingsPanel:ClearOutputText();
 		end
 
-		local requiredDialog = false;
 		if completedSuccessfully and keys then
-			requiredDialog = DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys);
+			DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys);
 		end
 
-		if not requiredDialog then
-			SaveAllCustomBindings(true);
-		else
-			-- FIXME save on mac ua response
-		end
+		SaveAllCustomBindings(true);
 	end);
 
 	return handler;

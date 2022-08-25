@@ -16,6 +16,8 @@
 		excludeStagedChangesForCurrencies: if staged changes should be excluded for currency calculations.
 		maximumCommitTime: temporarily configuration parameter for commits until we replace with an event-driven system.
 		disabledOverlayAlpha: alpha to set the disabled overlay to. It is shown while a commit is in progress.
+		enableCommitCastBar: if overlay player cast bar should be displayed while commit is in progress.
+		enableCommitEndFlash: if background flash should be played on commit completion.
 		-->
 		<KeyValues>
 			<KeyValue key="getTemplateType" value="TalentButtonUtil.GetTemplateForTalentType" type="global"/>
@@ -31,8 +33,18 @@
 			<KeyValue key="excludeStagedChangesForCurrencies" value="false" type="boolean"/>
 			<KeyValue key="maximumCommitTime" value="0.5" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value="0.4" type="number"/>
+			<KeyValue key="enableCommitCastBar" value="false" type="boolean"/>
+			<KeyValue key="enableCommitEndFlash" value="false" type="boolean"/>
 		</KeyValues>
-		<Frames>			
+		<Frames>
+			<Frame parentKey="AnimationHolder">
+				<Animations>
+					<AnimationGroup parentKey="BackgroundFlashAnim" setToFinalAlpha="true">
+						<Alpha childKey="$parent.BackgroundFlash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+
 			<Frame parentKey="ButtonsParent" mixin="TalentFrameBaseButtonsParentMixin" clipChildren="true" frameLevel="1000">
 				<Scripts>
 					<OnUpdate method="OnUpdate"/>
@@ -43,7 +55,7 @@
 
 			<Frame parentKey="SelectionChoiceFrame" inherits="TalentSelectionChoiceFrameTemplate" enableMouse="true" frameLevel="2000"/>
 			
-			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="5000" hidden="true">
+			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="4000" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
@@ -51,12 +63,22 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="GrayOverlay">
-							<Color r="0" g="0" b="0" a="0"/>
+							<Color r="0" g="0" b="0" a="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
 		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundFlash" atlas="spec-background" alphaMode="ADD" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<!-- OnUpdate Set dynamically -->

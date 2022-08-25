@@ -5,7 +5,7 @@ function EditModeSystemMixin:OnSystemLoad()
 		-- All systems must have self.system set on them
 		return;
 	end
-
+	
 	EditModeManagerFrame:RegisterSystemFrame(self);
 
 	self.systemName = (self.addSystemIndexToName and self.systemIndex) and self.systemNameString:format(self.systemIndex) or self.systemNameString;
@@ -83,7 +83,7 @@ function EditModeSystemMixin:UpdateSystemSettingValue(setting, newValue)
 end
 
 function EditModeSystemMixin:ResetToDefaultPosition()
-	self.systemInfo.anchorInfo.isDefaultPosition = true;
+	self.systemInfo.anchorInfo = EditModePresetLayoutManager:GetModernSystemAnchorInfo(self.system, self.systemIndex);
 	self:ApplySystemAnchor();
 	EditModeSystemSettingsDialog:UpdateDialog(self);
 	self:SetHasActiveChanges(true);
@@ -171,6 +171,9 @@ function EditModeSystemMixin:HasSetting(setting)
 end
 
 function EditModeSystemMixin:GetSettingValue(setting, useRawValue)
+	if not self:IsInitialized() then
+		return 0;
+	end
 	return useRawValue and self.settingMap[setting].value or self.settingMap[setting].displayValue;
 end
 
@@ -191,6 +194,11 @@ end
 -- Override in inheriting mixins as needed
 function EditModeSystemMixin:UseSettingAltName(setting)
 	return false;
+end
+
+-- Override in inheriting mixins as needed
+function EditModeSystemMixin:UpdateDisplayInfoOptions(displayInfo)
+	return displayInfo;
 end
 
 -- Override in inheriting mixins as needed
@@ -494,6 +502,8 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingVisibleSetting()
 		self.visibility = "InCombat";
 	elseif self:DoesSettingValueEqual(Enum.EditModeActionBarSetting.VisibleSetting, Enum.ActionBarVisibleSetting.OutOfCombat) then
 		self.visibility = "OutOfCombat"
+	elseif self:DoesSettingValueEqual(Enum.EditModeActionBarSetting.VisibleSetting, Enum.ActionBarVisibleSetting.Hidden) then
+		self.visibility = "Hidden";
 	else
 		self.visibility = "Always";
 	end
@@ -598,9 +608,32 @@ function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
 	return true;
 end
 
+local function CreateResetToDefaultPositionButton(systemFrame, extraButtonPool)
+	local resetPositionButton = extraButtonPool:Acquire();
+	resetPositionButton.layoutIndex = 3;
+	resetPositionButton:SetText(HUD_EDIT_MODE_RESET_POSITION);
+	resetPositionButton:SetOnClickHandler(GenerateClosure(systemFrame.ResetToDefaultPosition, systemFrame));
+	resetPositionButton:SetEnabled(not systemFrame:IsInDefaultPosition());
+	resetPositionButton:Show();
+end
+
 EditModeUnitFrameSystemMixin = {};
 
 function EditModeUnitFrameSystemMixin:ShouldResetSettingsDialogAnchors(oldSelectedSystemFrame)
+	return true;
+end
+
+function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
+	if not EditModeSystemMixin.ShouldShowSetting(self, setting) then
+		return false;
+	end
+
+	if setting == Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground then
+		return not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+	elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalGroups then
+		return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+	end
+
 	return true;
 end
 
@@ -615,6 +648,22 @@ function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 10);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -35, 0);
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+		if self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) then
+			if self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseHorizontalGroups) then
+				self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2);
+				self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -7, 1);
+			else
+				self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2);
+				self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+			end
+		else
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 9, 0);
+		end
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
 	end
 end
 
@@ -625,7 +674,20 @@ function EditModeUnitFrameSystemMixin:SetupSettingsDialogAnchor()
 		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("RIGHT", UIParent, "RIGHT", -250);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
 		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("RIGHT", UIParent, "RIGHT", -250);
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("TOPLEFT", UIParent, "TOPLEFT", 200, -200);
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("TOPLEFT", UIParent, "TOPLEFT", 200, -200);
 	end
+end
+
+function EditModeUnitFrameSystemMixin:AddExtraButtons(extraButtonPool)
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		CreateResetToDefaultPositionButton(self, extraButtonPool);
+		return true;
+	end
+
+	return false;
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingHidePortrait()
@@ -639,6 +701,28 @@ end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseLargerFrame()
 	FocusFrame_SetSmallSize(not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame));
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseRaidStylePartyFrames()
+	UpdateRaidAndPartyFrames();
+	self:UpdateSelectionVerticalState();
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingShowPartyFrameBackground()
+	PartyFrame:UpdatePartyMemberBackground();
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseHorizontalGroups()
+	if CompactPartyFrame then
+		CompactRaidGroup_UpdateBorder(CompactPartyFrame);
+	end
+	UpdateRaidAndPartyFrames();
+	self:UpdateSelectionVerticalState();
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSelectionVerticalState()
+	local verticalState = self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) and not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseHorizontalGroups)
+	self.Selection:SetVerticalState(verticalState);
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -657,6 +741,12 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		self:UpdateSystemSettingBuffsOnTop();
 	elseif setting == Enum.EditModeUnitFrameSetting.UseLargerFrame and self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) then
 		self:UpdateSystemSettingUseLargerFrame();
+	elseif setting == Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames and self:HasSetting(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) then
+		self:UpdateSystemSettingUseRaidStylePartyFrames();
+	elseif setting == Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground and self:HasSetting(Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground) then
+		self:UpdateSystemSettingShowPartyFrameBackground();
+	elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalGroups and self:HasSetting(Enum.EditModeUnitFrameSetting.UseHorizontalGroups) then
+		self:UpdateSystemSettingUseHorizontalGroups();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -685,15 +775,6 @@ end
 
 EditModeCastBarSystemMixin = {};
 
-local function CreateResetToDefaultPositionButton(systemFrame, extraButtonPool)
-	local resetPositionButton = extraButtonPool:Acquire();
-	resetPositionButton.layoutIndex = 3;
-	resetPositionButton:SetText(HUD_EDIT_MODE_RESET_POSITION);
-	resetPositionButton:SetOnClickHandler(GenerateClosure(systemFrame.ResetToDefaultPosition, systemFrame));
-	resetPositionButton:SetEnabled(not systemFrame:IsInDefaultPosition());
-	resetPositionButton:Show();
-end
-
 function EditModeCastBarSystemMixin:ApplySystemAnchor()
 	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
 	if lockToPlayerFrame then
@@ -716,6 +797,10 @@ function EditModeCastBarSystemMixin:ShouldResetSettingsDialogAnchors(oldSelected
 end
 
 function EditModeCastBarSystemMixin:ShouldShowSetting(setting)
+	if not EditModeSystemMixin.ShouldShowSetting(self, setting) then
+		return false;
+	end
+
 	if setting == Enum.EditModeCastBarSetting.BarSize then
 		return not self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
 	end
@@ -790,6 +875,16 @@ end
 
 EditModeEncounterBarSystemMixin = {};
 
+function EditModeEncounterBarSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	-- Undo encounter bar min size stuff so we don't have extra spacing in bottom managed container
+	EncounterBar.minimumWidth = nil;
+	EncounterBar.minimumHeight = nil;
+	EncounterBar:Layout();
+	UIParent_ManageFramePositions();
+end
+
 function EditModeEncounterBarSystemMixin:AddExtraButtons(extraButtonPool)
 	CreateResetToDefaultPositionButton(self, extraButtonPool);
 	return true;
@@ -814,6 +909,245 @@ function EditModeExtraAbilitiesSystemMixin:OnDragStart()
 		self:SetParent(UIParent);
 		self:StartMoving();
 	end
+end
+
+EditModeAuraFrameSystemMixin = {};
+
+function EditModeAuraFrameSystemMixin:OnEditModeEnter()
+	EditModeSystemMixin.OnEditModeEnter(self);
+
+	if not self.hasInitializedExampleAuras then
+		-- Setup example aura frames
+		local spellIconsOnly = true;
+		self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spell, spellIconsOnly);
+		local iconDataProviderNumIcons = self.iconDataProvider:GetNumIcons();
+
+		self.exampleAuraFrames = {};
+		for i = 1, self.maxAuras, 1 do
+			local auraFrame = self.auraPool:Acquire(self.exampleAuraTemplate);
+			auraFrame:SetScale(self.iconScale);
+
+			auraFrame.duration:SetFontObject(DEFAULT_AURA_DURATION_FONT);
+			auraFrame.duration:SetFormattedText(SecondsToTimeAbbrev(i * 60));
+
+			auraFrame.Icon:SetTexture(self.iconDataProvider:GetIconByIndex(math.random(1, iconDataProviderNumIcons)));
+
+			if auraFrame.Setup then
+				auraFrame:Setup();
+			end
+
+			auraFrame:Hide();
+			table.insert(self.exampleAuraFrames, auraFrame);
+		end
+
+		self.iconDataProvider:Release();
+		self.iconDataProvider = nil;
+
+		self.hasInitializedExampleAuras = true;
+	end
+end
+
+function EditModeAuraFrameSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateAuraButtons();
+	self:UpdateGridLayout();
+end
+
+function EditModeAuraFrameSystemMixin:UpdateDisplayInfoOptions(displayInfo)
+	local updatedDisplayInfo = displayInfo;
+
+	if displayInfo.setting == Enum.EditModeAuraFrameSetting.IconWrap then
+		updatedDisplayInfo = CopyTable(displayInfo);
+
+		local valueTextPrefix = "HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_WRAP_";
+
+		if self:DoesSettingValueEqual(Enum.EditModeAuraFrameSetting.Orientation, Enum.AuraFrameOrientation.Horizontal) then
+			updatedDisplayInfo.options[1].text = _G[valueTextPrefix.."DOWN"];
+			updatedDisplayInfo.options[2].text = _G[valueTextPrefix.."UP"];
+		else -- Vertical orientation
+			updatedDisplayInfo.options[1].text = _G[valueTextPrefix.."LEFT"];
+			updatedDisplayInfo.options[2].text = _G[valueTextPrefix.."RIGHT"];
+		end
+	elseif displayInfo.setting == Enum.EditModeAuraFrameSetting.IconDirection then
+		updatedDisplayInfo = CopyTable(displayInfo);
+
+		local valueTextPrefix = "HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_";
+
+		if self:DoesSettingValueEqual(Enum.EditModeAuraFrameSetting.Orientation, Enum.AuraFrameOrientation.Horizontal) then
+			updatedDisplayInfo.options[1].text = _G[valueTextPrefix.."LEFT"];
+			updatedDisplayInfo.options[2].text = _G[valueTextPrefix.."RIGHT"];
+		else -- Vertical orientation
+			updatedDisplayInfo.options[1].text = _G[valueTextPrefix.."DOWN"];
+			updatedDisplayInfo.options[2].text = _G[valueTextPrefix.."UP"];
+		end
+	end
+
+	return updatedDisplayInfo;
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystem(systemInfo)
+	EditModeSystemMixin.UpdateSystem(self, systemInfo);
+	self:UpdateGridLayout();
+end
+
+function EditModeAuraFrameSystemMixin:MarkAuraButtonsDirty()
+	self.auraButtonsDirty = true;
+end
+
+function EditModeAuraFrameSystemMixin:RefreshAuraButtons()
+	if self.auraButtonsDirty then
+		self:UpdateAuraButtons()
+		self.auraButtonsDirty = false;
+	end
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingOrientation()
+	local isHorizontal = self:DoesSettingValueEqual(Enum.EditModeAuraFrameSetting.Orientation, Enum.AuraFrameOrientation.Horizontal);
+	self.AuraContainer.isHorizontal = isHorizontal;
+
+	-- Update icon wrap and direction based on new orientation
+	-- This is to try and keep the icons in roughly the same location when swapping orientations
+	local oldIconWrap = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconWrap);
+	local oldIconDirection = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconDirection);
+	local newIconWrap;
+	local newIconDirection;
+
+	if isHorizontal then
+		-- Update IconDirection
+		if oldIconWrap == Enum.AuraFrameIconWrap.Left then
+			newIconDirection = Enum.AuraFrameIconDirection.Left;
+		elseif oldIconWrap == Enum.AuraFrameIconWrap.Right then
+			newIconDirection = Enum.AuraFrameIconDirection.Right;
+		end
+
+		-- Update IconWrap
+		if oldIconDirection == Enum.AuraFrameIconDirection.Down then
+			newIconWrap = Enum.AuraFrameIconWrap.Down;
+		elseif oldIconDirection == Enum.AuraFrameIconDirection.Up then
+			newIconWrap = Enum.AuraFrameIconWrap.Up;
+		end
+	else -- Vertical orientation
+		-- Update IconDirection
+		if oldIconWrap == Enum.AuraFrameIconWrap.Down then
+			newIconDirection = Enum.AuraFrameIconDirection.Down;
+		elseif oldIconWrap == Enum.AuraFrameIconWrap.Up then
+			newIconDirection = Enum.AuraFrameIconDirection.Up;
+		end
+
+		-- Update IconWrap
+		if oldIconDirection == Enum.AuraFrameIconDirection.Left then
+			newIconWrap = Enum.AuraFrameIconWrap.Left;
+		elseif oldIconDirection == Enum.AuraFrameIconDirection.Right then
+			newIconWrap = Enum.AuraFrameIconWrap.Right;
+		end
+	end
+
+	if newIconWrap then
+		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeAuraFrameSetting.IconDirection, newIconDirection);
+	end
+
+	if newIconDirection then
+		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeAuraFrameSetting.IconWrap, newIconWrap);
+	end
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconWrap()
+	local iconWrap = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconWrap);
+
+	if self:DoesSettingValueEqual(Enum.EditModeAuraFrameSetting.Orientation, Enum.AuraFrameOrientation.Horizontal) then
+		if iconWrap == Enum.AuraFrameIconWrap.Down then
+			self.AuraContainer.addIconsToTop = false;
+		else -- Up
+			self.AuraContainer.addIconsToTop = true;
+		end
+	else -- Vertical Orientation
+		if iconWrap == Enum.AuraFrameIconWrap.Left then
+			self.AuraContainer.addIconsToRight = false;
+		else -- Right
+			self.AuraContainer.addIconsToRight = true;
+		end
+	end
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconDirection()
+	local iconDirection = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconDirection);
+
+	if self:DoesSettingValueEqual(Enum.EditModeAuraFrameSetting.Orientation, Enum.AuraFrameOrientation.Horizontal) then
+		if iconDirection == Enum.AuraFrameIconDirection.Left then
+			self.AuraContainer.addIconsToRight = false;
+		else -- Right
+			self.AuraContainer.addIconsToRight = true;
+		end
+	else -- Vertical orientation
+		if iconDirection == Enum.AuraFrameIconDirection.Down then
+			self.AuraContainer.addIconsToTop = false;
+		else -- Up
+			self.AuraContainer.addIconsToTop = true;
+		end
+	end
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconLimit()
+	local setting = self == BuffFrame and Enum.EditModeAuraFrameSetting.IconLimitBuffFrame or Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame;
+	self.AuraContainer.iconStride = self:GetSettingValue(setting);
+
+	-- Only need to update aura buttons if we aren't already showing the full number of auras
+	-- This is because we base the number of buttons we show on the icon limit if we aren't showing a full number of them
+	if not self:GetSettingValueBool(Enum.EditModeAuraFrameSetting.ShowFull) then
+		self:MarkAuraButtonsDirty();
+	end
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconSize()
+	local iconSize = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconSize);
+	self.iconScale = iconSize / 100;
+	for i, auraFrame in pairs(self.auraFrames) do
+		auraFrame:SetScale(self.iconScale);
+	end
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconPadding()
+	self.AuraContainer.iconPadding = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconPadding);
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingShowFull()
+	self.ShowFull = self:GetSettingValueBool(Enum.EditModeAuraFrameSetting.ShowFull);
+	self:MarkAuraButtonsDirty();
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeAuraFrameSetting.Orientation and self:HasSetting(Enum.EditModeAuraFrameSetting.Orientation) then
+		self:UpdateSystemSettingOrientation();
+	elseif setting == Enum.EditModeAuraFrameSetting.IconWrap and self:HasSetting(Enum.EditModeAuraFrameSetting.IconWrap) then
+		self:UpdateSystemSettingIconWrap();
+	elseif setting == Enum.EditModeAuraFrameSetting.IconDirection and self:HasSetting(Enum.EditModeAuraFrameSetting.IconDirection) then
+		self:UpdateSystemSettingIconDirection();
+	elseif (setting == Enum.EditModeAuraFrameSetting.IconLimitBuffFrame and self:HasSetting(Enum.EditModeAuraFrameSetting.IconLimitBuffFrame))
+		or (setting == Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame and self:HasSetting(Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame)) then
+		self:UpdateSystemSettingIconLimit();
+	elseif setting == Enum.EditModeAuraFrameSetting.IconSize and self:HasSetting(Enum.EditModeAuraFrameSetting.IconSize) then
+		self:UpdateSystemSettingIconSize();
+	elseif setting == Enum.EditModeAuraFrameSetting.IconPadding and self:HasSetting(Enum.EditModeAuraFrameSetting.IconPadding) then
+		self:UpdateSystemSettingIconPadding();
+	elseif setting == Enum.EditModeAuraFrameSetting.ShowFull and self:HasSetting(Enum.EditModeAuraFrameSetting.ShowFull) then
+		self:UpdateSystemSettingShowFull();
+	end
+
+	if not entireSystemUpdate then
+		self:RefreshAuraButtons();
+		self:UpdateGridLayout();
+	end
+
+	self:ClearDirtySetting(setting);
 end
 
 local EditModeSystemSelectionLayout =
@@ -871,19 +1205,19 @@ function EditModeSystemSelectionMixin:UpdateLabelVisibility()
 	self.Label:SetShown(self.isSelected);
 end
 
-EditModeActionBarSystemSelectionMixin = {};
+EditModeSystemSelectionDoubleLabelMixin = {};
 
-function EditModeActionBarSystemSelectionMixin:SetLabelText(text)
+function EditModeSystemSelectionDoubleLabelMixin:SetLabelText(text)
 	self.HorizontalLabel:SetText(text);
 	self.VerticalLabel:SetText(text);
 end
 
-function EditModeActionBarSystemSelectionMixin:SetVerticalState(vertical)
+function EditModeSystemSelectionDoubleLabelMixin:SetVerticalState(vertical)
 	self.isVertical = vertical;
 	self:UpdateLabelVisibility();
 end
 
-function EditModeActionBarSystemSelectionMixin:UpdateLabelVisibility()
+function EditModeSystemSelectionDoubleLabelMixin:UpdateLabelVisibility()
 	self.HorizontalLabel:SetShown(self.isSelected and not self.isVertical);
 	self.VerticalLabel:SetShown(self.isSelected and self.isVertical);
 end

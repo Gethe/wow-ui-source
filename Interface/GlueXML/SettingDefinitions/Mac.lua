@@ -2,5 +2,5 @@ if IsMacClient() then
 	DefineGameSettingsMacOpenUniversalAccessDialog(GlueDialogTypes);
 	DefineGameSettingsMacOpenInputMonitoringDialog(GlueDialogTypes);
 
-	RegisterMacSettings();
+	SettingsRegistrar:AddRegistrant(RegisterMacSettings);
 end

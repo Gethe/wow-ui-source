@@ -205,6 +205,33 @@ local modernSystemMap =
 				offsetY = 0,
 			},
 		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Party] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames] = 0,
+				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
+				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
+			},
+			anchorInfo = {
+				point = "TOPLEFT",
+				relativeTo = "CompactRaidFrameManager",
+				relativePoint = "TOPRIGHT",
+				offsetX = 0,
+				offsetY = -7,
+			},
+		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Raid] = {
+			settings = {
+			},
+			anchorInfo = {
+				point = "TOPLEFT",
+				relativeTo = "CompactRaidFrameManager",
+				relativePoint = "TOPRIGHT",
+				offsetX = 0,
+				offsetY = -20,
+			},
+		},
 	},
 
 	[Enum.EditModeSystem.Minimap] = {
@@ -241,6 +268,45 @@ local modernSystemMap =
 			relativePoint = "TOPLEFT",
 			offsetX = 0,
 			offsetY = 5,
+		},
+	},
+
+	[Enum.EditModeSystem.AuraFrame] = {
+		[Enum.EditModeAuraFrameSystemIndices.BuffFrame] = {
+			settings = {
+				[Enum.EditModeAuraFrameSetting.Orientation] = Enum.AuraFrameOrientation.Horizontal,
+				[Enum.EditModeAuraFrameSetting.IconWrap] = Enum.AuraFrameIconWrap.Down,
+				[Enum.EditModeAuraFrameSetting.IconDirection] = Enum.AuraFrameIconDirection.Left,
+				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 8,
+				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
+				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
+				[Enum.EditModeAuraFrameSetting.ShowFull] = 0,
+			},
+			anchorInfo = {
+				point = "TOPRIGHT",
+				relativeTo = "MinimapCluster",
+				relativePoint = "TOPLEFT",
+				offsetX = -10,
+				offsetY = -10,
+			},
+		},
+		[Enum.EditModeAuraFrameSystemIndices.DebuffFrame] = {
+			settings = {
+				[Enum.EditModeAuraFrameSetting.Orientation] = Enum.AuraFrameOrientation.Horizontal,
+				[Enum.EditModeAuraFrameSetting.IconWrap] = Enum.AuraFrameIconWrap.Down,
+				[Enum.EditModeAuraFrameSetting.IconDirection] = Enum.AuraFrameIconDirection.Left,
+				[Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame] = 8,
+				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
+				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
+				[Enum.EditModeAuraFrameSetting.ShowFull] = 0,
+			},
+			anchorInfo = {
+				point = "TOPRIGHT",
+				relativeTo = "BuffFrame",
+				relativePoint = "BOTTOMRIGHT",
+				offsetX = -13,
+				offsetY = -5,
+			},
 		},
 	},
 };
@@ -452,6 +518,33 @@ local classicSystemMap =
 				offsetY = -240,
 			},
 		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Party] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames] = 0,
+				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
+				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
+			},
+			anchorInfo = {
+				point = "TOPLEFT",
+				relativeTo = "CompactRaidFrameManager",
+				relativePoint = "TOPRIGHT",
+				offsetX = 0,
+				offsetY = -7,
+			},
+		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Raid] = {
+			settings = {
+			},
+			anchorInfo = {
+				point = "TOPLEFT",
+				relativeTo = "CompactRaidFrameManager",
+				relativePoint = "TOPRIGHT",
+				offsetX = 0,
+				offsetY = -20,
+			},
+		},
 	},
 
 	[Enum.EditModeSystem.Minimap] = {
@@ -488,6 +581,45 @@ local classicSystemMap =
 			relativePoint = "TOPLEFT",
 			offsetX = 0,
 			offsetY = 5,
+		},
+	},
+
+	[Enum.EditModeSystem.AuraFrame] = {
+		[Enum.EditModeAuraFrameSystemIndices.BuffFrame] = {
+			settings = {
+				[Enum.EditModeAuraFrameSetting.Orientation] = Enum.AuraFrameOrientation.Horizontal,
+				[Enum.EditModeAuraFrameSetting.IconWrap] = Enum.AuraFrameIconWrap.Down,
+				[Enum.EditModeAuraFrameSetting.IconDirection] = Enum.AuraFrameIconDirection.Left,
+				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 8,
+				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
+				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
+				[Enum.EditModeAuraFrameSetting.ShowFull] = 0,
+			},
+			anchorInfo = {
+				point = "TOPRIGHT",
+				relativeTo = "MinimapCluster",
+				relativePoint = "TOPLEFT",
+				offsetX = -10,
+				offsetY = -10,
+			},
+		},
+		[Enum.EditModeAuraFrameSystemIndices.DebuffFrame] = {
+			settings = {
+				[Enum.EditModeAuraFrameSetting.Orientation] = Enum.AuraFrameOrientation.Horizontal,
+				[Enum.EditModeAuraFrameSetting.IconWrap] = Enum.AuraFrameIconWrap.Down,
+				[Enum.EditModeAuraFrameSetting.IconDirection] = Enum.AuraFrameIconDirection.Left,
+				[Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame] = 8,
+				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
+				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
+				[Enum.EditModeAuraFrameSetting.ShowFull] = 0,
+			},
+			anchorInfo = {
+				point = "TOPRIGHT",
+				relativeTo = "BuffFrame",
+				relativePoint = "BOTTOMRIGHT",
+				offsetX = -13,
+				offsetY = -5,
+			},
 		},
 	},
 };
@@ -553,4 +685,9 @@ end
 
 function EditModePresetLayoutManager:GetModernSystems()
 	return self.presetLayoutInfo[1].systems;
+end
+
+function EditModePresetLayoutManager:GetModernSystemAnchorInfo(system, systemIndex)
+	local modernSystemInfo = systemIndex and modernSystemMap[system][systemIndex] or modernSystemMap[system];
+	return CopyTable(modernSystemInfo.anchorInfo);
 end

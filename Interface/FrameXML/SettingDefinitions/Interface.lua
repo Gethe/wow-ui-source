@@ -330,6 +330,9 @@ local function Register()
 		Settings.SetOnValueChangedCallback("spellActivationOverlayOpacity", OnValueChanged);
 	end
 
+	-- Hold Button
+	Settings.SetupCVarCheckBox(category, "ActionButtonUseKeyHeldSpell", PRESS_AND_HOLD_CASTING_OPTION, PRESS_AND_HOLD_CASTING_OPTION_TOOLTIP);
+
 	----Display
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(DISPLAY_LABEL));
 

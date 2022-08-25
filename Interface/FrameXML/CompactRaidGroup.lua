@@ -28,7 +28,6 @@ function CompactRaidGroup_GenerateForGroup(groupIndex)
 	if (  not frame ) then
 		frame = CreateFrame("Frame", "CompactRaidGroup"..groupIndex, UIParent, "CompactRaidGroupTemplate");
 		CompactRaidGroup_InitializeForGroup(frame, groupIndex);
-		--CompactRaidGroup_UpdateLayout(frame);	--Update border calls UpdateLayout.
 		CompactRaidGroup_UpdateBorder(frame);
 		didCreate = true;
 	end
@@ -69,7 +68,9 @@ end
 function CompactRaidGroup_UpdateLayout(frame)
 	local totalHeight = frame.title:GetHeight();
 	local totalWidth = 0;
-	if ( CUF_HORIZONTAL_GROUPS ) then
+
+	local useHorizontalGroups = IsInRaid() and CUF_HORIZONTAL_GROUPS or EditModeManagerFrame:ShouldPartyFrameUseHorizntalRaidGroups();
+	if ( useHorizontalGroups ) then
 		frame.title:ClearAllPoints();
 		frame.title:SetPoint("TOPLEFT");
 		

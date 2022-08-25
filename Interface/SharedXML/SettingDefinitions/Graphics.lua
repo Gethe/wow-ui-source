@@ -1146,13 +1146,20 @@ local function Register()
 			fpsSliderSetting, options, TARGETFPS, OPTION_TARGETFPS_CHECK);
 		layout:AddInitializer(initializer);
 	end
+	
+	local function FormatScaledPercentage(value)
+		return FormatPercentage(value/100);
+	end
+
+	local function RoundToOneTenth(value)
+		return RoundToSignificantDigits(value, 1);
+	end
 
 	-- Resample Sharpness
 	do
 		local minValue, maxValue, step = 0.0, 2.0, .1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Min, HIGH);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Max, LOW);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, RoundToOneTenth);
 		Settings.SetupCVarSlider(category, "ResampleSharpness", options, RESAMPLE_SHARPNESS, OPTION_TOOLTIP_SHARPNESS);
 	end
 
@@ -1160,8 +1167,7 @@ local function Register()
 	do
 		local minValue, maxValue, step = 0, 100, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Min, LOW);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Max, HIGH);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatScaledPercentage);
 		Settings.SetupCVarSlider(category, "Contrast", options, OPTION_CONTRAST, OPTION_TOOLTIP_CONTRAST);
 	end
 
@@ -1169,8 +1175,7 @@ local function Register()
 	do
 		local minValue, maxValue, step = 0, 100, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Min, LOW);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Max, HIGH);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatScaledPercentage);
 		Settings.SetupCVarSlider(category, "Brightness", options, OPTIONS_BRIGHTNESS, OPTION_TOOLTIP_BRIGHTNESS);
 	end
 
@@ -1178,8 +1183,7 @@ local function Register()
 	do
 		local minValue, maxValue, step = .3, 2.8, .1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Min, LOW);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Max, HIGH);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, RoundToOneTenth);
 		Settings.SetupCVarSlider(category, "Gamma", options, GAMMA, OPTION_TOOLTIP_GAMMA);
 	end
 

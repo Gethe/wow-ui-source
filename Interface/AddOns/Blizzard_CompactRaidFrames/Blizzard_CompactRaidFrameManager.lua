@@ -12,8 +12,6 @@ WORLD_RAID_MARKER_ORDER[7] = 6;
 WORLD_RAID_MARKER_ORDER[8] = 5;
 
 MINIMUM_RAID_CONTAINER_HEIGHT = 72;
-local RESIZE_HORIZONTAL_OUTSETS = 4;
-local RESIZE_VERTICAL_OUTSETS = 7;
 
 function CompactRaidFrameManager_OnLoad(self)
 	self.container = CompactRaidFrameContainer;
@@ -29,16 +27,13 @@ function CompactRaidFrameManager_OnLoad(self)
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	
-	self.dynamicContainerPosition = true;
 
-	CompactRaidFrameContainer_SetFlowFilterFunction(self.container, CRFFlowFilterFunc)
-	CompactRaidFrameContainer_SetGroupFilterFunction(self.container, CRFGroupFilterFunc)
-	CompactRaidFrameManager_UpdateContainerBounds(self);
-	CompactRaidFrameManager_ResizeFrame_Reanchor(self);
-	CompactRaidFrameManager_AttachPartyFrames(self);
+	self.container:SetFlowFilterFunction(CRFFlowFilterFunc)
+	self.container:SetGroupFilterFunction(CRFGroupFilterFunc)
+	CompactRaidFrameManager_UpdateContainerBounds();
+	CompactRaidFrameManager_UpdateContainerFrameAnchor();
 
-	CompactRaidFrameManager_Collapse(self);
+	CompactRaidFrameManager_Collapse();
 
 	--Set up the options flow container
 	FlowContainer_Initialize(self.displayFrame.optionsFlowContainer);
@@ -47,21 +42,20 @@ end
 local settings = { --[["Managed",]] "Locked", "SortMode", "KeepGroupsTogether", "DisplayPets", "DisplayMainTankAndAssist", "IsShown", "ShowBorders" };
 function CompactRaidFrameManager_OnEvent(self, event, ...)
 	if ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
-		CompactRaidFrameManager_UpdateContainerBounds(self);
+		CompactRaidFrameManager_UpdateContainerBounds();
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "UPDATE_ACTIVE_BATTLEFIELD" ) then
-		CompactRaidFrameManager_UpdateShown(self);
-		CompactRaidFrameManager_UpdateDisplayCounts(self);
-		CompactRaidFrameManager_UpdateLabel(self);
-		CompactRaidFrameManager_UpdateContainerLockVisibility(self);
+		CompactRaidFrameManager_UpdateShown();
+		CompactRaidFrameManager_UpdateDisplayCounts();
+		CompactRaidFrameManager_UpdateLabel();
 	elseif ( event == "UNIT_FLAGS" or event == "PLAYER_FLAGS_CHANGED" ) then
-		CompactRaidFrameManager_UpdateDisplayCounts(self);
+		CompactRaidFrameManager_UpdateDisplayCounts();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		CompactRaidFrameManager_UpdateShown(self);
-		CompactRaidFrameManager_UpdateDisplayCounts(self);
-		CompactRaidFrameManager_UpdateOptionsFlowContainer(self);
+		CompactRaidFrameManager_UpdateShown();
+		CompactRaidFrameManager_UpdateDisplayCounts();
+		CompactRaidFrameManager_UpdateOptionsFlowContainer();
 		CompactRaidFrameManager_UpdateRaidIcons();
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
-		CompactRaidFrameManager_UpdateOptionsFlowContainer(self);
+		CompactRaidFrameManager_UpdateOptionsFlowContainer();
 	elseif ( event == "RAID_TARGET_UPDATE" ) then
 		CompactRaidFrameManager_UpdateRaidIcons();
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
@@ -92,137 +86,141 @@ function CompactRaidFrameManagerDisplayFrameProfileSelector_OnClick(self)
 	CompactUnitFrameProfiles_ActivateRaidProfile(profile);
 end
 
-function CompactRaidFrameManager_UpdateShown(self)
-	if ( GetDisplayedAllyFrames() ) then
-		self:Show();
+function CompactRaidFrameManager_UpdateShown()
+	if GetDisplayedAllyFrames() then
+		CompactRaidFrameManager:Show();
 	else
-		self:Hide();
+		CompactRaidFrameManager:Hide();
 	end
-	CompactRaidFrameManager_UpdateOptionsFlowContainer(self);
+	CompactRaidFrameManager_UpdateOptionsFlowContainer();
 	CompactRaidFrameManager_UpdateContainerVisibility();
+	CompactRaidFrameManager_UpdateContainerFrameAnchor();
 end
 
-function CompactRaidFrameManager_UpdateLabel(self)
+function CompactRaidFrameManager_UpdateLabel()
 	if ( IsInRaid() ) then
-		self.displayFrame.label:SetText(RAID_MEMBERS);
+		CompactRaidFrameManager.displayFrame.label:SetText(RAID_MEMBERS);
 	else
-		self.displayFrame.label:SetText(PARTY_MEMBERS);
+		CompactRaidFrameManager.displayFrame.label:SetText(PARTY_MEMBERS);
 	end
 end
 
-function CompactRaidFrameManager_Toggle(self)
-	if ( self.collapsed ) then
-		CompactRaidFrameManager_Expand(self);
+function CompactRaidFrameManager_Toggle()
+	if ( CompactRaidFrameManager.collapsed ) then
+		CompactRaidFrameManager_Expand();
 	else
-		CompactRaidFrameManager_Collapse(self);
+		CompactRaidFrameManager_Collapse();
 	end
 end
 
-function CompactRaidFrameManager_Expand(self)
-	self.collapsed = false;
-	self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -7, -140);
-	self.displayFrame:Show();
-	self.toggleButton:GetNormalTexture():SetTexCoord(0.5, 1, 0, 1);
+function CompactRaidFrameManager_Expand()
+	CompactRaidFrameManager.collapsed = false;
+	CompactRaidFrameManager:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -7, -140);
+	CompactRaidFrameManager.displayFrame:Show();
+	CompactRaidFrameManager.toggleButton:GetNormalTexture():SetTexCoord(0.5, 1, 0, 1);
 end
 
-function CompactRaidFrameManager_Collapse(self)
-	self.collapsed = true;
-	self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -182, -140);
-	self.displayFrame:Hide();
-	self.toggleButton:GetNormalTexture():SetTexCoord(0, 0.5, 0, 1);
+function CompactRaidFrameManager_Collapse()
+	CompactRaidFrameManager.collapsed = true;
+	CompactRaidFrameManager:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -182, -140);
+	CompactRaidFrameManager.displayFrame:Hide();
+	CompactRaidFrameManager.toggleButton:GetNormalTexture():SetTexCoord(0, 0.5, 0, 1);
 end
 
-function CompactRaidFrameManager_UpdateOptionsFlowContainer(self)
-	local container = self.displayFrame.optionsFlowContainer;
+function CompactRaidFrameManager_UpdateOptionsFlowContainer()
+	local container = CompactRaidFrameManager.displayFrame.optionsFlowContainer;
 
 	FlowContainer_RemoveAllObjects(container);
 	FlowContainer_PauseUpdates(container);
 
-	if ( GetDisplayedAllyFrames() == "raid" ) then
-		FlowContainer_AddObject(container, self.displayFrame.profileSelector);
-		self.displayFrame.profileSelector:Show();
+	if ShowingRaidFrames() then
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.profileSelector);
+		CompactRaidFrameManager.displayFrame.profileSelector:Show();
 	else
-		self.displayFrame.profileSelector:Hide();
+		CompactRaidFrameManager.displayFrame.profileSelector:Hide();
 	end
 
 	if ( IsInRaid() ) then
-		FlowContainer_AddObject(container, self.displayFrame.filterOptions);
-		self.displayFrame.filterOptions:Show();
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.filterOptions);
+		CompactRaidFrameManager.displayFrame.filterOptions:Show();
 	else
-		self.displayFrame.filterOptions:Hide();
+		CompactRaidFrameManager.displayFrame.filterOptions:Hide();
 	end
 
 	if ( not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
-		FlowContainer_AddObject(container, self.displayFrame.raidMarkers);
-		self.displayFrame.raidMarkers:Show();
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.raidMarkers);
+		CompactRaidFrameManager.displayFrame.raidMarkers:Show();
 	else
-		self.displayFrame.raidMarkers:Hide();
+		CompactRaidFrameManager.displayFrame.raidMarkers:Hide();
 	end
 
 	if ( not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
-		FlowContainer_AddObject(container, self.displayFrame.leaderOptions);
-		self.displayFrame.leaderOptions:Show();
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.leaderOptions);
+		CompactRaidFrameManager.displayFrame.leaderOptions:Show();
 	else
-		self.displayFrame.leaderOptions:Hide();
+		CompactRaidFrameManager.displayFrame.leaderOptions:Hide();
 	end
 
 	if ( not IsInRaid() and UnitIsGroupLeader("player") and not HasLFGRestrictions() ) then
 		FlowContainer_AddLineBreak(container);
 		FlowContainer_AddSpacer(container, 20);
-		FlowContainer_AddObject(container, self.displayFrame.convertToRaid);
-		self.displayFrame.convertToRaid:Show();
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.convertToRaid);
+		CompactRaidFrameManager.displayFrame.convertToRaid:Show();
 	else
-		self.displayFrame.convertToRaid:Hide();
+		CompactRaidFrameManager.displayFrame.convertToRaid:Hide();
 	end
 
-	if ( GetDisplayedAllyFrames() == "raid" ) then
+	if ShowingRaidFrames() then
 		FlowContainer_AddLineBreak(container);
 		FlowContainer_AddSpacer(container, 20);
-		FlowContainer_AddObject(container, self.displayFrame.lockedModeToggle);
-		FlowContainer_AddObject(container, self.displayFrame.hiddenModeToggle);
-		self.displayFrame.lockedModeToggle:Show();
-		self.displayFrame.hiddenModeToggle:Show();
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.editMode);
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.hiddenModeToggle);
+		CompactRaidFrameManager.displayFrame.editMode:Show();
+		CompactRaidFrameManager.displayFrame.hiddenModeToggle:Show();
 	else
-		self.displayFrame.lockedModeToggle:Hide();
-		self.displayFrame.hiddenModeToggle:Hide();
+		FlowContainer_AddLineBreak(container);
+		FlowContainer_AddSpacer(container, 20);
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.editMode);
+		CompactRaidFrameManager.displayFrame.editMode:Show();
+		CompactRaidFrameManager.displayFrame.hiddenModeToggle:Hide();
 	end
 
 	if ( IsInRaid() and UnitIsGroupLeader("player") ) then
 		FlowContainer_AddLineBreak(container);
 		FlowContainer_AddSpacer(container, 20);
-		FlowContainer_AddObject(container, self.displayFrame.everyoneIsAssistButton);
-		self.displayFrame.everyoneIsAssistButton:Show();
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.everyoneIsAssistButton);
+		CompactRaidFrameManager.displayFrame.everyoneIsAssistButton:Show();
 	else
-		self.displayFrame.everyoneIsAssistButton:Hide();
+		CompactRaidFrameManager.displayFrame.everyoneIsAssistButton:Hide();
 	end
 
 	FlowContainer_ResumeUpdates(container);
 
 	local usedX, usedY = FlowContainer_GetUsedBounds(container);
-	self:SetHeight(usedY + 40);
+	CompactRaidFrameManager:SetHeight(usedY + 40);
 
 	--Then, we update which specific buttons are enabled.
 
 	--Raid leaders and assistants and leaders of non-dungeon finder parties may initiate a role poll.
 	if ( IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
-		self.displayFrame.leaderOptions.rolePollButton:Enable();
-		self.displayFrame.leaderOptions.rolePollButton:SetAlpha(1);
+		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:Enable();
+		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:SetAlpha(1);
 	else
-		self.displayFrame.leaderOptions.rolePollButton:Disable();
-		self.displayFrame.leaderOptions.rolePollButton:SetAlpha(0.5);
+		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:Disable();
+		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:SetAlpha(0.5);
 	end
 
 	--Any sort of leader may initiate a ready check.
 	if ( IsInGroup() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
-		self.displayFrame.leaderOptions.readyCheckButton:Enable();
-		self.displayFrame.leaderOptions.readyCheckButton:SetAlpha(1);
-		self.displayFrame.leaderOptions.countdownButton:Enable();
-		self.displayFrame.leaderOptions.countdownButton:SetAlpha(1);
+		CompactRaidFrameManager.displayFrame.leaderOptions.readyCheckButton:Enable();
+		CompactRaidFrameManager.displayFrame.leaderOptions.readyCheckButton:SetAlpha(1);
+		CompactRaidFrameManager.displayFrame.leaderOptions.countdownButton:Enable();
+		CompactRaidFrameManager.displayFrame.leaderOptions.countdownButton:SetAlpha(1);
 	else
-		self.displayFrame.leaderOptions.readyCheckButton:Disable();
-		self.displayFrame.leaderOptions.readyCheckButton:SetAlpha(0.5);
-		self.displayFrame.leaderOptions.countdownButton:Disable();
-		self.displayFrame.leaderOptions.countdownButton:SetAlpha(0.5);
+		CompactRaidFrameManager.displayFrame.leaderOptions.readyCheckButton:Disable();
+		CompactRaidFrameManager.displayFrame.leaderOptions.readyCheckButton:SetAlpha(0.5);
+		CompactRaidFrameManager.displayFrame.leaderOptions.countdownButton:Disable();
+		CompactRaidFrameManager.displayFrame.leaderOptions.countdownButton:SetAlpha(0.5);
 	end
 end
 
@@ -260,25 +258,25 @@ function CRFManager_RaidWorldMarkerDropDown_Update()
 	UIDropDownMenu_AddButton(info);
 end
 
-function CompactRaidFrameManager_UpdateDisplayCounts(self)
+function CompactRaidFrameManager_UpdateDisplayCounts()
 	CRF_CountStuff();
-	CompactRaidFrameManager_UpdateHeaderInfo(self);
-	CompactRaidFrameManager_UpdateFilterInfo(self)
+	CompactRaidFrameManager_UpdateHeaderInfo();
+	CompactRaidFrameManager_UpdateFilterInfo()
 end
 
-function CompactRaidFrameManager_UpdateHeaderInfo(self)
-	self.displayFrame.memberCountLabel:SetFormattedText("%d/%d", RaidInfoCounts.totalAlive, RaidInfoCounts.totalCount);
+function CompactRaidFrameManager_UpdateHeaderInfo()
+	CompactRaidFrameManager.displayFrame.memberCountLabel:SetFormattedText("%d/%d", RaidInfoCounts.totalAlive, RaidInfoCounts.totalCount);
 end
 
 local usedGroups = {};
-function CompactRaidFrameManager_UpdateFilterInfo(self)
-	CompactRaidFrameManager_UpdateRoleFilterButton(self.displayFrame.filterOptions.filterRoleTank);
-	CompactRaidFrameManager_UpdateRoleFilterButton(self.displayFrame.filterOptions.filterRoleHealer);
-	CompactRaidFrameManager_UpdateRoleFilterButton(self.displayFrame.filterOptions.filterRoleDamager);
+function CompactRaidFrameManager_UpdateFilterInfo()
+	CompactRaidFrameManager_UpdateRoleFilterButton(CompactRaidFrameManager.displayFrame.filterOptions.filterRoleTank);
+	CompactRaidFrameManager_UpdateRoleFilterButton(CompactRaidFrameManager.displayFrame.filterOptions.filterRoleHealer);
+	CompactRaidFrameManager_UpdateRoleFilterButton(CompactRaidFrameManager.displayFrame.filterOptions.filterRoleDamager);
 
 	RaidUtil_GetUsedGroups(usedGroups);
 	for i=1, MAX_RAID_GROUPS do
-		CompactRaidFrameManager_UpdateGroupFilterButton(self.displayFrame.filterOptions["filterGroup"..i], usedGroups);
+		CompactRaidFrameManager_UpdateGroupFilterButton(CompactRaidFrameManager.displayFrame.filterOptions["filterGroup"..i], usedGroups);
 	end
 end
 
@@ -305,8 +303,8 @@ end
 
 function CompactRaidFrameManager_ToggleRoleFilter(role)
 	CRF_SetFilterRole(role, not CRF_GetFilterRole(role));
-	CompactRaidFrameManager_UpdateFilterInfo(CompactRaidFrameManager);
-	CompactRaidFrameContainer_TryUpdate(CompactRaidFrameContainer);
+	CompactRaidFrameManager_UpdateFilterInfo();
+	CompactRaidFrameContainer:TryUpdate();
 end
 
 function CompactRaidFrameManager_UpdateGroupFilterButton(button, usedGroups)
@@ -329,8 +327,8 @@ end
 
 function CompactRaidFrameManager_ToggleGroupFilter(group)
 	CRF_SetFilterGroup(group, not CRF_GetFilterGroup(group));
-	CompactRaidFrameManager_UpdateFilterInfo(CompactRaidFrameManager);
-	CompactRaidFrameContainer_TryUpdate(CompactRaidFrameContainer);
+	CompactRaidFrameManager_UpdateFilterInfo();
+	CompactRaidFrameContainer:TryUpdate();
 end
 
 function CompactRaidFrameManager_UpdateRaidIcons()
@@ -400,27 +398,13 @@ do	--Enclosure to make sure people go through SetSetting
 		local container = CompactRaidFrameManager.container;
 	end
 
-	local function CompactRaidFrameManager_SetLocked(value)
-		local manager = CompactRaidFrameManager;
-		if ( value and value ~= "0" ) then
-			CompactRaidFrameManagerDisplayFrameLockedModeToggle:SetText(UNLOCK);
-			CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode = false;
-			CompactRaidFrameManager_UpdateContainerLockVisibility(manager);
-		else
-			CompactRaidFrameManagerDisplayFrameLockedModeToggle:SetText(LOCK);
-			CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode = true;
-			CompactRaidFrameManager_UpdateContainerLockVisibility(manager);
-		end
-	end
-
 	local function CompactRaidFrameManager_SetSortMode(value)
-		local manager = CompactRaidFrameManager;
 		if ( value == "group" ) then
-			CompactRaidFrameContainer_SetFlowSortFunction(manager.container, CRFSort_Group);
+			CompactRaidFrameManager.container:SetFlowSortFunction(CRFSort_Group);
 		elseif ( value == "role" ) then
-			CompactRaidFrameContainer_SetFlowSortFunction(manager.container, CRFSort_Role);
+			CompactRaidFrameManager.container:SetFlowSortFunction(CRFSort_Role);
 		elseif ( value == "alphabetical" ) then
-			CompactRaidFrameContainer_SetFlowSortFunction(manager.container, CRFSort_Alphabetical);
+			CompactRaidFrameManager.container:SetFlowSortFunction(CRFSort_Alphabetical);
 		else
 			CompactRaidFrameManager_SetSetting("SortMode", "role");
 			GMError("Unknown sort mode: "..tostring(value));
@@ -428,7 +412,6 @@ do	--Enclosure to make sure people go through SetSetting
 	end
 
 	local function CompactRaidFrameManager_SetKeepGroupsTogether(value)
-		local manager = CompactRaidFrameManager;
 		local groupMode;
 		if ( not value or value == "0" ) then
 			groupMode = "flush";
@@ -436,8 +419,8 @@ do	--Enclosure to make sure people go through SetSetting
 			groupMode = "discrete";
 		end
 
-		CompactRaidFrameContainer_SetGroupMode(manager.container, groupMode);
-		CompactRaidFrameManager_UpdateFilterInfo(manager);
+		CompactRaidFrameManager.container:SetGroupMode(groupMode);
+		CompactRaidFrameManager_UpdateFilterInfo();
 	end
 
 	local function CompactRaidFrameManager_SetDisplayPets(value)
@@ -447,27 +430,26 @@ do	--Enclosure to make sure people go through SetSetting
 			displayPets = true;
 		end
 
-		CompactRaidFrameContainer_SetDisplayPets(container, displayPets);
+		container:SetDisplayPets(displayPets);
 	end
 
 	local function CompactRaidFrameManager_SetDisplayMainTankAndAssist(value)
 		local container = CompactRaidFrameManager.container;
 		local displayFlaggedMembers;
-		if ( value and value ~= "0" ) then
+		if value and value ~= "0" then
 			displayFlaggedMembers = true;
 		end
 
-		CompactRaidFrameContainer_SetDisplayMainTankAndAssist(container, displayFlaggedMembers);
+		container:SetDisplayMainTankAndAssist(displayFlaggedMembers);
 	end
 
 	local function CompactRaidFrameManager_SetIsShown(value)
-		local manager = CompactRaidFrameManager;
-		if ( value and value ~= "0" ) then
-			manager.container.enabled = true;
+		if value and value ~= "0" then
+			CompactRaidFrameManager.container.enabled = true;
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle:SetText(HIDE);
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = false;
 		else
-			manager.container.enabled = false;
+			CompactRaidFrameManager.container.enabled = false;
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle:SetText(SHOW);
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = true;
 		end
@@ -475,13 +457,12 @@ do	--Enclosure to make sure people go through SetSetting
 	end
 
 	local function CompactRaidFrameManager_SetBorderShown(value)
-		local manager = CompactRaidFrameManager;
 		local showBorder;
-		if ( value and value ~= "0" ) then
+		if value and value ~= "0" then
 			showBorder = true;
 		end
 		CUF_SHOW_BORDER = showBorder;
-		CompactRaidFrameContainer_SetBorderShown(manager.container, showBorder);
+		CompactRaidFrameManager.container:SetBorderShown(showBorder);
 	end
 
 	local function CompactRaidFrameManager_SetHorizontalGroups(value)
@@ -490,6 +471,7 @@ do	--Enclosure to make sure people go through SetSetting
 			horizontalGroups = true;
 		end
 		CUF_HORIZONTAL_GROUPS = horizontalGroups;
+		CompactRaidFrameManager_UpdateContainerBounds();
 	end
 
 	function CompactRaidFrameManager_SetSetting(settingName, value)
@@ -499,8 +481,6 @@ do	--Enclosure to make sure people go through SetSetting
 		--Perform the actual functions
 		if ( settingName == "Managed" ) then
 			CompactRaidFrameManager_SetManaged(value);
-		elseif ( settingName == "Locked" ) then
-			CompactRaidFrameManager_SetLocked(value);
 		elseif ( settingName == "SortMode" ) then
 			CompactRaidFrameManager_SetSortMode(value);
 		elseif ( settingName == "KeepGroupsTogether" ) then
@@ -522,230 +502,26 @@ do	--Enclosure to make sure people go through SetSetting
 end
 
 function CompactRaidFrameManager_UpdateContainerVisibility()
-	local manager = CompactRaidFrameManager;
-	if ( GetDisplayedAllyFrames() == "raid" and manager.container.enabled ) then
-		manager.container:Show();
+	if ShowingRaidFrames() and CompactRaidFrameManager.container.enabled then
+		CompactRaidFrameManager.container:Show();
 	else
-		manager.container:Hide();
+		CompactRaidFrameManager.container:Hide();
 	end
 end
 
-function CompactRaidFrameManager_AttachPartyFrames(manager)
-	PartyFrame:ClearAllPoints();
-	PartyFrame:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, -20);
+function CompactRaidFrameManager_UpdateContainerBounds()
+	CompactRaidFrameManager.container:Layout();
 end
 
-function CompactRaidFrameManager_ResetContainerPosition()
-	local manager = CompactRaidFrameManager;
-	manager.dynamicContainerPosition = true;
-	CompactRaidFrameManager_UpdateContainerBounds(manager);
-	CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
-end
-
-function CompactRaidFrameManager_UpdateContainerBounds(self)
-	local containerWidth = self.container:GetWidth();
-	local minWidth = containerWidth;
-	local minHeight = MINIMUM_RAID_CONTAINER_HEIGHT + RESIZE_VERTICAL_OUTSETS * 2 + 1;
-	local maxWidth = self.containerResizeFrame:GetWidth();
-	local maxHeight = GetScreenHeight() - 90;
-	self.containerResizeFrame:SetResizeBounds(minWidth, minHeight, maxWidth, maxHeight);
-
-	if ( self.dynamicContainerPosition ) then
-		--Should be below the TargetFrameSpellBar at its lowest height..
-		local top = GetScreenHeight() - 135;
-		--Should be just above the FriendsFrameMicroButton.
-		local bottom = 330;
-
-		local managerTop = self:GetTop();
-
-		self.containerResizeFrame:ClearAllPoints();
-		self.containerResizeFrame:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, top - managerTop);
-		self.containerResizeFrame:SetHeight(top - bottom);
-
-		CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(self);
-	end
-end
-
-function CompactRaidFrameManager_UpdateContainerLockVisibility(self)
-	if ( GetDisplayedAllyFrames() ~= "raid" or not CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode ) then
-		CompactRaidFrameManager_LockContainer(self);
+function CompactRaidFrameManager_UpdateContainerFrameAnchor()
+	if not IsInRaid() and EditModeManagerFrame:UseRaidStylePartyFrames() then
+		CompactRaidFrameManager.container:SetParent(PartyFrame);
 	else
-		CompactRaidFrameManager_UnlockContainer(self);
-	end
-end
-
-function CompactRaidFrameManager_LockContainer(self)
-	self.containerResizeFrame:Hide();
-end
-
-function CompactRaidFrameManager_UnlockContainer(self)
-	self.containerResizeFrame:Show();
-end
-
---ResizeFrame related functions
-function CompactRaidFrameManager_ResizeFrame_Reanchor(manager)
-	manager.container:SetPoint("TOPLEFT", manager.containerResizeFrame, "TOPLEFT", RESIZE_HORIZONTAL_OUTSETS, -RESIZE_VERTICAL_OUTSETS);
-end
-
-function CompactRaidFrameManager_ResizeFrame_OnDragStart(manager)
-	manager.dynamicContainerPosition = false;
-
-	manager.containerResizeFrame:StartMoving();
-end
-
-function CompactRaidFrameManager_ResizeFrame_OnDragStop(manager)
-	manager.containerResizeFrame:StopMovingOrSizing();
-	CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager);
-	CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
-end
-
-function CompactRaidFrameManager_ResizeFrame_OnResizeStart(manager)
-	manager.dynamicContainerPosition = false;
-
-	manager.containerResizeFrame:StartSizing("BOTTOM")
-	manager.containerResizeFrame:SetScript("OnUpdate", CompactRaidFrameManager_ResizeFrame_OnUpdate);
-end
-
-function CompactRaidFrameManager_ResizeFrame_OnResizeStop(manager)
-	manager.containerResizeFrame:StopMovingOrSizing();
-	manager.containerResizeFrame:SetScript("OnUpdate", nil);
-	CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager);
-	CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager);
-	CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
-end
-
-local RESIZE_UPDATE_INTERVAL = 0.5;
-function CompactRaidFrameManager_ResizeFrame_OnUpdate(self, elapsed)
-	self.timeSinceUpdate = (self.timeSinceUpdate or 0) + elapsed;
-	if ( self.timeSinceUpdate >= RESIZE_UPDATE_INTERVAL ) then
-		local manager = self:GetParent();
-		CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager);
-		CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager);
-		CompactRaidFrameManager_ResizeFrame_SavePosition(manager);
-	end
-end
-
-function CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager)
-	--If we're flow style, we want to make sure we exactly fit N frames.
-	local keepGroupsTogether = CompactRaidFrameManager_GetSetting("KeepGroupsTogether");
-	if ( keepGroupsTogether ~= "1" ) then
-		local unitFrameHeight = DefaultCompactUnitFrameSetupOptions.height;
-		local resizerHeight = manager.containerResizeFrame:GetHeight() - RESIZE_VERTICAL_OUTSETS * 2;
-		local newHeight = unitFrameHeight * floor(resizerHeight / unitFrameHeight);
-		manager.container:SetHeight(newHeight);
-	else
-		manager.container:SetHeight(manager.containerResizeFrame:GetHeight() - RESIZE_VERTICAL_OUTSETS * 2);
-	end
-end
-
-local MAGNETIC_FIELD_RANGE = 10;
-function CompactRaidFrameManager_ResizeFrame_CheckMagnetism(manager)
-	if ( abs(manager.containerResizeFrame:GetLeft() - manager:GetRight()) < MAGNETIC_FIELD_RANGE and
-		manager.containerResizeFrame:GetTop() > manager:GetBottom() and manager.containerResizeFrame:GetBottom() < manager:GetTop() ) then
-		local resizeFrameTop = manager.containerResizeFrame:GetTop();
-		local managerTop = manager:GetTop();
-		manager.containerResizeFrame:ClearAllPoints();
-		manager.containerResizeFrame:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, resizeFrameTop - managerTop);
-	end
-end
-
-function CompactRaidFrameManager_ResizeFrame_SavePosition(manager)
-	if ( manager.dynamicContainerPosition ) then
-		SetRaidProfileSavedPosition(GetActiveRaidProfile(), true);
-		return;
+		CompactRaidFrameManager.container:SetParent(CompactRaidFrameManager);
+		CompactRaidFrameManager.container:SetPoint("TOPLEFT", CompactRaidFrameManager, "TOPRIGHT", 0, 0);
 	end
 
-	--The stuff we're actually saving
-	local topPoint, topOffset;
-	local bottomPoint, bottomOffset;
-	local leftPoint, leftOffset;
-
-	local screenHeight = GetScreenHeight();
-	local top = manager.containerResizeFrame:GetTop();
-	if ( top > screenHeight / 2 ) then
-		topPoint = "TOP";
-		topOffset = screenHeight - top;
-	else
-		topPoint = "BOTTOM";
-		topOffset = top;
-	end
-
-	local bottom = manager.containerResizeFrame:GetBottom();
-	if ( bottom > screenHeight / 2 ) then
-		bottomPoint = "TOP";
-		bottomOffset = screenHeight - bottom;
-	else
-		bottomPoint = "BOTTOM";
-		bottomOffset = bottom;
-	end
-
-	local isAttached = (select(2, manager.containerResizeFrame:GetPoint(1)) == manager);
-	if ( isAttached ) then
-		leftPoint = "ATTACHED";
-		leftOffset = 0;
-	else
-		local screenWidth = GetScreenWidth();
-		local left = manager.containerResizeFrame:GetLeft();
-		if ( left > screenWidth / 2 ) then
-			leftPoint = "RIGHT";
-			leftOffset = screenWidth - left;
-		else
-			leftPoint = "LEFT";
-			leftOffset = left;
-		end
-	end
-
-	SetRaidProfileSavedPosition(GetActiveRaidProfile(), false, topPoint, topOffset, bottomPoint, bottomOffset, leftPoint, leftOffset);
-end
-
-function CompactRaidFrameManager_ResizeFrame_LoadPosition(manager)
-	local dynamic, topPoint, topOffset, bottomPoint, bottomOffset, leftPoint, leftOffset = GetRaidProfileSavedPosition(GetActiveRaidProfile());
-
-	if ( dynamic ) then	--We are automatically placed.
-		manager.dynamicContainerPosition = true;
-		CompactRaidFrameManager_UpdateContainerBounds(manager);
-		return;
-	else
-		manager.dynamicContainerPosition = false;
-	end
-
-	--First, let's clear the container's current anchors.
-	manager.containerResizeFrame:ClearAllPoints();
-
-	local top;
-	if ( topPoint == "TOP" ) then
-		top = GetScreenHeight() - topOffset;
-	else
-		top = topOffset;
-	end
-
-	local bottom;
-	if ( bottomPoint == "TOP" ) then
-		bottom = GetScreenHeight() - bottomOffset;
-	else
-		bottom = bottomOffset
-	end
-
-	local height = top - bottom;
-	height = max(height, MINIMUM_RAID_CONTAINER_HEIGHT);
-	top = max(top, height);
-
-	manager.containerResizeFrame:SetHeight(height);
-
-	if ( leftPoint == "ATTACHED" ) then
-		manager.containerResizeFrame:SetPoint("TOPLEFT", manager, "TOPRIGHT", 0, top - manager:GetTop());
-	else
-		local left;
-		if ( leftPoint == "RIGHT" ) then
-			left = GetScreenWidth() - leftOffset;
-		else
-			left = leftOffset;
-		end
-
-		manager.containerResizeFrame:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", left, top);
-	end
-
-	CompactRaidFrameManager_ResizeFrame_UpdateContainerSize(manager);
+	PartyFrame:Layout();
 end
 
 -------------Utility functions-------------

@@ -356,7 +356,8 @@ local function InitVoiceSettings(category, layout)
 
 		-- Push To Talk
 		do
-			local initializer = Settings.CreateElementInitializer("VoicePushToTalkTemplate");
+			local data = {name = VOICE_CHAT_MODE_KEY };
+			local initializer = Settings.CreateElementInitializer("VoicePushToTalkTemplate", data);
 			initializer:AddSearchTags(VOICE_CHAT_MODE_KEY);
 			initializer:SetParentInitializer(chatModeInitializer);
 			layout:AddInitializer(initializer);

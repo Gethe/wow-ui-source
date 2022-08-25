@@ -173,6 +173,7 @@ function EditModeManagerFrameMixin:ExitEditMode()
 	self:RevertAllChanges();
 	self:HideSystemSelections();
 	self.AccountSettings:OnEditModeExit();
+	C_EditMode.OnEditModeExit();
 end
 
 function EditModeManagerFrameMixin:OnShow()
@@ -409,6 +410,22 @@ function EditModeManagerFrameMixin:DoesSettingDisplayValueEqual(system, systemIn
 	if systemFrame then
 		return systemFrame:DoesSettingDisplayValueEqual(setting, value);
 	end
+end
+
+function EditModeManagerFrameMixin:ArePartyFramesForcedShown()
+	return self:IsEditModeActive() and self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPartyFrames);
+end
+
+function EditModeManagerFrameMixin:UseRaidStylePartyFrames()
+	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+end
+
+function EditModeManagerFrameMixin:ShouldShowPartyFrameBackground()
+	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground);
+end
+
+function EditModeManagerFrameMixin:ShouldPartyFrameUseHorizntalRaidGroups()
+	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.UseHorizontalGroups);
 end
 
 function EditModeManagerFrameMixin:GetRightAnchoredActionBarWidth()
@@ -652,12 +669,16 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self:SetGridSpacing(self:GetAccountSettingValue(Enum.EditModeAccountSetting.GridSpacing));
 	self.AccountSettings:SetExpandedState(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.SettingsExpanded));
 	self.AccountSettings:SetTargetAndFocusShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowTargetAndFocus));
+	self.AccountSettings:SetPartyFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPartyFrames));
+	self.AccountSettings:SetRaidFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowRaidFrames));
 	self.AccountSettings:SetActionBarShown(StanceBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowStanceBar));
 	self.AccountSettings:SetActionBarShown(PetActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetActionBar));
 	self.AccountSettings:SetActionBarShown(PossessActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPossessActionBar));
 	self.AccountSettings:SetCastBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowCastBar));
 	self.AccountSettings:SetEncounterBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterBar));
 	self.AccountSettings:SetExtraAbilitiesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowExtraAbilities));
+	self.AccountSettings:SetAuraFrameShown(BuffFrame, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowBuffFrame));
+	self.AccountSettings:SetAuraFrameShown(DebuffFrame, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDebuffFrame));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -1173,6 +1194,16 @@ function EditModeAccountSettingsMixin:OnLoad()
 	end
 	self.Settings.TargetAndFocus:SetCallback(onTargetAndFocusCheckboxChecked);
 
+	local function onPartyFramesCheckboxChecked(isChecked, isUserInput)
+		self:SetPartyFramesShown(isChecked, isUserInput);
+	end
+	self.Settings.PartyFrames:SetCallback(onPartyFramesCheckboxChecked);
+
+	local function onRaidFramesCheckboxChecked(isChecked, isUserInput)
+		self:SetRaidFramesShown(isChecked, isUserInput);
+	end
+	--self.Settings.RaidFrames:SetCallback(onRaidFramesCheckboxChecked);
+
 	local function onStanceBarCheckboxChecked(isChecked, isUserInput)
 		self:SetActionBarShown(StanceBar, isChecked, isUserInput);
 	end
@@ -1202,12 +1233,24 @@ function EditModeAccountSettingsMixin:OnLoad()
 		self:SetExtraAbilitiesShown(isChecked, isUserInput);
 	end
 	self.Settings.ExtraAbilities:SetCallback(onExtraAbilitiesCheckboxChecked);
+
+	local function onBuffFrameCheckboxChecked(isChecked, isUserInput)
+		self:SetAuraFrameShown(BuffFrame, isChecked, isUserInput);
+	end
+	self.Settings.BuffFrame:SetCallback(onBuffFrameCheckboxChecked);
+
+	local function onDebuffFrameCheckboxChecked(isChecked, isUserInput)
+		self:SetAuraFrameShown(DebuffFrame, isChecked, isUserInput);
+	end
+	self.Settings.DebuffFrame:SetCallback(onDebuffFrameCheckboxChecked);
 end
 
 function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self.oldTargetName = UnitName("target");
 	self.oldFocusName = UnitName("focus");
 	self:RefreshTargetAndFocus();
+	self:RefreshPartyFrames();
+	self:RefreshRaidFrames();
 
 	self.oldActionBarSettings = {};
 	local function SetupActionBar(bar)
@@ -1226,20 +1269,19 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 
 	ExtraAbilityContainer.editModeEnterShown = ExtraAbilityContainer:IsShown();
 	self:RefreshExtraAbilities();
+
+	self:RefreshAuraFrame(BuffFrame);
+	self:RefreshAuraFrame(DebuffFrame);
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
 	local clearSavedTargetAndFocus = true;
 	self:ResetTargetAndFocus(clearSavedTargetAndFocus);
+	self:ResetPartyFrames();
+
 	self:ResetActionBarShown(StanceBar);
 	self:ResetActionBarShown(PetActionBar);
 	self:ResetActionBarShown(PossessActionBar);
-
-	-- Undo encounter bar min size stuff so we don't have extra spacing in bottom managed container
-	EncounterBar.minimumWidth = nil;
-	EncounterBar.minimumHeight = nil;
-	EncounterBar:Layout();
-	UIParent_ManageFramePositions();
 
 	ExtraAbilityContainer:SetShown(ExtraAbilityContainer.editModeEnterShown);
 end
@@ -1285,6 +1327,41 @@ function EditModeAccountSettingsMixin:SetTargetAndFocusShown(shown, isUserInput)
 	else
 		self.Settings.TargetAndFocus:SetControlChecked(shown);
 	end
+end
+
+function EditModeAccountSettingsMixin:RefreshPartyFrames()
+	local showPartyFrames = self.Settings.PartyFrames:IsControlChecked();
+	if showPartyFrames then
+		PartyFrame:HighlightSystem();
+	else
+		if PartyFrame.isSelected then
+			EditModeManagerFrame:ClearSelectedSystem();
+		end
+		PartyFrame:ClearHighlight();
+	end
+
+	CompactPartyFrame_RefreshMembers();
+	UpdateRaidAndPartyFrames();
+end
+
+function EditModeAccountSettingsMixin:ResetPartyFrames()
+	CompactPartyFrame_RefreshMembers();
+	UpdateRaidAndPartyFrames();
+end
+
+function EditModeAccountSettingsMixin:SetPartyFramesShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowPartyFrames, shown);
+		self:RefreshPartyFrames();
+	else
+		self.Settings.PartyFrames:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshRaidFrames()
+end
+
+function EditModeAccountSettingsMixin:SetRaidFramesShown(shown, isUserInput)
 end
 
 function EditModeAccountSettingsMixin:ResetActionBarShown(bar)
@@ -1386,6 +1463,34 @@ function EditModeAccountSettingsMixin:RefreshExtraAbilities()
 		ExtraAbilityContainer:SetShown(ExtraAbilityContainer.editModeEnterShown);
 		ExtraAbilityContainer:ClearHighlight();
 	end
+end
+
+function EditModeAccountSettingsMixin:SetAuraFrameShown(frame, shown, isUserInput)
+	local frameName = frame:GetName();
+
+	if isUserInput then
+		local showFrameName = "Show"..frameName;
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting[showFrameName], shown);
+		self:RefreshAuraFrame(frame);
+	else
+		self.Settings[frameName]:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshAuraFrame(frame)
+	local frameName = frame:GetName();
+	local showFrame = self.Settings[frameName]:IsControlChecked();
+
+	if showFrame then
+		frame.isInEditMode = true;
+		frame:HighlightSystem();
+	else
+		frame.isInEditMode = false;
+		frame:ClearHighlight();
+	end
+
+	frame:UpdateAuraButtons();
+	frame:UpdateGridLayout();
 end
 
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)

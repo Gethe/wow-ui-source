@@ -224,8 +224,7 @@ function GossipFrameSharedMixin:Update()
 		dataProvider:Insert({buttonType= GOSSIP_BUTTON_TYPE_DIVIDER});
 	end		
 
-	local gossipOptions = C_GossipInfo.GetOptions();
-	for _, optionInfo in ipairs(gossipOptions) do
+	for _, optionInfo in ipairs(self.gossipOptions) do
 		dataProvider:Insert({buttonType= GOSSIP_BUTTON_TYPE_OPTION, info=optionInfo, titleOptionButton = titleOptionButton, index = index});
 		index = index + 1;
 	end

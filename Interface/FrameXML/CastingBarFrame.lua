@@ -642,6 +642,11 @@ function CastingBarMixin:UpdateIsShown()
 	end
 end
 
+function CastingBarMixin:SetAndUpdateShowCastbar(showCastbar)
+	self.showCastbar = showCastbar;
+	self:UpdateIsShown();
+end
+
 function CastingBarMixin:SetLook(look)
 	if ( look == "CLASSIC" ) then
 		self:SetWidth(209);
@@ -866,4 +871,61 @@ end
 function PlayerCastingBarMixin:OnShow()
 	CastingBarMixin.OnShow(self);
 	UIParentManagedFrameMixin.OnShow(self); 
+end
+
+-- Alternate Player Casting Bar for use over frames whose content triggers contextual player casts
+OverlayPlayerCastingBarMixin = {};
+
+function OverlayPlayerCastingBarMixin:OnLoad()
+	local showTradeSkills = true;
+	local showShieldNo = false;
+	CastingBarMixin.OnLoad(self, "player", showTradeSkills, showShieldNo);
+	self.Icon:Hide();
+	self.showCastbar = false;
+	self.TextBorder:Hide();
+end
+
+--[[
+--	Call to use this casting bar over the specified frame INSTEAD of showing the default PlayerCastingBar.
+--	Will display any currently active Player cast, and any future Player casts until EndReplacingPlayerBar is called.
+--]]
+function OverlayPlayerCastingBarMixin:StartReplacingPlayerBarAt(parentFrame, overrideBarType, overrideAnchor)
+	-- Disable real Player Cast Bar
+	PlayerCastingBarFrame:SetAndUpdateShowCastbar(false);
+
+	self:SetParent(parentFrame);
+	self:SetFrameLevel(parentFrame:GetFrameLevel() + 10);
+	self:ClearAllPoints();
+
+	-- overrideAnchor should be created via CreateAnchor
+	if overrideAnchor then
+		overrideAnchor:SetPoint(self);
+	else
+		-- Default to center of parentFrame if anchor not specified
+		self:SetPoint("CENTER", parentFrame);
+	end
+
+	self.overrideBarType = overrideBarType;
+
+	-- SetAndUpdateShowCastbar will show self on next Player Cast OR now if a Player Cast is active
+	self:SetAndUpdateShowCastbar(true);
+end
+
+--[[
+--	Call to resume using only the default PlayerCastingBar.
+--	PlayerCastingBar will immediately pick up displaying any already-active Player casts.
+--]]
+function OverlayPlayerCastingBarMixin:EndReplacingPlayerBar()
+	-- Hide self
+	self:SetAndUpdateShowCastbar(false);
+	self:SetParent(UIParent);
+	self.overrideBarType = nil;
+
+	-- Re-enable real Player Cast Bar
+	PlayerCastingBarFrame:SetAndUpdateShowCastbar(true);
+end
+
+-- Override template mixin for overriden bar type
+function OverlayPlayerCastingBarMixin:GetEffectiveType(isChannel, notInterruptible, isTradeSkill, isEmpowered)
+	return self.overrideBarType or CastingBarMixin.GetEffectiveType(self, isChannel, notInterruptible, isTradeSkill, isEmpowered);
 end

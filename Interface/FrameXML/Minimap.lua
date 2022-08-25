@@ -421,9 +421,6 @@ end
 function MiniMapTrackingDropDown_SetTracking(self, id, unused, on)
 	C_Minimap.SetTracking(id, on);
 
-	local colorCode = MiniMapTracking_FilterIsDefaultValue(id, on) and HIGHLIGHT_FONT_COLOR_CODE or RED_FONT_COLOR_CODE;
-	self:SetText(colorCode .. self.value);
-
 	UIDropDownMenu_Refresh(MinimapCluster.Tracking.DropDown);
 end
 
@@ -479,7 +476,8 @@ local OPTIONAL_FILTERS = {
 function MiniMapTracking_FilterIsVisible(id)
 	local filter = C_Minimap.GetTrackingFilter(id);
 	local optionalFilter = filter and OPTIONAL_FILTERS[filter.filterID];
-	local filterTypeIsVisible = optionalFilter;
+	local filterIsSpell = filter and filter.spellID;
+	local filterTypeIsVisible = optionalFilter or filterIsSpell;
 	return filterTypeIsVisible;
 end
 
@@ -502,9 +500,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		info.keepShownOnClick = true;
 		UIDropDownMenu_AddButton(info, level);
 		UIDropDownMenu_AddSeparator(level);
-	end
 
-	if (level == 1 and showAll) then
 		if (class == "HUNTER") then --only show hunter dropdown for hunters
 			numTracking = 0;
 			-- make sure there are at least two options in dropdown
@@ -524,7 +520,9 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 				UIDropDownMenu_AddButton(info, level)
 			end
 		end
+	end
 
+	if (level == 1 and showAll) then
 		info.text = TOWNSFOLK_TRACKING_TEXT;
 		info.func =  nil;
 		info.notCheckable = true;
@@ -538,8 +536,8 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
 
 		if showAll or MiniMapTracking_FilterIsVisible(id) then
-			-- Remove nesting unless showing all
-			if not showAll then
+			-- Remove nested townsfold unless showing all
+			if nested == TOWNSFOLK and not showAll then
 				nested = -1;
 			end
 

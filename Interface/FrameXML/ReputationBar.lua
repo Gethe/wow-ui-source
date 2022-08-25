@@ -32,18 +32,21 @@ function ReputationStatusBarMixin:Update()
 	-- do something different for friendships
 	local level;
 	
-	if ( C_Reputation.IsMajorFaction(factionID) ) then
-		local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
-		minBar, maxBar = 0, majorFactionData.renownLevelThreshold;
-		currentValue = majorFactionData.renownReputationEarned or 0;
-		barColor = BLUE_FONT_COLOR;
-	elseif ( C_Reputation.IsFactionParagon(factionID) ) then
+	if ( C_Reputation.IsFactionParagon(factionID) ) then
 		local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
 		minBar, maxBar  = 0, threshold;
 		value = currentValue % threshold;
 		if ( hasRewardPending ) then 
 			value = value + threshold;
 		end
+		if ( C_Reputation.IsMajorFaction(factionID) ) then
+			barColor = BLUE_FONT_COLOR;
+		end
+	elseif ( C_Reputation.IsMajorFaction(factionID) ) then
+		local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
+		minBar, maxBar = 0, majorFactionData.renownLevelThreshold;
+		currentValue = majorFactionData.renownReputationEarned or 0;
+		barColor = BLUE_FONT_COLOR;
 	elseif ( friendshipID > 0) then
 		local repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
 		local repRankInfo = C_GossipInfo.GetFriendshipReputationRanks(factionID);

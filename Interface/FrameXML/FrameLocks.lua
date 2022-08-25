@@ -20,6 +20,7 @@ local HIDE_MOST = {
 	PartyMemberFrame4	= "hidden",
 	ConsolidatedBuffs	= "hidden",
 	BuffFrame			= "hidden",
+	DebuffFrame			= "hidden",
 	MultiBarBottomLeft  = "hidden",
 	MultiBarBottomRight = "hidden",
 	MultiBarLeft		= "hidden",

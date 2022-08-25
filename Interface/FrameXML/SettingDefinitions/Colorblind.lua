@@ -46,8 +46,7 @@ function ColorblindSelectorMixin:Init(initializer)
 
 		local minValue, maxValue, step = 0, 1, .05;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Min, OFF);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Max, HIGH);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentage);
 
 		self.StrengthSliderWithSteppers:Init(settings.colorblindFactor:GetValue(), options.minValue, options.maxValue, options.steps, options.formatters);
 		self.StrengthSliderWithSteppers:SetEnabled_(settings.colorblindSimulator:GetValue() > 0);

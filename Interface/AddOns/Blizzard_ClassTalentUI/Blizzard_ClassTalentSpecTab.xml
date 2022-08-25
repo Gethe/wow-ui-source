@@ -28,6 +28,9 @@
 		</Scripts>
 	</Button>
 	<Frame name="ClassTalentSpecTabTemplate" mixin="ClassTalentSpecTabMixin" inherits="HorizontalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="disabledOverlayAlpha" value="0.8" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="spec-background">
@@ -43,6 +46,15 @@
 						<Alpha childKey="$parent.BackgroundFlash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
 					</AnimationGroup>
 				</Animations>
+			</Frame>
+			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="4000" hidden="true" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GrayOverlay">
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -178,8 +190,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = self:GetParent():GetParent();
-						SetSpecialization(self:GetParent().specIndex, false);
+						self:GetParent():OnActivateClicked();
 					</OnClick>
 				</Scripts>
 			</Button>

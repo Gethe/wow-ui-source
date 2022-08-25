@@ -67,6 +67,24 @@ function TalentUtil.IsFriendlyCondition(condType)
 	return condType == Enum.TraitConditionType.Granted or condType == Enum.TraitConditionType.Increased;
 end
 
+function TalentUtil.CombineCostArrays(...)
+	local combinedCostMap = {};
+	for i = 1, select("#", ...) do
+		local costArray = select(i, ...);
+		for j, cost in ipairs(costArray) do
+			combinedCostMap[cost.ID] = (combinedCostMap[cost.ID] or 0) + cost.amount;
+		end
+	end
+
+	local combinedCostArray = {};
+	for ID, amount in pairs(combinedCostMap) do
+		-- Note: This must match the definition of TraitCurrencyCost, from C_Traits.GetNodeCost, etc.
+		table.insert(combinedCostArray, { ID = ID, amount = amount, });
+	end
+
+	return combinedCostArray;
+end
+
 
 TalentButtonUtil = {};
 
@@ -187,6 +205,7 @@ C_Traits.GetEntryInfo = function (...)
 	local entryInfo = OriginalGetEntryInfo(...);
 	if entryInfo then
 		entryInfo.talentID = entryInfo.definitionID;
+		entryInfo.entryCost = {};
 	end
 
 	return entryInfo;

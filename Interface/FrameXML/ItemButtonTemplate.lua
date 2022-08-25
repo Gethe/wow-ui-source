@@ -17,7 +17,8 @@ function SetItemButtonCount(button, count, abbreviate)
 
 	button.count = count;
 	local countString = button.Count or _G[button:GetName().."Count"];
-	if ( count > 1 or (button.isBag and count > 0) ) then
+	local minDisplayCount = button.minDisplayCount or 1;
+	if ( count > minDisplayCount or (button.isBag and count > 0)) then
 		if ( abbreviate ) then
 			count = AbbreviateNumbers(count);
 		else
@@ -115,15 +116,18 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 	button.SlotTexture:SetVertexColor(r, g, b);
 end
 
+local function ClearOverlay(overlay)
+	if overlay then
+		overlay:SetVertexColor(1,1,1);
+		overlay:SetAtlas(nil);
+		overlay:Hide();
+	end
+end
+
 local OverlayKeys = {"IconOverlay", "IconOverlay2", "ProfessionQualityOverlay"};
 function ClearItemButtonOverlay(button)
 	for _, key in ipairs(OverlayKeys) do
-		local overlay = button[key];
-		if overlay then
-			overlay:SetVertexColor(1,1,1);
-			overlay:SetAtlas(nil);
-			overlay:Hide();
-		end
+		ClearOverlay(button[key]);
 	end
 end
 
@@ -184,6 +188,20 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, i
 	end
 end
 
+local function SetQuality(button, quality)
+	if not button.ProfessionQualityOverlay then
+		button.ProfessionQualityOverlay = button:CreateTexture(nil, "OVERLAY");
+		button.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2);
+		button.ProfessionQualityOverlay:SetDrawLayer("OVERLAY", 7);
+		button.ProfessionQualityOverlay:SetScale(button.qualityOverlayScale or 1.0);
+	end
+
+	local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);
+	button.ProfessionQualityOverlay:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	button:UpdateCraftedProfessionsQualityShown();
+	EventRegistry:RegisterCallback("ItemButton.UpdateCraftedProfessionQualityShown", button.UpdateCraftedProfessionsQualityShown, button);
+end
+
 -- Remember to update the OverlayKeys table if adding an overlay texture here.
 function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 	ClearItemButtonOverlay(button);
@@ -215,21 +233,26 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 		-- The reagent slots contain this button/mixin, however there's a nuance in the button behavior that the overlay needs to be
 		-- hidden if more than 1 quality of reagent is assigned to the slot. Those slots have a separate overlay that is
 		-- managed independently of this, though it still uses the rest of this button's behaviors.
-		if not button.noQualityOverlay then
-			local quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemIDOrLink);
-			if quality then
-				if not button.ProfessionQualityOverlay then
-					button.ProfessionQualityOverlay = button:CreateTexture(nil, "OVERLAY");
-					button.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2);
-					button.ProfessionQualityOverlay:SetDrawLayer("OVERLAY", 7);
-				end
+		SetItemCraftingQualityOverlay(button, itemIDOrLink);
+	end
+end
 
-				local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);
-				button.ProfessionQualityOverlay:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
-				button.ProfessionQualityOverlay:Show();
-			end
+function SetItemCraftingQualityOverlay(button, itemIDOrLink)
+	if itemIDOrLink and not button.noQualityOverlay then
+		local quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemIDOrLink);
+		if not quality then
+			quality = C_TradeSkillUI.GetItemCraftedQualityByItemInfo(itemIDOrLink);
+			button.isCraftedItem = quality ~= nil;
+		end
+
+		if quality then
+			SetQuality(button, quality);
 		end
 	end
+end
+
+function ClearItemCraftingQualityOverlay(button)
+	ClearOverlay(button.ProfessionQualityOverlay);
 end
 
 function SetItemButtonReagentCount(button, reagentCount, playerReagentCount)
@@ -309,7 +332,7 @@ end
 
 function ItemButtonMixin:SetMatchesSearch(matchesSearch)
 	self.matchesSearch = matchesSearch;
-	self:UpdateItemContextOverlay(self);
+	self:UpdateItemContextOverlay();
 end
 
 function ItemButtonMixin:GetMatchesSearch()
@@ -324,7 +347,17 @@ function ItemButtonMixin:UpdateItemContextMatching()
 		self.itemContextMatchResult = ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 	end
 
-	self:UpdateItemContextOverlay(self);
+	self:UpdateItemContextOverlay();
+end
+
+function ItemButtonMixin:UpdateCraftedProfessionsQualityShown()
+	if not self.ProfessionQualityOverlay then
+		return;
+	end
+
+	-- Stackable items with quality always show quality overlay
+	local shouldShow = (not self.isCraftedItem) or (ProfessionsFrame and ProfessionsFrame:IsShown());
+	self.ProfessionQualityOverlay:SetShown(shouldShow);
 end
 
 function ItemButtonMixin:UpdateItemContextOverlay()
@@ -334,19 +367,10 @@ function ItemButtonMixin:UpdateItemContextOverlay()
 
 	self.ItemContextOverlay:Hide();
 
-	local function SetProfessionsQualityShown(shown)
-		if self.ProfessionQualityOverlay then
-			shown = shown and self.ProfessionQualityOverlay:GetAtlas() ~= nil;
-			self.ProfessionQualityOverlay:SetShown(shown);
-		end
-	end
-
 	if not matchesSearch or (contextApplies and not matchesContext) then
 		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
 		self.ItemContextOverlay:SetAllPoints(true);
 		self.ItemContextOverlay:Show();
-
-		SetProfessionsQualityShown(false);
 	elseif matchesContext and self.showMatchHighlight then
 		local itemContext = ItemButtonUtil.GetItemContext();
 		if itemContext == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem or itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeItem or itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then
@@ -356,10 +380,6 @@ function ItemButtonMixin:UpdateItemContextOverlay()
 			self.ItemContextOverlay:SetPoint("CENTER");
 			self.ItemContextOverlay:Show();
 		end
-
-		SetProfessionsQualityShown(true);
-	elseif not contextApplies then
-		SetProfessionsQualityShown(true);
 	end
 end
 
@@ -372,6 +392,10 @@ function ItemButtonMixin:Reset()
 	self:SetItemSource(nil);
 
 	self.noQualityOverlay = false;
+
+	self.isCraftedItem = false;
+	EventRegistry:UnregisterCallback("ItemButton.UpdateCraftedProfessionQualityShown", self.UpdateCraftedProfessionsQualityShown, self);
+	ClearItemButtonOverlay(self);
 end
 
 function ItemButtonMixin:SetItemSource(itemLocation)

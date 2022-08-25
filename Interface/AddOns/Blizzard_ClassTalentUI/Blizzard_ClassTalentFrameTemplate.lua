@@ -30,11 +30,15 @@ function ClassTalentFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForUnitEvents(self, ClassTalentFrameUnitEvents, "player");
 
 	self:UpdateTabs();
+
+	PlaySound(SOUNDKIT.UI_CLASS_TALENT_OPEN_WINDOW);
 end
 
 function ClassTalentFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentFrameEvents);
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentFrameUnitEvents);
+
+	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
 end
 
 function ClassTalentFrameMixin:OnEvent(event)

@@ -347,7 +347,7 @@ SECURE_ACTIONS.actionbar =
     end;
 
 SECURE_ACTIONS.action =
-    function (self, unit, button)
+    function (self, unit, button, isKeyPress)
         local action = self:CalculateAction(button);
         if ( action ) then
             -- Save macros in case the one for this action is being edited
@@ -361,7 +361,7 @@ SECURE_ACTIONS.action =
                 SpellFlyout:Toggle(flyoutId, self, direction, 0, true);
             else
                 SpellFlyout:Hide();
-                UseAction(action, unit, button);
+                UseAction(action, unit, button, isKeyPress);
             end
         end
     end;
@@ -669,7 +669,7 @@ local function GetConvertedButtonUnitAndActionType(self, button, pressType)
 	return button, unit, actionType;
 end
 
-local function PerformAction(self, button, unit, actionType, down)
+local function PerformAction(self, button, unit, actionType, down, isKeyPress)
 	if button and actionType then
 		local atRisk = false;
 		local handler = SECURE_ACTIONS[actionType]
@@ -687,21 +687,21 @@ local function PerformAction(self, button, unit, actionType, down)
 			if atRisk then
 				forceinsecure();
 			end
-			handler(self, unit, button);
+			handler(self, unit, button, isKeyPress);
 		elseif type(handler) == 'string' then
 			SecureHandler_OnClick(self, "_"..actionType, button, down);
 		end
 	end
 end
 
-local function OnActionButtonClick(self, inputButton, down)
+local function OnActionButtonClick(self, inputButton, down, isKeyPress)
 	local button, unit, actionType = GetConvertedButtonUnitAndActionType(self, inputButton, down and PRESS_TYPE_DOWN or PRESS_TYPE_UP);
 
 	if not button then
 		return;
 	end
 
-	PerformAction(self, button, unit, actionType, down);
+	PerformAction(self, button, unit, actionType, down, isKeyPress);
 
 	-- Target predefined item, if we just cast a spell that targets an item
 	if SpellCanTargetItem() or SpellCanTargetItemID() then
@@ -727,16 +727,16 @@ local function OnActionButtonPressAndHoldRelease(self, inputButton)
 	PerformAction(self, button, unit, actionType, false);
 end
 
-function SecureActionButton_OnClick(self, inputButton, down)
+function SecureActionButton_OnClick(self, inputButton, down, isKeyPress)
 	local useOnKeyDown = GetCVarBool("ActionButtonUseKeyDown") or self.pressAndHoldAction;
 	local clickAction = (down and useOnKeyDown) or (not down and not useOnKeyDown);
-	local releaseAction = (not down and self.pressAndHoldAction);
+	local releasePressAndHoldAction = (not down) and (self.pressAndHoldAction or GetCVarBool("ActionButtonUseKeyHeldSpell"));
 
 	if clickAction then
-		OnActionButtonClick(self, inputButton, down);
+		OnActionButtonClick(self, inputButton, down, isKeyPress);
 		return true;
-	elseif releaseAction then
-		OnActionButtonPressAndHoldRelease(self, inputButton);
+	elseif releasePressAndHoldAction then
+		OnActionButtonPressAndHoldRelease(self, inputButton, isKeyPress);
 		return true;
 	end
 
@@ -766,6 +766,6 @@ function SecureUnitButton_OnClick(self, button, down)
                 return;
             end
         end
-        OnActionButtonClick(self, effectiveButton, down);
+        OnActionButtonClick(self, effectiveButton, down, false);
     end
 end

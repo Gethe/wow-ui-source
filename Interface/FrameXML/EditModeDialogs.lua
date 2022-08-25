@@ -342,7 +342,8 @@ function EditModeSystemSettingsDialogMixin:UpdateSettings(systemFrame)
 					settingFrame:SetPoint("TOPLEFT");
 					settingFrame.layoutIndex = index;
 					local settingName = (self.attachedToSystem:UseSettingAltName(displayInfo.setting) and displayInfo.altName) and displayInfo.altName or displayInfo.name;
-					settingsToSetup[settingFrame] = { displayInfo = displayInfo, currentValue = self.attachedToSystem:GetSettingValue(displayInfo.setting), settingName = settingName },
+					local updatedDisplayInfo = self.attachedToSystem:UpdateDisplayInfoOptions(displayInfo);
+					settingsToSetup[settingFrame] = { displayInfo = updatedDisplayInfo, currentValue = self.attachedToSystem:GetSettingValue(updatedDisplayInfo.setting), settingName = settingName },
 					settingFrame:Show();
 				end
 			end

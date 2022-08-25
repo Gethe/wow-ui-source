@@ -1,4 +1,4 @@
-local InvalidationReason = EnumUtil.MakeEnum("DataProviderReassigned", "DataProviderContentsChanged"); 
+local InvalidationReason = EnumUtil.MakeEnum("DataProviderReassigned", "DataProviderContentsChanged");
 
 ScrollBoxListViewMixin = CreateFromMixins(ScrollBoxViewMixin, CallbackRegistryMixin);
 ScrollBoxListViewMixin:GenerateCallbackEvents(
@@ -170,6 +170,10 @@ function ScrollBoxListViewMixin:ClearDataProviderInternal()
 	end
 
 	self.dataProvider = nil;
+
+	-- Anytime the data provider is discarded we also want to discard any cached extents.
+	self.templateExtents = nil;
+	self.calculatedElementExtents = nil;
 end
 
 function ScrollBoxListViewMixin:ClearDataProvider()
@@ -536,7 +540,8 @@ function ScrollBoxListViewMixin:RecalculateExtent(scrollBox, stride, spacing)
 		local total = 0;
 
 		for dataIndex, elementData in self:EnumerateDataProvider() do
-			table.insert(extentsTbl, self:CalculateFrameExtent(dataIndex, elementData));
+			local extent = self:CalculateFrameExtent(dataIndex, elementData);
+			table.insert(extentsTbl, extent);
 		end
 
 		for dataIndex = 1, size, stride do
@@ -551,15 +556,22 @@ function ScrollBoxListViewMixin:RecalculateExtent(scrollBox, stride, spacing)
 	local dataProvider = self:GetDataProvider();
 	if dataProvider then
 		size = dataProvider:GetSize();
+		
+		local function CalculateTemplateExtents()
+			self.templateExtents = {};
+			return CalculateExtents(self.templateExtents, size);
+		end
 
-		if self:HasIdenticalElementExtents() then
+		local templateExtentsMismatch = self.templateExtents and #self.templateExtents ~= size;
+		if templateExtentsMismatch then
+			extent = CalculateTemplateExtents();
+		elseif self:HasIdenticalElementExtents() then
 			extent = math.ceil(size/stride) * self:GetIdenticalElementExtents();
 		elseif self.elementExtentCalculator then
 			self.calculatedElementExtents = {};
 			extent = CalculateExtents(self.calculatedElementExtents, size);
 		else
-			self.templateExtents = {};
-			extent = CalculateExtents(self.templateExtents, size);
+			extent = CalculateTemplateExtents();
 		end
 	end
 	
@@ -623,29 +635,41 @@ function ScrollBoxListViewMixin:GetIdenticalElementExtents()
 	return info.extent;
 end
 
+local function ValidateExtent(extentsTbl, dataIndex)
+	if not extentsTbl[dataIndex] then
+		Dump(extentsTbl);
+		error(string.format("dataIndex %d not found in extents table", dataIndex));
+	end
+end
+
 function ScrollBoxListViewMixin:GetElementExtent(dataIndex)
 	if self:HasIdenticalElementExtents() then 
 		return self:GetIdenticalElementExtents();
 	end
-	
+
 	local extent = 0;
 	if self.calculatedElementExtents then
 		extent = self.calculatedElementExtents[dataIndex];
+		--ValidateExtent(self.calculatedElementExtents, dataIndex);
 	elseif self.templateExtents then
 		extent = self.templateExtents[dataIndex];
+		--ValidateExtent(self.templateExtents, dataIndex);
 	end
-	assert(extent and extent > 0);
 	return extent;
 end
 
 function ScrollBoxListViewMixin:SetElementExtent(extent)
 	self.elementExtent = math.max(extent, 1);
 	self.elementExtentCalculator = nil;
+	self.templateExtents = nil;
+	self.calculatedElementExtents = nil;
 end
 
 function ScrollBoxListViewMixin:SetElementExtentCalculator(elementExtentCalculator)
 	self.elementExtentCalculator = elementExtentCalculator;
 	self.elementExtent = nil;
+	self.templateExtents = nil;
+	self.calculatedElementExtents = nil;
 end
 
 function ScrollBoxListViewMixin:GetExtentUntil(scrollBox, dataIndex, stride, spacing)

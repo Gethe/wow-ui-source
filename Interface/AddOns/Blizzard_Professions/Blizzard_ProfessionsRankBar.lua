@@ -18,6 +18,9 @@ end
 
 function ProfessionsRankBarMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ProfessionsRankBarEvents);
+
+	self.ratio = nil;
+	self.lastProfession = nil;
 end
 
 function ProfessionsRankBarMixin:OnEvent(event, ...)
@@ -53,6 +56,14 @@ local function GenerateRankText(professionName, skillLevel, maxSkillLevel, skill
 	return rankText;
 end
 
+local flipbookAnimDuration =
+{
+	[Enum.Profession.Blacksmithing] = 2.6,
+	[Enum.Profession.Enchanting] = 2.6,
+	[Enum.Profession.Tailoring] = 2.6,
+	[Enum.Profession.Jewelcrafting] = 2.6,
+};
+
 function ProfessionsRankBarMixin:Update(professionInfo)
 	local rankText = GenerateRankText(professionInfo.professionName, professionInfo.skillLevel, professionInfo.maxSkillLevel, professionInfo.skillModifier);
 	self.Rank.Text:SetText(rankText);
@@ -65,12 +76,19 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 		local fillArtAtlasFormat = "Skillbar_Fill_Flipbook_%s";
 		local stylizedFillAtlasName = kitSpecifier and fillArtAtlasFormat:format(kitSpecifier);
 		local stylizedFillInfo = stylizedFillAtlasName and C_Texture.GetAtlasInfo(stylizedFillAtlasName);
-		if not stylizedFillInfo then
+		local duration = flipbookAnimDuration[professionInfo.profession];
+		if not stylizedFillInfo or not duration then
 			stylizedFillAtlasName = fillArtAtlasFormat:format("Blacksmithing");
 			stylizedFillInfo = C_Texture.GetAtlasInfo(stylizedFillAtlasName);
+			duration = flipbookAnimDuration[Enum.Profession.Blacksmithing];
 		end
 		self.Fill:SetAtlas(stylizedFillAtlasName, TextureKitConstants.IgnoreAtlasSize);
-		self.BarAnimation:Restart();
+
+		local frameHeight = 34;
+		local flipBookNumRows = stylizedFillInfo.height / frameHeight;
+		self.BarAnimation.Flipbook:SetFlipBookRows(flipBookNumRows);
+		self.BarAnimation.Flipbook:SetFlipBookFrames(flipBookNumRows * self.BarAnimation.Flipbook:GetFlipBookColumns());
+		self.BarAnimation.Flipbook:SetDuration(duration);
 	end
 
 	local newRatio = 0;
@@ -78,7 +96,13 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 		newRatio = professionInfo.skillLevel / professionInfo.maxSkillLevel;
 	end
 
-	if self.ratio == newRatio then
+	local sameRatio = self.ratio == newRatio;
+
+	if professionChanged or not sameRatio then
+		self.BarAnimation:Restart();
+	end
+
+	if sameRatio then
 		return;
 	end
 

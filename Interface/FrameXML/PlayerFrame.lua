@@ -332,6 +332,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PetFrame_Update(PetFrame);
 	PlayerFrame_Update();
 	BuffFrame:Update();
+	DebuffFrame:Update();
 	ComboFrame_Update(ComboFrame);
 
 	PlayerFrameTexture:Hide();
@@ -372,6 +373,7 @@ function PlayerFrame_ToPlayerArt(self)
 	PetFrame_Update(PetFrame);
 	PlayerFrame_Update();
 	BuffFrame:Update();
+	DebuffFrame:Update();
 	ComboFrame_Update(ComboFrame);
 
 	PlayerFrameTexture:Show();

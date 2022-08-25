@@ -8,8 +8,11 @@ local ProfessionsCraftingPageEvents =
 {
 	"TRADE_SKILL_DATA_SOURCE_CHANGING",
 	"TRADE_SKILL_DATA_SOURCE_CHANGED",
-	"UPDATE_TRADESKILL_RECAST_READY",
+	"TRADE_SKILL_ITEM_CRAFTED_RESULT",
+	"UPDATE_TRADESKILL_CAST_COMPLETE",
 	"TRADE_SKILL_CLOSE",
+	"BAG_UPDATE",
+	"BAG_UPDATE_DELAYED",
 };
 
 function ProfessionsCraftingPageMixin:OnLoad()
@@ -17,6 +20,7 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	self.RecipeList.FilterButton:SetScript("OnMouseDown", function(button, buttonName, down)
 		UIMenuButtonStretchMixin.OnMouseDown(self.RecipeList.FilterButton, buttonName);
 		ToggleDropDownMenu(1, nil, self.RecipeList.FilterDropDown, self.RecipeList.FilterButton, 74, 15);
+		PlaySound(SOUNDKIT.UI_PROFESSION_FILTER_MENU_OPEN_CLOSE);
 	end);
 	EventRegistry:RegisterCallback("ProfessionsRecipeListMixin.Event.OnRecipeSelected", self.OnRecipeSelected, self);
 
@@ -57,20 +61,20 @@ function ProfessionsCraftingPageMixin:OnLoad()
 		Professions.AllocateAllBasicReagents(transaction, checked);
 		self.SchematicForm:SetManuallyAllocated(false);
 
-		self:SetupCraftingButtons();
+		self:ValidateControls();
 	end
 
 	self.SchematicForm:RegisterCallback(ProfessionsRecipeSchematicFormMixin.Event.UseBestQualityModified, OnUseBestQualityModified, self);
 	
 	local function OnAllocationsModified(o, checked)
-		self:SetupCraftingButtons();
+		self:ValidateControls();
 	end
 	self.SchematicForm:RegisterCallback(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified, OnAllocationsModified);
 
 	EventRegistry:RegisterCallback("Professions.ProfessionUpdated", self.OnProfessionUpdated, self);
 	EventRegistry:RegisterCallback("Professions.ProfessionSelected", self.OnProfessionSelected, self);
 	EventRegistry:RegisterCallback("Professions.ReagentClicked", self.OnReagentClicked, self);
-	EventRegistry:RegisterCallback("Professions.TransactionUpdated", self.SetupCraftingButtons, self);
+	EventRegistry:RegisterCallback("Professions.TransactionUpdated", self.ValidateControls, self);
 
 	UIDropDownMenu_Initialize(self.LinkDropDown, GenerateClosure(self.InitLinkDropdown, self), "MENU");
 
@@ -95,10 +99,22 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 	elseif event == "TRADE_SKILL_DATA_SOURCE_CHANGED" then
 		self:Reset();
 		self.GuildFrame:Clear();
-	elseif event == "UPDATE_TRADESKILL_RECAST_READY" then
-		C_TradeSkillUI.ContinueRecast();
+	elseif event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
+		self:ContinueCrafting();
 	elseif event == "TRADE_SKILL_CLOSE" then
 		HideUIPanel(self);
+	elseif event == "BAG_UPDATE" or event == "BAG_UPDATE_DELAYED" then
+		self:ValidateControls();
+	elseif event == "TRADE_SKILL_ITEM_CRAFTED_RESULT" then
+		if not self.craftingQueue or self.reallocPending then
+			self.reallocPending = nil;
+			local transaction = self.SchematicForm:GetTransaction();
+			transaction:SanitizeAllocations();
+			self.SchematicForm:SetManuallyAllocated(false);
+			self.SchematicForm:Refresh();
+			self:ValidateControls();
+
+		end
 	end
 end
 
@@ -201,18 +217,44 @@ function ProfessionsCraftingPageMixin:OnRecipeSelected(recipeInfo)
 		self.CreateMultipleInputBox:Disable();
 		self.CreateMultipleInputBox:SetValue(0);
 	else
-		if recipeInfo.numAvailable > 0 then
-			local count = math.max(1, C_TradeSkillUI.GetRecipeRepeatCount());
-			self:SetupMultipleInputBox(count, recipeInfo.numAvailable);
+		local count = C_TradeSkillUI.GetCraftableCount(recipeInfo.recipeID);
+		if count > 0 then
+			local minCount = 1;
+			self:SetupMultipleInputBox(minCount, count);
 		else
 			self:SetupMultipleInputBox(0, 0);
 		end
-		
 	end
 
 	self:SetupCraftingButtons();
 	local scrollToRecipe = false;
 	self.RecipeList:SelectRecipe(recipeInfo, scrollToRecipe);
+end
+
+function ProfessionsCraftingPageMixin:UpdateRemainingCraftCount()
+	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
+	if currentRecipeInfo then
+		local craftableCount = 0;
+		if self.SchematicForm:IsManuallyAllocated() then
+			craftableCount = self:GetCraftableCount();
+		else
+			local recipeLevel = self.SchematicForm:GetCurrentRecipeLevel();
+			craftableCount = C_TradeSkillUI.GetCraftableCount(currentRecipeInfo.recipeID, recipeLevel);
+		end
+
+		if craftableCount > 0 then
+			local count = 0;
+			if self.craftingQueue then
+				count = self.craftingQueue:GetTotal() + 1;
+			else
+				count = C_TradeSkillUI.GetRecipeRepeatCount();
+			end
+
+			self:SetupMultipleInputBox(count, craftableCount);
+		else
+			self:SetupMultipleInputBox(0, 0);
+		end
+	end
 end
 
 function ProfessionsCraftingPageMixin:SetupMultipleInputBox(count, countMax)
@@ -299,12 +341,14 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 		end
 
 		local countMax = self:GetCraftableCount();
+		local createAllFormat;
 		if currentRecipeInfo.abilityAllVerb then
 			-- abilityAllVerb is recipe-level override
-			self.CreateAllButton:SetTextToFit(currentRecipeInfo.abilityAllVerb:format(countMax));
+			createAllFormat = currentRecipeInfo.abilityAllVerb;
 		else
-			self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_COUNT:format(countMax));
+			createAllFormat = PROFESSIONS_CREATE_ALL;
 		end
+		self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_FORMAT:format(createAllFormat, countMax));
 
 		local function IsRecipeOnCooldown(recipeID)
 			local cooldown, isDayCooldown, charges, maxCharges = C_TradeSkillUI.GetRecipeCooldown(recipeID);
@@ -452,9 +496,14 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 		local elementData = self.RecipeList:SelectRecipe(currentRecipeInfo, scrollToRecipe);
 	else
 		self.SchematicForm:Init();
-		self:SetupCraftingButtons();
+		self:ValidateControls();
 	end
 end
+
+function ProfessionsCraftingPageMixin:ValidateControls()
+	self:UpdateRemainingCraftCount();
+		self:SetupCraftingButtons();
+	end
 
 function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
@@ -476,6 +525,22 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 		HelpPlate_Hide(false);
 	end
 	self:UpdateFilterResetVisibility();
+
+	self.SchematicForm:Refresh();
+	self:ValidateControls();
+end
+
+function ProfessionsCraftingPageMixin:ContinueCrafting()
+	if self.craftingQueue then
+		if not self.craftingCallback() then
+			self.craftingCallback = nil;
+			self.craftingQueue = nil;
+			self.reallocPending = true;
+		end
+	else
+		C_TradeSkillUI.ContinueRecast();
+	end
+	self:ValidateControls();
 end
 
 function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLevel)
@@ -497,9 +562,26 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 			C_TradeSkillUI.CraftSalvage(recipeID, count, matchItemLocation);
 		end
 	else
-		local reagentsTbl = transaction:CreateCraftingReagentInfoTbl();
 		if transaction:HasRecraftAllocation() then
-			local result = C_TradeSkillUI.RecraftRecipe(transaction:GetRecraftAllocation(), reagentsTbl);
+			local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
+
+			local itemMods = transaction:GetRecraftItemMods();
+			if itemMods then
+				for dataSlotIndex, modification in ipairs(itemMods) do
+					if modification.itemID > 0 then
+						for _, craftingReagentInfo in ipairs(craftingReagentTbl) do
+							if (craftingReagentInfo.itemID == modification.itemID) and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex) then
+								-- If the modification still exists in the same position, set it's quantity to 0 to inform the server
+								-- not to modify this reagent.
+								craftingReagentInfo.quantity = 0;
+								break;
+							end
+						end
+					end
+				end
+			end
+			
+			local result = C_TradeSkillUI.RecraftRecipe(transaction:GetRecraftAllocation(), craftingReagentTbl);
 			if result then
 				-- Create an expected table of item modifications so that we don't incorrectly deallocate
 				-- an item modification slot on form refresh that has just been installed but hasn't been stamped
@@ -507,7 +589,43 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 				transaction:GenerateExpectedItemModifications();
 			end
 		else
-			C_TradeSkillUI.CraftRecipe(recipeID, count, reagentsTbl, recipeLevel);
+			if count > 1 then
+				local ascending = not Professions.ShouldAllocateBestQualityReagents();
+				self.craftingQueue = CreateProfessionsCraftingQueue(transaction);
+				if self.SchematicForm:IsManuallyAllocated() then
+					local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
+					self.craftingQueue:SetPartitions(count, craftingReagentTbl);
+				else
+					self.craftingQueue:CalculatePartitions(transaction, count, ascending);
+				end
+				self.reallocPending = nil;
+
+				self.craftingCallback = function()
+					local partition = self.craftingQueue:Front();
+					if not partition then
+						return false;
+					end
+			
+					partition.quantity = partition.quantity - 1;
+					if partition.quantity == 0 then
+						self.craftingQueue:Pop();
+					end
+					
+					local craftingReagentTbl = {};
+					local quantity = 1;
+					for _, craftingReagentInfo in ipairs(partition.craftingReagentInfos) do
+						table.insert(craftingReagentTbl, craftingReagentInfo);
+					end
+					local count = 1;
+					C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel);
+					return true;
+				end
+				self.craftingCallback();
+			else
+				local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
+				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel);
+			end
+			
 		end
 	end
 
@@ -516,6 +634,7 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 	self.CraftingOutputLog:StartListening(successive);
 
 	self.CreateMultipleInputBox:ClearFocus();
+	self:ValidateControls();
 
 	self.SchematicForm.Details:Reset();
 end
@@ -531,7 +650,13 @@ end
 
 function ProfessionsCraftingPageMixin:CreateAll()
 	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
-	self:CreateInternal(currentRecipeInfo.recipeID, currentRecipeInfo.numAvailable, self.SchematicForm:GetCurrentRecipeLevel());
+	local count = 0;
+	if self.SchematicForm:IsManuallyAllocated() then
+		craftableCount = self:GetCraftableCount();
+	else
+		craftableCount = C_TradeSkillUI.GetCraftableCount(currentRecipeInfo.recipeID);
+	end
+	self:CreateInternal(currentRecipeInfo.recipeID, craftableCount, self.SchematicForm:GetCurrentRecipeLevel());
 end
 
 function ProfessionsCraftingPageMixin:Create()
@@ -564,7 +689,6 @@ function ProfessionsCraftingPageMixin:HideInventorySlots()
 		inventorySlot:Hide();
 	end
 end
-
 function ProfessionsCraftingPageMixin:AnyInventorySlotShown()
 	for index, inventorySlot in ipairs(self.InventorySlots) do
 		if inventorySlot:IsShown() then

@@ -718,11 +718,6 @@ end
 
 function PlayerChoice_LoadUI()
 	UIParentLoadAddOn("Blizzard_PlayerChoice");
-
-	-- ACHURCHILL TODO: remove once player choice refactor testing is done
-	if OldPlayerChoiceFrame then
-		PlayerChoiceFrame = OldPlayerChoiceFrame;
-	end
 end
 
 function Store_LoadUI()
@@ -931,6 +926,7 @@ function ToggleTalentFrame(suggestedTab)
 		[9] = true, -- Warlock
 		[10] = true, -- Monk
 		[11] = true, -- Druid
+		[12] = true, -- Demon Hunter
 		[13] = true, -- Evoker
 	};
 
@@ -1785,7 +1781,7 @@ function UIParent_OnEvent(self, event, ...)
 		PlayBattlefieldBanner(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
-		RaidOptionsFrame_UpdatePartyFrames();
+		UpdateRaidAndPartyFrames();
 		if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 			StaticPopup_Hide("CONFIRM_LEAVE_INSTANCE_PARTY");
 		end
@@ -2475,8 +2471,10 @@ function UIParent_UpdateTopFramePositions()
 		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
 	end
 
-	local y = -(buffOffset + 13)
-	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
+	if BuffFrame:IsInDefaultPosition() then
+		local y = -(buffOffset + 13)
+		BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", -10, y);
+	end
 end
 
 UIParentManagedFrameMixin = { };
@@ -4994,16 +4992,25 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 end
 
 function GetDisplayedAllyFrames()
-	local useCompact = GetCVarBool("useCompactPartyFrames")
-	if ( IsActiveBattlefieldArena() and not useCompact and not C_PvP.IsInBrawl() ) then
+	local useCompact = EditModeManagerFrame:UseRaidStylePartyFrames();
+	local showingGroup = IsInGroup() or EditModeManagerFrame:ArePartyFramesForcedShown();
+	if IsActiveBattlefieldArena() and not useCompact and not C_PvP.IsInBrawl() then
 		return "party";
-	elseif ( IsInGroup() and (IsInRaid() or useCompact) ) then
+	elseif showingGroup and (IsInRaid() or useCompact) then
 		return "raid";
-	elseif ( IsInGroup() ) then
+	elseif showingGroup then
 		return "party";
 	else
 		return nil;
 	end
+end
+
+function ShowingPartyFrames()
+	return GetDisplayedAllyFrames() == "party";
+end
+
+function ShowingRaidFrames()
+	return GetDisplayedAllyFrames() == "raid";
 end
 
 local displayedCapMessage = false;

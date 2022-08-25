@@ -180,11 +180,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<CheckButton parentKey="RaidStylePartyFramesCheckBox" name="$parentRaidStylePartyFrames" inherits="UICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-260" y="-8"/>
-				</Anchors>
-			</CheckButton>
 			<Frame name="$parentNewProfileDialog" inherits="CompactUnitFrameProfileDialogWithCoverTemplate" parentKey="newProfileDialog">
 				<Size x="450" y="200"/>
 				<Layers>
@@ -583,43 +578,9 @@
 							</OnLoad>
 						</Scripts>
 					</Slider>
-
-					<CheckButton name="$parentAutoActivate2Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentKey="autoActivate2Players">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate2Players");
-								self.disabledTooltip = AUTO_ACTIVATE_DISABLED_IN_PARTY;
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="$parentAutoActivate3Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentKey="autoActivate3Players">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate2Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate3Players");
-								self.disabledTooltip = AUTO_ACTIVATE_DISABLED_IN_PARTY;
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="$parentAutoActivate5Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate" parentKey="autoActivate5Players">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate3Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "autoActivate5Players");
-								self.disabledTooltip = AUTO_ACTIVATE_DISABLED_IN_PARTY;
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
 					<CheckButton name="$parentAutoActivate10Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivate5Players" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -710,19 +671,6 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-
-					<Button name="$parentResetPositionButton" inherits="UIPanelButtonTemplate" text="RESET_POSITION">
-						<Size x="160" y="21"/>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								CompactRaidFrameManager_ResetContainerPosition();
-							</OnClick>
-						</Scripts>
-					</Button>
 				</Frames>
 				<Scripts>
 					<OnShow function="CompactUnitFrameProfilesGeneralOptionsFrame_OnShow"/>

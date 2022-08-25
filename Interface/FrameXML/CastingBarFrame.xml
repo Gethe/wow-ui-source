@@ -463,8 +463,28 @@
 			<KeyValue key="bottomPadding" value="8" type="number"/>
 		</KeyValues>
 		<Scripts>
-			<OnLoad method="OnLoad" inherit="append"/>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+		</Scripts>
+	</StatusBar>
+
+	<StatusBar name="OverlayPlayerCastingBarFrame" toplevel="true" inherits="CastingBarFrameTemplate" parent="UIParent" hidden="true" frameStrata="HIGH" mixin="OverlayPlayerCastingBarMixin">
+		<Size x="209" y="11"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="Text" inherits="GameFontNormalLarge">
+					<Size x="300" y="20"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</StatusBar>
 </Ui>

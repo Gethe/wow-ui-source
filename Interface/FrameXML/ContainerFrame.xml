@@ -387,6 +387,9 @@
 			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate"/>
 
 			<Frame parentKey="MoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<KeyValues>
+					<KeyValue key="showCurrencyTracking" value="true" type="boolean"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="BGTemp" setAllPoints="true">

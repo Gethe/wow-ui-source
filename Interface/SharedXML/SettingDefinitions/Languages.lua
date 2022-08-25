@@ -1,23 +1,23 @@
 local function CreateOptions(...)
+	local exists = {};
 	local options = {};
 	for index = 1, select("#", ...) do
 		local locale = select(index, ...);
-		if LocaleUtil.ContainInstructionForLocale(locale) then
+		if not exists[locale] and LocaleUtil.ContainInstructionForLocale(locale) then
+			exists[locale] = true;
 			table.insert(options, {value=locale});
 		end
 	end
 	return options;
 end
 
+-- Always include selected locales even if not available. CreateOptions will skip duplicates.
 local function GetTextLocalesOptions()
-	return CreateOptions(GetAvailableLocales());
+	return CreateOptions(GetCVar("textLocale"), GetAvailableLocales());
 end
 
 local function GetAvailableAudioLocales()
-	if GetCVar("textLocale") == "enUS" then
-		return "enUS";
-	end
-	return "enUS", GetCVar("textLocale");
+	return "enUS", GetCVar("audioLocale"), GetCVar("textLocale");
 end
 
 local function GetAudioLocalesOptions()
@@ -137,6 +137,17 @@ function SettingsLanguagePopoutButtonMixin:UpdateButtonDetails()
 	return result;
 end
 
+LanguageRestartNeededMixin = CreateFromMixins(SettingsListElementMixin);
+
+function LanguageRestartNeededMixin:EvaluateState()
+	local textLocaleCurrent = GetCVar("textLocale");
+	self.RestartNeeded:SetShown(textLocaleCurrent ~= self.data.textLocaleOriginal);
+
+	local value = LocaleUtil.ContainInstructionForLocale(textLocaleCurrent);
+	local texCoordHeight = LocaleUtil.GetInstructionTexCoordHeight();
+	self.RestartNeeded:SetTexCoord(0.0, 1.0, texCoordHeight * value, (texCoordHeight * value) + texCoordHeight);
+end
+
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(LANGUAGES_LABEL);
 
@@ -151,6 +162,12 @@ local function Register()
 	local audioLocaleInitializer = Settings.CreateControlInitializer("SettingsAudioLocaleDropDownTemplate", 
 		audioLocaleSetting, GetAudioLocalesOptions, OPTION_TOOLTIP_AUDIO_LOCALE);
 	layout:AddInitializer(audioLocaleInitializer);
+
+	-- Restart Needed
+	local restartNeededData = { textLocaleOriginal = GetCVar("textLocale") };
+	local restartNeededInitializer = Settings.CreateElementInitializer("SettingsLanguageRestartNeededTemplate", restartNeededData);
+	restartNeededInitializer:SetParentInitializer(textLocaleInitializer);
+	layout:AddInitializer(restartNeededInitializer);
 
 	local function OnTextLocaleChanged(o, setting, value)
 		SetAudioLocaleSettingToDefault(audioLocaleSetting);

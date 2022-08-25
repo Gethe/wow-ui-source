@@ -275,10 +275,14 @@ function ReputationParagonFrame_SetupParagonTooltip(frame)
 	GameTooltip.owner = frame;
 	GameTooltip.factionID = frame.factionID;
 
+	local factionStandingtext;
 	local factionName, _, standingID = GetFactionInfoByID(frame.factionID);
 	local reputationInfo = C_GossipInfo.GetFriendshipReputation(frame.factionID);
-	local factionStandingtext = reputationInfo and reputationInfo.reaction or nil;
-	if not factionStandingtext  then
+	if reputationInfo and reputationInfo.friendshipFactionID > 0 then
+		factionStandingtext = reputationInfo.reaction;
+	elseif C_Reputation.IsMajorFaction(frame.factionID) then
+		factionStandingtext = MAJOR_FACTION_MAX_RENOWN_REACHED;
+	else
 		local gender = UnitSex("player");
 		factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
 	end
@@ -418,7 +422,7 @@ function ReputationBarMixin:OnEnter()
 	
 	if ( self.friendshipID ) then
 		self:ShowFriendshipReputationTooltip(self.friendshipID, "ANCHOR_BOTTOMRIGHT");
-	elseif self.factionID and C_Reputation.IsMajorFaction(self.factionID) then
+	elseif self.factionID and C_Reputation.IsMajorFaction(self.factionID) and not C_MajorFactions.HasMaximumRenown(self.factionID) then
 		self:ShowMajorFactionRenownTooltip();
 	elseif self.Container.Name:IsTruncated() then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -487,17 +491,13 @@ function ReputationBarMixin:ShowMajorFactionRenownTooltip()
 
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
-	if C_MajorFactions.HasMaximumRenown(self.factionID) then
-		GameTooltip_AddHighlightLine(GameTooltip, MAJOR_FACTION_RENOWN_TOOLTIP_ALL_REWARDS_UNLOCKED);
-	else
-		GameTooltip_AddHighlightLine(GameTooltip, MAJOR_FACTION_RENOWN_TOOLTIP_PROGRESS:format(majorFactionData.name));
 
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddHighlightLine(GameTooltip, MAJOR_FACTION_RENOWN_TOOLTIP_PROGRESS:format(majorFactionData.name));
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
-		local nextRenownRewards = C_MajorFactions.GetRenownRewardsForLevel(self.factionID, C_MajorFactions.GetCurrentRenownLevel(self.factionID) + 1);
-		if #nextRenownRewards > 0 then
-			AddRenownRewardsToTooltip(nextRenownRewards);
-		end
+	local nextRenownRewards = C_MajorFactions.GetRenownRewardsForLevel(self.factionID, C_MajorFactions.GetCurrentRenownLevel(self.factionID) + 1);
+	if #nextRenownRewards > 0 then
+		AddRenownRewardsToTooltip(nextRenownRewards);
 	end
 
 	GameTooltip:Show();

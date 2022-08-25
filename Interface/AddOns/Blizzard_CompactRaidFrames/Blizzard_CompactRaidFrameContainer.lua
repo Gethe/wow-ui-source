@@ -1,6 +1,5 @@
 MAX_RAID_GROUPS = 8;
 
-
 local frameCreationSpecifiers = {
 	raid = { mapping = UnitGUID, setUpFunc = DefaultCompactUnitFrameSetup, updateList = "normal"},
 	pet =  { setUpFunc = DefaultCompactMiniFrameSetup, updateList = "mini" },
@@ -9,7 +8,9 @@ local frameCreationSpecifiers = {
 }
 
 --Widget Handlers
-function CompactRaidFrameContainer_OnLoad(self)
+CompactRaidFrameContainerMixin = {};
+
+function CompactRaidFrameContainerMixin:OnLoad()
 	FlowContainer_Initialize(self);	--Congrats! We are now a certified FlowContainer.
 	
 	self:SetClampRectInsets(0, 200 - self:GetWidth(), 10, 0);
@@ -22,14 +23,12 @@ function CompactRaidFrameContainer_OnLoad(self)
 	for i=1, MAX_PARTY_MEMBERS do
 		tinsert(self.partyUnits, "party"..i);
 	end
-	CompactRaidFrameContainer_UpdateDisplayedUnits(self);
+	self:UpdateDisplayedUnits();
 	
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_PET");
 	
-	local unitFrameReleaseFunc = function(frame)
-													CompactUnitFrame_SetUnit(frame, nil);
-												end;
+	local unitFrameReleaseFunc = function(frame) CompactUnitFrame_SetUnit(frame, nil);	end;
 	self.frameReservations = {
 		raid		= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);
 		pet		= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);
@@ -43,80 +42,86 @@ function CompactRaidFrameContainer_OnLoad(self)
 		group = {},
 	}
 
-	self.unitFrameUnusedFunc = function(frame)
-													frame.inUse = false;
-												end;
+	self.unitFrameUnusedFunc = function(frame) frame.inUse = false;	end;
 												
 	self.displayPets = true;
 	self.displayFlaggedMembers = true;
 end
 
-function CompactRaidFrameContainer_OnEvent(self, event, ...)
-	if ( event == "GROUP_ROSTER_UPDATE" ) then
-		CompactRaidFrameContainer_UpdateDisplayedUnits(self);
-		CompactRaidFrameContainer_TryUpdate(self);
-	elseif ( event == "UNIT_PET" ) then
-		if ( self.displayPets ) then
+function CompactRaidFrameContainerMixin:OnEvent(event, ...)
+	if event == "GROUP_ROSTER_UPDATE" then
+		self:UpdateDisplayedUnits();
+		self:TryUpdate();
+	elseif event == "UNIT_PET" then
+		if self.displayPets then
 			local unit = ...;
-			if ( unit == "player" or strsub(unit, 1, 4) == "raid" or strsub(unit, 1, 5) == "party" ) then
-				CompactRaidFrameContainer_TryUpdate(self);
+			if unit == "player" or strsub(unit, 1, 4) == "raid" or strsub(unit, 1, 5) == "party" then
+				self:TryUpdate();
 			end
 		end
 	end
 end
 
-function CompactRaidFrameContainer_OnSizeChanged(self)
+function CompactRaidFrameContainerMixin:OnSizeChanged()
 	FlowContainer_DoLayout(self);
-	CompactRaidFrameContainer_UpdateBorder(self);
+	self:UpdateBorder();
 end
 
 --Externally used functions
-function CompactRaidFrameContainer_SetGroupMode(self, groupMode)
+function CompactRaidFrameContainerMixin:SetGroupMode(groupMode)
 	self.groupMode = groupMode;
-	CompactRaidFrameContainer_TryUpdate(self);
+	self:TryUpdate();
 end
 
-function CompactRaidFrameContainer_SetFlowFilterFunction(self, flowFilterFunc)
+function CompactRaidFrameContainerMixin:GetGroupMode()
+	if not IsInRaid() then
+		return "discrete";
+	else
+		return self.groupMode;
+	end
+end
+
+function CompactRaidFrameContainerMixin:SetFlowFilterFunction(flowFilterFunc)
 	--Usage: flowFilterFunc is called as flowFilterFunc("unittoken") and should return whether this frame should be displayed or not.
 	self.flowFilterFunc = flowFilterFunc;
-	CompactRaidFrameContainer_TryUpdate(self);
+	self:TryUpdate();
 end
 
-function CompactRaidFrameContainer_SetGroupFilterFunction(self, groupFilterFunc)
+function CompactRaidFrameContainerMixin:SetGroupFilterFunction(groupFilterFunc)
 	--Usage: groupFilterFunc is called as groupFilterFunc(groupNum) and should return whether this group should be displayed or not.
 	self.groupFilterFunc = groupFilterFunc;
-	CompactRaidFrameContainer_TryUpdate(self);
+	self:TryUpdate();
 end
 
-function CompactRaidFrameContainer_SetFlowSortFunction(self, flowSortFunc)
+function CompactRaidFrameContainerMixin:SetFlowSortFunction(flowSortFunc)
 	--Usage: Takes two tokens, should work as a Lua sort function.
 	--The ordering must be well-defined, even across units that will be filtered out
 	self.flowSortFunc = flowSortFunc;
-	CompactRaidFrameContainer_TryUpdate(self);
+	self:TryUpdate();
 end
 
-function CompactRaidFrameContainer_SetDisplayPets(self, displayPets)
-	if ( self.displayPets ~= displayPets ) then
+function CompactRaidFrameContainerMixin:SetDisplayPets(displayPets)
+	if self.displayPets ~= displayPets then
 		self.displayPets = displayPets;
-		CompactRaidFrameContainer_TryUpdate(self);
+		self:TryUpdate();
 	end
 end
 
-function CompactRaidFrameContainer_SetDisplayMainTankAndAssist(self, displayFlaggedMembers)
-	if ( self.displayFlaggedMembers ~= displayFlaggedMembers ) then
+function CompactRaidFrameContainerMixin:SetDisplayMainTankAndAssist(displayFlaggedMembers)
+	if self.displayFlaggedMembers ~= displayFlaggedMembers then
 		self.displayFlaggedMembers = displayFlaggedMembers;
-		CompactRaidFrameContainer_TryUpdate(self);
+		self:TryUpdate();
 	end
 end
 
-function CompactRaidFrameContainer_SetBorderShown(self, showBorder)
+function CompactRaidFrameContainerMixin:SetBorderShown(showBorder)
 	self.showBorder = showBorder;
-	CompactRaidFrameContainer_UpdateBorder(self);
+	self:UpdateBorder();
 end
 
-function CompactRaidFrameContainer_ApplyToFrames(self, updateSpecifier, func, ...)
+function CompactRaidFrameContainerMixin:ApplyToFrames(updateSpecifier, func, ...)
 	for specifier, list in pairs(self.frameUpdateList) do
-		if ( updateSpecifier == "all" or specifier == updateSpecifier ) then
+		if updateSpecifier == "all" or specifier == updateSpecifier then
 			for i=1, #list do
 				list[i]:applyFunc(updateSpecifier, func, ...);
 			end
@@ -125,38 +130,39 @@ function CompactRaidFrameContainer_ApplyToFrames(self, updateSpecifier, func, ..
 end
 
 --Internally used functions
-function CompactRaidFrameContainer_TryUpdate(self)
-	if ( CompactRaidFrameContainer_ReadyToUpdate(self) ) then
-		CompactRaidFrameContainer_LayoutFrames(self);
+function CompactRaidFrameContainerMixin:TryUpdate()
+	if self:ReadyToUpdate() then
+		self:LayoutFrames();
 	end
 end
 
-function CompactRaidFrameContainer_ReadyToUpdate(self)
-	if ( not self.groupMode ) then
+function CompactRaidFrameContainerMixin:ReadyToUpdate()
+	local groupMode = self:GetGroupMode();
+	if not groupMode then
 		return false;
 	end
-	if ( self.groupMode == "flush" and not (self.flowFilterFunc and self.flowSortFunc) ) then
+	if groupMode == "flush" and not (self.flowFilterFunc and self.flowSortFunc) then
 		return false;
 	end
-	if ( self.groupMode == "discrete" and not self.groupFilterFunc ) then
+	if groupMode == "discrete" and not self.groupFilterFunc then
 		return false;
 	end
 	
 	return true;
 end
 
-function CompactRaidFrameContainer_UpdateDisplayedUnits(self)
-	if ( IsInRaid() ) then
+function CompactRaidFrameContainerMixin:UpdateDisplayedUnits()
+	if IsInRaid() then
 		self.units = self.raidUnits;
 	else
 		self.units = self.partyUnits;
 	end
 end
 
-function CompactRaidFrameContainer_LayoutFrames(self)
+function CompactRaidFrameContainerMixin:LayoutFrames()
 	--First, mark everything we currently use as unused. We'll hide all the ones that are still unused at the end of this function. (On release)
 	for i=1, #self.flowFrames do
-		if ( type(self.flowFrames[i]) == "table" and self.flowFrames[i].unusedFunc ) then
+		if type(self.flowFrames[i]) == "table" and self.flowFrames[i].unusedFunc then
 			self.flowFrames[i]:unusedFunc();
 		end
 	end
@@ -164,34 +170,30 @@ function CompactRaidFrameContainer_LayoutFrames(self)
 	
 	FlowContainer_PauseUpdates(self);	--We don't want to update it every time we add an item.
 	
-	
-	if ( self.displayFlaggedMembers ) then
-		CompactRaidFrameContainer_AddFlaggedUnits(self);
+	if self.displayFlaggedMembers then
+		self:AddFlaggedUnits();
 		FlowContainer_AddLineBreak(self);
 	end
 	
-	if ( self.groupMode == "discrete" ) then
-		CompactRaidFrameContainer_AddGroups(self);
-	elseif ( self.groupMode == "flush" ) then
-		CompactRaidFrameContainer_AddPlayers(self);
+	if self:GetGroupMode() == "discrete" then
+		self:AddGroups();
 	else
-		error("Unknown group mode");
+		self:AddPlayers();
 	end
 	
-	if ( self.displayPets ) then
-		CompactRaidFrameContainer_AddPets(self);
+	if self.displayPets then
+		self:AddPets();
 	end
 	
 	FlowContainer_ResumeUpdates(self);
 	
-	CompactRaidFrameContainer_UpdateBorder(self);
-	
-	CompactRaidFrameContainer_ReleaseAllReservedFrames(self);
+	self:UpdateBorder();
+	self:ReleaseAllReservedFrames();
 end
 
-function CompactRaidFrameContainer_UpdateBorder(self)
+function CompactRaidFrameContainerMixin:UpdateBorder()
 	local usedX, usedY = FlowContainer_GetUsedBounds(self);
-	if ( self.showBorder and self.groupMode ~= "discrete" and usedX > 0 and usedY > 0 ) then
+	if self.showBorder and self:GetGroupMode() ~= "discrete" and usedX > 0 and usedY > 0 then
 		self.borderFrame:SetSize(usedX + 11, usedY + 13);
 		self.borderFrame:Show();
 	else
@@ -199,32 +201,27 @@ function CompactRaidFrameContainer_UpdateBorder(self)
 	end
 end
 
-do
-	local usedGroups = {}; --Enclosure to make sure usedGroups isn't used anywhere else.
-	function CompactRaidFrameContainer_AddGroups(self)
-	
-		if ( IsInRaid() ) then
-			RaidUtil_GetUsedGroups(usedGroups);
+local usedGroups = {}; --Enclosure to make sure usedGroups isn't used anywhere else.
+function CompactRaidFrameContainerMixin:AddGroups()
+	if IsInRaid() then
+		RaidUtil_GetUsedGroups(usedGroups);
 			
-			for groupNum, isUsed in ipairs(usedGroups) do
-				if ( isUsed and self.groupFilterFunc(groupNum) ) then
-					CompactRaidFrameContainer_AddGroup(self, groupNum);
-				end
+		for groupNum, isUsed in ipairs(usedGroups) do
+			if isUsed and self.groupFilterFunc(groupNum) then
+				self:AddGroup(groupNum);
 			end
-		else
-			CompactRaidFrameContainer_AddGroup(self, "PARTY");
 		end
-		FlowContainer_SetOrientation(self, "vertical")
+	else
+		self:AddGroup("PARTY");
 	end
-	
+	FlowContainer_SetOrientation(self, "vertical")
 end
 
-function CompactRaidFrameContainer_AddGroup(self, id)
-
+function CompactRaidFrameContainerMixin:AddGroup(id)
 	local groupFrame, didCreation;
-	if ( type(id) == "number" ) then
+	if type(id) == "number" then
 		groupFrame, didCreation = CompactRaidGroup_GenerateForGroup(id);
-	elseif ( id == "PARTY" ) then
+	elseif id == "PARTY" then
 		groupFrame, didCreation = CompactPartyFrame_Generate();
 	else
 		GMError("Unknown id");
@@ -233,7 +230,7 @@ function CompactRaidFrameContainer_AddGroup(self, id)
 	groupFrame:SetParent(self);
 	groupFrame:SetFrameStrata("LOW");
 	groupFrame.unusedFunc = groupFrame.Hide;
-	if ( didCreation ) then
+	if didCreation then
 		tinsert(self.frameUpdateList.normal, groupFrame);
 		tinsert(self.frameUpdateList.group, groupFrame);
 	end
@@ -241,48 +238,48 @@ function CompactRaidFrameContainer_AddGroup(self, id)
 	groupFrame:Show();
 end
 
-function CompactRaidFrameContainer_AddPlayers(self)
+function CompactRaidFrameContainerMixin:AddPlayers()
 	--First, sort the players we're going to use
-	assert(self.flowSortFunc);	--No sort function defined! Call CompactRaidFrameContainer_SetFlowSortFunction.
-	assert(self.flowFilterFunc);	--No filter function defined! Call CompactRaidFrameContainer_SetFlowFilterFunction.
+	assert(self.flowSortFunc);		--No sort function defined! Call SetFlowSortFunction.
+	assert(self.flowFilterFunc);	--No filter function defined! Call SetFlowFilterFunction.
 	
 	table.sort(self.units, self.flowSortFunc);
 	
 	for i=1, #self.units do
 		local unit = self.units[i];
-		if ( self.flowFilterFunc(unit) ) then
-			CompactRaidFrameContainer_AddUnitFrame(self, unit, "raid");
+		if self.flowFilterFunc(unit) then
+			self:AddUnitFrame(unit, "raid");
 		end
 	end
 	
 	FlowContainer_SetOrientation(self, "vertical")
 end
 
-function CompactRaidFrameContainer_AddPets(self)
-	if ( IsInRaid() ) then
+function CompactRaidFrameContainerMixin:AddPets()
+	if IsInRaid() then
 		for i=1, MAX_RAID_MEMBERS do
 			local unit = "raidpet"..i;
-			if ( UnitExists(unit) ) then
-				CompactRaidFrameContainer_AddUnitFrame(self, unit, "pet");
+			if UnitExists(unit) then
+				self:AddUnitFrame(unit, "pet");
 			end
 		end
 	else
 		--Add the player's pet.
-		if ( UnitExists("pet") ) then
-			CompactRaidFrameContainer_AddUnitFrame(self, "pet", "pet");
+		if UnitExists("pet") then
+			self:AddUnitFrame("pet", "pet");
 		end
 		for i=1, GetNumSubgroupMembers() do
 			local unit = "partypet"..i;
-			if ( UnitExists(unit) ) then
-				CompactRaidFrameContainer_AddUnitFrame(self, unit, "pet");
+			if UnitExists(unit) then
+				self:AddUnitFrame(unit, "pet");
 			end
 		end
 	end
 end
 
 local flaggedRoles = { "MAINTANK", "MAINASSIST" };
-function CompactRaidFrameContainer_AddFlaggedUnits(self)
-	if ( not IsInRaid() ) then
+function CompactRaidFrameContainerMixin:AddFlaggedUnits()
+	if not IsInRaid() then
 		return;
 	end
 	for roleIndex = 1, #flaggedRoles do
@@ -290,21 +287,18 @@ function CompactRaidFrameContainer_AddFlaggedUnits(self)
 		for i=1, MAX_RAID_MEMBERS do
 			local unit = "raid"..i;
 			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i);
-			if ( role == desiredRole ) then
+			if role == desiredRole then
 				FlowContainer_BeginAtomicAdd(self);	--We want each unit to be right next to its target and target of target.
 				
-				CompactRaidFrameContainer_AddUnitFrame(self, unit, "flagged");
+				self:AddUnitFrame(unit, "flagged");
 				
 				--If we want to display the tank/assist target...
-				local targetFrame = CompactRaidFrameContainer_AddUnitFrame(self, unit.."target", "target");
+				local targetFrame = self:AddUnitFrame(unit.."target", "target");
 				CompactUnitFrame_SetUpdateAllOnUpdate(targetFrame, true);
 				
 				--Target of target?
-				local targetOfTargetFrame = CompactRaidFrameContainer_AddUnitFrame(self, unit.."targettarget", "target");
+				local targetOfTargetFrame = self:AddUnitFrame(unit.."targettarget", "target");
 				CompactUnitFrame_SetUpdateAllOnUpdate(targetOfTargetFrame, true);
-				
-				--Add some space before the next one.
-				--FlowContainer_AddSpacer(self, 36);
 				
 				FlowContainer_EndAtomicAdd(self);
 			end
@@ -313,11 +307,10 @@ function CompactRaidFrameContainer_AddFlaggedUnits(self)
 end
 
 --Utility Functions
-function CompactRaidFrameContainer_AddUnitFrame(self, unit, frameType)
-	local frame = CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType);
+function CompactRaidFrameContainerMixin:AddUnitFrame(unit, frameType)
+	local frame = self:GetUnitFrame(unit, frameType);
 	CompactUnitFrame_SetUnit(frame, unit);
 	FlowContainer_AddObject(self, frame);
-	
 	return frame;
 end
 
@@ -326,7 +319,7 @@ local function applyFunc(unitFrame, updateSpecifier, func, ...)
 end
 
 local unitFramesCreated = 0;
-function CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType)
+function CompactRaidFrameContainerMixin:GetUnitFrame(unit, frameType)
 	local info = frameCreationSpecifiers[frameType];
 	assert(info);
 	assert(info.setUpFunc);
@@ -354,7 +347,7 @@ function CompactRaidFrameContainer_GetUnitFrame(self, unit, frameType)
 	return frame;
 end
 
-function CompactRaidFrameContainer_ReleaseAllReservedFrames(self)
+function CompactRaidFrameContainerMixin:ReleaseAllReservedFrames()
 	for key, reservations in pairs(self.frameReservations) do
 		CompactRaidFrameReservation_ReleaseUnusedReservations(reservations);
 	end

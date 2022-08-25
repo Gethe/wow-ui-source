@@ -353,6 +353,17 @@ local spellTextureKitRegionInfo = {
 	["AmountBorder"] = {formatString = "%s-amount", setVisibility = true, useAtlasSize = true},
 }
 
+local spellBorderColorFromTintValue = {
+	[Enum.SpellDisplayBorderColor.Black] = BLACK_FONT_COLOR,
+	[Enum.SpellDisplayBorderColor.White] = WHITE_FONT_COLOR,
+	[Enum.SpellDisplayBorderColor.Red] = RED_FONT_COLOR,
+	[Enum.SpellDisplayBorderColor.Yellow] = YELLOW_FONT_COLOR,
+	[Enum.SpellDisplayBorderColor.Orange] = ORANGE_FONT_COLOR,
+	[Enum.SpellDisplayBorderColor.Purple] = EPIC_PURPLE_COLOR,
+	[Enum.SpellDisplayBorderColor.Green] = GREEN_FONT_COLOR,
+	[Enum.SpellDisplayBorderColor.Blue] = RARE_BLUE_COLOR,
+}
+
 function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enabledState, width, textureKit)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 	SetupTextureKitsFromRegionInfo(textureKit, self, spellTextureKitRegionInfo);
@@ -373,6 +384,20 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 
 	local iconSize = GetIconSize(spellInfo.iconSizeType);
 	self.Icon:SetSize(iconSize, iconSize);
+
+	local hasBorderColor = true;
+
+	if spellInfo.borderColor ~= Enum.SpellDisplayBorderColor.None then
+		if not hasBorderTexture then
+			self.Border:SetAtlas("dressingroom-itemborder-small-white", false);
+		end
+		local color = spellBorderColorFromTintValue[spellInfo.borderColor];
+		if color then 
+			self.Border:SetVertexColor(color:GetRGB());
+		end
+	else
+		hasBorderColor = false;
+	end
 
 	if not hasBorderTexture then
 		self.Border:SetAtlas("UI-Frame-IconBorder", false);
@@ -412,7 +437,14 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 		self.AmountBorder:Hide();
 	end
 
-	local showBorder = (spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff) or ((spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular) and hasBorderTexture);
+	local showBorder = true;
+	local isBuffOrCircularWithTexture = (spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Buff) or ((spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Circular) and hasBorderTexture);
+	if spellInfo.borderColor ~= Enum.SpellDisplayBorderColor.None then
+		showBorder = hasBorderColor and isBuffOrCircularWithTexture;
+	else
+		showBorder = isBuffOrCircularWithTexture;
+	end
+
 	self.Border:SetShown(showBorder);
 	self.DebuffBorder:SetShown(spellInfo.iconDisplayType == Enum.SpellDisplayIconDisplayType.Debuff);
 	self.IconMask:SetShown(spellInfo.iconDisplayType ~= Enum.SpellDisplayIconDisplayType.Circular);

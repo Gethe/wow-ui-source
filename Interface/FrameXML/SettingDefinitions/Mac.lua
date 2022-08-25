@@ -2,5 +2,5 @@ if IsMacClient() then
 	DefineGameSettingsMacOpenUniversalAccessDialog(StaticPopupDialogs);
 	DefineGameSettingsMacOpenInputMonitoringDialog(StaticPopupDialogs);
 
-	RegisterMacSettings();
+	SettingsRegistrar:AddRegistrant(RegisterMacSettings);
 end

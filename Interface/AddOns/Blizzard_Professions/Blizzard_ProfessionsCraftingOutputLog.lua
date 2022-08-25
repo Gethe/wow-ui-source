@@ -63,6 +63,7 @@ function ProfessionsCraftingOutputLogMixin:OnLoad()
 	
 	local function OnCancel()
 		self:Hide();
+		PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_EXIT);
 	end
 
 	self.CloseButton:SetScript("OnClick", OnCancel);
@@ -197,12 +198,13 @@ function ProfessionsCraftingOutputLogMixin:ProcessSingleCraftingResult(resultDat
 		self.RecraftButton:SetScript("OnClick", function(button)
 			Professions.TransitionToRecraft(resultData.itemGUID);
 			self:Hide();
+			PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_RECRAFT);
 		end);
 	else
 		self.RecraftButton:Hide();
 	end
-	
-	-- Temporarily hiding in all cases.
+
+	-- Temporary
 	self.RecraftButton:Hide();
 end
 

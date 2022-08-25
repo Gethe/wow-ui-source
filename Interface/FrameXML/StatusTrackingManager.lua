@@ -168,6 +168,7 @@ function StatusTrackingManagerMixin:OnLoad()
 	self.bars = {};
 
 	self:RegisterEvent("UPDATE_FACTION");
+	self:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED");
 	self:RegisterEvent("ENABLE_XP_GAIN");
 	self:RegisterEvent("DISABLE_XP_GAIN");
 	self:RegisterEvent("CVAR_UPDATE");

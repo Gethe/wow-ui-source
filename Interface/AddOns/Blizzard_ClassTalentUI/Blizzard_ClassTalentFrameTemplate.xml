@@ -5,7 +5,7 @@
 	<Frame name="ClassTalentFrameTemplate" mixin="ClassTalentFrameMixin" inherits="PortraitFrameTemplate, TabSystemOwnerTemplate" virtual="true">
 		<Size x="1618" y="883"/>
 		<Frames>
-			<Frame parentKey="PortraitOverlay" frameLevel="4000" setAllPoints="true">
+			<Frame parentKey="PortraitOverlay" frameLevel="5000" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="Portrait" file="Interface\TargetingFrame\UI-Classes-Circles">
@@ -44,6 +44,7 @@
 				<KeyValues>
 					<KeyValue key="minTabWidth" value="100" type="number"/>
 					<KeyValue key="maxTabWidth" value="150" type="number"/>
+					<KeyValue key="tabSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_TAB" type="global"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="22" y="2"/>

@@ -134,10 +134,9 @@ function TalentSelectionChoiceMixin:AddTooltipInfo(tooltip)
 end
 
 function TalentSelectionChoiceMixin:AddTooltipCost(tooltip)
+	local combinedCost = self:GetCombinedCost();
 	local selectionChoiceFrame = self:GetParent();
-	local traitCurrenciesCost = selectionChoiceFrame:GetBaseTraitCurrenciesCost();
-	-- TODO:: Add in entry costs.
-	selectionChoiceFrame:GetTalentFrame():AddCostToTooltip(tooltip, traitCurrenciesCost);
+	selectionChoiceFrame:GetTalentFrame():AddCostToTooltip(tooltip, combinedCost);
 end
 
 function TalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
@@ -191,12 +190,19 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 	return self:IsChoiceAvailable() and TalentButtonUtil.BaseVisualState.Selectable or TalentButtonUtil.BaseVisualState.Disabled;
 end
 
-function TalentSelectionChoiceMixin:CanAffordChoice()
-	-- TODO:: Add in entry-specific costs, self:GetEntryID()
-
+function TalentSelectionChoiceMixin:GetCombinedCost()
 	local selectionChoiceFrame = self:GetParent();
 	local traitCurrenciesCost = selectionChoiceFrame:GetBaseTraitCurrenciesCost();
-	return selectionChoiceFrame:GetTalentFrame():CanAfford(traitCurrenciesCost);
+	local talentFrame = selectionChoiceFrame:GetTalentFrame();
+	local entryInfo = talentFrame:GetAndCacheEntryInfo(self:GetEntryID());
+	local combinedCost = TalentUtil.CombineCostArrays(traitCurrenciesCost, entryInfo.entryCost);
+	return combinedCost;
+end
+
+function TalentSelectionChoiceMixin:CanAffordChoice()
+	local combinedCost = self:GetCombinedCost();
+	local selectionChoiceFrame = self:GetParent();
+	return selectionChoiceFrame:GetTalentFrame():CanAfford(combinedCost);
 end
 
 function TalentSelectionChoiceMixin:IsChoiceAvailable()

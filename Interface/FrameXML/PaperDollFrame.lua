@@ -1645,6 +1645,7 @@ function PaperDollItemSlotButton_Update(self)
 	local quality = GetInventoryItemQuality("player", self:GetID());
 	local suppressOverlays = self.HasPaperDollAzeriteItemOverlay;
 	SetItemButtonQuality(self, quality, GetInventoryItemID("player", self:GetID()), suppressOverlays);
+	SetItemCraftingQualityOverlay(self, GetInventoryItemLink("player", self:GetID()));
 
 	if (not PaperDollFrame.EquipmentManagerPane:IsShown()) then
 		self.ignored = nil;

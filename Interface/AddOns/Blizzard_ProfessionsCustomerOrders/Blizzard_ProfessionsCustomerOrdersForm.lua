@@ -273,10 +273,6 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 			table.insert(slots, slot);
 
 			slot:SetParent(slotParents[reagentType]);
-			
-			if not order.committed then
-				slot:SetQuantityAvailableCallback(Professions.AccumulateReagentsInPossession);
-			end
 
 			slot:Init(transaction, reagentSlotSchematic);
 			slot:Show();
@@ -308,7 +304,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 								self.QualityDialog:RegisterCallback(ProfessionsQualityDialogMixin.Event.Accepted, OnAllocationsAccepted, slot);
 								
 								local allocationsCopy = transaction:GetAllocationsCopy(slotIndex);
-								self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy);
+								self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex);
 							elseif buttonName == "RightButton" then
 								transaction:ClearAllocations(slotIndex);
 

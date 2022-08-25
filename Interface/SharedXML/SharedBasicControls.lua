@@ -197,7 +197,7 @@ function ScriptErrorsFrameMixin:DisplayMessageInternal(msg, warnType, keepHidden
 		self.locals[index] = locals;
 		self.warnType[index] = (warnType or false); --Use false instead of nil
 
-		PrintToDebugWindow(EXCEPTION_FORMAT:format(msg or "", locals or ""));
+		PrintToDebugWindow(msg);
 	end
 
 	if ( not self:IsShown() and not keepHidden ) then

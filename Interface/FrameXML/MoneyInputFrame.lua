@@ -36,7 +36,7 @@ function MoneyInputFrame_GetCopper(moneyFrame)
 	local copper = moneyFrame.copper:GetText();
 	local silver = moneyFrame.silver:GetText();
 	local gold = moneyFrame.gold:GetText();
-	
+
 	if ( copper ~= "" ) then
 		totalCopper = totalCopper + copper;
 	end
@@ -118,7 +118,7 @@ function MoneyInputFrame_OnTextChanged(self)
 			self.texture:SetAlpha(1);
 			self.label:SetAlpha(1);
 		end
-	end	
+	end
 	if ( moneyFrame.onValueChangedFunc ) then
 		moneyFrame.onValueChangedFunc();
 	end
@@ -197,7 +197,7 @@ function MoneyInputFrame_OnShow(moneyFrame)
 			moneyFrame.fixedCopper.texture:Show();
 			moneyFrame.fixedSilver.label:Hide();
 			moneyFrame.fixedCopper.label:Hide();
-		end		
+		end
 	end
 	if ( moneyFrame.goldOnly ) then
 		moneyFrame.copper.texture:Hide();
@@ -214,6 +214,11 @@ function MoneyInputFrame_OnShow(moneyFrame)
 end
 
 function MoneyInputFrame_OpenPopup(moneyFrame)
+	if moneyFrame.showCurrencyTracking then
+		ToggleCharacter("TokenFrame");
+		return;
+	end
+
 	if ( popupOwner ) then
 		popupOwner.hasPickup = 0;
 	end
@@ -242,7 +247,7 @@ LargeMoneyInputBoxMixin = {};
 
 function LargeMoneyInputBoxMixin:OnLoad()
 	self:SetFontObject("PriceFont");
-	
+
 	if self.iconAtlas then
 		self.Icon:SetAtlas(self.iconAtlas);
 	end
@@ -271,7 +276,7 @@ function LargeMoneyInputFrameMixin:OnLoad()
 		self.CopperBox:Hide();
 		self.SilverBox:ClearAllPoints();
 		self.SilverBox:SetPoint("RIGHT", self.CopperBox, "RIGHT");
-	
+
 		self.GoldBox.nextEditBox = self.SilverBox;
 		self.SilverBox.previousEditBox = self.GoldBox;
 		self.SilverBox.nextEditBox = self.nextEditBox;

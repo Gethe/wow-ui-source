@@ -2,7 +2,8 @@
 local dialBaseAngle = 1.4;
 
 function ProfessionDial_GetRelativeRotation(currRank, maxRank, inPct)
-	local rads = (currRank / maxRank) * (2 * math.pi - dialBaseAngle) + (dialBaseAngle / 2);
+	local finalPipRotation = 5.61; -- Final pip has hard-coded rotation due to offset in art
+	local rads = (currRank == maxRank) and finalPipRotation or (currRank / maxRank) * (2 * math.pi - dialBaseAngle) + (dialBaseAngle / 2);
 	return inPct and rads / (2 * math.pi) or rads;
 end
 
@@ -157,6 +158,7 @@ function ProfessionsSpecPathMixin:OnLoad()
 	self:SetAndApplySize(self.iconSize, self.iconSize);
 	self.ProgressBar:SetSize(self.progressBarSizeX, self.progressBarSizeY);
 	self.StateBorder:SetShown(false);
+	self.selectSound = SOUNDKIT.UI_PROFESSION_SPEC_PATH_SPEND;
 
 	if not self.isDetailedView then
 		local function PathSelectedCallback(_, selectedID)
@@ -180,23 +182,26 @@ function ProfessionsSpecPathMixin:OnClick(button, down) -- Override
 	if not self.isDetailedView and not self:GetTalentFrame():AnyPopupShown() then
 		if not self.selected then
 			EventRegistry:TriggerEvent("ProfessionsSpecializations.PathSelected", self:GetTalentNodeID());
-		elseif button == "LeftButton" and IsShiftKeyDown() then
+		elseif button == "LeftButton" and IsShiftKeyDown() and self:CanPurchaseRank() then
 			local talentFrame = self:GetTalentFrame();
 			if talentFrame:GetRootNodeID() == self:GetTalentNodeID() and self.state == Enum.ProfessionsSpecPathState.Locked then
 				talentFrame:CheckConfirmPurchaseTab();
 			else
-				if self:CanPurchaseRank() then
-					if self.state == Enum.ProfessionsSpecPathState.Locked then
-						talentFrame:PlayDialLockInAnimation();
-					else
-						PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_SPEND);
-					end
-					self:PurchaseRank();
-				end
+				self:PurchaseRank();
 			end
 		end
 		self:OnEnter();
 	end
+end
+
+function ProfessionsSpecPathMixin:PurchaseRank() -- Override
+	if self.state == Enum.ProfessionsSpecPathState.Locked then
+		self:GetTalentFrame():PlayDialLockInAnimation();
+	else
+		self:PlaySelectSound();
+	end
+	self:GetTalentFrame():PurchaseRank(self:GetTalentNodeID());
+	self:CheckTooltip();
 end
 
 function ProfessionsSpecPathMixin:GetConfigID()

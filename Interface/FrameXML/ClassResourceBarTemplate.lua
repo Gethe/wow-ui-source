@@ -38,6 +38,7 @@ end
 function ClassResourceBarMixin:OnEvent(event, arg1, arg2)
 	if(event == "PLAYER_LEVEL_UP") then 
 		local unit = self.unit or self:GetParent().unit; 
+		unit = unit or "player";
 		if(self.requiredShownLevel and UnitLevel(unit) >= self.requiredShownLevel) then
 			self:UnregisterEvent("PLAYER_LEVEL_UP");
 			self:HandleBarSetup();
@@ -82,6 +83,7 @@ function ClassResourceBarMixin:Setup()
 
 	if showBar then
 		local unit = self.unit or self:GetParent().unit;
+		unit = unit or "player";
 		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit);
 		self:RegisterUnitEvent("UNIT_MAXPOWER", unit);
 		self:RegisterUnitEvent("UNIT_POWER_POINT_CHARGE", unit);
@@ -103,6 +105,7 @@ function ClassResourceBarMixin:UpdateMaxPower()
 	self.classResourceButtonTable = { };
 
 	local unit = self.unit or self:GetParent().unit;
+	unit = unit or "player"; 
 	self.maxUsablePoints = UnitPowerMax(unit, self.powerType);
 	for i = 1, self.maxUsablePoints do
 		local resourcePoint = self.classResourceButtonPool:Acquire(); 

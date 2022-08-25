@@ -3,12 +3,8 @@
 	<Script file="CompactPartyFrame.lua"/>
 	<Frame name="CompactPartyFrameTemplate" inherits="CompactRaidGroupTemplate" virtual="true">
 		<Scripts>
-			<OnLoad>
-				CompactPartyFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				--Overriding the RaidGroup OnEvent.
-			</OnEvent>
+			<OnLoad function="CompactPartyFrame_OnLoad"/>
+			<OnEvent function="CompactPartyFrame_RefreshMembers"/>
 		</Scripts>
 	</Frame>
 </Ui>

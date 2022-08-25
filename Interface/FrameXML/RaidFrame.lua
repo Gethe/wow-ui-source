@@ -22,7 +22,7 @@ function RaidFrame_OnLoad(self)
 	self:RegisterEvent("PARTY_LFG_RESTRICTED");
 
 	-- Update party frame visibility
-	RaidOptionsFrame_UpdatePartyFrames();
+	UpdateRaidAndPartyFrames();
 	RaidFrame_Update();
 
 	-- Used in ChatFrame.lua
@@ -128,15 +128,14 @@ function RaidFrame_ConvertToRaid()
 	C_PartyInfo.ConvertToRaid();
 end
 
--- Function for raid options
-function RaidOptionsFrame_UpdatePartyFrames()
-	PartyFrame:HidePartyFrame();
+function UpdateRaidAndPartyFrames()
+	PartyFrame:HidePartyFrames();
 
-	if ( GetDisplayedAllyFrames() == "party" ) then
-		PartyFrame:ShowPartyFrame();
+	if CompactRaidFrameManager_UpdateShown then
+		CompactRaidFrameManager_UpdateShown();
 	end
 
-	PartyFrame:UpdatePartyMemberBackground();
+	PartyFrame:UpdatePartyFrame();
 end
 
 function RaidInfoFrame_InitButton(button, elementData)

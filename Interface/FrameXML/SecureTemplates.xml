@@ -17,7 +17,7 @@
 	<!-- A template that can perform secure actions outside of combat -->
 	<Button name="InsecureActionButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick> if not InCombatLockdown() then SecureActionButton_OnClick(self, button, down); end</OnClick>
+			<OnClick> if not InCombatLockdown() then SecureActionButton_OnClick(self, button, down, false); end</OnClick>
 		</Scripts>
 	</Button>
 

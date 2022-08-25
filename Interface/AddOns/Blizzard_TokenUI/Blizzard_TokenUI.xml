@@ -198,7 +198,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Button name="BackpackTokenTemplate" hidden="true" virtual="true">
+	<Button name="BackpackTokenTemplate" mixin="BackpackTokenMixin" hidden="true" virtual="true">
 		<Size x="50" y="12"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -218,18 +218,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetBackpackToken(self:GetID());
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnClick>
-				if ( IsModifiedClick("CHATLINK") ) then
-					HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyLink(self.currencyID));
-				end
-			</OnClick>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 	<Frame name="BackpackTokenFrameTemplate" mixin="BackpackTokenFrameMixin" virtual="true">

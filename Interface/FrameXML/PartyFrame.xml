@@ -4,7 +4,12 @@
 	<Script file="PartyFrame.lua"/>
 	<Script file="TextStatusBar.lua"/>
 	<Include file="PartyFrameTemplates.xml"/>
-	<Frame name="PartyFrame" mixin="PartyFrameMixin" inherits="VerticalLayoutFrame" frameStrata="LOW" parent="UIParent" toplevel="true">
+	<Frame name="PartyFrame" mixin="PartyFrameMixin" inherits="VerticalLayoutFrame, EditModeUnitFrameSystemTemplate" frameStrata="LOW" parent="UIParent" toplevel="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Party" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PARTY_FRAMES_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="Background" mixin="PartyMemberBackgroundMixin" hidden="true" inherits="BackdropTemplate">
 				<Size x="144" y="10"/>
@@ -30,8 +35,9 @@
 			<KeyValue key="spacing" value="10" type="number"/>
 		</KeyValues>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 	<Frame name="PartyMemberBuffTooltip" mixin="PartyMemberBuffTooltipMixin" frameStrata="TOOLTIP" hidden="true" inherits="TooltipBackdropTemplate">

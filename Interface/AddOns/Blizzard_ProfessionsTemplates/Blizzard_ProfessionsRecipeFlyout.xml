@@ -1,0 +1,49 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsRecipeFlyout.lua"/>
+
+	<ItemButton name="ProfessionsItemFlyoutButtonTemplate" mixin="ProfessionsItemFlyoutButtonMixin" virtual="true">
+		<Size x="37" y="37"/>
+	</ItemButton>
+	
+	<Frame name="ProfessionsItemFlyoutTemplate" mixin="ProfessionsItemFlyoutMixin" inherits="TooltipBackdropTemplate" virtual="true">
+		<Size x="200" y="150"/>
+		<KeyValues>
+			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER">
+					<Size x="200" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="15" y="-15"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="-2"/>
+				</Anchors>
+			</EventFrame>
+			<CheckButton parentKey="HideUnownedCheckBox" inherits="UICheckButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="11" y="6"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

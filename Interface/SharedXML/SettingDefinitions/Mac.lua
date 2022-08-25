@@ -47,10 +47,6 @@ function DefineGameSettingsMacOpenInputMonitoringDialog(dialogTable)
 		button2 = NO,
 		OnAccept = function()
 			MacOptions_OpenInputMonitoring();
-			Settings.OpenToCategory(MAC_SETTINGS_LABEL);
-		end,
-		OnCancel = function()
-			Settings.OpenToCategory(MAC_SETTINGS_LABEL);
 		end,
 		OnShow = function(self)
 			if (MacOptions_HasNewStyleInputMonitoring()) then

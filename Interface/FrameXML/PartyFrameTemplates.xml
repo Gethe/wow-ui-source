@@ -13,7 +13,7 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
-	<Frame name="PartyDebuffFrameTemplate" mixin="PartyDebuffFrameMixin" parentArray="debuffFrames" virtual="true" enableMouse="true" hidden="true">
+	<Frame name="PartyDebuffFrameTemplate" mixin="PartyDebuffFrameMixin" parentArray="debuffFrames" virtual="true" enableMouse="true" frameLevel="6" hidden="true">
 		<Size x="15" y="15"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -50,23 +50,16 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
-	<Frame name="PartyPetDebuffFrameTemplate" inherits="PartyDebuffFrameTemplate" virtual="true" hidden="true"/>
-	<Button name="PartyMemberPetFrameTemplate" mixin="PartyMemberPetFrameMixin" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true">
-		<Size x="64" y="26"/>
+	<Frame name="PartyPetDebuffFrameTemplate" inherits="PartyDebuffFrameTemplate" virtual="true" hidden="true">
+		<Size x="5" y="5"/>
+	</Frame>
+	<Button name="PartyMemberPetFrameTemplate" mixin="PartyMemberPetFrameMixin" frameStrata="LOW" inherits="SecureUnitButtonTemplate" virtual="true">
+		<Size x="64" y="23"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="20" y="-47"/>
 		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="3" right="33" top="3" bottom="3"/>
-		</HitRectInsets>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Flash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
-					<Size x="64" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-1" y="1"/>
-					</Anchors>
-				</Texture>
+			<Layer level="BACKGROUND">
 				<Texture parentKey="Portrait">
 					<Size x="18" y="18"/>
 					<Anchors>
@@ -74,44 +67,40 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Texture" atlas="ui-hud-unitframe-partyframe" useAtlasSize="true" scale="0.5">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Flash" atlas="ui-hud-unitframe-partyframe-flash" useAtlasSize="true" hidden="true" scale="0.5">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="25" y="21"/>
+					</Anchors>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="PartyMemberPetOverlay" setAllPoints="true">
-				<Frames>
-					<Frame parentKey="Info" setAllPoints="true">
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Texture" file="Interface\TargetingFrame\UI-PartyFrame">
-									<Size x="64" y="32"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="0" y="-1"/>
-									</Anchors>
-								</Texture>
-								<FontString parentKey="Name" inherits="GameFontNormalSmall">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="25" y="21"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
-			</Frame>
-			<StatusBar parentKey="HealthBar" inherits="TextStatusBar">
-				<Size x="35" y="4"/>
+			<StatusBar parentKey="HealthBar" inherits="TextStatusBar" scale="0.5">
+				<Size x="71" y="10"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="23" y="-6"/>
+					<Anchor point="TOPLEFT" x="43" y="-18"/>
 				</Anchors>
 				<Scripts>
 					<OnValueChanged>
 						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarTexture atlas="ui-hud-unitframe-partyframe-bar-health"/>
 			</StatusBar>
 			<Button parentKey="Debuff1" inherits="PartyPetDebuffFrameTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="24" y="-16"/>
+					<Anchor point="TOPLEFT" x="24" y="-20"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Debuff2" inherits="PartyPetDebuffFrameTemplate" id="2">
@@ -138,34 +127,40 @@
 		</Scripts>
 	</Button>
 	<Button name="PartyMemberFrameTemplate" mixin="PartyMemberFrameMixin" hidden="true" inherits="SecureUnitButtonTemplate" virtual="true">
-		<Size x="128" y="53"/>
-		<HitRectInsets>
-			<AbsInset left="7" right="85" top="6" bottom="7"/>
-		</HitRectInsets>
+		<Size x="120" y="53"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Flash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
-					<Size x="128" y="64"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="2"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="Portrait">
 					<Size x="37" y="37"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Background">
-					<Size x="83" y="23"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="45" y="-17"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.5"/>
-				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
+				<Texture parentKey="Texture" atlas="ui-hud-unitframe-partyframe" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="VehicleTexture" file="Interface\Vehicles\UI-Vehicles-PartyFrame" hidden="true">
+					<Size x="128" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Flash" atlas="ui-hud-unitframe-partyframe-flash" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="60" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="43" y="-6"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
@@ -184,117 +179,80 @@
 				</Anchors>
 			</Frame>
 			<Frame parentKey="PartyMemberOverlay" setAllPoints="true">
-				<Frames>
-					<Frame parentKey="Info" setAllPoints="true">
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-								<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-								<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-								<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-								<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
-							</Layer>
-							<Layer level="BORDER">
-								<Texture parentKey="Texture" atlas="ui-hud-unitframe-player-portraiton">
-									<Size x="128" y="46"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="2" y="-2"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="VehicleTexture" file="Interface\Vehicles\UI-Vehicles-PartyFrame" hidden="true">
-									<Size x="128" y="64"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-6" y="6"/>
-									</Anchors>
-								</Texture>
-								<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="50" y="40"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="HealthBarText" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="CENTER" x="25" y="3"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="HealthBarTextLeft" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="LEFT" x="47" y="3"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="HealthBarTextRight" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="RIGHT" x="-5" y="3"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="ManaBarText" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="CENTER" x="25" y="-7"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="ManaBarTextLeft" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="LEFT" x="47" y="-7"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="ManaBarTextRight" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="RIGHT" x="-5" y="-7"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Status" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
-									<Size x="36" y="36"/>
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.$parent.$parent.Portrait" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
-								</Texture>
-								<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
-								<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
-							</Layer>
-							<Layer level="OVERLAY">
-								<Texture parentKey="LeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
-									<Size x="16" y="16"/>
-									<Anchors>
-										<Anchor point="BOTTOM" relativePoint="TOP" x="-5" y="-3"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="GuideIcon" atlas="newplayerchat-chaticon-guide" hidden="true">
-									<Size x="12" y="12"/>
-									<Anchors>
-										<Anchor point="BOTTOM" relativePoint="TOP" x="-5" y="-3"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="PVPIcon" hidden="true">
-									<Size x="32" y="32"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-9" y="-15"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="Disconnect" file="Interface\CharacterFrame\Disconnect-Icon" hidden="true">
-									<Size x="64" y="64"/>
-									<Anchors>
-										<Anchor point="LEFT" x="-7" y="-1"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="RoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
-									<Size x="19" y="19"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="7" y="-33"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+						<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+						<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+						<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+						<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Status" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
+							<Size x="37" y="37"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Portrait" x="-1" y="-1"/>
+							</Anchors>
+							<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
+						</Texture>
+						<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+						<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="LeaderIcon" atlas="ui-hud-unitframe-player-group-leadericon" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="-10" y="-6"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GuideIcon" atlas="ui-hud-unitframe-player-group-guideicon" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="-10" y="-6"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PVPIcon" scale="0.6" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="24" y="-68"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Disconnect" file="Interface\CharacterFrame\Disconnect-Icon" hidden="true">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-7" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RoleIcon" hidden="true">
+							<Size x="12" y="12"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 			<StatusBar parentKey="HealthBar" inherits="TextStatusBar">
-				<Size x="83" y="15"/>
+				<Size x="71" y="10"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="43" y="-17"/>
+					<Anchor point="TOPLEFT" x="44" y="-19"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="CenterText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="LeftText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="RightText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						TextStatusBar_Initialize(self);
@@ -302,6 +260,12 @@
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
 					</OnLoad>
+					<OnEnter inherit="prepend">
+						self:GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave inherit="prepend">
+						self:GetParent():OnLeave();
+					</OnLeave>
 					<OnMouseUp>
 						self:GetParent():Click(button);
 					</OnMouseUp>
@@ -313,13 +277,32 @@
 						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
 					</OnSizeChanged>
 				</Scripts>
-				<BarTexture atlas="ui-hud-unitframe-player-portraitoff-bar-health"/>
+				<BarTexture atlas="ui-hud-unitframe-partyframe-bar-health"/>
 			</StatusBar>
 			<StatusBar parentKey="ManaBar" inherits="TextStatusBar">
-				<Size x="83" y="8"/>
+				<Size x="71" y="7"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="43" y="-32"/>
+					<Anchor point="TOPLEFT" x="44" y="-30"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="CenterText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="LeftText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="RightText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						TextStatusBar_Initialize(self);
@@ -327,12 +310,17 @@
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
 					</OnLoad>
+					<OnEnter inherit="prepend">
+						self:GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave inherit="prepend">
+						self:GetParent():OnLeave();
+					</OnLeave>
 					<OnMouseUp>
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
-				<BarTexture atlas="ui-hud-unitframe-player-portraitoff-bar-mana"/>
-				<BarColor r="0" g="0" b="1.0"/>
+				<BarTexture atlas="ui-hud-unitframe-partyframe-bar-mana"/>
 			</StatusBar>
 			<Frame parentKey="ReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
 				<Anchors>
@@ -366,9 +354,10 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
+			<Button parentKey="PetFrame" inherits="PartyMemberPetFrameTemplate"/>
 			<Button parentKey="Debuff1" inherits="PartyDebuffFrameTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="48" y="-43"/>
+					<Anchor point="TOPLEFT" x="48" y="-40"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Debuff2" inherits="PartyDebuffFrameTemplate" id="2">
@@ -386,7 +375,6 @@
 					<Anchor point="LEFT" relativeKey="$parent.Debuff3" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="PetFrame" inherits="PartyMemberPetFrameTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnEvent method="OnEvent"/>

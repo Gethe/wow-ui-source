@@ -131,7 +131,7 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.ItemRecrafting then
 			local recipeID = ProfessionsFrame:GetCurrentRecraftingRecipeID();
-			if recipeID and C_TradeSkillUI.IsItemRecraftCandidate(itemLocation, recipeID) then
+			if recipeID and C_TradeSkillUI.DoesRecraftingRecipeAcceptItem(itemLocation, recipeID) then
 				return ItemButtonUtil.ItemContextMatchResult.Match;
 			end
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
@@ -267,15 +267,6 @@ function ItemUtil.TransformItemLocationsToItems(itemLocations)
 	return items;
 end
 
-function ItemUtil.TransformItemGUIDsToItemIDs(itemGUIDs)
-	local itemIDs = {};
-	for index, itemGUID in ipairs(itemGUIDs) do
-		local itemID = C_Item.GetItemIDByGUID(itemGUID);
-		table.insert(itemIDs, itemID);
-	end
-	return itemIDs;
-end
-
 function ItemUtil.TransformItemGUIDToItem(itemGUID)
 	if itemGUID and C_Item.IsItemGUIDInInventory(itemGUID) then
 		local itemLocation = C_Item.GetItemLocation(itemGUID);
@@ -285,8 +276,14 @@ function ItemUtil.TransformItemGUIDToItem(itemGUID)
 end
 
 function ItemUtil.TransformItemGUIDsToItems(itemGUIDs)
-	local itemIDs = ItemUtil.TransformItemGUIDsToItemIDs(itemGUIDs);
-	return ItemUtil.TransformItemIDsToItems(itemIDs);
+	local items = {};
+	for index, itemGUID in ipairs(itemGUIDs) do
+		local item = ItemUtil.TransformItemGUIDToItem(itemGUID);
+		if item then
+			table.insert(items, item);
+		end
+	end
+	return items;
 end
 
 ItemTransmogInfoMixin = {};

@@ -94,6 +94,20 @@ function PTR_IssueReporter.SetupUnitTooltips()
             end
         end
     end)
+    
+    local bindingFunc = function(sender, name, guid)
+        if (name) and (guid) then
+            local id = select(6, strsplit("-", guid))
+            
+            --The actual method that sets the tooltip is in c++, so we can't fire a lua event during the set process, only just before
+            --the delay is to make sure the hook isn't until after the tooltip has been built
+            C_Timer.After(0.1, function()
+                PTR_IssueReporter.HookIntoTooltip(ItemRefTooltip, PTR_IssueReporter.TooltipTypes.unit, id, name)
+            end)
+        end
+    end
+
+    EventRegistry:RegisterCallback("ItemRefTooltip.UnitSet", bindingFunc, "JiraIntegration")
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupQuestTooltips()

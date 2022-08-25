@@ -5,6 +5,14 @@ local function showAsPercentage(value)
 	return FormatPercentage(value / 100, roundToNearestInteger);
 end
 
+local function ConvertValuePercentage(self, value, forDisplay)
+	if forDisplay then
+		return self:ClampValue((value * self.stepSize) + self.minValue);
+	else
+		return (value - self.minValue) / self.stepSize;
+	end
+end
+
 -- The ordering of the setting display info tables in here affects the order settings show in the system setting dialog
 EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	-- Action Bar Settings
@@ -49,13 +57,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			minValue = 50,
 			maxValue = 200,
 			stepSize = 10,
-			ConvertValue = function(self, value, forDisplay)
-				if forDisplay then
-					return self:ClampValue((value * 10) + 50);
-				else
-					return (value - 50) / 10;
-				end
-			end,
+			ConvertValue = ConvertValuePercentage,
 			formatter = showAsPercentage,
 		},
 
@@ -79,6 +81,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 				{value = Enum.ActionBarVisibleSetting.Always, text = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING_ALWAYS},
 				{value = Enum.ActionBarVisibleSetting.InCombat, text = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING_IN_COMBAT},
 				{value = Enum.ActionBarVisibleSetting.OutOfCombat, text = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING_OUT_OF_COMBAT},
+				{value = Enum.ActionBarVisibleSetting.Hidden, text = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING_HIDDEN},
 			},
 		},
 
@@ -132,13 +135,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			minValue = 100,
 			maxValue = 150,
 			stepSize = 10,
-			ConvertValue = function(self, value, forDisplay)
-				if forDisplay then
-					return self:ClampValue((value * 10) + 100);
-				else
-					return (value - 100) / 10;
-				end
-			end,
+			ConvertValue = ConvertValuePercentage,
 			formatter = showAsPercentage,
 		},
 
@@ -180,6 +177,27 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_USE_LARGER_FRAME,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
+
+		-- Use Raid Style Party Frames
+		{
+			setting = Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_RAID_STYLE_PARTY_FRAMES,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Party Frame Background
+		{
+			setting = Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SHOW_PARTY_FRAME_BACKGROUND,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Use Horizontal Groups
+		{
+			setting = Enum.EditModeUnitFrameSetting.UseHorizontalGroups,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_USE_HORIZONTAL_GROUPS,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
 	},
 
 	[Enum.EditModeSystem.EncounterBar] =
@@ -189,6 +207,93 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 	[Enum.EditModeSystem.ExtraAbilities] =
 	{
+
+	},
+
+	[Enum.EditModeSystem.AuraFrame] =
+	{
+		-- Orientation
+		{
+			setting = Enum.EditModeAuraFrameSetting.Orientation,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_ORIENTATION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.AuraFrameOrientation.Horizontal, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_ORIENTATION_HORIZONTAL},
+				{value = Enum.AuraFrameOrientation.Vertical, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_ORIENTATION_VERTICAL},
+			},
+		},
+
+		-- IconWrap
+		{
+			setting = Enum.EditModeAuraFrameSetting.IconWrap,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_WRAP,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.AuraFrameIconDirection.Down, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_WRAP_DOWN},
+				{value = Enum.AuraFrameIconDirection.Up, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_WRAP_UP},
+			},
+		},
+
+		-- IconDirection
+		{
+			setting = Enum.EditModeAuraFrameSetting.IconDirection,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.AuraFrameIconDirection.Left, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_LEFT},
+				{value = Enum.AuraFrameIconDirection.Right, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_RIGHT},
+			},
+		},
+
+		-- IconSize
+		{
+			setting = Enum.EditModeAuraFrameSetting.IconSize,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValuePercentage,
+			formatter = showAsPercentage,
+		},
+
+		-- IconPadding
+		{
+			setting = Enum.EditModeAuraFrameSetting.IconPadding,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_PADDING,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 5,
+			maxValue = 15,
+			stepSize = 1,
+		},
+
+		-- IconLimit
+		{
+			setting = Enum.EditModeAuraFrameSetting.IconLimitBuffFrame,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_LIMIT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 1,
+			maxValue = 32,
+			stepSize = 1,
+		},
+		{
+			setting = Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_LIMIT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 1,
+			maxValue = 16,
+			stepSize = 1,
+		},
+
+		-- ShowFull
+		{
+			setting = Enum.EditModeAuraFrameSetting.ShowFull,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_SHOW_FULL,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
 
 	},
 };

@@ -82,6 +82,11 @@ function GenericTraitFrameMixin:OnEvent(event, ...)
 	end
 end
 
+function GenericTraitFrameMixin:SetSystemID(systemID)
+	local configID = C_Traits.GetConfigIDBySystemID(systemID);
+	self:SetConfigID(configID);
+end
+
 function GenericTraitFrameMixin:SetTreeID(traitTreeID)
 	self.traitTreeID = traitTreeID;
 
@@ -141,7 +146,7 @@ function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo)
 	return TotalFrameLevelSpread - scaledYOffset;
 end
 
-function GenericTraitFrameMixin:PurchaseRank(nodeID, entryID)
+function GenericTraitFrameMixin:PurchaseRank(nodeID)
 	-- Overrides TalentFrameBaseMixin.
 
 	local referenceKey = self;
@@ -153,7 +158,7 @@ function GenericTraitFrameMixin:PurchaseRank(nodeID, entryID)
 	local costStrings = self:GetCostStrings(cost);
 	local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
 
-	local purchaseRankCallback = GenerateClosure(TalentFrameBaseMixin.PurchaseRank, self, nodeID, entryID);
+	local purchaseRankCallback = GenerateClosure(TalentFrameBaseMixin.PurchaseRank, self, nodeID);
 	local customData = {
 		text = costString,
 		callback = purchaseRankCallback,

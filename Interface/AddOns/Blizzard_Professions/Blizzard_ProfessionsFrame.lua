@@ -147,7 +147,7 @@ end
 function ProfessionsMixin:Refresh()
 	local professionInfo = self:GetProfessionInfo();
 
-	self:SetTitle(professionInfo.displayName);
+	self:SetTitle(professionInfo.professionName or professionInfo.parentProfessionName);
 	self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(professionInfo.professionID));
 	self:SetProfessionType(Professions.GetProfessionType(professionInfo));
 
@@ -265,13 +265,16 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	end
 	TabSystemOwnerMixin.SetTab(self, tabID);
 	self:SetWidth(pageWidth);
+	UpdateUIPanelPositions(self);
 end
 
 function ProfessionsMixin:OnShow()
+	EventRegistry:TriggerEvent("ItemButton.UpdateCraftedProfessionQualityShown");
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_OPEN);
 end
 
 function ProfessionsMixin:OnHide()
+	EventRegistry:TriggerEvent("ItemButton.UpdateCraftedProfessionQualityShown");
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Professions);
 	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
 	

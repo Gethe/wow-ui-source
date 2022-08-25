@@ -33,8 +33,8 @@ local SpecIDToBackgroundAtlas = {
 
 	-- Monk
 	[268] = "talents-background-monk-brewmaster",
-	[270] = "talents-background-monk-windwalker",
-	[269] = "talents-background-monk-mistweaver",
+	[269] = "talents-background-monk-windwalker",
+	[270] = "talents-background-monk-mistweaver",
 
 	-- Paladin
 	[65] = "talents-background-paladin-holy",
@@ -124,6 +124,7 @@ function ClassTalentTalentsTabMixin:OnLoad()
 		[5] = { extraOffsetX = -30, extraOffsetY = -29, }, -- Priest
 		[8] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Mage
 		[11] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Druid
+		[12] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Demon Hunter
 		[13] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Evoker
 	};
 
@@ -560,4 +561,51 @@ function ClassTalentTalentsTabMixin:CanChangeTalents()
 	end
 
 	return C_ClassTalents.CanChangeTalents();
+end
+
+ClassTalentButtonSpendMixin = CreateFromMixins(TalentButtonSpendMixin);
+
+function ClassTalentButtonSpendMixin:OnLoad()
+	TalentButtonSpendMixin.OnLoad(self);
+
+	self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+	self.deselectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND;
+end
+
+function ClassTalentButtonSpendMixin:UpdateEntryInfo(skipUpdate)
+	TalentButtonSpendMixin.UpdateEntryInfo(self, skipUpdate);
+	
+	if self.entryInfo and self.entryInfo.type == Enum.TraitNodeEntryType.SpendSquare then
+		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR;
+	else
+		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+	end
+end
+
+ClassTalentButtonSelectMixin = CreateFromMixins(TalentButtonSelectMixin);
+
+function ClassTalentButtonSelectMixin:OnLoad()
+	TalentButtonSelectMixin.OnLoad(self);
+
+	self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+	self.deselectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND;
+end
+
+function ClassTalentButtonSelectMixin:UpdateEntryInfo(skipUpdate)
+	TalentButtonSelectMixin.UpdateEntryInfo(self, skipUpdate);
+	
+	if self.entryInfo and self.entryInfo.type == Enum.TraitNodeEntryType.SpendSquare then
+		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR;
+	else
+		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+	end
+end
+
+ClassTalentButtonSplitSelectMixin = CreateFromMixins(TalentButtonSplitSelectMixin);
+
+function ClassTalentButtonSplitSelectMixin:OnLoad()
+	TalentButtonSplitSelectMixin.OnLoad(self);
+
+	self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR;
+	self.deselectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND;
 end

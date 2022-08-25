@@ -42,7 +42,6 @@ end
 MajorFactionRenownMixin = {};
 
 local MajorFactionRenownEvents = {
-	"MAJOR_FACTION_RENOWN_INTERACTION_ENDED",
 	"MAJOR_FACTION_RENOWN_LEVEL_CHANGED",
 	"MAJOR_FACTION_UNLOCKED",
 	"MAJOR_FACTION_RENOWN_CATCH_UP_STATE_UPDATE",
@@ -60,8 +59,6 @@ function MajorFactionRenownMixin:OnLoad()
 	};
 	RegisterUIPanel(MajorFactionRenownFrame, attributes);
 	
-	self:RegisterEvent("MAJOR_FACTION_RENOWN_INTERACTION_STARTED");
-
 	self.rewardsPool = CreateFramePool("FRAME", self, "MajorFactionRenownRewardTemplate");
 
 	EventRegistry:RegisterCallback("MajorFactionRenownMixin.MajorFactionRenownRequest", self.SetMajorFaction, self);
@@ -98,15 +95,15 @@ function MajorFactionRenownMixin:OnHide()
 	local cvarName = "lastRenownForMajorFaction".. currentFactionID;
 	SetCVar(cvarName, self.actualLevel);
 
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.MajorFactionRenown);
+
 	PlaySound(SOUNDKIT.UI_MAJOR_FACTION_RENOWN_CLOSE_WINDOW);
 end
 
 function MajorFactionRenownMixin:OnEvent(event, ...)
 	if event == "MAJOR_FACTION_SANCTUM_RENOWN_LEVEL_CHANGED" then
 		self:Refresh();
-	elseif event == "MAJOR_FACTION_RENOWN_INTERACTION_STARTED" then
-		ShowUIPanel(self);
-	elseif event == "MAJOR_FACTION_RENOWN_INTERACTION_ENDED" or event == "MAJOR_FACTION_UNLOCKED" then
+	elseif event == "MAJOR_FACTION_UNLOCKED" then
 		HideUIPanel(self);
 	elseif event == "MAJOR_FACTION_RENOWN_CATCH_UP_STATE_UPDATE" then 
 		if self.HeaderFrame:IsMouseOver() then 
@@ -372,7 +369,9 @@ function MajorFactionRenownHeaderFrameMixin:OnEnter()
 
 	local majorFactionName = currentFactionData.name;
 	GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_LEVEL_TOOLTIP:format(majorFactionName));
-	GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_CURRENT_PROGRESS:format(currentFactionData.renownReputationEarned, currentFactionData.renownLevelThreshold));
+	if not C_MajorFactions.HasMaximumRenown(currentFactionID) then
+		GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_CURRENT_PROGRESS:format(currentFactionData.renownReputationEarned, currentFactionData.renownLevelThreshold));
+	end
 	GameTooltip:Show(); 
 end 
 
@@ -394,6 +393,7 @@ function MajorFactionRenownTrackProgressBarMixin:RefreshBar()
 	if newData then
 		local minValue, maxValue = 0, newData.renownLevelThreshold;
 		self:SetMinMaxValues(minValue, maxValue);
-		self:SetValue(newData.renownReputationEarned);
+		-- Show a full bar if we have max renown
+		self:SetValue(C_MajorFactions.HasMaximumRenown(currentFactionID) and newData.renownLevelThreshold or newData.renownReputationEarned);
 	end
 end

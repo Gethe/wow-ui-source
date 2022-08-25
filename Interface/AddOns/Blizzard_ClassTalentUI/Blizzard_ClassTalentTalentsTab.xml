@@ -18,6 +18,7 @@
 
 	<Frame name="ClassTalentTalentsTabTemplate" mixin="ClassTalentTalentsTabMixin" inherits="TalentFrameBaseTemplate" virtual="true">
 		<KeyValues>
+			<KeyValue key="getSpecializedMixin" value="ClassTalentUtil.GetSpecializedMixin" type="global"/>
 			<KeyValue key="getEdgeTemplateType" value="ClassTalentUtil.GetEdgeTemplateType" type="global"/>
 			<KeyValue key="topPadding" value="0" type="number"/>
 			<KeyValue key="leftPadding" value="0" type="number"/>
@@ -26,6 +27,10 @@
 			<KeyValue key="basePanOffsetX" value="4" type="number"/>
 			<KeyValue key="basePanOffsetY" value="-30" type="number"/>
 			<KeyValue key="maximumCommitTime" value="6" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0.6" type="number"/>
+			<KeyValue key="enableCommitEndFlash" value="true" type="boolean"/>
+			<KeyValue key="enableCommitCastBar" value="true" type="boolean"/>
+			<KeyValue key="commitSound" value="SOUNDKIT.UI_CLASS_TALENT_APPLY_CHANGES" type="global"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">

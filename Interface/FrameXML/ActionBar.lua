@@ -267,6 +267,12 @@ function EditModeActionBarMixin:UpdateVisibility()
         return;
     end
 
+    -- If we are set to be hidden then hide
+    if (self.visibility == "Hidden") then
+        self:HideBase();
+        return;
+    end
+
     -- If no other rules, show the bar
     self:ShowBase();
 end

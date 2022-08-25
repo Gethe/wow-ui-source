@@ -498,9 +498,12 @@ end
 
 function SocialRenderAchievement(achievementID)
 	local achievementButton = OffScreenFrame.Achievement;
-	Mixin(achievementButton, ScrollBoxListFrameMixin);
+	-- GetElementData() being assigned to this achievement button because it is required as
+	-- an interface to ScrollBox, which this button's template was originally written for.
 	local elementData = {selected = true, id = achievementID};
-	achievementButton.scrollboxElementData = elementData;
+	achievementButton.GetElementData = function(self)
+		return elementData;
+	end;
 	achievementButton:Init(elementData);
 	achievementButton.Tracked:Hide();
 	achievementButton.PlusMinus:Hide();

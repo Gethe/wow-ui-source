@@ -17,7 +17,6 @@ end
 -- WIP Strings
 MAJOR_FACTION_QUEST_BUTTON_TOOLTIP_QUESTS_AVAILABLE = "Quests Available";
 MAJOR_FACTION_QUEST_BUTTON_TOOLTIP_VIEW_QUESTS = "<Click to view quests on map>";
-MAJOR_FACTION_RENOWN_TOOLTIP_ALL_REWARDS_UNLOCKED = "All rewards have been unlocked!"
 
 LandingPageMajorFactionList = {};
 
@@ -191,6 +190,8 @@ function MajorFactionButtonUnlockedStateMixin:Refresh(majorFactionData)
 	local currentValue = isCapped and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned or 0;
 	self.RenownProgressBar:UpdateBar(minValue, maxValue, currentValue);
 	self.RenownProgressBar:Show();
+
+	C_Reputation.RequestFactionParagonPreloadRewardData(majorFactionData.factionID);
 end
 
 function MajorFactionButtonUnlockedStateMixin:OnShow()
@@ -217,9 +218,11 @@ end
 function MajorFactionButtonUnlockedStateMixin:OnEvent(event, ...)
 	if event == "MAJOR_FACTION_RENOWN_LEVEL_CHANGED" then
 		local changedFactionID, newRenownLevel, oldRenownLevel = ...;
+		local factionID = self:GetParent().factionID;
+		if factionID == changedFactionID then
+			local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
 
-		if self:GetParent().factionID == changedFactionID then
-			self.RenownLevel:SetText(newRenownLevel);
+			self:Refresh(majorFactionData);
 		end
 	elseif event == "UPDATE_FACTION" then
 		local majorFactionData = C_MajorFactions.GetMajorFactionData(self:GetParent().factionID);
@@ -271,7 +274,11 @@ end
 
 function MajorFactionButtonUnlockedStateMixin:RefreshTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	self:SetUpRenownRewardsTooltip();
+	if C_Reputation.IsFactionParagon(self:GetParent().factionID) then
+		self:SetUpParagonRewardsTooltip();
+	else
+		self:SetUpRenownRewardsTooltip();
+	end
 	GameTooltip:Show();
 end
 
@@ -279,14 +286,11 @@ function MajorFactionButtonUnlockedStateMixin:SetUpRenownRewardsTooltip()
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(self:GetParent().factionID);
 	local tooltipTitle = majorFactionData.name;
 	GameTooltip_SetTitle(GameTooltip, tooltipTitle, NORMAL_FONT_COLOR);
-	GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_CURRENT_PROGRESS:format(majorFactionData.renownReputationEarned, majorFactionData.renownLevelThreshold));
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
 	local factionID = self:GetParent().factionID;
-	if C_MajorFactions.HasMaximumRenown(factionID) then
-		GameTooltip_AddHighlightLine(GameTooltip, MAJOR_FACTION_RENOWN_TOOLTIP_ALL_REWARDS_UNLOCKED);
+	if not C_MajorFactions.HasMaximumRenown(factionID) then
+		GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_CURRENT_PROGRESS:format(majorFactionData.renownReputationEarned, majorFactionData.renownLevelThreshold));
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	else
 		local nextRenownRewards = C_MajorFactions.GetRenownRewardsForLevel(factionID, C_MajorFactions.GetCurrentRenownLevel(factionID) + 1);
 		if #nextRenownRewards > 0 then
 			self:AddRenownRewardsToTooltip(nextRenownRewards);
@@ -312,6 +316,38 @@ function MajorFactionButtonUnlockedStateMixin:AddRenownRewardsToTooltip(renownRe
 	end
 
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+end
+
+function MajorFactionButtonUnlockedStateMixin:SetUpParagonRewardsTooltip()
+	local factionID = self:GetParent().factionID;
+	local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
+	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(factionID);
+
+	if tooLowLevelForParagon then
+		GameTooltip_SetTitle(GameTooltip, PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL, NORMAL_FONT_COLOR);
+	else
+		GameTooltip_SetTitle(GameTooltip, MAJOR_FACTION_MAX_RENOWN_REACHED, NORMAL_FONT_COLOR);
+		local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(majorFactionData.name);
+		if hasRewardPending then
+			local questIndex = C_QuestLog.GetLogIndexForQuestID(rewardQuestID);
+			local text = GetQuestLogCompletionText(questIndex);
+			if text and text ~= "" then
+				description = text;
+			end
+		end
+
+		GameTooltip_AddHighlightLine(GameTooltip, description);
+
+		if not hasRewardPending then
+			local value = mod(currentValue, threshold);
+			-- Show overflow if a reward is pending
+			if hasRewardPending then
+				value = value + threshold;
+			end
+			GameTooltip_ShowProgressBar(GameTooltip, 0, threshold, value, REPUTATION_PROGRESS_FORMAT:format(value, threshold));
+		end
+		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, rewardQuestID);
+	end
 end
 
 function MajorFactionButtonUnlockedStateMixin:PlayUnlockCelebration()

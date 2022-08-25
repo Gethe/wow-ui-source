@@ -7,6 +7,8 @@
 			<KeyValue key="enableZoomAndPan" value="false" type="boolean"/>
 			<KeyValue key="excludeStagedChangesForCurrencies" value="false" type="boolean"/>
 			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+			<KeyValue key="commitSound" value="SOUNDKIT.UI_PROFESSION_SPEC_APPLY_CHANGES" type="global"/>
+			<KeyValue key="rollbackSound" value="SOUNDKIT.UI_PROFESSION_SPEC_UNDO_CHANGES" type="global"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -283,7 +285,7 @@
 							</Anchors>
 						</FontString>
 						<FontString parentKey="PointsText" inherits="GameFontHighlightHuge" justifyH="CENTER" wordwrap="false">
-							<Size x="62" y="1"/>
+							<Size x="400" y="1"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.PathName" x="0" y="-25"/>
 							</Anchors>

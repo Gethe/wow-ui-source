@@ -255,20 +255,17 @@ function NamePlateDriverMixin:OnSoftTargetUpdate()
 	local doInteractIcon = GetCVarBool("SoftTargetIconInteract");
 	for _, frame in pairs(C_NamePlate.GetNamePlates(issecure())) do
 		local icon = frame.UnitFrame.SoftTargetFrame.Icon;
-		local iconTexture = nil;
+		local hasCursorTexture = false;
 		if (iconSize > 0) then
 			if ((doEnemyIcon and UnitIsUnit(frame.namePlateUnitToken, "softenemy")) or
 				(doFriendIcon and UnitIsUnit(frame.namePlateUnitToken, "softfriend")) or
 				(doInteractIcon and UnitIsUnit(frame.namePlateUnitToken, "softinteract"))
 				) then
-				iconTexture = UnitCursor(frame.namePlateUnitToken);
+				hasCursorTexture = SetUnitCursorTexture(icon, frame.namePlateUnitToken);
 			end
 		end
 
-		if (iconTexture) then
-			local iconFrame = frame.UnitFrame.SoftTargetFrame;
-			iconFrame:SetSize(iconSize, iconSize);
-			icon:SetTexture(iconTexture);
+		if (hasCursorTexture) then
 			icon:Show();
 		else
 			icon:Hide();
@@ -731,7 +728,6 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 		else
 			buff.CountFrame.Count:Hide();
 		end
-
 		CooldownFrame_Set(buff.Cooldown, aura.expirationTime - aura.duration, aura.duration, aura.duration > 0, true);
 
 		buff:Show();
@@ -742,7 +738,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 
 	--Add Cooldowns 
 	if(buffIndex < BUFF_MAX_DISPLAY and UnitIsUnit(self:GetParent().unit, "player")) then 
-		local nameplateSpells = C_SpellBook.GetTrackedNameplateSpells(); 
+		local nameplateSpells = C_SpellBook.GetTrackedNameplateCooldownSpells(); 
 		for _, spellID in ipairs(nameplateSpells) do 
 			if (not self:HasActiveBuff(spellID) and buffIndex < BUFF_MAX_DISPLAY) then
 				local locStart, locDuration = GetSpellLossOfControlCooldown(spellID);

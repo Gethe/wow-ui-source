@@ -151,6 +151,19 @@ local InteractionManagerFrameInfo = {
 		frame = "EncounterJournal",
 		loadFunc = EncounterJournal_LoadUI,
 		showFunc = function () if (C_AdventureJournal.CanBeShown()) then ShowUIPanel(EncounterJournal); EJSuggestFrame_OpenFrame(); end; end; 
+	},
+	[Enum.PlayerInteractionType.MajorFactionRenown] = {
+		frame = "MajorFactionRenownFrame",
+		loadFunc = MajorFactions_LoadUI,
+		-- Todo: Pull this into a "Major Factions" function so it can be reused
+		showFunc = function() 
+						local majorFactionID = C_MajorFactions.GetRenownNPCFactionID();
+						HideUIPanel(MajorFactionRenownFrame);
+						if majorFactionID > 0 then
+							EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", majorFactionID);
+							ShowUIPanel(MajorFactionRenownFrame);
+						end
+					end;
 	}
 };
 

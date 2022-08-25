@@ -708,6 +708,8 @@ function SpellButtonMixin:OnClick(button)
 end
 
 function SpellButtonMixin:OnModifiedClick(button)
+	EventRegistry:TriggerEvent("SpellMixinButton.OnModifiedClick", self, button);
+
 	local slot = SpellBook_GetSpellBookSlot(self);
 	if ( slot > MAX_SPELLS ) then
 		return;

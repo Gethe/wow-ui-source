@@ -28,8 +28,8 @@ function ProfessionsSpecFrameMixin:GetDesiredPageWidth()
 end
 
 function ProfessionsSpecFrameMixin:ConfigureButtons()
-	self.ApplyButton:SetScript("OnClick", function() self:CommitConfig(); PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_APPLY_CHANGES); end);
-	self.UndoButton:SetScript("OnClick", function() self:RollbackConfig(); PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_UNDO_CHANGES); end)
+	self.ApplyButton:SetScript("OnClick", function() self:CommitConfig(); end);
+	self.UndoButton:SetScript("OnClick", function() self:RollbackConfig(); end);
 
 	self.UnlockTabButton:SetScript("OnClick", function()
 		self:CheckConfirmPurchaseTab();
@@ -37,12 +37,12 @@ function ProfessionsSpecFrameMixin:ConfigureButtons()
 	self.UnlockTabButton:SetScript("OnLeave", GameTooltip_Hide);
 
 	self.DetailedView.SpendPointsButton:SetScript("OnClick", function()
-		self:PurchaseRank(self:GetDetailedPanelNodeID(), C_ProfSpecs.GetSpendEntryForPath(self:GetDetailedPanelNodeID()));
+		self:PurchaseRank(self:GetDetailedPanelNodeID());
 		PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_SPEND);
 	end);
 
 	self.DetailedView.UnlockPathButton:SetScript("OnClick", function()
-		self:PurchaseRank(self:GetDetailedPanelNodeID(), C_ProfSpecs.GetUnlockEntryForPath(self:GetDetailedPanelNodeID()));
+		self:PurchaseRank(self:GetDetailedPanelNodeID());
 		self:PlayDialLockInAnimation();
 	end);
 	self.DetailedView.UnlockPathButton:SetScript("OnLeave", GameTooltip_Hide);
@@ -80,7 +80,7 @@ function ProfessionsSpecFrameMixin:CheckConfirmPurchaseTab()
 		local info = {};
 		info.onAccept = function()
 			EventRegistry:TriggerEvent("ProfessionsSpecializations.PathSelected", self.tabInfo.rootNodeID);
-			self:PurchaseRank(self.tabInfo.rootNodeID, C_ProfSpecs.GetUnlockEntryForPath(self.tabInfo.rootNodeID));
+			self:PurchaseRank(self.tabInfo.rootNodeID);
 			self:CommitConfig();
 			self:PlayDialLockInAnimation();
 		end;
@@ -367,7 +367,7 @@ local PathLayoutInfo =
 			[1] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
 			[2] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
 			[3] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
-			[4] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
+			[4] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
 			[5] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
 		},
 		[4] =
@@ -397,7 +397,7 @@ local PathLayoutInfo =
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1200 },
 			[2] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
 			[3] = { rotationBetweenChildren = 60, distanceToChild = 1200 },
-			[4] = { rotationBetweenChildren = 50, distanceToChild = 1200 },
+			[4] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
 			[5] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
 		},
 		[3] =
@@ -405,7 +405,7 @@ local PathLayoutInfo =
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1200 },
 			[2] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
 			[3] = { rotationBetweenChildren = 50, distanceToChild = 1200 },
-			[4] = { rotationBetweenChildren = 50, distanceToChild = 1200 },
+			[4] = { rotationBetweenChildren = 30, distanceToChild = 1200 },
 			[5] = { rotationBetweenChildren = 30, distanceToChild = 1200 },
 		},
 		[4] =
@@ -700,8 +700,8 @@ function ProfessionsSpecFrameMixin:SetDefaultTab(tabID)
 	g_professionsSpecsSelectedTabs[self:GetProfessionID()] = tabID;
 end
 
-function ProfessionsSpecFrameMixin:PurchaseRank(pathID, entryID)
-	self:AttemptConfigOperation(C_Traits.PurchaseRank, pathID, entryID)
+function ProfessionsSpecFrameMixin:PurchaseRank(pathID)
+	self:AttemptConfigOperation(C_Traits.PurchaseRank, pathID)
 	self.DetailedView.Path.AddKnowledgeAnim:Restart();
 	self:SetDefaultPath(pathID);
 	self:SetDefaultTab(self:GetTalentTreeID());
@@ -822,15 +822,30 @@ function ProfessionsDetailedSpecPathMixin:SetLocked(locked)
 	end
 end
 
-local progressBarAnimDuration = 2.6;
+local flipbookAnimDuration =
+{
+	[Enum.Profession.Blacksmithing] = 2.6,
+	[Enum.Profession.Enchanting] = 1.5,
+	[Enum.Profession.Tailoring] = 3,
+	[Enum.Profession.Jewelcrafting] = 1.2,
+};
+
+local flipbookAnimEndDelay =
+{
+	[Enum.Profession.Jewelcrafting] = 2,
+};
+
 function ProfessionsDetailedSpecPathMixin:UpdateAssets()
-	local kitSpecifier = Professions.GetAtlasKitSpecifier(self:GetTalentFrame().professionInfo);
+	local professionInfo = self:GetTalentFrame().professionInfo;
+	local kitSpecifier = Professions.GetAtlasKitSpecifier(professionInfo);
 	local fillArtAtlasFormat = "SpecDial_Fill_Flipbook_%s";
 	local stylizedFillAtlasName = kitSpecifier and fillArtAtlasFormat:format(kitSpecifier);
 	local stylizedFillInfo = stylizedFillAtlasName and C_Texture.GetAtlasInfo(stylizedFillAtlasName);
-	if not stylizedFillInfo then
+	local duration = flipbookAnimDuration[professionInfo.profession];
+	if not stylizedFillInfo or not duration then
 		stylizedFillAtlasName = fillArtAtlasFormat:format("Blacksmithing");
 		stylizedFillInfo = C_Texture.GetAtlasInfo(stylizedFillAtlasName);
+		duration = flipbookAnimDuration[Enum.Profession.Blacksmithing];
 	end
 
 	self.ProgressBar:SetSwipeTexture(stylizedFillInfo.file);
@@ -838,7 +853,8 @@ function ProfessionsDetailedSpecPathMixin:UpdateAssets()
 	local frameSize = 330;
 	self.flipBookNumRows = stylizedFillInfo.height / frameSize;
 	self.flipBookNumCols = stylizedFillInfo.width / frameSize;
-	self.timePerFrame = progressBarAnimDuration / (self.flipBookNumRows * self.flipBookNumCols);
+	self.timePerFrame = duration / (self.flipBookNumRows * self.flipBookNumCols);
+	self.endDelay = flipbookAnimEndDelay[professionInfo.profession];
 	self.flipBookULx = stylizedFillInfo.leftTexCoord;
 	self.flipBookULy = stylizedFillInfo.topTexCoord;
 	self.flipBookBRx = stylizedFillInfo.rightTexCoord;
@@ -865,7 +881,12 @@ function ProfessionsDetailedSpecPathMixin:OnUpdate(dt)
 		self.timeOnFrame = self.timeOnFrame + dt;
 	end
 
-	if not self.timeOnFrame or self.timeOnFrame > self.timePerFrame then
+	local isLastFrame = self.frameCol == self.flipBookNumCols and self.frameRow == self.flipBookNumRows;
+	local frameTime = self.timePerFrame;
+	if isLastFrame then
+		frameTime = frameTime + (self.endDelay or 0);
+	end
+	if not self.timeOnFrame or self.timeOnFrame > frameTime then
 		self.timeOnFrame = 0;
 		self.frameCol = self.frameCol + 1;
 		if self.frameCol > self.flipBookNumCols then

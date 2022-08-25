@@ -85,6 +85,7 @@
 			minTabWidth: min width of a tab, including side textures. nil means no minimum.
 			tabTemplate: what button template to use for tabs. Must support the behavior from TabSystemButtonMixin.
 			spacing: from HorizontalLayoutFrame.
+			tabSelectSound: what sound to play when tabs are clicked.
 
 			<KeyValue key="tabSelectedCallback" value="..." type="function"/>
 			<KeyValue key="minTabWidth" value="60" type="number"/>
@@ -92,6 +93,7 @@
 			-->
 			<KeyValue key="tabTemplate" value="TabSystemButtonTemplate" type="string"/>
 			<KeyValue key="spacing" value="-12" type="number"/>
+			<KeyValue key="tabSelectSound" value="SOUNDKIT.IG_CHARACTER_INFO_TAB" type="global"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

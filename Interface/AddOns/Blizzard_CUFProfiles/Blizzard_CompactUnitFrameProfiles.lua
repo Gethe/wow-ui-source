@@ -8,38 +8,6 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	
 	self.name = COMPACT_UNIT_FRAME_PROFILES_LABEL;
 
-	self.RaidStylePartyFramesCheckBox.Text:SetText(USE_RAID_STYLE_PARTY_FRAMES);
-	local function SetAutoActivationCheckBoxes(checked)
-		self.optionsFrame.autoActivate2Players:SetEnabled(checked);
-		self.optionsFrame.autoActivate3Players:SetEnabled(checked);
-		self.optionsFrame.autoActivate5Players:SetEnabled(checked);
-	end
-	
-	local cvar = "useCompactPartyFrames";
-	
-	local function SetUseRaidStylePartyFramesEnabled(enabled)
-		self.RaidStylePartyFramesCheckBox:SetChecked(enabled);
-
-		SetAutoActivationCheckBoxes(enabled);
-		RaidOptionsFrame_UpdatePartyFrames();
-		CompactRaidFrameManager_UpdateShown(CompactRaidFrameManager);
-	end
-
-	self.RaidStylePartyFramesCheckBox:SetScript("OnClick", function(self)
-		local checked = self:GetChecked();
-		Settings.SetValue(cvar, checked);
-
-		SetUseRaidStylePartyFramesEnabled(checked);
-	end);
-	
-	local function OnValueChanged(o, setting, value)
-		SetUseRaidStylePartyFramesEnabled(value);
-	end
-
-	Settings.SetOnValueChangedCallback(cvar, OnValueChanged);
-
-	SetAutoActivationCheckBoxes(Settings.GetValue(cvar));
-
 	self.OnDefault = GenerateClosure(CompactUnitFrameProfiles_ResetToDefaults, self);
 end
 
@@ -587,20 +555,16 @@ function CompactUnitFrameProfiles_ApplyProfile(profile)
 	end
 	
 	--Refresh all frames to make sure the changes stick.
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "mini", DefaultCompactMiniFrameSetup);
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "mini", CompactUnitFrame_UpdateAll);
-	--CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "group", CompactRaidGroup_UpdateLayout);	--UpdateBorder calls UpdateLayout.
+	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
+	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
+	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
+	CompactRaidFrameContainer:ApplyToFrames("mini", CompactUnitFrame_UpdateAll);
 	
 	--Update the borders on the group frames.
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "group", CompactRaidGroup_UpdateBorder);
-	
-	--Update the position of the container.
-	CompactRaidFrameManager_ResizeFrame_LoadPosition(CompactRaidFrameManager);
+	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
 	
 	--Update the container in case sizes and such changed.
-	CompactRaidFrameContainer_TryUpdate(CompactRaidFrameContainer);
+	CompactRaidFrameContainer:TryUpdate();
 end
 
 local function CompactUnitFrameProfiles_GenerateRaidManagerSetting(optionName)
@@ -658,6 +622,5 @@ CUFProfileActionTable = {
 							end,
 							
 	--State
-	locked = CompactUnitFrameProfiles_GenerateRaidManagerSetting("Locked"),
 	shown = CompactUnitFrameProfiles_GenerateRaidManagerSetting("IsShown"),
 }

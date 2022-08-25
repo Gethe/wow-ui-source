@@ -30,91 +30,362 @@ local textureMapping = {
 	[3] = 18,	--Ranged
 };
 
-BuffFrameMixin = { };
-function BuffFrameMixin:OnLoad()
-	self.isExpanded = true; 
+local CollapseAndExpandButton_Orientation_Horizontal = 0;
+local CollapseAndExpandButton_Orientation_Vertical = 1;
+local CollapseAndExpandButton_ExpandDirection_Left = 0;
+local CollapseAndExpandButton_ExpandDirection_Right = 1;
+local CollapseAndExpandButton_ExpandDirection_Down = CollapseAndExpandButton_ExpandDirection_Left;
+local CollapseAndExpandButton_ExpandDirection_Up = CollapseAndExpandButton_ExpandDirection_Right;
+
+
+AuraContainerMixin = {};
+
+function AuraContainerMixin:UpdateGridLayout(auras)
+	local newLayoutInfo = {
+		isHorizontal = self.isHorizontal;
+		iconStride = self.iconStride;
+		iconPadding = self.iconPadding;
+		addIconsToRight = self.addIconsToRight;
+		addIconsToTop = self.addIconsToTop;
+	};
+
+	-- Check whether we need to update the icon's anchor point
+	local updateAnchor = not self.currentGridLayoutInfo
+					or self.currentGridLayoutInfo.addIconsToRight ~= newLayoutInfo.addIconsToRight
+					or self.currentGridLayoutInfo.addIconsToTop ~= newLayoutInfo.addIconsToTop;
+
+	if updateAnchor then
+		-- Need to change where the icons anchor based on how the container grows
+		local anchorPoint = "TOPRIGHT";
+		if newLayoutInfo.addIconsToTop then
+			if newLayoutInfo.addIconsToRight then
+				anchorPoint = "BOTTOMLEFT";
+			else
+				anchorPoint = "BOTTOMRIGHT";
+			end
+		else
+			if newLayoutInfo.addIconsToRight then
+				anchorPoint = "TOPLEFT";
+			end
+		end
+		newLayoutInfo.anchor = AnchorUtil.CreateAnchor(anchorPoint, self, anchorPoint);
+	else
+		-- If we didn't need to update the anchor then use the old one
+		newLayoutInfo.anchor = self.currentGridLayoutInfo.anchor;
+	end
+
+	-- Check whether we need to update the grid's layout
+	local updateLayout = updateAnchor
+					or self.currentGridLayoutInfo.isHorizontal ~= newLayoutInfo.isHorizontal
+					or self.currentGridLayoutInfo.iconStride ~= newLayoutInfo.iconStride
+					or self.currentGridLayoutInfo.iconPadding ~= newLayoutInfo.iconPadding;
+
+	if updateLayout then
+		-- Multipliers determine the direction the bar grows for grid layouts 
+		-- Positive means right/up
+		-- Negative means left/down
+		local xMultiplier = newLayoutInfo.addIconsToRight and 1 or -1;
+		local yMultiplier = newLayoutInfo.addIconsToTop and 1 or -1;
+
+		-- Create the grid layout according to whether we are horizontal or vertical
+		if newLayoutInfo.isHorizontal then
+			newLayoutInfo.layout = GridLayoutUtil.CreateStandardGridLayout(
+				newLayoutInfo.iconStride,
+				newLayoutInfo.iconPadding, newLayoutInfo.iconPadding,
+				xMultiplier, yMultiplier);
+		else
+			newLayoutInfo.layout = GridLayoutUtil.CreateVerticalGridLayout(
+				newLayoutInfo.iconStride,
+				newLayoutInfo.iconPadding, newLayoutInfo.iconPadding,
+				xMultiplier, yMultiplier);
+		end
+	else
+		-- If we didn't need to update the layout then use the old one
+		newLayoutInfo.layout = self.currentGridLayoutInfo.layout;
+	end
+
+	-- Update aura icon and duration anchors
+	-- Also resize aura accordingly
+	local auraWidth, auraHeight, durationPoint, durationRelativePoint, iconPoint;
+	if newLayoutInfo.isHorizontal then
+		auraWidth = 30;
+		auraHeight = 40;
+
+		durationPoint = newLayoutInfo.addIconsToTop and "BOTTOM" or "TOP";
+		durationRelativePoint = newLayoutInfo.addIconsToTop and "TOP" or "BOTTOM";
+
+		iconPoint = newLayoutInfo.addIconsToTop and "BOTTOM" or "TOP";
+	else
+		auraWidth = 60;
+		auraHeight = 30;
+
+		durationPoint = newLayoutInfo.addIconsToRight and "LEFT" or "RIGHT";
+		durationRelativePoint = newLayoutInfo.addIconsToRight and "RIGHT" or "LEFT";
+
+		iconPoint = newLayoutInfo.addIconsToRight and "LEFT" or "RIGHT";
+	end
+
+	for index, aura in ipairs(auras) do
+		aura:SetSize(auraWidth, auraHeight);
+
+		aura.Icon:ClearAllPoints();
+		aura.Icon:SetPoint(iconPoint, aura, iconPoint);
+
+		aura.duration:ClearAllPoints();
+		aura.duration:SetPoint(durationPoint, aura.Icon, durationRelativePoint);
+	end
+
+    -- Apply the layout and then update our size
+	GridLayoutUtil.ApplyGridLayout(
+		auras,
+		newLayoutInfo.anchor,
+		newLayoutInfo.layout);
+
+	self:Layout();
+
+	-- Cache the new grid layout info so we know what needs to be update in future calls
+	self.currentGridLayoutInfo = newLayoutInfo;
+end
+
+AuraFrameMixin = {};
+
+function AuraFrameMixin:AuraFrame_OnLoad()
+	self.auraFrames = {};
+
 	self:RegisterUnitEvent("UNIT_AURA", "player", "vehicle");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-	self.numEnchants = 0;
-	self.buffsPool = CreateFramePoolCollection();
-	self.buffsPool:CreatePool("Button", self.BuffsContainer, "BuffButtonTemplate");
-	self.buffsPool:CreatePool("Button", self.BuffsContainer, "TempEnchantButtonTemplate");
-	self.debuffPool = CreateFramePoolCollection();
-	self.debuffPool:CreatePool("BUTTON", self.DebuffsContainer, "DebuffButtonTemplate");
-	self.debuffPool:CreatePool("BUTTON", self.DeadlyDebuffContainer, "DeadlyDebuffButtonTemplate");
-	self.bottomEdgeExtent = 0;
+
+	self.auraPool = CreateFramePoolCollection();
+	self.auraPool:CreatePool("BUTTON", self.AuraContainer, self.auraTemplate);
+	self.auraPool:CreatePool("Frame", self.AuraContainer, self.exampleAuraTemplate);
 end
 
-function BuffFrameMixin:SetBuffsExpandedState(expanded) 
-	self.isExpanded = expanded; 
-	self:Update(); 
-end 
-
-function BuffFrameMixin:OnEvent(event, ...)
-	if ( event == "UNIT_AURA" ) then
+function AuraFrameMixin:AuraFrame_OnEvent(event, ...)
+	if event == "UNIT_AURA" then
 		local unit = ...;
-		if ( unit == PlayerFrame.unit ) then
+		if unit == PlayerFrame.unit then
 			self:Update();
 		end
-	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" ) then
+	elseif event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 		self:Update();
 	end
 end
 
-function BuffFrameMixin:UpdateWithSlots(unit, filter, maxCount)
-	local index = 1;
-	local shownBuffsIndex = 1; 
-	AuraUtil.ForEachAura(unit, filter, maxCount, function(...)
-		local _, texture, count, debuffType, duration, expirationTime, _, _, _, spellID, _, _, _, _, timeMod = ...;
-		local timeLeft = (expirationTime - GetTime());
-		local hideBuff = (duration == 0) or (expirationTime == 0) or ((timeLeft) > BUFF_DURATION_WARNING_TIME); --Aubrie TODO filter with a flag on the aura.
-		
-		if(filter == "HELPFUL") then 
-			self.buffInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration,  expirationTime = expirationTime, timeMod = timeMod, hideUnlessExpanded = hideUnlessExpanded };
-			if(not hideBuff) then 
-				self.shownBuffs[shownBuffsIndex] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration,  expirationTime = expirationTime, timeMod = timeMod, hideUnlessExpanded = hideUnlessExpanded };
-				shownBuffsIndex = shownBuffsIndex + 1; 
-			end 
-		else 
-			local deadlyDebuffInfo = C_SpellBook.GetDeadlyDebuffInfo(spellID); 
-			if(deadlyDebuffInfo) then 
-				table.insert(self.deadlyDebuffInfo, {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration, expirationTime = expirationTime, timeMod = timeMod, warningText = deadlyDebuffInfo.warningText, soundKitID = deadlyDebuffInfo.soundKitID }); 
-			else 
-				table.insert(self.debuffInfo, {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration, expirationTime = expirationTime, timeMod = timeMod, }); 
-			end 
-		end
-		index = index + 1;
-		return index > maxCount;
-	end);
+-- Override this in frames which inherit AuraFrameMixin
+function AuraFrameMixin:UpdateAuras()
 end
 
-function BuffFrameMixin:ManageDeadlyDebuffs()
-	local mostCriticalDebuffIndex = nil; 
-	for i = 1, #self.deadlyDebuffInfo do 
-		if(not mostCriticalDebuffIndex) then 
-			mostCriticalDebuffIndex = i; 
+-- Override this in frames which inherit AuraFrameMixin if needed
+function AuraFrameMixin:IsExpanded()
+	return true;
+end
+
+function AuraFrameMixin:UpdateAuraButtons()
+	if not self.isInitialized then
+		return;
+	end
+
+	self.auraPool:ReleaseAllByTemplate(self.auraTemplate);
+	self.auraFrames = {};
+
+	if self.isInEditMode then
+		-- Decide num example auras to show
+		local maxExampleAuras;
+		if self.ShowFull then
+			maxExampleAuras = self.maxAuras;
 		else
-			local currentTime = GetTime(); 
-			local timeRemaining1 = self.deadlyDebuffInfo[i].expirationTime - currentTime; 
-			local timeRemaining2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].expirationTime - currentTime; 
-			if (timeRemaining1 < timeRemaining2) then 
-				mostCriticalDebuffIndex = i; 
+			maxExampleAuras = math.min(self.maxAuras, self.AuraContainer.iconStride + 3);
+		end
+
+		-- Show example auras
+		for index, exampleAuraFrame in ipairs(self.exampleAuraFrames) do
+			if index <= maxExampleAuras then
+				exampleAuraFrame:Show();
+				table.insert(self.auraFrames, exampleAuraFrame);
 			else
-				local priority1 = self.deadlyDebuffInfo[i].priority;
-				local priority2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].priority;
-				if(priorty1 > priority2) then 
-					mostCriticalDebuffIndex = i; 
-				end
-			end		
-		end		
+				exampleAuraFrame:Hide();
+			end
+		end
+	else
+		-- Hide example auras
+		if self.exampleAuraFrames then
+			for index, exampleAuraFrame in ipairs(self.exampleAuraFrames) do
+				exampleAuraFrame:Hide();
+			end
+		end
+
+		-- Setup and show normal auras
+		local isExpanded = self:IsExpanded();
+
+		for index, aura in ipairs(self.auraInfo) do
+			local auraFrame;
+			if aura.isTempEnchant then
+				auraFrame = self.auraPool:Acquire("TempEnchantButtonTemplate");
+			else
+				auraFrame = self.auraPool:Acquire(self.auraTemplate);
+			end
+			auraFrame:SetScale(self.iconScale);
+			auraFrame:Update(aura, isExpanded);
+			table.insert(self.auraFrames, auraFrame);
+		end
 	end
-	if (mostCriticalDebuffIndex) then 
-		DeadlyDebuffFrame:Setup(self.deadlyDebuffInfo[mostCriticalDebuffIndex]);
-		table.remove(self.deadlyDebuffInfo, mostCriticalDebuffIndex); --Only want to show the debuff in one place. 
-	else 
-		DeadlyDebuffFrame:Hide(); 
+end
+
+function AuraFrameMixin:UpdateGridLayout()
+	self.AuraContainer:UpdateGridLayout(self.auraFrames);
+	self:Layout();
+end
+
+function AuraFrameMixin:Update()
+	self.isInitialized = true;
+	self.auraInfo = {};
+	self:UpdateAuras();
+	self:UpdateAuraButtons();
+	self:UpdateGridLayout();
+end
+
+BuffFrameMixin = { };
+
+function BuffFrameMixin:OnLoad()
+	self:RegisterEvent("WEAPON_ENCHANT_CHANGED");
+	self:RegisterEvent("WEAPON_SLOT_CHANGED");
+
+	self.isExpanded = true;
+	self.maxAuras = BUFF_MAX_DISPLAY;
+
+	self.auraPool:CreatePool("Button", self.AuraContainer, "TempEnchantButtonTemplate");
+end
+
+function BuffFrameMixin:OnEvent(event, ...)
+	if event == "WEAPON_ENCHANT_CHANGED" or event == "WEAPON_SLOT_CHANGED" then
+		self:Update();
 	end
+end
+
+function BuffFrameMixin:UpdateCollapseAndExpandButtonAnchor()
+	self.AuraContainer:ClearAllPoints();
+	self.CollapseAndExpandButton:ClearAllPoints();
+
+	if self.AuraContainer.isHorizontal then
+		self.CollapseAndExpandButton.orientation = CollapseAndExpandButton_Orientation_Horizontal;
+		self.CollapseAndExpandButton.expandDirection = self.AuraContainer.addIconsToRight
+														and CollapseAndExpandButton_ExpandDirection_Right
+														or CollapseAndExpandButton_ExpandDirection_Left;
+
+		if self.AuraContainer.addIconsToRight then
+			if self.AuraContainer.addIconsToTop then
+				-- Put CollapseAndExpandButton in bottom left, facing right
+				self.AuraContainer:SetPoint("BOTTOMLEFT", self.CollapseAndExpandButton, "BOTTOMRIGHT");
+				self.CollapseAndExpandButton:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT");
+			else
+				-- Put CollapseAndExpandButton in top left, facing right
+				self.AuraContainer:SetPoint("TOPLEFT", self.CollapseAndExpandButton, "TOPRIGHT");
+				self.CollapseAndExpandButton:SetPoint("TOPLEFT", self, "TOPLEFT");
+			end
+		else
+			if self.AuraContainer.addIconsToTop then
+				-- Put CollapseAndExpandButton in bottom right, facing left
+				self.AuraContainer:SetPoint("BOTTOMRIGHT", self.CollapseAndExpandButton, "BOTTOMLEFT");
+				self.CollapseAndExpandButton:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT");
+			else
+				-- Put CollapseAndExpandButton in top right, facing left
+				self.AuraContainer:SetPoint("TOPRIGHT", self.CollapseAndExpandButton, "TOPLEFT");
+				self.CollapseAndExpandButton:SetPoint("TOPRIGHT", self, "TOPRIGHT");
+			end
+		end
+	else
+		self.CollapseAndExpandButton.orientation = CollapseAndExpandButton_Orientation_Vertical;
+		self.CollapseAndExpandButton.expandDirection = self.AuraContainer.addIconsToTop
+														and CollapseAndExpandButton_ExpandDirection_Up
+														or CollapseAndExpandButton_ExpandDirection_Down;
+
+		if self.AuraContainer.addIconsToRight then
+			if self.AuraContainer.addIconsToTop then
+				-- Put CollapseAndExpandButton in bottom left, facing up
+				self.AuraContainer:SetPoint("BOTTOMLEFT", self.CollapseAndExpandButton, "TOPLEFT");
+				self.CollapseAndExpandButton:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT");
+			else
+				-- Put CollapseAndExpandButton in top left, facing down
+				self.AuraContainer:SetPoint("TOPLEFT", self.CollapseAndExpandButton, "BOTTOMLEFT");
+				self.CollapseAndExpandButton:SetPoint("TOPLEFT", self, "TOPLEFT");
+			end
+		else
+			if self.AuraContainer.addIconsToTop then
+				-- Put CollapseAndExpandButton in bottom right, facing up
+				self.AuraContainer:SetPoint("BOTTOMRIGHT", self.CollapseAndExpandButton, "TOPRIGHT");
+				self.CollapseAndExpandButton:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT");
+			else
+				-- Put CollapseAndExpandButton in top right, facing down
+				self.AuraContainer:SetPoint("TOPRIGHT", self.CollapseAndExpandButton, "BOTTOMRIGHT");
+				self.CollapseAndExpandButton:SetPoint("TOPRIGHT", self, "TOPRIGHT");
+			end
+		end
+	end
+
+	self.CollapseAndExpandButton:UpdateOrientation();
+end
+
+function BuffFrameMixin:Update()
+	AuraFrameMixin.Update(self);
+
+	self:RefreshCollapseExpandButtonState();
+	self:Layout();
+end
+
+function BuffFrameMixin:UpdateGridLayout()
+	self.AuraContainer:UpdateGridLayout(self.auraFrames);
+	self:UpdateCollapseAndExpandButtonAnchor();
+	self:Layout();
+end
+
+function BuffFrameMixin:IsExpanded()
+	return self.isExpanded;
+end
+
+function BuffFrameMixin:RefreshCollapseExpandButtonState()
+	self.CollapseAndExpandButton:SetShown(self.numHideableBuffs > 0);
+	self.CollapseAndExpandButton:SetChecked(self.isExpanded);
+	self.CollapseAndExpandButton:UpdateOrientation();
+end
+
+function BuffFrameMixin:UpdateAuraButtons()
+	if not self.isInitialized then
+		return;
+	end
+
+	AuraFrameMixin.UpdateAuraButtons(self);
+
+	if self.isInEditMode then
+		self.CollapseAndExpandButton:SetShown(true);
+		self.CollapseAndExpandButton:SetChecked(true);
+		self.CollapseAndExpandButton:UpdateOrientation();
+	else
+		self:RefreshCollapseExpandButtonState();
+	end
+end
+
+function BuffFrameMixin:UpdatePlayerBuffs()
+	local isExpanded = self:IsExpanded();
+
+	self.numHideableBuffs = 0;
+
+	AuraUtil.ForEachAura(PlayerFrame.unit, "HELPFUL", self.maxAuras, function(...)
+		local _, texture, count, debuffType, duration, expirationTime, _, _, _, _, _, _, _, _, timeMod = ...;
+		local timeLeft = (expirationTime - GetTime());
+		local hideBuff = (duration == 0) or (expirationTime == 0) or ((timeLeft) > BUFF_DURATION_WARNING_TIME); --Aubrie TODO filter with a flag on the aura.
+
+		if hideBuff then
+			self.numHideableBuffs = self.numHideableBuffs + 1;
+		end
+
+		if not hideBuff or isExpanded then
+			local index = #self.auraInfo + 1;
+			self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration,  expirationTime = expirationTime, timeMod = timeMod, hideUnlessExpanded = nil };
+		end
+
+		return #self.auraInfo > self.maxAuras;
+	end);
 end
 
 --AubrieTODO: Figure out how we want to refactor this function to include non-weapon enchants..
@@ -123,116 +394,107 @@ function BuffFrameMixin:UpdateTemporaryEnchantments(...)
 	local numVals = select("#", ...);
 	local numItems = numVals / RETURNS_PER_ITEM;
 
-	if ( numItems == 0 ) then
+	if numItems == 0 then
 		return;
 	end
 
-	local enchantIndex = 0;
 	for itemIndex = numItems, 1, -1 do	--Loop through the items from the back.
+		-- If we can't display any more buffs then stop
+		if #self.auraInfo > BUFF_MAX_DISPLAY then
+			break;
+		end
+
 		local hasEnchant, enchantExpiration, enchantCharges = select(RETURNS_PER_ITEM * (itemIndex - 1) + 1, ...);
-		if ( hasEnchant ) then
-			enchantIndex = enchantIndex + 1;
+		if hasEnchant then
 			-- Show buff durations if necessary
-			if ( enchantExpiration ) then
-				enchantExpiration = enchantExpiration/1000;
+			if enchantExpiration then
+				enchantExpiration = enchantExpiration / 1000;
 			end
+			local expirationTime =  GetTime() + enchantExpiration;
+
 			local hideUnlessExpanded = enchantExpiration > BUFF_DURATION_WARNING_TIME;
-			self.wepEnchantInfo[enchantIndex] = {textureName = GetInventoryItemTexture("player", textureMapping[itemIndex]), ID = textureMapping[itemIndex], expirationTime = enchantExpiration, hideUnlessExpanded = hideUnlessExpanded };
+			if hideUnlessExpanded then
+				self.numHideableBuffs = self.numHideableBuffs + 1;
+			end
+
+			local aura = { isTempEnchant = true, textureName = GetInventoryItemTexture("player", textureMapping[itemIndex]), ID = textureMapping[itemIndex], count = enchantCharges, expirationTime = expirationTime, hideUnlessExpanded = hideUnlessExpanded };
+			table.insert(self.auraInfo, aura);
 		end
 	end
 end
 
-function BuffFrameMixin:Update()
-	self.buffInfo = { }; 
-	self.shownBuffs = { };
-	self.debuffInfo = { };
-	self.deadlyDebuffInfo = { };
-	self.wepEnchantInfo = { };
-	self:UpdateWithSlots(PlayerFrame.unit, "HELPFUL", BUFF_MAX_DISPLAY);
-	self:UpdateWithSlots(PlayerFrame.unit, "HARMFUL", DEBUFF_MAX_DISPLAY);
+function BuffFrameMixin:UpdateAuras()
+	self:UpdatePlayerBuffs();
 	self:UpdateTemporaryEnchantments(GetWeaponEnchantInfo());
-	self:ManageDeadlyDebuffs(); 
-	self:UpdateAllBuffAnchors();
 end
 
-function BuffFrameMixin:UpdatePositions()
+function BuffFrameMixin:SetBuffsExpandedState(expanded)
+	self.isExpanded = expanded;
 	self:Update();
 end
 
-function BuffFrameMixin:GetExpanded()
-	return self.isExpanded; 
+DebuffFrameMixin = { };
+
+function DebuffFrameMixin:OnLoad()
+	self.maxAuras = DEBUFF_MAX_DISPLAY;
+
+	self.auraPool:CreatePool("BUTTON", self.AuraContainer, "DeadlyDebuffButtonTemplate");
 end
 
-local function BuffsSortFunction(a, b)
-	local aTimeLeft = (a.expirationTime - GetTime());
-	if(a.timeMod > 0) then
-		aTimeLeft = aTimeLeft / a.timeMod;
-	end
+function DebuffFrameMixin:UpdateAuras()
+	self.deadlyDebuffInfo = {};
 
-	local bTimeLeft = (b.expirationTime - GetTime());
-	if(b.timeMod > 0) then
-		bTimeLeft = bTimeLeft / b.timeMod;
-	end
-	return aTimeLeft < bTimeLeft;
-end
+	AuraUtil.ForEachAura(PlayerFrame.unit, "HARMFUL", self.maxAuras, function(...)
+		local _, texture, count, debuffType, duration, expirationTime, _, _, _, spellID, _, _, _, _, timeMod = ...;
 
-function BuffFrameMixin:SetupBuffs(expanded)
-	local buffInfo = expanded and self.buffInfo or self.shownBuffs
-	local function BuffsFactoryFunction(index)
-		if(index > #buffInfo) then 
-			local totalBuffs = #buffInfo; 
-			local tempWepEnchantIndex = (totalBuffs - index) + 2;
-			if(self.wepEnchantInfo[tempWepEnchantIndex]) then
-				local buff = self.buffsPool:Acquire("TempEnchantButtonTemplate");
-				buff:Update(self.wepEnchantInfo[tempWepEnchantIndex], self:GetExpanded());
-				return buff;
+		local deadlyDebuffInfo = C_SpellBook.GetDeadlyDebuffInfo(spellID);
+		if(deadlyDebuffInfo) then
+			local deadlyDebuff = { index = 0, texture = texture, count = count, debuffType = debuffType, duration = duration, expirationTime = expirationTime, timeMod = timeMod, warningText = deadlyDebuffInfo.warningText, soundKitID = deadlyDebuffInfo.soundKitID, priority = deadlyDebuffInfo.priority };
+			table.insert(self.deadlyDebuffInfo, deadlyDebuff);
+		else
+			local index = #self.auraInfo + 1;
+			self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration, expirationTime = expirationTime, timeMod = timeMod, }
+		end
+
+		return (#self.auraInfo + #self.deadlyDebuffInfo) > self.maxAuras;
+	end);
+
+	-- Setup DeadlyDebuffFrame
+	local mostCriticalDebuffIndex = nil;
+
+	for i = 1, #self.deadlyDebuffInfo do
+		if(not mostCriticalDebuffIndex) then
+			mostCriticalDebuffIndex = i;
+		else
+			local currentTime = GetTime();
+			local timeRemaining1 = self.deadlyDebuffInfo[i].expirationTime - currentTime;
+			local timeRemaining2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].expirationTime - currentTime;
+			if timeRemaining1 < timeRemaining2 then
+				mostCriticalDebuffIndex = i;
+			else
+				local priority1 = self.deadlyDebuffInfo[i].priority;
+				local priority2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].priority;
+				if priority1 > priority2 then
+					mostCriticalDebuffIndex = i;
+				end
 			end
-			return nil; 
 		end
-		
-		local buff = self.buffsPool:Acquire("BuffButtonTemplate");
-		buff:Update(buffInfo[index], self:GetExpanded());
-		return buff;
 	end
 
-	--Aubrie ToDO: The width and the layout will need to come from edit mode. 
-	local totalWidth = 376
-	local totalHeight = 200;
-	local anchor = AnchorUtil.CreateAnchor("RIGHT", self.CollapseAndExpandButton, "LEFT", -10);
-	AnchorUtil.GridLayoutFactory(BuffsFactoryFunction, anchor, totalWidth, totalHeight, GridLayoutMixin.Direction.TopRightToBottomLeft, 5, 15);
-end 
+	if mostCriticalDebuffIndex then
+		DeadlyDebuffFrame:Setup(self.deadlyDebuffInfo[mostCriticalDebuffIndex]);
 
-function BuffFrameMixin:SetupDebuffs(deadlyDebuffs)
-	local debuffTable = deadlyDebuffs and self.deadlyDebuffInfo or self.debuffInfo; 
-	local debuffContainer = deadlyDebuffs and self.DeadlyDebuffContainer or self.DebuffsContainer; 
-	local debuffTemplate = deadlyDebuffs and "DeadlyDebuffButtonTemplate" or "DebuffButtonTemplate"
-	local function DebuffFactoryFunction(index)
-		if(index > #debuffTable) then 
-			return; 
-		end
-		local debuffInfo = debuffTable[index];
-		local buff = self.debuffPool:Acquire(debuffTemplate);
-		buff:Update(debuffTable[index], self:GetExpanded());
-		return buff;
+		-- Remove deadly debuff which is being shown in DeadlyDebuffFrame so it only appears in one place
+		table.remove(self.deadlyDebuffInfo, mostCriticalDebuffIndex);
+	else
+		DeadlyDebuffFrame:Hide();
 	end
 
-	--Aubrie ToDO: The width and the layout will need to come from edit mode. 
-	local anchor = AnchorUtil.CreateAnchor("TOPRIGHT", debuffContainer, "TOPRIGHT");
-	local layout = AnchorUtil.CreateGridLayout( GridLayoutMixin.Direction.TopRightToBottomLeft, 4, 5, 15);
-	
-	AnchorUtil.GridLayoutFactoryByCount(DebuffFactoryFunction, #debuffTable, anchor,  layout);
-	debuffContainer:Layout(); 
-end
-
-function BuffFrameMixin:UpdateAllBuffAnchors()
-	self.debuffPool:ReleaseAll(); 
-	self.buffsPool:ReleaseAll(); 
-	--table.sort(self.buffInfo, BuffsSortFunction); 
-	--table.sort(self.shownBuffs, BuffSortFunction);
-	self:SetupBuffs(self:GetExpanded());
-	self:SetupDebuffs(false);
-	self:SetupDebuffs(true);
-	self.CollapseAndExpandButton:SetShown(self.buffInfo and (#self.buffInfo >= 1));
+	-- Add remaining deadly debuffs onto end of aura list so they appear at the end
+	for index, deadlyDebuff in ipairs(self.deadlyDebuffInfo) do
+		deadlyDebuff.index = #self.auraInfo + 1;
+		self.auraInfo[deadlyDebuff.index] = deadlyDebuff;
+	end
 end
 
 AuraButtonMixin = { }; 
@@ -247,11 +509,11 @@ function AuraButtonMixin:OnLeave()
 end 
 
 function AuraButtonMixin:UpdateExpirationTime(buttonInfo)
-	if ( (buttonInfo.duration and buttonInfo.duration > 0) and buttonInfo.expirationTime ) then
+	if ( buttonInfo.expirationTime and buttonInfo.expirationTime > 0 ) then
 		self.duration:SetShown(CVarCallbackRegistry:GetCVarValueBool("buffDurations"));
-			
+		 
 		local timeLeft = (buttonInfo.expirationTime - GetTime());
-		if(buttonInfo.timeMod > 0) then
+		if( buttonInfo.timeMod and buttonInfo.timeMod > 0) then
 			self.timeMod = buttonInfo.timeMod;
 			timeLeft = timeLeft / buttonInfo.timeMod;
 		end
@@ -394,19 +656,22 @@ function DebuffButtonMixin:OnLoad()
 end
 
 TempEnchantButtonMixin = CreateFromMixins(AuraButtonMixin);
+
 function TempEnchantButtonMixin:OnLoad()
 	self:RegisterForClicks("RightButtonUp");
 end
 
 function TempEnchantButtonMixin:OnUpdate(elapsed)
 	-- Update duration
-	if( not PlayerFrame.unit or PlayerFrame.unit ~= "player") then 
-		self:Hide(); 
-		return; 
-	end		
+	if( not PlayerFrame.unit or PlayerFrame.unit ~= "player") then
+		self:Hide();
+		return;
+	end
+
 	if ( GameTooltip:IsOwned(self) ) then
 		self:OnEnter();
 	end
+
 	AuraButtonMixin.OnUpdate(self, elapsed);
 end
 
@@ -416,19 +681,27 @@ function TempEnchantButtonMixin:OnEnter()
 end
 
 function TempEnchantButtonMixin:GetID()
-	return self.buttonInfo.ID; 
+	return self.buttonInfo.ID;
 end
 
 function TempEnchantButtonMixin:Update(buttonInfo, expanded)
 	if (not buttonInfo) then
-		return; 
-	end 
-	
+		return;
+	end
+
 	self.buttonInfo = buttonInfo; 
-	self.Icon:SetTexture(self.buttonInfo.textureName); 
-	self:UpdateExpirationTime(buttonInfo); 
-	local canShow = (not buttonInfo.hideUnlessExpanded) or expanded; 
-	self:SetShown(canShow); 
+	self.Icon:SetTexture(self.buttonInfo.textureName);
+	self:UpdateExpirationTime(buttonInfo);
+
+	if (buttonInfo.count > 1) then
+		self.count:SetText(buttonInfo.count);
+		self.count:Show();
+	else
+		self.count:Hide();
+	end
+
+	local canShow = (not buttonInfo.hideUnlessExpanded) or expanded;
+	self:SetShown(canShow);
 end
 
 --AubrieTODO: Figure out what we want to do with temp item enchants. 
@@ -443,17 +716,48 @@ function TempEnchantButtonMixin:OnClick()
 end
 
 CollapseAndExpandButtonMixin = { };
-function CollapseAndExpandButtonMixin:OnClick()
-	self:GetParent():SetBuffsExpandedState(self:GetChecked()); 
-	local collapseState = self:GetChecked() and math.pi or 0;
-	self:GetNormalTexture():SetRotation(collapseState);
-	self:GetHighlightTexture():SetRotation(collapseState);
-end
 
 function CollapseAndExpandButtonMixin:OnLoad()
+	self.orientation = CollapseAndExpandButton_Orientation_Horizontal;
+	self.expandDirection = CollapseAndExpandButton_ExpandDirection_Left;
+
 	self:SetChecked(true);
-	self:GetNormalTexture():SetRotation(math.pi);
-	self:GetHighlightTexture():SetRotation(math.pi);
+	self:UpdateOrientation();
+end
+
+function CollapseAndExpandButtonMixin:OnClick()
+	self:GetParent():SetBuffsExpandedState(self:GetChecked());
+	self:UpdateOrientation();
+end
+
+function CollapseAndExpandButtonMixin:UpdateOrientation()
+	local isChecked = self:GetChecked();
+	local rotation;
+
+	if self.orientation == CollapseAndExpandButton_Orientation_Horizontal then
+		local leftRotation = math.pi;
+		local rightRotation = 0;
+		if self.expandDirection == CollapseAndExpandButton_ExpandDirection_Left then
+			rotation = isChecked and leftRotation or rightRotation;
+		else
+			rotation = isChecked and rightRotation or leftRotation;
+		end
+
+		self:SetSize(13, 30);
+	else
+		local downRotation = 3 * math.pi / 2;
+		local upRotation = math.pi / 2;
+		if self.expandDirection == CollapseAndExpandButton_ExpandDirection_Down then
+			rotation = isChecked and downRotation or upRotation;
+		else
+			rotation = isChecked and upRotation or downRotation;
+		end
+
+		self:SetSize(30, 13);
+	end
+
+	self:GetNormalTexture():SetRotation(rotation);
+	self:GetHighlightTexture():SetRotation(rotation);
 end
 
 DeadlyDebuffFrameMixin = { };
@@ -465,3 +769,10 @@ function DeadlyDebuffFrameMixin:Setup(deadlyDebuffInfo)
 	end
 	self:Show(); 
 end 
+
+ExampleDebuffMixin = {};
+
+function ExampleDebuffMixin:Setup()
+	local color = DebuffTypeColor["none"];
+	self.Border:SetVertexColor(color.r, color.g, color.b)
+end

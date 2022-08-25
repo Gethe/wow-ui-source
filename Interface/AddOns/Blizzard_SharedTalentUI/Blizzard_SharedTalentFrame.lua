@@ -234,10 +234,22 @@ function TalentFrameBaseMixin:OnShow()
 		-- Currency info may have been changed since the frame was last opened.
 		self:UpdateTreeCurrencyInfo();
 	end
+
+	if self:IsCommitInProgress() then
+		self:SetCommitVisualsActive(true);
+	end
 end
 
 function TalentFrameBaseMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, TalentFrameBaseEvents);
+
+	if self:IsCommitInProgress() then
+		self:SetCommitVisualsActive(false);
+	end
+
+	if self.playingBackgroundFlash then
+		self:SetBackgroundFlashActive(false);
+	end
 
 	self:ClearInfoCaches();
 end
@@ -970,15 +982,46 @@ function TalentFrameBaseMixin:SetDisabledOverlayShown(shown)
 	self.DisabledOverlay:SetShown(shown);
 end
 
+function TalentFrameBaseMixin:SetBackgroundFlashActive(activateFlash)
+	if activateFlash then
+		self.AnimationHolder.BackgroundFlashAnim:Restart();
+		self.playingBackgroundFlash = true;
+	else
+		self.BackgroundFlash:SetAlpha(0);
+		self.AnimationHolder.BackgroundFlashAnim:Stop();
+		self.playingBackgroundFlash = false;
+	end
+end
+
+function TalentFrameBaseMixin:SetCommitVisualsActive(active)
+	self.DisabledOverlay:SetShown(active);
+
+	if self.enableCommitCastBar then
+		if active then
+			OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, "applyingcrafting");
+		else
+			OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
+		end
+	end
+end
+
 function TalentFrameBaseMixin:SetCommitStarted(configID)
 	local isCommitStarted = (configID ~= nil);
+	local wasCommitActive = self:IsCommitInProgress();
+
 	self.commitedConfigID = configID;
 
-	self.DisabledOverlay:SetShown(isCommitStarted);
+	if isCommitStarted ~= wasCommitActive then
+		self:SetCommitVisualsActive(isCommitStarted);
+	end
 
 	if not isCommitStarted and self.commitTimer then
 		self.commitTimer:Cancel();
 		self.commitTimer = nil;
+	end
+
+	if self.enableCommitEndFlash and not isCommitStarted and wasCommitActive then
+		self:SetBackgroundFlashActive(true);
 	end
 end
 
@@ -990,6 +1033,8 @@ function TalentFrameBaseMixin:CommitConfig()
 	if self:IsCommitInProgress() or not self:CheckAndReportCommitOperation() then
 		return;
 	end
+
+	self:PlayCommitConfigSound();
 
 	self:SetCommitStarted(self:GetConfigID());
 
@@ -1011,7 +1056,21 @@ function TalentFrameBaseMixin:RollbackConfig()
 		return;
 	end
 
+	self:PlayRollbackConfigSound();
+
 	return C_Traits.RollbackConfig(self:GetConfigID());
+end
+
+function TalentFrameBaseMixin:PlayCommitConfigSound()
+	if self.commitSound then
+		PlaySound(self.commitSound);
+	end
+end
+
+function TalentFrameBaseMixin:PlayRollbackConfigSound()
+	if self.rollbackSound then
+		PlaySound(self.rollbackSound);
+	end
 end
 
 function TalentFrameBaseMixin:IsCommitInProgress()
@@ -1052,12 +1111,12 @@ function TalentFrameBaseMixin:AttemptConfigOperation(operation, ...)
 	return true;
 end
 
-function TalentFrameBaseMixin:PurchaseRank(nodeID, entryID)
-	self:AttemptConfigOperation(C_Traits.PurchaseRank, nodeID, entryID);
+function TalentFrameBaseMixin:PurchaseRank(nodeID)
+	self:AttemptConfigOperation(C_Traits.PurchaseRank, nodeID);
 end
 
-function TalentFrameBaseMixin:RefundRank(nodeID, entryID)
-	self:AttemptConfigOperation(C_Traits.RefundRank, nodeID, entryID);
+function TalentFrameBaseMixin:RefundRank(nodeID)
+	self:AttemptConfigOperation(C_Traits.RefundRank, nodeID);
 end
 
 function TalentFrameBaseMixin:RefundAllRanks(nodeID)

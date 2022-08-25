@@ -108,7 +108,7 @@ local function FillOutExtraIconsMapWithEquipment(extraIconsMap)
 	end
 end
 
-function IconDataProviderMixin:Init(type)
+function IconDataProviderMixin:Init(type, extraIconsOnly)
 	self.extraIcons = {};
 
 	if type == IconDataProviderExtraType.Spell then
@@ -122,13 +122,16 @@ function IconDataProviderMixin:Init(type)
 		self.extraIcons = GetKeysArray(extraIconsMap);
 	end
 
-	NumActiveIconDataProviders = NumActiveIconDataProviders + 1;
-	IconDataProvider_RefreshIconTextures();
+	if not extraIconsOnly then
+		NumActiveIconDataProviders = NumActiveIconDataProviders + 1;
+		IconDataProvider_RefreshIconTextures();
+	end
 end
 
 function IconDataProviderMixin:GetNumIcons()
 	-- 1 to account for the ? icon.
-	return 1 + #self.extraIcons + #BaseIconFilenames;
+	local numBaseIcons = BaseIconFilenames and #BaseIconFilenames or 0;
+	return 1 + #self.extraIcons + numBaseIcons;
 end
 
 function IconDataProviderMixin:GetIconByIndex(index)
@@ -161,7 +164,8 @@ function IconDataProviderMixin:GetIndexOfIcon(icon)
 		return 1;
 	end
 
-	for i = 1, self:GetNumIcons() do
+	local numIcons = self:GetNumIcons();
+	for i = 1, numIcons do
 		if self:GetIconByIndex(i) == icon then
 			return i;
 		end

@@ -4,7 +4,7 @@ local MAJOR_FACTIONS_INTRO_QUEST_ID_ALLIANCE = 65436;
 local MAJOR_FACTIONS_INTRO_QUEST_ID_HORDE = 65435;
 
 local DRAGONRIDING_INTRO_QUEST_ID = 68798;
-local DRAGONRIDING_TRAIT_TREE_ID = 500;
+local DRAGONRIDING_TRAIT_SYSTEM_ID = 1;
 
 local minimapDisplayInfo = { 
 	["normalAtlas"] = "legionmission-landingbutton-druid-up",
@@ -132,6 +132,6 @@ end
 function DragonridingPanelTalentButtonMixin:OnClick()
 	GenericTraitUI_LoadUI();
 
-	GenericTraitFrame:SetTreeID(DRAGONRIDING_TRAIT_TREE_ID);
+	GenericTraitFrame:SetSystemID(DRAGONRIDING_TRAIT_SYSTEM_ID);
 	ShowUIPanel(GenericTraitFrame);
 end

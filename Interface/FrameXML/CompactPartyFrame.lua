@@ -6,25 +6,41 @@ function CompactPartyFrame_OnLoad(self)
 	CompactUnitFrame_SetUpFrame(unitFrame, DefaultCompactUnitFrameSetup);
 	CompactUnitFrame_SetUpdateAllEvent(unitFrame, "GROUP_ROSTER_UPDATE");
 	
-	for i=1, MEMBERS_PER_RAID_GROUP do
-		if ( i > 1 ) then	--Player has to be done separately.
-			local unitFrame = _G[self:GetName().."Member"..i];
-			CompactUnitFrame_SetUnit(unitFrame, "party"..(i-1));
-			CompactUnitFrame_SetUpFrame(unitFrame, DefaultCompactUnitFrameSetup);
-			CompactUnitFrame_SetUpdateAllEvent(unitFrame, "GROUP_ROSTER_UPDATE");
-		end
-	end
+	CompactPartyFrame_RefreshMembers();
 	
 	self.title:SetText(PARTY);
 	self.title:Disable();
 end
 
+function CompactPartyFrame_RefreshMembers()
+	if not CompactPartyFrame then
+		return;
+	end
+
+	for i=2, MEMBERS_PER_RAID_GROUP do
+		local unitFrame = _G["CompactPartyFrameMember"..i];
+
+		local realPartyMemberToken = "party"..(i-1);
+		local usePlayerOverride = EditModeManagerFrame:ArePartyFramesForcedShown() and not UnitExists(realPartyMemberToken);
+		local unitToken = usePlayerOverride and "player" or realPartyMemberToken;
+
+		CompactUnitFrame_SetUnit(unitFrame, unitToken);
+		if not usePlayerOverride then
+			CompactUnitFrame_SetUpFrame(unitFrame, DefaultCompactUnitFrameSetup);
+			CompactUnitFrame_SetUpdateAllEvent(unitFrame, "GROUP_ROSTER_UPDATE");
+		end
+	end
+
+	CompactRaidGroup_UpdateBorder(CompactPartyFrame);
+end
+
 function CompactPartyFrame_Generate()
 	local frame = CompactPartyFrame;
 	local didCreate = false;
-	if ( not frame ) then
+	if not frame then
 		frame = CreateFrame("Frame", "CompactPartyFrame", UIParent, "CompactPartyFrameTemplate");
 		CompactRaidGroup_UpdateBorder(frame);
+		frame:RegisterEvent("GROUP_ROSTER_UPDATE");
 		didCreate = true;
 	end
 	return frame, didCreate;

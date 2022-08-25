@@ -95,8 +95,8 @@
 			</Frame>
 		</Frames>
 		<Animations>
-			<AnimationGroup parentKey="BarAnimation" looping="REPEAT" setToFinalAlpha="true">
-				<FlipBook smoothing="NONE" childKey="Fill" duration="5" order="1" flipBookRows="30" flipBookColumns="2" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			<AnimationGroup parentKey="BarAnimation" looping="NONE" setToFinalAlpha="true">
+				<FlipBook parentKey="Flipbook" smoothing="OUT" childKey="Fill" duration="1.5" order="1" flipBookRows="30" flipBookColumns="2" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

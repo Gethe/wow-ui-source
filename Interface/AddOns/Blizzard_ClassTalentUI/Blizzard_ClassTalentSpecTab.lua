@@ -62,6 +62,11 @@ local ClassTalentSpecTabUnitEvents = {
 
 function ClassTalentSpecTabMixin:OnLoad()
 	self.SpecContentFramePool = CreateFramePool("FRAME", self, "ClassSpecContentFrameTemplate");
+	self.DisabledOverlay.GrayOverlay:SetAlpha(self.disabledOverlayAlpha);
+
+	-- TODO: Replace with bespoke spec change state flow
+	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
 
 	self:UpdateSpecContents();
 	self:UpdateSpecFrame();
@@ -71,7 +76,22 @@ function ClassTalentSpecTabMixin:OnShow()
 	FrameUtil.RegisterFrameForUnitEvents(self, ClassTalentSpecTabUnitEvents, "player");
 	self:UpdateSpecContents();
 	self:UpdateSpecFrame();
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+
+	if self:IsActivateInProgress() then
+		self:SetActivateVisualsActive(true);
+	end
+end
+
+function ClassTalentSpecTabMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, ClassTalentSpecTabUnitEvents);
+
+	if self.playingBackgroundFlash then
+		self:SetBackgroundFlashActive(false);
+	end
+
+	if self:IsActivateInProgress() then
+		self:SetActivateVisualsActive(false);
+	end
 end
 
 function ClassTalentSpecTabMixin:UpdateSpecFrame()
@@ -83,6 +103,10 @@ function ClassTalentSpecTabMixin:UpdateSpecFrame()
 	local playerTalentSpec = GetSpecialization(nil, false, talentGroup);
 	local numSpecs = GetNumSpecializations(nil, false);
 	local sex = UnitSex("player");
+
+	if playerTalentSpec == self.activatedSpecIndex and self:IsActivateInProgress() then
+		self:SetSpecActivateStarted(nil);
+	end
 
 	for specContentFrame in self.SpecContentFramePool:EnumerateActive() do 
 		-- selected spec highlight
@@ -123,33 +147,57 @@ function ClassTalentSpecTabMixin:UpdateSpecContents()
 	self:Layout();
 end
 
-function ClassTalentSpecTabMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, ClassTalentSpecTabUnitEvents);
-	if self.playingBackgroundFlash then
-		self:StopBackgroundFlash();
-	end
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-end
-
 function ClassTalentSpecTabMixin:OnEvent(event, ...)
 	if (event == "UNIT_LEVEL") or (event == "PLAYER_SPECIALIZATION_CHANGED") then
 		self:UpdateSpecFrame();
 
 		if event == "PLAYER_SPECIALIZATION_CHANGED" then
-			self:PlayBackgroundFlash();
+			self:SetBackgroundFlashActive(true);
+			self:SetSpecActivateStarted(nil);
+		end
+	-- TODO: Replace with bespoke spec change state flow
+	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) and ( self:IsActivateInProgress()) then
+		local cancelledSpellID = select(3, ...);
+		if ( cancelledSpellID and IsSpecializationActivateSpell(cancelledSpellID) ) then
+			self:SetSpecActivateStarted(nil);
 		end
 	end
 end
 
-function ClassTalentSpecTabMixin:PlayBackgroundFlash()
-	self.AnimationHolder.BackgroundFlashAnim:Restart();
-	self.playingBackgroundFlash = true;
+function ClassTalentSpecTabMixin:SetBackgroundFlashActive(activateFlash)
+	if(activateFlash) then
+		self.AnimationHolder.BackgroundFlashAnim:Restart();
+		self.playingBackgroundFlash = true;
+	else
+		self.BackgroundFlash:SetAlpha(0);
+		self.AnimationHolder.BackgroundFlashAnim:Stop();
+		self.playingBackgroundFlash = false;
+	end
 end
 
-function ClassTalentSpecTabMixin:StopBackgroundFlash()
-	self.BackgroundFlash:SetAlpha(0);
-	self.AnimationHolder.BackgroundFlashAnim:Stop();
-	self.playingBackgroundFlash = false;
+function ClassTalentSpecTabMixin:IsActivateInProgress()
+	return self.activatedSpecIndex ~= nil;
+end
+
+function ClassTalentSpecTabMixin:SetSpecActivateStarted(specIndex)
+	local isActivateStarted = (specIndex ~= nil);
+	local wasActivateActive = self:IsActivateInProgress();
+
+	self.activatedSpecIndex = specIndex;
+
+	if isActivateStarted ~= wasActivateActive then
+		self:SetActivateVisualsActive(isActivateStarted);
+	end
+end
+
+function ClassTalentSpecTabMixin:SetActivateVisualsActive(active)
+	if active then
+		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, "applyingcrafting");
+		self.DisabledOverlay:SetShown(true);
+	else
+		OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
+		self.DisabledOverlay:SetShown(false);
+	end
 end
 
 ClassSpecContentFrameMixin={}
@@ -271,6 +319,12 @@ function ClassSpecContentFrameMixin:UpdateSelectionGlow(IsInGlowState, numSpecs)
 		self.SelectedBackgroundRight3:Hide()
 		self.SelectedBackgroundRight4:Hide()
 	end
+end
+
+function ClassSpecContentFrameMixin:OnActivateClicked()
+	PlaySound(SOUNDKIT.UI_CLASS_TALENT_SPEC_ACTIVATE);
+	SetSpecialization(self.specIndex, false);
+	self:GetParent():SetSpecActivateStarted(self.specIndex);
 end
 
 ClassSpecSpellMixin = {}

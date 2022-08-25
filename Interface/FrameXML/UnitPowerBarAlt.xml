@@ -173,6 +173,13 @@
 						self.alwaysShow = 1;
 						self.cvar = "alternateResourceText";
 						self.cvarLabel = "ALTERNATE_RESOURCE_TEXT";
+
+						local function OnStatusTextSettingChanged()
+							UnitPowerBarAltStatus_UpdateText(self);
+						end
+
+						Settings.SetOnValueChangedCallback("PROXY_STATUS_TEXT", OnStatusTextSettingChanged);
+
 						self:RegisterEvent("CVAR_UPDATE");
 					</OnLoad>
 					<OnEvent function="UnitPowerBarAltStatus_OnEvent"/>

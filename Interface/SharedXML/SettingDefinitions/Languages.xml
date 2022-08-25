@@ -67,4 +67,16 @@
 			</EventButton>
 		</Frames>
 	</Frame>
+
+	<Frame name="SettingsLanguageRestartNeededTemplate" inherits="SettingsListElementTemplate" mixin="LanguageRestartNeededMixin" virtual="true">
+		<Size x="512" y="22"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RestartNeeded" file="Interface\Common\Lang-Alerts" hidden="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

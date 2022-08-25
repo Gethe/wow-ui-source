@@ -482,8 +482,6 @@ function UnitPowerBarAltStatus_OnEvent(self, event, ...)
 	local doUpdate = false;
 	if ( self.cvar and cvar == self.cvarLabel ) then
 		UnitPowerBarAltStatus_ToggleFrame(self);
-	elseif ( cvar == "STATUS_TEXT_DISPLAY" ) then
-		UnitPowerBarAltStatus_UpdateText(self);
 	end
 end
 

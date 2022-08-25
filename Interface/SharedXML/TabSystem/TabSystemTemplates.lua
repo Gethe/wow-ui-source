@@ -81,8 +81,9 @@ function TabSystemButtonMixin:OnLeave()
 end
 
 function TabSystemButtonMixin:OnClick()
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-	self:GetTabSystem():SetTab(self:GetTabID());
+	local tabSystem = self:GetTabSystem();
+	tabSystem:PlayTabSelectSound();
+	tabSystem:SetTab(self:GetTabID());
 end
 
 function TabSystemButtonMixin:Init(tabID, tabText)
@@ -181,4 +182,10 @@ end
 
 function TabSystemMixin:GetTabButton(tabID)
 	return self.tabs[tabID];
+end
+
+function TabSystemMixin:PlayTabSelectSound()
+	if self.tabSelectSound then
+		PlaySound(self.tabSelectSound);
+	end
 end

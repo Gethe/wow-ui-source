@@ -56,7 +56,7 @@
 	</Frame>
 
 	<Frame name="VoicePushToTalkTemplate" inherits="SettingsListElementTemplate" mixin="VoicePushToTalkMixin" virtual="true">
-		<Size x="280" y="52"/>
+		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

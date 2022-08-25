@@ -356,3 +356,22 @@ function BackpackTokenFrameMixin:GetMaxTokensWatched()
 
 	return math.floor(self:GetWidth() / self.tokenWidth);
 end
+
+BackpackTokenMixin = {};
+
+function BackpackTokenMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetBackpackToken(self:GetID());
+end
+
+function BackpackTokenMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function BackpackTokenMixin:OnClick()
+	if IsModifiedClick("CHATLINK") then
+		HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyLink(self.currencyID));
+	else
+		ToggleCharacter("TokenFrame");
+	end
+end

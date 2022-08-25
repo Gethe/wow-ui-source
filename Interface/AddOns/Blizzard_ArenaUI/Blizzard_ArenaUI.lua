@@ -17,7 +17,7 @@ function ArenaEnemyFrames_OnLoad(self)
 		castFrame:UpdateIsShown();
 	end
 	
-	UpdateArenaEnemyBackground(GetCVarBool("showPartyBackground"));
+	UpdateArenaEnemyBackground();
 	ArenaEnemyBackground_SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
 	ArenaEnemyFrames_UpdateVisible();
 	ArenaEnemyFrames_ResetCrowdControlCooldownData();
@@ -39,7 +39,7 @@ function ArenaEnemyFrames_OnEvent(self, event, ...)
 		for i=1, MAX_ARENA_ENEMIES do
 			ArenaEnemyFrame_UpdatePet(_G["ArenaEnemyFrame"..i], i);
 		end
-		UpdateArenaEnemyBackground(GetCVarBool("showPartyBackground"));
+		UpdateArenaEnemyBackground();
 		ArenaEnemyBackground_SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		ArenaEnemyFrames_CheckEffectiveEnableState(self);
@@ -399,8 +399,8 @@ function ArenaEnemyPetDropDown_Initialize(self)
 	UnitPopup_ShowMenu(self, "ARENAENEMY", "arenapet"..self:GetParent():GetID());
 end
 
-function UpdateArenaEnemyBackground(force)
-	if ( force or GetCVarBool("showPartyBackground")) then
+function UpdateArenaEnemyBackground()
+	if EditModeManagerFrame:ShouldShowPartyFrameBackground() then
 		ArenaEnemyBackground:Show();
 		local numOpps = min(GetNumArenaOpponents(), MAX_ARENA_ENEMIES);
 		if ( numOpps > 0 ) then
@@ -484,8 +484,8 @@ function ArenaPrepFrames_UpdateFrames()
 	
 end
 
-function ArenaPrepFrames_UpdateBackground(force)
-	if ( force or GetCVarBool("showPartyBackground")) then
+function ArenaPrepFrames_UpdateBackground()
+	if EditModeManagerFrame:ShouldShowPartyFrameBackground() then
 		ArenaPrepBackground:Show();
 		local numOpps = GetNumArenaOpponents();
 		if ( numOpps > 0 ) then

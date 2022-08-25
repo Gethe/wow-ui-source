@@ -59,6 +59,12 @@ local function Register()
 	-- Invert Mouse
 	Settings.SetupCVarCheckBox(category, "mouseInvertPitch", INVERT_MOUSE, OPTION_TOOLTIP_INVERT_MOUSE);
 
+	local function GetFormatter1to10(minValue, maxValue)
+		return function(value)
+			return RoundToSignificantDigits(((value-minValue)/(maxValue-minValue) * 9) + 1, 1)
+		end
+	end
+
 	-- Mouse Look Speed
 	do
 		local function GetValue()
@@ -76,8 +82,7 @@ local function Register()
 		
 		local minValue, maxValue, step = 90, 270, 10;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Min, SLOW);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Max, FAST);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, GetFormatter1to10(minValue, maxValue));
 		Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_MOUSE_LOOK_SPEED);
 	end
 	
@@ -86,10 +91,9 @@ local function Register()
 		local cbSetting = Settings.RegisterCVarSetting(category, "enableMouseSpeed", Settings.VarType.Boolean, ENABLE_MOUSE_SPEED);
 		local sliderSetting = Settings.RegisterCVarSetting(category, "mouseSpeed", Settings.VarType.Number, MOUSE_SENSITIVITY);
 
-		local minValue, maxValue, step = 0.5, 1.5, .05;
+		local minValue, maxValue, step = 0.5, 1.4, .05;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Min, LOW);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Max, HIGH);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, GetFormatter1to10(minValue, maxValue));
 
 		local initializer = CreateSettingsCheckBoxSliderInitializer(
 				cbSetting, ENABLE_MOUSE_SPEED, OPTION_TOOLTIP_ENABLE_MOUSE_SPEED,
@@ -141,8 +145,7 @@ local function Register()
 
 		local minValue, maxValue, step = 90, 270, 10;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Min, SLOW);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Max, FAST);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, GetFormatter1to10(minValue, maxValue));
 		Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_AUTO_FOLLOW_SPEED);
 	end
 	
