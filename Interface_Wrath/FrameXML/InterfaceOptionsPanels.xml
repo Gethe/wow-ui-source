@@ -1425,7 +1425,7 @@
 						self.type = CONTROLTYPE_DROPDOWN;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					<OnShow function="InterfaceOptionsDisplayPanelChatBubblesDropDown_OnShow"/>
+					<OnShow function="InterfaceOptionsSocialPanelChatBubblesDropDown_OnShow"/>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);

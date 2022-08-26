@@ -1237,23 +1237,25 @@ function FriendsFrame_UpdateFriendButton(button)
 		end
 
 		if ( isOnline ) then
-			local _, _, _, realmName, realmID, faction, _, _, _, zoneName, _, gameText, _, _, _, _, _, isGameAFK, isGameBusy, guid, wowProjectID = BNGetGameAccountInfo(bnetIDGameAccount);
+			local gameAccountInfo = C_BattleNet.GetGameAccountInfoByID(bnetIDGameAccount);
 			button.background:SetColorTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
-			if ( isBnetAFK or isGameAFK ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_AFK);
-			elseif ( isBnetDND or isGameBusy ) then
-				button.status:SetTexture(FRIENDS_TEXTURE_DND);
-			else
-				button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
-			end
-
-			if ShowRichPresenceOnly(client, wowProjectID, faction, realmID) then
-				infoText = gameText;
-			else
-				if ( not zoneName or zoneName == "" ) then
-					infoText = UNKNOWN;
+			if(gameAccountInfo) then
+				if ( isBnetAFK or gameAccountInfo.isGameAFK ) then
+					button.status:SetTexture(FRIENDS_TEXTURE_AFK);
+				elseif ( isBnetDND or gameAccountInfo.isGameBusy ) then
+					button.status:SetTexture(FRIENDS_TEXTURE_DND);
 				else
-					infoText = zoneName;
+					button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
+				end
+
+				if ShowRichPresenceOnly(client, gameAccountInfo.wowProjectID, gameAccountInfo.factionName, gameAccountInfo.realmID) then
+					infoText = gameAccountInfo.richPresence;
+				else
+					if ( not gameAccountInfo.areaName or gameAccountInfo.areaName == "" ) then
+						infoText = UNKNOWN;
+					else
+						infoText = gameAccountInfo.areaName;
+					end
 				end
 			end
 			

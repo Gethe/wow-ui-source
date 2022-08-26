@@ -1,13 +1,22 @@
 function UnitPopupSharedUtil:GetBNetIDAccount()
-	return nil;
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
+	if dropdownMenu.bnetIDAccount then
+		return dropdownMenu.bnetIDAccount;
+	elseif dropdownMenu.guid and C_AccountInfo.IsGUIDBattleNetAccountType(dropdownMenu.guid) then
+		return C_AccountInfo.GetIDFromBattleNetAccountGUID(dropdownMenu.guid);
+	end
 end
 
 function UnitPopupSharedUtil:GetBNetAccountInfo()
-	return nil;
-end
-
-function UnitPopupSharedUtil:GetIsMobile()
-	return nil;
+	local bnetIDAccount = UnitPopupSharedUtil.GetBNetIDAccount()
+	if bnetIDAccount then
+		return C_BattleNet.GetAccountInfoByID(bnetIDAccount);
+	else
+		local guid = UnitPopupSharedUtil.GetGUID()
+		if guid then
+			return C_BattleNet.GetAccountInfoByGUID(guid);
+		end
+	end
 end
 
 function UnitPopupSharedUtil:TryCreatePlayerLocation(guid)
@@ -33,17 +42,14 @@ end
 	
 
 function UnitPopupSharedUtil:IsBNetFriend()
-	return nil;
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	return dropdownMenu.accountInfo and dropdownMenu.accountInfo.isFriend;
 end
 
 function UnitPopupSharedUtil:CanAddBNetFriend(isLocalPlayer, haveBattleTag, isPlayer)
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if dropdownMenu.clubInfo == nil
-		or dropdownMenu.clubMemberInfo == nil
-		or dropdownMenu.clubMemberInfo.isSelf then
-		return false; 
-	end
-	return true; 
+	local hasClubInfo = dropdownMenu.clubInfo ~= nil and dropdownMenu.clubMemberInfo ~= nil;
+	return not isLocalPlayer and haveBattleTag and (isPlayer or hasClubInfo or dropdownMenu.accountInfo) and not UnitPopupSharedUtil.IsBNetFriend();
 end
 
 function UnitPopupSharedUtil:GetCurrentDropdownMenu()

@@ -152,7 +152,7 @@ end
 
 --Add your project specific implementation in UnitPopupUtils
 function UnitPopupSharedUtil:CanAddBNetFriend(isLocalPlayer, haveBattleTag, isPlayer)
-	return nil; 
+	return nil;
 end
 
 function UnitPopupSharedUtil:IsEnabled(unitPopupButton)

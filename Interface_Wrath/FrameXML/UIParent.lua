@@ -1052,6 +1052,16 @@ function UIParent_OnEvent(self, event, ...)
 			if ( dialog ) then
 				dialog.data = resSicknessTime;
 			end
+		else
+			local dialog = nil;
+			if (UnitLevel("player") <= Constants.LevelConstsExposed.MIN_RES_SICKNESS_LEVEL) then
+				dialog = StaticPopup_Show("XP_LOSS_NO_SICKNESS_NO_DURABILITY");
+			else
+				dialog = StaticPopup_Show("XP_LOSS_NO_SICKNESS");
+			end
+			if ( dialog ) then
+				dialog.data = 1;
+			end
 		end
 		HideUIPanel(GossipFrame);
 	elseif ( event == "CORPSE_IN_RANGE" ) then

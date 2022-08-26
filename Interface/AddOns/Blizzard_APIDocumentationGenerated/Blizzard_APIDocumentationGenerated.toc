@@ -17,6 +17,7 @@ AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
 BankDocumentation.lua
 BarberShopDocumentation.lua
+BattleNetDocumentation.lua
 BattlePetDocumentation.lua
 BehavioralMessagingDocumentation.lua
 BlackMarketInfoDocumentation.lua
@@ -167,6 +168,7 @@ PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
+RecruitAFriendSharedDocumentation.lua
 ReportSystemConstantsDocumentation.lua
 ScriptRegionSharedDocumentation.lua
 TextureSharedDocumentation.lua
