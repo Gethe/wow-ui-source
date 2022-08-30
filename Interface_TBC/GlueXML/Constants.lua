@@ -2,12 +2,14 @@
 EXPANSION_GLUE_AMBIENCE = {
 	[LE_EXPANSION_CLASSIC]					= SOUNDKIT.GLUESCREEN_INTRO,
 	[LE_EXPANSION_BURNING_CRUSADE]			= SOUNDKIT.GLUESCREEN_INTRO,
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING]				= SOUNDKIT.GLUESCREEN_INTRO,
 };
 
 --Music
 EXPANSION_GLUE_MUSIC = {
 	[LE_EXPANSION_CLASSIC]					= SOUNDKIT.MUS_1_0_MAINTITLE_ORIGINAL,
 	[LE_EXPANSION_BURNING_CRUSADE]			= SOUNDKIT.GS_BURNINGCRUSADE,
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING]				= SOUNDKIT.GS_LICH_KING,
 };
 
 GLUE_AMBIENCE_TRACKS = {
@@ -75,11 +77,13 @@ CREDITS_TITLES = {
 EXPANSION_HIGH_RES_BG = {
 	[LE_EXPANSION_CLASSIC] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 	[LE_EXPANSION_BURNING_CRUSADE] = "Interface\\Glues\\Models\\UI_MainMenu_BurningCrusade\\UI_MainMenu_BurningCrusade.m2",
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Interface\\Glues\\Models\\UI_MainMenu_Northrend\\UI_MainMenu_Northrend.M2",
 };
 
 EXPANSION_LOW_RES_BG = {
-	[LE_EXPANSION_CLASSIC] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
-	[LE_EXPANSION_BURNING_CRUSADE] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+	[LE_EXPANSION_CLASSIC] =			"Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+	[LE_EXPANSION_BURNING_CRUSADE] =	"Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] =			"Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 };
 
 --Movie
@@ -148,7 +152,7 @@ CREDITS_ART_INFO = {
 			{ file="Fellwood", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="OrcShield", w=512, h=512, offsetx=128, offsety=0, maxAlpha=0.5 },
 		},
-		[LE_RELEASE_TYPE_MODERN] = {
+		[LE_RELEASE_TYPE_CLASSIC] = {
 			{ file="ClassicGryphon", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 		},
 	},
@@ -216,8 +220,66 @@ CREDITS_ART_INFO = {
 			{ file="The_Broken", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="Photos", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 		},
-		[LE_RELEASE_TYPE_MODERN] = {
+		[LE_RELEASE_TYPE_CLASSIC] = {
 			{ file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+		},
+	},
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {
+		[LE_RELEASE_TYPE_ORIGINAL] = {
+			{ file="Azol0", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="BoreanTun", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="GrizzlemawTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="GrizzlyHills2TGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="GrizzlyHills3TGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="GrizzlyHillsTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="HallwayTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Hunter01TGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="ID_TownTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="IronDwarfTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Knife1HTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="LeatherSunwellTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="LichKingTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mace1HTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="MaginnisTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Magnataur", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Magnataur2", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Mergul01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="NerubianArch", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="NexusFire", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="NorthGiant", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="NorthrendComp", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="OrcTower", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Penguin", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Powersource", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Revanent", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Revanent2", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Rocket", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Sanctification", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="SeaVrykul", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Shol", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Shol02", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="ShovelTusk", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Sword_1H", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Titan1", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="TrollFacade", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Turtle01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Tuskar House", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="TuskarGuy", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="TuskarGuy2", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Uld_Hall", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="ValgardeDragon", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="ValgardeForge", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Vamp", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="VryFem", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="VrykDoor", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Vrykul_Undead", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="VrykulBuild", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="VrykulFace", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="Zombie", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+			{ file="ZulDrak", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+		},
+		[LE_RELEASE_TYPE_CLASSIC] = {
+			{ file="LichKingTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 		},
 	},
 };
@@ -225,6 +287,7 @@ CREDITS_ART_INFO = {
 GLUE_CREDITS_SOUND_KITS = {
 	[LE_EXPANSION_CLASSIC]					= SOUNDKIT.MENU_CREDITS01,
 	[LE_EXPANSION_BURNING_CRUSADE]			= SOUNDKIT.MENU_CREDITS02,
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING]				= SOUNDKIT.MENU_CREDITS03,
 };
 
 AUTO_LOGIN_WAIT_TIME = 1.75;

@@ -104,6 +104,7 @@ ChatTypeInfo["CHANNEL17"]								= { sticky = 1, flashTab = false, flashTabOnGen
 ChatTypeInfo["CHANNEL18"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL19"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL20"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["ACHIEVEMENT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BN_WHISPER"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = true };
 ChatTypeInfo["BN_WHISPER_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -230,6 +231,9 @@ ChatTypeGroup["LOOT"] = {
 ChatTypeGroup["MONEY"] = {
 	"CHAT_MSG_MONEY",
 };
+ChatTypeGroup["CURRENCY"] = {
+	"CHAT_MSG_CURRENCY",
+};
 ChatTypeGroup["OPENING"] = {
 	"CHAT_MSG_OPENING";
 };
@@ -241,6 +245,9 @@ ChatTypeGroup["PET_INFO"] = {
 };
 ChatTypeGroup["COMBAT_MISC_INFO"] = {
 	"CHAT_MSG_COMBAT_MISC_INFO";
+};
+ChatTypeGroup["ACHIEVEMENT"] = {
+	"CHAT_MSG_ACHIEVEMENT";
 };
 ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_JOIN",
@@ -1653,7 +1660,7 @@ SecureCmdList["GUILD_DISBAND"] = function(msg)
 end
 
 SecureCmdList["TEAM_INVITE"] = function(msg)
-	if ( msg ~= "" ) then
+	if ( msg ~= "" and GetCurrentArenaSeasonUsesTeams() ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
 		if ( team and name ) then
 			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
@@ -1840,6 +1847,21 @@ SlashCmdList["INVITE"] = function(msg)
 		return;
 	end
 	InviteToGroup(msg);
+end
+
+SlashCmdList["REQUEST_INVITE"] = function(msg)
+	if(msg == "") then
+		msg = GetUnitName("target", true)
+	end
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	if(msg == nil) then
+		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
+		return;
+	end
+	RequestInviteFromUnit(msg);
 end
 
 SlashCmdList["UNINVITE"] = function(msg)
@@ -2323,6 +2345,17 @@ end
 		Calendar_Toggle();
 	end
 end]]
+
+SlashCmdList["ACHIEVEMENTUI"] = function(msg)
+	ToggleAchievementFrame();
+end
+
+SlashCmdList["EQUIP_SET"] = function(msg)
+	local set = SecureCmdOptionParse(msg);
+	if ( set and set ~= "" ) then
+		C_EquipmentSet.UseEquipmentSet(C_EquipmentSet.GetEquipmentSetID(set));
+	end
+end
 
 -- easier method to turn on/off errors for macros
 SlashCmdList["UI_ERRORS_OFF"] = function(msg)

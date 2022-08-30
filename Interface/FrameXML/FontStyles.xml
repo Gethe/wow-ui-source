@@ -27,8 +27,14 @@
 	<Font name="GameFontNormalLeftGrey" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
+	<Font name="GameFontNormalLeftLightGrey" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.6" g="0.6" b="0.6"/>
+	</Font>
 	<Font name="GameFontNormalLeftRed" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="0.9" g="0.0" b="0.0"/>
+	</Font>
+	<Font name="GameFontNormalLeftLightBlue" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.53" g="0.67" b="1.0"/>
 	</Font>
 	<Font name="GameFontDisableMed3" inherits="SystemFont_Shadow_Med3" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
@@ -317,5 +323,10 @@
 			</Offset>
 		</Shadow>
 	</Font>
+
+	<Font name="LFGActivityHeader" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.7" g="0.7" b="0.7"/>
+	</Font>
+	<Font name="LFGActivityEntry" inherits="GameFontNormalLeft" virtual="true"/>
 
 </Ui>

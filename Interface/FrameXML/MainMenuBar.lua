@@ -122,7 +122,8 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	if ( not newLevel ) then
 		newLevel = UnitLevel("player");
 	end
-	local showXP = newLevel < GetMaxPlayerLevel();
+	--local showXP = not (newLevel >= GetMaxPlayerLevel() or IsXPUserDisabled());
+	local showXP = newLevel < GetMaxPlayerLevel() and not IsXPUserDisabled();
 	local showRep = name;
 	local numBarsShowing = 0;
 	--******************* EXPERIENCE **************************************
@@ -271,10 +272,14 @@ end
 function MainMenuBarVehicleLeaveButton_Update()
 	if ( UnitOnTaxi("player") and ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_MAIN ) then
 		MainMenuBarVehicleLeaveButton:ClearAllPoints();
-		if ( GetNumShapeshiftForms() > 0 ) then
+		if ( IsPossessBarVisible() ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessButton2, "RIGHT", 30, 0);
+		elseif ( GetNumShapeshiftForms() > 0 ) then
 			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", "StanceButton"..GetNumShapeshiftForms(), "RIGHT", 30, 0);
+		elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", MultiCastActionBarFrame, "RIGHT", 30, 0);
 		else
-			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", StanceBarFrame, "LEFT", 10, 0);
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessBarFrame, "LEFT", 10, 0);
 		end
 
 		MainMenuBarVehicleLeaveButton:Show();

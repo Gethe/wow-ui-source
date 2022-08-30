@@ -111,6 +111,6 @@ function InspectFrame_UpdateTalentTab()
 		end
 	else
 		PanelTemplates_EnableTab(InspectFrame, 3);
-		InspectTalentFrame_SetupTabs();
+		InspectTalentFrame_UpdateTabs();
 	end
 end

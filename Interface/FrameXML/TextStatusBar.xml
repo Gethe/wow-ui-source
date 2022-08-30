@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<StatusBar name="TextStatusBar" virtual="true">
+	<StatusBar name="TextStatusBar" enableMouseMotion="true" virtual="true">
 		<Scripts>
 			<OnLoad>
 				TextStatusBar_Initialize(self);
@@ -8,7 +8,7 @@
 			<OnEvent>
 				TextStatusBar_OnEvent(self, event, ...);
 			</OnEvent>
-			<OnEnter>
+			<OnEnter autoEnableInput="false">
 				ShowTextStatusBarText(self);
 				TextStatusBar_UpdateTextString(self);
 				if ( self.tooltipTitle ) then
@@ -17,7 +17,7 @@
 					UnitFrame_UpdateTooltip(TargetFrame);
 				end
 			</OnEnter>
-			<OnLeave>
+			<OnLeave autoEnableInput="false">
 				HideTextStatusBarText(self);
 				GameTooltip:Hide();
 			</OnLeave>

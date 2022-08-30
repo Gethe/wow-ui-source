@@ -558,10 +558,15 @@ end
 
 function QuestLog_UpdatePartyInfoTooltip(self)
 	local index = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
+	local questName = tostring(self:GetText());
 	local numPartyMembers = GetNumSubgroupMembers();
+	local questID = GetQuestIDFromLogIndex(index);
+	
 	if ( numPartyMembers == 0 or self.isHeader ) then
+		EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, questName, questID, false);
 		return;
 	end
+	EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, questName, questID, true);
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	
 	local questLogTitleText = GetQuestLogTitle(index);

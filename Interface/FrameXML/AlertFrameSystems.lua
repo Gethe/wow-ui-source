@@ -422,7 +422,7 @@ function AchievementAlertFrame_OnClick (self, button, down)
 end
 
 AchievementAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("AchievementAlertFrameTemplate", AchievementAlertFrame_SetUp, 2, 6);
-AchievementAlertSystem:SetCanShowMoreConditionFunc(function() return false end);
+AchievementAlertSystem:SetCanShowMoreConditionFunc(function() return true end);
 
 -- [[ CriteriaAlertFrame ]] --
 function CriteriaAlertFrame_SetUp(frame, achievementID, criteriaString)

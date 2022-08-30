@@ -472,6 +472,9 @@
 						PERFORMANCEBAR_UPDATE_INTERVAL = 10;
 						self.hover = nil;
 						self.updateInterval = 0;
+						if (GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+						self:Hide();
+						end
 					</OnLoad>
 					<OnUpdate>
 						if (self.updateInterval > 0) then

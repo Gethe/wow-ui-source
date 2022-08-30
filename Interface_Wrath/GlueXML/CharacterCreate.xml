@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="CharacterCreate.lua"/>
+	<Script file="CharacterCreate_Wrath.lua"/>
+	<Script file="../../Interface/GlueXML/CharacterCreate_Shared.lua"/>
 	<CheckButton name="CharacterCreateIconButtonTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="38" y="38"/>
@@ -84,7 +85,7 @@
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
 	</CheckButton>
-	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CharacterCreateIconButtonTemplate" virtual="true">
+	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CharacterCreateIconButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Layers>
 		</Layers>
 		<Scripts>
@@ -92,16 +93,8 @@
 				CharacterClass_OnClick(self, self.classID);	
 				GlueTooltip:Hide();
 			</OnClick>
-			<OnEnter>
-				if ( CharacterCreate.selectedClass == self:GetID() ) then
-					return;
-				end
-				GlueTooltip_SetOwner(nil,nil, -3, -5);
-				GlueTooltip:SetText(self.tooltip, nil, 1.0, 1.0, 1.0);
-			</OnEnter>
-			<OnLeave>
-				GlueTooltip:Hide();
-			</OnLeave>
+			<OnEnter function="CharacterCreateClassButton_OnEnter"/>
+			<OnLeave function="CharacterCreateClassButton_OnLeave"/>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes"/>
 	</CheckButton>
@@ -231,7 +224,7 @@
 							<AbsDimension x="256" y="128"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-9" y="0"/>
+							<Anchor point="TOPRIGHT" x="-19" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -241,9 +234,7 @@
 									</Size>
 									<Anchors>
 										<Anchor point="TOP" relativePoint="TOPLEFT">
-											<Offset>
-												<AbsDimension x="128" y="-15"/>
-											</Offset>
+											<Offset x="128" y="0"/>
 										</Anchor>
 									</Anchors>
 								</Texture>
@@ -252,148 +243,73 @@
 					</Frame>
 					<Frame name="CharacterCreateCharacterRace" inherits="BackdropTemplate">
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_CHARACTER_CREATE_TOOLTIP_32_32" type="global"/>
+							<KeyValue key="backdropInfo" value="BACKDROP_WRATH_CHARACTER_CREATE_TOOLTIP_32_32" type="global"/>
 						</KeyValues>
-						<Size>
-							<AbsDimension x="240" y="260"/>
-						</Size>
+						<Size x="267" y="287"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterCreateWoWLogo" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="9" y="-15"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="CharacterCreateWoWLogo" relativePoint="BOTTOM" x="0" y="5"/>
 						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture name="CharacterCreateRaceIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-RacesRound">
+									<Size x="48" y="48"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="4" y="-4"/>
+									</Anchors>
+									<TexCoords left="0" right="0.375" top="0" bottom="0.75"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-InfoBox" setAllPoints="true">
+									<TexCoords left="0.005859375" right="0.52734375" top="0.005859375" bottom="0.56640625"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="CharacterCreateRaceLabel" inherits="FactionName_Shadow_Huge" justifyH="LEFT" text="RACE">
+									<Size x="220" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="40" y="-11"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background">
+							<BackgroundInsets>
+								<AbsInset left="12" right="3" top="20" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
 						<Frames>
-							<Frame name="CharacterCreateRaceIconFrame">
-								<Size>
-									<AbsDimension x="48" y="48"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="-3" y="8"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture name="CharacterCreateRaceIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races">
-											<Size>
-												<AbsDimension x="48" y="48"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-											</Anchors>
-											<TexCoords left="0" right="0.375" top="0" bottom="0.75"/>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad>
-										self:SetFrameLevel(self:GetFrameLevel() + 1);
-									</OnLoad>
-								</Scripts>
-							</Frame>
 							<ScrollFrame name="CharacterCreateRaceScrollFrame" inherits="GlueScrollFrameTemplate">
-								<Size>
-									<AbsDimension x="190" y="240"/>
-								</Size>
+								<Size x="220" y="224"/>
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="17" y="-10"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="20" y="-55"/>
 								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture name="$parentTop" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-ScrollBar-Top">
-											<Size>
-												<AbsDimension x="32" y="128"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-													<Offset>
-														<AbsDimension x="-3" y="4"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</Texture>
-										<Texture name="$parentBottom" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-											<Size>
-												<AbsDimension x="30" y="123"/>
-											</Size>
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="-3" y="-2"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
-										</Texture>
-									</Layer>
-								</Layers>
 								<Scripts>
 									<OnLoad>
-										_G[self:GetName().."ScrollBarScrollDownButton"]:Disable();
-										_G[self:GetName().."ScrollBarScrollUpButton"]:Disable();
-										self.scrollBarHideable = 1;
-										GlueScrollFrame_OnScrollRangeChanged(self);
+										CharacterCreateRaceScrollFrameScrollBar:ClearAllPoints();
+										CharacterCreateRaceScrollFrameScrollBar:SetPoint("TOPLEFT", CharacterCreateRaceScrollFrame, "TOPRIGHT", 7, 4);
+										CharacterCreateRaceScrollFrameScrollBar:SetPoint("BOTTOMLEFT", CharacterCreateRaceScrollFrame, "BOTTOMRIGHT", 7, 12);
+										GlueScrollFrame_OnScrollRangeChanged(self, yrange);
 									</OnLoad>
 									<OnScrollRangeChanged>
-										GlueScrollFrame_OnScrollRangeChanged(self, arg2);
-										if ( self:GetVerticalScrollRange() == 0 ) then
-											_G[self:GetName().."Top"]:Hide();
-											_G[self:GetName().."Bottom"]:Hide();
-										else
-											_G[self:GetName().."Top"]:Show();
-											_G[self:GetName().."Bottom"]:Show();
-										end
+										GlueScrollFrame_OnScrollRangeChanged(self, yrange);
 									</OnScrollRangeChanged>
 								</Scripts>
 								<ScrollChild>
 									<Frame name="CharacterCreateRaceScrollChild">
-										<Size>
-											<AbsDimension x="190" y="10"/>
-										</Size>
+										<Size x="220" y="10"/>
 										<Layers>
 											<Layer level="BACKGROUND">
-												<FontString name="CharacterCreateRaceLabel" inherits="GlueFontNormalLarge" justifyH="LEFT" text="RACE">
-													<Size>
-														<AbsDimension x="158" y="0"/>
-													</Size>
+												<FontString name="CharacterCreateRaceAbilityText" inherits="GlueFontNormalSmall" justifyH="LEFT">
+													<Size x="220" y="0"/>
 													<Anchors>
-														<Anchor point="TOPLEFT">
-															<Offset>
-																<AbsDimension x="32" y="0"/>
-															</Offset>
-														</Anchor>
+														<Anchor point="TOPLEFT" x="0" y="-6"/>
 													</Anchors>
 												</FontString>
 												<FontString name="CharacterCreateRaceText" inherits="GlueFontCharacterCreate" justifyH="LEFT">
-													<Size>
-														<AbsDimension x="190" y="0"/>
-													</Size>
+													<Size x="220" y="0"/>
 													<Anchors>
-														<Anchor point="TOPLEFT" relativeTo="CharacterCreateRaceLabel" relativePoint="BOTTOMLEFT">
-															<Offset>
-																<AbsDimension x="-32" y="-2"/>
-															</Offset>
-														</Anchor>
-													</Anchors>
-												</FontString>
-												<FontString name="CharacterCreateRaceAbilityText" inherits="GlueFontNormalSmall" justifyH="LEFT">
-													<Size>
-														<AbsDimension x="190" y="0"/>
-													</Size>
-													<Anchors>
-														<Anchor point="TOPLEFT" relativeTo="CharacterCreateRaceText" relativePoint="BOTTOMLEFT">
-															<Offset>
-																<AbsDimension x="0" y="-2"/>
-															</Offset>
-														</Anchor>
+														<Anchor point="TOPLEFT" relativeTo="CharacterCreateRaceAbilityText" relativePoint="BOTTOMLEFT" x="0" y="-22"/>
 													</Anchors>
 												</FontString>
 											</Layer>
@@ -405,136 +321,73 @@
 					</Frame>
 					<Frame name="CharacterCreateCharacterClass" inherits="BackdropTemplate">
 						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_CHARACTER_CREATE_TOOLTIP_32_32" type="global"/>
+							<KeyValue key="backdropInfo" value="BACKDROP_WRATH_CHARACTER_CREATE_TOOLTIP_32_32" type="global"/>
 						</KeyValues>
-						<Size>
-							<AbsDimension x="240" y="260"/>
-						</Size>
+						<Size x="267" y="287"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CharacterCreateCharacterRace" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-10"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="CharacterCreateCharacterRace" relativePoint="BOTTOM" x="0" y="-5"/>
 						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture name="CharacterCreateClassIcon" file="Interface\TargetingFrame\UI-Classes-Circles">
+									<Size x="48" y="48"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="4" y="-4"/>
+									</Anchors>
+									<TexCoords left="0" right="0.375" top="0" bottom="0.75"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-InfoBox" setAllPoints="true">
+									<TexCoords left="0.005859375" right="0.52734375" top="0.005859375" bottom="0.56640625"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="CharacterCreateClassLabel" inherits="FactionName_Shadow_Huge" justifyH="LEFT" text="RACE">
+									<Size x="220" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="40" y="-11"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background">
+							<BackgroundInsets>
+								<AbsInset left="12" right="3" top="20" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
 						<Frames>
-							<Frame name="CharacterCreateClassIconFrame">
-								<Size>
-									<AbsDimension x="48" y="48"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="-3" y="8"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture name="CharacterCreateClassIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
-											<Size>
-												<AbsDimension x="48" y="48"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-											</Anchors>
-											<TexCoords left="0" right="0.375" top="0" bottom="0.75"/>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad>
-										self:SetFrameLevel(self:GetFrameLevel() + 1);
-									</OnLoad>
-								</Scripts>
-							</Frame>
 							<ScrollFrame name="CharacterCreateClassScrollFrame" inherits="GlueScrollFrameTemplate">
-								<Size>
-									<AbsDimension x="190" y="240"/>
-								</Size>
+								<Size x="220" y="224"/>
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="17" y="-10"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="20" y="-55"/>
 								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture name="$parentTop" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-ScrollBar-Top">
-											<Size>
-												<AbsDimension x="32" y="128"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-													<Offset>
-														<AbsDimension x="-3" y="4"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</Texture>
-										<Texture name="$parentBottom" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
-											<Size>
-												<AbsDimension x="30" y="123"/>
-											</Size>
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="-3" y="-2"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
-										</Texture>
-									</Layer>
-								</Layers>
 								<Scripts>
 									<OnLoad>
-										_G[self:GetName().."ScrollBarScrollDownButton"]:Disable();
-										_G[self:GetName().."ScrollBarScrollUpButton"]:Disable();
-										self.scrollBarHideable = 1;
-										GlueScrollFrame_OnScrollRangeChanged(self);
+										CharacterCreateClassScrollFrameScrollBar:ClearAllPoints();
+										CharacterCreateClassScrollFrameScrollBar:SetPoint("TOPLEFT", CharacterCreateClassScrollFrame, "TOPRIGHT", 7, 4);
+										CharacterCreateClassScrollFrameScrollBar:SetPoint("BOTTOMLEFT", CharacterCreateClassScrollFrame, "BOTTOMRIGHT", 7, 12);
+										GlueScrollFrame_OnScrollRangeChanged(self, yrange);
 									</OnLoad>
 									<OnScrollRangeChanged>
-										GlueScrollFrame_OnScrollRangeChanged(self, arg2);
-										if ( self:GetVerticalScrollRange() == 0 ) then
-											_G[self:GetName().."Top"]:Hide();
-											_G[self:GetName().."Bottom"]:Hide();
-										else
-											_G[self:GetName().."Top"]:Show();
-											_G[self:GetName().."Bottom"]:Show();
-										end
+										GlueScrollFrame_OnScrollRangeChanged(self, yrange);
 									</OnScrollRangeChanged>
 								</Scripts>
 								<ScrollChild>
 									<Frame name="CharacterCreateClassScrollChild">
-										<Size>
-											<AbsDimension x="190" y="10"/>
-										</Size>
+										<Size x="220" y="10"/>
 										<Layers>
 											<Layer level="BACKGROUND">
-												<FontString name="CharacterCreateClassLabel" inherits="GlueFontNormalLarge" justifyH="LEFT" text="RACE">
-													<Size>
-														<AbsDimension x="158" y="0"/>
-													</Size>
+												<FontString name="CharacterCreateClassRolesText" inherits="GlueFontNormalSmall" justifyH="LEFT">
+													<Size x="220" y="0"/>
 													<Anchors>
-														<Anchor point="TOPLEFT">
-															<Offset>
-																<AbsDimension x="32" y="0"/>
-															</Offset>
-														</Anchor>
+														<Anchor point="TOPLEFT" x="0" y="-6"/>
 													</Anchors>
 												</FontString>
 												<FontString name="CharacterCreateClassText" inherits="GlueFontCharacterCreate" justifyH="LEFT">
-													<Size>
-														<AbsDimension x="190" y="0"/>
-													</Size>
+													<Size x="220" y="0"/>
 													<Anchors>
-														<Anchor point="TOPLEFT" relativeTo="CharacterCreateClassLabel" relativePoint="BOTTOMLEFT">
-															<Offset>
-																<AbsDimension x="-32" y="-2"/>
-															</Offset>
-														</Anchor>
+														<Anchor point="TOPLEFT" relativeTo="CharacterCreateClassRolesText" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
 													</Anchors>
 												</FontString>
 											</Layer>
@@ -608,7 +461,7 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
-								<FontString inherits="FactionName_Shadow_Huge" text="ALLIANCE">
+								<FontString inherits="FactionName_Shadow_Huge" parentKey="AllianceText" text="ALLIANCE">
 									<Anchors>
 										<Anchor point="TOP" relativeTo="CharacterCreateBanners" relativePoint="TOP">
 											<Offset>
@@ -617,7 +470,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString inherits="FactionName_Shadow_Huge" text="HORDE">
+								<FontString inherits="FactionName_Shadow_Huge" parentKey="HordeText" text="HORDE">
 									<Anchors>
 										<Anchor point="TOP" relativeTo="CharacterCreateBanners" relativePoint="TOP">
 											<Offset>
@@ -626,15 +479,15 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString name="CharacterCreateGender" inherits="CharacterCreateTooltipFont">
+								<FontString name="CharacterCreateClassName" inherits="CharacterCreateTooltipFont">
 									<Anchors>
 										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-351"/>
 									</Anchors>
 									<Color r="1.0" g="0.78" b="0"/>
 								</FontString>
-								<FontString name="CharacterCreateClassName" inherits="CharacterCreateTooltipFont">
+								<FontString name="CharacterCreateGender" inherits="CharacterCreateTooltipFont">
 									<Anchors>
-										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-418"/>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-458"/>
 									</Anchors>
 									<Color r="1.0" g="0.78" b="0"/>
 								</FontString>
@@ -746,11 +599,101 @@
 									</Anchor>
 								</Anchors>
 							</CheckButton>
-							<CheckButton name="CharacterCreateGenderButtonMale" inherits="CharacterCreateGenderButtonTemplate">
+							<CheckButton name="CharacterCreateClassButton1" inherits="CharacterCreateClassButtonTemplate" id="1">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="CharacterCreateRaceButton5" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="23" y="-57"/>
+											<AbsDimension x="-35" y="-60"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateClassButton2" inherits="CharacterCreateClassButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton1" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="4" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateClassButton3" inherits="CharacterCreateClassButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton2" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="4" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateClassButton4" inherits="CharacterCreateClassButtonTemplate" id="4">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton3" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="4" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateClassButton5" inherits="CharacterCreateClassButtonTemplate" id="5">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton4" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="4" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateClassButton6" inherits="CharacterCreateClassButtonTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CharacterCreateClassButton1" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateClassButton7" inherits="CharacterCreateClassButtonTemplate" id="7">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton6" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="4" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateClassButton8" inherits="CharacterCreateClassButtonTemplate" id="8">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton7" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="4" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateClassButton9" inherits="CharacterCreateClassButtonTemplate" id="9">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton8" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="4" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateClassButton10" inherits="CharacterCreateClassButtonTemplate" id="11">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton9" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="4" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharacterCreateGenderButtonMale" inherits="CharacterCreateGenderButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CharacterCreateClassButton6" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="62" y="-30"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -796,101 +739,11 @@
 									</OnEnter>
 								</Scripts>
 							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton1" inherits="CharacterCreateClassButtonTemplate" id="1">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharacterCreateGenderButtonMale" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="-58" y="-29"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton2" inherits="CharacterCreateClassButtonTemplate" id="2">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton1" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="4" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton3" inherits="CharacterCreateClassButtonTemplate" id="3">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton2" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="4" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton4" inherits="CharacterCreateClassButtonTemplate" id="4">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton3" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton5" inherits="CharacterCreateClassButtonTemplate" id="5">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton4" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="4" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton6" inherits="CharacterCreateClassButtonTemplate" id="6">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharacterCreateClassButton1" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton7" inherits="CharacterCreateClassButtonTemplate" id="7">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton6" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="4" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton8" inherits="CharacterCreateClassButtonTemplate" id="8">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton7" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="4" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton9" inherits="CharacterCreateClassButtonTemplate" id="8">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton8" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="4" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
-							<CheckButton name="CharacterCreateClassButton10" inherits="CharacterCreateClassButtonTemplate" id="8">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="CharacterCreateClassButton9" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="4" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</CheckButton>
 							<Frame name="CharacterCustomizationButtonFrame1" inherits="CharacterCustomizationFrameTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharacterCreateClassButton8" relativePoint="BOTTOM">
+									<Anchor point="TOP" relativeTo="CharacterCreateGenderButtonMale" relativePoint="BOTTOM">
 										<Offset>
-											<AbsDimension x="-6" y="-10"/>
+											<AbsDimension x="15" y="-10"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -1093,38 +946,26 @@
 							</Anchors>
 						</HighlightTexture>
 					</Button>
-					<Button name="CharCreateBackButton" inherits="GlueButtonSmallTemplate" text="BACK">
-						<Size>
-							<AbsDimension x="120" y="30"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-74" y="19"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								CharacterCreate_Back();
-							</OnClick>
-							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
-						</Scripts>
-					</Button>
 					<Button name="CharCreateOkayButton" inherits="GlueButtonTemplate" text="CHARACTER_CREATE_ACCEPT">
-						<Size>
-							<AbsDimension x="160" y="35"/>
-						</Size>
+						<Size x="160" y="35"/>
 						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="CharCreateBackButton" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="0" y="5"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="CharacterCreateCharacterClass" relativePoint="BOTTOM" x="4" y="-3"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
 								CharacterCreate_Okay();
+							</OnClick>
+							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
+						</Scripts>
+					</Button>
+					<Button name="CharCreateBackButton" inherits="GlueButtonSmallTemplate" text="BACK">
+						<Size x="120" y="30"/>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="CharCreateOkayButton" relativePoint="BOTTOM" x="4" y="3"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CharacterCreate_Back();
 							</OnClick>
 							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 						</Scripts>
@@ -1149,6 +990,7 @@
 			</OnLoad>
 			<OnShow>
 				CharacterCreate_OnShow(self);
+				CharacterCreateWrath_OnShow();
 			</OnShow>
 			<OnHide>
 				CharacterCreate_OnHide(self);

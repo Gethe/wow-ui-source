@@ -176,6 +176,68 @@ function PTR_IssueReporter.CreateReports()
     classicSkillsReport:AddDataCollection(baseCollectors + 3, collector.OpenEndedQuestion, "What was the issue with this skill?")
 
     classicSkillsReport:RegisterPopEvent(event.Tooltip, tooltips.skill)
+
+    ---------------------------------- Classic Glyph Reporting -------------------------------------------   
+    local classicGlyphReport = PTR_IssueReporter.CreateSurvey(classicReportOffset + 11, "Bug Report: %s")
+
+    classicGlyphReport:PopulateDynamicTitleToken(1, "Name")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(classicGlyphReport)
     
-    ----------------------------------------------------------------------------------------------------
+    classicGlyphReport:AddDataCollection(baseCollectors + 1, collector.FromDataPackage, "ID")
+    classicGlyphReport:AddDataCollection(baseCollectors + 2, collector.OpenEndedQuestion, "What was the issue with this glyph?")
+
+    classicGlyphReport:RegisterPopEvent(event.Tooltip, tooltips.glyph)
+    
+    --------------------------------------- Character Customization Bug Reporting ----------------------------------------------
+    local barberShopReport = PTR_IssueReporter.CreateSurvey(classicReportOffset + 12, "Bug Report")
+    
+    local GetRaceID = function()
+        return select(3, UnitRace(PTR_IssueReporter.Data.UnitTokens.Player))
+    end
+
+    local GetAllCustomizationSelections = function()
+        local customizationCategoryData = C_BarberShop.GetAvailableCustomizations()
+        --if the function has changed and doesn't exist then we'll pass through an error index
+        if customizationCategoryData == nil then
+            return "-1"
+        end
+
+        local customizationDataString = ""
+        local count = 0
+
+        for key, category in pairs (customizationCategoryData) do
+            for optionKey, optionValue in pairs(category.options) do
+                if(optionValue.choices[optionValue.currentChoiceIndex].id) then
+                    customizationDataString = customizationDataString .. "," .. optionValue.choices[optionValue.currentChoiceIndex].id
+                    count = count + 1
+                 end
+            end
+        end
+        
+        customizationDataString = count .. customizationDataString
+
+        return customizationDataString
+    end
+
+    local GetClassID = function()
+        return select(3, UnitClass(PTR_IssueReporter.Data.UnitTokens.Player))
+    end
+
+    local GetGender = function()
+        local currentCharacterData = C_BarberShop.GetCurrentCharacterData()
+		return currentCharacterData.sex
+    end
+
+    barberShopReport:AddDataCollection(baseCollectors + 1, collector.RunFunction, PTR_IssueReporter.GetMessageKey)
+    barberShopReport:AddDataCollection(baseCollectors + 2, collector.OpenEndedQuestion, "Please describe the bug:") 
+    barberShopReport:AddDataCollection(baseCollectors + 3, collector.SurveyID)    
+    barberShopReport:AddDataCollection(baseCollectors + 4, collector.RunFunction, GetClassID)
+    barberShopReport:AddDataCollection(baseCollectors + 5, collector.RunFunction, GetGender)
+    barberShopReport:AddDataCollection(baseCollectors + 6, collector.RunFunction, GetRaceID)
+    barberShopReport:AddDataCollection(baseCollectors + 7, collector.RunFunction, GetAllCustomizationSelections)
+    barberShopReport:RegisterButtonEvent(event.BarberShopOpened)
+    barberShopReport:RegisterButtonEventEnd(event.BarberShopClosed)
+    barberShopReport:RegisterButtonEventEnd(event.MapIDExit)
 end
+----------------------------------------------------------------------------------------------------
+

@@ -70,7 +70,7 @@ function UIFrameCache:New (frameType, baseName, parent, template)
 	frameCache.frames = {};
 	frameCache.usedFrames = {};
 	frameCache.numFrames = 0;
-
+	frameCache[0] = self[0]
 	tinsert(caches, frameCache);
 
 	return frameCache;

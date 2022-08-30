@@ -128,30 +128,34 @@ StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
 	whileDead = 1,
 }
 
-StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
+StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) AttachGlyphToSpell(self.data.id); end,
+	OnAccept = function (self)
+		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
+		if ( talentGroup == GetActiveTalentGroup() ) then
+			RemoveGlyphFromSocket(self.data.id);
+		end
+	end,
 	OnCancel = function (self)
 	end,
 	OnShow = function(self)
-		self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT_NO_COST, self.data.name, self.data.currentName);
+		self.text:SetFormattedText(CONFIRM_GLYPH_REMOVAL, self.data.name);
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
 }
 
-StaticPopupDialogs["CONFIRM_GLYPH_REMOVAL"] = {
+StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) AttachGlyphToSpell(self.data.id); end,
-	OnCancel = function (self)
-	end,
+	OnAccept = function (self) PlaceGlyphInSocket(self.data.id); end,
+	OnCancel = function (self) end,
 	OnShow = function(self)
-		self.text:SetFormattedText(CONFIRM_GLYPH_REMOVAL, self.data.name);
+		self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT_NO_COST, self.data.name, self.data.currentName);
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -633,7 +637,9 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 	autoCompleteParams = AUTOCOMPLETE_LIST.TEAM_INVITE,
 	maxLetters = 77,
 	OnAccept = function(self)
-		ArenaTeamInviteByName(PVPTeamDetails.team, self.editBox:GetText());
+		if( GetCurrentArenaSeasonUsesTeams() ) then
+			ArenaTeamInviteByName(PVPTeamDetails.team, self.editBox:GetText());
+		end
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -643,9 +649,11 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 		self.editBox:SetText("");
 	end,
 	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		ArenaTeamInviteByName(PVPTeamDetails.team, parent.editBox:GetText());
-		parent:Hide();
+		if( GetCurrentArenaSeasonUsesTeams() ) then
+			local parent = self:GetParent();
+			ArenaTeamInviteByName(PVPTeamDetails.team, parent.editBox:GetText());
+			parent:Hide();
+		end
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
@@ -1595,10 +1603,10 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 			return;
 		end
 
-		local _, _, guid, _, _, level, spec, itemLevel = GetInviteConfirmationInfo(self.data);
+		local _, _, guid, roles, _, level = GetInviteConfirmationInfo(self.data);
 		local className, classFilename, _, _, gender, characterName, _ = GetPlayerInfoByGUID(guid);
 
-		GameTooltip:SetOwner(self.linkRegion);
+		GameTooltip:SetOwner(self.linkRegion, "ANCHOR_CURSOR_RIGHT");
 
 		if ( className ) then
 			self.nextUpdateTime = nil; -- The tooltip will be created with valid data, no more updates necessary.
@@ -1606,12 +1614,21 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 			local _, _, _, colorCode = GetClassColor(classFilename);
 			GameTooltip:SetText(WrapTextInColorCode(characterName, colorCode));
 
-			local _, specName = GetSpecializationInfoByID(spec, gender);
-			local characterLine = CHARACTER_LINK_CLASS_LEVEL_SPEC_TOOLTIP:format(level, className, specName);
-			local itemLevelLine = CHARACTER_LINK_ITEM_LEVEL_TOOLTIP:format(itemLevel);
+			local characterLine = CHARACTER_LINK_CLASS_LEVEL_TOOLTIP:format(level, className);
+			if (roles["TANK"] or roles["HEALER"] or roles["DAMAGER"]) then
+				characterLine = characterLine .. " ";
+				if (roles["TANK"]) then
+					characterLine = characterLine .. " " .. INLINE_TANK_ICON_SMALL;
+				end
+				if (roles["HEALER"]) then
+					characterLine = characterLine .. " " .. INLINE_HEALER_ICON_SMALL;
+				end
+				if (roles["DAMAGER"]) then
+					characterLine = characterLine .. " " .. INLINE_DAMAGER_ICON_SMALL;
+				end
+			end
 
 			GameTooltip:AddLine(characterLine, HIGHLIGHT_FONT_COLOR:GetRGB());
-			GameTooltip:AddLine(itemLevelLine, HIGHLIGHT_FONT_COLOR:GetRGB());
 		else
 			self.nextUpdateTime = timeNow + .5;
 			GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
@@ -1637,6 +1654,7 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 		self.nextUpdateTime = nil;
 		GameTooltip:Hide();
 	end,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 };
 StaticPopupDialogs["GUILD_INVITE"] = {
@@ -2211,6 +2229,9 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
+		if ( QuestLogDetailFrame:IsShown() ) then
+			HideUIPanel(QuestLogDetailFrame);
+		end
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
 	timeout = 0,
@@ -2224,6 +2245,9 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
+		if ( QuestLogDetailFrame:IsShown() ) then
+			HideUIPanel(QuestLogDetailFrame);
+		end
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
 	timeout = 0,
@@ -3310,6 +3334,20 @@ StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
 	timeout = 0,
 	hideOnEscape = 1
 };
+
+StaticPopupDialogs["CONFIRM_BARBERS_CHOICE"] = {
+	text = BARBERS_CHOICE_CONFIRM,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ConfirmBarbersChoice();
+	end,
+	hasMoneyFrame = 1,
+	exclusive = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["CONFIRM_PET_UNLEARN"] = {
 	text = CONFIRM_PET_UNLEARN,
 	button1 = ACCEPT,
@@ -4182,6 +4220,18 @@ StaticPopupDialogs["BACKPACK_INCREASE_SIZE"] = {
 	whileDead = 0,
 }
 
+StaticPopupDialogs["GROUP_FINDER_AUTHENTICATOR_POPUP"] = {
+	text = GROUP_FINDER_AUTHENTICATOR_POPUP_DESC,
+	button1 = ACTIVATE,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		LoadURLIndex(41);
+	end,
+	wide = true,
+	timeout = 0,
+	whileDead = 0,
+}
+
 StaticPopupDialogs["CLIENT_INVENTORY_FULL_OVERFLOW"] = {
 	text = BACKPACK_AUTHENTICATOR_FULL_INVENTORY,
 	button1 = OKAY,
@@ -4326,6 +4376,70 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	timeout = 0,
 	hideOnEscape = 0,
 	exclusive = 1,
+};
+
+StaticPopupDialogs["ON_BATTLEFIELD_AUTO_QUEUE"] = {
+	button1 = JOIN,
+	button2 = BATTLEFIELD_GROUP_JOIN,
+	button3 = CANCEL,
+	selectCallbackByIndex = true,
+	OnShow = function(self)
+		self.text:SetText(WORLD_PVP_INVITED_WARMUP:format(GetWorldPVPQueueMapName(true)));
+		if ( not IsInGroup() ) then
+			self.button2:Disable();
+		end
+	end,
+	OnButton1 = function(self)
+		JoinWorldPVPQueue(true, false);
+	end,
+	OnButton2 = function(self, data, reason)
+		JoinWorldPVPQueue(true, true);
+	end,
+	OnButton3 = function()
+
+	end,
+	timeout = 15,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = false,
+	exclusive = 1,
+};
+
+StaticPopupDialogs["ON_BATTLEFIELD_AUTO_QUEUE_EJECT"] = {
+	button1 = OKAY,
+	OnShow = function(self)
+		self.text:SetText(WORLD_PVP_AUTO_QUEUE_EJECT:format(GetWorldPVPQueueMapName(true)));
+	end,
+	OnButton1 = function()
+	end,
+	timeout = 15,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = false,
+};
+
+StaticPopupDialogs["ON_WORLD_PVP_QUEUE"] = {
+	button1 = JOIN,
+	button2 = BATTLEFIELD_GROUP_JOIN,
+	button3 = CANCEL,
+	selectCallbackByIndex = true,
+	OnShow = function(self)
+		self.text:SetText(WORLD_PVP_INVITED_WARMUP:format(GetWorldPVPQueueMapName(false)));
+		if ( not IsInGroup() ) then
+			self.button2:Disable();
+		end
+	end,
+	OnButton1 = function(self)
+		JoinWorldPVPQueue(false, false);
+	end,
+	OnButton2 = function(self, data, reason)
+		JoinWorldPVPQueue(false, true);
+	end,
+	OnButton3 = function()
+
+	end,
+	showAlert = 1,
+	hideOnEscape = false,
 };
 
 function StaticPopup_FindVisible(which, data)
@@ -4559,7 +4673,10 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "BFMGR_INVITED_TO_ENTER") or
 		 (which == "AREA_SPIRIT_HEAL") or
 		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
-		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") ) then
+		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") or
+		 (which == "ON_BATTLEFIELD_AUTO_QUEUE") or
+		 (which == "ON_BATTLEFIELD_AUTO_QUEUE_EJECT") or
+		 (which == "ON_WORLD_PVP_QUEUE") ) then
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
@@ -4877,10 +4994,18 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
-				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, SECONDS);
-				else
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), ceil(timeleft / 60), MINUTES);
+				if( GetClassicExpansionLevel() < LE_EXPANSION_WRATH_OF_THE_LICH_KING ) then
+					if ( timeleft < 60 ) then
+						text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, SECONDS);
+					else
+						text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), ceil(timeleft / 60), MINUTES);
+					end
+				else -- In Wrath+ player is booted to graveyard rather than bind location, so one less format param
+					if ( timeleft < 60 ) then
+						text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
+					else
+						text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
+					end
 				end
 			elseif ( which == "CONFIRM_SUMMON" or which == "CONFIRM_SUMMON_SCENARIO" or which == "CONFIRM_SUMMON_STARTING_AREA" ) then
 				if ( timeleft < 60 ) then

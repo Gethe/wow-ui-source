@@ -316,7 +316,6 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-7"/>
 					</Anchors>
-					<TexCoords left="0.125" right="0.875" top="0.3125" bottom="0.6875"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">

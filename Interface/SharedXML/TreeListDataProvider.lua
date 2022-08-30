@@ -45,6 +45,9 @@ function TreeListNodeMixin:Insert(data)
 	local node = CreateTreeListNode(self.dataProvider, self, data);
 	table.insert(self.nodes, node);
 	self:Invalidate();
+
+	self:Sort();
+
 	return node;
 end
 
@@ -55,6 +58,31 @@ function TreeListNodeMixin:Remove(node)
 			self:Invalidate();
 			return removed;
 		end
+	end
+end
+
+function TreeListNodeMixin:SetSortComparator(sortComparator, affectChildren, skipSort)
+	self.sortComparator = sortComparator;
+	
+	if affectChildren then
+		for index, child in ipairs(self.nodes) do
+			child:SetSortComparator(sortComparator, affectChildren, skipSort);
+		end
+	end
+
+	if not skipSort then
+		self:Sort();
+	end
+end
+
+function TreeListNodeMixin:HasSortComparator()
+	return self.sortComparator ~= nil;
+end
+
+function TreeListNodeMixin:Sort()
+	if self.sortComparator then
+		table.sort(self.nodes, self.sortComparator);
+		self.dataProvider:TriggerEvent(TreeListDataProviderMixin.Event.OnSort);
 	end
 end
 
@@ -116,6 +144,7 @@ TreeListDataProviderMixin:GenerateCallbackEvents(
 	{
 		"OnSizeChanged",
 		"OnRemove",
+		"OnSort",
 	}
 );
 
@@ -144,6 +173,10 @@ local function EnumerateInternal(indexBegin, indexEnd, root, includeCollapsed)
 	end
 	
 	return Enumerator;
+end
+
+function TreeListDataProviderMixin:GetRootNode()
+	return self.node;
 end
 
 function TreeListDataProviderMixin:Enumerate(indexBegin, indexEnd)
@@ -183,6 +216,18 @@ function TreeListDataProviderMixin:Remove(node)
 			node2.parent:Remove(node);
 		end
 	end
+end
+
+function TreeListDataProviderMixin:SetSortComparator(sortComparator, affectChildren, skipSort)
+	self.node:SetSortComparator(sortComparator, affectChildren, skipSort);
+end
+
+function TreeListDataProviderMixin:HasSortComparator()
+	return self.node:HasSortComparator();
+end
+
+function TreeListDataProviderMixin:Sort()
+	self.node:Sort();
 end
 
 function TreeListDataProviderMixin:FindIndex(node)

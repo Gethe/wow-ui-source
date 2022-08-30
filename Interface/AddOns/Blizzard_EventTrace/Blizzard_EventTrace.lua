@@ -654,7 +654,6 @@ function EventTracePanelMixin:OnEvent(event, ...)
 			self:UnregisterEvent("ADDON_LOADED");
 			self:Show();
 		end
-		return;
 	end
 
 	self:LogEvent(event, ...);

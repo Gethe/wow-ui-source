@@ -383,6 +383,112 @@
 		end
 	</Binding>
 
+	<!-- Multicast bindings header="MULTICASTFUNCTIONS" -->
+	<Binding name="MULTICASTSUMMONBUTTON1" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "up" ) then
+			MultiCastSummonSpellButtonUp(1);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(1);
+		else
+			MultiCastActionButtonUp(1);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON2" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(2);
+		else
+			MultiCastActionButtonUp(2);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON3" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(3);
+		else
+			MultiCastActionButtonUp(3);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON4" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(4);
+		else
+			MultiCastActionButtonUp(4);
+		end
+	</Binding>
+	<Binding name="MULTICASTSUMMONBUTTON2" runOnUp="true" header="BLANK" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "up" ) then
+			MultiCastSummonSpellButtonUp(2);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON5" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(5);
+		else
+			MultiCastActionButtonUp(5);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON6" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(6);
+		else
+			MultiCastActionButtonUp(6);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON7" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(7);
+		else
+			MultiCastActionButtonUp(7);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON8" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(8);
+		else
+			MultiCastActionButtonUp(8);
+		end
+	</Binding>
+	<Binding name="MULTICASTSUMMONBUTTON3" runOnUp="true" header="BLANK2" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "up" ) then
+			MultiCastSummonSpellButtonUp(3);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON9" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(9);
+		else
+			MultiCastActionButtonUp(9);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON10" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(10);
+		else
+			MultiCastActionButtonUp(10);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON11" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(11);
+		else
+			MultiCastActionButtonUp(11);
+		end
+	</Binding>
+	<Binding name="MULTICASTACTIONBUTTON12" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "down" ) then
+			MultiCastActionButtonDown(12);
+		else
+			MultiCastActionButtonUp(12);
+		end
+	</Binding>
+	<Binding name="MULTICASTRECALLBUTTON1" runOnUp="true" header="BLANK3" category="BINDING_HEADER_MULTICASTFUNCTIONS">
+		if ( keystate == "up" ) then
+			MultiCastRecallSpellButtonUp(1);
+		end
+	</Binding>
+
 	<!-- MultiAction bar bindings header="MULTIACTIONBAR" -->
 	<Binding name="MULTIACTIONBAR1BUTTON1" runOnUp="true" category="BINDING_HEADER_MULTIACTIONBAR">
 		if ( keystate == "down" ) then
@@ -774,28 +880,28 @@
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER1" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party1", "target") ) then
+		if ( UnitIsUnit("party1", "target") or UnitHasVehicleUI("party1") ) then
 			TargetUnit("partypet1");
 		else
 			TargetUnit("party1");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER2" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party2", "target") ) then
+		if ( UnitIsUnit("party2", "target") or UnitHasVehicleUI("party2") ) then
 			TargetUnit("partypet2");
 		else
 			TargetUnit("party2");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER3" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party3", "target") ) then
+		if ( UnitIsUnit("party3", "target") or UnitHasVehicleUI("party3") ) then
 			TargetUnit("partypet3");
 		else
 			TargetUnit("party3");
 		end
 	</Binding>
 	<Binding name="TARGETPARTYMEMBER4" category="BINDING_HEADER_TARGETING">
-		if ( UnitIsUnit("party4", "target") ) then
+		if ( UnitIsUnit("party4", "target") or UnitHasVehicleUI("party4") ) then
 			TargetUnit("partypet4");
 		else
 			TargetUnit("party4");
@@ -882,9 +988,9 @@
 	<Binding name="ATTACKTARGET" category="BINDING_HEADER_TARGETING">
 		AttackTarget();
 	</Binding>
-  <Binding name="STARTATTACK" category="BINDING_HEADER_TARGETING">
-    StartAttack();
-  </Binding>
+	<Binding name="STARTATTACK" category="BINDING_HEADER_TARGETING">
+		StartAttack();
+	</Binding>
 	<Binding name="PETATTACK" category="BINDING_HEADER_TARGETING">
 		PetAttack();
 	</Binding>
@@ -937,7 +1043,7 @@
 		ToggleCharacter("SkillFrame");
 	</Binding>
 	<Binding name="TOGGLECHARACTER4" category="BINDING_HEADER_INTERFACE">
-		ToggleCharacter("PVPFrame");
+		TogglePVPFrame();
 	</Binding>
 
 	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">
@@ -945,6 +1051,9 @@
 	</Binding>
 	<Binding name="TOGGLEPETBOOK" category="BINDING_HEADER_INTERFACE">
 		ToggleSpellBook(BOOKTYPE_PET);
+	</Binding>
+	<Binding name="TOGGLEINSCRIPTION" category="BINDING_HEADER_INTERFACE">
+		ToggleGlyphFrame();
 	</Binding>
 	<Binding name="TOGGLETALENTS" category="BINDING_HEADER_INTERFACE">
 		ToggleTalentFrame();
@@ -967,6 +1076,15 @@
 	</Binding>
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
 		ToggleWorldStateScoreFrame();
+	</Binding>
+	<Binding name="TOGGLEACHIEVEMENT" category="BINDING_HEADER_INTERFACE">
+		ToggleAchievementFrame();
+	</Binding>
+	<Binding name="TOGGLESTATISTICS" category="BINDING_HEADER_INTERFACE">
+		ToggleAchievementFrame(1);
+	</Binding>
+	<Binding name="TOGGLECURRENCY" category="BINDING_HEADER_INTERFACE">
+		ToggleCharacter("TokenFrame");
 	</Binding>
 
 	<Binding name="TOGGLESOCIAL" header="BLANK12" category="BINDING_HEADER_INTERFACE">
@@ -991,7 +1109,7 @@
 		ToggleChannelFrame();
 	</Binding>
 
-  <!-- Misc header="MISC" -->
+	<!-- Misc header="MISC" -->
 	<Binding name="STOPCASTING" category="BINDING_HEADER_MISC">
 		SpellStopCasting();
 	</Binding>
@@ -1064,6 +1182,13 @@
 	</Binding>
 
 	<!-- Debug function key bindings -->
+	<Binding name="RELOADUI" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ReloadUI();
+	</Binding>
+	<Binding name="FSTACK" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		LoadAddOn("Blizzard_DebugTools");
+		FrameStackTooltip_ToggleDefaults();
+	</Binding>
 	<Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleStats();
 	</Binding>
@@ -1082,16 +1207,16 @@
 	<Binding name="TOGGLEPLAYERBOUNDS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		TogglePlayerBounds();
 	</Binding>
-  <Binding name="TOGGLEPERFORMANCEPAUSE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-    TogglePerformancePause();
-  </Binding>
-  <Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+	<Binding name="TOGGLEPERFORMANCEPAUSE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePerformancePause();
+	</Binding>
+	<Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		TogglePerformanceValues(1);
 	</Binding>
-  <Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-    TogglePerformanceValues(0);
-  </Binding>
-  <Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+	<Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePerformanceValues(0);
+	</Binding>
+	<Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ResetPerformanceValues();
 	</Binding>
 	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
@@ -1113,10 +1238,10 @@
 		PrevView();
 	</Binding>
 	<Binding name="CAMERAZOOMIN" category="BINDING_HEADER_CAMERA">
-			CameraZoomIn(1.0);
+		CameraZoomIn(1.0);
 	</Binding>
 	<Binding name="CAMERAZOOMOUT" category="BINDING_HEADER_CAMERA">
-			CameraZoomOut(1.0);
+		CameraZoomOut(1.0);
 	</Binding>
 	<Binding name="SETVIEW1" category="BINDING_HEADER_CAMERA">
 		SetView(1);
@@ -1166,26 +1291,27 @@
 	<Binding name="FLIPCAMERAYAW" category="BINDING_HEADER_CAMERA">
 		FlipCameraYaw(180);
 	</Binding>
+
 	<!--  header="RAID_TARGET" -->
 	<Binding name="RAIDTARGET8" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTargetIcon("target", 8);
 	</Binding>
-		<Binding name="RAIDTARGET7" category="BINDING_HEADER_RAID_TARGET">
+	<Binding name="RAIDTARGET7" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTargetIcon("target", 7);
 	</Binding>
-		<Binding name="RAIDTARGET6" category="BINDING_HEADER_RAID_TARGET">
+	<Binding name="RAIDTARGET6" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTargetIcon("target", 6);
 	</Binding>
-		<Binding name="RAIDTARGET5" category="BINDING_HEADER_RAID_TARGET">
+	<Binding name="RAIDTARGET5" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTargetIcon("target", 5);
 	</Binding>
-		<Binding name="RAIDTARGET4" category="BINDING_HEADER_RAID_TARGET">
+	<Binding name="RAIDTARGET4" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTargetIcon("target", 4);
 	</Binding>
-		<Binding name="RAIDTARGET3" category="BINDING_HEADER_RAID_TARGET">
+	<Binding name="RAIDTARGET3" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTargetIcon("target", 3);
 	</Binding>
-		<Binding name="RAIDTARGET2" category="BINDING_HEADER_RAID_TARGET">
+	<Binding name="RAIDTARGET2" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTargetIcon("target", 2);
 	</Binding>
 	<Binding name="RAIDTARGET1" category="BINDING_HEADER_RAID_TARGET">
@@ -1195,7 +1321,44 @@
 		SetRaidTarget("target", 0);
 	</Binding>
 
-<!-- Hidden bindings -->
+	<!-- Vehicle bindings header="VEHICLE" -->
+	<Binding name="VEHICLEEXIT" category="BINDING_HEADER_VEHICLE">
+		VehicleExit();
+	</Binding>
+	<Binding name="VEHICLEPREVSEAT" category="BINDING_HEADER_VEHICLE">
+		VehiclePrevSeat();
+	</Binding>
+	<Binding name="VEHICLENEXTSEAT" category="BINDING_HEADER_VEHICLE">
+		VehicleNextSeat();
+	</Binding>
+	<Binding name="VEHICLEAIMUP" runOnUp="true" category="BINDING_HEADER_VEHICLE">
+		if ( keystate == "down" ) then
+			VehicleAimUpStart();
+		else
+			VehicleAimUpStop();
+		end
+	</Binding>
+	<Binding name="VEHICLEAIMDOWN" runOnUp="true" category="BINDING_HEADER_VEHICLE">
+		if ( keystate == "down" ) then
+			VehicleAimDownStart();
+		else
+			VehicleAimDownStop();
+		end
+	</Binding>
+	<Binding name="VEHICLEAIMINCREMENT" category="BINDING_HEADER_VEHICLE">
+		VehicleAimIncrement(0.1);
+	</Binding>
+	<Binding name="VEHICLEAIMDECREMENT" category="BINDING_HEADER_VEHICLE">
+		VehicleAimDecrement(0.1);
+	</Binding>
+	<Binding name="VEHICLECAMERAZOOMIN" category="BINDING_HEADER_VEHICLE">
+		VehicleCameraZoomIn(1.0);
+	</Binding>
+	<Binding name="VEHICLECAMERAZOOMOUT" category="BINDING_HEADER_VEHICLE">
+		VehicleCameraZoomOut(1.0);
+	</Binding>
+
+	<!-- Hidden bindings -->
 	<Binding name="TURNORACTION" runOnUp="true" hidden="true">
 		if ( keystate == "down" ) then
 			TurnOrActionStart();

@@ -10,12 +10,14 @@ function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
 	CastingBarFrame_SetNonInterruptibleCastColor(self, 0.7, 0.7, 0.7);
 	CastingBarFrame_SetFailedCastColor(self, 1.0, 0.0, 0.0);
 
-	CastingBarFrame_SetUseStartColorForFinished(self, true);
+	--classic cast bars should flash green when finished casting
+	--CastingBarFrame_SetUseStartColorForFinished(self, true);
 	CastingBarFrame_SetUseStartColorForFlash(self, true);
 
 	CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield);
 
 	self.showCastbar = true;
+	self.notInterruptible = false;
 
 	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint();
 	if ( point == "CENTER" ) then

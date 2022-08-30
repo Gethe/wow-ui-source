@@ -116,4 +116,11 @@
 			<KeyValue key="backdropColorAlpha" value="0.8" type="number"/>
 		</KeyValues>
 	</Frame>
+	
+	<Button name="DisabledTooltipButtonTemplate" mixin="DisabledTooltipButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
 </Ui>

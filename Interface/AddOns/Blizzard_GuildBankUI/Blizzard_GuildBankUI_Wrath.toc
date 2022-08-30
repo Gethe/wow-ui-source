@@ -1,0 +1,3 @@
+## Title: Blizzard Guild Bank UI
+## LoadOnDemand: 1
+..\..\..\Interface_TBC\AddOns\Blizzard_GuildBankUI\Blizzard_GuildBankUI.xml

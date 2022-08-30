@@ -64,6 +64,7 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PET_BAR_UPDATE_USABLE");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self.showgrid = 0;
@@ -255,7 +256,7 @@ end
 function ShowPetActionBar(doNotSlide)
 	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and (not PetActionBarFrame.locked or doNotSlide) and not PetActionBarFrame.ctrlPressed ) then
 		PetActionBar_UpdatePositionValues();
-		if ( MainMenuBar.busy or doNotSlide ) then
+		if ( MainMenuBar.busy or UnitHasVehicleUI("player") or doNotSlide ) then
 			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 			PetActionBarFrame.state = "top";
 			PetActionBarFrame:Show();

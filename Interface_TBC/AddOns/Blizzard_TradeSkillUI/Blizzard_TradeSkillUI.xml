@@ -619,11 +619,23 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
-								<FontString name="TradeSkillReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
+								<FontString name="TradeSkillDescription" inherits="GameFontHighlightSmall" justifyH="LEFT">
+									<Size>
+										<AbsDimension x="290" y="0"/>
+									</Size>
 									<Anchors>
 										<Anchor point="TOPLEFT">
 											<Offset>
-												<AbsDimension x="8" y="-47"/>
+												<AbsDimension x="5" y="-50"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="TradeSkillReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="TradeSkillDescription" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-10"/> <!--Re-anchored in code-->
 											</Offset>
 										</Anchor>
 									</Anchors>

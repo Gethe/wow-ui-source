@@ -103,20 +103,65 @@
 	</Button>
 
 	<Frame name="BuffFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
-		<Size>
-			<AbsDimension x="50" y="50"/>
-		</Size>
+		<Size x="50" y="50"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-				<Offset>
-					<AbsDimension x="-205" y="-13"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-205" y="-13"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad function="BuffFrame_OnLoad"/>
 			<OnEvent function="BuffFrame_OnEvent"/>
 			<OnUpdate function="BuffFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="ConsolidatedBuffs" parent="UIParent" inherits="AuraButtonTemplate" hidden="true">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="TOPRIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				ConsolidatedBuffsIcon:SetTexture("Interface\\Buttons\\BuffConsolidation");
+				ConsolidatedBuffsIcon:SetTexCoord(0, 0.5, 0, 1);
+				ConsolidatedBuffsIcon:ClearAllPoints();
+				ConsolidatedBuffsIcon:SetPoint("CENTER");
+				ConsolidatedBuffsIcon:SetWidth(64);
+				ConsolidatedBuffsIcon:SetHeight(64);
+			</OnLoad>
+			<OnUpdate function="ConsolidatedBuffs_OnUpdate" />
+			<OnEnter function="ConsolidatedBuffs_OnEnter" />
+			<OnShow function="ConsolidatedBuffs_OnShow" />
+			<OnHide function="ConsolidatedBuffs_OnHide" />
+		</Scripts>
+	</Button>
+	<Frame name="ConsolidatedBuffsTooltip" inherits="TooltipBackdropTemplate" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" />
+		</Anchors>	
+		<Size x="60" y="60"/>
+		<Frames>
+			<Frame name="ConsolidatedBuffsContainer">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="16" y="-16"/>
+				</Anchors>			
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ConsolidatedBuffsContainer:SetScale(0.66);
+			</OnLoad>
+			<OnEnter>
+				self.mousedOver = true;
+			</OnEnter>
+			<OnUpdate>
+				if ( self.mousedOver and not ConsolidatedBuffs.mousedOver and not self:IsMouseOver() ) then
+					self.mousedOver = nil;
+					self:Hide();
+				end
+			</OnUpdate>
+			<OnHide>
+				self.mousedOver = nil;
+			</OnHide>
 		</Scripts>
 	</Frame>
 
