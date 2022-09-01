@@ -136,7 +136,12 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 
 		local sentinelkey, sentinelInfo = self:GetSentinelKeyInfoFromSelectionID(dropDownButtonInfo.value);
 		if sentinelInfo then
-			dropDownButtonInfo.customCheckIconAtlas = sentinelInfo.icon;
+			if sentinelInfo.icon then
+				dropDownButtonInfo.customCheckIconAtlas = sentinelInfo.icon;
+			else
+				dropDownButtonInfo.notCheckable = true;
+				dropDownButtonInfo.leftPadding = 6;
+			end
 		else
 			dropDownButtonInfo.colorCode = self.dropDownOptionColorCode;
 			dropDownButtonInfo.notCheckable = true;

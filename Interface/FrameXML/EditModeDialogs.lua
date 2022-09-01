@@ -95,8 +95,8 @@ end
 function EditModeImportLayoutDialogMixin:ShowDialog()
 	self.ImportBox.EditBox:SetText("");
 	self.CharacterSpecificLayoutCheckButton:SetControlChecked(false);
-	self.ImportBox.EditBox:SetFocus();
 	StaticPopupSpecial_Show(self);
+	self.ImportBox.EditBox:SetFocus();
 end
 
 function EditModeImportLayoutDialogMixin:OnAccept()

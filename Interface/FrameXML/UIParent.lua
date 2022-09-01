@@ -909,8 +909,8 @@ function ToggleAchievementFrame(stats)
 	end
 end
 
-function ToggleTalentFrame(suggestedTab)
-	if not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
+function ToggleTalentFrame(suggestedTab, inspectUnit)
+	if not inspectUnit and not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
 		return;
 	end
 
@@ -934,12 +934,17 @@ function ToggleTalentFrame(suggestedTab)
 	if useNewFrame then
 		ClassTalentFrame_LoadUI();
 
+		ClassTalentFrame:SetInspecting(inspectUnit);
 		if not ClassTalentFrame:IsShown() then
 			ShowUIPanel(ClassTalentFrame);
 		else
 			ClassTalentFrame:CheckConfirmClose();
 		end
 	else
+		if inspectUnit then
+			return;
+		end
+
 		TalentFrame_LoadUI();
 		if ( PlayerTalentFrame_Toggle ) then
 			PlayerTalentFrame_Toggle(suggestedTab);
@@ -1303,6 +1308,10 @@ end
 function InspectUnit(unit)
 	InspectFrame_LoadUI();
 	if ( InspectFrame_Show ) then
+		if ( ClassTalentFrame and ClassTalentFrame:IsInspecting() ) then
+			ClassTalentFrame:LockInspect();
+		end
+
 		InspectFrame_Show(unit);
 	end
 end
@@ -2313,7 +2322,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "TALKINGHEAD_REQUESTED" ) then
 		if ( not TalkingHeadFrame ) then
 			TalkingHead_LoadUI();
-			TalkingHeadFrame_PlayCurrent();
+			TalkingHeadFrame:PlayCurrent();
 		end
 		self:UnregisterEvent("TALKINGHEAD_REQUESTED");
 	elseif (event == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN") then

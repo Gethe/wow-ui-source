@@ -76,7 +76,7 @@ end
 function MainMenuBarBagManager:OnExpandBarChanged()
 	local isExpanded = self:ShouldBarExpand();
 	for i, bagButton in self:EnumerateBagButtons() do
-		bagButton:SetShown(bagButton:IsBackpack() or isExpanded);
+		bagButton:SetBarExpanded(isExpanded);
 	end
 
 	EventRegistry:TriggerEvent("MainMenuBarManager.OnExpandChanged", self);

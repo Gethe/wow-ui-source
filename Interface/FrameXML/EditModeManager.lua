@@ -679,6 +679,8 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetExtraAbilitiesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowExtraAbilities));
 	self.AccountSettings:SetAuraFrameShown(BuffFrame, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowBuffFrame));
 	self.AccountSettings:SetAuraFrameShown(DebuffFrame, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDebuffFrame));
+	self.AccountSettings:SetTalkingHeadFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowTalkingHeadFrame));
+	self.AccountSettings:SetVehicleLeaveButtonShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowVehicleLeaveButton));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -828,15 +830,19 @@ end
 
 function EditModeManagerFrameMixin:UpdateSystems()
 	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
-		if systemInfo then
-			systemFrame:UpdateSystem(systemInfo);
-		end
+		self:UpdateSystem(systemFrame);
 	end
 
 	self:UpdateRightAnchoredActionBarWidth();
 	self:UpdateBottomAnchoredActionBarHeight();
 	self:UpdateRightAnchoredActionBarScales();
+end
+
+function EditModeManagerFrameMixin:UpdateSystem(systemFrame)
+	local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
+	if systemInfo then
+		systemFrame:UpdateSystem(systemInfo);
+	end
 end
 
 function EditModeManagerFrameMixin:GetActiveLayoutInfo()
@@ -1243,6 +1249,16 @@ function EditModeAccountSettingsMixin:OnLoad()
 		self:SetAuraFrameShown(DebuffFrame, isChecked, isUserInput);
 	end
 	self.Settings.DebuffFrame:SetCallback(onDebuffFrameCheckboxChecked);
+
+	local function onTalkingHeadFrameCheckboxChecked(isChecked, isUserInput)
+		self:SetTalkingHeadFrameShown(isChecked, isUserInput);
+	end
+	self.Settings.TalkingHeadFrame:SetCallback(onTalkingHeadFrameCheckboxChecked);
+
+	local function onVehicleLeaveButtonCheckboxChecked(isChecked, isUserInput)
+		self:SetVehicleLeaveButtonShown(isChecked, isUserInput);
+	end
+	self.Settings.VehicleLeaveButton:SetCallback(onVehicleLeaveButtonCheckboxChecked);
 end
 
 function EditModeAccountSettingsMixin:OnEditModeEnter()
@@ -1266,12 +1282,11 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 
 	self:RefreshCastBar();
 	self:RefreshEncounterBar();
-
-	ExtraAbilityContainer.editModeEnterShown = ExtraAbilityContainer:IsShown();
 	self:RefreshExtraAbilities();
-
 	self:RefreshAuraFrame(BuffFrame);
 	self:RefreshAuraFrame(DebuffFrame);
+	self:RefreshTalkingHeadFrame();
+	self:RefreshVehicleLeaveButton();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
@@ -1282,8 +1297,6 @@ function EditModeAccountSettingsMixin:OnEditModeExit()
 	self:ResetActionBarShown(StanceBar);
 	self:ResetActionBarShown(PetActionBar);
 	self:ResetActionBarShown(PossessActionBar);
-
-	ExtraAbilityContainer:SetShown(ExtraAbilityContainer.editModeEnterShown);
 end
 
 function EditModeAccountSettingsMixin:ResetTargetAndFocus(clearSavedTargetAndFocus)
@@ -1334,9 +1347,6 @@ function EditModeAccountSettingsMixin:RefreshPartyFrames()
 	if showPartyFrames then
 		PartyFrame:HighlightSystem();
 	else
-		if PartyFrame.isSelected then
-			EditModeManagerFrame:ClearSelectedSystem();
-		end
 		PartyFrame:ClearHighlight();
 	end
 
@@ -1457,12 +1467,14 @@ end
 function EditModeAccountSettingsMixin:RefreshExtraAbilities()
 	local showExtraAbilities = self.Settings.ExtraAbilities:IsControlChecked();
 	if showExtraAbilities then
-		ExtraAbilityContainer:Show();
+		ExtraAbilityContainer.isInEditMode = true;
 		ExtraAbilityContainer:HighlightSystem();
 	else
-		ExtraAbilityContainer:SetShown(ExtraAbilityContainer.editModeEnterShown);
+		ExtraAbilityContainer.isInEditMode = false;
 		ExtraAbilityContainer:ClearHighlight();
 	end
+
+	ExtraAbilityContainer:UpdateShownState();
 end
 
 function EditModeAccountSettingsMixin:SetAuraFrameShown(frame, shown, isUserInput)
@@ -1491,6 +1503,61 @@ function EditModeAccountSettingsMixin:RefreshAuraFrame(frame)
 
 	frame:UpdateAuraButtons();
 	frame:UpdateGridLayout();
+end
+
+function EditModeAccountSettingsMixin:SetTalkingHeadFrameShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.TalkingHeadFrame, shown);
+		self:RefreshTalkingHeadFrame();
+	else
+		self.Settings.TalkingHeadFrame:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshTalkingHeadFrame()
+	local showTalkingHeadFrame = self.Settings.TalkingHeadFrame:IsControlChecked();
+	if showTalkingHeadFrame then
+		-- Talking head frame is loaded as needed so if it isn't loaded yet then load it now
+		if not TalkingHeadFrame then
+			TalkingHead_LoadUI();
+		end
+
+		TalkingHeadFrame.isInEditMode = true;
+		TalkingHeadFrame:HighlightSystem();
+	else
+		-- If we haven't even loaded the talking head frame in then nothing we need to do
+		if not TalkingHeadFrame then
+			return;
+		end
+
+		TalkingHeadFrame.isInEditMode = false;
+		TalkingHeadFrame:ClearHighlight();
+	end
+
+	TalkingHeadFrame:UpdateShownState();
+	UIParent_ManageFramePositions();
+end
+
+function EditModeAccountSettingsMixin:SetVehicleLeaveButtonShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowVehicleLeaveButton, shown);
+		self:RefreshVehicleLeaveButton();
+	else
+		self.Settings.VehicleLeaveButton:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshVehicleLeaveButton()
+	local showVehicleLeaveButton = self.Settings.VehicleLeaveButton:IsControlChecked();
+	if showVehicleLeaveButton then
+		MainMenuBarVehicleLeaveButton.isInEditMode = true;
+		MainMenuBarVehicleLeaveButton:HighlightSystem();
+	else
+		MainMenuBarVehicleLeaveButton.isInEditMode = false;
+		MainMenuBarVehicleLeaveButton:ClearHighlight();
+	end
+
+	MainMenuBarVehicleLeaveButton:UpdateShownState();
 end
 
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)

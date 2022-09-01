@@ -46,6 +46,20 @@ function PlayerUtil.GetSpecName()
 	return "";
 end
 
+function PlayerUtil.GetSpecNameBySpecID(specID, playerSex)
+	playerSex = playerSex or UnitSex("player");
+	if playerSex then
+		return select(2, GetSpecializationInfoByID(specID, playerSex));
+	end
+
+	return "";
+end
+
+function PlayerUtil.ShouldUseNativeFormInModelScene()
+	local _, raceFilename = UnitRace("player");
+	return (raceFilename and (raceFilename ~= "Dracthyr" and raceFilename ~= "Worgen")) or C_UnitAuras.WantsAlteredForm("player");
+end
+
 function PlayerUtil.GetClassID()
 	local classID = select(3, UnitClass("player"));
 	return classID;

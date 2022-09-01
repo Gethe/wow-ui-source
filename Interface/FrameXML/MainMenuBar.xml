@@ -112,6 +112,9 @@
 					<Layer level="OVERLAY" textureSubLevel="5">
 						<FontString parentKey="Text" inherits="GameFontNormalCenter">
 							<Size x="17" y="10"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-1"/>
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -153,7 +156,7 @@
 				</Frames>
 			</Frame>
 
-			<Button name="MainMenuBarVehicleLeaveButton" parentKey="VehicleLeaveButton" inherits="UIParentBottomManagedFrameTemplate" hidden="true" motionScriptsWhileDisabled="true">
+			<Button name="MainMenuBarVehicleLeaveButton" parentKey="VehicleLeaveButton" inherits="UIParentBottomManagedFrameTemplate, EditModeVehicleLeaveButtonSystemTemplate" mixin="MainMenuBarVehicleLeaveButtonMixin" hidden="true" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -164,10 +167,10 @@
 					<KeyValue key="layoutOnBottom" value="true" type="boolean"/>
 				</KeyValues>
 				<Scripts>
-					<OnLoad function="MainMenuBarVehicleLeaveButton_OnLoad"/>
-					<OnEvent function="MainMenuBarVehicleLeaveButton_OnEvent"/>
-					<OnClick function="MainMenuBarVehicleLeaveButton_OnClicked"/>
-					<OnEnter function="MainMenuBarVehicleLeaveButton_OnEnter"/>
+					<OnLoad method="OnLoad" inherit="prepend"/>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClicked"/>
+					<OnEnter method="OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">

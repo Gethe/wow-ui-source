@@ -38,9 +38,6 @@
 			<Layer level="OVERLAY" textureSubLevel="5">
 				<Texture parentKey="ItemContextOverlay" setAllPoints="true" hidden="true"/>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="LevelLinkLockTexture"/>
-			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
 					<Size x="37" y="37"/>
@@ -81,10 +78,25 @@
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 	</Button>
 
-	<Button name="CircularGiantItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
-		<KeyValues>
-			<KeyValue key="useCircularIconBorder" value="true" type="boolean"/>
-		</KeyValues>
+	<Frame name="CircularItemButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+						<MaskedTexture childKey="searchOverlay"/>
+						<MaskedTexture childKey="ItemContextOverlay"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="CircularGiantItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" mixin="CircularGiantItemButtonMixin" virtual="true">
 		<Size x="54" y="54"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -101,7 +113,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
 					</Anchors>
 					<MaskedTextures>
-						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="Icon"/> <!-- NOTE: cannot use CircularItemButtonTemplate which is intended for ItemButton intrinsic, Icon/icon case mismatch -->
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>

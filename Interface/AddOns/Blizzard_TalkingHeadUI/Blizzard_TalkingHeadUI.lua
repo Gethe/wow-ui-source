@@ -1,4 +1,6 @@
-function TalkingHeadFrame_OnLoad(self)
+TalkingHeadFrameMixin = {};
+
+function TalkingHeadFrameMixin:OnLoad()
 	self:RegisterEvent("TALKINGHEAD_REQUESTED");
 	self:RegisterEvent("TALKINGHEAD_CLOSE");
 	self:RegisterEvent("SOUNDKIT_FINISHED");
@@ -11,90 +13,89 @@ function TalkingHeadFrame_OnLoad(self)
 	AlertFrame:SetSubSystemAnchorPriority(alertSystem, 0);
 end
 
-function TalkingHeadFrame_OnEvent(self, event, ...)
+function TalkingHeadFrameMixin:OnEvent(event, ...)
 	if ( event == "TALKINGHEAD_REQUESTED" ) then
-		TalkingHeadFrame_PlayCurrent();
+		self:PlayCurrent();
 	elseif ( event == "TALKINGHEAD_CLOSE" ) then
-		TalkingHeadFrame_Close();
+		self:Close();
 	elseif ( event == "SOUNDKIT_FINISHED" ) then
 		local voHandle = ...;
 		if ( self.voHandle == voHandle ) then
-			TalkingHeadFrame_VOComplete(self.MainFrame.Model);
+			self.MainFrame.Model:VOComplete();
 			self.voHandle = nil;
 		end
 	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
-		TalkingHeadFrame_Reset(TalkingHeadFrame);
-		TalkingHeadFrame_CloseImmediately();
+		self:Reset();
+		self:CloseImmediately();
 	end
 end
 
-function TalkingHeadFrame_CloseImmediately()
-	local frame = TalkingHeadFrame;
-	if (frame.finishTimer) then
-		frame.finishTimer:Cancel();
-		frame.finishTimer = nil;
+function TalkingHeadFrameMixin:CloseImmediately()
+	self.isPlaying = false;
+
+	if (self.finishTimer) then
+		self.finishTimer:Cancel();
+		self.finishTimer = nil;
 	end
 	C_TalkingHead.IgnoreCurrentTalkingHead();
-	frame:Hide();
-	if ( frame.voHandle ) then
-		StopSound(frame.voHandle);
-		frame.voHandle = nil;
+	self:UpdateShownState();
+	if ( self.voHandle ) then
+		StopSound(self.voHandle);
+		self.voHandle = nil;
 	end
 end
 
-function TalkingHeadFrame_OnClick(self, button)
+function TalkingHeadFrameMixin:OnClick(button)
 	if ( button == "RightButton" ) then
-		TalkingHeadFrame_CloseImmediately();
+		self:CloseImmediately();
 		return true;
 	end
 
 	return false;
 end
 
-function TalkingHeadFrame_FadeinFrames()
-	local frame = TalkingHeadFrame;
-	frame.MainFrame.TalkingHeadsInAnim:Play();
+function TalkingHeadFrameMixin:FadeinFrames()
+	self.MainFrame.TalkingHeadsInAnim:Play();
 	C_Timer.After(0.5, function()
-		frame.NameFrame.Fadein:Play();
+		self.NameFrame.Fadein:Play();
 	end);
 	C_Timer.After(0.75, function()
-		frame.TextFrame.Fadein:Play();
+		self.TextFrame.Fadein:Play();
 	end);
-	frame.BackgroundFrame.Fadein:Play();
-	frame.PortraitFrame.Fadein:Play();
+	self.BackgroundFrame.Fadein:Play();
+	self.PortraitFrame.Fadein:Play();
 end
 
-function TalkingHeadFrame_FadeoutFrames()
-	local frame = TalkingHeadFrame;
-	frame.MainFrame.Close:Play();
-	frame.NameFrame.Close:Play();
-	frame.TextFrame.Close:Play();
-	frame.BackgroundFrame.Close:Play();
-	frame.PortraitFrame.Close:Play();
-	frame.isClosing = true;
+function TalkingHeadFrameMixin:FadeoutFrames()
+	self.MainFrame.Close:Play();
+	self.NameFrame.Close:Play();
+	self.TextFrame.Close:Play();
+	self.BackgroundFrame.Close:Play();
+	self.PortraitFrame.Close:Play();
+	self.isClosing = true;
 end
 
-function TalkingHeadFrame_Reset(frame, text, name)
+function TalkingHeadFrameMixin:Reset(text, name)
 	-- set alpha for all animating textures
-	frame:StopAnimating();
-	frame.BackgroundFrame.TextBackground:SetAlpha(0.01);
-	frame.NameFrame.Name:SetAlpha(0.01);
-	frame.TextFrame.Text:SetAlpha(0.01);
-	frame.MainFrame.Sheen:SetAlpha(0.01);
-	frame.MainFrame.TextSheen:SetAlpha(0.01);
+	self:StopAnimating();
+	self.BackgroundFrame.TextBackground:SetAlpha(0.01);
+	self.NameFrame.Name:SetAlpha(0.01);
+	self.TextFrame.Text:SetAlpha(0.01);
+	self.MainFrame.Sheen:SetAlpha(0.01);
+	self.MainFrame.TextSheen:SetAlpha(0.01);
 
-	frame.MainFrame.Model:SetAlpha(0.01);
-	frame.MainFrame.Model.PortraitBg:SetAlpha(0.01);
-	frame.PortraitFrame.Portrait:SetAlpha(0.01);
-	frame.MainFrame.Overlay.Glow_LeftBar:SetAlpha(0.01);
-	frame.MainFrame.Overlay.Glow_RightBar:SetAlpha(0.01);
-	frame.MainFrame.CloseButton:SetAlpha(0.01);
+	self.MainFrame.Model:SetAlpha(0.01);
+	self.MainFrame.Model.PortraitBg:SetAlpha(0.01);
+	self.PortraitFrame.Portrait:SetAlpha(0.01);
+	self.MainFrame.Overlay.Glow_LeftBar:SetAlpha(0.01);
+	self.MainFrame.Overlay.Glow_RightBar:SetAlpha(0.01);
+	self.MainFrame.CloseButton:SetAlpha(0.01);
 
-	frame.MainFrame:SetAlpha(1);
-	frame.NameFrame.Name:SetText(name);
-	frame.TextFrame.Text:SetText(text);
+	self.MainFrame:SetAlpha(1);
+	self.NameFrame.Name:SetText(name);
+	self.TextFrame.Text:SetText(text);
 
-	frame.isClosing = false;
+	self.isClosing = false;
 end
 
 local talkingHeadTextureKitRegionFormatStrings = {
@@ -112,17 +113,18 @@ local talkingHeadFontColor = {
 	["Normal"] = {Name = CreateColor(1, 0.82, 0.02), Text = CreateColor(1, 1, 1), Shadow = CreateColor(0.0, 0.0, 0.0, 1.0)},
 }
 
-function TalkingHeadFrame_PlayCurrent()
-	local frame = TalkingHeadFrame;
-	local model = frame.MainFrame.Model;
+function TalkingHeadFrameMixin:PlayCurrent()
+	self.isPlaying = true;
 
-	if( frame.finishTimer ) then
-		frame.finishTimer:Cancel();
-		frame.finishTimer = nil;
+	local model = self.MainFrame.Model;
+
+	if( self.finishTimer ) then
+		self.finishTimer:Cancel();
+		self.finishTimer = nil;
 	end
-	if ( frame.voHandle ) then
-		StopSound(frame.voHandle);
-		frame.voHandle = nil;
+	if ( self.voHandle ) then
+		StopSound(self.voHandle);
+		self.voHandle = nil;
 	end
 
 	local currentDisplayInfo = model:GetDisplayInfo();
@@ -130,22 +132,22 @@ function TalkingHeadFrame_PlayCurrent()
 	local textFormatted = string.format(text);
 	if ( displayInfo and displayInfo ~= 0 ) then
 		if textureKit then
-			SetupTextureKitOnRegions(textureKit, frame.BackgroundFrame, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
-			SetupTextureKitOnRegions(textureKit, frame.PortraitFrame, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+			SetupTextureKitOnRegions(textureKit, self.BackgroundFrame, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+			SetupTextureKitOnRegions(textureKit, self.PortraitFrame, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 		else
-			SetupAtlasesOnRegions(frame.BackgroundFrame, talkingHeadDefaultAtlases, true);
-			SetupAtlasesOnRegions(frame.PortraitFrame, talkingHeadDefaultAtlases, true);
+			SetupAtlasesOnRegions(self.BackgroundFrame, talkingHeadDefaultAtlases, true);
+			SetupAtlasesOnRegions(self.PortraitFrame, talkingHeadDefaultAtlases, true);
 			textureKit = "Normal";
 		end
 		local nameColor = talkingHeadFontColor[textureKit].Name;
 		local textColor = talkingHeadFontColor[textureKit].Text;
 		local shadowColor = talkingHeadFontColor[textureKit].Shadow;
-		frame.NameFrame.Name:SetTextColor(nameColor:GetRGB());
-		frame.NameFrame.Name:SetShadowColor(shadowColor:GetRGBA());
-		frame.TextFrame.Text:SetTextColor(textColor:GetRGB());
-		frame.TextFrame.Text:SetShadowColor(shadowColor:GetRGBA());
-		local wasShown = frame:IsShown();
-		frame:Show();
+		self.NameFrame.Name:SetTextColor(nameColor:GetRGB());
+		self.NameFrame.Name:SetShadowColor(shadowColor:GetRGBA());
+		self.TextFrame.Text:SetTextColor(textColor:GetRGB());
+		self.TextFrame.Text:SetShadowColor(shadowColor:GetRGBA());
+		local wasShown = self:IsShown();
+		self:UpdateShownState();
 		if ( currentDisplayInfo ~= displayInfo ) then
 			model.uiCameraID = cameraID;
 			model:SetDisplayInfo(displayInfo);
@@ -154,34 +156,34 @@ function TalkingHeadFrame_PlayCurrent()
 				model.uiCameraID = cameraID;
 				Model_ApplyUICamera(model, model.uiCameraID);
 			end
-			TalkingHeadFrame_SetupAnimations(model);
+			model:SetupAnimations();
 		end
 
-		if ( isNewTalkingHead or not wasShown or frame.isClosing ) then
-			TalkingHeadFrame_Reset(frame, textFormatted, name);
-			TalkingHeadFrame_FadeinFrames();
+		if ( isNewTalkingHead or not wasShown or self.isClosing ) then
+			self:Reset(textFormatted, name);
+			self:FadeinFrames();
 		else
-			if ( name ~= frame.NameFrame.Name:GetText() ) then
+			if ( name ~= self.NameFrame.Name:GetText() ) then
 				-- Fade out the old name and fade in the new name
-				frame.NameFrame.Fadeout:Play();
+				self.NameFrame.Fadeout:Play();
 				C_Timer.After(0.25, function()
-					frame.NameFrame.Name:SetText(name);
+					self.NameFrame.Name:SetText(name);
 				end);
 				C_Timer.After(0.5, function()
-					frame.NameFrame.Fadein:Play();
+					self.NameFrame.Fadein:Play();
 				end);
 
-				frame.MainFrame.TalkingHeadsInAnim:Play();
+				self.MainFrame.TalkingHeadsInAnim:Play();
 			end
 
-			if ( textFormatted ~= frame.TextFrame.Text:GetText() ) then
+			if ( textFormatted ~= self.TextFrame.Text:GetText() ) then
 				-- Fade out the old text and fade in the new text
-				frame.TextFrame.Fadeout:Play();
+				self.TextFrame.Fadeout:Play();
 				C_Timer.After(0.25, function()
-					frame.TextFrame.Text:SetText(textFormatted);
+					self.TextFrame.Text:SetText(textFormatted);
 				end);
 				C_Timer.After(0.5, function()
-					frame.TextFrame.Fadein:Play();
+					self.TextFrame.Fadein:Play();
 				end);
 			end
 		end
@@ -189,44 +191,67 @@ function TalkingHeadFrame_PlayCurrent()
 
 		local success, voHandle = PlaySound(vo, "Talking Head", true, true);
 		if ( success ) then
-			frame.voHandle = voHandle;
+			self.voHandle = voHandle;
 		end
 	end
 end
 
-function TalkingHeadFrame_Close()
-	local frame = TalkingHeadFrame;
-	TalkingHeadFrame_VOComplete(frame.MainFrame.Model);
-	TalkingHeadFrame_IdleAnim(frame.MainFrame.Model);
-	if( frame.voHandle ) then
-		if( frame.finishTimer ) then
-			frame.finishTimer:Cancel();
+function TalkingHeadFrameMixin:Close()
+	self.MainFrame.Model:VOComplete();
+	self.MainFrame.Model:IdleAnim();
+	if( self.voHandle ) then
+		if( self.finishTimer ) then
+			self.finishTimer:Cancel();
 		end
-		StopSound(frame.voHandle, 2000);
-		frame.finishTimer = C_Timer.NewTimer(1, function()
-			TalkingHeadFrame_FadeoutFrames();
-			frame.finishTimer = nil;
-			frame.voHandle = nil;
+		StopSound(self.voHandle, 2000);
+		self.finishTimer = C_Timer.NewTimer(1, function()
+			self:FadeoutFrames();
+			self.finishTimer = nil;
+			self.voHandle = nil;
 			end
 		);
 	else
-		TalkingHeadFrame_FadeoutFrames();
-		frame.finishTimer = nil;
+		self:FadeoutFrames();
+		self.finishTimer = nil;
 	end
 
-	frame.voHandle = nil;
+	self.voHandle = nil;
 end
 
-function TalkingHeadFrame_OnModelLoaded(self)
+function TalkingHeadFrameMixin:Close_OnFinished()
+	self.isPlaying = false;
+	self.isClosing = false;
+	self:UpdateShownState();
+end
+
+function TalkingHeadFrameMixin:UpdateShownState()
+	self:SetShown(self.isInEditMode or self.isPlaying);
+end
+
+TalkingHeadFrameModelMixin = {};
+
+function TalkingHeadFrameModelMixin:OnLoad()
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
+function TalkingHeadFrameModelMixin:OnEvent()
+	self:RefreshCamera();
+	if self.uiCameraID then
+		Model_ApplyUICamera(self, self.uiCameraID);
+	end
+end
+
+function TalkingHeadFrameModelMixin:OnModelLoaded()
 	self:RefreshCamera();
 	if self.uiCameraID then
 		Model_ApplyUICamera(self, self.uiCameraID);
 	end
 
-	TalkingHeadFrame_SetupAnimations(self);
+	self:SetupAnimations();
 end
 
-function TalkingHeadFrame_SetupAnimations(self)
+function TalkingHeadFrameModelMixin:SetupAnimations()
 	local animKit, animIntro, animLoop, lineDuration = C_TalkingHead.GetCurrentLineAnimationInfo();
 	if ( animKit == nil ) then
 		return;
@@ -253,11 +278,11 @@ function TalkingHeadFrame_SetupAnimations(self)
 	elseif (self.animIntro) then
 		self:SetAnimation(self.animIntro, 0);
 		self.shouldLoop = true;
-		self:SetScript("OnAnimFinished", TalkingHeadFrame_IdleAnim);
+		self:SetScript("OnAnimFinished", self.IdleAnim);
 	else
 		self:SetAnimation(self.animLoop, 0);
 		self.shouldLoop = true;
-		self:SetScript("OnAnimFinished", TalkingHeadFrame_IdleAnim);
+		self:SetScript("OnAnimFinished", self.IdleAnim);
 	end
 
 	self.lineAnimDone = false;
@@ -270,11 +295,11 @@ function TalkingHeadFrame_SetupAnimations(self)
 	end
 end
 
-function TalkingHeadFrame_VOComplete(self)
+function TalkingHeadFrameModelMixin:VOComplete()
 	self.shouldLoop = false;
 end
 
-function TalkingHeadFrame_IdleAnim(self)
+function TalkingHeadFrameModelMixin:IdleAnim()
 	if (self.lineAnimDone) then
 		return;
 	end
@@ -291,9 +316,4 @@ function TalkingHeadFrame_IdleAnim(self)
 		self:SetScript("OnAnimFinished", nil);
 		self.lineAnimDone = true;
 	end
-end
-
-function TalkingHeadFrame_Close_OnFinished(self)
-	TalkingHeadFrame.isClosing = false;
-	TalkingHeadFrame:Hide();
 end

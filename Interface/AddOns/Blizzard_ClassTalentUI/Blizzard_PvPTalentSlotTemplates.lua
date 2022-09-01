@@ -26,6 +26,10 @@ function PvPTalentSlotButtonMixin:OnEvent(event)
 end
 
 function PvPTalentSlotButtonMixin:GetSelectedTalent()
+	if (self:IsInspecting()) then
+		return C_SpecializationInfo.GetInspectSelectedPvpTalent(self:GetInspectUnit(), self.slotIndex);
+	end
+
 	return self.predictedSetting:Get();
 end
 
@@ -68,6 +72,23 @@ end
 function PvPTalentSlotButtonMixin:Update()
 	if (not self.slotIndex) then
 		error("Slot must be setup with a slot index first.");
+	end
+
+	if (self:IsInspecting()) then
+		local selectedTalentID = C_SpecializationInfo.GetInspectSelectedPvpTalent(self:GetInspectUnit(), self.slotIndex);
+		if (selectedTalentID) then
+			SetPortraitToTexture(self.Texture, select(3, GetPvpTalentInfoByID(selectedTalentID)));
+			self.Texture:Show();
+
+			self.Border:SetAtlas("talents-node-pvp-inspect");
+			self.Border:Show();
+		else
+			self.Texture:SetAtlas("talents-node-pvp-inspect-empty");
+			self.Border:Hide();
+		end
+		return;
+	else
+		self.Border:Show();
 	end
 
 	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
@@ -117,8 +138,11 @@ function PvPTalentSlotButtonMixin:OnEnter()
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local selectedTalentID = self:GetSelectedTalent();
+	local isInspecting = self:IsInspecting();
 	if (selectedTalentID) then
-		GameTooltip:SetPvpTalent(selectedTalentID, false, GetActiveSpecGroup(true), self.slotIndex);
+		GameTooltip:SetPvpTalent(selectedTalentID, isInspecting, GetActiveSpecGroup(true), self.slotIndex);
+	elseif (isInspecting) then
+		GameTooltip:SetText(TALENT_NOT_SELECTED, HIGHLIGHT_FONT_COLOR:GetRGB());
 	else
 		GameTooltip:SetText(PVP_TALENT_SLOT);
 		if (not slotInfo.enabled) then
@@ -139,19 +163,34 @@ function PvPTalentSlotButtonMixin:OnClick()
 		HandleGeneralTalentFrameChatLink(self, name, link);
 		return;
 	end
+
+	if (self:IsInspecting()) then
+		return;
+	end
+
 	self:GetParent():SelectSlot(self);
 end
 
 function PvPTalentSlotButtonMixin:OnDragStart()
-	if (not self.isInspect) then
-		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
-		if slotInfo and slotInfo.selectedTalentID then
-			local predictedTalentID = self:GetSelectedTalent();
-			if (not predictedTalentID or predictedTalentID == slotInfo.selectedTalentID) then
-				PickupPvpTalent(slotInfo.selectedTalentID);
-			end
+	if (self:IsInspecting()) then
+		return;
+	end
+
+	local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(self.slotIndex);
+	if slotInfo and slotInfo.selectedTalentID then
+		local predictedTalentID = self:GetSelectedTalent();
+		if (not predictedTalentID or predictedTalentID == slotInfo.selectedTalentID) then
+			PickupPvpTalent(slotInfo.selectedTalentID);
 		end
 	end
+end
+
+function PvPTalentSlotButtonMixin:IsInspecting()
+	return self:GetParent():IsInspecting();
+end
+
+function PvPTalentSlotButtonMixin:GetInspectUnit()
+	return self:GetParent():GetInspectUnit();
 end
 
 
@@ -308,4 +347,22 @@ function PvPTalentSlotTrayMixin:SelectTalentForSlot(talentID, slotIndex)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	slot:SetSelectedTalent(talentID);
 	self:UnselectSlot();
+end
+
+function PvPTalentSlotTrayMixin:IsInspecting()
+	local talentFrame = self:GetTalentFrame();
+	if (not talentFrame) then
+		return false;
+	end
+
+	return talentFrame:IsInspecting();
+end
+
+function PvPTalentSlotTrayMixin:GetInspectUnit()
+	local talentFrame = self:GetTalentFrame();
+	if (not talentFrame) then
+		return nil;
+	end
+
+	return talentFrame:GetInspectUnit();
 end

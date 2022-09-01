@@ -513,6 +513,10 @@ function TalentFrameBaseMixin:ShowSelections(button, selectionOptions, canSelect
 	self.SelectionChoiceFrame:Show();
 end
 
+function TalentFrameBaseMixin:OnSelectionChoiceShown(selectionChoice)
+	-- Override in your derived Mixin.
+end
+
 function TalentFrameBaseMixin:UpdateSelections(button, canSelectChoice, currentSelection, baseCost)
 	if self:AreSelectionsOpen(button) then
 		self.SelectionChoiceFrame:UpdateSelectionOptions(canSelectChoice, currentSelection, baseCost);
@@ -1236,7 +1240,6 @@ function TalentFrameBaseMixin:AddEdgeRequirementsToTooltip(tooltip, nodeID, shou
 
 		GameTooltip_AddErrorLine(tooltip, GENERIC_TRAIT_FRAME_EDGE_REQUIREMENTS_BUTTON_TOOLTIP);
 	end
-	
 end
 
 function TalentFrameBaseMixin:GetIncomingEdgeInfoForNode(nodeID)
@@ -1250,4 +1253,35 @@ function TalentFrameBaseMixin:GetIncomingEdgeInfoForNode(nodeID)
 		end
 	end
 	return incomingEdges;
+end
+
+function TalentFrameBaseMixin:SetPreviewResultSearch(searchText)
+	-- Override in your derived Mixin.
+end
+
+function TalentFrameBaseMixin:HidePreviewResultSearch()
+	-- Override in your derived Mixin.
+end
+
+function TalentFrameBaseMixin:SetFullResultSearch(searchText)
+	-- Override in your derived Mixin.
+end
+
+function TalentFrameBaseMixin:SetSelectedSearchResult(talentID)
+	-- Override in your derived Mixin.
+end
+
+function TalentFrameBaseMixin:GetSearchMatchTypeForEntryID(entryID)
+	-- Override in your derived Mixin.
+	return nil;
+end
+
+function TalentFrameBaseMixin:IsInspecting()
+	-- Override in your derived Mixin.
+	return self:GetInspectUnit() ~= nil;
+end
+
+function TalentFrameBaseMixin:GetInspectUnit()
+	-- Override in your derived Mixin.
+	return nil;
 end

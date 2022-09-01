@@ -383,7 +383,13 @@ function TransmogFrameMixin:RefreshPlayerModel()
 	if actor then
 		local sheatheWeapons = false;
 		local autoDress = true;
-		actor:SetModelByUnit("player", sheatheWeapons, autoDress);
+		local hideWeapons = false;
+		local useNativeForm = true;
+		local _, raceFilename = UnitRace("Player");
+		if(raceFilename == "Dracthyr" or raceFilename == "Worgen") then
+			useNativeForm = not self.inAlternateForm;
+		end
+		actor:SetModelByUnit("player", sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 		self.ModelScene.previousActor = actor;
 	end
 	self:Update();
@@ -2482,7 +2488,7 @@ function WardrobeItemsModelMixin:Reload(reloadSlot)
 			self:SetUseTransmogSkin(WARDROBE_MODEL_SETUP[reloadSlot].useTransmogSkin);
 			self:SetUseTransmogChoices(WARDROBE_MODEL_SETUP[reloadSlot].useTransmogChoices);
 			self:SetObeyHideInTransmogFlag(WARDROBE_MODEL_SETUP[reloadSlot].obeyHideInTransmogFlag);
-			self:SetUnit("player", false);
+			self:SetUnit("player", false, PlayerUtil.ShouldUseNativeFormInModelScene());
 			self:SetDoBlend(false);
 			for slot, equip in pairs(WARDROBE_MODEL_SETUP[reloadSlot].slots) do
 				if ( equip ) then
@@ -2510,7 +2516,7 @@ function WardrobeSetsTransmogModelMixin:OnLoad()
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:SetAutoDress(false);
-	self:SetUnit("player");
+	self:SetUnit("player", false, PlayerUtil.ShouldUseNativeFormInModelScene());
 	self:FreezeAnimation(0, 0, 0);
 	local x, y, z = self:TransformCameraSpaceToModelSpace(CreateVector3D(0, 0, -0.25)):GetXYZ();
 	self:SetPosition(x, y, z);
@@ -3900,7 +3906,7 @@ WardrobeSetsDetailsModelMixin = { };
 
 function WardrobeSetsDetailsModelMixin:OnLoad()
 	self:SetAutoDress(false);
-	self:SetUnit("player");
+	self:SetUnit("player", false, PlayerUtil.ShouldUseNativeFormInModelScene());
 	self:UpdatePanAndZoomModelType();
 
 	local lightValues = { omnidirectional = false, point = CreateVector3D(-1, 0, 0), ambientIntensity = .7, ambientColor = CreateColor(.7, .7, .7), diffuseIntensity = .6, diffuseColor = CreateColor(1, 1, 1) };

@@ -121,4 +121,54 @@
 			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
+
+	<Frame name="EditModeTalkingHeadFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeTalkingHeadFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.TalkingHeadFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_TALKING_HEAD_FRAME_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeChatFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeChatFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.ChatFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_CHAT_FRAME_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" toplevel="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-32" y="60"/>
+					<Anchor point="BOTTOMRIGHT" x="25" y="-32"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="EditModeResizeButton" mixin="EditModeChatFrameResizeButtonMixin" frameStrata="HIGH" toplevel="true" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Selection" y="26"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Up"/>
+				<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeVehicleLeaveButtonSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeVehicleLeaveButtonSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.VehicleLeaveButton" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_VEHICLE_LEAVE_BUTTON_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
 </Ui>

@@ -43,6 +43,15 @@ local scenarioTextureKitOffsets = {
 		topperBackgroundYPadding = 5,
 		footerBackgroundYPadding = -5,
 	},
+	["dragonflight-score"] = {
+		topperXOffset = 0, 
+		topperYOffset = 34,
+		footerXOffset = 0, 
+		footerYOffset = -40, 
+		backgroundXPadding = 20, 
+		topperBackgroundYPadding = 5,
+		footerBackgroundYPadding = -5,
+	},
 	["default"] = {
 		topperXOffset = 0, 
 		topperYOffset = 0,

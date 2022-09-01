@@ -1,11 +1,18 @@
 
 local TalentSelectionChoiceFramePadding = 0;
+local TalentSelectionChoiceFrameStride = 5;
 
 
 TalentSelectionChoiceFrameMixin = {};
 
 local TalentSelectionChoiceFrameEvents = {
 	"GLOBAL_MOUSE_DOWN",
+};
+
+TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition = {
+	OuterLeft = 1,
+	Inner = 2,
+	OuterRight = 3
 };
 
 function TalentSelectionChoiceFrameMixin:OnLoad()
@@ -39,22 +46,26 @@ function TalentSelectionChoiceFrameMixin:SetSelectionOptions(baseButton, selecti
 	end
 
 	self.selectionFrameArray = {};
+	self.selectionCount = 0;
 
 	for i, entryID in ipairs(selectionOptions) do
+		self.selectionCount = self.selectionCount + 1;
 		local entryInfo = talentFrame:GetAndCacheEntryInfo(entryID);
 
 		local useLargeButton = true;
 		local newSelectionFrame = talentFrame:AcquireTalentDisplayFrame(entryInfo.type, TalentSelectionChoiceMixin, useLargeButton);
 
 		newSelectionFrame:SetParent(self);
+		newSelectionFrame:Init(talentFrame);
 
 		local isCurrentSelection = entryID == currentSelection;
-		newSelectionFrame:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, baseCost);
-		newSelectionFrame:Init(talentFrame);
+		newSelectionFrame:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, i);
 		newSelectionFrame:SetEntryID(entryID);
 		newSelectionFrame:Show();
 
 		table.insert(self.selectionFrameArray, newSelectionFrame);
+
+		talentFrame:OnSelectionChoiceShown(newSelectionFrame);
 	end
 
 	self:UpdateTrayLayout();
@@ -67,7 +78,7 @@ function TalentSelectionChoiceFrameMixin:UpdateSelectionOptions(canSelectChoice,
 		local entryID = selectionFrame:GetEntryID();
 		local isCurrentSelection = entryID == currentSelection;
 		local entryInfo = self:GetTalentFrame():GetAndCacheEntryInfo(entryID);
-		selectionFrame:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection);
+		selectionFrame:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, i);
 	end
 end
 
@@ -76,7 +87,7 @@ function TalentSelectionChoiceFrameMixin:GetBaseTraitCurrenciesCost()
 end
 
 function TalentSelectionChoiceFrameMixin:UpdateTrayLayout()
-	local stride = 5;
+	local stride = TalentSelectionChoiceFrameStride;
 	local xPadding = 5;
 	local yPadding = 0;
 	local layout = GridLayoutUtil.CreateStandardGridLayout(stride, xPadding, yPadding);
@@ -94,6 +105,27 @@ function TalentSelectionChoiceFrameMixin:SetSelectedEntryID(selectedEntryID, sel
 	self:Hide();
 end
 
+function TalentSelectionChoiceFrameMixin:GetHorizontalSelectionPositionForIndex(index)
+	if index == 1 then
+		return TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterLeft;
+	elseif index == self:GetSelectionCount() then
+		return TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterRight;
+	end
+
+	local column = (index - 1) % TalentSelectionChoiceFrameStride + 1;
+	if column == 1 then
+		return TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterLeft;
+	elseif column == TalentSelectionChoiceFrameStride then
+		return TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterRight;
+	else
+		return TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.Inner;
+	end
+end
+
+function TalentSelectionChoiceFrameMixin:GetSelectionCount()
+	return self.selectionCount;
+end
+
 function TalentSelectionChoiceFrameMixin:GetBaseButton()
 	return self.baseButton;
 end
@@ -107,7 +139,11 @@ TalentSelectionChoiceMixin = {};
 
 function TalentSelectionChoiceMixin:OnClick(button)
 	EventRegistry:TriggerEvent("TalentButton.OnClick", self, button);
-	
+
+	if self:IsInspecting() then
+		return;
+	end
+
 	local selectionChoiceFrame = self:GetParent();
 	if button == "LeftButton" then
 		if not self:IsChoiceAvailable() then
@@ -174,6 +210,8 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 
 	if self.isCurrentSelection then
 		return TalentButtonUtil.BaseVisualState.Maxed;
+	elseif self:IsInspecting() then
+		return TalentButtonUtil.BaseVisualState.Disabled;
 	end
 
 	local selectionChoiceFrame = self:GetParent();
@@ -209,13 +247,31 @@ function TalentSelectionChoiceMixin:IsChoiceAvailable()
 	return self.canSelectChoice and self.entryInfo.isAvailable;
 end
 
-function TalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection)
+function TalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, selectionIndex)
 	self.entryInfo = entryInfo;
 	self.canSelectChoice = canSelectChoice;
 	self.isCurrentSelection = isCurrentSelection;
+	self.selectionIndex = selectionIndex;
 	self:UpdateVisualState();
+	self:UpdateSearchIcon();
 end
 
 function TalentSelectionChoiceMixin:CanSelectChoice()
 	return self.canSelectChoice;
+end
+
+function TalentSelectionChoiceMixin:UpdateSearchIcon()
+	-- Overrides TalentButtonArtMixin.
+	TalentButtonArtMixin.UpdateSearchIcon(self);
+
+	if self.SearchIcon and self.SearchIcon:IsShown() then
+		local horizontalPos = self:GetParent():GetHorizontalSelectionPositionForIndex(self.selectionIndex);
+		if horizontalPos == TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterLeft then
+			self.SearchIcon:SetPoint("CENTER", self.Icon, "TOPLEFT");
+		elseif horizontalPos == TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.Inner then
+			self.SearchIcon:SetPoint("CENTER", self.Icon, "TOP");
+		elseif horizontalPos == TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterRight then
+			self.SearchIcon:SetPoint("CENTER", self.Icon, "TOPRIGHT");
+		end
+	end
 end

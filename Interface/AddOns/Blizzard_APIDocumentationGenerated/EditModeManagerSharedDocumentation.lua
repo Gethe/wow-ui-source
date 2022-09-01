@@ -84,9 +84,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 14,
+			NumValues = 16,
 			MinValue = 0,
-			MaxValue = 13,
+			MaxValue = 15,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -103,6 +103,8 @@ local EditModeManagerShared =
 				{ Name = "ShowDebuffFrame", Type = "EditModeAccountSetting", EnumValue = 11 },
 				{ Name = "ShowPartyFrames", Type = "EditModeAccountSetting", EnumValue = 12 },
 				{ Name = "ShowRaidFrames", Type = "EditModeAccountSetting", EnumValue = 13 },
+				{ Name = "ShowTalkingHeadFrame", Type = "EditModeAccountSetting", EnumValue = 14 },
+				{ Name = "ShowVehicleLeaveButton", Type = "EditModeAccountSetting", EnumValue = 15 },
 			},
 		},
 		{
@@ -186,6 +188,20 @@ local EditModeManagerShared =
 			},
 		},
 		{
+			Name = "EditModeChatFrameSetting",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "WidthHundreds", Type = "EditModeChatFrameSetting", EnumValue = 0 },
+				{ Name = "WidthTensAndOnes", Type = "EditModeChatFrameSetting", EnumValue = 1 },
+				{ Name = "HeightHundreds", Type = "EditModeChatFrameSetting", EnumValue = 2 },
+				{ Name = "HeightTensAndOnes", Type = "EditModeChatFrameSetting", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "EditModeLayoutType",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -237,9 +253,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -249,6 +265,9 @@ local EditModeManagerShared =
 				{ Name = "EncounterBar", Type = "EditModeSystem", EnumValue = 4 },
 				{ Name = "ExtraAbilities", Type = "EditModeSystem", EnumValue = 5 },
 				{ Name = "AuraFrame", Type = "EditModeSystem", EnumValue = 6 },
+				{ Name = "TalkingHeadFrame", Type = "EditModeSystem", EnumValue = 7 },
+				{ Name = "ChatFrame", Type = "EditModeSystem", EnumValue = 8 },
+				{ Name = "VehicleLeaveButton", Type = "EditModeSystem", EnumValue = 9 },
 			},
 		},
 		{

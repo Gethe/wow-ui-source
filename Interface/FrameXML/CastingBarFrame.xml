@@ -463,7 +463,7 @@
 			<KeyValue key="bottomPadding" value="8" type="number"/>
 		</KeyValues>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</StatusBar>

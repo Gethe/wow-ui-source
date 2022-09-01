@@ -53,7 +53,7 @@ function ExtraAbilityContainerMixin:AddFrame(frameToAdd, priority)
 	frameToAdd:Show();
 
 	self:UpdateLayoutIndicies();
-	self:Show();
+	self:UpdateShownState();
 end
 
 function ExtraAbilityContainerMixin:RemoveFrame(frameToRemove)
@@ -68,7 +68,7 @@ function ExtraAbilityContainerMixin:RemoveFrame(frameToRemove)
 	end
 
 	self:UpdateLayoutIndicies();
-	self:SetShown(#self.frames > 0);
+	self:UpdateShownState();
 end
 
 function ExtraAbilityContainerMixin:UpdateLayoutIndicies()
@@ -77,4 +77,8 @@ function ExtraAbilityContainerMixin:UpdateLayoutIndicies()
 	end
 
 	self:MarkDirty();
-end	
+end
+
+function ExtraAbilityContainerMixin:UpdateShownState()
+	self:SetShown(self.isInEditMode or #self.frames > 0);
+end

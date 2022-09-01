@@ -239,12 +239,18 @@ function ProfessionsRecipeListRecipeMixin:Init(node)
 		local skillUpAtlas;
 		local xOfs = -3;
 		local yOfs = 0;
+
+		local isDifficultyOptimal = recipeInfo.relativeDifficulty == Enum.TradeskillRelativeDifficulty.Optimal;
+		local tooltipSkillUpString = nil;
 		if recipeInfo.relativeDifficulty == Enum.TradeskillRelativeDifficulty.Easy then
 			skillUpAtlas = "Professions-Icon-Skill-Low";
+			tooltipSkillUpString = PROFESSIONS_SKILL_UP_EASY;
 		elseif recipeInfo.relativeDifficulty == Enum.TradeskillRelativeDifficulty.Medium then
 			skillUpAtlas = "Professions-Icon-Skill-Medium";
-		elseif recipeInfo.relativeDifficulty == Enum.TradeskillRelativeDifficulty.Optimal then
+			tooltipSkillUpString = PROFESSIONS_SKILL_UP_MEDIUM;
+		elseif isDifficultyOptimal then
 			skillUpAtlas = "Professions-Icon-Skill-High";
+			tooltipSkillUpString = PROFESSIONS_SKILL_UP_OPTIMAL;
 			yOfs = 1;
 		end
 
@@ -254,15 +260,21 @@ function ProfessionsRecipeListRecipeMixin:Init(node)
 
 			self.SkillUps.Icon:SetAtlas(skillUpAtlas, TextureKitConstants.UseAtlasSize);
 			self.SkillUps:SetScript("OnClick", OnClick);
-			local multipleSkillUps = recipeInfo.numSkillUps > 1;
-			self.SkillUps.Text:SetShown(multipleSkillUps);
-			if multipleSkillUps then
-				self.SkillUps.Text:SetText(recipeInfo.numSkillUps);
-				self.SkillUps.Text:SetVertexColor(DifficultyColors[recipeInfo.relativeDifficulty]:GetRGB());
+			local numSkillUps = recipeInfo.numSkillUps;
+			local hasMultipleSkillUps = numSkillUps > 1;
+			local hasSkillUps = numSkillUps > 0;
+			local showText = hasMultipleSkillUps and isDifficultyOptimal;
+			self.SkillUps.Text:SetShown(showText);
+			if hasSkillUps then
+				if showText then
+					self.SkillUps.Text:SetText(numSkillUps);
+					self.SkillUps.Text:SetVertexColor(DifficultyColors[recipeInfo.relativeDifficulty]:GetRGB());
+				end
+
 				self.SkillUps:SetScript("OnEnter", function()
 					self:OnEnter();
 					GameTooltip:SetOwner(self.SkillUps, "ANCHOR_RIGHT");
-					GameTooltip_AddNormalLine(GameTooltip, SKILLUP_TOOLTIP:format(self.SkillUps.Text:GetText()));
+					GameTooltip_AddNormalLine(GameTooltip, tooltipSkillUpString:format(numSkillUps));
 					GameTooltip:Show();
 				end);
 			else

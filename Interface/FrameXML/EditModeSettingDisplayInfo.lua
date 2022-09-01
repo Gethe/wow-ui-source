@@ -296,6 +296,20 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 		},
 
 	},
+
+	[Enum.EditModeSystem.TalkingHeadFrame] =
+	{
+
+	},
+
+	[Enum.EditModeSystem.ChatFrame] =
+	{
+	},
+
+	[Enum.EditModeSystem.VehicleLeaveButton] =
+	{
+
+	},
 };
 
 local DefaultSettingDisplayInfo = {};

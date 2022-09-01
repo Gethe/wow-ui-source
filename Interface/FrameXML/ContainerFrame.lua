@@ -2,7 +2,7 @@ NUM_CONTAINER_FRAMES = 13;
 NUM_BAG_FRAMES = 4;
 NUM_REAGENTBAG_FRAMES = 1;
 NUM_TOTAL_BAG_FRAMES = NUM_BAG_FRAMES + NUM_REAGENTBAG_FRAMES;
-CONTAINER_OFFSET_Y = 70;
+CONTAINER_OFFSET_Y = 85;
 CONTAINER_OFFSET_X = -4;
 
 local MAX_CONTAINER_ITEMS = 36;
@@ -114,7 +114,7 @@ function ContainerFrame_AllowedToOpenBags()
 end
 
 function ToggleBackpack_Combined()
-	if IsAnyBagOpen() then
+	if IsAnyStandardHeldBagOpen() then
 		ContainerFrameCombinedBags:Hide();
 	else
 		OpenBackpack();
@@ -1990,14 +1990,22 @@ function ToggleAllBags()
 	end
 end
 
-function IsAnyBagOpen()
-	for i = 0, NUM_TOTAL_BAG_FRAMES do
+local function IsAnyBagOpen_Internal(startBagID, endBagID)
+	for i = startBagID, endBagID do
 		if IsBagOpen(i) then
 			return true;
 		end
 	end
 
 	return false;
+end
+
+function IsAnyBagOpen()
+	return IsAnyBagOpen_Internal(0, NUM_TOTAL_BAG_FRAMES);
+end
+
+function IsAnyStandardHeldBagOpen()
+	return IsAnyBagOpen_Internal(0, NUM_BAG_FRAMES);
 end
 
 function OpenAllBagsMatchingContext(frame)
@@ -2309,7 +2317,18 @@ function ContainerFrameSettingsManager:SetupBagsGeneric(overrideParent)
 
 	local isOverrideParent = overrideParent ~= nil;
 
-	for bag = 0, NUM_BAG_FRAMES do
+	local function GetBagSetupIndices(ascendingOrder)
+		if ascendingOrder then
+			return 0, NUM_BAG_FRAMES, 1;
+		else
+			return NUM_BAG_FRAMES, 0, -1;
+		end
+	end
+
+	local ascendingOrder = not isOverrideParent or not overrideParent:IsCombinedBagContainer();
+	local startIndex, endIndex, increment = GetBagSetupIndices(ascendingOrder);
+
+	for bag = startIndex, endIndex, increment do
 		local bagSize, baseSize = ContainerFrame_GetContainerNumSlotsWithBase(bag);
 		for i = 1, bagSize do
 			local containerFrame = UIParent.ContainerFrames[bag + 1];
@@ -2630,7 +2649,9 @@ function ContainerFrameCombinedBagsMixin:SetItemsMatchingBagHighlighted(bagID, h
 end
 
 function ContainerFrameCombinedBagsMixin:OnBagSlotEnter(bagSlot)
-	self:SetItemsMatchingBagHighlighted(bagSlot:GetBagID(), true);
+	if bagSlot:GetIsBarExpanded() then -- Don't highlight items if the bags aren't expanded
+		self:SetItemsMatchingBagHighlighted(bagSlot:GetBagID(), true);
+	end
 end
 
 function ContainerFrameCombinedBagsMixin:OnBagSlotLeave(bagSlot)

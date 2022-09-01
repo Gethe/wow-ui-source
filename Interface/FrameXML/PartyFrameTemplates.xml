@@ -147,7 +147,7 @@
 				<Texture parentKey="VehicleTexture" file="Interface\Vehicles\UI-Vehicles-PartyFrame" hidden="true">
 					<Size x="128" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="6"/>
+						<Anchor point="TOPLEFT" x="-6" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Flash" atlas="ui-hud-unitframe-partyframe-flash" useAtlasSize="true" hidden="true">
@@ -178,57 +178,6 @@
 					<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="13" y="5"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="PartyMemberOverlay" setAllPoints="true">
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-						<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-						<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-						<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-						<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Status" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
-							<Size x="37" y="37"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.$parent.Portrait" x="-1" y="-1"/>
-							</Anchors>
-							<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
-						</Texture>
-						<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
-						<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="LeaderIcon" atlas="ui-hud-unitframe-player-group-leadericon" useAtlasSize="true" hidden="true">
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="-10" y="-6"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="GuideIcon" atlas="ui-hud-unitframe-player-group-guideicon" useAtlasSize="true" hidden="true">
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="-10" y="-6"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="PVPIcon" scale="0.6" hidden="true">
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="TOPLEFT" x="24" y="-68"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Disconnect" file="Interface\CharacterFrame\Disconnect-Icon" hidden="true">
-							<Size x="64" y="64"/>
-							<Anchors>
-								<Anchor point="LEFT" x="-7" y="-1"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="RoleIcon" hidden="true">
-							<Size x="12" y="12"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-5" y="-5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
 			<StatusBar parentKey="HealthBar" inherits="TextStatusBar">
 				<Size x="71" y="10"/>
 				<Anchors>
@@ -236,6 +185,13 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
+						<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+						<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+						<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+						<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+						<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+						<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+						<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 						<FontString parentKey="CenterText" inherits="TextStatusBarText">
 							<Anchors>
 								<Anchor point="CENTER"/>
@@ -259,6 +215,7 @@
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
+						self.lockColor = true;
 					</OnLoad>
 					<OnEnter inherit="prepend">
 						self:GetParent():OnEnter();
@@ -271,7 +228,6 @@
 					</OnMouseUp>
 					<OnValueChanged>
 						self:GetParent():PartyMemberHealthCheck(value);
-						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 					<OnSizeChanged>
 						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
@@ -322,6 +278,48 @@
 				</Scripts>
 				<BarTexture atlas="ui-hud-unitframe-partyframe-bar-mana"/>
 			</StatusBar>
+			<Frame parentKey="PartyMemberOverlay" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Status" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
+							<Size x="37" y="37"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.Portrait" x="-1" y="-1"/>
+							</Anchors>
+							<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="LeaderIcon" atlas="ui-hud-unitframe-player-group-leadericon" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="-10" y="-6"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GuideIcon" atlas="ui-hud-unitframe-player-group-guideicon" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="-10" y="-6"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PVPIcon" scale="0.6" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="24" y="-68"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Disconnect" file="Interface\CharacterFrame\Disconnect-Icon" hidden="true">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-7" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RoleIcon" hidden="true">
+							<Size x="12" y="12"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="ReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="CENTER" x="0" y="0"/>

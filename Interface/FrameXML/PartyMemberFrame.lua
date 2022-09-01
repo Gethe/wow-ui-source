@@ -207,9 +207,9 @@ function PartyMemberFrameMixin:ToVehicleArt(vehicleType)
 		self.VehicleTexture:SetTexture("Interface\\Vehicles\\UI-Vehicles-PartyFrame");
 	end
 	self.VehicleTexture:Show();
-	self.Portrait:SetPoint("TOPLEFT", 4, -9);
-	self.PartyMemberOverlay.PVPIcon:SetPoint("CENTER", self.PartyMemberOverlay, "TOPLEFT", 12, -68);
-	self.PartyMemberOverlay.Disconnect:SetPoint("LEFT", -10, -1);
+	self.Portrait:SetPoint("TOPLEFT", 4, -12);
+	self.PartyMemberOverlay.PVPIcon:SetPoint("CENTER", self.PartyMemberOverlay, "TOPLEFT", 16, -83);
+	self.PartyMemberOverlay.Disconnect:SetPoint("LEFT", -10, -9);
 
 	self.overrideName = self.unitToken;
 
@@ -233,10 +233,10 @@ function PartyMemberFrameMixin:Setup(usePlayerOverride)
 	UnitFrame_Initialize(self, self.unitToken,  self.Name, self.Portrait,
 		   self.HealthBar, self.HealthBar.CenterText,
 		   self.ManaBar, self.ManaBar.CenterText,
-		   self.Flash, nil, nil, self.PartyMemberOverlay.MyHealPredictionBar, self.PartyMemberOverlay.OtherHealPredictionBar,
-		   self.TotalAbsorbBar, self.TotalAbsorbBarOverlay, self.PartyMemberOverlay.OverAbsorbGlow,
-		   self.PartyMemberOverlay.OverHealAbsorbGlow, self.PartyMemberOverlay.HealAbsorbBar, self.PartyMemberOverlay.HealAbsorbBarLeftShadow,
-		   self.PartyMemberOverlay.HealAbsorbBarRightShadow);
+		   self.Flash, nil, nil, self.HealthBar.MyHealPredictionBar, self.HealthBar.OtherHealPredictionBar,
+		   self.TotalAbsorbBar, self.TotalAbsorbBarOverlay, self.HealthBar.OverAbsorbGlow,
+		   self.HealthBar.OverHealAbsorbGlow, self.HealthBar.HealAbsorbBar, self.HealthBar.HealAbsorbBarLeftShadow,
+		   self.HealthBar.HealAbsorbBarRightShadow);
 	SetTextStatusBarTextZeroText(self.HealthBar, DEAD);
 
 	self.statusCounter = 0;
@@ -610,18 +610,19 @@ function PartyMemberFrameMixin:OnLeave()
 end
 
 function PartyMemberFrameMixin:UpdateOnlineStatus()
-	if ( not UnitIsConnected(self.unitToken) ) then
+	local healthBar = self.HealthBar;
+
+	if not UnitIsConnected(self.unitToken) then
 		-- Handle disconnected state
-		local healthBar = self.HealthBar;
 		local unitHPMin, unitHPMax = healthBar:GetMinMaxValues();
 
 		healthBar:SetValue(unitHPMax);
-		healthBar:SetStatusBarColor(0.5, 0.5, 0.5);
+		healthBar:SetStatusBarDesaturated(true);
 		SetDesaturation(self.Portrait, true);
 		self.PartyMemberOverlay.Disconnect:Show();
 		self.PetFrame:Hide();
-		return;
 	else
+		healthBar:SetStatusBarDesaturated(false);
 		SetDesaturation(self.Portrait, false);
 		self.PartyMemberOverlay.Disconnect:Hide();
 	end

@@ -324,11 +324,8 @@
 			<OnDragStart>
 				local chatFrame = _G["ChatFrame"..self:GetID()];
 				if ( chatFrame == DEFAULT_CHAT_FRAME ) then
-					if (chatFrame.isLocked) then
-						return;
-					end
-					chatFrame:StartMoving();
-					MOVING_CHATFRAME = chatFrame;
+					-- Default frame is managed via edit mode
+					return;
 				elseif ( chatFrame.isDocked ) then
 					FCF_UnDockFrame(chatFrame);
 					FCF_SetLocked(chatFrame, false);
@@ -654,13 +651,13 @@
 
 	<!-- Main chat window -->
 	<Button name="ChatFrame1Tab" inherits="ChatTabTemplate" id="1"/>
-	<ScrollingMessageFrame name="ChatFrame1" hidden="false" inherits="FloatingChatFrameTemplate" id="1">
+	<ScrollingMessageFrame name="ChatFrame1" hidden="false" inherits="FloatingChatFrameTemplate, EditModeChatFrameSystemTemplate" id="1">
 		<Size x="430" y="120"/>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" x="32" y="95"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				tinsert(CHAT_FRAMES, self:GetName());
 				ChatFrame_OnLoad(self);
 				DEFAULT_CHAT_FRAME = ChatFrame1;
@@ -675,6 +672,10 @@
 				self:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS");
 
 				FloatingChatFrame_SetupScrolling(self);
+
+				-- Default chat tab remains locked and is controlled via edit mode for position and size
+				FCF_SetLocked(self, true);
+				self.ResizeButton:Hide();
 			</OnLoad>
 			<OnEvent>
 				ChatFrame_OnEvent(self, event, ...);
@@ -793,4 +794,3 @@
 		</Scripts>
 	</Frame>
 </Ui>
-

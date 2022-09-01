@@ -187,6 +187,7 @@ function AuraFrameMixin:UpdateAuraButtons()
 	end
 
 	self.auraPool:ReleaseAllByTemplate(self.auraTemplate);
+	self.auraPool:ReleaseAllByTemplate("TempEnchantButtonTemplate");
 	self.auraFrames = {};
 
 	if self.isInEditMode then

@@ -67,6 +67,21 @@
 				</Anchors>
 			</Frame>
 
+			<EditBox parentKey="SearchBox" inherits="TalentSearchBoxTemplate" hidden="false">
+				<Size x="170" y="30"/>
+				<Anchors>
+					<!-- Re-anchored in code -->
+					<Anchor point="LEFT" relativeKey="$parent.LoadoutDropDown" relativePoint="RIGHT" x="20" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<Frame parentKey="SearchPreviewContainer" inherits="TalentSearchPreviewContainerTemplate" hidden="true" frameLevel="2000">
+				<Size x="206"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SearchBox" relativePoint="BOTTOMLEFT" x="-4" y="3"/>
+				</Anchors>
+			</Frame>
+
 			<Button parentKey="ApplyButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_FRAME_APPLY_BUTTON_TEXT">
 				<Size x="164" y="22"/>
 				<Anchors>
@@ -110,6 +125,7 @@
 
 			<Frame parentKey="PvPTalentSlotTray" inherits="PvPTalentSlotTrayTemplate">
 				<Anchors>
+					<!-- Anchor updated dynamically -->
 					<Anchor point="RIGHT" relativeKey="$parent.BottomBar" relativePoint="RIGHT" x="-114" y="0"/>
 				</Anchors>
 			</Frame>

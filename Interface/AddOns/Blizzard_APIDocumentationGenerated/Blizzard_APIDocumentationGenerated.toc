@@ -17,6 +17,7 @@ AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
 BankDocumentation.lua
 BarberShopDocumentation.lua
+BattleNetDocumentation.lua
 BattlePetDocumentation.lua
 BehavioralMessagingDocumentation.lua
 BlackMarketInfoDocumentation.lua
@@ -173,7 +174,6 @@ AlliedRacesFrameDocumentation.lua
 AnimaDiversionUIDocumentation.lua
 ArdenwealdGardeningDocumentation.lua
 ArtifactUIDocumentation.lua
-BattleNetDocumentation.lua
 CVarDocumentation.lua
 CameraDocumentation.lua
 ChallengeModeInfoDocumentation.lua
@@ -276,6 +276,7 @@ PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
+RecruitAFriendSharedDocumentation.lua
 ReportSystemConstantsDocumentation.lua
 ScriptRegionSharedDocumentation.lua
 SharedScriptObjectModelLightDocumentation.lua
@@ -309,7 +310,6 @@ MajorFactionsConstantsDocumentation.lua
 MythicPlusInfoSharedDocumentation.lua
 ProfessionSpecConstantsDocumentation.lua
 QuestConstants_MainlineDocumentation.lua
-RecruitAFriendSharedDocumentation.lua
 SoulbindsConstantsDocumentation.lua
 SuperTrackManagerSharedDocumentation.lua
 TransmogConstantsDocumentation.lua

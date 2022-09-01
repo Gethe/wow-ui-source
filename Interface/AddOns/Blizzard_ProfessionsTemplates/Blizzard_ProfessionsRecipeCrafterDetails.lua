@@ -132,8 +132,12 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 		local qualityIndex = self.QualityMeter.qualityInteger + (isRight and 1 or 0);
 
 		GameTooltip:SetOwner(cap, "ANCHOR_RIGHT");
+		-- Enchanting recipe
+		if self.recipeInfo.isEnchantingRecipe then
+			local recipeLevel = nil;
+			C_TradeSkillUI.SetTooltipRecipeResultItem(self.recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetRecraftAllocation(), recipeLevel, self.recipeInfo.qualityIDs[qualityIndex]);
 		-- Generic tooltip (no specific item output)
-		if not self.recipeInfo.hasSingleItemOutput then
+		elseif not self.recipeInfo.hasSingleItemOutput then
 			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_CRAFTING_GENERIC_QUALITY_DESCRIPTION);
 		-- Item ID per quality
 		elseif self.recipeInfo.qualityItemIDs ~= nil then
@@ -141,7 +145,7 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 		-- Item modified by quality
 		elseif self.recipeInfo.qualityIlvlBonuses ~= nil then
 			GameTooltip_SetTitle(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUSES:format(self.itemName));
-			local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeInfo.recipeID, self.transaction:CreateOptionalCraftingReagentInfoTbl());
+			local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeInfo.recipeID, self.transaction:CreateOptionalCraftingReagentInfoTbl(), self.transaction:GetRecraftAllocation());
 			if outputItemInfo.hyperlink then
 				local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 				if item:IsItemDataCached() then

@@ -51,6 +51,8 @@ function TalentDisplayMixin:OnRelease()
 
 	self.visualState = nil;
 	self.spellLoadCancel = nil;
+	self.matchType = nil;
+	self.shouldGlow = nil;
 end
 
 function TalentDisplayMixin:SetTooltipInternal()
@@ -63,10 +65,14 @@ function TalentDisplayMixin:SetTooltipInternal()
 	self:AddTooltipInfo(tooltip);
 	self:AddTooltipDescription(tooltip);
 	self:AddTooltipCost(tooltip);
-	self:AddTooltipInstructions(tooltip);
-	self:AddTooltipErrors(tooltip);    
+
+	if not self:IsInspecting() then
+		self:AddTooltipInstructions(tooltip);
+		self:AddTooltipErrors(tooltip);
+	end
+
 	tooltip:Show();
-    
+
     -- Used client issue submission tools
     EventRegistry:TriggerEvent("TalentDisplay.TooltipCreated", self, tooltip);
 end
@@ -174,11 +180,15 @@ function TalentDisplayMixin:GetVisualState()
 end
 
 function TalentDisplayMixin:GetName()
-	return TalentButtonUtil.GetTalentName(self.talentInfo.overrideName, self:GetSpellID());
+	return self.talentInfo and TalentUtil.GetTalentName(self.talentInfo.overrideName, self:GetSpellID()) or "";
 end
 
 function TalentDisplayMixin:GetSubtext()
-	return self.talentInfo.talentSubtext or GetSpellSubtext(self:GetSpellID());
+	return self.talentInfo and TalentUtil.GetTalentSubtext(self.talentInfo.talentSubtext, self:GetSpellID()) or nil;
+end
+
+function TalentDisplayMixin:GetDescription()
+	return self.talentInfo and TalentUtil.GetTalentDescription(self.talentInfo.overrideDescription, self:GetSpellID()) or "";
 end
 
 function TalentDisplayMixin:AddTooltipTitle(tooltip)
@@ -233,8 +243,22 @@ function TalentDisplayMixin:AddTooltipErrors(tooltip)
 	self:GetTalentFrame():AddConditionsToTooltip(tooltip, self.entryInfo.conditionIDs, shouldAddSpacer);
 end
 
+function TalentDisplayMixin:SetSearchMatchType(matchType)
+	self.matchType = matchType;
+	self:UpdateSearchIcon();
+end
+
+function TalentDisplayMixin:SetGlowing(shouldGlow)
+	self.shouldGlow = shouldGlow;
+	self:UpdateGlow();
+end
+
 function TalentDisplayMixin:GetTalentFrame()
 	return self.talentFrame;
+end
+
+function TalentDisplayMixin:IsInspecting()
+	return self:GetTalentFrame():IsInspecting();
 end
 
 function TalentDisplayMixin:SetAndApplySize(width, height)
@@ -263,6 +287,15 @@ end
 function TalentDisplayMixin:ApplyVisualState(visualState)
 	-- Implement in your derived mixin.
 end
+
+function TalentDisplayMixin:UpdateSearchIcon()
+	-- Implement in your derived mixin.
+end
+
+function TalentDisplayMixin:UpdateGlow()
+	-- Implement in your derived mixin.
+end
+
 
 
 TalentButtonBaseMixin = {};
@@ -363,6 +396,7 @@ function TalentButtonBaseMixin:FullUpdate()
 	TalentDisplayMixin.FullUpdate(self);
 
 	self:UpdateSpendText();
+	self:UpdateSearchIcon();
 end
 
 function TalentButtonBaseMixin:ResetDynamic()
@@ -517,6 +551,7 @@ TalentButtonBasicArtMixin.SizingAdjustment = {
 		{ region = "DisabledOverlay", adjust = 0, },
 		{ region = "DisabledOverlayMask", adjust = 0, },
 		{ region = "StateBorder", adjust = 0, },
+		{ region = "Glow", adjust = 44, },
 	}
 };
 
@@ -569,6 +604,7 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-square-green",
 		maxed = "talents-node-square-yellow",
 		locked = "talents-node-square-locked",
+		glow = "talents-node-square-greenglow",
 	},
 
 	Circle = {
@@ -578,6 +614,7 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-circle-green",
 		maxed = "talents-node-circle-yellow",
 		locked = "talents-node-circle-locked",
+		glow = "talents-node-circle-greenglow",
 	},
 
 	Choice = {
@@ -587,6 +624,7 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-choice-green",
 		maxed = "talents-node-choice-yellow",
 		locked = "talents-node-choice-locked",
+		glow = "talents-node-choice-greenglow",
 	},
 
 	LargeSquare = {
@@ -596,6 +634,7 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-choiceflyout-square-green",
 		maxed = "talents-node-choiceflyout-square-yellow",
 		locked = "talents-node-choiceflyout-square-locked",
+		glow = "talents-node-square-greenglow",
 	},
 
 	
@@ -606,6 +645,7 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-choiceflyout-circle-green",
 		maxed = "talents-node-choiceflyout-circle-yellow",
 		locked = "talents-node-choiceflyout-circle-locked",
+		glow = "talents-node-circle-greenglow",
 	},
 };
 
@@ -619,6 +659,8 @@ function TalentButtonArtMixin:OnLoad()
 		self.IconMask:SetAtlas(self.artSet.iconMask, TextureKitConstants.IgnoreAtlasSize);
 		self.DisabledOverlayMask:SetAtlas(self.artSet.iconMask, TextureKitConstants.IgnoreAtlasSize);
 	end
+
+	self.Glow:SetAtlas(self.artSet.glow, TextureKitConstants.IgnoreAtlasSize);
 
 	self.Shadow:SetAtlas(self.artSet.shadow, TextureKitConstants.UseAtlasSize);
 end
@@ -681,6 +723,33 @@ function TalentButtonArtMixin:GetChoiceEdgeDiameterOffset(angle)
 	local sixteenthRotation = eighthRotation / 2;
 	local progress = math.abs(((sixteenthRotation + angle) % eighthRotation) - sixteenthRotation);
 	return Lerp(TalentButtonUtil.ChoiceEdgeMinDiameterOffset, TalentButtonUtil.ChoiceEdgeMaxDiameterOffset, progress);
+end
+
+function TalentButtonArtMixin:UpdateSearchIcon()
+	if not self.SearchIcon then
+		return;
+	end
+
+	if not self.matchType then
+		self.SearchIcon:SetShown(false);
+	else
+		self.SearchIcon:SetFrameLevel(self:GetFrameLevel() + 50);
+		self.SearchIcon:SetShown(true);
+		local matchStyle = TalentButtonUtil.GetStyleForSearchMatchType(self.matchType);
+		self.SearchIcon.Icon:SetAtlas(matchStyle.icon);
+		self.SearchIcon.OverlayIcon:SetAtlas(matchStyle.icon);
+		self.SearchIcon.Mouseover:SetScript("OnEnter", function()
+			GameTooltip:SetOwner(self.SearchIcon.Mouseover, "ANCHOR_RIGHT", 0, 0);
+			GameTooltip_AddNormalLine(GameTooltip, matchStyle.tooltipText);
+			GameTooltip:Show();
+		end);
+	end
+end
+
+function TalentButtonArtMixin:UpdateGlow()
+	if self.Glow then
+		self.Glow:SetShown(self.shouldGlow);
+	end
 end
 
 
@@ -841,7 +910,7 @@ end
 function TalentButtonSelectMixin:OnClick(button)
 	EventRegistry:TriggerEvent("TalentButton.OnClick", self, button);
 
-	if button ~= "LeftButton" then
+	if not self:IsInspecting() and (button ~= "LeftButton") then
 		self:SetSelectedEntryID(nil);
 
 		local canSelectChoice = true;
@@ -952,7 +1021,7 @@ function TalentButtonSelectMixin:GetName()
 		return "";
 	end
 
-	return TalentButtonUtil.GetTalentName(talentInfo.overrideName, self:GetSpellID());
+	return TalentUtil.GetTalentName(talentInfo.overrideName, self:GetSpellID());
 end
 
 function TalentButtonSelectMixin:GetSubtext()
@@ -963,7 +1032,18 @@ function TalentButtonSelectMixin:GetSubtext()
 		return nil;
 	end
 
-	return talentInfo.talentSubtext or GetSpellSubtext(self:GetSpellID());
+	return TalentUtil.GetTalentSubtext(talentInfo.talentSubtext, self:GetSpellID());
+end
+
+function TalentButtonSelectMixin:GetDescription()
+	-- Overrides TalentButtonBaseMixin.
+
+	local talentInfo = self:GetSelectedTalentInfo();
+	if talentInfo == nil then
+		return "";
+	end
+
+	return TalentUtil.GetTalentDescription(talentInfo.overrideDescription, self:GetSpellID());
 end
 
 function TalentButtonSelectMixin:CalculateIconTexture()

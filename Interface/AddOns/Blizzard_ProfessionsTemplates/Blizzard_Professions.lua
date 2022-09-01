@@ -56,7 +56,7 @@ function Professions.ExtractItemIDsFromCraftingReagents(reagents)
 	return tbl;
 end
 
-function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID)
+function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID)
 	local craftingReagents = Professions.CreateCraftingReagentInfoBonusTbl(item:GetItemID());
 	local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, craftingReagents);
 	if difficultyText and difficultyText ~= "" then
@@ -65,7 +65,7 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID)
 	end
 
 	local craftingReagentIndex = 1;
-	local bonusText = C_TradeSkillUI.GetCraftingReagentBonusText(recipeID, craftingReagentIndex, craftingReagents);
+	local bonusText = C_TradeSkillUI.GetCraftingReagentBonusText(recipeID, craftingReagentIndex, craftingReagents, recraftItemGUID);
 	for _, str in ipairs(bonusText) do
 		GameTooltip_AddHighlightLine(tooltip, str);
 	end
@@ -79,13 +79,13 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID)
 	end
 end
 
-function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID)
+function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID)
 	local item = elementData.item;
 		
 	local colorData = item:GetItemQualityColor();
 	GameTooltip_SetTitle(tooltip, item:GetItemName(), colorData.color);
 	
-	Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID);
+	Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID);
 
 	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
 	if count <= 0 then
@@ -329,14 +329,14 @@ function Professions.SetupQualityReagentTooltip(slot, transaction)
 	end
 end
 
-function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, slotText, exchangeOnly)
+function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, slotText, exchangeOnly, recraftItemGUID)
 	local itemID = slot.Button:GetItemID();
 	if itemID then
 		local item = Item:CreateFromItemID(itemID);
 		local colorData = item:GetItemQualityColor();
 		GameTooltip_SetTitle(GameTooltip, item:GetItemName(), colorData.color, false);
 	
-		Professions.AddCommonOptionalTooltipInfo(item, GameTooltip, recipeID);
+		Professions.AddCommonOptionalTooltipInfo(item, GameTooltip, recipeID, recraftItemGUID);
 
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		if exchangeOnly then

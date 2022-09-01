@@ -39,6 +39,12 @@ function ClassTalentFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentFrameUnitEvents);
 
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
+
+	if self:IsInspecting() and not self.lockInspect then
+		ClearInspectPlayer();
+	end
+
+	self.lockInspect = false;
 end
 
 function ClassTalentFrameMixin:OnEvent(event)
@@ -48,10 +54,16 @@ function ClassTalentFrameMixin:OnEvent(event)
 end
 
 function ClassTalentFrameMixin:UpdateTabs()
-	local canUseTalents = PlayerUtil.CanUseClassTalents();
-	self.TabSystem:SetTabShown(self.talentTabID, canUseTalents);
-	if not canUseTalents and (self.talentTabID == self:GetTab())  then
-		self:SetTab(self.specTabID);
+	local isInspecting = self:IsInspecting();
+	self.TabSystem:SetTabShown(self.specTabID, not isInspecting);
+	if self:IsInspecting() then
+		self.TabSystem:SetTabShown(self.talentTabID, false);
+	else
+		local canUseTalents = PlayerUtil.CanUseClassTalents();
+		self.TabSystem:SetTabShown(self.talentTabID, canUseTalents);
+		if not canUseTalents and (self.talentTabID == self:GetTab())  then
+			self:SetTab(self.specTabID);
+		end
 	end
 end
 
@@ -74,12 +86,55 @@ function ClassTalentFrameMixin:CheckConfirmResetAction(callback)
 	end
 end
 
+function ClassTalentFrameMixin:UpdateFrameTitle()
+	local tabID = self:GetTab();
+	if self:IsInspecting() then
+		self:SetTitle(TALENTS_INSPECT_FORMAT:format(UnitName(self:GetInspectUnit())));
+	elseif tabID == self.specTabID then
+		self:SetTitle(SPECIALIZATION);
+	else -- tabID == self.talentTabID
+		self:SetTitle(TALENTS);
+	end
+end
+
+function ClassTalentFrameMixin:SetTabInternal(tabID)
+	TabSystemOwnerMixin.SetTab(self, tabID);
+
+	self:UpdateFrameTitle();
+end
+
 function ClassTalentFrameMixin:SetTab(tabID)
 	-- Overrides TabSystemOwnerMixin.SetTab.
 
-	local callback = GenerateClosure(TabSystemOwnerMixin.SetTab, self, tabID);
+	local callback = GenerateClosure(self.SetTabInternal, self, tabID);
 	self:CheckConfirmResetAction(callback);
 	return true; -- Don't show the tab as selected yet.
+end
+
+function ClassTalentFrameMixin:LockInspect()
+	if self:IsInspecting() then
+		self.lockInspect = true;
+	end
+end
+
+function ClassTalentFrameMixin:SetInspecting(inspectUnit)
+	self.inspectUnit = inspectUnit;
+	self:UpdateTabs();
+	self.TalentsTab:UpdateInspecting();
+
+	if inspectUnit then
+		self:SetTab(self.talentTabID);
+	else
+		self:UpdateFrameTitle();
+	end
+end
+
+function ClassTalentFrameMixin:IsInspecting()
+	return self.inspectUnit ~= nil;
+end
+
+function ClassTalentFrameMixin:GetInspectUnit()
+	return self.inspectUnit;
 end
 
 function ClassTalentFrameMixin:CheckConfirmClose()

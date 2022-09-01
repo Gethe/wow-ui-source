@@ -277,6 +277,21 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetTreeHash",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "treeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTreeInfo",
 			Type = "Function",
 

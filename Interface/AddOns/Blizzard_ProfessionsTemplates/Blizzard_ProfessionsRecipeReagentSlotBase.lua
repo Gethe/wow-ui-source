@@ -2,14 +2,13 @@ ProfessionsReagentSlotButtonMixin = {};
 
 function ProfessionsReagentSlotButtonMixin:SetItem(item)
 	ItemButtonMixin.SetItem(self, item);
-
-	self.InputOverlay:Hide();
 end
 
 function ProfessionsReagentSlotButtonMixin:Reset()
 	ItemButtonMixin.Reset(self);
 		
-	self.InputOverlay:Show();
+	self.InputOverlay.LockedIcon:Hide();
+	self.InputOverlay.AddIcon:Hide();
 
 	self:UpdateCursor();
 end

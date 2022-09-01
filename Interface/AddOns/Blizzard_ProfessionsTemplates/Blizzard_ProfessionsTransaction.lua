@@ -142,6 +142,11 @@ function ProfessionsRecipeTransactionMixin:GetRecipeSchematic()
 	return self.recipeSchematic;
 end
 
+function ProfessionsRecipeTransactionMixin:IsRecraft()
+	local recipeSchematic = self:GetRecipeSchematic();
+	return recipeSchematic.isRecraft;
+end
+
 function ProfessionsRecipeTransactionMixin:GetAllocations(slotIndex)
 	return self.allocationTbls[slotIndex];
 end

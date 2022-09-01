@@ -29,22 +29,9 @@
 					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
 			</Button>
-			<Button name="InspectFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="TALENTS">
+			<Button name="InspectFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="GUILD">
 				<Anchors>
-				   <Anchor point="LEFT" relativeTo="InspectFrameTab2" relativePoint="RIGHT" x="-16" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="InspectFrameTab_OnClick"/>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(TALENTS, 1.0,1.0,1.0 );
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
-			<Button name="InspectFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="GUILD">
-				<Anchors>
-				   <Anchor point="LEFT" relativeTo="InspectFrameTab3" relativePoint="RIGHT" x="-16" y="0"/>
+					<Anchor point="LEFT" relativeTo="InspectFrameTab2" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="InspectFrameTab_OnClick"/>

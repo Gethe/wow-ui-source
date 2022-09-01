@@ -5,7 +5,8 @@ local HideUnownedCvar = "professionsFlyoutHideUnowned";
 
 ProfessionsItemFlyoutButtonMixin = {};
 
-function ProfessionsItemFlyoutButtonMixin:Init(item)
+function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImplementation)
+	local item = elementData.item;
 	local itemLocation = item:GetItemLocation();
 	if itemLocation then
 		self:SetItemLocation(itemLocation);
@@ -19,8 +20,12 @@ function ProfessionsItemFlyoutButtonMixin:Init(item)
 	local stackable = C_Item.GetItemMaxStackSizeByID(item:GetItemID()) > 1;
 	self:SetItemButtonCount(stackable and count or 1);
 	
-	local disabled = count <= 0;
-	self:DesaturateHierarchy(disabled and 1 or 0);
+	local enabled = count > 0;
+	if onElementEnabledImplementation then
+		enabled = onElementEnabledImplementation(self, elementData);
+	end
+	self.enabled = enabled;
+	self:DesaturateHierarchy(enabled and 0 or 1);
 end
 
 ProfessionsItemFlyoutMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -51,8 +56,7 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 	local spacing = 3;
 	view:SetPadding(padding, padding, padding, padding, spacing, spacing);
 	view:SetElementInitializer("ProfessionsItemFlyoutButtonTemplate", function(button, elementData)
-		local item = elementData.item;
-		button:Init(item);
+		button:Init(elementData, self.OnElementEnabledImplementation);
 
 		button:SetScript("OnEnter", function(button)
 			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
@@ -63,7 +67,7 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 		button:SetScript("OnLeave", GameTooltip_Hide);
 
 		button:SetScript("OnClick", function()
-			if not disable then
+			if button.enabled then
 				self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ItemSelected, self, elementData);
 				CloseItemFlyout();
 			end

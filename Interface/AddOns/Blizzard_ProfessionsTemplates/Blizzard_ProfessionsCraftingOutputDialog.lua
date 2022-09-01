@@ -40,7 +40,8 @@ end
 function ProfessionsCraftingOutputDialogMixin:Init(transaction, quality)
 	local recipeID = transaction:GetRecipeID();
 
-	local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID);
+	local reagents = nil;
+	local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, reagents, transaction:GetRecraftAllocation());
 	if outputItemInfo.hyperlink then
 		local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 		self.RecipeName:SetText(item:GetItemName());
@@ -63,8 +64,8 @@ function ProfessionsCraftingOutputDialogMixin:Init(transaction, quality)
 	self.OutputIcon:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(self.OutputIcon, "ANCHOR_RIGHT");
 
-		local optionalReagents = transaction:CreateOptionalCraftingReagentInfoTbl();
-		GameTooltip:SetRecipeResultItem(recipeID, optionalReagents);
+		local reagents = transaction:CreateOptionalCraftingReagentInfoTbl();
+		C_TradeSkillUI.SetTooltipRecipeResultItem(recipeID, reagents, transaction:GetRecraftAllocation());
 	end);
 	self.OutputIcon:SetScript("OnLeave", GameTooltip_Hide);
 

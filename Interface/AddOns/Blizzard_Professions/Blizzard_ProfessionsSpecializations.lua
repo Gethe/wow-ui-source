@@ -828,6 +828,8 @@ local flipbookAnimDuration =
 	[Enum.Profession.Enchanting] = 1.5,
 	[Enum.Profession.Tailoring] = 3,
 	[Enum.Profession.Jewelcrafting] = 1.2,
+	[Enum.Profession.Alchemy] = 2.2,
+	[Enum.Profession.Leatherworking] = 2.5,
 };
 
 local flipbookAnimEndDelay =
@@ -848,7 +850,7 @@ function ProfessionsDetailedSpecPathMixin:UpdateAssets()
 		duration = flipbookAnimDuration[Enum.Profession.Blacksmithing];
 	end
 
-	self.ProgressBar:SetSwipeTexture(stylizedFillInfo.file);
+	self.ProgressBar:SetSwipeTexture(stylizedFillInfo.file or stylizedFillInfo.filename);
 
 	local frameSize = 330;
 	self.flipBookNumRows = stylizedFillInfo.height / frameSize;

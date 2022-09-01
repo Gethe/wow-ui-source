@@ -80,6 +80,20 @@ local UnitAura =
 				{ Name = "isFiltered", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "WantsAlteredForm",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "wantsAlteredForm", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

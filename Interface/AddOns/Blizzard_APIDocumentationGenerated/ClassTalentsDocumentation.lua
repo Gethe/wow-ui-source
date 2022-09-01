@@ -32,6 +32,20 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "DeleteConfig",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveConfigID",
 			Type = "Function",
 
@@ -55,6 +69,29 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "GetHasStarterBuild",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasStarterBuild", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLastSelectedSavedConfigID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "configID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetNextStarterBuildPurchase",
 			Type = "Function",
 
@@ -71,6 +108,21 @@ local ClassTalents =
 			Returns =
 			{
 				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ImportLoadout",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "entries", Type = "table", InnerType = "ImportLoadoutEntryInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -101,6 +153,21 @@ local ClassTalents =
 			Returns =
 			{
 				{ Name = "result", Type = "LoadConfigResult", Nilable = false },
+			},
+		},
+		{
+			Name = "RenameConfig",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -155,6 +222,16 @@ local ClassTalents =
 				{ Name = "usesShared", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "UpdateLastSelectedSavedConfigID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "configID", Type = "number", Nilable = true },
+			},
+		},
 	},
 
 	Events =
@@ -189,6 +266,16 @@ local ClassTalents =
 				{ Name = "NoChangesNecessary", Type = "LoadConfigResult", EnumValue = 1 },
 				{ Name = "LoadInProgress", Type = "LoadConfigResult", EnumValue = 2 },
 				{ Name = "Ready", Type = "LoadConfigResult", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "ImportLoadoutEntryInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "ranksPurchased", Type = "number", Nilable = false },
+				{ Name = "selectionEntryID", Type = "number", Nilable = false },
 			},
 		},
 	},

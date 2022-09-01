@@ -33,9 +33,6 @@ function BaseBagSlotButtonMixin:OnLoadInternal()
 	self.maxDisplayCount = 999;
 	self.UpdateTooltip = self.BagSlotOnEnter;
 
-	self.NormalTexture:SetSize(50, 50);
-	self.IconBorder:SetSize(30, 30);
-
 	self.Count:ClearAllPoints();
 	self.Count:SetPoint("BOTTOMRIGHT", -2, 2);
 
@@ -134,12 +131,16 @@ end
 function BaseBagSlotButtonMixin:UpdateBagButtonHighlight(containerFrame)
 	local isMatchingContainer = containerFrame:IsCombinedBagContainer() or (self:GetBagID() == containerFrame:GetBagID());
 	if isMatchingContainer then
-		self.SlotHighlightTexture:SetShown(containerFrame:IsShown());
+		self .SlotHighlightTexture:SetShown(containerFrame:IsShown());
 	end
 end
 
 function BaseBagSlotButtonMixin:GetItemContextMatchResult()
 	return ItemButtonUtil.GetItemContextMatchResultForContainer(self:GetBagID());
+end
+
+function BaseBagSlotButtonMixin:GetIsBarExpanded()
+	return MainMenuBarBagManager:ShouldBarExpand();
 end
 
 function BaseBagSlotButtonMixin:GetBagID()
@@ -165,6 +166,45 @@ function BaseBagSlotButtonMixin:IsBackpack()
 	return false;
 end
 
+function BaseBagSlotButtonMixin:GetSlotAtlases()
+	return "bag-border", "bag-border-empty", "bag-border-highlight";
+end
+
+function BaseBagSlotButtonMixin:UpdateTextures()
+	local size = ContainerFrame_GetContainerNumSlots(self:GetBagID());
+	local bagSlotAtlas, bagSlotEmptyAtlas, bagSlotHighlight = self:GetSlotAtlases();
+	local atlas = (size and size > 0) and bagSlotAtlas or bagSlotEmptyAtlas;
+
+	local normalTexture = self:GetNormalTexture();
+	normalTexture:SetAllPoints(self);
+	normalTexture:SetAtlas(atlas);
+
+	local pushedTexture = self:GetPushedTexture();
+	pushedTexture:SetAllPoints(self);
+	pushedTexture:SetAtlas(atlas);
+
+	local highlight = self:GetHighlightTexture();
+	highlight:SetAllPoints(self);
+	highlight:SetBlendMode("ADD");
+	highlight:SetAlpha(.4);
+	highlight:SetAtlas(atlas);
+
+	self.SlotHighlightTexture:SetAtlas(bagSlotHighlight);
+end
+
+function BaseBagSlotButtonMixin:SetItemButtonTexture(texture)
+	ItemButtonMixin.SetItemButtonTexture(self, texture);
+	self:UpdateTextures();
+end
+
+function BaseBagSlotButtonMixin:SetItemButtonQuality()
+	self:UpdateTextures();
+end
+
+function BaseBagSlotButtonMixin:SetBarExpanded(isExpanded)
+	self:SetShown(isExpanded);
+end
+
 MainMenuBarBackpackMixin = CreateFromMixins(BaseBagSlotButtonMixin);
 
 function MainMenuBarBackpackMixin:BagSlotOnShow()
@@ -181,10 +221,7 @@ function MainMenuBarBackpackMixin:OnLoadInternal()
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("AZERITE_EMPOWERED_ITEM_LOOTED");
 
-	self.icon:SetAtlas("hud-backpack");
-	self.icon:Show();
-
-	self.NormalTexture:SetSize(64, 64);
+	self:UpdateTextures();
 	self.Count:ClearAllPoints();
 	self.Count:SetPoint("CENTER", 0, -10);
 end
@@ -313,6 +350,29 @@ end
 
 function MainMenuBarBackpackMixin:IsBackpack()
 	return true;
+end
+
+function MainMenuBarBackpackMixin:GetSlotAtlases()
+	return "bag-main", "bag-main", "bag-main-highlight";
+end
+
+function MainMenuBarBackpackMixin:SetBarExpanded(isExpanded)
+	-- Remains shown during expand state change
+end
+
+function MainMenuBarBackpackMixin:BagSlotOnDragStart(button)
+	-- prevent pick up
+end
+
+CharacterReagentBagMixin = {};
+
+function CharacterReagentBagMixin:GetSlotAtlases()
+	return "bag-reagent-border", "bag-reagent-border-empty", "bag-border-highlight";
+end
+
+function CharacterReagentBagMixin:SetBarExpanded(isExpanded)
+	self:ClearAllPoints();
+	self:SetPoint("RIGHT", isExpanded and CharacterBag3Slot or BagBarExpandToggle, "LEFT");
 end
 
 BagBarExpandToggleMixin = {};

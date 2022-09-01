@@ -305,7 +305,8 @@ function DressUpFrame_Show(frame)
 		local autoDress = true;
 		local hideWeapons = false;
 		local itemModifiedAppearanceIDs = nil;
-		SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons);
+		local useNativeForm = PlayerUtil.ShouldUseNativeFormInModelScene();
+		SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 	end
 end
 
@@ -313,7 +314,8 @@ function DressUpFrame_ApplyAppearances(frame, itemModifiedAppearanceIDs)
 	local sheatheWeapons = false;
 	local autoDress = true;
 	local hideWeapons = false;
-	SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons);
+	local useNativeForm = PlayerUtil.ShouldUseNativeFormInModelScene();
+	SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 end
 
 function DressUpItemTransmogInfo(itemTransmogInfo)
@@ -429,12 +431,18 @@ end
 function DressUpOutfitDetailsPanelMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
+
+	local hasAlternateForm, _ = C_PlayerInfo.GetAlternateFormInfo();
+	if ( hasAlternateForm ) then
+		self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
+	end
 	self:Refresh();
 end
 
 function DressUpOutfitDetailsPanelMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:UnregisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
+	self:UnregisterEvent("UNIT_MODEL_CHANGED");
 end
 
 function DressUpOutfitDetailsPanelMixin:OnEvent(event, ...)
@@ -446,6 +454,8 @@ function DressUpOutfitDetailsPanelMixin:OnEvent(event, ...)
 		end
 	elseif event == "TRANSMOG_SOURCE_COLLECTABILITY_UPDATE" then
 		self:MarkDirty();
+	elseif ( event == "UNIT_MODEL_CHANGED" ) then
+		self:RefreshPlayerModel();
 	end
 end
 
@@ -524,6 +534,20 @@ function DressUpOutfitDetailsPanelMixin:Refresh()
 			end
 		end
 	end
+end
+
+function DressUpOutfitDetailsPanelMixin:RefreshPlayerModel()
+	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+	if playerActor then
+		local itemTransmogInfoList = playerActor:GetItemTransmogInfoList();
+		local sheatheWeapons = false;
+		local autoDress = true;
+		local hideWeapons = false;
+		local useNativeForm = PlayerUtil.ShouldUseNativeFormInModelScene();
+		playerActor:SetModelByUnit("player", sheatheWeapons, autoDress, hideWeapons, useNativeForm);
+		DressUpItemTransmogInfoList(itemTransmogInfoList);
+	end
+	self:Refresh();
 end
 
 function DressUpOutfitDetailsPanelMixin:AddSlotFrame(slotID, transmogInfo, field)

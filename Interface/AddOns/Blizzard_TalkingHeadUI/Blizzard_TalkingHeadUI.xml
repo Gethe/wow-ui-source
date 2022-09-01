@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TalkingHeadUI.lua"/>
 
-	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" inherits="UIParentBottomManagedFrameTemplate" hidden="true" frameStrata="HIGH" frameLevel="1">
+	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" inherits="UIParentBottomManagedFrameTemplate, EditModeTalkingHeadFrameSystemTemplate" mixin="TalkingHeadFrameMixin" hidden="true" frameStrata="HIGH" frameLevel="1">
 		<Size x="570" y="155"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="8" type="number"/>
@@ -112,7 +112,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<PlayerModel parentKey="Model" alpha="0.01" >
+					<PlayerModel parentKey="Model" alpha="0.01" mixin="TalkingHeadFrameModelMixin">
 						<Size x="115" y="115"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="21" y="-21"/>
@@ -127,17 +127,9 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								self:RegisterEvent("UI_SCALE_CHANGED");
-								self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-							</OnLoad>
-							<OnEvent>
-								self:RefreshCamera();
-								if self.uiCameraID then
-									Model_ApplyUICamera(self, self.uiCameraID);
-								end
-							</OnEvent>
-							<OnModelLoaded function="TalkingHeadFrame_OnModelLoaded"/>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnModelLoaded method="OnModelLoaded"/>
 						</Scripts>
 					</PlayerModel>
 					<Frame parentKey="Overlay">
@@ -171,7 +163,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								TalkingHeadFrame_CloseImmediately();
+								TalkingHeadFrame:CloseImmediately();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -212,16 +204,18 @@
 						<Alpha childKey="Model.PortraitBg" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
 						<Alpha childKey="CloseButton" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
 						<Scripts>
-							<OnFinished function="TalkingHeadFrame_Close_OnFinished"/>
+							<OnFinished>
+								TalkingHeadFrame:Close_OnFinished();
+							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
 				</Animations>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="TalkingHeadFrame_OnLoad"/>
-			<OnEvent function="TalkingHeadFrame_OnEvent"/>
-			<OnClick function="TalkingHeadFrame_OnClick"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</ContainedAlertFrame>
 </Ui>

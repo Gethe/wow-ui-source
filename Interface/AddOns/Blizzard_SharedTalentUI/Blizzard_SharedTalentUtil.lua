@@ -25,6 +25,7 @@ TALENT_FRAME_LABEL_RESET_BUTTON = "Reset All Talents";
 
 TALENT_FRAME_DROP_DOWN_NEW_LOADOUT = "New Loadout";
 TALENT_FRAME_DROP_DOWN_NEW_LOADOUT_PROMPT = "Enter a name for the new loadout";
+TALENT_FRAME_DROP_DOWN_STARTER_BUILD = "Starter Build";
 
 TALENT_FRAME_TAB_LABEL_SPEC = "Specialization";
 TALENT_FRAME_TAB_LABEL_TALENTS = "Talents";
@@ -38,12 +39,20 @@ TALENT_FRAME_RESET_BUTTON_TOOLTIP = "Reset All Talents";
 TALENT_FRAME_CONFIG_OPERATION_TOO_FAST = "Talent operation still in progress, try again later.";
 
 TALENT_FRAME_CONFIRM_CLOSE = "You will lose any pending changes if you continue.";
+TALENT_FRAME_CONFIRM_STARTER_DEVIATION = "Choosing this talent will remove you from the Starter Build guided experience.";
 
 TALENT_FRAME_GATE_TOOLTIP_FORMAT = "Spend %d more |4point:points; to unlock this row";
+
+TALENT_FRAME_SEARCH_TOOLTIP_MATCH = "Matching Talent";
+TALENT_FRAME_SEARCH_TOOLTIP_EXACT_MATCH = "Exact Match";
+TALENT_FRAME_SEARCH_TOOLTIP_RELATED_MATCH = "Related Talent";
+TALENT_FRAME_SEARCH_NOT_ON_ACTIONBAR = "Not on action bar";
 
 GENERIC_TRAIT_FRAME_CURRENCY_TEXT = "%d %s";
 GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT = "Are you sure you want to spend %s to unlock this talent?";
 GENERIC_TRAIT_FRAME_EDGE_REQUIREMENTS_BUTTON_TOOLTIP = "Requires all preceding talents";
+
+TALENTS_INSPECT_FORMAT = "Talents - %s";
 
 
 local TemplatesByTalentType = {
@@ -85,6 +94,62 @@ function TalentUtil.CombineCostArrays(...)
 	return combinedCostArray;
 end
 
+function TalentUtil.GetTalentNameFromInfo(talentInfo)
+	return TalentUtil.GetTalentName(talentInfo.overrideName, talentInfo.spellID);
+end
+
+function TalentUtil.GetTalentName(overrideName, spellID)
+	if overrideName ~= nil then
+		return overrideName;
+	end
+
+	if spellID ~= nil then
+		local spellName = GetSpellInfo(spellID);
+		if spellName ~= nil then
+			return spellName;
+		end
+	end
+
+	return "";
+end
+
+function TalentUtil.GetTalentSubtextFromInfo(talentInfo)
+	return TalentUtil.GetTalentSubtext(talentInfo.talentSubtext, talentInfo.spellID);
+end
+
+function TalentUtil.GetTalentSubtext(overrideSubtext, spellID)
+	if overrideSubtext ~= nil then
+		return overrideSubtext;
+	end
+
+	if spellID ~= nil then
+		local spellSubtext = GetSpellSubtext(spellID);
+		if spellSubtext ~= nil then
+			return spellSubtext;
+		end
+	end
+
+	return nil;
+end
+
+function TalentUtil.GetTalentDescriptionFromInfo(talentInfo)
+	return TalentUtil.GetTalentDescription(talentInfo.overrideDescription, talentInfo.spellID);
+end
+
+function TalentUtil.GetTalentDescription(overrideDescription, spellID)
+	if overrideDescription ~= nil then
+		return overrideDescription;
+	end
+
+	if spellID ~= nil then
+		local spellDescription = GetSpellDescription(spellID);
+		if spellDescription ~= nil then
+			return spellDescription;
+		end
+	end
+
+	return "";
+end
 
 TalentButtonUtil = {};
 
@@ -143,21 +208,6 @@ function TalentButtonUtil.ApplyPosition(button, talentFrame, posX, posY)
 	button:SetPoint(point, relativeTo, relativePoint, newX, newY);
 end
 
-function TalentButtonUtil.GetTalentName(overrideName, spellID)
-	if overrideName ~= nil then
-		return overrideName;
-	end
-
-	if spellID ~= nil then
-		local spellName = GetSpellInfo(spellID);
-		if spellName ~= nil then
-			return spellName;
-		end
-	end
-
-	return "";
-end
-
 function TalentButtonUtil.GetColorForBaseVisualState(visualState)
 	if (visualState == TalentButtonUtil.BaseVisualState.Gated) or (visualState == TalentButtonUtil.BaseVisualState.Disabled) or (visualState == TalentButtonUtil.BaseVisualState.Locked) then
 		return DISABLED_FONT_COLOR;
@@ -185,6 +235,31 @@ function TalentButtonUtil.CalculateIconTexture(talentInfo, overrideSpellID)
 	end
 
 	return [[Interface\Icons\spell_magic_polymorphrabbit]];
+end
+
+TalentButtonUtil.SearchMatchType = {
+	RelatedMatch = 1,
+	Match = 2,
+	ExactMatch = 3,
+};
+
+local SearchMatchStyles = {
+	[TalentButtonUtil.SearchMatchType.RelatedMatch] = {
+		icon = "talents-search-relatedmatch",
+		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_RELATED_MATCH
+	},
+	[TalentButtonUtil.SearchMatchType.Match] = {
+		icon = "talents-search-match",
+		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_MATCH
+	},
+	[TalentButtonUtil.SearchMatchType.ExactMatch] = {
+		icon = "talents-search-exactmatch",
+		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_EXACT_MATCH
+	},
+};
+
+function TalentButtonUtil.GetStyleForSearchMatchType(matchType)
+	return SearchMatchStyles[matchType];
 end
 
 -- TODO:: Replace this temp code that is supplying missing pieces to avoid Lua errors.

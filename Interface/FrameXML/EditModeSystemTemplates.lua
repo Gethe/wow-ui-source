@@ -216,8 +216,12 @@ function EditModeSystemMixin:AddExtraButtons(extraButtonPool)
 end
 
 function EditModeSystemMixin:ClearHighlight()
+	if self.isSelected then
+		EditModeManagerFrame:ClearSelectedSystem();
+		self.isSelected = false;
+	end
+
 	self.Selection:Hide();
-	self.isSelected = false;
 	self.isHighlighted = false;
 end
 
@@ -899,6 +903,13 @@ end
 
 EditModeExtraAbilitiesSystemMixin = {};
 
+function EditModeExtraAbilitiesSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
 function EditModeExtraAbilitiesSystemMixin:AddExtraButtons(extraButtonPool)
 	CreateResetToDefaultPositionButton(self, extraButtonPool);
 	return true;
@@ -1148,6 +1159,146 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 	end
 
 	self:ClearDirtySetting(setting);
+end
+
+EditModeTalkingHeadFrameSystemMixin = {};
+
+function EditModeTalkingHeadFrameSystemMixin:OnSystemLoad()
+	EditModeSystemMixin.OnSystemLoad(self);
+
+	-- Gotta call this ourselves since talking head is loaded in as needed on the fly so it won't be setup yet
+	EditModeManagerFrame:UpdateSystem(self);
+end
+
+function EditModeTalkingHeadFrameSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
+function EditModeTalkingHeadFrameSystemMixin:AddExtraButtons(extraButtonPool)
+	CreateResetToDefaultPositionButton(self, extraButtonPool);
+	return true;
+end
+
+function EditModeTalkingHeadFrameSystemMixin:OnDragStart()
+	if self:CanBeMoved() then
+		self:SetParent(UIParent);
+		self:StartMoving();
+	end
+end
+
+EditModeChatFrameSystemMixin = {};
+
+function EditModeChatFrameSystemMixin:OnEditModeEnter()
+	EditModeSystemMixin.OnEditModeEnter(self);
+
+	FCF_SelectDockFrame(self);
+	FCF_SetLocked(self, false);
+
+	self.EditModeResizeButton:Show();
+end
+
+function EditModeChatFrameSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	FCF_SetLocked(self, true);
+
+	self.EditModeResizeButton:Hide();
+end
+
+function EditModeChatFrameSystemMixin:EditMode_OnResized()
+	local width = self:GetWidth();
+	local height = self:GetHeight();
+
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.WidthHundreds, math.floor(width / 100));
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.WidthTensAndOnes, math.floor(width % 100));
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.HeightHundreds, math.floor(height / 100));
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.HeightTensAndOnes, math.floor(height % 100));
+end
+
+function EditModeChatFrameSystemMixin:UpdateSystemSettingSize()
+	local useRawValueYes = true;
+
+	local width;
+	if self:HasSetting(Enum.EditModeChatFrameSetting.WidthHundreds) and self:HasSetting(Enum.EditModeChatFrameSetting.WidthTensAndOnes) then
+		local widthHundreds = self:GetSettingValue(Enum.EditModeChatFrameSetting.WidthHundreds, useRawValueYes);
+		local widthTensAndOnes = self:GetSettingValue(Enum.EditModeChatFrameSetting.WidthTensAndOnes, useRawValueYes);
+		width = (widthHundreds * 100) + widthTensAndOnes;
+	else
+		width = self:GetWidth();
+	end
+
+	local height;
+	if self:HasSetting(Enum.EditModeChatFrameSetting.HeightHundreds) and self:HasSetting(Enum.EditModeChatFrameSetting.HeightTensAndOnes) then
+		local heightHundreds = self:GetSettingValue(Enum.EditModeChatFrameSetting.HeightHundreds, useRawValueYes);
+		local heightTensAndOnes = self:GetSettingValue(Enum.EditModeChatFrameSetting.HeightTensAndOnes, useRawValueYes);
+		height = (heightHundreds * 100) + heightTensAndOnes;
+	else
+		height = self:GetHeight();
+	end
+
+	self:SetSize(width, height);
+end
+
+function EditModeChatFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if (setting == Enum.EditModeChatFrameSetting.WidthHundreds
+		or setting == Enum.EditModeChatFrameSetting.WidthTensAndOnes
+		or setting == Enum.EditModeChatFrameSetting.HeightHundreds
+		or setting == Enum.EditModeChatFrameSetting.HeightTensAndOnes)
+		then
+		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeChatFrameResizeButtonMixin = {};
+
+function EditModeChatFrameResizeButtonMixin:OnMouseDown()
+	self:SetButtonState("PUSHED", true);
+	self:GetHighlightTexture():Hide();
+
+	local chatFrame = self:GetParent();
+	chatFrame:StartSizing("BOTTOMRIGHT");
+end
+
+function EditModeChatFrameResizeButtonMixin:OnMouseUp()
+	self:SetButtonState("NORMAL", false);
+	self:GetHighlightTexture():Show();
+
+	local chatFrame = self:GetParent();
+	chatFrame:StopMovingOrSizing();
+	chatFrame:EditMode_OnResized();
+end
+
+EditModeVehicleLeaveButtonSystemMixin = {};
+
+function EditModeVehicleLeaveButtonSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
+function EditModeVehicleLeaveButtonSystemMixin:AddExtraButtons(extraButtonPool)
+	CreateResetToDefaultPositionButton(self, extraButtonPool);
+	return true;
+end
+
+function EditModeVehicleLeaveButtonSystemMixin:OnDragStart()
+	if self:CanBeMoved() then
+		self:SetParent(UIParent);
+		self:StartMoving();
+	end
 end
 
 local EditModeSystemSelectionLayout =

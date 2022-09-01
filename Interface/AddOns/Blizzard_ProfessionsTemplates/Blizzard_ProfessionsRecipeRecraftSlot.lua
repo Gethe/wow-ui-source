@@ -62,9 +62,7 @@ function ProfessionsRecraftInputSlotMixin:Init(item)
 
 	if item then
 		SetItemButtonTexture(self, item:GetItemIcon());
-		local itemLocation = item:GetItemLocation();
-		local itemLink = C_Item.GetItemLink(itemLocation);
-		SetItemCraftingQualityOverlay(self, itemLink);
+		SetItemCraftingQualityOverlay(self, item:GetItemLink());
 		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
 		self.Glow.EmptySlotGlow:Hide();
 		self.Glow.PulseEmptySlotGlow:Stop();
@@ -81,10 +79,11 @@ end
 function ProfessionsRecraftInputSlotMixin:OnReceiveDrag()
 	local cursorItemLocation = C_Cursor.GetCursorItem();
 	local cursorItemGUID = C_Item.GetItemGUID(cursorItemLocation);
-	if self.cursorItemPredicate(cursorItemGUID) then
+	local learned = C_TradeSkillUI.IsOriginalCraftRecipeLearned(cursorItemGUID);
+	if learned and self.cursorItemPredicate(cursorItemGUID) then
 		Professions.TransitionToRecraft(cursorItemGUID);
-		ClearCursor();
 	end
+	ClearCursor();
 end
 
 
@@ -98,9 +97,7 @@ function ProfessionsRecraftOutputSlotMixin:Init(item)
 
 	if item then
 		SetItemButtonTexture(self, item:GetItemIcon());
-		local itemLocation = item:GetItemLocation();
-		local itemLink = C_Item.GetItemLink(itemLocation);
-		SetItemCraftingQualityOverlay(self, itemLink);
+		SetItemCraftingQualityOverlay(self, item:GetItemLink());
 	else
 		SetItemButtonTexture(self, nil);
 		ClearItemCraftingQualityOverlay(self)

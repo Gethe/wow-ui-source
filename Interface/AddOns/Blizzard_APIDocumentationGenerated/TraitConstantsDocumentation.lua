@@ -51,13 +51,14 @@ local TraitConstants =
 		{
 			Name = "TraitCombatConfigFlags",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "ActiveForSpec", Type = "TraitCombatConfigFlags", EnumValue = 1 },
 				{ Name = "StarterBuild", Type = "TraitCombatConfigFlags", EnumValue = 2 },
+				{ Name = "SharedActionBars", Type = "TraitCombatConfigFlags", EnumValue = 4 },
 			},
 		},
 		{
@@ -240,6 +241,17 @@ local TraitConstants =
 			},
 		},
 		{
+			Name = "TraitSystemFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "AllowMultipleLoadoutsPerTree", Type = "TraitSystemFlag", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "TraitTreeFlag",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -259,6 +271,7 @@ local TraitConstants =
 				{ Name = "MAX_COMBAT_TRAIT_CONFIGS", Type = "number", Value = 10 },
 				{ Name = "COMMIT_COMBAT_TRAIT_CONFIG_CHANGES_SPELL_ID", Type = "number", Value = 384255 },
 				{ Name = "INSPECT_TRAIT_CONFIG_ID", Type = "number", Value = -1 },
+				{ Name = "STARTER_BUILD_TRAIT_CONFIG_ID", Type = "number", Value = -2 },
 			},
 		},
 	},

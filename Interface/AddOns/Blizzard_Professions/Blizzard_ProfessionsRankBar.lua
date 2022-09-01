@@ -62,6 +62,8 @@ local flipbookAnimDuration =
 	[Enum.Profession.Enchanting] = 2.6,
 	[Enum.Profession.Tailoring] = 2.6,
 	[Enum.Profession.Jewelcrafting] = 2.6,
+	[Enum.Profession.Alchemy] = 1.5,
+	[Enum.Profession.Leatherworking] = 1.5,
 };
 
 function ProfessionsRankBarMixin:Update(professionInfo)

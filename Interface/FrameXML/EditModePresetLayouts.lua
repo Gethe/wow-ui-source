@@ -309,6 +309,46 @@ local modernSystemMap =
 			},
 		},
 	},
+
+	[Enum.EditModeSystem.TalkingHeadFrame] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "MainMenuBar",
+			relativePoint = "TOPLEFT",
+			offsetX = 0,
+			offsetY = 5,
+		},
+	},
+
+	[Enum.EditModeSystem.ChatFrame] = {
+		settings = {
+			[Enum.EditModeChatFrameSetting.WidthHundreds] = 4,
+			[Enum.EditModeChatFrameSetting.WidthTensAndOnes] = 30,
+			[Enum.EditModeChatFrameSetting.HeightHundreds] = 1,
+			[Enum.EditModeChatFrameSetting.HeightTensAndOnes] = 20,
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMLEFT",
+			offsetX = 35,
+			offsetY = 50,
+		},
+	},
+
+	[Enum.EditModeSystem.VehicleLeaveButton] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "MainMenuBar",
+			relativePoint = "TOPLEFT",
+			offsetX = 0,
+			offsetY = 5,
+		},
+	},
 };
 
 local classicSystemMap =
@@ -620,6 +660,46 @@ local classicSystemMap =
 				offsetX = -13,
 				offsetY = -5,
 			},
+		},
+	},
+
+	[Enum.EditModeSystem.TalkingHeadFrame] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "MainMenuBar",
+			relativePoint = "TOPLEFT",
+			offsetX = 0,
+			offsetY = 5,
+		},
+	},
+
+	[Enum.EditModeSystem.ChatFrame] = {
+		settings = {
+			[Enum.EditModeChatFrameSetting.WidthHundreds] = 4,
+			[Enum.EditModeChatFrameSetting.WidthTensAndOnes] = 30,
+			[Enum.EditModeChatFrameSetting.HeightHundreds] = 1,
+			[Enum.EditModeChatFrameSetting.HeightTensAndOnes] = 20,
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMLEFT",
+			offsetX = 35,
+			offsetY = 50,
+		},
+	},
+
+	[Enum.EditModeSystem.VehicleLeaveButton] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "MainMenuBar",
+			relativePoint = "TOPLEFT",
+			offsetX = 0,
+			offsetY = 5,
 		},
 	},
 };

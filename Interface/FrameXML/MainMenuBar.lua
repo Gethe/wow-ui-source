@@ -69,7 +69,9 @@ function MainMenuBarMixin:OnEvent(event, ...)
 	end
 end
 
-function MainMenuBarVehicleLeaveButton_OnLoad(self)
+MainMenuBarVehicleLeaveButtonMixin = {};
+
+function MainMenuBarVehicleLeaveButtonMixin:OnLoad()
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 	self:RegisterEvent("UPDATE_MULTI_CAST_ACTIONBAR");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
@@ -77,8 +79,8 @@ function MainMenuBarVehicleLeaveButton_OnLoad(self)
 	self:RegisterEvent("VEHICLE_UPDATE");
 end
 
-function MainMenuBarVehicleLeaveButton_OnEnter(self)
-	if ( UnitOnTaxi("player") ) then
+function MainMenuBarVehicleLeaveButtonMixin:OnEnter()
+	if UnitOnTaxi("player") then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, TAXI_CANCEL);
 		GameTooltip:AddLine(TAXI_CANCEL_DESCRIPTION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
@@ -90,29 +92,37 @@ function MainMenuBarVehicleLeaveButton_OnEnter(self)
 	end
 end
 
-function MainMenuBarVehicleLeaveButton_OnEvent(self, event, ...)
-	MainMenuBarVehicleLeaveButton_Update();
+function MainMenuBarVehicleLeaveButtonMixin:OnEvent(event, ...)
+	self:Update();
 end
 
-function MainMenuBarVehicleLeaveButton_Update()
-	if ( CanExitVehicle() and ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_MAIN ) then
-		MainMenuBarVehicleLeaveButton:Show();
-		MainMenuBarVehicleLeaveButton:Enable();
+function MainMenuBarVehicleLeaveButtonMixin:CanExitVehicle()
+	return CanExitVehicle() and ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_MAIN;
+end
+
+function MainMenuBarVehicleLeaveButtonMixin:UpdateShownState()
+	self:SetShown(self.isInEditMode or self:CanExitVehicle());
+end
+
+function MainMenuBarVehicleLeaveButtonMixin:Update()
+	self:UpdateShownState();
+
+	if self:CanExitVehicle() then
+		self:Enable();
 		if (PetHasActionBar()) then
 			PetActionBar:Show();
 		end
 	else
-		MainMenuBarVehicleLeaveButton:SetHighlightTexture([[Interface\Buttons\ButtonHilight-Square]], "ADD");
-		MainMenuBarVehicleLeaveButton:UnlockHighlight();
-		MainMenuBarVehicleLeaveButton:Hide();
-		if (PetHasActionBar()) then
+		self:SetHighlightTexture([[Interface\Buttons\ButtonHilight-Square]], "ADD");
+		self:UnlockHighlight();
+		if PetHasActionBar() then
 			PetActionBar:Show();
 		end
 	end
 end
 
-function MainMenuBarVehicleLeaveButton_OnClicked(self)
-	if ( UnitOnTaxi("player") ) then
+function MainMenuBarVehicleLeaveButtonMixin:OnClicked()
+	if UnitOnTaxi("player") then
 		TaxiRequestEarlyLanding();
 
 		-- Show that the request for landing has been received.

@@ -80,7 +80,53 @@
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Glow" hidden="true" alphaMode="ADD" atlas="talents-node-square-greenglow">
+					<Size x="61" y="61"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="SearchIcon" hidden="true">
+				<Size x="36" y="36"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="Icon" atlas="talents-search-match"/>
+						<Texture parentKey="OverlayIcon" atlas="talents-search-match" alphaMode="ADD"/>
+						<Texture parentKey="Mouseover">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0"/>
+							<Scripts>
+								<OnLeave function="GameTooltip_Hide"/>
+							</Scripts>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="GlowAnim" looping="REPEAT" setToFinalAlpha="true">
+						<Alpha childKey="OverlayIcon" fromAlpha="0" toAlpha=".5" duration="1" order="1" smoothing="NONE"/>
+						<Alpha childKey="OverlayIcon" fromAlpha=".5" toAlpha="0" duration="1" order="2" smoothing="NONE"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnShow>
+						self.GlowAnim:Play();
+					</OnShow>
+					<OnHide>
+						self.GlowAnim:Stop();
+					</OnHide>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

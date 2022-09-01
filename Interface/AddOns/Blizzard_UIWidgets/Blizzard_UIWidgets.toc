@@ -61,3 +61,5 @@ Blizzard_UIWidgetBelowMinimapFrame.lua
 Blizzard_UIWidgetBelowMinimapFrame.xml
 Blizzard_UIWidgetPowerBarFrame.lua
 Blizzard_UIWidgetPowerBarFrame.xml
+Blizzard_UIWidgetCenterScreenFrame.lua
+Blizzard_UIWidgetCenterScreenFrame.xml

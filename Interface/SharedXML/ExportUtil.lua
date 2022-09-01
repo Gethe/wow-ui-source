@@ -36,7 +36,9 @@ function ExportUtil.ConvertToBase64(dataEntries)
 	for i, dataEntry in ipairs(dataEntries) do
 		local remainingValue = dataEntry.value;
 		local remainingRequiredBits = dataEntry.bitWidth;
-		if remainingValue >= bit.lshift(1, remainingRequiredBits) then
+		-- TODO: bit.lshift doesnt work with > 32 bits.  Maybe use maxValue = 2^X instead?
+		local maxValue = bit.lshift(1, remainingRequiredBits);
+		if remainingValue >= maxValue then
 			error(("Data entry has higher value than storable in bitWidth. (%d in %d bits)"):format(remainingValue, remainingRequiredBits));
 			return "";
 		end
@@ -140,4 +142,7 @@ function ImportDataStreamMixin:ExtractValue(bitWidth)
 	return value;
 end
 
+function ImportDataStreamMixin:GetNumberOfBits()
+	return BitsPerChar * getn(self.dataValues);
+end
 

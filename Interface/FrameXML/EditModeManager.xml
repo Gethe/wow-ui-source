@@ -136,14 +136,6 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.StanceBar" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
-							<Frame parentKey="PossessActionBar" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_POSSESS_ACTION_BAR_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.PetActionBar" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
 							<Frame parentKey="CastBar" inherits="EditModeCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_CAST_BAR_LABEL" type="global"/>
@@ -168,12 +160,20 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.EncounterBar" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
+							<Frame parentKey="PossessActionBar" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_POSSESS_ACTION_BAR_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ExtraAbilities" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
 							<Frame parentKey="BuffFrame" inherits="EditModeCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_BUFF_FRAME_LABEL" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.PossessActionBar" relativePoint="BOTTOMLEFT"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.PetActionBar" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
 							<Frame parentKey="DebuffFrame" inherits="EditModeCheckButtonTemplate">
@@ -182,6 +182,22 @@
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.BuffFrame" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="TalkingHeadFrame" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_TALKING_HEAD_FRAME_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.PossessActionBar" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="VehicleLeaveButton" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_VEHICLE_LEAVE_BUTTON_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.TalkingHeadFrame" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
 						</Frames>

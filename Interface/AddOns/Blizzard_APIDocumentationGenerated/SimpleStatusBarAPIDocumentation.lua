@@ -88,6 +88,19 @@ local SimpleStatusBarAPI =
 			},
 		},
 		{
+			Name = "GetStatusBarDesaturation",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "desaturation", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetStatusBarTexture",
 			Type = "Function",
 
@@ -111,6 +124,19 @@ local SimpleStatusBarAPI =
 			Returns =
 			{
 				{ Name = "value", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsStatusBarDesaturated",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "desaturated", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -181,6 +207,24 @@ local SimpleStatusBarAPI =
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
 				{ Name = "a", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "SetStatusBarDesaturated",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "desaturated", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetStatusBarDesaturation",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "desaturation", Type = "number", Nilable = false },
 			},
 		},
 		{

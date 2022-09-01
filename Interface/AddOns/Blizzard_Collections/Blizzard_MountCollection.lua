@@ -146,6 +146,11 @@ function MountJournal_OnLoad(self)
 	self:RegisterEvent("MOUNT_EQUIPMENT_APPLY_RESULT");
 	self:RegisterEvent("CURSOR_CHANGED");
 
+	local hasAlternateForm, _ = C_PlayerInfo.GetAlternateFormInfo();
+	if ( hasAlternateForm ) then
+		self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
+	end
+
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("MountListButtonTemplate", function(button, elementData)
 		MountJournal_InitMountButton(button, elementData);
@@ -299,6 +304,11 @@ function MountJournal_OnEvent(self, event, ...)
 		MountJournal_OnEquipmentApplyResult(self, success);
 	elseif (event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
 		MountJournal_UpdateEquipmentPalette(self);
+	elseif (event == "UNIT_MODEL_CHANGED") then
+		local showPlayer = GetCVarBool("mountJournalShowPlayer");
+		if(self:IsVisible() and showPlayer) then
+			MountJournal_UpdateMountDisplay(true);
+		end
 	end
 end
 
@@ -663,7 +673,8 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 				if not disablePlayerMountPreview and not showPlayer then
 					disablePlayerMountPreview = true;
 				end
-				MountJournal.MountDisplay.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID);
+				local useNativeForm = PlayerUtil.ShouldUseNativeFormInModelScene();
+				MountJournal.MountDisplay.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID, useNativeForm);
 			end
 		end
 

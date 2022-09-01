@@ -41,6 +41,18 @@ local ProfessionConstants =
 			},
 		},
 		{
+			Name = "ProfessionActionType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Craft", Type = "ProfessionActionType", EnumValue = 0 },
+				{ Name = "Gather", Type = "ProfessionActionType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "ProfessionEffect",
 			Type = "Enumeration",
 			NumValues = 26,

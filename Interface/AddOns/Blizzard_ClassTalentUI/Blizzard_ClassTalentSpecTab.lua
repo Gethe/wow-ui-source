@@ -323,8 +323,9 @@ end
 
 function ClassSpecContentFrameMixin:OnActivateClicked()
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_SPEC_ACTIVATE);
-	SetSpecialization(self.specIndex, false);
-	self:GetParent():SetSpecActivateStarted(self.specIndex);
+	if SetSpecialization(self.specIndex, false) then
+		self:GetParent():SetSpecActivateStarted(self.specIndex);
+	end
 end
 
 ClassSpecSpellMixin = {}

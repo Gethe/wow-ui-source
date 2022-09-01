@@ -193,7 +193,12 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 		-- Set Frame Color and Alpha
 		FCF_SetWindowColor(chatFrame, r, g, b, true);
 		FCF_SetWindowAlpha(chatFrame, a, true);
-		FCF_SetLocked(chatFrame, locked);
+
+		-- DEFAULT_CHAT_FRAME should remain locked. It is now managed by edit mode
+		if (chatFrame ~= DEFAULT_CHAT_FRAME) then
+			FCF_SetLocked(chatFrame, locked);
+		end
+
 		FCF_SetUninteractable(chatFrame, uninteractable);
 	end
 
@@ -222,7 +227,7 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 		end
 	end
 
-	if ( not chatFrame.isTemporary and (chatFrame == DEFAULT_CHAT_FRAME or not chatFrame.isDocked)) then
+	if ( not chatFrame.isTemporary and not chatFrame.isDocked) then
 		FCF_RestorePositionAndDimensions(chatFrame);
 	end
 
@@ -271,36 +276,34 @@ function FCFOptionsDropDown_Initialize(dropDown)
 	end
 
 	-- Window options
-	info = UIDropDownMenu_CreateInfo();
 	local dropDownChatFrame = FCF_GetCurrentChatFrame(dropDown);
 	if( dropDownChatFrame ) then
-		if( dropDownChatFrame == GENERAL_CHAT_DOCK.primary ) then
-			info.text = dropDownChatFrame.isLocked and UNLOCK_WINDOW or LOCK_WINDOW;
-			info.func = FCF_ToggleLockOnDockedFrame;
+		info = UIDropDownMenu_CreateInfo();
+		if (dropDownChatFrame == DEFAULT_CHAT_FRAME) then
+			-- If you are the default chat frame then show the enter edit mode option
+			info.text = HUD_EDIT_MODE_MENU;
+			info.func = function() ShowUIPanel(EditModeManagerFrame); end;
 		else
-			if(dropDownChatFrame.isDocked) then
-				info.text = UNDOCK_WINDOW;
-				info.func = FCF_ToggleLock;
-			elseif ( dropDownChatFrame.isLocked ) then
-				info.text = UNLOCK_WINDOW;
-				info.func = FCF_ToggleLock;
+			-- If you aren't the default chat frame then show lock/unlock option
+			if( dropDownChatFrame == GENERAL_CHAT_DOCK.primary ) then
+				info.text = dropDownChatFrame.isLocked and UNLOCK_WINDOW or LOCK_WINDOW;
+				info.func = FCF_ToggleLockOnDockedFrame;
 			else
-				info.text = LOCK_WINDOW;
-				info.func = FCF_ToggleLock;
+				if(dropDownChatFrame.isDocked) then
+					info.text = UNDOCK_WINDOW;
+					info.func = FCF_ToggleLock;
+				elseif ( dropDownChatFrame.isLocked ) then
+					info.text = UNLOCK_WINDOW;
+					info.func = FCF_ToggleLock;
+				else
+					info.text = LOCK_WINDOW;
+					info.func = FCF_ToggleLock;
+				end
 			end
 		end
 		info.notCheckable = 1;
 		UIDropDownMenu_AddButton(info);
-		--Add Unlock Button for docked windows
-		if( dropDownChatFrame ~= GENERAL_CHAT_DOCK.primary ) then
-			if(dropDownChatFrame.isDocked) then
-				info = UIDropDownMenu_CreateInfo();
-				info.text = dropDownChatFrame.isLocked and UNLOCK_WINDOW or LOCK_WINDOW;
-				info.func = FCF_ToggleLockOnDockedFrame;
-				info.notCheckable = 1;
-				UIDropDownMenu_AddButton(info);
-			end
-		end
+
 		--Add Uninteractable button
 		info = UIDropDownMenu_CreateInfo();
 		info.text = dropDownChatFrame.isUninteractable and MAKE_INTERACTABLE or MAKE_UNINTERACTABLE;
@@ -1081,7 +1084,7 @@ function FCF_UpdateScrollbarAnchors(chatFrame)
 end
 
 function FCF_UpdateResizeButton(chatFrame)
-	local showResize = not (chatFrame.isUninteractable or chatFrame.isLocked);
+	local showResize = chatFrame ~= DEFAULT_CHAT_FRAME and not (chatFrame.isUninteractable or chatFrame.isLocked);
 	chatFrame.ResizeButton:SetShown(showResize);
 	FCF_UpdateScrollbarAnchors(chatFrame);
 end
@@ -1285,11 +1288,14 @@ function FCF_SavePositionAndDimensions(chatFrame)
 end
 
 function FCF_RestorePositionAndDimensions(chatFrame)
+	if (chatFrame == DEFAULT_CHAT_FRAME) then
+		-- Default chat frame is now controlled via edit mode
+		return;
+	end
+
 	local width, height = GetChatWindowSavedDimensions(chatFrame:GetID());
 	if ( width and height ) then
 		chatFrame:SetSize(width, height);
-	elseif ( chatFrame == DEFAULT_CHAT_FRAME ) then
-		chatFrame:SetSize(430, 120);
 	end
 
 	local point, xOffset, yOffset = GetChatWindowSavedPosition(chatFrame:GetID());
@@ -1297,10 +1303,6 @@ function FCF_RestorePositionAndDimensions(chatFrame)
 		chatFrame:ClearAllPoints();
 		chatFrame:SetPoint(point, xOffset * GetScreenWidth(), yOffset * GetScreenHeight());
 		chatFrame:SetUserPlaced(true);
-	elseif ( chatFrame == DEFAULT_CHAT_FRAME ) then
-		chatFrame:ClearAllPoints();
-		chatFrame:SetPoint("BOTTOMLEFT", 32, 95);
-		chatFrame:SetUserPlaced(false);
 	else
 		chatFrame:SetUserPlaced(false);
 	end
@@ -1732,26 +1734,6 @@ function FCF_FlashTab(self)
 	end
 	tabFlash:Show();
 	UIFrameFlash(tabFlash, 0.25, 0.25, 60, nil, 0.5, 0.5);
-end
-
--- Function for repositioning the chat dock depending on if there's a shapeshift bar/stance bar, etc...
-function FCF_UpdateDockPosition()
-	if ( DEFAULT_CHAT_FRAME:IsUserPlaced() ) then
-		return;
-	end
-
-	local chatOffset = 85;
-	if ( GetNumShapeshiftForms() > 0 or HasPetUI() or PetHasActionBar() ) then
-		if ( MultiBarBottomLeft:IsShown() ) then
-			chatOffset = chatOffset + 55;
-		else
-			chatOffset = chatOffset + 15;
-		end
-	elseif ( MultiBarBottomLeft:IsShown() ) then
-		chatOffset = chatOffset + 15;
-	end
-	DEFAULT_CHAT_FRAME:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 32, chatOffset);
-	FCF_DockUpdate();
 end
 
 function FCF_Set_NormalChat()

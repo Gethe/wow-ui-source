@@ -130,9 +130,12 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			end
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.ItemRecrafting then
-			local recipeID = ProfessionsFrame:GetCurrentRecraftingRecipeID();
-			if recipeID and C_TradeSkillUI.DoesRecraftingRecipeAcceptItem(itemLocation, recipeID) then
-				return ItemButtonUtil.ItemContextMatchResult.Match;
+			local itemGUID = C_Item.GetItemGUID(itemLocation);
+			if itemGUID and C_TradeSkillUI.IsOriginalCraftRecipeLearned(itemGUID) then
+				local recipeID = ProfessionsFrame:GetCurrentRecraftingRecipeID();
+				if recipeID and C_TradeSkillUI.DoesRecraftingRecipeAcceptItem(itemLocation, recipeID) then
+					return ItemButtonUtil.ItemContextMatchResult.Match;
+				end
 			end
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else
