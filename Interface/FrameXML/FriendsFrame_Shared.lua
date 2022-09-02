@@ -74,7 +74,8 @@ local INVITE_RESTRICTION_WOW_PROJECT_ID = 6;
 local INVITE_RESTRICTION_WOW_PROJECT_MAINLINE = 7;
 local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 8;
 local INVITE_RESTRICTION_WOW_PROJECT_BCC = 9;
-local INVITE_RESTRICTION_NONE = 10;
+local INVITE_RESTRICTION_WOW_PROJECT_WRATH = 10;
+local INVITE_RESTRICTION_NONE = 11;
 
 local FriendListEntries = { };
 local playerRealmID;
@@ -2143,6 +2144,8 @@ function FriendsFrame_GetInviteRestriction(index)
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_CLASSIC, restriction);
 				elseif(wowProjectID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_BCC, restriction);
+				elseif(wowProjectID == WOW_PROJECT_WRATH_CLASSIC) then
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_WRATH, restriction);
 				elseif(wowProjectID == WOW_PROJECT_MAINLINE) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_MAINLINE, restriction);
 				else
@@ -2185,6 +2188,8 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_WRONG_PROJECT_CLASSIC_OVERRIDE;
 	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_BCC ) then
 		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_BCC_OVERRIDE
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_WRATH ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_WRATH_OVERRIDE
 	else
 		return "";
 	end
