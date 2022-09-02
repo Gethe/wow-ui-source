@@ -2136,23 +2136,13 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 	if ( showDay ) then
 		UIMenu_AddButton(self, CALENDAR_CREATE_EVENT, nil, CalendarDayContextMenu_CreateEvent);
 
+
+		--DISABLING THIS FOR NOW UNTIL WE FIX CLASS-17077
 		-- add guild selections if the player has a guild
-		if ( IsInGuild() ) then
-			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
-
-			if ( CanEditGuildEvent() ) then
-				UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
-			end
-		end
-
-		-- add community selections if the player is in a character community
-		local clubs = C_Club.GetSubscribedClubs();
-		for i, clubInfo in ipairs(clubs) do
-			if clubInfo.clubType == Enum.ClubType.Character then
-				UIMenu_AddButton(self, CALENDAR_CREATE_COMMUNITY_EVENT, nil, CalendarDayContextMenu_CreateCommunityEvent);
-				break;
-			end
-		end
+		--if ( CanEditGuildEvent() ) then
+			--UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
+			--UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
+		--end
 
 		needSpacer = true;
 	end

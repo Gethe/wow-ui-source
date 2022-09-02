@@ -263,9 +263,16 @@
 									GameTooltip:SetText(self.tooltip);
 								end
 							</OnEnter>
+							<OnUpdate>
+								if ( GameTooltip:IsOwned(self) ) then
+									BattlefieldFrame_UpdateStatus(1);
+									if (self.tooltip) then
+										GameTooltip:SetText(self.tooltip);
+									end
+								end
+							</OnUpdate>
 							<OnLeave>
 								GameTooltip:Hide();
-								self:SetScript("OnUpdate", nil);
 							</OnLeave>
 							<OnClick>
 								-- Hide tooltip

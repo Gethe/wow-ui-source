@@ -556,14 +556,16 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 	if ( unit == statusbar.unit ) then
 		local maxValue = UnitHealthMax(unit);
 
-		statusbar.showPercentage = false;
+		if (GetClassicExpansionLevel() <= LE_EXPANSION_BURNING_CRUSADE) then
+			statusbar.showPercentage = false;
+		end
 
 		-- Safety check to make sure we never get an empty bar.
 		statusbar.forceHideText = false;
 		if ( maxValue == 0 ) then
 			maxValue = 1;
 			statusbar.forceHideText = true;
-		elseif ( GetClassicExpansionLevel() >= LE_EXPANSION_BURNING_CRUSADE and (maxValue == 100 or not ShouldKnowUnitHealth(unit)) ) then
+		elseif ( GetClassicExpansionLevel() <= LE_EXPANSION_BURNING_CRUSADE and (maxValue == 100 or not ShouldKnowUnitHealth(unit)) ) then
 			--This should be displayed as percentage.
 			statusbar.showPercentage = true;
 		end
