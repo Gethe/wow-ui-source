@@ -1,7 +1,7 @@
 function ModelPreviewFrame_OnLoad(self)
 	ButtonFrameTemplate_HidePortrait(self);
 	ButtonFrameTemplate_HideAttic(self);
-	self.TitleText:SetText(PREVIEW);
+	self:SetTitle(PREVIEW);
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 end
 
@@ -120,7 +120,7 @@ end
 function ModelPreviewFrame_SetCarouselIndex(self, index, allowZoom, forceUpdate)
 	self.carouselIndex = index;
 	self.Display.CarouselText:SetText(MODEL_PREVIEW_FRAME_CAROUSEL_TEXT_FORMAT:format(self.carouselIndex, #self.carouselEntries));
-	
+
 	local displayInfoEntry = self.carouselEntries[self.carouselIndex];
 	ModelPreviewFrame_ShowModelInternal(displayInfoEntry.creatureDisplayInfoID, displayInfoEntry.modelSceneID, allowZoom, forceUpdate, displayInfoEntry.itemModifiedAppearanceIDs);
 	self.Display.Name:SetText(displayInfoEntry.title);
@@ -139,7 +139,7 @@ function ModelPreviewFrame_MoveCarousel(self, backward)
 			newCarouselIndex = 1;
 		end
 	end
-	
+
 	local display = self.Display;
 	ModelPreviewFrame_SetCarouselIndex(self, newCarouselIndex, display.allowZoom, true);
 end

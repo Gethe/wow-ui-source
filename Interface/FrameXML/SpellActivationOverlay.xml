@@ -31,14 +31,14 @@
 			<OnShow function="SpellActivationOverlayTexture_OnShow"/>
 		</Scripts>
 	</Frame>
-	<Frame name="SpellActivationOverlayFrame" parent="UIParent">
+	<Frame name="SpellActivationOverlayFrame" mixin="SpellActivationOverlayMixin" parent="UIParent">
 		<Size x="256" y="256"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="SpellActivationOverlay_OnLoad"/>
-			<OnEvent function="SpellActivationOverlay_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

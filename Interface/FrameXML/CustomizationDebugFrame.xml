@@ -6,11 +6,7 @@
 			<Layer level="ARTWORK">
 				<FontString name="CustomizationDebugFrameText" inherits="NumberFontNormal" justifyH="LEFT" justifyV="BOTTOM">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="-16" y="192"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="-16" y="192"/>
 					</Anchors>
 				</FontString>
 			</Layer>

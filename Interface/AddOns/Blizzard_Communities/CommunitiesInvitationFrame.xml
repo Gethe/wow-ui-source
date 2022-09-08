@@ -57,7 +57,7 @@
 				<Texture parentKey="Icon" file="Interface\CharacterFrame\TempPortraitAlphaMask">
 					<Size x="63" y="63"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.InvitationText" relaitvePoint="BOTTOM" x="0" y="-35"/>
+						<Anchor point="TOP" relativeKey="$parent.InvitationText" relativePoint="BOTTOM" x="0" y="-35"/>
 					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">

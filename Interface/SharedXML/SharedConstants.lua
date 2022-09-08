@@ -16,11 +16,12 @@ FACTION_LABELS = {
 };
 
 FACTION_LABELS_FROM_STRING = {
-	["Horde"] = FACTION_HORDE, 
+	["Horde"] = FACTION_HORDE,
 	["Alliance"] = FACTION_ALLIANCE,
 }
 
--- If you add a class here, you also need to add it to RAID_CLASS_COLORS, CHARCREATE_CLASS_INFO, and maybe to ALT_MANA_BAR_PAIR_DISPLAY_INFO
+-- If you add a class here, you also need to add it to RAID_CLASS_COLORS, CHARCREATE_CLASS_INFO, CLASS_SORT_ORDER, and maybe to ALT_MANA_BAR_PAIR_DISPLAY_INFO
+-- Also add a new RaidButton in Blizzard_RaidUI.xml: name="RaidClassButton###..
 CLASS_ICON_TCOORDS = {
 	["WARRIOR"]		= {0, 0.25, 0, 0.25},
 	["MAGE"]		= {0.25, 0.49609375, 0, 0.25},
@@ -34,30 +35,15 @@ CLASS_ICON_TCOORDS = {
 	["DEATHKNIGHT"]	= {0.25, .5, 0.5, .75},
 	["MONK"]		= {0.5, 0.73828125, 0.5, .75},
 	["DEMONHUNTER"]	= {0.7421875, 0.98828125, 0.5, 0.75},
+	["EVOKER"]= {0, 0.25, 0, 0.25},
 };
-
--- For these races, the names are shortened for the atlas
-local fixedRaceAtlasNames = {
-	["highmountaintauren"] = "highmountain",
-	["lightforgeddraenei"] = "lightforged",
-	["scourge"] = "undead",
-	["zandalaritroll"] = "zandalari",
-};
-
-function GetRaceAtlas(raceName, gender, useHiRez)
-	if (fixedRaceAtlasNames[raceName]) then
-		raceName = fixedRaceAtlasNames[raceName];
-	end
-	local formatingString = useHiRez and "raceicon128-%s-%s" or "raceicon-%s-%s";
-	return formatingString:format(raceName, gender);
-end
 
 function GetClassAtlas(className)
 	return ("classicon-%s"):format(className);
 end
 
-function GetGenderAtlases(sexID)
-	local genderName = (sexID == Enum.UnitSex.Male) and "male" or "female";
+function GetBodyTypeAtlases(bodyTypeID)
+	local genderName = (bodyTypeID == Enum.UnitSex.Male) and "male" or "female";
 	local baseAtlas = ("charactercreate-gendericon-%s"):format(genderName);
 	local selectedAtlas = ("%s-selected"):format(baseAtlas);
 	return baseAtlas, selectedAtlas;

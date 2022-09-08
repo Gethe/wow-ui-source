@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="ChatFrame.lua"/>
-	<ScrollingMessageFrame name="ChatFrameTemplate" frameStrata="BACKGROUND" toplevel="true" hidden="true" virtual="true">
+	<ScrollingMessageFrame name="ChatFrameTemplate" frameStrata="LOW" toplevel="true" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad>
 				ChatFrame_OnLoad(self);
@@ -17,7 +17,7 @@
 			</OnHyperlinkClick>
 		</Scripts>
 	</ScrollingMessageFrame>
-	<EditBox name="ChatFrameEditBoxTemplate" inherits="AutoCompleteEditBoxTemplate" autoFocus="false" ignoreArrows="true" frameStrata="DIALOG" toplevel="true" historyLines="32" bytes="512" visibleBytes="255" invisibleBytes="255" hidden="true" virtual="true">
+	<EditBox name="ChatFrameEditBoxTemplate" inherits="AutoCompleteEditBoxTemplate" autoFocus="false" ignoreArrows="true" frameStrata="DIALOG" toplevel="true" historyLines="32" bytes="1280" visibleBytes="255" invisibleBytes="1023" hidden="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">

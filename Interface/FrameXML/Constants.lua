@@ -4,21 +4,21 @@
 --
 
 WORLD_QUEST_ICONS_BY_PROFESSION = {
-	[Constants.ProfessionIDs.PROFESSION_FIRST_AID] = "worldquest-icon-firstaid",
-	[Constants.ProfessionIDs.PROFESSION_BLACKSMITHING] = "worldquest-icon-blacksmithing",
-	[Constants.ProfessionIDs.PROFESSION_LEATHERWORKING] = "worldquest-icon-leatherworking",
-	[Constants.ProfessionIDs.PROFESSION_ALCHEMY] = "worldquest-icon-alchemy",
-	[Constants.ProfessionIDs.PROFESSION_HERBALISM] = "worldquest-icon-herbalism",
-	[Constants.ProfessionIDs.PROFESSION_MINING] = "worldquest-icon-mining",
-	[Constants.ProfessionIDs.PROFESSION_ENGINEERING] = "worldquest-icon-engineering",
-	[Constants.ProfessionIDs.PROFESSION_ENCHANTING] = "worldquest-icon-enchanting",
-	[Constants.ProfessionIDs.PROFESSION_JEWELCRAFTING] = "worldquest-icon-jewelcrafting",
-	[Constants.ProfessionIDs.PROFESSION_INSCRIPTION] = "worldquest-icon-inscription",
-	[Constants.ProfessionIDs.PROFESSION_ARCHAEOLOGY] = "worldquest-icon-archaeology",
-	[Constants.ProfessionIDs.PROFESSION_FISHING] = "worldquest-icon-fishing",
-	[Constants.ProfessionIDs.PROFESSION_COOKING] = "worldquest-icon-cooking",
-	[Constants.ProfessionIDs.PROFESSION_TAILORING] = "worldquest-icon-tailoring",
-	[Constants.ProfessionIDs.PROFESSION_SKINNING] = "worldquest-icon-skinning",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.FirstAid)] = "worldquest-icon-firstaid",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Blacksmithing)] = "worldquest-icon-blacksmithing",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Leatherworking)] = "worldquest-icon-leatherworking",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Alchemy)] = "worldquest-icon-alchemy",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Herbalism)] = "worldquest-icon-herbalism",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Mining)] = "worldquest-icon-mining",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Engineering)] = "worldquest-icon-engineering",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Enchanting)] = "worldquest-icon-enchanting",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Jewelcrafting)] = "worldquest-icon-jewelcrafting",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Inscription)] = "worldquest-icon-inscription",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Archaeology)] = "worldquest-icon-archaeology",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Fishing)] = "worldquest-icon-fishing",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Cooking)] = "worldquest-icon-cooking",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Tailoring)] = "worldquest-icon-tailoring",
+	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Skinning)] = "worldquest-icon-skinning",
 };
 
 CHAT_FONT_HEIGHTS = {
@@ -48,6 +48,7 @@ CLASS_SORT_ORDER = {
 	"WARLOCK",
 	"HUNTER",
 	"DEMONHUNTER",
+	"EVOKER",
 };
 MAX_CLASSES = #CLASS_SORT_ORDER;
 
@@ -216,10 +217,11 @@ CONTAINER_BAG_OFFSET = 19; -- Used for PutItemInBag
 BACKPACK_CONTAINER = 0;
 BANK_CONTAINER = -1;
 BANK_CONTAINER_INVENTORY_OFFSET = 39; -- Used for PickupInventoryItem
-KEYRING_CONTAINER = -2;
 REAGENTBANK_CONTAINER = -3;
 
 NUM_BAG_SLOTS = 4;
+NUM_REAGENTBAG_SLOTS = 1;
+NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_BAG_SLOTS + NUM_REAGENTBAG_SLOTS;
 NUM_BANKGENERIC_SLOTS = 28;
 NUM_BANKBAGSLOTS = 7;
 
@@ -650,10 +652,10 @@ LFG_CATEGORY_NAMES = {
 -- PVP
 MAX_ARENA_TEAMS = 2;
 MAX_WORLD_PVP_QUEUES = 2;
-CONQUEST_SIZE_STRINGS = { ARENA_2V2, ARENA_3V3, BATTLEGROUND_10V10 };
-CONQUEST_TYPE_STRINGS = { ARENA, ARENA, BATTLEGROUNDS };
-CONQUEST_SIZES = {2, 3, 10};
-CONQUEST_BRACKET_INDEXES = { 1, 2, 4 }; -- 5v5 was removed
+CONQUEST_SIZE_STRINGS = { RATED_SOLO_SHUFFLE_SIZE, ARENA_2V2, ARENA_3V3, BATTLEGROUND_10V10 };
+CONQUEST_TYPE_STRINGS = { ARENA, ARENA, ARENA, BATTLEGROUNDS };
+CONQUEST_SIZES = { 1, 2, 3, 10 };
+CONQUEST_BRACKET_INDEXES = { 7, 1, 2, 4 }; -- 5v5 was removed
 
 -- Chat
 CHANNEL_INVITE_TIMEOUT = 60;

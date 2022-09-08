@@ -10,7 +10,8 @@ function PVPMatchScoreboardMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PVP_MATCH_ACTIVE");
 
-	self.ScrollFrame = self.Content.ScrollFrame;
+	self.ScrollBox = self.Content.ScrollBox;
+	self.ScrollBar = self.Content.ScrollBar;
 	self.ScrollCategories = self.Content.ScrollCategories;
 	self.TabContainer = self.Content.TabContainer;
 	self.TabGroup = self.TabContainer.TabGroup;
@@ -18,7 +19,7 @@ function PVPMatchScoreboardMixin:OnLoad()
 	self.Tab1 = self.TabGroup.Tab1;
 	self.Tab2 = self.TabGroup.Tab2;
 	self.Tab3 = self.TabGroup.Tab3;
-	self.tintFrames = { self.ScrollFrame.Background };
+	self.tintFrames = { self.Content.ScrollBox.Background };
 
 	self.Tab1:SetText(ALL);
 	self.Tabs = {self.Tab1, self.Tab2, self.Tab3};
@@ -28,14 +29,12 @@ function PVPMatchScoreboardMixin:OnLoad()
 	end
 	PanelTemplates_SetTab(self, 1);
 
-	HybridScrollFrame_OnLoad(self.ScrollFrame);
-	HybridScrollFrame_CreateButtons(self.ScrollFrame, "PVPTableRowTemplate");
-	HybridScrollFrame_SetDoNotHideScrollBar(self.ScrollFrame, true);
-
 	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-GenericMetal-ExitButtonBorder", -1, 1);
 
-	self.tableBuilder = CreateTableBuilder(HybridScrollFrame_GetButtons(self.ScrollFrame));
+	self.tableBuilder = CreateTableBuilder();
 	self.tableBuilder:SetHeaderContainer(self.ScrollCategories);
+
+	PVPMatchUtil.InitScrollBox(self.ScrollBox, self.ScrollBar, self.tableBuilder);
 end
 
 function PVPMatchScoreboardMixin:Init()
@@ -52,7 +51,7 @@ function PVPMatchScoreboardMixin:Init()
 	
 	local factionIndex = GetBattlefieldArenaFaction();
 	self:SetupArtwork(factionIndex, isFactionalMatch);
-
+	
 	ConstructPVPMatchTable(self.tableBuilder, not isFactionalMatch);
 end
 
@@ -87,15 +86,12 @@ end
 
 function PVPMatchScoreboardMixin:OnUpdate()
 	RequestBattlefieldScoreData();
-
-	PVPMatchUtil.UpdateTable(self.tableBuilder, self.ScrollFrame);
 end
 
 function PVPMatchScoreboardMixin:SetupArtwork(factionIndex, isFactionalMatch)
-	PVPMatchUtil.SetupTableButtonColors(factionIndex, isFactionalMatch, self.ScrollFrame);
-
+	local useAlternateColor = not isFactionalMatch;
 	local r, g, b = PVPMatchStyle.GetTeamColor(factionIndex, useAlternateColor):GetRGB();
-	self.ScrollFrame.Background:SetVertexColor(r, g, b);
+	self.ScrollBox.Background:SetVertexColor(r, g, b);
 
 	local theme;
 	if isFactionalMatch then
@@ -107,26 +103,12 @@ function PVPMatchScoreboardMixin:SetupArtwork(factionIndex, isFactionalMatch)
 	NineSliceUtil.ApplyLayoutByName(self, theme.nineSliceLayout);
 end
 
-function PVPMatchScoreboardMixin:UpdateTable()
-	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-	local buttonCount = #buttons;
-	local displayCount = GetNumBattlefieldScores();
-	local buttonHeight = buttons[1]:GetHeight();
-	local visibleElementHeight = displayCount * buttonHeight;
 
-	local offset = HybridScrollFrame_GetOffset(self.ScrollFrame);
-	local populateCount = math.min(buttonCount, displayCount);
-	self.tableBuilder:Populate(offset, populateCount);
-	
-	for i = 1, buttonCount do
-		local visible = i <= displayCount;
-		buttons[i]:SetShown(visible);
-	end
+function PVPMatchScoreboardMixin:UpdateTable()
+	local forceNewDataProvider = false;
+	PVPMatchUtil.UpdateDataProvider(self.ScrollBox, forceNewDataProvider);
 
 	self:UpdateTabs();
-
-	local regionHeight = self.ScrollFrame:GetHeight();
-	HybridScrollFrame_Update(self.ScrollFrame, visibleElementHeight, regionHeight);
 end
 
 function PVPMatchScoreboardMixin:OnShow()
@@ -141,6 +123,9 @@ function PVPMatchScoreboardMixin:OnTabGroupClicked(tab)
 	PanelTemplates_SetTab(self, tab:GetID());
 	SetBattlefieldScoreFaction(tab.factionEnum);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+
+	local forceNewDataProvider = true;
+	PVPMatchUtil.UpdateDataProvider(self.ScrollBox, forceNewDataProvider);
 end
 
 function PVPMatchScoreboardMixin:BeginShow()

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
 	<Script file="TrimScrollBar.lua"/>
 
 	<Frame name="WowTrimScrollBarStepperScripts" mixin="WowTrimScrollBarStepperMixin" virtual="true">
@@ -29,10 +29,10 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Backdrop">
+				<Texture parentKey="Backplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" y="-3"/>
-						<Anchor point="BOTTOMRIGHT" y="3"/>
+						<Anchor point="TOPLEFT" x="2" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a=".75"/>
 				</Texture>
@@ -85,7 +85,7 @@
 							<KeyValue key="disabledEndTexture" value="UI-ScrollBar-Knob-EndCap-Bottom-Disabled" type="string"/>
 						</KeyValues>
 						<Layers>
-							<Layer level="Background" textureSubLevel="1">
+							<Layer level="BACKGROUND" textureSubLevel="1">
 								<Texture parentKey="Middle">
 									<Anchors>
 										<Anchor point="TOPLEFT" y="-5"/>
@@ -93,7 +93,7 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="Background" textureSubLevel="2">
+							<Layer level="BACKGROUND" textureSubLevel="2">
 								<Texture parentKey="Begin">
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
@@ -225,7 +225,7 @@
 							<KeyValue key="disabledEndTexture" value="UI-ScrollBar-Knob-EndCap-Right-Disabled" type="string"/>
 						</KeyValues>
 						<Layers>
-							<Layer level="Background" textureSubLevel="1">
+							<Layer level="BACKGROUND" textureSubLevel="1">
 								<Texture parentKey="Middle">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="5"/>
@@ -233,7 +233,7 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="Background" textureSubLevel="2">
+							<Layer level="BACKGROUND" textureSubLevel="2">
 								<Texture parentKey="Begin">
 									<Anchors>
 										<Anchor point="TOPLEFT"/>

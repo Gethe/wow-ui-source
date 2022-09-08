@@ -49,19 +49,13 @@
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
 	<Frame name="StaticPopupTemplate" toplevel="true" enableKeyboard="true" enableMouse="true" frameStrata="DIALOG" hidden="true" hyperlinksEnabled="true" virtual="true">
-		<Size>
-			<AbsDimension x="320" y="72"/>
-		</Size>
+		<Size x="320" y="72"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" parentKey="text" inherits="GameFontHighlight">
 					<Size x="1" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-16"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-16"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SubText" inherits="GameFontNormalSmall">
@@ -70,10 +64,8 @@
 						<Anchor point="TOP" relativeKey="$parent.text" relativePoint="BOTTOM" x="0" y="-6"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentAlertIcon">
-					<Size>
-						<AbsDimension x="36" y="36"/>
-					</Size>
+				<Texture parentKey="AlertIcon" name="$parentAlertIcon">
+					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="LEFT" x="24" y="0"/>
 					</Anchors>
@@ -111,11 +103,7 @@
 			<Frame name="$parentExtraFrame" parentKey="extraFrame" enableMouse="true"/>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-3" y="-3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentButton1" inherits="StaticPopupButtonTemplate" parentKey="button1" id="1"/>
@@ -124,49 +112,29 @@
 			<Button name="$parentButton4" inherits="StaticPopupButtonTemplate" parentKey="button4" id="4"/>
 			<Button name="$parentExtraButton" inherits="StaticPopupButtonTemplate" parentKey="extraButton" id="5"/>
 			<EditBox name="$parentEditBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate">
-				<Size>
-					<AbsDimension x="130" y="32"/>
-				</Size>
+				<Size x="130" y="32"/>
 				<Anchors>
-					<Anchor point="BOTTOM" >
-						<Offset>
-							<AbsDimension x="0" y="45"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOM" x="0" y="45"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
-							<Size>
-								<AbsDimension x="32" y="32"/>
-							</Size>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="LEFT" x="-10" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
-							<Size>
-								<AbsDimension x="32" y="32"/>
-							</Size>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="RIGHT" x="10" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentMid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
-							<Size>
-								<AbsDimension x="0" y="32"/>
-							</Size>
+							<Size x="0" y="32"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -193,6 +161,11 @@
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
+			<Frame parentKey="DropDownControl" hidden="true" inherits="DropDownControlTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="45"/>
+				</Anchors>
+			</Frame>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>

@@ -5,17 +5,13 @@ local EXPANDED_FILTERS = {};
 
 function AuctionFrameFilters_Update(categoriesList, forceSelectionIntoView)
 	AuctionFrameFilters_UpdateCategories(categoriesList, forceSelectionIntoView);
-	-- Update scrollFrame
-	local alwaysShowScrollBar = true;
-	FauxScrollFrame_Update(categoriesList.ScrollFrame, #EXPANDED_FILTERS, NUM_FILTERS_TO_DISPLAY, BROWSE_FILTER_HEIGHT, nil, nil, nil, nil, nil, nil, alwaysShowScrollBar);
 end
 
 function AuctionFrameFilters_UpdateCategories(categoriesList, forceSelectionIntoView)
 	local selectedCategoryIndex, selectedSubCategoryIndex = categoriesList:GetSelectedCategory();
-
 	-- Initialize the list of open filters
 	EXPANDED_FILTERS = {};
-
+	
 	for categoryIndex, categoryInfo in ipairs(AuctionCategories) do
 		local selected = selectedCategoryIndex and selectedCategoryIndex == categoryIndex;
 		local isToken = categoryInfo:HasFlag("WOW_TOKEN_FLAG");
@@ -26,43 +22,12 @@ function AuctionFrameFilters_UpdateCategories(categoriesList, forceSelectionInto
 			AuctionFrameFilters_AddSubCategories(categoriesList, categoryInfo.subCategories);
 		end
 	end
-	
-	-- Display the list of open filters
-	local offset = FauxScrollFrame_GetOffset(categoriesList.ScrollFrame);
-	if ( forceSelectionIntoView and selectedCategoryIndex and ( not selectedSubCategoryIndex and not selectedSubSubCategoryIndex ) ) then
-		if ( selectedCategoryIndex <= offset ) then
-			FauxScrollFrame_OnVerticalScroll(categoriesList.ScrollFrame, math.max(0.0, (selectedCategoryIndex - 1) * BROWSE_FILTER_HEIGHT), BROWSE_FILTER_HEIGHT);
-			offset = FauxScrollFrame_GetOffset(categoriesList.ScrollFrame);
-		end
-	end
-	
-	local dataIndex = offset;
 
-	for i = 1, NUM_FILTERS_TO_DISPLAY do
-		local button = categoriesList.FilterButtons[i];
+	local dataProvider = CreateDataProvider(EXPANDED_FILTERS);
+	categoriesList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
-		dataIndex = dataIndex + 1;
-
-		if ( dataIndex <= #EXPANDED_FILTERS ) then
-			local info = EXPANDED_FILTERS[dataIndex];
-
-			if ( info ) then
-				FilterButton_SetUp(button, info);
-				
-				if ( info.type == "category" ) then
-					button.categoryIndex = info.categoryIndex;
-				elseif ( info.type == "subCategory" ) then
-					button.subCategoryIndex = info.subCategoryIndex;
-				elseif ( info.type == "subSubCategory" ) then
-					button.subSubCategoryIndex = info.subSubCategoryIndex;
-				end
-				
-				button.SelectedTexture:SetShown(info.selected);
-				button:Show();
-			end
-		else
-			button:Hide();
-		end
+	if forceSelectionIntoView and selectedCategoryIndex and (not selectedSubCategoryIndex and not selectedSubSubCategoryIndex) then
+		categoriesList.ScrollBox:ScrollToElementDataIndex(selectedCategoryIndex, ScrollBoxConstants.AlignBegin, ScrollBoxConstants.NoScrollInterpolation);
 	end
 end
 
@@ -91,7 +56,7 @@ function AuctionFrameFilters_AddSubSubCategories(categoriesList, subSubCategorie
 	end
 end
 
-function FilterButton_SetUp(button, info)
+function AuctionHouseFilterButton_SetUp(button, info)
 	local normalText = button.Text;
 	local normalTexture = button.NormalTexture;
 	local line = button.Lines;
@@ -110,11 +75,11 @@ function FilterButton_SetUp(button, info)
 		button.SelectedTexture:SetAtlas("auctionhouse-nav-button-select", false);
 		button.SelectedTexture:SetSize(132,21);
 		button.SelectedTexture:ClearAllPoints();
-		button.SelectedTexture:SetPoint("CENTER");
+		button.SelectedTexture:SetPoint("LEFT");
 		button.HighlightTexture:SetAtlas("auctionhouse-nav-button-highlight", false);
 		button.HighlightTexture:SetSize(132,21);
 		button.HighlightTexture:ClearAllPoints();
-		button.HighlightTexture:SetPoint("CENTER");
+		button.HighlightTexture:SetPoint("LEFT");
 		button.HighlightTexture:SetBlendMode("BLEND");
 		button:SetText(info.name);
 		normalText:SetPoint("LEFT", button, "LEFT", 8, 0);
@@ -158,6 +123,16 @@ function FilterButton_SetUp(button, info)
 		line:Show();
 	end
 	button.type = info.type; 
+
+	if ( info.type == "category" ) then
+		button.categoryIndex = info.categoryIndex;
+	elseif ( info.type == "subCategory" ) then
+		button.subCategoryIndex = info.subCategoryIndex;
+	elseif ( info.type == "subSubCategory" ) then
+		button.subSubCategoryIndex = info.subSubCategoryIndex;
+	end
+	
+	button.SelectedTexture:SetShown(info.selected);
 end
 
 function AuctionFrameFilter_OnLoad(self)
@@ -184,40 +159,53 @@ function AuctionFrameFilter_OnMouseUp(self)
 	self.Text:AdjustPointsOffset(-1, 1);
 end
 
-function AuctionFrameFilter_OnClick(self, button)
-	local categoriesList = self:GetParent();
-	local selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex = categoriesList:GetSelectedCategory();
-	if ( self.type == "category" ) then
+AuctionHouseCategoriesListMixin = CreateFromMixins(AuctionHouseSystemMixin);
+
+function AuctionHouseCategoriesListMixin:OnLoad()
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("AuctionCategoryButtonTemplate", function(button, elementData)
+		AuctionHouseFilterButton_SetUp(button, elementData);
+		button:SetScript("OnClick", function(button, buttonName)
+			self:OnFilterClicked(button, buttonName);
+		end);
+	end);
+	local leftPad = 3;
+	local spacing = 0;
+	view:SetPadding(0,0,leftPad,0,spacing);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+end
+
+function AuctionHouseCategoriesListMixin:OnFilterClicked(button, buttonName)
+	local selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex = self:GetSelectedCategory();
+	if ( button.type == "category" ) then
 		local wasToken = AuctionFrame_DoesCategoryHaveFlag("WOW_TOKEN_FLAG", selectedCategoryIndex);
-		if ( selectedCategoryIndex == self.categoryIndex ) then
+		if ( selectedCategoryIndex == button.categoryIndex ) then
 			selectedCategoryIndex = nil;
 		else
-			selectedCategoryIndex = self.categoryIndex;
+			selectedCategoryIndex = button.categoryIndex;
 		end
 		selectedSubCategoryIndex = nil;
 		selectedSubSubCategoryIndex = nil;
-	elseif ( self.type == "subCategory" ) then
-		if ( selectedSubCategoryIndex == self.subCategoryIndex ) then
+	elseif ( button.type == "subCategory" ) then
+		if ( selectedSubCategoryIndex == button.subCategoryIndex ) then
 			selectedSubCategoryIndex = nil;
 			selectedSubSubCategoryIndex = nil;
 		else
-			selectedSubCategoryIndex = self.subCategoryIndex;
+			selectedSubCategoryIndex = button.subCategoryIndex;
 			selectedSubSubCategoryIndex = nil;
 		end
-	elseif ( self.type == "subSubCategory" ) then
-		if ( selectedSubSubCategoryIndex == self.subSubCategoryIndex ) then
+	elseif ( button.type == "subSubCategory" ) then
+		if ( selectedSubSubCategoryIndex == button.subSubCategoryIndex ) then
 			selectedSubSubCategoryIndex = nil;
 		else
-			selectedSubSubCategoryIndex = self.subSubCategoryIndex;
+			selectedSubSubCategoryIndex = button.subSubCategoryIndex;
 		end
 	end
 
-	categoriesList:SetSelectedCategory(selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex);
-	AuctionFrameFilters_Update(categoriesList, true);
+	self:SetSelectedCategory(selectedCategoryIndex, selectedSubCategoryIndex, selectedSubSubCategoryIndex);
+	AuctionFrameFilters_Update(self, true);
 end
-
-
-AuctionHouseCategoriesListMixin = CreateFromMixins(AuctionHouseSystemMixin);
 
 function AuctionHouseCategoriesListMixin:OnShow()
 	AuctionFrameFilters_Update(self);

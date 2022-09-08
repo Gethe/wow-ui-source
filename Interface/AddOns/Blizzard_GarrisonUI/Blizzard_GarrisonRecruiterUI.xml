@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonRecruiterUI.lua"/>
 	<CheckButton name="GarrisonRecruiterRadioButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
 		<Layers>
@@ -24,7 +24,7 @@
 						<Anchor point="LEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" justifyV="CENTER">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
 					<Size x="138" y="28"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="8" y="0"/>
@@ -261,7 +261,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK" >
-								<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT" justifyV="CENTER">
+								<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="8" y="0"/>
 										<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="1"/>
@@ -297,7 +297,7 @@
 			<Frame parentKey="Random" hidden="true" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="CENTER" text="GARRISON_RANDOM_RECRUIT" wordwrap="true">
+						<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE" text="GARRISON_RANDOM_RECRUIT" wordwrap="true">
 							<Size y="128"/>
 							<Anchors>
 								<Anchor point="CENTER" y="48"/>
@@ -327,7 +327,7 @@
 			<Frame parentKey="UnavailableFrame" hidden="true" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="CENTER" text="GARRISON_RECRUIT_NEXT_WEEK" wordwrap="true">
+						<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE" text="GARRISON_RECRUIT_NEXT_WEEK" wordwrap="true">
 							<Size y="128"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="LEFT" x="54"/>
@@ -430,7 +430,7 @@
 							</Anchors>
 							<Color r="0.1608" g="0.1333" b="0.1098"/>
 						</Texture>
-						<FontString parentKey="WaitText" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="CENTER" text="GARRISON_GATHERING_RECRUITS" wordwrap="true" hidden="true">
+						<FontString parentKey="WaitText" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE" text="GARRISON_GATHERING_RECRUITS" wordwrap="true" hidden="true">
 							<Size y="128"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
@@ -453,7 +453,7 @@
 						</Anchors>
 					</Frame>
 					<Frame parentKey="Recruit3" id="3" inherits="GarrisonRecruitTemplate">
-`						<Anchors>
+						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Recruit2" relativePoint="TOPRIGHT" x="1"/>
 						</Anchors>
 					</Frame>

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Frame name="IslandsQueueFrameTutorialTemplate" hidden="true" virtual="true">
 		<Size x="900" y="600"/> 
 		<Anchors>
@@ -24,7 +24,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="TutorialText" font="SystemFont_Med3" text="ISLANDS_TUTORIAL" justifyH="center" justifyV="top">
+				<FontString parentKey="TutorialText" font="SystemFont_Med3" text="ISLANDS_TUTORIAL" justifyH="CENTER" justifyV="TOP">
 					<Size x="300" y="0"/>
 					<Color r="0.2824" g="0.0157" b="0.0157"/>
 				</FontString>
@@ -244,7 +244,7 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
-						<Alpha childKey="Flash" change="-0.85" duration="2.0" smoothing="IN_OUT" order="1" fromAlpha="1" toAlpha=".15"/>
+						<Alpha childKey="Flash" duration="2.0" smoothing="IN_OUT" order="1" fromAlpha="1" toAlpha=".15"/>
 					</AnimationGroup>
 				</Animations>
 				<Scripts> 
@@ -492,7 +492,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/> 
-			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/> 
 			<OnHide method="OnHide"/>
 		</Scripts>

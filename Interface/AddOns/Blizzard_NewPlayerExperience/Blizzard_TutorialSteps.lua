@@ -153,7 +153,6 @@ function Class_UI_Watcher:OnBegin()
 	self.tutorialData = TutorialHelper:GetFactionData();
 
 	local showBackpack = false;
-	local showMainMenuBarArtFrame = false;
 	local showBagsBar = false;
 	local showSpellbookButton = false;
 	local showCharacterButton = false;
@@ -170,7 +169,6 @@ function Class_UI_Watcher:OnBegin()
 
 	if C_QuestLog.IsQuestFlaggedCompleted(self.tutorialData.StartingQuest) then
 		-- the starting quest is completed
-		showMainMenuBarArtFrame = true;
 		showTargetFrame = true;
 		showStatusTrackingBar = true;
 	end
@@ -255,41 +253,40 @@ Class_GossipFrameWatcher = class("GossipFrameWatcher", Class_TutorialBase);
 function Class_GossipFrameWatcher:OnBegin()
 	Dispatcher:RegisterEvent("GOSSIP_SHOW", self);
 	Dispatcher:RegisterEvent("GOSSIP_CLOSED", self);
+	GossipFrame:SetGossipTutorialMode(true);
 end
 
 function Class_GossipFrameWatcher:GOSSIP_SHOW()
 	local firstQuestButton = nil;
-	local questCount = 0;
-	for i = 1, GossipFrame_GetTitleButtonCount() do
-		local button = GossipFrame_GetTitleButton(i);
-		if button and button:IsShown() and button.type == "Available" then
-			questCount = questCount + 1;
-			if not firstQuestButton then
-				firstQuestButton = button;
-			end
-			NPE_TutorialQuestBangGlow:Show(button);
+	local tutorialButtons = GossipFrame:GetTutorialButtons(); 
+	if(not tutorialButtons) then 
+		return; 
+	end 
+
+	for _, button in ipairs(tutorialButtons) do
+		if not firstQuestButton then
+			firstQuestButton = button;
 		end
+		NPE_TutorialQuestBangGlow:Show(button);
 	end
-	GossipFrameGreetingGoodbyeButton:Hide();
-	if firstQuestButton and questCount > 1 then
+	if firstQuestButton and #tutorialButtons > 1 then
 		self:ShowPointerTutorial(NPEV2_MULTIPLE_QUESTS_OFFERED, "LEFT", firstQuestButton, 0, 0, "RIGHT");
 	end
 end
 
 function Class_GossipFrameWatcher:GOSSIP_CLOSED()
-	for i = 1, GossipFrame_GetTitleButtonCount() do
-		local button = GossipFrame_GetTitleButton(i);
-		if button and button:IsShown() and button.type == "Available" then
-			NPE_TutorialQuestBangGlow:Hide(button);
-		end
+	local tutorialButtons = GossipFrame:GetTutorialButtons(); 
+	for _, button in ipairs(tutorialButtons) do
+		NPE_TutorialQuestBangGlow:Hide(button);
 	end
-	GossipFrameGreetingGoodbyeButton:Show();
+	GossipFrame:SetGossipTutorialMode(false);
 	self:HidePointerTutorials();
 end
 
 function Class_GossipFrameWatcher:OnInterrupt(interruptedBy)
 	self:HidePointerTutorials();
 	self:Complete();
+	GossipFrame:SetGossipTutorialMode(false);
 end
 
 function Class_GossipFrameWatcher:OnComplete()
@@ -410,7 +407,7 @@ function Class_TurnInQuestWatcher:QUEST_COMPLETE()
 		self.Timer:Cancel();
 	end
 	self.Timer = C_Timer.NewTimer(4, function() GlowEmitterFactory:Show(QuestFrameCompleteQuestButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow) end);
-	
+
 	-- Figure out if all the items are usable
 	local areAllItemsUsable = true;
 	local questID = GetQuestID(); -- the last ID that was brought up in a quest frame
@@ -465,7 +462,7 @@ function Class_XPBarWatcher:QUEST_TURNED_IN(completedQuestID)
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
 
 	TutorialLogic.Tutorials.UI_Watcher:SetShown(UI_Elements.STATUS_TRACKING_BAR, true);
-	
+
 	if self.questID == completedQuestID then
 		self.pointerTutorial = self:ShowPointerTutorial(NPEV2_XP_BAR_TUTORIAL, "DOWN", StatusTrackingBarManager, 0, -5, nil, "DOWN");
 	end
@@ -1032,10 +1029,10 @@ end
 function Class_Intro_KeyboardMouse:LaunchMouseKeyboardFrame()
 	EventRegistry:RegisterCallback("NPE_TutorialKeyboardMouseFrame.Closed", self.CloseMouseKeyboardFrame, self);
 	self:ShowMouseKeyboardTutorial();
-	self.Timer = C_Timer.NewTimer(10, 
-		function() 
-			GlowEmitterFactory:Show(KeyboardMouseConfirmButton, 
-			GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow) 
+	self.Timer = C_Timer.NewTimer(10,
+		function()
+			GlowEmitterFactory:Show(KeyboardMouseConfirmButton,
+			GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow)
 		end);
 end
 
@@ -1122,7 +1119,7 @@ function Class_Intro_CameraLook:Finish()
 	Dispatcher:UnregisterEvent("PLAYER_STOPPED_TURNING", self);
 	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
 	self:HideScreenTutorial();
-	
+
 	if not self.earlyExit then
 		TutorialQueue:Add(TutorialLogic.Tutorials.Intro_ApproachQuestGiver);
 	end;
@@ -1639,7 +1636,7 @@ function Class_UseMinimap:Start()
 
 		if C_QuestLog.IsQuestFlaggedCompleted(self.showMinimapQuestID) then
 			TutorialQueue:NotifyDone(self);
-		elseif C_QuestLog.GetLogIndexForQuestID(self.showMinimapQuestID) ~= nil then 
+		elseif C_QuestLog.GetLogIndexForQuestID(self.showMinimapQuestID) ~= nil then
 			self.PointerTimer = C_Timer.NewTimer(1, function() self:ShowMinimapPrompt() end);
 		end
 	else
@@ -1739,7 +1736,7 @@ end
 function Class_Intro_OpenMap:Start()
 	Dispatcher:RegisterEvent("PLAYER_DEAD", self);
 	Dispatcher:RegisterScript(WorldMapFrame, "OnShow", self);
-	
+
 	self.success = false;
 	local key = TutorialHelper:GetMapBinding();
 	local content = {text = NPEV2_OPENMAP, icon = nil, keyText = key};
@@ -1980,11 +1977,8 @@ function Class_ChangeEquipment:Start(args)
 	Dispatcher:RegisterEvent("ZONE_CHANGED_NEW_AREA", self);
 	Dispatcher:RegisterEvent("BAG_UPDATE_DELAYED", self);
 
-	EventRegistry:RegisterCallback("ContainerFrame.AllBagsClosed", self.BagClosed, self);
 	EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
 	EventRegistry:RegisterCallback("ContainerFrame.CloseBag", self.BagClosed, self);
-	EventRegistry:RegisterCallback("ContainerFrame.OpenBackpack", self.BagOpened, self);
-	EventRegistry:RegisterCallback("ContainerFrame.CloseBackpack", self.BagClosed, self);
 
 	if (not GetContainerItemID(self.data.Container, self.data.ContainerSlot)) then
 		TutorialQueue:NotifyDone(self);
@@ -2047,7 +2041,6 @@ function Class_ChangeEquipment:BagOpened()
 		self.allBagsOpened = true;
 
 		self.Timer = C_Timer.NewTimer(0.1, function()
-			TutorialHelper:CloseAllBags();
 			self:OpenAllBags();
 		end);
 	end
@@ -2087,7 +2080,7 @@ end
 
 function Class_ChangeEquipment:CharacterSheetClosed()
 	EventRegistry:UnregisterCallback("CharacterFrame.Hide", self);
-	
+
 	if self.success then
 		TutorialQueue:NotifyDone(self);
 		return;
@@ -2096,14 +2089,7 @@ function Class_ChangeEquipment:CharacterSheetClosed()
 end
 
 function Class_ChangeEquipment:CheckReady()
-	local bagsReady = true;
-	for i=1, 1, 1 do
-		local frame = _G["ContainerFrame"..i];
-		if not frame:IsShown() then
-			bagsReady = false;
-			break;
-		end
-	end
+	local bagsReady = IsAnyBagOpen();
 	local characterSheetReady = CharacterFrame:IsVisible();
 	return bagsReady and characterSheetReady;
 end
@@ -2262,11 +2248,8 @@ function Class_ChangeEquipment:Finish()
 		self.AnimTimer = nil;
 	end
 
-	EventRegistry:UnregisterCallback("ContainerFrame.AllBagsClosed", self);
 	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
 	EventRegistry:UnregisterCallback("ContainerFrame.CloseBag", self);
-	EventRegistry:UnregisterCallback("ContainerFrame.OpenBackpack", self);
-	EventRegistry:UnregisterCallback("ContainerFrame.CloseBackpack", self);
 	EventRegistry:UnregisterCallback("CharacterFrame.Show", self);
 	EventRegistry:UnregisterCallback("CharacterFrame.Hide", self);
 	Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
@@ -3421,12 +3404,12 @@ function Class_PromptLFG:Start()
 
 	Dispatcher:RegisterEvent("QUEST_LOG_UPDATE", self);
 	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
-	self.onShowID = Dispatcher:RegisterScript(PVEFrame, "OnShow", 
+	self.onShowID = Dispatcher:RegisterScript(PVEFrame, "OnShow",
 		function()
 			C_Timer.After(0.1, function()
 				self:ShowLFG()
 			end);
-		end, 
+		end,
 		false);
 	self:Restart();
 end
@@ -3515,7 +3498,7 @@ function Class_LookingForGroup:Start()
 	EventRegistry:RegisterCallback("LFDQueueFrameSpecificList_Update.DungeonListReady", self.ReadyDungeonList, self);
 	EventRegistry:RegisterCallback("LFGDungeonList.DungeonEnabled", self.DungeonEnabled, self);
 	EventRegistry:RegisterCallback("LFGDungeonList.DungeonDisabled", self.DungeonDisabled, self);
-	
+
 	self.onHideID = Dispatcher:RegisterScript(PVEFrame, "OnHide", function() self:HideLFG() end, false);
 	self.questRemoved = false;
 	self:UpdateDungeonPointer();
@@ -3607,8 +3590,8 @@ function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE(args)
 
 	self:HidePointerTutorials();
 
-	if QueueStatusMinimapButton:IsVisible() then
-		self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "RIGHT", QueueStatusMinimapButton, 20, 0, nil, "RIGHT"); 
+	if QueueStatusButton:IsVisible() then
+		self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "RIGHT", QueueStatusButton, 20, 0, nil, "RIGHT");
 	end
 end
 
@@ -3936,7 +3919,7 @@ function Class_ChangeSpec:OnBegin()
 end
 
 function Class_ChangeSpec:Start()
-	if C_QuestLog.IsQuestFlaggedCompleted(self.specQuestID) then 
+	if C_QuestLog.IsQuestFlaggedCompleted(self.specQuestID) then
 		self:Complete();
 		return;
 	end

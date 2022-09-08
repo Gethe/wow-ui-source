@@ -160,10 +160,20 @@ do
 	end
 end
 
+local function GetDistanceString()
+	local distance = C_Navigation.GetDistance();
+	if distance < 1000 then
+		return Round(distance);
+	else
+		return AbbreviateNumbers(distance);
+	end
+end
+
 function SuperTrackedFrameMixin:UpdateDistanceText()
 	if not self.isClamped then
 		local distance = C_Navigation.GetDistance();
-		self.DistanceText:SetText(IN_GAME_NAVIGATION_RANGE:format(Round(distance)));
+
+		self.DistanceText:SetText(IN_GAME_NAVIGATION_RANGE:format(GetDistanceString()));
 	end
 
 	self.DistanceText:SetShown(not self.isClamped);

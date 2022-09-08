@@ -34,6 +34,34 @@ function EventRegistry:UnregisterFrameEvent(frameEvent)
 	end
 end
 
+function EventRegistry:RegisterFrameEventAndCallback(frameEvent, ...)
+	self:RegisterFrameEvent(frameEvent);
+	return self:RegisterCallback(frameEvent, ...);
+end
+
+local function CreateCallbackHandle(cbr, cbrHandle, frameEvent)
+	-- Wrapped in a table for future flexibility.
+	local handle = {
+		Unregister = function()
+			cbr:UnregisterFrameEvent(frameEvent);
+			cbrHandle:Unregister();
+		end,
+	};
+	return handle;
+end
+
+
+function EventRegistry:RegisterFrameEventAndCallbackWithHandle(frameEvent, ...)
+	self:RegisterFrameEvent(frameEvent);
+	local cbrHandle = self:RegisterCallbackWithHandle(frameEvent, ...);
+	return CreateCallbackHandle(self, cbrHandle, frameEvent);
+end
+
+function EventRegistry:UnregisterFrameEventAndCallback(frameEvent, ...)
+	self:UnregisterFrameEvent(frameEvent);
+	self:UnregisterCallback(frameEvent, ...);
+end
+
 function EventRegistry:GetEventCounts(...)
 	local counts = {};
 	for i = 1, select("#", ...) do

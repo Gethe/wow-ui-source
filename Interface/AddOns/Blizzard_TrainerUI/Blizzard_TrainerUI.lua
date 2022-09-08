@@ -12,7 +12,7 @@ TRAINER_FILTER_UNAVAILABLE = 1;
 TRAINER_FILTER_USED = 0;
 
 
-UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0};
+UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0, allowOtherPanels = 1,};
 
 StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	text = format(PROFESSION_CONFIRMATION1, "XXX"),
@@ -23,7 +23,8 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 		ClassTrainerFrame.showSkillDetails = 1;
 		ClassTrainerFrame.showDialog = nil;
 		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
-		ClassTrainerFrame_Update();
+		local retainScrollPosition = true;
+		ClassTrainerFrame_Update(retainScrollPosition);
 	end,
 	OnShow = function(self)
 		local prof1, prof2 = GetProfessions();
@@ -56,29 +57,16 @@ function ClassTrainerFrame_OnLoad(self)
 	self:RegisterEvent("TRAINER_SERVICE_INFO_NAME_UPDATE");
 	MoneyFrame_SetMaxDisplayWidth(ClassTrainerFrameMoneyFrame, 152);
 
+	self.BG:SetPoint("TOPLEFT", self.ScrollBox, "TOPLEFT", -3, 4);
+	self.BG:SetPoint("BOTTOMRIGHT", self.ScrollBox, "BOTTOMRIGHT", 3, -4);
+	
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("ClassTrainerSkillButtonTemplate", function(button, elementData)
+		ClassTrainerFrame_InitServiceButton(button, elementData);
+	end);
+	view:SetPadding(1,0,1,0,0);
 
-	self.BG:SetPoint("TOPLEFT", self.scrollFrame, "TOPLEFT", -3, 4);
-	self.BG:SetPoint("BOTTOMRIGHT", self.scrollFrame, "BOTTOMRIGHT", 3, -4);
-	self.scrollFrame.update = ClassTrainerFrame_Update;
-	HybridScrollFrame_CreateButtons(self.scrollFrame, "ClassTrainerSkillButtonTemplate", 1, -1, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
-
-	ClassTrainerScrollFrameScrollBar.Show = 
-		function (self)
-			ClassTrainerScrollFrame:SetWidth(CLASS_TRAINER_SKILL_BARBUTTON_WIDTH + 2);
-			for _, button in next, ClassTrainerScrollFrame.buttons do
-				button:SetWidth(CLASS_TRAINER_SKILL_BARBUTTON_WIDTH);
-			end
-			getmetatable(self).__index.Show(self);
-		end
-		
-	ClassTrainerScrollFrameScrollBar.Hide = 
-		function (self)
-			ClassTrainerScrollFrame:SetWidth(CLASS_TRAINER_SKILL_BUTTON_WIDTH + 2);
-			for _, button in next, ClassTrainerScrollFrame.buttons do
-				button:SetWidth(CLASS_TRAINER_SKILL_BUTTON_WIDTH);
-			end
-			getmetatable(self).__index.Hide(self);
-		end	
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
 
@@ -89,9 +77,10 @@ function ClassTrainerFrame_OnShow(self)
 	ClassTrainerTrainButton:Disable();
 
 	ClassTrainerFrame.selectedService = nil;
-	--Reset scrollbar
-	ClassTrainerFrame_Update();
-	ClassTrainerFrame.scrollFrame.scrollBar:SetValue(0);
+
+	local retainScrollPosition = false;
+	ClassTrainerFrame_Update(retainScrollPosition);
+
 	ClassTrainer_SelectNearestLearnableSkill();
 	UpdateMicroButtons();
 end
@@ -99,46 +88,62 @@ end
 
 function ClassTrainerFrame_OnEvent(self, event, ...)
 	if ( event == "TRAINER_UPDATE" ) then
-		ClassTrainer_SelectNearestLearnableSkill();
-		ClassTrainerFrame_Update();
+		local retainScrollPosition = true;
+		if ClassTrainerFrame.filterPending then
+			ClassTrainerFrame.filterPending = nil;
+			retainScrollPosition = false;
+		end
+
+		ClassTrainerFrame_Update(retainScrollPosition, ScrollBoxConstants.NoScrollInterpolation);
 	elseif ( event == "TRAINER_DESCRIPTION_UPDATE" ) then
 		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
 	elseif ( event == "TRAINER_SERVICE_INFO_NAME_UPDATE" ) then
 		-- It would be really cool if I could uniquely identify the button associated
 		-- with a particular spell here, and only update the name on that button.
-		ClassTrainerFrame_Update();
+		local retainScrollPosition = true;
+		ClassTrainerFrame_Update(retainScrollPosition);
 	end
 end
 
 
-function ClassTrainerFrame_Update()
+function ClassTrainerFrame_Update(retainScrollPosition)
 	local numTrainerServices = GetNumTrainerServices();
-	local selected = GetTrainerSelectionIndex();
 	local playerMoney = GetMoney();
-	local isTradeSkill = IsTradeskillTrainer()
-	local scrollFrame = ClassTrainerFrame.scrollFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numButtons = #buttons;
-	local displayHeight = CLASS_TRAINER_SCROLL_HEIGHT;
+	local isTradeSkill = IsTradeskillTrainer();
 	
+	local dataProvider = CreateDataProvider();
+	for index = 1, numTrainerServices do
+		dataProvider:Insert({
+			skillIndex=index,
+			playerMoney=playerMoney,
+			isTradeSkill=isTradeSkill,
+		});
+	end
+
+	local scrollBox = ClassTrainerFrame.ScrollBox;
+	scrollBox:ClearAllPoints();
 	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
 	if tradeSkillStepIndex then
-		scrollFrame:ClearAllPoints();
-		scrollFrame:SetPoint("TOPLEFT", ClassTrainerFrame.bottomInset, "TOPLEFT", 5, -5);
-		displayHeight = CLASS_TRAINER_SCROLL_HEIGHT - CLASS_TRAINER_SKILL_HEIGHT - 5;
-		scrollFrame:SetHeight(CLASS_TRAINER_SCROLL_HEIGHT - CLASS_TRAINER_SKILL_HEIGHT - 5);
+		scrollBox:SetPoint("TOPLEFT", ClassTrainerFrame.bottomInset, "TOPLEFT", 5, -5);
+		scrollBox:SetHeight(CLASS_TRAINER_SCROLL_HEIGHT - CLASS_TRAINER_SKILL_HEIGHT - 5);
 		ClassTrainerFrame.bottomInset:Show();
 		ClassTrainerFrame.Inset:SetPoint("BOTTOMRIGHT", ClassTrainerFrame, "TOPRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_ATTIC_OFFSET-47);
-		ClassTrainerFrame_SetServiceButton( ClassTrainerFrame.skillStepButton, tradeSkillStepIndex, playerMoney, selected, isTradeSkill );
+		
+		local elementData = {
+			skillIndex=tradeSkillStepIndex,
+			playerMoney=playerMoney,
+			isTradeSkill=isTradeSkill,
+		}
+		ClassTrainerFrame_InitServiceButton(ClassTrainerFrame.skillStepButton, elementData);
 	else
-		scrollFrame:ClearAllPoints();
-		scrollFrame:SetPoint("TOPLEFT", ClassTrainerFrame.Inset, "TOPLEFT", 5, -5);
-		scrollFrame:SetHeight(CLASS_TRAINER_SCROLL_HEIGHT);
+		scrollBox:SetPoint("TOPLEFT", ClassTrainerFrame.Inset, "TOPLEFT", 5, -5);
+		scrollBox:SetHeight(CLASS_TRAINER_SCROLL_HEIGHT);
 		ClassTrainerFrame.bottomInset:Hide();
 		ClassTrainerFrame.Inset:SetPoint("BOTTOMRIGHT", ClassTrainerFrame, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
 		ClassTrainerFrame.skillStepButton:Hide();
 	end
+
+	scrollBox:SetDataProvider(dataProvider, retainScrollPosition);
 
 	-- rank status bar
 	local rank, maxRank, rankModifier = GetTrainerTradeskillRankValues();
@@ -155,25 +160,12 @@ function ClassTrainerFrame_Update()
 	else
 		ClassTrainerStatusBar:Hide();
 	end
-
-	-- Fill in the skill buttons
-	for i=1, numButtons do
-		local skillIndex = i + offset;
-		local skillButton = buttons[i];
-		if ( skillIndex <= numTrainerServices) then	
-			ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMoney, selected, isTradeSkill );
-		else
-			skillButton:Hide();
-		end
-	end
-	
-
-	local totalHeight = CLASS_TRAINER_SKILL_HEIGHT * numTrainerServices ;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, displayHeight);
 end
 
-
-function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMoney, selected, isTradeSkill )
+function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
+	local skillIndex = elementData.skillIndex;
+	local playerMoney = elementData.playerMoney;
+	local isTradeSkill = elementData.isTradeSkill;
 
 	local unavailable = false;
 	local serviceName, serviceType, texture, reqLevel = GetTrainerServiceInfo(skillIndex);
@@ -247,11 +239,11 @@ function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMone
 	
 	local moneyCost, isProfession = GetTrainerServiceCost(skillIndex);
 	if ( showMoney and moneyCost and moneyCost > 0 ) then
-		MoneyFrame_Update(skillButton.money:GetName(), moneyCost);
+		MoneyFrame_Update(skillButton.money, moneyCost);
 		if ( playerMoney >= moneyCost ) then
-			SetMoneyFrameColor(skillButton.money:GetName(), "white");
+			SetMoneyFrameColorByFrame(skillButton.money, "white");
 		else
-			SetMoneyFrameColor(skillButton.money:GetName(), "red");
+			SetMoneyFrameColorByFrame(skillButton.money, "red");
 			unavailable = true;
 		end
 		skillButton.money:Show();
@@ -260,7 +252,7 @@ function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMone
 		skillButton.money:Hide();
 	end
 	-- Place the highlight and lock the highlight state
-	if ( ClassTrainerFrame.selectedService and selected == skillIndex ) then
+	if ( ClassTrainerFrame.selectedService == skillIndex ) then
 		ClassTrainerFrame.showDialog = nil;
 		
 		if isProfession then
@@ -290,13 +282,11 @@ function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMone
 	skillButton:Show();
 end
 
-
 function ClassTrainer_SelectNearestLearnableSkill()
 	ClassTrainerTrainButton:Disable();
 	local numServices = GetNumTrainerServices();
 	local startIndex = ClassTrainerFrame.selectedService;
-	ClassTrainerFrame.selectedService = nil;
-	if not startIndex or  startIndex> numServices then
+	if not startIndex or startIndex > numServices then
 		 startIndex = 1;
 	else 
 		local _, serviceType = GetTrainerServiceInfo(startIndex);
@@ -304,24 +294,25 @@ function ClassTrainer_SelectNearestLearnableSkill()
 			startIndex = 1;
 		end
 	end
+
+	local newSelection = nil;
 	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
 	if ( numServices > 0 ) then
 		for i=startIndex, numServices do 
 			local _, serviceType = GetTrainerServiceInfo(i);
 			if ( serviceType == "available" and i ~= tradeSkillStepIndex ) then
-				ClassTrainerFrame.selectedService = i;
+				newSelection = i;
 				break;
 			end
 		end
 	end
 	
-	if ClassTrainerFrame.selectedService then
-		ClassTrainer_SetSelection( ClassTrainerFrame.selectedService);
-		local offset = HybridScrollFrame_GetOffset(ClassTrainerFrame.scrollFrame);
-		if ClassTrainerFrame.selectedService > offset + CLASS_TRAINER_SKILLS_DISPLAYED then
-			ClassTrainerFrame.scrollFrame.scrollBar:SetValue( (ClassTrainerFrame.selectedService-1)*CLASS_TRAINER_SKILL_HEIGHT);
-		end
-		ClassTrainerFrame_Update();
+	if newSelection then
+		ClassTrainer_SetSelection( newSelection );
+		
+		ClassTrainerFrame.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
+			return elementData.skillIndex == ClassTrainerFrame.selectedService;
+		end, ScrollBoxConstants.AlignNearest, ScrollBoxConstants.NoScrollInterpolation);
 	end
 end
 
@@ -331,9 +322,32 @@ function ClassTrainer_SetSelection(id)
 		return;
 	end
 	
+	local oldSelectedService = ClassTrainerFrame.selectedService;
 	ClassTrainerFrame.selectedService = id;
 	SelectTrainerService(id);
 	
+	local function ReinitializeButton(skillIndex)
+		local button = ClassTrainerFrame.ScrollBox:FindFrameByPredicate(function(frame)
+			return frame:GetElementData().skillIndex == skillIndex;
+		end);
+		if button then
+			ClassTrainerFrame_InitServiceButton(button, button:GetElementData());
+		end
+	end
+
+	ReinitializeButton(oldSelectedService);
+	ReinitializeButton(ClassTrainerFrame.selectedService);
+
+	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
+	if tradeSkillStepIndex then
+		local elementData = {
+			skillIndex=tradeSkillStepIndex,
+			playerMoney=GetMoney(),
+			isTradeSkill=IsTradeskillTrainer(),
+		}
+		ClassTrainerFrame_InitServiceButton(ClassTrainerFrame.skillStepButton, elementData);
+	end
+
 	-- Close the confirmation dialog if you choose a different skill
 	if ( StaticPopup_Visible("CONFIRM_PROFESSION") ) then
 		StaticPopup_Hide("CONFIRM_PROFESSION");
@@ -343,9 +357,7 @@ end
 
 function ClassTrainerSkillButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		ClassTrainerFrame.selectedService = self:GetID();
 		ClassTrainer_SetSelection(self:GetID());
-		ClassTrainerFrame_Update();
 	end
 end
 
@@ -354,8 +366,6 @@ function ClassTrainerTrainButton_OnClick(self, button)
 		StaticPopup_Show("CONFIRM_PROFESSION");
 	else
 		BuyTrainerService(ClassTrainerFrame.selectedService);
-		ClassTrainer_SetSelection(ClassTrainerFrame.selectedService);
-		ClassTrainerFrame_Update();
 	end
 end
 
@@ -398,6 +408,7 @@ function ClassTrainerFrameFilterDropDown_Initialize()
 end
 
 function ClassTrainerFrameFilterDropDown_OnClick(self)
+	ClassTrainerFrame.filterPending = true;
 	if ( UIDropDownMenuButton_GetChecked(self) ) then
 		SetTrainerServiceTypeFilter(self.value, 1);
 	else

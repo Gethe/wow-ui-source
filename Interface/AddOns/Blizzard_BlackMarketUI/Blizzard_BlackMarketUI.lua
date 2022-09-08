@@ -29,21 +29,104 @@ function BlackMarketFrame_Hide()
 end
 
 function BlackMarketFrame_OnLoad(self)
-	BlackMarketScrollFrame.update = BlackMarketScrollFrame_Update;
-	BlackMarketScrollFrame.scrollBar.doNotHide = true;
 	self:RegisterEvent("BLACK_MARKET_ITEM_UPDATE");
 	self:RegisterEvent("BLACK_MARKET_BID_RESULT");
 	self:RegisterEvent("BLACK_MARKET_OUTBID");
 	MoneyInputFrame_SetGoldOnly(BlackMarketBidPrice, true);
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("BlackMarketItemTemplate", function(button, elementData)
+		button:Init(elementData);
+	end);
+	view:SetPadding(4,4,4,4,0);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	BlackMarketBidPrice.gold:SetWidth(80);
 	BlackMarketBidPrice.gold:SetMaxLetters(8);
 	BlackMarketBidPrice.onValueChangedFunc = BlackMarketFrame_UpdateBidButton;
 end
 
+BlackMarketItemMixin = {};
+
+function BlackMarketItemMixin:OnClick(buttonName, down)
+	if ( IsModifiedClick() ) then
+		HandleModifiedItemClick(self.itemLink);
+	else
+		MoneyInputFrame_SetCopper(BlackMarketBidPrice, self.minNextBid);
+		
+		local oldMarketID = BlackMarketFrame.selectedMarketID;
+		if oldMarketID == self.marketID then
+			return;
+		end
+
+		BlackMarketFrame.selectedMarketID = self.marketID;
+		BlackMarketFrame.ScrollBox:ForEachFrame(function(button, elementData)
+			button:SetSelected(button:ShouldSelect());
+		end);
+	end
+end
+
+function BlackMarketItemMixin:Init(elementData)
+	local index = elementData.index;
+	local name, texture, quantity, itemType, usable, level, levelType, sellerName, minBid, minIncrement, currBid, youHaveHighBid, numBids, timeLeft, link, marketID, quality = C_BlackMarket.GetItemInfoByIndex(index);
+	
+	self.Name:SetText(name);
+		
+	self.Item.IconTexture:SetTexture(texture);
+	if ( not usable ) then
+		self.Item.IconTexture:SetVertexColor(1.0, 0.1, 0.1);
+	else
+		self.Item.IconTexture:SetVertexColor(1.0, 1.0, 1.0);
+	end
+
+	SetItemButtonQuality(self.Item, quality, link);
+
+	if (quality and quality >= Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
+		self.Name:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+	else
+		self.Name:SetTextColor(1.0, 0.82, 0);
+	end
+
+	self.Item.Count:SetText(quantity);
+	self.Item.Count:SetShown(quantity > 1);
+
+	self.Type:SetText(itemType);
+	
+	self.Seller:SetText(sellerName);
+	
+	self.Level:SetText(level);
+
+	local bidAmount = currBid;
+	local minNextBid = currBid + minIncrement;
+	if ( currBid == 0 ) then
+		bidAmount = minBid;
+		minNextBid = minBid;
+	end
+	MoneyFrame_Update(self.CurrentBid, bidAmount);
+	
+	self.minNextBid = minNextBid;
+	self.YourBid:SetShown(youHaveHighBid);
+	
+	self.TimeLeft.Text:SetText(_G["AUCTION_TIME_LEFT"..timeLeft]);
+	self.TimeLeft.tooltip = _G["AUCTION_TIME_LEFT"..timeLeft.."_DETAIL"];
+	
+	self.itemLink = link;
+	self.marketID = marketID;
+	self:SetSelected(self:ShouldSelect());
+end
+
+
+function BlackMarketItemMixin:ShouldSelect(selected)
+	return self.marketID == BlackMarketFrame.selectedMarketID;
+end
+
+function BlackMarketItemMixin:SetSelected(selected)
+	self.Selection:SetShown(selected);
+end
+
 function BlackMarketFrame_OnEvent(self, event, ...)
 	if ( event == "BLACK_MARKET_ITEM_UPDATE" ) then
-		HybridScrollFrame_CreateButtons(BlackMarketScrollFrame, "BlackMarketItemTemplate", 5, -5);
 		BlackMarketScrollFrame_Update();
 	elseif ( event == "BLACK_MARKET_BID_RESULT" or event == "BLACK_MARKET_OUTBID" ) then
 		if (self:IsShown()) then
@@ -130,87 +213,9 @@ function BlackMarketFrame_UpdateHotItem(self)
 	end
 end
 
--- Scroll Frame
 function BlackMarketScrollFrame_Update()
-	local numItems = C_BlackMarket.GetNumItems();
-	
-	if (not numItems) then
-		numItems = 0;
-	end
-	
-	local scrollFrame = BlackMarketScrollFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numButtons = #buttons;
-
-	for i = 1, numButtons do
-		local button = buttons[i];
-		local index = offset + i; -- adjust index
-
-		if ( index <= numItems ) then
-			local name, texture, quantity, itemType, usable, level, levelType, sellerName, minBid, minIncrement, currBid, youHaveHighBid, numBids, timeLeft, link, marketID, quality = C_BlackMarket.GetItemInfoByIndex(index);
-			
-			if ( name ) then
-				button.Name:SetText(name);
-				
-				button.Item.IconTexture:SetTexture(texture);
-				if ( not usable ) then
-					button.Item.IconTexture:SetVertexColor(1.0, 0.1, 0.1);
-				else
-					button.Item.IconTexture:SetVertexColor(1.0, 1.0, 1.0);
-				end
-
-				SetItemButtonQuality(button.Item, quality, link);
-
-				if (quality and quality >= Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
-					button.Name:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-				else
-					button.Name:SetTextColor(1.0, 0.82, 0);
-				end
-
-				button.Item.Count:SetText(quantity);
-				button.Item.Count:SetShown(quantity > 1);
-			
-				button.Type:SetText(itemType);
-				
-				button.Seller:SetText(sellerName);
-				
-				button.Level:SetText(level);
-
-				local bidAmount = currBid;
-				local minNextBid = currBid + minIncrement;
-				if ( currBid == 0 ) then
-					bidAmount = minBid;
-					minNextBid = minBid;
-				end
-				MoneyFrame_Update(button.CurrentBid, bidAmount);
-				
-				button.minNextBid = minNextBid;
-				button.YourBid:SetShown(youHaveHighBid);
-				
-				button.TimeLeft.Text:SetText(_G["AUCTION_TIME_LEFT"..timeLeft]);
-				button.TimeLeft.tooltip = _G["AUCTION_TIME_LEFT"..timeLeft.."_DETAIL"];
-				
-				button.itemLink = link;
-				button.marketID = marketID;
-				if ( marketID == BlackMarketFrame.selectedMarketID ) then
-					button.Selection:Show();
-				else
-					button.Selection:Hide();
-				end
-
-				button:Show();
-			else
-				button:Hide()
-			end
-		else
-			button:Hide();
-		end
-	end
-	
-	local totalHeight = numItems * scrollFrame.buttonHeight;
-	local displayedHeight = numButtons * scrollFrame.buttonHeight;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
+	local dataProvider = CreateDataProviderByIndexCount(C_BlackMarket.GetNumItems() or 0);
+	BlackMarketFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end
 
 function BlackMarketFrame_UpdateBidButton()
@@ -235,12 +240,6 @@ function BlackMarketFrame_ConfirmBid(auctionID)
 	StaticPopup_Show("BID_BLACKMARKET", GetMoneyString(bid), nil, data);
 end
 
-function BlackMarketItem_OnClick(self, button, down)
-	MoneyInputFrame_SetCopper(BlackMarketBidPrice, self.minNextBid);
-	BlackMarketFrame.selectedMarketID = self.marketID;
-	BlackMarketScrollFrame_Update();
-end
-
 function BlackMarketHotItemBid_OnClick(self, button, down)
 	if (BlackMarketFrame.HotDeal.selectedMarketID) then
 		BlackMarketFrame_ConfirmBid(BlackMarketFrame.HotDeal.selectedMarketID);
@@ -254,31 +253,3 @@ function BlackMarketBid_OnClick(self, button, down)
 	end
 	self:Disable();
 end
-
---[[
--- Rarity DropDown
-function BlackMarket_RarityDropDown_OnLoad(self)
-	UIDropDownMenu_SetWidth(self, 95);
-	UIDropDownMenu_Initialize(self, BlackMarket_RarityDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(self, -1);
-end
-
-function BlackMarket_RarityDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = ALL;
-	info.value = -1;
-	info.func = BlackMarket_RarityDropDown_OnClick;
-	UIDropDownMenu_AddButton(info);
-	for i=0, getn(ITEM_QUALITY_COLORS)-2  do
-		info.text = _G["ITEM_QUALITY"..i.."_DESC"];
-		info.value = i;
-		info.func = BrowseDropDown_OnClick;
-		info.checked = nil;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function BlackMarket_RarityDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(BlackMarket_RarityDropDown, self.value);
-end
-]]

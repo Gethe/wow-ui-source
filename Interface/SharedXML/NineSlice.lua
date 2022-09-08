@@ -120,14 +120,31 @@ end
 
 local function SetupEdge(container, piece, setupInfo, pieceLayout)
 	piece:ClearAllPoints();
-	piece:SetPoint(setupInfo.point, GetNineSlicePiece(container, setupInfo.relativePieces[1]), setupInfo.relativePoint, pieceLayout.x, pieceLayout.y);
-	piece:SetPoint(setupInfo.relativePoint, GetNineSlicePiece(container, setupInfo.relativePieces[2]), setupInfo.point, pieceLayout.x1, pieceLayout.y1);
+
+	local userLayout = NineSliceUtil.GetLayout(container.layoutType);
+	if userLayout and (userLayout.threeSliceVertical or userLayout.threeSliceHorizontal) then
+		piece:SetPoint(setupInfo.point, container, setupInfo.relativePoint, pieceLayout.x, pieceLayout.y);
+		piece:SetPoint(setupInfo.relativePoint, container, setupInfo.point, pieceLayout.x1, pieceLayout.y1);
+	else
+		piece:SetPoint(setupInfo.point, GetNineSlicePiece(container, setupInfo.relativePieces[1]), setupInfo.relativePoint, pieceLayout.x, pieceLayout.y);
+		piece:SetPoint(setupInfo.relativePoint, GetNineSlicePiece(container, setupInfo.relativePieces[2]), setupInfo.point, pieceLayout.x1, pieceLayout.y1);
+	end
 end
 
 local function SetupCenter(container, piece, setupInfo, pieceLayout)
 	piece:ClearAllPoints();
-	piece:SetPoint("TOPLEFT", GetNineSlicePiece(container, "TopLeftCorner"), "BOTTOMRIGHT", pieceLayout.x, pieceLayout.y);
-	piece:SetPoint("BOTTOMRIGHT", GetNineSlicePiece(container, "BottomRightCorner"), "TOPLEFT", pieceLayout.x1, pieceLayout.y1);
+
+	local userLayout = NineSliceUtil.GetLayout(container.layoutType);
+	if userLayout and userLayout.threeSliceVertical then
+		piece:SetPoint("TOPLEFT", GetNineSlicePiece(container, "TopEdge"), "BOTTOMLEFT", pieceLayout.x, pieceLayout.y);
+		piece:SetPoint("BOTTOMRIGHT", GetNineSlicePiece(container, "BottomEdge"), "TOPRIGHT", pieceLayout.x1, pieceLayout.y1);
+	elseif userLayout and userLayout.threeSliceHorizontal then
+		piece:SetPoint("TOPLEFT", GetNineSlicePiece(container, "LeftEdge"), "TOPRIGHT", pieceLayout.x, pieceLayout.y);
+		piece:SetPoint("BOTTOMRIGHT", GetNineSlicePiece(container, "RightEdge"), "BOTTOMLEFT", pieceLayout.x1, pieceLayout.y1);
+	else
+		piece:SetPoint("TOPLEFT", GetNineSlicePiece(container, "TopLeftCorner"), "BOTTOMRIGHT", pieceLayout.x, pieceLayout.y);
+		piece:SetPoint("BOTTOMRIGHT", GetNineSlicePiece(container, "BottomRightCorner"), "TOPLEFT", pieceLayout.x1, pieceLayout.y1);
+	end
 end
 
 -- Defines the order in which each piece should be set up, and how to do the setup.
@@ -168,7 +185,9 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 			local piece, pieceAlreadyExisted = GetNineSlicePiece(container, pieceName);
 			if not pieceAlreadyExisted then
 				container[pieceName] = piece;
-				piece:SetDrawLayer(pieceLayout.layer or "BORDER", pieceLayout.subLevel);
+				local layer = container.layoutTextureLayer or pieceLayout.layer or "BORDER";
+				local subLevel = container.layoutTextureSubLevel or pieceLayout.subLevel;
+				piece:SetDrawLayer(layer, subLevel);
 			end
 
 			-- Piece setup can change arbitrary properties, do it before changing the texture.
@@ -211,7 +230,8 @@ function NineSlicePanelMixin:GetFrameLayoutType()
 end
 
 function NineSlicePanelMixin:GetFrameLayoutTextureKit()
-	return self.layoutTextureKit or self:GetParent().layoutTextureKit;
+	local parentAtlasKey = self.atlasKey or "layoutTextureKit";
+	return self.layoutTextureKit or self:GetParent()[parentAtlasKey];
 end
 
 function NineSlicePanelMixin:OnLoad()
@@ -256,6 +276,11 @@ function NineSlicePanelMixin:GetBorderColor()
 			end
 		end
 	end
+end
+
+function NineSlicePanelMixin:SetVertexColor(r, g, b, a)
+	self:SetCenterColor(r, g, b, a);
+	self:SetBorderColor(r, g, b, a);
 end
 
 function NineSlicePanelMixin:SetBorderBlendMode(blendMode)

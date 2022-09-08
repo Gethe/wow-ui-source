@@ -2,6 +2,24 @@ local function IsLootNews(newsType)
 	return newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED or newsType == NEWS_LEGENDARY_LOOTED;
 end
 
+CommunitiesGuildNewsButtonMixin = {};
+
+function CommunitiesGuildNewsButtonMixin:Init(elementData)
+	self.newsInfo = nil;
+	self.icon:Hide();
+	self.dash:Hide();
+	self.header:Hide();
+	self:Enable();
+
+	if elementData.motd then
+		GuildNewsButton_SetMOTD(self, elementData.motd);
+	elseif elementData.event then
+		CommunitiesGuildNewsButton_SetEvent(self, elementData.index);
+	elseif elementData.news then
+		GuildNewsButton_SetNews(self, elementData.index);
+	end
+end
+
 function CommunitiesGuildNewsFrame_OnLoad(self)
 	QueryGuildNews();
 	self:RegisterEvent("GUILD_NEWS_UPDATE");
@@ -11,9 +29,14 @@ function CommunitiesGuildNewsFrame_OnLoad(self)
 	local fontString = self.SetFiltersButton:GetFontString();
 	self.SetFiltersButton:SetHeight(fontString:GetHeight() + 4);
 	self.SetFiltersButton:SetWidth(fontString:GetWidth() + 4);
-	self.Container.update = function () CommunitiesGuildNews_Update(self); end;
-	HybridScrollFrame_CreateButtons(self.Container, "CommunitiesGuildNewsButtonTemplate", 0, 0);
-	
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("CommunitiesGuildNewsButtonTemplate", function(button, elementData)
+		button:Init(elementData);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
 	if ( GetGuildFactionGroup() == 0 ) then  -- horde
 		GUILD_EVENT_TEXTURES[Enum.CalendarEventType.PvP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
 	else  -- alliance
@@ -45,48 +68,30 @@ function CommunitiesGuildNews_Update(self)
 	-- check to display impeach frame
 	if ( CanReplaceGuildMaster() ) then
 		self.GMImpeachButton:Show();
-		self.Container:SetPoint("TOPLEFT", self.GMImpeachButton, "BOTTOMLEFT", 0, 0);
-		self.Container:SetHeight(290);
-		self.Container.ScrollBar:SetPoint("TOPLEFT", self.Container, "TOPRIGHT", 1, 25);
-		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 7);
+		self.ScrollBox:SetPoint("TOPLEFT", self.GMImpeachButton, "BOTTOMLEFT", 0, 0);
+		self.ScrollBox:SetHeight(290);
 	else
 		self.GMImpeachButton:Hide();
-		self.Container:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 0, 0);
-		self.Container:SetHeight(306);
-		self.Container.ScrollBar:SetPoint("TOPLEFT", self.Container, "TOPRIGHT", 1, 7);
-		self.Container.ScrollBar:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMRIGHT", 1, 5);
+		self.ScrollBox:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 0, 0);
+		self.ScrollBox:SetHeight(306);
 	end
 	
+	local dataProvider = CreateDataProvider();
 	local motd = GetGuildRosterMOTD();
-	local scrollFrame = self.Container;
-	local haveMOTD = motd ~= "" and 1 or 0;	
-	local buttons = scrollFrame.buttons;
-	local button, index;
-	
-	local numEvents = math.min(7, C_Calendar.GetNumGuildEvents());
-	local numNews = GetNumGuildNews();
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local numButtons = #buttons;
-	for i = 1, numButtons do
-		button = buttons[i];
-		button.newsInfo = nil;
-		button.icon:Hide();
-		button.dash:Hide();
-		button.header:Hide();
-		button:Show();
-		button:Enable();
-		index = offset + i;
-		if( index == haveMOTD ) then
-			GuildNewsButton_SetMOTD(button, motd);
-		elseif( index <= numEvents + haveMOTD ) then
-			CommunitiesGuildNewsButton_SetEvent(button, index - haveMOTD);
-		elseif( index <= numEvents + haveMOTD + numNews  ) then
-			GuildNewsButton_SetNews( button, index - haveMOTD - numEvents  );
-		else
-			button:Hide();
-		end
+	if motd ~= "" then
+		dataProvider:Insert({motd=motd});
 	end
-	
+
+	local events = C_Calendar.GetNumGuildEvents();
+	for index = 1, math.min(7, events) do
+		dataProvider:Insert({index=index, event=true});
+	end
+
+	for index = 1, GetNumGuildNews() do
+		dataProvider:Insert({index=index, news=true});
+	end
+	self.ScrollBox:SetDataProvider(dataProvider);
+
 	-- update tooltip
 	if ( self.activeButton ) then
 		CommunitiesGuildNewsButton_OnEnter(self.activeButton);
@@ -102,9 +107,6 @@ function CommunitiesGuildNews_Update(self)
 	else
 		self.NoNews:Hide();
 	end
-	local totalHeight = (numNews + haveMOTD + numEvents) * scrollFrame.buttonHeight;
-	local displayedHeight = numButtons * scrollFrame.buttonHeight;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
 
 local SIX_DAYS = 6 * 24 * 60 * 60		-- time in seconds

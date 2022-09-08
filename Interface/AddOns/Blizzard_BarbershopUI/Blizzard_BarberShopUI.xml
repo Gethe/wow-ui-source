@@ -38,7 +38,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Sexes" inherits="HorizontalLayoutFrame">
+			<Frame parentKey="BodyTypes" inherits="HorizontalLayoutFrame">
 				<KeyValues>
 					<KeyValue key="spacing" value="22" type="number"/>
 				</KeyValues>
@@ -72,17 +72,6 @@
 					<KeyValue key="barberShopOnClickMethod" value="ApplyChanges" type="string"/>
 				</KeyValues>
 			</Button>
-
-			<Frame parentKey="PriceFrame" inherits="MoneyDisplayFrameTemplate" scale="1.5">
-				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.AcceptButton" relativePoint="TOP" y="15"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="hideCopper" value="true" type="boolean"/>
-					<KeyValue key="resizeToFit" value="true" type="boolean"/>
-					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
-				</KeyValues>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="prepend" />

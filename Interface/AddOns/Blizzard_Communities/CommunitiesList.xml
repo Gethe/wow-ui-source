@@ -92,14 +92,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="10">
+			<Layer level="OVERLAY" textureSubLevel="6">
 				<Texture parentKey="FavoriteIcon" atlas="collections-icon-favorites" useAtlasSize="true" scale="0.75">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="5" y="-9"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="15">
+			<Layer level="OVERLAY" textureSubLevel="7">
 				<Texture parentKey="NewCommunityFlash" file="Interface\Common\bluemenu-main" alphaMode="ADD" hidden="true">
 					<Size x="0" y="80"/>
 					<Anchors>
@@ -157,31 +157,23 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="$parentListScrollFrame" parentKey="ListScrollFrame" useParentLevel="true" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="stepSize" value="40" type="number"/>
-				</KeyValues>
-				<Frames>
-					<Slider parentKey="ScrollBar" frameLevel="100" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-15"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="11"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
-							</Layer>
-						</Layers>
-					</Slider>
-				</Frames>
-				<Scripts>
-					<OnVerticalScroll function="CommunitiesListScrollFrame_OnVerticalScroll"/>
-				</Scripts>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</EventFrame>
 			<Frame parentKey="EntryDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>
 					<OnLoad function="CommunitiesListEntryDropDown_OnLoad"/>

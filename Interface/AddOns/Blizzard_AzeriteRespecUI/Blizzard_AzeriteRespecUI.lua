@@ -11,14 +11,11 @@ function AzeriteRespecMixin:OnLoad()
 	self.CornerTR:SetPoint("TOPRIGHT", 0, -18);
 
 	self:RegisterEvent("PLAYER_MONEY");
-	self:RegisterEvent("RESPEC_AZERITE_EMPOWERED_ITEM_CLOSED");
 	self:RegisterEvent("AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED");
 end
 
 function AzeriteRespecMixin:OnEvent(event, ...)
-	if event == "RESPEC_AZERITE_EMPOWERED_ITEM_CLOSED" then
-		HideUIPanel(self);
-	elseif(event == "PLAYER_MONEY") or (event == "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED") then
+	if(event == "PLAYER_MONEY") or (event == "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED") then
 		self:UpdateMoney();
 		if (event == "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED") then
 			local itemLocation = ...;
@@ -49,7 +46,7 @@ function AzeriteRespecMixin:OnHide()
 	PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_REFORGE_ETHEREALWINDOW_CLOSE)
 	StaticPopup_Hide("CONFIRM_AZERITE_EMPOWERED_RESPEC");
 	StaticPopup_Hide("CONFIRM_AZERITE_EMPOWERED_RESPEC_EXPENSIVE");
-	C_AzeriteEmpoweredItem.CloseAzeriteEmpoweredItemRespec();
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.AzeriteRespec);
 	self:SetRespecItem(nil);
 end
 

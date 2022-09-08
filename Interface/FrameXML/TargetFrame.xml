@@ -34,7 +34,7 @@
 				end
 				local unit = self:GetParent().unit;
 				local filter;
-				if ( SHOW_DISPELLABLE_DEBUFFS == "1" and UnitCanAssist("player", unit) ) then
+				if ( GetCVarBool("showDispelDebuffs") and UnitCanAssist("player", unit) ) then
 					filter = "RAID";
 				end
 				GameTooltip:SetUnitDebuff(unit, self:GetID(), filter);
@@ -44,7 +44,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="TargetDebuffFrameTemplate" parentArray="Debuff" virtual="true" enableMouse="true">
+	<Frame name="TargetDebuffFrameTemplate" virtual="true" enableMouse="true">
 		<Size x="17" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -76,19 +76,19 @@
 		<Scripts>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuff(self.unit, self:GetID());
+					GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.auraInstanceID);
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
-				GameTooltip:SetUnitDebuff(self.unit, self:GetID());
+				GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.auraInstanceID);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="TargetBuffFrameTemplate" parentArray="Buff" virtual="true" enableMouse="true">
+	<Frame name="TargetBuffFrameTemplate" virtual="true" enableMouse="true">
 		<Size x="21" y="21"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -120,12 +120,12 @@
 		<Scripts>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitBuff(self.unit, self:GetID());
+					GameTooltip:SetUnitBuffByAuraInstanceID(self.unit, self.auraInstanceID);
 				end
 			</OnUpdate>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25);
-				GameTooltip:SetUnitBuff(self.unit, self:GetID());
+				GameTooltip:SetUnitBuffByAuraInstanceID(self.unit, self.auraInstanceID);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -167,6 +167,12 @@
 						<Anchor point="TOPRIGHT" x="-42" y="-12"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-42" y="-12"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
@@ -199,12 +205,12 @@
 								<Anchor point="CENTER" x="61" y="-17"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentDeadText" inherits="GameFontNormalSmall" text="DEAD">
+						<FontString name="$parentDeadText" inherits="GameFontNormalSmall" text="DEAD" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-50" y="3"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentUnconsciousText" inherits="GameFontNormalSmall" text="UNCONSCIOUS">
+						<FontString name="$parentUnconsciousText" inherits="GameFontNormalSmall" text="UNCONSCIOUS" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-50" y="3"/>
 							</Anchors>
@@ -385,7 +391,10 @@
 			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate" virtual="true">
+	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate" mixin="BossTargetFrameMixin" toplevel="false" virtual="true">
+		<KeyValues>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
@@ -399,15 +408,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				local id = self:GetID();
-				if ( id == 1 ) then
-					BossTargetFrame_OnLoad(self, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT");
-				else
-					BossTargetFrame_OnLoad(self, "boss"..id);
-				end
-				TargetFrame_CreateSpellbar(self, "INSTANCE_ENCOUNTER_ENGAGE_UNIT", true);
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide" inherit="append"/>
 		</Scripts>
 	</Button>
 	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
@@ -528,8 +531,11 @@
 		</Scripts>
 	</StatusBar>
 
-	<Button name="TargetFrame" inherits="TargetFrameTemplate" movable="true">
-		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
+	<Button name="TargetFrame" inherits="TargetFrameTemplate, EditModeUnitFrameSystemTemplate" movable="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Target" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_TARGET_FRAME_LABEL" type="global"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
@@ -543,8 +549,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.noTextPrefix = true;
+			<OnLoad inherit="append">
 				self.showLevel = true;
 				self.showPVP = true;
 				self.showLeader = true;
@@ -558,16 +563,14 @@
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
 				self.threatNumericIndicator:SetScript("OnShow", function() TargetFrame_UpdateAuras(self) end);
 				self.threatNumericIndicator:SetScript("OnHide", function() TargetFrame_UpdateAuras(self) end);
-				UIParent_UpdateTopFramePositions();
 			</OnLoad>
-			<OnDragStart function="TargetFrame_OnDragStart"/>
-			<OnDragStop function="TargetFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
-	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
-		<Anchors>
-			<Anchor point="TOPLEFT" x="250" y="-240"/>
-		</Anchors>
+	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate, EditModeUnitFrameSystemTemplate" clampedToScreen="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Focus" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_FOCUS_FRAME_LABEL" type="global"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
@@ -581,8 +584,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.noTextPrefix = true;
+			<OnLoad inherit="append">
 				self.showLevel = true;
 				self.showPVP = true;
 				self.showLeader = true;
@@ -594,35 +596,51 @@
 				TargetFrame_CreateSpellbar(self, "PLAYER_FOCUS_CHANGED");
 				TargetFrame_CreateTargetofTarget(self, "focus-target");
 				self:RegisterEvent("PLAYER_FOCUS_CHANGED");
-				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnDragStart function="FocusFrame_OnDragStart"/>
-			<OnDragStop function="FocusFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
-	<Button name="Boss1TargetFrame" inherits="BossTargetFrameTemplate" id="1">
+	<Frame name="BossTargetFrameContainer" parent ="UIParent" inherits="VerticalLayoutFrame, UIParentRightManagedFrameTemplate, EditModeBossUnitFrameSystemTemplate" mixin="BossTargetFrameContainerMixin" hidden="false">
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="55" y="-236"/>
+			<Anchor point="CENTER"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="4" type="number"/>
+			<KeyValue key="spacing" value="10" type="number"/>
+			<KeyValue key="rightPadding" value="-70" type="number" />
+		</KeyValues>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="Boss1TargetFrame" parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="1">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="4" type="number"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 	</Button>
-	<Button name="Boss2TargetFrame" inherits="BossTargetFrameTemplate" id="2">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Boss1TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-		</Anchors>
+	<Button name="Boss2TargetFrame"  parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="2">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="5" type="number"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 	</Button>
-	<Button name="Boss3TargetFrame" inherits="BossTargetFrameTemplate" id="3">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Boss2TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-		</Anchors>
+	<Button name="Boss3TargetFrame"  parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="3">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="6" type="number"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 	</Button>
-	<Button name="Boss4TargetFrame" inherits="BossTargetFrameTemplate" id="4">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Boss3TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-		</Anchors>
+	<Button name="Boss4TargetFrame"  parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="4">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="7" type="number"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 	</Button>
-	<Button name="Boss5TargetFrame" inherits="BossTargetFrameTemplate" id="5">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Boss4TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
-		</Anchors>
+	<Button name="Boss5TargetFrame"  parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="5">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="8" type="number"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
 	</Button>
 </Ui>

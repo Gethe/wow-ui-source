@@ -2,3 +2,4 @@
 ## LoadOnDemand: 0
 
 Blizzard_CompactUnitFrameProfiles.xml
+RegisterSettings.lua

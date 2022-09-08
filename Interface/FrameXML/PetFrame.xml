@@ -1,10 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PetFrame.lua"/>
-	<Button name="PetFrame" frameStrata="LOW" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
+	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
 		<Size x="128" y="53"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" x="80" y="-60"/>
+			<Anchor point="TOPLEFT" x="85" y="-75"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="7" right="66" top="6" bottom="7"/>
@@ -24,6 +24,12 @@
 						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
@@ -156,45 +162,21 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="48" y="-42"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
 			</Button>
 			<Button name="$parentDebuff2" inherits="PartyDebuffFrameTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
 			</Button>
 			<Button name="$parentDebuff3" inherits="PartyDebuffFrameTemplate" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
 			</Button>
 			<Button name="$parentDebuff4" inherits="PartyDebuffFrameTemplate" id="4">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
-					</OnEnter>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -204,19 +186,15 @@
 				UnitFrame_Update(self);
 				PetFrame_Update(self);
 				TotemFrame_Update(self);
-				-- this will happen in TotemFrame_Update
-				--PlayerFrame_AdjustAttachments();
 			</OnShow>
 			<OnHide>
 				TotemFrame_Update(self);
-				-- this will happen in TotemFrame_Update
-				--PlayerFrame_AdjustAttachments();
 			</OnHide>
 			<OnUpdate function="PetFrame_OnUpdate"/>
 			<OnEnter>
 				UnitFrame_OnEnter(self);
 				PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 60, -35);
-				PartyMemberBuffTooltip_Update(self);
+				PartyMemberBuffTooltip:UpdateTooltip(self);
 			</OnEnter>
 			<OnLeave>
 				UnitFrame_OnLeave(self);
@@ -224,10 +202,10 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<StatusBar name="PetCastingBarFrame" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">
-		<Size x="195" y="13"/>
+	<StatusBar name="PetCastingBarFrame" mixin="CastingBarMixin" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">
+		<Size x="209" y="11"/>
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="TOP" x="0" y="12"/>
+			<Anchor point="BOTTOM" relativeTo="PlayerCastingBarFrame" relativePoint="TOP" x="0" y="18"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad function="PetCastingBarFrame_OnLoad"/>

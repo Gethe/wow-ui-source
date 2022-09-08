@@ -2,6 +2,10 @@ CreateChannelPopupMixin = {};
 
 function CreateChannelPopupMixin:OnLoad()
 	self.tabGroup = CreateTabGroup(self.Name, self.Password);
+
+	self.UseVoiceChat.Text:SetFontObject(GameFontNormal);
+	self.UseVoiceChat.Text:SetText(ENABLE_VOICECHAT);
+	self.UseVoiceChat.Text:SetPoint("LEFT", self.UseVoiceChat, "RIGHT", 2, 2);
 end
 
 function CreateChannelPopupMixin:SetCallback(contextObject, callbackFunction)

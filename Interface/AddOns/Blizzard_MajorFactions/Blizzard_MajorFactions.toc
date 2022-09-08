@@ -1,0 +1,14 @@
+## Title: Blizzard Major Factions UI
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+
+Blizzard_MajorFactionsLandingTemplates.xml
+
+Blizzard_MajorFactionToasts.xml
+Blizzard_MajorFactionUnlockToast.xml
+Blizzard_MajorFactionRenownToast.xml
+
+Blizzard_MajorFactionRenown.xml
+
+Localization.lua

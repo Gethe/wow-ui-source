@@ -4,29 +4,19 @@
 	<!-- These frames are shown when the current zone or subzone changes -->
 	<Frame name="ZoneTextFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
 		<Anchors>
-			<Anchor point="TOP">
-				<Offset>
-					<AbsDimension x="0" y="-128"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOP" x="0" y="-128"/>
 		</Anchors>
-		<Size>
-			<AbsDimension x="128" y="128"/>
-		</Size>
+		<Size x="128" y="128"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="ZoneTextString" inherits="ZoneTextFont">
-					<Size>
-						<AbsDimension x="512" y="0"/>
-					</Size>
+					<Size x="512" y="0"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</FontString>
 				<FontString name="PVPInfoTextString" inherits="PVPInfoTextFont">
-					<Size>
-						<AbsDimension x="512" y="0"/>
-					</Size>
+					<Size x="512" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="ZoneTextString" relativePoint="BOTTOM"/>
 					</Anchors>
@@ -41,29 +31,19 @@
 	</Frame>
 	<Frame name="SubZoneTextFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
 		<Anchors>
-			<Anchor point="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="512"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" x="0" y="512"/>
 		</Anchors>
-		<Size>
-			<AbsDimension x="128" y="128"/>
-		</Size>
+		<Size x="128" y="128"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="SubZoneTextString" inherits="SubZoneTextFont">
-					<Size>
-						<AbsDimension x="512" y="0"/>
-					</Size>
+					<Size x="512" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="ZoneTextString" relativePoint="BOTTOM"/>
 					</Anchors>
 				</FontString>
 				<FontString name="PVPArenaTextString" inherits="PVPInfoTextFont">
-					<Size>
-						<AbsDimension x="512" y="0"/>
-					</Size>
+					<Size x="512" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="SubZoneTextString" relativePoint="BOTTOM"/>
 					</Anchors>
@@ -80,11 +60,7 @@
 			<Layer level="ARTWORK">
 				<FontString name="AutoFollowStatusText" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="WorldFrame">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" relativeTo="WorldFrame" x="0" y="0"/>
 					</Anchors>
 					<FontHeight>
 						<AbsValue val="20"/>

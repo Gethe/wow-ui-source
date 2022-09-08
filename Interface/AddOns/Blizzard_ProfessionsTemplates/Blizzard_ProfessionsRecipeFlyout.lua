@@ -1,0 +1,187 @@
+local MaxColumns = 3;
+local MaxRows = 6;
+local MaxUnscrolledCount = MaxColumns * MaxRows;
+local HideUnownedCvar = "professionsFlyoutHideUnowned";
+
+ProfessionsItemFlyoutButtonMixin = {};
+
+function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImplementation)
+	local item = elementData.item;
+	local itemLocation = item:GetItemLocation();
+	if itemLocation then
+		self:SetItemLocation(itemLocation);
+	else
+		self:SetItem(item:GetItemID());
+	end
+
+	-- FIXME - Allow initializer to be installed so we can have elective behavior in either crafting order or crafting UI.
+	-- Temp disabled appearance
+	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+	local stackable = C_Item.GetItemMaxStackSizeByID(item:GetItemID()) > 1;
+	self:SetItemButtonCount(stackable and count or 1);
+	
+	local enabled = count > 0;
+	if onElementEnabledImplementation then
+		enabled = onElementEnabledImplementation(self, elementData);
+	end
+	self.enabled = enabled;
+	self:DesaturateHierarchy(enabled and 0 or 1);
+end
+
+ProfessionsItemFlyoutMixin = CreateFromMixins(CallbackRegistryMixin);
+
+ProfessionsItemFlyoutMixin:GenerateCallbackEvents(
+{
+    "ItemSelected",
+});
+
+local ProfessionsItemFlyoutEvents = {
+	"GLOBAL_MOUSE_DOWN",
+};
+
+function ProfessionsItemFlyoutMixin:OnLoad()
+	CallbackRegistryMixin.OnLoad(self);
+
+	self.Text:SetText(PROFESSIONS_PICKER_NO_AVAILABLE_REAGENTS);
+	self.HideUnownedCheckBox.text:SetText(PROFESSIONS_HIDE_UNOWNED_REAGENTS);
+	self.HideUnownedCheckBox:SetScript("OnClick", function(button, buttonName, down)
+		local checked = button:GetChecked();
+		SetCVar(HideUnownedCvar, checked);
+		self:InitializeContents();
+		PlaySound(SOUNDKIT.UI_PROFESSION_HIDE_UNOWNED_REAGENTS_CHECKBOX);
+	end);
+
+	local view = CreateScrollBoxListGridView(MaxColumns);
+	local padding = 3;
+	local spacing = 3;
+	view:SetPadding(padding, padding, padding, padding, spacing, spacing);
+	view:SetElementInitializer("ProfessionsItemFlyoutButtonTemplate", function(button, elementData)
+		button:Init(elementData, self.OnElementEnabledImplementation);
+
+		button:SetScript("OnEnter", function(button)
+			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+			self.OnElementEnterImplementation(elementData, GameTooltip);
+			GameTooltip:Show();
+		end);
+
+		button:SetScript("OnLeave", GameTooltip_Hide);
+
+		button:SetScript("OnClick", function()
+			if button.enabled then
+				self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ItemSelected, self, elementData);
+				CloseItemFlyout();
+			end
+		end);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+end
+
+function ProfessionsItemFlyoutMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, ProfessionsItemFlyoutEvents);
+end
+
+function ProfessionsItemFlyoutMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, ProfessionsItemFlyoutEvents);
+	
+	self:UnregisterEvents();
+
+	self.owner = nil;
+	self:SetParent(nil);
+end
+
+function ProfessionsItemFlyoutMixin:OnEvent(event, ...)
+	if event == "GLOBAL_MOUSE_DOWN" then
+		local buttonName = ...;
+		local isRightButton = buttonName == "RightButton";
+
+		local mouseFocus = GetMouseFocus();
+		if not isRightButton and DoesAncestryInclude(self.owner, mouseFocus) then
+			return;
+		end
+
+		if isRightButton or (not DoesAncestryInclude(self, mouseFocus) and mouseFocus ~= self) then
+			CloseItemFlyout();
+		end
+	end
+end
+
+function ProfessionsItemFlyoutMixin:ShouldHideUnownedItems()
+	return GetCVarBool(HideUnownedCvar);
+end
+
+function ProfessionsItemFlyoutMixin:InitializeContents()
+	local filterOwned = self.canFilter and self:ShouldHideUnownedItems();
+	local elements = self:GetElementsImplementation(filterOwned);
+	self.HideUnownedCheckBox:SetShown(self.canFilter);
+
+	local count = #elements.items;
+	if count > 0 then
+		self.Text:Hide();
+		
+		local continuableContainer = ContinuableContainer:Create();
+		continuableContainer:AddContinuables(elements.items);
+		continuableContainer:ContinueOnLoad(function()
+			local rows = math.min(MaxRows, math.ceil(count / MaxColumns));
+			local columns = self.canFilter and MaxColumns or (math.max(1, math.min(MaxColumns, count)));
+
+			local padding = self.ScrollBox:GetPadding();
+			local vSpacing = padding:GetVerticalSpacing();
+			local hSpacing = padding:GetHorizontalSpacing();
+			local elementHeight = 37;
+			local height = (rows * elementHeight) + (math.max(0, rows - 1) * vSpacing) + (padding.top + padding.bottom);
+			local width = (columns * elementHeight) + (math.max(0, columns - 1) * hSpacing)+ (padding.left + padding.right);
+			self.ScrollBox:SetSize(width, height);
+
+			local scrollBoxAnchorOffset = 15;
+			local adjustment = 2 * scrollBoxAnchorOffset;
+			local totalWidth = width + adjustment;
+			local canShowScrollBar = count > MaxUnscrolledCount;
+			if canShowScrollBar then
+				local scrollBarPadding = 8;
+				totalWidth = totalWidth + self.ScrollBar:GetWidth() + scrollBarPadding;
+			end
+
+			local totalHeight = height + adjustment;
+			if self.canFilter then
+				totalHeight = totalHeight + 25;
+			end
+
+			self.ScrollBar:SetShown(canShowScrollBar);
+
+			local dataProvider = CreateDataProvider();
+			for index, item in ipairs(elements.items) do
+				-- Expected that some of these fields will be missing depending on the implementation
+				-- of the GetElementsImplementation function. "item" is required. 
+				local elementData = {
+					item = item,
+					itemGUID = elements.itemGUIDs and elements.itemGUIDs[index] or nil,
+					itemLocation = elements.itemLocation and elements.itemLocation[index] or nil,
+				};
+				dataProvider:Insert(elementData);
+			end
+			self.ScrollBox:SetDataProvider(dataProvider);
+
+			self:SetSize(totalWidth, totalHeight);
+		end);
+	else
+		self.Text:Show();
+
+		self.ScrollBox:ClearDataProvider();
+		self.ScrollBar:SetShown(false);
+
+		self:SetSize(250, 120);
+	end
+
+	PlaySound(SOUNDKIT.UI_PROFESSION_FILTER_MENU_OPEN_CLOSE);
+end
+
+-- FIXME Visual states required for reagents already in transaction.
+function ProfessionsItemFlyoutMixin:Init(owner, transaction, cannotFilter)
+	self.owner = owner;
+	self.canFilter = not cannotFilter;
+
+	self.HideUnownedCheckBox:SetChecked(self:ShouldHideUnownedItems());
+
+	self:InitializeContents();
+end

@@ -25,6 +25,9 @@ end
 function CharCustomizeParentFrameBaseMixin:SetViewingShapeshiftForm(formID)
 end
 
+function CharCustomizeParentFrameBaseMixin:SetViewingChrModel(chrModelID)
+end
+
 function CharCustomizeParentFrameBaseMixin:SetModelDressState(dressedState)
 end
 
@@ -421,20 +424,11 @@ end
 
 CharCustomizeAlteredFormButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
 
-function CharCustomizeAlteredFormButtonMixin:SetupAlteredFormButton(raceData, selectedSexID, isSelected, isAlteredForm, layoutIndex)
+function CharCustomizeAlteredFormButtonMixin:SetupAlteredFormButton(raceData, isSelected, isAlteredForm, layoutIndex)
 	self.layoutIndex = layoutIndex;
 	self.isAlteredForm = isAlteredForm;
 
-	local sexString;
-	if selectedSexID == Enum.UnitSex.Male then
-		sexString = "male";
-	else
-		sexString = "female";
-	end
-
-	local useHiRez = true;
-	local atlas = GetRaceAtlas(strlower(raceData.fileName), sexString, useHiRez);
-	self:SetIconAtlas(atlas);
+	self:SetIconAtlas(raceData.createScreenIconAtlas);
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(CHARACTER_FORM:format(raceData.name));
@@ -468,8 +462,17 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 	end
 
 	self.New:SetShown(categoryData.hasNewChoices);
-
-	if selectedCategoryID == categoryData.id then
+	local selected = false;
+	if categoryData.chrModelID then
+		if CharCustomizeFrame.viewingChrModelID then
+			selected = categoryData.chrModelID == CharCustomizeFrame.viewingChrModelID;
+		else
+			selected = categoryData.chrModelID == CharCustomizeFrame.firstChrModelID;
+		end
+	else
+		selected = selectedCategoryID == categoryData.id;
+	end
+	if selected then
 		self:SetChecked(true);
 		self:SetIconAtlas(categoryData.selectedIcon);
 	else
@@ -504,22 +507,40 @@ function CharCustomizeShapeshiftFormButtonMixin:SetCategory(categoryData, select
 	end
 end
 
-CharCustomizeSexButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
+CharCustomizeRidingDrakeButtonMixin = CreateFromMixins(CharCustomizeCategoryButtonMixin);
 
-function CharCustomizeSexButtonMixin:SetSex(sexID, selectedSexID, layoutIndex)
-	self.sexID = sexID;
+function CharCustomizeRidingDrakeButtonMixin:SetupAnchors(tooltip)
+	tooltip:SetOwner(self, "ANCHOR_NONE");
+	tooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", self.tooltipXOffset, self.tooltipYOffset);
+end
+
+function CharCustomizeRidingDrakeButtonMixin:SetCategory(categoryData, selectedCategoryID)
+	CharCustomizeCategoryButtonMixin.SetCategory(self, categoryData, selectedCategoryID);
+	self:ClearTooltipLines();
+	self:AddTooltipLine(categoryData.name);
+
+	if showDebugTooltipInfo then
+		self:AddBlankTooltipLine();
+		self:AddTooltipLine("Category ID: "..categoryData.id, HIGHLIGHT_FONT_COLOR);
+	end
+end
+
+CharCustomizeBodyTypeButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
+
+function CharCustomizeBodyTypeButtonMixin:SetBodyType(bodyTypeID, selecteBodyTypeID, layoutIndex)
+	self.sexID = bodyTypeID;
 	self.layoutIndex = layoutIndex;
 
 	self:ClearTooltipLines();
 
-	if sexID == Enum.UnitSex.Male then
-		self:AddTooltipLine(MALE, HIGHLIGHT_FONT_COLOR);
+	if bodyTypeID == Enum.UnitSex.Male then
+		self:AddTooltipLine(BODY_1, HIGHLIGHT_FONT_COLOR);
 	else
-		self:AddTooltipLine(FEMALE, HIGHLIGHT_FONT_COLOR);
+		self:AddTooltipLine(BODY_2, HIGHLIGHT_FONT_COLOR);
 	end
 
-	local isSelected = selectedSexID == sexID;
-	local baseAtlas, selectedAtlas = GetGenderAtlases(sexID);
+	local isSelected = selecteBodyTypeID == bodyTypeID;
+	local baseAtlas, selectedAtlas = GetBodyTypeAtlases(bodyTypeID);
 	self:SetIconAtlas(isSelected and selectedAtlas or baseAtlas);
 
 	self:SetChecked(isSelected);
@@ -527,7 +548,7 @@ function CharCustomizeSexButtonMixin:SetSex(sexID, selectedSexID, layoutIndex)
 	self:UpdateHighlightTexture();
 end
 
-function CharCustomizeSexButtonMixin:OnClick()
+function CharCustomizeBodyTypeButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 	CharCustomizeFrame:SetCharacterSex(self.sexID);
 end
@@ -627,6 +648,108 @@ function CharCustomizeOptionCheckButtonMixin:OnCheckButtonClick()
 	CharCustomizeFrame:SetCustomizationChoice(self.optionData.id, newChoiceData.id);
 end
 
+local function IsSoundMuted()
+	return not GetCVarBool("Sound_EnableSFX") or not GetCVarBool("Sound_EnableAllSound");
+end
+
+CharCustomizeAudioInterfacePlayButtonMixin = {};
+
+function CharCustomizeAudioInterfacePlayButtonMixin:OnClick()
+	local parent = self:GetParent();
+	if parent:IsPlaying() then
+		parent:StopAudio();
+	else
+		parent:PlayAudio(parent.soundKit);
+	end
+end
+
+CharCustomizeAudioInterfaceMuteButtonMixin = {};
+
+function CharCustomizeAudioInterfaceMuteButtonMixin:OnClick()
+	self.PulseAnim:Stop();
+	if (IsSoundMuted()) then
+		self:SetNormalAtlas("charactercreate-customize-speakeronbutton");
+		self:SetPushedAtlas("charactercreate-customize-speakeronbutton-down");
+		SetCVar("Sound_EnableSFX", 1);
+		SetCVar("Sound_EnableAllSound", 1);
+	else
+		self:SetNormalAtlas("charactercreate-customize-speakeroffbutton");
+		self:SetPushedAtlas("charactercreate-customize-speakeroffbutton-down");
+		SetCVar("Sound_EnableSFX", self:GetParent().previousSFXSetting or 0);
+		SetCVar("Sound_EnableAllSound", self:GetParent().previousAllSoundSetting or 0);
+		self:GetParent():StopAudio();
+	end	
+end
+
+CharCustomizeAudioInterfaceMixin = {};
+
+function CharCustomizeAudioInterfaceMixin:OnLoad()
+	self:RegisterEvent("SOUNDKIT_FINISHED");
+end
+
+function CharCustomizeAudioInterfaceMixin:OnEvent(event, ...)
+	if ( event == "SOUNDKIT_FINISHED" ) then
+		local soundHandle = ...;
+		if ( self.soundHandle == soundHandle ) then
+			self.audioInterface:StopAudio();
+		end
+	end
+end
+
+function CharCustomizeAudioInterfaceMixin:SetupAudio(soundKit)
+	local isMuted = IsSoundMuted();
+	self.previousSFXSetting = GetCVar("Sound_EnableSFX");
+	self.previousAllSoundSetting = GetCVar("Sound_EnableAllSound");
+	self.soundKit = soundKit;
+	self.PlayWaveform.Waveform:SetValue(0);
+	self.PlayButton:Show();
+	self.MuteButton:SetShown(isMuted);
+	self.PlayButton:SetEnabled(soundKit);
+end
+
+function CharCustomizeAudioInterfaceMixin:IsPlaying()
+	return self.soundHandle and C_Sound.IsPlaying(self.soundHandle);
+end
+
+function CharCustomizeAudioInterfaceMixin:PlayAudio(soundKit)
+	if IsSoundMuted() then
+		self.MuteButton.PulseAnim:Play();
+	else
+		if self.soundHandle then
+			StopSound(self.soundHandle);
+			self.soundHandle = nil;
+		end
+		if soundKit then
+			local runFinishCallback = true;
+			local _, soundHandle = PlaySound(soundKit, nil, nil, runFinishCallback);
+			self.soundHandle = soundHandle;
+			self.PlayButton:SetNormalAtlas("charactercreate-customize-speakeroffbutton");
+			self.PlayButton:SetPushedAtlas("charactercreate-customize-speakeroffbutton-down");
+			self.waveformTicker = C_Timer.NewTicker(.05, function()
+				self:OnAudioPlayingTick();
+			end);
+		end
+	end
+end
+
+function CharCustomizeAudioInterfaceMixin:StopAudio()
+	if self.waveformTicker then
+		self.waveformTicker:Cancel();
+		self.waveformTicker = nil;
+	end
+	self.PlayWaveform.Waveform:SetValue(0);
+	if self.soundHandle then
+		StopSound(self.soundHandle);
+		self.soundHandle = nil;
+	end
+	self.PlayButton:SetNormalAtlas("charactercreate-customize-playbutton");
+	self.PlayButton:SetPushedAtlas("charactercreate-customize-playbutton-down");
+end
+
+function CharCustomizeAudioInterfaceMixin:OnAudioPlayingTick()
+	self.PlayWaveform.Waveform:SetValue(math.random(65, 80)/100);
+end
+
 CharCustomizeOptionSelectionPopoutMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
 
 function CharCustomizeOptionSelectionPopoutMixin:OnLoad()
@@ -639,8 +762,20 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupAnchors(tooltip)
 	tooltip:SetPoint("BOTTOMRIGHT", self.Button, "TOPLEFT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
+function CharCustomizeOptionSelectionPopoutMixin:SetupAudio()
+	if self.optionData.isSound then
+		local audioInterface = CharCustomizeFrame.pools:Acquire("CharCustomizeAudioInterface");
+		audioInterface:SetParent(self);
+		audioInterface:SetPoint("RIGHT", self.Label, "LEFT", -40, 0);
+		audioInterface:Show();
+		audioInterface:SetupAudio(self.optionData.currentChoiceIndex and SOUNDKIT.MENU_CREDITS07 or nil);
+		self.audioInterface = audioInterface;
+	end
+end
+
 function CharCustomizeOptionSelectionPopoutMixin:OnEntrySelected(entryData)
 	CharCustomizeFrame:OnOptionPopoutEntrySelected(self, entryData);
+	self:SetupAudio();
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
@@ -667,6 +802,10 @@ function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
 
 		tooltip:Show();
 	end
+
+	if self.optionData.isSound and not entry.isSelected then
+		self.audioInterface:PlayAudio(SOUNDKIT.MENU_CREDITS07);
+	end
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseLeave(entry)
@@ -674,6 +813,9 @@ function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseLeave(entry)
 
 	local tooltip = self:GetAppropriateTooltip();
 	tooltip:Hide();
+	if self.audioInterface then
+		self.audioInterface:StopAudio();
+	end
 end
 
 local POPOUT_CLEARANCE = 100;
@@ -690,8 +832,9 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 	self.optionData = optionData;
 
 	self:SetupSelections(optionData.choices, optionData.currentChoiceIndex, optionData.name);
-
 	self.New:SetShown(optionData.hasNewChoices);
+
+	self:SetupAudio();
 
 	self:ClearTooltipLines();
 
@@ -831,6 +974,21 @@ function CharCustomizeSelectionPopoutDetailsMixin:UpdateText(selectionData, isSe
 end
 
 function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq)
+	if not index then
+		self.SelectionName:SetText(CHARACTER_CUSTOMIZE_POPOUT_UNSELECTED_OPTION);
+		self.SelectionName:Show();
+		self.SelectionName:SetWidth(0);
+		self.SelectionName:SetPoint("LEFT", self, "LEFT", 0, 0);
+		self.SelectionNumber:Hide();
+		self.SelectionNumberBG:Hide();
+		self.ColorSwatch1:Hide();
+		self.ColorSwatch1Glow:Hide();
+		self.ColorSwatch2:Hide();
+		self.ColorSwatch2Glow:Hide();
+		self:SetShowAsNew(false);
+		return;
+	end
+
 	self.name = selectionData.name;
 	self.index = index;
 
@@ -940,6 +1098,8 @@ function CharCustomizeMixin:OnLoad()
 	self.pools:CreatePool("CHECKBUTTON", self.Categories, "CharCustomizeCategoryButtonTemplate");
 	self.pools:CreatePool("FRAME", self.Options, "CharCustomizeOptionCheckButtonTemplate");
 	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeShapeshiftFormButtonTemplate");
+	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeRidingDrakeButtonTemplate");
+	self.pools:CreatePool("FRAME", self, "CharCustomizeAudioInterface");
 
 	-- Keep the selectionPopout and sliders in different pools because we need to be careful not to release the option the player is interacting with
 	self.selectionPopoutPool = CreateFramePool("BUTTON", self.Options, "CharCustomizeOptionSelectionPopoutTemplate");
@@ -1032,20 +1192,20 @@ function CharCustomizeMixin:UpdateAlteredFormButtons()
 	self.alteredFormsPools:ReleaseAll();
 
 	local buttonPool = self:GetAlteredFormsButtonPool();
-	if self.selectedRaceData.alternateFormRaceData then
+	if self.selectedRaceData.alternateFormRaceData and self.selectedRaceData.alternateFormRaceData.createScreenIconAtlas then
 		local normalForm = buttonPool:Acquire();
 		local normalFormSelected = not self.viewingShapeshiftForm and not self.viewingAlteredForm;
-		normalForm:SetupAlteredFormButton(self.selectedRaceData, self.selectedSexID, normalFormSelected, false, -1);
+		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
 		normalForm:Show();
 
 		local alteredForm = buttonPool:Acquire();
 		local alteredFormSelected = not self.viewingShapeshiftForm and self.viewingAlteredForm;
-		alteredForm:SetupAlteredFormButton(self.selectedRaceData.alternateFormRaceData, self.selectedSexID, alteredFormSelected, true, 0);
+		alteredForm:SetupAlteredFormButton(self.selectedRaceData.alternateFormRaceData, alteredFormSelected, true, 0);
 		alteredForm:Show();
 	elseif self.hasShapeshiftForms then
 		local normalForm = buttonPool:Acquire();
 		local normalFormSelected = not self.viewingShapeshiftForm;
-		normalForm:SetupAlteredFormButton(self.selectedRaceData, self.selectedSexID, normalFormSelected, false, -1);
+		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
 		normalForm:Show();
 	end
 
@@ -1057,6 +1217,7 @@ function CharCustomizeMixin:SetSelectedData(selectedRaceData, selectedSexID, vie
 	self.selectedSexID = selectedSexID;
 	self.viewingAlteredForm = viewingAlteredForm;
 	self.viewingShapeshiftForm = nil;
+	self.viewingChrModelID = nil;
 end
 
 function CharCustomizeMixin:SetViewingAlteredForm(viewingAlteredForm)
@@ -1065,6 +1226,10 @@ function CharCustomizeMixin:SetViewingAlteredForm(viewingAlteredForm)
 	if self.viewingShapeshiftForm then
 		self:ClearViewingShapeshiftForm();
 	end
+
+	if self.viewingChrModelID then
+		self:ClearViewingChrModel();
+	end	
 
 	local resetCategory = true;
 	self.parentFrame:SetViewingAlteredForm(viewingAlteredForm, resetCategory);
@@ -1082,6 +1247,18 @@ function CharCustomizeMixin:SetViewingShapeshiftForm(formID)
 	end
 end
 
+function CharCustomizeMixin:ClearViewingChrModel()
+	local noModelID = nil;
+	self:SetViewingChrModel(noModelID);
+end
+
+function CharCustomizeMixin:SetViewingChrModel(chrModelID)
+	if self.viewingChrModelID ~= chrModelID then
+		self.viewingChrModelID = chrModelID;
+		self.parentFrame:SetViewingChrModel(chrModelID);
+	end
+end
+
 function CharCustomizeMixin:SetCharacterSex(sexID)
 	self.parentFrame:SetCharacterSex(sexID);
 end
@@ -1096,6 +1273,18 @@ function CharCustomizeMixin:RefreshCustomizations()
 	end
 end
 
+function CharCustomizeMixin:GetFirstValidCategory()
+	-- This filters out any categories with a charmodel id, since we don't want to auto select those
+
+	for i, category in ipairs(self.categories) do
+		if not category.chrModelID then
+			return category;
+		end
+	end
+
+	return self.categories[1];
+end
+
 function CharCustomizeMixin:SetCustomizations(categories)
 	self.categories = categories;
 
@@ -1103,7 +1292,7 @@ function CharCustomizeMixin:SetCustomizations(categories)
 
 	if self:NeedsCategorySelected() then
 		table.sort(self.categories, SortCategories);
-		self:SetSelectedCategory(self.categories[1], keepState);
+		self:SetSelectedCategory(self:GetFirstValidCategory(), keepState);
 	else
 		self:SetSelectedCategory(self.selectedCategoryData, keepState);
 	end
@@ -1120,8 +1309,10 @@ function CharCustomizeMixin:GetOptionPool(optionType)
 end
 
 function CharCustomizeMixin:GetCategoryPool(categoryData)
-	if categoryData.spellShapeshiftFormID then
-		return self.pools:GetPool("CharCustomizeShapeshiftFormButtonTemplate");
+	if categoryData.chrModelID then
+		return self.pools:GetPool("CharCustomizeRidingDrakeButtonTemplate");
+	elseif categoryData.spellShapeshiftFormID then
+		return self.pools:GetPool("CharCustomizeShapeshiftFormButtonTemplate");	
 	else
 		return self.pools:GetPool("CharCustomizeCategoryButtonTemplate");
 	end
@@ -1184,6 +1375,8 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	end
 
 	self.hasShapeshiftForms = false;
+	self.hasChrModels = false;	-- nothing using this right now, tracking it anyway
+	self.firstChrModelID = nil;
 	self.numNormalCategories = 0;
 
 	local optionsToSetup = {};
@@ -1194,14 +1387,20 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 		if showCategory then
 			local categoryPool = self:GetCategoryPool(categoryData);
 			local button = categoryPool:Acquire();
-			button:SetCategory(categoryData, self.selectedCategoryData.id);
-			button:Show();
 
-			if categoryData.spellShapeshiftFormID then
+			if categoryData.chrModelID then
+				self.hasChrModels = true;
+				if not self.firstChrModelID then
+					self.firstChrModelID = categoryData.chrModelID;
+				end
+			elseif categoryData.spellShapeshiftFormID then
 				self.hasShapeshiftForms = true;
 			else
 				self.numNormalCategories = self.numNormalCategories + 1;
 			end
+
+			button:SetCategory(categoryData, self.selectedCategoryData.id);
+			button:Show();
 
 			if self.selectedCategoryData.id == categoryData.id then
 				for _, optionData in ipairs(categoryData.options) do
@@ -1283,7 +1482,9 @@ function CharCustomizeMixin:UpdateCameraMode(keepCustomZoom)
 end
 
 function CharCustomizeMixin:SetSelectedCategory(categoryData, keepState)
-	if categoryData.spellShapeshiftFormID or self.viewingShapeshiftForm then
+	if categoryData.chrModelID then
+		self:SetViewingChrModel(categoryData.chrModelID);
+	elseif categoryData.spellShapeshiftFormID or self.viewingShapeshiftForm then
 		self:SetViewingShapeshiftForm(categoryData.spellShapeshiftFormID);
 	end
 

@@ -26,9 +26,7 @@
 		</Scripts>
 	</ItemButton>
 	<Button name="EquipmentFlyoutPopoutButtonTemplate" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="16" y="32"/>
-		</Size>
+		<Size x="16" y="32"/>
 		<Anchors>
 			<Anchor point="LEFT" relativePoint="RIGHT"/>
 		</Anchors>
@@ -104,9 +102,7 @@
 				</Layers>
 				<Frames>
 					<Button parentKey="PrevButton">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
+						<Size x="32" y="32"/>
 						<Anchors>
 							<Anchor point="LEFT" x="6" y="1"/>
 						</Anchors>
@@ -121,9 +117,7 @@
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button parentKey="NextButton">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
+						<Size x="32" y="32"/>
 						<Anchors>
 							<Anchor point="RIGHT" x="-3" y="1"/>
 						</Anchors>

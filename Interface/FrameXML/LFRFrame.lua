@@ -15,16 +15,6 @@ function LFRFrame_OnLoad(self)
 	LFRFrame_SetActiveTab(1);
 
 	self.lastInGroup = IsInGroup();
-
-	for i = 2, NUM_LFR_LIST_BUTTONS do
-		local button = CreateFrame("Button", "LFRBrowseFrameListButton"..i, LFRBrowseFrame, "LFRBrowseButtonTemplate");
-		button:SetPoint("TOPLEFT", _G["LFRBrowseFrameListButton"..(i-1)], "BOTTOMLEFT");
-	end
-	for i = 2, NUM_LFR_CHOICE_BUTTONS do
-		local button = CreateFrame("Button", "LFRQueueFrameSpecificListButton"..i, LFRQueueFrameSpecific, "LFRFrameDungeonChoiceTemplate");
-		button:SetID(i);
-		button:SetPoint("TOPLEFT", _G["LFRQueueFrameSpecificListButton"..(i-1)], "BOTTOMLEFT");
-	end
 end
 
 function LFRFrame_OnEvent(self, event, ...)
@@ -33,7 +23,6 @@ function LFRFrame_OnEvent(self, event, ...)
 			LFRBrowseFrameList_Update();
 		end
 	elseif ( event == "LFG_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
---		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, category, requestedLeader, requestedTank, requestedHealer, requestedDamage, needTank, needHealer, needDamage = GetLFGInfoServer(LE_LFG_CATEGORY_LFR);
 		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer(LE_LFG_CATEGORY_LFR);
 		local inGroup = IsInGroup();
 		if ( inGroup ~= self.lastInGroup ) then
@@ -228,22 +217,6 @@ end
 function LFRQueueFrameSpecificList_Update()
 	if ( LFGDungeonList_Setup() ) then
 		return;	--Setup will update the list.
-	end
-	FauxScrollFrame_Update(LFRQueueFrameSpecificListScrollFrame, LFRGetNumDungeons(), NUM_LFR_CHOICE_BUTTONS, 16);
-
-	local offset = FauxScrollFrame_GetOffset(LFRQueueFrameSpecificListScrollFrame);
-
-	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFR);
-
-	for i = 1, NUM_LFR_CHOICE_BUTTONS do
-		local button = _G["LFRQueueFrameSpecificListButton"..i];
-		local dungeonID = LFRRaidList[i+offset];
-		if ( dungeonID ) then
-			button:Show();
-			LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, subMode);
-		else
-			button:Hide();
-		end
 	end
 
 	if ( LFRRaidList[1] ) then
@@ -456,21 +429,6 @@ end
 
 function LFRBrowseFrameList_Update()
 	LFRBrowseFrameRefreshButton.timeUntilNextRefresh = LFR_BROWSE_AUTO_REFRESH_TIME;
-
-	local numResults, totalResults = SearchLFGGetNumResults();
-	FauxScrollFrame_Update(LFRBrowseFrameListScrollFrame, numResults, NUM_LFR_LIST_BUTTONS, 16);
-
-	local offset = FauxScrollFrame_GetOffset(LFRBrowseFrameListScrollFrame);
-
-	for i=1, NUM_LFR_LIST_BUTTONS do
-		local button = _G["LFRBrowseFrameListButton"..i];
-		if ( i <= numResults ) then
-			LFRBrowseFrameListButton_SetData(button, i + offset);
-			button:Show();
-		else
-			button:Hide();
-		end
-	end
 
 	if ( LFRBrowseFrame.selectedName ) then
 		local nameStillThere = false;

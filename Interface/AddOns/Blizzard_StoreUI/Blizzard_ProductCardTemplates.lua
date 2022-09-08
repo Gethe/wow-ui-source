@@ -60,7 +60,7 @@ function StoreCardMixin:OnLoad()
 	self:Layout();
 
 	-- the caching of NormalPrice's anchor HAS to be done after Layout
-	self.basePoint = { self.NormalPrice:GetPoint() };
+	self.basePoint = { self.NormalPrice:GetPoint(1) };
 end
 
 function StoreCardMixin:OnEnter()

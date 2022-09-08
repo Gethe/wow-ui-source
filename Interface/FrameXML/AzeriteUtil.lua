@@ -133,5 +133,5 @@ function AzeriteUtil.DoesBagContainAnyAzeriteEmpoweredItems(bagID)
 end
 
 function AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation)
-	return azeriteItemLocation and azeriteItemLocation.bagID and azeriteItemLocation.bagID >= NUM_BAG_SLOTS;
+	return azeriteItemLocation and azeriteItemLocation.bagID and azeriteItemLocation.bagID >= NUM_TOTAL_EQUIPPED_BAG_SLOTS;
 end

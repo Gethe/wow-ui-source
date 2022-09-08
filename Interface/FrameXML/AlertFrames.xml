@@ -14,7 +14,6 @@
 	<Frame name="AlertContainerTemplate" parent="UIParent" hidden="true" mixin="AlertContainerMixin" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnLoad method="OnEvent"/>
 		</Scripts>
 	</Frame>
 

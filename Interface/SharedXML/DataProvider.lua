@@ -27,17 +27,17 @@ function DataProviderMixin:GetSize()
 	return #self.collection;
 end
 
-local function InsertInternal(dataProvider, elementData, hasSortComparator)
-	table.insert(dataProvider.collection, elementData);
-	local insertIndex = #dataProvider.collection;
-	dataProvider:TriggerEvent(DataProviderMixin.Event.OnInsert, insertIndex, elementData, hasSortComparator);
+function DataProviderMixin:InsertInternal(elementData, hasSortComparator)
+	table.insert(self.collection, elementData);
+	local insertIndex = #self.collection;
+	self:TriggerEvent(DataProviderMixin.Event.OnInsert, insertIndex, elementData, hasSortComparator);
 end
 
 function DataProviderMixin:Insert(...)
 	local hasSortComparator = self:HasSortComparator();
 	local count = select("#", ...);
 	for index = 1, count do
-		InsertInternal(self, select(index, ...), hasSortComparator);
+		self:InsertInternal(select(index, ...), hasSortComparator);
 	end
 
 	if count > 0 then
@@ -58,7 +58,7 @@ function DataProviderMixin:InsertTableRange(tbl, indexBegin, indexEnd)
 
 	local hasSortComparator = self:HasSortComparator();
 	for index = indexBegin, indexEnd do
-		InsertInternal(self, tbl[index], hasSortComparator);
+		self:InsertInternal(tbl[index], hasSortComparator);
 	end
 
 	self:TriggerEvent(DataProviderMixin.Event.OnSizeChanged, hasSortComparator);
@@ -87,6 +87,13 @@ function DataProviderMixin:Remove(...)
 	end
 
 	return removedIndex;
+end
+
+function DataProviderMixin:RemoveByPredicate(predicate)
+	local index, elementData = self:FindByPredicate(predicate);
+	if elementData then
+		self:Remove(elementData);
+	end
 end
 
 function DataProviderMixin:RemoveIndex(index)
@@ -179,12 +186,6 @@ function DataProviderMixin:Flush()
 	end
 	local sorting = false;
 	self:TriggerEvent(DataProviderMixin.Event.OnSizeChanged, sorting);
-end
-
-local function RegisterListener(dataProvider, event, handler, listener)
-	if handler then
-		dataProvider:RegisterCallback(event, handler, listener);
-	end
 end
 
 function CreateDataProvider(tbl)

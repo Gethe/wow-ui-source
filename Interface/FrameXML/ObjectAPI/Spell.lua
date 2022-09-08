@@ -33,6 +33,11 @@ function SpellMixin:IsSpellDataCached()
 	return true;
 end
 
+function SpellMixin:IsDataEvictable()
+	-- Spell data could be evicted from the cache
+	return true;
+end
+
 function SpellMixin:GetSpellName()
 	return (GetSpellInfo(self:GetSpellID()));
 end
@@ -65,4 +70,13 @@ function SpellMixin:ContinueWithCancelOnSpellLoad(callbackFunction)
 	end
 
 	return SpellEventListener:AddCancelableCallback(self:GetSpellID(), callbackFunction);
+end
+
+-- Generic aliases for use with ContinuableContainer
+function SpellMixin:ContinueWithCancelOnRecordLoad(callbackFunction)
+	return self:ContinueWithCancelOnSpellLoad(callbackFunction);
+end
+
+function SpellMixin:IsRecordDataCached()
+	return self:IsSpellDataCached();
 end

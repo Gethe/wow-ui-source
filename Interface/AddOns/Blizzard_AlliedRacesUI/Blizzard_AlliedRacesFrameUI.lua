@@ -106,16 +106,9 @@ end
 
 function AlliedRacesFrameMixin:OnLoad()
 	self.abilityPool = CreateFramePool("BUTTON", self.RaceInfoFrame.ScrollFrame.Child, "AlliedRaceAbilityTemplate");
-	self:RegisterEvent("ALLIED_RACE_CLOSE");
 	self.TopTileStreaks:Hide();
 end
 
-function AlliedRacesFrameMixin:OnEvent(event, ...)
-	if (event == "ALLIED_RACE_CLOSE") then
-		HideUIPanel(self);
-	end
-end
-
 function AlliedRacesFrameMixin:OnHide()
-	C_AlliedRaces.ClearAlliedRaceDetailsGiver();
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.AlliedRaceDetailsGiver);
 end

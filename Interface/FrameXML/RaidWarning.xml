@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="RaidWarning.lua"/>
 	<Frame name="RaidBossEmoteFrameTemplate" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="512" y="80"/>
-		</Size>
+		<Size x="512" y="80"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentSlot1" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true" parentKey="slot1">
@@ -28,9 +26,7 @@
 		</Scripts>
 	</Frame>
 	<Frame name="RaidWarningFrame" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
-		<Size>
-			<AbsDimension x="512" y="70"/>
-		</Size>
+		<Size x="512" y="70"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIErrorsFrame" relativePoint="BOTTOM"/>
 		</Anchors>

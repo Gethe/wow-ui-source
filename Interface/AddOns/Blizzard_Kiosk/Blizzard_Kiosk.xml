@@ -44,7 +44,7 @@
 							</Anchors>
 							<Color color="BLACK_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="Body" inherits="SystemFont_Large" justifyH="CENTER" justifyV="CENTER" wordWrap="true">
+						<FontString parentKey="Body" inherits="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true">
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" y="18"/>
 								<Anchor point="LEFT" relativePoint="LEFT" x="90.0"/>

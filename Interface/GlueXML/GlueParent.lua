@@ -13,7 +13,7 @@ GLUE_SECONDARY_SCREENS = {
 	-- Bug 477070 We have some rare race condition crash in the sound engine that happens when the MovieFrame's "showSound" sound plays at the same time the movie audio is starting.
 	-- Removing the showSound from the MovieFrame in attempt to avoid the crash, until we can actually find and fix the bug in the sound engine.
 	["movie"] = 		{ frame = "MovieFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true },
-	["options"] = 		{ frame = "VideoOptionsFrame",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
+	["options"] = 		{ frame = "SettingsPanel",		playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
 };
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
@@ -55,7 +55,6 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("FRAMES_LOADED");
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
-	self:RegisterEvent("REALM_LIST_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
@@ -90,8 +89,6 @@ function GlueParent_OnEvent(self, event, ...)
 	elseif ( event == "OPEN_STATUS_DIALOG" ) then
 		local dialog, text = ...;
 		GlueDialog_Show(dialog, text);
-	elseif ( event == "REALM_LIST_UPDATED" ) then
-		RealmList_Update();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		OnDisplaySizeChanged(self);
 	elseif ( event == "LUA_WARNING" ) then
@@ -436,55 +433,22 @@ function ToggleFrame(frame)
 	frame:SetShown(not frame:IsShown());
 end
 
-local modalFrames = { };
-
-function GlueParent_AddModalFrame(frame)
-	local index = tIndexOf(modalFrames, frame);
-	if index then
-		return;
-	end
-
-	table.insert(modalFrames, frame);
-
-	if #modalFrames == 1 then
-		GlueParent.BlockingFrame:Show();
-	end
-end
-
-function GlueParent_RemoveModalFrame(frame)
-	local index = tIndexOf(modalFrames, frame);
-	if not index then
-		return;
-	end
-
-	table.remove(modalFrames, index);
-
-	if #modalFrames == 0 then
-		GlueParent.BlockingFrame:Hide();
-	end
-end
-
-function GlueParentBlockingFrame_OnKeyDown(self, key)
-	if key == "ESCAPE" then
-		local frame = modalFrames[#modalFrames];
-		frame:Hide();
-	elseif key == "PRINTSCREEN" then
-		Screenshot();
-	end
-end
-
 -- =============================================================
 -- Model functions
 -- =============================================================
 
 function SetLoginScreenModel(model)
 	local expansionLevel = GetClientDisplayExpansionLevel();
-	local lowResBG = SafeGetExpansionData(EXPANSION_LOW_RES_BG, expansionLevel);
-	local highResBG = SafeGetExpansionData(EXPANSION_HIGH_RES_BG, expansionLevel);
+	local expansionInfo = GetExpansionDisplayInfo(expansionLevel);
 
-	if lowResBG and highResBG then
-		local background = GetLoginScreenBackground(highResBG, lowResBG);
-		model:SetModel(background, true);
+	if expansionInfo then
+		local lowResBG = expansionInfo.lowResBackgroundID;
+		local highResBG = expansionInfo.highResBackgroundID;
+
+		if lowResBG and highResBG then
+			local background = GetLoginScreenBackground(highResBG, lowResBG);
+			model:SetModel(background, true);
+		end
 	end
 
 	model:SetCamera(0);

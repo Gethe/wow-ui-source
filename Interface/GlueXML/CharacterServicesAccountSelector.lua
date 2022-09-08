@@ -41,10 +41,10 @@ function AccountSelectorMixin:OnLoad()
 		self:CallOnSelectedCallback();
 	end
 
-	self.Dropdown:UpdateWidth(165);
+	self.Dropdown:UpdateDropDownWidth(165);
 	self.Dropdown:SetOptionSelectedCallback(wowAccountSelectedCallback);
 
-	self.BNetWoWAccountDropdown:UpdateWidth(195);
+	self.BNetWoWAccountDropdown:UpdateDropDownWidth(195);
 	self.BNetWoWAccountDropdown:SetOptionSelectedCallback(wowAccountSelectedCallback);
 
 	EventRegistry:RegisterFrameEvent("VAS_TRANSFER_VALIDATION_UPDATE");

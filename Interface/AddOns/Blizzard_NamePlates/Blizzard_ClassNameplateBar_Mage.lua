@@ -1,26 +1,39 @@
 ClassNameplateBarMage = {};
 
-function ClassNameplateBarMage:OnLoad()
-	self.class = "MAGE";
-	self.spec = SPEC_MAGE_ARCANE;
-	self.powerToken = "ARCANE_CHARGES";
 
-	for i = 1, #self.Charges do
-		self.Charges[i].on = false;
-	end
-	ClassNameplateBar.OnLoad(self);
+function ClassNameplateBarMage:OnLoad()
+	ClassResourceBarMixin.OnLoad(self);
+end 
+
+function ClassNameplateBarMage:UpdateMaxPower()
+	ClassResourceBarMixin.UpdateMaxPower(self);
+end
+
+function ClassNameplateBarMage:Setup()
+	local showBar = ClassNameplateBar.Setup(self);
+	if(showBar) then 
+		self:ShowNameplateBar();
+	end 
+	return showBar; 
 end
 
 function ClassNameplateBarMage:UpdatePower()
 	local charges = UnitPower("player", Enum.PowerType.ArcaneCharges);
-	for i = 1, min(charges, #self.Charges) do
-		if (not self.Charges[i].on) then
-			self:TurnOn(self.Charges[i], self.Charges[i].ChargeTexture, 1);
+	for i = 1, min(charges, #self.classResourceButtonTable) do
+		local charge = self.classResourceButtonTable[i]; 
+		if (charge and not charge.on) then
+			self:TurnOn(charge, charge.ChargeTexture, 1);
 		end
 	end
-	for i = charges + 1, #self.Charges do
-		if (self.Charges[i].on) then
-			self:TurnOff(self.Charges[i], self.Charges[i].ChargeTexture, 0.3);
+	for i = charges + 1, #self.classResourceButtonTable do
+		local charge = self.classResourceButtonTable[i]; 
+		if (charge and charge.on) then
+			self:TurnOff(charge, charge.ChargeTexture, 0.3);
 		end
 	end
 end
+
+ClassNameplateBarArcaneChargeMixin = { };
+function ClassNameplateBarArcaneChargeMixin:Setup()
+	self.on = false; 
+end		

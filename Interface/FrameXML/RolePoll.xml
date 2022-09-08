@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="RolePoll.lua"/>
 	<Button name="RolePollRoleButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
-		<Size>
-			<AbsDimension x="48" y="48"/>
-		</Size>
+		<Size x="48" y="48"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
@@ -14,15 +12,9 @@
 		</Layers>
 		<Frames>
 			<CheckButton parentKey="checkButton">
-				<Size>
-					<AbsDimension x="24" y="24"/>
-				</Size>
+				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-5" y="-5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -64,18 +56,12 @@
 		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
 	</Button>
 	<Frame name="RolePollPopup" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="306" y="160"/>
-		</Size>
+		<Size x="306" y="160"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString inherits="GameFontHighlight" justifyH="CENTER" text="SELECT_YOUR_ROLE">
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-15"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-15"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -83,15 +69,9 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 			<Button name="$parentCloseButton">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-2" y="-2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -104,15 +84,9 @@
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentRoleButtonTank" inherits="RolePollRoleButtonTemplate" id="2">
-				<Size>
-					<AbsDimension x="70" y="70"/>
-				</Size>
+				<Size x="70" y="70"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="35" y="-35"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="35" y="-35"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -123,15 +97,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentRoleButtonHealer" inherits="RolePollRoleButtonTemplate" id="3">
-				<Size>
-					<AbsDimension x="70" y="70"/>
-				</Size>
+				<Size x="70" y="70"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -142,15 +110,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentRoleButtonDPS" inherits="RolePollRoleButtonTemplate" id="1">
-				<Size>
-					<AbsDimension x="70" y="70"/>
-				</Size>
+				<Size x="70" y="70"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -161,15 +123,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" parentKey="acceptButton" text="ACCEPT">
-				<Size>
-					<AbsDimension x="115" y="22"/>
-				</Size>
+				<Size x="115" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="15"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="RolePollPopupAccept_OnClick"/>

@@ -6,20 +6,12 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	
-	--Get this working with the InterfaceOptions panel.
 	self.name = COMPACT_UNIT_FRAME_PROFILES_LABEL;
-	self.options = {
-		useCompactPartyFrames = { text = "USE_RAID_STYLE_PARTY_FRAMES" },
-	}
-	
-	BlizzardOptionsPanel_OnLoad(self, CompactUnitFrameProfiles_SaveChanges, CompactUnitFrameProfiles_CancelCallback, CompactUnitFrameProfiles_DefaultCallback, CompactUnitFrameProfiles_UpdateCurrentPanel);
-	InterfaceOptions_AddCategory(self, false, 11);
+
+	self.OnDefault = GenerateClosure(CompactUnitFrameProfiles_ResetToDefaults, self);
 end
 
 function CompactUnitFrameProfiles_OnEvent(self, event, ...)
-	--Do normal BlizzardOptionsPanel code too.
-	BlizzardOptionsPanel_OnEvent(self, event, ...);
-	
 	if ( event == "COMPACT_UNIT_FRAME_PROFILES_LOADED" ) then
 		--HasLoadedCUFProfiles will now return true.
 		self:UnregisterEvent(event);
@@ -49,11 +41,6 @@ function CompactUnitFrameProfiles_ValidateProfilesLoaded(self)
 	end
 end
 
-function CompactUnitFrameProfiles_DefaultCallback(self)
-	InterfaceOptionsPanel_Default(self);
-	CompactUnitFrameProfiles_ResetToDefaults();
-end
-
 function CompactUnitFrameProfiles_ResetToDefaults()
 	local profiles = {};
 	for i=1, GetNumRaidProfiles() do
@@ -72,12 +59,10 @@ function CompactUnitFrameProfiles_SaveChanges(self)
 end
 
 function CompactUnitFrameProfiles_CancelCallback(self)
-	InterfaceOptionsPanel_Cancel(self);
 	CompactUnitFrameProfiles_CancelChanges(self);
 end
 
 function CompactUnitFrameProfiles_CancelChanges(self)
-	InterfaceOptionsPanel_Cancel(self);
 	RestoreRaidProfileFromCopy();
 	CompactUnitFrameProfiles_UpdateCurrentPanel();
 	CompactUnitFrameProfiles_ApplyCurrentSettings();
@@ -116,7 +101,6 @@ end
 function CompactUnitFrameProfilesProfileSelector_SetUp(self)
 	UIDropDownMenu_SetWidth(self, 190);
 	UIDropDownMenu_Initialize(self, CompactUnitFrameProfilesProfileSelector_Initialize);
-	--UIDropDownMenu_SetSelectedValue(self, GetActiveRaidProfile());
 end
 
 function CompactUnitFrameProfilesProfileSelector_Initialize()
@@ -156,7 +140,7 @@ function CompactUnitFrameProfiles_NewProfileButtonClicked()
 	end
 end
 
-function CompactUnitFrameProfiles_ActivateRaidProfile(profile)	
+function CompactUnitFrameProfiles_ActivateRaidProfile(profile)
 	CompactUnitFrameProfiles.selectedProfile = profile;
 	SaveRaidProfileCopy(profile);	--Save off the current version in case we cancel.
 	SetActiveRaidProfile(profile);
@@ -176,7 +160,6 @@ end
 
 
 function CompactUnitFrameProfiles_UpdateCurrentPanel()
-	InterfaceOptionsPanel_Refresh(CompactUnitFrameProfiles);
 	local panel = CompactUnitFrameProfiles.optionsFrame;
 	for i=1, #panel.optionControls do
 		panel.optionControls[i]:updateFunc();
@@ -480,7 +463,6 @@ end
 
 function CompactUnitFrameProfilesDropdown_Initialize(dropDown)
 	local info = UIDropDownMenu_CreateInfo();
-	
 	local currentValue = GetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, dropDown.optionName);
 	for i=1, #dropDown.options do
 		local id = dropDown.options[i];
@@ -573,20 +555,16 @@ function CompactUnitFrameProfiles_ApplyProfile(profile)
 	end
 	
 	--Refresh all frames to make sure the changes stick.
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", DefaultCompactUnitFrameSetup);
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "normal", CompactUnitFrame_UpdateAll);
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "mini", DefaultCompactMiniFrameSetup);
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "mini", CompactUnitFrame_UpdateAll);
-	--CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "group", CompactRaidGroup_UpdateLayout);	--UpdateBorder calls UpdateLayout.
+	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
+	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
+	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
+	CompactRaidFrameContainer:ApplyToFrames("mini", CompactUnitFrame_UpdateAll);
 	
 	--Update the borders on the group frames.
-	CompactRaidFrameContainer_ApplyToFrames(CompactRaidFrameContainer, "group", CompactRaidGroup_UpdateBorder);
-	
-	--Update the position of the container.
-	CompactRaidFrameManager_ResizeFrame_LoadPosition(CompactRaidFrameManager);
+	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
 	
 	--Update the container in case sizes and such changed.
-	CompactRaidFrameContainer_TryUpdate(CompactRaidFrameContainer);
+	CompactRaidFrameContainer:TryUpdate();
 end
 
 local function CompactUnitFrameProfiles_GenerateRaidManagerSetting(optionName)
@@ -619,8 +597,6 @@ end
 
 CUFProfileActionTable = {
 	--Settings
-	keepGroupsTogether = CompactUnitFrameProfiles_GenerateRaidManagerSetting("KeepGroupsTogether"),
-	sortBy = CompactUnitFrameProfiles_GenerateRaidManagerSetting("SortMode"),
 	displayPets = CompactUnitFrameProfiles_GenerateRaidManagerSetting("DisplayPets"),
 	displayMainTankAndAssist = CompactUnitFrameProfiles_GenerateRaidManagerSetting("DisplayMainTankAndAssist"),
 	displayHealPrediction = CompactUnitFrameProfiles_GenerateOptionSetter("displayHealPrediction", "all"),
@@ -629,21 +605,8 @@ CUFProfileActionTable = {
 	displayNonBossDebuffs = CompactUnitFrameProfiles_GenerateOptionSetter("displayNonBossDebuffs", "normal"),
 	displayOnlyDispellableDebuffs = CompactUnitFrameProfiles_GenerateOptionSetter("displayOnlyDispellableDebuffs", "normal"),
 	useClassColors = CompactUnitFrameProfiles_GenerateOptionSetter("useClassColors", "normal"),
-	horizontalGroups = CompactUnitFrameProfiles_GenerateRaidManagerSetting("HorizontalGroups");
 	healthText = CompactUnitFrameProfiles_GenerateOptionSetter("healthText", "normal"),
-	frameWidth = CompactUnitFrameProfiles_GenerateSetUpOptionSetter("width", "all");
-	frameHeight = 	function(value)
-								DefaultCompactUnitFrameSetupOptions.height = value;
-								DefaultCompactMiniFrameSetUpOptions.height = value / 2;
-							end,
-	displayBorder = function(value)
-								RAID_BORDERS_SHOWN = value;
-								DefaultCompactUnitFrameSetupOptions.displayBorder = value;
-								DefaultCompactMiniFrameSetUpOptions.displayBorder = value;
-								CompactRaidFrameManager_SetSetting("ShowBorders", value);
-							end,
 							
 	--State
-	locked = CompactUnitFrameProfiles_GenerateRaidManagerSetting("Locked"),
 	shown = CompactUnitFrameProfiles_GenerateRaidManagerSetting("IsShown"),
 }

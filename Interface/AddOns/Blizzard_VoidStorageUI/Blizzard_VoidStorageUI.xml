@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_VoidStorageUI.lua"/>
 	
 <!--
@@ -96,9 +96,7 @@
 </Texture>
 -->
 	<Button name="VoidStorageItemButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>	
+		<Size x="37" y="37"/>	
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBg" file="Interface\VoidStorage\VoidStorage.png">
@@ -145,9 +143,7 @@
 	</Button>
 
 	<Frame name="VoidStorageAntsFrameTemplate" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>
+		<Size x="37" y="37"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -184,21 +180,13 @@
 	</Frame>
 	
 	<CheckButton name="VoidStorageTabTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
+		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-3" y="11"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-3" y="11"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -627,7 +615,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
-										<FontString name="$parentPrefixText" inherits="GameFontNormal" text="COSTS_LABEL">
+										<FontString parentKey="PrefixText" inherits="GameFontNormal" text="COSTS_LABEL">
 											<Anchors>
 												<Anchor point="LEFT" x="0" y="0"/>
 											</Anchors>

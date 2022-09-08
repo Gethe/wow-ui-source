@@ -79,7 +79,7 @@
 			<Button name="CoinPickupCancelButton" inherits="UIPanelButtonTemplate" text="COINPICKUP_CANCEL">
 				<Size x="64" y="24"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="BOTTOM"  x="5" y="32"/>
+					<Anchor point="LEFT" relativePoint="BOTTOM" x="5" y="32"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="CoinPickupFrameCancel_Click"/>

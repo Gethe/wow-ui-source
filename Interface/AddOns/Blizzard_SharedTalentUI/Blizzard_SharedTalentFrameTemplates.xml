@@ -1,0 +1,32 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SharedTalentFrameTemplates.lua"/>
+	
+	<Frame name="TalentFrameGateTemplate" mixin="TalentFrameGateMixin" virtual="true">
+		<Size x="124" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LockIcon" atlas="talents-gate" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-10" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="GateText" inherits="GameFontHighlightHuge2" hidden="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.LockIcon" relativePoint="LEFT" x="-10" y="-1"/>
+					</Anchors>
+					<Color r="1" g="0.64" b="0.56"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

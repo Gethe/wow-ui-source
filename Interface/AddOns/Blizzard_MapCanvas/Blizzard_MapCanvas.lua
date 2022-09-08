@@ -184,6 +184,9 @@ do
 
 			pin:SetMouseClickEnabled(isMouseClickEnabled);
 			pin:SetMouseMotionEnabled(isMouseMotionEnabled);
+
+			-- All pins should pass through right clicks to allow the map to zoom out
+			pin:SetPassThroughButtons("RightButton");
 		end
 
 		pin.pinTemplate = pinTemplate;

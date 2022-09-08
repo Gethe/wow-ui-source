@@ -60,8 +60,6 @@ function CharacterFrame_OnLoad (self)
 	self:SetTitleColor(HIGHLIGHT_FONT_COLOR);
 	self:SetTitleMaxLinesAndHeight(1, 13);
 
-	SetTextStatusBarTextPrefix(PlayerFrameHealthBar, HEALTH);
-	SetTextStatusBarTextPrefix(PlayerFrameManaBar, MANA);
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, NUM_CHARACTERFRAME_TABS);
 	PanelTemplates_SetTab(self, 1);
@@ -171,7 +169,7 @@ function CharacterFrame_Collapse()
 	CharacterFrame:SetWidth(PANEL_DEFAULT_WIDTH);
 	CharacterFrame.Expanded = false;
 	for i = 1, #PAPERDOLL_SIDEBARS do
-		_G[PAPERDOLL_SIDEBARS[i].frame]:Hide();
+		GetPaperDollSideBarFrame(i):Hide();
 	end
 	CharacterFrame.InsetRight:Hide();
 	UpdateUIPanelPositions(CharacterFrame);

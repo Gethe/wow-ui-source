@@ -134,7 +134,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="CommunitiesGuildRewardsButtonTemplate" virtual="true">
+	<Button name="CommunitiesGuildRewardsButtonTemplate" mixin="CommunitiesGuildRewardsButtonMixin" virtual="true">
 		<Size x="289" y="47"/>
 		<Frames>
 			<Frame name="$parentMoneyFrame" parentKey="Money" inherits="SmallMoneyFrameTemplate">
@@ -229,21 +229,19 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="$parentRewards" parentKey="RewardsContainer" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Size x="292" y="306"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-6"/>
 					<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
 				</Anchors>
-				<Frames>
-					<Slider inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="-9"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="5" y="10"/>
-						</Anchors>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="2"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="-5"/>
+				</Anchors>
+			</EventFrame>
 			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
 				<Size x="10" y="10"/>
 				<Scripts>

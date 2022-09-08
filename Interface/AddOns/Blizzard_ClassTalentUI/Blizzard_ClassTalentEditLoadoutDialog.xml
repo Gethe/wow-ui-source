@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+    <Script file="Blizzard_ClassTalentEditLoadoutDialog.lua"/>
+
+    <Button name="ClassTalentEditLoadoutDialogButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
+        <Size x="130" y="22"/>
+    </Button>
+
+    <Frame name="ClassTalentEditLoadoutDialog" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="ClassTalentEditLoadoutDialogMixin" frameLevel="100">
+        <Size x="460" y="200"/>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString parentKey="Title" inherits="GameFontHighlight" text="HUD_CLASS_TALENTS_EDIT_LOADOUT_DIALOG_TITLE">
+                    <Size x="250"/>
+                    <Anchors>
+                        <Anchor point="TOP" y="-20"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="EditBoxLabel" inherits="GameFontNormal" text="HUD_CLASS_TALENTS_EDIT_LOADOUT_DIALOG_EDIT_BOX_LABEL">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="22" y="-40"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+            <EditBox parentKey="LoadoutName" inherits="InputBoxTemplate" letters="30" mixin="ClassTalentEditLoadoutDialogNameEditBoxMixin">
+                <Size x="260" y="32"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="25" y="-50"/>
+                    <Anchor point="RIGHT" x="-25" />
+                </Anchors>
+                <Scripts>
+                    <OnEnterPressed method="OnEnterPressed"/>
+                    <OnEscapePressed method="OnEscapePressed"/>
+                    <OnTextChanged method="OnTextChanged"/>
+                </Scripts>
+                <FontString inherits="ChatFontNormal"/>
+            </EditBox>
+            
+			<Frame parentKey="UsesSharedActionBars" mixin="UseSharedActionBarsMixin">
+                <Size y="30"/>
+				<Anchors>
+                    <Anchor point="TOP" y="-100"/>
+                    <Anchor point="LEFT" x="40"/>
+                    <Anchor point="RIGHT" x="0"/>
+                </Anchors>
+				<Frames>
+					<CheckButton parentKey="CheckButton">
+						<Size x="30" y="29"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+                        <NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+                        <PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+                        <CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+                        <DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormal" text="HUD_CLASS_TALENTS_EDIT_LOADOUT_SHARED_ACTION_BARS_TEXT">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.CheckButton" relativePoint="RIGHT" x="10" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+                <Scripts>
+                    <OnEnter method="OnEnter"/>
+                    <OnLeave method="OnLeave"/>
+                </Scripts>
+			</Frame>
+            <Button parentKey="AcceptButton" inherits="ClassTalentEditLoadoutDialogButtonTemplate" text="ACCEPT">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" x="25" y="25"/>
+                </Anchors>
+            </Button>
+            
+            <Button parentKey="DeleteButton" inherits="ClassTalentEditLoadoutDialogButtonTemplate" text="DELETE">
+                <Anchors>
+                    <Anchor point="BOTTOM" x="0" y="25"/>
+                </Anchors>
+            </Button>
+            <Button parentKey="CancelButton" inherits="ClassTalentEditLoadoutDialogButtonTemplate" text="CANCEL">
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" x="-25" y="25"/>
+                </Anchors>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+    </Frame>
+</Ui>

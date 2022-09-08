@@ -86,47 +86,6 @@ GlueDialogTypes["ERROR_CINEMATIC"] = {
 	button2 = nil,
 }
 
-GlueDialogTypes["CONFIRM_RESET_VIDEO_SETTINGS"] = {
-	text = CONFIRM_RESET_SETTINGS,
-	button1 = ALL_SETTINGS,
-	button2 = CURRENT_SETTINGS,
-	button3 = CANCEL,
-	showAlert = 1,
-	OnAccept = function ()
-		VideoOptionsFrame_SetAllToDefaults();
-	end,
-	OnCancel = function ()
-		VideoOptionsFrame_SetCurrentToDefaults();
-	end,
-	escapeHides = true,
-}
-
-GlueDialogTypes["RESET_SERVER_SETTINGS"] = {
-	text = RESET_SERVER_SETTINGS,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function ()
-		GlueParent.ScreenFrame.OptionsResetFrame:Show();
-		-- Switch the reset settings button to cancel mode
-		VideoOptionsFrameReset:SetText(CANCEL_RESET);
-		VideoOptionsFrameReset:SetScript("OnClick", VideoOptionsFrameReset_OnClick_Cancel);
-		SetClearConfigData(true);
-	end,
-}
-
-GlueDialogTypes["CANCEL_RESET_SETTINGS"] = {
-	text = CANCEL_RESET_SETTINGS,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function ()
-		GlueParent.ScreenFrame.OptionsResetFrame:Hide();
-		-- Switch the reset settings button back to reset mode
-		VideoOptionsFrameReset:SetText(RESET_SETTINGS);
-		VideoOptionsFrameReset:SetScript("OnClick", VideoOptionsFrameReset_OnClick_Reset);
-		SetClearConfigData(false);
-	end,
-}
-
 GlueDialogTypes["CLIENT_RESTART_ALERT"] = {
 	text = CLIENT_RESTART_ALERT,
 	button1 = OKAY,
@@ -351,6 +310,80 @@ GlueDialogTypes["SUBSCRIPTION_CHANGED_KICK_WARNING"] = {
 	anchorOffsetY = 150,
 }
 
+GlueDialogTypes["EVOKER_NEW_PLAYER_WARNING"] = {
+	text = EVOKER_NEW_PLAYER_WARNING_TEXT,
+	button1 = CHOOSE_DIFF_CLASS,
+	button2 = CONTINUE_WITH_EVOKER,
+	showAlert = 1,
+	alertTopCenterAlign = 1;
+	displayVertical = 1,
+	buttonTextMargin = 40,
+	OnAccept = function()
+		SelectOtherRaceAvailable();
+	end,
+	OnCancel = function()
+		GlueDialog_Show("EVOKER_NEW_PLAYER_CONFIRMATION");
+	end,
+}
+
+GlueDialogTypes["EVOKER_NEW_PLAYER_CONFIRMATION"] = {
+	text = EVOKER_NEW_PLAYER_CONFIRMATION_TEXT,
+	button1 = CHARACTER_CREATE_ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	editBoxInstructions = EVOKER_NEW_PLAYER_CONFIRM_INSTRUCTION,
+	maxLetters = 32,
+	editBoxYMargin = 35,
+	EditBoxOnTextChanged = function(self)
+		GlueDialog_StandardConfirmationTextHandler(self, ADVANCED_CONFIRM_STRING);
+	end,
+	OnShow = function(self)
+		GlueDialogButton1:SetEnabled(false);
+	end,
+	OnCancel = function()
+		GlueDialogButton1:SetEnabled(true);
+	end,
+	OnAccept = function()
+		PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+		CharacterCreateFrame:UpdateMode(1);
+	end,
+}
+
+function GlueDialog_EditBoxOnEnterPressed(self)
+	local EditBoxOnEnterPressed, which, dialog;
+	local parent = self:GetParent();
+	if ( parent.which ) then
+		which = parent.which;
+		dialog = parent;
+	elseif ( parent:GetParent().which ) then
+		-- This is needed if this is a money input frame since it's nested deeper than a normal edit box
+		which = parent:GetParent().which;
+		dialog = parent:GetParent();
+	end
+	EditBoxOnEnterPressed = GlueDialogTypes[which].EditBoxOnEnterPressed;
+	if ( EditBoxOnEnterPressed ) then
+		EditBoxOnEnterPressed(self, dialog.data);
+	end
+end
+
+function GlueDialog_EditBoxOnEscapePressed(self)
+	local EditBoxOnEscapePressed = GlueDialogTypes[self:GetParent().which].EditBoxOnEscapePressed;
+	if ( EditBoxOnEscapePressed ) then
+		EditBoxOnEscapePressed(self, self:GetParent().data);
+	end
+end
+
+function GlueDialog_EditBoxOnTextChanged(self, userInput)
+	local EditBoxOnTextChanged = GlueDialogTypes[self:GetParent().which].EditBoxOnTextChanged;
+	if ( EditBoxOnTextChanged ) then
+		EditBoxOnTextChanged(self, self:GetParent().data);
+	end
+end
+
+function GlueDialog_StandardConfirmationTextHandler(self, expectedText)
+	GlueDialogButton1:SetEnabled(ConfirmationEditBoxMatches(GlueDialogEditBox, expectedText));
+end
+
 function GlueDialog_Queue(which, text, data)
 	table.insert(QUEUED_GLUE_DIALOGS, {which = which, text = text, data = data});
 end
@@ -457,7 +490,15 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogButton2:Hide();
 		GlueDialogButton3:Hide();
 	end
-	
+	if (dialogInfo.buttonTextMargin) then
+		GlueDialogButton1:SetWidth(GlueDialogButton1:GetTextWidth() + dialogInfo.buttonTextMargin);
+		GlueDialogButton2:SetWidth(GlueDialogButton2:GetTextWidth() + dialogInfo.buttonTextMargin);
+		GlueDialogButton3:SetWidth(GlueDialogButton3:GetTextWidth() + dialogInfo.buttonTextMargin);
+	else 
+		GlueDialogButton1:SetWidth(200);
+		GlueDialogButton2:SetWidth(200);
+		GlueDialogButton3:SetWidth(200);
+	end
 
 	-- Set the miscellaneous variables for the dialog
 	GlueDialog.which = which;
@@ -472,16 +513,39 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogBackground:SetWidth(GlueDialogBackground.origWidth);
 		GlueDialogAlertIcon:Hide();
 	end
+	GlueDialogAlertIcon:ClearAllPoints();
+	if ( dialogInfo.alertTopCenterAlign == 1 ) then
+		GlueDialogAlertIcon:SetPoint("TOP", 0, -24);
+		glueText:ClearAllPoints();
+		glueText:SetPoint("TOP", "GlueDialogAlertIcon", "BOTTOM", 0, -12);
+	else
+		GlueDialogAlertIcon:SetPoint("LEFT", 24, 0);
+	end
 	GlueDialogText:SetWidth(GlueDialogText.origWidth);
 
 	-- Editbox setup
 	if ( dialogInfo.hasEditBox ) then
 		GlueDialogEditBox:Show();
+		GlueDialogEditBox.Instructions:SetText(dialogInfo.editBoxInstructions or "");
+
 		if ( dialogInfo.maxLetters ) then
 			GlueDialogEditBox:SetMaxLetters(dialogInfo.maxLetters);
 		end
 		if ( dialogInfo.maxBytes ) then
 			GlueDialogEditBox:SetMaxBytes(dialogInfo.maxBytes);
+		end
+		GlueDialogEditBox:SetText("");
+		if ( dialogInfo.editBoxWidth ) then
+			GlueDialogEditBox:SetWidth(info.editBoxWidth);
+		else
+			GlueDialogEditBox:SetWidth(130);
+		end
+
+		GlueDialogEditBox:ClearAllPoints();
+		if (dialogInfo.editBoxYMargin) then
+			GlueDialogEditBox:SetPoint("TOP", "GlueDialogText", "BOTTOM", 0, -dialogInfo.editBoxYMargin);
+		else 
+			GlueDialogEditBox:SetPoint("CENTER");
 		end
 	else
 		GlueDialogEditBox:Hide();
@@ -494,6 +558,14 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogSpinner:Hide();
 	end
 
+	GlueDialog_Resize(GlueDialog, which);
+
+	GlueDialog:Show();
+end
+
+function GlueDialog_Resize(self, which)
+	local dialogInfo = GlueDialogTypes[which];
+	
 	-- Get the width of the text to aid in determining the width of the dialog
 	local textWidth = 0;
 	if ( dialogInfo.html ) then
@@ -546,16 +618,23 @@ function GlueDialog_Show(which, text, data)
 
 		if ( dialogInfo.hasEditBox ) then
 			displayHeight = displayHeight + 13 + GlueDialogEditBox:GetHeight();
+			if (dialogInfo.editBoxYMargin) then
+				displayHeight = displayHeight + dialogInfo.editBoxYMargin;
+			end
+			if (dialogInfo.editBoxInstructions) then
+				displayHeight = displayHeight + 3 + GlueDialogEditBox.Instructions:GetHeight();
+			end
 		end
 
 		if ( dialogInfo.spinner)  then
 			displayHeight = displayHeight + GlueDialogSpinner:GetHeight();
 		end
 	end
+	if (dialogInfo.alertTopCenterAlign == 1) then
+		displayHeight = displayHeight + GlueDialogAlertIcon:GetHeight() + 36;
+	end
 
 	GlueDialogBackground:SetHeight(math.floor(displayHeight + 0.5));
-
-	GlueDialog:Show();
 end
 
 function GlueDialog_Hide(which, text)
@@ -588,7 +667,7 @@ function GlueDialog_OnShow(self)
 	self:Raise();
 	local OnShow = GlueDialogTypes[self.which].OnShow;
 	if ( OnShow ) then
-		OnShow();
+		OnShow(self, self.data);
 	end
 	if GlueDialogTypes[self.which].cover then
 		GlueParent_AddModalFrame(GlueDialog);
@@ -613,7 +692,7 @@ function GlueDialog_OnUpdate(self, elapsed)
 	
 	local OnUpdate = GlueDialogTypes[which].OnUpdate;
 	if ( OnUpdate ) then
-		OnUpdate(elapsed);
+		OnUpdate(self, elapsed);
 	end
 end
 
@@ -623,23 +702,19 @@ function GlueDialog_OnHide(self)
 end
 
 function GlueDialog_OnClick(self, button, down)
-	local index = self:GetID();
 	GlueDialog:Hide();
+	local index = self:GetID();
+	local info = GlueDialogTypes[GlueDialog.which]
+	local func;
 	if ( index == 1 ) then
-		local OnAccept = GlueDialogTypes[GlueDialog.which].OnAccept;
-		if ( OnAccept ) then
-			OnAccept();
-		end
+		func = info.OnAccept or info.OnButton1;
 	elseif ( index == 2 ) then
-		local OnCancel = GlueDialogTypes[GlueDialog.which].OnCancel;
-		if ( OnCancel ) then
-			OnCancel();
-		end
+		func = info.OnCancel or info.OnButton2;
 	elseif ( index == 3 ) then
-		local OnAlt = GlueDialogTypes[GlueDialog.which].OnAlt;
-		if ( OnAlt ) then
-			OnAlt();
-		end
+		func = info.OnAlt or info.OnButton3;
+	end
+	if ( func ) then 
+		func();
 	end
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end

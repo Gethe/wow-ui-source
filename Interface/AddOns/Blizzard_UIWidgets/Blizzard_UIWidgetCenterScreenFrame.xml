@@ -1,0 +1,9 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetCenterScreenContainerFrame" parent="UIParent" inherits="UIWidgetContainerNoResizeTemplate" mixin="UIWidgetCenterScreenContainerMixin" hidden="true">
+		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Frame>
+</Ui>

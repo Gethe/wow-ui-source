@@ -13,7 +13,7 @@
 	<Frame name="MoneyFrameTemplate" virtual="true">
 		<Size x="192" y="28"/>
 		<Frames>
-			<Button name="$parentCopperButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentCopperButton" parentKey="CopperButton" inherits="MoneyFrameButtonTemplate">
 				<Size x="47" y="19"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-13" y="0"/>
@@ -31,16 +31,16 @@
 				</NormalTexture>
 				<ButtonText name="$parentText" parentKey="Text">
 					<Anchors>
-						<Anchor point="RIGHT"  x="-19" y="0"/>
+						<Anchor point="RIGHT" x="-19" y="0"/>
 					</Anchors>
 				</ButtonText>
 				<NormalFont style="NumberFontNormalLargeRight"/>
 				<PushedTextOffset x="0" y="0"/>
 			</Button>
-			<Button name="$parentSilverButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentSilverButton" parentKey="SilverButton" inherits="MoneyFrameButtonTemplate">
 				<Size x="47" y="19"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentCopperButton" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CopperButton" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -61,10 +61,10 @@
 				<NormalFont style="NumberFontNormalLargeRight"/>
 				<PushedTextOffset x="0" y="0"/>
 			</Button>
-			<Button name="$parentGoldButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentGoldButton" parentKey="GoldButton" inherits="MoneyFrameButtonTemplate">
 				<Size x="47" y="19"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentSilverButton" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.SilverButton" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -133,7 +133,7 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Button name="$parentCopperButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentCopperButton" parentKey="CopperButton" inherits="MoneyFrameButtonTemplate">
 				<Size x="32" y="13"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-13" y="0"/>
@@ -157,10 +157,10 @@
 				<NormalFont style="NumberFontNormalRight"/>
 				<PushedTextOffset x="0" y="0"/>
 			</Button>
-			<Button name="$parentSilverButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentSilverButton" parentKey="SilverButton" inherits="MoneyFrameButtonTemplate">
 				<Size x="32" y="13"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentCopperButton" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CopperButton" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -181,10 +181,10 @@
 				<NormalFont style="NumberFontNormalRight"/>
 				<PushedTextOffset x="0" y="0"/>
 			</Button>
-			<Button name="$parentGoldButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentGoldButton" parentKey="GoldButton" inherits="MoneyFrameButtonTemplate">
 				<Size x="32" y="13"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentSilverButton" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.SilverButton" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

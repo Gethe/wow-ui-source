@@ -1,4 +1,5 @@
-﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TutorialMainFrame.lua" />
 
 	<Frame name="NPE_TutorialMainFrame_Frame" mixin="NPE_TutorialMainFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
@@ -16,7 +17,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentkey="Icon" useAtlasSize="true">
+						<Texture parentKey="Icon" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="LEFT" x="0" y="0"/>
 							</Anchors>
@@ -58,7 +59,7 @@
 		<Size x="40" y="35" />
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentkey="KeyIcon" atlas="newplayertutorial-icon-key" useAtlasSize="true">
+				<Texture parentKey="KeyIcon" atlas="newplayertutorial-icon-key" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
@@ -87,7 +88,7 @@
 					<Anchor point="CENTER" />
 				</Anchors>
 				<Frames>
-					<Frame parentkey="KeyBind" inherits="KeyBindingTemplate">
+					<Frame parentKey="KeyBind" inherits="KeyBindingTemplate">
 						<Anchors>
 							<Anchor point="LEFT" x="0" y="0"/>
 						</Anchors>
@@ -125,22 +126,22 @@
 					<Anchor point="CENTER" />
 				</Anchors>
 					<Frames>
-						<Frame parentkey="TURNLEFT" inherits="KeyBindingTemplate">
+						<Frame parentKey="TURNLEFT" inherits="KeyBindingTemplate">
 							<Anchors>
 								<Anchor point="LEFT" x="0" y="-15"/>
 							</Anchors>
 						</Frame>
-						<Frame parentkey="MOVEBACKWARD" inherits="KeyBindingTemplate">
+						<Frame parentKey="MOVEBACKWARD" inherits="KeyBindingTemplate">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.TURNLEFT" relativePoint="RIGHT" />
 							</Anchors>
 						</Frame>
-						<Frame parentkey="MOVEFORWARD" inherits="KeyBindingTemplate">
+						<Frame parentKey="MOVEFORWARD" inherits="KeyBindingTemplate">
 							<Anchors>
 								<Anchor point="BOTTOM" relativeKey="$parent.MOVEBACKWARD" relativePoint="TOP" />
 							</Anchors>
 						</Frame>
-						<Frame parentkey="TURNRIGHT" inherits="KeyBindingTemplate">
+						<Frame parentKey="TURNRIGHT" inherits="KeyBindingTemplate">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.MOVEBACKWARD" relativePoint="RIGHT" />
 							</Anchors>

@@ -23,3 +23,11 @@ end
 function AchievementCategoryButton_Localize(button)
 
 end
+
+function AchievementButton_Localize(button)
+
+end
+
+function AchievementComparisonButton_Localize(button)
+
+end

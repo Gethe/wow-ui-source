@@ -190,3 +190,13 @@ function InspectPaperDollViewButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	DressUpItemTransmogInfoList(C_TransmogCollection.GetInspectItemTransmogInfoList());
 end
+
+InspectPaperDollFrameTalentsButtonMixin = {};
+
+function InspectPaperDollFrameTalentsButtonMixin:OnClick()
+	ClassTalentFrame_LoadUI();
+
+	local suggestedTab = nil;
+	local inspectUnit = InspectFrame.unit;
+	ToggleTalentFrame(suggestedTab, inspectUnit);
+end

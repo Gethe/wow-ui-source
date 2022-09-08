@@ -48,7 +48,7 @@ function CovenantRenownToastMixin:SetupRewardVisuals(covenantID, renownLevel)
 
 	if #rewards > 0 then
 		local primaryRewardInfo = rewards[1];
-		local icon, name = CovenantUtil.GetUnformattedRenownRewardInfo(primaryRewardInfo, GenerateClosure(self.SetupRewardVisuals, self, covenantID, renownLevel))
+		local icon, name = RenownRewardUtil.GetUnformattedRenownRewardInfo(primaryRewardInfo, GenerateClosure(self.SetupRewardVisuals, self, covenantID, renownLevel))
 
 		if icon then
 			self.RewardIcon:SetTexture(icon);
@@ -183,7 +183,7 @@ function CovenantRenownToastMixin:RefreshTooltip()
 		GameTooltip_AddHighlightLine(GameTooltip, RENOWN_REWARD_CAPSTONE_TOOLTIP_DESC2);
 	else
 		if #rewards == 1 then
-			local icon, name, description = CovenantUtil.GetRenownRewardInfo(rewards[1], onItemUpdateCallback);
+			local icon, name, description = RenownRewardUtil.GetRenownRewardInfo(rewards[1], onItemUpdateCallback);
 			GameTooltip_SetTitle(GameTooltip, name);
 			GameTooltip_AddNormalLine(GameTooltip, description);
 			addRewards = false;
@@ -193,7 +193,7 @@ function CovenantRenownToastMixin:RefreshTooltip()
 	end
 	if addRewards then
 		for i, rewardInfo in ipairs(rewards) do
-			local icon, name, description = CovenantUtil.GetRenownRewardInfo(rewardInfo, onItemUpdateCallback);
+			local icon, name, description = RenownRewardUtil.GetRenownRewardInfo(rewardInfo, onItemUpdateCallback);
 			if name then
 				GameTooltip_AddNormalLine(GameTooltip, RENOWN_REWARD_TOOLTIP_REWARD_LINE:format(name));
 			end

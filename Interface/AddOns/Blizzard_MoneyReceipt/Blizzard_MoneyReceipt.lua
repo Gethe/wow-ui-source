@@ -10,12 +10,12 @@ end
 
 local beginTrackingEvents = {
 	MERCHANT_SHOW = true,
-	MAIL_SHOW = true,
+	MAIL_SHOW = true, 
 };
 
 local endTrackingEvents = {
 	MERCHANT_CLOSED = true,
-	MAIL_CLOSED = true,
+	MAIL_CLOSED = true, 
 };
 
 function ReceiptMixin:OnEvent(event, ...)

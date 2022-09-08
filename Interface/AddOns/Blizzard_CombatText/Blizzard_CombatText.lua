@@ -17,65 +17,80 @@ COMBAT_TEXT_X_ADJUSTMENT = 80;
 COMBAT_TEXT_Y_SCALE = 1;
 COMBAT_TEXT_X_SCALE = 1;
 
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextLowManaHealth");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextAuras");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextCombatState");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextDodgeParryMiss");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextDamageReduction");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextRepChanges");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextReactives");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextFriendlyHealers");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextComboPoints");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextEnergyGains");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextPeriodicEnergyGains");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextFloatMode");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextHonorGains");
+CVarCallbackRegistry:SetCVarCachable("floatingCombatTextHonorGains");
+
 --[[
 List of COMBAT_TEXT_TYPE_INFO attributes
 ======================================================
 r, g, b = [floats]  --  The floating text color
 show = [nil, 1]  --  Display this message type in the UI
 isStaggered = [nil, 1]  --  Randomly stagger these messages from left to right
-var = [nil, 1]  --  This messageType is shown if this variable resolves to "1"
+cvar = [nil, 1]  --  This messageType is shown if this variable resolves to "1"
 ]]
 
 COMBAT_TEXT_TYPE_INFO = {};
 COMBAT_TEXT_TYPE_INFO["INTERRUPT"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["DAMAGE_CRIT"] = {r = 1, g = 0.1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["DAMAGE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, show = 1};
-COMBAT_TEXT_TYPE_INFO["MISS"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["DODGE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["PARRY"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["EVADE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["IMMUNE"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["DEFLECT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["REFLECT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["RESIST"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["BLOCK"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["ABSORB"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
+COMBAT_TEXT_TYPE_INFO["MISS"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["DODGE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["PARRY"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["EVADE"] = {r = 1, g = 0.1, b = 0.1, isStaggered = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["IMMUNE"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["DEFLECT"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["REFLECT"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["RESIST"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDamageReduction"};
+COMBAT_TEXT_TYPE_INFO["BLOCK"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDamageReduction"};
+COMBAT_TEXT_TYPE_INFO["ABSORB"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDamageReduction"};
 COMBAT_TEXT_TYPE_INFO["SPELL_DAMAGE_CRIT"] = {r = 0.79, g = 0.3, b = 0.85, show = 1};
 COMBAT_TEXT_TYPE_INFO["SPELL_DAMAGE"] = {r = 0.79, g = 0.3, b = 0.85, show = 1};
-COMBAT_TEXT_TYPE_INFO["SPELL_MISS"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_DODGE"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_PARRY"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_EVADE"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_IMMUNE"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_DEFLECT"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_REFLECT"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_RESIST"] = {r = 0.79, g = 0.3, b = 0.85, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["SPELL_BLOCK"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
-COMBAT_TEXT_TYPE_INFO["SPELL_ABSORB"] = {r = 0.79, g = 0.3, b = 0.85, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
+COMBAT_TEXT_TYPE_INFO["SPELL_MISS"] = {r = 1, g = 1, b = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["SPELL_DODGE"] = {r = 1, g = 1, b = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["SPELL_PARRY"] = {r = 1, g = 1, b = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["SPELL_EVADE"] = {r = 1, g = 1, b = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["SPELL_IMMUNE"] = {r = 1, g = 1, b = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["SPELL_DEFLECT"] = {r = 1, g = 1, b = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["SPELL_REFLECT"] = {r = 1, g = 1, b = 1, cvar = "floatingCombatTextDodgeParryMiss"};
+COMBAT_TEXT_TYPE_INFO["SPELL_RESIST"] = {r = 0.79, g = 0.3, b = 0.85, cvar = "floatingCombatTextDamageReduction"};
+COMBAT_TEXT_TYPE_INFO["SPELL_BLOCK"] = {r = 1, g = 1, b = 1, cvar = "floatingCombatTextDamageReduction"};
+COMBAT_TEXT_TYPE_INFO["SPELL_ABSORB"] = {r = 0.79, g = 0.3, b = 0.85, cvar = "floatingCombatTextDamageReduction"};
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_CRIT"] = {r = 0.1, g = 1, b = 0.1, show = 1};
-COMBAT_TEXT_TYPE_INFO["ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_ENERGIZE"};
-COMBAT_TEXT_TYPE_INFO["PERIODIC_ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE"};
+COMBAT_TEXT_TYPE_INFO["ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextEnergyGains"};
+COMBAT_TEXT_TYPE_INFO["PERIODIC_ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextPeriodicEnergyGains"};
 COMBAT_TEXT_TYPE_INFO["SPELL_CAST"] = {r = 0.1, g = 1, b = 0.1, show = 1};
-COMBAT_TEXT_TYPE_INFO["SPELL_AURA_END"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_AURA_END_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_AURA_START"] = {r = 0.1, g = 1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_AURA_START_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_AURAS"};
-COMBAT_TEXT_TYPE_INFO["SPELL_ACTIVE"] = {r = 1, g = 0.82, b = 0, var = "COMBAT_TEXT_SHOW_REACTIVES"};
-COMBAT_TEXT_TYPE_INFO["FACTION"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_REPUTATION"};
+COMBAT_TEXT_TYPE_INFO["SPELL_AURA_END"] = {r = 0.1, g = 1, b = 0.1, cvar = "floatingCombatTextAuras"};
+COMBAT_TEXT_TYPE_INFO["SPELL_AURA_END_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextAuras"};
+COMBAT_TEXT_TYPE_INFO["SPELL_AURA_START"] = {r = 0.1, g = 1, b = 0.1, cvar = "floatingCombatTextAuras"};
+COMBAT_TEXT_TYPE_INFO["SPELL_AURA_START_HARMFUL"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextAuras"};
+COMBAT_TEXT_TYPE_INFO["SPELL_ACTIVE"] = {r = 1, g = 0.82, b = 0, cvar = "floatingCombatTextReactives"};
+COMBAT_TEXT_TYPE_INFO["FACTION"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextRepChanges"};
 COMBAT_TEXT_TYPE_INFO["HEAL_CRIT"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["DAMAGE_SHIELD"] = {r = 0.79, g = 0.3, b = 0.85, show = 1};
 COMBAT_TEXT_TYPE_INFO["SPELL_DISPELLED"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["EXTRA_ATTACKS"] = {r = 1, g = 1, b = 1};
 COMBAT_TEXT_TYPE_INFO["SPLIT_DAMAGE"] = {r = 1, g = 1, b = 1, show = 1};
-COMBAT_TEXT_TYPE_INFO["HONOR_GAINED"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_HONOR_GAINED"};
-COMBAT_TEXT_TYPE_INFO["HEALTH_LOW"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"};
-COMBAT_TEXT_TYPE_INFO["MANA_LOW"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA"};
-COMBAT_TEXT_TYPE_INFO["ENTERING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_COMBAT_STATE"};
-COMBAT_TEXT_TYPE_INFO["LEAVING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_COMBAT_STATE"};
-COMBAT_TEXT_TYPE_INFO["COMBO_POINTS"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_COMBO_POINTS"};
-COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_ENERGIZE"};
+COMBAT_TEXT_TYPE_INFO["HONOR_GAINED"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextHonorGains"};
+COMBAT_TEXT_TYPE_INFO["HEALTH_LOW"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextLowManaHealth"};
+COMBAT_TEXT_TYPE_INFO["MANA_LOW"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextLowManaHealth"};
+COMBAT_TEXT_TYPE_INFO["ENTERING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextCombatState"};
+COMBAT_TEXT_TYPE_INFO["LEAVING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextCombatState"};
+COMBAT_TEXT_TYPE_INFO["COMBO_POINTS"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextComboPoints"};
+COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextEnergyGains"};
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL_CRIT_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
@@ -85,6 +100,11 @@ function CombatText_OnLoad(self)
 	CombatText_UpdateDisplayedMessages();
 	CombatText.previousMana = {};
 	CombatText.xDir = 1;
+	
+	local function OnValueChanged()
+		CombatText_UpdateDisplayedMessages();
+	end
+	Settings.SetOnValueChangedCallback("enableFloatingCombatText", OnValueChanged);
 end
 
 function CombatText_OnEvent(self, event, ...)
@@ -174,7 +194,7 @@ function CombatText_OnEvent(self, event, ...)
 	-- See if we should display the message or not
 	if ( not info.show ) then
 		-- When Resists aren't being shown, partial resists should display as Damage
-		if (info.var == "COMBAT_TEXT_SHOW_RESISTANCES" and arg3) then
+		if (info.cvar == "floatingCombatTextDamageReduction" and arg3) then
 			if ( strsub(messageType, 1, 5) == "SPELL" ) then
 				messageType = arg4 and "SPELL_DAMAGE_CRIT" or "SPELL_DAMAGE";
 			else
@@ -208,27 +228,27 @@ function CombatText_OnEvent(self, event, ...)
 	elseif ( messageType == "SPELL_AURA_END" or messageType == "SPELL_AURA_END_HARMFUL" ) then
 		message = format(AURA_END, data);
 	elseif ( messageType == "HEAL" or messageType == "PERIODIC_HEAL") then
-		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and messageType == "HEAL" and UnitName(self.unit) ~= data ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers") and messageType == "HEAL" and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).." ["..data.."]";
 		else
 			message = "+"..BreakUpLargeNumbers(arg3);
 		end
 	elseif ( messageType == "HEAL_ABSORB" or messageType == "PERIODIC_HEAL_ABSORB") then
-		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and messageType == "HEAL_ABSORB" and UnitName(self.unit) ~= data ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers") and messageType == "HEAL_ABSORB" and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).." ["..data.."] "..format(ABSORB_TRAILER, arg4);
 		else
 			message = "+"..BreakUpLargeNumbers(arg3).." "..format(ABSORB_TRAILER, arg4);
 		end
 	elseif ( messageType == "HEAL_CRIT" or messageType == "PERIODIC_HEAL_CRIT" ) then
 		displayType = "crit";
-		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and UnitName(self.unit) ~= data ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers") and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).." ["..data.."]";
 		else
 			message = "+"..BreakUpLargeNumbers(arg3);
 		end
 	elseif ( messageType == "HEAL_CRIT_ABSORB" ) then
 		displayType = "crit";
-		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and UnitName(self.unit) ~= data ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers") and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).." ["..data.."] "..format(ABSORB_TRAILER, arg4);
 		else
 			message = "+"..BreakUpLargeNumbers(arg3).." "..format(ABSORB_TRAILER, arg4);
@@ -324,7 +344,7 @@ function CombatText_OnEvent(self, event, ...)
 			message = nil;
 		end
 	elseif (messageType == "ABSORB_ADDED") then
-		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and UnitName(self.unit) ~= data ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("floatingCombatTextFriendlyHealers") and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).."("..COMBAT_TEXT_ABSORB..")".." ["..data.."]";
 		else
 			message = "+"..BreakUpLargeNumbers(arg3).."("..COMBAT_TEXT_ABSORB..")";
@@ -543,7 +563,7 @@ end
 
 function CombatText_UpdateDisplayedMessages()
 	-- Unregister events if combat text is disabled
-	if ( SHOW_COMBAT_TEXT == "0" ) then
+	if ( not CVarCallbackRegistry:GetCVarValueBool("enableFloatingCombatText") ) then
 		CombatText:UnregisterEvent("COMBAT_TEXT_UPDATE");
 		CombatText:UnregisterEvent("UNIT_HEALTH");
 		CombatText:UnregisterEvent("UNIT_POWER_UPDATE");
@@ -582,8 +602,8 @@ function CombatText_UpdateDisplayedMessages()
 
 	-- Update shown messages
 	for index, value in pairs(COMBAT_TEXT_TYPE_INFO) do
-		if ( value.var ) then
-			if ( _G[value.var] == "1" ) then
+		if ( value.cvar ) then
+			if ( CVarCallbackRegistry:GetCVarValueBool(value.cvar) ) then
 				value.show = 1;
 			else
 				value.show = nil;
@@ -591,7 +611,8 @@ function CombatText_UpdateDisplayedMessages()
 		end
 	end
 	-- Update scrolldirection
-	if ( COMBAT_TEXT_FLOAT_MODE == "1" ) then
+	local textFloatMode = CVarCallbackRegistry:GetCVarValue("floatingCombatTextFloatMode");
+	if ( textFloatMode == "1") then
 		COMBAT_TEXT_SCROLL_FUNCTION = CombatText_StandardScroll;
 		COMBAT_TEXT_LOCATIONS = {
 			startX = 0,
@@ -600,7 +621,7 @@ function CombatText_UpdateDisplayedMessages()
 			endY = 609 * COMBAT_TEXT_Y_SCALE
 		};
 
-	elseif ( COMBAT_TEXT_FLOAT_MODE == "2" ) then
+	elseif ( textFloatMode == "2" ) then
 		COMBAT_TEXT_SCROLL_FUNCTION = CombatText_StandardScroll;
 		COMBAT_TEXT_LOCATIONS = {
 			startX = 0,

@@ -1,25 +1,25 @@
-OribosScrollBarButtonScriptsMixin = CreateFromMixins(ScrollBarButtonBehaviorMixin);
+OribosScrollBarButtonScriptsMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
 function OribosScrollBarButtonScriptsMixin:OnEnter()
-	if ScrollBarButtonBehaviorMixin.OnEnter(self) then
+	if ButtonStateBehaviorMixin.OnEnter(self) then
 		self.Enter:Show();
 	end
 end
 
 function OribosScrollBarButtonScriptsMixin:OnLeave()
-	if ScrollBarButtonBehaviorMixin.OnLeave(self) then
+	if ButtonStateBehaviorMixin.OnLeave(self) then
 		self.Enter:Hide();
 	end
 end
 
 function OribosScrollBarButtonScriptsMixin:OnMouseDown()
-	if ScrollBarButtonBehaviorMixin.OnMouseDown(self) then
+	if ButtonStateBehaviorMixin.OnMouseDown(self) then
 		self.Down:Show();
 	end
 end
 
 function OribosScrollBarButtonScriptsMixin:OnMouseUp()
-	if ScrollBarButtonBehaviorMixin.OnMouseUp(self) then
+	if ButtonStateBehaviorMixin.OnMouseUp(self) then
 		self.Down:Hide();
 	end
 end
@@ -29,6 +29,6 @@ function OribosScrollBarButtonScriptsMixin:OnEnable()
 end
 
 function OribosScrollBarButtonScriptsMixin:OnDisable()
-	ScrollBarButtonBehaviorMixin.OnDisable(self);
+	ButtonStateBehaviorMixin.OnDisable(self);
 	self:DesaturateHierarchy(1);
 end

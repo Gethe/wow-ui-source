@@ -2,56 +2,6 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_BlackMarketUI.lua"/>
 
-<!--
-	<Button name="BlackMarketColumnButtonTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="5" y="19"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.078125" top="0" bottom="0.59375"/>
-				</Texture>
-				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="4" y="19"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.59375"/>
-				</Texture>
-				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="10" y="19"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
-					</Anchors>
-					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.59375"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<ButtonText name="$parentText">
-			<Anchors>
-				<Anchor point="LEFT" x="8" y="0"/>
-			</Anchors>
-		</ButtonText>
-		<NormalFont style="GameFontHighlightSmall"/>
-		<NormalTexture name="$parentArrow" file="Interface\Buttons\UI-SortArrow">
-			<Size x="9" y="8"/>
-			<Anchors>
-				<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT" x="3" y="-2"/>
-			</Anchors>
-			<TexCoords left="0" right="0.5625" top="0" bottom="1.0"/>
-		</NormalTexture>
-		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
-			<Size x="5" y="24"/>
-			<Anchors>
-				<Anchor point="LEFT" x="0" y="0"/>
-				<Anchor point="RIGHT" x="4" y="0"/>
-			</Anchors>
-		</HighlightTexture>
-	</Button>
--->
 	<Frame name="BlackMarketColumnButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -86,7 +36,7 @@
 		</Layers>
 	</Frame>
 
-	<Button name="BlackMarketItemTemplate" virtual="true">
+	<Button name="BlackMarketItemTemplate" mixin="BlackMarketItemMixin" virtual="true">
 		<Size x="570" y="37"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -211,7 +161,7 @@
 						if ( IsModifiedClick() ) then
 							HandleModifiedItemClick(self:GetParent().itemLink);
 						else
-							BlackMarketItem_OnClick(self:GetParent(), button, down);
+							self:GetParent():OnClick(button, down);
 						end
 					</OnClick>
 				</Scripts>
@@ -257,12 +207,12 @@
 						if ( IsModifiedClick() ) then
 							HandleModifiedItemClick(self:GetParent().itemLink);
 						else
-							BlackMarketItem_OnClick(self:GetParent(), button, down);
+							self:GetParent():OnClick(button, down);
 						end
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="CurrentBid" name="$parentCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
+			<Frame parentKey="CurrentBid" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" x="6" y="-3"/>
 				</Anchors>
@@ -275,13 +225,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(self.itemLink);
-				else
-					BlackMarketItem_OnClick(self, button, down);
-				end
-			</OnClick>
+			<OnClick method="OnClick"/>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" alpha="0.8">
 			<Anchors>
@@ -409,202 +353,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-<!--		<Frame parentKey="TopSearch">
-				<Size x="750" y="52"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" x="40" y="-45"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="SearchNameText" inherits="GameFontHighlightSmall" text="NAME">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="2" y="0"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="SearchLevelText" inherits="GameFontHighlightSmall" text="LEVEL_RANGE">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.SearchNameText" x="166" y="0"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="SearchRarity" inherits="GameFontHighlightSmall" text="RARITY">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.SearchLevelText" x="94" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<EditBox parentKey="SearchName" autoFocus="false" inherits="InputBoxTemplate" bytes="64">
-						<Size x="140" y="16"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.SearchNameText" relativePoint="BOTTOMLEFT" x="3" y="-6"/>
-						</Anchors>
-						<Scripts>
-							<OnTabPressed>
-								if ( IsShiftKeyDown() ) then
-									self.GetParent().SearchMaxLevel:SetFocus();
-								else
-									self.GetParent().SearchMinLevel:SetFocus();
-								end
-							</OnTabPressed>
-							<OnEnterPressed>
-								self:ClearFocus();
-							</OnEnterPressed>
-						</Scripts>
-						<FontString inherits="ChatFontNormal"/>
-					</EditBox>
-					<EditBox parentKey="SearchMinLevel" name="BlackMarketMinLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
-						<Size x="25" y="16"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.SearchLevelText" relativePoint="BOTTOMLEFT" x="6" y="-6"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString inherits="GameFontHighlightSmall" text="-">
-									<Anchors>
-										<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="1"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnTabPressed>
-								if ( IsShiftKeyDown() ) then
-									self.GetParent().SearchName:SetFocus();
-								else
-									self.GetParent().SearchMaxLevel:SetFocus();
-								end
-							</OnTabPressed>
-							<OnEnterPressed function="EditBox_ClearFocus"/>
-						</Scripts>
-					</EditBox>
-					<EditBox parentKey="SearchMaxLevel" name="BlackMarketMaxLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
-						<Size x="25" y="16"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.SearchMinLevel" relativePoint="RIGHT" x="12" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnTabPressed>
-								if ( IsShiftKeyDown() ) then
-									self.GetParent().SearchMinLevel:SetFocus();
-								else
-									self.GetParent().SearchName:SetFocus();
-								end
-							</OnTabPressed>
-							<OnEnterPressed function="EditBox_ClearFocus"/>
-						</Scripts>
-					</EditBox>
-					<Frame parentKey="RarityDropDown" name="BlackMarket_RarityDropDown" inherits="UIDropDownMenuTemplate" id="1">
-						<Size x="24" y="24"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.SearchRarity" relativePoint="BOTTOMLEFT" x="-20" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad function="BlackMarket_RarityDropDown_OnLoad"/>
-							<OnShow function="BlackMarket_RarityDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
-					<CheckButton parentKey="IsUsableCheckButton" name="BlackMarket_IsUsableCheckBox" inherits="UICheckButtonTemplate">
-						<Size x="24" y="24"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.SearchRarity" relativePoint="RIGHT" x="96" y="-9"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.text:SetFontObject("GameFontHighlightSmall");
-								self.text:SetText(USABLE_ITEMS);
-							</OnLoad>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnClick>
-						</Scripts>
-					</CheckButton>
-					<CheckButton parentKey="ShowOnPlayerCheckButton" name="BlackMarket_ShowOnPlayerCheckBox" inherits="UICheckButtonTemplate">
-						<Size x="24" y="24"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.IsUsableCheckButton" relativePoint="BOTTOMLEFT" x="0" y="2"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.text:SetFontObject("GameFontHighlightSmall");
-								self.text:SetText(DISPLAY_ON_CHARACTER);
-							</OnLoad>
-							<OnShow>
-								self:SetChecked(GetCVarBool("auctionDisplayOnCharacter"));
-							</OnShow>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								SetCVar("auctionDisplayOnCharacter", self:GetChecked());
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-								GameTooltip:SetText(DISPLAY_ON_CHAR_TOOLTIP, nil, nil, nil, nil, true);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</CheckButton>
-					<Button parentKey="SearchButton" inherits="UIPanelButtonTemplate" text="SEARCH">
-						<Size x="80" y="22"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="3" y="-2"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="BlackMarket_Search_OnClick"/>
-						</Scripts>
-					</Button>
-					<Button parentKey="PrevPageButton">
-						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.SearchButton" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="PREV">
-									<Size x="60" y="10"/>
-									<Anchors>
-										<Anchor point="LEFT" relativePoint="RIGHT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</Button>
-					<Button parentKey="BrowseNextPageButton">
-						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.SearchButton" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString inherits="GameFontHighlightSmall" justifyH="RIGHT" text="NEXT">
-									<Size x="60" y="10"/>
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick>
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</Button>
-				</Frames>
-			</Frame>
--->
 			<Frame parentKey="HotDeal">
 				<Size x="212" y="270"/>
 				<Anchors>
@@ -612,11 +360,6 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-<!--
-						<Texture setAllPoints="true">
-							<Color r="0" g="0" b="0" a="0.75"/>
-						</Texture>
--->
 						<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="CENTER" text="HOT_ITEM">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-10"/>
@@ -871,18 +614,24 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="NoItems" inherits="QuestFont_Super_Huge" justifyH="CENTER" hidden="true" text="BLACK_MARKET_NO_ITEMS">
 							<Anchors>
-								<Anchor point="TOP" x="" y="-20"/>
+								<Anchor point="TOP" x="0" y="-20"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
-			<ScrollFrame name="BlackMarketScrollFrame" inherits="MinimalHybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="6" y="-7"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="-27" y="7"/>
 				</Anchors>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</EventFrame>
 			<Frame parentKey="MoneyFrameBorder" inherits="ThinGoldEdgeTemplate">
 				<Size x="155" y="20"/>
 				<Anchors>

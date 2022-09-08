@@ -256,7 +256,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										self.text:SetText(COMMUNITIES_NOTIFICATION_SETTINGS_DIALOG_QUICK_JOIN_LABEL);
+										self.Text:SetText(COMMUNITIES_NOTIFICATION_SETTINGS_DIALOG_QUICK_JOIN_LABEL);
 									</OnLoad>
 									<OnClick>
 										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

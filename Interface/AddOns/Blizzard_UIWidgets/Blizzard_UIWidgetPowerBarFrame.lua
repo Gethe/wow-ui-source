@@ -2,7 +2,11 @@ UIWidgetPowerBarContainerMixin = {}
 
 local function WidgetsLayout(widgetContainer, sortedWidgets)
 	DefaultWidgetLayout(widgetContainer, sortedWidgets);
-	UIParent_ManageFramePositions();
+
+	EncounterBar:Layout();
+	if EncounterBar:IsInDefaultPosition() then
+		UIParent_ManageFramePositions();
+	end
 end
 
 function UIWidgetPowerBarContainerMixin:OnLoad()

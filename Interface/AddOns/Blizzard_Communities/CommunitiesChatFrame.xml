@@ -4,7 +4,7 @@
 	
 	<Frame name="CommunitiesChatTemplate" mixin="CommunitiesChatMixin" virtual="true">
 		<Frames>
-			<ScrollingMessageFrame parentKey="MessageFrame" enableMouseWheel="true">
+			<ScrollingMessageFrame parentKey="MessageFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>

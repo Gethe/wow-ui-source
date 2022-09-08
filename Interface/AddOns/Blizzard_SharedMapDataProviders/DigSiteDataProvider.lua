@@ -1,5 +1,5 @@
 DigSiteDataProviderMixin = CreateFromMixins(CVarMapCanvasDataProviderMixin);
-DigSiteDataProviderMixin:Init("digSites", "SHOW_DIG_SITES");
+DigSiteDataProviderMixin:Init("digSites");
 
 function DigSiteDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("DigSitePinTemplate");

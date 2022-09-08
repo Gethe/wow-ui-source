@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonSharedTemplates.lua"/>
 
 	<Frame name="GarrisonUITemplate" inherits="BaseBasicFrameTemplate" virtual="true">
@@ -195,29 +195,19 @@
 	</Frame>
 
 	<Frame name="GarrisonListTemplate" inherits="GarrisonMissionBaseFrameTemplate" virtual="true">
-		<Size x="300" y="575"/>
 		<Frames>
-			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-6"/>
-					<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+					<Anchor point="BOTTOMRIGHT" x="-23" y="8"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-12"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="12"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.trackBG:Show();
-								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
-								self.doNotHide = true;
-							</OnLoad>
-						</Scripts>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 	</Frame>
 
@@ -333,9 +323,7 @@
 	</Button>
 
 	<Button name="GarrisonFollowerCombatAllySpellTemplate" virtual="true" mixin="GarrisonFollowerCombatAllySpellMixin">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>
+		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="iconTexture" setAllPoints="true"/>
@@ -610,7 +598,7 @@
 					</Anchors>
 					<Color r="0.1" g="1" b="0.1"/>
 				</FontString>
-				<FontString parentKey="TextInvalid" inherits="GameFontNormal" textwrap="true" text="GARRISON_FOLLOWER_UPGRADE_REQUIRES_MAX_LEVEL">
+				<FontString parentKey="TextInvalid" inherits="GameFontNormal" text="GARRISON_FOLLOWER_UPGRADE_REQUIRES_MAX_LEVEL">
 					<Size x="200" y="0"/>
 					<Anchors>
 						<Anchor point="BOTTOM"/>

@@ -1,10 +1,13 @@
 --PET_WARNING_TIME = 55;
 --PET_FLASH_ON_TIME = 0.5;
 --PET_FLASH_OFF_TIME = 0.5;
+PetFrameMixin=CreateFromMixins(PartyMemberAuraMixin);
+
+function PetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
+	self:UpdateMemberAuras(unitAuraUpdateInfo);
+end
 
 function PetFrame_OnLoad (self)
-	self.noTextPrefix = true;
-
 	PetFrameHealthBar.LeftText = PetFrameHealthBarTextLeft;
 	PetFrameHealthBar.RightText = PetFrameHealthBarTextRight;
 	PetFrameManaBar.LeftText = PetFrameManaBarTextLeft;
@@ -76,13 +79,22 @@ function PetFrame_Update (self, override)
 			end
 			PetAttackModeTexture:Hide();
 
-			RefreshDebuffs(self, self.unit, nil, nil, true);
+			self:UpdateAuras();
 		else
 			self:Hide();
 		end
 	end
-	
-	PetFrame_UpdateAnchoring(self)
+
+	-- Portrait masking is usually done already, but player portraits opt out of that because they might not always be circles.
+	-- In this case, we manually re-apply the circle mask. 
+	if(UnitIsPlayer(self.unit)) then
+		PetPortrait:AddMaskTexture(self.CircleMask);
+	else
+		PetPortrait:RemoveMaskTexture(self.CircleMask);
+	end
+
+	PetFrame_UpdateAnchoring(self);
+	PlayerFrame_AdjustAttachments();
 end
 
 function PetFrame_OnEvent (self, event, ...)
@@ -107,7 +119,8 @@ function PetFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == self.unit ) then
-			RefreshDebuffs(self, self.unit, nil, nil, true);
+			local unitAuraUpdateInfo = arg2;
+			self:UpdateAuras(unitAuraUpdateInfo);
 		end
 	elseif ( event == "PET_ATTACK_START" ) then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
@@ -138,29 +151,6 @@ function PetFrame_OnUpdate (self, elapsed)
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, alpha);
 	end
 	CombatFeedback_OnUpdate(self, elapsed);
-	-- Expiration flash stuff
-	--local petTimeRemaining = nil;
-	--if ( GetPetTimeRemaining() ) then
-	---	if ( self.flashState == 1 ) then
-	--		self:SetAlpha(this.flashTimer/PET_FLASH_ON_TIME);
-	--	else
-	--		self:SetAlpha((PET_FLASH_OFF_TIME - this.flashTimer)/PET_FLASH_OFF_TIME);
-	--	end
-	--	petTimeRemaining = GetPetTimeRemaining() / 1000;
-	--end
-	--if ( petTimeRemaining and (petTimeRemaining < PET_WARNING_TIME) ) then
-	--	PetFrame.flashTimer = PetFrame.flashTimer - elapsed;
-	--	if ( PetFrame.flashTimer <= 0 ) then
-	--		if ( PetFrame.flashState == 1 ) then
-	--			PetFrame.flashState = 0;
-	--			PetFrame.flashTimer = PET_FLASH_OFF_TIME;
-	--		else
-	--			PetFrame.flashState = 1;
-	--			PetFrame.flashTimer = PET_FLASH_ON_TIME;
-	--		end
-	--	end
-	--end
-	
 end
 
 function PetFrameDropDown_OnLoad (self)
@@ -182,7 +172,7 @@ function PetFrameDropDown_Initialize ()
 end
 
 function PetCastingBarFrame_OnLoad (self)
-	CastingBarFrame_OnLoad(self, "pet", false, false);
+	self:OnLoad("pet", false, false);
 
 	self:RegisterEvent("UNIT_PET");
 
@@ -203,5 +193,5 @@ function PetCastingBarFrame_OnEvent (self, event, ...)
 		end
 		return;
 	end
-	CastingBarFrame_OnEvent(self, event, ...);
+	self:OnEvent(event, ...);
 end

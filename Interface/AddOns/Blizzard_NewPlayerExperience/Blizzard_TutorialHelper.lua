@@ -90,36 +90,17 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetItemContainerFrame(container, slot)
-	local frameIndex = (GetContainerNumSlots(container) + 1) - slot;
-	if (container == 0 and not IsAccountSecured()) then
-		frameIndex = frameIndex + 4;
-	end
-	return _G["ContainerFrame" .. (container + 1) .. "Item" .. frameIndex];
+	local item = ContainerFrame_GetItemButtonCheckSecuredAccount(container, slot);
+	return item;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:CloseAllBags()
-	if IsBagOpen(0) then
-		CloseBackpack()
-	end
-
-	for i = 1, NUM_BAG_FRAMES, 1 do
-		if IsBagOpen(i) then
-			CloseBag(i);
-		end
-	end
+	CloseAllBags();
 end
 
 function TutorialHelper:OpenAllBags()
-	if not IsBagOpen(0) then
-		OpenBackpack()
-	end
-
-	for i = 1, NUM_BAG_FRAMES, 1 do
-		if not IsBagOpen(i) then
-			OpenBag(i);
-		end
-	end
+	OpenAllBags();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -235,7 +216,7 @@ function TutorialHelper:GetActionButtonBySpellID(spellID)
 
 	-- backup for stance bars
 	for i = 1, 10 do
-		local btn = _G["StanceButton" .. i];
+		local btn = StanceBar.actionButtons[i];
 		local icon, isActive, isCastable, sID = GetShapeshiftFormInfo(btn:GetID());
 
 		if (sID == spellID) then

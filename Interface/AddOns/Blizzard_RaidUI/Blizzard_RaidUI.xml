@@ -167,7 +167,7 @@
 				if ( button == "RightButton" ) then
 					RaidGroupButton_ShowMenu(self);
 				else
-					SecureUnitButton_OnClick(self, button);
+					SecureUnitButton_OnClick(self, button, down);
 				end
 			</OnClick>
 			<OnDragStart>
@@ -656,14 +656,19 @@
 			</OnMouseUp>
 		</Scripts>
 	</Button>
-	<Button name="RaidClassButton15"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
+	<Button name="RaidClassButton16"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="16">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
 		</Anchors>
 	</Button>
+	<Button name="RaidClassButton15"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="15">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton16" relativePoint="TOP" x="0" y="12"/>
+		</Anchors>
+	</Button>
 	<Button name="RaidClassButton14"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="14">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="RaidFrame" relativePoint="BOTTOMRIGHT" x="-2" y="16"/>
+			<Anchor point="BOTTOM" relativeTo="RaidClassButton15" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 	</Button>
 	<Button name="RaidClassButton13"  parent="RaidFrame" inherits="RaidClassButtonTemplate" id="13">

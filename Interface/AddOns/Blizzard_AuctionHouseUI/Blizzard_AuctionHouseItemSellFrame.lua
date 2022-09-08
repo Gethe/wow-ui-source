@@ -5,9 +5,9 @@ local ITEM_SELL_SCROLL_OFFSET_REFRESH_THRESHOLD = 30;
 AuctionHouseBuyoutModeCheckButtonMixin = {};
 
 function AuctionHouseBuyoutModeCheckButtonMixin:OnLoad()
-	self.text:SetFontObject(GameFontNormal);
-	self.text:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-	self.text:SetText(AUCTION_HOUSE_BUYOUT_MODE_CHECK_BOX);
+	self.Text:SetFontObject(GameFontNormal);
+	self.Text:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	self.Text:SetText(AUCTION_HOUSE_BUYOUT_MODE_CHECK_BOX);
 end
 
 function AuctionHouseBuyoutModeCheckButtonMixin:OnShow()

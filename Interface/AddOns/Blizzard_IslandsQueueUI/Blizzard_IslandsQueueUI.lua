@@ -175,13 +175,6 @@ function IslandsQueueFrameMixin:OnLoad()
 	self.portrait:Hide();
 	SetPortraitToTexture(self.ArtOverlayFrame.portrait, "Interface\\Icons\\icon_treasuremap");
 	self.IslandCardsFrame:RegisterForWidgetSet(ISLANDS_QUEUE_WIDGET_SET_ID, WidgetsLayout, WidgetInit);
-	self:RegisterEvent("ISLANDS_QUEUE_CLOSE");
-end
-
-function IslandsQueueFrameMixin:OnEvent(event, ...)
-	if (event == "ISLANDS_QUEUE_CLOSE") then
-		HideUIPanel(self);
-	end
 end
 
 function IslandsQueueFrameMixin:OnShow()

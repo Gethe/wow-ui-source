@@ -400,7 +400,8 @@ end
 
 function MapCanvasScrollControllerMixin:SetMapID(mapID)
 	self.mapID = mapID;
-
+    
+    EventRegistry:TriggerEvent("MapCanvas.MapSet", mapID)
 	self:OnCanvasSizeChanged();
 	self:GetMap():AddMaskableTexture(self.Child.TiledBackground);
 end

@@ -1,0 +1,35 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsCustomerOrdersMyOrders.lua"/>
+
+	<Frame name="ProfessionsCustomerOrdersMyOrdersTemplate" mixin="ProfessionsCustomerOrdersMyOrdersMixin" virtual="true">
+		<Size x="800" y="538"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="mode" value="ProfessionsCustomerOrdersMode.Orders" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="CategoryList" inherits="ProfessionsCustomerOrdersOrderCategoryListTemplate">
+				<Size x="200"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-60"/>
+					<Anchor point="BOTTOMLEFT" x="3" y="30"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="OrderList" inherits="ProfessionsCustomerOrdersOrderListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CategoryList" relativePoint="TOPRIGHT" x="5"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.CategoryList" relativePoint="BOTTOMRIGHT" x="5"/>
+					<Anchor point="TOPRIGHT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

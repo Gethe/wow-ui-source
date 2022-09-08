@@ -1445,10 +1445,6 @@ function PvpTalentFrameMixin:OnLoad()
 	end
 
 	self.InvisibleWarmodeButton:SetUp();
-
-	self.TalentList.ScrollFrame.update = function() self.TalentList:Update() end;
-	self.TalentList.ScrollFrame.ScrollBar.doNotHide = true;
-	HybridScrollFrame_CreateButtons(self.TalentList.ScrollFrame, "PvpTalentButtonTemplate", 0, -1, "TOPLEFT", "TOPLEFT", 0, -PVP_TALENT_LIST_BUTTON_OFFSET, "TOP", "BOTTOM");
 end
 
 function PvpTalentFrameMixin:OnEvent(event, ...)
@@ -1559,8 +1555,8 @@ function PvpTalentFrameMixin:SelectSlot(slot)
 	UpdateUIPanelPositions(PlayerTalentFrame);
 	self.selectedSlotIndex = slot.slotIndex;
 	slot.Arrow:Show();
-	HybridScrollFrame_SetOffset(self.TalentList.ScrollFrame, 0);
-	self.TalentList.ScrollFrame.ScrollBar:SetValue(0);
+
+	self.TalentList.ScrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 	self.TalentList:Update();
 	self.TalentList:Show();
 end
@@ -1603,6 +1599,16 @@ PvpTalentButtonMixin = {};
 
 function PvpTalentButtonMixin:SetPvpTalent(talentID)
 	self.talentID = talentID;
+end
+
+function PvpTalentButtonMixin:Init(elementData)
+	local talentID = elementData.talentID;
+	local selectedHere = elementData.selectedHere;
+	local selectedOther = elementData.selectedOther;
+	local owner = elementData.owner;
+	self:SetOwningFrame(owner);
+	self:SetPvpTalent(talentID);
+	self:Update(selectedHere, selectedOther);
 end
 
 function PvpTalentButtonMixin:Update(selectedHere, selectedOther)
@@ -1840,16 +1846,20 @@ PvpTalentListMixin = {};
 function PvpTalentListMixin:OnLoad()
 	ButtonFrameTemplate_ShowButtonBar(self);
 	FrameTemplate_SetAtticHeight(self, 8);
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("PvpTalentButtonTemplate", function(button, elementData)
+		button:Init(elementData);
+	end);
+	view:SetPadding(1,0,0,0,PVP_TALENT_LIST_BUTTON_OFFSET);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
 function PvpTalentListMixin:Update()
 	local slotIndex = self:GetParent().selectedSlotIndex;
 
 	if (slotIndex) then
-		local scrollFrame = self.ScrollFrame;
-		local offset = HybridScrollFrame_GetOffset(scrollFrame);
-		local buttons = scrollFrame.buttons;
-		local numButtons = #buttons;
 		local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);
 		if not slotInfo then
 			return;
@@ -1886,24 +1896,14 @@ function PvpTalentListMixin:Update()
 		end);
 		local selectedTalentID = slotInfo.selectedTalentID;
 
-		for i = 1, numButtons do
-			local button = buttons[i];
-			local index = offset + i;
-			if (index <= numTalents) then
-				local talentID = availableTalentIDs[index];
-				local selectedHere = selectedTalentID == talentID;
-				local selectedOther = tContains(selectedPvpTalents, talentID) and not selectedHere;
-				button:SetHeight(PVP_TALENT_LIST_BUTTON_HEIGHT);
-				button:SetOwningFrame(self:GetParent());
-				button:SetPvpTalent(talentID);
-				button:Update(selectedHere, selectedOther);
-				button:Show();
-			else
-				button:Hide();
-			end
+		local owner = self:GetParent();
+		local dataProvider = CreateDataProvider();
+		for index = 1, numTalents do
+			local talentID = availableTalentIDs[index];
+			local selectedHere = selectedTalentID == talentID;
+			local selectedOther = not selectedHere and tContains(selectedPvpTalents, talentID);
+			dataProvider:Insert({talentID=talentID, selectedHere=selectedHere, selectedOther=selectedOther, owner=owner});
 		end
-
-		local totalHeight = numTalents * PVP_TALENT_LIST_BUTTON_HEIGHT;
-		HybridScrollFrame_Update(scrollFrame, totalHeight + 10, 338);
+		self.ScrollBox:SetDataProvider(dataProvider);
 	end
 end

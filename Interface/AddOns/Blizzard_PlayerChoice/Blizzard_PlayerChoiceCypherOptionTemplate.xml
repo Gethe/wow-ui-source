@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 
 	<Frame name="PlayerChoiceCypherOptionTemplate" inherits="PlayerChoicePowerChoiceTemplate" mixin="PlayerChoiceCypherOptionTemplateMixin" virtual="true">
 		<KeyValues>
@@ -113,10 +113,10 @@
 			</Frame>
 		</Frames>
 		<Animations>
-			<AnimationGroup looping="REPEAT" SetToFinalAlpha="true" parentArray="PassiveAnimations">
+			<AnimationGroup looping="REPEAT" setToFinalAlpha="true" parentArray="PassiveAnimations">
 				<TextureCoordTranslation childKey="LineGlow" endDelay="3" duration="15" offsetU="0" offsetV="1" />
 			</AnimationGroup>
-			<AnimationGroup looping="BOUNCE" SetToFinalAlpha="true" parentArray="PassiveAnimations">
+			<AnimationGroup looping="BOUNCE" setToFinalAlpha="true" parentArray="PassiveAnimations">
 				<Alpha childKey="ArtworkGlow" duration="3" order="1" fromAlpha="0.6" toAlpha="0.9"/>
 			</AnimationGroup>
 		</Animations>

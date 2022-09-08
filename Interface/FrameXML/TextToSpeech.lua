@@ -1,4 +1,12 @@
--- Toggle button for the text to speech config window
+SpeechToTextMixin = {};
+
+function SpeechToTextMixin:OnLoad()
+	SettingsCheckBoxControlMixin.OnLoad(self);
+
+	self.SubTextContainer.SubText:ClearAllPoints();
+	self.SubTextContainer.SubText:SetPoint("LEFT", self.CheckBox, "RIGHT", 8, 0);
+end
+
 TextToSpeechButtonMixin = {};
 
 function TextToSpeechButtonFrame_OnLoad(self)

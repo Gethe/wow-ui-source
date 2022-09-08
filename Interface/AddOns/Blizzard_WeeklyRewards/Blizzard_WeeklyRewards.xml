@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_WeeklyRewards.lua"/>
 
 	<Button name="WeeklyRewardActivityItemFrameTemplate" mixin="WeeklyRewardActivityItemMixin" virtual="true">
@@ -33,12 +33,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Fontstring parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT" maxLines="3">
+				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT" maxLines="3">
 					<Size x="92" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" x="51"/>
 					</Anchors>
-				</Fontstring>
+				</FontString>
 				<Texture parentKey="IconOverlay" hidden="true">
 					<Size x="37" y="37"/>
 					<Anchors>
@@ -49,7 +49,7 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="GlowSpinAnim" looping="REPEAT">
-				<Rotation childKey="GlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+				<Rotation childKey="GlowSpin" degrees="-360" duration="15"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

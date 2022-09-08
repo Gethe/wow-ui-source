@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="StatusTrackingBar.lua"/>
 	<Script file="ReputationBar.lua"/>
-	<Frame name="ReputationStatusBarTemplate" inherits="StatusTrackingBarTemplate" mixin="ReputationBarMixin" virtual="true">
+	<Frame name="ReputationStatusBarTemplate" inherits="StatusTrackingBarTemplate" mixin="ReputationStatusBarMixin" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

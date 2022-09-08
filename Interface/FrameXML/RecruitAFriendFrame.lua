@@ -1,3 +1,6 @@
+local RECRUIT_HEIGHT = 34;
+local DIVIDER_HEIGHT = 16;
+
 RecruitAFriendFrameMixin = {};
 
 function RecruitAFriendFrameMixin:OnLoad()
@@ -11,16 +14,18 @@ function RecruitAFriendFrameMixin:OnLoad()
 	self:RegisterEvent("VARIABLES_LOADED");
 
 	self.RecruitList.NoRecruitsDesc:SetText(RAF_NO_RECRUITS_DESC);
-	self.recruitScrollFrame = self.RecruitList.ScrollFrame;
 
-	local function UpdateRecruitList()
-		if self.rafInfo then
-			self:UpdateRecruitList(self.rafInfo.recruits);
-		end
-	end
+	local view = CreateScrollBoxListLinearView();
+	-- SetElementExtentCalculator could be removed if the element initializer is replaced with a factory
+	-- and the concepts of divider and recruit entry split apart from RecruitListButtonTemplate.
+	view:SetElementExtentCalculator(function(dataIndex, elementData)
+		return elementData.isDivider and DIVIDER_HEIGHT or RECRUIT_HEIGHT;
+	end);
+	view:SetElementInitializer("RecruitListButtonTemplate", function(button, elementData)
+		button:Init(elementData);
+	end);
 
-	self.recruitScrollFrame.update = UpdateRecruitList;
-	HybridScrollFrame_CreateButtons(self.recruitScrollFrame, "RecruitListButtonTemplate");
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.RecruitList.ScrollBox, self.RecruitList.ScrollBar, view);
 
 	local rafSystemInfo = C_RecruitAFriend.GetRAFSystemInfo();
 	self:UpdateRAFSystemInfo(rafSystemInfo);
@@ -188,50 +193,24 @@ local function ProcessAndSortRecruits(recruits)
 	return haveOnlineFriends and haveOfflineFriends;
 end
 
-local RECRUIT_HEIGHT = 34;
-local DIVIDER_HEIGHT = 16;
-
 function RecruitAFriendFrameMixin:UpdateRecruitList(recruits)
-	local offset = HybridScrollFrame_GetOffset(self.recruitScrollFrame);
-	local buttons = self.recruitScrollFrame.buttons;
-	local numButtons = #buttons;
-	local usedHeight = 0;
-
-	local needDivider = ProcessAndSortRecruits(recruits);
-
 	local numRecruits = #recruits;
 
 	self.RecruitList.NoRecruitsDesc:SetShown(numRecruits == 0);
 	self.RecruitList.Header.Count:SetText(RAF_RECRUITED_FRIENDS_COUNT:format(numRecruits, maxRecruits));
 
-	local numEntries = numRecruits;
-	local totalHeight = numRecruits * RECRUIT_HEIGHT;
-	if needDivider then
-		numEntries = numEntries + 1;
-		totalHeight = totalHeight + DIVIDER_HEIGHT;
-	end
-
-	local recruitIndex = offset + 1;
-	for i = 1, numButtons do
-		local button = buttons[i];
-		local index = offset + i;
-		if index <= numEntries then
-			if needDivider and not recruits[recruitIndex].isOnline then
-				button:SetupDivider();
-				needDivider = false;
-			else
-				button:SetupRecruit(recruits[recruitIndex]);
-				recruitIndex = recruitIndex + 1;
-			end
-
-			usedHeight = usedHeight + button:GetHeight();
-		else
-			button.recruitInfo = nil;
-			button:Hide();
+	local needDivider = ProcessAndSortRecruits(recruits);
+	local dataProvider = CreateDataProvider();
+	for index = 1, numRecruits do
+		local recruit = recruits[index];
+		if needDivider and not recruit.isOnline then
+			dataProvider:Insert({isDivider=true});
+			needDivider = false;
 		end
+		dataProvider:Insert(recruit);
 	end
 
-	HybridScrollFrame_Update(self.recruitScrollFrame, totalHeight, usedHeight);
+	self.RecruitList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end
 
 function RecruitAFriendFrameMixin:SetNextRewardName(rewardName, count, rewardType)
@@ -550,6 +529,14 @@ function RecruitActivityButtonModelMixin:OnAnimFinished()
 end
 
 RecruitListButtonMixin = {};
+
+function RecruitListButtonMixin:Init(elementData)
+	if elementData.isDivider then
+		self:SetupDivider();
+	else
+		self:SetupRecruit(elementData);
+	end
+end
 
 function RecruitListButtonMixin:OnEnter()
 	if self.recruitInfo then

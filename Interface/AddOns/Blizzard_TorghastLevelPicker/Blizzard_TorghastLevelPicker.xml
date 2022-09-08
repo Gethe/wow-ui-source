@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TorghastLevelPicker.lua"/>
 	<Frame name="TorghastPagingContainerTemplate" mixin="TorghastPagingContainerMixin" virtual="true">
 		<Size x="150" y="34"/>
@@ -71,7 +71,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="Artwork" textureSubLevel="2">
+			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="LockedIcon" atlas="jailerstower-wayfinder-rewardpadlock" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -142,10 +142,10 @@
 	<CheckButton name="TorghastLevelPickerOptionButtonTemplate" motionScriptsWhileDisabled="true" inherits="CustomGossipOptionButtonBaseTemplate" mixin="TorghastLevelPickerOptionButtonMixin" frameStrata="HIGH" virtual="true">
 		<Size x="91" y="91"/>
 		<Layers>
-			<Layer level="Background">
+			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="jailerstower-wayfinder-tierbackground-skoldushall" useAtlasSize="true"/>
 			</Layer>
-			<Layer level="Border">
+			<Layer level="BORDER">
 				<Texture parentKey="Icon" atlas="islands-queue-difficultyselector-1">
 					<Size x="52" y="52"/>
 					<Anchors>

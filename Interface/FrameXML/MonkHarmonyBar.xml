@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
   <Script file="MonkHarmonyBar.lua"/>		
  
-	<Frame name="MonkLightEnergyTemplate" parentArray="LightEnergy" virtual="true">
+	<Frame name="MonkLightEnergyTemplate" mixin="MonkLightEnergyMixin" virtual="true">
 		<Size x="18" y="17"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -29,9 +29,7 @@
 			</AnimationGroup>
 			<AnimationGroup parentKey="spin">
 				<Rotation radians="6.28318531" duration="0.7" order="1">
-					<Origin point="BOTTOMRIGHT">
-						<Offset x="-6" y="6"/>
-					</Origin>
+					<Origin point="BOTTOMRIGHT"/>
 				</Rotation>
 				<Scripts>
 					<OnFinished>
@@ -55,10 +53,22 @@
 		</Scripts>
 	</Frame>
   
-	<Frame name="MonkHarmonyBarFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, MonkPowerBar">
+	<Frame name="MonkHarmonyBarFrame" inherits="ClassResourceBarTemplate" mixin="MonkPowerBar">
 		<Size x="1" y="60"/>
+		<KeyValues>
+			<KeyValue key="powerToken" value="CHI" type="string"/>
+			<KeyValue key="powerToken2" value="DARK_FORCE" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.Chi" type="global"/>
+			<KeyValue key="tooltip1" value="CHI_POWER" type="global"/>
+			<KeyValue key="tooltip2" value="CHI_TOOLTIP" type="global"/>
+			<KeyValue key="resourcePointTemplate" value="MonkLightEnergyTemplate" type="string"/>
+			<KeyValue key="resourcePointSetupFunc" value="MonkLightEnergyMixin.Setup" type="global"/>
+			<KeyValue key="spacing" value="-1" type="number"/>
+			<KeyValue key="class" value="MONK" type="string"/>
+			<KeyValue key="spec" value="SPEC_MONK_WINDWALKER" type="global"/>
+		</KeyValues>
 		<Anchors>
-			<Anchor point="TOP" x="49" y="-46"/>
+			<Anchor point="TOP" x="31" y="24"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -76,14 +86,5 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame inherits="MonkLightEnergyTemplate">
-				<Anchors>
-					<Anchor point="LEFT" x="-43" y="1"/>
-				</Anchors>
-			</Frame>
-		</Frames>
 	</Frame>
 </Ui>
-
-

@@ -179,6 +179,10 @@ function EquipmentFlyout_Show(itemButton)
 	flyout:SetScript("OnUpdate", flyoutSettings.customFlyoutOnUpdate or EquipmentFlyout_OnUpdate);
 
 	flyout.Highlight:SetShown(not flyoutSettings.hideFlyoutHighlight);
+	if not flyoutSettings.hideFlyoutHighlight then
+		flyout.Highlight:SetSize(flyoutSettings.highlightSizeX or 50, flyoutSettings.highlightSizeY or 50);
+		flyout.Highlight:SetPoint("LEFT", flyout, "LEFT", flyoutSettings.highlightOfsX or -4, flyoutSettings.highlightOfsY or 0);
+	end
 
 	EquipmentFlyout_SetBackgroundTexture(flyoutSettings.customBackground or [[Interface\PaperDollInfoFrame\UI-GearManager-Flyout]]);
 

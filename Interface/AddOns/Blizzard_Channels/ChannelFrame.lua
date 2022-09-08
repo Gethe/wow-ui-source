@@ -400,7 +400,7 @@ function ChannelFrameMixin:ToggleCreateChannel()
 end
 
 function ChannelFrameMixin:ToggleVoiceSettings()
-	ShowOptionsPanel(VideoOptionsFrame, self, VOICE_CHAT);
+	Settings.OpenToCategory("Audio");
 end
 
 -- Channel remains, but appears disabled
@@ -437,7 +437,7 @@ function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
 
 	local errorCode = Voice_GetGameErrorFromStatusCode(statusCode);
 	if errorCode then
-		UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
+		UIErrorsFrame:TryDisplayMessage(errorCode, tostring(errorString), RED_FONT_COLOR:GetRGB());
 	end
 end
 
@@ -617,10 +617,6 @@ function ChannelFrameMixin:OnChatChannelTransmitChanged(channelID, isTransmittin
 	else
 		PlaySound(SOUNDKIT.UI_VOICECHAT_STOPTALK);
 	end
-end
-
-function ChannelFrameMixin:UpdateScrolling()
-	self:GetRoster():UpdateRosterWidth();
 end
 
 function ChannelFrameMixin:OnUserSelectedChannel()

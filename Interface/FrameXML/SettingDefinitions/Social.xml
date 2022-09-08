@@ -1,0 +1,53 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\UI.xsd">
+	<Script file="Social.lua"/>
+	
+	<Frame name="TwitterPanelTemplate" inherits="SettingsCheckBoxControlTemplate" mixin="TwitterPanelMixin" virtual="true">
+		<Size y="55"/>
+		<Frames>
+			<Button parentKey="Button" inherits="UIPanelButtonTemplate">
+				<Size x="200" y="21"/>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="LoginStatus" inherits="GameFontNormal" justifyH="LEFT"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SocialBrowserFrame" frameStrata="DIALOG" hidden="true" enableMouse="true" inherits="BasicFrameTemplate">
+		<Size x="666" y="630"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Browser name="SocialBrowser" IMEFont="ChatFontNormal">
+				<Size x="660" y="606"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-1" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						C_Social.RegisterSocialBrowser(self);
+					</OnLoad>
+					<OnShow>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+					</OnShow>
+					<OnHide>
+						PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+					</OnHide>
+					<OnExternalLink>
+						StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url, browser=self});
+					</OnExternalLink>
+					<OnEscapePressed>
+						self:ClearFocus();
+					</OnEscapePressed>
+				</Scripts>
+			</Browser>
+		</Frames>
+	</Frame>
+</Ui>

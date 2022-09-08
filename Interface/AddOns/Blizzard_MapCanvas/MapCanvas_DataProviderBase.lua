@@ -108,9 +108,8 @@ end
 -- A base template for data providers that are enabled or disabled with a CVar, e.g. archaeology digsites.
 CVarMapCanvasDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function CVarMapCanvasDataProviderMixin:Init(cvar, scriptCVar)
+function CVarMapCanvasDataProviderMixin:Init(cvar)
 	self.cvar = cvar;
-	self.scriptCVar = scriptCVar;
 end
 
 function CVarMapCanvasDataProviderMixin:IsCVarSet()
@@ -128,7 +127,7 @@ end
 function CVarMapCanvasDataProviderMixin:OnEvent(event, ...)
 	if event == "CVAR_UPDATE" then
 		local eventName, value = ...;
-		if eventName == self.scriptCVar then
+		if eventName == self.cvar then
 			self:RefreshAllData();
 		end
 	end

@@ -2,6 +2,12 @@
 function TextStatusBar_Initialize(self)
 	self:RegisterEvent("CVAR_UPDATE");
 	self.lockShow = 0;
+
+	local function OnStatusTextSettingChanged()
+		TextStatusBar_UpdateTextString(self);
+	end
+
+	Settings.SetOnValueChangedCallback("PROXY_STATUS_TEXT", OnStatusTextSettingChanged);
 end
 
 function SetTextStatusBarText(bar, text)
@@ -22,8 +28,6 @@ function TextStatusBar_OnEvent(self, event, ...)
 					self.TextString:Hide();
 				end
 			end
-			TextStatusBar_UpdateTextString(self);
-		elseif ( cvar == "STATUS_TEXT_DISPLAY" ) then
 			TextStatusBar_UpdateTextString(self);
 		end
 	end

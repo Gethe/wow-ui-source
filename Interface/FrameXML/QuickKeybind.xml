@@ -4,11 +4,8 @@
 	<Button name="QuickKeybindButtonTemplate" mixin="QuickKeybindButtonTemplateMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="QuickKeybindHighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" alpha="0.5" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-2" y="2"/>
-						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
-					</Anchors>
+				<Texture parentKey="QuickKeybindHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" hidden="true">
+					<Size x="35" y="35"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -21,4 +18,73 @@
 		</Scripts>
 	</Button>
 	<GameTooltip name="QuickKeybindTooltip" parent="UIParent" inherits="SharedTooltipTemplate"/>
+
+	<Button name="QuickKeybindFrameTemplate" enableMouse="true" enableKeyboard="true" mixin="QuickKeybindFrameMixin" virtual="true">
+		<Size x="450" y="250"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="InstructionText" inherits="GameFontWhite" text="QUICK_KEYBIND_DESCRIPTION" wordwrap="true">
+					<Size x="400" y="50"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CancelDescriptionText" inherits="GameFontWhite" text="QUICK_KEYBIND_CANCEL_DESCRIPTION" wordwrap="true">
+					<Size x="400" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.InstructionText" relativePoint="CENTER" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="OutputText" inherits="GameFontWhite">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CancelDescriptionText" relativePoint="CENTER" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="QUICK_KEYBIND_MODE" type="global"/>
+				</KeyValues>
+			</Frame>
+			<CheckButton parentKey="UseCharacterBindingsButton" inherits="UICheckButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="-82" y="-65"/>
+				</Anchors>
+			</CheckButton>
+			<Button parentKey="DefaultsButton" inherits="UIPanelButtonTemplate">
+				<Size x="128" y="22"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-95"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.DefaultsButton" relativePoint="BOTTOMRIGHT" x="25" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="OkayButton" inherits="UIPanelButtonTemplate">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.DefaultsButton" relativePoint="BOTTOMLEFT" x="-25" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnGamePadButtonDown method="OnKeyDown"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Button>
+
+	<Button name="QuickKeybindFrame" inherits="QuickKeybindFrameTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" movable="true" hidden="true" />
 </Ui>

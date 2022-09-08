@@ -44,20 +44,20 @@ end
 
 function CustomGossipManagerMixin:HandleOpenEvent(textureKit)
 	if(not textureKit) then
-		GossipFrame_HandleShow(GossipFrame);
+		GossipFrame:HandleShow();
 	else
 		local handler = self:GetHandler(textureKit);
 		if handler then
 			self.customFrame = handler(textureKit);
 		else 
-			GossipFrame_HandleShow(GossipFrame, textureKit);
+			GossipFrame:HandleShow(textureKit);
 		end
 	end
 end
 
 function CustomGossipManagerMixin:HideOpenedUIPanel()
 	if(GossipFrame:IsShown()) then
-		GossipFrame_HandleHide(GossipFrame);
+		GossipFrame:HandleHide();
 	elseif self.customFrame then
 		HideUIPanel(self.customFrame);
 		self.customFrame = nil;

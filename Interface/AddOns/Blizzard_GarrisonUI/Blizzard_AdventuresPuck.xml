@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AdventuresPuck.lua"/>
 
 	<Button name="AdventuresPuckAbilityTemplate" mixin="AdventuresPuckAbilityMixin" enableMouse="true" virtual="true">
@@ -68,8 +68,10 @@
 				</Texture>
 				<Texture parentKey="PuckBorder" atlas="Adventurers-Followers-Frame"/>
 				<Texture parentKey="SupportColorationRing" atlas="Adventures-Buff-Heal-Ring" hidden="true" >
-					<Anchor point="TOPLEFT" relativeKey="$parent.PuckBorder" />
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PuckBorder"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PuckBorder" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PuckBorder"/>
+					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>

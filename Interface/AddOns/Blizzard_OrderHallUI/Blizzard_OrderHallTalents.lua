@@ -639,15 +639,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 	local friendshipFactionID = C_Garrison.GetCurrentGarrTalentTreeFriendshipFactionID();
 	if friendshipFactionID and friendshipFactionID > 0 then
-		NPCFriendshipStatusBar_Update(self, friendshipFactionID);
 		self.Currency:Hide();
 		self.CurrencyHitTest:Hide();
-		NPCFriendshipStatusBar:ClearAllPoints();
-		NPCFriendshipStatusBar:SetPoint("TOPLEFT", 86, -42);
+		self.FriendshipStatusBar:Update(friendshipFactionID);
 	else
-		if NPCFriendshipStatusBar:GetParent() == self then
-			NPCFriendshipStatusBar:Hide();
-		end
+		self.FriendshipStatusBar:Hide(); 
 
 		local showCurrency = not layoutOptions.noCurrencyUsed;
 		self.Currency:SetShown(showCurrency);

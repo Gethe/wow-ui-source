@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="TaxiFrame.lua"/>
 	<Button name="TaxiButtonTemplate" hidden="true" parent="TaxiFrame" virtual="true">
-		<Size>
-			<AbsDimension x="16" y="16"/>
-		</Size>
+		<Size x="16" y="16"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT"/>
 		</Anchors>
@@ -22,18 +20,12 @@
 		<HighlightTexture file="Interface\TaxiFrame\UI-Taxi-Icon-Highlight">
 			<Size x="32" y="32"/>
 			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="0"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="CENTER" x="0" y="0"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
 	<Frame name="TaxiFrame" toplevel="true" movable="true" hidden="true" parent="UIParent" enableMouse="true" inherits="BasicFrameTemplateWithInset">
-		<Size>
-			<AbsDimension x="590" y="608"/>
-		</Size>
+		<Size x="590" y="608"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>

@@ -105,6 +105,11 @@ function InspectPVPFrame_Update()
 			frame.Record:SetFormattedText(PVP_RECORD_DESCRIPTION, seasonWon, (seasonPlayed - seasonWon));
 			frame:Show();
 		end
+		local ratedSoloShuffleStats = C_PaperDollInfo.GetInspectRatedSoloShuffleData();
+		InspectPVPFrame.RatedSoloShuffle.Rating:SetText(ratedSoloShuffleStats.rating);
+		InspectPVPFrame.RatedSoloShuffle.Record:SetFormattedText(PVP_RECORD_DESCRIPTION, ratedSoloShuffleStats.roundsWon, (ratedSoloShuffleStats.roundsPlayed - ratedSoloShuffleStats.roundsWon));
+		InspectPVPFrame.RatedSoloShuffle:Show();
+		
 		InspectPVPFrame.talentGroup = GetActiveSpecGroup(true);
 		for i, slot in ipairs(InspectPVPFrame.Slots) do
 			slot:Update();

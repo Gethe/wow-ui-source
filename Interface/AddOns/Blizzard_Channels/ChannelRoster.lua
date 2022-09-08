@@ -1,7 +1,7 @@
 ChannelRosterMixin = {};
 
 function ChannelRosterMixin:OnLoad()
-	self:InitializeScrollFrame();
+	self:InitializeScrollBox();
 end
 
 function ChannelRosterMixin:OnShow()
@@ -46,13 +46,9 @@ function ChannelRosterMixin:OnUnitConnection()
 end
 
 function ChannelRosterMixin:GetRosterButtonForVoiceMemberID(voiceMemberID)
-	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-
-	for i = 1, #buttons do
-		if buttons[i]:GetVoiceMemberID() == voiceMemberID then
-			return buttons[i];
-		end
-	end
+	return self.ScrollBox:FindFrameByPredicate(function(frame)
+		return frame:GetVoiceMemberID() == voiceMemberID;
+	end);
 end
 
 function ChannelRosterMixin:Update()
@@ -69,7 +65,7 @@ function ChannelRosterMixin:Update()
 end
 
 function ChannelRosterMixin:ResetScrollPosition()
-	self.ScrollFrame.scrollBar:SetValue(0);
+	self.ScrollBox:ScrollToBegin();
 end
 
 function ChannelRosterMixin:GetChannelCountText(count, category)
@@ -94,70 +90,19 @@ function ChannelRosterMixin:UpdateFromOpaqueChannel(opaqueChannel, getChannelInf
 	self.ChannelCount:SetText(self:GetChannelCountText(self.count, category));
 	self.ChannelName:SetText(self:GetChannelNameText(self.count, channel));
 
-	self:UpdateRosterList();
+	local dataProvider = CreateIndexRangeDataProvider(self.count);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end
 
-do
-	function ChannelRosterMixin:UpdateRosterList()
-		local count = self.count or 0;
-		local opaqueChannel = self.opaqueChannel;
-		local updateChannelRosterEntryFn = self.updateChannelRosterEntryFn;
+function ChannelRosterMixin:InitializeScrollBox()
+	local view = CreateScrollBoxListLinearView();
 
-		if self.opaqueChannel then
-			local offset = HybridScrollFrame_GetOffset(self.ScrollFrame);
-			local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-
-			for i = 1, #buttons do
-				local button = buttons[i];
-				local rosterIndex = offset + i;
-				if rosterIndex <= count  then
-					updateChannelRosterEntryFn(self.opaqueChannel, rosterIndex, self.voiceChannelID, button);
-				else
-					button:Hide();
-				end
-			end
-		end
-
-		local index, firstButton = next(HybridScrollFrame_GetButtons(self.ScrollFrame));
-		local totalHeight = firstButton and (count * firstButton:GetHeight()) or 0;
-
-		HybridScrollFrame_Update(self.ScrollFrame, totalHeight, self.ScrollFrame:GetHeight());
+	local function Initializer(button, rosterIndex)
+		self.updateChannelRosterEntryFn(self.opaqueChannel, rosterIndex, self.voiceChannelID, button);
 	end
-end
+	view:SetElementInitializer("ChannelRosterButtonTemplate", Initializer);
 
-function ChannelRosterMixin:UpdateRosterWidth()
-	local rosterLeftEdge = self:GetChannelFrame().LeftInset:GetRight();
-	local rosterRightEdge = self.ScrollFrame.scrollBar:GetLeft();
-
-	if self:GetChannelFrame():GetList().ScrollBar:IsShown() then
-		rosterLeftEdge = self:GetChannelFrame():GetList().ScrollBar:GetRight();
-	end
-
-	-- Add some padding for the inset and scrollbar textures.
-	local rosterWidth = rosterRightEdge - rosterLeftEdge;
-	self:SetWidth(rosterWidth);
-	self.ScrollFrame.scrollChild:SetWidth(rosterWidth - 9); -- Sizing hack, pull the edge of the scroll child inside the right scrollbar.
-end
-
-function ChannelRosterMixin:InitializeScrollFrame()
-	self.ScrollFrame.update = function() self:UpdateRosterList(); end;
-	HybridScrollFrame_SetDoNotHideScrollBar(self.ScrollFrame, true);
-	HybridScrollFrame_CreateButtons(self.ScrollFrame, "ChannelRosterButtonTemplate", 0, 0);
-
-	-- Set up additional anchors on the buttons so that the width of the roster can be changed, and the
-	-- buttons will size automatically.
-	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-	if buttons then
-		for index, button in ipairs(buttons) do
-			if index > 1 then
-				button:SetPoint("TOPRIGHT", buttons[index - 1], "BOTTOMRIGHT", 0, 0);
-			else
-				button:SetPoint("TOPRIGHT", self.ScrollFrame.scrollChild, "TOPRIGHT", 0, 0);
-			end
-		end
-	end
-
-	self:UpdateRosterWidth();
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
 -- Text channel handling, these can also have members who are active in voice

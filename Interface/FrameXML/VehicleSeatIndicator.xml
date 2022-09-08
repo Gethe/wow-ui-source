@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="VehicleSeatIndicator.lua"/>
 	<Button name="VehicleSeatIndicatorButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="25" y="25"/>
-		</Size>
+		<Size x="25" y="25"/>
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -28,18 +26,14 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentPlayerIcon" file="Interface\Vehicles\VehicleSeats">
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 					<TexCoords left="0.390625" right="0.4609375" top="0.0" bottom="0.28125"/>
 				</Texture>
 				<Texture name="$parentAllyIcon" file="Interface\Vehicles\VehicleSeats">
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -49,24 +43,16 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentPulseTexture" alphaMode="ADD" file="Interface\Vehicles\VehicleSeats" setAllPoints="false" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="-1" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER" x="-1" y="0"/>
 					</Anchors>
-					<Size>
-						<AbsDimension x="25" y="25"/>
-					</Size>
+					<Size x="25" y="25"/>
 					<TexCoords left="0.1875" right="0.3828125" top="0.0" bottom="0.78125"/>
 					<Color r="0.2" g="0.4" b="0.8"/>
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture name="$parentHighlight" file="Interface\Vehicles\VehicleSeats" >
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -75,17 +61,11 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Frame name="VehicleSeatIndicator" enableMouse="false" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="128" y="128"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="40" y="15"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
+	<Frame name="VehicleSeatIndicator" enableMouse="false" inherits="UIParentRightManagedFrameTemplate" hidden="true">
+		<Size x="128" y="128"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="3" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackgroundTexture"/>

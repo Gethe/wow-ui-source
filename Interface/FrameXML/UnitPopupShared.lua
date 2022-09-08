@@ -1,13 +1,13 @@
 UnitPopupManager = { };
 UnitPopupMenus = { };
 function UnitPopupManager:CheckAddSubsection(dropdownMenu, info, menuLevel, currentButton, index, previousButton, menuButtons)
-	local hasButtonsThatStillNeedToShow = false; 
+	local hasButtonsThatStillNeedToShow = false;
 	--Checking if there are any buttons that are supposed to show after this that are not a subsection title or separator
-	for startIndex = index, #menuButtons do 
+	for startIndex = index, #menuButtons do
 		local button = menuButtons[startIndex];
-		if(not button.isSubsectionSeparator and not button.isSubsectionTitle and button:CanShow()) then 
-			hasButtonsThatStillNeedToShow = true; 
-		end		
+		if(not button.isSubsectionSeparator and not button.isSubsectionTitle and button:CanShow()) then
+			hasButtonsThatStillNeedToShow = true;
+		end
 	end
 
 	--Add the separator  as long as the previous button wasn't a separator
@@ -45,13 +45,13 @@ function UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData)
 	self.mostRecentDropdownMenu = dropdownMenu;
 	local menu = self:GetMenu(which);
 	local menuButtons = menu:GetButtons();
-	self.currentlyShowingMenu = menu; 
-	if(not menuButtons) then 
+	self.currentlyShowingMenu = menu;
+	if(not menuButtons) then
 		return;
 	end
 
 	local count = 0;
-	for index, buttonMixin in ipairs(menuButtons) do 
+	for index, buttonMixin in ipairs(menuButtons) do
 		if( buttonMixin:CanShow() and not buttonMixin:IsCloseCommand() ) then
 			count = count + 1;
 		end
@@ -60,17 +60,17 @@ function UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData)
 		return;
 	end
 
-	local info; 
+	local info;
 	if ( UIDROPDOWNMENU_MENU_LEVEL == 2 ) then
 		local nestedDropdownMenu = menuButtons[UIDROPDOWNMENU_MENU_VALUE];
-		if(not nestedDropdownMenu) then 
-			return; 
-		end 
+		if(not nestedDropdownMenu) then
+			return;
+		end
 
 		self.currentlyShowingMenu = nestedDropdownMenu;
 		local nestedDropdownMenus = nestedDropdownMenu:GetButtons();
-		if(not nestedDropdownMenus) then 
-			return; 
+		if(not nestedDropdownMenus) then
+			return;
 		end
 
 		OPEN_DROPDOWNMENUS[UIDROPDOWNMENU_MENU_LEVEL] = {which = dropdownMenu.which, unit = dropdownMenu.unit};
@@ -83,7 +83,7 @@ function UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData)
 				if (not button.isSubsection) then
 					self:AddDropDownButton(info, dropdownMenu, button, nestedIndex, UIDROPDOWNMENU_MENU_LEVEL);
 				end
-				previousButton = button; 
+				previousButton = button;
 			end
 		end
 		return;
@@ -95,7 +95,7 @@ function UnitPopupManager:ShowMenu(dropdownMenu, which, unit, name, userData)
 	info = UIDropDownMenu_CreateInfo();
 	local tooltipText;
 	local previousButton = nil;
-	for index, button in ipairs(menuButtons) do 
+	for index, button in ipairs(menuButtons) do
 		if( button:CanShow() ) then
 			self:CheckAddSubsection(dropdownMenu, info, UIDROPDOWNMENU_MENU_LEVEL, button, index, previousButton, menuButtons);
 			if (not button.isSubsection) then
@@ -142,10 +142,10 @@ function UnitPopupManager:AddDropDownButton(info, dropdownMenu, button, buttonIn
 		level = 1;
 	end
 	local dropdownMenuButton = button;
-	info.text = dropdownMenuButton:GetText(); 
+	info.text = dropdownMenuButton:GetText();
 	info.value = buttonIndex;
 	info.owner = nil;
-	info.func = function() dropdownMenuButton:OnClick() end; 
+	info.func = function() dropdownMenuButton:OnClick() end;
 	info.notCheckable = not dropdownMenuButton:IsCheckable();
 
 	local color = dropdownMenuButton:GetColor();
@@ -155,7 +155,7 @@ function UnitPopupManager:AddDropDownButton(info, dropdownMenu, button, buttonIn
 		info.colorCode = nil;
 	end
 	-- Icons
-	local textureCoords = dropdownMenuButton:GetTextureCoords(); 
+	local textureCoords = dropdownMenuButton:GetTextureCoords();
 	if ( dropdownMenuButton:IsIconOnly() and textureCoords ) then
 		info.iconOnly = 1;
 		info.icon = dropdownMenuButton:GetIcon();
@@ -166,7 +166,7 @@ function UnitPopupManager:AddDropDownButton(info, dropdownMenu, button, buttonIn
 			tCoordBottom = textureCoords.tCoordBottom,
 			tSizeX = textureCoords.tSizeX,
 			tSizeY = textureCoords.tSizeY,
-			tFitDropDownSizeX = textureCoords.tFitDropDownSizeX 
+			tFitDropDownSizeX = textureCoords.tFitDropDownSizeX
 		};
 	else
 		info.iconOnly = nil;
@@ -185,9 +185,9 @@ function UnitPopupManager:AddDropDownButton(info, dropdownMenu, button, buttonIn
 
 	info.checked = info.checked or dropdownMenuButton:IsChecked();
 	info.hasArrow = dropdownMenuButton:IsNested();
-	info.isNotRadio = dropdownMenuButton:IsNotRadio(); 
-	info.isTitle = dropdownMenuButton:IsTitle(); 
-	if(not info.isTitle) then 
+	info.isNotRadio = dropdownMenuButton:IsNotRadio();
+	info.isTitle = dropdownMenuButton:IsTitle();
+	if(not info.isTitle) then
 		if (level == 1) then
 			info.disabled = nil;
 		end
@@ -195,7 +195,7 @@ function UnitPopupManager:AddDropDownButton(info, dropdownMenu, button, buttonIn
 
 	info.tooltipTitle = dropdownMenuButton:GetText();
 	info.tooltipText = dropdownMenuButton:GetTooltipText();
-	info.customFrame = dropdownMenuButton:GetCustomFrame(); 
+	info.customFrame = dropdownMenuButton:GetCustomFrame();
 	if info.customFrame then
 		local guid = UnitPopupSharedUtil.GetGUID();
 		local playerLocation = UnitPopupSharedUtil:TryCreatePlayerLocation(guid);
@@ -215,9 +215,10 @@ function UnitPopupManager:AddDropDownButton(info, dropdownMenu, button, buttonIn
 	info.tooltipOnButton = dropdownMenuButton:TooltipOnButton();
 	info.tooltipInstruction = dropdownMenuButton:TooltipInstruction();
 	info.tooltipWarning = dropdownMenuButton:TooltipWarning();
-	info.hasArrow = dropdownMenuButton:HasArrow() or dropdownMenuButton:IsNested(); 
+	info.hasArrow = dropdownMenuButton:HasArrow() or dropdownMenuButton:IsNested();
 	info.disabled = not UnitPopupSharedUtil:IsEnabled(dropdownMenuButton);
-	UIDropDownMenu_AddButton(info, level);
+	local addedButton = UIDropDownMenu_AddButton(info, level);
+	button:SetCurrentButton(addedButton);
 end
 
 function UnitPopupManager:OnUpdate(elapsed)
@@ -228,43 +229,31 @@ function UnitPopupManager:OnUpdate(elapsed)
 	if ( not UnitPopup_HasVisibleMenu() ) then
 		return;
 	end
-	local tempCount, count; 
 	for level, dropdownFrame in pairs(OPEN_DROPDOWNMENUS) do
 		if(dropdownFrame) then
-			count = 0;
 			local menu = self:GetMenu(dropdownFrame.which);
-			local topLevelButtons = menu:GetButtons(); 
-			local menuButtons; 
-			if(level == 2) then 
+			local topLevelButtons = menu:GetButtons();
+			local menuButtons;
+			if(level == 2) then
 				local nestedMenu = topLevelButtons[UIDROPDOWNMENU_MENU_VALUE];
-				local nestedMenusButtons = nestedMenu and nestedMenu:GetButtons(); 
-				menuButtons = nestedMenusButtons; 
-			else 
+				local nestedMenusButtons = nestedMenu and nestedMenu:GetButtons();
+				menuButtons = nestedMenusButtons;
+			else
 				menuButtons =  topLevelButtons;
-			end 
-			if (menuButtons) then 
-				for index, button in ipairs(menuButtons) do 
-					local shown = button:CanShow(); 
+			end
+			if (menuButtons) then
+				for index, button in ipairs(menuButtons) do
+					local shown = button:CanShow();
 					if(shown) then
-						count = count + 1;
-						local enable = UnitPopupSharedUtil:IsEnabled(button);
-						local diff = (level > 1) and 0 or 1;
-						tempCount = count + diff; 
-						if(button.isSubsectionTitle) then 
-							count = count + 1; 
-						elseif (not button.isSubsection) then
-							if (enable) then
-								UIDropDownMenu_EnableButton(level, tempCount);
-							else 
-								UIDropDownMenu_DisableButton(level, tempCount);
-							end
-						end		
-					end 
+						if (not button.isSubsection) then
+							UIDropDownMenu_SetDropdownButtonEnabled(button:GetCurrentButton(), UnitPopupSharedUtil:IsEnabled(button));
+						end
+					end
 				end
-			end 
+			end
 		end
-	end 
-end 
+	end
+end
 
 function UnitPopupManager:GetMostRecentDropdownMenu()
 	return self.mostRecentDropdownMenu;
@@ -275,7 +264,7 @@ function UnitPopupManager:GetMenu(which)
 end
 
 function UnitPopupManager:RegisterMenu(which, menu)
-	UnitPopupMenus[which] = menu; 
+	UnitPopupMenus[which] = menu;
 end
 
 local g_mostRecentPopupMenu;

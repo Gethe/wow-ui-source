@@ -1,6 +1,6 @@
 
 local BIDS_TAB_ID = 2;
-
+local ALL_INDEX = 1;
 
 AuctionHouseAuctionsFrameTabMixin = {};
 
@@ -10,65 +10,62 @@ function AuctionHouseAuctionsFrameTabMixin:OnClick()
 	self:GetParent():SetTab(self:GetID());
 end
 
-
 AuctionHouseAuctionsSummaryListMixin = {};
 
 function AuctionHouseAuctionsSummaryListMixin:OnLoad()
 	AuctionHouseBackgroundMixin.OnLoad(self);
 
-	self.InsetFrame:Hide();
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("AuctionHouseAuctionsSummaryLineTemplate", function(button, elementData)
+		button:Init(elementData);
+		button:SetSelected(elementData == self.selectedListIndex);
+		button:SetScript("OnClick", function(button, buttonName)
+			self:SetSelectedIndex(button:GetElementData());
+		end);
+	end);
 
-	local selectedHighlight = self:GetSelectedHighlight();
-	selectedHighlight:SetAtlas("auctionhouse-ui-row-select", true);
-	selectedHighlight:SetBlendMode("ADD");
-	selectedHighlight:SetAlpha(0.8);
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
-
-AuctionHouseAuctionsSummaryLineMixin = {};
-
-function AuctionHouseAuctionsSummaryLineMixin:InitElement(auctionsFrame)
-	self.auctionsFrame = auctionsFrame;
-end
-
-function AuctionHouseAuctionsSummaryLineMixin:OnLoad()
-	self:SetNormalTexture(nil);
-	self.Text:ClearAllPoints();
-	self.Text:SetPoint("LEFT", self.Icon, "RIGHT", 4, 0);
-	self.Text:SetPoint("RIGHT", -4, 0);
-	self.Text:SetFontObject(Number13FontYellow);
-end
-
-function AuctionHouseAuctionsSummaryLineMixin:OnEvent(event, ...)
-	if event == "ITEM_KEY_ITEM_INFO_RECEIVED" then
-		local itemID = ...;
-		if itemID == self.pendingItemID then
-			self:UpdateDisplay();
-		end
+function AuctionHouseAuctionsSummaryListMixin:RefreshListDisplay()
+	local auctionsFrame = AuctionHouseFrame.AuctionsFrame;
+	if auctionsFrame:IsDisplayingBids() then
+		auctionsFrame:SetDataProviderIndexRange(C_AuctionHouse.GetNumBidTypes(), ScrollBoxConstants.RetainScrollPosition);
+	else
+		auctionsFrame:SetDataProviderIndexRange(C_AuctionHouse.GetNumOwnedAuctionTypes(), ScrollBoxConstants.RetainScrollPosition);
 	end
 end
 
-function AuctionHouseAuctionsSummaryLineMixin:OnHide()
-	self:UnregisterEvent("ITEM_KEY_ITEM_INFO_RECEIVED");
+function AuctionHouseAuctionsSummaryListMixin:SetSelectedIndex(index)
+	local oldSelectedIndex = self.selectedListIndex;
+	self.selectedListIndex = index;
+
+	local function SetSelected(index, selected)
+		local found = self.ScrollBox:FindFrame(index);
+		if found then
+			found:SetSelected(selected);
+		end
+	end;
+
+	SetSelected(oldSelectedIndex, false);
+	SetSelected(index, true);
+
+	AuctionHouseFrame.AuctionsFrame:OnSummaryLineSelected(index);
 end
 
-function AuctionHouseAuctionsSummaryLineMixin:SetIconShown(shown)
-	self.Icon:SetShown(shown);
-	self.IconBorder:SetShown(shown);
-end
+AuctionHouseAuctionsSummaryLineMixin = {};
 
-function AuctionHouseAuctionsSummaryLineMixin:UpdateDisplay()
+function AuctionHouseAuctionsSummaryLineMixin:Init(listIndex)
 	self:SetIconShown(false);
 
-	local listIndex = self:GetListIndex();
-	local isDisplayingBids = self.auctionsFrame:IsDisplayingBids();
-	if listIndex == 1 then
+	local isDisplayingBids = AuctionHouseFrame.AuctionsFrame:IsDisplayingBids();
+	if listIndex == ALL_INDEX then
 		self.Text:SetText(isDisplayingBids and AUCTION_HOUSE_ALL_BIDS or AUCTION_HOUSE_ALL_AUCTIONS);
 		self.Text:SetPoint("LEFT", 4, 0);
 	else
 		self.Text:SetPoint("LEFT", self.Icon, "RIGHT", 4, 0);
 
-		local typeIndex = listIndex - 1;
+		local typeIndex = listIndex - ALL_INDEX;
 		local itemKey = isDisplayingBids and C_AuctionHouse.GetBidType(typeIndex) or C_AuctionHouse.GetOwnedAuctionType(typeIndex);
 		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey);
 		if not itemKeyInfo then
@@ -89,46 +86,35 @@ function AuctionHouseAuctionsSummaryLineMixin:UpdateDisplay()
 	end
 end
 
+function AuctionHouseAuctionsSummaryLineMixin:SetSelected(selected)
+	self.SelectedHighlight:SetShown(selected);
+end
 
-AuctionHouseBidsSummaryLineMixin = {};
+function AuctionHouseAuctionsSummaryLineMixin:OnLoad()
+	self:ClearNormalTexture();
+	self.Text:ClearAllPoints();
+	self.Text:SetPoint("LEFT", self.Icon, "RIGHT", 4, 0);
+	self.Text:SetPoint("RIGHT", -4, 0);
+	self.Text:SetFontObject(Number13FontYellow);
+end
 
-function AuctionHouseBidsSummaryLineMixin:OnEvent(event, ...)
+function AuctionHouseAuctionsSummaryLineMixin:OnEvent(event, ...)
 	if event == "ITEM_KEY_ITEM_INFO_RECEIVED" then
 		local itemID = ...;
 		if itemID == self.pendingItemID then
-			self:UpdateDisplay();
+			self:Init(self:GetElementData());
 		end
 	end
 end
 
-function AuctionHouseBidsSummaryLineMixin:OnHide()
+function AuctionHouseAuctionsSummaryLineMixin:OnHide()
 	self:UnregisterEvent("ITEM_KEY_ITEM_INFO_RECEIVED");
 end
 
-function AuctionHouseBidsSummaryLineMixin:UpdateDisplay()
-	local listIndex = self:GetListIndex();
-	if listIndex == 1 then
-		self.Text:SetText(AUCTION_HOUSE_ALL_BIDS);
-	else
-		local typeOffset = listIndex - 1;
-		local itemKey = C_AuctionHouse.GetBidType(typeOffset);
-		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey);
-		if not itemKeyInfo then
-			self.pendingItemID = itemKey.itemID;
-			self:RegisterEvent("ITEM_KEY_ITEM_INFO_RECEIVED");
-			self.Text:SetText("");
-			return;
-		end
-
-		self.Text:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo));
-	end
-
-	if self.pendingItemID ~= nil then
-		self:UnregisterEvent("ITEM_KEY_ITEM_INFO_RECEIVED");
-		self.pendingItemID = nil;
-	end
+function AuctionHouseAuctionsSummaryLineMixin:SetIconShown(shown)
+	self.Icon:SetShown(shown);
+	self.IconBorder:SetShown(shown);
 end
-
 
 CancelAuctionButtonMixin = {};
 
@@ -167,7 +153,6 @@ function AuctionHouseAuctionsFrameMixin:OnLoad()
 
 	self.ItemDisplay:SetAuctionHouseFrame(self:GetAuctionHouseFrame());
 
-	self:InitializeSummaryList();
 	self:InitializeAllAuctionsList();
 	self:InitializeBidsList();
 	self:InitializeItemList();
@@ -183,11 +168,11 @@ function AuctionHouseAuctionsFrameMixin:OnShow()
 	-- and explicit update.
 	local displayMode = self:GetDisplayMode();
 	if displayMode ~= AuctionsFrameDisplayMode.BidsList and displayMode ~= AuctionsFrameDisplayMode.AllAuctions then
-		self:RefreshSeachResults();
+		self:RefreshSearchResults();
 	end
 end
 
-function AuctionHouseAuctionsFrameMixin:RefreshSeachResults()
+function AuctionHouseAuctionsFrameMixin:RefreshSearchResults()
 	local displayMode = self:GetDisplayMode();
 	if self:IsDisplayingBids() then
 		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllBids);
@@ -227,21 +212,10 @@ function AuctionHouseAuctionsFrameMixin:OnEvent(event, ...)
 			self.SummaryList:RefreshListDisplay();
 		end
 	elseif event == "AUCTION_CANCELED" then
-		self:RefreshSeachResults();
+		self:RefreshSearchResults();
 	elseif event == "AUCTION_HOUSE_NEW_BID_RECEIVED" then
-		self:RefreshSeachResults();
+		self:RefreshSearchResults();
 	end
-end
-
-function AuctionHouseAuctionsFrameMixin:InitializeSummaryList()
-	self.SummaryList:SetSelectedListIndex(1);
-
-	local function OnSummaryLineSelectedCallback(...)
-		self:OnSummaryLineSelected(...);
-	end
-
-	self.SummaryList:SetSelectionCallback(OnSummaryLineSelectedCallback);
-	self.SummaryList:SetElementTemplate("AuctionHouseAuctionsSummaryLineTemplate", self);
 end
 
 function AuctionHouseAuctionsFrameMixin:InitializeAllAuctionsList()
@@ -261,7 +235,7 @@ function AuctionHouseAuctionsFrameMixin:InitializeAllAuctionsList()
 
 	self.AllAuctionsList:SetDataProvider(AuctionsSearchStarted, C_AuctionHouse.GetOwnedAuctionInfo, C_AuctionHouse.GetNumOwnedAuctions, C_AuctionHouse.HasFullOwnedAuctionResults);
 
-	
+
 	local function AllAuctionsRefreshResults()
 		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllAuctions);
 		self.AllAuctionsList:DirtyScrollFrame();
@@ -273,7 +247,7 @@ function AuctionHouseAuctionsFrameMixin:InitializeAllAuctionsList()
 end
 
 function AuctionHouseAuctionsFrameMixin:InitializeBidsList()
-	self.BidsList:SetSelectionCallback(AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, self.OnBidsListSearchResultSelected)); 
+	self.BidsList:SetSelectionCallback(AuctionHouseUtil.GenerateRowSelectedCallbackWithInspect(self, self.OnBidsListSearchResultSelected));
 	self.BidsList:SetLineOnEnterCallback(AuctionHouseUtil.LineOnEnterCallback);
 	self.BidsList:SetLineOnLeaveCallback(AuctionHouseUtil.LineOnLeaveCallback);
 
@@ -289,7 +263,7 @@ function AuctionHouseAuctionsFrameMixin:InitializeBidsList()
 
 	self.BidsList:SetDataProvider(BidsSearchStarted, C_AuctionHouse.GetBidInfo, C_AuctionHouse.GetNumBids, C_AuctionHouse.HasFullBidResults);
 
-	
+
 	local function BidsListRefreshResults()
 		self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllBids);
 		self.BidsList:DirtyScrollFrame();
@@ -398,10 +372,10 @@ function AuctionHouseAuctionsFrameMixin:ValidateDisplayMode()
 		local itemKey = self:GetItemKey();
 		if self:IsDisplayingBids() then
 			local hasType, typeIndex = AuctionHouseUtil.HasBidType(itemKey);
-			self.SummaryList:SetSelectedListIndex(hasType and (typeIndex + 1) or 1);
+			self.SummaryList:SetSelectedIndex(hasType and (typeIndex + 1) or 1);
 		else
 			local hasType, typeIndex = AuctionHouseUtil.HasOwnedAuctionType(itemKey);
-			self.SummaryList:SetSelectedListIndex(hasType and (typeIndex + 1) or 1);
+			self.SummaryList:SetSelectedIndex(hasType and (typeIndex + 1) or 1);
 		end
 	end
 end
@@ -419,22 +393,22 @@ function AuctionHouseAuctionsFrameMixin:OnSummaryLineSelected(...)
 end
 
 function AuctionHouseAuctionsFrameMixin:OnAuctionSummaryLineSelected(listIndex)
-	if listIndex == 1 then
+	if listIndex == ALL_INDEX then
 		self:SetItemKey(nil);
 		self:SetDisplayMode(AuctionsFrameDisplayMode.AllAuctions);
 	else
-		local typeIndex = listIndex - 1;
+		local typeIndex = listIndex - ALL_INDEX;
 		local itemKey = C_AuctionHouse.GetOwnedAuctionType(typeIndex);
 		self:SelectItemKey(itemKey);
 	end
 end
 
 function AuctionHouseAuctionsFrameMixin:OnBidSummaryLineSelected(listIndex)
-	if listIndex == 1 then
+	if listIndex == ALL_INDEX then
 		self:SetItemKey(nil);
 		self:SetDisplayMode(AuctionsFrameDisplayMode.BidsList);
 	else
-		local typeIndex = listIndex - 1;
+		local typeIndex = listIndex - ALL_INDEX;
 		local itemKey = C_AuctionHouse.GetBidType(typeIndex);
 		self:SelectItemKey(itemKey);
 	end
@@ -539,30 +513,25 @@ function AuctionHouseAuctionsFrameMixin:SetTab(tabID)
 	PanelTemplates_SetTab(self, tabID);
 
 	local isDisplayingBids = self:IsDisplayingBids();
-	
+
 	self.CancelAuctionButton:SetShown(not isDisplayingBids);
 	self.BidFrame:SetShown(isDisplayingBids);
 	self.BuyoutFrame:SetShown(isDisplayingBids);
 
+	local retainScrollPosition = false;
 	if isDisplayingBids then
 		self:SetDisplayMode(AuctionsFrameDisplayMode.BidsList);
-
-		local function GetNumBidSummaryResults()
-			return C_AuctionHouse.GetNumBidTypes() + 1;
-		end
-
-		self.SummaryList:SetGetNumResultsFunction(GetNumBidSummaryResults);
+		self:SetDataProviderIndexRange(C_AuctionHouse.GetNumBidTypes(), retainScrollPosition);
 	else
 		self:SetDisplayMode(AuctionsFrameDisplayMode.AllAuctions);
-		
-		local function GetNumOwnedAuctionSummaryResults()
-			return C_AuctionHouse.GetNumOwnedAuctionTypes() + 1;
-		end
-
-		self.SummaryList:SetGetNumResultsFunction(GetNumOwnedAuctionSummaryResults);
+		self:SetDataProviderIndexRange(C_AuctionHouse.GetNumOwnedAuctionTypes(), retainScrollPosition);
 	end
+end
 
-	self.SummaryList:SetSelectedListIndex(1);
+function AuctionHouseAuctionsFrameMixin:SetDataProviderIndexRange(range, retainScrollPosition)
+	local dataProvider = CreateIndexRangeDataProvider(range + ALL_INDEX);
+	self.SummaryList.ScrollBox:SetDataProvider(dataProvider, retainScrollPosition);
+	self.SummaryList:SetSelectedIndex(1);
 end
 
 function AuctionHouseAuctionsFrameMixin:IsDisplayingBids()

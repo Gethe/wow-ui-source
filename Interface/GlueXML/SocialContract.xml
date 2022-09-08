@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\FrameXML\UI_shared.xsd">
 	<Script file="SocialContract.lua"/>
 
 	<Frame name="SocialContractFrame" inherits="DefaultScaleFrame" mixin="SocialContractFrameMixin" parent="GlueParent" frameStrata="DIALOG" hidden="true" toplevel="true" enableMouse="true">
@@ -77,7 +77,7 @@
 			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
 				<KeyValues>
 					<KeyValue key="hideBackground" value="true" type="boolean"/>
-					<KeyValue key="backdropAlpha" value="0" type="number"/>
+					<KeyValue key="hideBackplate" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.TopInsetEdge" relativePoint="BOTTOMRIGHT" x="1" y="20"/>

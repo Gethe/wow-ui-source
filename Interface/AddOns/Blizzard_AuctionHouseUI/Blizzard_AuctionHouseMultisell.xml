@@ -2,11 +2,11 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AuctionHouseMultisell.lua"/>
 
-	<Frame name="AuctionHouseMultisellProgressFrame" mixin="MultisellProgressFrameMixin" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+	<Frame name="AuctionHouseMultisellProgressFrame" mixin="MultisellProgressFrameMixin" inherits="UIParentBottomManagedFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size x="300" y="64"/>
-		<Anchors>
-			<Anchor point="BOTTOM" x="0" y="73"/>
-		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="61" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Fill" file="Interface\AuctionFrame\UI-AuctionPost-Background">							
@@ -46,7 +46,7 @@
 		</Layers>
 		<Frames>
 			<StatusBar parentKey="ProgressBar" inherits="CastingBarFrameTemplate">
-				<Size x="195" y="13"/>
+				<Size x="209" y="11"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent" x="3" y="-3"/>
 				</Anchors>
@@ -83,10 +83,5 @@
 				<HighlightTexture file="Interface\Buttons\CancelButton-Highlight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				UIParent_ManageFramePositions();
-			</OnLoad>
-		</Scripts>
 	</Frame>
 </Ui>

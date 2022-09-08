@@ -252,7 +252,7 @@ function ChannelListMixin:UpdateScrollBar()
 
 	self.ScrollBar:SetShown(self.scrolling);
 
-	self:GetChannelFrame():UpdateScrolling();
+	self:GetParent().LeftInset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", self.scrolling and 20 or 0, -2);
 end
 
 function ChannelListMixin:IsScrolling()

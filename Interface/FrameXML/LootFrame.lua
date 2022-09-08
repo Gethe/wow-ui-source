@@ -1,4 +1,4 @@
-LOOTFRAME_NUMBUTTONS = 4;
+LOOTFRAME_NUMBUTTONS = 5;
 NUM_GROUP_LOOT_FRAMES = 4;
 MASTER_LOOT_THREHOLD = 4;
 LOOT_SLOT_NONE = 0;
@@ -6,66 +6,50 @@ LOOT_SLOT_ITEM = 1;
 LOOT_SLOT_MONEY = 2;
 LOOT_SLOT_CURRENCY = 3;
 
-LOOTFRAME_AUTOLOOT_DELAY = 0.3;
-LOOTFRAME_AUTOLOOT_RATE = 0.35;
+local LOOTFRAME_BASEHEIGHT = 290;
+local LOOTFRAME_BASEWIDTH = 220;
+
+local LOOTFRAME_BUTTONHEIGHT = 46;
+local LOOTFRAME_SCROLLBARWIDTH = 16;
+
+local LOOTFRAME_PAD = 6;
+local LOOTFRAME_SPACING = 2;
 
 function LootFrame_OnLoad(self)
 	self:RegisterEvent("LOOT_OPENED");
 	self:RegisterEvent("LOOT_SLOT_CLEARED");
 	self:RegisterEvent("LOOT_SLOT_CHANGED");
 	self:RegisterEvent("LOOT_CLOSED");
-	self:RegisterEvent("LOOT_READY");
 	self:RegisterEvent("OPEN_MASTER_LOOT_LIST");
 	self:RegisterEvent("UPDATE_MASTER_LOOT_LIST");
-	--hide button bar
-	ButtonFrameTemplate_HideButtonBar(self);
 
-	--[[ WOW8-76190 Corners for nine slice template are too large to accommodate 
-	the loot frame, causing overlaps between the pieces. Until an artist can adjust
-	the atlas, cull the overlaps so the composition appears to fit.]]--
-	
-	-- Maps each of the four corners to a UV relative to their corner.
-	local function MapNineSliceCornerUVs(nineSlice, topLeftRelUV, topRightRelUV, botLeftRelUV, botRightRelUV)
-		if (nineSlice) then
-			-- relU,relV expected relative to corner. dirU,dirV translate accordingly.
-			local function MapTextureUV(texture, relU, relV, dirU, dirV)
-				if (texture) then
-					local cullU = 1.0 - Saturate(relU);
-					local cullV = 1.0 - Saturate(relV);
-					local startU = cullU * Saturate(dirU);
-					local startV = cullV * Saturate(dirV);
-					local endU = startU + (1.0 - cullU);
-					local endV = startV + (1.0 - cullV);
-					texture:SetTexCoord(startU, endU, startV, endV);
-					texture:SetWidth(texture:GetWidth() * relU);
-					texture:SetHeight(texture:GetHeight() * relV);
-				end
-			end
-
-			MapTextureUV(nineSlice.TopLeftCorner, topLeftRelUV[1], topLeftRelUV[2], 0, 0);
-			MapTextureUV(nineSlice.TopRightCorner, topRightRelUV[1], topRightRelUV[2], 1.0, 0);
-			MapTextureUV(nineSlice.BottomLeftCorner, botLeftRelUV[1], botLeftRelUV[2], 0, 1.0);
-			MapTextureUV(nineSlice.BottomRightCorner, botRightRelUV[1], botRightRelUV[2], 1.0, 1.0);
-		end
+	local Pad = LOOTFRAME_PAD;
+	local Spacing = LOOTFRAME_SPACING;
+	local view = CreateScrollBoxListLinearView(Pad, Pad, Pad, Pad, Spacing);
+		
+	local function Initializer(button, elementData)
+		LootButton_Update(button);
 	end
 
-	MapNineSliceCornerUVs(self.NineSlice, {.65, .6}, {.25, .4}, {.55, .4}, {.35, .4});
+	view:SetElementInitializer("LootButtonTemplate", Initializer);
 
+	ScrollUtil.InitScrollBoxWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.ScrollBox:SetShadowsFrameLevel(self.ScrollBox.ScrollTarget:GetFrameLevel() + 15);
+	self.ScrollBox:SetShadowsScale(0.2);
+	self.ScrollBox:GetUpperShadowTexture():SetTexCoord(0, 1, 1, 0);
+	self.ScrollBox:GetUpperShadowTexture():SetPoint("TOPLEFT", 30, 0);
+	self.ScrollBox:GetUpperShadowTexture():SetPoint("TOPRIGHT", -30, 0);
+	self.ScrollBox:GetLowerShadowTexture():SetPoint("BOTTOMLEFT", 30, 0);
+	self.ScrollBox:GetLowerShadowTexture():SetPoint("BOTTOMRIGHT", -30, 0);
 end
 
 function LootFrame_OnEvent(self, event, ...)
 	if ( event == "LOOT_OPENED" ) then
 		local autoLoot, isFromItem = ...;
-		if( autoLoot ) then
-			LootFrame_InitAutoLootTable( self );
-			LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
-			self.AutoLootDelay = LOOTFRAME_AUTOLOOT_DELAY;
-		else
-			self.AutoLootDelay = 0;
-			self.AutoLootTable = nil;
-		end
 
-		self.page = 1;
+		self.isAutoLoot = autoLoot;
+
 		LootFrame_Show(self);
 		if ( not self:IsShown()) then
 			CloseLoot(not autoLoot);	-- The parameter tells code that we were unable to open the UI
@@ -74,65 +58,34 @@ function LootFrame_OnEvent(self, event, ...)
 				PlaySound(SOUNDKIT.UI_CONTAINER_ITEM_OPEN);
 			end
 		end
-	elseif( event == "LOOT_READY" ) then
-		LootFrame_InitAutoLootTable( self );
 	elseif ( event == "LOOT_SLOT_CLEARED" ) then
 		local arg1 = ...;
-		if ( not self:IsShown() or self.AutoLootTable) then
+		if ( not self:IsShown() ) then
 			return;
 		end
 
-		local numLootToShow = LOOTFRAME_NUMBUTTONS;
-		if ( self.numLootItems > LOOTFRAME_NUMBUTTONS ) then
-			numLootToShow = numLootToShow - 1;
-		end
-		local slot = arg1 - ((self.page - 1) * numLootToShow);
-		if ( (slot > 0) and (slot < (numLootToShow + 1)) ) then
-			local button = _G["LootButton"..slot];
-			if ( button ) then
+		local button = self.ScrollBox:FindFrameByPredicate(function(frame)
+			return frame:GetElementData().index == arg1;
+		end);
+		if button then
+			if self.isAutoLoot then
+				button.AutoLootAnim:Play();
+			else
 				button:Hide();
 			end
 		end
-		-- try to move second page of loot items to the first page
-		local button;
-		local allButtonsHidden = 1;
-
-		for index = 1, LOOTFRAME_NUMBUTTONS do
-			button = _G["LootButton"..index];
-			if ( button:IsShown() ) then
-				allButtonsHidden = nil;
-			end
-		end
-		if ( allButtonsHidden and LootFrameDownButton:IsShown() ) then
-			LootFrame_PageDown();
-		end
-		return;
 	elseif ( event == "LOOT_SLOT_CHANGED" ) then
 		local arg1 = ...;
 
 		if ( not self:IsShown() ) then
 			return;
 		end
-
-		local numLootToShow = LOOTFRAME_NUMBUTTONS;
-		if ( self.numLootItems > LOOTFRAME_NUMBUTTONS ) then
-			numLootToShow = numLootToShow - 1;
-		end
-		local slot = arg1 - ((self.page - 1) * numLootToShow);
-		if ( (slot > 0) and (slot < (numLootToShow + 1)) ) then
-			local button = _G["LootButton"..slot];
-			if ( button ) then
-				LootFrame_UpdateButton(slot);
-			end
-		end
+		
+		LootFrame_Update();
 	elseif ( event == "LOOT_CLOSED" ) then
-		if( not self.AutoLootTable ) then
-			LootFrame_Close();
-		end
-		return;
+		LootFrame_Close();
 	elseif ( event == "OPEN_MASTER_LOOT_LIST" ) then
 		ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedLootButton, 0, 0);
-		return;
 	elseif ( event == "UPDATE_MASTER_LOOT_LIST" ) then
 		MasterLooterFrame_UpdatePlayers();
 	end
@@ -141,195 +94,104 @@ end
 local LOOT_UPDATE_INTERVAL = 0.5;
 function LootFrame_OnUpdate(self, elapsed)
 	self.timeSinceUpdate = (self.timeSinceUpdate or 0) + elapsed;
-	if( self.AutoLootTable )then
-		if( self.AutoLootDelay > 0 ) then
-			self.AutoLootDelay = self.AutoLootDelay - elapsed;
-			self.timeSinceUpdate = 0;
-			self.AutoLootCurrentIdx = 1;
-		elseif( self.timeSinceUpdate >  LOOTFRAME_AUTOLOOT_RATE ) then
-			local entry = self.AutoLootTable[self.AutoLootCurrentIdx]
-			if( entry and not entry.roll and not entry.locked) then
-				self.AutoLootTable[self.AutoLootCurrentIdx].hide = true;
-			end
-			self.AutoLootCurrentIdx = self.AutoLootCurrentIdx +1;
-			self.timeSinceUpdate = 0;
-			if( self.AutoLootCurrentIdx > #self.AutoLootTable ) then
-				self:SetScript("OnUpdate", nil);
-				self.timeSinceUpdate = nil;
-				self.AutoLootTable = nil;
-				--close
-				LootFrame_Close();
-			else
-				local numLootToShow = LOOTFRAME_NUMBUTTONS;
-				if ( self.numLootItems > LOOTFRAME_NUMBUTTONS ) then
-					numLootToShow = numLootToShow - 1;
-				end
-				local slot = self.AutoLootCurrentIdx - ((self.page - 1) * numLootToShow) - 1;
-				if ( (slot > 0) and (slot < (numLootToShow + 1)) ) then
-					local button = _G["LootButton"..slot];
-					if ( button ) then
-						button:Hide();
-					end
-				end
-				-- try to move second page of loot items to the first page
-				if( self.AutoLootCurrentIdx % numLootToShow == 1 ) then
-					if( LootFrameDownButton:IsShown() ) then
-						LootFrame_PageDown();
-					end
-				end
-				LootFrame_Update();
-			end
-		end
-	elseif ( self.timeSinceUpdate >= LOOT_UPDATE_INTERVAL ) then
+	if ( self.timeSinceUpdate >= LOOT_UPDATE_INTERVAL ) then
 		self:SetScript("OnUpdate", nil);
 		self.timeSinceUpdate = nil;
 		LootFrame_Update();
 	end
 end
 
-function LootFrame_UpdateButton(index)
+function LootButton_Update(button)
 	local numLootItems = LootFrame.numLootItems;
-	--Logic to determine how many items to show per page
-	local numLootToShow = LOOTFRAME_NUMBUTTONS;
 	local self = LootFrame;
-	if( self.AutoLootTable ) then
-		numLootItems = #self.AutoLootTable;
-	end
-	if ( numLootItems > LOOTFRAME_NUMBUTTONS ) then
-		numLootToShow = numLootToShow - 1; -- make space for the page buttons
-	end
-	local button = _G["LootButton"..index];
-	local slot = (numLootToShow * (LootFrame.page - 1)) + index;
-	if ( slot <= numLootItems ) then
-		if ( (LootSlotHasItem(slot)  or (self.AutoLootTable and self.AutoLootTable[slot]) )and index <= numLootToShow) then
-			local texture, item, quantity, currencyID, quality, locked, isQuestItem, questId, isActive;
-			if(self.AutoLootTable)then
-				local entry = self.AutoLootTable[slot];
-				if( entry.hide ) then
-					button:Hide();
-					return;
-				else
-					texture = entry.texture;
-					item = entry.item;
-					quantity = entry.quantity;
-					quality = entry.quality;
-					locked = entry.locked;
-					isQuestItem = entry.isQuestItem;
-					questId = entry.questId;
-					isActive = entry.isActive;
-				end
-			else
-				texture, item, quantity, currencyID, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
-			end
 
-			if ( currencyID ) then 
-				item, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, quality);
-			end
-			
-			local text = _G["LootButton"..index.."Text"];
-			if ( texture ) then
-				local color = ITEM_QUALITY_COLORS[quality];
-				SetItemButtonQuality(button, quality, GetLootSlotLink(slot));
-				_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
-				text:SetText(item);
-				if( locked ) then
-					SetItemButtonNameFrameVertexColor(button, 1.0, 0, 0);
-					SetItemButtonTextureVertexColor(button, 0.9, 0, 0);
-					SetItemButtonNormalTextureVertexColor(button, 0.9, 0, 0);
-				else
-					SetItemButtonNameFrameVertexColor(button, 0.5, 0.5, 0.5);
-					SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
-					SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
-				end
-
-				local questTexture = _G["LootButton"..index.."IconQuestTexture"];
-				if ( questId and not isActive ) then
-					questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
-					questTexture:Show();
-				elseif ( questId or isQuestItem ) then
-					questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
-					questTexture:Show();
-				else
-					questTexture:Hide();
-				end
-
-				text:SetVertexColor(color.r, color.g, color.b);
-				local countString = _G["LootButton"..index.."Count"];
-				if ( quantity > 1 ) then
-					countString:SetText(quantity);
-					countString:Show();
-				else
-					countString:Hide();
-				end
-				button.slot = slot;
-				button.quality = quality;
-				button:Enable();
-			else
-				text:SetText("");
-				_G["LootButton"..index.."IconTexture"]:SetTexture(nil);
-				SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
-				LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
-				button:Disable();
-			end
-			button:Show();
-		else
+	local slot = button:GetElementData().index;
+	if ( not LootSlotHasItem(slot) ) then
+		if not self.isAutoLoot then
 			button:Hide();
 		end
-	else
-		button:Hide();
+		return;
 	end
+
+	local texture, item, quantity, currencyID, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
+
+	if ( currencyID ) then 
+		item, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, quality);
+	end
+
+	local slotType = GetLootSlotType(slot);
+	local isMoney = slotType == LOOT_SLOT_MONEY;
+
+	local text = isMoney and button.MoneyText or button.Text;
+	local hiddenText = isMoney and button.Text or button.MoneyText;
+	hiddenText:SetText("");
+	button.QualityText:SetShown(not isMoney);
+	button.QualityFrame:SetShown(not isMoney);
+	if ( texture ) then
+		local color = ITEM_QUALITY_COLORS[quality];
+		SetItemButtonQuality(button.Item, quality, GetLootSlotLink(slot));
+		button.Item.icon:SetTexture(texture);
+		text:SetText(item);
+		button.QualityText:SetText(_G["ITEM_QUALITY"..quality.."_DESC"]);
+		button.NameFrame:SetVertexColor(color.r, color.g, color.b);
+		if( locked ) then
+			SetItemButtonTextureVertexColor(button.Item, 0.9, 0, 0);
+			SetItemButtonNormalTextureVertexColor(button.Item, 0.9, 0, 0);
+		else
+			SetItemButtonTextureVertexColor(button.Item, 1.0, 1.0, 1.0);
+			SetItemButtonNormalTextureVertexColor(button.Item, 1.0, 1.0, 1.0);
+		end
+
+		local questTexture = button.IconQuestTexture;
+		if ( questId and not isActive ) then
+			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
+			questTexture:Show();
+		elseif ( questId or isQuestItem ) then
+			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
+			questTexture:Show();
+		else
+			questTexture:Hide();
+		end
+
+		text:SetVertexColor(color.r, color.g, color.b);
+		local countString = button.Item.Count;
+		if ( quantity > 1 ) then
+			countString:SetText(quantity);
+			countString:Show();
+		else
+			countString:Hide();
+		end
+		button.slot = slot;
+		button.quality = quality;
+		button.Item:Enable();
+	else
+		text:SetText("");
+		button.QualityText:SetText("");
+		button.Item.icon:SetTexture(nil);
+		SetItemButtonNormalTextureVertexColor(button.Item, 1.0, 1.0, 1.0);
+		LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
+		button.Item:Disable();
+	end
+	button.AutoLootAnim:Stop();
+	button.ShownAnim:Play();
+	button:Show();
 end
 
-function LootFrame_Update()
-	for index = 1, LOOTFRAME_NUMBUTTONS do
-		LootFrame_UpdateButton(index);
-	end
-	if ( LootFrame.page == 1 ) then
-		LootFrameUpButton:Hide();
-		LootFramePrev:Hide();
-	else
-		LootFrameUpButton:Show();
-		LootFramePrev:Show();
-	end
-	local numItemsPerPage = LOOTFRAME_NUMBUTTONS;
-	if ( LootFrame.numLootItems > LOOTFRAME_NUMBUTTONS ) then
-		numItemsPerPage = numItemsPerPage - 1;
-	end
-	if ( LootFrame.page == ceil(LootFrame.numLootItems / numItemsPerPage) or LootFrame.numLootItems == 0 ) then
-		LootFrameDownButton:Hide();
-		LootFrameNext:Hide();
-	else
-		LootFrameDownButton:Show();
-		LootFrameNext:Show();
-	end
-end
+function LootFrame_Update(retainScrollPosition)
+	local numLootItems = LootFrame.numLootItems;
 
-function LootFrame_InitAutoLootTable( self )
---	if( not self.AutoLootTable )then
---		self.AutoLootTable = GetLootInfo();
---	end
+	local dataProvider = CreateDataProviderByIndexCount(numLootItems);
+
+	LootFrame.ScrollBox:SetDataProvider(dataProvider, retainScrollPosition == nil and ScrollBoxConstants.RetainScrollPosition or retainScrollPosition);
 end
 
 function LootFrame_Close()
-	StaticPopup_Hide("LOOT_BIND");
-	HideUIPanel(LootFrame);
-end
-
-function LootFrame_PageDown()
-	LootFrame.page = LootFrame.page + 1;
-	LootFrame_Update();
-end
-
-function LootFrame_PageUp()
-	LootFrame.page = LootFrame.page - 1;
-	LootFrame_Update();
+	LootFrame.ShowAnim:Stop();
+	LootFrame.HideAnim:Play(false);
 end
 
 function LootFrame_Show(self)
 	self.numLootItems = GetNumLootItems();
-	if(self.AutoLootTable) then
-		self.numLootItems = #self.AutoLootTable;
-	end
 
 	if ( GetCVar("lootUnderMouse") == "1" ) then
 		self:Show();
@@ -359,8 +221,22 @@ function LootFrame_Show(self)
 		ShowUIPanel(self);
 	end
 
-	LootFrame_Update();
-	LootFramePortraitOverlay:SetTexture("Interface\\TargetingFrame\\TargetDead");
+	local showScrollBar = self.numLootItems > LOOTFRAME_NUMBUTTONS;
+	if (showScrollBar) then
+		self:SetHeight(LOOTFRAME_BASEHEIGHT);
+		self:SetWidth(LOOTFRAME_BASEWIDTH + LOOTFRAME_SCROLLBARWIDTH);
+	else
+		local fitToHeight = LOOTFRAME_BASEHEIGHT - ((LOOTFRAME_BUTTONHEIGHT + LOOTFRAME_SPACING) * (LOOTFRAME_NUMBUTTONS - self.numLootItems));
+		self:SetHeight(fitToHeight);
+		self:SetWidth(LOOTFRAME_BASEWIDTH);
+	end
+	self.ScrollBar:SetShown(showScrollBar);
+	self.ScrollBox:SetWidth(LOOTFRAME_BASEWIDTH - LOOTFRAME_PAD);
+
+	LootFrame_Update(ScrollBoxConstants.DiscardScrollPosition);
+	
+	LootFrame.HideAnim:Stop();
+	LootFrame.ShowAnim:Play(true);
 end
 
 function LootFrame_OnShow(self)
@@ -368,7 +244,6 @@ function LootFrame_OnShow(self)
 		PlaySound(SOUNDKIT.LOOT_WINDOW_OPEN_EMPTY);
 	elseif( IsFishingLoot() ) then
 		PlaySound(SOUNDKIT.FISHING_REEL_IN);
-		LootFramePortraitOverlay:SetTexture("Interface\\LootFrame\\FishingLoot-Icon");
 	end
 end
 
@@ -377,12 +252,6 @@ function LootFrame_OnHide(self)
 	-- Close any loot distribution confirmation windows
 	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
 	MasterLooterFrame:Hide();
-
-	if( self.AutoLootTable )then
-		self:SetScript("OnUpdate", nil);
-		self.timeSinceUpdate = nil;
-		self.AutoLootTable = nil;
-	end
 end
 
 function LootButton_OnClick(self, button)
@@ -393,13 +262,13 @@ function LootButton_OnClick(self, button)
 	LootFrame.selectedLootButton = self:GetName();
 	LootFrame.selectedSlot = self.slot;
 	LootFrame.selectedQuality = self.quality;
-	LootFrame.selectedItemName = _G[self:GetName().."Text"]:GetText();
-	LootFrame.selectedTexture = _G[self:GetName().."IconTexture"]:GetTexture();
+	LootFrame.selectedItemName = self.Text:GetText();
+	LootFrame.selectedTexture = self.Item.icon:GetTexture();
 	LootSlot(self.slot);
 end
 
 function LootItem_OnEnter(self)
-	local slot = ((LOOTFRAME_NUMBUTTONS - 1) * (LootFrame.page - 1)) + self:GetID();
+	local slot = self:GetElementData().index;
 	local slotType = GetLootSlotType(slot);
 	if ( slotType == LOOT_SLOT_ITEM ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -411,6 +280,19 @@ function LootItem_OnEnter(self)
 		GameTooltip:SetLootCurrency(slot);
 		CursorUpdate(self);
 	end
+	self.HighlightNameFrame:Show();
+end
+
+function LootItem_OnLeave(self)
+	self.HighlightNameFrame:Hide();
+end
+
+function LootItem_OnMouseDown(self)
+	self.PushedNameFrame:Show();
+end
+
+function LootItem_OnMouseUp(self)
+	self.PushedNameFrame:Hide();
 end
 
 function GroupLootContainer_OnLoad(self)

@@ -1,5 +1,5 @@
 PetTamerDataProviderMixin = CreateFromMixins(CVarMapCanvasDataProviderMixin);
-PetTamerDataProviderMixin:Init("showTamers", "SHOW_TAMERS");
+PetTamerDataProviderMixin:Init("showTamers");
 
 function PetTamerDataProviderMixin:OnShow()
 	CVarMapCanvasDataProviderMixin.OnShow(self);
@@ -28,7 +28,7 @@ end
 function PetTamerDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
-	if not CanTrackBattlePets() or not self:IsCVarSet() then
+	if not C_Minimap.CanTrackBattlePets() or not self:IsCVarSet() then
 		return;
 	end
 

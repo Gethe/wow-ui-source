@@ -1,4 +1,5 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_Contribution.lua"/>
 
 	<Frame name="ContributionHeaderTemplate" virtual="true">
@@ -172,9 +173,7 @@
 				<Alpha childKey="SparkGlow" 		startDelay="0.5" 	duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Translation childKey="SparkGlow" 						duration="0.5" order="1" offsetX="2" offsetY="0"/>
 				<Scale childKey="SparkGlow" 							duration="0.25" order="1" fromScaleX="0.15" fromScaleY="1" toScaleX="0.2" toScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="20" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 			</AnimationGroup>
 		</Animations>

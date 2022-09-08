@@ -61,6 +61,8 @@ function AuctionHouseItemListMixin:OnLoad()
 	self.RefreshFrame:SetPoint("TOPRIGHT", self.refreshFrameXOffset or 0, self.refreshFrameYOffset or 0);
 
 	self.NineSlice:SetPoint("BOTTOMRIGHT", -22, 0);
+
+	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnScroll, self.OnScrollBoxScroll, self);
 end
 
 -- searchStartedFunc should return whether or not a search has been started, and optionally a 2nd return for search results text.
@@ -103,7 +105,7 @@ function AuctionHouseItemListMixin:UpdateTableBuilderLayout()
 	if self.tableBuilderLayoutDirty then
 		self.tableBuilder:Reset();
 		self.tableBuilderLayoutFunction(self.tableBuilder);
-		self.tableBuilder:SetTableWidth(self.ScrollFrame:GetWidth());
+		self.tableBuilder:SetTableWidth(self.ScrollBox:GetWidth());
 		self.tableBuilder:Arrange();
 		self.tableBuilderLayoutDirty = false;
 	end
@@ -135,36 +137,53 @@ function AuctionHouseItemListMixin:Init()
 
 	self.SpinnerAnim:Play();
 
-	self.ScrollFrame.update = function()
-		self:RefreshScrollFrame();
-	end;
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementFactory(function(factory, elementData)
+		local function Initializer(button, elementData)
+			if self.hideStripes then
+				-- Force the texture to stay hidden through button clicks, etc.
+				button:GetNormalTexture():SetAlpha(0);
+			end
+		
+			if self.lineTemplate then
+				button:InitLine(unpack(self.initArgs));
+			end
+		
+			button:SetEnabled(self.selectionCallback ~= nil);
+		end
+		factory(self.lineTemplate or "AuctionHouseItemListLineTemplate", Initializer);
+	end);
 
-	HybridScrollFrame_CreateButtons(self.ScrollFrame, self.lineTemplate or "AuctionHouseItemListLineTemplate", 0, 0);
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 	
-	for i, button in ipairs(self.ScrollFrame.buttons) do
-		if self.hideStripes then
-			-- Force the texture to stay hidden through button clicks, etc.
-			button:GetNormalTexture():SetAlpha(0);
-		else
-			local oddRow = (i % 2) == 1;
-			button:GetNormalTexture():SetAtlas(oddRow and "auctionhouse-rowstripe-1" or "auctionhouse-rowstripe-2");
-		end
-
-		if self.lineTemplate then
-			button:InitLine(unpack(self.initArgs));
-		end
-	end
-
-	HybridScrollFrame_SetDoNotHideScrollBar(self.ScrollFrame, true);
-
-	local tableBuilder = CreateTableBuilder(HybridScrollFrame_GetButtons(self.ScrollFrame), AuctionHouseTableBuilderMixin);
+	local tableBuilder = CreateTableBuilder(nil, AuctionHouseTableBuilderMixin);
 	self.tableBuilder = tableBuilder;
+
+	local function ElementDataTranslator(elementData)
+		return elementData;
+	end;
+	ScrollUtil.RegisterTableBuilder(self.ScrollBox, tableBuilder, ElementDataTranslator);
 
 	if self.getEntry then
 		self.tableBuilder:SetDataProvider(self.getEntry);
 	end
 
+	self.ScrollBox:RegisterCallback("OnDataRangeChanged", self.OnScrollBoxRangeChanged, self);
+
 	self.isInitialized = true;
+end
+
+function AuctionHouseItemListMixin:OnScrollBoxRangeChanged(sortPending)
+	if not self.hideStripes then
+		local index = self.ScrollBox:GetDataIndexBegin();
+		self.ScrollBox:ForEachFrame(function(button)
+			local alternate = index % 2 == 1;
+			button:GetNormalTexture():SetAtlas(alternate and "auctionhouse-rowstripe-1" or "auctionhouse-rowstripe-2");
+			index = index + 1;
+		end);
+	end;
+
+	self:UpdateSelectionHighlights();
 end
 
 function AuctionHouseItemListMixin:SetLineOnEnterCallback(callback)
@@ -219,11 +238,8 @@ function AuctionHouseItemListMixin:OnUpdate()
 end
 
 function AuctionHouseItemListMixin:Reset()
-	if self:GetScrollOffset() == 0 then
-		self:RefreshScrollFrame();
-	else
-		self.ScrollFrame.scrollBar:SetValue(0);
-	end
+	self.ScrollBox:ScrollToBegin();
+	self:RefreshScrollFrame();
 end
 
 function AuctionHouseItemListMixin:SetState(state)
@@ -248,14 +264,7 @@ function AuctionHouseItemListMixin:SetState(state)
 	self:UpdateRefreshFrame();
 
 	if state ~= ItemListState.ShowResults then
-		local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-		for i, button in ipairs(buttons) do
-			button:Hide();
-		end
-
-		local totalHeight = 0;
-		local displayedHeight = 0;
-		HybridScrollFrame_Update(self.ScrollFrame, totalHeight, displayedHeight);
+		self.ScrollBox:ClearDataProvider();
 	end
 end
 
@@ -282,39 +291,11 @@ function AuctionHouseItemListMixin:ScrollToEntryIndex(entryIndex)
 	if not self.isInitialized then
 		return;
 	end
-
-	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-	local buttonHeight = buttons[1]:GetHeight();
-	local currentScrollOffset = self:GetScrollOffset();
-	local newScrollOffset = entryIndex - 1;
-	if newScrollOffset < currentScrollOffset or newScrollOffset > (currentScrollOffset + #buttons) then
-		self.ScrollFrame.scrollBar:SetValue(newScrollOffset * buttonHeight);
-	else
-		self:RefreshScrollFrame();
-	end
+	self.ScrollBox:ScrollToElementDataIndex(entryIndex, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
 end
 
-function AuctionHouseItemListMixin:SetScrollOffset(scrollOffset)
-	if not self.isInitialized then
-		return;
-	end
-
-	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-	local buttonHeight = buttons[1]:GetHeight();
-	if scrollOffset ~= self:GetScrollOffset() then
-		self.ScrollFrame.scrollBar:SetValue(scrollOffset * buttonHeight);
-	else
-		self:RefreshScrollFrame();
-	end
-end
-
-function AuctionHouseItemListMixin:GetScrollOffset()
-	return HybridScrollFrame_GetOffset(self.ScrollFrame);
-end
-
-function AuctionHouseItemListMixin:GetNumButtons()
-	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-	return buttons and #buttons or 0;
+function AuctionHouseItemListMixin:GetScrollBoxDataIndexBegin()
+	return self.ScrollBox:GetDataIndexBegin();
 end
 
 function AuctionHouseItemListMixin:UpdateRefreshFrame()
@@ -337,6 +318,18 @@ function AuctionHouseItemListMixin:DirtyScrollFrame()
 	self.scrollFrameDirty = true;
 end
 
+function AuctionHouseItemListMixin:UpdateSelectionHighlights()
+	self.ScrollBox:ForEachFrame(function(button)
+		if self.highlightCallback then
+			local highlightShown, highlightAlpha = self.highlightCallback(button.rowData, self.selectedRowData, button:GetElementData());
+			button.SelectedHighlight:SetShown(highlightShown);
+			button.SelectedHighlight:SetAlpha(highlightAlpha or 1.0);
+		else
+			button.SelectedHighlight:Hide();
+		end
+	end);
+end
+
 function AuctionHouseItemListMixin:RefreshScrollFrame()
 	self.scrollFrameDirty = false;
 
@@ -353,7 +346,6 @@ function AuctionHouseItemListMixin:RefreshScrollFrame()
 		self:SetState(ItemListState.NoSearch);
 		return;
 	end
-
 	local numResults = self.getNumEntries();
 	if numResults == 0 then
 		local hasFullResults = not self.hasFullResultsFunc or self.hasFullResultsFunc();
@@ -363,41 +355,22 @@ function AuctionHouseItemListMixin:RefreshScrollFrame()
 
 	self:SetState(ItemListState.ShowResults);
 
-	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-	local buttonCount = #buttons;
-	local buttonHeight = buttons[1]:GetHeight();
+	local dataProvider = CreateIndexRangeDataProvider(numResults);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+	
+	self:UpdateSelectionHighlights();
+	self:CallRefreshCallback();
+end
 
-	local offset = self:GetScrollOffset();
-	local populateCount = math.min(buttonCount, numResults);
-	self.tableBuilder:Populate(offset, populateCount);
-
-	for i = 1, buttonCount do
-		local visible = i + offset <= numResults;
-		local button = buttons[i];
-
-		if visible then
-			button:SetEnabled(self.selectionCallback ~= nil);
-
-			if self.highlightCallback then
-				local highlightShown, highlightAlpha = self.highlightCallback(button.rowData, self.selectedRowData);
-				button.SelectedHighlight:SetShown(highlightShown);
-				button.SelectedHighlight:SetAlpha(highlightAlpha or 1.0);
-			else
-				button.SelectedHighlight:Hide();
-			end
-		end
-		
-		button:SetShown(visible);
-	end
-
-	local totalHeight = numResults * buttonHeight;
-	local displayedHeight = populateCount * buttonHeight;
-	HybridScrollFrame_Update(self.ScrollFrame, totalHeight, displayedHeight);
-
+function AuctionHouseItemListMixin:CallRefreshCallback()
 	if self.refreshCallback ~= nil then
-		local lastDisplayedEntry = offset + buttonCount;
+		local lastDisplayedEntry = self.ScrollBox:GetDataIndexEnd();
 		self.refreshCallback(lastDisplayedEntry);
 	end
+end
+
+function AuctionHouseItemListMixin:OnScrollBoxScroll(scrollPercentage, visibleExtentPercentage, panExtentPercentage)
+	self:CallRefreshCallback();
 end
 
 function AuctionHouseItemListMixin:GetHeaderContainer()

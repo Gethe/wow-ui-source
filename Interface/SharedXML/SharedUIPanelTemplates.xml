@@ -235,19 +235,19 @@
 		<TexCoords left="0.00000000" right="1.00000000" top="0.04296875" bottom="0.07421875"/>
 	</Texture>
 
-	<Button name="UIPanelCloseButtonNoScripts" virtual="true">
-		<Size x="32" y="32"/>
-		<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
-		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+	<Button name="UIPanelCloseButtonNoScripts" frameLevel="510" virtual="true">
+		<Size x="24" y="24"/>
+		<DisabledTexture atlas="RedButton-Exit-Disabled"/>
+		<NormalTexture atlas="RedButton-Exit"/>
+		<PushedTexture atlas="RedButton-exit-pressed"/>
+		<HighlightTexture atlas="RedButton-Highlight" alphaMode="ADD"/>
 	</Button>
-	<Button name="UIPanelHideButtonNoScripts" virtual="true">
-		<Size x="32" y="32"/>
-		<DisabledTexture atlas="UI-Panel-HideButton-Disabled" useAtlasSize="true" />
-		<NormalTexture atlas="UI-Panel-HideButton-Up"  useAtlasSize="true" />
-		<PushedTexture atlas="UI-Panel-HideButton-Down" useAtlasSize="true" />
-		<HighlightTexture atlas="UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" useAtlasSize="true" />
+	<Button name="UIPanelHideButtonNoScripts" frameLevel="510" virtual="true">
+		<Size x="24" y="24"/>
+		<DisabledTexture atlas="RedButton-MiniCondense-disabled"/>
+		<NormalTexture atlas="RedButton-MiniCondense"/>
+		<PushedTexture atlas="RedButton-MiniCondense-pressed"/>
+		<HighlightTexture atlas="RedButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Button name="UIPanelCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
@@ -458,22 +458,28 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<CheckButton name="UICheckButtonTemplate" virtual="true">
-		<Size x="32" y="32"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+	<CheckButton name="UICheckButtonArtTemplate" virtual="true">
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+
+	<CheckButton name="UICheckButtonTemplate" inherits="UICheckButtonArtTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="Text">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
+					</Anchors>
+					<Scripts>
+						<OnLoad function="UICheckButtonFontString_SetParentKeyAlias"/>
+					</Scripts>
+				</FontString>
+			</Layer>
+		</Layers>
 	</CheckButton>
 
 	<Slider name="UISliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
@@ -514,7 +520,7 @@
 			</Layer>
 		</Layers>
 	</Slider>
-	
+
 	<!--
 *******************************************************************************
     GlowBoxArrowTemplate
@@ -901,8 +907,7 @@
 			<Layer level="OVERLAY">
 				<FontString name="$parentTitleText" inherits="GameFontNormal" parentKey="TitleText" wordwrap="false">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="25"/>
-						<Anchor point="TOPRIGHT" x="-25"/>
+						<Anchor point="CENTER" relativeKey="$parent.TitleBg"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -938,23 +943,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="$parentPortrait" parentKey="portrait">
-					<Size x="61" y="61"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="8" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText" wordwrap="false">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-5"/>
-						<Anchor point="LEFT" x="60"/>
-						<Anchor point="RIGHT" x="-60"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
 					<Anchors>
@@ -966,6 +954,43 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+			<Frame parentKey="PortraitContainer" frameLevel="400">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentPortrait" parentKey="portrait">
+							<Size x="60" y="60"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="7" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="TitleContainer" frameLevel="510" mixin="PortraitFrameTitleContainerMixin">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-1"/>
+					<Anchor point="TOPRIGHT" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText" wordwrap="false">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-5"/>
+								<Anchor point="LEFT" x="37" y="0"/>
+								<Anchor point="RIGHT" x="-37" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 	</Frame>
 
@@ -973,7 +998,7 @@
 		<Frames>
 			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5.6" y="5"/>
+					<Anchor point="TOPRIGHT" x="1" y="-1"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -1041,7 +1066,7 @@
 		</Scripts>
 	</Button>
 
-	
+
 	<Texture name="GreenCheckMarkTemplate" file="Interface\Scenarios\ScenarioIcon-Check" virtual="true">
 		<Size x="16" y="16"/>
 	</Texture>
@@ -1184,7 +1209,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</DropDownToggleButton>
-	
+
 	<Button name="UIGoldBorderButtonTemplate" virtual="true">
 		<Size x="105" y="22"/>
 		<Anchors>
@@ -1220,18 +1245,6 @@
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
-
-	<Slider name="HorizontalSliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true" inherits="BackdropTemplate">
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
-		</HitRectInsets>
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
-		</KeyValues>
-		<ThumbTexture parentKey="Thumb" name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
-			<Size x="32" y="32"/>
-		</ThumbTexture>
-	</Slider>
 
 	<Slider name="UIPanelStretchableArtScrollBarTemplate" inherits="UIPanelScrollBarTemplate" virtual="true">
 		<Size x="20" y="0" />
@@ -1852,7 +1865,7 @@
 		</HighlightTexture>
     </Button>
 
-	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" virtual="true">
+	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" frameLevel="510" virtual="true">
 		<Size x="32" y="32"/>
 		<Frames>
 			<Button parentKey="MaximizeButton" setAllPoints="true" hidden="true">
@@ -2045,57 +2058,6 @@
 		</Scripts>
 	</Button>
 
-	<Button name="IconButtonTemplate" mixin="IconButtonMixin" virtual="true">
-		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-		</Scripts>
-	</Button>
-
-	<Button name="SquareIconButtonTemplate" mixin="SquareIconButtonMixin" virtual="true">
-		<Size x="32" y="32"/>
-		<!--
-		icon: texture file to be displayed on the button.
-		iconAtlas: atlas to be displayed on the button.
-		tooltipText: displayed on the right of the button by default.
-		onClickHandler: forwards the standard OnClick arguments.
-		<KeyValues>
-			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
-			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
-			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
-			<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
-		</KeyValues>
-		-->
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Icon">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="CENTER" x="-1" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnClick method="OnClick"/>
-		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
-		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
-		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-	</Button>
-
-	<Button name="RefreshButtonTemplate" inherits="SquareIconButtonTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
-		</KeyValues>
-	</Button>
-
 	<Button name="ThreeSliceButtonTemplate" mixin="ThreeSliceButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<!--
 		atlasName: The art kit to use for the 3 sections of the button.
@@ -2152,6 +2114,68 @@
 			<OnSizeChanged method="UpdateScale"/>
 		</Scripts>
 	</Button>
+
+	<CheckButton name="NineSliceCheckButtonTemplate" mixin="NineSliceCheckButtonMixin" virtual="true">
+		<!--
+		<KeyValues>
+			<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+
+			<KeyValue key="normalAtlasName" value="UI-HUD-ActionBar-IconFrame" type="string"/>
+			<KeyValue key="normalLeftPadding" value="0" type="number"/> Optional
+			<KeyValue key="normalTopPadding" value="0" type="number"/> Optional
+			<KeyValue key="normalRightPadding" value="0" type="number"/> Optional
+			<KeyValue key="normalBottomPadding" value="0" type="number"/> Optional
+
+			<KeyValue key="pushedAtlasName" value="UI-HUD-ActionBar-IconFrame-Pushed" type="string"/>
+			<KeyValue key="pushedLeftPadding" value="0" type="number"/> Optional
+			<KeyValue key="pushedTopPadding" value="0" type="number"/> Optional
+			<KeyValue key="pushedRightPadding" value="0" type="number"/> Optional
+			<KeyValue key="pushedBottomPadding" value="0" type="number"/> Optional
+
+			<KeyValue key="highlightAtlasName" value="UI-HUD-ActionBar-IconFrame-Highlight" type="string"/>
+			<KeyValue key="highlightLeftPadding" value="0" type="number"/> Optional
+			<KeyValue key="highlightTopPadding" value="0" type="number"/> Optional
+			<KeyValue key="highlightRightPadding" value="0" type="number"/> Optional
+			<KeyValue key="highlightBottomPadding" value="0" type="number"/> Optional
+
+			<KeyValue key="checkedAtlasName" value="UI-HUD-ActionBar-IconFrame-Checked" type="string"/>
+			<KeyValue key="checkedLeftPadding" value="0" type="number"/> Optional
+			<KeyValue key="checkedTopPadding" value="0" type="number"/> Optional
+			<KeyValue key="checkedRightPadding" value="0" type="number"/> Optional
+			<KeyValue key="checkedBottomPadding" value="0" type="number"/> Optional
+		</KeyValues>
+		-->
+		<Size x="20" y="20"/>
+		<Frames>
+			<Frame parentKey="NormalNineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="atlasKey" value="normalAtlasName" type="string"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="PushedNineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="atlasKey" value="pushedAtlasName" type="string"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="HighlightNineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="atlasKey" value="highlightAtlasName" type="string"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="CheckedNineSlice" inherits="NineSlicePanelTemplate"  useParentLevel="true" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="atlasKey" value="checkedAtlasName" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</CheckButton>
 
 	<Button name="BigRedThreeSliceButtonTemplate" inherits="ThreeSliceButtonTemplate" virtual="true">
 		<Size x="441" y="128"/>
@@ -2214,18 +2238,34 @@
 	<Button name="UIButtonTemplate" mixin="UIButtonMixin" virtual="true">
 		<Size x="20" y="20"/>
 		<!--
-		atlasName: The art kit to use for the  button.
-						* The normal texture will be "atlasName"
-						* The pressed texture will be "atlasName-Pressed"
-						* The disabled texture will be "atlasName-Disabled"
-						* The highlight texture will be "atlasName-Highlight"
-		tooltip: This can be either a string or a function which returns a string
+		buttonArtKit: The art kit to use for the  button.
+						* The normal texture will be "buttonArtKit"
+						* The pressed texture will be "buttonArtKit-Pressed"
+						* The disabled texture will be "buttonArtKit-Disabled"
+						* The highlight texture will be "buttonArtKit-Highlight"
+		onClickHandler: forwards the standard OnClick arguments.
+		onClickSoundKit: sound to play for OnClick.
+		tooltipAnchor: where to anchor the tooltip for SetOwner.
+		tooltipTitle: the title text for the tooltip.
+		tooltipTitleColor: a color for tooltipTitle.
+		tooltipText: the body text for a tooltip; can be set with or without tooltipTitle.
+		tooltipTextColor: a color for tooltipText.
+		tooltipOffsetX: x offset for the tooltip relative to tooltipAnchor for SetOwner.
+		tooltipOffsetY: y offset for the tooltip relative to tooltipAnchor for SetOwner.
 
 		<KeyValues>
-			<KeyValue key="atlasName" value="128-RedButton" type="string"/>
-			<KeyValue key="tooltip" value="MyTooltipFunction" type="global"/>
-				or
-			<KeyValue key="tooltip" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+			<KeyValue key="buttonArtKit" value="128-RedButton" type="string"/>
+			<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
+			<KeyValue key="onClickSoundKit" value="SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON" type="global"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+			<KeyValue key="tooltipTitle" value="REFRESH_BUTTON_TOOLTIP_TITLE" type="string"/>
+			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+			<KeyValue key="tooltipOffsetX" value="0" type="number"/>
+			<KeyValue key="tooltipOffsetY" value="0" type="number"/>
+			<KeyValue key="disabledTooltip" value="REFRESH_BUTTON_TOOLTIP_DISABLED" type="string"/>
+			<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+			<KeyValue key="disabledTooltipOffsetX" value="0" type="number"/>
+			<KeyValue key="disabledTooltipOffsetY" value="0" type="number"/>
 		</KeyValues>
 		-->
 		<Frames>
@@ -2236,41 +2276,111 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
 	</Button>
 
 	<Button name="BigRedRefreshButtonTemplate" inherits="UIButtonTemplate" virtual="true">
 		<Size x="128" y="128"/>
 		<KeyValues>
-			<KeyValue key="atlasName" value="128-RedButton-Refresh" type="string"/>
+			<KeyValue key="buttonArtKit" value="128-RedButton-Refresh" type="string"/>
 		</KeyValues>
 	</Button>
 
 	<Button name="BigRedExitButtonTemplate" inherits="UIButtonTemplate" virtual="true">
 		<Size x="128" y="128"/>
 		<KeyValues>
-			<KeyValue key="atlasName" value="128-redbutton-exit" type="string"/>
+			<KeyValue key="buttonArtKit" value="128-redbutton-exit" type="string"/>
 		</KeyValues>
 	</Button>
 
-	<Frame name="ResizeCheckButtonTemplate" inherits="ResizeLayoutFrame" mixin="ResizeCheckButtonMixin" virtual="true">
+	<Button name="IconButtonTemplate" mixin="IconButtonMixin" inherits="UIButtonTemplate" virtual="true">
 		<!--
-		labelText: The text to use on the label
-
+		icon: texture file to be displayed on the button.
+		iconSize: size for square icons. iconSize/{iconWidth iconHeight}/useAtlasSize are exclusive.
+		iconWidth: specified with iconHeight.
+		iconHeight: specified with iconWidth.
+		iconAtlas: atlas to be displayed on the button.
+		useAtlasSize: used with iconAtlas.
+		useIconAsHighlight: use the same icon for the highlight texture.
 		<KeyValues>
+			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
+			<KeyValue key="iconSize" value="16" type="number"/>
+			<KeyValue key="iconWidth" value="16" type="number"/>
+			<KeyValue key="iconHeight" value="16" type="number"/>
+			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
+			<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+			<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<!-- TODO:: This should be using InitButton -->
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Button>
+
+	<Button name="SquareIconButtonTemplate" mixin="SquareIconButtonMixin" inherits="IconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconSize" value="16" type="number"/>
+		</KeyValues>
+		<Size x="32" y="32"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="RefreshButtonTemplate" inherits="SquareIconButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Frame name="ResizeCheckButtonBehaviorTemplate" inherits="ResizeLayoutFrame" mixin="ResizeCheckButtonMixin" virtual="true">
+		<!--
+		onBoxToggled: a function that takes two arguments: a boolean for whether the box is checked or not, and a boolean for whether it
+						was toggled by the user or programmatically. Called when the checked state changes.
+		labelText: The text to use on the label
+		<KeyValues>
+			<KeyValue key="onBoxToggled" value="nop" type="global"/>
 			<KeyValue key="labelText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
 		</KeyValues>
 		-->
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ResizeCheckButtonTemplate" inherits="ResizeCheckButtonBehaviorTemplate" virtual="true">
 		<Frames>
-			<CheckButton parentKey="Button">
+			<CheckButton parentKey="Button" inherits="UICheckButtonTemplate">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 				<Scripts>
 					<OnClick>
 						self:GetParent():OnCheckButtonClick();
@@ -2287,10 +2397,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-		</Scripts>
 	</Frame>
 
 	<EditBox name="SharedEditBoxTemplate" mixin="SharedEditBoxMixin" virtual="true">
@@ -2321,20 +2427,6 @@
 		</Scripts>
 	</EditBox>
 
-	<Slider name="SharedHorizontalSliderTemplate" orientation="HORIZONTAL" obeyStepOnDrag="true" virtual="true">
-		<Size x="300" y="20"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Track" atlas="common-slider-track" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<ThumbTexture parentKey="Thumb" atlas="common-slider-thumb" useAtlasSize="true"/>
-	</Slider>
-
 	<Frame name="SliderWithButtonsAndLabelTemplate" inherits="ResizeLayoutFrame" mixin="SliderWithButtonsAndLabelMixin" virtual="true">
 		<Size x="1" y="1"/>
 		<Layers>
@@ -2350,7 +2442,8 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Slider parentKey="Slider" inherits="SharedHorizontalSliderTemplate" scale="0.7">
+			<Slider parentKey="Slider" orientation="HORIZONTAL" obeyStepOnDrag="true" scale="0.7">
+				<Size x="300" y="20"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
@@ -2365,6 +2458,16 @@
 						self:GetParent():OnSliderValueChanged(value, userInput);
 					</OnValueChanged>
 				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Track" atlas="common-slider-track" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ThumbTexture parentKey="Thumb" atlas="common-slider-thumb" useAtlasSize="true"/>
 			</Slider>
 			<Button parentKey="IncrementButton" motionScriptsWhileDisabled="true">
 				<Size x="32" y="32"/>
@@ -2575,11 +2678,40 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="LargeDropDownControlTemplate" mixin="DropDownControlMixin" virtual="true">
+		<Size x="150" y="30"/>
+		<Frames>
+			<Frame parentKey="DropDownMenu" inherits="LargeUIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="EnumDropDownControlTemplate" mixin="EnumDropDownControlMixin" inherits="DropDownControlTemplate" virtual="true">
 		<KeyValues>
 			<!-- Overwrite to change the dropdown text when the selected value is nil -->
 			<KeyValue key="noneSelectedText" value="NONE" type="global"/>
 		</KeyValues>
+	</Frame>
+
+	<Frame name="LabeledEnumDropDownControlTemplate" mixin="LabeledEnumDropDownControlMixin" inherits="DropDownControlTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.DropDownMenu" relativePoint="TOPLEFT" x="20" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="ClickToDragTemplate" mixin="ClickToDragMixin" movable="true" virtual="true">
@@ -2590,10 +2722,258 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="DisabledTooltipButtonTemplate" mixin="DisabledTooltipButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+	<EditBox name="NumericInputBoxTemplate" mixin="NumericInputBoxMixin" inherits="InputBoxTemplate" numeric="true" virtual="true">
+		<KeyValues>
+			<!--
+			valueChangedCallback: a function that takes two arguments, the numeric value of the edit box, and a boolean for whether
+										it was set by user input (as opposed to set by script). Called whenever the value changes
+			valueFinalizedCallback: a function that takes the numeric value of the edit box when the focus is cleared (i.e. enter pressed).
+			-->
+			<KeyValue key="valueChangedCallback" value="nop" type="global"/>
+			<KeyValue key="valueFinalizedCallback" value="nop" type="global"/>
+		</KeyValues>
 		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
+			<OnTextChanged method="OnTextChanged"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost method="OnEditFocusLost"/>
 		</Scripts>
-	</Button>
+	</EditBox>
+
+	<Frame name="SliderAndEditControlTemplate" mixin="SliderAndEditControlMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="12" type="number"/>
+			<KeyValue key="heightPadding" value="6" type="number"/>
+		</KeyValues>
+		<Frames>
+			<EditBox parentKey="ValueBox" inherits="NumericInputBoxTemplate" letters="3" autoFocus="false">
+				<Size x="30" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" x="6" y="6"/>
+				</Anchors>
+			</EditBox>
+
+			<Slider parentKey="Slider" inherits="UISliderTemplate" obeyStepOnDrag="true">
+				<Size x="120" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ValueBox" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():OnLeave();
+					</OnLeave>
+					<OnValueChanged>
+						self:GetParent():OnSliderValueChanged(value, userInput);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Slider" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+<!--
+*******************************************************************************
+    IconSelectorPopupFrameTemplate
+	Frame used for icon selections and naming.  Contains:
+	- Header area with name field and current selected icon
+	- Scroll area for icon list
+	- Footer with confirmation buttons
+*******************************************************************************
+-->
+	<Frame name="IconSelectorPopupFrameTemplate" mixin="IconSelectorPopupFrameTemplateMixin" virtual="true">
+		<Size x="525" y="495"/>
+		<!--
+		editBoxHeaderText: text to be used for font string just above edit box.
+		-->
+		<KeyValues>
+			<KeyValue key="editBoxHeaderText" value="" type="global"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".80"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BorderBox" inherits="SelectionFrameTemplate" frameLevel="50" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<FontString parentKey="EditBoxHeaderText" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-21" />
+							</Anchors>
+						</FontString>
+						<FontString parentKey="IconSelectionText" inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-69"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="SelectedIconArea">
+						<Size x="275" y="45"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-13" y="-13"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="SelectedIconButton" mixin="SelectedIconButtonMixin">
+								<Size x="36" y="36"/>
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-4.5" y="-3.5"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture file="Interface\Buttons\UI-EmptySlot-Disabled">
+											<Size x="45" y="45"/>
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="-1"/>
+											</Anchors>
+											<TexCoords left="0.140625" right="0.84375" top="0.140625" bottom="0.84375"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="SelectedTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" hidden="true"/>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnClick method="OnClick"/>
+								</Scripts>
+								<NormalTexture parentKey="Icon">
+									<Size x="36" y="36"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="-1"/>
+									</Anchors>
+								</NormalTexture>
+								<HighlightTexture parentKey="Highlight" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+							</Button>
+							<Frame parentKey="SelectedIconText" inherits="VerticalLayoutFrame">
+								<KeyValues>
+									<KeyValue key="spacing" value="2" type="number"/>
+									<KeyValue key="expand" value="true" type="boolean"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-46" y="-10.5"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString parentKey="SelectedIconHeader" inherits="GameFontNormalSmall">
+											<KeyValues>
+												<KeyValue key="layoutIndex" value="1" type="number"/>
+												<KeyValue key="align" value="right" type="string"/>
+											</KeyValues>
+										</FontString>
+										<FontString parentKey="SelectedIconDescription" inherits="GameFontHighlightSmall">
+											<KeyValues>
+												<KeyValue key="layoutIndex" value="2" type="number"/>
+												<KeyValue key="align" value="right" type="string"/>
+											</KeyValues>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame parentKey="IconDragArea" hidden="true">
+						<Size x="499" y="391"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="13" y="-68"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="IconDragAreaContent" inherits="HorizontalLayoutFrame">
+								<KeyValues>
+									<KeyValue key="spacing" value="5" type="number"/>
+									<KeyValue key="expand" value="true" type="boolean"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="PlusIcon" atlas="communities-icon-addchannelplus" useAtlasSize="true" alphaMode="ADD">
+											<KeyValues>
+												<KeyValue key="layoutIndex" value="1" type="number"/>
+											</KeyValues>
+										</Texture>
+										<FontString parentKey="IconDragText" inherits="GameFontGreenLarge" text="ICON_SELECTION_DRAG">
+											<KeyValues>
+												<KeyValue key="layoutIndex" value="2" type="number"/>
+											</KeyValues>
+											<Size x="0" y="32"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+					<EditBox parentKey="IconSelectorEditBox" mixin="IconSelectorEditBoxMixin" letters="16" historyLines="0">
+						<Size x="182" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="29" y="-35"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="IconSelectorPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="12" y="29"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-11" y="0"/>
+									</Anchors>
+									<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture parentKey="IconSelectorPopupNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="175" y="29"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.IconSelectorPopupNameLeft" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture parentKey="IconSelectorPopupNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="12" y="29"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.IconSelectorPopupNameMiddle" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnTextChanged method="OnTextChanged"/>
+							<OnEscapePressed method="OnEscapePressed"/>
+							<OnEnterPressed method="OnEnterPressed"/>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>
+				</Frames>
+			</Frame>
+			<Frame parentKey="IconSelector" inherits="ScrollBoxSelectorTemplate" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="21" y="-84"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
 </Ui>

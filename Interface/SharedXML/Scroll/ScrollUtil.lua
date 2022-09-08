@@ -1,6 +1,6 @@
 ScrollUtil = {};
 
--- For convenience of public addons.
+-- For public addons to access frames post-acquire, post-initialization and post-release.
 function ScrollUtil.AddAcquiredFrameCallback(scrollBox, callback, owner, iterateExisting)
 	if iterateExisting then
 		scrollBox:ForEachFrame(callback);
@@ -10,6 +10,17 @@ function ScrollUtil.AddAcquiredFrameCallback(scrollBox, callback, owner, iterate
 		callback(frame, elementData, new);
 	end
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnAcquiredFrame, OnAcquired, owner);
+end
+
+function ScrollUtil.AddInitializedFrameCallback(scrollBox, callback, owner, iterateExisting)
+	if iterateExisting then
+		scrollBox:ForEachFrame(callback);
+	end
+
+	local function OnInitialized(o, frame, elementData)
+		callback(frame, elementData);
+	end
+	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnInitializedFrame, OnInitialized, owner);
 end
 
 function ScrollUtil.AddReleasedFrameCallback(scrollBox, callback, owner)
@@ -167,10 +178,7 @@ end
 
 SelectionBehaviorMixin = CreateFromMixins(CallbackRegistryMixin);
 
-SelectionBehaviorPolicy =
-{
-	Deselectable = 1,
-};
+SelectionBehaviorFlags = FlagsUtil.MakeFlags("Deselectable", "Intrusive");
 
 SelectionBehaviorMixin:GenerateCallbackEvents(
 	{
@@ -178,28 +186,64 @@ SelectionBehaviorMixin:GenerateCallbackEvents(
 	}
 );
 
-function SelectionBehaviorMixin.IsSelected(frame)
-	return frame and SelectionBehaviorMixin.IsElementDataSelected(frame:GetElementData()) or false;
+function SelectionBehaviorMixin.IsIntrusiveSelected(frame)
+	if frame then
+		return SelectionBehaviorMixin.IsElementDataIntrusiveSelected(frame:GetElementData());
+	end
+	return false;	
 end
 
-function SelectionBehaviorMixin.IsElementDataSelected(elementData)
-	return elementData and elementData.selected or false;
+-- Intrusive accessors
+function SelectionBehaviorMixin.IsElementDataIntrusiveSelected(elementData)
+	if elementData then
+		return not not elementData.selected;
+	end
+	return false;
 end
 
-function SelectionBehaviorMixin:OnLoad(scrollBox, selectionPolicy)
+-- Extrusive accessors (default)
+function SelectionBehaviorMixin:IsSelected(frame)
+	if frame then
+		return self:IsElementDataSelected(frame:GetElementData());
+	end
+	return false;	
+end
+
+function SelectionBehaviorMixin:IsElementDataSelected(elementData)
+	if elementData then
+		return (self.selections and self.selections[elementData] == true) or (not not elementData.selected);
+	end
+	return false;
+end
+
+-- "..." are SelectionBehaviorFlags
+function SelectionBehaviorMixin:Init(scrollBox, ...)
 	CallbackRegistryMixin.OnLoad(self);
 	
 	self.scrollBox = scrollBox;
+	self.selectionFlags = CreateFromMixins(FlagsMixin);
+	self.selectionFlags:OnLoad();
 
-	self:SetSelectionPolicy(selectionPolicy);
+	self:SetSelectionFlags(...);
+
+	if not self.selectionFlags:IsSet(SelectionBehaviorFlags.Intrusive) then
+		self.selections = {};
+	end
 end
 
-function SelectionBehaviorMixin:SetSelectionPolicy(selectionPolicy)
-	self.selectionPolicy = selectionPolicy;
+function SelectionBehaviorMixin:SetSelectionFlags(...)
+	for index = 1, select("#", ...) do
+		self.selectionFlags:Set(select(index, ...));
+	end
 end
 
 function SelectionBehaviorMixin:HasSelection()
 	return #self:GetSelectedElementData() > 0;
+end
+
+function SelectionBehaviorMixin:GetFirstSelectedElementData()
+	local selected = self:GetSelectedElementData();
+	return selected[1];
 end
 
 function SelectionBehaviorMixin:GetSelectedElementData()
@@ -207,7 +251,7 @@ function SelectionBehaviorMixin:GetSelectedElementData()
 	local dataProvider = self.scrollBox:GetDataProvider();
 	if dataProvider then
 		for index, elementData in dataProvider:Enumerate() do
-			if elementData.selected then
+			if self:IsElementDataSelected(elementData) then
 				table.insert(selected, elementData);
 			end
 		end
@@ -215,8 +259,8 @@ function SelectionBehaviorMixin:GetSelectedElementData()
 	return selected;
 end
 
-function SelectionBehaviorMixin:IsDeselectable()
-	return self.selectionPolicy == SelectionBehaviorPolicy.Deselectable;
+function SelectionBehaviorMixin:IsFlagSet(flag)
+	return self.selectionFlags:IsSet(flag);
 end
 
 function SelectionBehaviorMixin:DeselectByPredicate(predicate)
@@ -225,7 +269,7 @@ function SelectionBehaviorMixin:DeselectByPredicate(predicate)
 	if dataProvider then
 		for index, elementData in dataProvider:Enumerate() do
 			if predicate(elementData) then
-				elementData.selected = nil;
+				self:SetElementDataSelected_Internal(elementData, false);
 				table.insert(deselected, elementData);
 			end
 		end
@@ -235,7 +279,7 @@ end
 
 function SelectionBehaviorMixin:DeselectSelectedElements()
 	return self:DeselectByPredicate(function(elementData)
-		return elementData.selected;
+		return self:IsElementDataSelected(elementData);
 	end);
 end
 
@@ -247,8 +291,8 @@ function SelectionBehaviorMixin:ClearSelections()
 end
 
 function SelectionBehaviorMixin:ToggleSelectElementData(elementData)
-	local oldSelected = elementData.selected;
-	if oldSelected and not self:IsDeselectable() then
+	local oldSelected = self:IsElementDataSelected(elementData);
+	if oldSelected and not self:IsFlagSet(SelectionBehaviorFlags.Deselectable) then
 		return;
 	end
 	
@@ -260,18 +304,30 @@ function SelectionBehaviorMixin:SelectElementData(elementData)
 	self:SetElementDataSelected_Internal(elementData, true);
 end
 
+function SelectionBehaviorMixin:SelectElementDataByPredicate(predicate)
+	local elementData = self.scrollBox:FindElementDataByPredicate(predicate);
+	if elementData then
+		self:SelectElementData(elementData);
+	end
+	return elementData;
+end
+
 function SelectionBehaviorMixin:SetElementDataSelected_Internal(elementData, newSelected)
 	local deselected = nil;
 	if newSelected then
 		-- Works under the current single selection policy. When multi-select is added,
 		-- change this.
 		deselected = self:DeselectByPredicate(function(data)
-			return data.selected and data ~= elementData;
+			return data ~= elementData and self:IsElementDataSelected(data);
 		end);
 	end
 
-	local changed = (not not elementData.selected) ~= newSelected;
-	elementData.selected = newSelected;
+	local changed = self:IsElementDataSelected(elementData) ~= newSelected;
+	if self.selectionFlags:IsSet(SelectionBehaviorFlags.Intrusive) then
+		elementData.selected = newSelected;
+	else
+		self.selections[elementData] = newSelected;
+	end
 
 	if deselected then
 		for index, data in ipairs(deselected) do
@@ -292,9 +348,9 @@ function SelectionBehaviorMixin:ToggleSelect(frame)
 	self:ToggleSelectElementData(frame:GetElementData());
 end
 
-function ScrollUtil.AddSelectionBehavior(scrollBox, selectionPolicy)
+function ScrollUtil.AddSelectionBehavior(scrollBox, ...)
 	local behavior = CreateFromMixins(SelectionBehaviorMixin);
-	behavior:OnLoad(scrollBox, selectionPolicy);
+	behavior:Init(scrollBox, ...);
 	return behavior;
 end
 
@@ -332,13 +388,48 @@ function ScrollUtil.AddResizableChildrenBehavior(scrollBox)
 end
 
 function ScrollUtil.RegisterTableBuilder(scrollBox, tableBuilder, elementDataTranslator)
-	local onAcquired = function(o, frame, elementData)
+	local onInitialized = function(o, frame, elementData)
 		tableBuilder:AddRow(frame, elementDataTranslator(elementData));
 	end;
-	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnAcquiredFrame, onAcquired, onAcquired);
+	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnInitializedFrame, onInitialized, onInitialized);
 
 	local onReleased = function(o, frame, elementData)
 		tableBuilder:RemoveRow(frame, elementDataTranslator(elementData));
 	end;
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, onReleased, onReleased);
+end
+
+ScrollBoxFactoryInitializerMixin = {};
+
+function ScrollBoxFactoryInitializerMixin:Init(frameTemplate)
+	self.frameTemplate = frameTemplate;
+end
+
+function ScrollBoxFactoryInitializerMixin:GetTemplate()
+	assert(self.frameTemplate);
+	return self.frameTemplate;
+end
+
+function ScrollBoxFactoryInitializerMixin:GetExtent()
+	return nil;
+end
+
+function ScrollBoxFactoryInitializerMixin:Factory(factory, initializer)
+	factory(self:GetTemplate(), initializer);
+end
+
+function ScrollBoxFactoryInitializerMixin:InitFrame(frame)
+	if frame.Init then
+		frame:Init(self);
+	end
+end
+
+function ScrollBoxFactoryInitializerMixin:Resetter(frame)
+	if frame.Release then
+		frame:Release(self);
+	end
+end
+
+function ScrollBoxFactoryInitializerMixin:IsTemplate(frameTemplate)
+	return frameTemplate == self.frameTemplate;
 end

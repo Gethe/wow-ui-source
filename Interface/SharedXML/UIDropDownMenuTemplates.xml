@@ -69,9 +69,7 @@
 					<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
 				</Texture>
 				<Texture parentKey="Icon" name="$parentIcon" hidden="true">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset x="0" y="0"/>
@@ -100,15 +98,9 @@
 				</Scripts>
 			</Button>
 			<DropDownToggleButton name="$parentExpandArrow" mixin="DropDownExpandArrowMixin" hidden="true" motionScriptsWhileDisabled="true">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="RIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnMouseDown method="OnMouseDown"/>
@@ -120,11 +112,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMLEFT"/>
-					<Anchor point="RIGHT" relativeTo="$parentColorSwatch" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="RIGHT" relativeTo="$parentColorSwatch" relativePoint="LEFT" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter function="UIDropDownMenuButtonInvisibleButton_OnEnter"/>
@@ -190,60 +178,40 @@
 	</DropDownToggleButton>
 
 	<Frame name="UIDropDownMenuTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="40" y="32"/>
-		</Size>
+		<Size x="40" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentLeft" parentKey="Left" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
-					<Size>
-						<AbsDimension x="25" y="64"/>
-					</Size>
+					<Size x="25" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="17"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="17"/>
 					</Anchors>
 					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
-					<Size>
-						<AbsDimension x="115" y="64"/>
-					</Size>
+					<Size x="115" y="64"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentRight" parentKey="Right" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
-					<Size>
-						<AbsDimension x="25" y="64"/>
-					</Size>
+					<Size x="25" y="64"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
 				</Texture>
 				<FontString parentKey="Text" name="$parentText" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT">
-					<Size>
-						<AbsDimension x="0" y="10"/>
-					</Size>
+					<Size x="0" y="10"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.Right">
-							<Offset>
-								<AbsDimension x="-43" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" x="-43" y="2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Icon" name="$parentIcon" hidden="true">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset x="30" y="2"/>
@@ -254,44 +222,30 @@
 		</Layers>
 		<Frames>
 			<DropDownToggleButton parentKey="Button" name="$parentButton" inherits="UIDropDownMenuButtonScriptTemplate" motionScriptsWhileDisabled="true" >
-				<Size>
-					<AbsDimension x="24" y="24"/>
-				</Size>
+				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.Right">
-						<Offset>
-							<AbsDimension x="-16" y="-18"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Right" x="-16" y="-18"/>
 				</Anchors>
 				<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
-					<Size>
-						<AbsDimension x="24" y="24"/>
-					</Size>
+					<Size x="24" y="24"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</NormalTexture>
 				<PushedTexture name="$parentPushedTexture" parentKey="PushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
-					<Size>
-						<AbsDimension x="24" y="24"/>
-					</Size>
+					<Size x="24" y="24"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</PushedTexture>
 				<DisabledTexture name="$parentDisabledTexture" parentKey="DisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
-					<Size>
-						<AbsDimension x="24" y="24"/>
-					</Size>
+					<Size x="24" y="24"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</DisabledTexture>
 				<HighlightTexture name="$parentHighlightTexture" parentKey="HighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-					<Size>
-						<AbsDimension x="24" y="24"/>
-					</Size>
+					<Size x="24" y="24"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
 					</Anchors>

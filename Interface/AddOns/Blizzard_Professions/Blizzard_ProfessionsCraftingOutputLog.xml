@@ -1,0 +1,147 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsCraftingOutputLog.lua"/>
+
+	<Frame name="ProfessionsCraftingOutputLogElementTemplate" mixin="ProfessionsCraftingOutputLogElementMixin" virtual="true">
+		<Size y="60"/>
+		<Frames>
+			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-10"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormalMed2" justifyH="LEFT">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.OutputIcon" relativePoint="TOPRIGHT" x="20" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Quality" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="300" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ProfessionsCraftingOutputLogResourceTemplate" virtual="true">
+		<Size x="350" y="40"/>
+		<Frames>
+			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormalMed2" text="PROFESSIONS_CRAFTING_FORM_OUTPUT_LOG_RESOURCES_RETURNED" justifyH="LEFT">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.OutputIcon" relativePoint="RIGHT" x="20" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ProfessionsCraftingOutputLogTemplate" mixin="ProfessionsCraftingOutputLogMixin" inherits="TooltipBackdropTemplate" enableMouse="true" virtual="true">
+		<Size x="420" y="350"/>
+		<KeyValues>
+			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="Header" inherits="GameFontHighlight">
+					<Size x="300" y="-20" />
+					<Anchors>
+						<Anchor point="TOP" y="-10" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ResultContainer">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="100"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="10" y="-10"/>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Name" inherits="GameFontNormalMed2" justifyH="LEFT">
+							<Size x="400" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.OutputIcon" relativePoint="TOPRIGHT" x="20" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Quality" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="300" y="20"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Frame parentKey="ResultsContainer">
+				<Size y="110"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="100"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="3" y="-6"/>
+							<Anchor point="BOTTOMRIGHT" x="-25" y="2"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="-3" y="-1"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
+			</Frame>
+			
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="3"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="ExitButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
+				</Anchors>
+			</Button>
+			
+			<Button parentKey="RecraftButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ExitButton" relativePoint="LEFT" x="-20"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

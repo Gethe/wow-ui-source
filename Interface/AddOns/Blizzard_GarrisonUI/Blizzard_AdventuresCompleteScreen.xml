@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AdventuresCompleteScreen.lua"/>
 
 	<Frame name="AdventuresCompleteScreenTemplate" mixin="AdventuresCompleteScreenMixin" virtual="true">
@@ -143,7 +143,7 @@
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Median" atlas="_AdventuresFrameTile-Median" useAtlasSize="true" tile="true">
+				<Texture parentKey="Median" atlas="_AdventuresFrameTile-Median" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" y="10"/>
 						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT"  y="10"/>

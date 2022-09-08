@@ -1,4 +1,5 @@
-﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TutorialKeyboardMouseFrame.lua" />
 
 	<Frame name="NPE_TutorialKeyboardMouseFrame_Frame" mixin="NPE_TutorialKeyboardMouseFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
@@ -11,7 +12,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentkey="Keyboard" atlas="newplayertutorial-keyboard" useAtlasSize="true">
+				<Texture parentKey="Keyboard" atlas="newplayertutorial-keyboard" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>

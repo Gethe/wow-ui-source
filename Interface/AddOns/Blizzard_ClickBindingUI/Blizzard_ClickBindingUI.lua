@@ -395,6 +395,10 @@ local function AddFromCursorInfo(addFunc)
 	return addedNew;
 end
 
+local function HeaderInitializer(button, elementData)
+	button:Init(elementData);
+end
+
 function ClickBindingFrameMixin:InitializeScrollBox()
 	local padding = 7;
 	-- Extra bottom padding to leave space to drag in an action
@@ -402,79 +406,74 @@ function ClickBindingFrameMixin:InitializeScrollBox()
 	local spacing = 4;
 	local view = CreateScrollBoxListLinearView(padding, bottomPadding, padding, padding, spacing);
 
-	view:SetElementExtentCalculator(function(dataIndex, elementData)
-		local buttonHeight = 46;
-		local headerHeight = 20;
-		local type = elementData.elementType;
-		return (type == ElementDataTypes.DefaultsHeader or type == ElementDataTypes.CustomsHeader) and headerHeight or buttonHeight;
-	end);
+	local function LineInitializer(button, elementData)
+		button:Init(elementData);
+		
+		button:SetScript("OnClick", function(button, buttonName)
+			local addedNew;
+			if elementData.elementType ~= ElementDataTypes.InteractionBinding then
+				addedNew = AddFromCursorInfo(function(type, actionID)
+					if not elementData.bindingInfo then
+						elementData.bindingInfo = {};
+					end
+					elementData.bindingInfo.type = type;
+					elementData.bindingInfo.actionID = actionID;
+					button:Init(elementData);
+				end);
+			end
+		
+			if addedNew or not elementData.bindingInfo then
+				return;
+			end
+		
+			local modifiers = C_ClickBindings.MakeModifiers();
+			if elementData.bindingInfo.button == buttonName and elementData.bindingInfo.modifiers == modifiers then
+				return;
+			end
+		
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+			elementData.bindingInfo.button = buttonName;
+			elementData.bindingInfo.modifiers = modifiers;
+			elementData.unbound = false;
+			if elementData.elementType == ElementDataTypes.NewSlot then
+				elementData.elementType = ElementDataTypes.CustomsBinding;
+				self:SetHasNewSlot(false);
+			end
+			button:Init(elementData);
+			self:ClearUnboundText();
+			self.ScrollBox:ForEachFrame(function(otherButton)
+				local otherData = otherButton:GetElementData();
+				if (otherData ~= elementData) and otherData.bindingInfo and (otherData.bindingInfo.button == buttonName) and (otherData.bindingInfo.modifiers == modifiers) then
+					otherData.bindingInfo.button = nil;
+					otherData.bindingInfo.modifiers = nil;
+					otherData.unbound = true;
+					otherButton:Init(otherData);
+					self:SetUnboundText(otherData);
+				end
+			end);
+			self:CleanDataProvider();
+			self.dataProvider:Sort();
+			self.pendingChanges = true;
+		end);
+		
+		button.DeleteButton:SetScript("OnClick", function()
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+			self.dataProvider:Remove(elementData);
+			if type == ElementDataTypes.NewSlot then
+				self:SetHasNewSlot(false);
+			else
+				self.pendingChanges = true;
+			end
+			self:ClearUnboundText();
+		end);
+	end
 
 	view:SetElementFactory(function(factory, elementData)
 		local type = elementData.elementType;
 		if type == ElementDataTypes.DefaultsHeader or type == ElementDataTypes.CustomsHeader then
-			local button = factory("Button", "ClickBindingHeaderTemplate");
-			button:Init(elementData);
+			factory("ClickBindingHeaderTemplate", HeaderInitializer);
 		else
-			local button = factory("Button", "ClickBindingLineTemplate");
-			button:Init(elementData);
-
-			button:SetScript("OnClick", function(button, buttonName)
-				local addedNew;
-				if elementData.elementType ~= ElementDataTypes.InteractionBinding then
-					addedNew = AddFromCursorInfo(function(type, actionID)
-						if not elementData.bindingInfo then
-							elementData.bindingInfo = {};
-						end
-						elementData.bindingInfo.type = type;
-						elementData.bindingInfo.actionID = actionID;
-						button:Init(elementData);
-					end);
-				end
-
-				if addedNew or not elementData.bindingInfo then
-					return;
-				end
-
-				local modifiers = C_ClickBindings.MakeModifiers();
-				if elementData.bindingInfo.button == buttonName and elementData.bindingInfo.modifiers == modifiers then
-					return;
-				end
-
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				elementData.bindingInfo.button = buttonName;
-				elementData.bindingInfo.modifiers = modifiers;
-				elementData.unbound = false;
-				if elementData.elementType == ElementDataTypes.NewSlot then
-					elementData.elementType = ElementDataTypes.CustomsBinding;
-					self:SetHasNewSlot(false);
-				end
-				button:Init(elementData);
-				self:ClearUnboundText();
-				self.ScrollBox:ForEachFrame(function(otherButton)
-					local otherData = otherButton:GetElementData();
-					if (otherData ~= elementData) and otherData.bindingInfo and (otherData.bindingInfo.button == buttonName) and (otherData.bindingInfo.modifiers == modifiers) then
-						otherData.bindingInfo.button = nil;
-						otherData.bindingInfo.modifiers = nil;
-						otherData.unbound = true;
-						otherButton:Init(otherData);
-						self:SetUnboundText(otherData);
-					end
-				end);
-				self:CleanDataProvider();
-				self.dataProvider:Sort();
-				self.pendingChanges = true;
-			end);
-
-			button.DeleteButton:SetScript("OnClick", function()
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-				self.dataProvider:Remove(elementData);
-				if type == ElementDataTypes.NewSlot then
-					self:SetHasNewSlot(false);
-				else
-					self.pendingChanges = true;
-				end
-				self:ClearUnboundText();
-			end);
+			factory("ClickBindingLineTemplate", LineInitializer);
 		end
 	end);
 
@@ -533,6 +532,7 @@ local ClickBindingFrameEvents = {
 	"PLAYER_SPECIALIZATION_CHANGED",
 	"SPELLS_CHANGED",
 	"CLICKBINDINGS_SET_HIGHLIGHTS_SHOWN",
+	"CVAR_UPDATE"
 };
 
 function ClickBindingFrameMixin:OnLoad()
@@ -555,6 +555,7 @@ function ClickBindingFrameMixin:OnShow()
 	-- Refresh() triggers ClickBindingFrame.UpdateFrames event through SetHasNewSlot()
 	self:Refresh();
 	self:SetFocusedFrame(SpellBookFrame);
+	self:UpdateMouseoverCastUI();
 end
 
 function ClickBindingFrameMixin:OnHide()
@@ -583,6 +584,11 @@ function ClickBindingFrameMixin:OnEvent(event, ...)
 	elseif event == "CLICKBINDINGS_SET_HIGHLIGHTS_SHOWN" then
 		local showHighlights = ...;
 		self:SetIconHighlightsShown(showHighlights);
+	elseif event == "CVAR_UPDATE" then
+		local cVarName = ...;
+		if cVarName == "ENABLE_MOUSEOVER_CAST" then
+			self:UpdateMouseoverCastUI();
+		end
 	end
 end
 
@@ -710,6 +716,27 @@ function ClickBindingFrameMixin:ResetToDefaultProfile()
 	self.pendingChanges = false;
 end
 
+function ClickBindingFrameMixin:UpdateMouseoverCastUI()
+	self.EnableMouseoverCastCheckbox:UpdateCheckbox();
+
+	local enableMouseoverCast = GetCVarBool("enableMouseoverCast");
+	self.MouseoverCastKeyDropDown:SetShown(enableMouseoverCast);
+
+	local dropDownSizeYOffset = 25;
+	if enableMouseoverCast and not self.isApplyingEnabledMouseOverCastFrameSizeOffset then
+		local sizeX, sizeY = self:GetSize();
+		sizeY = sizeY + dropDownSizeYOffset;
+
+		self:SetSize(sizeX, sizeY);
+		self.isApplyingEnabledMouseOverCastFrameSizeOffset = true;
+	elseif not enableMouseoverCast and self.isApplyingEnabledMouseOverCastFrameSizeOffset then
+		local sizeX, sizeY = self:GetSize();
+		sizeY = sizeY - dropDownSizeYOffset;
+
+		self:SetSize(sizeX, sizeY);
+		self.isApplyingEnabledMouseOverCastFrameSizeOffset = false;
+	end
+end
 
 ClickBindingTutorialMixin = {};
 
@@ -728,4 +755,86 @@ end
 function ClickBindingFrame_Toggle()
 	local show = not ClickBindingFrame:IsShown();
 	SetUIPanelShown(ClickBindingFrame, show);
+end
+
+-- [[ Enable Mouseover Cast ]]
+-- This should keep parity with the Interface Option Panel's MouseoverCast settings
+ClickableBindingsEnableMouseoverCastCheckboxMixin = {};
+
+function ClickableBindingsEnableMouseoverCastCheckboxMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(OPTION_TOOLTIP_ENABLE_MOUSEOVER_CAST, nil, nil, nil, nil, true);
+end
+
+function ClickableBindingsEnableMouseoverCastCheckboxMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function ClickableBindingsEnableMouseoverCastCheckboxMixin:OnClick()
+	local isNowEnabled = not GetCVarBool("enableMouseoverCast");
+
+	local newValue = isNowEnabled and "1" or "0";
+	SetCVar("enableMouseoverCast", newValue, "ENABLE_MOUSEOVER_CAST");
+
+	local soundFile = isNowEnabled and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF;
+	PlaySound(soundFile);
+end
+
+function ClickableBindingsEnableMouseoverCastCheckboxMixin:UpdateCheckbox()
+	self:SetChecked(GetCVarBool("enableMouseoverCast"));
+end
+
+-- [[ Mouseover Cast Key ]]
+-- This should keep parity with the Interface Option Panel's MouseoverCast settings
+ClickableBindingsMouseoverCastKeyDropDownMixin = {};
+
+function ClickableBindingsMouseoverCastKeyDropDownMixin:OnShow()
+	self:RefreshValue();
+end
+
+function ClickableBindingsMouseoverCastKeyDropDownMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+end
+
+function ClickableBindingsMouseoverCastKeyDropDownMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function ClickableBindingsMouseoverCastKeyDropDownMixin:RefreshValue()
+	local function Initialize()
+		local function GetTooltipText(value)
+			return _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..value.."_KEY"];
+		end
+
+		local defaultValue = "NONE";
+		local oldValue = GetModifiedClick("MOUSEOVERCAST");
+		self.selectedValue = oldValue or defaultValue;
+	
+		local info = UIDropDownMenu_CreateInfo();
+
+		info.func = function(info) 
+			SetModifiedClick("MOUSEOVERCAST", info.value);
+			SaveBindings(GetCurrentBindingSet());
+			self:RefreshValue();
+		end;
+	
+		local function AddDropdownButton(value)
+			info.text = _G[value.."_KEY"];
+			info.value = value;
+			info.tooltipTitle = info.text;
+			info.tooltipText = GetTooltipText(value);
+			UIDropDownMenu_AddButton(info);
+		end
+	
+		AddDropdownButton("NONE");
+		AddDropdownButton("ALT");
+		AddDropdownButton("CTRL");
+		AddDropdownButton("SHIFT");
+	
+		UIDropDownMenu_SetSelectedValue(self, self.selectedValue);
+		self.tooltipText = GetTooltipText(self.selectedValue);
+	end
+
+	UIDropDownMenu_Initialize(self, GenerateClosure(Initialize, self));
 end

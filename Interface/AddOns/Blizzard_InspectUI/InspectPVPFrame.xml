@@ -112,6 +112,16 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="RatedSoloShuffle" inherits="InspectPvpStatTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Arena3v3" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.BGType:SetText(PVP_RATED_SOLO_SHUFFLE);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Button parentKey="TalentSlot1" parentArray="Slots" inherits="InspectPvpTalentSlotTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.BG" x="-36" y="-60"/>

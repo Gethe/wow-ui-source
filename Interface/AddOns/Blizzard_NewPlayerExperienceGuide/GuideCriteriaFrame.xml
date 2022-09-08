@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="GuideCriteriaFrame.lua"/>
 
 	<Frame name="CriteriaBulletTemplate" mixin="CriteriaBulletMixin" hyperlinksEnabled="true" virtual="true">
@@ -68,7 +68,7 @@
 				<FontString parentKey="Description" inherits="GameFontBlack" justifyH="LEFT">
 					<Size x="260" y="30"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.HeaderBackground" x="=-20" y="-9"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.HeaderBackground" x="-20" y="-9"/>
 					</Anchors>
 					<Color color="PAPER_FRAME_DARK_COLOR"/>
 				</FontString>

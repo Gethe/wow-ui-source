@@ -144,11 +144,7 @@
         <Frames>
             <Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER">
                 <Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="11" y="2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
                 </Anchors>
                 <Scripts>
 					<OnEnter>
@@ -160,11 +156,7 @@
             </Button>
 			<Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="REPUTATION_ABBR">
                 <Anchors>
-                   <Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-15" y="0"/>
-                        </Offset>
-                    </Anchor>
+                   <Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT" x="-15" y="0"/>
                 </Anchors>
                 <Scripts>
 					<OnEnter>
@@ -176,11 +168,7 @@
             </Button>
 			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="CURRENCY" hidden="true">
                 <Anchors>
-                   <Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-15" y="0"/>
-                        </Offset>
-                    </Anchor>
+                   <Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT" x="-15" y="0"/>
                 </Anchors>
                 <Scripts>
 					<OnEnter>

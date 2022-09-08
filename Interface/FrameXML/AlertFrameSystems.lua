@@ -951,6 +951,7 @@ function NewRecipeLearnedAlertFrame_SetUp(self, recipeID, recipeLevel)
 				self.Name:SetText(recipeName);
 			end
 			self.tradeSkillID = parentTradeSkillID or tradeSkillID;
+			self.skillLineID = tradeSkillID;
 			self.recipeID = recipeID;
 			return true;
 		end
@@ -963,13 +964,70 @@ function NewRecipeLearnedAlertFrame_OnClick(self, button, down)
 		return;
 	end
 
-	TradeSkillFrame_LoadUI();
-	if C_TradeSkillUI.OpenTradeSkill(self.tradeSkillID) then
-		TradeSkillFrame:SelectRecipe(self.recipeID);
+	ProfessionsFrame_LoadUI();
+
+	local currBaseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
+	local currentSkillLineInfo = C_TradeSkillUI.GetChildProfessionInfo();
+	if currentSkillLineInfo ~= nil and currentSkillLineInfo.professionID == self.skillLineID then
+		local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.recipeID);
+		ProfessionsFrame:SetTab(ProfessionsFrame.recipesTabID);
+		EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", recipeInfo);
+	elseif currBaseProfessionInfo ~= nil and currBaseProfessionInfo.professionID == self.tradeSkillID then
+		C_TradeSkillUI.SetProfessionChildSkillLineID(self.skillLineID);
+		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+		professionInfo.openRecipeID = self.recipeID;
+		EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
+	else
+		ProfessionsFrame:SetOpenRecipeResponse(self.skillLineID, self.recipeID);
+		C_TradeSkillUI.OpenTradeSkill(self.tradeSkillID);
 	end
 end
 
 NewRecipeLearnedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRecipeLearnedAlertFrameTemplate", NewRecipeLearnedAlertFrame_SetUp, 2, 6);
+
+
+-- [[SkillLineSpecsUnlockedAlertFrame ]] --
+SkillLineSpecsUnlockedAlertFrameMixin = {};
+
+function SkillLineSpecsUnlockedAlertFrameMixin:SetUp(skillLineID, tradeSkillID)
+	PlaySound(SOUNDKIT.UI_PROFESSIONS_NEW_RECIPE_LEARNED_TOAST);
+	self.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+	self.Icon:SetTexture(C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
+
+	self.Title:SetText(LEVEL_UP_FEATURE2);
+	self.Name:SetFormattedText(PROFESSIONS_SPECIALIZATION_TITLE, C_TradeSkillUI.GetTradeSkillDisplayName(skillLineID));
+
+	self.tradeSkillID = tradeSkillID;
+	self.skillLineID = skillLineID;
+
+	return true;
+end
+
+function SkillLineSpecsUnlockedAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+
+	ProfessionsFrame_LoadUI();
+
+	local currBaseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
+	local currentSkillLineInfo = C_TradeSkillUI.GetChildProfessionInfo();
+	if currentSkillLineInfo ~= nil and currentSkillLineInfo.professionID == self.skillLineID then
+		ProfessionsFrame:SetTab(ProfessionsFrame.specializationsTabID);
+	elseif currBaseProfessionInfo ~= nil and currBaseProfessionInfo.professionID == self.tradeSkillID then
+		C_TradeSkillUI.SetProfessionChildSkillLineID(self.skillLineID);
+		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+		professionInfo.openSpecTab = true;
+		EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
+	else
+		local openSpecTab = true;
+		ProfessionsFrame:SetOpenRecipeResponse(self.skillLineID, nil, openSpecTab);
+		C_TradeSkillUI.OpenTradeSkill(self.tradeSkillID);
+	end
+end
+
+SkillLineSpecsUnlockedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("SkillLineSpecsUnlockedAlertFrameTemplate", function(alert, ...) alert:SetUp(...) end, 2, 6);
+
 
 -- [[WorldQuestCompleteAlertFrame ]] --
 function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
@@ -1247,6 +1305,10 @@ end
 
 function NewCosmeticAlertFrameMixin:OnClick(button, down)
 	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+
+	if IsModifiedClick("DRESSUP") and DressUpItemLink(self.itemModifiedAppearanceID) then
 		return;
 	end
 

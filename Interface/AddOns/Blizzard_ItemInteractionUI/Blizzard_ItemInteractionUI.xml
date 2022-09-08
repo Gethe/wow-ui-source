@@ -10,7 +10,7 @@
 				<Texture parentKey="Background" setAllPoints="false"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Description" justifyV="CENTER" justifyH="CENTER" inherits="GameFontHighlight" setAllPoints="false">
+				<FontString parentKey="Description" justifyV="MIDDLE" justifyH="CENTER" inherits="GameFontHighlight" setAllPoints="false">
 					<Size x="250" y="0"/>
 					<!-- Anchored dynamically -->
 				</FontString>
@@ -124,7 +124,7 @@
 								</Layers>
 								<Animations>
 									<AnimationGroup parentKey="PulseEmptySlotGlow" looping="BOUNCE">
-										<Alpha childkey="EmptySlotGlow" duration="1" fromalpha="0.4" toalpha="1"/>
+										<Alpha childKey="EmptySlotGlow" duration="1" fromAlpha="0.4" toAlpha="1"/>
 									</AnimationGroup>
 								</Animations>
 							</Frame>
@@ -210,7 +210,7 @@
 								<Alpha childKey="$parent.Background_Flash2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
 
 								<Alpha childKey="$parent.ItemConversionInputSlot.InputSlot_Flash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-								<Alpha childKey="$parent.ItemConversionInputSlot.InputSlot_Flash2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>-->
+								<Alpha childKey="$parent.ItemConversionInputSlot.InputSlot_Flash2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
 
 								<Alpha childKey="$parent.ItemConversionOutputSlot.OutputSlot_Flash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
 								<Alpha childKey="$parent.ItemConversionOutputSlot.OutputSlot_Flash2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>

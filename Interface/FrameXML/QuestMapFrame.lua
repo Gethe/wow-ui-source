@@ -185,7 +185,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 				TriggerTutorial(11);
 			end
 		end
-		if questLogIndex and AUTO_QUEST_WATCH == "1" and GetNumQuestLeaderBoards(questLogIndex) > 0 and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
+		if questLogIndex and GetCVarBool("autoQuestWatch") and GetNumQuestLeaderBoards(questLogIndex) > 0 and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
 			C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
 		end
 	elseif ( event == "QUEST_WATCH_LIST_CHANGED" ) then
@@ -224,7 +224,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		self:Refresh();
 	elseif ( event == "CVAR_UPDATE" ) then
 		local arg1 =...;
-		if ( arg1 == "QUEST_POI" ) then
+		if ( arg1 == "questPOI" ) then
 			QuestMapFrame_UpdateAll();
 		end
 	end
@@ -1577,6 +1577,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	GameTooltip:Show();
 	tooltipButton = self;
+    EventRegistry:TriggerEvent("QuestMapLogTittleButton.OnEnter", self, questID);
 end
 
 function QuestMapLogTitleButton_OnLeave(self)
@@ -1623,14 +1624,14 @@ function QuestMapLogTitleButton_OnClick(self, button)
 end
 
 function QuestMapLogTitleButton_OnMouseDown(self)
-	local anchor, _, _, x, y = self.Text:GetPoint();
+	local anchor, _, _, x, y = self.Text:GetPoint(1);
 	self.Text:SetPoint(anchor, x + 1, y - 1);
 	anchor, _, _, x, y = self.TagTexture:GetPoint(2);
 	self.TagTexture:SetPoint(anchor, x + 1, y - 1);
 end
 
 function QuestMapLogTitleButton_OnMouseUp(self)
-	local anchor, _, _, x, y = self.Text:GetPoint();
+	local anchor, _, _, x, y = self.Text:GetPoint(1);
 	self.Text:SetPoint(anchor, x - 1, y + 1);
 	anchor, _, _, x, y = self.TagTexture:GetPoint(2);
 	self.TagTexture:SetPoint(anchor, x - 1, y + 1);

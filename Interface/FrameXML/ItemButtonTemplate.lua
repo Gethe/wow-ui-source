@@ -1,3 +1,16 @@
+ItemButtonConstants =
+{
+	ContextMatch =
+	{
+		Standard = 1,
+		RuneForging = 2,
+	},
+};
+
+local function GetItemButtonIconTexture(button)
+	return button.Icon or button.icon or _G[button:GetName().."IconTexture"];
+end
+
 function GetFormattedItemQuantity(quantity, maxQuantity)
 	if quantity > (maxQuantity or 9999) then
 		return "*";
@@ -17,7 +30,8 @@ function SetItemButtonCount(button, count, abbreviate)
 
 	button.count = count;
 	local countString = button.Count or _G[button:GetName().."Count"];
-	if ( count > 1 or (button.isBag and count > 0) ) then
+	local minDisplayCount = button.minDisplayCount or 1;
+	if ( count > minDisplayCount or (button.isBag and count > 0)) then
 		if ( abbreviate ) then
 			count = AbbreviateNumbers(count);
 		else
@@ -54,55 +68,107 @@ function SetItemButtonStock(button, numInStock)
 	end
 end
 
-function SetItemButtonTexture(button, texture)
-	if ( not button ) then
-		return;
+local function GetItemButtonBackgroundTexture_Base(button)
+	if button.emptyBackgroundTexture then
+		return button.emptyBackgroundTexture;
+	elseif button.emptyBackgroundAtlas then
+		return button.emptyBackgroundAtlas, true;
 	end
-	
-	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
-	if ( texture ) then
-		icon:Show();
-	else
-		icon:Hide();
-	end
+end
 
-	icon:SetTexture(texture);
+function GetItemButtonBackgroundTexture(button)
+	if button then
+		if button.GetItemButtonBackgroundTexture then
+			return button:GetItemButtonBackgroundTexture();
+		else
+			GetItemButtonBackgroundTexture_Base(button);
+		end
+	end
+end
+
+local function SetItemButtonTexture_Base(button, texture)
+	local icon = GetItemButtonIconTexture(button);
+	if icon then
+		local isAtlas;
+		if not texture then
+			texture, isAtlas = GetItemButtonBackgroundTexture(button);
+		end
+
+		icon:SetShown(texture ~= nil);
+
+		if isAtlas then
+			icon:SetAtlas(texture);
+		else
+			icon:SetTexture(texture);
+		end
+	end
+end
+
+function SetItemButtonTexture(button, texture)
+	if button then
+		if button.SetItemButtonTexture then
+			button:SetItemButtonTexture(texture);
+		else
+			SetItemButtonTexture_Base(button, texture);
+		end
+	end
+end
+
+local function SetItemButtonTextureVertexColor_Base(button, r, g, b)
+	local icon = GetItemButtonIconTexture(button);
+	if icon then
+		icon:SetVertexColor(r, g, b);
+	end
 end
 
 function SetItemButtonTextureVertexColor(button, r, g, b)
-	if ( not button ) then
-		return;
+	if button then
+		if button.SetItemButtonTextureVertexColor then
+			button:SetItemButtonTextureVertexColor(r, g, b);
+		else
+			SetItemButtonTextureVertexColor_Base(button, r, g, b);
+		end
 	end
-	
-	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
-	icon:SetVertexColor(r, g, b);
+end
+
+local function SetItemButtonBorderVertexColor_Base(button, r, g, b)
+	if button.IconBorder then
+		button.IconBorder:SetVertexColor(r, g, b);
+	end
+end
+
+function SetItemButtonBorderVertexColor(button, r, g, b)
+	if button then
+		if button.SetItemButtonBorderVertexColor then
+			button:SetItemButtonBorderVertexColor(r, g, b);
+		else
+			SetItemButtonBorderVertexColor_Base(button, r, g, b);
+		end
+	end
 end
 
 function SetItemButtonDesaturated(button, desaturated)
-	if ( not button ) then
-		return;
+	if button then
+		local icon = GetItemButtonIconTexture(button);
+		if icon then
+			icon:SetDesaturated(desaturated);
+		end
 	end
-	local icon = button.Icon or button.icon or _G[button:GetName().."IconTexture"];
-	if ( not icon ) then
-		return;
-	end
-	
-	icon:SetDesaturated(desaturated);
 end
 
 function SetItemButtonNormalTextureVertexColor(button, r, g, b)
 	if ( not button ) then
 		return;
 	end
-	
-	_G[button:GetName().."NormalTexture"]:SetVertexColor(r, g, b);
+
+	button:GetNormalTexture():SetVertexColor(r, g, b);
 end
 
 function SetItemButtonNameFrameVertexColor(button, r, g, b)
 	if ( not button ) then
 		return;
 	end
-	
+
 	local nameFrame = button.NameFrame or _G[button:GetName().."NameFrame"];
 	nameFrame:SetVertexColor(r, g, b);
 end
@@ -111,75 +177,101 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 	if ( not button ) then
 		return;
 	end
-	
-	_G[button:GetName().."SlotTexture"]:SetVertexColor(r, g, b);
+
+	button.SlotTexture:SetVertexColor(r, g, b);
+end
+
+local function ClearOverlay(overlay)
+	if overlay then
+		overlay:SetVertexColor(1,1,1);
+		overlay:SetAtlas(nil);
+		overlay:SetTexture(nil);
+		overlay:Hide();
+	end
+end
+
+local OverlayKeys = {"IconOverlay", "IconOverlay2", "ProfessionQualityOverlay"};
+function ClearItemButtonOverlay(button)
+	for _, key in ipairs(OverlayKeys) do
+		ClearOverlay(button[key]);
+	end
+	button.isProfessionItem = false;
+	button.isCraftedItem = false;
+end
+
+function SetItemButtonBorder_Base(button, asset, isAtlas)
+	button.IconBorder:SetShown(asset ~= nil);
+	if asset then
+		if isAtlas then
+			button.IconBorder:SetAtlas(asset);
+		else
+			button.IconBorder:SetTexture(asset);
+		end
+	end
+end
+
+function SetItemButtonBorder(button, asset, isAtlas)
+	if button then
+		if button.SetItemButtonBorder then
+			button:SetItemButtonBorder(asset, isAtlas);
+		else
+			SetItemButtonBorder_Base(button, asset, isAtlas);
+		end
+	end
+end
+
+local qualityToIconBorderAtlas =
+{
+	[Enum.ItemQuality.Poor] = "auctionhouse-itemicon-border-gray",
+	[Enum.ItemQuality.Common] = "auctionhouse-itemicon-border-white",
+	[Enum.ItemQuality.Uncommon] = "auctionhouse-itemicon-border-green",
+	[Enum.ItemQuality.Rare] = "auctionhouse-itemicon-border-blue",
+	[Enum.ItemQuality.Epic] = "auctionhouse-itemicon-border-purple",
+	[Enum.ItemQuality.Legendary] = "auctionhouse-itemicon-border-orange",
+	[Enum.ItemQuality.Artifact] = "auctionhouse-itemicon-border-artifact",
+	[Enum.ItemQuality.Heirloom] = "auctionhouse-itemicon-border-account",
+	[Enum.ItemQuality.WoWToken] = "auctionhouse-itemicon-border-account",
+};
+
+local function SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppressOverlays, isBound)
+	ClearItemButtonOverlay(button);
+
+	local hasQuality = quality and BAG_ITEM_QUALITY_COLORS[quality];
+	if hasQuality then
+		if itemIDOrLink then
+			if IsArtifactRelicItem(itemIDOrLink) then
+				SetItemButtonBorder(button, [[Interface\Artifacts\RelicIconFrame]]);
+			else
+				SetItemButtonBorder(button, [[Interface\Common\WhiteIconFrame]]);
+			end
+
+			if not suppressOverlays then
+				SetItemButtonOverlay(button, itemIDOrLink, quality, isBound);
+			end
+		else
+			SetItemButtonBorder(button, [[Interface\Common\WhiteIconFrame]]);
+		end
+
+		local color = BAG_ITEM_QUALITY_COLORS[quality];
+		SetItemButtonBorderVertexColor(button, color.r, color.g, color.b);
+	else
+		SetItemButtonBorder(button);
+	end
 end
 
 function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, isBound)
-	if button.useCircularIconBorder then
-		button.IconBorder:Show();
-
-		if quality == Enum.ItemQuality.Poor then
-			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-gray");
-		elseif quality == Enum.ItemQuality.Common then
-			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-white");
-		elseif quality == Enum.ItemQuality.Uncommon then
-			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-green");
-		elseif quality == Enum.ItemQuality.Rare then
-			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-blue");
-		elseif quality == Enum.ItemQuality.Epic then
-			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-purple");
-		elseif quality == Enum.ItemQuality.Legendary then
-			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-orange");
-		elseif quality == Enum.ItemQuality.Artifact then
-			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-artifact");
-		elseif quality == Enum.ItemQuality.Heirloom then
-			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-account");
-		elseif quality == Enum.ItemQuality.WoWToken then
-			button.IconBorder:SetAtlas("auctionhouse-itemicon-border-account");
+	if button then
+		if button.SetItemButtonQuality then
+			button:SetItemButtonQuality(quality, itemIDOrLink, suppressOverlays, isBound);
 		else
-			button.IconBorder:Hide();
+			SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppressOverlays, isBound);
 		end
-		
-		return;
-	end
-
-	button.IconOverlay:Hide();
-	if button.IconOverlay2 then
-		button.IconOverlay2:Hide();
-	end
-
-	if itemIDOrLink then
-		if IsArtifactRelicItem(itemIDOrLink) then
-			button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
-		else
-			button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
-		end
-		
-		if not suppressOverlays then
-			SetItemButtonOverlay(button, itemIDOrLink, quality, isBound);
-		end
-	else
-		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
-	end
-
-	if quality then
-		if quality >= Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality] then
-			button.IconBorder:Show();
-			button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-		else
-			button.IconBorder:Hide();
-		end
-	else
-		button.IconBorder:Hide();
 	end
 end
 
+-- Remember to update the OverlayKeys table if adding an overlay texture here.
 function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
-	button.IconOverlay:SetVertexColor(1,1,1);
-	if button.IconOverlay2 then
-		button.IconOverlay2:Hide();
-	end
+	ClearItemButtonOverlay(button);
 
 	if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("AzeriteIconFrame");
@@ -205,15 +297,54 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 			button.IconOverlay2:Show();
 		end
 	else
-		button.IconOverlay:Hide();
+		-- The reagent slots contain this button/mixin, however there's a nuance in the button behavior that the overlay needs to be
+		-- hidden if more than 1 quality of reagent is assigned to the slot. Those slots have a separate overlay that is
+		-- managed independently of this, though it still uses the rest of this button's behaviors.
+		SetItemCraftingQualityOverlay(button, itemIDOrLink);
 	end
+end
+
+function SetItemCraftingQualityOverlay(button, itemIDOrLink)
+	if itemIDOrLink and not button.noQualityOverlay then
+		local quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemIDOrLink);
+		if not quality then
+			quality = C_TradeSkillUI.GetItemCraftedQualityByItemInfo(itemIDOrLink);
+			button.isCraftedItem = quality ~= nil;
+		else
+			button.isCraftedItem = false;
+		end
+
+		if quality then
+			button.isProfessionItem = true;
+
+			if not button.ProfessionQualityOverlay then
+				button.ProfessionQualityOverlay = button:CreateTexture(nil, "OVERLAY");
+				button.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2);
+				button.ProfessionQualityOverlay:SetDrawLayer("OVERLAY", 7);
+				button.ProfessionQualityOverlay:SetScale(button.qualityOverlayScale or 1.0);
+			end
+
+			local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);
+			button.ProfessionQualityOverlay:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+			ItemButtonMixin.UpdateCraftedProfessionsQualityShown(button);
+			EventRegistry:RegisterCallback("ItemButton.UpdateCraftedProfessionQualityShown", ItemButtonMixin.UpdateCraftedProfessionsQualityShown, button);
+		else
+			button.isProfessionItem = false;
+		end
+	else
+		button.isProfessionItem = false;
+	end
+end
+
+function ClearItemCraftingQualityOverlay(button)
+	ClearOverlay(button.ProfessionQualityOverlay);
 end
 
 function SetItemButtonReagentCount(button, reagentCount, playerReagentCount)
 	local playerReagentCountAbbreviated = AbbreviateNumbers(playerReagentCount);
 	button.Count:SetFormattedText(TRADESKILL_REAGENT_COUNT, playerReagentCountAbbreviated, reagentCount);
 	--fix text overflow when the button count is too high
-	if math.floor(button.Count:GetStringWidth()) > math.floor(button.Icon:GetWidth() + .5) then 
+	if math.floor(button.Count:GetStringWidth()) > math.floor(button.Icon:GetWidth() + .5) then
 		--round count width down because the leftmost number can overflow slightly without looking bad
 		--round icon width because it should always be an int, but sometimes it's a slightly off float
 		button.Count:SetFormattedText("%s\n/%s", playerReagentCountAbbreviated, reagentCount);
@@ -259,7 +390,7 @@ end
 
 function ItemButtonMixin:PostOnShow()
 	self:UpdateItemContextMatching();
-	
+
 	local hasFunctionSet = self.GetItemContextMatchResult ~= nil;
 	if hasFunctionSet then
 		ItemButtonUtil.RegisterCallback(ItemButtonUtil.Event.ItemContextChanged, self.OnItemContextChanged, self);
@@ -286,7 +417,7 @@ end
 
 function ItemButtonMixin:SetMatchesSearch(matchesSearch)
 	self.matchesSearch = matchesSearch;
-	self:UpdateItemContextOverlay(self);
+	self:UpdateItemContextOverlay();
 end
 
 function ItemButtonMixin:GetMatchesSearch()
@@ -300,40 +431,73 @@ function ItemButtonMixin:UpdateItemContextMatching()
 	else
 		self.itemContextMatchResult = ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 	end
-	
-	self:UpdateItemContextOverlay(self);
+
+	self:UpdateItemContextOverlay();
 end
 
-function ItemButtonMixin:UpdateItemContextOverlay()
+function ItemButtonMixin:UpdateCraftedProfessionsQualityShown()
+	if not self.ProfessionQualityOverlay then
+		return;
+	end
+
+	-- Stackable items with quality always show quality overlay
+	local shouldShow = self.isProfessionItem and ((not self.isCraftedItem) or (ProfessionsFrame and ProfessionsFrame:IsShown()));
+	self.ProfessionQualityOverlay:SetShown(shouldShow);
+end
+
+function ItemButtonMixin:GetItemContextOverlayMode()
 	local matchesSearch = self.matchesSearch == nil or self.matchesSearch;
 	local contextApplies = self.itemContextMatchResult ~= ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 	local matchesContext = self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.Match;
 
-	self.ItemContextOverlay:Hide();
-
 	if not matchesSearch or (contextApplies and not matchesContext) then
-		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
-		self.ItemContextOverlay:SetAllPoints(true);
-		self.ItemContextOverlay:Show();
+		return ItemButtonConstants.ContextMatch.Standard;
 	elseif matchesContext and self.showMatchHighlight then
 		local itemContext = ItemButtonUtil.GetItemContext();
 		if itemContext == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem or itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeItem or itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then
-			local useAtlasSize = true;
-			self.ItemContextOverlay:SetAtlas("runecarving-icon-bag-item-glow", useAtlasSize);
-			self.ItemContextOverlay:ClearAllPoints();
-			self.ItemContextOverlay:SetPoint("CENTER");
-			self.ItemContextOverlay:Show();
+			return ItemButtonConstants.ContextMatch.RuneForging;
 		end
+	end
+
+	return nil;
+end
+
+function ItemButtonMixin:UpdateItemContextOverlay()
+	self:UpdateCraftedProfessionsQualityShown();
+
+	local contextMode = self:GetItemContextOverlayMode();
+	if contextMode then
+		self:UpdateItemContextOverlayTextures(contextMode);
+	end
+
+	self.ItemContextOverlay:SetShown(contextMode ~= nil);
+end
+
+function ItemButtonMixin:UpdateItemContextOverlayTextures(contextMode)
+	if contextMode == ItemButtonConstants.ContextMatch.Standard then
+		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
+		self.ItemContextOverlay:SetAllPoints();
+	elseif contextMode == ItemButtonConstants.ContextMatch.RuneForging then
+		self.ItemContextOverlay:SetAtlas("runecarving-icon-bag-item-glow", TextureKitConstants.UseAtlasSize);
+		self.ItemContextOverlay:ClearAllPoints();
+		self.ItemContextOverlay:SetPoint("CENTER");
 	end
 end
 
 function ItemButtonMixin:Reset()
 	self:SetItemButtonCount(nil);
-	SetItemButtonTexture(self, nil);
-	SetItemButtonQuality(self, nil, nil);
+	self:SetItemButtonTexture();
+	self:SetItemButtonQuality();
 
+	self.item = nil;
 	self.itemLink = nil;
 	self:SetItemSource(nil);
+
+	self.noQualityOverlay = false;
+	self.isProfessionItem = false;
+	self.isCraftedItem = false;
+	EventRegistry:UnregisterCallback("ItemButton.UpdateCraftedProfessionQualityShown", self.UpdateCraftedProfessionsQualityShown, self);
+	ClearItemButtonOverlay(self);
 end
 
 function ItemButtonMixin:SetItemSource(itemLocation)
@@ -378,8 +542,8 @@ function ItemButtonMixin:SetItemInternal(item)
 	self.pendingItem = nil;
 	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
 
-	SetItemButtonTexture(self, itemIcon);
-	SetItemButtonQuality(self, itemQuality, itemLink);
+	self:SetItemButtonTexture(itemIcon);
+	self:SetItemButtonQuality(itemQuality, itemLink);
 	return true;
 end
 
@@ -434,3 +598,60 @@ function ItemButtonMixin:SetAlpha(alpha)
 	self.Stock:SetAlpha(alpha);
 	self.Count:SetAlpha(alpha);
 end
+
+function ItemButtonMixin:SetBagID(bagID)
+	self.bagID = bagID;
+end
+
+function ItemButtonMixin:GetBagID()
+	return self.bagID;
+end
+
+function ItemButtonMixin:OnUpdateItemContextMatching(bagID)
+	if self:GetBagID() == bagID then
+		self:UpdateItemContextMatching();
+	end
+end
+
+function ItemButtonMixin:RegisterBagButtonUpdateItemContextMatching()
+	assert(self:GetBagID() ~= nil);
+	EventRegistry:RegisterCallback("ItemButton.UpdateItemContextMatching", self.OnUpdateItemContextMatching, self);
+end
+
+function ItemButtonMixin:SetItemButtonQuality(quality, itemIDOrLink, suppressOverlays, isBound)
+	SetItemButtonQuality_Base(self, quality, itemIDOrLink, suppressOverlays, isBound);
+end
+
+function ItemButtonMixin:SetItemButtonBorderVertexColor(r, g, b)
+	SetItemButtonBorderVertexColor_Base(self, r, g, b);
+end
+
+function ItemButtonMixin:SetItemButtonTextureVertexColor(r, g, b)
+	SetItemButtonTextureVertexColor_Base(self, r, g, b);
+end
+
+function ItemButtonMixin:SetItemButtonTexture(texture)
+	SetItemButtonTexture_Base(self, texture);
+end
+
+function ItemButtonMixin:GetItemButtonIconTexture()
+	return GetItemButtonIconTexture(self);
+end
+
+function ItemButtonMixin:GetItemButtonBackgroundTexture()
+	return GetItemButtonBackgroundTexture_Base(self);
+end
+
+CircularGiantItemButtonMixin = {}
+
+function CircularGiantItemButtonMixin:SetItemButtonQuality(quality, itemIDOrLink, suppressOverlays, isBound)
+	ClearItemButtonOverlay(self);
+
+	if quality then
+		local isAtlas = true;
+		SetItemButtonBorder(self, qualityToIconBorderAtlas[quality], isAtlas);
+	else
+		SetItemButtonBorder(self);
+	end
+end
+

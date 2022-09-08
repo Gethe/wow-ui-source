@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_SoulbindsConduitList.lua"/>
 
-	<Texture name="ConduitButtonGlow" atlas="Soulbinds_Collection_Entry_Glow" alpha="0" alphaMode="add" virtual="true">
+	<Texture name="ConduitButtonGlow" atlas="Soulbinds_Collection_Entry_Glow" alpha="0" alphaMode="ADD" virtual="true">
 		<Size x="242" y="68"/>
 		<Anchors>
 			<Anchor point="LEFT"/>
@@ -304,7 +304,7 @@
 					<Frame parentKey="Effects" frameStrata="HIGH">
 						<Size x="1" y="1"/>
 						<Layers>
-							<Layer level="DIALOG">
+							<Layer level="OVERLAY">
 								<Texture parentArray="Glows" inherits="ConduitButtonGlow"/>
 								<Texture parentArray="Glows" inherits="ConduitButtonGlow"/>
 								<Texture parentArray="Glows" inherits="ConduitButtonGlow"/>

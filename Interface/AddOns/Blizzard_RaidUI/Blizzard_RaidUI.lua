@@ -242,9 +242,6 @@ function RaidGroupFrame_Update()
 		for i=1, NUM_RAID_GROUPS do
 			raid_groupFrames[i]:Show();
 		end
-		for i=1, MAX_RAID_CLASS_BUTTONS do
-			--classes[i]:Show();
-		end
 	end
 
 
@@ -1083,7 +1080,7 @@ function RaidPulloutStopMoving(frame)
 end
 
 function RaidPullout_SaveFrames(pullOutFrame)
-	local point, relativeTo, relativePoint, offsetX, offsetY = pullOutFrame:GetPoint();
+	local point, relativeTo, relativePoint, offsetX, offsetY = pullOutFrame:GetPoint(1);
 	local filterID = tostring(pullOutFrame.filterID);
 	local settings = {};
 	if ( pullOutFrame:IsShown() ) then

@@ -23,5 +23,10 @@ function UIWidgetTemplateCaptureZoneMixin:Setup(widgetInfo, widgetContainer)
 	self.Zone:SetTooltipLocation(widgetInfo.tooltipLoc);
 	self.lastVals = zoneInfo;
 
-	self:Layout();
+	if not self.Zone:IsShown() then
+		self:Hide();
+		return;
+	else
+		self:Layout();
+	end
 end

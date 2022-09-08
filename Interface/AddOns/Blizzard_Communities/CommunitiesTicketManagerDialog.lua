@@ -246,13 +246,14 @@ function CommunitiesTicketManagerDialogMixin:OnLoad()
 	self:SetUses(USES_OPTIONS[DEFAULT_USES_OPTION]);
 	self:SetExpirationTime(EXPIRES_OPTIONS[DEFAULT_EXPIRES_OPTION]);
 	
-	local scrollFrame = self.InviteManager.ListScrollFrame;
-	HybridScrollFrame_CreateButtons(scrollFrame, "CommunitiesTicketEntryTemplate", 0, 0);
-	scrollFrame.scrollBar.doNotHide = true;
-	scrollFrame.update = function() 
-		self:Update(); 
-	end;
-	
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("CommunitiesTicketEntryTemplate", function(button, elementData)
+		button:SetClubId(self:GetClubId());
+		button:SetTicket(elementData);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.InviteManager.ScrollBox, self.InviteManager.ScrollBar, view);
+
 	UIDropDownMenu_SetWidth(self.UsesDropDownMenu, 115);
 	self.UsesDropDownMenu.Text:SetJustifyH("LEFT");
 	UIDropDownMenu_Initialize(self.UsesDropDownMenu, CommunitiesTicketManagerDialogUsesDropDown_Initialize);
@@ -355,44 +356,16 @@ function CommunitiesTicketManagerDialogMixin:Update()
 	self.LinkToChat:SetEnabled(hasTickets);
 	self.Copy:SetEnabled(hasTickets);
 	
-	local scrollFrame = self.InviteManager.ListScrollFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local displayedHeight = 0;
-	local buttonHeight = buttons[1]:GetHeight();
-	local ticketIndex = offset + 1;
-	for i = 1, #buttons do
-		local button = buttons[i];
-		if ticketIndex <= #tickets then
-			local ticket = tickets[ticketIndex];			
-			if ticket then
-				button:SetClubId(self:GetClubId());
-				button:SetTicket(ticket);
-				displayedHeight = displayedHeight + buttonHeight;
-				ticketIndex = ticketIndex + 1;
-				button:Show();
-			else
-				button:Hide();
-			end
-		else
-			button:Hide();
-		end
-	end
-	
-	HybridScrollFrame_Update(scrollFrame, #tickets * buttonHeight, displayedHeight);
+	local dataProvider = CreateDataProvider(tickets);
+	self.InviteManager.ScrollBox:SetDataProvider(dataProvider);
 end
 
 function CommunitiesTicketManagerDialogMixin:Refresh()
 	self:RefreshLink();
 	
-	local buttons = self.InviteManager.ListScrollFrame.buttons;
-	for i, button in ipairs(buttons) do
-		if button:IsShown() then
-			button:Refresh();
-		else
-			break;
-		end
-	end
+	self.InviteManager.ScrollBox:ForEachFrame(function(button, ticketInfo)
+		button:SetTicket(ticketInfo);
+	end);
 end
 
 function CommunitiesTicketManagerDialogMixin:OnTicketRevoked(ticketId)

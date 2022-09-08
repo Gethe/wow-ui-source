@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	
 	<Button name="PlayerChoiceToggleButtonTemplate" parent="UIParent" mixin="PlayerChoiceToggleButtonMixin" hidden="true" virtual="true">
 		<Size x="465" y="149"/>
@@ -83,7 +83,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 		<Animations>
-			<AnimationGroup parentArray="pendingAnimations" looping="REPEAT" SetToFinalAlpha="true">
+			<AnimationGroup parentArray="pendingAnimations" looping="REPEAT" setToFinalAlpha="true">
 				<Translation endDelay="4.25" smoothing="NONE" childKey="Glow" duration="0.75" order="1" offsetX="360" offsetY="0"/>
 			</AnimationGroup>
 		</Animations>

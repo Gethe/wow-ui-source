@@ -34,7 +34,7 @@
 			<ModelScene parentKey="FrontModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
 				<Size x="1" y="1"/>
 				<KeyValues>
-					<KeyValue key="ignoreInLayout" value="true" type="bool"/>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 				<Scripts>
 					<OnLoad>
@@ -47,7 +47,7 @@
 			<ModelScene parentKey="BackModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">
 				<Size x="1" y="1"/>
 				<KeyValues>
-					<KeyValue key="ignoreInLayout" value="true" type="bool"/>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 				<Scripts>
 					<OnLoad>

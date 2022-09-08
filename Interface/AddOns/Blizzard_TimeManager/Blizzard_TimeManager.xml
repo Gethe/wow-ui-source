@@ -181,20 +181,15 @@
 		</Scripts>
 	</Frame>
 	<!-- Minimap button to access the TimeManagerButton -->
-	<Button name="TimeManagerClockButton" parent="Minimap">
-		<Size x="60" y="28"/>
+	<Button name="TimeManagerClockButton" parent="MinimapCluster">
+		<Size x="40" y="16"/>
 		<Anchors>
-			<Anchor point="CENTER" x="0" y="-75"/>
+			<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTop" x="-4" y="0"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="8" right="5" top="3" bottom="3"/>
 		</HitRectInsets>
 		<Layers>
-			<Layer level="BORDER">
-				<Texture file="Interface\TimeManager\ClockBackground" setAllPoints="true">
-					<TexCoords left="0.015625" right="0.8125" top="0.015625" bottom="0.390625"/>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="TimeManagerClockTicker" inherits="WhiteNormalNumberFont">
 					<Anchors>

@@ -11,8 +11,6 @@ ObliterumForgeMixin = {};
 function ObliterumForgeMixin:OnLoad()
 	self:SetPortraitToAsset("Interface\\Icons\\INV_Obliterum_Ash");
 	self:SetTitle(OBLITERUM_FORGE_TITLE);
-
-	self:RegisterEvent("OBLITERUM_FORGE_CLOSE");
 	self:RegisterEvent("OBLITERUM_FORGE_PENDING_ITEM_CHANGED");
 end
 
@@ -34,8 +32,6 @@ function ObliterumForgeMixin:OnEvent(event, ...)
 		if self.obliterateCastLineID and self.obliterateCastLineID == lineID then
 			C_TradeSkillUI.ClearPendingObliterateItem();
 		end
-	elseif event == "OBLITERUM_FORGE_CLOSE" then
-		HideUIPanel(self);
 	end
 end
 

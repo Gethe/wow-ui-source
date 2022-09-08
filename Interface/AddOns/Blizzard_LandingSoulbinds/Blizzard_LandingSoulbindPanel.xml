@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_LandingSoulbindPanel.lua"/>
 	<Frame name="LandingPageSoulbindPanelTemplate" inherits="ResizeLayoutFrame" mixin="LandingPageSoulbindPanelMixin" virtual="true">
 		<KeyValues>
@@ -8,7 +8,7 @@
 			<KeyValue key="heightPadding" value="10" type="number"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="Background">
+			<Layer level="BACKGROUND">
 				<Texture atlas="shadowlands-landingpage-topbackground" useAtlasSize="true">
   					<KeyValues>
   						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>

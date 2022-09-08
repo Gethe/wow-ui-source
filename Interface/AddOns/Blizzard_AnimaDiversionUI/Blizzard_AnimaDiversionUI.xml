@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AnimaDiversionUI.lua"/>
 	
 	<Frame name="AnimaDiversionBolsterProgressGemTemplate" frameLevel="512" virtual="true">
@@ -19,7 +19,7 @@
 		<Size x="200" y="18"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Quantity" justifyV="CENTER" justifyH="CENTER" inherits="GameFontHighlight">
+				<FontString parentKey="Quantity" justifyV="MIDDLE" justifyH="CENTER" inherits="GameFontHighlight">
 					<Size x="200" y="18"/>
 				</FontString>
 			</Layer>

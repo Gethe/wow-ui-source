@@ -153,12 +153,12 @@
 		<Size x="128" y="13"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentPrefixText" inherits="GameFontHighlight">
+				<FontString name="$parentPrefixText" parentKey="PrefixText" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="LEFT" x="-4" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSuffixText" inherits="GameFontHighlight">
+				<FontString name="$parentSuffixText" parentKey="SuffixText" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>

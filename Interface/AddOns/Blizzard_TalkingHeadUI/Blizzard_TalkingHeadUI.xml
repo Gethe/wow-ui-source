@@ -1,9 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TalkingHeadUI.lua"/>
 
-	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH" frameLevel="1">
+	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" inherits="UIParentBottomManagedFrameTemplate, EditModeTalkingHeadFrameSystemTemplate" mixin="TalkingHeadFrameMixin" hidden="true" frameStrata="HIGH" frameLevel="1">
 		<Size x="570" y="155"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="8" type="number"/>
+			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="96"/>
 		</Anchors>
@@ -108,7 +112,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<PlayerModel parentKey="Model" alpha="0.01" >
+					<PlayerModel parentKey="Model" alpha="0.01" mixin="TalkingHeadFrameModelMixin">
 						<Size x="115" y="115"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="21" y="-21"/>
@@ -123,17 +127,9 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								self:RegisterEvent("UI_SCALE_CHANGED");
-								self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-							</OnLoad>
-							<OnEvent>
-								self:RefreshCamera();
-								if self.uiCameraID then
-									Model_ApplyUICamera(self, self.uiCameraID);
-								end
-							</OnEvent>
-							<OnModelLoaded function="TalkingHeadFrame_OnModelLoaded"/>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnModelLoaded method="OnModelLoaded"/>
 						</Scripts>
 					</PlayerModel>
 					<Frame parentKey="Overlay">
@@ -167,7 +163,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								TalkingHeadFrame_CloseImmediately();
+								TalkingHeadFrame:CloseImmediately();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -180,31 +176,23 @@
 						<Alpha childKey="Overlay.Glow_LeftBar" startDelay="0.35" duration="0.25" order="1" fromAlpha="0" toAlpha="0.7"/>
 						<Translation childKey="Overlay.Glow_LeftBar" startDelay="0.35" duration="0.8" order="1" offsetX="0" offsetY="-10"/>
 						<Scale childKey="Overlay.Glow_LeftBar" startDelay="0.35" duration="0.7" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1.6">
-							<Origin point="TOP">
-								<Offset x="0" y="0"/>
-							</Origin>
+							<Origin point="TOP"/>
 						</Scale>
 						<Alpha childKey="Overlay.Glow_LeftBar" startDelay="0.85" duration="0.25" order="1" fromAlpha="0.7" toAlpha="0"/>
 						<Alpha childKey="Overlay.Glow_RightBar" startDelay="0.35" duration="0.25" order="1" fromAlpha="0" toAlpha="0.7"/>
 						<Translation childKey="Overlay.Glow_RightBar" startDelay="0.35" duration="0.8" order="1" offsetX="0" offsetY="-10"/>
 						<Scale childKey="Overlay.Glow_RightBar" startDelay="0.35" duration="0.7" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1.6">
-							<Origin point="TOP">
-								<Offset x="0" y="0"/>
-							</Origin>
+							<Origin point="TOP"/>
 						</Scale>
 						<Alpha childKey="Overlay.Glow_RightBar" startDelay="0.95" duration="0.25" order="1" fromAlpha="0.7" toAlpha="0"/>
 						<Alpha childKey="Sheen" startDelay="0.5" duration="0.5" order="1" fromAlpha="0" toAlpha="0.7"/>
 						<Scale childKey="Sheen" startDelay="0.5" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1">
-							<Origin point="LEFT">
-								<Offset x="0" y="0"/>
-							</Origin>
+							<Origin point="LEFT"/>
 						</Scale>
 						<Alpha childKey="Sheen" startDelay="1" duration="0.5" order="1" fromAlpha="0.7" toAlpha="0"/>
 						<Alpha childKey="TextSheen" startDelay="0.75" duration="0.5" order="1" fromAlpha="0" toAlpha="0.7"/>
 						<Scale childKey="TextSheen" startDelay="0.75" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1">
-							<Origin point="LEFT">
-								<Offset x="0" y="0"/>
-							</Origin>
+							<Origin point="LEFT"/>
 						</Scale>
 						<Alpha childKey="TextSheen" startDelay="1.25" duration="0.5" order="1" fromAlpha="0.7" toAlpha="0"/>
 						<Alpha childKey="Model" duration="0.75" order="1" fromAlpha="0" toAlpha="1"/>
@@ -216,18 +204,18 @@
 						<Alpha childKey="Model.PortraitBg" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
 						<Alpha childKey="CloseButton" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
 						<Scripts>
-							<OnFinished function="TalkingHeadFrame_Close_OnFinished"/>
+							<OnFinished>
+								TalkingHeadFrame:Close_OnFinished();
+							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
 				</Animations>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="TalkingHeadFrame_OnLoad"/>
-			<OnShow function="TalkingHeadFrame_OnShow"/>
-			<OnHide function="TalkingHeadFrame_OnHide"/>
-			<OnEvent function="TalkingHeadFrame_OnEvent"/>
-			<OnClick function="TalkingHeadFrame_OnClick"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 	</ContainedAlertFrame>
 </Ui>

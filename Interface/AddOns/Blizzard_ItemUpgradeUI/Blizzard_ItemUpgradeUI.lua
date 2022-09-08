@@ -25,7 +25,7 @@ function ItemUpgradeMixin:OnLoad()
 	self.UpgradeItemButton.IconBorder:SetSize(58, 58);
 	self.UpgradeCostFrame:CreateLabel(ITEM_UPGRADE_COST_LABEL, nil, nil, 5);
 	self.Ring:SetPoint("CENTER", self.UpgradeButton, "CENTER", 0, 0);
-	
+
 	self.Dropdown = self.ItemInfo.Dropdown;
 	UIDropDownMenu_Initialize(self.Dropdown, GenerateClosure(self.InitDropdown, self));
 	UIDropDownMenu_SetWidth(self.Dropdown, 95);
@@ -130,7 +130,7 @@ function ItemUpgradeMixin:Update(fromDropDown)
 		return;
 	end
 
-	self.UpgradeItemButton:SetNormalTexture(nil);
+	self.UpgradeItemButton:ClearNormalTexture();
 	self.UpgradeItemButton:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
 	self.UpgradeItemButton.EmptySlotGlow:Hide();
 	self.UpgradeItemButton.PulseEmptySlotGlow:Stop();
@@ -142,8 +142,8 @@ function ItemUpgradeMixin:Update(fromDropDown)
 	end
 	self.numUpgradeLevels = self.targetUpgradeLevel - self.upgradeInfo.currUpgrade;
 
-	self.currentUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[1] 
-	self.targetUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[self.numUpgradeLevels + 1] 
+	self.currentUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[1]
+	self.targetUpgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[self.numUpgradeLevels + 1]
 
 	HideDropDownMenu(1);
 	UIDropDownMenu_SetSelectedValue(self.Dropdown, self.targetUpgradeLevel);
@@ -272,7 +272,7 @@ function ItemUpgradeMixin:GetTrinketUpgradeText(string1, string2)
 	local start2, end2, substring2 = string.find(string2, "([%d,%.]+)");
 	while start1 and start2 do
 		output = output..string.sub(string2, index2, start2 - 1);
-		
+
 		local diff;
 		if substring1 ~= substring2 then
 			-- need to remove , and . because of locale
@@ -315,7 +315,7 @@ function ItemUpgradeMixin:CalculateTotalCostTable()
 
 		for _, levelCost in ipairs(upgradeLevelInfo.costsToUpgrade) do
 			local currentCost = levelCostTable[levelCost.currencyID] or 0;
-			levelCostTable[levelCost.currencyID] = currentCost + levelCost.cost; 
+			levelCostTable[levelCost.currencyID] = currentCost + levelCost.cost;
 		end
 
 		self.upgradeCosts[upgradeLevelInfo.upgradeLevel] = levelCostTable;
@@ -516,12 +516,12 @@ function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 		local originalText, upgradeText = C_ItemUpgrade.GetItemUpgradeEffect(index, numUpgradeLevels);
 		if isUpgrade and upgradeText then
 			effectText = ItemUpgradeFrame:GetTrinketUpgradeText(originalText, upgradeText);
-			break; 
-		elseif originalText then 
+			break;
+		elseif originalText then
 			effectText = originalText;
-			break; 
+			break;
 		end
-	end 
+	end
 
 	local pvpItemLevel, newPvpItemLevel = C_ItemUpgrade.GetItemUpgradePvpItemLevelDeltaValues(numUpgradeLevels);
 	local pvpItemLevelText = pvpItemLevel and PVP_ITEM_LEVEL_TOOLTIP:format(isUpgrade and newPvpItemLevel or pvpItemLevel);

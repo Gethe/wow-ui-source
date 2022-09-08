@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="TextToSpeechFrame.lua"/>
 
 	<!-- Text To Speech Frame Templates -->
@@ -136,6 +136,57 @@
 		</Scripts>
 	</Frame>
 
+	<Slider name="TextToSpeechSliderTemplate" inherits="UISliderTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="type" value="CONTROLTYPE_SLIDER" type="global"/>
+		</KeyValues>
+		<Size x="144" y="17"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLow" parentKey="Low" inherits="GameFontHighlightSmall" text="LOW">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="-4" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHigh" parentKey="High" inherits="GameFontHighlightSmall" text="HIGH">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( self:IsEnabled() ) then
+				if ( self.tooltipText ) then
+				GetAppropriateTooltip():SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
+				GetAppropriateTooltip():SetText(self.tooltipText, nil, nil, nil, nil, true);
+				end
+				if ( self.tooltipRequirement ) then
+				GetAppropriateTooltip():AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, true);
+				GetAppropriateTooltip():Show();
+				end
+				end
+			</OnEnter>
+			<OnLeave>
+				GetAppropriateTooltip():Hide();
+			</OnLeave>
+		</Scripts>
+	</Slider>
+	
 	<Frame name="TextToSpeechFrameTemplate" virtual="true">
 		<Size x="600" y="500"/>
 		<Layers>
@@ -269,7 +320,7 @@
 							<OnClick function="TextToSpeechFramePlaySampleAlternateButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Slider name="TextToSpeechFrameAdjustRateSlider" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
+					<Slider name="TextToSpeechFrameAdjustRateSlider" inherits="TextToSpeechSliderTemplate" obeyStepOnDrag="true">
 						<Size x="200" y="17"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="330" y="-150"/>
@@ -288,7 +339,7 @@
 							<OnValueChanged inherit="append" function="TextToSpeechFrameAdjustRateSlider_OnValueChanged"/>
 						</Scripts>
 					</Slider>
-					<Slider name="TextToSpeechFrameAdjustVolumeSlider" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
+					<Slider name="TextToSpeechFrameAdjustVolumeSlider" inherits="TextToSpeechSliderTemplate" obeyStepOnDrag="true">
 						<Size x="200" y="17"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="TextToSpeechFrameAdjustRateSlider" relativePoint="BOTTOMLEFT" y="-40" />

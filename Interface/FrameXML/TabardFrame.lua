@@ -1,7 +1,5 @@
 
 function TabardFrame_OnLoad(self)
-	self:RegisterEvent("OPEN_TABARD_FRAME");
-	self:RegisterEvent("CLOSE_TABARD_FRAME");
 	self:RegisterEvent("TABARD_CANSAVE_CHANGED");
 	self:RegisterEvent("TABARD_SAVE_PENDING");
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
@@ -19,22 +17,21 @@ function TabardFrame_OnLoad(self)
 	MoneyFrame_SetMaxDisplayWidth(TabardFrameMoneyFrame, 160);
 end
 
+function TabardFrame_Open()
+	TabardModel:SetUnit("player");
+	SetPortraitTexture(TabardFramePortrait,"npc");
+	TabardFrameNameText:SetText(UnitName("npc"));
+	TabardModel:InitializeTabardColors();
+	TabardFrame_UpdateTextures();
+	TabardFrame_UpdateButtons();
+	ShowUIPanel(TabardFrame);
+	if ( not TabardFrame:IsShown() ) then
+		CloseTabardCreation();
+	end
+end
+
 function TabardFrame_OnEvent(self, event, ...)
-	local unit = ...;
-	if ( event == "OPEN_TABARD_FRAME" ) then
-		TabardModel:SetUnit("player");
-		SetPortraitTexture(TabardFramePortrait,"npc");
-		TabardFrameNameText:SetText(UnitName("npc"));
-		TabardModel:InitializeTabardColors();
-		TabardFrame_UpdateTextures();
-		TabardFrame_UpdateButtons();
-		ShowUIPanel(TabardFrame);
-		if ( not TabardFrame:IsShown() ) then
-			CloseTabardCreation();
-		end
-	elseif ( event == "CLOSE_TABARD_FRAME" ) then
-		HideUIPanel(TabardFrame);
-	elseif ( event == "TABARD_CANSAVE_CHANGED" or event == "TABARD_SAVE_PENDING" ) then
+	if ( event == "TABARD_CANSAVE_CHANGED" or event == "TABARD_SAVE_PENDING" ) then
 		TabardFrame_UpdateButtons();
 	elseif ( event == "UNIT_MODEL_CHANGED" ) then
 		if ( unit == "player" ) then

@@ -76,15 +76,9 @@
 				<Layers>
 					<Layer level="BORDER">
 						<Texture name="$parentBackground" file="Interface\LFGFrame\UI-LFG-BACKGROUND-QUESTPAPER">
-							<Size>
-								<AbsDimension x="512" y="256"/>
-							</Size>
+							<Size x="512" y="256"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="6" y="28"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" x="6" y="28"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -95,11 +89,7 @@
 							<KeyValue key="role" value="TANK" type="string"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="50" y="336"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" x="50" y="336"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentRoleButtonHealer" inherits="RaidFinderRoleButtonTemplate" id="2">
@@ -107,11 +97,7 @@
 							<KeyValue key="role" value="HEALER" type="string"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="25" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="25" y="0"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentRoleButtonDPS" inherits="RaidFinderRoleButtonTemplate" id="3">
@@ -119,20 +105,12 @@
 							<KeyValue key="role" value="DAMAGER" type="string"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="23" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="23" y="0"/>
 						</Anchors>
 					</Button>
 					<Button name="$parentRoleButtonLeader" inherits="LFGRoleButtonTemplate" id="4">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentRoleButtonDPS" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="32" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonDPS" relativePoint="RIGHT" x="32" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -148,24 +126,14 @@
 					</Button>
 					<Frame name="$parentSelectionDropDown" inherits="UIDropDownMenuTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="117" y="287"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMLEFT" x="117" y="287"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="RAID">
-									<Size>
-										<AbsDimension x="115" y="24"/>
-									</Size>
+									<Size x="115" y="24"/>
 									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT">
-											<Offset>
-												<AbsDimension x="0" y="2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="2"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -175,58 +143,32 @@
 						</Scripts>
 					</Frame>
 					<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="303" y="253"/>
-						</Size>
+						<Size x="303" y="253"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-29" y="28"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" x="-29" y="28"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentScrollBackground">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-4" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="24" y="-2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-4" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="24" y="-2"/>
 									</Anchors>
 									<Color r="0" b="0" g="0" a=".65"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture name="$parentScrollBackgroundTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="256"/>
-									</Size>
+									<Size x="31" y="256"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-5" y="5"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-5" y="5"/>
 									</Anchors>
 									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
 								</Texture>
 								<Texture name="$parentScrollBackgroundBottomRight" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
+									<Size x="31" y="106"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-5" y="-4"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-5" y="-4"/>
 									</Anchors>
 									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
 								</Texture>
@@ -259,15 +201,9 @@
 						</ScrollChild>
 					</ScrollFrame>
 					<Frame name="$parentPartyBackfill" inherits="LFGBackfillCoverTemplate">
-						<Size>
-							<AbsDimension x="330" y="257"/>
-						</Size>
+						<Size x="330" y="257"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-6" y="27"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -276,15 +212,9 @@
 						</Scripts>
 					</Frame>
 					<Frame name="$parentCooldownFrame" parentKey="CooldownFrame" inherits="LFGCooldownCoverTemplate">
-						<Size>
-							<AbsDimension x="330" y="257"/>
-						</Size>
+						<Size x="330" y="257"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-6" y="27"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -300,15 +230,9 @@
 						</Scripts>
 					</Frame>
 					<Frame name="$parentIneligibleFrame" hidden="true" enableMouse="true">
-						<Size>
-							<AbsDimension x="330" y="257"/>
-						</Size>
+						<Size x="330" y="257"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-6" y="27"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -318,30 +242,18 @@
 							</Layer>
 							<Layer level="ARTWORK">
 								<FontString name="$parentDescription" inherits="GameFontNormal" text="" justifyH="CENTER" parentKey="description">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
+									<Size x="300" y="0"/>
 									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="-0" y="-70"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" x="-0" y="-70"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
 							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" parentKey="leaveQueueButton">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
+								<Size x="153" y="22"/>
 								<Anchors>
-									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-10"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>

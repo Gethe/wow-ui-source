@@ -10,10 +10,17 @@ function ExtraAbilityContainerMixin:OnLoad()
 end
 
 function ExtraAbilityContainerMixin:OnShow()
+	LayoutMixin.OnShow(self);
+
+	if self:IsInDefaultPosition() then
+		UIParentManagedFrameMixin.OnShow(self);
+	end
 end
 
 function ExtraAbilityContainerMixin:OnHide()
-	UIParent_ManageFramePositions();
+	if self:IsInDefaultPosition() then
+		UIParentManagedFrameMixin.OnHide(self);
+	end
 end
 
 local function SortFramePairs(lhsFramePair, rhsFramePair)
@@ -46,7 +53,7 @@ function ExtraAbilityContainerMixin:AddFrame(frameToAdd, priority)
 	frameToAdd:Show();
 
 	self:UpdateLayoutIndicies();
-	self:Show();
+	self:UpdateShownState();
 end
 
 function ExtraAbilityContainerMixin:RemoveFrame(frameToRemove)
@@ -61,7 +68,7 @@ function ExtraAbilityContainerMixin:RemoveFrame(frameToRemove)
 	end
 
 	self:UpdateLayoutIndicies();
-	self:SetShown(#self.frames > 0);
+	self:UpdateShownState();
 end
 
 function ExtraAbilityContainerMixin:UpdateLayoutIndicies()
@@ -72,6 +79,6 @@ function ExtraAbilityContainerMixin:UpdateLayoutIndicies()
 	self:MarkDirty();
 end
 
-function ExtraAbilityContainerMixin:OnCleaned()
-	UIParent_ManageFramePositions();
+function ExtraAbilityContainerMixin:UpdateShownState()
+	self:SetShown(self.isInEditMode or #self.frames > 0);
 end
