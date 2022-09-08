@@ -23,7 +23,7 @@
 		</Animations>
 		<Size x="136" y="39"/>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="43" y="39"/>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="25" y="32"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="17" right="17" top="7" bottom="4"/>
@@ -233,5 +233,3 @@
 		</Frames>
 	</Frame>
 </Ui>
-
-

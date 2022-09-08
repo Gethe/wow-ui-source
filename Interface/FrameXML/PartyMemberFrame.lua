@@ -173,8 +173,8 @@ end
 PartyMemberFrameMixin=CreateFromMixins(PartyMemberAuraMixin);
 
 function PartyMemberFrameMixin:UpdateArt()
-	if ( UnitHasVehicleUI(self.unitToken) and UnitIsConnected(self.unitToken) ) then
-		local vehicleType = UnitVehicleSkin(self.unitToken);
+	if ( UnitHasVehicleUI(self.unit) and UnitIsConnected(self.unit) ) then
+		local vehicleType = UnitVehicleSkin(self.unit);
 		self:ToVehicleArt(vehicleType);
 	else
 		self:ToPlayerArt();
@@ -191,9 +191,8 @@ function PartyMemberFrameMixin:ToPlayerArt()
 
 	self.overrideName = nil;
 
-	UnitFrame_SetUnit(self, self.unitToken, self.HealthBar, self.ManaBar);
-	UnitFrame_SetUnit(self.PetFrame, self.petUnitToken, self.PetFrame.HealthBar, nil);
-	self:UpdateMember();
+	UnitFrame_SetUnit(self, self.unit, self.HealthBar, self.ManaBar);
+	UnitFrame_SetUnit(self.PetFrame, self.PetFrame.unit, self.PetFrame.HealthBar, nil);
 
 	UnitFrame_Update(self, true)
 end
@@ -211,24 +210,22 @@ function PartyMemberFrameMixin:ToVehicleArt(vehicleType)
 	self.PartyMemberOverlay.PVPIcon:SetPoint("CENTER", self.PartyMemberOverlay, "TOPLEFT", 16, -83);
 	self.PartyMemberOverlay.Disconnect:SetPoint("LEFT", -10, -9);
 
-	self.overrideName = self.unitToken;
+	self.overrideName = self.unit;
 
 	UnitFrame_SetUnit(self, self.petUnitToken, self.HealthBar, self.ManaBar);
 	UnitFrame_SetUnit(self.PetFrame, self.overrideName, self.PetFrame.HealthBar, nil);
-	self:UpdateMember();
 
 	UnitFrame_Update(self, true)
 end
 
-function PartyMemberFrameMixin:Setup(usePlayerOverride)
-	self.unitToken = usePlayerOverride and "player" or ("party"..self.layoutIndex);
-	self.petUnitToken = usePlayerOverride and "pet" or ("partypet"..self.layoutIndex);
+function PartyMemberFrameMixin:Setup()
+	self.unitToken = "party"..self.layoutIndex;
+	self.petUnitToken = "partypet"..self.layoutIndex;
 
 	self.debuffCountdown = 0;
 	self.numDebuffs = 0;
-	self.noTextPrefix = true;
 	
-	self.PetFrame:Setup(usePlayerOverride);
+	self.PetFrame:Setup();
 
 	UnitFrame_Initialize(self, self.unitToken,  self.Name, self.Portrait,
 		   self.HealthBar, self.HealthBar.CenterText,
@@ -304,23 +301,27 @@ function PartyMemberFrameMixin:VoiceActivityNotificationCreatedCallback(notifica
 end
 
 function PartyMemberFrameMixin:UpdateMember()
-	if ShowingRaidFrames() then
+	if not ShouldShowPartyFrames() then
 		self:Hide();
 		PartyFrame:UpdatePartyMemberBackground();
 		return;
 	end
 
 	local showFrame;
-	if self.realPartyMemberToken then
-		showFrame = EditModeManagerFrame:ArePartyFramesForcedShown() and not UnitExists(self.realPartyMemberToken);
+	if EditModeManagerFrame:ArePartyFramesForcedShown() and not UnitExists(self.unitToken) then
+		UnitFrame_SetUnit(self, "player", self.HealthBar, self.ManaBar);
+		UnitFrame_SetUnit(self.PetFrame, "pet", self.PetFrame.HealthBar);
+		showFrame = true;
 	else
+		UnitFrame_SetUnit(self, self.unitToken, self.HealthBar, self.ManaBar);
+		UnitFrame_SetUnit(self.PetFrame, self.petUnitToken, self.PetFrame.HealthBar);
 		showFrame = UnitExists(self.unitToken);
 	end
 	if showFrame then
 		self:Show();
 
 		if VoiceActivityManager then
-			local guid = UnitGUID(self.unitToken);
+			local guid = UnitGUID(self.unit);
 			VoiceActivityManager:RegisterFrameForVoiceActivityNotifications(self, guid, nil, "VoiceActivityNotificationPartyTemplate", "Button", PartyMemberFrameMixin.VoiceActivityNotificationCreatedCallback);
 		end
 
@@ -339,6 +340,7 @@ function PartyMemberFrameMixin:UpdateMember()
 	self:UpdateReadyCheck();
 	self:UpdateOnlineStatus();
 	self:UpdateNotPresentIcon();
+	self:UpdateArt();
 	PartyFrame:UpdatePartyMemberBackground();
 end
 
@@ -381,7 +383,7 @@ function PartyMemberFrameMixin:UpdateLeader()
 	local leaderIcon = self.PartyMemberOverlay.LeaderIcon;
 	local guideIcon = self.PartyMemberOverlay.GuideIcon;
 
-	if( UnitIsGroupLeader(self.unitToken) ) then
+	if( UnitIsGroupLeader(self.unit) ) then
 		if ( HasLFGRestrictions() ) then
 			guideIcon:Show();
 			leaderIcon:Hide();
@@ -397,11 +399,11 @@ end
 
 function PartyMemberFrameMixin:UpdatePvPStatus()
 	local icon = self.PartyMemberOverlay.PVPIcon;
-	local factionGroup = UnitFactionGroup(self.unitToken);
-	if UnitIsPVPFreeForAll(self.unitToken) then
+	local factionGroup = UnitFactionGroup(self.unit);
+	if UnitIsPVPFreeForAll(self.unit) then
 		icon:SetAtlas("ui-hud-unitframe-player-pvp-ffaicon", true);
 		icon:Show();
-	elseif factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(self.unitToken) then
+	elseif factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(self.unit) then
 		local atlas = (factionGroup == "Horde") and "ui-hud-unitframe-player-pvp-hordeicon" or "ui-hud-unitframe-player-pvp-allianceicon";
 		icon:SetAtlas(atlas, true);
 		icon:Show();
@@ -412,7 +414,7 @@ end
 
 function PartyMemberFrameMixin:UpdateAssignedRoles()
 	local icon = self.PartyMemberOverlay.RoleIcon;
-	local role = UnitGroupRolesAssigned(self.unitToken);
+	local role = UnitGroupRolesAssigned(self.unit);
 
 	if role == "TANK" then
 		icon:SetAtlas("roleicon-tiny-tank");
@@ -429,7 +431,7 @@ function PartyMemberFrameMixin:UpdateAssignedRoles()
 end
 
 function PartyMemberFrameMixin:UpdateVoiceStatus()
-	if ( not UnitName(self.unitToken) ) then
+	if ( not UnitName(self.unit) ) then
 		--No need to update if the frame doesn't have a unit.
 		return;
 	end
@@ -448,8 +450,8 @@ end
 
 function PartyMemberFrameMixin:UpdateReadyCheck()
 	local readyCheckFrame = self.ReadyCheck;
-	local readyCheckStatus = GetReadyCheckStatus(self.unitToken);
-	if ( UnitName(self.unitToken) and UnitIsConnected(self.unitToken) and readyCheckStatus ) then
+	local readyCheckStatus = GetReadyCheckStatus(self.unit);
+	if ( UnitName(self.unit) and UnitIsConnected(self.unit) and readyCheckStatus ) then
 		if ( readyCheckStatus == "ready" ) then
 			ReadyCheck_Confirm(readyCheckFrame, 1);
 		elseif ( readyCheckStatus == "notready" ) then
@@ -463,7 +465,7 @@ function PartyMemberFrameMixin:UpdateReadyCheck()
 end
 
 function PartyMemberFrameMixin:UpdateNotPresentIcon()
-	if ( UnitInOtherParty(self.unitToken) ) then
+	if ( UnitInOtherParty(self.unit) ) then
 		self:SetAlpha(0.6);
 		self.NotPresentIcon.texture:SetAtlas("groupfinder-eye-single", true);
 		self.NotPresentIcon.texture:SetTexCoord(0, 1, 0, 1);
@@ -492,13 +494,13 @@ function PartyMemberFrameMixin:UpdateNotPresentIcon()
 			self.NotPresentIcon:Show();
 		end
 	else
-		local phaseReason = UnitIsConnected(self.unitToken) and UnitPhaseReason(self.unitToken) or nil;
+		local phaseReason = UnitIsConnected(self.unit) and UnitPhaseReason(self.unit) or nil;
 		if phaseReason then
 			self:SetAlpha(0.6);
 			self.NotPresentIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
 			self.NotPresentIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
 			self.NotPresentIcon.Border:Hide();
-			self.NotPresentIcon.tooltip = PartyUtil.GetPhasedReasonString(phaseReason, self.unitToken);
+			self.NotPresentIcon.tooltip = PartyUtil.GetPhasedReasonString(phaseReason, self.unit);
 			self.NotPresentIcon:Show();
 		else
 			self:SetAlpha(1);
@@ -516,7 +518,7 @@ function PartyMemberFrameMixin:OnEvent(event, ...)
 	local selfID = self.layoutIndex;
 
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		if ( UnitExists(self.unitToken) ) then
+		if ( UnitExists(self.unit) ) then
 			self:UpdateMember();
 			self:UpdateOnlineStatus();
 			self:UpdateAssignedRoles();
@@ -531,11 +533,11 @@ function PartyMemberFrameMixin:OnEvent(event, ...)
 	elseif ( event == "MUTELIST_UPDATE" or event == "IGNORELIST_UPDATE" ) then
 		self:UpdateVoiceStatus();
 	elseif ( event == "UNIT_FACTION" ) then
-		if ( arg1 == self.unitToken ) then
+		if ( arg1 == self.unit ) then
 			self:UpdatePvPStatus();
 		end
 	elseif ( event =="UNIT_AURA" ) then
-		if ( arg1 == self.unitToken ) then
+		if ( arg1 == self.unit ) then
 			local unitAuraUpdateInfo = arg2;
 			self:UpdateAuras(unitAuraUpdateInfo);
 			if ( PartyMemberBuffTooltip:IsShown() and
@@ -548,19 +550,20 @@ function PartyMemberFrameMixin:OnEvent(event, ...)
 			end
 		end
 	elseif ( event =="UNIT_PET" ) then
-		if ( arg1 == self.unitToken ) then
+		if ( arg1 == self.unit ) then
 			self:UpdatePet();
 		end
-		if ( UnitHasVehicleUI(self.unitToken) and UnitIsConnected(self.unitToken)) then
-			self:ToVehicleArt(UnitVehicleSkin(self.unitToken));
+		if ( UnitHasVehicleUI(self.unit) and UnitIsConnected(self.unit)) then
+			self:ToVehicleArt(UnitVehicleSkin(self.unit));
+			self:UpdateMember();
 		end
 	elseif ( event == "READY_CHECK" or
 		 event == "READY_CHECK_CONFIRM" ) then
 		self:UpdateReadyCheck();
 	elseif ( event == "READY_CHECK_FINISHED" ) then
-		if (UnitExists(self.unitToken)) then
+		if (UnitExists(self.unit)) then
 			local finishTime = DEFAULT_READY_CHECK_STAY_TIME;
-			if not ShowingPartyFrames() then
+			if not ShouldShowPartyFrames() then
 				finishTime = 0;
 			end
 			ReadyCheck_Finish(self.ReadyCheck, finishTime);
@@ -568,24 +571,26 @@ function PartyMemberFrameMixin:OnEvent(event, ...)
 	elseif ( event == "VARIABLES_LOADED" ) then
 		self:UpdatePet();
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
-		if ( arg1 == self.unitToken ) then
-			if ( arg2 and UnitIsConnected(self.unitToken) ) then
+		if ( arg1 == self.unit ) then
+			if ( arg2 and UnitIsConnected(self.unit) ) then
 				self:ToVehicleArt(arg3);
 			else
 				self:ToPlayerArt();
 			end
+			self:UpdateMember();
 		end
 	elseif ( event == "UNIT_EXITED_VEHICLE" ) then
-		if ( arg1 == self.unitToken ) then
+		if ( arg1 == self.unit ) then
 			self:ToPlayerArt();
+			self:UpdateMember();
 		end
-	elseif ( event == "UNIT_CONNECTION" ) and ( arg1 == self.unitToken) then
+	elseif ( event == "UNIT_CONNECTION" ) and ( arg1 == self.unit) then
 		self:UpdateArt();
 	elseif ( event == "UNIT_PHASE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" or event == "UNIT_FLAGS" or event == "UNIT_CTR_OPTIONS") then
-		if ( event ~= "UNIT_PHASE" or arg1 == self.unitToken ) then
+		if ( event ~= "UNIT_PHASE" or arg1 == self.unit ) then
 			self:UpdateNotPresentIcon();
 		end
-	elseif ( event == "UNIT_OTHER_PARTY_CHANGED" and arg1 == self.unitToken ) then
+	elseif ( event == "UNIT_OTHER_PARTY_CHANGED" and arg1 == self.unit ) then
 		self:UpdateNotPresentIcon();
 	elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
 		self:UpdateNotPresentIcon();
@@ -612,7 +617,7 @@ end
 function PartyMemberFrameMixin:UpdateOnlineStatus()
 	local healthBar = self.HealthBar;
 
-	if not UnitIsConnected(self.unitToken) then
+	if not UnitIsConnected(self.unit) then
 		-- Handle disconnected state
 		local unitHPMin, unitHPMax = healthBar:GetMinMaxValues();
 
@@ -642,9 +647,9 @@ function PartyMemberFrameMixin:PartyMemberHealthCheck (value)
 	else
 		self.unitHPPercent = 0;
 	end
-	if ( UnitIsDead(self.unitToken) ) then
+	if ( UnitIsDead(self.unit) ) then
 		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 1.0);
-	elseif ( UnitIsGhost(self.unitToken) ) then
+	elseif ( UnitIsGhost(self.unit) ) then
 		self.Portrait:SetVertexColor(0.2, 0.2, 0.75, 1.0);
 	elseif ( (self.unitHPPercent > 0) and (self.unitHPPercent <= 0.2) ) then
 		self.Portrait:SetVertexColor(1.0, 0.0, 0.0);
@@ -664,8 +669,8 @@ function PartyMemberPetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 	self:UpdateMemberAuras(unitAuraUpdateInfo);
 end
 
-function PartyMemberPetFrameMixin:Setup(usePlayerOverride)
-	self.unitToken = usePlayerOverride and "pet" or ("partypet"..self:GetParent().layoutIndex);
+function PartyMemberPetFrameMixin:Setup()
+	self.unitToken = "partypet"..self:GetParent().layoutIndex;
 	UnitFrame_Initialize(self, self.unitToken,  self.Name, self.Portrait, self.HealthBar, nil, nil, nil, self.Flash);
 	SetTextStatusBarTextZeroText(self.HealthBar, DEAD);
 	self.Name:Hide();
@@ -692,13 +697,13 @@ PartyBuffFrameMixin={};
 
 function PartyBuffFrameMixin:OnUpdate()
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetUnitBuff(self:GetParent().unitToken, self:GetID());
+		GameTooltip:SetUnitBuff(self:GetParent().unit, self:GetID());
 	end
 end
 
 function PartyBuffFrameMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetUnitBuff(self:GetParent().unitToken, self:GetID());
+	GameTooltip:SetUnitBuff(self:GetParent().unit, self:GetID());
 end
 
 function PartyBuffFrameMixin:OnLeave()

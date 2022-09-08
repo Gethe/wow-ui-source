@@ -194,13 +194,15 @@ local TraitConstants =
 		{
 			Name = "TraitNodeFlag",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 4,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "ShowMultipleIcons", Type = "TraitNodeFlag", EnumValue = 1 },
 				{ Name = "NeverPurchasable", Type = "TraitNodeFlag", EnumValue = 2 },
+				{ Name = "TestPositionLocked", Type = "TraitNodeFlag", EnumValue = 4 },
+				{ Name = "TestGridPositioned", Type = "TraitNodeFlag", EnumValue = 8 },
 			},
 		},
 		{

@@ -1248,6 +1248,50 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="EncounterItemDividerTemplate" virtual="true">
+		<Size x="321" y="45"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString text="BONUS_LOOT_TOOLTIP_TITLE" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="name">
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="-22"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="TipButton" >
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.name" relativePoint="RIGHT" x="-3" y="3" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="I" file="Interface\common\help-i">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".2"/>
+				</HighlightTexture>
+				<Scripts>
+					<OnEnter function="EncounterItemTemplate_DividerFrameTipOnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+
 	<Button name="EncounterItemTemplate" registerForClicks="LeftButtonUp, RightButtonUp" mixin="EncounterJournalItemMixin" virtual="true">
 		<Size x="321" y="45"/>
 		<Layers>

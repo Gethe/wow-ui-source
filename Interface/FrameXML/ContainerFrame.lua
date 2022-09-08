@@ -5,33 +5,14 @@ NUM_TOTAL_BAG_FRAMES = NUM_BAG_FRAMES + NUM_REAGENTBAG_FRAMES;
 CONTAINER_OFFSET_Y = 85;
 CONTAINER_OFFSET_X = -4;
 
-local MAX_CONTAINER_ITEMS = 36;
-local ROWS_IN_BG_TEXTURE = 5;
-local BG_TEXTURE_MIDDLE_START = 215;
-local BG_TEXTURE_TOP_PLUS_TWO_START = 97;
-local BG_TEXTURE_TOP_PLUS_TWO_END = 163;
-local BG_TEXTURE_TOP_START = 2;
-local BG_TEXTURE_TOP_END = 89;
-local BG_TEXTURE_TOP_ONE_ROW_END = 86;
-local BG_TEXTURE_HEIGHT = 512;
-local CONTAINER_WIDTH = 192;
-local CONTAINER_SPACING = 0;
+local CONTAINER_WIDTH = 178;
+local CONTAINER_SPACING = 8;
 local ITEM_SPACING_X = 5;
-local ITEM_SPACING_Y = 4;
-local VISIBLE_CONTAINER_SPACING = 3;
+local ITEM_SPACING_Y = 5;
 local MINIMUM_CONTAINER_OFFSET_X = 10;
 local CONTAINER_SCALE = 0.75;
-local BACKPACK_DEFAULT_TOPHEIGHT = 256;
-local BACKPACK_EXTENDED_TOPHEIGHT = 226;
 local BACKPACK_BASE_SIZE = 16;
-local ROW_HEIGHT = 41;
-local FIRST_BACKPACK_BUTTON_OFFSET_BASE = -225;
 local FRAME_THAT_OPENED_BAGS = nil;
-local CONTAINER_BOTTOM_TEXTURE_DEFAULT_START = 169;
-local CONTAINER_BOTTOM_TEXTURE_DEFAULT_END = 179;
-local CONTAINER_BOTTOM_TEXTURE_DEFAULT_HEIGHT = CONTAINER_BOTTOM_TEXTURE_DEFAULT_END - CONTAINER_BOTTOM_TEXTURE_DEFAULT_START;
-local CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_END = 172;
-local CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_HEIGHT = CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_END - CONTAINER_BOTTOM_TEXTURE_DEFAULT_START;
 local CONTAINER_HELPTIP_SYSTEM = "ContainerFrame";
 
 local BagUpdaterMixin = {};
@@ -186,8 +167,8 @@ do
 		[Enum.BagSlotFlags.PriorityEquipment] = "bags-icon-equipment",
 		[Enum.BagSlotFlags.PriorityConsumables] = "bags-icon-consumables",
 		[Enum.BagSlotFlags.PriorityTradeGoods] = "bags-icon-tradegoods",
-		[Enum.BagSlotFlags.PriorityJunk] = "bags-icon-tradegoods", -- TODO: Fix asset
-		[Enum.BagSlotFlags.PriorityQuestItems] = "bags-icon-tradegoods", -- TODO: Fix asset
+		[Enum.BagSlotFlags.PriorityJunk] = "bags-icon-junk",
+		[Enum.BagSlotFlags.PriorityQuestItems] = "bags-icon-questitem",
 	};
 
 	local function ContainerFrame_GetBestFilterIndex(id)
@@ -507,22 +488,6 @@ do
 		UIDropDownMenu_AddButton(info, level);
 	end
 
-	local BAG_AUTO_CLEANUP = "Auto Cleanup (Prototype)";
-
-	local function AddButtons_BagAutoCleanup(level)
-		local info = UIDropDownMenu_CreateInfo();
-
-		info = UIDropDownMenu_CreateInfo();
-		info.text = BAG_AUTO_CLEANUP;
-		info.isNotRadio = true;
-		info.checked = ContainerFrameSettingsManager:IsUsingAutoCleanup();
-		info.func = function(_, _, _, value)
-			ContainerFrameSettingsManager:SetUsingAutoCleanup(not ContainerFrameSettingsManager:IsUsingAutoCleanup());
-		end
-
-		UIDropDownMenu_AddButton(info, level);
-	end
-
 	local function AddButtons_BagModeToggle(containerFrame, level)
 		if ContainerFrame_IsGenericHeldBag(containerFrame:GetBagID()) then
 			local info = UIDropDownMenu_CreateInfo();
@@ -545,8 +510,6 @@ do
 			return;
 		end
 
-		AddButtons_BagAutoCleanup(level);
-
 		if ContainerFrame_CanContainerUseFilterMenu(id) then
 			AddButtons_BagFilters(id, level);
 		end
@@ -567,8 +530,6 @@ do
 	ContainerFrameFilterDropDownCombined_Initialize = function(self, level)
 		if level == 1 then
 			local info = UIDropDownMenu_CreateInfo();
-
-			AddButtons_BagAutoCleanup(level);
 
 			info.text = BAG_FILTER_TITLE_SORTING;
 			info.isTitle = 1;
@@ -667,6 +628,8 @@ function ContainerFrame_OnEvent(self, event, ...)
 		if self:MatchesBagID(bagID) then
 			BagUpdaterFrame:MarkBagUpdateDirty(self);
 		end
+	elseif event == "BAG_CONTAINER_UPDATE" then
+		ContainerFrameSettingsManager:OnBagContainerUpdate(self);
 	elseif event == "ITEM_LOCK_CHANGED" then
 		local bagID, slot = ...;
 		if bagID and slot and (bagID == self:GetID()) then
@@ -710,6 +673,7 @@ function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 
 	UIDropDownMenu_SetInitializeFunction(self.FilterDropDown, ContainerFrameFilterDropDown_Initialize);
+	self:SetPortraitTextureSizeAndOffset(36, -4, 1);
 end
 
 function ContainerFrame_OnHide(self)
@@ -737,6 +701,9 @@ function ContainerFrame_OnHide(self)
 end
 
 function ContainerFrame_OnShow(self)
+	-- [NB] TODO: Portrait frames are getting new bgs, until then, just hide the current one, only bags are custom for now.
+	self.Bg:Hide();
+
 	EventRegistry:TriggerEvent("ContainerFrame.OpenBag", self);
 
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
@@ -840,124 +807,18 @@ end
 
 function ContainerFrameMixin:UpdateName()
 	if self:GetBagSize() == 1 then
-		self.Name:SetText("");
+		self:SetTitle("");
 	else
-		self.Name:SetText(GetBagName(self:GetBagID()));
-	end
-end
-
-function ContainerFrameMixin:UpdateBackgroundTextures()
-	self.Background1Slot:Hide();
-
-	local textureName = "Interface\\ContainerFrame\\UI-Bag-Components"..self:GetTextureSuffix();
-
-	if self:IsBackpack() then
-		self.BackgroundTop:SetTexture("Interface\\ContainerFrame\\UI-BackpackBackground");
-		self.BackgroundBottom:SetTexture("Interface\\ContainerFrame\\UI-BackpackBackground");
-
-		if self:IsExtended() then
-			self.BackgroundTop:SetHeight(BACKPACK_EXTENDED_TOPHEIGHT);
-			self.BackgroundTop:SetTexCoord(0, 1, 0, BACKPACK_EXTENDED_TOPHEIGHT / BACKPACK_DEFAULT_TOPHEIGHT);
-		else
-			self.BackgroundTop:SetHeight(BACKPACK_DEFAULT_TOPHEIGHT);
-			self.BackgroundTop:SetTexCoord(0, 1, 0, 1);
-		end
-
-		self.BackgroundBottom:SetHeight(BACKPACK_DEFAULT_TOPHEIGHT - BACKPACK_EXTENDED_TOPHEIGHT);
-		self.BackgroundBottom:SetTexCoord(0, 1, BACKPACK_EXTENDED_TOPHEIGHT / BACKPACK_DEFAULT_TOPHEIGHT, 1);
-
-		self.BackgroundTop:Show();
-		self.BackgroundBottom:Show();
-	else
-		if self:GetBagSize() == 1 then
-			-- Halloween gag gift
-			self.Background1Slot:Show();
-			self.BackgroundTop:Hide();
-			self.BackgroundBottom:Hide();
-		else
-			self.BackgroundTop:SetTexture(textureName);
-			self.BackgroundBottom:SetTexture(textureName);
-
-			if self:IsPlusTwoBag() then
-				self.BackgroundTop:SetTexCoord(0, 1, BG_TEXTURE_TOP_PLUS_TWO_START / BG_TEXTURE_HEIGHT, BG_TEXTURE_TOP_PLUS_TWO_END / BG_TEXTURE_HEIGHT);
-				self.BackgroundTop:SetHeight(BG_TEXTURE_TOP_PLUS_TWO_END - BG_TEXTURE_TOP_PLUS_TWO_START);
-			else
-				if self:GetRows() == 1 then
-					-- If only one row chop off the bottom of the texture
-					self.BackgroundTop:SetTexCoord(0, 1, BG_TEXTURE_TOP_START / BG_TEXTURE_HEIGHT, BG_TEXTURE_TOP_ONE_ROW_END / BG_TEXTURE_HEIGHT);
-					self.BackgroundTop:SetHeight(BG_TEXTURE_TOP_ONE_ROW_END - BG_TEXTURE_TOP_START);
-				else
-					self.BackgroundTop:SetTexCoord(0, 1, BG_TEXTURE_TOP_START / BG_TEXTURE_HEIGHT, BG_TEXTURE_TOP_END / BG_TEXTURE_HEIGHT);
-					self.BackgroundTop:SetHeight(BG_TEXTURE_TOP_END - BG_TEXTURE_TOP_START);
-				end
-			end
-
-			self.BackgroundBottom:SetHeight(CONTAINER_BOTTOM_TEXTURE_DEFAULT_HEIGHT);
-			self.BackgroundBottom:SetTexCoord(0, 1, CONTAINER_BOTTOM_TEXTURE_DEFAULT_START / BG_TEXTURE_HEIGHT, CONTAINER_BOTTOM_TEXTURE_DEFAULT_END / BG_TEXTURE_HEIGHT);
-
-			self.BackgroundTop:Show();
-			self.BackgroundBottom:Show();
-		end
-	end
-
-	for i, texture in ipairs(self.BackgroundMiddle) do
-		texture:SetTexture(textureName);
-		texture:Hide();
-	end
-
-	if self:GetBagSize() > 1 then
-		self:UpdateBackgroundTexturesMiddle();
-	end
-end
-
-do
-	local function GetRemainingRows(container)
-		if container:IsBackpack() then
-			return container:GetExtraRows();
-		end
-
-		-- Subtract one, since the top texture contains one row already
-		return container:GetRows() - 1;
-	end
-
-	function ContainerFrameMixin:UpdateBackgroundTexturesMiddle()
-		local remainingRows = GetRemainingRows(self);
-		local bgTextureCount = math.ceil(remainingRows / ROWS_IN_BG_TEXTURE);
-
-		-- If one row only special case
-		if ( self:GetRows() == 1 ) then
-			self.BackgroundBottom:SetPoint("TOP", self.BackgroundTop , "BOTTOM", 0, 0);
-		else
-			local height;
-			for i = 1, bgTextureCount do
-				local bgTextureMiddle = self.BackgroundMiddle[i];
-				if remainingRows > ROWS_IN_BG_TEXTURE then
-					-- If more rows left to draw than can fit in a texture then draw the max possible
-					height = ROWS_IN_BG_TEXTURE * ROW_HEIGHT;
-					remainingRows = remainingRows - ROWS_IN_BG_TEXTURE;
-				else
-					height = remainingRows * ROW_HEIGHT;
-					remainingRows = 0;
-				end
-
-				if not self:IsBackpack() and (remainingRows == 0 or i == bgTextureCount) then
-					-- For non-backpack bags, the bottom texture has to contain a small slice of the bottom row of items.
-					-- So if this middle texture is the bottom one, subtract out that slice from the middle texture's height
-					height = height - CONTAINER_BOTTOM_TEXTURE_DEFAULT_ROW_HEIGHT;
-				end
-
-				bgTextureMiddle:SetHeight(height);
-				bgTextureMiddle:SetTexCoord(0, 1, BG_TEXTURE_MIDDLE_START / BG_TEXTURE_HEIGHT, ((BG_TEXTURE_MIDDLE_START + height) / BG_TEXTURE_HEIGHT) );
-				bgTextureMiddle:Show();
-			end
-
-			self.BackgroundBottom:SetPoint("TOP", self.BackgroundMiddle[bgTextureCount] , "BOTTOM", 0, 0);
-		end
+		self:SetTitle(GetBagName(self:GetBagID()));
 	end
 end
 
 function ContainerFrameMixin:UpdateMiscellaneousFrames()
-	SetBagPortraitTexture(self.Portrait, self:GetBagID());
+	if self:IsBackpack() then
+		self:SetPortraitToAsset("Interface/Icons/Inv_misc_bag_08");
+	else
+		self:SetPortraitToBag(self:GetBagID());
+	end
 end
 
 function ContainerFrameMixin:CheckUpdateDynamicContents()
@@ -967,28 +828,42 @@ function ContainerFrameMixin:CheckUpdateDynamicContents()
 	end
 end
 
-function ContainerFrameMixin:CalculateHeight()
-	-- NOTE: Only intended to be called for backpack/standard container frames, not the gag gift.
-	local middleHeight = 0;
-	for i, texture in ipairs(self.BackgroundMiddle) do
-		if texture:IsShown() then
-			middleHeight = middleHeight + texture:GetHeight();
-		end
+function ContainerFrameMixin:CalculateWidth()
+	if self:GetBagSize() == 1 then
+		return 99;
 	end
 
-	return self.BackgroundTop:GetHeight() + self.BackgroundBottom:GetHeight() + middleHeight + self:CalculateExtraHeight();
+	return CONTAINER_WIDTH;
+end
+
+function ContainerFrameMixin:CalculateHeight()
+	if self:GetBagSize() == 1 then
+		return 70;
+	end
+
+	local rows = self:GetRows();
+	local itemButton = self.Items[1];
+	local itemsHeight = (rows * itemButton:GetHeight()) + ((rows - 1) * ITEM_SPACING_Y);
+	return itemsHeight + self:GetPaddingHeight() + self:CalculateExtraHeight();
 end
 
 function ContainerFrameMixin:CalculateExtraHeight()
 	return 0;
 end
 
+function ContainerFrameMixin:GetPaddingHeight()
+	-- Accounts for the vertical anchor offset at the bottom  and the height of the titlebar and attic.
+	return self:GetFirstButtonOffsetY() + 48;
+end
+
+function ContainerFrameMixin:GetPaddingWidth()
+	return 0;
+end
+
 function ContainerFrameMixin:UpdateFrameSize()
-	if self:GetBagSize() == 1 then
-		self:SetSize(99, 70);
-	else
-		self:SetSize(CONTAINER_WIDTH, self:CalculateHeight());
-	end
+	local width = self:CalculateWidth();
+	local height = self:CalculateHeight();
+	self:SetSize(width, height);
 end
 
 function ContainerFrameMixin:GetAnchorLayout()
@@ -996,7 +871,7 @@ function ContainerFrameMixin:GetAnchorLayout()
 end
 
 function ContainerFrameMixin:GetInitialItemAnchor()
-	return AnchorUtil.CreateAnchor("BOTTOMRIGHT", self, "BOTTOMRIGHT", -12, self:GetFirstButtonOffsetY());
+	return AnchorUtil.CreateAnchor("BOTTOMRIGHT", self, "BOTTOMRIGHT", -7, self:GetFirstButtonOffsetY());
 end
 
 function ContainerFrameMixin:UpdateItemLayout()
@@ -1038,13 +913,13 @@ function ContainerFrameMixin:UpdateFilterIcon()
 	self.FilterIcon:Hide();
 	local filterIcon = ContainerFrame_GetBestFilterIcon(self:GetID());
 	if filterIcon then
-		self.FilterIcon.Icon:SetAtlas(filterIcon, TextureKitConstants.UseAtlasSize);
+		self.FilterIcon.Icon:SetAtlas(filterIcon);
 		self.FilterIcon:Show();
 	end
 end
 
 function ContainerFrameMixin:SetSearchBoxPoint(searchBox)
-	searchBox:SetPoint("TOPLEFT", self, "TOPLEFT", 54, -37);
+	searchBox:SetPoint("TOPLEFT", self, "TOPLEFT", 42, -37);
 	searchBox:SetWidth(96);
 end
 
@@ -1120,9 +995,10 @@ function ContainerFrameMixin:UpdateItems()
 		local texture, itemCount, locked, quality, readable, _, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bagID, itemButton:GetID());
 		local isQuestItem, questID, isActive = GetContainerItemQuestInfo(bagID, itemButton:GetID());
 
-		itemButton:SetHasItem(texture);
+		ClearItemButtonOverlay(itemButton);
 
-		SetItemButtonTexture(itemButton, texture);
+		itemButton:SetHasItem(texture);
+		itemButton:SetItemButtonTexture(texture);
 
 		local doNotSuppressOverlays = false;
 		SetItemButtonQuality(itemButton, quality, itemLink, doNotSuppressOverlays, isBound);
@@ -1225,7 +1101,6 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	frame:Raise();
 
 	frame:UpdateName();
-	frame:UpdateBackgroundTextures();
 	frame:UpdateMiscellaneousFrames();
 	frame:UpdateFrameSize();
 	frame:UpdateItemLayout();
@@ -1276,7 +1151,7 @@ local function GetContainerScale()
 				end
 			end
 
-			freeScreenHeight = freeScreenHeight - frameHeight - VISIBLE_CONTAINER_SPACING;
+			freeScreenHeight = freeScreenHeight - frameHeight;
 		end
 
 		if forceScaleDecrease or (leftMostPoint < leftLimit) then
@@ -1308,8 +1183,7 @@ function UpdateContainerFrameAnchors()
 		elseif (freeScreenHeight < frame:GetHeight()) or previousBag:IsCombinedBagContainer() then
 			-- Start a new column
 			freeScreenHeight = screenHeight - yOffset;
-			local xOffset = (previousBag and previousBag:IsCombinedBagContainer()) and -11 or 0;
-			frame:SetPoint("BOTTOMRIGHT", firstBagInMostRecentColumn, "BOTTOMLEFT", xOffset, 0);
+			frame:SetPoint("BOTTOMRIGHT", firstBagInMostRecentColumn, "BOTTOMLEFT", -11, 0);
 			firstBagInMostRecentColumn = frame;
 		else
 			-- Anchor to the previous bag
@@ -1317,7 +1191,7 @@ function UpdateContainerFrameAnchors()
 		end
 
 		previousBag = frame;
-		freeScreenHeight = freeScreenHeight - frame:GetHeight() - VISIBLE_CONTAINER_SPACING;
+		freeScreenHeight = freeScreenHeight - frame:GetHeight();
 	end
 end
 
@@ -1806,9 +1680,9 @@ function ContainerFrameItemButtonMixin:UpdateCooldown(hasItem)
 		local start, duration, enable = GetContainerItemCooldown(self:GetBagID(), self:GetID());
 		CooldownFrame_Set(self.Cooldown, start, duration, enable);
 		if ( duration > 0 and enable == 0 ) then
-			SetItemButtonTextureVertexColor(button, 0.4, 0.4, 0.4);
+			SetItemButtonTextureVertexColor(self, 0.4, 0.4, 0.4);
 		else
-			SetItemButtonTextureVertexColor(button, 1, 1, 1);
+			SetItemButtonTextureVertexColor(self, 1, 1, 1);
 		end
 	else
 		self.Cooldown:Hide();
@@ -1865,7 +1739,6 @@ function ContainerFramePortraitButtonMixin:OnMouseDown()
 end
 
 function ContainerFramePortraitButtonMixin:OnEnter()
-	self.Highlight:Show();
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	local waitingOnData = false;
 	if ( self:GetID() == 0 ) then
@@ -1903,7 +1776,6 @@ function ContainerFramePortraitButtonMixin:OnEnter()
 end
 
 function ContainerFramePortraitButtonMixin:OnLeave()
-	self.Highlight:Hide();
 	GameTooltip_Hide();
 end
 
@@ -2222,35 +2094,14 @@ function ContainerFrameSettingsManager:OnCombinedBagSettingChanged(willUseCombin
 	end
 end
 
-function ContainerFrameSettingsManager:IsUsingAutoCleanup()
-	return self.autoCleanup;
-end
+function ContainerFrameSettingsManager:OnBagContainerUpdate(container)
+	if self:IsUsingCombinedBags() and container:IsCombinedBagContainer() then
+		self:MarkBagSetupDirty();
 
-function ContainerFrameSettingsManager:SetUsingAutoCleanup(autoCleanup)
-	local wasAutoCleanup = self.autoCleanup;
-	self.autoCleanup = autoCleanup;
-	if wasAutoCleanup ~= autoCleanup then
-		self:OnAutoCleanupChanged();
-	end
-end
-
-function ContainerFrameSettingsManager:CancelAutoCleanupTimer()
-	if self.cleanupTimer then
-		self.cleanupTimer:Cancel();
-		self.cleanupTimer = nil;
-	end
-end
-
-function ContainerFrameSettingsManager:OnAutoCleanupChanged()
-	if self:IsUsingAutoCleanup() then
-		EventRegistry:RegisterFrameEventAndCallback("BAG_UPDATE_DELAYED", function()
-			self:CancelAutoCleanupTimer();
-
-			self.cleanupTimer = C_Timer.NewTimer(1, function() SortBags() end);
-		end, self);
-	else
-		self:CancelAutoCleanupTimer();
-		EventRegistry:UnregisterFrameEventAndCallback("BAG_UPDATE_DELAYED", self);
+		if IsBagOpen(0) then
+			CloseBag(0);
+			OpenBag(0);
+		end
 	end
 end
 
@@ -2312,6 +2163,7 @@ end
 
 function ContainerFrameSettingsManager:SetupBagsGeneric(overrideParent)
 	if overrideParent then
+		overrideParent:HideItems();
 		overrideParent:ClearItems();
 	end
 
@@ -2438,15 +2290,34 @@ function ContainerFrameTokenWatcherMixin:UpdateTokenTracker()
 	if tokenFrame then
 		local showTokenFrame = tokenFrame:ShouldShow() and self:IsShown()
 		tokenFrame:SetShown(showTokenFrame);
-		return showTokenFrame and tokenFrame;
 	end
 
-	return nil;
+	self:UpdateCurrencyFrames();
 end
 
 function ContainerFrameTokenWatcherMixin:CalculateExtraHeight()
 	local tracker = ContainerFrameSettingsManager:GetTokenTrackerIfShown(self);
 	return tracker and tracker:GetHeight() or 0;
+end
+
+function ContainerFrameTokenWatcherMixin:UpdateCurrencyFrames()
+	local tokenFrame = ContainerFrameSettingsManager:GetTokenTrackerIfShown(self);
+
+	if tokenFrame then
+		tokenFrame:ClearAllPoints();
+		tokenFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 8, 8);
+		tokenFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -8, 8);
+
+		self.MoneyFrame:ClearAllPoints();
+		self.MoneyFrame:SetPoint("BOTTOMRIGHT", tokenFrame, "TOPRIGHT", 0, 3);
+		self.MoneyFrame:SetPoint("BOTTOMLEFT", tokenFrame, "TOPLEFT", 0, 3);
+	else
+		self.MoneyFrame:ClearAllPoints();
+		self.MoneyFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 8, 8);
+		self.MoneyFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -8, 8);
+	end
+
+	self.MoneyFrame:Show();
 end
 
 ContainerFrameBackpackMixin = CreateFromMixins(ContainerFrameTokenWatcherMixin);
@@ -2460,41 +2331,30 @@ function ContainerFrameBackpackMixin:CanUseForBagID(id)
 end
 
 function ContainerFrameBackpackMixin:GetInitialItemAnchor()
-	return AnchorUtil.CreateAnchor("BOTTOMRIGHT", self, "TOPRIGHT", -12, self:GetFirstButtonOffsetY());
+	return AnchorUtil.CreateAnchor("BOTTOMRIGHT", self.MoneyFrame, "TOPRIGHT", 0, 4);
 end
 
-function ContainerFrameBackpackMixin:GetFirstButtonOffsetY()
-	return FIRST_BACKPACK_BUTTON_OFFSET_BASE - (ROW_HEIGHT * self:GetExtraRows());
+function ContainerFrameBackpackMixin:GetPaddingHeight()
+	return ContainerFrameMixin.GetPaddingHeight(self) + 30; -- Account for the search box in the backpack
 end
 
 function ContainerFrameBackpackMixin:CalculateExtraHeight()
-	-- NOTE: Not only does the bottom background have some empty pixels, but the top of the tracker
-	-- must overlap a specific amount of bottom BG texture, that's the arbitrary 13 pixel offset.
-	local tracker = ContainerFrameSettingsManager:GetTokenTrackerIfShown(self);
-	return tracker and (tracker:GetHeight() - 13) or 0;
+	return ContainerFrameTokenWatcherMixin.CalculateExtraHeight(self) + self.MoneyFrame:GetHeight();
 end
 
 function ContainerFrameBackpackMixin:UpdateMiscellaneousFrames()
 	ContainerFrameMixin.UpdateMiscellaneousFrames(self);
+	self:UpdateCurrencyFrames();
 
 	self.AddSlotsButton:SetShown(not IsAccountSecured());
-	self.MoneyFrame:Show();
-	self.MoneyFrame:SetPoint("BOTTOMRIGHT", self.BackgroundBottom, "BOTTOMRIGHT", -2, 12);
-end
-
-function ContainerFrameBackpackMixin:UpdateTokenTracker()
-	local tokenFrame = ContainerFrameTokenWatcherMixin.UpdateTokenTracker(self);
-	if tokenFrame then
-		tokenFrame:ClearAllPoints();
-		tokenFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 9, 0);
-	end
 end
 
 ContainerFrameCombinedBagsMixin = CreateFromMixins(ContainerFrameTokenWatcherMixin);
 
 function ContainerFrameCombinedBagsMixin:OnLoad()
 	ContainerFrame_OnLoad(self);
-	self.PortraitButton:SetPoint("CENTER", self.portrait, "CENTER", 3, -3);
+	self:RegisterEvent("BAG_CONTAINER_UPDATE");
+	self.PortraitButton:SetPoint("CENTER", self:GetPortrait() , "CENTER", 3, -3);
 
 	UIDropDownMenu_SetInitializeFunction(self.FilterDropDown, ContainerFrameFilterDropDownCombined_Initialize);
 end
@@ -2555,51 +2415,41 @@ function ContainerFrameCombinedBagsMixin:GetContainedBagIDs(outContainedBagIDs)
 	end
 end
 
-function ContainerFrameCombinedBagsMixin:UpdateBackgroundTextures()
-end
-
 function ContainerFrameCombinedBagsMixin:UpdateMiscellaneousFrames()
-	self:SetPortraitToAsset("Interface/Icons/Inv_misc_bag_08"); -- This is a temp icon
+	self:SetPortraitToAsset("Interface/Icons/Inv_misc_bag_08");
 	self:UpdateCurrencyFrames();
 end
 
-function ContainerFrameCombinedBagsMixin:UpdateCurrencyFrames()
-	local tokenFrame = ContainerFrameSettingsManager:GetTokenTrackerIfShown(self);
-
-	if tokenFrame then
-		tokenFrame:ClearAllPoints();
-		tokenFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 8, 8);
-		tokenFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -8, 8);
-
-		self.MoneyFrame:ClearAllPoints();
-		self.MoneyFrame:SetPoint("BOTTOMRIGHT", tokenFrame, "TOPRIGHT", 0, 3);
-		self.MoneyFrame:SetPoint("BOTTOMLEFT", tokenFrame, "TOPLEFT", 0, 3);
-	else
-		self.MoneyFrame:ClearAllPoints();
-		self.MoneyFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 8, 8);
-		self.MoneyFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -8, 8);
-	end
-end
-
-local COMBINED_BAG_PADDING_WIDTH = 15;
-local COMBINED_BAG_PADDING_HEIGHT = 67;
-
-function ContainerFrameCombinedBagsMixin:UpdateFrameSize()
-	-- [NB] TODO: ResizeLayoutFrame?
-	local columns, rows = self:GetColumns(), self:GetRows();
+function ContainerFrameCombinedBagsMixin:CalculateWidth()
+	local columns = self:GetColumns();
 	local itemButton = self.Items[1];
 	local itemsWidth = (columns * itemButton:GetWidth()) + ((columns - 1) * ITEM_SPACING_X);
-	local itemsHeight = (rows * itemButton:GetHeight()) + ((rows - 1) * ITEM_SPACING_X);
 
-	self:SetSize(itemsWidth + COMBINED_BAG_PADDING_WIDTH, itemsHeight + self:CalculateExtraHeight() + COMBINED_BAG_PADDING_HEIGHT);
+	return itemsWidth + self:GetPaddingWidth();
+end
+
+function ContainerFrameCombinedBagsMixin:GetPaddingWidth()
+	return 15;
+end
+
+function ContainerFrameCombinedBagsMixin:GetPaddingHeight()
+	return 75;
 end
 
 function ContainerFrameCombinedBagsMixin:CalculateExtraHeight()
-	return ContainerFrameTokenWatcherMixin.CalculateExtraHeight(self) + self.MoneyFrame:GetHeight();
+	return ContainerFrameTokenWatcherMixin.CalculateExtraHeight(self) + self.MoneyFrame:GetHeight() + 12; -- extra for  the search bar
 end
 
 function ContainerFrameCombinedBagsMixin:ClearItems()
 	self.Items = {};
+end
+
+function ContainerFrameCombinedBagsMixin:HideItems()
+	if self.Items then
+		for i = 1, #self.Items do
+			self.Items[i]:Hide();
+		end
+	end
 end
 
 function ContainerFrameCombinedBagsMixin:AddItem(item)
@@ -2607,7 +2457,7 @@ function ContainerFrameCombinedBagsMixin:AddItem(item)
 end
 
 function ContainerFrameCombinedBagsMixin:UpdateName()
-	self.TitleText:SetText(COMBINED_BAG_TITLE);
+	self:SetTitle(COMBINED_BAG_TITLE);
 end
 
 function ContainerFrameCombinedBagsMixin:UpdateFilterIcon()
@@ -2620,14 +2470,6 @@ end
 
 function ContainerFrameCombinedBagsMixin:GetInitialItemAnchor()
 	return AnchorUtil.CreateAnchor("BOTTOMRIGHT", self.MoneyFrame, "TOPRIGHT", 0, 4);
-end
-
-function ContainerFrameCombinedBagsMixin:UpdateTokenTracker(tokenFrame)
-	local tokenFrame = ContainerFrameTokenWatcherMixin.UpdateTokenTracker(self);
-	if tokenFrame then
-		tokenFrame:ClearAllPoints();
-		self:UpdateCurrencyFrames();
-	end
 end
 
 function ContainerFrameCombinedBagsMixin:OnTokenWatchChanged()
@@ -2656,4 +2498,17 @@ end
 
 function ContainerFrameCombinedBagsMixin:OnBagSlotLeave(bagSlot)
 	self:SetItemsMatchingBagHighlighted(bagSlot:GetBagID(), false);
+end
+
+ContainerFrameCurrencyBorderMixin = {};
+
+function ContainerFrameCurrencyBorderMixin:OnLoad()
+	self:SetupPiece(self.Left, self.leftEdge);
+	self:SetupPiece(self.Right, self.rightEdge);
+	self:SetupPiece(self.Middle, self.centerEdge);
+end
+
+function ContainerFrameCurrencyBorderMixin:SetupPiece(piece, atlas)
+	piece:SetTexelSnappingBias(0);
+	piece:SetAtlas(atlas);
 end

@@ -1,61 +1,127 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LootFrame.lua"/>
-	<ItemButton name="LootButtonTemplate" virtual="true">
-		<HitRectInsets>
-			<AbsInset left="0" right="-107" top="0" bottom="0"/>
-		</HitRectInsets>
+
+	<Frame name="LootButtonTemplate" virtual="true">
+		<Size x="157" y="46"/>
+		<Frames>
+			<ItemButton parentKey="Item" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-4"/>
+				</Anchors>
+				<Size x="37" y="37"/>
+				<HitRectInsets>
+					<AbsInset left="0" right="-157" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						self.hasItem = 1;
+					</OnLoad>
+					<OnEnter>
+						LootItem_OnEnter(self:GetParent(), motion);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+						LootItem_OnLeave(self:GetParent(), motion);
+					</OnLeave>
+					<OnMouseDown>
+						LootItem_OnMouseDown(self:GetParent(), button);
+					</OnMouseDown>
+					<OnMouseUp>
+						LootItem_OnMouseUp(self:GetParent(), button);
+					</OnMouseUp>
+					<OnUpdate>
+						if ( GameTooltip:IsOwned(self:GetParent()) ) then
+							LootItem_OnEnter(self:GetParent());
+						end
+						CursorOnUpdate(self:GetParent());
+					</OnUpdate>
+					<OnClick>
+						if ( IsModifiedClick() ) then
+							HandleModifiedItemClick(GetLootSlotLink(self:GetParent().slot));
+						else
+							LootButton_OnClick(self:GetParent(), button);
+						end
+					</OnClick>
+				</Scripts>
+			</ItemButton>
+		</Frames>
 		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentIconQuestTexture">
-					<Size x="37" y="38"/>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="NameFrame" atlas="looting_itemcard_bg">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="0"/>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QualityFrame" atlas="looting_raritytag_frame">
+					<Size x="100" y="13"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="BorderFrame" atlas="looting_itemcard_stroke_normal">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
-					<Size x="130" y="62"/>
-					<Anchors>
-						<Anchor point="LEFT" x="30" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+				<FontString parentKey="MoneyText" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="93" y="38"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Item" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size x="150" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Item" relativePoint="TOPRIGHT" x="8" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="QualityText" inherits="GameFontWhiteTiny2" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-4" y="-2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconQuestTexture">
+					<Size x="37" y="38"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Item" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightNameFrame" alphaMode="ADD" atlas="looting_itemcard_stroke_clickstate" alpha="0.7" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PushedNameFrame" alphaMode="ADD" atlas="looting_itemcard_stroke_clickstate" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				self.hasItem = 1;
-			</OnLoad>
-			<OnEnter>
-				LootItem_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
-			<OnUpdate>
-				if ( GameTooltip:IsOwned(self) ) then
-					LootItem_OnEnter(self);
-				end
-				CursorOnUpdate(self);
-			</OnUpdate>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(GetLootSlotLink(self.slot));
-				else
-					LootButton_OnClick(self, button);
-				end
-			</OnClick>
-		</Scripts>
-	</ItemButton>
+		<Animations>
+			<AnimationGroup parentKey="ShownAnim" looping="NONE" setToFinalAlpha="true">
+				<Alpha duration="0.1" fromAlpha="1" toAlpha="1" smoothing="IN"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AutoLootAnim" looping="NONE" setToFinalAlpha="true">
+				<Translation duration="0.3" offsetX="100" smoothing="IN"/>
+				<Alpha duration="0.2" fromAlpha="1" toAlpha="0" startDelay="0.1" smoothing="IN"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
 	<Button name="LootRollButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="32" y="32"/>
 		<Scripts>
@@ -76,85 +142,66 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="LootFrame" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate">
-		<Size x="170" y="240"/>
-
+	<Frame name="LootFrame" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent">
+		<Size x="220" y="290"/>
+		<KeyValues>
+			<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
+		</KeyValues>
 		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="LootFramePortraitOverlay" file="Interface\TargetingFrame\TargetDead">
-					<Size x="58" y="58"/>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture name="$parentBg" parentKey="Bg">
+					<Color r="0.1" g="0.1" b="0.1" a="0.9"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="5"/>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTitleBg" parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="TOPRIGHT" x="-25" y="-2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<FontString inherits="GameFontNormal" text="ITEMS">
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
 					<Anchors>
-						<Anchor point="CENTER" x="12" y="108"/>
+						<Anchor point="TOPLEFT" x="0" y="-21"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
 					</Anchors>
-				</FontString>
-				<FontString name="LootFramePrev" inherits="GameFontNormal" text="PREV">
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="ItemsText" inherits="GameFontNormal" text="ITEMS">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="45" y="18"/>
-
-					</Anchors>
-				</FontString>
-				<FontString name="LootFrameNext" inherits="GameFontNormal" text="NEXT">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT" x="127" y="18"/>
+						<Anchor point="TOP" x="-12" y="-5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<ItemButton name="LootButton1" inherits="LootButtonTemplate" id="1">
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate"/>
+			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="9" y="-68"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="4"/>
 				</Anchors>
-			</ItemButton>
-			<!-- anchors not relative - see bug 266687 -->
-			<ItemButton name="LootButton2" inherits="LootButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="9" y="-109"/>
-				</Anchors>
-			</ItemButton>
-			<ItemButton name="LootButton3" inherits="LootButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="9" y="-150"/>
-				</Anchors>
-			</ItemButton>
-			<ItemButton name="LootButton4" inherits="LootButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="9" y="-193"/>
-				</Anchors>
-			</ItemButton>
-			<Button name="LootFrameUpButton">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT" x="8" y="6"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="LootFrame_PageUp"/>
-				</Scripts>
-				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
-				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
-				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Button name="LootFrameDownButton">
-				<Size x="32" y="32"/>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<KeyValues>
+					<KeyValue key="upperShadow" value="_looting_itemcard_shadow-center" type="string"/>
+					<KeyValue key="lowerShadow" value="_looting_itemcard_shadow-center" type="string"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT" x="130" y="6"/>
+					<Anchor point="TOPLEFT" x="4" y="-22"/>
+					<Anchor point="BOTTOM" x="0" y="4"/>
 				</Anchors>
-				<Scripts>
-					<OnClick function="LootFrame_PageDown"/>
-				</Scripts>
-				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
-				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
-				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-16" y="-28"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-16" y="6"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="LootFrame_OnLoad"/>
@@ -162,6 +209,22 @@
 			<OnShow function="LootFrame_OnShow"/>
 			<OnHide function="LootFrame_OnHide"/>
 		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="ShowAnim" looping="NONE" setToFinalAlpha="true">
+				<Translation duration="0.1" offsetY="-10" smoothing="IN"/>
+				<Alpha duration="0.1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="HideAnim" looping="NONE" setToFinalAlpha="true">
+				<Translation duration="0.1" offsetY="-10" smoothing="IN"/>
+				<Alpha duration="0.1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+				<Scripts>
+					<OnFinished>
+						StaticPopup_Hide("LOOT_BIND");
+						HideUIPanel(LootFrame);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 	<Frame name="GroupLootDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 		<Anchors>

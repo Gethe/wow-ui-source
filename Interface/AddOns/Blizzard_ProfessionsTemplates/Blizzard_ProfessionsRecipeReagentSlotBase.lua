@@ -2,20 +2,29 @@ ProfessionsReagentSlotButtonMixin = {};
 
 function ProfessionsReagentSlotButtonMixin:SetItem(item)
 	ItemButtonMixin.SetItem(self, item);
+	self:UpdateOverlay();
 end
 
 function ProfessionsReagentSlotButtonMixin:Reset()
 	ItemButtonMixin.Reset(self);
-		
-	self.InputOverlay.LockedIcon:Hide();
-	self.InputOverlay.AddIcon:Hide();
-
+	self.locked = nil;
+	self:UpdateOverlay();
 	self:UpdateCursor();
 end
 
 function ProfessionsReagentSlotButtonMixin:SetLocked(locked)
-	self.InputOverlay.LockedIcon:SetShown(locked);
-	self.InputOverlay.AddIcon:SetShown(not locked);
+	self.locked = locked;
+	self:UpdateOverlay();
+end
+
+function ProfessionsReagentSlotButtonMixin:UpdateOverlay()
+	if self.locked then
+		self.InputOverlay.LockedIcon:Show();
+		self.InputOverlay.AddIcon:Hide();
+	else
+		self.InputOverlay.LockedIcon:Hide();
+		self.InputOverlay.AddIcon:SetShown(self:GetItem() == nil);
+	end
 end
 
 function ProfessionsReagentSlotButtonMixin:UpdateCursor()

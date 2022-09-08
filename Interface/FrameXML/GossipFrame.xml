@@ -38,14 +38,6 @@
 	<Frame name="GossipFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" mixin="GossipFrameMixin">
 		<Size x="338" y="496"/>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Portrait">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background">
 					<Anchors>
@@ -59,7 +51,7 @@
 				<Size x="0" y="14"/>
 				<Anchors>
 					<Anchor point="TOP" relativePoint="TOP" x="0" y="-4"/>
-					<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.PortraitContainer.portrait" relativePoint="RIGHT" x="10" y="0"/>
 					<Anchor point="RIGHT" x="-58" y="0"/>
 				</Anchors>
 				<Layers>

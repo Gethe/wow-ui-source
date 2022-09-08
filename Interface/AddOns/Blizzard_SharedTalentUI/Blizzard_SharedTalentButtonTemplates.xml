@@ -88,6 +88,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Ghost" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="SearchIcon" hidden="true">
@@ -180,6 +187,7 @@
 			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.Choice" type="global"/>
 		</KeyValues>
 		<Size x="40" y="40"/>
+		<HitRectInsets left="-10" right="-10" top="0" bottom="0" />
 		<Layers>
 			<Layer level="BORDER">
 				<Texture parentKey="Icon2" file="Interface\Icons\INV_Misc_QuestionMark">

@@ -2,6 +2,7 @@ MAX_RAID_GROUPS = 8;
 
 local frameCreationSpecifiers = {
 	raid = { mapping = UnitGUID, setUpFunc = DefaultCompactUnitFrameSetup, updateList = "normal"},
+	raidFake = { setUpFunc = DefaultCompactUnitFrameSetup, updateList = "normal"},
 	pet =  { setUpFunc = DefaultCompactMiniFrameSetup, updateList = "mini" },
 	flagged = { mapping = UnitGUID, setUpFunc = DefaultCompactUnitFrameSetup, updateList = "normal"	},
 	target = { setUpFunc = DefaultCompactMiniFrameSetup, updateList = "mini" },
@@ -15,15 +16,10 @@ function CompactRaidFrameContainerMixin:OnLoad()
 	
 	self:SetClampRectInsets(0, 200 - self:GetWidth(), 10, 0);
 	
-	self.raidUnits = {--[["raid1", "raid2", "raid3", ..., "raid40"]]};
+	self.units = {--[["raid1", "raid2", "raid3", ..., "raid40"]]};
 	for i=1, MAX_RAID_MEMBERS do
-		tinsert(self.raidUnits, "raid"..i);
+		tinsert(self.units, "raid"..i);
 	end
-	self.partyUnits = { "player" };
-	for i=1, MAX_PARTY_MEMBERS do
-		tinsert(self.partyUnits, "party"..i);
-	end
-	self:UpdateDisplayedUnits();
 	
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_PET");
@@ -31,6 +27,7 @@ function CompactRaidFrameContainerMixin:OnLoad()
 	local unitFrameReleaseFunc = function(frame) CompactUnitFrame_SetUnit(frame, nil);	end;
 	self.frameReservations = {
 		raid		= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);
+		raidFake	= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);
 		pet		= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);
 		flagged	= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);	--For Main Tank/Assist units
 		target	= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);	--Target of target for Main Tank/Main Assist
@@ -46,11 +43,12 @@ function CompactRaidFrameContainerMixin:OnLoad()
 												
 	self.displayPets = true;
 	self.displayFlaggedMembers = true;
+
+	self:AddGroup("PARTY");
 end
 
 function CompactRaidFrameContainerMixin:OnEvent(event, ...)
 	if event == "GROUP_ROSTER_UPDATE" then
-		self:UpdateDisplayedUnits();
 		self:TryUpdate();
 	elseif event == "UNIT_PET" then
 		if self.displayPets then
@@ -63,7 +61,6 @@ function CompactRaidFrameContainerMixin:OnEvent(event, ...)
 end
 
 function CompactRaidFrameContainerMixin:OnSizeChanged()
-	FlowContainer_DoLayout(self);
 	self:UpdateBorder();
 end
 
@@ -74,11 +71,7 @@ function CompactRaidFrameContainerMixin:SetGroupMode(groupMode)
 end
 
 function CompactRaidFrameContainerMixin:GetGroupMode()
-	if not IsInRaid() then
-		return "discrete";
-	else
-		return self.groupMode;
-	end
+	return self.groupMode;
 end
 
 function CompactRaidFrameContainerMixin:SetFlowFilterFunction(flowFilterFunc)
@@ -151,14 +144,6 @@ function CompactRaidFrameContainerMixin:ReadyToUpdate()
 	return true;
 end
 
-function CompactRaidFrameContainerMixin:UpdateDisplayedUnits()
-	if IsInRaid() then
-		self.units = self.raidUnits;
-	else
-		self.units = self.partyUnits;
-	end
-end
-
 function CompactRaidFrameContainerMixin:LayoutFrames()
 	--First, mark everything we currently use as unused. We'll hide all the ones that are still unused at the end of this function. (On release)
 	for i=1, #self.flowFrames do
@@ -203,18 +188,14 @@ end
 
 local usedGroups = {}; --Enclosure to make sure usedGroups isn't used anywhere else.
 function CompactRaidFrameContainerMixin:AddGroups()
-	if IsInRaid() then
-		RaidUtil_GetUsedGroups(usedGroups);
+	RaidUtil_GetUsedGroups(usedGroups);
 			
-		for groupNum, isUsed in ipairs(usedGroups) do
-			if isUsed and self.groupFilterFunc(groupNum) then
-				self:AddGroup(groupNum);
-			end
+	for groupNum, isUsed in ipairs(usedGroups) do
+		if isUsed and self.groupFilterFunc(groupNum) then
+			self:AddGroup(groupNum);
 		end
-	else
-		self:AddGroup("PARTY");
 	end
-	FlowContainer_SetOrientation(self, "vertical")
+	FlowContainer_DoLayout(self);
 end
 
 function CompactRaidFrameContainerMixin:AddGroup(id)
@@ -227,15 +208,21 @@ function CompactRaidFrameContainerMixin:AddGroup(id)
 		GMError("Unknown id");
 	end
 	
-	groupFrame:SetParent(self);
-	groupFrame:SetFrameStrata("LOW");
 	groupFrame.unusedFunc = groupFrame.Hide;
 	if didCreation then
 		tinsert(self.frameUpdateList.normal, groupFrame);
 		tinsert(self.frameUpdateList.group, groupFrame);
 	end
-	FlowContainer_AddObject(self, groupFrame);
-	groupFrame:Show();
+
+	if id == "PARTY" then
+		CompactPartyFrame_UpdateVisibility();
+	else
+		if didCreation then
+			groupFrame:SetParent(self);
+		end
+		groupFrame:Show();
+		FlowContainer_AddObject(self, groupFrame);
+	end
 end
 
 function CompactRaidFrameContainerMixin:AddPlayers()
@@ -245,14 +232,16 @@ function CompactRaidFrameContainerMixin:AddPlayers()
 	
 	table.sort(self.units, self.flowSortFunc);
 	
+	local numForcedMembersShown = EditModeManagerFrame:GetNumRaidMembersForcedShown();
+
 	for i=1, #self.units do
 		local unit = self.units[i];
 		if self.flowFilterFunc(unit) then
 			self:AddUnitFrame(unit, "raid");
+		elseif i <= numForcedMembersShown then
+			self:AddUnitFrame(unit, "raidFake", "player");
 		end
 	end
-	
-	FlowContainer_SetOrientation(self, "vertical")
 end
 
 function CompactRaidFrameContainerMixin:AddPets()
@@ -307,9 +296,9 @@ function CompactRaidFrameContainerMixin:AddFlaggedUnits()
 end
 
 --Utility Functions
-function CompactRaidFrameContainerMixin:AddUnitFrame(unit, frameType)
+function CompactRaidFrameContainerMixin:AddUnitFrame(unit, frameType, overrideUnit)
 	local frame = self:GetUnitFrame(unit, frameType);
-	CompactUnitFrame_SetUnit(frame, unit);
+	CompactUnitFrame_SetUnit(frame, overrideUnit or unit);
 	FlowContainer_AddObject(self, frame);
 	return frame;
 end
@@ -357,10 +346,15 @@ function RaidUtil_GetUsedGroups(tab)	--Fills out the table with which groups hav
 	for i=1, MAX_RAID_GROUPS do
 		tab[i] = false;
 	end
-	if ( IsInRaid() ) then
+	if ShouldShowRaidFrames() then
 		for i=1, GetNumGroupMembers() do
 			local name, rank, subgroup = GetRaidRosterInfo(i);
 			tab[subgroup] = true;
+		end
+
+		local numForcedGroupsShown = EditModeManagerFrame:GetNumRaidGroupsForcedShown();
+		for i=1, numForcedGroupsShown do
+			tab[i] = true;
 		end
 	end
 	return tab;

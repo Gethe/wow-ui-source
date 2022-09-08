@@ -111,10 +111,14 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	SecureUnitButton_OnLoad(self, self.unit, showmenu);
 end
 
+local function ShouldShowTargetFrame(targetFrame)
+	return UnitExists(targetFrame.unit) or ShowBossFrameWhenUninteractable(targetFrame.unit);
+end
+
 function TargetFrame_Update (self)
 	-- This check is here so the frame will hide when the target goes away
 	-- even if some of the functions below are hooked by addons.
-	if ( not (UnitExists(self.unit) or ShowBossFrameWhenUninteractable(self.unit)) ) then
+	if ( not ShouldShowTargetFrame(self) ) then
 		self:Hide();
 	else
 		self:Show();
@@ -153,6 +157,14 @@ function TargetFrame_Update (self)
 		TargetFrame_CheckBattlePet(self);
 		if ( self.petBattleIcon ) then
 			self.petBattleIcon:SetAlpha(1.0);
+		end
+
+		-- Portrait masking is usually done already, but player portraits opt out of that because they might not always be circles.
+		-- In this case, we manually re-apply the circle mask. 
+		if(UnitIsPlayer(self.unit)) then
+			_G[self:GetName().."Portrait"]:AddMaskTexture(self.CircleMask);
+		else
+			_G[self:GetName().."Portrait"]:RemoveMaskTexture(self.CircleMask);
 		end
 	end
 end
@@ -1156,26 +1168,66 @@ end
 -- Boss Frames
 -- *********************************************************************************
 
-function BossTargetFrame_OnLoad(self, unit, event)
+BossTargetFrameMixin = {};
+
+function BossTargetFrameMixin:OnLoad()
+	local id = self:GetID();
+
 	self.isBossFrame = true;
-	self.noTextPrefix = true;
 	self.showLevel = true;
 	self.showThreat = true;
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
-	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
+
+	TargetFrame_OnLoad(self, "boss"..id, BossTargetFrameDropDown_Initialize);
+
 	self:UnregisterEvent("UNIT_AURA"); -- Boss frames do not display auras
 	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
+
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
+
 	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint(1)));
 	self.raidTargetIcon:SetPoint("RIGHT", -90, 0);
 	self.threatNumericIndicator:SetPoint("BOTTOM", self, "TOP", -85, -22);
+
 	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss-Flash");
 	self.threatIndicator:SetTexCoord(0.0, 0.945, 0.0, 0.73125);
+
 	self:SetHitRectInsets(0, 95, 15, 30);
 	self:SetScale(0.75);
-	if ( event ) then
-		self:RegisterEvent(event);
+
+	if ( id == 1 ) then
+		self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT");
+	end
+
+	TargetFrame_CreateSpellbar(self, "INSTANCE_ENCOUNTER_ENGAGE_UNIT", true);
+	self.spellbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -105, 15);
+end
+
+function BossTargetFrameMixin:OnShow()
+	BossTargetFrameContainer:UpdateSize();
+end
+
+function BossTargetFrameMixin:OnHide()
+	BossTargetFrameContainer:UpdateSize();
+end
+
+function BossTargetFrameMixin:UpdateShownState()
+	self:SetShown(BossTargetFrameContainer.isInEditMode or ShouldShowTargetFrame(self));
+	self.spellbar:SetShown(BossTargetFrameContainer.isInEditMode or self.spellbar.casting);
+end
+
+function BossTargetFrameMixin:SetCastBarPosition(castBarOnSide)
+	if self.castBarOnSide == castBarOnSide then
+		return;
+	end
+	self.castBarOnSide = castBarOnSide;
+
+	self.spellbar:ClearAllPoints();
+	if self.castBarOnSide then
+		self.spellbar:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -25);
+	else
+		self.spellbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -105, 15);
 	end
 end
 
@@ -1278,17 +1330,80 @@ end
 BossTargetFrameContainerMixin = { };
 
 function BossTargetFrameContainerMixin:UpdateSize()
-	local currentHeight = self:GetHeight();
-	local currentWidth = self:GetWidth(); 
-	local actualHeightUsed = currentHeight * .75
-	local actualWidthUsed = currentWidth * .75
-	BossTargetFrameContainer.bottomPadding =  (actualHeightUsed - currentHeight); 
-	BossTargetFrameContainer.rightPadding =  (actualWidthUsed - currentWidth) - 20; 
-	BossTargetFrameContainer:Layout();
-	UIParent_ManageFramePositions(); 
-end 
+	local lastShowingBossFrame;
+	local numShowingBossFrames = 0;
+	for index, bossFrame in ipairs(self.BossTargetFrames) do
+
+		if self.castBarOnSide then
+			bossFrame.bottomPadding = -30;
+			if self.smallSize then
+				bossFrame.leftPadding = 70;
+			else
+				bossFrame.leftPadding = 150;
+			end
+		else
+			bossFrame.bottomPadding = 0;
+			if self.smallSize then
+				bossFrame.leftPadding = -25;
+			else
+				bossFrame.leftPadding = 20;
+			end
+		end
+
+		if bossFrame:IsShown() then
+			numShowingBossFrames = numShowingBossFrames + 1;
+			lastShowingBossFrame = bossFrame;
+		end
+	end
+
+	if lastShowingBossFrame then
+		if self.smallSize then
+			if self.castBarOnSide then
+				lastShowingBossFrame.bottomPadding = -40 - (numShowingBossFrames - 1) * 20;
+			else
+				lastShowingBossFrame.bottomPadding = -17 - (numShowingBossFrames - 1) * 27;
+			end
+		else
+			if self.castBarOnSide then
+				lastShowingBossFrame.bottomPadding = -20;
+			else
+				lastShowingBossFrame.bottomPadding = 10;
+			end
+		end
+	end
+
+	self:Layout();
+	UIParent_ManageFramePositions();
+end
 
 function BossTargetFrameContainerMixin:OnShow()
 	LayoutMixin.OnShow(self);
 	UIParentManagedFrameMixin.OnShow(self);
+end
+
+function BossTargetFrameContainerMixin:SetSmallSize(smallSize)
+	if smallSize == self.smallSize then
+		return;
+	end
+	self.smallSize = smallSize;
+
+	local scale = self.smallSize and SMALL_FOCUS_SCALE or LARGE_FOCUS_SCALE;
+	for index, bossFrame in ipairs(self.BossTargetFrames) do
+		bossFrame:SetScale(scale);
+	end
+
+	self:UpdateSize();
+end
+
+function BossTargetFrameContainerMixin:SetCastBarPosition(castBarOnSide)
+	if castBarOnSide == self.castBarOnSide then
+		return;
+	end
+	self.castBarOnSide = castBarOnSide;
+
+	for index, bossFrame in ipairs(self.BossTargetFrames) do
+		bossFrame:SetCastBarPosition(castBarOnSide);
+	end
+
+	self:UpdateSize();
 end

@@ -2135,7 +2135,7 @@ function StoreFrame_OnLoad(self)
 		C_StoreSecure.GetPurchaseList();
 	end
 
-	self.TitleText:SetText(BLIZZARD_STORE);
+	self:SetTitle(BLIZZARD_STORE);
 
 	self:SetPortraitToAsset("Interface\\Icons\\WoW_Store");
 	StoreFrame_UpdateBuyButton();

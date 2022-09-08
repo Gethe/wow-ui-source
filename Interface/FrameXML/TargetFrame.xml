@@ -167,6 +167,12 @@
 						<Anchor point="TOPRIGHT" x="-42" y="-12"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-42" y="-12"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
@@ -199,12 +205,12 @@
 								<Anchor point="CENTER" x="61" y="-17"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentDeadText" inherits="GameFontNormalSmall" text="DEAD">
+						<FontString name="$parentDeadText" inherits="GameFontNormalSmall" text="DEAD" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-50" y="3"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentUnconsciousText" inherits="GameFontNormalSmall" text="UNCONSCIOUS">
+						<FontString name="$parentUnconsciousText" inherits="GameFontNormalSmall" text="UNCONSCIOUS" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-50" y="3"/>
 							</Anchors>
@@ -385,7 +391,7 @@
 			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate" virtual="true">
+	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate" mixin="BossTargetFrameMixin" toplevel="false" virtual="true">
 		<KeyValues>
 			<KeyValue key="align" value="right" type="string"/>
 		</KeyValues>
@@ -402,22 +408,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				local id = self:GetID();
-				if ( id == 1 ) then
-					BossTargetFrame_OnLoad(self, "boss1", "INSTANCE_ENCOUNTER_ENGAGE_UNIT");
-				else
-					BossTargetFrame_OnLoad(self, "boss"..id);
-				end
-				TargetFrame_CreateSpellbar(self, "INSTANCE_ENCOUNTER_ENGAGE_UNIT", true);
-			</OnLoad>
-			<OnShow>
-				BossTargetFrameContainer:UpdateSize(); 
-			</OnShow>
-			<OnHide>
-				BossTargetFrameContainer:UpdateSize();
-				TargetFrame_OnHide(self);
-			</OnHide>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide" inherit="append"/>
 		</Scripts>
 	</Button>
 	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
@@ -557,7 +550,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad inherit="append">
-				self.noTextPrefix = true;
 				self.showLevel = true;
 				self.showPVP = true;
 				self.showLeader = true;
@@ -593,7 +585,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad inherit="append">
-				self.noTextPrefix = true;
 				self.showLevel = true;
 				self.showPVP = true;
 				self.showLeader = true;
@@ -608,44 +599,45 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Frame name="BossTargetFrameContainer" parent ="UIParent" inherits="VerticalLayoutFrame, UIParentRightManagedFrameTemplate" mixin="BossTargetFrameContainerMixin" hidden="false">
+	<Frame name="BossTargetFrameContainer" parent ="UIParent" inherits="VerticalLayoutFrame, UIParentRightManagedFrameTemplate, EditModeBossUnitFrameSystemTemplate" mixin="BossTargetFrameContainerMixin" hidden="false">
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="4" type="number"/>
 			<KeyValue key="spacing" value="10" type="number"/>
+			<KeyValue key="rightPadding" value="-70" type="number" />
 		</KeyValues>
 		<Scripts>
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 
-	<Button name="Boss1TargetFrame" parent="BossTargetFrameContainer" inherits="BossTargetFrameTemplate" id="1">
+	<Button name="Boss1TargetFrame" parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="1">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="4" type="number"/>
 			<KeyValue key="align" value="right" type="string"/>
 		</KeyValues>
 	</Button>
-	<Button name="Boss2TargetFrame"  parent="BossTargetFrameContainer" inherits="BossTargetFrameTemplate" id="2">
+	<Button name="Boss2TargetFrame"  parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="2">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="5" type="number"/>
 			<KeyValue key="align" value="right" type="string"/>
 		</KeyValues>
 	</Button>
-	<Button name="Boss3TargetFrame"  parent="BossTargetFrameContainer" inherits="BossTargetFrameTemplate" id="3">
+	<Button name="Boss3TargetFrame"  parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="3">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="6" type="number"/>
 			<KeyValue key="align" value="right" type="string"/>
 		</KeyValues>
 	</Button>
-	<Button name="Boss4TargetFrame"  parent="BossTargetFrameContainer" inherits="BossTargetFrameTemplate" id="4">
+	<Button name="Boss4TargetFrame"  parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="4">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="7" type="number"/>
 			<KeyValue key="align" value="right" type="string"/>
 		</KeyValues>
 	</Button>
-	<Button name="Boss5TargetFrame"  parent="BossTargetFrameContainer" inherits="BossTargetFrameTemplate" id="5">
+	<Button name="Boss5TargetFrame"  parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="5">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="8" type="number"/>
 			<KeyValue key="align" value="right" type="string"/>

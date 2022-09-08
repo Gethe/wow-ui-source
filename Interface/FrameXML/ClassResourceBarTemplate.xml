@@ -10,9 +10,7 @@
 			<KeyValue key="resourceBarMixin" value="ClassPowerBar" type="global"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="TOP" relativePoint="BOTTOM" x="50" y="38"/>
+			<Anchor point="TOP" relativePoint="BOTTOM" x="32" y="30"/>
 		</Anchors>
 	</Frame>	
 </Ui>
-
-

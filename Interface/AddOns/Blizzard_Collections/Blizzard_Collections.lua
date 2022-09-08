@@ -71,6 +71,8 @@ function CollectionsJournal_UpdateSelectedTab(self)
 	elseif (selected == 5 ) then
 		CollectionsJournalTitleText:SetText(WARDROBE);
 	end
+    
+    EventRegistry:TriggerEvent("CollectionsJournal.TabSet", CollectionsJournal, selected);
 
 	HelpTip:HideAll(self);
 	if ShouldShowHeirloomTabHelpTip() then

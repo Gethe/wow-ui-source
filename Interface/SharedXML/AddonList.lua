@@ -190,7 +190,7 @@ function AddonList_Hide(save)
 end
 
 function AddonList_OnLoad(self)
-	self.TitleText:SetText(ADDON_LIST)
+	self:SetTitle(ADDON_LIST);
 	ButtonFrameTemplate_HidePortrait(self)
 
 	self.offset = 0;
@@ -327,7 +327,7 @@ function AddonList_InitButton(entry, addonIndex)
 	end
 
 	entry.Security.tooltip = _G["ADDON_"..security];
-	
+
 	if ( not loadable and reason ) then
 		entry.Status:SetText(_G["ADDON_"..reason]);
 	else

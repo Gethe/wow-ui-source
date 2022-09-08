@@ -164,7 +164,35 @@ end
 function EditModeSettingSliderMixin:SetupSetting(settingData)
 	self.initInProgress = true;
 	self.formatters = {};
-	self.formatters[MinimalSliderWithSteppersMixin.Label.Right] = CreateMinimalSliderFormatter(MinimalSliderWithSteppersMixin.Label.Right, settingData.displayInfo.formatter); -- Just show value on the right by default
+	if settingData.displayInfo.hideValue then
+		self.Slider:SetWidth(230);
+	else
+		self.formatters[MinimalSliderWithSteppersMixin.Label.Right] = CreateMinimalSliderFormatter(MinimalSliderWithSteppersMixin.Label.Right, settingData.displayInfo.formatter);
+		self.Slider:SetWidth(200);
+	end
+
+	if settingData.displayInfo.minText or settingData.displayInfo.maxText then
+		self:SetHeight(38);
+		self.Label:SetPoint("LEFT", self, "LEFT", 0, 3);
+	else
+		self:SetHeight(32);
+		self.Label:SetPoint("LEFT", self, "LEFT", 0, 0);
+	end
+
+	if settingData.displayInfo.minText then
+		self.Slider.MinText:SetText(settingData.displayInfo.minText);
+		self.Slider.MinText:Show();
+	else
+		self.Slider.MinText:Hide();
+	end
+
+	if settingData.displayInfo.maxText then
+		self.Slider.MaxText:SetText(settingData.displayInfo.maxText);
+		self.Slider.MaxText:Show();
+	else
+		self.Slider.MaxText:Hide();
+	end
+
 	self.setting = settingData.displayInfo.setting;
 	self.Label:SetText(settingData.settingName);
 	local stepSize = settingData.displayInfo.stepSize or 1;

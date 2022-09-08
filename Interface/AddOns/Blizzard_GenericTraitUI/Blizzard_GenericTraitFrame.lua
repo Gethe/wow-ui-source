@@ -73,9 +73,9 @@ function GenericTraitFrameMixin:OnEvent(event, ...)
 		local treeID = ...;
 		if treeID == self:GetTalentTreeID() then
 			for talentButton in self:EnumerateAllTalentButtons() do
-				local nodeID = talentButton:GetTalentNodeID();
+				local nodeID = talentButton:GetNodeID();
 				if nodeID then
-					self:MarkTalentNodeInfoCacheDirty(nodeID);
+					self:MarkNodeInfoCacheDirty(nodeID);
 				end
 			end
 		end

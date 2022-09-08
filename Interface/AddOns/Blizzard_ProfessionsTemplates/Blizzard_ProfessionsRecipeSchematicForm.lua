@@ -228,6 +228,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	end
 
 	self.recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft, self:GetCurrentRecipeLevel());
+	local isSalvage = self.recipeSchematic.recipeType == Enum.TradeskillRecipeType.Salvage;
 
 	if newTransaction then
 		local onChanged = GenerateClosure(self.UpdateDetailsStats, self);
@@ -268,6 +269,13 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		-- we're manually allocating. When we run out of a reagent, we expect the allocation to be
 		-- removed.
 		self.transaction:SanitizeAllocations();
+	end
+
+	-- There are no slot allocations for a salvage recipe, however we want to set manually
+	-- allocated so that crafting count calculations can consider what's been targetted in the
+	-- salvage slot.
+	if isSalvage then
+		self:SetManuallyAllocated(true);
 	end
 
 	-- Verifies that the recraft target is still valid, and that the item modifications
@@ -732,7 +740,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		end
 	end
 	
-	local isSalvage = self.recipeSchematic.recipeType == Enum.TradeskillRecipeType.Salvage;
 	if isSalvage then
 		if not self.salvageSlot then
 			self.salvageSlot = CreateFrame("FRAME", nil, self, "ProfessionsReagentSalvageTemplate");

@@ -12,12 +12,12 @@ end
 
 function WorldMapMixin:SynchronizeDisplayState()
 	if self:IsMaximized() then
-		self.BorderFrame.TitleText:SetText(WORLD_MAP);
+		self.BorderFrame:SetTitle(WORLD_MAP);
 		GameTooltip:Hide();
 		self.BlackoutFrame:Show();
 		MaximizeUIPanel(self);
 	else
-		self.BorderFrame.TitleText:SetText(MAP_AND_QUEST_LOG);
+		self.BorderFrame:SetTitle(MAP_AND_QUEST_LOG);
 		self.BlackoutFrame:Hide();
 		RestoreUIPanelArea(self);
 	end
@@ -274,7 +274,7 @@ function WorldMapMixin:OnHide()
 	self:OnUIClose();
 	self:TriggerEvent("WorldMapOnHide");
 	C_Map.CloseWorldMapInteraction();
-	
+
 	UpdateMicroButtons();
 end
 

@@ -65,6 +65,15 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "GetInspectRatedSoloShuffleData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ratedSoloShuffleData", Type = "InspectPVPData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinItemLevel",
 			Type = "Function",
 
@@ -254,6 +263,18 @@ local PaperDollInfo =
 
 	Tables =
 	{
+		{
+			Name = "InspectPVPData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "rating", Type = "number", Nilable = false },
+				{ Name = "gamesWon", Type = "number", Nilable = false },
+				{ Name = "gamesPlayed", Type = "number", Nilable = false },
+				{ Name = "roundsWon", Type = "number", Nilable = false },
+				{ Name = "roundsPlayed", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

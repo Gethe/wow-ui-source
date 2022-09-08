@@ -1,3 +1,12 @@
+ItemButtonConstants =
+{
+	ContextMatch =
+	{
+		Standard = 1,
+		RuneForging = 2,
+	},
+};
+
 local function GetItemButtonIconTexture(button)
 	return button.Icon or button.icon or _G[button:GetName().."IconTexture"];
 end
@@ -59,11 +68,39 @@ function SetItemButtonStock(button, numInStock)
 	end
 end
 
+local function GetItemButtonBackgroundTexture_Base(button)
+	if button.emptyBackgroundTexture then
+		return button.emptyBackgroundTexture;
+	elseif button.emptyBackgroundAtlas then
+		return button.emptyBackgroundAtlas, true;
+	end
+end
+
+function GetItemButtonBackgroundTexture(button)
+	if button then
+		if button.GetItemButtonBackgroundTexture then
+			return button:GetItemButtonBackgroundTexture();
+		else
+			GetItemButtonBackgroundTexture_Base(button);
+		end
+	end
+end
+
 local function SetItemButtonTexture_Base(button, texture)
 	local icon = GetItemButtonIconTexture(button);
 	if icon then
+		local isAtlas;
+		if not texture then
+			texture, isAtlas = GetItemButtonBackgroundTexture(button);
+		end
+
 		icon:SetShown(texture ~= nil);
-		icon:SetTexture(texture);
+
+		if isAtlas then
+			icon:SetAtlas(texture);
+		else
+			icon:SetTexture(texture);
+		end
 	end
 end
 
@@ -147,6 +184,8 @@ end
 local function ClearOverlay(overlay)
 	if overlay then
 		overlay:SetVertexColor(1,1,1);
+		overlay:SetAtlas(nil);
+		overlay:SetTexture(nil);
 		overlay:Hide();
 	end
 end
@@ -156,6 +195,8 @@ function ClearItemButtonOverlay(button)
 	for _, key in ipairs(OverlayKeys) do
 		ClearOverlay(button[key]);
 	end
+	button.isProfessionItem = false;
+	button.isCraftedItem = false;
 end
 
 function SetItemButtonBorder_Base(button, asset, isAtlas)
@@ -223,7 +264,7 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, i
 		if button.SetItemButtonQuality then
 			button:SetItemButtonQuality(quality, itemIDOrLink, suppressOverlays, isBound);
 		else
-			SetItemButtonQuality_Base(button, r, g, b);
+			SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppressOverlays, isBound);
 		end
 	end
 end
@@ -269,9 +310,13 @@ function SetItemCraftingQualityOverlay(button, itemIDOrLink)
 		if not quality then
 			quality = C_TradeSkillUI.GetItemCraftedQualityByItemInfo(itemIDOrLink);
 			button.isCraftedItem = quality ~= nil;
+		else
+			button.isCraftedItem = false;
 		end
 
 		if quality then
+			button.isProfessionItem = true;
+
 			if not button.ProfessionQualityOverlay then
 				button.ProfessionQualityOverlay = button:CreateTexture(nil, "OVERLAY");
 				button.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2);
@@ -283,7 +328,11 @@ function SetItemCraftingQualityOverlay(button, itemIDOrLink)
 			button.ProfessionQualityOverlay:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 			ItemButtonMixin.UpdateCraftedProfessionsQualityShown(button);
 			EventRegistry:RegisterCallback("ItemButton.UpdateCraftedProfessionQualityShown", ItemButtonMixin.UpdateCraftedProfessionsQualityShown, button);
+		else
+			button.isProfessionItem = false;
 		end
+	else
+		button.isProfessionItem = false;
 	end
 end
 
@@ -392,35 +441,46 @@ function ItemButtonMixin:UpdateCraftedProfessionsQualityShown()
 	end
 
 	-- Stackable items with quality always show quality overlay
-	local shouldShow = (not self.isCraftedItem) or (ProfessionsFrame and ProfessionsFrame:IsShown());
+	local shouldShow = self.isProfessionItem and ((not self.isCraftedItem) or (ProfessionsFrame and ProfessionsFrame:IsShown()));
 	self.ProfessionQualityOverlay:SetShown(shouldShow);
 end
 
-function ItemButtonMixin:UpdateItemContextOverlay()
+function ItemButtonMixin:GetItemContextOverlayMode()
 	local matchesSearch = self.matchesSearch == nil or self.matchesSearch;
 	local contextApplies = self.itemContextMatchResult ~= ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 	local matchesContext = self.itemContextMatchResult == ItemButtonUtil.ItemContextMatchResult.Match;
 
-	self.ItemContextOverlay:Hide();
-	self:UpdateCraftedProfessionsQualityShown();
-
 	if not matchesSearch or (contextApplies and not matchesContext) then
-		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
-		self.ItemContextOverlay:SetAllPoints(true);
-		self.ItemContextOverlay:Show();
-
-		if self.ProfessionQualityOverlay then
-			self.ProfessionQualityOverlay:Hide();
-		end
+		return ItemButtonConstants.ContextMatch.Standard;
 	elseif matchesContext and self.showMatchHighlight then
 		local itemContext = ItemButtonUtil.GetItemContext();
 		if itemContext == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem or itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeItem or itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then
-			local useAtlasSize = true;
-			self.ItemContextOverlay:SetAtlas("runecarving-icon-bag-item-glow", useAtlasSize);
-			self.ItemContextOverlay:ClearAllPoints();
-			self.ItemContextOverlay:SetPoint("CENTER");
-			self.ItemContextOverlay:Show();
+			return ItemButtonConstants.ContextMatch.RuneForging;
 		end
+	end
+
+	return nil;
+end
+
+function ItemButtonMixin:UpdateItemContextOverlay()
+	self:UpdateCraftedProfessionsQualityShown();
+
+	local contextMode = self:GetItemContextOverlayMode();
+	if contextMode then
+		self:UpdateItemContextOverlayTextures(contextMode);
+	end
+
+	self.ItemContextOverlay:SetShown(contextMode ~= nil);
+end
+
+function ItemButtonMixin:UpdateItemContextOverlayTextures(contextMode)
+	if contextMode == ItemButtonConstants.ContextMatch.Standard then
+		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
+		self.ItemContextOverlay:SetAllPoints();
+	elseif contextMode == ItemButtonConstants.ContextMatch.RuneForging then
+		self.ItemContextOverlay:SetAtlas("runecarving-icon-bag-item-glow", TextureKitConstants.UseAtlasSize);
+		self.ItemContextOverlay:ClearAllPoints();
+		self.ItemContextOverlay:SetPoint("CENTER");
 	end
 end
 
@@ -429,11 +489,12 @@ function ItemButtonMixin:Reset()
 	self:SetItemButtonTexture();
 	self:SetItemButtonQuality();
 
+	self.item = nil;
 	self.itemLink = nil;
 	self:SetItemSource(nil);
 
 	self.noQualityOverlay = false;
-
+	self.isProfessionItem = false;
 	self.isCraftedItem = false;
 	EventRegistry:UnregisterCallback("ItemButton.UpdateCraftedProfessionQualityShown", self.UpdateCraftedProfessionsQualityShown, self);
 	ClearItemButtonOverlay(self);
@@ -575,6 +636,10 @@ end
 
 function ItemButtonMixin:GetItemButtonIconTexture()
 	return GetItemButtonIconTexture(self);
+end
+
+function ItemButtonMixin:GetItemButtonBackgroundTexture()
+	return GetItemButtonBackgroundTexture_Base(self);
 end
 
 CircularGiantItemButtonMixin = {}

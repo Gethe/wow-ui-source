@@ -232,8 +232,8 @@ function GossipFrameSharedMixin:Update()
 	self.GreetingPanel.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	self.NameFrame.Name:SetText(UnitName("npc"));
 	if ( UnitExists("npc") ) then
-		SetPortraitTexture(self.Portrait, "npc");
+		SetPortraitTexture(self.PortraitContainer.portrait, "npc");
 	else
-		self.Portrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
+		self.PortraitContainer.portrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 	end
 end

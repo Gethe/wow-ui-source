@@ -13,6 +13,14 @@ local function ConvertValuePercentage(self, value, forDisplay)
 	end
 end
 
+local function ConvertValueDiffFromMin(self, value, forDisplay)
+	if forDisplay then
+		return self:ClampValue(value + self.minValue);
+	else
+		return value - self.minValue;
+	end
+end
+
 -- The ordering of the setting display info tables in here affects the order settings show in the system setting dialog
 EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	-- Action Bar Settings
@@ -192,11 +200,103 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
+		-- CastBarOnSide
+		{	
+			setting = Enum.EditModeUnitFrameSetting.CastBarOnSide,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_CAST_BAR_ON_SIDE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- ShowCastTime
+		-- {
+		-- 	setting = Enum.EditModeUnitFrameSetting.ShowCastTime,
+		-- 	name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SHOW_CAST_TIME,
+		-- 	type = Enum.EditModeSettingDisplayType.Checkbox,
+		-- },
+
+		-- View Raid Size
+		{
+			setting = Enum.EditModeUnitFrameSetting.ViewRaidSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_RAID_SIZE,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options = 
+			{
+				{value = Enum.ViewRaidSize.Ten, text = "10"},
+				{value = Enum.ViewRaidSize.TwentyFive, text = "25"},
+				{value = Enum.ViewRaidSize.Forty, text = "40"},
+			},
+		},
+
+		-- Frame Width
+		{
+			setting = Enum.EditModeUnitFrameSetting.FrameWidth,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 72,
+			maxValue = 144,
+			stepSize = 2,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = NARROW,
+			maxText = WIDE,
+		},
+
+		-- Frame Height
+		{
+			setting = Enum.EditModeUnitFrameSetting.FrameHeight,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 36,
+			maxValue = 72,
+			stepSize = 2,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
+		-- Keep Groups Together
+		{
+			setting = Enum.EditModeUnitFrameSetting.KeepGroupsTogether,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_KEEP_GROUPS_TOGETHER,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Sort Players By
+		{
+			setting = Enum.EditModeUnitFrameSetting.SortPlayersBy,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SORT_BY,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options = 
+			{
+				{value = Enum.SortPlayersBy.Role, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SORT_BY_SETTING_ROLE},
+				{value = Enum.SortPlayersBy.Group, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SORT_BY_SETTING_GROUP},
+				{value = Enum.SortPlayersBy.Alphabetical, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SORT_BY_SETTING_ALPHABETICAL},
+			},
+		},
+
 		-- Use Horizontal Groups
 		{
 			setting = Enum.EditModeUnitFrameSetting.UseHorizontalGroups,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_USE_HORIZONTAL_GROUPS,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Display Border
+		{
+			setting = Enum.EditModeUnitFrameSetting.DisplayBorder,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_DISPLAY_BORDER,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Row Size
+		{
+			setting = Enum.EditModeUnitFrameSetting.RowSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_ROW_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 2,
+			maxValue = 10,
+			stepSize = 1,
 		},
 	},
 

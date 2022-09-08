@@ -531,9 +531,6 @@ function UnitFrameManaBar_UpdateType (manaBar)
 	end
 
 	-- Update the manabar text
-	if ( not unitFrame.noTextPrefix ) then
-		SetTextStatusBarTextPrefix(manaBar, prefix);
-	end
 	TextStatusBar_UpdateTextString(manaBar);
 
 	-- Setup newbie tooltip

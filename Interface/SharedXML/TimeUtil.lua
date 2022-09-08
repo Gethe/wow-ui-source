@@ -262,6 +262,7 @@ function SecondsToClock(seconds, displayZeroHours)
 	end
 end
 
+-- Deprecated. See SecondsFormatter for intended replacement
 function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	local time = "";
 	local count = 0;
@@ -329,6 +330,7 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	return time;
 end
 
+-- Deprecated. See SecondsFormatter for intended replacement
 function MinutesToTime(mins, hideDays)
 	local time = "";
 	local count = 0;
@@ -354,6 +356,7 @@ function MinutesToTime(mins, hideDays)
 	return time;
 end
 
+-- Deprecated. See SecondsFormatter for intended replacement
 function SecondsToTimeAbbrev(seconds)
 	local tempTime;
 	if ( seconds >= 86400  ) then

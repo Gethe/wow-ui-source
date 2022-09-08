@@ -14,7 +14,7 @@ function DressUpModelFrameResetButtonMixin:OnClick()
 	if (playerActor) then
 		playerActor:SetSheathed(false);
 		playerActor:Dress();
-	end	
+	end
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
@@ -46,10 +46,10 @@ end
 local function LinkOutfitDropDownInit()
 	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
 	local itemTransmogInfoList = playerActor and playerActor:GetItemTransmogInfoList();
-	
+
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = true;
-	
+
 	info.text = TRANSMOG_OUTFIT_POST_IN_CHAT;
 	info.func = function()
 		local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
@@ -58,7 +58,7 @@ local function LinkOutfitDropDownInit()
 		end
 	end;
 	UIDropDownMenu_AddButton(info);
-	
+
 	info.text = TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD;
 	info.func = function()
 		local slashCommand = TransmogUtil.CreateOutfitSlashCommand(itemTransmogInfoList);
@@ -117,16 +117,16 @@ function DressUpModelFrameMaximizeMinimizeMixin:OnLoad()
 		local isMinimized = false;
 		frame:GetParent():ConfigureSize(isMinimized);
 	end
-						
+
 	self:SetOnMaximizedCallback(OnMaximize);
-						
+
 	local function OnMinimize(frame)
 		local isMinimized = true;
 		frame:GetParent():ConfigureSize(isMinimized);
 	end
-						
+
 	self:SetOnMinimizedCallback(OnMinimize);
-						
+
 	self:SetMinimizedCVar("miniDressUpFrame");
 end
 
@@ -159,7 +159,7 @@ end
 DressUpModelFrameMixin = CreateFromMixins(DressUpModelFrameBaseMixin);
 
 function DressUpModelFrameMixin:OnLoad()
-	self.TitleText:SetText(DRESSUP_FRAME);
+	self:SetTitle(DRESSUP_FRAME);
 end
 
 function DressUpModelFrameMixin:OnShow()
@@ -180,7 +180,7 @@ function DressUpModelFrameMixin:OnHide()
 end
 
 function DressUpModelFrameMixin:OnDressModel()
-	if self.OutfitDropDown then	
+	if self.OutfitDropDown then
 		if not self.gotDressed then
 			self.gotDressed = true;
 			C_Timer.After(0, function()
@@ -247,23 +247,23 @@ end
 TransmogAndMountDressupFrameMixin = CreateFromMixins(DressUpModelFrameBaseMixin);
 
 function TransmogAndMountDressupFrameMixin:OnLoad()
-	local checkButton = self.ShowMountCheckButton; 
+	local checkButton = self.ShowMountCheckButton;
 	checkButton.Text:SetFontObject("GameFontNormal");
-	checkButton.Text:ClearAllPoints(); 
-	checkButton.Text:SetPoint("RIGHT", checkButton, "LEFT"); 
+	checkButton.Text:ClearAllPoints();
+	checkButton.Text:SetPoint("RIGHT", checkButton, "LEFT");
 	checkButton.Text:SetText(TRANSMOG_AND_MOUNT_DRESSUP_FRAME_SHOW_MOUNT);
-end 
+end
 
 function TransmogAndMountDressupFrameMixin:OnHide()
-	self.mountID = nil; 
-	self.transmogSetID = nil; 
-	self.removeWeapons = nil; 
+	self.mountID = nil;
+	self.transmogSetID = nil;
+	self.removeWeapons = nil;
 	self.ShowMountCheckButton:SetChecked(false);
 	if self.removingWeapons then
 		self.removingWeapons = nil;
 		self:SetScript("OnUpdate", nil);
 	end
-end 
+end
 
 function TransmogAndMountDressupFrameMixin:RemoveWeapons()
 	for actor in self.ModelScene:EnumerateActiveActors() do
@@ -272,7 +272,7 @@ function TransmogAndMountDressupFrameMixin:RemoveWeapons()
 		actor:UndressSlot(mainHandSlotID);
 		actor:UndressSlot(offHandSlotID);
 	end
-end 
+end
 
 function TransmogAndMountDressupFrameMixin:CheckButtonOnClick()
 	if(self.ShowMountCheckButton:GetChecked()) then

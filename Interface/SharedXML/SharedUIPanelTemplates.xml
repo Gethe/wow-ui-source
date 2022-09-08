@@ -235,19 +235,19 @@
 		<TexCoords left="0.00000000" right="1.00000000" top="0.04296875" bottom="0.07421875"/>
 	</Texture>
 
-	<Button name="UIPanelCloseButtonNoScripts" virtual="true">
-		<Size x="32" y="32"/>
-		<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
-		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+	<Button name="UIPanelCloseButtonNoScripts" frameLevel="510" virtual="true">
+		<Size x="24" y="24"/>
+		<DisabledTexture atlas="RedButton-Exit-Disabled"/>
+		<NormalTexture atlas="RedButton-Exit"/>
+		<PushedTexture atlas="RedButton-exit-pressed"/>
+		<HighlightTexture atlas="RedButton-Highlight" alphaMode="ADD"/>
 	</Button>
-	<Button name="UIPanelHideButtonNoScripts" virtual="true">
-		<Size x="32" y="32"/>
-		<DisabledTexture atlas="UI-Panel-HideButton-Disabled" useAtlasSize="true" />
-		<NormalTexture atlas="UI-Panel-HideButton-Up"  useAtlasSize="true" />
-		<PushedTexture atlas="UI-Panel-HideButton-Down" useAtlasSize="true" />
-		<HighlightTexture atlas="UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" useAtlasSize="true" />
+	<Button name="UIPanelHideButtonNoScripts" frameLevel="510" virtual="true">
+		<Size x="24" y="24"/>
+		<DisabledTexture atlas="RedButton-MiniCondense-disabled"/>
+		<NormalTexture atlas="RedButton-MiniCondense"/>
+		<PushedTexture atlas="RedButton-MiniCondense-pressed"/>
+		<HighlightTexture atlas="RedButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Button name="UIPanelCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
@@ -465,7 +465,7 @@
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
-	
+
 	<CheckButton name="UICheckButtonTemplate" inherits="UICheckButtonArtTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
@@ -520,7 +520,7 @@
 			</Layer>
 		</Layers>
 	</Slider>
-	
+
 	<!--
 *******************************************************************************
     GlowBoxArrowTemplate
@@ -682,7 +682,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
 <!--
 *******************************************************************************
    Frame border element
@@ -943,23 +943,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="$parentPortrait" parentKey="portrait">
-					<Size x="61" y="61"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="8" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText" wordwrap="false">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-5"/>
-						<Anchor point="LEFT" x="60"/>
-						<Anchor point="RIGHT" x="-60"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
 					<Anchors>
@@ -971,6 +954,43 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+			<Frame parentKey="PortraitContainer" frameLevel="400">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentPortrait" parentKey="portrait">
+							<Size x="60" y="60"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="7" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="TitleContainer" frameLevel="510" mixin="PortraitFrameTitleContainerMixin">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-1"/>
+					<Anchor point="TOPRIGHT" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText" wordwrap="false">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-5"/>
+								<Anchor point="LEFT" x="37" y="0"/>
+								<Anchor point="RIGHT" x="-37" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 	</Frame>
 
@@ -978,7 +998,7 @@
 		<Frames>
 			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5" y="5"/>
+					<Anchor point="TOPRIGHT" x="1" y="-1"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -1046,7 +1066,7 @@
 		</Scripts>
 	</Button>
 
-	
+
 	<Texture name="GreenCheckMarkTemplate" file="Interface\Scenarios\ScenarioIcon-Check" virtual="true">
 		<Size x="16" y="16"/>
 	</Texture>
@@ -1189,7 +1209,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</DropDownToggleButton>
-	
+
 	<Button name="UIGoldBorderButtonTemplate" virtual="true">
 		<Size x="105" y="22"/>
 		<Anchors>
@@ -1845,7 +1865,7 @@
 		</HighlightTexture>
     </Button>
 
-	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" virtual="true">
+	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" frameLevel="510" virtual="true">
 		<Size x="32" y="32"/>
 		<Frames>
 			<Button parentKey="MaximizeButton" setAllPoints="true" hidden="true">
@@ -2040,7 +2060,7 @@
 
 	<Button name="ThreeSliceButtonTemplate" mixin="ThreeSliceButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<!--
-		atlasName: The art kit to use for the 3 sections of the button. 
+		atlasName: The art kit to use for the 3 sections of the button.
 						* The left textures will be "atlasName-Left", "atlasName-Left-Disabled" and "atlasName-Left-Pressed"
 						* The right textures will be "atlasName-Right", "atlasName-Right-Disabled" and "atlasName-Right-Pressed"
 						* The center textures will be "_atlasName-Center", "_atlasName-Disabled" and "_atlasName-Pressed"
@@ -2094,7 +2114,7 @@
 			<OnSizeChanged method="UpdateScale"/>
 		</Scripts>
 	</Button>
-	
+
 	<CheckButton name="NineSliceCheckButtonTemplate" mixin="NineSliceCheckButtonMixin" virtual="true">
 		<!--
 		<KeyValues>
@@ -2156,7 +2176,7 @@
 			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 	</CheckButton>
-	
+
 	<Button name="BigRedThreeSliceButtonTemplate" inherits="ThreeSliceButtonTemplate" virtual="true">
 		<Size x="441" y="128"/>
 		<KeyValues>
@@ -2214,11 +2234,11 @@
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
 	</Button>
-	
+
 	<Button name="UIButtonTemplate" mixin="UIButtonMixin" virtual="true">
 		<Size x="20" y="20"/>
 		<!--
-		buttonArtKit: The art kit to use for the  button. 
+		buttonArtKit: The art kit to use for the  button.
 						* The normal texture will be "buttonArtKit"
 						* The pressed texture will be "buttonArtKit-Pressed"
 						* The disabled texture will be "buttonArtKit-Disabled"
@@ -2232,7 +2252,7 @@
 		tooltipTextColor: a color for tooltipText.
 		tooltipOffsetX: x offset for the tooltip relative to tooltipAnchor for SetOwner.
 		tooltipOffsetY: y offset for the tooltip relative to tooltipAnchor for SetOwner.
-		
+
 		<KeyValues>
 			<KeyValue key="buttonArtKit" value="128-RedButton" type="string"/>
 			<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
@@ -2276,7 +2296,7 @@
 			<KeyValue key="buttonArtKit" value="128-redbutton-exit" type="string"/>
 		</KeyValues>
 	</Button>
-	
+
 	<Button name="IconButtonTemplate" mixin="IconButtonMixin" inherits="UIButtonTemplate" virtual="true">
 		<!--
 		icon: texture file to be displayed on the button.
@@ -2614,7 +2634,7 @@
 		It is most useful in Glues, where we ALWAYS apply a UIScale, with no way to turn it off.
 		But it can also be used in game in order to attain a consistent look on a panel.
 		If you choose to use it in-game, remember that when you use it, the player will no longer be able to scale that panel up for accessibility reasons.-->
-		
+
 	<!--IMPORTANT:
 		If you are inheriting from more than 1 frame, inherit this frame LAST (the right-most in the list).
 		If you have your own mixin, use inherit="prepend" for OnLoad & OnEvent if you define them-->
@@ -2701,7 +2721,7 @@
 			<OnDragStop method="OnDragStop"/>
 		</Scripts>
 	</Frame>
-	
+
 	<EditBox name="NumericInputBoxTemplate" mixin="NumericInputBoxMixin" inherits="InputBoxTemplate" numeric="true" virtual="true">
 		<KeyValues>
 			<!--

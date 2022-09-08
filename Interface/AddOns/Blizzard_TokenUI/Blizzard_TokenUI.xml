@@ -224,17 +224,20 @@
 		</Scripts>
 	</Button>
 	<Frame name="BackpackTokenFrameTemplate" mixin="BackpackTokenFrameMixin" virtual="true">
-		<Size x="183" y="32"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="BG" file="Interface\ContainerFrame\UI-Backpack-TokenFrame">
-					<Size x="256" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+		<Size x="1" y="17"/>
+		<Frames>
+			<Frame parentKey="Border" inherits="ContainerFrameCurrencyBorderTemplate">
+				<KeyValues>
+					<KeyValue key="leftEdge" value="common-currencybox-cornerleft" type="string"/>
+					<KeyValue key="rightEdge" value="common-currencybox-cornerright" type="string"/>
+					<KeyValue key="centerEdge" value="_common-currencybox-tile" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" />
+					<Anchor point="RIGHT" />
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

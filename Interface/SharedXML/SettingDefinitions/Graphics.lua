@@ -215,7 +215,6 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 		Settings.InitSelectionDropDown(dropDown, setting, options, 200, initTooltip);
 
 		local tooltipFunc = GenerateClosure(Settings.InitTooltip, name, tooltip);
-		dropDown.Button:SetTooltipFunc(tooltipFunc);
 		control:SetTooltipFunc(tooltipFunc);
 
 		local function OnSettingValueChanged(o, setting, value)

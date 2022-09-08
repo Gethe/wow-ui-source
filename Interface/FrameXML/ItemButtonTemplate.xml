@@ -84,7 +84,7 @@
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-2"/>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="icon"/>

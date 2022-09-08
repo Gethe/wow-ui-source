@@ -409,18 +409,18 @@ function SettingsPanelMixin:CheckApplyButton()
 end
 
 function SettingsPanelMixin:ForEachCanvas(func)
-	local function CallOnCanvases(categories, func)
-		for _, category in ipairs(categories) do
-			local layout = self:GetLayout(category);
-		   	if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Canvas then
-		   		xpcall(func, CallErrorHandler, layout:GetFrame());
-		   	end
-
-			CallOnCanvases(category:GetSubcategories(), func);
+	local function CallOnCanvases(index, category, func)
+		local layout = self:GetLayout(category);
+		if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Canvas then
+			xpcall(func, CallErrorHandler, layout:GetFrame());
 		end
+
+		local subcategories = securecallfunction(category.GetSubcategories, category);
+		secureexecuterange(subcategories, CallOnCanvases, func);
 	end
 
-	CallOnCanvases(self:GetAllCategories(), func);
+	local allCategories = securecallfunction(self.GetAllCategories, self);
+	secureexecuterange(allCategories, CallOnCanvases, func);
 end
 
 function SettingsPanelMixin:SetApplyButtonEnabled(enabled)

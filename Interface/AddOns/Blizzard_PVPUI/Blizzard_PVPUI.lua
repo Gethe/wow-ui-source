@@ -1062,6 +1062,16 @@ end
 -- CONQUEST FRAME
 ---------------------------------------------------------------
 
+CONQUEST_FRAME_EVENTS = {
+	"GROUP_ROSTER_UPDATE",
+	"LFG_LIST_ACTIVE_ENTRY_UPDATE",
+	"LFG_LIST_SEARCH_RESULT_UPDATED",
+	"PLAYER_SPECIALIZATION_CHANGED",
+	"PVP_RATED_STATS_UPDATE",
+	"PVP_REWARDS_UPDATE",
+	"QUEST_LOG_UPDATE",
+};
+
 CONQUEST_BUTTONS = {};
 local RATED_SOLO_SHUFFLE_BUTTON_ID = 1;
 local RATED_BG_BUTTON_ID = 4;
@@ -1073,13 +1083,7 @@ function ConquestFrame_OnLoad(self)
 	RequestRatedInfo();
 	RequestPVPOptionsEnabled();
 
-	self:RegisterEvent("GROUP_ROSTER_UPDATE");
-	self:RegisterEvent("QUEST_LOG_UPDATE");
-	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
-	self:RegisterEvent("PVP_REWARDS_UPDATE");
 	self:RegisterEvent("PVP_TYPES_ENABLED");
-	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
-	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 
 	ConquestFrame_EvaluateSeasonState(self);
 end
@@ -1095,7 +1099,9 @@ function ConquestFrame_OnEvent(self, event, ...)
 		self.disabled = not ratedBgs and not ratedArenas and not ratedSoloShuffle;
 		ConquestFrame_EvaluateSeasonState(self);
 		ConquestFrame_UpdateSeasonFrames(self);
-	elseif (self:IsVisible()) then
+	elseif (event == "PLAYER_SPECIALIZATION_CHANGED") then
+		RequestRatedInfo();
+	else
 		ConquestFrame_Update(self);
 	end
 end
@@ -1135,6 +1141,8 @@ function ConquestFrame_IsQueueingEnabled()
 end
 
 function ConquestFrame_OnShow(self)
+	FrameUtil.RegisterFrameForEvents(self, CONQUEST_FRAME_EVENTS);
+
 	RequestRatedInfo();
 	RequestPVPOptionsEnabled();
 	ConquestFrame_Update(self);
@@ -1143,6 +1151,10 @@ function ConquestFrame_OnShow(self)
 	if currentSeasonNumber >= SL_START_SEASON and lastSeasonNumber < currentSeasonNumber then
 		PVPQueueFrame.NewSeasonPopup:Show();
 	end
+end
+
+function ConquestFrame_OnHide(self)
+	FrameUtil.UnregisterFrameForEvents(self, CONQUEST_FRAME_EVENTS);
 end
 
 function PVPRatedTier_OnEnter(self)
@@ -1214,7 +1226,7 @@ function ConquestFrame_Update(self)
 		for i = 1, RATED_BG_BUTTON_ID do
 			local button = CONQUEST_BUTTONS[i];
 			local bracketIndex = CONQUEST_BRACKET_INDEXES[i];
-			local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon, pvpTier, ranking = GetPersonalRatedInfo(bracketIndex);
+			local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon, pvpTier, ranking, roundsSeasonPlayed, roundsSeasonWon, roundsWeeklyPlayed, roundsWeeklyWon = GetPersonalRatedInfo(bracketIndex);
 			local tierInfo = pvpTier and C_PvP.GetPvpTierInfo(pvpTier);
 			if tierInfo then
 				button.CurrentRating:SetText(rating);
@@ -1423,7 +1435,7 @@ end
 function ConquestFrameButton_OnEnter(self)
 	local tooltip = ConquestTooltip;
 
-	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon, pvpTier, ranking = GetPersonalRatedInfo(self.bracketIndex);
+	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon, pvpTier, ranking, roundsSeasonPlayed, roundsSeasonWon, roundsWeeklyPlayed, roundsWeeklyWon = GetPersonalRatedInfo(self.bracketIndex);
 
 	tooltip.Title:SetText(self.toolTipTitle);
 
@@ -1440,16 +1452,28 @@ function ConquestFrameButton_OnEnter(self)
 	end
 
 	local isSoloShuffle = self.id == RATED_SOLO_SHUFFLE_BUTTON_ID;
-	local totalWonString = isSoloShuffle and PVP_ROUNDS_WON or PVP_GAMES_WON;
-	local totalPlayedString = isSoloShuffle and PVP_ROUNDS_PLAYED or PVP_GAMES_PLAYED;
+	local weeklyWonString = isSoloShuffle and (PVP_ROUNDS_WON .. roundsWeeklyWon) or (PVP_GAMES_WON .. weeklyWon);
+	local weeklyPlayedString = isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsWeeklyPlayed) or (PVP_GAMES_WON .. weeklyPlayed);
+	local seasonWonString = isSoloShuffle and (PVP_ROUNDS_WON .. roundsSeasonWon) or (PVP_GAMES_WON .. seasonWon);
+	local seasonPlayedString = isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsSeasonPlayed) or (PVP_GAMES_WON .. seasonPlayed);
 
 	tooltip.WeeklyBest:SetText(PVP_BEST_RATING..weeklyBest);
-	tooltip.WeeklyGamesWon:SetText(totalWonString..weeklyWon);
-	tooltip.WeeklyGamesPlayed:SetText(totalPlayedString..weeklyPlayed);
+	tooltip.WeeklyWon:SetText(weeklyWonString);
+	tooltip.WeeklyPlayed:SetText(weeklyPlayedString);
 
 	tooltip.SeasonBest:SetText(PVP_BEST_RATING..seasonBest);
-	tooltip.SeasonWon:SetText(totalWonString..seasonWon);
-	tooltip.SeasonGamesPlayed:SetText(totalPlayedString..seasonPlayed);
+	tooltip.SeasonWon:SetText(seasonWonString);
+	tooltip.SeasonPlayed:SetText(seasonPlayedString);
+
+	local specStats = isSoloShuffle and C_PvP.GetPersonalRatedSoloShuffleSpecStats();
+	if specStats then
+		tooltip.WeeklyMostPlayedSpec:SetText(PVP_MOST_PLAYED_SPEC:format(GetSpecializationNameForSpecID(specStats.weeklyMostPlayedSpecID), specStats.weeklyMostPlayedSpecRounds));
+		tooltip.SeasonMostPlayedSpec:SetText(PVP_MOST_PLAYED_SPEC:format(GetSpecializationNameForSpecID(specStats.seasonMostPlayedSpecID), specStats.seasonMostPlayedSpecRounds));
+	end
+	tooltip.WeeklyMostPlayedSpec:SetShown(specStats);
+	tooltip.SeasonMostPlayedSpec:SetShown(specStats);
+	tooltip.SeasonLabel:ClearAllPoints();
+	tooltip.SeasonLabel:SetPoint("TOPLEFT", specStats and tooltip.WeeklyMostPlayedSpec or tooltip.WeeklyPlayed, "BOTTOMLEFT", 0, -13);
 
 	-- We want the mode description to word wrap, set it to the width of the next longest string
 	tooltip.ModeDescription:SetText("");
@@ -1459,11 +1483,13 @@ function ConquestFrameButton_OnEnter(self)
 	end
 	tooltip.ModeDescription:SetWidth(descriptionWidth);
 	tooltip.ModeDescription:SetText(self.modeDescription or "");
+	tooltip.ModeDescription:ClearAllPoints();
+	tooltip.ModeDescription:SetPoint("TOPLEFT", specStats and tooltip.SeasonMostPlayedSpec or tooltip.SeasonPlayed, "BOTTOMLEFT", 0, -13);
 	tooltip.ModeDescription:SetShown(self.modeDescription);
 
 	tooltip:ClearAllPoints();
 	local xOffset = 0;
-	local yOffset = isSoloShuffle and -48 or 0;
+	local yOffset = isSoloShuffle and -88 or 0;
 	tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", xOffset, yOffset);
 	tooltip:Layout();
 	tooltip:Show();

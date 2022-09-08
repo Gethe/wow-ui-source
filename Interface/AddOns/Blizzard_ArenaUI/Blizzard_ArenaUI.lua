@@ -104,7 +104,6 @@ function ArenaEnemyFrame_OnLoad(self)
 	local id = self:GetID();
 	self.debuffCountdown = 0; 
 	self.numDebuffs = 0;
-	self.noTextPrefix = 1;
 	local prefix = "ArenaEnemyFrame"..id;
 	UnitFrame_Initialize(self, "arena"..id,  _G[prefix.."Name"], nil,
 			_G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 

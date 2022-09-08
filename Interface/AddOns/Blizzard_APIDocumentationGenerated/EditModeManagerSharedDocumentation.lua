@@ -69,24 +69,11 @@ local EditModeManagerShared =
 			},
 		},
 		{
-			Name = "CastBarSize",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Small", Type = "CastBarSize", EnumValue = 0 },
-				{ Name = "Medium", Type = "CastBarSize", EnumValue = 1 },
-				{ Name = "Large", Type = "CastBarSize", EnumValue = 2 },
-			},
-		},
-		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 0,
-			MaxValue = 15,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -105,6 +92,7 @@ local EditModeManagerShared =
 				{ Name = "ShowRaidFrames", Type = "EditModeAccountSetting", EnumValue = 13 },
 				{ Name = "ShowTalkingHeadFrame", Type = "EditModeAccountSetting", EnumValue = 14 },
 				{ Name = "ShowVehicleLeaveButton", Type = "EditModeAccountSetting", EnumValue = 15 },
+				{ Name = "ShowBossFrames", Type = "EditModeAccountSetting", EnumValue = 16 },
 			},
 		},
 		{
@@ -273,9 +261,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeUnitFrameSetting",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 16,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 15,
 			Fields =
 			{
 				{ Name = "HidePortrait", Type = "EditModeUnitFrameSetting", EnumValue = 0 },
@@ -285,14 +273,23 @@ local EditModeManagerShared =
 				{ Name = "UseRaidStylePartyFrames", Type = "EditModeUnitFrameSetting", EnumValue = 4 },
 				{ Name = "ShowPartyFrameBackground", Type = "EditModeUnitFrameSetting", EnumValue = 5 },
 				{ Name = "UseHorizontalGroups", Type = "EditModeUnitFrameSetting", EnumValue = 6 },
+				{ Name = "CastBarOnSide", Type = "EditModeUnitFrameSetting", EnumValue = 7 },
+				{ Name = "ShowCastTime", Type = "EditModeUnitFrameSetting", EnumValue = 8 },
+				{ Name = "ViewRaidSize", Type = "EditModeUnitFrameSetting", EnumValue = 9 },
+				{ Name = "FrameWidth", Type = "EditModeUnitFrameSetting", EnumValue = 10 },
+				{ Name = "FrameHeight", Type = "EditModeUnitFrameSetting", EnumValue = 11 },
+				{ Name = "DisplayBorder", Type = "EditModeUnitFrameSetting", EnumValue = 12 },
+				{ Name = "KeepGroupsTogether", Type = "EditModeUnitFrameSetting", EnumValue = 13 },
+				{ Name = "SortPlayersBy", Type = "EditModeUnitFrameSetting", EnumValue = 14 },
+				{ Name = "RowSize", Type = "EditModeUnitFrameSetting", EnumValue = 15 },
 			},
 		},
 		{
 			Name = "EditModeUnitFrameSystemIndices",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 1,
-			MaxValue = 5,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "Player", Type = "EditModeUnitFrameSystemIndices", EnumValue = 1 },
@@ -300,6 +297,33 @@ local EditModeManagerShared =
 				{ Name = "Focus", Type = "EditModeUnitFrameSystemIndices", EnumValue = 3 },
 				{ Name = "Party", Type = "EditModeUnitFrameSystemIndices", EnumValue = 4 },
 				{ Name = "Raid", Type = "EditModeUnitFrameSystemIndices", EnumValue = 5 },
+				{ Name = "Boss", Type = "EditModeUnitFrameSystemIndices", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "SortPlayersBy",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Role", Type = "SortPlayersBy", EnumValue = 0 },
+				{ Name = "Group", Type = "SortPlayersBy", EnumValue = 1 },
+				{ Name = "Alphabetical", Type = "SortPlayersBy", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "ViewRaidSize",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Ten", Type = "ViewRaidSize", EnumValue = 0 },
+				{ Name = "TwentyFive", Type = "ViewRaidSize", EnumValue = 1 },
+				{ Name = "Forty", Type = "ViewRaidSize", EnumValue = 2 },
 			},
 		},
 		{

@@ -9,24 +9,15 @@ end
 
 function PartyFrameMixin:OnShow()
 	self:InitializePartyMemberFrames();
-	self:UpdatePartyFrame();
+	self:UpdatePartyFrames();
 end
 
 function PartyFrameMixin:OnEvent(event, ...)
-	if IsInRaid() then
-		self.fixedWidth = 120;
-		self.fixedHeight = 242;
-	else
-		self.fixedWidth = nil;
-		self.fixedHeight = nil;
-	end
-
 	self:Layout();
 end
 
 function PartyFrameMixin:InitializePartyMemberFrames()
 	local memberFramesToSetup = {};
-	local usePlayerOverride = true;
 	
 	self.PartyMemberFramePool:ReleaseAll();
 	for i = 1, MAX_PARTY_MEMBERS do 	
@@ -35,12 +26,6 @@ function PartyFrameMixin:InitializePartyMemberFrames()
 		 memberFrame.layoutIndex = i;
 		 memberFramesToSetup[i] = memberFrame;
 		 memberFrame:Show();
-
-		 local fakeMemberFrame = self.PartyMemberFramePool:Acquire();
-		 fakeMemberFrame:SetPoint("TOPLEFT");
-		 fakeMemberFrame.layoutIndex = MAX_PARTY_MEMBERS + i;
-		 fakeMemberFrame.realPartyMemberToken = "party"..i;
-		 fakeMemberFrame:Setup(usePlayerOverride);
 	end
 	self:Layout();
 	for _, frame in ipairs(memberFramesToSetup) do 
@@ -61,7 +46,7 @@ function PartyFrameMixin:UpdatePartyMemberBackground()
 		return;
 	end
 
-	if ShowingRaidFrames() or not EditModeManagerFrame:ShouldShowPartyFrameBackground() then
+	if not ShouldShowPartyFrames() or not EditModeManagerFrame:ShouldShowPartyFrameBackground() then
 		self.Background:Hide();
 		return;
 	end
@@ -89,10 +74,10 @@ function PartyFrameMixin:HidePartyFrames()
 	end
 end
 
-function PartyFrameMixin:UpdatePartyFrame()
-	local showingPartyFrames = ShowingPartyFrames();
+function PartyFrameMixin:UpdatePartyFrames()
+	local showPartyFrames = ShouldShowPartyFrames();
 	for memberFrame in self.PartyMemberFramePool:EnumerateActive() do
-		if showingPartyFrames and UnitExists(memberFrame.unit) then
+		if showPartyFrames then
 			memberFrame:Show();
 			memberFrame:UpdateMember();
 		else

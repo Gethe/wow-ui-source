@@ -406,52 +406,20 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<CheckButton name="$parentKeepGroupsTogether" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
+					<Frame name="$parentHealthTextDropdown" inherits="CompactUnitFrameProfilesDropdownTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="13" y="-110"/>
+							<Anchor point="TOPLEFT" x="13" y="-120"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "keepGroupsTogether", function(self)
-									local currentValue = GetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName);
-									local sortBy = self:GetParent().SortByDropdown;
-									local horizontalGroups = _G[self:GetParent():GetName().."HorizontalGroups"];
-									if ( currentValue ) then
-										sortBy:Hide();
-										horizontalGroups:Show();
-									else
-										sortBy:Show();
-										horizontalGroups:Hide();
-									end
-									self:SetChecked(currentValue);
-								end)
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-					<CheckButton name="$parentHorizontalGroups" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="15" y="-5"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "horizontalGroups");
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
-					<Frame parentKey="SortByDropdown" name="$parentSortByDropdown" inherits="CompactUnitFrameProfilesDropdownTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="15" y="-10"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.width = 110;
-								CompactUnitFrameProfilesDropdown_InitializeWidget(self, "sortBy", { "role", "group", "alphabetical" });
+								CompactUnitFrameProfilesDropdown_InitializeWidget(self, "healthText", { "none", "health", "losthealth", "perc" });
 							</OnLoad>
 						</Scripts>
 					</Frame>
+
 					<CheckButton name="$parentDisplayIncomingHeals" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentKeepGroupsTogether" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentHealthTextDropdown" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -509,19 +477,9 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentDisplayBorder" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDisplayMainTankAndAssist" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesCheckButton_InitializeWidget(self, "displayBorder");
-							</OnLoad>
-						</Scripts>
-					</CheckButton>
 					<CheckButton name="$parentShowDebuffs" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDisplayBorder" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentDisplayMainTankAndAssist" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -548,36 +506,6 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<Frame name="$parentHealthTextDropdown" inherits="CompactUnitFrameProfilesDropdownTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentDisplayOnlyDispellableDebuffs" relativePoint="BOTTOMLEFT" x="-18" y="-18"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								CompactUnitFrameProfilesDropdown_InitializeWidget(self, "healthText", { "none", "health", "losthealth", "perc" });
-							</OnLoad>
-						</Scripts>
-					</Frame>
-					<Slider name="$parentHeightSlider" inherits="CompactUnitFrameProfilesSliderTemplate" minValue="36" maxValue="72" valueStep="2">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentHealthTextDropdown" relativePoint="BOTTOMLEFT" x="10" y="-15"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad inherit="prepend">
-								CompactUnitFrameProfilesSlider_InitializeWidget(self, "frameHeight", SHORT, TALL);
-							</OnLoad>
-						</Scripts>
-					</Slider>
-					<Slider name="$parentWidthSlider" inherits="CompactUnitFrameProfilesSliderTemplate" minValue="72" maxValue="144" valueStep="2">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentHeightSlider" relativePoint="RIGHT" x="40" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad inherit="prepend">
-								CompactUnitFrameProfilesSlider_InitializeWidget(self, "frameWidth", NARROW, WIDE);
-							</OnLoad>
-						</Scripts>
-					</Slider>
 					<CheckButton name="$parentAutoActivate10Players" inherits="CompactUnitFrameProfilesCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAutoActivateLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>

@@ -728,9 +728,10 @@ local function OnActionButtonPressAndHoldRelease(self, inputButton)
 end
 
 function SecureActionButton_OnClick(self, inputButton, down, isKeyPress)
-	local useOnKeyDown = GetCVarBool("ActionButtonUseKeyDown") or self.pressAndHoldAction;
+	local pressAndHoldAction = SecureButton_GetAttribute(self, "pressAndHoldAction");
+	local useOnKeyDown = GetCVarBool("ActionButtonUseKeyDown") or pressAndHoldAction;
 	local clickAction = (down and useOnKeyDown) or (not down and not useOnKeyDown);
-	local releasePressAndHoldAction = (not down) and (self.pressAndHoldAction or GetCVarBool("ActionButtonUseKeyHeldSpell"));
+	local releasePressAndHoldAction = (not down) and (pressAndHoldAction or GetCVarBool("ActionButtonUseKeyHeldSpell"));
 
 	if clickAction then
 		OnActionButtonClick(self, inputButton, down, isKeyPress);

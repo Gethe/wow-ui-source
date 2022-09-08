@@ -280,35 +280,35 @@ function ProfessionsCraftingPageMixin:GetCraftableCount(count)
 			return 0;
 		end
 	else
-		local intervals = math.huge;
-		if self.SchematicForm:IsManuallyAllocated() then
-			-- If manual, limit the count to the LCD of the allocated reagents.
-			for index, allocations in transaction:EnumerateAllAllocations() do
-				for _, allocation in allocations:Enumerate() do
-					local possessed = Professions.GetReagentQuantityInPossession(allocation:GetReagent());
-					intervals = math.min(intervals, math.floor(possessed / allocation:GetQuantity()));
-				end
-			end
-		else
-			-- If automatically allocated, then sum every reagent and divide by the quantity required.
-			for index, reagents in transaction:EnumerateAllSlotReagents() do
-				if transaction:IsSlotRequiredToCraft(index) then
-					local total = 0;
-					for _, reagent in ipairs(reagents) do
-						total = total + Professions.GetReagentQuantityInPossession(reagent);
-					end
-
-					local required = transaction:GetQuantityRequiredInSlot(index);
-					intervals = math.min(intervals, math.floor(total / required));
-				end
+	local intervals = math.huge;
+	if self.SchematicForm:IsManuallyAllocated() then
+		-- If manual, limit the count to the LCD of the allocated reagents.
+		for index, allocations in transaction:EnumerateAllAllocations() do
+			for _, allocation in allocations:Enumerate() do
+				local possessed = Professions.GetReagentQuantityInPossession(allocation:GetReagent());
+				intervals = math.min(intervals, math.floor(possessed / allocation:GetQuantity()));
 			end
 		end
+	else
+		-- If automatically allocated, then sum every reagent and divide by the quantity required.
+		for index, reagents in transaction:EnumerateAllSlotReagents() do
+			if transaction:IsSlotRequiredToCraft(index) then
+				local total = 0;
+				for _, reagent in ipairs(reagents) do
+					total = total + Professions.GetReagentQuantityInPossession(reagent);
+				end
 
-		if intervals ~= math.huge then
-			return intervals;
+				local required = transaction:GetQuantityRequiredInSlot(index);
+				intervals = math.min(intervals, math.floor(total / required));
+			end
 		end
-		return 0;
 	end
+
+	if intervals ~= math.huge then
+		return intervals;
+	end
+	return 0;
+end
 end
 
 function ProfessionsCraftingPageMixin:SetupCraftingButtons()
@@ -387,11 +387,10 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 		end
 
 		if enabled then
+			-- Enchanting does not require the optional target to be set. When it is not,
+			-- clicking the create button creates a targeting cursor.
 			if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 				enabled = transaction:HasAllocatedSalvageRequirements();
-				if enabled then
-					self:SetupMultipleInputBox(1, countMax);
-				end
 			else
 				enabled = transaction:HasAllocatedReagentRequirements();
 			end

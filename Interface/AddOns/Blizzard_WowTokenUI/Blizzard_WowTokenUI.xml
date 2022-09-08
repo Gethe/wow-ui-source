@@ -89,7 +89,7 @@
 			<Frames>
 				<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5" y="4"/>
+						<Anchor point="TOPRIGHT" x="1" y="-1"/>
 					</Anchors>
 					<Scripts>
 						<OnClick function="WowTokenRedemptionFrameCloseButton_OnClick" />

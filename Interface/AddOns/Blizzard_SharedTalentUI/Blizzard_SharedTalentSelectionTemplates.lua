@@ -52,20 +52,20 @@ function TalentSelectionChoiceFrameMixin:SetSelectionOptions(baseButton, selecti
 		self.selectionCount = self.selectionCount + 1;
 		local entryInfo = talentFrame:GetAndCacheEntryInfo(entryID);
 
+		local choiceMixin = talentFrame:GetSpecializedSelectionChoiceMixin(entryInfo, entryInfo.type) or TalentSelectionChoiceMixin;
+
 		local useLargeButton = true;
-		local newSelectionFrame = talentFrame:AcquireTalentDisplayFrame(entryInfo.type, TalentSelectionChoiceMixin, useLargeButton);
+		local newSelectionFrame = talentFrame:AcquireTalentDisplayFrame(entryInfo.type, choiceMixin, useLargeButton);
 
 		newSelectionFrame:SetParent(self);
 		newSelectionFrame:Init(talentFrame);
 
 		local isCurrentSelection = entryID == currentSelection;
-		newSelectionFrame:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, i);
 		newSelectionFrame:SetEntryID(entryID);
+		newSelectionFrame:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, i);
 		newSelectionFrame:Show();
 
 		table.insert(self.selectionFrameArray, newSelectionFrame);
-
-		talentFrame:OnSelectionChoiceShown(newSelectionFrame);
 	end
 
 	self:UpdateTrayLayout();
@@ -100,8 +100,8 @@ function TalentSelectionChoiceFrameMixin:UpdateTrayLayout()
 	self:Layout();
 end
 
-function TalentSelectionChoiceFrameMixin:SetSelectedEntryID(selectedEntryID, selectedTalentInfo)
-	self.baseButton:SetSelectedEntryID(selectedEntryID, selectedTalentInfo);
+function TalentSelectionChoiceFrameMixin:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo)
+	self.baseButton:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo);
 	self:Hide();
 end
 
@@ -155,7 +155,7 @@ function TalentSelectionChoiceMixin:OnClick(button)
 			return;
 		end
 
-		selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID(), self:GetTalentInfo());
+		selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID(), self:GetDefinitionInfo());
 	else
 		selectionChoiceFrame:Hide();
 	end
@@ -274,4 +274,16 @@ function TalentSelectionChoiceMixin:UpdateSearchIcon()
 			self.SearchIcon:SetPoint("CENTER", self.Icon, "TOPRIGHT");
 		end
 	end
+end
+
+function TalentSelectionChoiceMixin:GetSpellID()
+	-- Overrides TalentDisplayMixin.
+	local definitionInfo = self:GetDefinitionInfo();
+	return definitionInfo and definitionInfo.spellID or nil;
+end
+
+function TalentSelectionChoiceMixin:GetNodeInfo()
+	local selectionChoiceFrame = self:GetParent();
+	local selectionBaseButton = selectionChoiceFrame and selectionChoiceFrame:GetBaseButton() or nil;
+	return selectionBaseButton and selectionBaseButton:GetNodeInfo() or nil;
 end

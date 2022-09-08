@@ -4,7 +4,7 @@
 	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
 		<Size x="128" y="53"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" x="80" y="-60"/>
+			<Anchor point="TOPLEFT" x="85" y="-75"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="7" right="66" top="6" bottom="7"/>
@@ -24,6 +24,12 @@
 						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>

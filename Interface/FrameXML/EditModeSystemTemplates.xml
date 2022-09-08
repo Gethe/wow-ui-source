@@ -8,10 +8,11 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeSystemSelectionBaseTemplate" inherits="NineSliceCodeTemplate" mixin="EditModeSystemSelectionBaseMixin" ignoreParentAlpha="true" frameStrata="MEDIUM" frameLevel="100" enableMouse="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
+	<Frame name="EditModeSystemSelectionBaseTemplate" inherits="NineSliceCodeTemplate" mixin="EditModeSystemSelectionBaseMixin" ignoreParentAlpha="true" frameStrata="MEDIUM" frameLevel="1000" toplevel="true" enableMouse="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="highlightTextureKit" value="editmode-actionbar-highlight" type="string"/>
 			<KeyValue key="selectedTextureKit" value="editmode-actionbar-selected" type="string"/>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -68,6 +69,14 @@
 		<Frames>
 			<Frame parentKey="Selection" inherits="EditModeSystemSelectionDoubleLabelTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
+	</Frame>
+
+	<Frame name="EditModeBossUnitFrameSystemTemplate" inherits="EditModeUnitFrameSystemTemplate" mixin="EditModeBossUnitFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Boss" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_BOSS_FRAMES_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
 	</Frame>
 
 	<Frame name="EditModeMinimapSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeMinimapSystemMixin" virtual="true">

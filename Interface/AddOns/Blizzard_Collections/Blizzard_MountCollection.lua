@@ -659,7 +659,7 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 
 			local mountActor = MountJournal.MountDisplay.ModelScene:GetActorByTag("unwrapped");
 			if mountActor then
-				mountActor:SetModelByCreatureDisplayID(creatureDisplayID);
+				mountActor:SetModelByCreatureDisplayID(creatureDisplayID, true);
 
 				-- mount self idle animation
 				if (isSelfMount) then

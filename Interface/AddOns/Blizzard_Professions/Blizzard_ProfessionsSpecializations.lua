@@ -315,13 +315,13 @@ function ProfessionsSpecFrameMixin.getEdgeTemplateType()
 end
 
 function ProfessionsSpecFrameMixin:InstantiateTalentButton(nodeID, xPos, yPos) -- Override
-	local talentNodeInfo = self:GetAndCacheTalentNodeInfo(nodeID);
+	local nodeInfo = self:GetAndCacheNodeInfo(nodeID);
 
-	local activeEntryID = talentNodeInfo.activeEntry and talentNodeInfo.activeEntry.entryID or nil;
+	local activeEntryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID or nil;
 	local entryInfo = (activeEntryID ~= nil) and self:GetAndCacheEntryInfo(activeEntryID) or nil;
 	local talentType = (entryInfo ~= nil) and entryInfo.type or nil;
 	local function InitTalentButton(newTalentButton)
-		newTalentButton:SetTalentNodeID(nodeID);
+		newTalentButton:SetNodeID(nodeID);
 		newTalentButton:SetAndApplySize(newTalentButton.iconSize, newTalentButton.iconSize);
 		TalentButtonUtil.ApplyPosition(newTalentButton, self, xPos, yPos)
 		newTalentButton:SetSelected(nodeID == self:GetDetailedPanelNodeID());
@@ -330,7 +330,7 @@ function ProfessionsSpecFrameMixin:InstantiateTalentButton(nodeID, xPos, yPos) -
 
 	local offsetX = nil;
 	local offsetY = nil;
-	local newTalentButton = self:AcquireTalentButton(talentNodeInfo, talentType, offsetX, offsetY, InitTalentButton);
+	local newTalentButton = self:AcquireTalentButton(nodeInfo, talentType, offsetX, offsetY, InitTalentButton);
 
 	return newTalentButton;
 end
@@ -577,7 +577,7 @@ function ProfessionsSpecFrameMixin:GetDetailedPanelPath()
 end
 
 function ProfessionsSpecFrameMixin:GetDetailedPanelNodeID()
-	return self:GetDetailedPanelPath():GetTalentNodeID();
+	return self:GetDetailedPanelPath():GetNodeID();
 end
 
 function ProfessionsSpecFrameMixin:GetRootNodeID()
@@ -585,7 +585,7 @@ function ProfessionsSpecFrameMixin:GetRootNodeID()
 end
 
 function ProfessionsSpecFrameMixin:SetDetailedPanel(pathID)
-	self:GetDetailedPanelPath():SetTalentNodeID(pathID);
+	self:GetDetailedPanelPath():SetNodeID(pathID);
 
 	self:InitDetailedPanelPerks();
 	local setLocked = true;
@@ -635,7 +635,7 @@ end
 
 function ProfessionsSpecFrameMixin:UpdateDetailedPanel(setLocked)
 	local detailedViewPath = self:GetDetailedPanelPath();
-	detailedViewPath:UpdateTalentNodeInfo();
+	detailedViewPath:UpdateNodeInfo();
 
 	local nodeID = self:GetDetailedPanelNodeID();
 

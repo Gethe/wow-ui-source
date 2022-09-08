@@ -26,9 +26,8 @@
 	<DropDownToggleButton name="ContainerFramePortraitButtonTemplate" mixin="ContainerFramePortraitButtonMixin" virtual="true">
 		<Size x="40" y="40"/>
 		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
-					<Size x="36" y="36"/>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" setAllPoints="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" x="-3" y="3"/>
 					</Anchors>
@@ -42,7 +41,10 @@
 		</Scripts>
 	</DropDownToggleButton>
 
-	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" parentArray="Items" hidden="true" virtual="true">
+	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" parentArray="Items" hidden="true" frameLevel="10" virtual="true">
+		<KeyValues>
+			<KeyValue key="emptyBackgroundAtlas" value="bags-item-slot64" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 		</Anchors>
@@ -121,51 +123,101 @@
 		</Scripts>
 	</ItemButton>
 
-	<Frame name="ContainerFrameTemplate" mixin="ContainerFrameMixin" parent="UIParent" parentArray="ContainerFrames" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
-		<Size x="256" y="256"/>
+	<Frame name="ContainerFrameBackgroundTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-8">
+				<Texture parentKey="BottomLeft" atlas="uiframebackground-nineslice-cornerbottomleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<Color color="BAG_BACKGROUND_COLOR"/>
+				</Texture>
+				<Texture parentKey="BottomRight" atlas="uiframebackground-nineslice-cornerbottomright" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color color="BAG_BACKGROUND_COLOR"/>
+				</Texture>
+				<Texture parentKey="BottomEdge">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<Color color="BAG_BACKGROUND_COLOR"/>
+				</Texture>
+				<Texture parentKey="TopSection">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<Color color="BAG_BACKGROUND_COLOR"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ContainerFrameCurrencyBorderTemplate" mixin="ContainerFrameCurrencyBorderMixin" virtual="true">
+		<Size y="17"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-                <Texture name="$parentPortrait" parentKey="Portrait">
-                    <Size x="40" y="40"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="7" y="-5"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
+				<Texture parentKey="Left">
+					<Size x="8" y="17"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right">
+					<Size x="8" y="17"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ContainerMoneyFrameTemplate" inherits="SmallMoneyFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="showCurrencyTracking" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Border" inherits="ContainerFrameCurrencyBorderTemplate">
+				<KeyValues>
+					<KeyValue key="leftEdge" value="common-coinbox-cornerleft" type="string"/>
+					<KeyValue key="rightEdge" value="common-coinbox-cornerright" type="string"/>
+					<KeyValue key="centerEdge" value="_common-coinbox-tile" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" />
+					<Anchor point="RIGHT" />
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				SmallMoneyFrame_OnLoad(self);
+				MoneyFrame_SetType(self, "PLAYER");
+				MoneyFrame_SetMaxDisplayWidth(self, 168);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ContainerFrameTemplate" inherits="PortraitFrameTemplateNoCloseButton" mixin="ContainerFrameMixin" parent="UIParent" parentArray="ContainerFrames" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="HeldBagLayout" type="string"/>
+		</KeyValues>
+		<Size x="256" y="256"/>
+		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBackgroundTop" parentKey="BackgroundTop" file="Interface\ContainerFrame\UI-Bag-Components">
-					<Size x="256" y="512"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parent" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBackgroundMiddle1" parentArray="BackgroundMiddle" file="Interface\ContainerFrame\UI-Bag-Components">
-					<Size x="256" y="512"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentBackgroundTop" relativePoint="BOTTOM"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="0.3515625" bottom="0.8515625"/>
-				</Texture>
-				<Texture name="$parentBackgroundMiddle2" parentArray="BackgroundMiddle" file="Interface\ContainerFrame\UI-Bag-Components" hidden="true">
-					<Size x="256" y="256"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="0.353515625" bottom="0.8515625"/>
-				</Texture>
-				<Texture name="$parentBackgroundBottom" parentKey="BackgroundBottom" file="Interface\ContainerFrame\UI-Bag-Components">
-					<Size x="256" y="10"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentBackgroundMiddle1" relativePoint="BOTTOM"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="0.330078125" bottom="0.349609375"/>
-				</Texture>
-				<FontString name="$parentName" parentKey="Name" inherits="GameFontHighlight">
-					<Size x="112" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="47" y="-10"/>
-					</Anchors>
-				</FontString>
 				<Texture name="$parentBackground1Slot" parentKey="Background1Slot" file="Interface\ContainerFrame\UI-Bag-1Slot" hidden="true">
 					<Size x="99" y="74"/>
 					<Anchors>
@@ -176,16 +228,13 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<!-- [NB] TODO: Only the backpack should even have these frames, any other frames having them is a waste. -->
-			<Frame name="$parentMoneyFrame" parentKey="MoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
-				<Scripts>
-					<OnLoad>
-						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "PLAYER");
-						MoneyFrame_SetMaxDisplayWidth(self, 168);
-					</OnLoad>
-				</Scripts>
+			<Frame parentKey="Background" inherits="ContainerFrameBackgroundTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
+				</Anchors>
 			</Frame>
+
 			<ItemButton name="$parentItem1" inherits="ContainerFrameItemButtonTemplate"/>
 			<ItemButton name="$parentItem2" inherits="ContainerFrameItemButtonTemplate"/>
 			<ItemButton name="$parentItem3" inherits="ContainerFrameItemButtonTemplate"/>
@@ -228,24 +277,22 @@
 					<Anchor point="TOPLEFT" x="7" y="-5"/>
 				</Anchors>
 			</DropDownToggleButton>
-			<Button parentKey="FilterIcon" mixin="DropDownToggleButtonMixin" hidden="true">
+			<Button parentKey="FilterIcon" mixin="DropDownToggleButtonMixin" frameLevel="510" hidden="true">
 				<Size x="28" y="28"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="BOTTOMRIGHT" x="-9" y="14"/>
+					<Anchor point="CENTER" relativeTo="$parentPortrait" relativePoint="BOTTOMRIGHT" x="-1" y="9"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Icon" atlas="bags-icon-consumables" useAtlasSize="true">
+						<Texture parentKey="Icon" atlas="bags-icon-consumables">
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnShow>
-						self:SetFrameLevel(self:GetParent().PortraitButton:GetFrameLevel()+1);
-					</OnShow>
 					<OnEnter>
 						local target = self:GetParent().PortraitButton;
 						target:GetScript("OnEnter")(target);
@@ -307,7 +354,7 @@
 			</Button>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="-1"/>
+					<Anchor point="TOPRIGHT" x="1" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -358,6 +405,9 @@
 	</Frame>
 
 	<Frame name="ContainerFrameBackpackTemplate" inherits="ContainerFrameTemplate" mixin="ContainerFrameBackpackMixin" virtual="true">
+		<Frames>
+			<Frame name="$parentMoneyFrame" parentKey="MoneyFrame" inherits="ContainerMoneyFrameTemplate"/>
+		</Frames>
 		<Scripts>
 			<OnHide method="OnHide"/>
 			<OnShow method="OnShow"/>
@@ -381,30 +431,20 @@
 	<Frame name="ContainerFrameCombinedBags" inherits="PortraitFrameTemplate" mixin="ContainerFrameCombinedBagsMixin" parent="UIParent" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true">
 		<KeyValues>
 			<KeyValue key="onCloseCallback" value="ContainerFrameCombinedBagsMixin.Close" type="global"/> <!-- NOTE: Will pass close button as first argument, use a function that doesn't care about that -->
+			<KeyValue key="layoutType" value="HeldBagLayout" type="string"/>
 		</KeyValues>
 		<Frames>
-			<DropDownToggleButton name="$parentPortraitButton" parentKey="PortraitButton" inherits="ContainerFramePortraitButtonTemplate" scale="1.5"/>
+			<Frame parentKey="Background" inherits="ContainerFrameBackgroundTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
+				</Anchors>
+			</Frame>
+
+			<DropDownToggleButton name="$parentPortraitButton" parentKey="PortraitButton" inherits="ContainerFramePortraitButtonTemplate"/>
 			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate"/>
 
-			<Frame parentKey="MoneyFrame" inherits="SmallMoneyFrameTemplate">
-				<KeyValues>
-					<KeyValue key="showCurrencyTracking" value="true" type="boolean"/>
-				</KeyValues>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="BGTemp" setAllPoints="true">
-							<Color color="BLACK_FONT_COLOR"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "PLAYER");
-						MoneyFrame_SetMaxDisplayWidth(self, 160);
-					</OnLoad>
-				</Scripts>
-			</Frame>
+			<Frame parentKey="MoneyFrame" inherits="ContainerMoneyFrameTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnEvent function="ContainerFrame_OnEvent"/>

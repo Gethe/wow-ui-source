@@ -21,8 +21,8 @@ function MonkLightEnergyMixin:Setup()
 	end
 	self.Glow:SetAtlas(lightOrb, true);
 	self.OrbOff:SetAtlas(orbOff, true);
-	self:Show(); 
-end		
+	self:Show();
+end
 
 
 function MonkLightEnergyMixin:SetEnergy(active)

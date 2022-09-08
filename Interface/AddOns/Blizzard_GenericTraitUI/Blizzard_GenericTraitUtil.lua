@@ -1,10 +1,10 @@
 
-local TemplatesByEdgeVisualization = {
+local TemplatesByEdgeVisualStyle = {
 	[Enum.TraitEdgeVisualStyle.Straight] = "TalentEdgeArrowTemplate",
 };
 
 GenericTraitUtil = {};
 
 function GenericTraitUtil.GetEdgeTemplateType(edgeVisualStyle)
-	return TemplatesByEdgeVisualization[edgeVisualStyle];
+	return TemplatesByEdgeVisualStyle[edgeVisualStyle];
 end

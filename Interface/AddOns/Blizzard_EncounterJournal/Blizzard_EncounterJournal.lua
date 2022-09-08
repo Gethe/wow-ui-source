@@ -105,6 +105,7 @@ local EJ_TIER_DATA =
 	[7] = { backgroundAtlas = "UI-EJ-Legion", r = 0.0, g = 0.6, b = 0.2 },
 	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth", r = 0.8, g = 0.4, b = 0.0 },
 	[9] = { backgroundAtlas = "UI-EJ-Shadowlands", r = 0.278, g = 0.471, b = .937 },
+	[10] = { backgroundAtlas = "UI-EJ-Dragonflight", r = 0.2, g = 0.8, b = 1.0 },
 }
 
 EJButtonMixin = {}
@@ -319,19 +320,29 @@ function EncounterJournal_OnLoad(self)
 
 	-- Items
 	do
-		local buttonHeight = BOSS_LOOT_BUTTON_HEIGHT;
 		local view = CreateScrollBoxListLinearView();
 		view:SetElementExtentCalculator(function(dataIndex, elementData)
-			return EncounterJournal.encounterID and BOSS_LOOT_BUTTON_HEIGHT or INSTANCE_LOOT_BUTTON_HEIGHT;
+			if elementData.perPlayerLootHeader then
+				return BOSS_LOOT_BUTTON_HEIGHT;
+			elseif EncounterJournal.encounterID then
+				return BOSS_LOOT_BUTTON_HEIGHT;
+			else
+				return INSTANCE_LOOT_BUTTON_HEIGHT;
+			end
 		end);
-		view:SetElementInitializer("EncounterItemTemplate", function(button, elementData)
-			button:Init(elementData);
+		view:SetElementFactory(function(factory, elementData)
+			if elementData.perPlayerLootHeader then
+				factory("EncounterItemDividerTemplate");
+			else
+				factory("EncounterItemTemplate", function(button, elementData)
+					button:Init(elementData);
+				end);
+			end
 		end);
 
 		local lootContainer = self.encounter.info.LootContainer;
 		local scrollBox = lootContainer.ScrollBox;
 		local scrollBar = lootContainer.ScrollBar;
-		local panExtent = buttonHeight;
 		ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, view);
 
 		UIDropDownMenu_Initialize(lootContainer.lootFilter, EncounterJournal_InitLootFilter, "MENU");
@@ -429,6 +440,13 @@ function EncounterJournal_OnLoad(self)
 	end
 	-- set the suggestion panel frame to open by default
 	EJSuggestFrame_OpenFrame();
+end
+
+function EncounterItemTemplate_DividerFrameTipOnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(BONUS_LOOT_TOOLTIP_TITLE, 1, 1, 1);
+	GameTooltip:AddLine(BONUS_LOOT_TOOLTIP_BODY, nil, nil, nil, true);
+	GameTooltip:Show();
 end
 
 function EncounterJournal_GetLootJournalView()
@@ -1959,7 +1977,27 @@ function EncounterJournal_LootUpdate()
 
 	local scrollBox = EncounterJournal.encounter.info.LootContainer.ScrollBox;
 
-	local dataProvider = CreateDataProviderByIndexCount(EJ_GetNumLoot());
+	local dataProvider = CreateDataProvider();
+	local loot = {};
+	local perPlayerLoot = {};
+	for i = 1, EJ_GetNumLoot() do
+		local itemInfo = C_EncounterJournal.GetLootInfoByIndex(i);
+		if itemInfo.displayAsPerPlayerLoot then
+			tinsert(perPlayerLoot, i);
+		else
+			tinsert(loot, i);
+		end
+	end
+
+	for _,val in ipairs(loot) do
+		dataProvider:Insert({index=val});
+	end
+	if #perPlayerLoot > 0 then
+		dataProvider:Insert({perPlayerLootHeader=true});
+		for _,val in ipairs(perPlayerLoot) do
+			dataProvider:Insert({index=val});
+		end
+	end
 	scrollBox:SetDataProvider(dataProvider);
 end
 
@@ -2572,6 +2610,8 @@ function EJ_ContentTab_Select(id)
 		EncounterJournal_EnableTierDropDown();
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+    
+    EventRegistry:TriggerEvent("EncounterJournal.TabSet", EncounterJournal, id);
 end
 
 function EJ_HideSuggestPanel()

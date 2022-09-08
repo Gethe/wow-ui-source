@@ -311,21 +311,6 @@ end
 
 function BackpackTokenFrameMixin:SetIsCombinedInventory(isCombined)
 	self.isCombined = isCombined;
-	self:UpdateFrameStyle();
-end
-
-function BackpackTokenFrameMixin:UpdateFrameStyle()
-	if self:IsCombined() then
-		self:SetHeight(16);
-		self.BG:SetColorTexture(BLACK_FONT_COLOR:GetRGB());
-		self.BG:SetAllPoints(self);
-	else
-		self:SetHeight(32);
-		self.BG:SetTexture("Interface\\ContainerFrame\\UI-Backpack-TokenFrame");
-		self.BG:SetSize(256, 32);
-		self.BG:ClearAllPoints();
-		self.BG:SetPoint("LEFT");
-	end
 end
 
 function BackpackTokenFrameMixin:UpdateTokenAnchoring()
@@ -354,7 +339,8 @@ function BackpackTokenFrameMixin:GetMaxTokensWatched()
 		self.tokenWidth = info and info.width or 50;
 	end
 
-	return math.floor(self:GetWidth() / self.tokenWidth);
+	-- You can always track at least one token
+	return math.max(math.floor(self:GetWidth() / self.tokenWidth), 1);
 end
 
 BackpackTokenMixin = {};

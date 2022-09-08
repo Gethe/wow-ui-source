@@ -18,7 +18,7 @@ PTR_IssueReporter.Data = {
     RegisteredSlashSurveys = {},
     DefaultKeybind = "F6",
     SuppressedLocations = {},
-    BugReportString = "I have encountered a bug in this zone.",
+    BugReportString = "I have encountered a Bug in this Zone.",
     ButtonDataPackage = {},
     bossBugButtonText = "Issue - %s",
     CurrentBugButtonContext = "",
@@ -45,6 +45,7 @@ PTR_IssueReporter.Assets = {
     FontString = "GameFontNormal",
     BossReportIcon = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
     PetReportIcon = "Interface\\Icons\\tracking_wildpet",
+    EditModeIcon = "Interface\\Icons\\ability_siege_engineer_pattern_recognition",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.Init()
@@ -200,6 +201,11 @@ function PTR_IssueReporter.CreateSurvey(reportID, reportTitle)
         PTR_IssueReporter.AttachSurveyToFrameOnEvent(self, frame, startEvent, endEvent, xOffset, yOffset, point, relativePoint)
     end
     
+    function newSurvey:RegisterUIPanelClick(eventString, index, offsetButton)    
+        PTR_IssueReporter.RegisterUIPanelTabEvent(eventString, index, offsetButton)        
+        PTR_IssueReporter.RegisterEventToReport(PTR_IssueReporter.Data.RegisteredSurveys, self, PTR_IssueReporter.ReportEventTypes.UIPanelButtonClicked, PTR_IssueReporter.GetUIPanelEventString(eventString, index))
+    end
+    
     function newSurvey:PopulateDynamicTitleToken(index, dataPackageKey, functionToUse)
         local dynamicTitleToken = {
             key = dataPackageKey,
@@ -235,6 +241,7 @@ PTR_IssueReporter.DataCollectorTypes = {
     FromDataPackage = 5, 
     SurveyID = 6,
     TextBlock = 7,
+    PassValue = 8,
 }
 
 function PTR_IssueReporter.AddDataCollectorToReport(survey, collectorType, ...)
@@ -321,6 +328,22 @@ function PTR_IssueReporter.AddDataCollectorToReport(survey, collectorType, ...)
                 text = text,
             }
             table.insert(survey.Collectors, newDataCollector)
+        elseif collectorType == types.PassValue then
+            local collectorValue = ...
+
+            if (collectorValue) then                
+                local collectorFunction = function()
+                    return collectorValue
+                end
+                
+                local newDataCollector = {
+                    collectorType = types.RunFunction,
+                    collectorFunction = collectorFunction,
+                }
+                
+                table.insert(survey.Collectors, newDataCollector)
+            end
+        
         end
     end
 end
@@ -480,7 +503,7 @@ function PTR_IssueReporter.HandleTooltipKeypress()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.QueueStandaloneSurvey(event, survey, dataPackage)
-    if (IsOnGlueScreen() or event == PTR_IssueReporter.ReportEventTypes.UIButtonClicked) or (event == PTR_IssueReporter.ReportEventTypes.Tooltip) then -- These event types warrant an immediate pop due to them being prompted from the player, the rest should be delayed until combat ends since their are prompted from game state
+    if (IsOnGlueScreen() or event == PTR_IssueReporter.ReportEventTypes.UIButtonClicked) or (event == PTR_IssueReporter.ReportEventTypes.UIPanelButtonClicked) or (event == PTR_IssueReporter.ReportEventTypes.Tooltip) then -- These event types warrant an immediate pop due to them being prompted from the player, the rest should be delayed until combat ends since their are prompted from game state
         PTR_IssueReporter.PopStandaloneSurvey(survey, dataPackage)
     else
         table.insert(PTR_IssueReporter.Data.PopSurveyQueue, {survey = survey, dataPackage = dataPackage})

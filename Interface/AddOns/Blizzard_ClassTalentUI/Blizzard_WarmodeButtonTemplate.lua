@@ -65,7 +65,7 @@ function WarmodeButtonMixin:Update()
 	local isPvp = self.predictedToggle:Get();
 	local disabledAdd = isPvp and "" or "-disabled";
 	local swordsAtlas = "pvptalents-warmode-swords"..disabledAdd;
-	local ringAtlas = "pvptalents-warmode-ring"..disabledAdd;
+	local ringAtlas = "talents-warmode-ring"..disabledAdd;
 	self.Swords:SetAtlas(swordsAtlas);
 	self.Ring:SetAtlas(ringAtlas);
 
@@ -126,7 +126,7 @@ function WarmodeButtonMixin:OnClick()
 end
 
 function WarmodeButtonMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT", 14, 0);
 	GameTooltip_SetTitle(GameTooltip, PVP_LABEL_WAR_MODE);
 	if C_PvP.IsWarModeActive() or self:GetWarModeDesired() then
 		GameTooltip_AddInstructionLine(GameTooltip, PVP_WAR_MODE_ENABLED);

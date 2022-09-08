@@ -591,6 +591,7 @@ local SharedTraits =
 				{ Name = "overrideSubtext", Type = "string", Nilable = false },
 				{ Name = "overrideDescription", Type = "string", Nilable = false },
 				{ Name = "overrideIcon", Type = "number", Nilable = true },
+				{ Name = "overriddenSpellID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -633,6 +634,7 @@ local SharedTraits =
 				{ Name = "posY", Type = "number", Nilable = false },
 				{ Name = "flags", Type = "number", Nilable = false },
 				{ Name = "entryIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "entryIDsWithCommittedRanks", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "canPurchaseRank", Type = "bool", Nilable = false },
 				{ Name = "canRefundRank", Type = "bool", Nilable = false },
 				{ Name = "isAvailable", Type = "bool", Nilable = false },

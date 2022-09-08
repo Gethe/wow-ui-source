@@ -58,7 +58,7 @@
 	<Frame name="ComboPointPlayerFrame" inherits="ClassResourceBarTemplate" mixin="ComboPointPowerBar">
 		<Size x="126" y="18"/>
 		<Anchors>
-			<Anchor point="TOP" relativePoint="BOTTOM" x="50" y="38"/>
+			<Anchor point="TOP" relativePoint="BOTTOM" x="32" y="30"/>
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="powerToken" value="COMBO_POINTS" type="string"/>
@@ -75,7 +75,7 @@
 	<Frame name="ComboPointDruidPlayerFrame" inherits="ClassResourceBarTemplate" mixin="ComboPointPowerBar">
 		<Size x="126" y="18"/>
 		<Anchors>
-			<Anchor point="TOP" relativePoint="BOTTOM" x="50" y="38"/>
+			<Anchor point="TOP" relativePoint="BOTTOM" x="32" y="30"/>
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="powerToken" value="COMBO_POINTS" type="string"/>
@@ -90,5 +90,3 @@
 		</KeyValues>
 	</Frame>
 </Ui>
-
-

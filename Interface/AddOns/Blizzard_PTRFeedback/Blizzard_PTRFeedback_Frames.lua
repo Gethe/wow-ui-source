@@ -12,6 +12,70 @@ function PTR_IssueReporter.AttachEmptyFunctionComponent(frame, func)
     table.insert(frame.FrameComponents, emptyComponent) 
 end
 ---------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.RegisterUIPanelTabEvent(eventString, index, offsetButton)
+    
+    if not (PTR_IssueReporter.RegisteredUIPanelButtons) then
+        PTR_IssueReporter.RegisteredUIPanelButtons = {}
+    end
+    
+    if not (PTR_IssueReporter.RegisteredUIPanelButtons) then
+        PTR_IssueReporter.RegisteredUIPanelRegisteredIndexes = {}
+    end
+    
+    if not (PTR_IssueReporter.RegisteredUIPanelButtons[eventString]) then
+        PTR_IssueReporter.RegisteredUIPanelButtons[eventString] = {}
+    end
+    
+    if (index) and not (PTR_IssueReporter.RegisteredUIPanelButtons[eventString][index]) then
+        PTR_IssueReporter.RegisteredUIPanelButtons[eventString][index] = true
+    end
+    
+    local registerFunction = function(sender, frame, tabIndex, tabText)
+        if not (frame) then
+            return
+        end
+        
+        local registeredTabFound = false
+        
+        if not (PTR_IssueReporter.RegisteredUIPanelButtons[frame]) then
+            PTR_IssueReporter.RegisteredUIPanelButtons[frame] = CreateFrame("Button", eventString.."BugButton", frame, "UIPanelBugButton")
+        end
+        
+        if ((index) and (index == tabIndex)) or (index == nil) then
+            local offset = 40
+            if (offsetButton) then
+                offset = 70
+            end
+            
+            PTR_IssueReporter.RegisteredUIPanelButtons[frame]:SetScript("OnClick", function()
+                PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIPanelButtonClicked, PTR_IssueReporter.GetUIPanelEventString(eventString, index))
+            end)            
+            PTR_IssueReporter.RegisteredUIPanelButtons[frame]:SetPoint("TOPLEFT", frame, "TOPLEFT", offset, 20)
+            PTR_IssueReporter.RegisteredUIPanelButtons[frame]:Show()
+        else
+            if (index) and not (PTR_IssueReporter.RegisteredUIPanelButtons[eventString][tabIndex]) then
+                -- Hide only if the index given is not a registered index, and the event is expecting one
+                PTR_IssueReporter.RegisteredUIPanelButtons[frame]:Hide()
+            end
+        end
+    end
+    
+    if not (index) then
+        index = 0
+    end
+
+    EventRegistry:RegisterCallback(eventString, registerFunction, "PTR_IssueReporter" .. index)
+end
+---------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.GetUIPanelEventString(eventString, index)
+    local eventName = eventString
+    if (index) then
+        eventName = eventName .. index
+    end
+    
+    return eventName
+end
+---------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AttachStandaloneQuestion(frame, question, characterLimit)
 
     local questionFrame
@@ -577,7 +641,7 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
         
         local titleBox = CreateFrame("Frame", nil, UIParent)      
         titleBox.text = titleBox:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Assets.FontString)
-        titleBox:SetFrameStrata("HIGH")
+        titleBox:SetFrameStrata("FULLSCREEN")
         titleBox.text:SetWidth(titleBox:GetWidth())
         titleBox.text:SetHeight(titleBox:GetHeight())
         titleBox.text:SetPoint("CENTER", titleBox, "CENTER", 0, 0)
@@ -657,8 +721,8 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
         PTR_IssueReporter.StandaloneSurvey:SetParent(GetAppropriateTopLevelParent())
         PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetParent(GetAppropriateTopLevelParent())
 	end     
-	PTR_IssueReporter.StandaloneSurvey:SetFrameStrata("HIGH")
-	PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetFrameStrata("HIGH")
+	PTR_IssueReporter.StandaloneSurvey:SetFrameStrata("FULLSCREEN")
+	PTR_IssueReporter.StandaloneSurvey.SurveyFrame:SetFrameStrata("FULLSCREEN")
     if (followUpSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) then
         PTR_IssueReporter.StandaloneSurvey.submitButton:SetText(PTR_IssueReporter.Data.NextText)
     else
@@ -835,35 +899,37 @@ function PTR_IssueReporter.CreateInGameMenu()
        "If possible create bugs using the tooltip keybind to help us identify the issue easier.|r\n\n|cffFFFFFFPlease Provide:|r\n-What you were doing\n-What you observed\n\n|cffFFFFFFAutomatically Collected:|r\n-Your world location\n-Your character information")
 
    --create buttons
-   PTR_IssueReporter.Confused = PTR_IssueReporter.CreateIssueButton("Feedback",
-       PTR_IssueReporter.Assets.ConfusedIcon,
-       "I have Feedback for this Zone")
+   --PTR_IssueReporter.Confused = PTR_IssueReporter.CreateIssueButton("Feedback",
+   --    PTR_IssueReporter.Assets.ConfusedIcon,
+   --    "I have Feedback for this Zone")
+   
    PTR_IssueReporter.ReportBug = PTR_IssueReporter.CreateIssueButton("Bug",
        PTR_IssueReporter.Assets.BugReportIcon,
        PTR_IssueReporter.Data.bugMouseoverText)
 
-   PTR_IssueReporter.Confused:SetScript("OnClick", function(self, button, down)
-       PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIButtonClicked, "Confused")
-       PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-   end)
+   --PTR_IssueReporter.Confused:SetScript("OnClick", function(self, button, down)
+   --    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIButtonClicked, "Confused")
+   --    PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+   --end)
 
    PTR_IssueReporter.ReportBug:SetScript("OnClick", function(self, button, down)
        PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIButtonClicked, PTR_IssueReporter.Data.CurrentBugButtonContext, PTR_IssueReporter.Data.ButtonDataPackage)
        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
    end)
 
-    PTR_IssueReporter.Confused:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
+    --PTR_IssueReporter.Confused:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
     PTR_IssueReporter.ReportBug:HookScript("OnEnter", function() PTR_IssueReporter.Reminder(false, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
 
    PTR_IssueReporter.SetBugButtonContext()
-   PTR_IssueReporter.ReportBug:SetPoint("TOPLEFT", PTR_IssueReporter.Body, "TOP", 2, -6)
-   PTR_IssueReporter.Confused:SetPoint("TOPRIGHT", PTR_IssueReporter.Body, "TOP", -2, -6)
+   PTR_IssueReporter.ReportBug:SetPoint("TOP", PTR_IssueReporter.Body, "TOP", 0, -6)
+   --PTR_IssueReporter.Confused:SetPoint("TOPRIGHT", PTR_IssueReporter.Body, "TOP", -2, -6)
    PTR_IssueReporter.Body.Texture = PTR_IssueReporter.Body:CreateTexture()
    PTR_IssueReporter.Body.Texture:SetTexture(PTR_IssueReporter.Assets.BackgroundTexture)
-   PTR_IssueReporter.Body.Texture:SetPoint("TOPLEFT", PTR_IssueReporter.Confused, "TOPLEFT")
+   --PTR_IssueReporter.Body.Texture:SetPoint("TOPLEFT", PTR_IssueReporter.Confused, "TOPLEFT")
+   PTR_IssueReporter.Body.Texture:SetPoint("TOPLEFT", PTR_IssueReporter.ReportBug, "TOPLEFT")
    PTR_IssueReporter.Body.Texture:SetPoint("BOTTOMRIGHT", PTR_IssueReporter.ReportBug, "BOTTOMRIGHT")
    PTR_IssueReporter.Body.Texture:SetDrawLayer("BACKGROUND")
-   PTR_IssueReporter:SetClampRectInsets(0,0,0, -(PTR_IssueReporter.Confused:GetHeight()))
+   PTR_IssueReporter:SetClampRectInsets(0,0,0, -(PTR_IssueReporter.ReportBug:GetHeight()))
 
     --timers/reminders/notifications, only one time ever on login
     C_Timer.After(1, function(self) PTR_IssueReporter.Reminder(true, PTR_IssueReporter.Confused, PTR_IssueReporter.ReportBug) end)
@@ -888,7 +954,7 @@ function PTR_IssueReporter.CreateMainView()
     PTR_IssueReporter.text:SetHeight(PTR_IssueReporter:GetHeight())
     PTR_IssueReporter.text:SetPoint("CENTER", PTR_IssueReporter, "CENTER", 0, 0)
     PTR_IssueReporter.text:SetText("Issue\nReporter")
-    PTR_IssueReporter:SetSize(PTR_IssueReporter.text:GetStringWidth()*1.5,32)
+    PTR_IssueReporter:SetSize(PTR_IssueReporter.text:GetStringWidth()*1.3, 32)
     PTR_IssueReporter.AddBorder(PTR_IssueReporter)
     PTR_IssueReporter.Body = CreateFrame("Frame", nil, PTR_IssueReporter)
     PTR_IssueReporter.Body:SetSize(PTR_IssueReporter:GetWidth(), PTR_IssueReporter.Data.Height)

@@ -351,8 +351,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local fillCoefficient = 1.0;
 	local namePadding = 4;
 	
-	local isSoloShuffleBrawl = PVPMatchUtil.InSoloShuffleBrawl();
-	if isSoloShuffleBrawl then
+	if C_PvP.IsSoloShuffle() then
 		column:ConstructCells("BUTTON", "PVPSoloShuffleCellNameTemplate");
 	else
 		column:ConstructCells("BUTTON", "PVPCellNameTemplate", useAlternateColor);
@@ -402,7 +401,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		return lhs.orderIndex < rhs.orderIndex;
 	end);
 
-	local cellStatTemplate = isSoloShuffleBrawl and "PVPSoloShuffleCellStatTemplate" or "PVPCellStatTemplate";
+	local cellStatTemplate = C_PvP.IsSoloShuffle() and "PVPSoloShuffleCellStatTemplate" or "PVPCellStatTemplate";
 	for columnIndex, statColumn in ipairs(statColumns) do
 		if strlen(statColumn.name) > 0 then
 			column = tableBuilder:AddColumn();

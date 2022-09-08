@@ -46,6 +46,11 @@ local Container =
 			},
 		},
 		{
+			Name = "BagContainerUpdate",
+			Type = "Event",
+			LiteralName = "BAG_CONTAINER_UPDATE",
+		},
+		{
 			Name = "BagNewItemsUpdated",
 			Type = "Event",
 			LiteralName = "BAG_NEW_ITEMS_UPDATED",

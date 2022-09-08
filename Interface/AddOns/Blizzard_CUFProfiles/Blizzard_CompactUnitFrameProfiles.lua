@@ -597,8 +597,6 @@ end
 
 CUFProfileActionTable = {
 	--Settings
-	keepGroupsTogether = CompactUnitFrameProfiles_GenerateRaidManagerSetting("KeepGroupsTogether"),
-	sortBy = CompactUnitFrameProfiles_GenerateRaidManagerSetting("SortMode"),
 	displayPets = CompactUnitFrameProfiles_GenerateRaidManagerSetting("DisplayPets"),
 	displayMainTankAndAssist = CompactUnitFrameProfiles_GenerateRaidManagerSetting("DisplayMainTankAndAssist"),
 	displayHealPrediction = CompactUnitFrameProfiles_GenerateOptionSetter("displayHealPrediction", "all"),
@@ -607,19 +605,7 @@ CUFProfileActionTable = {
 	displayNonBossDebuffs = CompactUnitFrameProfiles_GenerateOptionSetter("displayNonBossDebuffs", "normal"),
 	displayOnlyDispellableDebuffs = CompactUnitFrameProfiles_GenerateOptionSetter("displayOnlyDispellableDebuffs", "normal"),
 	useClassColors = CompactUnitFrameProfiles_GenerateOptionSetter("useClassColors", "normal"),
-	horizontalGroups = CompactUnitFrameProfiles_GenerateRaidManagerSetting("HorizontalGroups");
 	healthText = CompactUnitFrameProfiles_GenerateOptionSetter("healthText", "normal"),
-	frameWidth = CompactUnitFrameProfiles_GenerateSetUpOptionSetter("width", "all");
-	frameHeight = 	function(value)
-								DefaultCompactUnitFrameSetupOptions.height = value;
-								DefaultCompactMiniFrameSetUpOptions.height = value / 2;
-							end,
-	displayBorder = function(value)
-								RAID_BORDERS_SHOWN = value;
-								DefaultCompactUnitFrameSetupOptions.displayBorder = value;
-								DefaultCompactMiniFrameSetUpOptions.displayBorder = value;
-								CompactRaidFrameManager_SetSetting("ShowBorders", value);
-							end,
 							
 	--State
 	shown = CompactUnitFrameProfiles_GenerateRaidManagerSetting("IsShown"),

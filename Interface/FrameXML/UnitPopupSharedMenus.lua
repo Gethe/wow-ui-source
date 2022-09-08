@@ -364,9 +364,10 @@ UnitPopupManager:RegisterMenu("BOSS", UnitPopupMenuBoss);
 function UnitPopupMenuBoss:GetMenuButtons()
 	return {
 		UnitPopupRaidTargetButtonMixin,
-		UnitPopupSetFocusButtonMixin, 
-		UnitPopupOtherSubsectionTitle, 
-		UnitPopupCancelButtonMixin, 
+		UnitPopupSetFocusButtonMixin,
+		UnitPopupOtherSubsectionTitle,
+		UnitPopupEnterEditModeMixin,
+		UnitPopupCancelButtonMixin,
 	}
 end
 

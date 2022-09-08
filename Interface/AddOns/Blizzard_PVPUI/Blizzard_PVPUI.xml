@@ -1411,6 +1411,7 @@
 							<OnLoad function="ConquestFrame_OnLoad" />
 							<OnEvent function="ConquestFrame_OnEvent"/>
 							<OnShow function="ConquestFrame_OnShow" />
+							<OnHide function="ConquestFrame_OnHide"/>
 							<OnHide>
 								self:GetParent().NewSeasonPopup:Hide();
 							</OnHide>
@@ -1741,19 +1742,24 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyGamesWon" parentArray="Content" inherits="GameFontHighlight" text="">
+				<FontString parentKey="WeeklyWon" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyGamesPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
+				<FontString parentKey="WeeklyPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyGamesWon" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyWon" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WeeklyMostPlayedSpec" parentArray="Content" inherits="GameFontHighlight" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyPlayed" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SeasonLabel" parentArray="Content" inherits="GameFontNormalMed3" text="ARENA_SEASON_STATS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyPlayed" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SeasonBest" parentArray="Content" inherits="GameFontHighlight" text="">
@@ -1766,14 +1772,19 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonBest" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SeasonGamesPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
+				<FontString parentKey="SeasonPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonWon" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="SeasonMostPlayedSpec" parentArray="Content" inherits="GameFontHighlight" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonPlayed" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="ModeDescription" parentArray="Content" wordwrap="true" inherits="GameFontNormal" text="" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonMostPlayedSpec" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
 			</Layer>

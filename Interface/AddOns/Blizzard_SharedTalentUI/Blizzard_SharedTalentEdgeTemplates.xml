@@ -39,6 +39,9 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Line parentKey="Ghost" atlas="talents-arrow-line-ghost" thickness="12" hWrapMode="REPEAT" alphaMode="ADD" hidden="true"/>
+			</Layer>
 		</Layers>
 	</Frame>
 </Ui>

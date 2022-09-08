@@ -131,7 +131,7 @@ end
 function BaseBagSlotButtonMixin:UpdateBagButtonHighlight(containerFrame)
 	local isMatchingContainer = containerFrame:IsCombinedBagContainer() or (self:GetBagID() == containerFrame:GetBagID());
 	if isMatchingContainer then
-		self .SlotHighlightTexture:SetShown(containerFrame:IsShown());
+		self.SlotHighlightTexture:SetShown(containerFrame:IsShown());
 	end
 end
 
@@ -168,6 +168,13 @@ end
 
 function BaseBagSlotButtonMixin:GetSlotAtlases()
 	return "bag-border", "bag-border-empty", "bag-border-highlight";
+end
+
+function BaseBagSlotButtonMixin:UpdateItemContextOverlayTextures(contextMode)
+	if contextMode then
+		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
+		self.ItemContextOverlay:SetAllPoints();
+	end
 end
 
 function BaseBagSlotButtonMixin:UpdateTextures()
@@ -220,6 +227,7 @@ function MainMenuBarBackpackMixin:OnLoadInternal()
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("AZERITE_EMPOWERED_ITEM_LOOTED");
+	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 
 	self:UpdateTextures();
 	self.Count:ClearAllPoints();
@@ -354,6 +362,22 @@ end
 
 function MainMenuBarBackpackMixin:GetSlotAtlases()
 	return "bag-main", "bag-main", "bag-main-highlight";
+end
+
+function MainMenuBarBackpackMixin:UpdateItemContextOverlayTextures(contextMode)
+	if contextMode then
+		local overlay = self.ItemContextOverlay;
+		overlay:RemoveMaskTexture(self.CircleMask);
+
+		local normalAtlas = self:GetSlotAtlases();
+		overlay:SetAtlas(normalAtlas);
+		overlay:SetVertexColor(.2, .2, .2, .8);
+		overlay:SetDesaturated(true);
+
+		overlay:ClearAllPoints();
+		overlay:SetPoint("TOPLEFT", overlay:GetParent(), "TOPLEFT", -1, 1);
+		overlay:SetPoint("BOTTOMRIGHT", overlay:GetParent(), "BOTTOMRIGHT", 1, -1);
+	end
 end
 
 function MainMenuBarBackpackMixin:SetBarExpanded(isExpanded)

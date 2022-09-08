@@ -457,7 +457,7 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 
 	-- Run the Setup function on the widget (could change the orderIndex and/or layoutDirection)
 	widgetFrame:Setup(widgetInfo, self);
-	if(isNewWidget) then 
+	if isNewWidget then 
 		--Only Apply the effects when the widget is first added.
 		widgetFrame:ApplyEffects(widgetInfo); 
 	end		

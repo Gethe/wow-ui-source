@@ -112,20 +112,20 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.TargetAndFocus" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
-							<!--<Frame parentKey="RaidFrames" inherits="EditModeCheckButtonTemplate">
+							<Frame parentKey="RaidFrames" inherits="EditModeCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_RAID_FRAMES_LABEL" type="global"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.PartyFrames" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
-							</Frame>-->
+							</Frame>
 							<Frame parentKey="StanceBar" inherits="EditModeCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_STANCE_BAR_LABEL" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.PartyFrames" relativePoint="BOTTOMLEFT"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.RaidFrames" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
 							<Frame parentKey="PetActionBar" inherits="EditModeCheckButtonTemplate">
@@ -198,6 +198,14 @@
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.TalkingHeadFrame" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="BossFrames" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_BOSS_FRAMES_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.DebuffFrame" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
 						</Frames>

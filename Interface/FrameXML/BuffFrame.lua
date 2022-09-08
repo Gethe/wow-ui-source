@@ -226,7 +226,7 @@ function AuraFrameMixin:UpdateAuraButtons()
 			else
 				auraFrame = self.auraPool:Acquire(self.auraTemplate);
 			end
-			auraFrame:SetScale(self.iconScale);
+			auraFrame:SetScale(self.AuraContainer.iconScale);
 			auraFrame:Update(aura, isExpanded);
 			table.insert(self.auraFrames, auraFrame);
 		end

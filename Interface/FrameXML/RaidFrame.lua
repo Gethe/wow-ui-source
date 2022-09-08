@@ -135,7 +135,7 @@ function UpdateRaidAndPartyFrames()
 		CompactRaidFrameManager_UpdateShown();
 	end
 
-	PartyFrame:UpdatePartyFrame();
+	PartyFrame:UpdatePartyFrames();
 end
 
 function RaidInfoFrame_InitButton(button, elementData)

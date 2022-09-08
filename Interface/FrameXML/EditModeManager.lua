@@ -160,6 +160,7 @@ function EditModeManagerFrameMixin:EnterEditMode()
 	self:UpdateDropdownOptions();
 	self:ShowSystemSelections();
 	self.AccountSettings:OnEditModeEnter();
+    EventRegistry:TriggerEvent("EditMode.Enter");
 end
 
 function EditModeManagerFrameMixin:HideSystemSelections()
@@ -174,6 +175,7 @@ function EditModeManagerFrameMixin:ExitEditMode()
 	self:HideSystemSelections();
 	self.AccountSettings:OnEditModeExit();
 	C_EditMode.OnEditModeExit();
+    EventRegistry:TriggerEvent("EditMode.Exit");
 end
 
 function EditModeManagerFrameMixin:OnShow()
@@ -341,7 +343,7 @@ function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame, isDefault
 				self:UpdateBottomAnchoredActionBarHeight();
 			end
 
-			if systemFrame.isBottomManagedFrame then
+			if systemFrame.isBottomManagedFrame or systemFrame.isRightManagedFrame then
 				UIParent_ManageFramePositions();
 			end
 
@@ -424,8 +426,87 @@ function EditModeManagerFrameMixin:ShouldShowPartyFrameBackground()
 	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground);
 end
 
-function EditModeManagerFrameMixin:ShouldPartyFrameUseHorizntalRaidGroups()
-	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.UseHorizontalGroups);
+function EditModeManagerFrameMixin:UpdateRaidContainerFlow()
+	local maxPerLine, orientation;
+	if self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.KeepGroupsTogether) then
+		orientation = self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.UseHorizontalGroups) and "horizontal" or "vertical";
+		CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
+		maxPerLine = 1;
+	else
+		orientation = "horizontal";
+		maxPerLine = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.RowSize);
+	end
+
+	-- Setting CompactRaidFrameContainer to a really big size because the flow container bases its calculations off the size of the container itself
+	-- The layout call below shrinks the container back down to fit the actual contents after they have been anchored
+	CompactRaidFrameContainer:SetSize(3000, 3000);
+	FlowContainer_SetOrientation(CompactRaidFrameContainer, orientation);
+	FlowContainer_SetMaxPerLine(CompactRaidFrameContainer, maxPerLine);
+	CompactRaidFrameContainer:Layout();
+end
+
+function EditModeManagerFrameMixin:AreRaidFramesForcedShown()
+	return self:IsEditModeActive() and self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowRaidFrames);
+end
+
+function EditModeManagerFrameMixin:GetNumRaidGroupsForcedShown()
+	if self:AreRaidFramesForcedShown() then
+		local viewRaidSize = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.ViewRaidSize);
+		if viewRaidSize == Enum.ViewRaidSize.Ten then
+			return 2;
+		elseif viewRaidSize == Enum.ViewRaidSize.TwentyFive then
+			return 5;
+		elseif viewRaidSize == Enum.ViewRaidSize.Forty then
+			return 8;
+		else
+			return 0;
+		end
+	else
+		return 0;
+	end
+end
+
+function EditModeManagerFrameMixin:GetNumRaidMembersForcedShown()
+	if self:AreRaidFramesForcedShown() then
+		local viewRaidSize = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.ViewRaidSize);
+		if viewRaidSize == Enum.ViewRaidSize.Ten then
+			return 10;
+		elseif viewRaidSize == Enum.ViewRaidSize.TwentyFive then
+			return 25;
+		elseif viewRaidSize == Enum.ViewRaidSize.Forty then
+			return 40;
+		else
+			return 0;
+		end
+	else
+		return 0;
+	end
+end
+
+function EditModeManagerFrameMixin:GetRaidFrameWidth(forParty)
+	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
+	local raidFrameWidth = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.FrameWidth);
+	return (raidFrameWidth and raidFrameWidth > 0) and raidFrameWidth or NATIVE_UNIT_FRAME_WIDTH;
+end
+
+function EditModeManagerFrameMixin:GetRaidFrameHeight(forParty)
+	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
+	local raidFrameHeight = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.FrameHeight);
+	return (raidFrameHeight and raidFrameHeight > 0) and raidFrameHeight or NATIVE_UNIT_FRAME_HEIGHT;
+end
+
+function EditModeManagerFrameMixin:ShouldRaidFrameUseHorizontalRaidGroups(forParty)
+	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
+	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.UseHorizontalGroups);
+end
+
+function EditModeManagerFrameMixin:ShouldRaidFrameDisplayBorder(forParty)
+	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
+	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.DisplayBorder);
+end
+
+function EditModeManagerFrameMixin:ShouldRaidFrameKeepGroupsTogether()
+	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.KeepGroupsTogether);
 end
 
 function EditModeManagerFrameMixin:GetRightAnchoredActionBarWidth()
@@ -681,6 +762,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetAuraFrameShown(DebuffFrame, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDebuffFrame));
 	self.AccountSettings:SetTalkingHeadFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowTalkingHeadFrame));
 	self.AccountSettings:SetVehicleLeaveButtonShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowVehicleLeaveButton));
+	self.AccountSettings:SetBossFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowBossFrames));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -1208,7 +1290,7 @@ function EditModeAccountSettingsMixin:OnLoad()
 	local function onRaidFramesCheckboxChecked(isChecked, isUserInput)
 		self:SetRaidFramesShown(isChecked, isUserInput);
 	end
-	--self.Settings.RaidFrames:SetCallback(onRaidFramesCheckboxChecked);
+	self.Settings.RaidFrames:SetCallback(onRaidFramesCheckboxChecked);
 
 	local function onStanceBarCheckboxChecked(isChecked, isUserInput)
 		self:SetActionBarShown(StanceBar, isChecked, isUserInput);
@@ -1259,6 +1341,11 @@ function EditModeAccountSettingsMixin:OnLoad()
 		self:SetVehicleLeaveButtonShown(isChecked, isUserInput);
 	end
 	self.Settings.VehicleLeaveButton:SetCallback(onVehicleLeaveButtonCheckboxChecked);
+
+	local function onBossFramesCheckboxChecked(isChecked, isUserInput)
+		self:SetBossFramesShown(isChecked, isUserInput);
+	end
+	self.Settings.BossFrames:SetCallback(onBossFramesCheckboxChecked);
 end
 
 function EditModeAccountSettingsMixin:OnEditModeEnter()
@@ -1287,12 +1374,14 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:RefreshAuraFrame(DebuffFrame);
 	self:RefreshTalkingHeadFrame();
 	self:RefreshVehicleLeaveButton();
+	self:RefreshBossFrames();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
 	local clearSavedTargetAndFocus = true;
 	self:ResetTargetAndFocus(clearSavedTargetAndFocus);
 	self:ResetPartyFrames();
+	self:ResetRaidFrames();
 
 	self:ResetActionBarShown(StanceBar);
 	self:ResetActionBarShown(PetActionBar);
@@ -1346,6 +1435,7 @@ function EditModeAccountSettingsMixin:RefreshPartyFrames()
 	local showPartyFrames = self.Settings.PartyFrames:IsControlChecked();
 	if showPartyFrames then
 		PartyFrame:HighlightSystem();
+		PartyFrame:Raise();
 	else
 		PartyFrame:ClearHighlight();
 	end
@@ -1369,9 +1459,31 @@ function EditModeAccountSettingsMixin:SetPartyFramesShown(shown, isUserInput)
 end
 
 function EditModeAccountSettingsMixin:RefreshRaidFrames()
+	local showRaidFrames = self.Settings.RaidFrames:IsControlChecked();
+	if showRaidFrames then
+		CompactRaidFrameContainer:HighlightSystem();
+	else
+		CompactRaidFrameContainer:ClearHighlight();
+	end
+
+	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateUnits);
+	CompactRaidFrameContainer:TryUpdate();
+	EditModeManagerFrame:UpdateRaidContainerFlow();
+end
+
+function EditModeAccountSettingsMixin:ResetRaidFrames()
+	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateUnits);
+	CompactRaidFrameContainer:TryUpdate();
+	EditModeManagerFrame:UpdateRaidContainerFlow();
 end
 
 function EditModeAccountSettingsMixin:SetRaidFramesShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowRaidFrames, shown);
+		self:RefreshRaidFrames();
+	else
+		self.Settings.RaidFrames:SetControlChecked(shown);
+	end
 end
 
 function EditModeAccountSettingsMixin:ResetActionBarShown(bar)
@@ -1558,6 +1670,28 @@ function EditModeAccountSettingsMixin:RefreshVehicleLeaveButton()
 	end
 
 	MainMenuBarVehicleLeaveButton:UpdateShownState();
+end
+
+function EditModeAccountSettingsMixin:SetBossFramesShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowBossFrames, shown);
+		self:RefreshBossFrames();
+	else
+		self.Settings.BossFrames:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshBossFrames()
+	local showBossFrames = self.Settings.BossFrames:IsControlChecked();
+	if showBossFrames then
+		BossTargetFrameContainer.isInEditMode = true;
+		BossTargetFrameContainer:HighlightSystem();
+	else
+		BossTargetFrameContainer.isInEditMode = false;
+		BossTargetFrameContainer:ClearHighlight();
+	end
+
+	BossTargetFrameContainer:UpdateShownState();
 end
 
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)

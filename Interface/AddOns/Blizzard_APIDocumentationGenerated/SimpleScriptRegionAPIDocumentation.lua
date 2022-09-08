@@ -344,6 +344,7 @@ local SimpleScriptRegionAPI =
 			Returns =
 			{
 				{ Name = "isProtected", Type = "bool", Nilable = false },
+				{ Name = "isProtectedExplicitly", Type = "bool", Nilable = false },
 			},
 		},
 		{

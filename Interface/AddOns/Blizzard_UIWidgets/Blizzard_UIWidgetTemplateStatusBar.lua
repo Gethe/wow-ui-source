@@ -66,9 +66,12 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	local overrideHeight = nil;
 	local barColor = barColorFromTintValue[widgetInfo.colorTint];
-	if(barColor) then 
+	if barColor then 
 		self.Bar:SetStatusBarColor(barColor:GetRGB());
 		self.Bar.Spark:SetVertexColor(barColor:GetRGB());
+	else
+		self.Bar:SetStatusBarColor(WHITE_FONT_COLOR:GetRGB());
+		self.Bar.Spark:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
 	end 
 
 	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);

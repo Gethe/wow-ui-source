@@ -31,7 +31,6 @@ function CompactRaidFrameManager_OnLoad(self)
 	self.container:SetFlowFilterFunction(CRFFlowFilterFunc)
 	self.container:SetGroupFilterFunction(CRFGroupFilterFunc)
 	CompactRaidFrameManager_UpdateContainerBounds();
-	CompactRaidFrameManager_UpdateContainerFrameAnchor();
 
 	CompactRaidFrameManager_Collapse();
 
@@ -39,7 +38,6 @@ function CompactRaidFrameManager_OnLoad(self)
 	FlowContainer_Initialize(self.displayFrame.optionsFlowContainer);
 end
 
-local settings = { --[["Managed",]] "Locked", "SortMode", "KeepGroupsTogether", "DisplayPets", "DisplayMainTankAndAssist", "IsShown", "ShowBorders" };
 function CompactRaidFrameManager_OnEvent(self, event, ...)
 	if ( event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" ) then
 		CompactRaidFrameManager_UpdateContainerBounds();
@@ -87,14 +85,13 @@ function CompactRaidFrameManagerDisplayFrameProfileSelector_OnClick(self)
 end
 
 function CompactRaidFrameManager_UpdateShown()
-	if GetDisplayedAllyFrames() then
+	if ShouldShowRaidFrames() then
 		CompactRaidFrameManager:Show();
 	else
 		CompactRaidFrameManager:Hide();
 	end
 	CompactRaidFrameManager_UpdateOptionsFlowContainer();
 	CompactRaidFrameManager_UpdateContainerVisibility();
-	CompactRaidFrameManager_UpdateContainerFrameAnchor();
 end
 
 function CompactRaidFrameManager_UpdateLabel()
@@ -133,7 +130,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	FlowContainer_RemoveAllObjects(container);
 	FlowContainer_PauseUpdates(container);
 
-	if ShowingRaidFrames() then
+	if ShouldShowRaidFrames() then
 		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.profileSelector);
 		CompactRaidFrameManager.displayFrame.profileSelector:Show();
 	else
@@ -170,7 +167,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		CompactRaidFrameManager.displayFrame.convertToRaid:Hide();
 	end
 
-	if ShowingRaidFrames() then
+	if ShouldShowRaidFrames() then
 		FlowContainer_AddLineBreak(container);
 		FlowContainer_AddSpacer(container, 20);
 		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.editMode);
@@ -283,8 +280,7 @@ end
 function CompactRaidFrameManager_UpdateRoleFilterButton(button)
 	local totalAlive, totalCount = RaidInfoCounts["aliveRole"..button.role], RaidInfoCounts["totalRole"..button.role]
 	button:SetFormattedText("%s %d/%d", button.roleTexture, totalAlive, totalCount);
-	local keepGroupsTogether = CompactRaidFrameManager_GetSetting("KeepGroupsTogether");
-	keepGroupsTogether = keepGroupsTogether and keepGroupsTogether ~= "0";
+	local keepGroupsTogether = EditModeManagerFrame:ShouldRaidFrameKeepGroupsTogether();
 	if ( totalCount == 0 or keepGroupsTogether ) then
 		button.selectedHighlight:Hide();
 		button:Disable();
@@ -374,20 +370,12 @@ function CompactRaidFrameManager_GetSettingBeforeLoad(settingName)
 		return true;
 	elseif ( settingName == "Locked" ) then
 		return true;
-	elseif ( settingName == "SortMode" ) then
-		return "role";
-	elseif ( settingName == "KeepGroupsTogether" ) then
-		return false;
 	elseif ( settingName == "DisplayPets" ) then
 		return false;
 	elseif ( settingName == "DisplayMainTankAndAssist" ) then
 		return true;
 	elseif ( settingName == "IsShown" ) then
 		return true;
-	elseif ( settingName == "ShowBorders" ) then
-		return true;
-	elseif ( settingName == "HorizontalGroups" ) then
-		return false;
 	else
 		GMError("Unknown setting "..tostring(settingName));
 	end
@@ -396,31 +384,6 @@ end
 do	--Enclosure to make sure people go through SetSetting
 	local function CompactRaidFrameManager_SetManaged(value)
 		local container = CompactRaidFrameManager.container;
-	end
-
-	local function CompactRaidFrameManager_SetSortMode(value)
-		if ( value == "group" ) then
-			CompactRaidFrameManager.container:SetFlowSortFunction(CRFSort_Group);
-		elseif ( value == "role" ) then
-			CompactRaidFrameManager.container:SetFlowSortFunction(CRFSort_Role);
-		elseif ( value == "alphabetical" ) then
-			CompactRaidFrameManager.container:SetFlowSortFunction(CRFSort_Alphabetical);
-		else
-			CompactRaidFrameManager_SetSetting("SortMode", "role");
-			GMError("Unknown sort mode: "..tostring(value));
-		end
-	end
-
-	local function CompactRaidFrameManager_SetKeepGroupsTogether(value)
-		local groupMode;
-		if ( not value or value == "0" ) then
-			groupMode = "flush";
-		else
-			groupMode = "discrete";
-		end
-
-		CompactRaidFrameManager.container:SetGroupMode(groupMode);
-		CompactRaidFrameManager_UpdateFilterInfo();
 	end
 
 	local function CompactRaidFrameManager_SetDisplayPets(value)
@@ -456,24 +419,6 @@ do	--Enclosure to make sure people go through SetSetting
 		CompactRaidFrameManager_UpdateContainerVisibility();
 	end
 
-	local function CompactRaidFrameManager_SetBorderShown(value)
-		local showBorder;
-		if value and value ~= "0" then
-			showBorder = true;
-		end
-		CUF_SHOW_BORDER = showBorder;
-		CompactRaidFrameManager.container:SetBorderShown(showBorder);
-	end
-
-	local function CompactRaidFrameManager_SetHorizontalGroups(value)
-		local horizontalGroups;
-		if ( value and value ~= "0" ) then
-			horizontalGroups = true;
-		end
-		CUF_HORIZONTAL_GROUPS = horizontalGroups;
-		CompactRaidFrameManager_UpdateContainerBounds();
-	end
-
 	function CompactRaidFrameManager_SetSetting(settingName, value)
 		cachedSettings[settingName] = value;
 		isSettingCached[settingName] = true;
@@ -481,20 +426,12 @@ do	--Enclosure to make sure people go through SetSetting
 		--Perform the actual functions
 		if ( settingName == "Managed" ) then
 			CompactRaidFrameManager_SetManaged(value);
-		elseif ( settingName == "SortMode" ) then
-			CompactRaidFrameManager_SetSortMode(value);
-		elseif ( settingName == "KeepGroupsTogether" ) then
-			CompactRaidFrameManager_SetKeepGroupsTogether(value);
 		elseif ( settingName == "DisplayPets" ) then
 			CompactRaidFrameManager_SetDisplayPets(value);
 		elseif ( settingName == "DisplayMainTankAndAssist" ) then
 			CompactRaidFrameManager_SetDisplayMainTankAndAssist(value);
 		elseif ( settingName == "IsShown" ) then
 			CompactRaidFrameManager_SetIsShown(value);
-		elseif ( settingName == "ShowBorders" ) then
-			CompactRaidFrameManager_SetBorderShown(value);
-		elseif ( settingName == "HorizontalGroups" ) then
-			CompactRaidFrameManager_SetHorizontalGroups(value);
 		else
 			GMError("Unknown setting "..tostring(settingName));
 		end
@@ -502,26 +439,17 @@ do	--Enclosure to make sure people go through SetSetting
 end
 
 function CompactRaidFrameManager_UpdateContainerVisibility()
-	if ShowingRaidFrames() and CompactRaidFrameManager.container.enabled then
+	if ShouldShowRaidFrames() and CompactRaidFrameManager.container.enabled then
 		CompactRaidFrameManager.container:Show();
 	else
 		CompactRaidFrameManager.container:Hide();
 	end
+
+	CompactPartyFrame_UpdateVisibility();
 end
 
 function CompactRaidFrameManager_UpdateContainerBounds()
 	CompactRaidFrameManager.container:Layout();
-end
-
-function CompactRaidFrameManager_UpdateContainerFrameAnchor()
-	if not IsInRaid() and EditModeManagerFrame:UseRaidStylePartyFrames() then
-		CompactRaidFrameManager.container:SetParent(PartyFrame);
-	else
-		CompactRaidFrameManager.container:SetParent(CompactRaidFrameManager);
-		CompactRaidFrameManager.container:SetPoint("TOPLEFT", CompactRaidFrameManager, "TOPRIGHT", 0, 0);
-	end
-
-	PartyFrame:Layout();
 end
 
 -------------Utility functions-------------

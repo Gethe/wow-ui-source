@@ -3,17 +3,24 @@
 	<Script file="Blizzard_PvPTalentSlotTemplates.lua"/>
 
 	<Button name="PvPTalentSlotButtonTemplate" mixin="PvPTalentSlotButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="58" y="58"/>
+		<Size x="58" y="52"/>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<Texture parentKey="Shadow" atlas="talents-node-pvp-shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
 				<Texture parentKey="Texture">
-					<Size x="42" y="42"/>
+					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="TextureMask" atlas="talents-node-choice-mask" useAtlasSize="false">
-					<Size x="45" y="45"/>
+					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -23,8 +30,8 @@
 				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Border" atlas="pvptalents-talentborder">
-					<Size x="61" y="61"/>
+				<Texture parentKey="Border" atlas="talents-node-pvp-locked">
+					<Size x="58" y="52"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

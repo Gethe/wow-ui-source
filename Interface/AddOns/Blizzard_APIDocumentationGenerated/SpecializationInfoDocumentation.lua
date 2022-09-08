@@ -259,15 +259,6 @@ local SpecializationInfo =
 	Tables =
 	{
 		{
-			Name = "LevelLearnedSpell",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "level", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "PvpTalentSlotInfo",
 			Type = "Structure",
 			Fields =

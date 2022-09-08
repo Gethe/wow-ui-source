@@ -5,6 +5,14 @@
 	<Button name="TalentSearchPreviewButtonTemplate" mixin="TalentSearchPreviewButtonMixin" virtual="true">
 		<Size x="206" y="27"/>
 		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="HighlightTexture" atlas="search-highlight" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="IconFrame" atlas="talents-search-suggestion-itemborder">
 					<Size x="18" y="18"/>
@@ -30,10 +38,10 @@
 			</Layer>
 		</Layers>
 		<NormalTexture atlas="_search-rowbg"/>
-		<HighlightTexture atlas="search-highlight" alphaMode="ADD"/>
 		<PushedTexture atlas="_search-rowbg"/>
 		<Scripts>
 			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
 		</Scripts>
 	</Button>
 	
@@ -103,31 +111,56 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
 				</Anchors>
 			</EventFrame>
-			<Button parentKey="DefaultResultButton" hidden="true">
-				<Size x="206" y="27"/>
+
+			<Frame parentKey="OverflowCount" hidden="true">
+				<Size x="206" y="16"/>
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="BOTTOM" x="0" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Icon" atlas="talents-search-suggestion-magnifyingglass" useAtlasSize="false">
-							<Size x="16" y="16"/>
+						<FontString parentKey="Text" inherits="GameFontDisableSmall" justifyH="LEFT">
+							<Size x="400" y="0"/>
 							<Anchors>
-								<Anchor point="LEFT" x="5" y="1"/>
+								<Anchor point="TOPLEFT" x="9" y="0"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Button parentKey="DefaultResultButton" hidden="true">
+				<Size x="206" y="27"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="HighlightTexture" atlas="search-highlight" alphaMode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" atlas="talents-search-suggestion-magnifyingglass" useAtlasSize="false">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" x="10" y="1"/>
 							</Anchors>
 						</Texture>
 						<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyH="LEFT">
 							<Size x="400" y="0"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
 								<Anchor point="RIGHT" x="-5" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<NormalTexture atlas="_search-rowbg"/>
-				<HighlightTexture atlas="search-highlight" alphaMode="ADD"/>
 				<PushedTexture atlas="_search-rowbg"/>
 			</Button>
 		</Frames>
@@ -138,13 +171,14 @@
 	</Frame>
 
 	<EditBox name="TalentSearchBoxTemplate" mixin="TalentSearchBoxMixin" inherits="SearchBoxTemplate" letters="40" virtual="true">
-		<Size x="170" y="30"/>
+		<Size x="206" y="30"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnTextChanged method="OnTextChanged"/>
 			<OnEnterPressed method="OnEnterPressed"/>
 			<OnEditFocusLost method="OnFocusLost"/>
 			<OnEditFocusGained method="OnFocusGained"/>
+			<OnKeyDown method="OnKeyDown"/>
 		</Scripts>
 	</EditBox>
 </Ui>

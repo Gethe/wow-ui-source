@@ -5000,26 +5000,17 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 	end
 end
 
-function GetDisplayedAllyFrames()
-	local useCompact = EditModeManagerFrame:UseRaidStylePartyFrames();
-	local showingGroup = IsInGroup() or EditModeManagerFrame:ArePartyFramesForcedShown();
-	if IsActiveBattlefieldArena() and not useCompact and not C_PvP.IsInBrawl() then
-		return "party";
-	elseif showingGroup and (IsInRaid() or useCompact) then
-		return "raid";
-	elseif showingGroup then
-		return "party";
-	else
-		return nil;
-	end
+function ShouldShowArenaParty()
+	return IsActiveBattlefieldArena() and not C_PvP.IsInBrawl();
 end
 
-function ShowingPartyFrames()
-	return GetDisplayedAllyFrames() == "party";
+function ShouldShowPartyFrames()
+	local partyFramesShown = ShouldShowArenaParty() or (IsInGroup() and not IsInRaid()) or EditModeManagerFrame:ArePartyFramesForcedShown();
+	return partyFramesShown and not EditModeManagerFrame:UseRaidStylePartyFrames();
 end
 
-function ShowingRaidFrames()
-	return GetDisplayedAllyFrames() == "raid";
+function ShouldShowRaidFrames()
+	return not ShouldShowArenaParty() and IsInRaid() or EditModeManagerFrame:AreRaidFramesForcedShown();
 end
 
 local displayedCapMessage = false;

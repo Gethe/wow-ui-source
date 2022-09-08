@@ -162,7 +162,7 @@ function ProfessionsSpecPathMixin:OnLoad()
 
 	if not self.isDetailedView then
 		local function PathSelectedCallback(_, selectedID)
-			self:SetSelected(selectedID == self:GetTalentNodeID());
+			self:SetSelected(selectedID == self:GetNodeID());
 		end
 		EventRegistry:RegisterCallback("ProfessionsSpecializations.PathSelected", PathSelectedCallback, self);
 	end
@@ -181,10 +181,10 @@ end
 function ProfessionsSpecPathMixin:OnClick(button, down) -- Override
 	if not self.isDetailedView and not self:GetTalentFrame():AnyPopupShown() then
 		if not self.selected then
-			EventRegistry:TriggerEvent("ProfessionsSpecializations.PathSelected", self:GetTalentNodeID());
+			EventRegistry:TriggerEvent("ProfessionsSpecializations.PathSelected", self:GetNodeID());
 		elseif button == "LeftButton" and IsShiftKeyDown() and self:CanPurchaseRank() then
 			local talentFrame = self:GetTalentFrame();
-			if talentFrame:GetRootNodeID() == self:GetTalentNodeID() and self.state == Enum.ProfessionsSpecPathState.Locked then
+			if talentFrame:GetRootNodeID() == self:GetNodeID() and self.state == Enum.ProfessionsSpecPathState.Locked then
 				talentFrame:CheckConfirmPurchaseTab();
 			else
 				self:PurchaseRank();
@@ -200,7 +200,7 @@ function ProfessionsSpecPathMixin:PurchaseRank() -- Override
 	else
 		self:PlaySelectSound();
 	end
-	self:GetTalentFrame():PurchaseRank(self:GetTalentNodeID());
+	self:GetTalentFrame():PurchaseRank(self:GetNodeID());
 	self:CheckTooltip();
 end
 
@@ -209,20 +209,20 @@ function ProfessionsSpecPathMixin:GetConfigID()
 end
 
 function ProfessionsSpecPathMixin:GetActiveEntry()
-	return self.talentNodeInfo.activeEntry and self.talentNodeInfo.activeEntry.entryID;
+	return self.nodeInfo.activeEntry and self.nodeInfo.activeEntry.entryID;
 end
 
 function ProfessionsSpecPathMixin:GetNextEntry()
-	return self.talentNodeInfo.nextEntry and self.talentNodeInfo.nextEntry.entryID;
+	return self.nodeInfo.nextEntry and self.nodeInfo.nextEntry.entryID;
 end
 
 function ProfessionsSpecPathMixin:GetRanks()
 	-- First tier for the path node is the unlock entry, which we do not want to include in the count. It can have a max ranks of either 0 or 1
-	local unlockNodeEntry = C_ProfSpecs.GetUnlockEntryForPath(self:GetTalentNodeID());
+	local unlockNodeEntry = C_ProfSpecs.GetUnlockEntryForPath(self:GetNodeID());
 	local nodeEntryInfo = C_Traits.GetEntryInfo(self:GetConfigID(), unlockNodeEntry);
 	local numUnlockPoints = nodeEntryInfo and nodeEntryInfo.maxRanks or 0;
-	local currRank = (self.talentNodeInfo.currentRank > 0) and (self.talentNodeInfo.currentRank - numUnlockPoints) or self.talentNodeInfo.currentRank;
-	local maxRank = self.talentNodeInfo.maxRanks - numUnlockPoints;
+	local currRank = (self.nodeInfo.currentRank > 0) and (self.nodeInfo.currentRank - numUnlockPoints) or self.nodeInfo.currentRank;
+	local maxRank = self.nodeInfo.maxRanks - numUnlockPoints;
 	return currRank, maxRank;
 end
 
@@ -232,11 +232,11 @@ function ProfessionsSpecPathMixin:GetSpendText() -- Override
 end
 
 function ProfessionsSpecPathMixin:CanPurchaseUnlock()
-	return C_Traits.CanPurchaseRank(self:GetConfigID(), self.talentNodeInfo.ID, C_ProfSpecs.GetUnlockEntryForPath(self.talentNodeInfo.ID)) and self:CanAfford();
+	return C_Traits.CanPurchaseRank(self:GetConfigID(), self.nodeInfo.ID, C_ProfSpecs.GetUnlockEntryForPath(self.nodeInfo.ID)) and self:CanAfford();
 end
 
 function ProfessionsSpecPathMixin:CanPurchaseSpend()
-	return C_Traits.CanPurchaseRank(self:GetConfigID(), self.talentNodeInfo.ID, C_ProfSpecs.GetSpendEntryForPath(self.talentNodeInfo.ID)) and self:CanAfford();
+	return C_Traits.CanPurchaseRank(self:GetConfigID(), self.nodeInfo.ID, C_ProfSpecs.GetSpendEntryForPath(self.nodeInfo.ID)) and self:CanAfford();
 end
 
 function ProfessionsSpecPathMixin:OnEvent(event, ...)
@@ -266,7 +266,7 @@ function ProfessionsSpecPathMixin:OnEnter() -- Override
 	self:SetScript("OnEvent", self.OnEvent);
 	self:RegisterEvent("SPELL_TEXT_UPDATE");
 
-	EventRegistry:TriggerEvent("ProfessionSpecs.SpecPathEntered", self.talentNodeInfo.ID);
+	EventRegistry:TriggerEvent("ProfessionSpecs.SpecPathEntered", self.nodeInfo.ID);
 end
 
 function ProfessionsSpecPathMixin:OnLeave() -- Override
@@ -280,7 +280,7 @@ function ProfessionsSpecPathMixin:ShouldDisplaySource()
 end
 
 function ProfessionsSpecPathMixin:GetNextPerkDescription()
-	local perkIDs = C_ProfSpecs.GetPerksForPath(self.talentNodeInfo.ID);
+	local perkIDs = C_ProfSpecs.GetPerksForPath(self.nodeInfo.ID);
 	for _, perkID in ipairs(perkIDs) do
 		if C_ProfSpecs.GetStateForPerk(perkID, self:GetConfigID()) == Enum.ProfessionsSpecPerkState.Unearned then
 			local unlockRank = C_ProfSpecs.GetUnlockRankForPerk(perkID);
@@ -312,7 +312,7 @@ function ProfessionsSpecPathMixin:AddTooltipSource(tooltip, addBlankLine)
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 		end
 
-		local sourceDescription = C_ProfSpecs.GetSourceTextForPath(self.talentNodeInfo.ID, self:GetConfigID());
+		local sourceDescription = C_ProfSpecs.GetSourceTextForPath(self.nodeInfo.ID, self:GetConfigID());
 		GameTooltip_AddErrorLine(tooltip, sourceDescription);
 	end
 end
@@ -326,7 +326,7 @@ function ProfessionsSpecPathMixin:AddTooltipInfo(tooltip) -- Override
 
 	GameTooltip_AddBlankLineToTooltip(tooltip);
 
-	GameTooltip_AddNormalLine(tooltip, C_ProfSpecs.GetDescriptionForPath(self.talentNodeInfo.ID));
+	GameTooltip_AddNormalLine(tooltip, C_ProfSpecs.GetDescriptionForPath(self.nodeInfo.ID));
 end
 
 function ProfessionsSpecPathMixin:AddTooltipInstructions(tooltip) -- Override
@@ -348,7 +348,7 @@ function ProfessionsSpecPathMixin:AddTooltipInstructions(tooltip) -- Override
 end
 
 function ProfessionsSpecPathMixin:CalculateVisualState() -- Override
-	return C_ProfSpecs.GetStateForPath(self.talentNodeInfo.ID, self:GetConfigID());
+	return C_ProfSpecs.GetStateForPath(self.nodeInfo.ID, self:GetConfigID());
 end
 
 function ProfessionsSpecPathMixin:SetSelected(selected)
@@ -379,7 +379,7 @@ local PathStateInfo =
 function ProfessionsSpecPathMixin:SetVisualState(state) -- Override
 	local baseVisualState;
 	if state == Enum.ProfessionsSpecPathState.Locked then
-		local showPathAvailable = self:CanPurchaseUnlock() and self:GetTalentNodeID() ~= self:GetTalentFrame():GetRootNodeID();
+		local showPathAvailable = self:CanPurchaseUnlock() and self:GetNodeID() ~= self:GetTalentFrame():GetRootNodeID();
 		baseVisualState = showPathAvailable and TalentButtonUtil.BaseVisualState.Selectable or TalentButtonUtil.BaseVisualState.Locked;
 	elseif state == Enum.ProfessionsSpecPathState.Progressing then
 		baseVisualState = self:CanPurchaseSpend() and TalentButtonUtil.BaseVisualState.Selectable or TalentButtonUtil.BaseVisualState.Normal;
@@ -416,18 +416,18 @@ function ProfessionsSpecPathMixin:UpdateProgressBar()
 end
 
 function ProfessionsSpecPathMixin:UpdateSpendText() -- Override
-	if self.talentInfo ~= nil then
+	if self.definitionInfo ~= nil then
 		self.SpendText:SetText(self:GetSpendText());
 		self:UpdateProgressBar();
 	end
 end
 
-function ProfessionsSpecPathMixin:SetTalentNodeID(talentNodeID, skipUpdate) -- Override
-	local oldNodeID = self.talentNodeID;
-	self.talentNodeID = talentNodeID;
-	self:UpdateTalentNodeInfo(skipUpdate);
+function ProfessionsSpecPathMixin:SetNodeID(nodeID, skipUpdate) -- Override
+	local oldNodeID = self.nodeID;
+	self.nodeID = nodeID;
+	self:UpdateNodeInfo(skipUpdate);
 	if not self.isDetailedView then
-		self:GetTalentFrame():OnButtonNodeIDSet(self, oldNodeID, talentNodeID);
+		self:GetTalentFrame():OnButtonNodeIDSet(self, oldNodeID, nodeID);
 	end
 end
 

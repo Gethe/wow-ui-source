@@ -53,8 +53,8 @@ function EditModeUtil:GetBottomActionBarHeight(includeMainMenuBar)
 end
 
 function EditModeUtil:GetRightContainerAnchor()
-	local rightBarOffset = EditModeUtil:GetRightActionBarWidth();
-	local anchor = AnchorUtil.CreateAnchor("TOPRIGHT", UIParent, "TOPRIGHT", -rightBarOffset, -260);
+	local xOffset = -EditModeUtil:GetRightActionBarWidth() - 5;
+	local anchor = AnchorUtil.CreateAnchor("TOPRIGHT", UIParent, "TOPRIGHT", xOffset, -260);
 	return anchor;
 end
 

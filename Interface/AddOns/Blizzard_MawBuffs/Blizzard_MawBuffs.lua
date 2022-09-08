@@ -24,6 +24,12 @@ function MawBuffsContainerMixin:OnEvent(event, ...)
 end
 
 function MawBuffsContainerMixin:Update()
+	if not IsInJailersTower() and not self.fromFrameManager then
+		self:Hide();
+		self.buffCount = 0;
+		return;
+	end
+
 	local mawBuffs = {};
 	local totalCount = 0;
 	for i=1, MAW_BUFF_MAX_DISPLAY do
@@ -40,12 +46,8 @@ function MawBuffsContainerMixin:Update()
 
 	self:SetText(JAILERS_TOWER_BUFFS_BUTTON_TEXT:format(totalCount));
 	self.List:Update(mawBuffs);
-	
-	if(IsInJailersTower() or self.fromFrameManager) then
-		self:Show();
-	else
-		self:Hide();
-	end
+
+	self:Show();
 
 	self.buffCount = #mawBuffs;
 	if self.buffCount == 0 then

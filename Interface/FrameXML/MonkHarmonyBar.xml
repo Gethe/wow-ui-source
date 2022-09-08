@@ -68,7 +68,7 @@
 			<KeyValue key="spec" value="SPEC_MONK_WINDWALKER" type="global"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="TOP" x="49" y="-46"/>
+			<Anchor point="TOP" x="31" y="24"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -88,5 +88,3 @@
 		</Layers>
 	</Frame>
 </Ui>
-
-

@@ -89,7 +89,6 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdatePower(self);
 				CompactUnitFrame_UpdatePowerColor(self);
 			elseif ( event == "UNIT_NAME_UPDATE" ) then
-				CompactUnitFrame_UpdateName(self);
 				CompactUnitFrame_UpdateHealth(self);		--This may signify that the unit is a new pet who replaced an old pet, and needs a health update
 				CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
 			elseif ( event == "UNIT_AURA" ) then
@@ -321,11 +320,9 @@ function CompactUnitFrame_UpdateAll(frame)
 	if ( UnitExists(frame.displayedUnit) ) then
 		CompactUnitFrame_UpdateMaxHealth(frame);
 		CompactUnitFrame_UpdateHealth(frame);
-		CompactUnitFrame_UpdateHealthColor(frame);
 		CompactUnitFrame_UpdateMaxPower(frame);
 		CompactUnitFrame_UpdatePower(frame);
 		CompactUnitFrame_UpdatePowerColor(frame);
-		CompactUnitFrame_UpdateName(frame);
 		CompactUnitFrame_UpdateWidgetsOnlyMode(frame);
 		CompactUnitFrame_UpdateSelectionHighlight(frame);
 		CompactUnitFrame_UpdateAggroHighlight(frame);
@@ -501,6 +498,8 @@ function CompactUnitFrame_UpdateHealth(frame)
 	else
 		PixelUtil.SetStatusBarValue(frame.healthBar, health);
 	end
+	CompactUnitFrame_UpdateName(frame);
+	CompactUnitFrame_UpdateHealthColor(frame);
 end
 
 local function CompactUnitFrame_GetDisplayedPowerID(frame)
@@ -585,6 +584,10 @@ function ShouldShowName(frame)
 end
 
 function CompactUnitFrame_UpdateWidgetsOnlyMode(frame)
+	if not frame.WidgetContainer then
+		return;
+	end
+
 	local inWidgetsOnlyMode = UnitNameplateShowsWidgetsOnly(frame.unit);
 
 	frame.healthBar:SetShown(not inWidgetsOnlyMode and not frame.hideHealthbar);
@@ -647,6 +650,8 @@ function CompactUnitFrame_UpdateName(frame)
 			else
 				frame.name:SetVertexColor(UnitSelectionColor(frame.unit, frame.optionTable.colorNameWithExtendedColors));
 			end
+		else
+			frame.name:SetVertexColor(1.0, 1.0, 1.0);
 		end
 
 		frame.name:Show();
@@ -1559,22 +1564,24 @@ DefaultCompactUnitFrameOptions = {
 	allowClassColorsForNPCs = true,
 }
 
-local NATIVE_UNIT_FRAME_HEIGHT = 36;
-local NATIVE_UNIT_FRAME_WIDTH = 72;
+NATIVE_UNIT_FRAME_HEIGHT = 36;
+NATIVE_UNIT_FRAME_WIDTH = 72;
 DefaultCompactUnitFrameSetupOptions = {
 	displayPowerBar = true,
-	height = NATIVE_UNIT_FRAME_HEIGHT,
-	width = NATIVE_UNIT_FRAME_WIDTH,
-	displayBorder = true,
 }
 
 function DefaultCompactUnitFrameSetup(frame)
 	local options = DefaultCompactUnitFrameSetupOptions;
-	local componentScale = min(options.height / NATIVE_UNIT_FRAME_HEIGHT, options.width / NATIVE_UNIT_FRAME_WIDTH);
+	
+	local frameWidth = EditModeManagerFrame:GetRaidFrameWidth(frame.isParty);
+	local frameHeight = EditModeManagerFrame:GetRaidFrameHeight(frame.isParty);
+	local displayBorder = EditModeManagerFrame:ShouldRaidFrameDisplayBorder(frame.isParty);
+
+	local componentScale = min(frameHeight / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH);
 
 	frame:SetAlpha(1);
 
-	frame:SetSize(options.width, options.height);
+	frame:SetSize(frameWidth, frameHeight);
 	local powerBarHeight = 8;
 	local powerBarUsedHeight = options.displayPowerBar and powerBarHeight or 0;
 
@@ -1589,7 +1596,7 @@ function DefaultCompactUnitFrameSetup(frame)
 
 	if ( frame.powerBar ) then
 		if ( options.displayPowerBar ) then
-			if ( options.displayBorder ) then
+			if ( displayBorder ) then
 				frame.powerBar:SetPoint("TOPLEFT", frame.healthBar, "BOTTOMLEFT", 0, -2);
 			else
 				frame.powerBar:SetPoint("TOPLEFT", frame.healthBar, "BOTTOMLEFT", 0, 0);
@@ -1644,13 +1651,13 @@ function DefaultCompactUnitFrameSetup(frame)
 	local NATIVE_FONT_SIZE = 12;
 	local fontName, fontSize, fontFlags = frame.statusText:GetFont();
 	frame.statusText:SetFont(fontName, NATIVE_FONT_SIZE * componentScale, fontFlags);
-	frame.statusText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 3, options.height / 3 - 2);
-	frame.statusText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -3, options.height / 3 - 2);
+	frame.statusText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 3, frameHeight / 3 - 2);
+	frame.statusText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -3, frameHeight / 3 - 2);
 	frame.statusText:SetHeight(12 * componentScale);
 
 	local readyCheckSize = 15 * componentScale;
 	frame.readyCheckIcon:ClearAllPoints();
-	frame.readyCheckIcon:SetPoint("BOTTOM", frame, "BOTTOM", 0, options.height / 3 - 4);
+	frame.readyCheckIcon:SetPoint("BOTTOM", frame, "BOTTOM", 0, frameHeight / 3 - 4);
 	frame.readyCheckIcon:SetSize(readyCheckSize, readyCheckSize);
 
 	local buffSize = 11 * componentScale;
@@ -1679,7 +1686,7 @@ function DefaultCompactUnitFrameSetup(frame)
 			frame.debuffFrames[i]:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
 		end
 		frame.debuffFrames[i].baseSize = buffSize;
-		frame.debuffFrames[i].maxHeight = options.height - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE;
+		frame.debuffFrames[i].maxHeight = frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE;
 		--frame.debuffFrames[i]:SetSize(11, 11);
 	end
 
@@ -1700,10 +1707,10 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.aggroHighlight:SetAllPoints(frame);
 
 	frame.centerStatusIcon:ClearAllPoints();
-	frame.centerStatusIcon:SetPoint("CENTER", frame, "BOTTOM", 0, options.height / 3 + 2);
+	frame.centerStatusIcon:SetPoint("CENTER", frame, "BOTTOM", 0, frameHeight / 3 + 2);
 	frame.centerStatusIcon:SetSize(buffSize * 2, buffSize * 2);
 
-	if ( options.displayBorder ) then
+	if ( displayBorder ) then
 		frame.horizTopBorder:ClearAllPoints();
 		frame.horizTopBorder:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, -7);
 		frame.horizTopBorder:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, -7);

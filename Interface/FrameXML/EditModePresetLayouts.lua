@@ -174,8 +174,8 @@ local modernSystemMap =
 				point = "BOTTOMRIGHT",
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
-				offsetX = -300,
-				offsetY = 250,
+				offsetX = -282,
+				offsetY = 258,
 			},
 		},
 
@@ -211,6 +211,9 @@ local modernSystemMap =
 				[Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames] = 0,
 				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
 				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
+				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -223,13 +226,36 @@ local modernSystemMap =
 
 		[Enum.EditModeUnitFrameSystemIndices.Raid] = {
 			settings = {
+				[Enum.EditModeUnitFrameSetting.ViewRaidSize] = Enum.ViewRaidSize.Ten,
+				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
+				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
+				[Enum.EditModeUnitFrameSetting.KeepGroupsTogether] = 1,
+				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
 				relativeTo = "CompactRaidFrameManager",
 				relativePoint = "TOPRIGHT",
 				offsetX = 0,
-				offsetY = -20,
+				offsetY = -5,
+			},
+		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Boss] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.UseLargerFrame] = 0,
+				[Enum.EditModeUnitFrameSetting.CastBarOnSide] = 1,
+				-- [Enum.EditModeUnitFrameSetting.ShowCastTime] = 0,
+			},
+			anchorInfo = {
+				point = "RIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "RIGHT",
+				offsetX = 0,
+				offsetY = 0,
 			},
 		},
 	},
@@ -527,8 +553,8 @@ local classicSystemMap =
 				point = "TOPLEFT",
 				relativeTo = "UIParent",
 				relativePoint = "TOPLEFT",
-				offsetX = -19,
-				offsetY = -4,
+				offsetX = 0,
+				offsetY = 4,
 			},
 		},
 
@@ -564,6 +590,9 @@ local classicSystemMap =
 				[Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames] = 0,
 				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
 				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
+				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -576,13 +605,36 @@ local classicSystemMap =
 
 		[Enum.EditModeUnitFrameSystemIndices.Raid] = {
 			settings = {
+				[Enum.EditModeUnitFrameSetting.ViewRaidSize] = Enum.ViewRaidSize.Ten,
+				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
+				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
+				[Enum.EditModeUnitFrameSetting.KeepGroupsTogether] = 1,
+				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
 				relativeTo = "CompactRaidFrameManager",
 				relativePoint = "TOPRIGHT",
 				offsetX = 0,
-				offsetY = -20,
+				offsetY = -5,
+			},
+		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Boss] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.UseLargerFrame] = 0,
+				[Enum.EditModeUnitFrameSetting.CastBarOnSide] = 1,
+				-- [Enum.EditModeUnitFrameSetting.ShowCastTime] = 0,
+			},
+			anchorInfo = {
+				point = "RIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "RIGHT",
+				offsetX = 0,
+				offsetY = 0,
 			},
 		},
 	},

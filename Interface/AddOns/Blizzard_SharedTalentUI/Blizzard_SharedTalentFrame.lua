@@ -137,12 +137,12 @@ function TalentFrameBaseMixin:OnLoad()
 	self.nodeIDToButton = {};
 	self.buttonsWithDirtyEdges = {};
 	self.treeInfoDirty = false;
-	self.talentInfoCache = {};
-	self.dirtyTalentIDSet = {};
+	self.definitionInfoCache = {};
+	self.dirtyDefinitionIDSet = {};
 	self.entryInfoCache = {};
 	self.dirtyEntryIDSet = {};
-	self.talentNodeInfoCache = {};
-	self.dirtyTalentNodeIDSet = {};
+	self.nodeInfoCache = {};
+	self.dirtyNodeIDSet = {};
 	self.condInfoCache = {};
 	self.dirtyCondIDSet = {};
 	self.panOffsetX = 0;
@@ -171,15 +171,15 @@ function TalentFrameBaseMixin:OnUpdate()
 			self.condInfoCache[condID] = nil;
 		end
 
-		for talentID, isDirty in pairs(self.dirtyTalentIDSet) do
-			self.talentInfoCache[talentID] = nil;
+		for definitionID, isDirty in pairs(self.dirtyDefinitionIDSet) do
+			self.definitionInfoCache[definitionID] = nil;
 			for talentButton in self:EnumerateAllTalentButtons() do
 				-- TODO:: This sets a dangerous precedent for a very expensive iteration.
 				-- Consider replacing this with a pattern similar to nodeIDToButton or something else entirely.
 				-- We may not need this at all. This will only happen in response to a hotfix in practice, so we
 				-- could just reload the entire tree.
-				if talentID == talentButton:GetTalentID() then
-					buttonsToUpdateMethods[talentButton] = talentButton.UpdateTalentInfo;
+				if definitionID == talentButton:GetDefinitionID() then
+					buttonsToUpdateMethods[talentButton] = talentButton.UpdateDefinitionInfo;
 				end
 			end
 		end
@@ -197,18 +197,18 @@ function TalentFrameBaseMixin:OnUpdate()
 			end
 		end
 
-		for talentNodeID, isDirty in pairs(self.dirtyTalentNodeIDSet) do
-			self.talentNodeInfoCache[talentNodeID] = nil;
-			local talentButton = self.nodeIDToButton[talentNodeID];
+		for nodeID, isDirty in pairs(self.dirtyNodeIDSet) do
+			self.nodeInfoCache[nodeID] = nil;
+			local talentButton = self.nodeIDToButton[nodeID];
 			if talentButton then
-				buttonsToUpdateMethods[talentButton] = talentButton.UpdateTalentNodeInfo;
+				buttonsToUpdateMethods[talentButton] = talentButton.UpdateNodeInfo;
 			end
 		end
 
 		self.dirtyCondIDSet = {};
-		self.dirtyTalentIDSet = {};
+		self.dirtyDefinitionIDSet = {};
 		self.dirtyEntryIDSet = {};
-		self.dirtyTalentNodeIDSet = {};
+		self.dirtyNodeIDSet = {};
 
 		if self.treeInfoDirty then
 			self.treeInfoDirty = false;
@@ -257,7 +257,7 @@ end
 function TalentFrameBaseMixin:OnEvent(event, ...)
 	if event == "TRAIT_NODE_CHANGED" then
 		local nodeID = ...;
-		self:MarkTalentNodeInfoCacheDirty(nodeID);
+		self:MarkNodeInfoCacheDirty(nodeID);
 	elseif event == "TRAIT_NODE_ENTRY_UPDATED" then
 		local entryID = ...;
 		self:MarkEntryInfoCacheDirty(entryID);
@@ -276,7 +276,8 @@ function TalentFrameBaseMixin:OnEvent(event, ...)
 		self:OnTraitConfigUpdated(configID);
 	elseif event == "CONFIG_COMMIT_FAILED" then
 		if self:IsCommitInProgress() then
-			self:SetCommitStarted(nil);
+			local isCommitFailure = true;
+			self:SetCommitStarted(nil, isCommitFailure);
 			self:UpdateTreeCurrencyInfo();
 		end
 	end
@@ -366,7 +367,7 @@ end
 
 function TalentFrameBaseMixin:UpdateAllTalentButtonPositions()
 	for talentButton in self:EnumerateAllTalentButtons() do
-		local nodeInfo = talentButton:GetTalentNodeInfo();
+		local nodeInfo = talentButton:GetNodeInfo();
 		TalentButtonUtil.ApplyPosition(talentButton, self, nodeInfo.posX, nodeInfo.posY);
 	end
 end
@@ -427,7 +428,7 @@ function TalentFrameBaseMixin:TalentButtonCollectionReset(framePool, talentButto
 
 	self:ReleaseEdgesByCondition(TalentFrameBaseIsEdgeConnectedToTalentButton);
 
-	local nodeID = talentButton:GetTalentNodeID();
+	local nodeID = talentButton:GetNodeID();
 	if self.nodeIDToButton[nodeID] == talentButton then
 		self.nodeIDToButton[nodeID] = nil;
 	end
@@ -495,6 +496,10 @@ function TalentFrameBaseMixin:ReleaseTalentDisplayFrame(displayFrame)
 	self.talentDislayFramePool:Release(displayFrame);
 end
 
+function TalentFrameBaseMixin:GetSpecializedSelectionChoiceMixin(entryInfo, talentType)
+	return self.getSpecializedChoiceMixin and self.getSpecializedChoiceMixin(entryInfo, talentType) or nil;
+end
+
 function TalentFrameBaseMixin:AreSelectionsOpen(button)
 	return self.SelectionChoiceFrame:IsShown() and (self.SelectionChoiceFrame:GetBaseButton() == button);
 end
@@ -511,10 +516,6 @@ function TalentFrameBaseMixin:ShowSelections(button, selectionOptions, canSelect
 	self.SelectionChoiceFrame:SetPoint("BOTTOM", button, "TOP", 0, -5);
 	self.SelectionChoiceFrame:SetSelectionOptions(button, selectionOptions, canSelectChoice, currentSelection, baseCost);
 	self.SelectionChoiceFrame:Show();
-end
-
-function TalentFrameBaseMixin:OnSelectionChoiceShown(selectionChoice)
-	-- Override in your derived Mixin.
 end
 
 function TalentFrameBaseMixin:UpdateSelections(button, canSelectChoice, currentSelection, baseCost)
@@ -556,9 +557,9 @@ function TalentFrameBaseMixin:UpdateEdgesForButton(button)
 	self:UpdateEdgesByCondition(TalentFrameBaseIsEdgeToTalentButton);
 
 	if self:ShouldButtonShowEdges(button) then
-		local talentNodeInfo = button:GetTalentNodeInfo();
-		if talentNodeInfo then
-			for i, edgeVisualInfo in ipairs(talentNodeInfo.visibleEdges) do
+		local nodeInfo = button:GetNodeInfo();
+		if nodeInfo then
+			for i, edgeVisualInfo in ipairs(nodeInfo.visibleEdges) do
 				local targetButton = self:GetTalentButtonByNodeID(edgeVisualInfo.targetNode);
 				if targetButton and self:ShouldButtonShowEdges(targetButton) then
 					self:AcquireEdge(button, targetButton, edgeVisualInfo);
@@ -628,7 +629,7 @@ function TalentFrameBaseMixin:GetFrameLevelForButton(unused_nodeInfo)
 end
 
 function TalentFrameBaseMixin:InstantiateTalentButton(nodeID, nodeInfo)
-	nodeInfo = nodeInfo or self:GetAndCacheTalentNodeInfo(nodeID);
+	nodeInfo = nodeInfo or self:GetAndCacheNodeInfo(nodeID);
 
 	if not nodeInfo.isVisible and not self:ShouldInstantiateInvisibleButtons() then
 		return nil;
@@ -638,7 +639,7 @@ function TalentFrameBaseMixin:InstantiateTalentButton(nodeID, nodeInfo)
 	local entryInfo = (activeEntryID ~= nil) and self:GetAndCacheEntryInfo(activeEntryID) or nil;
 	local talentType = (entryInfo ~= nil) and entryInfo.type or nil;
 	local function InitTalentButton(newTalentButton)
-		newTalentButton:SetTalentNodeID(nodeID);
+		newTalentButton:SetNodeID(nodeID);
 	end
 
 	local offsetX = nil;
@@ -666,15 +667,15 @@ function TalentFrameBaseMixin:ReleaseAndReinstantiateTalentButtonByID(nodeID)
 end
 
 function TalentFrameBaseMixin:ReleaseAndReinstantiateTalentButton(talentButton)
-	local talentNodeID = talentButton:GetTalentNodeID();
+	local nodeID = talentButton:GetNodeID();
 	local entryID = talentButton:GetEntryID();
 
 	local forReinstantiation = true;
 	self:ReleaseTalentButton(talentButton, forReinstantiation);
 	self:ForceEntryInfoCacheUpdate(entryID);
-	self:ForceTalentNodeInfoUpdate(talentNodeID);
+	self:ForceNodeInfoUpdate(nodeID);
 
-	local newTalentButton = self:InstantiateTalentButton(talentNodeID);
+	local newTalentButton = self:InstantiateTalentButton(nodeID);
 	return newTalentButton;
 end
 
@@ -716,13 +717,13 @@ function TalentFrameBaseMixin:OnNodeInfoUpdated(nodeID)
 		return;
 	end
 
-	talentButton:UpdateTalentNodeInfo();
+	talentButton:UpdateNodeInfo();
 end
 
-function TalentFrameBaseMixin:OnTalentInfoUpdated(talentID)
+function TalentFrameBaseMixin:OnDefinitionInfoUpdated(definitionID)
 	for talentButton in self:EnumerateAllTalentButtons() do
-		if talentID == talentButton:GetTalentID() then
-			talentButton:UpdateTalentInfo();
+		if definitionID == talentButton:GetDefinitionID() then
+			talentButton:UpdateDefinitionInfo();
 		end
 	end
 end
@@ -741,14 +742,14 @@ function TalentFrameBaseMixin:ForceEntryInfoCacheUpdate(entryID)
 	self.entryInfoCache[entryID] = nil;
 end
 
-function TalentFrameBaseMixin:ForceTalentNodeInfoUpdate(talentNodeID)
-	if not self:IsTalentNodeInfoCacheDirty(talentNodeID) then
+function TalentFrameBaseMixin:ForceNodeInfoUpdate(nodeID)
+	if not self:IsNodeInfoCacheDirty(nodeID) then
 		return;
 	end
 
-	self.dirtyTalentNodeIDSet[talentNodeID] = nil;
-	self.talentNodeInfoCache[talentNodeID] = nil;
-	self:OnNodeInfoUpdated(talentNodeID);
+	self.dirtyNodeIDSet[nodeID] = nil;
+	self.nodeInfoCache[nodeID] = nil;
+	self:OnNodeInfoUpdated(nodeID);
 end
 
 function TalentFrameBaseMixin:ForceCondInfoUpdate(condID)
@@ -760,32 +761,32 @@ function TalentFrameBaseMixin:ForceCondInfoUpdate(condID)
 	self.condInfoCache[condID] = nil;
 end
 
-function TalentFrameBaseMixin:GetAndCacheTalentNodeInfo(talentNodeID)
-	local function GetTalentNodeInfoCallback()
-		self.dirtyTalentNodeIDSet[talentNodeID] = nil;
-		return C_Traits.GetNodeInfo(self:GetConfigID(), talentNodeID);
+function TalentFrameBaseMixin:GetAndCacheNodeInfo(nodeID)
+	local function GetNodeInfoCallback()
+		self.dirtyNodeIDSet[nodeID] = nil;
+		return C_Traits.GetNodeInfo(self:GetConfigID(), nodeID);
 	end
 
-	return GetOrCreateTableEntryByCallback(self.talentNodeInfoCache, talentNodeID, GetTalentNodeInfoCallback);
+	return GetOrCreateTableEntryByCallback(self.nodeInfoCache, nodeID, GetNodeInfoCallback);
 end
 
-function TalentFrameBaseMixin:ForceTalentInfoUpdate(talentID)
-	if not self:IsTalentInfoCacheDirty(talentID) then
+function TalentFrameBaseMixin:ForceDefinitionInfoUpdate(definitionID)
+	if not self:IsDefinitionInfoCacheDirty(definitionID) then
 		return;
 	end
 
-	self.dirtyTalentIDSet[talentID] = nil;
-	self.talentInfoCache[talentID] = nil;
-	self:OnTalentInfoUpdated(talentID);
+	self.dirtyDefinitionIDSet[definitionID] = nil;
+	self.definitionInfoCache[definitionID] = nil;
+	self:OnDefinitionInfoUpdated(definitionID);
 end
 
-function TalentFrameBaseMixin:GetAndCacheTalentInfo(talentID)
-	local function GetTalentInfoCallback()
-		self.dirtyTalentIDSet[talentID] = nil;
-		return C_Traits.GetDefinitionInfo(talentID);
+function TalentFrameBaseMixin:GetAndCacheDefinitionInfo(definitionID)
+	local function GetDefinitionInfoCallback()
+		self.dirtyDefinitionIDSet[definitionID] = nil;
+		return C_Traits.GetDefinitionInfo(definitionID);
 	end
 
-	return GetOrCreateTableEntryByCallback(self.talentInfoCache, talentID, GetTalentInfoCallback);
+	return GetOrCreateTableEntryByCallback(self.definitionInfoCache, definitionID, GetDefinitionInfoCallback);
 end
 
 function TalentFrameBaseMixin:GetAndCacheEntryInfo(entryID)
@@ -806,8 +807,8 @@ function TalentFrameBaseMixin:GetAndCacheCondInfo(condID)
 	return GetOrCreateTableEntryByCallback(self.condInfoCache, condID, GetCondInfoCallback);
 end
 
-function TalentFrameBaseMixin:MarkTalentInfoCacheDirty(talentID)
-	self.dirtyTalentIDSet[talentID] = true;
+function TalentFrameBaseMixin:MarkDefinitionInfoCacheDirty(definitionID)
+	self.dirtyDefinitionIDSet[definitionID] = true;
 	self:RegisterOnUpdate();
 end
 
@@ -816,8 +817,8 @@ function TalentFrameBaseMixin:MarkEntryInfoCacheDirty(entryID)
 	self:RegisterOnUpdate();
 end
 
-function TalentFrameBaseMixin:MarkTalentNodeInfoCacheDirty(talentNodeID)
-	self.dirtyTalentNodeIDSet[talentNodeID] = true;
+function TalentFrameBaseMixin:MarkNodeInfoCacheDirty(nodeID)
+	self.dirtyNodeIDSet[nodeID] = true;
 	self:RegisterOnUpdate();
 end
 
@@ -826,16 +827,16 @@ function TalentFrameBaseMixin:MarkCondInfoCacheDirty(condID)
 	self:RegisterOnUpdate();
 end
 
-function TalentFrameBaseMixin:IsTalentInfoCacheDirty(talentID)
-	return self.dirtyTalentIDSet[talentID] and (self.talentInfoCache[talentID] ~= nil);
+function TalentFrameBaseMixin:IsDefinitionInfoCacheDirty(definitionID)
+	return self.dirtyDefinitionIDSet[definitionID] and (self.definitionInfoCache[definitionID] ~= nil);
 end
 
 function TalentFrameBaseMixin:IsEntryInfoCacheDirty(entryID)
 	return self.dirtyEntryIDSet[entryID] and (self.entryInfoCache[entryID] ~= nil);
 end
 
-function TalentFrameBaseMixin:IsTalentNodeInfoCacheDirty(talentNodeID)
-	return self.dirtyTalentNodeIDSet[talentNodeID] and (self.talentNodeInfoCache[talentNodeID] ~= nil);
+function TalentFrameBaseMixin:IsNodeInfoCacheDirty(nodeID)
+	return self.dirtyNodeIDSet[nodeID] and (self.nodeInfoCache[nodeID] ~= nil);
 end
 
 function TalentFrameBaseMixin:IsCondInfoCacheDirty(condID)
@@ -843,12 +844,12 @@ function TalentFrameBaseMixin:IsCondInfoCacheDirty(condID)
 end
 
 function TalentFrameBaseMixin:ClearInfoCaches()
-	self.talentInfoCache = {};
-	self.dirtyTalentIDSet = {};
+	self.definitionInfoCache = {};
+	self.dirtyDefinitionIDSet = {};
 	self.entryInfoCache = {};
 	self.dirtyEntryIDSet = {};
-	self.talentNodeInfoCache = {};
-	self.dirtyTalentNodeIDSet = {};
+	self.nodeInfoCache = {};
+	self.dirtyNodeIDSet = {};
 	self.condInfoCache = {};
 	self.dirtyCondIDSet = {};
 end
@@ -903,6 +904,10 @@ end
 
 function TalentFrameBaseMixin:GetButtonSize()
 	return self:GetTreeInfo().buttonSize;
+end
+
+function TalentFrameBaseMixin:ShouldHideSingleRankNumbers()
+	return self:GetTreeInfo().hideSingleRankNumbers;
 end
 
 function TalentFrameBaseMixin:RefreshGates()
@@ -1009,7 +1014,7 @@ function TalentFrameBaseMixin:SetCommitVisualsActive(active)
 	end
 end
 
-function TalentFrameBaseMixin:SetCommitStarted(configID)
+function TalentFrameBaseMixin:SetCommitStarted(configID, isCommitFailure)
 	local isCommitStarted = (configID ~= nil);
 	local wasCommitActive = self:IsCommitInProgress();
 
@@ -1024,7 +1029,7 @@ function TalentFrameBaseMixin:SetCommitStarted(configID)
 		self.commitTimer = nil;
 	end
 
-	if self.enableCommitEndFlash and not isCommitStarted and wasCommitActive then
+	if self.enableCommitEndFlash and (not isCommitStarted and wasCommitActive) and not isCommitFailure then
 		self:SetBackgroundFlashActive(true);
 	end
 end
@@ -1117,6 +1122,10 @@ end
 
 function TalentFrameBaseMixin:PurchaseRank(nodeID)
 	self:AttemptConfigOperation(C_Traits.PurchaseRank, nodeID);
+end
+
+function TalentFrameBaseMixin:CascadeRepurchaseRanks(nodeID)
+	self:AttemptConfigOperation(C_Traits.CascadeRepurchaseRanks, nodeID);
 end
 
 function TalentFrameBaseMixin:RefundRank(nodeID)
@@ -1247,12 +1256,17 @@ function TalentFrameBaseMixin:GetIncomingEdgeInfoForNode(nodeID)
 	local i = 1;
 	for edgeFrame in self.edgePool:EnumerateActive() do
 		local edgeInfo = edgeFrame.edgeInfo;
-		if edgeInfo.targetNode == nodeID then
+		if edgeInfo.targetNodeID == nodeID then
 			incomingEdges[i] = edgeInfo;
 			i = i + 1;
 		end
 	end
 	return incomingEdges;
+end
+
+function TalentFrameBaseMixin:GetSearchPreviewContainer()
+	-- Override in your derived Mixin.
+	return nil;
 end
 
 function TalentFrameBaseMixin:SetPreviewResultSearch(searchText)
@@ -1267,11 +1281,11 @@ function TalentFrameBaseMixin:SetFullResultSearch(searchText)
 	-- Override in your derived Mixin.
 end
 
-function TalentFrameBaseMixin:SetSelectedSearchResult(talentID)
+function TalentFrameBaseMixin:SetSelectedSearchResult(definitionID)
 	-- Override in your derived Mixin.
 end
 
-function TalentFrameBaseMixin:GetSearchMatchTypeForEntryID(entryID)
+function TalentFrameBaseMixin:GetSearchMatchTypeForEntry(nodeID, entryID)
 	-- Override in your derived Mixin.
 	return nil;
 end

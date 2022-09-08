@@ -18,6 +18,15 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "CanCreateNewConfig",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canCreate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CommitConfig",
 			Type = "Function",
 

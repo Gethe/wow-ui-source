@@ -55,6 +55,7 @@
 			<KeyValue key="layoutParent" value="UIParentRightManagedFrameContainer" type="global"/>
 			<KeyValue key="align" value="right" type="string"/>
 			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
+			<KeyValue key="isRightManagedFrame" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>
 

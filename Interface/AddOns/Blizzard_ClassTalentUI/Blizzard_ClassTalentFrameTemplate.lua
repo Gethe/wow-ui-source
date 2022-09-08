@@ -108,6 +108,7 @@ function ClassTalentFrameMixin:SetTab(tabID)
 
 	local callback = GenerateClosure(self.SetTabInternal, self, tabID);
 	self:CheckConfirmResetAction(callback);
+    EventRegistry:TriggerEvent("ClassTalentFrame.TabSet", ClassTalentFrame, tabID);
 	return true; -- Don't show the tab as selected yet.
 end
 

@@ -107,6 +107,7 @@ local ClassTalentTalentsTabEvents = {
 	"STARTER_BUILD_ACTIVATION_FAILED",
 	"TRAIT_CONFIG_DELETED",
 	"TRAIT_CONFIG_UPDATED",
+	"ACTIONBAR_SLOT_CHANGED"
 };
 
 local ClassTalentTalentsTabUnitEvents = {
@@ -140,8 +141,7 @@ function ClassTalentTalentsTabMixin:OnLoad()
 
 	self:InitializeLoadoutDropDown();
 
-	-- TODO:: Add Default Autocomplete Search result
-	--self.SearchPreviewContainer:SetDefaultResultButton(TALENT_FRAME_SEARCH_NOT_ON_ACTIONBAR, GenerateClosure(self.OnDefaultSearchButtonClicked, self));
+	self:InitializeSearch();
 
 	-- TODO:: Remove this. It's all temporary until there's a better server-side solution.
 	EventUtil.ContinueOnAddOnLoaded("Blizzard_ClassTalentUI", GenerateClosure(self.LoadSavedVariables, self));
@@ -179,6 +179,9 @@ function ClassTalentTalentsTabMixin:OnShow()
 	FrameUtil.RegisterFrameForUnitEvents(self, ClassTalentTalentsTabUnitEvents, "player");
 
 	self:UpdateConfigButtonsState();
+
+	-- Art TODO: Un-Comment this once animation graphics are updated
+	--self:SetBackgroundAnimationsPlaying(true);
 end
 
 function ClassTalentTalentsTabMixin:LoadSavedVariables()
@@ -217,8 +220,16 @@ function ClassTalentTalentsTabMixin:UpdateSpecBackground()
 	local currentSpecID = self:GetSpecID();
 	local atlas = SpecIDToBackgroundAtlas[currentSpecID];
 	if atlas and C_Texture.GetAtlasInfo(atlas) then
-		self.Background:SetAtlas(SpecIDToBackgroundAtlas[currentSpecID], TextureKitConstants.UseAtlasSize);
+		self.Background:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+		self.OverlayBackground:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 	end
+end
+
+function ClassTalentTalentsTabMixin:SetBackgroundAnimationsPlaying(playing)
+	self.Sheen1.Anim:SetPlaying(playing);
+	self.Sheen2.Anim:SetPlaying(playing);
+	self.Sheen3.Anim:SetPlaying(playing);
+	self.OverlayBackground.Anim:SetPlaying(playing);
 end
 
 function ClassTalentTalentsTabMixin:CheckSetSelectedConfigID()
@@ -245,6 +256,9 @@ function ClassTalentTalentsTabMixin:OnHide()
 
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentTalentsTabEvents);
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentTalentsTabUnitEvents);
+
+	-- Art TODO: Un-Comment this once animation graphics are updated
+	--self:SetBackgroundAnimationsPlaying(false);
 end
 
 function ClassTalentTalentsTabMixin:OnEvent(event, ...)
@@ -284,7 +298,11 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 	elseif event == "PLAYER_TALENT_UPDATE" then
 		self:CheckSetSelectedConfigID();
 		self:UnregisterEvent("PLAYER_TALENT_UPDATE");
-
+	elseif event == "ACTIONBAR_SLOT_CHANGED" then
+		if not self:IsInspecting() then
+			self:UpdateTalentActionBarStatuses();
+			self:UpdateFullSearchResults();
+		end
 	-- TODO:: Replace this events with more proper "CanChangeTalent" signal(s).
 	elseif (event == "PLAYER_REGEN_ENABLED") or (event == "PLAYER_REGEN_DISABLED") or (event == "UNIT_AURA") then
 		self:UpdateConfigButtonsState();
@@ -350,7 +368,15 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 		return nil;
 	end
 
-	self.LoadoutDropDown:SetNewEntryCallback(NewEntryCallback, TALENT_FRAME_DROP_DOWN_NEW_LOADOUT, TALENT_FRAME_DROP_DOWN_NEW_LOADOUT_PROMPT);
+	local function NewEntryDisabledCallback()
+		local disabled = not C_ClassTalents.CanCreateNewConfig();
+		local title = ""; -- this needs to be set or the tooltip does not display
+		local text = nil;
+		local warning = TALENT_FRAME_NEW_LOADOUT_DISABLED_TOOLTIP;
+		return disabled, title, text, warning;
+	end
+
+	self.LoadoutDropDown:SetNewEntryCallback(NewEntryCallback, TALENT_FRAME_DROP_DOWN_NEW_LOADOUT, TALENT_FRAME_DROP_DOWN_NEW_LOADOUT_PROMPT, NewEntryDisabledCallback);
 
 	local function EditLoadoutCallback(configID)
 		ClassTalentEditLoadoutDialog:ShowDialog(configID);
@@ -443,15 +469,6 @@ function ClassTalentTalentsTabMixin:AnchorGate(gate, button)
 	-- Overrides TalentFrameBaseMixin.
 
 	gate:SetPoint("RIGHT", button, "LEFT");
-end
-
-function ClassTalentTalentsTabMixin:OnSelectionChoiceShown(selectionChoice)
-	-- Overrides TalentFrameBaseMixin.
-	local selectionEntryID = selectionChoice:GetEntryID();
-	selectionChoice:SetSearchMatchType(self:GetSearchMatchTypeForEntryID(selectionEntryID));
-
-	local shouldHighlight = self.activeStarterBuildHighlight and self.activeStarterBuildHighlight.entryID == selectionEntryID;
-	selectionChoice:SetGlowing(shouldHighlight);
 end
 
 function ClassTalentTalentsTabMixin:UpdateTreeCurrencyInfo()
@@ -564,8 +581,8 @@ function ClassTalentTalentsTabMixin:SetTalentTreeID(talentTreeID, forceUpdate)
 	end
 end
 
-function ClassTalentTalentsTabMixin:SetCommitStarted(configID)
-	TalentFrameBaseMixin.SetCommitStarted(self, configID);
+function ClassTalentTalentsTabMixin:SetCommitStarted(configID, commitFailed)
+	TalentFrameBaseMixin.SetCommitStarted(self, configID, commitFailed);
 
 	self:UpdateConfigButtonsState();
 end
@@ -686,9 +703,16 @@ function ClassTalentTalentsTabMixin:UpdateConfigButtonsState()
 	end
 
 	if hasAnyChanges then
-		GlowEmitterFactory:Show(self.ApplyButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
+		if self.ApplyButton:IsEnabled() then
+			GlowEmitterFactory:Show(self.ApplyButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
+			self.ApplyButton.YellowGlow:Hide();
+		else
+			GlowEmitterFactory:Hide(self.ApplyButton);
+			self.ApplyButton.YellowGlow:Show();
+		end
 	else
 		GlowEmitterFactory:Hide(self.ApplyButton);
+		self.ApplyButton.YellowGlow:Hide();
 	end
 
 	self.UndoButton:SetShown(hasAnyChanges);
@@ -699,7 +723,7 @@ end
 
 function ClassTalentTalentsTabMixin:HasAnyPurchasedRanks()
 	for button in self:EnumerateAllTalentButtons() do
-		local nodeInfo = button:GetTalentNodeInfo();
+		local nodeInfo = button:GetNodeInfo();
 		if nodeInfo and (nodeInfo.ranksPurchased > 0) then
 			return true;
 		end
@@ -765,6 +789,8 @@ function ClassTalentTalentsTabMixin:UpdateInspecting()
 	end
 
 	self:RefreshCurrencyDisplay();
+
+	ClassTalentTalentsSearchMixin.UpdateInspecting(self);
 end
 
 function ClassTalentTalentsTabMixin:IsInspecting()
@@ -810,16 +836,20 @@ function ClassTalentTalentsTabMixin:GetSpecName()
 	return select(2, GetSpecializationInfoByID(specID, unitSex));
 end
 
-function ClassTalentTalentsTabMixin:GetTalentInfoForEntry(entryID)
-	local talentID = self:GetAndCacheEntryInfo(entryID).talentID;
-	if talentID then
-		return self:GetAndCacheTalentInfo(talentID);
+function ClassTalentTalentsTabMixin:GetDefinitionInfoForEntry(entryID)
+	local definitionID = self:GetAndCacheEntryInfo(entryID).definitionID;
+	if definitionID then
+		return self:GetAndCacheDefinitionInfo(definitionID);
 	end
 	return nil;
 end
 
 function ClassTalentTalentsTabMixin:GetClassTalentFrame()
 	return self:GetParent();
+end
+
+function ClassTalentTalentsTabMixin:IsHighlightedStarterBuildEntry(entryID)
+	return self.activeStarterBuildHighlight and self.activeStarterBuildHighlight.entryID == entryID;
 end
 
 function ClassTalentTalentsTabMixin:UpdateStarterBuildHighlights()
@@ -890,49 +920,8 @@ function ClassTalentTalentsTabMixin:UnflagStarterBuild()
 	self:SetStarterBuildActive(false);
 end
 
-ClassTalentButtonSpendMixin = CreateFromMixins(TalentButtonSpendMixin);
-
-function ClassTalentButtonSpendMixin:OnLoad()
-	TalentButtonSpendMixin.OnLoad(self);
-
-	self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
-	self.deselectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND;
-end
-
-function ClassTalentButtonSpendMixin:UpdateEntryInfo(skipUpdate)
-	TalentButtonSpendMixin.UpdateEntryInfo(self, skipUpdate);
-	
-	if self.entryInfo and self.entryInfo.type == Enum.TraitNodeEntryType.SpendSquare then
-		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR;
-	else
-		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+function ClassTalentTalentsTabMixin:UpdateTalentActionBarStatuses()
+	for button in self:EnumerateAllTalentButtons() do
+		button:UpdateActionBarStatus();
 	end
-end
-
-ClassTalentButtonSelectMixin = CreateFromMixins(TalentButtonSelectMixin);
-
-function ClassTalentButtonSelectMixin:OnLoad()
-	TalentButtonSelectMixin.OnLoad(self);
-
-	self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
-	self.deselectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND;
-end
-
-function ClassTalentButtonSelectMixin:UpdateEntryInfo(skipUpdate)
-	TalentButtonSelectMixin.UpdateEntryInfo(self, skipUpdate);
-	
-	if self.entryInfo and self.entryInfo.type == Enum.TraitNodeEntryType.SpendSquare then
-		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR;
-	else
-		self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
-	end
-end
-
-ClassTalentButtonSplitSelectMixin = CreateFromMixins(TalentButtonSplitSelectMixin);
-
-function ClassTalentButtonSplitSelectMixin:OnLoad()
-	TalentButtonSplitSelectMixin.OnLoad(self);
-
-	self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR;
-	self.deselectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND;
 end

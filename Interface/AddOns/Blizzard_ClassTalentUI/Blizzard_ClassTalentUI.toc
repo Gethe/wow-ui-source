@@ -7,6 +7,7 @@ Blizzard_ClassTalentImportExport.lua
 Blizzard_ClassTalentImportDialog.xml
 Blizzard_ClassTalentEditLoadoutDialog.xml
 Blizzard_ClassTalentSpecTab.xml
+Blizzard_ClassTalentButtonTemplates.lua
 Blizzard_ClassTalentTalentsSearch.lua
 Blizzard_ClassTalentTalentsTab.xml
 Blizzard_PvPTalentListTemplates.xml

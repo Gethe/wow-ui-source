@@ -136,6 +136,22 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 
 		local sentinelkey, sentinelInfo = self:GetSentinelKeyInfoFromSelectionID(dropDownButtonInfo.value);
 		if sentinelInfo then
+			dropDownButtonInfo.colorCode = sentinelInfo.colorCode;
+			dropDownButtonInfo.tooltipText = sentinelInfo.tooltipText;
+			dropDownButtonInfo.tooltipTitle = sentinelInfo.tooltipTitle;
+			dropDownButtonInfo.tooltipWhileDisabled = sentinelInfo.tooltipWhileDisabled;
+			dropDownButtonInfo.tooltipOnButton = sentinelInfo.tooltipOnButton;
+			dropDownButtonInfo.noTooltipWhileEnabled = sentinelInfo.noTooltipWhileEnabled;
+			dropDownButtonInfo.tooltipWarning = sentinelInfo.tooltipWarning;
+
+			if sentinelInfo.disabledCallback then
+				local disabled, tooltipTitle, tooltipText, tooltipWarning = sentinelInfo.disabledCallback();
+				dropDownButtonInfo.disabled = disabled;
+				dropDownButtonInfo.tooltipTitle = tooltipTitle;
+				dropDownButtonInfo.tooltipText = tooltipText;
+				dropDownButtonInfo.tooltipWarning = tooltipWarning;
+			end
+
 			if sentinelInfo.icon then
 				dropDownButtonInfo.customCheckIconAtlas = sentinelInfo.icon;
 			else
@@ -222,7 +238,7 @@ end
 
 -- newEntryCallback(newEntryName)
 -- Create a fresh entry with a new name.
-function DropDownLoadSystemMixin:SetNewEntryCallback(newEntryCallback, optionText, popupText)
+function DropDownLoadSystemMixin:SetNewEntryCallback(newEntryCallback, optionText, popupText, disabledCallback)
 	local function NewEntrySentinelCallback(selectionID, loadSystem)
 		local function LoadSystemNewEntry(entryName)
 			if entryName ~= "" then
@@ -241,9 +257,14 @@ function DropDownLoadSystemMixin:SetNewEntryCallback(newEntryCallback, optionTex
 	end
 
 	local sentinelInfo = {
-		text = GREEN_FONT_COLOR:WrapTextInColorCode(optionText),
+		text = optionText,
+		colorCode = GREEN_FONT_COLOR_CODE,
 		icon = "communities-icon-addchannelplus",
 		callback = NewEntrySentinelCallback,
+		disabledCallback = disabledCallback,
+		tooltipWhileDisabled = true,
+		tooltipOnButton = true,
+		noTooltipWhileEnabled = true,
 	};
 
 	self:AddSentinelValue(sentinelInfo);

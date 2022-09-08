@@ -16,6 +16,7 @@ TALENT_BUTTON_TOOLTIP_REPLACED_BY_FORMAT = "Replaced by %s";
 TALENT_BUTTON_TOOLTIP_SELECT_INSTRUCTIONS = "Choose one option";
 TALENT_BUTTON_TOOLTIP_SELECT_CHANGE_INSTRUCTIONS = "Right click to unlearn";
 TALENT_BUTTON_TOOLTIP_SELECT_PREVIEW_INSTRUCTIONS = "Preview options";
+TALENT_BUTTON_TOOLTIP_NOT_ON_ACTION_BAR = "You haven't added this to your action bars";
 TALENT_FRAME_CURRENCY_FORMAT = "%s %s";
 TALENT_FRAME_CURRENCY_FORMAT_WITH_MAXIMUM = "%s / %s %s";
 
@@ -46,7 +47,6 @@ TALENT_FRAME_GATE_TOOLTIP_FORMAT = "Spend %d more |4point:points; to unlock this
 TALENT_FRAME_SEARCH_TOOLTIP_MATCH = "Matching Talent";
 TALENT_FRAME_SEARCH_TOOLTIP_EXACT_MATCH = "Exact Match";
 TALENT_FRAME_SEARCH_TOOLTIP_RELATED_MATCH = "Related Talent";
-TALENT_FRAME_SEARCH_NOT_ON_ACTIONBAR = "Not on action bar";
 
 GENERIC_TRAIT_FRAME_CURRENCY_TEXT = "%d %s";
 GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT = "Are you sure you want to spend %s to unlock this talent?";
@@ -65,7 +65,7 @@ local LargeTemplatesByTalentType = {
 	[Enum.TraitNodeEntryType.SpendCircle] = "TalentButtonLargeCircleTemplate",
 };
 
-local TemplatesByEdgeVisualization = {
+local TemplatesByEdgeVisualStyle = {
 	[Enum.TraitEdgeVisualStyle.Straight] = "TalentEdgeStraightTemplate",
 };
 
@@ -94,18 +94,18 @@ function TalentUtil.CombineCostArrays(...)
 	return combinedCostArray;
 end
 
-function TalentUtil.GetTalentNameFromInfo(talentInfo)
-	return TalentUtil.GetTalentName(talentInfo.overrideName, talentInfo.spellID);
+function TalentUtil.GetTalentNameFromInfo(definitionInfo)
+	return TalentUtil.GetTalentName(definitionInfo.overrideName, definitionInfo.spellID);
 end
 
 function TalentUtil.GetTalentName(overrideName, spellID)
-	if overrideName ~= nil then
+	if overrideName then
 		return overrideName;
 	end
 
-	if spellID ~= nil then
+	if spellID then
 		local spellName = GetSpellInfo(spellID);
-		if spellName ~= nil then
+		if spellName then
 			return spellName;
 		end
 	end
@@ -113,18 +113,18 @@ function TalentUtil.GetTalentName(overrideName, spellID)
 	return "";
 end
 
-function TalentUtil.GetTalentSubtextFromInfo(talentInfo)
-	return TalentUtil.GetTalentSubtext(talentInfo.talentSubtext, talentInfo.spellID);
+function TalentUtil.GetTalentSubtextFromInfo(definitionInfo)
+	return TalentUtil.GetTalentSubtext(definitionInfo.overrideSubtext, definitionInfo.spellID);
 end
 
 function TalentUtil.GetTalentSubtext(overrideSubtext, spellID)
-	if overrideSubtext ~= nil then
+	if overrideSubtext then
 		return overrideSubtext;
 	end
 
-	if spellID ~= nil then
+	if spellID then
 		local spellSubtext = GetSpellSubtext(spellID);
-		if spellSubtext ~= nil then
+		if spellSubtext then
 			return spellSubtext;
 		end
 	end
@@ -132,19 +132,31 @@ function TalentUtil.GetTalentSubtext(overrideSubtext, spellID)
 	return nil;
 end
 
-function TalentUtil.GetTalentDescriptionFromInfo(talentInfo)
-	return TalentUtil.GetTalentDescription(talentInfo.overrideDescription, talentInfo.spellID);
+function TalentUtil.GetTalentDescriptionFromInfo(definitionInfo)
+	return TalentUtil.GetTalentDescription(definitionInfo.overrideDescription, definitionInfo.spellID);
 end
 
 function TalentUtil.GetTalentDescription(overrideDescription, spellID)
-	if overrideDescription ~= nil then
+	if overrideDescription then
 		return overrideDescription;
 	end
 
-	if spellID ~= nil then
+	if spellID then
 		local spellDescription = GetSpellDescription(spellID);
-		if spellDescription ~= nil then
+		if spellDescription then
 			return spellDescription;
+		end
+	end
+
+	return "";
+end
+
+function TalentUtil.GetReplacesSpellNameFromInfo(definitionInfo)
+	if definitionInfo and definitionInfo.overriddenSpellID then
+		local overriddenSpellID = C_SpellBook.GetOverrideSpell(definitionInfo.overriddenSpellID);
+		local overriddenSpellName = GetSpellInfo(overriddenSpellID);
+		if overriddenSpellName then
+			return overriddenSpellName;
 		end
 	end
 
@@ -196,8 +208,8 @@ function TalentButtonUtil.GetSpecializedMixin(nodeInfo, talentType)
 	return TalentButtonSpendMixin;
 end
 
-function TalentButtonUtil.GetTemplateForEdgeVisualization(visualization)
-	return TemplatesByEdgeVisualization[visualization];
+function TalentButtonUtil.GetTemplateForEdgeVisualStyle(visualStyle)
+	return TemplatesByEdgeVisualStyle[visualStyle];
 end
 
 function TalentButtonUtil.ApplyPosition(button, talentFrame, posX, posY)
@@ -220,15 +232,15 @@ function TalentButtonUtil.GetColorForBaseVisualState(visualState)
 	return YELLOW_FONT_COLOR;
 end
 
-function TalentButtonUtil.CalculateIconTexture(talentInfo, overrideSpellID)
-	if talentInfo ~= nil then
-		local overrideIcon = talentInfo.overrideIcon;
-		if overrideIcon ~= nil then
+function TalentButtonUtil.CalculateIconTexture(definitionInfo, overrideSpellID)
+	if definitionInfo then
+		local overrideIcon = definitionInfo.overrideIcon;
+		if overrideIcon then
 			return overrideIcon;
 		end
 
-		local spellID = overrideSpellID or talentInfo.spellID;
-		if spellID ~= nil then
+		local spellID = overrideSpellID or definitionInfo.spellID;
+		if spellID then
 			local spellIcon = select(8, GetSpellInfo(spellID));
 			return spellIcon;
 		end
@@ -241,6 +253,7 @@ TalentButtonUtil.SearchMatchType = {
 	RelatedMatch = 1,
 	Match = 2,
 	ExactMatch = 3,
+	NotOnActionBar = 4,
 };
 
 local SearchMatchStyles = {
@@ -255,6 +268,10 @@ local SearchMatchStyles = {
 	[TalentButtonUtil.SearchMatchType.ExactMatch] = {
 		icon = "talents-search-exactmatch",
 		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_EXACT_MATCH
+	},
+	[TalentButtonUtil.SearchMatchType.NotOnActionBar] = {
+		icon = "talents-search-match",
+		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_NOT_ON_ACTIONBAR
 	},
 };
 
@@ -279,7 +296,6 @@ local OriginalGetEntryInfo = C_Traits.GetEntryInfo;
 C_Traits.GetEntryInfo = function (...)
 	local entryInfo = OriginalGetEntryInfo(...);
 	if entryInfo then
-		entryInfo.talentID = entryInfo.definitionID;
 		entryInfo.entryCost = {};
 	end
 

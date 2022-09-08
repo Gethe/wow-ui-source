@@ -154,10 +154,6 @@
 
 	<Frame name="EditModeSettingSliderTemplate" mixin="EditModeSettingSliderMixin" hidden="true" virtual="true">
 		<Size x="343" y="32"/>
-		<KeyValues>
-			<KeyValue key="widthPadding" value="30" type="number"/>
-			<KeyValue key="fixedHeight" value="32" type="number"/>
-		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">

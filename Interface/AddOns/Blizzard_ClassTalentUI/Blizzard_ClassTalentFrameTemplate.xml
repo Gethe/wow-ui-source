@@ -25,19 +25,6 @@
 							</MaskedTextures>
 						</MaskTexture>
 					</Layer>
-
-					<Layer level="OVERLAY">
-						<!-- TODO:: Remove WIP text. -->
-						<FontString parentKey="WIPText" inherits="GameFontNormalLarge" text="Work In Progress UI Art">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="70" y="-33"/>
-							</Anchors>
-							<Color color="RED_FONT_COLOR"/>
-							<Shadow x="1" y="-1">
-								<Color r="0" g="0" b="0"/>
-							</Shadow>
-						</FontString>
-					</Layer>
 				</Layers>
 			</Frame>
 			<Frame parentKey="TabSystem" inherits="TabSystemTemplate">

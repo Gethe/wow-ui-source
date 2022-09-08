@@ -266,6 +266,7 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	TabSystemOwnerMixin.SetTab(self, tabID);
 	self:SetWidth(pageWidth);
 	UpdateUIPanelPositions(self);
+    EventRegistry:TriggerEvent("ProfessionsFrame.TabSet", ProfessionsFrame, tabID);
 end
 
 function ProfessionsMixin:OnShow()

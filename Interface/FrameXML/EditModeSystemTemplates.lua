@@ -90,14 +90,16 @@ function EditModeSystemMixin:ResetToDefaultPosition()
 end
 
 function EditModeSystemMixin:ApplySystemAnchor()
-	if self.isBottomManagedFrame then
+	if self.isBottomManagedFrame or self.isRightManagedFrame then
+		local frameContainer = self.isBottomManagedFrame and UIParentBottomManagedFrameContainer or UIParentRightManagedFrameContainer;
+
 		if self:IsInDefaultPosition() then
 			self.ignoreFramePositionManager = nil;
-			UIParentBottomManagedFrameContainer:AddManagedFrame(self);
+			frameContainer:AddManagedFrame(self);
 			return;
 		else
 			self.ignoreFramePositionManager = true;
-			UIParentBottomManagedFrameContainer:RemoveManagedFrame(self);
+			frameContainer:RemoveManagedFrame(self);
 			self:SetParent(UIParent);
 		end
 	elseif EditModeUtil:IsRightAnchoredActionBar(self) then
@@ -635,7 +637,29 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 	if setting == Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground then
 		return not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 	elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalGroups then
-		return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		else
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.KeepGroupsTogether);
+		end
+	elseif setting == Enum.EditModeUnitFrameSetting.FrameHeight then
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		end
+	elseif setting == Enum.EditModeUnitFrameSetting.FrameWidth then
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		end
+	elseif setting == Enum.EditModeUnitFrameSetting.DisplayBorder then
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		else
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.KeepGroupsTogether);
+		end
+	elseif setting == Enum.EditModeUnitFrameSetting.SortPlayersBy then
+		return not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.KeepGroupsTogether);
+	elseif setting == Enum.EditModeUnitFrameSetting.RowSize then
+		return not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.KeepGroupsTogether);
 	end
 
 	return true;
@@ -644,8 +668,8 @@ end
 function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
 	self.Selection:ClearAllPoints();
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Player then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 35, -10);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 20);
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -16);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -19, 12);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 10);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -35, 0);
@@ -653,19 +677,17 @@ function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 10);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -35, 0);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		
 		if self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) then
-			if self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseHorizontalGroups) then
-				self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2);
-				self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -7, 1);
-			else
-				self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2);
-				self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-			end
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
 		else
-			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 2);
 			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 9, 0);
 		end
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
 	end
@@ -682,11 +704,15 @@ function EditModeUnitFrameSystemMixin:SetupSettingsDialogAnchor()
 		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("TOPLEFT", UIParent, "TOPLEFT", 200, -200);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
 		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("TOPLEFT", UIParent, "TOPLEFT", 200, -200);
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
+		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("TOPRIGHT", UIParent, "TOPRIGHT", -400, -200);
 	end
 end
 
 function EditModeUnitFrameSystemMixin:AddExtraButtons(extraButtonPool)
-	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party
+		or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid
+		or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
 		CreateResetToDefaultPositionButton(self, extraButtonPool);
 		return true;
 	end
@@ -704,11 +730,16 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingBuffsOnTop()
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseLargerFrame()
-	FocusFrame_SetSmallSize(not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame));
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
+		FocusFrame_SetSmallSize(not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame));
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
+		BossTargetFrameContainer:SetSmallSize(not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame));
+	end
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseRaidStylePartyFrames()
 	UpdateRaidAndPartyFrames();
+	CompactPartyFrame_RefreshMembers();
 	self:UpdateSelectionVerticalState();
 end
 
@@ -717,11 +748,90 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingShowPartyFrameBackgroun
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseHorizontalGroups()
-	if CompactPartyFrame then
-		CompactRaidGroup_UpdateBorder(CompactPartyFrame);
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+		if CompactPartyFrame then
+			CompactRaidGroup_UpdateBorder(CompactPartyFrame);
+		end
+		UpdateRaidAndPartyFrames();
+		self:UpdateSelectionVerticalState();
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		EditModeManagerFrame:UpdateRaidContainerFlow();
 	end
-	UpdateRaidAndPartyFrames();
-	self:UpdateSelectionVerticalState();
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingCastBarOnSide()
+	self:SetCastBarPosition(self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.CastBarOnSide));
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingShowCastTime()
+	-- TODO
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingViewRaidSize()
+	CompactRaidFrameContainer:TryUpdate();
+	CompactRaidFrameContainer:Layout();
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameWidth()
+	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
+	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
+	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
+
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		EditModeManagerFrame:UpdateRaidContainerFlow();
+	else
+		PartyFrame:Layout();
+	end
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameHeight()
+	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
+	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
+	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
+
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		EditModeManagerFrame:UpdateRaidContainerFlow();
+	else
+		PartyFrame:Layout();
+	end
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingDisplayBorder()
+	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
+
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		EditModeManagerFrame:UpdateRaidContainerFlow();
+	else
+		PartyFrame:Layout();
+	end
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingKeepGroupsTogether()
+	local groupMode;
+	if self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.KeepGroupsTogether) then
+		groupMode = "discrete";
+	else
+		groupMode = "flush";
+	end
+
+	CompactRaidFrameContainer:SetGroupMode(groupMode);
+	CompactRaidFrameManager_UpdateFilterInfo();
+	EditModeManagerFrame:UpdateRaidContainerFlow();
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingSortPlayersBy()
+	local sortBySettingValue = self:GetSettingValue(Enum.EditModeUnitFrameSetting.SortPlayersBy);
+	if sortBySettingValue == Enum.SortPlayersBy.Group then
+		CompactRaidFrameContainer:SetFlowSortFunction(CRFSort_Group);
+	elseif sortBySettingValue == Enum.SortPlayersBy.Alphabetical then
+		CompactRaidFrameContainer:SetFlowSortFunction(CRFSort_Alphabetical);
+	else
+		CompactRaidFrameContainer:SetFlowSortFunction(CRFSort_Role);
+	end
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingRowSize()
+	EditModeManagerFrame:UpdateRaidContainerFlow();
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSelectionVerticalState()
@@ -751,9 +861,53 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		self:UpdateSystemSettingShowPartyFrameBackground();
 	elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalGroups and self:HasSetting(Enum.EditModeUnitFrameSetting.UseHorizontalGroups) then
 		self:UpdateSystemSettingUseHorizontalGroups();
+	elseif setting == Enum.EditModeUnitFrameSetting.CastBarOnSide and self:HasSetting(Enum.EditModeUnitFrameSetting.CastBarOnSide) then
+		self:UpdateSystemSettingCastBarOnSide();
+	elseif setting == Enum.EditModeUnitFrameSetting.ShowCastTime and self:HasSetting(Enum.EditModeUnitFrameSetting.ShowCastTime) then
+		self:UpdateSystemSettingShowCastTime();
+	elseif setting == Enum.EditModeUnitFrameSetting.ViewRaidSize and self:HasSetting(Enum.EditModeUnitFrameSetting.ViewRaidSize) then
+		self:UpdateSystemSettingViewRaidSize();
+	elseif setting == Enum.EditModeUnitFrameSetting.FrameWidth and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameWidth) then
+		self:UpdateSystemSettingFrameWidth();
+	elseif setting == Enum.EditModeUnitFrameSetting.FrameHeight and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameHeight) then
+		self:UpdateSystemSettingFrameHeight();
+	elseif setting == Enum.EditModeUnitFrameSetting.DisplayBorder and self:HasSetting(Enum.EditModeUnitFrameSetting.DisplayBorder) then
+		self:UpdateSystemSettingDisplayBorder();
+	elseif setting == Enum.EditModeUnitFrameSetting.KeepGroupsTogether and self:HasSetting(Enum.EditModeUnitFrameSetting.KeepGroupsTogether) then
+		self:UpdateSystemSettingKeepGroupsTogether();
+	elseif setting == Enum.EditModeUnitFrameSetting.SortPlayersBy and self:HasSetting(Enum.EditModeUnitFrameSetting.SortPlayersBy) then
+		self:UpdateSystemSettingSortPlayersBy();
+	elseif setting == Enum.EditModeUnitFrameSetting.RowSize and self:HasSetting(Enum.EditModeUnitFrameSetting.RowSize) then
+		self:UpdateSystemSettingRowSize();
 	end
 
 	self:ClearDirtySetting(setting);
+end
+
+EditModeBossUnitFrameSystemMixin = {};
+
+function EditModeBossUnitFrameSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
+function EditModeBossUnitFrameSystemMixin:OnDragStart()
+	if self:CanBeMoved() then
+		self:SetParent(UIParent);
+		self:StartMoving();
+	end
+end
+
+function EditModeBossUnitFrameSystemMixin:UpdateShownState()
+	local isAnyBossFrameShowing = false;
+	for index, bossFrame in ipairs(self.BossTargetFrames) do
+		bossFrame:UpdateShownState();
+		isAnyBossFrameShowing = isAnyBossFrameShowing or bossFrame:IsShown();
+	end
+
+	self:SetShown(self.isInEditMode or isAnyBossFrameShowing);
 end
 
 EditModeMinimapSystemMixin = {};
@@ -936,7 +1090,7 @@ function EditModeAuraFrameSystemMixin:OnEditModeEnter()
 		self.exampleAuraFrames = {};
 		for i = 1, self.maxAuras, 1 do
 			local auraFrame = self.auraPool:Acquire(self.exampleAuraTemplate);
-			auraFrame:SetScale(self.iconScale);
+			auraFrame:SetScale(self.AuraContainer.iconScale);
 
 			auraFrame.duration:SetFontObject(DEFAULT_AURA_DURATION_FONT);
 			auraFrame.duration:SetFormattedText(SecondsToTimeAbbrev(i * 60));
@@ -1113,9 +1267,9 @@ end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconSize()
 	local iconSize = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconSize);
-	self.iconScale = iconSize / 100;
+	self.AuraContainer.iconScale = iconSize / 100;
 	for i, auraFrame in pairs(self.auraFrames) do
-		auraFrame:SetScale(self.iconScale);
+		auraFrame:SetScale(self.AuraContainer.iconScale);
 	end
 end
 

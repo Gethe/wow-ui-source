@@ -16,11 +16,11 @@
 				</FontString>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="2" y="-2"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" x="-2" y="2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitContainer.portrait" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PortraitContainer.portrait" x="-3" y="5"/>
 					</Anchors>
 					<MaskedTextures>
-						<MaskedTexture childKey="portrait"/>
+						<MaskedTexture childKey="PortraitContainer.portrait"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>

@@ -92,8 +92,8 @@ function ComboPointPlayerMixin:AnimateIn()
 end
 
 function ComboPointPlayerMixin:Setup()
-	self.on = false; 
-end 
+	self.on = false;
+end
 
 function ComboPointPlayerMixin:AnimateOut()
 	if (self.on) then

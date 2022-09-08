@@ -114,12 +114,12 @@ function PTR_IssueReporter.CreateReports()
     PTR_IssueReporter.AddMapToSuppressedList(IslandMapIDs) 
     
     ------------------------------------ Confused Reporting --------------------------------------------
-    local confusedReport = PTR_IssueReporter.CreateSurvey(1, "Feedback Report")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(confusedReport, true, true)
+    --local confusedReport = PTR_IssueReporter.CreateSurvey(1, "Feedback Report")
+    --PTR_IssueReporter.AttachDefaultCollectionToSurvey(confusedReport, true, true)
     
-    confusedReport:AddDataCollection(collector.OpenEndedQuestion, "What is your Feedback for this Zone?")
+    --confusedReport:AddDataCollection(collector.OpenEndedQuestion, "What is your Feedback for this Zone?")
 
-    confusedReport:RegisterPopEvent(event.UIButtonClicked, "Confused")
+    --confusedReport:RegisterPopEvent(event.UIButtonClicked, "Confused")
     
     --------------------------------------- Bug Reporting ----------------------------------------------
     local bugReport = PTR_IssueReporter.CreateSurvey(2, "Bug Report")
@@ -132,7 +132,7 @@ function PTR_IssueReporter.CreateReports()
     local creatureReport = PTR_IssueReporter.CreateSurvey(3, "Issue Report: %s")
     creatureReport:PopulateDynamicTitleToken(1, "Name")
     creatureReport:AttachModelViewer("ID")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(creatureReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(creatureReport, true)
     
     creatureReport:AddDataCollection(collector.FromDataPackage, "ID")
     creatureReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this creature?")
@@ -203,7 +203,7 @@ function PTR_IssueReporter.CreateReports()
     ------------------------------------- Island Reporting ----------------------------------------------
     local islandReport = PTR_IssueReporter.CreateSurvey(5, "Issue Report: %s")
     islandReport:PopulateDynamicTitleToken(1, "Name")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(islandReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(islandReport, true)
     
     islandReport:AddDataCollection(collector.FromDataPackage, "ID")
     islandReport:AddDataCollection(collector.FromDataPackage, "DifficultyID")
@@ -220,7 +220,7 @@ function PTR_IssueReporter.CreateReports()
     ------------------------------------ Warfronts Reporting ---------------------------------------------
     local warfrontsReport = PTR_IssueReporter.CreateSurvey(6, "Issue Report: %s")
     warfrontsReport:PopulateDynamicTitleToken(1, "Name")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(warfrontsReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(warfrontsReport, true)
     
     warfrontsReport:AddDataCollection(collector.FromDataPackage, "ID")
     warfrontsReport:AddDataCollection(collector.FromDataPackage, "DifficultyID")
@@ -242,7 +242,7 @@ function PTR_IssueReporter.CreateReports()
     local spellReport = PTR_IssueReporter.CreateSurvey(7, "Issue Report: %s")
     spellReport:PopulateDynamicTitleToken(1, "Name")
     spellReport:AttachIconViewer("ID", GetIconFromSpellID)
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(spellReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(spellReport, true)
     
     spellReport:AddDataCollection(collector.FromDataPackage, "ID")
     spellReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this spell?")
@@ -334,7 +334,7 @@ function PTR_IssueReporter.CreateReports()
     local itemReport = PTR_IssueReporter.CreateSurvey(9, "Issue Report: %s")
     itemReport:PopulateDynamicTitleToken(1, "Name")
     itemReport:AttachIconViewer("ID", GetIconFromItemID)
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(itemReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(itemReport, true)
     
     itemReport:AddDataCollection(collector.FromDataPackage, "ID")
     itemReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this item?")
@@ -365,7 +365,7 @@ function PTR_IssueReporter.CreateReports()
     local currencyReport = PTR_IssueReporter.CreateSurvey(11, "Issue Report: %s")
     currencyReport:PopulateDynamicTitleToken(1, "Name")
     currencyReport:AttachIconViewer("ID", GetIconFromCurrencyID)
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(currencyReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(currencyReport, true)
     
     currencyReport:AddDataCollection(collector.FromDataPackage, "ID")
     currencyReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this currency?")
@@ -374,7 +374,7 @@ function PTR_IssueReporter.CreateReports()
     
     -------------------------------- Pet Battle Creature Reporting ---------------------------------------
     local petBattleCreatureReport = PTR_IssueReporter.CreateSurvey(12, "Issue Report: Pet Battles")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(petBattleCreatureReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(petBattleCreatureReport, true)
     
     petBattleCreatureReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with pet battles?")
 
@@ -394,7 +394,7 @@ function PTR_IssueReporter.CreateReports()
     end
     
     local azeriteEssenceReport = PTR_IssueReporter.CreateSurvey(13, "Issue Report: %s")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(azeriteEssenceReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(azeriteEssenceReport, true)
     azeriteEssenceReport:PopulateDynamicTitleToken(1, "Name")
     azeriteEssenceReport:AttachIconViewer("ID", GetIconFromAzeriteEssenceID)
     
@@ -426,7 +426,7 @@ function PTR_IssueReporter.CreateReports()
     end
     
     local garrTalentReport = PTR_IssueReporter.CreateSurvey(14, "Issue Report: %s")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(garrTalentReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(garrTalentReport, true)
     garrTalentReport:PopulateDynamicTitleToken(1, "Name")
     garrTalentReport:AttachIconViewer("ID", GetIconFromGarrTalentID)
     
@@ -442,7 +442,7 @@ function PTR_IssueReporter.CreateReports()
     end
     
     local recipeReport = PTR_IssueReporter.CreateSurvey(15, "Issue Report: %s")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(recipeReport)
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(recipeReport, true)
     recipeReport:PopulateDynamicTitleToken(1, "Name")
     recipeReport:AttachIconViewer("Additional", GetIconFromRecipeID)
     
@@ -450,6 +450,135 @@ function PTR_IssueReporter.CreateReports()
     recipeReport:AddDataCollection(collector.FromDataPackage, "ID")
     
     recipeReport:RegisterPopEvent(event.Tooltip, tooltips.recipe)
+    
+    ----------------------------------------------------------------------------------------------------------
+    ------------------------------------------ UI Reporting --------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------
+    local UIPanelIDs = {
+        EditMode = 1,
+        MountJornal = 2,
+        PetJournal = 3,
+        ToyBox = 4,
+        Heirlooms = 5,
+        Appearances = 6,
+        AdventureGuide = 7,
+        ClassTalent = 8,
+        ProfessionTalents = 9,
+    }
+    
+    ----------------------------------------------- Edit Mode ------------------------------------------------
+    local editModeReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Edit Mode")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(editModeReport, true)
+    
+    editModeReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with Edit Mode?")
+    editModeReport:AddDataCollection(collector.PassValue, UIPanelIDs.EditMode)
+    
+    editModeReport:SetButton("I have found an issue with edit mode.", PTR_IssueReporter.Assets.EditModeIcon)
+    editModeReport:RegisterButtonEvent(event.EditModeEntered)
+    editModeReport:RegisterButtonEventEnd(event.EditModeExit)    
+    
+    -------------------------------------------- Mount Collection ---------------------------------------------
+    local mountUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Mounts UI")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(mountUIReport, true)
+    
+    mountUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Mounts UI?")
+    mountUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.MountJornal)
+
+    mountUIReport:RegisterUIPanelClick("CollectionsJournal.TabSet", 1)
+    
+    ------------------------------------------ Pet  Collection ------------------------------------------------
+    local petJournalUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Pet Journal UI")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(petJournalUIReport, true)
+    
+    petJournalUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Pet Journal UI?")
+    petJournalUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.PetJournal)
+
+    petJournalUIReport:RegisterUIPanelClick("CollectionsJournal.TabSet", 2, true)
+    
+    ----------------------------------------------- Toy Box ----------------------------------------------------
+    local toyBoxUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Toy Box UI")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(toyBoxUIReport, true)
+    
+    toyBoxUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Toy Box UI?")
+    toyBoxUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.ToyBox)
+
+    toyBoxUIReport:RegisterUIPanelClick("CollectionsJournal.TabSet", 3)
+    
+    ---------------------------------------------- Heirlooms  ---------------------------------------------------
+    local heirloomsUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Heirlooms UI")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(heirloomsUIReport, true)
+    
+    heirloomsUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Heirlooms UI?")
+    heirloomsUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.Heirlooms)
+
+    heirloomsUIReport:RegisterUIPanelClick("CollectionsJournal.TabSet", 4)
+    
+    --------------------------------------------- Appearances --------------------------------------------------
+    local appearancesUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Appearances UI")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(appearancesUIReport, true)
+    
+    appearancesUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Appearances UI?")
+    appearancesUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.Appearances)
+
+    appearancesUIReport:RegisterUIPanelClick("CollectionsJournal.TabSet", 5)
+    
+    ------------------------------------------- Adventure Guide -------------------------------------------------
+    local suggestedContentUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Adventure Guide UI")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(suggestedContentUIReport, true)
+    
+    suggestedContentUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Adventure Guide UI?")
+    suggestedContentUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.AdventureGuide)
+
+    suggestedContentUIReport:RegisterUIPanelClick("EncounterJournal.TabSet", 1)
+    
+    ------------------------------------------- Class Talents -------------------------------------------------
+    local getSpecIDFunc = function()
+        local ID = 0
+        if (ClassTalentFrame) and (ClassTalentFrame.TalentsTab) and (ClassTalentFrame.TalentsTab.GetTalentTreeID) then
+            ID = ClassTalentFrame.TalentsTab:GetTalentTreeID()
+        end
+        
+        return ID
+    end
+    
+    local getTalentTreeString = function()
+        local loadOutString = ""
+        
+        if (ClassTalentFrame) and (ClassTalentFrame.TalentsTab) and (ClassTalentFrame.TalentsTab.GetLoadoutExportString) then
+            loadOutString = ClassTalentFrame.TalentsTab:GetLoadoutExportString()
+        end
+        
+        return loadOutString        
+    end
+    
+    local classTalentUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Class Talent UI")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(classTalentUIReport, true)
+    
+    classTalentUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Class Talent UI?")
+    classTalentUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.ClassTalent)
+    classTalentUIReport:AddDataCollection(collector.RunFunction, getSpecIDFunc)
+    classTalentUIReport:AddDataCollection(collector.RunFunction, getTalentTreeString)
+    
+    classTalentUIReport:RegisterUIPanelClick("ClassTalentFrame.TabSet", 2)
+    
+    ----------------------------------------- Profession Talents -----------------------------------------------
+    local getProfSpecID = function()
+        local ID = 0
+        if (ProfessionsFrame) and (ProfessionsFrame.SpecPage) and (ProfessionsFrame.SpecPage.GetTalentTreeID) then
+            ID = ProfessionsFrame.SpecPage:GetTalentTreeID()
+        end
+        
+        return ID
+    end
+    
+    local professionTalentUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Profession Specialization UI")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(professionTalentUIReport, true)
+    
+    professionTalentUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Profession Specialization UI?")
+    professionTalentUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.ProfessionTalents)
+    professionTalentUIReport:AddDataCollection(collector.RunFunction, getProfSpecID)
+
+    professionTalentUIReport:RegisterUIPanelClick("ProfessionsFrame.TabSet", 2)
     
     --------------------------------------- Character Customization Issue Reporting ----------------------------------------------
     local barberShopReport = PTR_IssueReporter.CreateSurvey(3001, "Issue Report")
@@ -502,272 +631,3 @@ function PTR_IssueReporter.CreateReports()
     barberShopReport:RegisterButtonEventEnd(event.BarberShopClosed)
     barberShopReport:RegisterButtonEventEnd(event.MapIDExit)
 end
---------------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.CreateNPEReports() -- These surveys are for the New Player Experience being test in 9.0 Alpha
-    local URSurveyIndexOffset = 2000
-    local collector = PTR_IssueReporter.DataCollectorTypes
-    local event = PTR_IssueReporter.ReportEventTypes
-    local tooltips = PTR_IssueReporter.TooltipTypes
-    
-    local endOfPlayReport = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 1, "End of Session Report")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(endOfPlayReport)
-    
-    endOfPlayReport:AddDataCollection(collector.OpenEndedQuestion, "Before you go, can you please tell us a little bit about why you are ending your play session?")
-    endOfPlayReport:RegisterFrameAttachedSurvey(GameMenuFrame, event.GameMenuFrameOpened, {event.GameMenuButtonQuit, event.GameMenuButtonLogout, event.GameMenuFrameClosed}, 4, 8, "BOTTOMLEFT", "BOTTOMRIGHT")
-    
-    local lackOfProgressSurvey = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 2, "Objective Clarity Survey")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(lackOfProgressSurvey)
-    
-    lackOfProgressSurvey:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "How clear is your current quest objective(s)?", {"Not At All Clear", "Slightly Clear", "Moderately Clear", "Very Clear", "Extremely Clear"})
-    lackOfProgressSurvey:AddDataCollection(collector.OpenEndedQuestion, "Can you please briefly describe your current quest objective(s)?")
-    lackOfProgressSurvey:RegisterPopEvent(event.TimeSincePlayerProgress, 300)
-    
-    local endOfHubReports = {
-        Murloc_Hideaway = {        
-            ReportID = URSurveyIndexOffset + 3,
-            QuestChainTitle = "Murloc Hideaway",
-            QuestChainSentence = "the Murloc Hideaway",
-            EndQuestID = 54952,
-        },
-        Quilboar_Briar_Patch = {        
-            ReportID = URSurveyIndexOffset + 4,
-            QuestChainTitle = "Quilboar Briar Patch",
-            QuestChainSentence = "the Quilboar Briar Patch",
-            EndQuestID = 55186,
-        },
-        Henrys_Rescue = {        
-            ReportID = URSurveyIndexOffset + 5,
-            QuestChainTitle = "Henry Garrick's Rescue",
-            QuestChainSentence = "Henry Garrick's Rescue",
-            EndQuestID = 55879,
-        },
-        Hruns_Barrow = {        
-            ReportID = URSurveyIndexOffset + 6,
-            QuestChainTitle = "Hrun’s Barrow",
-            QuestChainSentence = "Hrun’s Barrow",
-            EndQuestID = 55639,
-        },
-        Harpy_Roost = {        
-            ReportID = URSurveyIndexOffset + 7,
-            QuestChainTitle = "Harpy's Roost",
-            QuestChainSentence = "the Harpy's Roost",
-            EndQuestID = 55882,
-        },
-        Darkmaul_Citadel = {        
-            ReportID = URSurveyIndexOffset + 8,
-            QuestChainTitle = "Darkmaul Citadel",
-            QuestChainSentence = "Darkmaul Citadel",
-            EndQuestID = 55990,
-        },
-        Darkmaul_Citadel_Dungeon = {        
-            ReportID = URSurveyIndexOffset + 9,
-            QuestChainTitle = "Darkmaul Citadel (Dungeon)",
-            QuestChainSentence = "Darkmaul Citadel (Dungeon)",
-            EndQuestID = 55992,
-        },
-    }
-    
-    local startOfSurvey = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 27, "Welcome to Shadowlands!")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(startOfSurvey)
-    startOfSurvey:AddDataCollection(collector.TextBlock, "Welcome to the Shadowlands Alpha!\n This survey will prompt you with questions while you play through the New Player Experience.")
-    startOfSurvey:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Before we get started, are you a new or novice World of Warcraft player?", {"Yes", "No"}, true)
-    startOfSurvey:RegisterPopEvent(event.QuestTurnedIn, 54952)
-    
-    for key, endOfHubData in pairs (endOfHubReports) do
-        local endOfHubReport = PTR_IssueReporter.CreateSurvey(endOfHubData.ReportID, endOfHubData.QuestChainTitle)
-        PTR_IssueReporter.AttachDefaultCollectionToSurvey(endOfHubReport)
-        endOfHubReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "How fun were the quests in\n"..endOfHubData.QuestChainSentence.."?", {"Not At\nAll Fun" , "Slightly\nFun" , "Moderately\nFun" , "Very\nFun" , "Extremely\nFun"})
-        endOfHubReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "How clear were the quest objectives for the quests\nin "..endOfHubData.QuestChainSentence.."?", {"Not At\nAll Clear" , "Slightly\nClear" , "Moderately\nClear" , "Very\nClear" , "Extremely\nClear"})
-        endOfHubReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "How difficult was it to find your way around in "..endOfHubData.QuestChainSentence.."?", {"Not At\nAll Difficult" , "Slightly\nDifficult" , "Moderately\nDifficult" , "Very\nDifficult" , "Extremely\nDifficult"})
-        endOfHubReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "How challenging were the quests\nin "..endOfHubData.QuestChainSentence.."?", {"Not At\nAll Challenging" , "Slightly\nChallenging" , "Moderately\nChallenging" , "Very\nChallenging" , "Extremely\nChallenging"})
-        endOfHubReport:AddDataCollection(collector.OpenEndedQuestion, "While you were questing in "..endOfHubData.QuestChainSentence..",\nwas there any part of the game that was\nunclear or confusing?")
-        endOfHubReport:AddDataCollection(collector.OpenEndedQuestion, "Do you have any additional comments on your experiences in "..endOfHubData.QuestChainSentence.."?")
-        if (endOfHubData.EndQuestID == 54952) then -- This quest ID is going to be asked after asking an intro quest
-            startOfSurvey:PopSurveyOnSubmit(endOfHubReport)
-        else
-            endOfHubReport:RegisterPopEvent(event.QuestTurnedIn, endOfHubData.EndQuestID)
-        end
-    end
-    
-    local GetIconFromSpellID = function(value)
-        return select(3, GetSpellInfo(value))
-    end
-    
-    local classQuestReportData = {
-        DRUID = {
-            ReportID = URSurveyIndexOffset + 10,
-            QuestTitle = "A Druid's Form",
-            SpellID = 783,
-            SpellName = "Travel Form",
-            CompletionQuestID = 59350,
-            ClassName = "Druid",
-        },
-        HUNTER = {
-            ReportID = URSurveyIndexOffset + 11,
-            QuestTitle = "The Art of Taming",
-            SpellID = 83242,
-            SpellName = "Tame Beast",
-            CompletionQuestID = 60168,
-            ClassName = "Hunter",            
-        },
-        MAGE = {
-            ReportID = URSurveyIndexOffset + 12,
-            QuestTitle = "The Best Way to Use Sheep",
-            SpellID = 118,
-            SpellName = "Polymorph",
-            CompletionQuestID = 59354,   
-            ClassName = "Mage",
-        },
-        MONK = {
-            ReportID = URSurveyIndexOffset + 13,
-            QuestTitle = "One Last Spar",
-            SpellID = 322109,
-            SpellName = "Touch of Death",
-            CompletionQuestID = 59349,
-            ClassName = "Monk",
-        },
-        PALADIN = {
-            ReportID = URSurveyIndexOffset + 14,
-            QuestTitle = "The Divine's Shield",
-            SpellID = 642,
-            SpellName = "Divine Shield",
-            CompletionQuestID = 58946,
-            ClassName = "Paladin",
-        },
-        PRIEST = {
-            ReportID = URSurveyIndexOffset + 15,
-            QuestTitle = "Resurrecting the Recruits",
-            SpellID = 2006,
-            SpellName = "Resurrection",
-            CompletionQuestID = 58960,
-            ClassName = "Priest",
-        },
-        ROGUE = {
-            ReportID = URSurveyIndexOffset + 16,
-            QuestTitle = "The Deadliest of Poisons",
-            SpellID = 315584,
-            SpellName = "Instant Poison",
-            CompletionQuestID = 58933,
-            ClassName = "Rogue",
-        },
-        SHAMAN = {
-            ReportID = URSurveyIndexOffset + 17,
-            QuestTitle = "A Shaman's Duty",
-            SpellID = 2645,
-            SpellName = "Ghost Wolf",
-            CompletionQuestID = 59002,
-            ClassName = "Shaman",
-        },
-        WARLOCK = {
-            ReportID = URSurveyIndexOffset + 18,
-            QuestTitle = "A Warlock's Bargain",
-            SpellID = 697,
-            SpellName = "Summon Voidwalker",
-            CompletionQuestID = 58962,
-            ClassName = "Warlock",
-        },
-        WARRIOR = {
-            ReportID = URSurveyIndexOffset + 19,
-            QuestTitle = "Hjalmar's Final Execution",
-            SpellID = 163201,
-            SpellName = "Execute",
-            CompletionQuestID = 58915,
-            ClassName = "Warrior",
-        },        
-    }
-    
-    for class, reportData in pairs (classQuestReportData) do
-        local classQuestReport = PTR_IssueReporter.CreateSurvey(reportData.ReportID, reportData.QuestTitle)
-        classQuestReport:AttachIconViewer("ID", function() return GetIconFromSpellID(reportData.SpellID) end)
-        
-        PTR_IssueReporter.AttachDefaultCollectionToSurvey(classQuestReport)
-        classQuestReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "How useful does "..reportData.SpellName.." seem?", {"Not At\nAll Useful" , "Slightly\nUseful" , "Moderately\nUseful" , "Very\nUseful" , "Extremely\nUseful"})
-        classQuestReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "How much did the last quest affect your understanding of what a "..reportData.ClassName.." is like in World of Warcraft? ", {"Understand Far Less" , "Understand A Bit Less" , "Did Not Affect Understanding" , "Understand A Bit More" , "Understand Far More"})
-        classQuestReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "How satisfied are you with your choice to play a "..reportData.ClassName.." so far?", {"Not At All\nSatisfied" , "Slightly\nSatisfied" , "Moderately\nSatisfied" , "Very\nSatisfied" , "Extremely\nSatisfied"})
-        classQuestReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "If given the option, how likely would you be to change your class at this point? ", {"Not At All\nLikely" , "Slightly\nLikely" , "Moderately\nLikely" , "Very\nLikely" , "Extremely\nLikely"})
-        classQuestReport:RegisterPopEvent(event.QuestTurnedIn, reportData.CompletionQuestID)
-    end
-    
-    local overall_experience_survey = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 20, "Overall Experience")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(overall_experience_survey)
-    overall_experience_survey:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Overall, how fun was your experience?", {"Not At\nAll Fun" , "Slightly\nFun" , "Moderately\nFun" , "Very\nFun" , "Extremely\nFun"})
-    overall_experience_survey:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Overall, how clear were the objectives in your experience?", {"Not At\nAll Clear" , "Slightly\nClear" , "Moderately\nClear" , "Very\nClear" , "Extremely\nClear"})
-    overall_experience_survey:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Overall, how difficult was it to find your way around during your experience?", {"Not At\nAll Difficult" , "Slightly\nDifficult" , "Moderately\nDifficult" , "Very\nDifficult" , "Extremely\nDifficult"})
-    overall_experience_survey:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Overall, how challenging was your experience?", {"Not At\nAll Challenging" , "Slightly\nChallenging" , "Moderately\nChallenging" , "Very\nChallenging" , "Extremely\nChallenging"})
-    overall_experience_survey:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Overall, how appropriate was the level of challenge of your experience?", {"Not At\nAll Challenging" , "Slightly\nChallenging" , "Moderately\nChallenging" , "Very\nChallenging" , "Extremely\nChallenging"})
-    
-    local localizedClass, englishClass = UnitClass("player")
-    
-    local GetClassLevelingSpell = function()        
-        if (classQuestReportData) and (classQuestReportData[englishClass]) then
-            return classQuestReportData[englishClass].SpellName
-        else
-            return ""
-        end
-    end
-    
-    local GetClassLevelingSpellID = function()        
-        if (classQuestReportData) and (classQuestReportData[englishClass]) then
-            return classQuestReportData[englishClass].SpellID
-        else
-            return 0
-        end
-    end
-    
-    local GetClassName = function()
-        return localizedClass
-    end
-    
-    local classQuestReport = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 21, "Overall Experience - Class")
-    classQuestReport:AttachIconViewer("ID", function() return GetIconFromSpellID(GetClassLevelingSpellID()) end)    
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(classQuestReport)
-    classQuestReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "How useful was "..GetClassLevelingSpell()..", the ability that you obtained from your class quest?", {"Not At\nAll Useful" , "Slightly\nUseful" , "Moderately\nUseful" , "Very\nUseful" , "Extremely\nUseful"})
-    classQuestReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "How satisfied are you with your choice to play a "..GetClassName().."?", {"Not At All\nSatisfied" , "Slightly\nSatisfied" , "Moderately\nSatisfied" , "Very\nSatisfied" , "Extremely\nSatisfied"})
-    classQuestReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "If given the option, how likely would you be to change your class at this point? ", {"Not At All\nLikely" , "Slightly\nLikely" , "Moderately\nLikely" , "Very\nLikely" , "Extremely\nLikely"})
-    
-    local personalExperienceReport = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 22, "Overall Experience")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(personalExperienceReport)
-    personalExperienceReport:AddDataCollection(collector.OpenEndedQuestion, "What was your favorite or most memorable\npart of this experience overall?")
-    personalExperienceReport:AddDataCollection(collector.OpenEndedQuestion, "What was the most difficult or frustrating\npart of this experience overall?")
-    
-    local whatWasLearnedReport = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 23, "Overall Experience - Tutorials")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(whatWasLearnedReport)
-    whatWasLearnedReport:AddDataCollection(0, collector.TextBlock, "|cFFFFFFFFThe goal of this experience is to teach new\nplayers about the basics of World of Warcraft.\n\nThe next set of questions will ask about a few different aspects that the team is trying to teach players. Please rate each based on how well you felt like you learned them by the end of the experience.\n\nPlease be honest - if you don't feel like you learned how to do these things it means that our experience is not working, not that you missed anything!")
-    whatWasLearnedReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Moving Your Camera", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Moving Your Character", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Obtaining & Completing Quests", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Fighting One Enemy", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Fighting Multiple Enemies", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    
-    local whatWasLearnedReport2 = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 24, "Overall Experience - Tutorials")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(whatWasLearnedReport2)
-    whatWasLearnedReport2:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Obtaining New Spells & Abilities", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport2:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Using Spells & Abilities Effectively in Combat", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport2:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Obtaining & Equipping New Gear", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport2:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Quest Objectives", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport2:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Using Items To Complete Quests", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    
-    local whatWasLearnedReport3 = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 25, "Overall Experience - Tutorials")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(whatWasLearnedReport3)
-    whatWasLearnedReport3:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Buying & Selling Items", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport3:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Mini-Map User Interface", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport3:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Large Map User Interface", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport3:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Interactable Objects", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    whatWasLearnedReport3:AddDataCollection(collector.SelectOne_MultipleChoiceQuestion, "Finding A Group For Activities", {"Did Not\nLearn At All" , "Learned\nSlightly Well" , "Learned\nModerately Well" , "Learned\nVery Well" , "Learned\nExtremely\nWell"})
-    
-    local endOfSurvey = PTR_IssueReporter.CreateSurvey(URSurveyIndexOffset + 26, "Thank you!")
-    PTR_IssueReporter.AttachDefaultCollectionToSurvey(endOfSurvey)
-    endOfSurvey:AddDataCollection(collector.TextBlock, "|cFFFFFFFFThank you for completing the Shadowlands\nNew Player Experience! Your feedback\nis important to us.\n\nWe appreciate your dedication to helping Blizzard create the most epic entertainment experiences ever!")
-    endOfSurvey:AddDataCollection(collector.OpenEndedQuestion, "Do you have any additional comments on your experiences?")
-    
-    overall_experience_survey:RegisterPopEvent(event.QuestTurnedIn, 55991)
-    PTR_IssueReporter.RegisterSurveyPopCommand("NPE", overall_experience_survey)
-    overall_experience_survey:PopSurveyOnSubmit(classQuestReport)
-    classQuestReport:PopSurveyOnSubmit(personalExperienceReport)
-    personalExperienceReport:PopSurveyOnSubmit(whatWasLearnedReport)
-    whatWasLearnedReport:PopSurveyOnSubmit(whatWasLearnedReport2)
-    whatWasLearnedReport2:PopSurveyOnSubmit(whatWasLearnedReport3)
-    whatWasLearnedReport3:PopSurveyOnSubmit(endOfSurvey)
-end
-
-PTR_IssueReporter.RegisterSetupCommand("NPE", PTR_IssueReporter.CreateNPEReports)

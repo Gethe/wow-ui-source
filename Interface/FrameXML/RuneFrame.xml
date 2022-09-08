@@ -81,7 +81,7 @@
 	<Frame name="RuneFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false" mixin="RuneFrameMixin">
 		<Size x="130" y="24" />
 		<Anchors>
-			<Anchor point="TOP" relativePoint="BOTTOM" x="54" y="34" />
+			<Anchor point="TOP" relativePoint="BOTTOM" x="44" y="23" />
 		</Anchors>
 		<Frames>
 			<Button parentKey="Rune1" parentArray="Runes" inherits="RuneButtonIndividualTemplate">

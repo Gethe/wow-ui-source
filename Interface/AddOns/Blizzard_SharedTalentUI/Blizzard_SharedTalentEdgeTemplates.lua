@@ -48,6 +48,7 @@ end
 function TalentEdgeStraightMixin:UpdateState()
 	local edgeInfo = self:GetEdgeInfo();
 	local isEndButtonGated = self:GetEndButton():GetVisualState() == TalentButtonUtil.BaseVisualState.Gated;
+
 	if edgeInfo.type == Enum.TraitEdgeType.MutuallyExclusive then
 		self:SetLineColor(isEndButtonGated and DIM_RED_FONT_COLOR or RED_FONT_COLOR);
 	elseif edgeInfo.visualStyle == Enum.TraitEdgeVisualStyle.Straight then
@@ -83,6 +84,9 @@ function TalentEdgeArrowMixin:Init(startButton, endButton, edgeInfo)
 	self.Line:SetStartPoint("CENTER", startButton);
 	self.Line:SetEndPoint("CENTER", endButton, xOffset, yOffset);
 
+	self.Ghost:SetStartPoint("CENTER", startButton);
+	self.Ghost:SetEndPoint("CENTER", endButton, xOffset, yOffset);
+
 	self.ArrowHead:SetPoint("CENTER", endButton, xOffset, yOffset);
 	self.ArrowHead:SetRotation(angle - (math.pi / 2));
 
@@ -91,6 +95,11 @@ end
 
 function TalentEdgeArrowMixin:UpdateState()
 	local edgeInfo = self:GetEdgeInfo();
+
+	local isStartButtonGhosted = self:GetStartButton():IsGhosted();
+	local isEndButtonGhosted = self:GetEndButton():IsGhosted();
+
+	self.Ghost:SetShown(isStartButtonGhosted and isEndButtonGhosted);
 
 	-- Other types and styles are not supported by this template.
 	if edgeInfo.visualStyle == Enum.TraitEdgeVisualStyle.Straight then

@@ -319,19 +319,25 @@ function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
 end
 
 function ActionBarActionButtonMixin:UpdatePressAndHoldAction()
-	self.pressAndHoldAction = false;
+	local pressAndHoldAction = false;
 
 	if self.action then
 		local actionType, id = GetActionInfo(self.action);
 		if actionType == "spell" then
-			self.pressAndHoldAction = IsPressHoldReleaseSpell(id);
+			pressAndHoldAction = IsPressHoldReleaseSpell(id);
 		elseif actionType == "macro" then
 			local spellID = GetMacroSpell(id);
 			if spellID then
-				self.pressAndHoldAction = IsPressHoldReleaseSpell(spellID);
+				pressAndHoldAction = IsPressHoldReleaseSpell(spellID);
 			end
 		end
 	end
+
+	self:SetAttribute("pressAndHoldAction", pressAndHoldAction);
+end
+
+function ActionBarActionButtonMixin:OnAttributeChanged(name, value)
+	self:UpdateAction();
 end
 
 function ActionBarActionButtonMixin:UpdateAction(force)
@@ -1114,7 +1120,7 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 			local actionBarLocked = Settings.GetValue("lockActionBars");
 
 			local lockedBarDoNothing = actionBarLocked and down and IsModifiedClick("PICKUPACTION");
-			local unlockedBarDoNothing = not actionBarLocked and (self.pressAndHoldAction or (useKeyDownCvar and down));
+			local unlockedBarDoNothing = not actionBarLocked and (self:GetAttribute("pressAndHoldAction") or (useKeyDownCvar and down));
 			if lockedBarDoNothing or unlockedBarDoNothing then
 				return;
 			end

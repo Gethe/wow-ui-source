@@ -4,7 +4,7 @@
 	<StatusBar name="MonkStaggerBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">	<!--For Brewmaster Monks-->
 		<Size x="94" y="12"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" x="118" y="23"/>
+			<Anchor point="BOTTOMLEFT" x="100" y="15"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad function="MonkStaggerBar_OnLoad"/>

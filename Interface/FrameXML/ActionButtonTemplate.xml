@@ -277,7 +277,7 @@
 	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate" virtual="true" mixin="ActionBarActionButtonMixin">
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
-			<OnAttributeChanged method="UpdateAction"/>
+			<OnAttributeChanged method="OnAttributeChanged"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick" inherit="prepend"/>
 			<PostClick method="UpdateState"/>

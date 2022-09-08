@@ -135,7 +135,7 @@ local DISPLAY_DATA = {
 	[30] = { --TUTORIAL_INNS
 		tileHeight = 11,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
-		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 32, yOff = -4, width = 85, height = 85},
+		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 11, yOff = -7, width = 85, height = 85},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		notNPE = true,
 	},
@@ -143,7 +143,7 @@ local DISPLAY_DATA = {
 	[32] = { --TUTORIAL_PVP
 		tileHeight = 10,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
-		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 34, yOff = -6, width = 78, height = 78},
+		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 11, yOff = -7, width = 85, height = 85},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		notNPE = true,
 	},

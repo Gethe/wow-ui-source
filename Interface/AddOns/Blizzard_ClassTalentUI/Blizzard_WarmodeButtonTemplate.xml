@@ -5,24 +5,31 @@
 	<Button name="WarmodeButtonTemplate" mixin="WarmodeButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="100" y="100"/>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Indent" atlas="talents-warmode-indent" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="Swords" atlas="pvptalents-warmode-swords" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="30"/>
+						<Anchor point="BOTTOM" x="0" y="39"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
 				<Texture parentKey="Orb" atlas="pvptalents-warmode-orb" useAtlasSize="true" alpha="0.4">
 					<Anchors>
-						<Anchor point="BOTTOM" x="-.5" y="5"/>
+						<Anchor point="BOTTOM" x="0" y="14"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="2">
-				<Texture parentKey="Ring" atlas="pvptalents-warmode-ring" useAtlasSize="true">
+				<Texture parentKey="Ring" atlas="talents-warmode-ring" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOM" x="-.5" y="5"/>
+						<Anchor point="BOTTOM" x="0" y="5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -62,13 +69,13 @@
 			<ModelScene parentKey="OrbModelScene" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="OVERLAY" enableMouse="false">
 				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="23"/>
+					<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="28"/>
 				</Anchors>
 			</ModelScene>
 			<ModelScene parentKey="FireModelScene" inherits="NonInteractableModelSceneMixinTemplate" useParentLevel="true" drawLayer="ARTWORK" enableMouse="false">
 				<Size x="200" y="200"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="0"/>
+					<Anchor point="BOTTOM" x="2" y="19"/>
 				</Anchors>
 			</ModelScene>
 		</Frames>

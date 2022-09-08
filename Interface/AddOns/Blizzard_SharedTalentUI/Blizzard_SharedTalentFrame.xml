@@ -22,7 +22,8 @@
 		<KeyValues>
 			<KeyValue key="getTemplateType" value="TalentButtonUtil.GetTemplateForTalentType" type="global"/>
 			<KeyValue key="getSpecializedMixin" value="TalentButtonUtil.GetSpecializedMixin" type="global"/>
-			<KeyValue key="getEdgeTemplateType" value="TalentButtonUtil.GetTemplateForEdgeVisualization" type="global"/>
+			<KeyValue key="getSpecializedChoiceMixin" value="nil" type="global"/>
+			<KeyValue key="getEdgeTemplateType" value="TalentButtonUtil.GetTemplateForEdgeVisualStyle" type="global"/>
 			<KeyValue key="topPadding" value="0" type="number"/>
 			<KeyValue key="leftPadding" value="0" type="number"/>
 			<KeyValue key="bottomPadding" value="0" type="number"/>
@@ -40,7 +41,7 @@
 			<Frame parentKey="AnimationHolder">
 				<Animations>
 					<AnimationGroup parentKey="BackgroundFlashAnim" setToFinalAlpha="true">
-						<Alpha childKey="$parent.BackgroundFlash" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.BackgroundFlash" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
 					</AnimationGroup>
 				</Animations>
 			</Frame>

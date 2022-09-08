@@ -450,6 +450,14 @@ function ScrollBoxBaseMixin:SetShadowsShown(showLower, showUpper)
 	self:GetUpperShadowTexture():SetShown(showUpper);
 end
 
+function ScrollBoxBaseMixin:SetShadowsFrameLevel(frameLevel)
+	self.Shadows:SetFrameLevel(frameLevel);
+end
+
+function ScrollBoxBaseMixin:SetShadowsScale(uiScale)
+	self.Shadows:SetScale(uiScale);
+end
+
 ScrollBoxListMixin = CreateFromMixins(ScrollBoxBaseMixin);
 
 ScrollBoxListMixin:GenerateCallbackEvents(

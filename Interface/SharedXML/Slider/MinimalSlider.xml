@@ -84,12 +84,12 @@
 				</FontString>
 				<FontString parentKey="MinText" inherits="GameFontNormal" parentArray="Labels" hidden="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Slider" relativePoint="BOTTOMLEFT" y="11"/>
+						<Anchor point="TOP" relativeKey="$parent.Slider" relativePoint="BOTTOMLEFT" y="6"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="MaxText" inherits="GameFontNormal" parentArray="Labels" hidden="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Slider" relativePoint="BOTTOMRIGHT" y="11"/>
+						<Anchor point="TOP" relativeKey="$parent.Slider" relativePoint="BOTTOMRIGHT" y="6"/>
 					</Anchors>
 				</FontString>
 			</Layer>

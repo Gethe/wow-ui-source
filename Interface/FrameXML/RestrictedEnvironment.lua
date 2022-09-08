@@ -93,7 +93,7 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
 
 local OTHER_SAFE_FUNCTION_NAMES = {
     "GetBindingKey", "HasAction",
-    "IsHarmfulSpell", "IsHarmfulItem", "IsHelpfulSpell", "IsHelpfulItem",
+    "IsHarmfulSpell", "IsHarmfulItem", "IsHelpfulSpell", "IsHelpfulItem", "IsPressHoldReleaseSpell",
     "GetMultiCastTotemSpells", "FindSpellBookSlotBySpellID", "UnitTargetsVehicleInRaidUI"
 };
 

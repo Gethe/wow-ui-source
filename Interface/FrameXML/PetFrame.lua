@@ -8,8 +8,6 @@ function PetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 end
 
 function PetFrame_OnLoad (self)
-	self.noTextPrefix = true;
-
 	PetFrameHealthBar.LeftText = PetFrameHealthBarTextLeft;
 	PetFrameHealthBar.RightText = PetFrameHealthBarTextRight;
 	PetFrameManaBar.LeftText = PetFrameManaBarTextLeft;
@@ -86,7 +84,15 @@ function PetFrame_Update (self, override)
 			self:Hide();
 		end
 	end
-	
+
+	-- Portrait masking is usually done already, but player portraits opt out of that because they might not always be circles.
+	-- In this case, we manually re-apply the circle mask. 
+	if(UnitIsPlayer(self.unit)) then
+		PetPortrait:AddMaskTexture(self.CircleMask);
+	else
+		PetPortrait:RemoveMaskTexture(self.CircleMask);
+	end
+
 	PetFrame_UpdateAnchoring(self);
 	PlayerFrame_AdjustAttachments();
 end

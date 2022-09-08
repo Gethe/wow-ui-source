@@ -575,7 +575,7 @@ function AddPvpRatingsToTable()
 	local pvpLinkInfoTable = { };
 	for i = 1, PVP_LINK_ITERATE do 
 		local bracketIndex = CONQUEST_BRACKET_INDEXES[i];
-		local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon, pvpTier, ranking = GetPersonalRatedInfo(bracketIndex);
+		local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, lastWeeksBest, hasWon, pvpTier, ranking, roundsSeasonPlayed, roundsSeasonWon, roundsWeeklyPlayed, roundsWeeklyWon = GetPersonalRatedInfo(bracketIndex);
 		local tierInfo = C_PvP.GetPvpTierInfo(pvpTier);
 		if(not tierInfo or not tierInfo.pvpTierEnum) then 
 			return; 
