@@ -14,21 +14,21 @@ function RolePollPopup_Show(self)
 	--First, update what roles are usable
 	PlaySound(SOUNDKIT.READY_CHECK);
 	FlashClientIcon();
-	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles("player");
-	if ( canBeTank ) then
-		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonTank);
+	local recommendedTank, recommendedHealer, recommendedDPS = UnitGetAvailableRoles("player");
+	if ( recommendedTank ) then
+		RolePollPopupRoleButton_SetRecommended(RolePollPopupRoleButtonTank);
 	else
-		RolePollPopupRoleButton_Disable(RolePollPopupRoleButtonTank);
+		RolePollPopupRoleButton_SetNotRecommended(RolePollPopupRoleButtonTank);
 	end
-	if ( canBeHealer ) then
-		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonHealer);
+	if ( recommendedHealer ) then
+		RolePollPopupRoleButton_SetRecommended(RolePollPopupRoleButtonHealer);
 	else
-		RolePollPopupRoleButton_Disable(RolePollPopupRoleButtonHealer);
+		RolePollPopupRoleButton_SetNotRecommended(RolePollPopupRoleButtonHealer);
 	end
-	if ( canBeDamager ) then
-		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonDPS);
+	if ( recommendedDPS ) then
+		RolePollPopupRoleButton_SetRecommended(RolePollPopupRoleButtonDPS);
 	else
-		RolePollPopupRoleButton_Disable(RolePollPopupRoleButtonDPS);
+		RolePollPopupRoleButton_SetNotRecommended(RolePollPopupRoleButtonDPS);
 	end
 	
 	self.role = UnitGroupRolesAssigned("player");
@@ -49,26 +49,18 @@ function RolePollPopup_UpdateChecked(self)
 	end
 end
 
-function RolePollPopupRoleButton_Enable(button)
-	button:Enable();
-	SetDesaturation(button:GetNormalTexture(), false);
+function RolePollPopupRoleButton_SetRecommended(button)
 	button.cover:Hide();
 	button.cover:SetAlpha(1);
-	button.checkButton:Enable();
-	button.checkButton:Show();
 	
-	button.permDisabled = false;
+	button.notRecommended = false;
 end
 
-function RolePollPopupRoleButton_Disable(button)
-	button:Disable();
-	SetDesaturation(button:GetNormalTexture(), true);
+function RolePollPopupRoleButton_SetNotRecommended(button)
 	button.cover:Show();
 	button.cover:SetAlpha(0.5);
-	button.checkButton:Disable();
-	button.checkButton:Hide();
 	
-	button.permDisabled = true;
+	button.notRecommended = true;
 end
 
 function RolePollPopupRoleButtonCheckButton_OnClick(self, button)

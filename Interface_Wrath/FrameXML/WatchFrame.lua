@@ -822,7 +822,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				else
 					for j = 1, numObjectives do
 						text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
-						if ( not finished ) then
+						if ( not finished and text) then
 							text = WatchFrame_ReverseQuestObjective(text);
 							line = WatchFrame_GetQuestLine();
 							WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW, item);

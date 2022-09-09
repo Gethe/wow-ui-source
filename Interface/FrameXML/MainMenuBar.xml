@@ -473,27 +473,27 @@
 						self.hover = nil;
 						self.updateInterval = 0;
 						if (GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
-						self:Hide();
+							self:Hide();
 						end
 					</OnLoad>
 					<OnUpdate>
 						if (self.updateInterval > 0) then
-						self.updateInterval = self.updateInterval - elapsed;
+							self.updateInterval = self.updateInterval - elapsed;
 						else
-						self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+							self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
 
-						local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
-						local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
-						if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
-						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
-						elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
-						MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
-						else
-						MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
-						end
-						if (self.hover) then
-						GameTooltip_AddNewbieTip(self, MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LATENCY);
-						end
+							local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+							local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
+							if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+								MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
+							elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+								MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
+							else
+								MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
+							end
+							if (self.hover) then
+								GameTooltip_AddNewbieTip(self, MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LATENCY);
+							end
 						end
 					</OnUpdate>
 				</Scripts>

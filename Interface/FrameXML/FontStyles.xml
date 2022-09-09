@@ -328,5 +328,8 @@
 		<Color r="0.7" g="0.7" b="0.7"/>
 	</Font>
 	<Font name="LFGActivityEntry" inherits="GameFontNormalLeft" virtual="true"/>
+	<Font name="LFGActivityEntryTrivial" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
 
 </Ui>

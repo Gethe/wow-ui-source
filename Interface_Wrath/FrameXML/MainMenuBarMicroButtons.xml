@@ -369,22 +369,14 @@
 	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="LFGMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-3" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" relativeTo="LFGMicroButton" relativePoint="BOTTOMRIGHT" x="-3" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="MainMenuBarDownload" file="Interface\BUTTONS\UI-MicroStream-Yellow" hidden="true">
-					<Size>
-						<AbsDimension x="28" y="28"/>
-					</Size>
+				<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
+					<Size x="14" y="7"/>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeTo="MainMenuMicroButton" relativePoint="BOTTOM">
-							<Offset x="0" y="7"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="MainMenuMicroButton" relativePoint="TOPLEFT" x="10" y="-34"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -395,40 +387,29 @@
 				self.tooltipText = MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU");
 				self.newbieText = NEWBIE_TOOLTIP_MAINMENU;
 
+				PERFORMANCEBAR_LOW_LATENCY = 300;
+				PERFORMANCEBAR_MEDIUM_LATENCY = 600;
 				self.hover = nil;
 				self.updateInterval = 0;
 			</OnLoad>
 			<OnUpdate>
 				if (self.updateInterval > 0) then
-				self.updateInterval = self.updateInterval - elapsed;
+					self.updateInterval = self.updateInterval - elapsed;
 				else
-				self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
-				local status = GetFileStreamingStatus();
-				if(status==0) then
-				status = (GetBackgroundLoadingStatus()~=0) and 1 or 0;
-				end
-				if(status == 0) then
-				MainMenuBarDownload:Hide();
-				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Up");
-				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Down");
-				self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Disabled");
-				else
-				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
-				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down");
-				self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
-				if (status == 1) then
-				MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Green");
-				elseif (status == 2) then
-				MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Yellow");
-				elseif (status == 3) then
-				MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Red");
-				end
+					self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+					local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+					local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
 
-				MainMenuBarDownload:Show();
-				end
-				if (self.hover) then
-				MicroButton_OnEnter(self);
-				end
+					if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
+					elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+						MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
+					else
+						MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
+					end
+					if (self.hover) then
+						MainMenuBarPerformanceBarFrame_OnEnter(self);
+					end
 				end
 			</OnUpdate>
 			<OnEvent>
@@ -436,60 +417,60 @@
 			</OnEvent>
 			<OnMouseDown>
 				if ( self.down ) then
-				self.down = nil; -- I'm pretty sure none of this should ever get run.
-				if ( not GameMenuFrame:IsShown() ) then
-				if ( VideoOptionsFrame:IsShown() ) then
-				VideoOptionsFrameCancel:Click();
-				elseif ( AudioOptionsFrame:IsShown() ) then
-				AudioOptionsFrameCancel:Click();
-				elseif ( InterfaceOptionsFrame:IsShown() ) then
-				InterfaceOptionsFrameCancel:Click();
-				end
-				CloseMenus();
-				CloseAllWindows()
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-				ShowUIPanel(GameMenuFrame);
-				else
-				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
-				HideUIPanel(GameMenuFrame);
-				MainMenuMicroButton_SetNormal();
-				end
-				return;
+					self.down = nil; -- I'm pretty sure none of this should ever get run.
+					if ( not GameMenuFrame:IsShown() ) then
+						if ( VideoOptionsFrame:IsShown() ) then
+							VideoOptionsFrameCancel:Click();
+						elseif ( AudioOptionsFrame:IsShown() ) then
+							AudioOptionsFrameCancel:Click();
+						elseif ( InterfaceOptionsFrame:IsShown() ) then
+							InterfaceOptionsFrameCancel:Click();
+						end
+						CloseMenus();
+						CloseAllWindows()
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+						ShowUIPanel(GameMenuFrame);
+					else
+						PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
+						HideUIPanel(GameMenuFrame);
+						MainMenuMicroButton_SetNormal();
+					end
+					return;
 				end
 				MainMenuMicroButton_SetPushed();
 				self.down = 1;
 			</OnMouseDown>
 			<OnMouseUp>
 				if ( self.down ) then
-				self.down = nil;
-				if ( self:IsMouseOver() ) then
-				if ( not GameMenuFrame:IsShown() ) then
-				if ( VideoOptionsFrame:IsShown() ) then
-				VideoOptionsFrameCancel:Click();
-				elseif ( AudioOptionsFrame:IsShown() ) then
-				AudioOptionsFrameCancel:Click();
-				elseif ( InterfaceOptionsFrame:IsShown() ) then
-				InterfaceOptionsFrameCancel:Click();
-				end
-				CloseMenus();
-				CloseAllWindows()
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-				ShowUIPanel(GameMenuFrame);
-				else
-				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
-				HideUIPanel(GameMenuFrame);
-				MainMenuMicroButton_SetNormal();
-				end
-				end
-				UpdateMicroButtons();
-				return;
+					self.down = nil;
+					if ( self:IsMouseOver() ) then
+						if ( not GameMenuFrame:IsShown() ) then
+							if ( VideoOptionsFrame:IsShown() ) then
+								VideoOptionsFrameCancel:Click();
+							elseif ( AudioOptionsFrame:IsShown() ) then
+								AudioOptionsFrameCancel:Click();
+							elseif ( InterfaceOptionsFrame:IsShown() ) then
+								InterfaceOptionsFrameCancel:Click();
+							end
+							CloseMenus();
+							CloseAllWindows()
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+							ShowUIPanel(GameMenuFrame);
+						else
+							PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
+							HideUIPanel(GameMenuFrame);
+							MainMenuMicroButton_SetNormal();
+						end
+					end
+					UpdateMicroButtons();
+					return;
 				end
 				if ( self:GetButtonState() == "NORMAL" ) then
-				MainMenuMicroButton_SetPushed();
-				self.down = 1;
+					MainMenuMicroButton_SetPushed();
+					self.down = 1;
 				else
-				MainMenuMicroButton_SetNormal();
-				self.down = 1;
+					MainMenuMicroButton_SetNormal();
+					self.down = 1;
 				end
 			</OnMouseUp>
 			<OnEnter>

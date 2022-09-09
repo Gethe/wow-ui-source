@@ -394,8 +394,13 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = REPORT_PLAYER;
-		info.hasArrow = true;
-		info.func = nil;
+		info.func = function() 
+			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
+			local playerLocation = PlayerLocation:CreateFromBattleNetID(bnetIDAccount);
+			local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Friend);
+			local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+			ReportFrame:InitiateReport(reportInfo, name, playerLocation, bnetIDAccount ~= nil);
+		end; 
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = BLOCK_INVITES;
@@ -408,32 +413,6 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 						end
 					end
 		UIDropDownMenu_AddButton(info, level)
-	else
-		if level == 2 then
-			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
-
-			info.text = REPORT_SPAMMING;
-			info.func = function()
-							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_SPAM, name);
-						end
-			UIDropDownMenu_AddButton(info, level)
-
-			info.text = REPORT_ABUSE;
-			info.func = function()
-							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_ABUSE, name);
-						end
-			UIDropDownMenu_AddButton(info, level)
-
-			info.text = REPORT_BAD_NAME;
-			info.func = function()
-							UIDROPDOWNMENU_MENU_VALUE = self.inviteIndex;
-							PlayerReportFrame:InitiateReport(PLAYER_REPORT_TYPE_BAD_PLAYER_NAME, name);
-						end
-			UIDropDownMenu_AddButton(info, level)
-			info.notCheckable = false;
-		end
 	end
 end
 
@@ -848,7 +827,7 @@ function FriendsFrameFriendButton_OnClick(self, button)
 		else
 			-- wow friend
 			local info = C_FriendList.GetFriendInfoByIndex(self.id);
-			FriendsFrame_ShowDropdown(info.name, info.connected, nil, nil, nil, 1, nil, nil, nil, nil);
+			FriendsFrame_ShowDropdown(info.name, info.connected, nil, nil, nil, 1, nil, nil, nil, nil, nil, info.guid);
 		end
 	end
 end
