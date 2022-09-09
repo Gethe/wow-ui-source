@@ -719,7 +719,7 @@ function MountJournal_GetMountButtonHeight()
 end
 
 function MountJournal_GetMountButtonByMountID(mountID)
-	return self.ScrollBox:FindFrameByPredicate(function(elementData)
+	return MountJournal.ScrollBox:FindFrameByPredicate(function(elementData)
 			return elementData.mountID == mountID;
 		end);
 end

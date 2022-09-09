@@ -20,11 +20,11 @@ end
 
 -- Deprecated. Use Settings.OpenToCategory().
 function InterfaceOptionsFrame_OpenToCategory(categoryNameOrFrame)
-	if type(categoryNameOrFrame == "string") then
+	if type(categoryNameOrFrame) == "string" then
 		return Settings.OpenToCategory(categoryNameOrFrame);
-	elseif type(categoryNameOrFrame == "table") then
-		local category = frame.name;
-		if category and type(category) == "string" then
+	elseif type(categoryNameOrFrame) == "table" then
+		local category = categoryNameOrFrame.name;
+		if type(category) == "string" then
 			return Settings.OpenToCategory(category);
 		end
 	end
