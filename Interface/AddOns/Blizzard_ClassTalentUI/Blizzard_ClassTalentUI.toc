@@ -3,9 +3,11 @@
 ## Dependencies: Blizzard_SharedTalentUI
 
 Blizzard_ClassTalentUtil.lua
+Blizzard_ClassTalentLoadoutDialogTemplates.xml
 Blizzard_ClassTalentImportExport.lua
-Blizzard_ClassTalentImportDialog.xml
-Blizzard_ClassTalentEditLoadoutDialog.xml
+Blizzard_ClassTalentLoadoutImportDialog.xml
+Blizzard_ClassTalentLoadoutEditDialog.xml
+Blizzard_ClassTalentLoadoutCreateDialog.xml
 Blizzard_ClassTalentSpecTab.xml
 Blizzard_ClassTalentButtonTemplates.lua
 Blizzard_ClassTalentTalentsSearch.lua

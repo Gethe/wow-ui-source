@@ -59,7 +59,7 @@ function ClassTrainerFrame_OnLoad(self)
 
 	self.BG:SetPoint("TOPLEFT", self.ScrollBox, "TOPLEFT", -3, 4);
 	self.BG:SetPoint("BOTTOMRIGHT", self.ScrollBox, "BOTTOMRIGHT", 3, -4);
-	
+
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("ClassTrainerSkillButtonTemplate", function(button, elementData)
 		ClassTrainerFrame_InitServiceButton(button, elementData);
@@ -72,7 +72,7 @@ end
 
 function ClassTrainerFrame_OnShow(self)
 	SetPortraitTexture(ClassTrainerFramePortrait, "npc");
-	ClassTrainerFrameTitleText:SetText(UnitName("npc"));
+	self:SetTitle(UnitName("npc"));
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	ClassTrainerTrainButton:Disable();
 
@@ -110,7 +110,7 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 	local numTrainerServices = GetNumTrainerServices();
 	local playerMoney = GetMoney();
 	local isTradeSkill = IsTradeskillTrainer();
-	
+
 	local dataProvider = CreateDataProvider();
 	for index = 1, numTrainerServices do
 		dataProvider:Insert({
@@ -128,7 +128,7 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 		scrollBox:SetHeight(CLASS_TRAINER_SCROLL_HEIGHT - CLASS_TRAINER_SKILL_HEIGHT - 5);
 		ClassTrainerFrame.bottomInset:Show();
 		ClassTrainerFrame.Inset:SetPoint("BOTTOMRIGHT", ClassTrainerFrame, "TOPRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_ATTIC_OFFSET-47);
-		
+
 		local elementData = {
 			skillIndex=tradeSkillStepIndex,
 			playerMoney=playerMoney,
@@ -174,8 +174,8 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 	end
 
 	skillButton.icon:SetTexture(texture);
-	
-	
+
+
 	local requirements = "";
 	local separator = "";
 	if reqLevel and reqLevel > 1 then
@@ -186,7 +186,7 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 		end
 		separator = PLAYER_LIST_DELIMITER;
 	end
-	
+
 	if ( isTradeSkill ) then
 		local skill, rank, hasReq = GetTrainerServiceSkillReq(skillIndex);
 		if ( skill ) then
@@ -198,7 +198,7 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 			separator = PLAYER_LIST_DELIMITER;
 		end
 	end
-	
+
 	-- Ability Requirements
 	local numRequirements = GetTrainerServiceNumAbilityReq(skillIndex);
 	local ability, hasReq;
@@ -214,7 +214,7 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 			end
 		end
 	end
-	
+
 	if ( serviceType == "unavailable" ) then
 		skillButton.icon:SetDesaturated(true);
 		skillButton.name:SetText(GRAY_FONT_COLOR_CODE..serviceName..FONT_COLOR_CODE_CLOSE);
@@ -223,7 +223,7 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 		skillButton.icon:SetDesaturated(false);
 		skillButton.disabledBG:Hide();
 	end
-	
+
 	local showMoney = true;
 	if ( requirements ~= "" and serviceType ~= "used" ) then
 		requirements = REQUIRES_LABEL.." "..requirements;
@@ -235,8 +235,8 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 	end
 	skillButton.name:SetText(serviceName);
 	skillButton.subText:SetText(requirements);
-	
-	
+
+
 	local moneyCost, isProfession = GetTrainerServiceCost(skillIndex);
 	if ( showMoney and moneyCost and moneyCost > 0 ) then
 		MoneyFrame_Update(skillButton.money, moneyCost);
@@ -254,15 +254,15 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 	-- Place the highlight and lock the highlight state
 	if ( ClassTrainerFrame.selectedService == skillIndex ) then
 		ClassTrainerFrame.showDialog = nil;
-		
+
 		if isProfession then
 			ClassTrainerFrame.showDialog = true;
 			local _, prof2 = GetProfessions();
 			if prof2 then
 				unavailable = true;
 			end
-		end 
-	
+		end
+
 		skillButton.selectedTex:Show();
 		if ( serviceType == "available" and not unavailable) then
 			ClassTrainerTrainButton:Enable();
@@ -276,7 +276,7 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 	if skillButton.showingTooltip then
 		GameTooltip:SetTrainerService(skillButton:GetID());
 	end
-	
+
 	skillButton:SetID(skillIndex);
 	skillButton:Hide(); -- Forces the anchors in the button to update (Hack)
 	skillButton:Show();
@@ -288,7 +288,7 @@ function ClassTrainer_SelectNearestLearnableSkill()
 	local startIndex = ClassTrainerFrame.selectedService;
 	if not startIndex or startIndex > numServices then
 		 startIndex = 1;
-	else 
+	else
 		local _, serviceType = GetTrainerServiceInfo(startIndex);
 		if ( serviceType == "unavailable" ) then
 			startIndex = 1;
@@ -298,7 +298,7 @@ function ClassTrainer_SelectNearestLearnableSkill()
 	local newSelection = nil;
 	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
 	if ( numServices > 0 ) then
-		for i=startIndex, numServices do 
+		for i=startIndex, numServices do
 			local _, serviceType = GetTrainerServiceInfo(i);
 			if ( serviceType == "available" and i ~= tradeSkillStepIndex ) then
 				newSelection = i;
@@ -306,10 +306,10 @@ function ClassTrainer_SelectNearestLearnableSkill()
 			end
 		end
 	end
-	
+
 	if newSelection then
 		ClassTrainer_SetSelection( newSelection );
-		
+
 		ClassTrainerFrame.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
 			return elementData.skillIndex == ClassTrainerFrame.selectedService;
 		end, ScrollBoxConstants.AlignNearest, ScrollBoxConstants.NoScrollInterpolation);
@@ -321,11 +321,11 @@ function ClassTrainer_SetSelection(id)
 	if ( not id ) then
 		return;
 	end
-	
+
 	local oldSelectedService = ClassTrainerFrame.selectedService;
 	ClassTrainerFrame.selectedService = id;
 	SelectTrainerService(id);
-	
+
 	local function ReinitializeButton(skillIndex)
 		local button = ClassTrainerFrame.ScrollBox:FindFrameByPredicate(function(frame)
 			return frame:GetElementData().skillIndex == skillIndex;

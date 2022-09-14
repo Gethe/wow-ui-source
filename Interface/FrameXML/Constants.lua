@@ -736,6 +736,8 @@ TRANSMOG_INVALID_CODES = {
 	"",		-- invalid source quality
 	"CANNOT_USE",
 	"SLOT_FOR_RACE",
+	"",		-- no illusion
+	"SLOT_FOR_FORM",
 }
 
 TRANSMOG_SOURCE_BOSS_DROP = 1;

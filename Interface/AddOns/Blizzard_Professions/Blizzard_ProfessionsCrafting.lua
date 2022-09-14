@@ -8,11 +8,11 @@ local ProfessionsCraftingPageEvents =
 {
 	"TRADE_SKILL_DATA_SOURCE_CHANGING",
 	"TRADE_SKILL_DATA_SOURCE_CHANGED",
-	"TRADE_SKILL_ITEM_CRAFTED_RESULT",
 	"UPDATE_TRADESKILL_CAST_COMPLETE",
 	"TRADE_SKILL_CLOSE",
 	"BAG_UPDATE",
 	"BAG_UPDATE_DELAYED",
+	"UNIT_SPELLCAST_INTERRUPTED",
 };
 
 function ProfessionsCraftingPageMixin:OnLoad()
@@ -59,7 +59,6 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	local function OnUseBestQualityModified(o, checked)
 		local transaction = self.SchematicForm:GetTransaction();
 		Professions.AllocateAllBasicReagents(transaction, checked);
-		self.SchematicForm:SetManuallyAllocated(false);
 
 		self:ValidateControls();
 	end
@@ -104,17 +103,25 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 	elseif event == "TRADE_SKILL_CLOSE" then
 		HideUIPanel(self);
 	elseif event == "BAG_UPDATE" or event == "BAG_UPDATE_DELAYED" then
-		self:ValidateControls();
-	elseif event == "TRADE_SKILL_ITEM_CRAFTED_RESULT" then
-		if not self.craftingQueue or self.reallocPending then
-			self.reallocPending = nil;
-			local transaction = self.SchematicForm:GetTransaction();
-			transaction:SanitizeAllocations();
-			self.SchematicForm:SetManuallyAllocated(false);
-			self.SchematicForm:Refresh();
-			self:ValidateControls();
-
+		local transaction = self.SchematicForm:GetTransaction();
+		if transaction then
+			transaction:SanitizeTargetAllocations();
+			-- If we are in the process of enchanting multiple vellums, we may need to reassign
+			-- a valid target if the previous item stack was depleted.
+			if self.craftingQueueEnchantID and not transaction:GetEnchantAllocation() then
+				ItemUtil.IteratePlayerInventory(function(itemLocation)
+					if C_Item.GetItemID(itemLocation) == self.craftingQueueEnchantID then
+						local item = Item:CreateFromItemGUID(C_Item.GetItemGUID(itemLocation));
+						transaction:SetEnchantAllocation(item);
+						return true;
+					end
+				end);
+			end
 		end
+		self:ValidateControls();
+	elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
+		self:ClearCraftingQueue();
+		self:ValidateControls();
 	end
 end
 
@@ -212,49 +219,10 @@ function ProfessionsCraftingPageMixin:OnRecipeSelected(recipeInfo)
 
 	self.GuildFrame:Clear();
 
-	local transaction = self.SchematicForm:GetTransaction();
-	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
-		self.CreateMultipleInputBox:Disable();
-		self.CreateMultipleInputBox:SetValue(0);
-	else
-		local count = C_TradeSkillUI.GetCraftableCount(recipeInfo.recipeID);
-		if count > 0 then
-			local minCount = 1;
-			self:SetupMultipleInputBox(minCount, count);
-		else
-			self:SetupMultipleInputBox(0, 0);
-		end
-	end
+	self:ValidateControls();
 
-	self:SetupCraftingButtons();
 	local scrollToRecipe = false;
 	self.RecipeList:SelectRecipe(recipeInfo, scrollToRecipe);
-end
-
-function ProfessionsCraftingPageMixin:UpdateRemainingCraftCount()
-	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
-	if currentRecipeInfo then
-		local craftableCount = 0;
-		if self.SchematicForm:IsManuallyAllocated() then
-			craftableCount = self:GetCraftableCount();
-		else
-			local recipeLevel = self.SchematicForm:GetCurrentRecipeLevel();
-			craftableCount = C_TradeSkillUI.GetCraftableCount(currentRecipeInfo.recipeID, recipeLevel);
-		end
-
-		if craftableCount > 0 then
-			local count = 0;
-			if self.craftingQueue then
-				count = self.craftingQueue:GetTotal() + 1;
-			else
-				count = C_TradeSkillUI.GetRecipeRepeatCount();
-			end
-
-			self:SetupMultipleInputBox(count, craftableCount);
-		else
-			self:SetupMultipleInputBox(0, 0);
-		end
-	end
 end
 
 function ProfessionsCraftingPageMixin:SetupMultipleInputBox(count, countMax)
@@ -268,38 +236,86 @@ function ProfessionsCraftingPageMixin:SetupMultipleInputBox(count, countMax)
 	end
 end
 
-function ProfessionsCraftingPageMixin:GetCraftableCount(count)
+function ProfessionsCraftingPageMixin:GetCraftableCount()
 	local transaction = self.SchematicForm:GetTransaction();
-	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
-		local salvageItem = transaction:GetSalvageAllocation();
-		if salvageItem then
-			local recipeSchematic = transaction:GetRecipeSchematic();
-			local count = ItemUtil.GetCraftingReagentCount(salvageItem:GetItemID());
-			return math.floor(count / recipeSchematic.quantityMax);
-		else
-			return 0;
-		end
-	else
 	local intervals = math.huge;
-	if self.SchematicForm:IsManuallyAllocated() then
-		-- If manual, limit the count to the LCD of the allocated reagents.
+
+	local function ClampInvervals(quantity, quantityMax)
+		intervals = math.min(intervals, math.floor(quantity / quantityMax));
+	end
+
+	local function ClampAllocations(allocations)
+		for index, allocation in allocations:Enumerate() do
+			local quantity = Professions.GetReagentQuantityInPossession(allocation:GetReagent());
+			local quantityMax = allocation:GetQuantity();
+			ClampInvervals(quantity, quantityMax);
+		end
+	end
+
+	if transaction:IsManuallyAllocated() then
+		-- If manually allocated, we can only accumulate the reagents currently allocated.
 		for index, allocations in transaction:EnumerateAllAllocations() do
-			for _, allocation in allocations:Enumerate() do
-				local possessed = Professions.GetReagentQuantityInPossession(allocation:GetReagent());
-				intervals = math.min(intervals, math.floor(possessed / allocation:GetQuantity()));
+			if transaction:IsSlotBasicReagentType(index) then
+				ClampAllocations(allocations);
 			end
 		end
 	else
-		-- If automatically allocated, then sum every reagent and divide by the quantity required.
+		-- If automatically allocated, we can accumulate every compatible reagent regardless of what
+		-- is currently allocated.
 		for index, reagents in transaction:EnumerateAllSlotReagents() do
-			if transaction:IsSlotRequiredToCraft(index) then
-				local total = 0;
-				for _, reagent in ipairs(reagents) do
-					total = total + Professions.GetReagentQuantityInPossession(reagent);
-				end
+			if transaction:IsSlotBasicReagentType(index) then
+				local quantity = AccumulateOp(reagents, function(reagent)
+					return Professions.GetReagentQuantityInPossession(reagent);
+				end);
 
-				local required = transaction:GetQuantityRequiredInSlot(index);
-				intervals = math.min(intervals, math.floor(total / required));
+				local quantityMax = transaction:GetQuantityRequiredInSlot(index);
+				ClampInvervals(quantity, quantityMax);
+			end
+		end
+	end
+
+	-- Optionals and finishers are included unless the current reagent matches
+	-- a recrafting modification.
+	for index, allocations in transaction:EnumerateAllAllocations() do
+		if not transaction:IsSlotBasicReagentType(index) then
+			local allocs = allocations:SelectFirst();
+			if allocs then
+				local clamp = true;
+				local modification = transaction:GetModificationAtIndex(index);
+				if modification then
+					local reagent = allocs:GetReagent();
+					if modification.itemID == reagent.itemID then
+						clamp = false;
+					end
+				end
+				
+				if clamp then
+					ClampAllocations(allocations);
+				end
+			end
+		end
+	end
+
+	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
+		local salvageItem = transaction:GetSalvageAllocation();
+		if salvageItem then
+			local quantity = salvageItem:GetStackCount();
+			if quantity then
+				local recipeSchematic = transaction:GetRecipeSchematic();
+				ClampInvervals(quantity, recipeSchematic.quantityMax); 
+			end
+		end
+	elseif transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
+		local enchantItem = transaction:GetEnchantAllocation();
+		if enchantItem then
+			if enchantItem:IsStackable() then
+				local quantity = ItemUtil.GetCraftingReagentCount(enchantItem:GetItemID());
+				local quantityMax = 1;
+				ClampInvervals(quantity, quantityMax); 
+			else
+				local quantity = 1;
+				local quantityMax = 1;
+				ClampInvervals(quantity, quantityMax); 
 			end
 		end
 	end
@@ -309,9 +325,8 @@ function ProfessionsCraftingPageMixin:GetCraftableCount(count)
 	end
 	return 0;
 end
-end
 
-function ProfessionsCraftingPageMixin:SetupCraftingButtons()
+function ProfessionsCraftingPageMixin:ValidateControls()
 	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
@@ -330,26 +345,46 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 			self.CreateMultipleInputBox:Hide();
 		end
 
-		if currentRecipeInfo.abilityVerb then
-			-- abilityVerb is recipe-level override
-			self.CreateButton:SetText(currentRecipeInfo.abilityVerb);
-		elseif currentRecipeInfo.alternateVerb then
-			-- alternateVerb is profession-level override
-			self.CreateButton:SetText(currentRecipeInfo.alternateVerb);
-		else
-			self.CreateButton:SetText(CREATE_PROFESSION);
-		end
-
 		local countMax = self:GetCraftableCount();
-		local createAllFormat;
-		if currentRecipeInfo.abilityAllVerb then
-			-- abilityAllVerb is recipe-level override
-			createAllFormat = currentRecipeInfo.abilityAllVerb;
-		else
-			createAllFormat = PROFESSIONS_CREATE_ALL;
-		end
-		self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_FORMAT:format(createAllFormat, countMax));
+		if countMax > 0 then
+			local count = 0;
+			if self.craftingQueue then
+				count = self.craftingQueue:GetTotal() + 1;
+			else
+				count = C_TradeSkillUI.GetRecipeRepeatCount();
+			end
 
+			self:SetupMultipleInputBox(count, countMax);
+		else
+			self:SetupMultipleInputBox(0, 0);
+		end
+
+
+		if transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
+			self.CreateButton:SetText(CREATE_PROFESSION_ENCHANT);
+			local quantity = math.min(1, countMax);
+			self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_FORMAT:format(PROFESSIONS_ENCHANT_ALL, quantity));
+		else
+			if currentRecipeInfo.abilityVerb then
+				-- abilityVerb is recipe-level override
+				self.CreateButton:SetText(currentRecipeInfo.abilityVerb);
+			elseif currentRecipeInfo.alternateVerb then
+				-- alternateVerb is profession-level override
+				self.CreateButton:SetText(currentRecipeInfo.alternateVerb);
+			else
+				self.CreateButton:SetText(CREATE_PROFESSION);
+			end
+
+			local createAllFormat;
+			if currentRecipeInfo.abilityAllVerb then
+				-- abilityAllVerb is recipe-level override
+				createAllFormat = currentRecipeInfo.abilityAllVerb;
+			else
+				createAllFormat = PROFESSIONS_CREATE_ALL;
+			end
+			self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_FORMAT:format(createAllFormat, countMax));
+		end
+		
 		local function IsRecipeOnCooldown(recipeID)
 			local cooldown, isDayCooldown, charges, maxCharges = C_TradeSkillUI.GetRecipeCooldown(recipeID);
 			if not cooldown then
@@ -365,7 +400,7 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 
 		-- CAIS not relevant anymore since the client is denied login. Nevertheless, this is carried over from the
 		-- previous implementation in case the CAIS system changes.
-		local enabled = nil;
+		local enabled;
 		if PartialPlayTime() then
 			local reasonText = PLAYTIME_TIRED_ABILITY:format(REQUIRED_REST_HOURS - math.floor(GetBillingTimeRested() / 60));
 			self.CreateButton.tooltipText = reasonText;
@@ -383,16 +418,38 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 		else
 			self.CreateButton.tooltipText = nil;
 			self.CreateAllButton.tooltipText = nil;
-			enabled = currentRecipeInfo.craftable and not currentRecipeInfo.disabled;
+			
+			if countMax <= 0 then
+				enabled = false;
+			elseif not currentRecipeInfo.craftable or currentRecipeInfo.disabled then
+				enabled = false;
+			else
+				enabled = true;
+			end
 		end
 
+		local restrictAllButton = false;
 		if enabled then
 			-- Enchanting does not require the optional target to be set. When it is not,
 			-- clicking the create button creates a targeting cursor.
 			if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 				enabled = transaction:HasAllocatedSalvageRequirements();
 			else
-				enabled = transaction:HasAllocatedReagentRequirements();
+				if not transaction:HasAllocatedReagentRequirements() then
+					enabled = false;
+				end
+
+				if transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
+					local doesTargetSupportStacks = false;
+					local enchantItem = transaction:GetEnchantAllocation();
+					if enchantItem then
+						doesTargetSupportStacks = enchantItem:IsStackable();
+					end
+
+					if not doesTargetSupportStacks then
+						restrictAllButton = true;
+					end
+				end
 			end
 
 			if not enabled then
@@ -402,8 +459,8 @@ function ProfessionsCraftingPageMixin:SetupCraftingButtons()
 		end
 
 		self.CreateButton:SetEnabled(enabled);
-		self.CreateAllButton:SetEnabled(enabled);
-		self.CreateMultipleInputBox:SetEnabled(enabled);
+		self.CreateAllButton:SetEnabled(enabled and not restrictAllButton);
+		self.CreateMultipleInputBox:SetEnabled(enabled and not restrictAllButton);
 
 		if isRuneforging then
 			self.CreateAllButton:Hide();
@@ -499,11 +556,6 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	end
 end
 
-function ProfessionsCraftingPageMixin:ValidateControls()
-	self:UpdateRemainingCraftCount();
-		self:SetupCraftingButtons();
-	end
-
 function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
 
@@ -532,9 +584,7 @@ end
 function ProfessionsCraftingPageMixin:ContinueCrafting()
 	if self.craftingQueue then
 		if not self.craftingCallback() then
-			self.craftingCallback = nil;
-			self.craftingQueue = nil;
-			self.reallocPending = true;
+			self:ClearCraftingQueue();
 		end
 	else
 		C_TradeSkillUI.ContinueRecast();
@@ -542,23 +592,21 @@ function ProfessionsCraftingPageMixin:ContinueCrafting()
 	self:ValidateControls();
 end
 
+function ProfessionsCraftingPageMixin:ClearCraftingQueue()
+	self.craftingCallback = nil;
+	self.craftingQueue = nil;
+	self.craftingQueueEnchantID = nil;
+end
+
 function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLevel)
 	local transaction = self.SchematicForm:GetTransaction();
 	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
-		local matchItemLocation = nil;
 		local salvageItem = transaction:GetSalvageAllocation();
-		local salvageItemID = salvageItem:GetItemID();
-		ItemUtil.IteratePlayerInventory(function(bagItemLocation)
-			local item = Item:CreateFromItemLocation(bagItemLocation);
-			if item:GetItemID() == salvageItemID then
-				matchItemLocation = bagItemLocation;
-				return true;
+		if salvageItem then
+			local itemLocation = C_Item.GetItemLocation(salvageItem:GetItemGUID());
+			if itemLocation then
+				C_TradeSkillUI.CraftSalvage(recipeID, count, itemLocation);
 			end
-			return false;
-		end);
-
-		if matchItemLocation then
-			C_TradeSkillUI.CraftSalvage(recipeID, count, matchItemLocation);
 		end
 	else
 		if transaction:HasRecraftAllocation() then
@@ -588,16 +636,39 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 				transaction:GenerateExpectedItemModifications();
 			end
 		else
+			local function CraftRecipe(count, craftingReagentTbl)
+				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel);
+			end
+
+			local enchantItem = transaction:GetEnchantAllocation();
+
 			if count > 1 then
 				local ascending = not Professions.ShouldAllocateBestQualityReagents();
 				self.craftingQueue = CreateProfessionsCraftingQueue(transaction);
-				if self.SchematicForm:IsManuallyAllocated() then
+				if transaction:IsManuallyAllocated() then
 					local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
 					self.craftingQueue:SetPartitions(count, craftingReagentTbl);
 				else
 					self.craftingQueue:CalculatePartitions(transaction, count, ascending);
 				end
-				self.reallocPending = nil;
+
+				-- When creating multiple enchants, the server will remove the items in the order
+				-- discovered in inventory. Until this is fixed, replicate the expected order
+				-- so we always have a valid target.
+				local enchantQueue;
+				if enchantItem then
+					self.craftingQueueEnchantID = enchantItem:GetItemID();
+					enchantQueue = (function()
+						local queue = {};
+						ItemUtil.IteratePlayerInventoryAndEquipment(function(itemLocation)
+							if C_Item.GetItemID(itemLocation) == self.craftingQueueEnchantID then
+								local item = Item:CreateFromItemGUID(C_Item.GetItemGUID(itemLocation));
+								table.insert(queue, {itemLocation = itemLocation, count = item:GetStackCount()});
+							end
+						end);
+						return queue;
+					end)();
+				end
 
 				self.craftingCallback = function()
 					local partition = self.craftingQueue:Front();
@@ -606,25 +677,40 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 					end
 			
 					partition.quantity = partition.quantity - 1;
-					if partition.quantity == 0 then
+					if partition.quantity <= 0 then
 						self.craftingQueue:Pop();
 					end
 					
-					local craftingReagentTbl = {};
-					local quantity = 1;
-					for _, craftingReagentInfo in ipairs(partition.craftingReagentInfos) do
-						table.insert(craftingReagentTbl, craftingReagentInfo);
-					end
+					local shallow = true;
+					local craftingReagentTbl = CopyTable(partition.craftingReagentInfos, shallow);
+
 					local count = 1;
-					C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel);
+					if enchantQueue then
+						local index = 1;
+						local next = enchantQueue[index];
+						if next then
+							local itemLocation = next.itemLocation;
+							next.count = next.count - 1;
+							if next.count <= 0 then
+								table.remove(enchantQueue, index);
+							end
+							C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentTbl, itemLocation);
+						end
+					else
+						CraftRecipe(count, craftingReagentTbl);
+					end
+					
 					return true;
 				end
 				self.craftingCallback();
 			else
 				local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
-				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel);
+				if enchantItem then
+					C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentTbl, enchantItem:GetItemLocation());
+				else
+					CraftRecipe(count, craftingReagentTbl);
+				end
 			end
-			
 		end
 	end
 
@@ -649,12 +735,7 @@ end
 
 function ProfessionsCraftingPageMixin:CreateAll()
 	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
-	local count = 0;
-	if self.SchematicForm:IsManuallyAllocated() then
-		craftableCount = self:GetCraftableCount();
-	else
-		craftableCount = C_TradeSkillUI.GetCraftableCount(currentRecipeInfo.recipeID);
-	end
+	local craftableCount = self:GetCraftableCount();
 	self:CreateInternal(currentRecipeInfo.recipeID, craftableCount, self.SchematicForm:GetCurrentRecipeLevel());
 end
 

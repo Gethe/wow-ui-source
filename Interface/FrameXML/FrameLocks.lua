@@ -42,7 +42,7 @@ FRAMELOCK_STATES = {
 		QuickJoinToastButton				= "hidden",
 		ChatFrameMenuButton					= "hidden",
 		CombatLogQuickButtonFrame 			= "hidden",
-		ArenaEnemyFrames 					= "hidden",
+		ArenaEnemyFramesContainer 			= "hidden",
 		ChatFrame1							= "hidden",
 		ChatFrameChannelButton				= "hidden",
 		--Additional chat frames are added to this list as they are created.

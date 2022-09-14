@@ -11,14 +11,9 @@ end
 function HonorBarMixin:Update()
 	local current = UnitHonor("player");
 	local maxHonor = UnitHonorMax("player");
-
 	local level = UnitHonorLevel("player");
-	
-
 	self:SetBarValues(current, 0, maxHonor, level);
-	
-	
-	self:SetBarColor(1.0, 0.24, 0);
+	self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Honor");
 end
 
 function HonorBarMixin:UpdateOverlayFrameText()

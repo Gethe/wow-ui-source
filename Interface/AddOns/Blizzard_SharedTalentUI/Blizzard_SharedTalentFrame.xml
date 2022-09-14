@@ -71,7 +71,7 @@
 			</Frame>
 		</Frames>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="3">
 				<Texture parentKey="BackgroundFlash" atlas="spec-background" alphaMode="ADD" alpha="0">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>

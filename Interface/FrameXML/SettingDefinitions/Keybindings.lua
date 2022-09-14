@@ -314,7 +314,9 @@ local function Register()
 	end
 
 	for categoryName, bindingCategory in pairs(bindingsCategories) do
-		layout:AddInitializer(CreateKeybindingSectionInitializer(categoryName, bindingCategory));
+		if #bindingCategory > 0 then
+			layout:AddInitializer(CreateKeybindingSectionInitializer(categoryName, bindingCategory));
+		end
 	end
 	
 	-- Keybindings (search + redirectCategory)

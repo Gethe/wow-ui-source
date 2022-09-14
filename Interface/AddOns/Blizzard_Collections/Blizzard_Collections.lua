@@ -38,6 +38,19 @@ function CollectionsJournal_ValidateTab(tabNum)
 	return true;
 end
 
+local titles =
+{
+	[1] = MOUNTS,
+	[2] = PET_JOURNAL,
+	[3] = TOY_BOX,
+	[4] = HEIRLOOMS,
+	[5] = WARDROBE,
+};
+
+local function GetTitleText(titleIndex)
+	return titles[titleIndex] or "";
+end
+
 function CollectionsJournal_UpdateSelectedTab(self)
 	local selected = CollectionsJournal_GetTab(self);
 
@@ -45,7 +58,7 @@ function CollectionsJournal_UpdateSelectedTab(self)
 		PanelTemplates_SetTab(self, 1);
 		selected = 1;
 	end
-	
+
 	MountJournal:SetShown(selected == 1);
 	PetJournal:SetShown(selected == 2);
 	ToyBox:SetShown(selected == 3);
@@ -60,18 +73,8 @@ function CollectionsJournal_UpdateSelectedTab(self)
 		end
 	end
 
-	if ( selected == 1 ) then
-		CollectionsJournalTitleText:SetText(MOUNTS);
-	elseif (selected == 2 ) then
-		CollectionsJournalTitleText:SetText(PET_JOURNAL);
-	elseif (selected == 3 ) then
-		CollectionsJournalTitleText:SetText(TOY_BOX);
-	elseif (selected == 4 ) then
-		CollectionsJournalTitleText:SetText(HEIRLOOMS);
-	elseif (selected == 5 ) then
-		CollectionsJournalTitleText:SetText(WARDROBE);
-	end
-    
+	self:SetTitle(GetTitleText(selected));
+
     EventRegistry:TriggerEvent("CollectionsJournal.TabSet", CollectionsJournal, selected);
 
 	HelpTip:HideAll(self);

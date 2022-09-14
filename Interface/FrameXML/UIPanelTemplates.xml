@@ -888,13 +888,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-						<Offset x="4" y="5"/>
-					</Anchor>
-				</Anchors>
-			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton"/>
 		</Frames>
 	</Frame>
 
@@ -1624,8 +1618,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				ExampleButtonFramePortrait:SetTexture("Interface\\FriendsFrame\\FriendsFrameScrollIcon");
-				ExampleButtonFrameTitleText:SetText("Example Button Frame");
+				ExampleButtonFramePortrait:SetPortraitToAsset([[Interface\FriendsFrame\FriendsFrameScrollIcon]]);
+				ExampleButtonFrame:SetTitle("Example Button Frame");
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -1676,6 +1670,10 @@
 -->
 	<Button name="MainHelpPlateButton" frameLevel="510" virtual="true">
 		<Size x="64" y="64"/>
+		<KeyValues>
+			<!-- Use this to override what tooltip text is shown when mousing over this button -->
+			<KeyValue key="MainHelpPlateButtonTooltipText" value="MAIN_HELP_BUTTON_TOOLTIP" type="global"/>
+		</KeyValues>
 		<HitRectInsets>
 			<AbsInset left="20" right="20" top="20" bottom="20"/>
 		</HitRectInsets>

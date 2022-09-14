@@ -109,7 +109,6 @@ retain("GetRealmName");
 retain("PlaySound");
 retain("SetPortraitToTexture");
 retain("SetPortraitTexture");
-retain("SetBagPortraitTexture");
 retain("getmetatable");
 retain("BACKPACK_CONTAINER");
 retain("NUM_BAG_SLOTS");

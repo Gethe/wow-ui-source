@@ -260,12 +260,6 @@
 						<Anchor point="BOTTOM" relativeTo="MainMenuMicroButton" relativePoint="BOTTOM" x="0" y="-4"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="MainMenuBarDownload" file="Interface\BUTTONS\UI-MicroStream-Yellow" hidden="true">
-					<Size x="19" y="19"/>
-					<Anchors>
-						<Anchor point="BOTTOM" relativeTo="MainMenuMicroButton" relativePoint="BOTTOM" x="0" y="7"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>

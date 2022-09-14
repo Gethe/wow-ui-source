@@ -137,7 +137,7 @@
 		<Frames>
 			<Button name="$parentClose" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="2" y="1"/>
+					<Anchor point="TOPRIGHT" x="-2" y="-4"/>
 				</Anchors>
 			</Button>
 		</Frames>

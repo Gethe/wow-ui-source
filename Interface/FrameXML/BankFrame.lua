@@ -1,6 +1,6 @@
 BANK_PANELS = {
-	{ name = "BankSlotsFrame", size = {x=386, y=415}, SetTitle=function() BankFrameTitleText:SetText(UnitName("npc")); end },
-	{ name = "ReagentBankFrame", size = {x=738, y=415}, SetTitle=function() BankFrameTitleText:SetText(REAGENT_BANK); end },
+	{ name = "BankSlotsFrame", size = {x=386, y=415}, SetTitle=function() BankFrame:SetTitle(UnitName("npc")); end },
+	{ name = "ReagentBankFrame", size = {x=738, y=415}, SetTitle=function() BankFrame:SetTitle(REAGENT_BANK); end },
 }
 
 function ButtonInventorySlot (self)
@@ -286,7 +286,7 @@ function BankFrame_Open()
 	if ( not BankFrame:IsShown() ) then
 		CloseBankFrame();
 	end
-end		
+end
 
 function BankFrame_OnEvent (self, event, ...)
 	if ( event == "ITEM_LOCK_CHANGED" ) then

@@ -334,7 +334,8 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 
 						if not slot:IsUnallocatable() then
 							if buttonName == "LeftButton" then
-								Professions.AllocateBasicReagents(transaction, slotIndex);
+								local best = Professions.ShouldAllocateBestQualityReagents();
+								Professions.AllocateBasicReagents(transaction, slotIndex, best);
 								
 								slot:Update();
 

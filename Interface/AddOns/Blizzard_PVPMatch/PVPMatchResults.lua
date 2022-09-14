@@ -553,9 +553,12 @@ function PVPMatchResultsRatingMixin:OnEnter()
 	else
 		GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_CURRENT:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.ratingNew)));
 	end
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddNormalLine(GameTooltip, self.friendlyMMR);
-	GameTooltip_AddNormalLine(GameTooltip, self.enemyMMR);
+
+	if not PVPMatchUtil.InSoloShuffleBrawl() then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddNormalLine(GameTooltip, self.friendlyMMR);
+		GameTooltip_AddNormalLine(GameTooltip, self.enemyMMR);
+	end
 	
 	GameTooltip:Show();
 end

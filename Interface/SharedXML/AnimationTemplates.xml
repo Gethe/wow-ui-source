@@ -10,4 +10,13 @@
 			<OnFinished method="Hide"/>
 		</Scripts>
 	</AnimationGroup>
+
+	<AnimationGroup name="TargetsVisibleWhilePlayingAnimGroupTemplate" mixin="TargetsVisibleWhilePlayingAnimGroupMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="Hide"/>
+			<OnPlay method="Show"/>
+			<OnStop method="Hide"/>
+			<OnFinished method="Hide"/>
+		</Scripts>
+	</AnimationGroup>
 </Ui>

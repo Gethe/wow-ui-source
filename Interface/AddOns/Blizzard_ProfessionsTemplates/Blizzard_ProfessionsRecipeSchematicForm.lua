@@ -153,9 +153,9 @@ end
 
 function ProfessionsRecipeSchematicFormMixin:GetRecipeOperationInfo()
 	local recipeInfo = self.currentRecipeInfo;
-	if recipeInfo.isGatheringRecipe then
+	if self.recipeSchematic.hasGatheringOperationInfo then
 		return C_TradeSkillUI.GetGatheringOperationInfo(recipeInfo.recipeID);
-	elseif self.recipeSchematic.hasOperationInfo then
+	elseif self.recipeSchematic.hasCraftingOperationInfo then
 		return C_TradeSkillUI.GetCraftingOperationInfo(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetRecraftAllocation());
 	end
 end
@@ -258,12 +258,11 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	self.TrackRecipeCheckBox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeInfo.recipeID));
 
 	local learned = recipeInfo.learned;
-	if learned and (newTransaction or not self:IsManuallyAllocated()) then
+	if learned and (newTransaction or not self.transaction:IsManuallyAllocated()) then
 		self.transaction:SanitizeOptionalAllocations();
 		-- Unless the allocation has been manually changed, the 'best quality reagent' option is used to
 		-- auto-allocate the reagents.
 		Professions.AllocateAllBasicReagents(self.transaction, Professions.ShouldAllocateBestQualityReagents());
-		self:SetManuallyAllocated(false);
 	else
 		-- We still need to sanitize the transaction to remove allocations we no longer have even if
 		-- we're manually allocating. When we run out of a reagent, we expect the allocation to be
@@ -271,16 +270,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		self.transaction:SanitizeAllocations();
 	end
 
-	-- There are no slot allocations for a salvage recipe, however we want to set manually
-	-- allocated so that crafting count calculations can consider what's been targetted in the
-	-- salvage slot.
-	if isSalvage then
-		self:SetManuallyAllocated(true);
-	end
-
-	-- Verifies that the recraft target is still valid, and that the item modifications
-	-- for the item are updated.
-	self.transaction:SanitizeRecraftAllocation();
+	-- Verifies that targets are still valid, and that the item modifications
+	-- for the item are updated if a recraft target.
+	self.transaction:SanitizeTargetAllocations();
 
 	if self.QualityDialog:IsShown() then
 		local slotIndex = self.QualityDialog:GetSlotIndex();
@@ -511,7 +503,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 					end
 
 					local cannotFilter = true;
-					flyout:Init(self.recraftSlot.InputSlot, nilTransaction, cannotFilter);
+					flyout:Init(self.recraftSlot.InputSlot, self.transaction, cannotFilter);
 					flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
 				end
 			end
@@ -587,7 +579,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 						if buttonName == "LeftButton" then
 							local function OnAllocationsAccepted(dialog, allocations, reagentSlotSchematic)
 								self.transaction:OverwriteAllocations(reagentSlotSchematic.slotIndex, allocations);
-								self:SetManuallyAllocated(true);
+								self.transaction:SetManuallyAllocated(true);
 
 								slot:Update();
 
@@ -630,8 +622,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 			slot.UndoButton:SetScript("OnClick", function(button)
 				AllocateModification(slotIndex, reagentSlotSchematic);
 
-				self:SetManuallyAllocated(true);
-
 				slot:RestoreOriginalItem();
 
 				self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
@@ -673,13 +663,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 									local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
 									self.transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
 									
-									-- This sets manual allocation to limit the create multiple to the exact
-									-- configuration provided. If 3 of an optional reagent were assigned but
-									-- 9 items could be made without it, the create multiple count should be limited to
-									-- 3. Create multiple is only ever uncapped when no optionals are provided and
-									-- the quality of a basic reagent hasn't been hand tweaked.
-									self:SetManuallyAllocated(true);
-
 									slot:SetItem(item);
 
 									self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
@@ -698,10 +681,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 
 							flyout.GetElementsImplementation = function(self, filterOwned)
 								local itemIDs = Professions.ExtractItemIDsFromCraftingReagents(reagentSlotSchematic.reagents);
-								if filterOwned then
-									itemIDs = ItemUtil.FilterOwnedItems(itemIDs);
-								end
-								local items = ItemUtil.TransformItemIDsToItems(itemIDs);
+								local items = Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned);
 								local elementData = {items = items};
 								return elementData;
 							end
@@ -717,22 +697,24 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 							flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
 						end
 					elseif buttonName == "RightButton" then
-						local function Deallocate()
-							self.transaction:ClearAllocations(slotIndex);
+						if self.transaction:HasAllocations(slotIndex) then
+							local function Deallocate()
+								self.transaction:ClearAllocations(slotIndex);
 
-							slot:ClearItem();
+								slot:ClearItem();
 
-							self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
-						end
-
-						local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
-						local allocate = not (modification and self.transaction:HasAllocatedItemID(modification.itemID));
-						if allocate then
-							Deallocate();
-						else
-							local modItem = Item:CreateFromItemID(modification.itemID);
-							local dialogData = {callback = Deallocate, itemName = modItem:GetItemName()};
-							StaticPopup_Show("PROFESSIONS_RECRAFT_REPLACE_OPTIONAL_REAGENT", nil, nil, dialogData);	
+								self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
+							end
+							
+							local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
+							local allocate = not (modification and self.transaction:HasAllocatedItemID(modification.itemID));
+							if allocate then
+								Deallocate();
+							else
+								local modItem = Item:CreateFromItemID(modification.itemID);
+								local dialogData = {callback = Deallocate, itemName = modItem:GetItemName()};
+								StaticPopup_Show("PROFESSIONS_RECRAFT_REPLACE_OPTIONAL_REAGENT", nil, nil, dialogData);	
+							end
 						end
 					end
 				end
@@ -767,11 +749,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		
 					flyout.GetElementsImplementation = function(self, filterOwned)
 						local itemIDs = C_TradeSkillUI.GetSalvagableItemIDs(recipeID);
-						if filterOwned then
-							itemIDs = ItemUtil.FilterOwnedItems(itemIDs);
-						end
-						local items = ItemUtil.TransformItemIDsToItems(itemIDs);
-						local elementData = {items = items};
+						local items = Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned);
+						local elementData = {items = items, onlyCountStack = true,};
 						return elementData;
 					end
 
@@ -779,10 +758,14 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 						Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, self.transaction:GetRecraftAllocation());
 					end
 
-					flyout.OnElementEnabledImplementation = nil;
+					flyout.OnElementEnabledImplementation = function(button, elementData)
+						local item = elementData.item;
+						local quantity = item:GetItemGUID() and item:GetStackCount() or nil;
+						return (quantity ~= nil) and (quantity >= self.recipeSchematic.quantityMax);
+					end
 
 					local cannotFilter = false;
-					flyout:Init(self.salvageSlot.Button, nilTransaction, cannotFilter);
+					flyout:Init(self.salvageSlot.Button, self.transaction, cannotFilter);
 					flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
 				end
 			elseif buttonName == "RightButton" then
@@ -799,9 +782,12 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 
 			local salvageItem = self.transaction:GetSalvageAllocation();
 			if salvageItem then
-				GameTooltip:SetItemByID(salvageItem:GetItemID());
-				GameTooltip_AddBlankLineToTooltip(GameTooltip);
-				GameTooltip_AddInstructionLine(GameTooltip, SALVAGE_REAGENT_TOOLTIP_CLICK_TO_REMOVE);
+				local itemID = salvageItem:GetItemID();
+				if itemID then
+					GameTooltip:SetItemByID(itemID);
+					GameTooltip_AddBlankLineToTooltip(GameTooltip);
+					GameTooltip_AddInstructionLine(GameTooltip, SALVAGE_REAGENT_TOOLTIP_CLICK_TO_REMOVE);
+				end
 			else
 				GameTooltip_AddInstructionLine(GameTooltip, SALVAGE_REAGENT_TOOLTIP_CLICK_TO_ADD);
 			end
@@ -810,6 +796,68 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	else
 		if self.salvageSlot then
 			self.salvageSlot:Hide();
+		end
+	end
+
+	local isEnchant = self.recipeSchematic.recipeType == Enum.TradeskillRecipeType.Enchant;
+	if isEnchant then
+		if not self.enchantSlot then
+			self.enchantSlot = CreateFrame("FRAME", nil, self, "ProfessionsReagentEnchantTemplate");
+		end
+		self.enchantSlot:Show();
+		self.enchantSlot:Init(self.transaction);
+	
+		self.enchantSlot.Button:SetScript("OnMouseDown", function(button, buttonName, down)
+			if buttonName == "LeftButton" then
+				local flyout = ToggleProfessionsItemFlyout(self.enchantSlot.Button);
+				if flyout then
+					local function OnFlyoutItemSelected(o, flyout, elementData)
+						local item = elementData.item;
+						if ItemUtil.GetCraftingReagentCount(item:GetItemID()) == 0 then
+							return;
+						end
+	
+						self.transaction:SetEnchantAllocation(item);
+	
+						self.enchantSlot:SetItem(item);
+	
+						self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
+					end
+		
+					flyout.GetElementsImplementation = function(self, filterOwned)
+						local itemGUIDs = C_TradeSkillUI.GetEnchantItems(recipeID);
+
+						local function CopyPredicate(item)
+							return item:GetItemID();
+						end
+						local items = TableUtil.CopyUniqueByPredicate(ItemUtil.TransformItemGUIDsToItems(itemGUIDs), 
+							TableUtil.Constants.IsIndexTable, CopyPredicate);
+
+						local elementsData = {items = items, itemGUIDs = itemGUIDs};
+						return elementsData;
+					end
+	
+					flyout.OnElementEnterImplementation = function(elementData, tooltip)
+						Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, self.transaction:GetRecraftAllocation());
+					end
+	
+					flyout.OnElementEnabledImplementation = nil;
+	
+					local cannotFilter = true;
+					flyout:Init(self.enchantSlot.Button, self.transaction, cannotFilter);
+					flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
+				end
+			elseif buttonName == "RightButton" then
+				self.transaction:ClearEnchantAllocations();
+	
+				self.enchantSlot:ClearItem();
+	
+				self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
+			end
+		end);
+	else
+		if self.enchantSlot then
+			self.enchantSlot:Hide();
 		end
 	end
 
@@ -831,8 +879,16 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		basicSlots = self:GetSlotsByReagentType(Enum.CraftingReagentType.Basic);
 	end
 
-	Professions.LayoutReagentSlots(basicSlots, self.Reagents, 
-		self:GetSlotsByReagentType(Enum.CraftingReagentType.Optional), self.OptionalReagents, self.VerticalDivider);
+	local optionalSlots;
+	if isEnchant then
+		optionalSlots = {self.enchantSlot};
+		self.OptionalReagents:SetText(PROFESSIONS_REAGENT_CONTAINER_ENCHANT_LABEL);
+	else
+		optionalSlots = self:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+		self.OptionalReagents:SetText(PROFESSIONS_REAGENT_CONTAINER_LABEL);
+	end
+
+	Professions.LayoutReagentSlots(basicSlots, self.Reagents, optionalSlots, self.OptionalReagents, self.VerticalDivider);
 	
 	if basicSlots and #basicSlots > 0 then
 		self.Reagents:Show();
@@ -886,17 +942,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	organizer:Layout();
 end
 
-function ProfessionsRecipeSchematicFormMixin:SetManuallyAllocated(manuallyAllocated)
-	self.manuallyAllocated = manuallyAllocated;
-end
-
-function ProfessionsRecipeSchematicFormMixin:IsManuallyAllocated()
-	return self.manuallyAllocated;
-end
-
 function ProfessionsRecipeSchematicFormMixin:UpdateDetailsStats()
 	if self.currentRecipeInfo ~= nil and self.Details:IsShown() then
-		if self.recipeSchematic.hasOperationInfo then
+		if self.recipeSchematic.hasCraftingOperationInfo or self.recipeSchematic.hasGatheringOperationInfo then
 			local operationInfo = self:GetRecipeOperationInfo();
 			self.Details:SetStats(operationInfo, self.currentRecipeInfo.supportsQualities, self.currentRecipeInfo.isGatheringRecipe);
 		end

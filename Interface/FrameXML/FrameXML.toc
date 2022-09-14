@@ -223,6 +223,7 @@ StaticPopup.xml
 SettingDefinitions\Definitions.xml
 
 QuickKeybind.xml
+TutorialFrame.xml
 EditModePresetLayouts.lua
 EditModeSettingDisplayInfo.lua
 EditModeUtil.lua
@@ -254,7 +255,6 @@ Cooldown.xml
 PVPUITemplates.xml
 PVPHonorSystem.xml
 ActionBarController.xml
-TutorialFrame.xml
 Minimap.xml
 GameTime.xml
 AddonCompartment.xml
@@ -305,6 +305,7 @@ MerchantFrame.xml
 TradeFrame.xml
 ContainerFrame.xml
 LootFrame.xml
+GroupLootFrame.xml
 ItemTextFrame.xml
 TaxiFrame.xml
 BankFrame.xml

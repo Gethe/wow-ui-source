@@ -15,6 +15,18 @@ local TradeSkillUI =
 			Type = "Function",
 		},
 		{
+			Name = "CraftEnchant",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+				{ Name = "numCasts", Type = "number", Nilable = false, Default = 1 },
+				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
+				{ Name = "itemTarget", Type = "table", Mixin = "ItemLocationMixin", Nilable = true },
+			},
+		},
+		{
 			Name = "CraftRecipe",
 			Type = "Function",
 
@@ -34,7 +46,7 @@ local TradeSkillUI =
 			{
 				{ Name = "recipeSpellID", Type = "number", Nilable = false },
 				{ Name = "numCasts", Type = "number", Nilable = false, Default = 1 },
-				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemTarget", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 		{
@@ -134,6 +146,20 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "bonusText", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetEnchantItems",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "items", Type = "table", InnerType = "string", Nilable = false },
 			},
 		},
 		{

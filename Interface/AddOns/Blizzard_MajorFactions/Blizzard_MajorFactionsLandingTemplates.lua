@@ -1,22 +1,16 @@
--- Using colors for the button background textures until the final art is ready!
-local tempBackgroundColors = { 
-	{ r = 0, g = 0.5, b = 0.25, a = 1, },
-	{ r = 0.75, g = 0.5, b = 0, a = 1},
-	{ r = 0.75, g = 0, b = 0.25, a = 1, },
-	{ r = 0.5, g = 0.6, b = 0.65, a = 1, },
-	{ r = 0, g = 0.75, b = 0.75, a = 1, },
-	{ r = 0.75, g = 0.75, b = 0.75, a = 1, },
-	{ r = 0.5, g = 0.1, b = 0.25, a = 1, },
-	{ r = 0.25, g = 0.25, b = 0.75, a = 1, },
+local buttonTextureKits = {
+	[2503] = "Centaur",
+	[2507] = "Expedition",
+	[2510] = "Tuskarr",
+	[2511] = "Valdrakken",
 };
 
-local function GetTempBackgroundColor(index)
-	return tempBackgroundColors[index % #tempBackgroundColors];
-end
+local iconAtlasFormat = "majorFactions_icons_%s512";
+local buttonAtlasFormat = "%s-landingpage-renownbutton-%s";
+local buttonHoverAtlasFormat = "%s-landingpage-renownbutton-%s-hover";
 
--- WIP Strings
-MAJOR_FACTION_QUEST_BUTTON_TOOLTIP_QUESTS_AVAILABLE = "Quests Available";
-MAJOR_FACTION_QUEST_BUTTON_TOOLTIP_VIEW_QUESTS = "<Click to view quests on map>";
+-- Todo: Add globalstring
+MAJOR_FACTION_BUTTON_RENOWN_LEVEL = "Level %d";
 
 LandingPageMajorFactionList = {};
 
@@ -29,13 +23,13 @@ end
 
 MajorFactionListMixin = {};
 
-MajorFactionListEvents = {
+local MAJOR_FACTION_LIST_EVENTS = {
 	"MAJOR_FACTION_UNLOCKED",
 };
 
 function MajorFactionListMixin:OnLoad()
 	local padding = 0;
-	local elementSpacing = 10;
+	local elementSpacing = 8;
 	local view = CreateScrollBoxListLinearView(padding, padding, padding, padding, elementSpacing);
 	view:SetElementInitializer("MajorFactionButtonTemplate", function(button, majorFactionData)
 		button:Init(majorFactionData);
@@ -47,14 +41,11 @@ function MajorFactionListMixin:OnLoad()
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
-	local xoffset, yoffset = 0, 8;
-	self.Title:SetPoint("BOTTOMLEFT", self.ScrollBox, "TOPLEFT", xoffset, yoffset);
-
 	EventRegistry:RegisterCallback("MajorFactionRenownMixin.RenownTrackFactionChanged", self.OnRenownTrackFactionChanged, self);
 end
 
 function MajorFactionListMixin:OnShow()
-	FrameUtil.RegisterFrameForEvents(self, MajorFactionListEvents);
+	FrameUtil.RegisterFrameForEvents(self, MAJOR_FACTION_LIST_EVENTS);
 	self:Refresh();
 
 	if self.selectedFactionID then
@@ -63,7 +54,7 @@ function MajorFactionListMixin:OnShow()
 end
 
 function MajorFactionListMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, MajorFactionListEvents);
+	FrameUtil.UnregisterFrameForEvents(self, MAJOR_FACTION_LIST_EVENTS);
 end
 
 function MajorFactionListMixin:OnEvent(event, ...)
@@ -78,10 +69,6 @@ function MajorFactionListMixin:Refresh()
 	local majorFactionIDs = C_MajorFactions.GetMajorFactionIDs(self.expansionFilter);
 	for index, majorFactionID in ipairs(majorFactionIDs) do
 		local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
-
-		-- Placeholder colored background until we get the final art!
-		majorFactionData.color = GetTempBackgroundColor(index);
-
 		tinsert(factionList, majorFactionData);
 	end
 
@@ -92,6 +79,7 @@ function MajorFactionListMixin:Refresh()
 
 	local dataProvider = CreateDataProvider(factionList);
 	self.ScrollBox:SetDataProvider(dataProvider);
+	self.ScrollBar:SetShown(self.ScrollBox:HasScrollableExtent());
 end
 
 function MajorFactionListMixin:SetExpansionFilter(expansionFilter)
@@ -144,7 +132,17 @@ MajorFactionButtonMixin = {};
 function MajorFactionButtonMixin:Init(majorFactionData)
 	self.isUnlocked = majorFactionData.isUnlocked;
 	self.factionID = majorFactionData.factionID;
+	self.expansionID = majorFactionData.expansionID;
 	self.bountySetID = majorFactionData.bountySetID;
+
+	local expansionName = _G["EXPANSION_NAME" .. self.expansionID];
+	self.UnlockedState.normalAtlas = buttonAtlasFormat:format(expansionName, buttonTextureKits[self.factionID]);
+	self.UnlockedState.hoverAtlas = buttonHoverAtlasFormat:format(expansionName, buttonTextureKits[self.factionID]);
+
+	self.UnlockedState.Background:SetAtlas(self.UnlockedState.normalAtlas, TextureKitConstants.UseAtlasSize);
+
+	self.UnlockedState.Icon:SetAtlas(iconAtlasFormat:format(buttonTextureKits[self.factionID]), TextureKitConstants.IgnoreAtlasSize);
+	self.UnlockedState.Icon:Show();
 
 	self.LockedState:Refresh(majorFactionData);
 	self.UnlockedState:Refresh(majorFactionData);
@@ -166,7 +164,7 @@ end
 
 ----------------------------------- Major Faction Button Unlocked State -----------------------------------
 
-MajorFactionButtonUnlockedStateEvents = {
+local MAJOR_FACTION_BUTTON_UNLOCKED_STATE_EVENTS = {
 	"MAJOR_FACTION_RENOWN_LEVEL_CHANGED",
 	"UPDATE_FACTION",
 };
@@ -174,45 +172,37 @@ MajorFactionButtonUnlockedStateEvents = {
 MajorFactionButtonUnlockedStateMixin = {};
 
 function MajorFactionButtonUnlockedStateMixin:Refresh(majorFactionData)
-	-- Placeholder colored background until we get the final art!
-	if majorFactionData.color then
-		self.color = majorFactionData.color;
-		self.Background:SetColorTexture(majorFactionData.color.r, majorFactionData.color.g, majorFactionData.color.b, majorFactionData.color.a);
-	end
-
 	self.Title:SetText(majorFactionData.name or "");
-	self.RenownLevel:SetText(majorFactionData.renownLevel or 0);
+	self.RenownLevel:SetText(MAJOR_FACTION_BUTTON_RENOWN_LEVEL:format(majorFactionData.renownLevel or 0));
 
-	self.QuestButton:SetShown(false); -- TODO: Show only when quests are available
-
-	local minValue, maxValue = 0, majorFactionData.renownLevelThreshold;
 	local isCapped = C_MajorFactions.HasMaximumRenown(majorFactionData.factionID);
 	local currentValue = isCapped and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned or 0;
-	self.RenownProgressBar:UpdateBar(minValue, maxValue, currentValue);
+	local maxValue = majorFactionData.renownLevelThreshold;
+	self.RenownProgressBar:UpdateBar(currentValue, maxValue);
 	self.RenownProgressBar:Show();
 
 	C_Reputation.RequestFactionParagonPreloadRewardData(majorFactionData.factionID);
 end
 
 function MajorFactionButtonUnlockedStateMixin:OnShow()
-	FrameUtil.RegisterFrameForEvents(self, MajorFactionButtonUnlockedStateEvents);
+	FrameUtil.RegisterFrameForEvents(self, MAJOR_FACTION_BUTTON_UNLOCKED_STATE_EVENTS);
 
 	if self:GetParent().isUnlocked then
 		local cvarName = "lastRenownForMajorFaction" .. self:GetParent().factionID;
 		local lastRenownLevel = tonumber(GetCVar(cvarName)) or 1;
 		local newFactionUnlock = lastRenownLevel == 0;
-		if newFactionUnlock then
-			self:PlayUnlockCelebration();
-		end
+		--if newFactionUnlock then
+		--	self:PlayUnlockCelebration();
+		--end
 	end
 end
 
 function MajorFactionButtonUnlockedStateMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, MajorFactionButtonUnlockedStateEvents);
+	FrameUtil.UnregisterFrameForEvents(self, MAJOR_FACTION_BUTTON_UNLOCKED_STATE_EVENTS);
 
-	if self.isPlayingUnlockCelebration == true then
-		self:StopUnlockCelebration();
-	end
+	--if self.isPlayingUnlockCelebration == true then
+	--	self:StopUnlockCelebration();
+	--end
 end
 
 function MajorFactionButtonUnlockedStateMixin:OnEvent(event, ...)
@@ -234,11 +224,15 @@ end
 function MajorFactionButtonUnlockedStateMixin:OnEnter()
 	self.WatchFactionButton:Show();
 
+	self.Background:SetAtlas(self.hoverAtlas, TextureKitConstants.UseAtlasSize);
+
 	self:RefreshTooltip();
 end
 
 function MajorFactionButtonUnlockedStateMixin:OnLeave()
-	GameTooltip:Hide();
+	self.Background:SetAtlas(self.normalAtlas, TextureKitConstants.UseAtlasSize);
+
+	GameTooltip_Hide();
 end
 
 function MajorFactionButtonUnlockedStateMixin:OnClick()
@@ -269,7 +263,7 @@ end
 
 function MajorFactionButtonUnlockedStateMixin:SetSelected(selected)
 	self.isSelected = selected;
-	self.SelectedTexture:SetShown(selected);
+	--self.SelectedTexture:SetShown(selected);
 end
 
 function MajorFactionButtonUnlockedStateMixin:RefreshTooltip()
@@ -366,56 +360,29 @@ end
 
 MajorFactionRenownProgressBarMixin = {};
 
-function MajorFactionRenownProgressBarMixin:OnLoad()
-	self:SetStatusBarColor(BLUE_FONT_COLOR:GetRGBA());
-	self:SetMinMaxValues(0, 100);
-	self:SetValue(0);
-	self:GetStatusBarTexture():SetDrawLayer("BORDER");
-end
-
-function MajorFactionRenownProgressBarMixin:UpdateBar(minValue, maxValue, currentValue)
-	if not minValue or not maxValue or not currentValue then
+function MajorFactionRenownProgressBarMixin:UpdateBar(currentValue, maxValue)
+	if not currentValue or not maxValue or maxValue == 0 then
 		return;
 	end
 
-	self:SetMinMaxValues(minValue, maxValue);
-	self:SetValue(currentValue);
-end
-
------------------------------------ Major Faction Button Unlocked State Quest Button -----------------------------------
-
-MajorFactionQuestButtonMixin = {};
-
-function MajorFactionQuestButtonMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, MAJOR_FACTION_QUEST_BUTTON_TOOLTIP_QUESTS_AVAILABLE, NORMAL_FONT_COLOR);
-	GameTooltip_AddColoredLine(GameTooltip, MAJOR_FACTION_QUEST_BUTTON_TOOLTIP_VIEW_QUESTS, GREEN_FONT_COLOR);
-	GameTooltip:Show();
-end
-
-function MajorFactionQuestButtonMixin:OnLeave()
-	GameTooltip:Hide();
-end
-
-function MajorFactionQuestButtonMixin:OnClick()
-	-- TODO: Open to map that has activities for this faction ID
+	CooldownFrame_SetDisplayAsPercentage(self, currentValue / maxValue);
 end
 
 ----------------------------------- Major Faction Button Unlocked State Watch Faction Button -----------------------------------
 
-MajorFactionWatchFactionButtonEvents = {
+local MAJOR_FACTION_WATCH_FACTION_BUTTON_EVENTS = {
 	"UPDATE_FACTION",
 }
 
 MajorFactionWatchFactionButtonMixin = {};
 
 function MajorFactionWatchFactionButtonMixin:OnShow()
-	FrameUtil.RegisterFrameForEvents(self, MajorFactionWatchFactionButtonEvents);
+	FrameUtil.RegisterFrameForEvents(self, MAJOR_FACTION_WATCH_FACTION_BUTTON_EVENTS);
 	self:UpdateState();
 end
 
 function MajorFactionWatchFactionButtonMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, MajorFactionWatchFactionButtonEvents);
+	FrameUtil.UnregisterFrameForEvents(self, MAJOR_FACTION_WATCH_FACTION_BUTTON_EVENTS);
 end
 
 function MajorFactionWatchFactionButtonMixin:OnEvent(event)

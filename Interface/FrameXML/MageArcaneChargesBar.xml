@@ -96,7 +96,7 @@
 			<KeyValue key="resourcePointSetupFunc" value="ArcaneChargeMixin.Setup" type="global"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="50" y="34"/>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="32" y="30"/>
 		</Anchors>
 	</Frame>
 </Ui>

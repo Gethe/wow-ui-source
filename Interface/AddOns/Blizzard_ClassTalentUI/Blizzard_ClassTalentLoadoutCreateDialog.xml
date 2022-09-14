@@ -1,0 +1,48 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Script file="Blizzard_ClassTalentLoadoutCreateDialog.lua"/>
+
+	<Frame name="ClassTalentLoadoutCreateDialog" inherits="ClassTalentLoadoutDialogTemplate" mixin="ClassTalentLoadoutCreateDialogMixin" parent="UIParent" hidden="true" >
+		<KeyValues>
+			<KeyValue key="titleText" value="HUD_CLASS_TALENTS_NEW_LOADOUT_DIALOG_TITLE" type="global"/>
+		</KeyValues>
+		<Size x="460" y="150"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="LoadoutNameLabel" inherits="GameFontNormal" text="HUD_CLASS_TALENTS_NEW_LOADOUT_DIALOG_EDIT_BOX_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ContentArea"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="LoadoutName" inherits="ClassTalentLoadoutDialogNameInputTemplate" mixin="ClassTalentLoadoutCreateDialogNameEditBoxMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ContentArea" y="-10"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ContentArea"/>
+				</Anchors>
+				<Scripts>
+					<OnEnterPressed method="OnEnterPressed"/>
+					<OnEscapePressed method="OnEscapePressed"/>
+					<OnTextChanged method="OnTextChanged"/>
+				</Scripts>
+			</EditBox>
+
+			<Button parentKey="AcceptButton" inherits="ClassTalentLoadoutDialogButtonTemplate" text="SAVE">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" relativeKey="$parent.ContentArea" x="-5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="ClassTalentLoadoutDialogButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" relativeKey="$parent.ContentArea" x="5"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

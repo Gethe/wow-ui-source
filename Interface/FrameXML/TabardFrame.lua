@@ -2,7 +2,7 @@
 function TabardFrame_OnLoad(self)
 	self:RegisterEvent("TABARD_CANSAVE_CHANGED");
 	self:RegisterEvent("TABARD_SAVE_PENDING");
-	self:RegisterEvent("UNIT_MODEL_CHANGED");
+	self:RegisterEvent("UNIT_FORM_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
 
@@ -18,13 +18,14 @@ function TabardFrame_OnLoad(self)
 end
 
 function TabardFrame_Open()
-	TabardModel:SetUnit("player");
 	SetPortraitTexture(TabardFramePortrait,"npc");
 	TabardFrameNameText:SetText(UnitName("npc"));
-	TabardModel:InitializeTabardColors();
 	TabardFrame_UpdateTextures();
 	TabardFrame_UpdateButtons();
 	ShowUIPanel(TabardFrame);
+	TabardModel:SetUnit("player");
+	TabardModel:InitializeTabardColors();
+
 	if ( not TabardFrame:IsShown() ) then
 		CloseTabardCreation();
 	end
@@ -33,7 +34,7 @@ end
 function TabardFrame_OnEvent(self, event, ...)
 	if ( event == "TABARD_CANSAVE_CHANGED" or event == "TABARD_SAVE_PENDING" ) then
 		TabardFrame_UpdateButtons();
-	elseif ( event == "UNIT_MODEL_CHANGED" ) then
+	elseif ( event == "UNIT_FORM_CHANGED" ) then
 		if ( unit == "player" ) then
 			TabardModel:SetUnit("player");
 		end

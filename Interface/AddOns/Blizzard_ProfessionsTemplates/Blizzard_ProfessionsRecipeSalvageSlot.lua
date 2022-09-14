@@ -21,7 +21,6 @@ function ProfessionsSalvageSlotMixin:Init(transaction, quantityRequired)
 
 	self.quantityRequired = quantityRequired;
 
-	self:SetNameText(PROFESSIONS_ADD_SALVAGE);
 	self:Update();
 	
 	local function OnItemsLoaded()
@@ -39,7 +38,9 @@ function ProfessionsSalvageSlotMixin:Init(transaction, quantityRequired)
 end
 
 function ProfessionsSalvageSlotMixin:Update()
-	self:UpdateAllocationText();
+	if not self:UpdateAllocationText() then
+		self:SetNameText(PROFESSIONS_ADD_SALVAGE);
+	end
 end
 
 function ProfessionsSalvageSlotMixin:SetQuantityAvailableCallback(callback)
@@ -48,11 +49,15 @@ end
 
 function ProfessionsSalvageSlotMixin:UpdateAllocationText()
 	if self.allocationItem then
-		local count = ItemUtil.GetCraftingReagentCount(self.allocationItem:GetItemID());
-		self:SetNameText(("%s %s"):format(
-			TRADESKILL_REAGENT_COUNT:format(count, self.quantityRequired), 
-			self.allocationItem:GetItemName()));
+		local quantity = self.allocationItem:GetStackCount();
+		if quantity then
+			self:SetNameText(("%s %s"):format(
+				TRADESKILL_REAGENT_COUNT:format(quantity, self.quantityRequired),
+				self.allocationItem:GetItemName()));
+				return true;
+		end
 	end
+	return false;
 end
 
 function ProfessionsSalvageSlotMixin:SetNameText(text)
@@ -81,7 +86,6 @@ function ProfessionsSalvageSlotMixin:SetItem(item)
 	self.allocationItem = item;
 
 	self.Button:SetItem(item:GetItemID());
-	self.Name:SetText(item:GetItemName());
 
 	self:Update();
 end

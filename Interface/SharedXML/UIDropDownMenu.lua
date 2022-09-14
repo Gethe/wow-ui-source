@@ -168,7 +168,7 @@ function UIDropDownMenuButtonInvisibleButton_OnLeave(self)
 	GetAppropriateTooltip():Hide();
 end
 
-function UIDropDownMenuButton_OnEnter(self)
+function UIDropDownMenuButton_OnEnter(self, isShowingIconTooltip)
 	if ( self.hasArrow ) then
 		local level =  self:GetParent():GetID() + 1;
 		local listFrame = _G["DropDownList"..level];
@@ -179,7 +179,7 @@ function UIDropDownMenuButton_OnEnter(self)
 		CloseDropDownMenus(self:GetParent():GetID() + 1);
 	end
 	self.Highlight:Show();
-	if ( self.tooltipTitle and not self.noTooltipWhileEnabled ) then
+	if ( self.tooltipTitle and not self.noTooltipWhileEnabled and not isShowingIconTooltip ) then
 		if ( self.tooltipOnButton ) then
 			local tooltip = GetAppropriateTooltip();
 			tooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -212,6 +212,49 @@ function UIDropDownMenuButton_OnLeave(self)
 	end
 
 	GetValueOrCallFunction(self, "funcOnLeave", self);
+end
+
+function UIDropDownMenuButtonIcon_OnClick(self, mouseButton)
+	local button = self:GetParent();
+	if not button then
+		return;
+	end
+
+	UIDropDownMenuButton_OnClick(button, mouseButton);
+end
+
+function UIDropDownMenuButtonIcon_OnEnter(self)
+	local button = self:GetParent();
+	if not button then
+		return;
+	end
+
+	local isShowingIconTooltip = false;
+
+	if button.iconTooltipTitle or button.iconTooltipText then
+		isShowingIconTooltip = true;
+		
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(button, "ANCHOR_RIGHT");
+		if button.iconTooltipTitle then
+			GameTooltip_SetTitle(tooltip, button.iconTooltipTitle);
+		end
+		if button.iconTooltipText then
+			GameTooltip_AddNormalLine(tooltip, button.iconTooltipText, true);
+		end
+		tooltip:Show();
+	end
+
+	UIDropDownMenuButton_OnEnter(button, isShowingIconTooltip);
+end
+
+function UIDropDownMenuButtonIcon_OnLeave(self)
+	local button = self:GetParent();
+	if not button then
+		return;
+	end
+
+	UIDropDownMenuButton_OnLeave(button);
 end
 
 --[[
@@ -256,6 +299,8 @@ info.minWidth = [nil, NUMBER] -- Minimum width for this line
 info.customFrame = frame -- Allows this button to be a completely custom frame, should inherit from UIDropDownCustomMenuEntryTemplate and override appropriate methods.
 info.icon = [TEXTURE] -- An icon for the button.
 info.iconXOffset = [nil, NUMBER] -- Number of pixels to shift the button's icon to the left or right (positive numbers shift right, negative numbers shift left).
+info.iconTooltipTitle = [nil, STRING] -- Title of the tooltip shown on icon mouseover
+info.iconTooltipText = [nil, STRING] -- Text of the tooltip shown on icon mouseover
 info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 info.ignoreAsMenuSelection [nil, true] -- Never set the menu text/icon to this, even when this button is checked
 info.registerForRightClick [nil, true] -- Register dropdown buttons for right clicks
@@ -488,6 +533,8 @@ function UIDropDownMenu_AddButton(info, level)
 	button.noClickSound = info.noClickSound;
 	button.padding = info.padding;
 	button.icon = info.icon;
+	button.iconTooltipTitle = info.iconTooltipTitle;
+	button.iconTooltipText = info.iconTooltipText;
 	button.iconXOffset = info.iconXOffset;
 	button.mouseOverIcon = info.mouseOverIcon;
 	button.ignoreAsMenuSelection = info.ignoreAsMenuSelection;

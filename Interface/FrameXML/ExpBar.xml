@@ -6,18 +6,17 @@
 		<Size x="804" y="11"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="-1">
-				<Texture parentKey="ExhaustionLevelFillBar">
-					<Size x="0" y="10"/>
+				<Texture parentKey="ExhaustionLevelFillBar" atlas="UI-HUD-ExperienceBar-Fill-Prediction">
+					<Size x="0" y="11"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
-					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="ExhaustionTick" hidden="true" frameStrata="MEDIUM" mixin="ExhaustionTickMixin">
-				<Size x="32" y="32"/>
+				<Size x="10" y="14"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT"/>
 				</Anchors>
@@ -27,8 +26,8 @@
 					<OnEnter method="ExhaustionToolTipText"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
-				<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
+				<NormalTexture parentKey="Normal" atlas="UI-HUD-ExperienceBar-Frame-Pip"/>
+				<HighlightTexture parentKey="Highlight" atlas="UI-HUD-ExperienceBar-Frame-Pip-Mouseover" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>

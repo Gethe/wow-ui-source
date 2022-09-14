@@ -344,7 +344,7 @@ function ClickBindingFrameMixin:InitializeButtons()
 	self.ResetButton:SetScript("OnClick", function()
 		StaticPopup_Show("CONFIRM_RESET_CLICK_BINDINGS");
 	end);
-	
+
 	self.TutorialButton:SetScript("OnClick", function()
 		local showTutorial = not self.TutorialFrame:IsShown();
 		self.TutorialFrame:SetShown(showTutorial);
@@ -408,7 +408,7 @@ function ClickBindingFrameMixin:InitializeScrollBox()
 
 	local function LineInitializer(button, elementData)
 		button:Init(elementData);
-		
+
 		button:SetScript("OnClick", function(button, buttonName)
 			local addedNew;
 			if elementData.elementType ~= ElementDataTypes.InteractionBinding then
@@ -421,16 +421,16 @@ function ClickBindingFrameMixin:InitializeScrollBox()
 					button:Init(elementData);
 				end);
 			end
-		
+
 			if addedNew or not elementData.bindingInfo then
 				return;
 			end
-		
+
 			local modifiers = C_ClickBindings.MakeModifiers();
 			if elementData.bindingInfo.button == buttonName and elementData.bindingInfo.modifiers == modifiers then
 				return;
 			end
-		
+
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			elementData.bindingInfo.button = buttonName;
 			elementData.bindingInfo.modifiers = modifiers;
@@ -455,7 +455,7 @@ function ClickBindingFrameMixin:InitializeScrollBox()
 			self.dataProvider:Sort();
 			self.pendingChanges = true;
 		end);
-		
+
 		button.DeleteButton:SetScript("OnClick", function()
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			self.dataProvider:Remove(elementData);
@@ -744,7 +744,7 @@ function ClickBindingTutorialMixin:OnLoad()
 	ButtonFrameTemplate_HidePortrait(self);
 	ButtonFrameTemplate_HideAttic(self);
 	ButtonFrameTemplate_HideButtonBar(self);
-	self.TitleText:SetText(CLICK_CAST_ABOUT_HEADER);
+	self:SetTitle(CLICK_CAST_ABOUT_HEADER);
 end
 
 function ClickBindingTutorialMixin:OnHide()
@@ -810,15 +810,15 @@ function ClickableBindingsMouseoverCastKeyDropDownMixin:RefreshValue()
 		local defaultValue = "NONE";
 		local oldValue = GetModifiedClick("MOUSEOVERCAST");
 		self.selectedValue = oldValue or defaultValue;
-	
+
 		local info = UIDropDownMenu_CreateInfo();
 
-		info.func = function(info) 
+		info.func = function(info)
 			SetModifiedClick("MOUSEOVERCAST", info.value);
 			SaveBindings(GetCurrentBindingSet());
 			self:RefreshValue();
 		end;
-	
+
 		local function AddDropdownButton(value)
 			info.text = _G[value.."_KEY"];
 			info.value = value;
@@ -826,12 +826,12 @@ function ClickableBindingsMouseoverCastKeyDropDownMixin:RefreshValue()
 			info.tooltipText = GetTooltipText(value);
 			UIDropDownMenu_AddButton(info);
 		end
-	
+
 		AddDropdownButton("NONE");
 		AddDropdownButton("ALT");
 		AddDropdownButton("CTRL");
 		AddDropdownButton("SHIFT");
-	
+
 		UIDropDownMenu_SetSelectedValue(self, self.selectedValue);
 		self.tooltipText = GetTooltipText(self.selectedValue);
 	end

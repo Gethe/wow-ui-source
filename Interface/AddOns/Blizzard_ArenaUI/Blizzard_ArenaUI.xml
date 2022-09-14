@@ -52,8 +52,12 @@
 			<OnShow method="OnShow" />
 		</Scripts>
 	</StatusBar>
-	<Button name="ArenaEnemyPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
+	<Button name="ArenaEnemyPetFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate" mixin="ArenaEnemyPetFrameMixin" virtual="true" hidden="true">
 		<Size x="77" y="31"/>
+		<KeyValues>
+			<KeyValue key="topPadding" value="-15" type="number"/>
+			<KeyValue key="leftPadding" value="10" type="number"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="15" y="-25"/>
 		</Anchors>
@@ -131,14 +135,15 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ArenaEnemyPetFrame_OnLoad"/>
-			<OnShow function="UnitFrame_Update"/>
-			<OnEvent function="ArenaEnemyPetFrame_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 			<OnEnter function="UnitFrame_OnEnter"/>
 			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="ArenaPrepFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="SecureUnitButtonTemplate" virtual="true">
+	<Button name="ArenaEnemyPrepFrameTemplate" frameStrata="LOW" movable="true" hidden="true" inherits="SecureUnitButtonTemplate" mixin="ArenaEnemyPrepFrameMixin" virtual="true">
 		<Size x="112" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -213,7 +218,7 @@
 								</FontString>
 							</Layer>
 							<Layer level="BORDER">	
-								<Texture name="$parentSpecPortrait" >
+								<Texture name="$parentSpecPortrait">
 									<Size x="22" y="22"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="2" y="2"/>
@@ -301,11 +306,11 @@
 			</StatusBar>
 		</Frames>
 		<Scripts>
-			<OnShow function="ArenaPrepFrame_OnShow"/>
-			<OnHide function="ArenaPrepFrame_OnHide"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Button>
-	<Button name="ArenaEnemyFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="ArenaPrepFrameTemplate" virtual="true">
+	<Button name="ArenaEnemyMatchFrameTemplate" frameStrata="LOW" movable="true" hidden="true" inherits="ArenaEnemyPrepFrameTemplate" mixin="ArenaEnemyMatchFrameMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
@@ -351,158 +356,141 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ArenaEnemyFrame_OnLoad"/>
-			<OnShow function="ArenaEnemyFrame_OnShow"/>
-			<OnHide function="ArenaEnemyFrame_OnHide"/>
-			<OnEvent function="ArenaEnemyFrame_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 			<OnEnter function="UnitFrame_OnEnter"/>
 			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	<Frame name="ArenaPrepFrames" hidden="true" inherits="VerticalLayoutFrame, UIParentRightManagedFrameTemplate">
+	<Frame name="ArenaEnemyFramesContainer" inherits="ResizeLayoutFrame, UIParentRightManagedFrameTemplate, EditModeArenaUnitFrameSystemTemplate" mixin="ArenaEnemyFramesContainerMixin">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="12" type="number"/>
-			<KeyValue key="spacing" value="10" type="number"/>
+			<KeyValue key="fixedWidth" value="245" type="number"/>
 		</KeyValues>
 		<Frames>
-			<Button name="ArenaPrepFrame1" inherits="ArenaPrepFrameTemplate" id="1">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="1" type="number"/>
-				</KeyValues>
-			</Button>
-			<Button name="ArenaPrepFrame2" inherits="ArenaPrepFrameTemplate" id="2">
-					<KeyValues>
-					<KeyValue key="layoutIndex" value="2" type="number"/>
-				</KeyValues>
-			</Button>
-			<Button name="ArenaPrepFrame3" inherits="ArenaPrepFrameTemplate" id="3">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="3" type="number"/>
-				</KeyValues>
-			</Button>
-			<Button name="ArenaPrepFrame4" inherits="ArenaPrepFrameTemplate" id="4">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="4" type="number"/>
-				</KeyValues>
-			</Button>
-			<Button name="ArenaPrepFrame5" inherits="ArenaPrepFrameTemplate" id="5">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="5" type="number"/>
-				</KeyValues>
-			</Button>
-			<Frame name="ArenaPrepBackground" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate">
-				<Size x="125" y="10"/>
-				<KeyValues>
-					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-				</KeyValues>
+			<Frame name="ArenaEnemyPrepFramesContainer" hidden="true" inherits="VerticalLayoutFrame" mixin="ArenaEnemyPrepFramesContainerMixin">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ArenaPrepFrame1" x="-15" y="6"/>
-					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+					<Anchor point="TOPRIGHT"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_ARENA_32_32" type="global"/>
+					<KeyValue key="spacing" value="10" type="number"/>
 				</KeyValues>
+				<Frames>
+					<Button name="ArenaEnemyPrepFrame1" parentArray="UnitFrames" inherits="ArenaEnemyPrepFrameTemplate" id="1">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyPrepFrame2" parentArray="UnitFrames" inherits="ArenaEnemyPrepFrameTemplate" id="2">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyPrepFrame3" parentArray="UnitFrames" inherits="ArenaEnemyPrepFrameTemplate" id="3">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyPrepFrame4" parentArray="UnitFrames" inherits="ArenaEnemyPrepFrameTemplate" id="4">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="7" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyPrepFrame5" parentArray="UnitFrames" inherits="ArenaEnemyPrepFrameTemplate" id="5">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="9" type="number"/>
+						</KeyValues>
+					</Button>
+					<Frame name="ArenaPrepBackground" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate" mixin="ArenaPrepBackgroundMixin">
+						<Size x="125" y="10"/>
+						<KeyValues>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ArenaEnemyPrepFrame1" x="-15" y="6"/>
+							<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_ARENA_32_32" type="global"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad method="OnLoad" inherit="prepend"/>
+							<OnShow method="OnShow"/>
+							<OnEvent method="OnEvent"/>
+							<OnMouseUp method="OnMouseUp"/>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<Scripts>
-					<OnLoad inherit="prepend">
-						self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS");
-						ArenaPrepFrames_UpdateBackground();
-					</OnLoad>
-					<OnShow>
-						self:SetFrameLevel(1);
-					</OnShow>
-					<OnEvent>
-						if ( event == "ARENA_PREP_OPPONENT_SPECIALIZATIONS" ) then
-							ArenaPrepFrames_UpdateBackground();
-							OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
-							ArenaPrepBackground_SetOpacity();
-						end
-					</OnEvent>
-					<OnMouseUp>
-						if ( button == "RightButton" ) then
-							PartyFrame.Background:ToggleOpacity(self);
-						end
-					</OnMouseUp>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Frame>
+
+			<Frame name="ArenaEnemyMatchFramesContainer" hidden="true" inherits="VerticalLayoutFrame" mixin="ArenaEnemyMatchFramesContainerMixin">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="10" type="number"/>
+				</KeyValues>
+				<Frames>
+					<Button name="ArenaEnemyMatchFrame1" parentArray="UnitFrames" inherits="ArenaEnemyMatchFrameTemplate" id="1">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyMatchFrame2" parentArray="UnitFrames" inherits="ArenaEnemyMatchFrameTemplate" id="2">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyMatchFrame3" parentArray="UnitFrames" inherits="ArenaEnemyMatchFrameTemplate" id="3">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyMatchFrame4" parentArray="UnitFrames" inherits="ArenaEnemyMatchFrameTemplate" id="4">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="7" type="number"/>
+						</KeyValues>
+					</Button>
+					<Button name="ArenaEnemyMatchFrame5" parentArray="UnitFrames" inherits="ArenaEnemyMatchFrameTemplate" id="5">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="9" type="number"/>
+						</KeyValues>
+					</Button>
+					<Frame name="ArenaEnemyBackground" parentKey="ArenaEnemyBackground" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate" mixin="ArenaEnemyBackgroundMixin">
+						<Size x="125" y="10"/>
+						<KeyValues>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ArenaEnemyMatchFrame1" x="-15" y="6"/>
+							<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_ARENA_32_32" type="global"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad method="OnLoad" inherit="prepend"/>
+							<OnShow method="OnShow"/>
+							<OnEvent method="OnEvent"/>
+							<OnMouseUp method="OnMouseUp"/>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
 				</Scripts>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad function="ArenaPrepFrames_OnLoad"/>
-			<OnEvent function="ArenaPrepFrames_OnEvent"/>
-			<OnShow function="ArenaPrepFrames_OnShow"/>
-			<OnHide function="ArenaPrepFrames_OnHide"/>
-		</Scripts>
-	</Frame>
-	<Frame name="ArenaEnemyFrames" hidden="true" inherits="VerticalLayoutFrame, UIParentRightManagedFrameTemplate" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="layoutIndex" value="10" type="number"/>
-			<KeyValue key="spacing" value="10" type="number"/>
-		</KeyValues>
-		<Frames>
-			<Button name="ArenaEnemyFrame1" inherits="ArenaEnemyFrameTemplate" id="1">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="1" type="number"/>
-				</KeyValues>
-			</Button>
-			<Button name="ArenaEnemyFrame2" inherits="ArenaEnemyFrameTemplate" id="2">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="2" type="number"/>
-				</KeyValues>
-			</Button>
-			<Button name="ArenaEnemyFrame3" inherits="ArenaEnemyFrameTemplate" id="3">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="3" type="number"/>
-				</KeyValues>
-			</Button>
-			<Button name="ArenaEnemyFrame4" inherits="ArenaEnemyFrameTemplate" id="4">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="4" type="number"/>
-				</KeyValues>
-			</Button>
-			<Button name="ArenaEnemyFrame5" inherits="ArenaEnemyFrameTemplate" id="5">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="5" type="number"/>
-				</KeyValues>
-			</Button>
-			<Frame name="ArenaEnemyBackground" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate">
-				<Size x="125" y="10"/>
-				<KeyValues>
-					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ArenaEnemyFrame1" x="-15" y="6"/>
-					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_ARENA_32_32" type="global"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad inherit="prepend">
-						self:RegisterEvent("VARIABLES_LOADED");
-						UpdateArenaEnemyBackground();
-					</OnLoad>
-					<OnShow>
-						self:SetFrameLevel(1);
-					</OnShow>
-					<OnEvent>
-						if ( event == "VARIABLES_LOADED" ) then
-							UpdateArenaEnemyBackground();
-							OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
-							ArenaEnemyBackground_SetOpacity();
-						end
-					</OnEvent>
-					<OnMouseUp>
-						if ( button == "RightButton" ) then
-							PartyFrame.Background:ToggleOpacity(self);
-						end
-					</OnMouseUp>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad function="ArenaEnemyFrames_OnLoad"/>
-			<OnEvent function="ArenaEnemyFrames_OnEvent"/>
-			<OnShow function="ArenaEnemyFrames_OnShow"/>
-			<OnHide function="ArenaEnemyFrames_OnHide"/>
-		</Scripts>
 	</Frame>
 </Ui>

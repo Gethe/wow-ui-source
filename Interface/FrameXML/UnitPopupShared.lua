@@ -246,7 +246,10 @@ function UnitPopupManager:OnUpdate(elapsed)
 					local shown = button:CanShow();
 					if(shown) then
 						if (not button.isSubsection) then
-							UIDropDownMenu_SetDropdownButtonEnabled(button:GetCurrentButton(), UnitPopupSharedUtil:IsEnabled(button));
+							local currButton = button:GetCurrentButton();
+							if(currButton) then 
+								UIDropDownMenu_SetDropdownButtonEnabled(currButton, UnitPopupSharedUtil:IsEnabled(button));
+							end 
 						end
 					end
 				end

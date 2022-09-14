@@ -226,7 +226,7 @@ function AuraFrameMixin:UpdateAuraButtons()
 			else
 				auraFrame = self.auraPool:Acquire(self.auraTemplate);
 			end
-			auraFrame:SetScale(self.AuraContainer.iconScale);
+			auraFrame:SetScale(self.AuraContainer.iconScale or 1);
 			auraFrame:Update(aura, isExpanded);
 			table.insert(self.auraFrames, auraFrame);
 		end
@@ -406,7 +406,7 @@ function BuffFrameMixin:UpdateTemporaryEnchantments(...)
 		end
 
 		local hasEnchant, enchantExpiration, enchantCharges = select(RETURNS_PER_ITEM * (itemIndex - 1) + 1, ...);
-		if hasEnchant then
+		if hasEnchant and enchantExpiration then
 			-- Show buff durations if necessary
 			if enchantExpiration then
 				enchantExpiration = enchantExpiration / 1000;

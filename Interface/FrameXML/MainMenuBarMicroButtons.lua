@@ -1218,24 +1218,25 @@ function MainMenuMicroButtonMixin:OnUpdate(elapsed)
 		if ( status == 0 ) then
 			status = (GetBackgroundLoadingStatus()~=0) and 1 or 0;
 		end
-		if ( status == 0 ) then
-			self.MainMenuBarDownload:Hide();
-			self:SetNormalAtlas("UI-HUD-MicroMenu-GameMenu-Up", true);
-			self:SetPushedAtlas("UI-HUD-MicroMenu-GameMenu-Down", true);
-			self:SetDisabledAtlas("UI-HUD-MicroMenu-GameMenu-Disabled", true);
-		else
-			self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
-			self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down");
-			self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
-			if ( status == 1 ) then
-				self.MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Green");
-			elseif ( status == 2 ) then
-				self.MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Yellow");
-			elseif ( status == 3 ) then
-				self.MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Red");
-			end
-			self.MainMenuBarDownload:Show();
+
+		local prefix = "UI-HUD-MicroMenu-";
+		local disabledPostfix = (status == 0) and "-Disabled" or "-Up";
+		local highlightPostfix = (status == 0) and "-Mouseover" or "-Up";
+
+		local textureKit = "GameMenu";
+		if ( status == 1 ) then
+			textureKit = "StreamDLGreen";
+		elseif ( status == 2 ) then
+			textureKit = "StreamDLYellow";
+		elseif ( status == 3 ) then
+			textureKit = "StreamDLRed";
 		end
+
+		self:SetNormalAtlas(prefix..textureKit.."-Up");
+		self:SetPushedAtlas(prefix..textureKit.."-Down");
+		self:SetDisabledAtlas(prefix..textureKit..disabledPostfix);
+		self:SetHighlightAtlas(prefix..textureKit..highlightPostfix);
+
 		local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
 		local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
 		if ( latency > PERFORMANCEBAR_MEDIUM_LATENCY ) then

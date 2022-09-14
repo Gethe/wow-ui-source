@@ -344,7 +344,7 @@
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontHighlightSmall"/>
 	</Button>
-	
+
 	<Frame name="AchievementFrameAchievementsObjectivesTemplate" mixin="AchievementsObjectivesMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1508,7 +1508,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="AchievementFrame" toplevel="true" parent="UIParent" frameStrata="MEDIUM" hidden="true" enableMouse="true" inherits="BackdropTemplate">
 		<Size x="768" y="500"/>
 		<KeyValues>
@@ -1523,7 +1523,7 @@
 				<FontString parentKey="PlaceholderName" inherits="AchievementCriteriaFont" hidden="true"/>
 				<FontString parentKey="PlaceholderHiddenDescription" inherits="AchievementDescriptionFont" hidden="true"/>
 			</Layer>
-			
+
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" file="Interface\TutorialFrame\TutorialFrameBackground">
 					<Anchors>
@@ -2231,7 +2231,7 @@
 							</OnHide>
 						</Scripts>
 					</Frame>
-					
+
 					<Frame parentKey="StatContainer" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
@@ -2301,7 +2301,7 @@
 			</Frame>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="AchievementFrame" relativePoint="TOPRIGHT" x="3" y="4"/>
+					<Anchor point="TOPRIGHT"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -2725,7 +2725,7 @@
 				<Frames>
 					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" x="0" y="-2"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" x="1" y="-4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>

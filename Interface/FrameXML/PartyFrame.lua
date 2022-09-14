@@ -212,8 +212,8 @@ end
 function PartyMemberBackgroundMixin:SetOpacity()
 	local alpha = 1.0 - OpacityFrameSlider:GetValue();
 	PartyFrame.Background:SetAlpha(alpha);
-	if ( ArenaEnemyBackground_SetOpacity ) then
-		ArenaEnemyBackground_SetOpacity();
+	if ( ArenaEnemyBackground and ArenaEnemyBackground.SetOpacity  ) then
+		ArenaEnemyBackground:SetOpacity();
 	end
 end
 

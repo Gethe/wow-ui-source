@@ -296,7 +296,7 @@ end
 
 function GroupFinderFrame_OnShow(self)
 	PVEFrame:SetPortraitAtlasRaw("groupfinder-eye-frame");
-	PVEFrame.TitleText:SetText(GROUP_FINDER);
+	PVEFrame:SetTitle(GROUP_FINDER);
 	GroupFinderFrame_EvaluateButtonVisibility(self);
 	GroupFinderFrame_EvaluateHelpTips(self);
 end

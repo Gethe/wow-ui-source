@@ -236,3 +236,16 @@ function EditModeGridLineMixin:SetupLine(centerLine, verticalLine, xOffset, yOff
 	local lineThickness = PixelUtil.GetNearestPixelSize(linePixelWidth, self:GetEffectiveScale(), linePixelWidth);
 	self:SetThickness(lineThickness);
 end
+
+EditModeCheckButtonMixin = {};
+
+function EditModeCheckButtonMixin:OnShow()
+	local shouldEnable = self:ShouldEnable();
+	self.Button:SetEnabled(shouldEnable);
+	self.Label:SetFontObject(shouldEnable and "GameFontHighlightMedium" or "GameFontDisableMed2")
+end
+
+-- Override this to change whether we are enabled on show
+function EditModeCheckButtonMixin:ShouldEnable()
+	return true;
+end

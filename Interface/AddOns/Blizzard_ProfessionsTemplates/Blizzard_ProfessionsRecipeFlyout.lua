@@ -7,16 +7,28 @@ ProfessionsItemFlyoutButtonMixin = {};
 
 function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImplementation)
 	local item = elementData.item;
-	local itemLocation = item:GetItemLocation();
+	local itemLocation = elementData.itemLocation;
+	if not itemLocation then
+		itemLocation = item:GetItemLocation();
+	end
+
+	if not itemLocation and elementData.itemGUID then
+		itemLocation = C_Item.GetItemLocation(elementData.itemGUID);
+	end
+
 	if itemLocation then
 		self:SetItemLocation(itemLocation);
 	else
 		self:SetItem(item:GetItemID());
 	end
 
-	-- FIXME - Allow initializer to be installed so we can have elective behavior in either crafting order or crafting UI.
-	-- Temp disabled appearance
-	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+	local count;
+	if itemLocation and elementData.onlyCountStack then
+		count = C_Item.GetStackCount(itemLocation);
+	else
+		count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+	end
+
 	local stackable = C_Item.GetItemMaxStackSizeByID(item:GetItemID()) > 1;
 	self:SetItemButtonCount(stackable and count or 1);
 	
@@ -157,6 +169,7 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 					item = item,
 					itemGUID = elements.itemGUIDs and elements.itemGUIDs[index] or nil,
 					itemLocation = elements.itemLocation and elements.itemLocation[index] or nil,
+					onlyCountStack = elements.onlyCountStack,
 				};
 				dataProvider:Insert(elementData);
 			end
@@ -176,10 +189,11 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 	PlaySound(SOUNDKIT.UI_PROFESSION_FILTER_MENU_OPEN_CLOSE);
 end
 
--- FIXME Visual states required for reagents already in transaction.
 function ProfessionsItemFlyoutMixin:Init(owner, transaction, cannotFilter)
 	self.owner = owner;
 	self.canFilter = not cannotFilter;
+	-- FIXME Visual states required for reagents already in transaction.
+	--self.transaction = transaction;
 
 	self.HideUnownedCheckBox:SetChecked(self:ShouldHideUnownedItems());
 

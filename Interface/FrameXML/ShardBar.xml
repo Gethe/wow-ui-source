@@ -95,7 +95,7 @@
 	<Frame name="WarlockPowerFrame" inherits="WarlockPowerFrameTemplate">
 		<Size x="110" y="25"/>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="65" y="20"/>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="32" y="30"/>
 		</Anchors>
 	</Frame>
 </Ui>

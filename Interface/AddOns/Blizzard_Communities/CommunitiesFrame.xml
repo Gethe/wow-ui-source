@@ -139,14 +139,14 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						if (self.tooltipText) then 
+						if (self.tooltipText) then
 							GameTooltip:SetOwner(self, ANCHOR_RIGHT, 270);
 							GameTooltip_AddColoredLine(GameTooltip, self.tooltipText, HIGHLIGHT_FONT_COLOR);
 							GameTooltip:Show();
 						end
 					</OnEnter>
 					<OnLeave>
-						GameTooltip:Hide(); 
+						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
 				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
@@ -252,7 +252,7 @@
 						end
 					</OnEnter>
 					<OnLeave>
-						GameTooltip:Hide(); 
+						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
 			</Button>
@@ -354,7 +354,7 @@
 			</Frame>
 			<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="8.5" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="CommunitiesFrameMaximizeMinimizeButton_OnLoad" inherit="append"/>
@@ -442,7 +442,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-10" y="-27"/>
 				</Anchors>
-			</Frame> 
+			</Frame>
 			<Frame parentKey="CommunitiesListDropDownMenu" inherits="CommunitiesListDropDownMenuTemplate">
 				<Size x="40" y="28"/>
 				<Anchors>
@@ -481,8 +481,8 @@
 					<Anchor point="BOTTOMRIGHT" x="-9" y="29"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad> 
-						ClubFinderGuildAndCommunityMixin.OnLoad(self); 
+					<OnLoad>
+						ClubFinderGuildAndCommunityMixin.OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -544,7 +544,7 @@
 			<Frame parentKey="CommunityNameChangeFrame" inherits="CommunityNameChangeFrameTemplate" frameLevel="1"/>
 			<Frame parentKey="GuildPostingChangeFrame" inherits="GuildPostingChangeFrameTemplate" frameLevel="1"/>
 			<Frame parentKey="CommunityPostingChangeFrame" inherits="CommunityPostingChangeFrameTemplate" frameLevel="1"/>
-			
+
 			<Frame parentKey="EditStreamDialog" frameStrata="DIALOG" inherits="CommunitiesEditStreamDialogTemplate" hidden="true">
 				<Size x="320" y="260"/>
 				<Anchors>

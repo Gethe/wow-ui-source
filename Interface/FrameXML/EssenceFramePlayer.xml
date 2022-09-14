@@ -305,9 +305,7 @@
 	<Frame name="EssencePlayerFrame" inherits="EssencePlayerFrameTemplate">
 		<Size x="126" y="24"/>
 		<Anchors>
-			<Anchor point="TOP" relativePoint="BOTTOM" x="50" y="54"/>
+			<Anchor point="TOP" relativePoint="BOTTOM" x="32" y="30"/>
 		</Anchors>
 	</Frame>	
 </Ui>
-
-

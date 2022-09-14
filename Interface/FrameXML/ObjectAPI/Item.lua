@@ -46,6 +46,41 @@ end
 	return item;
 end
 
+--[[static]] function Item:CreateFromItemGUID(itemGUID)
+	if type(itemGUID) ~= "string" then
+		error("Usage: Item:CreateFromItemGUID(itemGUIDString)", 2);
+	end
+	local item = CreateFromMixins(ItemMixin);
+	item:SetItemGUID(itemGUID);
+	return item;
+end
+
+--[[static]] function Item:DoItemsMatch(item1, item2)
+	if not item1 or not item2 then
+		return false;
+	end
+
+	return item1:Matches(item2);
+end
+
+function ItemMixin:Matches(item)
+	if not item then
+		return false;
+	end
+
+	local itemID = item:GetItemID();
+	if (itemID ~= nil) and (self:GetItemID() == itemID) then
+		return true;
+	end
+
+	local itemLocation = item:GetItemLocation();
+	if (itemLocation ~= nil) and itemLocation:IsEqualTo(self:GetItemLocation()) then
+		return true;
+	end
+
+	return false;
+end
+
 function ItemMixin:SetItemLocation(itemLocation)
 	self:Clear();
 	self.itemLocation = itemLocation;
@@ -61,8 +96,32 @@ function ItemMixin:SetItemID(itemID)
 	self.itemID = itemID;
 end
 
+function ItemMixin:SetItemGUID(itemGUID)
+	self:Clear();
+	self.itemGUID = itemGUID;
+end
+
 function ItemMixin:GetItemLocation()
-	return self.itemLocation;
+	if self.itemLocation then
+		return self.itemLocation;
+	end
+
+	if self.itemGUID then
+		return C_Item.GetItemLocation(self.itemGUID);
+	end
+	return nil;
+end
+
+function ItemMixin:GetItemGUID()
+	if self.itemGUID then
+		return self.itemGUID;
+	end
+
+	if self.itemLocation then
+		return C_Item.GetItemGUID(self.itemLocation);
+	end
+
+	return nil;
 end
 
 function ItemMixin:HasItemLocation()
@@ -73,6 +132,7 @@ function ItemMixin:Clear()
 	self.itemLocation = nil;
 	self.itemLink = nil;
 	self.itemID = nil;
+	self.itemGUID = nil;
 end
 
 function ItemMixin:IsItemEmpty()
@@ -89,7 +149,11 @@ end
 
 function ItemMixin:IsItemInPlayersControl()
 	local itemLocation = self:GetItemLocation();
-	return itemLocation and C_Item.DoesItemExist(itemLocation);
+	if itemLocation and C_Item.DoesItemExist(itemLocation) then
+		return true;
+	end
+
+	return false;
 end
 
 -- Item API
@@ -167,6 +231,13 @@ function ItemMixin:GetItemQuality() -- requires item data to be loaded
 	return nil;
 end
 
+function ItemMixin:GetStackCount() -- requires item data to be loaded
+	if not self:IsItemEmpty() then
+		return C_Item.GetStackCount(self:GetItemLocation());
+	end
+	return nil;
+end
+
 function ItemMixin:GetCurrentItemLevel() -- requires item data to be loaded
 	if self:GetStaticBackingItem() then
 		return (GetDetailedItemLevelInfo(self:GetStaticBackingItem()));
@@ -199,6 +270,11 @@ function ItemMixin:GetItemMaxStackSize() -- requires item data to be loaded
 	return nil;
 end
 
+function ItemMixin:IsStackable() -- requires item data to be loaded
+	local maxStackSize = self:GetItemMaxStackSize();
+	return maxStackSize and maxStackSize > 1;
+end
+
 function ItemMixin:GetInventoryType()
 	if self:GetStaticBackingItem() then
 		return C_Item.GetItemInventoryTypeByID(self:GetStaticBackingItem());
@@ -206,17 +282,6 @@ function ItemMixin:GetInventoryType()
 
 	if not self:IsItemEmpty() then
 		return C_Item.GetItemInventoryType(self:GetItemLocation());
-	end
-	return nil;
-end
-
-function ItemMixin:GetItemGUID()
-	if self:GetStaticBackingItem() then
-		return nil;
-	end
-
-	if not self:IsItemEmpty() then
-		return C_Item.GetItemGUID(self:GetItemLocation());
 	end
 	return nil;
 end

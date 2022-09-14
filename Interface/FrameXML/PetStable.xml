@@ -85,16 +85,7 @@
 			<OnDragStart>
 				PickupStablePet(self.petSlot);
 			</OnDragStart>
-			<OnReceiveDrag>
-				if (self:IsEnabled()) then
-					local cursorType, petSlot = GetCursorInfo();
-					if (cursorType == "pet") then
-						SetPetSlot(petSlot, self.petSlot);
-						ClearCursor();
-					end
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				end
-			</OnReceiveDrag>
+			<OnReceiveDrag function="PetStableSlot_OnReceiveDrag"/>
 		</Scripts>
 		<PushedTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>

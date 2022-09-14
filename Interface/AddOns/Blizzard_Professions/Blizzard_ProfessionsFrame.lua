@@ -1,5 +1,5 @@
 
-local ProfessionsFrameEvents = 
+local ProfessionsFrameEvents =
 {
 	"TRADE_SKILL_NAME_UPDATE",
 	"TRADE_SKILL_LIST_UPDATE",
@@ -7,7 +7,7 @@ local ProfessionsFrameEvents =
 	"GARRISON_TRADESKILL_NPC_CLOSED",
 };
 
-StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE"] = 
+StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE"] =
 {
 	text = PROFESSIONS_SPECS_CONFIRM_CLOSE,
 	button1 = YES,
@@ -76,7 +76,7 @@ function ProfessionsMixin:OnEvent(event, ...)
 		else
 			professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
 		end
-		
+
 		self:SetProfessionInfo(professionInfo);
 	elseif event == "TRADE_SKILL_CLOSE" or event == "GARRISON_TRADESKILL_NPC_CLOSED" then
 		HideUIPanel(self);
@@ -122,7 +122,7 @@ function ProfessionsMixin:SetTitle(skillLineName)
 		if linked and linkedName then
 			self:SetTitleFormatted("%s %s[%s]|r", TRADE_SKILL_TITLE:format(skillLineName), HIGHLIGHT_FONT_COLOR_CODE, linkedName);
 		else
-			self.TitleText:SetFormattedText(TRADE_SKILL_TITLE, skillLineName);
+			self:SetTitleFormatted(TRADE_SKILL_TITLE, skillLineName);
 		end
 	end
 end
@@ -192,7 +192,7 @@ function ProfessionsMixin:UpdateTabs()
 	self:SetTab(selectedTab);
 end
 
-local unlockableSpecHelpTipInfo = 
+local unlockableSpecHelpTipInfo =
 {
 	text = PROFESSIONS_SPECS_CAN_UNLOCK_SPEC,
 	buttonStyle = HelpTip.ButtonStyle.Close,
@@ -202,7 +202,7 @@ local unlockableSpecHelpTipInfo =
 	onAcknowledgeCallback = function() ProfessionsFrame.unlockSpecHelptipAcknowledged = true; end,
 };
 
-local unspentPointsHelpTipInfo = 
+local unspentPointsHelpTipInfo =
 {
 	text = PROFESSIONS_SPECS_PENDING_POINTS,
 	buttonStyle = HelpTip.ButtonStyle.Close,
@@ -278,7 +278,7 @@ function ProfessionsMixin:OnHide()
 	EventRegistry:TriggerEvent("ItemButton.UpdateCraftedProfessionQualityShown");
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Professions);
 	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
-	
+
 	C_Garrison.CloseGarrisonTradeskillNPC();
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_CLOSE);
 end

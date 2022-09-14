@@ -130,27 +130,27 @@
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
-					<Color name="BAG_BACKGROUND_COLOR"/>
+					<Color color="BAG_BACKGROUND_COLOR"/>
 				</Texture>
 				<Texture parentKey="BottomRight" atlas="uiframebackground-nineslice-cornerbottomright" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
-					<Color name="BAG_BACKGROUND_COLOR"/>
+					<Color color="BAG_BACKGROUND_COLOR"/>
 				</Texture>
-				<Texture parentKey="BottomEdge" alpha="0.8">
+				<Texture parentKey="BottomEdge">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
-					<Color name="BAG_BACKGROUND_COLOR"/>
+					<Color color="BAG_BACKGROUND_COLOR"/>
 				</Texture>
-				<Texture parentKey="TopSection" alpha="0.8">
+				<Texture parentKey="TopSection">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
 					</Anchors>
-					<Color name="BAG_BACKGROUND_COLOR"/>
+					<Color color="BAG_BACKGROUND_COLOR"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -192,9 +192,9 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="ContainerFrameCurrencyBorderTemplate">
 				<KeyValues>
-					<KeyValue key="leftEdge" value="common-coinbox-cornerleft" type="string"/>
-					<KeyValue key="rightEdge" value="common-coinbox-cornerright" type="string"/>
-					<KeyValue key="centerEdge" value="_common-coinbox-tile" type="string"/>
+					<KeyValue key="leftEdge" value="common-coinbox-left" type="string"/>
+					<KeyValue key="rightEdge" value="common-coinbox-right" type="string"/>
+					<KeyValue key="centerEdge" value="_common-coinbox-center" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" />

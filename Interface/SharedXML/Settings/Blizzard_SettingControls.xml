@@ -112,6 +112,9 @@
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="SelectionDetails" setAllPoints="true" mixin="SettingsSelectionPopoutDetailsMixin">
+				<KeyValues>
+					<KeyValue key="selectionNamePadding" value="14" type="number"/>
+				</KeyValues>
 				<Size x="250" y="20"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="14" y="0"/>

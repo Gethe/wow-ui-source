@@ -401,7 +401,6 @@ function TalentButtonBaseMixin:FullUpdate()
 	TalentDisplayMixin.FullUpdate(self);
 
 	self:UpdateSpendText();
-	self:UpdateSearchIcon();
 end
 
 function TalentButtonBaseMixin:ResetDynamic()
@@ -716,6 +715,9 @@ function TalentButtonArtMixin:ApplyVisualState(visualState)
 	else
 		self.StateBorder:SetAtlas(self.artSet.normal, TextureKitConstants.UseAtlasSize);
 	end
+
+	self:UpdateSearchIcon();
+	self:UpdateGlow();
 end
 
 function TalentButtonArtMixin:SetAndApplySize(width, height)

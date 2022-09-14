@@ -3,12 +3,10 @@
 	<Script file="Blizzard_ExpansionLandingPage.lua"/>
 
 	<Frame name="LandingPageExpansionOverlayTemplate" virtual="true">
-		<Size x="830" y="538"/>
+		<Size x="880" y="618"/>
 		<Frames>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="5000">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-10"/>
-				</Anchors>
+			<!-- Anchor this in your Overlay! -->
 				<Scripts>
 					<OnClick>
 						HideUIPanel(ExpansionLandingPage);
@@ -20,7 +18,7 @@
 	</Frame>
 
 	<Frame name="ExpansionLandingPage" parent="UIParent" enableMouse="true" toplevel="true" hidden="true" mixin="ExpansionLandingPageMixin">
-		<Size x="830" y="538"/>
+		<Size x="880" y="618"/>
 		<Frames>
 			<Frame parentKey="Overlay">
 				<Size x="1" y="1"/>

@@ -4,7 +4,7 @@ AzeriteRespecMixin = {};
 
 function AzeriteRespecMixin:OnLoad()
 	self:SetPortraitToAsset("Interface\\Icons\\inv_enchant_voidsphere");
-	self.TitleText:SetText(AZERITE_RESPEC_TITLE);
+	self:SetTitle(AZERITE_RESPEC_TITLE);
 	self.CornerBL:SetPoint("BOTTOMLEFT", -1, 24);
 	self.CornerBR:SetPoint("BOTTOMRIGHT", 0, 24);
 	self.CornerTL:SetPoint("TOPLEFT", -2, -18);

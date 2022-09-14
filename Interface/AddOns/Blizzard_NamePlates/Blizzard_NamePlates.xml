@@ -182,8 +182,11 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="background">
-							<Color r=".2" g=".2" b=".2" a=".85"/>
+						<Texture parentKey="Background" atlas="ui-castingbar-background">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="1" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">

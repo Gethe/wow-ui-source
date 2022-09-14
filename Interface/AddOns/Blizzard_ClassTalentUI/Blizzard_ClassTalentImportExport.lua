@@ -126,17 +126,17 @@ function ClassTalentImportExportMixin:ImportLoadout(importText)
 
 	if(not headerValid) then
 		self:ShowImportError(LOADOUT_ERROR_BAD_STRING);
-		return;
+		return false;
 	end
 
 	if(serializationVersion ~= LOADOUT_SERIALIZATION_VERSION) then
 		self:ShowImportError(LOADOUT_ERROR_SERIALIZATION_VERSION_MISMATCH);
-		return;
+		return false;
 	end
 
 	if(specID ~= PlayerUtil.GetCurrentSpecID()) then
 		self:ShowImportError(LOADOUT_ERROR_WRONG_SPEC);
-		return;
+		return false;
 	end
 
 	local treeInfo = self:GetTreeInfo();
@@ -144,9 +144,8 @@ function ClassTalentImportExportMixin:ImportLoadout(importText)
 
 	if not self:HashEquals(treeHash, C_Traits.GetTreeHash(configID, treeInfo.ID)) then
 		self:ShowImportError(LOADOUT_ERROR_TREE_CHANGED);
-		return;
+		return false;
 	end
-
 
 	local loadoutContent = self:ReadLoadoutContent(importStream, treeInfo.ID);
 	local loadoutEntryInfo = self:ConvertToImportLoadoutEntryInfo(treeInfo.ID, loadoutContent);
@@ -155,7 +154,10 @@ function ClassTalentImportExportMixin:ImportLoadout(importText)
 	local success = C_ClassTalents.ImportLoadout(configID, loadoutEntryInfo);
 	if(not success) then
 		self:ShowImportError(LOADOUT_ERROR_IMPORT_FAILED);
+		return false;
 	end
+
+	return true;
 end
 
 function ClassTalentImportExportMixin:HashEquals(a,b)

@@ -79,6 +79,14 @@
 		</KeyValues>
 	</Frame>
 
+	<Frame name="EditModeArenaUnitFrameSystemTemplate" inherits="EditModeUnitFrameSystemTemplate" mixin="EditModeArenaUnitFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Arena" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ARENA_FRAMES_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
 	<Frame name="EditModeMinimapSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeMinimapSystemMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="system" value="Enum.EditModeSystem.Minimap" type="global"/>
@@ -174,6 +182,17 @@
 		<KeyValues>
 			<KeyValue key="system" value="Enum.EditModeSystem.VehicleLeaveButton" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_VEHICLE_LEAVE_BUTTON_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeLootFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeLootFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.LootFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_LOOT_FRAME_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>

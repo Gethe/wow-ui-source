@@ -284,3 +284,14 @@ function PetStableSlot_Lock_OnEnter(self)
 	end
 	GameTooltip:Show();
 end
+
+function PetStableSlot_OnReceiveDrag(self)
+	if (self:IsEnabled()) then
+		local cursorType, petSlot = GetCursorInfo();
+		if (cursorType == "pet") then
+			SetPetSlot(petSlot, self.petSlot);
+			ClearCursor();
+		end
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
+end

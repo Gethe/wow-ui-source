@@ -64,7 +64,7 @@ function SettingsPanelMixin:OnLoad()
 	EventRegistry:RegisterCallback("KeybindListener.RebindFailed", self.OnKeybindRebindFailed, self);
 	EventRegistry:RegisterCallback("KeybindListener.RebindSuccess", self.OnKeybindRebindSuccess, self);
 
-	CVarCallbackRegistry:RegisterCallback(CVarCallbackRegistry.Event.OnCVarChanged, self.OnCVarChanged, self);
+	CVarCallbackRegistry:RegisterCVarChangedCallback(self.OnCVarChanged, self);
 
 	self:RegisterEvent("UPDATE_BINDINGS");
 end

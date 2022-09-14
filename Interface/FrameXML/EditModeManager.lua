@@ -763,6 +763,8 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetTalkingHeadFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowTalkingHeadFrame));
 	self.AccountSettings:SetVehicleLeaveButtonShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowVehicleLeaveButton));
 	self.AccountSettings:SetBossFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowBossFrames));
+	self.AccountSettings:SetArenaFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowArenaFrames));
+	self.AccountSettings:SetLootFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowLootFrame));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -1346,6 +1348,16 @@ function EditModeAccountSettingsMixin:OnLoad()
 		self:SetBossFramesShown(isChecked, isUserInput);
 	end
 	self.Settings.BossFrames:SetCallback(onBossFramesCheckboxChecked);
+
+	local function onArenaFramesCheckboxChecked(isChecked, isUserInput)
+		self:SetArenaFramesShown(isChecked, isUserInput);
+	end
+	self.Settings.ArenaFrames:SetCallback(onArenaFramesCheckboxChecked);
+
+	local function onLootFrameCheckboxChecked(isChecked, isUserInput)
+		self:SetLootFrameShown(isChecked, isUserInput);
+	end
+	self.Settings.LootFrame:SetCallback(onLootFrameCheckboxChecked);
 end
 
 function EditModeAccountSettingsMixin:OnEditModeEnter()
@@ -1375,6 +1387,8 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:RefreshTalkingHeadFrame();
 	self:RefreshVehicleLeaveButton();
 	self:RefreshBossFrames();
+	self:RefreshArenaFrames();
+	self:RefreshLootFrame();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
@@ -1637,7 +1651,7 @@ function EditModeAccountSettingsMixin:RefreshTalkingHeadFrame()
 		TalkingHeadFrame.isInEditMode = true;
 		TalkingHeadFrame:HighlightSystem();
 	else
-		-- If we haven't even loaded the talking head frame in then nothing we need to do
+		-- If we haven't loaded the talking head frame in yet then nothing we need to do
 		if not TalkingHeadFrame then
 			return;
 		end
@@ -1694,6 +1708,60 @@ function EditModeAccountSettingsMixin:RefreshBossFrames()
 	BossTargetFrameContainer:UpdateShownState();
 end
 
+function EditModeAccountSettingsMixin:SetArenaFramesShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowArenaFrames, shown);
+		self:RefreshArenaFrames();
+	else
+		self.Settings.ArenaFrames:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshArenaFrames()
+	local showArenaFrames = self.Settings.ArenaFrames:IsControlChecked();
+	if showArenaFrames then
+		-- Arena frames are loaded as needed so if they aren't loaded yet then load them now
+		if not ArenaEnemyFramesContainer then
+			Arena_LoadUI();
+		end
+
+		ArenaEnemyFramesContainer:SetIsInEditMode(true);
+		ArenaEnemyFramesContainer:HighlightSystem();
+	else
+		-- If we haven't loaded the arena frames in yet then nothing we need to do
+		if not ArenaEnemyFramesContainer then
+			return;
+		end
+
+		ArenaEnemyFramesContainer:SetIsInEditMode(false);
+		ArenaEnemyFramesContainer:ClearHighlight();
+	end
+
+	ArenaEnemyFramesContainer:Update();
+end
+
+function EditModeAccountSettingsMixin:SetLootFrameShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowLootFrame, shown);
+		self:RefreshLootFrame();
+	else
+		self.Settings.LootFrame:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshLootFrame()
+	local showLootFrame = self.Settings.LootFrame:IsControlChecked() and GetCVar("lootUnderMouse") ~= "1";
+	if showLootFrame then
+		LootFrame.isInEditMode = true;
+		LootFrame:HighlightSystem();
+	else
+		LootFrame.isInEditMode = false;
+		LootFrame:ClearHighlight();
+	end
+
+	LootFrame:UpdateShownState();
+end
+
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)
 	self.expanded = expanded;
 	self.Expander.Label:SetText(expanded and HUD_EDIT_MODE_COLLAPSE_OPTIONS or HUD_EDIT_MODE_EXPAND_OPTIONS);
@@ -1708,4 +1776,68 @@ end
 function EditModeAccountSettingsMixin:ToggleExpandedState()
 	local isUserInput = true;
 	self:SetExpandedState(not self.expanded, isUserInput);
+end
+
+EditModeManagerTutorialMixin = {};
+
+local HelpTipInfos = {
+	[1] = { text = EDIT_MODE_HELPTIPS_1, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="LayoutDropdown" },
+	[2] = { text = EDIT_MODE_HELPTIPS_2, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="AccountSettings" },
+	[3] = { text = EDIT_MODE_HELPTIPS_3, buttonStyle = HelpTip.ButtonStyle.GotIt, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.BottomEdgeCenter, hideArrow = true },
+};
+
+function EditModeManagerTutorialMixin:OnLoad()
+	local onAcknowledgeCallback = GenerateClosure(self.ProgressHelpTips, self);
+	for index, helpTipInfo in ipairs(HelpTipInfos) do
+		helpTipInfo.onAcknowledgeCallback = onAcknowledgeCallback;
+	end
+end
+
+function EditModeManagerTutorialMixin:OnClick()
+	if HelpTip:IsShowingAny(self) then
+		HelpTip:HideAll(self);
+	else
+		-- Expand the account setttings for the help tips
+		local expanded = true;
+		local isUserInput = true;
+		EditModeManagerFrame.AccountSettings:SetExpandedState(expanded, isUserInput)
+
+		self.currentTipIndex = 1;
+		self:ShowHelpTip();
+	end
+end
+
+function EditModeManagerTutorialMixin:ShowHelpTip()
+	local helpTipInfo = HelpTipInfos[self.currentTipIndex];
+	local relativeRegion = helpTipInfo.relativeRegionParentKey and EditModeManagerFrame[helpTipInfo.relativeRegionParentKey] or EditModeManagerFrame;
+
+	HelpTip:Show(self, helpTipInfo, relativeRegion);
+end
+
+function EditModeManagerTutorialMixin:ProgressHelpTips()
+	self.currentTipIndex = self.currentTipIndex + 1;
+
+	if self.currentTipIndex > #HelpTipInfos then
+		HelpTip:HideAll(self);
+		return;
+	end
+
+	self:ShowHelpTip();
+end
+EditModeLootFrameCheckButtonMixin = {};
+
+function EditModeLootFrameCheckButtonMixin:OnEnter()
+	if not self:ShouldEnable() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_AddNormalLine(GameTooltip, HUD_EDIT_MODE_LOOT_FRAME_DISABLED_TOOLTIP);
+		GameTooltip:Show();
+	end
+end
+
+function EditModeLootFrameCheckButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function EditModeLootFrameCheckButtonMixin:ShouldEnable()
+	return GetCVar("lootUnderMouse") ~= "1";
 end

@@ -2,37 +2,20 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_MajorFactionsLandingTemplates.lua"/>
 
-	<Frame name="LandingPageMajorFactionListTemplate" mixin="MajorFactionListMixin" virtual="true">
-		<Size x="390" y="420"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture atlas="GarrLanding-MissionListBG">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-
-			<Layer level="BORDER">
-				<FontString parentKey="Title" inherits="Fancy20Font" text="MAJOR_FACTION_LIST_TITLE">
-					<!-- Anchored after Scrollbox setup -->
-					<Color r="1" g="1" b="1"/>
-				</FontString>
-			</Layer>
-		</Layers>
+	<Frame name="LandingPageMajorFactionListTemplate" mixin="MajorFactionListMixin" virtual="true" scale="0.875">
+		<Size x="460" y="520"/>
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-28" y="-40"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-28" y="5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 
 			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="10" y="0"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="10" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="10" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="10" y="0"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>
@@ -44,25 +27,24 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="MajorFactionButtonTemplate" virtual="true" mixin="MajorFactionButtonMixin">
-		<Size x="400" y="85"/>
+	<Frame name="MajorFactionButtonTemplate" virtual="true" mixin="MajorFactionButtonMixin" scale="0.875">
+		<Size x="458" y="122"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="LockedState" mixin="MajorFactionButtonLockedStateMixin">
-				<Size x="400" y="85"/>
+				<Size x="458" y="122"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Background">
+						<Texture parentKey="Background" atlas="dragonflight-landingpage-renownbutton-tuskarr" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
-							<Color r="0.1" g="0.1" b="0.1" a="1"/>
+							<Color r="0.2" g="0.2" b="0.2" a="1"/>
 						</Texture>
 					</Layer>
 
@@ -85,7 +67,7 @@
 			</Frame>
 
 			<Button parentKey="UnlockedState" mixin="MajorFactionButtonUnlockedStateMixin">
-				<Size x="400" y="85"/>
+				<Size x="458" y="122"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
@@ -94,40 +76,7 @@
 						<Texture parentKey="Icon">
 							<Size x="48" y="48"/>
 							<Anchors>
-								<Anchor point="LEFT" x="15" y ="-10"/>
-							</Anchors>
-							<Color r="0.1" g="0.1" b="0.1" a="1"/>
-						</Texture>
-
-						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMP" vWrapMode="CLAMP">
-							<Size x="48" y="48"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-							</Anchors>
-							<MaskedTextures>
-								<MaskedTexture childKey="Icon"/>
-							</MaskedTextures>
-						</MaskTexture>
-					</Layer>
-
-					<Layer level="OVERLAY">
-						<Texture parentKey="IconBorder" atlas="CovenantSanctum-Icon-Border-kyrian" useAtlasSize="false" hidden="true">
-							<Size x="100" y="100"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-							</Anchors>
-						</Texture>
-
-						<FontString parentKey="RenownLevel" inherits="Game27Font">
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
-							</Anchors>
-						</FontString>
-
-						<Texture parentKey="SelectedTexture" atlas="GarrMission_FollowerListButton-Select" useAtlasSize="false" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+								<Anchor point="LEFT" x="40" y ="-4"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -135,17 +84,22 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontHighlightLarge">
+						<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontHighlightLarge2">
 							<Size x="350" y="22"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="12" y="2"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="RenownLevel" justifyH="LEFT" inherits="GameFontNormalLarge2">
+							<Size x="350" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -154,7 +108,7 @@
 					<CheckButton parentKey="WatchFactionButton" hidden="true" mixin="MajorFactionWatchFactionButtonMixin" inherits="UICheckButtonArtTemplate">
 						<Size x="16" y="16"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="5" y="-5"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="12" y="-6"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -177,92 +131,30 @@
 						</Scripts>
 					</CheckButton>
 
-					<Button parentKey="QuestButton" hidden="true" mixin="MajorFactionQuestButtonMixin">
-						<Size x="30" y="30"/>
+					<Cooldown parentKey="RenownProgressBar" reverse="true" hideCountdownNumbers="true" rotation="180" useParentLevel="true" mixin="MajorFactionRenownProgressBarMixin">
+						<Size x="100" y="100"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-5" y="-5"/>
+							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon" atlas="adventureguide-microbutton-alert" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-							<OnClick method="OnClick"/>
-						</Scripts>
-					</Button>
-
-					<StatusBar parentKey="RenownProgressBar" mixin="MajorFactionRenownProgressBarMixin">
-						<Size x="302" y="8"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Background">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
-										<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
-									</Anchors>
-									<Color r="0" g="0" b="0" a=".4"/>
-								</Texture>
-							</Layer>
-							
-							<Layer level="ARTWORK">
-								<Texture parentKey="BorderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
-									<Size x="16" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-6" y="5"/>
-										<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
-									</Anchors>
-									<TexCoords left="0" right="0.0625" top="0" bottom="0.75"/>
-								</Texture>
-								<Texture parentKey="BorderRight" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
-									<Size x="16" y="0"/>
-									<Anchors>
-										<Anchor point="TOPRIGHT" x="6" y="5"/>
-										<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
-									</Anchors>
-									<TexCoords left="0.812" right="0.8745" top="0" bottom="0.75"/>
-								</Texture>
-								<Texture parentKey="BorderCenter" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
-									<Size x="16"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
-										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
-									</Anchors>
-									<TexCoords left="0.0625" right="0.812" top="0" bottom="0.75"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad method="OnLoad"/>
-						</Scripts>
-						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-					</StatusBar>
+						<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
+					</Cooldown>
 
 					<Frame parentKey="UnlockFlash" hidden="true">
+						<Size x="458" y="122"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture parentKey="UnlockFlashBackground" setAllPoints="true">
+								<Texture parentKey="UnlockFlashBackground" atlas="dragonflight-landingpage-renownbutton-tuskarr" useAtlasSize="true" alphaMode="ADD">
 									<Color r="1" g="1" b="1"/>
 								</Texture>
 							</Layer>
 						</Layers>
 						<Animations>
 							<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
-								<Alpha childKey="UnlockFlashBackground" duration="0.4" fromAlpha="0" toAlpha="0.8" />
-								<Alpha childKey="UnlockFlashBackground" duration="0.4" fromAlpha="0.8" toAlpha="0" startDelay="0.5"/>
+								<Alpha childKey="UnlockFlashBackground" duration="0.4" fromAlpha="0" toAlpha="1" />
+								<Alpha childKey="UnlockFlashBackground" duration="0.4" fromAlpha="1" toAlpha="0" startDelay="0.5"/>
 							</AnimationGroup>
 						</Animations>
 					</Frame>
@@ -276,8 +168,10 @@
 					<OnClick method="OnClick"/>
 					<OnUpdate method="OnUpdate"/>
 				</Scripts>
-				<HighlightTexture>
-					<Color r="1" g="1" b="1" a="0.2"/>
+				<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</HighlightTexture>
 			</Button>
 		</Frames>

@@ -1,15 +1,15 @@
 GossipTitleButtonMixin = CreateFromMixins(GossipSharedTitleButtonMixin)
 function GossipTitleButtonMixin:OnEnter()
-	if (self.spellID) then 
+	if (self.spellID) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetSpellByID(self.spellID);
-		GameTooltip:Show(); 
-	end  
-end 
+		GameTooltip:Show();
+	end
+end
 
 function GossipTitleButtonMixin:OnLeave()
-	GameTooltip:Hide(); 
-end 
+	GameTooltip:Hide();
+end
 
 GossipQuestButtonMixin = CreateFromMixins(GossipSharedQuestButtonMixin);
 function GossipQuestButtonMixin:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial)
@@ -48,14 +48,15 @@ end
 GossipGreetingTextMixin = { }
 function GossipGreetingTextMixin:Setup(text)
 	self.GreetingText:SetText(text);
-	self:Show(); 
+	self:Show();
 	self:SetSize(270, self.GreetingText:GetHeight());
-end		
+end
 
-GossipFrameMixin = CreateFromMixins(GossipFrameSharedMixin); 
+GossipFrameMixin = CreateFromMixins(GossipFrameSharedMixin);
 function GossipFrameMixin:OnLoad()
 	self:RegisterEvent("QUEST_LOG_UPDATE");
-	self:UpdateScrollBox(); 
+	self:UpdateScrollBox();
+	self:SetTitleColor(HIGHLIGHT_FONT_COLOR);
 end
 
 function GossipFrameMixin:HandleShow(textureKit)
@@ -67,15 +68,15 @@ end
 
 local backgroundTextureKit = "QuestBG-%s";
 function GossipFrameMixin:GetBackgroundTexture(textureKit)
-	if (textureKit) then 
+	if (textureKit) then
 		local backgroundAtlas = GetFinalNameFromTextureKit(backgroundTextureKit, textureKit);
-		local atlasInfo = C_Texture.GetAtlasInfo(backgroundAtlas); 
-		if(atlasInfo) then 
-			return backgroundAtlas; 
+		local atlasInfo = C_Texture.GetAtlasInfo(backgroundAtlas);
+		if(atlasInfo) then
+			return backgroundAtlas;
 		end
 	end
-	return QuestUtil.GetDefaultQuestBackgroundTexture(); 
-end 
+	return QuestUtil.GetDefaultQuestBackgroundTexture();
+end
 
 function GossipFrameMixin:OnEvent(event, ...)
 	if ( event == "QUEST_LOG_UPDATE" and GossipFrame.hasActiveQuests ) then
@@ -84,11 +85,11 @@ function GossipFrameMixin:OnEvent(event, ...)
 end
 
 function GossipFrameMixin:SetGossipTutorialMode(tutorialMode)
-	self.tutorialMode = tutorialMode; 
+	self.tutorialMode = tutorialMode;
 	self.tutorialButtons = { };
 	self.GreetingPanel.GoodbyeButton:SetShown(not tutorialMode);
-end		
+end
 
-function GossipFrameMixin:GetTutorialButtons() 
+function GossipFrameMixin:GetTutorialButtons()
 	return self.tutorialButtons;
-end		
+end

@@ -87,8 +87,13 @@ end
 function CustomGossipFrameBaseMixin:SetupFrames()
 end
 
+local function GossipOptionSort(leftInfo, rightInfo)
+	return leftInfo.orderIndex < rightInfo.orderIndex;
+end  
+
 function CustomGossipFrameBaseMixin:BuildOptionList()
 	self.gossipOptions = C_GossipInfo.GetOptions();
+	table.sort(self.gossipOptions, GossipOptionSort);
 end
 
 --To be overriden

@@ -23,6 +23,18 @@
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>
+			<Button parentKey="Tutorial" inherits="MainHelpPlateButton" mixin="EditModeManagerTutorialMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="MainHelpPlateButtonTooltipText" value="EDIT_MODE_HELPTIP_BUTTON_TOOLTIP" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton, EditModeUnsavedChangesCheckerTemplate">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -34,7 +46,7 @@
 			<Frame parentKey="LayoutDropdown" inherits="DropDownControlTemplate">
 				<Size x="220" y="30"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="-40"/>
+					<Anchor point="TOPLEFT" x="20" y="-50"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Grid" frameStrata="BACKGROUND" mixin="EditModeGridMixin" ignoreParentScale="true" hidden="true">
@@ -61,7 +73,7 @@
 			</Frame>
 			<Frame parentKey="GridSpacingSlider" inherits="ResizeLayoutFrame" mixin="EditModeGridSpacingSliderMixin">
 				<Anchors>
-					<Anchor point="TOP" y="-85"/>
+					<Anchor point="TOP" y="-95"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -87,7 +99,7 @@
 			</Frame>
 			<Frame parentKey="AccountSettings" inherits="VerticalLayoutFrame" mixin="EditModeAccountSettingsMixin">
 				<Anchors>
-					<Anchor point="TOP" y="-125"/>
+					<Anchor point="TOP" y="-135"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="Settings" inherits="ResizeLayoutFrame" hidden="true" >
@@ -207,6 +219,26 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.DebuffFrame" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
+							</Frame>
+							<Frame parentKey="ArenaFrames" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_ARENA_FRAMES_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.VehicleLeaveButton" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="LootFrame" inherits="EditModeCheckButtonTemplate" mixin="EditModeLootFrameCheckButtonMixin">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_LOOT_FRAME_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ArenaFrames" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+								<Scripts>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+								</Scripts>
 							</Frame>
 						</Frames>
 					</Frame>

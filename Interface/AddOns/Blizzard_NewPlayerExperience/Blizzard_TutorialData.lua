@@ -87,7 +87,7 @@ TutorialData.LevelAbilitiesTable = {
 		688,	-- Summon Imp, level 3
 		104773,	-- Unending Resolve, level 4
 		5782,	-- Fear, level 5
-		702,	-- Curse of Weakness, level 6
+		nil,	-- 
 		6201,	-- Create Healthstone, level 7
 		755,	-- Health Funnel, level 8
 		234153,	-- Drain Life, level 9

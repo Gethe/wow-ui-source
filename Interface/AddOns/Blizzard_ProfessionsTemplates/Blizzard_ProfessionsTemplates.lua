@@ -102,7 +102,11 @@ end
 ProfessionsReagentContainerMixin = {};
 
 function ProfessionsReagentContainerMixin:OnLoad()
-	self.Label:SetText(self.labelText);
+	self:SetText(self.labelText);
+end
+
+function ProfessionsReagentContainerMixin:SetText(text)
+	self.Label:SetText(text);
 end
 
 ProfessionsCrafterTableHeaderStringMixin = CreateFromMixins(TableBuilderElementMixin);

@@ -1001,7 +1001,7 @@ function Main_HelpPlate_Button_ShowTooltip(self)
 	HelpPlateTooltip.ArrowRIGHT:Show();
 	HelpPlateTooltip.ArrowGlowRIGHT:Show();
 	HelpPlateTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0);
-	HelpPlateTooltip.Text:SetText(MAIN_HELP_BUTTON_TOOLTIP);
+	HelpPlateTooltip.Text:SetText(self.MainHelpPlateButtonTooltipText or MAIN_HELP_BUTTON_TOOLTIP);
 	HelpPlateTooltip:Show();
 end
 

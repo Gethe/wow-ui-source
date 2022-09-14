@@ -2,10 +2,40 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="LoadSystemTemplates.lua"/>
 
-	<Frame name="DropDownLoadSystemTemplate" mixin="DropDownLoadSystemMixin" virtual="true">
+	<Frame name="LargeDropDownLoadSystemTemplate" mixin="DropDownLoadSystemMixin" virtual="true">
+		<!--
+		dropDownSelectionFont: font to use on the selected option text.
+		dropDownOptionFont: font to use for each option name in the dropdown flyout.
+		-->
+		<KeyValues>
+			<KeyValue key="dropDownSelectionFont" value="GameFontHighlight" type="string"/>
+			<KeyValue key="dropDownOptionFont" value="GameFontNormal" type="string"/>
+		</KeyValues>
 		<Size x="150" y="30"/>
 		<Frames>
 			<Frame parentKey="DropDownControl" inherits="LargeDropDownControlTemplate">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="DropDownLoadSystemTemplate" mixin="DropDownLoadSystemMixin" virtual="true">
+		<!--
+		dropDownSelectionFont: font to use on the selected option text.
+		dropDownOptionFont: font to use for each option name in the dropdown flyout.
+		-->
+		<KeyValues>
+			<KeyValue key="dropDownSelectionFont" value="GameFontHighlightSmall" type="string"/>
+			<KeyValue key="dropDownOptionFont" value="GameFontNormalSmall" type="string"/>
+		</KeyValues>
+		<Size x="150" y="30"/>
+		<Frames>
+			<Frame parentKey="DropDownControl" inherits="DropDownControlTemplate">
 				<Anchors>
 					<Anchor point="LEFT"/>
 				</Anchors>

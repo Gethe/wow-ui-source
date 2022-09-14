@@ -222,6 +222,7 @@ function ClassTalentTalentsTabMixin:UpdateSpecBackground()
 	if atlas and C_Texture.GetAtlasInfo(atlas) then
 		self.Background:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 		self.OverlayBackground:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+		self.BackgroundFlash:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 	end
 end
 
@@ -238,7 +239,7 @@ function ClassTalentTalentsTabMixin:CheckSetSelectedConfigID()
 	end
 
 	local currentSpecID = PlayerUtil.GetCurrentSpecID();
-	local lastSelectedSavedConfigID = C_ClassTalents.GetLastSelectedSavedConfigID(currentSpecID);
+	local lastSelectedSavedConfigID = currentSpecID and C_ClassTalents.GetLastSelectedSavedConfigID(currentSpecID) or nil;
 
 	if self:GetIsStarterBuildActive() and not self.unflagStarterBuildAfterNextCommit then
 		local autoApply = false;
@@ -263,7 +264,7 @@ end
 
 function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 	-- Overrides TalentFrameBaseMixin. The base method happens after because TRAIT_CONFIG_UPDATED requires self.commitedConfigID.
-
+	
 	if event == "TRAIT_CONFIG_CREATED" then
 		local configInfo = ...;
 		if configInfo.type == Enum.TraitConfigType.Combat then
@@ -353,10 +354,13 @@ end
 function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 	self.LoadoutDropDown:SetEnabledCallback(GenerateClosure(self.CanSetDropDownValue, self));
 
+	local loadoutWidth = self.LoadoutDropDown:GetWidth();
 	local loadoutDropDownControl = self.LoadoutDropDown:GetDropDownControl();
-	loadoutDropDownControl:SetDropDownTextFontObject("GameFontDisable");
-	loadoutDropDownControl:SetDropDownListMinWidth(186);
-	loadoutDropDownControl:SetCustomMenuAnchorInfo(-8, 0, "BOTTOMLEFT", "TOPLEFT");
+	loadoutDropDownControl:SetDropDownListMinWidth(loadoutWidth+5);
+	loadoutDropDownControl:SetControlWidth(loadoutWidth);
+	loadoutDropDownControl:SetCustomMenuAnchorInfo(-2, 0, "BOTTOMLEFT", "TOPLEFT", loadoutDropDownControl);
+	loadoutDropDownControl:SetNoneSelectedText(TALENT_FRAME_DROP_DOWN_DEFAULT);
+	loadoutDropDownControl:SetNoneSelectedTextColor(0.5, 0.5, 0.5, 1);
 
 	self:RefreshLoadoutOptions();
 	self:RefreshConfigID();
@@ -376,16 +380,16 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 		return disabled, title, text, warning;
 	end
 
-	self.LoadoutDropDown:SetNewEntryCallback(NewEntryCallback, TALENT_FRAME_DROP_DOWN_NEW_LOADOUT, TALENT_FRAME_DROP_DOWN_NEW_LOADOUT_PROMPT, NewEntryDisabledCallback);
+	self.LoadoutDropDown:SetNewEntryCallbackCustomPopup(NewEntryCallback, TALENT_FRAME_DROP_DOWN_NEW_LOADOUT, ClassTalentLoadoutCreateDialog, NewEntryDisabledCallback);
 
 	local function EditLoadoutCallback(configID)
-		ClassTalentEditLoadoutDialog:ShowDialog(configID);
+		ClassTalentLoadoutEditDialog:ShowDialog(configID);
 	end
 
-	self.LoadoutDropDown:SetEditEntryCallback(EditLoadoutCallback);
+	self.LoadoutDropDown:SetEditEntryCallback(EditLoadoutCallback, TALENT_FRAME_DROP_DOWN_TOOLTIP_EDIT);
 
 	local function ImportCallback()
-		ClassTalentImportDialog:ShowDialog();
+		ClassTalentLoadoutImportDialog:ShowDialog();
 	end
 
 	local function ExportCallback()	

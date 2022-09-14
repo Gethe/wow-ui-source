@@ -8,6 +8,7 @@ TableUtil.Constants =
 {
 	AssociativePriorityTable = true,
 	ArraylikePriorityTable = false,
+	IsIndexTable = true,
 };
 
 function ipairs_reverse(table)
@@ -103,6 +104,32 @@ function tInvert(tbl)
 		inverted[v] = k;
 	end
 	return inverted;
+end
+
+function TableUtil.TrySet(tbl, key)
+	if not tbl[key] then
+		tbl[key] = true;
+		return true;
+	end
+	return false;
+end
+
+function TableUtil.CopyUnique(tbl, isIndexTable)
+	local found = {};
+	local function FilterPredicate(value)
+		return TableUtil.TrySet(found, value);
+	end
+
+	return tFilter(tbl, FilterPredicate, isIndexTable);
+end
+
+function TableUtil.CopyUniqueByPredicate(tbl, isIndexTable, unaryPredicate)
+	local found = {};
+	local function FilterPredicate(value)
+		return TableUtil.TrySet(found, unaryPredicate(value));
+	end
+
+	return tFilter(tbl, FilterPredicate, isIndexTable);
 end
 
 function tFilter(tbl, pred, isIndexTable)

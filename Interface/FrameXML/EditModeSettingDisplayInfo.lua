@@ -201,7 +201,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 		},
 
 		-- CastBarOnSide
-		{	
+		{
 			setting = Enum.EditModeUnitFrameSetting.CastBarOnSide,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_CAST_BAR_ON_SIDE,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
@@ -399,7 +399,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 	[Enum.EditModeSystem.TalkingHeadFrame] =
 	{
-
 	},
 
 	[Enum.EditModeSystem.ChatFrame] =
@@ -408,7 +407,10 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 	[Enum.EditModeSystem.VehicleLeaveButton] =
 	{
+	},
 
+	[Enum.EditModeSystem.LootFrame] =
+	{
 	},
 };
 

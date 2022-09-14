@@ -2306,6 +2306,7 @@ function DropDownControlMixin:OnLoad()
 	UIDropDownMenu_Initialize(self.DropDownMenu, InitializeDropDownFrame);
 
 	self:UpdateDropDownWidth(self:GetWidth());
+	self:UpdateSavedDefaultTextColor();
 end
 
 function DropDownControlMixin:AddTopLabel(labelText, labelFont, labelOffsetX, labelOffsetY)
@@ -2407,6 +2408,16 @@ function DropDownControlMixin:UpdateSelectedText()
 			end
 		end
 	end
+
+	self:UpdateSelectedTextColor();
+end
+
+function DropDownControlMixin:UpdateSelectedTextColor()
+	if self.selectedValue == nil and self.noneSelectedTextColor then
+		self.DropDownMenu.Text:SetTextColor(self.noneSelectedTextColor:GetRGBA());
+	else
+		self.DropDownMenu.Text:SetTextColor(self.defaultTextColor:GetRGBA());
+	end
 end
 
 function DropDownControlMixin:SetOptionSelectedCallback(optionSelectedCallback)
@@ -2467,10 +2478,18 @@ end
 
 function DropDownControlMixin:SetDropDownTextFontObject(fontObject)
 	self.DropDownMenu.Text:SetFontObject(fontObject);
+	self:UpdateSavedDefaultTextColor();
+	self:UpdateSelectedTextColor();
 end
 
 function DropDownControlMixin:SetDropDownTextColor(...)
 	self.DropDownMenu.Text:SetTextColor(...);
+	self:UpdateSavedDefaultTextColor();
+	self:UpdateSelectedTextColor();
+end
+
+function DropDownControlMixin:UpdateSavedDefaultTextColor()
+	self.defaultTextColor = CreateColor(self.DropDownMenu.Text:GetTextColor());
 end
 
 function DropDownControlMixin:SetTextJustifyH(...)
@@ -2479,6 +2498,15 @@ end
 
 function DropDownControlMixin:AdjustTextPointsOffset(...)
 	self.DropDownMenu.Text:AdjustPointsOffset(...);
+end
+
+function DropDownControlMixin:SetNoneSelectedText(text)
+	self.noneSelectedText = text;
+end
+
+function DropDownControlMixin:SetNoneSelectedTextColor(r, g, b, a)
+	self.noneSelectedTextColor = CreateColor(r, g, b, a);
+	self:UpdateSelectedTextColor();
 end
 
 function DropDownControlMixin:SetDropDownListMinWidth(minWidth)
@@ -2495,6 +2523,9 @@ end
 
 function DropDownControlMixin:SetEnabled(enabled, disabledTooltip)
 	UIDropDownMenu_SetDropDownEnabled(self.DropDownMenu, enabled, disabledTooltip);
+	if enabled then
+		self:UpdateSelectedTextColor();
+	end
 end
 
 -- enabledCallback: called before a selection is allowed (in case enabled state changed while the dropdown list is open). ([selectionID]) -> shouldBeEnabled

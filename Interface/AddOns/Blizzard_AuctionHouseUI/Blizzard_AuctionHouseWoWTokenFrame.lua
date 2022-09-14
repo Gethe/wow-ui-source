@@ -18,7 +18,7 @@ StaticPopupDialogs["TOKEN_AUCTIONABLE_TOKEN_OWNED"] = {
 
 function BrowseWowTokenResults_OnLoad(self)
 	AuctionHouseBackgroundMixin.OnLoad(self);
-	
+
 	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 	self:RegisterEvent("TOKEN_BUY_RESULT");
@@ -208,7 +208,7 @@ function WoWTokenSellFrameMixin:OnEvent(event, ...)
 			UIErrorsFrame:AddMessage(ERR_AUCTION_DATABASE_ERROR, 1.0, 0.1, 0.1, 1.0);
 		else
 			C_WowTokenPublic.UpdateListedAuctionableTokens();
-			
+
 			local info = ChatTypeInfo["SYSTEM"];
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_STARTED, info.r, info.g, info.b, info.id);
 		end
@@ -282,7 +282,7 @@ end
 
 
 function AuctionWowToken_UpdateMarketPriceCallback()
-	if (C_WowTokenPublic.GetCommerceSystemStatus() 
+	if (C_WowTokenPublic.GetCommerceSystemStatus()
 		and ((WowTokenUpdateInfo.AreWowTokenResultsVisible() or WowTokenUpdateInfo.IsWowTokenAuctionFrameVisible()) and not WowToken_IsWowTokenAuctionDialogShown())) then
 		WowTokenUpdateInfo.lastMarketPriceUpdate = GetTime();
 		C_WowTokenPublic.UpdateMarketPrice();
@@ -307,7 +307,7 @@ function AuctionWowToken_ShouldUpdatePrice()
 end
 
 function AuctionWowToken_UpdateMarketPrice()
-	if (AuctionWowToken_ShouldUpdatePrice()) then	
+	if (AuctionWowToken_ShouldUpdatePrice()) then
 		WowTokenUpdateInfo.lastMarketPriceUpdate = GetTime();
 		C_WowTokenPublic.UpdateMarketPrice();
 	end
@@ -334,7 +334,7 @@ function WoWTokenGameTimeTutorial_OnLoad(self)
 	ButtonFrameTemplate_HidePortrait(self);
 	ButtonFrameTemplate_HideAttic(self);
 	ButtonFrameTemplate_HideButtonBar(self);
-	self.TitleText:SetText(TUTORIAL_TOKEN_ABOUT_TOKENS);
+	self:SetTitle(TUTORIAL_TOKEN_ABOUT_TOKENS);
 end
 
 function WoWTokenGameTimeTutorial_OnShow(self)

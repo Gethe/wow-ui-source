@@ -141,9 +141,9 @@
 			</OnHide>
 			<OnShow>
 				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-				self.TitleText:SetText(NPE_KEYBOARDANDMOUSETITLE);
-				self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-				self.portrait:SetAtlas("NPE_Icon");
+				self:SetTitle(NPE_KEYBOARDANDMOUSETITLE);
+				self:GetPortrait():SetMask([[Interface/CharacterFrame/TempPortraitAlphaMask]]);
+				self:SetPortraitAtlasRaw("NPE_Icon");
 			</OnShow>
 		</Scripts>
 	</Frame>

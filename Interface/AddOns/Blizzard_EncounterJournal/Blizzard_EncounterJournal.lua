@@ -281,8 +281,8 @@ function EncounterBossButtonMixin:Init(elementData)
 end
 
 function EncounterJournal_OnLoad(self)
-	EncounterJournalTitleText:SetText(ADVENTURE_JOURNAL);
-	EncounterJournal:SetPortraitToAsset("Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
+	self:SetTitle(ADVENTURE_JOURNAL);
+	self:SetPortraitToAsset([[Interface\EncounterJournal\UI-EJ-PortraitIcon]]);
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
@@ -367,7 +367,7 @@ function EncounterJournal_OnLoad(self)
 		local Pad = 0;
 		local Spacing = 15;
 		local view = CreateScrollBoxListGridView(4, Pad, Pad, Pad, Pad, Spacing, Spacing);
-		
+
 		local function Initializer(button, elementData)
 			button.name:SetText(elementData.name);
 			button.bgImage:SetTexture(elementData.buttonImage);
@@ -381,14 +381,14 @@ function EncounterJournal_OnLoad(self)
 			end
 
 			local modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(elementData.mapID)
-			if (modifiedInstanceInfo) then 
+			if (modifiedInstanceInfo) then
 				button.ModifiedInstanceIcon.info = modifiedInstanceInfo;
 				button.ModifiedInstanceIcon.name = name;
 				local atlas = button.ModifiedInstanceIcon:GetIconTextureAtlas();
 				button.ModifiedInstanceIcon.Icon:SetAtlas(atlas, true)
 				button.ModifiedInstanceIcon:SetSize(button.ModifiedInstanceIcon.Icon:GetSize());
-				button.ModifiedInstanceIcon:Show(); 
-			end 
+				button.ModifiedInstanceIcon:Show();
+			end
 
 		end
 
@@ -455,11 +455,11 @@ end
 
 function EncounterJournal_SetLootJournalView(view)
 	local self = EncounterJournal;
-	local activeViewPanel, inactiveViewPanel = EncounterJournal_GetLootJournalPanels(view);	
+	local activeViewPanel, inactiveViewPanel = EncounterJournal_GetLootJournalPanels(view);
 	self.LootJournalViewDropDown:SetParent(activeViewPanel);
 	self.LootJournalViewDropDown:SetPoint("TOPLEFT", 15, -9);
 	UIDropDownMenu_SetText(self.LootJournalViewDropDown, view);
-	
+
 	-- if no previous view then it's the init, no need to change which frame is shown
 	if self.lootJournalView then
 		activeViewPanel:Show();
@@ -478,7 +478,7 @@ function EncounterJournal_GetLootJournalPanels(view)
 		return self.LootJournal, self.LootJournalItems;
 	else
 		return self.LootJournalItems, self.LootJournal;
-	end	
+	end
 end
 
 function EncounterJournal_EnableTierDropDown()
@@ -2610,7 +2610,7 @@ function EJ_ContentTab_Select(id)
 		EncounterJournal_EnableTierDropDown();
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-    
+
     EventRegistry:TriggerEvent("EncounterJournal.TabSet", EncounterJournal, id);
 end
 
@@ -3495,12 +3495,12 @@ function ModifiedInstanceIconMixin:OnEnter()
 	GameTooltip_SetTitle(GameTooltip, self.name, HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddNormalLine(GameTooltip, self.info.description);
 	GameTooltip:Show();
-end 
+end
 
 function ModifiedInstanceIconMixin:GetIconTextureAtlas()
 	return GetFinalNameFromTextureKit("%s-large", self.info.uiTextureKit);
-end 
+end
 
 function ModifiedInstanceIconMixin:OnLeave()
-	GameTooltip:Hide(); 
-end 
+	GameTooltip:Hide();
+end

@@ -75,6 +75,15 @@
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
+					<Scripts>
+						<OnEnter function="UIDropDownMenuButtonIcon_OnEnter"/>
+						<OnLeave function="UIDropDownMenuButtonIcon_OnLeave"/>
+						<OnMouseUp>
+							if ( button == "LeftButton" ) then
+								UIDropDownMenuButtonIcon_OnClick(self, button);
+							end
+						</OnMouseUp>
+					</Scripts>
 				</Texture>
 			</Layer>
 		</Layers>

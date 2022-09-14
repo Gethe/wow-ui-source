@@ -53,7 +53,7 @@ end
 
 function GetAchievementInfoFromHyperlink(link)
 	local linkType, linkData = LinkUtil.SplitLinkData(link);
-	if linkType:match("|Hachievement") then
+	if linkType and linkType:match("|Hachievement") then
 		local achievementID, _, complete = strsplit(":", linkData);
 		return tonumber(achievementID), complete == "1";
 	end

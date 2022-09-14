@@ -568,7 +568,7 @@ function ProfessionsSpecFrameMixin:Refresh(professionInfo)
 	self.professionInfo = professionInfo;
 	self:SetConfigID(configID);
 	self:InitializeTabs();
-	self.TreeView.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.UseAtlasSize);
+	self.TreeView.Background:SetAtlas(Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo), TextureKitConstants.UseAtlasSize);
 	self.DetailedView.Path:UpdateAssets();
 end
 

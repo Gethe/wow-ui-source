@@ -407,11 +407,11 @@ end
 
 function PVPQueueFrame_UpdateTitle()
 	if ConquestFrame.seasonState == SEASON_STATE_PRESEASON then
-		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_PRE_SEASON);
+		PVEFrame:SetTitle(PLAYER_V_PLAYER_PRE_SEASON);
 	elseif ConquestFrame.seasonState == SEASON_STATE_OFFSEASON then
-		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_OFF_SEASON);
+		PVEFrame:SetTitle(PLAYER_V_PLAYER_OFF_SEASON);
 	else
-		PVEFrame.TitleText:SetText(PLAYER_V_PLAYER_SEASON:format(PVPUtil.GetCurrentSeasonNumber()));
+		PVEFrame:SetTitleFormatted(PLAYER_V_PLAYER_SEASON, PVPUtil.GetCurrentSeasonNumber());
 	end
 end
 
@@ -667,15 +667,15 @@ function HonorFrame_UpdateQueueButtons()
 		end
 	end
 
-	if isSpecialBrawl and canQueue then 
-		if (IsInGroup(LE_PARTY_CATEGORY_HOME)) then 
-			local brawlInfo = C_PvP.GetSpecialEventBrawlInfo(); 
-			if(brawlInfo) then 
-				canQueue = false; 
-				disabledReason = SOLO_BRAWL_CANT_QUEUE; 
-			end		
-		end		
-	end		
+	if isSpecialBrawl and canQueue then
+		if (IsInGroup(LE_PARTY_CATEGORY_HOME)) then
+			local brawlInfo = C_PvP.GetSpecialEventBrawlInfo();
+			if(brawlInfo) then
+				canQueue = false;
+				disabledReason = SOLO_BRAWL_CANT_QUEUE;
+			end
+		end
+	end
 	local isInCrossFactionGroup = C_PartyInfo.IsCrossFactionParty();
 	if ( canQueue ) then
 		HonorFrame.QueueButton:Enable();
@@ -684,9 +684,9 @@ function HonorFrame_UpdateQueueButtons()
 			if (not UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME)) then
 				HonorFrame.QueueButton:Disable();
                 disabledReason = ERR_NOT_LEADER; -- let this trump any other disabled reason
-			elseif(isInCrossFactionGroup) then 
+			elseif(isInCrossFactionGroup) then
 				HonorFrame.QueueButton:Disable();
-				disabledReason = CROSS_FACTION_PVP_ERROR; 
+				disabledReason = CROSS_FACTION_PVP_ERROR;
 			end
 		else
 			HonorFrame.QueueButton:SetText(BATTLEFIELD_JOIN);
@@ -724,7 +724,7 @@ function HonorFrame_Queue()
 			JoinSingleLFG(LE_LFG_CATEGORY_WORLDPVP, HonorFrame.BonusFrame.selectedButton.queueID);
 		elseif (HonorFrame.BonusFrame.selectedButton.isBrawl) then
 			C_PvP.JoinBrawl();
-		elseif (HonorFrame.BonusFrame.selectedButton.isSpecialBrawl) then 
+		elseif (HonorFrame.BonusFrame.selectedButton.isSpecialBrawl) then
 			C_PvP.JoinBrawl(true);
 		else
 			JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID);
@@ -899,7 +899,7 @@ function HonorFrameBonusFrame_Update()
 		HonorFrame.BonusFrame.Arena1Button,
 		HonorFrame.BonusFrame.RandomEpicBGButton,
 		HonorFrame.BonusFrame.BrawlButton,
-		HonorFrame.BonusFrame.BrawlButton2, 
+		HonorFrame.BonusFrame.BrawlButton2,
 	};
 
 	-- random bg
@@ -984,7 +984,7 @@ function HonorFrameBonusFrame_Update()
 		local button = buttons[5];
 		local brawlInfo = C_PvP.GetSpecialEventBrawlInfo();
 		button.isSpecialBrawl = true;
-		if (brawlInfo) then 
+		if (brawlInfo) then
 			local expansionMaxLevel = GetMaxLevelForPlayerExpansion();
 			local meetsMaxLevel = PartyUtil.GetMinLevel() == expansionMaxLevel;
 			button.canQueue = brawlInfo and brawlInfo.canQueue and meetsMaxLevel;
@@ -1401,15 +1401,15 @@ function ConquestFrameButton_OnClick(self, button)
 		if not ChatEdit_InsertLink(link) then
 			ChatFrame_OpenChat(link);
 		end
-		return; 
-	end		
+		return;
+	end
 	if ( button == "LeftButton" or self.teamIndex ) then
 		ConquestFrame_SelectButton(self);
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end
 
-function ConquestFrameJoinButton_OnClick(self) 
+function ConquestFrameJoinButton_OnClick(self)
 	if (ConquestFrame.selectedButton.id == RATED_SOLO_SHUFFLE_BUTTON_ID) then
 		JoinRatedSoloShuffle();
 	elseif (ConquestFrame.selectedButton.id == RATED_BG_BUTTON_ID) then
@@ -1881,7 +1881,7 @@ end
 
 function PVPConquestBarMixin:Update()
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID);
-	local shouldShowConquestBar = currencyInfo and currencyInfo.maxQuantity > 0; 
+	local shouldShowConquestBar = currencyInfo and currencyInfo.maxQuantity > 0;
 	self:SetShown(shouldShowConquestBar);
 
 	self.locked = not IsPlayerAtEffectiveMaxLevel();
@@ -2169,55 +2169,55 @@ local function PVPQuestRewardSortFunction(firstValue, secondValue)
 	return firstValue > secondValue;
 end
 
-PVPQuestRewardMixin = { }; 
+PVPQuestRewardMixin = { };
 
 function PVPQuestRewardMixin:OnShow()
 	self:RegisterEvent("QUEST_LOG_UPDATE");
-end 
+end
 
 function PVPQuestRewardMixin:OnHide()
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 end
 
 function PVPQuestRewardMixin:OnEvent(event, ...)
-	if(event == "QUEST_LOG_UPDATE") then 
+	if(event == "QUEST_LOG_UPDATE") then
 		self:Init(self.questID);
-	end 
-end 
+	end
+end
 
 function PVPQuestRewardMixin:Init(questID)
 	self.questID = questID;
-	self.Icon:Hide(); 
+	self.Icon:Hide();
 
-	if (not self.questID) then 
-		return; 
-	end 
-
-	if (not HaveQuestData(self.questID)) then
-		self.questInCache = false; 
+	if (not self.questID) then
 		return;
 	end
 
-	--We already have set up the frame if the quest is set to in your cache. 
-	if (self.questInCache and self.Icon:IsShown()) then 
-		return; 
-	end 
+	if (not HaveQuestData(self.questID)) then
+		self.questInCache = false;
+		return;
+	end
+
+	--We already have set up the frame if the quest is set to in your cache.
+	if (self.questInCache and self.Icon:IsShown()) then
+		return;
+	end
 
 	local isCompleted;
-	if (C_QuestLog.IsOnQuest(self.questID)) then 
+	if (C_QuestLog.IsOnQuest(self.questID)) then
 		isCompleted =  C_QuestLog.IsComplete(self.questID)
-	else 
+	else
 		isCompleted = C_QuestLog.IsQuestFlaggedCompleted(self.questID);
 	end
-	
-	self.Icon:SetDesaturated(isCompleted); 
+
+	self.Icon:SetDesaturated(isCompleted);
 	if self.CheckMark then
 		self.CheckMark:SetShown(isCompleted);
 	end
 
-	self.questInCache = true; 
+	self.questInCache = true;
 	local rewards = { };
-	rewards.currencyRewards = { }; 
+	rewards.currencyRewards = { };
 	local continuableContainer = ContinuableContainer:Create();
 	local numCurrencies = GetNumQuestLogRewardCurrencies(self.questID);
 	for i = 1, numCurrencies do
@@ -2227,58 +2227,69 @@ function PVPQuestRewardMixin:Init(questID)
 		reward.quality = quality;
 		tinsert(rewards.currencyRewards, reward);
 	end
-	
+
 	local numItems = GetNumQuestLogRewards(questID);
 	for i = 1, numItems do
 		local name, texture, count, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
 		local item = Item:CreateFromItemID(itemID);
 		continuableContainer:AddContinuable(item);
 	end
-	
+
 	continuableContainer:ContinueOnLoad(function()
 		rewards.itemRewards = { };
 		local numItems = GetNumQuestLogRewards(questID);
 		for i = 1, numItems do
 			local name, texture, count, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
 			local reward = { };
-			reward.texture = texture; 
+			reward.texture = texture;
 			reward.quality = quality;
 		end
-	
-		if (rewards.itemRewards and #rewards.itemRewards > 1) then
-			table.sort(self.itemRewards, function(a, b) 
-				return PVPQuestRewardSortFunction(a.quality, b.quality); 
-			end);
-		end 
 
-		if(rewards.currencyRewards and #rewards.currencyRewards > 1) then 
-			table.sort(rewards.currencyRewards, function(a, b) 
-				return PVPQuestRewardSortFunction(a.quality, b.quality); 
+		if (rewards.itemRewards and #rewards.itemRewards > 1) then
+			table.sort(self.itemRewards, function(a, b)
+				return PVPQuestRewardSortFunction(a.quality, b.quality);
 			end);
 		end
-		if(rewards and rewards.itemRewards and rewards.itemRewards[1]) then 
+
+		if(rewards.currencyRewards and #rewards.currencyRewards > 1) then
+			table.sort(rewards.currencyRewards, function(a, b)
+				return PVPQuestRewardSortFunction(a.quality, b.quality);
+			end);
+		end
+		if(rewards and rewards.itemRewards and rewards.itemRewards[1]) then
 			self.Icon:SetTexture(rewards.itemRewards[1].texture);
-			self.Icon:Show(); 
-		elseif(rewards and rewards.currencyRewards and rewards.currencyRewards[1]) then 
+			self.Icon:Show();
+		elseif(rewards and rewards.currencyRewards and rewards.currencyRewards[1]) then
 			self.Icon:SetTexture(rewards.currencyRewards[1].texture)
-			self.Icon:Show(); 
-		end 
+			self.Icon:Show();
+		end
 	end);
 
-	self:Show(); 
-end 
+	self:Show();
+end
 
 function PVPQuestRewardMixin:OnEnter()
-	self.shouldShowObjectivesAsStatusBar = true; 
+	self.shouldShowObjectivesAsStatusBar = true;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( not C_QuestLog.IsOnQuest(self.questID) and C_QuestLog.IsQuestFlaggedCompleted(self.questID)) then
 		GameTooltip_AddColoredLine(GameTooltip, GOAL_COMPLETED, GREEN_FONT_COLOR);
 		GameTooltip:Show();
-	else 
-		GameTooltip_AddQuest(self); 
-	end		
+	else
+		GameTooltip_AddQuest(self);
+	end
 end
 
 function PVPQuestRewardMixin:OnLeave()
-	GameTooltip:Hide(); 
-end 
+	GameTooltip:Hide();
+end
+
+local function UserActionClosePVPTalentPrestigeLevelDialog(frame)
+	PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
+	frame:Hide();
+end
+
+PVPTalentPrestigeLevelDialogCloseButtonMixin = {};
+
+function PVPTalentPrestigeLevelDialogCloseButtonMixin:OnClick()
+	UserActionClosePVPTalentPrestigeLevelDialog(self:GetParent());
+end

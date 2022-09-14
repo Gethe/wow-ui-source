@@ -2405,7 +2405,7 @@ function Class_GossipBindPointer:OnBegin()
 
 	if (bindButtonIndex) then
 		-- offset the index by the first gossip button
-		for i=1, GossipFrame:GetTitleButtonCount()) do
+		for i = 1, GossipFrame:GetTitleButtonCount() do
 			local btn = GossipFrame:GetTitleButton(i);
 			if btn and btn.type == "Gossip" then
 				bindButtonIndex = bindButtonIndex + (i - 1);

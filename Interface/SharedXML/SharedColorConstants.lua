@@ -12,6 +12,18 @@ FACTION_BAR_COLORS =
 	FACTION_GREEN_COLOR,
 };
 
+FACTION_BAR_Textures =
+{
+	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Red",
+	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Red",
+	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Orange",
+	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Yellow",
+	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Green",
+	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Green",
+	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Green",
+	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Green",
+};
+
 MATERIAL_TEXT_COLOR_TABLE = 
 {
 	["Default"] = DEFAULT_MATERIAL_TEXT_COLOR,

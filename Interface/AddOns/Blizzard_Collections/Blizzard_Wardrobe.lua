@@ -53,7 +53,7 @@ WardrobeFrameMixin:GenerateCallbackEvents(
 
 function WardrobeFrameMixin:OnLoad()
 	self:SetPortraitToAsset("Interface\\Icons\\INV_Arcane_Orb");
-	WardrobeFrameTitleText:SetText(TRANSMOGRIFY);
+	self:SetTitle(TRANSMOGRIFY);
 	CallbackRegistryMixin.OnLoad(self);
 end
 
@@ -129,7 +129,7 @@ function TransmogFrameMixin:OnEvent(event, ...)
 		if ( slotButton ) then
 			slotButton:OnTransmogrifySuccess();
 		end
-	elseif ( event == "UNIT_MODEL_CHANGED" ) then
+	elseif ( event == "UNIT_FORM_CHANGED" ) then
 		local unit = ...;
 		if ( unit == "player" and IsUnitModelReadyForUI("player") ) then
 			local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
@@ -149,7 +149,7 @@ function TransmogFrameMixin:OnShow()
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 	if ( hasAlternateForm ) then
-		self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
+		self:RegisterUnitEvent("UNIT_FORM_CHANGED", "player");
 		self.inAlternateForm = inAlternateForm;
 	end
 	self.ModelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
@@ -161,7 +161,7 @@ function TransmogFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.UI_TRANSMOG_CLOSE_WINDOW);
 	StaticPopup_Hide("TRANSMOG_APPLY_WARNING");
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
-	self:UnregisterEvent("UNIT_MODEL_CHANGED");
+	self:UnregisterEvent("UNIT_FORM_CHANGED");
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Transmogrifier);
 	WardrobeFrame:UnregisterCallback(WardrobeFrameMixin.Event.OnCollectionTabChanged, self);
 end
@@ -645,7 +645,7 @@ function TransmogSlotButtonMixin:OnEnter()
 		end
 		GameTooltip:Show();
 	else
-		if ( self.UndoButton and isTransmogrified and not ( hasPending or hasUndo ) ) then
+		if ( self.UndoButton and canTransmogrify and isTransmogrified and not ( hasPending or hasUndo ) ) then
 			self.UndoButton:Show();
 		end
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 14, 0);
@@ -740,12 +740,20 @@ function TransmogSlotButtonMixin:Update()
 			self.NoItemTexture:Hide();
 		else
 			local tag = TRANSMOG_INVALID_CODES[cannotTransmogrifyReason];
-			if tag  == "NO_ITEM" or tag == "SLOT_FOR_RACE" then
-				local slotID, defaultTexture = GetInventorySlotInfo(self.slot);
-				self.Icon:SetTexture(defaultTexture);
+			local slotID, defaultTexture = GetInventorySlotInfo(self.slot);
+
+			if tag == "SLOT_FOR_FORM" then
+				if texture then
+					self.Icon:SetTexture(texture);
+				else
+					self.Icon:SetTexture(defaultTexture);
+				end
+			elseif tag == "NO_ITEM" or tag == "SLOT_FOR_RACE" then
+				self.Icon:SetTexture(defaultTexture);	
 			else
 				self.Icon:SetTexture(texture);
 			end
+			
 			self.NoItemTexture:Show();
 		end
 	else
@@ -980,6 +988,10 @@ local SET_MODEL_PAN_AND_ZOOM_LIMITS = {
 	["Mechagnome2"] = { maxZoom = 2.8552639484406, panMaxLeft = -0.2777853012085, panMaxRight = 0.29651582241058, panMaxTop = -0.095201380550861, panMaxBottom = -1.0263166427612 },
 	["Vulpera2"] = { maxZoom = 2.4605259895325, panMaxLeft = -0.31328883767128, panMaxRight = 0.39014467597008, panMaxTop = -0.089733943343162, panMaxBottom = -1.3402827978134 },
 	["Vulpera3"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.26144406199455, panMaxRight = 0.30945864319801, panMaxTop = -0.07625275105238, panMaxBottom = -1.2928194999695 },
+	["Dracthyr2"] = { maxZoom = 2.1118416786194, panMaxLeft = -0.72946360111237, panMaxRight = 0.83975899219513, panMaxTop = -0.061676319688559, panMaxBottom = -2.035267829895 },
+	["Dracthyr3"] = { maxZoom = 2.9605259895325, panMaxLeft = -0.37433895468712, panMaxRight = 0.40420442819595, panMaxTop = -0.1868137717247, panMaxBottom = -2.2116675376892 },
+	["Dracthyr3Alt"] = { maxZoom = 3.3618412017822, panMaxLeft = -0.19753229618072, panMaxRight = 0.26802557706833, panMaxTop = -0.073476828634739, panMaxBottom = -1.9255120754242 },
+	["Dracthyr2Alt"] = { maxZoom = 3.1710524559021, panMaxLeft = -0.25901651382446, panMaxRight = 0.45525884628296, panMaxTop = -0.085230752825737, panMaxBottom = -2.0548067092895 },
 };
 
 WardrobeCollectionFrameMixin = { };
@@ -1092,7 +1104,7 @@ function WardrobeCollectionFrameMixin:OnEvent(event, ...)
 		if ( self.ItemsCollectionFrame:IsShown() ) then
 			self.ItemsCollectionFrame:ValidateChosenVisualSources();
 		end
-	elseif ( event == "UNIT_MODEL_CHANGED" ) then
+	elseif ( event == "UNIT_FORM_CHANGED" ) then
 		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 		if ( (self.inAlternateForm ~= inAlternateForm or self.updateOnModelChanged) ) then
 			if ( self.activeFrame:OnUnitModelChangedEvent() ) then
@@ -1118,7 +1130,7 @@ function WardrobeCollectionFrameMixin:OnShow()
 	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\inv_chest_cloth_17");
 
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
-	self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
+	self:RegisterUnitEvent("UNIT_FORM_CHANGED", "player");
 	self:RegisterEvent("TRANSMOG_SEARCH_UPDATED");
 	self:RegisterEvent("SEARCH_DB_LOADED");
 	self:RegisterEvent("PLAYER_LEVEL_UP");
@@ -1142,7 +1154,7 @@ end
 
 function WardrobeCollectionFrameMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
-	self:UnregisterEvent("UNIT_MODEL_CHANGED");
+	self:UnregisterEvent("UNIT_FORM_CHANGED");
 	self:UnregisterEvent("TRANSMOG_SEARCH_UPDATED");
 	self:UnregisterEvent("SEARCH_DB_LOADED");
 	self:UnregisterEvent("PLAYER_LEVEL_UP");
@@ -2898,30 +2910,30 @@ end
 function WardrobeFilterDropDown_InitializeItems(self, level)
 	-- Transmog NPC only uses source filters
 	local sourceFilters = {
-		{ type = FilterComponent.TextButton, 
+		{ type = FilterComponent.TextButton,
 		  text = CHECK_ALL,
-		  set = function() WardrobeFilterDropDown_SetAllSourceTypeFilters(true) end, 
+		  set = function() WardrobeFilterDropDown_SetAllSourceTypeFilters(true) end,
 		},
 		{ type = FilterComponent.TextButton,
 		  text = UNCHECK_ALL,
 		  set = function() WardrobeFilterDropDown_SetAllSourceTypeFilters(false) end,
 		},
 		{ type = FilterComponent.DynamicFilterSet,
-		  buttonType = FilterComponent.Checkbox, 
+		  buttonType = FilterComponent.Checkbox,
 		  set = C_TransmogCollection.SetSourceTypeFilter,
 		  isSet = C_TransmogCollection.IsSourceTypeFilterChecked,
 		  numFilters = C_TransmogCollection.GetNumTransmogSources,
-		  globalPrepend = "TRANSMOG_SOURCE_", 
+		  globalPrepend = "TRANSMOG_SOURCE_",
 		},
 	};
 
 	local appearanceCollectionFilters = {
 		{ type = FilterComponent.Checkbox, text = COLLECTED, set = C_TransmogCollection.SetCollectedShown, isSet = C_TransmogCollection.GetCollectedShown },
 		{ type = FilterComponent.Checkbox, text = NOT_COLLECTED, set = C_TransmogCollection.SetUncollectedShown, isSet = C_TransmogCollection.GetUncollectedShown },
-		{ type = FilterComponent.Submenu, text = SOURCES, value = 1, childrenInfo = { 
+		{ type = FilterComponent.Submenu, text = SOURCES, value = 1, childrenInfo = {
 				-- "Appearances" Collection tab has collection filters + source filters
-				filters = sourceFilters, 
-			}, 
+				filters = sourceFilters,
+			},
 		},
 	};
 

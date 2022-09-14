@@ -145,11 +145,7 @@ function MountJournal_OnLoad(self)
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 	self:RegisterEvent("MOUNT_EQUIPMENT_APPLY_RESULT");
 	self:RegisterEvent("CURSOR_CHANGED");
-
-	local hasAlternateForm, _ = C_PlayerInfo.GetAlternateFormInfo();
-	if ( hasAlternateForm ) then
-		self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
-	end
+	self:RegisterUnitEvent("UNIT_FORM_CHANGED", "player");
 
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("MountListButtonTemplate", function(button, elementData)
@@ -175,7 +171,7 @@ function MountJournal_OnLoad(self)
 	self.SlotRequirementLabel:SetTextColor(LOCKED_EQUIPMENT_LABEL_COLOR:GetRGB());
 	
 	self.SuppressedMountEquipmentButton = bottomLeftInset.SuppressedMountEquipmentButton;
-	
+
 	MountJournal_UpdateEquipment(self);
 end
 
@@ -302,9 +298,9 @@ function MountJournal_OnEvent(self, event, ...)
 	elseif ( event == "MOUNT_EQUIPMENT_APPLY_RESULT" ) then
 		local success = ...;
 		MountJournal_OnEquipmentApplyResult(self, success);
-	elseif (event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
+	elseif ( event == "PLAYER_MOUNT_DISPLAY_CHANGED" ) then
 		MountJournal_UpdateEquipmentPalette(self);
-	elseif (event == "UNIT_MODEL_CHANGED") then
+	elseif ( event == "UNIT_FORM_CHANGED" ) then
 		local showPlayer = GetCVarBool("mountJournalShowPlayer");
 		if(self:IsVisible() and showPlayer) then
 			MountJournal_UpdateMountDisplay(true);
@@ -719,7 +715,7 @@ function MountJournal_GetMountButtonHeight()
 end
 
 function MountJournal_GetMountButtonByMountID(mountID)
-	return self.ScrollBox:FindFrameByPredicate(function(elementData)
+	return MountJournal.ScrollBox:FindFrameByPredicate(function(elementData)
 			return elementData.mountID == mountID;
 		end);
 end

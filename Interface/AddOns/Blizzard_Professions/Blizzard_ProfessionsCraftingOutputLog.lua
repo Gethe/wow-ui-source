@@ -206,6 +206,7 @@ function ProfessionsCraftingOutputLogMixin:ProcessSingleCraftingResult(resultDat
 
 	-- Temporary
 	self.RecraftButton:Hide();
+	self.ExitButton:Hide();
 end
 
 function ProfessionsCraftingOutputLogMixin:ProcessSuccessiveCraftingResult(data)

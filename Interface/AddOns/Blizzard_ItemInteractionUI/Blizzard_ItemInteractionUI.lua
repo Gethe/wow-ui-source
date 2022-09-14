@@ -255,7 +255,7 @@ end
 function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 	self.openSoundKitID = frameData.openSoundKitID;
 	self.closeSoundKitID = frameData.closeSoundKitID;
-	self.TitleText:SetText(frameData.titleText);
+	self:SetTitle(frameData.titleText);
 	self.ButtonFrame.ActionButton:SetText(frameData.buttonText);
 	self.confirmationText = frameData.buttonText;
 	self.confirmationDescription = frameData.confirmationDescription;
@@ -281,9 +281,9 @@ function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 
 	local portraitFormat = "%s-portrait";
 	if (C_Texture.GetAtlasInfo(portraitFormat:format(self.textureKit)) ~= nil) then
-		frameTextureKitRegions[self.portrait] = portraitFormat;
+		frameTextureKitRegions[self.PortraitContainer.portrait] = portraitFormat;
 	else
-		SetPortraitTexture(self.portrait, "npc");
+		SetPortraitTexture(self.PortraitContainer.portrait, "npc");
 	end
 
 	SetupTextureKitOnFrames(self.textureKit, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
