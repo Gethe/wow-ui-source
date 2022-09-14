@@ -72,6 +72,15 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetSavedRoles",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "roles", Type = "LFGRoles", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSearchResultInfo",
 			Type = "Function",
 

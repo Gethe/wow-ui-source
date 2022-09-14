@@ -3,7 +3,7 @@
 	<Script file="../../Interface/FrameXML/PVPFrameBase.lua"/>
 	<Script file="PVPFrame.lua"/>
 	<Include file="../../Interface/FrameXML/PVPFrameTemplates.xml"/>
-	<Frame name="PVPParentFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
+	<Frame name="PVPParentFrame" toplevel="true" enableMouse="false" parent="UIParent" hidden="true">
 		<Size>
 			<AbsDimension x="384" y="512"/>
 		</Size>
@@ -18,7 +18,7 @@
 			<AbsInset left="0" right="30" top="0" bottom="75"/>
 		</HitRectInsets>
 		<Frames>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
 						<Offset>
@@ -30,6 +30,9 @@
 					<OnLoad>
 						self:SetFrameLevel(self:GetFrameLevel() + 4);
 					</OnLoad>
+					<OnClick inherit="append">
+						BattlefieldFrame:Hide();
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Frame name="PVPFrame" setAllPoints="true" enableMouse="true" id="1">
@@ -920,6 +923,45 @@
 					</OnHide>
 				</Scripts>
 			</Frame>
+			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="PVP">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="11" y="46" />
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(PLAYER_V_PLAYER, 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnClick>
+						PVPFrame:Show();
+						BattlefieldFrame:Hide();
+						PanelTemplates_Tab_OnClick(self, PVPParentFrame);
+					</OnClick>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="BATTLEGROUNDS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(BATTLEFIELDS, 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnClick>
+						PanelTemplates_Tab_OnClick(self, PVPParentFrame);
+						PVPFrame:Hide();
+						BattlefieldFrame:Show();
+					</OnClick>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				PanelTemplates_SetNumTabs(self, 2)
+			</OnLoad>
+		</Scripts>
 	</Frame>
 </Ui>

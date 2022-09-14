@@ -42,7 +42,7 @@ function LFGListingMixin:OnLoad()
 	self.viewState = LFGLISTING_VIEWSTATE_ACTIVITIES;
 
 	self:ClearUI();
-	self:LoadSoloRolesFromTalentGroups();
+	self:LoadSoloRolesOnStartup();
 	self:UpdateFrameView();
 end
 
@@ -409,14 +409,12 @@ end
 -------------------------------------------------------
 ----------Solo Role UI
 -------------------------------------------------------
-function LFGListingMixin:LoadSoloRolesFromTalentGroups()
-	for i=1,GetNumTalentGroups() do
-		for _,roleButton in ipairs(self.SoloRoleButtons.RoleButtons) do
-			if (GetTalentGroupRole(i) == roleButton.roleID) then
-				roleButton.CheckButton:SetChecked(true);
-			end
-		end
-	end
+function LFGListingMixin:LoadSoloRolesOnStartup()
+	local roles = C_LFGList.GetSavedRoles();
+	self.SoloRoleButtons.Tank.CheckButton:SetChecked(roles.tank);
+	self.SoloRoleButtons.Healer.CheckButton:SetChecked(roles.healer);
+	self.SoloRoleButtons.DPS.CheckButton:SetChecked(roles.dps);
+
 	self:SaveSoloRoles();
 end
 

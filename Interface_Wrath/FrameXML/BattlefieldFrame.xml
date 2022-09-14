@@ -613,6 +613,7 @@
 				<Scripts>
 					<OnClick>
 						HideUIPanel(BattlefieldFrame);
+						BattlefieldFrameCloseButton_OnClick()
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -662,6 +663,11 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Scripts>
+					<OnClick inherit="append">
+						BattlefieldFrameCloseButton_OnClick()
+					</OnClick>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

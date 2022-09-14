@@ -68,6 +68,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</CheckButton>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				local recommendedTank, recommendedHealer, recommendedDPS = UnitGetAvailableRoles("player");
+				if ((self.roleID == "TANK" and not recommendedTank) or (self.roleID == "HEALER" and not recommendedHealer) or (self.roleID == "DAMAGER" and not recommendedDPS)) then
+					self.cover:Show();
+				else
+					self.cover:Hide();
+				end
+			</OnLoad>
 			<OnEnter inherit="append">
 				if ( self.CheckButton:IsEnabled() ) then
 					self.CheckButton:LockHighlight();
@@ -298,7 +306,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="append">
 								self.roleID = "TANK";
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
 								self.Background:SetTexCoord(GetBackgroundTexCoordsForRole("TANK"));
@@ -311,7 +319,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="25" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="append">
 								self.roleID = "HEALER";
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
 								self.Background:SetTexCoord(GetBackgroundTexCoordsForRole("HEALER"));
@@ -324,7 +332,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="25" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="append">
 								self.roleID = "DAMAGER";
 								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
 								self.Background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGER"));
