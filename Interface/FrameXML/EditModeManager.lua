@@ -1403,6 +1403,7 @@ function EditModeAccountSettingsMixin:OnEditModeExit()
 	self:ResetTargetAndFocus(clearSavedTargetAndFocus);
 	self:ResetPartyFrames();
 	self:ResetRaidFrames();
+	self:ResetHudTooltip();
 
 	self:ResetActionBarShown(StanceBar);
 	self:ResetActionBarShown(PetActionBar);
@@ -1781,10 +1782,14 @@ end
 function EditModeAccountSettingsMixin:RefreshHudTooltip()
 	local showHudTooltip = self.Settings.HudTooltip:IsControlChecked();
 	if showHudTooltip then
-		GameTooltipDefaultContainer:HighlightSystem();
+		GameTooltipDefaultContainer:Show();
 	else
-		GameTooltipDefaultContainer:ClearHighlight();
+		GameTooltipDefaultContainer:Hide();
 	end
+end
+
+function EditModeAccountSettingsMixin:ResetHudTooltip()
+	GameTooltipDefaultContainer:Hide();
 end
 
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)

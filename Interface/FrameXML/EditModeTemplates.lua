@@ -239,7 +239,7 @@ end
 
 EditModeCheckButtonMixin = {};
 
-function EditModeCheckButtonMixin:OnShow()
+function EditModeCheckButtonMixin:EditModeCheckButton_OnShow()
 	local shouldEnable = self:ShouldEnable();
 	self.Button:SetEnabled(shouldEnable);
 	self.Label:SetFontObject(shouldEnable and "GameFontHighlightMedium" or "GameFontDisableMed2")
