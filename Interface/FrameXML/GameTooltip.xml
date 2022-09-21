@@ -277,6 +277,13 @@
 			<OnTooltipSetItem function="GameTooltip_OnTooltipSetShoppingItem" />
 		</Scripts>
 	</GameTooltip>
+
+	<Frame name="GameTooltipDefaultContainer" frameStrata="TOOLTIP" inherits="EditModeHudTooltipSystemTemplate" parent="UIParent" hidden="true">
+		<Size x="250" y="150"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" x="-9" y="85"/>
+		</Anchors>
+	</Frame>
 	
 	<GameTooltip name="GameTooltip" inherits="GameTooltipTemplate" parent="UIParent">
 		<Frames>

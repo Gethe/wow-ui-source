@@ -101,7 +101,7 @@
 					<Anchor point="TOP" y="-60"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="maxLetters" value="1000" type="number"/>
+					<KeyValue key="maxLetters" value="2000" type="number"/>
 					<KeyValue key="instructions" value="HUD_EDIT_MODE_IMPORT_LAYOUT_INSTRUCTIONS" type="global"/>
 					<KeyValue key="hideCharCount" value="true" type="boolean"/>
 				</KeyValues>
@@ -267,7 +267,7 @@
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+					<Anchor point="TOPRIGHT"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="Settings" inherits="VerticalLayoutFrame">

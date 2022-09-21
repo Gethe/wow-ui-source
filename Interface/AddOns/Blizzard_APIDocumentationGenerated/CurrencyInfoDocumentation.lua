@@ -316,6 +316,7 @@ local CurrencyInfo =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "isHeader", Type = "bool", Nilable = false },
 				{ Name = "isHeaderExpanded", Type = "bool", Nilable = false },
 				{ Name = "isTypeUnused", Type = "bool", Nilable = false },

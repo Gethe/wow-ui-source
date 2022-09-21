@@ -1,1 +1,0 @@
-SETTING_GROUP_SYSTEM = "System";

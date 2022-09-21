@@ -1,3 +1,41 @@
+AutoLootDropDownControlMixin = CreateFromMixins(SettingsDropDownControlMixin);
+
+function AutoLootDropDownControlMixin:Init(initializer)
+	SettingsDropDownControlMixin.Init(self, initializer);
+	
+	self.autoLootSetting = Settings.GetSetting("autoLootDefault");
+	self:UpdateLabel();
+
+	self.cbrHandles:SetOnValueChangedCallback("autoLootDefault", self.OnAutoLootChanged, self);
+end
+
+function AutoLootDropDownControlMixin:Release()
+	SettingsDropDownControlMixin.Release(self);
+end
+
+function AutoLootDropDownControlMixin:OnAutoLootChanged(setting, value)
+	self:UpdateLabel();
+end
+
+function AutoLootDropDownControlMixin:UpdateLabel()
+	local text = self.autoLootSetting:GetValue() and LOOT_KEY_TEXT or AUTO_LOOT_KEY_TEXT;
+	self.Text:SetText(text);
+end
+
+function CreateAutoLootInitializer(setting)
+	local options = Settings.CreateModifiedClickOptions({
+		OPTION_TOOLTIP_AUTO_LOOT_ALT_KEY,
+		OPTION_TOOLTIP_AUTO_LOOT_CTRL_KEY,
+		OPTION_TOOLTIP_AUTO_LOOT_SHIFT_KEY,
+		OPTION_TOOLTIP_AUTO_LOOT_NONE_KEY,
+	});
+
+	local data = Settings.CreateSettingInitializerData(setting, options, OPTION_TOOLTIP_AUTO_LOOT_KEY);
+	local initializer = Settings.CreateSettingInitializer("AutoLootDropDownControlTemplate", data);
+	initializer:AddSearchTags(LOOT_KEY_TEXT);
+	return initializer;
+end
+
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(CONTROLS_LABEL);
 
@@ -34,6 +72,16 @@ local function Register()
 	-- Open Loot Window at Mouse
 	Settings.SetupCVarCheckBox(category, "lootUnderMouse", LOOT_UNDER_MOUSE_TEXT, OPTION_TOOLTIP_LOOT_UNDER_MOUSE);
 
+	-- Auto Loot
+	Settings.SetupCVarCheckBox(category, "autoLootDefault", AUTO_LOOT_DEFAULT_TEXT, OPTION_TOOLTIP_AUTO_LOOT_DEFAULT);
+
+	-- Auto Loot Key
+	do
+		local setting = Settings.RegisterModifiedClickSetting(category, "AUTOLOOTTOGGLE", AUTO_LOOT_KEY_TEXT, "SHIFT");
+		local initializer = CreateAutoLootInitializer(setting);
+		layout:AddInitializer(initializer);
+	end
+
 	-- Use Combined Inventory Bags
 	Settings.SetupCVarCheckBox(category, "combinedBags", USE_COMBINED_BAGS_TEXT, OPTION_TOOLTIP_USE_COMBINED_BAGS);
 
@@ -46,6 +94,31 @@ local function Register()
 			return container:GetData();
 		end
 		Settings.SetupCVarDropDown(category, "empowerTapControls", Settings.VarType.Number, GetTapControlOptions, SETTING_EMPOWERED_SPELL_INPUT, SETTING_EMPOWERED_SPELL_INPUT_TOOLTIP);
+	end
+
+	-- Enable Interact Key
+	do
+		local function GetValue()
+			return GetCVar("softTargetInteract") == Enum.SoftTargetEnableFlags.Any;
+		end
+		
+		local function SetValue(value)
+			SetCVar("softTargetInteract", value and Enum.SoftTargetEnableFlags.Any or Enum.SoftTargetEnableFlags.Gamepad);
+		end
+		
+		local defaultValue = false;
+		local setting = Settings.RegisterProxySetting(category, "PROXY_ENABLE_INTERACT", Settings.DefaultVarLocation, 
+			Settings.VarType.Boolean, ENABLE_INTERACT_TEXT, defaultValue, GetValue, SetValue);
+		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_ENABLE_INTERACT);
+	end
+	
+	-- Interact Key
+	do
+		local action = "INTERACTTARGET";
+		local bindingIndex = C_KeyBindings.GetBindingIndex(action);
+		local initializer = CreateKeybindingEntryInitializer(bindingIndex, true);
+		initializer:AddSearchTags(GetBindingName(action));
+		layout:AddInitializer(initializer);
 	end
 
 	---- Mouse

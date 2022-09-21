@@ -157,9 +157,9 @@ end
 
 function CommunitiesSettingsDialogMixin:UpdateCreateButton()
 	local name = self.NameEdit:GetText();
-	local nameIsValid = C_Club.ValidateText(self:GetClubType(), name, Enum.ClubFieldType.ClubName) == Enum.ValidateNameResult.NameSuccess;
+	local nameIsValid = C_Club.ValidateText(self:GetClubType(), name, Enum.ClubFieldType.ClubName) == Enum.ValidateNameResult.Success;
 	local shortName = self.ShortNameEdit:GetText();
-	local shortNameIsValid = C_Club.ValidateText(self:GetClubType(), shortName, Enum.ClubFieldType.ClubShortName) == Enum.ValidateNameResult.NameSuccess;
+	local shortNameIsValid = C_Club.ValidateText(self:GetClubType(), shortName, Enum.ClubFieldType.ClubShortName) == Enum.ValidateNameResult.Success;
 	local languageSelected = not self.LanguageDropdown.showAnyLanguage;
 	local shouldListChecked =  self.ShouldListClub.Button:GetChecked();
 	self.Accept:SetEnabled(nameIsValid and shortNameIsValid and (languageSelected or not shouldListChecked));

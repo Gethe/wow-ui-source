@@ -3358,12 +3358,12 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	-- Parent it to the tab so that we just inherit the tab's alpha. No need to do special fading for it.
 	CombatLogQuickButtonFrame:SetParent(_G[COMBATLOG:GetName() .. "Tab"]);
 	CombatLogQuickButtonFrame:ClearAllPoints();
-	CombatLogQuickButtonFrame:SetPoint("BOTTOMLEFT", COMBATLOG, "TOPLEFT");
+	CombatLogQuickButtonFrame:SetPoint("BOTTOMLEFT", COMBATLOG, "TOPLEFT", 0, 3);
 
 	if COMBATLOG.ScrollBar then
-		CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT", COMBATLOG.ScrollBar:GetWidth(), 0);
+		CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT", COMBATLOG.ScrollBar:GetWidth(), 3);
 	else
-		CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT");
+		CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT", 0, 3);
 	end
 
 	CombatLogQuickButtonFrameProgressBar:Hide();
@@ -3389,6 +3389,7 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	end
 
 	FCF_SetButtonSide(COMBATLOG, COMBATLOG.buttonSide, true);
+	FCF_DockUpdate();
 end
 
 local oldFCF_DockUpdate = FCF_DockUpdate;

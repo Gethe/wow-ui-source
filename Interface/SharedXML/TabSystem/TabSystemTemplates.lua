@@ -10,15 +10,20 @@ function TabSystemButtonArtMixin:HandleRotation()
 			texture:SetRotation(math.pi);
 		end
 
-		self.RightDisabled:SetPoint("TOPLEFT");
-		self.Right:SetPoint("TOPLEFT");
-		self.MiddleDisabled:SetPoint("LEFT", self.RightDisabled, "RIGHT");
-		self.Middle:SetPoint("LEFT", self.Right, "RIGHT");
-		self.LeftDisabled:SetPoint("LEFT", self.MiddleDisabled, "RIGHT");
-		self.Left:SetPoint("LEFT", self.Middle, "RIGHT");
+		self.RightActive:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -7, 0);
+		self.LeftActive:SetPoint("BOTTOMRIGHT");
+		self.MiddleActive:SetPoint("LEFT", self.RightActive, "RIGHT");
+		self.MiddleActive:SetPoint("RIGHT", self.LeftActive, "LEFT");
 
-		self.HighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -3, 0);
-		self.HighlightTexture:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 3, -7);
+		self.Right:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -6, 0);
+		self.Left:SetPoint("BOTTOMRIGHT");
+		self.Middle:SetPoint("LEFT", self.Right, "RIGHT");
+		self.Middle:SetPoint("RIGHT", self.Left, "LEFT");
+
+		self.LeftHighlight:SetPoint("TOPRIGHT", self.Left);
+		self.RightHighlight:SetPoint("TOPLEFT", self.Right);
+		self.MiddleHighlight:SetPoint("LEFT", self.Middle, "LEFT");
+		self.MiddleHighlight:SetPoint("RIGHT", self.Middle, "RIGHT");
 	end
 end
 
@@ -36,11 +41,10 @@ function TabSystemButtonArtMixin:SetTabSelected(isSelected)
 	self.Left:SetShown(not isSelected);
 	self.Middle:SetShown(not isSelected);
 	self.Right:SetShown(not isSelected);
-	self.LeftDisabled:SetShown(isSelected);
-	self.MiddleDisabled:SetShown(isSelected);
-	self.RightDisabled:SetShown(isSelected);
+	self.LeftActive:SetShown(isSelected);
+	self.MiddleActive:SetShown(isSelected);
+	self.RightActive:SetShown(isSelected);
 
-	self.HighlightTexture:SetShown(not isSelected);
 	self:SetNormalFontObject(isSelected and GameFontHighlightSmall or GameFontNormalSmall);
 
 	self:SetEnabled(not isSelected and not self.forceDisabled);
@@ -54,11 +58,6 @@ function TabSystemButtonArtMixin:SetTabSelected(isSelected)
 end
 
 function TabSystemButtonArtMixin:SetTabWidth(width)
-	local sidesWidth = self.Left:GetWidth() + self.Right:GetWidth();
-	local middleWidth = width - sidesWidth;
-
-	self.Middle:SetWidth(middleWidth);
-	self.MiddleDisabled:SetWidth(middleWidth);
 	self:SetWidth(width);
 end
 
@@ -71,7 +70,7 @@ function TabSystemButtonMixin:OnEnter()
 		GameTooltip:Show();
 	elseif self.Text:IsTruncated() then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
-		GameTooltip_AddLine(self.Text:GetText());
+		GameTooltip_AddNormalLine(GameTooltip, self.Text:GetText());
 		GameTooltip:Show();
 	end
 end
@@ -105,20 +104,23 @@ end
 
 function TabSystemButtonMixin:UpdateTabWidth()
 	local sidesWidth = self.Left:GetWidth() + self.Right:GetWidth();
-	local textWidth = self.Text:GetWidth();
+	local width = sidesWidth + TabSideExtraSpacing;
 	local minTabWidth, maxTabWidth = self:GetTabSystem():GetTabWidthConstraints();
-	local middleWidth = textWidth + TabSideExtraSpacing;
+	local textWidth;
 
-	if maxTabWidth then
-		middleWidth = math.min(middleWidth, (maxTabWidth - TabSideExtraSpacing) - sidesWidth);
-		self.Text:SetWidth(middleWidth);
+	if maxTabWidth and width > maxTabWidth then
+		width = maxTabWidth;
+		textWidth = width - 10;
 	end
 
-	if minTabWidth then
-		middleWidth = math.max(middleWidth, minTabWidth - sidesWidth);
+	if minTabWidth and width < minTabWidth then
+		width = minTabWidth;
+		textWidth = width - 10;
 	end
 
-	self:SetTabWidth(sidesWidth + middleWidth);
+	self.Text:SetWidth(textWidth or 0);
+
+	self:SetTabWidth(width);
 end
 
 function TabSystemButtonMixin:GetTabID()

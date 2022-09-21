@@ -190,7 +190,7 @@
 			</Frame>
 			<Frame parentKey="MaximizeMinimizeFrame" mixin="DressUpModelFrameMaximizeMinimizeMixin" inherits="MaximizeMinimizeButtonFrameTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="10" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad method="OnLoad" />
@@ -314,7 +314,7 @@
 				<Frames>
 					<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
 				</Frames>
-			</DropDownToggleButton>	
+			</DropDownToggleButton>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">

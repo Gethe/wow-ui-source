@@ -94,7 +94,7 @@ function ActionBarController_OnEvent(self, event, ...)
 
 	-- MultiBarBottomLeft
 	if ( event == "ACTIONBAR_SHOW_BOTTOMLEFT") then
-		Settings.SetValue("PROXY_SHOW_MULTI_ACTIONBAR_1", true);
+		Settings.SetValue("PROXY_SHOW_ACTIONBAR_2", true);
 	end
 	
 	if ( event == "PET_BATTLE_CLOSE" ) then
@@ -104,10 +104,10 @@ function ActionBarController_OnEvent(self, event, ...)
 	if event == "SETTINGS_LOADED" then
 		local variables =
 		{
-			"PROXY_SHOW_MULTI_ACTIONBAR_1",
-			"PROXY_SHOW_MULTI_ACTIONBAR_2",
-			"PROXY_SHOW_MULTI_ACTIONBAR_3",
-			"PROXY_SHOW_MULTI_ACTIONBAR_4",
+			"PROXY_SHOW_ACTIONBAR_2",
+			"PROXY_SHOW_ACTIONBAR_3",
+			"PROXY_SHOW_ACTIONBAR_4",
+			"PROXY_SHOW_ACTIONBAR_5",
 		};
 
 		local function UpdateActionBar()

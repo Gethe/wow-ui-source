@@ -370,9 +370,10 @@ end
 
 function PaperDollFrame_OnEvent(self, event, ...)
 	local unit = ...;
-	if ( event == "PLAYER_ENTERING_WORLD" or event == "GX_RESTARTED" or
-		event == "UNIT_MODEL_CHANGED" and unit == "player" ) then
-		CharacterModelFrame:SetUnit("player", false);
+	if ( event == "PLAYER_ENTERING_WORLD" or event == "GX_RESTARTED") then
+		return;
+	elseif ( event == "UNIT_MODEL_CHANGED" and unit == "player" ) then
+		PaperDollFrame_SetPlayer();
 		return;
 	elseif ( event == "KNOWN_TITLES_UPDATE" or (event == "UNIT_NAME_UPDATE" and unit == "player")) then
 		if (PaperDollFrame.TitleManagerPane:IsShown()) then
@@ -1402,6 +1403,23 @@ function CharacterSpellBonusDamage_OnEnter(self)
 	GameTooltip:Show();
 end
 
+local CHARACTER_SHEET_MODEL_SCENE_ID = 595;
+function PaperDollFrame_SetPlayer()
+	CharacterModelScene:ReleaseAllActors();
+	CharacterModelScene:TransitionToModelSceneID(CHARACTER_SHEET_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, true);
+	
+	local actor = CharacterModelScene:GetPlayerActor();
+	if actor then
+		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
+		local sheatheWeapon = GetSheathState() == 1;
+		local autodress = true;
+		local hideWeapon = false;
+		local useNativeForm = not inAlternateForm;
+		actor:SetModelByUnit("player", sheatheWeapon, autodress, hideWeapon, useNativeForm);
+		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+	end
+end
+
 function PaperDollFrame_OnShow(self)
 	CharacterStatsPane.initialOffsetY = 0;
 	CharacterFrame:SetTitle(UnitPVPName("player"));
@@ -1409,9 +1427,11 @@ function PaperDollFrame_OnShow(self)
 	PaperDollFrame_UpdateStats();
 	CharacterFrame_Expand();
 
-	SetPaperDollBackground(CharacterModelFrame, "player");
+	SetPaperDollBackground(CharacterModelScene, "player");
 	PaperDollBgDesaturate(true);
 	PaperDollSidebarTabs:Show();
+
+	PaperDollFrame_SetPlayer();
 end
 
 function PaperDollFrame_OnHide(self)

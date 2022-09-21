@@ -6,24 +6,24 @@
 		<Size x="115" y="42"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="LeftDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
+				<Texture parentKey="LeftActive" file="Interface\AchievementFrame\UI-Achievement-Header">
 					<Size x="21" y="59"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="3"/>
 					</Anchors>
 					<TexCoords left="0.47265625" right="0.513671875" top="0.76953125" bottom="1.0"/>
 				</Texture>
-				<Texture parentKey="MiddleDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
+				<Texture parentKey="MiddleActive" file="Interface\AchievementFrame\UI-Achievement-Header">
 					<Size x="88" y="59"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.LeftDisabled" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.LeftActive" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.513671875" right="0.685546875" top="0.76953125" bottom="1.0"/>
 				</Texture>
-				<Texture parentKey="RightDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
+				<Texture parentKey="RightActive" file="Interface\AchievementFrame\UI-Achievement-Header">
 					<Size x="18" y="59"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.MiddleDisabled" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.MiddleActive" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
 				</Texture>
@@ -48,6 +48,8 @@
 					</Anchors>
 					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
 				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
 				<Texture parentKey="LeftHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" hidden="true" alphaMode="ADD">
 					<Size x="32" y="49"/>
 					<Anchors>
@@ -80,8 +82,6 @@
 				self.deselectedTextY = 2;
 				self.selectedTextY = 2;
 			</OnLoad>
-			<OnEnter function="GarrisonMissionFrameTab_OnEnter"/>
-			<OnLeave function="GarrisonMissionFrameTab_OnLeave"/>
 			<OnShow>
 				PanelTemplates_TabResize(self, 10);
 			</OnShow>

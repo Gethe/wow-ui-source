@@ -35,6 +35,7 @@ NineSliceLayouts =
 
 	PortraitFrameTemplate =
 	{
+		disableSharpening = true,
 		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-PortraitMetal-CornerTopLeft", x = -13, y = 16, },
 		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16, },
 		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -13, y = -3, },
@@ -47,6 +48,7 @@ NineSliceLayouts =
 
 	PortraitFrameTemplateMinimizable =
 	{
+		disableSharpening = true,
 		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-PortraitMetal-CornerTopLeft", x = -13, y = 16, },
 		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRightDouble", x = 4, y = 16, },
 		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -13, y = -3, },
@@ -59,13 +61,14 @@ NineSliceLayouts =
 
 	ButtonFrameTemplateNoPortrait =
 	{
-		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopLeft", x = -4, y = 16, },
+		disableSharpening = true,
+		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopLeft", x = -8, y = 16, },
 		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16, },
-		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -12, y = -3, },
+		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -8, y = -3, },
 		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
 		TopEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", },
 		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", },
-		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", x = -8, y = 0, },
+		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", },
 		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", },
 	},
 
@@ -337,6 +340,7 @@ NineSliceLayouts =
 
 	HeldBagLayout =
 	{
+		disableSharpening = true,
 		TopLeftCorner =	{ layer = "OVERLAY", atlas = "ui-frame-portraitmetal-cornertopleftsmall", x = -13, y = 16, },
 		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16, },
 		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -13, y = -3, },
@@ -345,18 +349,6 @@ NineSliceLayouts =
 		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", x = 0, y = 0, x1 = 0, y1 = 0, },
 		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", x = 0, y = 0, x1 = 0, y1 = 0 },
 		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", x = 0, y = 0, x1 = 0, y1 = 0, },
-	};
-
-	HeldBagBackground =
-	{
-		TopLeftCorner =	{ layer = "BACKGROUND", atlas = "uiframebackground-nineslice-cornertopleft", x = -13, y = 16, },
-		TopRightCorner =	{ layer = "BACKGROUND", atlas = "uiframebackground-nineslice-cornertopright", x = 4, y = 16, },
-		BottomLeftCorner =	{ layer = "BACKGROUND", atlas = "uiframebackground-nineslice-cornerbottomleft", x = -13, y = -3, },
-		BottomRightCorner =	{ layer = "BACKGROUND", atlas = "uiframebackground-nineslice-cornerbottomright", x = 4, y = -3, },
-		TopEdge = { layer="BACKGROUND", atlas = "_uiframebackground-nineslice-edgetop", x = 0, y = 0, x1 = 0, y1 = 0, },
-		BottomEdge = { layer = "BACKGROUND", atlas = "_uiframebackground-nineslice-edgebottom", x = 0, y = 0, x1 = 0, y1 = 0, },
-		LeftEdge = { layer = "BACKGROUND", atlas = "!uiframebackground-nineslice-edgeleft", x = 0, y = 0, x1 = 0, y1 = 0 },
-		RightEdge = { layer = "BACKGROUND", atlas = "!uiframebackground-nineslice-edgeright", x = 0, y = 0, x1 = 0, y1 = 0, },
 	};
 
 	IdenticalCornersLayoutNoCenter =

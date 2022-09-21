@@ -35,6 +35,10 @@ function AllocationsMixin:Init()
 	self:Clear();
 end
 
+function AllocationsMixin:SetOnChangedHandler(onChangedFunc)
+	self.onChangedFunc = onChangedFunc;
+end
+
 function AllocationsMixin:Clear()
 	self.allocs = {};
 
@@ -110,15 +114,9 @@ function AllocationsMixin:OnChanged()
 	end
 end
 
-function CreateProfessionsAllocations(onChangedFunc)
-	local allocations = CreateAndInitFromMixin(AllocationsMixin);
-	allocations.onChangedFunc = onChangedFunc;
-	return allocations;
-end
-
 ProfessionsRecipeTransactionMixin = {};
 
-function ProfessionsRecipeTransactionMixin:Init(recipeSchematic, onChangedFunc)
+function ProfessionsRecipeTransactionMixin:Init(recipeSchematic)
 	self.reagentTbls = {};
 	self.allocationTbls = {};
 	self.reagentSlotSchematicTbls = {};
@@ -127,10 +125,16 @@ function ProfessionsRecipeTransactionMixin:Init(recipeSchematic, onChangedFunc)
 	self.recipeSchematic = recipeSchematic;
 
 	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-		local allocations = CreateProfessionsAllocations(onChangedFunc);
+		local allocations = CreateAndInitFromMixin(AllocationsMixin);
 		table.insert(self.allocationTbls, allocations);
 		table.insert(self.reagentSlotSchematicTbls, reagentSlotSchematic);
 		self.reagentTbls[slotIndex] = {reagentSlotSchematic = reagentSlotSchematic, allocations = allocations};
+	end
+end
+
+function ProfessionsRecipeTransactionMixin:SetAllocationsChangedHandler(onChangedFunc)
+	for index, allocations in self:EnumerateAllAllocations() do
+		allocations:SetOnChangedHandler(onChangedFunc);
 	end
 end
 
@@ -561,8 +565,8 @@ function ProfessionsRecipeTransactionMixin:CreateCraftingReagentInfoTbl()
 	return self:CreateCraftingReagentInfoTblIf(IsModifiedCraftingReagent);
 end
 
-function CreateProfessionsRecipeTransaction(recipeSchematic, onChangedFunc)
+function CreateProfessionsRecipeTransaction(recipeSchematic)
 	local transaction = CreateFromMixins(ProfessionsRecipeTransactionMixin);
-	transaction:Init(recipeSchematic, onChangedFunc);
+	transaction:Init(recipeSchematic);
 	return transaction;
 end

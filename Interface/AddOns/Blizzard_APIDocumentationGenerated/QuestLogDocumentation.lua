@@ -371,6 +371,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetQuestLogMajorFactionReputationRewards",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "reputationRewards", Type = "table", InnerType = "QuestReputationRewardInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestLogPortraitGiver",
 			Type = "Function",
 

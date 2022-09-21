@@ -8,7 +8,7 @@ function ClassTalentLoadoutCreateDialogMixin:OnLoad()
 end
 
 function ClassTalentLoadoutCreateDialogMixin:UpdateAcceptButtonEnabledState()
-	local nameTextFilled = UserEditBoxNonEmpty(self.LoadoutName);
+	local nameTextFilled = self.NameControl:HasText();
 	self.AcceptButton:SetEnabled(nameTextFilled);
 end
 
@@ -18,7 +18,7 @@ end
 
 function ClassTalentLoadoutCreateDialogMixin:OnAccept()
 	if self.AcceptButton:IsEnabled() then
-		local loadoutName = self.LoadoutName:GetText();
+		local loadoutName = self.NameControl:GetText();
 
 		StaticPopupSpecial_Hide(self);
 
@@ -33,22 +33,24 @@ end
 
 function ClassTalentLoadoutCreateDialogMixin:ShowDialog(acceptCallback)
 	self.acceptCallback = acceptCallback;
-
 	StaticPopupSpecial_Show(self);
-	self.LoadoutName:SetFocus();
 end
 
+ClassTalentLoadoutCreateDialogNameControlMixin = {};
 
-ClassTalentLoadoutCreateDialogNameEditBoxMixin = {};
+function ClassTalentLoadoutCreateDialogNameControlMixin:OnShow()
+	ClassTalentLoadoutDialogNameControlMixin.OnShow(self);
+	self:GetEditBox():SetFocus();
+end
 
-function ClassTalentLoadoutCreateDialogNameEditBoxMixin:OnEnterPressed()
+function ClassTalentLoadoutCreateDialogNameControlMixin:OnEnterPressed()
 	self:GetParent():OnAccept();
 end
 
-function ClassTalentLoadoutCreateDialogNameEditBoxMixin:OnEscapePressed()
+function ClassTalentLoadoutCreateDialogNameControlMixin:OnEscapePressed()
 	self:GetParent():OnCancel();
 end
 
-function ClassTalentLoadoutCreateDialogNameEditBoxMixin:OnTextChanged()
+function ClassTalentLoadoutCreateDialogNameControlMixin:OnTextChanged()
 	self:GetParent():OnTextChanged();
 end

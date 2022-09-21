@@ -1,13 +1,11 @@
 DragonflightLandingOverlayMixin = {};
 
-local MAJOR_FACTIONS_INTRO_QUEST_ID_ALLIANCE = 65436;
-local MAJOR_FACTIONS_INTRO_QUEST_ID_HORDE = 65435;
+local MAJOR_FACTIONS_INTRO_QUEST_ID_ALLIANCE = 67700;
+local MAJOR_FACTIONS_INTRO_QUEST_ID_HORDE = 65444;
 
 local DRAGONRIDING_INTRO_QUEST_ID = 68798;
+local DRAGONRIDING_ACCOUNT_ACHIEVEMENT_ID = 15794;
 local DRAGONRIDING_TRAIT_SYSTEM_ID = 1;
-
--- Todo: Add globalstring
-LANDING_DRAGONRIDING_PANEL_SUBTITLE = "Skills & Unlocks";
 
 local minimapDisplayInfo = { 
 	["normalAtlas"] = "legionmission-landingbutton-druid-up",
@@ -115,7 +113,8 @@ end
 DragonridingPanelSkillsButtonMixin = {};
 
 function DragonridingPanelSkillsButtonMixin:OnShow()
-	self:SetEnabled(C_QuestLog.IsQuestFlaggedCompleted(DRAGONRIDING_INTRO_QUEST_ID));
+	local hasAccountAchievement = select(4, GetAchievementInfo(DRAGONRIDING_ACCOUNT_ACHIEVEMENT_ID));
+	self:SetEnabled(hasAccountAchievement or C_QuestLog.IsQuestFlaggedCompleted(DRAGONRIDING_INTRO_QUEST_ID));
 end
 
 function DragonridingPanelSkillsButtonMixin:OnClick()

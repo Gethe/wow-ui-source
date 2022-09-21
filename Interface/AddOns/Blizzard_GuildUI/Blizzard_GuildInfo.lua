@@ -171,7 +171,7 @@ end
 
 function GuildLogFrame_OnLoad(self)
 	GuildFrame_RegisterPopup(self);
-	GuildLogHTMLFrame:SetSpacing(2);
+	GuildLogHTMLFrame:SetSpacing("P", 2);
 	ScrollBar_AdjustAnchors(GuildLogScrollFrameScrollBar, 0, -2);
 	self:RegisterEvent("GUILD_EVENT_LOG_UPDATE");
 end

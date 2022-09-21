@@ -221,18 +221,6 @@ end
 ---------------------------------------------------------------------------------
 --- Landing Page tabs
 ---------------------------------------------------------------------------------
-function GarrisonLandingPageTab_OnEnter(self)
-	self.LeftHighlight:Show();
-	self.MiddleHighlight:Show();
-	self.RightHighlight:Show();
-end
-
-function GarrisonLandingPageTab_OnLeave(self)
-	self.LeftHighlight:Hide();
-	self.MiddleHighlight:Hide();
-	self.RightHighlight:Hide();
-end
-
 function GarrisonLandingPageTab_OnClick(self)
 	PlaySound(SOUNDKIT.UI_GARRISON_NAV_TABS);
 	GarrisonLandingPageTab_SetTab(self);

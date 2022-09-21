@@ -1,6 +1,8 @@
 local REWARDS_SECTION_OFFSET = 5;		-- vertical distance between sections
 local REWARDS_ROW_OFFSET = 2;			-- vertical distance between rows within a section
 
+local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = [[Interface\Icons\UI_MajorFaction_%s]];
+
 function QuestInfoTimerFrame_OnUpdate(self, elapsed)
 	if ( self.timeLeft ) then
 		self.timeLeft = max(self.timeLeft - elapsed, 0);
@@ -458,7 +460,11 @@ local function QuestInfo_ShowRewardAsItemCommon(questItem, index, questLogQueryF
 	questItem:SetID(index);
 	questItem:Show();
 
-	local item = Item:CreateFromItemID(itemID);
+	local item = itemID and Item:CreateFromItemID(itemID);
+	if (not item) then 
+		return; 
+	end 
+
 	item:ContinueOnItemLoad(function()
 		if ( QuestInfoFrame.questLog ) then
 			name, texture, numItems, quality, isUsable = questLogQueryFunction(index);
@@ -531,6 +537,7 @@ function QuestInfo_ShowRewards()
 	local numSpellRewards = 0;
 	local rewardsFrame = QuestInfoFrame.rewardsFrame;
 	local hasWarModeBonus = false;
+	local majorFactionRepRewards;
 
 	local spellGetter;
 	local questID;
@@ -550,6 +557,7 @@ function QuestInfo_ShowRewards()
 			numSpellRewards = GetNumQuestLogRewardSpells();
 			spellGetter = GetQuestLogRewardSpell;
 			hasWarModeBonus = C_QuestLog.QuestHasWarModeBonus(questID)
+			majorFactionRepRewards = C_QuestLog.GetQuestLogMajorFactionReputationRewards(questID);
 		end
 	else
 		questID = GetQuestID();
@@ -566,6 +574,7 @@ function QuestInfo_ShowRewards()
 			numSpellRewards = GetNumRewardSpells();
 			spellGetter = GetRewardSpell;
 			hasWarModeBonus = C_QuestLog.QuestCanHaveWarModeBonus(questID);
+			majorFactionRepRewards = C_QuestOffer.GetQuestOfferMajorFactionReputationRewards();
 		end
 	end
 
@@ -580,7 +589,7 @@ function QuestInfo_ShowRewards()
 	end
 
 	local totalRewards = numQuestRewards + numQuestChoices + numQuestCurrencies;
-	if ( totalRewards == 0 and money == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 and artifactXP == 0 and honor == 0 ) then
+	if ( totalRewards == 0 and money == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 and artifactXP == 0 and honor == 0 and not majorFactionRepRewards ) then
 		rewardsFrame:Hide();
 		return nil;
 	end
@@ -694,6 +703,7 @@ function QuestInfo_ShowRewards()
 	rewardsFrame.spellRewardPool:ReleaseAll();
 	rewardsFrame.followerRewardPool:ReleaseAll();
 	rewardsFrame.spellHeaderPool:ReleaseAll();
+	rewardsFrame.reputationRewardPool:ReleaseAll();
 	rewardsFrame.WarModeBonusFrame:Hide();
 
 	-- Setup spell rewards
@@ -795,7 +805,7 @@ function QuestInfo_ShowRewards()
 
 	-- Setup mandatory rewards
 	local hasChanceForQuestSessionBonusReward = C_QuestLog.QuestHasQuestSessionBonus(questID);
-	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or xp > 0 or honor > 0 or hasChanceForQuestSessionBonusReward ) then
+	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or xp > 0 or honor > 0 or majorFactionRepRewards or hasChanceForQuestSessionBonusReward ) then
 		-- receive text, will either say "You will receive" or "You will also receive"
 		local questItemReceiveText = rewardsFrame.ItemReceiveText;
 		if ( numQuestChoices > 0 or numQuestSpellRewards > 0 or playerTitle ) then
@@ -890,6 +900,15 @@ function QuestInfo_ShowRewards()
 			foundCurrencies = foundCurrencies + 1;
 			if (foundCurrencies == numQuestCurrencies) then
 				break;
+			end
+		end
+
+		-- Major Faction Reputation Rewards
+		if majorFactionRepRewards then
+			for i, rewardInfo in ipairs(majorFactionRepRewards) do
+				local reputationReward = rewardsFrame.reputationRewardPool:Acquire();
+				reputationReward:SetUpMajorFactionReputationReward(rewardInfo);
+				AddRewardElement(reputationReward);
 			end
 		end
 
@@ -1099,4 +1118,37 @@ function QuestInfoRewardItemCodeTemplate_OnClick(self, button)
 			QuestInfoItem_OnClick(self);
 		end
 	end
+end
+
+QuestInfoReputationRewardButtonMixin = { };
+
+function QuestInfoReputationRewardButtonMixin:SetUpMajorFactionReputationReward(reputationRewardInfo)
+	local majorFactionData = C_MajorFactions.GetMajorFactionData(reputationRewardInfo.factionID);
+	self.factionName = majorFactionData.name;
+	self.rewardAmount = reputationRewardInfo.rewardAmount;
+	
+	self.Name:SetText(QUEST_REPUTATION_REWARD_TITLE:format(self.factionName));
+	self.RewardAmount:SetText(AbbreviateNumbers(self.rewardAmount));
+	
+	-- TODO: Remove this once we fully switch to Major Factions art
+	local majorFactionTextureKits = {
+		[2503] = "Centaur",
+		[2507] = "Expedition",
+		[2510] = "Valdrakken",
+		[2511] = "Tuskarr",
+	};
+	local majorFactionIcon = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(majorFactionTextureKits[majorFactionData.factionID]);
+	self.Icon:SetTexture(majorFactionIcon);	
+end
+
+function QuestInfoReputationRewardButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local wrapText = false;
+	GameTooltip_SetTitle(GameTooltip, QUEST_REPUTATION_REWARD_TITLE:format(self.factionName), HIGHLIGHT_FONT_COLOR, wrapText);
+	GameTooltip_AddNormalLine(GameTooltip, QUEST_REPUTATION_REWARD_TOOLTIP:format(self.rewardAmount, self.factionName));
+	GameTooltip:Show();
+end
+
+function QuestInfoReputationRewardButtonMixin:OnLeave()
+	GameTooltip_Hide();
 end

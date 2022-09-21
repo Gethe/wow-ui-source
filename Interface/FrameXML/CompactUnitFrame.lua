@@ -1162,16 +1162,16 @@ function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 end
 
 function CompactUnitFrame_UpdateClassificationIndicator(frame)
-	if frame.classificationIndicator then
-		if frame.optionTable.showPvPClassificationIndicator and CompactUnitFrame_UpdatePvPClassificationIndicator(frame) then
+	if (frame.classificationIndicator) then
+		if (frame.optionTable.showPvPClassificationIndicator and CompactUnitFrame_UpdatePvPClassificationIndicator(frame)) then
 			return;
-		elseif ( frame.optionTable.showClassificationIndicator ) then
+		elseif (frame.optionTable.showClassificationIndicator) then
 			local classification = UnitClassification(frame.unit);
-			if ( classification == "elite" or classification == "worldboss" ) then
-				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-gold");
+			if (classification == "rare") then
+				frame.classificationIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star");
 				frame.classificationIndicator:Show();
-			elseif ( classification == "rareelite" or classification == "rare" ) then
-				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
+			elseif (classification == "rareelite") then
+				frame.classificationIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare");
 				frame.classificationIndicator:Show();
 			else
 				frame.classificationIndicator:Hide();

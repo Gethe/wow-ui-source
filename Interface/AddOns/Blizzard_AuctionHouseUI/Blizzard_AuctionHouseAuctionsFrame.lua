@@ -148,7 +148,7 @@ function AuctionHouseAuctionsFrameMixin:OnLoad()
 	AuctionHouseBuySystemMixin.OnLoad(self);
 	AuctionHouseSortOrderSystemMixin.OnLoad(self);
 
-	self.numTabs = 2;
+	PanelTemplates_SetNumTabs(self, 2);
 	self:SetTab(1);
 
 	self.ItemDisplay:SetAuctionHouseFrame(self:GetAuctionHouseFrame());

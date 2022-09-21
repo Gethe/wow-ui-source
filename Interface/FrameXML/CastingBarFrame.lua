@@ -359,10 +359,7 @@ function CastingBarMixin:OnEvent(event, ...)
 		self:ClearStages();
 		
 		if (isChargeSpell) then
-			self:AddStages(numStages);
-
 			self.value = (startTime / 1000) - GetTime();
-			self:ShowSpark();
 		else
 			self.value = (endTime / 1000) - GetTime();
 		end
@@ -405,6 +402,11 @@ function CastingBarMixin:OnEvent(event, ...)
 		end
 		if ( self.showCastbar ) then
 			self:Show();
+		end
+
+		-- AddStages after Show so that the layout is valid
+		if (isChargeSpell) then
+			self:AddStages(numStages);
 		end
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_UPDATE" or event == "UNIT_SPELLCAST_EMPOWER_UPDATE" ) then
 		if ( self:IsShown() ) then

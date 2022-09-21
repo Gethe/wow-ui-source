@@ -24,7 +24,7 @@
 	<Frame name="ProfessionsFrame" mixin="ProfessionsMixin" inherits="PortraitFrameTemplateNoCloseButton, TabSystemOwnerTemplate" parent="UIParent" toplevel="true" hidden="true" enableMouse="true">
 		<Size x="1" y="658"/>
 		<Frames>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 
 			<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
 				<KeyValues>

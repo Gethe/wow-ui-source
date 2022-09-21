@@ -207,7 +207,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<FontString parentKey="WarningText" inherits="GameFontNormal" text="This debuff is gonna kill youuuuu">
+				<FontString parentKey="WarningText" inherits="GameFontNormal">
 					<Size x="400" y="30"/>
 					<Anchors>
 						<Anchor point="TOP"/> 
@@ -223,5 +223,10 @@
 				</Anchors>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnShow method ="OnShow"/>
+			<OnHide method ="OnHide"/>
+			<OnEvent method ="OnEvent"/>
+		</Scripts>
 	</Frame>
 </Ui>

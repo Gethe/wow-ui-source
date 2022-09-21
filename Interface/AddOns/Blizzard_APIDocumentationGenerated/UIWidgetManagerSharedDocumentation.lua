@@ -48,9 +48,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 24,
+			NumValues = 25,
 			MinValue = 0,
-			MaxValue = 23,
+			MaxValue = 24,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -77,6 +77,7 @@ local UIWidgetManagerShared =
 				{ Name = "TextColumnRow", Type = "UIWidgetVisualizationType", EnumValue = 21 },
 				{ Name = "Spacer", Type = "UIWidgetVisualizationType", EnumValue = 22 },
 				{ Name = "UnitPowerBar", Type = "UIWidgetVisualizationType", EnumValue = 23 },
+				{ Name = "FillUpFrames", Type = "UIWidgetVisualizationType", EnumValue = 24 },
 			},
 		},
 	},

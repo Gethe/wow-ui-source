@@ -2,6 +2,7 @@ MAX_PARTY_MEMBERS = 4;
 MAX_PARTY_BUFFS = 4;
 MAX_PARTY_DEBUFFS = 4;
 MAX_PARTY_TOOLTIP_BUFFS = 16;
+MAX_PARTY_TOOLTIP_BUFFS_PER_ROW = 8;
 MAX_PARTY_TOOLTIP_DEBUFFS = 8;
 
 CVarCallbackRegistry:SetCVarCachable("showPartyPets");
@@ -18,8 +19,8 @@ function PartyMemberAuraMixin:UpdateAurasInternal(unitAuraUpdateInfo)
 	local displayOnlyDispellableDebuffs = CVarCallbackRegistry:GetCVarValueBool("showDispelDebuffs") and UnitCanAssist("player", self.unit);
 	-- Buffs are only displayed in the Party Buff Tooltip
 	local ignoreBuffs = MAX_PARTY_TOOLTIP_BUFFS == 0;
-	local ignoreDebuffs = not self.debuffFrames or MAX_PARTY_DEBUFFS == 0;
-	local ignoreDispelDebuffs = not self.debuffFrames or MAX_PARTY_DEBUFFS == 0;
+	local ignoreDebuffs = MAX_PARTY_DEBUFFS == 0;
+	local ignoreDispelDebuffs = MAX_PARTY_DEBUFFS == 0;
 
 	local debuffsChanged = false;
 
@@ -74,17 +75,24 @@ function PartyMemberAuraMixin:UpdateAurasInternal(unitAuraUpdateInfo)
 
 	if debuffsChanged then
 		local frameNum = 1;
+		self.DebuffFramePool:ReleaseAll();
 		self.debuffs:Iterate(function(auraInstanceID, aura)
 			if frameNum > MAX_PARTY_DEBUFFS then
 				return true;
 			end
 
-			local debuffFrame = self.debuffFrames[frameNum];
-			self:SetDebuff(debuffFrame, aura, frameNum);
+			local debuffFrame = self.DebuffFramePool:Acquire();
+			debuffFrame:Setup(self.unit, frameNum);
+			debuffFrame:SetPoint("TOPLEFT");
+			debuffFrame.layoutIndex = frameNum;			
+			self:SetDebuff(debuffFrame, aura);
 			frameNum = frameNum + 1;
 
 			return false;
 		end);
+
+		self.DebuffFrameContainer:SetPoint("TOPLEFT", 48, -43);
+		self.DebuffFrameContainer:Layout();
 
 		local unitStatus;
 		if self.PartyMemberOverlay then
@@ -101,8 +109,6 @@ function PartyMemberAuraMixin:UpdateAurasInternal(unitAuraUpdateInfo)
 				unitStatus:Hide();
 			end
 		end
-
-		self:HideAllDebuffs(frameNum);
 	end
 end
 
@@ -131,7 +137,7 @@ function PartyMemberAuraMixin:ParseAllAuras(displayOnlyDispellableDebuffs, ignor
 	AuraUtil.ForEachAura(self.unit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful, AuraUtil.AuraFilters.Raid), batchCount, HandleAura, usePackedAura);
 end
 
-function PartyMemberAuraMixin:SetDebuff(debuffFrame, aura, frameNum)
+function PartyMemberAuraMixin:SetDebuff(debuffFrame, aura)
 	debuffFrame.auraInstanceID = aura.auraInstanceID;
 	debuffFrame.isBossBuff = aura.isBossAura and aura.isHelpful;
 	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid;
@@ -159,14 +165,6 @@ function PartyMemberAuraMixin:SetDebuff(debuffFrame, aura, frameNum)
 		end
 
 		debuffFrame:Show();
-	end
-end
-
-function PartyMemberAuraMixin:HideAllDebuffs(startingIndex)
-	if self.debuffFrames then
-		for i = startingIndex or 1, #self.debuffFrames do
-			self.debuffFrames[i]:Hide();
-		end
 	end
 end
 
@@ -235,6 +233,9 @@ function PartyMemberFrameMixin:Setup()
 		   self.HealthBar.OverHealAbsorbGlow, self.HealthBar.HealAbsorbBar, self.HealthBar.HealAbsorbBarLeftShadow,
 		   self.HealthBar.HealAbsorbBarRightShadow);
 	SetTextStatusBarTextZeroText(self.HealthBar, DEAD);
+
+	self.DebuffFramePool = CreateFramePool("BUTTON", self.DebuffFrameContainer, "PartyDebuffFrameTemplate");
+	self.PetFrame.DebuffFramePool = CreateFramePool("BUTTON", self.PetFrame.DebuffFrameContainer, "PartyDebuffFrameTemplate");
 
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -601,17 +602,19 @@ function PartyMemberFrameMixin:OnUpdate(elapsed)
 	if self.initialized then
 		self:UpdateMemberHealth(elapsed);
 	end
+	if(not self:IsMouseOver() and PartyMemberBuffTooltip:IsShown() and not PartyMemberBuffTooltip:IsMouseOver()) then
+		PartyMemberBuffTooltip:Hide()
+	end 
 end
 
 function PartyMemberFrameMixin:OnEnter()
 	UnitFrame_OnEnter(self);
-	PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 47, -40);
+	PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 47, -25);
 	PartyMemberBuffTooltip:UpdateTooltip(self);
 end
 
 function PartyMemberFrameMixin:OnLeave()
 	UnitFrame_OnLeave(self);
-	PartyMemberBuffTooltip:Hide();
 end
 
 function PartyMemberFrameMixin:UpdateOnlineStatus()
@@ -637,7 +640,7 @@ function PartyMemberFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 	self:UpdateMemberAuras(unitAuraUpdateInfo);
 end
 
-function PartyMemberFrameMixin:PartyMemberHealthCheck (value)
+function PartyMemberFrameMixin:PartyMemberHealthCheck(value)
 	local unitHPMin, unitHPMax, unitCurrHP;
 	unitHPMin, unitHPMax = self.HealthBar:GetMinMaxValues();
 
@@ -695,29 +698,38 @@ end
 
 PartyBuffFrameMixin={};
 
+function PartyBuffFrameMixin:Setup(unit, index)
+	self.unit = unit;
+	self.index = index;
+end
+
 function PartyBuffFrameMixin:OnUpdate()
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetUnitBuff(self:GetParent().unit, self:GetID());
+		GameTooltip:SetUnitBuff(self.unit, self.index);
 	end
 end
 
 function PartyBuffFrameMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetUnitBuff(self:GetParent().unit, self:GetID());
+	GameTooltip:SetUnitBuff(self.unit, self.index);
 end
 
 function PartyBuffFrameMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-PartyDebuffFrameMixin={};
+PartyDebuffFrameMixin = {};
+function PartyDebuffFrameMixin:Setup(unit, index)
+	self.unit = unit;
+	self.index = index;
+end
 
 function PartyDebuffFrameMixin:OnUpdate()
 	if GameTooltip:IsOwned(self) then
 		if self.isBossBuff then
-			GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().unit, self.auraInstanceID, self.filter);
+			GameTooltip:SetUnitBuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
 		else
-			GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().unit, self.auraInstanceID, self.filter);
+			GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
 		end
 	end
 end
@@ -725,9 +737,9 @@ end
 function PartyDebuffFrameMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if self.isBossBuff then
-		GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().unit, self.auraInstanceID, self.filter);
+		GameTooltip:SetUnitBuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
 	else
-		GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().unit, self.auraInstanceID, self.filter);
+		GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
 	end
 end
 

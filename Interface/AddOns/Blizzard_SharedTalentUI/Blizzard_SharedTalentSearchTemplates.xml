@@ -3,7 +3,7 @@
 	<Script file="Blizzard_SharedTalentSearchTemplates.lua"/>
 
 	<Button name="TalentSearchPreviewButtonTemplate" mixin="TalentSearchPreviewButtonMixin" virtual="true">
-		<Size x="206" y="27"/>
+		<Size x="176" y="27"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="3">
 				<Texture parentKey="HighlightTexture" atlas="search-highlight" alphaMode="ADD" hidden="true">
@@ -24,14 +24,14 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="Icon" file="Interface\Icons\Ability_ThunderClap">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.IconFrame" x="1" y="1"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconFrame" x="1" y="1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconFrame" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconFrame" x="-1" y="1"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size x="400" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" y="1"/>
 						<Anchor point="RIGHT" x="-5" y="0"/>
 					</Anchors>
 				</FontString>
@@ -46,7 +46,7 @@
 	</Button>
 	
 	<Frame name="TalentSearchPreviewContainerTemplate" mixin="TalentSearchPreviewContainerMixin" virtual="true">
-		<Size x="206" y="27"/>
+		<Size x="176" y="27"/>
 		<KeyValues>
 			<KeyValue key="maximumEntries" value="3" type="number"/>
 		</KeyValues>
@@ -63,7 +63,7 @@
 				<Texture inherits="UI-Frame-BotCornerLeft" parentKey="BorderAnchor">
 					<Anchors>
 						<Anchor point="LEFT" x="-7" y="0"/>
-						<Anchor point="BOTTOM" x="0" y="-5"/>
+						<Anchor point="BOTTOM" x="0" y="-7"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BotRightCorner" inherits="UI-Frame-BotCornerRight">
@@ -80,20 +80,14 @@
 				</Texture>
 				<Texture parentKey="LeftBorder" inherits="!UI-Frame-LeftTile">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="1" />
+						<Anchor point="TOP" x="0" y="2" />
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderAnchor" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="RightBorder" inherits="!UI-Frame-RightTile">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="1" />
+						<Anchor point="TOP" x="0" y="2" />
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopBorder" inherits="_UI-Frame-Bot">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-2" y="3"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="2" y="-3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -113,7 +107,7 @@
 			</EventFrame>
 
 			<Frame parentKey="OverflowCount" hidden="true">
-				<Size x="206" y="16"/>
+				<Size x="176" y="16"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="5"/>
 				</Anchors>
@@ -131,7 +125,7 @@
 			</Frame>
 
 			<Button parentKey="DefaultResultButton" hidden="true">
-				<Size x="206" y="27"/>
+				<Size x="176" y="27"/>
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
@@ -171,7 +165,7 @@
 	</Frame>
 
 	<EditBox name="TalentSearchBoxTemplate" mixin="TalentSearchBoxMixin" inherits="SearchBoxTemplate" letters="40" virtual="true">
-		<Size x="206" y="30"/>
+		<Size x="184" y="30"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnTextChanged method="OnTextChanged"/>

@@ -95,7 +95,7 @@
 	</Button>
 	<Frame name="RaidParentFrame"  toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Frames>
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" text="RAID" id="1">
+			<Button name="$parentTab1" inherits="PanelTabButtonTemplate" text="RAID" id="1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
 						<Offset x="19" y="-30"/>
@@ -108,7 +108,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="LOOKING_FOR_RAID" id="2">
+			<Button name="$parentTab2" inherits="PanelTabButtonTemplate" text="LOOKING_FOR_RAID" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>

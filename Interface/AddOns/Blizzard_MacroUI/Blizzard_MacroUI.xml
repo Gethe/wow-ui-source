@@ -22,6 +22,9 @@
 
 	<Frame name="MacroFrame" mixin="MacroFrameMixin" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Size x="338" y="424"/>
+		<KeyValues>
+			<KeyValue key="maxTabWidth" value="140" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="MacroFramePortrait" file="Interface\MacroFrame\MacroFrame-Icon">
@@ -174,21 +177,17 @@
 					<Anchor point="TOPLEFT" relativeTo="MacroFrame" x="6" y="-289"/>
 				</Anchors>
 			</Frame>
-			<Button name="MacroFrameTab1" inherits="TabButtonTemplate" text="GENERAL_MACROS" id="1">
+			<Button name="MacroFrameTab1" inherits="PanelTopTabButtonTemplate" text="GENERAL_MACROS" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="51" y="-28"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						PanelTemplates_TabResize(self, -15);
-						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
-					</OnLoad>
 					<OnClick>
 						self:GetParent():SelectTab(self);
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="MacroFrameTab2" inherits="TabButtonTemplate" id="2">
+			<Button name="MacroFrameTab2" inherits="PanelTopTabButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="MacroFrameTab1" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
@@ -199,11 +198,8 @@
 							GameTooltip:SetText(string.format(CHARACTER_SPECIFIC_MACROS, UnitName("player")), 1.0,1.0,1.0 );
 						end
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-					<OnLoad>
+					<OnLoad inherit="prepend">
 						self:SetFormattedText(CHARACTER_SPECIFIC_MACROS, UnitName("player"));
-						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
-						PanelTemplates_TabResize(self, -15, nil, nil, 150);
 					</OnLoad>
 					<OnClick>
 						self:GetParent():SelectTab(self);

@@ -306,7 +306,7 @@
 
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" mixin="WardrobeCollectionFrameMixin" setAllPoints="true" hidden="true">
 		<Frames>
-			<Button name="$parentTab1" parentKey="ItemsTab" inherits="TabButtonTemplate" text="WARDROBE_ITEMS" id="1" frameLevel="4" parentArray="Tabs">
+			<Button name="$parentTab1" parentKey="ItemsTab" inherits="PanelTopTabButtonTemplate" text="WARDROBE_ITEMS" id="1" frameLevel="4">
 				<KeyValues>
 					<KeyValue key="minWidth" value="57" type="number"/>
 				</KeyValues>
@@ -319,7 +319,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" parentKey="SetsTab" inherits="TabButtonTemplate" text="WARDROBE_SETS" id="2" frameLevel="4" parentArray="Tabs">
+			<Button name="$parentTab2" parentKey="SetsTab" inherits="PanelTopTabButtonTemplate" text="WARDROBE_SETS" id="2" frameLevel="4">
 				<KeyValues>
 					<KeyValue key="minWidth" value="57" type="number"/>
 				</KeyValues>

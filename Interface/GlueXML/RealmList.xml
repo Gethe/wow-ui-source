@@ -5,47 +5,55 @@
 		<Size x="115" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeftDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
-					<Size x="20" y="35"/>
+				<Texture parentKey="LeftActive" atlas="uiframe-activetab-left" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="3"/>
+						<Anchor point="TOPLEFT" x="-1"/>
 					</Anchors>
-					<TexCoords left="0" right="0.15625" top="0" bottom="0.546875"/>
 				</Texture>
-				<Texture name="$parentMiddleDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
-					<Size x="88" y="35"/>
+				<Texture parentKey="RightActive" atlas="uiframe-activetab-right" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
+						<Anchor point="TOPRIGHT" x="8"/>
 					</Anchors>
-					<TexCoords left="0.15625" right="0.84375" top="0" bottom="0.546875"/>
 				</Texture>
-				<Texture name="$parentRightDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
-					<Size x="20" y="35"/>
+				<Texture parentKey="MiddleActive" atlas="_uiframe-activetab-center" useAtlasSize="true" horizTile="true">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.LeftActive" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.RightActive" relativePoint="LEFT"/>
 					</Anchors>
-					<TexCoords left="0.84375" right="1.0" top="0" bottom="0.546875"/>
 				</Texture>
-				<Texture name="$parentLeft" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
-					<Size x="20" y="32"/>
+				<Texture parentKey="Left" atlas="uiframe-tab-left" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPLEFT" x="-3"/>
 					</Anchors>
-					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
-					<Size x="88" y="32"/>
+				<Texture parentKey="Right" atlas="uiframe-tab-right" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="TOPRIGHT" x="7"/>
 					</Anchors>
-					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
-					<Size x="20" y="32"/>
+				<Texture parentKey="Middle" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
 					</Anchors>
-					<TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="LeftHighlight" atlas="uiframe-tab-left" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleHighlight" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" alphaMode="ADD" alpha="0.4">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHighlight" atlas="uiframe-tab-right" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -54,20 +62,14 @@
 				RealmListTab_OnClick(self);
 			</OnClick>
 		</Scripts>
-		<ButtonText name="$parentText">
+		<ButtonText parentKey="Text">
 			<Anchors>
 				<Anchor point="CENTER" x="0" y="2"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GlueFontNormalSmall"/>
 		<HighlightFont style="GlueFontHighlightSmall"/>
-		<DisabledFont style="GlueFontHighlightSmall"/>
-		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-RealHighlight" alphaMode="ADD">
-			<Anchors>
-				<Anchor point="TOPLEFT" x="0" y="5"/>
-				<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
-			</Anchors>
-		</HighlightTexture>
+		<DisabledFont style="GlueFontDisableSmall"/>
 	</Button>
 	<Button name="RealmSortButtonTemplate" virtual="true">
 		<Layers>
@@ -320,7 +322,7 @@
 
 							<Button name="RealmListTab1" inherits="RealmListTabButtonTemplate" id="1">
 								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="11" y="-16"/>
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="16"/>
 								</Anchors>
 							</Button>
 

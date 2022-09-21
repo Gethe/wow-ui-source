@@ -1,21 +1,21 @@
 
 PowerBarColor = {};
-PowerBarColor["MANA"] = { r = 0.00, g = 0.00, b = 1.00 };
-PowerBarColor["RAGE"] = { r = 1.00, g = 0.00, b = 0.00, fullPowerAnim=true };
-PowerBarColor["FOCUS"] = { r = 1.00, g = 0.50, b = 0.25, fullPowerAnim=true };
-PowerBarColor["ENERGY"] = { r = 1.00, g = 1.00, b = 0.00, fullPowerAnim=true };
-PowerBarColor["COMBO_POINTS"] = { r = 1.00, g = 0.96, b = 0.41 };
-PowerBarColor["RUNES"] = { r = 0.50, g = 0.50, b = 0.50 };
-PowerBarColor["RUNIC_POWER"] = { r = 0.00, g = 0.82, b = 1.00, fullPowerAnim=true };
-PowerBarColor["SOUL_SHARDS"] = { r = 0.50, g = 0.32, b = 0.55 };
-PowerBarColor["LUNAR_POWER"] = { r = 0.30, g = 0.52, b = 0.90, atlas="_Druid-LunarBar" };
-PowerBarColor["HOLY_POWER"] = { r = 0.95, g = 0.90, b = 0.60 };
-PowerBarColor["MAELSTROM"] = { r = 0.00, g = 0.50, b = 1.00, atlas = "_Shaman-MaelstromBar", fullPowerAnim=true };
-PowerBarColor["INSANITY"] = { r = 0.40, g = 0, b = 0.80, atlas = "_Priest-InsanityBar"};
-PowerBarColor["CHI"] = { r = 0.71, g = 1.0, b = 0.92 };
-PowerBarColor["ARCANE_CHARGES"] = { r = 0.1, g = 0.1, b = 0.98 };
-PowerBarColor["FURY"] = { r = 0.788, g = 0.259, b = 0.992, atlas = "_DemonHunter-DemonicFuryBar", fullPowerAnim=true };
-PowerBarColor["PAIN"] = { r = 255/255, g = 156/255, b = 0, atlas = "_DemonHunter-DemonicPainBar", fullPowerAnim=true };
+PowerBarColor["MANA"] =				{ r = 0.00, g = 0.00, b = 1.00 };
+PowerBarColor["RAGE"] =				{ r = 1.00, g = 0.00, b = 0.00, fullPowerAnim=true };
+PowerBarColor["FOCUS"] =			{ r = 1.00, g = 0.50, b = 0.25, fullPowerAnim=true };
+PowerBarColor["ENERGY"] =			{ r = 1.00, g = 1.00, b = 0.00, fullPowerAnim=true };
+PowerBarColor["COMBO_POINTS"] =		{ r = 1.00, g = 0.96, b = 0.41 };
+PowerBarColor["RUNES"] =			{ r = 0.50, g = 0.50, b = 0.50 };
+PowerBarColor["RUNIC_POWER"] =		{ r = 0.00, g = 0.82, b = 1.00, fullPowerAnim=true };
+PowerBarColor["SOUL_SHARDS"] =		{ r = 0.50, g = 0.32, b = 0.55 };
+PowerBarColor["LUNAR_POWER"] =		{ r = 0.30, g = 0.52, b = 0.90, atlas="_Druid-LunarBar" };
+PowerBarColor["HOLY_POWER"] =		{ r = 0.95, g = 0.90, b = 0.60 };
+PowerBarColor["MAELSTROM"] =		{ r = 0.00, g = 0.50, b = 1.00, atlas = "_Shaman-MaelstromBar", fullPowerAnim=true };
+PowerBarColor["INSANITY"] =			{ r = 0.40, g = 0.00, b = 0.80, atlas = "_Priest-InsanityBar"};
+PowerBarColor["CHI"] =				{ r = 0.71, g = 1.00, b = 0.92 };
+PowerBarColor["ARCANE_CHARGES"] =	{ r = 0.10, g = 0.10, b = 0.98 };
+PowerBarColor["FURY"] =				{ r = 0.788, g = 0.259, b = 0.992, atlas = "_DemonHunter-DemonicFuryBar", fullPowerAnim=true };
+PowerBarColor["PAIN"] =				{ r = 255/255, g = 156/255, b = 0, atlas = "_DemonHunter-DemonicPainBar", fullPowerAnim=true };
 -- vehicle colors
 PowerBarColor["AMMOSLOT"] = { r = 0.80, g = 0.60, b = 0.00 };
 PowerBarColor["FUEL"] = { r = 0.0, g = 0.55, b = 0.5 };
@@ -201,7 +201,7 @@ end
 
 function UnitFramePortrait_Update (self)
 	if ( self.portrait ) then
-		SetPortraitTexture(self.portrait, self.unit);
+		SetPortraitTexture(self.portrait, self.unit, self.disablePortraitMask);
 	end
 end
 
@@ -514,7 +514,8 @@ function UnitFrameManaBar_UpdateType (manaBar)
 			end
 		end
 	end
-	if ( manaBar.powerType ~= powerType or manaBar.powerType ~= powerType ) then
+
+	if ( manaBar.powerType ~= powerType ) then
 		manaBar.powerType = powerType;
 		manaBar.powerToken = powerToken;
 		if ( manaBar.FullPowerFrame ) then
@@ -557,7 +558,7 @@ function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpd
 	if ( frequentUpdates ) then
 		statusbar:RegisterEvent("VARIABLES_LOADED");
 	end
-	
+
 	UnitFrameHealthBar_RefreshUpdateEvent(statusbar);
 
 	statusbar:RegisterUnitEvent("UNIT_MAXHEALTH", unit);

@@ -26,7 +26,6 @@ function ComboPointPowerBar:UpdatePower()
 	local unit = self:GetParent().unit;
 	local comboPoints = UnitPower(unit, Enum.PowerType.ComboPoints);
 	local maxComboPoints = UnitPowerMax(unit, Enum.PowerType.ComboPoints);
-
 	if ( self.lastPower and self.lastPower > self.maxUsablePoints and comboPoints == self.lastPower - self.maxUsablePoints ) then
 		for i = 1, self.maxUsablePoints do
 			self.classResourceButtonTable[i]:AnimateOut();
@@ -39,12 +38,12 @@ function ComboPointPowerBar:UpdatePower()
 		end);
 	else
 		for i = 1, min(comboPoints, self.maxUsablePoints) do
-			if (not self.classResourceButtonTable[i].on) then
+			if (self.classResourceButtonTable[i] and not self.classResourceButtonTable[i].on) then
 				self.classResourceButtonTable[i]:AnimateIn();
 			end
 		end
 		for i = comboPoints + 1, self.maxUsablePoints do
-			if (self.classResourceButtonTable[i] and self.classResourceButtonTable[i].on) then
+			if (self.classResourceButtonTable[i]) then
 				self.classResourceButtonTable[i]:AnimateOut();
 			end
 		end
@@ -83,26 +82,22 @@ ComboPointPlayerMixin = { }
 function ComboPointPlayerMixin:AnimateIn()
 	if (not self.on) then
 		self.on = true;
+		self.pointReset = false; 
 		self.AnimIn:Play();
-
-		if (self.PointAnim) then
-			self.PointAnim:Play();
-		end
+		self.PointAnim:Play();
 	end
 end
 
 function ComboPointPlayerMixin:Setup()
 	self.on = false;
+	self.pointReset = true; 
 end
 
 function ComboPointPlayerMixin:AnimateOut()
-	if (self.on) then
+	if (self.on or self.pointReset) then
 		self.on = false;
-
-		if (self.PointAnim) then
-			self.PointAnim:Play(true);
-		end
-
+		self.pointReset = false; 
+		self.PointAnim:Play(true);
 		self.AnimIn:Stop();
 		self.AnimOut:Play();
 	end

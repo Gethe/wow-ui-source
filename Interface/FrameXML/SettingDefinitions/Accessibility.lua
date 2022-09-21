@@ -9,10 +9,22 @@ local function Register()
 	Settings.SetupCVarCheckBox(category, "movieSubtitle", CINEMATIC_SUBTITLES, OPTION_TOOLTIP_CINEMATIC_SUBTITLES);
 	
 	-- Alternate Full Screen Effects
-	Settings.SetupCVarCheckBox(category, "overrideScreenFlash", ALTERNATE_SCREEN_EFFECTS, OPTION_TOOLTIP_ALTERNATE_SCREEN_EFFECTS);
+	do
+		local setting, initializer = Settings.SetupCVarCheckBox(category, "overrideScreenFlash", ALTERNATE_SCREEN_EFFECTS, OPTION_TOOLTIP_ALTERNATE_SCREEN_EFFECTS);
+		initializer:AddSearchTags(ALTERNATE_SCREEN_EFFECTS_SEARCH_TAG);
+	end
 
 	-- Quest Text Contrast
-	local setting, initializer = Settings.SetupCVarCheckBox(category, "questTextContrast", ENABLE_QUEST_TEXT_CONTRAST, OPTION_TOOLTIP_ENABLE_QUEST_TEXT_CONTRAST);
+	Settings.SetupCVarCheckBox(category, "questTextContrast", ENABLE_QUEST_TEXT_CONTRAST, OPTION_TOOLTIP_ENABLE_QUEST_TEXT_CONTRAST);
+
+	-- Minimum Character Name Size
+	do
+		local minValue, maxValue, step = 0, 64, 2;
+		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
+		Settings.SetupCVarSlider(category, "WorldTextMinSize", options, MINIMUM_CHARACTER_NAME_SIZE_TEXT, OPTION_TOOLTIP_MINIMUM_CHARACTER_NAME_SIZE);
+	end
 
 	-- Motion Sickness
 	do
@@ -134,6 +146,72 @@ local function Register()
 			return container:GetData();
 		end
 		Settings.SetupCVarDropDown(category, "empowerTapControls", Settings.VarType.Number, GetTapControlOptions, SETTING_EMPOWERED_SPELL_INPUT, SETTING_EMPOWERED_SPELL_INPUT_TOOLTIP);
+	end
+
+	-- Show Target Tooltip
+	do
+		local function GetValue()
+			return GetCVarBool("SoftTargetTooltipEnemy") and GetCVarBool("SoftTargetTooltipInteract");
+		end
+		
+		local function SetValue(value)
+			SetCVar("SoftTargetTooltipEnemy", value);
+			SetCVar("SoftTargetTooltipInteract", value);
+		end
+		
+		local defaultValue = false;
+		local setting = Settings.RegisterProxySetting(category, "PROXY_TARGET_TOOLTIP", Settings.DefaultVarLocation, 
+			Settings.VarType.Boolean, TARGET_TOOLTIP_OPTION, defaultValue, GetValue, SetValue);
+		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_TARGET_TOOLTIP);
+	end
+
+	-- Interact Key Icons
+	do
+		local function GetValue()
+			local enemy = GetCVarBool("SoftTargetIconEnemy");
+			local interact = GetCVarBool("SoftTargetIconInteract");
+			local gameObject = GetCVarBool("SoftTargetIconGameObject");
+			local lowPriority = GetCVarBool("SoftTargetLowPriorityIcons");
+			if enemy and interact and gameObject and lowPriority then
+				return 2;
+			elseif not enemy and not interact and not gameObject and not lowPriority then
+				return 3;
+			else
+				return 1;
+			end
+		end
+		
+		local function SetValue(value)
+			if value == 1 then
+				SetCVar("SoftTargetIconEnemy",			"0");
+				SetCVar("SoftTargetIconInteract",		"1");
+				SetCVar("SoftTargetIconGameObject",		"0");
+				SetCVar("SoftTargetLowPriorityIcons",	"0");
+			elseif value == 2 then
+				SetCVar("SoftTargetIconEnemy",			"1");
+				SetCVar("SoftTargetIconInteract",		"1");
+				SetCVar("SoftTargetIconGameObject",		"1");
+				SetCVar("SoftTargetLowPriorityIcons",	"1");
+			elseif value == 3 then
+				SetCVar("SoftTargetIconEnemy",			"0");
+				SetCVar("SoftTargetIconInteract",		"0");
+				SetCVar("SoftTargetIconGameObject",		"0");
+				SetCVar("SoftTargetLowPriorityIcons",	"0");
+			end
+		end
+	
+		local function GetOptions()
+			local container = Settings.CreateDropDownTextContainer();
+			container:Add(1, INTERACT_ICONS_DEFAULT);
+			container:Add(2, INTERACT_ICONS_SHOW_ALL);
+			container:Add(3, INTERACT_ICONS_SHOW_NONE);
+			return container:GetData();
+		end
+
+		local defaultValue = 3;
+		local setting = Settings.RegisterProxySetting(category, "PROXY_INTERACT_ICONS", Settings.DefaultVarLocation,
+			Settings.VarType.Number, INTERACT_ICONS_OPTION, defaultValue, GetValue, SetValue);
+		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_INTERACT_ICONS);
 	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_ACCESSIBILITY);

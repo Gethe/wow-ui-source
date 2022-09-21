@@ -1,70 +1,3 @@
-
-local SpecIDToBackgroundAtlas = {
-	-- DK
-	[250] = "talents-background-deathknight-blood",
-	[251] = "talents-background-deathknight-frost",
-	[252] = "talents-background-deathknight-unholy",
-
-	-- DH
-	[577] = "talents-background-demonhunter-havoc",
-	[581] = "talents-background-demonhunter-vengeance",
-
-	-- Druid
-	[102] = "talents-background-druid-balance",
-	[103] = "talents-background-druid-feral",
-	[104] = "talents-background-druid-guardian",
-	[105] = "talents-background-druid-restoration",
-
-	-- Evoker
-	[1467] = "talents-background-evoker-devastation",
-	[1468] = "talents-background-evoker-preservation",
-
-	-- Hunter
-	[253] = "talents-background-hunter-beastmastery",
-	[254] = "talents-background-hunter-marksmanship",
-	[255] = "talents-background-hunter-survival",
-
-	-- Mage
-	[62] = "talents-background-mage-arcane",
-	[63] = "talents-background-mage-fire",
-	[64] = "talents-background-mage-frost",
-
-	-- Monk
-	[268] = "talents-background-monk-brewmaster",
-	[269] = "talents-background-monk-windwalker",
-	[270] = "talents-background-monk-mistweaver",
-
-	-- Paladin
-	[65] = "talents-background-paladin-holy",
-	[66] = "talents-background-paladin-protection",
-	[70] = "talents-background-paladin-retribution",
-
-	-- Priest
-	[256] = "talents-background-priest-discipline",
-	[257] = "talents-background-priest-holy",
-	[258] = "talents-background-priest-shadow",
-
-	-- Rogue
-	[259] = "talents-background-rogue-assassination",
-	[260] = "talents-background-rogue-outlaw",
-	[261] =  "talents-background-rogue-subtlety",
-
-	-- Shaman
-	[262] = "talents-background-shaman-elemental",
-	[263] = "talents-background-shaman-enhancement",
-	[264] = "talents-background-shaman-restoration",
-
-	-- Warlock
-	[265] = "talents-background-warlock-affliction",
-	[266] = "talents-background-warlock-demonology",
-	[267] = "talents-background-warlock-destruction",
-
-	-- Warrior
-	[71] = "talents-background-warrior-arms",
-	[72] = "talents-background-warrior-fury",
-	[73] = "talents-background-warrior-protection",
-};
-
 local FrameLevelPerRow = 10;
 local TotalFrameLevelSpread = 500;
 local BaseYOffset = 1500;
@@ -128,7 +61,7 @@ function ClassTalentTalentsTabMixin:OnLoad()
 
 	TalentFrameBaseMixin.OnLoad(self);
 
-	self:UpdateBasePanOffset();
+	self:UpdateClassVisuals();
 
 	self.ResetButton:SetOnClickHandler(GenerateClosure(self.ResetTree, self));
 
@@ -147,6 +80,20 @@ function ClassTalentTalentsTabMixin:OnLoad()
 	EventUtil.ContinueOnAddOnLoaded("Blizzard_ClassTalentUI", GenerateClosure(self.LoadSavedVariables, self));
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED");
+end
+
+function ClassTalentTalentsTabMixin:RegisterOnUpdate()
+	-- Overrides TalentFrameBaseMixin.
+
+	if not self.isRegisteredForUpdate then
+		self.isRegisteredForUpdate = true;
+		-- OnUpdate gets registered to handle mass data update needs, meaning there were likely mass changes on this frame
+		-- Delay the OnUpdate handling to next frame to allow all this frame's changes to finish propagating first
+		RunNextFrame(function ()
+			self.isRegisteredForUpdate = false;
+			self:SetScript("OnUpdate", self.OnUpdate);
+		end);
+	end
 end
 
 -- This is registered and unregistered dynamically.
@@ -180,8 +127,7 @@ function ClassTalentTalentsTabMixin:OnShow()
 
 	self:UpdateConfigButtonsState();
 
-	-- Art TODO: Un-Comment this once animation graphics are updated
-	--self:SetBackgroundAnimationsPlaying(true);
+	self:SetBackgroundAnimationsPlaying(true);
 end
 
 function ClassTalentTalentsTabMixin:LoadSavedVariables()
@@ -190,24 +136,20 @@ function ClassTalentTalentsTabMixin:LoadSavedVariables()
 	self:CheckSetSelectedConfigID();
 end
 
-function ClassTalentTalentsTabMixin:UpdateBasePanOffset()
-	-- TODO:: Replace this temporary fix up.
-	local classIDToOffsets = {
-		[1] = { extraOffsetX = 30, extraOffsetY = 0, }, -- Warrior
-		[2] = { extraOffsetX = -60, extraOffsetY = -29, }, -- Paladin
-		[3] = { extraOffsetX = 0, extraOffsetY = -29, }, -- Hunter
-		[4] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Rogue
-		[5] = { extraOffsetX = -30, extraOffsetY = -29, }, -- Priest
-		[8] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Mage
-		[11] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Druid
-		[12] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Demon Hunter
-		[13] = { extraOffsetX = 30, extraOffsetY = -29, }, -- Evoker
-	};
+function ClassTalentTalentsTabMixin:UpdateClassVisuals()
+	local classVisuals = ClassTalentUtil.GetVisualsForClassID(self:GetClassID());
 
-	local classOffsets = classIDToOffsets[self:GetClassID()];
+	if self.ActivationClassFx then
+		if classVisuals and classVisuals.activationFX and C_Texture.GetAtlasInfo(classVisuals.activationFX) then
+			self.ActivationClassFx:SetAtlas(classVisuals.activationFX, TextureKitConstants.UseAtlasSize);
+		end
+	end
+
+	-- TODO:: Replace this temporary fix up.
+	local classOffsets = classVisuals and classVisuals.panOffset;
 	if classOffsets then
-		local basePanOffsetX = self.initialBasePanOffsetX - (classOffsets.extraOffsetX or 0);
-		local basePanOffsetY = self.initialBasePanOffsetY - (classOffsets.extraOffsetY or 0);
+		local basePanOffsetX = self.initialBasePanOffsetX - (classOffsets.x or 0);
+		local basePanOffsetY = self.initialBasePanOffsetY - (classOffsets.y or 0);
 		self:SetBasePanOffset(basePanOffsetX, basePanOffsetY);
 	else
 		self:SetBasePanOffset(self.initialBasePanOffsetX, self.initialBasePanOffsetY);
@@ -218,19 +160,22 @@ end
 
 function ClassTalentTalentsTabMixin:UpdateSpecBackground()
 	local currentSpecID = self:GetSpecID();
-	local atlas = SpecIDToBackgroundAtlas[currentSpecID];
+	local atlas = ClassTalentUtil.GetAtlasForSpecID(currentSpecID);
 	if atlas and C_Texture.GetAtlasInfo(atlas) then
-		self.Background:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
-		self.OverlayBackground:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 		self.BackgroundFlash:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+
+		for i, background in ipairs(self.specBackgrounds) do
+			background:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+		end
 	end
 end
 
 function ClassTalentTalentsTabMixin:SetBackgroundAnimationsPlaying(playing)
-	self.Sheen1.Anim:SetPlaying(playing);
-	self.Sheen2.Anim:SetPlaying(playing);
-	self.Sheen3.Anim:SetPlaying(playing);
-	self.OverlayBackground.Anim:SetPlaying(playing);
+	if self.backgroundAnims then
+		for i, animGroup in ipairs(self.backgroundAnims) do
+			animGroup:SetPlaying(playing);
+		end
+	end
 end
 
 function ClassTalentTalentsTabMixin:CheckSetSelectedConfigID()
@@ -240,6 +185,13 @@ function ClassTalentTalentsTabMixin:CheckSetSelectedConfigID()
 
 	local currentSpecID = PlayerUtil.GetCurrentSpecID();
 	local lastSelectedSavedConfigID = currentSpecID and C_ClassTalents.GetLastSelectedSavedConfigID(currentSpecID) or nil;
+
+	-- If the last selected configID has ended up invalid, clear out the saved value
+	-- This can happen due to loadout deletion, or base spec config being saved as last selected, prior to the handling of those being fixed
+	if lastSelectedSavedConfigID and not self.LoadoutDropDown:IsSelectionIDValid(lastSelectedSavedConfigID) then
+		self:ClearLastSelectedConfigID();
+		lastSelectedSavedConfigID = nil;
+	end
 
 	if self:GetIsStarterBuildActive() and not self.unflagStarterBuildAfterNextCommit then
 		local autoApply = false;
@@ -258,8 +210,7 @@ function ClassTalentTalentsTabMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentTalentsTabEvents);
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentTalentsTabUnitEvents);
 
-	-- Art TODO: Un-Comment this once animation graphics are updated
-	--self:SetBackgroundAnimationsPlaying(false);
+	self:SetBackgroundAnimationsPlaying(false);
 end
 
 function ClassTalentTalentsTabMixin:OnEvent(event, ...)
@@ -279,18 +230,21 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 				self.autoLoadNewConfigID = configID;
 			end
 		end
-	elseif (event ==  "TRAIT_CONFIG_DELETED") or (event == "TRAIT_CONFIG_UPDATED") then
+	elseif event == "TRAIT_CONFIG_UPDATED" then
 		self:RefreshLoadoutOptions();
+	elseif event ==  "TRAIT_CONFIG_DELETED" then
+		local configID = ...;
+		self:OnTraitConfigDeleted(configID);
 	elseif event == "ACTIVE_COMBAT_CONFIG_CHANGED" then
 		local configID = ...;
 		self:SetConfigID(configID);
 	elseif event == "CONFIG_COMMIT_FAILED" then
 		-- If failed to commit while in a "we're waiting until next commit" state, keep us in that state
 		if not self.unflagStarterBuildAfterNextCommit then
-			self:SetSelectedSavedConfigID(self.lastSelectedConfigID);
+			self:ResetToLastConfigID();
 		end
 	elseif event == "STARTER_BUILD_ACTIVATION_FAILED" then
-		self:SetSelectedSavedConfigID(self.lastSelectedConfigID);
+		self:ResetToLastConfigID();
 	elseif event == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" then
 		self:UpdateSpecBackground();
 		self:RefreshLoadoutOptions();
@@ -331,23 +285,77 @@ function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 
 		self:SetCommitStarted(nil);
 
-		if commitedConfigID then
+		-- Avoid overwriting last selected loadout by saving the base spec config id as the selected config
+		-- (The spec config will be both GetConfigID and the commited id in the case of applying changes to an active loadout)
+		if commitedConfigID and commitedConfigID ~= self:GetConfigID() then
 			local autoApply = false;
 			local skipLoad = true;
 			self:SetSelectedSavedConfigID(commitedConfigID, autoApply, skipLoad);
 		end
 
-		self:UpdateTreeCurrencyInfo();
+		-- Button currency updates not needed as SetConfigID -> LoadTalentTree will already have reinstatiated all buttons
+		local skipButtonUpdates = true;
+		self:UpdateTreeCurrencyInfo(skipButtonUpdates);
 	elseif configID == self.autoLoadNewConfigID then
 		local autoApply = true;
 		self:SetSelectedSavedConfigID(self.autoLoadNewConfigID, autoApply);
 		self.autoLoadNewConfigID = nil;
-	else
-		-- There was an error, reset.
-		self:SetCommitStarted(nil);
+	end
 
-		local forceUpdate = true;
-		self:SetConfigID(self:GetConfigID(), forceUpdate);
+	-- There are expected cases for TRAIT_CONFIG_UPDATED being fired that we don't need to react to
+	-- Examples: 
+	--  - Deleting a loadout while active may lead to Updated event for the next loadout down
+	--  - Saving a change to a loadout may lead to Updated event both for the base spec config id and then the selected loadout config id
+	-- If we do start getting "bad" Updated events, make sure to detect & handle those explicitly and not as a catch-all else case
+end
+
+function ClassTalentTalentsTabMixin:OnTraitConfigDeleted(configID)
+	if not configID or self.lastSelectedConfigID ~= configID then
+		-- Deleted Loadout is not the current one, just refresh options
+		self:RefreshLoadoutOptions();
+		return;
+	end
+
+	-- Handle deletion of the loadout we're currently on
+
+	local lastSelectedIndex = self.LoadoutDropDown:GetSelectedValueIndex();
+	self:RefreshLoadoutOptions();
+
+	local availableConfigs = #self.configIDs;
+	local fallbackConfigID = nil;
+
+	if availableConfigs > 0 then
+		-- Try falling back on the loadout below (now in the place of) the previous selection
+		-- Avoid using the Starter Build as a fallback as that will overwrite with all its own data
+		if lastSelectedIndex and lastSelectedIndex <= availableConfigs and self.configIDs[lastSelectedIndex] ~= Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
+			fallbackConfigID = self.configIDs[lastSelectedIndex];
+		-- Otherwise loop back up to the first loadout
+		elseif self.configIDs[1] ~= Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
+			fallbackConfigID = self.configIDs[1];
+		end
+	end
+
+	if fallbackConfigID then
+		-- Apply fallback loadout
+		local autoApply = true;
+		self:SetSelectedSavedConfigID(fallbackConfigID, autoApply);
+	else
+		-- No fallback loadout available, clear deleted config from the current and saved selection
+		self:ClearLastSelectedConfigID();
+	end
+end
+
+function ClassTalentTalentsTabMixin:ResetToLastConfigID()
+	if self.lastSelectedConfigID and self.LoadoutDropDown:IsSelectionIDValid(self.lastSelectedConfigID) then
+		-- Have a valid last selected config, reset back to that
+		local autoApply = false;
+		local skipLoad = false;
+		self:SetSelectedSavedConfigID(self.lastSelectedConfigID, autoApply, skipLoad);
+	else
+		-- No valid last selected config, reset to the base spec config
+		self:ClearLastSelectedConfigID();
+		local autoApply = false;
+		self:LoadConfigInternal(C_ClassTalents.GetActiveConfigID(), autoApply);
 	end
 end
 
@@ -386,21 +394,34 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 		ClassTalentLoadoutEditDialog:ShowDialog(configID);
 	end
 
-	self.LoadoutDropDown:SetEditEntryCallback(EditLoadoutCallback, TALENT_FRAME_DROP_DOWN_TOOLTIP_EDIT);
+	local function CanEditLoadoutCallback(configID)
+		-- TODO: Enable modified loadout settings dialog for Starter Build
+		return configID ~= Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID;
+	end
+
+	self.LoadoutDropDown:SetEditEntryCallback(EditLoadoutCallback, TALENT_FRAME_DROP_DOWN_TOOLTIP_EDIT, CanEditLoadoutCallback);
 
 	local function ImportCallback()
 		ClassTalentLoadoutImportDialog:ShowDialog();
 	end
 
 	local function ExportCallback()	
-		-- TODO: lastSelectedConfigID is always set to ActiveConfigID, and returns the 
 		local configID = self.lastSelectedConfigID or C_ClassTalents.GetActiveConfigID();
 		local configInfo = C_Traits.GetConfigInfo(configID);
 		local exportString = self:GetLoadoutExportString();
 		CopyToClipboard(exportString);
-		DEFAULT_CHAT_FRAME:AddMessage(TALENT_FRAME_EXPORT_TEXT:format(configInfo.name), YELLOW_FONT_COLOR:GetRGB());
-	end
 
+		local configName = nil;
+		if configID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
+			configName = TALENT_FRAME_DROP_DOWN_STARTER_BUILD;
+		elseif configInfo and self.LoadoutDropDown:IsSelectionIDValid(configID) then
+			configName = configInfo.name;
+		else
+			configName = TALENT_FRAME_DROP_DOWN_DEFAULT;
+		end
+
+		DEFAULT_CHAT_FRAME:AddMessage(TALENT_FRAME_EXPORT_TEXT:format(configName), YELLOW_FONT_COLOR:GetRGB());
+	end
 
 	local importSentinelInfo = {
 		text = WHITE_FONT_COLOR:WrapTextInColorCode(TALENT_FRAME_DROP_DOWN_IMPORT),
@@ -443,6 +464,15 @@ function ClassTalentTalentsTabMixin:UpdateLastSelectedConfigID(configID)
 	end
 end
 
+function ClassTalentTalentsTabMixin:ClearLastSelectedConfigID()
+	self.lastSelectedConfigID = nil;
+	local currentSpecID = self:GetSpecID();
+	if currentSpecID then
+		C_ClassTalents.UpdateLastSelectedSavedConfigID(currentSpecID, nil);
+	end
+	self.LoadoutDropDown:ClearSelection();
+end
+
 function ClassTalentTalentsTabMixin:RefreshGates()
 	self.traitCurrencyIDToGate = {};
 
@@ -475,20 +505,21 @@ function ClassTalentTalentsTabMixin:AnchorGate(gate, button)
 	gate:SetPoint("RIGHT", button, "LEFT");
 end
 
-function ClassTalentTalentsTabMixin:UpdateTreeCurrencyInfo()
-	TalentFrameBaseMixin.UpdateTreeCurrencyInfo(self);
+function ClassTalentTalentsTabMixin:UpdateTreeCurrencyInfo(skipButtonUpdates)
+	TalentFrameBaseMixin.UpdateTreeCurrencyInfo(self, skipButtonUpdates);
 
 	self:RefreshCurrencyDisplay();
 
-	-- TODO:: Replace this pattern of updating gates.
-	for condID, condInfo in pairs(self.condInfoCache) do
-		if condInfo.isGate then
-			self:MarkCondInfoCacheDirty(condID);
-			self:ForceCondInfoUpdate(condID);
+	if not skipButtonUpdates then
+		for condID, condInfo in pairs(self.condInfoCache) do
+			if condInfo.isGate then
+				self:MarkCondInfoCacheDirty(condID);
+				self:ForceCondInfoUpdate(condID);
+			end
 		end
-	end
 
-	self:RefreshGates();
+		self:RefreshGates();
+	end
 end
 
 function ClassTalentTalentsTabMixin:RefreshCurrencyDisplay()
@@ -503,6 +534,8 @@ function ClassTalentTalentsTabMixin:RefreshCurrencyDisplay()
 end
 
 function ClassTalentTalentsTabMixin:RefreshLoadoutOptions()
+	local oldConfigIDs = self.configIDs;
+	local oldConfigNames = self.configIDToName;
 	self.configIDs = C_ClassTalents.GetConfigIDsBySpecID(self:GetSpecID());
 
 	self.configIDToName = {};
@@ -512,19 +545,31 @@ function ClassTalentTalentsTabMixin:RefreshLoadoutOptions()
 	end
 
 	local function SelectionNameTranslation(configID)
+		return self.configIDToName[configID];
+	end
+
+	local function SelectionTooltipTranslation(configID)
 		if configID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
-			return TALENT_FRAME_DROP_DOWN_STARTER_BUILD;
+			return YELLOW_FONT_COLOR:WrapTextInColorCode(TALENT_FRAME_DROP_DOWN_STARTER_BUILD_TOOLTIP);
 		end
 
-		return self.configIDToName[configID];
+		return nil;
 	end
 
 	-- If spec has a starter build, add Starter Build as a dropdown option
 	if self:GetHasStarterBuild() then
 		table.insert(self.configIDs, Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID);
+		self.configIDToName[Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID] = BLUE_FONT_COLOR:WrapTextInColorCode(TALENT_FRAME_DROP_DOWN_STARTER_BUILD);
 	end
 
-	self.LoadoutDropDown:SetSelectionOptions(self.configIDs, SelectionNameTranslation, NORMAL_FONT_COLOR);
+	if oldConfigIDs and oldConfigNames then
+		-- Avoid performance hit from calling SetSelectionOptions with the same options as were already set
+		if tCompare(oldConfigIDs, self.configIDs) and tCompare(oldConfigNames, self.configIDToName) then
+			return;
+		end
+	end
+
+	self.LoadoutDropDown:SetSelectionOptions(self.configIDs, SelectionNameTranslation, NORMAL_FONT_COLOR, SelectionTooltipTranslation);
 
 	if #self.configIDs == 0 then
 		self.LoadoutDropDown:ClearSelection();
@@ -591,6 +636,41 @@ function ClassTalentTalentsTabMixin:SetCommitStarted(configID, commitFailed)
 	self:UpdateConfigButtonsState();
 end
 
+function ClassTalentTalentsTabMixin:SetCommitCompleteVisualsActive(active)
+	TalentFrameBaseMixin.SetCommitCompleteVisualsActive(self, active);
+
+	if self.commitFlashAnims then
+		for i, animGroup in ipairs(self.commitFlashAnims) do
+			if active then
+				animGroup:Restart();
+			else
+				animGroup:Stop();
+			end
+		end
+	end
+
+	if active and self.stagedPurchaseNodes then
+		-- Delay purchase animations a moment to allow post-commit refreshes/updates to process
+		-- Otherwise the immediate frame gets clogged up and visuals get missed
+		C_Timer.After(1.4, function()
+			if not self.stagedPurchaseNodes then
+				return;
+			end
+	
+			for i, nodeID in ipairs(self.stagedPurchaseNodes) do
+				local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
+				if buttonWithPurchase and buttonWithPurchase.PlayPurchaseEffect then
+					buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene);
+				end
+			end
+			self.stagedPurchaseNodes = nil;
+		end);
+	elseif not active then
+		self.stagedPurchaseNodes = nil;
+		self.FxModelScene:ClearEffects();
+	end
+end
+
 function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply)
 	local loadResult = nil;
 
@@ -627,6 +707,10 @@ function ClassTalentTalentsTabMixin:CommitConfigInternal()
 	-- Overrides TalentFrameBaseMixin.
 
 	local selectedConfigID = self.LoadoutDropDown:GetSelectionID();
+
+	self:SetCommitCompleteVisualsActive(false);
+	-- Cache nodes with staged purchases so we can animate them once the commit is complete
+	self.stagedPurchaseNodes = C_Traits.GetStagedPurchases(self:GetConfigID());
 
 	C_ClassTalents.CommitConfig(selectedConfigID);
 end
@@ -736,13 +820,17 @@ function ClassTalentTalentsTabMixin:HasAnyPurchasedRanks()
 	return false;
 end
 
-function ClassTalentTalentsTabMixin:CanSetDropDownValue(selectedValue)
+function ClassTalentTalentsTabMixin:CanSetDropDownValue(selectedValue, isUserInput)
 	if self:IsCommitInProgress() and (selectedValue ~= self.lastSelectedConfigID) then
-		return false, false;
+		return false;
 	end
 
 	if selectedValue == nil then
 		return true; -- The dropdown can always be cleared.
+	end
+
+	if not isUserInput and selectedValue == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID and not self:GetIsStarterBuildActive() then
+		return false; -- Cannot auto-select starter build unless already in it, or the player is switching to it
 	end
 
 	local currentSelectionID = self.LoadoutDropDown:GetSelectionID();
@@ -767,7 +855,7 @@ function ClassTalentTalentsTabMixin:CanChangeTalents()
 end
 
 function ClassTalentTalentsTabMixin:UpdateInspecting()
-	self:UpdateBasePanOffset();
+	self:UpdateClassVisuals();
 	self:RefreshConfigID();
 
 	local hiddenDuringInspect = {
@@ -857,15 +945,23 @@ function ClassTalentTalentsTabMixin:IsHighlightedStarterBuildEntry(entryID)
 end
 
 function ClassTalentTalentsTabMixin:UpdateStarterBuildHighlights()
+	local wereSelectableGlowsDisabled = false;
 	if self.activeStarterBuildHighlight then
 		local previousHighlightedButton = self:GetTalentButtonByNodeID(self.activeStarterBuildHighlight.nodeID);
 		if previousHighlightedButton then
 			previousHighlightedButton:SetGlowing(false);
 		end
 		self.activeStarterBuildHighlight = nil;
+
+		wereSelectableGlowsDisabled = true;
 	end
 
 	if not self:GetIsStarterBuildActive() or self.unflagStarterBuildAfterNextCommit then
+		if wereSelectableGlowsDisabled then
+			for button in self:EnumerateAllTalentButtons() do
+				button:SetSelectableGlowDisabled(false);
+			end
+		end
 		return;
 	end
 
@@ -879,6 +975,12 @@ function ClassTalentTalentsTabMixin:UpdateStarterBuildHighlights()
 		highlightButton:SetGlowing(true);
 
 		self.activeStarterBuildHighlight = { nodeID = nodeID, entryID = entryID };
+
+		if not wereSelectableGlowsDisabled then
+			for button in self:EnumerateAllTalentButtons() do
+				button:SetSelectableGlowDisabled(true);
+			end
+		end
 	end
 end
 
@@ -921,6 +1023,9 @@ end
 
 function ClassTalentTalentsTabMixin:UnflagStarterBuild()
 	self.unflagStarterBuildAfterNextCommit = false;
+	if self.lastSelectedConfigID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
+		self:ClearLastSelectedConfigID();
+	end
 	self:SetStarterBuildActive(false);
 end
 

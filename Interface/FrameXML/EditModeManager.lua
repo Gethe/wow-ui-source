@@ -2,7 +2,6 @@ EditModeManagerFrameMixin = {};
 
 function EditModeManagerFrameMixin:OnLoad()
 	self.registeredSystemFrames = {};
-	self.RightActionBarsInLayout = {};
 	self.modernSystemMap = EditModePresetLayoutManager:GetModernSystemMap();
 	self.modernSystems = EditModePresetLayoutManager:GetModernSystems();
 
@@ -34,9 +33,11 @@ function EditModeManagerFrameMixin:OnLoad()
 		self:CopyActiveLayoutToClipboard();
 	end
 
+	--[[
 	local function postInChat()
 		self:LinkActiveLayoutToChat();
 	end
+	]]--
 
 	local function copyLayout()
 		self:ShowNewLayoutDialog(self.lockedLayoutButton.layoutData);
@@ -80,10 +81,10 @@ function EditModeManagerFrameMixin:OnLoad()
 			local newButton = self.buttonEntryPool:Acquire();
 			newButton:Init(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, copyToClipboard, disableOnMaxLayoutsNo, disableOnActiveChangesNo, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;
-		elseif dropDownButtonInfo.value == "postInChat" then
+		--[[elseif dropDownButtonInfo.value == "postInChat" then
 			local newButton = self.buttonEntryPool:Acquire();
 			newButton:Init(HUD_EDIT_MODE_POST_IN_CHAT, postInChat, disableOnMaxLayoutsNo, disableOnActiveChangesNo, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
-			dropDownButtonInfo.customFrame = newButton;
+			dropDownButtonInfo.customFrame = newButton;]]--
 		elseif dropDownButtonInfo.value == "copyLayout" then
 			local newButton = self.buttonEntryPool:Acquire();
 			newButton:Init(HUD_EDIT_MODE_COPY_LAYOUT, copyLayout, disableOnMaxLayouts, disableOnActiveChangesNo, copyRenameSubDropdownButtonWidth, nil, nil, subMenuButton);
@@ -330,22 +331,11 @@ function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame, isDefault
 		if UpdateSystemAnchorInfo(systemInfo, systemFrame, isDefaultPosition) then
 			systemFrame:SetHasActiveChanges(true);
 
-			local isRightActionBar = EditModeUtil:IsRightAnchoredActionBar(systemFrame);
-			if isRightActionBar then
-				self:UpdateRightAnchoredActionBarWidth();
-			end
-
-			if isRightActionBar or systemFrame == MinimapCluster then
+			if EditModeUtil:IsRightAnchoredActionBar(systemFrame) or systemFrame == MinimapCluster then
 				self:UpdateRightAnchoredActionBarScales();
 			end
 
-			if EditModeUtil:IsBottomAnchoredActionBar(systemFrame) then
-				self:UpdateBottomAnchoredActionBarHeight();
-			end
-
-			if systemFrame.isBottomManagedFrame or systemFrame.isRightManagedFrame then
-				UIParent_ManageFramePositions();
-			end
+			self:UpdateActionBarLayout(systemFrame);
 
 			EditModeSystemSettingsDialog:UpdateDialog(systemFrame);
 		end
@@ -428,10 +418,19 @@ end
 
 function EditModeManagerFrameMixin:UpdateRaidContainerFlow()
 	local maxPerLine, orientation;
-	if self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.KeepGroupsTogether) then
-		orientation = self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.UseHorizontalGroups) and "horizontal" or "vertical";
+
+	local raidGroupDisplayType = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.RaidGroupDisplayType);
+	if raidGroupDisplayType == Enum.RaidGroupDisplayType.SeparateGroupsVertical then
+		orientation = "vertical";
 		CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
 		maxPerLine = 1;
+	elseif raidGroupDisplayType == Enum.RaidGroupDisplayType.SeparateGroupsHorizontal then
+		orientation = "horizontal";
+		CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
+		maxPerLine = 1;
+	elseif raidGroupDisplayType == Enum.RaidGroupDisplayType.CombineGroupsVertical then
+		orientation = "vertical";
+		maxPerLine = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.RowSize);
 	else
 		orientation = "horizontal";
 		maxPerLine = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.RowSize);
@@ -439,10 +438,9 @@ function EditModeManagerFrameMixin:UpdateRaidContainerFlow()
 
 	-- Setting CompactRaidFrameContainer to a really big size because the flow container bases its calculations off the size of the container itself
 	-- The layout call below shrinks the container back down to fit the actual contents after they have been anchored
-	CompactRaidFrameContainer:SetSize(3000, 3000);
 	FlowContainer_SetOrientation(CompactRaidFrameContainer, orientation);
 	FlowContainer_SetMaxPerLine(CompactRaidFrameContainer, maxPerLine);
-	CompactRaidFrameContainer:Layout();
+	CompactRaidFrameContainer:TryUpdate();
 end
 
 function EditModeManagerFrameMixin:AreRaidFramesForcedShown()
@@ -496,8 +494,11 @@ function EditModeManagerFrameMixin:GetRaidFrameHeight(forParty)
 end
 
 function EditModeManagerFrameMixin:ShouldRaidFrameUseHorizontalRaidGroups(forParty)
-	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
-	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.UseHorizontalGroups);
+	if forParty then
+		return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.UseHorizontalGroups);
+	else
+		return self:DoesSettingValueEqual(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.RaidGroupDisplayType, Enum.RaidGroupDisplayType.SeparateGroupsHorizontal);
+	end
 end
 
 function EditModeManagerFrameMixin:ShouldRaidFrameDisplayBorder(forParty)
@@ -505,8 +506,9 @@ function EditModeManagerFrameMixin:ShouldRaidFrameDisplayBorder(forParty)
 	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.DisplayBorder);
 end
 
-function EditModeManagerFrameMixin:ShouldRaidFrameKeepGroupsTogether()
-	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.KeepGroupsTogether);
+function EditModeManagerFrameMixin:ShouldRaidFrameShowSeparateGroups()
+	local raidGroupDisplayType = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.RaidGroupDisplayType);
+	return (raidGroupDisplayType == Enum.RaidGroupDisplayType.SeparateGroupsVertical) or (raidGroupDisplayType == Enum.RaidGroupDisplayType.SeparateGroupsHorizontal);
 end
 
 function EditModeManagerFrameMixin:GetRightAnchoredActionBarWidth()
@@ -515,6 +517,14 @@ end
 
 function EditModeManagerFrameMixin:GetBottomAnchoredActionBarHeight()
 	return self.bottomAnchoredActionBarHeight;
+end
+
+function EditModeManagerFrameMixin:UpdateActionBarLayout(barFrame)
+	if EditModeUtil:IsBottomAnchoredActionBar(barFrame) then
+		self:UpdateBottomAnchoredActionBarHeight();
+	elseif EditModeUtil:IsRightAnchoredActionBar(barFrame) then
+		self:UpdateRightAnchoredActionBarWidth();
+	end
 end
 
 function EditModeManagerFrameMixin:UpdateRightAnchoredActionBarWidth()
@@ -565,7 +575,7 @@ function EditModeManagerFrameMixin:UpdateBottomAnchoredActionBarHeight(includeMa
 			if EditModeUtil:IsBottomAnchoredActionBar(relativeTo) then
 				if topMostBottomAnchoredBar and relativeTo ~= topMostBottomAnchoredBar then
 					bar:SetPoint("BOTTOMLEFT", topMostBottomAnchoredBar, "TOPLEFT", 0, 5);
-					
+
 					local isDefaultPosition = true;
 					EditModeManagerFrame:OnSystemPositionChange(bar, isDefaultPosition);
 				end
@@ -765,6 +775,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetBossFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowBossFrames));
 	self.AccountSettings:SetArenaFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowArenaFrames));
 	self.AccountSettings:SetLootFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowLootFrame));
+	self.AccountSettings:SetHudTooltipShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowHudTooltip));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -907,7 +918,7 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 
 	-- And the 3rd-level options (copy to clipboard and post in chat)
 	table.insert(options, { value = "copyToClipboard", text = HUD_EDIT_MODE_COPY_TO_CLIPBOARD, level = 3 });
-	table.insert(options, { value = "postInChat", text = HUD_EDIT_MODE_POST_IN_CHAT, level = 3 });
+	--table.insert(options, { value = "postInChat", text = HUD_EDIT_MODE_POST_IN_CHAT, level = 3 });
 
 	self.LayoutDropdown:SetOptions(options, self.layoutInfo.activeLayout);
 end
@@ -917,8 +928,6 @@ function EditModeManagerFrameMixin:UpdateSystems()
 		self:UpdateSystem(systemFrame);
 	end
 
-	self:UpdateRightAnchoredActionBarWidth();
-	self:UpdateBottomAnchoredActionBarHeight();
 	self:UpdateRightAnchoredActionBarScales();
 end
 
@@ -1004,6 +1013,7 @@ function EditModeManagerFrameMixin:CopyActiveLayoutToClipboard()
 	DEFAULT_CHAT_FRAME:AddMessage(HUD_EDIT_MODE_COPY_TO_CLIPBOARD_NOTICE:format(activeLayoutInfo.layoutName), YELLOW_FONT_COLOR:GetRGB());
 end
 
+--[[
 function EditModeManagerFrameMixin:LinkActiveLayoutToChat()
 	CloseDropDownMenus();
 	local hyperlink = C_EditMode.ConvertLayoutInfoToHyperlink(self:GetActiveLayoutInfo());
@@ -1011,6 +1021,7 @@ function EditModeManagerFrameMixin:LinkActiveLayoutToChat()
 		ChatFrame_OpenChat(hyperlink);
 	end
 end
+]]--
 
 function EditModeManagerFrameMixin:ClearActiveChangesFlags()
 	for _, systemFrame in ipairs(self.registeredSystemFrames) do
@@ -1115,51 +1126,6 @@ end
 
 function EditModeManagerFrameMixin:IsLayoutButtonLocked(layoutButton)
 	return self.lockedLayoutButton == layoutButton;
-end
-
-function EditModeManagerFrameMixin:AddRightActionBarToLayout(barToAdd)
-	for i, bar in pairs(self.RightActionBarsInLayout) do
-		if bar == barToAdd then
-			return;
-		end
-	end
-
-	table.insert(self.RightActionBarsInLayout, barToAdd);
-	table.sort(self.RightActionBarsInLayout, LayoutIndexComparator);
-	self:UpdateRightActionBarsLayout();
-end
-
-function EditModeManagerFrameMixin:RemoveRightActionBarFromLayout(barToRemove)
-	for i, bar in pairs(self.RightActionBarsInLayout) do
-		if bar == barToRemove then
-			table.remove(self.RightActionBarsInLayout, i);
-			table.sort(self.RightActionBarsInLayout, LayoutIndexComparator);
-			self:UpdateRightActionBarsLayout();
-			break;
-		end
-	end
-end
-
-function EditModeManagerFrameMixin:UpdateRightActionBarsLayout()
-	local rightActionBarPadding = -5;
-	local leftMostBar;
-
-	for i, bar in pairs(self.RightActionBarsInLayout) do
-		local offsetX = rightActionBarPadding;
-		if leftMostBar then
-			offsetX = offsetX + leftMostBar.systemInfo.anchorInfo.offsetX - leftMostBar:GetWidth();
-		end
-
-		bar:ClearAllPoints();
-		bar:SetPoint("RIGHT", UIParent, "RIGHT", offsetX, -77);
-
-		local isDefaultPosition = true;
-		self:OnSystemPositionChange(bar, isDefaultPosition);
-
-		leftMostBar = bar;
-	end
-
-	self:UpdateRightAnchoredActionBarWidth();
 end
 
 function EditModeManagerFrameMixin:TryShowUnsavedChangesGlow()
@@ -1358,11 +1324,34 @@ function EditModeAccountSettingsMixin:OnLoad()
 		self:SetLootFrameShown(isChecked, isUserInput);
 	end
 	self.Settings.LootFrame:SetCallback(onLootFrameCheckboxChecked);
+
+	local function onHudTooltipCheckboxChecked(isChecked, isUserInput)
+		self:SetHudTooltipShown(isChecked, isUserInput);
+	end
+	self.Settings.HudTooltip:SetCallback(onHudTooltipCheckboxChecked);
+end
+
+function EditModeAccountSettingsMixin:OnEvent(event, ...)
+	if event == "PLAYER_TARGET_CHANGED" then
+		self.oldTargetName = UnitName("target");
+		if not self.oldTargetName then
+			-- Unregister before setting so we don't fall back into this OnEvent from this change
+			self:UnregisterEvent("PLAYER_TARGET_CHANGED");
+			TargetUnit("player");
+			self:RegisterEvent("PLAYER_TARGET_CHANGED");
+		end
+	elseif event == "PLAYER_FOCUS_CHANGED" then
+		self.oldFocusName = UnitName("focus");
+		if not self.oldFocusName then
+			-- Unregister before setting so we don't fall back into this OnEvent from this change
+			self:UnregisterEvent("PLAYER_FOCUS_CHANGED");
+			FocusUnit("player");
+			self:RegisterEvent("PLAYER_FOCUS_CHANGED");
+		end
+	end
 end
 
 function EditModeAccountSettingsMixin:OnEditModeEnter()
-	self.oldTargetName = UnitName("target");
-	self.oldFocusName = UnitName("focus");
 	self:RefreshTargetAndFocus();
 	self:RefreshPartyFrames();
 	self:RefreshRaidFrames();
@@ -1389,41 +1378,48 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:RefreshBossFrames();
 	self:RefreshArenaFrames();
 	self:RefreshLootFrame();
+	self:RefreshHudTooltip();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
-	local clearSavedTargetAndFocus = true;
-	self:ResetTargetAndFocus(clearSavedTargetAndFocus);
+	self:ResetTargetAndFocus();
 	self:ResetPartyFrames();
 	self:ResetRaidFrames();
+	self:ResetHudTooltip();
 
 	self:ResetActionBarShown(StanceBar);
 	self:ResetActionBarShown(PetActionBar);
 	self:ResetActionBarShown(PossessActionBar);
 end
 
-function EditModeAccountSettingsMixin:ResetTargetAndFocus(clearSavedTargetAndFocus)
+function EditModeAccountSettingsMixin:ResetTargetAndFocus()
+	self:UnregisterEvent("PLAYER_TARGET_CHANGED");
+	self:UnregisterEvent("PLAYER_FOCUS_CHANGED");
+
 	if self.oldTargetName then
 		TargetUnit(self.oldTargetName);
 	else
 		ClearTarget();
 	end
+	self.oldTargetName = nil;
 
 	if self.oldFocusName then
 		FocusUnit(self.oldFocusName);
 	else
 		ClearFocus();
 	end
+	self.oldFocusName = nil;
 
-	if clearSavedTargetAndFocus then
-		self.oldTargetName = nil;
-		self.oldFocusName = nil;
-	end
+	TargetFrame:ClearHighlight();
+	FocusFrame:ClearHighlight();
 end
 
 function EditModeAccountSettingsMixin:RefreshTargetAndFocus()
 	local showTargetAndFocus = self.Settings.TargetAndFocus:IsControlChecked();
 	if showTargetAndFocus then
+		self.oldTargetName = UnitName("target");
+		self.oldFocusName = UnitName("focus");
+
 		if not TargetFrame:IsShown() then
 			TargetUnit("player");
 		end
@@ -1431,6 +1427,12 @@ function EditModeAccountSettingsMixin:RefreshTargetAndFocus()
 		if not FocusFrame:IsShown() then
 			FocusUnit("player");
 		end
+
+		TargetFrame:HighlightSystem();
+		FocusFrame:HighlightSystem();
+
+		self:RegisterEvent("PLAYER_TARGET_CHANGED");
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED");
 	else
 		self:ResetTargetAndFocus();
 	end
@@ -1483,6 +1485,7 @@ function EditModeAccountSettingsMixin:RefreshRaidFrames()
 	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateUnits);
 	CompactRaidFrameContainer:TryUpdate();
 	EditModeManagerFrame:UpdateRaidContainerFlow();
+	UpdateRaidAndPartyFrames();
 end
 
 function EditModeAccountSettingsMixin:ResetRaidFrames()
@@ -1516,14 +1519,10 @@ function EditModeAccountSettingsMixin:RefreshActionBarShown(bar)
 			bar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
 			bar:Show();
 		end
+		bar:HighlightSystem();
 	else
 		self:ResetActionBarShown(bar);
-	end
-
-	if EditModeUtil:IsBottomAnchoredActionBar(bar) then
-		EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
-	elseif EditModeUtil:IsRightAnchoredActionBar(bar) then
-		EditModeManagerFrame:UpdateRightAnchoredActionBarWidth();
+		bar:ClearHighlight();
 	end
 end
 
@@ -1760,6 +1759,28 @@ function EditModeAccountSettingsMixin:RefreshLootFrame()
 	end
 
 	LootFrame:UpdateShownState();
+end
+
+function EditModeAccountSettingsMixin:SetHudTooltipShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowHudTooltip, shown);
+		self:RefreshHudTooltip();
+	else
+		self.Settings.HudTooltip:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshHudTooltip()
+	local showHudTooltip = self.Settings.HudTooltip:IsControlChecked();
+	if showHudTooltip then
+		GameTooltipDefaultContainer:Show();
+	else
+		GameTooltipDefaultContainer:Hide();
+	end
+end
+
+function EditModeAccountSettingsMixin:ResetHudTooltip()
+	GameTooltipDefaultContainer:Hide();
 end
 
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)

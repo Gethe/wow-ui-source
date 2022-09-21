@@ -430,7 +430,7 @@ function LootHistoryDropDown_OnClick()
 	local _, itemLink = C_LootHistory.GetItem(LootHistoryDropDown.itemIdx);
 	if ( itemLink ) then
 		local itemName, itemLink, itemRarity = GetItemInfo(itemLink);
-		if ( itemRarity >= MASTER_LOOT_THREHOLD ) then
+		if ( itemRarity >= Constants.LootConsts.MasterLootQualityThreshold ) then
 			local playerName = C_LootHistory.GetPlayerInfo(LootHistoryDropDown.itemIdx, LootHistoryDropDown.playerIdx);
 			StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE, playerName, "LootHistory");
 		else

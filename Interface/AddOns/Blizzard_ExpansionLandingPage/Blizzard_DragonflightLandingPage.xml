@@ -83,7 +83,7 @@
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="-80"/>
 							</Anchors>
-							<Color r="0.768" g="0.886" b="0.988"/>
+							<Color color="LIGHTERBLUE_FONT_COLOR"/>
 						</FontString>
 						<FontString parentKey="Subtitle" inherits="Game20Font" text="LANDING_DRAGONRIDING_PANEL_SUBTITLE">
 							<Anchors>
@@ -94,7 +94,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="SkillsButton" mixin="DragonridingPanelSkillsButtonMixin" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="VIEW">
+					<Button parentKey="SkillsButton" mixin="DragonridingPanelSkillsButtonMixin" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="LANDING_DRAGONRIDING_TREE_BUTTON">
 						<Size x="80" y="22"/>
 						<KeyValues>
 							<KeyValue key="disabledTooltip" value="LANDING_DRAGONRIDING_TREE_BUTTON_DISABLED" type="global"/>

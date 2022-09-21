@@ -89,26 +89,46 @@ function PartyFrameMixin:UpdatePartyFrames()
 	self:Layout();
 end
 
-PartyMemberBuffTooltipMixin={};
+PartyMemberBuffTooltipMixin = {};
+function PartyMemberBuffTooltipMixin:OnLoad()
+	self.PartyMemberBuffPool = CreateFramePool("BUTTON", self.BuffContainer, "PartyBuffFrameTemplate");
+	self.PartyMemberDebuffPool = CreateFramePool("BUTTON", self.DebuffContainer, "PartyDebuffFrameTemplate");
+end
+
+function PartyMemberBuffTooltipMixin:UpdateGridLayout(frames, numFrames, anchor)
+	local stride = math.min(numFrames, MAX_PARTY_TOOLTIP_BUFFS_PER_ROW);
+	local layout = GridLayoutUtil.CreateStandardGridLayout(stride, 2, 2);
+   
+	GridLayoutUtil.ApplyGridLayout(frames, anchor, layout);
+end
 
 function PartyMemberBuffTooltipMixin:UpdateTooltip(frame)
 	if frame.layoutIndex ~= nil then 
 		self:SetID(frame.layoutIndex);
 	else
-		self:SetID(frame:GetID()); -- Pet frame doesn't use layout index
+		self:SetID(frame:GetID() ~= 0 and frame:GetID() or 1); -- Pet frame doesn't use layout index
 	end
 
 	local numBuffs = 0;
 	local frameNum = 1;
+	self.PartyMemberBuffPool:ReleaseAll();
+
+	for frame in self.PartyMemberBuffPool:EnumerateActive() do 
+		frame:Hide()
+	end
+	local buffFrames = {};
+
 	frame.buffs:Iterate(function(auraInstanceID, aura)
 		if frameNum > MAX_PARTY_TOOLTIP_BUFFS then
 			return true;
 		end
 
 		if aura.icon then
-			local buff = self.Buff[frameNum];
-			buff.Icon:SetTexture(aura.icon);
-			buff:Show();
+			local buffFrame = self.PartyMemberBuffPool:Acquire();
+			buffFrame:Setup(frame.unit, frameNum);
+			buffFrame.Icon:SetTexture(aura.icon);
+			buffFrame:Show();
+			buffFrames[frameNum] = buffFrame;
 
 			frameNum = frameNum + 1;
 			numBuffs = numBuffs + 1;
@@ -117,31 +137,24 @@ function PartyMemberBuffTooltipMixin:UpdateTooltip(frame)
 		return false;
 	end);
 
-	for i = frameNum, MAX_PARTY_TOOLTIP_BUFFS do
-		self.Buff[i]:Hide();
-	end
-
-	if ( numBuffs == 0 ) then
-		self.Debuff[1]:SetPoint("TOP", self.Buff[1], "TOP", 0, 0);
-	elseif ( numBuffs <= 8 ) then
-		self.Debuff[1]:SetPoint("TOP", self.Buff[1], "BOTTOM", 0, -2);
-	else
-		self.Debuff[1]:SetPoint("TOP", self.Buff[9], "BOTTOM", 0, -2);
-	end
-
 	local numDebuffs = 0;
 	frameNum = 1;
+	self.PartyMemberDebuffPool:ReleaseAll();
+	local debuffFrames = {};
 	frame.debuffs:Iterate(function(auraInstanceID, aura)
 		if frameNum > MAX_PARTY_TOOLTIP_DEBUFFS then
 			return true;
 		end
 
 		if aura.icon then
-			local debuff = self.Debuff[frameNum]
-			debuff.Icon:SetTexture(aura.icon);
+			local debuffFrame = self.PartyMemberDebuffPool:Acquire();
+			debuffFrame:Setup(frame.unit, frameNum);
+			frame:SetDebuff(debuffFrame, aura, frameNum);
+			debuffFrame.Icon:SetTexture(aura.icon);
 			local color = aura.dispelName and DebuffTypeColor[aura.dispelName] or DebuffTypeColor["none"]
-			debuff.Border:SetVertexColor(color.r, color.g, color.b);
-			debuff:Show();
+			debuffFrame.Border:SetVertexColor(color.r, color.g, color.b);
+			debuffFrame:Show();
+			debuffFrames[frameNum] = debuffFrame;
 
 			frameNum = frameNum + 1;
 			numDebuffs = numDebuffs + 1;
@@ -150,13 +163,9 @@ function PartyMemberBuffTooltipMixin:UpdateTooltip(frame)
 		return false;
 	end);
 
-	for i = frameNum, MAX_PARTY_TOOLTIP_DEBUFFS do
-		self.Debuff[i]:Hide();
-	end
-
 	-- Size the tooltip
-	local rows = ceil(numBuffs / 8) + ceil(numDebuffs / 8);
-	local columns = min(8, max(numBuffs, numDebuffs));
+	local rows = ceil(numBuffs / MAX_PARTY_TOOLTIP_BUFFS_PER_ROW) + ceil(numDebuffs / MAX_PARTY_TOOLTIP_BUFFS_PER_ROW);
+	local columns = min(MAX_PARTY_TOOLTIP_BUFFS_PER_ROW, max(numBuffs, numDebuffs));
 	if ( (rows > 0) and (columns > 0) ) then
 		self:SetWidth( (columns * 17) + 15 );
 		self:SetHeight( (rows * 17) + 15 );
@@ -164,6 +173,15 @@ function PartyMemberBuffTooltipMixin:UpdateTooltip(frame)
 	else
 		self:Hide();
 	end
+
+	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self, "TOPLEFT", 8, -8);
+	self:UpdateGridLayout(buffFrames, numBuffs, anchor);
+
+	if ( numBuffs ~= 0 ) then
+		anchor = AnchorUtil.CreateAnchor("TOPLEFT", self, "TOPLEFT", 8, -8-17*(rows-1));
+	end
+
+	self:UpdateGridLayout(debuffFrames, numDebuffs, anchor);
 end
 
 PartyMemberBackgroundMixin={};

@@ -2,15 +2,14 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AuctionHouseTab.lua"/>
 
-	<Button name="AuctionHouseFrameTabTemplate" mixin="AuctionHouseFrameTabMixin" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Button name="AuctionHouseFrameTabTemplate" inherits="PanelTabButtonTemplate" mixin="AuctionHouseFrameTabMixin" virtual="true">
 		<Scripts>
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Button>
 
-	<Button name="AuctionHouseFrameTopTabTemplate" mixin="AuctionHouseFrameTopTabMixin" inherits="TabButtonTemplate" virtual="true">
+	<Button name="AuctionHouseFrameTopTabTemplate" inherits="PanelTopTabButtonTemplate" mixin="AuctionHouseFrameTopTabMixin" virtual="true">
 		<Scripts>
-			<OnLoad inherit="prepend" method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnClick method="OnClick"/>
 		</Scripts>

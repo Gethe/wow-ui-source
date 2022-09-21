@@ -350,7 +350,6 @@ function OrderHallTalentFrameMixin:UpdateThemedFrameVisibility(isThemed)
 	-- Default/base elements
 	local isBase = not isThemed;
 	self.TopTileStreaks:SetShown(isBase);
-	self.TitleBg:SetShown(isBase);
 	self.Bg:SetShown(isBase);
 	self.Inset:SetShown(isBase);
 	self:SetPortraitShown(isBase);

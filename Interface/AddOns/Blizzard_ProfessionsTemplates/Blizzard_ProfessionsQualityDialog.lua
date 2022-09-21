@@ -8,6 +8,8 @@ ProfessionsQualityDialogMixin:GenerateCallbackEvents(
 function ProfessionsQualityDialogMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
+	self:SetTitle(PROFESSIONS_QUALITY_DIALOG_TITLE);
+
 	self.containers = {self.Container1, self.Container2, self.Container3};
 
 	local function GetQuantityOutstanding(qualityIndex)
@@ -90,12 +92,15 @@ function ProfessionsQualityDialogMixin:OnLoad()
 		end);
 	end
 	
+	self.onCloseCallback = function(button)
+		PlaySound(SOUNDKIT.UI_PROFESSION_QUALITY_DIALOG_EXIT);
+		return true;
+	end
+	
 	local function OnCancel()
 		self:Hide();
 		PlaySound(SOUNDKIT.UI_PROFESSION_QUALITY_DIALOG_EXIT);
 	end
-
-	self.CloseButton:SetScript("OnClick", OnCancel);
 
 	self.CancelButton:SetText(CANCEL);
 	self.CancelButton:SetScript("OnClick", OnCancel);
@@ -190,10 +195,6 @@ end
 function ProfessionsQualityDialogMixin:EvaluateAllocations()
 	local quantityRequired = self:GetQuantityRequired();
 	local quantityAllocated = self:Accumulate();
-
-	local reagent1 = self.reagentSlotSchematic.reagents[1];
-	local item1 = Item:CreateFromItemID(reagent1.itemID);
-	self.Header:SetText(PROFESSIONS_QUALITY_ITEM_HEADER:format(item1:GetItemName(), quantityAllocated, quantityRequired));
 
 	for qualityIndex, reagent in ipairs(self.reagentSlotSchematic.reagents) do
 		local container = self.containers[qualityIndex];

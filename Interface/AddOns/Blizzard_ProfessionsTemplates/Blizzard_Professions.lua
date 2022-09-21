@@ -719,7 +719,9 @@ function Professions.SetInventorySlotFilter(inventorySlotIndex)
 end
 
 function Professions.IsUsingDefaultFilters()
-	local showAllRecipes = not C_TradeSkillUI.GetOnlyShowMakeableRecipes() and not C_TradeSkillUI.GetOnlyShowSkillUpRecipes();
+	local showAllRecipes = not C_TradeSkillUI.GetOnlyShowMakeableRecipes() and 
+		not C_TradeSkillUI.GetOnlyShowSkillUpRecipes() and 
+		not C_TradeSkillUI.GetOnlyShowFirstCraftRecipes();
 	local newestKnownProfessionInfo = Professions.GetNewestKnownProfessionInfo()
 	local isDefaultSkillLine = newestKnownProfessionInfo == nil or C_TradeSkillUI.GetChildProfessionInfo().professionID == Professions.GetNewestKnownProfessionInfo().professionID;
 	return showAllRecipes and isDefaultSkillLine and not C_TradeSkillUI.AreAnyInventorySlotsFiltered() and 
@@ -760,6 +762,7 @@ function Professions.SetDefaultFilters()
 	C_TradeSkillUI.SetShowUnlearned(false);
 	C_TradeSkillUI.SetOnlyShowMakeableRecipes(false);
 	C_TradeSkillUI.SetOnlyShowSkillUpRecipes(false);
+	C_TradeSkillUI.SetOnlyShowFirstCraftRecipes(false);
 	C_TradeSkillUI.ClearInventorySlotFilter();
 	Professions.SetAllSourcesFiltered(false);
 	C_TradeSkillUI.ClearRecipeSourceTypeFilter();
@@ -810,6 +813,12 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate)
 			text = CRAFT_IS_MAKEABLE,
 			set = C_TradeSkillUI.SetOnlyShowMakeableRecipes,
 			isSet = C_TradeSkillUI.GetOnlyShowMakeableRecipes
+		},
+		{
+			type = FilterComponent.Checkbox,
+			text = PROFESSION_RECIPES_IS_FIRST_CRAFT,
+			set = C_TradeSkillUI.SetOnlyShowFirstCraftRecipes,
+			isSet = C_TradeSkillUI.GetOnlyShowFirstCraftRecipes
 		},
 		{
 			type = FilterComponent.Submenu,
@@ -1025,6 +1034,40 @@ function Professions.CanTrackRecipe(recipeInfo)
 	end
 
 	return true;
+end
+
+function Professions.GetCurrencyTypesID(nodeID)
+	local traitCurrencyID = nodeID and C_ProfSpecs.GetSpendCurrencyForPath(nodeID);
+	if traitCurrencyID then
+		return select(3, C_Traits.GetTraitCurrencyInfo(traitCurrencyID));
+	end
+end
+
+function Professions.GetCurrentProfessionCurrencyInfo()
+	local nodeID = ProfessionsFrame.SpecPage:GetDetailedPanelNodeID();
+	local currencyTypesID = Professions.GetCurrencyTypesID(nodeID);
+	return currencyTypesID and C_CurrencyInfo.GetCurrencyInfo(currencyTypesID) or nil;
+end
+
+function Professions.SetupProfessionsCurrencyTooltip(currencyInfo, currencyCount)
+	GameTooltip_AddHighlightLine(GameTooltip, currencyInfo.name, false);
+	GameTooltip_AddNormalLine(GameTooltip, currencyInfo.description);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+
+	local count = currencyCount or currencyInfo.quantity;
+	GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_SPECIALIZATION_CURRENCY_TOTAL:format(count));
+end
+
+function Professions.DoesSchematicIncludeReagentQualities(recipeSchematic)
+	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
+		local isMCR = reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent;
+		if isMCR and (reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic) then
+			if #reagentSlotSchematic.reagents > 1 then
+				return true;
+			end
+		end
+	end
+	return false;
 end
 
 function Professions.GetProfessionType(professionInfo)

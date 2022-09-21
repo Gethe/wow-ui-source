@@ -363,9 +363,8 @@
 				</Scripts>
 			</Frame>
 			<Button name="CalendarCloseButton" inherits="UIPanelCloseButton">
-				<Size x="32" y="34"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="5" y="-13"/>
+					<Anchor point="TOPRIGHT" x="1" y="-17"/>
 				</Anchors>
 			</Button>
 

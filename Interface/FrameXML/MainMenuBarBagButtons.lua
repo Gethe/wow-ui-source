@@ -194,7 +194,7 @@ function BaseBagSlotButtonMixin:UpdateTextures()
 	highlight:SetAllPoints(self);
 	highlight:SetBlendMode("ADD");
 	highlight:SetAlpha(.4);
-	highlight:SetAtlas(atlas);
+	highlight:SetAtlas(bagSlotHighlight);
 
 	self.SlotHighlightTexture:SetAtlas(bagSlotHighlight);
 end
@@ -366,17 +366,12 @@ end
 
 function MainMenuBarBackpackMixin:UpdateItemContextOverlayTextures(contextMode)
 	if contextMode then
-		local overlay = self.ItemContextOverlay;
-		overlay:RemoveMaskTexture(self.CircleMask);
+		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
 
-		local normalAtlas = self:GetSlotAtlases();
-		overlay:SetAtlas(normalAtlas);
-		overlay:SetVertexColor(.2, .2, .2, .8);
-		overlay:SetDesaturated(true);
-
-		overlay:ClearAllPoints();
-		overlay:SetPoint("TOPLEFT", overlay:GetParent(), "TOPLEFT", -1, 1);
-		overlay:SetPoint("BOTTOMRIGHT", overlay:GetParent(), "BOTTOMRIGHT", 1, -1);
+		local mask = self.CircleMask;
+		mask:ClearAllPoints();
+		mask:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -4);
+		mask:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 6);
 	end
 end
 

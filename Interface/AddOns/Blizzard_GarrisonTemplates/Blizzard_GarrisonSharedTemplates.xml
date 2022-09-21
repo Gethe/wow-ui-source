@@ -7,8 +7,8 @@
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="BackgroundTile" atlas="Garr_WoodFrame-BackgroundTile" horizTile="true" vertTile="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" x="0" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>

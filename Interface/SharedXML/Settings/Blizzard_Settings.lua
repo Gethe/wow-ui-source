@@ -57,7 +57,7 @@ function SettingsSearchableElementMixin:AddSearchTags(...)
 
 	for index = 1, select("#", ...) do
 		local tag = select(index, ...);
-		if type(tag) == "string" then
+		if type(tag) == "string" and tag ~= "" then
 			table.insert(self.searchTags, tag:upper());
 		end
 	end
@@ -68,14 +68,15 @@ function SettingsSearchableElementMixin:MatchesSearchTags(words)
 		for _, val1 in ipairs(words) do
 			if strlen(val1) >= 3 then
 				for _, val2 in ipairs(self.searchTags) do
-					if string.find(val2, val1, nil, true) then
-						return true;
+					local first, last = string.find(val2, val1, nil, true);
+					if first and last then
+						return last - first;
 					end
 				end
 			end
 		end
 	end
-	return false;
+	return nil;
 end
 
 function Settings.CreateCanvasMixin()

@@ -51,6 +51,7 @@ UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 1, 	whileDead = 1
 UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
 UIPanelWindows["CollectionsJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 733};
 UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1};
+UIPanelWindows["LootFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
@@ -186,7 +187,7 @@ function UpdateUIElementsForClientScene(sceneType)
 		TargetFrame:Hide();
 	else
 		PlayerFrame:SetShown(true);
-		TargetFrame_Update(TargetFrame);
+		TargetFrame:Update();
 	end
 end
 
@@ -2459,65 +2460,73 @@ end
 
 UIParentManagedFrameMixin = { };
 function UIParentManagedFrameMixin:OnShow()
-	self.layoutParent:AddManagedFrame(self); 
+	self.layoutParent:AddManagedFrame(self);
 end
 
 function UIParentManagedFrameMixin:OnHide()
-	self.layoutParent:RemoveManagedFrame(self); 
+	self.layoutParent:RemoveManagedFrame(self);
 end
 
-UIParentManagedFrameContainerMixin  = {  }; 
+UIParentManagedFrameContainerMixin = {};
+
 function UIParentManagedFrameContainerMixin:OnLoad()
-	self.showingFrames = { }; 
+	self.showingFrames = {};
 end
 
 function UIParentManagedFrameContainerMixin:UpdateFrame(frame)
-	frame:ClearAllPoints(); 
-	frame:SetParent(frame.layoutOnBottom and self.BottomManagedLayoutContainer or self); 
-	if(ObjectiveTrackerFrame) then
-		ObjectiveTracker_UpdateHeight(); 
-	end 
-	self:Layout(); 
+	frame:ClearAllPoints();
+	frame:SetParent(frame.layoutOnBottom and self.BottomManagedLayoutContainer or self);
+	if ObjectiveTrackerFrame then
+		ObjectiveTracker_UpdateHeight();
+	end
+	self:Layout();
 	self.BottomManagedLayoutContainer:Layout();
-end		
+end
 
 function UIParentManagedFrameContainerMixin:AddManagedFrame(frame)
+	if frame.IsInDefaultPosition and not frame:IsInDefaultPosition() then
+		return;
+	end
+
 	if frame.ignoreFramePositionManager then
 		return;
 	end
 
 	self.showingFrames[frame] = frame;
 	self:UpdateFrame(frame);
-end	
+end
 
 function UIParentManagedFrameContainerMixin:UpdateManagedFrames()
 	for _, frame in pairs(self.showingFrames) do
-		if(frame) then
-			self:UpdateFrame(frame); 
+		if frame then
+			self:UpdateFrame(frame);
 		end
-	end 
+	end
 
 	self:AnimInManagedFrames();
-end 
+end
 
 function UIParentManagedFrameContainerMixin:ClearManagedFrames()
 	self:AnimOutManagedFrames();
 end
 
 function UIParentManagedFrameContainerMixin:RemoveManagedFrame(frame)
-	if(not self.showingFrames[frame]) then
+	if not self.showingFrames[frame] then
 		return;
 	end
-	if(self:GetParent():IsShown()) then 
-		self.showingFrames[frame] = nil; 
-	end 
-	frame:ClearAllPoints(); 
-	if(ObjectiveTrackerFrame) then
-		ObjectiveTracker_UpdateHeight(); 
-	end 
-	self:Layout(); 
+	self.showingFrames[frame] = nil;
+
+	if not frame.IsInDefaultPosition then
+		frame:ClearAllPoints();
+	end
+
+	if ObjectiveTrackerFrame then
+		ObjectiveTracker_UpdateHeight();
+	end
+
+	self:Layout();
 	self.BottomManagedLayoutContainer:Layout();
-end 
+end
 
 function UIParentManagedFrameContainerMixin:UpdateManagedFramesAlphaState()
 	local isActionBarOverriden = OverrideActionBar and OverrideActionBar:IsShown();
@@ -3136,7 +3145,7 @@ function ShowUIPanel(frame, force)
 		return;
 	end
 
-	if ( not GetUIPanelAttribute(frame, "area") ) then
+	if ( frame.editModeManuallyShown or not GetUIPanelAttribute(frame, "area") ) then
 		frame:Show();
 		return;
 	end
@@ -3156,7 +3165,7 @@ function HideUIPanel(frame, skipSetPoint)
 		return;
 	end
 
-	if ( not GetUIPanelAttribute(frame, "area") ) then
+	if ( frame.editModeManuallyShown or not GetUIPanelAttribute(frame, "area") ) then
 		frame:Hide();
 		return;
 	end

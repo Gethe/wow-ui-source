@@ -17,44 +17,6 @@ end
 
 local KeybindingSpacer = {};
 
-AutoLootDropDownControlMixin = CreateFromMixins(SettingsDropDownControlMixin);
-
-function AutoLootDropDownControlMixin:Init(initializer)
-	SettingsDropDownControlMixin.Init(self, initializer);
-	
-	self.autoLootSetting = Settings.GetSetting("autoLootDefault");
-	self:UpdateLabel();
-
-	self.cbrHandles:SetOnValueChangedCallback("autoLootDefault", self.OnAutoLootChanged, self);
-end
-
-function AutoLootDropDownControlMixin:Release()
-	SettingsDropDownControlMixin.Release(self);
-end
-
-function AutoLootDropDownControlMixin:OnAutoLootChanged(setting, value)
-	self:UpdateLabel();
-end
-
-function AutoLootDropDownControlMixin:UpdateLabel()
-	local text = self.autoLootSetting:GetValue() and LOOT_KEY_TEXT or AUTO_LOOT_KEY_TEXT;
-	self.Text:SetText(text);
-end
-
-function CreateAutoLootInitializer(setting)
-	local options = Settings.CreateModifiedClickOptions({
-		OPTION_TOOLTIP_AUTO_LOOT_ALT_KEY,
-		OPTION_TOOLTIP_AUTO_LOOT_CTRL_KEY,
-		OPTION_TOOLTIP_AUTO_LOOT_SHIFT_KEY,
-		OPTION_TOOLTIP_AUTO_LOOT_NONE_KEY,
-	});
-
-	local data = Settings.CreateSettingInitializerData(setting, options, OPTION_TOOLTIP_AUTO_LOOT_KEY);
-	local initializer = Settings.CreateSettingInitializer("AutoLootDropDownControlTemplate", data);
-	initializer:AddSearchTags(LOOT_KEY_TEXT);
-	return initializer;
-end
-
 SettingsKeybindingSectionMixin = CreateFromMixins(SettingsExpandableSectionMixin);
 
 function SettingsKeybindingSectionMixin:OnLoad()
@@ -255,44 +217,24 @@ local function Register()
 		local initializer = CreateSettingsButtonInitializer("", SETTINGS_QUICK_KEYBIND_BUTTON, OnButtonClick);
 		layout:AddInitializer(initializer);
 	end
-
-	-- Self Cast Key
-	do
-		local tooltips = {
-			OPTION_TOOLTIP_AUTO_SELF_CAST_ALT_KEY,
-			OPTION_TOOLTIP_AUTO_SELF_CAST_CTRL_KEY,
-			OPTION_TOOLTIP_AUTO_SELF_CAST_SHIFT_KEY,
-			OPTION_TOOLTIP_AUTO_SELF_CAST_NONE_KEY,
-		};
-		Settings.SetupModifiedClickDropDown(category, "SELFCAST", "ALT", AUTO_SELF_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_AUTO_SELF_CAST_KEY_TEXT);
-	end
-
-	-- Focus Cast Key
-	do
-		local tooltips = {
-			OPTION_TOOLTIP_FOCUS_CAST_ALT_KEY,
-			OPTION_TOOLTIP_FOCUS_CAST_CTRL_KEY,
-			OPTION_TOOLTIP_FOCUS_CAST_SHIFT_KEY,
-			OPTION_TOOLTIP_FOCUS_CAST_NONE_KEY,
-		};
-		Settings.SetupModifiedClickDropDown(category, "FOCUSCAST", "ALT", FOCUS_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_FOCUS_CAST_KEY_TEXT);
-	end
-
-	-- Auto Loot
-	Settings.SetupCVarCheckBox(category, "autoLootDefault", AUTO_LOOT_DEFAULT_TEXT, OPTION_TOOLTIP_AUTO_LOOT_DEFAULT);
-
-	-- Auto Loot Key
-	do
-		local setting = Settings.RegisterModifiedClickSetting(category, "AUTOLOOTTOGGLE", AUTO_LOOT_KEY_TEXT, "SHIFT");
-		local initializer = CreateAutoLootInitializer(setting);
-		layout:AddInitializer(initializer);
-	end
 	
 
 	-- Keybinding sections
 	local bindingsCategories = {
-		[BINDING_HEADER_OTHER] = {},
+		[BINDING_HEADER_MOVEMENT]		= {order = 1, bindings={}},
+		[BINDING_HEADER_INTERFACE]		= {order = 2, bindings={}},
+		[BINDING_HEADER_ACTIONBAR]		= {order = 3, bindings={}},
+		[BINDING_HEADER_MULTIACTIONBAR] = {order = 4, bindings={}},
+		[BINDING_HEADER_CHAT]			= {order = 5, bindings={}},
+		[BINDING_HEADER_TARGETING]		= {order = 6, bindings={}},
+		[BINDING_HEADER_RAID_TARGET]	= {order = 7, bindings={}},
+		[BINDING_HEADER_VEHICLE]		= {order = 8, bindings={}},
+		[BINDING_HEADER_CAMERA]			= {order = 9, bindings={}},
+		[BINDING_HEADER_MISC]			= {order = 10, bindings={}},
+		[BINDING_HEADER_OTHER]			= {order = 11, bindings={}},
 	};
+
+	local nextOrderIndex = 12;
 
 	for bindingIndex = 1, GetNumBindings() do
 		local action, cat, binding1, binding2 = GetBinding(bindingIndex);
@@ -302,20 +244,27 @@ local function Register()
 		else
 			cat = _G[cat] or cat;
 			if not bindingsCategories[cat] then
-				bindingsCategories[cat] = {};
+				bindingsCategories[cat] = { order = nextOrderIndex, bindings={} };
+				nextOrderIndex = nextOrderIndex + 1;
 			end
 
 			if strsub(action, 1, 6) == "HEADER" then
-				tinsert(bindingsCategories[cat], KeybindingSpacer);
+				tinsert(bindingsCategories[cat].bindings, KeybindingSpacer);
 			else
-				tinsert(bindingsCategories[cat], {bindingIndex, action});
+				tinsert(bindingsCategories[cat].bindings, {bindingIndex, action});
 			end
 		end
 	end
 
-	for categoryName, bindingCategory in pairs(bindingsCategories) do
-		if #bindingCategory > 0 then
-			layout:AddInitializer(CreateKeybindingSectionInitializer(categoryName, bindingCategory));
+	local sortedCategories = {};
+
+	for cat, bindingCategory in pairs(bindingsCategories) do
+		sortedCategories[bindingCategory.order] = {cat = cat, bindings = bindingCategory.bindings};
+	end
+
+	for _, categoryInfo in ipairs(sortedCategories) do
+		if #(categoryInfo.bindings) > 0 then
+			layout:AddInitializer(CreateKeybindingSectionInitializer(categoryInfo.cat, categoryInfo.bindings));
 		end
 	end
 	

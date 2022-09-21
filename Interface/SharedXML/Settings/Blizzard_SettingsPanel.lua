@@ -454,26 +454,26 @@ function SettingsPanelMixin:CallRefreshOnCanvases()
 end
 
 function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
-	local words = {};
-	for word in string.gmatch(searchText:upper(), "([^, ]+)") do
+	searchText = searchText:upper();
+
+	local words = { searchText };
+	for word in string.gmatch(searchText, "([^, ]+)") do
 		table.insert(words, word);
 	end
 
-	local initializers = {};
-	local found = {};
+	local matches = {};
 	local function ParseCategory(category, parentCategory)
 		local layout = self:GetLayout(category);
 		local redirectCategory = category.redirectCategory or category;
 		if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Vertical then
 			for _, initializer in layout:EnumerateInitializers() do
-				if initializer:MatchesSearchTags(words) then
-					if not found[redirectCategory] then
-						found[redirectCategory] = true;
-
-						table.insert(initializers, CreateSettingsListSearchCategoryInitializer(redirectCategory));
+				local result = initializer:MatchesSearchTags(words);
+				if result then
+					if not matches[result] then
+						matches[result] = {};
 					end
 
-					table.insert(initializers, initializer);
+					table.insert(matches[result], { initializer = initializer, category = redirectCategory });
 				end
 			end
 		end
@@ -484,6 +484,24 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 
 		for index, subcategory in ipairs(category:GetSubcategories()) do
 			ParseCategory(subcategory, category);
+		end
+	end
+
+	local matchScores = GetKeysArray(matches);
+	table.sort(matchScores, function(a, b) return a > b end);
+
+	local initializers = {};
+	local found = {};
+	for _, score in ipairs(matchScores) do
+		for _, match in ipairs(matches[score]) do
+			local category = match.category;
+			if not found[category] then
+				found[category] = true;
+
+				table.insert(initializers, CreateSettingsListSearchCategoryInitializer(category));
+			end
+
+			table.insert(initializers, match.initializer);
 		end
 	end
 
@@ -530,13 +548,13 @@ function SettingsPanelMixin:OnSearchTextChanged()
 		
 		local settingsList = self:GetSettingsList();
 		local searchSuccess = not layout:IsEmpty();
-		if searchSuccess then
-			settingsList.Header.Title:SetText(SETTINGS_SEARCH_RESULTS);
-
-			self:DisplayLayout(layout);
-		else
-			self:DisplayCategory(self:GetCurrentCategory());
+		if not searchSuccess then
+			layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SETTINGS_SEARCH_NOTHING_FOUND));
 		end
+
+		settingsList.Header.Title:SetText(SETTINGS_SEARCH_RESULTS);
+
+		self:DisplayLayout(layout);
 
 		settingsList.Header.DefaultsButton:SetShown(not searchSuccess);
 	end

@@ -1295,8 +1295,11 @@ end
 function LFGListEntryCreationActivityFinder_InitButton(button, elementData)
 	local id = elementData.id;
 	button.activityID = id;
-	button:SetText(C_LFGList.GetActivityInfo(id));
-	LFGListEntryCreationActivityFinder_SetButtonSelected(button, LFGListFrame.EntryCreation.ActivityFinder.selectedActivity == id);
+	local activityInfo = C_LFGList.GetActivityInfoTable(id);
+	if(activityInfo) then 
+		button:SetText(activityInfo.fullName);
+		LFGListEntryCreationActivityFinder_SetButtonSelected(button, LFGListFrame.EntryCreation.ActivityFinder.selectedActivity == id);
+	end 
 end
 
 function LFGListEntryCreationActivityFinder_SetButtonSelected(button, selected)

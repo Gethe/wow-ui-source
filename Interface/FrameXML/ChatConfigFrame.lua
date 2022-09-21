@@ -1717,7 +1717,7 @@ function ChatConfigCombat_OnLoad()
 	-- Create tabs
 	local tab;
 	local tabName = CHAT_CONFIG_COMBAT_TAB_NAME;
-	local name, text;
+	local name;
 	for index, value in ipairs(COMBAT_CONFIG_TABS) do
 		name = tabName..index;
 		if ( not _G[name] ) then
@@ -1728,8 +1728,7 @@ function ChatConfigCombat_OnLoad()
 				tab:SetPoint("BOTTOMLEFT", ChatConfigBackgroundFrame, "TOPLEFT", 2, -1);
 			end
 
-			text = _G[name.."Text"];
-			text:SetText(value.text);
+			tab.Text:SetText(value.text);
 			tab:SetID(index);
 			PanelTemplates_TabResize(tab, 0);
 		end
@@ -1932,21 +1931,20 @@ function GetMessageTypeState(messageType)
 end
 
 function ChatConfig_UpdateCombatTabs(selectedTabID)
-	local tab, text, frame;
+	local tab, frame;
 	for index, value in ipairs(COMBAT_CONFIG_TABS) do
 		tab = _G[CHAT_CONFIG_COMBAT_TAB_NAME..index];
-		text = _G[CHAT_CONFIG_COMBAT_TAB_NAME..index.."Text"];
 		frame = _G[value.frame];
 		if ( (not Blizzard_CombatLog_Filters) or #Blizzard_CombatLog_Filters.filters == 0 ) then
 			tab:SetAlpha(0.75);
-			text:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			tab.Text:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		elseif ( index == selectedTabID ) then
 			tab:SetAlpha(1.0);
-			text:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			tab.Text:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			frame:Show();
 		else
 			tab:SetAlpha(0.75);
-			text:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			tab.Text:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 			frame:Hide();
 		end
 

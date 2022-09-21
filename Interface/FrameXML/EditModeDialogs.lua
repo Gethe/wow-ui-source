@@ -312,6 +312,7 @@ function EditModeSystemSettingsDialogMixin:ReleaseNonDraggingSliders()
 	end
 
 	for _, releaseSlider in ipairs(releaseSliders) do
+		releaseSlider.Slider:Release();
 		self.pools:Release(releaseSlider);
 	end
 

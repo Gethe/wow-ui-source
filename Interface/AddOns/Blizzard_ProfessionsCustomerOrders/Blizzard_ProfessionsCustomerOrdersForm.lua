@@ -375,7 +375,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 				slot.Button:SetScript("OnMouseDown", function(button, buttonName, down)
 					if not slot:IsUnallocatable() then
 						if buttonName == "LeftButton" then
-							local flyout = ToggleProfessionsItemFlyout(slot.Button);
+							local flyout = ToggleProfessionsItemFlyout(slot.Button, ProfessionsCustomerOrdersFrame);
 							if flyout then
 								local function OnFlyoutItemSelected(o, flyout, item)
 									local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());

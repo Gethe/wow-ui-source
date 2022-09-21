@@ -107,7 +107,6 @@ TalentFrameBaseMixin = CreateFromMixins(CallbackRegistryMixin);
 local TalentFrameBaseEvents = {
 	"TRAIT_NODE_CHANGED",
 	"TRAIT_NODE_ENTRY_UPDATED",
-	"TRAIT_TREE_CHANGED",
 	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
 };
 
@@ -151,6 +150,7 @@ function TalentFrameBaseMixin:OnLoad()
 	-- These need to always be registered so that the entire loadout change process is always captured.
 	self:RegisterEvent("TRAIT_CONFIG_UPDATED");
 	self:RegisterEvent("CONFIG_COMMIT_FAILED");
+	self:RegisterEvent("TRAIT_TREE_CHANGED");
 end
 
 function TalentFrameBaseMixin:RegisterOnUpdate()
@@ -247,9 +247,7 @@ function TalentFrameBaseMixin:OnHide()
 		self:SetCommitVisualsActive(false);
 	end
 
-	if self.playingBackgroundFlash then
-		self:SetBackgroundFlashActive(false);
-	end
+	self:SetCommitCompleteVisualsActive(false);
 
 	self:ClearInfoCaches();
 end
@@ -407,15 +405,8 @@ function TalentFrameBaseMixin:GetPanExtents()
 
 	local basePanWidth, basePanHeight = self:GetPanViewSize();
 	local maxZoomFactor = (1 / treeInfo.minZoom);
-	local rawPanWidth = (basePanWidth * maxZoomFactor);
-	local rawPanHeight = (basePanHeight * maxZoomFactor);
-
-	local treePanWidth = (treeInfo.panWidth or 0);
-	local treePanHeight = (treeInfo.panHeight or 0);
-
-	local maxTreeWidth = math.max(rawPanWidth, treePanWidth);
-	local maxTreeHeight = math.max(rawPanHeight, treePanHeight);
-
+	local maxTreeWidth = (basePanWidth * maxZoomFactor);
+	local maxTreeHeight = (basePanHeight * maxZoomFactor);
 	local panWidth = maxTreeWidth - (basePanWidth * zoomLevelFactor);
 	local panHeight = maxTreeHeight - (basePanHeight * zoomLevelFactor);
 	return Clamp(panWidth, 0, math.huge), Clamp(panHeight, 0, math.huge);
@@ -663,7 +654,12 @@ function TalentFrameBaseMixin:ReleaseTalentButton(talentButton, forReinstantiati
 end
 
 function TalentFrameBaseMixin:ReleaseAndReinstantiateTalentButtonByID(nodeID)
-	return self:ReleaseAndReinstantiateTalentButton(self:GetTalentButtonByNodeID(nodeID));
+	local existingButton = self:GetTalentButtonByNodeID(nodeID);
+	if existingButton then
+		return self:ReleaseAndReinstantiateTalentButton(existingButton);
+	else
+		return self:InstantiateTalentButton(nodeID);
+	end
 end
 
 function TalentFrameBaseMixin:ReleaseAndReinstantiateTalentButton(talentButton)
@@ -903,7 +899,7 @@ function TalentFrameBaseMixin:GetTreeInfo()
 end
 
 function TalentFrameBaseMixin:GetButtonSize()
-	return self:GetTreeInfo().buttonSize;
+	return self.buttonSize;
 end
 
 function TalentFrameBaseMixin:ShouldHideSingleRankNumbers()
@@ -991,17 +987,6 @@ function TalentFrameBaseMixin:SetDisabledOverlayShown(shown)
 	self.DisabledOverlay:SetShown(shown);
 end
 
-function TalentFrameBaseMixin:SetBackgroundFlashActive(activateFlash)
-	if activateFlash then
-		self.AnimationHolder.BackgroundFlashAnim:Restart();
-		self.playingBackgroundFlash = true;
-	else
-		self.BackgroundFlash:SetAlpha(0);
-		self.AnimationHolder.BackgroundFlashAnim:Stop();
-		self.playingBackgroundFlash = false;
-	end
-end
-
 function TalentFrameBaseMixin:SetCommitVisualsActive(active)
 	self.DisabledOverlay:SetShown(active);
 
@@ -1010,6 +995,19 @@ function TalentFrameBaseMixin:SetCommitVisualsActive(active)
 			OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, "applyingtalents");
 		else
 			OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
+		end
+	end
+end
+
+function TalentFrameBaseMixin:SetCommitCompleteVisualsActive(active)
+	if self.enableCommitEndFlash then
+		if active then
+			self.AnimationHolder.BackgroundFlashAnim:Restart();
+			self.playingBackgroundFlash = true;
+		elseif self.playingBackgroundFlash then
+			self.BackgroundFlash:SetAlpha(0);
+			self.AnimationHolder.BackgroundFlashAnim:Stop();
+			self.playingBackgroundFlash = false;
 		end
 	end
 end
@@ -1029,8 +1027,12 @@ function TalentFrameBaseMixin:SetCommitStarted(configID, isCommitFailure)
 		self.commitTimer = nil;
 	end
 
-	if self.enableCommitEndFlash and (not isCommitStarted and wasCommitActive) and not isCommitFailure then
-		self:SetBackgroundFlashActive(true);
+	if self:IsShown() then
+		if isCommitFailure then
+			self:SetCommitCompleteVisualsActive(false);
+		elseif not isCommitStarted and wasCommitActive then
+			self:SetCommitCompleteVisualsActive(true);
+		end
 	end
 end
 
@@ -1196,7 +1198,7 @@ end
 
 function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shouldAddSpacer)
 	if #conditionIDs < 0 then
-		return;
+		return false;
 	end
 
 	local bestGateConditionID = nil;
@@ -1211,6 +1213,7 @@ function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shou
 		end
 	end
 
+	local addedAny = false;
 	for i, conditionID in ipairs(conditionIDs) do
 		local condInfo = self:GetAndCacheCondInfo(conditionID);
 		if condInfo.tooltipText and (not condInfo.isGate or (conditionID == bestGateConditionID)) then
@@ -1220,12 +1223,14 @@ function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shou
 			end
 
 			GameTooltip_AddHighlightLine(tooltip, condInfo.tooltipText);
+			addedAny = true;
 		end
 	end
+
+	return addedAny;
 end
 
 function TalentFrameBaseMixin:AddEdgeRequirementsToTooltip(tooltip, nodeID, shouldAddSpacer)
-
 	local incomingEdges = self:GetIncomingEdgeInfoForNode(nodeID);
 
 	local requiresAllPrecedingTraits = true;
@@ -1242,13 +1247,16 @@ function TalentFrameBaseMixin:AddEdgeRequirementsToTooltip(tooltip, nodeID, shou
 		end
 	end
 
-	if requiresAllPrecedingTraits and numOfEdges > 1 and not areAllPrecedingEdgesActive  then
+	if requiresAllPrecedingTraits and numOfEdges > 1 and not areAllPrecedingEdgesActive then
 		if shouldAddSpacer then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 		end
 
 		GameTooltip_AddErrorLine(tooltip, GENERIC_TRAIT_FRAME_EDGE_REQUIREMENTS_BUTTON_TOOLTIP);
+		return true;
 	end
+
+	return false;
 end
 
 function TalentFrameBaseMixin:GetIncomingEdgeInfoForNode(nodeID)

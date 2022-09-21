@@ -1,39 +1,59 @@
-LOOTFRAME_NUMBUTTONS = 5;
-MASTER_LOOT_THREHOLD = 4;
+local ScrollBoxElementHeight = 46;
+local ScrollBoxPad = 6;
+local ScrollBoxSpacing = 2;
 
-local LOOT_SLOT_NONE = 0;
-local LOOT_SLOT_ITEM = 1;
-local LOOT_SLOT_MONEY = 2;
-local LOOT_SLOT_CURRENCY = 3;
-
-local LOOTFRAME_BASEHEIGHT = 290;
-local LOOTFRAME_BASEWIDTH = 220;
-
-local LOOTFRAME_BUTTONHEIGHT = 46;
-local LOOTFRAME_SCROLLBARWIDTH = 16;
-
-local LOOTFRAME_PAD = 6;
-local LOOTFRAME_SPACING = 2;
+local FrameEvents =
+{
+	"LOOT_SLOT_CLEARED",
+	"LOOT_SLOT_CHANGED",
+};
 
 LootFrameMixin = {};
 
 function LootFrameMixin:OnLoad()
+	ScrollingFlatPanelMixin.OnLoad(self);
+	EditModeSystemMixin.OnSystemLoad(self);
+
 	self:RegisterEvent("LOOT_OPENED");
-	self:RegisterEvent("LOOT_SLOT_CLEARED");
-	self:RegisterEvent("LOOT_SLOT_CHANGED");
 	self:RegisterEvent("LOOT_CLOSED");
-	self:RegisterEvent("OPEN_MASTER_LOOT_LIST");
-	self:RegisterEvent("UPDATE_MASTER_LOOT_LIST");
 
-	local Pad = LOOTFRAME_PAD;
-	local Spacing = LOOTFRAME_SPACING;
-	local view = CreateScrollBoxListLinearView(Pad, Pad, Pad, Pad, Spacing);
+	local view = CreateScrollBoxListLinearView(ScrollBoxPad, ScrollBoxPad, ScrollBoxPad, ScrollBoxPad, ScrollBoxSpacing);
 
-	local function Initializer(button, elementData)
-		LootButton_Update(button);
+	local function Initializer(frame, elementData)
+		frame:Init();
+
+		frame.Item:SetScript("OnClick", function(button, buttonName, down)
+			if IsModifiedClick() then
+				local link = GetLootSlotLink(frame:GetSlotIndex());
+				HandleModifiedItemClick(link);
+			else
+				-- Values required by GroupLoot and MasterLoot frames. If these frames are returned
+				-- to service, it would be ideal to expose these values through an API.
+				self.selectedLootFrame = frame;
+				self.selectedSlot = frame:GetSlotIndex();
+				self.selectedQuality = frame:GetQuality();
+				self.selectedItemName = frame.Text:GetText();
+				self.selectedTexture = button.icon:GetTexture();
+
+				StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
+
+				LootSlot(frame:GetSlotIndex());
+
+				EventRegistry:TriggerEvent("LootFrame.ItemLooted");
+			end
+		end);
 	end
 
-	view:SetElementInitializer("LootButtonTemplate", Initializer);
+	view:SetElementFactory(function(factory, elementData)
+		local lootSlotType = GetLootSlotType(elementData.slotIndex);
+		if (lootSlotType == Enum.LootSlotType.Item) or (lootSlotType == Enum.LootSlotType.Currency) then
+			factory("LootFrameItemElementTemplate", Initializer);
+		elseif lootSlotType == Enum.LootSlotType.Money then
+			factory("LootFrameMoneyElementTemplate", Initializer);
+		elseif lootSlotType == Enum.LootSlotType.None then
+			factory("LootFrameBaseElementTemplate");
+		end
+	end);
 
 	ScrollUtil.InitScrollBoxWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
@@ -46,104 +66,117 @@ function LootFrameMixin:OnLoad()
 	self.ScrollBox:GetLowerShadowTexture():SetPoint("BOTTOMRIGHT", -30, 0);
 end
 
+function LootFrameMixin:OnHideAnimFinished()
+	ScrollingFlatPanelMixin.OnHideAnimFinished(self);
+
+	StaticPopup_Hide("LOOT_BIND");
+end
+
+function LootFrameMixin:CalculateElementsHeight()
+	return ScrollUtil.CalculateScrollBoxElementExtent(self.ScrollBox:GetDataProviderSize(), ScrollBoxElementHeight, ScrollBoxSpacing);
+end
+
 function LootFrameMixin:OnEvent(event, ...)
-	if ( event == "LOOT_OPENED" ) then
-		local autoLoot, isFromItem = ...;
+	if event == "LOOT_OPENED" then
+		local isAutoLoot, acquiredFromItem = ...;
+		self.isAutoLoot = isAutoLoot;
 
-		self.isAutoLoot = autoLoot;
+		self:Open();
 
-		self:LootFrame_Show();
-		if ( not self:IsShown()) then
-			CloseLoot(not autoLoot);	-- The parameter tells code that we were unable to open the UI
-		else
-			if ( isFromItem ) then
+		if self:IsShown() then
+			if acquiredFromItem then
 				PlaySound(SOUNDKIT.UI_CONTAINER_ITEM_OPEN);
+			elseif IsFishingLoot() then
+				PlaySound(SOUNDKIT.FISHING_REEL_IN);
+			elseif self.ScrollBox:GetDataProvider():IsEmpty() then
+				PlaySound(SOUNDKIT.LOOT_WINDOW_OPEN_EMPTY);
 			end
+		else
+			local showUnopenableError = not self.isAutoLoot;
+			CloseLoot(showUnopenableError);
 		end
-	elseif ( event == "LOOT_SLOT_CLEARED" ) then
-		local arg1 = ...;
-		if ( not self:IsShown() ) then
-			return;
-		end
-
-		local button = self.ScrollBox:FindFrameByPredicate(function(frame)
-			return frame:GetElementData().index == arg1;
+	elseif event == "LOOT_SLOT_CLEARED" then
+		local slotIndex = ...;
+		local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
+			return frame:GetSlotIndex() == slotIndex;
 		end);
-		if button then
+
+		if frame then
 			if self.isAutoLoot then
-				button.AutoLootAnim:Play();
+				frame.SlideOutRightAnim:Play();
 			else
-				button:Hide();
+				frame:Hide();
 			end
 		end
-	elseif ( event == "LOOT_SLOT_CHANGED" ) then
-		local arg1 = ...;
+	elseif event == "LOOT_SLOT_CHANGED" then
+		local slotIndex = ...;
+		local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
+			return frame:GetSlotIndex() == slotIndex;
+		end);
 
-		if ( not self:IsShown() ) then
-			return;
+		if frame then
+			frame:Init();
 		end
-
-		self:Update();
-	elseif ( event == "LOOT_CLOSED" ) then
+	elseif event == "LOOT_CLOSED" then
 		self:Close();
-	elseif ( event == "OPEN_MASTER_LOOT_LIST" ) then
-		ToggleDropDownMenu(1, nil, GroupLootDropDown, self.selectedLootButton, 0, 0);
-	elseif ( event == "UPDATE_MASTER_LOOT_LIST" ) then
-		MasterLooterFrame_UpdatePlayers();
 	end
 end
 
-local LOOT_UPDATE_INTERVAL = 0.5;
-function LootFrameMixin:OnUpdate(elapsed)
-	self.timeSinceUpdate = (self.timeSinceUpdate or 0) + elapsed;
-	if ( self.timeSinceUpdate >= LOOT_UPDATE_INTERVAL ) then
-		self:SetScript("OnUpdate", nil);
-		self.timeSinceUpdate = nil;
-		self:Update();
+function LootFrameMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, FrameEvents);
+end
+
+function LootFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, FrameEvents);
+
+	self.ScrollBox:ClearDataProvider();
+
+	CloseLoot();
+
+	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
+
+	EventRegistry:TriggerEvent("LootFrame.Hide");
+end
+
+function LootFrameMixin:Open()
+	local dataProvider = CreateDataProvider();
+	for slotIndex = 1, GetNumLootItems() do
+		local texture, item, quantity, currencyID, quality, locked, isQuestItem, questID, isActive, isCoin = GetLootSlotInfo(slotIndex);
+		if currencyID then 
+			item, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, quality);
+		end
+
+		local group = isCoin and 1 or 0;
+		dataProvider:Insert({slotIndex = slotIndex, group = group, quality = quality});
 	end
-end
 
-function LootFrameMixin:Update(retainScrollPosition)
-	local numLootItems = self.numLootItems;
+	dataProvider:SetSortComparator(function(a, b)
+		if a.group ~= b.group then
+			return a.group > b.group;
+		end
 
-	local dataProvider = CreateDataProviderByIndexCount(numLootItems);
+		if a.quality ~= b.quality then
+			return a.quality > b.quality;
+		end
 
-	self.ScrollBox:SetDataProvider(dataProvider, retainScrollPosition == nil and ScrollBoxConstants.RetainScrollPosition or retainScrollPosition);
-end
+		return a.slotIndex < b.slotIndex;
+	end);
 
-function LootFrameMixin:Close()
-	self.ShowAnim:Stop();
-	self.HideAnim:Play(false);
+	self.ScrollBox:SetDataProvider(dataProvider);
 
-	self.isShowingLoot = false;
-end
-
-function LootFrameMixin:LootFrame_Show()
-	self.numLootItems = GetNumLootItems();
-
-	if ( GetCVar("lootUnderMouse") == "1" ) then
+	if GetCVarBool("lootUnderMouse") then
+		-- ShowUIPanel is not called here because we don't
+		-- want the repositioning behavior that occurs.
+		if CanAutoSetGamePadCursorControl(true) then
+			SetGamePadCursorControl(true);
+		end
 		self:Show();
-		-- position loot window under mouse cursor
+
 		local x, y = GetCursorPosition();
-		x = x / self:GetEffectiveScale();
-		y = y / self:GetEffectiveScale();
-
-		local posX = x - 175;
-		local posY = y + 25;
-
-		if (self.numLootItems > 0) then
-			posX = x - 40;
-			posY = y + 55;
-			posY = posY + 40;
-		end
-
-		if( posY < 350 ) then
-			posY = 350;
-		end
-
+		x = x / (self:GetEffectiveScale()) - 30;
+		y = math.max((y / self:GetEffectiveScale()) + 50, 350);
 		self:ClearAllPoints();
-		self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", posX, posY);
-		self:GetCenter();
+		self:SetPoint("TOPLEFT", nil, "BOTTOMLEFT", x, y);
 		self:Raise();
 	else
 		ShowUIPanel(self);
@@ -152,165 +185,146 @@ function LootFrameMixin:LootFrame_Show()
 		self:ApplySystemAnchor();
 	end
 
-	local showScrollBar = self.numLootItems > LOOTFRAME_NUMBUTTONS;
-	if (showScrollBar) then
-		self:SetHeight(LOOTFRAME_BASEHEIGHT);
-		self:SetWidth(LOOTFRAME_BASEWIDTH + LOOTFRAME_SCROLLBARWIDTH);
-	else
-		local fitToHeight = LOOTFRAME_BASEHEIGHT - ((LOOTFRAME_BUTTONHEIGHT + LOOTFRAME_SPACING) * (LOOTFRAME_NUMBUTTONS - self.numLootItems));
-		self:SetHeight(fitToHeight);
-		self:SetWidth(LOOTFRAME_BASEWIDTH);
-	end
-	self.ScrollBar:SetShown(showScrollBar);
-	self.ScrollBox:SetWidth(LOOTFRAME_BASEWIDTH - LOOTFRAME_PAD);
-
-	self:Update(ScrollBoxConstants.DiscardScrollPosition);
-
-	self.HideAnim:Stop();
-	self.ShowAnim:Play(true);
-
-	self.isShowingLoot = true;
-end
-
-function LootFrameMixin:OnShow()
-	if( self.numLootItems == 0 ) then
-		PlaySound(SOUNDKIT.LOOT_WINDOW_OPEN_EMPTY);
-	elseif( IsFishingLoot() ) then
-		PlaySound(SOUNDKIT.FISHING_REEL_IN);
-	end
-end
-
-function LootFrameMixin:OnHide()
-	CloseLoot();
-	-- Close any loot distribution confirmation windows
-	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
-	MasterLooterFrame:Hide();
+	-- Avoid interfering with the visibility managed above.
+	local skipShow = true;
+	ScrollingFlatPanelMixin.Open(self, skipShow);
 end
 
 function LootFrameMixin:UpdateShownState()
 	if self.isInEditMode then
-		self.ShowAnim:Stop();
-		self.HideAnim:Stop();
+		self:StopAllAnimations();
 		self:SetAlpha(1);
-		self:SetHeight(LOOTFRAME_BASEHEIGHT);
+		self:SetHeight(self:GetPanelMaxHeight());
+		self:Show();
+	else
+		self:SetShown(self.isOpen);
 	end
-
-	self:SetShown(self.isInEditMode or self.isShowingLoot);
 end
 
-function LootButton_Update(button)
-	local numLootItems = LootFrame.numLootItems;
-	local self = LootFrame;
+LootFrameBaseElementMixin = {};
 
-	local slot = button:GetElementData().index;
-	if ( not LootSlotHasItem(slot) ) then
-		if not self.isAutoLoot then
-			button:Hide();
+function LootFrameBaseElementMixin:GetSlotIndex()
+	local elementData = self:GetElementData();
+	return elementData.slotIndex;
+end
+
+function LootFrameBaseElementMixin:GetQuality()
+	local elementData = self:GetElementData();
+	return elementData.quality;
+end
+
+function LootFrameBaseElementMixin:GetItemSlotType()
+	return GetLootSlotType(self:GetSlotIndex());
+end
+
+function LootFrameBaseElementMixin:Init()
+end
+
+LootFrameElementMixin = CreateFromMixins(LootFrameBaseElementMixin);
+
+function LootFrameElementMixin:OnLoad()
+	self.Item:SetScript("OnEnter", GenerateClosure(self.OnEnter, self));
+	self.Item:SetScript("OnLeave", GenerateClosure(self.OnLeave, self));
+
+	self.Item:SetScript("OnMouseDown", function(button)
+		self.PushedNameFrame:Show();
+	end);
+
+	self.Item:SetScript("OnMouseUp", function(button)
+		self.PushedNameFrame:Hide();
+	end);
+
+	self.Item:SetScript("OnUpdate", function(button)
+		if GameTooltip:IsOwned(self) then
+			self:OnEnter();
 		end
-		return;
-	end
 
-	local texture, item, quantity, currencyID, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
+		CursorOnUpdate(self);
+	end);
+end
 
-	if ( currencyID ) then 
+function LootFrameElementMixin:Init()
+	local slotIndex = self:GetSlotIndex();
+	local texture, item, quantity, currencyID, quality, locked, isQuestItem, questID, isActive = GetLootSlotInfo(slotIndex);
+	if currencyID then 
 		item, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, quality);
 	end
 
-	local slotType = GetLootSlotType(slot);
-	local isMoney = slotType == LOOT_SLOT_MONEY;
+	local color = ITEM_QUALITY_COLORS[quality].color;
 
-	local text = isMoney and button.MoneyText or button.Text;
-	local hiddenText = isMoney and button.Text or button.MoneyText;
-	hiddenText:SetText("");
-	button.QualityText:SetShown(not isMoney);
-	button.QualityFrame:SetShown(not isMoney);
-	if ( texture ) then
-		local color = ITEM_QUALITY_COLORS[quality];
-		SetItemButtonQuality(button.Item, quality, GetLootSlotLink(slot));
-		button.Item.icon:SetTexture(texture);
-		text:SetText(item);
-		button.QualityText:SetText(_G["ITEM_QUALITY"..quality.."_DESC"]);
-		button.NameFrame:SetVertexColor(color.r, color.g, color.b);
-		if( locked ) then
-			SetItemButtonTextureVertexColor(button.Item, 0.9, 0, 0);
-			SetItemButtonNormalTextureVertexColor(button.Item, 0.9, 0, 0);
+	self.Text:SetText(item);
+	self.Text:SetVertexColor(color:GetRGB());
+	self.NameFrame:SetVertexColor(color:GetRGB());
+
+	if questID and not isActive then
+		self.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
+		self.IconQuestTexture:Show();
+	elseif questID or isQuestItem then
+		self.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
+		self.IconQuestTexture:Show();
 		else
-			SetItemButtonTextureVertexColor(button.Item, 1.0, 1.0, 1.0);
-			SetItemButtonNormalTextureVertexColor(button.Item, 1.0, 1.0, 1.0);
+		self.IconQuestTexture:Hide();
 		end
 
-		local questTexture = button.IconQuestTexture;
-		if ( questId and not isActive ) then
-			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
-			questTexture:Show();
-		elseif ( questId or isQuestItem ) then
-			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
-			questTexture:Show();
-		else
-			questTexture:Hide();
-		end
-
-		text:SetVertexColor(color.r, color.g, color.b);
-		local countString = button.Item.Count;
-		if ( quantity > 1 ) then
-			countString:SetText(quantity);
-			countString:Show();
-		else
-			countString:Hide();
-		end
-		button.slot = slot;
-		button.quality = quality;
-		button.Item:Enable();
+	if locked then
+		SetItemButtonTextureVertexColor(self.Item, 0.9, 0, 0);
+		SetItemButtonNormalTextureVertexColor(self.Item, 0.9, 0, 0);
 	else
-		text:SetText("");
-		button.QualityText:SetText("");
-		button.Item.icon:SetTexture(nil);
-		SetItemButtonNormalTextureVertexColor(button.Item, 1.0, 1.0, 1.0);
-		LootFrame:SetScript("OnUpdate", LootFrame.OnUpdate);
-		button.Item:Disable();
+		SetItemButtonTextureVertexColor(self.Item, 1.0, 1.0, 1.0);
+		SetItemButtonNormalTextureVertexColor(self.Item, 1.0, 1.0, 1.0);
 	end
-	button.AutoLootAnim:Stop();
-	button.ShownAnim:Play();
-	button:Show();
+	
+	local link = GetLootSlotLink(slotIndex);
+	SetItemButtonQuality(self.Item, quality, link);
+	self.Item.icon:SetTexture(texture);
+
+	if quantity > 1 then
+		self.Item.Count:SetText(quantity);
+		self.Item.Count:Show();
+		else
+		self.Item.Count:Hide();
+	end
+
+	self.Item:Enable();
+
+	self.SlideOutRightAnim:Stop();
+	self.ShowAnim:Play();
 end
 
-function LootButton_OnClick(self, button)
-	-- Close any loot distribution confirmation windows
-	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
-	MasterLooterFrame:Hide();
-
-	LootFrame.selectedLootButton = self:GetName();
-	LootFrame.selectedSlot = self.slot;
-	LootFrame.selectedQuality = self.quality;
-	LootFrame.selectedItemName = self.Text:GetText();
-	LootFrame.selectedTexture = self.Item.icon:GetTexture();
-	LootSlot(self.slot);
-end
-
-function LootItem_OnEnter(self)
-	local slot = self:GetElementData().index;
-	local slotType = GetLootSlotType(slot);
-	if ( slotType == LOOT_SLOT_ITEM ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetLootItem(slot);
-		CursorUpdate(self);
-	end
-	if ( slotType == LOOT_SLOT_CURRENCY ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetLootCurrency(slot);
-		CursorUpdate(self);
-	end
+function LootFrameElementMixin:OnEnter()
 	self.HighlightNameFrame:Show();
 end
 
-function LootItem_OnLeave(self)
+function LootFrameElementMixin:OnLeave()
+	GameTooltip:Hide();
+
+	ResetCursor();
+
 	self.HighlightNameFrame:Hide();
 end
 
-function LootItem_OnMouseDown(self)
-	self.PushedNameFrame:Show();
+LootFrameItemElementMixin = CreateFromMixins(LootFrameElementMixin);
+
+function LootFrameItemElementMixin:Init()
+	LootFrameElementMixin.Init(self);
+
+	local elementData = self:GetElementData();
+	self.QualityText:SetText(_G[string.format("ITEM_QUALITY%s_DESC", elementData.quality)]);
 end
 
-function LootItem_OnMouseUp(self)
-	self.PushedNameFrame:Hide();
+function LootFrameItemElementMixin:OnEnter()
+	LootFrameElementMixin.OnEnter(self);
+
+	local lootSlotType = self:GetItemSlotType();
+	if lootSlotType == Enum.LootSlotType.Currency then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetLootCurrency(self:GetSlotIndex());
+
+		CursorUpdate(self);
+	elseif lootSlotType == Enum.LootSlotType.Item then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetLootItem(self:GetSlotIndex());
+
+		CursorUpdate(self);
+	end
 end

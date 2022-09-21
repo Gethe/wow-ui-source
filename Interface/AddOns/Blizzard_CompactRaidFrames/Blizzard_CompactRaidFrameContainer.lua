@@ -170,7 +170,9 @@ function CompactRaidFrameContainerMixin:LayoutFrames()
 		self:AddPets();
 	end
 	
+	self:SetSize(3000, 3000);
 	FlowContainer_ResumeUpdates(self);
+	self:Layout();
 	
 	self:UpdateBorder();
 	self:ReleaseAllReservedFrames();
@@ -239,7 +241,9 @@ function CompactRaidFrameContainerMixin:AddPlayers()
 		if self.flowFilterFunc(unit) then
 			self:AddUnitFrame(unit, "raid");
 		elseif i <= numForcedMembersShown then
-			self:AddUnitFrame(unit, "raidFake", "player");
+			local partyToken = "party"..(i - 1);
+			local unitToken = UnitExists(partyToken) and partyToken or "player";
+			self:AddUnitFrame(unit, "raidFake", unitToken);
 		end
 	end
 end

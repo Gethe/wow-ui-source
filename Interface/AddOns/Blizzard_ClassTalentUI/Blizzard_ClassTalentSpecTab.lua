@@ -333,16 +333,16 @@ function ClassSpecContentFrameMixin:SetActivationFlashPlaying(playFlash)
 	if playFlash then
 		self.AnimationHolder.ActivationFlashBack:Restart();
 		if not self.isLeftMostSpec then
-			self.AnimationHolder.ActivationFlashLeft:Restart();
+			--self.AnimationHolder.ActivationFlashLeft:Restart();
 		end
 		if not self.isRightMostSpec then
-			self.AnimationHolder.ActivationFlashRight:Restart();
+			--self.AnimationHolder.ActivationFlashRight:Restart();
 		end
 		self.playingActivationFlash = true;
 	else
 		self.AnimationHolder.ActivationFlashBack:Stop();
-		self.AnimationHolder.ActivationFlashLeft:Stop();
-		self.AnimationHolder.ActivationFlashRight:Stop();
+		--self.AnimationHolder.ActivationFlashLeft:Stop();
+		--self.AnimationHolder.ActivationFlashRight:Stop();
 		self.playingActivationFlash = false;
 	end
 end

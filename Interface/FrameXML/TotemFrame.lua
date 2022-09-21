@@ -169,13 +169,13 @@ function TotemFrame_AdjustPetFrame()
 	local _, class = UnitClass("player");
 	if ( class == "WARLOCK" ) then
 		if ( PetFrame:IsShown() and TotemFrameTotem4:IsShown() ) then
-			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 156, -90);
+			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 156, -97);
 		elseif ( PetFrame:IsShown() and TotemFrameTotem3:IsShown() ) then
-			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 126, -90);
+			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 126, -97);
 		elseif ( PetFrame:IsShown() and TotemFrameTotem2:IsShown() ) then
-			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 93, -90);
+			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 93, -97);
 		else
-			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
+			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -97);
 		end
 	end
 end

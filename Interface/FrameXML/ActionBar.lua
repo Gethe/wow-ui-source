@@ -187,11 +187,11 @@ function EditModeActionBarMixin:EditModeActionBar_OnEvent(event, ...)
 end
 
 function EditModeActionBarMixin:EditModeActionBar_OnShow()
-    self:OnVisibilityUpdated();
+    EditModeManagerFrame:UpdateActionBarLayout(self);
 end
 
 function EditModeActionBarMixin:EditModeActionBar_OnHide()
-    self:OnVisibilityUpdated();
+    EditModeManagerFrame:UpdateActionBarLayout(self);
 end
 
 function EditModeActionBarMixin:IsShownOverride()
@@ -275,13 +275,4 @@ function EditModeActionBarMixin:UpdateVisibility()
 
     -- If no other rules, show the bar
     self:ShowBase();
-end
-
-function EditModeActionBarMixin:OnVisibilityUpdated()
-    -- When some action bars visibility changes we need to update our width/height with edit mode
-    if (EditModeUtil:IsRightAnchoredActionBar(self)) then
-        EditModeManagerFrame:UpdateRightAnchoredActionBarWidth();
-    elseif (EditModeUtil:IsBottomAnchoredActionBar(self)) then
-        EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
-    end
 end

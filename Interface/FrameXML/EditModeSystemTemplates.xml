@@ -199,4 +199,14 @@
 			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
+
+	<Frame name="EditModeHudTooltipSystemTemplate" inherits="EditModeSystemTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.HudTooltip" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_HUD_TOOLTIP_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
 </Ui>

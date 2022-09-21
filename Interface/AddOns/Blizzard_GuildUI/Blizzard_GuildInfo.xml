@@ -64,15 +64,11 @@
 			<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-7" y="26"/>
 		</Anchors>
 		<Frames>
-			<Button name="GuildInfoFrameTab1" inherits="TabButtonTemplate" text="GUILDINFOTAB_INFO" id="1" hidden="true">
+			<Button name="GuildInfoFrameTab1" inherits="PanelTopTabButtonTemplate" text="GUILDINFOTAB_INFO" id="1" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="60" y="32"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						PanelTemplates_TabResize(self, 0);
-						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
-					</OnLoad>
 					<OnClick>
 						PanelTemplates_Tab_OnClick(self, GuildInfoFrame);
 						GuildInfoFrame_Update();

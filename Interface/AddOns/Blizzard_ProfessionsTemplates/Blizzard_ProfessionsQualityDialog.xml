@@ -19,71 +19,51 @@
 				</Anchors>
 			</EditBox>
 		</Frames>
+	</Frame>
+	
+	<Frame name="ProfessionsQualityDialogTemplate" mixin="ProfessionsQualityDialogMixin" inherits="DefaultPanelFlatTemplate" enableMouse="true" virtual="true">
+		<Size x="329" y="207"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture>
-					<Color r="0" g="0" b="0" a=".3"/>
+				<Texture atlas="Professions-QualityWindow-Background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-22"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
-	</Frame>
-	
-	<Frame name="ProfessionsQualityDialogTemplate" mixin="ProfessionsQualityDialogMixin" inherits="TooltipBackdropTemplate" enableMouse="true" virtual="true">
-		<Size x="450" y="240"/>
-		<KeyValues>
-			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="BORDER">
-				<FontString parentKey="Header" inherits="GameFontHighlight">
-					<Size x="300" y="-20" />
-					<Anchors>
-						<Anchor point="TOP" y="-10" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 			<Frame parentKey="Container2" inherits="ProfessionsQualityContainerTemplate">
 				<Anchors>
-					<Anchor point="CENTER"/>
+					<Anchor point="CENTER" x="5" y="0"/>
 				</Anchors>
 			</Frame>
-
 			<Frame parentKey="Container1" inherits="ProfessionsQualityContainerTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Container2" relativePoint="LEFT" x="-50" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Container2" relativePoint="LEFT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
-
 			<Frame parentKey="Container3" inherits="ProfessionsQualityContainerTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Container2" relativePoint="RIGHT" x="50" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Container2" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
-
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="3"/>
-				</Anchors>
-			</Button>
-
 			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
 				</Anchors>
 			</Button>
-
 			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.CancelButton" relativePoint="TOPLEFT" x="-20"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.CancelButton" relativePoint="TOPLEFT" x="-5"/>
 				</Anchors>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>

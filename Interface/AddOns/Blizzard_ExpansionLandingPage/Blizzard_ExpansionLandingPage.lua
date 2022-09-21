@@ -54,7 +54,7 @@ end
 
 function ExpansionLandingPageMixin:RefreshExpansionOverlay(completedQuestID)	
 	local newestOverlay = self:GetNewestExpansionOverlayForPlayer(completedQuestID);
-	if newestOverlay ~= self.overlay then
+	if newestOverlay and newestOverlay ~= self.overlay then
 		self.overlay = newestOverlay;
 		newestOverlay.CreateOverlay(self.Overlay);
 

@@ -121,50 +121,12 @@ function GlueScrollFrame_OnLoad(self)
 end
 
 --Tab stuffs
-function GlueTemplates_TabResize(padding, tab, absoluteSize)
-	local tabName;
-	if ( tab ) then
-		tabName = tab:GetName();
-	end
-	local buttonMiddle = _G[tabName.."Middle"];
-	local buttonMiddleDisabled = _G[tabName.."MiddleDisabled"];
-	local sideWidths = 2 * _G[tabName.."Left"]:GetWidth();
-	local tabText = _G[tab:GetName().."Text"];
-	local width, tabWidth;
 
-	-- If there's an absolute size specified then use it
-	if ( absoluteSize ) then
-		if ( absoluteSize < sideWidths) then
-			width = 1;
-			tabWidth = sideWidths
-		else
-			width = absoluteSize - sideWidths;
-			tabWidth = absoluteSize
-		end
-		tabText:SetWidth(width);
-	else
-		-- Otherwise try to use padding
-		if ( padding ) then
-			width = tabText:GetStringWidth() + padding;
-		else
-			width = tabText:GetStringWidth() + 24;
-		end
-		tabWidth = width + sideWidths;
-		tabText:SetWidth(0);
-	end
+local TAB_SIDES_PADDING = 30;
 
-	if ( buttonMiddle ) then
-		buttonMiddle:SetWidth(width);
-	end
-	if ( buttonMiddleDisabled ) then
-		buttonMiddleDisabled:SetWidth(width);
-	end
-
-	tab:SetWidth(tabWidth);
-	local highlightTexture = _G[tabName.."HighlightTexture"];
-	if ( highlightTexture ) then
-		highlightTexture:SetWidth(tabWidth);
-	end
+function GlueTemplates_TabResize(tab)
+	local width = tab.Text:GetStringWidth() + TAB_SIDES_PADDING;
+	tab:SetWidth(width);
 end
 
 function GlueTemplates_SetTab(frame, id)
@@ -204,48 +166,40 @@ end
 function GlueTemplates_EnableTab(frame, index)
 	local tab = _G[frame:GetName().."Tab"..index];
 	tab.isDisabled = nil;
-	-- Reset text color
-	tab:SetDisabledTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	GlueTemplates_UpdateTabs(frame);
 end
 
 function GlueTemplates_DeselectTab(tab)
-	local name = tab:GetName();
-	_G[name.."Left"]:Show();
-	_G[name.."Middle"]:Show();
-	_G[name.."Right"]:Show();
-	--tab:UnlockHighlight();
+	tab.Left:Show();
+	tab.Middle:Show();
+	tab.Right:Show();
 	tab:Enable();
-	_G[name.."LeftDisabled"]:Hide();
-	_G[name.."MiddleDisabled"]:Hide();
-	_G[name.."RightDisabled"]:Hide();
+	tab.Text:SetPoint("CENTER", tab, "CENTER", 0, 2);
+	tab.LeftActive:Hide();
+	tab.MiddleActive:Hide();
+	tab.RightActive:Hide();
 end
 
 function GlueTemplates_SelectTab(tab)
-	local name = tab:GetName();
-	_G[name.."Left"]:Hide();
-	_G[name.."Middle"]:Hide();
-	_G[name.."Right"]:Hide();
-	--tab:LockHighlight();
+	tab.Left:Hide();
+	tab.Middle:Hide();
+	tab.Right:Hide();
 	tab:Disable();
-	_G[name.."LeftDisabled"]:Show();
-	_G[name.."MiddleDisabled"]:Show();
-	_G[name.."RightDisabled"]:Show();
+	tab.Text:SetPoint("CENTER", tab, "CENTER", 0, -3);
+	tab.LeftActive:Show();
+	tab.MiddleActive:Show();
+	tab.RightActive:Show();
 end
 
 function GlueTemplates_SetDisabledTabState(tab)
-	local name = tab:GetName();
-	_G[name.."Left"]:Show();
-	_G[name.."Middle"]:Show();
-	_G[name.."Right"]:Show();
-	--tab:UnlockHighlight();
+	tab.Left:Show();
+	tab.Middle:Show();
+	tab.Right:Show();
 	tab:Disable();
-	tab.text = tab:GetText();
-	-- Gray out text
-	tab:SetDisabledTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-	_G[name.."LeftDisabled"]:Hide();
-	_G[name.."MiddleDisabled"]:Hide();
-	_G[name.."RightDisabled"]:Hide();
+	tab.Text:SetPoint("CENTER", tab, "CENTER", 0, 2);
+	tab.LeftActive:Hide();
+	tab.MiddleActive:Hide();
+	tab.RightActive:Hide();
 end
 
 HorizontalResizableCheckButtonMixin = {};

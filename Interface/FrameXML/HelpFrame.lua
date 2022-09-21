@@ -49,7 +49,6 @@ function HelpFrameMixin:ShowUnavailable()
 end
 
 function HelpFrameMixin:OnLoad()
-	ButtonFrameTemplate_HidePortrait(self)
 	self:SetTitle(HELP_FRAME_TITLE);
 
 	self:RegisterEvent("UPDATE_GM_STATUS");
@@ -57,10 +56,6 @@ function HelpFrameMixin:OnLoad()
 	self:RegisterEvent("QUICK_TICKET_THROTTLE_CHANGED");
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_PROXY_FAILED");
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_ERROR");
-
-	self.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Rock", true, true);
-	self.Bg:SetHorizTile(true);
-	self.Bg:SetVertTile(true);
 end
 
 function HelpFrameMixin:OnShow()

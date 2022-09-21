@@ -42,9 +42,6 @@ function MultiActionBar_Update ()
 	UpdateMultiActionBar(MultiBarBottomRight, MultiBar1_IsVisible() and MultiBar2_IsVisible(), BOTTOMRIGHT_ACTIONBAR_PAGE);
 	UpdateMultiActionBar(MultiBarRight, MultiBar3_IsVisible(), RIGHT_ACTIONBAR_PAGE);
 	UpdateMultiActionBar(MultiBarLeft, MultiBar3_IsVisible() and MultiBar4_IsVisible(), LEFT_ACTIONBAR_PAGE);
-
-	EditModeManagerFrame:UpdateRightAnchoredActionBarWidth();
-	EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
 end
 
 function MultiActionBar_ShowAllGrids (reason)
@@ -73,17 +70,17 @@ function Multibar_EmptyFunc (show)
 end
 
 function MultiBar1_IsVisible()
-	return Settings.GetValue("PROXY_SHOW_MULTI_ACTIONBAR_1");
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_2");
 end
 
 function MultiBar2_IsVisible()
-	return MultiBar1_IsVisible() and Settings.GetValue("PROXY_SHOW_MULTI_ACTIONBAR_2");
+	return MultiBar1_IsVisible() and Settings.GetValue("PROXY_SHOW_ACTIONBAR_3");
 end
 
 function MultiBar3_IsVisible()
-	return Settings.GetValue("PROXY_SHOW_MULTI_ACTIONBAR_3");
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_4");
 end
 
 function MultiBar4_IsVisible()
-	return MultiBar3_IsVisible() and Settings.GetValue("PROXY_SHOW_MULTI_ACTIONBAR_4");
+	return MultiBar3_IsVisible() and Settings.GetValue("PROXY_SHOW_ACTIONBAR_5");
 end

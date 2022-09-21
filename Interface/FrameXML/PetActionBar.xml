@@ -50,6 +50,7 @@
 			<KeyValue key="hideGridEventName" value="PET_BAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.PetActionBar" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PET_ACTION_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
 
 		<Scripts>

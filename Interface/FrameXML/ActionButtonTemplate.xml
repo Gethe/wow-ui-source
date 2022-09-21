@@ -137,7 +137,7 @@
 				</FontString>
 				<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="Count" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 					</Anchors>
 				</FontString>
 			</Layer>

@@ -165,6 +165,7 @@ function EditModeSettingSliderMixin:SetupSetting(settingData)
 	self.initInProgress = true;
 	self.formatters = {};
 	if settingData.displayInfo.hideValue then
+		self.formatters[MinimalSliderWithSteppersMixin.Label.Right] = nil;
 		self.Slider:SetWidth(230);
 	else
 		self.formatters[MinimalSliderWithSteppersMixin.Label.Right] = CreateMinimalSliderFormatter(MinimalSliderWithSteppersMixin.Label.Right, settingData.displayInfo.formatter);
@@ -239,7 +240,7 @@ end
 
 EditModeCheckButtonMixin = {};
 
-function EditModeCheckButtonMixin:OnShow()
+function EditModeCheckButtonMixin:EditModeCheckButton_OnShow()
 	local shouldEnable = self:ShouldEnable();
 	self.Button:SetEnabled(shouldEnable);
 	self.Label:SetFontObject(shouldEnable and "GameFontHighlightMedium" or "GameFontDisableMed2")

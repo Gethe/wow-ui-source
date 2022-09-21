@@ -7,20 +7,6 @@ local EditModeManager =
 	Functions =
 	{
 		{
-			Name = "ConvertLayoutInfoToHyperlink",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "layoutInfo", Type = "EditModeLayoutInfo", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "hyperlink", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "ConvertLayoutInfoToString",
 			Type = "Function",
 

@@ -25,7 +25,8 @@ function TalentDisplayMixin:OnEnter()
 	else
 		self:SetTooltipInternal();
 	end
-    
+
+	self:OnEnterVisuals();
 end
 
 function TalentDisplayMixin:OnLeave()
@@ -40,6 +41,8 @@ function TalentDisplayMixin:OnLeave()
 		self.overrideSpellLoadCancel();
 		self.overrideSpellLoadCancel = nil;
 	end
+
+	self:OnLeaveVisuals();
 end
 
 function TalentDisplayMixin:Init(talentFrame)
@@ -168,7 +171,6 @@ function TalentDisplayMixin:SetVisualState(visualState)
 
 	self:ApplyVisualState(visualState);
 
-	-- TODO:: Temporary hack to implement visibility.
 	local previousAlpha = self:GetAlpha();
 	local newAlpha = (visualState ~= TalentButtonUtil.BaseVisualState.Invisible) and 1.0 or 0.0;
 	if not ApproximatelyEqual(previousAlpha, newAlpha) then
@@ -297,6 +299,13 @@ function TalentDisplayMixin:UpdateGlow()
 	-- Implement in your derived mixin.
 end
 
+function TalentDisplayMixin:OnEnterVisuals()
+	-- Implement in your derived mixin.
+end
+
+function TalentDisplayMixin:OnLeaveVisuals()
+	-- Implement in your derived mixin.
+end
 
 
 TalentButtonBaseMixin = {};
@@ -314,7 +323,8 @@ end
 function TalentButtonBaseMixin:OnDragStart()
 	local spellID = self:GetSpellID();
 	if spellID then
-		PickupSpell(spellID);
+		local checkForPassive = true;
+		PickupSpell(spellID, checkForPassive);
 	end
 end
 
@@ -393,7 +403,8 @@ end
 
 function TalentButtonBaseMixin:UpdateSpendText()
 	if self.nodeInfo then
-		self.SpendText:SetText(self:GetSpendText());
+		local spendText = self:GetSpendText();
+		TalentButtonUtil.SetSpendText(self, spendText);
 	end
 end
 
@@ -470,6 +481,10 @@ function TalentButtonBaseMixin:AddTooltipErrors(tooltip)
 	local shouldAddSpacer = true;
 	self:GetTalentFrame():AddConditionsToTooltip(tooltip, self.nodeInfo.conditionIDs, shouldAddSpacer);
 	self:GetTalentFrame():AddEdgeRequirementsToTooltip(tooltip, self:GetNodeID(), shouldAddSpacer);
+
+	if not self.nodeInfo.meetsEdgeRequirements then
+		GameTooltip_AddErrorLine(tooltip, TALENT_BUTTON_TOOLTIP_NO_ACTIVE_LINKS);
+	end
 end
 
 function TalentButtonBaseMixin:ShouldBeVisible()
@@ -564,6 +579,7 @@ TalentButtonBasicArtMixin.SizingAdjustment = {
 		{ region = "DisabledOverlayMask", adjust = 0, },
 		{ region = "StateBorder", adjust = 0, },
 		{ region = "Glow", adjust = 44, },
+		{ region = "SelectableGlow", adjust = 44, },
 	}
 };
 
@@ -601,7 +617,9 @@ function TalentButtonBasicArtMixin:ApplySize(width, height)
 
 	for i, sizingAdjustmentInfo in ipairs(sizingAdjustment) do
 		local adjustment = sizingAdjustmentInfo.adjust;
+		if self[sizingAdjustmentInfo.region] then
 		self[sizingAdjustmentInfo.region]:SetSize(width + adjustment, height + adjustment);
+		end
 	end
 end
 
@@ -612,7 +630,8 @@ TalentButtonArtMixin.ArtSet = {
 	Square = {
 		iconMask = nil,
 		shadow = "talents-node-square-shadow",
-		normal = "talents-node-square-gray",
+		normal = "talents-node-square-yellow",
+		disabled = "talents-node-square-gray",
 		selectable = "talents-node-square-green",
 		maxed = "talents-node-square-yellow",
 		locked = "talents-node-square-locked",
@@ -623,7 +642,8 @@ TalentButtonArtMixin.ArtSet = {
 	Circle = {
 		iconMask = "talents-node-circle-mask",
 		shadow = "talents-node-circle-shadow",
-		normal = "talents-node-circle-gray",
+		normal = "talents-node-circle-yellow",
+		disabled = "talents-node-circle-gray",
 		selectable = "talents-node-circle-green",
 		maxed = "talents-node-circle-yellow",
 		locked = "talents-node-circle-locked",
@@ -634,7 +654,8 @@ TalentButtonArtMixin.ArtSet = {
 	Choice = {
 		iconMask = "talents-node-choice-mask",
 		shadow = "talents-node-choice-shadow",
-		normal = "talents-node-choice-gray",
+		normal = "talents-node-choice-yellow",
+		disabled = "talents-node-choice-gray",
 		selectable = "talents-node-choice-green",
 		maxed = "talents-node-choice-yellow",
 		locked = "talents-node-choice-locked",
@@ -645,7 +666,8 @@ TalentButtonArtMixin.ArtSet = {
 	LargeSquare = {
 		iconMask = "talents-node-choiceflyout-mask",
 		shadow = "talents-node-choiceflyout-square-shadow",
-		normal = "talents-node-choiceflyout-square-gray",
+		normal = "talents-node-choiceflyout-square-yellow",
+		disabled = "talents-node-choiceflyout-square-gray",
 		selectable = "talents-node-choiceflyout-square-green",
 		maxed = "talents-node-choiceflyout-square-yellow",
 		locked = "talents-node-choiceflyout-square-locked",
@@ -653,11 +675,11 @@ TalentButtonArtMixin.ArtSet = {
 		ghost = "talents-node-square-ghost",
 	},
 
-	
 	LargeCircle = {
 		iconMask = "talents-node-circle-mask",
 		shadow = "talents-node-choiceflyout-circle-shadow",
 		normal = "talents-node-choiceflyout-circle-gray",
+		disabled = "talents-node-choiceflyout-circle-gray",
 		selectable = "talents-node-choiceflyout-circle-green",
 		maxed = "talents-node-choiceflyout-circle-yellow",
 		locked = "talents-node-choiceflyout-circle-locked",
@@ -700,24 +722,41 @@ function TalentButtonArtMixin:ApplyVisualState(visualState)
 
 	self.Ghost:SetShown(self.isGhosted);
 
-	local isLocked = isGated or (visualState == TalentButtonUtil.BaseVisualState.Locked);
-	self.Icon:SetDesaturated(isLocked);
-
-	local isDisabled = isLocked or (visualState == TalentButtonUtil.BaseVisualState.Disabled);
+	local isDisabled = isGated or (visualState == TalentButtonUtil.BaseVisualState.Locked) or (visualState == TalentButtonUtil.BaseVisualState.Disabled);
+	self.Icon:SetDesaturated(isDisabled);
 	self.DisabledOverlay:SetShown(isDisabled);
 
-	if isGated then
-		self.StateBorder:SetAtlas(self.artSet.locked, TextureKitConstants.UseAtlasSize);
-	elseif (visualState == TalentButtonUtil.BaseVisualState.Selectable) then
-		self.StateBorder:SetAtlas(self.artSet.selectable, TextureKitConstants.UseAtlasSize);
-	elseif (visualState == TalentButtonUtil.BaseVisualState.Maxed) then
-		self.StateBorder:SetAtlas(self.artSet.maxed, TextureKitConstants.UseAtlasSize);
-	else
-		self.StateBorder:SetAtlas(self.artSet.normal, TextureKitConstants.UseAtlasSize);
-	end
+	self:UpdateStateBorder(visualState);
 
 	self:UpdateSearchIcon();
 	self:UpdateGlow();
+end
+
+function TalentButtonArtMixin:UpdateStateBorder(visualState)
+	local isDisabled = (visualState == TalentButtonUtil.BaseVisualState.Gated)
+					or (visualState == TalentButtonUtil.BaseVisualState.Locked)
+					or (visualState == TalentButtonUtil.BaseVisualState.Disabled);
+
+	local function SetAtlas(atlas)
+		self.StateBorder:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+
+		if self.StateBorderHover then
+			self.StateBorderHover:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+			self.StateBorderHover:SetAlpha(TalentButtonUtil.GetHoverAlphaForVisualStyle(visualState));
+		end
+	end
+
+	if (visualState == TalentButtonUtil.BaseVisualState.Gated) then
+		SetAtlas(self.artSet.locked);
+	elseif (visualState == TalentButtonUtil.BaseVisualState.Selectable) then
+		SetAtlas(self.artSet.selectable);
+	elseif (visualState == TalentButtonUtil.BaseVisualState.Maxed) then
+		SetAtlas(self.artSet.maxed);
+	elseif not isDisabled then
+		SetAtlas(self.artSet.normal);
+	else
+		SetAtlas(self.artSet.disabled);
+	end
 end
 
 function TalentButtonArtMixin:SetAndApplySize(width, height)
@@ -733,7 +772,9 @@ function TalentButtonArtMixin:ApplySize(width, height)
 
 	for i, sizingAdjustmentInfo in ipairs(sizingAdjustment) do
 		local adjustment = sizingAdjustmentInfo.adjust;
-		self[sizingAdjustmentInfo.region]:SetSize(width + adjustment, height + adjustment);
+		if self[sizingAdjustmentInfo.region] then
+			self[sizingAdjustmentInfo.region]:SetSize(width + adjustment, height + adjustment);
+		end
 	end
 end
 
@@ -799,6 +840,17 @@ function TalentButtonArtMixin:UpdateGlow()
 	end
 end
 
+function TalentButtonArtMixin:OnEnterVisuals()
+	if self.StateBorderHover then
+		self.StateBorderHover:Show();
+	end
+end
+
+function TalentButtonArtMixin:OnLeaveVisuals()
+	if self.StateBorderHover then
+		self.StateBorderHover:Hide();
+	end
+end
 
 TalentButtonSplitIconMixin = {};
 

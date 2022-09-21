@@ -303,7 +303,7 @@
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
 	</Button>
-	<Button name="GuildFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Button name="GuildFrameTabButtonTemplate" inherits="PanelTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
 				GuildFrame_TabClicked(self);
@@ -313,7 +313,6 @@
 			<OnShow>
 				PanelTemplates_TabResize(self, 0);
 			</OnShow>
-			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 <!--

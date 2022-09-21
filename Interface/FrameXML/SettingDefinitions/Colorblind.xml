@@ -12,18 +12,8 @@
 	</FontString>
 
 	<Frame name="ColorblindSelectorTemplate" mixin="ColorblindSelectorMixin" virtual="true">
-		<Size y="280"/>
+		<Size y="200"/>
 		<Frames>
-			<Frame parentKey="ColorBlindFilterDropDown" inherits="SettingsSelectionPopoutWithButtonsTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="278" y="-32"/>
-				</Anchors>
-			</Frame>
-			<Slider parentKey="StrengthSliderWithSteppers" inherits="MinimalSliderWithSteppersTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="238" y="-72"/>
-				</Anchors>
-			</Slider>
 			<Frame parentKey="ColorblindExamples" setAllPoints="true">
 				<Size y="280" />
 				<Layers>
@@ -191,16 +181,6 @@
 					<Size x="550" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="5" y="-10"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="ColorBlindFilterText" inherits="GameFontNormal" text="COLORBLIND_FILTER">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="40" y="-49"/>
-					</Anchors>
-				</FontString>
-				<FontString inherits="GameFontNormal" text="ADJUST_COLORBLIND_STRENGTH">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ColorBlindFilterText" relativePoint="BOTTOMLEFT" y="-30"/>
 					</Anchors>
 				</FontString>
 			</Layer>

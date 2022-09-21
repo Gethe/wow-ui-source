@@ -1396,7 +1396,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="EncounterTierTabTemplate" virtual="true" parentArray="Tabs">
+	<Button name="EncounterTierTabTemplate" virtual="true">
 		<Size x="120" y="36"/>
 		<HitRectInsets>
 			<AbsInset left="-12" right="-12" top="0" bottom="0"/>
@@ -1514,7 +1514,7 @@
 			</OnDisable>
 		</Scripts>
 	</Button>
-	<Button name="BottomEncounterTierTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true" parentArray="Tabs">
+	<Button name="BottomEncounterTierTabTemplate" inherits="PanelTabButtonTemplate" virtual="true">
 		<Frames>
 			<Frame enableMouse="true" parentKey="grayBox" hidden="true">
 				<Anchors>

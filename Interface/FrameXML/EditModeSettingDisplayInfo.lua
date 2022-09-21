@@ -113,13 +113,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_HIDE_BAR_SCROLLING,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
-
-		-- Snap To Side
-		{
-			setting = Enum.EditModeActionBarSetting.SnapToSide,
-			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_SNAP_TO_RIGHT_SIDE,
-			type = Enum.EditModeSettingDisplayType.Checkbox,
-		},
 	},
 
 	[Enum.EditModeSystem.Minimap] =
@@ -158,13 +151,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	-- Unit Frame Settings
 	[Enum.EditModeSystem.UnitFrame] =
 	{
-		-- Hide Portrait
-		--[[{
-			setting = Enum.EditModeUnitFrameSetting.HidePortrait,
-			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_HIDE_PORTRAIT,
-			type = Enum.EditModeSettingDisplayType.Checkbox,
-		},]]--
-
 		-- Cast Bar Underneath
 		{
 			setting = Enum.EditModeUnitFrameSetting.CastBarUnderneath,
@@ -172,17 +158,17 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
-		-- Buffs On Top
-		{
-			setting = Enum.EditModeUnitFrameSetting.BuffsOnTop,
-			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_BUFFS_ON_TOP,
-			type = Enum.EditModeSettingDisplayType.Checkbox,
-		},
-
 		-- Use Larger Frame
 		{
 			setting = Enum.EditModeUnitFrameSetting.UseLargerFrame,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_USE_LARGER_FRAME,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Buffs On Top
+		{
+			setting = Enum.EditModeUnitFrameSetting.BuffsOnTop,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_BUFFS_ON_TOP,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
@@ -255,11 +241,18 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxText = TALL,
 		},
 
-		-- Keep Groups Together
+		-- Raid Group Display Type
 		{
-			setting = Enum.EditModeUnitFrameSetting.KeepGroupsTogether,
-			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_KEEP_GROUPS_TOGETHER,
-			type = Enum.EditModeSettingDisplayType.Checkbox,
+			setting = Enum.EditModeUnitFrameSetting.RaidGroupDisplayType,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options = 
+			{
+				{value = Enum.RaidGroupDisplayType.SeparateGroupsVertical, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS_SEPARATE_GROUPS_VERTICAL},
+				{value = Enum.RaidGroupDisplayType.SeparateGroupsHorizontal, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS_SEPARATE_GROUPS_HORIZONTAL},
+				{value = Enum.RaidGroupDisplayType.CombineGroupsVertical, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS_COMBINE_GROUPS_VERTICAL},
+				{value = Enum.RaidGroupDisplayType.CombineGroupsHorizontal, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS_COMBINE_GROUPS_HORIZONTAL},
+			},
 		},
 
 		-- Sort Players By
@@ -293,6 +286,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 		{
 			setting = Enum.EditModeUnitFrameSetting.RowSize,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_ROW_SIZE,
+			altName = HUD_EDIT_MODE_SETTING_UNIT_FRAME_COLUMN_SIZE,
 			type = Enum.EditModeSettingDisplayType.Slider,
 			minValue = 2,
 			maxValue = 10,
@@ -375,7 +369,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeAuraFrameSetting.IconLimitBuffFrame,
 			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_LIMIT,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 1,
+			minValue = 2,
 			maxValue = 32,
 			stepSize = 1,
 		},
@@ -410,6 +404,10 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	},
 
 	[Enum.EditModeSystem.LootFrame] =
+	{
+	},
+
+	[Enum.EditModeSystem.HudTooltip] =
 	{
 	},
 };

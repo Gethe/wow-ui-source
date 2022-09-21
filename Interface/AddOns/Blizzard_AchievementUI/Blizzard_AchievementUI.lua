@@ -267,7 +267,7 @@ function AchievementFrame_UpdateTabs(clickedTab)
 	for i = 1, 3 do
 		local tab = _G["AchievementFrameTab"..i];
 		local y = i == clickedTab and -5 or -3;
-		tab.text:SetPoint("CENTER", 0, y);
+		tab.Text:SetPoint("CENTER", 0, y);
 	end
 end
 
@@ -423,7 +423,7 @@ end
 AchievementCategoryTemplateMixin = {};
 
 function AchievementCategoryTemplateMixin:OnLoad()
-	AchievementCategoryButton_Localize(self);
+	AchievementCategoryButton_Localize(self.Button);
 
 	self.Button:SetScript("OnClick", function()
 		AchievementFrameCategories_OnCategoryClicked(self);
@@ -1142,11 +1142,12 @@ function AchievementTemplateMixin:Init(elementData)
 		end
 	end
 
+	local noSound = true;
 	if ( IsTrackedAchievement(id) ) then
 		self.Label:SetWidth(self.Label:GetStringWidth() + 4); -- This +4 here is to fudge around any string width issues that arize from resizing a string set to its string width. See bug 144418 for an example.
-		self:SetAsTracked(true);
+		self:SetAsTracked(true, noSound);
 	else
-		self:SetAsTracked(false);
+		self:SetAsTracked(false, noSound);
 		self.Tracked:Hide();
 	end
 
@@ -1472,9 +1473,9 @@ function AchievementTemplateMixin:ToggleTracking()
 	return true;
 end
 
-function AchievementTemplateMixin:SetAsTracked(tracked)
+function AchievementTemplateMixin:SetAsTracked(tracked, noSound)
 	self.Check:SetShown(tracked);
-	self.Tracked:ApplyChecked(tracked);
+	self.Tracked:ApplyChecked(tracked, noSound);
 	if tracked then
 		self.Tracked:Show();
 	elseif not SelectionBehaviorMixin.IsIntrusiveSelected(self) then
@@ -1492,11 +1493,13 @@ end
 
 AchivementButtonCheckMixin = {};
 
-function AchivementButtonCheckMixin:ApplyChecked(checked)
-	if checked then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	else
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+function AchivementButtonCheckMixin:ApplyChecked(checked, noSound)
+	if not noSound then
+		if checked then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		end
 	end
 	self:SetChecked(checked);
 end

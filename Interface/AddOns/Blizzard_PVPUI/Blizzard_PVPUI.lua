@@ -94,8 +94,6 @@ function PVPSpecialEventLabelMixin:ValidateIsShown()
 end
 
 function PVPUIFrame_OnLoad(self)
-	PanelTemplates_SetNumTabs(self, 2);
-
 	if (UnitFactionGroup("player") == HORDE_PLAYER_FACTION_GROUP_NAME) then
 		HonorFrame.BonusFrame.WorldBattlesTexture:SetAtlas("pvpqueue-background-casual-horde", true)
 	else

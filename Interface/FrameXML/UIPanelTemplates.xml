@@ -888,7 +888,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 		</Frames>
 	</Frame>
 

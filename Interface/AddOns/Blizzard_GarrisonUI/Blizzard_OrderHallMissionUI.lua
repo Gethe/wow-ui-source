@@ -163,20 +163,17 @@ function OrderHallMission:SetupTabs()
 	-- don't show any tabs if there's only 1
 	if (#tabList > 1) then
 		local tab = self["Tab"..tabList[1]];
-		local prevTab = tab;
 		tab:ClearAllPoints();
-
 		tab:SetPoint("BOTTOMLEFT", self, tab.xOffset or 7, tab.yOffset or -31);
 		tab:Show();
 
 		for i = 2, #tabList do
 			tab = self["Tab"..tabList[i]];
-			tab:ClearAllPoints();
-			tab:SetPoint("LEFT", prevTab, "RIGHT", -16, 0);
 			tab:Show();
-			prevTab = tab;
 		end
 	end
+
+	 PanelTemplates_SetNumTabs(self, #tabList);
 
 	-- If the selected tab is not a valid one, switch to the default. Additionally, if the missions tab is newly available, then select it.
 	local selectedTab = PanelTemplates_GetSelectedTab(self);
@@ -732,15 +729,12 @@ local function CheckOpenMissionPageAndHasBossMechanic(missionFrame)
 	end
 
 	-- see if you have a follower that has that spec
-	for _, index in ipairs(missionFrame.FollowerList.followersList) do
-		if (index ~= 0) then
-			local follower = missionFrame.FollowerList.followers[index];
-			if (not follower.status) then
-				local abilities = C_Garrison.GetFollowerAbilities(follower.followerID);
-				for _, ability in ipairs(abilities) do
-					if (ability.id == missionFrame.MissionTab.MissionPage.Enemy1.counterAbility.id) then
-						return true;
-					end
+	for _, follower in ipairs(missionFrame.FollowerList.followers) do
+		if not follower.status then
+			local abilities = C_Garrison.GetFollowerAbilities(follower.followerID);
+			for _, ability in ipairs(abilities) do
+				if (ability.id == missionFrame.MissionTab.MissionPage.Enemy1.counterAbility.id) then
+					return true;
 				end
 			end
 		end
@@ -900,7 +894,11 @@ local function PositionAtFirstTroop(missionFrame)
 end
 
 local function PositionAtFirstMission(missionFrame)
-	return HelpTip.Point.BottomEdgeCenter, -120, 6, missionFrame.MissionTab.MissionList.listScroll.buttons[1];
+	local frame = missionFrame.MissionTab.MissionList.ScrollBox:FindFrameByPredicate(function(entry)
+		return entry.id == 1;
+	end);
+
+	return HelpTip.Point.BottomEdgeCenter, -120, 6, frame;
 end
 
 local function PositionAtCombatAlly(missionFrame)
@@ -913,15 +911,12 @@ local function TextBossSpec(missionFrame, tutorial)
 	local followerName = "";
 
 	-- find a follower that has the correct spec
-	for _, index in ipairs(missionFrame.FollowerList.followersList) do
-		if (index ~= 0) then
-			local follower = missionFrame.FollowerList.followers[index];
-			local abilities = C_Garrison.GetFollowerAbilities(follower.followerID);
-			for _, ability in ipairs(abilities) do
-				if (ability.id == missionFrame.MissionTab.MissionPage.Enemy1.counterAbility.id) then
-					followerName = follower.name;
-					break;
-				end
+	for _, follower in ipairs(missionFrame.FollowerList.followers) do
+		local abilities = C_Garrison.GetFollowerAbilities(follower.followerID);
+		for _, ability in ipairs(abilities) do
+			if (ability.id == missionFrame.MissionTab.MissionPage.Enemy1.counterAbility.id) then
+				followerName = follower.name;
+				break;
 			end
 		end
 	end

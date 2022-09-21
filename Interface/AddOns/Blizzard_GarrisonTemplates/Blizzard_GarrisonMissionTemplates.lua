@@ -2065,19 +2065,6 @@ end
 ---------------------------------------------------------------------------------
 --- Common Functions                                                          ---
 ---------------------------------------------------------------------------------
-
-function GarrisonMissionFrameTab_OnEnter(self)
-	self.LeftHighlight:Show();
-	self.MiddleHighlight:Show();
-	self.RightHighlight:Show();
-end
-
-function GarrisonMissionFrameTab_OnLeave(self)
-	self.LeftHighlight:Hide();
-	self.MiddleHighlight:Hide();
-	self.RightHighlight:Hide();
-end
-
 function GarrisonMissionFrame_SetItemRewardDetails(frame)
 	local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(frame.itemLink or frame.itemID);
 	frame.Icon:SetTexture(itemTexture);

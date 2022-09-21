@@ -16,14 +16,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="TitleText" inherits="GameFontNormal" text="CHAT_CHANNELS">
-					<Size x="0" y="16"/>
-					<Anchors>
-						<Anchor point="TOP" y="-3"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="NewButton" inherits="UIPanelButtonTemplate" text="ADD">

@@ -187,6 +187,19 @@ function GossipFrameSharedMixin:HandleHide()
 	HideUIPanel(self);
 end
 
+--This is an API for players and addon authors to continue to be able to select by index rather than ID
+function GossipFrameSharedMixin:SelectGossipOption(index)
+	if(not self.gossipOptions) then 
+		return;
+	end 
+
+	if(not self.gossipOptions[index]) then 
+		return; 
+	end
+
+	C_GossipInfo.SelectOption(self.gossipOptions[index].gossipOptionID);
+end	
+
 function GossipFrameSharedMixin:Update()
 	self.buttons = {};
 
@@ -232,12 +245,19 @@ function GossipFrameSharedMixin:Update()
 	self.GreetingPanel.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	self:SetGossipTitle(UnitName("npc"));
 	if ( UnitExists("npc") ) then
-		SetPortraitTexture(self.PortraitContainer.portrait, "npc");
+		self:SetPortraitToUnit("npc");
 	else
-		self.PortraitContainer.portrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
+		self:SetPortraitToAsset("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 	end
 end
 
 function GossipFrameSharedMixin:SetGossipTitle(title)
 	self:SetTitle(title);
+end
+
+--This is an API for players and addon authors to continue to be able to select by index rather than ID
+function SelectGossipOption(index)
+	if (GossipFrame and GossipFrame:IsShown()) then
+		GossipFrame:SelectGossipOption(index);
+	end 
 end

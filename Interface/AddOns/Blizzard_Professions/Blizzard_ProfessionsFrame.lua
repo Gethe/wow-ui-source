@@ -87,7 +87,7 @@ function ProfessionsMixin:OnEvent(event, ...)
 		if expansionSkillLineID == professionInfo.professionID then
 			-- We're in the same expansion profession so the recipe should exist in the list.
 			professionInfo.openRecipeID = openRecipeResponse.recipeID;
-			EventRegistry:TriggerEvent("Professions.ProfessionUpdated", professionInfo);
+			self.CraftingPage:Init(professionInfo);
 		elseif professionSkillLineID == professionInfo.parentProfessionID then
 			-- We're in a different expansion in the same profession. We need to regenerate
 			-- the recipe list, so treat this as if the profession info is changing (consistent

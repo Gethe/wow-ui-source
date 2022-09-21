@@ -120,6 +120,17 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "HasUnspentTalentPoints",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasUnspentPoints", Type = "bool", Nilable = false },
+				{ Name = "numClassPoints", Type = "number", Nilable = false },
+				{ Name = "numSpecPoints", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ImportLoadout",
 			Type = "Function",
 
@@ -127,6 +138,7 @@ local ClassTalents =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
 				{ Name = "entries", Type = "table", InnerType = "ImportLoadoutEntryInfo", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
 			},
 
 			Returns =

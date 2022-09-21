@@ -412,8 +412,12 @@ local function Register()
 	
 	do
 		local minValue, maxValue, step = 0, 1, .05;
+		local function Formatter(value)
+			local roundToNearestInteger = true;
+			return FormatPercentage(value, roundToNearestInteger);
+		end
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentage);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, Formatter);
 
 		-- Master Volume
 		local masterSetting, masterInitializer = Settings.SetupCVarSlider(category, "Sound_MasterVolume", options, MASTER_VOLUME, OPTION_TOOLTIP_MASTER_VOLUME);

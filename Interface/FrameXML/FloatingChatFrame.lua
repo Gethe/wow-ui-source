@@ -283,6 +283,10 @@ function FCFOptionsDropDown_Initialize(dropDown)
 			-- If you are the default chat frame then show the enter edit mode option
 			info.text = HUD_EDIT_MODE_MENU;
 			info.func = function() ShowUIPanel(EditModeManagerFrame); end;
+
+			local NPE_AchievementID = 14287;
+			local _, _, _, completedNPE = GetAchievementInfo(NPE_AchievementID);
+			info.disabled = not completedNPE;
 		else
 			-- If you aren't the default chat frame then show lock/unlock option
 			if( dropDownChatFrame == GENERAL_CHAT_DOCK.primary ) then
@@ -807,9 +811,9 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 		conversationIcon:SetPoint("RIGHT", chatTab:GetFontString(), "LEFT", 0, -2);
 		chatTab.conversationIcon = conversationIcon;
 
-		local tabText = _G[chatTab:GetName().."Text"];
-		tabText:SetPoint("LEFT", chatTab.leftTexture, "RIGHT", 10, -6);
-		tabText:SetJustifyH("LEFT");
+		chatTab.Text:ClearAllPoints(); 
+		chatTab.Text:SetPoint("LEFT", chatTab.leftTexture, "RIGHT", 10, -6);
+		chatTab.Text:SetJustifyH("LEFT");
 		chatTab.sizePadding = 10;
 
 		chatFrame = CreateFrame("ScrollingMessageFrame", "ChatFrame"..maxTempIndex, UIParent, "FloatingChatFrameTemplate", maxTempIndex);
@@ -924,7 +928,7 @@ function FCF_SetWindowName(frame, name, doNotSave)
 	tab:SetText(name);
 	PanelTemplates_TabResize(tab, tab.sizePadding or 0);
 	-- Save this off so we know how big the tab should always be, even if it gets shrunken on the dock.
-	tab.textWidth = _G[tab:GetName().."Text"]:GetWidth();
+	tab.textWidth = tab.Text:GetWidth();
 	if ( not doNotSave ) then
 		SetChatWindowName(frame:GetID(), name);
 	end
@@ -1363,13 +1367,13 @@ DEFAULT_TAB_SELECTED_COLOR_TABLE = { r = 1, g = 0.5, b = 0.25 };
 
 function FCFTab_UpdateColors(self, selected)
 	if ( selected ) then
-		self.leftSelectedTexture:Show();
-		self.middleSelectedTexture:Show();
-		self.rightSelectedTexture:Show();
+		self.ActiveLeft:Show();
+		self.ActiveMiddle:Show();
+		self.ActiveRight:Show();
 	else
-		self.leftSelectedTexture:Hide();
-		self.middleSelectedTexture:Hide();
-		self.rightSelectedTexture:Hide();
+		self.ActiveLeft:Hide();
+		self.ActiveMiddle:Hide();
+		self.ActiveRight:Hide();
 	end
 
 	local colorTable = self.selectedColorTable or DEFAULT_TAB_SELECTED_COLOR_TABLE;
@@ -1380,13 +1384,13 @@ function FCFTab_UpdateColors(self, selected)
 		self:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 
-	self.leftSelectedTexture:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
-	self.middleSelectedTexture:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
-	self.rightSelectedTexture:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	self.ActiveLeft:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	self.ActiveMiddle:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	self.ActiveRight:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
 
-	self.leftHighlightTexture:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
-	self.middleHighlightTexture:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
-	self.rightHighlightTexture:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	self.HighlightLeft:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	self.HighlightMiddle:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	self.HighlightRight:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
 	self.glow:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
 
 	if ( self.conversationIcon ) then
@@ -1933,9 +1937,9 @@ function FCFMin_UpdateColors(minFrame)
 		minFrame:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 
-	minFrame.leftHighlightTexture:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
-	minFrame.middleHighlightTexture:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
-	minFrame.rightHighlightTexture:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	minFrame.HighlightLeft:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	minFrame.HighlightMiddle:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	minFrame.HighlightRight:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
 	minFrame.glow:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
 
 	minFrame.conversationIcon:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
@@ -1973,8 +1977,8 @@ end
 
 function FCFDock_SetPrimary(dock, chatFrame)
 	dock.primary = chatFrame;
-	dock:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 0, 6);
-	dock:SetPoint("BOTTOMRIGHT", chatFrame, "TOPRIGHT", 0, 6);
+	dock:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 0, 3);
+	dock:SetPoint("BOTTOMRIGHT", chatFrame, "TOPRIGHT", 0, 3);
 
 	chatFrame:SetScript("OnSizeChanged", function(self) FCFDock_OnPrimarySizeChanged(dock) end);
 
@@ -2123,9 +2127,9 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 			chatTab:SetParent(dock);
 			PanelTemplates_TabResize(chatTab, chatTab.sizePadding or 0);
 			if ( lastDockedStaticTab ) then
-				chatTab:SetPoint("LEFT", lastDockedStaticTab, "RIGHT", 0, 0);
+				chatTab:SetPoint("LEFT", lastDockedStaticTab, "RIGHT", 1, 0);
 			else
-				chatTab:SetPoint("LEFT", dock, "LEFT", 0, 0);
+				chatTab:SetPoint("BOTTOMLEFT", dock, "BOTTOMLEFT", 0, 0);
 			end
 			lastDockedStaticTab = chatTab;
 		else
@@ -2137,13 +2141,16 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 			end
 
 			if ( lastDockedDynamicTab ) then
-				chatTab:SetPoint("LEFT", lastDockedDynamicTab, "RIGHT", 0, 0);
+				chatTab:SetPoint("LEFT", lastDockedDynamicTab, "RIGHT", 1, 0);
 			else
-				chatTab:SetPoint("LEFT", scrollChild, "LEFT", 0, 0);
+				chatTab:SetPoint("LEFT", scrollChild, "LEFT", 0, -1);
 			end
 			lastDockedDynamicTab = chatTab;
 		end
 	end
+
+	dock.scrollFrame:SetPoint("LEFT", lastDockedStaticTab, "RIGHT", 0, 0);
+	dock.scrollFrame:SetPoint("BOTTOMRIGHT", dock, "BOTTOMRIGHT", 0, 0);
 
 	local dynTabSize, hasOverflow = FCFDock_CalculateTabSize(dock, numDynFrames);
 
@@ -2154,13 +2161,11 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 		end
 	end
 
-	dock.scrollFrame:SetPoint("LEFT", lastDockedStaticTab, "RIGHT", 0, 0);
 	if ( hasOverflow ) then
 		dock.overflowButton:Show();
-		dock.scrollFrame:SetPoint("BOTTOMRIGHT", dock.overflowButton, "BOTTOMLEFT", 0, 0);
+		dock.scrollFrame:SetPoint("BOTTOMRIGHT", dock.overflowButton, "BOTTOMLEFT", -5, 0);
 	else
 		dock.overflowButton:Hide();
-		dock.scrollFrame:SetPoint("BOTTOMRIGHT", dock, "BOTTOMRIGHT", 0, -5);
 	end
 
 	--Cache some of this data on the scroll frame for animating to the selected tab.
@@ -2176,7 +2181,7 @@ end
 --Returns dynTabSize, hasOverflow
 function FCFDock_CalculateTabSize(dock, numDynFrames)
 	local MIN_SIZE, MAX_SIZE = 60, 90;
-	local scrollSize = dock.scrollFrame:GetWidth() + (dock.overflowButton:IsShown() and dock.overflowButton.width or 0); --We want the total width assuming no overflow button.
+	local scrollSize = dock.scrollFrame:GetWidth();
 
 	--First, see if we can fit all the tabs at the maximum size
 	if ( numDynFrames * MAX_SIZE < scrollSize ) then
@@ -2185,7 +2190,7 @@ function FCFDock_CalculateTabSize(dock, numDynFrames)
 
 	if ( scrollSize / MIN_SIZE < numDynFrames ) then
 		--Not everything fits, so we'll need room for the overflow button.
-		scrollSize = scrollSize - dock.overflowButton.width;
+		scrollSize = scrollSize - dock.overflowButton.width - 5;
 	end
 
 	--Figure out how many tabs we're going to be able to fit at the minimum size

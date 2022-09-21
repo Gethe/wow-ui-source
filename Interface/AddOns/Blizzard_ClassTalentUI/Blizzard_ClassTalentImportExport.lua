@@ -118,7 +118,7 @@ function ClassTalentImportExportMixin:ShowImportError(errorString)
 	 StaticPopup_Show("LOADOUT_IMPORT_ERROR_DIALOG", errorString);
 end
 
-function ClassTalentImportExportMixin:ImportLoadout(importText)
+function ClassTalentImportExportMixin:ImportLoadout(importText, loadoutName)
 
 	local importStream = ExportUtil.MakeImportDataStream(importText);
 
@@ -151,7 +151,7 @@ function ClassTalentImportExportMixin:ImportLoadout(importText)
 	local loadoutEntryInfo = self:ConvertToImportLoadoutEntryInfo(treeInfo.ID, loadoutContent);
 
 	local configInfo = C_Traits.GetConfigInfo(configID);
-	local success = C_ClassTalents.ImportLoadout(configID, loadoutEntryInfo);
+	local success = C_ClassTalents.ImportLoadout(configID, loadoutEntryInfo, loadoutName);
 	if(not success) then
 		self:ShowImportError(LOADOUT_ERROR_IMPORT_FAILED);
 		return false;

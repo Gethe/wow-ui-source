@@ -73,6 +73,11 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 			option.text = sentinelInfo.text;
 		else
 			option.text = self.nameTranslation(selectionID);
+
+			if self.tooltipTranslation then
+				option.tooltipOnButton = true;
+				option.tooltipTitle = self.tooltipTranslation(selectionID);
+			end
 		end
 
 		table.insert(options, option);
@@ -163,7 +168,7 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 			dropDownButtonInfo.notCheckable = true;
 			dropDownButtonInfo.leftPadding = 6;
 
-			if self.editEntryCallback then
+			if self.editEntryCallback and (not self.canEditCallback or self.canEditCallback(dropDownButtonInfo.value)) then
 				dropDownButtonInfo.iconXOffset = -10;
 				dropDownButtonInfo.mouseOverIcon = [[Interface\WorldMap\GEAR_64GREY]];
 				dropDownButtonInfo.iconTooltipTitle = self.editEntryTooltip;
@@ -187,9 +192,10 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 	self.DropDownControl:SetOptions(options);
 end
 
-function DropDownLoadSystemMixin:SetSelectionOptions(possibleSelections, nameTranslation, dropDownOptionColor)
+function DropDownLoadSystemMixin:SetSelectionOptions(possibleSelections, nameTranslation, dropDownOptionColor, tooltipTranslation)
 	self.possibleSelections = CopyTable(possibleSelections);
 	self.nameTranslation = nameTranslation;
+	self.tooltipTranslation = tooltipTranslation;
 	self.dropDownOptionColorCode = dropDownOptionColor and dropDownOptionColor:GenerateHexColorMarkup() or nil;
 
 	self:UpdateSelectionOptions();
@@ -293,9 +299,11 @@ end
 
 -- editEntryCallback(selectionID): If this callback is set, a gear icon is displayed in the dropdown that can be clicked to edit the entry.
 -- editEntryTooltip: If set, displays tooltip text when hoving over the gear icon.
-function DropDownLoadSystemMixin:SetEditEntryCallback(editEntryCallback, editEntryTooltip)
+-- canEditCallback(selectionID): If set, is used to determine whether a specific selection can be edited
+function DropDownLoadSystemMixin:SetEditEntryCallback(editEntryCallback, editEntryTooltip, canEditCallback)
 	self.editEntryCallback = editEntryCallback;
 	self.editEntryTooltip = editEntryTooltip;
+	self.canEditCallback = canEditCallback;
 	self:UpdateSelectionOptions();
 end
 
@@ -311,6 +319,23 @@ function DropDownLoadSystemMixin:IsSelectionIDValid(selectionID)
 	return tContains(self.possibleSelections, selectionID);
 end
 
+function DropDownLoadSystemMixin:IsSelectionIDValidAndEnabled(selectionID, isUserInput)
+	if self.possibleSelections == nil then
+		return true;
+	end
+
+	if not tContains(self.possibleSelections, selectionID) then
+		return false;
+	end
+
+	local dropdownEnabledCallback = self.DropDownControl:GetEnabledCallback();
+	if dropdownEnabledCallback then
+		return dropdownEnabledCallback(selectionID, isUserInput);
+	end
+
+	return true;
+end
+
 function DropDownLoadSystemMixin:GetSelectionIDForUtility()
 	return self.lastValidSelectionID;
 end
@@ -319,21 +344,26 @@ function DropDownLoadSystemMixin:GetSelectionID()
 	return self.DropDownControl:GetSelectedValue();
 end
 
+function DropDownLoadSystemMixin:GetSelectedValueIndex()
+	return self.DropDownControl:GetSelectedValueIndex();
+end
+
 function DropDownLoadSystemMixin:GetDefaultSelectionID()
-	local lastValidSelectionID = self.lastValidSelectionID;
-	if lastValidSelectionID and self:IsSelectionIDValid(lastValidSelectionID) then
-		return lastValidSelectionID;
+	local isUserInput = false; -- Switching to a default selectionID should not be a user input
+
+	if self.lastValidSelectionID and self:IsSelectionIDValidAndEnabled(self.lastValidSelectionID, isUserInput) then
+		return self.lastValidSelectionID;
 	end
 
-	if self.initialSelectionID then
+	if self.initialSelectionID and self:IsSelectionIDValidAndEnabled(self.initialSelectionID, isUserInput) then
 		return self.initialSelectionID;
 	end
 
-	if self.possibleSelections then
+	if self.possibleSelections and self:IsSelectionIDValidAndEnabled(self.possibleSelections[1], isUserInput) then
 		return self.possibleSelections[1];
 	end
 
-	return 1;
+	return nil;
 end
 
 function DropDownLoadSystemMixin:GetNextSentinelKey()

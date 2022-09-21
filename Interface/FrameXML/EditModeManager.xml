@@ -40,7 +40,7 @@
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+					<Anchor point="TOPRIGHT"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="LayoutDropdown" inherits="DropDownControlTemplate">
@@ -240,6 +240,14 @@
 									<OnLeave method="OnLeave"/>
 								</Scripts>
 							</Frame>
+							<Frame parentKey="HudTooltip" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_HUD_TOOLTIP_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.BossFrames" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
 						</Frames>
 					</Frame>
 					<Frame parentKey="Expander" inherits="ResizeLayoutFrame">
@@ -272,6 +280,7 @@
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
 			<Button parentKey="SaveChangesButton" inherits="EditModeManagerFrameButtonTemplate" text="HUD_EDIT_MODE_SAVE_LAYOUT">

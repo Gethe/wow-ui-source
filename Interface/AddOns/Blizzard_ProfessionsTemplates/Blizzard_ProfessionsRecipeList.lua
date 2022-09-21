@@ -235,7 +235,7 @@ function ProfessionsRecipeListRecipeMixin:Init(node)
 
 		self.LockedIcon:Show();
 		table.insert(rightFrames, self.LockedIcon);
-	elseif not C_TradeSkillUI.IsTradeSkillGuild() and not C_TradeSkillUI.IsNPCCrafting() and not C_TradeSkillUI.IsRuneforging() then
+	elseif recipeInfo.canSkillUp and not C_TradeSkillUI.IsTradeSkillGuild() and not C_TradeSkillUI.IsNPCCrafting() and not C_TradeSkillUI.IsRuneforging() then
 		local skillUpAtlas;
 		local xOfs = -3;
 		local yOfs = 0;
@@ -320,15 +320,26 @@ end
 
 function ProfessionsRecipeListRecipeMixin:OnEnter()
 	self:SetLabelFontColors(HIGHLIGHT_FONT_COLOR);
-	local recipeID = self.GetElementData().data.recipeInfo.recipeID
-	local name = self.GetElementData().data.recipeInfo.name
-	local iconID = self.GetElementData().data.recipeInfo.icon
-	EventRegistry:TriggerEvent("Professions.RecipeListOnEnter", self, recipeID, name, iconID)
+	local elementData = self.GetElementData();
+	local recipeID = elementData.data.recipeInfo.recipeID;
+	local name = elementData.data.recipeInfo.name;
+	local iconID = elementData.data.recipeInfo.icon;
+
+	if self.Label:IsTruncated() then
+		GameTooltip:SetOwner(self.Label, "ANCHOR_RIGHT");
+		local wrap = false;
+		GameTooltip_AddHighlightLine(GameTooltip, name, wrap);
+		GameTooltip:Show();
+	end
+
+
+	EventRegistry:TriggerEvent("Professions.RecipeListOnEnter", self, recipeID, name, iconID);
 end
 
 
 function ProfessionsRecipeListRecipeMixin:OnLeave()
 	self:SetLabelFontColors(self:GetLabelColor());
+	GameTooltip:Hide();
 end
 
 function ProfessionsRecipeListRecipeMixin:SetSelected(selected)

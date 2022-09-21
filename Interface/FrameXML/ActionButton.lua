@@ -1248,7 +1248,10 @@ SmallActionButtonMixin = {}
 
 function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.HotKey:ClearAllPoints();
-	self.HotKey:SetPoint("TOPRIGHT", -4, -4);
+	self.HotKey:SetPoint("TOPRIGHT", -3, -4);
+
+	self.Count:ClearAllPoints();
+	self.Count:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -3, 1);
 
 	self.IconMask:SetSize(45, 45);
 	self.IconMask:ClearAllPoints();

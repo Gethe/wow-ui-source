@@ -261,6 +261,7 @@ ItemConstantsDocumentation.lua
 ItemSharedDocumentation.lua
 LFGConstantsDocumentation.lua
 LevelConstantsDocumentation.lua
+LootConstantsDocumentation.lua
 MinimapConstantsDocumentation.lua
 ModelSceneDocumentation.lua
 NamePlateDocumentation.lua
@@ -274,6 +275,7 @@ ProfessionConstantsDocumentation.lua
 PvPFactionConstantsDocumentation.lua
 PvpInfoConstantsDocumentation.lua
 QuestConstantsDocumentation.lua
+QuestRewardsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
 RecruitAFriendSharedDocumentation.lua
@@ -282,6 +284,7 @@ ScriptRegionSharedDocumentation.lua
 SharedScriptObjectModelLightDocumentation.lua
 SharedTraitsEnumsDocumentation.lua
 SimpleHTMLSharedDocumentation.lua
+SoftTargetConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
 TradeSkillUITypesDocumentation.lua

@@ -51,7 +51,7 @@ end
 
 function RenownRewardUtil.GetUnformattedRenownRewardInfo(rewardInfo, onItemUpdateCallback)
 	local icon, name, formatString, description = RenownRewardUtil.GetRenownRewardDisplayData(rewardInfo, onItemUpdateCallback);
-	return (rewardInfo.icon or icon), (name or rewardInfo.name), formatString, (rewardInfo.description or description);
+	return (rewardInfo.icon or icon), (rewardInfo.name or name), formatString, (rewardInfo.description or description);
 end
 
 function RenownRewardUtil.GetRenownRewardInfo(rewardInfo, onItemUpdateCallback)

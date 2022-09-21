@@ -473,6 +473,20 @@ local OPTIONAL_FILTERS = {
 	[Enum.MinimapTrackingFilter.Mailbox] = true,
 };
 
+function MiniMapTrackingDropDown_SetTrackingNone()
+	C_Minimap.ClearAllTracking();
+	
+	local count = C_Minimap.GetNumTrackingTypes();
+	for id=1, count do
+		local filter = C_Minimap.GetTrackingFilter(id);
+		if ALWAYS_ON_FILTERS[filter.filterID] or CONDITIONAL_FILTERS[filter.filterID] then
+			C_Minimap.SetTracking(id, true);
+		end
+	end
+	
+	UIDropDownMenu_Refresh(MinimapCluster.Tracking.DropDown);
+end
+
 function MiniMapTracking_FilterIsVisible(id)
 	local filter = C_Minimap.GetTrackingFilter(id);
 	local optionalFilter = filter and OPTIONAL_FILTERS[filter.filterID];
@@ -491,9 +505,9 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 
 	if (level == 1) then
 		info = UIDropDownMenu_CreateInfo();
-		info.text=MINIMAP_TRACKING_NONE;
+		info.text = MINIMAP_TRACKING_NONE;
 		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive;
-		info.func = C_Minimap.ClearAllTracking;
+		info.func = MiniMapTrackingDropDown_SetTrackingNone;
 		info.icon = nil;
 		info.arg1 = nil;
 		info.isNotRadio = true;

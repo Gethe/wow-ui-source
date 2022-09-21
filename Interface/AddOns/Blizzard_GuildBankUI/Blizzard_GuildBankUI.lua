@@ -39,7 +39,7 @@ function GuildBankFrameMixin:OnLoad()
 		button:SetID(i);
 	end
 	self.mode = "bank";
-	self.numTabs = 4;
+	PanelTemplates_SetNumTabs(self, 4);
 	self.maxTabWidth = 128;
 	self:UpdateTabs();
 	self:UpdateTabard();
@@ -115,7 +115,7 @@ function GuildBankFrameMixin:SelectAvailableTab()
 end
 
 function GuildBankFrameMixin:OnShow()
-	self.FrameTabs[1]:OnClick();
+	self.Tabs[1]:OnClick();
 	self:UpdateTabard();
 	self:SelectAvailableTab();
 	PlaySound(SOUNDKIT.GUILD_VAULT_OPEN);

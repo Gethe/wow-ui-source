@@ -672,6 +672,10 @@ function ScrollBoxListViewMixin:SetElementExtentCalculator(elementExtentCalculat
 	self.calculatedElementExtents = nil;
 end
 
+function ScrollBoxListViewMixin:GetElementExtentCalculator()
+	return self.elementExtentCalculator;
+end
+
 function ScrollBoxListViewMixin:GetExtentUntil(scrollBox, dataIndex, stride, spacing)
 	if dataIndex == 0 then
 		return 0;

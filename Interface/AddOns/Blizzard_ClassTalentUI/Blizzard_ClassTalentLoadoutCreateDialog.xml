@@ -8,27 +8,16 @@
 			<KeyValue key="titleText" value="HUD_CLASS_TALENTS_NEW_LOADOUT_DIALOG_TITLE" type="global"/>
 		</KeyValues>
 		<Size x="460" y="150"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="LoadoutNameLabel" inherits="GameFontNormal" text="HUD_CLASS_TALENTS_NEW_LOADOUT_DIALOG_EDIT_BOX_LABEL">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ContentArea"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
-			<EditBox parentKey="LoadoutName" inherits="ClassTalentLoadoutDialogNameInputTemplate" mixin="ClassTalentLoadoutCreateDialogNameEditBoxMixin">
+			<Frame parentKey="NameControl" inherits="ClassTalentLoadoutDialogNameControlTemplate" mixin="ClassTalentLoadoutCreateDialogNameControlMixin">
+				<KeyValues>
+					<KeyValue key="labelText" value="HUD_CLASS_TALENTS_NEW_LOADOUT_DIALOG_EDIT_BOX_LABEL" type="global"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ContentArea" y="-10"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ContentArea"/>
 					<Anchor point="RIGHT" relativeKey="$parent.ContentArea"/>
 				</Anchors>
-				<Scripts>
-					<OnEnterPressed method="OnEnterPressed"/>
-					<OnEscapePressed method="OnEscapePressed"/>
-					<OnTextChanged method="OnTextChanged"/>
-				</Scripts>
-			</EditBox>
+			</Frame>
 
 			<Button parentKey="AcceptButton" inherits="ClassTalentLoadoutDialogButtonTemplate" text="SAVE">
 				<Anchors>

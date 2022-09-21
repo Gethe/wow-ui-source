@@ -609,5 +609,8 @@
 				</Anchors>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnLoad function="MasterLooterFrame_OnLoad"/>
+		</Scripts>
 	</Frame>
 </Ui>

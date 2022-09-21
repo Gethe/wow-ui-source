@@ -9,7 +9,7 @@
 		</KeyValues>
 		<Size x="30" y="30"/>
 		<Layers>
-			<Layer level="OVERLAY">
+			<Layer level="OVERLAY" textureSubLevel="6">
 				<Texture  parentKey="AnimIcon" setAllPoints="true"/>
 				<Texture parentKey="SlotHighlightTexture" setAllPoints="true" hidden="true"/>
 			</Layer>
@@ -49,7 +49,7 @@
 		</KeyValues>
 		<Size x="48" y="48"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+			<Anchor point="TOPRIGHT" x="-4" y="2"/>
 		</Anchors>
 		<Scripts>
 			<OnEvent method="BackpackOnEvent" inherit="append"/>

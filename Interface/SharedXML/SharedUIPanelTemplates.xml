@@ -840,6 +840,39 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="FlatPanelBackgroundTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BottomLeft" atlas="uiframebackground-nineslice-cornerbottomleft" useAtlasSize="true" alpha="0.8">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<Color color="PANEL_BACKGROUND_COLOR"/>
+				</Texture>
+				<Texture parentKey="BottomRight" atlas="uiframebackground-nineslice-cornerbottomright" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color color="PANEL_BACKGROUND_COLOR"/>
+				</Texture>
+				<Texture parentKey="BottomEdge">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<Color color="PANEL_BACKGROUND_COLOR"/>
+				</Texture>
+				<Texture parentKey="TopSection">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<Color color="PANEL_BACKGROUND_COLOR"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
 <!--
 *******************************************************************************
    Simple Panel templates
@@ -881,35 +914,11 @@
 	It makes its own nine-slice border.
 *******************************************************************************
 -->
-	<Frame name="DefaultPanelTemplate" mixin="DefaultPanelMixin" virtual="true">
+	<Frame name="DefaultPanelBaseTemplate" mixin="DefaultPanelMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
 		</KeyValues>
 		<Size x="338" y="424"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-6">
-				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-21"/>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTitleBg" parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-2"/>
-						<Anchor point="TOPRIGHT" x="-25" y="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-5">
-				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-21"/>
-						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Frame parentKey="TitleContainer" frameLevel="510">
 				<Size x="0" y="20"/>
@@ -933,41 +942,49 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="DefaultPanelTemplate" inherits="DefaultPanelBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-21"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DefaultPanelFlatTemplate" inherits="DefaultPanelBaseTemplate" virtual="true">
+		<Frames>
+			<Frame name="$parentBg" parentKey="Bg" inherits="FlatPanelBackgroundTemplate" frameLevel="0">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="6" y="-20"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
 <!--
 *******************************************************************************
     PortraitFrameTemplate
 	This is an empty frame with space for a portrait/icon in the top left corner.
 *******************************************************************************
 -->
-	<Frame name="PortraitFrameTemplateNoCloseButton" mixin="PortraitFrameMixin" virtual="true">
+	<Frame name="PortraitFrameBaseTemplate" mixin="PortraitFrameMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutType" value="PortraitFrameTemplate" type="string"/>
 		</KeyValues>
 		<Size x="338" y="424"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-6">
-				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-21"/>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-3"/>
-						<Anchor point="TOPRIGHT" x="-25" y="-3"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-21"/>
-						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
 			<Frame parentKey="PortraitContainer" frameLevel="400">
@@ -1007,6 +1024,40 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="PortraitFrameTexturedBaseTemplate" inherits="PortraitFrameBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-21"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="PortraitFrameFlatBaseTemplate" inherits="PortraitFrameBaseTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="Bg" inherits="FlatPanelBackgroundTemplate" frameLevel="0">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-20"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="3"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="PortraitFrameTemplateNoCloseButton" inherits="PortraitFrameTexturedBaseTemplate" virtual="true"/>
+
 	<Frame name="PortraitFrameTemplate" inherits="PortraitFrameTemplateNoCloseButton" virtual="true">
 		<Frames>
 			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
@@ -1017,6 +1068,12 @@
 		<KeyValues>
 			<KeyValue key="layoutType" value="PortraitFrameTemplateMinimizable" type="string"/>
 		</KeyValues>
+	</Frame>
+
+	<Frame name="PortraitFrameFlatTemplate" inherits="PortraitFrameFlatBaseTemplate" virtual="true">
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+		</Frames>
 	</Frame>
 
 <!--
@@ -1030,8 +1087,28 @@
 	ButtonFrameTemplate_ShowButtonBar(self)
 *******************************************************************************
 -->
-	<Frame name="ButtonFrameTemplate" inherits="PortraitFrameTemplate" virtual="true">
+	<Frame name="ButtonFrameTemplate" inherits="PortraitFrameBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-21"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+
 			<Frame name="$parentInset" parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-60" />
@@ -1212,6 +1289,9 @@
 				<NormalTexture atlas="auctionhouse-ui-filter-redx">
 					<Size x="23" y="23"/>
 				</NormalTexture>
+				<HighlightTexture atlas="auctionhouse-ui-filter-redx" alphaMode="ADD" alpha="0.4">
+					<Size x="23" y="23"/>
+				</HighlightTexture>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -1804,75 +1884,81 @@
 		</Scripts>
 	</EditBox>
 
-	<Button name="TabButtonTemplate" virtual="true">
-		<Size x="115" y="32"/>
-        <Layers>
-        	<Layer level="BACKGROUND">
-        		<Texture name="$parentLeftDisabled" parentKey="LeftDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
-        			<Size x="16" y="32"/>
-        			<Anchors>
-        				<Anchor point="BOTTOMLEFT" x="0" y="-3"/>
-        			</Anchors>
-					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
-        		</Texture>
-				<Texture name="$parentMiddleDisabled" parentKey="MiddleDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
-        			<Size x="32" y="32"/>
-        			<Anchors>
-        				<Anchor point="LEFT" relativeKey="$parent.LeftDisabled" relativePoint="RIGHT"/>
-        			</Anchors>
-					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
-        		</Texture>
-				<Texture name="$parentRightDisabled" parentKey="RightDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
-        			<Size x="16" y="32"/>
-        			<Anchors>
-        				<Anchor point="LEFT" relativeKey="$parent.MiddleDisabled" relativePoint="RIGHT"/>
-        			</Anchors>
-					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
-        		</Texture>
-				<Texture name="$parentLeft" parentKey="Left" file="Interface\HelpFrame\HelpFrameTab-Inactive">
-        			<Size x="16" y="32"/>
-        			<Anchors>
-        				<Anchor point="BOTTOMLEFT"/>
-        			</Anchors>
-					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
-        		</Texture>
-				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\HelpFrame\HelpFrameTab-Inactive">
-        			<Size x="32" y="32"/>
-        			<Anchors>
-        				<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
-        			</Anchors>
-					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
-        		</Texture>
-				<Texture name="$parentRight" parentKey="Right" file="Interface\HelpFrame\HelpFrameTab-Inactive">
-        			<Size x="16" y="32"/>
-        			<Anchors>
-        				<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
-        			</Anchors>
-					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
-        		</Texture>
-        	</Layer>
-        </Layers>
+	<Button name="PanelTabButtonTemplate" mixin="PanelTabButtonMixin" motionScriptsWhileDisabled="true" parentArray="Tabs" virtual="true" >
+		<Size x="10" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftActive" atlas="uiframe-activetab-left" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightActive" atlas="uiframe-activetab-right" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleActive" atlas="_uiframe-activetab-center" useAtlasSize="true" horizTile="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LeftActive" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.RightActive" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Left" atlas="uiframe-tab-left" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="uiframe-tab-right" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="LeftHighlight" atlas="uiframe-tab-left" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleHighlight" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHighlight" atlas="uiframe-tab-right" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
-			<OnLoad>
-				PanelTemplates_TabResize(self, 0, nil, self.minWidth);
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
-		<ButtonText name="$parentText" parentKey="Text">
-			<Size x="0" y="13"/>
+		<ButtonText parentKey="Text">
+			<Size x="0" y="10"/>
 			<Anchors>
-				<Anchor point="BOTTOM" x="0" y="5"/>
+				<Anchor point="CENTER" x="0" y="2"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontDisableSmall"/>
-		<HighlightTexture name="$parentHighlightTexture" parentKey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
-			<Size x="5" y="32"/>
-			<Anchors>
-				<Anchor point="BOTTOM" x="2" y="-8"/>
-			</Anchors>
-		</HighlightTexture>
-    </Button>
+		<DisabledFont style="GameFontHighlightSmall"/>
+	</Button>
+
+	<Button name="PanelTopTabButtonTemplate" inherits="PanelTabButtonTemplate" mixin="PanelTopTabButtonMixin" virtual="true"/>
 
 	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" frameLevel="510" virtual="true">
 		<Size x="24" y="24"/>

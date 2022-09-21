@@ -215,6 +215,7 @@ local Unit =
 			{
 				{ Name = "textureObject", Type = "table", Nilable = false },
 				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "disableMasking", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{

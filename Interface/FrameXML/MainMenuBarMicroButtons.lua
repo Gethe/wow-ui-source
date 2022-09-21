@@ -587,7 +587,7 @@ function TalentMicroButtonMixin:HasTalentAlertToShow()
 		alert = "TALENT_MICRO_BUTTON_TALENT_TUTORIAL";
 	elseif canUseTalentSpecUI and IsPlayerInitialSpec() then
 		alert = "TALENT_MICRO_BUTTON_NO_SPEC";
-	elseif canUseTalentUI and not AreTalentsLocked() and GetNumUnspentTalents() > 0 then
+	elseif canUseTalentUI and not AreTalentsLocked() and C_ClassTalents.HasUnspentTalentPoints() then
 		alert = "TALENT_MICRO_BUTTON_UNSPENT_TALENTS";
 	end
 

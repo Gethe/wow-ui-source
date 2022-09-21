@@ -31,7 +31,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnShow method="OnShow"/>
+			<OnShow method="EditModeCheckButton_OnShow" inherit="append"/>
 		</Scripts>
 	</Frame>
 

@@ -23,7 +23,7 @@ function EditModeUtil:GetRightActionBarWidth()
 
 	if MultiBar4_IsVisible and MultiBar4_IsVisible() and MultiBarLeft:IsInDefaultPosition() then
 		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarLeft:GetPoint(1);
-		offset = MultiBarLeft:GetWidth() - offsetX;
+		offset = offset + MultiBarLeft:GetWidth() - offsetX;
 	end
 
 	return offset;

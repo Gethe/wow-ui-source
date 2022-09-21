@@ -130,9 +130,11 @@ end
 
 ExhaustionTickMixin = { }
 function ExhaustionTickMixin:ExhaustionToolTipText()
-	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
+	if(not exhaustionStateID) then 
+		return; 
+	end
+	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
 	local exhaustionCurrXP, exhaustionMaxXP;
 	local exhaustionThreshold = GetXPExhaustion();
 	local exhaustionCountdown = nil;
@@ -187,17 +189,19 @@ function ExhaustionTickMixin:UpdateTickPosition()
 		self:Hide();
 		self:GetParent().ExhaustionLevelFillBar:Hide();
 	else
-		local exhaustionTickSet = max(((playerCurrXP + exhaustionThreshold) / playerMaxXP) * (self:GetParent():GetWidth()), 0);
+		local widthRatio = max((playerCurrXP + exhaustionThreshold) / playerMaxXP, 0);
+		self:SetShown(widthRatio >= 0.01 and widthRatio <= 0.99); -- Hide pip at edges of bar since it doesn't look good at edges
+
+		local exhaustionTickSet = max(widthRatio * (self:GetParent():GetWidth()), 0);
 		self:ClearAllPoints();
 
 		if ( exhaustionTickSet > self:GetParent():GetWidth() ) then
-			self:Hide();
 			self:GetParent().ExhaustionLevelFillBar:Hide();
 		else
-			self:Show();
 			self:SetPoint("CENTER", self:GetParent(), "LEFT", exhaustionTickSet, 2);
 			self:GetParent().ExhaustionLevelFillBar:Show();
 			self:GetParent().ExhaustionLevelFillBar:SetWidth(exhaustionTickSet);
+			self:GetParent().ExhaustionLevelFillBar:SetTexCoord(0, widthRatio, 0, 1);
 		end
 	end
 

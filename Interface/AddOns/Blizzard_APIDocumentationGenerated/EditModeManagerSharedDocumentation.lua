@@ -71,9 +71,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 19,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 18,
+			MaxValue = 19,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -95,6 +95,7 @@ local EditModeManagerShared =
 				{ Name = "ShowBossFrames", Type = "EditModeAccountSetting", EnumValue = 16 },
 				{ Name = "ShowArenaFrames", Type = "EditModeAccountSetting", EnumValue = 17 },
 				{ Name = "ShowLootFrame", Type = "EditModeAccountSetting", EnumValue = 18 },
+				{ Name = "ShowHudTooltip", Type = "EditModeAccountSetting", EnumValue = 19 },
 			},
 		},
 		{
@@ -112,7 +113,7 @@ local EditModeManagerShared =
 				{ Name = "IconPadding", Type = "EditModeActionBarSetting", EnumValue = 4 },
 				{ Name = "VisibleSetting", Type = "EditModeActionBarSetting", EnumValue = 5 },
 				{ Name = "HideBarArt", Type = "EditModeActionBarSetting", EnumValue = 6 },
-				{ Name = "SnapToSide", Type = "EditModeActionBarSetting", EnumValue = 7 },
+				{ Name = "DeprecatedSnapToSide", Type = "EditModeActionBarSetting", EnumValue = 7 },
 				{ Name = "HideBarScrolling", Type = "EditModeActionBarSetting", EnumValue = 8 },
 				{ Name = "AlwaysShowButtons", Type = "EditModeActionBarSetting", EnumValue = 9 },
 			},
@@ -243,9 +244,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -259,6 +260,7 @@ local EditModeManagerShared =
 				{ Name = "ChatFrame", Type = "EditModeSystem", EnumValue = 8 },
 				{ Name = "VehicleLeaveButton", Type = "EditModeSystem", EnumValue = 9 },
 				{ Name = "LootFrame", Type = "EditModeSystem", EnumValue = 10 },
+				{ Name = "HudTooltip", Type = "EditModeSystem", EnumValue = 11 },
 			},
 		},
 		{
@@ -282,7 +284,7 @@ local EditModeManagerShared =
 				{ Name = "FrameWidth", Type = "EditModeUnitFrameSetting", EnumValue = 10 },
 				{ Name = "FrameHeight", Type = "EditModeUnitFrameSetting", EnumValue = 11 },
 				{ Name = "DisplayBorder", Type = "EditModeUnitFrameSetting", EnumValue = 12 },
-				{ Name = "KeepGroupsTogether", Type = "EditModeUnitFrameSetting", EnumValue = 13 },
+				{ Name = "RaidGroupDisplayType", Type = "EditModeUnitFrameSetting", EnumValue = 13 },
 				{ Name = "SortPlayersBy", Type = "EditModeUnitFrameSetting", EnumValue = 14 },
 				{ Name = "RowSize", Type = "EditModeUnitFrameSetting", EnumValue = 15 },
 			},
@@ -302,6 +304,20 @@ local EditModeManagerShared =
 				{ Name = "Raid", Type = "EditModeUnitFrameSystemIndices", EnumValue = 5 },
 				{ Name = "Boss", Type = "EditModeUnitFrameSystemIndices", EnumValue = 6 },
 				{ Name = "Arena", Type = "EditModeUnitFrameSystemIndices", EnumValue = 7 },
+			},
+		},
+		{
+			Name = "RaidGroupDisplayType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "SeparateGroupsVertical", Type = "RaidGroupDisplayType", EnumValue = 0 },
+				{ Name = "SeparateGroupsHorizontal", Type = "RaidGroupDisplayType", EnumValue = 1 },
+				{ Name = "CombineGroupsVertical", Type = "RaidGroupDisplayType", EnumValue = 2 },
+				{ Name = "CombineGroupsHorizontal", Type = "RaidGroupDisplayType", EnumValue = 3 },
 			},
 		},
 		{
