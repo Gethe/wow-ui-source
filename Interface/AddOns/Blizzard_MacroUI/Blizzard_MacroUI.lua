@@ -263,9 +263,11 @@ function MacroFrameMixin:SelectMacro(index)
 	if index then
 		local actualIndex = self:GetMacroDataIndex(index);
 		local name, texture, body = GetMacroInfo(actualIndex);
-		MacroFrameSelectedMacroName:SetText(name);
-		MacroFrameText:SetText(body);
-		self.SelectedMacroButton.Icon:SetTexture(texture);
+		if(name) then 
+			MacroFrameSelectedMacroName:SetText(name);
+			MacroFrameText:SetText(body);
+			self.SelectedMacroButton.Icon:SetTexture(texture);
+		end
 	end
 
 	self:UpdateButtons();

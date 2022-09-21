@@ -434,7 +434,7 @@ function DressUpOutfitDetailsPanelMixin:OnShow()
 
 	local hasAlternateForm, _ = C_PlayerInfo.GetAlternateFormInfo();
 	if ( hasAlternateForm ) then
-		self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
+		self:RegisterUnitEvent("UNIT_FORM_CHANGED", "player");
 	end
 	self:Refresh();
 end
@@ -442,7 +442,7 @@ end
 function DressUpOutfitDetailsPanelMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:UnregisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
-	self:UnregisterEvent("UNIT_MODEL_CHANGED");
+	self:UnregisterEvent("UNIT_FORM_CHANGED");
 end
 
 function DressUpOutfitDetailsPanelMixin:OnEvent(event, ...)
@@ -454,7 +454,7 @@ function DressUpOutfitDetailsPanelMixin:OnEvent(event, ...)
 		end
 	elseif event == "TRANSMOG_SOURCE_COLLECTABILITY_UPDATE" then
 		self:MarkDirty();
-	elseif ( event == "UNIT_MODEL_CHANGED" ) then
+	elseif ( event == "UNIT_FORM_CHANGED" ) then
 		self:RefreshPlayerModel();
 	end
 end

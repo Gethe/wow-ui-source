@@ -255,7 +255,7 @@ end
 function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 	self.openSoundKitID = frameData.openSoundKitID;
 	self.closeSoundKitID = frameData.closeSoundKitID;
-	self.TitleText:SetText(frameData.titleText);
+	self:SetTitle(frameData.titleText);
 	self.ButtonFrame.ActionButton:SetText(frameData.buttonText);
 	self.confirmationText = frameData.buttonText;
 	self.confirmationDescription = frameData.confirmationDescription;

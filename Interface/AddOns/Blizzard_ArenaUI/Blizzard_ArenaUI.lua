@@ -2,111 +2,165 @@ MAX_ARENA_ENEMIES = 5;
 
 CVarCallbackRegistry:SetCVarCachable("showArenaEnemyPets");
 
-function ArenaEnemyFrames_OnLoad(self)
+local function LockUnitFrame(unitFrame)
+	unitFrame.healthbar:SetStatusBarColor(0.5, 0.5, 0.5);
+	unitFrame.healthbar.lockColor = true;
+	unitFrame.manabar:SetStatusBarColor(0.5, 0.5, 0.5);
+	unitFrame.manabar.lockColor = true;
+	unitFrame.hideStatusOnTooltip = true;
+end
+
+local function UnlockUnitFrame(unitFrame)
+	unitFrame.healthbar.lockColor = false;
+	unitFrame.healthbar.forceHideText = false;
+	unitFrame.manabar.lockColor = false;
+	unitFrame.manabar.forceHideText = false;
+	unitFrame.hideStatusOnTooltip = false;
+end
+
+ArenaEnemyFramesContainerMixin = {};
+
+function ArenaEnemyFramesContainerMixin:Update()
+	self:UpdateShownState();
+	self:Layout();
+	UIParent_ManageFramePositions();
+end
+
+function ArenaEnemyFramesContainerMixin:UpdateShownState()
+	for index, unitFrame in ipairs(ArenaEnemyMatchFramesContainer.UnitFrames) do
+		unitFrame:UpdateShownState();
+	end
+
+	if self.isInEditMode then
+		ArenaEnemyPrepFramesContainer:Hide();
+
+		ArenaEnemyMatchFramesContainer:Show();
+		for index, unitFrame in ipairs(ArenaEnemyMatchFramesContainer.UnitFrames) do
+			unitFrame:Show();
+		end
+
+		self:Show();
+		return;
+	end
+
+	local _, instanceType = IsInInstance();
+	if instanceType and instanceType == "arena" then
+		local hasArenaStarted = GetNumArenaOpponents() > 0;
+		ArenaEnemyPrepFramesContainer:SetShown(not hasArenaStarted);
+		ArenaEnemyMatchFramesContainer:SetShown(hasArenaStarted);
+
+		self:Show();
+		return;
+	end
+
+	ArenaEnemyPrepFramesContainer:Hide();
+	ArenaEnemyMatchFramesContainer:Hide();
+	self:Hide();
+end
+
+ArenaEnemyMatchFramesContainerMixin = {};
+
+function ArenaEnemyMatchFramesContainerMixin:OnLoad()
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	
-	ArenaEnemyFrames_CheckEffectiveEnableState(self);
+
+	self:CheckEffectiveEnableState();
 	local showCastbars = GetCVarBool("showArenaEnemyCastbar");
 	local castFrame;
 	for i = 1, MAX_ARENA_ENEMIES do
-		castFrame = _G["ArenaEnemyFrame"..i.."CastingBar"];
-		castFrame:SetPoint("RIGHT", _G["ArenaEnemyFrame"..i], "LEFT", -32, -3);
+		castFrame = _G["ArenaEnemyMatchFrame"..i.."CastingBar"];
+		castFrame:SetPoint("RIGHT", _G["ArenaEnemyMatchFrame"..i], "LEFT", -32, -3);
 		castFrame.showCastbar = showCastbars;
 		castFrame:UpdateIsShown();
 	end
-	
-	UpdateArenaEnemyBackground();
-	ArenaEnemyBackground_SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
-	ArenaEnemyFrames_UpdateVisible();
-	ArenaEnemyFrames_ResetCrowdControlCooldownData();
+
+	self.ArenaEnemyBackground:Update();
+	self.ArenaEnemyBackground:SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
+	ArenaEnemyFramesContainer:Update();
+	self:ResetCrowdControlCooldownData();
 end
 
-function ArenaEnemyFrames_OnEvent(self, event, ...)
+function ArenaEnemyMatchFramesContainerMixin:OnEvent(event, ...)
 	local arg1, arg2 = ...;
 	if ( (event == "CVAR_UPDATE") and (arg1 == "showArenaEnemyFrames") ) then
-		ArenaEnemyFrames_CheckEffectiveEnableState(self, arg2 == "1");
+		self:CheckEffectiveEnableState(arg2 == "1");
 	elseif ( event == "VARIABLES_LOADED" ) then
-		ArenaEnemyFrames_CheckEffectiveEnableState(self);
+		self:CheckEffectiveEnableState();
 		local showCastbars = GetCVarBool("showArenaEnemyCastbar");
 		local castFrame;
 		for i = 1, MAX_ARENA_ENEMIES do
-			castFrame = _G["ArenaEnemyFrame"..i.."CastingBar"];
+			castFrame = _G["ArenaEnemyMatchFrame"..i.."CastingBar"];
 			castFrame.showCastbar = showCastbars;
 			castFrame:UpdateIsShown();
 		end
 		for i=1, MAX_ARENA_ENEMIES do
-			ArenaEnemyFrame_UpdatePet(_G["ArenaEnemyFrame"..i], i);
+			_G["ArenaEnemyMatchFrame"..i]:UpdatePet();
 		end
-		UpdateArenaEnemyBackground();
-		ArenaEnemyBackground_SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
+
+		self.ArenaEnemyBackground:Update();
+		self.ArenaEnemyBackground:SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		ArenaEnemyFrames_CheckEffectiveEnableState(self);
-		ArenaEnemyFrames_UpdateVisible();
-		ArenaEnemyFrames_ResetCrowdControlCooldownData();
+		self:CheckEffectiveEnableState();
+		ArenaEnemyFramesContainer:Update();
+		self:ResetCrowdControlCooldownData();
 	end
 end
 
-function ArenaEnemyFrames_ResetCrowdControlCooldownData()
-	for i=1, MAX_ARENA_ENEMIES do
-		local frame = _G["ArenaEnemyFrame"..i];
-		frame.CC.spellID = nil;
-		frame.CC.Icon:SetTexture(nil);
-		frame.CC.Cooldown:Clear();
-		ArenaEnemyFrame_UpdateCrowdControl(frame);
+function ArenaEnemyMatchFramesContainerMixin:OnShow()
+	DurabilityFrame:SetAlerts();
+	ArenaEnemyFramesContainer:Update();
+end
+
+function ArenaEnemyMatchFramesContainerMixin:OnHide()
+	DurabilityFrame:SetAlerts();
+	ArenaEnemyFramesContainer:Update();
+end
+
+function ArenaEnemyMatchFramesContainerMixin:ResetCrowdControlCooldownData()
+	for index, unitFrame in ipairs(self.UnitFrames) do
+		unitFrame.CC.spellID = nil;
+		unitFrame.CC.Icon:SetTexture(nil);
+		unitFrame.CC.Cooldown:Clear();
+		unitFrame:UpdateCrowdControl();
 	end
 end
 
-function ArenaEnemyFrames_OnShow(self)
-	DurabilityFrame:SetAlerts();
-	LayoutMixin.OnShow(self);
-	UIParentManagedFrameMixin.OnShow(self);
-end
-
-function ArenaEnemyFrames_OnHide(self)	
-	DurabilityFrame:SetAlerts();
-	UIParentManagedFrameMixin.OnHide(self);
-end
-
-function ArenaEnemyFrames_CheckEffectiveEnableState(self, cvarUpdate)
+function ArenaEnemyMatchFramesContainerMixin:CheckEffectiveEnableState(cvarUpdate)
 	if (C_PvP.IsInBrawl() and not C_PvP.IsSoloShuffle()) then
-		ArenaEnemyFrames_Disable(self);
+		self:Disable();
 	else
 		if ( GetCVarBool("showArenaEnemyFrames") or cvarUpdate ) then
-			ArenaEnemyFrames_Enable(self);
+			self:Enable();
 		else
-			ArenaEnemyFrames_Disable(self);
+			self:Disable();
 		end
 	end
 end
 
-function ArenaEnemyFrames_Enable(self)
+function ArenaEnemyMatchFramesContainerMixin:Enable()
 	self.show = true;
-	ArenaEnemyFrames_UpdateVisible();
+	ArenaEnemyFramesContainer:Update();
 end
 
-function ArenaEnemyFrames_Disable(self)
+function ArenaEnemyMatchFramesContainerMixin:Disable()
 	self.show = false;
-	ArenaEnemyFrames_UpdateVisible();
+	ArenaEnemyFramesContainer:Update();
 end
 
-function ArenaEnemyFrames_UpdateVisible()
-	local _, instanceType = IsInInstance();
-	if ( ArenaEnemyFrames.show and ((instanceType == "arena") or (GetNumArenaOpponents() > 0))) then
-		ArenaEnemyFrames:Show();
-	else
-		ArenaEnemyFrames:Hide();
-	end
+function ArenaEnemyMatchFramesContainerMixin:GetBestAnchorUnitFrameForOppponent(opponentNumber)
+	return self.UnitFrames[math.min(opponentNumber, MAX_ARENA_ENEMIES)];
 end
 
-function ArenaEnemyFrame_OnLoad(self)
+ArenaEnemyMatchFrameMixin = {};
+
+function ArenaEnemyMatchFrameMixin:OnLoad()
 	local id = self:GetID();
-	self.debuffCountdown = 0; 
+	self.debuffCountdown = 0;
 	self.numDebuffs = 0;
-	local prefix = "ArenaEnemyFrame"..id;
+	local prefix = "ArenaEnemyMatchFrame"..id;
 	UnitFrame_Initialize(self, "arena"..id,  _G[prefix.."Name"], nil,
-			_G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
+			_G[prefix.."HealthBar"], _G[prefix.."HealthBarText"],
 			_G[prefix.."ManaBar"], _G[prefix.."ManaBarText"], nil, nil, nil,
 			_G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"],
 			_G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"],
@@ -117,50 +171,50 @@ function ArenaEnemyFrame_OnLoad(self)
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
-	
+
 	self.classPortrait = _G[self:GetName().."ClassPortrait"];
 	self.specPortrait = _G[self:GetName().."SpecPortrait"];
 	self.specBorder = _G[self:GetName().."SpecBorder"];
 	self.castBar = _G[self:GetName().."CastingBar"];
 
-	ArenaEnemyFrame_UpdatePlayer(self, true);
+	self:UpdatePlayer();
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("ARENA_COOLDOWNS_UPDATE");
 	self:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE");
-	
+
 	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyDropDown_Initialize, "MENU");
-	
+
 	local setfocus = function()
 		FocusUnit("arena"..self:GetID());
 	end
 	SecureUnitButton_OnLoad(self, "arena"..self:GetID(), setfocus);
-	
+
 	local id = self:GetID();
 	if ( UnitClass("arena"..id) and (not UnitExists("arena"..id))) then	--It is possible for the unit itself to no longer exist on the client, but some of the information to remain (after reloading the UI)
 		self:Show();
-		ArenaEnemyFrame_Lock(self);
+		LockUnitFrame(self);
 	elseif ( UnitExists("arenapet"..id) and ( not UnitClass("arena"..id) ) ) then	--We use UnitClass because even if the unit doesn't exist on the client, we may still have enough info to populate the frame.
-		ArenaEnemyFrame_SetMysteryPlayer(self);
+		self:SetMysteryPlayer();
 	end
 end
 
-function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need to use CVars instead of UVars even though UVars are faster.
+function ArenaEnemyMatchFrameMixin:UpdatePlayer() --At some points, we need to use CVars instead of UVars even though UVars are faster.
 	local id = self:GetID();
 	if ( UnitGUID(self.unit) ) then	--Use UnitGUID instead of UnitExists in case the unit is a remote update.
 		self:Show();
-		_G["ArenaPrepFrame"..id]:Hide();
+		_G["ArenaEnemyPrepFrame"..id]:Hide();
 		UnitFrame_Update(self);
 	end
-		
+
 	local _, class = UnitClass(self.unit);
 	if( class ) then
 		self.classPortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 		self.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
 	end
 	local specID = GetArenaOpponentSpec(id);
-	if (specID and specID > 0) then 
+	if (specID and specID > 0) then
 		local _, _, _, specIcon = GetSpecializationInfoByID(specID);
 		self.specBorder:Show();
 		SetPortraitToTexture(self.specPortrait, specIcon);
@@ -168,7 +222,7 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 		self.specPortrait:SetTexture(nil);
 		self.specBorder:Hide();
 	end
-	
+
 	-- When not in an arena, show their faction icon (these are really flag carriers, not arena opponents)
 	local _, instanceType = IsInInstance();
 	local factionGroup, factionName = UnitFactionGroup(self.unit);
@@ -183,27 +237,11 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 	end
 
 	self.castBar:SetUnit(self.unit, false, true);
-	
-	ArenaEnemyFrames_UpdateVisible();
+
+	ArenaEnemyFramesContainer:Update();
 end
 
-function ArenaEnemyFrame_Lock(self)
-	self.healthbar:SetStatusBarColor(0.5, 0.5, 0.5);
-	self.healthbar.lockColor = true;
-	self.manabar:SetStatusBarColor(0.5, 0.5, 0.5);
-	self.manabar.lockColor = true;
-	self.hideStatusOnTooltip = true;
-end
-
-function ArenaEnemyFrame_Unlock(self)
-	self.healthbar.lockColor = false;
-	self.healthbar.forceHideText = false;
-	self.manabar.lockColor = false;
-	self.manabar.forceHideText = false;
-	self.hideStatusOnTooltip = false;
-end
-
-function ArenaEnemyFrame_SetMysteryPlayer(self)
+function ArenaEnemyMatchFrameMixin:SetMysteryPlayer()
 	self.healthbar:SetMinMaxValues(0,100);
 	self.healthbar:SetValue(100);
 	self.healthbar.forceHideText = true;
@@ -213,18 +251,18 @@ function ArenaEnemyFrame_SetMysteryPlayer(self)
 	self.classPortrait:SetTexture("Interface\\CharacterFrame\\TempPortrait");
 	self.classPortrait:SetTexCoord(0, 1, 0, 1);
 	self.name:SetText("");
-	ArenaEnemyFrame_Lock(self);
+	LockUnitFrame(self);
 	self:Show();
 end
 
-function ArenaEnemyFrame_OnEvent(self, event, unit, ...)
+function ArenaEnemyMatchFrameMixin:OnEvent(event, unit, ...)
 	if ( unit == self.unit ) then
 		if ( event == "ARENA_OPPONENT_UPDATE" ) then
 			local unitEvent = ...;
 			if ( unitEvent == "seen" or unitEvent == "destroyed") then
-				ArenaEnemyFrame_Unlock(self);
-				ArenaEnemyFrame_UpdatePlayer(self);
-				
+				UnlockUnitFrame(self);
+				self:UpdatePlayer();
+
 				if ( self.healthbar.frequentUpdates and GetCVarBool("predictedHealth") ) then
 					self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 					self.healthbar:UnregisterEvent("UNIT_HEALTH");
@@ -233,33 +271,33 @@ function ArenaEnemyFrame_OnEvent(self, event, unit, ...)
 					self.manabar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
 					UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
 				end
-				ArenaEnemyFrame_UpdatePet(self);
-				UpdateArenaEnemyBackground();
-				UIParent_ManageFramePositions();
+				self:UpdatePet();
+
+				ArenaEnemyMatchFramesContainer.ArenaEnemyBackground:Update();
+				ArenaEnemyFramesContainer:Update();
 			elseif ( unitEvent == "unseen" ) then
-				ArenaEnemyFrame_Lock(self);
-				
+				LockUnitFrame(self);
 				self.healthbar:RegisterEvent("UNIT_HEALTH");
 				self.healthbar:SetScript("OnUpdate", nil);
 				UnitFrameManaBar_RegisterDefaultEvents(self.manabar);
 				self.manabar:SetScript("OnUpdate", nil);
 			elseif ( unitEvent == "cleared" ) then
-				ArenaEnemyFrame_Unlock(self);
+				UnlockUnitFrame(self);
 				self:Hide();
-				ArenaEnemyFrames_UpdateVisible();
+				ArenaEnemyFramesContainer:Update();
 				local _, instanceType = IsInInstance();
 				if (instanceType ~= "arena") then
-					ArenaPrepFrames:Hide()
+					ArenaEnemyPrepFramesContainer:Hide()
 				end
 			end
 		elseif ( event == "UNIT_PET" ) then
-			ArenaEnemyFrame_UpdatePet(self);
+			self:UpdatePet();
 		elseif ( event == "UNIT_NAME_UPDATE" ) then
-			ArenaEnemyFrame_UpdatePlayer(self);
+			self:UpdatePlayer();
 		elseif ( event == "UNIT_MAXHEALTH" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
 			UnitFrameHealPredictionBars_Update(self);
 		elseif ( event == "ARENA_COOLDOWNS_UPDATE" ) then
-			ArenaEnemyFrame_UpdateCrowdControl(self);
+			self:UpdateCrowdControl();
 		elseif ( event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" ) then
 			local spellID = ...;
 			if (spellID ~= self.CC.spellID) then
@@ -271,7 +309,7 @@ function ArenaEnemyFrame_OnEvent(self, event, unit, ...)
 	end
 end
 
-function ArenaEnemyFrame_UpdateCrowdControl(self)
+function ArenaEnemyMatchFrameMixin:UpdateCrowdControl()
 	local spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(self.unit);
 	if (spellID) then
 		if (spellID ~= self.CC.spellID) then
@@ -287,83 +325,92 @@ function ArenaEnemyFrame_UpdateCrowdControl(self)
 	end
 end
 
-function ArenaEnemyFrame_OnShow(self)
+function ArenaEnemyMatchFrameMixin:OnShow()
 	self:SetFrameLevel(2);
-	self:GetParent():Layout(); 
-	UIParent_ManageFramePositions();
 	C_PvP.RequestCrowdControlSpell(self.unit);
+	ArenaEnemyFramesContainer:Update();
 end
 
-function ArenaEnemyFrame_OnHide(self)
-	self:GetParent():Layout(); 
-	UIParent_ManageFramePositions();
-end 
-
-function ArenaEnemyFrames_GetBestAnchorUnitFrameForOppponent(opponentNumber)
-	return _G["ArenaEnemyFrame" .. math.min(opponentNumber, MAX_ARENA_ENEMIES)];
+function ArenaEnemyMatchFrameMixin:OnHide()
+	ArenaEnemyFramesContainer:Update();
 end
 
-function ArenaEnemyFrame_UpdatePet(self, id)	--At some points, we need to use CVars instead of UVars even though UVars are faster.
-	if ( not id ) then
-		id = self:GetID();
+function ArenaEnemyMatchFrameMixin:GetPetFrame()
+	return _G["ArenaEnemyMatchFrame"..self:GetID().."PetFrame"];
+end
+
+function ArenaEnemyMatchFrameMixin:UpdatePet()
+	self:GetPetFrame():Update();
+end
+
+function ArenaEnemyMatchFrameMixin:UpdateShownState()
+	local unitGuid = UnitGUID(self.unit);
+	if self.isInEditMode and not unitGuid then
+		self:SetMysteryPlayer();
 	end
-	
-	local unitFrame = _G["ArenaEnemyFrame"..id];
-	local petFrame = _G["ArenaEnemyFrame"..id.."PetFrame"];
-	
-	if ( UnitGUID(petFrame.unit) and CVarCallbackRegistry:GetCVarValue("showArenaEnemyPets")) then
-		petFrame:Show();
-	else
-		petFrame:Hide();
-	end
-	
-	UnitFrame_Update(petFrame);
+
+	self:SetShown(self.isInEditMode or unitGuid);
+	self.CastingBar:SetShown(self.isInEditMode or self.CastingBar.casting);
+	self:UpdatePet();
 end
 
-function ArenaPrepFrame_OnShow(self)
+ArenaEnemyPrepFrameMixin = {};
+
+function ArenaEnemyPrepFrameMixin:OnShow()
 	self:SetFrameLevel(2);
-	self:GetParent():Layout();
-	UIParent_ManageFramePositions();
-end 
+	ArenaEnemyFramesContainer:Update();
+end
 
-function ArenaPrepFrame_OnHide(self)
-	self:GetParent():Layout();
-	UIParent_ManageFramePositions();
-end 
+function ArenaEnemyPrepFrameMixin:OnHide()
+	ArenaEnemyFramesContainer:Update();
+end
 
-function ArenaEnemyPetFrame_OnLoad(self)
+ArenaEnemyPetFrameMixin = {};
+
+function ArenaEnemyPetFrameMixin:Update() --At some points, we need to use CVars instead of UVars even though UVars are faster.
+	if (self.isInEditMode or UnitGUID(self.unit)) and CVarCallbackRegistry:GetCVarValue("showArenaEnemyPets") then
+		self:Show();
+	else
+		self:Hide();
+	end
+
+	UnitFrame_Update(self);
+end
+
+function ArenaEnemyPetFrameMixin:OnLoad()
 	local id = self:GetParent():GetID();
-	local prefix = "ArenaEnemyFrame"..id.."PetFrame";
+	local prefix = "ArenaEnemyMatchFrame"..id.."PetFrame";
 	local unit = "arenapet"..id;
+	self.layoutIndex = self:GetParent().layoutIndex + 1;
 	UnitFrame_Initialize(self, unit,  _G[prefix.."Name"], _G[prefix.."Portrait"],
 		   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"]);
 	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 	_G[prefix.."Name"]:Hide();
 	SecureUnitButton_OnLoad(self, unit);
 	self:SetID(id);
-	self:SetParent(ArenaEnemyFrames);
-	ArenaEnemyFrame_UpdatePet(self, id);
+	self:SetParent(ArenaEnemyMatchFramesContainer);
+	self:Update();
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
-	
+
 	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyPetDropDown_Initialize, "MENU");
-	
+
 	local setfocus = function()
 		FocusUnit("arenapet"..self:GetID());
 	end
 	SecureUnitButton_OnLoad(self, "arenapet"..self:GetID(), setfocus);
 end
 
-function ArenaEnemyPetFrame_OnEvent(self, event, ...)
+function ArenaEnemyPetFrameMixin:OnEvent(event, ...)
 	local arg1, arg2 = ...;
 	if ( event == "ARENA_OPPONENT_UPDATE" and arg1 == self.unit ) then
 		if ( arg2 == "seen" or arg2 == "destroyed") then
-			ArenaEnemyFrame_Unlock(self);
-			ArenaEnemyFrame_UpdatePet(self);
-			UpdateArenaEnemyBackground();
-			local ownerFrame = _G["ArenaEnemyFrame"..self:GetID()];
+			UnlockUnitFrame(self);
+			self:Update();
+			ArenaEnemyMatchFramesContainer.ArenaEnemyBackground:Update();
+			local ownerFrame = _G["ArenaEnemyMatchFrame"..self:GetID()];
 			if ( not ownerFrame:IsShown() ) then
-				ArenaEnemyFrame_SetMysteryPlayer(ownerFrame);
+				ownerFrame:SetMysteryPlayer();
 				ownerFrame:Show();
 			end
 			if ( self.healthbar.frequentUpdates and GetCVarBool("predictedHealth") ) then
@@ -375,19 +422,28 @@ function ArenaEnemyPetFrame_OnEvent(self, event, ...)
 				UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
 			end
 		elseif ( arg2 == "unseen" ) then
-			ArenaEnemyFrame_Lock(self);
+			LockUnitFrame(self);
 			self.healthbar:RegisterEvent("UNIT_HEALTH");
 			self.healthbar:SetScript("OnUpdate", nil);
 			UnitFrameManaBar_RegisterDefaultEvents(self.manabar);
 			self.manabar:SetScript("OnUpdate", nil);
 		elseif ( arg2 == "cleared" ) then
-			ArenaEnemyFrame_Unlock(self);
+			UnlockUnitFrame(self);
 			self:Hide()
 		end
 	elseif ( event == "UNIT_CLASSIFICATION_CHANGED" and arg1 == self.unit ) then
 		UnitFrame_Update(self);
 	end
 	UnitFrame_OnEvent(self, event, ...);
+end
+
+function ArenaEnemyPetFrameMixin:OnShow()
+	UnitFrame_Update(self);
+	ArenaEnemyFramesContainer:Update();
+end
+
+function ArenaEnemyPetFrameMixin:OnHide()
+	ArenaEnemyFramesContainer:Update();
 end
 
 function ArenaEnemyDropDown_Initialize(self)
@@ -398,72 +454,96 @@ function ArenaEnemyPetDropDown_Initialize(self)
 	UnitPopup_ShowMenu(self, "ARENAENEMY", "arenapet"..self:GetParent():GetID());
 end
 
-function UpdateArenaEnemyBackground()
-	if EditModeManagerFrame:ShouldShowPartyFrameBackground() then
-		ArenaEnemyBackground:Show();
-		local numOpps = min(GetNumArenaOpponents(), MAX_ARENA_ENEMIES);
-		if ( numOpps > 0 ) then
-			ArenaEnemyBackground:SetPoint("BOTTOMLEFT", "ArenaEnemyFrame"..numOpps.."PetFrame", "BOTTOMLEFT", -15, -10);
-		else
-			ArenaEnemyBackground:Hide();
-		end
-	else
-		ArenaEnemyBackground:Hide();
-	end
-	
+ArenaEnemyBackgroundMixin = {};
+
+function ArenaEnemyBackgroundMixin:OnLoad()
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:Update();
 end
 
-function ArenaEnemyBackground_SetOpacity(opacity)
+function ArenaEnemyBackgroundMixin:OnShow()
+	self:SetFrameLevel(1);
+end
+
+function ArenaEnemyBackgroundMixin:OnEvent(event, ...)
+	if event == "VARIABLES_LOADED" then
+		self:Update();
+		OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
+		self:SetOpacity();
+	end
+end
+
+function ArenaEnemyBackgroundMixin:OnMouseUp(button)
+	if button == "RightButton" then
+		PartyFrame.Background:ToggleOpacity(self);
+	end
+end
+
+function ArenaEnemyBackgroundMixin:Update()
+	if EditModeManagerFrame:ShouldShowPartyFrameBackground() then
+		self:Show();
+		local numOpps = min(GetNumArenaOpponents(), MAX_ARENA_ENEMIES);
+		if ( numOpps > 0 ) then
+			self:SetPoint("BOTTOMLEFT", "ArenaEnemyMatchFrame"..numOpps.."PetFrame", "BOTTOMLEFT", -15, -10);
+		else
+			self:Hide();
+		end
+	else
+		self:Hide();
+	end
+end
+
+function ArenaEnemyBackgroundMixin:SetOpacity(opacity)
 	local alpha;
 	if ( not opacity ) then
 		alpha = 1.0 - OpacityFrameSlider:GetValue();
 	else
 		alpha = 1.0 - opacity;
 	end
-	ArenaEnemyBackground:SetAlpha(alpha);
+	self:SetAlpha(alpha);
 end
 
 -----------------------------------------------------------------------------
 --Arena preparation stuff, shows class and spec of opponents during countdown
 ------------------------------------------------------------------------------
 
+ArenaEnemyPrepFramesContainerMixin = {};
 
-function ArenaPrepFrames_OnLoad(self)
+function ArenaEnemyPrepFramesContainerMixin:OnLoad()
 	self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS");
 	local numOpps = GetNumArenaOpponentSpecs();
 	if (numOpps and numOpps > 0) then
-		ArenaPrepFrames_OnEvent(self, "ARENA_PREP_OPPONENT_SPECIALIZATIONS");
+		self:OnEvent(self, "ARENA_PREP_OPPONENT_SPECIALIZATIONS");
 	end
 end
 
-function ArenaPrepFrames_OnEvent(self, event, ...) --also called in OnLoad
+function ArenaEnemyPrepFramesContainerMixin:OnEvent(event, ...) --also called in OnLoad
 	if (event == "ARENA_PREP_OPPONENT_SPECIALIZATIONS") then
-		ArenaPrepFrames_UpdateFrames();
-		self:Show()
+		self:UpdateFrames();
+		self:Show();
 	end
 end
 
-function ArenaPrepFrames_OnShow(self)
+function ArenaEnemyPrepFramesContainerMixin:OnShow()
 	DurabilityFrame:SetAlerts();
-	LayoutMixin.OnShow(self);
-	UIParentManagedFrameMixin.OnShow(self);
+	ArenaEnemyFramesContainer:Update();
 end
 
-function ArenaPrepFrames_OnHide(self)
+function ArenaEnemyPrepFramesContainerMixin:OnHide()
 	DurabilityFrame:SetAlerts();
-	UIParentManagedFrameMixin.OnHide(self)
+	ArenaEnemyFramesContainer:Update();
 end
 
-function ArenaPrepFrames_GetBestAnchorUnitFrameForOppponent(opponentNumber)
-	return _G["ArenaPrepFrame" .. math.min(opponentNumber, MAX_ARENA_ENEMIES)];
+function ArenaEnemyPrepFramesContainerMixin:GetBestAnchorUnitFrameForOppponent(opponentNumber)
+	return self.UnitFrames[math.min(opponentNumber, MAX_ARENA_ENEMIES)];
 end
 
-function ArenaPrepFrames_UpdateFrames()
+function ArenaEnemyPrepFramesContainerMixin:UpdateFrames()
 	local numOpps = GetNumArenaOpponentSpecs();
 	for i=1, MAX_ARENA_ENEMIES do
-		local prepFrame = _G["ArenaPrepFrame"..i];
+		local prepFrame = self.UnitFrames[i];
 		if (i <= numOpps) then 
-			prepFrame.specPortrait = _G["ArenaPrepFrame"..i.."SpecPortrait"];
+			prepFrame.specPortrait = _G["ArenaEnemyPrepFrame"..i.."SpecPortrait"];
 			local specID, gender = GetArenaOpponentSpec(i);
 			if (specID > 0) then 
 				local _, _, _, specIcon, _, class = GetSpecializationInfoByID(specID, gender);
@@ -480,30 +560,53 @@ function ArenaPrepFrames_UpdateFrames()
 			prepFrame:Hide();
 		end
 	end
-	
 end
 
-function ArenaPrepFrames_UpdateBackground()
+ArenaPrepBackgroundMixin = {};
+
+function ArenaPrepBackgroundMixin:OnLoad()
+	self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS");
+	self:Update();
+end
+
+function ArenaPrepBackgroundMixin:OnShow()
+	self:SetFrameLevel(1);
+end
+
+function ArenaPrepBackgroundMixin:OnEvent(event, ...)
+	if event == "ARENA_PREP_OPPONENT_SPECIALIZATIONS" then
+		self:Update();
+		OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
+		self:SetOpacity();
+	end
+end
+
+function ArenaPrepBackgroundMixin:Update()
 	if EditModeManagerFrame:ShouldShowPartyFrameBackground() then
-		ArenaPrepBackground:Show();
+		self:Show();
 		local numOpps = GetNumArenaOpponents();
-		if ( numOpps > 0 ) then
-			ArenaPrepBackground:SetPoint("BOTTOMLEFT", "ArenaEnemyFrame"..numOpps.."PetFrame", "BOTTOMLEFT", -15, -10);
+		if numOpps > 0 then
+			self:SetPoint("BOTTOMLEFT", "ArenaEnemyMatchFrame"..numOpps.."PetFrame", "BOTTOMLEFT", -15, -10);
 		else
-			ArenaPrepBackground:Hide();
+			self:Hide();
 		end
 	else
-		ArenaPrepBackground:Hide();
+		self:Hide();
 	end
-	
 end
 
-function ArenaPrepBackground_SetOpacity(opacity)
+function ArenaPrepBackgroundMixin:OnMouseUp(button)
+	if button == "RightButton" then
+		PartyFrame.Background:ToggleOpacity(self);
+	end
+end
+
+function ArenaPrepBackgroundMixin:SetOpacity(opacity)
 	local alpha;
 	if ( not opacity ) then
 		alpha = 1.0 - OpacityFrameSlider:GetValue();
 	else
 		alpha = 1.0 - opacity;
 	end
-	ArenaPrepBackground:SetAlpha(alpha);
+	self:SetAlpha(alpha);
 end

@@ -12,8 +12,11 @@ function ProfessionsRecraftSlotMixin:Init(transaction)
 	self.continuableContainer = ContinuableContainer:Create();
 	
 	local function OnItemsLoaded()
+		local item;
 		local itemGUID = transaction:GetRecraftAllocation();
-		local item = ItemUtil.TransformItemGUIDToItem(itemGUID);
+		if itemGUID then
+			item = Item:CreateFromItemGUID(itemGUID);
+		end
 		self:SetItem(item);
 
 		if item then

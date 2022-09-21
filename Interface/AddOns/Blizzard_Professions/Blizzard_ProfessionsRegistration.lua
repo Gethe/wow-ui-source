@@ -3,8 +3,8 @@ do
 	{ 
 		area = "left",
 		xoffset = 35,
-		pushable = 1,
-		allowOtherPanels = 1,
+		pushable = 0,
+		allowOtherPanels = 0,
 		checkFit = 1,
 	};
 	RegisterUIPanel(ProfessionsFrame, attributes);

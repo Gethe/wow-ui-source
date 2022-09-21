@@ -85,10 +85,6 @@ end
 function ClassTalentSpecTabMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentSpecTabUnitEvents);
 
-	if self.playingBackgroundFlash then
-		self:SetBackgroundFlashActive(false);
-	end
-
 	if self:IsActivateInProgress() then
 		self:SetActivateVisualsActive(false);
 	end
@@ -99,9 +95,7 @@ function ClassTalentSpecTabMixin:UpdateSpecFrame()
 		return;
 	end
 
-	local talentGroup = 1;
-	local playerTalentSpec = GetSpecialization(nil, false, talentGroup);
-	local numSpecs = GetNumSpecializations(nil, false);
+	local playerTalentSpec = self:GetCurrentSpecIndex();
 	local sex = UnitSex("player");
 
 	if playerTalentSpec == self.activatedSpecIndex and self:IsActivateInProgress() then
@@ -111,7 +105,7 @@ function ClassTalentSpecTabMixin:UpdateSpecFrame()
 	for specContentFrame in self.SpecContentFramePool:EnumerateActive() do 
 		-- selected spec highlight
 		if specContentFrame.specIndex == playerTalentSpec then
-			specContentFrame:UpdateSelectionGlow(true, numSpecs);
+			specContentFrame:UpdateSelectionGlow(true);
 		else
 			specContentFrame:UpdateSelectionGlow(false);
 		end
@@ -152,7 +146,7 @@ function ClassTalentSpecTabMixin:OnEvent(event, ...)
 		self:UpdateSpecFrame();
 
 		if event == "PLAYER_SPECIALIZATION_CHANGED" then
-			self:SetBackgroundFlashActive(true);
+			self:PlayActivationFlash();
 			self:SetSpecActivateStarted(nil);
 		end
 	-- TODO: Replace with bespoke spec change state flow
@@ -164,19 +158,26 @@ function ClassTalentSpecTabMixin:OnEvent(event, ...)
 	end
 end
 
-function ClassTalentSpecTabMixin:SetBackgroundFlashActive(activateFlash)
-	if(activateFlash) then
-		self.AnimationHolder.BackgroundFlashAnim:Restart();
-		self.playingBackgroundFlash = true;
-	else
-		self.BackgroundFlash:SetAlpha(0);
-		self.AnimationHolder.BackgroundFlashAnim:Stop();
-		self.playingBackgroundFlash = false;
+function ClassTalentSpecTabMixin:PlayActivationFlash()
+	if not self:IsShown() then
+		return;
+	end
+
+	local currentSpecIndex = self:GetCurrentSpecIndex();
+	for specContentFrame in self.SpecContentFramePool:EnumerateActive() do
+		if specContentFrame.specIndex == currentSpecIndex then
+			specContentFrame:SetActivationFlashPlaying(true);
+		end
 	end
 end
 
 function ClassTalentSpecTabMixin:IsActivateInProgress()
 	return self.activatedSpecIndex ~= nil;
+end
+
+function ClassTalentSpecTabMixin:GetCurrentSpecIndex()
+	local talentGroup = 1;
+	return GetSpecialization(nil, false, talentGroup);
 end
 
 function ClassTalentSpecTabMixin:SetSpecActivateStarted(specIndex)
@@ -192,7 +193,7 @@ end
 
 function ClassTalentSpecTabMixin:SetActivateVisualsActive(active)
 	if active then
-		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, "applyingcrafting");
+		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, "applyingtalents");
 		self.DisabledOverlay:SetShown(true);
 	else
 		OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
@@ -204,6 +205,17 @@ ClassSpecContentFrameMixin={}
 
 function ClassSpecContentFrameMixin:OnLoad()
 	self.SpellButtonPool = CreateFramePool("BUTTON", self, "ClassSpecSpellTemplate");
+
+	self.selectedBackgrounds = {
+		back = 	{ self.SelectedBackgroundBack1, self.SelectedBackgroundBack2 },
+		left = 	{ self.SelectedBackgroundLeft1, self.SelectedBackgroundLeft2, self.SelectedBackgroundLeft3, self.SelectedBackgroundLeft4, },
+		right = { self.SelectedBackgroundRight1, self.SelectedBackgroundRight2,	self.SelectedBackgroundRight3, self.SelectedBackgroundRight4 }
+	};
+	self.activatedBackgrounds = {
+		back = 	{ self.ActivatedBackgroundBack1, self.ActivatedBackgroundBack2 },
+		left = 	{ self.ActivatedBackgroundLeft1, self.ActivatedBackgroundLeft2, self.ActivatedBackgroundLeft3, self.ActivatedBackgroundLeft4 },
+		right = { self.ActivatedBackgroundRight1, self.ActivatedBackgroundRight2, self.ActivatedBackgroundRight3, self.ActivatedBackgroundRight4 }
+	};
 end
 
 function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, frameHeight, numSpecs)
@@ -213,6 +225,9 @@ function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, frameHeight, n
 	self.layoutIndex = index;
 	self.specIndex = index;
 
+	self.isLeftMostSpec = index == 1;
+	self.isRightMostSpec = index == numSpecs;
+
 	local specID, name, description, icon, _, primaryStat = GetSpecializationInfo(index, false, false, nil, sex);
 
 	if not specID then
@@ -221,6 +236,8 @@ function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, frameHeight, n
 	local atlasName = SPEC_TEXTURE_FORMAT:format(SPEC_FORMAT_STRINGS[specID]);
 	if C_Texture.GetAtlasInfo(atlasName) then
 		self.SpecImage:SetAtlas(atlasName);
+		self.ActivatedSpecImage:SetAtlas(atlasName);
+		self.HoverSpecImage:SetAtlas(atlasName);
 	end
 	self.SpecName:SetText(name);
 	if primaryStat and primaryStat ~= 0 then
@@ -241,17 +258,14 @@ function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, frameHeight, n
 	self.RoleName:SetPoint("LEFT", self.RoleIcon, "RIGHT", ROLE_ICON_TEXT_MARGIN, 0);
 
 	-- highlights and columns
-	self.SelectedBackgroundBack1:SetSize(frameWidth, frameHeight);
-	self.SelectedBackgroundBack2:SetSize(frameWidth, frameHeight);
-	self.SelectedBackgroundLeft1:SetHeight(frameHeight);
-	self.SelectedBackgroundLeft2:SetHeight(frameHeight);
-	self.SelectedBackgroundLeft3:SetHeight(frameHeight);
-	self.SelectedBackgroundLeft4:SetHeight(frameHeight);
-	self.SelectedBackgroundRight1:SetHeight(frameHeight);
-	self.SelectedBackgroundRight2:SetHeight(frameHeight);
-	self.SelectedBackgroundRight3:SetHeight(frameHeight);
-	self.SelectedBackgroundRight4:SetHeight(frameHeight);
-	if index == numSpecs then
+	self:SetFramesSize(frameWidth, frameHeight, self.selectedBackgrounds.back);
+	self:SetFramesHeight(frameHeight, self.selectedBackgrounds.left);
+	self:SetFramesHeight(frameHeight, self.selectedBackgrounds.right);
+	self:SetFramesSize(frameWidth, frameHeight, self.activatedBackgrounds.back);
+	self:SetFramesHeight(frameHeight, self.activatedBackgrounds.left);
+	self:SetFramesHeight(frameHeight, self.activatedBackgrounds.right);
+
+	if self.isRightMostSpec then
 		self.ColumnDivider:Hide();
 	else
 		self.ColumnDivider:Show();
@@ -283,41 +297,53 @@ function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, frameHeight, n
 	end
 end
 
-function ClassSpecContentFrameMixin:UpdateSelectionGlow(IsInGlowState, numSpecs)
-	if IsInGlowState then
+function ClassSpecContentFrameMixin:UpdateSelectionGlow(isInGlowState)
+	self.isInGlowState = isInGlowState;
+	if isInGlowState then
 		self.ActivatedText:Show();
 		self.ActivateButton:Hide();
 		self.SpecImageBorderOn:Show();
 		self.SpecImageBorderOff:Hide();
-		self.SelectedBackgroundBack1:Show()
-		self.SelectedBackgroundBack2:Show()
-		if self.specIndex ~= 1 then
-			self.SelectedBackgroundLeft1:Show()
-			self.SelectedBackgroundLeft2:Show()
-			self.SelectedBackgroundLeft3:Show()
-			self.SelectedBackgroundLeft4:Show()
+
+		self:SetFramesShown(true, self.selectedBackgrounds.back);
+		if not self.isLeftMostSpec then
+			self:SetFramesShown(true, self.selectedBackgrounds.left);
 		end
-		if self.specIndex ~= numSpecs then
-			self.SelectedBackgroundRight1:Show()
-			self.SelectedBackgroundRight2:Show()
-			self.SelectedBackgroundRight3:Show()
-			self.SelectedBackgroundRight4:Show()
+		if not self.isRightMostSpec then
+			self:SetFramesShown(true, self.selectedBackgrounds.right);
 		end
 	else
 		self.ActivatedText:Hide();
 		self.ActivateButton:Show();
 		self.SpecImageBorderOn:Hide();
 		self.SpecImageBorderOff:Show();
-		self.SelectedBackgroundBack1:Hide()
-		self.SelectedBackgroundBack2:Hide()
-		self.SelectedBackgroundLeft1:Hide()
-		self.SelectedBackgroundLeft2:Hide()
-		self.SelectedBackgroundLeft3:Hide()
-		self.SelectedBackgroundLeft4:Hide()
-		self.SelectedBackgroundRight1:Hide()
-		self.SelectedBackgroundRight2:Hide()
-		self.SelectedBackgroundRight3:Hide()
-		self.SelectedBackgroundRight4:Hide()
+
+		self:SetFramesShown(false, self.selectedBackgrounds.back);
+		self:SetFramesShown(false, self.selectedBackgrounds.left);
+		self:SetFramesShown(false, self.selectedBackgrounds.right);
+	end
+
+	-- Mouse already hovering, update hover state visibility based on new glow state
+	if self:IsMouseOver() then
+		self:SetHoverStateActive(not self.isInGlowState);
+	end
+end
+
+function ClassSpecContentFrameMixin:SetActivationFlashPlaying(playFlash)
+	if playFlash then
+		self.AnimationHolder.ActivationFlashBack:Restart();
+		if not self.isLeftMostSpec then
+			self.AnimationHolder.ActivationFlashLeft:Restart();
+		end
+		if not self.isRightMostSpec then
+			self.AnimationHolder.ActivationFlashRight:Restart();
+		end
+		self.playingActivationFlash = true;
+	else
+		self.AnimationHolder.ActivationFlashBack:Stop();
+		self.AnimationHolder.ActivationFlashLeft:Stop();
+		self.AnimationHolder.ActivationFlashRight:Stop();
+		self.playingActivationFlash = false;
 	end
 end
 
@@ -325,6 +351,48 @@ function ClassSpecContentFrameMixin:OnActivateClicked()
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_SPEC_ACTIVATE);
 	if SetSpecialization(self.specIndex, false) then
 		self:GetParent():SetSpecActivateStarted(self.specIndex);
+	end
+end
+
+function ClassSpecContentFrameMixin:OnHide()
+	if self.playingActivationFlash then
+		self:SetActivationFlashPlaying(false);
+	end
+end
+
+function ClassSpecContentFrameMixin:OnEnter()
+	if not self.isInGlowState then
+		self:SetHoverStateActive(true);
+	end
+end
+
+function ClassSpecContentFrameMixin:OnLeave()
+	if not self.isInGlowState then
+		self:SetHoverStateActive(false);
+	end
+end
+
+function ClassSpecContentFrameMixin:SetHoverStateActive(isActive)
+	self.HoverSpecImageBorder:SetShown(isActive);
+	self.HoverSpecImage:SetShown(isActive);
+	self.HoverBackground:SetShown(isActive);
+end
+
+function ClassSpecContentFrameMixin:SetFramesSize(width, height, frames)
+	for i, frame in ipairs(frames) do
+		frame:SetSize(width, height);
+	end
+end
+
+function ClassSpecContentFrameMixin:SetFramesHeight(height, frames)
+	for i, frame in ipairs(frames) do
+		frame:SetHeight(height);
+	end
+end
+
+function ClassSpecContentFrameMixin:SetFramesShown(shown, frames)
+	for i, frame in ipairs(frames) do
+		frame:SetShown(shown);
 	end
 end
 
@@ -357,6 +425,8 @@ function ClassSpecSpellMixin:OnReceiveDrag()
 end
 
 function ClassSpecSpellMixin:OnEnter()
+	self:GetParent():OnEnter();
+
     if not self.spellID or not GetSpellInfo(self.spellID) then
 		return;
 	end
@@ -371,6 +441,8 @@ function ClassSpecSpellMixin:OnEnter()
 end
 
 function ClassSpecSpellMixin:OnLeave()
+	self:GetParent():OnLeave();
+
 	self.UpdateTooltip = nil;
 	GameTooltip:Hide();
 end

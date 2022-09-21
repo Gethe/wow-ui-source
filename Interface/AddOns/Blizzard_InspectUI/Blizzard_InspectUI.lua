@@ -28,7 +28,7 @@ function InspectFrame_OnLoad(self)
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 3);
 	PanelTemplates_SetTab(self, 1);
-	self.TitleText:SetFontObject("GameFontHighlight");
+	self:GetTitleText():SetFontObject("GameFontHighlight");
 end
 
 function InspectFrame_OnEvent(self, event, unit, ...)
@@ -57,13 +57,13 @@ function InspectFrame_OnEvent(self, event, unit, ...)
 	elseif ( event == "UNIT_NAME_UPDATE" ) then
 		local unit = ...;
 		if ( unit == self.unit ) then
-			InspectFrameTitleText:SetText(GetUnitName(self.unit, true));
+			InspectFrame:SetTitle(GetUnitName(self.unit, true));
 		end
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		local unit = ...;
 		if unit == self.unit then
 			SetPortraitTexture(InspectFramePortrait, self.unit);
-		end	
+		end
 	elseif ( event == "PORTRAITS_UPDATED" ) then
 		SetPortraitTexture(InspectFramePortrait, self.unit);
 	end
@@ -73,8 +73,8 @@ function InspectFrame_UnitChanged(self)
 	local unit = self.unit;
 	NotifyInspect(unit);
 	InspectPaperDollFrame_OnShow(self);
-	SetPortraitTexture(InspectFramePortrait, unit);
-	InspectFrameTitleText:SetText(GetUnitName(unit, true));
+	InspectFrame:SetPortraitToUnit(unit);
+	InspectFrame:SetTitle(GetUnitName(unit, true));
 	InspectFrame_UpdateTabs();
 	if ( InspectPVPFrame:IsShown() ) then
 		InspectPVPFrame_OnShow();
@@ -85,9 +85,9 @@ function InspectFrame_OnShow(self)
 	if ( not self.unit ) then
 		return;
 	end
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);	
-	SetPortraitTexture(InspectFramePortrait, self.unit);
-	InspectFrameTitleText:SetText(GetUnitName(self.unit, true));
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	InspectFrame:SetPortraitToUnit(self.unit);
+	InspectFrame:SetTitle(GetUnitName(self.unit, true));
 end
 
 function InspectFrame_OnHide(self)

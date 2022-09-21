@@ -103,7 +103,7 @@ function EventTracePanelMixin:OnLoad()
 
 	self.TitleBar:Init(self);
 	self.ResizeButton:Init(self, MinPanelWidth, MinPanelHeight);
-	self.TitleText:SetText(EVENTTRACE_HEADER);
+	self:SetTitle(EVENTTRACE_HEADER);
 
 	hooksecurefunc(EventRegistry, "TriggerEvent", function(registry, event, ...)
 		EventTrace:LogCallbackRegistryEvent(registry, event, ...);
@@ -337,7 +337,7 @@ function EventTracePanelMixin:InitializeLog()
 						LocateInSearch(elementData, elementData.message);
 					end);
 				end);
-				
+
 			end
 		end);
 
@@ -382,7 +382,7 @@ function EventTracePanelMixin:InitializeLog()
 					end);
 
 					button:SetScript("OnDoubleClick", function(button, buttonName)
-						if buttonName == "LeftButton" then 
+						if buttonName == "LeftButton" then
 							LocateInLog(elementData);
 						end
 					end);
@@ -779,6 +779,11 @@ local function AddTooltipArguments(...)
 		local arg = select(index, ...);
 		GameTooltip_AddColoredDoubleLine(EventTraceTooltip, EVENTTRACE_ARG_FMT:format(index), FormatArgument(arg), HIGHLIGHT_FONT_COLOR, GetArgumentColor(arg));
 	end
+end
+
+function EventTraceLogEventButtonMixin:OnLoad()
+	self.HideButton:ClearAllPoints();
+	self.HideButton:SetPoint("LEFT", self, "LEFT", 3, 0);
 end
 
 function EventTraceLogEventButtonMixin:OnEnter()

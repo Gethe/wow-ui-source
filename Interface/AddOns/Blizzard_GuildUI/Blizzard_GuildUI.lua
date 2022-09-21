@@ -26,7 +26,8 @@ function GuildFrame_OnLoad(self)
 	else
 		fullName = guildName
 	end
-	GuildFrameTitleText:SetText(fullName);
+
+	self:SetTitle(fullName);
 	local totalMembers, onlineMembers, onlineAndMobileMembers = GetNumGuildMembers();
 	GuildFrameMembersCount:SetText(onlineAndMobileMembers.." / "..totalMembers);
 end
@@ -83,7 +84,7 @@ function GuildFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
 		if ( IsInGuild() ) then
 			local guildName = GetGuildInfo("player");
-			GuildFrameTitleText:SetText(guildName);
+			self:SetTitle(guildName);
 			GuildFrame_UpdateTabard();
 		else
 			if ( self:IsShown() ) then

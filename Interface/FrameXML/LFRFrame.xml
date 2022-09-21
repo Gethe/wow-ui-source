@@ -311,7 +311,7 @@
 							<Button name="$parentFindGroupButton" inherits="UIPanelButtonTemplate" text="LIST_ME">
 								<Size x="125" y="22"/>
 								<Anchors>
-									<Anchor point="TOPRIGHT" x="1" y="-1"/>
+									<Anchor point="BOTTOMLEFT" x="5" y="4"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -596,7 +596,7 @@
 					<OnEvent function="LFRFrame_OnEvent"/>
 					<OnShow>
 						LFRBrowseFrame.timeToClear = nil;	--Never clear browsing while shown.
-						RaidParentFrame.TitleText:SetText(LOOKING_FOR_RAID);
+						RaidParentFrame:SetTitle(LOOKING_FOR_RAID);
 					</OnShow>
 					<OnHide>
 						LFRBrowseFrame.timeToClear = 40;	--Clear all browsing after 40 seconds of being hidden.

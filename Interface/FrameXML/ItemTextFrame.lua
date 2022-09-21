@@ -29,7 +29,7 @@ ITEM_TEXT_FONTS = {
 
 function ItemTextFrame_OnEvent(self, event, ...)
 	if ( event == "ITEM_TEXT_BEGIN" ) then
-		self.TitleText:SetText(ItemTextGetItem());
+		self:SetTitle(ItemTextGetItem());
 		ItemTextScrollFrame:Hide();
 		ItemTextCurrentPage:Hide();
 		ItemTextStatusBar:Hide();

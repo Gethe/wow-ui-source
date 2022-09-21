@@ -1,17 +1,13 @@
 ScrollUtil = {};
 
--- For public addons to access frames post-acquire, post-initialization and post-release.
-function ScrollUtil.AddAcquiredFrameCallback(scrollBox, callback, owner, iterateExisting)
-	if iterateExisting then
-		scrollBox:ForEachFrame(callback);
-	end
+-- For public addons to access frames post-acquire, post-initialization and post-release. It can be correct
+-- to use both AddInitializedFrameCallback and AddAcquiredFrameCallback depending on the modifications
+-- being made.
 
-	local function OnAcquired(o, frame, elementData, new)
-		callback(frame, elementData, new);
-	end
-	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnAcquiredFrame, OnAcquired, owner);
-end
-
+-- Assigns a callback to be invoked every time a frame is initialized. Initialization occurs after
+-- every frame has been anchored and a layout pass performed, which is necessary if the frame's initializer 
+-- needs to ask for information about it's size to inform layout decisions within itself.
+-- For convenience, you can leverage the 'iterateExisting' argument to immediately invoke the callback on any existing frames.
 function ScrollUtil.AddInitializedFrameCallback(scrollBox, callback, owner, iterateExisting)
 	if iterateExisting then
 		scrollBox:ForEachFrame(callback);
@@ -23,6 +19,22 @@ function ScrollUtil.AddInitializedFrameCallback(scrollBox, callback, owner, iter
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnInitializedFrame, OnInitialized, owner);
 end
 
+-- Assigns a callback to be invoked every time a frame is acquired. This is suitable if you need to perform 
+-- modifications to the frame prior to the initializer being called, or more likely if you're trying to make 
+-- one-time modifications if it's the first time the frame has ever been displayed in the ScrollBox (see 'new').
+function ScrollUtil.AddAcquiredFrameCallback(scrollBox, callback, owner, iterateExisting)
+	if iterateExisting then
+		scrollBox:ForEachFrame(callback);
+	end
+
+	local function OnAcquired(o, frame, elementData, new)
+		callback(frame, elementData, new);
+	end
+	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnAcquiredFrame, OnAcquired, owner);
+end
+
+-- Useful for being notified when a frame has been released and to remove any behavior
+-- if you've opted into using a single template type for frames with varied behavior.
 function ScrollUtil.AddReleasedFrameCallback(scrollBox, callback, owner)
 	local function OnReleased(o, frame, elementData)
 		callback(frame, elementData);

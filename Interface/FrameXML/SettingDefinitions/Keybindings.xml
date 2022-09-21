@@ -6,13 +6,6 @@
 		<Size y="25"/>
 	</Frame>
 
-	<Frame name="AutoLootDropDownControlTemplate" inherits="SettingsDropDownControlTemplate" mixin="AutoLootDropDownControlMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="dropDownType" value="Frame" type="string"/>
-			<KeyValue key="dropDownTemplate" value="SettingsSelectionPopoutWithButtonsTemplate" type="string"/>
-		</KeyValues>
-	</Frame>
-
 	<EventFrame name="SettingsKeybindingSectionTemplate" inherits="SettingsExpandableSectionTemplate" mixin="SettingsKeybindingSectionMixin" virtual="true">
 		<Size y="25"/>
 		<Scripts>

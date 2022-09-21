@@ -3,7 +3,7 @@ DropDownLoadSystemMixin = {};
 
 function DropDownLoadSystemMixin:OnLoad()
 	self.DropDownControl:SetOptionSelectedCallback(GenerateClosure(DropDownLoadSystemMixin.OnDropDownIDSelected, self));
-	self.DropDownControl:SetDropDownTextFontObject("GameFontHighlight");
+	self.DropDownControl:SetDropDownTextFontObject(self.dropDownSelectionFont);
 	self.DropDownControl:AdjustTextPointsOffset(0, -1);
 
 	self.selectionIDToSentinelKey = {};
@@ -113,7 +113,7 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 	end
 
 	local function CustomSetupFunction(dropDownButtonInfo, standardFunc)
-		dropDownButtonInfo.fontObject = "GameFontNormal";
+		dropDownButtonInfo.fontObject = self.dropDownOptionFont;
 		dropDownButtonInfo.topPadding = 2;
 
 		local hasRightClickCallback = (self.rightClickCallback ~= nil);
@@ -166,6 +166,7 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 			if self.editEntryCallback then
 				dropDownButtonInfo.iconXOffset = -10;
 				dropDownButtonInfo.mouseOverIcon = [[Interface\WorldMap\GEAR_64GREY]];
+				dropDownButtonInfo.iconTooltipTitle = self.editEntryTooltip;
 				dropDownButtonInfo.func = function(button, ...)
 					local gearIcon = button.Icon;
 					if button.mouseOverIcon and gearIcon:IsMouseOver() then
@@ -237,8 +238,34 @@ function DropDownLoadSystemMixin:AddSentinelValue(sentinelKeyInfo)
 end
 
 -- newEntryCallback(newEntryName)
+-- popupText: Text to display on a generic name input box popup
 -- Create a fresh entry with a new name.
 function DropDownLoadSystemMixin:SetNewEntryCallback(newEntryCallback, optionText, popupText, disabledCallback)
+	local function ShowGenericPopup(acceptCallback)
+		local popupInfo = {
+			text = popupText,
+			callback = acceptCallback,
+			acceptText = ACCEPT,
+		};
+
+		StaticPopup_ShowCustomGenericInputBox(popupInfo);
+	end
+
+	self:SetNewEntryCallbackInternal(newEntryCallback, optionText, disabledCallback, ShowGenericPopup);
+end
+
+-- newEntryCallback(newEntryName)
+-- customPopup: Custom popup for inputting the new entry name
+-- Create a fresh entry with a new name.
+function DropDownLoadSystemMixin:SetNewEntryCallbackCustomPopup(newEntryCallback, optionText, customPopup, disabledCallback)
+	local function ShowCustomPopup(acceptCallback)
+		customPopup:ShowDialog(acceptCallback);
+	end
+
+	self:SetNewEntryCallbackInternal(newEntryCallback, optionText, disabledCallback, ShowCustomPopup);
+end
+
+function DropDownLoadSystemMixin:SetNewEntryCallbackInternal(newEntryCallback, optionText, disabledCallback, showPopupFunc)
 	local function NewEntrySentinelCallback(selectionID, loadSystem)
 		local function LoadSystemNewEntry(entryName)
 			if entryName ~= "" then
@@ -246,13 +273,7 @@ function DropDownLoadSystemMixin:SetNewEntryCallback(newEntryCallback, optionTex
 			end
 		end
 
-		local popupInfo = {
-			text = popupText,
-			callback = LoadSystemNewEntry,
-			acceptText = ACCEPT,
-		};
-
-		StaticPopup_ShowCustomGenericInputBox(popupInfo);
+		showPopupFunc(LoadSystemNewEntry);
 		return nil;
 	end
 
@@ -270,10 +291,11 @@ function DropDownLoadSystemMixin:SetNewEntryCallback(newEntryCallback, optionTex
 	self:AddSentinelValue(sentinelInfo);
 end
 
--- editEntryCallback(selectionID)
--- If this callback is set, a gear icon is displayed in the dropdown that can be clicked to edit the entry.
-function DropDownLoadSystemMixin:SetEditEntryCallback(editEntryCallback)
+-- editEntryCallback(selectionID): If this callback is set, a gear icon is displayed in the dropdown that can be clicked to edit the entry.
+-- editEntryTooltip: If set, displays tooltip text when hoving over the gear icon.
+function DropDownLoadSystemMixin:SetEditEntryCallback(editEntryCallback, editEntryTooltip)
 	self.editEntryCallback = editEntryCallback;
+	self.editEntryTooltip = editEntryTooltip;
 	self:UpdateSelectionOptions();
 end
 

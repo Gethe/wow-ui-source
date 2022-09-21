@@ -253,7 +253,6 @@ function TalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectChoice,
 	self.isCurrentSelection = isCurrentSelection;
 	self.selectionIndex = selectionIndex;
 	self:UpdateVisualState();
-	self:UpdateSearchIcon();
 end
 
 function TalentSelectionChoiceMixin:CanSelectChoice()

@@ -79,6 +79,26 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 	end
 end
 
+function Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned)
+	local items = {};
+	if filterOwned then
+		for index, itemID in ipairs(itemIDs) do
+			local foundItems = ItemUtil.FindPlayerInventoryAndEquipmentItemsMatchingItemID(itemID);
+			tAppendAll(items, foundItems);
+		end
+	else
+		for index, itemID in ipairs(itemIDs) do
+			local foundItems = ItemUtil.FindPlayerInventoryAndEquipmentItemsMatchingItemID(itemID);
+			if #foundItems == 0 then
+				table.insert(items, Item:CreateFromItemID(itemID));
+			else
+				tAppendAll(items, foundItems);
+			end
+		end
+	end
+	return items;
+end
+
 function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID)
 	local item = elementData.item;
 		
@@ -353,7 +373,7 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, sl
 	end
 end
 
-local function AllocateBasicReagents(allocations, reagentSlotSchematic, useBestQuality)
+local function AllocateReagents(allocations, reagentSlotSchematic, useBestQuality)
 	allocations:Clear();
 
 	local quantityRequired = reagentSlotSchematic.quantityRequired;
@@ -373,21 +393,24 @@ local function AllocateBasicReagents(allocations, reagentSlotSchematic, useBestQ
 	end
 end
 
-function Professions.AllocateBasicReagents(transaction, slotIndex, useBestQuality)
-	local reagentSlotSchematic = transaction:GetReagentSlotSchematic(slotIndex);
+local function AllocateBasicReagents(transaction, reagentSlotSchematic, slotIndex, useBestQuality)
 	if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
 		local allocations = transaction:GetAllocations(slotIndex);
-		AllocateBasicReagents(allocations, reagentSlotSchematic, useBestQuality);
+		AllocateReagents(allocations, reagentSlotSchematic, useBestQuality);
 	end
 end
 
+function Professions.AllocateBasicReagents(transaction, slotIndex, useBestQuality)
+	transaction:SetManuallyAllocated(false);
+	local reagentSlotSchematic = transaction:GetReagentSlotSchematic(slotIndex);
+	AllocateBasicReagents(transaction, reagentSlotSchematic, slotIndex, useBestQuality);
+end
+
 function Professions.AllocateAllBasicReagents(transaction, useBestQuality)
+	transaction:SetManuallyAllocated(false);
 	local recipeSchematic = transaction:GetRecipeSchematic();
 	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-		if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
-			local allocations = transaction:GetAllocations(slotIndex);
-			AllocateBasicReagents(allocations, reagentSlotSchematic, useBestQuality);
-		end
+		AllocateBasicReagents(transaction, reagentSlotSchematic, slotIndex, useBestQuality);
 	end
 end
 
@@ -969,11 +992,19 @@ function Professions.GetAtlasKitSpecifier(professionInfo)
 	return professionInfo and professionInfo.profession and kitSpecifiers[professionInfo.profession];
 end
 
-function Professions.GetProfessionBackgroundAtlas(professionInfo)
+local function GetProfessionBackground(professionInfo, atlasFormat)
 	local kitSpecifier = Professions.GetAtlasKitSpecifier(professionInfo);
-	local stylizedAtlasName = kitSpecifier ~= nil and ("Professions-Recipe-Background-%s"):format(kitSpecifier);
+	local stylizedAtlasName = kitSpecifier ~= nil and atlasFormat:format(kitSpecifier);
 	local stylizedInfo = stylizedAtlasName and C_Texture.GetAtlasInfo(stylizedAtlasName);
 	return stylizedInfo and stylizedAtlasName or "Professions-Recipe-Background";
+end
+
+function Professions.GetProfessionBackgroundAtlas(professionInfo)
+	return GetProfessionBackground(professionInfo, "Professions-Recipe-Background-%s");
+end
+
+function Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo)
+	return GetProfessionBackground(professionInfo, "Professions-Specializations-Background-%s");
 end
 
 function Professions.CanTrackRecipe(recipeInfo)

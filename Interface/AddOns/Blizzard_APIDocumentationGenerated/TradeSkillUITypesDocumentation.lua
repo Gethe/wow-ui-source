@@ -45,13 +45,15 @@ local TradeSkillUITypes =
 		{
 			Name = "TradeskillRecipeType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 4,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Item", Type = "TradeskillRecipeType", EnumValue = 1 },
 				{ Name = "Salvage", Type = "TradeskillRecipeType", EnumValue = 2 },
+				{ Name = "Enchant", Type = "TradeskillRecipeType", EnumValue = 3 },
+				{ Name = "Recraft", Type = "TradeskillRecipeType", EnumValue = 4 },
 			},
 		},
 		{

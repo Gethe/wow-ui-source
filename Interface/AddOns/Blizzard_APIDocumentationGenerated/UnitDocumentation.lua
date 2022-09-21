@@ -6,38 +6,6 @@ local Unit =
 	Functions =
 	{
 		{
-			Name = "GetEmpowerHoldAtMaxTime",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "holdAtMaxTime", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetEmpowerMinHoldTime",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "minHoldTime", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetEmpowerStageDuration",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "index", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "duration", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetNegativeCorruptionEffectInfo",
 			Type = "Function",
 
@@ -58,6 +26,49 @@ local Unit =
 			Returns =
 			{
 				{ Name = "pointIndices", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitEmpowerHoldAtMaxTime",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "holdAtMaxTime", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitEmpowerMinHoldTime",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "minHoldTime", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitEmpowerStageDuration",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1074,6 +1085,15 @@ local Unit =
 			Name = "UnitFlags",
 			Type = "Event",
 			LiteralName = "UNIT_FLAGS",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitFormChanged",
+			Type = "Event",
+			LiteralName = "UNIT_FORM_CHANGED",
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "string", Nilable = false },

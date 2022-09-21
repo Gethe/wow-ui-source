@@ -71,9 +71,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 16,
+			MaxValue = 19,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -93,6 +93,9 @@ local EditModeManagerShared =
 				{ Name = "ShowTalkingHeadFrame", Type = "EditModeAccountSetting", EnumValue = 14 },
 				{ Name = "ShowVehicleLeaveButton", Type = "EditModeAccountSetting", EnumValue = 15 },
 				{ Name = "ShowBossFrames", Type = "EditModeAccountSetting", EnumValue = 16 },
+				{ Name = "ShowArenaFrames", Type = "EditModeAccountSetting", EnumValue = 17 },
+				{ Name = "ShowLootFrame", Type = "EditModeAccountSetting", EnumValue = 18 },
+				{ Name = "ShowHudTooltip", Type = "EditModeAccountSetting", EnumValue = 19 },
 			},
 		},
 		{
@@ -241,9 +244,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -256,6 +259,8 @@ local EditModeManagerShared =
 				{ Name = "TalkingHeadFrame", Type = "EditModeSystem", EnumValue = 7 },
 				{ Name = "ChatFrame", Type = "EditModeSystem", EnumValue = 8 },
 				{ Name = "VehicleLeaveButton", Type = "EditModeSystem", EnumValue = 9 },
+				{ Name = "LootFrame", Type = "EditModeSystem", EnumValue = 10 },
+				{ Name = "HudTooltip", Type = "EditModeSystem", EnumValue = 11 },
 			},
 		},
 		{
@@ -287,9 +292,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeUnitFrameSystemIndices",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 1,
-			MaxValue = 6,
+			MaxValue = 7,
 			Fields =
 			{
 				{ Name = "Player", Type = "EditModeUnitFrameSystemIndices", EnumValue = 1 },
@@ -298,6 +303,7 @@ local EditModeManagerShared =
 				{ Name = "Party", Type = "EditModeUnitFrameSystemIndices", EnumValue = 4 },
 				{ Name = "Raid", Type = "EditModeUnitFrameSystemIndices", EnumValue = 5 },
 				{ Name = "Boss", Type = "EditModeUnitFrameSystemIndices", EnumValue = 6 },
+				{ Name = "Arena", Type = "EditModeUnitFrameSystemIndices", EnumValue = 7 },
 			},
 		},
 		{

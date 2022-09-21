@@ -127,6 +127,7 @@ end
 local UI_Elements = {
 	BACKPACK				= {MainMenuBarBackpackButton},
 	BAGS_BAR				= {MicroButtonAndBagsBar},
+	MAIN_BAGS_BUTTON		= {MainMenuBarBackpackButton},
 	SPELLBOOK_MICROBUTTON	= {SpellbookMicroButton},
 	OTHER_MICROBUTTONS		= {CharacterMicroButton, GuildMicroButton, TalentMicroButton, MainMenuMicroButton, AchievementMicroButton, CollectionsMicroButton, QuestLogMicroButton, LFDMicroButton, EJMicroButton},
 	STORE_MICROBUTTON		= {StoreMicroButton},
@@ -181,6 +182,7 @@ function Class_UI_Watcher:OnBegin()
 
 	self:SetShown(UI_Elements.BACKPACK, showBackpack);
 	self:SetShown(UI_Elements.BAGS_BAR, showBagsBar);
+	self:SetShown(UI_Elements.MAIN_BAGS_BUTTON, showBagsBar);	
 	self:SetShown(UI_Elements.SPELLBOOK_MICROBUTTON, showSpellbookButton);
 	self:SetShown(UI_Elements.OTHER_MICROBUTTONS, showOtherButtons);
 	self:SetShown(UI_Elements.STORE_MICROBUTTON, showStoreButton);
@@ -202,6 +204,7 @@ function Class_UI_Watcher:QUEST_ACCEPTED(questID)
 	if questID == self.tutorialData.ShowAllUIQuest then
 		self:SetShown(UI_Elements.BACKPACK, true);
 		self:SetShown(UI_Elements.BAGS_BAR, true);
+		self:SetShown(UI_Elements.MAIN_BAGS_BUTTON, true);
 		self:SetShown(UI_Elements.OTHER_MICROBUTTONS, true);
 		self:SetShown(UI_Elements.SPELLBOOK_MICROBUTTON, true);
 		self:SetShown(UI_Elements.STORE_MICROBUTTON, true);
@@ -224,12 +227,14 @@ function Class_UI_Watcher:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
 	if (not self.IsActive) then return; end
 
 	self:SetShown(UI_Elements.BAGS_BAR, true);
+	self:SetShown(UI_Elements.MAIN_BAGS_BUTTON, true);
 	self:SetShown(UI_Elements.SPELLBOOK_MICROBUTTON, true);
 end
 
 function Class_UI_Watcher:OnInterrupt(interruptedBy)
 	self:SetShown(UI_Elements.BACKPACK, true);
 	self:SetShown(UI_Elements.BAGS_BAR, true);
+	self:SetShown(UI_Elements.MAIN_BAGS_BUTTON, true);
 	self:SetShown(UI_Elements.OTHER_MICROBUTTONS, true);
 	self:SetShown(UI_Elements.SPELLBOOK_MICROBUTTON, true);
 	self:SetShown(UI_Elements.STORE_MICROBUTTON, true);
@@ -3591,7 +3596,7 @@ function Class_LookingForGroup:LFG_QUEUE_STATUS_UPDATE(args)
 	self:HidePointerTutorials();
 
 	if QueueStatusButton:IsVisible() then
-		self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "RIGHT", QueueStatusButton, 20, 0, nil, "RIGHT");
+		self:ShowPointerTutorial(NPEV2_LFD_INFO_POINTER_MESSAGE, "DOWN", QueueStatusButton, 0, 0, nil, "DOWN");
 	end
 end
 
@@ -3916,17 +3921,39 @@ Class_ChangeSpec = class("ChangeSpec", Class_TutorialBase);
 function Class_ChangeSpec:OnBegin()
 	local tutorialData = TutorialHelper:GetFactionData();
 	self.specQuestID = TutorialHelper:FilterByClass(tutorialData.SpecQuests);
+	local questActiveButNotComplete = QuestUtil.IsQuestActiveButNotComplete(self.specQuestID);
+	if questActiveButNotComplete then
+		TutorialQueue:Add(self);
+	end
 end
 
 function Class_ChangeSpec:Start()
-	if C_QuestLog.IsQuestFlaggedCompleted(self.specQuestID) then
+	local questComplete = C_QuestLog.IsQuestFlaggedCompleted(self.specQuestID);
+	if questComplete then
 		self:Complete();
 		return;
 	end
 	self.success = false;
 
-	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
-	Dispatcher:RegisterEvent("GOSSIP_SHOW", self);
+	questObjectives = C_QuestLog.GetQuestObjectives(self.specQuestID);
+	local spokeToTrainer = questObjectives[1].finished;
+	if spokeToTrainer then
+		local newSpecActivated = questObjectives[2].finished;
+		if newSpecActivated then
+			self:Complete();
+			return;
+		else
+			self.functionID = Dispatcher:RegisterFunction("ToggleTalentFrame", function()
+				self:TalentFrameToggled();
+				end, false);
+			C_Timer.After(0.1, function()
+				self:ShowSpecButtonPointer();
+			end);			
+		end
+	else
+		Dispatcher:RegisterEvent("QUEST_REMOVED", self);
+		Dispatcher:RegisterEvent("UNIT_QUEST_LOG_CHANGED", self);		
+	end
 end
 
 function Class_ChangeSpec:QUEST_REMOVED(questIDRemoved)
@@ -3936,42 +3963,49 @@ function Class_ChangeSpec:QUEST_REMOVED(questIDRemoved)
 	end
 end
 
-function Class_ChangeSpec:GOSSIP_SHOW()
-	Dispatcher:RegisterEvent("UNIT_QUEST_LOG_CHANGED", self);
-end
-
-function Class_ChangeSpec:UNIT_QUEST_LOG_CHANGED()
-	Dispatcher:UnregisterEvent("UNIT_QUEST_LOG_CHANGED", self);
-	self:ShowPointerTutorial(NPEV2_SPEC_TUTORIAL_GOSSIP_CLOSED, "DOWN", TalentMicroButton, 0, 10, nil, "DOWN");
-	ActionButton_ShowOverlayGlow(TalentMicroButton);
-	self.functionID = Dispatcher:RegisterFunction("ToggleTalentFrame", function()
-		self:TutorialToggleTalentFrame();
-		end, false);
-end
-
-function Class_ChangeSpec:TutorialToggleTalentFrame()
-	Dispatcher:UnregisterFunction("ToggleTalentFrame", self.functionID);
-
-	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
-	if ( not PlayerTalentFrame:IsShown() ) then
-		ShowUIPanel(PlayerTalentFrame);
-		if PlayerTalentFrame:IsShown() then
-			self:ShowTalentChoiceHelp();
-		end
-	else
-		self:ShowTalentChoiceHelp();
+function Class_ChangeSpec:GOSSIP_CLOSED()
+	local questObjectives = C_QuestLog.GetQuestObjectives(self.specQuestID);
+	local spokeToTrainer = questObjectives[1].finished;
+	if spokeToTrainer then
+		Dispatcher:UnregisterEvent("GOSSIP_CLOSED", self);
+		self.functionID = Dispatcher:RegisterFunction("ToggleTalentFrame", function()
+			self:TalentFrameToggled();
+			end, false);
+		self:ShowSpecButtonPointer();
 	end
 end
 
-function Class_ChangeSpec:ShowTalentChoiceHelp()
-	ActionButton_HideOverlayGlow(TalentMicroButton);
-	self:ShowPointerTutorial(NPEV2_SPEC_TUTORIAL_TOGGLE_TALENT_FRAME, "DOWN", PlayerTalentFrameSpecializationSpecButton1, 10, 0, nil, "DOWN");
+function Class_ChangeSpec:UNIT_QUEST_LOG_CHANGED()
+	local questObjectives = C_QuestLog.GetQuestObjectives(self.specQuestID);
+	local spokeToTrainer = questObjectives[1].finished;
+	if spokeToTrainer then
+		Dispatcher:UnregisterEvent("UNIT_QUEST_LOG_CHANGED", self);
+		Dispatcher:RegisterEvent("GOSSIP_CLOSED", self);
+	end
+end
 
-	Dispatcher:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", self);
-	self.Timer = C_Timer.NewTimer(120, function() TutorialQueue:NotifyDone(self); end);
+function Class_ChangeSpec:ShowSpecButtonPointer()
+	self:HidePointerTutorials();
+	self:ShowPointerTutorial(NPEV2_SPEC_TUTORIAL_GOSSIP_CLOSED, "DOWN", TalentMicroButton, 0, 10, nil, "DOWN");
+	ActionButton_ShowOverlayGlow(TalentMicroButton);
+end
+
+function Class_ChangeSpec:TalentFrameToggled()
+	
+	if ( ClassTalentFrame:IsShown() ) then
+		self:HidePointerTutorials();
+		ClassTalentFrame:ShowTutorialHelp(true);
+		Dispatcher:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", self);
+	else
+		self:ShowSpecButtonPointer();
+	end
 end
 
 function Class_ChangeSpec:PLAYER_SPECIALIZATION_CHANGED()
+	Dispatcher:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED", self);
+	if self.functionID then
+		Dispatcher:UnregisterFunction("ToggleTalentFrame", self.functionID);
+	end
 	self.success = true;
 	TutorialQueue:NotifyDone(self);
 end
@@ -3981,12 +4015,8 @@ function Class_ChangeSpec:OnInterrupt(interruptedBy)
 	TutorialQueue:NotifyDone(self);
 end
 
-function Class_ChangeSpec:Finish()
-	Dispatcher:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED", self);
-	Dispatcher:UnregisterEvent("UNIT_QUEST_LOG_CHANGED", self);
-	if self.Timer then
-		self.Timer:Cancel();
-	end
+function Class_ChangeSpec:Finish()	
+	ClassTalentFrame:ShowTutorialHelp(false);
 	ActionButton_HideOverlayGlow(TalentMicroButton);
 	self:HidePointerTutorials();
 	if self.success then

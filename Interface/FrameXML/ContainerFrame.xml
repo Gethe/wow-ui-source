@@ -192,9 +192,9 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="ContainerFrameCurrencyBorderTemplate">
 				<KeyValues>
-					<KeyValue key="leftEdge" value="common-coinbox-cornerleft" type="string"/>
-					<KeyValue key="rightEdge" value="common-coinbox-cornerright" type="string"/>
-					<KeyValue key="centerEdge" value="_common-coinbox-tile" type="string"/>
+					<KeyValue key="leftEdge" value="common-coinbox-left" type="string"/>
+					<KeyValue key="rightEdge" value="common-coinbox-right" type="string"/>
+					<KeyValue key="centerEdge" value="_common-coinbox-center" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" />

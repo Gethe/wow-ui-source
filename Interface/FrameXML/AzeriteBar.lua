@@ -51,10 +51,10 @@ function AzeriteBarMixin:AnimatedValueChangedCallback()
 	self:UpdatePointsTooltip();
 end
 
-function AzeriteBarMixin:OnLoad() 
-	self:SetBarColor(ARTIFACT_BAR_COLOR:GetRGB());
+function AzeriteBarMixin:OnLoad()
+	self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-ArtifactPower");
 	self.StatusBar:SetOnAnimatedValueChangedCallback(function() self:AnimatedValueChangedCallback(); end)
-	self.priority = 0; 
+	self.priority = 0;
 end
 
 function AzeriteBarMixin:OnEvent(event, ...)

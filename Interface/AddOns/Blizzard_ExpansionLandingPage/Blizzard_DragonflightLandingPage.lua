@@ -6,6 +6,9 @@ local MAJOR_FACTIONS_INTRO_QUEST_ID_HORDE = 65435;
 local DRAGONRIDING_INTRO_QUEST_ID = 68798;
 local DRAGONRIDING_TRAIT_SYSTEM_ID = 1;
 
+-- Todo: Add globalstring
+LANDING_DRAGONRIDING_PANEL_SUBTITLE = "Skills & Unlocks";
+
 local minimapDisplayInfo = { 
 	["normalAtlas"] = "legionmission-landingbutton-druid-up",
 	["pushedAtlas"] = "legionmission-landingbutton-druid-down",
@@ -75,16 +78,17 @@ function DragonflightLandingOverlayMixin.HandleMinimapAnimationEvent(event, ...)
 end
 
 function DragonflightLandingOverlayMixin:OnLoad()
+	self.CloseButton:ClearAllPoints();
+	local xOffset, yOffset = -3, -10;
+	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", xOffset, yOffset);
 	self:RefreshOverlay();
 end
 
 function DragonflightLandingOverlayMixin:OnShow()
 	EventRegistry:TriggerEvent("ExpansionLandingPage.ClearPulses");
-	self.DragonridingPanel:Refresh();
 end
 
 function DragonflightLandingOverlayMixin:RefreshOverlay()
-	self.DragonridingPanel:Refresh();
 	self:RefreshMajorFactionList();
 end
 
@@ -101,37 +105,22 @@ function DragonflightLandingOverlayMixin:SetUpMajorFactionList()
 	
 	self.MajorFactionList = LandingPageMajorFactionList.Create(self);
 	self.MajorFactionList:ClearAllPoints();
-	local xOffset, yOffset = -45, 26;
-	self.MajorFactionList:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", xOffset, yOffset);
+	local xOffset, yOffset = 44, -26;
+	self.MajorFactionList:SetPoint("TOPRIGHT", self.Header.TitleDivider, "BOTTOMRIGHT", xOffset, yOffset);
 	self.MajorFactionList:SetExpansionFilter(LE_EXPANSION_10_0);
 end
 
-------------------------- Dragonriding Panel -------------------------
+------------------------- Dragonriding Skills Button -------------------------
 
-LandingPageDragonridingPanelMixin = {};
+DragonridingPanelSkillsButtonMixin = {};
 
-function LandingPageDragonridingPanelMixin:Refresh()
-	self:Layout();
-	self.TalentTreeButton:SetEnabled(C_QuestLog.IsQuestFlaggedCompleted(DRAGONRIDING_INTRO_QUEST_ID));
+function DragonridingPanelSkillsButtonMixin:OnShow()
+	self:SetEnabled(C_QuestLog.IsQuestFlaggedCompleted(DRAGONRIDING_INTRO_QUEST_ID));
 end
 
-DragonridingPanelTalentButtonMixin = {};
-
-function DragonridingPanelTalentButtonMixin:OnLoad()
-	self.PushedImage:SetAtlas(("shadowlands-landingpage-renownbutton-venthyr-down"));
-end
-
-function DragonridingPanelTalentButtonMixin:OnMouseDown()
-	self.PushedImage:Show();
-end
-
-function DragonridingPanelTalentButtonMixin:OnMouseUp()
-	self.PushedImage:Hide();
-end
-
-function DragonridingPanelTalentButtonMixin:OnClick()
+function DragonridingPanelSkillsButtonMixin:OnClick()
 	GenericTraitUI_LoadUI();
 
 	GenericTraitFrame:SetSystemID(DRAGONRIDING_TRAIT_SYSTEM_ID);
-	ShowUIPanel(GenericTraitFrame);
+	ToggleFrame(GenericTraitFrame);
 end

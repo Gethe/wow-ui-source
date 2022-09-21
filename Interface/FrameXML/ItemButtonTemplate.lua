@@ -555,8 +555,11 @@ function ItemButtonMixin:GetItemInfo()
 		local itemIcon = C_Item.GetItemIcon(itemLocation);
 		return itemLink, itemQuality, itemIcon;
 	else
-		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(self:GetItem());
-		return itemLink, itemQuality, itemIcon;
+		local item = self:GetItem();
+		if item then
+			local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(item);
+			return itemLink, itemQuality, itemIcon;
+		end
 	end
 end
 

@@ -16,7 +16,7 @@ local modernSystemMap =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 25,
+				offsetY = 45,
 			},
 		},
 
@@ -258,6 +258,18 @@ local modernSystemMap =
 				offsetY = 0,
 			},
 		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Arena] = {
+			settings = {
+			},
+			anchorInfo = {
+				point = "RIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "RIGHT",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
 	},
 
 	[Enum.EditModeSystem.Minimap] = {
@@ -375,6 +387,30 @@ local modernSystemMap =
 			offsetY = 5,
 		},
 	},
+
+	[Enum.EditModeSystem.LootFrame] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "TOPLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "TOPLEFT",
+			offsetX = 16,
+			offsetY = -116,
+		},
+	},
+
+	[Enum.EditModeSystem.HudTooltip] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMRIGHT",
+			offsetX = -9,
+			offsetY = 85,
+		},
+	},
 };
 
 local classicSystemMap =
@@ -395,7 +431,7 @@ local classicSystemMap =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 25,
+				offsetY = 45,
 			},
 		},
 
@@ -637,6 +673,18 @@ local classicSystemMap =
 				offsetY = 0,
 			},
 		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Arena] = {
+			settings = {
+			},
+			anchorInfo = {
+				point = "RIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "RIGHT",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
 	},
 
 	[Enum.EditModeSystem.Minimap] = {
@@ -752,6 +800,30 @@ local classicSystemMap =
 			relativePoint = "TOPLEFT",
 			offsetX = 0,
 			offsetY = 5,
+		},
+	},
+
+	[Enum.EditModeSystem.LootFrame] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "TOPLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "TOPLEFT",
+			offsetX = 16,
+			offsetY = -116,
+		},
+	},
+
+	[Enum.EditModeSystem.HudTooltip] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMRIGHT",
+			offsetX = -9,
+			offsetY = 85,
 		},
 	},
 };

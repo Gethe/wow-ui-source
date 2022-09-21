@@ -23,14 +23,40 @@ if tbl then
 end
 --------------------------------------------------
 
-PortraitFrameMixin = {};
+TitledPanelMixin = {};
+
+function TitledPanelMixin:GetTitleText()
+	return self.TitleContainer.TitleText;
+end
+
+function TitledPanelMixin:SetTitleColor(color)
+	self:GetTitleText():SetTextColor(color:GetRGBA());
+end
+
+function TitledPanelMixin:SetTitle(title)
+	self:GetTitleText():SetText(title);
+end
+
+function TitledPanelMixin:SetTitleFormatted(fmt, ...)
+	self:GetTitleText():SetFormattedText(fmt, ...);
+end
+
+function TitledPanelMixin:SetTitleMaxLinesAndHeight(maxLines, height)
+	self:GetTitleText():SetMaxLines(maxLines);
+	self:GetTitleText():SetHeight(height);
+end
+
+function TitledPanelMixin:SetTitleMaxLinesAndHeight(maxLines, height)
+	self:GetTitleText():SetMaxLines(maxLines);
+	self:GetTitleText():SetHeight(height);
+end
+
+DefaultPanelMixin = CreateFromMixins(TitledPanelMixin);
+
+PortraitFrameMixin = CreateFromMixins(TitledPanelMixin);
 
 function PortraitFrameMixin:GetPortrait()
 	return self.PortraitContainer.portrait;
-end
-
-function PortraitFrameMixin:GetTitleText()
-	return self.TitleContainer.TitleText;
 end
 
 function PortraitFrameMixin:SetBorder(layoutName)
@@ -66,28 +92,6 @@ function PortraitFrameMixin:SetPortraitShown(shown)
 	self:GetPortrait():SetShown(shown);
 end
 
-function PortraitFrameMixin:SetTitleColor(color)
-	self:GetTitleText():SetTextColor(color:GetRGBA());
-end
-
-function PortraitFrameMixin:SetTitle(title)
-	self:GetTitleText():SetText(title);
-end
-
-function PortraitFrameMixin:SetTitleFormatted(fmt, ...)
-	self:GetTitleText():SetFormattedText(fmt, ...);
-end
-
-function PortraitFrameMixin:SetTitleMaxLinesAndHeight(maxLines, height)
-	self:GetTitleText():SetMaxLines(maxLines);
-	self:GetTitleText():SetHeight(height);
-end
-
-function PortraitFrameMixin:SetTitleMaxLinesAndHeight(maxLines, height)
-	self:GetTitleText():SetMaxLines(maxLines);
-	self:GetTitleText():SetHeight(height);
-end
-
 function PortraitFrameMixin:SetPortraitTextureSizeAndOffset(size, offsetX, offsetY)
 	local portrait = self:GetPortrait();
 	portrait:SetSize(size, size);
@@ -96,10 +100,4 @@ end
 
 function PortraitFrameMixin:DefaultPortraitTextureSizeAndOffset()
 	self:SetPortraitTextureSizeAndOffset(60, -54, 7); -- [NB] TODO: Template lookup?
-end
-
-PortraitFrameTitleContainerMixin = {};
-
-function PortraitFrameTitleContainerMixin:OnLoad()
-	self:GetParent().TitleText = self.TitleText;
 end

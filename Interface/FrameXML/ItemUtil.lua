@@ -227,14 +227,30 @@ function ItemUtil.IteratePlayerInventoryAndEquipment(callback)
 end
 
 function ItemUtil.FilterOwnedItems(itemIDs)
-	local ownedItemIDs = {};
+	local found = {};
 	ItemUtil.IteratePlayerInventory(function(itemLocation)
-		local item = Item:CreateFromItemLocation(itemLocation);
-		if tContains(itemIDs, item:GetItemID()) then
-			table.insert(ownedItemIDs, item:GetItemID());
+		local itemID = C_Item.GetItemID(itemLocation);
+		TableUtil.TrySet(found, itemID);
+	end);
+
+	local filtered = {};
+	for index, itemID in ipairs(itemIDs) do
+		if found[itemID] then
+			table.insert(filtered, itemID);
+		end
+	end
+	return filtered;
+end
+
+function ItemUtil.FindPlayerInventoryAndEquipmentItemsMatchingItemID(itemID)
+	local items = {};
+	ItemUtil.IteratePlayerInventoryAndEquipment(function(itemLocation)
+		if C_Item.GetItemID(itemLocation) == itemID then
+			local itemGUID = C_Item.GetItemGUID(itemLocation);
+			table.insert(items, Item:CreateFromItemGUID(itemGUID));
 		end
 	end);
-	return ownedItemIDs;
+	return items;
 end
 
 function ItemUtil.DoesAnyItemSlotMatchItemContext()
@@ -270,21 +286,19 @@ function ItemUtil.TransformItemLocationsToItems(itemLocations)
 	return items;
 end
 
-function ItemUtil.TransformItemGUIDToItem(itemGUID)
-	if itemGUID and C_Item.IsItemGUIDInInventory(itemGUID) then
-		local itemLocation = C_Item.GetItemLocation(itemGUID);
-		return Item:CreateFromItemLocation(itemLocation);
-	end
-	return nil;
-end
-
 function ItemUtil.TransformItemGUIDsToItems(itemGUIDs)
 	local items = {};
 	for index, itemGUID in ipairs(itemGUIDs) do
-		local item = ItemUtil.TransformItemGUIDToItem(itemGUID);
-		if item then
-			table.insert(items, item);
-		end
+		local item = Item:CreateFromItemGUID(itemGUID);
+		table.insert(items, item);
+	end
+	return items;
+end
+
+function ItemUtil.TransformItemLocationItemsToGUIDItems(items)
+	local items = {};
+	for index, itemLocation in ipairs(itemLocations) do
+		table.insert(items, Item:CreateFromItemLocation(itemLocation));
 	end
 	return items;
 end

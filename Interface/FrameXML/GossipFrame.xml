@@ -47,28 +47,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="NameFrame">
-				<Size x="0" y="14"/>
-				<Anchors>
-					<Anchor point="TOP" relativePoint="TOP" x="0" y="-4"/>
-					<Anchor point="LEFT" relativeKey="$parent.PortraitContainer.portrait" relativePoint="RIGHT" x="10" y="0"/>
-					<Anchor point="RIGHT" x="-58" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString parentKey="Name" inherits="GameFontHighlight">
-							<Size x="235" y="20"/>
-							<Anchors>
-								<Anchor point="LEFT"/>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad function="RaiseFrameLevelByTwo"/>
-				</Scripts>
-			</Frame>
 			<Frame parentKey="GreetingPanel" inherits="GossipFramePanelTemplate" hidden="false">
 				<Frames>
 					<Button parentKey="GoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">

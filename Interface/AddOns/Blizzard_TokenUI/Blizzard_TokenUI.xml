@@ -228,9 +228,9 @@
 		<Frames>
 			<Frame parentKey="Border" inherits="ContainerFrameCurrencyBorderTemplate">
 				<KeyValues>
-					<KeyValue key="leftEdge" value="common-currencybox-cornerleft" type="string"/>
-					<KeyValue key="rightEdge" value="common-currencybox-cornerright" type="string"/>
-					<KeyValue key="centerEdge" value="_common-currencybox-tile" type="string"/>
+					<KeyValue key="leftEdge" value="common-currencybox-left" type="string"/>
+					<KeyValue key="rightEdge" value="common-currencybox-right" type="string"/>
+					<KeyValue key="centerEdge" value="_common-currencybox-center" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" />

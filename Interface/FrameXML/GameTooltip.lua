@@ -171,7 +171,23 @@ end
 
 function GameTooltip_SetDefaultAnchor(tooltip, parent)
 	tooltip:SetOwner(parent, "ANCHOR_NONE");
-	tooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y);
+
+	-- If GameTooltipDefaultContainer isn't corner anchored then find the nearest corner to anchor to
+	local point, relativeTo, relativePoint, offsetX, offsetY = GameTooltipDefaultContainer:GetPoint(1);
+	if not (point == "BOTTOMRIGHT" or point == "BOTTOMLEFT" or point == "TOPRIGHT" or point == "TOPLEFT") then
+		if point == "TOP" or point == "BOTTOM" then
+			point = offsetX > 0 and point.."RIGHT" or point.."LEFT";
+		elseif point =="LEFT" or point == "RIGHT" then
+			point = offsetY > 0 and "TOP"..point or "BOTTOM"..point;
+		else -- CENTER
+			local topBottom = offsetY > 0 and "TOP" or "BOTTOM";
+			local rightLeft = offsetX > 0 and "RIGHT" or "LEFT";
+			point = topBottom..rightLeft;
+		end
+	end
+
+	-- Anchor tooltip to corner
+	tooltip:SetPoint(point, GameTooltipDefaultContainer);
 end
 
 function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)

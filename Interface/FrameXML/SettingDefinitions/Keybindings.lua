@@ -17,44 +17,6 @@ end
 
 local KeybindingSpacer = {};
 
-AutoLootDropDownControlMixin = CreateFromMixins(SettingsDropDownControlMixin);
-
-function AutoLootDropDownControlMixin:Init(initializer)
-	SettingsDropDownControlMixin.Init(self, initializer);
-	
-	self.autoLootSetting = Settings.GetSetting("autoLootDefault");
-	self:UpdateLabel();
-
-	self.cbrHandles:SetOnValueChangedCallback("autoLootDefault", self.OnAutoLootChanged, self);
-end
-
-function AutoLootDropDownControlMixin:Release()
-	SettingsDropDownControlMixin.Release(self);
-end
-
-function AutoLootDropDownControlMixin:OnAutoLootChanged(setting, value)
-	self:UpdateLabel();
-end
-
-function AutoLootDropDownControlMixin:UpdateLabel()
-	local text = self.autoLootSetting:GetValue() and LOOT_KEY_TEXT or AUTO_LOOT_KEY_TEXT;
-	self.Text:SetText(text);
-end
-
-function CreateAutoLootInitializer(setting)
-	local options = Settings.CreateModifiedClickOptions({
-		OPTION_TOOLTIP_AUTO_LOOT_ALT_KEY,
-		OPTION_TOOLTIP_AUTO_LOOT_CTRL_KEY,
-		OPTION_TOOLTIP_AUTO_LOOT_SHIFT_KEY,
-		OPTION_TOOLTIP_AUTO_LOOT_NONE_KEY,
-	});
-
-	local data = Settings.CreateSettingInitializerData(setting, options, OPTION_TOOLTIP_AUTO_LOOT_KEY);
-	local initializer = Settings.CreateSettingInitializer("AutoLootDropDownControlTemplate", data);
-	initializer:AddSearchTags(LOOT_KEY_TEXT);
-	return initializer;
-end
-
 SettingsKeybindingSectionMixin = CreateFromMixins(SettingsExpandableSectionMixin);
 
 function SettingsKeybindingSectionMixin:OnLoad()
@@ -277,16 +239,6 @@ local function Register()
 		};
 		Settings.SetupModifiedClickDropDown(category, "FOCUSCAST", "ALT", FOCUS_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_FOCUS_CAST_KEY_TEXT);
 	end
-
-	-- Auto Loot
-	Settings.SetupCVarCheckBox(category, "autoLootDefault", AUTO_LOOT_DEFAULT_TEXT, OPTION_TOOLTIP_AUTO_LOOT_DEFAULT);
-
-	-- Auto Loot Key
-	do
-		local setting = Settings.RegisterModifiedClickSetting(category, "AUTOLOOTTOGGLE", AUTO_LOOT_KEY_TEXT, "SHIFT");
-		local initializer = CreateAutoLootInitializer(setting);
-		layout:AddInitializer(initializer);
-	end
 	
 
 	-- Keybinding sections
@@ -314,7 +266,9 @@ local function Register()
 	end
 
 	for categoryName, bindingCategory in pairs(bindingsCategories) do
-		layout:AddInitializer(CreateKeybindingSectionInitializer(categoryName, bindingCategory));
+		if #bindingCategory > 0 then
+			layout:AddInitializer(CreateKeybindingSectionInitializer(categoryName, bindingCategory));
+		end
 	end
 	
 	-- Keybindings (search + redirectCategory)

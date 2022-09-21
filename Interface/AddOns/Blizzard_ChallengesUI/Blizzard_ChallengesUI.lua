@@ -148,14 +148,14 @@ function ChallengesFrameMixin:Update()
 
     for i = 1, #self.maps do
 		local inTimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(self.maps[i]);
-		local level = 0; 
+		local level = 0;
 		local dungeonScore = 0;
-		if(inTimeInfo and overtimeInfo) then 
-			local inTimeScoreIsBetter = inTimeInfo.dungeonScore > overtimeInfo.dungeonScore; 
-			level = inTimeScoreIsBetter and inTimeInfo.level or overtimeInfo.level; 
-			dungeonScore = inTimeScoreIsBetter and inTimeInfo.dungeonScore or overtimeInfo.dungeonScore; 
-        elseif(inTimeInfo or overtimeInfo) then 
-			level = inTimeInfo and inTimeInfo.level or overtimeInfo.level; 
+		if(inTimeInfo and overtimeInfo) then
+			local inTimeScoreIsBetter = inTimeInfo.dungeonScore > overtimeInfo.dungeonScore;
+			level = inTimeScoreIsBetter and inTimeInfo.level or overtimeInfo.level;
+			dungeonScore = inTimeScoreIsBetter and inTimeInfo.dungeonScore or overtimeInfo.dungeonScore;
+        elseif(inTimeInfo or overtimeInfo) then
+			level = inTimeInfo and inTimeInfo.level or overtimeInfo.level;
 			dungeonScore = inTimeInfo and inTimeInfo.dungeonScore or overtimeInfo.dungeonScore;
 		end
 		local name = C_ChallengeMode.GetMapUIInfo(self.maps[i]);
@@ -164,9 +164,9 @@ function ChallengesFrameMixin:Update()
 
     table.sort(sortedMaps,
 	function(a, b)
-		if(b.dungeonScore ~= a.dungeonScore) then 
-			return a.dungeonScore > b.dungeonScore; 
-		else 
+		if(b.dungeonScore ~= a.dungeonScore) then
+			return a.dungeonScore > b.dungeonScore;
+		else
 			return strcmputf8i(a.name, b.name) > 0;
 		end
 	end);
@@ -214,11 +214,11 @@ function ChallengesFrameMixin:Update()
 	local bestMapID = weeklySortedMaps[1].id;
 	local dungeonScore = C_ChallengeMode.GetOverallDungeonScore();
 	local chestState = chestFrame:Update(bestMapID, dungeonScore);
-	chestFrame:SetShown(chestState ~= CHEST_STATE_WALL_OF_TEXT); 
-	local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore); 
-	if(color) then 
+	chestFrame:SetShown(chestState ~= CHEST_STATE_WALL_OF_TEXT);
+	local color = C_ChallengeMode.GetDungeonScoreRarityColor(dungeonScore);
+	if(color) then
 		self.WeeklyInfo.Child.DungeonScoreInfo.Score:SetVertexColor(color.r, color.g, color.b);
-	end 
+	end
 	self.WeeklyInfo.Child.DungeonScoreInfo.Score:SetText(dungeonScore);
 	self.WeeklyInfo.Child.DungeonScoreInfo:SetShown(chestFrame:IsShown());
 
@@ -271,14 +271,14 @@ end
 function ChallengesFrameMixin:UpdateTitle()
 	local currentDisplaySeason =  C_MythicPlus.GetCurrentUIDisplaySeason();
 	if ( not currentDisplaySeason ) then
-		PVEFrame.TitleText:SetText(CHALLENGES);
+		PVEFrame:SetTitle(CHALLENGES);
 		return;
 	end
 
 	local currExpID = GetExpansionLevel();
 	local expName = _G["EXPANSION_NAME"..currExpID];
 	local title = MYTHIC_DUNGEON_SEASON:format(expName, currentDisplaySeason);
-	PVEFrame.TitleText:SetText(title);
+	PVEFrame:SetTitle(title);
 end
 
 ChallengeModeWeeklyChestMixin = CreateFromMixins(WeeklyRewardMixin);
@@ -499,12 +499,12 @@ function ChallengesDungeonIconMixin:SetUp(mapInfo, isFirst)
 
 	local _, overAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(mapInfo.id);
 	local color;
-	if(overAllScore) then	
+	if(overAllScore) then
 		color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overAllScore);
 	end
-	if(not color) then 
-		color = HIGHLIGHT_FONT_COLOR; 
-	end		
+	if(not color) then
+		color = HIGHLIGHT_FONT_COLOR;
+	end
 
     if (mapInfo.level > 0) then
         self.HighestLevel:SetText(mapInfo.level);
@@ -527,34 +527,34 @@ function ChallengesDungeonIconMixin:OnEnter()
 
 	local seasonBestDurationSec, seasonBestLevel, members;
 
-	if(overAllScore and inTimeInfo or overtimeInfo) then 
+	if(overAllScore and inTimeInfo or overtimeInfo) then
 		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overAllScore);
-		if(not color) then 
+		if(not color) then
 			color = HIGHLIGHT_FONT_COLOR;
-		end 
+		end
 		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_TOTAL_SCORE:format(color:WrapTextInColorCode(overAllScore)), GREEN_FONT_COLOR);
-	end 
+	end
 
-	if(affixScores and #affixScores > 0) then 
-		for _, affixInfo in ipairs(affixScores) do 
+	if(affixScores and #affixScores > 0) then
+		for _, affixInfo in ipairs(affixScores) do
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_BEST_AFFIX:format(affixInfo.name));
 			GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(affixInfo.level), HIGHLIGHT_FONT_COLOR);
-			if(affixInfo.overTime) then 
-				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then 
+			if(affixInfo.overTime) then
+				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then
 					GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, true)), LIGHTGRAY_FONT_COLOR);
 				else
 					GameTooltip_AddColoredLine(GameTooltip, DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, false)), LIGHTGRAY_FONT_COLOR);
 				end
 			else
-				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then 
+				if(affixInfo.durationSec >= SECONDS_PER_HOUR) then
 					GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(affixInfo.durationSec, true), HIGHLIGHT_FONT_COLOR);
 				else
 					GameTooltip_AddColoredLine(GameTooltip, SecondsToClock(affixInfo.durationSec, false), HIGHLIGHT_FONT_COLOR);
 				end
 			end
-		end 
-	end		
+		end
+	end
 
     GameTooltip:Show();
 end
@@ -886,16 +886,16 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
         self.DescriptionLineOne:SetText(CHALLENGE_MODE_COMPLETE_BEAT_TIMER);
         self.DescriptionLineTwo:SetFormattedText(CHALLENGE_MODE_COMPLETE_KEYSTONE_UPGRADED, data.keystoneUpgradeLevels);
         PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_KEYSTONE_UPGRADE);
-		local chatPrintText; 
+		local chatPrintText;
 
-		if (data.isAffixRecord) then 
+		if (data.isAffixRecord) then
 			local affixName = C_ChallengeMode.GetAffixInfo(data.primaryAffix);
 			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_AFFIX_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true), affixName)
-		elseif (data.isMapRecord) then 
+		elseif (data.isMapRecord) then
 			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
 		else
 			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
-		end		
+		end
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(chatPrintText, info.r, info.g, info.b, info.id);
     else
@@ -903,52 +903,52 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(data)
         self.DescriptionLineTwo:SetText(CHALLENGE_MODE_COMPLETE_TRY_AGAIN);
         PlaySound(SOUNDKIT.UI_70_CHALLENGE_MODE_COMPLETE_NO_UPGRADE);
 
-		local chatPrintText; 
-		if (data.isAffixRecord) then 
+		local chatPrintText;
+		if (data.isAffixRecord) then
 			local affixName = C_ChallengeMode.GetAffixInfo(data.primaryAffix);
 			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_AFFIX_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true), affixName)
-		elseif (data.isMapRecord) then 
+		elseif (data.isMapRecord) then
 			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_CHAT_LINK_OVERTIME_RECORD:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
 		else
 			chatPrintText = CHALLENGE_MODE_TIMED_DUNGEON_OVERTIME_CHAT_LINK:format(name, data.level, timeText, timeFormatter:Format(timeRemaining, false, true))
-		end	
+		end
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(chatPrintText, info.r, info.g, info.b, info.id);
     end
-	if(data.upgradeMembers and #data.upgradeMembers >= 1) then 
+	if(data.upgradeMembers and #data.upgradeMembers >= 1) then
 		local formatString = nil;
-		for i, member in ipairs(data.upgradeMembers) do 
-			if(member.name) then 
-				local _, classFilename = UnitClass(member.memberGUID);	
+		for i, member in ipairs(data.upgradeMembers) do
+			if(member.name) then
+				local _, classFilename = UnitClass(member.memberGUID);
 				local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
 				local playerString = classColor:WrapTextInColorCode(member.name);
-				if(not formatString) then 
+				if(not formatString) then
 					formatString = playerString
 				else
 					formatString = formatString..PLAYER_LIST_DELIMITER..playerString;
 				end
 			end
 		end
-		if(formatString) then 
+		if(formatString) then
 			local chatString = DUNGEON_SCORE_INCREASE_PARTY_MEMBERS:format(formatString);
 			local info = ChatTypeInfo["SYSTEM"];
 			DEFAULT_CHAT_FRAME:AddMessage(chatString, info.r, info.g, info.b, info.id);
 		end
-	end		
+	end
 
-	local isOnlyRunThisSeason = #C_MythicPlus.GetRunHistory(true, true) <= 1; 
+	local isOnlyRunThisSeason = #C_MythicPlus.GetRunHistory(true, true) <= 1;
 	if (data.isEligibleForScore and ((data.oldDungeonScore and data.newDungeonScore) or (isOnlyRunThisSeason))) then
 		local gainedScore = data.newDungeonScore - data.oldDungeonScore;
 		local color = C_ChallengeMode.GetDungeonScoreRarityColor(data.newDungeonScore);
-		if (not color) then 
-			color = HIGHLIGHT_FONT_COLOR; 
+		if (not color) then
+			color = HIGHLIGHT_FONT_COLOR;
 		end
 		self.DescriptionLineThree:SetText(CHALLENGE_COMPLETE_DUNGEON_SCORE:format(color:WrapTextInColorCode(CHALLENGE_COMPLETE_DUNGEON_SCORE_FORMAT_TEXT:format(data.newDungeonScore, gainedScore))));
-		
+
 		local showChatMessage = gainedScore or isOnlyRunThisSeason;
-		if(showChatMessage) then 
+		if(showChatMessage) then
 			local chatString;
-			if(data.keystoneUpgradeLevels and data.keystoneUpgradeLevels > 0) then 
+			if(data.keystoneUpgradeLevels and data.keystoneUpgradeLevels > 0) then
 				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_KEYSTONE_UPGRADE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore, data.keystoneUpgradeLevels);
 			else
 				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_CHAT_LINK:format(color:WrapTextInColorCode(data.newDungeonScore), gainedScore);
@@ -1081,25 +1081,25 @@ function MythicPlusSeasonChangeNoticeOnCloseClick(self)
 	PlaySound(SOUNDKIT.UI_80_ISLANDS_TUTORIAL_CLOSE);
 end
 
-DungeonScoreInfoMixin = { }; 
+DungeonScoreInfoMixin = { };
 
 function DungeonScoreInfoMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
 	GameTooltip_SetTitle(GameTooltip, DUNGEON_SCORE);
 	GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DESC);
 	GameTooltip:Show();
-end 
+end
 
 function DungeonScoreInfoMixin:OnLeave()
-	GameTooltip:Hide(); 
-end 
+	GameTooltip:Hide();
+end
 
-function DungeonScoreInfoMixin:OnClick() 
+function DungeonScoreInfoMixin:OnClick()
 	if( IsModifiedClick("CHATLINK")) then
-		local dungeonScore = C_ChallengeMode.GetOverallDungeonScore(); 
+		local dungeonScore = C_ChallengeMode.GetOverallDungeonScore();
 		local link = GetDungeonScoreLink(dungeonScore, UnitName("player"));
 		if not ChatEdit_InsertLink(link) then
 			ChatFrame_OpenChat(link);
 		end
-	end 
-end		
+	end
+end

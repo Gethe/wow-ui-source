@@ -134,6 +134,14 @@ function ProfessionsRecipeTransactionMixin:Init(recipeSchematic, onChangedFunc)
 	end
 end
 
+function ProfessionsRecipeTransactionMixin:SetManuallyAllocated(manuallyAllocated)
+	self.manuallyAllocated = manuallyAllocated;
+end
+
+function ProfessionsRecipeTransactionMixin:IsManuallyAllocated()
+	return self.manuallyAllocated;
+end
+
 function ProfessionsRecipeTransactionMixin:GetRecipeID()
 	return self.recipeID;
 end
@@ -165,7 +173,7 @@ function ProfessionsRecipeTransactionMixin:GetQuantityRequiredInSlot(slotIndex)
 	return reagentSlotSchematic.quantityRequired;
 end
 
-function ProfessionsRecipeTransactionMixin:IsSlotRequiredToCraft(slotIndex)
+function ProfessionsRecipeTransactionMixin:IsSlotBasicReagentType(slotIndex)
 	local reagentSlotSchematic = self:GetReagentSlotSchematic(slotIndex);
 	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic;
 end
@@ -319,6 +327,12 @@ function ProfessionsRecipeTransactionMixin:SanitizeAllocations()
 	end
 end
 
+function ProfessionsRecipeTransactionMixin:SanitizeTargetAllocations()
+	self:SanitizeRecraftAllocation();
+	self:SanitizeEnchantAllocation();
+	self:SanitizeSalvageAllocation();
+end
+
 function ProfessionsRecipeTransactionMixin:SanitizeRecraftAllocation(clearExpected)
 	local itemGUID = self:GetRecraftAllocation();
 	if itemGUID and not C_Item.IsItemGUIDInInventory(itemGUID) then
@@ -329,6 +343,22 @@ function ProfessionsRecipeTransactionMixin:SanitizeRecraftAllocation(clearExpect
 		self.recraftExpectedItemMods = nil;
 	end
 	self:CacheItemModifications();
+end
+
+function ProfessionsRecipeTransactionMixin:SanitizeEnchantAllocation(clearExpected)
+	local item = self:GetEnchantAllocation();
+	local itemGUID = item and item:GetItemGUID() or nil;
+	if itemGUID and not C_Item.IsItemGUIDInInventory(itemGUID) then
+		self:ClearEnchantAllocations();
+	end
+end
+
+function ProfessionsRecipeTransactionMixin:SanitizeSalvageAllocation(clearExpected)
+	local itemGUID = self:GetSalvageAllocation();
+	local itemGUID = item and item:GetItemGUID() or nil;
+	if itemGUID and not C_Item.IsItemGUIDInInventory(itemGUID) then
+		self:ClearSalvageAllocations();
+	end
 end
 
 function ProfessionsRecipeTransactionMixin:OverwriteAllocations(slotIndex, allocations)
@@ -376,6 +406,19 @@ end
 
 function ProfessionsRecipeTransactionMixin:GetSalvageAllocation()
 	return self.salvageItem;
+end
+
+
+function ProfessionsRecipeTransactionMixin:ClearEnchantAllocations()
+	self:SetEnchantAllocation(nil);
+end
+
+function ProfessionsRecipeTransactionMixin:SetEnchantAllocation(enchantItem)
+	self.enchantItem = enchantItem;
+end
+
+function ProfessionsRecipeTransactionMixin:GetEnchantAllocation()
+	return self.enchantItem;
 end
 
 function ProfessionsRecipeTransactionMixin:SetRecraft(isRecraft)
@@ -450,8 +493,12 @@ function ProfessionsRecipeTransactionMixin:HasAllocatedSalvageRequirements()
 
 	local recipeSchematic = self:GetRecipeSchematic();
 	local quantityRequired = recipeSchematic.quantityMax;
-	local count = ItemUtil.GetCraftingReagentCount(self.salvageItem:GetItemID());
-	return count >= quantityRequired;
+	
+	local quantity = self.salvageItem:GetStackCount();
+	if not quantity then
+		return false;
+	end
+	return quantity >= quantityRequired;
 end
 
 function ProfessionsRecipeTransactionMixin:HasAllocatedReagentRequirements()

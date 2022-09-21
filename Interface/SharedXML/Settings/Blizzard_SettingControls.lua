@@ -495,6 +495,7 @@ function CreateSettingsButtonInitializer(name, buttonText, buttonClick, tooltip)
 	local data = {name = name, buttonText = buttonText, buttonClick = buttonClick, tooltip = tooltip};
 	local initializer = Settings.CreateElementInitializer("SettingButtonControlTemplate", data);
 	initializer:AddSearchTags(name);
+	initializer:AddSearchTags(buttonText);
 	return initializer;
 end
 
@@ -762,11 +763,11 @@ end
 
 function SettingsSelectionPopoutEntryMixin:OnEnter()
 	SelectionPopoutEntryMixin.OnEnter(self);
+	
+	self.HighlightBGTex:SetAlpha(0.15);
 
 	if not self.isSelected then
 		if self.selectionData.disabled == nil then
-			self.HighlightBGTex:SetAlpha(0.15);
-
 			self.SelectionDetails.SelectionName:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		end
 	end
@@ -776,13 +777,13 @@ end
 
 function SettingsSelectionPopoutEntryMixin:OnLeave()
 	SelectionPopoutEntryMixin.OnLeave(self);
+	
+	self.HighlightBGTex:SetAlpha(0);
 
 	if not self.isSelected then
-		self.HighlightBGTex:SetAlpha(0);
-
 		local fontColor = nil;
 		if self.selectionData.disabled == nil then
-			fontColor = GRAY_FONT_COLOR;
+			fontColor = VERY_LIGHT_GRAY_COLOR;
 		else
 			fontColor = DISABLED_FONT_COLOR;
 		end
@@ -812,7 +813,9 @@ function SettingsSelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaul
 	if multipleColumns then
 		self:SetWidth(Round(defaultWidth / 2));
 	else
-		self:SetWidth(Round(defaultWidth));
+		local nameWidth = self.SelectionName:GetUnboundedStringWidth() + self.selectionNamePadding;
+		self:SetWidth(Round(math.max(nameWidth, defaultWidth)));
+		self.SelectionName:SetWidth(nameWidth);
 	end
 end
 
@@ -829,7 +832,7 @@ function SettingsSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, 
 		elseif selectionData.disabled then
 			fontColor = DISABLED_FONT_COLOR;
 		else
-			fontColor = GRAY_FONT_COLOR;
+			fontColor = VERY_LIGHT_GRAY_COLOR;
 		end
 		self.SelectionName:SetTextColor(fontColor:GetRGB());
 	end

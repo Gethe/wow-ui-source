@@ -254,6 +254,11 @@
 			<OnClick function="UIPanelCloseButton_OnClick"/>
 		</Scripts>
 	</Button>
+	<Button name="UIPanelCloseButtonDefaultAnchors" inherits="UIPanelCloseButton" virtual="true">
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="1" y="0"/>
+		</Anchors>
+	</Button>
 	<Button name="UIStaticPopupSpecialCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
 			<OnClick function="UIPanelStaticPopupSpecialCloseButton_OnClick"/>
@@ -876,7 +881,7 @@
 	It makes its own nine-slice border.
 *******************************************************************************
 -->
-	<Frame name="DefaultPanelTemplate" virtual="true">
+	<Frame name="DefaultPanelTemplate" mixin="DefaultPanelMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
 		</KeyValues>
@@ -904,15 +909,26 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="$parentTitleText" inherits="GameFontNormal" parentKey="TitleText" wordwrap="false">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.TitleBg"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="TitleContainer" frameLevel="510">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-1"/>
+					<Anchor point="TOPRIGHT" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentTitleText" inherits="GameFontNormal" parentKey="TitleText" wordwrap="false">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-5"/>
+								<Anchor point="LEFT" x="37" y="0"/>
+								<Anchor point="RIGHT" x="-37" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
 		</Frames>
 	</Frame>
@@ -970,7 +986,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="TitleContainer" frameLevel="510" mixin="PortraitFrameTitleContainerMixin">
+			<Frame parentKey="TitleContainer" frameLevel="510">
 				<Size x="0" y="20"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" y="-1"/>
@@ -987,20 +1003,13 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>
 
 	<Frame name="PortraitFrameTemplate" inherits="PortraitFrameTemplateNoCloseButton" virtual="true">
 		<Frames>
-			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="1" y="-1"/>
-				</Anchors>
-			</Button>
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 		</Frames>
 	</Frame>
 
@@ -1866,33 +1875,31 @@
     </Button>
 
 	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" frameLevel="510" virtual="true">
-		<Size x="32" y="32"/>
+		<Size x="24" y="24"/>
 		<Frames>
 			<Button parentKey="MaximizeButton" setAllPoints="true" hidden="true">
-				<HitRectInsets left="5" right="5" top="5" bottom="5"/>
 				<Scripts>
 					<OnClick>
 						self:GetParent():Maximize();
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-BiggerButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-BiggerButton-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-Panel-BiggerButton-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<NormalTexture atlas="RedButton-Expand"/>
+				<PushedTexture atlas="RedButton-Expand-Pressed"/>
+				<DisabledTexture atlas="RedButton-Expand-Disabled"/>
+				<HighlightTexture atlas="RedButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button parentKey="MinimizeButton" setAllPoints="true">
-				<HitRectInsets left="5" right="5" top="5" bottom="5"/>
 				<Scripts>
 					<OnClick>
 						self:GetParent():Minimize();
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-SmallerButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-SmallerButton-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-Panel-SmallerButton-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<NormalTexture atlas="RedButton-Condense"/>
+				<PushedTexture atlas="RedButton-Condense-Pressed"/>
+				<DisabledTexture atlas="RedButton-Condense-disabled"/>
+				<HighlightTexture atlas="RedButton-Highlight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>

@@ -101,12 +101,10 @@
 		<Frames>
 			<Button parentKey="HideButton" inherits="UIPanelCloseButtonNoScripts">
 				<Size x="20" y="20"/>
-				<Anchors>
-					<Anchor point="LEFT" x="3"/>
-				</Anchors>
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>

@@ -51,7 +51,6 @@ UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 1, 	whileDead = 1
 UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
 UIPanelWindows["CollectionsJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 733};
 UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1};
-UIPanelWindows["LootFrame"] =					{ area = "left",			pushable = 7};
 UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
@@ -914,41 +913,13 @@ function ToggleTalentFrame(suggestedTab, inspectUnit)
 		return;
 	end
 
-	local newTalentClassIDSet = {
-		[1] = true, -- Warrior
-		[2] = true, -- Paladin
-		[3] = true, -- Hunter
-		[4] = true, -- Rogue
-		[5] = true, -- Priest
-		[6] = true, -- DK
-		[7] = true, -- Shaman
-		[8] = true, -- Mage
-		[9] = true, -- Warlock
-		[10] = true, -- Monk
-		[11] = true, -- Druid
-		[12] = true, -- Demon Hunter
-		[13] = true, -- Evoker
-	};
+	ClassTalentFrame_LoadUI();
 
-	local useNewFrame = newTalentClassIDSet[PlayerUtil.GetClassID()];
-	if useNewFrame then
-		ClassTalentFrame_LoadUI();
-
-		ClassTalentFrame:SetInspecting(inspectUnit);
-		if not ClassTalentFrame:IsShown() then
-			ShowUIPanel(ClassTalentFrame);
-		else
-			ClassTalentFrame:CheckConfirmClose();
-		end
+	ClassTalentFrame:SetInspecting(inspectUnit);
+	if not ClassTalentFrame:IsShown() then
+		ShowUIPanel(ClassTalentFrame);
 	else
-		if inspectUnit then
-			return;
-		end
-
-		TalentFrame_LoadUI();
-		if ( PlayerTalentFrame_Toggle ) then
-			PlayerTalentFrame_Toggle(suggestedTab);
-		end
+		ClassTalentFrame:CheckConfirmClose();
 	end
 end
 
@@ -2605,13 +2576,13 @@ local FramePositionDelegate = CreateFrame("FRAME");
 FramePositionDelegate:SetScript("OnAttributeChanged", FramePositionDelegate_OnAttributeChanged);
 
 function FramePositionDelegate:ShowUIPanel(frame, force)
-	local frameArea, framePushable;
-	frameArea = GetUIPanelAttribute(frame, "area");
+	local frameArea = GetUIPanelAttribute(frame, "area");
 	if ( not CanOpenPanels() and frameArea ~= "center" and frameArea ~= "full" ) then
 		self:ShowUIPanelFailed(frame);
 		return;
 	end
-	framePushable = GetUIPanelAttribute(frame, "pushable") or 0;
+	local framePushable = GetUIPanelAttribute(frame, "pushable") or 0;
+	local frameAllowOtherPanels = GetUIPanelAttribute(frame, "allowOtherPanels") or 1;
 
 	if ( UnitIsDead("player") and not GetUIPanelAttribute(frame, "whileDead") ) then
 		self:ShowUIPanelFailed(frame);
@@ -2717,6 +2688,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 		return;
 	end
 	local leftPushable = GetUIPanelAttribute(leftFrame, "pushable") or 0;
+	local leftAllowOtherPanels = GetUIPanelAttribute(leftFrame, "allowOtherPanels") or 1;
 
 	-- Two open already
 	local rightFrame = self:GetUIPanel("right");
@@ -2767,7 +2739,8 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	-- If there's only one open...
 	if ( not centerFrame ) then
 		-- If neither is pushable, replace
-		if ( (leftPushable == 0) and (framePushable == 0) ) then
+		local replaceLeft = (leftAllowOtherPanels == 0) or (frameAllowOtherPanels == 0) or ((leftPushable == 0) and (framePushable == 0));
+		if replaceLeft then
 			self:SetUIPanel("left", frame);
 			return;
 		end

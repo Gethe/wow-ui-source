@@ -131,6 +131,10 @@ function CVarCallbackRegistry:SetCVarCachable(cvar)
 	self.cachable[cvar] = true;
 end
 
+function CVarCallbackRegistry:RegisterCVarChangedCallback(func, owner, ...)
+	return self:RegisterCallback(CVarCallbackRegistry.Event.OnCVarChanged, func, owner, ...);
+end
+
 CVarCallbackRegistry = Mixin(CreateFrame("Frame"), CVarCallbackRegistry);
 CVarCallbackRegistry:OnLoad();
 CVarCallbackRegistry:SetUndefinedEventsAllowed(true);

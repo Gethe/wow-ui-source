@@ -200,6 +200,7 @@ local MajorFactions =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "factionID", Type = "number", Nilable = false },
+				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "bountySetID", Type = "number", Nilable = false },
 				{ Name = "isUnlocked", Type = "bool", Nilable = false },
 				{ Name = "renownLevel", Type = "number", Nilable = false },

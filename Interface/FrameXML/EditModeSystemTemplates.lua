@@ -5,7 +5,7 @@ function EditModeSystemMixin:OnSystemLoad()
 		-- All systems must have self.system set on them
 		return;
 	end
-	
+
 	EditModeManagerFrame:RegisterSystemFrame(self);
 
 	self.systemName = (self.addSystemIndexToName and self.systemIndex) and self.systemNameString:format(self.systemIndex) or self.systemNameString;
@@ -690,6 +690,9 @@ function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
 	end
 end
 
@@ -706,13 +709,16 @@ function EditModeUnitFrameSystemMixin:SetupSettingsDialogAnchor()
 		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("TOPLEFT", UIParent, "TOPLEFT", 200, -200);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
 		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("TOPRIGHT", UIParent, "TOPRIGHT", -400, -200);
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
+		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("TOPRIGHT", UIParent, "TOPRIGHT", -400, -200);
 	end
 end
 
 function EditModeUnitFrameSystemMixin:AddExtraButtons(extraButtonPool)
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party
 		or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid
-		or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
+		or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss
+		or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
 		CreateResetToDefaultPositionButton(self, extraButtonPool);
 		return true;
 	end
@@ -908,6 +914,38 @@ function EditModeBossUnitFrameSystemMixin:UpdateShownState()
 	end
 
 	self:SetShown(self.isInEditMode or isAnyBossFrameShowing);
+end
+
+EditModeArenaUnitFrameSystemMixin = {};
+
+function EditModeArenaUnitFrameSystemMixin:OnSystemLoad()
+	EditModeSystemMixin.OnSystemLoad(self);
+
+	-- Gotta call this ourselves since arena frames are loaded in as needed on the fly so they won't be setup yet
+	EditModeManagerFrame:UpdateSystem(self);
+end
+
+
+function EditModeArenaUnitFrameSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsInEditMode(false);
+	self:Update();
+end
+
+function EditModeArenaUnitFrameSystemMixin:OnDragStart()
+	if self:CanBeMoved() then
+		self:SetParent(UIParent);
+		self:StartMoving();
+	end
+end
+
+function EditModeArenaUnitFrameSystemMixin:SetIsInEditMode(isInEditMode)
+	self.isInEditMode = isInEditMode;
+	for index, unitFrame in ipairs(ArenaEnemyMatchFramesContainer.UnitFrames) do
+		unitFrame.isInEditMode = isInEditMode;
+		unitFrame:GetPetFrame().isInEditMode = isInEditMode;
+	end
 end
 
 EditModeMinimapSystemMixin = {};
@@ -1453,6 +1491,15 @@ function EditModeVehicleLeaveButtonSystemMixin:OnDragStart()
 		self:SetParent(UIParent);
 		self:StartMoving();
 	end
+end
+
+EditModeLootFrameSystemMixin = {};
+
+function EditModeLootFrameSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
 end
 
 local EditModeSystemSelectionLayout =

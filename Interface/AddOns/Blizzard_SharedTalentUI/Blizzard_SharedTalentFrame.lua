@@ -1007,7 +1007,7 @@ function TalentFrameBaseMixin:SetCommitVisualsActive(active)
 
 	if self.enableCommitCastBar then
 		if active then
-			OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, "applyingcrafting");
+			OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, "applyingtalents");
 		else
 			OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
 		end

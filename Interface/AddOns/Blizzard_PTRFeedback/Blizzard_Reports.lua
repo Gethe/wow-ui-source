@@ -26,11 +26,12 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
     end
     
     local GetSpecID = function()
-        return select(1, GetSpecializationInfo(GetSpecialization() or 1))
+        -- There are rare occurrences where it appeared either GetSpecID or GetCurrentiLvl were returning nil, in case nothing is returned for the select, sending 0 for data completeness
+        return select(1, GetSpecializationInfo(GetSpecialization() or 1)) or 0
     end
     
     local GetCurrentiLvl = function()
-        return select(2, GetAverageItemLevel())
+        return select(2, GetAverageItemLevel()) or 0
     end
 
 	local GetCurrentConduits = function()

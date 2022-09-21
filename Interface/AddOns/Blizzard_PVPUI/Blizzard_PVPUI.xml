@@ -945,17 +945,9 @@
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</Frame>
-							<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-										<Offset x="4" y="5"/>
-									</Anchor>
-								</Anchors>
+							<Button name="$parentCloseButton" inherits="UIPanelCloseButtonDefaultAnchors" parentKey="CloseButton" mixin="PVPTalentPrestigeLevelDialogCloseButtonMixin">
 								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
-										self:GetParent():Hide();
-									</OnClick>
+									<OnClick method="OnClick"/>
 								</Scripts>
 							</Button>
 							<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="PVP_PRESTIGE_RANK_UP_ACCEPT">
@@ -972,16 +964,13 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+							<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL" mixin="PVPTalentPrestigeLevelDialogCloseButtonMixin">
 								<Size x="126" y="22"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="4" y="20"/>
 								</Anchors>
 								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
-										self:GetParent():Hide();
-									</OnClick>
+									<OnClick method="OnClick"/>
 								</Scripts>
 							</Button>
 						</Frames>

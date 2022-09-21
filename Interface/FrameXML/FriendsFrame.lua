@@ -365,14 +365,14 @@ function FriendsFrame_Update()
 
 		if selectedHeaderTab == FRIEND_HEADER_TAB_FRIENDS then
 			C_FriendList.ShowFriends();
-			FriendsFrameTitleText:SetText(FRIENDS_LIST);
+			FriendsFrame:SetTitle(FRIENDS_LIST);
 			FriendsFrame_ShowSubFrame("FriendsListFrame");
 		elseif selectedHeaderTab == FRIEND_HEADER_TAB_IGNORE then
-			FriendsFrameTitleText:SetText(IGNORE_LIST);
+			FriendsFrame:SetTitle(IGNORE_LIST);
 			FriendsFrame_ShowSubFrame("IgnoreListFrame");
 			IgnoreList_Update();
 		elseif selectedHeaderTab == FRIEND_HEADER_TAB_RAF then
-			FriendsFrameTitleText:SetText(RECRUIT_A_FRIEND);
+			FriendsFrame:SetTitle(RECRUIT_A_FRIEND);
 			FriendsFrame_ShowSubFrame("RecruitAFriendFrame");
 		end
 	elseif ( selectedTab == FRIEND_TAB_WHO ) then
@@ -506,13 +506,13 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = REPORT_PLAYER;
-		info.func = function() 
+		info.func = function()
 			local bnetIDAccount, name = BNGetFriendInviteInfo(self.inviteIndex);
 			local playerLocation = PlayerLocation:CreateFromBattleNetID(bnetIDAccount);
 			local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Friend);
 			local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 			ReportFrame:InitiateReport(reportInfo, name, playerLocation, bnetIDAccount ~= nil);
-		end; 
+		end;
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = BLOCK_INVITES;
@@ -647,7 +647,7 @@ end
 
 function IgnoreList_InitButton(button, elementData)
 	button.index = elementData.index;
-	
+
 	if elementData.squelchType == SQUELCH_TYPE_IGNORE then
 		local name = C_FriendList.GetIgnoreName(button.index);
 		if not name then
@@ -729,16 +729,16 @@ function WhoList_InitButton(button, elementData)
 	else
 		classTextColor = HIGHLIGHT_FONT_COLOR;
 	end
-	
+
 	button.Name:SetText(info.fullName);
 	button.Level:SetText(info.level);
 	button.Class:SetText(info.classStr);
 	button.Class:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
-	
+
 	local variableColumnTable = { info.area, info.fullGuildName, info.raceStr };
 	local variableText = variableColumnTable[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)];
 	button.Variable:SetText(variableText);
-	
+
 	if button.Variable:IsTruncated() or button.Name:IsTruncated() then
 		button.tooltip1 = info.fullName;
 		button.tooltip2 = variableText;
@@ -771,7 +771,7 @@ function WhoList_SetSelectedButton(button)
 			end
 		end
 	end;
-	
+
 	UpdateButtonSelection(oldSelectedWho,  false);
 	UpdateButtonSelection(WhoFrame.selectedWho, true);
 
@@ -900,7 +900,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 				C_GuildInfo.GuildRoster();
 			end
 		end
-	elseif ( event == "PLAYER_GUILD_UPDATE") then 
+	elseif ( event == "PLAYER_GUILD_UPDATE") then
 		C_GuildInfo.GuildRoster();
 	end
 end
@@ -925,7 +925,7 @@ function FriendsFrame_SelectFriend(friendType, id)
 			FriendsFrame_FriendButtonSetSelection(button, selected);
 		end
 	end;
-	
+
 	UpdateButtonSelection(oldFriendType, oldFriendId, false);
 	UpdateButtonSelection(friendType, id, true);
 
@@ -934,7 +934,7 @@ end
 
 function FriendsFrame_SelectSquelched(squelchType, index)
 	local oldSquelchType, oldSquelchIndex = IgnoreList_GetSelected();
-	
+
 	if ( squelchType == SQUELCH_TYPE_IGNORE ) then
 		C_FriendList.SetSelectedIgnore(index);
 	elseif ( squelchType == SQUELCH_TYPE_BLOCK_INVITE ) then
@@ -951,7 +951,7 @@ function FriendsFrame_SelectSquelched(squelchType, index)
 			IgnoreList_SetButtonSelected(button, selected);
 		end
 	end;
-	
+
 	UpdateButtonSelection(oldSquelchType, oldSquelchIndex, false);
 	UpdateButtonSelection(squelchType, index, true);
 
@@ -1162,7 +1162,7 @@ end
 
 function ToggleRafPanel()
 	ToggleFriendsSubPanel(FRIEND_HEADER_TAB_RAF);
-end		
+end
 
 function ToggleQuickJoinPanel()
 	ToggleFriendsFrame(FRIEND_TAB_QUICK_JOIN);
@@ -2154,7 +2154,7 @@ function FriendsFriends_InitButton(button, elementData)
 		button.name:SetTextColor(BATTLENET_FONT_COLOR.r, BATTLENET_FONT_COLOR.g, BATTLENET_FONT_COLOR.b);
 	end
 	button.friendID = friendID;
-	
+
 	local selected = FriendsFriendsFrame.selection == friendID;
 	FriendsFriendsButton_SetSelected(button, selected);
 end
@@ -2162,7 +2162,7 @@ end
 function FriendsFriends_SetSelection(friendID)
 	local oldSelection = FriendsFriendsFrame.selection;
 	FriendsFriendsFrame.selection = friendID;
-	
+
 	local function UpdateButtonSelection(friendID, selected)
 		if friendID then
 			local button = FriendsFriendsFrame.ScrollBox:FindFrameByPredicate(function(button)
@@ -2173,7 +2173,7 @@ function FriendsFriends_SetSelection(friendID)
 			end
 		end
 	end;
-	
+
 	UpdateButtonSelection(oldSelection, false);
 	UpdateButtonSelection(friendID, true);
 
@@ -2460,7 +2460,7 @@ function TravelPassButton_OnEnter(self)
 
 	local inviteType, guid, factionName = FriendsFrame_GetDisplayedInviteTypeAndGuid(self:GetParent().id);
 	GameTooltip:SetText(inviteTypeToButtonText[inviteType], HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	
+
 	if ( inviteTypeIsCrossFaction[inviteType] and factionName ) then
 		GameTooltip:AddLine(CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS_FROM_STRING[factionName]), nil, nil, nil, true);
 	end

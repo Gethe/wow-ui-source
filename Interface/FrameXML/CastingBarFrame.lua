@@ -1,8 +1,5 @@
 local CASTBAR_STAGE_INVALID = -1;
 local CASTBAR_STAGE_DURATION_INVALID = -1;
-CASTBAR_STAGE_WIDTH = 195;
-CASTBAR_STAGE_MIN_OFFSET = CASTBAR_STAGE_WIDTH / -2;
-CASTBAR_STAGE_MAX_OFFSET = CASTBAR_STAGE_WIDTH / 2;
 
 CASTING_BAR_TYPES = {
 	applyingcrafting = { 
@@ -12,6 +9,12 @@ CASTING_BAR_TYPES = {
 		sparkFx = "CraftingGlow",
 		finishAnim = "CraftingFinish",
 	},
+	applyingtalents = { 
+		filling = "ui-castingbar-filling-applyingcrafting",
+		full = "ui-castingbar-full-applyingcrafting",
+		glow = "ui-castingbar-full-glow-applyingcrafting",
+		sparkFx = "CraftingGlow",
+	},
 	standard = { 
 		filling = "ui-castingbar-filling-standard",
 		full = "ui-castingbar-full-standard",
@@ -20,12 +23,9 @@ CASTING_BAR_TYPES = {
 		finishAnim = "StandardFinish",
 	},
 	empowered = { 
-		filling = "ui-castingbar-filling-empowered",
-		full = "ui-castingbar-full-standard",
-		glow = "ui-castingbar-full-glow-standard",
-		finishAnim = "StandardFinish",
-		-- For empowered, only play finish anim if at full power
-		finishCondition = function (self) return self.CurrSpellStage == self.NumStages; end
+		filling = "",
+		full = "",
+		glow = "",
 	},
 	channel = { 
 		filling = "ui-castingbar-filling-channel",
@@ -51,6 +51,7 @@ CastingBarMixin = {};
 function CastingBarMixin:OnLoad(unit, showTradeSkills, showShield)
 	self.StagePoints = {};
 	self.StagePips = {};
+	self.StageTiers = {};
 
 	self:SetUnit(unit, showTradeSkills, showShield);
 
@@ -255,7 +256,9 @@ function CastingBarMixin:OnEvent(event, ...)
 			local barTypeInfo = self:GetTypeInfo(self.barType);
 			self:SetStatusBarTexture(barTypeInfo.full);
 
-			self:HideSpark();
+			if not self.reverseChanneling then
+				self:HideSpark();
+			end
 
 			if ( self.Flash ) then
 				self.Flash:SetAtlas(barTypeInfo.glow);
@@ -267,10 +270,7 @@ function CastingBarMixin:OnEvent(event, ...)
 			end
 
 			self:PlayFadeAnim();
-			
-			if (event ~= "UNIT_SPELLCAST_EMPOWER_STOP") then
-				self:PlayFinishAnim();
-			end
+			self:PlayFinishAnim();
 
 			if ( event == "UNIT_SPELLCAST_STOP" ) then
 				self.casting = nil;
@@ -341,11 +341,20 @@ function CastingBarMixin:OnEvent(event, ...)
 		end
 
 		local isChargeSpell = numStages > 0;
+
+		if isChargeSpell then
+			endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit);
+		end
 		
 		self.maxValue = (endTime - startTime) / 1000;
 
 		self.barType = self:GetEffectiveType(not isChargeSpell, notInterruptible, isTradeSkill, isChargeSpell);
-		self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling);
+
+		if isChargeSpell then
+			self:SetColorFill(0, 0, 0, 0);
+		else
+			self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling);
+		end
 
 		self:ClearStages();
 		
@@ -509,10 +518,7 @@ function CastingBarMixin:FinishSpell()
 	end
 	
 	self:PlayFadeAnim();
-	
-	if not self.reverseChanneling then
-		self:PlayFinishAnim();
-	end
+	self:PlayFinishAnim();
 	
 	self.casting = nil;
 	self.channeling = nil;
@@ -527,9 +533,14 @@ function CastingBarMixin:ShowSpark()
 	local currentBarType = self.barType;
 
 	if currentBarType == "interrupted" then
-		self.Spark:SetAtlas("ui-castingbar-pip-2x_red");
+		self.Spark:SetAtlas("ui-castingbar-pip-2x_red", TextureKitConstants.UseAtlasSize);
+		self.Spark.offsetY = 0;
+	elseif currentBarType == "empowered" then
+		self.Spark:SetAtlas("ui-castingbar-empower-cursor", TextureKitConstants.UseAtlasSize);
+		self.Spark.offsetY = 4;
 	else
-		self.Spark:SetAtlas("ui-castingbar-pip");
+		self.Spark:SetAtlas("ui-castingbar-pip", TextureKitConstants.UseAtlasSize);
+		self.Spark.offsetY = 0;
 	end
 
 	for barType, barTypeInfo in pairs(CASTING_BAR_TYPES) do
@@ -611,6 +622,16 @@ function CastingBarMixin:PlayFinishAnim()
 			finishAnim:Play();
 		end
 	end
+
+	if self.barType == "empowered" then
+		for i = 1, self.CurrSpellStage do
+			local stageTier = self.StageTiers[i];
+			if stageTier and stageTier.FinishAnim then
+				stageTier.FlashAnim:Stop();
+				stageTier.FinishAnim:Play();
+			end
+		end
+	end
 end
 
 function CastingBarMixin:StopFinishAnims()
@@ -671,8 +692,6 @@ function CastingBarMixin:SetLook(look)
 		end
 		-- icon
 		self.Icon:Hide();
-		-- bar spark
-		self.Spark.offsetY = 0;
 		-- bar flash
 		self.Flash:ClearAllPoints();
 		self.Flash:SetAllPoints();
@@ -702,8 +721,6 @@ function CastingBarMixin:SetLook(look)
 		end
 		-- icon
 		self.Icon:Show();
-		-- bar spark
-		self.Spark.offsetY = 0;
 		-- bar flash
 		self.Flash:ClearAllPoints();
 		self.Flash:SetAllPoints();
@@ -712,58 +729,100 @@ end
 
 function CastingBarMixin:AddStages(numStages)
 	self.CurrSpellStage = CASTBAR_STAGE_INVALID;
-	self.NumStages = numStages;
+	self.NumStages = numStages + 1;
 	self.SpellID = spellID;
 	local sumDuration = 0;
 	self.StagePoints = {};
 	self.StagePips = {};
+	self.StageTiers = {};
 	local hasFX = self.StandardFinish ~= nil;
 	local stageMaxValue = self.maxValue * 1000;
-	for i = 1,self.NumStages,1 do
-		local duration = GetEmpowerStageDuration(i-1);
+
+	local getStageDuration = function(stage)
+		if stage == self.NumStages then	
+			return GetUnitEmpowerHoldAtMaxTime(self.unit);
+		else
+			return GetUnitEmpowerStageDuration(self.unit, stage-1);
+		end
+	end;
+
+	local castBarLeft = self:GetLeft();
+	local castBarRight = self:GetRight();
+	local castBarWidth = castBarRight - castBarLeft;
+
+	for i = 1,self.NumStages-1,1 do
+		local duration = getStageDuration(i);
 		if(duration > CASTBAR_STAGE_DURATION_INVALID) then
 			sumDuration = sumDuration + duration;
 			local portion = sumDuration / stageMaxValue;
-			local offset = (CASTBAR_STAGE_WIDTH * portion) + CASTBAR_STAGE_MIN_OFFSET;
+			local offset = castBarWidth * portion;
 			self.StagePoints[i] = sumDuration;
-			if(offset > CASTBAR_STAGE_MIN_OFFSET and offset <= CASTBAR_STAGE_MAX_OFFSET) then
-				local stagePipName = "StagePip" .. i;
-				local stagePip = self[stagePipName];
-				if not stagePip then
-					stagePip = CreateFrame("FRAME", nil, self, hasFX and "CastingBarFrameStagePipFXTemplate" or "CastingBarFrameStagePipTemplate");
-					self[stagePipName] = stagePip;
-				end
 
-				if stagePip then
-					table.insert(self.StagePips, stagePip);
-					stagePip:ClearAllPoints();
-					stagePip:SetPoint("TOP", offset, 0.5);
-					stagePip:SetPoint("BOTTOM", offset, 0);
-					if i == self.NumStages then
-						stagePip:SetPoint("RIGHT", 0, 0);
-					end
-					stagePip:Show();
-					stagePip.BasePip:SetShown(i ~= self.NumStages);
-					stagePip.BasePipGlow:Hide();
-				end
+			local stagePipName = "StagePip" .. i;
+			local stagePip = self[stagePipName];
+			if not stagePip then
+				stagePip = CreateFrame("FRAME", nil, self, hasFX and "CastingBarFrameStagePipFXTemplate" or "CastingBarFrameStagePipTemplate");
+				self[stagePipName] = stagePip;
+			end
+
+			if stagePip then
+				table.insert(self.StagePips, stagePip);
+				stagePip:ClearAllPoints();
+				stagePip:SetPoint("TOP", self, "TOPLEFT", offset, -1);
+				stagePip:SetPoint("BOTTOM", self, "BOTTOMLEFT", offset, 1);
+				stagePip:Show();
+				stagePip.BasePip:SetShown(i ~= self.NumStages);
 			end
 		end
 	end
 
-	if self.ChargeBackground then
-		local showChargeBackground = self.NumStages > 0 and self.StagePip1;
+	for i = 1,self.NumStages-1,1 do
+		local chargeTierName = "ChargeTier" .. i;
+		local chargeTier = self[chargeTierName];
+		if not chargeTier then
+			chargeTier = CreateFrame("FRAME", nil, self, "CastingBarFrameStageTierTemplate");
+			self[chargeTierName] = chargeTier;
+		end
 
-		self.ChargeBackground:SetShown(showChargeBackground);
+		if chargeTier then
+			local leftStagePip = self.StagePips[i];
+			local rightStagePip = self.StagePips[i+1];
 
-		if showChargeBackground then
-			self.ChargeBackground:SetTexCoord(0, 1 / numStages, 0, 1);
-			self.ChargeBackground:SetPoint("RIGHT", self.StagePip1, "CENTER", 0, 0);
+			if leftStagePip then
+				chargeTier:SetPoint("TOPLEFT", leftStagePip, "TOP", 0, 0);
+			end
+			if rightStagePip then
+				chargeTier:SetPoint("BOTTOMRIGHT", rightStagePip, "BOTTOM", 0, 0);
+			else
+				chargeTier:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 1);
+			end
+
+			local chargeTierLeft = chargeTier:GetLeft();
+			local chargeTierRight = chargeTier:GetRight();
+
+			local left = (chargeTierLeft - castBarLeft) / castBarWidth;
+			local right = 1.0 - ((castBarRight - chargeTierRight) / castBarWidth);
+
+			chargeTier.FlashAnim:Stop();
+			chargeTier.FinishAnim:Stop();
+
+			chargeTier.Normal:SetAtlas(("ui-castingbar-tier%d-empower"):format(i));
+			chargeTier.Disabled:SetAtlas(("ui-castingbar-disabled-tier%d-empower"):format(i));
+			chargeTier.Glow:SetAtlas(("ui-castingbar-glow-tier%d-empower"):format(i));
+
+			chargeTier.Normal:SetTexCoord(left, right, 0, 1);
+			chargeTier.Disabled:SetTexCoord(left, right, 0, 1);
+			chargeTier.Glow:SetTexCoord(left, right, 0, 1);
+
+			chargeTier.Normal:SetShown(false);
+			chargeTier.Disabled:SetShown(true);
+			chargeTier.Glow:SetAlpha(0);
+
+			chargeTier:Show();
+			table.insert(self.StageTiers, chargeTier);
 		end
 	end
 
-	if self.ChargeFull then
-		self.ChargeFull:SetShown(false);
-	end
 end
 
 function CastingBarMixin:UpdateStage()
@@ -783,62 +842,22 @@ function CastingBarMixin:UpdateStage()
 		self.CurrSpellStage = maxStage;
 		if maxStage < self.NumStages then
 			local stagePip = self.StagePips[maxStage];
-			if stagePip then
-				stagePip.BasePipGlow:SetShown(maxStage < self.NumStages);
-
-				for i = 1, maxStage do
-					local stageAnimName = "Stage" .. i;
-					local stageAnim = stagePip[stageAnimName];
-					if stageAnim then
-						stageAnim:Play();
-					end
-				end
+			if stagePip and stagePip.StageAnim then
+				stagePip.StageAnim:Play();
 			end
 		end
-		if maxStage == self.NumStages then
-			self:PlayFinishAnim();
-		end
-
-		if self.ChargeGlow then
-			self.ChargeGlow:SetShown(maxStage == self.NumStages);
-		end
-
-		if self.ChargeFull then
-			self.ChargeFull:SetShown(maxStage > 0);
-
-			local stagePip = self["StagePip" .. maxStage];
-
-			if maxStage == self.NumStages then
-				self.ChargeFull:SetPoint("RIGHT", self, "RIGHT", 0, 0);
-			elseif stagePip then
-				self.ChargeFull:SetPoint("RIGHT", stagePip, "CENTER", 0, 0);
-			end
-
-			self.ChargeFull:SetTexCoord(0, self.ChargeFull:GetWidth() / self:GetWidth(), 0, 1);
-		end
-
-		if self.ChargeBackground then
-			local nextStagePip = self["StagePip" .. maxStage + 1];
-			
-			if (maxStage + 1) == self.NumStages then
-				self.ChargeBackground:SetPoint("RIGHT", self, "RIGHT", 0, 0);
-			elseif nextStagePip then
-				self.ChargeBackground:SetPoint("RIGHT", nextStagePip, "CENTER", 0, 0);
-			end
-
-			self.ChargeBackground:SetTexCoord(0, self.ChargeBackground:GetWidth() / self:GetWidth(), 0, 1);
+		
+		local chargeTierName = "ChargeTier" .. self.CurrSpellStage;
+		local chargeTier = self[chargeTierName];
+		if chargeTier then
+			chargeTier.Normal:SetShown(true);
+			chargeTier.Disabled:SetShown(false);
+			chargeTier.FlashAnim:Play();
 		end
 	end
 end
 
 function CastingBarMixin:ClearStages()
-	if self.ChargeBackground then
-		self.ChargeBackground:SetShown(false);
-	end
-
-	if self.ChargeFull then
-		self.ChargeFull:SetShown(false);
-	end
 
 	if self.ChargeGlow then
 		self.ChargeGlow:SetShown(false);
@@ -855,8 +874,14 @@ function CastingBarMixin:ClearStages()
 		end
 		stagePip:Hide();
 	end
+
+	for _, stageTier in pairs(self.StageTiers) do
+		stageTier:Hide();
+	end
+
 	self.NumStages = 0;
 	table.wipe(self.StagePoints);
+	table.wipe(self.StageTiers);
 end
 
 PlayerCastingBarMixin = {};

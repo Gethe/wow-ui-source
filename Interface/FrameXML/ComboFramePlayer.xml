@@ -58,7 +58,7 @@
 	<Frame name="ComboPointPlayerFrame" inherits="ClassResourceBarTemplate" mixin="ComboPointPowerBar">
 		<Size x="126" y="18"/>
 		<Anchors>
-			<Anchor point="TOP" relativePoint="BOTTOM" x="32" y="30"/>
+			<Anchor point="TOP" relativePoint="BOTTOM" x="32" y="25"/>
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="powerToken" value="COMBO_POINTS" type="string"/>

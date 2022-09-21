@@ -11,4 +11,4 @@ Blizzard_ProfessionsCrafting.xml
 Blizzard_ProfessionsSpecializationsTemplates.xml
 Blizzard_ProfessionsSpecializations.xml
 Blizzard_ProfessionsFrame.xml
-Registration.lua
+Blizzard_ProfessionsRegistration.lua

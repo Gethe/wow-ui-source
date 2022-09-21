@@ -40,8 +40,8 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 		end
 		
 		local modification = transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
-		if modification then
-			self.originalItem = Item:CreateFromItemID(modification.itemID);
+		if modification and modification.itemID > 0 then
+			self:SetOriginalItem(Item:CreateFromItemID(modification.itemID));
 		end
 
 		local reagentType = reagentSlotSchematic.reagentType;
@@ -92,11 +92,14 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 	if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
 		local foundMultiple, foundIndex = self:GetAllocationDetails();
 
-		local quantity = nil;
+		local quantity = 0;
 		if foundMultiple then
 			quantity = TRADESKILL_QUANTITY_MULTIPLE;
 		else
-			quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
+			if foundIndex then
+				local reagent = reagentSlotSchematic.reagents[foundIndex];
+				quantity = ItemUtil.GetCraftingReagentCount(reagent.itemID);
+			end
 		end
 
 		local reagent = reagentSlotSchematic.reagents[1];
@@ -147,19 +150,7 @@ function ProfessionsReagentSlotMixin:IsUnallocatable()
 end
 
 function ProfessionsReagentSlotMixin:ClearItem()
-	self.Button:Reset();
-
-	local reagentSlotSchematic = self:GetReagentSlotSchematic();
-	local slotInfo = reagentSlotSchematic.slotInfo;
-	self:SetNameText(slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX);
-
-	if self.originalItem then
-		self.UndoButton:Show();
-	else
-		self.UndoButton:Hide();
-	end
-
-	self:Update();
+	self:SetItem(nil);
 end
 
 function ProfessionsReagentSlotMixin:RestoreOriginalItem()
@@ -171,13 +162,21 @@ function ProfessionsReagentSlotMixin:SetOriginalItem(item)
 end
 
 function ProfessionsReagentSlotMixin:SetItem(item)
-	self.Button:SetItem(item:GetItemID());
-	self:SetNameText(item:GetItemName());
+	self.Button:Reset();
 
-	if self.originalItem and self.originalItem:GetItemID() ~= item:GetItemID() then
-		self.UndoButton:Show();
+	if item then
+		self.Button:SetItem(item:GetItemID());
+		self:SetNameText(item:GetItemName());
 	else
+		local reagentSlotSchematic = self:GetReagentSlotSchematic();
+		local slotInfo = reagentSlotSchematic.slotInfo;
+		self:SetNameText(slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX);
+	end
+
+	if not self.originalItem or Item:DoItemsMatch(self.originalItem, item) then
 		self.UndoButton:Hide();
+	else
+		self.UndoButton:Show();
 	end
 
 	self:Update();

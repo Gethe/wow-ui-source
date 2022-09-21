@@ -53,6 +53,16 @@ function ClassTalentFrameMixin:OnEvent(event)
 	end
 end
 
+function ClassTalentFrameMixin:ShowTutorialHelp(showHelpFeature)
+	for specContentFrame in self.SpecTab.SpecContentFramePool:EnumerateActive() do 
+		if showHelpFeature then
+			GlowEmitterFactory:Show(specContentFrame.ActivateButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow)			
+		else
+			GlowEmitterFactory:Hide(specContentFrame.ActivateButton);
+		end
+	end
+end
+
 function ClassTalentFrameMixin:UpdateTabs()
 	local isInspecting = self:IsInspecting();
 	self.TabSystem:SetTabShown(self.specTabID, not isInspecting);

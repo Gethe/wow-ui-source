@@ -255,6 +255,11 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "SpecializationChangeCastFailed",
+			Type = "Event",
+			LiteralName = "SPECIALIZATION_CHANGE_CAST_FAILED",
+		},
+		{
 			Name = "StarterBuildActivationFailed",
 			Type = "Event",
 			LiteralName = "STARTER_BUILD_ACTIVATION_FAILED",
