@@ -358,7 +358,7 @@
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 
-	<Button name="PlayerTalentTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Button name="PlayerTalentTabTemplate" inherits="PanelTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
 				PlayerTalentTab_OnLoad(self);

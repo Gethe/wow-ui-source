@@ -451,11 +451,6 @@ end
 -- Used for the sub-tabs within Friends
 FriendsTabMixin = {};
 
-function FriendsTabMixin:OnLoad()
-	PanelTemplates_TabResize(self, 0);
-	self.HighlightTexture:SetWidth(self:GetTextWidth() + 31);
-end
-
 function FriendsTabMixin:OnClick()
 	PanelTemplates_Tab_OnClick(self, FriendsTabHeader);
 	FriendsFrame_Update();

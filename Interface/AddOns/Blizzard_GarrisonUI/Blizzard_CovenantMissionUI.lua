@@ -276,20 +276,17 @@ function CovenantMission:SetupTabs()
    -- don't show any tabs if there's only 1
    if (#tabList > 1) then
 		local tab = self["Tab"..tabList[1]];
-		local prevTab = tab;
 		tab:ClearAllPoints();
-		
 		tab:SetPoint("BOTTOMLEFT", self, tab.xOffset or 7, tab.yOffset or -31);
 		tab:Show();
 		
 		for i = 2, #tabList do
 			tab = self["Tab"..tabList[i]];
-			tab:ClearAllPoints();
-			tab:SetPoint("LEFT", prevTab, "RIGHT", -16, 0);
 			tab:Show();
-			prevTab = tab;
 		end
    end
+
+   PanelTemplates_SetNumTabs(self, #tabList);
 
    -- If the selected tab is not a valid one, switch to the default. Additionally, if the missions tab is newly available, then select it.
    local selectedTab = PanelTemplates_GetSelectedTab(self);

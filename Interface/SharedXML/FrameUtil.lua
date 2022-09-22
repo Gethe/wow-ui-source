@@ -41,11 +41,6 @@ function FrameUtil.RegisterFrameForUnitEvents(frame, events, ...)
 end
 
 function FrameUtil.DialogStyleGlobalMouseDown(frame, buttonName, ...)
-	if buttonName == "RightButton" then
-		frame:Hide();
-		return;
-	end
-
 	local mouseFocus = GetMouseFocus();
 	if DoesAncestryInclude(frame, mouseFocus) then
 		return;

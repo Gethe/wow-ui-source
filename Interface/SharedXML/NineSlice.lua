@@ -199,6 +199,10 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 			end
 		end
 	end
+
+	if userLayout.disableSharpening then
+		NineSliceUtil.DisableSharpening(container);
+	end
 end
 
 function NineSliceUtil.DisableSharpening(container)

@@ -223,6 +223,14 @@ function TableUtil.Execute(tbl, op)
 	end
 end
 
+function TableUtil.Map(tbl, op)
+	local result = {};
+	for k, v in pairs(tbl) do
+		table.insert(result, op(v));
+	end
+	return result;
+end
+
 function TableUtil.ExecuteUntil(tbl, op)
 	for k, v in pairs(tbl) do
 		local operationResult = op(v);

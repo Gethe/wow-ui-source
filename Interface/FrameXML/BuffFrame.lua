@@ -485,6 +485,14 @@ function DebuffFrameMixin:UpdateAuras()
 	if mostCriticalDebuffIndex then
 		DeadlyDebuffFrame:Setup(self.deadlyDebuffInfo[mostCriticalDebuffIndex]);
 
+		if (RaidBossEmoteFrame and RaidBossEmoteFrame:IsShown()) then
+			DeadlyDebuffFrame:SetPoint("TOP", RaidBossEmoteFrame, "BOTTOM");
+		elseif (RaidWarningFrame and RaidWarningFrame:IsShown()) then
+			DeadlyDebuffFrame:SetPoint("TOP", RaidWarningFrame, "BOTTOM");
+		else
+			DeadlyDebuffFrame:SetPoint("TOP", UIErrorsFrame, "BOTTOM");
+		end
+
 		-- Remove deadly debuff which is being shown in DeadlyDebuffFrame so it only appears in one place
 		table.remove(self.deadlyDebuffInfo, mostCriticalDebuffIndex);
 	else
@@ -545,7 +553,7 @@ function AuraButtonMixin:Update(buttonInfo, expanded)
 	if ( not helpful ) then
 		if ( self.Border ) then
 			local color;
-			if ( debuffType ) then
+			if ( buttonInfo.debuffType ) then
 				color = DebuffTypeColor[buttonInfo.debuffType];
 				if ( ENABLE_COLORBLIND_MODE == "1" ) then
 					self.symbol:Show();
@@ -762,6 +770,24 @@ function CollapseAndExpandButtonMixin:UpdateOrientation()
 end
 
 DeadlyDebuffFrameMixin = { };
+function DeadlyDebuffFrameMixin:OnShow()
+	self:RegisterEvent("CHAT_MSG_RAID_WARNING");
+	self:RegisterEvent("RAID_BOSS_EMOTE");
+end
+
+function DeadlyDebuffFrameMixin:OnEvent(event, ...)
+	if (event == "RAID_BOSS_EMOTE") then
+		DeadlyDebuffFrame:SetPoint("TOP", RaidBossEmoteFrame, "BOTTOM");
+	elseif (event == "CHAT_MSG_RAID_WARNING") then
+		DeadlyDebuffFrame:SetPoint("TOP", RaidWarningFrame, "BOTTOM");
+	end
+end
+
+function DeadlyDebuffFrameMixin:OnHide()
+	self:UnregisterEvent("CHAT_MSG_RAID_WARNING");
+	self:UnregisterEvent("RAID_BOSS_EMOTE");
+end
+
 function DeadlyDebuffFrameMixin:Setup(deadlyDebuffInfo)
 	self.Debuff:Update(deadlyDebuffInfo);
 	self.WarningText:SetText(deadlyDebuffInfo.warningText)

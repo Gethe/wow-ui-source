@@ -1,16 +1,13 @@
 local buttonTextureKits = {
 	[2503] = "Centaur",
 	[2507] = "Expedition",
-	[2510] = "Tuskarr",
-	[2511] = "Valdrakken",
+	[2510] = "Valdrakken",
+	[2511] = "Tuskarr",
 };
 
 local iconAtlasFormat = "majorFactions_icons_%s512";
 local buttonAtlasFormat = "%s-landingpage-renownbutton-%s";
 local buttonHoverAtlasFormat = "%s-landingpage-renownbutton-%s-hover";
-
--- Todo: Add globalstring
-MAJOR_FACTION_BUTTON_RENOWN_LEVEL = "Level %d";
 
 LandingPageMajorFactionList = {};
 

@@ -6,11 +6,37 @@
 	<Button name="ClassTalentLoadoutDialogButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
 		<Size x="120" y="22"/>
 	</Button>
-
-	<EditBox name="ClassTalentLoadoutDialogNameInputTemplate" inherits="InputBoxTemplate" virtual="true" letters="30">
-		<Size x="260" y="32"/>
-		<FontString inherits="ChatFontNormal"/>
-	</EditBox>
+	
+	<Frame name="ClassTalentLoadoutDialogNameControlTemplate" mixin="ClassTalentLoadoutDialogNameControlMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="labelText" value="" type="global"/>
+		</KeyValues>
+		<Size x="260" y="50"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="EditBox" inherits="InputBoxTemplate" letters="30">
+				<Size x="260" y="32"/>
+				<FontString inherits="ChatFontNormal"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.Label" y="10"/>
+					<Anchor point="RIGHT"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnShow"/>
+		</Scripts>
+	</Frame>
 
 	<Frame name="ClassTalentLoadoutDialogTemplate" mixin="ClassTalentLoadoutDialogMixin" virtual="true" frameStrata="DIALOG" frameLevel="100">
 		<KeyValues>

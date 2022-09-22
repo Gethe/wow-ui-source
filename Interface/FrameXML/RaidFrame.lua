@@ -41,7 +41,7 @@ end
 
 function RaidFrame_OnShow(self)
 	ButtonFrameTemplate_ShowAttic(self:GetParent());
-	self:GetParent():SetText(RAID);
+	self:GetParent():GetTitleText():SetText(RAID);
 
 	RaidFrame_Update();
 

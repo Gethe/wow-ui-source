@@ -137,6 +137,13 @@ end
 
 TalentSelectionChoiceMixin = {};
 
+function TalentSelectionChoiceMixin:Init(talentFrame)
+	TalentDisplayMixin.Init(self, talentFrame);
+
+	self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+	self:RegisterForDrag("LeftButton");
+end
+
 function TalentSelectionChoiceMixin:OnClick(button)
 	EventRegistry:TriggerEvent("TalentButton.OnClick", self, button);
 
@@ -157,7 +164,15 @@ function TalentSelectionChoiceMixin:OnClick(button)
 
 		selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID(), self:GetDefinitionInfo());
 	else
-		selectionChoiceFrame:Hide();
+		selectionChoiceFrame:SetSelectedEntryID(nil);
+	end
+end
+
+function TalentSelectionChoiceMixin:OnDragStart()
+	local spellID = self:GetSpellID();
+	if spellID then
+		local checkForPassive = true;
+		PickupSpell(spellID, checkForPassive);
 	end
 end
 
@@ -178,9 +193,14 @@ end
 function TalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
 	-- Overrides TalentDisplayMixin.
 
-	if not self.isCurrentSelection and self:IsChoiceAvailable() then
+	if self:IsChoiceAvailable() then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
-		GameTooltip_AddInstructionLine(tooltip, TALENT_BUTTON_TOOLTIP_SELECTION_INSTRUCTIONS);
+
+		if self.isCurrentSelection then
+			GameTooltip_AddDisabledLine(tooltip, TALENT_BUTTON_TOOLTIP_REFUND_INSTRUCTIONS);
+		else
+			GameTooltip_AddInstructionLine(tooltip, TALENT_BUTTON_TOOLTIP_PURCHASE_INSTRUCTIONS);
+		end
 	end
 end
 
@@ -188,7 +208,29 @@ function TalentSelectionChoiceMixin:AddTooltipErrors(tooltip)
 	-- Overrides TalentDisplayMixin.
 
 	local shouldAddSpacer = true;
-	self:GetTalentFrame():AddConditionsToTooltip(tooltip, self.entryInfo.conditionIDs, shouldAddSpacer);
+	if self:GetTalentFrame():AddConditionsToTooltip(tooltip, self.entryInfo.conditionIDs, shouldAddSpacer) then
+		return;
+	end
+
+	local baseButton = self:GetBaseButton();
+	if baseButton then
+		local nodeInfo = baseButton:GetNodeInfo();
+		if self:GetTalentFrame():AddConditionsToTooltip(tooltip, nodeInfo.conditionIDs, shouldAddSpacer) then
+			return;
+		end
+
+		if self:GetTalentFrame():AddEdgeRequirementsToTooltip(tooltip, baseButton:GetNodeID(), shouldAddSpacer) then
+			return;
+		end
+
+		if not nodeInfo.meetsEdgeRequirements then
+			GameTooltip_AddErrorLine(tooltip, TALENT_BUTTON_TOOLTIP_NO_ACTIVE_LINKS);
+		end
+
+		if not baseButton:IsSelectable() then
+			return;
+		end
+	end
 
 	if self.isCurrentSelection then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
@@ -226,6 +268,12 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 	end
 
 	return self:IsChoiceAvailable() and TalentButtonUtil.BaseVisualState.Selectable or TalentButtonUtil.BaseVisualState.Disabled;
+end
+
+function TalentSelectionChoiceMixin:ApplyVisualState(visualState)
+	TalentButtonArtMixin.ApplyVisualState(self, visualState);
+
+	self:UpdateSpendText();
 end
 
 function TalentSelectionChoiceMixin:GetCombinedCost()
@@ -275,14 +323,28 @@ function TalentSelectionChoiceMixin:UpdateSearchIcon()
 	end
 end
 
+function TalentSelectionChoiceMixin:UpdateSpendText()
+	local nodeInfo = self:GetNodeInfo();
+	if self.isCurrentSelection and nodeInfo and (nodeInfo.currentRank > 0) and
+		not self:GetParent():GetTalentFrame():ShouldHideSingleRankNumbers() then
+		TalentButtonUtil.SetSpendText(self, tostring(nodeInfo.currentRank));
+	else
+		TalentButtonUtil.SetSpendText(self, "");
+	end
+end
+
 function TalentSelectionChoiceMixin:GetSpellID()
 	-- Overrides TalentDisplayMixin.
 	local definitionInfo = self:GetDefinitionInfo();
 	return definitionInfo and definitionInfo.spellID or nil;
 end
 
-function TalentSelectionChoiceMixin:GetNodeInfo()
+function TalentSelectionChoiceMixin:GetBaseButton()
 	local selectionChoiceFrame = self:GetParent();
-	local selectionBaseButton = selectionChoiceFrame and selectionChoiceFrame:GetBaseButton() or nil;
+	return selectionChoiceFrame and selectionChoiceFrame:GetBaseButton() or nil;
+end
+
+function TalentSelectionChoiceMixin:GetNodeInfo()
+	local selectionBaseButton = self:GetBaseButton();
 	return selectionBaseButton and selectionBaseButton:GetNodeInfo() or nil;
 end

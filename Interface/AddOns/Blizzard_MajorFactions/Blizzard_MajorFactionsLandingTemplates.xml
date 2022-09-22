@@ -3,7 +3,7 @@
 	<Script file="Blizzard_MajorFactionsLandingTemplates.lua"/>
 
 	<Frame name="LandingPageMajorFactionListTemplate" mixin="MajorFactionListMixin" virtual="true" scale="0.875">
-		<Size x="460" y="520"/>
+		<Size x="450" y="520"/>
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
@@ -14,8 +14,8 @@
 
 			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="10" y="0"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="10" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>
@@ -49,14 +49,14 @@
 					</Layer>
 
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="LEFT">
+						<FontString parentKey="Title" inherits="GameFontHighlightLarge2" justifyH="LEFT">
 							<Size x="350" y="22"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="22" y="-5"/>
 							</Anchors>
 							<Color r="0.5" g="0.5" b="0.5" a="1"/>
 						</FontString>
-						<FontString parentKey="StateInfo" inherits="GameFontHighlight" justifyH="LEFT" text="MAJOR_FACTION_BUTTON_FACTION_LOCKED">
+						<FontString parentKey="StateInfo" inherits="GameFontHighlightLarge2" justifyH="LEFT" text="MAJOR_FACTION_BUTTON_FACTION_LOCKED">
 							<Size x="350" y="22"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT"/>
@@ -168,11 +168,6 @@
 					<OnClick method="OnClick"/>
 					<OnUpdate method="OnUpdate"/>
 				</Scripts>
-				<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</HighlightTexture>
 			</Button>
 		</Frames>
 	</Frame>

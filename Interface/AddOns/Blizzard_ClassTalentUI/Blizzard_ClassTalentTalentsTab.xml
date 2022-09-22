@@ -18,6 +18,7 @@
 
 	<Frame name="ClassTalentTalentsTabTemplate" mixin="ClassTalentTalentsTabMixin" inherits="TalentFrameBaseTemplate" virtual="true">
 		<KeyValues>
+			<KeyValue key="getTemplateType" value="ClassTalentUtil.GetTemplateForTalentType" type="global"/>
 			<KeyValue key="getSpecializedMixin" value="ClassTalentUtil.GetSpecializedMixin" type="global"/>
 			<KeyValue key="getSpecializedChoiceMixin" value="ClassTalentUtil.GetSpecializedChoiceMixin" type="global"/>
 			<KeyValue key="getEdgeTemplateType" value="ClassTalentUtil.GetEdgeTemplateType" type="global"/>
@@ -28,12 +29,22 @@
 			<KeyValue key="basePanOffsetX" value="4" type="number"/>
 			<KeyValue key="basePanOffsetY" value="-30" type="number"/>
 			<KeyValue key="maximumCommitTime" value="6" type="number"/>
-			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value=".3" type="number"/>
 			<KeyValue key="enableCommitEndFlash" value="true" type="boolean"/>
 			<KeyValue key="enableCommitCastBar" value="true" type="boolean"/>
 			<KeyValue key="commitSound" value="SOUNDKIT.UI_CLASS_TALENT_APPLY_CHANGES" type="global"/>
 		</KeyValues>
 		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="BlackBG">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
+			
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="BottomBar" atlas="talents-background-bottombar" useAtlasSize="true">
 					<Anchors>
@@ -41,103 +52,143 @@
 					</Anchors>
 				</Texture>
 
-				<Texture parentKey="Background" atlas="talents-background-druid-restoration" useAtlasSize="true">
+				<Texture parentKey="Background" atlas="talents-background-druid-restoration" useAtlasSize="true" parentArray="specBackgrounds">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.BottomBar" relativePoint="TOP"/>
 					</Anchors>
 				</Texture>
 
-				<Texture parentKey="OverlayBackground" atlas="talents-background-druid-restoration" useAtlasSize="true" alpha="0" alphaMode="ADD">
+				<Texture parentKey="OverlayBackgroundRight1" atlas="talents-background-druid-restoration" useAtlasSize="true" alpha="0" alphaMode="ADD" parentArray="specBackgrounds">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.BottomBar" relativePoint="TOP"/>
 					</Anchors>
-					<Animations>
-						<!-- Art TODO: Update Animations -->
-						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Alpha childKey="OverlayBackground" order="1" fromAlpha="0" toAlpha=".25" duration="3" smoothing="IN"/>
-							<Alpha childKey="OverlayBackground" order="2" fromAlpha=".25" toAlpha="0" duration="3" smoothing="IN"/>
-						</AnimationGroup>
-					</Animations>
 				</Texture>
+				<Texture parentKey="OverlayBackgroundRight2" atlas="talents-background-druid-restoration" useAtlasSize="true" alpha="0" alphaMode="ADD" parentArray="specBackgrounds">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.BottomBar" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="OverlayBackgroundRightMask" atlas="talents-animations-mask-specart">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="OverlayBackgroundRight1"/>
+						<MaskedTexture childKey="OverlayBackgroundRight2"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<Texture parentKey="OverlayBackgroundMid1" atlas="talents-background-druid-restoration" useAtlasSize="true" alpha="0" alphaMode="ADD" parentArray="specBackgrounds">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.BottomBar" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="OverlayBackgroundMid2" atlas="talents-background-druid-restoration" useAtlasSize="true" alpha="0" alphaMode="ADD" parentArray="specBackgrounds">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.BottomBar" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="OverlayBackgroundMidMask" atlas="talents-animations-mask-specart-mid">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="OverlayBackgroundMid1"/>
+						<MaskedTexture childKey="OverlayBackgroundMid2"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			
 			<Layer level="BACKGROUND" textureSubLevel="2">
 				<!-- Art TODO: Replace Soulbind ForgeSheen graphics -->
-				<Texture parentKey="Sheen1" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="Clouds1" atlas="talents-animations-clouds" useAtlasSize="true" alpha="0.036" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Alpha childKey="Sheen1" order="1" fromAlpha="0" toAlpha="0" duration="4"/>
-							<Translation childKey="Sheen1" order="2" offsetX="-1422" offsetY="0"/>
-							<Translation childKey="Sheen1" order="2" offsetX="1941" offsetY="0" duration="5.9"/>
-							<Translation childKey="Sheen1" order="2" offsetX="-1422" offsetY="0" startDelay="5.9" duration="0.1"/>
-							<Alpha childKey="Sheen1" order="2" fromAlpha="0" toAlpha="1" startDelay="0" duration="0.1"/>
-							<Alpha childKey="Sheen1" order="2" fromAlpha="1" toAlpha="0" startDelay="5.8" duration="0.1"/>
-						</AnimationGroup>
-					</Animations>
 				</Texture>
-				<MaskTexture parentKey="Sheen1Mask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_forge">
+				
+				<Texture parentKey="Clouds2" atlas="talents-animations-clouds" useAtlasSize="true" alpha="0.036" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				
+				<!--<Texture parentKey="GridSheen" atlas="talents-animations-sheen" useAtlasSize="true" alpha="0.1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="GridMask" atlas="talents-animations-mask-filigree">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="GridSheen"/>
+					</MaskedTextures>
+				</MaskTexture>-->
+				
+				<Texture parentKey="AirParticlesClose" atlas="talents-animations-particles" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				
+				<Texture parentKey="AirParticlesFar" atlas="talents-animations-particles" useAtlasSize="false" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="800" y="473"/>
+					<TexCoords left="1" right="0" top="1" bottom="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				
+				<MaskTexture parentKey="FullMask" atlas="talents-animations-mask-full">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 					<MaskedTextures>
-						<MaskedTexture childKey="Sheen1"/>
+						<MaskedTexture childKey="Clouds1"/>
+						<MaskedTexture childKey="Clouds2"/>
+						<MaskedTexture childKey="AirParticlesClose"/>
+						<MaskedTexture childKey="AirParticlesFar"/>
 					</MaskedTextures>
 				</MaskTexture>
-				
-				<!-- Art TODO: Replace Soulbind BackgroundSheen graphics -->
-				<Texture parentKey="Sheen2" atlas="soulbinds_backgroundfx_sheen" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+			</Layer>
+			
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="ActivationGridFx" atlas="talents-animations-activationgrid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Translation childKey="Sheen2" order="1" offsetX="941" offsetY="0"/>
-							<Translation childKey="Sheen2" order="1" offsetX="-2140" offsetY="0" startDelay="0" duration="40.9" />
-							<Translation childKey="Sheen2" order="1" offsetX="941" offsetY="0" startDelay="40.9" duration="0.1"/>
-							<Alpha childKey="Sheen2" order="1" fromAlpha="0" toAlpha="0.06" startDelay="0" duration="0.1"/>
-							<Alpha childKey="Sheen2" order="1" fromAlpha="0.06" toAlpha="0" startDelay="40.8" duration="0.1"/>
-						</AnimationGroup>
-					</Animations>
 				</Texture>
-				<MaskTexture parentKey="Sheen2Mask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_full">
+
+				<Texture parentKey="ActivationClassFx" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER"/>
 					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="Sheen2"/>
-					</MaskedTextures>
-				</MaskTexture>
+				</Texture>
 				
-				<!-- Art TODO: Replace Soulbind GridSheen graphics -->
-				<Texture parentKey="Sheen3" atlas="soulbinds_backgroundfx_gridburst" useAtlasSize="false" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="ActivationExpandFx" atlas="talents-animations-gridburst" useAtlasSize="false" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Size x="320" y="320"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER" x="-91" y="32"/>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER"/>
 					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Alpha childKey="Sheen3" order="1" fromAlpha="0" toAlpha="0" duration="1.4"/>
-							<Scale childKey="Sheen3" smoothing="IN" duration="5" order="2" fromScaleX="1" fromScaleY="1" toScaleX="14" toScaleY="14"/>
-							<Scale childKey="Sheen3" smoothing="IN" duration=".1" order="3" fromScaleX="1" fromScaleY="1" toScaleX=".001" toScaleY=".001" startDelay="1"/>
-							<Alpha childKey="Sheen3" order="2" fromAlpha="0" toAlpha=".3" startDelay="0" duration=".1"/>
-							<Alpha childKey="Sheen3" order="2" fromAlpha=".3" toAlpha="0" startDelay=".1" duration="10.5"/>
-						</AnimationGroup>
-					</Animations>
 				</Texture>
-				<MaskTexture parentKey="Sheen3Mask" file="Interface\Soulbinds\soulbinds_backgroundfx_mask_grid">
+				<MaskTexture parentKey="ActivationExpandFxMask" atlas="talents-animations-mask-filigree-activate">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 					<MaskedTextures>
-						<MaskedTexture childKey="Sheen3"/>
+						<MaskedTexture childKey="ActivationExpandFx"/>
 					</MaskedTextures>
 				</MaskTexture>
+
+				<!-- Art TODO: Un-Comment and modify once art finalized -->
+				<Texture parentKey="ActivationClassFx" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -161,7 +212,7 @@
 			</Frame>
 
 			<EditBox parentKey="SearchBox" inherits="TalentSearchBoxTemplate" hidden="false">
-				<Size x="206" y="30"/>
+				<Size x="184" y="30"/>
 				<Anchors>
 					<!-- Re-anchored in code -->
 					<Anchor point="LEFT" relativeKey="$parent.LoadoutDropDown" relativePoint="RIGHT" x="20" y="0"/>
@@ -169,9 +220,9 @@
 			</EditBox>
 
 			<Frame parentKey="SearchPreviewContainer" inherits="TalentSearchPreviewContainerTemplate" hidden="true" frameLevel="2000">
-				<Size x="206"/>
+				<Size x="176"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.SearchBox" relativePoint="BOTTOMLEFT" x="-4" y="3"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SearchBox" relativePoint="BOTTOMRIGHT" x="-4" y="2"/>
 				</Anchors>
 			</Frame>
 
@@ -254,7 +305,80 @@
 
 			<Frame parentKey="PvPTalentList" inherits="PvPTalentListTemplate" frameLevel="1000" hidden="true">
 			</Frame>
+
+			<ModelScene parentKey="FxModelScene" frameStrata="HIGH" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="4000">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</ModelScene>
 		</Frames>
+		<!-- Art TODO: Update Animations -->
+		<Animations>
+			<AnimationGroup parentArray="commitFlashAnims" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Scale childKey="ActivationExpandFx" smoothing="IN" duration="1.4" order="2" fromScaleX="1" fromScaleY="1" toScaleX="20" toScaleY="20"/>
+				<Scale childKey="ActivationExpandFx" smoothing="IN" duration=".1" order="3" fromScaleX="1" fromScaleY="1" toScaleX=".001" toScaleY=".001" startDelay="0"/>
+				<Alpha childKey="ActivationExpandFx" order="2" fromAlpha="1" toAlpha="0" startDelay="0" duration="1.4" smoothing="IN"/>
+			</AnimationGroup>
+			<!--<AnimationGroup parentArray="commitFlashAnims" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="ActivationGridFx" startDelay="0" smoothing="IN" duration="1.2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>-->
+			<AnimationGroup parentArray="commitFlashAnims" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="ActivationClassFx" order="1" smoothing="OUT" duration="1" fromAlpha=".8" toAlpha="0"/>
+			</AnimationGroup>
+
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Translation childKey="Clouds1" order="1" offsetX="0" offsetY="0"/>
+				<Translation childKey="Clouds1" order="2" offsetX="-1612" offsetY="0" startDelay="0" duration="50" />
+				<Translation childKey="Clouds1" order="3" offsetX="1612" offsetY="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Translation childKey="Clouds2" order="1" offsetX="1612" offsetY="0"/>
+				<Translation childKey="Clouds2" order="2" offsetX="-1612" offsetY="0" startDelay="0" duration="50"/>
+				<Translation childKey="Clouds2" order="3" offsetX="1612" offsetY="0"/>
+			</AnimationGroup>
+			<!--<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Translation childKey="GridSheen" order="1" offsetX="-1612" offsetY="0"/>
+				<Translation childKey="GridSheen" order="2" offsetX="3224" offsetY="0" startDelay="0" duration="5"/>
+				<Translation childKey="GridSheen" order="3" offsetX="-3224" offsetY="0" startDelay="10"/>
+			</AnimationGroup>-->
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="AirParticlesClose" order="2" fromAlpha="0" toAlpha=".13" duration="5" smoothing="NONE"/>
+				<Alpha childKey="AirParticlesClose" order="2" fromAlpha=".13" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
+				<Translation childKey="AirParticlesClose" order="1" offsetX="100" offsetY="0"/>
+				<Translation childKey="AirParticlesClose" order="2" offsetX="-200" offsetY="0" startDelay="0" duration="10"/>
+				<Translation childKey="AirParticlesClose" order="3" offsetX="200" offsetY="0" startDelay="0"/>
+				<Rotation childKey="AirParticlesClose" duration="10" order="2" degrees="20" />
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="AirParticlesFar" order="2" fromAlpha="0" toAlpha=".13" duration="5" smoothing="NONE"/>
+				<Alpha childKey="AirParticlesFar" order="2" fromAlpha=".13" toAlpha="0" startDelay="31" duration="5" smoothing="NONE"/>
+				<Translation childKey="AirParticlesFar" order="1" offsetX="100" offsetY="0"/>
+				<Translation childKey="AirParticlesFar" order="2" offsetX="-200" offsetY="0" startDelay="0" duration="36"/>
+				<Translation childKey="AirParticlesFar" order="3" offsetX="200" offsetY="0" startDelay="0"/>
+				<Rotation childKey="AirParticlesFar" duration="36" order="2" degrees="20" />
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="OverlayBackgroundRight1" order="1" fromAlpha="0" toAlpha="0" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundRight1" order="2" fromAlpha="0" toAlpha=".4" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundRight1" order="2" fromAlpha=".4" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="OverlayBackgroundRight2" order="1" fromAlpha="0" toAlpha="0" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundRight2" order="2" fromAlpha="0" toAlpha=".7" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundRight2" order="2" fromAlpha=".7" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="OverlayBackgroundMid1" order="1" fromAlpha="0" toAlpha=".55" duration="3" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundMid1" order="1" fromAlpha=".55" toAlpha="0" startDelay="17" duration="3" smoothing="OUT"/>
+				<Translation childKey="OverlayBackgroundMid1" order="1" offsetX="-100" offsetY="0" startDelay="0" duration="20" />
+			</AnimationGroup>
+			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="OverlayBackgroundMid2" order="1" fromAlpha="0" toAlpha="0" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundMid2" order="2" fromAlpha="0" toAlpha=".7" duration="5" smoothing="NONE"/>
+				<Alpha childKey="OverlayBackgroundMid2" order="2" fromAlpha=".7" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

@@ -152,7 +152,7 @@
 				</FontString>
 
 				<FontString parentKey="RecraftingDescription" inherits="GameFontHighlight" text="PROFESSIONS_RECRAFT_RECIPE_INSTRUCTION" justifyV="TOP" justifyH="LEFT" parentArray="recipeInfoFrames">
-					<Size x="280" y="72"/>
+					<Size x="280" y="200"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="28" y="-250"/>
 					</Anchors>
@@ -169,7 +169,7 @@
 				<FontString parentKey="RequiredTools" inherits="GameFontHighlightSmall2" justifyH="LEFT">
 					<Size x="400" y="20"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.OutputText" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.OutputText" relativePoint="BOTTOMLEFT" y="-3"/>
 					</Anchors>
 				</FontString>
 				

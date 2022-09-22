@@ -3376,7 +3376,7 @@ function StoreVASValidationFrame_CheckForInstructions(self)
 	if self.productInfo.sharedData.instructions ~= "" then
 		InstructionsShowing = true;
 		StoreVASValidationFrame_Init(self);
-		self.ProductInstructions:SetTextColor(0, 0, 0);
+		self.ProductInstructions:SetTextColor("P", 0, 0, 0);
 		self.ProductInstructions:SetText(HTML_START..self.productInfo.sharedData.instructions..HTML_END);
 		self.ProductInstructions:Show();
 		self.ProductDescription:Hide();
@@ -3498,9 +3498,9 @@ local function StoreVASValidationFrame_ValidationDescription_SetText(text, isErr
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame.ValidationDescription;
 
 	if isError then
-		frame:SetTextColor(1.0, 0.1, 0.1);
+		frame:SetTextColor("P", 1.0, 0.1, 0.1);
 	else
-		frame:SetTextColor(0, 0, 0);
+		frame:SetTextColor("P", 0, 0, 0);
 	end
 
 	frame:SetText(HTML_START..text..HTML_END);

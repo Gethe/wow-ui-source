@@ -296,7 +296,7 @@ function ScrollBoxBaseMixin:CalculateScrollPercentage()
 end
 
 function ScrollBoxBaseMixin:HasScrollableExtent()
-	return WithinRangeExclusive(self:GetVisibleExtentPercentage(), 0, 1);
+	return WithinRangeExclusive(self:GetVisibleExtentPercentage(), MathUtil.Epsilon, 1 - MathUtil.Epsilon);
 end
 
 function ScrollBoxBaseMixin:SetScrollAllowed(allowScroll)

@@ -27,6 +27,10 @@ function DataProviderMixin:GetSize()
 	return #self.collection;
 end
 
+function DataProviderMixin:IsEmpty()
+	return self:GetSize() == 0;
+end
+
 function DataProviderMixin:InsertInternal(elementData, hasSortComparator)
 	table.insert(self.collection, elementData);
 	local insertIndex = #self.collection;

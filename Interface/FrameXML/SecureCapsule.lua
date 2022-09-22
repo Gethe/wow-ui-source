@@ -117,6 +117,7 @@ retain("RAID_CLASS_COLORS");
 retain("CLASS_ICON_TCOORDS");
 retain("C_Timer");
 retain("C_ModelInfo");
+retain("C_PlayerInfo");
 retain("IsModifiedClick");
 retain("GetTime");
 retain("UnitAffectingCombat");

@@ -9,6 +9,7 @@
 			<KeyValue key="resourceBarMixin" value="ClassNameplateBar" type="global"/>
 			<KeyValue key="class" value="EVOKER" type="string"/>
 			<KeyValue key="unit" value="player" type="string"/>
+			<KeyValue key="topPadding" value="0" type="number"/>
 		</KeyValues>
 	</Frame>
 </Ui>

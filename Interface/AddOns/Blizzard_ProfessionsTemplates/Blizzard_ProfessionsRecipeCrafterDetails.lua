@@ -271,6 +271,8 @@ function ProfessionsRecipeCrafterDetailsMixin:HandleCritAnimation(resultData)
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:SetTransaction(transaction)
+	self.operationInfo = nil;
+	self.projectedQuality = nil;
 	self.transaction = transaction;
 end
 
@@ -290,12 +292,12 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 			if soundKit then
 				PlaySound(soundKit);
 			end
-		elseif nextProjectedQuality < nextProjectedQuality then
+		elseif nextProjectedQuality < self.projectedQuality then
 			PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_PREVIOUS_QUALITY);
 		end
 	end
 	self.projectedQuality = nextProjectedQuality;
-	
+
 
 	local professionType = isGatheringRecipe and Professions.ProfessionType.Gathering or Professions.ProfessionType.Crafting;
 	self.Label:SetText(detailsPanelTitles[professionType]);

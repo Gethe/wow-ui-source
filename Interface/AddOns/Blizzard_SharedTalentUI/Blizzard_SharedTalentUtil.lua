@@ -1,60 +1,4 @@
 
-TALENT_BUTTON_TOOLTIP_RANK_FORMAT = "Rank %s/%s";
-TALENT_BUTTON_TOOLTIP_COST_ENTRY_FORMAT = "%d %s";
-TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR = " ";
-TALENT_BUTTON_TOOLTIP_COST_FORMAT = "Cost: %s";
-TALENT_BUTTON_TOOLTIP_PURCHASE_INSTRUCTIONS = "Click to learn";
-TALENT_BUTTON_TOOLTIP_REFUND_INSTRUCTIONS = "Right click to unlearn";
-TALENT_BUTTON_TOOLTIP_SELECTION_INSTRUCTIONS = "Click to learn";
-TALENT_BUTTON_TOOLTIP_SELECTION_CURRENT_INSTRUCTIONS = "This is already learned";
-TALENT_BUTTON_TOOLTIP_SELECTION_COST_ERROR = "You can't afford this choice";
-TALENT_BUTTON_TOOLTIP_SELECTION_CHOICE_ERROR = "Select another choice";
-TALENT_BUTTON_TOOLTIP_SELECTION_ERROR = "This node isn't active";
-TALENT_BUTTON_TOOLTIP_SELECT_TITLE = "Talent Slot";
-TALENT_BUTTON_TOOLTIP_NEXT_RANK = "Next Rank:";
-TALENT_BUTTON_TOOLTIP_REPLACED_BY_FORMAT = "Replaced by %s";
-TALENT_BUTTON_TOOLTIP_SELECT_INSTRUCTIONS = "Choose one option";
-TALENT_BUTTON_TOOLTIP_SELECT_CHANGE_INSTRUCTIONS = "Right click to unlearn";
-TALENT_BUTTON_TOOLTIP_SELECT_PREVIEW_INSTRUCTIONS = "Preview options";
-TALENT_BUTTON_TOOLTIP_NOT_ON_ACTION_BAR = "You haven't added this to your action bars";
-TALENT_FRAME_CURRENCY_FORMAT = "%s %s";
-TALENT_FRAME_CURRENCY_FORMAT_WITH_MAXIMUM = "%s / %s %s";
-
-TALENT_FRAME_LABEL_PVP_TALENT_SLOTS = "PVP";
-TALENT_FRAME_LABEL_WARMODE = "WARMODE";
-TALENT_FRAME_LABEL_RESET_BUTTON = "Reset All Talents";
-
-TALENT_FRAME_DROP_DOWN_NEW_LOADOUT = "New Loadout";
-TALENT_FRAME_DROP_DOWN_NEW_LOADOUT_PROMPT = "Enter a name for the new loadout";
-TALENT_FRAME_DROP_DOWN_STARTER_BUILD = "Starter Build";
-
-TALENT_FRAME_TAB_LABEL_SPEC = "Specialization";
-TALENT_FRAME_TAB_LABEL_TALENTS = "Talents";
-
-TALENT_FRAME_CURRENCY_DISPLAY_FORMAT = "%s POINTS AVAILABLE";
-
-TALENT_FRAME_APPLY_BUTTON_TEXT = "Apply Changes";
-TALENT_FRAME_DISCARD_CHANGES_BUTTON_TOOLTIP = "Undo Pending Changes";
-TALENT_FRAME_RESET_BUTTON_TOOLTIP = "Reset All Talents";
-
-TALENT_FRAME_CONFIG_OPERATION_TOO_FAST = "Talent operation still in progress, try again later.";
-
-TALENT_FRAME_CONFIRM_CLOSE = "You will lose any pending changes if you continue.";
-TALENT_FRAME_CONFIRM_STARTER_DEVIATION = "Choosing this talent will remove you from the Starter Build guided experience.";
-
-TALENT_FRAME_GATE_TOOLTIP_FORMAT = "Spend %d more |4point:points; to unlock this row";
-
-TALENT_FRAME_SEARCH_TOOLTIP_MATCH = "Matching Talent";
-TALENT_FRAME_SEARCH_TOOLTIP_EXACT_MATCH = "Exact Match";
-TALENT_FRAME_SEARCH_TOOLTIP_RELATED_MATCH = "Related Talent";
-
-GENERIC_TRAIT_FRAME_CURRENCY_TEXT = "%d %s";
-GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT = "Are you sure you want to spend %s to unlock this talent?";
-GENERIC_TRAIT_FRAME_EDGE_REQUIREMENTS_BUTTON_TOOLTIP = "Requires all preceding talents";
-
-TALENTS_INSPECT_FORMAT = "Talents - %s";
-
-
 local TemplatesByTalentType = {
 	[Enum.TraitNodeEntryType.SpendSquare] = "TalentButtonSquareTemplate",
 	[Enum.TraitNodeEntryType.SpendCircle] = "TalentButtonCircleTemplate",
@@ -181,6 +125,16 @@ TalentButtonUtil.BaseVisualState = {
 	Invisible = 7,
 };
 
+local HoverAlphaByVisualState = {
+	[TalentButtonUtil.BaseVisualState.Normal] = 1,
+	[TalentButtonUtil.BaseVisualState.Gated] = 0.4,
+	[TalentButtonUtil.BaseVisualState.Disabled] = 0.4,
+	[TalentButtonUtil.BaseVisualState.Locked] = 0.4,
+	[TalentButtonUtil.BaseVisualState.Selectable] = 1,
+	[TalentButtonUtil.BaseVisualState.Maxed] = 1,
+	[TalentButtonUtil.BaseVisualState.Invisible] = 0,
+};
+
 function TalentButtonUtil.GetTemplateForTalentType(nodeInfo, talentType, useLarge)
 	if nodeInfo and (nodeInfo.type == Enum.TraitNodeType.Selection) then
 		if FlagsUtil.IsSet(nodeInfo.flags, Enum.TraitNodeFlag.ShowMultipleIcons) then
@@ -249,6 +203,16 @@ function TalentButtonUtil.CalculateIconTexture(definitionInfo, overrideSpellID)
 	return [[Interface\Icons\spell_magic_polymorphrabbit]];
 end
 
+function TalentButtonUtil.SetSpendText(button, spendText)
+	button.SpendText:SetText(spendText);
+
+	if button.spendTextShadows then
+		for i, shadow in ipairs(button.spendTextShadows) do
+			shadow:SetText(spendText);
+		end
+	end
+end
+
 TalentButtonUtil.SearchMatchType = {
 	RelatedMatch = 1,
 	Match = 2,
@@ -270,13 +234,17 @@ local SearchMatchStyles = {
 		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_EXACT_MATCH
 	},
 	[TalentButtonUtil.SearchMatchType.NotOnActionBar] = {
-		icon = "talents-search-match",
+		icon = "talents-search-notonactionbar",
 		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_NOT_ON_ACTIONBAR
 	},
 };
 
 function TalentButtonUtil.GetStyleForSearchMatchType(matchType)
 	return SearchMatchStyles[matchType];
+end
+
+function TalentButtonUtil.GetHoverAlphaForVisualStyle(visualStyle)
+	return HoverAlphaByVisualState[visualStyle];
 end
 
 -- TODO:: Replace this temp code that is supplying missing pieces to avoid Lua errors.

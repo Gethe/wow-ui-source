@@ -12,7 +12,7 @@
 	<Frame name="MovePadFrame" mixin="MovePadMixin" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
 		<Size x="126" y="124" />
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="-90" y="-180"/>
+			<Anchor point="TOPRIGHT" x="-380" y="-280"/>
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="backdropColorAlpha" value="0.5" type="number"/>

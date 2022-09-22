@@ -20,6 +20,7 @@ function ToggleCharacter (tab, onlyShow)
 				CharacterFrame_ShowSubFrame(tab);
 				ShowUIPanel(CharacterFrame);
 			end
+			CharacterFrame_UpdateTabBounds(CharacterFrame);
 		end
 	end
 end
@@ -111,6 +112,30 @@ local function ShouldShowExaltedPlusHelpTip()
 	return false;
 end
 
+local function CompareFrameSize(frame1, frame2)
+	return frame1:GetWidth() > frame2:GetWidth();
+end
+
+function CharacterFrame_UpdateTabBounds(self)
+	if CharacterFrameTab3:IsShown() then
+		local diff = CharacterFrameTab3:GetRight() - self:GetRight();
+
+		if diff > 0 then
+			table.sort(self.Tabs, CompareFrameSize);
+
+			for _, tab in ipairs(self.Tabs) do
+				local change = min(10, diff);
+				diff = diff - change;
+				tab.Text:SetWidth(0);
+				PanelTemplates_TabResize(tab, -change, nil, 36-change, 88);
+				if diff <= 0 then
+					break;
+				end
+			end
+		end
+	end
+end
+
 function CharacterFrame_OnShow (self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	CharacterFrame_UpdatePortrait();
@@ -188,41 +213,6 @@ function CharacterFrame_Expand()
 	CharacterFrame.InsetRight:Show();
 	UpdateUIPanelPositions(CharacterFrame);
 	PaperDollFrame_SetLevel();
-end
-
-local function CompareFrameSize(frame1, frame2)
-	return frame1:GetWidth() > frame2:GetWidth();
-end
-local CharTabtable = {};
-function CharacterFrame_TabBoundsCheck(self)
-	if ( string.sub(self:GetName(), 1, 17) ~= "CharacterFrameTab" ) then
-		return;
-	end
-
-	for i=1, NUM_CHARACTERFRAME_TABS do
-		_G["CharacterFrameTab"..i.."Text"]:SetWidth(0);
-		PanelTemplates_TabResize(_G["CharacterFrameTab"..i], 0, nil, 36, 88);
-	end
-
-	local diff = _G["CharacterFrameTab"..NUM_CHARACTERFRAME_TABS]:GetRight() - CharacterFrame:GetRight();
-
-	if ( diff > 0 and CharacterFrameTab3:IsShown() ) then
-		--Find the biggest tab
-		for i=1, NUM_CHARACTERFRAME_TABS do
-			CharTabtable[i]=_G["CharacterFrameTab"..i];
-		end
-		table.sort(CharTabtable, CompareFrameSize);
-
-		local i=1;
-		while ( diff > 0 and i <= NUM_CHARACTERFRAME_TABS) do
-			local tabText = _G[CharTabtable[i]:GetName().."Text"]
-			local change = min(10, diff);
-			diff = diff - change;
-			tabText:SetWidth(0);
-			PanelTemplates_TabResize(CharTabtable[i], -change, nil, 36-change, 88);
-			i = i+1;
-		end
-	end
 end
 
 function CharacterFrameCorruption_OnLoad(self)
@@ -306,4 +296,11 @@ function CharacterFrameCorruption_OnLeave(self)
 	self.Eye:SetAtlas("Nzoth-charactersheet-icon", true);
 	GameTooltip_Hide();
 	PaperDollFrame_UpdateCorruptedItemGlows(false);
+end
+
+CharacterFrameTabButtonMixin = {};
+
+function CharacterFrameTabButtonMixin:OnClick(button)
+	PanelTemplates_Tab_OnClick(self, CharacterFrame);
+	CharacterFrameTab_OnClick(self, button);
 end

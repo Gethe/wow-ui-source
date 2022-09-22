@@ -321,7 +321,6 @@ function SetItemCraftingQualityOverlay(button, itemIDOrLink)
 				button.ProfessionQualityOverlay = button:CreateTexture(nil, "OVERLAY");
 				button.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2);
 				button.ProfessionQualityOverlay:SetDrawLayer("OVERLAY", 7);
-				button.ProfessionQualityOverlay:SetScale(button.qualityOverlayScale or 1.0);
 			end
 
 			local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);

@@ -36,15 +36,16 @@ UI_shared.xsd">
 		</Scripts>
 	</Browser>
 
-	<Frame name="HelpFrame" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" mixin="HelpFrameMixin">
+	<Frame name="HelpFrame" toplevel="true" parent="UIParent" inherits="DefaultPanelTemplate" hidden="true" enableMouse="true" mixin="HelpFrameMixin">
 		<Size x="974" y="628"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
 		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 			<Browser parentKey="Browser" name="HelpBrowser" inherits="BrowserTemplate" >
 				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-23"/>
+					<Anchor point="TOPLEFT" x="7" y="-22"/>
 					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
 				</Anchors>
 				<Scripts>

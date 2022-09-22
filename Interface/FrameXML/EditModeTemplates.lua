@@ -165,6 +165,7 @@ function EditModeSettingSliderMixin:SetupSetting(settingData)
 	self.initInProgress = true;
 	self.formatters = {};
 	if settingData.displayInfo.hideValue then
+		self.formatters[MinimalSliderWithSteppersMixin.Label.Right] = nil;
 		self.Slider:SetWidth(230);
 	else
 		self.formatters[MinimalSliderWithSteppersMixin.Label.Right] = CreateMinimalSliderFormatter(MinimalSliderWithSteppersMixin.Label.Right, settingData.displayInfo.formatter);

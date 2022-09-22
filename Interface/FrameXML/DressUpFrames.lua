@@ -141,8 +141,8 @@ end
 
 function DressUpTransmogSet(itemModifiedAppearanceIDs, forcedFrame)
 	local frame = forcedFrame or GetFrameAndSetBackground();
-	DressUpFrame_Show(frame);
-	DressUpFrame_ApplyAppearances(frame, itemModifiedAppearanceIDs);
+	local forcePlayerRefresh = true;
+	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh);
 end
 
 function DressUpBattlePetLink(link)
@@ -280,8 +280,9 @@ function SetDressUpBackground(frame, raceFilename, classFilename)
 	end
 end
 
-function DressUpFrame_Show(frame)
-	if ( not frame:IsShown() or frame:GetMode() ~= "player") then
+local DRESS_UP_FRAME_MODEL_SCENE_ID = 596;
+function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh)
+	if ( forcePlayerRefresh or (not frame:IsShown() or frame:GetMode() ~= "player") ) then
 		frame:SetMode("player");
 
 		-- If there's not enough space as-is, try minimizing.
@@ -296,26 +297,18 @@ function DressUpFrame_Show(frame)
 		end
 
 		ShowUIPanel(frame);
-
 		frame.ModelScene:ClearScene();
 		frame.ModelScene:SetViewInsets(0, 0, 0, 0);
-		frame.ModelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
-		
+		frame.ModelScene:ReleaseAllActors();
+		frame.ModelScene:TransitionToModelSceneID(DRESS_UP_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
+
 		local sheatheWeapons = false;
 		local autoDress = true;
 		local hideWeapons = false;
-		local itemModifiedAppearanceIDs = nil;
-		local useNativeForm = PlayerUtil.ShouldUseNativeFormInModelScene();
+		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
+		local useNativeForm = not inAlternateForm;
 		SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 	end
-end
-
-function DressUpFrame_ApplyAppearances(frame, itemModifiedAppearanceIDs)
-	local sheatheWeapons = false;
-	local autoDress = true;
-	local hideWeapons = false;
-	local useNativeForm = PlayerUtil.ShouldUseNativeFormInModelScene();
-	SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 end
 
 function DressUpItemTransmogInfo(itemTransmogInfo)
@@ -331,9 +324,10 @@ function DressUpItemTransmogInfo(itemTransmogInfo)
 	return true;
 end
 
-function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails)
+function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails, forcePlayerRefresh)
 	local frame = GetFrameAndSetBackground();
-	DressUpFrame_Show(frame);
+	local itemModifiedAppearanceIDs = nil,
+	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh);
 
 	local playerActor = frame.ModelScene:GetPlayerActor();
 	if not playerActor or not itemTransmogInfoList then
@@ -455,7 +449,8 @@ function DressUpOutfitDetailsPanelMixin:OnEvent(event, ...)
 	elseif event == "TRANSMOG_SOURCE_COLLECTABILITY_UPDATE" then
 		self:MarkDirty();
 	elseif ( event == "UNIT_FORM_CHANGED" ) then
-		self:RefreshPlayerModel();
+		local forcePlayerRefresh = true;
+		self:RefreshPlayerModel(forcePlayerRefresh);
 	end
 end
 
@@ -536,17 +531,17 @@ function DressUpOutfitDetailsPanelMixin:Refresh()
 	end
 end
 
-function DressUpOutfitDetailsPanelMixin:RefreshPlayerModel()
+function DressUpOutfitDetailsPanelMixin:RefreshPlayerModel(forcePlayerRefresh)
 	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
 	if playerActor then
 		local itemTransmogInfoList = playerActor:GetItemTransmogInfoList();
-		local sheatheWeapons = false;
-		local autoDress = true;
-		local hideWeapons = false;
-		local useNativeForm = PlayerUtil.ShouldUseNativeFormInModelScene();
-		playerActor:SetModelByUnit("player", sheatheWeapons, autoDress, hideWeapons, useNativeForm);
-		DressUpItemTransmogInfoList(itemTransmogInfoList);
 	end
+
+	local itemModifiedAppearanceIDs = nil;
+	DressUpFrame_Show(DressUpFrame, itemModifiedAppearanceIDs, forcePlayerRefresh);
+
+	local showOutfitDetails = false;
+	DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails, forcePlayerRefresh);
 	self:Refresh();
 end
 

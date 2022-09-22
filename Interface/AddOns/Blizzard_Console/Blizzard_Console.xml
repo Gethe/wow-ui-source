@@ -249,6 +249,7 @@
 						self.Icon:SetPoint("RIGHT", self.Label, "LEFT", -2, 0);
 					</OnLoad>
 					<OnClick>
+						EnableAddOn("CheatBrowser");
 						LoadAddOn("CheatBrowser");
 						CheatBrowser:Toggle();
 					</OnClick>

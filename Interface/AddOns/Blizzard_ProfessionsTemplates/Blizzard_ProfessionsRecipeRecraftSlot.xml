@@ -1,48 +1,25 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsRecipeRecraftSlot.lua"/>
-	
-	<Frame name="ProfessionsReagentRecraftTemplate" scale=".8" mixin="ProfessionsRecraftSlotMixin" virtual="true">
+
+	<Frame name="ProfessionsRecraftSlotTemplate" mixin="ProfessionsRecraftSlotMixin" virtual="true">
 		<Size x="260" y="105"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture>
-					<Color r="0" g="0" b="0" a=".5"/>
+				<Texture atlas="Professions-Recrafting-Panel" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<ItemButton parentKey="InputSlot" mixin="ProfessionsRecraftInputSlotMixin">
-				<KeyValues>
-					<KeyValue key="qualityOverlayScale" value="1.3" type="number" />
-				</KeyValues>
-				<Size x="48" y="48"/>
+			<ItemButton parentKey="InputSlot" scale="1.1" mixin="ProfessionsRecraftInputSlotMixin">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="30" y="-30"/>
+					<Anchor point="TOPLEFT" x="17" y="-17"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="ButtonFrame">
-							<Anchors>
-								<Anchor point="CENTER" y="1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="2">
-						<Texture parentKey="InputSlot_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
-							<Anchors>
-								<Anchor point="CENTER" y="1"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="InputSlot_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
-							<Anchors>
-								<Anchor point="CENTER" y="1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Frames>
-					<Frame parentKey="Glow">
+					<Frame parentKey="Glow" scale=".6">
 						<Size x="50" y="50"/>
 						<Anchors>
 							<Anchor point="CENTER"/>
@@ -66,10 +43,10 @@
 					<OnReceiveDrag method="OnReceiveDrag"/>
 				</Scripts>
 			</ItemButton>
-			<Frame parentKey="AnimatedArrow">
+			<Frame parentKey="AnimatedArrow" scale=".65">
 				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.InputSlot" relativePoint="RIGHT" x="20" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.InputSlot" relativePoint="RIGHT" x="19" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -88,10 +65,10 @@
 					</AnimationGroup>
 				</Animations>
 			</Frame>
-			<Frame parentKey="DimArrow">
+			<Frame parentKey="DimArrow" scale=".95">
 				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="CENTER"/>
+					<Anchor point="CENTER" x="-36" y="14"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -103,35 +80,22 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<ItemButton parentKey="OutputSlot" mixin="ProfessionsRecraftOutputSlotMixin">
-				<KeyValues>
-					<KeyValue key="qualityOverlayScale" value="1.3" type="number" />
-				</KeyValues>
-				<Size x="48" y="48"/>
+			<ItemButton parentKey="OutputSlot" mixin="ProfessionsRecraftOutputSlotMixin" scale="1.1">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="180" y="-30"/>
+					<Anchor point="TOPLEFT" x="112" y="-17"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="ButtonFrame">
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="ItemFrame" scale=".45" atlas="Professions-Recrafting-Frame-Item" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" y="1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="OutputSlot_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
-							<Anchors>
-								<Anchor point="CENTER" y="1"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="OutputSlot_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
-							<Anchors>
-								<Anchor point="CENTER" y="1"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
 			</ItemButton>
 		</Frames>
 		<Scripts>

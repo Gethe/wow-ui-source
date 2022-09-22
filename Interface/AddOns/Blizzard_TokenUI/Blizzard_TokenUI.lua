@@ -318,11 +318,7 @@ function BackpackTokenFrameMixin:UpdateTokenAnchoring()
 end
 
 function BackpackTokenFrameMixin:GetInitialTokenAnchor()
-	if self:IsCombined() then
-		return AnchorUtil.CreateAnchor("RIGHT", self, "RIGHT", -17, -1);
-	else
-		return AnchorUtil.CreateAnchor("LEFT", self, "LEFT", 13, 0);
-	end
+	return AnchorUtil.CreateAnchor("RIGHT", self, "RIGHT", -17, -1);
 end
 
 function BackpackTokenFrameMixin:GetTokenLayout()

@@ -32,6 +32,28 @@ local SimpleObjectAPI =
 				{ Name = "parent", Type = "table", Nilable = false },
 			},
 		},
+		{
+			Name = "GetParentKey",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "parentKey", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SetParentKey",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "parentKey", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =

@@ -12,7 +12,7 @@ local ZONE_CHOICE_ZOOM_AMOUNT = 100;
 local ZONE_CHOICE_ZOOM_TIME = 0.6;
 local ZOOM_TIME_SECONDS = 0.25;
 local ROTATION_ADJUST_SECONDS = 0.25;
-local CLASS_ANIM_WAIT_TIME_SECONDS = 5;
+local CLASS_ANIM_WAIT_TIME_SECONDS = 3;
 
 local HIGH_PRIORITY = 1;
 local MEDIUM_PRIORITY = 2;
@@ -29,14 +29,14 @@ local HUMAN_RADE_ID = 1;
 local ORC_RACE_ID = 2;
 
 NineSliceUtil.AddLayout("CharacterCreateThickBorder", {
-	TopLeftCorner =	{ atlas = "charactercreate-DiamondMetal-CornerTopLeft-8x", },
-	TopRightCorner =	{ atlas = "charactercreate-DiamondMetal-CornerTopRight-8x", },
-	BottomLeftCorner =	{ atlas = "charactercreate-DiamondMetal-CornerBottomLeft-8x", },
-	BottomRightCorner =	{ atlas = "charactercreate-DiamondMetal-CornerBottomRight-8x", },
-	TopEdge = { atlas = "_charactercreate-DiamondMetal-EdgeTop-8x", },
-	BottomEdge = { atlas = "_charactercreate-DiamondMetal-EdgeBottom-8x", },
-	LeftEdge = { atlas = "!charactercreate-DiamondMetal-EdgeLeft-8x", },
-	RightEdge = { atlas = "!charactercreate-DiamondMetal-EdgeRight-8x", },
+	TopLeftCorner =	{ atlas = "ui-frame-diamondmetal-cornertopleft-8x", },
+	TopRightCorner =	{ atlas = "ui-frame-diamondmetal-cornertopright-8x", },
+	BottomLeftCorner =	{ atlas = "ui-frame-diamondmetal-cornerbottomleft-8x", },
+	BottomRightCorner =	{ atlas = "ui-frame-diamondmetal-cornerbottomright-8x", },
+	TopEdge = { atlas = "_ui-frame-diamondmetal-edgetop-8x", },
+	BottomEdge = { atlas = "_ui-frame-diamondmetal-edgebottom-8x", },
+	LeftEdge = { atlas = "!ui-frame-diamondmetal-edgeleft-8x", },
+	RightEdge = { atlas = "!ui-frame-diamondmetal-edgeright-8x", },
 });
 
 GlueDialogTypes["CHARACTER_CREATE_FAILURE"] = {

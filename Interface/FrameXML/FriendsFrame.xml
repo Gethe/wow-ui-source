@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="FriendsFrame.lua"/>
 
-	<Button name="FriendsTabTemplate" inherits="TabButtonTemplate" mixin="FriendsTabMixin" virtual="true">
+	<Button name="FriendsTabTemplate" inherits="PanelTopTabButtonTemplate" mixin="FriendsTabMixin" virtual="true">
 		<Size x="280" y="32"/>
 		<Frames>
 			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate" frameLevel="20">
@@ -12,7 +12,6 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
@@ -458,7 +457,7 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-	<Button name="FriendsFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" mixin="FriendsFrameTabMixin" virtual="true">
+	<Button name="FriendsFrameTabTemplate" inherits="PanelTabButtonTemplate" mixin="FriendsFrameTabMixin" virtual="true">
 		<Scripts>
 			<OnClick method="OnClick"/>
 		</Scripts>
@@ -491,6 +490,9 @@
 				</Scripts>
 			</Frame>
 			<Frame name="FriendsTabHeader" parentKey="FriendsTabHeader" mixin="FriendsTabHeaderMixin" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="maxTabWidth" value="110" type="number"/>
+				</KeyValues>
 				<Frames>
 					<Frame name="FriendsFrameBattlenetFrame">
 						<Size x="190" y="29"/>
@@ -751,21 +753,13 @@
 							<OnShow function="FriendsFrameStatusDropDown_OnShow"/>
 						</Scripts>
 					</Frame>
-					<Button name="FriendsTabHeaderTab1" parentKey="Tab1" inherits="FriendsTabTemplate" text="FRIENDS" id="1" parentArray="Tabs">
+					<Button name="FriendsTabHeaderTab1" parentKey="Tab1" inherits="FriendsTabTemplate" text="FRIENDS" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="18" y="-51"/>
 						</Anchors>
 					</Button>
-					<Button name="FriendsTabHeaderTab2" parentKey="Tab2" inherits="FriendsTabTemplate" text="IGNORE" id="2" parentArray="Tabs">
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT"/>
-						</Anchors>
-					</Button>
-					<Button name="FriendsTabHeaderTab3" parentKey="Tab3" inherits="FriendsTabTemplate" text="RECRUIT_A_FRIEND" id="3" parentArray="Tabs">
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT"/>
-						</Anchors>
-					</Button>
+					<Button name="FriendsTabHeaderTab2" parentKey="Tab2" inherits="FriendsTabTemplate" text="IGNORE" id="2"/>
+					<Button name="FriendsTabHeaderTab3" parentKey="Tab3" inherits="FriendsTabTemplate" text="RECRUIT_A_FRIEND" id="3"/>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad" />

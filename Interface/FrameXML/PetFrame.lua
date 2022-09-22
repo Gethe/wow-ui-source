@@ -1,17 +1,16 @@
---PET_WARNING_TIME = 55;
---PET_FLASH_ON_TIME = 0.5;
---PET_FLASH_OFF_TIME = 0.5;
-PetFrameMixin=CreateFromMixins(PartyMemberAuraMixin);
+PetFrameMixin = CreateFromMixins(PartyMemberAuraMixin);
 
 function PetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 	self:UpdateMemberAuras(unitAuraUpdateInfo);
 end
 
-function PetFrame_OnLoad (self)
+function PetFrameMixin:OnLoad()
 	PetFrameHealthBar.LeftText = PetFrameHealthBarTextLeft;
 	PetFrameHealthBar.RightText = PetFrameHealthBarTextRight;
 	PetFrameManaBar.LeftText = PetFrameManaBarTextLeft;
 	PetFrameManaBar.RightText = PetFrameManaBarTextRight;
+
+	self.DebuffFramePool = CreateFramePool("BUTTON", self.DebuffFrameContainer, "PartyDebuffFrameTemplate");
 
 	UnitFrame_Initialize(self, "pet", PetName, PetPortrait,
 						 PetFrameHealthBar, PetFrameHealthBarText, 
@@ -21,12 +20,12 @@ function PetFrame_OnLoad (self)
 						 PetFrameTotalAbsorbBar, PetFrameTotalAbsorbBarOverlay, 
 						 PetFrameOverAbsorbGlow, PetFrameOverHealAbsorbGlow, PetFrameHealAbsorbBar,
 						 PetFrameHealAbsorbBarLeftShadow, PetFrameHealAbsorbBarRightShadow);
+
 	self.attackModeCounter = 0;
 	self.attackModeSign = -1;
-	--self.flashState = 1;
-	--self.flashTimer = 0;
+
 	CombatFeedback_Initialize(self, PetHitIndicator, 30);
-	PetFrame_Update(self);
+	self:Update();
 	self:RegisterUnitEvent("UNIT_PET", "player");
 	self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player");
 	self:RegisterEvent("PET_ATTACK_START");
@@ -40,64 +39,60 @@ function PetFrame_OnLoad (self)
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
 end
 
-function PetFrame_UpdateAnchoring(self)
+function PetFrameMixin:UpdateAnchoring()
 	if self.unit == "player" and PlayerVehicleHasComboPoints() then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
 	else
 		local _, class = UnitClass("player");
-		if ( class == "DEATHKNIGHT" or class == "ROGUE") then
-			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
-		elseif ( class == "SHAMAN" or class == "DRUID" ) then
+		if class == "DEATHKNIGHT" or class == "ROGUE" then
 			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
-		elseif ( class == "WARLOCK" ) then
-			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
-		elseif ( class == "PALADIN" ) then
-			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
-		elseif ( class == "PRIEST" ) then
-			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
-		elseif ( class == "MONK" ) then
+		elseif class == "SHAMAN" or class == "DRUID" then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
+		elseif class == "WARLOCK" then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -97);
+		elseif class == "PALADIN" then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -97);
+		elseif class == "PRIEST" then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -87);
+		elseif class == "MONK" then
 			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 90, -100);
 		end
 	end
 end
 
-function PetFrame_Update (self, override)
-	if ( (not PlayerFrame.animating) or (override) ) then
-		if ( UnitIsVisible(self.unit) and PetUsesPetFrame() and not PlayerFrame.vehicleHidesPet ) then
-			if ( self:IsShown() ) then
+function PetFrameMixin:Update(override)
+	if (not PlayerFrame.animating) or override then
+		local previousShownState = self:IsShown();
+
+		if UnitIsVisible(self.unit) and PetUsesPetFrame() and not PlayerFrame.vehicleHidesPet then
+			if self:IsShown() then
 				UnitFrame_Update(self);
 			else
 				self:Show();
 			end
-			--self.flashState = 1;
-			--self.flashTimer = PET_FLASH_ON_TIME;
-			if ( UnitPowerMax(self.unit) == 0 ) then
-				PetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-SmallTargetingFrame-NoMana");
+
+			if UnitPowerMax(self.unit) == 0 then
 				PetFrameManaBarText:Hide();
-			else
-				PetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-SmallTargetingFrame");
 			end
+
 			PetAttackModeTexture:Hide();
 
 			self:UpdateAuras();
 		else
 			self:Hide();
 		end
+
+		-- If we're in edit mode we should update the player frame's selection since it adjusts according to the PetFrame's shown state
+		if previousShownState ~= self:IsShown() and EditModeManagerFrame:IsEditModeActive() then
+			PlayerFrame:AnchorSelectionFrame();
+		end
 	end
 
-	-- Portrait masking is usually done already, but player portraits opt out of that because they might not always be circles.
-	-- In this case, we manually re-apply the circle mask. 
-	if(UnitIsPlayer(self.unit)) then
-		PetPortrait:AddMaskTexture(self.CircleMask);
-	else
-		PetPortrait:RemoveMaskTexture(self.CircleMask);
-	end
-
-	PetFrame_UpdateAnchoring(self);
+	self:UpdateAnchoring();
 	PlayerFrame_AdjustAttachments();
 end
 
-function PetFrame_OnEvent (self, event, ...)
+function PetFrameMixin:OnEvent(event, ...)
 	UnitFrame_OnEvent(self, event, ...);
 	local arg1, arg2, arg3, arg4, arg5 = ...;
 	if ( event == "UNIT_PET" or event == "UNIT_EXITED_VEHICLE" or event == "PET_UI_UPDATE" ) then
@@ -112,38 +107,48 @@ function PetFrame_OnEvent (self, event, ...)
 			unit = "pet";
 		end
 		UnitFrame_SetUnit(self, unit, PetFrameHealthBar, PetFrameManaBar);
-		PetFrame_Update(self);
-	elseif ( event == "UNIT_COMBAT" ) then
-		if ( arg1 == self.unit ) then
+		self:Update();
+	elseif event == "UNIT_COMBAT" then
+		if arg1 == self.unit then
 			CombatFeedback_OnCombatEvent(self, arg2, arg3, arg4, arg5);
 		end
-	elseif ( event == "UNIT_AURA" ) then
-		if ( arg1 == self.unit ) then
+	elseif event == "UNIT_AURA" then
+		if arg1 == self.unit then
 			local unitAuraUpdateInfo = arg2;
 			self:UpdateAuras(unitAuraUpdateInfo);
 		end
-	elseif ( event == "PET_ATTACK_START" ) then
+	elseif event == "PET_ATTACK_START" then
 		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
 		PetAttackModeTexture:Show();
-	elseif ( event == "PET_ATTACK_STOP" ) then
+	elseif event == "PET_ATTACK_STOP" then
 		PetAttackModeTexture:Hide();
 	end
 end
 
-function PetFrame_OnUpdate (self, elapsed)
-	if ( PetAttackModeTexture:IsShown() ) then
+function PetFrameMixin:OnShow()
+	UnitFrame_Update(self);
+	self:Update();
+	TotemFrame_Update(self);
+end
+
+function PetFrameMixin:OnHide()
+	TotemFrame_Update(self);
+end
+
+function PetFrameMixin:OnUpdate(elapsed)
+	if PetAttackModeTexture:IsShown() then
 		local alpha = 255;
 		local counter = self.attackModeCounter + elapsed;
 		local sign    = self.attackModeSign;
 
-		if ( counter > 0.5 ) then
+		if counter > 0.5 then
 			sign = -sign;
 			self.attackModeSign = sign;
 		end
 		counter = mod(counter, 0.5);
 		self.attackModeCounter = counter;
 
-		if ( sign == 1 ) then
+		if sign == 1 then
 			alpha = (55  + (counter * 400)) / 255;
 		else
 			alpha = (255 - (counter * 400)) / 255;
@@ -153,16 +158,29 @@ function PetFrame_OnUpdate (self, elapsed)
 	CombatFeedback_OnUpdate(self, elapsed);
 end
 
-function PetFrameDropDown_OnLoad (self)
-	UIDropDownMenu_Initialize(self, PetFrameDropDown_Initialize, "MENU");
+function PetFrameMixin:OnEnter()
+	UnitFrame_OnEnter(self);
+	PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 60, -35);
+	PartyMemberBuffTooltip:UpdateTooltip(self);
 end
 
-function PetFrameDropDown_Initialize ()
-	if ( UnitExists(PetFrame.unit) ) then
-		if ( PetFrame.unit == "player" ) then
+function PetFrameMixin:OnLeave()
+	UnitFrame_OnLeave(self);
+	PartyMemberBuffTooltip:Hide();
+end
+
+PetFrameDropDownMixin = {};
+
+function PetFrameDropDownMixin:OnLoad()
+	UIDropDownMenu_Initialize(self, self.Initialize, "MENU");
+end
+
+function PetFrameDropDownMixin:Initialize()
+	if UnitExists(PetFrame.unit) then
+		if PetFrame.unit == "player" then
 			UnitPopup_ShowMenu(PetFrameDropDown, "SELF", "player");
 		else
-			if ( UnitIsUnit("pet", "vehicle") ) then
+			if UnitIsUnit("pet", "vehicle") then
 				UnitPopup_ShowMenu(PetFrameDropDown, "VEHICLE", "vehicle");
 			else
 				UnitPopup_ShowMenu(PetFrameDropDown, "PET", "pet");
@@ -171,15 +189,17 @@ function PetFrameDropDown_Initialize ()
 	end
 end
 
-function PetCastingBarFrame_OnLoad (self)
-	self:OnLoad("pet", false, false);
+PetCastingBarMixin = CreateFromMixins(CastingBarMixin);
+
+function PetCastingBarMixin:PetCastingBar_OnLoad()
+	CastingBarMixin.OnLoad(self, "pet", false, false);
 
 	self:RegisterEvent("UNIT_PET");
 
 	self.showCastbar = UnitIsPossessed("pet");
 end
 
-function PetCastingBarFrame_OnEvent (self, event, ...)
+function PetCastingBarMixin:PetCastingBar_OnEvent(event, ...)
 	local arg1 = ...;
 	if ( event == "UNIT_PET" ) then
 		if ( arg1 == "player" ) then
@@ -193,5 +213,27 @@ function PetCastingBarFrame_OnEvent (self, event, ...)
 		end
 		return;
 	end
-	self:OnEvent(event, ...);
+	CastingBarMixin.OnEvent(event, ...);
+end
+
+PetManaBarMixin = {};
+
+function PetManaBarMixin:OnLoad()
+	TextStatusBar_Initialize(self);
+	self.textLockable = 1;
+	self.cvar = "statusText";
+	self.cvarLabel = "STATUS_TEXT_PET";
+end
+
+PetHealthBarMixin = {};
+
+function PetHealthBarMixin:OnLoad()
+	TextStatusBar_Initialize(self);
+	self.textLockable = 1;
+	self.cvar = "statusText";
+	self.cvarLabel = "STATUS_TEXT_PET";
+end
+
+function PetHealthBarMixin:OnSizeChanged()
+	UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
 end

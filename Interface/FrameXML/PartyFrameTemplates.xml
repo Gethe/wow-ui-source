@@ -13,7 +13,7 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
-	<Frame name="PartyDebuffFrameTemplate" mixin="PartyDebuffFrameMixin" parentArray="debuffFrames" virtual="true" enableMouse="true" frameLevel="6" hidden="true">
+	<Frame name="PartyDebuffFrameTemplate" mixin="PartyDebuffFrameMixin" virtual="true" enableMouse="true" hidden="true">
 		<Size x="15" y="15"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -68,14 +68,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Texture" atlas="ui-hud-unitframe-partyframe" useAtlasSize="true" scale="0.5">
+				<Texture parentKey="Texture" atlas="ui-hud-unitframe-party-portraiton" useAtlasSize="true" scale="0.5">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="-1"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Flash" atlas="ui-hud-unitframe-partyframe-flash" useAtlasSize="true" hidden="true" scale="0.5">
+				<Texture parentKey="Flash" atlas="ui-hud-unitframe-party-portraiton-incombat" useAtlasSize="true" hidden="true" scale="0.5">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormalSmall">
@@ -96,28 +96,16 @@
 						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture atlas="ui-hud-unitframe-partyframe-bar-health"/>
+				<BarTexture atlas="ui-hud-unitframe-party-portraiton-bar-health"/>
 			</StatusBar>
-			<Button parentKey="Debuff1" inherits="PartyPetDebuffFrameTemplate" id="1">
+			<Frame parentKey="DebuffFrameContainer" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="2" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="24" y="-20"/>
+					<Anchor point="TOPLEFT" x="24" y="-16"/>
 				</Anchors>
-			</Button>
-			<Button parentKey="Debuff2" inherits="PartyPetDebuffFrameTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Debuff1" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Debuff3" inherits="PartyPetDebuffFrameTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Debuff2" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Debuff4" inherits="PartyPetDebuffFrameTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Debuff3" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Button>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnShow method="OnShow"/>
@@ -139,7 +127,7 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-				<Texture parentKey="Texture" atlas="ui-hud-unitframe-partyframe" useAtlasSize="true">
+				<Texture parentKey="Texture" atlas="ui-hud-unitframe-party-portraiton" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="-2"/>
 					</Anchors>
@@ -150,9 +138,9 @@
 						<Anchor point="TOPLEFT" x="-6" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Flash" atlas="ui-hud-unitframe-partyframe-flash" useAtlasSize="true" hidden="true">
+				<Texture parentKey="Flash" atlas="ui-hud-unitframe-party-portraiton-incombat" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="TOPLEFT" x="1" y="-2"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
@@ -233,7 +221,7 @@
 						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
 					</OnSizeChanged>
 				</Scripts>
-				<BarTexture atlas="ui-hud-unitframe-partyframe-bar-health"/>
+				<BarTexture atlas="ui-hud-unitframe-party-portraiton-bar-health"/>
 			</StatusBar>
 			<StatusBar parentKey="ManaBar" inherits="TextStatusBar">
 				<Size x="71" y="7"/>
@@ -276,17 +264,15 @@
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
-				<BarTexture atlas="ui-hud-unitframe-partyframe-bar-mana"/>
+				<BarTexture atlas="ui-hud-unitframe-party-portraiton-bar-mana"/>
 			</StatusBar>
 			<Frame parentKey="PartyMemberOverlay" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Status" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
-							<Size x="37" y="37"/>
+						<Texture parentKey="Status" atlas="ui-hud-unitframe-party-portraiton-status" useAtlasSize="true" hidden="true">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.$parent.Portrait" x="-1" y="-1"/>
+								<Anchor point="TOPLEFT" x="1" y="-2"/>
 							</Anchors>
-							<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -353,26 +339,11 @@
 				</Scripts>
 			</Frame>
 			<Button parentKey="PetFrame" inherits="PartyMemberPetFrameTemplate"/>
-			<Button parentKey="Debuff1" inherits="PartyDebuffFrameTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="48" y="-40"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Debuff2" inherits="PartyDebuffFrameTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Debuff1" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Debuff3" inherits="PartyDebuffFrameTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Debuff2" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Debuff4" inherits="PartyDebuffFrameTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Debuff3" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Button>
+			<Frame parentKey="DebuffFrameContainer" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEvent method="OnEvent"/>

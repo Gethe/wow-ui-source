@@ -242,7 +242,7 @@ function ProfessionsSpecFrameMixin:InitializeTabs()
 			tab:ClearAllPoints();
 
 			if lastTab then
-				tab:SetPoint("LEFT", lastTab, "RIGHT", -10, 0);
+				tab:SetPoint("LEFT", lastTab, "RIGHT", 1, 0);
 			else
 				tab:SetPoint("BOTTOMLEFT", self.TreeView, "TOPLEFT", 60, 0);
 			end
@@ -287,10 +287,7 @@ function ProfessionsSpecFrameMixin:UpdateCurrencyDisplay()
 		self.DetailedView.UnspentPoints.Icon:SetTexture(currencyTypesInfo.iconFileID);
 		self.DetailedView.UnspentPoints.Icon:SetScript("OnEnter", function()
 			GameTooltip:SetOwner(self.DetailedView.UnspentPoints.Icon, "ANCHOR_RIGHT", 0, 0);
-			GameTooltip_AddHighlightLine(GameTooltip, currencyTypesInfo.name, false);
-			GameTooltip_AddNormalLine(GameTooltip, C_CurrencyInfo.GetCurrencyDescription(currencyTypesID));
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_SPECIALIZATION_CURRENCY_TOTAL:format(currencyCount));
+			Professions.SetupProfessionsCurrencyTooltip(currencyTypesInfo, currencyCount);
 			GameTooltip:Show();
 		end);
 	end

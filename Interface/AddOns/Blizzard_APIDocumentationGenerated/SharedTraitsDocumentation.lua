@@ -229,6 +229,20 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetStagedPurchases",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "nodeIDsWithPurchases", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTraitCurrencyInfo",
 			Type = "Function",
 

@@ -117,7 +117,12 @@ function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
 		for i, exploredTextureInfo in ipairs(exploredMapTextures) do
 			local numTexturesWide = ceil(exploredTextureInfo.textureWidth/TILE_SIZE_WIDTH);
 			local numTexturesTall = ceil(exploredTextureInfo.textureHeight/TILE_SIZE_HEIGHT);
-			local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;
+			local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;			
+			local textureSubLevel = subLevel
+			if exploredTextureInfo.isDrawOnTopLayer then
+				textureSubLevel = subLevel + 1
+			end
+
 			for j = 1, numTexturesTall do
 				if ( j < numTexturesTall ) then
 					texturePixelHeight = TILE_SIZE_HEIGHT;
@@ -156,7 +161,7 @@ function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
 
 					if exploredTextureInfo.isShownByMouseOver then
 						-- keep track of the textures to show by mouseover
-						texture:SetDrawLayer(drawLayer, subLevel + 1);
+						texture:SetDrawLayer(drawLayer, textureSubLevel + 1);
 						texture:Hide();
 						local highlightRect = self.highlightRectPool:Acquire();
 						mapCanvas:AddMaskableTexture(highlightRect);
@@ -165,7 +170,7 @@ function MapExplorationPinMixin:RefreshOverlays(fullUpdate)
 						highlightRect.index = i;
 						highlightRect.texture = texture;
 					else
-						texture:SetDrawLayer(drawLayer, subLevel);
+						texture:SetDrawLayer(drawLayer, textureSubLevel);
 						texture:Show();
 
 						if fullUpdate then

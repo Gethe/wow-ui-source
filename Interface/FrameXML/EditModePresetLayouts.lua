@@ -31,9 +31,9 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "BOTTOM",
+				point = "BOTTOMLEFT",
 				relativeTo = "MainMenuBar",
-				relativePoint = "TOP",
+				relativePoint = "TOPLEFT",
 				offsetX = 0,
 				offsetY = 5,
 			},
@@ -50,9 +50,9 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "BOTTOM",
+				point = "BOTTOMLEFT",
 				relativeTo = "MultiBarBottomLeft",
-				relativePoint = "TOP",
+				relativePoint = "TOPLEFT",
 				offsetX = 0,
 				offsetY = 5,
 			},
@@ -66,15 +66,14 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
 				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
-				[Enum.EditModeActionBarSetting.SnapToSide] = 1,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "RIGHT",
-				relativeTo = "UIParent",
-				relativePoint = "RIGHT",
-				offsetX = -55,
-				offsetY = -77,
+				point = "TOPRIGHT",
+				relativeTo = "MultiBarRight",
+				relativePoint = "TOPLEFT",
+				offsetX = -5,
+				offsetY = 0,
 			},
 		},
 
@@ -86,7 +85,6 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
 				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
-				[Enum.EditModeActionBarSetting.SnapToSide] = 1,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
@@ -167,15 +165,14 @@ local modernSystemMap =
 	[Enum.EditModeSystem.UnitFrame] = {
 		[Enum.EditModeUnitFrameSystemIndices.Player] = {
 			settings = {
-				[Enum.EditModeUnitFrameSetting.HidePortrait] = 0,
 				[Enum.EditModeUnitFrameSetting.CastBarUnderneath] = 0,
 			},
 			anchorInfo = {
 				point = "BOTTOMRIGHT",
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
-				offsetX = -282,
-				offsetY = 258,
+				offsetX = -300,
+				offsetY = 250,
 			},
 		},
 
@@ -227,9 +224,8 @@ local modernSystemMap =
 		[Enum.EditModeUnitFrameSystemIndices.Raid] = {
 			settings = {
 				[Enum.EditModeUnitFrameSetting.ViewRaidSize] = Enum.ViewRaidSize.Ten,
-				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-				[Enum.EditModeUnitFrameSetting.KeepGroupsTogether] = 1,
+				[Enum.EditModeUnitFrameSetting.RaidGroupDisplayType] = Enum.RaidGroupDisplayType.SeparateGroupsVertical,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
@@ -343,7 +339,7 @@ local modernSystemMap =
 				relativeTo = "BuffFrame",
 				relativePoint = "BOTTOMRIGHT",
 				offsetX = -13,
-				offsetY = -5,
+				offsetY = -60,
 			},
 		},
 	},
@@ -446,9 +442,9 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "BOTTOM",
+				point = "BOTTOMLEFT",
 				relativeTo = "MainMenuBar",
-				relativePoint = "TOP",
+				relativePoint = "TOPLEFT",
 				offsetX = 0,
 				offsetY = 5,
 			},
@@ -465,9 +461,9 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "BOTTOM",
+				point = "BOTTOMLEFT",
 				relativeTo = "MultiBarBottomLeft",
-				relativePoint = "TOP",
+				relativePoint = "TOPLEFT",
 				offsetX = 0,
 				offsetY = 5,
 			},
@@ -481,13 +477,12 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
 				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
-				[Enum.EditModeActionBarSetting.SnapToSide] = 1,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "RIGHT",
+				point = "TOPRIGHT",
 				relativeTo = "MultiBarRight",
-				relativePoint = "LEFT",
+				relativePoint = "TOPLEFT",
 				offsetX = -5,
 				offsetY = 0,
 			},
@@ -501,7 +496,6 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.IconSize] = 5,
 				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
-				[Enum.EditModeActionBarSetting.SnapToSide] = 1,
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
@@ -582,15 +576,14 @@ local classicSystemMap =
 	[Enum.EditModeSystem.UnitFrame] = {
 		[Enum.EditModeUnitFrameSystemIndices.Player] = {
 			settings = {
-				[Enum.EditModeUnitFrameSetting.HidePortrait] = 0,
 				[Enum.EditModeUnitFrameSetting.CastBarUnderneath] = 0,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
 				relativeTo = "UIParent",
 				relativePoint = "TOPLEFT",
-				offsetX = 0,
-				offsetY = 4,
+				offsetX = 4,
+				offsetY = -4,
 			},
 		},
 
@@ -642,9 +635,8 @@ local classicSystemMap =
 		[Enum.EditModeUnitFrameSystemIndices.Raid] = {
 			settings = {
 				[Enum.EditModeUnitFrameSetting.ViewRaidSize] = Enum.ViewRaidSize.Ten,
-				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-				[Enum.EditModeUnitFrameSetting.KeepGroupsTogether] = 1,
+				[Enum.EditModeUnitFrameSetting.RaidGroupDisplayType] = Enum.RaidGroupDisplayType.SeparateGroupsVertical,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
@@ -758,7 +750,7 @@ local classicSystemMap =
 				relativeTo = "BuffFrame",
 				relativePoint = "BOTTOMRIGHT",
 				offsetX = -13,
-				offsetY = -5,
+				offsetY = -60,
 			},
 		},
 	},

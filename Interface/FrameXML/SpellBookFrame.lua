@@ -227,29 +227,27 @@ function SpellBookFrame_Update()
 	SpellBookFrameTabButton2:SetText(SpellBookInfo[BOOKTYPE_PROFESSION].title);
 	SpellBookFrameTabButton2.binding = "TOGGLEPROFESSIONBOOK";
 
-	local tabIndex = 3;
+	local numTabs = 2;
 	-- check to see if we have a pet
 	local hasPetSpells, petToken = HasPetSpells();
 	SpellBookFrame.petTitle = nil;
 	if ( hasPetSpells and PetHasSpellbook() ) then
 		SpellBookFrame.petTitle = _G["PET_TYPE_"..petToken];
-		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
+		local nextTab = _G["SpellBookFrameTabButton"..3];
 		nextTab:Show();
 		nextTab.bookType = BOOKTYPE_PET;
 		nextTab.binding = "TOGGLEPETBOOK";
 		nextTab:SetText(SpellBookInfo[BOOKTYPE_PET].title);
-		tabIndex = tabIndex+1;
+		numTabs = numTabs + 1;
 	elseif (SpellBookFrame.bookType == BOOKTYPE_PET) then
-		SpellBookFrame.bookType = _G["SpellBookFrameTabButton"..tabIndex-1].bookType;
+		SpellBookFrame.bookType = _G["SpellBookFrameTabButton"..2].bookType;
 	end
 
-	local level = UnitLevel("player");
-
+	PanelTemplates_SetNumTabs(SpellBookFrame, numTabs);
 
 	-- Make sure the correct tab is selected
 	for i=1,MaxSpellBookTypes do
 		local tab = _G["SpellBookFrameTabButton"..i];
-		PanelTemplates_TabResize(tab, 0, nil, 40);
 		if ( tab.bookType == SpellBookFrame.bookType ) then
 			PanelTemplates_SelectTab(tab);
 			SpellBookFrame.currentTab = tab;

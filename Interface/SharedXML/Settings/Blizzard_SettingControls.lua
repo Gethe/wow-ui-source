@@ -24,7 +24,7 @@ end
 function DefaultTooltipMixin:OnLoad()
 	self.tooltipAnchorParent = nil;
 	self.tooltipAnchoring = "ANCHOR_RIGHT";
-	self.tooltipXOffset = 0;
+	self.tooltipXOffset = -10;
 	self.tooltipYOffset = 0;
 
 	self:InitDefaultTooltipScriptHandlers();
@@ -270,6 +270,7 @@ SettingsCheckBoxMixin:GenerateCallbackEvents(
 function SettingsCheckBoxMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	DefaultTooltipMixin.OnLoad(self);
+	self.tooltipXOffset = 0;
 end
 
 function SettingsCheckBoxMixin:Init(value, initTooltip)
@@ -476,7 +477,6 @@ function SettingsButtonControlMixin:OnLoad()
 
 	self.Button = CreateFrame("Button", nil, self, "UIPanelButtonTemplate");
 	self.Button:SetWidth(200, 26);
-	self.Button:SetPoint("LEFT", self, "CENTER", -40, 0);
 end
 
 function SettingsButtonControlMixin:Init(initializer)
@@ -484,6 +484,14 @@ function SettingsButtonControlMixin:Init(initializer)
 
 	self.Button:SetText(self.data.buttonText);
 	self.Button:SetScript("OnClick", self.data.buttonClick);
+
+	if self.data.name == "" then
+		self.Button:SetPoint("LEFT", self.Text, "LEFT", 0, 0);
+		self.Tooltip:Hide();
+	else
+		self.Button:SetPoint("LEFT", self, "CENTER", -40, 0);
+		self.Tooltip:Show();
+	end
 end
 
 function SettingsButtonControlMixin:Release()

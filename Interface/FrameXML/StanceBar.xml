@@ -28,6 +28,7 @@
 			<KeyValue key="noSpacers" value="true" type="boolean"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.StanceBar" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_STANCE_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
 
 		<Scripts>

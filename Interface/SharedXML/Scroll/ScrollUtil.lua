@@ -411,6 +411,10 @@ function ScrollUtil.RegisterTableBuilder(scrollBox, tableBuilder, elementDataTra
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, onReleased, onReleased);
 end
 
+function ScrollUtil.CalculateScrollBoxElementExtent(count, frameExtent, spacing)
+	return (count * frameExtent) + (math.max(0, count-1) * spacing);
+end
+
 ScrollBoxFactoryInitializerMixin = {};
 
 function ScrollBoxFactoryInitializerMixin:Init(frameTemplate)

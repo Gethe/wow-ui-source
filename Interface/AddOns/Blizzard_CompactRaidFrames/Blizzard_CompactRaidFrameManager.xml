@@ -186,7 +186,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								Settings.OpenToCategory("Audio");
+								Settings.OpenToCategory(INTERFACE_LABEL, RAID_FRAMES_LABEL);
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 							</OnClick>
 						</Scripts>
@@ -196,11 +196,6 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentHeaderDelineator" relativePoint="BOTTOMLEFT" x="-10" y="4"/>
 						</Anchors>
-					</Frame>
-					<Frame name="$parentProfileSelector" inherits="UIDropDownMenuTemplate" parentKey="profileSelector">
-						<Scripts>
-							<OnShow function="CompactRaidFrameManagerDisplayFrameProfileSelector_SetUp"/>
-						</Scripts>
 					</Frame>
 					<Frame name="$parentFilterOptions" parentKey="filterOptions">
 						<Size x="200" y="85"/>
@@ -294,6 +289,11 @@
 					<Button name="$parentEditMode" parentKey="editMode" inherits="UIMenuButtonStretchTemplate" text="HUD_EDIT_MODE_GROUP_MANAGER">
 						<Size x="85" y="20"/>
 						<Scripts>
+							<OnShow>
+								local NPE_AchievementID = 14287;
+								local _, _, _, completedNPE = GetAchievementInfo(NPE_AchievementID);
+								self:SetEnabled(completedNPE);
+							</OnShow>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								ShowUIPanel(EditModeManagerFrame);
@@ -305,8 +305,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								SetRaidProfileOption(GetActiveRaidProfile(), "shown", self.shownMode);
-								CompactRaidFrameManager_SetSetting("IsShown", self.shownMode);
+								SetCVar("raidOptionIsShown", not GetCVarBool("raidOptionIsShown"));
 							</OnClick>
 						</Scripts>
 					</Button>

@@ -61,29 +61,6 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 	end
 end
 
-function CompactRaidFrameManagerDisplayFrameProfileSelector_SetUp(self)
-	UIDropDownMenu_SetWidth(self, 165);
-	UIDropDownMenu_Initialize(self, CompactRaidFrameManagerDisplayFrameProfileSelector_Initialize);
-end
-
-function CompactRaidFrameManagerDisplayFrameProfileSelector_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	for i=1, GetNumRaidProfiles() do
-		local name = GetRaidProfileName(i);
-		info.text = name;
-		info.value = name;
-		info.func = CompactRaidFrameManagerDisplayFrameProfileSelector_OnClick;
-		info.checked = GetActiveRaidProfile() == info.value;
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function CompactRaidFrameManagerDisplayFrameProfileSelector_OnClick(self)
-	local profile = self.value;
-	CompactUnitFrameProfiles_ActivateRaidProfile(profile);
-end
-
 function CompactRaidFrameManager_UpdateShown()
 	if ShouldShowRaidFrames() then
 		CompactRaidFrameManager:Show();
@@ -129,13 +106,6 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 
 	FlowContainer_RemoveAllObjects(container);
 	FlowContainer_PauseUpdates(container);
-
-	if ShouldShowRaidFrames() then
-		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.profileSelector);
-		CompactRaidFrameManager.displayFrame.profileSelector:Show();
-	else
-		CompactRaidFrameManager.displayFrame.profileSelector:Hide();
-	end
 
 	if ( IsInRaid() ) then
 		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.filterOptions);
@@ -280,8 +250,8 @@ end
 function CompactRaidFrameManager_UpdateRoleFilterButton(button)
 	local totalAlive, totalCount = RaidInfoCounts["aliveRole"..button.role], RaidInfoCounts["totalRole"..button.role]
 	button:SetFormattedText("%s %d/%d", button.roleTexture, totalAlive, totalCount);
-	local keepGroupsTogether = EditModeManagerFrame:ShouldRaidFrameKeepGroupsTogether();
-	if ( totalCount == 0 or keepGroupsTogether ) then
+	local showSeparateGroups = EditModeManagerFrame:ShouldRaidFrameShowSeparateGroups();
+	if ( totalCount == 0 or showSeparateGroups ) then
 		button.selectedHighlight:Hide();
 		button:Disable();
 		button:SetAlpha(0.5);

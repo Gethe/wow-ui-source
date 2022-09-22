@@ -81,7 +81,7 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 		button:SetScript("OnClick", function()
 			if button.enabled then
 				self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ItemSelected, self, elementData);
-				CloseItemFlyout();
+				CloseProfessionsItemFlyout();
 			end
 		end);
 	end);
@@ -99,6 +99,13 @@ function ProfessionsItemFlyoutMixin:OnHide()
 	self:UnregisterEvents();
 
 	self.owner = nil;
+	--[[
+		NOTE: OnHide triggers when the frame is no longer visible, not when it is no longer shown.
+		This frame may become non-visible because its parent gets hidden, but it may itself still be shown.
+		Setting a nil parent when shown, even if not visible, causes the frame to become visisble.
+		This Hide call sets the frame to be explicitly hidden, and therefore not become visible when we nil out the parent.
+	]]
+	self:Hide();
 	self:SetParent(nil);
 end
 
@@ -113,7 +120,7 @@ function ProfessionsItemFlyoutMixin:OnEvent(event, ...)
 		end
 
 		if isRightButton or (not DoesAncestryInclude(self, mouseFocus) and mouseFocus ~= self) then
-			CloseItemFlyout();
+			CloseProfessionsItemFlyout();
 		end
 	end
 end

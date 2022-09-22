@@ -247,67 +247,71 @@
 		<Size x="115" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeftDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
+				<Texture parentKey="LeftActive" file="Interface\AchievementFrame\UI-Achievement-Header">
 					<Size x="21" y="59"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="5"/>
+						<Anchor point="TOPLEFT" x="-4"/>
 					</Anchors>
 					<TexCoords left="0.47265625" right="0.513671875" top="0.76953125" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentMiddleDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
-					<Size x="88" y="59"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.513671875" right="0.685546875" top="0.76953125" bottom="1.0"/>
-				</Texture>
-				<Texture name="$parentRightDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
+				<Texture parentKey="RightActive" file="Interface\AchievementFrame\UI-Achievement-Header">
 					<Size x="18" y="59"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+						<Anchor point="TOPRIGHT" x="4"/>
 					</Anchors>
 					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentLeft" file="Interface\AchievementFrame\UI-Achievement-Header">
-					<Size x="21" y="49"/>
+				<Texture parentKey="MiddleActive" file="Interface\AchievementFrame\UI-Achievement-Header">
+					<Size x="88" y="59"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0.47265625" right="0.513671875" top="0.76953125" bottom="1.0"/>
-				</Texture>
-				<Texture name="$parentMiddle" file="Interface\AchievementFrame\UI-Achievement-Header">
-					<Size x="88" y="49"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.LeftActive" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.RightActive" relativePoint="LEFT"/>
 					</Anchors>
 					<TexCoords left="0.513671875" right="0.685546875" top="0.76953125" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\AchievementFrame\UI-Achievement-Header">
+				<Texture parentKey="Left" file="Interface\AchievementFrame\UI-Achievement-Header">
+					<Size x="21" y="49"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4"/>
+					</Anchors>
+					<TexCoords left="0.47265625" right="0.513671875" top="0.76953125" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\AchievementFrame\UI-Achievement-Header">
 					<Size x="18" y="49"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+						<Anchor point="TOPRIGHT" x="4"/>
 					</Anchors>
 					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentLeftHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" hidden="true" alphaMode="ADD" parentKey="leftHighlight">
+				<Texture parentKey="Middle" file="Interface\AchievementFrame\UI-Achievement-Header">
+					<Size x="88" y="49"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.513671875" right="0.685546875" top="0.76953125" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="LeftHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" alphaMode="ADD">
 					<Size x="32" y="49"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="-1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" x="-3"/>
 					</Anchors>
 					<TexCoords left="0.720703125" right="0.783203125" top="0.76953125" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentRightHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" hidden="true" alphaMode="ADD" parentKey="rightHighlight">
+				<Texture parentKey="RightHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" alphaMode="ADD">
 					<Size x="18" y="49"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-4" y="-1"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right"/>
 					</Anchors>
 					<TexCoords left="0.923828125" right="0.986328125" top="0.76953125" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentMiddleHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" hidden="true" alphaMode="ADD" parentKey="middleHighlight">
+				<Texture parentKey="MiddleHighlight" file="Interface\AchievementFrame\UI-Achievement-Header" alphaMode="ADD">
 					<Size x="88" y="49"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeftHighlight" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeTo="$parentRightHighlight" relativePoint="LEFT"/>
+						<Anchor point="LEFT" relativeKey="$parent.LeftHighlight" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.RightHighlight" relativePoint="LEFT"/>
 					</Anchors>
 					<TexCoords left="0.783203125" right="0.923828125" top="0.76953125" bottom="1.0"/>
 				</Texture>
@@ -315,27 +319,15 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				local name = self:GetName();
-				_G[name.."Left"]:SetVertexColor(0.6, 0.6, 0.6);
-				_G[name.."Middle"]:SetVertexColor(0.6, 0.6, 0.6);
-				_G[name.."Right"]:SetVertexColor(0.6, 0.6, 0.6);
-				_G[name.."LeftDisabled"]:SetPoint("TOPLEFT", 0, 2);
+				self.Left:SetVertexColor(0.6, 0.6, 0.6);
+				self.Middle:SetVertexColor(0.6, 0.6, 0.6);
+				self.Right:SetVertexColor(0.6, 0.6, 0.6);
 			</OnLoad>
-			<OnEnter>
-				self.leftHighlight:Show();
-				self.middleHighlight:Show();
-				self.rightHighlight:Show();
-			</OnEnter>
-			<OnLeave>
-				self.leftHighlight:Hide();
-				self.middleHighlight:Hide();
-				self.rightHighlight:Hide();
-			</OnLeave>
 			<OnShow>
-				PanelTemplates_TabResize(self, 10);
+				PanelTemplates_TabResize(self, 30);
 			</OnShow>
 		</Scripts>
-		<ButtonText name="$parentText" parentKey="text">
+		<ButtonText name="$parentText" parentKey="Text">
 			<Anchors>
 				<Anchor point="CENTER" x="0" y="-3"/>
 			</Anchors>
@@ -2313,7 +2305,7 @@
 			</Button>
 			<Button name="$parentTab1" inherits="AchievementFrameTabButtonTemplate" id="1" text="ACHIEVEMENTS">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="11" y="-30"/>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="17" y="3"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -2323,9 +2315,6 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentTab2" inherits="AchievementFrameTabButtonTemplate" id="2" text="ACHIEVEMENTS_GUILD_TAB">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>
 				<Scripts>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
@@ -2334,9 +2323,6 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentTab3" inherits="AchievementFrameTabButtonTemplate" id="3" text="STATISTICS">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>
 				<Scripts>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());

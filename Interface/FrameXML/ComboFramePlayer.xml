@@ -3,11 +3,11 @@
   <Script file="ComboFramePlayer.lua"/>
   
 	<Frame name="ComboPointPlayerTemplate" mixin="ComboPointPlayerMixin" virtual="true">
-		<Size x="20" y="21"/>
+		<Size x="16" y="17"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="PointOff" atlas="ComboPoints-PointBg" useAtlasSize="false">
-					<Size x="20" y="21"/>
+					<Size x="16" y="17"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -15,7 +15,7 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Point" atlas="ComboPoints-ComboPoint" useAtlasSize="false" alpha="0" alphaMode="BLEND">
-					<Size x="20" y="21"/>
+					<Size x="16" y="17"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -84,9 +84,10 @@
 			<KeyValue key="tooltip2" value="COMBO_POINTS_DRUID_TOOLTIP" type="global"/>
 			<KeyValue key="resourcePointTemplate" value="ComboPointPlayerTemplate" type="string"/>
 			<KeyValue key="resourcePointSetupFunc" value="ComboPointPlayerMixin.Setup" type="global"/>
-			<KeyValue key="spacing" value="-1" type="number"/>
+			<KeyValue key="spacing" value="2" type="number"/>
 			<KeyValue key="class" value="DRUID" type="string"/>
 			<KeyValue key="showBarFunc" value="ComboPointPowerBar.SetupDruid" type="global"/>
+			<KeyValue key="topPadding" value="5" type="number"/>
 		</KeyValues>
 	</Frame>
 </Ui>

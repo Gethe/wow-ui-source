@@ -6,30 +6,22 @@ function ProfessionsRecraftSlotMixin:OnLoad()
 end
 
 function ProfessionsRecraftSlotMixin:Init(transaction)
-	if self.continuableContainer then
-		self.continuableContainer:Cancel();
+	local item;
+	local itemGUID = transaction:GetRecraftAllocation();
+	if itemGUID then
+		item = Item:CreateFromItemGUID(itemGUID);
 	end
-	self.continuableContainer = ContinuableContainer:Create();
-	
-	local function OnItemsLoaded()
-		local item;
-		local itemGUID = transaction:GetRecraftAllocation();
-		if itemGUID then
-			item = Item:CreateFromItemGUID(itemGUID);
-		end
-		self:SetItem(item);
+	self:SetItem(item);
 
-		if item then
-			self.DimArrow:Hide();
-			self.AnimatedArrow.Anim:Restart();
-			self.AnimatedArrow:Show();
-		else
-			self.AnimatedArrow.Anim:Stop();
-			self.AnimatedArrow:Hide();
-			self.DimArrow:Show();
-		end
+	if item then
+		self.DimArrow:Hide();
+		self.AnimatedArrow.Anim:Restart();
+		self.AnimatedArrow:Show();
+	else
+		self.AnimatedArrow.Anim:Stop();
+		self.AnimatedArrow:Hide();
+		self.DimArrow:Show();
 	end
-	self.continuableContainer:ContinueOnLoad(OnItemsLoaded);
 
 	local recipeID = transaction:GetRecipeID();
 	self.InputSlot:SetCursorItemPredicate(function(draggedItemGUID)
@@ -41,9 +33,26 @@ end
 function ProfessionsRecraftSlotMixin:SetItem(item)
 	self.InputSlot:Init(item);
 
-	-- Fixme output item does not represent the actual output result. Still needs the
-	-- synthesized item preview.
-	self.OutputSlot:Init(item);
+	if item then
+		self.OutputSlot:Show();
+		self.OutputSlot:Init(item);
+	else
+		self.OutputSlot:Hide();
+	end
+end
+
+ProfessionsRecraftOutputSlotMixin = {};
+
+
+function ProfessionsRecraftOutputSlotMixin:OnLoad()
+	self:ClearNormalTexture();
+end
+
+function ProfessionsRecraftOutputSlotMixin:Init(item)
+	self.ItemFrame:Show();
+
+	SetItemButtonTexture(self, item:GetItemIcon());
+	SetItemCraftingQualityOverlay(self, item:GetItemLink());
 end
 
 ProfessionsRecraftInputSlotMixin = {};
@@ -51,6 +60,15 @@ ProfessionsRecraftInputSlotMixin = {};
 function ProfessionsRecraftInputSlotMixin:OnLoad()
 	self:RegisterForClicks("RightButtonDown", "LeftButtonDown");
 	self:RegisterForDrag("LeftButton");
+
+	local scale = .65;
+	self:GetNormalTexture():SetScale(scale);
+	self:GetPushedTexture():SetScale(scale);
+
+	self.BorderTexture = self:CreateTexture(nil, "OVERLAY");
+	self.BorderTexture:SetPoint("CENTER", 0, 1);
+	self.BorderTexture:SetDrawLayer("OVERLAY", 6);
+	self.BorderTexture:SetScale(.65);
 end
 
 function ProfessionsRecraftInputSlotMixin:SetCursorItemPredicate(cursorItemPredicate)
@@ -58,22 +76,24 @@ function ProfessionsRecraftInputSlotMixin:SetCursorItemPredicate(cursorItemPredi
 end
 
 function ProfessionsRecraftInputSlotMixin:Init(item)
-	local textureFormat = item and "%s-leftitem-border-full" or "%s-leftitem-border-empty";
-	SetupTextureKitOnFrame("cyphersetupgrade", self.ButtonFrame, textureFormat, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
-		
 	self:ClearNormalTexture();
-
+	
+	SetupTextureKitOnFrame("cyphersetupgrade", self.BorderTexture, "%s-leftitem-border-full", TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	
 	if item then
 		SetItemButtonTexture(self, item:GetItemIcon());
 		SetItemCraftingQualityOverlay(self, item:GetItemLink());
 		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
+		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
 		self.Glow.EmptySlotGlow:Hide();
 		self.Glow.PulseEmptySlotGlow:Stop();
 	else
 		SetItemButtonTexture(self, nil);
 		ClearItemCraftingQualityOverlay(self)
-		self:SetNormalAtlas("itemupgrade_greenplusicon");
-		self:SetPushedAtlas("itemupgrade_greenplusicon_pressed");
+
+		self:SetNormalAtlas("itemupgrade_greenplusicon", false);
+		self:SetPushedAtlas("itemupgrade_greenplusicon_pressed", false);
+		self:ClearHighlightTexture();
 		self.Glow.EmptySlotGlow:Show();
 		self.Glow.PulseEmptySlotGlow:Restart();
 	end
@@ -87,22 +107,4 @@ function ProfessionsRecraftInputSlotMixin:OnReceiveDrag()
 		Professions.TransitionToRecraft(cursorItemGUID);
 	end
 	ClearCursor();
-end
-
-
-ProfessionsRecraftOutputSlotMixin = {};
-
-function ProfessionsRecraftOutputSlotMixin:Init(item)
-	local textureFormat = item and "%s-rightitem-border-full" or "%s-rightitem-border-empty";
-	SetupTextureKitOnFrame("cyphersetupgrade", self.ButtonFrame, textureFormat, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
-	
-	self:ClearNormalTexture();
-
-	if item then
-		SetItemButtonTexture(self, item:GetItemIcon());
-		SetItemCraftingQualityOverlay(self, item:GetItemLink());
-	else
-		SetItemButtonTexture(self, nil);
-		ClearItemCraftingQualityOverlay(self)
-	end
 end

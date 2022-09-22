@@ -9,7 +9,6 @@ local CONTAINER_WIDTH = 178;
 local CONTAINER_SPACING = 8;
 local ITEM_SPACING_X = 5;
 local ITEM_SPACING_Y = 5;
-local MINIMUM_CONTAINER_OFFSET_X = 10;
 local CONTAINER_SCALE = 0.75;
 local BACKPACK_BASE_SIZE = 16;
 local FRAME_THAT_OPENED_BAGS = nil;
@@ -701,9 +700,6 @@ function ContainerFrame_OnHide(self)
 end
 
 function ContainerFrame_OnShow(self)
-	-- [NB] TODO: Portrait frames are getting new bgs, until then, just hide the current one, only bags are custom for now.
-	self.Bg:Hide();
-
 	EventRegistry:TriggerEvent("ContainerFrame.OpenBag", self);
 
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
@@ -723,7 +719,15 @@ function ContainerFrame_OnShow(self)
 	HelpTip:Hide(MainMenuBarBackpackButton, AZERITE_TUTORIAL_ITEM_IN_BAG);
 end
 
+function ContainerFrame_OnCloseButtonClicked(closeButton)
+	closeButton:GetParent():OnCloseClicked();
+end
+
 ContainerFrameMixin = CreateFromMixins(BaseContainerFrameMixin);
+
+function ContainerFrameMixin:OnCloseClicked()
+	CloseBag(self:GetBagID());
+end
 
 function ContainerFrameMixin:UpdateMoneyFrame()
 	-- [NB] TODO: Convert to single MoneyFrame for each container, for now every container has its own .MoneyFrame
@@ -806,11 +810,7 @@ function ContainerFrameMixin:GetTextureSuffix()
 end
 
 function ContainerFrameMixin:UpdateName()
-	if self:GetBagSize() == 1 then
-		self:SetTitle("");
-	else
-		self:SetTitle(GetBagName(self:GetBagID()));
-	end
+	self:SetTitle(GetBagName(self:GetBagID()));
 end
 
 function ContainerFrameMixin:UpdateMiscellaneousFrames()
@@ -829,18 +829,10 @@ function ContainerFrameMixin:CheckUpdateDynamicContents()
 end
 
 function ContainerFrameMixin:CalculateWidth()
-	if self:GetBagSize() == 1 then
-		return 99;
-	end
-
 	return CONTAINER_WIDTH;
 end
 
 function ContainerFrameMixin:CalculateHeight()
-	if self:GetBagSize() == 1 then
-		return 70;
-	end
-
 	local rows = self:GetRows();
 	local itemButton = self.Items[1];
 	local itemsHeight = (rows * itemButton:GetHeight()) + ((rows - 1) * ITEM_SPACING_Y);
@@ -877,32 +869,25 @@ end
 function ContainerFrameMixin:UpdateItemLayout()
 	local bagSize = self:GetBagSize();
 
-	if bagSize == 1 then
-		-- Halloween gag gift
-		self.Items[1]:SetID(1);
-		self.Items[1]:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -10, 5);
-		self.Items[1]:Show();
-    else
-		local isBankBag = self:IsBankBag();
-		local isCombinedBag = self:IsCombinedBagContainer();
-		local requiresIDAssignment = isBankBag or not isCombinedBag;
-		local itemsToLayout = {};
+	local isBankBag = self:IsBankBag();
+	local isCombinedBag = self:IsCombinedBagContainer();
+	local requiresIDAssignment = isBankBag or not isCombinedBag;
+	local itemsToLayout = {};
 
-		for i, itemButton in self:EnumerateValidItems() do
-			table.insert(itemsToLayout, itemButton);
+	for i, itemButton in self:EnumerateValidItems() do
+		table.insert(itemsToLayout, itemButton);
 
-			-- NOTE: This workaround has to do with the fact that banks are not using combined inventory yet, so this
-			-- is the most ideal place to update the itemSlot id.
-			if requiresIDAssignment then
-				itemButton:SetID(bagSize - i + 1);
-				itemButton:SetBagID(self:GetBagID());
-			end
-
-			itemButton:Show();
+		-- NOTE: This workaround has to do with the fact that banks are not using combined inventory yet, so this
+		-- is the most ideal place to update the itemSlot id.
+		if requiresIDAssignment then
+			itemButton:SetID(bagSize - i + 1);
+			itemButton:SetBagID(self:GetBagID());
 		end
 
-		AnchorUtil.GridLayout(itemsToLayout, self:GetInitialItemAnchor(), self:GetAnchorLayout());
+		itemButton:Show();
 	end
+
+	AnchorUtil.GridLayout(itemsToLayout, self:GetInitialItemAnchor(), self:GetAnchorLayout());
 
 	for i = bagSize + 1, #self.Items do
 		self.Items[i]:Hide();
@@ -1112,8 +1097,12 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	frame:CheckUpdateDynamicContents();
 end
 
+local function GetInitialContainerFrameOffsetX()
+	return EditModeUtil:GetRightActionBarWidth() + 10;
+end
+
 local function GetContainerScale()
-	local containerFrameOffsetX = math.max(CONTAINER_OFFSET_X, MINIMUM_CONTAINER_OFFSET_X);
+	local containerFrameOffsetX = GetInitialContainerFrameOffsetX();
 	local xOffset, yOffset, screenHeight, freeScreenHeight, leftMostPoint, column;
 	local screenWidth = GetScreenWidth();
 	local containerScale = 1;
@@ -1168,7 +1157,7 @@ function UpdateContainerFrameAnchors()
 	local containerScale = GetContainerScale();
 	local screenHeight = GetScreenHeight() / containerScale;
 	-- Adjust the start anchor for bags depending on the multibars
-	local xOffset = math.max(CONTAINER_OFFSET_X, MINIMUM_CONTAINER_OFFSET_X) / containerScale;
+	local xOffset = GetInitialContainerFrameOffsetX() / containerScale;
 	local yOffset = CONTAINER_OFFSET_Y / containerScale;
 	-- freeScreenHeight determines when to start a new column of bags
 	local freeScreenHeight = screenHeight - yOffset;

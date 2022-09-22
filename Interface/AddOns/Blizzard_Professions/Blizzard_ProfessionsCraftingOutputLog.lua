@@ -1,43 +1,168 @@
--- Shared by ProfessionsCraftingOutputLogResourceTemplate and ResultContainer.
-local function InitializeOutputFrame(frame, resultData)
-	local item = Item:CreateFromItemLink(resultData.hyperlink);
-	frame.Name:SetText(item:GetItemName());
-	frame.Name:SetTextColor(item:GetItemQualityColorRGB());
-
-	if resultData.craftingQuality then
-		local atlasSize = 25;
-		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(resultData.craftingQuality), atlasSize, atlasSize);
-		frame.Quality:SetText(PROFESSIONS_CRAFTING_FORM_OUTPUT_QUALITY:format(atlasMarkup));
-		frame.Quality:Show();
-	else
-		frame.Quality:Hide();
-	end
-	
-	local icon = item:GetItemIcon();
-	local itemID = item:GetItemID();
-	local quantity = resultData.quantity;
-	local quality = item:GetItemQuality();
-	Professions.SetupOutputIconCommon(frame.OutputIcon, quantity, quantity, icon, itemID, quality);
-end
+local ScrollBoxPad = 6;
+local ScrollBoxSpacing = 2;
+local ElementBonusRowHeight = 31;
 
 ProfessionsCraftingOutputLogElementMixin = {};
 
-function ProfessionsCraftingOutputLogElementMixin:Init(resultData)
+function ProfessionsCraftingOutputLogElementMixin:OnLoad()
+	self.resourcesFramePool = CreateFramePool("ItemButton", self);
+		
+	self.ItemContainer.CritText:SetScript("OnLeave", GameTooltip_Hide);
+	self.ItemContainer.Item:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.Multicraft.Text:SetText(PROFESSIONS_OUTPUT_MULTICRAFT);
+	self.Multicraft.Text:SetScript("OnLeave", GameTooltip_Hide);
+	self.Multicraft.Item.noQualityOverlay = true;
+
+	self.Resources.Text:SetText(PROFESSIONS_OUTPUT_RESOURCE_RETURN);
+	self.Resources.Text:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.CreationBonus.Text:SetText(PROFESSIONS_OUTPUT_FIRST_CREATE_BONUS);
+	self.CreationBonus.Text:SetScript("OnLeave", GameTooltip_Hide);
+	self.CreationBonus.Item:SetScript("OnLeave", GameTooltip_Hide);
+end
+
+function ProfessionsCraftingOutputLogElementMixin:Init()
+	self.resourcesFramePool:ReleaseAll();
+
+	local resultData = self:GetElementData();
+
 	local continuableContainer = ContinuableContainer:Create();
-	local item = Item:CreateFromItemID(resultData.itemID);
+	local item = Item:CreateFromItemLink(resultData.hyperlink);
 	continuableContainer:AddContinuable(item);
 	
 	local function OnItemLoaded()
-		InitializeOutputFrame(self, resultData);
+		self.ItemContainer.Text:SetText(item:GetItemName());
+		self.ItemContainer.Text:SetTextColor(item:GetItemQualityColorRGB());
 
-		self.OutputIcon:SetScript("OnLeave", GameTooltip_Hide);
-		self.OutputIcon:SetScript("OnEnter", function(button)
-			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+		self.ItemContainer.Item:SetItem(resultData.hyperlink);
+		self.ItemContainer.Item:SetItemButtonCount(resultData.quantity);
+		self.ItemContainer.Item:SetScript("OnEnter", function(button)
+			GameTooltip:SetOwner(self.ItemContainer.Item, "ANCHOR_RIGHT");
 			GameTooltip:SetHyperlink(resultData.hyperlink);
 		end);
 	end
 
 	continuableContainer:ContinueOnLoad(OnItemLoaded);
+	
+	if resultData.isCrit then
+		self.ItemContainer.CritText:SetScript("OnEnter", function(text)
+			GameTooltip:SetOwner(text, "ANCHOR_RIGHT");
+			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_OUTPUT_INSPIRATION_TITLE);
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_OUTPUT_INSPIRATION_DESC);
+			GameTooltip:Show();
+		end);
+
+		self.ItemContainer.CritFrame:Show();
+		self.ItemContainer.CritText:Show();
+	else
+		self.ItemContainer.CritFrame:Hide();
+		self.ItemContainer.CritText:Hide();
+	end
+
+	local rows = {};
+	if resultData.multicraft > 0 then
+		self.Multicraft.Item:SetItem(resultData.hyperlink);
+		self.Multicraft.Text:SetScript("OnEnter", function(text)
+			GameTooltip:SetOwner(text, "ANCHOR_RIGHT");
+			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_OUTPUT_MULTICRAFT_TITLE);
+			local tooltipText = PROFESSIONS_OUTPUT_MULTICRAFT_DESC:format(resultData.multicraft);
+			GameTooltip_AddNormalLine(GameTooltip, tooltipText);
+			GameTooltip:Show();
+		end);
+
+		table.insert(rows, self.Multicraft);
+	end
+
+	if resultData.resourcesReturned then
+		local resourcesContainer = ContinuableContainer:Create();
+		for index, resource in ipairs(resultData.resourcesReturned) do
+			local item = Item:CreateFromItemID(resource.itemID);
+			resourcesContainer:AddContinuable(item);
+		end
+
+		local function FactoryFunction(index)
+			local resource = resultData.resourcesReturned[index];
+			if resource then
+				local itemButton = self.resourcesFramePool:Acquire();
+				itemButton:SetScale(.6);
+				return itemButton;
+			end
+			return nil;
+		end
+
+		local count = #resultData.resourcesReturned;
+		local anchor = AnchorUtil.CreateAnchor("LEFT", self.Resources.Bracket, "RIGHT", 5, -10);
+		local direction, stride, paddingX, paddingY = GridLayoutMixin.Direction.TopLeftToBottomRight, count, 4, 0;
+		local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
+		local itemButtons = AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, count, anchor, layout);
+
+		local function OnResourcesLoaded()
+			for index, itemButton in ipairs(itemButtons) do
+				local resource = resultData.resourcesReturned[index];
+
+				local item = Item:CreateFromItemID(resource.itemID);
+				itemButton:SetItem(resource.itemID);
+				itemButton:SetItemButtonCount(resource.quantity);
+				itemButton:Show();
+
+				itemButton:SetScript("OnLeave", GameTooltip_Hide);
+				itemButton:SetScript("OnEnter", function(button)
+					GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+					GameTooltip:SetItemByID(resource.itemID);
+				end);
+			end
+
+			self.Resources.Text:SetScript("OnEnter", function(text)
+				GameTooltip:SetOwner(text, "ANCHOR_RIGHT");
+				GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_OUTPUT_RESOURCEFULNESS_TITLE);
+				GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_OUTPUT_RESOURCEFULNESS_DESC);
+				GameTooltip:Show();
+			end);
+		end
+
+		self.Resources.Text:SetPoint("LEFT", itemButtons[count], "RIGHT", 7, 0);
+
+		resourcesContainer:ContinueOnLoad(OnResourcesLoaded);
+
+		table.insert(rows, self.Resources);
+	end
+
+	if resultData.awardSpecPoint then
+		local currencyInfo = Professions.GetCurrentProfessionCurrencyInfo();
+		self.CreationBonus.Item:SetItemButtonTexture(currencyInfo.iconFileID);
+		self.CreationBonus.Item:SetScript("OnEnter", function(button)
+			GameTooltip:SetOwner(button, "ANCHOR_RIGHT", 0, 0);
+			Professions.SetupProfessionsCurrencyTooltip(currencyInfo);
+			GameTooltip:Show();
+		end);
+
+		self.CreationBonus.Text:SetScript("OnEnter", function(text)
+			GameTooltip:SetOwner(text, "ANCHOR_RIGHT", 0, 0);
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_OUTPUT_FIRST_CREATE_DESC);
+			GameTooltip:Show();
+		end);
+
+		table.insert(rows, self.CreationBonus);
+	end
+
+	for index, row in ipairs(self.Rows) do
+		row:ClearAllPoints();
+		row:Hide();
+	end
+
+	local offset = -46;
+	for index, row in ipairs(rows) do
+		row:SetPoint("TOPLEFT", 0, offset);
+		row:SetPoint("TOPRIGHT", 0, offset);
+		row:Show();
+		offset = offset - ElementBonusRowHeight;
+	end
+
+	if not resultData.displayed then
+		resultData.displayed = true;
+		self.ShowAnim:Play();
+	end
 end
 
 ProfessionsCraftingOutputLogMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -49,167 +174,90 @@ ProfessionsCraftingOutputLogMixin:GenerateCallbackEvents(
 
 function ProfessionsCraftingOutputLogMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
+	ScrollingFlatPanelMixin.OnLoad(self);
 	
-	local view = CreateScrollBoxListLinearView();
+	local view = CreateScrollBoxListLinearView(ScrollBoxPad, ScrollBoxPad, ScrollBoxPad, ScrollBoxPad, ScrollBoxSpacing);
 	
-	local function Initializer(frame, elementData)
-		frame:Init(elementData);
+	local function Initializer(frame, resultData)
+		frame:Init(resultData);
 	end
 	view:SetElementInitializer("ProfessionsCraftingOutputLogElementTemplate", Initializer);
 
-	ScrollUtil.InitScrollBoxListWithScrollBar(self.ResultsContainer.ScrollBox, self.ResultsContainer.ScrollBar, view);
-
-	self.Header:SetText(PROFESSIONS_CRAFTING_COMPLETE);
-	
-	local function OnCancel()
-		self:Hide();
-		PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_EXIT);
-	end
-
-	self.CloseButton:SetScript("OnClick", OnCancel);
-
-	self.ExitButton:SetTextToFit(PROFESSIONS_CRAFTING_FORM_OUTPUT_EXIT);
-	self.ExitButton:SetScript("OnClick", OnCancel);
-
-	self.RecraftButton:SetTextToFit(PROFESSIONS_CRAFTING_FORM_OUTPUT_RECRAFT);
-	self.RecraftButton:Disable();
-
-	self.ResultContainer.OutputIcon:SetScript("OnLeave", GameTooltip_Hide);
-	self.ResultContainer.OutputIcon:SetScript("OnEnter", function(button)
-		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-		GameTooltip:SetHyperlink(self.resultDatas[1].hyperlink);
+	view:SetElementExtentCalculator(function(dataIndex, resultData)
+		local height = 46;
+		local rows = 0;
+		if resultData.multicraft > 0 then
+			rows = rows + 1;
+		end
+		if resultData.resourcesReturned then
+			rows = rows + 1;
+		end
+		if resultData.awardSpecPoint then
+			rows = rows + 1;
+		end
+		return height + (rows * ElementBonusRowHeight);
 	end);
 
-	self.resourcesFramePool = CreateFramePool("FRAME", self.ResultContainer, "ProfessionsCraftingOutputLogResourceTemplate");
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.ScrollBox:SetShadowsFrameLevel(self.ScrollBox.ScrollTarget:GetFrameLevel() + 15);
+	self.ScrollBox:SetShadowsScale(0.2);
+	self.ScrollBox:GetUpperShadowTexture():SetTexCoord(0, 1, 1, 0);
+	self.ScrollBox:GetUpperShadowTexture():SetPoint("TOPLEFT", 30, 0);
+	self.ScrollBox:GetUpperShadowTexture():SetPoint("TOPRIGHT", -30, 0);
+	self.ScrollBox:GetLowerShadowTexture():SetPoint("BOTTOMLEFT", 30, 0);
+	self.ScrollBox:GetLowerShadowTexture():SetPoint("BOTTOMRIGHT", -30, 0);
 end
 
 function ProfessionsCraftingOutputLogMixin:OnEvent(event, ...)
 	if event == "TRADE_SKILL_ITEM_CRAFTED_RESULT" then
-		if self.resultHandler then
-			local resultData = ...;
-			table.insert(self.resultDatas, resultData);
+		local resultData = ...;
 
-			self.resultHandler(self, resultData);
-		end	
-		self:Show();
+		if not self.ScrollBox:HasDataProvider() then
+			self.ScrollBox:SetDataProvider(CreateDataProvider());
+		end
+
+		self.ScrollBox:InsertElementData(resultData);
+
+		if self:IsShown() then
+			self:Resize();
+		else
+			self:Open();
+		end
+
+		self.ScrollBox:ScrollToEnd();
 	end
 end
 
 function ProfessionsCraftingOutputLogMixin:OnHide()
 	self:UnregisterEvents();
 	self:UnregisterEvent("TRADE_SKILL_ITEM_CRAFTED_RESULT");
+
+	self.ScrollBox:ClearDataProvider();
 end
 
-function ProfessionsCraftingOutputLogMixin:Close()
-	self:Hide();
+function ProfessionsCraftingOutputLogMixin:OnCloseCallback()
+	ScrollingFlatPanelMixin.OnCloseCallback(self);
+	PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_EXIT);
 end
 
-function ProfessionsCraftingOutputLogMixin:StartListening(successive)
-	if successive then
-		self.RecraftButton:Hide();
+function ProfessionsCraftingOutputLogMixin:CalculateElementsHeight()
+	local view = self.ScrollBox:GetView();
+	local elementExtentCalculator = view:GetElementExtentCalculator();
+	local dataProvider = self.ScrollBox:GetDataProvider();
 
-		self.resultHandler = self.ProcessSuccessiveCraftingResult;
-
-		self.ResultContainer:Hide();
-		self.ResultsContainer:Show();
-
-		self.ResultsContainer.ScrollBox:SetDataProvider(CreateDataProvider());
-		
-		self:SetHeight(400);
-	else
-		self.resultHandler = self.ProcessSingleCraftingResult;
-
-		self.ResultContainer:Show();
-		self.ResultsContainer:Hide();
+	local height = 0;
+	local panelMaxHeight = self:GetPanelMaxHeight();
+	for index, elementData in dataProvider:Enumerate() do
+		height = height + elementExtentCalculator(index, elementData);
+		-- Skip the rest if we've already met the max height.
+		if height >= panelMaxHeight then
+			return panelMaxHeight;
+		end
 	end
+	return height;
+end
 
-	self.resultDatas = {};
+function ProfessionsCraftingOutputLogMixin:StartListening()
 	self:RegisterEvent("TRADE_SKILL_ITEM_CRAFTED_RESULT");
-end
-
-function ProfessionsCraftingOutputLogMixin:ProcessSingleCraftingResult(resultData)
-	self.resourcesFramePool:ReleaseAll();
-
-	local continuableContainer = ContinuableContainer:Create();
-	local item = Item:CreateFromItemLink(resultData.hyperlink);
-	continuableContainer:AddContinuable(item);
-
-	local frames = nil;
-	if resultData.resourcesReturned then
-		for index, resource in ipairs(resultData.resourcesReturned) do
-			local item = Item:CreateFromItemID(resource.itemID);
-			continuableContainer:AddContinuable(item);
-		end
-			
-		local function FactoryFunction(index)
-			local resource = resultData.resourcesReturned[index];
-			if resource then
-				local frame = self.resourcesFramePool:Acquire();
-				return frame;
-			end
-			return nil;
-		end
-
-		local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self.ResultContainer.OutputIcon, "BOTTOMLEFT", 0, -20);
-		local direction, stride, paddingX, paddingY = GridLayoutMixin.Direction.TopLeftToBottomRight, 1, 0, 0;
-		local layout = AnchorUtil.CreateGridLayout(direction, stride, paddingX, paddingY);
-		frames = AnchorUtil.GridLayoutFactoryByCount(FactoryFunction, 6, anchor, layout);
-	end
-
-	local function OnItemsLoaded()
-		InitializeOutputFrame(self.ResultContainer, resultData);
-		
-		local height = 180;
-		if frames then
-			local scale = .75;
-			for index, frame in ipairs(frames) do
-				local resource = resultData.resourcesReturned[index];
-				local itemID = resource.itemID;
-				local quantity = resource.quantity;
-
-				local item = Item:CreateFromItemID(itemID);
-				local icon = item:GetItemIcon();
-				local quality = item:GetItemQuality();
-				Professions.SetupOutputIconCommon(frame.OutputIcon, quantity, quantity, icon, itemID, quality);
-				
-				frame.OutputIcon:SetScale(scale);
-				frame.OutputIcon.Count:SetScale(1 / scale);
-				frame.OutputIcon:SetScript("OnLeave", GameTooltip_Hide);
-				frame.OutputIcon:SetScript("OnEnter", function(button)
-					GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-					GameTooltip:SetItemByID(itemID);
-				end);
-
-				frame:Show();
-			end
-
-			local info = C_XMLUtil.GetTemplateInfo("ProfessionsCraftingOutputLogResourceTemplate");
-			self:SetHeight(height + (info.height * #frames));
-		else
-			self:SetHeight(height);
-		end
-	end
-
-	continuableContainer:ContinueOnLoad(OnItemsLoaded);
-
-	if resultData.recraftable then
-		self.RecraftButton:Show();
-		self.RecraftButton:Enable();
-		self.RecraftButton:SetScript("OnClick", function(button)
-			Professions.TransitionToRecraft(resultData.itemGUID);
-			self:Hide();
-			PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_RECRAFT);
-		end);
-	else
-		self.RecraftButton:Hide();
-	end
-
-	-- Temporary
-	self.RecraftButton:Hide();
-	self.ExitButton:Hide();
-end
-
-function ProfessionsCraftingOutputLogMixin:ProcessSuccessiveCraftingResult(data)
-	self.ResultsContainer.ScrollBox:InsertElementData(data);
-	self.ResultsContainer.ScrollBox:ScrollToEnd();
 end

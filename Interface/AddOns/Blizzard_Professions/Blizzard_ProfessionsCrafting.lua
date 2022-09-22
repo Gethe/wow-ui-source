@@ -25,6 +25,7 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	EventRegistry:RegisterCallback("ProfessionsRecipeListMixin.Event.OnRecipeSelected", self.OnRecipeSelected, self);
 
 	UIDropDownMenu_SetInitializeFunction(self.RecipeList.FilterDropDown, GenerateClosure(self.InitFilterMenu, self));
+	UIDropDownMenu_SetDisplayMode(self.RecipeList.FilterDropDown, "MENU");
 
 	self.CreateButton:SetScript("OnClick", GenerateClosure(self.Create, self));
 	self.CreateAllButton:SetScript("OnClick", GenerateClosure(self.CreateAll, self));
@@ -70,7 +71,6 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	end
 	self.SchematicForm:RegisterCallback(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified, OnAllocationsModified);
 
-	EventRegistry:RegisterCallback("Professions.ProfessionUpdated", self.OnProfessionUpdated, self);
 	EventRegistry:RegisterCallback("Professions.ProfessionSelected", self.OnProfessionSelected, self);
 	EventRegistry:RegisterCallback("Professions.ReagentClicked", self.OnReagentClicked, self);
 	EventRegistry:RegisterCallback("Professions.TransactionUpdated", self.ValidateControls, self);
@@ -199,10 +199,6 @@ function ProfessionsCraftingPageMixin:OnProfessionSelected(professionInfo)
 	self:Init(professionInfo);
 end
 
-function ProfessionsCraftingPageMixin:OnProfessionUpdated(professionInfo)
-	self:Init(professionInfo);
-end
-
 function ProfessionsCraftingPageMixin:InitFilterMenu(dropdown, level)
 	Professions.InitFilterMenu(dropdown, level, GenerateClosure(self.UpdateFilterResetVisibility, self));
 end
@@ -212,6 +208,14 @@ function ProfessionsCraftingPageMixin:UpdateFilterResetVisibility()
 end
 
 function ProfessionsCraftingPageMixin:OnRecipeSelected(recipeInfo)
+	-- Only expect that if this is called, it is in response to selecting a recipe from the
+	-- list, in which case we never want the recrafting version of a recipe to be displayed.
+	Professions.EraseRecraftingTransitionData();
+
+	self:SelectRecipe(recipeInfo);
+end
+
+function ProfessionsCraftingPageMixin:SelectRecipe(recipeInfo, skipSelectInList)
 	-- The selected recipe from the list will be the first level. 
 	-- Always forward the highest learned recipe to the schematic.
 	local highestRecipe = Professions.GetHighestLearnedRecipe(recipeInfo);
@@ -221,8 +225,10 @@ function ProfessionsCraftingPageMixin:OnRecipeSelected(recipeInfo)
 
 	self:ValidateControls();
 
-	local scrollToRecipe = false;
-	self.RecipeList:SelectRecipe(recipeInfo, scrollToRecipe);
+	if not skipSelectInList then
+		local scrollToRecipe = false;
+		self.RecipeList:SelectRecipe(recipeInfo, scrollToRecipe);
+	end
 end
 
 function ProfessionsCraftingPageMixin:SetupMultipleInputBox(count, countMax)
@@ -481,6 +487,30 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 end
 
 function ProfessionsCraftingPageMixin:Init(professionInfo)
+	-- If we're reinitializing the crafting page due to selecting a recrafting recipe
+	-- then don't modify the recipe list at all and just forward the desired recipe to the
+	-- schematic form in SelectRecipe.
+	local transitionData = Professions.GetRecraftingTransitionData();
+	if transitionData then
+		local dataProvider = self.RecipeList.ScrollBox:GetDataProvider();
+		if dataProvider then
+			local node = dataProvider:FindElementDataByPredicate(function(node)
+				local data = node:GetData();
+				local recipeInfo = data.recipeInfo;
+				return recipeInfo and recipeInfo.recipeID == professionInfo.openRecipeID;
+			end);
+
+			if node then
+				local data = node:GetData();
+				local recipeInfo = data.recipeInfo;
+
+				local skipSelectInList = true;
+				self:SelectRecipe(recipeInfo, skipSelectInList);
+				return;
+			end
+		end
+	end
+
 	local oldProfessionInfo = self.professionInfo;
 	self.professionInfo = professionInfo;
 
@@ -519,32 +549,32 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 		end
 	end
 
-	local currentRecipeInfo = nil;
-	local openRecipeID = professionInfo.openRecipeID;
-	if openRecipeID then
-		local node = dataProvider:FindElementDataByPredicate(function(node)
-			local data = node:GetData();
-			local recipeInfo = data.recipeInfo;
-			return recipeInfo and recipeInfo.recipeID == openRecipeID;
-		end);
+		local currentRecipeInfo = nil;
+		local openRecipeID = professionInfo.openRecipeID;
+		if openRecipeID then
+			local node = dataProvider:FindElementDataByPredicate(function(node)
+				local data = node:GetData();
+				local recipeInfo = data.recipeInfo;
+				return recipeInfo and recipeInfo.recipeID == openRecipeID;
+			end);
 
-		assert(node, string.format("%d, %d", openRecipeID, dataProvider:GetSize()));
-		if node then
-			local data = node:GetData();
-			currentRecipeInfo = data.recipeInfo;
-		end
-	else
-		if changedProfessionID then
-			currentRecipeInfo = SelectInitialRecipe();
+			assert(node, string.format("%d, %d", openRecipeID, dataProvider:GetSize()));
+			if node then
+				local data = node:GetData();
+				currentRecipeInfo = data.recipeInfo;
+			end
 		else
-			currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
-			if currentRecipeInfo then
-				currentRecipeInfo = Professions.GetFirstRecipe(currentRecipeInfo);
-			else
+			if changedProfessionID then
 				currentRecipeInfo = SelectInitialRecipe();
+			else
+				currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
+				if currentRecipeInfo then
+					currentRecipeInfo = Professions.GetFirstRecipe(currentRecipeInfo);
+				else
+					currentRecipeInfo = SelectInitialRecipe();
+				end
 			end
 		end
-	end
 
 	local hasRecipe = currentRecipeInfo ~= nil;
 	if hasRecipe then
@@ -714,9 +744,7 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 		end
 	end
 
-	local successive = count > 1;
-	self.CraftingOutputLog:Close();
-	self.CraftingOutputLog:StartListening(successive);
+	self.CraftingOutputLog:StartListening();
 
 	self.CreateMultipleInputBox:ClearFocus();
 	self:ValidateControls();

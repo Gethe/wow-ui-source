@@ -168,7 +168,7 @@ function UIDropDownMenuButtonInvisibleButton_OnLeave(self)
 	GetAppropriateTooltip():Hide();
 end
 
-function UIDropDownMenuButton_OnEnter(self, isShowingIconTooltip)
+function UIDropDownMenuButton_OnEnter(self)
 	if ( self.hasArrow ) then
 		local level =  self:GetParent():GetID() + 1;
 		local listFrame = _G["DropDownList"..level];
@@ -179,7 +179,7 @@ function UIDropDownMenuButton_OnEnter(self, isShowingIconTooltip)
 		CloseDropDownMenus(self:GetParent():GetID() + 1);
 	end
 	self.Highlight:Show();
-	if ( self.tooltipTitle and not self.noTooltipWhileEnabled and not isShowingIconTooltip ) then
+	if ( self.tooltipTitle and not self.noTooltipWhileEnabled and not UIDropDownMenuButton_ShouldShowIconTooltip(self) ) then
 		if ( self.tooltipOnButton ) then
 			local tooltip = GetAppropriateTooltip();
 			tooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -214,6 +214,13 @@ function UIDropDownMenuButton_OnLeave(self)
 	GetValueOrCallFunction(self, "funcOnLeave", self);
 end
 
+function UIDropDownMenuButton_ShouldShowIconTooltip(self)
+	if self.Icon and (self.iconTooltipTitle or self.iconTooltipText) and (self.icon or self.mouseOverIcon) then
+		return GetMouseFocus() == self.Icon;
+	end
+	return false;
+end
+
 function UIDropDownMenuButtonIcon_OnClick(self, mouseButton)
 	local button = self:GetParent();
 	if not button then
@@ -229,10 +236,9 @@ function UIDropDownMenuButtonIcon_OnEnter(self)
 		return;
 	end
 
-	local isShowingIconTooltip = false;
+	local shouldShowIconTooltip = UIDropDownMenuButton_ShouldShowIconTooltip(button);
 
-	if button.iconTooltipTitle or button.iconTooltipText then
-		isShowingIconTooltip = true;
+	if shouldShowIconTooltip then
 		
 		local tooltip = GetAppropriateTooltip();
 		tooltip:SetOwner(button, "ANCHOR_RIGHT");
@@ -245,7 +251,7 @@ function UIDropDownMenuButtonIcon_OnEnter(self)
 		tooltip:Show();
 	end
 
-	UIDropDownMenuButton_OnEnter(button, isShowingIconTooltip);
+	UIDropDownMenuButton_OnEnter(button);
 end
 
 function UIDropDownMenuButtonIcon_OnLeave(self)

@@ -248,7 +248,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="OrderHallFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Button name="OrderHallFrameTabButtonTemplate" inherits="PanelTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick function="GarrisonMissionController_OnClickTab"/>
 		</Scripts>

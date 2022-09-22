@@ -45,7 +45,7 @@ end
 
 function ClassTalentLoadoutEditDialogMixin:OnAccept()
 	if self.AcceptButton:IsEnabled() then
-		local loadoutName = self.LoadoutName:GetText();
+		local loadoutName = self.NameControl:GetText();
 		local usesShared = self.UsesSharedActionBars.CheckButton:GetChecked();
 
 		StaticPopupSpecial_Hide(self);
@@ -82,7 +82,7 @@ function ClassTalentLoadoutEditDialogMixin:OnSharedActionBarsConfirmed()
 end
 
 function ClassTalentLoadoutEditDialogMixin:UpdateAcceptButtonEnabledState()
-	local nameTextFilled = UserEditBoxNonEmpty(self.LoadoutName);
+	local nameTextFilled = self.NameControl:HasText();
 	self.AcceptButton:SetEnabled(nameTextFilled);
 end
 
@@ -92,27 +92,30 @@ end
 
 function ClassTalentLoadoutEditDialogMixin:ShowDialog(configID)
 	local configInfo = C_Traits.GetConfigInfo(configID);
-	self.LoadoutName:SetText(configInfo.name);
 	StaticPopupSpecial_Show(self);
-	self.LoadoutName:SetFocus();
+	self.NameControl:SetText(configInfo.name);
 
 	self.UsesSharedActionBars.CheckButton:SetChecked(configInfo.usesSharedActionBars);
 
 	self.configID = configID;
 end
 
+ClassTalentLoadoutEditDialogNameControlMixin = {}
 
-ClassTalentLoadoutEditDialogNameEditBoxMixin = {};
+function ClassTalentLoadoutEditDialogNameControlMixin:OnShow()
+	ClassTalentLoadoutDialogNameControlMixin.OnShow(self);
+	self:GetEditBox():SetFocus();
+end
 
-function ClassTalentLoadoutEditDialogNameEditBoxMixin:OnEnterPressed()
+function ClassTalentLoadoutEditDialogNameControlMixin:OnEnterPressed()
 	self:GetParent():OnAccept();
 end
 
-function ClassTalentLoadoutEditDialogNameEditBoxMixin:OnEscapePressed()
+function ClassTalentLoadoutEditDialogNameControlMixin:OnEscapePressed()
 	self:GetParent():OnCancel();
 end
 
-function ClassTalentLoadoutEditDialogNameEditBoxMixin:OnTextChanged()
+function ClassTalentLoadoutEditDialogNameControlMixin:OnTextChanged()
 	self:GetParent():OnTextChanged();
 end
 

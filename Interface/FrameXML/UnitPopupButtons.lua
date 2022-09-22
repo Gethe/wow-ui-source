@@ -473,6 +473,12 @@ function UnitPopupEnterEditModeMixin:CanShow()
 	return true; 
 end
 
+function UnitPopupEnterEditModeMixin:IsEnabled()
+	local NPE_AchievementID = 14287;
+	local _, _, _, completedNPE = GetAchievementInfo(NPE_AchievementID);
+	return completedNPE;
+end
+
 function UnitPopupEnterEditModeMixin:OnClick()
 	ShowUIPanel(EditModeManagerFrame);
 end

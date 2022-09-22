@@ -122,9 +122,12 @@ end
 function UIPanelCloseButton_OnClick(self)
 	local parent = self:GetParent();
 	if parent then
+		local continueHide = true;
 		if parent.onCloseCallback then
-			parent.onCloseCallback(self);
-		else
+			continueHide = parent.onCloseCallback(self);
+		end
+
+		if continueHide then
 			HideUIPanel(parent);
 		end
 	end
@@ -398,6 +401,60 @@ function SearchBoxTemplateClearButton_OnClick(self)
 	editBox:ClearFocus();
 end
 
+PanelTabButtonMixin = {};
+
+function PanelTabButtonMixin:OnLoad()
+	self:SetFrameLevel(self:GetFrameLevel() + 4);
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
+function PanelTabButtonMixin:OnEvent(event, ...)
+	if self:IsVisible() then
+		PanelTemplates_TabResize(self, 0, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth or 88);
+	end
+end
+
+function PanelTabButtonMixin:OnShow()
+	PanelTemplates_TabResize(self, 0, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth or 88);
+end
+
+function PanelTabButtonMixin:OnEnter()
+	if self.Text:IsTruncated() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.Text:GetText());
+	end
+end
+
+function PanelTabButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+PanelTopTabButtonMixin = {};
+
+local TOP_TAB_HEIGHT_PERCENT = 0.75;
+local TOP_TAB_BOTTOM_TEX_COORD = 1 - TOP_TAB_HEIGHT_PERCENT;
+
+function PanelTopTabButtonMixin:OnLoad()
+	PanelTabButtonMixin.OnLoad(self);
+
+	for _, tabTexture in ipairs(self.TabTextures) do
+		tabTexture:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD);
+		tabTexture:SetHeight(tabTexture:GetHeight() * TOP_TAB_HEIGHT_PERCENT);
+	end
+
+	self.Left:ClearAllPoints();
+	self.Left:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -3, 0);
+	self.Right:ClearAllPoints();
+	self.Right:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, 0);
+
+	self.LeftActive:ClearAllPoints();
+	self.LeftActive:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -1, 0);
+	self.RightActive:ClearAllPoints();
+	self.RightActive:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 8, 0);
+
+	self.isTopTab = true;
+end
+
 -- functions to manage tab interfaces where only one tab of a group may be selected
 function PanelTemplates_Tab_OnClick(self, frame)
 	PanelTemplates_SetTab(frame, self:GetID())
@@ -433,76 +490,49 @@ function PanelTemplates_UpdateTabs(frame)
 end
 
 function PanelTemplates_GetTabWidth(tab)
-	local tabName = tab:GetName();
-
-	local sideWidths = 2 * _G[tabName.."Left"]:GetWidth();
+	local sideWidths = tab.Left:GetWidth() + tab.Right:GetWidth();
 	return tab:GetTextWidth() + sideWidths;
 end
 
+local TAB_SIDES_PADDING = 20;
+
 function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth, absoluteTextSize)
-	local tabName = tab:GetName();
-
-	local buttonMiddle = tab.Middle or tab.middleTexture or _G[tabName.."Middle"];
-	local buttonMiddleDisabled = tab.MiddleDisabled or (tabName and _G[tabName.."MiddleDisabled"]);
-	local left = tab.Left or tab.leftTexture or _G[tabName.."Left"];
-	local sideWidths = 2 * left:GetWidth();
-	local tabText = tab.Text or _G[tab:GetName().."Text"];
-	local highlightTexture = tab.HighlightTexture or (tabName and _G[tabName.."HighlightTexture"]);
-
-	local width, tabWidth;
-	local textWidth;
-	if ( absoluteTextSize ) then
-		textWidth = absoluteTextSize;
-	else
-		tabText:SetWidth(0);
-		textWidth = tabText:GetWidth();
+	if tab == GuildFrameTab1 then
+		local test = 1;
+		test = 2;
 	end
-	-- If there's an absolute size specified then use it
-	if ( absoluteSize ) then
-		if ( absoluteSize < sideWidths) then
-			width = 1;
-			tabWidth = sideWidths
-		else
-			width = absoluteSize - sideWidths;
-			tabWidth = absoluteSize
-		end
-		tabText:SetWidth(width);
+
+	if absoluteTextSize then
+		tab.Text:SetWidth(absoluteTextSize);
 	else
-		-- Otherwise try to use padding
-		if ( padding ) then
-			width = textWidth + padding;
+		tab.Text:SetWidth(0);
+	end
+
+	local textWidth = tab.Text:GetStringWidth();
+	local width = textWidth + TAB_SIDES_PADDING + (padding or 0);
+	local sideWidths = tab.Left:GetWidth() + tab.Right:GetWidth();
+	minWidth = minWidth or sideWidths;
+
+	if absoluteSize then
+		if absoluteSize < sideWidths then
+			width = sideWidths;
 		else
-			width = textWidth + 24;
+			width = absoluteSize;
 		end
-		-- If greater than the maxWidth then cap it
-		if ( maxWidth and width > maxWidth ) then
-			if ( padding ) then
-				width = maxWidth + padding;
-			else
-				width = maxWidth + 24;
-			end
-			tabText:SetWidth(width);
-		else
-			tabText:SetWidth(0);
-		end
-		if (minWidth and width < minWidth) then
+
+		textWidth = width - 10;
+	else
+		if maxWidth and width > maxWidth then
+			width = maxWidth;
+			textWidth = width - 10;
+		elseif minWidth and width < minWidth then
 			width = minWidth;
+			textWidth = width - 10;
 		end
-		tabWidth = width + sideWidths;
 	end
 
-	if ( buttonMiddle ) then
-		buttonMiddle:SetWidth(width);
-	end
-	if ( buttonMiddleDisabled ) then
-		buttonMiddleDisabled:SetWidth(width);
-	end
-
-	tab:SetWidth(tabWidth);
-
-	if ( highlightTexture ) then
-		highlightTexture:SetWidth(tabWidth);
-	end
+	tab.Text:SetWidth(textWidth);
+	tab:SetWidth(width);
 end
 
 function PanelTemplates_ResizeTabsToFit(frame, maxWidthForAllTabs)
@@ -538,6 +568,15 @@ end
 
 function PanelTemplates_SetNumTabs(frame, numTabs)
 	frame.numTabs = numTabs;
+	PanelTemplates_AnchorTabs(frame);
+end
+
+function PanelTemplates_AnchorTabs(frame, numTabs)
+	for i = 2, frame.numTabs do
+		local lastTab = GetTabByIndex(frame, i - 1);
+		local thisTab = GetTabByIndex(frame, i);
+		thisTab:SetPoint("TOPLEFT", lastTab, "TOPRIGHT", 1, 0);
+	end
 end
 
 function PanelTemplates_DisableTab(frame, index)
@@ -564,48 +603,40 @@ function PanelTemplates_ShowTab(frame, index)
 end
 
 function PanelTemplates_DeselectTab(tab)
-	local name = tab:GetName();
-
-	local left = tab.Left or _G[name.."Left"];
-	local middle = tab.Middle or _G[name.."Middle"];
-	local right = tab.Right or _G[name.."Right"];
-	left:Show();
-	middle:Show();
-	right:Show();
-	--tab:UnlockHighlight();
+	tab.Left:Show();
+	tab.Middle:Show();
+	tab.Right:Show();
 	tab:Enable();
-	local text = tab.Text or _G[name.."Text"];
-	text:SetPoint("CENTER", tab, "CENTER", (tab.deselectedTextX or 0), (tab.deselectedTextY or 2));
 
-	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
-	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
-	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
-	leftDisabled:Hide();
-	middleDisabled:Hide();
-	rightDisabled:Hide();
+	local offsetY = tab.deselectedTextY or 2;
+	if tab.isTopTab then
+		offsetY = -offsetY - 6;
+	end
+
+	tab.Text:SetPoint("CENTER", tab, "CENTER", (tab.deselectedTextX or 0), offsetY);
+
+	tab.LeftActive:Hide();
+	tab.MiddleActive:Hide();
+	tab.RightActive:Hide();
 end
 
 function PanelTemplates_SelectTab(tab)
-	local name = tab:GetName();
-
-	local left = tab.Left or _G[name.."Left"];
-	local middle = tab.Middle or _G[name.."Middle"];
-	local right = tab.Right or _G[name.."Right"];
-	left:Hide();
-	middle:Hide();
-	right:Hide();
-	--tab:LockHighlight();
+	tab.Left:Hide();
+	tab.Middle:Hide();
+	tab.Right:Hide();
 	tab:Disable();
 	tab:SetDisabledFontObject(GameFontHighlightSmall);
-	local text = tab.Text or _G[name.."Text"];
-	text:SetPoint("CENTER", tab, "CENTER", (tab.selectedTextX or 0), (tab.selectedTextY or -3));
 
-	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
-	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
-	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
-	leftDisabled:Show();
-	middleDisabled:Show();
-	rightDisabled:Show();
+	local offsetY = tab.selectedTextY or -3;
+	if tab.isTopTab then
+		offsetY = -offsetY - 7;
+	end
+
+	tab.Text:SetPoint("CENTER", tab, "CENTER", (tab.selectedTextX or 0), offsetY);
+
+	tab.LeftActive:Show();
+	tab.MiddleActive:Show();
+	tab.RightActive:Show();
 
 	local tooltip = GetAppropriateTooltip();
 	if tooltip:IsOwned(tab) then
@@ -614,24 +645,22 @@ function PanelTemplates_SelectTab(tab)
 end
 
 function PanelTemplates_SetDisabledTabState(tab)
-	local name = tab:GetName();
-	local left = tab.Left or _G[name.."Left"];
-	local middle = tab.Middle or _G[name.."Middle"];
-	local right = tab.Right or _G[name.."Right"];
-	left:Show();
-	middle:Show();
-	right:Show();
-	--tab:UnlockHighlight();
+	tab.Left:Show();
+	tab.Middle:Show();
+	tab.Right:Show();
 	tab:Disable();
-	tab.text = tab:GetText();
-	-- Gray out text
 	tab:SetDisabledFontObject(GameFontDisableSmall);
-	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
-	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
-	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
-	leftDisabled:Hide();
-	middleDisabled:Hide();
-	rightDisabled:Hide();
+
+	local offsetY = tab.deselectedTextY or 2;
+	if tab.isTopTab then
+		offsetY = -offsetY - 6;
+	end
+
+	tab.Text:SetPoint("CENTER", tab, "CENTER", (tab.deselectedTextX or 0), offsetY);
+
+	tab.LeftActive:Hide();
+	tab.MiddleActive:Hide();
+	tab.RightActive:Hide();
 end
 
 -- NOTE: If your edit box never shows partial lines of text, then this function will not work when you use
@@ -2356,6 +2385,13 @@ function DropDownControlMixin:Initialize(level)
 				local info = UIDropDownMenu_CreateInfo();
 				if not self.skipNormalSetup then
 					info.text = option.text;
+					info.tooltipTitle = option.tooltipTitle;
+					info.tooltipText = option.tooltipText;
+					info.tooltipInstruction = option.tooltipInstruction;
+					info.tooltipWarning = option.tooltipWarning;
+					info.tooltipOnButton = option.tooltipOnButton;
+					info.iconTooltipTitle = option.iconTooltipTitle;
+					info.iconTooltipText = option.iconTooltipText;
 					info.minWidth = self.dropDownListMinWidth or 108;
 					info.value = option.value;
 					info.checked = self.selectedValue == option.value;
@@ -2376,7 +2412,7 @@ function DropDownControlMixin:Initialize(level)
 end
 
 function DropDownControlMixin:SetSelectedValue(value, isUserInput)
-	if self.enabledCallback and not self.enabledCallback(value) then
+	if self.enabledCallback and not self.enabledCallback(value, isUserInput) then
 		return;
 	end
 
@@ -2395,6 +2431,18 @@ end
 
 function DropDownControlMixin:GetSelectedValue()
 	return self.selectedValue;
+end
+
+function DropDownControlMixin:GetSelectedValueIndex()
+	if not self.selectedValue or not self.options then
+		return nil;
+	end
+
+	for i, option in ipairs(self.options) do
+		if option.value == self.selectedValue then
+			return i;
+		end
+	end
 end
 
 function DropDownControlMixin:UpdateSelectedText()
@@ -2531,6 +2579,10 @@ end
 -- enabledCallback: called before a selection is allowed (in case enabled state changed while the dropdown list is open). ([selectionID]) -> shouldBeEnabled
 function DropDownControlMixin:SetEnabledCallback(enabledCallback)
 	self.enabledCallback = enabledCallback;
+end
+
+function DropDownControlMixin:GetEnabledCallback()
+	return self.enabledCallback;
 end
 
 EnumDropDownControlMixin = CreateFromMixins(DropDownControlMixin);

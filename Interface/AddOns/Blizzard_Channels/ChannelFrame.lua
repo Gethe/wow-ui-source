@@ -23,6 +23,7 @@ do
 		self.DirtyFlags:AddNamedMask("UpdateAll", Flags_CreateMaskFromTable(dirtyFlags));
 		self.DirtyFlags:AddNamedMask("CheckShowTutorial", 4);
 
+		self:SetTitle(CHAT_CHANNELS);
 		self:MarkDirty("UpdateAll");
 
 		self:RegisterEvent("MUTELIST_UPDATE");

@@ -194,54 +194,58 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="GarrisonLandingPageTabTemplate" virtual="true">
+	<Button name="GarrisonLandingPageTabTemplate" parentArray="Tabs" virtual="true">
 		<Size x="115" y="42"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="LeftDisabled" atlas="GarrLanding-Tab-Bottom-Selected-Left" useAtlasSize="true">
+				<Texture parentKey="LeftActive" atlas="GarrLanding-Tab-Bottom-Selected-Left" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" x="-7"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="MiddleDisabled" atlas="GarrLanding-Tab-Bottom-Selected" useAtlasSize="true">
+				<Texture parentKey="RightActive" atlas="GarrLanding-Tab-Bottom-Selected-Right" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.LeftDisabled" relativePoint="RIGHT"/>
+						<Anchor point="TOPRIGHT" x="7"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="RightDisabled" atlas="GarrLanding-Tab-Bottom-Selected-Right" useAtlasSize="true">
+				<Texture parentKey="MiddleActive" atlas="GarrLanding-Tab-Bottom-Selected" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.MiddleDisabled" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.LeftActive" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.RightActive" relativePoint="LEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Left" atlas="GarrLanding-Tab-Bottom-Unselected-Left" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPLEFT" x="-7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="GarrLanding-Tab-Bottom-Unselected-Right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Middle" atlas="GarrLanding-Tab-Bottom-Unselected" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Right" atlas="GarrLanding-Tab-Bottom-Unselected-Right" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
-					</Anchors>
-				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
 				<Texture parentKey="LeftHighlight" atlas="GarrLanding-Tab-Bottom-Highlight-Left" useAtlasSize="true" hidden="true" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="RightHighlight" atlas="GarrLanding-Tab-Bottom-Highlight-Right" useAtlasSize="true" hidden="true" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="MiddleHighlight" atlas="GarrLanding-Tab-Bottom-Highlight" useAtlasSize="true" hidden="true" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.LeftHighlight" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.RightHighlight" relativePoint="LEFT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -250,18 +254,9 @@
 			<OnLoad>
 				self.deselectedTextY = -3;
 			</OnLoad>
-			<OnEnter function="GarrisonLandingPageTab_OnEnter"/>
-			<OnLeave function="GarrisonLandingPageTab_OnLeave"/>
-			<OnShow>
-				PanelTemplates_TabResize(self, 10);
-			</OnShow>
 			<OnClick function="GarrisonLandingPageTab_OnClick"/>
 		</Scripts>
-		<ButtonText name="$parentText" parentKey="Text">
-			<Anchors>
-				<Anchor point="TOP" x="0" y="-18"/>
-			</Anchors>
-		</ButtonText>
+		<ButtonText name="$parentText" parentKey="Text"/>
 		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontHighlightSmall"/>
@@ -440,16 +435,9 @@
 				</Anchors>
 			</Button>
 
-			<Button parentKey="FollowerTabButton" name="$parentTab2" inherits="GarrisonLandingPageTabTemplate" id="2" text="GARRISON_FOLLOWERS">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>
-			</Button>
+			<Button parentKey="FollowerTabButton" name="$parentTab2" inherits="GarrisonLandingPageTabTemplate" id="2" text="GARRISON_FOLLOWERS"/>
 
 			<Button parentKey="FleetTab" name="$parentTab3" inherits="GarrisonLandingPageTabTemplate" id="3" text="GARRISON_FLEET" motionScriptsWhileDisabled="true" hidden="true">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>
 				<Scripts>
 					<OnEnter>
 						if (self.isDisabled) then

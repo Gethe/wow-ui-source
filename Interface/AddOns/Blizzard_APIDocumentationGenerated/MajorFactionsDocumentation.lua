@@ -124,6 +124,20 @@ local MajorFactions =
 			},
 		},
 		{
+			Name = "IsMajorFaction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "IsMajorFaction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerInRenownCatchUpMode",
 			Type = "Function",
 
@@ -226,6 +240,7 @@ local MajorFactions =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "factionID", Type = "number", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "locked", Type = "bool", Nilable = false },
 				{ Name = "isMilestone", Type = "bool", Nilable = false },
@@ -237,6 +252,7 @@ local MajorFactions =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "renownRewardID", Type = "number", Nilable = false },
 				{ Name = "uiOrder", Type = "number", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = true },

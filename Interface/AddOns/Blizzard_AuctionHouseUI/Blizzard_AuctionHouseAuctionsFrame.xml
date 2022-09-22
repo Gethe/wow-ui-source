@@ -54,17 +54,13 @@
 
 	<Frame name="AuctionHouseAuctionsFrameTemplate" mixin="AuctionHouseAuctionsFrameMixin" virtual="true">
 		<Frames>
-			<Button name="$parentAuctionsTab" parentKey="AuctionsTab" parentArray="Tabs" id="1" inherits="AuctionHouseAuctionsFrameTabTemplate" frameLevel="300" text="AUCTION_HOUSE_AUCTIONS_SUB_TAB">
+			<Button name="$parentAuctionsTab" parentKey="AuctionsTab" id="1" inherits="AuctionHouseAuctionsFrameTabTemplate" frameLevel="300" text="AUCTION_HOUSE_AUCTIONS_SUB_TAB">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="47" y="-1"/>
 				</Anchors>
 			</Button>
 
-			<Button name="$parentBidsTab" parentKey="BidsTab" parentArray="Tabs" id="2" inherits="AuctionHouseAuctionsFrameTabTemplate" useParentLevel="true" text="AUCTION_HOUSE_BIDS_SUB_TAB">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AuctionsTab" relativePoint="TOPRIGHT" x="0" y="0"/>
-				</Anchors>
-			</Button>
+			<Button name="$parentBidsTab" parentKey="BidsTab" id="2" inherits="AuctionHouseAuctionsFrameTabTemplate" useParentLevel="true" text="AUCTION_HOUSE_BIDS_SUB_TAB"/>
 
 			<Button parentKey="CancelAuctionButton" mixin="CancelAuctionButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_CANCEL_AUCTION_BUTTON">
 				<Size x="158" y="22"/>

@@ -113,7 +113,7 @@ local EditModeManagerShared =
 				{ Name = "IconPadding", Type = "EditModeActionBarSetting", EnumValue = 4 },
 				{ Name = "VisibleSetting", Type = "EditModeActionBarSetting", EnumValue = 5 },
 				{ Name = "HideBarArt", Type = "EditModeActionBarSetting", EnumValue = 6 },
-				{ Name = "SnapToSide", Type = "EditModeActionBarSetting", EnumValue = 7 },
+				{ Name = "DeprecatedSnapToSide", Type = "EditModeActionBarSetting", EnumValue = 7 },
 				{ Name = "HideBarScrolling", Type = "EditModeActionBarSetting", EnumValue = 8 },
 				{ Name = "AlwaysShowButtons", Type = "EditModeActionBarSetting", EnumValue = 9 },
 			},
@@ -284,7 +284,7 @@ local EditModeManagerShared =
 				{ Name = "FrameWidth", Type = "EditModeUnitFrameSetting", EnumValue = 10 },
 				{ Name = "FrameHeight", Type = "EditModeUnitFrameSetting", EnumValue = 11 },
 				{ Name = "DisplayBorder", Type = "EditModeUnitFrameSetting", EnumValue = 12 },
-				{ Name = "KeepGroupsTogether", Type = "EditModeUnitFrameSetting", EnumValue = 13 },
+				{ Name = "RaidGroupDisplayType", Type = "EditModeUnitFrameSetting", EnumValue = 13 },
 				{ Name = "SortPlayersBy", Type = "EditModeUnitFrameSetting", EnumValue = 14 },
 				{ Name = "RowSize", Type = "EditModeUnitFrameSetting", EnumValue = 15 },
 			},
@@ -304,6 +304,20 @@ local EditModeManagerShared =
 				{ Name = "Raid", Type = "EditModeUnitFrameSystemIndices", EnumValue = 5 },
 				{ Name = "Boss", Type = "EditModeUnitFrameSystemIndices", EnumValue = 6 },
 				{ Name = "Arena", Type = "EditModeUnitFrameSystemIndices", EnumValue = 7 },
+			},
+		},
+		{
+			Name = "RaidGroupDisplayType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "SeparateGroupsVertical", Type = "RaidGroupDisplayType", EnumValue = 0 },
+				{ Name = "SeparateGroupsHorizontal", Type = "RaidGroupDisplayType", EnumValue = 1 },
+				{ Name = "CombineGroupsVertical", Type = "RaidGroupDisplayType", EnumValue = 2 },
+				{ Name = "CombineGroupsHorizontal", Type = "RaidGroupDisplayType", EnumValue = 3 },
 			},
 		},
 		{

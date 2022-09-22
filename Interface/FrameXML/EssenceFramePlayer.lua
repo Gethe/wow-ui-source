@@ -37,11 +37,21 @@ function EssencePowerBar:SetupEvoker()
 end
 
 EssencePointButtonMixin = { }; 
-function EssencePointButtonMixin:AnimIn(animationSpeedMultiplier)
-	
+function EssencePointButtonMixin:OnUpdate(elapsed) 
+	local peace,interrupted = GetPowerRegenForPowerType(Enum.PowerType.Essence)
+	if (peace == nil or peace == 0) then
+		peace = 0.2;
+	end
+	local cooldownDuration = 1 / peace;
+	local animationSpeedMultiplier = FillingAnimationTime / cooldownDuration
 	self.EssenceFilling.FillingAnim:SetAnimationSpeedMultiplier(animationSpeedMultiplier);
 	self.EssenceFilling.CircleAnim:SetAnimationSpeedMultiplier(animationSpeedMultiplier);
+end
 
+function EssencePointButtonMixin:AnimIn(animationSpeedMultiplier)
+	self.EssenceFilling.FillingAnim:SetAnimationSpeedMultiplier(animationSpeedMultiplier);
+	self.EssenceFilling.CircleAnim:SetAnimationSpeedMultiplier(animationSpeedMultiplier);
+	self:SetScript("OnUpdate", self.OnUpdate);
 	self.EssenceFilling:Show();
 	self.EssenceDepleting:Hide(); 
 	self.EssenceEmpty:Hide(); 
@@ -64,4 +74,5 @@ function EssencePointButtonMixin:SetEssennceFull()
 	self.EssenceFilling.CircleAnim:Stop();
 	self.EssenceFillDone:Show();
 	self.EssenceEmpty:Hide();
+	self:SetScript("OnUpdate", nil);
 end 

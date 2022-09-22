@@ -3,23 +3,17 @@
 
 	<Frame name="SettingsFrameTemplate" virtual="true">
 		<Frames>
+			<Frame parentKey="Bg" inherits="FlatPanelBackgroundTemplate" frameLevel="0">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-18"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
+				</KeyValues>
 				<Layers>
-					<Layer>
-						<Texture>
-							<Anchors>
-								<Anchor point="TOPLEFT" y="-20"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a=".8"/>
-						</Texture>
-						<Texture parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="2" y="-3"/>
-								<Anchor point="TOPRIGHT" x="-25" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 					<Layer level="OVERLAY">
 						<FontString parentKey="Text" inherits="GameFontNormal" wordwrap="false">
 							<Anchors>
@@ -30,9 +24,6 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<KeyValues>
-					<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
-				</KeyValues>
 			</Frame>
 			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 		</Frames>
@@ -111,7 +102,7 @@
 				</Frames>
 			</Frame>
 			<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" autoFocus="false" historyLines="1" bytes="64" frameLevel="5">
-				<Size x="180" y="22"/>
+				<Size x="350" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Container" relativePoint="TOPRIGHT" x="4" y="20"/>
 				</Anchors>

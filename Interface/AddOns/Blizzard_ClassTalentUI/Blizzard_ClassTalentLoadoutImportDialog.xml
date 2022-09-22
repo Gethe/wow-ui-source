@@ -7,29 +7,56 @@
 		<KeyValues>
 			<KeyValue key="titleText" value="HUD_CLASS_TALENTS_IMPORT_DIALOG_TITLE" type="global"/>
 		</KeyValues>
-		<Size x="460" y="250"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="ImportBoxLabel" inherits="GameFontNormal" text="HUD_CLASS_TALENTS_IMPORT_DIALOG_EDIT_BOX_LABEL">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ContentArea"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+		<Size x="460" y="275"/>
 		<Frames>
-			<ScrollFrame parentKey="ImportBox" inherits="InputScrollFrameTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ContentArea" y="-20"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.ContentArea" y="-20"/>
-					<Anchor point="BOTTOM" relativeKey="$parent.ContentArea" y="50"/>
-				</Anchors>
+			<Frame parentKey="ImportControl" mixin="ClassTalentLoadoutImportDialogImportControlMixin">
 				<KeyValues>
-					<KeyValue key="maxLetters" value="1000" type="number"/>
-					<KeyValue key="instructions" value="HUD_CLASS_TALENTS_IMPORT_INSTRUCTIONS" type="global"/>
-					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+					<KeyValue key="labelText" value="HUD_CLASS_TALENTS_IMPORT_DIALOG_EDIT_BOX_LABEL" type="global"/>
 				</KeyValues>
-			</ScrollFrame>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ContentArea"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.ContentArea"/>
+				</Anchors>
+				<Size y="100"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ScrollFrame parentKey="InputContainer" inherits="InputScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.Label" y="-10"/>
+							<Anchor point="RIGHT"/>
+							<Anchor point="BOTTOM"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="maxLetters" value="1000" type="number"/>
+							<KeyValue key="instructions" value="HUD_CLASS_TALENTS_IMPORT_INSTRUCTIONS" type="global"/>
+							<KeyValue key="hideCharCount" value="true" type="boolean"/>
+						</KeyValues>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnHide method="OnShow"/>
+				</Scripts>
+			</Frame>
+			
+			<Frame parentKey="NameControl" inherits="ClassTalentLoadoutDialogNameControlTemplate" mixin="ClassTalentLoadoutImportDialogNameControlMixin">
+				<KeyValues>
+					<KeyValue key="labelText" value="HUD_CLASS_TALENTS_IMPORT_DIALOG_NAME_LABEL" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.ImportControl" y="-25"/>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.ContentArea" y="-25"/>
+				</Anchors>
+			</Frame>
+			
 			<Button parentKey="AcceptButton" inherits="ClassTalentLoadoutDialogButtonTemplate" text="HUD_CLASS_TALENTS_IMPORT_LOADOUT_ACCEPT_BUTTON">
 				<KeyValues>
 					<KeyValue key="disabledTooltip" value="HUD_CLASS_TALENTS_IMPORT_ERROR_IMPORT_STRING_AND_NAME" type="global"/>

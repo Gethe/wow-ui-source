@@ -15,6 +15,15 @@ local QuestOffer =
 				{ Name = "hideRequiredItemsOnTurnIn", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "GetQuestOfferMajorFactionReputationRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "reputationRewards", Type = "table", InnerType = "QuestReputationRewardInfo", Nilable = false },
+			},
+		},
 	},
 
 	Events =

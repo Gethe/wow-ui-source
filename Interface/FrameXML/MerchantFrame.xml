@@ -510,7 +510,7 @@
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Button name="MerchantFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="MERCHANT">
+			<Button name="MerchantFrameTab1" inherits="PanelTabButtonTemplate" id="1" text="MERCHANT">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="50" y="-15"/>
 				</Anchors>
@@ -519,7 +519,6 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						PanelTemplates_SetTab(MerchantFrame, self:GetID());
 						MerchantFrame_Update();
@@ -527,7 +526,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="MerchantFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="BUYBACK">
+			<Button name="MerchantFrameTab2" inherits="PanelTabButtonTemplate" id="2" text="BUYBACK">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="MerchantFrameTab1" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
@@ -536,7 +535,6 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText("", 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick>
 						PanelTemplates_SetTab(MerchantFrame, self:GetID());
 						MerchantFrame_Update();

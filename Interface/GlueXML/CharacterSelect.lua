@@ -1281,16 +1281,6 @@ function CharacterSelectButton_ShowMoveButtons(button)
     end
 end
 
-function CharacterSelect_TabResize(self)
-    local buttonMiddle = _G[self:GetName().."Middle"];
-    local buttonMiddleDisabled = _G[self:GetName().."MiddleDisabled"];
-    local width = self:GetTextWidth() - 8;
-    local leftWidth = _G[self:GetName().."Left"]:GetWidth();
-    buttonMiddle:SetWidth(width);
-    buttonMiddleDisabled:SetWidth(width);
-    self:SetWidth(width + (2 * leftWidth));
-end
-
 function CharacterSelect_CreateNewCharacter(characterType)
     C_CharacterCreation.SetCharacterCreateType(characterType);
 

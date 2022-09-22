@@ -1,5 +1,4 @@
 ## Title: Blizzard_CUFProfiles
 ## LoadOnDemand: 0
 
-Blizzard_CompactUnitFrameProfiles.xml
-RegisterSettings.lua
+Blizzard_CompactUnitFrameProfiles.lua

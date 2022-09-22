@@ -10,6 +10,8 @@ local ErrorMessages =
 	VRN_NEEDS_5_0,
 	VRN_NEEDS_6_0,
 	VRN_NEEDS_RT,
+	VRN_NEEDS_DX12,
+	VRN_NEEDS_DX12_VRS2,
 	VRN_NEEDS_MACOS_10_13,
 	VRN_NEEDS_MACOS_10_14,
 	VRN_NEEDS_MACOS_10_15,
@@ -33,11 +35,12 @@ local function ExtractSizeFromFormattedSize(formattedSize)
 	return tonumber(x), tonumber(y);
 end
 
-local function CreateAdvancedQualitySetting(category, cvar, name, proxyName)
+local function CreateAdvancedQualitySetting(category, cvar, name, proxyName, minQualityValue)
 	local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Number);
 	local commitValue = setValue;
 	local setting = Settings.RegisterProxySetting(category, proxyName, Settings.DefaultVarLocation, Settings.VarType.Number, name, getDefaultValue(), getValue, nil, commitValue);
 	setting:SetCommitFlags(Settings.CommitFlag.Apply);
+	setting.minQualityValue = minQualityValue or -1;
 	return setting;
 end
 
@@ -623,13 +626,8 @@ local function Register()
 			local function GetOptions()
 				local container = Settings.CreateDropDownTextContainer();
 				container:Add(AA_NONE, VIDEO_OPTIONS_NONE);
-				local fxaa, cmaa = AntiAliasingSupported();
-				if fxaa then
-					container:Add(AA_IMAGE, FXAA_CMAA_LABEL);
-				end
-				if cmaa then
-					container:Add(AA_MULTISAMPLE, MSAA_LABEL);
-				end
+				container:Add(AA_IMAGE, FXAA_CMAA_LABEL);
+				container:Add(AA_MULTISAMPLE, MSAA_LABEL);
 				container:Add(AA_ADVANCED, ADVANCED_LABEL);
 				return container:GetData();
 			end
@@ -647,13 +645,14 @@ local function Register()
 			local function GetOptions()
 				local container = Settings.CreateDropDownTextContainer();
 				container:Add(0, VIDEO_OPTIONS_NONE);
-				local fxaa, cmaa = AntiAliasingSupported();
-				if fxaa then
-					container:Add(1, ANTIALIASING_FXAA_LOW);
-					container:Add(2, ANTIALIASING_FXAA_HIGH);
-				end
+				container:Add(1, ANTIALIASING_FXAA_LOW);
+				container:Add(2, ANTIALIASING_FXAA_HIGH);
+				local fxaa, cmaa, cmaa2 = AntiAliasingSupported();
 				if cmaa then
 					container:Add(3, ANTIALIASING_CMAA);
+				end
+				if cmaa2 then
+					container:Add(4, ANTIALIASING_CMAA2);
 				end
 				return container:GetData();
 			end
@@ -815,7 +814,7 @@ local function Register()
 	local advSettings = {};
 	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsShadowQuality", SHADOW_QUALITY, "PROXY_SHADOW_QUALITY"));
 	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsLiquidDetail", LIQUID_DETAIL, "PROXY_LIQUID_DETAIL"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsParticleDensity", PARTICLE_DENSITY, "PROXY_PARTICLE_DENSITY"));
+	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsParticleDensity", PARTICLE_DENSITY, "PROXY_PARTICLE_DENSITY", 1));
 	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsSSAO", SSAO_LABEL, "PROXY_SSAO"));
 	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsDepthEffects", DEPTH_EFFECTS, "PROXY_DEPTH_EFFECTS"));
 	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsComputeEffects", COMPUTE_EFFECTS, "PROXY_COMPUTE_EFFECTS"));
@@ -886,6 +885,7 @@ local function Register()
 			local variable = setting:GetVariable();
 			local cvar = settingToCvars[variable];
 			local newIndex = GetGraphicsCVarValueForQualityLevel(cvar, value, raid);
+			newIndex = setting.minQualityValue > newIndex and setting.minQualityValue or newIndex;
 			setting:SetValue(newIndex);
 		end
 	end;

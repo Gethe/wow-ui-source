@@ -90,6 +90,10 @@ end
 function GroupLootDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, nil, "MENU");
 	self.initialize = GroupLootDropDown_Initialize;
+	
+	EventRegistry:RegisterFrameEventAndCallback("OPEN_MASTER_LOOT_LIST", function()
+		ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedLootFrame, 0, 0);
+	end, self);
 end
 
 function GroupLootDropDown_Initialize()
@@ -535,6 +539,24 @@ local function MasterLooterPlayerSort(pInfo1, pInfo2)
 	end
 end
 
+function MasterLooterFrame_OnLoad(self)
+	self:SetScript("OnEvent", function(self, event, ...)
+		if event == "UPDATE_MASTER_LOOT_LIST" then
+			MasterLooterFrame_UpdatePlayers();
+		end
+	end);
+
+	local function OnLootFrameHide()
+		MasterLooterFrame:Hide();
+	end
+	EventRegistry:RegisterCallback("LootFrame.Hide", OnLootFrameHide, MasterLooterFrame);
+
+	local function OnLootFrameItemLooted()
+		MasterLooterFrame:Hide();
+	end
+	EventRegistry:RegisterCallback("LootFrame.ItemLooted", OnLootFrameItemLooted, MasterLooterFrame);
+end
+
 function MasterLooterFrame_OnHide(self)
 	for playerFrame in pairs(buttonsToHide) do
 		playerFrame:Hide();
@@ -630,7 +652,7 @@ end
 function MasterLooterPlayerFrame_OnClick(self)
 	MasterLooterFrame.slot = LootFrame.selectedSlot;
 	MasterLooterFrame.candidateId = self.id;
-	if ( LootFrame.selectedQuality >= MASTER_LOOT_THREHOLD ) then
+	if ( LootFrame.selectedQuality >= Constants.LootConsts.MasterLootQualityThreshold ) then
 		StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName..FONT_COLOR_CODE_CLOSE, self.Name:GetText(), "LootWindow");
 	else
 		MasterLooterFrame_GiveMasterLoot();

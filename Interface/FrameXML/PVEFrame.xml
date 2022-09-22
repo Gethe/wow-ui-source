@@ -153,7 +153,7 @@
 					<Anchor point="BOTTOMLEFT" x="4" y="4" />
 				</Anchors>
 			</Frame>
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" text="GROUP_FINDER" id="1" parentKey="tab1">
+			<Button name="$parentTab1" inherits="PanelTabButtonTemplate" text="GROUP_FINDER" id="1" parentKey="tab1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
 						<Offset x="19" y="-30"/>
@@ -163,7 +163,7 @@
 					<OnClick function="PVEFrame_TabOnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="PLAYER_V_PLAYER" id="2" parentKey="tab2">
+			<Button name="$parentTab2" inherits="PanelTabButtonTemplate" text="PLAYER_V_PLAYER" id="2" parentKey="tab2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
@@ -171,7 +171,7 @@
 					<OnClick function="PVEFrame_TabOnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" text="CHALLENGES" id="3" parentKey="tab3">
+			<Button name="$parentTab3" inherits="PanelTabButtonTemplate" text="CHALLENGES" id="3" parentKey="tab3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>

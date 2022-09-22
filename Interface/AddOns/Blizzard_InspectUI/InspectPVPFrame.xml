@@ -60,12 +60,6 @@
 						<Anchor point="TOP" x="0" y="-36"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="PortraitBackground" hidden="true">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectFrame" relativePoint="TOPLEFT" x="-6" y="7" />
-					</Anchors>
-				</Texture>
 				<FontString parentKey="HonorLevel" inherits="GameFontNormalLarge">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-84"/>
@@ -141,7 +135,6 @@
 		<Scripts>
 			<OnLoad function="InspectPVPFrame_OnLoad"/>
 			<OnShow function="InspectPVPFrame_OnShow"/>
-			<OnHide function="InspectPVPFrame_OnHide"/>
 			<OnEvent function="InspectPVPFrame_OnEvent"/>
 		</Scripts>
 	</Frame>

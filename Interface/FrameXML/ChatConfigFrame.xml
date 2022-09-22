@@ -248,26 +248,27 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\ChatFrame\ChatFrameTab">
+				<Texture parentKey="Left" file="Interface\ChatFrame\ChatFrameTab">
 					<Size x="16" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPLEFT" x="-2"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.25" top="0.0" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\ChatFrame\ChatFrameTab">
-					<Size x="44" y="32"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.25" right="0.75" top="0.0" bottom="1.0"/>
-				</Texture>
-				<Texture name="$parentRight" file="Interface\ChatFrame\ChatFrameTab">
+				<Texture parentKey="Right" file="Interface\ChatFrame\ChatFrameTab">
 					<Size x="16" y="32"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+						<Anchor point="TOPRIGHT" x="2"/>
 					</Anchors>
 					<TexCoords left="0.75" right="1.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\ChatFrame\ChatFrameTab">
+					<Size x="44" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.25" right="0.75" top="0.0" bottom="1.0"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -280,21 +281,21 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-		<ButtonText name="$parentText">
+		<ButtonText parentKey="Text">
 			<Size x="0" y="8"/>
 			<Anchors>
-				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="0" y="-5"/>
+				<Anchor point="CENTER" y="-5"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="LEFT" relativeTo="$parentLeft" x="0" y="-7"/>
-				<Anchor point="RIGHT" relativeTo="$parentRight" x="0" y="-7"/>
+				<Anchor point="LEFT" relativeKey="$parent.Left" x="2" y="-7"/>
+				<Anchor point="RIGHT" relativeKey="$parent.Right" x="-2" y="-7"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
-	<Button name="ChatWindowTab" mixin="ChatWindowTabMixin" inherits="ChatTabArtTemplate" virtual="true">
+	<Button name="ChatWindowTab" mixin="ChatWindowTabMixin" inherits="ChatTabArtTemplate" virtual="true" parentArray="Tabs">
 		<Size x="64" y="32"/>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="10" y="-1"/>

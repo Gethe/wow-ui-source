@@ -7,6 +7,20 @@ local KeyBindings =
 	Functions =
 	{
 		{
+			Name = "GetBindingIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "action", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bindingIndex", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCustomBindingType",
 			Type = "Function",
 

@@ -6,15 +6,17 @@
 		<Size x="70" y="70"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Ring" file="Interface\TalentFrame\spec-filagree" setAllPoints="true">
-					<TexCoords left="0.00390625" right="0.27734375" top="0.48437500" bottom="0.75781250"/>
+				<Texture parentKey="Ring" atlas="spec-sampleabilityring" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
-					<Size x="56" y="56"/>
+					<Size x="58" y="58"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" y="1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -267,22 +269,22 @@
 			<Frame parentKey="AnimationHolder">
 				<Animations>
 					<AnimationGroup parentKey="ActivationFlashBack" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
-						<Alpha childKey="$parent.ActivatedSpecImageBorder" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="$parent.ActivatedSpecImage" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="$parent.ActivatedBackgroundBack1" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="$parent.ActivatedBackgroundBack2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedSpecImageBorder" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedSpecImage" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundBack1" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundBack2" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="ActivationFlashLeft" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
-						<Alpha childKey="$parent.ActivatedBackgroundLeft1" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="$parent.ActivatedBackgroundLeft2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="$parent.ActivatedBackgroundLeft3" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="$parent.ActivatedBackgroundLeft4" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundLeft1" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundLeft2" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundLeft3" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundLeft4" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="ActivationFlashRight" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
-						<Alpha childKey="$parent.ActivatedBackgroundRight1" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="$parent.ActivatedBackgroundRight2" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="$parent.ActivatedBackgroundRight3" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="$parent.ActivatedBackgroundRight4" startDelay="0.15" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundRight1" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundRight2" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundRight3" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundRight4" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
 					</AnimationGroup>
 				</Animations>
 			</Frame>

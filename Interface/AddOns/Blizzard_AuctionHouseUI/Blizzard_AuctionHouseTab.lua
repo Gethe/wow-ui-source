@@ -13,13 +13,6 @@ end
 
 AuctionHouseFrameTopTabMixin = CreateFromMixins(AuctionHouseFrameTabMixin);
 
-function AuctionHouseFrameTopTabMixin:OnLoad()
-	self.LeftDisabled:SetPoint("BOTTOMLEFT");
-	self.Text:ClearAllPoints();
-	self.deselectedTextY = -6;
-	self.selectedTextY = -2;
-end
-
 function AuctionHouseFrameTopTabMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end

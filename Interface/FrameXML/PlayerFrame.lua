@@ -211,31 +211,31 @@ function PlayerFrame_UpdatePlayerNameTextAnchor()
 	PlayerName:SetPoint("TOPLEFT", 88, -26);
 end
 
-function PlayerFrame_UpdateLevelTextAnchor(level)
+function PlayerFrame_UpdateLevelTextAnchor()
 	PlayerLevelText:SetPoint("TOPRIGHT", -24.5, -27);
 end
 
 function PlayerFrame_UpdateHealthBarTextAnchors()
 	if (UnitHasVehiclePlayerFrameUI("player")) then
-		PlayerFrameHealthBarText:SetPoint("TOPLEFT", 100, -50);
-		PlayerFrameHealthBarTextLeft:SetPoint("TOPLEFT", 100, -50);
-		PlayerFrameHealthBarTextRight:SetPoint("TOPRIGHT", -34, -50);
+		PlayerFrameHealthBarText:SetPoint("CENTER", 0, 1);
+		PlayerFrameHealthBarTextLeft:SetPoint("LEFT", 2, 1);
+		PlayerFrameHealthBarTextRight:SetPoint("RIGHT", -2, 1);
 	else
-		PlayerFrameHealthBarText:SetPoint("TOPLEFT", 88, -44.5);
-		PlayerFrameHealthBarTextLeft:SetPoint("TOPLEFT", 88, -44.5);
-		PlayerFrameHealthBarTextRight:SetPoint("TOPRIGHT", -26, -44.5);
+		PlayerFrameHealthBarText:SetPoint("CENTER", 0, 0);
+		PlayerFrameHealthBarTextLeft:SetPoint("LEFT", 2, 0);
+		PlayerFrameHealthBarTextRight:SetPoint("RIGHT", -2, 0);
 	end
 end
 
 function PlayerFrame_UpdateManaBarTextAnchors()
 	if (UnitHasVehiclePlayerFrameUI("player")) then
-		PlayerFrameManaBarText:SetPoint("TOPLEFT", 100, -60);
-		PlayerFrameManaBarTextLeft:SetPoint("TOPLEFT", 100, -60);
-		PlayerFrameManaBarTextRight:SetPoint("TOPRIGHT", -34, -60);
+		PlayerFrameManaBarText:SetPoint("CENTER", 0, 1);
+		PlayerFrameManaBarTextLeft:SetPoint("LEFT", 2, 1);
+		PlayerFrameManaBarTextRight:SetPoint("RIGHT", -2, 1);
 	else
-		PlayerFrameManaBarText:SetPoint("TOPLEFT", 88, -61);
-		PlayerFrameManaBarTextLeft:SetPoint("TOPLEFT", 88, -61);
-		PlayerFrameManaBarTextRight:SetPoint("TOPRIGHT", -26, -61);
+		PlayerFrameManaBarText:SetPoint("CENTER", 0, 1);
+		PlayerFrameManaBarTextLeft:SetPoint("LEFT", 2, 1);
+		PlayerFrameManaBarTextRight:SetPoint("RIGHT", -2, 1);
 	end
 end
 
@@ -263,7 +263,7 @@ function PlayerFrame_UpdateLevel()
 		else
 			PlayerLevelText:SetVertexColor(1.0, 0.82, 0.0, 1.0);
 		end
-		PlayerFrame_UpdateLevelTextAnchor(effectiveLevel);
+		PlayerFrame_UpdateLevelTextAnchor();
 		PlayerLevelText:SetText(effectiveLevel);
 	end
 end
@@ -337,7 +337,7 @@ function PlayerFrame_UpdatePvPStatus()
 			prestigeBadge:Hide();
 			if (factionGroup == "Horde") then
 				pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
-			elseif ( factionGroup == "Alliance" ) then
+			elseif (factionGroup == "Alliance") then
 				pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
 			end
 
@@ -384,7 +384,7 @@ end
 
 function PlayerFrame_UpdateArt(self)
 	if (self.inSeat) then
-		PetFrame_Update(PetFrame);
+		PetFrame:Update();
 		if (UnitHasVehiclePlayerFrameUI("player")) then
 			PlayerFrame_ToVehicleArt(self, UnitVehicleSkin("player"));
 		else
@@ -393,7 +393,7 @@ function PlayerFrame_UpdateArt(self)
 	elseif (self.updatePetFrame) then
 		-- leaving a vehicle that didn't change player art
 		self.updatePetFrame = false;
-		PetFrame_Update(PetFrame);
+		PetFrame:Update();
 	end
 end
 
@@ -520,7 +520,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 
 	UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
 	UnitFrame_SetUnit(PetFrame, "player", PetFrameHealthBar, PetFrameManaBar);
-	PetFrame_Update(PetFrame);
+	PetFrame:Update();
 	PlayerFrame_Update();
 	BuffFrame:Update();
 	DebuffFrame:Update();
@@ -569,7 +569,7 @@ function PlayerFrame_ToPlayerArt(self)
 
 	UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
 	UnitFrame_SetUnit(PetFrame, "pet", PetFrameHealthBar, PetFrameManaBar);
-	PetFrame_Update(PetFrame);
+	PetFrame:Update();
 	PlayerFrame_Update();
 	BuffFrame:Update();
 	DebuffFrame:Update();
@@ -584,7 +584,7 @@ function PlayerFrame_ToPlayerArt(self)
 
 	PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
 
-	PlayerFrameHealthBar:SetHeight(21);
+	PlayerFrameHealthBar:SetHeight(20);
 	PlayerFrameHealthBar:SetWidth(124);
 	PlayerFrameHealthBar:SetPoint("TOPLEFT", 85, -40);
 

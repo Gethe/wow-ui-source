@@ -61,6 +61,9 @@
 								<NormalTexture atlas="auctionhouse-ui-filter-redx">
 									<Size x="23" y="23"/>
 								</NormalTexture>
+								<HighlightTexture atlas="auctionhouse-ui-filter-redx" alphaMode="ADD" alpha="0.4">
+									<Size x="23" y="23"/>
+								</HighlightTexture>
 							</Button>
 							<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
 							<Frame parentKey="LevelRangeFrame" inherits="AuctionHouseLevelRangeFrameTemplate"/>

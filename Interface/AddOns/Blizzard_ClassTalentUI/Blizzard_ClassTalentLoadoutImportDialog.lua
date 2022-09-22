@@ -4,9 +4,6 @@ function ClassTalentLoadoutImportDialogMixin:OnLoad()
 	self.exclusive = true;
 	self.AcceptButton:SetOnClickHandler(GenerateClosure(self.OnAccept, self));
 	self.CancelButton:SetOnClickHandler(GenerateClosure(self.OnCancel, self));
-	self.ImportBox.EditBox:SetScript("OnTextChanged", GenerateClosure(self.OnTextChanged, self));
-	self.ImportBox.EditBox:SetScript("OnEnterPressed", GenerateClosure(self.OnAccept, self));
-	self.ImportBox.EditBox:SetScript("OnEscapePressed", GenerateClosure(self.OnCancel, self));
 	ClassTalentLoadoutDialogMixin.OnLoad(self);
 end
 
@@ -20,8 +17,9 @@ end
 
 function ClassTalentLoadoutImportDialogMixin:OnAccept()
 	if self.AcceptButton:IsEnabled() then
-		local importText = self.ImportBox.EditBox:GetText();
-		local success = ClassTalentFrame.TalentsTab:ImportLoadout(importText);
+		local importText = self.ImportControl:GetText();
+		local loadoutName = self.NameControl:GetText();
+		local success = ClassTalentFrame.TalentsTab:ImportLoadout(importText, loadoutName);
 		
 		if success then
 			StaticPopupSpecial_Hide(self);
@@ -29,19 +27,56 @@ function ClassTalentLoadoutImportDialogMixin:OnAccept()
 	end
 end
 
-
 function ClassTalentLoadoutImportDialogMixin:UpdateAcceptButtonEnabledState()
-	local importTextFilled = UserEditBoxNonEmpty(self.ImportBox.EditBox);
-	self.AcceptButton:SetEnabled(importTextFilled);
+	local importTextFilled = self.ImportControl:HasText();
+	local nameTextFilled = self.NameControl:HasText();
+	self.AcceptButton:SetEnabled(importTextFilled and nameTextFilled);
 end
 
 function ClassTalentLoadoutImportDialogMixin:OnTextChanged()
 	self:UpdateAcceptButtonEnabledState();
-	InputScrollFrame_OnTextChanged(self.ImportBox.EditBox);
 end
 
 function ClassTalentLoadoutImportDialogMixin:ShowDialog()
-	self.ImportBox.EditBox:SetText("");
 	StaticPopupSpecial_Show(self);
-	self.ImportBox.EditBox:SetFocus();
+end
+
+
+ClassTalentLoadoutImportDialogImportControlMixin = CreateFromMixins(ClassTalentLoadoutDialogInputControlMixin);
+
+function ClassTalentLoadoutImportDialogImportControlMixin:OnShow()
+	ClassTalentLoadoutDialogInputControlMixin.OnShow(self);
+	self.InputContainer.EditBox:SetFocus();
+end
+
+function ClassTalentLoadoutImportDialogImportControlMixin:OnEnterPressed()
+	self:GetParent():OnAccept();
+end
+
+function ClassTalentLoadoutImportDialogImportControlMixin:OnEscapePressed()
+	self:GetParent():OnCancel();
+end
+
+function ClassTalentLoadoutImportDialogImportControlMixin:OnTextChanged()
+	self:GetParent():OnTextChanged();
+	InputScrollFrame_OnTextChanged(self.InputContainer.EditBox);
+end
+
+function ClassTalentLoadoutImportDialogImportControlMixin:GetEditBox()
+	return self.InputContainer.EditBox;
+end
+
+
+ClassTalentLoadoutImportDialogNameControlMixin = {}
+
+function ClassTalentLoadoutImportDialogNameControlMixin:OnEnterPressed()
+	self:GetParent():OnAccept();
+end
+
+function ClassTalentLoadoutImportDialogNameControlMixin:OnEscapePressed()
+	self:GetParent():OnCancel();
+end
+
+function ClassTalentLoadoutImportDialogNameControlMixin:OnTextChanged()
+	self:GetParent():OnTextChanged();
 end

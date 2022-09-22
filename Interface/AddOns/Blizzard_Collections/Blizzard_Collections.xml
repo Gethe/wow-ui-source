@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_Collections.lua"/>
 
-	<Button name="CollectionsJournalTab" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Button name="CollectionsJournalTab" inherits="PanelTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
 				CollectionsJournal_SetTab(self:GetParent(), self:GetID());

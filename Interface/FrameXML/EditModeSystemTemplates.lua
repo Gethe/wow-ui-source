@@ -102,11 +102,6 @@ function EditModeSystemMixin:ApplySystemAnchor()
 			frameContainer:RemoveManagedFrame(self);
 			self:SetParent(UIParent);
 		end
-	elseif EditModeUtil:IsRightAnchoredActionBar(self) then
-		if self:IsInDefaultPosition() then
-			EditModeManagerFrame:AddRightActionBarToLayout(self);
-			return;
-		end
 	end
 
 	self:ClearAllPoints();
@@ -229,6 +224,7 @@ end
 
 function EditModeSystemMixin:HighlightSystem()
 	self:SetMovable(false);
+	self:AnchorSelectionFrame();
 	self.Selection:ShowHighlighted();
 	self.isHighlighted = true;
 	self.isSelected = false;
@@ -275,26 +271,26 @@ function EditModeSystemMixin:OnDragStop()
 	end
 end
 
+local function CreateResetToDefaultPositionButton(systemFrame, extraButtonPool)
+	local resetPositionButton = extraButtonPool:Acquire();
+	resetPositionButton.layoutIndex = 3;
+	resetPositionButton:SetText(HUD_EDIT_MODE_RESET_POSITION);
+	resetPositionButton:SetOnClickHandler(GenerateClosure(systemFrame.ResetToDefaultPosition, systemFrame));
+	resetPositionButton:SetEnabled(not systemFrame:IsInDefaultPosition());
+	resetPositionButton:Show();
+end
+
 EditModeActionBarSystemMixin = {};
 
 function EditModeActionBarSystemMixin:UpdateSystem(systemInfo)
 	EditModeSystemMixin.UpdateSystem(self, systemInfo);
 	self:RefreshGridLayout();
 	self:RefreshButtonArt();
-
-	if EditModeUtil:IsBottomAnchoredActionBar(self) then
-		EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
-	elseif EditModeUtil:IsRightAnchoredActionBar(self) then
-		EditModeManagerFrame:UpdateRightActionBarsLayout();
-	end
 end
 
-function EditModeActionBarSystemMixin:OnDragStart()
-	EditModeSystemMixin.OnDragStart(self);
-
-	if self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide) then
-		EditModeSystemSettingsDialog:OnSettingValueChanged(Enum.EditModeActionBarSetting.SnapToSide, 0);
-	end
+function EditModeActionBarSystemMixin:ApplySystemAnchor()
+	EditModeSystemMixin.ApplySystemAnchor(self);
+	EditModeManagerFrame:UpdateActionBarLayout(self);
 end
 
 function EditModeActionBarSystemMixin:OnEditModeEnter()
@@ -374,19 +370,7 @@ function EditModeActionBarSystemMixin:UpdateGridLayout()
 		return;
 	end
 
-	-- If you can be in a right action bar layout then update the layout
-	if self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide) then
-		EditModeManagerFrame:UpdateRightActionBarsLayout();
-	end
-
-	if EditModeUtil:IsBottomAnchoredActionBar(self) then
-		EditModeManagerFrame:UpdateBottomAnchoredActionBarHeight();
-	elseif EditModeUtil:IsRightAnchoredActionBar(self) then
-		EditModeManagerFrame:UpdateRightActionBarsLayout();
-	end
-
-	-- Update frame positions since if we update the size of the action bars then we'll wanna update the position of things relative to those action bars
-	UIParent_ManageFramePositions();
+	EditModeManagerFrame:UpdateActionBarLayout(self);
 end
 
 function EditModeActionBarSystemMixin:MarkButtonArtDirty()
@@ -417,12 +401,6 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingOrientation()
 		self.addButtonsToTop = false;
 	end
 
-	if (self.isHorizontal
-		and self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide)
-		and self:GetSettingValueBool(Enum.EditModeActionBarSetting.SnapToSide)) then
-		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.SnapToSide, 0);
-	end
-
 	-- Since the orientation changed we'll want to update the grid layout
 	self:MarkGridLayoutDirty();
 
@@ -432,13 +410,6 @@ end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingNumRows()
 	self.numRows = self:GetSettingValue(Enum.EditModeActionBarSetting.NumRows);
-
-	-- If num rows > 1 and we can snap to the side then make sure snap to side is disabled
-	if self.numRows > 1
-		and self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide)
-		and self:GetSettingValueBool(Enum.EditModeActionBarSetting.SnapToSide) then
-		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.SnapToSide, 0);
-	end
 
 	-- Since the num rows changed we'll want to update the grid layout
 	self:MarkGridLayoutDirty();
@@ -521,21 +492,6 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingAlwaysShowButtons()
 	self:SetShowGrid(alwaysShowButtons, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 end
 
-function EditModeActionBarSystemMixin:UpdateSystemSettingSnapToSide()
-	if self:GetSettingValueBool(Enum.EditModeActionBarSetting.SnapToSide) then
-		self:ResetToDefaultPosition();
-
-		-- Force vertical with 1 column when snapped to side
-		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.Orientation, Enum.ActionBarOrientation.Vertical);
-		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeActionBarSetting.NumRows, 1);
-	else
-		self.systemInfo.anchorInfo.isDefaultPosition = false;
-		EditModeManagerFrame:RemoveRightActionBarFromLayout(self);
-	end
-
-	EditModeManagerFrame:UpdateRightAnchoredActionBarScales();
-end
-
 function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -562,8 +518,6 @@ function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		self:UpdateSystemSettingVisibleSetting();
 	elseif setting == Enum.EditModeActionBarSetting.AlwaysShowButtons and self:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
 		self:UpdateSystemSettingAlwaysShowButtons();
-	elseif setting == Enum.EditModeActionBarSetting.SnapToSide and self:HasSetting(Enum.EditModeActionBarSetting.SnapToSide) then
-		self:UpdateSystemSettingSnapToSide();
 	end
 
 	if not entireSystemUpdate then
@@ -595,8 +549,10 @@ local function openActionBarSettings()
 end
 
 function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
+	CreateResetToDefaultPositionButton(self, extraButtonPool);
+
 	local quickKeybindModeButton = extraButtonPool:Acquire();
-	quickKeybindModeButton.layoutIndex = 3;
+	quickKeybindModeButton.layoutIndex = 4;
 	quickKeybindModeButton:SetText(QUICK_KEYBIND_MODE);
 	quickKeybindModeButton:SetOnClickHandler(enterQuickKeybindMode);
 	quickKeybindModeButton:Show();
@@ -605,7 +561,7 @@ function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
 		and self.systemIndex ~= Enum.EditModeActionBarSystemIndices.PetActionBar
 		and self.systemIndex ~= Enum.EditModeActionBarSystemIndices.PossessActionBar then
 		local actionBarSettingsButton = extraButtonPool:Acquire();
-		actionBarSettingsButton.layoutIndex = 4;
+		actionBarSettingsButton.layoutIndex = 5;
 		actionBarSettingsButton:SetText(HUD_EDIT_MODE_ACTION_BAR_SETTINGS);
 		actionBarSettingsButton:SetOnClickHandler(openActionBarSettings);
 		actionBarSettingsButton:Show();
@@ -614,19 +570,26 @@ function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
 	return true;
 end
 
-local function CreateResetToDefaultPositionButton(systemFrame, extraButtonPool)
-	local resetPositionButton = extraButtonPool:Acquire();
-	resetPositionButton.layoutIndex = 3;
-	resetPositionButton:SetText(HUD_EDIT_MODE_RESET_POSITION);
-	resetPositionButton:SetOnClickHandler(GenerateClosure(systemFrame.ResetToDefaultPosition, systemFrame));
-	resetPositionButton:SetEnabled(not systemFrame:IsInDefaultPosition());
-	resetPositionButton:Show();
-end
-
 EditModeUnitFrameSystemMixin = {};
 
 function EditModeUnitFrameSystemMixin:ShouldResetSettingsDialogAnchors(oldSelectedSystemFrame)
 	return true;
+end
+
+function EditModeUnitFrameSystemMixin:UseCombinedGroups()
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		local raidGroupDisplayType = self:GetSettingValue(Enum.EditModeUnitFrameSetting.RaidGroupDisplayType);
+		return (raidGroupDisplayType == Enum.RaidGroupDisplayType.CombineGroupsVertical) or (raidGroupDisplayType == Enum.RaidGroupDisplayType.CombineGroupsHorizontal);
+	else
+		return false;
+	end
+end
+
+function EditModeUnitFrameSystemMixin:UseSettingAltName(setting)
+	if setting == Enum.EditModeUnitFrameSetting.RowSize then
+		return self:DoesSettingValueEqual(Enum.EditModeUnitFrameSetting.RaidGroupDisplayType, Enum.RaidGroupDisplayType.CombineGroupsVertical);
+	end
+	return false;
 end
 
 function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
@@ -637,11 +600,7 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 	if setting == Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground then
 		return not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 	elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalGroups then
-		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
-			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
-		else
-			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.KeepGroupsTogether);
-		end
+		return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 	elseif setting == Enum.EditModeUnitFrameSetting.FrameHeight then
 		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
@@ -654,31 +613,40 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 		else
-			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.KeepGroupsTogether);
+			return not self:UseCombinedGroups();
 		end
 	elseif setting == Enum.EditModeUnitFrameSetting.SortPlayersBy then
-		return not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.KeepGroupsTogether);
+		return self:UseCombinedGroups();
 	elseif setting == Enum.EditModeUnitFrameSetting.RowSize then
-		return not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.KeepGroupsTogether);
+		return self:UseCombinedGroups();
+	elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop and self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
+		return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame);
 	end
 
 	return true;
 end
 
+local PetFrameDefaultSelectionHeightAdjustment = -19;
+local PetFrameDefaultYOffset = -75;
 function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
 	self.Selection:ClearAllPoints();
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Player then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -16);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -19, 12);
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		if PetFrame:IsShown() then
+			local point, relativeTo, relativePoint, offsetX, offsetY = PetFrame:GetPoint(1);
+			local extraOffset = offsetY - PetFrameDefaultYOffset;
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, PetFrameDefaultSelectionHeightAdjustment + extraOffset);
+		else
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		end
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 10);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -35, 0);
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 10);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -35, 0);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		
 		if self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) then
 			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
 		else
@@ -726,13 +694,9 @@ function EditModeUnitFrameSystemMixin:AddExtraButtons(extraButtonPool)
 	return false;
 end
 
-function EditModeUnitFrameSystemMixin:UpdateSystemSettingHidePortrait()
-	--TODO
-end
-
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingBuffsOnTop()
 	self.buffsOnTop = self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.BuffsOnTop);
-	TargetFrame_UpdateAuras(self);
+	self:UpdateAuras();
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseLargerFrame()
@@ -812,14 +776,8 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingDisplayBorder()
 	end
 end
 
-function EditModeUnitFrameSystemMixin:UpdateSystemSettingKeepGroupsTogether()
-	local groupMode;
-	if self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.KeepGroupsTogether) then
-		groupMode = "discrete";
-	else
-		groupMode = "flush";
-	end
-
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingRaidGroupDisplayType()
+	local groupMode = self:UseCombinedGroups() and "flush" or "discrete";
 	CompactRaidFrameContainer:SetGroupMode(groupMode);
 	CompactRaidFrameManager_UpdateFilterInfo();
 	EditModeManagerFrame:UpdateRaidContainerFlow();
@@ -834,6 +792,7 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingSortPlayersBy()
 	else
 		CompactRaidFrameContainer:SetFlowSortFunction(CRFSort_Role);
 	end
+	EditModeManagerFrame:UpdateRaidContainerFlow();
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingRowSize()
@@ -853,9 +812,7 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		return;
 	end
 
-	if setting == Enum.EditModeUnitFrameSetting.HidePortrait and self:HasSetting(Enum.EditModeUnitFrameSetting.HidePortrait) then
-		self:UpdateSystemSettingHidePortrait();
-	elseif setting == Enum.EditModeUnitFrameSetting.CastBarUnderneath and self:HasSetting(Enum.EditModeUnitFrameSetting.CastBarUnderneath) then
+	if setting == Enum.EditModeUnitFrameSetting.CastBarUnderneath and self:HasSetting(Enum.EditModeUnitFrameSetting.CastBarUnderneath) then
 		-- Nothing to do, this setting is mirrored by Enum.EditModeCastBarSetting.LockToPlayerFrame 
 	elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop and self:HasSetting(Enum.EditModeUnitFrameSetting.BuffsOnTop) then
 		self:UpdateSystemSettingBuffsOnTop();
@@ -879,8 +836,8 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		self:UpdateSystemSettingFrameHeight();
 	elseif setting == Enum.EditModeUnitFrameSetting.DisplayBorder and self:HasSetting(Enum.EditModeUnitFrameSetting.DisplayBorder) then
 		self:UpdateSystemSettingDisplayBorder();
-	elseif setting == Enum.EditModeUnitFrameSetting.KeepGroupsTogether and self:HasSetting(Enum.EditModeUnitFrameSetting.KeepGroupsTogether) then
-		self:UpdateSystemSettingKeepGroupsTogether();
+	elseif setting == Enum.EditModeUnitFrameSetting.RaidGroupDisplayType and self:HasSetting(Enum.EditModeUnitFrameSetting.RaidGroupDisplayType) then
+		self:UpdateSystemSettingRaidGroupDisplayType();
 	elseif setting == Enum.EditModeUnitFrameSetting.SortPlayersBy and self:HasSetting(Enum.EditModeUnitFrameSetting.SortPlayersBy) then
 		self:UpdateSystemSettingSortPlayersBy();
 	elseif setting == Enum.EditModeUnitFrameSetting.RowSize and self:HasSetting(Enum.EditModeUnitFrameSetting.RowSize) then
@@ -1091,6 +1048,11 @@ function EditModeEncounterBarSystemMixin:OnDragStart()
 		self:SetParent(UIParent);
 		self:StartMoving();
 	end
+end
+
+function EditModeEncounterBarSystemMixin:ApplySystemAnchor()
+	EditModeSystemMixin.ApplySystemAnchor(self);
+	self:Layout();
 end
 
 EditModeExtraAbilitiesSystemMixin = {};
@@ -1500,6 +1462,24 @@ function EditModeLootFrameSystemMixin:OnEditModeExit()
 
 	self.isInEditMode = false;
 	self:UpdateShownState();
+end
+
+function EditModeLootFrameSystemMixin:OnDragStart()
+	self.editModeManuallyShown = true;
+	EditModeSystemMixin.OnDragStart(self);
+end
+
+function EditModeLootFrameSystemMixin:AddExtraButtons(extraButtonPool)
+	CreateResetToDefaultPositionButton(self, extraButtonPool);
+	return true;
+end
+
+function EditModeLootFrameSystemMixin:ApplySystemAnchor()
+	EditModeSystemMixin.ApplySystemAnchor(self);
+
+	-- If we aren't in the default position then we'll want the frame to call it's regular visibility methods rather than UI Panel ones
+	-- This is so that if it is in the default position it will be treated as a UI panel and things can push around but if it's got a custom position then it won't be treated like a UI Panel
+	self.editModeManuallyShown = not self:IsInDefaultPosition();
 end
 
 local EditModeSystemSelectionLayout =

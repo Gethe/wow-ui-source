@@ -12,6 +12,7 @@
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Player" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PLAYER_FRAME_LABEL" type="global"/>
+			<KeyValue key="disablePortraitMask" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="PlayerFrameContainer" setAllPoints="true">
@@ -103,25 +104,6 @@
 						</Layers>
 						<Frames>
 							<Frame parentKey="HealthBarArea" setAllPoints="true" useParentLevel="true">
-								<Layers>
-									<Layer level="OVERLAY">
-										<FontString name="PlayerFrameHealthBarText" inherits="TextStatusBarText">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="88" y="-44.5"/>
-											</Anchors>
-										</FontString>
-										<FontString name="PlayerFrameHealthBarTextLeft" inherits="TextStatusBarText">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="88" y="-44.5"/>
-											</Anchors>
-										</FontString>
-										<FontString name="PlayerFrameHealthBarTextRight" inherits="TextStatusBarText">
-											<Anchors>
-												<Anchor point="TOPRIGHT" x="-26" y="-44.5"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
 								<Frames>
 									<StatusBar parentKey="PlayerFrameHealthBarAnimatedLoss" mixin="AnimatedHealthLossMixin" hidden="true" useParentLevel="true">
 										<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health"/>
@@ -130,10 +112,29 @@
 										</Scripts>
 									</StatusBar>
 									<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar" enableMouseMotion="true" useParentLevel="true">
-										<Size x="124" y="21"/>
+										<Size x="124" y="20"/>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="85" y="-40"/>
 										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="PlayerFrameHealthBarText" inherits="TextStatusBarText">
+													<Anchors>
+														<Anchor point="CENTER" x="0" y="0"/>
+													</Anchors>
+												</FontString>
+												<FontString name="PlayerFrameHealthBarTextLeft" inherits="TextStatusBarText">
+													<Anchors>
+														<Anchor point="LEFT" x="2" y="0"/>
+													</Anchors>
+												</FontString>
+												<FontString name="PlayerFrameHealthBarTextRight" inherits="TextStatusBarText">
+													<Anchors>
+														<Anchor point="RIGHT" x="-2" y="0"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
 										<Scripts>
 											<OnLoad>
 												TextStatusBar_Initialize(self);
@@ -154,31 +155,31 @@
 								</Frames>
 							</Frame>
 							<Frame parentKey="ManaBarArea" setAllPoints="true" useParentLevel="true">
-								<Layers>
-									<Layer level="OVERLAY">
-										<FontString name="PlayerFrameManaBarText" inherits="TextStatusBarText">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="88" y="-61"/>
-											</Anchors>
-										</FontString>
-										<FontString name="PlayerFrameManaBarTextLeft" inherits="TextStatusBarText">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="88" y="-61"/>
-											</Anchors>
-										</FontString>
-										<FontString name="PlayerFrameManaBarTextRight" inherits="TextStatusBarText">
-											<Anchors>
-												<Anchor point="TOPRIGHT" x="-26" y="-61"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
 								<Frames>
 									<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar" enableMouseMotion="true" useParentLevel="true">
 										<Size x="124" y="10"/>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="85" y="-62"/>
 										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="PlayerFrameManaBarText" inherits="TextStatusBarText">
+													<Anchors>
+														<Anchor point="CENTER" x="0" y="1"/>
+													</Anchors>
+												</FontString>
+												<FontString name="PlayerFrameManaBarTextLeft" inherits="TextStatusBarText">
+													<Anchors>
+														<Anchor point="LEFT" x="2" y="1"/>
+													</Anchors>
+												</FontString>
+												<FontString name="PlayerFrameManaBarTextRight" inherits="TextStatusBarText">
+													<Anchors>
+														<Anchor point="RIGHT" x="-2" y="1"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
 										<Scripts>
 											<OnLoad>
 												TextStatusBar_Initialize(self);

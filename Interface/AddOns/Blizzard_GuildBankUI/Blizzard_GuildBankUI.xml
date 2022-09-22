@@ -158,7 +158,7 @@
 		</Frames>
 	</Frame>
 
-	<Button name="GuildBankFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" mixin="GuildBankFrameTabMixin" parentArray="FrameTabs" virtual="true">
+	<Button name="GuildBankFrameTabTemplate" inherits="PanelTabButtonTemplate" mixin="GuildBankFrameTabMixin" virtual="true">
 		<Scripts>
 			<OnClick method="OnClick" />
 		</Scripts>
@@ -574,21 +574,9 @@
 					<Anchor point="BOTTOMLEFT" relativeTo="GuildBankFrame" relativePoint="BOTTOMLEFT" x="7" y="-30" />
 				</Anchors>
             </Button>
-            <Button name="GuildBankFrameTab2" inherits="GuildBankFrameTabTemplate" text="GUILD_BANK_LOG" id="2">
-                <Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankFrameTab1" relativePoint="RIGHT" x="-16" y="0" />
-                </Anchors>
-            </Button>
-			<Button name="GuildBankFrameTab3" inherits="GuildBankFrameTabTemplate" text="GUILD_BANK_MONEY_LOG" id="3">
-                <Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankFrameTab2" relativePoint="RIGHT" x="-16" y="0" />
-                </Anchors>
-            </Button>
-			<Button name="GuildBankFrameTab4" inherits="GuildBankFrameTabTemplate" text="GUILD_BANK_TAB_INFO" id="4">
-                <Anchors>
-					<Anchor point="LEFT" relativeTo="GuildBankFrameTab3" relativePoint="RIGHT" x="-16" y="0" />
-                </Anchors>
-            </Button>
+            <Button name="GuildBankFrameTab2" inherits="GuildBankFrameTabTemplate" text="GUILD_BANK_LOG" id="2"/>
+			<Button name="GuildBankFrameTab3" inherits="GuildBankFrameTabTemplate" text="GUILD_BANK_MONEY_LOG" id="3"/>
+			<Button name="GuildBankFrameTab4" inherits="GuildBankFrameTabTemplate" text="GUILD_BANK_TAB_INFO" id="4"/>
 			<Frame name="GuildBankTab1" inherits="GuildBankTabTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="GuildBankFrame" relativePoint="TOPRIGHT" x="-1" y="-17" />

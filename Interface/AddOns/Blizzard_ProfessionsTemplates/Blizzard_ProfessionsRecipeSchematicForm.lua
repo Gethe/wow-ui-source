@@ -101,6 +101,8 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		self:SetSelectedRecipeLevel(recipeInfo.recipeID, level);
 		self:Init(recipeInfo);
 	end);
+
+	self.statsChangedHandler = GenerateClosure(self.UpdateDetailsStats, self);
 end
 
 function ProfessionsRecipeSchematicFormMixin:OnShow()
@@ -163,7 +165,7 @@ end
 function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	local stride = 1;
 	local xPadding = 0;
-	local yPadding = 0;
+	local yPadding = 4;
 	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self.OutputIcon, "BOTTOMLEFT", 7, -10);
 	local organizer = AnchorUtil.CreateGridLayoutOrganizer(stride, anchor, xPadding, yPadding);
 
@@ -231,9 +233,16 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	local isSalvage = self.recipeSchematic.recipeType == Enum.TradeskillRecipeType.Salvage;
 
 	if newTransaction then
-		local onChanged = GenerateClosure(self.UpdateDetailsStats, self);
-		self.transaction = CreateProfessionsRecipeTransaction(self.recipeSchematic, onChanged);
+		self.transaction = CreateProfessionsRecipeTransaction(self.recipeSchematic);
 		self.transaction:SetRecraft(isRecraft);
+	else
+		-- Remove allocation handlers while we're initializing the form
+		-- otherwise we're going to flood the details stats panel with
+		-- irrelevant events. Altrnatively, the details panel could
+		-- defer handling the changed event until end of frame, but it
+		-- would first need to be guaranteed that no state is accessed
+		-- off the details frame that would not have been set as expected.
+		self.transaction:SetAllocationsChangedHandler(nil);
 	end
 
 	local function AllocateModification(slotIndex, reagentSlotSchematic)
@@ -428,7 +437,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	do
 		local function SetRequiredToolsText(fontString, text)
 			fontString:SetText(text);
-			fontString:SetWidth(300);
+			fontString:SetWidth(500);
 			fontString:SetWidth(fontString:GetStringWidth());
 			fontString:SetHeight(fontString:GetStringHeight());
 			fontString:Show();
@@ -463,7 +472,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 
 	if isRecraft then
 		if not self.recraftSlot then
-			self.recraftSlot = CreateFrame("FRAME", nil, self, "ProfessionsReagentRecraftTemplate");
+			self.recraftSlot = CreateFrame("FRAME", nil, self, "ProfessionsRecraftSlotTemplate");
 			self.recraftSlot:SetPoint("TOPLEFT", self.RecraftingOutputText, "BOTTOMLEFT", 0, -30);
 			table.insert(self.recipeInfoFrames, self.recraftSlot);
 		end
@@ -472,7 +481,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 
 		self.recraftSlot.InputSlot:SetScript("OnMouseDown", function(button, buttonName, down)
 			if buttonName == "LeftButton" then
-				local flyout = ToggleProfessionsItemFlyout(self.recraftSlot.InputSlot);
+				local flyout = ToggleProfessionsItemFlyout(self.recraftSlot.InputSlot, ProfessionsFrame);
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, elementData)
 						Professions.TransitionToRecraft(elementData.itemGUID);
@@ -650,7 +659,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 
 				if not slot:IsUnallocatable() then
 					if buttonName == "LeftButton" then
-						local flyout = ToggleProfessionsItemFlyout(slot.Button);
+						local flyout = ToggleProfessionsItemFlyout(slot.Button, ProfessionsFrame);
 						if flyout then
 							local function OnFlyoutItemSelected(o, flyout, elementData)
 								local item = elementData.item;
@@ -731,7 +740,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 
 		self.salvageSlot.Button:SetScript("OnMouseDown", function(button, buttonName, down)
 			if buttonName == "LeftButton" then
-				local flyout = ToggleProfessionsItemFlyout(self.salvageSlot.Button);
+				local flyout = ToggleProfessionsItemFlyout(self.salvageSlot.Button, ProfessionsFrame);
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, elementData)
 						local item = elementData.item;
@@ -809,7 +818,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 	
 		self.enchantSlot.Button:SetScript("OnMouseDown", function(button, buttonName, down)
 			if buttonName == "LeftButton" then
-				local flyout = ToggleProfessionsItemFlyout(self.enchantSlot.Button);
+				local flyout = ToggleProfessionsItemFlyout(self.enchantSlot.Button, ProfessionsFrame);
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, elementData)
 						local item = elementData.item;
@@ -885,7 +894,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		self.OptionalReagents:SetText(PROFESSIONS_REAGENT_CONTAINER_ENCHANT_LABEL);
 	else
 		optionalSlots = self:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
-		self.OptionalReagents:SetText(PROFESSIONS_REAGENT_CONTAINER_LABEL);
+		self.OptionalReagents:SetText(PROFESSIONS_OPTIONAL_REAGENT_CONTAINER_LABEL);
 	end
 
 	Professions.LayoutReagentSlots(basicSlots, self.Reagents, optionalSlots, self.OptionalReagents, self.VerticalDivider);
@@ -922,22 +931,22 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 		
 		self.Details:SetOutputItemName(recipeInfo.name);
 		self.Details.FinishingReagentSlotContainer:SetShown(hasFinishingSlots);
-		
-		if not self.transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) and not recipeInfo.isGatheringRecipe then
-			self.AllocateBestQualityCheckBox:Show();
-			self.AllocateBestQualityCheckBox:SetChecked(Professions.ShouldAllocateBestQualityReagents());
-		else
-			self.AllocateBestQualityCheckBox:Hide();
-		end
-
 		self.Details:Show();
 
 		self.Details:SetTransaction(self.transaction);
 		self:UpdateDetailsStats();
 	else
-		self.AllocateBestQualityCheckBox:Hide();
 		self.Details:Hide();
 	end
+
+	if professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic) then
+		self.AllocateBestQualityCheckBox:Show();
+		self.AllocateBestQualityCheckBox:SetChecked(Professions.ShouldAllocateBestQualityReagents());
+	else
+		self.AllocateBestQualityCheckBox:Hide();
+	end
+
+	self.transaction:SetAllocationsChangedHandler(self.statsChangedHandler);
 
 	organizer:Layout();
 end

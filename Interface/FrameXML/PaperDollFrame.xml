@@ -579,7 +579,7 @@
 							<OnUpdate function="PaperDollEquipmentManagerPane_OnUpdate"/>
 						</Scripts>
 					</Frame>
-			<PlayerModel name="CharacterModelFrame" mixin ="CharacterModelFrameMixin" inherits="ModelWithControlsTemplate">
+			<ModelScene name="CharacterModelScene" mixin ="CharacterModelSceneMixin" inherits="PanningModelSceneMixinTemplate">
 				<Size x="231" y="320"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="52" y="-66"/>
@@ -677,11 +677,20 @@
 						</Texture>
 					</Layer>
 				</Layers>
+
+				<Frames>
+					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate" >
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-10"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+
 				<Scripts>
-					<OnLoad method="OnLoad"/>
+					<OnMouseUp method="OnMouseUp"/>
 					<OnReceiveDrag method="OnReceiveDrag"/>
 				</Scripts>
-			</PlayerModel>
+			</ModelScene>
 
 			<Frame name="PaperDollItemsFrame" setAllPoints="true">
 				<Frames>
@@ -800,7 +809,7 @@
             <OnLoad function="PaperDollFrame_OnLoad"/>
             <OnEvent function="PaperDollFrame_OnEvent"/>
             <OnShow function="PaperDollFrame_OnShow"/>
-			<OnHide function="PaperDollFrame_OnHide"/>
+						<OnHide function="PaperDollFrame_OnHide"/>
         </Scripts>
     </Frame>
 

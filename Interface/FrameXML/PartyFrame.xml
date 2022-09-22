@@ -40,130 +40,23 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-	<Frame name="PartyMemberBuffTooltip" mixin="PartyMemberBuffTooltipMixin" frameStrata="TOOLTIP" hidden="true" inherits="TooltipBackdropTemplate">
+	<Frame name="PartyMemberBuffTooltip" mixin="PartyMemberBuffTooltipMixin" enableMouse="true" frameStrata="TOOLTIP" hidden="true" inherits="TooltipBackdropTemplate">
 		<Size x="200" y="75"/>
 		<Frames>
-			<Frame name="$parentBuff1" parentArray="Buff" inherits="PartyBuffFrameTemplate">
+			<Frame parentKey="BuffContainer">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="9" y="-9"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentBuff2" parentArray="Buff" inherits="PartyBuffFrameTemplate">
+			<Frame parentKey="DebuffContainer">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff1" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff3" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff2" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff4" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff3" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff5" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff4" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff6" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff5" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff7" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff6" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff8" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff7" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff9" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentBuff1" relativePoint="BOTTOM" x="0" y="-2"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff10" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff9" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff11" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff10" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff12" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff11" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff13" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff12" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff14" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff13" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff15" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff14" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentBuff16" parentArray="Buff" inherits="PartyBuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff15" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentDebuff1" parentArray="Debuff" inherits="PartyDebuffFrameTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentBuff9" relativePoint="BOTTOM" x="0" y="-2"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentDebuff2" parentArray="Debuff" inherits="PartyDebuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentDebuff3" parentArray="Debuff" inherits="PartyDebuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentDebuff4" parentArray="Debuff" inherits="PartyDebuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentDebuff5" parentArray="Debuff" inherits="PartyDebuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff4" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentDebuff6" parentArray="Debuff" inherits="PartyDebuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff5" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentDebuff7" parentArray="Debuff" inherits="PartyDebuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff6" relativePoint="RIGHT" x="2" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentDebuff8" parentArray="Debuff" inherits="PartyDebuffFrameTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff7" relativePoint="RIGHT" x="2" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BuffContainer" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 				</Anchors>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 	
 </Ui>

@@ -308,10 +308,11 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 
 	local bindingIndex = initializer.data.bindingIndex;
 	local action, category, binding1, binding2 = GetBinding(bindingIndex);
+	local bindingName = GetBindingName(action);
 
 	local labelIndent = (initializer.data.search and 37) or 37;
 	self.Label:SetPoint("LEFT", labelIndent, 0);
-	self.Label:SetText(GetBindingName(action));
+	self.Label:SetText(bindingName);
 	
 	self.CustomButton = GetOrCreateCustomKeybindingButton(C_KeyBindings.GetCustomBindingType(bindingIndex));
 	if self.CustomButton then
@@ -329,10 +330,17 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 	self.Button2:SetParent(self);
 	self.Button1:SetShown(not self.CustomButton);
 	self.Button2:SetEnabled(not self.CustomButton);
+
+	local function InitializeKeyBindingButtonTooltip(index)
+		local key = select(index, GetBindingKey(action));
+		if key then
+			Settings.InitTooltip(KEY_BINDING_NAME_AND_KEY:format(bindingName, GetBindingText(key)), KEY_BINDING_TOOLTIP);
+		end
+	end
 	
 	for index, button in ipairs(self.Buttons) do
 		button:SetScript("OnClick", function(button, buttonName, down)
-			if buttonName == "LeftButton" or buttonName == "RightButton" then
+			if buttonName == "LeftButton" then
 				local oldSelected = initializer.selectedIndex == index;
 				KeybindListener:StopListening();
 
@@ -341,11 +349,21 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 					button:SetSelected(true);
 					KeybindListener:StartListening(action, index);
 				end
+			elseif buttonName == "RightButton" then
+				local unbindKey = select(index, GetBindingKey(action));
+				if unbindKey then
+					SetBinding(unbindKey, nil);
+					SettingsTooltip:Hide();
+					SettingsPanel:ClearOutputText();
+				end
 			else
 				KeybindListener:ProcessInput(buttonName);
 				return;
 			end
 		end);
+
+		button:SetTooltipFunc(GenerateClosure(InitializeKeyBindingButtonTooltip, index));
+		button:SetCustomTooltipAnchoring(button, "ANCHOR_RIGHT", 0, 0);
 	end
 
 	self.cbrHandles:RegisterCallback(EventRegistry, "Settings.ReparentBindingsToInputBlocker", self.ReparentBindingsToInputBlocker, self);
@@ -422,25 +440,27 @@ function CreateKeybindingEntryInitializer(bindingIndex, search)
 	end;
 
 	initializer.MatchesSearchTags = function(self, words)
-		if oldMatchesSearchTags(self, words) then
-			return true;
+		local result = oldMatchesSearchTags(self, words);
+		if result then
+			return result;
 		end
 	
 		local bindingIndex = self.data.bindingIndex;
 		for actionIndex = 1, 2 do
+			local bindingText = self:GetBindingText(bindingIndex, actionIndex):upper();
 			for _, word in ipairs(words) do
-				local bindingText = self:GetBindingText(bindingIndex, actionIndex);
-				if string.find(bindingText, word, nil, true) then
-					return true;
+				local first, last = string.find(bindingText, word, nil, true);
+				if first and last then
+					return last - first;
 				end
 			end
 		end
-		return false;
+		return nil;
 	end;
 	return initializer;
 end
 
-KeyBindingButtonMixin = {};
+KeyBindingButtonMixin = CreateFromMixins(DefaultTooltipMixin);
 
 function KeyBindingButtonMixin:SetSelected(selected)
 	self.SelectedHighlight:SetShown(selected);

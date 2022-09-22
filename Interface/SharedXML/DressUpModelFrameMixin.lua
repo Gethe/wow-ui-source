@@ -7,14 +7,9 @@ function DressUpModelFrameResetButtonMixin:OnLoad()
 end
 
 function DressUpModelFrameResetButtonMixin:OnClick()
-	self.modelScene:Reset();
-
-	local playerActor = self.modelScene:GetPlayerActor();
-
-	if (playerActor) then
-		playerActor:SetSheathed(false);
-		playerActor:Dress();
-	end
+	local itemModifiedAppearanceIDs = nil;
+	local forcePlayerRefresh = true;
+	DressUpFrame_Show(self:GetParent(), itemModifiedAppearanceIDs, forcePlayerRefresh)
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 

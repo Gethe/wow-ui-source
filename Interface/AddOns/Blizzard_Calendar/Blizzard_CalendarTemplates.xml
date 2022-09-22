@@ -209,17 +209,8 @@
 	<!-- Calendar Misc Templates -->
 	<Button name="CalendarCloseButtonTemplate" inherits="UIPanelCloseButton" virtual="true">
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+			<Anchor point="TOPRIGHT" x="-7" y="-7"/>
 		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\DialogFrame\UI-DialogBox-Corner">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-4" y="-4"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Scripts>
 			<OnLoad>
 				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 6);

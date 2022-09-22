@@ -19,8 +19,7 @@ local GenericTraitFrameEvents = {
 function GenericTraitFrameMixin:OnLoad()
 	TalentFrameBaseMixin.OnLoad(self);
 
-	-- TODO:: Data-drive this title.
-	self:SetTitle("Dragonriding Talents");
+	self:SetTitle(GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE);
 
 	-- Show costs by default.
 	local function GetDisplayTextFromTreeCurrency(treeCurrency)
@@ -115,7 +114,7 @@ end
 function GenericTraitFrameMixin:AttemptConfigOperation(...)
 	if TalentFrameBaseMixin.AttemptConfigOperation(self, ...) then
 		if not self:CommitConfig() then
-			UIErrorsFrame:AddExternalErrorMessage("Internal configuration error.");
+			UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
 		end
 	end
 end

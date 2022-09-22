@@ -96,6 +96,31 @@ local function Register()
 		Settings.SetupCVarDropDown(category, "empowerTapControls", Settings.VarType.Number, GetTapControlOptions, SETTING_EMPOWERED_SPELL_INPUT, SETTING_EMPOWERED_SPELL_INPUT_TOOLTIP);
 	end
 
+	-- Enable Interact Key
+	do
+		local function GetValue()
+			return GetCVar("softTargetInteract") == Enum.SoftTargetEnableFlags.Any;
+		end
+		
+		local function SetValue(value)
+			SetCVar("softTargetInteract", value and Enum.SoftTargetEnableFlags.Any or Enum.SoftTargetEnableFlags.Gamepad);
+		end
+		
+		local defaultValue = false;
+		local setting = Settings.RegisterProxySetting(category, "PROXY_ENABLE_INTERACT", Settings.DefaultVarLocation, 
+			Settings.VarType.Boolean, ENABLE_INTERACT_TEXT, defaultValue, GetValue, SetValue);
+		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_ENABLE_INTERACT);
+	end
+	
+	-- Interact Key
+	do
+		local action = "INTERACTTARGET";
+		local bindingIndex = C_KeyBindings.GetBindingIndex(action);
+		local initializer = CreateKeybindingEntryInitializer(bindingIndex, true);
+		initializer:AddSearchTags(GetBindingName(action));
+		layout:AddInitializer(initializer);
+	end
+
 	---- Mouse
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(MOUSE_LABEL));
 

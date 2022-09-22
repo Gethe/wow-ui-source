@@ -230,7 +230,6 @@ NavigationBar.xml
 ..\SharedXML\ScrollList.xml
 ..\SharedXML\PagedList.xml
 GameMenuFrame.xml
-CharacterFrameTemplates.xml
 FilterDropDown.lua
 TextStatusBar.lua
 TextStatusBar.xml
@@ -304,6 +303,7 @@ QuestInfo.xml
 MerchantFrame.xml
 TradeFrame.xml
 ContainerFrame.xml
+ScrollingFlatPanel.xml
 LootFrame.xml
 GroupLootFrame.xml
 ItemTextFrame.xml

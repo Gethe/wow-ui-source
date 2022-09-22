@@ -196,7 +196,7 @@ function RealmList_UpdateTabs()
 		if ( not tab ) then
 			tab = CreateFrame("Button", "RealmListTab"..i, RealmListBackground, "RealmListTabButtonTemplate");
 			tab:SetID(i);
-			tab:SetPoint("LEFT", "RealmListTab"..(i-1), "RIGHT", -15, 0);
+			tab:SetPoint("TOPLEFT", "RealmListTab"..(i-1), "TOPRIGHT", 1, 0);
 		end
 		tab.disabled = nil;
 		if ( numTabs == 1 ) then
@@ -206,8 +206,9 @@ function RealmList_UpdateTabs()
 			if not name or name == "" then
 				name = "Invalid Category";
 			end
+			tab.Text:SetWidth(0);
 			tab:SetText(name);
-			GlueTemplates_TabResize(0, tab);
+			GlueTemplates_TabResize(tab);
 			tab:Show();
 			tab:SetDisabledFontObject("GlueFontHighlightSmall");
 		else

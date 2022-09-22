@@ -136,7 +136,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="BANK">
+			<Button name="$parentTab1" inherits="PanelTabButtonTemplate" id="1" text="BANK">
                 <Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y ="2"/>
                 </Anchors>
@@ -144,7 +144,7 @@
 					<OnClick function="BankFrame_TabOnClick"/>
                 </Scripts>
             </Button>
-            <Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="REAGENT_BANK">
+            <Button name="$parentTab2" inherits="PanelTabButtonTemplate" id="2" text="REAGENT_BANK">
                 <Anchors>
                    <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-15" y="0"/>
                 </Anchors>

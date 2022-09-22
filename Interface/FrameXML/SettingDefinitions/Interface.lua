@@ -4,6 +4,9 @@ local function Register()
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[INTERFACE_LABEL]);
 
+	-- Nameplates
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMEPLATES_LABEL));
+
 	-- My name
 	Settings.SetupCVarCheckBox(category, "UnitNameOwn", UNIT_NAME_OWN, OPTION_TOOLTIP_UNIT_NAME_OWN);
 
@@ -106,11 +109,6 @@ local function Register()
 		Settings.SetupCVarCheckBox(category, "nameplateShowAll", UNIT_NAMEPLATES_AUTOMODE, OPTION_TOOLTIP_UNIT_NAMEPLATES_AUTOMODE);
 	end
 
-	-- Personal Resource Display
-	do
-		Settings.SetupCVarCheckBox(category, "nameplateShowSelf", DISPLAY_PERSONAL_RESOURCE, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE);
-	end
-
 	-- Show Special Resources
 	do
 		Settings.SetupCVarCheckBox(category, "nameplateResourceOnTarget", DISPLAY_PERSONAL_RESOURCE_ON_ENEMY, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE_ON_ENEMY);
@@ -196,143 +194,6 @@ local function Register()
 		Settings.SetupCVarDropDown(category, "nameplateMotion", Settings.VarType.Number, GetOptions, UNIT_NAMEPLATES_TYPES, OPTION_TOOLTIP_UNIT_NAMEPLATES_TYPES);
 	end
 	
-	---ActionBars
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(ACTIONBARS_LABEL));
-
-	-- Action Bars 1-4
-	do
-		local function GetActionBarToggle(index)
-			return select(index, GetActionBarToggles());
-		end
-		
-		local function SetActionBarToggle(index, value)
-			local toggles = {GetActionBarToggles()};
-			toggles[index] = value;
-			SetActionBarToggles(unpack(toggles));
-		end
-		
-		local actionBars = 
-		{
-			{variable = "PROXY_SHOW_MULTI_ACTIONBAR_1", label = SHOW_MULTIBAR1_TEXT, tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR1},
-			{variable = "PROXY_SHOW_MULTI_ACTIONBAR_2", label = SHOW_MULTIBAR2_TEXT, tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR2},
-			{variable = "PROXY_SHOW_MULTI_ACTIONBAR_3", label = SHOW_MULTIBAR3_TEXT, tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR3},
-			{variable = "PROXY_SHOW_MULTI_ACTIONBAR_4", label = SHOW_MULTIBAR4_TEXT, tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR4},
-		};
-
-		for index, data in ipairs(actionBars) do
-			local function GetValue()
-				return GetActionBarToggle(index);
-			end
-			
-			local function SetValue(value)
-				SetActionBarToggle(index, value);
-			end
-		
-			local defaultValue = true;
-			local setting = Settings.RegisterProxySetting(category, data.variable, Settings.DefaultVarLocation,
-				Settings.VarType.Boolean, data.label, defaultValue, GetValue, SetValue);
-			actionBars[index].setting = setting;
-			actionBars[index].initializer = Settings.CreateCheckBox(category, setting, data.tooltip);
-		end
-
-		local actionBar1Setting = actionBars[1].setting;
-		local actionBar1Initializer = actionBars[1].initializer;
-		local actionBar2Initializer = actionBars[2].initializer;
-		local function IsModifiableActionBar1Setting()
-			return actionBar1Setting:GetValue();
-		end
-		actionBar2Initializer:SetParentInitializer(actionBar1Initializer, IsModifiableActionBar1Setting);
-
-		local actionBar3Setting = actionBars[3].setting;
-		local actionBar3Initializer = actionBars[3].initializer;
-		local actionBar4Initializer = actionBars[4].initializer;
-		local function IsModifiableActionBar3Setting()
-			return actionBar3Setting:GetValue();
-		end
-		actionBar4Initializer:SetParentInitializer(actionBar3Initializer, IsModifiableActionBar3Setting);
-	end
-
-	-- Lock Action Bars
-	do
-
-		local cbSetting = Settings.RegisterCVarSetting(category, "lockActionBars", Settings.VarType.Boolean, LOCK_ACTIONBAR_TEXT);
-
-		local tooltips = {
-			OPTION_TOOLTIP_PICKUP_ACTION_ALT_KEY,
-			OPTION_TOOLTIP_PICKUP_ACTION_CTRL_KEY,
-			OPTION_TOOLTIP_PICKUP_ACTION_SHIFT_KEY,
-			OPTION_TOOLTIP_PICKUP_ACTION_NONE_KEY,
-		};
-		local options = Settings.CreateModifiedClickOptions(tooltips);
-		local dropDownSetting = Settings.RegisterModifiedClickSetting(category, "PICKUPACTION", PICKUP_ACTION_KEY_TEXT, "SHIFT");
-
-		local initializer = CreateSettingsCheckBoxDropDownInitializer(
-			cbSetting, LOCK_ACTIONBAR_TEXT, OPTION_TOOLTIP_LOCK_ACTIONBAR,
-			dropDownSetting, options, PICKUP_ACTION_KEY_TEXT, OPTION_TOOLTIP_PICKUP_ACTION_KEY_TEXT);
-		initializer:AddSearchTags(LOCK_ACTIONBAR_TEXT);
-		layout:AddInitializer(initializer);
-	end
-
-	-- Show Numbers for Cooldowns
-	Settings.SetupCVarCheckBox(category, "countdownForCooldowns", COUNTDOWN_FOR_COOLDOWNS_TEXT, OPTION_TOOLTIP_COUNTDOWN_FOR_COOLDOWNS);
-
-	----Combat
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(COMBAT_LABEL));
-
-	-- Target of Target
-	Settings.SetupCVarCheckBox(category, "showTargetOfTarget", SHOW_TARGET_OF_TARGET_TEXT, OPTION_TOOLTIP_SHOW_TARGET_OF_TARGET);
-
-	-- Low Agro Flash
-	Settings.SetupCVarCheckBox(category, "doNotFlashLowHealthWarning", FLASH_LOW_HEALTH_WARNING, OPTION_TOOLTIP_FLASH_LOW_HEALTH_WARNING);
-
-	-- Loss of Control Alerts
-	Settings.SetupCVarCheckBox(category, "lossOfControl", LOSS_OF_CONTROL, OPTION_TOOLTIP_LOSS_OF_CONTROL);
-
-	-- Scrolling Combat Text
-	do
-		Settings.SetupCVarCheckBox(category, "enableFloatingCombatText", SHOW_COMBAT_TEXT_TEXT, OPTION_TOOLTIP_SHOW_COMBAT_TEXT);
-		Settings.LoadAddOnCVarWatcher("enableFloatingCombatText", "Blizzard_CombatText");
-	end
-
-	-- Mouseover Cast control
-	do
-
-		local cbSetting = Settings.RegisterCVarSetting(category, "enableMouseoverCast", Settings.VarType.Boolean, ENABLE_MOUSEOVER_CAST);
-
-		local tooltips = {
-			OPTION_TOOLTIP_MOUSEOVER_CAST_CTRL_KEY,
-			OPTION_TOOLTIP_MOUSEOVER_CAST_SHIFT_KEY,
-			OPTION_TOOLTIP_MOUSEOVER_CAST_ALT_KEY,
-			OPTION_TOOLTIP_MOUSEOVER_CAST_NONE_KEY,
-		};
-		local options = Settings.CreateModifiedClickOptions(tooltips);
-		local dropDownSetting = Settings.RegisterModifiedClickSetting(category, "MOUSEOVERCAST", MOUSEOVER_CAST_KEY, "NONE");
-
-		local initializer = CreateSettingsCheckBoxDropDownInitializer(
-			cbSetting, ENABLE_MOUSEOVER_CAST, OPTION_TOOLTIP_ENABLE_MOUSEOVER_CAST,
-			dropDownSetting, options, MOUSEOVER_CAST_KEY, OPTION_TOOLTIP_MOUSEOVER_CAST_KEY_TEXT);
-		layout:AddInitializer(initializer);
-	end
-
-	-- Auto Self Cast
-	Settings.SetupCVarCheckBox(category, "autoSelfCast", AUTO_SELF_CAST_TEXT, OPTION_TOOLTIP_AUTO_SELF_CAST);
-
-	-- Spell Alert Opacity
-	do
-		local minValue, maxValue, step = 0, 1, .05;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentage);
-
-		local setting = Settings.SetupCVarSlider(category, "spellActivationOverlayOpacity", options, SPELL_ALERT_OPACITY, OPTION_TOOLTIP_SPELL_ALERT_OPACITY);
-		local function OnValueChanged(o, setting, value)
-			SetCVar("displaySpellActivationOverlays", value > 0);
-		end
-		Settings.SetOnValueChangedCallback("spellActivationOverlayOpacity", OnValueChanged);
-	end
-
-	-- Hold Button
-	Settings.SetupCVarCheckBox(category, "ActionButtonUseKeyHeldSpell", PRESS_AND_HOLD_CASTING_OPTION, PRESS_AND_HOLD_CASTING_OPTION_TOOLTIP);
-
 	----Display
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(DISPLAY_LABEL));
 
@@ -379,20 +240,6 @@ local function Register()
 		end
 
 		Settings.SetupCVarDropDown(category, "Outline", Settings.VarType.Number, GetOptions, OBJECT_NPC_OUTLINE, OPTION_TOOLTIP_OBJECT_NPC_OUTLINE);
-	end
-
-	-- Self highlight
-	do
-		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
-			container:Add(0, SELF_HIGHLIGHT_MODE_CIRCLE);
-			container:Add(2, SELF_HIGHLIGHT_MODE_OUTLINE);
-			container:Add(1, SELF_HIGHLIGHT_MODE_CIRCLE_AND_OUTLINE);
-			container:Add(-1, OFF);
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropDown(category, "findYourselfMode", Settings.VarType.Number, GetOptions, SELF_HIGHLIGHT_OPTION, OPTION_TOOLTIP_SELF_HIGHLIGHT);
 	end
 
 	-- Status text 
@@ -486,6 +333,53 @@ local function Register()
 		local setting = Settings.RegisterProxySetting(category, "PROXY_CHAT_BUBBLES", Settings.DefaultVarLocation, 
 			Settings.VarType.Number, CHAT_BUBBLES_TEXT, defaultValue, GetValue, SetValue);
 		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_CHAT_BUBBLES);
+	end
+
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(RAID_FRAMES_LABEL));
+
+	-- Incoming Heals
+	Settings.SetupCVarCheckBox(category, "raidFramesDisplayIncomingHeals", COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION);
+
+	-- Power Bars
+	Settings.SetupCVarCheckBox(category, "raidFramesDisplayPowerBars", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR);
+
+	-- Aggro Highlight
+	Settings.SetupCVarCheckBox(category, "raidFramesDisplayAggroHighlight", COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT);
+
+	-- Class Colors
+	Settings.SetupCVarCheckBox(category, "raidFramesDisplayClassColor", COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
+
+	-- Pets
+	Settings.SetupCVarCheckBox(category, "raidOptionDisplayPets", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
+
+	-- Main Tank and Assist
+	Settings.SetupCVarCheckBox(category, "raidOptionDisplayMainTankAndAssist", COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST);
+
+	do
+		-- Debuffs
+		local debuffSetting, debuffInitializer = Settings.SetupCVarCheckBox(category, "raidFramesDisplayNonBossDebufs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
+
+		-- Only Dispellable Debuffs
+		local function IsModifiable()
+			return debuffSetting:GetValue();
+		end
+
+		local _, initializer = Settings.SetupCVarCheckBox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
+		initializer:SetParentInitializer(debuffInitializer, IsModifiable);
+	end
+
+	-- Health Text
+	do 
+		local function GetOptions()
+			local container = Settings.CreateDropDownTextContainer();
+			container:Add("none", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);
+			container:Add("health", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH);
+			container:Add("losthealth", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH);
+			container:Add("perc", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC);
+			return container:GetData();
+		end
+
+		Settings.SetupCVarDropDown(category, "raidFramesHealthText", Settings.VarType.String, GetOptions, COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
 	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);

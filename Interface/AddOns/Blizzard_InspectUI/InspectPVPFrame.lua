@@ -66,15 +66,6 @@ function InspectPVPFrame_OnShow()
 	InspectPVPFrame_Update();
 end
 
-function InspectPVPFrame_OnHide(self)
-	local parent = self:GetParent();
-	self.PortraitBackground:Hide();
-	parent.portrait:SetSize(61, 61);
-	parent.portrait:ClearAllPoints();
-	parent.portrait:SetPoint("TOPLEFT", -6, 8);
-	SetPortraitTexture(InspectFramePortrait, INSPECTED_UNIT);
-end
-
 function InspectPVPFrame_Update()
 	local parent = InspectPVPFrame:GetParent();
 	local factionGroup = UnitFactionGroup(INSPECTED_UNIT);
