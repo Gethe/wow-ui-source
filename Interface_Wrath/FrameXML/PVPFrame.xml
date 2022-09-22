@@ -30,9 +30,6 @@
 					<OnLoad>
 						self:SetFrameLevel(self:GetFrameLevel() + 4);
 					</OnLoad>
-					<OnClick inherit="append">
-						BattlefieldFrame:Hide();
-					</OnClick>
 				</Scripts>
 			</Button>
 			<Frame name="PVPFrame" setAllPoints="true" enableMouse="true" id="1">

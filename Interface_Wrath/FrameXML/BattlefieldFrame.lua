@@ -20,8 +20,6 @@ BATTLEFIELD_FRAME_FADE_TIME = 0.15
 
 function BattlefieldFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("BATTLEFIELDS_SHOW");
-	self:RegisterEvent("BATTLEFIELDS_CLOSED");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
@@ -31,15 +29,7 @@ function BattlefieldFrame_OnLoad(self)
 end
 
 function BattlefieldFrame_OnEvent(self, event, ...)
-	if ( event == "BATTLEFIELDS_SHOW") then
-		self.currentData = true;
-		if ( not IsBattlefieldArena() ) then
-			ShowUIPanel(BattlefieldFrame);
-			BattlefieldFrame_UpdatePanelInfo();
-		end
-	elseif ( event == "BATTLEFIELDS_CLOSED") then
-		HideUIPanel(BattlefieldFrame);
-	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
+	if ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		PVPBattleground_UpdateQueueStatus();
 		BattlefieldFrame_UpdateStatus(false);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
@@ -164,8 +154,8 @@ function GetRandomBGHonorCurrencyBonuses()
 end
 
 function GetHolidayBGHonorCurrencyBonuses()
-	local honorWin,_,_, currencyRewardsWin = C_PvP.GetRandomBGRewards();
-	local honorLoss,_,_, currencyRewardsLoss = C_PvP.GetRandomBGLossRewards();
+	local honorWin,_,_, currencyRewardsWin = C_PvP.GetHolidayBGRewards();
+	local honorLoss,_,_, currencyRewardsLoss = C_PvP.GetHolidayBGLossRewards();
 	local conquestWin, conquestLoss = 0, 0;
 
 	if(currencyRewardsWin) then
@@ -269,16 +259,10 @@ end
 
 --Code copied from BattlefieldFrame below
 function BattlefieldFrame_OnShow(self)
-	if ( IsInInstance() ) then
-		WintergraspTimer:Hide();
-	else
-		WintergraspTimer:Show();
-	end
-	
 	SortBGList();
 	
-	BattlefieldFrame_UpdatePanelInfo();
 	PVPBattleground_UpdateBattlegrounds(self, true);
+	BattlefieldFrame_UpdatePanelInfo();
 	RequestBattlegroundInstanceInfo(self.selectedBG or 1);
 end
 
@@ -484,35 +468,5 @@ function BattlefieldFrame_UpdateGroupAvailable()
 		BattlefieldFrameGroupJoinButton:Enable();
 	else
 		BattlefieldFrameGroupJoinButton:Disable();
-	end
-end
-
-function WintergraspTimer_OnLoad(self)
-	self.canQueue = false;
-	self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CANNOT_QUEUE;
-	self.texture:SetTexCoord(0.0, 1.0, 0.0, 0.5);
-end
-
-function WintergraspTimer_OnUpdate(self, elapsed)
-	local nextBattleTime = GetWintergraspWaitTime();
-	if ( nextBattleTime and nextBattleTime > 60 ) then
-		self.text:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, true));
-	elseif ( nextBattleTime and nextBattleTime > 0 ) then
-		self.text:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, SecondsToTime(nextBattleTime, false));
-	else
-		self.text:SetFormattedText(PVPBATTLEGROUND_WINTERGRASPTIMER, WINTERGRASP_IN_PROGRESS);
-	end
-
-	local canQueue = CanQueueForWintergrasp();
-	if ( self.canQueue ~= canQueue ) then
-		-- simple safeguard so we're not doing a bunch of unnecessary work for each OnUpdate
-		if ( canQueue ) then
-			self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CAN_QUEUE;
-			self.texture:SetTexCoord(0.0, 1.0, 0.5, 1.0);
-		else
-			self.tooltip = PVPBATTLEGROUND_WINTERGRASPTIMER_CANNOT_QUEUE;
-			self.texture:SetTexCoord(0.0, 1.0, 0.0, 0.5);
-		end
-		self.canQueue = canQueue;
 	end
 end

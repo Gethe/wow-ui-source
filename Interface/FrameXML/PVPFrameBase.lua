@@ -16,6 +16,8 @@ function PVPFrame_OnLoad(self)
 	self:RegisterEvent("BATTLEFIELD_AUTO_QUEUE_EJECT");
 	self:RegisterEvent("WORLD_PVP_QUEUE");
 
+	PVPFrame_ExpansionSpecificOnLoad(self);
+
 	if ( not GetCurrentArenaSeasonUsesTeams() ) then
 		RequestRatedInfo();
 	end
@@ -72,6 +74,8 @@ function PVPFrame_OnEvent(self, event, ...)
 	elseif ( event == "WORLD_PVP_QUEUE" ) then
 		StaticPopup_Show("ON_WORLD_PVP_QUEUE");
 	end
+
+	PVPFrame_ExpansionSpecificOnEvent(self, event, ...);
 end
 
 function PVPFrame_SetFaction(self)

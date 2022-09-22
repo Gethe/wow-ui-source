@@ -363,16 +363,10 @@
 		<NormalFont style="GameFontNormalLeft"/>
 		<HighlightFont style="GameFontHighlightLeft"/>
 	</Button>
-	<Frame name="BattlefieldFrame"  toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="384" y="512"/>
-		</Size>
+	<Frame name="BattlefieldFrame" parent="PVPParentFrame" enableMouse="true" hidden="true">
+		<Size x="384" y="512"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="0" y="0" />
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="0" right="34" top="0" bottom="75"/>
@@ -461,50 +455,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="WintergraspTimer" enableMouse="true">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="RIGHT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-40" y="-55"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="texture" file="Interface\PVPFrame\Icons\PVP-WintergraspTimerIcon">
-							<Size>
-								<AbsDimension x="32" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="text" inherits="GameFontNormal" justifyH="RIGHT" spacing="4">
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT">
-									<Offset>
-										<AbsDimension x="-3" y="1"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad function="WintergraspTimer_OnLoad"/>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 5, 40);
-						GameTooltip:SetText(self.tooltip);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<!--<OnUpdate function="WintergraspTimer_OnUpdate"/> TODO uncomment this-->
-				</Scripts>
-			</Frame>
 			<Button name="BattlegroundType1" inherits="PVPBattlegroundButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="BattlefieldFrame">
@@ -612,7 +562,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(BattlefieldFrame);
+						HideUIPanel(PVPParentFrame);
 						BattlefieldFrameCloseButton_OnClick()
 					</OnClick>
 				</Scripts>

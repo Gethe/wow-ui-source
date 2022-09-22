@@ -820,6 +820,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 					WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
 					lastLine = line;
 				else
+					-- Could have some objectives that caused our first isComplete to return nil
+					-- Check if we have any hidden objectives that aren't normally tracked by checking text
+					local hiddenObjective = nil;
+					local uncompletedObjectives = nil;
 					for j = 1, numObjectives do
 						text, _, finished = GetQuestLogLeaderBoard(j, questIndex);
 						if ( not finished and text) then
@@ -827,7 +831,15 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 							line = WatchFrame_GetQuestLine();
 							WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW, item);
 							lastLine = line;
+							uncompletedObjectives = true;
+						elseif(not finished and not text) then
+							hiddenObjective = true;
 						end
+					end
+					if (hiddenObjective and not uncompletedObjectives) then
+						line = WatchFrame_GetQuestLine();
+						WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, GetQuestLogCompletionText(questIndex), DASH_SHOW, nil, true);
+						lastLine = line;
 					end
 					if ( requiredMoney > playerMoney ) then
 						text = GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney);

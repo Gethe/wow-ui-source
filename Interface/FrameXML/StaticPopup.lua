@@ -4385,7 +4385,7 @@ StaticPopupDialogs["ON_BATTLEFIELD_AUTO_QUEUE"] = {
 	selectCallbackByIndex = true,
 	OnShow = function(self)
 		self.text:SetText(WORLD_PVP_INVITED_WARMUP:format(GetWorldPVPQueueMapName(true)));
-		if ( not IsInGroup() ) then
+		if ( not IsInGroup() or not UnitIsGroupLeader("player") ) then
 			self.button2:Disable();
 		end
 	end,
@@ -4425,7 +4425,7 @@ StaticPopupDialogs["ON_WORLD_PVP_QUEUE"] = {
 	selectCallbackByIndex = true,
 	OnShow = function(self)
 		self.text:SetText(WORLD_PVP_INVITED_WARMUP:format(GetWorldPVPQueueMapName(false)));
-		if ( not IsInGroup() ) then
+		if ( not IsInGroup() or not UnitIsGroupLeader("player") ) then
 			self.button2:Disable();
 		end
 	end,

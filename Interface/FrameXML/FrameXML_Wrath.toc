@@ -276,11 +276,11 @@ PVPHelper.xml
 ProductChoice.xml
 ..\SharedXML\ModelPreviewFrame.xml
 ClassTrainerFrameTemplates.xml
+..\..\Interface_Wrath\FrameXML\PVPFrame.xml
 ..\..\Interface_Wrath\FrameXML\BattlefieldFrame.xml
 ..\SharedXML\ArenaUtil.lua
 ArenaFrame.xml
 ArenaRegistrarFrame.xml
-..\..\Interface_Wrath\FrameXML\PVPFrame.xml
 RuneFrame.xml
 ..\..\Interface_Wrath\FrameXML\EquipmentManager.lua
 QueueReadyCheckFrame.xml
