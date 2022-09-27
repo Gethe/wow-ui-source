@@ -93,6 +93,7 @@ Import("IsVeteranTrialAccount");
 Import("PortraitFrameTemplateMixin");
 Import("SecondsToTime");
 Import("BackdropTemplateMixin");
+Import("GetExpansionLevel");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -290,6 +291,7 @@ Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
 --Lua enums
 Import("SOUNDKIT");
 Import("LE_MODEL_BLEND_OPERATION_NONE");
+Import("LE_EXPANSION_WRATH_OF_THE_LICH_KING");
 
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
@@ -519,12 +521,26 @@ local vasErrorData = {
 	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
 			local str = "";
-			if (character.level > 50) then
-				str = GetSecureMoneyString(5000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level > 30) then
-				str = GetSecureMoneyString(500 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level >= 10) then
-				str = GetSecureMoneyString(100 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			local moneyCapForLevel = 0;
+			if GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+				if (character.level > 50) then
+					moneyCapForLevel = 25000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				elseif (character.level > 30) then
+					moneyCapForLevel = 2500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				else
+					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				end
+			else
+				if (character.level > 50) then
+					moneyCapForLevel = 5000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				elseif (character.level > 30) then
+					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				else
+					moneyCapForLevel = 100 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				end
+			end
+			if (moneyCapForLevel > 0) then
+				str = GetSecureMoneyString(moneyCapForLevel, true, true);
 			end
 			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
 		end

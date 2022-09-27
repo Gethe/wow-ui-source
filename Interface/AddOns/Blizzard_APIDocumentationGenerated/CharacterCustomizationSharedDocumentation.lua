@@ -68,7 +68,7 @@ local CharacterCustomizationShared =
 			{
 				{ Name = "CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST", Type = "CharCustomizationType", Value = CustomOptionTattoo },
 				{ Name = "CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST", Type = "CharCustomizationType", Value = CustomOptionTattooColor },
-				{ Name = "NUM_CUSTOM_DISPLAY", Type = "number", Value = CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST - CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST + 1 },
+				{ Name = "NUM_CUSTOM_DISPLAY", Type = "number", Value = Constants.CharCustomizationConstants.CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST - Constants.CharCustomizationConstants.CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST + 1 },
 			},
 		},
 		{
