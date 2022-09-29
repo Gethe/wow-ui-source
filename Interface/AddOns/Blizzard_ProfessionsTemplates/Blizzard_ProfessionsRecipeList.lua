@@ -63,6 +63,8 @@ function ProfessionsRecipeListMixin:OnLoad()
 							ToggleDropDownMenu(1, elementData.recipeInfo, self.ContextMenu, "cursor");
 						end
 					end
+
+					PlaySound(SOUNDKIT.UI_90_BLACKSMITHING_TREEITEMCLICK);
 				end);
 
 				button:SetScript("OnEnter", function()
@@ -125,6 +127,10 @@ function ProfessionsRecipeListMixin:OnLoad()
 
 	UIDropDownMenu_SetInitializeFunction(self.ContextMenu, GenerateClosure(self.InitContextMenu, self));
 	UIDropDownMenu_SetDisplayMode(self.ContextMenu, "MENU");
+end
+
+function ProfessionsRecipeListMixin:ProfessionChanged()
+	self.previousRecipeID = nil;
 end
 
 function ProfessionsRecipeListMixin:InitContextMenu(dropDown, level)

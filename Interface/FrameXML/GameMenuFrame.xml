@@ -89,9 +89,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						local NPE_AchievementID = 14287;
-						local _, _, _, completedNPE = GetAchievementInfo(NPE_AchievementID);
-						self:SetEnabled(completedNPE);
+						self:SetEnabled(not C_PlayerInfo.IsPlayerNPERestricted());
 					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);

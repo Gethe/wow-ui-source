@@ -34,13 +34,22 @@
 			<KeyValue key="disabledOverlayAlpha" value="0.8" type="number"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="BlackBG">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>		
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" atlas="spec-background">
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="4000" hidden="true" setAllPoints="true">
+			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="400" hidden="true" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="GrayOverlay">
@@ -60,27 +69,30 @@
 
 	<Frame name="ClassSpecContentFrameTemplate" mixin="ClassSpecContentFrameMixin" virtual="true">
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="HoverBackground" atlas="spec-hover-background" alpha="0.1" alphaMode="ADD" hidden="true"/>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SpecImageBorderOff" atlas="spec-thumbnailborder-off" useAtlasSize="true">
-					<Size x="310" y="190"/>
+					<Size x="306" y="186"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="HoverSpecImageBorder" atlas="spec-thumbnailborder-off" useAtlasSize="true" alphaMode="ADD" alpha="0.1">
-					<Size x="310" y="190"/>
+					<Size x="306" y="186"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="SpecImageBorderOn" atlas="spec-thumbnailborder-on" useAtlasSize="true">
-					<Size x="310" y="190"/>
+					<Size x="306" y="186"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="ActivatedSpecImageBorder" atlas="spec-thumbnailborder-on" useAtlasSize="true" alphaMode="ADD" hidden="true">
-					<Size x="310" y="190"/>
+					<Size x="306" y="186"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
 					</Anchors>
@@ -151,7 +163,6 @@
 						<Anchor point="RIGHT" x="3.5" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="HoverBackground" atlas="spec-hover-background" alpha="0.1" alphaMode="ADD" hidden="true"/>
 				<Texture parentKey="SelectedBackgroundBack1" atlas="spec-selected-background1" alpha="0.1" alphaMode="ADD" hidden="true"/>
 				<Texture parentKey="SelectedBackgroundBack2" atlas="spec-selected-background1" alpha="0.1" alphaMode="MOD" hidden="true"/>
 				<Texture parentKey="SelectedBackgroundLeft1" atlas="spec-selected-background2" alphaMode="ADD" useAtlasSize="true" hidden="true">

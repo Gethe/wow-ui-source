@@ -148,6 +148,15 @@ local WeeklyRewards =
 			},
 		},
 		{
+			Name = "IsWeeklyChestRetired",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRetired", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "OnUIInteract",
 			Type = "Function",
 		},

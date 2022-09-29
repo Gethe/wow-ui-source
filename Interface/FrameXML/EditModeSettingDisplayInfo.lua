@@ -5,7 +5,7 @@ local function showAsPercentage(value)
 	return FormatPercentage(value / 100, roundToNearestInteger);
 end
 
-local function ConvertValuePercentage(self, value, forDisplay)
+local function ConvertValueDefault(self, value, forDisplay)
 	if forDisplay then
 		return self:ClampValue((value * self.stepSize) + self.minValue);
 	else
@@ -31,7 +31,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeActionBarSetting.Orientation,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_ORIENTATION,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.ActionBarOrientation.Horizontal, text = HUD_EDIT_MODE_SETTING_ACTION_BAR_ORIENTATION_HORIZONTAL},
 				{value = Enum.ActionBarOrientation.Vertical, text = HUD_EDIT_MODE_SETTING_ACTION_BAR_ORIENTATION_VERTICAL},
@@ -65,7 +65,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			minValue = 50,
 			maxValue = 200,
 			stepSize = 10,
-			ConvertValue = ConvertValuePercentage,
+			ConvertValue = ConvertValueDefault,
 			formatter = showAsPercentage,
 		},
 
@@ -123,6 +123,13 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			name = HUD_EDIT_MODE_SETTING_MINIMAP_HEADER_UNDERNEATH,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
+
+		-- Rotate Minimap
+		{
+			setting = Enum.EditModeMinimapSetting.RotateMinimap,
+			name = HUD_EDIT_MODE_SETTING_MINIMAP_ROTATE_MINIMAP,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
 	},
 
 	-- Cast Bar Settings
@@ -136,7 +143,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			minValue = 100,
 			maxValue = 150,
 			stepSize = 10,
-			ConvertValue = ConvertValuePercentage,
+			ConvertValue = ConvertValueDefault,
 			formatter = showAsPercentage,
 		},
 
@@ -350,7 +357,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			minValue = 50,
 			maxValue = 200,
 			stepSize = 10,
-			ConvertValue = ConvertValuePercentage,
+			ConvertValue = ConvertValueDefault,
 			formatter = showAsPercentage,
 		},
 
@@ -409,6 +416,20 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 	[Enum.EditModeSystem.HudTooltip] =
 	{
+	},
+
+	[Enum.EditModeSystem.ObjectiveTracker] =
+	{
+		-- Height
+		{
+			setting = Enum.EditModeObjectiveTrackerSetting.Height,
+			name = HUD_EDIT_MODE_SETTING_OBJECTIVE_TRACKER_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 400,
+			maxValue = 1000,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+		},
 	},
 };
 

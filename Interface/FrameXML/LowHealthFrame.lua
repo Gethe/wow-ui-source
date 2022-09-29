@@ -44,7 +44,7 @@ function LowHealthFrameMixin:OnEvent(event, ...)
 			self:ListenForHealthEvents();
 		end
 	elseif event == "CVAR_UPDATE" then
-		if arg1 == "FLASH_LOW_HEALTH_WARNING" then
+		if arg1 == "doNotFlashLowHealthWarning" then
 			if not GetCVarBool("doNotFlashLowHealthWarning") then
 				self:ListenForHealthEvents();
 			else

@@ -66,18 +66,24 @@ PVPMatchStyle.Theme = {
 };
 
 function PVPMatchUtil.UpdateMatchmakingText(fontString)
-	if (C_PvP.GetCustomVictoryStatID() == 0 and (C_PvP.IsRatedBattleground() or C_PvP.IsRatedArena() and (not IsArenaSkirmish()))) then
+	if (C_PvP.IsRatedSoloShuffle() or C_PvP.GetCustomVictoryStatID() == 0 and (C_PvP.IsRatedBattleground() or C_PvP.IsRatedArena() and (not IsArenaSkirmish()))) then
 		local teamInfos = { 
 			C_PvP.GetTeamInfo(0),
 			C_PvP.GetTeamInfo(1), 
 		};
 
-		local factionIndex = GetBattlefieldArenaFaction();
-		local enemyFactionIndex = (factionIndex+1) % 2;
-		local yourMMR = BreakUpLargeNumbers(teamInfos[factionIndex+1].ratingMMR);
-		local enemyMMR = BreakUpLargeNumbers(teamInfos[enemyFactionIndex+1].ratingMMR);
-		local yourTeamString = MATCHMAKING_YOUR_AVG_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(yourMMR));
-		local enemyTeamString = MATCHMAKING_ENEMY_AVG_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(enemyMMR));
+		local yourTeamString, enemyTeamString;
+		if C_PvP.IsRatedSoloShuffle() then
+			-- For Rated Solo Shuffle your MMR is always first, followed by the match average
+			yourTeamString = BATTLEGROUND_YOUR_PERSONAL_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(teamInfos[1].ratingMMR)));
+			enemyTeamString = BATTLEGROUND_MATCH_AVERAGE_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(teamInfos[2].ratingMMR)));
+		else
+			local factionIndex = GetBattlefieldArenaFaction();
+			local enemyFactionIndex = (factionIndex+1) % 2;
+			yourTeamString = MATCHMAKING_YOUR_AVG_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(teamInfos[factionIndex+1].ratingMMR)));
+			enemyTeamString = MATCHMAKING_ENEMY_AVG_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(teamInfos[enemyFactionIndex+1].ratingMMR)));
+		end
+
 		fontString:SetText(format("%s\n%s", yourTeamString, enemyTeamString));
 		fontString:Show();
 	else

@@ -1009,9 +1009,6 @@
 	<Binding name="TOGGLEMINIMAP" category="BINDING_HEADER_INTERFACE">
 		ToggleMinimap();
 	</Binding>
-	<Binding name="TOGGLEMINIMAPROTATION" category="BINDING_HEADER_INTERFACE">
-		ToggleMiniMapRotation();
-	</Binding>
 	<Binding name="TOGGLEBATTLEFIELDMINIMAP" category="BINDING_HEADER_INTERFACE">
 		ToggleBattlefieldMap();
 	</Binding>

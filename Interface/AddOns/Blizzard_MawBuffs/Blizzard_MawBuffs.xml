@@ -97,12 +97,13 @@
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 		<NormalFont style="GameFontHighlight"/>
-		<NormalTexture atlas="jailerstower-animapowerbutton-normal"/>
-		<PushedTexture atlas="jailerstower-animapowerbutton-normalpressed"/>
-		<HighlightTexture atlas="jailerstower-animapowerbutton-highlight" alphaMode="ADD"/>
-		<DisabledTexture atlas="jailerstower-animapowerbutton-normal" desaturated="true"/>
+		<NormalTexture atlas="jailerstower-animapowerbutton-normal" parentKey="NormalTexture"/>
+		<PushedTexture atlas="jailerstower-animapowerbutton-normalpressed" parentKey="PushedTexture"/>
+		<HighlightTexture atlas="jailerstower-animapowerbutton-highlight" parentKey="HighlightTexture" alphaMode="ADD"/>
+		<DisabledTexture atlas="jailerstower-animapowerbutton-normal" parentKey="DisabledTexture" desaturated="true"/>
 		<PushedTextOffset x="1.25" y="-1"/>
 	</Button>
 	<Frame name="MawBuffsBelowMinimapFrame" inherits="UIFrameManager_ManagedFrame, UIParentRightManagedFrameTemplate" mixin="MawBuffsBelowMinimapFrameMixin" hidden="true" enableMouse="true" parent="UIParent" toplevel="true">

@@ -1278,6 +1278,7 @@ function UIDropDownMenu_OnShow(self)
 	if ( self:GetID() > 1 ) then
 		self.parent = _G["DropDownList"..(self:GetID() - 1)];
 	end
+	EventRegistry:TriggerEvent("UIDropDownMenu.Show", self);
 end
 
 function UIDropDownMenu_OnHide(self)
@@ -1295,8 +1296,8 @@ function UIDropDownMenu_OnHide(self)
 	if (id == 1) then
 		UIDROPDOWNMENU_OPEN_MENU = nil;
 	end
-
-	UIDropDownMenu_ClearCustomFrames(self);
+	UIDropDownMenu_ClearCustomFrames(self);	
+	EventRegistry:TriggerEvent("UIDropDownMenu.Hide");
 end
 
 function UIDropDownMenu_ClearCustomFrames(self)

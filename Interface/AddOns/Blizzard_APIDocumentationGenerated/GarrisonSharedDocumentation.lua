@@ -83,6 +83,21 @@ local GarrisonShared =
 				{ Name = "misc1", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "GarrisonTalentTreeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "treeID", Type = "number", Nilable = false },
+				{ Name = "title", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "talents", Type = "table", InnerType = "GarrisonTalentInfo", Nilable = false },
+				{ Name = "isClassAgnostic", Type = "bool", Nilable = false },
+				{ Name = "isThemed", Type = "bool", Nilable = false },
+				{ Name = "featureType", Type = "number", Nilable = false },
+				{ Name = "featureSubtype", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

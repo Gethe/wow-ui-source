@@ -59,12 +59,12 @@ local function ContainerFrame_IsBackpack(id)
 	return id == 0;
 end
 
-local function ContainerFrame_IsReagentBag(id)
+function ContainerFrame_IsReagentBag(id)
 	return id == 5;
 end
 
 local function ContainerFrame_IsProfessionBag(id)
-	return not ContainerFrame_IsBackpack(id) and IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id));
+	return not ContainerFrame_IsBackpack(id) and IsInventoryItemProfessionBag("player", C_Container.ContainerIDToInventoryID(id));
 end
 
 function ContainerFrame_CanContainerUseFilterMenu(id)
@@ -76,7 +76,7 @@ function ContainerFrame_CanContainerUseFilterMenu(id)
 end
 
 function ContainerFrame_GetContainerNumSlotsWithBase(id)
-	local numSlotsBase = GetContainerNumSlots(id);
+	local numSlotsBase = C_Container.GetContainerNumSlots(id);
 	if (id == 0 and not IsAccountSecured()) then
 		return numSlotsBase + 4, numSlotsBase;
 	end
@@ -303,8 +303,8 @@ end
 
 function SearchBagsForItem(itemID)
 	for i = 0, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
-		for j = 1, GetContainerNumSlots(i) do
-			local id = GetContainerItemID(i, j);
+		for j = 1, C_Container.GetContainerNumSlots(i) do
+			local id = C_Container.GetContainerItemID(i, j);
 			if (id == itemID and C_NewItems.IsNewItem(i, j)) then
 				return i;
 			end
@@ -315,8 +315,8 @@ end
 
 function SearchBagsForItemLink(itemLink)
 	for i = 0, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
-		for j = 1, GetContainerNumSlots(i) do
-			local _, _, _, _, _, _, link = GetContainerItemInfo(i, j);
+		for j = 1, C_Container.GetContainerNumSlots(i) do
+			local link = C_Container.GetContainerItemInfo(i, j).hyperlink;
 			if (link == itemLink and C_NewItems.IsNewItem(i, j)) then
 				return i;
 			end
@@ -468,18 +468,18 @@ do
 		info.text = BAG_FILTER_IGNORE;
 		info.func = function(_, _, _, value)
 			if ContainerFrame_IsMainBank(id) then
-				SetBankAutosortDisabled(not value);
+				C_Container.SetBankAutosortDisabled(not value);
 			elseif ContainerFrame_IsBackpack(id) then
-				SetBackpackAutosortDisabled(not value);
+				C_Container.SetBackpackAutosortDisabled(not value);
 			else
 				C_Container.SetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort, not value);
 			end
 		end
 
 		if ContainerFrame_IsMainBank(id) then
-			info.checked = GetBankAutosortDisabled();
+			info.checked = C_Container.GetBankAutosortDisabled();
 		elseif ContainerFrame_IsBackpack(id) then
-			info.checked = GetBackpackAutosortDisabled();
+			info.checked = C_Container.GetBackpackAutosortDisabled();
 		else
 			info.checked = C_Container.GetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort);
 		end
@@ -604,7 +604,7 @@ end
 
 function BaseContainerFrameMixin:UpdateSearchResults()
 	for i, itemButton in self:EnumerateValidItems() do
-		local isFiltered = select(8, GetContainerItemInfo(itemButton:GetBagID(), itemButton:GetID()));
+		local isFiltered = C_Container.GetContainerItemInfo(itemButton:GetBagID(), itemButton:GetID()).isFiltered;
 		itemButton:SetMatchesSearch(not isFiltered);
 	end
 end
@@ -620,8 +620,6 @@ function ContainerFrame_OnEvent(self, event, ...)
 		if self:GetID() == bagID then
 			CloseBag(bagID);
 		end
-	elseif event == "UNIT_INVENTORY_CHANGED" or event == "PLAYER_SPECIALIZATION_CHANGED" then
-		self:UpdateItemUpgradeIcons();
 	elseif event == "BAG_UPDATE" then
 		local bagID = ...;
 		if self:MatchesBagID(bagID) then
@@ -810,7 +808,7 @@ function ContainerFrameMixin:GetTextureSuffix()
 end
 
 function ContainerFrameMixin:UpdateName()
-	self:SetTitle(GetBagName(self:GetBagID()));
+	self:SetTitle(C_Container.GetBagName(self:GetBagID()));
 end
 
 function ContainerFrameMixin:UpdateMiscellaneousFrames()
@@ -866,31 +864,58 @@ function ContainerFrameMixin:GetInitialItemAnchor()
 	return AnchorUtil.CreateAnchor("BOTTOMRIGHT", self, "BOTTOMRIGHT", -7, self:GetFirstButtonOffsetY());
 end
 
-function ContainerFrameMixin:UpdateItemLayout()
-	local bagSize = self:GetBagSize();
-
-	local isBankBag = self:IsBankBag();
-	local isCombinedBag = self:IsCombinedBagContainer();
-	local requiresIDAssignment = isBankBag or not isCombinedBag;
-	local itemsToLayout = {};
-
-	for i, itemButton in self:EnumerateValidItems() do
-		table.insert(itemsToLayout, itemButton);
-
-		-- NOTE: This workaround has to do with the fact that banks are not using combined inventory yet, so this
-		-- is the most ideal place to update the itemSlot id.
-		if requiresIDAssignment then
-			itemButton:SetID(bagSize - i + 1);
-			itemButton:SetBagID(self:GetBagID());
+do
+	local function SortItemsByExtendedState(item1, item2)
+		local extended1, extended2 = item1:IsExtended(), item2:IsExtended();
+		if extended1 ~= extended2 then
+			return not extended1;
 		end
 
-		itemButton:Show();
+		local bag1, bag2 = item1:GetBagID(), item2:GetBagID();
+		if bag1 ~= bag2 then
+			return bag1 > bag2;
+		end
+
+		local id1, id2 = item1:GetID(), item2:GetID();
+		return id1 < id2;
 	end
 
-	AnchorUtil.GridLayout(itemsToLayout, self:GetInitialItemAnchor(), self:GetAnchorLayout());
+	local function UpdateItemSort(items)
+		if not IsAccountSecured() and ContainerFrameSettingsManager:IsUsingCombinedBags() then
+			table.sort(items, SortItemsByExtendedState);
+		end
+	end
 
-	for i = bagSize + 1, #self.Items do
-		self.Items[i]:Hide();
+	function ContainerFrameMixin:UpdateItemLayout()
+		local bagSize = self:GetBagSize();
+
+		local isBankBag = self:IsBankBag();
+		local isCombinedBag = self:IsCombinedBagContainer();
+		local requiresIDAssignment = isBankBag or not isCombinedBag;
+		local itemsToLayout = {};
+
+		for i, itemButton in self:EnumerateValidItems() do
+			table.insert(itemsToLayout, itemButton);
+
+			-- NOTE: This workaround has to do with the fact that banks are not using combined inventory yet, so this
+			-- is the most ideal place to update the itemSlot id.
+			if requiresIDAssignment then
+				itemButton:SetID(bagSize - i + 1);
+				itemButton:SetBagID(self:GetBagID());
+			end
+
+			itemButton:Show();
+		end
+
+		UpdateItemSort(itemsToLayout);
+
+		AnchorUtil.GridLayout(itemsToLayout, self:GetInitialItemAnchor(), self:GetAnchorLayout());
+
+		for i = bagSize + 1, #self.Items do
+			self.Items[i]:Hide();
+		end
+
+		self:LayoutAddSlots();
 	end
 end
 
@@ -977,8 +1002,21 @@ function ContainerFrameMixin:UpdateItems()
 	for i, itemButton in self:EnumerateValidItems() do
 		local bagID = itemButton:GetBagID();
 
-		local texture, itemCount, locked, quality, readable, _, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bagID, itemButton:GetID());
-		local isQuestItem, questID, isActive = GetContainerItemQuestInfo(bagID, itemButton:GetID());
+		local info = C_Container.GetContainerItemInfo(bagID, itemButton:GetID());
+		local texture = info and info.iconFileID;
+		local itemCount = info and info.stackCount;
+		local locked = info and info.isLocked;
+		local quality = info and info.quality;
+		local readable = info and info.IsReadable;
+		local itemLink = info and info.hyperlink;
+		local isFiltered = info and info.isFiltered;
+		local noValue = info and info.hasNoValue;
+		local itemID = info and info.itemID;
+		local isBound = info and info.isBound;
+		local questInfo = C_Container.GetContainerItemQuestInfo(bagID, itemButton:GetID());
+		local isQuestItem = questInfo.isQuestItem;
+		local questID = questInfo.questID;
+		local isActive = questInfo.isActive;
 
 		ClearItemButtonOverlay(itemButton);
 
@@ -996,7 +1034,6 @@ function ContainerFrameMixin:UpdateItems()
 		itemButton:UpdateNewItem(quality);
 		itemButton:UpdateJunkItem(quality, noValue);
 		itemButton:UpdateItemContextMatching();
-		itemButton:UpdateItemUpgradeIcon();
 		itemButton:UpdateCooldown(texture);
 		itemButton:SetReadable(readable);
 		itemButton:CheckUpdateTooltip(tooltipOwner);
@@ -1014,15 +1051,10 @@ function ContainerFrameMixin:UpdateIfShown()
 	end
 end
 
-function ContainerFrameMixin:UpdateItemUpgradeIcons(frame)
-	for i, itemButton in self:EnumerateValidItems() do
-		itemButton:UpdateItemUpgradeIcon();
-	end
-end
-
 function ContainerFrameMixin:UpdateCooldowns()
 	for i, itemButton in self:EnumerateValidItems() do
-		local texture = GetContainerItemInfo(itemButton:GetBagID(), itemButton:GetID());
+		local info = C_Container.GetContainerItemInfo(itemButton:GetBagID(), itemButton:GetID());
+		local texture = info and info.iconFileID;
 		itemButton:UpdateCooldown(texture);
 	end
 end
@@ -1049,6 +1081,14 @@ function ContainerFrameMixin:UpdateItemContextMatching()
 	EventRegistry:TriggerEvent("ItemButton.UpdateItemContextMatching", self:GetBagID());
 end
 
+function ContainerFrameMixin:UpdateAddSlots()
+	-- override if needed
+end
+
+function ContainerFrameMixin:LayoutAddSlots()
+	-- override if needed
+end
+
 function ContainerFrame_UpdateAll()
 	for i, frame in ContainerFrameUtil_EnumerateContainerFrames() do
 		frame:UpdateIfShown();
@@ -1061,9 +1101,9 @@ end
 
 function ContainerFrame_UpdateLocked(frame)
 	local id = frame:GetID();
-	local _, locked;
+	local locked;
 	for i, itemButton in frame:EnumerateValidItems() do
-		_, _, locked = GetContainerItemInfo(id, itemButton:GetID());
+		locked = C_Container.GetContainerItemInfo(id, itemButton:GetID()).isLocked;
 		SetItemButtonDesaturated(itemButton, locked);
 	end
 end
@@ -1071,7 +1111,7 @@ end
 function ContainerFrame_UpdateLockedItem(frame, slot)
 	local index = frame.size + 1 - slot;
 	local itemButton = frame.Items[index];
-	local _, _, locked = GetContainerItemInfo(frame:GetID(), itemButton:GetID());
+	local locked = C_Container.GetContainerItemInfo(frame:GetID(), itemButton:GetID()).isLocked;
 	SetItemButtonDesaturated(itemButton, locked);
 end
 
@@ -1185,7 +1225,7 @@ function UpdateContainerFrameAnchors()
 end
 
 function ContainerFrameItemButton_GetDebugReportInfo(self)
-	local texture, itemCount, locked, quality, readable, _, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(self:GetBagID(), self:GetID());
+	local itemLink = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID()).hyperlink;
 	return { debugType = "ContainerItem", itemLink = itemLink, };
 end
 
@@ -1193,7 +1233,12 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	quantity = (quantity or 1);
 	local slot, bag = itemButton:GetSlotAndBagID();
 
-	local money, itemCount, refundSec, currencyCount, hasEnchants = GetContainerItemPurchaseInfo(bag, slot, isEquipped);
+	local info = C_Container.GetContainerItemPurchaseInfo(bag, slot, isEquipped);
+	local money = info.money;
+	local itemCount = info.itemCount;
+	local refundSec = info.refundSeconds;
+	local currencyCount = info.currencyCount;
+	local hasEnchants = info.hasEnchants;
 	if ( not refundSec or ((itemCount == 0) and (money == 0) and (currencyCount == 0)) ) then
 		return false;
 	end
@@ -1208,7 +1253,10 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 
 	local maxQuality = 0;
 	for i=1, itemCount, 1 do
-		local itemTexture, itemQuantity, itemLink = GetContainerItemPurchaseItem(bag, slot, i, isEquipped);
+		local itemInfo = C_Container.GetContainerItemPurchaseItem(bag, slot, i, isEquipped);
+		local itemTexture = itemInfo.iconFileID;
+		local itemQuantity = itemInfo.itemCount;
+		local itemLink = itemInfo.hyperlink;
 		if ( itemLink ) then
 			local _, _, itemQuality = GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
@@ -1221,7 +1269,10 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	end
 
 	for i=1, currencyCount, 1 do
-		local currencyTexture, currencyQuantity, currencyName = GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
+		local currencyInfo = C_Container.GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
+		local currencyTexture = currencyInfo.iconFileID;
+		local currencyQuantity = currencyInfo.currencyCount;
+		local currencyName = currencyInfo.name;
 		if ( currencyName ) then
 			if ( itemsString ) then
 				itemsString = itemsString .. ", |T"..currencyTexture..":0:0:0:-1|t ".. format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
@@ -1245,7 +1296,9 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		refundItemTexture = GetInventoryItemTexture("player", slot);
 		refundItemLink = GetInventoryItemLink("player", slot);
 	else
-		refundItemTexture, _, _, _, _, _, refundItemLink = GetContainerItemInfo(bag, slot);
+		local info = C_Container.GetContainerItemInfo(bag, slot);
+		refundItemTexture = info.iconFileID;
+		refundItemLink = item.hyperlink;
 	end
 	local itemName, _, itemQuality = GetItemInfo(refundItemLink);
 	local r, g, b = GetItemQualityColor(itemQuality);
@@ -1265,7 +1318,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 		local type, money = GetCursorInfo();
 		if ( SpellCanTargetItem() or SpellCanTargetItemID() ) then
 			-- Target the spell with the selected item
-			UseContainerItem(self:GetBagID(), self:GetID());
+			C_Container.UseContainerItem(self:GetBagID(), self:GetID());
 		elseif ( type == "guildbankmoney" ) then
 			WithdrawGuildBankMoney(money);
 			ClearCursor();
@@ -1278,10 +1331,10 @@ function ContainerFrameItemButton_OnClick(self, button)
 			elseif ( MerchantFrame.highPrice ) then
 				MerchantFrame_ConfirmHighCostItem(MerchantFrame.highPrice);
 			else
-				PickupContainerItem(self:GetBagID(), self:GetID());
+				C_Container.PickupContainerItem(self:GetBagID(), self:GetID());
 			end
 		else
-			PickupContainerItem(self:GetBagID(), self:GetID());
+			C_Container.PickupContainerItem(self:GetBagID(), self:GetID());
 			if ( CursorHasItem() ) then
 				MerchantFrame_SetRefundItem(self);
 			end
@@ -1320,11 +1373,11 @@ function ContainerFrameItemButton_OnClick(self, button)
 			elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
 						(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
 						(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
-				local itemID = select(10, GetContainerItemInfo(self:GetBagID(), self:GetID()));
+				local itemID = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID()).itemID;
 				if itemID then
 					if IsArtifactRelicItem(itemID) then
 						if C_ArtifactUI.CanApplyArtifactRelic(itemID, false) then
-							SocketContainerItem(self:GetBagID(), self:GetID());
+							C_Container.SocketContainerItem(self:GetBagID(), self:GetID());
 						elseif C_ArtifactUI.GetEquippedArtifactInfo() then
 							UIErrorsFrame:AddMessage(ERR_ARTIFACT_RELIC_DOES_NOT_MATCH_ARTIFACT, RED_FONT_COLOR:GetRGBA());
 						end
@@ -1348,7 +1401,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 				end
 			end
 		end
-		UseContainerItem(self:GetBagID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
+		C_Container.UseContainerItem(self:GetBagID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
 		StackSplitFrame:Hide();
 	end
 end
@@ -1391,7 +1444,7 @@ function ContainerFrameItemButtonMixin:OnClick(button)
 	local modifiedClick = IsModifiedClick();
 	-- If we can loot the item and autoloot toggle is active, then do a normal click
 	if ( button ~= "LeftButton" and modifiedClick and IsModifiedClick("AUTOLOOTTOGGLE") ) then
-		local _, _, _, _, _, lootable = GetContainerItemInfo(self:GetBagID(), self:GetID());
+		local lootable = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID()).hasLoot;
 		if ( lootable ) then
 			modifiedClick = false;
 		end
@@ -1470,7 +1523,7 @@ function ContainerFrameItemButtonMixin:OnUpdate()
 		if ( IsModifiedClick("DRESSUP") and self:HasItem() ) then
 			ShowInspectCursor();
 		elseif ( showSell ) then
-			ShowContainerSellCursor(self:GetBagID(), self:GetID());
+			C_Container.ShowContainerSellCursor(self:GetBagID(), self:GetID());
 		elseif ( self:IsReadable() ) then
 			ShowInspectCursor();
 		else
@@ -1488,7 +1541,7 @@ function ContainerFrameItemButtonMixin:OnUpdate()
 end
 
 local function SplitStack(button, split)
-	SplitContainerItem(button:GetBagID(), button:GetID(), split);
+	C_Container.SplitContainerItem(button:GetBagID(), button:GetID(), split);
 end
 
 function ContainerFrameItemButtonMixin:OnModifiedClick(button)
@@ -1506,17 +1559,19 @@ function ContainerFrameItemButtonMixin:OnModifiedClick(button)
 				return;
 			end
 
-			if SocketContainerItem(self:GetBagID(), self:GetID()) then
+			if C_Container.SocketContainerItem(self:GetBagID(), self:GetID()) then
 				return;
 			end
 		end
 	end
 
-	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetBagID(), self:GetID()), itemLocation) ) then
+	if ( HandleModifiedItemClick(C_Container.GetContainerItemLink(self:GetBagID(), self:GetID()), itemLocation) ) then
 		return;
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
-		local texture, itemCount, locked = GetContainerItemInfo(self:GetBagID(), self:GetID());
+		local info = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID());
+		local itemCount = info.stackCount;
+		local locked = info.isLocked;
 		if ( not locked and itemCount and itemCount > 1) then
 			self.SplitStack = SplitStack;
 			StackSplitFrame:OpenStackSplitFrame(itemCount, self, "BOTTOMRIGHT", "TOPRIGHT");
@@ -1585,7 +1640,7 @@ end
 
 function ContainerFrameItemButtonMixin:UpdateNewItem(quality)
 	if C_NewItems.IsNewItem(self:GetBagID(), self:GetID()) then
-		if IsBattlePayItem(self:GetBagID(), self:GetID()) then
+		if C_Container.IsBattlePayItem(self:GetBagID(), self:GetID()) then
 			self.NewItemTexture:Hide();
 			self.BattlepayItemTexture:Show();
 		else
@@ -1621,27 +1676,6 @@ function ContainerFrameItemButtonMixin:UpdateJunkItem(quality, noValue)
 	end
 end
 
-function ContainerFrameItemButtonMixin:UpdateItemUpgradeIcon()
-	self.timeSinceUpgradeCheck = 0;
-
-	local itemIsUpgrade = IsContainerItemAnUpgrade(self:GetBagID(), self:GetID());
-	if ( itemIsUpgrade == nil and not self.isExtended) then -- nil means not all the data was available to determine if this is an upgrade.
-		self.UpgradeIcon:SetShown(false);
-		self:SetScript("OnUpdate", self.TryUpdateItemUpgradeIcon);
-	elseif (not self.isExtended) then
-		self.UpgradeIcon:SetShown(itemIsUpgrade);
-		self:SetScript("OnUpdate", nil);
-	end
-end
-
-local ITEM_UPGRADE_CHECK_TIME = 0.5;
-function ContainerFrameItemButtonMixin:TryUpdateItemUpgradeIcon(elapsed)
-	self.timeSinceUpgradeCheck = self.timeSinceUpgradeCheck + elapsed;
-	if ( self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME ) then
-		self:UpdateItemUpgradeIcon();
-	end
-end
-
 function ContainerFrameItemButtonMixin:SetHasItem(hasItem)
 	if hasItem then
 		self.hasItem = 1;
@@ -1666,7 +1700,7 @@ function ContainerFrameItemButtonMixin:UpdateCooldown(hasItem)
 	self:SetHasItem(hasItem);
 
 	if hasItem then
-		local start, duration, enable = GetContainerItemCooldown(self:GetBagID(), self:GetID());
+		local start, duration, enable = C_Container.GetContainerItemCooldown(self:GetBagID(), self:GetID());
 		CooldownFrame_Set(self.Cooldown, start, duration, enable);
 		if ( duration > 0 and enable == 0 ) then
 			SetItemButtonTextureVertexColor(self, 0.4, 0.4, 0.4);
@@ -1725,12 +1759,15 @@ ContainerFramePortraitButtonMixin = {};
 function ContainerFramePortraitButtonMixin:OnMouseDown()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	ToggleDropDownMenu(1, nil, self:GetParent().FilterDropDown, self, 0, 0);
+	if ContainerFrame_IsBackpack(self:GetID()) then
+		HelpTip:Hide(UIParent, TUTORIAL_HUD_REVAMP_BAG_CHANGES);
+	end
 end
 
 function ContainerFramePortraitButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	local waitingOnData = false;
-	if ( self:GetID() == 0 ) then
+	if ContainerFrame_IsBackpack(self:GetID()) then
 		GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
 		if (GetBindingKey("TOGGLEBACKPACK")) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
@@ -1738,7 +1775,7 @@ function ContainerFramePortraitButtonMixin:OnEnter()
 	else
 		local parent = self:GetParent();
 		local id = parent:GetBagID();
-		local link = GetInventoryItemLink("player", ContainerIDToInventoryID(id));
+		local link = GetInventoryItemLink("player", C_Container.ContainerIDToInventoryID(id));
 		local name, _, quality = GetItemInfo(link);
 		if name and quality then
 			local r, g, b = GetItemQualityColor(quality);
@@ -1766,6 +1803,28 @@ end
 
 function ContainerFramePortraitButtonMixin:OnLeave()
 	GameTooltip_Hide();
+end
+
+function ContainerFramePortraitButtonMixin:OnShow()
+	if ( self:GetID() == 0 ) then
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_BAG_CHANGES) then
+			local helpTipInfo = {
+				text = TUTORIAL_HUD_REVAMP_BAG_CHANGES,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_BAG_CHANGES,
+				targetPoint = HelpTip.Point.LeftEdgeCenter,
+				offsetX = 0,
+				alignment = HelpTip.Alignment.Center,
+				acknowledgeOnHide = true,
+			};
+			HelpTip:Show(UIParent, helpTipInfo, self);
+		end
+	end
+end
+
+function ContainerFramePortraitButtonMixin:OnHide()
+	HelpTip:Hide(UIParent, TUTORIAL_HUD_REVAMP_BAG_CHANGES);
 end
 
 local function OpenAllBagsInternal(includeBank)
@@ -1816,7 +1875,7 @@ function ToggleAllBags()
 	local isUsingCombinedBags = ContainerFrameSettingsManager:IsUsingCombinedBags();
 	for i = 1, NUM_TOTAL_BAG_FRAMES, 1 do
 		if not (isUsingCombinedBags and ContainerFrame_IsGenericHeldBag(i)) then
-			if GetContainerNumSlots(i) > 0 then
+			if C_Container.GetContainerNumSlots(i) > 0 then
 				totalBags = totalBags + 1;
 			end
 
@@ -1834,7 +1893,7 @@ function ToggleAllBags()
 		bagsOpen = 0;
 		totalBags = 0;
 		for i = NUM_TOTAL_BAG_FRAMES + 1, NUM_CONTAINER_FRAMES do
-			if GetContainerNumSlots(i) > 0 then
+			if C_Container.GetContainerNumSlots(i) > 0 then
 				totalBags = totalBags + 1;
 			end
 
@@ -2249,6 +2308,44 @@ end
 
 ContainerFrameSettingsManager:Init();
 
+ContainerFrameExtendedSlotPack = CreateFromMixins(ContainerFrameMixin);
+
+function ContainerFrameExtendedSlotPack:UpdateAddSlots()
+	if not self.AddSlotsButton then
+		self.AddSlotsButton = CreateFrame("BUTTON", nil, self, "AddExtendedSlotsButtonTemplate");
+	end
+
+	self.AddSlotsButton:SetShown(not IsAccountSecured());
+end
+
+do
+	local function FindTargetExtendedItemButton(container)
+		local isCombined = ContainerFrameSettingsManager:IsUsingCombinedBags();
+		local lastExtendedItemButton;
+		for i, itemButton in container:EnumerateValidItems() do
+			if itemButton:IsExtended() then
+				lastExtendedItemButton = itemButton;
+
+				if isCombined then
+					return lastExtendedItemButton;
+				end
+			end
+		end
+
+		return lastExtendedItemButton;
+	end
+
+	function ContainerFrameExtendedSlotPack:LayoutAddSlots()
+		if self.AddSlotsButton and self.AddSlotsButton:IsShown() then
+			local itemButton = FindTargetExtendedItemButton(self);
+			if itemButton then
+				self.AddSlotsButton:ClearAllPoints();
+				self.AddSlotsButton:SetPoint("LEFT", itemButton, "LEFT", -14, -2);
+			end
+		end
+	end
+end
+
 ContainerFrameTokenWatcherMixin = CreateFromMixins(ContainerFrameMixin);
 
 function ContainerFrameTokenWatcherMixin:OnShow()
@@ -2309,7 +2406,7 @@ function ContainerFrameTokenWatcherMixin:UpdateCurrencyFrames()
 	self.MoneyFrame:Show();
 end
 
-ContainerFrameBackpackMixin = CreateFromMixins(ContainerFrameTokenWatcherMixin);
+ContainerFrameBackpackMixin = CreateFromMixins(ContainerFrameTokenWatcherMixin, ContainerFrameExtendedSlotPack);
 
 function ContainerFrameBackpackMixin:IsBackpack()
 	return true;
@@ -2334,11 +2431,10 @@ end
 function ContainerFrameBackpackMixin:UpdateMiscellaneousFrames()
 	ContainerFrameMixin.UpdateMiscellaneousFrames(self);
 	self:UpdateCurrencyFrames();
-
-	self.AddSlotsButton:SetShown(not IsAccountSecured());
+	self:UpdateAddSlots();
 end
 
-ContainerFrameCombinedBagsMixin = CreateFromMixins(ContainerFrameTokenWatcherMixin);
+ContainerFrameCombinedBagsMixin = CreateFromMixins(ContainerFrameTokenWatcherMixin, ContainerFrameExtendedSlotPack);
 
 function ContainerFrameCombinedBagsMixin:OnLoad()
 	ContainerFrame_OnLoad(self);
@@ -2406,6 +2502,7 @@ end
 
 function ContainerFrameCombinedBagsMixin:UpdateMiscellaneousFrames()
 	self:SetPortraitToAsset("Interface/Icons/Inv_misc_bag_08");
+	self:UpdateAddSlots();
 	self:UpdateCurrencyFrames();
 end
 

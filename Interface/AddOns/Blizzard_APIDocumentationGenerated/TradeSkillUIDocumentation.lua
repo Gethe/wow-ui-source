@@ -753,6 +753,15 @@ local TradeSkillUI =
 			LiteralName = "TRADE_SKILL_CLOSE",
 		},
 		{
+			Name = "TradeSkillCraftBegin",
+			Type = "Event",
+			LiteralName = "TRADE_SKILL_CRAFT_BEGIN",
+			Payload =
+			{
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "TradeSkillCraftingReagentBonusTextUpdated",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_CRAFTING_REAGENT_BONUS_TEXT_UPDATED",

@@ -45,6 +45,25 @@ function NamePlateDriverMixin:OnLoad()
 		["friendly"] =  C_NamePlate.SetNamePlateFriendlyPreferredClickInsets,
 		["enemy"] = C_NamePlate.SetNamePlateEnemyPreferredClickInsets,
 	};
+
+	self.optionCVars =
+	{
+		["ShowClassColorInFriendlyNameplate"] = true,
+		["ShowNamePlateLoseAggroFlash"] = true,
+		["ShowClassColorInNameplate"] = true,
+		["nameplateShowDebuffsOnFriendly"] = true,
+		["nameplateShowFriendlyBuffs"] = true,
+		["nameplateResourceOnTarget"] = true,
+		["nameplateHideHealthAndPower"] = true,
+		["NamePlateVerticalScale"] = true,
+		["nameplateShowOnlyNames"] = true,
+		["NameplatePersonalClickThrough"] = true,
+		["NamePlateHorizontalScale"] = true,
+		["NamePlateClassificationScale"] = true,
+		["NamePlateMaximumClassificationScale"] = true,
+		["nameplateShowPersonalCooldowns"] = true,
+		["nameplateClassResourceTopInset"] = true,
+	};
 end
 
 function NamePlateDriverMixin:OnEvent(event, ...)
@@ -72,7 +91,7 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 		self:UpdateNamePlateOptions();
 	elseif event == "CVAR_UPDATE" then
 		local name = ...;
-		if name == "SHOW_CLASS_COLOR_IN_V_KEY" or name == "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" or name == "UNIT_NAMEPLATES_SHOW_FRIENDLY_CLASS_COLORS" then
+		if self.optionCVars[name] then
 			self:UpdateNamePlateOptions();
 		end
 	elseif event == "RAID_TARGET_UPDATE" then
@@ -196,7 +215,7 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 	local reaction = UnitReaction("player", unit);
 	-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
 	local hostileUnit = reaction and reaction <= 4;
-	local showDebuffsOnFriendly = GetCVarBool("nameplateShowDebuffsOnFriendly");
+	local showDebuffsOnFriendly = self.showDebuffsOnFriendly;
 
 	local auraSettings =
 	{
@@ -211,6 +230,7 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 	if isPlayer then
 		auraSettings.helpful = true;
 		auraSettings.includeNameplateOnly = true;
+		auraSettings.showPersonalCooldowns = self.showPersonalCooldowns;
 	else
 		if hostileUnit then
 			-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
@@ -231,6 +251,15 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, issecure());
 	if (nameplate) then
 		nameplate.UnitFrame.BuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, unitAuraUpdateInfo, auraSettings);
+		if isPlayer and self.personalFriendlyBuffFrame then
+			local auraSettingsFriendlyBuffs = {
+				helpful = true;
+				includeNameplateOnly = true;
+				showFriendlyBuffs = self.showFriendlyBuffs;
+				showPersonalCooldowns = false;
+			};
+			self.personalFriendlyBuffFrame:UpdateBuffs(nameplate.namePlateUnitToken, unitAuraUpdateInfo, auraSettingsFriendlyBuffs);
+		end
 	end
 end
 
@@ -306,7 +335,7 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 			self.classNamePlatePowerBar:ClearAllPoints();
 			self.classNamePlatePowerBar:SetPoint("TOPLEFT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMLEFT", 0, 0);
 			self.classNamePlatePowerBar:SetPoint("TOPRIGHT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMRIGHT", 0, 0);
-			self.classNamePlatePowerBar:Show();
+			self.classNamePlatePowerBar:SetShown(not self.playerHideHealthandPowerBar);
 
 			anchorMechanicToPowerBar = true;
 		else
@@ -344,6 +373,17 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 		end
 	end
 
+	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
+	if self.personalFriendlyBuffFrame and namePlatePlayer then
+		local mechanicFrame = not showMechanicOnTarget and self.classNamePlateMechanicFrame;
+		local powerBar = self.classNamePlatePowerBar;
+		local attachTo = (mechanicFrame and mechanicFrame:IsShown() and mechanicFrame) or (powerBar and powerBar:IsShown() and powerBar) or namePlatePlayer.UnitFrame.BuffFrame;
+		self.personalFriendlyBuffFrame:SetParent(namePlatePlayer);
+		self.personalFriendlyBuffFrame:SetPoint("TOP", attachTo, "BOTTOM", 0, 0);
+		self.personalFriendlyBuffFrame:SetPoint("LEFT", attachTo, "LEFT", 0, 0);
+		self.personalFriendlyBuffFrame:SetActive(not C_Commentator.IsSpectating());
+	end
+
 	if targetMode and self.classNamePlateMechanicFrame then
 		local percentOffset = tonumber(GetCVar("nameplateClassResourceTopInset")) or 0;
 		if self:IsUsingLargerNamePlateStyle() then
@@ -373,6 +413,11 @@ function NamePlateDriverMixin:SetClassNameplateManaBar(frame)
 	self:SetupClassNameplateBars();
 end
 
+function NamePlateDriverMixin:SetPersonalFriendlyBuffFrame(frame)
+	self.personalFriendlyBuffFrame = frame;
+	self:SetupClassNameplateBars();
+end
+
 function NamePlateDriverMixin:SetBaseNamePlateSize(width, height)
 	if self.baseNamePlateWidth ~= width or self.baseNamePlateHeight ~= height then
 		self.baseNamePlateWidth = width;
@@ -396,6 +441,11 @@ function NamePlateDriverMixin:IsUsingLargerNamePlateStyle()
 end
 
 function NamePlateDriverMixin:UpdateNamePlateOptions()
+	self.showDebuffsOnFriendly = GetCVarBool("nameplateShowDebuffsOnFriendly");
+	self.showFriendlyBuffs = GetCVarBool("nameplateShowFriendlyBuffs");
+	self.showPersonalCooldowns = GetCVarBool("nameplateShowPersonalCooldowns");
+	self.playerHideHealthandPowerBar = GetCVarBool("nameplateHideHealthAndPower");
+
 	DefaultCompactNamePlateEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
 	DefaultCompactNamePlateEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
 
@@ -403,6 +453,8 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInFriendlyNameplate");
 	DefaultCompactNamePlateFriendlyFrameOptions.hideHealthbar = showOnlyNames;
 	DefaultCompactNamePlateFriendlyFrameOptions.hideCastbar = showOnlyNames;
+
+	DefaultCompactNamePlatePlayerFrameSetUpOptions.hideHealthbar = self.playerHideHealthandPowerBar;
 
 	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
 	local zeroBasedScale = namePlateVerticalScale - 1.0;
@@ -666,6 +718,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 	local previousUnit = self.unit;
 	self.unit = unit;
 	self.filter = filterString;
+	self.showFriendlyBuffs = auraSettings.showFriendlyBuffs;
 
 	local aurasChanged = false;
 	if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate or unit ~= previousUnit or self.auras == nil or filterString ~= previousFilter then
@@ -737,7 +790,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 	end);
 
 	--Add Cooldowns 
-	if(buffIndex < BUFF_MAX_DISPLAY and UnitIsUnit(self:GetParent().unit, "player")) then 
+	if(auraSettings.showPersonalCooldowns and buffIndex < BUFF_MAX_DISPLAY and UnitIsUnit(unit, "player")) then 
 		local nameplateSpells = C_SpellBook.GetTrackedNameplateCooldownSpells(); 
 		for _, spellID in ipairs(nameplateSpells) do 
 			if (not self:HasActiveBuff(spellID) and buffIndex < BUFF_MAX_DISPLAY) then
@@ -773,6 +826,25 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 	end
 
 	self:Layout();
+end
+
+PersonalFriendlyBuffContainerMixin = CreateFromMixins(NameplateBuffContainerMixin);
+
+function PersonalFriendlyBuffContainerMixin:OnLoad()
+	NameplateBuffContainerMixin.OnLoad(self);
+	NamePlateDriverFrame:SetPersonalFriendlyBuffFrame(self);
+end
+
+function PersonalFriendlyBuffContainerMixin:UpdateAnchor()
+	-- Anchor controlled by NamePlateDriver
+end
+
+function PersonalFriendlyBuffContainerMixin:ShouldShowBuff(aura, forceAll)
+	if (not aura or not aura.name) then
+		return false;
+	end
+	return aura.nameplateShowAll or forceAll or
+		(self.showFriendlyBuffs and aura.isHelpful and aura.sourceUnit ~= "player");
 end
 
 NameplateBuffButtonTemplateMixin = {};

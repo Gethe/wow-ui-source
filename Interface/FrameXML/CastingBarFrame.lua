@@ -548,7 +548,7 @@ function CastingBarMixin:ShowSpark()
 	for barType, barTypeInfo in pairs(CASTING_BAR_TYPES) do
 		local sparkFx = barTypeInfo.sparkFx and self[barTypeInfo.sparkFx];
 		if sparkFx then
-			sparkFx:SetShown(barType == currentBarType);
+			sparkFx:SetShown(self.playCastFX and barType == currentBarType);
 		end
 	end
 end
@@ -570,6 +570,11 @@ function CastingBarMixin:PlayInterruptAnims()
 	if self.HoldFadeOutAnim then
 		self.HoldFadeOutAnim:Play();
 	end
+	
+	if not self.playCastFX then
+		return;
+	end
+
 	if self.InterruptShakeAnim and tonumber(GetCVar("ShakeStrengthUI")) > 0 then
 		self.InterruptShakeAnim:Play();
 	end
@@ -615,6 +620,10 @@ function CastingBarMixin:PlayFadeAnim()
 end
 	
 function CastingBarMixin:PlayFinishAnim()
+	if not self.playCastFX then
+		return;
+	end
+
 	local barTypeInfo = self:GetTypeInfo(self.barType);
 
 	local playFinish = not barTypeInfo.finishCondition or barTypeInfo.finishCondition(self);
@@ -672,6 +681,7 @@ end
 
 function CastingBarMixin:SetLook(look)
 	if ( look == "CLASSIC" ) then
+		self.playCastFX = true;
 		self:SetWidth(209);
 		self:SetHeight(11);
 		-- border
@@ -699,6 +709,7 @@ function CastingBarMixin:SetLook(look)
 		self.Flash:SetAllPoints();
 		self.Flash:SetPoint("TOP", 0, 2);
 	elseif ( look == "UNITFRAME" ) then
+		self.playCastFX = false;
 		self:SetWidth(150);
 		self:SetHeight(10);
 		-- border

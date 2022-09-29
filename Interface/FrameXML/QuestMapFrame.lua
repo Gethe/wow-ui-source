@@ -912,6 +912,8 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 	local info = C_QuestLog.GetInfo(questLogIndex);
 	if not info then return end
 
+	info.questSortType = QuestUtils_GetQuestSortType(info);
+
 	questInfoContainer[questLogIndex] = info;
 
 	-- Precompute whether or not the headers should display so that it's easier to add them later.
@@ -959,7 +961,7 @@ local function QuestLogQuests_GetCampaignInfos(questInfoContainer)
 
 	-- questInfoContainer is sorted with all campaigns coming first
 	for index, info in ipairs(questInfoContainer) do
-		if info.campaignID then
+		if info.questSortType == QuestSortType.Campaign then
 			table.insert(infos, info);
 		else
 			break;
@@ -973,7 +975,7 @@ local function QuestLogQuests_GetCovenantCallingsInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if info.isCalling then
+		if info.questSortType == QuestSortType.Calling then
 			table.insert(infos, info);
 		end
 	end
@@ -985,7 +987,7 @@ local function QuestLogQuests_GetQuestInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if not info.campaignID and not info.isCalling then
+		if info.questSortType == QuestSortType.Normal then
 			table.insert(infos, info);
 		end
 	end
@@ -1295,9 +1297,9 @@ local function QuestLogQuests_AddHeaderButton(displayState, info)
 	displayState.hasShownAnyHeader = true;
 
 	local button;
-	if info.campaignID then
+	if info.questSortType == QuestSortType.Campaign then
 		button = QuestLogQuests_AddCampaignHeaderButton(displayState, info);
-	elseif info.isCalling then
+	elseif info.questSortType == QuestSortType.Calling then
 		button = QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info);
 	else
 		button = QuestLogQuests_AddStandardHeaderButton(displayState, info);

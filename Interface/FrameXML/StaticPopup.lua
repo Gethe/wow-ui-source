@@ -374,7 +374,7 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -398,7 +398,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -419,7 +419,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_ARENA_POINTS"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -440,7 +440,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR_AND_ARENA"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -4263,6 +4263,30 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	timeout = 0,
 	exclusive = 1,
 };
+
+local factionMajorCities = {
+	["Alliance"] = STORMWIND,
+	["Horde"] = ORGRIMMAR,
+}
+
+StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
+	text = "",
+	button1 = YES,
+	button2 = NO,
+	OnShow = function(self)
+		local playerFactionGroup = UnitFactionGroup("player"); 
+		local factionCity = playerFactionGroup and factionMajorCities[playerFactionGroup] or nil; 
+		if(factionCity) then 
+			self.text:SetText(NORMAL_FONT_COLOR:WrapTextInColorCode(RETURNING_PLAYER_PROMPT:format(factionCity)));
+		end
+	end,
+	OnAccept = function(self)
+		C_ReturningPlayerUI.AcceptPrompt(); 
+		self:Hide();
+	end,
+	timeout = 0,
+	exclusive = 1,
+}
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];

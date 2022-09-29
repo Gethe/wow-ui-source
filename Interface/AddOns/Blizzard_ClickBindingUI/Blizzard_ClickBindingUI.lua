@@ -586,7 +586,7 @@ function ClickBindingFrameMixin:OnEvent(event, ...)
 		self:SetIconHighlightsShown(showHighlights);
 	elseif event == "CVAR_UPDATE" then
 		local cVarName = ...;
-		if cVarName == "ENABLE_MOUSEOVER_CAST" then
+		if cVarName == "enableMouseoverCast" then
 			self:UpdateMouseoverCastUI();
 		end
 	end

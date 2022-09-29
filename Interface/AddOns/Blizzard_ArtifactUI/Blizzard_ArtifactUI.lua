@@ -265,9 +265,9 @@ end
 
 function ArtifactUIMixin:OnInventoryItemMouseEnter(bag, slot)
 	if self:IsVisible() then
-		local itemInfo = {GetContainerItemInfo(bag, slot)};
-		local itemLink = itemInfo[7];
-		local itemID = itemInfo[10];
+		local itemInfo = C_Container.GetContainerItemInfo(bag, slot);
+		local itemLink = itemInfo.hyperlink;
+		local itemID = itemInfo.itemID;
 
 		if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
 			self.PerksTab:ShowHighlightForRelicItemID(itemID, itemLink);
@@ -277,9 +277,9 @@ function ArtifactUIMixin:OnInventoryItemMouseEnter(bag, slot)
 end
 
 function ArtifactUIMixin:OnInventoryItemMouseLeave(bag, slot)
-	local itemInfo = {GetContainerItemInfo(bag, slot)};
-	local itemLink = itemInfo[7];
-	local itemID = itemInfo[10];
+	local itemInfo = C_Container.GetContainerItemInfo(bag, slot);
+	local itemLink = itemInfo.hyperlink;
+	local itemID = itemInfo.itemID;
 
 	if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() and self.PerksTab:IsVisible() then
 		self.PerksTab:HideHighlightForRelicItemID(itemID, itemLink);

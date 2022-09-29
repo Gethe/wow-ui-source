@@ -61,6 +61,7 @@ Import("C_Timer");
 Import("C_WowTokenPublic");
 Import("C_StorePublic");
 Import("C_WowTokenSecure");
+Import("C_Container");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
 Import("HideGMOnly");
@@ -77,7 +78,6 @@ Import("type");
 Import("string");
 Import("strtrim");
 Import("LoadURLIndex");
-Import("GetContainerNumFreeSlots");
 Import("GetCursorPosition");
 Import("PlaySound");
 Import("SetPortraitToTexture");
@@ -2816,7 +2816,7 @@ end
 
 function StoreFrame_HasFreeBagSlots()
 	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		local freeSlots, bagFamily = GetContainerNumFreeSlots(i);
+		local freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
 		if ( freeSlots > 0 and bagFamily == 0 ) then
 			return true;
 		end

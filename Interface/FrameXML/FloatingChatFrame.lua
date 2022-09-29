@@ -62,7 +62,6 @@ function FloatingChatFrame_OnLoad(self)
 	FloatingChatFrame_Update(self:GetID());
 
 	FCFTab_UpdateColors(_G[self:GetName().."Tab"], true);
-	self:SetClampRectInsets(-35, 35, 26, -50);
 
 	local chatTab = _G[self:GetName().."Tab"];
 	chatTab.mouseOverAlpha = CHAT_FRAME_TAB_SELECTED_MOUSEOVER_ALPHA;
@@ -92,8 +91,6 @@ function FloatingChatFrame_UpdateBackgroundAnchors(self)
 	self.Background:SetPoint("TOPRIGHT", self, "TOPRIGHT", 2 + scrollbarWidth, 3 + quickButtonHeight);
 	self.Background:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -2, -6);
 	self.Background:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 2 + scrollbarWidth, -6);
-
-	self:SetClampRectInsets(-35, 35 + scrollbarWidth, 38, -50);
 end
 
 function FloatingChatFrame_SetupScrolling(self)
@@ -283,10 +280,7 @@ function FCFOptionsDropDown_Initialize(dropDown)
 			-- If you are the default chat frame then show the enter edit mode option
 			info.text = HUD_EDIT_MODE_MENU;
 			info.func = function() ShowUIPanel(EditModeManagerFrame); end;
-
-			local NPE_AchievementID = 14287;
-			local _, _, _, completedNPE = GetAchievementInfo(NPE_AchievementID);
-			info.disabled = not completedNPE;
+			info.disabled =  C_PlayerInfo.IsPlayerNPERestricted();
 		else
 			-- If you aren't the default chat frame then show lock/unlock option
 			if( dropDownChatFrame == GENERAL_CHAT_DOCK.primary ) then
@@ -1835,7 +1829,7 @@ end
 function FCFClickAnywhereButton_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( event == "VARIABLES_LOADED" or
-		(event == "CVAR_UPDATE" and (arg1 == "chatStyle" or arg1 == "CHAT_WHOLE_WINDOW_CLICKABLE")) ) then
+		(event == "CVAR_UPDATE" and arg1 == "chatStyle") ) then
 		FCFClickAnywhereButton_UpdateState(self);
 	end
 end

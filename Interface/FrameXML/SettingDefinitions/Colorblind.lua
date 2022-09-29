@@ -25,7 +25,7 @@ local function Register()
 	-- Colorblind Filter
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(0, COLORBLIND_OPTION_NONE);
 			container:Add(1, COLORBLIND_OPTION_PROTANOPIA);
 			container:Add(2, COLORBLIND_OPTION_DEUTERANOPIA);

@@ -9,8 +9,8 @@
 	<Frame name="ContainerFrameExtendedItemButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="worldquest-tracker-lock">
-					<Size x="27" y="35"/>
+				<Texture atlas="Bags-padlock-authenticator">
+					<Size x="41" y="49"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -22,6 +22,25 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
+
+	<Button name="AddExtendedSlotsButtonTemplate" hidden="true" frameLevel="510" virtual="true">
+		<Size x="28" y="28"/>
+		<NormalTexture atlas="Bags-icon-AddAuthenticator"/>
+		<PushedTexture atlas="Bags-icon-AddAuthenticator"/>
+		<HighlightTexture atlas="Bags-icon-AddAuthenticator" alphaMode="ADD" alpha="0.4"/>
+
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+				GameTooltip:SetText(BACKPACK_AUTHENTICATOR_INCREASE_SIZE, 1, 1, 1);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick>
+				StaticPopup_Show("BACKPACK_INCREASE_SIZE");
+			</OnClick>
+		</Scripts>
+	</Button>
 
 	<DropDownToggleButton name="ContainerFramePortraitButtonTemplate" mixin="ContainerFramePortraitButtonMixin" virtual="true">
 		<Size x="40" y="40"/>
@@ -38,6 +57,8 @@
 			<OnMouseDown method="OnMouseDown"/>
 			<OnEnter method="OnEnter" />
 			<OnLeave method="OnLeave" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
 		</Scripts>
 	</DropDownToggleButton>
 
@@ -268,51 +289,6 @@
 					</OnMouseDown>
 				</Scripts>
 			</Button>
-			<Button name="$parentAddSlotsButton" parentKey="AddSlotsButton" hidden="true" frameLevel="100">
-				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="12" y="37"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture>
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-							<Color r="0" g="0" b="0"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Border" file="Interface\Common\RingBorder" setAllPoints="true"/>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" atlas="bags-icon-addslots">
-							<Size x="14" y="14"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<HighlightTexture atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
-					<Size x="20" y="20"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</HighlightTexture>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						GameTooltip:SetText(BACKPACK_AUTHENTICATOR_INCREASE_SIZE, 1, 1, 1);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-					<OnClick>
-						StaticPopup_Show("BACKPACK_INCREASE_SIZE");
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Button parentKey="ClickableTitleFrame" mixin="DropDownToggleButtonMixin">
 				<Size x="118" y="16"/>
@@ -415,7 +391,7 @@
 		<Scripts>
 			<OnClick>
 				PlaySound(SOUNDKIT.UI_BAG_SORTING_01);
-				SortBags();
+				C_Container.SortBags();
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self);

@@ -47,7 +47,7 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 		local reagentType = reagentSlotSchematic.reagentType;
 		if reagentType == Enum.CraftingReagentType.Basic then
 			if Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
-				self.Button.noQualityOverlay = true;
+				self.Button.noProfessionQualityOverlay = true;
 			end
 
 			local reagent = reagentSlotSchematic.reagents[1];

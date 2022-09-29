@@ -28,6 +28,10 @@ function ProfessionsCraftingQueue:CalculatePartitions(transaction, count, ascend
 		end
 	end
 
+	-- Optionals and finishers are all quantity 1 and can be appended to each partition because we've already
+	-- determined we have at least [count] of them.
+	local optionalAndFinishingReagentTbl = transaction:CreateOptionalOrFinishingCraftingReagentInfoTbl();
+
 	while count > 0 do
 		local pass = false;
 		local craftingReagentInfos = {};
@@ -66,6 +70,7 @@ function ProfessionsCraftingQueue:CalculatePartitions(transaction, count, ascend
 			if partition and tCompare(partition.craftingReagentInfos, craftingReagentInfos, depth) then
 				partition.quantity = partition.quantity + 1;
 			else
+				tAppendAll(craftingReagentInfos, optionalAndFinishingReagentTbl);
 				table.insert(self.partitions, {
 					quantity = 1, 
 					craftingReagentInfos = craftingReagentInfos,
@@ -76,14 +81,19 @@ function ProfessionsCraftingQueue:CalculatePartitions(transaction, count, ascend
 			break;
 		end
 	end
+
+	--Dump(self.partitions);
 end
 
-function ProfessionsCraftingQueue:SetPartitions(quantity, craftingReagentInfos)
+function ProfessionsCraftingQueue:SetPartitions(transaction, quantity)
+	local craftingReagentInfos = transaction:CreateCraftingReagentInfoTbl();
 	self.partitions = {{
 			quantity = quantity,
 			craftingReagentInfos = CopyTable(craftingReagentInfos),
 		}
 	};
+
+	--Dump(self.partitions);
 end
 
 function ProfessionsCraftingQueue:GetTotal()

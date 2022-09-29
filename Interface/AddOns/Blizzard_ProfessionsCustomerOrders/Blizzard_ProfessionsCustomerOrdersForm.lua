@@ -234,9 +234,15 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 		GameTooltip:SetOwner(self.OutputIcon, "ANCHOR_RIGHT");
 
 		local reagents = transaction:CreateOptionalCraftingReagentInfoTbl();
-		C_TradeSkillUI.SetTooltipRecipeResultItem(recipeSchematic.recipeID, reagents, transaction:GetRecraftAllocation());
+		self.OutputIcon:SetScript("OnUpdate", function() 
+			C_TradeSkillUI.SetTooltipRecipeResultItem(recipeSchematic.recipeID, reagents, transaction:GetRecraftAllocation());
+		end);
 	end);
-	self.OutputIcon:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.OutputIcon:SetScript("OnLeave", function()
+		GameTooltip_Hide(); 
+		self.OutputIcon:SetScript("OnUpdate", nil);
+	end);
 
 	local editBox = self.PaymentContainer.ScrollBoxContainer.ScrollingEditBox;
 	editBox:SetDefaultTextEnabled(not committed);

@@ -159,7 +159,7 @@ function ArenaEnemyMatchFrameMixin:OnLoad()
 	self.debuffCountdown = 0;
 	self.numDebuffs = 0;
 	local prefix = "ArenaEnemyMatchFrame"..id;
-	UnitFrame_Initialize(self, "arena"..id,  _G[prefix.."Name"], nil,
+	UnitFrame_Initialize(self, "arena"..id,  _G[prefix.."Name"], nil, nil,
 			_G[prefix.."HealthBar"], _G[prefix.."HealthBarText"],
 			_G[prefix.."ManaBar"], _G[prefix.."ManaBarText"], nil, nil, nil,
 			_G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"],
@@ -382,7 +382,7 @@ function ArenaEnemyPetFrameMixin:OnLoad()
 	local prefix = "ArenaEnemyMatchFrame"..id.."PetFrame";
 	local unit = "arenapet"..id;
 	self.layoutIndex = self:GetParent().layoutIndex + 1;
-	UnitFrame_Initialize(self, unit,  _G[prefix.."Name"], _G[prefix.."Portrait"],
+	UnitFrame_Initialize(self, unit,  _G[prefix.."Name"], nil, _G[prefix.."Portrait"],
 		   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"]);
 	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 	_G[prefix.."Name"]:Hide();

@@ -133,9 +133,16 @@ function ActionBarMixin:SetShowGrid(showGrid, reason)
         actionButton:SetShowGrid(showGrid, reason);
     end
 
+	local shouldBeRaised = showGrid and (reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+	self:UpdateFrameStrata(shouldBeRaised);
+
     self:UpdateShownButtons();
     self:UpdateVisibility();
     self:UpdateGridLayout();
+end
+
+function ActionBarMixin:UpdateFrameStrata(shouldBeRaised)
+	self:SetFrameStrata(shouldBeRaised and "TOOLTIP" or "MEDIUM");
 end
 
 function ActionBarMixin:UpdateShownButtons()

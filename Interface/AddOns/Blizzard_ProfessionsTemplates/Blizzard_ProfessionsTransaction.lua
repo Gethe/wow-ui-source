@@ -358,7 +358,7 @@ function ProfessionsRecipeTransactionMixin:SanitizeEnchantAllocation(clearExpect
 end
 
 function ProfessionsRecipeTransactionMixin:SanitizeSalvageAllocation(clearExpected)
-	local itemGUID = self:GetSalvageAllocation();
+	local item = self:GetSalvageAllocation();
 	local itemGUID = item and item:GetItemGUID() or nil;
 	if itemGUID and not C_Item.IsItemGUIDInInventory(itemGUID) then
 		self:ClearSalvageAllocations();
@@ -549,6 +549,14 @@ function ProfessionsRecipeTransactionMixin:CreateCraftingReagentInfoTblIf(predic
 		end
 	end
 	return tbl;
+end
+
+function ProfessionsRecipeTransactionMixin:CreateOptionalOrFinishingCraftingReagentInfoTbl()
+	local function IsOptionalOrFinishing(reagentTbl)
+		local reagentType = reagentTbl.reagentSlotSchematic.reagentType;
+		return reagentType == Enum.CraftingReagentType.Optional or reagentType == Enum.CraftingReagentType.Finishing;
+	end
+	return self:CreateCraftingReagentInfoTblIf(IsOptionalOrFinishing);
 end
 
 function ProfessionsRecipeTransactionMixin:CreateOptionalCraftingReagentInfoTbl()

@@ -1,17 +1,19 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PetFrame.lua"/>
-	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
+	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate" parent="PlayerFrame">
 		<Size x="128" y="53"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="85" y="-75"/>
-		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="48" type="number"/>
+			<KeyValue key="layoutOnBottom" value="true" type="boolean"/>
+			<KeyValue key="leftPadding" value="15" type="number"/>
+		</KeyValues>
 		<HitRectInsets>
 			<AbsInset left="7" right="66" top="6" bottom="7"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="PetFrameFlash" atlas="ui-hud-unitframe-party-portraiton-incombat" useAtlasSize="true" hidden="true">
+				<Texture name="PetFrameFlash" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-InCombat" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -30,7 +32,7 @@
 				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="PetFrameTexture" atlas="ui-hud-unitframe-party-portraiton" useAtlasSize="true">
+				<Texture name="PetFrameTexture" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -102,12 +104,10 @@
 										<Anchor point="BOTTOMLEFT" x="42" y="38"/>
 									</Anchors>
 								</FontString>
-								<Texture name="PetAttackModeTexture" file="Interface\TargetingFrame\UI-Player-AttackStatus" alphaMode="ADD" hidden="true">
-									<Size x="83" y="68"/>
+								<Texture name="PetAttackModeTexture" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Status" useAtlasSize="true" alphaMode="ADD" hidden="true">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="4" y="-6"/>
+										<Anchor point="TOPLEFT"/>
 									</Anchors>
-									<TexCoords left="0.703125" right="1.0" top="0" bottom="1.0"/>
 								</Texture>
 								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
@@ -126,7 +126,7 @@
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
 					<OnSizeChanged method="OnSizeChanged"/>
 				</Scripts>
-				<BarTexture atlas="ui-hud-unitframe-party-portraiton-bar-health"/>
+				<BarTexture atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health"/>
 			</StatusBar>
 			<StatusBar name="PetFrameManaBar" inherits="TextStatusBar" mixin="PetManaBarMixin">
 				<Size x="71" y="7"/>
@@ -136,7 +136,7 @@
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>
-				<BarTexture atlas="ui-hud-unitframe-party-portraiton-bar-mana"/>
+				<BarTexture atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana"/>
 			</StatusBar>
 			<Frame parentKey="DebuffFrameContainer" inherits="HorizontalLayoutFrame">
 				<KeyValues>

@@ -50,7 +50,7 @@ Settings.CreateSlider(category, setting, options, tooltip);
 -- dropdown
 local variable, name, tooltip = "MyDropDown", "My DropDown", "My DropDown Tooltip";
 local function GetOptions()
-    local container = Settings.CreateDropDownTextContainer();
+    local container = Settings.CreateControlTextContainer();
     container:Add(0, "Option A");
     container:Add(1, "Option B");
     container:Add(2, "Option C");

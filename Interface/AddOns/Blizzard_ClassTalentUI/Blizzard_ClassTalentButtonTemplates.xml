@@ -3,7 +3,8 @@
 
 	<Script file="Blizzard_ClassTalentButtonTemplates.lua"/>
 
-	<Frame name="BaseClassTalentButtonTemplate" mixin="ClassTalentButtonArtMixin" virtual="true">
+	<!-- Template for both the standard Class Talent buttons and the flyout choice mixin -->
+	<Frame name="ClassTalentButtonArtTemplate" mixin="ClassTalentButtonArtMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="sheenMaskAtlas" value="" type="string"/>
 		</KeyValues>
@@ -15,7 +16,7 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT">
-							<Translation offsetX="150" order="1" endDelay="10.5" duration="6.5" />
+							<Translation offsetX="150" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
 						</AnimationGroup>
 					</Animations>
 				</Texture>
@@ -28,6 +29,23 @@
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Art TODO: Uncomment & fill out layers for purchase animations -->
+			<!-- <Frame parentKey="PurchaseVisuals">
+				<Layers></Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+						<Alpha smoothing="NONE" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame> -->
+		</Frames>
+	</Frame>
+
+	<!-- Template for only the Class Talent buttons -->
+	<Frame name="ClassTalentBaseButtonTemplate" inherits="ClassTalentButtonArtTemplate" virtual="true">
+		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectableGlow" hidden="true" alphaMode="ADD" atlas="talents-node-square-greenglow">
 					<Size x="61" y="61"/>
@@ -43,43 +61,33 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<!-- Art TODO: Uncomment & fill out layers for purchase animations -->
-			<!-- <Frame name="ClassTalentButtonPurchaseVisualsTemplate" virtual="true">
-				<Animations>
-					<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
-						<Alpha smoothing="NONE" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
-					</AnimationGroup>
-				</Animations>
-			</Frame> -->
-		</Frames>
 	</Frame>
 
-	<Button name="ClassTalentButtonChoiceTemplate" inherits="TalentButtonChoiceTemplate, BaseClassTalentButtonTemplate" virtual="true">
+	<Button name="ClassTalentButtonChoiceTemplate" inherits="TalentButtonChoiceTemplate, ClassTalentBaseButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="sheenMaskAtlas" value="talents-node-choice-sheenmask" type="string"/>
 		</KeyValues>
 	</Button>
 
-	<Button name="ClassTalentButtonCircleTemplate" inherits="TalentButtonCircleTemplate, BaseClassTalentButtonTemplate" virtual="true">
+	<Button name="ClassTalentButtonCircleTemplate" inherits="TalentButtonCircleTemplate, ClassTalentBaseButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="sheenMaskAtlas" value="talents-node-circle-sheenmask" type="string"/>
 		</KeyValues>
 	</Button>
 
-	<Button name="ClassTalentButtonSquareTemplate" inherits="TalentButtonSquareTemplate, BaseClassTalentButtonTemplate" virtual="true">
+	<Button name="ClassTalentButtonSquareTemplate" inherits="TalentButtonSquareTemplate, ClassTalentBaseButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="sheenMaskAtlas" value="talents-node-square-sheenmask" type="string"/>
 		</KeyValues>
 	</Button>
 
-	<Button name="ClassTalentButtonLargeSquareTemplate" inherits="TalentButtonLargeSquareTemplate, BaseClassTalentButtonTemplate" virtual="true">
+	<Button name="ClassTalentButtonLargeSquareTemplate" inherits="TalentButtonLargeSquareTemplate, ClassTalentButtonArtTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="sheenMaskAtlas" value="talents-node-choiceflyout-square-sheenmask" type="string"/>
 		</KeyValues>
 	</Button>
 
-	<Button name="ClassTalentButtonLargeCircleTemplate" inherits="TalentButtonLargeCircleTemplate, BaseClassTalentButtonTemplate" virtual="true">
+	<Button name="ClassTalentButtonLargeCircleTemplate" inherits="TalentButtonLargeCircleTemplate, ClassTalentButtonArtTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="sheenMaskAtlas" value="talents-node-choiceflyout-circle-sheenmask" type="string"/>
 		</KeyValues>

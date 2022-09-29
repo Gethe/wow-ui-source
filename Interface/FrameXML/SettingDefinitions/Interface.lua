@@ -1,5 +1,6 @@
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(INTERFACE_LABEL);
+	Settings.INTERFACE_CATEGORY_ID = category:GetID();
 
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[INTERFACE_LABEL]);
@@ -66,7 +67,7 @@ local function Register()
 		end
 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(1, NPC_NAMES_DROPDOWN_TRACKED, NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP);
 			container:Add(2, NPC_NAMES_DROPDOWN_HOSTILE, NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP);
 			container:Add(3, NPC_NAMES_DROPDOWN_INTERACTIVE, NPC_NAMES_DROPDOWN_INTERACTIVE_TOOLTIP);
@@ -107,11 +108,6 @@ local function Register()
 	-- Always Show Nameplates
 	do
 		Settings.SetupCVarCheckBox(category, "nameplateShowAll", UNIT_NAMEPLATES_AUTOMODE, OPTION_TOOLTIP_UNIT_NAMEPLATES_AUTOMODE);
-	end
-
-	-- Show Special Resources
-	do
-		Settings.SetupCVarCheckBox(category, "nameplateResourceOnTarget", DISPLAY_PERSONAL_RESOURCE_ON_ENEMY, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE_ON_ENEMY);
 	end
 
 	-- Larger Nameplates
@@ -182,7 +178,7 @@ local function Register()
 	-- Nameplate Motion Type
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			for index = 1, C_NamePlate.GetNumNamePlateMotionTypes() do
 				local label = _G["UNIT_NAMEPLATES_TYPE_"..index];
 				local tooltip = _G["UNIT_NAMEPLATES_TYPE_TOOLTIP_"..index];
@@ -193,12 +189,9 @@ local function Register()
 
 		Settings.SetupCVarDropDown(category, "nameplateMotion", Settings.VarType.Number, GetOptions, UNIT_NAMEPLATES_TYPES, OPTION_TOOLTIP_UNIT_NAMEPLATES_TYPES);
 	end
-	
+
 	----Display
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(DISPLAY_LABEL));
-
-	-- Rotate Minimap
-	Settings.SetupCVarCheckBox(category, "rotateMinimap", ROTATE_MINIMAP, OPTION_TOOLTIP_ROTATE_MINIMAP);
 
 	-- Hide Adventure Guide Alerts
 	Settings.SetupCVarCheckBox(category, "hideAdventureJournalAlerts", HIDE_ADVENTURE_JOURNAL_ALERTS, OPTION_TOOLTIP_HIDE_ADVENTURE_JOURNAL_ALERTS);
@@ -231,7 +224,7 @@ local function Register()
 	-- Outline
 	do 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(0, OBJECT_NPC_OUTLINE_DISABLED);
 			container:Add(1, OBJECT_NPC_OUTLINE_MODE_ONE);
 			container:Add(2, OBJECT_NPC_OUTLINE_MODE_TWO);
@@ -279,7 +272,7 @@ local function Register()
 		end
 		
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(1, STATUS_TEXT_VALUE);
 			container:Add(2, STATUS_TEXT_PERCENT);
 			container:Add(3, STATUS_TEXT_BOTH);
@@ -322,7 +315,7 @@ local function Register()
 		end
 		
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(1, ALL);
 			container:Add(2, NONE);
 			container:Add(3, CHAT_BUBBLES_EXCLUDE_PARTY_CHAT);
@@ -371,7 +364,7 @@ local function Register()
 	-- Health Text
 	do 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add("none", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);
 			container:Add("health", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH);
 			container:Add("losthealth", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH);

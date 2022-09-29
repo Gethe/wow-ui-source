@@ -322,11 +322,7 @@ function BackpackTokenFrameMixin:GetInitialTokenAnchor()
 end
 
 function BackpackTokenFrameMixin:GetTokenLayout()
-	if self:IsCombined() then
-		return AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, self:GetMaxTokensWatched(), 0, 0);
-	else
-		return AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, self:GetMaxTokensWatched(), 0, 0);
-	end
+	return AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, self:GetMaxTokensWatched(), 0, 0);
 end
 
 function BackpackTokenFrameMixin:GetMaxTokensWatched()

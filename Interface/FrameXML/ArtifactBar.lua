@@ -65,7 +65,7 @@ function ArtifactBarMixin:OnEvent(event, ...)
 			self:Update();
 		elseif ( event == "CVAR_UPDATE" ) then
 			local name, value = ...;
-			if ( name == "XP_BAR_TEXT" ) then
+			if ( name == "xpBarText" ) then
 				self:UpdateTextVisibility();
 			end
 		end

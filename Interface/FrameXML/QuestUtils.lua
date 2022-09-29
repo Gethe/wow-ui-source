@@ -91,7 +91,7 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 	elseif ( worldQuestType == Enum.QuestTagType.Threat ) then
 		iconAtlas = QuestUtil.GetThreatPOIIcon(questID);
 	else
-		if(questID) then 
+		if(questID) then
 			local theme = C_QuestLog.GetQuestDetailsTheme(questID);
 			if theme then
 				iconAtlas = theme.poiIcon;
@@ -99,9 +99,9 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 		end
 	end
 
-	if(not iconAtlas) then 
+	if(not iconAtlas) then
 		return "worldquest-questmarker-questbang", 6, 15;
-	end 
+	end
 
 	local info = C_Texture.GetAtlasInfo(iconAtlas);
 	return iconAtlas, info and info.width, info and info.height;
@@ -658,4 +658,18 @@ end
 
 function QuestUtils_IsQuestWatched(questID)
 	return questID and C_QuestLog.GetQuestWatchType(questID) ~= nil;
+end
+
+QuestSortType = EnumUtil.MakeEnum( "Normal", "Campaign", "Calling");
+
+function QuestUtils_GetQuestSortType(questInfo)
+	if questInfo.isCalling then
+		return QuestSortType.Calling;
+	elseif questInfo.campaignID and questInfo.campaignID > 0 then
+		if not C_CampaignInfo.SortAsNormalQuest(questInfo.campaignID) then
+			return QuestSortType.Campaign;
+		end
+	end
+
+	return QuestSortType.Normal;
 end

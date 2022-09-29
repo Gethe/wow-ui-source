@@ -112,7 +112,7 @@ function UpdateMicroButtons()
 		SpellbookMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
+	if (ClassTalentFrame and ClassTalentFrame:IsShown()) then
 		TalentMicroButton:SetButtonState("PUSHED", true);
 	else
 		if not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
@@ -629,7 +629,7 @@ function TalentMicroButtonMixin:EvaluateAlertVisibility()
 		return false;
 	end
 
-	if not PlayerTalentFrame or not PlayerTalentFrame:IsShown() then
+	if not ClassTalentFrame or not ClassTalentFrame:IsShown() then
 		if MainMenuMicroButton_ShowAlert(self, alertText) then
 			MicroButtonPulse(self);
 			if IsPlayerInitialSpec() then

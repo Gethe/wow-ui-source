@@ -79,6 +79,29 @@ function SettingsSearchableElementMixin:MatchesSearchTags(words)
 	return nil;
 end
 
+function SettingsSearchableElementMixin:AddShownPredicate(func)
+	if not self.shownPredicates then
+		self.shownPredicates = {};
+	end
+	table.insert(self.shownPredicates, func);
+end
+
+function SettingsSearchableElementMixin:GetShownPredicates()
+	return self.shownPredicates;
+end
+
+function SettingsSearchableElementMixin:ShouldShow()
+	local prereqs = self:GetShownPredicates();
+	if prereqs then
+		for index, prereq in ipairs(prereqs) do
+			if not prereq() then
+				return false;
+			end
+		end
+	end
+	return true;
+end
+
 function Settings.CreateCanvasMixin()
 	local canvas = CreateFromMixins(SettingsCanvasMixin);
 	return canvas;
@@ -108,8 +131,8 @@ function Settings.SetKeybindingsCategory(category)
 	SettingsPanel:SetKeybindingsCategory(category);
 end
 
-function Settings.OpenToCategory(categoryNameOrFrame, scrollToElementName)
-	return SettingsPanel:OpenToCategory(categoryNameOrFrame, scrollToElementName);
+function Settings.OpenToCategory(categoryID, scrollToElementName)
+	return SettingsPanel:OpenToCategory(categoryID, scrollToElementName);
 end
 
 function Settings.SafeLoadBindings(bindingSet)
@@ -202,24 +225,24 @@ function Settings.SetValue(variable, value, force)
 	end
 end
 
-local SettingsDropDownTextContainerMixin = {};
+local SettingsControlTextContainerMixin = {};
 
-function SettingsDropDownTextContainerMixin:Init()
+function SettingsControlTextContainerMixin:Init()
 	self.data = {};
 end
 
-function SettingsDropDownTextContainerMixin:GetData()
+function SettingsControlTextContainerMixin:GetData()
 	return self.data;
 end
 
-function SettingsDropDownTextContainerMixin:Add(value, label, tooltip)
+function SettingsControlTextContainerMixin:Add(value, label, tooltip)
 	local data = {label = label, tooltip = tooltip, value = value};
 	table.insert(self.data, data);
 	return data;
 end
 
-function Settings.CreateDropDownTextContainer()
-	local container = CreateFromMixins(SettingsDropDownTextContainerMixin);
+function Settings.CreateControlTextContainer()
+	local container = CreateFromMixins(SettingsControlTextContainerMixin);
 	container:Init();
 	return container;
 end
@@ -265,7 +288,7 @@ end
 
 function Settings.CreateModifiedClickOptions(tooltips)
 	local function GetOptions(options)
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		container:Add("ALT", ALT_KEY, tooltips[1]);
 		container:Add("CTRL", CTRL_KEY, tooltips[2]);
 		container:Add("SHIFT", SHIFT_KEY, tooltips[3]);
@@ -322,9 +345,8 @@ function Settings.CreateControlInitializer(frameTemplate, setting, options, tool
 	return Settings.CreateSettingInitializer(frameTemplate, data);
 end
 
-function Settings.CreateCheckBoxInitializer(setting, tooltip)
+function Settings.CreateCheckBoxInitializer(setting, options, tooltip)
 	assert(setting:GetVariableType() == "boolean");
-	local options = nil;
 	return Settings.CreateControlInitializer("SettingsCheckBoxControlTemplate", setting, options, tooltip);
 end
 
@@ -344,7 +366,11 @@ local function AddInitializerToLayout(category, initializer)
 end
 
 function Settings.CreateCheckBox(category, setting, tooltip)
-	local initializer = Settings.CreateCheckBoxInitializer(setting, tooltip);
+	return Settings.CreateCheckBoxWithOptions(category, setting, nil, tooltip);
+end
+
+function Settings.CreateCheckBoxWithOptions(category, setting, options, tooltip)
+	local initializer = Settings.CreateCheckBoxInitializer(setting, options, tooltip);
 	AddInitializerToLayout(category, initializer);
 	return initializer;
 end
@@ -361,11 +387,11 @@ function Settings.CreateDropDown(category, setting, options, tooltip)
 	return initializer;
 end
 
-function Settings.CreateDropDownInitTooltip(setting, name, tooltip, options)
+function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 	local function InitTooltip()
 		Settings.InitTooltip(name, tooltip);
 
-		local optionData = options();
+		local optionData = type(options) == 'function' and options() or options;
 		local default = setting:GetDefaultValue();
 		local warningOption = nil;
 		local defaultOption = nil;
@@ -379,7 +405,7 @@ function Settings.CreateDropDownInitTooltip(setting, name, tooltip, options)
 				warningOption = option;
 			end
 
-			if option.tooltip then
+			if option.tooltip or option.disabled then
 				GameTooltip_AddBlankLineToTooltip(SettingsTooltip);
 
 				local optionTooltip = nil;
@@ -391,14 +417,18 @@ function Settings.CreateDropDownInitTooltip(setting, name, tooltip, options)
 					optionLabel = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(option.label);
 				end
 
-				if option.disabled then
-					optionTooltip = DISABLED_FONT_COLOR:WrapTextInColorCode(option.tooltip);
-				elseif default and option.recommend then
-					optionTooltip = GREEN_FONT_COLOR:WrapTextInColorCode(option.tooltip);
+				if option.tooltip then
+					if option.disabled then
+						optionTooltip = DISABLED_FONT_COLOR:WrapTextInColorCode(option.tooltip);
+					elseif default and option.recommend then
+						optionTooltip = GREEN_FONT_COLOR:WrapTextInColorCode(option.tooltip);
+					else
+						optionTooltip = NORMAL_FONT_COLOR:WrapTextInColorCode(option.tooltip);
+					end
+					GameTooltip_AddDisabledLine(SettingsTooltip, string.format("%s: %s", optionLabel, optionTooltip));
 				else
-					optionTooltip = NORMAL_FONT_COLOR:WrapTextInColorCode(option.tooltip);
+					GameTooltip_AddDisabledLine(SettingsTooltip, string.format("%s:", optionLabel));
 				end
-				GameTooltip_AddDisabledLine(SettingsTooltip, string.format("%s: %s", optionLabel, optionTooltip));
 
 				if option.disabled then
 					GameTooltip_AddErrorLine(SettingsTooltip, option.disabled);

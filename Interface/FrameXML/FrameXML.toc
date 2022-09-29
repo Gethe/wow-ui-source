@@ -65,6 +65,7 @@
 ..\SharedXML\Frame\EventEditBox.xml
 ..\SharedXML\DataProviders.xml
 ..\SharedXML\Interpolator.lua
+..\SharedXML\Sequencer.lua
 ..\SharedXML\ButtonStateBehavior.lua
 ..\SharedXML\Slider\MinimalSlider.xml
 ..\SharedXML\Scroll\ScrollUtil.lua
@@ -410,6 +411,8 @@ QuestSession.xml
 ActionStatus.xml
 WeeklyReward.lua
 PlayerInteractionFrameManager.xml
+TalkingHeadUI.xml
+ArenaUI.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

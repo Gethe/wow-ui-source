@@ -103,7 +103,7 @@ retain("error");
 retain("assert");
 retain("strtrim");
 retain("LoadURLIndex");
-retain("GetContainerNumFreeSlots");
+retain("C_Container");
 retain("GetCursorPosition");
 retain("GetRealmName");
 retain("PlaySound");

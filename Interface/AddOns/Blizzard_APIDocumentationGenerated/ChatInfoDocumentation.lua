@@ -2215,6 +2215,17 @@ local ChatInfo =
 
 	Tables =
 	{
+		{
+			Name = "AddonMessageParams",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "prefix", Type = "string", Nilable = false },
+				{ Name = "message", Type = "string", Nilable = false },
+				{ Name = "chatType", Type = "string", Nilable = true, Documentation = { "ChatType, defaults to SLASH_CMD_PARTY." } },
+				{ Name = "target", Type = "string", Nilable = true, Documentation = { "Only applies for targeted channels" } },
+			},
+		},
 	},
 };
 

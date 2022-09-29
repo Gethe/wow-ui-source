@@ -236,6 +236,8 @@ function EditModeGridLineMixin:SetupLine(centerLine, verticalLine, xOffset, yOff
 
 	local lineThickness = PixelUtil.GetNearestPixelSize(linePixelWidth, self:GetEffectiveScale(), linePixelWidth);
 	self:SetThickness(lineThickness);
+
+	EditModeMagnetismManager:RegisterGridLine(self, verticalLine, verticalLine and xOffset or yOffset);
 end
 
 EditModeCheckButtonMixin = {};

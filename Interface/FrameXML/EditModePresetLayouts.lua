@@ -271,6 +271,7 @@ local modernSystemMap =
 	[Enum.EditModeSystem.Minimap] = {
 		settings = {
 			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
+			[Enum.EditModeMinimapSetting.RotateMinimap] = 0,
 		},
 		anchorInfo = {
 			point = "TOPRIGHT",
@@ -405,6 +406,19 @@ local modernSystemMap =
 			relativePoint = "BOTTOMRIGHT",
 			offsetX = -9,
 			offsetY = 85,
+		},
+	},
+
+	[Enum.EditModeSystem.ObjectiveTracker] = {
+		settings = {
+			[Enum.EditModeObjectiveTrackerSetting.Height] = 40,
+		},
+		anchorInfo = {
+			point = "TOPRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "TOPRIGHT",
+			offsetX = -110,
+			offsetY = -275,
 		},
 	},
 };
@@ -682,6 +696,7 @@ local classicSystemMap =
 	[Enum.EditModeSystem.Minimap] = {
 		settings = {
 			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
+			[Enum.EditModeMinimapSetting.RotateMinimap] = 0,
 		},
 		anchorInfo = {
 			point = "TOPRIGHT",
@@ -818,16 +833,28 @@ local classicSystemMap =
 			offsetY = 85,
 		},
 	},
+
+	[Enum.EditModeSystem.ObjectiveTracker] = {
+		settings = {
+			[Enum.EditModeObjectiveTrackerSetting.Height] = 40,
+		},
+		anchorInfo = {
+			point = "TOPRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "TOPRIGHT",
+			offsetX = -110,
+			offsetY = -275,
+		},
+	},
 };
 
 local function AddSystem(systems, system, systemIndex, anchorInfo, settings)
-	anchorInfo.isDefaultPosition = true;
-
 	table.insert(systems, {
 		system = system,
 		systemIndex = systemIndex,
 		anchorInfo = anchorInfo,
 		settings = {},
+		isInDefaultPosition = true;
 	});
 
 	local settingsTable = systems[#systems].settings;

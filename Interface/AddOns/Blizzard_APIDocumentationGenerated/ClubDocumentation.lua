@@ -1636,6 +1636,17 @@ local Club =
 			},
 		},
 		{
+			Name = "ClubRoleInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "roleId", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "required", Type = "bool", Nilable = false, Documentation = { "At least one user must be in this role" } },
+				{ Name = "unique", Type = "bool", Nilable = false, Documentation = { "At most one user can be in this role" } },
+			},
+		},
+		{
 			Name = "ClubSelfInvitationInfo",
 			Type = "Structure",
 			Fields =

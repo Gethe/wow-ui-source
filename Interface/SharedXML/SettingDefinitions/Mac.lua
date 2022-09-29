@@ -1,5 +1,6 @@
 function RegisterMacSettings()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(MAC_SETTINGS_LABEL);
+	Settings.MAC_CATEGORY_ID = category:GetID();
 
 	local setting = Settings.SetupCVarCheckBox(category, "MacDisableOsShortcuts", MAC_DISABLE_OS_SHORTCUTS, MAC_DISABLE_OS_SHORTCUTS_TOOLTIP);
 	
@@ -24,10 +25,10 @@ function DefineGameSettingsMacOpenUniversalAccessDialog(dialogTable)
 		button2 = NO,
 		OnAccept = function()
 			MacOptions_OpenUniversalAccess();
-			Settings.OpenToCategory(MAC_SETTINGS_LABEL);
+			Settings.OpenToCategory(Settings.MAC_CATEGORY_ID);
 		end,
 		OnCancel = function()
-			Settings.OpenToCategory(MAC_SETTINGS_LABEL);
+			Settings.OpenToCategory(Settings.MAC_CATEGORY_ID);
 		end,
 		OnShow = function(self)
 			self.text:SetFormattedText(MAC_OPEN_UNIVERSAL_ACCESS1090, MacOptions_GetGameBundleName());

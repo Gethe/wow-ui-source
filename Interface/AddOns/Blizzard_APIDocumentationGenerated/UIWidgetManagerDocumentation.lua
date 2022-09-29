@@ -1550,6 +1550,15 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetTextTooltipPair",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitPowerBarWidgetVisualizationInfo",
 			Type = "Structure",
 			Fields =

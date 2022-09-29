@@ -12,8 +12,8 @@ function PetFrameMixin:OnLoad()
 
 	self.DebuffFramePool = CreateFramePool("BUTTON", self.DebuffFrameContainer, "PartyDebuffFrameTemplate");
 
-	UnitFrame_Initialize(self, "pet", PetName, PetPortrait,
-						 PetFrameHealthBar, PetFrameHealthBarText, 
+	UnitFrame_Initialize(self, "pet", PetName, nil, PetPortrait,
+						 PetFrameHealthBar, PetFrameHealthBarText,
 						 PetFrameManaBar, PetFrameManaBarText,
 						 PetFrameFlash, nil, nil,
 						 PetFrameMyHealPredictionBar, PetFrameOtherHealPredictionBar,
@@ -37,27 +37,6 @@ function PetFrameMixin:OnLoad()
 		ToggleDropDownMenu(1, nil, PetFrameDropDown, "PetFrame", 44, 8);
 	end
 	SecureUnitButton_OnLoad(self, "pet", showmenu);
-end
-
-function PetFrameMixin:UpdateAnchoring()
-	if self.unit == "player" and PlayerVehicleHasComboPoints() then
-		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75);
-	else
-		local _, class = UnitClass("player");
-		if class == "DEATHKNIGHT" or class == "ROGUE" then
-			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
-		elseif class == "SHAMAN" or class == "DRUID" then
-			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
-		elseif class == "WARLOCK" then
-			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -97);
-		elseif class == "PALADIN" then
-			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -97);
-		elseif class == "PRIEST" then
-			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -87);
-		elseif class == "MONK" then
-			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 90, -100);
-		end
-	end
 end
 
 function PetFrameMixin:Update(override)
@@ -88,7 +67,6 @@ function PetFrameMixin:Update(override)
 		end
 	end
 
-	self:UpdateAnchoring();
 	PlayerFrame_AdjustAttachments();
 end
 
@@ -118,7 +96,7 @@ function PetFrameMixin:OnEvent(event, ...)
 			self:UpdateAuras(unitAuraUpdateInfo);
 		end
 	elseif event == "PET_ATTACK_START" then
-		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, 1.0);
+		PetAttackModeTexture:SetVertexColor(1.0, 0, 0, 1.0);
 		PetAttackModeTexture:Show();
 	elseif event == "PET_ATTACK_STOP" then
 		PetAttackModeTexture:Hide();
@@ -128,11 +106,13 @@ end
 function PetFrameMixin:OnShow()
 	UnitFrame_Update(self);
 	self:Update();
-	TotemFrame_Update(self);
+	TotemFrame:Update(); 
+	UIParentManagedFrameMixin.OnShow(self); 
 end
 
 function PetFrameMixin:OnHide()
-	TotemFrame_Update(self);
+	TotemFrame:Update();
+	UIParentManagedFrameMixin.OnHide(self); 
 end
 
 function PetFrameMixin:OnUpdate(elapsed)
@@ -153,7 +133,7 @@ function PetFrameMixin:OnUpdate(elapsed)
 		else
 			alpha = (255 - (counter * 400)) / 255;
 		end
-		PetAttackModeTexture:SetVertexColor(1.0, 1.0, 1.0, alpha);
+		PetAttackModeTexture:SetVertexColor(1.0, 0, 0, alpha);
 	end
 	CombatFeedback_OnUpdate(self, elapsed);
 end

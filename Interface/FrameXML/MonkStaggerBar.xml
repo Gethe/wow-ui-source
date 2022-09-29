@@ -1,11 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MonkStaggerBar.lua"/>
-	<StatusBar name="MonkStaggerBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">	<!--For Brewmaster Monks-->
+	<StatusBar name="MonkStaggerBar" inherits="AlternatePowerBarTemplate, PlayerFrameBottomManagedFrameTemplate" parent="PlayerFrame">	<!--For Brewmaster Monks-->
 		<Size x="94" y="12"/>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" x="100" y="15"/>
-		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="7" type="number"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad function="MonkStaggerBar_OnLoad"/>
 			<OnEvent>

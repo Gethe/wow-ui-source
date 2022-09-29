@@ -277,7 +277,34 @@ function MinimapClusterMixin:OnLoad()
 end
 
 function MinimapClusterMixin:OnEvent(event, ...)
+	if event == "SETTINGS_LOADED" then
+		self:CheckTutorials();
+	end
 	Minimap_Update();
+end
+
+function MinimapClusterMixin:CheckTutorials()
+	if not self:IsShown() then
+		return;
+	end
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_TRACKING_CHANGES) then
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES) then
+			EventRegistry:TriggerEvent("Tutorials.ShowUnitFrameChanges");
+		end
+	else
+		local helpTipInfo = {
+			text = TUTORIAL_HUD_REVAMP_TRACKING_CHANGES,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_TRACKING_CHANGES,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			offsetX = 0,
+			alignment = HelpTip.Alignment.Center,
+			onAcknowledgeCallback = GenerateClosure(self.CheckTutorials, self),
+			acknowledgeOnHide = true,
+		};
+		HelpTip:Show(self, helpTipInfo);
+	end
 end
 
 local function ResetFramePoints(frame)
@@ -315,9 +342,8 @@ function MinimapClusterMixin:SetHeaderUnderneath(headerUnderneath)
 	end
 end
 
-function ToggleMiniMapRotation()
-	local currentValue = Settings.GetValue("rotateMinimap");
-	Settings.SetValue("rotateMinimap", not currentValue);
+function MinimapClusterMixin:SetRotateMinimap(rotateMinimap)
+	SetCVar("rotateMinimap", rotateMinimap);
 end
 
 MiniMapMailFrameMixin = { };

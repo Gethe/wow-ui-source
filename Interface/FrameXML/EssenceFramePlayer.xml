@@ -299,7 +299,6 @@
 			<KeyValue key="showBarFunc" value="EssencePowerBar.SetupEvoker" type="global"/>
 			<KeyValue key="spacing" value="-1" type="number"/>
 			<KeyValue key="class" value="DRACTHYR" type="string"/>
-			<KeyValue key="topPadding" value="5" type="number"/>
 		</KeyValues>
 	</Frame>
 

@@ -313,6 +313,16 @@ function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
         hotkey:SetText(RANGE_INDICATOR);
         hotkey:Hide();
     else
+		local frameWidth, frameHeight = self:GetSize();
+		if ( IsBindingForGamePad(key) ) then
+			-- Allow gamepad binding to go all the way across and overlap the border for more space
+			hotkey:SetSize(frameWidth, 16);
+			hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0);
+		else
+			-- Tuck in KBM binding a bit to be inside the border
+			hotkey:SetSize(frameWidth-8, 10);
+			hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", -4, -5);
+		end
         hotkey:SetText(text);
         hotkey:Show();
     end

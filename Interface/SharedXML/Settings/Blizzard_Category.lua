@@ -1,12 +1,17 @@
 SettingsCategoryMixin = {};
 
-local orderCounter = CreateCounter();
+local idCounter = CreateCounter();
 
 local securecallfunction = securecallfunction;
 function SettingsCategoryMixin:Init(name)
 	self.subcategories = {};
-	self.order = orderCounter();
+	self.ID = idCounter();
+	self.order = self.ID;
 	self:SetName(name);
+end
+
+function SettingsCategoryMixin:GetID()
+	return self.ID;
 end
 
 function SettingsCategoryMixin:GetName()

@@ -535,10 +535,16 @@ function PVPMatchResultsRatingMixin:Init(rating, ratingChange)
 		C_PvP.GetTeamInfo(0),
 		C_PvP.GetTeamInfo(1), 
 	};
-	local factionIndex = GetBattlefieldArenaFaction();
-	self.friendlyMMR = BATTLEGROUND_YOUR_AVERAGE_RATING:format(teamInfos[factionIndex+1].ratingMMR);
-	local enemyFactionIndex = (factionIndex+1)%2;
-	self.enemyMMR = BATTLEGROUND_ENEMY_AVERAGE_RATING:format(teamInfos[enemyFactionIndex+1].ratingMMR);
+	if C_PvP.IsRatedSoloShuffle() then
+		-- For Rated Solo Shuffle your MMR is always first, followed by the match average
+		self.friendlyMMR = BATTLEGROUND_YOUR_PERSONAL_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(teamInfos[1].ratingMMR));
+		self.enemyMMR = BATTLEGROUND_MATCH_AVERAGE_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(teamInfos[2].ratingMMR));
+	else
+		local factionIndex = GetBattlefieldArenaFaction();
+		local enemyFactionIndex = (factionIndex+1)%2;
+		self.friendlyMMR = BATTLEGROUND_YOUR_AVERAGE_RATING:format(teamInfos[factionIndex+1].ratingMMR);
+		self.enemyMMR = BATTLEGROUND_ENEMY_AVERAGE_RATING:format(teamInfos[enemyFactionIndex+1].ratingMMR);
+	end
 end
 
 function PVPMatchResultsRatingMixin:OnEnter()
@@ -553,12 +559,10 @@ function PVPMatchResultsRatingMixin:OnEnter()
 	else
 		GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_CURRENT:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.ratingNew)));
 	end
-
-	if not PVPMatchUtil.InSoloShuffleBrawl() then
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		GameTooltip_AddNormalLine(GameTooltip, self.friendlyMMR);
-		GameTooltip_AddNormalLine(GameTooltip, self.enemyMMR);
-	end
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	local wrapText = false;
+	GameTooltip_AddNormalLine(GameTooltip, self.friendlyMMR, wrapText);
+	GameTooltip_AddNormalLine(GameTooltip, self.enemyMMR, wrapText);
 	
 	GameTooltip:Show();
 end

@@ -610,7 +610,6 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterForDrag("LeftButton");
-				self:SetClampRectInsets(0, 0, 0, -50);
 				self.Text:ClearAllPoints();
 				self.Text:SetPoint("LEFT", self, "LEFT", 15, 0);
 				self.Text:SetPoint("RIGHT", self, "RIGHT", -25, 0);
@@ -681,7 +680,7 @@
 		</Scripts>
 	</ScrollingMessageFrame>
 	<!-- ChatFrame1 Specific buttons -->
-	<Button name="ChatFrameMenuButton" frameStrata="LOW" parent="UIParent">
+	<Button name="ChatFrameMenuButton" frameStrata="MEDIUM" parent="UIParent">
 		<Size x="32" y="32"/>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="ChatFrame1ButtonFrame" relativePoint="BOTTOM" x="0" y="0"/>
@@ -697,7 +696,7 @@
 		<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
-	<Button name="ChatFrameChannelButton" frameStrata="LOW" parent="UIParent" mixin="ChannelFrameButtonMixin" inherits="VoiceToggleButtonTemplate">
+	<Button name="ChatFrameChannelButton" frameStrata="MEDIUM" parent="UIParent" mixin="ChannelFrameButtonMixin" inherits="VoiceToggleButtonTemplate">
 		<Anchors>
 			<Anchor point="TOP" relativeTo="ChatFrame1ButtonFrame" relativePoint="TOP" x="0" y="0"/>
 		</Anchors>
@@ -711,12 +710,12 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Button name="ChatFrameToggleVoiceDeafenButton" frameStrata="LOW" parent="UIParent" inherits="ToggleVoiceDeafenButtonTemplate">
+	<Button name="ChatFrameToggleVoiceDeafenButton" frameStrata="MEDIUM" parent="UIParent" inherits="ToggleVoiceDeafenButtonTemplate">
 		<Anchors>
 			<Anchor point="TOP" relativeTo="ChatFrameChannelButton" relativePoint="BOTTOM" x="0" y="-2" />
 		</Anchors>
 	</Button>
-	<Button name="ChatFrameToggleVoiceMuteButton" frameStrata="LOW" parent="UIParent" inherits="ToggleVoiceMuteButtonTemplate">
+	<Button name="ChatFrameToggleVoiceMuteButton" frameStrata="MEDIUM" parent="UIParent" inherits="ToggleVoiceMuteButtonTemplate">
 		<Anchors>
 			<Anchor point="TOP" relativeTo="ChatFrameToggleVoiceDeafenButton" relativePoint="BOTTOM" x="0" y="-2" />
 		</Anchors>
@@ -761,7 +760,6 @@
 			<OnLoad>
 				ChatFrame_OnLoad(self);
 				FloatingChatFrame_OnLoad(self);
-				self:SetClampRectInsets(-35, 35, 52, -50);
 				self.isStaticDocked = true;
 			</OnLoad>
 		</Scripts>

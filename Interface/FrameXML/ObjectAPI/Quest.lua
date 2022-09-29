@@ -75,4 +75,10 @@ function QuestMixin:IsOnMap()
 	return C_QuestLog.IsOnMap(self:GetID());
 end
 
+function QuestMixin:GetSortType()
+	-- Ensure that the campaignID is set
+	self:GetCampaignID();
+	return QuestUtils_GetQuestSortType(self);
+end
+
 QuestCache = ObjectCache_Create(QuestMixin);

@@ -135,6 +135,7 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Ghost" alphaMode="ADD" hidden="true">
+					<Size x="48" y="48"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -143,7 +144,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="SearchIcon" hidden="true">
-				<Size x="63" y="64"/>
+				<Size x="63" y="63"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="TOPRIGHT"/>
 				</Anchors>

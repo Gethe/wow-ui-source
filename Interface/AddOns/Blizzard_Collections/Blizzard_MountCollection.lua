@@ -807,8 +807,8 @@ function MountListDragButton_OnClick(self, button)
 			local spellName = GetSpellInfo(id);
 			ChatEdit_InsertLink(spellName);
 		else
-			local spellLink = GetSpellLink(id);
-			ChatEdit_InsertLink(spellLink);
+			local mountLink = C_MountJournal.GetMountLink(id);
+			ChatEdit_InsertLink(mountLink);
 		end
 	else
 		C_MountJournal.Pickup(parent.index);
@@ -827,8 +827,8 @@ function MountListItem_OnClick(self, button)
 			local spellName = GetSpellInfo(id);
 			ChatEdit_InsertLink(spellName);
 		else
-			local spellLink = GetSpellLink(id);
-			ChatEdit_InsertLink(spellLink);
+			local mountLink = C_MountJournal.GetMountLink(id);
+			ChatEdit_InsertLink(mountLink);
 		end
 	elseif ( self.spellID ~= MountJournal.selectedSpellID ) then
 		MountJournal_Select(self.index);

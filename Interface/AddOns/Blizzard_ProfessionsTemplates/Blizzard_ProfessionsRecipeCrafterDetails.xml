@@ -34,9 +34,42 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" scale=".6">
+					<Size x="26" y="26"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
+				</Texture>
+				<Texture parentKey="AppearIcon" scale=".6">
+					<Size x="62" y="62"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="NONE">
+							<FlipBook smoothing="NONE" childKey="AppearIcon" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						</AnimationGroup>
+						
+						<AnimationGroup parentKey="ScaleUp" looping="NONE">
+							<Scale duration=".3" fromScaleY="1" toScaleY="1.3" fromScaleX="1" toScaleX="1.3"/>
+							<Scale startDelay="3" duration=".2" fromScaleY="1.3" toScaleY="1" fromScaleX="1.3" toScaleX="1"/>
+						</AnimationGroup>
+
+						<AnimationGroup parentKey="ScaleUpQuick" looping="NONE">
+							<Scale duration=".3" fromScaleY="1" toScaleY="1.3" fromScaleX="1" toScaleX="1.3"/>
+							<Scale startDelay=".3" duration=".2" fromScaleY="1.3" toScaleY="1" fromScaleX="1.3" toScaleX="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="DissolveIcon" scale=".6" hidden="true">
+					<Size x="72" y="162"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="NONE">
+							<FlipBook parentKey="Flipbook" smoothing="NONE" childKey="DissolveIcon" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						</AnimationGroup>
+					</Animations>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -134,102 +167,188 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentKey="Test2b" alphaMode="ADD" alpha="0" hidden="true">
-									<Color r=".8" g=".8" b=".8"/>
+								<Texture parentKey="Background">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="-6" y="6"/>
-										<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+										<Anchor point="TOPLEFT" x="3" y="-3"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="Fill">
+							<Frame parentKey="Fill" frameLevel="6">
+								<Size x="1" y="1"/>
 								<Anchors>
-									<Anchor point="TOP" y="-3"/>
-									<Anchor point="BOTTOM" y="7"/>
-									<Anchor point="LEFT" x="3"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK" textureSubLevel="1">
-										<Texture parentKey="Background">
-											<Color r="1" g="1" b="1"/>
-										</Texture>
-										<Texture parentKey="Test1" alphaMode="ADD">
-											<Color r="1" g="1" b="1"/>
-											<Animations>
-												<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
-													<Alpha duration=".5" order="1" fromAlpha="1" toAlpha="0"/>
-												</AnimationGroup>
-											</Animations>
+										<Texture parentKey="Bar">
 											<Anchors>
 												<Anchor point="TOPLEFT"/>
-												<Anchor point="BOTTOMRIGHT" x="50"/>
-											</Anchors>
-										</Texture>
-
-										<Texture parentKey="Test2" alphaMode="ADD" alpha="0">
-											<Color r="1" g="1" b="1"/>
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-												<Anchor point="BOTTOMLEFT"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-
-									<Layer level="ARTWORK" textureSubLevel="2">
-										<Texture parentKey="Flare" atlas="QualityBar_Mockup_Flare" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.Test1" relativePoint="RIGHT"/>
 											</Anchors>
 											<Animations>
-												<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
-													<Alpha duration=".5" order="1" fromAlpha="1" toAlpha="0"/>
+												<AnimationGroup parentKey="Flipbook" looping="REPEAT" setToFinalAlpha="true">
+													<FlipBook parentKey="Flipbook" smoothing="NONE" childKey="BarFill" duration="1" order="1" flipBookRows="15" flipBookColumns="4" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 												</AnimationGroup>
 											</Animations>
 										</Texture>
 									</Layer>
-									
 									<Layer level="ARTWORK" textureSubLevel="2">
-										<Texture parentKey="Flare2" atlas="QualityBar_Mockup_Flare" useAtlasSize="true">
+										<Texture parentKey="BarHighlight" alphaMode="ADD">
 											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.Test2" relativePoint="RIGHT"/>
+												<Anchor point="TOPLEFT"/>
 											</Anchors>
 										</Texture>
+										
+										<MaskTexture parentKey="BarMask" atlas="SquareMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+											<MaskedTextures>
+												<MaskedTexture childKey="Bar"/>
+											</MaskedTextures>
+										</MaskTexture>
+										<MaskTexture parentKey="BarHighlightMask" atlas="SquareMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+											<MaskedTextures>
+												<MaskedTexture childKey="BarHighlight"/>
+											</MaskedTextures>
+										</MaskTexture>
 									</Layer>
 								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="TransitionOut" looping="NONE" setToFinalAlpha="true">
+										<Alpha childKey="Bar" duration=".5" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+										<Alpha childKey="BarHighlight" duration=".5" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+									</AnimationGroup>
+
+									<AnimationGroup parentKey="TransitionOutLate" looping="NONE" setToFinalAlpha="true">
+										<Alpha childKey="Bar" startDelay="3" duration=".5" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+										<Alpha childKey="BarHighlight" startDelay="3" duration=".5" fromAlpha="1" toAlpha="0" smoothing="NONE"/>
+									</AnimationGroup>
+								</Animations>
 							</Frame>
-							<StatusBar parentKey="Fill2">
-								<Size x="50"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.Fill" relativePoint="TOPRIGHT"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Fill" relativePoint="BOTTOMRIGHT"/>
-								</Anchors>
-								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-							</StatusBar>
 						</Frames>
 					</Frame>
+					
+					<Frame parentKey="DividerGlow" frameLevel="7">
+						<Size x="1" y="28"/>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="DividerGlow" atlas="Professions-QualityBar-DividerGlow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP"/>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="TransitionIn" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="DividerGlow" duration=".2" fromAlpha="0" toAlpha="1"/>
+							</AnimationGroup>
+
+							<AnimationGroup parentKey="TransitionOut" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="DividerGlow" startDelay=".3" duration=".2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+					
 					<Frame parentKey="Border" frameLevel="8">
 						<Size x="193" y="36"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Center"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Center"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture atlas="Professions-QualityBar-Frame" useAtlasSize="true"/>
 							</Layer>
-							<Layer level="OVERLAY">
-								<Texture parentKey="Marker" atlas="Professions-QualityBar-marker" useAtlasSize="true"/>
+						</Layers>
+					</Frame>
+
+					<Frame parentKey="Marker" frameLevel="9">
+						<Size x="1" y="36"/>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="2">
+								<Texture parentKey="Marker" atlas="Professions-QualityBar-marker" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="TransitionIn" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="Marker" duration=".2" fromAlpha="0" toAlpha="1"/>
+							</AnimationGroup>
+
+							<AnimationGroup parentKey="TransitionOut" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="Marker" startDelay=".3" duration=".2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+
+							<AnimationGroup parentKey="TransitionOutLate" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="Marker" startDelay="3.3" duration=".2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+
+					<Frame parentKey="Flare" frameLevel="10">
+						<Size x="1" y="36"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.DividerGlow"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="Fx" alpha="0">
+								<Size x="100" y="100"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Flare" alphaMode="ADD" atlas="Professions-QualityBar-Flare" useAtlasSize="true" alpha="0">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="FlareTransitionIn" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="Flare" toAlpha="1"/>
+								<Scale childKey="Flare" duration=".3" fromScaleY=".4" toScaleY=".7" fromScaleX="1.2" toScaleX=".7"/>
+								<Scale childKey="Flare" startDelay=".3" duration=".2" fromScaleX=".7" toScaleX=".5" fromScaleY="1.2" toScaleY="1.2"/>
+								<Alpha childKey="Flare" startDelay=".3" duration=".2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						
+							<AnimationGroup parentKey="FxTransitionOut" setToFinalAlpha="true" looping="NONE">
+								<Alpha childKey="Fx" toAlpha="1"/>
+								<Alpha childKey="Fx" startDelay=".3" duration=".2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+		
+					<Frame parentKey="InteriorMask">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Center.Fill"/>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<MaskTexture parentKey="GlowMask" atlas="SquareMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<MaskedTextures>
+										<MaskedTexture childKey="$parent.DividerGlow.DividerGlow"/>
+									</MaskedTextures>
+								</MaskTexture>
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame parentKey="Left" inherits="ProfessionsQualityMeterCapTemplate">
+					
+					<Frame parentKey="Left" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="11">>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.Center" relativePoint="LEFT"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="Right" inherits="ProfessionsQualityMeterCapTemplate">
+					<Frame parentKey="Right" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="12">>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Center" relativePoint="RIGHT"/>
 						</Anchors>
@@ -262,6 +381,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

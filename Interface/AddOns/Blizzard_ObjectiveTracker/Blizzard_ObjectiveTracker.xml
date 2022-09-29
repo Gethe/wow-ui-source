@@ -345,7 +345,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ObjectiveTrackerFrame" inherits="UIParentRightManagedFrameTemplate" frameStrata="LOW">
+	<Frame name="ObjectiveTrackerFrame" inherits="UIParentRightManagedFrameTemplate, EditModeObjectiveTrackerSystemTemplate" frameStrata="LOW">
 		<Size x="235" y="140"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="50" type="number"/>
@@ -396,7 +396,7 @@
 			<Frame name="ObjectiveTrackerBlockDropDown" parentKey="BlockDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ObjectiveTracker_OnLoad"/>
+			<OnLoad function="ObjectiveTracker_OnLoad" inherit="prepend"/>
 			<OnEvent function="ObjectiveTracker_OnEvent"/>
 			<OnUpdate function="ObjectiveTracker_OnUpdate"/>
 			<OnSizeChanged function="ObjectiveTracker_OnSizeChanged"/>

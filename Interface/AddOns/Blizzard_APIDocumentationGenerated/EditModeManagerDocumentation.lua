@@ -130,7 +130,6 @@ local EditModeManager =
 				{ Name = "relativePoint", Type = "FramePoint", Nilable = false },
 				{ Name = "offsetX", Type = "number", Nilable = false },
 				{ Name = "offsetY", Type = "number", Nilable = false },
-				{ Name = "isDefaultPosition", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -169,7 +168,9 @@ local EditModeManager =
 				{ Name = "system", Type = "EditModeSystem", Nilable = false },
 				{ Name = "systemIndex", Type = "number", Nilable = true },
 				{ Name = "anchorInfo", Type = "EditModeAnchorInfo", Nilable = false },
+				{ Name = "anchorInfo2", Type = "EditModeAnchorInfo", Nilable = true },
 				{ Name = "settings", Type = "table", InnerType = "EditModeSettingInfo", Nilable = false },
+				{ Name = "isInDefaultPosition", Type = "bool", Nilable = false },
 			},
 		},
 	},

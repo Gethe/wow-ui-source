@@ -44,10 +44,11 @@ end
 
 function MonkStaggerBar_OnEvent(self, event, arg1)
 	local parent = self:GetParent();
+	local unit = self:GetParent().unit or self:GetParent():GetParent().unit
 	if ( event == "UNIT_DISPLAYPOWER" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UNIT_EXITED_VEHICLE" ) then
 		MonkStaggerBar_UpdatePowerType(self);
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
-		if ( arg1 == nil or arg1 == parent.unit) then
+		if ( arg1 == nil or arg1 == unit) then
 			MonkStaggerBar_UpdatePowerType(self);
 			if (self.specRestriction == GetSpecialization()) then
 				MonkStaggerBar_RegisterEvents(self);
@@ -70,10 +71,12 @@ function MonkStaggerBar_RegisterEvents(self)
 end
 
 function MonkStaggerBar_UpdateValue(self)
-	local currstagger = UnitStagger(self:GetParent().unit);
+	local unit = self:GetParent().unit or self:GetParent():GetParent().unit
+	local currstagger = UnitStagger(unit);
 	if (not currstagger) then
 		return;
 	end
+
 	self:SetValue(currstagger);
 	self.value = currstagger;
 	MonkStaggerBar_UpdateMaxValues(self);
@@ -93,7 +96,8 @@ function MonkStaggerBar_UpdateValue(self)
 end
 
 function MonkStaggerBar_UpdateMaxValues(self)
-	local maxhealth = UnitHealthMax(self:GetParent().unit);
+	local unit = self:GetParent().unit or self:GetParent():GetParent().unit
+	local maxhealth = UnitHealthMax(unit);
 	self:SetMinMaxValues(0, maxhealth);
 	TextStatusBar_UpdateTextString(self);
 end

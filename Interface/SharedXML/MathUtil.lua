@@ -24,8 +24,11 @@ end
 
 MathUtil = 
 {
-	Epsilon = .000001;
+	Epsilon = .000001,
 };
+
+MathUtil.ApproxZero = MathUtil.Epsilon;
+MathUtil.ApproxOne = 1.0 - MathUtil.Epsilon;
 
 local securecallfunction = securecallfunction;
 function CreateCounter(initialCount)

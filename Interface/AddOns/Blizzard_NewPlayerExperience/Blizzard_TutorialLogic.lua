@@ -208,6 +208,10 @@ function TutorialLogic:Quest_TurnedIn(questData)
 			end
 			return;
 		end
+
+		if questID == self.specQuestID then
+			TutorialQueue:Add(tutorials.TalentPoints);
+		end
 	end
 end
 
@@ -260,7 +264,8 @@ Tutorials.LeavePartyPrompt				= Class_LeavePartyPrompt:new()
 Tutorials.MountReceived					= Class_MountReceived:new();
 Tutorials.AddMountToActionBar			= Class_AddMountToActionBar:new();
 Tutorials.UseMount						= Class_UseMount:new();
-Tutorials.ChangeSpec					= Class_ChangeSpec:new()
+Tutorials.ChangeSpec					= Class_ChangeSpec:new();
+Tutorials.TalentPoints					= Class_TalentPoints:new();
 
 -- these tutorials have a lot of edge cases and are aren't queued
 Tutorials.Death_Watcher					= Class_Death_Watcher:new();

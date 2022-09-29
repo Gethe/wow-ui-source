@@ -8,7 +8,7 @@ function ClassPowerBar:OnLoad()
 end
 
 function ClassPowerBar:GetUnit()
-	return self:GetParent().unit;
+	return self.unit or self:GetParent().unit;
 end
 
 function ClassPowerBar:SetTooltip(tooltipTitle, tooltip)

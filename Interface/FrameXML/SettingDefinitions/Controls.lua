@@ -88,7 +88,7 @@ local function Register()
 	-- Enable Dracthyr Tap Controls (Mirrored in Accessibility)
 	do
 		local function GetTapControlOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(0, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION_TOOLTIP);
 			container:Add(1, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION_TOOLTIP);
 			return container:GetData();
@@ -169,7 +169,7 @@ local function Register()
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, GetFormatter1to10(minValue, maxValue));
 
 		local initializer = CreateSettingsCheckBoxSliderInitializer(
-				cbSetting, ENABLE_MOUSE_SPEED, OPTION_TOOLTIP_ENABLE_MOUSE_SPEED,
+				cbSetting, ENABLE_MOUSE_SPEED, OPTION_TOOLTIP_MOUSE_SENSITIVITY,
 				sliderSetting, options, MOUSE_SENSITIVITY, OPTION_TOOLTIP_MOUSE_SENSITIVITY);
 		layout:AddInitializer(initializer);
 	end
@@ -180,7 +180,7 @@ local function Register()
 		local dropDownSetting = Settings.RegisterCVarSetting(category, "cameraSmoothStyle", Settings.VarType.Number, CAMERA_CTM_FOLLOWING_STYLE);
 	
 		local function GetOptionData(options)
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(1, CAMERA_SMART, OPTION_TOOLTIP_CAMERA_SMART);
 			container:Add(4, CAMERA_SMARTER, OPTION_TOOLTIP_CAMERA_SMARTER);
 			container:Add(2, CAMERA_ALWAYS, OPTION_TOOLTIP_CAMERA_ALWAYS);
@@ -225,7 +225,7 @@ local function Register()
 	-- Camera Following Style
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(1, CAMERA_SMART, OPTION_TOOLTIP_CAMERA_SMART);
 			container:Add(4, CAMERA_SMARTER, OPTION_TOOLTIP_CAMERA_SMARTER);
 			container:Add(2, CAMERA_ALWAYS, OPTION_TOOLTIP_CAMERA_ALWAYS);

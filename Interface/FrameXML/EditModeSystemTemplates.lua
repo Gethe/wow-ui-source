@@ -21,8 +21,23 @@ function EditModeSystemMixin:OnSystemHide()
 	end
 end
 
+function EditModeSystemMixin:UpdateClampOffsets()
+	if not self:GetLeft() then
+		self:SetClampRectInsets(0, 0, 0, 0);
+		return;
+	end
+
+	local leftOffset = self.Selection:GetLeft() - self:GetLeft();
+	local rightOffset = self.Selection:GetRight() - self:GetRight();
+	local topOffset = self.Selection:GetTop() - self:GetTop();
+	local bottomOffset = self.Selection:GetBottom() - self:GetBottom();
+
+	self:SetClampRectInsets(leftOffset, rightOffset, topOffset, bottomOffset);
+end
+
 -- Override in inheriting mixins as needed
 function EditModeSystemMixin:AnchorSelectionFrame()
+	self:UpdateClampOffsets();
 end
 
 -- Override in inheriting mixins as needed
@@ -84,6 +99,8 @@ end
 
 function EditModeSystemMixin:ResetToDefaultPosition()
 	self.systemInfo.anchorInfo = EditModePresetLayoutManager:GetModernSystemAnchorInfo(self.system, self.systemIndex);
+	self.systemInfo.anchorInfo2 = nil;
+	self.systemInfo.isInDefaultPosition = true;
 	self:ApplySystemAnchor();
 	EditModeSystemSettingsDialog:UpdateDialog(self);
 	self:SetHasActiveChanges(true);
@@ -106,6 +123,10 @@ function EditModeSystemMixin:ApplySystemAnchor()
 
 	self:ClearAllPoints();
 	self:SetPoint(self.systemInfo.anchorInfo.point, self.systemInfo.anchorInfo.relativeTo, self.systemInfo.anchorInfo.relativePoint, self.systemInfo.anchorInfo.offsetX, self.systemInfo.anchorInfo.offsetY);
+
+	if self.systemInfo.anchorInfo2 then
+		self:SetPoint(self.systemInfo.anchorInfo2.point, self.systemInfo.anchorInfo2.relativeTo, self.systemInfo.anchorInfo2.relativePoint, self.systemInfo.anchorInfo2.offsetX, self.systemInfo.anchorInfo2.offsetY);
+	end
 end
 
 function EditModeSystemMixin:UpdateSystem(systemInfo)
@@ -164,7 +185,7 @@ function EditModeSystemMixin:HasActiveChanges()
 end
 
 function EditModeSystemMixin:HasSetting(setting)
-	return self.settingMap[setting] ~= nil;
+	return self.settingMap and (self.settingMap[setting] ~= nil);
 end
 
 function EditModeSystemMixin:GetSettingValue(setting, useRawValue)
@@ -212,6 +233,175 @@ function EditModeSystemMixin:AddExtraButtons(extraButtonPool)
 	return false;
 end
 
+function EditModeSystemMixin:IsToTheLeftOfFrame(systemFrame)
+	local myLeft, myRight, myBottom, myTop = self:GetScaledSelectionSides();
+	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
+	return myRight < systemFrameLeft;
+end
+
+function EditModeSystemMixin:IsToTheRightOfFrame(systemFrame)
+	local myLeft, myRight, myBottom, myTop = self:GetScaledSelectionSides();
+	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
+	return myLeft > systemFrameRight;
+end
+
+function EditModeSystemMixin:IsAboveFrame(systemFrame)
+	local myLeft, myRight, myBottom, myTop = self:GetScaledSelectionSides();
+	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
+	return myBottom > systemFrameTop;
+end
+
+function EditModeSystemMixin:IsBelowFrame(systemFrame)
+	local myLeft, myRight, myBottom, myTop = self:GetScaledSelectionSides();
+	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
+	return myTop < systemFrameBottom;
+end
+
+function EditModeSystemMixin:IsVerticallyAlignedWithFrame(systemFrame)
+	local myLeft, myRight, myBottom, myTop = self:GetScaledSelectionSides();
+	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
+	return (myTop >= systemFrameBottom) and (myBottom <= systemFrameTop);
+end
+
+function EditModeSystemMixin:IsHorizontallyAlignedWithFrame(systemFrame)
+	local myLeft, myRight, myBottom, myTop = self:GetScaledSelectionSides();
+	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
+	return (myRight >= systemFrameLeft) and (myLeft <= systemFrameRight);
+end
+
+-- Returns selection frame center, adjusted for scale: centerX, centerY
+function EditModeSystemMixin:GetScaledSelectionCenter()
+	local centerX, centerY = self.Selection:GetCenter();
+	local scale = self:GetScale();
+	return centerX * scale, centerY * scale;
+end
+
+-- Returns center, adjusted for scale: centerX, centerY
+function EditModeSystemMixin:GetScaledCenter()
+	local centerX, centerY = self:GetCenter();
+	local scale = self:GetScale();
+	return centerX * scale, centerY * scale;
+end
+
+-- Returns selection frame sides, adjusted for scale: left, right, bottom, top
+function EditModeSystemMixin:GetScaledSelectionSides()
+	local left, bottom, width, height = self.Selection:GetRect();
+	local scale = self:GetScale();
+	return left * scale, (left + width) * scale, bottom * scale, (bottom + height) * scale;
+end
+
+local SELECTION_PADDING = 2;
+
+function EditModeSystemMixin:GetSelectionOffset(point, forYOffset)
+	local offset;
+	if point == "LEFT" then
+		offset = select(4, self.Selection:GetPoint(1)) - SELECTION_PADDING;
+	elseif point == "RIGHT" then
+		offset = select(4, self.Selection:GetPoint(2)) + SELECTION_PADDING;
+	elseif point == "TOP" then
+		offset = select(5, self.Selection:GetPoint(1)) + SELECTION_PADDING;
+	elseif point == "BOTTOM" then
+		offset = select(5, self.Selection:GetPoint(2)) - SELECTION_PADDING;
+	else
+		-- Center
+		local selectionCenterX, selectionCenterY = self.Selection:GetCenter();
+		local centerX, centerY = self:GetCenter();
+		if forYOffset then
+			offset = selectionCenterY - centerY;
+		else
+			offset = selectionCenterX - centerX;
+		end
+	end
+
+	return offset * self:GetScale();
+end
+
+function EditModeSystemMixin:GetCombinedSelectionOffset(frameInfo, forYOffset)
+	local offset;
+	if frameInfo.frame.Selection then
+		offset = -self:GetSelectionOffset(frameInfo.point, forYOffset) + frameInfo.frame:GetSelectionOffset(frameInfo.relativePoint, forYOffset) + frameInfo.offset;
+	else
+		offset = -self:GetSelectionOffset(frameInfo.point, forYOffset) + frameInfo.offset;
+	end
+
+	return offset / self:GetScale();
+end
+
+function EditModeSystemMixin:GetCombinedCenterOffset(frame)
+	local centerX, centerY = self:GetScaledCenter();
+	local frameCenterX, frameCenterY;
+	if frame.GetScaledCenter then
+		frameCenterX, frameCenterY = frame:GetScaledCenter();
+	else
+		frameCenterX, frameCenterY = frame:GetCenter();
+	end
+
+	local scale = self:GetScale();
+	return (centerX - frameCenterX) / scale, (centerY - frameCenterY) / scale;
+end
+
+function EditModeSystemMixin:GetSnapOffsets(frameInfo)
+	local offsetX, offsetY = self:GetCombinedCenterOffset(frameInfo.frame);
+	if frameInfo.isHorizontal then
+		local forYOffsetNo = false;
+		offsetX = self:GetCombinedSelectionOffset(frameInfo, forYOffsetNo);
+	else
+		local forYOffsetYes = true;
+		offsetY = self:GetCombinedSelectionOffset(frameInfo, forYOffsetYes);
+	end
+	return offsetX, offsetY;
+end
+
+function EditModeSystemMixin:SnapToFrame(frameInfo)
+	local offsetX, offsetY = self:GetSnapOffsets(frameInfo);
+	self:SetPoint(frameInfo.point, frameInfo.frame, frameInfo.relativePoint, offsetX, offsetY);
+end
+
+function EditModeSystemMixin:IsFrameAnchoredToMe(frame)
+	for i = 1, frame:GetNumPoints() do
+		local _, relativeTo = frame:GetPoint(i);
+
+		if not relativeTo then
+			return false;
+		end
+
+		if relativeTo == self then
+			return true;
+		end
+
+		if self:IsFrameAnchoredToMe(relativeTo) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function EditModeSystemMixin:GetFrameMagneticEligibility(systemFrame)
+	-- Can't magnetize to myself
+	if systemFrame ==  self then
+		return nil;
+	end
+
+	-- Can't magnetize to anything already anchored to me
+	if self:IsFrameAnchoredToMe(systemFrame) then
+		return nil;
+	end
+
+	local horizontalEligible = self:IsVerticallyAlignedWithFrame(systemFrame) and (self:IsToTheLeftOfFrame(systemFrame) or self:IsToTheRightOfFrame(systemFrame));
+	local verticalEligible = self:IsHorizontallyAlignedWithFrame(systemFrame) and (self:IsAboveFrame(systemFrame) or self:IsBelowFrame(systemFrame));
+
+	return horizontalEligible, verticalEligible;
+end
+
+function EditModeSystemMixin:UpdateMagnetismRegistration()
+	if self:IsVisible() and self.isHighlighted and not self.isSelected then
+		EditModeMagnetismManager:RegisterFrame(self);
+	else
+		EditModeMagnetismManager:UnregisterFrame(self);
+	end
+end
+
 function EditModeSystemMixin:ClearHighlight()
 	if self.isSelected then
 		EditModeManagerFrame:ClearSelectedSystem();
@@ -220,6 +410,7 @@ function EditModeSystemMixin:ClearHighlight()
 
 	self.Selection:Hide();
 	self.isHighlighted = false;
+	self:UpdateMagnetismRegistration();
 end
 
 function EditModeSystemMixin:HighlightSystem()
@@ -228,6 +419,7 @@ function EditModeSystemMixin:HighlightSystem()
 	self.Selection:ShowHighlighted();
 	self.isHighlighted = true;
 	self.isSelected = false;
+	self:UpdateMagnetismRegistration();
 end
 
 function EditModeSystemMixin:SelectSystem()
@@ -236,6 +428,7 @@ function EditModeSystemMixin:SelectSystem()
 		self.Selection:ShowSelected();
 		EditModeSystemSettingsDialog:AttachToSystemFrame(self);
 		self.isSelected = true;
+		self:UpdateMagnetismRegistration();
 	end
 end
 
@@ -255,7 +448,7 @@ function EditModeSystemMixin:CanBeMoved()
 end
 
 function EditModeSystemMixin:IsInDefaultPosition()
-	return self:IsInitialized() and self.systemInfo.anchorInfo.isDefaultPosition;
+	return self:IsInitialized() and self.systemInfo.isInDefaultPosition;
 end
 
 function EditModeSystemMixin:OnDragStart()
@@ -267,7 +460,11 @@ end
 function EditModeSystemMixin:OnDragStop()
 	if self:CanBeMoved() then
 		self:StopMovingOrSizing();
-		EditModeManagerFrame:OnSystemPositionChange(self);
+		if EditModeManagerFrame:IsSnapEnabled() then
+			EditModeMagnetismManager:ApplyMagnetism(self);
+		end
+		local isInDefaultPositionNo = false;
+		EditModeManagerFrame:OnSystemPositionChange(self, isInDefaultPositionNo);
 	end
 end
 
@@ -545,7 +742,7 @@ end
 local function openActionBarSettings()
 	EditModeManagerFrame:ClearSelectedSystem();
 	EditModeManagerFrame:SetEditModeLockState("showSelections");
-	Settings.OpenToCategory("Interface", ACTIONBARS_LABEL);
+	Settings.OpenToCategory(Settings.ACTION_BAR_CATEGORY_ID);
 end
 
 function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
@@ -626,32 +823,20 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 	return true;
 end
 
-local PetFrameDefaultSelectionHeightAdjustment = -19;
-local PetFrameDefaultYOffset = -75;
 function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
 	self.Selection:ClearAllPoints();
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Player then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		if PetFrame:IsShown() then
-			local point, relativeTo, relativePoint, offsetX, offsetY = PetFrame:GetPoint(1);
-			local extraOffset = offsetY - PetFrameDefaultYOffset;
-			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, PetFrameDefaultSelectionHeightAdjustment + extraOffset);
-		else
-			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-		end
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -16);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -18, 17);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -18);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 18);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 10);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -35, 0);
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -18);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 18);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		if self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) then
-			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-		else
-			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 9, 0);
-		end
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
@@ -662,6 +847,8 @@ function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
 	end
+
+	self:UpdateClampOffsets();
 end
 
 function EditModeUnitFrameSystemMixin:SetupSettingsDialogAnchor()
@@ -701,7 +888,7 @@ end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseLargerFrame()
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
-		FocusFrame_SetSmallSize(not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame));
+		FocusFrame:SetSmallSize(not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame));
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
 		BossTargetFrameContainer:SetSmallSize(not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame));
 	end
@@ -750,7 +937,7 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameWidth()
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
 		EditModeManagerFrame:UpdateRaidContainerFlow();
 	else
-		PartyFrame:Layout();
+		PartyFrame:UpdatePaddingAndLayout();
 	end
 end
 
@@ -762,7 +949,7 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameHeight()
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
 		EditModeManagerFrame:UpdateRaidContainerFlow();
 	else
-		PartyFrame:Layout();
+		PartyFrame:UpdatePaddingAndLayout();
 	end
 end
 
@@ -772,7 +959,7 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingDisplayBorder()
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
 		EditModeManagerFrame:UpdateRaidContainerFlow();
 	else
-		PartyFrame:Layout();
+		PartyFrame:UpdatePaddingAndLayout();
 	end
 end
 
@@ -882,7 +1069,6 @@ function EditModeArenaUnitFrameSystemMixin:OnSystemLoad()
 	EditModeManagerFrame:UpdateSystem(self);
 end
 
-
 function EditModeArenaUnitFrameSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);
 
@@ -911,6 +1097,10 @@ function EditModeMinimapSystemMixin:UpdateSystemSettingHeaderUnderneath()
 	self:SetHeaderUnderneath(self:GetSettingValueBool(Enum.EditModeMinimapSetting.HeaderUnderneath));
 end
 
+function EditModeMinimapSystemMixin:UpdateSystemSettingRotateMinimap()
+	self:SetRotateMinimap(self:GetSettingValueBool(Enum.EditModeMinimapSetting.RotateMinimap));
+end
+
 function EditModeMinimapSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -921,6 +1111,8 @@ function EditModeMinimapSystemMixin:UpdateSystemSetting(setting, entireSystemUpd
 
 	if setting == Enum.EditModeMinimapSetting.HeaderUnderneath and self:HasSetting(Enum.EditModeMinimapSetting.HeaderUnderneath) then
 		self:UpdateSystemSettingHeaderUnderneath();
+	elseif setting == Enum.EditModeMinimapSetting.RotateMinimap and self:HasSetting(Enum.EditModeMinimapSetting.RotateMinimap) then
+		self:UpdateSystemSettingRotateMinimap();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -939,10 +1131,9 @@ end
 
 function EditModeCastBarSystemMixin:OnDragStop()
 	if self:CanBeMoved() then
-		self:StopMovingOrSizing();
 		self:SetParent(UIParent);
-		EditModeManagerFrame:OnSystemPositionChange(self);
 	end
+	EditModeSystemMixin.OnDragStop(self);
 end
 
 function EditModeCastBarSystemMixin:ShouldResetSettingsDialogAnchors(oldSelectedSystemFrame)
@@ -983,6 +1174,8 @@ function EditModeCastBarSystemMixin:AnchorSelectionFrame()
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
 	end
+
+	self:UpdateClampOffsets();
 end
 
 function EditModeCastBarSystemMixin:UpdateSystemSettingLockToPlayerFrame()
@@ -1480,6 +1673,86 @@ function EditModeLootFrameSystemMixin:ApplySystemAnchor()
 	-- If we aren't in the default position then we'll want the frame to call it's regular visibility methods rather than UI Panel ones
 	-- This is so that if it is in the default position it will be treated as a UI panel and things can push around but if it's got a custom position then it won't be treated like a UI Panel
 	self.editModeManuallyShown = not self:IsInDefaultPosition();
+end
+
+EditModeObjectiveTrackerSystemMixin = {};
+
+function EditModeObjectiveTrackerSystemMixin:OnEditModeEnter()
+	EditModeSystemMixin.OnEditModeEnter(self);
+
+	self.wascollapsedOnEditModeEnter = self.collapsed;
+	if self.collapsed then
+		ObjectiveTracker_Expand();
+	end
+end
+
+function EditModeObjectiveTrackerSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	if self.wascollapsedOnEditModeEnter and not self.collapsed then
+		ObjectiveTracker_Collapse();
+	end
+end
+
+function EditModeObjectiveTrackerSystemMixin:OnDragStop()
+	EditModeSystemMixin.OnDragStop(self);
+
+	self:SetParent(UIParent);
+	ObjectiveTracker_UpdateHeight();
+end
+
+function EditModeObjectiveTrackerSystemMixin:AddExtraButtons(extraButtonPool)
+	CreateResetToDefaultPositionButton(self, extraButtonPool);
+	return true;
+end
+
+function EditModeObjectiveTrackerSystemMixin:AnchorSelectionFrame()
+	self.Selection:ClearAllPoints();
+	self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -30, 0);
+	self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+end
+
+function EditModeObjectiveTrackerSystemMixin:ResetToDefaultPosition()
+	EditModeSystemMixin.ResetToDefaultPosition(self);
+	ObjectiveTracker_UpdateHeight();
+end
+
+function EditModeObjectiveTrackerSystemMixin:ShouldShowSetting(setting)
+	if not EditModeSystemMixin.ShouldShowSetting(self, setting) then
+		return false;
+	end
+
+	if setting == Enum.EditModeObjectiveTrackerSetting.Height then
+		return not self:IsInDefaultPosition();
+	end
+
+	return true;
+end
+
+function EditModeObjectiveTrackerSystemMixin:UpdateSystemSettingHeight()
+	self.editModeHeight = self:GetSettingValue(Enum.EditModeObjectiveTrackerSetting.Height);
+	ObjectiveTracker_UpdateHeight();
+end
+
+function EditModeObjectiveTrackerSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeObjectiveTrackerSetting.Height and self:HasSetting(Enum.EditModeObjectiveTrackerSetting.Height) then
+		self:UpdateSystemSettingHeight();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+function EditModeObjectiveTrackerSystemMixin:ApplySystemAnchor()
+	EditModeSystemMixin.ApplySystemAnchor(self);
+
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MOVED);
 end
 
 local EditModeSystemSelectionLayout =

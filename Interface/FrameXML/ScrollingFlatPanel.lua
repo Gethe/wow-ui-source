@@ -48,6 +48,10 @@ function ScrollingFlatPanelMixin:Resize()
 	self.ScrollBox:SetWidth(self.panelWidth - padding.left);
 end
 
+function ScrollingFlatPanelMixin:GetMaxPossibleWidth()
+	return self.panelWidth + ScrollBarWidth;
+end
+
 function ScrollingFlatPanelMixin:OnHideAnimFinished()
 	HideUIPanel(self);
 end

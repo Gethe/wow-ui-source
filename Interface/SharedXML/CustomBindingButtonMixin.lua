@@ -78,6 +78,11 @@ end
 	key = GetConvertedKeyOrButton(key);
 
 	if isDown then
+		if key == "ESCAPE" then
+			self:CancelBinding();
+			return;
+		end
+		
 		if not IsMetaKey(key) then
 			self.receivedNonMetaKeyInput = true;
 		end

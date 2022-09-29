@@ -198,22 +198,26 @@ end
 function DressUpMountLink(link)
 	if( link ) then
 		local mountID = 0;
+		local shouldSetModelFromHyperlink = false;
 
 		local _, _, _, linkType, linkID = strsplit(":|H", link);
 		if linkType == "item" then
 			mountID = C_MountJournal.GetMountFromItem(tonumber(linkID));
 		elseif linkType == "spell" then
 			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
+		elseif linkType == "mount" then
+			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
+			shouldSetModelFromHyperlink = true;
 		end
 
 		if ( mountID ) then
-			return DressUpMount(mountID);
+			return DressUpMount(mountID, false, shouldSetModelFromHyperlink, link);
 		end
 	end
 	return false
 end
 
-function DressUpMount(mountID, forcedFrame)
+function DressUpMount(mountID, forcedFrame, shouldSetModelFromHyperlink, link)
 	if ( not mountID or mountID == 0 ) then
 		return false;
 	end
@@ -227,6 +231,7 @@ function DressUpMount(mountID, forcedFrame)
 	end
 
 	local creatureDisplayID, _, _, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(mountID);
+
 	frame.ModelScene:ClearScene();
 	frame.ModelScene:SetViewInsets(0, 0, 0, 0);
 	local forceEvenIfSame = true;
@@ -234,8 +239,13 @@ function DressUpMount(mountID, forcedFrame)
 	
 	local mountActor = frame.ModelScene:GetActorByTag("unwrapped");
 	if mountActor then
-		mountActor:SetModelByCreatureDisplayID(creatureDisplayID);
 
+		if shouldSetModelFromHyperlink and link then
+			mountActor:SetModelByHyperlink(link);
+		else
+			mountActor:SetModelByCreatureDisplayID(creatureDisplayID);
+		end
+		
 		-- mount self idle animation
 		if (isSelfMount) then
 			mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);

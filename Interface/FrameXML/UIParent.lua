@@ -99,7 +99,7 @@ UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		while
 UIPanelWindows["CovenantMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
 UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
-UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 830, 	yoffset = 9,	allowOtherPanels = 1};
+UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 880, 	yoffset = 9,	allowOtherPanels = 1};
 
 CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
 CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
@@ -415,9 +415,6 @@ function UIParent_OnLoad(self)
 
 	self:RegisterEvent("TOKEN_AUCTION_SOLD");
 
-	-- Talking Head
-	self:RegisterEvent("TALKINGHEAD_REQUESTED");
-
 	-- Challenge Mode 2.0
 	self:RegisterEvent("CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN");
 	self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
@@ -478,6 +475,12 @@ function UIParent_OnLoad(self)
     -- Event(s) for Client Scenes
     self:RegisterEvent("CLIENT_SCENE_OPENED");
     self:RegisterEvent("CLIENT_SCENE_CLOSED");
+
+	-- Event(s) for returning player prompts
+	self:RegisterEvent("RETURNING_PLAYER_PROMPT");
+
+	--Event(s) for soft targetting
+	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
 
 end
 
@@ -689,10 +692,6 @@ function GMChatFrame_LoadUI(...)
 	end
 end
 
-function Arena_LoadUI()
-	UIParentLoadAddOn("Blizzard_ArenaUI");
-end
-
 function GuildFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GuildUI");
 end
@@ -738,10 +737,6 @@ end
 
 function MajorFactions_LoadUI()
 	UIParentLoadAddOn("Blizzard_MajorFactions");
-end
-
-function TalkingHead_LoadUI()
-	UIParentLoadAddOn("Blizzard_TalkingHeadUI");
 end
 
 function ChallengeMode_LoadUI()
@@ -1434,7 +1429,7 @@ function UIParent_OnEvent(self, event, ...)
 		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 	elseif ( event == "CVAR_UPDATE" ) then
 		local cvarName = ...;
-		if cvarName and cvarName == "SHOW_TUTORIALS" then
+		if cvarName and cvarName == "showTutorials" then
 			local showTutorials = GetCVarBool("showTutorials");
 			if ( showTutorials ) then
 				if ( IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
@@ -1674,10 +1669,6 @@ function UIParent_OnEvent(self, event, ...)
 		-- Fix for Bug 124392
 		StaticPopup_Hide("CONFIRM_LEAVE_BATTLEFIELD");
 
-		local _, instanceType = IsInInstance();
-		if ( instanceType == "arena" or instanceType == "pvp") then
-			Arena_LoadUI();
-		end
 		if ( C_Commentator.IsSpectating() ) then
 			Commentator_LoadUI();
 		end
@@ -2291,12 +2282,6 @@ function UIParent_OnEvent(self, event, ...)
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_SOLD_S:format(itemName), info.r, info.g, info.b, info.id);
 			self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
 		end
-	elseif ( event == "TALKINGHEAD_REQUESTED" ) then
-		if ( not TalkingHeadFrame ) then
-			TalkingHead_LoadUI();
-			TalkingHeadFrame:PlayCurrent();
-		end
-		self:UnregisterEvent("TALKINGHEAD_REQUESTED");
 	elseif (event == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN") then
 		ChallengeMode_LoadUI();
 		ChallengesKeystoneFrame:ShowKeystoneFrame();
@@ -2406,6 +2391,15 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
+	elseif (event == "RETURNING_PLAYER_PROMPT") then 
+		StaticPopup_Show("RETURNING_PLAYER_PROMPT");
+	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then 
+		local previousTarget, currentTarget = ...; 
+		if(not currentTarget) then 
+			PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_NOT_AVAILABLE);
+		elseif(previousTarget ~= currentTarget) then
+			PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
+		end
 	end
 end
 

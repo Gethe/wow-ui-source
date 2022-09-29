@@ -132,10 +132,9 @@
 						<Anchor point="TOPLEFT" x="1" y="-2"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="VehicleTexture" file="Interface\Vehicles\UI-Vehicles-PartyFrame" hidden="true">
-					<Size x="128" y="64"/>
+				<Texture parentKey="VehicleTexture" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Vehicle" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="0"/>
+						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Flash" atlas="ui-hud-unitframe-party-portraiton-incombat" useAtlasSize="true" hidden="true">

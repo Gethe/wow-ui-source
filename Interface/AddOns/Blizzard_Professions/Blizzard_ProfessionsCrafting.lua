@@ -91,6 +91,20 @@ function ProfessionsCraftingPageMixin:OnLoad()
 		highlightSizeY = 45,
 		highlightOfsY = 3,
 	};
+
+	self.CraftingOutputLog:SetScript("OnShow", function()
+		local p, r, rp, x, y = self.CraftingOutputLog:GetPointByName("TOPLEFT");
+		local width = ProfessionsFrame:GetWidth() + self.CraftingOutputLog:GetMaxPossibleWidth() + x;
+		SetUIPanelAttribute(ProfessionsFrame, "width", width);
+		UpdateUIPanelPositions(ProfessionsFrame);
+	end);
+
+	self.CraftingOutputLog:SetScript("OnHide", function()
+		ProfessionsCraftingOutputLogMixin.OnHide(self.CraftingOutputLog);
+		local width = ProfessionsFrame:GetWidth();
+		SetUIPanelAttribute(ProfessionsFrame, "width", width);
+		UpdateUIPanelPositions(ProfessionsFrame);
+	end);
 end
 
 function ProfessionsCraftingPageMixin:OnEvent(event, ...)
@@ -219,7 +233,9 @@ function ProfessionsCraftingPageMixin:SelectRecipe(recipeInfo, skipSelectInList)
 	-- The selected recipe from the list will be the first level. 
 	-- Always forward the highest learned recipe to the schematic.
 	local highestRecipe = Professions.GetHighestLearnedRecipe(recipeInfo);
+	self.SchematicForm.Details:CancelAllAnims();
 	self.SchematicForm:Init(highestRecipe or recipeInfo);
+
 
 	self.GuildFrame:Clear();
 
@@ -521,8 +537,11 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	end
 
 	local changedProfessionID = not oldProfessionInfo or oldProfessionInfo.professionID ~= self.professionInfo.professionID;
+	if changedProfessionID then
+		self.RecipeList:ProfessionChanged();
+	end
 
-	self.RankBar:SetShown(Professions.InLocalCraftingMode());
+	Professions.UpdateRankBarVisibility(self.RankBar, professionInfo);
 
 	local searching = self.RecipeList.SearchBox:HasText();
 	local dataProvider = Professions.GenerateCraftingDataProvider(self.professionInfo.professionID, searching, noStripCategories);
@@ -581,6 +600,7 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 		local scrollToRecipe = openRecipeID ~= nil;
 		local elementData = self.RecipeList:SelectRecipe(currentRecipeInfo, scrollToRecipe);
 	else
+		self.SchematicForm.Details:CancelAllAnims();
 		self.SchematicForm:Init();
 		self:ValidateControls();
 	end
@@ -676,8 +696,7 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 				local ascending = not Professions.ShouldAllocateBestQualityReagents();
 				self.craftingQueue = CreateProfessionsCraftingQueue(transaction);
 				if transaction:IsManuallyAllocated() then
-					local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
-					self.craftingQueue:SetPartitions(count, craftingReagentTbl);
+					self.craftingQueue:SetPartitions(transaction, count);
 				else
 					self.craftingQueue:CalculatePartitions(transaction, count, ascending);
 				end
@@ -750,6 +769,13 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 	self:ValidateControls();
 
 	self.SchematicForm.Details:Reset();
+
+	local animSpeedMultiplier = count > 1 and 2 or 1;
+	self.SchematicForm.Details:SetQualityMeterAnimSpeedMultiplier(animSpeedMultiplier);
+
+	if count == 1 then
+		self.SchematicForm.Details:CancelAllAnims();
+	end
 end
 
 function ProfessionsCraftingPageMixin:OnViewGuildCraftersClicked()

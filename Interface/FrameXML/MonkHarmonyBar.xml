@@ -3,7 +3,7 @@
   <Script file="MonkHarmonyBar.lua"/>		
  
 	<Frame name="MonkLightEnergyTemplate" mixin="MonkLightEnergyMixin" virtual="true">
-		<Size x="18" y="17"/>
+		<Size x="21" y="21"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="OrbOff" atlas="MonkUI-OrbOff" useAtlasSize="true">
@@ -67,24 +67,5 @@
 			<KeyValue key="class" value="MONK" type="string"/>
 			<KeyValue key="spec" value="SPEC_MONK_WINDWALKER" type="global"/>
 		</KeyValues>
-		<Anchors>
-			<Anchor point="TOP" x="31" y="24"/>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture atlas="MonkUI-background-shadow" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture atlas="MonkUI-background" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 	</Frame>
 </Ui>

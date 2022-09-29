@@ -197,10 +197,10 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:FindItemInContainer(itemID)
 	for containerIndex = 0, 4 do
-		local slots = GetContainerNumSlots(containerIndex);
+		local slots = C_Container.GetContainerNumSlots(containerIndex);
 		if (slots > 0) then
 			for slotIndex = 1, slots do
-				local id = select(10, GetContainerItemInfo(containerIndex, slotIndex));
+				local id = C_Container.GetContainerItemInfo(containerIndex, slotIndex).itemID;
 				if (id == itemID) then
 					return containerIndex, slotIndex;
 				end
@@ -1251,7 +1251,7 @@ function Class_ShowBags:OnBegin(data)
 	-- between the time the tutorial was activated and actually begins.  e.g. They turn in a quest that rewards
 	-- them with an item, activating this tutorial.  The quest frame is still open to accept the next quest causing
 	-- this to be delayed, and in while the quest frame is open, they equip the item.
-	if (not GetContainerItemID(data.Container, data.ContainerSlot)) then
+	if (not C_Container.GetContainerItemID(data.Container, data.ContainerSlot)) then
 		self:Interrupt(self);
 		return;
 	end

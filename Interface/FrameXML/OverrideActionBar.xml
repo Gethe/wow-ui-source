@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="OverrideActionBar.lua"/>
 	<CheckButton name="OverrideActionBarButtonTemplate" inherits="ActionBarButtonTemplate" virtual="true">
-		<Size x="52" y="52"/>
+		<Size x="45" y="45"/>
 		<Scripts>
 			<OnLoad inherit="append">
 				self:SetFrameLevel(self:GetFrameLevel() + 2);

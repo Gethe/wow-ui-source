@@ -381,9 +381,13 @@ function EditModeSystemSettingsDialogMixin:UpdateExtraButtons(systemFrame)
 end
 
 function EditModeSystemSettingsDialogMixin:OnSettingValueChanged(setting, value)
-	EditModeManagerFrame:OnSystemSettingChange(self.attachedToSystem, setting, value);
+	if self.attachedToSystem then
+		EditModeManagerFrame:OnSystemSettingChange(self.attachedToSystem, setting, value);
+	end
 end
 
 function EditModeSystemSettingsDialogMixin:RevertChanges()
-	EditModeManagerFrame:RevertSystemChanges(self.attachedToSystem);
+	if self.attachedToSystem then
+		EditModeManagerFrame:RevertSystemChanges(self.attachedToSystem);
+	end
 end

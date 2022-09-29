@@ -49,6 +49,25 @@ local CharacterCustomizationShared =
 			},
 		},
 		{
+			Name = "CharCustomizationCategory",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "string", Nilable = false },
+				{ Name = "selectedIcon", Type = "string", Nilable = false },
+				{ Name = "undressModel", Type = "bool", Nilable = false },
+				{ Name = "cameraZoomLevel", Type = "number", Nilable = false },
+				{ Name = "cameraDistanceOffset", Type = "number", Nilable = false },
+				{ Name = "spellShapeshiftFormID", Type = "number", Nilable = true },
+				{ Name = "chrModelID", Type = "number", Nilable = true },
+				{ Name = "options", Type = "table", InnerType = "CharCustomizationOption", Nilable = false },
+				{ Name = "hasNewChoices", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CharCustomizationChoice",
 			Type = "Structure",
 			Fields =
@@ -70,7 +89,7 @@ local CharacterCustomizationShared =
 			{
 				{ Name = "CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST", Type = "CharCustomizationType", Value = CustomOptionTattoo },
 				{ Name = "CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST", Type = "CharCustomizationType", Value = CustomOptionTattooColor },
-				{ Name = "NUM_CUSTOM_DISPLAY", Type = "number", Value = CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST - CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST + 1 },
+				{ Name = "NUM_CUSTOM_DISPLAY", Type = "number", Value = Constants.CharCustomizationConstants.CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST - Constants.CharCustomizationConstants.CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST + 1 },
 			},
 		},
 		{
@@ -86,6 +105,17 @@ local CharacterCustomizationShared =
 				{ Name = "currentChoiceIndex", Type = "number", Nilable = true },
 				{ Name = "hasNewChoices", Type = "bool", Nilable = false },
 				{ Name = "isSound", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CharacterAlternateFormData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "raceID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "fileName", Type = "string", Nilable = false },
+				{ Name = "createScreenIconAtlas", Type = "string", Nilable = false },
 			},
 		},
 	},

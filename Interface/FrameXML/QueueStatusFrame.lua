@@ -227,7 +227,29 @@ function QueueStatusButtonMixin:OnClick(button)
 	end
 end
 
+function QueueStatusButtonMixin:CheckTutorials()
+	if not self:IsShown() then
+		return;
+	end
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES) then
+		local helpTipInfo = {
+			text = TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			offsetX = 0,
+			textJustifyH = "CENTER",
+			alignment = HelpTip.Alignment.Center,
+			acknowledgeOnHide = true,
+		};
+		HelpTip:Show(UIParent, helpTipInfo, self);
+	end
+end
+
 function QueueStatusButtonMixin:OnShow()
+	self:CheckTutorials();
+	
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 
 	self.Eye:StartInitialAnimation();

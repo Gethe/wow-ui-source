@@ -50,7 +50,7 @@ function NewPlayerExperience:PLAYER_LEVEL_UP(newLevel)
 end
 
 function NewPlayerExperience:CVAR_UPDATE(cvar, value)
-	if (cvar == "SHOW_TUTORIALS" ) then
+	if (cvar == "showTutorials" ) then
 		if (value == "0") then
 			-- player is trying to shut the NPE Tutorial off
 			local _, _, _, completed = GetAchievementInfo(NPE_AchievementID);

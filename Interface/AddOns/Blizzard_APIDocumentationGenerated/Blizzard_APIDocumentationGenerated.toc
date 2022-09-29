@@ -71,6 +71,7 @@ MerchantFrameDocumentation.lua
 MinimapDocumentation.lua
 MinimapFrameAPIDocumentation.lua
 NamePlateManagerDocumentation.lua
+NewItemsDocumentation.lua
 PaperDollInfoDocumentation.lua
 PartyInfoDocumentation.lua
 PartyPoseUIDocumentation.lua
@@ -215,6 +216,7 @@ ProfessionSpecUIDocumentation.lua
 QuestItemUseDocumentation.lua
 RecruitAFriendDocumentation.lua
 ResearchInfoDocumentation.lua
+ReturningPlayerUIDocumentation.lua
 ScenarioInfoDocumentation.lua
 ScrappingMachineUIDocumentation.lua
 ScriptedAnimationsDocumentation.lua
@@ -300,6 +302,7 @@ ValidateNameConstantsDocumentation.lua
 VectorSharedDocumentation.lua
 VehicleConstantsDocumentation.lua
 VignetteConstantsDocumentation.lua
+AuctionHouseConstants_MainlineDocumentation.lua
 ClickBindingsConstantsDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua
 CovenantSanctumConstantsDocumentation.lua

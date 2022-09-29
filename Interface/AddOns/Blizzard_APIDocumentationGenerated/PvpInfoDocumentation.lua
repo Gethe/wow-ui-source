@@ -756,6 +756,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsRatedSoloShuffle",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedSoloShuffle", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSoloShuffle",
 			Type = "Function",
 
@@ -1125,6 +1134,17 @@ local PvpInfo =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "texture", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "BattlefieldRewards",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 			},
 		},
 		{

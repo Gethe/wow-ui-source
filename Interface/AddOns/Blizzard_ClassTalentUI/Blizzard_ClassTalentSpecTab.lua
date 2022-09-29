@@ -77,6 +77,8 @@ function ClassTalentSpecTabMixin:OnShow()
 	self:UpdateSpecContents();
 	self:UpdateSpecFrame();
 
+	EventRegistry:TriggerEvent("TalentFrame.SpecTab.Show");
+
 	if self:IsActivateInProgress() then
 		self:SetActivateVisualsActive(true);
 	end
@@ -85,8 +87,20 @@ end
 function ClassTalentSpecTabMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentSpecTabUnitEvents);
 
+	EventRegistry:TriggerEvent("TalentFrame.SpecTab.Hide");
+
 	if self:IsActivateInProgress() then
 		self:SetActivateVisualsActive(false);
+	end
+end
+
+function ClassTalentSpecTabMixin:ShowTutorialHelp(showHelpFeature)
+	for specContentFrame in self.SpecContentFramePool:EnumerateActive() do 
+		if showHelpFeature then
+			GlowEmitterFactory:Show(specContentFrame.ActivateButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow)			
+		else
+			GlowEmitterFactory:Hide(specContentFrame.ActivateButton);
+		end
 	end
 end
 
@@ -270,6 +284,12 @@ function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, frameHeight, n
 	else
 		self.ColumnDivider:Show();
 	end
+
+	-- adjust background positioning
+	local leftBGPadding = self.isLeftMostSpec and 0 or self.ColumnDivider:GetWidth() / 2;
+	local rightBGPadding = self.isRightMostSpec and 0 or self.ColumnDivider:GetWidth() / 2;
+	self.HoverBackground:SetPoint("TOPLEFT", leftBGPadding, 0);
+	self.HoverBackground:SetPoint("BOTTOMRIGHT", rightBGPadding, 0);
 
 	-- set spec spells
 	self.SpellButtonPool:ReleaseAll();

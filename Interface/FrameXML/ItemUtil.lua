@@ -188,7 +188,7 @@ end
 function ItemUtil.PickupBagItem(itemLocation)
 	local bag, slot = itemLocation:GetBagAndSlot();
 	if bag and slot then
-		PickupContainerItem(bag, slot);
+		C_Container.PickupContainerItem(bag, slot);
 	end
 end
 

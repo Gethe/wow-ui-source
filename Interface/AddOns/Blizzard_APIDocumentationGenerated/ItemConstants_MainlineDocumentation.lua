@@ -3,6 +3,20 @@ local ItemConstants_Mainline =
 	Tables =
 	{
 		{
+			Name = "BagIndex",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = -5,
+			MaxValue = -1,
+			Fields =
+			{
+				{ Name = "Backback", Type = "BagIndex", EnumValue = -1 },
+				{ Name = "Bank", Type = "BagIndex", EnumValue = -2 },
+				{ Name = "Reagentbank", Type = "BagIndex", EnumValue = -4 },
+				{ Name = "Bankbag", Type = "BagIndex", EnumValue = -5 },
+			},
+		},
+		{
 			Name = "ItemGemSubclass",
 			Type = "Enumeration",
 			NumValues = 12,

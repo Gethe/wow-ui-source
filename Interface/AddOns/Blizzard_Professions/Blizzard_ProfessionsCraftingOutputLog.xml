@@ -70,10 +70,10 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
-							<Size x="150" y="30"/>
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" maxLines="2">
+							<Size x="148" y="30"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Item" relativePoint="TOPRIGHT" x="8" y="-8"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Item" relativePoint="TOPRIGHT" x="8" y="-1"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -101,7 +101,7 @@
 						<FontString parentKey="CritText" inherits="GameFontNormalTiny" text="Inspired Creation!" justifyH="RIGHT" enableMouse="true">
 							<Size x="140" y="0"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="-8" y="7"/>
+								<Anchor point="BOTTOMRIGHT" x="-8" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>

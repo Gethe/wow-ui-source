@@ -129,6 +129,12 @@ function EditModeManagerFrameMixin:OnLoad()
 
 	self.ShowGridCheckButton:SetCallback(onShowGridCheckboxChecked);
 
+	local function onEnableSnapCheckboxChecked(isChecked, isUserInput)
+		self:SetEnableSnap(isChecked, isUserInput);
+	end
+
+	self.EnableSnapCheckButton:SetCallback(onEnableSnapCheckboxChecked);
+
 	self.onCloseCallback = onCloseCallback;
 
 	self.LayoutDropdown:SetOptionSelectedCallback(layoutSelectedCallback);
@@ -232,6 +238,7 @@ function EditModeManagerFrameMixin:OnEvent(event, ...)
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
 		self:UpdateRightAnchoredActionBarScales();
+		EditModeMagnetismManager:UpdateUIParentPoints();
 	end
 end
 
@@ -260,7 +267,6 @@ local function AreAnchorsEqual(anchorInfo, otherAnchorInfo)
 		and anchorInfo.relativePoint == otherAnchorInfo.relativePoint
 		and anchorInfo.offsetX == otherAnchorInfo.offsetX
 		and anchorInfo.offsetY == otherAnchorInfo.offsetY
-		and anchorInfo.isDefaultPosition == otherAnchorInfo.isDefaultPosition;
 	end
 
 	return anchorInfo == otherAnchorInfo;
@@ -273,11 +279,10 @@ local function CopyAnchorInfo(anchorInfo, otherAnchorInfo)
 		anchorInfo.relativePoint = otherAnchorInfo.relativePoint;
 		anchorInfo.offsetX = otherAnchorInfo.offsetX;
 		anchorInfo.offsetY = otherAnchorInfo.offsetY;
-		anchorInfo.isDefaultPosition = otherAnchorInfo.isDefaultPosition;
 	end
 end
 
-local function ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY, isDefaultPosition)
+local function ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY)
 	if point then
 		local anchorInfo = {};
 		anchorInfo.point = point;
@@ -285,7 +290,6 @@ local function ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, of
 		anchorInfo.relativePoint = relativePoint;
 		anchorInfo.offsetX = offsetX;
 		anchorInfo.offsetY = offsetY;
-		anchorInfo.isDefaultPosition = isDefaultPosition or false;
 		return anchorInfo;
 	end
 
@@ -314,22 +318,32 @@ function EditModeManagerFrameMixin:HasActiveChanges()
 	return self.hasActiveChanges;
 end
 
-local function UpdateSystemAnchorInfo(systemInfo, systemFrame, isDefaultPosition)
+local function UpdateSystemAnchorInfo(systemInfo, systemFrame)
+	local anchorInfoChanged = false;
+	
 	local point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(1);
-	local newAnchorInfo = ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY, isDefaultPosition);
+	local newAnchorInfo = ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY);
 	if not AreAnchorsEqual(systemInfo.anchorInfo, newAnchorInfo) then
 		CopyAnchorInfo(systemInfo.anchorInfo, newAnchorInfo);
-		return true;
+		anchorInfoChanged = true;
 	end
 
-	return false;
+	point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(2);
+	newAnchorInfo = ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY);
+	if not AreAnchorsEqual(systemInfo.anchorInfo2, newAnchorInfo) then
+		CopyAnchorInfo(systemInfo.anchorInfo2, newAnchorInfo);
+		anchorInfoChanged = true;
+	end
+
+	return anchorInfoChanged;
 end
 
-function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame, isDefaultPosition)
+function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame, isInDefaultPosition)
 	local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
 	if systemInfo then
-		if UpdateSystemAnchorInfo(systemInfo, systemFrame, isDefaultPosition) then
+		if UpdateSystemAnchorInfo(systemInfo, systemFrame) then
 			systemFrame:SetHasActiveChanges(true);
+			systemInfo.isInDefaultPosition = isInDefaultPosition;
 
 			if EditModeUtil:IsRightAnchoredActionBar(systemFrame) or systemFrame == MinimapCluster then
 				self:UpdateRightAnchoredActionBarScales();
@@ -576,8 +590,8 @@ function EditModeManagerFrameMixin:UpdateBottomAnchoredActionBarHeight(includeMa
 				if topMostBottomAnchoredBar and relativeTo ~= topMostBottomAnchoredBar then
 					bar:SetPoint("BOTTOMLEFT", topMostBottomAnchoredBar, "TOPLEFT", 0, 5);
 
-					local isDefaultPosition = true;
-					EditModeManagerFrame:OnSystemPositionChange(bar, isDefaultPosition);
+					local isInDefaultPositionYes = true;
+					EditModeManagerFrame:OnSystemPositionChange(bar, isInDefaultPositionYes);
 				end
 
 				if bar:IsInDefaultPosition() then
@@ -758,6 +772,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 
 	self:SetGridShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowGrid));
 	self:SetGridSpacing(self:GetAccountSettingValue(Enum.EditModeAccountSetting.GridSpacing));
+	self:SetEnableSnap(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.EnableSnap));
 	self.AccountSettings:SetExpandedState(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.SettingsExpanded));
 	self.AccountSettings:SetTargetAndFocusShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowTargetAndFocus));
 	self.AccountSettings:SetPartyFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPartyFrames));
@@ -827,6 +842,7 @@ function EditModeManagerFrameMixin:UpdateLayoutInfo(layoutInfo, reconcileLayouts
 
 	self:UpdateLayoutCounts(savedLayouts);
 
+	self:InitSystemAnchors();
 	self:UpdateSystems();
 	self:ClearActiveChangesFlags();
 
@@ -853,6 +869,20 @@ function EditModeManagerFrameMixin:SetGridSpacing(gridSpacing, isUserInput)
 	if isUserInput then
 		self:OnAccountSettingChanged(Enum.EditModeAccountSetting.GridSpacing, gridSpacing);
 	end
+end
+
+function EditModeManagerFrameMixin:SetEnableSnap(enableSnap, isUserInput)
+	self.snapEnabled = enableSnap;
+
+	if isUserInput then
+		self:OnAccountSettingChanged(Enum.EditModeAccountSetting.EnableSnap, enableSnap);
+	else
+		self.EnableSnapCheckButton:SetControlChecked(enableSnap);
+	end
+end
+
+function EditModeManagerFrameMixin:IsSnapEnabled()
+	return self.snapEnabled;
 end
 
 local characterLayoutHeaderText = GetClassColoredTextForUnit("player", HUD_EDIT_MODE_CHARACTER_LAYOUTS_HEADER:format(UnitNameUnmodified("player")));
@@ -921,6 +951,13 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 	--table.insert(options, { value = "postInChat", text = HUD_EDIT_MODE_POST_IN_CHAT, level = 3 });
 
 	self.LayoutDropdown:SetOptions(options, self.layoutInfo.activeLayout);
+end
+
+function EditModeManagerFrameMixin:InitSystemAnchors()
+	for _, systemFrame in ipairs(self.registeredSystemFrames) do
+		systemFrame:ClearAllPoints();
+		systemFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
+	end
 end
 
 function EditModeManagerFrameMixin:UpdateSystems()
@@ -1158,17 +1195,23 @@ function EditModeGridMixin:OnLoad()
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
+function EditModeGridMixin:OnHide()
+	EditModeMagnetismManager:UnregisterGrid();
+	self.linePool:ReleaseAll();
+end
+
 function EditModeGridMixin:SetGridSpacing(spacing)
 	self.gridSpacing = spacing;
 	self:UpdateGrid();
 end
 
 function EditModeGridMixin:UpdateGrid()
-	if not self:IsShown() then
+	if not self:IsVisible() then
 		return;
 	end
 
 	self.linePool:ReleaseAll();
+	EditModeMagnetismManager:RegisterGrid(self:GetCenter());
 
 	local centerLine = true;
 	local centerLineNo = false;
@@ -1642,19 +1685,9 @@ end
 function EditModeAccountSettingsMixin:RefreshTalkingHeadFrame()
 	local showTalkingHeadFrame = self.Settings.TalkingHeadFrame:IsControlChecked();
 	if showTalkingHeadFrame then
-		-- Talking head frame is loaded as needed so if it isn't loaded yet then load it now
-		if not TalkingHeadFrame then
-			TalkingHead_LoadUI();
-		end
-
 		TalkingHeadFrame.isInEditMode = true;
 		TalkingHeadFrame:HighlightSystem();
 	else
-		-- If we haven't loaded the talking head frame in yet then nothing we need to do
-		if not TalkingHeadFrame then
-			return;
-		end
-
 		TalkingHeadFrame.isInEditMode = false;
 		TalkingHeadFrame:ClearHighlight();
 	end
@@ -1719,19 +1752,9 @@ end
 function EditModeAccountSettingsMixin:RefreshArenaFrames()
 	local showArenaFrames = self.Settings.ArenaFrames:IsControlChecked();
 	if showArenaFrames then
-		-- Arena frames are loaded as needed so if they aren't loaded yet then load them now
-		if not ArenaEnemyFramesContainer then
-			Arena_LoadUI();
-		end
-
 		ArenaEnemyFramesContainer:SetIsInEditMode(true);
 		ArenaEnemyFramesContainer:HighlightSystem();
 	else
-		-- If we haven't loaded the arena frames in yet then nothing we need to do
-		if not ArenaEnemyFramesContainer then
-			return;
-		end
-
 		ArenaEnemyFramesContainer:SetIsInEditMode(false);
 		ArenaEnemyFramesContainer:ClearHighlight();
 	end

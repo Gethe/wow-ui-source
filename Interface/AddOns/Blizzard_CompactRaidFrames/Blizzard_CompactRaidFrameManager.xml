@@ -186,7 +186,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								Settings.OpenToCategory(INTERFACE_LABEL, RAID_FRAMES_LABEL);
+								Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL);
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 							</OnClick>
 						</Scripts>
@@ -290,9 +290,7 @@
 						<Size x="85" y="20"/>
 						<Scripts>
 							<OnShow>
-								local NPE_AchievementID = 14287;
-								local _, _, _, completedNPE = GetAchievementInfo(NPE_AchievementID);
-								self:SetEnabled(completedNPE);
+								self:SetEnabled(not C_PlayerInfo.IsPlayerNPERestricted());
 							</OnShow>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

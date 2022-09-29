@@ -63,7 +63,7 @@ function AzeriteBarMixin:OnEvent(event, ...)
 			self:Update();
 		elseif ( event == "CVAR_UPDATE" ) then
 			local name, value = ...;
-			if ( name == "XP_BAR_TEXT" ) then
+			if ( name == "xpBarText" ) then
 				self:UpdateTextVisibility();
 			end
 		elseif ( event == "BAG_UPDATE" ) then

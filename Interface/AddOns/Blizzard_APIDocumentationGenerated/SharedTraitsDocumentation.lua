@@ -665,6 +665,7 @@ local SharedTraits =
 				{ Name = "groupIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "conditionIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "isCascadeRepurchasable", Type = "bool", Nilable = false },
+				{ Name = "cascadeRepurchaseEntryID", Type = "number", Nilable = true },
 			},
 		},
 		{

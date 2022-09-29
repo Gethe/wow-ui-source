@@ -52,6 +52,25 @@ local ProfessionSpecConstants =
 				{ Name = "Unlockable", Type = "ProfessionsSpecTabState", EnumValue = 2 },
 			},
 		},
+		{
+			Name = "ProfTabInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "rootNodeID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SpecializationTabInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false, Default = true },
+				{ Name = "errorReason", Type = "string", Nilable = false },
+			},
+		},
 	},
 };
 

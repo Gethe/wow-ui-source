@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Script file="Blizzard_TalkingHeadUI.lua"/>
+	<Script file="TalkingHeadUI.lua"/>
 
 	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" inherits="UIParentBottomManagedFrameTemplate, EditModeTalkingHeadFrameSystemTemplate" mixin="TalkingHeadFrameMixin" hidden="true" frameStrata="HIGH" frameLevel="1">
 		<Size x="570" y="155"/>

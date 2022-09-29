@@ -90,6 +90,17 @@ function SettingsElementHierarchyMixin:GetModifyPredicates()
 	return self.modifyPredicates;
 end
 
+function SettingsElementHierarchyMixin:GetEvaluateStateFrameEvents()
+	return self.evaluateStateFrameEvents;
+end
+
+function SettingsElementHierarchyMixin:AddEvaluateStateFrameEvent(event)
+	if not self.evaluateStateFrameEvents then
+		self.evaluateStateFrameEvents = {};
+	end
+	table.insert(self.evaluateStateFrameEvents, event);
+end
+
 SettingsListPanelInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsSearchableElementMixin);
 
 SettingsListElementInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsElementHierarchyMixin, SettingsSearchableElementMixin);
@@ -211,6 +222,8 @@ function SettingsListElementMixin:OnParentSettingValueChanged(setting, value)
 end
 
 function SettingsListElementMixin:EvaluateState()
+	local initializer = self:GetElementData();
+	self:SetShown(initializer:ShouldShow());
 end
 
 SettingsControlMixin = CreateFromMixins(SettingsListElementMixin);
@@ -222,6 +235,13 @@ end
 function SettingsControlMixin:Init(initializer)
 	SettingsListElementMixin.Init(self, initializer);
 	self.cbrHandles:SetOnValueChangedCallback(self:GetSetting():GetVariable(), self.OnSettingValueChanged, self);
+
+	local evaluateStateFrameEvents = initializer:GetEvaluateStateFrameEvents();
+	if evaluateStateFrameEvents then
+		for index, event in ipairs(evaluateStateFrameEvents) do
+			self.cbrHandles:AddHandle(EventRegistry:RegisterFrameEventAndCallbackWithHandle(event, self.EvaluateState, self));
+		end
+	end
 end
 
 function SettingsControlMixin:Release()
@@ -303,7 +323,9 @@ function SettingsCheckBoxControlMixin:Init(initializer)
 	SettingsControlMixin.Init(self, initializer);
 
 	local setting = self:GetSetting();
-	local initTooltip = GenerateClosure(InitializeSettingTooltip, initializer);
+	local options = initializer:GetOptions();
+	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
+
 	self.CheckBox:Init(setting:GetValue(), initTooltip);
 	
 	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
@@ -335,7 +357,21 @@ function SettingsCheckBoxControlMixin:SetValue(value)
 end
 
 function SettingsCheckBoxControlMixin:EvaluateState()
+	SettingsListElementMixin.EvaluateState(self);
 	local enabled = SettingsControlMixin.IsEnabled(self);
+
+	local initializer = self:GetElementData();
+	local options = initializer:GetOptions();
+	if options then
+		local optionData = type(options) == 'function' and options() or options;
+		local value = self:GetSetting():GetValue();
+		for index, option in ipairs(optionData) do
+			if option.disabled and option.value ~= value then
+				enabled = false;
+			end
+		end
+	end
+
 	self.CheckBox:SetEnabled(enabled);
 	self:DisplayEnabled(enabled);
 end
@@ -396,6 +432,7 @@ function SettingsSliderControlMixin:SetValue(value)
 end
 
 function SettingsSliderControlMixin:EvaluateState()
+	SettingsListElementMixin.EvaluateState(self);
 	local enabled = SettingsControlMixin.IsEnabled(self);
 	self.SliderWithSteppers:SetEnabled_(enabled);
 	self:DisplayEnabled(enabled);
@@ -422,7 +459,7 @@ function SettingsDropDownControlMixin:InitDropDown()
 	local setting = self:GetSetting();
 	local initializer = self:GetElementData();
 	local options = initializer:GetOptions();
-	local initTooltip = Settings.CreateDropDownInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
+	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
 	
 	function OnDropDownValueChanged(o, option)
 		setting:SetValue(option.value);
@@ -463,6 +500,7 @@ function SettingsDropDownControlMixin:SetValue(value)
 end
 
 function SettingsDropDownControlMixin:EvaluateState()
+	SettingsListElementMixin.EvaluateState(self);
 	local enabled = SettingsControlMixin.IsEnabled(self);
 	self.DropDown:SetEnabled_(enabled);
 
@@ -564,6 +602,7 @@ function SettingsCheckBoxWithButtonControlMixin:SetValue(value)
 end
 
 function SettingsCheckBoxWithButtonControlMixin:EvaluateState()
+	SettingsListElementMixin.EvaluateState(self);
 	local enabled = SettingsControlMixin.IsEnabled(self);
 	
 	local clickEnabled = enabled;
@@ -707,7 +746,7 @@ function SettingsCheckBoxDropDownControlMixin:Init(initializer)
 
 	self.cbrHandles:RegisterCallback(self.DropDown.Button, SelectionPopoutButtonMixin.Event.OnValueChanged, OnDropDownValueChanged);
 
-	local initTooltip = Settings.CreateDropDownInitTooltip(dropDownSetting, initializer:GetName(), initializer:GetTooltip(), dropDownOptions);
+	local initTooltip = Settings.CreateOptionsInitTooltip(dropDownSetting, initializer:GetName(), initializer:GetTooltip(), dropDownOptions);
 	Settings.InitSelectionDropDown(self.DropDown, dropDownSetting, dropDownOptions, 200, initTooltip);
 
 	self.DropDown:SetEnabled_(cbSetting:GetValue());

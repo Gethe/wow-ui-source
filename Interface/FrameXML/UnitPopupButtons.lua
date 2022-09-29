@@ -474,9 +474,7 @@ function UnitPopupEnterEditModeMixin:CanShow()
 end
 
 function UnitPopupEnterEditModeMixin:IsEnabled()
-	local NPE_AchievementID = 14287;
-	local _, _, _, completedNPE = GetAchievementInfo(NPE_AchievementID);
-	return completedNPE;
+	return not C_PlayerInfo.IsPlayerNPERestricted();
 end
 
 function UnitPopupEnterEditModeMixin:OnClick()

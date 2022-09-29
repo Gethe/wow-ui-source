@@ -12,7 +12,7 @@ function ProfessionsCraftingOutputLogElementMixin:OnLoad()
 
 	self.Multicraft.Text:SetText(PROFESSIONS_OUTPUT_MULTICRAFT);
 	self.Multicraft.Text:SetScript("OnLeave", GameTooltip_Hide);
-	self.Multicraft.Item.noQualityOverlay = true;
+	self.Multicraft.Item.noProfessionQualityOverlay = true;
 
 	self.Resources.Text:SetText(PROFESSIONS_OUTPUT_RESOURCE_RETURN);
 	self.Resources.Text:SetScript("OnLeave", GameTooltip_Hide);

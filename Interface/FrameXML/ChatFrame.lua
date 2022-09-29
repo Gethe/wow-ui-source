@@ -688,9 +688,9 @@ EMOTE623_TOKEN = "WINCE"
 EMOTE624_TOKEN = "HUZZAH"
 EMOTE625_TOKEN = "IMPRESSED"
 EMOTE626_TOKEN = "MAGNIFICENT"
-
+EMOTE627_TOKEN = "QUACK"
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
-local MAXEMOTEINDEX = 626;
+local MAXEMOTEINDEX = 627;
 
 
 ICON_LIST = {
@@ -1162,7 +1162,7 @@ function SecureCmdItemParse(item)
 		slot = strmatch(item, "^(%d+)$");
 	end
 	if ( bag ) then
-		item = GetContainerItemLink(bag, slot);
+		item = C_Container.GetContainerItemLink(bag, slot);
 	elseif ( slot ) then
 		item = GetInventoryItemLink("player", slot);
 	end
@@ -1171,7 +1171,7 @@ end
 
 function SecureCmdUseItem(name, bag, slot, target)
 	if ( bag ) then
-		UseContainerItem(bag, slot, target);
+		C_Container.UseContainerItem(bag, slot, target);
 	elseif ( slot ) then
 		UseInventoryItem(slot, target);
 	else
@@ -4602,13 +4602,14 @@ function ChatEdit_InsertLink(text)
 		end
 		return true;
 	end
-	if ( TradeSkillFrame and TradeSkillFrame.SearchBox:HasFocus() )  then
+
+	if ( ProfessionsFrame and ProfessionsFrame.CraftingPage.RecipeList.SearchBox:HasFocus() )  then
 		local item;
 		if ( strfind(text, "item:", 1, true) ) then
 			item = GetItemInfo(text);
 		end
 		if ( item ) then
-			TradeSkillFrame.SearchBox:SetText(item);
+			ProfessionsFrame.CraftingPage.RecipeList.SearchBox:SetText(item);
 			return true;
 		end
 	end

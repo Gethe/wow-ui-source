@@ -120,9 +120,9 @@ local ItemConstants =
 		{
 			Name = "ItemGemColor",
 			Type = "Enumeration",
-			NumValues = 24,
+			NumValues = 25,
 			MinValue = 1,
-			MaxValue = 8388608,
+			MaxValue = 16777216,
 			Fields =
 			{
 				{ Name = "Meta", Type = "ItemGemColor", EnumValue = 1 },
@@ -149,6 +149,7 @@ local ItemConstants =
 				{ Name = "DominationFrost", Type = "ItemGemColor", EnumValue = 2097152 },
 				{ Name = "DominationUnholy", Type = "ItemGemColor", EnumValue = 4194304 },
 				{ Name = "Cypher", Type = "ItemGemColor", EnumValue = 8388608 },
+				{ Name = "Tinker", Type = "ItemGemColor", EnumValue = 16777216 },
 			},
 		},
 		{
@@ -249,9 +250,9 @@ local ItemConstants =
 		{
 			Name = "ItemSocketType",
 			Type = "Enumeration",
-			NumValues = 24,
+			NumValues = 25,
 			MinValue = 0,
-			MaxValue = 23,
+			MaxValue = 24,
 			Fields =
 			{
 				{ Name = "None", Type = "ItemSocketType", EnumValue = 0 },
@@ -278,6 +279,7 @@ local ItemConstants =
 				{ Name = "PunchcardBlue", Type = "ItemSocketType", EnumValue = 21 },
 				{ Name = "Domination", Type = "ItemSocketType", EnumValue = 22 },
 				{ Name = "Cypher", Type = "ItemSocketType", EnumValue = 23 },
+				{ Name = "Tinker", Type = "ItemSocketType", EnumValue = 24 },
 			},
 		},
 		{
@@ -384,6 +386,21 @@ local ItemConstants =
 				{ Name = "Legacy", Type = "Itemsetflags", EnumValue = 1 },
 				{ Name = "UseItemHistorySetSlots", Type = "Itemsetflags", EnumValue = 2 },
 				{ Name = "RequiresPvPTalentsActive", Type = "Itemsetflags", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "SlotRegion",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "SlotRegion", EnumValue = 0 },
+				{ Name = "PlayerEquip", Type = "SlotRegion", EnumValue = 1 },
+				{ Name = "PlayerInv", Type = "SlotRegion", EnumValue = 2 },
+				{ Name = "Bank", Type = "SlotRegion", EnumValue = 3 },
+				{ Name = "ReagentBank", Type = "SlotRegion", EnumValue = 4 },
 			},
 		},
 		{

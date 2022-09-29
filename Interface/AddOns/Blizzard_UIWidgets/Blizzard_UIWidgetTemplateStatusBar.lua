@@ -125,10 +125,11 @@ function UIWidgetTemplateStatusBarMixin:EvaluateTutorials()
 			cvarBitfield = "closedInfoFrames",
 			bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR,
 			checkCVars = true,
+			autoEdgeFlipping = true;
 			targetPoint = HelpTip.Point.LeftEdgeCenter,
 			onAcknowledgeCallback = evaluateTutorialsClosure,
 		};
-		
+
 		HelpTip:Show(self, barHelpTipInfo);
 
 		if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR_CUTOFF) then
@@ -141,9 +142,9 @@ function UIWidgetTemplateStatusBarMixin:EvaluateTutorials()
 					bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR_CUTOFF,
 					checkCVars = true,
 					targetPoint = HelpTip.Point.BottomEdgeCenter,
-					alignment = HelpTip.Alignment.Right,
+					alignment = (ObjectiveTrackerFrame and ObjectiveTrackerFrame.isOnLeftSideOfScreen) and HelpTip.Alignment.Left or HelpTip.Alignment.Right,
 				};
-		
+
 				HelpTip:Show(firstPartition, cutoffHelpTipInfo);
 			end
 		end

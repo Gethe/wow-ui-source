@@ -186,7 +186,7 @@
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnLoad method="OnLoad" inherit="prepend"/>
-			<OnEvent method="OnEvent"/>
+			<OnEvent method="OnEvent" inherit="prepend"/>
 		</Scripts>
 	</Frame>
 </Ui>

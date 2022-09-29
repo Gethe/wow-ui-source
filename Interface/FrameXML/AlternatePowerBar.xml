@@ -79,10 +79,10 @@
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="0" g="0" b="1.0"/>
 	</StatusBar>
-	<StatusBar name="PlayerFrameAlternateManaBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">	<!--For Druids in forms -->
+	<StatusBar name="PlayerFrameAlternateManaBar" inherits="AlternatePowerBarTemplate, PlayerFrameBottomManagedFrameTemplate" parent="PlayerFrame">	<!--For Druids in forms -->
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="5" type="number"/>
+		</KeyValues>
 		<Size x="104" y="12"/>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" x="94" y="15"/>
-		</Anchors>
 	</StatusBar>
 </Ui>

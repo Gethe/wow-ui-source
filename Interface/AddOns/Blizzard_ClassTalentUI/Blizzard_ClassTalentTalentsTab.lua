@@ -2,6 +2,7 @@ local FrameLevelPerRow = 10;
 local TotalFrameLevelSpread = 500;
 local BaseYOffset = 1500;
 local BaseRowHeight = 600;
+local PurchaseFXDelay = 1.2;
 
 
 ClassTalentCurrencyDisplayMixin = {};
@@ -82,20 +83,6 @@ function ClassTalentTalentsTabMixin:OnLoad()
 	self:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED");
 end
 
-function ClassTalentTalentsTabMixin:RegisterOnUpdate()
-	-- Overrides TalentFrameBaseMixin.
-
-	if not self.isRegisteredForUpdate then
-		self.isRegisteredForUpdate = true;
-		-- OnUpdate gets registered to handle mass data update needs, meaning there were likely mass changes on this frame
-		-- Delay the OnUpdate handling to next frame to allow all this frame's changes to finish propagating first
-		RunNextFrame(function ()
-			self.isRegisteredForUpdate = false;
-			self:SetScript("OnUpdate", self.OnUpdate);
-		end);
-	end
-end
-
 -- This is registered and unregistered dynamically.
 function ClassTalentTalentsTabMixin:OnUpdate()
 	TalentFrameBaseMixin.OnUpdate(self);
@@ -124,6 +111,7 @@ function ClassTalentTalentsTabMixin:OnShow()
 
 	FrameUtil.RegisterFrameForEvents(self, ClassTalentTalentsTabEvents);
 	FrameUtil.RegisterFrameForUnitEvents(self, ClassTalentTalentsTabUnitEvents, "player");
+	EventRegistry:TriggerEvent("TalentFrame.TalentTab.Show");
 
 	self:UpdateConfigButtonsState();
 
@@ -142,6 +130,9 @@ function ClassTalentTalentsTabMixin:UpdateClassVisuals()
 	if self.ActivationClassFx then
 		if classVisuals and classVisuals.activationFX and C_Texture.GetAtlasInfo(classVisuals.activationFX) then
 			self.ActivationClassFx:SetAtlas(classVisuals.activationFX, TextureKitConstants.UseAtlasSize);
+			self.ActivationClassFx2:SetAtlas(classVisuals.activationFX, TextureKitConstants.UseAtlasSize);	
+			self.ActivationClassFx3:SetAtlas(classVisuals.activationFX, TextureKitConstants.UseAtlasSize);
+			self.ActivationClassFx4:SetAtlas(classVisuals.activationFX, TextureKitConstants.UseAtlasSize);					
 		end
 	end
 
@@ -209,6 +200,7 @@ function ClassTalentTalentsTabMixin:OnHide()
 
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentTalentsTabEvents);
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentTalentsTabUnitEvents);
+	EventRegistry:TriggerEvent("TalentFrame.TalentTab.Hide");
 
 	self:SetBackgroundAnimationsPlaying(false);
 end
@@ -244,7 +236,10 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 			self:ResetToLastConfigID();
 		end
 	elseif event == "STARTER_BUILD_ACTIVATION_FAILED" then
+		local isCommitFailure = true;
+		self:SetCommitStarted(nil, isCommitFailure);
 		self:ResetToLastConfigID();
+		UIErrorsFrame:AddExternalErrorMessage("ERR_INTERNAL_ERROR");
 	elseif event == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" then
 		self:UpdateSpecBackground();
 		self:RefreshLoadoutOptions();
@@ -405,6 +400,14 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 		ClassTalentLoadoutImportDialog:ShowDialog();
 	end
 
+	local function ImportDisabledCallback()
+		local disabled = not C_ClassTalents.CanCreateNewConfig();
+		local title = ""; -- this needs to be set or the tooltip does not display
+		local text = nil;
+		local warning = TALENT_FRAME_NEW_LOADOUT_DISABLED_TOOLTIP;
+		return disabled, title, text, warning;
+	end
+
 	local function ExportCallback()	
 		local configID = self.lastSelectedConfigID or C_ClassTalents.GetActiveConfigID();
 		local configInfo = C_Traits.GetConfigInfo(configID);
@@ -423,14 +426,26 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 		DEFAULT_CHAT_FRAME:AddMessage(TALENT_FRAME_EXPORT_TEXT:format(configName), YELLOW_FONT_COLOR:GetRGB());
 	end
 
+	local function ExportDisabledCallback()
+		local disabled = self:HasAnyConfigChanges() or C_ClassTalents.HasUnspentTalentPoints();
+		local title = ""; -- this needs to be set or the tooltip does not display
+		local text = nil;
+		local warning = TALENT_FRAME_EXPORT_LOADOUT_DISABLED_TOOLTIP;
+		return disabled, title, text, warning;
+	end
+
 	local importSentinelInfo = {
-		text = WHITE_FONT_COLOR:WrapTextInColorCode(TALENT_FRAME_DROP_DOWN_IMPORT),
+		text = TALENT_FRAME_DROP_DOWN_IMPORT,
+		colorCode = WHITE_FONT_COLOR_CODE,
 		callback = ImportCallback,
+		disabledCallback = ImportDisabledCallback,
 	};
 
 	local exportSentinelInfo = {
-		text = WHITE_FONT_COLOR:WrapTextInColorCode(TALENT_FRAME_DROP_DOWN_EXPORT),
+		text = TALENT_FRAME_DROP_DOWN_EXPORT,
+		colorCode = WHITE_FONT_COLOR_CODE,
 		callback = ExportCallback,
+		disabledCallback = ExportDisabledCallback,
 	};
 
 	self.LoadoutDropDown:AddSentinelValue(importSentinelInfo);
@@ -443,8 +458,16 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 				local autoApply = true;
 				self:LoadConfigInternal(configID, autoApply);
 			end
+			
+			local function CancelLoadConfiguration()
+				if self.lastSelectedConfigID then
+					self.LoadoutDropDown:SetSelectionID(self.lastSelectedConfigID);
+				else
+					self.LoadoutDropDown:ClearSelection();
+				end
+			end
 
-			self:GetParent():CheckConfirmResetAction(FinishLoadConfiguration);
+			self:GetParent():CheckConfirmResetAction(FinishLoadConfiguration, CancelLoadConfiguration);
 		end
 	end
 
@@ -587,6 +610,10 @@ function ClassTalentTalentsTabMixin:LoadTalentTreeInternal()
 end
 
 function ClassTalentTalentsTabMixin:SetSelectedSavedConfigID(configID, autoApply, skipLoad)
+	if self.LoadoutDropDown:GetSelectionID() == configID then
+		return;
+	end
+
 	self.LoadoutDropDown:SetSelectionID(configID);
 
 	self:UpdateLastSelectedConfigID(configID);
@@ -652,7 +679,7 @@ function ClassTalentTalentsTabMixin:SetCommitCompleteVisualsActive(active)
 	if active and self.stagedPurchaseNodes then
 		-- Delay purchase animations a moment to allow post-commit refreshes/updates to process
 		-- Otherwise the immediate frame gets clogged up and visuals get missed
-		C_Timer.After(1.4, function()
+		C_Timer.After(PurchaseFXDelay, function()
 			if not self.stagedPurchaseNodes then
 				return;
 			end
@@ -663,6 +690,10 @@ function ClassTalentTalentsTabMixin:SetCommitCompleteVisualsActive(active)
 					buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene);
 				end
 			end
+
+			-- Play sound for collective node purchase effects
+			PlaySound(SOUNDKIT.UI_CLASS_TALENT_APPLY_COMPLETE);
+
 			self.stagedPurchaseNodes = nil;
 		end);
 	elseif not active then
@@ -686,7 +717,9 @@ function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply)
 		loadResult = C_ClassTalents.LoadConfig(configID, autoApply);
 	end
 
-	if loadResult == Enum.LoadConfigResult.NoChangesNecessary then
+	if loadResult == Enum.LoadConfigResult.Ready then
+		self:UpdateLastSelectedConfigID(configID);
+	elseif loadResult == Enum.LoadConfigResult.NoChangesNecessary then
 		self:UpdateLastSelectedConfigID(configID);
 
 		if self.unflagStarterBuildAfterNextCommit then
@@ -745,7 +778,7 @@ function ClassTalentTalentsTabMixin:PurchaseRank(nodeID)
 	end
 end
 
-function ClassTalentTalentsTabMixin:SetSelection(nodeID, entryID)
+function ClassTalentTalentsTabMixin:SetSelection(nodeID, entryID, oldEntryID)
 	-- Overrides TalentFrameBaseMixin.
 
 	if not self:WillDeviateFromStarterBuild(nodeID, entryID) then
@@ -758,7 +791,14 @@ function ClassTalentTalentsTabMixin:SetSelection(nodeID, entryID)
 			self.LoadoutDropDown:ClearSelection();
 			TalentFrameBaseMixin.SetSelection(self, nodeID, entryID);
 		end
-		self:CheckConfirmStarterBuildDeviation(FinishSelect);
+		local function CancelSelect()
+			local button = self:GetTalentButtonByNodeID(nodeID);
+			-- If player cancelled, make sure button is reset back to previous selection 
+			if button and button:GetSelectedEntryID() == entryID then
+				button:SetSelectedEntryID(oldEntryID);
+			end
+		end
+		self:CheckConfirmStarterBuildDeviation(FinishSelect, CancelSelect);
 	end
 end
 
@@ -843,7 +883,7 @@ function ClassTalentTalentsTabMixin:CanSetDropDownValue(selectedValue, isUserInp
 		return true; -- new/import/export always enabled
 	end
 
-	return C_ClassTalents.CanChangeTalents();
+	return self.LoadoutDropDown:IsSelectionIDValid(selectedValue);
 end
 
 function ClassTalentTalentsTabMixin:CanChangeTalents()
@@ -875,7 +915,7 @@ function ClassTalentTalentsTabMixin:UpdateInspecting()
 
 	self.SearchBox:ClearAllPoints();
 	if isInspecting then
-		self.SearchBox:SetPoint("BOTTOM", 0, 30);
+		self.SearchBox:SetPoint("BOTTOMLEFT", 53, 27);
 	else
 		self.SearchBox:SetPoint("LEFT", self.LoadoutDropDown, "RIGHT", 20, 0);
 	end
@@ -957,7 +997,9 @@ function ClassTalentTalentsTabMixin:UpdateStarterBuildHighlights()
 	end
 
 	if not self:GetIsStarterBuildActive() or self.unflagStarterBuildAfterNextCommit then
+
 		if wereSelectableGlowsDisabled then
+			-- Re-enable selection glows now that starter build highlight is inactive
 			for button in self:EnumerateAllTalentButtons() do
 				button:SetSelectableGlowDisabled(false);
 			end
@@ -977,6 +1019,7 @@ function ClassTalentTalentsTabMixin:UpdateStarterBuildHighlights()
 		self.activeStarterBuildHighlight = { nodeID = nodeID, entryID = entryID };
 
 		if not wereSelectableGlowsDisabled then
+			-- Disable selection glows since the starter build highlight is active
 			for button in self:EnumerateAllTalentButtons() do
 				button:SetSelectableGlowDisabled(true);
 			end
@@ -984,12 +1027,13 @@ function ClassTalentTalentsTabMixin:UpdateStarterBuildHighlights()
 	end
 end
 
-function ClassTalentTalentsTabMixin:CheckConfirmStarterBuildDeviation(callback)
+function ClassTalentTalentsTabMixin:CheckConfirmStarterBuildDeviation(acceptCallback, cancelCallback)
 	local referenceKey = self;
 	if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
 		local customData = {
 			text = TALENT_FRAME_CONFIRM_STARTER_DEVIATION,
-			callback = callback,
+			callback = acceptCallback,
+			cancelCallback = cancelCallback,
 			acceptText = CONTINUE,
 			cancelText = CANCEL,
 			referenceKey = referenceKey,

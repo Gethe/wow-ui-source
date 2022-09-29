@@ -14,6 +14,12 @@ local nextQualitySoundKits = {
 	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY5,
 };
 
+local DetailsFrameEvents =
+{
+	"TRADE_SKILL_ITEM_CRAFTED_RESULT",
+	"TRADE_SKILL_CRAFT_BEGIN",
+};
+
 CraftingQualityStatLine = EnumUtil.MakeEnum("Difficulty", "Skill");
 
 local detailsPanelTitles =
@@ -106,6 +112,8 @@ end
 ProfessionsRecipeCrafterDetailsMixin = {};
 
 function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
+	--self.pendingOperationInfos = {};
+
 	self.statLinePool = CreateFramePool("FRAME", self.StatLines, "ProfessionsCrafterDetailsStatLineTemplate");
 
 	self.FinishingReagentSlotContainer.Label:SetText(PROFESSIONS_CRAFTING_FINISHING_HEADER);
@@ -114,11 +122,11 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 		GameTooltip:SetOwner(fill, "ANCHOR_RIGHT");
 
 		local atlasSize = 25;
-		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(self.QualityMeter.qualityInteger), atlasSize, atlasSize);
+		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(self.QualityMeter.craftingQuality), atlasSize, atlasSize);
 		local hasNextQuality = self.operationInfo.upperSkillTreshold > self.operationInfo.lowerSkillThreshold;
 		if hasNextQuality then
 			atlasSize = 20;
-			local nextAtlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(self.QualityMeter.qualityInteger + 1), atlasSize, atlasSize);
+			local nextAtlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(self.QualityMeter.craftingQuality + 1), atlasSize, atlasSize);
 			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_EXPECTED_QUALITY_WITH_NEXT_SKILL:format(atlasMarkup, self.operationInfo.upperSkillTreshold, nextAtlasMarkup));
 		else
 			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_EXPECTED_QUALITY:format(atlasMarkup));
@@ -129,7 +137,7 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 	self.QualityMeter.Center:SetScript("OnLeave", GameTooltip_Hide);
 
 	local function OnCapEntered(cap, isRight)
-		local qualityIndex = self.QualityMeter.qualityInteger + (isRight and 1 or 0);
+		local qualityIndex = self.QualityMeter.craftingQuality + (isRight and 1 or 0);
 
 		GameTooltip:SetOwner(cap, "ANCHOR_RIGHT");
 		-- Enchanting recipe
@@ -172,112 +180,85 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 	self.QualityMeter.Left:SetScript("OnLeave", GameTooltip_Hide);
 	self.QualityMeter.Right:SetScript("OnLeave", GameTooltip_Hide);
 
-	self:RegisterEvent("TRADE_SKILL_ITEM_CRAFTED_RESULT");
+	--self.QualityMeter:SetOnAnimationsFinished(function()
+	--	local pendingStats = self.pendingStats;
+	--	self.pendingStats = nil;
+	--
+	--	self:SetStats(pendingStats.operationInfo, pendingStats.supportsQualities, pendingStats.isGatheringRecipe);
+	--	return pendingStats ~= nil;
+	--end);
+end
+
+function ProfessionsRecipeCrafterDetailsMixin:SetQualityMeterAnimSpeedMultiplier(animSpeedMultiplier)
+	self.animSpeedMultiplier = animSpeedMultiplier;
+end
+
+function ProfessionsRecipeCrafterDetailsMixin:CancelAllAnims()
+	if self.animating then
+		self.QualityMeter:CancelAllAnims(self.operationInfo);
+		self.QualityMeter:SetQuality(self.operationInfo.quality, self.recipeInfo.maxQuality);
+	end
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:OnEvent(event, ...)
 	if event == "TRADE_SKILL_ITEM_CRAFTED_RESULT" then
+		if not self.operationInfo then
+			return;
+		end
+
 		local resultData = ...;
-		self:HandleCritAnimation(resultData);
-	end
-end
 
-function ProfessionsRecipeCrafterDetailsMixin:QuickFinishAnimation()
-	self.QualityMeter.Center.Fill.Test1.Anim:Play();
-	self.QualityMeter.Center.Fill.Flare.Anim:Play();
-end
-
-function ProfessionsRecipeCrafterDetailsMixin:HandleCritAnimation(resultData)
-	self.QualityMeter.Center.Fill.Test2:SetAlpha(1);
-	self.QualityMeter.Center.Fill.Flare2:SetAlpha(0);
-	self.QualityMeter.Center.Test2b:SetAlpha(0);
-
-	local startingWidth = self.QualityMeter.Center.Fill:GetWidth();
-	local unitsPerSecond = 375;
-
-	PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_START);
-
-	local sequence = CreateInterpolationSequence();
-	do
-		-- Resize primary fill left to right
-		local v1, v2 = 0, 1;
-		local t = math.min(1, startingWidth / unitsPerSecond);
-		sequence:Add(v1, v2, t, InterpolatorUtil.InterpolateLinear, function(value)
-			self.QualityMeter.Center.Fill.Test2:SetWidth(startingWidth * value);
-		end);
-	end
-
-	if resultData.isCrit then
-		do
-			sequence:Add(0, 0, 0, InterpolatorUtil.InterpolateLinear, function()
-				PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_CRIT);
-			end);
-
-			-- Resize secondary fill left ro right.
-			local skillRange = self.operationInfo.upperSkillTreshold - self.operationInfo.lowerSkillThreshold;
-			if skillRange == 0 then
-				return;
-			end
-			local finalSkillPct = math.min((self.operationInfo.baseSkill + self.operationInfo.bonusSkill + resultData.critBonusSkill - self.operationInfo.lowerSkillThreshold) / skillRange, 1.0);
-			local finalWidth = self.QualityMeter.Center:GetWidth() * finalSkillPct;
-			local extraCritWidth = finalWidth - startingWidth;
-			local modifier = .12;
-			local v1, v2 = 0, 1;
-			local t = (extraCritWidth / unitsPerSecond) / modifier;
-
-			if t > 0 then
-				local function SetAnimState(value)
-					self.QualityMeter.Center.Fill.Test2:SetWidth(startingWidth + (value * extraCritWidth));
-					self.QualityMeter.Center.Test2b:SetAlpha(value * .6);
-					self.QualityMeter.Center.Fill.Flare2:SetAlpha(value * .6);
-					self.QualityMeter.Center.Test2b:Show();
-				end
-				sequence:Add(v1, v2, t, InterpolatorUtil.InterpolateEaseOut, SetAnimState);
-			else
-				SetAnimState(v2);
+		if resultData.craftingQuality then
+			--local operationInfo = table.remove(self.pendingOperationInfos, 1);
+			--self.QualityMeter:PlayResultAnimation(resultData, operationInfo, self.animSpeedMultiplier or 1);
+			if self.recipeInfo.recipeID == self.expectedRecipeID then
+				self.QualityMeter:PlayResultAnimation(resultData, self.operationInfo, self.animSpeedMultiplier or 1);
 			end
 		end
+	elseif event == "TRADE_SKILL_CRAFT_BEGIN" then
+		if not self.recipeInfo then
+			return;
+		end
 
-		do
-			-- Fade out
-			local v1, v2 = 1, 0;
-			local t = .25;
-			sequence:Add(v1, v2, t, InterpolatorUtil.InterpolateLinear, function(value)
-				self.QualityMeter.Center.Fill.Test2:SetAlpha(value);
-				self.QualityMeter.Center.Fill.Flare2:SetAlpha(value);
-				self.QualityMeter.Center.Test2b:SetAlpha(value * .6);
-			end);
-		end
-	else
-		do
-			-- Fade out
-			local v1, v2 = 1, 0;
-			local t = .25;
-			sequence:Add(v1, v2, t, InterpolatorUtil.InterpolateLinear, function(value)
-				self.QualityMeter.Center.Fill.Test2:SetAlpha(value);
-			end);
-		end
+		self.expectedRecipeID = self.recipeInfo.recipeID;
+		--if self.operationInfo then
+		--	table.insert(self.pendingOperationInfos, self.operationInfo);
+		--	if #self.pendingOperationInfos > 2 then
+		--		table.remove(self.pendingOperationInfos, 1);
+		--	end
+		--end
 	end
-
-	sequence:Add(0, 0, 0, InterpolatorUtil.InterpolateLinear, function()
-		local craftingQuality = resultData.craftingQuality;
-		local soundKit = craftingQuality and craftCompleteSoundKits[craftingQuality];
-		if soundKit then
-			PlaySound(soundKit);
-		end
-	end);
-
-	sequence:Play();
-end
-
-function ProfessionsRecipeCrafterDetailsMixin:SetTransaction(transaction)
-	self.operationInfo = nil;
-	self.projectedQuality = nil;
-	self.transaction = transaction;
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:OnShow()
-	self.projectedQuality = nil;
+	FrameUtil.RegisterFrameForEvents(self, DetailsFrameEvents);
+end
+
+function ProfessionsRecipeCrafterDetailsMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, DetailsFrameEvents);
+
+	self:ClearData();
+end
+
+function ProfessionsRecipeCrafterDetailsMixin:ClearData()
+	self.transaction = nil;
+	self.recipeInfo = nil;
+	self.operationInfo = nil;
+	self.craftingQuality = nil;
+end
+
+function ProfessionsRecipeCrafterDetailsMixin:SetData(transaction, recipeInfo, hasFinishingSlots)
+	self.transaction = transaction;
+	self.recipeInfo = recipeInfo;
+	self.operationInfo = nil;
+	self.craftingQuality = nil;
+
+	self:SetOutputItemName(recipeInfo.name);
+	self.FinishingReagentSlotContainer:SetShown(hasFinishingSlots);
+end
+
+function ProfessionsRecipeCrafterDetailsMixin:HasData()
+	return self.recipeInfo and self.transaction;
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQualities, isGatheringRecipe)
@@ -285,19 +266,18 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 		return;
 	end
 
-	local nextProjectedQuality = operationInfo.quality and math.floor(operationInfo.quality);
-	if self.projectedQuality ~= nil then
-		if nextProjectedQuality > self.projectedQuality then
-			local soundKit = nextQualitySoundKits[nextProjectedQuality];
+	local nextCraftingQuality = operationInfo.craftingQuality;
+	if self.craftingQuality ~= nil then
+		if nextCraftingQuality > self.craftingQuality then
+			local soundKit = nextQualitySoundKits[nextCraftingQuality];
 			if soundKit then
 				PlaySound(soundKit);
 			end
-		elseif nextProjectedQuality < self.projectedQuality then
+		elseif nextCraftingQuality < self.craftingQuality then
 			PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_PREVIOUS_QUALITY);
 		end
 	end
-	self.projectedQuality = nextProjectedQuality;
-
+	self.craftingQuality = nextCraftingQuality;
 
 	local professionType = isGatheringRecipe and Professions.ProfessionType.Gathering or Professions.ProfessionType.Crafting;
 	self.Label:SetText(detailsPanelTitles[professionType]);
@@ -305,10 +285,6 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 
 	self.statLinePool:ReleaseAll();
 
-	self.QualityMeter.Center.Fill2:SetValue(0);
-	self.QualityMeter.Center.Fill.Flare2:SetAlpha(0);
-
-	self.QualityMeter:SetShown(supportsQualities);
 	self.StatLines.DifficultyStatLine:SetShown(supportsQualities or isGatheringRecipe);
 	self.StatLines.DifficultyStatLine:SetProfessionType(professionType);
 	self.StatLines.SkillStatLine:SetShown(supportsQualities or isGatheringRecipe);
@@ -317,10 +293,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 		self.StatLines.DifficultyStatLine:SetValue(isGatheringRecipe and operationInfo.maxDifficulty or operationInfo.baseDifficulty, operationInfo.bonusDifficulty);
 		self.StatLines.SkillStatLine:SetValue(operationInfo.baseSkill, operationInfo.bonusSkill);
 	end
-	if supportsQualities then
-		self.QualityMeter:SetQuality(operationInfo.quality, self.recipeInfo.maxQuality);
-	end
-
+	
 	local nextStatLineIndex = 3;
 	for _, bonusStat in ipairs(operationInfo.bonusStats) do
 		local statLine = self.statLinePool:Acquire();
@@ -332,6 +305,16 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 	end
 
 	self.StatLines:Layout();
+	
+	--if self.QualityMeter.lockedForAnimations then
+	--	self.pendingStats = {operationInfo = operationInfo, supportsQualities = supportsQualities, isGatheringRecipe = isGatheringRecipe};
+	--else
+		self.QualityMeter:SetShown(supportsQualities);
+		if supportsQualities then
+			self.QualityMeter:SetQuality(operationInfo.quality, self.recipeInfo.maxQuality);
+		end
+	--end
+
 	self:Layout();
 end
 
@@ -343,60 +326,293 @@ function ProfessionsRecipeCrafterDetailsMixin:Reset()
 	self.QualityMeter:Reset();
 end
 
-function ProfessionsRecipeCrafterDetailsMixin:SetRecipeInfo(recipeInfo)
-	self.recipeInfo = recipeInfo;
-end
-
 ProfessionsQualityMeterMixin = {};
 
 function ProfessionsQualityMeterMixin:OnLoad()
 	self:Reset();
 
 	self.interpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseOut);
+
+	self.InteriorMask:SetSize((372/2), (52/2));
+	self.Center.Fill.BarMask:SetHeight(27);
+	self.Center.Fill.BarHighlightMask:SetHeight(27);
+
+	self.anims = {};
+	table.insert(self.anims, self.Left.AppearIcon.Anim);
+	table.insert(self.anims, self.Left.AppearIcon.ScaleUp);
+	table.insert(self.anims, self.Left.DissolveIcon.Anim);
+	table.insert(self.anims, self.Right.AppearIcon.Anim);
+	table.insert(self.anims, self.Right.AppearIcon.ScaleUp);
+	table.insert(self.anims, self.Right.AppearIcon.ScaleUpQuick);
+	table.insert(self.anims, self.Right.DissolveIcon.Anim);
+	table.insert(self.anims, self.Marker.TransitionIn);
+	table.insert(self.anims, self.Marker.TransitionOut);
+	table.insert(self.anims, self.Marker.TransitionOutLate);
+	table.insert(self.anims, self.DividerGlow.TransitionIn);
+	table.insert(self.anims, self.DividerGlow.TransitionOut);
+	table.insert(self.anims, self.Flare.FlareTransitionIn);
+	table.insert(self.anims, self.Flare.FxTransitionOut);
+	table.insert(self.anims, self.Center.Fill.TransitionOutLate);
+	table.insert(self.anims, self.Center.Fill.TransitionOut);
 end
 
-local function GetColorRGBA(quality)
-	if quality == 1 then
-		return .616, .357, .231, 1;
-	elseif quality == 2 then
-		return .592, .608, .627, 1;
-	elseif quality == 3 then
-		return .886, .761, .004, 1;
-	elseif quality == 4 then
-		return .086, .867, .675, 1;
-	elseif quality == 5 then
-		return 1, .761, .071, 1;
+function ProfessionsQualityMeterMixin:CancelAllAnims(operationInfo)
+	if self.anims then
+		for index, anim in ipairs(self.anims) do
+			anim:Stop();
+		end
 	end
-	assert(false);
+
+	if self.sequencer then
+		self.sequencer:Cancel();
+	end
+
+	if operationInfo then
+		self:SetBarAtlas(operationInfo.craftingQuality);
+	end
+
+	if self.animating then
+		self.Center.Fill.BarMask:SetWidth(0);
+		self.Center.Fill.Bar:SetShown(false);
+
+		self.Center.Fill.BarHighlightMask:SetWidth(0);
+		self.Center.Fill.BarHighlight:SetShown(false);
+
+		self.Marker.TransitionIn:Restart();
+		self.DividerGlow:SetPoint("CENTER", self.Marker);
+		self.DividerGlow.TransitionIn:Restart();
+
+		self.Left.AppearIcon:Show();
+		self.Left.AppearIcon.Anim:Restart();
+		self.Right.AppearIcon.Anim:Restart();
+	end
+
+	self.animating = false;
+end
+
+function ProfessionsQualityMeterMixin:SetOnAnimationsFinished(func)
+	self.onAnimationsFinished = func;
 end
 
 function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
-	self.qualityInteger = math.floor(quality);
-	self.Left.Icon:SetAtlas(Professions.GetIconForQuality(self.qualityInteger), TextureKitConstants.UseAtlasSize);
-	local notAtMax = self.qualityInteger < maxQuality;
-	self.Right:SetShown(notAtMax);
-	if notAtMax then
-		self.Right.Icon:SetAtlas(Professions.GetIconForQuality(self.qualityInteger + 1), TextureKitConstants.UseAtlasSize);
+	local oldCraftingQuality = self.craftingQuality;
+	self.craftingQuality = math.floor(quality);
+	
+	self.Left.AppearIcon:SetAtlas(("GemAppear_T%d_Flipbook"):format(self.craftingQuality));
+	self.Left.DissolveIcon:SetAtlas(("GemDissolve_T%d_Flipbook"):format(self.craftingQuality));
+	
+	local canPromoteTier = self.craftingQuality < maxQuality;
+	self.Right:SetShown(canPromoteTier);
+	if canPromoteTier then
+		self.Right.AppearIcon:SetAtlas(("GemAppear_T%d_Flipbook"):format(self.craftingQuality + 1));
 	end
+	
+	--if not self.lockedForAnimations then
+		if oldCraftingQuality ~= self.craftingQuality then
+			self.Left.AppearIcon.Anim:Restart();
+			self.Right.AppearIcon.Anim:Restart();
+		end
+	--end
 
-	self.partialQuality = math.fmod(quality, 1);
-	local hasPartial = self.partialQuality ~= 0;
-	local centerWidth = self.Center:GetWidth();
-	self.Center.Fill:SetShown(hasPartial);
-	if hasPartial then
-		self.Center.Fill:SetWidth((math.fmod(quality, 1) * centerWidth) - 3);
-		self.Center.Fill.Background:SetColorTexture(GetColorRGBA(self.qualityInteger));
-	end
+	local backgroundTier = math.min(math.max(1, self.craftingQuality), 4);
+	local backgroundAtlas = ("Professions-QualityBar-BarBGx2-Tier%d"):format(backgroundTier);
+	self.Center.Background:SetAtlas(backgroundAtlas);
+	self.Center.Background:SetSize((372/2), (52/2));
 
-	self.Border.Marker:ClearAllPoints();
-	if hasPartial then
-		self.Border.Marker:SetPoint("CENTER", self.Center.Fill, "RIGHT", 0, 0);
+	local qualityRemainder = math.fmod(quality, 1);
+	if qualityRemainder <= MathUtil.ApproxZero then
+		self.Marker.Marker:SetAtlas("Professions-QualityBar-marker-left", TextureKitConstants.UseAtlasSize);
+	elseif qualityRemainder >= MathUtil.ApproxOne then
+		self.Marker.Marker:SetAtlas("Professions-QualityBar-marker-right", TextureKitConstants.UseAtlasSize);
 	else
-		self.Border.Marker:SetPoint("CENTER", self.Center, "LEFT", 3, 2);
+		self.Marker.Marker:SetAtlas("Professions-QualityBar-marker", TextureKitConstants.UseAtlasSize);
 	end
+
+	local markerX = qualityRemainder * (374.25/2);
+	self.Marker:SetPoint("CENTER", self.Center.Fill, "TOPLEFT", markerX, -13);
+	self.DividerGlow:SetPoint("CENTER", self.Marker);
+end
+
+function ProfessionsQualityMeterMixin:SetBarAtlas(quality)
+	local barAtlas = ("Quality-BarFill-Flipbook-T%d-x2"):format(quality);
+	self.Center.Fill.Bar:SetAtlas(barAtlas);
+	self.Center.Fill.Bar:SetSize((374.25/2), (54/2));
+
+	local highlightAtlas = ("Professions-QualityBar-Highlight-T%d"):format(quality);
+	self.Center.Fill.BarHighlight:SetAtlas(highlightAtlas, TextureKitConstants.UseAtlasSize);
+	self.Center.Fill.BarHighlight:SetSize((372/2), (52/2));
+end
+
+function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationInfo, animSpeedMultiplier)
+	self.animating = true;
+
+	if self.sequencer then
+		self.sequencer:Cancel();
+	end
+
+	self.Left.AppearIcon.Anim:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Left.AppearIcon.ScaleUp:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Left.DissolveIcon.Anim:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Right.AppearIcon.Anim:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Right.AppearIcon.ScaleUp:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Right.AppearIcon.ScaleUpQuick:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Right.DissolveIcon.Anim:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Marker.TransitionIn:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Marker.TransitionOut:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Marker.TransitionOutLate:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.DividerGlow.TransitionIn:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.DividerGlow.TransitionOut:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Flare.FlareTransitionIn:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Flare.FxTransitionOut:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Center.Fill.TransitionOutLate:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+	self.Center.Fill.TransitionOut:SetAnimationSpeedMultiplier(animSpeedMultiplier);
+
+	PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_START);
+
+	self:SetBarAtlas(operationInfo.craftingQuality);
+
+	self.Center.Fill.Bar.Flipbook:Play();
+	self.Center.Fill.Bar:SetAlpha(1);
+	self.Center.Fill.BarHighlight:SetAlpha(1);
+
+	do
+		self.Center.Fill.BarHighlightMask:ClearAllPoints();
+		local p, r, rp, x, y = self.Marker:GetPointByName("CENTER");
+		self.Center.Fill.BarHighlightMask:SetPoint("LEFT", self.Marker, "CENTER");
+	end
+
+	local function GetFillToPct(operationInfo)
+		if resultData.isCrit then
+			local additive = operationInfo.baseSkill + operationInfo.bonusSkill + resultData.critBonusSkill;
+			local skillRange = operationInfo.upperSkillTreshold - operationInfo.lowerSkillThreshold;
+			if skillRange == 0 then
+				return 0;
+			end
+
+			return math.min((additive - operationInfo.lowerSkillThreshold) / skillRange, 1.0);
+		else
+			return math.fmod(operationInfo.quality, 1);
+		end
+	end
+
+	local promotedTier = resultData.craftingQuality > operationInfo.craftingQuality;
+
+	-- The fill is driven through an interpolator, not XML animation. Once the
+	-- interpolation finishes, we'll call a sequence of XML animations to handle
+	-- the more complicated weaving of element animations.
+	self.sequencer = CreateSequencer();
+	do
+		local fillToWidth = GetFillToPct(operationInfo) * (374.25/2);
+		local unitsPerSecond = 200;
+		local time = (fillToWidth / unitsPerSecond) / animSpeedMultiplier;
+		self.sequencer:AddInterpolated(0, 1, time, InterpolatorUtil.InterpolateEaseOut, function(value)
+			local maskWidth = fillToWidth * value;
+			self.Center.Fill.BarMask:SetWidth(maskWidth);
+			-- Mask with 0 extent causes the mask to be ignored. Show the bar
+			-- highlight if we still need it.
+			self.Center.Fill.Bar:SetShown(maskWidth > 0);
+
+			local p, r, rp, x, y = self.Marker:GetPointByName("CENTER");
+			local barHighlightMaskWidth = math.max(0, maskWidth - x);
+			self.Center.Fill.BarHighlightMask:SetWidth(barHighlightMaskWidth);
+			-- Mask with 0 extent causes the mask to be ignored. Show the bar
+			-- highlight if we still need it.
+			self.Center.Fill.BarHighlight:SetShown(barHighlightMaskWidth > 0);
+
+			-- The divider follows the fill progress, with a minimum position
+			-- where the marker is.
+			local dividerX = math.max(0, maskWidth - x);
+			self.DividerGlow:SetPoint("CENTER", self.Marker, "CENTER", dividerX, 0);
+		end);
+	end
+
+	local function PlayBeginAnimation()
+		local craftingQuality = resultData.craftingQuality;
+		local soundKit = craftingQuality and craftCompleteSoundKits[craftingQuality];
+		if soundKit then
+			PlaySound(soundKit);
+		end
+
+		--assert(self.onAnimationsFinished);
+		--local statsChanged = self.onAnimationsFinished();
+
+		-- The stats may now have changed, so anything being animated in
+		-- should represent the new state, not the old state.
+		self.Marker.TransitionIn:Restart();
+		self.DividerGlow:SetPoint("CENTER", self.Marker);
+		self.DividerGlow.TransitionIn:Restart();
+
+		if promotedTier then
+			self.Left.DissolveIcon:Hide();
+			self.Left.AppearIcon:Show();
+			self.Left.AppearIcon.Anim:Restart();
+		end
+
+		--self.lockedForAnimations = false;
+		self.animating = false;
+	end
+	
+	local function OnFxFinished()
+		self.flareEffect = nil;
+	end
+
+	local function PlayEndAnimation()
+		self.Flare.FlareTransitionIn:Restart();
+		self.DividerGlow.TransitionOut:Restart();
+
+		if resultData.isCrit then
+			local modifier = Clamp(tonumber(GetCVar("ShakeStrengthUI")) or 0, 0, 1);
+			local magnitude = 10 * modifier;
+			if magnitude > 0 then
+				ScriptAnimationUtil.ShakeFrameRandom(self, magnitude, .25, .05);
+			end
+
+			local effectID = 146;
+			local source = self.Flare.Fx;
+			self.flareEffect = GlobalFXDialogModelScene:AddEffect(effectID, source, nil, OnFxFinished);
+
+			self.Flare.FxTransitionOut:Restart();
+		end
+
+		if promotedTier then
+			self.Left.AppearIcon:Hide();
+			self.Left.DissolveIcon:Show();
+			self.Left.DissolveIcon.Anim:Restart();
+
+			local quick = animSpeedMultiplier > 1;
+			if quick then
+				self.Right.AppearIcon.ScaleUpQuick:Restart();
+			else
+				self.Right.AppearIcon.ScaleUp:Restart();
+			end
+
+			self:SetBarAtlas(resultData.craftingQuality);
+
+			if quick then
+				self.Marker.TransitionOut:Restart();
+			else
+				self.Marker.TransitionOutLate:Restart();
+			end
+
+			if quick then
+				self.Center.Fill.TransitionOut:Restart();
+				self.Center.Fill.TransitionOut:SetScript("OnFinished", PlayBeginAnimation);
+			else
+				self.Center.Fill.TransitionOutLate:Restart();
+				self.Center.Fill.TransitionOutLate:SetScript("OnFinished", PlayBeginAnimation);
+			end
+		else
+			self.Marker.TransitionOut:Restart();
+			self.Center.Fill.TransitionOut:Restart();
+			self.Center.Fill.TransitionOut:SetScript("OnFinished", PlayBeginAnimation);
+		end
+	end
+
+	self.sequencer:Add(PlayEndAnimation);
+	self.sequencer:Play();
+
+	--self.lockedForAnimations = true;
 end
 
 function ProfessionsQualityMeterMixin:Reset()
-	self.Center.Fill2:SetMinMaxValues(0, 1);
-	self.Center.Fill2:SetValue(0);
 end

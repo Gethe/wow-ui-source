@@ -829,6 +829,35 @@ local ArtifactUI =
 	Tables =
 	{
 		{
+			Name = "ArtifactAppearanceInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "artifactAppearanceID", Type = "number", Nilable = false },
+				{ Name = "appearanceName", Type = "string", Nilable = false },
+				{ Name = "displayIndex", Type = "number", Nilable = false },
+				{ Name = "unlocked", Type = "bool", Nilable = false },
+				{ Name = "failureDescription", Type = "string", Nilable = true },
+				{ Name = "uiCameraID", Type = "number", Nilable = false },
+				{ Name = "altHandCameraID", Type = "number", Nilable = true },
+				{ Name = "swatchColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "modelOpacity", Type = "number", Nilable = false },
+				{ Name = "modelSaturation", Type = "number", Nilable = false },
+				{ Name = "obtainable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ArtifactAppearanceSetInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "artifactAppearanceSetID", Type = "number", Nilable = false },
+				{ Name = "appearanceSetName", Type = "string", Nilable = false },
+				{ Name = "appearanceSetDescription", Type = "string", Nilable = false },
+				{ Name = "numAppearances", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ArtifactArtInfo",
 			Type = "Structure",
 			Fields =
@@ -840,6 +869,36 @@ local ArtifactUI =
 				{ Name = "barDisconnectedColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
 				{ Name = "spellVisualKitID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ArtifactInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "altItemID", Type = "number", Nilable = true },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "xp", Type = "number", Nilable = false },
+				{ Name = "pointsSpent", Type = "number", Nilable = false },
+				{ Name = "quality", Type = "number", Nilable = false },
+				{ Name = "artifactAppearanceID", Type = "number", Nilable = false },
+				{ Name = "appearanceModID", Type = "number", Nilable = false },
+				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
+				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
+				{ Name = "altOnTop", Type = "bool", Nilable = false },
+				{ Name = "tier", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ArtifactMetaPowerInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "powerCost", Type = "number", Nilable = false },
+				{ Name = "currentRank", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -861,6 +920,17 @@ local ArtifactUI =
 				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "offset", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
 				{ Name = "linearIndex", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "ArtifactRelicInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "slotTypeName", Type = "string", Nilable = false, Documentation = { "Matches the socket identifiers used in the socketing system." } },
+				{ Name = "link", Type = "string", Nilable = false },
 			},
 		},
 	},

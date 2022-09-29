@@ -40,6 +40,7 @@ OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT				= 0x00040;
 OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED			= 0x00080;
 OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED		= 0x00100;
 OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED		= 0x00200;
+OBJECTIVE_TRACKER_UPDATE_MOVED						= 0x80000;
 -- these are for the specific module ONLY!
 OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST				= 0x00400;
 OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP	= 0x00800;
@@ -794,12 +795,23 @@ end
 
 function ObjectiveTracker_UpdateHeight()
 	local self = ObjectiveTrackerFrame;
+
+	if not self:IsInDefaultPosition() then
+		-- Assure we can fit the scenario block since it has gameplay implications
+		local isScenarioBlockShowing = ScenarioBlocksFrame and ScenarioBlocksFrame:IsShown();
+		local scenarioBlockHeight = isScenarioBlockShowing and (ScenarioBlocksFrame:GetHeight() + ObjectiveTrackerBlocksFrame.ScenarioHeader:GetHeight() + 10) or 0;
+
+		local newHeight = math.max(self.editModeHeight or 800, scenarioBlockHeight);
+		self:SetHeight(newHeight);
+		return;
+	end
+
 	local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(1);
-	if(offsetY) then 
-		local parentHeight = self:GetParent():GetHeight(); 
+	if offsetY then
+		local parentHeight = self:GetParent():GetHeight();
 		local setHeight = parentHeight + offsetY;
 		self:SetHeight(setHeight);
-	end 
+	end
 end
 
 function ObjectiveTracker_OnShow(self)
@@ -1125,7 +1137,7 @@ local function InternalAddBlock(block)
 		return false;
 	end
 
-	local offsetY = AnchorBlock(block, blocksFrame.currentBlock, true);
+	local offsetY = AnchorBlock(block, blocksFrame.currentBlock, not module.ignoreFit);
 	if ( not offsetY ) then
 		return false;
 	end
@@ -1352,6 +1364,27 @@ end
 
 function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 	local tracker = ObjectiveTrackerFrame;
+
+	if not reason or reason == OBJECTIVE_TRACKER_UPDATE_ALL or reason == OBJECTIVE_TRACKER_UPDATE_MOVED then
+		local trackerCenterX = tracker:GetCenter();
+		if not trackerCenterX then
+			return;
+		end
+
+		local halfScreenWidth = GetScreenWidth() / 2;
+		tracker.isOnLeftSideOfScreen = trackerCenterX < halfScreenWidth;
+
+		tracker.HeaderMenu.MinimizeButton:ClearAllPoints();
+		tracker.HeaderMenu.Title:ClearAllPoints();
+		if tracker.isOnLeftSideOfScreen then
+			tracker.HeaderMenu.MinimizeButton:SetPoint("LEFT", tracker.HeaderMenu, "LEFT", 0, 0);
+			tracker.HeaderMenu.Title:SetPoint("LEFT", tracker.HeaderMenu.MinimizeButton, "RIGHT", 3, 0);
+		else
+			tracker.HeaderMenu.MinimizeButton:SetPoint("RIGHT", tracker.HeaderMenu, "RIGHT", 0, 0);
+			tracker.HeaderMenu.Title:SetPoint("RIGHT", tracker.HeaderMenu.MinimizeButton, "LEFT", -3, 0);
+		end
+	end
+
 	if tracker.isUpdating then
 		-- Trying to update while we're already updating, try again next frame
 		tracker.isUpdateDirty = true;
@@ -1432,7 +1465,10 @@ function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 
 	tracker.BlocksFrame.currentBlock = nil;
 	tracker.isUpdating = false;
-	UIParent_ManageFramePositions();
+
+	if tracker:IsInDefaultPosition() then
+		UIParent_ManageFramePositions();
+	end
 end
 
 function ObjectiveTracker_CheckAndHideHeader(moduleHeader)
@@ -1499,10 +1535,15 @@ function ObjectiveTracker_ReorderModules()
 				anchorBlock = module.lastBlock;
 			end
 
+			local headerPoint = ObjectiveTrackerFrame.isOnLeftSideOfScreen and "LEFT" or "RIGHT";
 			if header then
-				header:SetPoint("RIGHT", module.Header, "RIGHT", 0, 0);
+				header:ClearAllPoints();
+				header:SetPoint(headerPoint, module.Header, headerPoint, ObjectiveTrackerFrame.isOnLeftSideOfScreen and -10 or 0, 0);
 				header = nil;
 			end
+
+			module.Header.Text:ClearAllPoints();
+			module.Header.Text:SetPoint("LEFT", module.Header, "LEFT", ObjectiveTrackerFrame.isOnLeftSideOfScreen and 30 or 4, -1);
 
 			-- Side-step annoying "uncollapse" issue by allowing a collapsed module to continue showing its minimize button even if
 			-- it's the only remaining visible module
@@ -1510,7 +1551,8 @@ function ObjectiveTracker_ReorderModules()
 
 			module.Header.MinimizeButton:SetShown(shouldShowThisModuleMinimizeButton);
 			if shouldShowThisModuleMinimizeButton then
-				module.Header.MinimizeButton:SetPoint("RIGHT", module.Header, "RIGHT", -21, 0);
+				module.Header.MinimizeButton:ClearAllPoints();
+				module.Header.MinimizeButton:SetPoint(headerPoint, module.Header, headerPoint, ObjectiveTrackerFrame.isOnLeftSideOfScreen and 9 or -20, 0);
 			end
 		end
 	end

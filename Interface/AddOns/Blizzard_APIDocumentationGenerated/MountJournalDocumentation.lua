@@ -278,6 +278,20 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "GetMountLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mountCreatureDisplayInfoLink", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetMountUsabilityByID",
 			Type = "Function",
 
@@ -582,6 +596,42 @@ local MountJournal =
 			{
 				{ Name = "creatureDisplayID", Type = "number", Nilable = false },
 				{ Name = "isVisible", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "MountInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "isUsable", Type = "bool", Nilable = false },
+				{ Name = "sourceType", Type = "number", Nilable = false },
+				{ Name = "isFavorite", Type = "bool", Nilable = false },
+				{ Name = "isFactionSpecific", Type = "bool", Nilable = false },
+				{ Name = "faction", Type = "number", Nilable = true },
+				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
+				{ Name = "isCollected", Type = "bool", Nilable = false },
+				{ Name = "mountID", Type = "number", Nilable = false },
+				{ Name = "isForDragonriding", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "MountInfoExtra",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "creatureDisplayInfoID", Type = "number", Nilable = true },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "source", Type = "string", Nilable = false },
+				{ Name = "isSelfMount", Type = "bool", Nilable = false },
+				{ Name = "mountTypeID", Type = "number", Nilable = false },
+				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
+				{ Name = "animID", Type = "number", Nilable = false },
+				{ Name = "spellVisualKitID", Type = "number", Nilable = false },
+				{ Name = "disablePlayerMountPreview", Type = "bool", Nilable = false },
 			},
 		},
 	},

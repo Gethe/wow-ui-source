@@ -491,5 +491,5 @@ function QUEST_TRACKER_MODULE:ShouldDisplayQuest(quest)
 		return false;
 	end
 
-	return not quest:IsCampaign();
+	return quest:GetSortType() ~= QuestSortType.Campaign;
 end

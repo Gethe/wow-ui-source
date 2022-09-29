@@ -23,16 +23,25 @@
 	</Frame>
 
 	<Frame name="ProfessionsRecipeSchematicFormTemplate" mixin="ProfessionsRecipeSchematicFormMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="canShowFavoriteButton" value="true" type="boolean"/>
+		</KeyValues>
 		<Frames>
 			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate" parentArray="recipeInfoFrames">
 				<KeyValues>
-					<KeyValue key="noQualityOverlay" value="true" type="boolean"/>
+					<KeyValue key="noProfessionQualityOverlay" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-20"/>
 				</Anchors>
 			</Button>
 
+			<CheckButton parentKey="FavoriteButton" mixin="ProfessionsFavoriteButtonMixin" parentArray="recipeInfoFrames" hidden="true">
+				<Size x="20" y="18"/>
+				<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-icon-favorite"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-icon-favorite-off" alphaMode="ADD"/>
+			</CheckButton>
+			
 			<Frame parentKey="QualityDialog" inherits="ProfessionsQualityDialogTemplate" frameStrata="DIALOG" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER"/>

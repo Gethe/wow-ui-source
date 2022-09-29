@@ -143,7 +143,8 @@ local ClassTalents =
 
 			Returns =
 			{
-				{ Name = "result", Type = "bool", Nilable = false },
+				{ Name = "success", Type = "bool", Nilable = false },
+				{ Name = "importError", Type = "string", Nilable = false },
 			},
 		},
 		{

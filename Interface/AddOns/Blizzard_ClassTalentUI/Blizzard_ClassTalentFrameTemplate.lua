@@ -30,6 +30,7 @@ function ClassTalentFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForUnitEvents(self, ClassTalentFrameUnitEvents, "player");
 
 	self:UpdateTabs();
+	UpdateMicroButtons();
 
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_OPEN_WINDOW);
 end
@@ -44,6 +45,7 @@ function ClassTalentFrameMixin:OnHide()
 		ClearInspectPlayer();
 	end
 
+	UpdateMicroButtons();
 	self.lockInspect = false;
 end
 
@@ -53,14 +55,8 @@ function ClassTalentFrameMixin:OnEvent(event)
 	end
 end
 
-function ClassTalentFrameMixin:ShowTutorialHelp(showHelpFeature)
-	for specContentFrame in self.SpecTab.SpecContentFramePool:EnumerateActive() do 
-		if showHelpFeature then
-			GlowEmitterFactory:Show(specContentFrame.ActivateButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow)			
-		else
-			GlowEmitterFactory:Hide(specContentFrame.ActivateButton);
-		end
-	end
+function ClassTalentFrameMixin:GetTalentsTabButton()
+	return self:GetTabButton(self.talentTabID);
 end
 
 function ClassTalentFrameMixin:UpdateTabs()
@@ -77,13 +73,14 @@ function ClassTalentFrameMixin:UpdateTabs()
 	end
 end
 
-function ClassTalentFrameMixin:CheckConfirmResetAction(callback)
+function ClassTalentFrameMixin:CheckConfirmResetAction(callback, cancelCallback)
 	if (self:GetTab() == self.talentTabID) and self.TalentsTab:HasAnyConfigChanges() then
 		local referenceKey = self;
 		if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
 			local customData = {
 				text = TALENT_FRAME_CONFIRM_CLOSE,
 				callback = callback,
+				cancelCallback = cancelCallback,
 				acceptText = CONTINUE,
 				cancelText = CANCEL,
 				referenceKey = referenceKey,
@@ -151,4 +148,5 @@ end
 function ClassTalentFrameMixin:CheckConfirmClose()
 	-- No need to check before closing anymore.
 	HideUIPanel(self);
+	EventRegistry:TriggerEvent("TalentFrame.CloseFrame");
 end

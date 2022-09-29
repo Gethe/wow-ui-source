@@ -1,5 +1,6 @@
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(ACTIONBARS_LABEL);
+	Settings.ACTION_BAR_CATEGORY_ID = category:GetID();
 
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[ACTIONBARS_LABEL]);

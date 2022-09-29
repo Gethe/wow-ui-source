@@ -13,6 +13,7 @@
 			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Player" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PLAYER_FRAME_LABEL" type="global"/>
 			<KeyValue key="disablePortraitMask" value="true" type="boolean"/>
+			<KeyValue key="frameType" value="Player" type="string"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="PlayerFrameContainer" setAllPoints="true">
@@ -35,10 +36,9 @@
 						</MaskTexture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="2">
-						<Texture parentKey="VehicleFrameTexture" file="Interface\Vehicles\UI-Vehicle-Frame" hidden="true">
-							<Size x="240" y="120"/>
+						<Texture parentKey="VehicleFrameTexture" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Vehicle" useAtlasSize="true" hidden="true">
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="-8"/>
+								<Anchor point="CENTER" x="-2" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="FrameTexture" atlas="UI-HUD-UnitFrame-Player-PortraitOn" useAtlasSize="true">
@@ -78,12 +78,12 @@
 								<FontString name="PlayerName" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
 									<Size x="96" y="12"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="88" y="-26"/>
+										<Anchor point="TOPLEFT" x="88" y="-27"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerLevelText" inherits="GameNormalNumberFont" justifyH="RIGHT" justifyV="MIDDLE">
 									<Anchors>
-										<Anchor point="TOPRIGHT" x="-24.5" y="-27"/>
+										<Anchor point="TOPRIGHT" x="-24.5" y="-28"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
@@ -91,6 +91,11 @@
 										<Anchor point="CENTER" relativeKey="$parent.$parent.$parent.PlayerFrameContainer.PlayerPortrait" relativePoint="CENTER"/>
 									</Anchors>
 								</FontString>
+								<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="83" y="-59"/>
+									</Anchors>
+								</MaskTexture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="2">
 								<!-- StatusTexture is a flash texture for the player portrait and top bar (where the player name is).
@@ -159,23 +164,23 @@
 									<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar" enableMouseMotion="true" useParentLevel="true">
 										<Size x="124" y="10"/>
 										<Anchors>
-											<Anchor point="TOPLEFT" x="85" y="-62"/>
+											<Anchor point="TOPLEFT" x="85" y="-61"/>
 										</Anchors>
 										<Layers>
 											<Layer level="OVERLAY">
 												<FontString name="PlayerFrameManaBarText" inherits="TextStatusBarText">
 													<Anchors>
-														<Anchor point="CENTER" x="0" y="1"/>
+														<Anchor point="CENTER" x="0" y="0"/>
 													</Anchors>
 												</FontString>
 												<FontString name="PlayerFrameManaBarTextLeft" inherits="TextStatusBarText">
 													<Anchors>
-														<Anchor point="LEFT" x="2" y="1"/>
+														<Anchor point="LEFT" x="2" y="0"/>
 													</Anchors>
 												</FontString>
 												<FontString name="PlayerFrameManaBarTextRight" inherits="TextStatusBarText">
 													<Anchors>
-														<Anchor point="RIGHT" x="-2" y="1"/>
+														<Anchor point="RIGHT" x="-2" y="0"/>
 													</Anchors>
 												</FontString>
 											</Layer>
@@ -184,6 +189,7 @@
 											<OnLoad>
 												TextStatusBar_Initialize(self);
 												self.textLockable = 1;
+												self.lockColor = true;
 												self.cvar = "statusText";
 												self.cvarLabel = "STATUS_TEXT_PLAYER";
 												self:SetMouseClickEnabled(false);
@@ -235,7 +241,7 @@
 										<Anchor point="TOPLEFT" x="58.5" y="-53.5"/>
 									</Anchors>
 								</Texture>
-								<FontString name="PlayerPVPTimerText" inherits="GameFontNormalSmall">
+								<FontString name="PlayerPVPTimerText" parentKey="PvpTimerText" inherits="GameFontNormalSmall">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="45" y="-82"/>
 									</Anchors>
@@ -383,4 +389,39 @@
 			<OnReceiveDrag function="PlayerFrame_OnReceiveDrag"/>
 		</Scripts>
 	</Button>
+
+	<Frame name="PlayerFrameBottomManagedFrameTemplate" inherits="UIParentManagedFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutParent" value="PlayerFrameBottomManagedFramesContainer" type="global"/>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="PlayerFrameManagedContainerTemplate" parent="PlayerFrame" inherits="VerticalLayoutFrame" mixin="UIParentManagedFrameContainerMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="spacing" value="2" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="BottomManagedLayoutContainer" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="500" type="number"/>
+					<KeyValue key="spacing" value="-10" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="fixedWidth" value="160" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PlayerFrameBottomManagedFramesContainer" inherits="PlayerFrameManagedContainerTemplate">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="160" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="30" y="25"/>
+		</Anchors>
+	</Frame>
 </Ui>

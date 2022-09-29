@@ -42,16 +42,15 @@ function UIWidgetTemplateFillUpFramesMixin:Setup(widgetInfo, widgetContainer)
 		self.lastNumFullFrames = widgetInfo.numFullFrames;
 	end
 	
-	local flashFullFrames = (widgetInfo.numFullFrames > self.lastNumFullFrames);
-
 	for index = 1, widgetInfo.numTotalFrames do
 		local fillUpFrame = self.fillUpFramePool:Acquire();
 
 		local isFull = (index <= widgetInfo.numFullFrames);
 		local isFilling = (index == (widgetInfo.numFullFrames + 1));
+		local flashFrame = isFull and (widgetInfo.numFullFrames > self.lastNumFullFrames) and (index > self.lastNumFullFrames);
 
 		fillUpFrame:SetPoint("TOPLEFT", self, "TOPLEFT");
-		fillUpFrame:Setup(widgetContainer, widgetInfo.textureKit, isFull, isFilling, flashFullFrames, widgetInfo.fillMin, widgetInfo.fillMax, widgetInfo.fillValue)
+		fillUpFrame:Setup(widgetContainer, widgetInfo.textureKit, isFull, isFilling, flashFrame, widgetInfo.fillMin, widgetInfo.fillMax, widgetInfo.fillValue)
 		fillUpFrame.layoutIndex = index;
 
 		if isFull then
@@ -95,7 +94,11 @@ local fixedSizeByTextureKit = {
 	dragonriding_vigor = {width=42, height=45};
 };
 
-function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isFull, isFilling, flashFullFrames, min, max, value)
+local flashFameSound = {
+	dragonriding_vigor = SOUNDKIT.UI_DRAGONRIDING_FULL_NODE;
+};
+
+function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isFull, isFilling, flashFrame, min, max, value)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 
 	SetupTextureKitOnRegions(textureKit, self, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
@@ -118,17 +121,11 @@ function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isF
 		self.Bar:SetValue(min);
 	end
 
-	if isFull then
-		if flashFullFrames then
-			self.Flash.PulseAnim:Stop();
-			self.Flash.FlashAnim:Restart();
-			self.Flash.PulseAnim.FadeIn:SetStartDelay(2);
-			self.Flash.PulseAnim:Restart();
-		else
-			self.Flash.PulseAnim:Play();
+	if flashFrame then
+		self.Flash.FlashAnim:Restart();
+		if flashFameSound[textureKit] then
+			PlaySound(flashFameSound[textureKit]);
 		end
-	else
-		self.Flash.PulseAnim:Stop();
 	end
 
 	self.Spark:SetShown(isFilling and value > min and value < max);

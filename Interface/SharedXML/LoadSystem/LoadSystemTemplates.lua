@@ -144,17 +144,23 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 			dropDownButtonInfo.colorCode = sentinelInfo.colorCode;
 			dropDownButtonInfo.tooltipText = sentinelInfo.tooltipText;
 			dropDownButtonInfo.tooltipTitle = sentinelInfo.tooltipTitle;
+			dropDownButtonInfo.tooltipWarning = sentinelInfo.tooltipWarning;
 			dropDownButtonInfo.tooltipWhileDisabled = sentinelInfo.tooltipWhileDisabled;
 			dropDownButtonInfo.tooltipOnButton = sentinelInfo.tooltipOnButton;
 			dropDownButtonInfo.noTooltipWhileEnabled = sentinelInfo.noTooltipWhileEnabled;
-			dropDownButtonInfo.tooltipWarning = sentinelInfo.tooltipWarning;
 
 			if sentinelInfo.disabledCallback then
-				local disabled, tooltipTitle, tooltipText, tooltipWarning = sentinelInfo.disabledCallback();
+				local disabled, disabledTooltipTitle, disabledTooltipText, disabledTooltipWarning = sentinelInfo.disabledCallback();
 				dropDownButtonInfo.disabled = disabled;
-				dropDownButtonInfo.tooltipTitle = tooltipTitle;
-				dropDownButtonInfo.tooltipText = tooltipText;
-				dropDownButtonInfo.tooltipWarning = tooltipWarning;
+
+				if dropDownButtonInfo.disabled then
+					dropDownButtonInfo.tooltipTitle = disabledTooltipTitle;
+					dropDownButtonInfo.tooltipText = disabledTooltipText;
+					dropDownButtonInfo.tooltipWarning = disabledTooltipWarning;
+					dropDownButtonInfo.tooltipWhileDisabled = true;
+					dropDownButtonInfo.tooltipOnButton = true;
+					dropDownButtonInfo.noTooltipWhileEnabled = true;
+				end
 			end
 
 			if sentinelInfo.icon then
@@ -237,14 +243,19 @@ end
 -- 				(selectionID, loadSystem) -> [optional newSelectionID]
 -- .text: The dropdown text for this special selection option.
 -- .icon: An optional icon used for this special selection option.
+-- .disabledCallback: Should return whether selection is disabled and tooltip content to show if it is.
+--						() => [isDisabled, tooltipTitle, tooltipText, tooltipWarning]
 function DropDownLoadSystemMixin:AddSentinelValue(sentinelKeyInfo)
 	local sentinelKey = self:GetNextSentinelKey();
 	self.sentinelKeyToInfo[sentinelKey] = sentinelKeyInfo;
+
 	self:UpdateSelectionOptions();
 end
 
 -- newEntryCallback(newEntryName)
 -- popupText: Text to display on a generic name input box popup
+-- disabledCallback: Should return whether new entry creation is disabled and tooltip content to show if it is.
+--						() => [isDisabled, tooltipTitle, tooltipText, tooltipWarning]
 -- Create a fresh entry with a new name.
 function DropDownLoadSystemMixin:SetNewEntryCallback(newEntryCallback, optionText, popupText, disabledCallback)
 	local function ShowGenericPopup(acceptCallback)
@@ -262,6 +273,8 @@ end
 
 -- newEntryCallback(newEntryName)
 -- customPopup: Custom popup for inputting the new entry name
+-- disabledCallback: Should return whether new entry creation is disabled and tooltip content to show if it is.
+--						() => [isDisabled, tooltipTitle, tooltipText, tooltipWarning]
 -- Create a fresh entry with a new name.
 function DropDownLoadSystemMixin:SetNewEntryCallbackCustomPopup(newEntryCallback, optionText, customPopup, disabledCallback)
 	local function ShowCustomPopup(acceptCallback)
@@ -289,9 +302,6 @@ function DropDownLoadSystemMixin:SetNewEntryCallbackInternal(newEntryCallback, o
 		icon = "communities-icon-addchannelplus",
 		callback = NewEntrySentinelCallback,
 		disabledCallback = disabledCallback,
-		tooltipWhileDisabled = true,
-		tooltipOnButton = true,
-		noTooltipWhileEnabled = true,
 	};
 
 	self:AddSentinelValue(sentinelInfo);

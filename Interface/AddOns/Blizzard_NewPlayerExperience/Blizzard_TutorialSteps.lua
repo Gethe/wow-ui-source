@@ -1985,7 +1985,7 @@ function Class_ChangeEquipment:Start(args)
 	EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
 	EventRegistry:RegisterCallback("ContainerFrame.CloseBag", self.BagClosed, self);
 
-	if (not GetContainerItemID(self.data.Container, self.data.ContainerSlot)) then
+	if (not C_Container.GetContainerItemID(self.data.Container, self.data.ContainerSlot)) then
 		TutorialQueue:NotifyDone(self);
 		return;
 	end
@@ -2179,11 +2179,11 @@ function Class_ChangeEquipment:UpdateItemContainerAndSlotInfo()
 
 		local itemFound = false;
 		for containerIndex = 0, maxNumContainters do
-			local slots = GetContainerNumSlots(containerIndex);
+			local slots = C_Container.GetContainerNumSlots(containerIndex);
 			if (slots > 0) then
 				for slotIndex = 1, slots do
-					local itemInfo = {GetContainerItemInfo(containerIndex, slotIndex)};
-					local itemID = itemInfo[10];
+					local itemInfo = C_Container.GetContainerItemInfo(containerIndex, slotIndex);
+					local itemID = itemInfo.itemID;
 					if itemID and itemID == currentItemID then
 						self.data.Container = containerIndex;
 						self.data.ContainerSlot = slotIndex;
@@ -3258,11 +3258,11 @@ function Class_UseVendor:UpdateGreyItemPointer()
 	local maxNumContainters = 4;
 	local greyItemQuality = 0;
 	for containerIndex = 0, maxNumContainters do
-		local slots = GetContainerNumSlots(containerIndex);
+		local slots = C_Container.GetContainerNumSlots(containerIndex);
 		if (slots > 0) then
 			for slotIndex = 1, slots do
-				local itemInfo = {GetContainerItemInfo(containerIndex, slotIndex)};
-				local itemQuality = itemInfo[4];
+				local itemInfo = C_Container.GetContainerItemInfo(containerIndex, slotIndex);
+				local itemQuality = itemInfo.quality;
 				if itemQuality == greyItemQuality then
 					itemFrame = TutorialHelper:GetItemContainerFrame(containerIndex, slotIndex);
 					break;
@@ -3994,7 +3994,7 @@ function Class_ChangeSpec:TalentFrameToggled()
 	
 	if ( ClassTalentFrame:IsShown() ) then
 		self:HidePointerTutorials();
-		ClassTalentFrame:ShowTutorialHelp(true);
+		ClassTalentFrame.SpecTab:ShowTutorialHelp(true);
 		Dispatcher:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", self);
 	else
 		self:ShowSpecButtonPointer();
@@ -4016,7 +4016,7 @@ function Class_ChangeSpec:OnInterrupt(interruptedBy)
 end
 
 function Class_ChangeSpec:Finish()	
-	ClassTalentFrame:ShowTutorialHelp(false);
+	ClassTalentFrame.SpecTab:ShowTutorialHelp(false);
 	ActionButton_HideOverlayGlow(TalentMicroButton);
 	self:HidePointerTutorials();
 	if self.success then
@@ -4024,6 +4024,122 @@ function Class_ChangeSpec:Finish()
 	end
 end
 
+-- ------------------------------------------------------------------------------------------------------------
+-- Talent Points
+-- ------------------------------------------------------------------------------------------------------------
+Class_TalentPoints = class("TalentPoints", Class_TutorialBase);
+function Class_TalentPoints:OnBegin()
+	local tutorialData = TutorialHelper:GetFactionData();
+	self.specQuestID = TutorialHelper:FilterByClass(tutorialData.SpecQuests);
+
+	local questComplete = C_QuestLog.IsQuestFlaggedCompleted(self.specQuestID);
+	if questComplete and C_ClassTalents.HasUnspentTalentPoints() then
+		TutorialQueue:Add(self);
+	end
+end
+
+function Class_TalentPoints:Start()
+	local talentPointsRemaining = C_ClassTalents.HasUnspentTalentPoints()
+
+	if talentPointsRemaining then
+		self.functionID = Dispatcher:RegisterFunction("ToggleTalentFrame", function()
+			self:TalentFrameToggled();
+			end, false);
+		
+		C_Timer.After(0.1, function()
+			self:ShowTalentButtonPointer();
+		end);	
+	else
+		self:TalentTutorialFinished();
+	end
+end
+
+function Class_TalentPoints:ShowTalentButtonPointer()
+	self:HidePointerTutorials();
+	self:ShowPointerTutorial(TALENT_MICRO_BUTTON_UNSPENT_TALENTS, "DOWN", TalentMicroButton, 0, 10, nil, "DOWN");
+	ActionButton_ShowOverlayGlow(TalentMicroButton);
+end
+
+function Class_TalentPoints:TalentFrameToggled()	
+	if ( ClassTalentFrame:IsShown() ) then
+		self:HidePointerTutorials();
+		if self.Timer then
+			self.Timer:Cancel();
+		end
+		if ClassTalentFrame.TalentsTab:IsShown() then
+			self.Timer = C_Timer.NewTimer(10, function() self:ShowTalentsHelp(ClassTalentFrame.TalentsTab.LoadoutDropDown) end);
+			EventRegistry:RegisterCallback("TalentFrame.CloseFrame", self.TalentTutorialFinished, self);
+		else
+			local talentPointsRemaining = C_ClassTalents.HasUnspentTalentPoints();
+			if talentPointsRemaining then
+				EventRegistry:RegisterCallback("TalentFrame.TalentTab.Show", self.TalentFrameTalentsTabShow, self);				
+				local talentsTab = ClassTalentFrame:GetTalentsTabButton();
+				self:ShowPointerTutorial(NPEV2_SELECT_TALENTS_TAB, "DOWN", talentsTab, 0, 10, nil, "DOWN");
+			else
+				self:TalentTutorialFinished();
+			end
+		end
+	else
+		if C_ClassTalents.HasUnspentTalentPoints() then
+			self:ShowTalentButtonPointer();
+		else
+			self.TalentTutorialFinished();
+		end
+	end
+end
+
+function Class_TalentPoints:ShowTalentsHelp(pointerTarget)
+	self:HidePointerTutorials();
+	EventRegistry:RegisterCallback("TalentFrame.SpecTab.Show", self.TalentFrameSpecTabShow, self);
+	EventRegistry:RegisterCallback("UIDropDownMenu.Show", self.TalentFrameDropDownShow, self);
+	self:ShowPointerTutorial(NPEV2_TALENTS_STARTER_BUILD, "DOWN", pointerTarget, 0, 10, nil, "DOWN");
+end
+
+function Class_TalentPoints:TalentFrameTalentsTabShow()
+	EventRegistry:UnregisterCallback("TalentFrame.TalentTab.Show", self);
+	C_Timer.After(0.1, function()
+		self:TalentFrameToggled();
+	end);		
+end
+
+function Class_TalentPoints:TalentFrameSpecTabShow()
+	EventRegistry:UnregisterCallback("TalentFrame.SpecTab.Show", self);
+	C_Timer.After(0.1, function()
+		self:TalentFrameToggled();
+	end);		
+end
+
+function Class_TalentPoints:TalentFrameDropDownShow(dropdownFrame)
+	EventRegistry:UnregisterCallback("UIDropDownMenu.Show", self);
+	EventRegistry:RegisterCallback("UIDropDownMenu.Hide", self.TalentFrameDropDownHide, self);
+	self:ShowTalentsHelp(dropdownFrame);
+end
+
+function Class_TalentPoints:TalentFrameDropDownHide()
+	EventRegistry:UnregisterCallback("UIDropDownMenu.Hide", self);
+	self:ShowTalentsHelp(ClassTalentFrame.TalentsTab.LoadoutDropDown);
+end
+
+function Class_TalentPoints:TalentTutorialFinished()
+	if not C_ClassTalents.HasUnspentTalentPoints() then
+		self:Complete();
+	end
+end
+
+function Class_TalentPoints:OnComplete()	
+	self:HidePointerTutorials();
+	ActionButton_HideOverlayGlow(TalentMicroButton);
+	EventRegistry:UnregisterCallback("TalentFrame.SpecTab.Show", self);
+	EventRegistry:UnregisterCallback("TalentFrame.TalentTab.Show", self);
+	EventRegistry:UnregisterCallback("TalentFrame.CloseFrame", self);
+	if self.functionID then
+		Dispatcher:UnregisterFunction("ToggleTalentFrame", self.functionID);
+	end
+	if self.Timer then
+		self.Timer:Cancel();
+	end
+	TutorialQueue:NotifyDone(self);
+end
 
 -- ============================================================================================================
 -- Death Watch - watches for the player to die

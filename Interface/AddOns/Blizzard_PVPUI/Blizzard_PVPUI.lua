@@ -1437,10 +1437,12 @@ function ConquestFrameButton_OnEnter(self)
 
 	tooltip.Title:SetText(self.toolTipTitle);
 
+	local isSoloShuffle = self.id == RATED_SOLO_SHUFFLE_BUTTON_ID;
 	local tierInfo = pvpTier and C_PvP.GetPvpTierInfo(pvpTier);
 	local tierName = tierInfo and tierInfo.pvpTierEnum and PVPUtil.GetTierName(tierInfo.pvpTierEnum);
+	local hasSpecRank = tierName and ranking and isSoloShuffle;
 	if tierName then
-		if ranking then
+		if ranking and not hasSpecRank then
 			tooltip.Tier:SetFormattedText(PVP_TIER_WITH_RANK_AND_RATING, tierName, ranking, rating);
 		else
 			tooltip.Tier:SetFormattedText(PVP_TIER_WITH_RATING, tierName, rating);
@@ -1448,25 +1450,23 @@ function ConquestFrameButton_OnEnter(self)
 	else
 		tooltip.Tier:SetText("");
 	end
-
-	local isSoloShuffle = self.id == RATED_SOLO_SHUFFLE_BUTTON_ID;
-	local weeklyWonString = isSoloShuffle and (PVP_ROUNDS_WON .. roundsWeeklyWon) or (PVP_GAMES_WON .. weeklyWon);
-	local weeklyPlayedString = isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsWeeklyPlayed) or (PVP_GAMES_WON .. weeklyPlayed);
-	local seasonWonString = isSoloShuffle and (PVP_ROUNDS_WON .. roundsSeasonWon) or (PVP_GAMES_WON .. seasonWon);
-	local seasonPlayedString = isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsSeasonPlayed) or (PVP_GAMES_WON .. seasonPlayed);
+	tooltip.SpecRank:SetText(hasSpecRank and PVP_SPECIALIZATION_RANK:format(PlayerUtil.GetSpecName(), ranking) or "");
+	tooltip.SpecRank:SetShown(hasSpecRank);
+	tooltip.WeeklyLabel:ClearAllPoints();
+	tooltip.WeeklyLabel:SetPoint("TOPLEFT", hasSpecRank and tooltip.SpecRank or tooltip.Tier, "BOTTOMLEFT", 0, -13);
 
 	tooltip.WeeklyBest:SetText(PVP_BEST_RATING..weeklyBest);
-	tooltip.WeeklyWon:SetText(weeklyWonString);
-	tooltip.WeeklyPlayed:SetText(weeklyPlayedString);
+	tooltip.WeeklyWon:SetText(isSoloShuffle and (PVP_ROUNDS_WON .. roundsWeeklyWon) or (PVP_GAMES_WON .. weeklyWon));
+	tooltip.WeeklyPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsWeeklyPlayed) or (PVP_GAMES_WON .. weeklyPlayed));
 
 	tooltip.SeasonBest:SetText(PVP_BEST_RATING..seasonBest);
-	tooltip.SeasonWon:SetText(seasonWonString);
-	tooltip.SeasonPlayed:SetText(seasonPlayedString);
+	tooltip.SeasonWon:SetText(isSoloShuffle and (PVP_ROUNDS_WON .. roundsSeasonWon) or (PVP_GAMES_WON .. seasonWon));
+	tooltip.SeasonPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsSeasonPlayed) or (PVP_GAMES_WON .. seasonPlayed));
 
 	local specStats = isSoloShuffle and C_PvP.GetPersonalRatedSoloShuffleSpecStats();
 	if specStats then
-		tooltip.WeeklyMostPlayedSpec:SetText(PVP_MOST_PLAYED_SPEC:format(GetSpecializationNameForSpecID(specStats.weeklyMostPlayedSpecID), specStats.weeklyMostPlayedSpecRounds));
-		tooltip.SeasonMostPlayedSpec:SetText(PVP_MOST_PLAYED_SPEC:format(GetSpecializationNameForSpecID(specStats.seasonMostPlayedSpecID), specStats.seasonMostPlayedSpecRounds));
+		tooltip.WeeklyMostPlayedSpec:SetText(PVP_MOST_PLAYED_SPEC:format(PlayerUtil.GetSpecNameBySpecID(specStats.weeklyMostPlayedSpecID), specStats.weeklyMostPlayedSpecRounds));
+		tooltip.SeasonMostPlayedSpec:SetText(PVP_MOST_PLAYED_SPEC:format(PlayerUtil.GetSpecNameBySpecID(specStats.seasonMostPlayedSpecID), specStats.seasonMostPlayedSpecRounds));
 	end
 	tooltip.WeeklyMostPlayedSpec:SetShown(specStats);
 	tooltip.SeasonMostPlayedSpec:SetShown(specStats);
@@ -1487,7 +1487,7 @@ function ConquestFrameButton_OnEnter(self)
 
 	tooltip:ClearAllPoints();
 	local xOffset = 0;
-	local yOffset = isSoloShuffle and -88 or 0;
+	local yOffset = isSoloShuffle and -100 or 0;
 	tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", xOffset, yOffset);
 	tooltip:Layout();
 	tooltip:Show();

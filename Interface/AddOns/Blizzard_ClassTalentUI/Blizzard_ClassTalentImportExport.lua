@@ -1,3 +1,46 @@
+-- WoW 10.0 Class Talent Tree Import/Export 
+-- File Format Specifications
+
+-- The import/export string for Class Talent is created in two steps:
+-- 1. Create a variable sized byte arry using a bit stream to represent the state of the tree
+-- 2. Convert the binary data to a base64 string
+
+-- HEADER (fixed-size)
+
+-- 	Serialization Version, 8 bits. 
+-- 	The version of the serialization method.  If the client updates the export algorithm, the version will be incremented, and loadouts exported with older serialization version will fail to import and need to be re-exported. Currently set to 1, as defined in the constant LOADOUT_SERIALIZATION_VERSION.
+
+-- 	Specialization ID, 16 bits.  
+-- 	The class specialization for this loadout.  Uses the player's currently assigned specialization.  Attempting to import a loadout for a different class specialization will result in a failure.
+
+-- 	Tree Hash, 128 bits, optional.  
+-- 	A hash of the content of the tree to compare against the current tree when importing a loadout.  For third-party sites that want to generate loadout strings, this can be ommitted and zero-filled, which will ignore the extra validation on import.  If the tree has changed and treehash is zero-filled, it will attempt to import the loadout but may result in incomplete or incorrect nodes getting selected.
+
+-- FILE CONTENT (variable-size)
+
+-- 	Is Node Selected, 1 bit
+-- 		Is Partially Ranked, 1 bit
+-- 			Ranks Purchased, 6 bits
+-- 		Is Choice Node, 1 bit
+-- 			Choice Entry Index, 2 bits
+
+-- The content section uses single bits for boolean values for various node states (0=false, 1=true).  If the boolean is true, additional information is written to the file.
+
+-- Is Node Selected, 1 bit.
+-- Specifies if the node is selected in the loadout. If it is unselected, the 0 bit is the only information written for that node, and the next bit in the stream will contain the selected value for the next node in the tree. 
+
+-- Is Partially Ranked, 1 bit.
+-- (Only written if isNodeSelected is true). Indicates if the node is partially ranked.  For example, if a node has 3 ranks, and the player only puts 2 ranks into that node, it is marked as partially ranked and the number of ranks is written to the stream.  If it is not partially ranked, the max number of ranks is assumed.
+
+-- Ranks Purchased, 6 bits.
+-- (Only written if IsPartiallyRanked is true). The number of ranks a player put into this node, between 1 (inclusive) and max ranks for that node (exclusive). 
+
+-- Is Choice Node, 1 bit
+-- (Only written if isNodeSelected is true). Specifies if this node is a choice node, where a player must choose one out of the available options. 
+
+-- Choice Entry Index, 2 bits.
+-- (Only written if isChoiceNode is true). The index of selected entry for the choice node. Zero-based index (first entry is index 0).
+
 local LOADOUT_SERIALIZATION_VERSION = 1;
 
 ClassTalentImportExportMixin = {};
@@ -115,7 +158,7 @@ function ClassTalentImportExportMixin:GetLoadoutExportString()
 end
 
 function ClassTalentImportExportMixin:ShowImportError(errorString)
-	 StaticPopup_Show("LOADOUT_IMPORT_ERROR_DIALOG", errorString);
+	 StaticPopup_Show("LOADOUT_IMPORT_ERROR_DIALOG", ERROR_COLOR:WrapTextInColorCode(errorString));
 end
 
 function ClassTalentImportExportMixin:ImportLoadout(importText, loadoutName)
@@ -142,22 +185,36 @@ function ClassTalentImportExportMixin:ImportLoadout(importText, loadoutName)
 	local treeInfo = self:GetTreeInfo();
 	local configID = self:GetConfigID();
 
-	if not self:HashEquals(treeHash, C_Traits.GetTreeHash(configID, treeInfo.ID)) then
-		self:ShowImportError(LOADOUT_ERROR_TREE_CHANGED);
-		return false;
+	if not self:IsHashEmpty(treeHash) then
+		-- allow third-party sites to generate loadout strings with an empty tree hash, which bypasses hash validation
+		if not self:HashEquals(treeHash, C_Traits.GetTreeHash(configID, treeInfo.ID)) then
+			self:ShowImportError(LOADOUT_ERROR_TREE_CHANGED);
+			return false;
+		end
 	end
 
 	local loadoutContent = self:ReadLoadoutContent(importStream, treeInfo.ID);
 	local loadoutEntryInfo = self:ConvertToImportLoadoutEntryInfo(treeInfo.ID, loadoutContent);
 
 	local configInfo = C_Traits.GetConfigInfo(configID);
-	local success = C_ClassTalents.ImportLoadout(configID, loadoutEntryInfo, loadoutName);
+	local success, errorString = C_ClassTalents.ImportLoadout(configID, loadoutEntryInfo, loadoutName);
 	if(not success) then
-		self:ShowImportError(LOADOUT_ERROR_IMPORT_FAILED);
+		self:ShowImportError(errorString or LOADOUT_ERROR_IMPORT_FAILED);
 		return false;
 	end
 
 	return true;
+end
+
+-- Returns true if all elements in the treehash are zero
+function ClassTalentImportExportMixin:IsHashEmpty(treeHash)
+	for i, value in ipairs(treeHash) do
+		if (value ~= 0) then
+			return false;
+	   end
+   end
+
+   return true;
 end
 
 function ClassTalentImportExportMixin:HashEquals(a,b)
@@ -191,6 +248,7 @@ function ClassTalentImportExportMixin:ReadLoadoutHeader(importStream)
 	end
 	local serializationVersion = importStream:ExtractValue(self.bitWidthHeaderVersion);
 	local specID = importStream:ExtractValue(self.bitWidthSpecID);
+
 	-- treeHash is a 128bit hash, passed as an array of 16, 8-bit values
 	local treeHash = {};
 	for i=1,16,1 do

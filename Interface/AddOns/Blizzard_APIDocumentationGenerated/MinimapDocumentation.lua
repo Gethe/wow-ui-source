@@ -247,6 +247,19 @@ local Minimap =
 				{ Name = "filterID", Type = "MinimapTrackingFilter", Nilable = true },
 			},
 		},
+		{
+			Name = "MinimapScriptTrackingInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "textureFileID", Type = "number", Nilable = false },
+				{ Name = "active", Type = "bool", Nilable = false },
+				{ Name = "type", Type = "string", Nilable = false },
+				{ Name = "subType", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = true },
+			},
+		},
 	},
 };
 
