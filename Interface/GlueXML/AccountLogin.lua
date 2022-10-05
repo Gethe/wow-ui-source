@@ -496,22 +496,15 @@ function AccountLogin_OnTimerFinished()
 end
 
 function AccountLogin_CanAutoLogin()
-	return not ShouldShowRegulationOverlay() and ((C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin()) or GetKioskLoginInfo()) and AccountLogin:IsVisible();
+	return not ShouldShowRegulationOverlay() and (C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin()) and AccountLogin:IsVisible();
 end
 
 function AccountLogin_CheckAutoLogin()
 	if ( AccountLogin_CanAutoLogin() ) then
 		if ( AccountLogin.timerFinished ) then
-			local accountName, password, realmAddr = GetKioskLoginInfo();
-			if (accountName and password) then
-				SetKioskAutoRealmAddress(realmAddr);
-				AccountLogin.UI.PasswordEditBox:SetText(password);
-				C_Login.Login(accountName, AccountLogin.UI.PasswordEditBox);
-			else
-				C_Login.SetAttemptedLauncherLogin();
-				if ( not C_Login.LauncherLogin() ) then
-					C_Login.CancelLauncherLogin();
-				end
+			C_Login.SetAttemptedLauncherLogin();
+			if ( not C_Login.LauncherLogin() ) then
+				C_Login.CancelLauncherLogin();
 			end
 		elseif ( not AccountLogin.timerStarted ) then
 			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);

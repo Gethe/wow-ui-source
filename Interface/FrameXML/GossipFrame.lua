@@ -123,7 +123,11 @@ function GossipFrameActiveQuestsUpdate(...)
 		GossipResize(titleButton);
 		titleButton:SetID(titleIndex);
 		titleButton.type="Active";
-		titleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");	
+		if ( ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) and not select(i+3, ...) ) then
+			titleButtonIcon:SetTexture("Interface\\GossipFrame\\IncompleteQuestIcon");
+		else
+			titleButtonIcon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
+		end	
 		GossipFrame.buttonIndex = GossipFrame.buttonIndex + 1;
 		titleIndex = titleIndex + 1;
 		titleButton:Show();
