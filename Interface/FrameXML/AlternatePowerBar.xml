@@ -73,7 +73,7 @@
 				AlternatePowerBar_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnMouseUp>
-				self:GetParent():Click(button);
+				PlayerFrame:Click(button);
 			</OnMouseUp>
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>

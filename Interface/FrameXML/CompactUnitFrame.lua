@@ -1456,7 +1456,7 @@ function CompactUnitFrame_UtilSetBuff(buffFrame, aura)
 end
 
 function CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
-	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid;
+	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid or nil;
 	debuffFrame.icon:SetTexture(aura.icon);
 	if ( aura.applications > 1 ) then
 		local countText = aura.applications;

@@ -1594,6 +1594,8 @@
 		<Scripts>
 			<OnLoad function="PetBattleFrame_OnLoad"/>
 			<OnEvent function="PetBattleFrame_OnEvent"/>
+			<OnShow function="PetBattleFrame_OnShow"/>
+			<OnHide function="PetBattleFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Frame name="PetBattlePrimaryUnitTooltip" inherits="PetBattleUnitTooltipTemplate"/>

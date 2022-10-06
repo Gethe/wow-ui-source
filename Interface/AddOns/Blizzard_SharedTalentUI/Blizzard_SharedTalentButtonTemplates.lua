@@ -224,19 +224,25 @@ function TalentDisplayMixin:AddTooltipDescription(tooltip)
 		local activeEntry = self.nodeInfo.activeEntry;
 		if activeEntry then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
-			tooltip:AddTraitEntry(activeEntry.entryID, activeEntry.rank);
+			local tooltipInfo = MakeBaseTooltipInfo("GetTraitEntry", activeEntry.entryID, activeEntry.rank);
+			tooltipInfo.append = true;
+			tooltip:ProcessInfo(tooltipInfo);
 		end
 
 		local nextEntry = self.nodeInfo.nextEntry;
 		if nextEntry and self.nodeInfo.ranksPurchased > 0 then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_AddHighlightLine(tooltip, TALENT_BUTTON_TOOLTIP_NEXT_RANK);
-			tooltip:AddTraitEntry(nextEntry.entryID, nextEntry.rank);
+			local tooltipInfo = MakeBaseTooltipInfo("GetTraitEntry", nextEntry.entryID, nextEntry.rank);
+			tooltipInfo.append = true;
+			tooltip:ProcessInfo(tooltipInfo);
 		end
 	elseif self.entryID then
 		-- If this tooltip isn't coming from a node, we can't know what rank to show other than 1.
 		local rank = 1;
-		tooltip:AddTraitEntry(self.entryID, rank);
+		local tooltipInfo = MakeBaseTooltipInfo("GetTraitEntry", self.entryID, rank);
+		tooltipInfo.append = true;		
+		tooltip:ProcessInfo(tooltipInfo);
 	end
 end
 
@@ -558,6 +564,12 @@ function TalentButtonBaseMixin:CascadeRepurchaseRanks()
 	self:UpdateMouseOverInfo();
 end
 
+function TalentButtonBaseMixin:ClearCascadeRepurchaseHistory()
+	self:PlayDeselectSound();
+	self:GetTalentFrame():ClearCascadeRepurchaseHistory();
+	self:UpdateMouseOverInfo();
+end
+
 function TalentButtonBaseMixin:PlaySelectSound()
 	if self.selectSound then
 		PlaySound(self.selectSound);
@@ -724,7 +736,7 @@ function TalentButtonArtMixin:OnLoad()
 		self.DisabledOverlayMask:SetAtlas(self.artSet.iconMask, TextureKitConstants.IgnoreAtlasSize);
 	end
 
-	self.Glow:SetAtlas(self.artSet.glow, TextureKitConstants.IgnoreAtlasSize);
+	self.Glow:SetAtlas(self.artSet.glow, TextureKitConstants.UseAtlasSize);
 	self.Ghost:SetAtlas(self.artSet.ghost, TextureKitConstants.UseAtlasSize);
 	self.Shadow:SetAtlas(self.artSet.shadow, TextureKitConstants.UseAtlasSize);
 
@@ -901,12 +913,17 @@ function TalentButtonSpendMixin:OnClick(button)
 	if button == "LeftButton" then
 		if IsShiftKeyDown() and self:CanCascadeRepurchaseRanks() then
 			self:CascadeRepurchaseRanks();
+		elseif IsModifiedClick("CHATLINK") then
+			local spellLink = GetSpellLink(self:GetSpellID());
+			ChatEdit_InsertLink(spellLink);
 		elseif self:CanPurchaseRank() then
 			self:PurchaseRank();
 		end
 	elseif button == "RightButton" then
 		if self:CanRefundRank() then
 			self:RefundRank();
+		elseif self:IsGhosted() then
+			self:ClearCascadeRepurchaseHistory();
 		end
 	end
 end
@@ -984,6 +1001,9 @@ function TalentButtonSpendMixin:AddTooltipInstructions(tooltip)
 
 	if canRepurchase then
 		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
+	elseif self:IsGhosted() then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_CLEAR_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
 	end
 end
 
@@ -1015,7 +1035,7 @@ function TalentButtonSelectMixin:OnLeave()
 end
 
 local TimeToHideSeconds = 0;
-local TimeToShowSelections = 0.1;
+local TimeToShowSelections = 0;
 function TalentButtonSelectMixin:OnUpdate(dt)
 	local talentFrame = self:GetTalentFrame();
 	if not talentFrame:IsMouseOverSelections() and (GetMouseFocus() ~= self) then
@@ -1038,16 +1058,28 @@ function TalentButtonSelectMixin:OnClick(button)
 
 	if self:IsInspecting() then
 		return;
-	end	
+	end
 
 	if button == "RightButton" then
-		self:SetSelectedEntryID(nil);
+		if self:IsGhosted() then
+			self:ClearCascadeRepurchaseHistory();
+		end
 
-		local canSelectChoice = true;
-		self:GetTalentFrame():UpdateSelections(self, canSelectChoice, self:GetSelectedEntryID(), self:GetTraitCurrenciesCost());
+		if self.nodeInfo.canRefundRank then
+			self:SetSelectedEntryID(nil);
+
+			local canSelectChoice = true;
+			self:GetTalentFrame():UpdateSelections(self, canSelectChoice, self:GetSelectedEntryID(), self:GetTraitCurrenciesCost());
+		end
 	elseif button == "LeftButton" then
 		if IsShiftKeyDown() and self:CanCascadeRepurchaseRanks() then
 			self:CascadeRepurchaseRanks();
+		elseif IsModifiedClick("CHATLINK") then
+			local spellID = self:GetSpellID();
+			if spellID then
+				local spellLink = GetSpellLink(spellID);
+				ChatEdit_InsertLink(spellLink);
+			end
 		end
 	end
 end
@@ -1088,6 +1120,10 @@ end
 
 function TalentButtonSelectMixin:AddTooltipInstructions(tooltip)
 	-- Override TalentButtonBaseMixin.
+
+	if self:IsGhosted() then
+		--GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_CLEAR_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
+	end
 end
 
 function TalentButtonSelectMixin:AddTooltipErrors(unused_tooltip)

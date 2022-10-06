@@ -28,7 +28,7 @@ local Container =
 			{
 				{ Name = "containerIndex", Type = "number", Nilable = false },
 				{ Name = "slotIndex", Type = "number", Nilable = false },
-				{ Name = "isEquipped", Type = "bool", Nilable = false },
+				{ Name = "isEquipped", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{

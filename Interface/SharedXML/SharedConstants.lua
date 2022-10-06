@@ -35,7 +35,7 @@ CLASS_ICON_TCOORDS = {
 	["DEATHKNIGHT"]	= {0.25, .5, 0.5, .75},
 	["MONK"]		= {0.5, 0.73828125, 0.5, .75},
 	["DEMONHUNTER"]	= {0.7421875, 0.98828125, 0.5, 0.75},
-	["EVOKER"]= {0, 0.25, 0, 0.25},
+	["EVOKER"] 		= {0, 0.25, 0.75, 1},
 };
 
 function GetClassAtlas(className)

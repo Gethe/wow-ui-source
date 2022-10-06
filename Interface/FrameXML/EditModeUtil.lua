@@ -11,44 +11,41 @@ function EditModeUtil:IsBottomAnchoredActionBar(systemFrame)
 		or (systemFrame == MainMenuBar)
 		or (systemFrame == StanceBar)
 		or (systemFrame == PetActionBar)
-		or (systemFrame == PossessActionBar);
+		or (systemFrame == PossessActionBar)
+		or (systemFrame == MainMenuBarVehicleLeaveButton);
 end
 
 function EditModeUtil:GetRightActionBarWidth()
 	local offset = 0;
 	if MultiBar3_IsVisible and MultiBar3_IsVisible() and MultiBarRight:IsInDefaultPosition() then
 		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarRight:GetPoint(1);
-		offset = MultiBarRight:GetWidth() - offsetX; -- Subtract x offset since it will be a negative value due to us anchoring to the right side and anchoring towards the middle
+		offset = (MultiBarRight:GetScale() * MultiBarRight:GetWidth()) - offsetX; -- Subtract x offset since it will be a negative value due to us anchoring to the right side and anchoring towards the middle
 	end
 
 	if MultiBar4_IsVisible and MultiBar4_IsVisible() and MultiBarLeft:IsInDefaultPosition() then
 		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarLeft:GetPoint(1);
-		offset = offset + MultiBarLeft:GetWidth() - offsetX;
+		offset = offset + (MultiBarLeft:GetScale() * MultiBarLeft:GetWidth()) - offsetX;
 	end
 
 	return offset;
 end
 
-function EditModeUtil:GetBottomActionBarHeight(includeMainMenuBar)
+function EditModeUtil:GetBottomActionBarHeight()
 	local actionBarHeight = 0;
 
-	if OverrideActionBar:IsShown() then
-		local point, relativeTo, relativePoint, offsetX, offsetY = OverrideActionBar:GetPoint(1);
-		actionBarHeight =  offsetY + OverrideActionBar:GetHeight();
-
-		if OverrideActionBar.xpBar:IsShown() then
-			actionBarHeight =  actionBarHeight + OverrideActionBar.xpBar:GetHeight();
-		end
-
-		return actionBarHeight + 5;
+	if OverrideActionBar and OverrideActionBar:IsShown() then
+		actionBarHeight = actionBarHeight + OverrideActionBar:GetBottomAnchoredHeight();
+	else
+		actionBarHeight = actionBarHeight + MainMenuBar:GetBottomAnchoredHeight();
+		actionBarHeight = actionBarHeight + (MultiBarBottomLeft and MultiBarBottomLeft:GetBottomAnchoredHeight() or 0);
+		actionBarHeight = actionBarHeight + (MultiBarBottomRight and MultiBarBottomRight:GetBottomAnchoredHeight() or 0);
 	end
 
-	actionBarHeight = includeMainMenuBar and MainMenuBar:GetBottomAnchoredHeight() or 0;
-	actionBarHeight = actionBarHeight + MultiBarBottomLeft:GetBottomAnchoredHeight();
-	actionBarHeight = actionBarHeight + MultiBarBottomRight:GetBottomAnchoredHeight();
-	actionBarHeight = actionBarHeight + StanceBar:GetBottomAnchoredHeight();
+	actionBarHeight = actionBarHeight + (StanceBar and StanceBar:GetBottomAnchoredHeight() or 0);
 	actionBarHeight = actionBarHeight + (PetActionBar and PetActionBar:GetBottomAnchoredHeight() or 0);
-	actionBarHeight = actionBarHeight + PossessActionBar:GetBottomAnchoredHeight();
+	actionBarHeight = actionBarHeight + (PossessActionBar and PossessActionBar:GetBottomAnchoredHeight() or 0);
+	actionBarHeight = actionBarHeight + (MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:GetBottomAnchoredHeight() or 0);
+
 	return actionBarHeight;
 end
 
@@ -215,7 +212,7 @@ function EditModeMagnetismManager:FindClosestLine(systemFrame, verticalLines)
 	return closestDistance, closestPoint, closestOffset;
 end
 
--- Finds up to 2 frames or grid lines that are withing magnetic range of systemFrame
+-- Finds up to 2 frames or grid lines that are within magnetic range of systemFrame
 function EditModeMagnetismManager:FindMagneticFrames(systemFrame)
 	local eligibleFrames = self:GetEligibleMagneticFrames(systemFrame);
 	local magneticHorizontalFrame, magneticVerticalFrame;
@@ -292,7 +289,7 @@ function EditModeMagnetismManager:ApplyMagnetism(systemFrame)
 			elseif magneticVerticalFrame.point == "CENTER" then
 				systemFrame:SnapToFrame(magneticVerticalFrame);
 			else
-				-- Otherwise snap to both (not that this is only safe in the UIParent case because anchor cycles can result otherwise)
+				-- Otherwise snap to both (note that this is only safe in the UIParent case because anchor cycles can result otherwise)
 				systemFrame:SnapToFrame(magneticHorizontalFrame);
 				systemFrame:SnapToFrame(magneticVerticalFrame);
 			end

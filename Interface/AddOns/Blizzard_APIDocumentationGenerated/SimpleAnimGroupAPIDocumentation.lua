@@ -200,6 +200,19 @@ local SimpleAnimGroupAPI =
 			},
 		},
 		{
+			Name = "IsReverse",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isReverse", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSetToFinalAlpha",
 			Type = "Function",
 

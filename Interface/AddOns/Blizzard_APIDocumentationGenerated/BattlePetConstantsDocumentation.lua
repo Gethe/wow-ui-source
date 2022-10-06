@@ -239,9 +239,9 @@ local BattlePetConstants =
 		{
 			Name = "BattlePetSpeciesFlags",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 1,
-			MaxValue = 32768,
+			MaxValue = 65536,
 			Fields =
 			{
 				{ Name = "NoRename", Type = "BattlePetSpeciesFlags", EnumValue = 1 },
@@ -260,6 +260,7 @@ local BattlePetConstants =
 				{ Name = "AddsAllowedWithBoss", Type = "BattlePetSpeciesFlags", EnumValue = 8192 },
 				{ Name = "HideUntilLearned", Type = "BattlePetSpeciesFlags", EnumValue = 16384 },
 				{ Name = "MatchPlayerHighPetLevel", Type = "BattlePetSpeciesFlags", EnumValue = 32768 },
+				{ Name = "NoWildPetAddsAllowed", Type = "BattlePetSpeciesFlags", EnumValue = 65536 },
 			},
 		},
 		{

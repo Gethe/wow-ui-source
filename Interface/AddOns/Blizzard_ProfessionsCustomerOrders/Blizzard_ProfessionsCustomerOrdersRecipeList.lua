@@ -18,7 +18,7 @@ function ProfessionsCustomerOrdersRecipeListElementMixin:OnLineEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	local reagents = {};
-	C_TradeSkillUI.SetTooltipRecipeResultItem(self.option.spellID, reagents);
+	GameTooltip:SetRecipeResultItem(self.option.spellID, reagents);
 
 	if IsModifiedClick("DRESSUP") then
 		ShowInspectCursor();

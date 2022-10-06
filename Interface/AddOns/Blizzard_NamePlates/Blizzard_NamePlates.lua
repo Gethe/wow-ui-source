@@ -379,6 +379,7 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 		local powerBar = self.classNamePlatePowerBar;
 		local attachTo = (mechanicFrame and mechanicFrame:IsShown() and mechanicFrame) or (powerBar and powerBar:IsShown() and powerBar) or namePlatePlayer.UnitFrame.BuffFrame;
 		self.personalFriendlyBuffFrame:SetParent(namePlatePlayer);
+		self.personalFriendlyBuffFrame:ClearAllPoints();
 		self.personalFriendlyBuffFrame:SetPoint("TOP", attachTo, "BOTTOM", 0, 0);
 		self.personalFriendlyBuffFrame:SetPoint("LEFT", attachTo, "LEFT", 0, 0);
 		self.personalFriendlyBuffFrame:SetActive(not C_Commentator.IsSpectating());

@@ -26,6 +26,8 @@
 
 -- The content section uses single bits for boolean values for various node states (0=false, 1=true).  If the boolean is true, additional information is written to the file.
 
+-- The order of the nodes is determined by C_Traits.GetTreeNodes API.  It returns all nodes for a class tree, including nodes from all class specializations, ordered in ascending order by the nodeID.  Only nodes from the specID defined in the header should be marked as selected for this loadout.
+
 -- Is Node Selected, 1 bit.
 -- Specifies if the node is selected in the loadout. If it is unselected, the 0 bit is the only information written for that node, and the next bit in the stream will contain the selected value for the next node in the tree. 
 

@@ -105,7 +105,6 @@
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.RightBar1" type="global"/>
-			<KeyValue key="layoutIndex" value="2" type="number"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="4"/>
@@ -134,7 +133,6 @@
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.RightBar2" type="global"/>
-			<KeyValue key="layoutIndex" value="1" type="number"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="3"/>

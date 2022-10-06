@@ -280,9 +280,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeUnitFrameSetting",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 0,
-			MaxValue = 15,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "HidePortrait", Type = "EditModeUnitFrameSetting", EnumValue = 0 },
@@ -301,6 +301,7 @@ local EditModeManagerShared =
 				{ Name = "RaidGroupDisplayType", Type = "EditModeUnitFrameSetting", EnumValue = 13 },
 				{ Name = "SortPlayersBy", Type = "EditModeUnitFrameSetting", EnumValue = 14 },
 				{ Name = "RowSize", Type = "EditModeUnitFrameSetting", EnumValue = 15 },
+				{ Name = "FrameSize", Type = "EditModeUnitFrameSetting", EnumValue = 16 },
 			},
 		},
 		{

@@ -122,7 +122,7 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="AuraFrameTemplate" inherits="ResizeLayoutFrame, EditModeAuraFrameSystemTemplate" mixin="AuraFrameMixin" virtual="true">
+	<Frame name="AuraFrameTemplate" inherits="EditModeAuraFrameSystemTemplate" mixin="AuraFrameMixin" virtual="true">
 		<!-- 
 		<KeyValues>
 			<KeyValue key="auraTemplate" value="BuffButtonTemplate" type="string"/>
@@ -156,25 +156,31 @@
 		</KeyValues> 
 		<Frames>
 			<CheckButton parentKey="CollapseAndExpandButton" mixin="CollapseAndExpandButtonMixin">
-				<Size x="13" y="30"/>
+				<Size x="15" y="30"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT"/>
+					<Anchor point="RIGHT"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>
 					<OnLoad method="OnLoad"/>
 				</Scripts>
-				<NormalTexture parentKey="NormalTexture" atlas="CovenantSanctum-Renown-Arrow">
-					<Size x="13" y="50"/>
+				<NormalTexture parentKey="NormalTexture" atlas="bag-arrow" useAtlasSize="false">
+					<Size x="10" y="16"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</NormalTexture>
-				<HighlightTexture parentKey="HighlightTexture" atlas="CovenantSanctum-Renown-Arrow" alpha=".2" alphaMode="ADD">
-					<Size x="13" y="50"/>
+				<PushedTexture parentKey="PushedTexture" atlas="bag-arrow" useAtlasSize="false">
+					<Size x="10" y="16"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
-					</Anchors>	
+					</Anchors>
+				</PushedTexture>
+				<HighlightTexture parentKey="HighlightTexture" atlas="bag-arrow" alpha=".4" alphaMode="ADD" useAtlasSize="false">
+					<Size x="10" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</HighlightTexture>
 			</CheckButton>
 		</Frames>

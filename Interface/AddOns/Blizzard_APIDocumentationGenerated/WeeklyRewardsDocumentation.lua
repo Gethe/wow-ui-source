@@ -121,6 +121,15 @@ local WeeklyRewards =
 			},
 		},
 		{
+			Name = "GetWeeklyRewardTextureKit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiTextureKit", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "HasAvailableRewards",
 			Type = "Function",
 
@@ -159,6 +168,15 @@ local WeeklyRewards =
 		{
 			Name = "OnUIInteract",
 			Type = "Function",
+		},
+		{
+			Name = "ShouldShowRetirementMessage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "showRetirementMessage", Type = "bool", Nilable = false },
+			},
 		},
 	},
 

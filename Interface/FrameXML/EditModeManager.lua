@@ -145,6 +145,8 @@ function EditModeManagerFrameMixin:OnLoad()
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
+
+	self.FramesBlockingEditMode = {};
 end
 
 function EditModeManagerFrameMixin:OnDragStart()
@@ -190,6 +192,7 @@ function EditModeManagerFrameMixin:OnShow()
 		self:EnterEditMode();
 	elseif self:IsEditModeInLockState("hideSelections")  then
 		self:ShowSystemSelections();
+		self.AccountSettings:OnEditModeEnter();
 	end
 
 	self:ClearEditModeLockState();
@@ -201,6 +204,7 @@ function EditModeManagerFrameMixin:OnHide()
 		self:ExitEditMode();
 	elseif self:IsEditModeInLockState("hideSelections") then
 		self:HideSystemSelections();
+		self.AccountSettings:OnEditModeExit();
 	end
 end
 
@@ -237,7 +241,7 @@ function EditModeManagerFrameMixin:OnEvent(event, ...)
 			self:NotifyChatOfLayoutChange();
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
-		self:UpdateRightAnchoredActionBarScales();
+		self:UpdateRightActionBarPositions();
 		EditModeMagnetismManager:UpdateUIParentPoints();
 	end
 end
@@ -320,8 +324,14 @@ end
 
 local function UpdateSystemAnchorInfo(systemInfo, systemFrame)
 	local anchorInfoChanged = false;
-	
+
 	local point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(1);
+
+	-- Undo offset changes due to scale so we're always working as if we're at 1.0 scale
+	local frameScale = systemFrame:GetScale();
+	offsetX = offsetX * frameScale;
+	offsetY = offsetY * frameScale;
+
 	local newAnchorInfo = ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY);
 	if not AreAnchorsEqual(systemInfo.anchorInfo, newAnchorInfo) then
 		CopyAnchorInfo(systemInfo.anchorInfo, newAnchorInfo);
@@ -329,6 +339,14 @@ local function UpdateSystemAnchorInfo(systemInfo, systemFrame)
 	end
 
 	point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(2);
+
+	-- Undo offset changes due to scale so we're always working as if we're at 1.0 scale
+	-- May not always have a second point so nil check first
+	if point ~= nil then
+		offsetX = offsetX * frameScale;
+		offsetY = offsetY * frameScale;
+	end
+
 	newAnchorInfo = ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY);
 	if not AreAnchorsEqual(systemInfo.anchorInfo2, newAnchorInfo) then
 		CopyAnchorInfo(systemInfo.anchorInfo2, newAnchorInfo);
@@ -345,11 +363,11 @@ function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame, isInDefau
 			systemFrame:SetHasActiveChanges(true);
 			systemInfo.isInDefaultPosition = isInDefaultPosition;
 
-			if EditModeUtil:IsRightAnchoredActionBar(systemFrame) or systemFrame == MinimapCluster then
-				self:UpdateRightAnchoredActionBarScales();
-			end
-
 			self:UpdateActionBarLayout(systemFrame);
+
+			if systemFrame.isBottomManagedFrame or systemFrame.isRightManagedFrame then
+				UIParent_ManageFramePositions();
+			end
 
 			EditModeSystemSettingsDialog:UpdateDialog(systemFrame);
 		end
@@ -525,80 +543,81 @@ function EditModeManagerFrameMixin:ShouldRaidFrameShowSeparateGroups()
 	return (raidGroupDisplayType == Enum.RaidGroupDisplayType.SeparateGroupsVertical) or (raidGroupDisplayType == Enum.RaidGroupDisplayType.SeparateGroupsHorizontal);
 end
 
-function EditModeManagerFrameMixin:GetRightAnchoredActionBarWidth()
-	return self.rightAnchoredActionBarWidth;
-end
-
-function EditModeManagerFrameMixin:GetBottomAnchoredActionBarHeight()
-	return self.bottomAnchoredActionBarHeight;
-end
-
-function EditModeManagerFrameMixin:UpdateActionBarLayout(barFrame)
-	if EditModeUtil:IsBottomAnchoredActionBar(barFrame) then
-		self:UpdateBottomAnchoredActionBarHeight();
-	elseif EditModeUtil:IsRightAnchoredActionBar(barFrame) then
-		self:UpdateRightAnchoredActionBarWidth();
+function EditModeManagerFrameMixin:UpdateActionBarLayout(systemFrame)
+	if EditModeUtil:IsBottomAnchoredActionBar(systemFrame) then
+		self:UpdateBottomActionBarPositions();
+	elseif EditModeUtil:IsRightAnchoredActionBar(systemFrame) or systemFrame == MinimapCluster then
+		self:UpdateRightActionBarPositions();
 	end
 end
 
-function EditModeManagerFrameMixin:UpdateRightAnchoredActionBarWidth()
-	self.rightAnchoredActionBarWidth = EditModeUtil:GetRightActionBarWidth();
-	UIParent_ManageFramePositions();
-end
-
-function EditModeManagerFrameMixin:UpdateRightAnchoredActionBarScales()
+function EditModeManagerFrameMixin:UpdateRightActionBarPositions()
 	if not self:IsInitialized() then
 		return;
 	end
 
+	local barsToUpdate = { MultiBarRight, MultiBarLeft };
+
+	-- Determine new scale
 	local topLimit = MinimapCluster:IsInDefaultPosition() and (MinimapCluster:GetBottom() - 10) or UIParent:GetTop();
 	local bottomLimit = MicroButtonAndBagsBar:GetTop() + 24;
 	local availableSpace = topLimit - bottomLimit;
 	local multiBarHeight = MultiBarRight:GetHeight();
+	local newScale = multiBarHeight > availableSpace and availableSpace / multiBarHeight or 1;
 
-	if multiBarHeight <= availableSpace then
-		MultiBarRight:SetScale(1);
-		MultiBarLeft:SetScale(1);
+	-- Update bars
+	local leftMostBar = UIParent;
+
+	for index, bar in ipairs(barsToUpdate) do
+		local isInDefaultPosition = bar:IsInDefaultPosition();
+		bar:SetScale(isInDefaultPosition and newScale or 1);
+
+		if bar and bar:IsShown() and isInDefaultPosition then
+			local point, relativeTo, relativePoint, offsetX, offsetY = bar:GetPoint(1);
+			if relativeTo ~= leftMostBar then
+				bar:ClearAllPoints();
+				if leftMostBar == UIParent then
+					bar:SetPoint("RIGHT", leftMostBar, "RIGHT", RIGHT_ACTION_BAR_DEFAULT_OFFSET_X, RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y);
+				else
+					bar:SetPoint("TOPRIGHT", leftMostBar, "TOPLEFT", -5, 0);
+				end
+			end
+
+			leftMostBar = bar;
+		end
+	end
+
+	UIParent_ManageFramePositions();
+end
+
+function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
+	if not self:IsInitialized() then
 		return;
 	end
 
-	local scale = availableSpace / multiBarHeight;
-	MultiBarRight:SetScaleIfRightAnchored(scale);
-	MultiBarLeft:SetScaleIfRightAnchored(scale);
-end
+	local barsToUpdate = { MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, StanceBar, PetActionBar, PossessActionBar, MainMenuBarVehicleLeaveButton };
 
-function EditModeManagerFrameMixin:UpdateBottomAnchoredActionBarHeight(includeMainMenuBar)
-	self.bottomAnchoredActionBarHeight =  EditModeUtil:GetBottomActionBarHeight(includeMainMenuBar);
-
-	-- Update bottom anchoring bars which show on top of other bars since if other bottom bars changed we may wanna change those bars too
-	local bottomAnchoredActionBarsToUpdate = { StanceBar, PetActionBar, PossessActionBar};
-
-	local topMostBottomAnchoredBar = nil;
-	if MultiBar2_IsVisible() and MultiBarBottomRight:IsInDefaultPosition() then
-		topMostBottomAnchoredBar = MultiBarBottomRight;
-	elseif MultiBar1_IsVisible() and MultiBarBottomLeft:IsInDefaultPosition() then
-		topMostBottomAnchoredBar = MultiBarBottomLeft;
-	elseif MainMenuBar:IsInDefaultPosition() then
-		topMostBottomAnchoredBar = MainMenuBar;
+	local topMostBar = UIParent;
+	if OverrideActionBar and OverrideActionBar:IsShown() then
+		topMostBar = OverrideActionBar;
 	end
 
-	for index, bar in ipairs(bottomAnchoredActionBarsToUpdate) do
-		if (bar and bar:IsShown()) then
-			-- Only update bar's anchor if it was already bottom anchored
+	for index, bar in ipairs(barsToUpdate) do
+		if bar and bar:IsShown() and bar:IsInDefaultPosition() then
 			local point, relativeTo, relativePoint, offsetX, offsetY = bar:GetPoint(1);
-			if EditModeUtil:IsBottomAnchoredActionBar(relativeTo) then
-				if topMostBottomAnchoredBar and relativeTo ~= topMostBottomAnchoredBar then
-					bar:SetPoint("BOTTOMLEFT", topMostBottomAnchoredBar, "TOPLEFT", 0, 5);
-
-					local isInDefaultPositionYes = true;
-					EditModeManagerFrame:OnSystemPositionChange(bar, isInDefaultPositionYes);
-				end
-
-				if bar:IsInDefaultPosition() then
-					-- This bar is now the new topmost bar
-					topMostBottomAnchoredBar = bar;
+			if relativeTo ~= topMostBar then
+				bar:ClearAllPoints();
+				if topMostBar == UIParent then
+					bar:SetPoint("BOTTOM", topMostBar, "BOTTOM", 0, MAIN_ACTION_BAR_DEFAULT_OFFSET_Y);
+				elseif topMostBar == OverrideActionBar then
+					local xpBarHeight = OverrideActionBar.xpBar:IsShown() and OverrideActionBar.xpBar:GetHeight() or 0;
+					bar:SetPoint("BOTTOM", topMostBar, "TOP", 0, 10 + xpBarHeight);
+				else
+					bar:SetPoint("BOTTOMLEFT", topMostBar, "TOPLEFT", 0, 5);
 				end
 			end
+
+			topMostBar = bar;
 		end
 	end
 
@@ -851,6 +870,10 @@ function EditModeManagerFrameMixin:UpdateLayoutInfo(layoutInfo, reconcileLayouts
 	end
 end
 
+function EditModeManagerFrameMixin:GetLayouts()
+	return self.layoutInfo.layouts;
+end
+
 function EditModeManagerFrameMixin:SetGridShown(gridShown, isUserInput)
 	self.Grid:SetShown(gridShown);
 	self.GridSpacingSlider:SetEnabled(gridShown);
@@ -964,8 +987,6 @@ function EditModeManagerFrameMixin:UpdateSystems()
 	for _, systemFrame in ipairs(self.registeredSystemFrames) do
 		self:UpdateSystem(systemFrame);
 	end
-
-	self:UpdateRightAnchoredActionBarScales();
 end
 
 function EditModeManagerFrameMixin:UpdateSystem(systemFrame)
@@ -1174,6 +1195,18 @@ end
 
 function EditModeManagerFrameMixin:ClearUnsavedChangesGlow()
 	GlowEmitterFactory:Hide(self.SaveChangesButton);
+end
+
+function EditModeManagerFrameMixin:BlockEnteringEditMode(blockingFrame)
+	self.FramesBlockingEditMode[blockingFrame] = true;
+end
+
+function EditModeManagerFrameMixin:UnblockEnteringEditMode(blockingFrame)
+	self.FramesBlockingEditMode[blockingFrame] = nil;
+end
+
+function EditModeManagerFrameMixin:CanEnterEditMode()
+	return not C_PlayerInfo.IsPlayerNPERestricted() and TableIsEmpty(self.FramesBlockingEditMode);
 end
 
 EditModeGridMixin = {}
@@ -1548,7 +1581,12 @@ end
 
 function EditModeAccountSettingsMixin:ResetActionBarShown(bar)
 	bar.numShowingButtons = self.oldActionBarSettings[bar].numShowingButtons;
-	bar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+
+	if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
+		bar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+	end
+
+	bar.editModeForceShow = false;
 	bar:SetShown(self.oldActionBarSettings[bar].isShown);
 end
 
@@ -1557,11 +1595,14 @@ function EditModeAccountSettingsMixin:RefreshActionBarShown(bar)
 	local show = self.Settings[barName]:IsControlChecked();
 
 	if show then
-		if not bar:IsShown() then
-			bar.numShowingButtons = bar.numButtons;
+		bar.editModeForceShow = true;
+		bar.numShowingButtons = bar.numButtons;
+
+		if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
 			bar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
-			bar:Show();
 		end
+
+		bar:Show();
 		bar:HighlightSystem();
 	else
 		self:ResetActionBarShown(bar);
@@ -1675,7 +1716,7 @@ end
 
 function EditModeAccountSettingsMixin:SetTalkingHeadFrameShown(shown, isUserInput)
 	if isUserInput then
-		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.TalkingHeadFrame, shown);
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowTalkingHeadFrame, shown);
 		self:RefreshTalkingHeadFrame();
 	else
 		self.Settings.TalkingHeadFrame:SetControlChecked(shown);

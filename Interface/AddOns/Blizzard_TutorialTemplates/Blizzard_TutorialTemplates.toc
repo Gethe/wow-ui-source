@@ -1,5 +1,0 @@
-## Author: Blizzard Entertainment
-## Title: Blizzard Tutorial Templates
-## LoadOnDemand: 1
-
-Blizzard_TutorialPointerFrame.xml

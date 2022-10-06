@@ -15,7 +15,7 @@ function WarmodeButtonMixin:OnShow()
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFrames",
 			bitfieldFlag = LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK,
-			targetPoint = HelpTip.Point.RightEdgeCenter,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
 			offsetX = -4,
 		};
 

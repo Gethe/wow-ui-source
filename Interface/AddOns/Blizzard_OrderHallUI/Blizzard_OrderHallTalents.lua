@@ -67,6 +67,13 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
 
 local CustomTalentTreeLayoutOptions = {};
 
+local DRAGONSCALE_EXPEDITION_TALENT_TREE_ID = 489;
+CustomTalentTreeLayoutOptions[DRAGONSCALE_EXPEDITION_TALENT_TREE_ID] =
+{
+	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_DRAGONSCALE_EXPEDITION_RESEARCH_COMPLETE,
+};
+setmetatable(CustomTalentTreeLayoutOptions[DRAGONSCALE_EXPEDITION_TALENT_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic]});
+
 local TORGHAST_TALENT_TREE_ID = 461;
 CustomTalentTreeLayoutOptions[TORGHAST_TALENT_TREE_ID] =
 {

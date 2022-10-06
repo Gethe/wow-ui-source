@@ -4284,6 +4284,9 @@ StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
 		C_ReturningPlayerUI.AcceptPrompt(); 
 		self:Hide();
 	end,
+	OnCancel = function()
+		C_ReturningPlayerUI.DeclinePrompt();
+	end,
 	timeout = 0,
 	exclusive = 1,
 }

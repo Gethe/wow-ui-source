@@ -262,8 +262,8 @@
 					<KeyValue key="iconAtlas" value="talents-button-reset" type="string"/>
 					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
 					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
-					<KeyValue key="tooltipText" value="TALENT_FRAME_RESET_BUTTON_TOOLTIP" type="global"/>
-					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+					<KeyValue key="tooltipTitle" value="TALENT_FRAME_RESET_BUTTON_TOOLTIP" type="global"/>
+					<KeyValue key="tooltipText" value="TALENT_FRAME_RESET_BUTTON_TOOLTIP_DESCRIPTION" type="global"/>
 				</KeyValues>
 				<Size x="25" y="25"/>
 				<Anchors>
@@ -312,7 +312,7 @@
 		<Animations>
 			<AnimationGroup parentArray="commitFlashAnims" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
 				<Scale childKey="ActivationExpandFx" smoothing="IN" duration="1.4" fromScaleX="1" fromScaleY="1" toScaleX="20" toScaleY="20"/>
-				<Alpha childKey="ActivationExpandFx" smoothing="IN" duration="1.4" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="ActivationExpandFx" smoothing="IN" duration="1.4" fromAlpha="0.65" toAlpha="0"/>
 				<Alpha childKey="ActivationClassFx" smoothing="OUT" duration="1.2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="ActivationClassFx2" smoothing="OUT" duration="1.2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="ActivationClassFx3" smoothing="OUT" duration=".3" fromAlpha=".3" toAlpha="0"/>
@@ -325,29 +325,29 @@
 			
 			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
 				<Translation childKey="Clouds1" order="1" offsetX="0" offsetY="0"/>
-				<Translation childKey="Clouds1" order="2" offsetX="-1612" offsetY="0" startDelay="0" duration="50" />
+				<Translation childKey="Clouds1" order="2" offsetX="-1612" offsetY="0" startDelay="0" duration="80" />
 				<Translation childKey="Clouds1" order="3" offsetX="1612" offsetY="0"/>
 			</AnimationGroup>
 			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
 				<Translation childKey="Clouds2" order="1" offsetX="1612" offsetY="0"/>
-				<Translation childKey="Clouds2" order="2" offsetX="-1612" offsetY="0" startDelay="0" duration="50"/>
+				<Translation childKey="Clouds2" order="2" offsetX="-1612" offsetY="0" startDelay="0" duration="80"/>
 				<Translation childKey="Clouds2" order="3" offsetX="1612" offsetY="0"/>
 			</AnimationGroup>
 			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
-				<Alpha childKey="AirParticlesClose" order="2" fromAlpha="0" toAlpha=".16" duration="5" smoothing="NONE"/>
-				<Alpha childKey="AirParticlesClose" order="2" fromAlpha=".16" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
-				<Translation childKey="AirParticlesClose" order="1" offsetX="100" offsetY="0"/>
-				<Translation childKey="AirParticlesClose" order="2" offsetX="-200" offsetY="0" startDelay="0" duration="10"/>
-				<Translation childKey="AirParticlesClose" order="3" offsetX="200" offsetY="0" startDelay="0"/>
-				<Rotation childKey="AirParticlesClose" duration="10" order="2" degrees="20" />
+				<Alpha childKey="AirParticlesClose" order="2" fromAlpha="0" toAlpha=".15" duration="5" smoothing="NONE"/>
+				<Alpha childKey="AirParticlesClose" order="2" fromAlpha=".15" toAlpha="0" startDelay="22" duration="5" smoothing="NONE"/>
+				<Translation childKey="AirParticlesClose" order="1" offsetX="300" offsetY="0"/>
+				<Translation childKey="AirParticlesClose" order="2" offsetX="-600" offsetY="0" startDelay="0" duration="27"/>
+				<Translation childKey="AirParticlesClose" order="3" offsetX="600" offsetY="0" startDelay="0"/>
+				<Rotation childKey="AirParticlesClose" duration="27" order="2" degrees="20" />
 			</AnimationGroup>
 			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
-				<Alpha childKey="AirParticlesFar" order="2" fromAlpha="0" toAlpha=".16" duration="5" smoothing="NONE"/>
-				<Alpha childKey="AirParticlesFar" order="2" fromAlpha=".16" toAlpha="0" startDelay="31" duration="5" smoothing="NONE"/>
+				<Alpha childKey="AirParticlesFar" order="2" fromAlpha="0" toAlpha="0.14" duration="5" smoothing="NONE"/>
+				<Alpha childKey="AirParticlesFar" order="2" fromAlpha="0.14" toAlpha="0" startDelay="31" duration="5" smoothing="NONE"/>
 				<Translation childKey="AirParticlesFar" order="1" offsetX="100" offsetY="0"/>
 				<Translation childKey="AirParticlesFar" order="2" offsetX="-200" offsetY="0" startDelay="0" duration="36"/>
 				<Translation childKey="AirParticlesFar" order="3" offsetX="200" offsetY="0" startDelay="0"/>
-				<Rotation childKey="AirParticlesFar" duration="36" order="2" degrees="20" />
+				<Rotation childKey="AirParticlesFar" duration="36" order="2" degrees="-20" />
 			</AnimationGroup>
 			<AnimationGroup parentArray="backgroundAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
 				<Alpha childKey="OverlayBackgroundRight" order="1" fromAlpha="0" toAlpha="0" duration="5" smoothing="NONE"/>

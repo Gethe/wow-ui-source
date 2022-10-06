@@ -222,9 +222,6 @@ function BoostTutorial:Init()
 	eventFrame:RegisterEvent("SCENARIO_UPDATE");
 
 	if (C_CharacterServicesPublic.ShouldSeeControlPopup()) then
-		if (not NPE_TutorialKeyboardMouseFrame_Frame) then
-			UIParentLoadAddOn("Blizzard_Tutorial");
-		end
 		NPE_TutorialKeyboardMouseFrame_Frame:Show();
 	end
 end

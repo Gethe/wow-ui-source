@@ -7,8 +7,8 @@
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 			</Frame>
 
@@ -29,9 +29,6 @@
 
 	<Frame name="MajorFactionButtonTemplate" virtual="true" mixin="MajorFactionButtonMixin" scale="0.875">
 		<Size x="458" y="122"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
 		<Frames>
 			<Frame parentKey="LockedState" mixin="MajorFactionButtonLockedStateMixin">
 				<Size x="458" y="122"/>
@@ -40,11 +37,10 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="dragonflight-landingpage-renownbutton-tuskarr" useAtlasSize="true">
+						<Texture parentKey="Background">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
-							<Color r="0.2" g="0.2" b="0.2" a="1"/>
 						</Texture>
 					</Layer>
 

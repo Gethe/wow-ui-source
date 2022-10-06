@@ -1,0 +1,6 @@
+## Author: Blizzard Entertainment
+## Title: Blizzard Tutorials
+## RequiredDep: Blizzard_TutorialManager
+
+Blizzard_Tutorials_Classes.lua
+Blizzard_Tutorials.lua

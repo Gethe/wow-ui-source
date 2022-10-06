@@ -10,13 +10,13 @@ local function Register()
 		local function GetActionBarToggle(index)
 			return select(index, GetActionBarToggles());
 		end
-		
+
 		local function SetActionBarToggle(index, value)
 			local toggles = {GetActionBarToggles()};
 			toggles[index] = value;
 			SetActionBarToggles(unpack(toggles));
 		end
-		
+
 		local actionBars = 
 		{
 			{variable = "PROXY_SHOW_ACTIONBAR_2", label = OPTION_SHOW_ACTION_BAR:format(2), tooltip = OPTION_SHOW_ACTION_BAR2_TOOLTIP},
@@ -29,33 +29,17 @@ local function Register()
 			local function GetValue()
 				return GetActionBarToggle(index);
 			end
-			
+
 			local function SetValue(value)
 				SetActionBarToggle(index, value);
 			end
-		
+
 			local defaultValue = true;
 			local setting = Settings.RegisterProxySetting(category, data.variable, Settings.DefaultVarLocation,
 				Settings.VarType.Boolean, data.label, defaultValue, GetValue, SetValue);
 			actionBars[index].setting = setting;
 			actionBars[index].initializer = Settings.CreateCheckBox(category, setting, data.tooltip);
 		end
-
-		local actionBar1Setting = actionBars[1].setting;
-		local actionBar1Initializer = actionBars[1].initializer;
-		local actionBar2Initializer = actionBars[2].initializer;
-		local function IsModifiableActionBar1Setting()
-			return actionBar1Setting:GetValue();
-		end
-		actionBar2Initializer:SetParentInitializer(actionBar1Initializer, IsModifiableActionBar1Setting);
-
-		local actionBar3Setting = actionBars[3].setting;
-		local actionBar3Initializer = actionBars[3].initializer;
-		local actionBar4Initializer = actionBars[4].initializer;
-		local function IsModifiableActionBar3Setting()
-			return actionBar3Setting:GetValue();
-		end
-		actionBar4Initializer:SetParentInitializer(actionBar3Initializer, IsModifiableActionBar3Setting);
 	end
 
 	-- Lock Action Bars

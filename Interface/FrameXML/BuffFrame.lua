@@ -134,6 +134,7 @@ function AuraContainerMixin:UpdateGridLayout(auras)
 		aura.duration:ClearAllPoints();
 		aura.duration:SetPoint(durationPoint, aura.Icon, durationRelativePoint);
 	end
+	self:GetParent():UpdateSize(auraWidth, auraHeight, newLayoutInfo.iconStride or 1, newLayoutInfo.iconPadding or 0, self.iconScale or 1, newLayoutInfo.isHorizontal)
 
     -- Apply the layout and then update our size
 	GridLayoutUtil.ApplyGridLayout(
@@ -155,6 +156,7 @@ function AuraFrameMixin:AuraFrame_OnLoad()
 	self:RegisterUnitEvent("UNIT_AURA", "player", "vehicle");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 	self.auraPool = CreateFramePoolCollection();
 	self.auraPool:CreatePool("BUTTON", self.AuraContainer, self.auraTemplate);
@@ -162,7 +164,9 @@ function AuraFrameMixin:AuraFrame_OnLoad()
 end
 
 function AuraFrameMixin:AuraFrame_OnEvent(event, ...)
-	if event == "UNIT_AURA" then
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:Update();
+	elseif event == "UNIT_AURA" then
 		local unit = ...;
 		if unit == PlayerFrame.unit then
 			self:Update();
@@ -235,7 +239,6 @@ end
 
 function AuraFrameMixin:UpdateGridLayout()
 	self.AuraContainer:UpdateGridLayout(self.auraFrames);
-	self:Layout();
 end
 
 function AuraFrameMixin:Update()
@@ -244,6 +247,18 @@ function AuraFrameMixin:Update()
 	self:UpdateAuras();
 	self:UpdateAuraButtons();
 	self:UpdateGridLayout();
+end
+
+function AuraFrameMixin:UpdateSize(auraWidth, auraHeight, perRow, iconPadding, scale, isHorizontal)
+	local totalRows = math.ceil(self.maxAuras / perRow); 
+	local frameWidth = (auraWidth + iconPadding) * (isHorizontal and perRow or totalRows); 
+	local frameHeight = (auraHeight + iconPadding) * (isHorizontal and (totalRows) or perRow); 
+
+	local expandButtonWidth = self.CollapseAndExpandButton and self.CollapseAndExpandButton:GetWidth() or 0; 
+	local expandButtonHeight = self.CollapseAndExpandButton and  self.CollapseAndExpandButton:GetHeight() or 0; 
+	local totalWidth = isHorizontal and frameWidth + expandButtonWidth or frameWidth; 
+	local totalHeight = not isHorizontal and frameHeight + expandButtonHeight or frameHeight; 
+	self:SetSize(totalWidth * scale, totalHeight * scale);
 end
 
 BuffFrameMixin = { };
@@ -323,7 +338,7 @@ function BuffFrameMixin:UpdateCollapseAndExpandButtonAnchor()
 			end
 		end
 	end
-
+	self.CollapseAndExpandButton:SetScale(self.AuraContainer.iconScale or 1);
 	self.CollapseAndExpandButton:UpdateOrientation();
 end
 
@@ -331,13 +346,11 @@ function BuffFrameMixin:Update()
 	AuraFrameMixin.Update(self);
 
 	self:RefreshCollapseExpandButtonState();
-	self:Layout();
 end
 
 function BuffFrameMixin:UpdateGridLayout()
 	self.AuraContainer:UpdateGridLayout(self.auraFrames);
 	self:UpdateCollapseAndExpandButtonAnchor();
-	self:Layout();
 end
 
 function BuffFrameMixin:IsExpanded()
@@ -752,7 +765,7 @@ function CollapseAndExpandButtonMixin:UpdateOrientation()
 			rotation = isChecked and rightRotation or leftRotation;
 		end
 
-		self:SetSize(13, 30);
+		self:SetSize(15, 30);
 	else
 		local downRotation = 3 * math.pi / 2;
 		local upRotation = math.pi / 2;
@@ -762,11 +775,12 @@ function CollapseAndExpandButtonMixin:UpdateOrientation()
 			rotation = isChecked and upRotation or downRotation;
 		end
 
-		self:SetSize(30, 13);
+		self:SetSize(30, 15);
 	end
 
 	self:GetNormalTexture():SetRotation(rotation);
 	self:GetHighlightTexture():SetRotation(rotation);
+	self:GetPushedTexture():SetRotation(rotation);
 end
 
 DeadlyDebuffFrameMixin = { };

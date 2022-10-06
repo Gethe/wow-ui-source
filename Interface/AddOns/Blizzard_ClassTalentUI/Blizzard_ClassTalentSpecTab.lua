@@ -92,6 +92,7 @@ function ClassTalentSpecTabMixin:OnHide()
 	if self:IsActivateInProgress() then
 		self:SetActivateVisualsActive(false);
 	end
+	self:ShowTutorialHelp(false);
 end
 
 function ClassTalentSpecTabMixin:ShowTutorialHelp(showHelpFeature)
@@ -372,6 +373,7 @@ function ClassSpecContentFrameMixin:OnActivateClicked()
 	if SetSpecialization(self.specIndex, false) then
 		self:GetParent():SetSpecActivateStarted(self.specIndex);
 	end
+	EventRegistry:TriggerEvent("TalentFrame.SpecTab.ActivateSpec");
 end
 
 function ClassSpecContentFrameMixin:OnHide()

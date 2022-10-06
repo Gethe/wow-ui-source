@@ -294,7 +294,7 @@ local function Register()
 			local chatBubblesParty = C_CVar.GetCVarBool("chatBubblesParty");
 			if chatBubbles and chatBubblesParty then
 				return 1;
-			elseif not chatBubbles and not chatBubblesParty then
+			elseif not chatBubbles then
 				return 2;
 			elseif chatBubbles and not chatBubblesParty then
 				return 3;

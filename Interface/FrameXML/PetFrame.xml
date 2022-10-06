@@ -1,27 +1,24 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="PetFrame.lua"/>
+	<!-- Note that pet frame uses target of target frame assets/uses TargetofTarget for the frameType, and this is intentional. -->
 	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate" parent="PlayerFrame">
-		<Size x="128" y="53"/>
+		<Size x="120" y="49"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="48" type="number"/>
 			<KeyValue key="layoutOnBottom" value="true" type="boolean"/>
 			<KeyValue key="leftPadding" value="15" type="number"/>
+			<KeyValue key="frameType" value="TargetofTarget" type="string"/>
 		</KeyValues>
 		<HitRectInsets>
 			<AbsInset left="7" right="66" top="6" bottom="7"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="PetFrameFlash" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-InCombat" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
 				<Texture name="PetPortrait">
-					<Size x="35" y="35"/>
+					<Size x="37" y="37"/>
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="TOPLEFT" x="24" y="-23"/>
+						<Anchor point="TOPLEFT" x="5" y="-5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -34,21 +31,24 @@
 			<Layer level="BORDER">
 				<Texture name="PetFrameTexture" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-			</Layer>	
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="PetFrameFlash" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-InCombat" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="PetAttackModeTexture" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Status" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="PetFrameDropDown" inherits="UIDropDownMenuTemplate" mixin="PetFrameDropDownMixin" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-				</Scripts>
-			</Frame>
 			<Frame setAllPoints="true">
 				<Frames>
 					<Frame setAllPoints="true">
@@ -63,22 +63,22 @@
 							<Layer level="BORDER">
 								<FontString name="PetHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT" x="24" y="-24"/>
+										<Anchor point="TOPLEFT" x="5" y="-5"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PetFrameHealthBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT" x="79" y="-23"/>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="79" y="-22"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PetFrameHealthBarTextLeft" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="LEFT" relativePoint="TOPLEFT" x="44" y="-23"/>
+										<Anchor point="LEFT" relativePoint="TOPLEFT" x="44" y="-22"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PetFrameHealthBarTextRight" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="RIGHT" relativePoint="TOPLEFT" x="114" y="-23"/>
+										<Anchor point="RIGHT" relativePoint="TOPLEFT" x="114" y="-22"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PetFrameManaBarText" inherits="TextStatusBarText">
@@ -99,16 +99,17 @@
 							</Layer>
 							<Layer level="ARTWORK">
 								<FontString name="PetName" inherits="GameFontNormalSmall" justifyV="BOTTOM" justifyH="LEFT">
-									<Size x="72" y="10"/>
+									<Size x="68" y="10"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="42" y="38"/>
+										<Anchor point="TOPLEFT" relativeTo="PetPortrait" relativePoint="TOPRIGHT" x="2" y="0"/>
 									</Anchors>
 								</FontString>
-								<Texture name="PetAttackModeTexture" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Status" useAtlasSize="true" alphaMode="ADD" hidden="true">
+								<!-- Note that using the party mask asset here is intentional. -->
+								<MaskTexture name="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 									<Anchors>
-										<Anchor point="TOPLEFT"/>
+										<Anchor point="TOPLEFT" x="13" y="-24"/>
 									</Anchors>
-								</Texture>
+								</MaskTexture>
 								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 							</Layer>
@@ -117,9 +118,9 @@
 				</Frames>
 			</Frame>
 			<StatusBar name="PetFrameHealthBar" inherits="TextStatusBar" mixin="PetHealthBarMixin">
-				<Size x="71" y="10"/>
+				<Size x="70" y="10"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="43" y="-17"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="PetPortrait" relativePoint="RIGHT" x="2" y="-3.5"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -129,9 +130,9 @@
 				<BarTexture atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health"/>
 			</StatusBar>
 			<StatusBar name="PetFrameManaBar" inherits="TextStatusBar" mixin="PetManaBarMixin">
-				<Size x="71" y="7"/>
+				<Size x="74" y="7"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="43" y="-28"/>
+					<Anchor point="TOPLEFT" relativeTo="PetFrameHealthBar" relativePoint="BOTTOMLEFT" x="-4" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -145,6 +146,15 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="48" y="-42"/>
 				</Anchors>
+			</Frame>
+			<Frame name="PetFrameDropDown" inherits="UIDropDownMenuTemplate" mixin="PetFrameDropDownMixin" id="1" hidden="true">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOP" x="-20" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

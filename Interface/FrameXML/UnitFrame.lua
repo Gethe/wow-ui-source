@@ -52,8 +52,8 @@ end
 ]]--
 
 function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit, threatNumericIndicator,
-		myHealPredictionBar, otherHealPredictionBar, totalAbsorbBar, totalAbsorbBarOverlay, overAbsorbGlow, overHealAbsorbGlow, healAbsorbBar, healAbsorbBarLeftShadow,
-		healAbsorbBarRightShadow, myManaCostPredictionBar)
+	myHealPredictionBar, otherHealPredictionBar, totalAbsorbBar, totalAbsorbBarOverlay, overAbsorbGlow, overHealAbsorbGlow, healAbsorbBar, healAbsorbBarLeftShadow,
+	healAbsorbBarRightShadow, myManaCostPredictionBar)
 	self.unit = unit;
 	self.name = name;
 	self.frameType = frameType;
@@ -118,13 +118,15 @@ function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar,
 	if (self.manabar) then
 		self.manabar.capNumericDisplay = true;
 
-		if(self.frameType) then
+		if (self.frameType) then
 			self.manabar.frameType = self.frameType;
 		end
+
+		self.manabar.portraitType = self.portrait and "PortraitOn" or "PortraitOff";
 	end
 
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
-	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player" or unit == "pet" or unit == "vehicle" or unit == "target" or unit == "focus"));
+	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player" or unit == "pet" or unit == "vehicle" or unit == "target" or unit == "focus" or unit =="targettarget"));
 	UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
 	UnitFrame_Update(self);
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -575,7 +577,7 @@ function UnitFrameManaBar_UpdateType(manaBar)
 
 	if (info) then
 		if (manaBar.frameType and info.atlasElementName) then
-			local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-PortraitOn-Bar-"..info.atlasElementName;
+			local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType.."-Bar-"..info.atlasElementName;
 			manaBar:SetStatusBarTexture(manaBarTexture);
 		elseif (info.atlas) then
 			manaBar:SetStatusBarTexture(info.atlas);
@@ -596,12 +598,17 @@ function UnitFrameManaBar_UpdateType(manaBar)
 			manaBar.FullPowerFrame:Initialize(info.fullPowerAnim);
 		end
 	else
-		if (not altR) then
-			-- couldn't find a power token entry...default to indexing by power type or just mana if we don't have that either
-			info = PowerBarColor[powerType] or PowerBarColor["MANA"];
-		elseif (not manaBar.lockColor) then
+		-- If we cannot find the info for what the mana bar should be, default either to Mana or Mana-Status (colorable).
+		local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType.."-Bar-Mana";
+		manaBar:SetStatusBarColor(1, 1, 1);
+
+		if (altR) then
+			-- This steps around manaBar.lockColor as it is initially setting things.
+			manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType.."-Bar-Mana-Status";
 			manaBar:SetStatusBarColor(altR, altG, altB);
 		end
+
+		manaBar:SetStatusBarTexture(manaBarTexture);
 	end
 
 	if (manaBar.powerType ~= powerType) then

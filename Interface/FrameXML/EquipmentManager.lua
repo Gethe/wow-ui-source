@@ -294,8 +294,6 @@ function EquipmentManager_GetItemInfoByLocation (location)
 			quality = GetInventoryItemQuality("player", slot);
 		end
 
-		isUpgrade = IsInventoryItemAnUpgrade("player", slot);
-
 		setTooltip = function () GameTooltip:SetInventoryItem("player", slot) end;
 	else -- bags
 		itemID = C_Container.GetContainerItemID(bag, slot);
@@ -309,7 +307,6 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		start, duration, enable = C_Container.GetContainerItemCooldown(bag, slot);
 
 		durability, maxDurability = C_Container.GetContainerItemDurability(bag, slot);
-		isUpgrade = IsContainerItemAnUpgrade(bag, slot);
 
 		setTooltip = function () GameTooltip:SetBagItem(bag, slot); end;
 	end

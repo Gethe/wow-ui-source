@@ -220,6 +220,7 @@
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="6" type="number"/>
+			<KeyValue key="align" value="center" type="string"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

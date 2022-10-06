@@ -16,7 +16,7 @@
 	<Frame name="CastingBarFrameStagePipFXTemplate" inherits="CastingBarFrameStagePipTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="PipGlow" alpha="0" alphaMode="BLEND" atlas="Cast_Empowered_PipFlare" useAtlasSize="true" scale="0.5">
+				<Texture parentKey="PipGlow" alpha="0" alphaMode="BLEND" atlas="cast-empowered-pipflare" useAtlasSize="true" scale="0.5">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

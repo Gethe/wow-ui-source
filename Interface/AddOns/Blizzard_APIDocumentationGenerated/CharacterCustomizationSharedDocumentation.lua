@@ -78,8 +78,8 @@ local CharacterCustomizationShared =
 				{ Name = "isNew", Type = "bool", Nilable = false },
 				{ Name = "swatchColor1", Type = "table", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "swatchColor2", Type = "table", Mixin = "ColorMixin", Nilable = true },
-				{ Name = "showLocked", Type = "bool", Nilable = false },
-				{ Name = "lockedTooltip", Type = "string", Nilable = false },
+				{ Name = "isLocked", Type = "bool", Nilable = false },
+				{ Name = "lockedText", Type = "string", Nilable = true },
 			},
 		},
 		{

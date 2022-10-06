@@ -63,6 +63,15 @@ local ProfessionSpecConstants =
 			},
 		},
 		{
+			Name = "SpecializationCurrencyInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "numAvailable", Type = "number", Nilable = false },
+				{ Name = "currencyName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "SpecializationTabInfo",
 			Type = "Structure",
 			Fields =

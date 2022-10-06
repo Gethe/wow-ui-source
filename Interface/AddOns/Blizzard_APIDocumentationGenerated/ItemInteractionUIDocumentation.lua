@@ -68,14 +68,6 @@ local ItemInteractionUI =
 			Type = "Function",
 		},
 		{
-			Name = "SetCorruptionReforgerItemTooltip",
-			Type = "Function",
-		},
-		{
-			Name = "SetItemConversionOutputTooltip",
-			Type = "Function",
-		},
-		{
 			Name = "SetPendingItem",
 			Type = "Function",
 

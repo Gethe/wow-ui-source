@@ -5,7 +5,7 @@ ScrollUtil = {};
 -- being made.
 
 -- Assigns a callback to be invoked every time a frame is initialized. Initialization occurs after
--- every frame has been anchored and a layout pass performed, which is necessary if the frame's initializer 
+-- every frame has been anchored and a layout pass performed, which is necessary if the frame's initializer
 -- needs to ask for information about it's size to inform layout decisions within itself.
 -- For convenience, you can leverage the 'iterateExisting' argument to immediately invoke the callback on any existing frames.
 function ScrollUtil.AddInitializedFrameCallback(scrollBox, callback, owner, iterateExisting)
@@ -14,13 +14,13 @@ function ScrollUtil.AddInitializedFrameCallback(scrollBox, callback, owner, iter
 	end
 
 	local function OnInitialized(o, frame, elementData)
-		callback(frame, elementData);
+		callback(owner, frame, elementData);
 	end
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnInitializedFrame, OnInitialized, owner);
 end
 
--- Assigns a callback to be invoked every time a frame is acquired. This is suitable if you need to perform 
--- modifications to the frame prior to the initializer being called, or more likely if you're trying to make 
+-- Assigns a callback to be invoked every time a frame is acquired. This is suitable if you need to perform
+-- modifications to the frame prior to the initializer being called, or more likely if you're trying to make
 -- one-time modifications if it's the first time the frame has ever been displayed in the ScrollBox (see 'new').
 function ScrollUtil.AddAcquiredFrameCallback(scrollBox, callback, owner, iterateExisting)
 	if iterateExisting then
@@ -49,12 +49,12 @@ local function RegisterWithScrollBox(scrollBox, scrollBar)
 		scrollBar:SetPanExtentPercentage(panExtentPercentage);
 	end;
 	scrollBox:RegisterCallback(BaseScrollBoxEvents.OnScroll, onScrollBoxScroll, scrollBar);
-	
+
 	local onSizeChanged = function(o, width, height, visibleExtentPercentage)
 		scrollBar:SetVisibleExtentPercentage(visibleExtentPercentage);
 	end;
 	scrollBox:RegisterCallback(BaseScrollBoxEvents.OnSizeChanged, onSizeChanged, scrollBar);
-	
+
 	local onScrollBoxAllowScroll = function(o, allowScroll)
 		scrollBar:SetScrollAllowed(allowScroll);
 	end;
@@ -85,7 +85,7 @@ function ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, scrollB
 	InitScrollBar(scrollBox, scrollBar);
 end
 
--- ScrollBox variant intended for the majority of registration and initialization cases. 
+-- ScrollBox variant intended for the majority of registration and initialization cases.
 -- Currently implemented identically to InitScrollBoxListWithScrollBar but allows for
 -- changes to be made easier without public deprecation problems.
 function ScrollUtil.InitScrollBoxWithScrollBar(scrollBox, scrollBar, scrollBoxView)
@@ -133,7 +133,7 @@ function ManagedScrollBarVisibilityBehaviorMixin:Init(scrollBox, scrollBar, scro
 	end
 
 	scrollBox:RegisterCallback(BaseScrollBoxEvents.OnLayout, self.EvaluateVisibility, self);
-	
+
 	local onSizeChanged = function(o, width, height, visibleExtentPercentage)
 		self:EvaluateVisibility();
 	end;
@@ -170,7 +170,7 @@ function ManagedScrollBarVisibilityBehaviorMixin:EvaluateVisibility(force)
 		scrollBox:ClearAllPoints();
 
 		-- Issue here to resolve:
-		-- This will invalidate the ScrollBox and scroll target rects, preventing layout calculations from 
+		-- This will invalidate the ScrollBox and scroll target rects, preventing layout calculations from
 		-- being correct in grid view. The incorrect calculations are overwritten by doing a full update
 		-- in the size changed handler (see OnScrollTargetSizeChanged in ScrollBox.lua).
 		local clearAllPoints = false;
@@ -202,7 +202,7 @@ function SelectionBehaviorMixin.IsIntrusiveSelected(frame)
 	if frame then
 		return SelectionBehaviorMixin.IsElementDataIntrusiveSelected(frame:GetElementData());
 	end
-	return false;	
+	return false;
 end
 
 -- Intrusive accessors
@@ -218,7 +218,7 @@ function SelectionBehaviorMixin:IsSelected(frame)
 	if frame then
 		return self:IsElementDataSelected(frame:GetElementData());
 	end
-	return false;	
+	return false;
 end
 
 function SelectionBehaviorMixin:IsElementDataSelected(elementData)
@@ -231,7 +231,7 @@ end
 -- "..." are SelectionBehaviorFlags
 function SelectionBehaviorMixin:Init(scrollBox, ...)
 	CallbackRegistryMixin.OnLoad(self);
-	
+
 	self.scrollBox = scrollBox;
 	self.selectionFlags = CreateFromMixins(FlagsMixin);
 	self.selectionFlags:OnLoad();
@@ -307,7 +307,7 @@ function SelectionBehaviorMixin:ToggleSelectElementData(elementData)
 	if oldSelected and not self:IsFlagSet(SelectionBehaviorFlags.Deselectable) then
 		return;
 	end
-	
+
 	local newSelected = not oldSelected;
 	self:SetElementDataSelected_Internal(elementData, newSelected);
 end
@@ -374,7 +374,7 @@ function ScrollUtil.AddResizableChildrenBehavior(scrollBox)
 			1) This is called if the size changed during layout or acquire.
 			2) We're invalidating every calculated element extent instead of the element that changed.
 			3) We cannot update immediately because of a rentrant frame flag invalidation issue.
-		]] 
+		]]
 		scrollBox:FullUpdate(ScrollBoxConstants.UpdateQueued);
 	end;
 

@@ -147,7 +147,8 @@ SummonInfoDocumentation.lua
 TTSSettingsDocumentation.lua
 TaxiMapDocumentation.lua
 TextureUtilsDocumentation.lua
-TooltipConstantsDocumentation.lua
+TooltipComparisonDocumentation.lua
+TooltipInfoDocumentation.lua
 ToyBoxInfoDocumentation.lua
 TradeInfoDocumentation.lua
 TradeSkillUIDocumentation.lua
@@ -289,6 +290,8 @@ SimpleHTMLSharedDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TooltipConstantsDocumentation.lua
+TooltipInfoSharedDocumentation.lua
 TradeSkillUITypesDocumentation.lua
 TraitConstantsDocumentation.lua
 TransmogSharedDocumentation.lua
@@ -320,4 +323,5 @@ SoulbindsConstantsDocumentation.lua
 SuperTrackManagerSharedDocumentation.lua
 TransmogConstantsDocumentation.lua
 UnitConstantsDocumentation.lua
+WeeklyRewardsSharedDocumentation.lua
 # End documentation files here

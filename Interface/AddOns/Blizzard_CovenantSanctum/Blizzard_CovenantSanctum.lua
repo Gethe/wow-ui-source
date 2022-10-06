@@ -1,11 +1,6 @@
 CovenantSanctumMixin = {};
 
-local TAB_UPGRADES = 1;
-local TAB_RENOWN = 2;
-
 function CovenantSanctumMixin:OnLoad()
-	PanelTemplates_SetNumTabs(self, 2);
-
 	local attributes =
 	{
 		area = "center",

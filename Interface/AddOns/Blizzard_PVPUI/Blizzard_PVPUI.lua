@@ -825,7 +825,8 @@ BONUS_BUTTON_TOOLTIPS = {
 	SpecialEventBrawl = {
 		func = function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip:SetSpecialPvpBrawl();
+			local specialBrawl = true;
+			GameTooltip:SetPvpBrawl(specialBrawl);
 		end,
 	}
 }

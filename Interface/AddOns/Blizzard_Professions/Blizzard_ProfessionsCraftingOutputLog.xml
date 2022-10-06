@@ -35,7 +35,17 @@
 			</Layer>
 		</Layers>
 	</Frame>
-		
+
+	<Frame name="ProfessionsOutputLogExtraIconsRowTemplate" inherits="ProfessionsOutputLogExtraRowTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="MIDDLE" maxLines="2" enableMouse="true">
+					<Size x="150" y="30"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="ProfessionsCraftingOutputLogElementTemplate" mixin="ProfessionsCraftingOutputLogElementMixin" virtual="true">
 		<Size x="157" y="46"/>
 		<Frames>
@@ -108,16 +118,8 @@
 				</Layers>
 			</Frame>
 			<Frame parentKey="Multicraft" parentArray="Rows" inherits="ProfessionsOutputLogExtraIconRowTemplate"/>
-			<Frame parentKey="Resources" parentArray="Rows" inherits="ProfessionsOutputLogExtraRowTemplate">
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="MIDDLE" enableMouse="true">
-							<Size x="150" y="30"/>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Frame parentKey="CreationBonus" parentArray="Rows" inherits="ProfessionsOutputLogExtraIconRowTemplate"/>
+			<Frame parentKey="Resources" parentArray="Rows" inherits="ProfessionsOutputLogExtraIconsRowTemplate"/>
+			<Frame parentKey="BonusCraft" parentArray="Rows" inherits="ProfessionsOutputLogExtraIconsRowTemplate"/>
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="ShowAnim" looping="NONE" setToFinalAlpha="true">

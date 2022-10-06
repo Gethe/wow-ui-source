@@ -156,7 +156,7 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_CHAT_FRAME_LABEL" type="global"/>
 		</KeyValues>
 		<Frames>
-			<Frame inherits="EditModeSystemSelectionTemplate" toplevel="true" hidden="true">
+			<Frame inherits="EditModeSystemSelectionTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-32" y="60"/>
 					<Anchor point="BOTTOMRIGHT" x="25" y="-32"/>
@@ -187,6 +187,10 @@
 		<Frames>
 			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
+		<Scripts>
+			<OnShow method="EditModeVehicleLeaveButtonSystem_OnShow"/>
+			<OnHide method="EditModeVehicleLeaveButtonSystem_OnHide"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="EditModeLootFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeLootFrameSystemMixin" virtual="true">

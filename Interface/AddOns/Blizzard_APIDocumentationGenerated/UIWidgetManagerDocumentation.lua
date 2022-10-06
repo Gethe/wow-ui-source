@@ -1086,6 +1086,7 @@ local UIWidgetManager =
 				{ Name = "fillValue", Type = "number", Nilable = false },
 				{ Name = "numTotalFrames", Type = "number", Nilable = false },
 				{ Name = "numFullFrames", Type = "number", Nilable = false },
+				{ Name = "pulseFillingFrame", Type = "bool", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },

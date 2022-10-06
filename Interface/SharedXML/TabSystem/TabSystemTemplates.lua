@@ -29,7 +29,7 @@ end
 
 function TabSystemButtonArtMixin:GetTextYOffset(isSelected)
 	if self.isTabOnTop then
-		return isSelected and 0 or -5;
+		return isSelected and 0 or -3;
 	else
 		return isSelected and -3 or 2;
 	end
@@ -68,6 +68,10 @@ function TabSystemButtonMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
 		GameTooltip_AddErrorLine(GameTooltip, self.errorReason);
 		GameTooltip:Show();
+	elseif self.tooltipText then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
+		GameTooltip_AddNormalLine(GameTooltip, self.tooltipText);
+		GameTooltip:Show();
 	elseif self.Text:IsTruncated() then
 		local text = self.Text:GetText();
 		if text then
@@ -95,6 +99,10 @@ function TabSystemButtonMixin:Init(tabID, tabText)
 	self:SetText(tabText);
 	self:UpdateTabWidth();
 	self:SetTabSelected(false);
+end
+
+function TabSystemButtonMixin:SetTooltipText(tooltipText)
+	self.tooltipText = tooltipText;
 end
 
 function TabSystemButtonMixin:SetTabEnabled(enabled, errorReason)

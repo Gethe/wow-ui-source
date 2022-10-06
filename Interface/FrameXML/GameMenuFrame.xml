@@ -89,7 +89,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						self:SetEnabled(not C_PlayerInfo.IsPlayerNPERestricted());
+						self:SetEnabled(EditModeManagerFrame:CanEnterEditMode());
 					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);

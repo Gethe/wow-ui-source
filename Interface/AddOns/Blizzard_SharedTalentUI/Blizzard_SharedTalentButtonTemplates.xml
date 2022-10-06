@@ -113,14 +113,14 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Glow" hidden="true" alphaMode="ADD" atlas="talents-node-square-greenglow">
-					<Size x="61" y="61"/>
+					<Size x="62" y="62"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
-							<Alpha childKey="Glow" fromAlpha="0.3" toAlpha="1" duration="0.5" order="1" smoothing="OUT"/>
-							<Alpha childKey="Glow" fromAlpha="1" toAlpha="0.3" duration="0.5" order="2" smoothing="IN"/>
+							<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration="0.36" order="1" smoothing="OUT"/>
+							<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" duration="0.36" order="2" smoothing="IN"/>
 						</AnimationGroup>
 					</Animations>
 					<Scripts>

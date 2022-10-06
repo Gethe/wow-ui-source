@@ -1832,10 +1832,13 @@ function SelectionPopoutButtonMixin:UpdatePopout()
 	local buttons = {};
 
 	local hasIneligibleChoice = false;
+	local hasLockedChoice = false;
 	for _, selectionData in ipairs(selections) do
 		if selectionData.ineligibleChoice then
 			hasIneligibleChoice = true;
-			break;
+		end
+		if selectionData.isLocked then
+			hasLockedChoice = true;
 		end
 	end
 
@@ -1844,7 +1847,7 @@ function SelectionPopoutButtonMixin:UpdatePopout()
 		local button = self.buttonPool:Acquire();
 
 		local isSelected = (index == self.selectedIndex);
-		button:SetupEntry(selectionInfo, index, isSelected, numColumns > 1, hasIneligibleChoice);
+		button:SetupEntry(selectionInfo, index, isSelected, numColumns > 1, hasIneligibleChoice, hasLockedChoice);
 		maxDetailsWidth = math.max(maxDetailsWidth, button.SelectionDetails:GetWidth());
 
 		table.insert(buttons, button);
@@ -1922,6 +1925,9 @@ function SelectionPopoutButtonMixin:IsDataMatch(data1, data2)
 end
 
 function SelectionPopoutButtonMixin:OnEntryClicked(entryData)
+	if entryData.isLocked then
+		return;
+	end
 	local newIndex = self:FindIndex(function(element)
 		return self:IsDataMatch(element, entryData);
 	end);
@@ -1963,16 +1969,15 @@ function SelectionPopoutButtonMixin:GetAdjustedIndex(forward, selections)
 	if not self.selectedIndex then
 		return nil;
 	end
-
 	local offset = forward and 1 or -1;
 	local nextIndex = self.selectedIndex + offset;
 	local data = selections[nextIndex];
 	while data do
-		if data.disabled == nil then
+		if data.disabled == nil and not data.isLocked then
 			return nextIndex;
 		else
 			nextIndex = nextIndex + offset;
-			data = selections[currentIndex];
+			data = selections[nextIndex];
 		end
 	end
 
@@ -2124,12 +2129,13 @@ function SelectionPopoutEntryMixin:HandlesGlobalMouseEvent(buttonID, event)
 	return event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton";
 end
 
-function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns, hasAFailedReq)
+function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns, hasAFailedReq, hasALockedChoice)
 	self.isSelected = isSelected;
 	self.selectionData = selectionData;
 	self.popoutHasAFailedReq = hasAFailedReq;
+	self.popoutHasALockedChoice = hasALockedChoice;
 
-	self.SelectionDetails:SetupDetails(selectionData, index, isSelected, hasAFailedReq);
+	self.SelectionDetails:SetupDetails(selectionData, index, isSelected, hasAFailedReq, hasALockedChoice);
 	self.SelectionDetails:AdjustWidth(multipleColumns, self.defaultWidth);
 end
 

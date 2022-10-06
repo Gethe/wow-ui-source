@@ -178,15 +178,23 @@ function MinimapMixin:OnEvent(event, ...)
 end
 
 function MinimapMixin:OnEnter()
+	self:SetScript("OnUpdate", Minimap_OnUpdate);
 	self.ZoomIn:Show();
 	self.ZoomOut:Show();
 end
 
 function MinimapMixin:OnLeave()
+	self:SetScript("OnUpdate", nil);
+	GameTooltip:Hide();
 	if not self.ZoomIn:IsMouseOver() and not self.ZoomOut:IsMouseOver() and not self.ZoomHitArea:IsMouseOver() then
 		self.ZoomIn:Hide();
 		self.ZoomOut:Hide();
 	end
+end
+
+function Minimap_OnUpdate(self)
+	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR");
+	GameTooltip:SetMinimapMouseover();
 end
 
 function Minimap_SetPing(x, y, playSound)
@@ -301,9 +309,9 @@ function MinimapClusterMixin:CheckTutorials()
 			offsetX = 0,
 			alignment = HelpTip.Alignment.Center,
 			onAcknowledgeCallback = GenerateClosure(self.CheckTutorials, self),
-			acknowledgeOnHide = true,
+			useParentStrata	= false,
 		};
-		HelpTip:Show(self, helpTipInfo);
+		HelpTip:Show(UIParent, helpTipInfo, self);
 	end
 end
 
@@ -855,13 +863,24 @@ function ExpansionLandingPageMinimapButtonMixin:OnEvent(event, ...)
 	end
 end
 
-local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow)
-	local info = C_Texture.GetAtlasInfo(up);
-	self:SetSize(info and info.width or 0, info and info.height or 0);
-	self:GetNormalTexture():SetAtlas(up, TextureKitConstants.UseAtlasSize);
-	self:GetPushedTexture():SetAtlas(down, TextureKitConstants.UseAtlasSize);
-	self:GetHighlightTexture():SetAtlas(highlight, TextureKitConstants.UseAtlasSize);
-	self.LoopingGlow:SetAtlas(glow, TextureKitConstants.UseAtlasSize);
+local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow, useDefaultButtonSize)
+	local width, height;
+	if useDefaultButtonSize then
+		width = self.defaultWidth;
+		height = self.defaultHeight;
+		self.LoopingGlow:SetSize(self.defaultGlowWidth, self.defaultGlowHeight);
+	else
+		local info = C_Texture.GetAtlasInfo(up);
+		width = info and info.width or 0;
+		height = info and info.height or 0;
+	end
+	self:SetSize(width, height);
+
+	local useAtlasSize = not useDefaultButtonSize;
+	self:GetNormalTexture():SetAtlas(up, useAtlasSize);
+	self:GetPushedTexture():SetAtlas(down, useAtlasSize);
+	self:GetHighlightTexture():SetAtlas(highlight, useAtlasSize);
+	self.LoopingGlow:SetAtlas(glow, useAtlasSize);
 end
 
 function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
@@ -869,9 +888,11 @@ function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
 		self:UpdateIconForGarrison();
 	else
 		local minimapDisplayInfo = ExpansionLandingPage:GetOverlayMinimapDisplayInfo();
-		SetLandingPageIconFromAtlases(self, minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas);
-		self.title = minimapDisplayInfo.title;
-		self.description = minimapDisplayInfo.description;
+		if minimapDisplayInfo then
+			SetLandingPageIconFromAtlases(self, minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas, minimapDisplayInfo.useDefaultButtonSize);
+			self.title = minimapDisplayInfo.title;
+			self.description = minimapDisplayInfo.description;
+		end
 	end
 end
 

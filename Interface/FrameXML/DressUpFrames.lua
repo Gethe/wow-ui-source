@@ -651,7 +651,7 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNUSABLE);
 		else
 			local hideVendorPrice = true;
-			GameTooltip:SetHyperlink(self.item:GetItemLink(), nil, nil, nil, hideVendorPrice);
+			GameTooltip:SetHyperlink(self.item:GetItemLink(), nil, nil, hideVendorPrice);
 			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNCOLLECTABLE);
 		end
 	elseif self.slotState == OUTFIT_SLOT_STATE_UNCOLLECTED then

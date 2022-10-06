@@ -16,9 +16,7 @@ function ClassTalentFrameMixin:OnLoad()
 
 	self.CloseButton:SetScript("OnClick", GenerateClosure(self.CheckConfirmClose, self));
 
-	local classFile = PlayerUtil.GetClassFile();
-	local left, right, bottom, top = unpack(CLASS_ICON_TCOORDS[string.upper(classFile)]);
-	self.PortraitOverlay.Portrait:SetTexCoord(left, right, bottom, top);
+	self:UpdatePortrait();
 end
 
 function ClassTalentFrameMixin:OnShow()
@@ -31,7 +29,7 @@ function ClassTalentFrameMixin:OnShow()
 
 	self:UpdateTabs();
 	UpdateMicroButtons();
-
+	EventRegistry:TriggerEvent("TalentFrame.OpenFrame");
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_OPEN_WINDOW);
 end
 
@@ -52,6 +50,7 @@ end
 function ClassTalentFrameMixin:OnEvent(event)
 	if event == "PLAYER_SPECIALIZATION_CHANGED" then
 		self:UpdateTabs();
+		self:UpdatePortrait();
 	end
 end
 
@@ -104,18 +103,11 @@ function ClassTalentFrameMixin:UpdateFrameTitle()
 	end
 end
 
-function ClassTalentFrameMixin:SetTabInternal(tabID)
+function ClassTalentFrameMixin:SetTab(tabID)
 	TabSystemOwnerMixin.SetTab(self, tabID);
 
 	self:UpdateFrameTitle();
-end
-
-function ClassTalentFrameMixin:SetTab(tabID)
-	-- Overrides TabSystemOwnerMixin.SetTab.
-
-	local callback = GenerateClosure(self.SetTabInternal, self, tabID);
-	self:CheckConfirmResetAction(callback);
-    EventRegistry:TriggerEvent("ClassTalentFrame.TabSet", ClassTalentFrame, tabID);
+	EventRegistry:TriggerEvent("ClassTalentFrame.TabSet", ClassTalentFrame, tabID);
 	return true; -- Don't show the tab as selected yet.
 end
 
@@ -149,4 +141,17 @@ function ClassTalentFrameMixin:CheckConfirmClose()
 	-- No need to check before closing anymore.
 	HideUIPanel(self);
 	EventRegistry:TriggerEvent("TalentFrame.CloseFrame");
+end
+
+function ClassTalentFrameMixin:UpdatePortrait()
+	local masteryIndex = GetSpecialization();
+	if (masteryIndex == nil) then
+		local classFile = PlayerUtil.GetClassFile();
+		local left, right, bottom, top = unpack(CLASS_ICON_TCOORDS[string.upper(classFile)]);
+		self.PortraitOverlay.Portrait:SetTexCoord(left, right, bottom, top);
+	else
+		local _, _, _, icon = GetSpecializationInfo(masteryIndex);
+		self.PortraitOverlay.Portrait:SetTexCoord(0, 1, 0, 1);
+		self.PortraitOverlay.Portrait:SetTexture(icon);
+	end
 end

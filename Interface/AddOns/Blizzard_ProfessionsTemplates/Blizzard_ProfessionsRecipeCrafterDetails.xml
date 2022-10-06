@@ -343,12 +343,12 @@
 						</Layers>
 					</Frame>
 					
-					<Frame parentKey="Left" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="11">>
+					<Frame parentKey="Left" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="11">
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.Center" relativePoint="LEFT"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="Right" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="12">>
+					<Frame parentKey="Right" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="12">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Center" relativePoint="RIGHT"/>
 						</Anchors>

@@ -1,6 +1,25 @@
 
 local dialBaseAngle = 1.4;
 
+local professionVertexColors =
+{
+	[Enum.Profession.FirstAid] = PROFESSION_SPEC_COLOR_FIRST_AID,
+	[Enum.Profession.Blacksmithing] = PROFESSION_SPEC_COLOR_BLACKSMITHING,
+	[Enum.Profession.Leatherworking] = PROFESSION_SPEC_COLOR_LEATHERWORKING,
+	[Enum.Profession.Alchemy] = PROFESSION_SPEC_COLOR_ALCHEMY,
+	[Enum.Profession.Herbalism] = PROFESSION_SPEC_COLOR_HERBALISM,
+	[Enum.Profession.Cooking] = PROFESSION_SPEC_COLOR_COOKING,
+	[Enum.Profession.Mining] = PROFESSION_SPEC_COLOR_MINING,
+	[Enum.Profession.Tailoring] = PROFESSION_SPEC_COLOR_TAILORING,
+	[Enum.Profession.Engineering] = PROFESSION_SPEC_COLOR_ENGINEERING,
+	[Enum.Profession.Enchanting] = PROFESSION_SPEC_COLOR_ENCHANTING,
+	[Enum.Profession.Fishing] = PROFESSION_SPEC_COLOR_FISHING,
+	[Enum.Profession.Skinning] = PROFESSION_SPEC_COLOR_SKINNING,
+	[Enum.Profession.Jewelcrafting] = PROFESSION_SPEC_COLOR_JEWELCRAFTING,
+	[Enum.Profession.Inscription] = PROFESSION_SPEC_COLOR_INSCRIPTION,
+	[Enum.Profession.Archaeology] = PROFESSION_SPEC_COLOR_ARCHAEOLOGY,
+};
+
 function ProfessionDial_GetRelativeRotation(currRank, maxRank, inPct)
 	local finalPipRotation = 5.61; -- Final pip has hard-coded rotation due to offset in art
 	local rads = (currRank == maxRank) and finalPipRotation or (currRank / maxRank) * (2 * math.pi - dialBaseAngle) + (dialBaseAngle / 2);
@@ -46,7 +65,8 @@ function ProfessionSpecTabMixin:OnLoad()
 	local function TabSelectedCallback(_, selectedID)
 		local isSelected = (selectedID == self.traitTreeID);
 		self:SetTabSelected(isSelected);
-		self.Glow:SetShown(not isSelected);
+		self.StateIconGlow:SetShown(self.state ~= Enum.ProfessionsSpecTabState.Unlocked and not isSelected);
+		self.BottomBorderGlow:SetShown(isSelected);
 	end
 	EventRegistry:RegisterCallback("ProfessionsSpecializations.TabSelected", TabSelectedCallback, self);
 
@@ -62,17 +82,14 @@ function ProfessionSpecTabMixin:SetState(state)
 	self.StateIcon:SetShown(not isUnlocked);
 	if not isUnlocked then
 		self.StateIcon:ClearAllPoints();
-		self.StateIcon:SetPoint("LEFT", self.Text, "RIGHT", 0, 0);
-		local canUnlock = state == Enum.ProfessionsSpecTabState.Unlockable;
-		-- HRO TODO: Different asset when unlockable
-		self.StateIcon:SetAtlas(canUnlock and "AdventureMapIcon-Lock" or "AdventureMapIcon-Lock", TextureKitConstants.IgnoreAtlasSize);
+		self.StateIcon:SetPoint("LEFT", self.Text, "RIGHT", 6, 0);
 	end
 
 	local unlockable = (state == Enum.ProfessionsSpecTabState.Unlockable);
 	if unlockable then
-		self.GlowAnim:Play();
+		self.StateIconGlowAnim:Play();
 	else
-		self.GlowAnim:Stop();
+		self.StateIconGlowAnim:Stop();
 	end
 end
 
@@ -135,7 +152,6 @@ function ProfessionSpecTabMixin:Init(traitTreeID)
 	self.tabInfo = tabInfo;
 	self.state = nil;
 
-	self.GlowAnim:Restart();
 	self.Text:SetText(tabInfo.name);
 	self:SetTabSelected(false);
 	self:UpdateState();
@@ -152,9 +168,15 @@ end
 
 ProfessionsSpecPathMixin = CreateFromMixins(TalentButtonSpendMixin);
 
+function ProfessionsSpecPathMixin:AdjustBaseArt()
+	self.SpendText:ClearAllPoints();
+	self.SpendText:SetPoint("BOTTOM", self, "BOTTOM", 1, -2);
+end
+
 function ProfessionsSpecPathMixin:OnLoad()
 	TalentButtonArtMixin.OnLoad(self);
 
+	self:AdjustBaseArt();
 	self:SetAndApplySize(self.iconSize, self.iconSize);
 	self.ProgressBar:SetSize(self.progressBarSizeX, self.progressBarSizeY);
 	self.StateBorder:SetShown(false);
@@ -201,15 +223,15 @@ local SuppressedSoundsOnPurchaseRank = {
 
 function ProfessionsSpecPathMixin:PurchaseRank() -- Override
 	if self.state == Enum.ProfessionsSpecPathState.Locked then
-		self:SetSuppressedSounds(SuppressedSoundsOnPurchaseRank);
+		self:GetTalentFrame():SetSuppressedSounds(SuppressedSoundsOnPurchaseRank);
 		self:GetTalentFrame():PlayDialLockInAnimation();
 	else
 		self:PlaySelectSound();
 	end
 	self:GetTalentFrame():PurchaseRank(self:GetNodeID());
-	self:ClearSuppressedSounds();
+	self:GetTalentFrame():ClearSuppressedSounds();
 
-	self:CheckTooltip();
+	self:OnEnter();
 end
 
 function ProfessionsSpecPathMixin:GetConfigID()
@@ -274,6 +296,11 @@ function ProfessionsSpecPathMixin:OnEnter() -- Override
 	self:SetScript("OnEvent", self.OnEvent);
 	self:RegisterEvent("SPELL_TEXT_UPDATE");
 
+	if not self.isDetailedView then
+		self.MouseoverOverlay:Show();
+		self.IconMouseoverHighlight:Show();
+	end
+
 	EventRegistry:TriggerEvent("ProfessionSpecs.SpecPathEntered", self.nodeInfo.ID);
 end
 
@@ -281,6 +308,8 @@ function ProfessionsSpecPathMixin:OnLeave() -- Override
 	GameTooltip_Hide();
 	self:SetScript("OnEvent", nil);
 	self:UnregisterEvent("SPELL_TEXT_UPDATE");
+	self.MouseoverOverlay:Hide();
+	self.IconMouseoverHighlight:Hide();
 end
 
 function ProfessionsSpecPathMixin:ShouldDisplaySource()
@@ -405,6 +434,9 @@ function ProfessionsSpecPathMixin:SetVisualState(state) -- Override
 
 	local stateInfo = PathStateInfo[state];
 	self.SpendText:SetShown(stateInfo.showPoints and not self.isDetailedView);
+	for i, shadow in ipairs(self.spendTextShadows) do
+		shadow:SetShown(stateInfo.showPoints and not self.isDetailedView);
+	end
 	self.LockedIcon:SetShown(stateInfo.showLock);
 	self.ProgressBarBackground:SetShown(not self.isDetailedView)
 
@@ -425,9 +457,15 @@ end
 
 function ProfessionsSpecPathMixin:UpdateSpendText() -- Override
 	if self.definitionInfo ~= nil then
-		self.SpendText:SetText(self:GetSpendText());
+		TalentButtonUtil.SetSpendText(self, self:GetSpendText());
 		self:UpdateProgressBar();
 	end
+end
+
+function ProfessionsSpecPathMixin:UpdateIconTexture() -- Override
+	local texture = self:CalculateIconTexture();
+	self.Icon:SetTexture(texture);
+	self.IconMouseoverHighlight:SetTexture(texture);
 end
 
 function ProfessionsSpecPathMixin:SetNodeID(nodeID, skipUpdate) -- Override
@@ -437,6 +475,15 @@ function ProfessionsSpecPathMixin:SetNodeID(nodeID, skipUpdate) -- Override
 	if not self.isDetailedView then
 		self:GetTalentFrame():OnButtonNodeIDSet(self, oldNodeID, nodeID);
 	end
+	self:UpdateAssets();
+end
+
+function ProfessionsSpecPathMixin:UpdateAssets()
+	-- TODO:: Re-enable specialized fills
+	local kitSpecifier = "Tailoring";--Professions.GetAtlasKitSpecifier(self:GetTalentFrame().professionInfo);
+	local stylizedProgressBarAtlasName = kitSpecifier and string.format("Professions-Specialization-Node-%s", kitSpecifier);
+	local stylizedProgressBarInfo = stylizedProgressBarAtlasName and C_Texture.GetAtlasInfo(stylizedProgressBarAtlasName);
+	self.ProgressBar:SetSwipeTexture(stylizedProgressBarInfo.file or stylizedProgressBarInfo.filename);
 end
 
 -- Do not want to reinstantiate when the entry changes, so we use the base display mixin's version
@@ -571,21 +618,22 @@ function ProfessionsSpecPerkMixin:OnLeave()
 end
 
 function ProfessionsSpecPerkMixin:UpdateAssets()
-	local kitSpecifier = Professions.GetAtlasKitSpecifier(self:GetTalentFrame().professionInfo);
+	-- TODO:: Re-enable specialized pips
+	local kitSpecifier = "Tailoring"; --Professions.GetAtlasKitSpecifier(self:GetTalentFrame().professionInfo);
 	local isFinalPip = self.unlockRank == self:GetParentMaxRank();
 	local pipArtAtlasFormat = isFinalPip and "SpecDial_EndPip_Flipbook_%s" or "SpecDial_Pip_Flipbook_%s";
-	local stylizedAtlasName = kitSpecifier and pipArtAtlasFormat:format(kitSpecifier);
-	local stylizedInfo = stylizedAtlasName and C_Texture.GetAtlasInfo(stylizedAtlasName);
-	if not stylizedInfo then
-		stylizedAtlasName = pipArtAtlasFormat:format("Blacksmithing");
-		stylizedInfo = C_Texture.GetAtlasInfo(stylizedAtlasName);
+	local stylizedPipAtlasName = kitSpecifier and pipArtAtlasFormat:format(kitSpecifier);
+	local stylizedPipInfo = stylizedPipAtlasName and C_Texture.GetAtlasInfo(stylizedPipAtlasName);
+	if not stylizedPipInfo then
+		stylizedPipAtlasName = pipArtAtlasFormat:format("Blacksmithing");
+		stylizedPipInfo = C_Texture.GetAtlasInfo(stylizedPipAtlasName);
 	end
 
-	self.Artwork:SetAtlas(stylizedAtlasName, TextureKitConstants.IgnoreAtlasSize);
+	self.Artwork:SetAtlas(stylizedPipAtlasName, TextureKitConstants.IgnoreAtlasSize);
 
 	local frameSize = 90;
-	local numRows = stylizedInfo.height / frameSize;
-	local numCols = stylizedInfo.width / frameSize;
+	local numRows = stylizedPipInfo.height / frameSize;
+	local numCols = stylizedPipInfo.width / frameSize;
 	local numFrames = numRows * numCols; -- Expected that all rows are filled
 	self.PipLockinAnim.FlipBook:SetFlipBookRows(numRows);
 	self.PipLockinAnim.FlipBook:SetFlipBookColumns(numCols);
@@ -609,10 +657,13 @@ ProfessionSpecEdgeArrowMixin = {};
 function ProfessionSpecEdgeArrowMixin:UpdateState() -- Override
 	local endButton = self:GetEndButton();
 	endButton:CanPurchaseUnlock();
+
+	local overrideArrowColor = false;
 	
 	if endButton.state ~= Enum.ProfessionsSpecPathState.Locked  then
-		self.Line:SetAtlas("talents-arrow-line-yellow", TextureKitConstants.IgnoreAtlasSize);
-		self.ArrowHead:SetAtlas("talents-arrow-head-yellow", TextureKitConstants.IgnoreAtlasSize);
+		self.Line:SetAtlas("Professions_Specialization_arrowline", TextureKitConstants.IgnoreAtlasSize);
+		self.ArrowHead:SetAtlas("Professions_Specialization_arrowhead", TextureKitConstants.IgnoreAtlasSize);
+		overrideArrowColor = true;
 	elseif endButton:CanPurchaseUnlock() then
 		self.Line:SetAtlas("talents-arrow-line-gray", TextureKitConstants.IgnoreAtlasSize);
 		self.ArrowHead:SetAtlas("talents-arrow-head-gray", TextureKitConstants.IgnoreAtlasSize);
@@ -620,4 +671,14 @@ function ProfessionSpecEdgeArrowMixin:UpdateState() -- Override
 		self.Line:SetAtlas("talents-arrow-line-locked", TextureKitConstants.IgnoreAtlasSize);
 		self.ArrowHead:SetAtlas("talents-arrow-head-locked", TextureKitConstants.IgnoreAtlasSize);
 	end
+
+	local r, g, b = 1, 1, 1;
+	if overrideArrowColor then
+		-- TODO:: Re-enable specialized colors
+		local profession = Enum.Profession.Tailoring;--endButton:GetTalentFrame().professionInfo.profession;
+		local color = professionVertexColors[profession];
+		r, g, b = color:GetRGB();
+	end
+	self.Line:SetVertexColor(r, g, b);
+	self.ArrowHead:SetVertexColor(r, g, b);
 end

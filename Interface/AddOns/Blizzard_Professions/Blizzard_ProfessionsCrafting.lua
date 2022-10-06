@@ -234,8 +234,9 @@ function ProfessionsCraftingPageMixin:SelectRecipe(recipeInfo, skipSelectInList)
 	-- Always forward the highest learned recipe to the schematic.
 	local highestRecipe = Professions.GetHighestLearnedRecipe(recipeInfo);
 	self.SchematicForm.Details:CancelAllAnims();
-	self.SchematicForm:Init(highestRecipe or recipeInfo);
 
+	self.SchematicForm:ClearTransaction();
+	self.SchematicForm:Init(highestRecipe or recipeInfo);
 
 	self.GuildFrame:Clear();
 
@@ -383,18 +384,18 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 
 
 		if transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
-			self.CreateButton:SetText(CREATE_PROFESSION_ENCHANT);
+			self.CreateButton:SetTextToFit(CREATE_PROFESSION_ENCHANT);
 			local quantity = math.min(1, countMax);
 			self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_FORMAT:format(PROFESSIONS_ENCHANT_ALL, quantity));
 		else
 			if currentRecipeInfo.abilityVerb then
 				-- abilityVerb is recipe-level override
-				self.CreateButton:SetText(currentRecipeInfo.abilityVerb);
+				self.CreateButton:SetTextToFit(currentRecipeInfo.abilityVerb);
 			elseif currentRecipeInfo.alternateVerb then
 				-- alternateVerb is profession-level override
-				self.CreateButton:SetText(currentRecipeInfo.alternateVerb);
+				self.CreateButton:SetTextToFit(currentRecipeInfo.alternateVerb);
 			else
-				self.CreateButton:SetText(CREATE_PROFESSION);
+				self.CreateButton:SetTextToFit(CREATE_PROFESSION);
 			end
 
 			local createAllFormat;
@@ -441,7 +442,8 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 			self.CreateButton.tooltipText = nil;
 			self.CreateAllButton.tooltipText = nil;
 			
-			if countMax <= 0 then
+			local requiresCount = not isRuneforging;
+			if requiresCount and countMax <= 0 then
 				enabled = false;
 			elseif not currentRecipeInfo.craftable or currentRecipeInfo.disabled then
 				enabled = false;
@@ -568,40 +570,55 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 		end
 	end
 
-		local currentRecipeInfo = nil;
-		local openRecipeID = professionInfo.openRecipeID;
-		if openRecipeID then
-			local node = dataProvider:FindElementDataByPredicate(function(node)
-				local data = node:GetData();
-				local recipeInfo = data.recipeInfo;
-				return recipeInfo and recipeInfo.recipeID == openRecipeID;
-			end);
-
-			assert(node, string.format("%d, %d", openRecipeID, dataProvider:GetSize()));
-			if node then
-				local data = node:GetData();
-				currentRecipeInfo = data.recipeInfo;
-			end
-		else
-			if changedProfessionID then
-				currentRecipeInfo = SelectInitialRecipe();
-			else
-				currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
-				if currentRecipeInfo then
-					currentRecipeInfo = Professions.GetFirstRecipe(currentRecipeInfo);
-				else
-					currentRecipeInfo = SelectInitialRecipe();
-				end
-			end
+	local function SetCurrentRecipeInfo(recipeID)
+		if not recipeID then
+			return nil;
 		end
+
+		local node = dataProvider:FindElementDataByPredicate(function(node)
+			local data = node:GetData();
+			local recipeInfo = data.recipeInfo;
+			return recipeInfo and recipeInfo.recipeID == recipeID;
+		end);
+
+		if node then
+			local data = node:GetData();
+			return data.recipeInfo;
+		end
+	end
+
+	local currentRecipeInfo = nil;
+	if changedProfessionID then
+		currentRecipeInfo = SelectInitialRecipe();
+	end
+
+	local openRecipeID = professionInfo.openRecipeID;
+	if not currentRecipeInfo then
+		currentRecipeInfo = SetCurrentRecipeInfo(openRecipeID);
+	end
+
+	if not currentRecipeInfo then
+		local previousRecipeID = self.RecipeList:GetPreviousRecipeID();
+		currentRecipeInfo = SetCurrentRecipeInfo(previousRecipeID);
+	end
+
+	if not currentRecipeInfo then
+		currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
+		if currentRecipeInfo then
+			-- The form may not be the base recipe ID, so find the first info
+			-- if we expect to retrieve it from the data provider.
+			currentRecipeInfo = Professions.GetFirstRecipe(currentRecipeInfo);
+		else
+			currentRecipeInfo = SelectInitialRecipe();
+		end
+	end
 
 	local hasRecipe = currentRecipeInfo ~= nil;
 	if hasRecipe then
 		local scrollToRecipe = openRecipeID ~= nil;
-		local elementData = self.RecipeList:SelectRecipe(currentRecipeInfo, scrollToRecipe);
+		self.RecipeList:SelectRecipe(currentRecipeInfo, scrollToRecipe);
 	else
-		self.SchematicForm.Details:CancelAllAnims();
-		self.SchematicForm:Init();
+		self.SchematicForm:Init(nil);
 		self:ValidateControls();
 	end
 end

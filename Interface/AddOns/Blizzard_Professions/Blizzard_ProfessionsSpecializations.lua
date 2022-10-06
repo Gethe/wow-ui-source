@@ -383,7 +383,7 @@ local PathLayoutInfo =
 			[2] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
 			[3] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
 			[4] = { rotationBetweenChildren = 90, distanceToChild = 1200 },
-			[5] = { rotationBetweenChildren = 100, distanceToChild = 1200 },
+			[5] = { rotationBetweenChildren = 100, distanceToChild = 1300 },
 		},
 		[3] =
 		{
@@ -391,11 +391,11 @@ local PathLayoutInfo =
 			[2] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
 			[3] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
 			[4] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
-			[5] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
+			[5] = { rotationBetweenChildren = 60, distanceToChild = 1300 },
 		},
 		[4] =
 		{
-			[1] = { rotationBetweenChildren = 60, distanceToChild = 1200 },
+			[1] = { rotationBetweenChildren = 50, distanceToChild = 1200 },
 			[2] = { rotationBetweenChildren = 60, distanceToChild = 1200 },
 			[3] = { rotationBetweenChildren = 55, distanceToChild = 1200 },
 		},
@@ -418,17 +418,17 @@ local PathLayoutInfo =
 		[2] =
 		{
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1200 },
-			[2] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
-			[3] = { rotationBetweenChildren = 60, distanceToChild = 1200 },
+			[2] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
+			[3] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
 			[4] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
-			[5] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
+			[5] = { rotationBetweenChildren = 35, distanceToChild = 1200 },
 		},
 		[3] =
 		{
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1200 },
 			[2] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
-			[3] = { rotationBetweenChildren = 50, distanceToChild = 1200 },
-			[4] = { rotationBetweenChildren = 30, distanceToChild = 1200 },
+			[3] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
+			[4] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
 			[5] = { rotationBetweenChildren = 30, distanceToChild = 1200 },
 		},
 		[4] =
@@ -501,7 +501,7 @@ function ProfessionsSpecFrameMixin:LoadTalentTreeInternal() -- Override
 		end
 	end
 
-	local rootPosX = 3670;
+	local rootPosX = 3470;
 	local rootPosY = 2910;
 	self:InstantiateTalentButton(self.tabInfo.rootNodeID, rootPosX, rootPosY);
 	SetUpChildren(self.tabInfo.rootNodeID, rootPosX, rootPosY, 0, PathLayers.Root);
@@ -551,7 +551,7 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 
 	self.tabInfo = C_ProfSpecs.GetTabInfo(traitTreeID);
 	self.TreeView.TreeName:SetText(self.tabInfo.name);
-	self.TreeView.TreeDescription:SetWidth(280);
+	self.TreeView.TreeDescription:SetWidth(325);
 	self.TreeView.TreeDescription:SetText(self.tabInfo.description);
 
 	local forceUpdate = true;
@@ -861,7 +861,25 @@ local flipbookAnimEndDelay =
 	[Enum.Profession.Jewelcrafting] = 2,
 };
 
-function ProfessionsDetailedSpecPathMixin:UpdateAssets()
+function ProfessionsDetailedSpecPathMixin:UpdateAssets() -- Override
+	local fillArtAtlas= "SpecDial_Fill_Flipbook_DefaultBlue";
+	local fillInfo = C_Texture.GetAtlasInfo(fillArtAtlas);
+	self.ProgressBar:SetSwipeTexture(fillInfo.file or fillInfo.filename);
+	local lowTexCoords =
+	{
+		x = fillInfo.leftTexCoord,
+		y = fillInfo.topTexCoord,
+	};
+	local highTexCoords =
+	{
+		x = fillInfo.rightTexCoord,
+		y = fillInfo.bottomTexCoord,
+	};
+	self.ProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
+	self.DividerGlow:SetAtlas("SpecDial_DividerGlow_Tailoring", TextureKitConstants.UseAtlasSize);
+
+	-- TODO:: Re-enable specialized fills (also re-adjust size)
+	--[[
 	local professionInfo = self:GetTalentFrame().professionInfo;
 	local kitSpecifier = Professions.GetAtlasKitSpecifier(professionInfo);
 	local fillArtAtlasFormat = "SpecDial_Fill_Flipbook_%s";
@@ -896,9 +914,12 @@ function ProfessionsDetailedSpecPathMixin:UpdateAssets()
 		stylizedDividerAtlasName = dividerAtlasFormat:format("Blacksmithing");
 	end
 	self.DividerGlow:SetAtlas(stylizedDividerAtlasName, TextureKitConstants.UseAtlasSize);
+	--]]
 end
 
 function ProfessionsDetailedSpecPathMixin:OnUpdate(dt)
+	-- TODO:: Re-enable animation
+	--[[
 	if not self.timePerFrame then
 		return;
 	end
@@ -935,4 +956,5 @@ function ProfessionsDetailedSpecPathMixin:OnUpdate(dt)
 		};
 		self.ProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
 	end
+	--]]
 end

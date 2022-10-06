@@ -535,7 +535,7 @@ function CastingBarMixin:ShowSpark()
 	local currentBarType = self.barType;
 
 	if currentBarType == "interrupted" then
-		self.Spark:SetAtlas("ui-castingbar-pip-2x_red", TextureKitConstants.UseAtlasSize);
+		self.Spark:SetAtlas("ui-castingbar-pip-red", TextureKitConstants.UseAtlasSize);
 		self.Spark.offsetY = 0;
 	elseif currentBarType == "empowered" then
 		self.Spark:SetAtlas("ui-castingbar-empower-cursor", TextureKitConstants.UseAtlasSize);

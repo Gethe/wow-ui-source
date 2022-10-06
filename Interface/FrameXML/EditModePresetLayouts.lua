@@ -1,3 +1,7 @@
+MAIN_ACTION_BAR_DEFAULT_OFFSET_Y = 45;
+RIGHT_ACTION_BAR_DEFAULT_OFFSET_X = -5;
+RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y = -77;
+
 local modernSystemMap =
 {
 	[Enum.EditModeSystem.ActionBar] = {
@@ -16,7 +20,7 @@ local modernSystemMap =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 45,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -91,8 +95,8 @@ local modernSystemMap =
 				point = "RIGHT",
 				relativeTo = "UIParent",
 				relativePoint = "RIGHT",
-				offsetX = -5,
-				offsetY = -77,
+				offsetX = RIGHT_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -166,6 +170,7 @@ local modernSystemMap =
 		[Enum.EditModeUnitFrameSystemIndices.Player] = {
 			settings = {
 				[Enum.EditModeUnitFrameSetting.CastBarUnderneath] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "BOTTOMRIGHT",
@@ -179,6 +184,7 @@ local modernSystemMap =
 		[Enum.EditModeUnitFrameSystemIndices.Target] = {
 			settings = {
 				[Enum.EditModeUnitFrameSetting.BuffsOnTop] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "BOTTOMLEFT",
@@ -193,12 +199,13 @@ local modernSystemMap =
 			settings = {
 				[Enum.EditModeUnitFrameSetting.BuffsOnTop] = 0,
 				[Enum.EditModeUnitFrameSetting.UseLargerFrame] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "LEFT",
 				relativeTo = "TargetFrame",
 				relativePoint = "RIGHT",
-				offsetX = 10,
+				offsetX = -10,
 				offsetY = 0,
 			},
 		},
@@ -211,6 +218,7 @@ local modernSystemMap =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -245,6 +253,7 @@ local modernSystemMap =
 				[Enum.EditModeUnitFrameSetting.UseLargerFrame] = 0,
 				[Enum.EditModeUnitFrameSetting.CastBarOnSide] = 1,
 				-- [Enum.EditModeUnitFrameSetting.ShowCastTime] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "RIGHT",
@@ -257,6 +266,7 @@ local modernSystemMap =
 
 		[Enum.EditModeUnitFrameSystemIndices.Arena] = {
 			settings = {
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "RIGHT",
@@ -312,7 +322,7 @@ local modernSystemMap =
 				[Enum.EditModeAuraFrameSetting.Orientation] = Enum.AuraFrameOrientation.Horizontal,
 				[Enum.EditModeAuraFrameSetting.IconWrap] = Enum.AuraFrameIconWrap.Down,
 				[Enum.EditModeAuraFrameSetting.IconDirection] = Enum.AuraFrameIconDirection.Left,
-				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 8,
+				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 11,
 				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
 				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
 				[Enum.EditModeAuraFrameSetting.ShowFull] = 0,
@@ -340,7 +350,7 @@ local modernSystemMap =
 				relativeTo = "BuffFrame",
 				relativePoint = "BOTTOMRIGHT",
 				offsetX = -13,
-				offsetY = -60,
+				offsetY = -15,
 			},
 		},
 	},
@@ -441,7 +451,7 @@ local classicSystemMap =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 45,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -516,8 +526,8 @@ local classicSystemMap =
 				point = "RIGHT",
 				relativeTo = "UIParent",
 				relativePoint = "RIGHT",
-				offsetX = -5,
-				offsetY = -77,
+				offsetX = RIGHT_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -591,6 +601,7 @@ local classicSystemMap =
 		[Enum.EditModeUnitFrameSystemIndices.Player] = {
 			settings = {
 				[Enum.EditModeUnitFrameSetting.CastBarUnderneath] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -604,6 +615,7 @@ local classicSystemMap =
 		[Enum.EditModeUnitFrameSystemIndices.Target] = {
 			settings = {
 				[Enum.EditModeUnitFrameSetting.BuffsOnTop] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -618,6 +630,7 @@ local classicSystemMap =
 			settings = {
 				[Enum.EditModeUnitFrameSetting.BuffsOnTop] = 0,
 				[Enum.EditModeUnitFrameSetting.UseLargerFrame] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -636,6 +649,7 @@ local classicSystemMap =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -670,6 +684,7 @@ local classicSystemMap =
 				[Enum.EditModeUnitFrameSetting.UseLargerFrame] = 0,
 				[Enum.EditModeUnitFrameSetting.CastBarOnSide] = 1,
 				-- [Enum.EditModeUnitFrameSetting.ShowCastTime] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "RIGHT",
@@ -682,6 +697,7 @@ local classicSystemMap =
 
 		[Enum.EditModeUnitFrameSystemIndices.Arena] = {
 			settings = {
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
 				point = "RIGHT",
@@ -737,7 +753,7 @@ local classicSystemMap =
 				[Enum.EditModeAuraFrameSetting.Orientation] = Enum.AuraFrameOrientation.Horizontal,
 				[Enum.EditModeAuraFrameSetting.IconWrap] = Enum.AuraFrameIconWrap.Down,
 				[Enum.EditModeAuraFrameSetting.IconDirection] = Enum.AuraFrameIconDirection.Left,
-				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 8,
+				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 11,
 				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
 				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
 				[Enum.EditModeAuraFrameSetting.ShowFull] = 0,
@@ -765,7 +781,7 @@ local classicSystemMap =
 				relativeTo = "BuffFrame",
 				relativePoint = "BOTTOMRIGHT",
 				offsetX = -13,
-				offsetY = -60,
+				offsetY = -15,
 			},
 		},
 	},

@@ -1417,7 +1417,12 @@ end
 
 
 function UpdateProfessionButton(self)
-	local spellIndex = self:GetID() + self:GetParent().spellOffset;
+	local parent = self:GetParent();
+	if not parent.professionInitialized then
+		return;
+	end
+
+	local spellIndex = self:GetID() + parent.spellOffset;
 	local texture = GetSpellBookItemTexture(spellIndex, SpellBookFrame.bookType);
 	local spellName, _, spellID = GetSpellBookItemName(spellIndex, SpellBookFrame.bookType);
 	local isPassive = IsPassiveSpell(spellIndex, SpellBookFrame.bookType);
@@ -1456,9 +1461,10 @@ function FormatProfession(frame, index)
 		frame.missingHeader:Hide();
 		frame.missingText:Hide();
 
-		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier, specializationIndex, specializationOffset, skillLineName = GetProfessionInfo(index);
+		local name, texture, rank, maxRank, numSpells, spellOffset, skillLine, rankModifier, specializationIndex, specializationOffset, skillLineName = GetProfessionInfo(index);
+		frame.professionInitialized = true;
 		frame.skillName = name;
-		frame.spellOffset = spelloffset;
+		frame.spellOffset = spellOffset;
 		frame.skillLine = skillLine;
 		frame.specializationIndex = specializationIndex;
 		frame.specializationOffset = specializationOffset;

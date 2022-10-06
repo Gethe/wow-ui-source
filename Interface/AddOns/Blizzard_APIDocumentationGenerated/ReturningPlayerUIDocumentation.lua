@@ -10,6 +10,10 @@ local ReturningPlayerUI =
 			Name = "AcceptPrompt",
 			Type = "Function",
 		},
+		{
+			Name = "DeclinePrompt",
+			Type = "Function",
+		},
 	},
 
 	Events =

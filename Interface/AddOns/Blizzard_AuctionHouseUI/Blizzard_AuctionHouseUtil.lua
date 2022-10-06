@@ -528,7 +528,7 @@ function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
 		tooltip = GameTooltip;
 		if tooltipType == AuctionHouseTooltipType.ItemLink then
 			local hideVendorPrice = true;
-			GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
+			GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, hideVendorPrice);
 		elseif tooltipType == AuctionHouseTooltipType.ItemKey then
 			GameTooltip:SetItemKey(data.itemID, data.itemLevel, data.itemSuffix, C_AuctionHouse.GetItemKeyRequiredLevel(data));
 		end

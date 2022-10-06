@@ -280,7 +280,7 @@ function FCFOptionsDropDown_Initialize(dropDown)
 			-- If you are the default chat frame then show the enter edit mode option
 			info.text = HUD_EDIT_MODE_MENU;
 			info.func = function() ShowUIPanel(EditModeManagerFrame); end;
-			info.disabled =  C_PlayerInfo.IsPlayerNPERestricted();
+			info.disabled =  not EditModeManagerFrame:CanEnterEditMode();
 		else
 			-- If you aren't the default chat frame then show lock/unlock option
 			if( dropDownChatFrame == GENERAL_CHAT_DOCK.primary ) then

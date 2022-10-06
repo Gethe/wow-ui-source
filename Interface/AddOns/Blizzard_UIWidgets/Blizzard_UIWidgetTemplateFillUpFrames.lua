@@ -48,9 +48,10 @@ function UIWidgetTemplateFillUpFramesMixin:Setup(widgetInfo, widgetContainer)
 		local isFull = (index <= widgetInfo.numFullFrames);
 		local isFilling = (index == (widgetInfo.numFullFrames + 1));
 		local flashFrame = isFull and (widgetInfo.numFullFrames > self.lastNumFullFrames) and (index > self.lastNumFullFrames);
+		local pulseFrame = isFilling and widgetInfo.pulseFillingFrame and (widgetInfo.fillValue < widgetInfo.fillMax);
 
 		fillUpFrame:SetPoint("TOPLEFT", self, "TOPLEFT");
-		fillUpFrame:Setup(widgetContainer, widgetInfo.textureKit, isFull, isFilling, flashFrame, widgetInfo.fillMin, widgetInfo.fillMax, widgetInfo.fillValue)
+		fillUpFrame:Setup(widgetContainer, widgetInfo.textureKit, isFull, isFilling, flashFrame, pulseFrame, widgetInfo.fillMin, widgetInfo.fillMax, widgetInfo.fillValue)
 		fillUpFrame.layoutIndex = index;
 
 		if isFull then
@@ -89,6 +90,7 @@ local frameTextureKitRegions = {
 };
 
 local fillTextureKitFormatString = "%s_fill";
+local fillFullTextureKitFormatString = "%s_fillfull";
 
 local fixedSizeByTextureKit = {
 	dragonriding_vigor = {width=42, height=45};
@@ -98,12 +100,18 @@ local flashFameSound = {
 	dragonriding_vigor = SOUNDKIT.UI_DRAGONRIDING_FULL_NODE;
 };
 
-function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isFull, isFilling, flashFrame, min, max, value)
+function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isFull, isFilling, flashFrame, pulseFrame, min, max, value)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 
 	SetupTextureKitOnRegions(textureKit, self, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
-	local fillAtlas = fillTextureKitFormatString:format(textureKit);
+	local fillAtlas;
+	if isFull then
+		fillAtlas = fillFullTextureKitFormatString:format(textureKit)
+	else
+		fillAtlas = fillTextureKitFormatString:format(textureKit);
+	end
+
 	local fillAtlasInfo = C_Texture.GetAtlasInfo(fillAtlas);
 	if fillAtlasInfo then
 		self.Bar:SetStatusBarTexture(fillAtlas);
@@ -122,9 +130,16 @@ function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isF
 	end
 
 	if flashFrame then
+		self.Flash.PulseAnim:Stop();
 		self.Flash.FlashAnim:Restart();
 		if flashFameSound[textureKit] then
 			PlaySound(flashFameSound[textureKit]);
+		end
+	else
+		if pulseFrame then
+			self.Flash.PulseAnim:Play();
+		else
+			self.Flash.PulseAnim:Stop();
 		end
 	end
 

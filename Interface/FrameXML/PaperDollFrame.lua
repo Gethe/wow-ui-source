@@ -1179,11 +1179,15 @@ function Mastery_OnEnter(statFrame)
 	if (primaryTalentTree) then
 		local masterySpell, masterySpell2 = GetSpecializationMasterySpells(primaryTalentTree);
 		if (masterySpell) then
-			GameTooltip:AddSpellByID(masterySpell);
+			local tooltipInfo = MakeBaseTooltipInfo("GetSpellByID", masterySpell);
+			tooltipInfo.append = true;
+			GameTooltip:ProcessInfo(tooltipInfo);
 		end
 		if (masterySpell2) then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddSpellByID(masterySpell2);
+			local tooltipInfo = MakeBaseTooltipInfo("GetSpellByID", masterySpell2);
+			tooltipInfo.append = true;
+			GameTooltip:ProcessInfo(tooltipInfo);
 		end
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(format(STAT_MASTERY_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_MASTERY)), masteryBonus), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
@@ -1696,23 +1700,21 @@ function PaperDollItemSlotButton_OnEnter(self)
 	if ( not EquipmentFlyout_SetTooltipAnchor(self) ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
-	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID(), nil, true);
+
+	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID(), true);
 	if ( not hasItem ) then
+		-- This SetOwner is needed because calling SetInventoryItem now hides tooltip if there is no item
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		local asRelic = self.checkRelic and UnitHasRelicSlot("player");
 		if asRelic then
 			GameTooltip:SetText(_G[RELICSLOT]);
 		else
 			local slotName = PaperDollItemSlotButton_GetSlotName(self);
 			GameTooltip:SetText(_G[strupper(slotName)]);
+			GameTooltip:Show();
 		end
 	end
-	if ( InRepairMode() and repairCost and (repairCost > 0) ) then
-		GameTooltip:AddLine(REPAIR_COST, nil, nil, nil, true);
-		SetTooltipMoney(GameTooltip, repairCost);
-		GameTooltip:Show();
-	else
-		CursorUpdate(self);
-	end
+	CursorUpdate(self);
 end
 
 function PaperDollItemSlotButton_OnLeave(self)
@@ -2706,4 +2708,8 @@ PaperDollItemSlotButtonMixin = {}
 
 function PaperDollItemSlotButtonMixin:GetItemContextMatchResult()
 	return ItemButtonUtil.GetItemContextMatchResultForItem(ItemLocation:CreateFromEquipmentSlot(self:GetID()));
+end
+
+function PaperDollItemSlotButtonMixin:GetSlotAndBagID()
+	return self:GetID(), 0;
 end

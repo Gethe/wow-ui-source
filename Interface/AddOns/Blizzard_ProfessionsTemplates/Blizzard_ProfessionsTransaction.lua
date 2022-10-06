@@ -412,6 +412,16 @@ function ProfessionsRecipeTransactionMixin:GetSalvageAllocation()
 	return self.salvageItem;
 end
 
+function ProfessionsRecipeTransactionMixin:GetAllocationItemGUID()
+	if self.salvageItem then
+		return self.salvageItem:GetItemGUID();
+	elseif self.enchantItem then
+		return self.enchantItem:GetItemGUID();
+	elseif self.recraftItemGUID then
+		-- When setting the recraft allocation, we set the GUID directly so we can just return that.
+		return self.recraftItemGUID;
+	end
+end
 
 function ProfessionsRecipeTransactionMixin:ClearEnchantAllocations()
 	self:SetEnchantAllocation(nil);

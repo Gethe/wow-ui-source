@@ -106,6 +106,7 @@ TalentFrameBaseMixin = CreateFromMixins(CallbackRegistryMixin);
 
 local TalentFrameBaseEvents = {
 	"TRAIT_NODE_CHANGED",
+	"TRAIT_NODE_CHANGED_PARTIAL",
 	"TRAIT_NODE_ENTRY_UPDATED",
 	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
 };
@@ -259,6 +260,23 @@ function TalentFrameBaseMixin:OnEvent(event, ...)
 	if event == "TRAIT_NODE_CHANGED" then
 		local nodeID = ...;
 		self:MarkNodeInfoCacheDirty(nodeID);
+	elseif event == "TRAIT_NODE_CHANGED_PARTIAL" then
+		local nodeID, partialUpdate = ...;
+		if not self:IsNodeInfoCacheDirty() then
+			local cachedNodeInfo = self.nodeInfoCache[nodeID];
+			if cachedNodeInfo then
+				for key, value in pairs(partialUpdate) do
+					if value ~= nil then
+						cachedNodeInfo[key] = value;
+					end
+				end
+
+				local button = self:GetTalentButtonByNodeID(nodeID);
+				if button then
+					button:UpdateNodeInfo();
+				end
+			end
+		end
 	elseif event == "TRAIT_NODE_ENTRY_UPDATED" then
 		local entryID = ...;
 		self:MarkEntryInfoCacheDirty(entryID);
@@ -510,7 +528,7 @@ function TalentFrameBaseMixin:ToggleSelections(button, selectionOptions, canSele
 end
 
 function TalentFrameBaseMixin:ShowSelections(button, selectionOptions, canSelectChoice, currentSelection, baseCost)
-	self.SelectionChoiceFrame:SetPoint("BOTTOM", button, "TOP", 0, -5);
+	self.SelectionChoiceFrame:SetPoint("BOTTOM", button, "TOP", 0, -10);
 	self.SelectionChoiceFrame:SetSelectionOptions(button, selectionOptions, canSelectChoice, currentSelection, baseCost);
 	self.SelectionChoiceFrame:Show();
 end
@@ -1161,6 +1179,10 @@ end
 
 function TalentFrameBaseMixin:SetSelection(nodeID, entryID)
 	self:AttemptConfigOperation(C_Traits.SetSelection, nodeID, entryID);
+end
+
+function TalentFrameBaseMixin:ClearCascadeRepurchaseHistory()
+	C_Traits.ClearCascadeRepurchaseHistory(self:GetConfigID());
 end
 
 function TalentFrameBaseMixin:GetNodeCost(nodeID)

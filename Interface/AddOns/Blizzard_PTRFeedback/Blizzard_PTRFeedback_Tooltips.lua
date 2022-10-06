@@ -34,15 +34,15 @@ function PTR_IssueReporter.SetupSpellTooltips()
         end
     end)
     
-    local onTooltipSetSpellFunction = function(self)
-        local name, id = self:GetSpell()
-        if (id) then
-            PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.spell, id, name)
-        end
-    end
-
-    GameTooltip:HookScript("OnTooltipSetSpell", onTooltipSetSpellFunction)
-    EmbeddedItemTooltip:HookScript("OnTooltipSetSpell", onTooltipSetSpellFunction)
+    local onTooltipSetSpellFunction = function(tooltip, tooltipData)
+		if (tooltip == GameTooltip or tooltip == EmbeddedItemTooltip) then
+			local name, id = tooltip:GetSpell()
+			if (id) then
+				PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.spell, id, name)
+			end
+		end
+	end
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, onTooltipSetSpellFunction)
     
     local bindingFunc = function(self, talentFrame, tooltip)
         if (talentFrame) and (tooltip) then
@@ -78,16 +78,20 @@ function PTR_IssueReporter.SetupItemTooltips()
         end
     end
 
-    GameTooltip:HookScript("OnTooltipSetItem", attachItemTooltip)
-    ItemRefTooltip:HookScript("OnTooltipSetItem", attachItemTooltip)
+	local function onTooltipSetItemFunction(tooltip, tooltipData)
+		if (tooltip == GameTooltip or tooltip == ItemRefTooltip) then
+			attachItemTooltip(tooltip)
+		end
+	end
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, onTooltipSetItemFunction)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupUnitTooltips()
-    GameTooltip:HookScript("OnTooltipSetUnit", function(self)
+    local function onTooltipSetUnitFunction(tooltip, tooltipData)
         if (C_PetBattles.IsInBattle()) then
             return
         end
-        local name, unit = self:GetUnit()
+        local name, unit = tooltip:GetUnit()
         if (name) and (unit) then
             local guid = UnitGUID(unit) or ""
             local id = tonumber(guid:match("-(%d+)-%x+$"), 10)
@@ -95,7 +99,8 @@ function PTR_IssueReporter.SetupUnitTooltips()
                 PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.unit, id, name)
             end
         end
-    end)
+    end
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, onTooltipSetUnitFunction)
     
     local bindingFunc = function(sender, name, guid)
         if (name) and (guid) then

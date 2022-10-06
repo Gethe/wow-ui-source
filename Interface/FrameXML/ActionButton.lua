@@ -289,6 +289,10 @@ function ActionBarActionButtonMixin:OnLoad()
 	ActionBarButtonEventsFrame:RegisterFrame(self);
 	self:UpdateAction();
 	self:UpdateHotkeys(self.buttonType);
+
+	self.QuickKeybindHighlightTexture:ClearAllPoints();
+	self.QuickKeybindHighlightTexture:SetPoint("TOPLEFT");
+	self.QuickKeybindHighlightTexture:SetSize(46, 45);
 end
 
 function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
@@ -1129,7 +1133,14 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 			local useKeyDownCvar = GetCVarBool("ActionButtonUseKeyDown");
 			local actionBarLocked = Settings.GetValue("lockActionBars");
 
-			local lockedBarDoNothing = actionBarLocked and down and IsModifiedClick("PICKUPACTION");
+			local isModifiedClickLockedBarDoNothing = IsModifiedClick("PICKUPACTION");
+			if GetCursorInfo() then
+				-- If we have something on the cursor then we don't care whether it was a modified click
+				-- as far as lockedBarDoNothing goes
+				isModifiedClickLockedBarDoNothing = false;
+			end
+
+			local lockedBarDoNothing = actionBarLocked and down and isModifiedClickLockedBarDoNothing;
 			local unlockedBarDoNothing = not actionBarLocked and (self:GetAttribute("pressAndHoldAction") or (useKeyDownCvar and down));
 			if lockedBarDoNothing or unlockedBarDoNothing then
 				return;
@@ -1275,9 +1286,19 @@ function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.AutoCastShine:ClearAllPoints();
 	self.AutoCastShine:SetPoint("CENTER", 0.5, -0.5);
 
-	self.HighlightTexture:SetSize(31.7, 31);
+	self.HighlightTexture:SetSize(31.6, 30.9);
+	self.CheckedTexture:SetSize(31.6, 30.9);
 
-	self.CheckedTexture:SetSize(31.7, 31);
+	if self.QuickKeybindHighlightTexture then
+		self.QuickKeybindHighlightTexture:ClearAllPoints();
+		self.QuickKeybindHighlightTexture:SetPoint("TOPLEFT");
+		self.QuickKeybindHighlightTexture:SetSize(31.6, 30.9);
+	end
+
+	self.NewActionTexture:SetSize(31.6, 30.9);
+	self.SpellHighlightTexture:SetSize(31.6, 30.9);
+	self.Border:SetSize(31.6, 30.9);
+	self.Flash:SetSize(31.6, 30.9);
 end
 
 function SmallActionButtonMixin:UpdateButtonArt(hideDivider)

@@ -475,6 +475,7 @@ function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, 
 	if not result then
 		UIErrorsFrame:AddExternalWarningMessage(("Failed to setup setting '%s'"):format(setting:GetName()), settingValue);
 		print(("Failed to setup setting '%s'"):format(setting:GetName()), settingValue);
+		LoadAddOn("Blizzard_DebugTools");
 		Dump(options);
 	end
 	return selectionIndex;

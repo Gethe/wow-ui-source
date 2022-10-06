@@ -36,6 +36,9 @@
 
 				Spacing is the number of pixels between child elements
 				<KeyValue key="spacing" value="10" type="number"/>
+
+				Determines if child scale is taken into account when laying out children
+				<KeyValue key="respectChildScale" value="true" type="boolean"/>
 			</KeyValues>
 			-->
 
@@ -73,6 +76,9 @@
 				Just like VerticalLayoutFrame, by default each child is anchored from TOPLEFT of the child to TOPLEFT of the HorizontalLayoutFrame
 				Possible choices here are "center" (anchored LEFT to LEFT) and "bottom" (anchored BOTTOMLEFT to BOTTOMLEFT)
 				<KeyValue key="align" value="center" type="string"/>
+
+				Determines if child scale is taken into account when laying out children
+				<KeyValue key="respectChildScale" value="true" type="boolean"/>
 			-->
 		</Frame>
 

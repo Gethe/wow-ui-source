@@ -75,6 +75,7 @@ local function Register()
 		local initializer = CreateSettingsCheckBoxDropDownInitializer(
 			cbSetting, ENABLE_MOUSEOVER_CAST, OPTION_TOOLTIP_ENABLE_MOUSEOVER_CAST,
 			dropDownSetting, options, MOUSEOVER_CAST_KEY, OPTION_TOOLTIP_MOUSEOVER_CAST_KEY_TEXT);
+		initializer:AddSearchTags(ENABLE_MOUSEOVER_CAST);
 		layout:AddInitializer(initializer);
 	end
 
@@ -122,7 +123,7 @@ local function Register()
 	-- Enable Action Targeting
 	do
 		local function GetValue()
-			return GetCVar("softTargetEnemy") == Enum.SoftTargetEnableFlags.Any;
+			return tonumber(GetCVar("softTargetEnemy")) == Enum.SoftTargetEnableFlags.Any;
 		end
 		
 		local function SetValue(value)

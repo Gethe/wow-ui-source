@@ -41,6 +41,7 @@ local ClassTalentTalentsTabEvents = {
 	"STARTER_BUILD_ACTIVATION_FAILED",
 	"TRAIT_CONFIG_DELETED",
 	"TRAIT_CONFIG_UPDATED",
+	"TRAIT_CONFIG_LIST_UPDATED",
 	"ACTIONBAR_SLOT_CHANGED"
 };
 
@@ -66,7 +67,7 @@ function ClassTalentTalentsTabMixin:OnLoad()
 
 	self.ResetButton:SetOnClickHandler(GenerateClosure(self.ResetTree, self));
 
-	self.ApplyButton:SetOnClickHandler(GenerateClosure(self.CommitConfig, self));
+	self.ApplyButton:SetOnClickHandler(GenerateClosure(self.ApplyConfig, self));
 	self.ApplyButton:SetOnEnterHandler(GenerateClosure(self.UpdateConfigButtonsState, self));
 	self.UndoButton:SetOnClickHandler(GenerateClosure(self.RollbackConfig, self));
 
@@ -81,6 +82,9 @@ function ClassTalentTalentsTabMixin:OnLoad()
 	EventUtil.ContinueOnAddOnLoaded("Blizzard_ClassTalentUI", GenerateClosure(self.LoadSavedVariables, self));
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED");
+
+	-- CVars are unloaded when we leave the world, so we have to refresh last selected configID after entering the world.
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 -- This is registered and unregistered dynamically.
@@ -175,7 +179,12 @@ function ClassTalentTalentsTabMixin:CheckSetSelectedConfigID()
 	end
 
 	local currentSpecID = PlayerUtil.GetCurrentSpecID();
-	local lastSelectedSavedConfigID = currentSpecID and C_ClassTalents.GetLastSelectedSavedConfigID(currentSpecID) or nil;
+	if not currentSpecID then
+		self:RegisterEvent("PLAYER_TALENT_UPDATE");
+		return;
+	end
+
+	local lastSelectedSavedConfigID = C_ClassTalents.GetLastSelectedSavedConfigID(currentSpecID);
 
 	-- If the last selected configID has ended up invalid, clear out the saved value
 	-- This can happen due to loadout deletion, or base spec config being saved as last selected, prior to the handling of those being fixed
@@ -207,7 +216,7 @@ end
 
 function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 	-- Overrides TalentFrameBaseMixin. The base method happens after because TRAIT_CONFIG_UPDATED requires self.commitedConfigID.
-	
+
 	if event == "TRAIT_CONFIG_CREATED" then
 		local configInfo = ...;
 		if configInfo.type == Enum.TraitConfigType.Combat then
@@ -222,6 +231,8 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 				self.autoLoadNewConfigID = configID;
 			end
 		end
+	elseif event == "TRAIT_CONFIG_LIST_UPDATED" then
+		self:RefreshLoadoutOptions();
 	elseif event == "TRAIT_CONFIG_UPDATED" then
 		self:RefreshLoadoutOptions();
 	elseif event ==  "TRAIT_CONFIG_DELETED" then
@@ -248,6 +259,8 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 	elseif event == "PLAYER_TALENT_UPDATE" then
 		self:CheckSetSelectedConfigID();
 		self:UnregisterEvent("PLAYER_TALENT_UPDATE");
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:CheckSetSelectedConfigID();
 	elseif event == "ACTIONBAR_SLOT_CHANGED" then
 		if not self:IsInspecting() then
 			self:UpdateTalentActionBarStatuses();
@@ -311,33 +324,8 @@ function ClassTalentTalentsTabMixin:OnTraitConfigDeleted(configID)
 		return;
 	end
 
-	-- Handle deletion of the loadout we're currently on
-
-	local lastSelectedIndex = self.LoadoutDropDown:GetSelectedValueIndex();
-	self:RefreshLoadoutOptions();
-
-	local availableConfigs = #self.configIDs;
-	local fallbackConfigID = nil;
-
-	if availableConfigs > 0 then
-		-- Try falling back on the loadout below (now in the place of) the previous selection
-		-- Avoid using the Starter Build as a fallback as that will overwrite with all its own data
-		if lastSelectedIndex and lastSelectedIndex <= availableConfigs and self.configIDs[lastSelectedIndex] ~= Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
-			fallbackConfigID = self.configIDs[lastSelectedIndex];
-		-- Otherwise loop back up to the first loadout
-		elseif self.configIDs[1] ~= Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
-			fallbackConfigID = self.configIDs[1];
-		end
-	end
-
-	if fallbackConfigID then
-		-- Apply fallback loadout
-		local autoApply = true;
-		self:SetSelectedSavedConfigID(fallbackConfigID, autoApply);
-	else
-		-- No fallback loadout available, clear deleted config from the current and saved selection
-		self:ClearLastSelectedConfigID();
-	end
+	-- Handle deletion of the loadout we're currently on by falling back to the default base spec loadout
+	self:ClearLastSelectedConfigID();
 end
 
 function ClassTalentTalentsTabMixin:ResetToLastConfigID()
@@ -610,13 +598,13 @@ function ClassTalentTalentsTabMixin:LoadTalentTreeInternal()
 end
 
 function ClassTalentTalentsTabMixin:SetSelectedSavedConfigID(configID, autoApply, skipLoad)
+	self:UpdateLastSelectedConfigID(configID);
+
 	if self.LoadoutDropDown:GetSelectionID() == configID then
 		return;
 	end
 
 	self.LoadoutDropDown:SetSelectionID(configID);
-
-	self:UpdateLastSelectedConfigID(configID);
 
 	if not skipLoad then
 		self:LoadConfigInternal(configID, not not autoApply);
@@ -717,7 +705,10 @@ function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply)
 		loadResult = C_ClassTalents.LoadConfig(configID, autoApply);
 	end
 
-	if loadResult == Enum.LoadConfigResult.Ready then
+	local isConfigReadyToApply = (loadResult == Enum.LoadConfigResult.Ready);
+	self.isConfigReadyToApply = isConfigReadyToApply;
+
+	if isConfigReadyToApply then
 		self:UpdateLastSelectedConfigID(configID);
 	elseif loadResult == Enum.LoadConfigResult.NoChangesNecessary then
 		self:UpdateLastSelectedConfigID(configID);
@@ -728,12 +719,23 @@ function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply)
 	elseif (loadResult == Enum.LoadConfigResult.LoadInProgress) and autoApply then
 		self:SetCommitStarted(configID);
 	end
+
+	self:UpdateConfigButtonsState();
 end
 
 function ClassTalentTalentsTabMixin:GetConfigCommitErrorString()
 	-- Overrides TalentFrameBaseMixin.
 
 	return TALENT_FRAME_CONFIG_OPERATION_TOO_FAST;
+end
+
+function ClassTalentTalentsTabMixin:ApplyConfig()
+	if self:HasAnyConfigChanges() then
+		self:CommitConfig();
+	else
+		self.isConfigReadyToApply = not C_ClassTalents.SaveConfig(self.LoadoutDropDown:GetSelectionID());
+		self:UpdateConfigButtonsState();
+	end
 end
 
 function ClassTalentTalentsTabMixin:CommitConfigInternal()
@@ -822,15 +824,15 @@ function ClassTalentTalentsTabMixin:UpdateConfigButtonsState()
 	local canChangeTalents, canAdd, canChangeError = self:CanChangeTalents();
 
 	local hasAnyChanges = self:HasAnyConfigChanges();
-	self.ApplyButton:SetEnabled(hasAnyChanges and (canChangeTalents or canAdd));
+	self.ApplyButton:SetEnabled((self.isConfigReadyToApply or hasAnyChanges) and (canChangeTalents or canAdd));
 
-	if hasAnyChanges and not canChangeTalents and canChangeError then
+	if ((self.isConfigReadyToApply or hasAnyChanges) and not canChangeTalents and canChangeError) then
 		self.ApplyButton:SetDisabledTooltip(canChangeError);
 	else
 		self.ApplyButton:SetDisabledTooltip(nil);
 	end
 
-	if hasAnyChanges then
+	if hasAnyChanges or self.isConfigReadyToApply then
 		if self.ApplyButton:IsEnabled() then
 			GlowEmitterFactory:Show(self.ApplyButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
 			self.ApplyButton.YellowGlow:Hide();
@@ -843,8 +845,9 @@ function ClassTalentTalentsTabMixin:UpdateConfigButtonsState()
 		self.ApplyButton.YellowGlow:Hide();
 	end
 
-	self.UndoButton:SetShown(hasAnyChanges);
-	self.ResetButton:SetShown(not hasAnyChanges);
+	local shouldShowUndo = hasAnyChanges and not self.isConfigReadyToApply;
+	self.UndoButton:SetShown(shouldShowUndo);
+	self.ResetButton:SetShown(not shouldShowUndo);
 	self.ResetButton:SetEnabledState(self:HasValidConfig() and self:HasAnyPurchasedRanks() and not self:IsCommitInProgress());
 	self.LoadoutDropDown:SetEnabledState(not self:IsCommitInProgress());
 end

@@ -521,8 +521,7 @@
 			<OnEnter>
 				if self.link then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetHyperlink(self.link);
-					GameTooltip_ShowCompareItem();
+					EncounterJournal_SetTooltipWithCompare(GameTooltip, self.link);
 					self.showingTooltip = true;
 				end
 				EncounterJournal_SetSearchPreviewSelection(self:GetID());
@@ -591,8 +590,7 @@
 			<OnEnter>
 				if self.link then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetHyperlink(self.link);
-					GameTooltip_ShowCompareItem();
+					EncounterJournal_SetTooltipWithCompare(GameTooltip, self.link);
 					self.showingTooltip = true;
 				end
 			</OnEnter>
@@ -1382,8 +1380,9 @@
 				end
 			</OnClick>
 			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				EncounterJournal_SetTooltip(self.link);
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				local useSpec = true;
+				EncounterJournal_SetTooltipWithCompare(GameTooltip, self.link, useSpec);
 				self.showingTooltip = true;
 				self:SetScript("OnUpdate", EncounterJournal_Loot_OnUpdate);
 			</OnEnter>
@@ -2989,6 +2988,7 @@
 					<GameTooltip name="$parentTooltip" parentKey="tooltip" inherits="GameTooltipTemplate">
 						<KeyValues>
 							<KeyValue key="IsEmbedded" value="true" type="boolean"/>
+							<KeyValue key="supportsItemComparison" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="0" y="10"/>

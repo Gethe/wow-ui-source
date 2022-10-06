@@ -5,20 +5,41 @@ local ErrorMessages =
 	VRN_UNSUPPORTED,
 	VRN_GRAPHICS,
 	VRN_DUALCORE,
+	VRN_QUADCORE,
 	VRN_CPUMEM_2GB,
 	VRN_CPUMEM_4GB,
+	VRN_CPUMEM_8GB,
 	VRN_NEEDS_5_0,
 	VRN_NEEDS_6_0,
 	VRN_NEEDS_RT,
 	VRN_NEEDS_DX12,
 	VRN_NEEDS_DX12_VRS2,
+	VRN_NEEDS_APPLE_GPU,
+	VRN_NEEDS_AMD_GPU,
+	VRN_NEEDS_INTEL_GPU,
+	VRN_NEEDS_NVIDIA_GPU,
+	VRN_NEEDS_QUALCOMM_GPU,
 	VRN_NEEDS_MACOS_10_13,
 	VRN_NEEDS_MACOS_10_14,
 	VRN_NEEDS_MACOS_10_15,
 	VRN_NEEDS_MACOS_11_0,
+	VRN_NEEDS_MACOS_12_0,
+	VRN_NEEDS_MACOS_13_0,
 	VRN_NEEDS_WINDOWS_10,
+	VRN_NEEDS_WINDOWS_11,
 	VRN_MACOS_UNSUPPORTED,
 	VRN_WINDOWS_UNSUPPORTED,
+	VRN_LEGACY_UNSUPPORTED,
+	VRN_DX11_UNSUPPORTED,
+	VRN_DX12_WIN7_UNSUPPORTED,
+	VRN_REMOTE_DESKTOP_UNSUPPORTED,
+	VRN_WINE_UNSUPPORTED,
+	VRN_NVAPI_WINE_UNSUPPORTED,
+	VRN_APPLE_UNSUPPORTED,
+	VRN_AMD_UNSUPPORTED,
+	VRN_INTEL_UNSUPPORTED,
+	VRN_NVIDIA_UNSUPPORTED,
+	VRN_QUALCOMM_UNSUPPORTED,
 	VRN_GPU_DRIVER,
 };
 
@@ -578,6 +599,22 @@ local function Register()
 		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_NOTCH_MODE);
 	end
 
+	-- Low Latency Mode
+	do
+		local cvar = "LowLatencyMode";
+
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			AddValidatedCVarOption(container, cvar, 0, VIDEO_OPTIONS_DISABLED);
+			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_BUILTIN);
+			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_NVIDIA_REFLEX);
+			AddValidatedCVarOption(container, cvar, 3, VIDEO_OPTIONS_NVIDIA_REFLEX_BOOST);
+			return container:GetData();
+		end
+
+		Settings.SetupCVarDropDown(category, cvar, Settings.VarType.Number, GetOptions, LOW_LATENCY_MODE, OPTION_TOOLTIP_LOW_LATENCY_MODE);
+	end
+
 	do
 		local function SplitMSAA(msaa)
 			local msaa, coverage = strsplit(",", msaa);
@@ -856,6 +893,7 @@ local function Register()
 		local commitValue = setValue;
 		graphicsSetting = Settings.RegisterProxySetting(category, "PROXY_GRAPHICS_QUALITY", Settings.DefaultVarLocation, 
 			Settings.VarType.Number, GRAPHICS_QUALITY, getDefaultValue(), getValue, nil, commitValue);
+		graphicsSetting:SetCommitFlags(Settings.CommitFlag.Apply);
 		
 		local minValue, maxValue, step = 0, 9, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -864,7 +902,7 @@ local function Register()
 		graphicsInitializer = Settings.CreateSlider(category, graphicsSetting, options, OPTION_TOOLTIP_GRAPHICS_QUALITY);
 	end
 
-	local advInitializer = CreateAdvancedQualitySectionInitializer("Advanced", advSettings);
+	local advInitializer = CreateAdvancedQualitySectionInitializer(ADVANCED_LABEL, advSettings);
 	layout:AddInitializer(advInitializer);
 
 	local raidSetting = Settings.RegisterCVarSetting(category, RaidSettingsEnabledCVar, Settings.VarType.Boolean, RAID_SETTINGS_ENABLED);
@@ -905,7 +943,7 @@ local function Register()
 
 	Settings.SetOnValueChangedCallback(graphicsSetting:GetVariable(), OnGraphicsQualityChanged);
 
-	local advRaidInitializer = CreateAdvancedQualitySectionInitializer("Raid", advRaidSettings, true);
+	local advRaidInitializer = CreateAdvancedQualitySectionInitializer(RAID_SETTINGS, advRaidSettings, true);
 	advRaidInitializer:SetParentInitializer(raidGraphicsInitializer);
 	layout:AddInitializer(advRaidInitializer);
 

@@ -151,12 +151,20 @@
 	<Button name="ProfessionsOutputButtonTemplate" inherits="CircularGiantItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size x="47" y="47"/>
 		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="3">
-				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT">
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<FontString parentKey="Count" inherits="NumberFontNormalLarge" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-8" y="5"/>
+						<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-4" y="1"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="CountShadow" atlas="BattleBar-SwapPetShadow" alpha=".8">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Count" relativePoint="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Count" relativePoint="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 	</Button>

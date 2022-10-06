@@ -185,7 +185,7 @@
 			</CheckButton>
 			<Button parentKey="$parent.CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+					<Anchor point="TOPRIGHT" x="-7" y="-7"/>
 				</Anchors>
 			</Button>
 		</Frames>

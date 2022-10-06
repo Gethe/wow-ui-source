@@ -299,6 +299,18 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 10,
 			stepSize = 1,
 		},
+
+		-- Frame Size
+		{
+			setting = Enum.EditModeUnitFrameSetting.FrameSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_FRAME_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 100,
+			maxValue = 200,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = showAsPercentage,
+		},
 	},
 
 	[Enum.EditModeSystem.EncounterBar] =

@@ -116,7 +116,10 @@ function ProfessionsRecipeListMixin:OnLoad()
 			local changed = self.previousRecipeID ~= newRecipeID;
 			if changed then
 				EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", data.recipeInfo);
-				self.previousRecipeID = newRecipeID;
+				
+				if newRecipeID then
+					self.previousRecipeID = newRecipeID;
+				end
 			end
 
 		end
@@ -131,6 +134,10 @@ end
 
 function ProfessionsRecipeListMixin:ProfessionChanged()
 	self.previousRecipeID = nil;
+end
+
+function ProfessionsRecipeListMixin:GetPreviousRecipeID()
+	return self.previousRecipeID;
 end
 
 function ProfessionsRecipeListMixin:InitContextMenu(dropDown, level)
@@ -326,7 +333,7 @@ end
 
 function ProfessionsRecipeListRecipeMixin:OnEnter()
 	self:SetLabelFontColors(HIGHLIGHT_FONT_COLOR);
-	local elementData = self.GetElementData();
+	local elementData = self:GetElementData();
 	local recipeID = elementData.data.recipeInfo.recipeID;
 	local name = elementData.data.recipeInfo.name;
 	local iconID = elementData.data.recipeInfo.icon;

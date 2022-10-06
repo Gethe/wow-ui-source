@@ -4,10 +4,8 @@ function NewPlayerExperience:Initialize()
 	self:Begin();
 end
 
--- ------------------------------------------------------------------------------------------------------------
-local NPE_AchievementID = 14287;
 function NewPlayerExperience:Begin()
-	local _, _, _, completed = GetAchievementInfo(NPE_AchievementID);
+	local _, _, _, completed = GetAchievementInfo(TutorialManager.NPE_AchievementID);
 	if ( completed == true ) then
 		-- we have completed the NPE at least once, check to see if Tutorials are on
 		local showTutorials = GetCVarBool("showTutorials");
@@ -25,7 +23,6 @@ function NewPlayerExperience:Begin()
 	end
 	
 	-- if the achievement is NOT completed, we don't care if Tutorials are on or off
-
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
 	Dispatcher:RegisterEvent("CVAR_UPDATE", self);
 
@@ -36,15 +33,14 @@ function NewPlayerExperience:Begin()
 	SetCVar("nameplateShowEnemies", 1); -- 0
 	
 	MainMenuMicroButton_SetAlertsEnabled(false, "NPEv2"); --Turns off microtips
-	NPE_QuestManager:Initialize();
 	TutorialLogic:Begin();
 
 	self.IsActive = true;
 end
 
--- ------------------------------------------------------------------------------------------------------------
 function NewPlayerExperience:PLAYER_LEVEL_UP(newLevel)
-	if not C_PlayerInfo.IsPlayerEligibleForNPEv2() then
+	local isRestricted = C_PlayerInfo.IsPlayerNPERestricted();
+	if not isRestricted then
 		self:Shutdown();
 	end
 end
@@ -53,7 +49,7 @@ function NewPlayerExperience:CVAR_UPDATE(cvar, value)
 	if (cvar == "showTutorials" ) then
 		if (value == "0") then
 			-- player is trying to shut the NPE Tutorial off
-			local _, _, _, completed = GetAchievementInfo(NPE_AchievementID);
+			local _, _, _, completed = GetAchievementInfo(TutorialManager.NPE_AchievementID);
 			-- they can  ONLY do that if the achievement is completed
 			if (completed) then
 				self:Shutdown();
@@ -62,11 +58,7 @@ function NewPlayerExperience:CVAR_UPDATE(cvar, value)
 	end
 end
 
--- ------------------------------------------------------------------------------------------------------------
 function NewPlayerExperience:Shutdown()
-	NPE_RangeManager:Shutdown();
-	NPE_QuestManager:Shutdown();
-
 	HelpTip:SetHelpTipsEnabled("NPEv2", true);
 	MainMenuMicroButton_SetAlertsEnabled(true, "NPEv2"); --Turns microtips back on
 
@@ -74,10 +66,8 @@ function NewPlayerExperience:Shutdown()
 	self.IsActive = false;
 end
 
--- ------------------------------------------------------------------------------------------------------------
 function NewPlayerExperience:GetIsActive()
 	return self.IsActive;
 end
 
--- ------------------------------------------------------------------------------------------------------------
 NewPlayerExperience:Initialize();

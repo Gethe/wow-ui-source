@@ -99,7 +99,7 @@ local function Register()
 	-- Enable Interact Key
 	do
 		local function GetValue()
-			return GetCVar("softTargetInteract") == Enum.SoftTargetEnableFlags.Any;
+			return tonumber(GetCVar("softTargetInteract")) == Enum.SoftTargetEnableFlags.Any;
 		end
 		
 		local function SetValue(value)
@@ -177,7 +177,7 @@ local function Register()
 	-- Click to Move
 	do
 		local cbSetting = Settings.RegisterCVarSetting(category, "autointeract", Settings.VarType.Boolean, CLICK_TO_MOVE);
-		local dropDownSetting = Settings.RegisterCVarSetting(category, "cameraSmoothStyle", Settings.VarType.Number, CAMERA_CTM_FOLLOWING_STYLE);
+		local dropDownSetting = Settings.RegisterCVarSetting(category, "cameraSmoothTrackingStyle", Settings.VarType.Number, CAMERA_CTM_FOLLOWING_STYLE);
 	
 		local function GetOptionData(options)
 			local container = Settings.CreateControlTextContainer();

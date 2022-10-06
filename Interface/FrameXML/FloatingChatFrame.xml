@@ -644,7 +644,6 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-
 	<!-- Main chat window -->
 	<Button name="ChatFrame1Tab" inherits="ChatTabTemplate" id="1"/>
 	<ScrollingMessageFrame name="ChatFrame1" hidden="false" inherits="FloatingChatFrameTemplate, EditModeChatFrameSystemTemplate" id="1">
@@ -680,10 +679,10 @@
 		</Scripts>
 	</ScrollingMessageFrame>
 	<!-- ChatFrame1 Specific buttons -->
-	<Button name="ChatFrameMenuButton" frameStrata="MEDIUM" parent="UIParent">
+	<Button name="ChatFrameMenuButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame">
 		<Size x="32" y="32"/>
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="ChatFrame1ButtonFrame" relativePoint="BOTTOM" x="0" y="0"/>
+			<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0"/>
 		</Anchors>
 		<Scripts>
 			<OnClick>
@@ -696,9 +695,9 @@
 		<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
-	<Button name="ChatFrameChannelButton" frameStrata="MEDIUM" parent="UIParent" mixin="ChannelFrameButtonMixin" inherits="VoiceToggleButtonTemplate">
+	<Button name="ChatFrameChannelButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame" mixin="ChannelFrameButtonMixin" inherits="VoiceToggleButtonTemplate">
 		<Anchors>
-			<Anchor point="TOP" relativeTo="ChatFrame1ButtonFrame" relativePoint="TOP" x="0" y="0"/>
+			<Anchor point="TOP" relativePoint="TOP" x="0" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">

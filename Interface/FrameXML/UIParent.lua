@@ -482,6 +482,10 @@ function UIParent_OnLoad(self)
 	--Event(s) for soft targetting
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
 
+	-- Tooltip data events that need to go to GameTooltip
+	self:RegisterEvent("SHOW_HYPERLINK_TOOLTIP");
+	self:RegisterEvent("HIDE_HYPERLINK_TOOLTIP");
+	self:RegisterEvent("WORLD_CURSOR_TOOLTIP_UPDATE");
 end
 
 function UIParent_OnShow(self)
@@ -777,12 +781,6 @@ function MovePad_LoadUI()
 	UIParentLoadAddOn("Blizzard_MovePad");
 end
 ]]
-
-function Tutorial_LoadUI()
-	if ( GetTutorialsEnabled() and C_PlayerInfo.IsPlayerEligibleForNPE() ) then
-		UIParentLoadAddOn("Blizzard_Tutorial");
-	end
-end
 
 function NPE_CheckTutorials()
 	if C_PlayerInfo.IsPlayerNPERestricted() and UnitLevel("player") == 1 then
@@ -1427,6 +1425,9 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+	elseif event == "WORLD_CURSOR_TOOLTIP_UPDATE" then
+		local anchorType = ...;
+		GameTooltip:SetWorldCursor(anchorType);
 	elseif ( event == "CVAR_UPDATE" ) then
 		local cvarName = ...;
 		if cvarName and cvarName == "showTutorials" then
@@ -2400,6 +2401,11 @@ function UIParent_OnEvent(self, event, ...)
 		elseif(previousTarget ~= currentTarget) then
 			PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
 		end
+	elseif event == "SHOW_HYPERLINK_TOOLTIP" then
+		local hyperlink = ...;
+		GameTooltip_ShowEventHyperlink(hyperlink);
+	elseif event == "HIDE_HYPERLINK_TOOLTIP" then
+		GameTooltip_HideEventHyperlink();
 	end
 end
 
@@ -2470,11 +2476,12 @@ end
 function UIParentManagedFrameContainerMixin:UpdateFrame(frame)
 	frame:ClearAllPoints();
 	frame:SetParent(frame.layoutOnBottom and self.BottomManagedLayoutContainer or self);
-	if ObjectiveTrackerFrame then
-		ObjectiveTracker_UpdateHeight();
-	end
 	self:Layout();
 	self.BottomManagedLayoutContainer:Layout();
+
+	if frame.isRightManagedFrame and ObjectiveTrackerFrame then
+		ObjectiveTracker_UpdateHeight();
+	end
 end
 
 function UIParentManagedFrameContainerMixin:AddManagedFrame(frame)
@@ -3074,11 +3081,11 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		MainMenuBar:SetScale(barScale);
 	end
 
-	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight(true);
-	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight or 25;
+	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight();
+	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + 15 or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
 	UIParentBottomManagedFrameContainer.fixedWidth = 573;
 	UIParentBottomManagedFrameContainer:ClearAllPoints();
-	UIParentBottomManagedFrameContainer:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, bottomActionBarHeight + 5);
+	UIParentBottomManagedFrameContainer:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, bottomActionBarHeight);
 	UIParentBottomManagedFrameContainer:Layout();
 	UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:Layout();
 
@@ -3096,6 +3103,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	if(ContainerFrame) then
 		UpdateContainerFrameAnchors();
 	end
+
+	local width, height = UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:GetSize();
+	UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:SetShown(width > 0 and height > 0);
 end
 
 -- Call this function to update the positions of all frames that can appear on the right side of the screen

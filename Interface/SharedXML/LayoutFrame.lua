@@ -213,6 +213,13 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 			child:SetWidth(childWidth);
 			childHeight = child:GetHeight();
 		end
+
+		if self.respectChildScale then
+			local childScale = child:GetScale();
+			childWidth = childWidth * childScale;
+			childHeight = childHeight * childScale;
+		end
+
 		childrenWidth = math.max(childrenWidth, childWidth + leftPadding + rightPadding);
 		childrenHeight = childrenHeight + childHeight + topPadding + bottomPadding;
 		if (i > 1) then
@@ -268,6 +275,13 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 			child:SetHeight(childHeight);
 			childWidth = child:GetWidth();
 		end
+
+		if self.respectChildScale then
+			local childScale = child:GetScale();
+			childWidth = childWidth * childScale;
+			childHeight = childHeight * childScale;
+		end
+
 		childrenHeight = math.max(childrenHeight, childHeight + topPadding + bottomPadding);
 		childrenWidth = childrenWidth + childWidth + leftPadding + rightPadding;
 		if (i > 1) then

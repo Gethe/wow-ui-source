@@ -253,7 +253,9 @@ function EncounterJournalItemMixin:Init(elementData)
 	self.itemID = itemInfo and itemInfo.itemID;
 	self.link = itemInfo and itemInfo.link;
 	if self.showingTooltip then
-		EncounterJournal_SetTooltip(self.link);
+		GameTooltip:SetAnchorType("ANCHOR_RIGHT");
+		local useSpec = true;
+		EncounterJournal_SetTooltipWithCompare(GameTooltip, self.link, useSpec);
 	end
 end
 
@@ -2018,25 +2020,26 @@ function EncounterJournal_Loot_OnClick(self)
 	end
 end
 
-function EncounterJournal_SetTooltip(link)
-	if (not link) then
+function EncounterJournal_SetTooltipWithCompare(tooltip, link, useSpec)
+	if not link then
 		return;
 	end
-
-	local classID, specID = EJ_GetLootFilter();
-
-	if (specID == 0) then
-		local spec = GetSpecialization();
-		if (spec and classID == select(3, UnitClass("player"))) then
-			specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
-		else
-			specID = -1;
+	
+	local classID, specID;
+	if useSpec then
+		local classID, specID = EJ_GetLootFilter();
+		if specID == 0 then
+			local spec = GetSpecialization();
+			if spec and classID == select(3, UnitClass("player")) then
+				specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
+			else
+				specID = -1;
+			end
 		end
 	end
-
-	GameTooltip:SetAnchorType("ANCHOR_RIGHT");
-	GameTooltip:SetHyperlink(link, classID, specID);
-	GameTooltip_ShowCompareItem();
+	local tooltipInfo = MakeBaseTooltipInfo("GetHyperlink", link, classID, specID);
+	tooltipInfo.compareItem = true;
+	tooltip:ProcessInfo(tooltipInfo);
 end
 
 function EncounterJournal_SetFlagIcon(texture, index)
@@ -2152,8 +2155,7 @@ function EncounterSearchResultLGMixin:Init(elementData)
 	if self.showingTooltip then
 		if itemLink then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip:SetHyperlink(itemLink);
-			GameTooltip_ShowCompareItem();
+			EncounterJournal_SetTooltipWithCompare(GameTooltip, itemLink);
 		else
 			GameTooltip:Hide();
 		end
@@ -3325,8 +3327,7 @@ function AdventureJournal_Reward_OnEnter(self)
 			tooltip:SetOwner(frame.Item1, "ANCHOR_NONE");
 			frame.Item1.UpdateTooltip = function() AdventureJournal_Reward_OnEnter(self) end;
 			if ( rewardData.itemLink ) then
-				tooltip:SetHyperlink(rewardData.itemLink);
-				GameTooltip_ShowCompareItem(tooltip, frame.Item1.tooltip);
+				EncounterJournal_SetTooltipWithCompare(tooltip, rewardData.itemLink);
 
 				local quality = select(3, GetItemInfo(rewardData.itemLink));
 				SetItemButtonQuality(frame.Item1, quality, rewardData.itemLink);

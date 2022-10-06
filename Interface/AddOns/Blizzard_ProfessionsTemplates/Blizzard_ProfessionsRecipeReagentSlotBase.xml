@@ -75,7 +75,7 @@
 			</Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="Name" inherits="GameFontHighlight_NoShadow" justifyH="LEFT">
-					<Size x="110" y="36" />
+					<Size x="148" y="36" />
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="10" y="0" />
 					</Anchors>

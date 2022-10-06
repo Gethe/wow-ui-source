@@ -53,6 +53,15 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "ClearCascadeRepurchaseHistory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseTraitSystemInteraction",
 			Type = "Function",
 		},
@@ -323,6 +332,7 @@ local SharedTraits =
 		{
 			Name = "GetTreeNodes",
 			Type = "Function",
+			Documentation = { "Returns a list of nodeIDs, sorted ascending, for a given treeID. Contains nodes for all class specializations." },
 
 			Arguments =
 			{
@@ -332,6 +342,15 @@ local SharedTraits =
 			Returns =
 			{
 				{ Name = "nodeIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HasValidInspectData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasValidInspectData", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -481,6 +500,11 @@ local SharedTraits =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "TraitConfigListUpdated",
+			Type = "Event",
+			LiteralName = "TRAIT_CONFIG_LIST_UPDATED",
 		},
 		{
 			Name = "TraitConfigUpdated",

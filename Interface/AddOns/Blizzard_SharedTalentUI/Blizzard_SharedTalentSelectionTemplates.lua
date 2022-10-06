@@ -156,6 +156,9 @@ function TalentSelectionChoiceMixin:OnClick(button)
 		if IsShiftKeyDown() and self:CanCascadeRepurchaseRanks() then
 			self:GetBaseButton():CascadeRepurchaseRanks();
 			self:UpdateMouseOverInfo();
+		elseif IsModifiedClick("CHATLINK") then
+			local spellLink = GetSpellLink(self:GetSpellID());
+			ChatEdit_InsertLink(spellLink);
 		else
 			if not self:IsChoiceAvailable() then
 				return;
@@ -169,7 +172,15 @@ function TalentSelectionChoiceMixin:OnClick(button)
 			selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID(), self:GetDefinitionInfo());
 		end
 	else
-		selectionChoiceFrame:SetSelectedEntryID(nil);
+		if self:IsGhosted() then
+			self:GetBaseButton():ClearCascadeRepurchaseHistory();
+		end
+
+		local baseButton = self:GetBaseButton();
+		local nodeInfo = baseButton and baseButton:GetNodeInfo() or nil;
+		if nodeInfo and nodeInfo.canRefundRank then
+			selectionChoiceFrame:SetSelectedEntryID(nil);
+		end
 	end
 end
 
@@ -199,17 +210,23 @@ function TalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
 	-- Overrides TalentDisplayMixin.
 
 	if self:IsChoiceAvailable() then
-		GameTooltip_AddBlankLineToTooltip(tooltip);
-
 		if self.isCurrentSelection then
-			GameTooltip_AddDisabledLine(tooltip, TALENT_BUTTON_TOOLTIP_REFUND_INSTRUCTIONS);
+			local baseButton = self:GetBaseButton();
+			local nodeInfo = baseButton and baseButton:GetNodeInfo() or nil;
+			if nodeInfo and nodeInfo.canRefundRank then
+				GameTooltip_AddBlankLineToTooltip(tooltip);
+				GameTooltip_AddDisabledLine(tooltip, TALENT_BUTTON_TOOLTIP_REFUND_INSTRUCTIONS);
+			end
 		else
+			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_AddInstructionLine(tooltip, TALENT_BUTTON_TOOLTIP_PURCHASE_INSTRUCTIONS);
 		end
 	end
 
 	if self:CanCascadeRepurchaseRanks() then
 		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
+	elseif self:IsGhosted() then
+		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_CLEAR_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
 	end
 end
 

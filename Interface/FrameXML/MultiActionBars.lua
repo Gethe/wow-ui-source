@@ -39,9 +39,9 @@ end
 
 function MultiActionBar_Update ()
 	UpdateMultiActionBar(MultiBarBottomLeft, MultiBar1_IsVisible(), BOTTOMLEFT_ACTIONBAR_PAGE);
-	UpdateMultiActionBar(MultiBarBottomRight, MultiBar1_IsVisible() and MultiBar2_IsVisible(), BOTTOMRIGHT_ACTIONBAR_PAGE);
+	UpdateMultiActionBar(MultiBarBottomRight, MultiBar2_IsVisible(), BOTTOMRIGHT_ACTIONBAR_PAGE);
 	UpdateMultiActionBar(MultiBarRight, MultiBar3_IsVisible(), RIGHT_ACTIONBAR_PAGE);
-	UpdateMultiActionBar(MultiBarLeft, MultiBar3_IsVisible() and MultiBar4_IsVisible(), LEFT_ACTIONBAR_PAGE);
+	UpdateMultiActionBar(MultiBarLeft, MultiBar4_IsVisible(), LEFT_ACTIONBAR_PAGE);
 end
 
 function MultiActionBar_ShowAllGrids (reason)
@@ -74,7 +74,7 @@ function MultiBar1_IsVisible()
 end
 
 function MultiBar2_IsVisible()
-	return MultiBar1_IsVisible() and Settings.GetValue("PROXY_SHOW_ACTIONBAR_3");
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_3");
 end
 
 function MultiBar3_IsVisible()
@@ -82,5 +82,5 @@ function MultiBar3_IsVisible()
 end
 
 function MultiBar4_IsVisible()
-	return MultiBar3_IsVisible() and Settings.GetValue("PROXY_SHOW_ACTIONBAR_5");
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_5");
 end

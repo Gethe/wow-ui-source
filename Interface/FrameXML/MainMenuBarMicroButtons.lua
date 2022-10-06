@@ -581,13 +581,7 @@ function TalentMicroButtonMixin:HasTalentAlertToShow()
 
 	local alert;
 
-	if not self.canUseTalentSpecUI and canUseTalentSpecUI then
-		alert = "TALENT_MICRO_BUTTON_SPEC_TUTORIAL";
-	elseif not self.canUseTalentUI and canUseTalentUI then
-		alert = "TALENT_MICRO_BUTTON_TALENT_TUTORIAL";
-	elseif canUseTalentSpecUI and IsPlayerInitialSpec() then
-		alert = "TALENT_MICRO_BUTTON_NO_SPEC";
-	elseif canUseTalentUI and not AreTalentsLocked() and C_ClassTalents.HasUnspentTalentPoints() then
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) and canUseTalentUI and not AreTalentsLocked() and C_ClassTalents.HasUnspentTalentPoints() then
 		alert = "TALENT_MICRO_BUTTON_UNSPENT_TALENTS";
 	end
 

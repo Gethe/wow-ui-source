@@ -56,17 +56,6 @@
 					<Anchor point="LEFT" relativeTo="QuestFramePortrait" relativePoint="RIGHT" x="10" y="0"/>
 					<Anchor point="RIGHT" x="-38" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="QuestFrameNpcNameText" inherits="GameFontHighlight">
-							<Size x="235" y="20"/>
-							<Anchors>
-								<Anchor point="LEFT"/>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad function="RaiseFrameLevelByTwo"/>
 				</Scripts>

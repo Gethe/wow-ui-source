@@ -84,6 +84,16 @@ local TradeSkillUITypes =
 			},
 		},
 		{
+			Name = "CraftingCurrencyResultData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "quantity", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "associatedItemGUID", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "CraftingItemResultData",
 			Type = "Structure",
 			Fields =
@@ -97,8 +107,9 @@ local TradeSkillUITypes =
 				{ Name = "isCrit", Type = "bool", Nilable = false, Default = false },
 				{ Name = "critBonusSkill", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "recraftable", Type = "bool", Nilable = false, Default = false },
-				{ Name = "awardSpecPoint", Type = "bool", Nilable = false, Default = false },
+				{ Name = "bonusCraft", Type = "bool", Nilable = false, Default = false },
 				{ Name = "multicraft", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "associatedItemGUID", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -264,6 +275,7 @@ local TradeSkillUITypes =
 				{ Name = "profession", Type = "Profession", Nilable = true },
 				{ Name = "professionID", Type = "number", Nilable = false },
 				{ Name = "professionName", Type = "string", Nilable = false },
+				{ Name = "expansionName", Type = "string", Nilable = false },
 				{ Name = "skillLevel", Type = "number", Nilable = false },
 				{ Name = "maxSkillLevel", Type = "number", Nilable = false },
 				{ Name = "skillModifier", Type = "number", Nilable = false },

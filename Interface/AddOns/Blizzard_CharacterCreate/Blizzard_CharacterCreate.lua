@@ -234,21 +234,25 @@ end
 function CharacterCreateMixin:SetPaidServiceInfo(serviceType, characterID)
 	self.paidServiceType = serviceType;
 	self.paidServiceCharacterID = characterID;
+	C_CharacterCreation.SetPaidService(serviceType ~= nil);
 end
 
 function CharacterCreateMixin:SetVASInfo(vasType, info)
 	self.vasType = vasType;
 	self.vasInfo = info;
+	C_CharacterCreation.SetPaidService(vasType ~= nil);
 end
 
 function CharacterCreateMixin:ClearPaidServiceInfo()
 	self.paidServiceType = nil;
 	self.paidServiceCharacterID = nil;
+	C_CharacterCreation.SetPaidService(false);
 end
 
 function CharacterCreateMixin:ClearVASInfo()
 	self.vasType = nil;
 	self.vasInfo = nil;	
+	C_CharacterCreation.SetPaidService(false);
 end
 
 function CharacterCreateMixin:BeginVASTransaction()

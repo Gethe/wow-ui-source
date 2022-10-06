@@ -317,6 +317,12 @@ function SettingsCheckBoxControlMixin:OnLoad()
 
 	self.CheckBox = CreateFrame("CheckButton", nil, self, "SettingsCheckBoxTemplate");
 	self.CheckBox:SetPoint("LEFT", self, "CENTER", -80, 0);
+
+	self.Tooltip:SetScript("OnMouseUp", function()
+		if self.CheckBox:IsEnabled() then
+			self.CheckBox:Click();
+		end
+	end);
 end
 
 function SettingsCheckBoxControlMixin:Init(initializer)
@@ -556,6 +562,12 @@ function SettingsCheckBoxWithButtonControlMixin:OnLoad()
 	self.Button = CreateFrame("Button", nil, self, "UIPanelButtonTemplate");
 	self.Button:SetWidth(200, 26);
 	self.Button:SetPoint("LEFT", self.CheckBox, "RIGHT", 5, 0);
+
+	self.Tooltip:SetScript("OnMouseUp", function()
+		if self.CheckBox:IsEnabled() then
+			self.CheckBox:Click();
+		end
+	end);
 end
 
 function SettingsCheckBoxWithButtonControlMixin:Init(initializer)
@@ -577,6 +589,11 @@ function SettingsCheckBoxWithButtonControlMixin:OnCheckBoxValueChanged(value)
 	local initializer = self:GetElementData();
 	local setting = initializer:GetSetting();
 	setting:SetValue(value);
+	if value then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else 
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
 
 	self:GetSetting():SetValue(value);
 end
@@ -599,6 +616,11 @@ end
 
 function SettingsCheckBoxWithButtonControlMixin:SetValue(value)
 	self.CheckBox:SetChecked(value);
+	if value then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else 
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
 end
 
 function SettingsCheckBoxWithButtonControlMixin:EvaluateState()
@@ -637,6 +659,12 @@ function SettingsCheckBoxSliderControlMixin:OnLoad()
 	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
 	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
 	self.SliderWithSteppers.Slider:SetCustomTooltipAnchoring(self.SliderWithSteppers.Slider, "ANCHOR_RIGHT", 20, 0);
+
+	self.Tooltip:SetScript("OnMouseUp", function()
+		if self.CheckBox:IsEnabled() then
+			self.CheckBox:Click();
+		end
+	end);
 end
 
 function SettingsCheckBoxSliderControlMixin:Init(initializer)
@@ -679,6 +707,11 @@ function SettingsCheckBoxSliderControlMixin:OnCheckBoxValueChanged(value)
 	local initializer = self:GetElementData();
 	local cbSetting = initializer.data.cbSetting;
 	cbSetting:SetValue(value);
+	if value then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else 
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
 
 	self.SliderWithSteppers:SetEnabled_(value);
 end
@@ -721,6 +754,12 @@ function SettingsCheckBoxDropDownControlMixin:OnLoad()
 
 	self.DropDown = CreateFrame("Frame", nil, self, "SettingsSelectionPopoutWithButtonsTemplate");
 	self.DropDown:SetPoint("LEFT", self.CheckBox, "RIGHT", 50, 0);
+
+	self.Tooltip:SetScript("OnMouseUp", function()
+		if self.CheckBox:IsEnabled() then
+			self.CheckBox:Click();
+		end
+	end);
 end
 
 function SettingsCheckBoxDropDownControlMixin:Init(initializer)
@@ -771,6 +810,11 @@ function SettingsCheckBoxDropDownControlMixin:OnCheckBoxValueChanged(value)
 	local initializer = self:GetElementData();
 	local cbSetting = initializer.data.cbSetting;
 	cbSetting:SetValue(value);
+	if value then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else 
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
 
 	self.DropDown:SetEnabled_(value);
 end
@@ -866,7 +910,7 @@ function SettingsSelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaul
 	end
 end
 
-function SettingsSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq)
+function SettingsSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq, hasALockedChoice)
 	self.label = selectionData.label;
 
 	self.SelectionName:Show();

@@ -42,7 +42,7 @@ end
 
 function BankFrameBagButton_OnEvent (self, event, ...)
 	if ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		if ( IsContainerFiltered(self:GetID()+NUM_TOTAL_EQUIPPED_BAG_SLOTS) ) then
+		if ( C_Container.IsContainerFiltered(self:GetID()+NUM_TOTAL_EQUIPPED_BAG_SLOTS) ) then
 			self.searchOverlay:Show();
 		else
 			self.searchOverlay:Hide();

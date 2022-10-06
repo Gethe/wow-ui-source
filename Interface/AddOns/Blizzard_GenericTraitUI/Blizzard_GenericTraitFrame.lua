@@ -6,7 +6,41 @@ local TotalFrameLevelSpread = 500;
 local BaseYOffset = 1500;
 local BaseRowHeight = 600;
 
-local GENERIC_TRAIT_FRAME_DEFAULT_PORTRIAT_TEXTURE = "Interface\\ICONS\\Ability_DragonRiding_Launch01";
+local GenericTraitFrameLayoutOptions =
+{
+	Default = {
+		NineSliceTextureKit = nil, 
+		DetailTopAtlas = nil,
+		Title = GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE,
+		TitleDividerAtlas = nil,
+		BackgroundAtlas = "ui-frame-dragonflight-backgroundtile", 
+		HeaderSize = {
+			Width = 500,
+			Height = 50
+		},
+		ShowInset = true,
+		HeaderOffset = { x = 0, y=0 },
+		CurrencyOffset = { x=0, y=50 },
+		CurrencyBackgroundAtlas = nil,
+		PanOffset = {x=0, y=0},
+	},
+	Dragonflight = {
+		NineSliceTextureKit = "Dragonflight", 
+		DetailTopAtlas = "dragonflight-golddetailtop",
+		Title = GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE,
+		TitleDividerAtlas = "dragonriding-talents-line",
+		BackgroundAtlas = "dragonriding-talents-background",
+		HeaderSize = {
+			Width = 500,
+			Height = 130
+		},
+		ShowInset = false,
+		HeaderOffset = { x = 0, y=-30 },
+		CurrencyOffset = { x=0, y=-20 },
+		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
+		PanOffset = {x=-80, y=-35},
+	}
+};
 
 
 GenericTraitFrameMixin = {};
@@ -19,23 +53,41 @@ local GenericTraitFrameEvents = {
 function GenericTraitFrameMixin:OnLoad()
 	TalentFrameBaseMixin.OnLoad(self);
 
-	self:SetTitle(GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE);
+	self:ApplyLayout(GenericTraitFrameLayoutOptions.Dragonflight)
 
 	-- Show costs by default.
 	local function GetDisplayTextFromTreeCurrency(treeCurrency)
 		local flags, traitCurrencyType, currencyTypesID, overrideIcon = C_Traits.GetTraitCurrencyInfo(treeCurrency.traitCurrencyID);
 		if overrideIcon then
-			local width = 16;
-			local height = 16;
+			local width = 24;
+			local height = 24;
 			return CreateSimpleTextureMarkup(overrideIcon, width, height);
 		end
 
 		return nil;
 	end
 
-	
-
 	self:SetTreeCurrencyDisplayTextCallback(GetDisplayTextFromTreeCurrency);
+end
+
+function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
+	self.Background:SetAtlas(layoutInfo.BackgroundAtlas);
+	self.Header.Title:SetText(layoutInfo.Title);
+	self.Header:SetSize(layoutInfo.HeaderSize.Width, layoutInfo.HeaderSize.Height);
+	self.Header.TitleDivider:SetAtlas(layoutInfo.TitleDividerAtlas, true);
+	self.Inset:SetShown(layoutInfo.ShowInset);
+	self.Header:SetPoint("TOP", layoutInfo.HeaderOffset.x, layoutInfo.HeaderOffset.y);
+	self.Currency:SetPoint("TOPRIGHT", self.Header, "BOTTOMRIGHT", layoutInfo.CurrencyOffset.x, layoutInfo.CurrencyOffset.y);
+	self.Currency.CurrencyBackground:SetAtlas(layoutInfo.CurrencyBackgroundAtlas, true);
+
+	self.NineSlice.DetailTop:SetAtlas(layoutInfo.DetailTopAtlas, true);
+	if layoutInfo.NineSliceTextureKit ~= nil then
+		NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, layoutInfo.NineSliceTextureKit);
+	end
+	self.NineSlice:SetShown(layoutInfo.NineSliceTextureKit ~= nil);
+
+	self.basePanOffsetX = layoutInfo.PanOffset.x;
+	self.basePanOffsetY = layoutInfo.PanOffset.y;
 end
 
 function GenericTraitFrameMixin:OnShow()
@@ -45,12 +97,7 @@ function GenericTraitFrameMixin:OnShow()
 
 	self:UpdateTreeCurrencyInfo();
 
-	if UnitExists("npc") then
-		SetPortraitTexture(self.PortraitOverlay.Portrait, "npc");
-	else
-		-- TODO: get from data
-		self.PortraitOverlay.Portrait:SetTexture(GENERIC_TRAIT_FRAME_DEFAULT_PORTRIAT_TEXTURE);
-	end
+	PlaySound(SOUNDKIT.UI_CLASS_TALENT_OPEN_WINDOW);
 end
 
 function GenericTraitFrameMixin:OnHide()
@@ -59,6 +106,8 @@ function GenericTraitFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, GenericTraitFrameEvents);
 
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.TraitSystem);
+
+	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
 end
 
 function GenericTraitFrameMixin:OnEvent(event, ...)

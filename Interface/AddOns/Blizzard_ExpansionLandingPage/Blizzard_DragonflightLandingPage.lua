@@ -7,11 +7,12 @@ local DRAGONRIDING_INTRO_QUEST_ID = 68798;
 local DRAGONRIDING_ACCOUNT_ACHIEVEMENT_ID = 15794;
 local DRAGONRIDING_TRAIT_SYSTEM_ID = 1;
 
-local minimapDisplayInfo = { 
-	["normalAtlas"] = "legionmission-landingbutton-druid-up",
-	["pushedAtlas"] = "legionmission-landingbutton-druid-down",
-	["highlightAtlas"] = "GarrLanding-CircleGlow",
-	["glowAtlas"] = "GarrLanding-CircleGlow",
+local minimapDisplayInfo = {
+	useDefaultButtonSize = true;
+	["normalAtlas"] = "dragonflight-landingbutton-up",
+	["pushedAtlas"] = "dragonflight-landingbutton-down",
+	["highlightAtlas"] = "dragonflight-landingbutton-circlehighlight",
+	["glowAtlas"] = "dragonflight-landingbutton-circleglow",
 	["title"] = DRAGONFLIGHT_LANDING_PAGE_TITLE,
 	["description"] = DRAGONFLIGHT_LANDING_PAGE_TOOLTIP,
 };
@@ -105,7 +106,7 @@ function DragonflightLandingOverlayMixin:SetUpMajorFactionList()
 	self.MajorFactionList:ClearAllPoints();
 	local xOffset, yOffset = 44, -26;
 	self.MajorFactionList:SetPoint("TOPRIGHT", self.Header.TitleDivider, "BOTTOMRIGHT", xOffset, yOffset);
-	self.MajorFactionList:SetExpansionFilter(LE_EXPANSION_10_0);
+	self.MajorFactionList:SetExpansionFilter(LE_EXPANSION_DRAGONFLIGHT);
 end
 
 ------------------------- Dragonriding Skills Button -------------------------

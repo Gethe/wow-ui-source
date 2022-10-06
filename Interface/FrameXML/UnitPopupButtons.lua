@@ -474,7 +474,7 @@ function UnitPopupEnterEditModeMixin:CanShow()
 end
 
 function UnitPopupEnterEditModeMixin:IsEnabled()
-	return not C_PlayerInfo.IsPlayerNPERestricted();
+	return EditModeManagerFrame:CanEnterEditMode();
 end
 
 function UnitPopupEnterEditModeMixin:OnClick()

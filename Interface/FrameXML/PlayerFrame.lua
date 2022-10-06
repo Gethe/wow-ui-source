@@ -84,6 +84,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerFrame_UpdatePvPStatus();
 		end
 	elseif (event == "PLAYER_ENTERING_WORLD") then
+		UnitFrame_Update(self);
 		PlayerFrame_UpdateArt(self);
 		self.inCombat = nil;
 		self.onHateList = nil;
@@ -177,9 +178,7 @@ function PlayerFrame_CheckTutorials(self)
 			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES,
 			targetPoint = HelpTip.Point.RightEdgeCenter,
 			offsetX = 0,
-			textJustifyH = "CENTER",
 			alignment = HelpTip.Alignment.Center,
-			acknowledgeOnHide = true,
 			onAcknowledgeCallback = GenerateClosure(PlayerFrame_CheckTutorials, self),
 		};
 		HelpTip:Show(UIParent, helpTipInfo, self);
@@ -774,6 +773,15 @@ end
 -- Functions for having the cast bar underneath the player frame.
 --
 
+local function AnchorCastBarToPlayerFrame()
+	PlayerCastingBarFrame:ClearAllPoints()
+	if(PlayerFrameBottomManagedFramesContainer:IsShown()) then
+		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrameBottomManagedFramesContainer, "BOTTOM", -10, -5);
+	else
+		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", -10, -5);
+	end
+end
+
 function PlayerFrame_AttachCastBar()
 	-- pet
 	PetCastingBarFrame:SetLook("UNITFRAME");
@@ -786,13 +794,7 @@ function PlayerFrame_AttachCastBar()
 	PlayerCastingBarFrame.attachedToPlayerFrame = true;
 	PlayerCastingBarFrame:SetLook("UNITFRAME");
 	PlayerCastingBarFrame:SetParent(PlayerFrame);
-	PlayerCastingBarFrame:ClearAllPoints()
-	if(PlayerFrameBottomManagedFramesContainer:IsShown()) then 
-		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrameBottomManagedFramesContainer, "BOTTOM", 0, -5);
-	else 
-		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -5);
-	end 
-
+	AnchorCastBarToPlayerFrame();
 end
 
 function PlayerFrame_DetachCastBar()
@@ -809,8 +811,7 @@ function PlayerFrame_DetachCastBar()
 end
 
 function PlayerFrame_AdjustAttachments()
-	if (PlayerCastingBarFrame.attachedToPlayerFrame) then 
-		PlayerCastingBarFrame:ClearAllPoints()
-		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrameBottomManagedFramesContainer, "BOTTOM", 0, -5);
+	if (PlayerCastingBarFrame.attachedToPlayerFrame) then
+		AnchorCastBarToPlayerFrame();
 	end
 end

@@ -1,5 +1,4 @@
-local NODE_PURCHASE_FX_1 = 142;
-local NODE_PURCHASE_FX_2 = 143;
+local NODE_PURCHASE_FX_1 = 150;
 
 
 --------------------------------------------------
@@ -48,7 +47,6 @@ end
 
 function ClassTalentButtonBaseMixin:PlayPurchaseEffect(fxModelScene)
 	fxModelScene:AddEffect(NODE_PURCHASE_FX_1, self, self);
-	fxModelScene:AddEffect(NODE_PURCHASE_FX_2, self, self);
 	if self.PurchaseVisuals and self.PurchaseVisuals.Anim then
 		self.PurchaseVisuals.Anim:SetPlaying(true);
 	end

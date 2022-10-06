@@ -35,7 +35,7 @@ local maxCharLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_CHAR_LAYOUTS:format(Cons
 local maxAccountLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_ACCOUNT_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType);
 local maxLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType, Constants.EditModeConsts.EditModeMaxLayoutsPerType);
 
-local function checkForMaxLayouts(acceptButton, charSpecificButton, layoutType)
+local function CheckForMaxLayouts(acceptButton, charSpecificButton)
 	if EditModeManagerFrame:AreLayoutsFullyMaxed() then
 		acceptButton.disabledTooltip = maxLayoutsErrorText;
 		acceptButton:Disable();
@@ -51,8 +51,21 @@ local function checkForMaxLayouts(acceptButton, charSpecificButton, layoutType)
 	end
 end
 
+local function CheckForDuplicateLayoutName(acceptButton, editBox)
+	local editBoxText = editBox:GetText();
+	local editModeLayouts = EditModeManagerFrame:GetLayouts();
+	for index, layout in ipairs(editModeLayouts) do
+		if layout.layoutName == editBoxText then
+			acceptButton.disabledTooltip = HUD_EDIT_MODE_ERROR_DUPLICATE_NAME;
+			acceptButton:Disable();
+			return true;
+		end
+	end
+end
+
 function EditModeNewLayoutDialogMixin:UpdateAcceptButtonEnabledState()
-	if not checkForMaxLayouts(self.AcceptButton, self.CharacterSpecificLayoutCheckButton) then
+	if not CheckForMaxLayouts(self.AcceptButton, self.CharacterSpecificLayoutCheckButton)
+		and not CheckForDuplicateLayoutName(self.AcceptButton, self.LayoutNameEditBox)  then
 		self.AcceptButton.disabledTooltip = HUD_EDIT_MODE_ERROR_ENTER_NAME;
 		self.AcceptButton:SetEnabled(UserEditBoxNonEmpty(self.LayoutNameEditBox));
 	end
@@ -112,7 +125,8 @@ function EditModeImportLayoutDialogMixin:OnCancel()
 end
 
 function EditModeImportLayoutDialogMixin:UpdateAcceptButtonEnabledState()
-	if not checkForMaxLayouts(self.AcceptButton, self.CharacterSpecificLayoutCheckButton) then
+	if not CheckForMaxLayouts(self.AcceptButton, self.CharacterSpecificLayoutCheckButton)
+		and not CheckForDuplicateLayoutName(self.AcceptButton, self.LayoutNameEditBox)  then
 		self.AcceptButton.disabledTooltip = HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING_AND_NAME;
 		self.AcceptButton:SetEnabled((self.importLayoutInfo ~= nil) and UserEditBoxNonEmpty(self.LayoutNameEditBox));
 	end
@@ -167,7 +181,8 @@ function EditModeImportLayoutLinkDialogMixin:OnCancel()
 end
 
 function EditModeImportLayoutLinkDialogMixin:UpdateAcceptButtonEnabledState()
-	if not checkForMaxLayouts(self.AcceptButton, self.CharacterSpecificLayoutCheckButton) then
+	if not CheckForMaxLayouts(self.AcceptButton, self.CharacterSpecificLayoutCheckButton)
+		and not CheckForDuplicateLayoutName(self.AcceptButton, self.LayoutNameEditBox)  then
 		self.AcceptButton.disabledTooltip = HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING_AND_NAME;
 		self.AcceptButton:SetEnabled(UserEditBoxNonEmpty(self.LayoutNameEditBox));
 	end

@@ -12,7 +12,7 @@ function PetFrameMixin:OnLoad()
 
 	self.DebuffFramePool = CreateFramePool("BUTTON", self.DebuffFrameContainer, "PartyDebuffFrameTemplate");
 
-	UnitFrame_Initialize(self, "pet", PetName, nil, PetPortrait,
+	UnitFrame_Initialize(self, "pet", PetName, self.frameType, PetPortrait,
 						 PetFrameHealthBar, PetFrameHealthBarText,
 						 PetFrameManaBar, PetFrameManaBarText,
 						 PetFrameFlash, nil, nil,
@@ -23,6 +23,8 @@ function PetFrameMixin:OnLoad()
 
 	self.attackModeCounter = 0;
 	self.attackModeSign = -1;
+
+	PetFrameManaBar:GetStatusBarTexture():AddMaskTexture(ManaBarMask);
 
 	CombatFeedback_Initialize(self, PetHitIndicator, 30);
 	self:Update();
@@ -106,13 +108,13 @@ end
 function PetFrameMixin:OnShow()
 	UnitFrame_Update(self);
 	self:Update();
-	TotemFrame:Update(); 
-	UIParentManagedFrameMixin.OnShow(self); 
+	TotemFrame:Update();
+	UIParentManagedFrameMixin.OnShow(self);
 end
 
 function PetFrameMixin:OnHide()
 	TotemFrame:Update();
-	UIParentManagedFrameMixin.OnHide(self); 
+	UIParentManagedFrameMixin.OnHide(self);
 end
 
 function PetFrameMixin:OnUpdate(elapsed)
@@ -201,6 +203,7 @@ PetManaBarMixin = {};
 function PetManaBarMixin:OnLoad()
 	TextStatusBar_Initialize(self);
 	self.textLockable = 1;
+	self.lockColor = true;
 	self.cvar = "statusText";
 	self.cvarLabel = "STATUS_TEXT_PET";
 end
@@ -210,6 +213,7 @@ PetHealthBarMixin = {};
 function PetHealthBarMixin:OnLoad()
 	TextStatusBar_Initialize(self);
 	self.textLockable = 1;
+	self.lockColor = true;
 	self.cvar = "statusText";
 	self.cvarLabel = "STATUS_TEXT_PET";
 end

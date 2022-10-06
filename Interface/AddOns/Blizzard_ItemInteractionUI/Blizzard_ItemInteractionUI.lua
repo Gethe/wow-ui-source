@@ -701,7 +701,7 @@ function ItemInteractionMixin:SetInputItemSlotTooltip(itemSlot, itemLocation)
 	if (itemLocation) then
 		GameTooltip:SetOwner(itemSlot, "ANCHOR_RIGHT");
 		if (self.interactionType == Enum.UIItemInteractionType.CleanseCorruption) then
-			C_ItemInteraction.SetCorruptionReforgerItemTooltip();
+			GameTooltip:SetItemInteractionItem();
 		else
 			ItemLocation:ApplyLocationToTooltip(itemLocation, GameTooltip);
 		end
@@ -1000,9 +1000,8 @@ function ItemInteractionItemConversionOutputSlotMixin:OnEnter()
 	if (itemLocation) then
 		if (itemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.ItemConversion) then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			C_ItemInteraction.SetItemConversionOutputTooltip();
-			GameTooltip:Show();
-		else
+			GameTooltip:SetItemInteractionItem();
+		else 
 			GameTooltip_Hide();
 		end
 	else

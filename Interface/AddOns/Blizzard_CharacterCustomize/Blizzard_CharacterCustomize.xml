@@ -373,6 +373,11 @@
 						<Anchor point="CENTER" relativeKey="$parent.SelectionNumber" relativePoint="LEFT"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="LockIcon" atlas="charactercreate-customize-dropdown-icon-lock" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-13"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="ColorSwatch1Glow" atlas="charactercreate-customize-palette-glow" useAtlasSize="true" alphaMode="ADD" hidden="true">

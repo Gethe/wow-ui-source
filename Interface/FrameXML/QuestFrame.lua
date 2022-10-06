@@ -109,7 +109,7 @@ function QuestFrame_OnEvent(self, event, ...)
 end
 
 function QuestFrame_SetPortrait()
-	QuestFrameNpcNameText:SetText(UnitName("questnpc"));
+	QuestFrame:SetTitle(UnitName("questnpc"));
 	if ( UnitExists("questnpc") ) then
 		SetPortraitTexture(QuestFramePortrait, "questnpc");
 	else

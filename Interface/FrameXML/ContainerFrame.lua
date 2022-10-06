@@ -316,7 +316,8 @@ end
 function SearchBagsForItemLink(itemLink)
 	for i = 0, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 		for j = 1, C_Container.GetContainerNumSlots(i) do
-			local link = C_Container.GetContainerItemInfo(i, j).hyperlink;
+			local info = C_Container.GetContainerItemInfo(i, j);
+			local link = info and info.hyperlink;
 			if (link == itemLink and C_NewItems.IsNewItem(i, j)) then
 				return i;
 			end
@@ -604,7 +605,8 @@ end
 
 function BaseContainerFrameMixin:UpdateSearchResults()
 	for i, itemButton in self:EnumerateValidItems() do
-		local isFiltered = C_Container.GetContainerItemInfo(itemButton:GetBagID(), itemButton:GetID()).isFiltered;
+		local info = C_Container.GetContainerItemInfo(itemButton:GetBagID(), itemButton:GetID());
+		local isFiltered = info and info.isFiltered;
 		itemButton:SetMatchesSearch(not isFiltered);
 	end
 end
@@ -1101,9 +1103,10 @@ end
 
 function ContainerFrame_UpdateLocked(frame)
 	local id = frame:GetID();
-	local locked;
+	local locked, info;
 	for i, itemButton in frame:EnumerateValidItems() do
-		locked = C_Container.GetContainerItemInfo(id, itemButton:GetID()).isLocked;
+		info = C_Container.GetContainerItemInfo(id, itemButton:GetID());
+		locked = info and info.isLocked;
 		SetItemButtonDesaturated(itemButton, locked);
 	end
 end
@@ -1111,7 +1114,8 @@ end
 function ContainerFrame_UpdateLockedItem(frame, slot)
 	local index = frame.size + 1 - slot;
 	local itemButton = frame.Items[index];
-	local locked = C_Container.GetContainerItemInfo(frame:GetID(), itemButton:GetID()).isLocked;
+	local info = C_Container.GetContainerItemInfo(frame:GetID(), itemButton:GetID());
+	local locked = info and info.isLocked;
 	SetItemButtonDesaturated(itemButton, locked);
 end
 
@@ -1225,20 +1229,23 @@ function UpdateContainerFrameAnchors()
 end
 
 function ContainerFrameItemButton_GetDebugReportInfo(self)
-	local itemLink = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID()).hyperlink;
+	local info = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID());
+	local itemLink = info and info.hyperlink;
 	return { debugType = "ContainerItem", itemLink = itemLink, };
 end
 
 function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	quantity = (quantity or 1);
+	isEquipped = (isEquipped or false);
+
 	local slot, bag = itemButton:GetSlotAndBagID();
 
 	local info = C_Container.GetContainerItemPurchaseInfo(bag, slot, isEquipped);
-	local money = info.money;
-	local itemCount = info.itemCount;
-	local refundSec = info.refundSeconds;
-	local currencyCount = info.currencyCount;
-	local hasEnchants = info.hasEnchants;
+	local money = info and info.money;
+	local itemCount = info and info.itemCount;
+	local refundSec = info and info.refundSeconds;
+	local currencyCount = info and info.currencyCount;
+	local hasEnchants = info and info.hasEnchants;
 	if ( not refundSec or ((itemCount == 0) and (money == 0) and (currencyCount == 0)) ) then
 		return false;
 	end
@@ -1254,9 +1261,9 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	local maxQuality = 0;
 	for i=1, itemCount, 1 do
 		local itemInfo = C_Container.GetContainerItemPurchaseItem(bag, slot, i, isEquipped);
-		local itemTexture = itemInfo.iconFileID;
-		local itemQuantity = itemInfo.itemCount;
-		local itemLink = itemInfo.hyperlink;
+		local itemTexture = itemInfo and itemInfo.iconFileID;
+		local itemQuantity = itemInfo and itemInfo.itemCount;
+		local itemLink = itemInfo and itemInfo.hyperlink;
 		if ( itemLink ) then
 			local _, _, itemQuality = GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
@@ -1270,9 +1277,9 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 
 	for i=1, currencyCount, 1 do
 		local currencyInfo = C_Container.GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
-		local currencyTexture = currencyInfo.iconFileID;
-		local currencyQuantity = currencyInfo.currencyCount;
-		local currencyName = currencyInfo.name;
+		local currencyTexture = currencyInfo and currencyInfo.iconFileID;
+		local currencyQuantity = currencyInfo and currencyInfo.currencyCount;
+		local currencyName = currencyInfo and currencyInfo.name;
 		if ( currencyName ) then
 			if ( itemsString ) then
 				itemsString = itemsString .. ", |T"..currencyTexture..":0:0:0:-1|t ".. format(CURRENCY_QUANTITY_TEMPLATE, (currencyQuantity or 0) * quantity, currencyName);
@@ -1373,7 +1380,8 @@ function ContainerFrameItemButton_OnClick(self, button)
 			elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
 						(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
 						(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
-				local itemID = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID()).itemID;
+				local info = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID());
+				local itemID = info and info.itemID;
 				if itemID then
 					if IsArtifactRelicItem(itemID) then
 						if C_ArtifactUI.CanApplyArtifactRelic(itemID, false) then
@@ -1444,7 +1452,8 @@ function ContainerFrameItemButtonMixin:OnClick(button)
 	local modifiedClick = IsModifiedClick();
 	-- If we can loot the item and autoloot toggle is active, then do a normal click
 	if ( button ~= "LeftButton" and modifiedClick and IsModifiedClick("AUTOLOOTTOGGLE") ) then
-		local lootable = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID()).hasLoot;
+		local info = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID());
+		local lootable = info and info.hasLoot;
 		if ( lootable ) then
 			modifiedClick = false;
 		end
@@ -1493,36 +1502,18 @@ function ContainerFrameItemButtonMixin:OnUpdate()
 		self.newitemglowAnim:Stop();
 	end
 
-	local showSell = nil;
-	local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(self:GetBagID(), self:GetID());
-	if ( speciesID and speciesID > 0 ) then
-		ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip); -- Battle pet tooltip uses the GameTooltip's anchor
-		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-		return;
-	else
-		if ( BattlePetTooltip ) then
-			BattlePetTooltip:Hide();
-		end
-	end
-
 	ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
 
-	if ( IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems") ) then
-		GameTooltip_ShowCompareItem(GameTooltip);
-	end
+	GameTooltip:SetBagItem(self:GetBagID(), self:GetID());
 
-	if ( InRepairMode() and (repairCost and repairCost > 0) ) then
-		GameTooltip:AddLine(REPAIR_COST, nil, nil, nil, true);
-		SetTooltipMoney(GameTooltip, repairCost);
-		GameTooltip:Show();
-	elseif ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 1 ) then
-		showSell = 1;
+	if TooltipUtil.ShouldDoItemComparison() then
+		GameTooltip_ShowCompareItem(GameTooltip);
 	end
 
 	if ( not SpellIsTargeting() ) then
 		if ( IsModifiedClick("DRESSUP") and self:HasItem() ) then
 			ShowInspectCursor();
-		elseif ( showSell ) then
+		elseif ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 1 ) then
 			C_Container.ShowContainerSellCursor(self:GetBagID(), self:GetID());
 		elseif ( self:IsReadable() ) then
 			ShowInspectCursor();

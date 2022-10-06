@@ -284,11 +284,11 @@ function AchievementFrame_RefreshView()
 		shield:SetHeight(18);
 		local bkgR, bkgG, bkgB, borderR, borderG, borderB, emblemR, emblemG, emblemB, emblemFilename = GetGuildLogoInfo();
 		if ( emblemFilename ) then
-			AchievementFrameGuild.Emblem.Left:SetTexture(emblemFilename);
-			AchievementFrameGuild.Emblem.Right:SetTexture(emblemFilename);
+			AchievementFrameGuildEmblemLeft:SetTexture(emblemFilename);
+			AchievementFrameGuildEmblemRight:SetTexture(emblemFilename);
 			local r, g, b = ACHIEVEMENT_YELLOW_BORDER_COLOR:GetRGB();
-			AchievementFrameGuild.Emblem.Left:SetVertexColor(r, g, b, 0.5);
-			AchievementFrameGuild.Emblem.Right:SetVertexColor(r, g, b, 0.5);
+			AchievementFrameGuildEmblemLeft:SetVertexColor(r, g, b, 0.5);
+			AchievementFrameGuildEmblemRight:SetVertexColor(r, g, b, 0.5);
 		end
 	else
 		TEXTURES_OFFSET = 0;
@@ -607,6 +607,10 @@ function AchievementFrameCategories_OnShow (self)
 end
 
 function AchievementFrameCategories_SelectDefaultElementData()
+	if not AchievementFrameCategories.ScrollBox:HasDataProvider() then
+		AchievementFrameCategories_UpdateDataProvider();
+	end
+
 	local elementData = AchievementFrameCategories.ScrollBox:ScrollToElementDataIndex(1, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
 	if elementData then
 		AchievementFrameCategories_SelectElementData(elementData);

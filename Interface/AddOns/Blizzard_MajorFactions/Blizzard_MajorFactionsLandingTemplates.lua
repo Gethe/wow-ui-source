@@ -8,6 +8,7 @@ local buttonTextureKits = {
 local iconAtlasFormat = "majorFactions_icons_%s512";
 local buttonAtlasFormat = "%s-landingpage-renownbutton-%s";
 local buttonHoverAtlasFormat = "%s-landingpage-renownbutton-%s-hover";
+local buttonLockedAtlasFormat = "%s-landingpage-renownbutton-locked";
 
 LandingPageMajorFactionList = {};
 
@@ -133,11 +134,11 @@ function MajorFactionButtonMixin:Init(majorFactionData)
 	self.bountySetID = majorFactionData.bountySetID;
 
 	local expansionName = _G["EXPANSION_NAME" .. self.expansionID];
+	self.LockedState.Background:SetAtlas(buttonLockedAtlasFormat:format(expansionName), TextureKitConstants.UseAtlasSize);
 	self.UnlockedState.normalAtlas = buttonAtlasFormat:format(expansionName, buttonTextureKits[self.factionID]);
 	self.UnlockedState.hoverAtlas = buttonHoverAtlasFormat:format(expansionName, buttonTextureKits[self.factionID]);
-
 	self.UnlockedState.Background:SetAtlas(self.UnlockedState.normalAtlas, TextureKitConstants.UseAtlasSize);
-
+	
 	self.UnlockedState.Icon:SetAtlas(iconAtlasFormat:format(buttonTextureKits[self.factionID]), TextureKitConstants.IgnoreAtlasSize);
 	self.UnlockedState.Icon:Show();
 

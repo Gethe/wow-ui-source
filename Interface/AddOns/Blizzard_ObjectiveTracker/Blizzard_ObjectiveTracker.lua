@@ -810,6 +810,7 @@ function ObjectiveTracker_UpdateHeight()
 	if offsetY then
 		local parentHeight = self:GetParent():GetHeight();
 		local setHeight = parentHeight + offsetY;
+		setHeight = math.max(setHeight, 20);
 		self:SetHeight(setHeight);
 	end
 end

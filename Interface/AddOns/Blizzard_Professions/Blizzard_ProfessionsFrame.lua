@@ -5,6 +5,7 @@ local ProfessionsFrameEvents =
 	"TRADE_SKILL_LIST_UPDATE",
 	"TRADE_SKILL_CLOSE",
 	"GARRISON_TRADESKILL_NPC_CLOSED",
+	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
 };
 
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE"] =
@@ -99,6 +100,8 @@ function ProfessionsMixin:OnEvent(event, ...)
 			-- next TRADE_SKILL_LIST_UPDATE.
 			self.openRecipeResponse = openRecipeResponse;
 		end
+	elseif event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" then
+		self:UpdateTabs();
 	end
 end
 
@@ -181,6 +184,11 @@ function ProfessionsMixin:UpdateTabs()
 	else
 		local specTabInfo = C_ProfSpecs.GetSpecTabInfo();
 		self.TabSystem:SetTabEnabled(self.specializationsTabID, specTabInfo.enabled, specTabInfo.errorReason);
+		if specTabInfo.enabled then
+			local specCurrencyInfo = C_ProfSpecs.GetCurrencyInfoForSkillLine(C_ProfSpecs.GetDefaultSpecSkillLine());
+			local specTab = self:GetTabButton(self.specializationsTabID);
+			specTab:SetTooltipText(specCurrencyInfo and PROFESSIONS_CURRENCY_AVAILABLE:format(specCurrencyInfo.numAvailable, specCurrencyInfo.currencyName));
+		end
 		forceAwayFromSpec = not specTabInfo.enabled;
 	end
 	self.TabSystem:Layout();

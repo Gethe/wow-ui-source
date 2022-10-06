@@ -301,19 +301,20 @@ function Professions.SetupOutputIcon(outputIcon, transaction, outputItemInfo)
 end
 
 function Professions.SetupOutputIconCommon(outputIcon, quantityMin, quantityMax, icon, itemIDOrLink, quality)
-	local countText = outputIcon.Count;
 	if quantityMax > 1 then
 		if quantityMin == quantityMax then
-			countText:SetText(quantityMin);
+			outputIcon.Count:SetText(quantityMin);
 		else
-			countText:SetFormattedText("%d-%d", quantityMin, quantityMax);
+			outputIcon.Count:SetFormattedText("%d-%d", quantityMin, quantityMax);
 		end
 		local magicWidth = 39;
-		if countText:GetWidth() > magicWidth then
-			countText:SetFormattedText("~%d", math.floor(Lerp(quantityMin, quantityMax, .5)));
+		if outputIcon.Count:GetWidth() > magicWidth then
+			outputIcon.Count:SetFormattedText("~%d", math.floor(Lerp(quantityMin, quantityMax, .5)));
 		end
+		outputIcon.CountShadow:Show();
 	else
-		countText:SetText("");
+		outputIcon.Count:SetText("");
+		outputIcon.CountShadow:Hide();
 	end
 	outputIcon.Icon:SetTexture(icon);
 	
@@ -335,7 +336,12 @@ end
 function Professions.SetupQualityReagentTooltip(slot, transaction)
 	local itemID = slot.Button:GetItemID();
 	if itemID then
-		GameTooltip:SetQualityReagentSlotItemByID(slot.Button:GetItemID());
+		local tooltipInfo = MakeBaseTooltipInfo("GetItemByID", slot.Button:GetItemID());
+		tooltipInfo.lineFilters = {
+				Enum.TooltipDataLineType.SellPrice,
+				Enum.TooltipDataLineType.ProfessionCraftingQuality,
+		};
+		GameTooltip:ProcessInfo(tooltipInfo);
 
 		if not slot:IsUnallocatable() then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
@@ -431,9 +437,11 @@ local function HandleReagentLink(link)
 end
 
 function Professions.TriggerReagentClickedEvent(link)
-	local itemID = GetItemInfoFromHyperlink(link);
-	local item = Item:CreateFromItemID(itemID);
-	EventRegistry:TriggerEvent("Professions.ReagentClicked", item:GetItemName());
+	if link then
+		local itemID = GetItemInfoFromHyperlink(link);
+		local item = Item:CreateFromItemID(itemID);
+		EventRegistry:TriggerEvent("Professions.ReagentClicked", item:GetItemName());
+	end
 end
 
 function Professions.HandleFixedReagentItemLink(recipeID, reagentSlotSchematic)
@@ -911,16 +919,9 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate)
 				table.insert(filterSystem.filters, spacer);
 
 				for index, professionInfo in ipairs(childProfessionInfos) do
-					local baseName = professionInfo.parentProfessionName;
-					local skillLineName = professionInfo.professionName;
-					if baseName then
-						skillLineName = skillLineName:gsub(" "..baseName, "");
-						skillLineName = skillLineName:gsub(baseName.." ", "");
-						skillLineName = skillLineName:gsub(baseName, "");
-					end
 					local skillLine = { 
 						type = FilterComponent.Radio,
-						text = skillLineName,
+						text = professionInfo.expansionName,
 						set = function() EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo); end, 
 						isSet = function() return C_TradeSkillUI.GetChildProfessionInfo().professionID == professionInfo.professionID; end,
 							hideMenuOnClick = true,
@@ -1063,7 +1064,13 @@ end
 function Professions.GetCurrentProfessionCurrencyInfo()
 	local nodeID = ProfessionsFrame.SpecPage:GetDetailedPanelNodeID();
 	local currencyTypesID = Professions.GetCurrencyTypesID(nodeID);
-	return currencyTypesID and C_CurrencyInfo.GetCurrencyInfo(currencyTypesID) or nil;
+	if currencyTypesID then
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyTypesID);
+		currencyInfo.currencyID = currencyTypesID;
+		return currencyInfo;
+	end
+	
+	return nil;
 end
 
 function Professions.SetupProfessionsCurrencyTooltip(currencyInfo, currencyCount)

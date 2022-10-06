@@ -6,6 +6,10 @@ function EditModeSystemMixin:OnSystemLoad()
 		return;
 	end
 
+	-- Override set scale so we can keep systems in place as their scale changes
+	self.SetScaleBase = self.SetScale;
+	self.SetScale = self.SetScaleOverride;
+
 	EditModeManagerFrame:RegisterSystemFrame(self);
 
 	self.systemName = (self.addSystemIndexToName and self.systemIndex) and self.systemNameString:format(self.systemIndex) or self.systemNameString;
@@ -18,6 +22,32 @@ end
 function EditModeSystemMixin:OnSystemHide()
 	if self.isSelected then
 		EditModeManagerFrame:ClearSelectedSystem();
+	end
+end
+
+function EditModeSystemMixin:SetScaleOverride(newScale)
+	local oldScale = self:GetScale();
+
+	self:SetScaleBase(newScale);
+
+	if oldScale == newScale then
+		return;
+	end
+
+	-- Update position to try and keep the system frame in the same position since scale changes how offsets work
+	local numPoints = self:GetNumPoints();
+	for i = 1, numPoints do
+		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(i);
+
+		-- Undo old scale adjustment so we're working with 1.0 scale offsets
+		-- Then apply the newScale adjustment
+		offsetX = offsetX * oldScale / newScale;
+		offsetY = offsetY * oldScale / newScale;
+		self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+	end
+
+	if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
+		UIParent_ManageFramePositions();
 	end
 end
 
@@ -65,8 +95,9 @@ end
 function EditModeSystemMixin:UpdateDirtySettings(oldSettingsMap)
 	-- Mark changed settings as dirty
 	self.dirtySettings = {};
+
 	for setting, settingInfo in pairs(self.settingMap) do
-		if not oldSettingsMap or oldSettingsMap[setting].value ~= settingInfo.value then
+		if not oldSettingsMap or not oldSettingsMap[setting] or oldSettingsMap[setting].value ~= settingInfo.value then
 			self.dirtySettings[setting] = true;
 		end
 	end
@@ -122,11 +153,16 @@ function EditModeSystemMixin:ApplySystemAnchor()
 	end
 
 	self:ClearAllPoints();
-	self:SetPoint(self.systemInfo.anchorInfo.point, self.systemInfo.anchorInfo.relativeTo, self.systemInfo.anchorInfo.relativePoint, self.systemInfo.anchorInfo.offsetX, self.systemInfo.anchorInfo.offsetY);
+
+	-- Make sure offsets are relative to our current scale
+	local scale = self:GetScale();
+	self:SetPoint(self.systemInfo.anchorInfo.point, self.systemInfo.anchorInfo.relativeTo, self.systemInfo.anchorInfo.relativePoint, self.systemInfo.anchorInfo.offsetX / scale, self.systemInfo.anchorInfo.offsetY / scale);
 
 	if self.systemInfo.anchorInfo2 then
-		self:SetPoint(self.systemInfo.anchorInfo2.point, self.systemInfo.anchorInfo2.relativeTo, self.systemInfo.anchorInfo2.relativePoint, self.systemInfo.anchorInfo2.offsetX, self.systemInfo.anchorInfo2.offsetY);
+		self:SetPoint(self.systemInfo.anchorInfo2.point, self.systemInfo.anchorInfo2.relativeTo, self.systemInfo.anchorInfo2.relativePoint, self.systemInfo.anchorInfo2.offsetX / scale, self.systemInfo.anchorInfo2.offsetY / scale);
 	end
+
+	EditModeManagerFrame:UpdateActionBarLayout(self);
 end
 
 function EditModeSystemMixin:UpdateSystem(systemInfo)
@@ -230,7 +266,14 @@ end
 
 -- Override in inheriting mixins as needed
 function EditModeSystemMixin:AddExtraButtons(extraButtonPool)
-	return false;
+	-- Create reset to default position button
+	self.resetToDefaultPositionButton = extraButtonPool:Acquire();
+	self.resetToDefaultPositionButton.layoutIndex = 3;
+	self.resetToDefaultPositionButton:SetText(HUD_EDIT_MODE_RESET_POSITION);
+	self.resetToDefaultPositionButton:SetOnClickHandler(GenerateClosure(self.ResetToDefaultPosition, self));
+	self.resetToDefaultPositionButton:SetEnabled(not self:IsInDefaultPosition());
+	self.resetToDefaultPositionButton:Show();
+	return true;
 end
 
 function EditModeSystemMixin:IsToTheLeftOfFrame(systemFrame)
@@ -453,6 +496,10 @@ end
 
 function EditModeSystemMixin:OnDragStart()
 	if self:CanBeMoved() then
+		if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
+			self:SetParent(UIParent);
+		end
+
 		self:StartMoving();
 	end
 end
@@ -468,26 +515,12 @@ function EditModeSystemMixin:OnDragStop()
 	end
 end
 
-local function CreateResetToDefaultPositionButton(systemFrame, extraButtonPool)
-	local resetPositionButton = extraButtonPool:Acquire();
-	resetPositionButton.layoutIndex = 3;
-	resetPositionButton:SetText(HUD_EDIT_MODE_RESET_POSITION);
-	resetPositionButton:SetOnClickHandler(GenerateClosure(systemFrame.ResetToDefaultPosition, systemFrame));
-	resetPositionButton:SetEnabled(not systemFrame:IsInDefaultPosition());
-	resetPositionButton:Show();
-end
-
 EditModeActionBarSystemMixin = {};
 
 function EditModeActionBarSystemMixin:UpdateSystem(systemInfo)
 	EditModeSystemMixin.UpdateSystem(self, systemInfo);
 	self:RefreshGridLayout();
 	self:RefreshButtonArt();
-end
-
-function EditModeActionBarSystemMixin:ApplySystemAnchor()
-	EditModeSystemMixin.ApplySystemAnchor(self);
-	EditModeManagerFrame:UpdateActionBarLayout(self);
 end
 
 function EditModeActionBarSystemMixin:OnEditModeEnter()
@@ -504,34 +537,13 @@ function EditModeActionBarSystemMixin:OnEditModeExit()
 	self:UpdateVisibility();
 end
 
-function EditModeActionBarSystemMixin:IsInDefaultPosition()
-	if not self:IsInitialized() then
-		return false;
-	end
-
-	local _, relativeTo = self:GetPoint(1);
-	if relativeTo and relativeTo.IsInDefaultPosition and not relativeTo:IsInDefaultPosition() then
-		return false;
-	end
-
-	return EditModeSystemMixin.IsInDefaultPosition(self);
-end
-
-function EditModeActionBarSystemMixin:SetScaleIfRightAnchored(scale)
-	if self:IsInDefaultPosition() then
-		self:SetScale(scale);
-	else
-		self:SetScale(1);
-	end
-end
-
 function EditModeActionBarSystemMixin:GetRightAnchoredWidth()
 	if not self:IsInitialized() then
 		return 0;
 	end
 
 	if self:IsShown() and self:IsInDefaultPosition() then
-		return self:GetWidth() + -self.systemInfo.anchorInfo.offsetX;
+		return self:GetWidth() - self.systemInfo.anchorInfo.offsetX;
 	end
 
 	return 0;
@@ -746,7 +758,7 @@ local function openActionBarSettings()
 end
 
 function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
-	CreateResetToDefaultPositionButton(self, extraButtonPool);
+	EditModeSystemMixin.AddExtraButtons(self, extraButtonPool);
 
 	local quickKeybindModeButton = extraButtonPool:Acquire();
 	quickKeybindModeButton.layoutIndex = 4;
@@ -818,6 +830,10 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 		return self:UseCombinedGroups();
 	elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop and self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
 		return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame);
+	elseif setting == Enum.EditModeUnitFrameSetting.FrameSize then
+		local shouldHideSetting = self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) and not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame);
+		shouldHideSetting = shouldHideSetting or (self:HasSetting(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) and self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames));
+		return not shouldHideSetting;
 	end
 
 	return true;
@@ -869,18 +885,6 @@ function EditModeUnitFrameSystemMixin:SetupSettingsDialogAnchor()
 	end
 end
 
-function EditModeUnitFrameSystemMixin:AddExtraButtons(extraButtonPool)
-	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party
-		or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid
-		or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss
-		or self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
-		CreateResetToDefaultPositionButton(self, extraButtonPool);
-		return true;
-	end
-
-	return false;
-end
-
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingBuffsOnTop()
 	self.buffsOnTop = self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.BuffsOnTop);
 	self:UpdateAuras();
@@ -892,12 +896,15 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseLargerFrame()
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
 		BossTargetFrameContainer:SetSmallSize(not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame));
 	end
+
+	self:UpdateSystemSettingFrameSize();
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseRaidStylePartyFrames()
 	UpdateRaidAndPartyFrames();
 	CompactPartyFrame_RefreshMembers();
 	self:UpdateSelectionVerticalState();
+	self:UpdateSystemSettingFrameSize();
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingShowPartyFrameBackground()
@@ -991,6 +998,24 @@ function EditModeUnitFrameSystemMixin:UpdateSelectionVerticalState()
 	self.Selection:SetVerticalState(verticalState);
 end
 
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameSize()
+	if self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) and not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame) then
+		-- Boss frame needs to reset it's container size when not using larger frames
+		-- Don't need this for focus frame since it's method around UseLargerFrame is directly setting it's scale whereas boss frame's doesn't change it's container's scale
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
+			self:SetScale(1);
+		end
+		return;
+	end
+
+	if self:HasSetting(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) and self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) then
+		self:SetScale(1);
+		return;
+	end
+
+	self:SetScale(self:GetSettingValue(Enum.EditModeUnitFrameSetting.FrameSize) / 100);
+end
+
 function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -1029,6 +1054,8 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		self:UpdateSystemSettingSortPlayersBy();
 	elseif setting == Enum.EditModeUnitFrameSetting.RowSize and self:HasSetting(Enum.EditModeUnitFrameSetting.RowSize) then
 		self:UpdateSystemSettingRowSize();
+	elseif setting == Enum.EditModeUnitFrameSetting.FrameSize and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameSize) then
+		self:UpdateSystemSettingFrameSize()
 	end
 
 	self:ClearDirtySetting(setting);
@@ -1041,13 +1068,6 @@ function EditModeBossUnitFrameSystemMixin:OnEditModeExit()
 
 	self.isInEditMode = false;
 	self:UpdateShownState();
-end
-
-function EditModeBossUnitFrameSystemMixin:OnDragStart()
-	if self:CanBeMoved() then
-		self:SetParent(UIParent);
-		self:StartMoving();
-	end
 end
 
 function EditModeBossUnitFrameSystemMixin:UpdateShownState()
@@ -1074,13 +1094,6 @@ function EditModeArenaUnitFrameSystemMixin:OnEditModeExit()
 
 	self:SetIsInEditMode(false);
 	self:Update();
-end
-
-function EditModeArenaUnitFrameSystemMixin:OnDragStart()
-	if self:CanBeMoved() then
-		self:SetParent(UIParent);
-		self:StartMoving();
-	end
 end
 
 function EditModeArenaUnitFrameSystemMixin:SetIsInEditMode(isInEditMode)
@@ -1123,17 +1136,10 @@ EditModeCastBarSystemMixin = {};
 function EditModeCastBarSystemMixin:ApplySystemAnchor()
 	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
 	if lockToPlayerFrame then
-		-- Nothing to do, it's already anchored to the player frame
+		PlayerFrame_AttachCastBar();
 	else
 		EditModeSystemMixin.ApplySystemAnchor(self);
 	end
-end
-
-function EditModeCastBarSystemMixin:OnDragStop()
-	if self:CanBeMoved() then
-		self:SetParent(UIParent);
-	end
-	EditModeSystemMixin.OnDragStop(self);
 end
 
 function EditModeCastBarSystemMixin:ShouldResetSettingsDialogAnchors(oldSelectedSystemFrame)
@@ -1157,12 +1163,9 @@ function EditModeCastBarSystemMixin:SetupSettingsDialogAnchor()
 end
 
 function EditModeCastBarSystemMixin:AddExtraButtons(extraButtonPool)
-	if not self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
-		CreateResetToDefaultPositionButton(self, extraButtonPool);
-		return true;
-	end
-
-	return false;
+	EditModeSystemMixin.AddExtraButtons(self, extraButtonPool);
+	self.resetToDefaultPositionButton:SetEnabled(not self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame));
+	return true;
 end
 
 function EditModeCastBarSystemMixin:AnchorSelectionFrame()
@@ -1231,18 +1234,6 @@ function EditModeEncounterBarSystemMixin:OnEditModeExit()
 	UIParent_ManageFramePositions();
 end
 
-function EditModeEncounterBarSystemMixin:AddExtraButtons(extraButtonPool)
-	CreateResetToDefaultPositionButton(self, extraButtonPool);
-	return true;
-end
-
-function EditModeEncounterBarSystemMixin:OnDragStart()
-	if self:CanBeMoved() then
-		self:SetParent(UIParent);
-		self:StartMoving();
-	end
-end
-
 function EditModeEncounterBarSystemMixin:ApplySystemAnchor()
 	EditModeSystemMixin.ApplySystemAnchor(self);
 	self:Layout();
@@ -1255,18 +1246,6 @@ function EditModeExtraAbilitiesSystemMixin:OnEditModeExit()
 
 	self.isInEditMode = false;
 	self:UpdateShownState();
-end
-
-function EditModeExtraAbilitiesSystemMixin:AddExtraButtons(extraButtonPool)
-	CreateResetToDefaultPositionButton(self, extraButtonPool);
-	return true;
-end
-
-function EditModeExtraAbilitiesSystemMixin:OnDragStart()
-	if self:CanBeMoved() then
-		self:SetParent(UIParent);
-		self:StartMoving();
-	end
 end
 
 EditModeAuraFrameSystemMixin = {};
@@ -1524,18 +1503,6 @@ function EditModeTalkingHeadFrameSystemMixin:OnEditModeExit()
 	self:UpdateShownState();
 end
 
-function EditModeTalkingHeadFrameSystemMixin:AddExtraButtons(extraButtonPool)
-	CreateResetToDefaultPositionButton(self, extraButtonPool);
-	return true;
-end
-
-function EditModeTalkingHeadFrameSystemMixin:OnDragStart()
-	if self:CanBeMoved() then
-		self:SetParent(UIParent);
-		self:StartMoving();
-	end
-end
-
 EditModeChatFrameSystemMixin = {};
 
 function EditModeChatFrameSystemMixin:OnEditModeEnter()
@@ -1636,16 +1603,20 @@ function EditModeVehicleLeaveButtonSystemMixin:OnEditModeExit()
 	self:UpdateShownState();
 end
 
-function EditModeVehicleLeaveButtonSystemMixin:AddExtraButtons(extraButtonPool)
-	CreateResetToDefaultPositionButton(self, extraButtonPool);
-	return true;
+function EditModeVehicleLeaveButtonSystemMixin:GetBottomAnchoredHeight()
+	if self:IsShown() and self:IsInDefaultPosition() then
+		return self:GetHeight() + self.systemInfo.anchorInfo.offsetY;
+	end
+
+	return 0;
 end
 
-function EditModeVehicleLeaveButtonSystemMixin:OnDragStart()
-	if self:CanBeMoved() then
-		self:SetParent(UIParent);
-		self:StartMoving();
-	end
+function EditModeVehicleLeaveButtonSystemMixin:EditModeVehicleLeaveButtonSystem_OnShow()
+    EditModeManagerFrame:UpdateActionBarLayout(self);
+end
+
+function EditModeVehicleLeaveButtonSystemMixin:EditModeVehicleLeaveButtonSystem_OnHide()
+    EditModeManagerFrame:UpdateActionBarLayout(self);
 end
 
 EditModeLootFrameSystemMixin = {};
@@ -1660,11 +1631,6 @@ end
 function EditModeLootFrameSystemMixin:OnDragStart()
 	self.editModeManuallyShown = true;
 	EditModeSystemMixin.OnDragStart(self);
-end
-
-function EditModeLootFrameSystemMixin:AddExtraButtons(extraButtonPool)
-	CreateResetToDefaultPositionButton(self, extraButtonPool);
-	return true;
 end
 
 function EditModeLootFrameSystemMixin:ApplySystemAnchor()
@@ -1697,13 +1663,7 @@ end
 function EditModeObjectiveTrackerSystemMixin:OnDragStop()
 	EditModeSystemMixin.OnDragStop(self);
 
-	self:SetParent(UIParent);
 	ObjectiveTracker_UpdateHeight();
-end
-
-function EditModeObjectiveTrackerSystemMixin:AddExtraButtons(extraButtonPool)
-	CreateResetToDefaultPositionButton(self, extraButtonPool);
-	return true;
 end
 
 function EditModeObjectiveTrackerSystemMixin:AnchorSelectionFrame()

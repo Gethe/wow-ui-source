@@ -363,6 +363,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitPercentHealthFromGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "percentHealth", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitPhaseReason",
 			Type = "Function",
 
@@ -490,6 +504,20 @@ local Unit =
 			Returns =
 			{
 				{ Name = "sex", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitTokenFromGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = true },
 			},
 		},
 		{

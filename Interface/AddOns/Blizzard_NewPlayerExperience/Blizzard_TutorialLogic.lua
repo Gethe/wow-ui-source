@@ -2,20 +2,17 @@ local _, addonTable = ...;
 local TutorialData = addonTable.TutorialData;
 
 TutorialLogic = {};
-TutorialLogic.Tutorials = {};
-
 function TutorialLogic:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
 	if newLevel > 10 then
 		Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 	else
-		local tutorials = self.Tutorials;
 		local LevelUpTutorial_spellIDlookUp = TutorialHelper:FilterByClass(TutorialData.LevelAbilitiesTable);
 		local warningString = nil;
 		local preferredActionBar = nil;
 		for i = originalLevel + 1, newLevel do
 			local spellID = LevelUpTutorial_spellIDlookUp[i];
 			if spellID then
-				TutorialQueue:Add(tutorials.AddSpellToActionBarService, spellID, warningString, NPEV2_SPELLBOOK_TUTORIAL, preferredActionBar);
+				TutorialManager:Queue(Class_AddSpellToActionBarService.name, spellID, warningString, NPEV2_SPELLBOOK_TUTORIAL, preferredActionBar);
 			end
 		end
 	end
@@ -28,7 +25,6 @@ end
 function TutorialLogic:CheckFormSpells()
 	local form = GetShapeshiftFormID();
 	local formSpells = nil;
-	local tutorials = self.Tutorials;
 
 	if form == BEAR_FORM then
 		formSpells = TutorialData.DruidAnimalFormSpells.bearSpells;
@@ -42,7 +38,7 @@ function TutorialLogic:CheckFormSpells()
 		local preferredActionBar = nil;
 		for i, spellID in ipairs(formSpells) do
 			if IsSpellKnown(spellID) then
-				TutorialQueue:Add(tutorials.AddSpellToActionBarService, spellID, warningString, NPEV2_SPELLBOOK_TUTORIAL, preferredActionBar, form);
+				TutorialManager:Queue(Class_AddSpellToActionBarService.name, spellID, warningString, NPEV2_SPELLBOOK_TUTORIAL, preferredActionBar, form);
 			end
 		end
 	end
@@ -50,7 +46,7 @@ end
 
 function TutorialLogic:UPDATE_SHAPESHIFT_FORM()
 	local level = UnitLevel("player");
-	if level > 10 then
+	if level > TutorialData.MAX_SPELL_HELP_LEVEL then
 		Dispatcher:UnregisterEvent("UPDATE_SHAPESHIFT_FORM", self);
 		return;
 	end
@@ -61,81 +57,205 @@ function TutorialLogic:UPDATE_SHAPESHIFT_FORM()
 end
 
 function TutorialLogic:Begin()
-	Class_TutorialBase:GlobalEnable()
-
-	self.playerClass = TutorialHelper:GetClass();-- player's class
-	self.factionData = TutorialHelper:GetFactionData();-- get the data for the player's faction
+	self.playerClass = TutorialHelper:GetClass();
+	self.factionData = TutorialData:GetFactionData();-- get the data for the player's faction
 	self.vendorQuestID = self.factionData.UseVendorQuest;
 	self.specQuestID = TutorialHelper:FilterByClass(self.factionData.SpecQuests);
-
-	-- Certain tutorials kick off when quests are accepted
-	NPE_QuestManager:RegisterForCallbacks(self);
-
-	-- many tutorials can occur at the same time, the queue system helps manage it so you get one at a time
-	TutorialQueue:Initialize();
-
+	
+	TutorialQuestManager:RegisterForCallbacks(self);-- Certain tutorials kick off when quests are accepted
+	
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
-
 	if self.playerClass == "ROGUE" or self.playerClass == "DRUID" then
 		Dispatcher:RegisterEvent("UPDATE_SHAPESHIFT_FORM", self);
 	end
 
-	local tutorials = self.Tutorials;
-	for k, v in pairs(tutorials) do
-		if (type(v) == "table") then
-			if(v.Begin)then
-				v:Begin();
-			end
-		end
+	-- add tutorials
+	TutorialManager:AddTutorial(Class_AddSpellToActionBarService:new());
+	TutorialManager:AddTutorial(Class_ItemUpgradeCheckingService:new());
+	TutorialManager:AddTutorial(Class_Intro_KeyboardMouse:new());
+	TutorialManager:AddTutorial(Class_Intro_CameraLook:new());
+	TutorialManager:AddTutorial(Class_Intro_ApproachQuestGiver:new());
+	TutorialManager:AddTutorial(Class_Intro_Interact:new());
+	TutorialManager:AddTutorial(Class_Intro_CombatDummyInRange:new());
+	TutorialManager:AddTutorial(Class_Intro_CombatTactics:new());
+	TutorialManager:AddTutorial(Class_Intro_Chat:new());
+	TutorialManager:AddTutorial(Class_QuestCompleteHelp:new());
+	TutorialManager:AddTutorial(Class_UseMinimap:new());
+	TutorialManager:AddTutorial(Class_Intro_OpenMap:new());
+	TutorialManager:AddTutorial(Class_Intro_MapHighlights:new());
+	TutorialManager:AddTutorial(Class_UseQuestItem:new());
+	TutorialManager:AddTutorial(Class_ChangeEquipment:new());
+	TutorialManager:AddTutorial(Class_EnhancedCombatTactics:new());
+	if self.playerClass == "WARRIOR" then
+		TutorialManager:AddTutorial(Class_EnhancedCombatTactics_Warrior:new());
+	elseif self.playerClass == "ROGUE" then
+		TutorialManager:AddTutorial(Class_EnhancedCombatTactics_Rogue:new());
+	elseif self.playerClass == "PRIEST" or self.playerClass == "WARLOCK" or self.playerClass == "DRUID" then
+		TutorialManager:AddTutorial(Class_EnhancedCombatTactics_UseDoTs:new());
+	elseif self.playerClass == "SHAMAN" or self.playerClass == "MAGE" then
+		TutorialManager:AddTutorial(Class_EnhancedCombatTactics_Ranged:new());
+	elseif self.playerClass == "HUNTER" then
+		TutorialManager:AddTutorial(Class_HunterStableWatcher:new());
+		TutorialManager:AddTutorial(Class_AddHunterTameSpells:new());
+		TutorialManager:AddTutorial(Class_HunterTame:new());
 	end
-	-- these tutorials have to be created outside the loop because we dont want to call Begin on them
-	tutorials.LootCorpse = Class_LootCorpse:new(tutorials.LootCorpseWatcher);
-	tutorials.LootPointer = Class_LootPointer:new(tutorials.LootCorpseWatcher);
+	TutorialManager:AddTutorial(Class_EatFood:new());
+	TutorialManager:AddTutorial(Class_UseVendor:new());
+	TutorialManager:AddTutorial(Class_PromptLFG:new());
+	TutorialManager:AddTutorial(Class_LookingForGroup:new());
+	TutorialManager:AddTutorial(Class_LeavePartyPrompt:new());
+	TutorialManager:AddTutorial(Class_MountReceived:new());
+	TutorialManager:AddTutorial(Class_AddMountToActionBar:new());
+	TutorialManager:AddTutorial(Class_UseMount:new());
 
-	-- first tutorial to start us off
-	TutorialQueue:Add(tutorials.Intro_KeyboardMouse);
-	tutorials.InventoryWatcher:StartWatching();
+	local specQuestID = TutorialHelper:FilterByClass(self.factionData.SpecQuests);
+	TutorialManager:AddTutorial(Class_ChangeSpec_NPE:new(), nil, specQuestID);
+	local autoStart = true;
+	TutorialManager:AddWatcher(Class_StarterTalentWatcher_NPE:new(), autoStart);
+	TutorialManager:AddTutorial(Class_TalentPoints:new(), nil, specQuestID);
+
+	TutorialManager:AddWatcher(Class_TurnInQuestWatcher:new(), autoStart);
+	local turnInQuestWatcher = TutorialManager:GetWatcher(Class_TurnInQuestWatcher.name)
+	TutorialManager:AddTutorial(Class_QuestRewardChoice:new(turnInQuestWatcher));
+
+	TutorialManager:AddWatcher(Class_Death_Watcher:new(), autoStart);
+	local deathWatcher = TutorialManager:GetWatcher(Class_Death_Watcher.name);
+	TutorialManager:AddTutorial(Class_Death_ReleaseCorpse:new(deathWatcher));
+	TutorialManager:AddTutorial(Class_Death_MapPrompt:new(deathWatcher));
+	TutorialManager:AddTutorial(Class_Death_ResurrectPrompt:new(deathWatcher));
+		
+	TutorialManager:AddWatcher(Class_LootCorpseWatcher:new(), autoStart);
+	local lootCorpseWatcher = TutorialManager:GetWatcher(Class_LootCorpseWatcher.name);
+	TutorialManager:AddTutorial(Class_LootCorpse:new(lootCorpseWatcher));
+	TutorialManager:AddTutorial(Class_LootPointer:new(lootCorpseWatcher));
+
+	-- add watchers
+	TutorialManager:AddWatcher(Class_AutoPushSpellWatcher:new(), autoStart);
+	TutorialManager:AddWatcher(Class_AbilityWatcher:new(), autoStart);
+	TutorialManager:AddWatcher(Class_UI_Watcher:new(), autoStart);
+	TutorialManager:AddWatcher(Class_GossipFrameWatcher:new(), autoStart);
+	TutorialManager:AddWatcher(Class_AcceptQuestWatcher:new(), autoStart);
+	TutorialManager:AddWatcher(Class_XPBarWatcher:new(), autoStart);
+	if self.playerClass == "HUNTER" then
+		TutorialManager:AddWatcher(Class_HunterStableWatcher:new(), autoStart);
+	elseif self.playerClass == "ROGUE" or self.playerClass == "DRUID" then
+		TutorialManager:AddWatcher(Class_StealthWatcher:new(), autoStart);
+		if self.playerClass == "DRUID" then
+			TutorialManager:AddWatcher(Class_DruidFormWatcher:new(), autoStart);
+		end
+	end	
+	TutorialManager:AddWatcher(Class_InventoryWatcher:new(), autoStart);
+	
+	autoStart = false;-- started later after the Player gets food
+	TutorialManager:AddWatcher(Class_LowHealthWatcher:new(), autoStart);
+
+	-- start NPE
+	TutorialManager:Queue(Class_Intro_KeyboardMouse.name);
 end
 
 function TutorialLogic:Shutdown()
 	Dispatcher:UnregisterAll(self);
-	NPE_QuestManager:UnregisterForCallbacks(self);
-	Class_TutorialBase:GlobalDisable();
+	TutorialQuestManager:UnregisterForCallbacks(self);
+
+	TutorialManager:ShutdownWatcher(Class_AutoPushSpellWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_AbilityWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_UI_Watcher.name);
+	TutorialManager:ShutdownWatcher(Class_GossipFrameWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_AcceptQuestWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_TurnInQuestWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_XPBarWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_HunterStableWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_StealthWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_DruidFormWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_InventoryWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_Death_Watcher.name);
+	TutorialManager:ShutdownWatcher(Class_LootCorpseWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_LowHealthWatcher.name);
+
+	TutorialManager:ShutdownTutorial(Class_AddSpellToActionBarService.name);
+	TutorialManager:ShutdownTutorial(Class_ItemUpgradeCheckingService.name);
+	TutorialManager:ShutdownTutorial(Class_Intro_KeyboardMouse.name);
+	TutorialManager:ShutdownTutorial(Class_Intro_CameraLook.name);
+	TutorialManager:ShutdownTutorial(Class_Intro_ApproachQuestGiver.name);
+	TutorialManager:ShutdownTutorial(Class_Intro_Interact.name);
+	TutorialManager:ShutdownTutorial(Class_Intro_CombatDummyInRange.name);
+	TutorialManager:ShutdownTutorial(Class_Intro_CombatTactics.name);
+	TutorialManager:ShutdownTutorial(Class_Intro_Chat.name);
+	TutorialManager:ShutdownTutorial(Class_QuestCompleteHelp.name);
+	TutorialManager:ShutdownTutorial(Class_UseMinimap.name);
+	TutorialManager:ShutdownTutorial(Class_QuestRewardChoice.name);
+	TutorialManager:ShutdownTutorial(Class_Intro_OpenMap.name);
+	TutorialManager:ShutdownTutorial(Class_Intro_MapHighlights.name);
+	TutorialManager:ShutdownTutorial(Class_UseQuestItem.name);
+	TutorialManager:ShutdownTutorial(Class_ChangeEquipment.name);
+	TutorialManager:ShutdownTutorial(Class_EnhancedCombatTactics.name);
+	TutorialManager:ShutdownTutorial(Class_EnhancedCombatTactics_Warrior.name);
+	TutorialManager:ShutdownTutorial(Class_EnhancedCombatTactics_Rogue.name);
+	TutorialManager:ShutdownTutorial(Class_EnhancedCombatTactics_UseDoTs.name);
+	TutorialManager:ShutdownTutorial(Class_EnhancedCombatTactics_Ranged.name);
+	TutorialManager:ShutdownTutorial(Class_HunterStableWatcher.name);
+	TutorialManager:ShutdownTutorial(Class_AddHunterTameSpells.name);
+	TutorialManager:ShutdownTutorial(Class_HunterTame.name);
+	TutorialManager:ShutdownTutorial(Class_EatFood.name);
+	TutorialManager:ShutdownTutorial(Class_UseVendor.name);
+	TutorialManager:ShutdownTutorial(Class_PromptLFG.name);
+	TutorialManager:ShutdownTutorial(Class_LookingForGroup.name);
+	TutorialManager:ShutdownTutorial(Class_LeavePartyPrompt.name);
+	TutorialManager:ShutdownTutorial(Class_MountReceived.name);
+	TutorialManager:ShutdownTutorial(Class_AddMountToActionBar.name);
+	TutorialManager:ShutdownTutorial(Class_UseMount.name);
+	TutorialManager:ShutdownTutorial(Class_ChangeSpec_NPE.name);
+	TutorialManager:ShutdownTutorial(Class_TalentPoints.name);
+	TutorialManager:ShutdownTutorial(Class_Death_ReleaseCorpse.name);
+	TutorialManager:ShutdownTutorial(Class_Death_MapPrompt.name);
+	TutorialManager:ShutdownTutorial(Class_Death_ResurrectPrompt.name);
+	TutorialManager:ShutdownTutorial(Class_LootCorpse.name);
+	TutorialManager:ShutdownTutorial(Class_LootPointer.name);
+
+	TutorialQueue:Status();
 end
 
 function TutorialLogic:Quest_Accepted(questData)
 	local questID = questData.QuestID;
-	local tutorials = self.Tutorials;
 
+	local tutorialKey, args;
 	if (questID == self.factionData.StartingQuest) then
-		TutorialQueue:Add(tutorials.Intro_CombatDummyInRange);
+		tutorialKey = Class_Intro_CombatDummyInRange.name;
 	elseif (questID == self.factionData.UseMapQuest) then
-		TutorialQueue:Add(tutorials.Intro_OpenMap);
-	elseif (questID == self.factionData.ShowMinimapQuest) then
-		tutorials.LootCorpseWatcher:WatchQuestMob(self.factionData.FirstLootableCreatureID);
-		TutorialQueue:Add(tutorials.UseMinimap);
-	elseif (questID == self.factionData.EnhancedCombatTacticsQuest) then
-		TutorialQueue:Add(tutorials.EnhancedCombatTactics);
+		tutorialKey = Class_Intro_OpenMap.name;
+	elseif (questID == self.factionData.ShowMinimapQuest) then		
+		local lootCorpseWatcher = TutorialManager:GetWatcher(Class_LootCorpseWatcher.name);
+		if lootCorpseWatcher then
+			lootCorpseWatcher:WatchQuestMob(self.factionData.FirstLootableCreatureID);
+		end
+		tutorialKey = Class_UseMinimap.name;
+	elseif (questID == self.factionData.EnhancedCombatTacticsQuest) then		
+		tutorialKey = Class_EnhancedCombatTactics.name;
 	elseif (questID == self.factionData.UseQuestItemData.ItemQuest) then
-		TutorialQueue:Add(tutorials.UseQuestItem, self.factionData.UseQuestItemData);
+		tutorialKey = Class_UseQuestItem.name;
+		args = self.factionData.UseQuestItemData;
 	elseif (questID == self.factionData.RemindUseQuestItemData.ItemQuest) then
-		TutorialQueue:Add(tutorials.UseQuestItem, self.factionData.RemindUseQuestItemData);
+		tutorialKey = Class_UseQuestItem.name;
+		args = self.factionData.RemindUseQuestItemData;	
 	elseif (questID == self.vendorQuestID) then
-		TutorialQueue:Add(tutorials.UseVendor);
+		tutorialKey = Class_UseVendor.name;
 	elseif (questID == self.factionData.LookingForGroupQuest) then
-		TutorialQueue:Add(tutorials.PromptLFG);
+		tutorialKey = Class_PromptLFG.name;
 	elseif (questID == self.factionData.LeavePartyPromptQuest) then
-		TutorialQueue:Add(tutorials.LeavePartyPrompt);
+		tutorialKey = Class_LeavePartyPrompt.name;
 	elseif (questID == self.factionData.AnUrgentMeeting) then -- second use mount reminder
-		local mountData = TutorialHelper:FilterByRace(TutorialHelper:GetFactionData().Mounts);
+		local mountData = TutorialHelper:FilterByRace(TutorialData:GetFactionData().Mounts);
 		if TutorialHelper:GetActionButtonBySpellID(mountData.mountID) then
-			TutorialQueue:Add(tutorials.UseMount);
+			tutorialKey = Class_UseMount.name;
 		end
 	elseif (questID == self.factionData.HunterTameTutorialQuestID) then
-		TutorialQueue:Add(tutorials.AddHunterTameSpells);
+		tutorialKey = Class_AddHunterTameSpells.name;
 	elseif (questID == self.specQuestID) then
-		TutorialQueue:Add(tutorials.ChangeSpec);
+		tutorialKey = Class_ChangeSpec_NPE.name;
+	end
+	if tutorialKey then
+		TutorialManager:Queue(tutorialKey, args)
 	end
 end
 
@@ -144,19 +264,6 @@ end
 function TutorialLogic:Quest_ObjectivesComplete(questData)
 	local questID = questData.QuestID;
 	local tutorials = self.Tutorials;
-	
-	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
-		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
-		if questID and C_QuestLog.ReadyForTurnIn(questID) then
-			if questID == self.factionData.UseQuestItemData.ItemQuest then
-				TutorialQueue:NotifyDone(tutorials.UseQuestItem);
-			elseif questID == self.factionData.RemindUseQuestItemData.ItemQuest then
-				TutorialQueue:NotifyDone(tutorials.UseQuestItem);
-			elseif questID == self.factionData.UseFoodQuest then
-				tutorials.LowHealthWatcher:Complete();
-			end
-		end
-	end
 end
 
 function TutorialLogic:Quest_Updated(questData)
@@ -164,37 +271,20 @@ end
 
 function TutorialLogic:Quest_TurnedIn(questData)
 	local questID = questData.QuestID;
-	local tutorials = self.Tutorials;
-
 	if questID and C_QuestLog.IsQuestFlaggedCompleted(questID) then
-		if questID == self.factionData.EnhancedCombatTacticsQuest then
-			local playerClass = TutorialHelper:GetClass();
-			if playerClass == "WARRIOR" then
-				tutorials.EnhancedCombatTactics_Warrior:Complete();
-			elseif playerClass == "ROGUE" then
-				tutorials.EnhancedCombatTactics_Rogue:Complete();
-			elseif playerClass == "PRIEST" or playerClass == "WARLOCK" or playerClass == "DRUID" then
-				tutorials.EnhancedCombatTactics_UseDoTs:Complete();
-			elseif playerClass == "SHAMAN" or playerClass == "MAGE" then
-				tutorials.EnhancedCombatTactics_Ranged:Complete();
-			else
-				tutorials.EnhancedCombatTactics:Complete();
-			end
-			return;
-		end
-
+		
 		if questID == self.factionData.GetMountQuest then
-			TutorialQueue:Add(tutorials.MountReceived);
+			TutorialManager:Queue(Class_MountReceived.name);
 			return;
 		end
 
 		if (questID == self.factionData.LeavePartyPromptQuest) then
-			TutorialQueue:Add(tutorials.LeavePartyPrompt);
+			TutorialManager:Queue(Class_LeavePartyPrompt.name);
 			return;
 		end
 
 		if (questID == self.factionData.StandYourGround) then
-			TutorialQueue:Add(tutorials.Intro_Chat);
+			TutorialManager:Queue(Class_Intro_Chat.name);
 			return;
 		end
 
@@ -204,91 +294,10 @@ function TutorialLogic:Quest_TurnedIn(questData)
 			local spellID = classData.classQuestSpellID;
 			if spellID then
 				local preferredActionBar = TutorialHelper:GetClass() == "ROGUE" and "MultiBarBottomLeftButton" or nil;
-				TutorialQueue:Add(tutorials.AddSpellToActionBarService, spellID, nil, NPEV2_SPELLBOOK_TUTORIAL, preferredActionBar);
+				TutorialManager:Queue(Class_AddSpellToActionBarService.name, spellID, nil, NPEV2_SPELLBOOK_TUTORIAL, preferredActionBar);
 			end
 			return;
 		end
 
-		if questID == self.specQuestID then
-			TutorialQueue:Add(tutorials.TalentPoints);
-		end
 	end
 end
-
---watchers
-local Tutorials = TutorialLogic.Tutorials;
-Tutorials.AutoPushSpellWatcher			= Class_AutoPushSpellWatcher:new();
-Tutorials.AbilityWatcher				= Class_AbilityWatcher:new();
-Tutorials.UI_Watcher					= Class_UI_Watcher:new()
-Tutorials.GossipFrameWatcher			= Class_GossipFrameWatcher:new();
-Tutorials.LowHealthWatcher				= Class_LowHealthWatcher:new();
-Tutorials.AcceptQuestWatcher			= Class_AcceptQuestWatcher:new();
-Tutorials.TurnInQuestWatcher			= Class_TurnInQuestWatcher:new();
-Tutorials.Class_XPBarWatcher			= Class_XPBarWatcher:new();
-Tutorials.HunterStableWatcher 			= Class_HunterStableWatcher:new();
-Tutorials.InventoryWatcher				= Class_InventoryWatcher:new();
-Tutorials.StealthWatcher 				= Class_StealthWatcher:new();
-Tutorials.DruidFormWatcher 				= Class_DruidFormWatcher:new();
-
--- services
-Tutorials.AddSpellToActionBarService	= Class_AddSpellToActionBarService:new();
-Tutorials.ItemUpgradeCheckingService	= Class_ItemUpgradeCheckingService:new();
-
--- tutorials
-Tutorials.Intro_KeyboardMouse			= Class_Intro_KeyboardMouse:new()
-Tutorials.Intro_CameraLook				= Class_Intro_CameraLook:new();
-Tutorials.Intro_ApproachQuestGiver		= Class_Intro_ApproachQuestGiver:new();
-Tutorials.Intro_Interact				= Class_Intro_Interact:new();
-Tutorials.Intro_CombatDummyInRange		= Class_Intro_CombatDummyInRange:new();
-Tutorials.Intro_CombatTactics 			= Class_Intro_CombatTactics:new();
-Tutorials.Intro_Chat					= Class_Intro_Chat:new();
-Tutorials.QuestCompleteHelp				= Class_QuestCompleteHelp:new();
-Tutorials.UseMinimap					= Class_UseMinimap:new();
-Tutorials.QuestRewardChoice				= Class_QuestRewardChoice:new(Tutorials.TurnInQuestWatcher);
-Tutorials.Intro_OpenMap					= Class_Intro_OpenMap:new();
-Tutorials.Intro_MapHighlights			= Class_Intro_MapHighlights:new();
-Tutorials.UseQuestItem					= Class_UseQuestItem:new()
-Tutorials.ChangeEquipment				= Class_ChangeEquipment:new();
-Tutorials.EnhancedCombatTactics			= Class_EnhancedCombatTactics:new();
-Tutorials.EnhancedCombatTactics_Warrior	= Class_EnhancedCombatTactics_Warrior:new();
-Tutorials.EnhancedCombatTactics_Rogue	= Class_EnhancedCombatTactics_Rogue:new();
-Tutorials.EnhancedCombatTactics_UseDoTs	= Class_EnhancedCombatTactics_UseDoTs:new();
-Tutorials.EnhancedCombatTactics_Ranged	= Class_EnhancedCombatTactics_Ranged:new();
-Tutorials.AddHunterTameSpells			= Class_AddHunterTameSpells:new();
-Tutorials.HunterTame 					= Class_HunterTame:new();
-Tutorials.EatFood						= Class_EatFood:new();
-Tutorials.UseVendor						= Class_UseVendor:new();
-Tutorials.PromptLFG						= Class_PromptLFG:new();
-Tutorials.LookingForGroup				= Class_LookingForGroup:new()
-Tutorials.LeavePartyPrompt				= Class_LeavePartyPrompt:new()
-Tutorials.MountReceived					= Class_MountReceived:new();
-Tutorials.AddMountToActionBar			= Class_AddMountToActionBar:new();
-Tutorials.UseMount						= Class_UseMount:new();
-Tutorials.ChangeSpec					= Class_ChangeSpec:new();
-Tutorials.TalentPoints					= Class_TalentPoints:new();
-
--- these tutorials have a lot of edge cases and are aren't queued
-Tutorials.Death_Watcher					= Class_Death_Watcher:new();
-Tutorials.Death_ReleaseCorpse			= Class_Death_ReleaseCorpse:new(Tutorials.Death_Watcher);
-Tutorials.Death_MapPrompt				= Class_Death_MapPrompt:new(Tutorials.Death_Watcher);
-Tutorials.Death_ResurrectPrompt			= Class_Death_ResurrectPrompt:new(Tutorials.Death_Watcher);
-Tutorials.LootCorpseWatcher				= Class_LootCorpseWatcher:new();
-
--- ============================================================================================================
--- DEBUG
--- ============================================================================================================
-function DebugTutorials(value)
-	Class_TutorialBase:Debug(value);
-end
-
-function TutorialStatus()
-	print("--------------START--------------")
-	for k, v in pairs(TutorialLogic.Tutorials) do
-		if (type(v) == "table") then
-			print(v.IsActive and "+ ACTIVE" or "- INACTIVE", k);
-		end
-	end
-	print("---------------END---------------")
-end
-
-DebugTutorials(false);

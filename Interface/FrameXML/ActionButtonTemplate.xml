@@ -120,7 +120,11 @@
 				<Texture parentKey="SlotArt" atlas="ui-hud-actionbar-iconframe-slot" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentFlash" parentKey="Flash" atlas="UI-HUD-ActionBar-IconFrame-Flash" hidden="true"/>
+				<Texture name="$parentFlash" parentKey="Flash" atlas="UI-HUD-ActionBar-IconFrame-Flash" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentFlyoutBorderShadow" parentKey="FlyoutBorderShadow" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBorderShadow" hidden="true">
 					<Size x="52" y="52"/>
 					<Anchors>
@@ -148,14 +152,22 @@
 						<Anchor point="BOTTOM" x="0" y="2"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentBorder" parentKey="Border" atlas="UI-HUD-ActionBar-IconFrame-Border" useAtlasSize="true" hidden="true"/>
+				<Texture name="$parentBorder" parentKey="Border" atlas="UI-HUD-ActionBar-IconFrame-Border" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="NewActionTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" hidden="true">
-					<Size x="46" y="45"/>
+				<Texture parentKey="NewActionTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
 				</Texture>
-				<Texture parentKey="SpellHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" hidden="true">
-					<Size x="46" y="45"/>
+				<Texture parentKey="SpellHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
 				</Texture>
 				<Texture parentKey="AutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
 					<Size x="80" y="80"/>
@@ -294,7 +306,7 @@
 	<CheckButton name="SmallActionButtonTemplate" inherits="ActionButtonTemplate" mixin="SmallActionButtonMixin" virtual="true">
 		<Size x="30" y="30"/>
 		<Scripts>
-			<OnLoad method="SmallActionButtonMixin_OnLoad" inherit="append"/>
+			<OnLoad method="SmallActionButtonMixin_OnLoad" inherit="prepend"/>
 		</Scripts>
 	</CheckButton>
 </Ui>

@@ -274,6 +274,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemLinkByGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetItemLocation",
 			Type = "Function",
 
