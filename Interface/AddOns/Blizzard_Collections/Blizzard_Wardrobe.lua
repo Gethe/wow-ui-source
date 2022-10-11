@@ -724,6 +724,7 @@ function TransmogSlotButtonMixin:Update()
 	end
 
 	local isTransmogrified, hasPending, isPendingCollected, canTransmogrify, cannotTransmogrifyReason, hasUndo, isHideVisual, texture = C_Transmog.GetSlotInfo(self.transmogLocation);
+	local baseTexture = GetInventoryItemTexture("player", self.transmogLocation.slotID);
 
 	if C_Transmog.IsSlotBeingCollapsed(self.transmogLocation) then
 		-- This will indicate a pending change for the item
@@ -736,7 +737,11 @@ function TransmogSlotButtonMixin:Update()
 
 	if self.transmogLocation:IsAppearance() then
 		if canTransmogrify or hasChange then
-			self.Icon:SetTexture(texture);
+			if hasUndo then
+				self.Icon:SetTexture(baseTexture);
+			else
+				self.Icon:SetTexture(texture);
+			end
 			self.NoItemTexture:Hide();
 		else
 			local tag = TRANSMOG_INVALID_CODES[cannotTransmogrifyReason];
@@ -802,9 +807,15 @@ function TransmogSlotButtonMixin:Update()
 
 	if ( isHideVisual and not hasUndo ) then
 		if ( self.HiddenVisualIcon ) then
-			self.HiddenVisualCover:Show();
-			self.HiddenVisualIcon:Show();
+			if ( canTransmogrify ) then
+				self.HiddenVisualCover:Show();
+				self.HiddenVisualIcon:Show();
+			else
+				self.HiddenVisualCover:Hide();
+				self.HiddenVisualIcon:Hide();
+			end
 		end
+
 		local baseTexture = GetInventoryItemTexture("player", self.transmogLocation.slotID);
 		self.Icon:SetTexture(baseTexture);
 	else

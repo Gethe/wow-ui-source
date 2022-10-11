@@ -1549,6 +1549,31 @@ local AuctionHouse =
 				{ Name = "bidder", Type = "string", Nilable = true },
 			},
 		},
+		{
+			Name = "ReplicateItemInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "texture", Type = "number", Nilable = true },
+				{ Name = "count", Type = "number", Nilable = false },
+				{ Name = "qualityID", Type = "number", Nilable = false },
+				{ Name = "usable", Type = "bool", Nilable = true },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "levelType", Type = "string", Nilable = true },
+				{ Name = "minBid", Type = "number", Nilable = false },
+				{ Name = "minIncrement", Type = "number", Nilable = false },
+				{ Name = "buyoutPrice", Type = "number", Nilable = false },
+				{ Name = "bidAmount", Type = "number", Nilable = false },
+				{ Name = "highBidder", Type = "string", Nilable = true },
+				{ Name = "bidderFullName", Type = "string", Nilable = true },
+				{ Name = "owner", Type = "string", Nilable = true },
+				{ Name = "ownerFullName", Type = "string", Nilable = true },
+				{ Name = "saleStatus", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "hasAllInfo", Type = "bool", Nilable = true },
+			},
+		},
 	},
 };
 

@@ -67,9 +67,10 @@ function PaladinPowerBar:UpdatePower()
 	if ( self.delayedUpdate ) then
 		return;
 	end
-
-	local numHolyPower = UnitPower( self:GetParent().unit, Enum.PowerType.HolyPower );
-	local maxHolyPower = UnitPowerMax( self:GetParent().unit, Enum.PowerType.HolyPower );
+	local unit = self:GetParent().unit or self:GetParent():GetParent().unit;
+	unit = unit or "player";
+	local numHolyPower = UnitPower( unit, Enum.PowerType.HolyPower );
+	local maxHolyPower = UnitPowerMax( unit, Enum.PowerType.HolyPower );
 
 	for i=1,maxHolyPower do
 		local holyRune = self["rune"..i];

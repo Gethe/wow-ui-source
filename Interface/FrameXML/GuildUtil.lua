@@ -111,3 +111,92 @@ function GuildNewsButton_SetNews( button, news_id )
 
 	button.isEvent = false;
 end
+
+function SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
+	-- texure dimensions are 1024x1024, icon dimensions are 64x64
+	local emblemSize, columns, offset;
+	if ( emblemTexture ) then
+		emblemSize = 64 / 1024;
+		columns = 16
+		offset = 0;
+		emblemTexture:SetTexture("Interface\\GuildFrame\\GuildEmblemsLG_01");
+	end
+	local hasEmblem = SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData);
+	emblemTexture:SetWidth(hasEmblem and (emblemTexture:GetHeight() * (7 / 8)) or emblemTexture:GetHeight());
+end
+
+function SetSmallGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
+	-- texure dimensions are 256x256, icon dimensions are 16x16, centered in 18x18 cells
+	local emblemSize, columns, offset;
+	if ( emblemTexture ) then
+		emblemSize = 18 / 256;
+		columns = 14;
+		offset = 1 / 256;
+		emblemTexture:SetTexture("Interface\\GuildFrame\\GuildEmblems_01");
+	end
+	SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData);
+end
+
+function SetDoubleGuildTabardTextures(unit, leftEmblemTexture, rightEmblemTexture, backgroundTexture, borderTexture, tabardData)
+	if ( leftEmblemTexture and rightEmblemTexture ) then
+		SetGuildTabardTextures(nil, nil, nil, unit, leftEmblemTexture, backgroundTexture, borderTexture, tabardData);
+		rightEmblemTexture:SetTexture(leftEmblemTexture:GetTexture());
+		rightEmblemTexture:SetVertexColor(leftEmblemTexture:GetVertexColor());
+	end
+end
+
+function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
+	local backgroundColor, borderColor, emblemColor, emblemFileID, emblemIndex;
+	tabardData = tabardData or C_GuildInfo.GetGuildTabardInfo(unit);
+	if(tabardData) then
+		backgroundColor = tabardData.backgroundColor;
+		borderColor = tabardData.borderColor;
+		emblemColor = tabardData.emblemColor;
+		emblemFileID = tabardData.emblemFileID;
+		emblemIndex = tabardData.emblemStyle;
+	end
+	if (emblemFileID) then
+		if (backgroundTexture) then
+			backgroundTexture:SetVertexColor(backgroundColor:GetRGB());
+		end
+		if (borderTexture) then
+			borderTexture:SetVertexColor(borderColor:GetRGB());
+		end
+		if (emblemSize) then
+			if (emblemIndex) then
+				local xCoord = mod(emblemIndex, columns) * emblemSize;
+				local yCoord = floor(emblemIndex / columns) * emblemSize;
+				emblemTexture:SetTexCoord(xCoord + offset, xCoord + emblemSize - offset, yCoord + offset, yCoord + emblemSize - offset);
+			end
+			emblemTexture:SetVertexColor(emblemColor:GetRGB());
+		elseif (emblemTexture) then
+			emblemTexture:SetTexture(emblemFileID);
+			emblemTexture:SetVertexColor(emblemColor:GetRGB());
+		end
+
+		return true;
+	else
+		-- tabard lacks design
+		if (backgroundTexture) then
+			backgroundTexture:SetVertexColor(0.2245, 0.2088, 0.1794);
+		end
+		if (borderTexture) then
+			borderTexture:SetVertexColor(0.2, 0.2, 0.2);
+		end
+		if (emblemTexture) then
+			if (emblemSize) then
+				if (emblemSize == 18 / 256) then
+					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogoSm");
+				else
+					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogo");
+				end
+				emblemTexture:SetTexCoord(0, 1, 0, 1);
+				emblemTexture:SetVertexColor(1, 1, 1, 1);
+			else
+				emblemTexture:SetTexture("");
+			end
+		end
+
+		return false;
+	end
+end

@@ -3,6 +3,7 @@
 ## add C namespace augmentations here
 
 ## add snippets independent of modules here
+..\SharedXML\middleclass.lua
 ..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
 ..\SharedXML\TableUtil.lua
@@ -65,6 +66,7 @@
 ..\SharedXML\Frame\EventEditBox.xml
 ..\SharedXML\DataProviders.xml
 ..\SharedXML\Interpolator.lua
+..\SharedXML\Sequencer.lua
 ..\SharedXML\ButtonStateBehavior.lua
 ..\SharedXML\Slider\MinimalSlider.xml
 ..\SharedXML\Scroll\ScrollUtil.lua
@@ -254,6 +256,7 @@ Cooldown.xml
 PVPUITemplates.xml
 PVPHonorSystem.xml
 ActionBarController.xml
+InstanceDifficulty.xml
 Minimap.xml
 GameTime.xml
 AddonCompartment.xml
@@ -410,6 +413,8 @@ QuestSession.xml
 ActionStatus.xml
 WeeklyReward.lua
 PlayerInteractionFrameManager.xml
+TalkingHeadUI.xml
+ArenaUI.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

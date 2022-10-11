@@ -63,34 +63,3 @@ function CreateInterpolator(interpolateFunc)
 	interpolator.interpolateFunc = interpolateFunc or InterpolatorUtil.InterpolateEaseOut;
 	return interpolator;
 end
-
-InterpolationSequenceMixin = {};
-
-function InterpolationSequenceMixin:Init()
-	self.original = {};
-	self.onFinish = GenerateClosure(self.InterpolateNext, self);
-end
-
-function InterpolationSequenceMixin:Add(v1, v2, t, interpType, func)
-	table.insert(self.original, 1, {v1=v1, v2=v2, t=t, interpType=interpType, func=func});
-end
-
-function InterpolationSequenceMixin:InterpolateNext()
-	local sequence = table.remove(self.sequences);
-	if sequence then
-		local interpolator = CreateInterpolator(sequence.interpType);
-		interpolator:Interpolate(sequence.v1, sequence.v2, sequence.t, sequence.func, self.onFinish);
-	end
-end
-
-function InterpolationSequenceMixin:Play()
-	local shallow = true;
-	self.sequences = CopyTable(self.original, shallow);
-	self:InterpolateNext();
-end
-
-function CreateInterpolationSequence()
-	local sequencer = CreateFromMixins(InterpolationSequenceMixin);
-	sequencer:Init();
-	return sequencer;
-end

@@ -584,7 +584,7 @@ function MountJournal_EvaluateListHelpTip(self)
 		local frame = self.ScrollBox:FindFrameByPredicate(function(entry)
 			return entry.index == self.dragonridingHelpTipMountIndex;
 		end);
-		if frame and frame:GetTop() <= self.ScrollBox:GetTop() + 4 and frame:GetBottom() >= self.ScrollBox:GetBottom() - 4 then
+		if ((frame and frame:IsShown()) and frame:GetTop() <= self.ScrollBox:GetTop() + 4 and frame:GetBottom() >= self.ScrollBox:GetBottom() - 4) then
 			local helpTipInfo = {
 				text = MOUNT_JOURNAL_DRAGONRIDING_HELPTIP,
 				buttonStyle = HelpTip.ButtonStyle.Close,
@@ -807,8 +807,8 @@ function MountListDragButton_OnClick(self, button)
 			local spellName = GetSpellInfo(id);
 			ChatEdit_InsertLink(spellName);
 		else
-			local spellLink = GetSpellLink(id);
-			ChatEdit_InsertLink(spellLink);
+			local mountLink = C_MountJournal.GetMountLink(id);
+			ChatEdit_InsertLink(mountLink);
 		end
 	else
 		C_MountJournal.Pickup(parent.index);
@@ -827,8 +827,8 @@ function MountListItem_OnClick(self, button)
 			local spellName = GetSpellInfo(id);
 			ChatEdit_InsertLink(spellName);
 		else
-			local spellLink = GetSpellLink(id);
-			ChatEdit_InsertLink(spellLink);
+			local mountLink = C_MountJournal.GetMountLink(id);
+			ChatEdit_InsertLink(mountLink);
 		end
 	elseif ( self.spellID ~= MountJournal.selectedSpellID ) then
 		MountJournal_Select(self.index);

@@ -197,14 +197,19 @@
 								<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
 									<Size x="90" y="12"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.ReputationColor" relativePoint="TOPRIGHT" x="-106" y="0"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.ReputationColor" relativePoint="TOPRIGHT" x="-106" y="-1"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="LevelText" inherits="GameNormalNumberFont" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.ReputationColor" relativePoint="TOPRIGHT" x="-133" y="-1"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.ReputationColor" relativePoint="TOPRIGHT" x="-133" y="-2"/>
 									</Anchors>
 								</FontString>
+								<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-38" y="-58"/>
+									</Anchors>
+								</MaskTexture>
 							</Layer>
 						</Layers>
 						<Frames>
@@ -250,25 +255,25 @@
 								<BarTexture parentKey="HealthBarTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health"/>
 							</StatusBar>
 							<StatusBar parentKey="ManaBar" inherits="TextStatusBar" mixin="TargetFrameStatusBarMixin" frameStrata="LOW">
-								<Size x="126" y="10"/>
+								<Size x="134" y="10"/>
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+									<Anchor point="TOPRIGHT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMRIGHT" x="8" y="-1"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="ManaBarText" inherits="TextStatusBarText">
 											<Anchors>
-												<Anchor point="CENTER" x="0" y="1"/>
+												<Anchor point="CENTER" x="-4" y="0"/>
 											</Anchors>
 										</FontString>
 										<FontString parentKey="LeftText" inherits="TextStatusBarText">
 											<Anchors>
-												<Anchor point="LEFT" x="2" y="1"/>
+												<Anchor point="LEFT" x="2" y="0"/>
 											</Anchors>
 										</FontString>
 										<FontString parentKey="RightText" inherits="TextStatusBarText">
 											<Anchors>
-												<Anchor point="RIGHT" x="-5" y="1"/>
+												<Anchor point="RIGHT" x="-13" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -399,6 +404,7 @@
 	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate" mixin="BossTargetFrameMixin" toplevel="false" virtual="true">
 		<KeyValues>
 			<KeyValue key="align" value="right" type="string"/>
+			<KeyValue key="frameType" value="Target-Boss-Small" type="string"/>
 		</KeyValues>
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
@@ -418,44 +424,51 @@
 			<OnHide method="OnHide" inherit="append"/>
 		</Scripts>
 	</Button>
-	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
-		<Size x="93" y="45"/>
+	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate" mixin="TargetOfTargetMixin" virtual="true" hidden="true">
+		<Size x="120" y="49"/>
+		<KeyValues>
+			<KeyValue key="frameType" value="TargetofTarget" type="string"/>
+		</KeyValues>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="10"/>
+			<!-- Note that this gets overridden for focus frames in FocusFrameMixin:SetSmallSize, based on if they are the small version or not. -->
+			<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="12" y="10"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" parentKey="background">
-					<Size x="46" y="15"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="42" y="13"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.5"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Portrait">
-					<Size x="35" y="35"/>
+					<Size x="37" y="37"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="5" y="-5"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Texture" file="Interface\TargetingFrame\UI-TargetofTargetFrame">
-					<TexCoords left="0.015625" right="0.7265625" top="0" bottom="0.703125"/>
-				</Texture>
-				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="100" y="10"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="FrameTexture" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Portrait" relativePoint="BOTTOMRIGHT" x="3" y="-2"/>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="68" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Portrait" relativePoint="TOPRIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
+				<!-- Note that using the party mask asset here is intentional. -->
+				<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="13" y="-24"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<StatusBar parentKey="HealthBar" inherits="TextStatusBar">
-				<Size x="46" y="7"/>
+				<Size x="70" y="10"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-2" y="-15"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="2" y="-3.5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -472,20 +485,26 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad>
+						self.lockColor = true;
+					</OnLoad>
 					<OnValueChanged>
-						TargetofTargetHealthCheck(self:GetParent());
+						self:GetParent():HealthCheck();
 					</OnValueChanged>
 				</Scripts>
-				<BarTexture atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health"/>
-				<BarColor r="0" g="1.0" b="0"/>
+				<BarTexture atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health"/>
 			</StatusBar>
 			<StatusBar parentKey="ManaBar" inherits="TextStatusBar">
-				<Size x="46" y="7"/>
+				<Size x="74" y="7"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-2" y="-23"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMLEFT" x="-4" y="-1"/>
 				</Anchors>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-				<BarColor r="0" g="0" b="1.0"/>
+				<Scripts>
+					<OnLoad>
+						self.lockColor = true;
+					</OnLoad>
+				</Scripts>
+				<BarTexture atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana"/>
 			</StatusBar>
 			<Frame name="$parentDebuff1" inherits="TargetofTargetDebuffFrameTemplate" id="1">
 				<Anchors>
@@ -509,13 +528,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				local targetParent = self:GetParent();
-				targetParent:UpdateAuras();
-			</OnShow>
-			<OnHide function="TargetofTarget_OnHide"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 			<OnEvent function="UnitFrame_OnEvent"/>
-			<OnUpdate function="TargetofTarget_Update"/>
 		</Scripts>
 	</Button>
 	<StatusBar name="TargetSpellBarTemplate" inherits="SmallCastingBarFrameTemplate" hidden="true" virtual="true">
@@ -536,6 +551,7 @@
 			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Target" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_TARGET_FRAME_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="frameType" value="Target" type="string"/>
 		</KeyValues>
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
@@ -567,11 +583,12 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate, EditModeUnitFrameSystemTemplate" clampedToScreen="true">
+	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate, EditModeUnitFrameSystemTemplate" mixin="FocusFrameMixin" clampedToScreen="true">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Focus" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_FOCUS_FRAME_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="frameType" value="Target" type="string"/>
 		</KeyValues>
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
@@ -596,7 +613,7 @@
 				self.showAuraCount = true;
 				self:OnLoad("focus", FocusFrameDropDown_Initialize);
 				self:CreateSpellbar("PLAYER_FOCUS_CHANGED");
-				self:CreateTargetofTarget("focus-target");
+				self:CreateTargetofTarget("focustarget");
 				self:RegisterEvent("PLAYER_FOCUS_CHANGED");
 			</OnLoad>
 		</Scripts>
@@ -609,6 +626,7 @@
 			<KeyValue key="layoutIndex" value="4" type="number"/>
 			<KeyValue key="spacing" value="10" type="number"/>
 			<KeyValue key="rightPadding" value="-70" type="number" />
+			<KeyValue key="respectChildScale" value="true" type="boolean"/>
 		</KeyValues>
 		<Scripts>
 			<OnShow method="OnShow"/>
@@ -618,6 +636,7 @@
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="4" type="number"/>
 			<KeyValue key="align" value="right" type="string"/>
+			<KeyValue key="topPadding" value="-15" type="number"/>
 		</KeyValues>
 	</Button>
 	<Button name="Boss2TargetFrame" parent="BossTargetFrameContainer" parentArray="BossTargetFrames" inherits="BossTargetFrameTemplate" id="2">

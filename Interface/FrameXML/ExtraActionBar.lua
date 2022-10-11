@@ -78,3 +78,9 @@ function ExtraActionButtonKey(id, isDown)
 		end
 	end
 end
+
+ExtraActionButtonMixin = {};
+
+function ExtraActionButtonMixin:ExtraActionButton_OnLoad()
+	self.QuickKeybindHighlightTexture:SetSize(54, 53);
+end

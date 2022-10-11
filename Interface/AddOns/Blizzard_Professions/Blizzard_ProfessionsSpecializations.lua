@@ -27,6 +27,11 @@ function ProfessionsSpecFrameMixin:GetDesiredPageWidth()
 	return 1144;
 end
 
+-- The intention is for only UI_PROFESSION_SPEC_DIAL_LOCKIN (207714) to be played.
+local SuppressedSoundsOnUnlockPath = {
+	SOUNDKIT.UI_PROFESSION_SPEC_PERK_EARNED, 
+};
+
 function ProfessionsSpecFrameMixin:ConfigureButtons()
 	self.ApplyButton:SetScript("OnClick", function() self:CommitConfig(); end);
 	self.UndoButton:SetScript("OnClick", function() self:RollbackConfig(); end);
@@ -42,8 +47,12 @@ function ProfessionsSpecFrameMixin:ConfigureButtons()
 	end);
 
 	self.DetailedView.UnlockPathButton:SetScript("OnClick", function()
+		self:SetSuppressedSounds(SuppressedSoundsOnUnlockPath);
+
 		self:PurchaseRank(self:GetDetailedPanelNodeID());
 		self:PlayDialLockInAnimation();
+
+		self:ClearSuppressedSounds();
 	end);
 	self.DetailedView.UnlockPathButton:SetScript("OnLeave", GameTooltip_Hide);
 
@@ -75,14 +84,25 @@ function ProfessionsSpecFrameMixin:GetSpendCurrencyTypesID()
 	end
 end
 
+-- The intention is for only UI_PROFESSION_SPEC_DIAL_LOCKIN (207714) to be played.
+local SuppressedSoundsOnPurchase = {
+	SOUNDKIT.UI_PROFESSION_SPEC_PATH_SELECT, 
+	SOUNDKIT.UI_PROFESSION_SPEC_PERK_EARNED, 
+	SOUNDKIT.UI_PROFESSION_SPEC_APPLY_CHANGES,
+};
+
 function ProfessionsSpecFrameMixin:CheckConfirmPurchaseTab()
 	if not self:AnyPopupShown() then
 		local info = {};
 		info.onAccept = function()
+			self:SetSuppressedSounds(SuppressedSoundsOnPurchase);
+
 			EventRegistry:TriggerEvent("ProfessionsSpecializations.PathSelected", self.tabInfo.rootNodeID);
 			self:PurchaseRank(self.tabInfo.rootNodeID);
 			self:CommitConfig();
 			self:PlayDialLockInAnimation();
+
+			self:ClearSuppressedSounds();
 		end;
 
 		info.specName = self.tabInfo.name;
@@ -93,9 +113,12 @@ function ProfessionsSpecFrameMixin:CheckConfirmPurchaseTab()
 end
 
 function ProfessionsSpecFrameMixin:RegisterCallbacks()
-	local function PathSelectedCallback(_, selectedID)
+	local function PathSelectedCallback(_, selectedID, skipSound)
 		self:SetDetailedPanel(selectedID);
-		PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_SELECT);
+
+		if not skipSound then
+			self:TryPlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_SELECT);
+		end
 	end
 	EventRegistry:RegisterCallback("ProfessionsSpecializations.PathSelected", PathSelectedCallback, self);
 
@@ -142,6 +165,7 @@ function ProfessionsSpecFrameMixin:OnShow()
 	self:UpdateTabs();
 	self:UpdateSelectedTabState();
 	self:UpdateTreeCurrencyInfo();
+	self:UpdateDetailedPanel();
 end
 
 local staticPopups =
@@ -193,6 +217,8 @@ function ProfessionsSpecFrameMixin:OnEvent(event, ...) -- Override
 			self.detailedViewDirty = true;
 			self:RegisterOnUpdate();
 		end
+	elseif event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" then
+		self:UpdateDetailedPanel();
 	end
 end
 
@@ -537,7 +563,8 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 	self:UpdateSelectedTabState();
 
 	local detailedViewNode = g_professionsSpecsSelectedPaths[traitTreeID] or self.tabInfo.rootNodeID;
-	EventRegistry:TriggerEvent("ProfessionsSpecializations.PathSelected", detailedViewNode);
+	local skipSound = true;
+	EventRegistry:TriggerEvent("ProfessionsSpecializations.PathSelected", detailedViewNode, skipSound);
 	-- Need to update currency display after the path changes to get new icon
 	self:UpdateCurrencyDisplay();
 

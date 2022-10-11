@@ -148,6 +148,13 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleActionButton_UpdateState(button);
 	end
 end
+function PetBattleFrame_OnShow(self)
+	EditModeManagerFrame:BlockEnteringEditMode(self);
+end
+
+function PetBattleFrame_OnHide(self)
+	EditModeManagerFrame:UnblockEnteringEditMode(self);
+end
 
 function PetBattleFrame_UpdateInstructions(self)
 	local battleState = C_PetBattles.GetBattleState();

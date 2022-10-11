@@ -331,6 +331,18 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="PersonalFriendlyBuffFrame" inherits="HorizontalLayoutFrame" mixin="PersonalFriendlyBuffContainerMixin">
+		<Size x="200" y="14"/>
+		<KeyValues>
+			<KeyValue key="spacing" value="4" type="number"/>
+			<KeyValue key="fixedHeight" value="14" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="NamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
 	<Button name="ForbiddenNamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
 

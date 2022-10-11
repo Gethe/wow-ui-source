@@ -122,7 +122,7 @@ end
 UseSharedActionBarsMixin = {};
 
 function UseSharedActionBarsMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, -4);
+	GameTooltip:SetOwner(self.CheckButton, "ANCHOR_RIGHT", 0, 0);
 	GameTooltip_AddNormalLine(GameTooltip, HUD_CLASS_TALENTS_EDIT_LOADOUT_USES_SHARED_ACTION_BARS_TOOLTIP);
 	GameTooltip:Show();
 end

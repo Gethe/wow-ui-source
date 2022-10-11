@@ -931,6 +931,22 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "TransmogAppearanceSourceInfoData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
+				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
+				{ Name = "canHaveIllusion", Type = "bool", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "isCollected", Type = "bool", Nilable = false },
+				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "transmoglink", Type = "string", Nilable = false },
+				{ Name = "sourceType", Type = "number", Nilable = true },
+				{ Name = "itemSubClass", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "TransmogCategoryAppearanceInfo",
 			Type = "Structure",
 			Fields =
@@ -949,6 +965,18 @@ local TransmogItems =
 			},
 		},
 		{
+			Name = "TransmogCategoryInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "isWeapon", Type = "bool", Nilable = false, Default = false },
+				{ Name = "canHaveIllusions", Type = "bool", Nilable = false, Default = false },
+				{ Name = "canMainHand", Type = "bool", Nilable = false, Default = false },
+				{ Name = "canOffHand", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
 			Name = "TransmogIllusionInfo",
 			Type = "Structure",
 			Fields =
@@ -959,6 +987,15 @@ local TransmogItems =
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "isUsable", Type = "bool", Nilable = false },
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TransmogOutfitInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
 			},
 		},
 	},

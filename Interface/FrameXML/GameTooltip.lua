@@ -383,6 +383,10 @@ function GameTooltip_ClearMoney(self)
 	self.shownMoneyFrames = nil;
 end
 
+GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT_DARK = {
+	layoutType = "TooltipDefaultDarkLayout",
+};
+
 GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
 	layoutType = "TooltipAzeriteLayout",
 
@@ -413,6 +417,10 @@ GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY = {
 	overlayAtlasTopYOffset = -2,
 
 	padding = { left = 6, right = 6, top = 6, bottom = 6 },
+};
+
+GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT = {
+	layoutType = "TooltipDefaultDarkLayout",
 };
 
 GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {

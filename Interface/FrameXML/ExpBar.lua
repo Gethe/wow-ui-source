@@ -61,7 +61,7 @@ end
 function ExpBarMixin:OnEvent(event, ...)
 	if( event == "CVAR_UPDATE") then
 		local cvar = ...;
-		if( cvar == "XP_BAR_TEXT" ) then
+		if( cvar == "xpBarText" ) then
 			self:UpdateTextVisibility();
 		end
 	elseif ( event == "PLAYER_XP_UPDATE" or event == "PLAYER_ENTERING_WORLD" ) then

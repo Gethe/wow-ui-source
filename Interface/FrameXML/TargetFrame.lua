@@ -54,7 +54,7 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	end
 
 	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
-	UnitFrame_Initialize(self, unit, targetFrameContentMain.Name, portraitFrame,
+	UnitFrame_Initialize(self, unit, targetFrameContentMain.Name, self.frameType, portraitFrame,
 						 targetFrameContentMain.HealthBar,
 						 targetFrameContentMain.HealthBar.HealthBarText,
 						 targetFrameContentMain.ManaBar,
@@ -74,7 +74,10 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");
 	self.auraPools:CreatePool("FRAME", self, "TargetBuffFrameTemplate");
 
+	targetFrameContentMain.ManaBar:GetStatusBarTexture():AddMaskTexture(targetFrameContentMain.ManaBarMask);
+
 	self:Update();
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_HEALTH");
 	if ( self.showLevel ) then
@@ -90,6 +93,7 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterUnitEvent("UNIT_AURA", unit);
+	self:RegisterUnitEvent("UNIT_TARGET", unit);
 
 	local showmenu;
 	if (menuFunc) then
@@ -119,7 +123,7 @@ function TargetFrameMixin:Update()
 
 		-- Moved here to avoid taint from functions below
 		if (self.totFrame) then
-			TargetofTarget_Update(self.totFrame);
+			self.totFrame:Update();
 		end
 
 		UnitFrame_Update(self);
@@ -204,6 +208,10 @@ function TargetFrameMixin:OnEvent(event, ...)
 			local unitAuraUpdateInfo = select(2, ...);
 			self:UpdateAuras(unitAuraUpdateInfo);
 		end
+	elseif (event == "UNIT_TARGET") then
+		if (self.totFrame) then
+			self.totFrame:Update();
+		end
 	elseif (event == "PLAYER_FLAGS_CHANGED") then
 		if (arg1 == self.unit) then
 			self:CheckPartyLeader();
@@ -217,7 +225,7 @@ function TargetFrameMixin:OnEvent(event, ...)
 			end
 		else
 			if (self.totFrame) then
-				TargetofTarget_Update(self.totFrame);
+				self.totFrame:Update();
 			end
 			self:CheckFaction();
 		end
@@ -355,8 +363,7 @@ function TargetFrameMixin:CheckBattlePet()
 	end
 end
 
-
-function TargetFrameMixin:CheckClassification(forceNormalTexture)
+function TargetFrameMixin:CheckClassification()
 	local classification = UnitClassification(self.unit);
 	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
 
@@ -365,10 +372,14 @@ function TargetFrameMixin:CheckClassification(forceNormalTexture)
 	targetFrameContentMain.ManaBar:Show();
 	TextStatusBar_UpdateTextString(targetFrameContentMain.ManaBar);
 
-	if (forceNormalTexture) then
-		self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn", TextureKitConstants.UseAtlasSize);
-	elseif (classification == "minus") then
+	if (classification == "minus") then
 		self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn", TextureKitConstants.UseAtlasSize);
+
+		-- self.threatIndicator should just be set to self.TargetFrameContainer.Flash.  See 'threatFrame' in TargetFrameMixin:OnLoad.
+		if (self.threatIndicator) then
+			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
+		end
+
 		targetFrameContentMain.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
 		targetFrameContentMain.HealthBar:SetHeight(12);
 		targetFrameContentMain.HealthBar:SetWidth(125);
@@ -379,39 +390,18 @@ function TargetFrameMixin:CheckClassification(forceNormalTexture)
 		targetFrameContentMain.ManaBar.TextString:Hide();
 		targetFrameContentMain.ManaBar.LeftText:Hide();
 		targetFrameContentMain.ManaBar.RightText:Hide();
-		forceNormalTexture = true;
 	else
 		self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn", TextureKitConstants.UseAtlasSize);
+
+		-- self.threatIndicator should just be set to self.TargetFrameContainer.Flash.  See 'threatFrame' in TargetFrameMixin:OnLoad.
+		if (self.threatIndicator) then
+			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
+		end
+
 		targetFrameContentMain.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
 		targetFrameContentMain.HealthBar:SetHeight(20);
 		targetFrameContentMain.HealthBar:SetWidth(126);
 		targetFrameContentMain.HealthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 1, -11);
-		forceNormalTexture = true;
-	end
-
-	-- Flash pieces
-	-- self.threatIndicator should just be set to self.TargetFrameContainer.Flash.  See 'threatFrame' in TargetFrameMixin:OnLoad.
-	self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
-	if (forceNormalTexture) then
-		self.haveElite = nil;
-		if (self.threatIndicator) then
-			if (classification == "minus") then
-				self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Minus-Flash");
-				self.threatIndicator:SetTexCoord(0, 1, 0, 1);
-				self.threatIndicator:SetWidth(210);
-				self.threatIndicator:SetHeight(105);
-				self.threatIndicator:ClearAllPoints();
-				self.threatIndicator:SetPoint("CENTER", self, 17, -14);
-			else
-				self.threatIndicator:ClearAllPoints();
-				self.threatIndicator:SetPoint("CENTER", self, 0, 2);
-			end
-		end
-	else
-		self.haveElite = true;
-		if (self.threatIndicator) then
-			self.threatIndicator:SetPoint("CENTER", self, 0, 2);
-		end
 	end
 
 	-- Boss frame pieces (dragon frame, icons)
@@ -468,7 +458,7 @@ end
 
 function TargetFrameMixin:OnUpdate(elapsed)
 	if (self.totFrame and self.totFrame:IsShown() ~= UnitExists(self.totFrame.unit)) then
-		TargetofTarget_Update(self.totFrame);
+		self.totFrame:Update();
 	end
 
 	self.elapsed = (self.elapsed or 0) + elapsed;
@@ -991,19 +981,19 @@ function TargetFrameMixin:CreateTargetofTarget(unit)
 	local frame = CreateFrame("BUTTON", thisName, self, "TargetofTargetFrameTemplate");
 	frame:SetFrameLevel(self:GetFrameLevel() + 5);
 	self.totFrame = frame;
-	UnitFrame_Initialize(frame, unit, frame.Name, frame.Portrait,
-						 frame.HealthBar, frame.HealthBar.HealthBarText,
-						 frame.ManaBar, frame.ManaBar.ManaBarText);
+	UnitFrame_Initialize(frame, unit, frame.Name, frame.frameType, frame.Portrait,
+						 frame.HealthBar, nil, frame.ManaBar, nil);
 	SetTextStatusBarTextZeroText(frame.HealthBar, DEAD);
+
+	frame.ManaBar:GetStatusBarTexture():AddMaskTexture(frame.ManaBarMask);
 
 	SecureUnitButton_OnLoad(frame, unit);
 end
 
 function TargetHealthCheck(self)
 	if (UnitIsPlayer(self.unit)) then
-		local unitHPMin, unitHPMax, unitCurrHP;
-		unitHPMin, unitHPMax = self:GetMinMaxValues();
-		unitCurrHP = self:GetValue();
+		local _, unitHPMax = self:GetMinMaxValues();
+		local unitCurrHP = self:GetValue();
 		self.unitHPPercent = unitCurrHP / unitHPMax;
 		if (self.Portrait) then
 			if (UnitIsDead(self.unit)) then
@@ -1024,6 +1014,7 @@ TargetFrameStatusBarMixin = {};
 function TargetFrameStatusBarMixin:OnLoad()
 	TextStatusBar_Initialize(self);
 	self.textLockable = 1;
+	self.lockColor = true;
 	self.cvar = "statusText";
 	self.cvarLabel = "STATUS_TEXT_TARGET";
 	self.zeroText = "";
@@ -1044,7 +1035,7 @@ function Target_Spellbar_OnEvent(self, event, ...)
 	local arg1 = ...
 
 	--	Check for target specific events
-	if ((event == "VARIABLES_LOADED") or ((event == "CVAR_UPDATE") and (arg1 == "SHOW_TARGET_CASTBAR"))) then
+	if ((event == "VARIABLES_LOADED") or ((event == "CVAR_UPDATE") and (arg1 == "showTargetCastbar"))) then
 		if (GetCVar("showTargetCastbar") == "0") then
 			self.showCastbar = false;
 		else
@@ -1083,41 +1074,43 @@ end
 
 function Target_Spellbar_AdjustPosition(self)
 	local parentFrame = self:GetParent();
-	if (self.boss) then
-		self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, 10);
-	elseif (parentFrame.haveToT) then
-		if (parentFrame.buffsOnTop or parentFrame.auraRows <= 1) then
-			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -21);
-		else
-			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
-		end
-	elseif (parentFrame.haveElite) then
-		if (parentFrame.buffsOnTop or parentFrame.auraRows <= 1) then
-			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -5);
-		else
-			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
-		end
-	else
-		if ((not parentFrame.buffsOnTop) and parentFrame.auraRows > 0) then
-			self:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15);
-		else
-			self:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, 7);
-		end
+
+	-- If the buffs are on the bottom of the frame, and either:
+	--  We have a ToT frame and more than 2 rows of buffs/debuffs.
+	--  We have no ToT frame and any rows of buffs/debuffs.
+	local useSpellbarAnchor = (not parentFrame.buffsOnTop) and ((parentFrame.haveToT and parentFrame.auraRows > 2) or ((not parentFrame.haveToT) and parentFrame.auraRows > 0));
+
+	local relativeKey = useSpellbarAnchor and parentFrame.spellbarAnchor or parentFrame;
+	local pointX = useSpellbarAnchor and 18 or  (parentFrame.smallSize and 38 or 43);
+	local pointY = useSpellbarAnchor and -10 or (parentFrame.smallSize and 3 or 5);
+
+	if ((not useSpellbarAnchor) and parentFrame.haveToT) then
+		pointY = parentFrame.smallSize and -48 or -46;
 	end
+
+	self:SetPoint("TOPLEFT", relativeKey, "BOTTOMLEFT", pointX, pointY);
 end
 
 --
 -- Target of Target Frame
 --
 
-function TargetofTarget_OnHide(self)
-	local targetParent = self:GetParent();
-	targetParent:UpdateAuras();
+TargetOfTargetMixin = {};
+
+function TargetOfTargetMixin:OnShow()
+	local parent = self:GetParent();
+	parent:UpdateAuras();
 end
 
-function TargetofTarget_Update(self, elapsed)
+function TargetOfTargetMixin:OnHide()
 	local parent = self:GetParent();
-	if (CVarCallbackRegistry:GetCVarValueBool("showTargetOfTarget") and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 )) then
+	parent:UpdateAuras();
+end
+
+function TargetOfTargetMixin:Update()
+	local parent = self:GetParent();
+	if (CVarCallbackRegistry:GetCVarValueBool("showTargetOfTarget") and UnitExists(parent.unit) and UnitExists(self.unit)
+		and (not UnitIsUnit(PlayerFrame.unit, parent.unit)) and (UnitHealth(parent.unit) > 0)) then
 		if (not self:IsShown()) then
 			self:Show();
 			if (parent.spellbar) then
@@ -1126,8 +1119,8 @@ function TargetofTarget_Update(self, elapsed)
 			end
 		end
 		UnitFrame_Update(self);
-		TargetofTarget_CheckDead(self);
-		TargetofTargetHealthCheck(self);
+		self:CheckDead();
+		self:HealthCheck();
 		RefreshDebuffs(self, self.unit, nil, nil, true);
 	else
 		if (self:IsShown()) then
@@ -1140,28 +1133,21 @@ function TargetofTarget_Update(self, elapsed)
 	end
 end
 
-function TargetofTarget_CheckDead(self)
+function TargetOfTargetMixin:CheckDead()
 	if ((UnitHealth(self.unit) <= 0) and UnitIsConnected(self.unit)) then
-		self.background:SetAlpha(0.9);
-		if (UnitIsUnconscious(self.unit)) then
-			self.HealthBar.UnconsciousText:Show();
-			self.HealthBar.DeadText:Hide();
-		else
-			self.HealthBar.UnconsciousText:Hide();
-			self.HealthBar.DeadText:Show();
-		end
+		local unitIsUnconscious = UnitIsUnconscious(self.unit);
+		self.HealthBar.UnconsciousText:SetShown(unitIsUnconscious);
+		self.HealthBar.DeadText:SetShown(not unitIsUnconscious);
 	else
-		self.background:SetAlpha(1);
 		self.HealthBar.DeadText:Hide();
 		self.HealthBar.UnconsciousText:Hide();
 	end
 end
 
-function TargetofTargetHealthCheck(self)
+function TargetOfTargetMixin:HealthCheck()
 	if (UnitIsPlayer(self.unit)) then
-		local unitHPMin, unitHPMax, unitCurrHP;
-		unitHPMin, unitHPMax = self.HealthBar:GetMinMaxValues();
-		unitCurrHP = self.HealthBar:GetValue();
+		local _, unitHPMax = self.HealthBar:GetMinMaxValues();
+		local unitCurrHP = self.HealthBar:GetValue();
 		self.unitHPPercent = unitCurrHP / unitHPMax;
 		if (UnitIsDead(self.unit)) then
 			self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 1.0);
@@ -1189,6 +1175,7 @@ function BossTargetFrameMixin:OnLoad()
 	self.showThreat = true;
 	self.maxBuffs = 0;
 	self.maxDebuffs = 0;
+	self.showPortrait = false;
 
 	TargetFrameMixin.OnLoad(self, "boss"..id, BossTargetFrameDropDown_Initialize);
 	TargetFrameMixin.CheckDead(self);
@@ -1196,16 +1183,44 @@ function BossTargetFrameMixin:OnLoad()
 	self:UnregisterEvent("UNIT_AURA"); -- Boss frames do not display auras
 	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 
+	-- There are several edits to the target frame that need to happen to fit the portraitless version of the boss frame.
 	self.TargetFrameContainer.Portrait:Hide();
-	self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-PortraitOff-Boss-Small", TextureKitConstants.UseAtlasSize);
+	self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-Boss-Small-PortraitOff", TextureKitConstants.UseAtlasSize);
+	self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-Boss-Small-PortraitOff-InCombat", TextureKitConstants.UseAtlasSize);
+	self.threatIndicator:SetPoint("CENTER", self.TargetFrameContainer, "CENTER", -12, 2);
+
+	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
+
+	local reputationBar = targetFrameContentMain.ReputationColor;
+	reputationBar:SetAtlas("UI-HUD-UnitFrame-Target-Boss-Small-PortraitOff-Type", TextureKitConstants.UseAtlasSize);
+	reputationBar:SetPoint("TOPRIGHT", targetFrameContentMain, "TOPRIGHT", -86, -32);
+
+	targetFrameContentMain.LevelText:SetPoint("TOPLEFT", reputationBar, "TOPRIGHT", -83, -2);
+	targetFrameContentMain.Name:SetWidth(55);
+	targetFrameContentMain.Name:SetPoint("TOPLEFT", reputationBar, "TOPRIGHT", -56, -1);
+
+	local healthBar = targetFrameContentMain.HealthBar;
+	healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-Boss-Small-PortraitOff-Bar-Health", TextureKitConstants.UseAtlasSize);
+	healthBar:SetWidth(84);
+	healthBar:SetHeight(10);
+	healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", -2, -8);
+
+	local manaBar = targetFrameContentMain.ManaBar;
+	manaBar:SetWidth(84);
+	manaBar:SetHeight(7);
+	manaBar:SetPoint("TOPRIGHT", healthBar, "BOTTOMRIGHT", 0, -1);
+	manaBar.ManaBarText:SetPoint("CENTER", 0, 0);
+	manaBar.RightText:SetPoint("RIGHT", -5, 0);
+
+	local manaBarMask = self.TargetFrameContent.TargetFrameContentMain.ManaBarMask;
+	-- The boss frame mask is the same shape as the party frame, so we just use that.
+	manaBarMask:SetAtlas("UI-HUD-UnitFrame-PartyFrame-PortraitOff-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
+	manaBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 0, -52);
 
 	self.TargetFrameContent.TargetFrameContentContextual.RaidTargetIcon:SetPoint("RIGHT", -90, 0);
-	self.threatNumericIndicator:SetPoint("BOTTOM", self, "TOP", -85, -22);
-	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss-Flash");
-	self.threatIndicator:SetTexCoord(0.0, 0.945, 0.0, 0.73125);
+	self.threatNumericIndicator:SetPoint("BOTTOM", self, "TOP", -28, -33);
 
 	self:SetHitRectInsets(0, 95, 15, 30);
-	self:SetScale(0.75);
 
 	if (id == 1) then
 		self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT");
@@ -1236,9 +1251,9 @@ function BossTargetFrameMixin:SetCastBarPosition(castBarOnSide)
 
 	self.spellbar:ClearAllPoints();
 	if (self.castBarOnSide) then
-		self.spellbar:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -25);
+		self.spellbar:SetPoint("TOPRIGHT", self, "TOPLEFT", 45, -34);
 	else
-		self.spellbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -105, 15);
+		self.spellbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -100, 17);
 	end
 end
 
@@ -1254,19 +1269,19 @@ function BossTargetFrameContainerMixin:UpdateSize()
 	for index, bossFrame in ipairs(self.BossTargetFrames) do
 		bossFrame.rightPadding = 20;
 		if (self.castBarOnSide) then
-			bossFrame.bottomPadding = -30;
 			if (self.smallSize) then
-				bossFrame.leftPadding = 70;
+				bossFrame.bottomPadding = -20;
 			else
-				bossFrame.leftPadding = 150;
+				bossFrame.bottomPadding = -50;
 			end
+			bossFrame.leftPadding = 92;
 		else
-			bossFrame.bottomPadding = 0;
 			if (self.smallSize) then
-				bossFrame.leftPadding = -25;
+				bossFrame.bottomPadding = 0;
 			else
-				bossFrame.leftPadding = 20;
+				bossFrame.bottomPadding = -20;
 			end
+			bossFrame.leftPadding = 24;
 		end
 
 		if (bossFrame:IsShown()) then
@@ -1276,15 +1291,15 @@ function BossTargetFrameContainerMixin:UpdateSize()
 	end
 
 	if (lastShowingBossFrame) then
-		if (self.smallSize) then
-			if (self.castBarOnSide) then
-				lastShowingBossFrame.bottomPadding = -40 - (numShowingBossFrames - 1) * 20;
+		if (self.castBarOnSide) then
+			if (self.smallSize) then
+				lastShowingBossFrame.bottomPadding = (-15 * numShowingBossFrames) + (5 / numShowingBossFrames);
 			else
-				lastShowingBossFrame.bottomPadding = -17 - (numShowingBossFrames - 1) * 27;
+				lastShowingBossFrame.bottomPadding = -20;
 			end
 		else
-			if (self.castBarOnSide) then
-				lastShowingBossFrame.bottomPadding = -20;
+			if (self.smallSize) then
+				lastShowingBossFrame.bottomPadding = 30 - (20 * (numShowingBossFrames));
 			else
 				lastShowingBossFrame.bottomPadding = 10;
 			end
@@ -1331,98 +1346,71 @@ end
 -- Focus Frame
 --
 
+local FOCUS_FRAME_LOCKED = true;
+
+FocusFrameMixin = {};
+
 function FocusFrameDropDown_Initialize(self)
 	UnitPopup_ShowMenu(self, "FOCUS", "focus", SET_FOCUS);
 end
 
-FOCUS_FRAME_LOCKED = true;
-function FocusFrame_IsLocked()
+function FocusFrameMixin:IsLocked()
 	return FOCUS_FRAME_LOCKED;
 end
 
-function FocusFrame_SetLock(locked)
+function FocusFrameMixin:SetLock(locked)
 	FOCUS_FRAME_LOCKED = locked;
 end
 
-function FocusFrame_OnDragStart(self, button)
-	FOCUS_FRAME_MOVING = false;
-	if (not FOCUS_FRAME_LOCKED) then
-		local cursorX, cursorY = GetCursorPosition();
-		self:SetFrameStrata("DIALOG");
-		self:StartMoving();
-		FOCUS_FRAME_MOVING = true;
-	end
-end
+function FocusFrameMixin:SetSmallSize(smallSize)
+	local focusFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
+	local focusFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
 
-function FocusFrame_OnDragStop(self)
-	if (not FOCUS_FRAME_LOCKED and FOCUS_FRAME_MOVING) then
-		self:StopMovingOrSizing();
-		self:SetFrameStrata("BACKGROUND");
-		if (self:GetBottom() < 15 + MainMenuBar:GetHeight()) then
-			local anchorX = self:GetLeft();
-			local anchorY = 60;
-			if (self.smallSize) then
-				anchorY = 90;	-- empirically determined
-			end
-			self:SetPoint("BOTTOMLEFT", anchorX, anchorY);
-		end
-		FOCUS_FRAME_MOVING = false;
-	end
-end
+	self.smallSize = smallSize;
 
-function FocusFrame_SetSmallSize(smallSize)
-	local focusFrameContentMain = FocusFrame.TargetFrameContent.TargetFrameContentMain;
-	local focusFrameContentContextual = FocusFrame.TargetFrameContent.TargetFrameContentContextual;
+	if (self.smallSize) then
+		self.maxBuffs = 0;
+		self.maxDebuffs = 8;
+		self.showLeader = nil;
+		self.showPVP = nil;
+		self.showAuraCount = nil;
+		self.TOT_AURA_ROW_WIDTH = 80; -- not as much room for auras with scaled-up ToT frame
 
-	if (smallSize) then
-		FocusFrame.smallSize = true;
-		FocusFrame.maxBuffs = 0;
-		FocusFrame.maxDebuffs = 8;
-		FocusFrame:SetScale(SMALL_FOCUS_SCALE);
-		FocusFrameToT:SetScale(SMALL_FOCUS_UPSCALE);
-		FocusFrameToT:SetPoint("BOTTOMRIGHT", -13, -17);
-		FocusFrame.TOT_AURA_ROW_WIDTH = 80;	-- not as much room for auras with scaled-up ToT frame
-		FocusFrame.spellbar:SetScale(SMALL_FOCUS_UPSCALE);
-		focusFrameContentMain.Name:SetFontObject(FocusFontSmall);
-		focusFrameContentMain.Name:SetWidth(90);
+		self:SetScale(SMALL_FOCUS_SCALE);
+		self.totFrame:SetScale(SMALL_FOCUS_UPSCALE);
+		self.spellbar:SetScale(SMALL_FOCUS_UPSCALE);
+
+		self.totFrame:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 20, 8);
 		focusFrameContentMain.HealthBar.TextString:SetFontObject(TextStatusBarTextLarge);
-		focusFrameContentMain.HealthBar.TextString:SetPoint("CENTER", -50, 4)
-		FocusFrame:UnregisterEvent("UNIT_CLASSIFICATION_CHANGED");
-		FocusFrame.showClassification = true;
-		FocusFrame:UnregisterEvent("PLAYER_FLAGS_CHANGED");
-		FocusFrame.showLeader = nil;
-		FocusFrame.showPVP = nil;
-		FocusFrame.showAuraCount = nil;
+		focusFrameContentContextual.NumericalThreat:SetPoint("BOTTOM", focusFrameContentMain.ReputationColor, "TOP", 0, -1);
 		focusFrameContentContextual.PvpIcon:Hide();
 		focusFrameContentContextual.PrestigePortrait:Hide();
 		focusFrameContentContextual.PrestigeBadge:Hide();
 		focusFrameContentContextual.LeaderIcon:Hide();
 		focusFrameContentContextual.GuideIcon:Hide();
-		FocusFrame.showAuraCount = nil;
---		FocusFrame:CheckClassification(true);
-		FocusFrame:Update();
-	elseif (not smallSize and FocusFrame.smallSize) then
-		FocusFrame.smallSize = false;
-		FocusFrame.maxBuffs = nil;
-		FocusFrame.maxDebuffs = nil;
-		FocusFrame:SetScale(LARGE_FOCUS_SCALE);
-		FocusFrameToT:SetScale(LARGE_FOCUS_SCALE);
-		FocusFrameToT:SetPoint("BOTTOMRIGHT", -35, -10);
-		FocusFrame.TOT_AURA_ROW_WIDTH = TOT_AURA_ROW_WIDTH;
-		FocusFrame.spellbar:SetScale(LARGE_FOCUS_SCALE);
-		focusFrameContentMain.Name:SetFontObject(GameFontNormalSmall);
-		focusFrameContentMain.Name:SetWidth(90);
+
+		self:UnregisterEvent("UNIT_CLASSIFICATION_CHANGED");
+		self:UnregisterEvent("PLAYER_FLAGS_CHANGED");
+	else
+		self.maxBuffs = nil;
+		self.maxDebuffs = nil;
+		self.showLeader = true;
+		self.showPVP = true;
+		self.showAuraCount = true;
+		self.TOT_AURA_ROW_WIDTH = TOT_AURA_ROW_WIDTH;
+
+		self:SetScale(LARGE_FOCUS_SCALE);
+		self.totFrame:SetScale(LARGE_FOCUS_SCALE);
+		self.spellbar:SetScale(LARGE_FOCUS_SCALE);
+
+		self.totFrame:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 12, 10);
 		focusFrameContentMain.HealthBar.TextString:SetFontObject(TextStatusBarText);
-		focusFrameContentMain.HealthBar.TextString:SetPoint("CENTER", -50, 3)
-		FocusFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
-		FocusFrame.showClassification = true;
-		FocusFrame:RegisterEvent("PLAYER_FLAGS_CHANGED");
-		FocusFrame.showLeader = true;
-		FocusFrame.showPVP = true;
-		FocusFrame.showAuraCount = true;
-		FocusFrame:Update();
+		focusFrameContentContextual.NumericalThreat:SetPoint("BOTTOM", focusFrameContentMain.ReputationColor, "TOP", 0, 0);
+
+		self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
+		self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	end
 
-	FocusFrame:Update();
-	FocusFrame:UpdateAuras();
+	self:Update();
+	self:UpdateAuras();
 end

@@ -85,9 +85,6 @@ local function Register()
 		end);
 	end
 
-	-- Spam Filter
-	Settings.SetupCVarCheckBox(category, "spamFilter", SPAM_FILTER, OPTION_TOOLTIP_SPAM_FILTER);
-
 	-- Guild Member Alert
 	Settings.SetupCVarCheckBox(category, "guildMemberNotify", GUILDMEMBER_ALERT, OPTION_TOOLTIP_GUILDMEMBER_ALERT);
 
@@ -134,7 +131,7 @@ local function Register()
 	--Chat Style
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add("im", IM_STYLE, OPTION_CHAT_STYLE_IM);
 			container:Add("classic", CLASSIC_STYLE, OPTION_CHAT_STYLE_CLASSIC);
 			return container:GetData();
@@ -146,7 +143,7 @@ local function Register()
 	-- New Whispers
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add("popout", CONVERSATION_MODE_POPOUT, OPTION_WHISPER_MODE_POPOUT);
 			container:Add("inline", CONVERSATION_MODE_INLINE, OPTION_WHISPER_MODE_INLINE);
 			container:Add("popout_and_inline", CONVERSATION_MODE_POPOUT_AND_INLINE, OPTION_WHISPER_MODE_POPOUT_AND_INLINE);
@@ -174,7 +171,7 @@ local function Register()
 		end
 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add("none", TIMESTAMP_FORMAT_NONE);
 			CreateTimeStampOption(container, TIMESTAMP_FORMAT_HHMM);
 			CreateTimeStampOption(container, TIMESTAMP_FORMAT_HHMMSS);

@@ -420,20 +420,6 @@
 				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Coin-Highlight" alphaMode="ADD"/>
 				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Coin-Down"/>
 			</Button>
-			<Button parentKey="DisenchantButton" inherits="LootRollButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.GreedButton" relativePoint="RIGHT" x="5" y="2"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.tooltipText=ROLL_DISENCHANT;
-						self.newbieText=ROLL_DISENCHANT_NEWBIE;
-					</OnLoad>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-GroupLoot-DE-Up"/>
-				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-DE-Highlight" alphaMode="ADD"/>
-				<PushedTexture file="Interface\Buttons\UI-GroupLoot-DE-Down"/>
-			</Button>
 			<StatusBar parentKey="Timer" drawLayer="ARTWORK" minValue="0" maxValue="60000" defaultValue="0">
 				<Size x="190" y="8"/>
 				<Anchors>

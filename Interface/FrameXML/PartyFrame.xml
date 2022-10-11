@@ -9,6 +9,7 @@
 			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Party" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PARTY_FRAMES_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="bottomPadding" value="2" type="number"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="Background" mixin="PartyMemberBackgroundMixin" hidden="true" inherits="BackdropTemplate">

@@ -1,10 +1,10 @@
 
 
 -- ------------------------------------------------------------------------------------------------------------
-NPE_TutorialQuestBangGlow = {};
-function NPE_TutorialQuestBangGlow:Show(button)
+TutorialQuestBangGlow = {};
+function TutorialQuestBangGlow:Show(button)
 	if not self.framePool then
-		self.framePool = CreateFramePool("FRAME", nil, "NPE_TutorialQuestBangGlowTemplate");
+		self.framePool = CreateFramePool("FRAME", nil, "TutorialQuestBangGlowTemplate");
 	end
 
 	local frame = self:GetExisting(button);
@@ -22,7 +22,7 @@ function NPE_TutorialQuestBangGlow:Show(button)
 	frame:Show();
 end
 
-function NPE_TutorialQuestBangGlow:Hide(button)
+function TutorialQuestBangGlow:Hide(button)
 	local frame = self:GetExisting(button);
 	if frame then
 		frame.GlowAnim:Stop();
@@ -30,7 +30,7 @@ function NPE_TutorialQuestBangGlow:Hide(button)
 	end
 end
 
-function NPE_TutorialQuestBangGlow:GetExisting(button)
+function TutorialQuestBangGlow:GetExisting(button)
 	if not self.framePool then
 		return;
 	end
@@ -42,8 +42,8 @@ function NPE_TutorialQuestBangGlow:GetExisting(button)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-NPE_TutorialDragButton = {};
-function NPE_TutorialDragButton:Show(originButton, destButton)
+TutorialDragButton = {};
+function TutorialDragButton:Show(originButton, destButton)
 	self:Hide();
 	Dispatcher:RegisterEvent("OnUpdate", self);
 
@@ -61,17 +61,17 @@ function NPE_TutorialDragButton:Show(originButton, destButton)
 		end
 	end
 
-	local originFrame = NPE_TutorialDragOriginFrame;
+	local originFrame = TutorialDragOriginFrame;
 	originFrame:SetParent(originButton.DragButton or originButton);
 	originFrame:SetPoint("CENTER");
 	originFrame:Show();
 
-	local targetFrame = NPE_TutorialDragTargetFrame;
+	local targetFrame = TutorialDragTargetFrame;
 	targetFrame:SetParent(destButton:GetParent());
 	targetFrame:SetPoint("CENTER", destButton);
 	targetFrame:Show();
 
-	local animFrame = NPE_TutorialDragAnimationFrame;
+	local animFrame = TutorialDragAnimationFrame;
 	animFrame.Icon:SetTexture(texture);
 	
 	animFrame:SetParent(UIParent);
@@ -85,8 +85,8 @@ function NPE_TutorialDragButton:Show(originButton, destButton)
 	self:Animate();
 end
 
-function NPE_TutorialDragButton:Animate()
-	local animFrame = NPE_TutorialDragAnimationFrame;
+function TutorialDragButton:Animate()
+	local animFrame = TutorialDragAnimationFrame;
 	animFrame.Anim:Stop();
 
 	self.ox, self.oy = self.originFrame:GetCenter();
@@ -96,7 +96,7 @@ function NPE_TutorialDragButton:Animate()
 	animFrame.Anim:Play();
 end
 
-function NPE_TutorialDragButton:OnUpdate()
+function TutorialDragButton:OnUpdate()
 	local ox, oy = self.originFrame:GetCenter();
 	local tx, ty = self.destFrame:GetCenter();
 
@@ -105,10 +105,10 @@ function NPE_TutorialDragButton:OnUpdate()
 	end
 end
 
-function NPE_TutorialDragButton:Hide()
+function TutorialDragButton:Hide()
 	Dispatcher:UnregisterEvent("OnUpdate", self);
-	NPE_TutorialDragOriginFrame:Hide();
-	NPE_TutorialDragTargetFrame:Hide();
-	NPE_TutorialDragAnimationFrame:Hide();
+	TutorialDragOriginFrame:Hide();
+	TutorialDragTargetFrame:Hide();
+	TutorialDragAnimationFrame:Hide();
 end
 -- ------------------------------------------------------------------------------------------------------------

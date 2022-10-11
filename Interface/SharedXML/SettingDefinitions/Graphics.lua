@@ -5,20 +5,38 @@ local ErrorMessages =
 	VRN_UNSUPPORTED,
 	VRN_GRAPHICS,
 	VRN_DUALCORE,
+	VRN_QUADCORE,
 	VRN_CPUMEM_2GB,
 	VRN_CPUMEM_4GB,
+	VRN_CPUMEM_8GB,
 	VRN_NEEDS_5_0,
 	VRN_NEEDS_6_0,
 	VRN_NEEDS_RT,
 	VRN_NEEDS_DX12,
 	VRN_NEEDS_DX12_VRS2,
+	VRN_NEEDS_APPLE_GPU,
+	VRN_NEEDS_AMD_GPU,
+	VRN_NEEDS_INTEL_GPU,
+	VRN_NEEDS_NVIDIA_GPU,
+	VRN_NEEDS_QUALCOMM_GPU,
 	VRN_NEEDS_MACOS_10_13,
 	VRN_NEEDS_MACOS_10_14,
 	VRN_NEEDS_MACOS_10_15,
 	VRN_NEEDS_MACOS_11_0,
+	VRN_NEEDS_MACOS_12_0,
+	VRN_NEEDS_MACOS_13_0,
 	VRN_NEEDS_WINDOWS_10,
+	VRN_NEEDS_WINDOWS_11,
 	VRN_MACOS_UNSUPPORTED,
 	VRN_WINDOWS_UNSUPPORTED,
+	VRN_DX12_WIN7_UNSUPPORTED,
+	VRN_WINE_UNSUPPORTED,
+	VRN_NVAPI_WINE_UNSUPPORTED,
+	VRN_APPLE_UNSUPPORTED,
+	VRN_AMD_UNSUPPORTED,
+	VRN_INTEL_UNSUPPORTED,
+	VRN_NVIDIA_UNSUPPORTED,
+	VRN_QUALCOMM_UNSUPPORTED,
 	VRN_GPU_DRIVER,
 };
 
@@ -89,7 +107,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	local settings = data.settings;
 
 	local function GetShadowQualityOptions()
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		local variable = settings[1]:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_SHADOW_QUALITY_LOW);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_SHADOW_QUALITY_FAIR);
@@ -102,7 +120,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function GetLiquidDetailOptions()
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		local variable = settings[2]:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_LIQUID_DETAIL_LOW);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_LIQUID_DETAIL_FAIR);
@@ -113,7 +131,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function GetParticleDensityOptions()
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		local variable = settings[3]:GetVariable();
 		local data = AddValidatedSettingOption(container, variable, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
 		data.warning = WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING);
@@ -127,7 +145,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function GetSSAOOptions()
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		local variable = settings[4]:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW);
@@ -139,7 +157,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function GetDepthEffectOptions()
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		local variable = settings[5]:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED, VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_DEPTH_EFFECTS_LOW);
@@ -150,7 +168,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function GetComputeEffectOptions()
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		local variable = settings[6]:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED, VIDEO_OPTIONS_COMPUTE_EFFECTS_DISABLED);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_COMPUTE_EFFECTS_LOW);
@@ -162,7 +180,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function GetOutlineModeOptions()
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		local variable = settings[7]:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_MEDIUM);
@@ -172,7 +190,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function GetTextureResolutionOptions()
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		local variable = settings[8]:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_TEXTURE_DETAIL_LOW);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_TEXTURE_DETAIL_FAIR);
@@ -182,7 +200,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function GetSpellDensityOptions()
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		local variable = settings[9]:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_ONLY_ESSENTIAL, VIDEO_OPTIONS_SPELL_DENSITY_ONLY_ESSENTIAL);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_SOME, VIDEO_OPTIONS_SPELL_DENSITY_SOME);
@@ -195,7 +213,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function GetProjectedTexturesOptions()
-		local container = Settings.CreateDropDownTextContainer();
+		local container = Settings.CreateControlTextContainer();
 		local variable = settings[10]:GetVariable();
 		local data = AddValidatedSettingOption(container, variable, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
 		data.warning = WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING);
@@ -214,7 +232,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 		
 		self.cbrHandles:RegisterCallback(dropDown.Button, SelectionPopoutButtonMixin.Event.OnValueChanged, OnDropDownValueChanged);
 
-		local initTooltip = Settings.CreateDropDownInitTooltip(setting, name, tooltip, options);
+		local initTooltip = Settings.CreateOptionsInitTooltip(setting, name, tooltip, options);
 		Settings.InitSelectionDropDown(dropDown, setting, options, 200, initTooltip);
 
 		local tooltipFunc = GenerateClosure(Settings.InitTooltip, name, tooltip);
@@ -358,10 +376,10 @@ function SettingsAdvancedQualitySectionInitializer:GetExtent()
 	return reservedHeight;
 end
 
-function CreateAdvancedQualitySectionInitializer(name, settings, raid)
+function CreateAdvancedQualitySectionInitializer(name, settings, raid, expanded)
 	local initializer = CreateFromMixins(SettingsAdvancedQualitySectionInitializer, SettingsElementHierarchyMixin);
 	initializer:Init("SettingsAdvancedQualitySectionTemplate");
-	initializer.data = {name=name, settings=settings, raid=raid};
+	initializer.data = {name=name, settings=settings, raid=raid, expanded=expanded};
 	initializer:AddSearchTags(SHADOW_QUALITY, LIQUID_DETAIL, PARTICLE_DENSITY, SSAO_LABEL, DEPTH_EFFECTS, COMPUTE_EFFECTS, 
 		OUTLINE_MODE, TEXTURE_DETAIL, SPELL_DENSITY, PROJECTED_TEXTURES, FARCLIP, ENVIRONMENT_DETAIL, GROUND_CLUTTER);
 	return initializer;
@@ -386,7 +404,7 @@ local function Register()
 		assert(DEFAULT_MONITOR_VALUE == 0);
 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			
 			local name = GetMonitorName(DEFAULT_MONITOR_VALUE + 1) or VIDEO_OPTIONS_MONITOR_PRIMARY;
 			container:Add(DEFAULT_MONITOR_VALUE, name);
@@ -413,7 +431,7 @@ local function Register()
 		local commitValue = setValue;
 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(true, VIDEO_OPTIONS_WINDOWED_FULLSCREEN);
 			container:Add(false, VIDEO_OPTIONS_WINDOWED);
 			return container:GetData();
@@ -446,8 +464,8 @@ local function Register()
 	local resolutionInitializer = nil;
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
-			local monitor = monitorSetting:GetValue() + 1;
+			local container = Settings.CreateControlTextContainer();
+			local monitor = monitorSetting:GetValue();
 			local fullscreen = displayModeSetting:GetValue();
 			
 			if fullscreen then
@@ -464,7 +482,7 @@ local function Register()
 		end
 	
 		local function GetValue()
-			local monitor = monitorSetting:GetValue() + 1;
+			local monitor = monitorSetting:GetValue();
 			local fullscreen = displayModeSetting:GetValue();
 			local size = C_VideoOptions.GetCurrentGameWindowSize(monitor, fullscreen);
 			local value = FormatScreenResolution(size.x, size.y);
@@ -543,7 +561,7 @@ local function Register()
 	-- Vertical Sync
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(false, VIDEO_OPTIONS_DISABLED);
 			container:Add(true, VIDEO_OPTIONS_ENABLED);
 			return container:GetData();
@@ -561,7 +579,7 @@ local function Register()
 	-- Notch Mode
 	if (C_UI.DoesAnyDisplayHaveNotch()) then
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(0, NOTCH_MODE_OVERLAP, VIDEO_OPTIONS_NOTCH_MODE_OVERLAP);
 			container:Add(1, NOTCH_MODE_SHIFT_UI, VIDEO_OPTIONS_NOTCH_MODE_SHIFT_UI);
 			container:Add(2, NOTCH_MODE_WINDOW_BELOW, VIDEO_OPTIONS_NOTCH_MODE_WINDOW_BELOW);
@@ -624,7 +642,7 @@ local function Register()
 			end
 	
 			local function GetOptions()
-				local container = Settings.CreateDropDownTextContainer();
+				local container = Settings.CreateControlTextContainer();
 				container:Add(AA_NONE, VIDEO_OPTIONS_NONE);
 				container:Add(AA_IMAGE, FXAA_CMAA_LABEL);
 				container:Add(AA_MULTISAMPLE, MSAA_LABEL);
@@ -643,7 +661,7 @@ local function Register()
 		-- Image Based
 		do
 			local function GetOptions()
-				local container = Settings.CreateDropDownTextContainer();
+				local container = Settings.CreateControlTextContainer();
 				container:Add(0, VIDEO_OPTIONS_NONE);
 				container:Add(1, ANTIALIASING_FXAA_LOW);
 				container:Add(2, ANTIALIASING_FXAA_HIGH);
@@ -685,7 +703,7 @@ local function Register()
 			end
 	
 			local function GetOptions()
-				local container = Settings.CreateDropDownTextContainer();
+				local container = Settings.CreateControlTextContainer();
 				container:Add(0, VIDEO_OPTIONS_NONE);
 				
 				local function GenerateMSAAOptions(container, ...)
@@ -717,15 +735,23 @@ local function Register()
 
 		-- Multisample Alpha Test
 		do
+			local cvar = "msaaAlphaTest";
 			local normalScale = 1.0;
-			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("msaaAlphaTest", Settings.VarType.Boolean);
+			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Boolean);
 			local commitValue = setValue;
 			local setting = Settings.RegisterProxySetting(category, "PROXY_MSAA_ALPHA", Settings.DefaultVarLocation, 
 				Settings.VarType.Boolean, MULTISAMPLE_ALPHA_TEST, getDefaultValue(), getValue, nil, commitValue);
 			setting:SetCommitFlags(Settings.CommitFlag.Apply);
 			aaSettings.msaaAlpha = setting;
 
-			local initializer = Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST);
+			local function GetOptions()
+				local container = Settings.CreateControlTextContainer();
+				AddValidatedCVarOption(container, cvar, 0, VIDEO_OPTIONS_DISABLED);
+				AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_ENABLED);
+				return container:GetData();
+			end
+
+			local initializer = Settings.CreateCheckBoxWithOptions(category, setting, GetOptions, OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST);
 			local function IsModifiable()
 				local value = aaSetting:GetValue();
 				return value == AA_MULTISAMPLE or value == AA_ADVANCED;
@@ -848,6 +874,7 @@ local function Register()
 		local commitValue = setValue;
 		graphicsSetting = Settings.RegisterProxySetting(category, "PROXY_GRAPHICS_QUALITY", Settings.DefaultVarLocation, 
 			Settings.VarType.Number, GRAPHICS_QUALITY, getDefaultValue(), getValue, nil, commitValue);
+		graphicsSetting:SetCommitFlags(Settings.CommitFlag.Apply);
 		
 		local minValue, maxValue, step = 0, 9, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -856,7 +883,7 @@ local function Register()
 		graphicsInitializer = Settings.CreateSlider(category, graphicsSetting, options, OPTION_TOOLTIP_GRAPHICS_QUALITY);
 	end
 
-	local advInitializer = CreateAdvancedQualitySectionInitializer("Advanced", advSettings);
+	local advInitializer = CreateAdvancedQualitySectionInitializer(ADVANCED_LABEL, advSettings, false, true);
 	layout:AddInitializer(advInitializer);
 
 	local raidSetting = Settings.RegisterCVarSetting(category, RaidSettingsEnabledCVar, Settings.VarType.Boolean, RAID_SETTINGS_ENABLED);
@@ -897,7 +924,7 @@ local function Register()
 
 	Settings.SetOnValueChangedCallback(graphicsSetting:GetVariable(), OnGraphicsQualityChanged);
 
-	local advRaidInitializer = CreateAdvancedQualitySectionInitializer("Raid", advRaidSettings, true);
+	local advRaidInitializer = CreateAdvancedQualitySectionInitializer(RAID_SETTINGS, advRaidSettings, true);
 	advRaidInitializer:SetParentInitializer(raidGraphicsInitializer);
 	layout:AddInitializer(advRaidInitializer);
 
@@ -935,7 +962,7 @@ local function Register()
 		local cvar = "textureFilteringMode";
 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			AddValidatedCVarOption(container, cvar, 0, VIDEO_OPTIONS_BILINEAR);
 			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_TRILINEAR);
 			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_2XANISOTROPIC);
@@ -953,7 +980,7 @@ local function Register()
 		local cvar = "shadowrt";
 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			AddValidatedCVarOption(container, cvar, 0, VIDEO_OPTIONS_DISABLED);
 			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_RT_SHADOW_QUALITY_FAIR);
 			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_RT_SHADOW_QUALITY_MEDIUM);
@@ -969,7 +996,7 @@ local function Register()
 		local cvar = "ResolvedSSAOType";
 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			AddValidatedCVarOption(container, cvar, 0, GX_ADAPTER_AUTO_DETECT);
 			AddValidatedCVarOption(container, cvar, 1, SSAO_TYPE_ASSAO);
 			AddValidatedCVarOption(container, cvar, 2, SSAO_TYPE_CACAO);
@@ -984,7 +1011,7 @@ local function Register()
 		local cvar = "ResampleQuality";
 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(0, RESAMPLE_QUALITY_POINT, VIDEO_OPTIONS_RESAMPLE_QUALITY_POINT);
 			container:Add(1, RESAMPLE_QUALITY_BILINEAR, VIDEO_OPTIONS_RESAMPLE_QUALITY_BILINEAR);
 			container:Add(2, RESAMPLE_QUALITY_BICUBIC, VIDEO_OPTIONS_RESAMPLE_QUALITY_BICUBIC);
@@ -1015,7 +1042,7 @@ local function Register()
 		end
 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			for index, api in ipairs(apis) do
 				container:Add(api, _G["GXAPI_"..strupper(api)]);
 			end
@@ -1033,7 +1060,7 @@ local function Register()
 	-- Physics Interaction
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(0, NO_ENVIRONMENT_INTERACTION);
 			container:Add(1, PLAYER_ONLY_INTERACTION);
 			container:Add(2, PLAYER_AND_NPC_INTERACTION);
@@ -1052,7 +1079,7 @@ local function Register()
 	-- Graphics Card
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add("", GX_ADAPTER_AUTO_DETECT);
 
 			for index, adapter in ipairs(C_VideoOptions.GetGxAdapterInfo()) do

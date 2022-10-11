@@ -143,13 +143,14 @@ local ClassTalents =
 
 			Returns =
 			{
-				{ Name = "result", Type = "bool", Nilable = false },
+				{ Name = "success", Type = "bool", Nilable = false },
+				{ Name = "importError", Type = "string", Nilable = false },
 			},
 		},
 		{
-			Name = "IsConfigReady",
+			Name = "IsConfigPopulated",
 			Type = "Function",
-			Documentation = { "New configs may or may not be ready to load immediately after creation" },
+			Documentation = { "New configs may or may not be populated and ready to load immediately after creation. Avoid calling for configs intentionally created empty." },
 
 			Arguments =
 			{
@@ -158,7 +159,7 @@ local ClassTalents =
 
 			Returns =
 			{
-				{ Name = "isReady", Type = "bool", Nilable = false },
+				{ Name = "isPopulated", Type = "bool", Nilable = false },
 			},
 		},
 		{

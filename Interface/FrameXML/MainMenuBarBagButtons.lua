@@ -115,7 +115,8 @@ function BaseBagSlotButtonMixin:OnEnterInternal()
 				end
 			end
 		else
-			GameTooltip_SetTitle(GameTooltip, EQUIP_CONTAINER);
+			local title = ContainerFrame_IsReagentBag(self:GetBagID()) and EQUIP_CONTAINER_REAGENT or EQUIP_CONTAINER;
+			GameTooltip_SetTitle(GameTooltip, title);
 		end
 
 		GameTooltip:Show();

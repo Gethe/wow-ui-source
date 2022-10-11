@@ -2,15 +2,12 @@
 ..\FrameXML\UI.xsd">
   <Script file="ClassResourceBarTemplate.lua"/>
    		
-	<Frame name="ClassResourceBarTemplate" inherits="ClassPowerBarFrame, HorizontalLayoutFrame" mixin="ClassPowerBar, ClassResourceBarMixin" virtual="true">
-		<Size x="126" y="18"/>
+	<Frame name="ClassResourceBarTemplate" inherits="ClassPowerBarFrame, HorizontalLayoutFrame, PlayerFrameBottomManagedFrameTemplate" mixin="ClassPowerBar, ClassResourceBarMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="maxUsablePoints" value="5" type="number"/>
 			<KeyValue key="powerType" value="Enum.PowerType.None" type="global"/>
 			<KeyValue key="resourceBarMixin" value="ClassPowerBar" type="global"/>
+			<KeyValue key="layoutIndex" value="1" type="number"/>
 		</KeyValues>
-		<Anchors>
-			<Anchor point="TOP" relativePoint="BOTTOM" x="32" y="30"/>
-		</Anchors>
 	</Frame>	
 </Ui>

@@ -652,6 +652,21 @@ local Map =
 			},
 		},
 		{
+			Name = "UiMapHighlightInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "fileDataID", Type = "number", Nilable = false },
+				{ Name = "atlasID", Type = "string", Nilable = false },
+				{ Name = "texturePercentageX", Type = "number", Nilable = false },
+				{ Name = "texturePercentageY", Type = "number", Nilable = false },
+				{ Name = "textureX", Type = "number", Nilable = false },
+				{ Name = "textureY", Type = "number", Nilable = false },
+				{ Name = "scrollChildX", Type = "number", Nilable = false },
+				{ Name = "scrollChildY", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UiMapLayerInfo",
 			Type = "Structure",
 			Fields =

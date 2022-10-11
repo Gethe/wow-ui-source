@@ -5,6 +5,9 @@ function ClassTalentLoadoutImportDialogMixin:OnLoad()
 	self.AcceptButton:SetOnClickHandler(GenerateClosure(self.OnAccept, self));
 	self.CancelButton:SetOnClickHandler(GenerateClosure(self.OnCancel, self));
 	ClassTalentLoadoutDialogMixin.OnLoad(self);
+
+	self.NameControl:GetEditBox():SetAutoFocus(false);
+	self.ImportControl:GetEditBox():SetAutoFocus(true);
 end
 
 function ClassTalentLoadoutImportDialogMixin:OnHide()
@@ -46,7 +49,6 @@ ClassTalentLoadoutImportDialogImportControlMixin = CreateFromMixins(ClassTalentL
 
 function ClassTalentLoadoutImportDialogImportControlMixin:OnShow()
 	ClassTalentLoadoutDialogInputControlMixin.OnShow(self);
-	self.InputContainer.EditBox:SetFocus();
 end
 
 function ClassTalentLoadoutImportDialogImportControlMixin:OnEnterPressed()

@@ -70,6 +70,9 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 	local rankText = GenerateRankText(professionInfo.professionName, professionInfo.skillLevel, professionInfo.maxSkillLevel, professionInfo.skillModifier);
 	self.Rank.Text:SetText(rankText);
 
+	self.Fill:SetAtlas("Skillbar_Fill_Flipbook_DefaultBlue", TextureKitConstants.IgnoreAtlasSize);
+	-- TODO:: Re-activate specialized fills
+	--[[
 	local professionChanged = self.lastProfession ~= professionInfo.profession;
 	if professionChanged then
 		self.lastProfession = professionInfo.profession;
@@ -92,6 +95,7 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 		self.BarAnimation.Flipbook:SetFlipBookFrames(flipBookNumRows * self.BarAnimation.Flipbook:GetFlipBookColumns());
 		self.BarAnimation.Flipbook:SetDuration(duration);
 	end
+	--]]
 
 	local newRatio = 0;
 	if professionInfo.maxSkillLevel > 0 then
@@ -100,9 +104,12 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 
 	local sameRatio = self.ratio == newRatio;
 
+	-- TODO:: Re-activate animation
+	--[[
 	if professionChanged or not sameRatio then
 		self.BarAnimation:Restart();
 	end
+	--]]
 
 	if sameRatio then
 		return;

@@ -21,6 +21,7 @@
 		systemPriority = 0,						-- if a system and a priority is specified, higher priority helptips will close another helptip in that system
 		extraRightMarginPadding = 0,			--  extra padding on the right side of the helptip
 		acknowledgeOnHide = false,				-- whether to treat a hide as an acknowledge
+		handlesGlobalMouseEventCallback	= nil,	-- if a helptip is tied to a drop down set a global mouse callback on the helptip info
 	}
 ]]--
 
@@ -504,6 +505,7 @@ function HelpTipTemplateMixin:Layout()
 		if buttonInfo.text then
 			self[buttonInfo.parentKey]:SetText(buttonInfo.text);
 		end
+		self[buttonInfo.parentKey].HandlesGlobalMouseEvent = self.info.handlesGlobalMouseEventCallback;
 	end
 	-- set height based on the text
 	self:ApplyText();

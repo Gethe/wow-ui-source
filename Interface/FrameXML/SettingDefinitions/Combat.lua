@@ -6,13 +6,33 @@ local function Register()
 
 	-- Personal Resource Display
 	do
-		Settings.SetupCVarCheckBox(category, "nameplateShowSelf", DISPLAY_PERSONAL_RESOURCE, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE);
+		local nameplateSetting, nameplateInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowSelf", DISPLAY_PERSONAL_RESOURCE, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE);
+
+		local function IsModifiable()
+			return nameplateSetting:GetValue();
+		end
+
+		-- Hide Health and Power Bars
+		local hideSetting, hideInitializer = Settings.SetupCVarCheckBox(category, "nameplateHideHealthAndPower", NAMEPLATE_HIDE_HEALTH_AND_POWER, OPTION_TOOLTIP_NAMEPLATE_HIDE_HEALTH_AND_POWER);
+		hideInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
+
+		-- Show Special Resources
+		local resourceSetting, resourceInitializer = Settings.SetupCVarCheckBox(category, "nameplateResourceOnTarget", DISPLAY_PERSONAL_RESOURCE_ON_ENEMY, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE_ON_ENEMY);
+		resourceInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
+
+		-- Show Personal Cooldowns
+		local cooldownSetting, cooldownInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowPersonalCooldowns", DISPLAY_PERSONAL_COOLDOWNS, OPTION_TOOLTIP_DISPLAY_PERSONAL_COOLDOWNS);
+		cooldownInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
+
+		-- Show Friendly Buffs
+		local buffsSetting, buffsInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowFriendlyBuffs", DISPLAY_PERSONAL_FRIENDLY_BUFFS, OPTION_TOOLTIP_DISPLAY_PERSONAL_FRIENDLY_BUFFS);
+		buffsInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
 	end
 
 	-- Raid Self Highlight
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(0, SELF_HIGHLIGHT_MODE_CIRCLE);
 			container:Add(2, SELF_HIGHLIGHT_MODE_OUTLINE);
 			container:Add(1, SELF_HIGHLIGHT_MODE_CIRCLE_AND_OUTLINE);
@@ -55,6 +75,7 @@ local function Register()
 		local initializer = CreateSettingsCheckBoxDropDownInitializer(
 			cbSetting, ENABLE_MOUSEOVER_CAST, OPTION_TOOLTIP_ENABLE_MOUSEOVER_CAST,
 			dropDownSetting, options, MOUSEOVER_CAST_KEY, OPTION_TOOLTIP_MOUSEOVER_CAST_KEY_TEXT);
+		initializer:AddSearchTags(ENABLE_MOUSEOVER_CAST);
 		layout:AddInitializer(initializer);
 	end
 
@@ -102,7 +123,7 @@ local function Register()
 	-- Enable Action Targeting
 	do
 		local function GetValue()
-			return GetCVar("softTargetEnemy") == Enum.SoftTargetEnableFlags.Any;
+			return tonumber(GetCVar("softTargetEnemy")) == Enum.SoftTargetEnableFlags.Any;
 		end
 		
 		local function SetValue(value)

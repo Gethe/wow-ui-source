@@ -309,12 +309,14 @@
 							<Anchor point="TOPLEFT" relativeTo="InspectMainHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
 						</Anchors>
 					</ItemButton>
-					<Button parentKey="InspectTalents" mixin="InspectPaperDollFrameTalentsButtonMixin" inherits="UIPanelButtonTemplate" text="INSPECT_TALENTS_BUTTON">
+					<Button parentKey="InspectTalents" mixin="InspectPaperDollFrameTalentsButtonMixin" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="INSPECT_TALENTS_BUTTON">
 						<Size x="102" y="20"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-10" y="11"/>
 						</Anchors>
 						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
 							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>

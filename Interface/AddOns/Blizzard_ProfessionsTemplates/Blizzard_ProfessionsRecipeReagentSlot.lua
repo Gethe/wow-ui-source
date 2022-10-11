@@ -47,7 +47,7 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 		local reagentType = reagentSlotSchematic.reagentType;
 		if reagentType == Enum.CraftingReagentType.Basic then
 			if Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
-				self.Button.noQualityOverlay = true;
+				self.Button.noProfessionQualityOverlay = true;
 			end
 
 			local reagent = reagentSlotSchematic.reagents[1];
@@ -90,7 +90,13 @@ end
 function ProfessionsReagentSlotMixin:UpdateAllocationText()
 	local reagentSlotSchematic = self:GetReagentSlotSchematic();
 	if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
+		-- First try only allocations
 		local foundMultiple, foundIndex = self:GetAllocationDetails();
+
+		-- Then include inventory if necessary
+		if not foundMultiple and not foundIndex then
+			foundMultiple, foundIndex = self:GetInventoryDetails();
+		end
 
 		local quantity = 0;
 		if foundMultiple then
@@ -98,7 +104,9 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 		else
 			if foundIndex then
 				local reagent = reagentSlotSchematic.reagents[foundIndex];
-				quantity = ItemUtil.GetCraftingReagentCount(reagent.itemID);
+				quantity = Professions.GetReagentQuantityInPossession(reagent);
+			else
+				quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
 			end
 		end
 
@@ -124,9 +132,33 @@ function ProfessionsReagentSlotMixin:GetAllocationDetails()
 	return foundMultiple, foundIndex;
 end
 
+function ProfessionsReagentSlotMixin:GetInventoryDetails()
+	local reagentSlotSchematic = self:GetReagentSlotSchematic();
+	local foundMultiple = nil;
+	local foundIndex = nil;
+	for index, reagent in ipairs(reagentSlotSchematic.reagents) do
+		local quantity = Professions.GetReagentQuantityInPossession(reagent);
+		if quantity > 0 then
+			if foundIndex then
+				foundMultiple = true;
+			end
+			foundIndex = index;
+		end
+	end
+	return foundMultiple, foundIndex;
+end
+
 function ProfessionsReagentSlotMixin:UpdateQualityOverlay()
-	if Professions.GetReagentInputMode(self:GetReagentSlotSchematic()) == Professions.ReagentInputMode.Quality then
+	local reagentSlotSchematic = self:GetReagentSlotSchematic();
+	if Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
+		-- First try only allocations
 		local foundMultiple, foundIndex = self:GetAllocationDetails();
+
+		-- Then include inventory if necessary
+		if not foundMultiple and not foundIndex then
+			foundMultiple, foundIndex = self:GetInventoryDetails();
+		end
+
 		if foundMultiple then
 			self.Button.QualityOverlay:SetAtlas("Professions-Icon-Quality-Mixed-Inv", TextureKitConstants.UseAtlasSize);
 		elseif foundIndex then

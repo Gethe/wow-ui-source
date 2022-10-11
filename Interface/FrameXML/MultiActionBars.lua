@@ -39,9 +39,12 @@ end
 
 function MultiActionBar_Update ()
 	UpdateMultiActionBar(MultiBarBottomLeft, MultiBar1_IsVisible(), BOTTOMLEFT_ACTIONBAR_PAGE);
-	UpdateMultiActionBar(MultiBarBottomRight, MultiBar1_IsVisible() and MultiBar2_IsVisible(), BOTTOMRIGHT_ACTIONBAR_PAGE);
+	UpdateMultiActionBar(MultiBarBottomRight, MultiBar2_IsVisible(), BOTTOMRIGHT_ACTIONBAR_PAGE);
 	UpdateMultiActionBar(MultiBarRight, MultiBar3_IsVisible(), RIGHT_ACTIONBAR_PAGE);
-	UpdateMultiActionBar(MultiBarLeft, MultiBar3_IsVisible() and MultiBar4_IsVisible(), LEFT_ACTIONBAR_PAGE);
+	UpdateMultiActionBar(MultiBarLeft, MultiBar4_IsVisible(), LEFT_ACTIONBAR_PAGE);
+	UpdateMultiActionBar(MultiBar5, MultiBar5_IsVisible(), MULTIBAR_5_ACTIONBAR_PAGE);
+	UpdateMultiActionBar(MultiBar6, MultiBar6_IsVisible(), MULTIBAR_6_ACTIONBAR_PAGE);
+	UpdateMultiActionBar(MultiBar7, MultiBar7_IsVisible(), MULTIBAR_7_ACTIONBAR_PAGE);
 end
 
 function MultiActionBar_ShowAllGrids (reason)
@@ -49,6 +52,9 @@ function MultiActionBar_ShowAllGrids (reason)
 	MultiBarBottomRight:SetShowGrid(true, reason);
 	MultiBarRight:SetShowGrid(true, reason);
 	MultiBarLeft:SetShowGrid(true, reason);
+	MultiBar5:SetShowGrid(true, reason);
+	MultiBar6:SetShowGrid(true, reason);
+	MultiBar7:SetShowGrid(true, reason);
 end
 
 function MultiActionBar_HideAllGrids (reason)
@@ -56,6 +62,9 @@ function MultiActionBar_HideAllGrids (reason)
 	MultiBarBottomRight:SetShowGrid(false, reason);
 	MultiBarRight:SetShowGrid(false, reason);
 	MultiBarLeft:SetShowGrid(false, reason);
+	MultiBar5:SetShowGrid(false, reason);
+	MultiBar6:SetShowGrid(false, reason);
+	MultiBar7:SetShowGrid(false, reason);
 end
 
 function MultiActionBar_SetAllQuickKeybindModeEffectsShown(showEffects)
@@ -63,6 +72,9 @@ function MultiActionBar_SetAllQuickKeybindModeEffectsShown(showEffects)
 	MultiBarBottomRight.QuickKeybindGlow:SetShown(showEffects);
 	MultiBarLeft.QuickKeybindGlow:SetShown(showEffects);
 	MultiBarRight.QuickKeybindGlow:SetShown(showEffects);
+	MultiBar5.QuickKeybindGlow:SetShown(showEffects);
+	MultiBar6.QuickKeybindGlow:SetShown(showEffects);
+	MultiBar7.QuickKeybindGlow:SetShown(showEffects);
 end
 
 function Multibar_EmptyFunc (show)
@@ -74,7 +86,7 @@ function MultiBar1_IsVisible()
 end
 
 function MultiBar2_IsVisible()
-	return MultiBar1_IsVisible() and Settings.GetValue("PROXY_SHOW_ACTIONBAR_3");
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_3");
 end
 
 function MultiBar3_IsVisible()
@@ -82,5 +94,17 @@ function MultiBar3_IsVisible()
 end
 
 function MultiBar4_IsVisible()
-	return MultiBar3_IsVisible() and Settings.GetValue("PROXY_SHOW_ACTIONBAR_5");
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_5");
+end
+
+function MultiBar5_IsVisible()
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_6");
+end
+
+function MultiBar6_IsVisible()
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_7");
+end
+
+function MultiBar7_IsVisible()
+	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_8");
 end

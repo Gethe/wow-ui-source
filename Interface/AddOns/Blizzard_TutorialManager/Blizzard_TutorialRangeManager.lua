@@ -17,16 +17,16 @@ function WatchData:initialize(itemOrList, watchType, range, callback, mode, ques
 	self.Range = range;
 	self.Type = watchType;
 	self.Callback = callback;
-	self.Mode = mode or NPE_RangeManager.Mode.Any;
+	self.Mode = mode or TutorialRangeManager.Mode.Any;
 	self.Quest = quest;
 	self.IsComplete = false;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function WatchData:_GetFunc()
-	if (self.Type == NPE_RangeManager.Type.Unit) then
+	if (self.Type == TutorialRangeManager.Type.Unit) then
 		return ClosestUnitPosition;
-	elseif (self.Type == NPE_RangeManager.Type.Object) then
+	elseif (self.Type == TutorialRangeManager.Type.Object) then
 		return ClosestGameObjectPosition;
 	end
 end
@@ -44,7 +44,7 @@ function WatchData:_CheckIsComplete()
 		end
 	end
 
-	if (self.Mode == NPE_RangeManager.Mode.Any) then
+	if (self.Mode == TutorialRangeManager.Mode.Any) then
 		return hasTrue;
 	else
 		return not hasFalse;
@@ -80,27 +80,27 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 -- Range Manager
 -- ------------------------------------------------------------------------------------------------------------
-NPE_RangeManager = {};
+TutorialRangeManager = {};
 
-NPE_RangeManager.Type = {
+TutorialRangeManager.Type = {
 	Unit = "Unit",
 	Object = "Object",
 }
 
-NPE_RangeManager.Mode = {
+TutorialRangeManager.Mode = {
 	Any = "Any",
 	All = "All",
 }
 
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_RangeManager:Initialize()
+function TutorialRangeManager:Initialize()
 	self.WatchList = {};
 	self.Ticker = nil;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_RangeManager:_Check()
+function TutorialRangeManager:_Check()
 	for i = #self.WatchList, 1, -1 do
 		local watchData = self.WatchList[i];
 
@@ -114,7 +114,7 @@ function NPE_RangeManager:_Check()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_RangeManager:_Update()
+function TutorialRangeManager:_Update()
 	if (next(self.WatchList)) then
 		if (not self.Ticker) then
 			self.Ticker = C_Timer.NewTicker(1, function() self:_Check() end);
@@ -128,7 +128,7 @@ function NPE_RangeManager:_Update()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_RangeManager:StartWatching(itemOrList, watchType, range, completeCallback, mode, quest)
+function TutorialRangeManager:StartWatching(itemOrList, watchType, range, completeCallback, mode, quest)
 	local watchData = WatchData:new(itemOrList, watchType, range, completeCallback, mode, quest);
 
 	table.insert(self.WatchList, watchData);
@@ -137,10 +137,10 @@ function NPE_RangeManager:StartWatching(itemOrList, watchType, range, completeCa
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_RangeManager:Shutdown()
+function TutorialRangeManager:Shutdown()
 	self.WatchList = {};
 	self:_Update();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-NPE_RangeManager:Initialize();
+TutorialRangeManager:Initialize();

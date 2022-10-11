@@ -23,6 +23,10 @@ function MawBuffsContainerMixin:OnEvent(event, ...)
 	end
 end
 
+function MawBuffsContainerMixin:OnShow()
+	self:UpdateAlignment();
+end
+
 function MawBuffsContainerMixin:Update()
 	if not IsInJailersTower() and not self.fromFrameManager then
 		self:Hide();
@@ -56,7 +60,32 @@ function MawBuffsContainerMixin:Update()
 	else
 		self:Enable();
 	end
-	self:UpdateHelptip(); 
+	self:UpdateHelptip();
+end
+
+function MawBuffsContainerMixin:UpdateAlignment()
+	self:ClearAllPoints();
+	self.List:ClearAllPoints();
+
+	if ObjectiveTrackerFrame and ObjectiveTrackerFrame.isOnLeftSideOfScreen then
+		-- If tracker is on left side of screen make stuff face right
+		self:SetPoint("TOPLEFT", self:GetParent(), "TOPLEFT", 0, 0);
+		self.List:SetPoint("TOPLEFT", self, "TOPRIGHT", -15, 1);
+
+		self.NormalTexture:SetTexCoord(1, 0, 1, 0);
+		self.PushedTexture:SetTexCoord(1, 0, 1, 0);
+		self.HighlightTexture:SetTexCoord(1, 0, 1, 0);
+		self.DisabledTexture:SetTexCoord(1, 0, 1, 0);
+	else
+		-- If tracker is on right side of screen make stuff face left
+		self:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", 0, 0);
+		self.List:SetPoint("TOPRIGHT", self, "TOPLEFT", 15, 1);
+
+		self.NormalTexture:SetTexCoord(0, 1, 1, 0);
+		self.PushedTexture:SetTexCoord(0, 1, 1, 0);
+		self.HighlightTexture:SetTexCoord(0, 1, 1, 0);
+		self.DisabledTexture:SetTexCoord(0, 1, 1, 0);
+	end
 end
 
 function MawBuffsContainerMixin:UpdateHelptip()
@@ -113,7 +142,7 @@ function MawBuffsListMixin:OnShow()
 	self.button:SetHighlightAtlas("jailerstower-animapowerbutton-pressed-highlight");
 	self.button:SetWidth(268);
 	self.button:SetButtonState("NORMAL");
-	self.button:SetPushedTextOffset(8.75, -1);
+	self.button:SetPushedTextOffset((ObjectiveTrackerFrame and ObjectiveTrackerFrame.isOnLeftSideOfScreen) and -8.75 or 8.75, -1);
 	self.button:SetButtonState("PUSHED", true);
 end
 
@@ -122,7 +151,7 @@ function MawBuffsListMixin:OnHide()
 	self.button:SetHighlightAtlas("jailerstower-animapowerbutton-highlight");
 	self.button:SetWidth(253);
 	self.button:SetButtonState("NORMAL", false);
-	self.button:SetPushedTextOffset(1.25, -1);
+	self.button:SetPushedTextOffset((ObjectiveTrackerFrame and ObjectiveTrackerFrame.isOnLeftSideOfScreen) and -1.25 or 1.25, -1);
 end
 
 function MawBuffsListMixin:HighlightBuffAndShow(spellID, maxStackCount)
@@ -239,6 +268,6 @@ end
 MawBuffsBelowMinimapFrameMixin = { };
 function MawBuffsBelowMinimapFrameMixin:OnShow()
 	self.Container.fromFrameManager = true;
-	self.Container:Update(); 
+	self.Container:Update();
 	UIParentManagedFrameMixin.OnShow(self);
-end 
+end

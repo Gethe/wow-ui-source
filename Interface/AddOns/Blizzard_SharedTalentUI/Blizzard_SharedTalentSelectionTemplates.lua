@@ -153,18 +153,34 @@ function TalentSelectionChoiceMixin:OnClick(button)
 
 	local selectionChoiceFrame = self:GetParent();
 	if button == "LeftButton" then
-		if not self:IsChoiceAvailable() then
-			return;
+		if IsShiftKeyDown() and self:CanCascadeRepurchaseRanks() then
+			self:GetBaseButton():CascadeRepurchaseRanks();
+			self:UpdateMouseOverInfo();
+		elseif IsModifiedClick("CHATLINK") then
+			local spellLink = GetSpellLink(self:GetSpellID());
+			ChatEdit_InsertLink(spellLink);
+		else
+			if not self:IsChoiceAvailable() then
+				return;
+			end
+	
+			if self.isCurrentSelection then
+				selectionChoiceFrame:Hide();
+				return;
+			end
+	
+			selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID(), self:GetDefinitionInfo());
 		end
-
-		if self.isCurrentSelection then
-			selectionChoiceFrame:Hide();
-			return;
-		end
-
-		selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID(), self:GetDefinitionInfo());
 	else
-		selectionChoiceFrame:SetSelectedEntryID(nil);
+		if self:IsGhosted() then
+			self:GetBaseButton():ClearCascadeRepurchaseHistory();
+		end
+
+		local baseButton = self:GetBaseButton();
+		local nodeInfo = baseButton and baseButton:GetNodeInfo() or nil;
+		if nodeInfo and nodeInfo.canRefundRank then
+			selectionChoiceFrame:SetSelectedEntryID(nil);
+		end
 	end
 end
 
@@ -194,13 +210,24 @@ function TalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
 	-- Overrides TalentDisplayMixin.
 
 	if self:IsChoiceAvailable() then
-		GameTooltip_AddBlankLineToTooltip(tooltip);
-
 		if self.isCurrentSelection then
-			GameTooltip_AddDisabledLine(tooltip, TALENT_BUTTON_TOOLTIP_REFUND_INSTRUCTIONS);
+			local baseButton = self:GetBaseButton();
+			local nodeInfo = baseButton and baseButton:GetNodeInfo() or nil;
+			if nodeInfo and nodeInfo.canRefundRank then
+				GameTooltip_AddBlankLineToTooltip(tooltip);
+				GameTooltip_AddDisabledLine(tooltip, TALENT_BUTTON_TOOLTIP_REFUND_INSTRUCTIONS);
+			end
 		else
+			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_AddInstructionLine(tooltip, TALENT_BUTTON_TOOLTIP_PURCHASE_INSTRUCTIONS);
 		end
+	end
+
+	if self:CanCascadeRepurchaseRanks() then
+		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
+	elseif self:IsGhosted() then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_CLEAR_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
 	end
 end
 
@@ -300,7 +327,11 @@ function TalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectChoice,
 	self.canSelectChoice = canSelectChoice;
 	self.isCurrentSelection = isCurrentSelection;
 	self.selectionIndex = selectionIndex;
-	self:UpdateVisualState();
+
+	-- TODO: need a better way to handle additional visual states on top of base state
+	self.isGhosted = self:IsGhosted();
+
+	self:FullUpdate();
 end
 
 function TalentSelectionChoiceMixin:CanSelectChoice()
@@ -331,6 +362,24 @@ function TalentSelectionChoiceMixin:UpdateSpendText()
 	else
 		TalentButtonUtil.SetSpendText(self, "");
 	end
+end
+
+function TalentSelectionChoiceMixin:IsCascadeRepurchasable()
+	local nodeInfo = self:GetNodeInfo();
+	return nodeInfo and nodeInfo.isCascadeRepurchasable and nodeInfo.cascadeRepurchaseEntryID == self:GetEntryID() and self:CanAffordChoice();
+end
+
+function TalentSelectionChoiceMixin:CanCascadeRepurchaseRanks()
+	local baseSelectButton = self:GetBaseButton();
+
+	local isLocked = not baseSelectButton or baseSelectButton:IsLocked();
+	local isGated = not baseSelectButton or baseSelectButton:IsGated();
+
+	return not isLocked and not isGated and self:IsCascadeRepurchasable();
+end
+
+function TalentSelectionChoiceMixin:IsGhosted()
+	return not self:GetNodeInfo() or (self:IsCascadeRepurchasable() and not self:IsChoiceAvailable());
 end
 
 function TalentSelectionChoiceMixin:GetSpellID()

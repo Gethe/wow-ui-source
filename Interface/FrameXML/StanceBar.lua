@@ -25,7 +25,11 @@ function StanceBarMixin:Update()
 		self:UpdateState();
 	end
 
-	self:SetShown(self:ShouldShow());
+	-- Don't update shown if action bars are busy
+	-- This is often related to vehicle bars or pet battles
+	if not ActionBarBusy() then
+		self:SetShown(self:ShouldShow());
+	end
 end
 
 function StanceBarMixin:UpdateState()

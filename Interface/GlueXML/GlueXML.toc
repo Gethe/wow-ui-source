@@ -4,6 +4,7 @@
 ## add C namespace augmentations here
 
 ##DebugHook.lua
+..\SharedXML\middleclass.lua
 ..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
 ..\SharedXML\TableUtil.lua

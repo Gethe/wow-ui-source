@@ -99,10 +99,10 @@ function StackSplitMixin:UpdateStackText()
 end 
 
 function StackSplitMixin:OnChar(text)
-	if ( self.isMultiStack and self.maxStack < self.minSplit * text ) then 
-		return; 
-	elseif ( text < "0" or text > "9") then
+	if ( text < "0" or text > "9") then
 		return;
+	elseif ( self.isMultiStack and self.maxStack < self.minSplit * text ) then 
+		return; 
 	end
 
 	if ( self.typing == 0 ) then

@@ -1238,7 +1238,7 @@ do
 		local displayOnlyDispellableDebuffs = frame.optionTable.displayOnlyDispellableDebuffs;
 		local ignoreBuffs = not frame.buffFrames or not frame.optionTable.displayBuffs or frame.maxBuffs == 0;
 		local ignoreDebuffs = not frame.debuffFrames or not frame.optionTable.displayDebuffs or frame.maxDebuffs == 0;
-		local ignoreDispelDebuffs = not frame.dispelDebuffFrames or not frame.optionTable.displayDispelDebuffs or frame.maxDispelDebuffs == 0;
+		local ignoreDispelDebuffs = ignoreDebuffs or not frame.dispelDebuffFrames or not frame.optionTable.displayDispelDebuffs or frame.maxDispelDebuffs == 0;
 
 		local debuffsChanged = false;
 		local buffsChanged = false;

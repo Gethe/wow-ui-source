@@ -215,6 +215,13 @@
 				<NormalTexture atlas="StreamCinematic-Shadowlands-Up" />
 				<PushedTexture atlas="StreamCinematic-Shadowlands-Down" />
 			</Button>
+			<Button name="CinematicsButton10" parentArray="CinematicsButtons" inherits="CinematicsButtonTemplate" text="EXPANSION_NAME9" hidden="true" id="10">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CinematicsButton9" relativePoint="BOTTOM" x="0" y="-8"/>
+				</Anchors>
+				<NormalTexture atlas="StreamCinematic-Dragonflight-Up" />
+				<PushedTexture atlas="StreamCinematic-Dragonflight-Down" />
+			</Button>
 			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>

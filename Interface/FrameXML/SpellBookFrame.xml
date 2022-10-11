@@ -357,6 +357,29 @@
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentIconTexture" setAllPoints="true" parentKey="IconTexture"/>
+
+				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="LEFT" parentKey="spellString">
+					<Size x="100" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="7"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubSpellName" inherits="NewSubSpellFont" justifyH="LEFT" justifyV="TOP" parentKey="subSpellString">
+					<Size x="95" y="28"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentNameFrame" file="Interface\Spellbook\ProfessionsBook">
+					<Size x="108" y="41"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="1" y="0"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="0.8"/>
+					<TexCoords left="0.00390625" right="0.42578125" top="0.14843750" bottom="0.46875000"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -401,7 +424,7 @@
 		</Scripts>
 	</Frame>
 	<StatusBar name="ProfessionStatusBarTemplate" virtual="true">
-		<Size x="180" y="16"/>
+		<Size x="95" y="16"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString name="$parentRank" inherits="TextStatusBarText" parentKey ="rankText" text="0/0">
@@ -476,7 +499,13 @@
 				<FontString name="$parentProfessionName" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="professionName" text="TRADE_SKILLS">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"  x="100" y="-30"/>
+						<Anchor point="TOPLEFT"  x="100" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSpecialization" inherits="GameFontNormal" justifyH="LEFT" parentKey="specialization" text="">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentMissing" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="missingHeader" text="PROFESSIONS_FIRST_PROFESSION">
@@ -496,7 +525,7 @@
 				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="rank" text="TRADE_SKILLS">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-33"/>
 					</Anchors>
 				</FontString>
 
@@ -522,14 +551,14 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton parentKey="SpellButton2" inherits="ProfessionButtonTemplate" id="2">
+			<CheckButton name="$parentSpellButtonTop" inherits="ProfessionButtonTemplate" parentKey="SpellButton2" id="2">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="0" y="-6" />
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-109" y="-3" />
 				</Anchors>
 			</CheckButton>
-			<CheckButton parentKey="SpellButton1" inherits="ProfessionButtonTemplate" id="1">
+			<CheckButton name="$parentSpellButtonBottom" inherits="ProfessionButtonTemplate" parentKey="SpellButton1" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.SpellButton2" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentSpellButtonTop" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 			</CheckButton>
 			<StatusBar name="$parentStatusBar" inherits="ProfessionStatusBarTemplate" parentKey="statusBar">
@@ -537,9 +566,9 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5"/>
 				</Anchors>
 			</StatusBar>
-			<Button parentKey="UnlearnButton" inherits="ResizeLayoutFrame" mixin="ProfessionsUnlearnButtonMixin">
+			<Button parentKey="UnlearnButton" inherits="ResizeLayoutFrame" mixin="ProfessionsUnlearnButtonMixin" scale=".7">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.professionName" relativePoint="RIGHT" x="5" y="0"/>
+					<Anchor point="RIGHT" relativeTo="$parentStatusBar" relativePoint="LEFT" x="-30" y="1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -569,14 +598,14 @@
 	<Frame name="SecondaryProfessionTemplate" virtual="true">
 		<Size x="437" y="46"/>
 		<Frames>
-			<CheckButton parentKey="SpellButton2" inherits="ProfessionButtonTemplate" id="2">
+			<CheckButton name="$parentSpellButtonRight" inherits="ProfessionButtonTemplate" parentKey="SpellButton1" id="1">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="0" y="0" />
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-109" y="-3"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton parentKey="SpellButton1" inherits="ProfessionButtonTemplate" id="1">
+			<CheckButton name="$parentSpellButtonLeft" inherits="ProfessionButtonTemplate" parentKey="SpellButton2" id="2">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.SpellButton2" relativePoint="TOPLEFT"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentSpellButtonRight" relativePoint="TOPLEFT" x="-109"/>
 				</Anchors>
 			</CheckButton>
 			<StatusBar name="$parentStatusBar" inherits="ProfessionStatusBarTemplate" parentKey="statusBar">

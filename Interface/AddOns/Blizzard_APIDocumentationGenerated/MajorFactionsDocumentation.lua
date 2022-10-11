@@ -222,7 +222,6 @@ local MajorFactions =
 				{ Name = "renownLevelThreshold", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "celebrationSoundKit", Type = "number", Nilable = false },
-				{ Name = "upgradeTabSelectSoundKitID", Type = "number", Nilable = false },
 				{ Name = "renownFanfareSoundKitID", Type = "number", Nilable = false },
 			},
 		},

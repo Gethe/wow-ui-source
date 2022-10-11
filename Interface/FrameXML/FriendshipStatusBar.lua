@@ -38,7 +38,8 @@ function NPCFriendshipStatusBarMixin:GetColorIndex(currentRank, numRanks, numCol
 end
 
 function NPCFriendshipStatusBarMixin:OnLoad()
-	self:SetStatusBarTexture(1, 1, 1, "BORDER", -1);
+	self:SetColorFill(1, 1, 1);
+	self.Bar:SetDrawLayer("BORDER", -1);
 end 
 
 function NPCFriendshipStatusBarMixin:Update(factionID --[[ = nil ]])
@@ -58,7 +59,7 @@ function NPCFriendshipStatusBarMixin:Update(factionID --[[ = nil ]])
 		local numColors = 4;
 		local colorIndex;
 		if (not reputationInfo.overrideColor) then
-			local rankInfo = GetFriendshipReputationRanks(factionID);
+			local rankInfo = C_GossipInfo.GetFriendshipReputationRanks(reputationInfo.friendshipFactionID);
 
 			colorIndex = self:GetColorIndex(rankInfo.currentLevel, rankInfo.maxLevel, numColors);
 			if (reversedColor) then
@@ -79,5 +80,5 @@ function NPCFriendshipStatusBarMixin:Update(factionID --[[ = nil ]])
 end
 
 function NPCFriendshipStatusBarMixin:OnEnter()
-	ShowFriendshipReputationTooltip(self.friendshipFactionID, self, "ANCHOR_BOTTOMRIGHT");
+	ReputationBarMixin.ShowFriendshipReputationTooltip(self, self.friendshipFactionID, self, "ANCHOR_BOTTOMRIGHT");
 end

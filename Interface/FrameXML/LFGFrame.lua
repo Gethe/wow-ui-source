@@ -1780,6 +1780,13 @@ function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
 		return false;
 	end
 
+	local isAvailableForAll, isAvailableForPlayer hideIfNotJoinable = IsLFGDungeonJoinable(dungeonID);
+	if (isAvailableForPlayer or not hideIfNotJoinable) then
+		return true;
+	else
+		return false;
+	end
+
 	return true;
 end
 

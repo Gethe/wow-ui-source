@@ -25,6 +25,14 @@ function ToggleCharacter (tab, onlyShow)
 	end
 end
 
+function CharacterFrame_ToggleTokenFrame()
+	if C_CurrencyInfo.GetCurrencyListSize() <= 0 then
+		return;
+	end
+
+	ToggleCharacter("TokenFrame");
+end
+
 function CharacterFrame_ShowSubFrame (frameName)
 	for index, value in pairs(CHARACTERFRAME_SUBFRAMES) do
 		if ( value ~= frameName ) then
@@ -46,7 +54,7 @@ function CharacterFrameTab_OnClick (self, button)
 	elseif ( name == "CharacterFrameTab2" ) then
 		ToggleCharacter("ReputationFrame");
 	elseif ( name == "CharacterFrameTab3" ) then
-		ToggleCharacter("TokenFrame");
+		CharacterFrame_ToggleTokenFrame();
 	end
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
@@ -118,7 +126,7 @@ end
 
 function CharacterFrame_UpdateTabBounds(self)
 	if CharacterFrameTab3:IsShown() then
-		local diff = CharacterFrameTab3:GetRight() - self:GetRight();
+		local diff = (CharacterFrameTab3:GetRight() or 0) - (self:GetRight() or 0);
 
 		if diff > 0 then
 			table.sort(self.Tabs, CompareFrameSize);

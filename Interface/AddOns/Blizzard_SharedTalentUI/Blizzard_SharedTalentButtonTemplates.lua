@@ -84,6 +84,9 @@ end
 function TalentDisplayMixin:AcquireTooltip()
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+	if self.tooltipBackdropStyle then
+		SharedTooltip_SetBackdropStyle(tooltip, self.tooltipBackdropStyle);
+	end
 	return tooltip;
 end
 
@@ -100,9 +103,7 @@ function TalentDisplayMixin:UpdateDefinitionInfo(skipUpdate)
 		self:FullUpdate();
 	end
 
-	if self:IsMouseOver() then
-		self:OnEnter();
-	end
+	self:UpdateMouseOverInfo();
 end
 
 function TalentDisplayMixin:SetEntryID(entryID, skipUpdate)
@@ -160,6 +161,7 @@ end
 function TalentDisplayMixin:FullUpdate()
 	self:UpdateVisualState();
 	self:UpdateIconTexture();
+	self:UpdateNonStateVisuals();
 end
 
 function TalentDisplayMixin:SetVisualState(visualState)
@@ -264,6 +266,12 @@ function TalentDisplayMixin:IsInspecting()
 	return self:GetTalentFrame():IsInspecting();
 end
 
+function TalentDisplayMixin:UpdateMouseOverInfo()
+	if self:IsMouseOver() then
+		self:OnEnter();
+	end
+end
+
 function TalentDisplayMixin:SetAndApplySize(width, height)
 	-- Override in your derived mixin.
 	self:SetSize(width, height);
@@ -289,6 +297,11 @@ end
 
 function TalentDisplayMixin:ApplyVisualState(visualState)
 	-- Implement in your derived mixin.
+end
+
+function TalentDisplayMixin:UpdateNonStateVisuals()
+	-- Implement in your derived mixin.
+	-- Should include updating visuals that are not dependent on the current VisualState.
 end
 
 function TalentDisplayMixin:UpdateSearchIcon()
@@ -409,6 +422,9 @@ function TalentButtonBaseMixin:UpdateSpendText()
 end
 
 function TalentButtonBaseMixin:FullUpdate()
+	-- TODO: need a better way to handle additional visual states on top of base state
+	self.isGhosted = self:IsGhosted();
+
 	TalentDisplayMixin.FullUpdate(self);
 
 	self:UpdateSpendText();
@@ -438,9 +454,6 @@ end
 
 function TalentButtonBaseMixin:CalculateVisualState()
 	-- Overrides TalentDisplayMixin.
-
-	-- TODO: need a better way to handle additional visual states on top of base state
-	self.isGhosted = self:IsGhosted();
 
 	if not self:ShouldBeVisible() then
 		return TalentButtonUtil.BaseVisualState.Invisible;
@@ -515,9 +528,17 @@ function TalentButtonBaseMixin:IsLocked()
 	return not self.nodeInfo or not self.nodeInfo.meetsEdgeRequirements;
 end
 
+function TalentButtonBaseMixin:IsCascadeRepurchasable()
+	return self.nodeInfo and self.nodeInfo.isCascadeRepurchasable and self:CanAfford();
+end
+
+function TalentButtonBaseMixin:CanCascadeRepurchaseRanks()
+	return not self:IsLocked() and not self:IsGated() and self:IsCascadeRepurchasable();
+end
+
 function TalentButtonBaseMixin:IsGhosted()
 	-- Override in your derived mixin as desired.
-	return not self.nodeInfo or self.nodeInfo.isCascadeRepurchasable;
+	return not self.nodeInfo or (self:IsCascadeRepurchasable() and not self:IsSelectable());
 end
 
 function TalentButtonBaseMixin:CanAfford()
@@ -532,6 +553,18 @@ end
 function TalentButtonBaseMixin:IsSelectable()
 	-- Override in your derived mixin as desired.
 	return not self:IsMaxed() and not self:IsLocked() and self:CanAfford();
+end
+
+function TalentButtonBaseMixin:CascadeRepurchaseRanks()
+	self:PlaySelectSound();
+	self:GetTalentFrame():CascadeRepurchaseRanks(self:GetNodeID());
+	self:UpdateMouseOverInfo();
+end
+
+function TalentButtonBaseMixin:ClearCascadeRepurchaseHistory()
+	self:PlayDeselectSound();
+	self:GetTalentFrame():ClearCascadeRepurchaseHistory();
+	self:UpdateMouseOverInfo();
 end
 
 function TalentButtonBaseMixin:PlaySelectSound()
@@ -578,8 +611,9 @@ TalentButtonBasicArtMixin.SizingAdjustment = {
 		{ region = "DisabledOverlay", adjust = 0, },
 		{ region = "DisabledOverlayMask", adjust = 0, },
 		{ region = "StateBorder", adjust = 0, },
-		{ region = "Glow", adjust = 44, },
-		{ region = "SelectableGlow", adjust = 44, },
+		{ region = "Ghost", adjust = 0, },
+		{ region = "Glow", adjust = 0, },
+		{ region = "SelectableGlow", adjust = 0, },
 	}
 };
 
@@ -671,8 +705,8 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-choiceflyout-square-green",
 		maxed = "talents-node-choiceflyout-square-yellow",
 		locked = "talents-node-choiceflyout-square-locked",
-		glow = "talents-node-square-greenglow",
-		ghost = "talents-node-square-ghost",
+		glow = "talents-node-choiceflyout-square-greenglow",
+		ghost = "talents-node-choiceflyout-square-ghost",
 	},
 
 	LargeCircle = {
@@ -683,8 +717,8 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-choiceflyout-circle-green",
 		maxed = "talents-node-choiceflyout-circle-yellow",
 		locked = "talents-node-choiceflyout-circle-locked",
-		glow = "talents-node-circle-greenglow",
-		ghost = "talents-node-circle-ghost",
+		glow = "talents-node-choiceflyout-circle-greenglow",
+		ghost = "talents-node-choiceflyout-circle-ghost",
 	},
 };
 
@@ -699,7 +733,7 @@ function TalentButtonArtMixin:OnLoad()
 		self.DisabledOverlayMask:SetAtlas(self.artSet.iconMask, TextureKitConstants.IgnoreAtlasSize);
 	end
 
-	self.Glow:SetAtlas(self.artSet.glow, TextureKitConstants.IgnoreAtlasSize);
+	self.Glow:SetAtlas(self.artSet.glow, TextureKitConstants.UseAtlasSize);
 	self.Ghost:SetAtlas(self.artSet.ghost, TextureKitConstants.UseAtlasSize);
 	self.Shadow:SetAtlas(self.artSet.shadow, TextureKitConstants.UseAtlasSize);
 
@@ -720,14 +754,15 @@ function TalentButtonArtMixin:ApplyVisualState(visualState)
 	local isGated = (visualState == TalentButtonUtil.BaseVisualState.Gated);
 	self.DisabledOverlay:SetAlpha(isGated and 0.7 or 0.25);
 
-	self.Ghost:SetShown(self.isGhosted);
-
 	local isDisabled = isGated or (visualState == TalentButtonUtil.BaseVisualState.Locked) or (visualState == TalentButtonUtil.BaseVisualState.Disabled);
 	self.Icon:SetDesaturated(isDisabled);
 	self.DisabledOverlay:SetShown(isDisabled);
 
 	self:UpdateStateBorder(visualState);
+end
 
+function TalentButtonArtMixin:UpdateNonStateVisuals()
+	self.Ghost:SetShown(self.isGhosted);
 	self:UpdateSearchIcon();
 	self:UpdateGlow();
 end
@@ -811,6 +846,9 @@ end
 function TalentButtonArtMixin:OnSearchIconEnter()
 	if self.searchIconTooltipText then
 		GameTooltip:SetOwner(self.SearchIcon.Mouseover, "ANCHOR_RIGHT", 0, 0);
+		if self.tooltipBackdropStyle then
+			SharedTooltip_SetBackdropStyle(GameTooltip, self.tooltipBackdropStyle);
+		end
 		GameTooltip_AddNormalLine(GameTooltip, self.searchIconTooltipText);
 		GameTooltip:Show();
 	end
@@ -875,12 +913,17 @@ function TalentButtonSpendMixin:OnClick(button)
 	if button == "LeftButton" then
 		if IsShiftKeyDown() and self:CanCascadeRepurchaseRanks() then
 			self:CascadeRepurchaseRanks();
+		elseif IsModifiedClick("CHATLINK") then
+			local spellLink = GetSpellLink(self:GetSpellID());
+			ChatEdit_InsertLink(spellLink);
 		elseif self:CanPurchaseRank() then
 			self:PurchaseRank();
 		end
 	elseif button == "RightButton" then
 		if self:CanRefundRank() then
 			self:RefundRank();
+		elseif self:IsGhosted() then
+			self:ClearCascadeRepurchaseHistory();
 		end
 	end
 end
@@ -889,12 +932,6 @@ function TalentButtonSpendMixin:Init(...)
 	TalentDisplayMixin.Init(self, ...);
 
 	self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
-end
-
-function TalentButtonSpendMixin:CheckTooltip()
-	if self:IsMouseOver() then
-		ExecuteFrameScript(self, "OnEnter");
-	end
 end
 
 function TalentButtonSpendMixin:CanPurchaseRank()
@@ -906,26 +943,16 @@ function TalentButtonSpendMixin:CanRefundRank()
 	return not self:IsLocked() and self.nodeInfo.canRefundRank and self.nodeInfo.ranksPurchased and (self.nodeInfo.ranksPurchased > 0);
 end
 
-function TalentButtonSpendMixin:CanCascadeRepurchaseRanks()
-	return not self:IsLocked() and self.nodeInfo.isCascadeRepurchasable;
-end
-
-function TalentButtonSpendMixin:CascadeRepurchaseRanks()
-	self:PlaySelectSound();
-	self:GetTalentFrame():CascadeRepurchaseRanks(self:GetNodeID());
-	self:CheckTooltip();
-end
-
 function TalentButtonSpendMixin:PurchaseRank()
 	self:PlaySelectSound();
 	self:GetTalentFrame():PurchaseRank(self:GetNodeID());
-	self:CheckTooltip();
+	self:UpdateMouseOverInfo();
 end
 
 function TalentButtonSpendMixin:RefundRank()
 	self:PlayDeselectSound();
 	self:GetTalentFrame():RefundRank(self:GetNodeID());
-	self:CheckTooltip();
+	self:UpdateMouseOverInfo();
 end
 
 function TalentButtonSpendMixin:IsSelectable()
@@ -962,7 +989,10 @@ function TalentButtonSpendMixin:AddTooltipInstructions(tooltip)
 	local canPurchase = self:CanPurchaseRank();
 	local canRefund = self:CanRefundRank();
 	local canRepurchase = self:CanCascadeRepurchaseRanks();
-	if canPurchase or canRefund then
+	local isGhosted = self:IsGhosted();
+
+	-- We want a preceding blank line if there are any instructions, but not lines between instructions.
+	if canPurchase or canRefund or canRepurchase or isGhosted then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
 	end
 
@@ -974,6 +1004,8 @@ function TalentButtonSpendMixin:AddTooltipInstructions(tooltip)
 
 	if canRepurchase then
 		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
+	elseif isGhosted then
+		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_CLEAR_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
 	end
 end
 
@@ -1005,7 +1037,7 @@ function TalentButtonSelectMixin:OnLeave()
 end
 
 local TimeToHideSeconds = 0;
-local TimeToShowSelections = 0.1;
+local TimeToShowSelections = 0;
 function TalentButtonSelectMixin:OnUpdate(dt)
 	local talentFrame = self:GetTalentFrame();
 	if not talentFrame:IsMouseOverSelections() and (GetMouseFocus() ~= self) then
@@ -1026,11 +1058,31 @@ end
 function TalentButtonSelectMixin:OnClick(button)
 	EventRegistry:TriggerEvent("TalentButton.OnClick", self, button);
 
-	if not self:IsInspecting() and (button ~= "LeftButton") then
-		self:SetSelectedEntryID(nil);
+	if self:IsInspecting() then
+		return;
+	end
 
-		local canSelectChoice = true;
-		self:GetTalentFrame():UpdateSelections(self, canSelectChoice, self:GetSelectedEntryID(), self:GetTraitCurrenciesCost());
+	if button == "RightButton" then
+		if self:IsGhosted() then
+			self:ClearCascadeRepurchaseHistory();
+		end
+
+		if self.nodeInfo.canRefundRank then
+			self:SetSelectedEntryID(nil);
+
+			local canSelectChoice = true;
+			self:GetTalentFrame():UpdateSelections(self, canSelectChoice, self:GetSelectedEntryID(), self:GetTraitCurrenciesCost());
+		end
+	elseif button == "LeftButton" then
+		if IsShiftKeyDown() and self:CanCascadeRepurchaseRanks() then
+			self:CascadeRepurchaseRanks();
+		elseif IsModifiedClick("CHATLINK") then
+			local spellID = self:GetSpellID();
+			if spellID then
+				local spellLink = GetSpellLink(spellID);
+				ChatEdit_InsertLink(spellLink);
+			end
+		end
 	end
 end
 
@@ -1040,6 +1092,9 @@ function TalentButtonSelectMixin:AcquireTooltip()
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_NONE");
 	tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT");
+	if self.tooltipBackdropStyle then
+		SharedTooltip_SetBackdropStyle(tooltip, self.tooltipBackdropStyle);
+	end
 	return tooltip;
 end
 
@@ -1065,10 +1120,6 @@ function TalentButtonSelectMixin:AddTooltipDescription(tooltip)
 end
 
 function TalentButtonSelectMixin:AddTooltipCost(tooltip)
-	-- Override TalentButtonBaseMixin.
-end
-
-function TalentButtonSelectMixin:AddTooltipInstructions(tooltip)
 	-- Override TalentButtonBaseMixin.
 end
 
@@ -1191,13 +1242,15 @@ function TalentButtonSelectMixin:GetSelectedDefinitionInfo()
 end
 
 function TalentButtonSelectMixin:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo)
+	local oldSelection = self.selectedEntryID;
+
 	if not self:UpdateSelectedEntryID(selectedEntryID, selectedDefinitionInfo) then
 		return;
 	end
 
 	local nodeID = self:GetNodeID();
 	if nodeID then
-		self:GetTalentFrame():SetSelection(nodeID, selectedEntryID);
+		self:GetTalentFrame():SetSelection(nodeID, selectedEntryID, oldSelection);
 	end
 end
 

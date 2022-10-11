@@ -29,6 +29,63 @@ local LegendaryCraftingTypes =
 				{ Name = "Invalid", Type = "RuneforgePowerState", EnumValue = 2 },
 			},
 		},
+		{
+			Name = "CurrencyCost",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "amount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RuneforgeItemPreviewInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemGUID", Type = "string", Nilable = false },
+				{ Name = "itemLevel", Type = "number", Nilable = false },
+				{ Name = "itemName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "RuneforgeLegendaryComponentInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "powerID", Type = "number", Nilable = false },
+				{ Name = "modifiers", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RuneforgeLegendaryCraftDescription",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "runeforgePowerID", Type = "number", Nilable = false },
+				{ Name = "modifiers", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RuneforgePower",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "runeforgePowerID", Type = "number", Nilable = false },
+				{ Name = "state", Type = "RuneforgePowerState", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "descriptionSpellID", Type = "number", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "source", Type = "string", Nilable = true },
+				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "specName", Type = "string", Nilable = true },
+				{ Name = "matchesSpec", Type = "bool", Nilable = false },
+				{ Name = "matchesCovenant", Type = "bool", Nilable = false },
+				{ Name = "covenantID", Type = "number", Nilable = true },
+				{ Name = "slots", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
 	},
 };
 

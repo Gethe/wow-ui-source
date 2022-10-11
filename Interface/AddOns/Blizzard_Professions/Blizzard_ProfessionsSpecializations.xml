@@ -12,6 +12,9 @@
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 		<Frames>
 			<Button parentKey="ApplyButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_FRAME_APPLY_BUTTON_TEXT">

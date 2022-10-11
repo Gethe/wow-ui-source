@@ -273,6 +273,19 @@ NineSliceLayouts =
 		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
 	};
 
+	TooltipDefaultDarkLayout =
+	{
+		["TopRightCorner"] = { atlas = "Tooltip-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "Tooltip-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "Tooltip-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "Tooltip-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_Tooltip-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_Tooltip-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!Tooltip-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!Tooltip-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-Azerite-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
+	};
+
 	TooltipAzeriteLayout =
 	{
 		["TopRightCorner"] = { atlas = "Tooltip-Azerite-NineSlice-CornerTopRight" },

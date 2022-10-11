@@ -64,15 +64,15 @@ function MailFrame_Show()
 	MailFrameTab_OnClick(nil, 1);
 	MailFrame_RefreshInbox(MailFrame);
 	DoEmote("READ", nil, true);
-end		
+end
 
-function MailFrame_Hide() 
+function MailFrame_Hide()
 	CancelEmote();
 	HideUIPanel(MailFrame);
 	CloseAllBags(self);
 	SendMailFrameLockSendMail:Hide();
 	StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
-end	
+end
 
 function MailFrame_OnEvent(self, event, ...)
 	if ( event == "MAIL_INBOX_UPDATE" ) then
@@ -138,6 +138,7 @@ function MailFrameTab_OnClick(self, tabID)
 		InboxFrame:Show();
 		SendMailFrame:Hide();
 		SetSendMailShowing(false);
+		MailFrame:SetTitle(INBOX);
 	else
 		-- Sendmail tab clicked
 		ButtonFrameTemplate_ShowButtonBar(MailFrame)
@@ -146,6 +147,7 @@ function MailFrameTab_OnClick(self, tabID)
 		SendMailFrame:Show();
 		SendMailFrame_Update();
 		SetSendMailShowing(true);
+		MailFrame:SetTitle(SENDMAIL);
 
 		-- Set the send mode to dictate the flow after a mail is sent
 		SendMailFrame.sendMode = "send";
@@ -420,7 +422,7 @@ function OpenMailFrame_OnHide()
 end
 
 function OpenMailFrame_IsValidMailID()
-	return InboxFrame.openMailID and InboxFrame.openMailID > 0;
+	return InboxFrame.openMailID and InboxFrame.openMailID > 0 and InboxFrame.openMailID <= GetInboxNumItems();
 end
 
 function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stationeryIcon, money)
@@ -813,9 +815,9 @@ end
 
 function OpenMail_ReportSpam()
 	local reportInfo = ReportInfo:CreateMailReportInfo(Enum.ReportType.Mail, InboxFrame.openMailID);
-	if(reportInfo) then 
-		ReportFrame:InitiateReport(reportInfo, InboxFrame.openMailSender); 
-	end		
+	if(reportInfo) then
+		ReportFrame:InitiateReport(reportInfo, InboxFrame.openMailSender);
+	end
 	OpenMailReportSpamButton:Disable();
 end
 

@@ -56,9 +56,11 @@ function MinimalSliderWithSteppersMixin:OnStepperClicked(forward)
 	else
 		self.Slider:SetValue(value - step);
 	end
+
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
-local function OnMouseUp(slider)
+local function OnMouseDown(slider)
 	if slider:IsEnabled() then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
@@ -78,7 +80,7 @@ function MinimalSliderWithSteppersMixin:Init(value, minValue, maxValue, steps, f
 		self:TriggerEvent(MinimalSliderWithSteppersMixin.Event.OnValueChanged, value);
 	end
 	self.Slider:SetScript("OnValueChanged", OnValueChanged);
-	self.Slider:SetScript("OnMouseUp", OnMouseUp);
+	self.Slider:SetScript("OnMouseDown", OnMouseDown);
 end
 
 function MinimalSliderWithSteppersMixin:FormatValue(value)
@@ -113,6 +115,8 @@ function MinimalSliderWithSteppersMixin:SetEnabled_(enabled)
 		ConfigureSlider(self, GRAY_FONT_COLOR, .7);
 	end
 	self.Slider:SetEnabled(enabled);
+	self.Back:SetEnabled(enabled);
+	self.Forward:SetEnabled(enabled);
 end
 
 function MinimalSliderWithSteppersMixin:SetValue(value)

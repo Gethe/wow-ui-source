@@ -215,7 +215,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 	self.loader = CreateProfessionsRecipeLoader(recipeSchematic, function()
 		local name = nil;
 		local reagents = nil;
-		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, reagents, transaction:GetRecraftAllocation());
+		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, reagents, transaction:GetAllocationItemGUID());
 		if outputItemInfo.hyperlink then
 			local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 			self.RecipeName:SetText(item:GetItemName());
@@ -234,9 +234,15 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 		GameTooltip:SetOwner(self.OutputIcon, "ANCHOR_RIGHT");
 
 		local reagents = transaction:CreateOptionalCraftingReagentInfoTbl();
-		C_TradeSkillUI.SetTooltipRecipeResultItem(recipeSchematic.recipeID, reagents, transaction:GetRecraftAllocation());
+		self.OutputIcon:SetScript("OnUpdate", function() 
+			C_TradeSkillUI.SetTooltipRecipeResultItem(recipeSchematic.recipeID, reagents, transaction:GetAllocationItemGUID());
+		end);
 	end);
-	self.OutputIcon:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.OutputIcon:SetScript("OnLeave", function()
+		GameTooltip_Hide(); 
+		self.OutputIcon:SetScript("OnUpdate", nil);
+	end);
 
 	local editBox = self.PaymentContainer.ScrollBoxContainer.ScrollingEditBox;
 	editBox:SetDefaultTextEnabled(not committed);
@@ -367,7 +373,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 						local title = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_TITLE:format(reagentSlotSchematic.slotInfo.slotText) or EMPTY_OPTIONAL_REAGENT_TOOLTIP_TITLE;
 						GameTooltip_SetTitle(GameTooltip, title);
 					else
-						Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, reagentSlotSchematic.slotInfo.slotText, transaction:GetRecraftAllocation());
+						Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, reagentSlotSchematic.slotInfo.slotText, transaction:GetAllocationItemGUID());
 					end
 					GameTooltip:Show();
 				end);

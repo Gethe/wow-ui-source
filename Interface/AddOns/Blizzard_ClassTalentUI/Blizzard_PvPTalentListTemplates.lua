@@ -67,9 +67,8 @@ function PvPTalentListButtonMixin:OnClick(button)
 	EventRegistry:TriggerEvent("PvPTalentButton.OnClick", self, button);
 
 	if (IsModifiedClick("CHATLINK")) then
-		local _, name = GetPvpTalentInfoByID(self.talentID);
 		local link = GetPvpTalentLink(self.talentID);
-		HandleGeneralTalentFrameChatLink(self, name, link);
+		ChatEdit_InsertLink(link);
 		return;
 	end
 

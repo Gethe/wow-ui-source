@@ -815,6 +815,11 @@ local Unit =
 			Name = "PlayerSoftInteractChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_INTERACT_CHANGED",
+			Payload =
+			{
+				{ Name = "oldTarget", Type = "string", Nilable = false },
+				{ Name = "newTarget", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "PlayerSpecializationChanged",

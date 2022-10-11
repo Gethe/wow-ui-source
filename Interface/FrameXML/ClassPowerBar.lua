@@ -8,7 +8,8 @@ function ClassPowerBar:OnLoad()
 end
 
 function ClassPowerBar:GetUnit()
-	return self:GetParent().unit;
+	local unit = self.unit or self:GetParent():GetParent().unit;
+	return unit or "player";
 end
 
 function ClassPowerBar:SetTooltip(tooltipTitle, tooltip)

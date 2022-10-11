@@ -112,7 +112,7 @@ function UpdateMicroButtons()
 		SpellbookMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
+	if (ClassTalentFrame and ClassTalentFrame:IsShown()) then
 		TalentMicroButton:SetButtonState("PUSHED", true);
 	else
 		if not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
@@ -581,13 +581,7 @@ function TalentMicroButtonMixin:HasTalentAlertToShow()
 
 	local alert;
 
-	if not self.canUseTalentSpecUI and canUseTalentSpecUI then
-		alert = "TALENT_MICRO_BUTTON_SPEC_TUTORIAL";
-	elseif not self.canUseTalentUI and canUseTalentUI then
-		alert = "TALENT_MICRO_BUTTON_TALENT_TUTORIAL";
-	elseif canUseTalentSpecUI and IsPlayerInitialSpec() then
-		alert = "TALENT_MICRO_BUTTON_NO_SPEC";
-	elseif canUseTalentUI and not AreTalentsLocked() and C_ClassTalents.HasUnspentTalentPoints() then
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) and canUseTalentUI and not AreTalentsLocked() and C_ClassTalents.HasUnspentTalentPoints() then
 		alert = "TALENT_MICRO_BUTTON_UNSPENT_TALENTS";
 	end
 
@@ -629,7 +623,7 @@ function TalentMicroButtonMixin:EvaluateAlertVisibility()
 		return false;
 	end
 
-	if not PlayerTalentFrame or not PlayerTalentFrame:IsShown() then
+	if not ClassTalentFrame or not ClassTalentFrame:IsShown() then
 		if MainMenuMicroButton_ShowAlert(self, alertText) then
 			MicroButtonPulse(self);
 			if IsPlayerInitialSpec() then
@@ -1263,13 +1257,15 @@ function MainMenuMicroButtonMixin:OnMouseUp(button)
 		self.down = nil;
 		if ( self:IsMouseOver() ) then
 			if ( not GameMenuFrame:IsShown() ) then
-				if ( SettingsPanel:IsShown() ) then
-					SettingsPanel:Close();
+				if ( not AreAllPanelsDisallowed() ) then
+					if ( SettingsPanel:IsShown() ) then
+						SettingsPanel:Close();
+					end
+					CloseMenus();
+					CloseAllWindows();
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+					ShowUIPanel(GameMenuFrame);
 				end
-				CloseMenus();
-				CloseAllWindows();
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-				ShowUIPanel(GameMenuFrame);
 			else
 				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 				HideUIPanel(GameMenuFrame);

@@ -38,7 +38,7 @@ UIPanelWindows = {};
 --Center Menu Frames
 UIPanelWindows["GameMenuFrame"] =				{ area = "center",		pushable = 0,	whileDead = 1, centerFrameSkipAnchoring = true };
 UIPanelWindows["HelpFrame"] =					{ area = "center",		pushable = 0,	whileDead = 1 };
-UIPanelWindows["EditModeManagerFrame"] =		{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["EditModeManagerFrame"] =		{ area = "center",		pushable = 0,	whileDead = 1, neverAllowOtherPanels = 1 };
 
 -- Frames using the new Templates
 UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,	whileDead = 1};
@@ -99,7 +99,7 @@ UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		while
 UIPanelWindows["CovenantMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
 UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
-UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 830, 	yoffset = 9,	allowOtherPanels = 1};
+UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 880, 	yoffset = 9,	allowOtherPanels = 1};
 
 CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
 CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
@@ -415,9 +415,6 @@ function UIParent_OnLoad(self)
 
 	self:RegisterEvent("TOKEN_AUCTION_SOLD");
 
-	-- Talking Head
-	self:RegisterEvent("TALKINGHEAD_REQUESTED");
-
 	-- Challenge Mode 2.0
 	self:RegisterEvent("CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN");
 	self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
@@ -478,6 +475,12 @@ function UIParent_OnLoad(self)
     -- Event(s) for Client Scenes
     self:RegisterEvent("CLIENT_SCENE_OPENED");
     self:RegisterEvent("CLIENT_SCENE_CLOSED");
+
+	-- Event(s) for returning player prompts
+	self:RegisterEvent("RETURNING_PLAYER_PROMPT");
+
+	--Event(s) for soft targetting
+	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
 
 end
 
@@ -689,10 +692,6 @@ function GMChatFrame_LoadUI(...)
 	end
 end
 
-function Arena_LoadUI()
-	UIParentLoadAddOn("Blizzard_ArenaUI");
-end
-
 function GuildFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GuildUI");
 end
@@ -740,10 +739,6 @@ function MajorFactions_LoadUI()
 	UIParentLoadAddOn("Blizzard_MajorFactions");
 end
 
-function TalkingHead_LoadUI()
-	UIParentLoadAddOn("Blizzard_TalkingHeadUI");
-end
-
 function ChallengeMode_LoadUI()
 	UIParentLoadAddOn("Blizzard_ChallengesUI");
 end
@@ -782,12 +777,6 @@ function MovePad_LoadUI()
 	UIParentLoadAddOn("Blizzard_MovePad");
 end
 ]]
-
-function Tutorial_LoadUI()
-	if ( GetTutorialsEnabled() and C_PlayerInfo.IsPlayerEligibleForNPE() ) then
-		UIParentLoadAddOn("Blizzard_Tutorial");
-	end
-end
 
 function NPE_CheckTutorials()
 	if C_PlayerInfo.IsPlayerNPERestricted() and UnitLevel("player") == 1 then
@@ -1192,7 +1181,7 @@ function TogglePVPUI()
 end
 
 function ToggleStoreUI()
-	if (Kiosk.IsEnabled()) then
+	if (AreAllPanelsDisallowed() or Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -1434,7 +1423,7 @@ function UIParent_OnEvent(self, event, ...)
 		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 	elseif ( event == "CVAR_UPDATE" ) then
 		local cvarName = ...;
-		if cvarName and cvarName == "SHOW_TUTORIALS" then
+		if cvarName and cvarName == "showTutorials" then
 			local showTutorials = GetCVarBool("showTutorials");
 			if ( showTutorials ) then
 				if ( IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
@@ -1674,10 +1663,6 @@ function UIParent_OnEvent(self, event, ...)
 		-- Fix for Bug 124392
 		StaticPopup_Hide("CONFIRM_LEAVE_BATTLEFIELD");
 
-		local _, instanceType = IsInInstance();
-		if ( instanceType == "arena" or instanceType == "pvp") then
-			Arena_LoadUI();
-		end
 		if ( C_Commentator.IsSpectating() ) then
 			Commentator_LoadUI();
 		end
@@ -2291,12 +2276,6 @@ function UIParent_OnEvent(self, event, ...)
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_SOLD_S:format(itemName), info.r, info.g, info.b, info.id);
 			self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
 		end
-	elseif ( event == "TALKINGHEAD_REQUESTED" ) then
-		if ( not TalkingHeadFrame ) then
-			TalkingHead_LoadUI();
-			TalkingHeadFrame:PlayCurrent();
-		end
-		self:UnregisterEvent("TALKINGHEAD_REQUESTED");
 	elseif (event == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN") then
 		ChallengeMode_LoadUI();
 		ChallengesKeystoneFrame:ShowKeystoneFrame();
@@ -2406,6 +2385,17 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
+	elseif (event == "RETURNING_PLAYER_PROMPT") then 
+		StaticPopup_Show("RETURNING_PLAYER_PROMPT");
+	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then 
+		if(GetCVarBool("softTargettingInteractKeySound")) then 
+			local previousTarget, currentTarget = ...; 
+			if(not currentTarget) then 
+				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_NOT_AVAILABLE);
+			elseif(previousTarget ~= currentTarget) then
+				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
+			end
+		end 
 	end
 end
 
@@ -2476,11 +2466,12 @@ end
 function UIParentManagedFrameContainerMixin:UpdateFrame(frame)
 	frame:ClearAllPoints();
 	frame:SetParent(frame.layoutOnBottom and self.BottomManagedLayoutContainer or self);
-	if ObjectiveTrackerFrame then
-		ObjectiveTracker_UpdateHeight();
-	end
 	self:Layout();
 	self.BottomManagedLayoutContainer:Layout();
+
+	if frame.isRightManagedFrame and ObjectiveTrackerFrame then
+		ObjectiveTracker_UpdateHeight();
+	end
 end
 
 function UIParentManagedFrameContainerMixin:AddManagedFrame(frame)
@@ -2586,7 +2577,7 @@ FramePositionDelegate:SetScript("OnAttributeChanged", FramePositionDelegate_OnAt
 
 function FramePositionDelegate:ShowUIPanel(frame, force)
 	local frameArea = GetUIPanelAttribute(frame, "area");
-	if ( not CanOpenPanels() and frameArea ~= "center" and frameArea ~= "full" ) then
+	if ( AreAllPanelsDisallowed() or (not CanOpenPanels() and frameArea ~= "center" and frameArea ~= "full") ) then
 		self:ShowUIPanelFailed(frame);
 		return;
 	end
@@ -3080,11 +3071,11 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		MainMenuBar:SetScale(barScale);
 	end
 
-	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight(true);
-	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight or 25;
+	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight();
+	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + 15 or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
 	UIParentBottomManagedFrameContainer.fixedWidth = 573;
 	UIParentBottomManagedFrameContainer:ClearAllPoints();
-	UIParentBottomManagedFrameContainer:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, bottomActionBarHeight + 5);
+	UIParentBottomManagedFrameContainer:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, bottomActionBarHeight);
 	UIParentBottomManagedFrameContainer:Layout();
 	UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:Layout();
 
@@ -3102,6 +3093,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	if(ContainerFrame) then
 		UpdateContainerFrameAnchors();
 	end
+
+	local width, height = UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:GetSize();
+	UIParentBottomManagedFrameContainer.BottomManagedLayoutContainer:SetShown(width > 0 and height > 0);
 end
 
 -- Call this function to update the positions of all frames that can appear on the right side of the screen
@@ -3278,6 +3272,19 @@ function CanOpenPanels()
 	end
 
 	return 1;
+end
+
+function AreAllPanelsDisallowed()
+	local currentWindow = GetUIPanel("center");
+	if not currentWindow then
+		currentWindow = GetUIPanel("full");
+		if not currentWindow then
+			return false;
+		end
+	end
+
+	local neverAllowOtherPanels = GetUIPanelAttribute(currentWindow, "neverAllowOtherPanels");
+	return neverAllowOtherPanels;
 end
 
 -- this function handles possibly tainted values and so
@@ -4891,95 +4898,6 @@ end
 
 function OnExcessiveErrors()
 	StaticPopup_Show("TOO_MANY_LUA_ERRORS");
-end
-
-function SetLargeGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
-	-- texure dimensions are 1024x1024, icon dimensions are 64x64
-	local emblemSize, columns, offset;
-	if ( emblemTexture ) then
-		emblemSize = 64 / 1024;
-		columns = 16
-		offset = 0;
-		emblemTexture:SetTexture("Interface\\GuildFrame\\GuildEmblemsLG_01");
-	end
-	local hasEmblem = SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData);
-	emblemTexture:SetWidth(hasEmblem and (emblemTexture:GetHeight() * (7 / 8)) or emblemTexture:GetHeight());
-end
-
-function SetSmallGuildTabardTextures(unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
-	-- texure dimensions are 256x256, icon dimensions are 16x16, centered in 18x18 cells
-	local emblemSize, columns, offset;
-	if ( emblemTexture ) then
-		emblemSize = 18 / 256;
-		columns = 14;
-		offset = 1 / 256;
-		emblemTexture:SetTexture("Interface\\GuildFrame\\GuildEmblems_01");
-	end
-	SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData);
-end
-
-function SetDoubleGuildTabardTextures(unit, leftEmblemTexture, rightEmblemTexture, backgroundTexture, borderTexture, tabardData)
-	if ( leftEmblemTexture and rightEmblemTexture ) then
-		SetGuildTabardTextures(nil, nil, nil, unit, leftEmblemTexture, backgroundTexture, borderTexture, tabardData);
-		rightEmblemTexture:SetTexture(leftEmblemTexture:GetTexture());
-		rightEmblemTexture:SetVertexColor(leftEmblemTexture:GetVertexColor());
-	end
-end
-
-function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture, backgroundTexture, borderTexture, tabardData)
-	local backgroundColor, borderColor, emblemColor, emblemFileID, emblemIndex;
-	tabardData = tabardData or C_GuildInfo.GetGuildTabardInfo(unit);
-	if(tabardData) then
-		backgroundColor = tabardData.backgroundColor;
-		borderColor = tabardData.borderColor;
-		emblemColor = tabardData.emblemColor;
-		emblemFileID = tabardData.emblemFileID;
-		emblemIndex = tabardData.emblemStyle;
-	end
-	if (emblemFileID) then
-		if (backgroundTexture) then
-			backgroundTexture:SetVertexColor(backgroundColor:GetRGB());
-		end
-		if (borderTexture) then
-			borderTexture:SetVertexColor(borderColor:GetRGB());
-		end
-		if (emblemSize) then
-			if (emblemIndex) then
-				local xCoord = mod(emblemIndex, columns) * emblemSize;
-				local yCoord = floor(emblemIndex / columns) * emblemSize;
-				emblemTexture:SetTexCoord(xCoord + offset, xCoord + emblemSize - offset, yCoord + offset, yCoord + emblemSize - offset);
-			end
-			emblemTexture:SetVertexColor(emblemColor:GetRGB());
-		elseif (emblemTexture) then
-			emblemTexture:SetTexture(emblemFileID);
-			emblemTexture:SetVertexColor(emblemColor:GetRGB());
-		end
-
-		return true;
-	else
-		-- tabard lacks design
-		if (backgroundTexture) then
-			backgroundTexture:SetVertexColor(0.2245, 0.2088, 0.1794);
-		end
-		if (borderTexture) then
-			borderTexture:SetVertexColor(0.2, 0.2, 0.2);
-		end
-		if (emblemTexture) then
-			if (emblemSize) then
-				if (emblemSize == 18 / 256) then
-					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogoSm");
-				else
-					emblemTexture:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogo");
-				end
-				emblemTexture:SetTexCoord(0, 1, 0, 1);
-				emblemTexture:SetVertexColor(1, 1, 1, 1);
-			else
-				emblemTexture:SetTexture("");
-			end
-		end
-
-		return false;
-	end
 end
 
 function ShouldShowArenaParty()

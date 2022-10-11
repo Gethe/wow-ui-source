@@ -172,6 +172,9 @@ COMBATLOG_EVENT_LIST = {
 	["SPELL_BUILDING_DAMAGE"] = true,
 	["SPELL_BUILDING_HEAL"] = true,
 	["UNIT_DISSIPATES"] = true,
+	["SPELL_EMPOWER_START"] = true,
+	["SPELL_EMPOWER_END"] = true,
+	["SPELL_EMPOWER_INTERRUPT"] = true,
 };
 
 COMBATLOG_FLAG_LIST = {
@@ -187,7 +190,9 @@ COMBATLOG_FLAG_LIST = {
 EVENT_TEMPLATE_FORMATS = {
 	["SPELL_AURA_BROKEN_SPELL"] = TEXT_MODE_A_STRING_3,
 	["SPELL_CAST_START"] = TEXT_MODE_A_STRING_2,
-	["SPELL_CAST_SUCCESS"] = TEXT_MODE_A_STRING_2
+	["SPELL_CAST_SUCCESS"] = TEXT_MODE_A_STRING_2,
+	["SPELL_EMPOWER_START"] = TEXT_MODE_A_STRING_2,
+	["SPELL_EMPOWER_END"] = TEXT_MODE_A_STRING_2
 };
 
 --
@@ -425,7 +430,10 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["PARTY_KILL"] = true,
 					      ["UNIT_DIED"] = false,
 					      ["UNIT_DESTROYED"] = true,
-					      ["UNIT_DISSIPATES"] = true
+					      ["UNIT_DISSIPATES"] = true,
+					      ["SPELL_EMPOWER_START"] = false,
+					      ["SPELL_EMPOWER_END"] = false,
+					      ["SPELL_EMPOWER_INTERRUPT"] = false,
 					};
 					sourceFlags = {
 						[COMBATLOG_FILTER_MINE] = true
@@ -658,11 +666,14 @@ function Blizzard_CombatLog_RefilterUpdate()
 	-- Clear the combat log
 	local total = 0;
 	while (valid and total < COMBATLOG_LIMIT_PER_FRAME) do
-		-- Log to the window
-		local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
-		-- NOTE: be sure to pass in nil for the color id or the color id may override the r, g, b values for this message
-		if ( text ) then
-			COMBATLOG:BackFillMessage(text, r, g, b);
+		local show = CombatLogShowCurrentEntry();
+		if (show) then
+			-- Log to the window
+			local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
+			-- NOTE: be sure to pass in nil for the color id or the color id may override the r, g, b values for this message
+			if ( text ) then
+				COMBATLOG:BackFillMessage(text, r, g, b);
+			end
 		end
 
 		-- count can be
@@ -2566,7 +2577,17 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			resultEnabled = false;
 			valueEnabled = true;
 			valueTypeEnabled = false;
-
+		elseif ( event == "SPELL_EMPOWER_START" ) then
+			-- Disable appropriate sections
+			resultEnabled = false;
+			valueEnabled = false;
+			valueTypeEnabled = false;
+		elseif ( event == "SPELL_EMPOWER_END" or event == "SPELL_EMPOWER_INTERRUPT" ) then
+			amount = select(4, ...);
+			-- Disable appropriate sections
+			resultEnabled = false;
+			valueEnabled = true;
+			valueTypeEnabled = false;
 		end
 	elseif ( subVal == "RANGE" ) then
 		--spellName = ACTION_RANGED;

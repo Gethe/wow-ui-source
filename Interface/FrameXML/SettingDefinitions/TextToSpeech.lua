@@ -72,12 +72,18 @@ local function Register()
 		-- Speak for me in Voice Chat
 		do
 			local rtttSetting, rtttInitializer = Settings.SetupCVarCheckBox(category, "remoteTextToSpeech", ENABLE_REMOTE_TEXT_TO_SPEECH, OPTION_TOOLTIP_ENABLE_REMOTE_TEXT_TO_SPEECH);
+
+			local function IsSpeakForMeAllowed()
+				return C_VoiceChat.IsSpeakForMeAllowed();
+			end
+			rtttInitializer:AddShownPredicate(IsSpeakForMeAllowed);
+			rtttInitializer:AddEvaluateStateFrameEvent("VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED");
 			
 			-- Voices
 			do
 				local setting = Settings.RegisterCVarSetting(category, "remoteTextToSpeechVoice", Settings.VarType.Number, VOICE);
 				local function GetOptions()
-					local container = Settings.CreateDropDownTextContainer();
+					local container = Settings.CreateControlTextContainer();
 					for index, voice in ipairs(C_VoiceChat.GetRemoteTtsVoices()) do
 						container:Add(voice.voiceID, VOICE_GENERIC_FORMAT:format(voice.voiceID));
 					end
@@ -87,9 +93,12 @@ local function Register()
 
 				local initializer = Settings.CreateSettingInitializer("RTTSTemplate", data);
 				local function IsModifiable()
-					return rtttSetting:GetValue();
+					return C_VoiceChat.IsSpeakForMeActive();
 				end
 				initializer:SetParentInitializer(rtttInitializer, IsModifiable);
+				initializer:AddShownPredicate(IsSpeakForMeAllowed);
+				initializer:AddEvaluateStateFrameEvent("VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED");
+				initializer:AddEvaluateStateFrameEvent("VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED");
 
 				layout:AddInitializer(initializer);
 			end

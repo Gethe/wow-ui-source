@@ -1,13 +1,13 @@
-NPE_TutorialPointerFrame = {};
+TutorialPointerFrame = {};
 
-NPE_TutorialPointerFrame.Direction = {
+TutorialPointerFrame.Direction = {
 	UP		= "UP",
 	DOWN	= "DOWN",
 	LEFT	= "LEFT",
 	RIGHT	= "RIGHT",
 }
 
-NPE_TutorialPointerFrame.DirectionData = {
+TutorialPointerFrame.DirectionData = {
 	UP = {
 		Anchor			= "TOP";
 		RelativePoint	= "BOTTOM";
@@ -35,7 +35,7 @@ NPE_TutorialPointerFrame.DirectionData = {
 }
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialPointerFrame:Initialize()
+function TutorialPointerFrame:Initialize()
 	self.NextID = 1;
 	self.FramePool = {};
 	self.InUseFrames = {};
@@ -43,21 +43,21 @@ function NPE_TutorialPointerFrame:Initialize()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
--- @Usage NPE_TutorialPointerFrame:Show(content, direction, frame, ofsX, ofsY [,relativePoint])
-function NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution)
+-- @Usage TutorialPointerFrame:Show(content, direction, frame, ofsX, ofsY [,relativePoint])
+function TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution)
 	ofsX = ofsX or 0;
 	ofsY = ofsY or 0;
 
 	-- Must have a valid anchor frame
 	if (not anchorFrame) then
-		error("NPE_TutorialPointerFrame:Show - Invalid Anchor Frame");
+		error("TutorialPointerFrame:Show - Invalid Anchor Frame");
 		return 0;
 	end
 
 	-- Must have a valid direction
 	local directionData = self.DirectionData[direction];
 	if (not directionData) then
-		error(string.format("NPE_TutorialPointerFrame:Show - Invalid Direction '%s'", direction));
+		error(string.format("TutorialPointerFrame:Show - Invalid Direction '%s'", direction));
 		return 0;
 	end
 
@@ -134,7 +134,7 @@ function NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, of
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialPointerFrame:Hide(id)
+function TutorialPointerFrame:Hide(id)
 	local frame = self.InUseFrames[id];
 	if (frame) then
 		self.InUseFrames[id] = nil;
@@ -143,7 +143,7 @@ function NPE_TutorialPointerFrame:Hide(id)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialPointerFrame:_DoesFrameFit(frame, anchorFrame, directionData)
+function TutorialPointerFrame:_DoesFrameFit(frame, anchorFrame, directionData)
 	local size;
 	local getEdgeFunc;
 
@@ -181,24 +181,24 @@ function NPE_TutorialPointerFrame:_DoesFrameFit(frame, anchorFrame, directionDat
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialPointerFrame:_GetTotalEffectiveHeight(frame)
+function TutorialPointerFrame:_GetTotalEffectiveHeight(frame)
 	return (frame:GetHeight() + frame.Content:GetHeight()) * frame:GetEffectiveScale();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialPointerFrame:_GetTotalEffectiveWidth(frame)
+function TutorialPointerFrame:_GetTotalEffectiveWidth(frame)
 	return (frame:GetWidth() + frame.Content:GetWidth()) * frame:GetEffectiveScale();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialPointerFrame:_GetFrame(parentFrame)
+function TutorialPointerFrame:_GetFrame(parentFrame)
 	local frame;
 
 	if (#self.FramePool > 0) then
 		frame = table.remove(self.FramePool);
 	else
 		self.FrameCount = self.FrameCount + 1;
-		frame = CreateFrame("frame", "NPE_PointerFrame_" .. self.FrameCount, UIParent, "TutorialPointerFrame");
+		frame = CreateFrame("frame", "TutorialPointerFrame_" .. self.FrameCount, UIParent, "TutorialPointerFrame");
 	end
 
 	if (not parentFrame.hasHookedScriptsForNPE) then
@@ -224,7 +224,7 @@ function NPE_TutorialPointerFrame:_GetFrame(parentFrame)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialPointerFrame:_RetireFrame(frame)
+function TutorialPointerFrame:_RetireFrame(frame)
 
 	-- TODO: fade the frame out?
 	frame:Hide();
@@ -234,7 +234,7 @@ function NPE_TutorialPointerFrame:_RetireFrame(frame)
 
 	-- Stop all animations
 	frame.AnimDelayTimer:Cancel();
-	for k, direction in pairs(NPE_TutorialPointerFrame.Direction) do
+	for k, direction in pairs(TutorialPointerFrame.Direction) do
 		for i = 1, 2 do
 			local arrow = frame["Arrow_" .. direction .. i];
 			arrow:Hide();
@@ -247,4 +247,4 @@ function NPE_TutorialPointerFrame:_RetireFrame(frame)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-NPE_TutorialPointerFrame:Initialize();
+TutorialPointerFrame:Initialize();

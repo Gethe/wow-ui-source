@@ -1,13 +1,4 @@
-ComboPointPowerBar = {};
-
-function ComboPointPowerBar:OnLoad()
-	if (GetCVar("comboPointLocation") ~= "2") then
-		self:Hide();
-		return;
-	end
-
-	ClassResourceBarMixin.OnLoad(self);
-end		
+ComboPointPowerBar = {};	
 function ComboPointPowerBar:SetupDruid()
 	local showBar = false;
 	local _, myclass = UnitClass("player");
@@ -22,10 +13,9 @@ function ComboPointPowerBar:UpdatePower()
 	if ( self.delayedUpdate ) then
 		return;
 	end
-
-	local unit = self:GetParent().unit;
-	local comboPoints = UnitPower(unit, Enum.PowerType.ComboPoints);
-	local maxComboPoints = UnitPowerMax(unit, Enum.PowerType.ComboPoints);
+	self.unit = self.unit or self:GetParent():GetParent().unit;
+	local comboPoints = UnitPower(self.unit, Enum.PowerType.ComboPoints);
+	local maxComboPoints = UnitPowerMax(self.unit, Enum.PowerType.ComboPoints);
 	if ( self.lastPower and self.lastPower > self.maxUsablePoints and comboPoints == self.lastPower - self.maxUsablePoints ) then
 		for i = 1, self.maxUsablePoints do
 			self.classResourceButtonTable[i]:AnimateOut();
@@ -54,7 +44,7 @@ function ComboPointPowerBar:UpdatePower()
 end
 
 function ComboPointPowerBar:UpdateChargedPowerPoints()
-	local chargedPowerPoints = GetUnitChargedPowerPoints(self:GetParent().unit);
+	local chargedPowerPoints = GetUnitChargedPowerPoints(self.unit);
 	for i = 1, self.maxUsablePoints do
 		local comboPointFrame = self.classResourceButtonTable[i];
 		if(comboPointFrame) then 

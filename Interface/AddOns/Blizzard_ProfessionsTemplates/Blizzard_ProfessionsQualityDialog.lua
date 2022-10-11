@@ -128,11 +128,12 @@ function ProfessionsQualityDialogMixin:GetReagentSlotCount()
 	return #self.reagentSlotSchematic.reagents;
 end
 
-function ProfessionsQualityDialogMixin:Init(recipeID, reagentSlotSchematic, allocations, slotIndex)
+function ProfessionsQualityDialogMixin:Init(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations)
 	self.reagentSlotSchematic = reagentSlotSchematic;
 	self.recipeID = recipeID;
 	self.slotIndex = slotIndex;
 	self.allocations = allocations;
+	self.disallowZeroAllocations = disallowZeroAllocations;
 
 	self:Setup();
 end
@@ -171,8 +172,8 @@ function ProfessionsQualityDialogMixin:GetSlotIndex()
 	return self.slotIndex;
 end
 
-function ProfessionsQualityDialogMixin:Open(recipeID, reagentSlotSchematic, allocations, slotIndex)
-	self:Init(recipeID, reagentSlotSchematic, allocations, slotIndex);
+function ProfessionsQualityDialogMixin:Open(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations)
+	self:Init(recipeID, reagentSlotSchematic, allocations, slotIndex, disallowZeroAllocations);
 	self:Show();
 end
 
@@ -202,5 +203,6 @@ function ProfessionsQualityDialogMixin:EvaluateAllocations()
 		editBox:SetMinMaxValues(0, math.min(self:GetQuantityRequired(), Professions.GetReagentQuantityInPossession(reagent)));
 	end
 
-	self.AcceptButton:SetEnabled(quantityAllocated == 0 or quantityAllocated >= quantityRequired);
+	local canEnable = not self.disallowZeroAllocations and quantityAllocated == 0;
+	self.AcceptButton:SetEnabled(canEnable or quantityAllocated >= quantityRequired);
 end

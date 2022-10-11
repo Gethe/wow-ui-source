@@ -6,6 +6,7 @@
 		<HitRectInsets>
 			<AbsInset left="-25" right="0" top="-15" bottom="0"/>
 		</HitRectInsets>
+		<BarTexture parentKey="Bar"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="-2">
 				<Texture parentKey="BarBorder" atlas="friendship-parts-bar" useAtlasSize="true">

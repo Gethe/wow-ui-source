@@ -21,6 +21,12 @@ function RewardTrackFrameMixin:OnLoad()
 	self.numElementsPerHalf = math.ceil(self.visibleRadius / self.calculationWidth);
 
 	self.elementPool = CreateFramePool("FRAME", self.ClipFrame, self.elementTemplate);
+
+	local defaultTrackButtonXOffset, defaultTrackButtonYOffset = 4, 0;
+	self.LeftButton:ClearAllPoints();
+	self.LeftButton:SetPoint("RIGHT", self, "LEFT", self.LeftButton.direction * (self.rewardButtonXOffset or defaultTrackButtonXOffset), self.rewardButtonYOffset or defaultTrackButtonYOffset);
+	self.RightButton:ClearAllPoints();
+	self.RightButton:SetPoint("LEFT", self, "RIGHT", self.RightButton.direction * (self.rewardButtonXOffset or defaultTrackButtonXOffset), self.rewardButtonYOffset or defaultTrackButtonYOffset);
 end
 
 function RewardTrackFrameMixin:OnHide()
@@ -235,12 +241,11 @@ end
 RewardTrackJumpButtonMixin = { };
 
 function RewardTrackJumpButtonMixin:OnLoad()
-	if self.direction == -1 then
+	if self.direction == 1 then
 		self:GetNormalTexture():SetTexCoord(1, 0, 0, 1);
-		-- Todo: Add new art in once it is ready!
-		--self:GetHighlightTexture():SetTexCoord(1, 0, 0, 1);
-		--self:GetPushedTexture():SetTexCoord(1, 0, 0, 1);
-		--self:GetDisabledTexture():SetTexCoord(1, 0, 0, 1);
+		self:GetHighlightTexture():SetTexCoord(1, 0, 0, 1);
+		self:GetPushedTexture():SetTexCoord(1, 0, 0, 1);
+		self:GetDisabledTexture():SetTexCoord(1, 0, 0, 1);
 	end
 end
 
@@ -262,17 +267,10 @@ function RewardTrackJumpButtonMixin:OnClick()
 		rewardFrame:CancelLevelEffect();
 		local fromOnShow, forceRefresh = false, true;
 		rewardFrame:SelectLevel(jumpLevel, fromOnShow, forceRefresh);
+		if track.scrollStartSound then
+			PlaySound(track.scrollStartSound);
+		end
 	end
-end
-
--- Todo: Just use the disabled textures once they're available instead of hiding the button!
-function RewardTrackJumpButtonMixin:OnEnable()
-	self:Show();
-end
-
--- Todo: Just use the disabled textures once they're available instead of hiding the button!
-function RewardTrackJumpButtonMixin:OnDisable()
-	self:Hide();
 end
 
 RewardTrackSkipLevelUpButtonMixin = { };

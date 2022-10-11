@@ -4264,6 +4264,33 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	exclusive = 1,
 };
 
+local factionMajorCities = {
+	["Alliance"] = STORMWIND,
+	["Horde"] = ORGRIMMAR,
+}
+
+StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
+	text = "",
+	button1 = YES,
+	button2 = NO,
+	OnShow = function(self)
+		local playerFactionGroup = UnitFactionGroup("player"); 
+		local factionCity = playerFactionGroup and factionMajorCities[playerFactionGroup] or nil; 
+		if(factionCity) then 
+			self.text:SetText(NORMAL_FONT_COLOR:WrapTextInColorCode(RETURNING_PLAYER_PROMPT:format(factionCity)));
+		end
+	end,
+	OnAccept = function(self)
+		C_ReturningPlayerUI.AcceptPrompt(); 
+		self:Hide();
+	end,
+	OnCancel = function()
+		C_ReturningPlayerUI.DeclinePrompt();
+	end,
+	timeout = 0,
+	exclusive = 1,
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then

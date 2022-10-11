@@ -26,7 +26,7 @@ function CompactPartyFrame_UpdateVisibility()
 	local groupFramesShown = (IsInGroup() and not IsInRaid()) or EditModeManagerFrame:ArePartyFramesForcedShown();
 	local showCompactPartyFrame = groupFramesShown and EditModeManagerFrame:UseRaidStylePartyFrames();
 	CompactPartyFrame:SetShown(showCompactPartyFrame);
-	PartyFrame:Layout();
+	PartyFrame:UpdatePaddingAndLayout();
 end
 
 function CompactPartyFrame_RefreshMembers()
@@ -54,6 +54,7 @@ function CompactPartyFrame_RefreshMembers()
 	end
 
 	CompactRaidGroup_UpdateBorder(CompactPartyFrame);
+	PartyFrame:UpdatePaddingAndLayout();
 end
 
 function CompactPartyFrame_Generate()
@@ -62,6 +63,7 @@ function CompactPartyFrame_Generate()
 	if not frame then
 		frame = CreateFrame("Frame", "CompactPartyFrame", PartyFrame, "CompactPartyFrameTemplate");
 		CompactRaidGroup_UpdateBorder(frame);
+		PartyFrame:UpdatePaddingAndLayout();
 		frame:RegisterEvent("GROUP_ROSTER_UPDATE");
 		didCreate = true;
 	end

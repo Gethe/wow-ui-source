@@ -164,7 +164,7 @@
 		<Size x ="746" y="564" />
 		<Frames>
 			<Button parentKey="ZoneArt" inherits="CharCustomizeBaseButtonTemplate" mixin="CharacterCreateStartingZoneArtMixin">
-				<Size x ="762" y="506" />
+				<Size x ="750" y="494" />
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>

@@ -4602,13 +4602,14 @@ function ChatEdit_InsertLink(text)
 		end
 		return true;
 	end
-	if ( TradeSkillFrame and TradeSkillFrame.SearchBox:HasFocus() )  then
+
+	if ( ProfessionsFrame and ProfessionsFrame.CraftingPage.RecipeList.SearchBox:HasFocus() )  then
 		local item;
 		if ( strfind(text, "item:", 1, true) ) then
 			item = GetItemInfo(text);
 		end
 		if ( item ) then
-			TradeSkillFrame.SearchBox:SetText(item);
+			ProfessionsFrame.CraftingPage.RecipeList.SearchBox:SetText(item);
 			return true;
 		end
 	end

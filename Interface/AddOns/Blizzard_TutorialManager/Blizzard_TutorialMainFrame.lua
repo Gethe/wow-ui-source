@@ -1,6 +1,5 @@
-NPE_TutorialMainFrameMixin = {};
-
-NPE_TutorialMainFrameMixin.States =
+TutorialMainFrameMixin = {};
+TutorialMainFrameMixin.States =
 {
 	Hidden			= "hidden",
 	AnimatingIn		= "animatingIn",
@@ -8,14 +7,14 @@ NPE_TutorialMainFrameMixin.States =
 	AnimatingOut	= "animatingOut",
 }
 
-NPE_TutorialMainFrameMixin.FramePositions =
+TutorialMainFrameMixin.FramePositions =
 {
 	Default = 160,
 	Low		= -140,
 }
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialMainFrameMixin:OnLoad()
+function TutorialMainFrameMixin:OnLoad()
 	NineSliceUtil.ApplyUniqueCornersLayout(self, "NewPlayerTutorial");
 
 	self:MarkDirty();
@@ -40,17 +39,17 @@ function NPE_TutorialMainFrameMixin:OnLoad()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialMainFrameMixin:CINEMATIC_START()
+function TutorialMainFrameMixin:CINEMATIC_START()
 	self:Hide();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialMainFrameMixin:CINEMATIC_STOP()
+function TutorialMainFrameMixin:CINEMATIC_STOP()
 	self:Show();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialMainFrameMixin:ShowTutorial(content, duration, position)
+function TutorialMainFrameMixin:ShowTutorial(content, duration, position)
 	self:_SetDesiredContent(content);
 	self:_SetDesiredPosition(position or self.FramePositions.Default);
 
@@ -68,7 +67,7 @@ function NPE_TutorialMainFrameMixin:ShowTutorial(content, duration, position)
 	return self.CurrentID;
 end
 
-function NPE_TutorialMainFrameMixin:HideTutorial(id)
+function TutorialMainFrameMixin:HideTutorial(id)
 	if (self.CurrentID == id) then
 		self:_AnimateOut();
 		self.DesiredContent = nil;
@@ -80,21 +79,21 @@ function NPE_TutorialMainFrameMixin:HideTutorial(id)
 	end
 end
 
-function NPE_TutorialMainFrameMixin:_HookUpdate()
+function TutorialMainFrameMixin:_HookUpdate()
 	if (not self.IsUpdating) then
 		self:SetScript("OnUpdate", self.UpdateAnimation);
 		self.IsUpdating = true;
 	end
 end
 
-function NPE_TutorialMainFrameMixin:_UnhookUpdate()
+function TutorialMainFrameMixin:_UnhookUpdate()
 	if (self.IsUpdating) then
 		self:SetScript("OnUpdate", ResizeLayoutMixin.OnUpdate);
 		self.IsUpdating = false;
 	end
 end
 
-function NPE_TutorialMainFrameMixin:_SetContent(content)
+function TutorialMainFrameMixin:_SetContent(content)
 	content = content or self.DesiredContent;
 	self.DesiredContent = nil;
 
@@ -123,14 +122,14 @@ function NPE_TutorialMainFrameMixin:_SetContent(content)
 	self:_AnimateIn();
 end
 
-function NPE_TutorialMainFrameMixin:_SetPosition(position)
+function TutorialMainFrameMixin:_SetPosition(position)
 	position = position or self.DesiredPosition;
 	self.DesiredPosition = nil;
 	self:SetPoint("CENTER", 0, position);
 	self:_AnimateIn();
 end
 
-function NPE_TutorialMainFrameMixin:_SetDesiredContent(content)
+function TutorialMainFrameMixin:_SetDesiredContent(content)
 	if (self.State == self.States.Hidden) then
 		self:_SetContent(content)
 	else
@@ -139,7 +138,7 @@ function NPE_TutorialMainFrameMixin:_SetDesiredContent(content)
 	end
 end
 
-function NPE_TutorialMainFrameMixin:_SetDesiredPosition(position)
+function TutorialMainFrameMixin:_SetDesiredPosition(position)
 	if (self.State == self.States.Hidden) then
 		self:_SetPosition(position);
 	else
@@ -150,7 +149,7 @@ end
 
 local fadeInTime = 0.25;
 local fadeOutTime = 0.25;
-function NPE_TutorialMainFrameMixin:UpdateAnimation(elapsed)
+function TutorialMainFrameMixin:UpdateAnimation(elapsed)
 	ResizeLayoutMixin.OnUpdate(self, elapsed);
 	local currentAlpha = self:GetAlpha();
 
@@ -201,7 +200,7 @@ function NPE_TutorialMainFrameMixin:UpdateAnimation(elapsed)
 	end
 end
 
-function NPE_TutorialMainFrameMixin:_AnimateIn()
+function TutorialMainFrameMixin:_AnimateIn()
 	if (self:GetAlpha() < 1) then
 		self.DesiredAlpha = 1;
 		self:_HookUpdate();
@@ -212,7 +211,7 @@ function NPE_TutorialMainFrameMixin:_AnimateIn()
 	end
 end
 
-function NPE_TutorialMainFrameMixin:_AnimateOut()
+function TutorialMainFrameMixin:_AnimateOut()
 	if (self:GetAlpha() > 0) then
 		self.DesiredAlpha = 0;
 		self:_HookUpdate();
@@ -225,14 +224,14 @@ end
 
 
 -- ------------------------------------------------------------------------------------------------------------
-NPE_TutorialSingleKeyMixin = CreateFromMixins(NPE_TutorialMainFrameMixin);
-function NPE_TutorialSingleKeyMixin:OnLoad()
-	NPE_TutorialMainFrameMixin.OnLoad(self);
+TutorialSingleKeyMixin = CreateFromMixins(TutorialMainFrameMixin);
+function TutorialSingleKeyMixin:OnLoad()
+	TutorialMainFrameMixin.OnLoad(self);
 
 	self:MarkDirty();
 end
 
-function NPE_TutorialSingleKeyMixin:SetKeyText(keyText)
+function TutorialSingleKeyMixin:SetKeyText(keyText)
 	local container = self.ContainerFrame.KeyBind;
 	if container then
 		local fontString = container.KeyBind;
@@ -242,7 +241,7 @@ function NPE_TutorialSingleKeyMixin:SetKeyText(keyText)
 	end
 end
 
-function NPE_TutorialSingleKeyMixin:_SetContent(content)
+function TutorialSingleKeyMixin:_SetContent(content)
 	self:SetKeyText(content.keyText);
 
 	local text = self.ContainerFrame.Text;
@@ -259,7 +258,7 @@ function NPE_TutorialSingleKeyMixin:_SetContent(content)
 	self:_AnimateIn();
 end
 
-function NPE_TutorialSingleKeyMixin:HideTutorial(id)
+function TutorialSingleKeyMixin:HideTutorial(id)
 	self:_AnimateOut();
 	if (self.Timer) then
 		self.Timer:Cancel();
@@ -268,12 +267,12 @@ end
 
 
 -- ------------------------------------------------------------------------------------------------------------
-NPE_TutorialWalkMixin = CreateFromMixins(NPE_TutorialMainFrameMixin);
-function NPE_TutorialWalkMixin:OnLoad()
-	NPE_TutorialMainFrameMixin.OnLoad(self);
+TutorialWalkMixin = CreateFromMixins(TutorialMainFrameMixin);
+function TutorialWalkMixin:OnLoad()
+	TutorialMainFrameMixin.OnLoad(self);
 end
 
-function NPE_TutorialWalkMixin:SetKeybindings()
+function TutorialWalkMixin:SetKeybindings()
 	local binds = {
 		"MOVEFORWARD",
 		"TURNLEFT",
@@ -304,14 +303,14 @@ function NPE_TutorialWalkMixin:SetKeybindings()
 	end
 end
 
-function NPE_TutorialWalkMixin:_SetContent(content)
+function TutorialWalkMixin:_SetContent(content)
 	self:SetKeybindings();
 	self:MarkDirty();
 	self.ContainerFrame:MarkDirty();
 	self:_AnimateIn();
 end
 
-function NPE_TutorialWalkMixin:HideTutorial(id)
+function TutorialWalkMixin:HideTutorial(id)
 	self:_AnimateOut();
 	if (self.Timer) then
 		self.Timer:Cancel();

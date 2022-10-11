@@ -57,7 +57,7 @@
 			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnEvent method="OnEvent" inherit="prepend"/>
 			<OnUpdate method="OnUpdate"/>
-			<OnHide method="OnHide"/>
+			<OnHide method="OnHide" inherit="prepend"/>
 		</Scripts>
 	</Frame>
 </Ui>

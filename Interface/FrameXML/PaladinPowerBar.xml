@@ -2,7 +2,10 @@
 ..\FrameXML\UI.xsd">
   <Script file="PaladinPowerBar.lua"/>
 
-	<Frame name="PaladinPowerBarFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, PaladinPowerBar">
+	<Frame name="PaladinPowerBarFrame" inherits="ClassPowerBarFrame, PlayerFrameBottomManagedFrameTemplate" mixin="ClassPowerBar, PaladinPowerBar">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="3" type="number"/>
+		</KeyValues>
 		<Animations>
 			<AnimationGroup parentKey="showAnim">
 				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>

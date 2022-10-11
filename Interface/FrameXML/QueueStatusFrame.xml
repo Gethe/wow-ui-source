@@ -405,7 +405,7 @@
 	<Frame name="QueueStatusFrame" mixin="QueueStatusFrameMixin" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" parent="UIParent" inherits="TooltipBackdropTemplate">
 		<Size x="275" y="150"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="QueueStatusButton" relativePoint="LEFT" x="0" y="28"/>
+			<Anchor point="RIGHT" relativeTo="QueueStatusButton" relativePoint="LEFT" x="0" y="28"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append" />

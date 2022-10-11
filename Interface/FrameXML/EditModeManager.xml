@@ -49,7 +49,7 @@
 					<Anchor point="TOPLEFT" x="20" y="-50"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Grid" frameStrata="BACKGROUND" mixin="EditModeGridMixin" ignoreParentScale="true" hidden="true">
+			<Frame parentKey="Grid" frameStrata="BACKGROUND" mixin="EditModeGridMixin" hidden="true">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
@@ -61,14 +61,25 @@
 					<OnLoad method="OnLoad"/>
 					<OnShow method="UpdateGrid"/>
 					<OnEvent method="UpdateGrid"/>
+					<OnHide method="OnHide"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="ShowGridCheckButton" inherits="EditModeCheckButtonTemplate">
 				<KeyValues>
 					<KeyValue key="labelText" value="HUD_EDIT_MODE_SHOW_GRID" type="global"/>
+					<KeyValue key="fixedWidth" value="110" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.LayoutDropdown" relativePoint="RIGHT" x="35" y="-5"/>
+					<Anchor point="LEFT" relativeKey="$parent.LayoutDropdown" relativePoint="RIGHT" x="10" y="-5"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="EnableSnapCheckButton" inherits="EditModeCheckButtonTemplate">
+				<KeyValues>
+					<KeyValue key="labelText" value="HUD_EDIT_MODE_ENABLE_SNAP" type="global"/>
+					<KeyValue key="fixedWidth" value="110" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ShowGridCheckButton" relativePoint="RIGHT" x="5"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="GridSpacingSlider" inherits="ResizeLayoutFrame" mixin="EditModeGridSpacingSliderMixin">

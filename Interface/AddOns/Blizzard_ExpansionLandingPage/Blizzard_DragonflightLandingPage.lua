@@ -105,7 +105,7 @@ function DragonflightLandingOverlayMixin:SetUpMajorFactionList()
 	self.MajorFactionList:ClearAllPoints();
 	local xOffset, yOffset = 44, -26;
 	self.MajorFactionList:SetPoint("TOPRIGHT", self.Header.TitleDivider, "BOTTOMRIGHT", xOffset, yOffset);
-	self.MajorFactionList:SetExpansionFilter(LE_EXPANSION_10_0);
+	self.MajorFactionList:SetExpansionFilter(LE_EXPANSION_DRAGONFLIGHT);
 end
 
 ------------------------- Dragonriding Skills Button -------------------------

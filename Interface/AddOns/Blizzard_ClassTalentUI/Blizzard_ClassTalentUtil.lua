@@ -66,16 +66,16 @@ local SpecIDToBackgroundAtlas = {
 
 -- TODO:: Replace panOffset fixups.
 local ClassVisuals = {
-	[1]	 --[[Warrior--]]	 = { activationFX = "talents-animations-class-warrior", panOffset = { x = 30, y = 0 }, },
+	[1]	 --[[Warrior--]]	 = { activationFX = "talents-animations-class-warrior", panOffset = { x = 30, y = 31 }, },
 	[2]  --[[Paladin--]] 	 = { activationFX = "talents-animations-class-paladin", panOffset = { x = -60, y = -29 }, },
 	[3]  --[[Hunter--]] 	 = { activationFX = "talents-animations-class-hunter", panOffset = { x = 0, y = -29 }, },
 	[4]  --[[Rogue--]] 		 = { activationFX = "talents-animations-class-rogue", panOffset = { x = 30, y = -29 }, },
 	[5]  --[[Priest--]] 	 = { activationFX = "talents-animations-class-priest", panOffset = { x = -30, y = -29 }, },
-	[6]  --[[DeathKnight--]] = { activationFX = "talents-animations-class-deathknight" },
-	[7]  --[[Shaman--]] 	 = { activationFX = "talents-animations-class-shaman" },
+	[6]  --[[DeathKnight--]] = { activationFX = "talents-animations-class-deathknight", panOffset = { x = 0, y = 1 }, },
+	[7]  --[[Shaman--]] 	 = { activationFX = "talents-animations-class-shaman", panOffset = { x = 0, y = 1 }, },
 	[8]  --[[Mage--]] 		 = { activationFX = "talents-animations-class-mage", panOffset = { x = 30, y = -29 }, },
-	[9]  --[[Warlock--]] 	 = { activationFX = "talents-animations-class-warlock" },
-	[10] --[[Monk--]] 		 = { activationFX = "talents-animations-class-monk" },
+	[9]  --[[Warlock--]] 	 = { activationFX = "talents-animations-class-warlock", panOffset = { x = 0, y = 1 }, },
+	[10] --[[Monk--]] 		 = { activationFX = "talents-animations-class-monk", panOffset = { x = 0, y = -29 }, },
 	[11] --[[Druid--]] 		 = { activationFX = "talents-animations-class-druid", panOffset = { x = 30, y = -29 }, },
 	[12] --[[DemonHunter--]] = { activationFX = "talents-animations-class-demonhunter", panOffset = { x = 30, y = -29 }, },
 	[13] --[[Evoker--]]		 = { activationFX = "talents-animations-class-evoker", panOffset = { x = 30, y = -29 }, },

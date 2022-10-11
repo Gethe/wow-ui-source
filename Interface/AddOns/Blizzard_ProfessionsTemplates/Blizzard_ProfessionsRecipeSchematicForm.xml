@@ -23,35 +23,44 @@
 	</Frame>
 
 	<Frame name="ProfessionsRecipeSchematicFormTemplate" mixin="ProfessionsRecipeSchematicFormMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="canShowFavoriteButton" value="true" type="boolean"/>
+		</KeyValues>
 		<Frames>
-			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate" parentArray="recipeInfoFrames">
+			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate">
 				<KeyValues>
-					<KeyValue key="noQualityOverlay" value="true" type="boolean"/>
+					<KeyValue key="noProfessionQualityOverlay" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="-20"/>
+					<Anchor point="TOPLEFT" x="20" y="-30"/>
 				</Anchors>
 			</Button>
 
+			<CheckButton parentKey="FavoriteButton" mixin="ProfessionsFavoriteButtonMixin" hidden="true">
+				<Size x="20" y="18"/>
+				<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-icon-favorite"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-icon-favorite-off" alphaMode="ADD"/>
+			</CheckButton>
+			
 			<Frame parentKey="QualityDialog" inherits="ProfessionsQualityDialogTemplate" frameStrata="DIALOG" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</Frame>
 
-			<CheckButton parentKey="TrackRecipeCheckBox" inherits="UICheckButtonTemplate" parentArray="recipeInfoFrames">
+			<CheckButton parentKey="TrackRecipeCheckBox" inherits="UICheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-83" y="-8"/>
 				</Anchors>
 			</CheckButton>
 
-			<CheckButton parentKey="AllocateBestQualityCheckBox" inherits="UICheckButtonTemplate" parentArray="recipeInfoFrames">
+			<CheckButton parentKey="AllocateBestQualityCheckBox" inherits="UICheckButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="30" y="20"/>
 				</Anchors>
 			</CheckButton>
 
-			<Frame parentKey="Reagents" inherits="ProfessionsReagentContainerTemplate" parentArray="recipeInfoFrames">
+			<Frame parentKey="Reagents" inherits="ProfessionsReagentContainerTemplate">
 				<KeyValues>
 					<KeyValue key="labelText" value="PROFESSIONS_REAGENT_CONTAINER_LABEL" type="global"/>
 				</KeyValues>
@@ -60,7 +69,7 @@
 				</Anchors>
 			</Frame>
 			
-			<Frame parentKey="OptionalReagents" inherits="ProfessionsReagentContainerTemplate" parentArray="recipeInfoFrames">
+			<Frame parentKey="OptionalReagents" inherits="ProfessionsReagentContainerTemplate">
 				<KeyValues>
 					<KeyValue key="labelText" value="PROFESSIONS_OPTIONAL_REAGENT_CONTAINER_LABEL" type="global"/>
 				</KeyValues>
@@ -98,9 +107,9 @@
 				</Anchors>
 			</DropDownToggleButton>
 			
-			<Frame parentKey="Details" inherits="ProfessionsRecipeCrafterDetailsTemplate" parentArray="recipeInfoFrames">
+			<Frame parentKey="Details" inherits="ProfessionsRecipeCrafterDetailsTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-20" y="-85"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-30" y="-85"/>
 				</Anchors>
 			</Frame>
 
@@ -136,18 +145,18 @@
 		
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="OutputText" inherits="GameFontHighlightMed2" justifyH="LEFT" parentArray="recipeInfoFrames">
+				<FontString parentKey="OutputText" inherits="GameFontHighlightMed2" justifyH="LEFT">
 					<Size x="400" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.OutputIcon" relativePoint="RIGHT" x="14" y="0"/>
-						<Anchor point="TOP" x="0" y="-22"/>
+						<Anchor point="TOP" x="0" y="-32"/>
 					</Anchors>
 				</FontString>
 
-				<FontString parentKey="RecraftingOutputText" inherits="GameFontHighlightMed2" justifyH="LEFT" parentArray="recipeInfoFrames">
+				<FontString parentKey="RecraftingOutputText" inherits="GameFontHighlightMed2" justifyH="LEFT">
 					<Size x="400" y="1"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="28" y="-25"/>
+						<Anchor point="TOPLEFT" x="28" y="-32"/>
 					</Anchors>
 				</FontString>
 
@@ -181,8 +190,8 @@
 					<Size x="400" y="0"/>
 				</FontString>
 				
-				<FontString parentKey="Description" inherits="GameFontHighlightSmall2" justifyH="LEFT">
-					<Size x="400" y="0"/>
+				<FontString parentKey="Description" inherits="GameFontHighlightSmall2" maxLines="4" justifyH="LEFT">
+					<Size x="460" y="0"/>
 				</FontString>
 			</Layer>
 		</Layers>

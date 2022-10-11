@@ -128,6 +128,20 @@ local WarCampaign =
 			},
 		},
 		{
+			Name = "SortAsNormalQuest",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "campaignID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sortAsNormalQuest", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UsesNormalQuestIcons",
 			Type = "Function",
 

@@ -174,13 +174,6 @@ function GroupLootFrame_OnShow(self)
 		GroupLootFrame_DisableLootButton(self.GreedButton);
 		self.GreedButton.reason = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonGreed];
 	end
-	if ( canDisenchant) then
-		GroupLootFrame_EnableLootButton(self.DisenchantButton);
-		self.DisenchantButton.reason = nil;
-	else
-		GroupLootFrame_DisableLootButton(self.DisenchantButton);
-		self.DisenchantButton.reason = format(_G["LOOT_ROLL_INELIGIBLE_REASON"..reasonDisenchant], deSkillRequired);
-	end
 	self.Timer:SetFrameLevel(self:GetFrameLevel() - 1);
 end
 

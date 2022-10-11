@@ -108,6 +108,9 @@ function ActionBarController_OnEvent(self, event, ...)
 			"PROXY_SHOW_ACTIONBAR_3",
 			"PROXY_SHOW_ACTIONBAR_4",
 			"PROXY_SHOW_ACTIONBAR_5",
+			"PROXY_SHOW_ACTIONBAR_6",
+			"PROXY_SHOW_ACTIONBAR_7",
+			"PROXY_SHOW_ACTIONBAR_8",
 		};
 
 		local function UpdateActionBar()
@@ -131,7 +134,7 @@ function ActionBarController_UpdateAll(force)
 	-- If we have a skinned vehicle bar or skinned override bar, display the OverrideActionBar
 	if ((HasVehicleActionBar() and UnitVehicleSkin("player") and UnitVehicleSkin("player") ~= "")
 		or (HasOverrideActionBar() and GetOverrideBarSkin() and GetOverrideBarSkin() ~= 0)) then
-		OverrideActionBar_UpdateSkin();
+		OverrideActionBar:UpdateSkin();
 		CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_OVERRIDE;
 	-- If we have a non-skinned override bar of some sort, use the MainMenuBar
 	elseif ( HasBonusActionBar() or HasOverrideActionBar() or HasVehicleActionBar() or HasTempShapeshiftActionBar() or C_PetBattles.IsInBattle() ) then

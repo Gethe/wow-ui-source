@@ -292,7 +292,7 @@
 					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 					<Button name="ReputationDetailCloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+							<Anchor point="TOPRIGHT" x="-7" y="-7"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>

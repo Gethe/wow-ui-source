@@ -1,4 +1,0 @@
-## Title: Blizzard Arena UI
-## LoadOnDemand: 1
-Blizzard_ArenaUI.xml
-Localization.lua

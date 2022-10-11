@@ -21,7 +21,8 @@ function ClassNameplateBar:OnEvent(event, ...)
 			self:UpdateMaxPower();
 			return true;
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+	elseif ( event == "UNIT_DISPLAYPOWER" or event == "PLAYER_ENTERING_WORLD" ) then
+		self:Setup();
 		self:UpdatePower();
 		return true;
 	elseif (event == "PLAYER_TALENT_UPDATE" ) then
@@ -60,12 +61,14 @@ function ClassNameplateBar:Setup()
 		if ( self:MatchesSpec() ) then
 			self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
 			self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
+			self:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit);
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			showBar = true;
 		else
 			self:UnregisterEvent("UNIT_POWER_FREQUENT");
 			self:UnregisterEvent("UNIT_MAXPOWER");
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+			self:UnregisterEvent("UNIT_DISPLAYPOWER");
 		end
 
 		self:RegisterEvent("PLAYER_TALENT_UPDATE");

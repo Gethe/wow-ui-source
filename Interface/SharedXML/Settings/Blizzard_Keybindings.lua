@@ -237,7 +237,7 @@ function CreateVoicePushToTalkBindingHandler()
 			DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys);
 		end
 
-		SaveAllCustomBindings(true);
+		CustomBindingManager:OnDismissed(Enum.CustomBindingType.VoicePushToTalk, true);
 	end);
 
 	return handler;

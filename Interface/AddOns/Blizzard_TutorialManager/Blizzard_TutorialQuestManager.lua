@@ -10,7 +10,7 @@ function QuestData:initialize(questID, questTitle)
 	self.Time_ObjectivesComplete = nil;
 	self.Time_TurnedIn = nil;
 
-	self.WasReinitializedAccepted = NPE_QuestManager.IsReinitializing;
+	self.WasReinitializedAccepted = TutorialQuestManager.IsReinitializing;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -51,9 +51,9 @@ function QuestData:GetTurnInMapID()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-NPE_QuestManager = {};
+TutorialQuestManager = {};
 
-NPE_QuestManager.Events =
+TutorialQuestManager.Events =
 {
 	Quest_Accepted				= "Quest_Accepted",
 	Quest_ObjectivesComplete	= "Quest_ObjectivesComplete",
@@ -63,7 +63,7 @@ NPE_QuestManager.Events =
 }
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:Initialize()
+function TutorialQuestManager:Initialize()
 	self.Data = {};
 	self.Callbacks = {};
 	self.IsReinitializing = false;
@@ -75,14 +75,14 @@ function NPE_QuestManager:Initialize()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:Shutdown()
+function TutorialQuestManager:Shutdown()
 	Dispatcher:UnregisterAll(self);
 	self.Data = {};
 	self.Callbacks = {};
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:ReinitializeExistingQuests()
+function TutorialQuestManager:ReinitializeExistingQuests()
 	self.IsReinitializing = true;
 
 	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
@@ -95,7 +95,7 @@ function NPE_QuestManager:ReinitializeExistingQuests()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:AreQuestsPending()
+function TutorialQuestManager:AreQuestsPending()
 	for questID, questData in pairs(self.Data) do
 		if (not questData.Time_ObjectivesComplete) then
 			return true;
@@ -106,7 +106,7 @@ function NPE_QuestManager:AreQuestsPending()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:QUEST_ACCEPTED(questID)
+function TutorialQuestManager:QUEST_ACCEPTED(questID)
 	local title = C_QuestLog.GetTitleForQuestID(questID);
 	if title then
 		local data = QuestData:new(questID, title);
@@ -116,7 +116,7 @@ function NPE_QuestManager:QUEST_ACCEPTED(questID)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:QUEST_LOG_UPDATE()
+function TutorialQuestManager:QUEST_LOG_UPDATE()
 	for questID, questData in pairs(self.Data) do
 		if (not questData.IsComplete) then
 			if (not questData.Time_ObjectivesComplete) then
@@ -144,7 +144,7 @@ function NPE_QuestManager:QUEST_LOG_UPDATE()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:SimulateEvents(callbackTargetFilter)
+function TutorialQuestManager:SimulateEvents(callbackTargetFilter)
 	for questID, questData in pairs(self.Data) do
 		if (not questData.IsComplete) then
 			if (not questData.Time_ObjectivesComplete) then
@@ -157,7 +157,7 @@ function NPE_QuestManager:SimulateEvents(callbackTargetFilter)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:_DoCallback(event, questData, callbackTargetFilter)
+function TutorialQuestManager:_DoCallback(event, questData, callbackTargetFilter)
 	for obj, v in pairs(self.Callbacks) do
 		if ((not callbackTargetFilter) or (callbackTargetFilter == obj)) then
 			if (obj and (type(obj[event]) == "function")) then
@@ -168,15 +168,15 @@ function NPE_QuestManager:_DoCallback(event, questData, callbackTargetFilter)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:RegisterForCallbacks(obj)
+function TutorialQuestManager:RegisterForCallbacks(obj)
 	self.Callbacks[obj] = true;
 	self:SimulateEvents(obj);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function NPE_QuestManager:UnregisterForCallbacks(obj)
+function TutorialQuestManager:UnregisterForCallbacks(obj)
 	self.Callbacks[obj] = nil;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-NPE_QuestManager:Initialize();
+TutorialQuestManager:Initialize();

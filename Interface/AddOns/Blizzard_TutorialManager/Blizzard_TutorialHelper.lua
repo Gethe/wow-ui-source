@@ -1,5 +1,4 @@
 local _, addonTable = ...;
-local TutorialData = addonTable.TutorialData;
 
 -- ============================================================================================================
 -- Helper Functions
@@ -76,16 +75,6 @@ function TutorialHelper:GetClassString(key)
 	end
 
 	return _G[key];
-end
-
--- ------------------------------------------------------------------------------------------------------------
-function TutorialHelper:GetRacialData()
-	return TutorialData[self:GetRace()];
-end
-
--- ------------------------------------------------------------------------------------------------------------
-function TutorialHelper:GetFactionData()
-	return TutorialData[self:GetFaction()];
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -167,7 +156,7 @@ function TutorialHelper:DoQuestsInBundleNeedPickup(questBundle)
 	return false;
 end
 
-local actionBars = {"ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton", "MultiBarLeftButton", "MultiBarRightButton"}
+local actionBars = {"ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton", "MultiBarLeftButton", "MultiBarRightButton", "MultiBar5Button", "MultiBar6Button", "MultiBar7Button"}
 function TutorialHelper:FindEmptyButton(optionalPreferredActionBar)
 	if optionalPreferredActionBar then
 		for i = 1, 12 do
@@ -205,9 +194,10 @@ function TutorialHelper:GetActionButtonBySpellID(spellID)
 
 				local baseSpellID  = FindBaseSpellByID(spellID) or spellID;
 				local overrideSpellID = FindSpellOverrideByID(spellID) or spellID;
-				if sID and (sID == baseSpellID or sID == overrideSpellID) then
+				local isFlyout = actionType == "flyout";
+				if not isFlyout and sID and (sID == baseSpellID or sID == overrideSpellID) then
 					return btn;
-				elseif (actionType == "flyout" and FlyoutHasSpell(sID, spellID)) then
+				elseif (isFlyout and FlyoutHasSpell(sID, spellID)) then
 					return btn;
 				end
 			end

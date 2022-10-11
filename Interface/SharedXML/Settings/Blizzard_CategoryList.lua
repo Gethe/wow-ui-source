@@ -204,10 +204,10 @@ function SettingsCategoryListMixin:GetOrCreateGroup(groupText, order)
 	return tbl;
 end
 
-function SettingsCategoryListMixin:GetCategory(categoryName)
+function SettingsCategoryListMixin:GetCategory(categoryID)
 	for index, tbl in ipairs(self.groups) do
 		for index, category in ipairs(tbl.categories) do
-			if category:GetName() == categoryName then
+			if category:GetID() == categoryID then
 				return category;
 			end
 		end

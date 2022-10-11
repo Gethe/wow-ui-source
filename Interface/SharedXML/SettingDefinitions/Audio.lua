@@ -230,7 +230,7 @@ local function InitVoiceSettings(category, layout)
 		local outputInitializer = nil;
 		do
 			local function GetOptions()
-				local container = Settings.CreateDropDownTextContainer();
+				local container = Settings.CreateControlTextContainer();
 				PopulateOptions(container, C_VoiceChat.GetAvailableOutputDevices(), VOICE_CHAT_OUTPUT_DEVICE_DEFAULT);
 				return container:GetData();
 			end
@@ -239,7 +239,7 @@ local function InitVoiceSettings(category, layout)
 			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_DEVICE", Settings.DefaultVarLocation,
 				Settings.VarType.String, VOICE_CHAT_OUTPUT_DEVICE, defaultValue, GetActiveOutputDeviceID, C_VoiceChat.SetOutputDevice);
 
-			outputInitializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_CHAT_OUTPUT_DEVICE);
+			outputInitializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_OUTPUT);
 		end
 		
 		-- Volume
@@ -252,7 +252,7 @@ local function InitVoiceSettings(category, layout)
 			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatScaledPercentage);
 
-			local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_VOICE_CHAT_VOLUME);
+			local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_VOICE_OUTPUT_VOLUME);
 			initializer:SetParentInitializer(outputInitializer);
 		end
 
@@ -275,7 +275,7 @@ local function InitVoiceSettings(category, layout)
 			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentage);
 
-			local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_VOICE_CHAT_DUCKING_SCALE);
+			local initializer = Settings.CreateSlider(category, setting, options, VOICE_CHAT_AUDIO_DUCKING);
 			initializer:SetParentInitializer(outputInitializer);
 			-- FIXME SEARCH
 		end
@@ -286,7 +286,7 @@ local function InitVoiceSettings(category, layout)
 		local inputInitializer = nil;
 		do
 			local function GetOptions()
-				local container = Settings.CreateDropDownTextContainer();
+				local container = Settings.CreateControlTextContainer();
 				PopulateOptions(container, C_VoiceChat.GetAvailableInputDevices(), VOICE_CHAT_INPUT_DEVICE_DEFAULT);
 				return container:GetData();
 			end
@@ -295,7 +295,7 @@ local function InitVoiceSettings(category, layout)
 			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_DEVICE", Settings.DefaultVarLocation, 
 				Settings.VarType.String, VOICE_CHAT_MIC_DEVICE, defaultValue, GetActiveInputDeviceID, C_VoiceChat.SetInputDevice);
 
-			inputInitializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_CHAT_MIC_DEVICE);
+			inputInitializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_INPUT);
 		end
 
 		-- Volume
@@ -308,21 +308,30 @@ local function InitVoiceSettings(category, layout)
 			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatScaledPercentage);
 
-			local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_VOICE_CHAT_MIC_VOLUME);
+			local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_VOICE_INPUT_VOLUME);
 			initializer:SetParentInitializer(inputInitializer);
 		end
 
 		-- Sensitivity
 		do
+			local minValue, maxValue, step = 0, VoiceMaxValue, 1;
+
+			-- Inverting the display value such that 0 == least sensitive, 100 == most sensitive
+			local function GetValue()
+				return maxValue - C_VoiceChat.GetVADSensitivity();
+			end
+			local function SetValue(value)
+				C_VoiceChat.SetVADSensitivity(maxValue - value);
+			end
+
 			local defaultValue = tonumber(GetCVarDefault("VoiceVADSensitivity"));
 			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_SENSITIVITY", Settings.DefaultVarLocation,
-				Settings.VarType.Number, VOICE_CHAT_MIC_SENSITIVITY, defaultValue, C_VoiceChat.GetVADSensitivity, C_VoiceChat.SetVADSensitivity);
+				Settings.VarType.Number, VOICE_CHAT_MIC_SENSITIVITY, defaultValue, GetValue, SetValue);
 
-			local minValue, maxValue, step = 0, VoiceMaxValue, 1;
 			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatScaledPercentage);
 			
-			local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_VOICE_CHAT_MIC_SENSITIVITY);
+			local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_VOICE_ACTIVATION_SENSITIVITY);
 			initializer:SetParentInitializer(inputInitializer);
 		end
 
@@ -341,9 +350,9 @@ local function InitVoiceSettings(category, layout)
 		local chatModeInitializer = nil;
 		do
 			local function GetOptionData(options)
-				local container = Settings.CreateDropDownTextContainer();
-				container:Add(Enum.CommunicationMode.PushToTalk, PUSH_TO_TALK);
-				container:Add(Enum.CommunicationMode.OpenMic, OPEN_MIC);
+				local container = Settings.CreateControlTextContainer();
+				container:Add(Enum.CommunicationMode.PushToTalk, PUSH_TO_TALK, OPTION_TOOLTIP_VOICE_TYPE1);
+				container:Add(Enum.CommunicationMode.OpenMic, OPEN_MIC, OPTION_TOOLTIP_VOICE_TYPE2);
 				return container:GetData();
 			end
 
@@ -367,6 +376,7 @@ end
 
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(AUDIO_LABEL);
+	Settings.AUDIO_CATEGORY_ID = category:GetID();
 
 	-- Enable Sound
 	Settings.SetupCVarCheckBox(category, "Sound_EnableAllSound", ENABLE_SOUND, OPTION_TOOLTIP_ENABLE_SOUND);
@@ -374,7 +384,7 @@ local function Register()
 	-- Game Sound Ouptut
 	do
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			local count = Sound_GameSystem_GetNumOutputDrivers();
 			for index = 0, count - 1 do
 				local name = Sound_GameSystem_GetOutputDriverNameByIndex(index);
@@ -401,7 +411,7 @@ local function Register()
 		local LARGE_CACHE_SIZE_BYTES = 134217728;
 		local BYTE_PER_MB = 1024*1024;
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(SMALL_CACHE_SIZE_BYTES, AUDIO_CACHE_SIZE_SMALL:format(SMALL_CACHE_SIZE_BYTES/BYTE_PER_MB));
 			container:Add(LARGE_CACHE_SIZE_BYTES, AUDIO_CACHE_SIZE_LARGE:format(LARGE_CACHE_SIZE_BYTES/BYTE_PER_MB));
 			return container:GetData();

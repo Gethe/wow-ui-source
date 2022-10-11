@@ -2707,3 +2707,7 @@ PaperDollItemSlotButtonMixin = {}
 function PaperDollItemSlotButtonMixin:GetItemContextMatchResult()
 	return ItemButtonUtil.GetItemContextMatchResultForItem(ItemLocation:CreateFromEquipmentSlot(self:GetID()));
 end
+
+function PaperDollItemSlotButtonMixin:GetSlotAndBagID()
+	return self:GetID(), 0;
+end

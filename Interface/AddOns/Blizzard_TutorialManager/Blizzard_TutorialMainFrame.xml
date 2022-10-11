@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TutorialMainFrame.lua" />
 
-	<Frame name="NPE_TutorialMainFrame_Frame" mixin="NPE_TutorialMainFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
+	<Frame name="TutorialMainFrame_Frame" mixin="TutorialMainFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="180" type="number"/>
 			<KeyValue key="heightPadding" value="64" type="number"/>
@@ -74,7 +74,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="NPE_TutorialSingleKey_Frame" mixin="NPE_TutorialSingleKeyMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
+	<Frame name="TutorialSingleKey_Frame" mixin="TutorialSingleKeyMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="180" type="number"/>
 			<KeyValue key="heightPadding" value="64" type="number"/>
@@ -112,7 +112,7 @@
 	</Frame>
 
 
-	<Frame name="NPE_TutorialWalk_Frame" mixin="NPE_TutorialWalkMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
+	<Frame name="TutorialWalk_Frame" mixin="TutorialWalkMixin" inherits="ResizeLayoutFrame" parent="UIParent" alpha="0">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="180" type="number"/>
 			<KeyValue key="heightPadding" value="64" type="number"/>

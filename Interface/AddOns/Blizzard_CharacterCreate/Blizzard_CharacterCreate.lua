@@ -29,14 +29,14 @@ local HUMAN_RADE_ID = 1;
 local ORC_RACE_ID = 2;
 
 NineSliceUtil.AddLayout("CharacterCreateThickBorder", {
-	TopLeftCorner =	{ atlas = "ui-frame-diamondmetal-cornertopleft-8x", },
-	TopRightCorner =	{ atlas = "ui-frame-diamondmetal-cornertopright-8x", },
-	BottomLeftCorner =	{ atlas = "ui-frame-diamondmetal-cornerbottomleft-8x", },
-	BottomRightCorner =	{ atlas = "ui-frame-diamondmetal-cornerbottomright-8x", },
-	TopEdge = { atlas = "_ui-frame-diamondmetal-edgetop-8x", },
-	BottomEdge = { atlas = "_ui-frame-diamondmetal-edgebottom-8x", },
-	LeftEdge = { atlas = "!ui-frame-diamondmetal-edgeleft-8x", },
-	RightEdge = { atlas = "!ui-frame-diamondmetal-edgeright-8x", },
+	TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
+	TopRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopRight", },
+	BottomLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomLeft", },
+	BottomRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomRight", },
+	TopEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeTop", },
+	BottomEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeBottom", },
+	LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
+	RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
 });
 
 GlueDialogTypes["CHARACTER_CREATE_FAILURE"] = {
@@ -234,21 +234,25 @@ end
 function CharacterCreateMixin:SetPaidServiceInfo(serviceType, characterID)
 	self.paidServiceType = serviceType;
 	self.paidServiceCharacterID = characterID;
+	C_CharacterCreation.SetPaidService(serviceType ~= nil);
 end
 
 function CharacterCreateMixin:SetVASInfo(vasType, info)
 	self.vasType = vasType;
 	self.vasInfo = info;
+	C_CharacterCreation.SetPaidService(vasType ~= nil);
 end
 
 function CharacterCreateMixin:ClearPaidServiceInfo()
 	self.paidServiceType = nil;
 	self.paidServiceCharacterID = nil;
+	C_CharacterCreation.SetPaidService(false);
 end
 
 function CharacterCreateMixin:ClearVASInfo()
 	self.vasType = nil;
 	self.vasInfo = nil;	
+	C_CharacterCreation.SetPaidService(false);
 end
 
 function CharacterCreateMixin:BeginVASTransaction()
@@ -832,6 +836,12 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 	self:SetEnabledState(buttonEnabled);
 	self.ClassName:SetText(classData.name);
 
+	-- Prevent tooltip of far right elements from overlapping races buttons
+	if (self.layoutIndex > 11) then
+		self.tooltipAnchor = "ANCHOR_LEFT";
+	end
+	
+
 	self:ClearTooltipLines();
 	self:AddTooltipLine(classData.description);
 	self:AddBlankTooltipLine();
@@ -1212,6 +1222,7 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 	local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
 	local isTrialRestricted = C_CharacterCreation.IsTrialAccountRestricted();
 	local useNewPlayerMode = C_CharacterCreation.UseBeginnerMode();
+	local blockedRaces = C_CharacterCreation.GetBlockedRaces();
 	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode);
 	self.HordeAlliedRaces:SetShown(not useNewPlayerMode);
 
@@ -1482,6 +1493,10 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 	end
 
 	if self.classValidRaces and not self.classValidRaces[raceData.raceID] then
+		return false;
+	end
+
+	if self.blockedRaces and self.blockedRaces[raceData.raceID] then
 		return false;
 	end
 

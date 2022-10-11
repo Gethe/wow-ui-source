@@ -69,9 +69,12 @@ function TabSystemButtonMixin:OnEnter()
 		GameTooltip_AddErrorLine(GameTooltip, self.errorReason);
 		GameTooltip:Show();
 	elseif self.Text:IsTruncated() then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
-		GameTooltip_AddNormalLine(GameTooltip, self.Text:GetText());
-		GameTooltip:Show();
+		local text = self.Text:GetText();
+		if text then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
+			GameTooltip_AddNormalLine(GameTooltip, text);
+			GameTooltip:Show();
+		end
 	end
 end
 

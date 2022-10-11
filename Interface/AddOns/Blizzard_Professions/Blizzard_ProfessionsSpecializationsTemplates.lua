@@ -194,13 +194,21 @@ function ProfessionsSpecPathMixin:OnClick(button, down) -- Override
 	end
 end
 
+-- The intention is for only UI_PROFESSION_SPEC_DIAL_LOCKIN (207714) to be played.
+local SuppressedSoundsOnPurchaseRank = {
+	SOUNDKIT.UI_PROFESSION_SPEC_PERK_EARNED, 
+};
+
 function ProfessionsSpecPathMixin:PurchaseRank() -- Override
 	if self.state == Enum.ProfessionsSpecPathState.Locked then
+		self:SetSuppressedSounds(SuppressedSoundsOnPurchaseRank);
 		self:GetTalentFrame():PlayDialLockInAnimation();
 	else
 		self:PlaySelectSound();
 	end
 	self:GetTalentFrame():PurchaseRank(self:GetNodeID());
+	self:ClearSuppressedSounds();
+
 	self:CheckTooltip();
 end
 
@@ -492,16 +500,22 @@ function ProfessionsSpecPerkMixin:UpdateIconTexture(fromAnimEnded) -- Override
 	elseif newState == Enum.ProfessionsSpecPerkState.Pending then
 		self.Artwork:SetTexCoord(self.initialLeft, self.initialRight, self.initialTop, self.initialBottom);
 		if self.state == Enum.ProfessionsSpecPerkState.Unearned then
-			PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PERK_EARNED);
+			if self.unlockRank == self:GetParentMaxRank() then
+				PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_FINISHED);
+			else
+				self:GetTalentFrame():TryPlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PERK_EARNED);
+			end
 		end
 	elseif newState == Enum.ProfessionsSpecPerkState.Earned then
 		if fromAnimEnded or self.state == nil then
 			self.Artwork:SetTexCoord(self.finalLeft, self.finalRight, self.finalTop, self.finalBottom);
 		else
-			PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PIP_LOCKIN);
 			self.PipLockinAnim:Restart();
 			if self.unlockRank == self:GetParentMaxRank() then
 				self:GetTalentFrame():PlayCompleteDialAnimation();
+				PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PIP_MAX_RANK_LOCKIN);
+			else
+				PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PIP_LOCKIN);
 			end
 			local delay = 0.2;
 			self:GetTalentFrame():StartShake(delay);

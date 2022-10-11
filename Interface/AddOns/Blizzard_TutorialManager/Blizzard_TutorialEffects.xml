@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TutorialEffects.lua" />
 
-	<Frame name="NPE_TutorialQuestBangGlowTemplate" virtual="true">
+	<Frame name="TutorialQuestBangGlowTemplate" virtual="true">
 		<Size x="16" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -19,7 +19,7 @@
 		</Animations>
 	</Frame>
 	
-	<Frame name="NPE_TutorialDragOriginFrame" hidden="true">
+	<Frame name="TutorialDragOriginFrame" hidden="true">
 		<Size x="76" y="76"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -31,7 +31,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="NPE_TutorialDragTargetFrame" hidden="true">
+	<Frame name="TutorialDragTargetFrame" hidden="true">
 		<Size x="76" y="76"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -43,7 +43,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="NPE_TutorialDragAnimationFrame" frameStrata="DIALOG" hidden="true" alpha="0.6">
+	<Frame name="TutorialDragAnimationFrame" frameStrata="DIALOG" hidden="true" alpha="0.6">
 		<Size x="76" y="76"/>
 		<Layers>
 			<Layer level="BACKGROUND">

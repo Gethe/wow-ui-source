@@ -100,7 +100,7 @@ end
 function ReputationStatusBarMixin:OnEvent(event, ...)
 	if( event == "CVAR_UPDATE") then
 		local cvar = ...;
-		if( cvar == "XP_BAR_TEXT" ) then
+		if( cvar == "xpBarText" ) then
 			self:UpdateTextVisibility();
 		end
 	end

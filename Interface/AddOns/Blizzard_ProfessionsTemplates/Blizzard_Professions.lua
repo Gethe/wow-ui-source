@@ -165,18 +165,22 @@ function Professions.AccumulateReagentsInPossession(reagents)
 	end);
 end
 
-function Professions.UpdateRankBarVisibility(rankBar, professionInfo)
+local function CanShowBar(professionInfo)
 	if C_TradeSkillUI.IsRuneforging() or C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember() then
-		rankBar:Hide();
-	else
-		if not C_TradeSkillUI.IsTradeSkillReady() or not professionInfo.professionID or (C_TradeSkillUI.IsNPCCrafting() and professionInfo.maxSkillLevel == 0) then
-			rankBar:Hide();
-		else
-			rankBar:Show();
-			return true;
-		end
+		return false;
 	end
-	return false;
+
+	if not C_TradeSkillUI.IsTradeSkillReady() or (not professionInfo.professionID) or professionInfo.maxSkillLevel == 0 then
+		return false;
+	end
+
+	return true;
+end
+
+function Professions.UpdateRankBarVisibility(rankBar, professionInfo)
+	local canShowBar = CanShowBar(professionInfo);
+	rankBar:SetShown(canShowBar);
+	return canShowBar;
 end
 
 function Professions.GetProfessionCategories(sorted)
@@ -258,8 +262,12 @@ function Professions.HasRecipeRanks(recipeInfo)
 	return recipeInfo.previousRecipeID or recipeInfo.nextRecipeID;
 end
 
+function Professions.IsViewingExternalCraftingList()
+	return C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember() or C_TradeSkillUI.IsTradeSkillLinked();
+end
+
 function Professions.InLocalCraftingMode()
-	return not (C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember() or C_TradeSkillUI.IsTradeSkillLinked());
+	return not (C_TradeSkillUI.IsNPCCrafting() or Professions.IsViewingExternalCraftingList());
 end
 
 function Professions.TransitionToRecraft(itemGUID)
@@ -293,19 +301,20 @@ function Professions.SetupOutputIcon(outputIcon, transaction, outputItemInfo)
 end
 
 function Professions.SetupOutputIconCommon(outputIcon, quantityMin, quantityMax, icon, itemIDOrLink, quality)
-	local countText = outputIcon.Count;
 	if quantityMax > 1 then
 		if quantityMin == quantityMax then
-			countText:SetText(quantityMin);
+			outputIcon.Count:SetText(quantityMin);
 		else
-			countText:SetFormattedText("%d-%d", quantityMin, quantityMax);
+			outputIcon.Count:SetFormattedText("%d-%d", quantityMin, quantityMax);
 		end
 		local magicWidth = 39;
-		if countText:GetWidth() > magicWidth then
-			countText:SetFormattedText("~%d", math.floor(Lerp(quantityMin, quantityMax, .5)));
+		if outputIcon.Count:GetWidth() > magicWidth then
+			outputIcon.Count:SetFormattedText("~%d", math.floor(Lerp(quantityMin, quantityMax, .5)));
 		end
+		outputIcon.CountShadow:Show();
 	else
-		countText:SetText("");
+		outputIcon.Count:SetText("");
+		outputIcon.CountShadow:Hide();
 	end
 	outputIcon.Icon:SetTexture(icon);
 	
@@ -423,9 +432,11 @@ local function HandleReagentLink(link)
 end
 
 function Professions.TriggerReagentClickedEvent(link)
-	local itemID = GetItemInfoFromHyperlink(link);
-	local item = Item:CreateFromItemID(itemID);
-	EventRegistry:TriggerEvent("Professions.ReagentClicked", item:GetItemName());
+	if link then
+		local itemID = GetItemInfoFromHyperlink(link);
+		local item = Item:CreateFromItemID(itemID);
+		EventRegistry:TriggerEvent("Professions.ReagentClicked", item:GetItemName());
+	end
 end
 
 function Professions.HandleFixedReagentItemLink(recipeID, reagentSlotSchematic)
@@ -629,13 +640,17 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 	CreateRecipeCategoryHierarchy(categoryMap, recipeInfos);
 
 	if not searching or C_TradeSkillUI.IsNPCCrafting() then
-		-- Strip out every root category. We're only interested in seeing these if
-		-- we're in a search so we can reconcile which expansion the recipe pertains to.
+		-- Strip out every root category if it doesnt have any recipes. We're only interested in seeing these if
+		-- we're in a search so we can reconcile which expansion the recipe pertains to. For an example of
+		-- a root category that has recipes, see ID 390.
 		for _, category in ipairs(Professions.GetProfessionCategories()) do
 			if not noStripCategories or not tContains(noStripCategories, category.categoryID) then
+				local categoryInMap = categoryMap[category.categoryID];
+				if not categoryInMap or not categoryInMap.recipes or #categoryInMap.recipes == 0 then
 				categoryMap[category.categoryID] = nil;
 			end
 		end
+	end
 	end
 
 	if next(favoritesCategoryInfo.recipes) ~= nil then
@@ -773,16 +788,6 @@ function Professions.SetDefaultFilters()
 	end
 end
 
-function Professions.AddInventorySlotFilters(filterSystem, level)
-	local inventorySlots = { C_TradeSkillUI.GetAllFilterableInventorySlots() };
-	for index, inventorySlot in ipairs(inventorySlots) do
-		local function OnClick(button, buttonName, downInside) 
-			Professions.SetInventorySlotFilter(index);
-		end;
-		FilterDropDownSystem.AddTextButtonToFilterSystem(filterSystem, inventorySlot, OnClick, level);
-	end
-end
-
 function Professions.GetNewestKnownProfessionInfo()
 	for index, professionInfo in ipairs(C_TradeSkillUI.GetChildProfessionInfos()) do
 		if professionInfo.skillLevel > 0 then
@@ -813,29 +818,11 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate)
 			text = CRAFT_IS_MAKEABLE,
 			set = C_TradeSkillUI.SetOnlyShowMakeableRecipes,
 			isSet = C_TradeSkillUI.GetOnlyShowMakeableRecipes
-		},
-		{
-			type = FilterComponent.Checkbox,
-			text = PROFESSION_RECIPES_IS_FIRST_CRAFT,
-			set = C_TradeSkillUI.SetOnlyShowFirstCraftRecipes,
-			isSet = C_TradeSkillUI.GetOnlyShowFirstCraftRecipes
-		},
-		{
-			type = FilterComponent.Submenu,
-			text = TRADESKILL_FILTER_SLOTS,
-			value = 1,
-			childrenInfo = {
-				filters = {
-					{
-						type = FilterComponent.CustomFunction, 
-						customFunc = function(level)
-							Professions.AddInventorySlotFilters(filterSystem, level)
-						end
-					}
-				}
-			}
-		},
-		{
+		}
+	};
+
+	if not C_TradeSkillUI.IsNPCCrafting() then
+		local sourcesFilters = {
 			type = FilterComponent.Submenu,
 			text = SOURCES,
 			value = 2,
@@ -872,8 +859,38 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate)
 					}
 				}
 			}
+		};
+		table.insert(filterSystem.filters, sourcesFilters);
+
+		local firstCraftFilters = {
+			type = FilterComponent.Checkbox,
+			text = PROFESSION_RECIPES_IS_FIRST_CRAFT,
+			set = C_TradeSkillUI.SetOnlyShowFirstCraftRecipes,
+			isSet = C_TradeSkillUI.GetOnlyShowFirstCraftRecipes
+		};
+		table.insert(filterSystem.filters, 3, firstCraftFilters);
+	end
+
+	local slotsFilters = {
+		type = FilterComponent.Submenu,
+		text = TRADESKILL_FILTER_SLOTS,
+		value = 1,
+		childrenInfo = {
+			filters = {
+				{
+					type = FilterComponent.DynamicFilterSet,
+					buttonType = FilterComponent.Checkbox,
+					set = C_TradeSkillUI.SetInventorySlotFilter,
+					isSet = function(filter)
+						return not C_TradeSkillUI.IsInventorySlotFiltered(filter);
+					end,
+					numFilters = C_TradeSkillUI.GetAllFilterableInventorySlotsCount,
+					nameFunction = C_TradeSkillUI.GetFilterableInventorySlotName,
+				}
+			}
 		}
-	}
+	};
+	table.insert(filterSystem.filters, slotsFilters);
 
 	if not C_TradeSkillUI.IsTradeSkillGuild() then
 		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
@@ -890,26 +907,22 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate)
 	end
 
 	do
-		local childProfessionInfos = C_TradeSkillUI.GetChildProfessionInfos();
-		if #childProfessionInfos > 0 then
-			local spacer = { type = FilterComponent.Space };
-			table.insert(filterSystem.filters, spacer);
+		if not C_TradeSkillUI.IsNPCCrafting() then
+			local childProfessionInfos = C_TradeSkillUI.GetChildProfessionInfos();
+			if #childProfessionInfos > 0 then
+				local spacer = { type = FilterComponent.Space };
+				table.insert(filterSystem.filters, spacer);
 
-			for index, professionInfo in ipairs(childProfessionInfos) do
-				local baseName = professionInfo.parentProfessionName;
-				local skillLineName = professionInfo.professionName;
-				if baseName then
-					skillLineName = skillLineName:gsub(" "..baseName, "");
-					skillLineName = skillLineName:gsub(baseName.." ", "");
-					skillLineName = skillLineName:gsub(baseName, "");
+				for index, professionInfo in ipairs(childProfessionInfos) do
+					local skillLine = { 
+						type = FilterComponent.Radio,
+						text = professionInfo.expansionName,
+						set = function() EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo); end, 
+						isSet = function() return C_TradeSkillUI.GetChildProfessionInfo().professionID == professionInfo.professionID; end,
+							hideMenuOnClick = true,
+					};
+					table.insert(filterSystem.filters, skillLine);
 				end
-				local skillLine = { 
-					type = FilterComponent.Radio,
-					text = skillLineName,
-					set = function() EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo); end, 
-					isSet = function() return C_TradeSkillUI.GetChildProfessionInfo().professionID == professionInfo.professionID; end,
-				};
-				table.insert(filterSystem.filters, skillLine);
 			end
 		end
 	end
@@ -1021,7 +1034,7 @@ function Professions.CanTrackRecipe(recipeInfo)
 		return false;
 	end
 
-	if not Professions.InLocalCraftingMode() then
+	if Professions.IsViewingExternalCraftingList() then
 		return false;
 	end
 
@@ -1046,7 +1059,13 @@ end
 function Professions.GetCurrentProfessionCurrencyInfo()
 	local nodeID = ProfessionsFrame.SpecPage:GetDetailedPanelNodeID();
 	local currencyTypesID = Professions.GetCurrencyTypesID(nodeID);
-	return currencyTypesID and C_CurrencyInfo.GetCurrencyInfo(currencyTypesID) or nil;
+	if currencyTypesID then
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyTypesID);
+		currencyInfo.currencyID = currencyTypesID;
+		return currencyInfo;
+	end
+	
+	return nil;
 end
 
 function Professions.SetupProfessionsCurrencyTooltip(currencyInfo, currencyCount)

@@ -61,15 +61,17 @@ function PTR_IssueReporter.SetupItemTooltips()
         local name, link = self:GetItem()
         if (link) and (name) then
             local id = string.match(link, "item:(%d*)")
-            if (id == "" or id == "0") and TradeSkillFrame ~= nil and TradeSkillFrame:IsVisible() and GetMouseFocus().reagentIndex then
-                local selectedRecipe = TradeSkillFrame.RecipeList:GetSelectedRecipeID()
-                for i = 1, 8 do
-                    if GetMouseFocus().reagentIndex == i then
-                        id = C_TradeSkillUI.GetRecipeReagentItemLink(selectedRecipe, i):match("item:(%d+):") or nil
-                        break
-                    end
-                end
-            end
+			-- Professions refactor requires an update to this code in both fetching the current recipe ID and retrieving the
+			-- reagent information from the mouse position.
+           --if (id == "" or id == "0") and TradeSkillFrame ~= nil and TradeSkillFrame:IsVisible() and GetMouseFocus().reagentIndex then
+           --    local selectedRecipe = TradeSkillFrame.RecipeList:GetSelectedRecipeID()
+           --    for i = 1, 8 do
+           --        if GetMouseFocus().reagentIndex == i then
+           --            id = C_TradeSkillUI.GetRecipeReagentItemLink(selectedRecipe, i):match("item:(%d+):") or nil
+           --            break
+           --        end
+           --    end
+           --end
             if (id) then
                 PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.item, id, name, nil, nil, link)
             end

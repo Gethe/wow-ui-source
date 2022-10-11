@@ -13,7 +13,7 @@ function PlayerFrame_OnLoad(self)
 	PlayerFrame.PlayerFrameContainer.FrameFlash:SetSnapToPixelGrid(false);
 
 	local playerFrameContent = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain;
-	UnitFrame_Initialize(self, "player", PlayerName, self.PlayerFrameContainer.PlayerPortrait,
+	UnitFrame_Initialize(self, "player", PlayerName, self.frameType, self.PlayerFrameContainer.PlayerPortrait,
 						 PlayerFrameHealthBar, PlayerFrameHealthBarText,
 						 PlayerFrameManaBar, PlayerFrameManaBarText,
 						 PlayerFrame.PlayerFrameContainer.FrameFlash, nil, nil,
@@ -30,8 +30,12 @@ function PlayerFrame_OnLoad(self)
 
 	self.statusCounter = 0;
 	self.statusSign = -1;
+
+	PlayerFrameManaBar:GetStatusBarTexture():AddMaskTexture(playerFrameContent.ManaBarMask);
+
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
 	PlayerFrame_Update();
+
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	self:RegisterEvent("UNIT_FACTION");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -57,8 +61,6 @@ function PlayerFrame_OnLoad(self)
 	-- Chinese playtime stuff
 	self:RegisterEvent("PLAYTIME_CHANGED");
 
-	self:SetClampRectInsets(20, 0, 0, 0);
-
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
 	end
@@ -82,12 +84,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerFrame_UpdatePvPStatus();
 		end
 	elseif (event == "PLAYER_ENTERING_WORLD") then
-		PlayerFrame_ToPlayerArt(self);
---		if (UnitHasVehicleUI("player")) then
---			UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
---		else
---			UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
---		end
+		UnitFrame_Update(self);
+		PlayerFrame_UpdateArt(self);
 		self.inCombat = nil;
 		self.onHateList = nil;
 		PlayerFrame_Update();
@@ -100,6 +98,9 @@ function PlayerFrame_OnEvent(self, event, ...)
 		else
 			PlayerPVPTimerText:Hide();
 			PlayerPVPTimerText.timeLeft = nil;
+		end
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES) then
+			EventRegistry:RegisterCallback("Tutorials.ShowUnitFrameChanges", PlayerFrame_CheckTutorials, self);
 		end
 	elseif (event == "PLAYER_ENTER_COMBAT") then
 		self.inCombat = 1;
@@ -127,7 +128,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		ReadyCheck_Finish(PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.ReadyCheck, DEFAULT_READY_CHECK_STAY_TIME);
 	elseif (event == "UNIT_ENTERED_VEHICLE") then
 		if (arg1 == "player") then
-			self.inSeat = true;
 			if (UnitInVehicleHidesPetFrame("player")) then
 				self.vehicleHidesPet = true;
 			end
@@ -136,7 +136,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 	elseif (event == "UNIT_EXITING_VEHICLE") then
 		if (arg1 == "player") then
 			if (self.state == "vehicle") then
-				self.inSeat = false;
 				PlayerFrame_UpdateArt(self);
 			else
 				self.updatePetFrame = true;
@@ -145,7 +144,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		end
 	elseif (event == "UNIT_EXITED_VEHICLE") then
 		if (arg1 == "player") then
-			self.inSeat = true;
 			PlayerFrame_UpdateArt(self);
 		end
 	elseif (event == "PVP_TIMER_UPDATE") then
@@ -160,6 +158,27 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateRolesAssigned();
 	elseif (event == "HONOR_LEVEL_UPDATE") then
 		PlayerFrame_UpdatePvPStatus();
+	end
+end
+
+function PlayerFrame_CheckTutorials(self)
+	if not self:IsShown() then
+		return;
+	end
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES) then
+		EventRegistry:UnregisterCallback("Tutorials.ShowUnitFrameChanges", self);
+	else
+		local helpTipInfo = {
+			text = TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = 0,
+			alignment = HelpTip.Alignment.Center,
+			onAcknowledgeCallback = GenerateClosure(PlayerFrame_CheckTutorials, self),
+		};
+		HelpTip:Show(UIParent, helpTipInfo, self);
 	end
 end
 
@@ -208,34 +227,10 @@ end
 --
 
 function PlayerFrame_UpdatePlayerNameTextAnchor()
-	PlayerName:SetPoint("TOPLEFT", 88, -26);
-end
-
-function PlayerFrame_UpdateLevelTextAnchor()
-	PlayerLevelText:SetPoint("TOPRIGHT", -24.5, -27);
-end
-
-function PlayerFrame_UpdateHealthBarTextAnchors()
-	if (UnitHasVehiclePlayerFrameUI("player")) then
-		PlayerFrameHealthBarText:SetPoint("CENTER", 0, 1);
-		PlayerFrameHealthBarTextLeft:SetPoint("LEFT", 2, 1);
-		PlayerFrameHealthBarTextRight:SetPoint("RIGHT", -2, 1);
+	if PlayerFrame.unit == "vehicle" then
+		PlayerName:SetPoint("TOPLEFT", 96, -27);
 	else
-		PlayerFrameHealthBarText:SetPoint("CENTER", 0, 0);
-		PlayerFrameHealthBarTextLeft:SetPoint("LEFT", 2, 0);
-		PlayerFrameHealthBarTextRight:SetPoint("RIGHT", -2, 0);
-	end
-end
-
-function PlayerFrame_UpdateManaBarTextAnchors()
-	if (UnitHasVehiclePlayerFrameUI("player")) then
-		PlayerFrameManaBarText:SetPoint("CENTER", 0, 1);
-		PlayerFrameManaBarTextLeft:SetPoint("LEFT", 2, 1);
-		PlayerFrameManaBarTextRight:SetPoint("RIGHT", -2, 1);
-	else
-		PlayerFrameManaBarText:SetPoint("CENTER", 0, 1);
-		PlayerFrameManaBarTextLeft:SetPoint("LEFT", 2, 1);
-		PlayerFrameManaBarTextRight:SetPoint("RIGHT", -2, 1);
+		PlayerName:SetPoint("TOPLEFT", 88, -27);
 	end
 end
 
@@ -263,7 +258,6 @@ function PlayerFrame_UpdateLevel()
 		else
 			PlayerLevelText:SetVertexColor(1.0, 0.82, 0.0, 1.0);
 		end
-		PlayerFrame_UpdateLevelTextAnchor();
 		PlayerLevelText:SetText(effectiveLevel);
 	end
 end
@@ -383,14 +377,13 @@ function PlayerFrame_UpdateRolesAssigned()
 end
 
 function PlayerFrame_UpdateArt(self)
-	if (self.inSeat) then
-		PetFrame:Update();
-		if (UnitHasVehiclePlayerFrameUI("player")) then
-			PlayerFrame_ToVehicleArt(self, UnitVehicleSkin("player"));
-		else
-			PlayerFrame_ToPlayerArt(self);
-		end
-	elseif (self.updatePetFrame) then
+	if (UnitHasVehiclePlayerFrameUI("player")) then
+		PlayerFrame_ToVehicleArt(self);
+	else
+		PlayerFrame_ToPlayerArt(self);
+	end
+
+	if (self.updatePetFrame) then
 		-- leaving a vehicle that didn't change player art
 		self.updatePetFrame = false;
 		PetFrame:Update();
@@ -422,13 +415,7 @@ function PlayerFrame_UpdateStatus()
 	local playerPortraitCornerIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPortraitCornerIcon;
 	local statusTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture;
 
-	if (UnitHasVehiclePlayerFrameUI("player")) then
-		statusTexture:Hide();
-		attackIcon:Hide();
-		playerPortraitCornerIcon:Hide();
-
-		PlayerFrame_UpdatePlayerRestLoop(false);
-	elseif (IsResting()) then
+	if (IsResting()) then
 		statusTexture:SetVertexColor(1.0, 0.88, 0.25, 1.0);
 		statusTexture:Show();
 		attackIcon:Hide();
@@ -514,128 +501,130 @@ end
 --
 
 function PlayerFrame_ToVehicleArt(self, vehicleType)
-	--Swap frame
-
 	PlayerFrame.state = "vehicle";
 
+	--Swap pet and player frames
 	UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
 	UnitFrame_SetUnit(PetFrame, "player", PetFrameHealthBar, PetFrameManaBar);
-	PetFrame:Update();
+
+	-- Swap frame textures
+	PlayerFrame.PlayerFrameContainer.FrameTexture:Hide();
+	PlayerFrame.PlayerFrameContainer.VehicleFrameTexture:Show();
+
+	-- Update Flash and Status Textures
+	local frameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
+	frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Vehicle-InCombat", TextureKitConstants.UseAtlasSize);
+	frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -3.5, 1);
+
+	local statusTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture;
+	statusTexture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Vehicle-Status", TextureKitConstants.UseAtlasSize);
+	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 11, -8);
+
+	-- Update health bar
+	PlayerFrameHealthBar:SetWidth(118);
+	PlayerFrameHealthBar:SetHeight(20);
+	PlayerFrameHealthBar:SetPoint("TOPLEFT", 91, -40);
+
+	-- Update mana bar
+	PlayerFrameManaBar:SetWidth(118);
+	PlayerFrameManaBar:SetHeight(10);
+	PlayerFrameManaBar:SetPoint("TOPLEFT",91,-61);
+
+	local manaBarMask = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarMask;
+	manaBarMask:SetWidth(121);
+	manaBarMask:SetPoint("TOPLEFT", manaBarMask:GetParent(), "TOPLEFT", 90, -58);
+
+	-- Update power bar
+	local _, class = UnitClass("player");
+	if PlayerFrame.classPowerBar then
+		PlayerFrame.classPowerBar:Hide();
+	elseif class == "SHAMAN" then
+		TotemFrame:Hide();
+	elseif class == "DEATHKNIGHT" then
+		RuneFrame:Hide();
+	elseif class == "PRIEST" then
+		PriestBarFrame:Hide();
+	end
+	ComboPointPlayerFrame:Setup();
+	EssencePlayerFrame:Setup();
+
+	-- Update other stuff
 	PlayerFrame_Update();
+	PetFrame:Update();
 	BuffFrame:Update();
 	DebuffFrame:Update();
 	ComboFrame_Update(ComboFrame);
 
-	PlayerFrame.PlayerFrameContainer.FrameTexture:Hide();
-	local vehicleFrameTexture = PlayerFrame.PlayerFrameContainer.VehicleFrameTexture;
-	local frameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
-	if (vehicleType == "Natural") then
-		vehicleFrameTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Organic");
-		frameFlash:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Organic-Flash");
-	else
-		vehicleFrameTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame");
-		frameFlash:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Flash");
-	end
-
-	frameFlash:SetWidth(240);
-	frameFlash:SetHeight(120);
-	frameFlash:SetPoint("CENTER", 0, -8);
-
-	PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.RoleIcon:SetPoint("TOPLEFT", 185, -29);
-
-	PlayerFrameHealthBar:SetHeight(8);
-	PlayerFrameHealthBar:SetWidth(102);
-	PlayerFrameHealthBar:SetPoint("TOPLEFT", 98, -52);
-
-	PlayerFrame_UpdateHealthBarTextAnchors();
-
-	PlayerFrameManaBar:SetHeight(8);
-	PlayerFrameManaBar:SetWidth(102);
-	PlayerFrameManaBar:SetPoint("TOPLEFT",98,-62);
-
-	PlayerFrame_UpdateManaBarTextAnchors();
-
-	PlayerFrame_ShowVehicleTexture();
 	PlayerFrame_UpdatePlayerNameTextAnchor();
-	PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPortraitCornerIcon:Hide();
-	PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 200, -20);
+	local PlayerFrameContentContextual = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual;
+	PlayerFrameContentContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -26);
+	PlayerFrameContentContextual.RoleIcon:SetPoint("TOPLEFT", 194, -27);
+	PlayerFrameContentContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -87);
 	PlayerLevelText:Hide();
 end
 
 function PlayerFrame_ToPlayerArt(self)
-	--Unswap frame
-
 	PlayerFrame.state = "player";
 
+	-- Unswap pet and player frames
 	UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
 	UnitFrame_SetUnit(PetFrame, "pet", PetFrameHealthBar, PetFrameManaBar);
-	PetFrame:Update();
-	PlayerFrame_Update();
-	BuffFrame:Update();
-	DebuffFrame:Update();
-	ComboFrame_Update(ComboFrame);
 
+	-- Swap frame textures
 	PlayerFrame.PlayerFrameContainer.FrameTexture:Show();
-	local playerFrameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
-	playerFrameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-InCombat");
-	playerFrameFlash:SetWidth(192);
-	playerFrameFlash:SetHeight(71);
-	playerFrameFlash:SetPoint("CENTER", -1.5, 1);
+	PlayerFrame.PlayerFrameContainer.VehicleFrameTexture:Hide();
 
-	PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
+	-- Update Flash and Status Textures
+	local frameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
+	frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
+	frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -1.5, 1);
 
+	local statusTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture;
+	statusTexture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Status", TextureKitConstants.UseAtlasSize);
+	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 18, -14);
+
+	-- Update health bar
 	PlayerFrameHealthBar:SetHeight(20);
 	PlayerFrameHealthBar:SetWidth(124);
 	PlayerFrameHealthBar:SetPoint("TOPLEFT", 85, -40);
 
-	PlayerFrame_UpdateHealthBarTextAnchors();
-
+	-- Update mana bar
 	PlayerFrameManaBar:SetHeight(10);
 	PlayerFrameManaBar:SetWidth(124);
-	PlayerFrameManaBar:SetPoint("TOPLEFT", 85, -62);
+	PlayerFrameManaBar:SetPoint("TOPLEFT", 85, -61);
 
-	PlayerFrame_UpdateManaBarTextAnchors();
+	local manaBarMask = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarMask;
+	manaBarMask:SetWidth(128);
+	manaBarMask:SetPoint("TOPLEFT", manaBarMask:GetParent(), "TOPLEFT", 83, -59);
 
-	PlayerFrame_HideVehicleTexture();
-	PlayerFrame_UpdatePlayerNameTextAnchor();
-	PlayerFrame_UpdateRolesAssigned();
-	PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -27);
-end
-
-function PlayerFrame_ShowVehicleTexture()
-	PlayerFrame.PlayerFrameContainer.VehicleFrameTexture:Show();
-
-	local _, class = UnitClass("player");
-	if (PlayerFrame.classPowerBar) then
-		PlayerFrame.classPowerBar:Hide();
-	elseif (class == "SHAMAN") then
-		TotemFrame:Hide();
-	elseif (class == "DEATHKNIGHT") then
-		RuneFrame:Hide();
-	elseif (class == "PRIEST") then
-		PriestBarFrame:Hide();
-	end
-
-	ComboPointPlayerFrame:Setup();
-	EssencePlayerFrame:Setup();
-end
-
-function PlayerFrame_HideVehicleTexture()
-	PlayerFrame.PlayerFrameContainer.VehicleFrameTexture:Hide();
-
+	-- Update power bar
 	local _, class = UnitClass("player");
 	if (PlayerFrame.classPowerBar) then
 		PlayerFrame.classPowerBar:Setup();
 	elseif (class == "SHAMAN") then
-		TotemFrame_Update();
+		TotemFrame:Update(); 
 	elseif (class == "DEATHKNIGHT") then
 		RuneFrame:Show();
 	elseif (class == "PRIEST") then
 		PriestBarFrame_CheckAndShow();
 	end
-
 	ComboPointPlayerFrame:Setup();
 	EssencePlayerFrame:Setup();
+
+	-- Update other stuff
+	PlayerFrame_Update();
+	PetFrame:Update();
+	BuffFrame:Update();
+	DebuffFrame:Update();
+	ComboFrame_Update(ComboFrame);
+
+	PlayerFrame_UpdateRolesAssigned();
+	PlayerFrame_UpdatePlayerNameTextAnchor();
+	local PlayerFrameContentContextual = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual;
+	PlayerFrameContentContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -27);
+	PlayerFrameContentContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
+	PlayerFrameContentContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -82);
+	PlayerLevelText:Show();
 end
 
 --
@@ -760,6 +749,15 @@ end
 -- Functions for having the cast bar underneath the player frame.
 --
 
+local function AnchorCastBarToPlayerFrame()
+	PlayerCastingBarFrame:ClearAllPoints()
+	if(PlayerFrameBottomManagedFramesContainer:IsShown() and PlayerFrameBottomManagedFramesContainer:GetHeight() > 0) then
+		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrameBottomManagedFramesContainer, "BOTTOM", -10, -5);
+	else
+		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 20, 10);
+	end
+end
+
 function PlayerFrame_AttachCastBar()
 	-- pet
 	PetCastingBarFrame:SetLook("UNITFRAME");
@@ -772,7 +770,7 @@ function PlayerFrame_AttachCastBar()
 	PlayerCastingBarFrame.attachedToPlayerFrame = true;
 	PlayerCastingBarFrame:SetLook("UNITFRAME");
 	PlayerCastingBarFrame:SetParent(PlayerFrame);
-	PlayerFrame_AdjustAttachments();
+	AnchorCastBarToPlayerFrame();
 end
 
 function PlayerFrame_DetachCastBar()
@@ -789,32 +787,14 @@ function PlayerFrame_DetachCastBar()
 end
 
 function PlayerFrame_AdjustAttachments()
-	if (not PlayerCastingBarFrame.attachedToPlayerFrame) then
-		return;
+	if (PlayerCastingBarFrame.attachedToPlayerFrame) then
+		AnchorCastBarToPlayerFrame();
 	end
+end
 
-	local yOffset;
-	if (PetFrame and PetFrame:IsShown()) then
-		yOffset = PetFrame:GetBottom() - PlayerFrame:GetBottom();
+PlayerFrameBottomManagedFramesContainerMixin = {};
 
-		if (PetCastingBarFrame.showCastbar) then
-			yOffset = yOffset - 30;
-		end
-	elseif (TotemFrame and TotemFrame:IsShown()) then
-		yOffset = TotemFrame:GetBottom() - PlayerFrame:GetBottom();
-	else
-		local _, class = UnitClass("player");
-		if (class == "PALADIN") then
-			yOffset = -6;
-		elseif (class == "PRIEST" and PriestBarFrame:IsShown()) then
-			yOffset = -2;
-		elseif (class == "DEATHKNIGHT" or class == "WARLOCK") then
-			yOffset = 4;
-		else
-			yOffset = 10;
-		end
-	end
-
-	PlayerCastingBarFrame:ClearAllPoints();
-	PlayerCastingBarFrame:SetPoint("TOPRIGHT", PlayerFrame, "BOTTOMRIGHT", 0, yOffset);
+function PlayerFrameBottomManagedFramesContainerMixin:Layout()
+	LayoutMixin.Layout(self);
+	PlayerFrame_AdjustAttachments();
 end

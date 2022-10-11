@@ -11,13 +11,6 @@ end
 
 function Class_TutorialBase.static:GlobalDisable()
 	self.static.IsGlobalEnabled = false;
-
-	-- Shutdown all tutorials
-	for k, tutorial in pairs(TutorialLogic.Tutorials) do
-		if (type(tutorial) == "table") then
-			tutorial:Interrupt();
-		end
-	end
 end
 
 function Class_TutorialBase.static:MakeExclusive(t1, t2)
@@ -40,7 +33,9 @@ function Class_TutorialBase:DebugLog(funcName, extraText)
 	end
 end
 
-
+function Class_TutorialBase:Name()
+	return self.class.name;
+end
 -- ------------------------------------------------------------------------------------------------------------
 function Class_TutorialBase:initialize(parent)
 	self._childTutorials = {};
@@ -91,7 +86,7 @@ end
 -- Frame is automatically closed when tutorial is shutdown
 function Class_TutorialBase:ShowScreenTutorial(content, druation, position, showMovieName, loopMovie, resolution)
 	self:DebugLog("ShowScreenTutorial");
-	self._screenTutorial = NPE_TutorialMainFrame_Frame:ShowTutorial(content, druation, position, showMovieName, loopMovie, resolution);
+	self._screenTutorial = TutorialMainFrame_Frame:ShowTutorial(content, druation, position, showMovieName, loopMovie, resolution);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -99,38 +94,38 @@ function Class_TutorialBase:HideScreenTutorial()
 	if (not self._screenTutorial) then return; end
 
 	self:DebugLog("HideScreenTutorial");
-	NPE_TutorialMainFrame_Frame:HideTutorial(self._screenTutorial);
+	TutorialMainFrame_Frame:HideTutorial(self._screenTutorial);
 	self._screenTutorial = nil;
 end
 
 function Class_TutorialBase:ShowMouseKeyboardTutorial()
 	self:DebugLog("ShowMouseKeyboardTutorial");
-	self._screenTutorial = NPE_TutorialKeyboardMouseFrame_Frame:ShowTutorial();
+	self._screenTutorial = TutorialKeyboardMouseFrame_Frame:ShowTutorial();
 end
 
 function Class_TutorialBase:HideMouseKeyboardTutorial()
 	self:DebugLog("HideMouseKeyboardTutorial");
-	self._screenTutorial = NPE_TutorialKeyboardMouseFrame_Frame:HideTutorial();
+	self._screenTutorial = TutorialKeyboardMouseFrame_Frame:HideTutorial();
 end
 
 function Class_TutorialBase:ShowSingleKeyTutorial(content, druation, position, showMovieName, loopMovie, resolution)
 	self:DebugLog("ShowSingleKeyTutorial");
-	self._screenTutorial = NPE_TutorialSingleKey_Frame:ShowTutorial(content, druation, position, showMovieName, loopMovie, resolution);
+	self._screenTutorial = TutorialSingleKey_Frame:ShowTutorial(content, druation, position, showMovieName, loopMovie, resolution);
 end
 
 function Class_TutorialBase:HideSingleKeyTutorial()
 	self:DebugLog("HideSingleKeyTutorial");
-	self._screenTutorial = NPE_TutorialSingleKey_Frame:HideTutorial();
+	self._screenTutorial = TutorialSingleKey_Frame:HideTutorial();
 end
 
 function Class_TutorialBase:ShowWalkTutorial()
 	self:DebugLog("ShowWalkTutorial");
-	self._screenTutorial = NPE_TutorialWalk_Frame:ShowTutorial();
+	self._screenTutorial = TutorialWalk_Frame:ShowTutorial();
 end
 
 function Class_TutorialBase:HideWalkTutorial()
 	self:DebugLog("HideWalkTutorial");
-	self._screenTutorial = NPE_TutorialWalk_Frame:HideTutorial();
+	self._screenTutorial = TutorialWalk_Frame:HideTutorial();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -149,7 +144,7 @@ end
 -- Adds a pointer tutorial ontop of existing pointers
 function Class_TutorialBase:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution)
 	self:DebugLog("AddPointerTutorial");
-	local pointer = NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution);	
+	local pointer = TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution);	
 	table.insert(self._pointerTutorials, pointer);
 
 	return pointer;
@@ -161,7 +156,7 @@ function Class_TutorialBase:HidePointerTutorial(pointerTutorialID)
 	if (count == 0) then return; end
 
 	self:DebugLog("HidePointerTutorial");
-	NPE_TutorialPointerFrame:Hide(pointerTutorialID);
+	TutorialPointerFrame:Hide(pointerTutorialID);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -172,7 +167,7 @@ function Class_TutorialBase:HidePointerTutorials()
 	self:DebugLog("HidePointerTutorials");
 
 	for i = 1, count do
-		NPE_TutorialPointerFrame:Hide(self._pointerTutorials[i]);
+		TutorialPointerFrame:Hide(self._pointerTutorials[i]);
 	end
 end
 
@@ -453,16 +448,6 @@ function Class_TutorialBase:DelayWhileFrameVisible(frame)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function Class_TutorialBase:CanStart(args)
-	return true;
-end
-
-function Class_TutorialBase:Start()
-end
-
 function Class_TutorialBase:Status()
 	return self.class.name;
-end
-
-function Class_TutorialBase:Finish()
 end

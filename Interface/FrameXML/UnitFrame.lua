@@ -1,12 +1,11 @@
-
 PowerBarColor = {};
-PowerBarColor["MANA"] =				{ r = 0.00, g = 0.00, b = 1.00 };
-PowerBarColor["RAGE"] =				{ r = 1.00, g = 0.00, b = 0.00, fullPowerAnim=true };
-PowerBarColor["FOCUS"] =			{ r = 1.00, g = 0.50, b = 0.25, fullPowerAnim=true };
-PowerBarColor["ENERGY"] =			{ r = 1.00, g = 1.00, b = 0.00, fullPowerAnim=true };
+PowerBarColor["MANA"] =				{ r = 0.00, g = 0.00, b = 1.00, atlasElementName="Mana" };
+PowerBarColor["RAGE"] =				{ r = 1.00, g = 0.00, b = 0.00, fullPowerAnim=true, atlasElementName="Rage" };
+PowerBarColor["FOCUS"] =			{ r = 1.00, g = 0.50, b = 0.25, fullPowerAnim=true, atlasElementName="Focus" };
+PowerBarColor["ENERGY"] =			{ r = 1.00, g = 1.00, b = 0.00, fullPowerAnim=true, atlasElementName="Energy" };
 PowerBarColor["COMBO_POINTS"] =		{ r = 1.00, g = 0.96, b = 0.41 };
 PowerBarColor["RUNES"] =			{ r = 0.50, g = 0.50, b = 0.50 };
-PowerBarColor["RUNIC_POWER"] =		{ r = 0.00, g = 0.82, b = 1.00, fullPowerAnim=true };
+PowerBarColor["RUNIC_POWER"] =		{ r = 0.00, g = 0.82, b = 1.00, fullPowerAnim=true, atlasElementName="RunicPower" };
 PowerBarColor["SOUL_SHARDS"] =		{ r = 0.50, g = 0.32, b = 0.55 };
 PowerBarColor["LUNAR_POWER"] =		{ r = 0.30, g = 0.52, b = 0.90, atlas="_Druid-LunarBar" };
 PowerBarColor["HOLY_POWER"] =		{ r = 0.95, g = 0.90, b = 0.60 };
@@ -38,6 +37,16 @@ PowerBarColor[13] = PowerBarColor["INSANITY"];
 PowerBarColor[17] = PowerBarColor["FURY"];
 PowerBarColor[18] = PowerBarColor["PAIN"];
 
+local ManaBarFrequentUpdateUnitTypes = {
+	"player",
+	"pet",
+	"vehicle",
+	"target",
+	"focus",
+	"targettarget",
+	"focustarget"
+};
+
 function GetPowerBarColor(powerType)
 	return PowerBarColor[powerType];
 end
@@ -52,11 +61,12 @@ end
 	I needed a seperate OnUpdate and OnEvent handlers. And needed to parse the event.
 ]]--
 
-function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit, threatNumericIndicator,
-		myHealPredictionBar, otherHealPredictionBar, totalAbsorbBar, totalAbsorbBarOverlay, overAbsorbGlow, overHealAbsorbGlow, healAbsorbBar, healAbsorbBarLeftShadow,
-		healAbsorbBarRightShadow, myManaCostPredictionBar)
+function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit, threatNumericIndicator,
+	myHealPredictionBar, otherHealPredictionBar, totalAbsorbBar, totalAbsorbBarOverlay, overAbsorbGlow, overHealAbsorbGlow, healAbsorbBar, healAbsorbBarLeftShadow,
+	healAbsorbBarRightShadow, myManaCostPredictionBar)
 	self.unit = unit;
 	self.name = name;
+	self.frameType = frameType;
 	self.portrait = portrait;
 	self.healthbar = healthbar;
 	self.manabar = manabar;
@@ -72,54 +82,73 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.healAbsorbBarLeftShadow = healAbsorbBarLeftShadow;
 	self.healAbsorbBarRightShadow = healAbsorbBarRightShadow;
 	self.myManaCostPredictionBar = myManaCostPredictionBar;
-	if ( self.myHealPredictionBar ) then
+
+	if (self.myHealPredictionBar) then
 		self.myHealPredictionBar:ClearAllPoints();
 	end
-	if ( self.otherHealPredictionBar ) then
+	if (self.otherHealPredictionBar) then
 		self.otherHealPredictionBar:ClearAllPoints();
 	end
-	if ( self.totalAbsorbBar ) then
+	if (self.totalAbsorbBar) then
 		self.totalAbsorbBar:ClearAllPoints();
 	end
-	if ( self.myManaCostPredictionBar ) then
+	if (self.myManaCostPredictionBar) then
 		self.myManaCostPredictionBar:ClearAllPoints();
 	end
 
-	if ( self.totalAbsorbBarOverlay ) then
+	if (self.totalAbsorbBarOverlay) then
 		self.totalAbsorbBar.overlay = self.totalAbsorbBarOverlay;
 		self.totalAbsorbBarOverlay:SetAllPoints(self.totalAbsorbBar);
 		self.totalAbsorbBarOverlay.tileSize = 32;
 	end
-	if ( self.overAbsorbGlow ) then
+	if (self.overAbsorbGlow) then
 		self.overAbsorbGlow:ClearAllPoints();
 		self.overAbsorbGlow:SetPoint("TOPLEFT", self.healthbar, "TOPRIGHT", -7, 0);
 		self.overAbsorbGlow:SetPoint("BOTTOMLEFT", self.healthbar, "BOTTOMRIGHT", -7, 0);
 	end
-	if ( self.healAbsorbBar ) then
+	if (self.healAbsorbBar) then
 		self.healAbsorbBar:ClearAllPoints();
 		self.healAbsorbBar:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
 	end
-	if ( self.overHealAbsorbGlow ) then
+	if (self.overHealAbsorbGlow) then
 		self.overHealAbsorbGlow:ClearAllPoints();
 		self.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", self.healthbar, "BOTTOMLEFT", 7, 0);
 		self.overHealAbsorbGlow:SetPoint("TOPRIGHT", self.healthbar, "TOPLEFT", 7, 0);
 	end
-	if ( healAbsorbBarLeftShadow ) then
+	if (healAbsorbBarLeftShadow) then
 		self.healAbsorbBarLeftShadow:ClearAllPoints();
 	end
-	if ( healAbsorbBarRightShadow ) then
+	if (healAbsorbBarRightShadow) then
 		self.healAbsorbBarRightShadow:ClearAllPoints();
 	end
+
 	if (self.healthbar) then
 		self.healthbar.capNumericDisplay = true;
 	end
 	if (self.manabar) then
 		self.manabar.capNumericDisplay = true;
+
+		if (self.frameType) then
+			self.manabar.frameType = self.frameType;
+		end
+
+		self.manabar.portraitType = self.portrait and "PortraitOn" or "PortraitOff";
 	end
+
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
-	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player" or unit == "pet" or unit == "vehicle" or unit == "target" or unit == "focus"));
+
+	local manaBarFrequentUpdates = false;
+	for _, unitType in ipairs(ManaBarFrequentUpdateUnitTypes) do
+		if (unit == unitType) then
+			manaBarFrequentUpdates = true;
+			break;
+		end
+	end
+
+	UnitFrameManaBar_Initialize(unit, manabar, manatext, manaBarFrequentUpdates);
 	UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
 	UnitFrame_Update(self);
+
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
@@ -469,7 +498,13 @@ function UnitFrame_UpdateTooltip (self)
 	GameTooltipTextLeft1:SetTextColor(r, g, b);
 end
 
-function UnitFrameManaBar_UpdateType (manaBar)
+--[[
+	Previous way to set the mana bar type was by coloring the mana bar (or using an atlas texture for
+	certain cases).  Current way uses atlas textures exclusively, with a mask (done in each frame)
+	making the older existing atlas textures fit to the frame shape.  Once all unit frames have been
+	converted to the new flow, this method and any associated data pieces can be removed safely.
+]]--
+function UnitFrameManaBar_UpdateTypeOld(manaBar)
 	if ( not manaBar ) then
 		return;
 	end
@@ -544,6 +579,86 @@ function UnitFrameManaBar_UpdateType (manaBar)
 		    manaBar.tooltipText = nil;
 	    end
 	end
+end
+
+function UnitFrameManaBar_UpdateType(manaBar)
+	if (not manaBar) then
+		return;
+	end
+
+	if(not manaBar.frameType) then
+		UnitFrameManaBar_UpdateTypeOld(manaBar);
+		return;
+	end
+
+	local unitFrame = manaBar:GetParent();
+	local powerType, powerToken, altR, altG, altB = UnitPowerType(manaBar.unit);
+	local info = PowerBarColor[powerToken];
+
+	-- Some mana bar art is different for a frame depending on if they are in a vehicle or not.
+	-- Special case for the party frame.
+	local vehicleText = "";
+	if(manaBar.frameType == "Party" and unitFrame.state == "vehicle") then
+		vehicleText = "-Vehicle";
+	end
+
+	if (info) then
+		if (manaBar.frameType and info.atlasElementName) then
+			local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType..vehicleText.."-Bar-"..info.atlasElementName;
+			manaBar:SetStatusBarTexture(manaBarTexture);
+		elseif (info.atlas) then
+			manaBar:SetStatusBarTexture(info.atlas);
+		end
+
+		manaBar:SetStatusBarColor(1, 1, 1);
+
+		local playerDeadOrGhost = (manaBar.unit == "player" and (UnitIsDead("player") or UnitIsGhost("player")));
+		local statusBarTexture = manaBar:GetStatusBarTexture();
+		statusBarTexture:SetDesaturated(playerDeadOrGhost);
+		statusBarTexture:SetAlpha(playerDeadOrGhost and 0.5 or 1);
+
+		if (manaBar.FeedbackFrame) then
+			manaBar.FeedbackFrame:Initialize(info, manaBar.unit, powerType);
+		end
+
+		if (manaBar.FullPowerFrame) then
+			manaBar.FullPowerFrame:Initialize(info.fullPowerAnim);
+		end
+	else
+		-- If we cannot find the info for what the mana bar should be, default either to Mana or Mana-Status (colorable).
+		local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType..vehicleText.."-Bar-Mana";
+		manaBar:SetStatusBarColor(1, 1, 1);
+
+		if (altR) then
+			-- This steps around manaBar.lockColor as it is initially setting things.
+			manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType..vehicleText.."-Bar-Mana-Status";
+			manaBar:SetStatusBarColor(altR, altG, altB);
+		end
+
+		manaBar:SetStatusBarTexture(manaBarTexture);
+	end
+
+	if (manaBar.powerType ~= powerType) then
+		manaBar.powerType = powerType;
+		manaBar.powerToken = powerToken;
+
+		if (manaBar.FeedbackFrame) then
+			manaBar.FeedbackFrame:StopFeedbackAnim();
+		end
+
+		if (manaBar.FullPowerFrame) then
+			manaBar.FullPowerFrame:RemoveAnims();
+		end
+
+		manaBar.currValue = UnitPower("player", powerType);
+		if (unitFrame.myManaCostPredictionBar) then
+			unitFrame.myManaCostPredictionBar:Hide();
+		end
+		unitFrame.predictedPowerCost = 0;
+	end
+
+	-- Update the manabar text
+	TextStatusBar_UpdateTextString(manaBar);
 end
 
 function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpdates)

@@ -401,7 +401,7 @@ function ChannelFrameMixin:ToggleCreateChannel()
 end
 
 function ChannelFrameMixin:ToggleVoiceSettings()
-	Settings.OpenToCategory("Audio");
+	Settings.OpenToCategory(Settings.AUDIO_CATEGORY_ID);
 end
 
 -- Channel remains, but appears disabled

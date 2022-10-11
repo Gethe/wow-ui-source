@@ -111,7 +111,7 @@ function ActionBarMixin:UpdateGridLayout()
 
         -- We will want to update our flyout if our orientation changes
         if (buttonOrSpacer.UpdateFlyout) then
-            buttonOrSpacer:UpdateFlyout()
+            buttonOrSpacer:UpdateFlyout();
         end
     end
 
@@ -133,9 +133,16 @@ function ActionBarMixin:SetShowGrid(showGrid, reason)
         actionButton:SetShowGrid(showGrid, reason);
     end
 
+	local shouldBeRaised = showGrid and (reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+	self:UpdateFrameStrata(shouldBeRaised);
+
     self:UpdateShownButtons();
     self:UpdateVisibility();
     self:UpdateGridLayout();
+end
+
+function ActionBarMixin:UpdateFrameStrata(shouldBeRaised)
+	self:SetFrameStrata(shouldBeRaised and "TOOLTIP" or "MEDIUM");
 end
 
 function ActionBarMixin:UpdateShownButtons()
@@ -187,6 +194,7 @@ function EditModeActionBarMixin:EditModeActionBar_OnEvent(event, ...)
 end
 
 function EditModeActionBarMixin:EditModeActionBar_OnShow()
+    self:UpdateGridLayout();
     EditModeManagerFrame:UpdateActionBarLayout(self);
 end
 
@@ -233,7 +241,7 @@ end
 function EditModeActionBarMixin:UpdateVisibility()
     -- If we don't have visiblity settings, then just follow whatever we are told to do externally
     if (not self.visibility) then
-        self:SetShownBase(self.isShownExternal);
+        self:SetShownBase(self.isShownExternal or self.editModeForceShow);
         return;
     end
 

@@ -1417,14 +1417,21 @@ end
 
 
 function UpdateProfessionButton(self)
-	local spellIndex = self:GetID() + self:GetParent().spellOffset;
+	local parent = self:GetParent();
+	if not parent.professionInitialized then
+		return;
+	end
+
+	local spellIndex = self:GetID() + parent.spellOffset;
 	local texture = GetSpellBookItemTexture(spellIndex, SpellBookFrame.bookType);
 	local spellName, _, spellID = GetSpellBookItemName(spellIndex, SpellBookFrame.bookType);
 	local isPassive = IsPassiveSpell(spellIndex, SpellBookFrame.bookType);
 	if ( isPassive ) then
 		self.highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
+		self.spellString:SetTextColor(PASSIVE_SPELL_FONT_COLOR.r, PASSIVE_SPELL_FONT_COLOR.g, PASSIVE_SPELL_FONT_COLOR.b);
 	else
 		self.highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
+		self.spellString:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
 
 	self.IconTexture:SetTexture(texture);
@@ -1436,6 +1443,16 @@ function UpdateProfessionButton(self)
 		self.IconTexture:SetVertexColor(0.4, 0.4, 0.4);
 	end
 
+	self.spellString:SetText(spellName);
+	self.subSpellString:SetText("");
+	if spellID then
+		local spell = Spell:CreateFromSpellID(spellID);
+		spell:ContinueOnSpellLoad(function()
+			self.subSpellString:SetText(spell:GetSpellSubtext());
+		end);
+	end
+	self.IconTexture:SetTexture(texture);
+
 	self:UpdateSelection();
 end
 
@@ -1444,9 +1461,10 @@ function FormatProfession(frame, index)
 		frame.missingHeader:Hide();
 		frame.missingText:Hide();
 
-		local name, texture, rank, maxRank, numSpells, spelloffset, skillLine, rankModifier, specializationIndex, specializationOffset, skillLineName = GetProfessionInfo(index);
+		local name, texture, rank, maxRank, numSpells, spellOffset, skillLine, rankModifier, specializationIndex, specializationOffset, skillLineName = GetProfessionInfo(index);
+		frame.professionInitialized = true;
 		frame.skillName = name;
-		frame.spellOffset = spelloffset;
+		frame.spellOffset = spellOffset;
 		frame.skillLine = skillLine;
 		frame.specializationIndex = specializationIndex;
 		frame.specializationOffset = specializationOffset;
@@ -1456,7 +1474,9 @@ function FormatProfession(frame, index)
 
 		if frame.UnlearnButton ~= nil then
 			frame.UnlearnButton:Show();
-			frame.UnlearnButton:SetScript("OnClick", function() StaticPopup_Show("UNLEARN_SKILL", name, nil, skillLine) end);
+			frame.UnlearnButton:SetScript("OnClick", function() 
+				StaticPopup_Show("UNLEARN_SKILL", name, nil, skillLine);
+			end);
 		end
 
 		local prof_title = "";
@@ -1504,13 +1524,12 @@ function FormatProfession(frame, index)
 			frame.statusBar.rankText:SetFormattedText(TRADESKILL_RANK, rank, maxRank);
 		end
 
-
 		if numSpells <= 0 then
 			frame.SpellButton1:Hide();
 			frame.SpellButton2:Hide();
 		elseif numSpells == 1 then
-			frame.SpellButton1:Show();
 			frame.SpellButton2:Hide();
+			frame.SpellButton1:Show();
 			UpdateProfessionButton(frame.SpellButton1);
 		else -- if numSpells >= 2 then
 			frame.SpellButton1:Show();
@@ -1532,6 +1551,7 @@ function FormatProfession(frame, index)
 
 		if frame.icon then
 			SetPortraitToTexture(frame.icon, "Interface\\Icons\\INV_Scroll_04");
+			frame.specialization:SetText("");
 		end
 		frame.SpellButton1:Hide();
 		frame.SpellButton2:Hide();

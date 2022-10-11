@@ -34,13 +34,22 @@
 			<KeyValue key="disabledOverlayAlpha" value="0.8" type="number"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="BlackBG">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>		
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" atlas="spec-background">
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="4000" hidden="true" setAllPoints="true">
+			<Frame parentKey="DisabledOverlay" enableMouse="true" frameLevel="400" hidden="true" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="GrayOverlay">
@@ -60,35 +69,38 @@
 
 	<Frame name="ClassSpecContentFrameTemplate" mixin="ClassSpecContentFrameMixin" virtual="true">
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="HoverBackground" atlas="spec-hover-background" alpha="0.01" alphaMode="ADD" hidden="true"/>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SpecImageBorderOff" atlas="spec-thumbnailborder-off" useAtlasSize="true">
-					<Size x="310" y="190"/>
+					<Size x="306" y="186"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-38"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="HoverSpecImageBorder" atlas="spec-thumbnailborder-off" useAtlasSize="true" alphaMode="ADD" alpha="0.1">
-					<Size x="310" y="190"/>
+					<Size x="306" y="186"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-38"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="SpecImageBorderOn" atlas="spec-thumbnailborder-on" useAtlasSize="true">
-					<Size x="310" y="190"/>
+					<Size x="306" y="186"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-38"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="ActivatedSpecImageBorder" atlas="spec-thumbnailborder-on" useAtlasSize="true" alphaMode="ADD" hidden="true">
-					<Size x="310" y="190"/>
+					<Size x="306" y="186"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-38"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="SpecImage" useAtlasSize="true">
-					<Size x="310" y="190"/>
+					<Size x="306" y="186"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.SpecImageBorderOff"/>
 					</Anchors>
@@ -108,13 +120,13 @@
 				<FontString parentKey="SpecName" inherits="Game30Font" justifyH="CENTER">
 					<Color r="1" g="1" b="1"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SpecImage" relativePoint="BOTTOM" x="0" y="-50"/>
+						<Anchor point="TOP" relativeKey="$parent.SpecImage" relativePoint="BOTTOM" x="0" y="-54"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="RoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES">
 					<Size x="30" y="30"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="-20" y="-15"/>
+						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="-20" y="-11"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="RoleName" inherits="GameFontNormalMed2">
@@ -123,9 +135,9 @@
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER">
-					<Size x="280" y="100"/>
+					<Size x="280"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="0" y="-90"/>
+						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="0" y="-100"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SampleAbilityText" inherits="GameFontHighlightMed2" text="SAMPLE_ABILITIES">
@@ -136,14 +148,14 @@
 				<FontString parentKey="ActivatedText" inherits="GameFontNormalLarge2" text="SPEC_ACTIVE">
 					<Color r="0" g="1.0" b="0"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="100"/>
+						<Anchor point="BOTTOM" x="0" y="97"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="Separator" atlas="spec-dividerline" alpha="0.2" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="0" y="-70"/>
+						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="0" y="-73"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="ColumnDivider" atlas="spec-columndivider" useAtlasSize="true">
@@ -151,7 +163,6 @@
 						<Anchor point="RIGHT" x="3.5" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="HoverBackground" atlas="spec-hover-background" alpha="0.1" alphaMode="ADD" hidden="true"/>
 				<Texture parentKey="SelectedBackgroundBack1" atlas="spec-selected-background1" alpha="0.1" alphaMode="ADD" hidden="true"/>
 				<Texture parentKey="SelectedBackgroundBack2" atlas="spec-selected-background1" alpha="0.1" alphaMode="MOD" hidden="true"/>
 				<Texture parentKey="SelectedBackgroundLeft1" atlas="spec-selected-background2" alphaMode="ADD" useAtlasSize="true" hidden="true">
@@ -252,7 +263,7 @@
 			<Button parentKey="ActivateButton" inherits="MagicButtonTemplate" text="TALENT_SPEC_ACTIVATE">
 				<Size x="160" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="100"/>
+					<Anchor point="BOTTOM" x="0" y="95"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

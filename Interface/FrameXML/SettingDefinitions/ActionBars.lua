@@ -1,5 +1,6 @@
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(ACTIONBARS_LABEL);
+	Settings.ACTION_BAR_CATEGORY_ID = category:GetID();
 
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[ACTIONBARS_LABEL]);
@@ -9,52 +10,39 @@ local function Register()
 		local function GetActionBarToggle(index)
 			return select(index, GetActionBarToggles());
 		end
-		
+
 		local function SetActionBarToggle(index, value)
 			local toggles = {GetActionBarToggles()};
 			toggles[index] = value;
 			SetActionBarToggles(unpack(toggles));
 		end
-		
+
 		local actionBars = 
 		{
 			{variable = "PROXY_SHOW_ACTIONBAR_2", label = OPTION_SHOW_ACTION_BAR:format(2), tooltip = OPTION_SHOW_ACTION_BAR2_TOOLTIP},
 			{variable = "PROXY_SHOW_ACTIONBAR_3", label = OPTION_SHOW_ACTION_BAR:format(3), tooltip = OPTION_SHOW_ACTION_BAR3_TOOLTIP},
 			{variable = "PROXY_SHOW_ACTIONBAR_4", label = OPTION_SHOW_ACTION_BAR:format(4), tooltip = OPTION_SHOW_ACTION_BAR4_TOOLTIP},
 			{variable = "PROXY_SHOW_ACTIONBAR_5", label = OPTION_SHOW_ACTION_BAR:format(5), tooltip = OPTION_SHOW_ACTION_BAR5_TOOLTIP},
+			{variable = "PROXY_SHOW_ACTIONBAR_6", label = OPTION_SHOW_ACTION_BAR:format(6), tooltip = OPTION_SHOW_ACTION_BAR6_TOOLTIP},
+			{variable = "PROXY_SHOW_ACTIONBAR_7", label = OPTION_SHOW_ACTION_BAR:format(7), tooltip = OPTION_SHOW_ACTION_BAR7_TOOLTIP},
+			{variable = "PROXY_SHOW_ACTIONBAR_8", label = OPTION_SHOW_ACTION_BAR:format(8), tooltip = OPTION_SHOW_ACTION_BAR8_TOOLTIP},
 		};
 
 		for index, data in ipairs(actionBars) do
 			local function GetValue()
 				return GetActionBarToggle(index);
 			end
-			
+
 			local function SetValue(value)
 				SetActionBarToggle(index, value);
 			end
-		
+
 			local defaultValue = true;
 			local setting = Settings.RegisterProxySetting(category, data.variable, Settings.DefaultVarLocation,
 				Settings.VarType.Boolean, data.label, defaultValue, GetValue, SetValue);
 			actionBars[index].setting = setting;
 			actionBars[index].initializer = Settings.CreateCheckBox(category, setting, data.tooltip);
 		end
-
-		local actionBar1Setting = actionBars[1].setting;
-		local actionBar1Initializer = actionBars[1].initializer;
-		local actionBar2Initializer = actionBars[2].initializer;
-		local function IsModifiableActionBar1Setting()
-			return actionBar1Setting:GetValue();
-		end
-		actionBar2Initializer:SetParentInitializer(actionBar1Initializer, IsModifiableActionBar1Setting);
-
-		local actionBar3Setting = actionBars[3].setting;
-		local actionBar3Initializer = actionBars[3].initializer;
-		local actionBar4Initializer = actionBars[4].initializer;
-		local function IsModifiableActionBar3Setting()
-			return actionBar3Setting:GetValue();
-		end
-		actionBar4Initializer:SetParentInitializer(actionBar3Initializer, IsModifiableActionBar3Setting);
 	end
 
 	-- Lock Action Bars

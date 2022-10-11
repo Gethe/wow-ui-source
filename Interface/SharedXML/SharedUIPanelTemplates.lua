@@ -410,12 +410,12 @@ end
 
 function PanelTabButtonMixin:OnEvent(event, ...)
 	if self:IsVisible() then
-		PanelTemplates_TabResize(self, 0, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth or 88);
+		PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
 	end
 end
 
 function PanelTabButtonMixin:OnShow()
-	PanelTemplates_TabResize(self, 0, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth or 88);
+	PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
 end
 
 function PanelTabButtonMixin:OnEnter()
@@ -497,11 +497,6 @@ end
 local TAB_SIDES_PADDING = 20;
 
 function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth, absoluteTextSize)
-	if tab == GuildFrameTab1 then
-		local test = 1;
-		test = 2;
-	end
-
 	if absoluteTextSize then
 		tab.Text:SetWidth(absoluteTextSize);
 	else
@@ -520,14 +515,14 @@ function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth
 			width = absoluteSize;
 		end
 
-		textWidth = width - 10;
+		textWidth = width - TAB_SIDES_PADDING - (padding or 0);
 	else
 		if maxWidth and width > maxWidth then
 			width = maxWidth;
-			textWidth = width - 10;
+			textWidth = width - TAB_SIDES_PADDING - (padding or 0);
 		elseif minWidth and width < minWidth then
 			width = minWidth;
-			textWidth = width - 10;
+			textWidth = width - TAB_SIDES_PADDING - (padding or 0);
 		end
 	end
 
@@ -575,7 +570,7 @@ function PanelTemplates_AnchorTabs(frame, numTabs)
 	for i = 2, frame.numTabs do
 		local lastTab = GetTabByIndex(frame, i - 1);
 		local thisTab = GetTabByIndex(frame, i);
-		thisTab:SetPoint("TOPLEFT", lastTab, "TOPRIGHT", 1, 0);
+		thisTab:SetPoint("TOPLEFT", lastTab, "TOPRIGHT", 3, 0);
 	end
 end
 
@@ -2030,10 +2025,12 @@ end
 
 function SelectionPopoutWithButtonsMixin:OnIncrementClicked(button, buttonName, down)
 	self.Button:Increment();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function SelectionPopoutWithButtonsMixin:OnDecrementClicked(button, buttonName, down)
 	self.Button:Decrement();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function SelectionPopoutWithButtonsMixin:SetupSelections(selections, selectedIndex, label)

@@ -52,7 +52,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="RewardTrackButtonTemplate" mixin="RewardTrackButtonMixin" virtual="true">
+	<Button name="RewardTrackButtonTemplate" mixin="RewardTrackButtonMixin" scale="0.89" virtual="true">
 		<Size x="22" y="39"/>
 		<NormalTexture atlas="CovenantSanctum-Renown-Arrow" useAtlasSize="true">
 			<Anchors>
@@ -82,46 +82,42 @@
 		</Scripts>
 	</Button>
 
-	<Button name="RewardTrackJumpButtonTemplate" mixin="RewardTrackJumpButtonMixin" virtual="true">
-		<Size x="26" y="44"/>
-		<NormalTexture atlas="CreditsScreen-Assets-Buttons-FastForward" useAtlasSize="false">
-			<Size x="26" y="44"/>
+	<Button name="RewardTrackJumpButtonTemplate" mixin="RewardTrackJumpButtonMixin" scale="0.7" virtual="true">
+		<Size x="32" y="38"/>
+		<NormalTexture atlas="CovenantSanctum-Renown-DoubleArrow" useAtlasSize="true">
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</NormalTexture>
-		<!-- Todo: Replace this with the final art!
-		<PushedTexture atlas="CovenantSanctum-Renown-Arrow-Depressed" useAtlasSize="true">
+		<PushedTexture atlas="CovenantSanctum-Renown-DoubleArrow-Depressed" useAtlasSize="true">
 			<Anchors>
 				<Anchor point="CENTER" y="1"/>
 			</Anchors>
 		</PushedTexture>	
-		<DisabledTexture atlas="CovenantSanctum-Renown-Arrow-Disabled" useAtlasSize="true">
+		<DisabledTexture atlas="CovenantSanctum-Renown-DoubleArrow-Disabled" useAtlasSize="true">
 			<Anchors>
 				<Anchor point="CENTER" y="1"/>
 			</Anchors>
 		</DisabledTexture>
-		<HighlightTexture atlas="CovenantSanctum-Renown-Arrow-Hover" useAtlasSize="true" alphaMode="ADD">
+		<HighlightTexture atlas="CovenantSanctum-Renown-DoubleArrow-Hover" useAtlasSize="true" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="CENTER" y="1"/>
 			</Anchors>
-		</HighlightTexture>-->
+		</HighlightTexture>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
-			<OnEnable method="OnEnable"/>
-			<OnDisable method="OnDisable"/>
 		</Scripts>
 	</Button>
 
-	<Button name="RewardTrackSkipLevelUpButtonTemplate" mixin="RewardTrackSkipLevelUpButtonMixin" inherits="UIButtonTemplate, SharedGoldRedButtonSmallTemplate" text="RENOWN_LEVEL_UP_SKIP_BUTTON" virtual="true">
-		<Size x="80" y="16"/>
+	<Button name="RewardTrackSkipLevelUpButtonTemplate" mixin="RewardTrackSkipLevelUpButtonMixin" inherits="SharedGoldRedButtonSmallTemplate" text="RENOWN_LEVEL_UP_SKIP_BUTTON" virtual="true">
+		<Size x="90" y="22"/>
 		<Scripts>
 			<OnClick method="OnClick"/>
 		</Scripts>
-		<NormalFont style="GameFontNormalTiny"/>
-		<HighlightFont style="GameFontWhiteTiny"/>
-		<DisabledFont style="GameFontDisableTiny"/>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontWhiteSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
 
 	<Frame name="RewardTrackFrameTemplate" mixin="RewardTrackFrameMixin" virtual="true">
@@ -151,7 +147,7 @@
 					<KeyValue key="direction" value="-1" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.LeftButton" relativePoint="LEFT" x="-4"/>
+					<Anchor point="RIGHT" relativeKey="$parent.LeftButton" relativePoint="LEFT" x="-17"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="RightButton" inherits="RewardTrackButtonTemplate">
@@ -167,7 +163,7 @@
 					<KeyValue key="direction" value="1" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RightButton" relativePoint="RIGHT" x="4"/>
+					<Anchor point="LEFT" relativeKey="$parent.RightButton" relativePoint="RIGHT" x="17"/>
 				</Anchors>
 			</Button>
 		</Frames>

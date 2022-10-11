@@ -210,10 +210,10 @@ function SettingsPanelMixin:Open()
 	ShowUIPanel(SettingsPanel);
 end
 
-function SettingsPanelMixin:OpenToCategory(category, scrollToElementName)
+function SettingsPanelMixin:OpenToCategory(categoryID, scrollToElementName)
 	self:Open();
 
-	local categoryTbl = self:GetCategoryList():GetCategory(category);
+	local categoryTbl = self:GetCategoryList():GetCategory(categoryID);
 	if categoryTbl then
 		self:SelectCategory(categoryTbl);
 
@@ -468,7 +468,7 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 		if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Vertical then
 			for _, initializer in layout:EnumerateInitializers() do
 				local result = initializer:MatchesSearchTags(words);
-				if result then
+				if result and initializer:ShouldShow() then
 					if not matches[result] then
 						matches[result] = {};
 					end

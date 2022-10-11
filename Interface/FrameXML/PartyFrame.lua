@@ -74,6 +74,31 @@ function PartyFrameMixin:HidePartyFrames()
 	end
 end
 
+function PartyFrameMixin:UpdatePaddingAndLayout()
+	local showPartyFrames = ShouldShowPartyFrames();
+	if showPartyFrames then
+		self.leftPadding = nil;
+		self.rightPadding = nil;
+	else
+		local useHorizontalGroups = EditModeManagerFrame:ShouldRaidFrameUseHorizontalRaidGroups(true);
+
+		if useHorizontalGroups then
+			if CompactPartyFrame.borderFrame:IsShown() then
+				self.leftPadding = 6;
+				self.rightPadding = nil;
+			else
+				self.leftPadding = 2;
+				self.rightPadding = 2;
+			end
+		else
+			self.leftPadding = 2;
+			self.rightPadding = 2;
+		end
+	end
+
+	self:Layout();
+end
+
 function PartyFrameMixin:UpdatePartyFrames()
 	local showPartyFrames = ShouldShowPartyFrames();
 	for memberFrame in self.PartyMemberFramePool:EnumerateActive() do
@@ -86,7 +111,7 @@ function PartyFrameMixin:UpdatePartyFrames()
 	end
 
 	self:UpdatePartyMemberBackground();
-	self:Layout();
+	self:UpdatePaddingAndLayout();
 end
 
 PartyMemberBuffTooltipMixin = {};

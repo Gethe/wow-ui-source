@@ -1,7 +1,10 @@
--- Art TODO: Replace use of SoulbindsNodes EffectIDs with ClassTalent-specific FX
-local NODE_PURCHASE_FX_1 = 142;
-local NODE_PURCHASE_FX_2 = 143;
+local NODE_PURCHASE_FX_1 = 150;
 
+
+--------------------------------------------------
+-- Base mixin for both the standard talent Buttons and the Selection Choice mixin.
+-- Should only contain overrides to TalentButtonArtMixin or TalentDisplayMixin functionality.
+-- Should NOT contain any overrides to TalentButtonBaseMixin functionality.
 ClassTalentButtonArtMixin = {};
 
 function ClassTalentButtonArtMixin:OnShow()
@@ -10,11 +13,6 @@ end
 
 function ClassTalentButtonArtMixin:OnHide()
 	self.BorderSheen.Anim:Stop();
-end
-
-function ClassTalentButtonArtMixin:SetSelectableGlowDisabled(disabled)
-	self.selectableGlowDisabled = disabled;
-	self:UpdateSelectableGlow();
 end
 
 function ClassTalentButtonArtMixin:UpdateStateBorder(visualState)
@@ -26,36 +24,22 @@ function ClassTalentButtonArtMixin:UpdateStateBorder(visualState)
 	self.BorderSheen:SetAlpha(sheenAlpha);
 	-- Hiding the sheen instead of stopping its anim so that it stays in sync with the other nodes
 	self.BorderSheen:SetShown(sheenAlpha > 0);
-
-	self:UpdateSelectableGlow();
-end
-
-function ClassTalentButtonArtMixin:UpdateGlow()
-	-- Overrides TalentButtonArtMixin.
-
-	TalentButtonArtMixin.UpdateGlow(self);
-
-	self:UpdateSelectableGlow();
-end
-
-function ClassTalentButtonArtMixin:UpdateSelectableGlow()
-	local isDoingStandardGlow = self.Glow and self.shouldGlow;
-	local canDoSelectableGlow = not isDoingStandardGlow and not self.selectableGlowDisabled;
-
-	local playSelectableGlow = canDoSelectableGlow and self.visualState == TalentButtonUtil.BaseVisualState.Selectable;
-	self.SelectableGlow.Anim:SetPlaying(playSelectableGlow);
 end
 
 
+--------------------------------------------------
+-- Base mixin for the standard talent Buttons.
+-- Should contain functionality for all BUT the Selection Choice mixin.
 ClassTalentButtonBaseMixin = {};
 
 function ClassTalentButtonBaseMixin:OnLoad()
 	self.BorderSheenMask:SetAtlas(self.sheenMaskAtlas, TextureKitConstants.UseAtlasSize);
 	self.SelectableGlow:SetAtlas(self.artSet.glow, TextureKitConstants.IgnoreAtlasSize);
+	self.tooltipBackdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT;
 end
 
 function ClassTalentButtonBaseMixin:UpdateActionBarStatus()
-	self.missingFromActionBar = not self:IsInspecting() and ClassTalentUtil.IsTalentMissingFromActionBars(self:GetNodeInfo(), self:GetSpellID());
+	self.missingFromActionBar = not self:IsInspecting() and not self:FrameHasAnyPendingChanges() and ClassTalentUtil.IsTalentMissingFromActionBars(self:GetNodeInfo(), self:GetSpellID());
 end
 
 function ClassTalentButtonBaseMixin:IsMissingFromActionBar()
@@ -64,7 +48,6 @@ end
 
 function ClassTalentButtonBaseMixin:PlayPurchaseEffect(fxModelScene)
 	fxModelScene:AddEffect(NODE_PURCHASE_FX_1, self, self);
-	fxModelScene:AddEffect(NODE_PURCHASE_FX_2, self, self);
 	if self.PurchaseVisuals and self.PurchaseVisuals.Anim then
 		self.PurchaseVisuals.Anim:SetPlaying(true);
 	end
@@ -76,6 +59,33 @@ function ClassTalentButtonBaseMixin:ResetPurchaseEffects()
 	end
 end
 
+function ClassTalentButtonBaseMixin:SetSelectableGlowDisabled(disabled)
+	self.selectableGlowDisabled = disabled;
+	self:UpdateSelectableGlow();
+end
+
+function ClassTalentButtonBaseMixin:UpdateStateBorder(visualState)
+	-- Overrides ClassTalentButtonArtMixin.
+
+	ClassTalentButtonArtMixin.UpdateStateBorder(self, visualState);
+	self:UpdateSelectableGlow();
+end
+
+function ClassTalentButtonBaseMixin:UpdateGlow()
+	-- Overrides TalentButtonArtMixin.
+
+	TalentButtonArtMixin.UpdateGlow(self);
+	self:UpdateSelectableGlow();
+end
+
+function ClassTalentButtonBaseMixin:UpdateSelectableGlow()
+	local isDoingStandardGlow = self.Glow and self.shouldGlow;
+	local canDoSelectableGlow = not isDoingStandardGlow and not self.selectableGlowDisabled;
+
+	local playSelectableGlow = canDoSelectableGlow and self.visualState == TalentButtonUtil.BaseVisualState.Selectable;
+	self.SelectableGlow.Anim:SetPlaying(playSelectableGlow);
+end
+
 function ClassTalentButtonBaseMixin:OnRelease()
 	-- Overrides TalentDisplayMixin.
 
@@ -83,7 +93,13 @@ function ClassTalentButtonBaseMixin:OnRelease()
 	TalentDisplayMixin.OnRelease(self);
 end
 
+function ClassTalentButtonBaseMixin:FrameHasAnyPendingChanges()
+	return self:GetTalentFrame():HasAnyPendingChanges();
+end
 
+
+--------------------------------------------------
+-- Spend Mixin (standard select/deselect)
 ClassTalentButtonSpendMixin = CreateFromMixins(TalentButtonSpendMixin, ClassTalentButtonBaseMixin);
 
 function ClassTalentButtonSpendMixin:OnLoad()
@@ -118,7 +134,7 @@ end
 function ClassTalentButtonSpendMixin:AddTooltipInstructions(tooltip)
 	-- Overrides TalentButtonSpendMixin.
 
-	if self.missingFromActionBar then
+	if self:IsMissingFromActionBar() then
 		GameTooltip:AddLine(TALENT_BUTTON_TOOLTIP_NOT_ON_ACTION_BAR, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b);
 	end
 	TalentButtonSpendMixin.AddTooltipInstructions(self, tooltip);
@@ -132,6 +148,8 @@ function ClassTalentButtonSpendMixin:ResetDynamic()
 end
 
 
+--------------------------------------------------
+-- Select Mixin (talent with multiple choices)
 ClassTalentButtonSelectMixin = CreateFromMixins(TalentButtonSelectMixin, ClassTalentButtonBaseMixin);
 
 function ClassTalentButtonSelectMixin:OnLoad()
@@ -170,7 +188,35 @@ function ClassTalentButtonSelectMixin:ResetDynamic()
 	self:ResetPurchaseEffects();
 end
 
+function ClassTalentButtonSelectMixin:UpdateGlow()
+	-- Overrides ClassTalentButtonBaseMixin.
 
+	ClassTalentButtonBaseMixin.UpdateGlow(self);
+
+	local isDoingStandardGlow = self.Glow and self.shouldGlow;
+	-- Prevent standard glow while selection flyout is open
+	if isDoingStandardGlow and self:GetTalentFrame():AreSelectionsOpen(self) then
+		self.Glow:SetShown(false);
+	end
+end
+
+function ClassTalentButtonSelectMixin:ShowSelections()
+	-- Overrides TalentButtonSelectMixin
+
+	TalentButtonSelectMixin.ShowSelections(self);
+	self:UpdateGlow();
+end
+
+function ClassTalentButtonSelectMixin:ClearSelections()
+	-- Overrides TalentButtonSelectMixin
+
+	TalentButtonSelectMixin.ClearSelections(self);
+	self:UpdateGlow();
+end
+
+
+--------------------------------------------------
+-- Split Select Mixin (talent with split icon with two choices)
 ClassTalentButtonSplitSelectMixin = CreateFromMixins(TalentButtonSplitSelectMixin, ClassTalentButtonBaseMixin);
 
 function ClassTalentButtonSplitSelectMixin:OnLoad()
@@ -197,7 +243,35 @@ function ClassTalentButtonSplitSelectMixin:ResetDynamic()
 	self:ResetPurchaseEffects();
 end
 
+function ClassTalentButtonSplitSelectMixin:UpdateGlow()
+	-- Overrides ClassTalentButtonBaseMixin.
 
+	ClassTalentButtonBaseMixin.UpdateGlow(self);
+
+	local isDoingStandardGlow = self.Glow and self.shouldGlow;
+	-- Prevent standard glow while selection flyout is open
+	if isDoingStandardGlow and self:GetTalentFrame():AreSelectionsOpen(self) then
+		self.Glow:SetShown(false);
+	end
+end
+
+function ClassTalentButtonSplitSelectMixin:ShowSelections()
+	-- Overrides TalentButtonSelectMixin
+
+	TalentButtonSelectMixin.ShowSelections(self);
+	self:UpdateGlow();
+end
+
+function ClassTalentButtonSplitSelectMixin:ClearSelections()
+	-- Overrides TalentButtonSelectMixin
+
+	TalentButtonSelectMixin.ClearSelections(self);
+	self:UpdateGlow();
+end
+
+
+--------------------------------------------------
+-- Selection Choice Mixin (flyout choice shown by select mixins)
 ClassTalentSelectionChoiceMixin = CreateFromMixins(TalentSelectionChoiceMixin);
 
 function ClassTalentSelectionChoiceMixin:OnLoad()
@@ -205,7 +279,8 @@ function ClassTalentSelectionChoiceMixin:OnLoad()
 
 	TalentButtonArtMixin.OnLoad(self);
 	self.BorderSheenMask:SetAtlas(self.sheenMaskAtlas, TextureKitConstants.UseAtlasSize);
-	self.SelectableGlow:SetAtlas(self.artSet.glow, TextureKitConstants.IgnoreAtlasSize);
+
+	self.tooltipBackdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT;
 end
 
 function ClassTalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, selectionIndex)
@@ -217,7 +292,7 @@ function ClassTalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectCh
 	local nodeInfo = self:GetNodeInfo();
 	local talentFrame = self:GetTalentFrame();
 
-	self.missingFromActionBar = ClassTalentUtil.IsEntryTalentMissingFromActionBars(entryID, nodeInfo, self:GetSpellID());
+	self.missingFromActionBar = not self:IsInspecting() and not talentFrame:HasAnyPendingChanges() and ClassTalentUtil.IsEntryTalentMissingFromActionBars(entryID, nodeInfo, self:GetSpellID());
 
 	self:SetSearchMatchType(nodeInfo and talentFrame:GetSearchMatchTypeForEntry(nodeInfo.ID, entryID) or nil);
 	self:SetGlowing(talentFrame:IsHighlightedStarterBuildEntry(entryID));

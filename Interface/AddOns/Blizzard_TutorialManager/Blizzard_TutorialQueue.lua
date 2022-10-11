@@ -11,8 +11,8 @@ end
 
 function TutorialQueue:Add(tutorialInstance, ...)
 	local args = {...};
-	if tutorialInstance:CanStart(args) then
-		--print("QUEUED: "..tutorialInstance.class.name);
+	if tutorialInstance:CanBegin(args) then
+		TutorialManager:DebugLog("    QUEUE ADD: "..tutorialInstance.class.name);
 		local value = {};
 		value.tutorial = tutorialInstance;
 		value.args = args;
@@ -23,8 +23,8 @@ end
 
 function TutorialQueue:NotifyDone(callingTutorial)
 	if self.currentTutorial and self.currentTutorial == callingTutorial then
-		--print("FINISH: "..self.currentTutorial.class.name);
-		self.currentTutorial:Finish();
+		TutorialManager:DebugLog("    QUEUE COMPLETE: "..self.currentTutorial.class.name);
+		self.currentTutorial:Complete();
 		self.currentTutorial.inProgress = false;
 		self.currentTutorial = nil;
 	end
@@ -37,11 +37,11 @@ function TutorialQueue:CheckQueue()
 	end
 
 	local value = self.queue:PopBack();
-	if value and value.tutorial and value.tutorial.IsActive then
+	if value and value.tutorial and not value.tutorial.IsActive then
 		self.currentTutorial = value.tutorial;
 		self.currentTutorial.inProgress = true;
-		--print("START: "..self.currentTutorial.class.name);
-		self.currentTutorial:Start(value.args);
+		TutorialManager:DebugLog("    QUEUE START: "..self.currentTutorial.class.name);
+		self.currentTutorial:Begin(value.args);
 	end
 end
 
@@ -55,3 +55,6 @@ function TutorialQueue:Status()
 	end
 	print("---------------END---------------")
 end
+
+-- ------------------------------------------------------------------------------------------------------------
+TutorialQueue:Initialize();

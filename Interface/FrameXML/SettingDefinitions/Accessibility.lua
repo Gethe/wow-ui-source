@@ -59,7 +59,7 @@ local function Register()
 		end
 		
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(1, MOTION_SICKNESS_CHARACTER_CENTERED);
 			container:Add(2, MOTION_SICKNESS_REDUCE_CAMERA_MOTION);
 			container:Add(3, MOTION_SICKNESS_BOTH);
@@ -104,7 +104,7 @@ local function Register()
 		end
 	
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(1, SHAKE_INTENSITY_NONE);
 			container:Add(3, SHAKE_INTENSITY_REDUCED);
 			container:Add(2, SHAKE_INTENSITY_FULL);
@@ -124,7 +124,7 @@ local function Register()
 		end
 
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(-1, CURSOR_SIZE_DEFAULT);
 			container:Add(0, FormatCursorSize(32));
 			container:Add(1, FormatCursorSize(48));
@@ -140,7 +140,7 @@ local function Register()
 	-- Enable Dracthyr Tap Controls (Mirrored in Controls)
 	do
 		local function GetTapControlOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(0, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION_TOOLTIP);
 			container:Add(1, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION_TOOLTIP);
 			return container:GetData();
@@ -201,7 +201,7 @@ local function Register()
 		end
 	
 		local function GetOptions()
-			local container = Settings.CreateDropDownTextContainer();
+			local container = Settings.CreateControlTextContainer();
 			container:Add(1, INTERACT_ICONS_DEFAULT);
 			container:Add(2, INTERACT_ICONS_SHOW_ALL);
 			container:Add(3, INTERACT_ICONS_SHOW_NONE);

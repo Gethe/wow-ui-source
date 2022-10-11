@@ -1,12 +1,10 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\FrameXML\UI.xsd">
   <Script file="QuickKeybind.lua"/>
 	<Button name="QuickKeybindButtonTemplate" mixin="QuickKeybindButtonTemplateMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="QuickKeybindHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" hidden="true">
-					<Size x="35" y="35"/>
-				</Texture>
+				<Texture parentKey="QuickKeybindHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" hidden="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -17,7 +15,7 @@
 			<OnLeave method="QuickKeybindButtonOnLeave"/>
 		</Scripts>
 	</Button>
-	<GameTooltip name="QuickKeybindTooltip" parent="UIParent" inherits="SharedTooltipTemplate"/>
+	<GameTooltip name="QuickKeybindTooltip" parent="UIParent" toplevel="true" inherits="SharedTooltipTemplate"/>
 
 	<Button name="QuickKeybindFrameTemplate" enableMouse="true" enableKeyboard="true" mixin="QuickKeybindFrameMixin" virtual="true">
 		<Size x="450" y="250"/>

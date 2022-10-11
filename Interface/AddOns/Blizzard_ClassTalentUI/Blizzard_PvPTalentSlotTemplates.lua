@@ -158,9 +158,8 @@ end
 function PvPTalentSlotButtonMixin:OnClick()
 	local selectedTalentID = self:GetSelectedTalent();
 	if (IsModifiedClick("CHATLINK") and selectedTalentID) then
-		local _, name = GetPvpTalentInfoByID(selectedTalentID);
 		local link = GetPvpTalentLink(selectedTalentID);
-		HandleGeneralTalentFrameChatLink(self, name, link);
+		ChatEdit_InsertLink(link);
 		return;
 	end
 

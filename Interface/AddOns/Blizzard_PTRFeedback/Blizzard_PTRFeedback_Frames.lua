@@ -699,6 +699,10 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
         showFunction()        
         
         local submitButton = CreateFrame("Button", nil, surveyFrame, "UIPanelButtonTemplate")
+        submitButton.Tooltip = CreateFrame("Frame", nil, submitButton)
+        submitButton.Tooltip:SetPoint("TOPLEFT", submitButton, "TOPLEFT")
+        submitButton.Tooltip:SetPoint("BOTTOMRIGHT", submitButton, "BOTTOMRIGHT")
+        
         submitButton:SetPoint("TOP", surveyFrame, "BOTTOM")
         submitButton:SetText(PTR_IssueReporter.Data.SubmitText)
         submitButton:SetSize(submitButton:GetTextWidth()*1.5, PTR_IssueReporter.Data.SubmitButtonHeight)
@@ -709,6 +713,20 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
             end
         end)
         submitButton:SetScript("OnShow", buttonOnShow)
+        
+        submitButton.Tooltip:SetScript("OnEnter", function()
+            if not (submitButton:IsEnabled()) then
+                GameTooltip:ClearAllPoints()
+                GameTooltip:SetPoint("TOPLEFT", submitButton, "TOPRIGHT", 0, 0)
+                GameTooltip:SetOwner(submitButton, "ANCHOR_PRESERVE")
+                GameTooltip:AddLine("Please select either Bug or Feedback")
+                GameTooltip:Show()
+            end
+        end)
+        
+        submitButton.Tooltip:SetScript("OnLeave", function(self)
+            GameTooltip:Hide()
+        end)
         
         titleBox.submitButton = submitButton
         titleBox:Hide()

@@ -175,6 +175,21 @@ local SocialQueue =
 			},
 		},
 		{
+			Name = "SocialQueueGroupInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "canJoin", Type = "bool", Nilable = false },
+				{ Name = "numQueues", Type = "number", Nilable = false },
+				{ Name = "needTank", Type = "bool", Nilable = false },
+				{ Name = "needHealer", Type = "bool", Nilable = false },
+				{ Name = "needDamage", Type = "bool", Nilable = false },
+				{ Name = "isSoloQueueParty", Type = "bool", Nilable = false },
+				{ Name = "questSessionActive", Type = "bool", Nilable = false },
+				{ Name = "leaderGUID", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "SocialQueueGroupQueueInfo",
 			Type = "Structure",
 			Fields =

@@ -440,6 +440,37 @@ local Transmog =
 				{ Name = "text", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "TransmogSlotInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "isTransmogrified", Type = "bool", Nilable = false },
+				{ Name = "hasPending", Type = "bool", Nilable = false },
+				{ Name = "isPendingCollected", Type = "bool", Nilable = false },
+				{ Name = "canTransmogrify", Type = "bool", Nilable = false },
+				{ Name = "cannotTransmogrifyReason", Type = "number", Nilable = false },
+				{ Name = "hasUndo", Type = "bool", Nilable = false },
+				{ Name = "isHideVisual", Type = "bool", Nilable = false },
+				{ Name = "texture", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "TransmogSlotVisualInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "baseSourceID", Type = "number", Nilable = false },
+				{ Name = "baseVisualID", Type = "number", Nilable = false },
+				{ Name = "appliedSourceID", Type = "number", Nilable = false },
+				{ Name = "appliedVisualID", Type = "number", Nilable = false },
+				{ Name = "pendingSourceID", Type = "number", Nilable = false },
+				{ Name = "pendingVisualID", Type = "number", Nilable = false },
+				{ Name = "hasUndo", Type = "bool", Nilable = false },
+				{ Name = "isHideVisual", Type = "bool", Nilable = false },
+				{ Name = "itemSubclass", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

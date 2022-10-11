@@ -10,6 +10,10 @@ LEFT_ACTIONBAR_PAGE = 4;
 RIGHT_ACTIONBAR_PAGE = 3;
 RANGE_INDICATOR = "●";
 
+MULTIBAR_5_ACTIONBAR_PAGE = 13;
+MULTIBAR_6_ACTIONBAR_PAGE = 14;
+MULTIBAR_7_ACTIONBAR_PAGE = 15;
+
 COOLDOWN_TYPE_LOSS_OF_CONTROL = 1;
 COOLDOWN_TYPE_NORMAL = 2;
 
@@ -289,6 +293,10 @@ function ActionBarActionButtonMixin:OnLoad()
 	ActionBarButtonEventsFrame:RegisterFrame(self);
 	self:UpdateAction();
 	self:UpdateHotkeys(self.buttonType);
+
+	self.QuickKeybindHighlightTexture:ClearAllPoints();
+	self.QuickKeybindHighlightTexture:SetPoint("TOPLEFT");
+	self.QuickKeybindHighlightTexture:SetSize(46, 45);
 end
 
 function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
@@ -313,6 +321,16 @@ function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
         hotkey:SetText(RANGE_INDICATOR);
         hotkey:Hide();
     else
+		local frameWidth, frameHeight = self:GetSize();
+		if ( IsBindingForGamePad(key) ) then
+			-- Allow gamepad binding to go all the way across and overlap the border for more space
+			hotkey:SetSize(frameWidth, 16);
+			hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0);
+		else
+			-- Tuck in KBM binding a bit to be inside the border
+			hotkey:SetSize(frameWidth-8, 10);
+			hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", -4, -5);
+		end
         hotkey:SetText(text);
         hotkey:Show();
     end
@@ -1116,18 +1134,23 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 				C_ActionBar.ToggleAutoCastPetAction(self.action);
 			end
 		else
-			local useKeyDownCvar = GetCVarBool("ActionButtonUseKeyDown");
 			local actionBarLocked = Settings.GetValue("lockActionBars");
 
-			local lockedBarDoNothing = actionBarLocked and down and IsModifiedClick("PICKUPACTION");
-			local unlockedBarDoNothing = not actionBarLocked and (self:GetAttribute("pressAndHoldAction") or (useKeyDownCvar and down));
+			local isModifiedClickLockedBarDoNothing = IsModifiedClick("PICKUPACTION");
+			if GetCursorInfo() then
+				-- If we have something on the cursor then we don't care whether it was a modified click
+				-- as far as lockedBarDoNothing goes
+				isModifiedClickLockedBarDoNothing = false;
+			end
+
+			local lockedBarDoNothing = actionBarLocked and down and isModifiedClickLockedBarDoNothing;
+			local unlockedBarDoNothing = not actionBarLocked and (self:GetAttribute("pressAndHoldAction") and down);
 			if lockedBarDoNothing or unlockedBarDoNothing then
 				return;
 			end
 
-			local useDown = down or (useKeyDownCvar and not actionBarLocked);
 			local isKeyPress = false;
-			SecureActionButton_OnClick(self, button, useDown, isKeyPress);
+			SecureActionButton_OnClick(self, button, down, isKeyPress);
 		end
 	end
 
@@ -1265,9 +1288,19 @@ function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.AutoCastShine:ClearAllPoints();
 	self.AutoCastShine:SetPoint("CENTER", 0.5, -0.5);
 
-	self.HighlightTexture:SetSize(31.7, 31);
+	self.HighlightTexture:SetSize(31.6, 30.9);
+	self.CheckedTexture:SetSize(31.6, 30.9);
 
-	self.CheckedTexture:SetSize(31.7, 31);
+	if self.QuickKeybindHighlightTexture then
+		self.QuickKeybindHighlightTexture:ClearAllPoints();
+		self.QuickKeybindHighlightTexture:SetPoint("TOPLEFT");
+		self.QuickKeybindHighlightTexture:SetSize(31.6, 30.9);
+	end
+
+	self.NewActionTexture:SetSize(31.6, 30.9);
+	self.SpellHighlightTexture:SetSize(31.6, 30.9);
+	self.Border:SetSize(31.6, 30.9);
+	self.Flash:SetSize(31.6, 30.9);
 end
 
 function SmallActionButtonMixin:UpdateButtonArt(hideDivider)

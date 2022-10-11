@@ -56,7 +56,7 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "CVAR_UPDATE" ) then
 		local cvar, value = ...;
-		if ( cvar == "LOSS_OF_CONTROL" ) then
+		if ( cvar == "lossOfControl" ) then
 			if ( value == "1" ) then
 				self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
 				self:RegisterEvent("LOSS_OF_CONTROL_ADDED");

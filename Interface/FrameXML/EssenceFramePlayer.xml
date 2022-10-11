@@ -299,12 +299,14 @@
 			<KeyValue key="showBarFunc" value="EssencePowerBar.SetupEvoker" type="global"/>
 			<KeyValue key="spacing" value="-1" type="number"/>
 			<KeyValue key="class" value="DRACTHYR" type="string"/>
-			<KeyValue key="topPadding" value="5" type="number"/>
 		</KeyValues>
 	</Frame>
 
 	<Frame name="EssencePlayerFrame" inherits="EssencePlayerFrameTemplate">
 		<Size x="126" y="24"/>
+		<KeyValues>
+			<KeyValue key="topPadding" value="5" type="number"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOP" relativePoint="BOTTOM" x="32" y="30"/>
 		</Anchors>

@@ -333,27 +333,3 @@ function AnchorUtil.PrintAnchorGraph(frame)
 	ConsolePrint(str);
 	print(str);
 end
-
-function AnchorUtil.CreateGridLayoutOrganizer(stride, anchor, xPadding, yPadding)
-	local OrganizerMixin = {entries = {}};
-
-	function OrganizerMixin:Add(frame, order)
-		table.insert(self.entries, {frame = frame, order = order});
-	end
-
-	function OrganizerMixin:Layout()
-		table.sort(self.entries, function(lhs, rhs)
-			return lhs.order < rhs.order;
-		end);
-
-		local frames = {};
-		for index, entry in ipairs(self.entries) do
-			table.insert(frames, entry.frame);
-		end
-
-		local layout = GridLayoutUtil.CreateNaturalGridLayout(stride, xPadding, yPadding);
-		GridLayoutUtil.ApplyGridLayout(frames, anchor, layout);
-	end
-
-	return CreateFromMixins(OrganizerMixin);
-end
