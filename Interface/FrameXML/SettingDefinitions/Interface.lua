@@ -350,7 +350,7 @@ local function Register()
 
 	do
 		-- Debuffs
-		local debuffSetting, debuffInitializer = Settings.SetupCVarCheckBox(category, "raidFramesDisplayNonBossDebufs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
+		local debuffSetting, debuffInitializer = Settings.SetupCVarCheckBox(category, "raidFramesDisplayDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
 
 		-- Only Dispellable Debuffs
 		local function IsModifiable()

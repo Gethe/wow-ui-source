@@ -764,6 +764,6 @@ function ItemRefTooltipMixin:SetHyperlink(...)
 		end
 	end
 
-	local tooltipInfo = MakeBaseTooltipInfo("GetHyperlink", ...);
+	local tooltipInfo = CreateBaseTooltipInfo("GetHyperlink", ...);
 	return self:ProcessInfo(tooltipInfo);
 end

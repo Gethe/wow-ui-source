@@ -23,6 +23,9 @@ local function Register()
 			{variable = "PROXY_SHOW_ACTIONBAR_3", label = OPTION_SHOW_ACTION_BAR:format(3), tooltip = OPTION_SHOW_ACTION_BAR3_TOOLTIP},
 			{variable = "PROXY_SHOW_ACTIONBAR_4", label = OPTION_SHOW_ACTION_BAR:format(4), tooltip = OPTION_SHOW_ACTION_BAR4_TOOLTIP},
 			{variable = "PROXY_SHOW_ACTIONBAR_5", label = OPTION_SHOW_ACTION_BAR:format(5), tooltip = OPTION_SHOW_ACTION_BAR5_TOOLTIP},
+			{variable = "PROXY_SHOW_ACTIONBAR_6", label = OPTION_SHOW_ACTION_BAR:format(6), tooltip = OPTION_SHOW_ACTION_BAR6_TOOLTIP},
+			{variable = "PROXY_SHOW_ACTIONBAR_7", label = OPTION_SHOW_ACTION_BAR:format(7), tooltip = OPTION_SHOW_ACTION_BAR7_TOOLTIP},
+			{variable = "PROXY_SHOW_ACTIONBAR_8", label = OPTION_SHOW_ACTION_BAR:format(8), tooltip = OPTION_SHOW_ACTION_BAR8_TOOLTIP},
 		};
 
 		for index, data in ipairs(actionBars) do

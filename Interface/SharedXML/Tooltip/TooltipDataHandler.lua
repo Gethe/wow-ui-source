@@ -81,7 +81,18 @@ end
 -- Tooltip data parser that should be mixed in by any tooltip that wants :SetX functionality
 -- =======================================================================
 
-function MakeBaseTooltipInfo(getterName, ...)
+--[[ info table layout
+	getterName		: If tooltipData is not set, the C_TooltipInfo function to call. The data returned will be set as tooltipData in this table.
+	getterArgs		: Optional table of arguments for the C_TooltipInfo call.
+	tooltipData		: In some places code already has this data, so it can set this key and leave the getterName nil.
+	append			: If true, the tooltip will not be cleared and the backdrop style (Azerite and Corrupted) will not be set.
+	compareItem		: If true, an item comparison will start automatically.
+	excludeLines	: Table of line types to exclude from the tooltip.
+	linePreCall		: Callback for each line before it's added.
+	linePostCall	: Callback for each line after it's added.
+]]--
+
+function CreateBaseTooltipInfo(getterName, ...)
 	local tooltipInfo = {
 		getterName = getterName,
 		getterArgs = { ... };
@@ -89,14 +100,7 @@ function MakeBaseTooltipInfo(getterName, ...)
 	return tooltipInfo;
 end
 
-local function SurfaceArgs(tbl)
-	if not tbl.args then
-		return;
-	end
-	for i, arg in ipairs(tbl.args) do
-		tbl[arg.field] = arg.stringVal or arg.intVal or arg.floatVal or arg.boolVal or arg.colorVal or arg.guidVal;
-	end
-end
+local SurfaceArgs = TooltipUtil.SurfaceArgs;
 
 TooltipDataHandlerMixin = { };
 
@@ -139,32 +143,42 @@ function TooltipDataHandlerMixin:ProcessInfo(info)
 	self:ProcessLines();
 
 	ProcessTooltipPostCalls(tooltipType, self, tooltipData);
-	
+
+	self:Show();
+
 	if not info.append and info.backdropStyle then
 		SharedTooltip_SetBackdropStyle(self, info.backdropStyle);
 	end
-	
-	self:Show();
 
 	return true;
 end
 
 function TooltipDataHandlerMixin:ProcessLines()
-	for i, lineData in ipairs(self.info.tooltipData.lines) do
-		self:ProcessLineData(lineData);
+	local info = self.info;
+	local excludeLines = info.excludeLines;
+	local linePreCall = info.linePreCall;
+	local linePostCall = info.linePostCall;
+	for i, lineData in ipairs(info.tooltipData.lines) do
+		self:ProcessLineData(lineData, excludeLines, linePreCall, linePostCall);
 	end	
 end
 
-function TooltipDataHandlerMixin:ProcessLineData(lineData)
+function TooltipDataHandlerMixin:ProcessLineData(lineData, excludeLines, linePreCall, linePostCall)
 	SurfaceArgs(lineData);
 
-	local lineConsumed = self.info.lineFilters and tContains(self.info.lineFilters, lineData.type) or false;
+	local lineConsumed = excludeLines and tContains(excludeLines, lineData.type) or false;
+	if not lineConsumed and linePreCall then
+		lineConsumed = linePreCall(self, lineData);
+	end
 	if not lineConsumed then
 		lineConsumed = ProcessLinePreCalls(lineData.type, self, lineData);
 	end
 
 	if not lineConsumed then
 		self:AddLineDataText(lineData);
+		if linePostCall then
+			linePostCall(self, lineData);
+		end
 		ProcessLinePostCalls(lineData.type, self, lineData);
 	end
 end
@@ -194,6 +208,10 @@ function TooltipDataHandlerMixin:GetTooltipData()
 		return self.info.tooltipData;
 	end
 	return nil;
+end
+
+function TooltipDataHandlerMixin:IsTooltipType(tooltipType)
+	return self.info and self.info.tooltipData and self.info.tooltipData.type == tooltipType;
 end
 
 do
@@ -265,6 +283,7 @@ do
 		SetUnit = "GetUnit",
 		SetTrainerService = "GetTrainerService",
 		SetRecipeResultItem = "GetRecipeResultItem",
+		SetRecipeResultItemForOrder = "GetRecipeResultItemForOrder",
 		SetAction = "GetAction",
 		SetSpellBookItem = "GetSpellBookItem",
 		SetOwnedItemByID = "GetOwnedItemByID",

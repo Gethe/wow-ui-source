@@ -200,6 +200,11 @@ function GlueParent_UpdateDialogs()
 			if ( not localizedString ) then
 				local tag = string.format("%s_ERROR_%d", errorCategory, errorID);
 				localizedString = _G[tag];
+
+				-- some translations may need the HTML formatting even if we are not using the %s_ERROR_%d_HTML basetag
+				if localizedString and strfind(strlower(localizedString), "<html><body><p>") then
+					isHTML = true;
+				end
 			end
 
 			--If we still don't have one, just display a generic error with the ID

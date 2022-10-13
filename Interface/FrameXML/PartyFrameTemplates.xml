@@ -114,8 +114,14 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
+	<!--IMPORTANT
+		If you change anything in this file, be sure to check in PartyMemberFrame.lua if these values get set there as well.
+		IMPORTANT-->
 	<Button name="PartyMemberFrameTemplate" mixin="PartyMemberFrameMixin" hidden="true" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Size x="120" y="53"/>
+		<KeyValues>
+			<KeyValue key="frameType" value="Party" type="string"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Portrait">
@@ -127,7 +133,7 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-				<Texture parentKey="Texture" atlas="ui-hud-unitframe-party-portraiton" useAtlasSize="true">
+				<Texture parentKey="Texture" atlas="UI-HUD-UnitFrame-Party-PortraitOn" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="-2"/>
 					</Anchors>
@@ -137,17 +143,22 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Flash" atlas="ui-hud-unitframe-party-portraiton-incombat" useAtlasSize="true" hidden="true">
+				<Texture parentKey="Flash" atlas="UI-HUD-UnitFrame-Party-PortraitOn-InCombat" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="-2"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="60" y="12"/>
+					<Size x="57" y="12"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="43" y="-6"/>
+						<Anchor point="TOPLEFT" x="46" y="-6"/>
 					</Anchors>
 				</FontString>
+				<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="14" y="-26"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
@@ -166,9 +177,9 @@
 				</Anchors>
 			</Frame>
 			<StatusBar parentKey="HealthBar" inherits="TextStatusBar">
-				<Size x="71" y="10"/>
+				<Size x="70" y="10"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="44" y="-19"/>
+					<Anchor point="TOPLEFT" x="45" y="-19"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -200,9 +211,9 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
+						self.lockColor = true;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
-						self.lockColor = true;
 					</OnLoad>
 					<OnEnter inherit="prepend">
 						self:GetParent():OnEnter();
@@ -220,23 +231,23 @@
 						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
 					</OnSizeChanged>
 				</Scripts>
-				<BarTexture atlas="ui-hud-unitframe-party-portraiton-bar-health"/>
+				<BarTexture parentKey="HealthBarTexture" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health"/>
 			</StatusBar>
 			<StatusBar parentKey="ManaBar" inherits="TextStatusBar">
-				<Size x="71" y="7"/>
+				<Size x="74" y="7"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="44" y="-30"/>
+					<Anchor point="TOPLEFT" x="41" y="-30"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<FontString parentKey="CenterText" inherits="TextStatusBarText">
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="CENTER" x="2" y="0"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="LeftText" inherits="TextStatusBarText">
 							<Anchors>
-								<Anchor point="LEFT"/>
+								<Anchor point="LEFT" x="4" y="0"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="RightText" inherits="TextStatusBarText">
@@ -250,6 +261,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
+						self.lockColor = true;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
 					</OnLoad>
@@ -263,24 +275,24 @@
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
-				<BarTexture atlas="ui-hud-unitframe-party-portraiton-bar-mana"/>
+				<BarTexture atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana"/>
 			</StatusBar>
 			<Frame parentKey="PartyMemberOverlay" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Status" atlas="ui-hud-unitframe-party-portraiton-status" useAtlasSize="true" hidden="true">
+						<Texture parentKey="Status" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Status" useAtlasSize="true" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="1" y="-2"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="LeaderIcon" atlas="ui-hud-unitframe-player-group-leadericon" useAtlasSize="true" hidden="true">
+						<Texture parentKey="LeaderIcon" atlas="UI-HUD-UnitFrame-Player-Group-LeaderIcon" useAtlasSize="true" hidden="true">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="-10" y="-6"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="GuideIcon" atlas="ui-hud-unitframe-player-group-guideicon" useAtlasSize="true" hidden="true">
+						<Texture parentKey="GuideIcon" atlas="UI-HUD-UnitFrame-Player-Group-GuideIcon" useAtlasSize="true" hidden="true">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="-10" y="-6"/>
 							</Anchors>

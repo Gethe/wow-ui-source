@@ -373,9 +373,9 @@ end
 
 local function AddFromCursorInfo(addFunc)
 	local addedNew = false;
-	local cursorType, cursorInfo1, cursorInfo2 = GetCursorInfo();
+	local cursorType, cursorInfo1, _, cursorInfo3 = GetCursorInfo();
 	if cursorType == "spell" then
-		local _, _, spellID = GetSpellBookItemName(cursorInfo1, cursorInfo2);
+		local spellID = cursorInfo3;
 		if C_ClickBindings.CanSpellBeClickBound(spellID) then
 			addFunc(Enum.ClickBindingType.Spell, spellID);
 			addedNew = true;
@@ -640,6 +640,7 @@ function ClickBindingFrameMixin:FillNewSlot(actionType, actionID)
 		return;
 	end
 
+	self.ScrollBox:ScrollToEnd(); 
 	local lastElem = self:GetLastElement();
 	local newBindingInfo = {
 		type = actionType,

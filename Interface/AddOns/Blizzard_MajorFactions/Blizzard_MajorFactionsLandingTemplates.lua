@@ -1,10 +1,3 @@
-local buttonTextureKits = {
-	[2503] = "Centaur",
-	[2507] = "Expedition",
-	[2510] = "Valdrakken",
-	[2511] = "Tuskarr",
-};
-
 local iconAtlasFormat = "majorFactions_icons_%s512";
 local buttonAtlasFormat = "%s-landingpage-renownbutton-%s";
 local buttonHoverAtlasFormat = "%s-landingpage-renownbutton-%s-hover";
@@ -135,11 +128,11 @@ function MajorFactionButtonMixin:Init(majorFactionData)
 
 	local expansionName = _G["EXPANSION_NAME" .. self.expansionID];
 	self.LockedState.Background:SetAtlas(buttonLockedAtlasFormat:format(expansionName), TextureKitConstants.UseAtlasSize);
-	self.UnlockedState.normalAtlas = buttonAtlasFormat:format(expansionName, buttonTextureKits[self.factionID]);
-	self.UnlockedState.hoverAtlas = buttonHoverAtlasFormat:format(expansionName, buttonTextureKits[self.factionID]);
+	self.UnlockedState.normalAtlas = buttonAtlasFormat:format(expansionName, majorFactionData.textureKit);
+	self.UnlockedState.hoverAtlas = buttonHoverAtlasFormat:format(expansionName, majorFactionData.textureKit);
 	self.UnlockedState.Background:SetAtlas(self.UnlockedState.normalAtlas, TextureKitConstants.UseAtlasSize);
 	
-	self.UnlockedState.Icon:SetAtlas(iconAtlasFormat:format(buttonTextureKits[self.factionID]), TextureKitConstants.IgnoreAtlasSize);
+	self.UnlockedState.Icon:SetAtlas(iconAtlasFormat:format(majorFactionData.textureKit), TextureKitConstants.IgnoreAtlasSize);
 	self.UnlockedState.Icon:Show();
 
 	self.LockedState:Refresh(majorFactionData);

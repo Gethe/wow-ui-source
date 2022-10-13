@@ -395,6 +395,12 @@ function HandleModifiedItemClick(link, itemLocation)
 			OpenAzeriteEmpoweredItemUIFromLink(link);
 			return true;
 		end
+		
+		local skillLineID = C_TradeSkillUI.GetSkillLineForGear(link);
+		if skillLineID then
+			OpenProfessionUIToSkillLine(skillLineID);
+			return true;
+		end
 	end
 	return false;
 end

@@ -67,12 +67,89 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
 
 local CustomTalentTreeLayoutOptions = {};
 
+local FRODRUM_COMPANION_TALENT_TREE_ID = 486; 
+CustomTalentTreeLayoutOptions[FRODRUM_COMPANION_TALENT_TREE_ID] =
+{
+	buttonInfo =
+	{
+		[Enum.GarrTalentType.Standard] = { size = 40, spacingX = 62, spacingY = 60 },
+	},
+	spacingTop = 120,
+	spacingBottom = 50,
+	noCurrencyUsed = true,
+	canHaveBackButton = false,
+	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
+	fontStrings =
+		{
+			{
+				text = UI_FRODRUM_TALENTS_COMPANION_APPEARANCES,
+				layer = "OVERLAY",
+				template = "GameFontHighlightMedium",
+				point = "CENTER",
+				relativePoint = "TOP",
+				xOfs = 0,
+				yOfs = -40,
+			},
+			{
+				text = UI_FRODRUM_TALENTS_OHUNA,
+				layer = "OVERLAY",
+				template = "OrderHallTalentRowFont",
+				point = "CENTER",
+				relativePoint = "TOP",
+				xOfs = 0,
+				yOfs = -100,
+			},
+			{
+				text = UI_FRODRUM_TALENTS_BAKAR,
+				layer = "OVERLAY",
+				template = "OrderHallTalentRowFont",
+				point = "CENTER",
+				relativePoint = "TOP",
+				xOfs = 0,
+				yOfs = -200,
+			},
+		}
+};
+setmetatable(CustomTalentTreeLayoutOptions[FRODRUM_COMPANION_TALENT_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers]});
+
+local FRODRUM_HUNTING_TACTICS_TALENT_TREE_ID = 491; 
+CustomTalentTreeLayoutOptions[FRODRUM_HUNTING_TACTICS_TALENT_TREE_ID] =
+{
+	noCurrencyUsed = true,
+	canHaveBackButton = false,
+	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
+	fontStrings =
+		{
+			{
+				text = UI_FRODRUM_TALENTS_HUNTING_TACTICS,
+				layer = "OVERLAY",
+				template = "GameFontHighlightMedium",
+				point = "CENTER",
+				relativePoint = "TOP",
+				xOfs = 0,
+				yOfs = -40,
+			},
+			
+		}
+};
+setmetatable(CustomTalentTreeLayoutOptions[FRODRUM_HUNTING_TACTICS_TALENT_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers]});
+
 local DRAGONSCALE_EXPEDITION_TALENT_TREE_ID = 489;
 CustomTalentTreeLayoutOptions[DRAGONSCALE_EXPEDITION_TALENT_TREE_ID] =
 {
+	spacingTop = 86,
+	singleCost = false,
 	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_DRAGONSCALE_EXPEDITION_RESEARCH_COMPLETE,
+	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
 };
 setmetatable(CustomTalentTreeLayoutOptions[DRAGONSCALE_EXPEDITION_TALENT_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic]});
+
+local COBALT_ASSEMBLY_TALENT_TREE_ID = 493;
+CustomTalentTreeLayoutOptions[COBALT_ASSEMBLY_TALENT_TREE_ID] =
+{
+	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
+};
+setmetatable(CustomTalentTreeLayoutOptions[COBALT_ASSEMBLY_TALENT_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic]});
 
 local TORGHAST_TALENT_TREE_ID = 461;
 CustomTalentTreeLayoutOptions[TORGHAST_TALENT_TREE_ID] =
@@ -871,13 +948,25 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local frameHeight = contentOffsetY + currentTierHeight + layoutOptions.spacingBottom;	-- add currentTierHeight to account for the last tier
 	self:SetSize(frameWidth, frameHeight);
 
+	-- hide old font strings
+	if self.fontStrings then
+		for _, oldString in ipairs(self.fontStrings) do
+			if oldString ~= nil then
+				oldString:Hide();
+			end
+		end
+		self.fontStrings = nil;
+	end
+
 	-- Set up custom font strings
 	if layoutOptions.fontStrings then
-		for _, stringDesc in ipairs(layoutOptions.fontStrings) do
+		self.fontStrings = {};
+		for i, stringDesc in ipairs(layoutOptions.fontStrings) do
 			local newString = self.fontStringPools:Acquire(stringDesc.template, self, stringDesc.layer, stringDesc.subLayer);
 			newString:SetText(stringDesc.text);
 			newString:SetPoint(stringDesc.point, self, stringDesc.relativePoint, stringDesc.xOfs, stringDesc.yOfs);
 			newString:Show();
+			self.fontStrings[i] = newString;
 		end
 	end
 

@@ -84,6 +84,9 @@ end
 function TalentDisplayMixin:AcquireTooltip()
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+	if self.tooltipBackdropStyle then
+		SharedTooltip_SetBackdropStyle(tooltip, self.tooltipBackdropStyle);
+	end
 	return tooltip;
 end
 
@@ -224,7 +227,7 @@ function TalentDisplayMixin:AddTooltipDescription(tooltip)
 		local activeEntry = self.nodeInfo.activeEntry;
 		if activeEntry then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
-			local tooltipInfo = MakeBaseTooltipInfo("GetTraitEntry", activeEntry.entryID, activeEntry.rank);
+			local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", activeEntry.entryID, activeEntry.rank);
 			tooltipInfo.append = true;
 			tooltip:ProcessInfo(tooltipInfo);
 		end
@@ -233,14 +236,14 @@ function TalentDisplayMixin:AddTooltipDescription(tooltip)
 		if nextEntry and self.nodeInfo.ranksPurchased > 0 then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_AddHighlightLine(tooltip, TALENT_BUTTON_TOOLTIP_NEXT_RANK);
-			local tooltipInfo = MakeBaseTooltipInfo("GetTraitEntry", nextEntry.entryID, nextEntry.rank);
+			local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", nextEntry.entryID, nextEntry.rank);
 			tooltipInfo.append = true;
 			tooltip:ProcessInfo(tooltipInfo);
 		end
 	elseif self.entryID then
 		-- If this tooltip isn't coming from a node, we can't know what rank to show other than 1.
 		local rank = 1;
-		local tooltipInfo = MakeBaseTooltipInfo("GetTraitEntry", self.entryID, rank);
+		local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", self.entryID, rank);
 		tooltipInfo.append = true;		
 		tooltip:ProcessInfo(tooltipInfo);
 	end
@@ -849,6 +852,9 @@ end
 function TalentButtonArtMixin:OnSearchIconEnter()
 	if self.searchIconTooltipText then
 		GameTooltip:SetOwner(self.SearchIcon.Mouseover, "ANCHOR_RIGHT", 0, 0);
+		if self.tooltipBackdropStyle then
+			SharedTooltip_SetBackdropStyle(GameTooltip, self.tooltipBackdropStyle);
+		end
 		GameTooltip_AddNormalLine(GameTooltip, self.searchIconTooltipText);
 		GameTooltip:Show();
 	end
@@ -989,7 +995,10 @@ function TalentButtonSpendMixin:AddTooltipInstructions(tooltip)
 	local canPurchase = self:CanPurchaseRank();
 	local canRefund = self:CanRefundRank();
 	local canRepurchase = self:CanCascadeRepurchaseRanks();
-	if canPurchase or canRefund then
+	local isGhosted = self:IsGhosted();
+
+	-- We want a preceding blank line if there are any instructions, but not lines between instructions.
+	if canPurchase or canRefund or canRepurchase or isGhosted then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
 	end
 
@@ -1001,8 +1010,7 @@ function TalentButtonSpendMixin:AddTooltipInstructions(tooltip)
 
 	if canRepurchase then
 		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
-	elseif self:IsGhosted() then
-		GameTooltip_AddBlankLineToTooltip(tooltip);
+	elseif isGhosted then
 		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_CLEAR_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
 	end
 end
@@ -1090,6 +1098,9 @@ function TalentButtonSelectMixin:AcquireTooltip()
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_NONE");
 	tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT");
+	if self.tooltipBackdropStyle then
+		SharedTooltip_SetBackdropStyle(tooltip, self.tooltipBackdropStyle);
+	end
 	return tooltip;
 end
 
@@ -1116,14 +1127,6 @@ end
 
 function TalentButtonSelectMixin:AddTooltipCost(tooltip)
 	-- Override TalentButtonBaseMixin.
-end
-
-function TalentButtonSelectMixin:AddTooltipInstructions(tooltip)
-	-- Override TalentButtonBaseMixin.
-
-	if self:IsGhosted() then
-		--GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_CLEAR_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
-	end
 end
 
 function TalentButtonSelectMixin:AddTooltipErrors(unused_tooltip)

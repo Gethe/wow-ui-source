@@ -73,10 +73,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
-						if(speciesID and speciesID > 0) then
-							BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-						end
+						GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
 						CursorUpdate(self);
 					</OnEnter>
 					<OnLeave>
@@ -86,10 +83,7 @@
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
-							if(speciesID and speciesID > 0) then
-								BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-							end
+							GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
 						end
 						CursorOnUpdate(self);
 					</OnUpdate>
@@ -124,10 +118,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
-						if(speciesID and speciesID > 0) then
-							BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-						end
+						GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
 						CursorUpdate(self);
 					</OnEnter>
 					<OnLeave>
@@ -137,10 +128,7 @@
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
-							if(speciesID and speciesID > 0) then
-								BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-							end
+							GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
 						end
 						CursorOnUpdate(self);
 					</OnUpdate>
@@ -363,10 +351,7 @@
 					<OnEnter>
 						if ( self.hasItem ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
-							if(speciesID and speciesID > 0) then
-								BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-							end
+							GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>

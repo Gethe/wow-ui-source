@@ -159,6 +159,9 @@ function UIDropDownMenuButtonInvisibleButton_OnEnter(self)
 			if parent.tooltipWarning then
 				GameTooltip_AddColoredLine(tooltip, parent.tooltipWarning, RED_FONT_COLOR, true);
 			end
+			if parent.tooltipBackdropStyle then
+				SharedTooltip_SetBackdropStyle(tooltip, parent.tooltipBackdropStyle);
+			end
 			tooltip:Show();
 		end
 	end
@@ -184,8 +187,17 @@ function UIDropDownMenuButton_OnEnter(self)
 			local tooltip = GetAppropriateTooltip();
 			tooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip_SetTitle(tooltip, self.tooltipTitle);
+			if self.tooltipInstruction then
+				GameTooltip_AddInstructionLine(tooltip, self.tooltipInstruction);
+			end
 			if self.tooltipText then
 				GameTooltip_AddNormalLine(tooltip, self.tooltipText, true);
+			end
+			if self.tooltipWarning then
+				GameTooltip_AddColoredLine(tooltip, self.tooltipWarning, RED_FONT_COLOR, true);
+			end
+			if self.tooltipBackdropStyle then
+				SharedTooltip_SetBackdropStyle(tooltip, self.tooltipBackdropStyle);
 			end
 			tooltip:Show();
 		end
@@ -248,6 +260,9 @@ function UIDropDownMenuButtonIcon_OnEnter(self)
 		if button.iconTooltipText then
 			GameTooltip_AddNormalLine(tooltip, button.iconTooltipText, true);
 		end
+		if button.iconTooltipBackdropStyle then
+			SharedTooltip_SetBackdropStyle(tooltip, button.iconTooltipBackdropStyle);
+		end
 		tooltip:Show();
 	end
 
@@ -291,7 +306,10 @@ info.owner = [Frame]  --  Dropdown frame that "owns" the current dropdownlist
 info.keepShownOnClick = [nil, 1]  --  Don't hide the dropdownlist after a button is clicked
 info.tooltipTitle = [nil, STRING] -- Title of the tooltip shown on mouseover
 info.tooltipText = [nil, STRING] -- Text of the tooltip shown on mouseover
+info.tooltipWarning = [nil, STRING] -- Warning-style text of the tooltip shown on mouseover
+info.tooltipInstruction = [nil, STRING] -- Instruction-style text of the tooltip shown on mouseover
 info.tooltipOnButton = [nil, 1] -- Show the tooltip attached to the button instead of as a Newbie tooltip.
+info.tooltipBackdropStyle = [nil, TABLE] -- Optional Backdrop style of the tooltip shown on mouseover
 info.justifyH = [nil, "CENTER"] -- Justify button text
 info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
@@ -307,6 +325,7 @@ info.icon = [TEXTURE] -- An icon for the button.
 info.iconXOffset = [nil, NUMBER] -- Number of pixels to shift the button's icon to the left or right (positive numbers shift right, negative numbers shift left).
 info.iconTooltipTitle = [nil, STRING] -- Title of the tooltip shown on icon mouseover
 info.iconTooltipText = [nil, STRING] -- Text of the tooltip shown on icon mouseover
+info.iconTooltipBackdropStyle = [nil, TABLE] -- Optional Backdrop style of the tooltip shown on icon mouseover
 info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 info.ignoreAsMenuSelection [nil, true] -- Never set the menu text/icon to this, even when this button is checked
 info.registerForRightClick [nil, true] -- Register dropdown buttons for right clicks
@@ -527,6 +546,7 @@ function UIDropDownMenu_AddButton(info, level)
 	button.tooltipText = info.tooltipText;
 	button.tooltipInstruction = info.tooltipInstruction;
 	button.tooltipWarning = info.tooltipWarning;
+	button.tooltipBackdropStyle = info.tooltipBackdropStyle;
 	button.arg1 = info.arg1;
 	button.arg2 = info.arg2;
 	button.hasArrow = info.hasArrow;
@@ -541,6 +561,7 @@ function UIDropDownMenu_AddButton(info, level)
 	button.icon = info.icon;
 	button.iconTooltipTitle = info.iconTooltipTitle;
 	button.iconTooltipText = info.iconTooltipText;
+	button.iconTooltipBackdropStyle = info.iconTooltipBackdropStyle;
 	button.iconXOffset = info.iconXOffset;
 	button.mouseOverIcon = info.mouseOverIcon;
 	button.ignoreAsMenuSelection = info.ignoreAsMenuSelection;

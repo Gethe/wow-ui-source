@@ -37,6 +37,16 @@ PowerBarColor[13] = PowerBarColor["INSANITY"];
 PowerBarColor[17] = PowerBarColor["FURY"];
 PowerBarColor[18] = PowerBarColor["PAIN"];
 
+local ManaBarFrequentUpdateUnitTypes = {
+	"player",
+	"pet",
+	"vehicle",
+	"target",
+	"focus",
+	"targettarget",
+	"focustarget"
+};
+
 function GetPowerBarColor(powerType)
 	return PowerBarColor[powerType];
 end
@@ -126,9 +136,19 @@ function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar,
 	end
 
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
-	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player" or unit == "pet" or unit == "vehicle" or unit == "target" or unit == "focus" or unit =="targettarget"));
+
+	local manaBarFrequentUpdates = false;
+	for _, unitType in ipairs(ManaBarFrequentUpdateUnitTypes) do
+		if (unit == unitType) then
+			manaBarFrequentUpdates = true;
+			break;
+		end
+	end
+
+	UnitFrameManaBar_Initialize(unit, manabar, manatext, manaBarFrequentUpdates);
 	UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
 	UnitFrame_Update(self);
+
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
@@ -575,9 +595,16 @@ function UnitFrameManaBar_UpdateType(manaBar)
 	local powerType, powerToken, altR, altG, altB = UnitPowerType(manaBar.unit);
 	local info = PowerBarColor[powerToken];
 
+	-- Some mana bar art is different for a frame depending on if they are in a vehicle or not.
+	-- Special case for the party frame.
+	local vehicleText = "";
+	if(manaBar.frameType == "Party" and unitFrame.state == "vehicle") then
+		vehicleText = "-Vehicle";
+	end
+
 	if (info) then
 		if (manaBar.frameType and info.atlasElementName) then
-			local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType.."-Bar-"..info.atlasElementName;
+			local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType..vehicleText.."-Bar-"..info.atlasElementName;
 			manaBar:SetStatusBarTexture(manaBarTexture);
 		elseif (info.atlas) then
 			manaBar:SetStatusBarTexture(info.atlas);
@@ -599,12 +626,12 @@ function UnitFrameManaBar_UpdateType(manaBar)
 		end
 	else
 		-- If we cannot find the info for what the mana bar should be, default either to Mana or Mana-Status (colorable).
-		local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType.."-Bar-Mana";
+		local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType..vehicleText.."-Bar-Mana";
 		manaBar:SetStatusBarColor(1, 1, 1);
 
 		if (altR) then
 			-- This steps around manaBar.lockColor as it is initially setting things.
-			manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType.."-Bar-Mana-Status";
+			manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType..vehicleText.."-Bar-Mana-Status";
 			manaBar:SetStatusBarColor(altR, altG, altB);
 		end
 

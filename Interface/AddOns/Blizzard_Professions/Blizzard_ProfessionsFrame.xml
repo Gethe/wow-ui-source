@@ -39,12 +39,14 @@
 
 			<Frame parentKey="CraftingPage" inherits="ProfessionsCraftingPageTemplate" parentArray="Pages" frameLevel="100" hidden="true"/>
 			<Frame parentKey="SpecPage" inherits="ProfessionsSpecPageTemplate" parentArray="Pages" frameLevel="100" hidden="true"/>
+			<Frame parentKey="OrdersPage" inherits="ProfessionsCraftingOrderPageTemplate" parentArray="Pages" frameLevel="100" hidden="true"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<!-- OnUpdate set dynamically -->
 		</Scripts>
 	</Frame>
 </Ui>

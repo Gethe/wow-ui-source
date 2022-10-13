@@ -161,8 +161,8 @@
 								<KeyValues>
 									<KeyValue key="defaultWidth" value="53" type="number"/>
 									<KeyValue key="defaultHeight" value="53" type="number"/>
-									<keyValue key="defaultGlowWidth" value="46" type="number"/>
-									<keyValue key="defaultGlowHeight" value="46" type="number"/>
+									<KeyValue key="defaultGlowWidth" value="46" type="number"/>
+									<KeyValue key="defaultGlowHeight" value="46" type="number"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="-3" y="-150"/>
@@ -312,128 +312,10 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Minimap>
-			<Frame name="MiniMapInstanceDifficulty" parentKey="InstanceDifficulty" mixin="MiniMapInstanceDifficultyMixin" hidden="true">
-				<Size x="38" y="46"/>
+			<Frame parentKey="InstanceDifficulty" inherits="InstanceDifficultyTemplate" mixin="InstanceDifficultyMixin">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="0" y="-24"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTop" x="0" y="-15"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentTexture" file="Interface\Minimap\UI-DungeonDifficulty-Button">
-							<Size x="64" y="46"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.0" right="0.25" top="0.0703125" bottom="0.4140625"/>
-						</Texture>
-						<FontString name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="CENTER" x="-1" y="-7"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnEvent method="OnEvent"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-			</Frame>
-			<Frame name="GuildInstanceDifficulty" parentKey="GuildInstanceDifficulty" mixin="GuildInstanceDifficultyMixin" hidden="true" enableMouse="true">
-				<Size x="38" y="46"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-3" y="-20"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentBackground" file="Interface\GuildFrame\GuildDifficulty" parentKey="background">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-							<Size x="41" y="53"/>
-							<TexCoords left="0.00781250" right="0.32812500" top="0.01562500" bottom="0.84375000"/>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture name="$parentDarkBackground" file="Interface\GuildFrame\GuildDifficulty" alpha="0.7">
-							<Anchors>
-								<Anchor point="BOTTOM" relativeTo="$parentBackground" x="0" y="7"/>
-							</Anchors>
-							<Size x="30" y="21"/>
-							<TexCoords left="0.67968750" right="0.91406250" top="0.01562500" bottom="0.34375000"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="$parentEmblem" parentKey="emblem" file="Interface\GuildFrame\GuildEmblems_01">
-							<Size x="16" y="16"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="12" y="-10"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentBorder" file="Interface\GuildFrame\GuildDifficulty" parentKey="border">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-							<Size x="41" y="53"/>
-							<TexCoords left="0.34375000" right="0.66406250" top="0.01562500" bottom="0.84375000"/>
-						</Texture>
-						<Texture name="$parentHeroicTexture" file="Interface\GuildFrame\GuildDifficulty">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="8" y="7"/>
-							</Anchors>
-							<Size x="12" y="13"/>
-							<TexCoords left="0.67968750" right="0.77343750" top="0.65625000" bottom="0.85937500"/>
-						</Texture>
-						<Texture name="$parentMythicTexture" file="Interface\GuildFrame\GuildDifficulty">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="8" y="7"/>
-							</Anchors>
-							<Size x="12" y="13"/>
-							<TexCoords left="0.77343750" right="0.8671875" top="0.65625000" bottom="0.85937500"/>
-						</Texture>
-						<Texture name="$parentChallengeModeTexture" file="Interface\Common\mini-hourglass">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="8" y="7"/>
-							</Anchors>
-							<Size x="12" y="12"/>
-						</Texture>
-						<FontString name="$parentText" inherits="GameFontNormalSmall" text="25">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="20" y="8"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="$parentHanger" file="Interface\GuildFrame\GuildDifficulty">
-							<Size x="39" y="16"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="1" y="-2"/>
-							</Anchors>
-							<TexCoords left="0.67968750" right="0.98437500" top="0.37500000" bottom="0.62500000"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-			</Frame>
-			<Frame name="MiniMapChallengeMode" parentKey="ChallengeMode" hidden="true" enableMouse="true">
-				<Size x="27" y="36"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-6" y="-29"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\Challenges\challenges-minimap-banner">
-							<Size x="64" y="64"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>

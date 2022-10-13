@@ -8,6 +8,9 @@ local ActionBars = {
 	"MultiBarBottomRightButton",
 	"MultiBarLeftButton",
 	"MultiBarRightButton",
+	"MultiBar5Button",
+	"MultiBar6Button",
+	"MultiBar7Button",
 }
 
 local MicroButtons = {

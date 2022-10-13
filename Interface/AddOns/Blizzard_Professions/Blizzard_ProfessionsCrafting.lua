@@ -135,7 +135,7 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 		self:ValidateControls();
 	elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
 		self:ClearCraftingQueue();
-		self:ValidateControls();
+			self:ValidateControls();
 	end
 end
 
@@ -183,6 +183,9 @@ end
 
 function ProfessionsCraftingPageMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, ProfessionsCraftingPageEvents);
+
+	self:SetTitle();
+	self.RecipeList.SearchBox:SetText(C_TradeSkillUI.GetRecipeItemNameFilter());
 end
 
 function ProfessionsCraftingPageMixin:OnHide()
@@ -221,7 +224,11 @@ function ProfessionsCraftingPageMixin:UpdateFilterResetVisibility()
 	self.RecipeList.FilterButton.ResetButton:SetShown(not Professions.IsUsingDefaultFilters());
 end
 
-function ProfessionsCraftingPageMixin:OnRecipeSelected(recipeInfo)
+function ProfessionsCraftingPageMixin:OnRecipeSelected(recipeInfo, recipeList)
+	if recipeList ~= nil and recipeList ~= self.RecipeList then
+		return;
+	end
+	
 	-- Only expect that if this is called, it is in response to selecting a recipe from the
 	-- list, in which case we never want the recrafting version of a recipe to be displayed.
 	Professions.EraseRecraftingTransitionData();
@@ -256,8 +263,8 @@ function ProfessionsCraftingPageMixin:SetupMultipleInputBox(count, countMax)
 	else
 		self.CreateMultipleInputBox:Disable();
 		self.CreateMultipleInputBox:SetValue(0);
+		end
 	end
-end
 
 function ProfessionsCraftingPageMixin:GetCraftableCount()
 	local transaction = self.SchematicForm:GetTransaction();
@@ -265,7 +272,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 
 	local function ClampInvervals(quantity, quantityMax)
 		intervals = math.min(intervals, math.floor(quantity / quantityMax));
-	end
+end
 
 	local function ClampAllocations(allocations)
 		for index, allocation in allocations:Enumerate() do
@@ -273,7 +280,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 			local quantityMax = allocation:GetQuantity();
 			ClampInvervals(quantity, quantityMax);
 		end
-	end
+		end
 
 	if transaction:IsManuallyAllocated() then
 		-- If manually allocated, we can only accumulate the reagents currently allocated.
@@ -282,7 +289,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 				ClampAllocations(allocations);
 			end
 		end
-	else
+			else
 		-- If automatically allocated, we can accumulate every compatible reagent regardless of what
 		-- is currently allocated.
 		for index, reagents in transaction:EnumerateAllSlotReagents() do
@@ -295,7 +302,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 				ClampInvervals(quantity, quantityMax);
 			end
 		end
-	end
+			end
 
 	-- Optionals and finishers are included unless the current reagent matches
 	-- a recrafting modification.
@@ -310,21 +317,21 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 					if modification.itemID == reagent.itemID then
 						clamp = false;
 					end
-				end
+		end
 				
 				if clamp then
 					ClampAllocations(allocations);
-				end
-			end
-		end
 	end
+end
+	end
+end
 
 	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 		local salvageItem = transaction:GetSalvageAllocation();
 		if salvageItem then
 			local quantity = salvageItem:GetStackCount();
 			if quantity then
-				local recipeSchematic = transaction:GetRecipeSchematic();
+			local recipeSchematic = transaction:GetRecipeSchematic();
 				ClampInvervals(quantity, recipeSchematic.quantityMax); 
 			end
 		end
@@ -335,7 +342,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 				local quantity = ItemUtil.GetCraftingReagentCount(enchantItem:GetItemID());
 				local quantityMax = 1;
 				ClampInvervals(quantity, quantityMax); 
-			else
+	else
 				local quantity = 1;
 				local quantityMax = 1;
 				ClampInvervals(quantity, quantityMax); 
@@ -407,19 +414,6 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 			end
 			self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_FORMAT:format(createAllFormat, countMax));
 		end
-		
-		local function IsRecipeOnCooldown(recipeID)
-			local cooldown, isDayCooldown, charges, maxCharges = C_TradeSkillUI.GetRecipeCooldown(recipeID);
-			if not cooldown then
-				return false;
-			end
-
-			if charges > 0 then
-				return false;
-			end
-
-			return true;
-		end
 
 		-- CAIS not relevant anymore since the client is denied login. Nevertheless, this is carried over from the
 		-- previous implementation in case the CAIS system changes.
@@ -434,7 +428,7 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 			self.CreateButton.tooltipText = reasonText;
 			self.CreateAllButton.tooltipText = reasonText;
 			enabled = false;
-		elseif IsRecipeOnCooldown(currentRecipeInfo.recipeID) then
+		elseif Professions.IsRecipeOnCooldown(currentRecipeInfo.recipeID) then
 			self.CreateButton.tooltipText = PROFESSIONS_RECIPE_COOLDOWN;
 			self.CreateAllButton.tooltipText = PROFESSIONS_RECIPE_COOLDOWN;
 			enabled = false;
@@ -624,6 +618,10 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 end
 
 function ProfessionsCraftingPageMixin:Refresh(professionInfo)
+	if self:IsVisible() then
+		self:SetTitle();
+	end
+
 	self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
@@ -644,7 +642,6 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	end
 	self:UpdateFilterResetVisibility();
 
-	self.SchematicForm:Refresh();
 	self:ValidateControls();
 end
 
@@ -820,10 +817,15 @@ function ProfessionsCraftingPageMixin:ConfigureInventorySlots(info)
 		self:HideInventorySlots();
 	else
 		local professionSlots = C_TradeSkillUI.GetProfessionSlots(info.profession);
+		local numShownSlots = 0;
 		for index, inventorySlot in ipairs(self.InventorySlots) do
 			local show = tContains(professionSlots, inventorySlot.slotID);
 			inventorySlot:SetShown(show);
+			if show then
+				numShownSlots = numShownSlots + 1;
+			end
 		end
+		self.GearSlotDivider:SetShown(numShownSlots > 1);
 	end
 end
 
@@ -839,7 +841,9 @@ function ProfessionsCraftingPageMixin:HideInventorySlots()
 	for index, inventorySlot in ipairs(self.InventorySlots) do
 		inventorySlot:Hide();
 	end
+	self.GearSlotDivider:Hide();
 end
+
 function ProfessionsCraftingPageMixin:AnyInventorySlotShown()
 	for index, inventorySlot in ipairs(self.InventorySlots) do
 		if inventorySlot:IsShown() then
@@ -970,4 +974,14 @@ function ProfessionsCraftingPageMixin:ToggleTutorial()
 	else
 		HelpPlate_Hide(true);
 	end
+end
+
+function ProfessionsCraftingPageMixin:SetTitle()
+	local professionFrame = self:GetParent();
+	local professionInfo = professionFrame.professionInfo;
+	if not professionInfo then
+		return;
+	end
+
+	professionFrame:SetTitle(professionInfo.professionName or professionInfo.parentProfessionName);
 end

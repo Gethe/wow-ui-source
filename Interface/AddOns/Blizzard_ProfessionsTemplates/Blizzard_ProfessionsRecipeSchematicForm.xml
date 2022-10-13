@@ -25,6 +25,7 @@
 	<Frame name="ProfessionsRecipeSchematicFormTemplate" mixin="ProfessionsRecipeSchematicFormMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="canShowFavoriteButton" value="true" type="boolean"/>
+			<KeyValue key="showTrackRecipe" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate">
@@ -167,7 +168,6 @@
 					</Anchors>
 				</FontString>
 				
-				<!-- HRO TODO: Fix this up for crafting orders -->
 				<FontString parentKey="OutputSubText" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="300" y="20"/>
 					<Anchors>
@@ -190,14 +190,15 @@
 					<Size x="400" y="0"/>
 				</FontString>
 				
-				<FontString parentKey="Description" inherits="GameFontHighlightSmall2" justifyH="LEFT">
-					<Size x="400" y="0"/>
+				<FontString parentKey="Description" inherits="GameFontHighlightSmall2" maxLines="4" justifyH="LEFT">
+					<Size x="460" y="0"/>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>

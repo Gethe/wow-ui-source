@@ -345,7 +345,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ObjectiveTrackerFrame" inherits="UIParentRightManagedFrameTemplate, EditModeObjectiveTrackerSystemTemplate" frameStrata="LOW">
+	<Frame name="ObjectiveTrackerFrame" inherits="UIParentRightManagedFrameTemplate, EditModeObjectiveTrackerSystemTemplate" frameStrata="LOW" passThroughButtons="LeftButton, MiddleButton, RightButton">
 		<Size x="235" y="140"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="50" type="number"/>

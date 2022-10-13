@@ -83,10 +83,7 @@ function AuctionHouseItemDisplayMixin:OnEnter()
 				local bagID, slotIndex = itemLocation:GetBagAndSlot();
 				if bagID and slotIndex then
 					GameTooltip:SetOwner(self.ItemButton, "ANCHOR_RIGHT");
-					local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(bagID, slotIndex);
-					if speciesID and speciesID > 0 then
-						BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-					end
+					GameTooltip:SetBagItem(bagID, slotIndex);
 				end
 			end
 		end

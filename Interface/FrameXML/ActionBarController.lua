@@ -108,6 +108,9 @@ function ActionBarController_OnEvent(self, event, ...)
 			"PROXY_SHOW_ACTIONBAR_3",
 			"PROXY_SHOW_ACTIONBAR_4",
 			"PROXY_SHOW_ACTIONBAR_5",
+			"PROXY_SHOW_ACTIONBAR_6",
+			"PROXY_SHOW_ACTIONBAR_7",
+			"PROXY_SHOW_ACTIONBAR_8",
 		};
 
 		local function UpdateActionBar()

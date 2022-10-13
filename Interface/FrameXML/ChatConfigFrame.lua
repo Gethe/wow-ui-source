@@ -678,6 +678,13 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_BUILDING_HEAL"); end;
 				tooltip = BUILDING_HEAL_COMBATLOG_TOOLTIP,
 			},
+			[11] = {
+				text = EMPOWERS,
+				type = {"SPELL_EMPOWER_START", "SPELL_EMPOWER_END", "SPELL_EMPOWER_INTERRUPT"};
+				checked = function () return HasMessageType("SPELL_EMPOWER_START"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_EMPOWER_START", "SPELL_EMPOWER_END", "SPELL_EMPOWER_INTERRUPT"); end;
+				tooltip = EMPOWERS_COMBATLOG_TOOLTIP,
+			},
 		}
 	},
 	[2] = {

@@ -259,6 +259,18 @@ function EncounterJournalItemMixin:Init(elementData)
 	end
 end
 
+EncounterJournalItemHeaderMixin = {};
+
+function EncounterJournalItemHeaderMixin:Init(elementData)
+	self.name:SetText(elementData.text);
+	if elementData.helpText then
+		self.TipButton.elementData = elementData;
+		self.TipButton:Show();
+	else
+		self.TipButton:Hide();
+	end
+end
+
 EncounterBossButtonMixin = {};
 
 function EncounterBossButtonMixin:Init(elementData)
@@ -324,7 +336,7 @@ function EncounterJournal_OnLoad(self)
 	do
 		local view = CreateScrollBoxListLinearView();
 		view:SetElementExtentCalculator(function(dataIndex, elementData)
-			if elementData.perPlayerLootHeader then
+			if elementData.header then
 				return BOSS_LOOT_BUTTON_HEIGHT;
 			elseif EncounterJournal.encounterID then
 				return BOSS_LOOT_BUTTON_HEIGHT;
@@ -333,8 +345,10 @@ function EncounterJournal_OnLoad(self)
 			end
 		end);
 		view:SetElementFactory(function(factory, elementData)
-			if elementData.perPlayerLootHeader then
-				factory("EncounterItemDividerTemplate");
+			if elementData.header then
+				factory("EncounterItemDividerTemplate", function(button, elementData)
+					button:Init(elementData);
+				end);
 			else
 				factory("EncounterItemTemplate", function(button, elementData)
 					button:Init(elementData);
@@ -446,8 +460,8 @@ end
 
 function EncounterItemTemplate_DividerFrameTipOnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(BONUS_LOOT_TOOLTIP_TITLE, 1, 1, 1);
-	GameTooltip:AddLine(BONUS_LOOT_TOOLTIP_BODY, nil, nil, nil, true);
+	GameTooltip:SetText(self.elementData.text, 1, 1, 1);
+	GameTooltip:AddLine(self.elementData.helpText, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 
@@ -1982,10 +1996,17 @@ function EncounterJournal_LootUpdate()
 	local dataProvider = CreateDataProvider();
 	local loot = {};
 	local perPlayerLoot = {};
+	local veryRareLoot = {};
+	local extremelyRareLoot = {};
+
 	for i = 1, EJ_GetNumLoot() do
 		local itemInfo = C_EncounterJournal.GetLootInfoByIndex(i);
 		if itemInfo.displayAsPerPlayerLoot then
 			tinsert(perPlayerLoot, i);
+		elseif itemInfo.displayAsExtremelyRare then
+			tinsert(extremelyRareLoot, i);
+		elseif itemInfo.displayAsVeryRare then
+			tinsert(veryRareLoot, i);
 		else
 			tinsert(loot, i);
 		end
@@ -1994,12 +2015,22 @@ function EncounterJournal_LootUpdate()
 	for _,val in ipairs(loot) do
 		dataProvider:Insert({index=val});
 	end
-	if #perPlayerLoot > 0 then
-		dataProvider:Insert({perPlayerLootHeader=true});
-		for _,val in ipairs(perPlayerLoot) do
-			dataProvider:Insert({index=val});
+
+	local lootCategories = { 
+		{ loot=veryRareLoot,		headerTitle=EJ_ITEM_CATEGORY_VERY_RARE },
+		{ loot=extremelyRareLoot,	headerTitle=EJ_ITEM_CATEGORY_EXTREMELY_RARE },
+		{ loot=perPlayerLoot,		headerTitle=BONUS_LOOT_TOOLTIP_TITLE,			helpText=BONUS_LOOT_TOOLTIP_BODY },
+	};
+
+	for _,category in ipairs(lootCategories) do
+		if #category.loot > 0 then
+			dataProvider:Insert({header=true, text=category.headerTitle, helpText=category.helpText});
+			for _,val in ipairs(category.loot) do
+				dataProvider:Insert({index=val});
+			end
 		end
 	end
+
 	scrollBox:SetDataProvider(dataProvider);
 end
 
@@ -2037,7 +2068,7 @@ function EncounterJournal_SetTooltipWithCompare(tooltip, link, useSpec)
 			end
 		end
 	end
-	local tooltipInfo = MakeBaseTooltipInfo("GetHyperlink", link, classID, specID);
+	local tooltipInfo = CreateBaseTooltipInfo("GetHyperlink", link, classID, specID);
 	tooltipInfo.compareItem = true;
 	tooltip:ProcessInfo(tooltipInfo);
 end

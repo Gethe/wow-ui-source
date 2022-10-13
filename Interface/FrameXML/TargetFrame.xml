@@ -581,6 +581,10 @@
 				self.threatNumericIndicator:SetScript("OnShow", function() self:UpdateAuras() end);
 				self.threatNumericIndicator:SetScript("OnHide", function() self:UpdateAuras() end);
 			</OnLoad>
+			<OnHide>
+				self:OnHide(); -- from TargetFrameMixin
+				self:OnSystemHide(); -- from EditModeSystemTemplate via EditModeUnitFrameSystemTemplate
+			</OnHide>
 		</Scripts>
 	</Button>
 	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate, EditModeUnitFrameSystemTemplate" mixin="FocusFrameMixin" clampedToScreen="true">
@@ -613,7 +617,7 @@
 				self.showAuraCount = true;
 				self:OnLoad("focus", FocusFrameDropDown_Initialize);
 				self:CreateSpellbar("PLAYER_FOCUS_CHANGED");
-				self:CreateTargetofTarget("focus-target");
+				self:CreateTargetofTarget("focustarget");
 				self:RegisterEvent("PLAYER_FOCUS_CHANGED");
 			</OnLoad>
 		</Scripts>

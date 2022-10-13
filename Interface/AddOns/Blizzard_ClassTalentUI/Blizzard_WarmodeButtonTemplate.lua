@@ -9,7 +9,10 @@ function WarmodeButtonMixin:OnShow()
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK)) then
+
+	local warModeButtonHelpTipComplete = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PVP_WARMODE_UNLOCK);
+	local talentChangesTutorialComplete = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES);
+	if (talentChangesTutorialComplete and not warModeButtonHelpTipComplete) then
 		local helpTipInfo = {
 			text = WAR_MODE_TUTORIAL,
 			buttonStyle = HelpTip.ButtonStyle.Close,

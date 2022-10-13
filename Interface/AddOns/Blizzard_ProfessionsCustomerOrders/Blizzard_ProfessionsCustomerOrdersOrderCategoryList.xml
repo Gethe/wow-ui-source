@@ -27,22 +27,4 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	
-	<Frame name="ProfessionsCustomerOrdersOrderCategoryListTemplate" virtual="true">
-		<Size x="1" y="1"/>
-		<Frames>
-			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" x="-25"/>
-				</Anchors>
-			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-				</Anchors>
-			</EventFrame>
-		</Frames>
-	</Frame>
 </Ui>

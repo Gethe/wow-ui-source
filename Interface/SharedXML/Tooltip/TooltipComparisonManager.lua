@@ -6,6 +6,18 @@ TooltipComparisonManager = { };
 --		CycleItem()
 --		Clear(tooltip)
 
+function TooltipComparisonManager:CreateComparisonItem(tooltipData)
+	local comparisonItem;
+	if tooltipData and tooltipData.type == Enum.TooltipDataType.Item then
+		if tooltipData.guid then
+			comparisonItem = { guid = tooltipData.guid };
+		elseif tooltipData.hyperlink and tooltipData.hyperlink ~= "" then
+			comparisonItem = { hyperlink = tooltipData.hyperlink };
+		end
+	end
+	return comparisonItem;
+end
+
 function TooltipComparisonManager:Initialize(tooltip, anchorFrame)
 	self.tooltip = tooltip;
 	self.anchorFrame = anchorFrame or self.tooltip;
@@ -228,7 +240,8 @@ function TooltipComparisonManager:SetItemTooltip(isPrimaryTooltip)
 
 	-- the item
 	local tooltipInfo = {
-		tooltipData = tooltipData;
+		tooltipData = tooltipData,
+		append = true,
 	};
 	tooltip:ProcessInfo(tooltipInfo);
 

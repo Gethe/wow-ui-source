@@ -4,20 +4,6 @@
 
 	<Frame name="MajorFactionCelebrationBannerTemplate" frameStrata="DIALOG" mixin="MajorFactionCelebrationBannerMixin" virtual="true">
 		<Size x="128" y="128"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="GlowLineTop">
-					<Anchors>
-						<Anchor point="TOP" y="-30"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="GlowLineTopAdditive">
-					<Anchors>
-						<Anchor point="TOP" y="-30"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<ModelScene parentKey="IconSwirlModelScene" inherits="ScriptAnimatedModelSceneTemplate">
 				<Size x="256" y="256"/>
@@ -28,13 +14,13 @@
 			<Frame parentKey="Icon">
 				<Size x="1" y="1"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.IconSwirlModelScene" />
+					<Anchor point="CENTER" relativeKey="$parent.IconSwirlModelScene"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Tex">
+						<Texture parentKey="Texture">
 							<Anchors>
-								<Anchor point="CENTER" />
+								<Anchor point="CENTER" y="-13"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -42,7 +28,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnHide method="OnHide" />
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

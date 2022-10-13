@@ -3,6 +3,7 @@
 ## add C namespace augmentations here
 
 ## add snippets independent of modules here
+..\SharedXML\middleclass.lua
 ..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
 ..\SharedXML\TableUtil.lua
@@ -260,6 +261,7 @@ Cooldown.xml
 PVPUITemplates.xml
 PVPHonorSystem.xml
 ActionBarController.xml
+InstanceDifficulty.xml
 Minimap.xml
 GameTime.xml
 AddonCompartment.xml

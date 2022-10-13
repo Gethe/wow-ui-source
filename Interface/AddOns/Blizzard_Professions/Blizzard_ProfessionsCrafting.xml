@@ -54,7 +54,7 @@
 			</Frame>
 
 			<Frame parentKey="SchematicForm" inherits="ProfessionsRecipeSchematicFormTemplate" useParentLevel="true">
-				<Size x="853" y="553"/>
+				<Size x="793" y="553"/>
 				<KeyValues>
 					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
 				</KeyValues>
@@ -124,7 +124,7 @@
 					<KeyValue key="slotID" value="20" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-110" y="-31"/>
+					<Anchor point="TOPRIGHT" x="-26" y="-31"/>
 				</Anchors>
 			</ItemButton>
 			<ItemButton parentKey="Prof0Gear0Slot" inherits="ProfessionsGearSlotTemplate">
@@ -133,7 +133,7 @@
 					<KeyValue key="slotID" value="21" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Prof0ToolSlot" x="5" y="0"/>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Prof0ToolSlot" x="-21" y="0"/>
 				</Anchors>
 			</ItemButton>
 			<ItemButton parentKey="Prof0Gear1Slot" inherits="ProfessionsGearSlotTemplate">
@@ -142,7 +142,7 @@
 					<KeyValue key="slotID" value="22" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Prof0Gear0Slot" x="5" y="0"/>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Prof0Gear0Slot" x="-5" y="0"/>
 				</Anchors>
 			</ItemButton>
 
@@ -152,7 +152,7 @@
 					<KeyValue key="slotID" value="23" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-110" y="-31"/>
+					<Anchor point="TOPRIGHT" x="-26" y="-31"/>
 				</Anchors>
 			</ItemButton>
 			<ItemButton parentKey="Prof1Gear0Slot" inherits="ProfessionsGearSlotTemplate">
@@ -161,7 +161,7 @@
 					<KeyValue key="slotID" value="24" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Prof1ToolSlot" x="5" y="0"/>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Prof1ToolSlot" x="-21" y="0"/>
 				</Anchors>
 			</ItemButton>
 			<ItemButton parentKey="Prof1Gear1Slot" inherits="ProfessionsGearSlotTemplate">
@@ -170,7 +170,7 @@
 					<KeyValue key="slotID" value="25" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Prof1Gear0Slot" x="5" y="0"/>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Prof1Gear0Slot" x="-5" y="0"/>
 				</Anchors>
 			</ItemButton>
 
@@ -180,7 +180,7 @@
 					<KeyValue key="slotID" value="26" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-74" y="-31"/>
+					<Anchor point="TOPRIGHT" x="-26" y="-31"/>
 				</Anchors>
 			</ItemButton>
 			<ItemButton parentKey="CookingGear0Slot" inherits="ProfessionsGearSlotTemplate">
@@ -189,7 +189,7 @@
 					<KeyValue key="slotID" value="27" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.CookingToolSlot" x="5" y="0"/>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.CookingToolSlot" x="-21" y="0"/>
 				</Anchors>
 			</ItemButton>
 
@@ -199,27 +199,21 @@
 					<KeyValue key="slotID" value="28" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-110" y="-31"/>
+					<Anchor point="TOPRIGHT" x="-26" y="-31"/>
 				</Anchors>
 			</ItemButton>
-			<ItemButton parentKey="FishingGear0Slot" inherits="ProfessionsGearSlotTemplate">
-				<KeyValues>
-					<KeyValue key="slotName" value="FishingGear0Slot" type="string"/>
-					<KeyValue key="slotID" value="29" type="number"/>
-				</KeyValues>
+
+			<Frame parentKey="GearSlotDivider">
+				<Size x="5" y="37"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.FishingToolSlot" x="5" y="0"/>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Prof0ToolSlot" x="-8" y="0"/>
 				</Anchors>
-			</ItemButton>
-			<ItemButton parentKey="FishingGear1Slot" inherits="ProfessionsGearSlotTemplate">
-				<KeyValues>
-					<KeyValue key="slotName" value="FishingGear1Slot" type="string"/>
-					<KeyValue key="slotID" value="30" type="number"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.FishingGear0Slot" x="5" y="0"/>
-				</Anchors>
-			</ItemButton>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="Professions-Equipment-Divider" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
 
 			<Button parentKey="LinkButton" mixin="DropDownToggleButtonMixin">
 				<Size x="30" y="30"/>

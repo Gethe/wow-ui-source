@@ -73,11 +73,11 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "TOPRIGHT",
-				relativeTo = "MultiBarRight",
-				relativePoint = "TOPLEFT",
-				offsetX = -5,
-				offsetY = 0,
+				point = "RIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "RIGHT",
+				offsetX = RIGHT_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -92,11 +92,68 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "RIGHT",
+				point = "TOPRIGHT",
+				relativeTo = "MultiBarRight",
+				relativePoint = "TOPLEFT",
+				offsetX = -5,
+				offsetY = 0,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.ExtraBar1] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
+				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
+			},
+			anchorInfo = {
+				point = "TOP",
 				relativeTo = "UIParent",
-				relativePoint = "RIGHT",
-				offsetX = RIGHT_ACTION_BAR_DEFAULT_OFFSET_X,
-				offsetY = RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y,
+				relativePoint = "CENTER",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.ExtraBar2] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
+				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
+			},
+			anchorInfo = {
+				point = "TOP",
+				relativeTo = "MultiBar5",
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.ExtraBar3] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
+				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
+			},
+			anchorInfo = {
+				point = "TOP",
+				relativeTo = "MultiBar6",
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 0,
 			},
 		},
 
@@ -504,11 +561,11 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "TOPRIGHT",
-				relativeTo = "MultiBarRight",
-				relativePoint = "TOPLEFT",
-				offsetX = -5,
-				offsetY = 0,
+				point = "RIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "RIGHT",
+				offsetX = RIGHT_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -523,11 +580,68 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "RIGHT",
+				point = "TOPRIGHT",
+				relativeTo = "MultiBarRight",
+				relativePoint = "TOPLEFT",
+				offsetX = -5,
+				offsetY = 0,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.ExtraBar1] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
+				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
+			},
+			anchorInfo = {
+				point = "TOP",
 				relativeTo = "UIParent",
-				relativePoint = "RIGHT",
-				offsetX = RIGHT_ACTION_BAR_DEFAULT_OFFSET_X,
-				offsetY = RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y,
+				relativePoint = "CENTER",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.ExtraBar2] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
+				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
+			},
+			anchorInfo = {
+				point = "TOP",
+				relativeTo = "MultiBar5",
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
+
+		[Enum.EditModeActionBarSystemIndices.ExtraBar3] = {
+			settings = {
+				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
+				[Enum.EditModeActionBarSetting.NumRows] = 1,
+				[Enum.EditModeActionBarSetting.NumIcons] = 12,
+				[Enum.EditModeActionBarSetting.IconSize] = 5,
+				[Enum.EditModeActionBarSetting.IconPadding] = 2,
+				[Enum.EditModeActionBarSetting.VisibleSetting] = Enum.ActionBarVisibleSetting.Always,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
+			},
+			anchorInfo = {
+				point = "TOP",
+				relativeTo = "MultiBar6",
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 0,
 			},
 		},
 

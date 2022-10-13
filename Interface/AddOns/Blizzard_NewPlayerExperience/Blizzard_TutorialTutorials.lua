@@ -44,15 +44,16 @@ function Class_Intro_KeyboardMouse:OnBegin()
 	end
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
 	self:HideScreenTutorial();
-	C_Timer.After(4, function()
-		self:LaunchMouseKeyboardFrame();
-	end);	
+	self.LaunchTimer = C_Timer.NewTimer(4,
+		function()
+			self:LaunchMouseKeyboardFrame();
+		end);
 end
 
 function Class_Intro_KeyboardMouse:LaunchMouseKeyboardFrame()
 	EventRegistry:RegisterCallback("TutorialKeyboardMouseFrame.Closed", self.CloseMouseKeyboardFrame, self);
 	self:ShowMouseKeyboardTutorial();
-	self.Timer = C_Timer.NewTimer(10,
+	self.GlowTimer = C_Timer.NewTimer(10,
 		function()
 			GlowEmitterFactory:Show(KeyboardMouseConfirmButton,
 			GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow)
@@ -70,12 +71,16 @@ function Class_Intro_KeyboardMouse:QUEST_DETAIL(logindex, questID)
 end
 
 function Class_Intro_KeyboardMouse:OnInterrupt(interruptedBy)
+	self:HideMouseKeyboardTutorial();
 	TutorialManager:Finished(self:Name());
 end
 
 function Class_Intro_KeyboardMouse:OnComplete()
-	if self.Timer then
-		self.Timer:Cancel();
+	if self.LaunchTimer then
+		self.LaunchTimer:Cancel();
+	end
+	if self.GlowTimer then
+		self.GlowTimer:Cancel();
 	end
 	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
 	self:HideMouseKeyboardTutorial();
@@ -320,7 +325,7 @@ function Class_Intro_CombatDummyInRange:OnComplete()
 	Dispatcher:UnregisterEvent("PLAYER_ENTER_COMBAT", self);
 	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 
-	local UI_Watcher = TutorialManager:GetWatcher(Class_UI_Watcher.name);
+	local UI_Watcher = TutorialManager:GetWatcher("UI_Watcher");
 	if UI_Watcher then
 		UI_Watcher:SetShown(TutorialData.UI_Elements.TARGET_FRAME, true);
 	end
@@ -1009,7 +1014,7 @@ function Class_ChangeEquipment:OnBegin(args)
 	EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
 	EventRegistry:RegisterCallback("ContainerFrame.CloseBag", self.BagClosed, self);
 
-	if (not GetContainerItemID(self.data.Container, self.data.ContainerSlot)) then
+	if (not C_Container.GetContainerItemID(self.data.Container, self.data.ContainerSlot)) then
 		TutorialManager:Finished(self:Name());
 		return;
 	end
@@ -1199,15 +1204,14 @@ function Class_ChangeEquipment:UpdateItemContainerAndSlotInfo()
 	else
 		-- the origin has changed
 		local itemFrame = nil;
-		local maxNumContainters = 4;
 
 		local itemFound = false;
-		for containerIndex = 0, maxNumContainters do
-			local slots = GetContainerNumSlots(containerIndex);
+		for containerIndex = Enum.BagIndex.Backpack, Constants.InventoryConstants.NumBagSlots do
+			local slots = C_Container.GetContainerNumSlots(containerIndex);
 			if (slots > 0) then
 				for slotIndex = 1, slots do
-					local itemInfo = {GetContainerItemInfo(containerIndex, slotIndex)};
-					local itemID = itemInfo[10];
+					local itemInfo = C_Container.GetContainerItemInfo(containerIndex, slotIndex);
+					local itemID = itemInfo and itemInfo.itemID;
 					if itemID and itemID == currentItemID then
 						self.data.Container = containerIndex;
 						self.data.ContainerSlot = slotIndex;
@@ -2290,14 +2294,13 @@ function Class_UseVendor:UpdateGreyItemPointer()
 	end
 
 	local itemFrame = nil;
-	local maxNumContainters = 4;
 	local greyItemQuality = 0;
-	for containerIndex = 0, maxNumContainters do
-		local slots = GetContainerNumSlots(containerIndex);
+	for containerIndex = Enum.BagIndex.Backpack, Constants.InventoryConstants.NumBagSlots do
+		local slots = C_Container.GetContainerNumSlots(containerIndex);
 		if (slots > 0) then
 			for slotIndex = 1, slots do
-				local itemInfo = {GetContainerItemInfo(containerIndex, slotIndex)};
-				local itemQuality = itemInfo[4];
+				local itemInfo = C_Container.GetContainerItemInfo(containerIndex, slotIndex);
+				local itemQuality = itemInfo and itemInfo.quality;
 				if itemQuality == greyItemQuality then
 					itemFrame = TutorialHelper:GetItemContainerFrame(containerIndex, slotIndex);
 					break;

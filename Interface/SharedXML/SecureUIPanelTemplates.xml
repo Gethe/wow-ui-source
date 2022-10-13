@@ -474,4 +474,22 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="OutlineLoadingSpinnerTemplate" mixin="LoadingSpinnerMixin" virtual="true">
+		<Size x="60" y="60"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Spinner" setAllPoints="true" atlas="common-loadingspinnercircle"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" looping="REPEAT">
+				<Rotation childKey="Spinner" order="1" duration="1" degrees="-360"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
 </Ui>

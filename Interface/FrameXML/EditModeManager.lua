@@ -1583,7 +1583,7 @@ function EditModeAccountSettingsMixin:ResetActionBarShown(bar)
 	bar.numShowingButtons = self.oldActionBarSettings[bar].numShowingButtons;
 
 	if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
-		bar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+		bar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 	end
 
 	bar.editModeForceShow = false;
@@ -1599,7 +1599,7 @@ function EditModeAccountSettingsMixin:RefreshActionBarShown(bar)
 		bar.numShowingButtons = bar.numButtons;
 
 		if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
-			bar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+			bar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 		end
 
 		bar:Show();

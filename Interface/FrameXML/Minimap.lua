@@ -265,9 +265,7 @@ function MinimapClusterMixin:OnLoad()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("SETTINGS_LOADED");
 	local raisedFrameLevel = self:GetFrameLevel() + 10;
-	MiniMapInstanceDifficulty:SetFrameLevel(raisedFrameLevel);
-	GuildInstanceDifficulty:SetFrameLevel(raisedFrameLevel);
-	MiniMapChallengeMode:SetFrameLevel(raisedFrameLevel);
+	self.InstanceDifficulty:SetFrameLevel(raisedFrameLevel);
 
 	-- Cache minimap piece points so we can reset them if needed
 	local function CacheFramePoints(frame)
@@ -280,8 +278,6 @@ function MinimapClusterMixin:OnLoad()
 	CacheFramePoints(self.Minimap);
 	CacheFramePoints(self.BorderTop);
 	CacheFramePoints(self.InstanceDifficulty);
-	CacheFramePoints(self.ChallengeMode);
-	CacheFramePoints(self.GuildInstanceDifficulty);
 end
 
 function MinimapClusterMixin:OnEvent(event, ...)
@@ -331,23 +327,14 @@ function MinimapClusterMixin:SetHeaderUnderneath(headerUnderneath)
 		self.BorderTop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -24, 2);
 
 		self.InstanceDifficulty:ClearAllPoints();
-		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 10);
-
-		self.InstanceDifficulty:ClearAllPoints();
-		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 6);
-
-		self.ChallengeMode:ClearAllPoints();
-		self.ChallengeMode:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 20);
-
-		self.GuildInstanceDifficulty:ClearAllPoints();
-		self.GuildInstanceDifficulty:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -3, 20);
+		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self.BorderTop, "TOPRIGHT", -2, -2);
 	else
 		ResetFramePoints(self.Minimap);
 		ResetFramePoints(self.BorderTop);
 		ResetFramePoints(self.InstanceDifficulty);
-		ResetFramePoints(self.ChallengeMode);
-		ResetFramePoints(self.GuildInstanceDifficulty);
 	end
+	
+	self.InstanceDifficulty:SetFlipped(headerUnderneath);
 end
 
 function MinimapClusterMixin:SetRotateMinimap(rotateMinimap)
@@ -620,179 +607,6 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		end
 	end
 
-end
-
---
--- Dungeon Difficulty
---
-
-local IS_GUILD_GROUP;
-
-MiniMapInstanceDifficultyMixin = { };
-
-function MiniMapInstanceDifficultyMixin:OnLoad()
-	self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED");
-	self:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED");
-	self:RegisterEvent("UPDATE_INSTANCE_INFO");
-	self:RegisterEvent("GROUP_ROSTER_UPDATE");
-	self:RegisterEvent("PLAYER_GUILD_UPDATE");
-	self:RegisterEvent("PARTY_MEMBER_ENABLE");
-	self:RegisterEvent("PARTY_MEMBER_DISABLE");
-	self:RegisterEvent("GUILD_PARTY_STATE_UPDATED");
-end
-
-function MiniMapInstanceDifficultyMixin:OnEvent(event, ...)
-	if ( event == "GUILD_PARTY_STATE_UPDATED" ) then
-		local isGuildGroup = ...;
-		if ( isGuildGroup ~= IS_GUILD_GROUP ) then
-			IS_GUILD_GROUP = isGuildGroup;
-			MiniMapInstanceDifficulty_Update();
-		end
-	elseif ( event == "PLAYER_DIFFICULTY_CHANGED") then
-		MiniMapInstanceDifficulty_Update();
-	elseif ( event == "UPDATE_INSTANCE_INFO" or event == "INSTANCE_GROUP_SIZE_CHANGED" ) then
-		RequestGuildPartyState();
-		MiniMapInstanceDifficulty_Update();
-	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
-		local tabard = GuildInstanceDifficulty;
-		SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background, tabard.border);
-		if ( IsInGuild() ) then
-			RequestGuildPartyState();
-		else
-			IS_GUILD_GROUP = nil;
-			MiniMapInstanceDifficulty_Update();
-		end
-	else
-		RequestGuildPartyState();
-	end
-end
-
-function MiniMapInstanceDifficulty_Update()
-	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize = GetInstanceInfo();
-	local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic = GetDifficultyInfo(difficulty);
-
-	if ( IS_GUILD_GROUP ) then
-		if ( instanceGroupSize == 0 ) then
-			GuildInstanceDifficultyText:SetText("");
-			GuildInstanceDifficultyDarkBackground:SetAlpha(0);
-			GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -16);
-		else
-			GuildInstanceDifficultyText:SetText(instanceGroupSize);
-			GuildInstanceDifficultyDarkBackground:SetAlpha(0.7);
-			GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -10);
-		end
-		GuildInstanceDifficultyText:ClearAllPoints();
-		if ( isHeroic or isChallengeMode or displayMythic or displayHeroic ) then
-			local symbolTexture;
-			if ( isChallengeMode ) then
-				symbolTexture = GuildInstanceDifficultyChallengeModeTexture;
-				GuildInstanceDifficultyHeroicTexture:Hide();
-				GuildInstanceDifficultyMythicTexture:Hide();
-			elseif ( displayMythic ) then
-				symbolTexture = GuildInstanceDifficultyMythicTexture;
-				GuildInstanceDifficultyHeroicTexture:Hide();
-				GuildInstanceDifficultyChallengeModeTexture:Hide();
-			else
-				symbolTexture = GuildInstanceDifficultyHeroicTexture;
-				GuildInstanceDifficultyChallengeModeTexture:Hide();
-				GuildInstanceDifficultyMythicTexture:Hide();
-			end
-			-- the 1 looks a little off when text is centered
-			if ( instanceGroupSize < 10 ) then
-				symbolTexture:SetPoint("BOTTOMLEFT", 11, 7);
-				GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 23, 8);
-			elseif ( instanceGroupSize > 19 ) then
-				symbolTexture:SetPoint("BOTTOMLEFT", 8, 7);
-				GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 20, 8);
-			else
-				symbolTexture:SetPoint("BOTTOMLEFT", 8, 7);
-				GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 19, 8);
-			end
-			symbolTexture:Show();
-		else
-			GuildInstanceDifficultyHeroicTexture:Hide();
-			GuildInstanceDifficultyChallengeModeTexture:Hide();
-			GuildInstanceDifficultyMythicTexture:Hide();
-			GuildInstanceDifficultyText:SetPoint("BOTTOM", 2, 8);
-		end
-		MiniMapInstanceDifficulty:Hide();
-		SetSmallGuildTabardTextures("player", GuildInstanceDifficulty.emblem, GuildInstanceDifficulty.background, GuildInstanceDifficulty.border);
-		GuildInstanceDifficulty:Show();
-		MiniMapChallengeMode:Hide();
-	elseif ( isChallengeMode ) then
-		MiniMapChallengeMode:Show();
-		MiniMapInstanceDifficulty:Hide();
-		GuildInstanceDifficulty:Hide();
-	elseif ( instanceType == "raid" or isHeroic or displayMythic or displayHeroic ) then
-		MiniMapInstanceDifficultyText:SetText(instanceGroupSize);
-		-- the 1 looks a little off when text is centered
-		local xOffset = 0;
-		if ( instanceGroupSize >= 10 and instanceGroupSize <= 19 ) then
-			xOffset = -1;
-		end
-		if ( displayMythic ) then
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0.25, 0.5, 0.0703125, 0.4296875);
-			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
-		elseif ( isHeroic or displayHeroic ) then
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.0703125, 0.4296875);
-			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
-		else
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.5703125, 0.9296875);
-			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, 5);
-		end
-		MiniMapInstanceDifficulty:Show();
-		GuildInstanceDifficulty:Hide();
-		MiniMapChallengeMode:Hide();
-	else
-		MiniMapInstanceDifficulty:Hide();
-		GuildInstanceDifficulty:Hide();
-		MiniMapChallengeMode:Hide();
-	end
-end
-
-function MiniMapInstanceDifficultyMixin:OnEnter()
-	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, lfgID = GetInstanceInfo();
-	local isLFR = select(8, GetDifficultyInfo(difficulty))
-	if (isLFR and lfgID) then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
-		local name = GetLFGDungeonInfo(lfgID);
-		GameTooltip:SetText(RAID_FINDER, 1, 1, 1);
-		GameTooltip:AddLine(name);
-		GameTooltip:Show();
-	end
-end
-
-function MiniMapInstanceDifficultyMixin:OnLeave()
-	GameTooltip_Hide();
-end
-
-GuildInstanceDifficultyMixin = { };
-
-function GuildInstanceDifficultyMixin:OnEnter()
-	local guildName = GetGuildInfo("player");
-	local _, instanceType, _, _, maxPlayers = GetInstanceInfo();
-	local _, numGuildPresent, numGuildRequired, xpMultiplier = InGuildParty();
-	-- hack alert
-	if ( instanceType == "arena" ) then
-		maxPlayers = numGuildRequired;
-	end
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
-	GameTooltip:SetText(GUILD_GROUP, 1, 1, 1);
-	if ( xpMultiplier < 1 ) then
-		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE_MINXP, numGuildRequired, maxPlayers, guildName, xpMultiplier * 100), nil, nil, nil, true);
-	elseif ( xpMultiplier > 1 ) then
-		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE_MAXXP, guildName, xpMultiplier * 100), nil, nil, nil, true);
-	else
-		if ( instanceType == "party" and maxPlayers == 5 ) then
-			numGuildRequired = 4;
-		end
-		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE, numGuildRequired, maxPlayers, guildName), nil, nil, nil, true);
-	end
-	GameTooltip:Show();
-end
-
-function GuildInstanceDifficultyMixin:OnLeave()
-	GameTooltip:Hide();
 end
 
 ExpansionLandingPageMinimapButtonMixin = { };

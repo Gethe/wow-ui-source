@@ -171,11 +171,20 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 				elseif bonusData.currencyID then
 					local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(bonusData.currencyID);
 					itemButton:SetItemButtonTexture(currencyInfo.iconFileID);
+					itemButton:SetItemButtonCount(bonusData.quantity);
 
 					itemButton:SetScript("OnEnter", function(button)
 						GameTooltip:SetOwner(button, "ANCHOR_RIGHT", 0, 0);
-						GameTooltip:SetCurrencyByID(bonusData.currencyID);
-						GameTooltip:Show();
+						
+						local tooltipInfo = CreateBaseTooltipInfo("GetCurrencyByID", bonusData.currencyID);
+						tooltipInfo.linePreCall = function(tooltip, lineData)
+							if lineData.type == Enum.TooltipDataLineType.CurrencyTotal then
+								local amountText = NORMAL_FONT_COLOR:WrapTextInColorCode(AMOUNT_RECEIVED_COLON);
+								GameTooltip_AddHighlightLine(tooltip, string.format("%s %d", amountText, bonusData.quantity));
+								return true;
+							end
+						end;
+						GameTooltip:ProcessInfo(tooltipInfo);
 					end);
 				end
 				itemButton:Show();

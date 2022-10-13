@@ -1179,13 +1179,13 @@ function Mastery_OnEnter(statFrame)
 	if (primaryTalentTree) then
 		local masterySpell, masterySpell2 = GetSpecializationMasterySpells(primaryTalentTree);
 		if (masterySpell) then
-			local tooltipInfo = MakeBaseTooltipInfo("GetSpellByID", masterySpell);
+			local tooltipInfo = CreateBaseTooltipInfo("GetSpellByID", masterySpell);
 			tooltipInfo.append = true;
 			GameTooltip:ProcessInfo(tooltipInfo);
 		end
 		if (masterySpell2) then
 			GameTooltip:AddLine(" ");
-			local tooltipInfo = MakeBaseTooltipInfo("GetSpellByID", masterySpell2);
+			local tooltipInfo = CreateBaseTooltipInfo("GetSpellByID", masterySpell2);
 			tooltipInfo.append = true;
 			GameTooltip:ProcessInfo(tooltipInfo);
 		end

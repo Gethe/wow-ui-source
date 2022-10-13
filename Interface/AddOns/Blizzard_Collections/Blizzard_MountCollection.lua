@@ -584,7 +584,7 @@ function MountJournal_EvaluateListHelpTip(self)
 		local frame = self.ScrollBox:FindFrameByPredicate(function(entry)
 			return entry.index == self.dragonridingHelpTipMountIndex;
 		end);
-		if frame and frame:GetTop() <= self.ScrollBox:GetTop() + 4 and frame:GetBottom() >= self.ScrollBox:GetBottom() - 4 then
+		if ((frame and frame:IsShown()) and frame:GetTop() <= self.ScrollBox:GetTop() + 4 and frame:GetBottom() >= self.ScrollBox:GetBottom() - 4) then
 			local helpTipInfo = {
 				text = MOUNT_JOURNAL_DRAGONRIDING_HELPTIP,
 				buttonStyle = HelpTip.ButtonStyle.Close,

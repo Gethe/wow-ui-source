@@ -3,6 +3,9 @@ TutorialManager = {};
 TutorialManager.IsDebugging = false;
 TutorialManager.NPE_AchievementID = 14287;
 function TutorialManager:Initialize()
+	EventRegistry:RegisterFrameEventAndCallback("SETTINGS_LOADED", self.OnSettingsLoaded, self);
+	EventRegistry:RegisterFrameEventAndCallback("CVAR_UPDATE", self.OnCVARsUpdated, self);	
+
 	self:Begin();
 end
 
@@ -11,23 +14,23 @@ function TutorialManager:Begin()
 	self.Tutorials = {};
 	self.Watchers = {};
 	self.IsActive = true;
-
-	Dispatcher:RegisterEvent("CVAR_UPDATE", self);
 end
 
 function TutorialManager:Shutdown()
 	TutorialRangeManager:Shutdown();
 	TutorialQuestManager:Shutdown();
 	Class_TutorialBase:GlobalDisable();
-
+	self:DebugLog("TUTORIAL MANAGER SHUTDOWN: ");
 	for k, tutorial in pairs(self.Tutorials) do
 		if (type(tutorial) == "table") then
+			self:DebugLog("    INTERRUPT: "..k);
 			tutorial:Interrupt();
 		end
 	end
 
 	for k, watcher in pairs(self.Watchers) do
 		if (type(watcher) == "table") then
+			self:DebugLog("    INTERRUPT: "..k);
 			watcher:Interrupt();
 		end
 	end
@@ -35,15 +38,33 @@ function TutorialManager:Shutdown()
 	self.Tutorials = {};
 	self.Watchers = {};
 	self.IsActive = false;
+	TutorialQueue:Reset();
+	self:DebugLog("TUTORIAL MANAGER DISABLED");
 end
 
-function TutorialManager:CVAR_UPDATE(cvar, value)
+function TutorialManager:OnSettingsLoaded(cvar, value)
+	local tutorialsEnabled = Settings.GetSetting("showTutorials");
+	self.IsActive = tutorialsEnabled:GetValue();
+	if self.IsActive then
+		self:DebugLog("TUTORIAL MANAGER ENABLED: ");
+		EventRegistry:TriggerEvent("TutorialManager.TutorialsEnabled");
+	else
+		self:DebugLog("TUTORIAL MANAGER DISABLED");
+	end
+end
+
+function TutorialManager:OnCVARsUpdated(cvar, value)
 	if (cvar == "showTutorials" ) then
-		if (value == "0") then
+		self.IsActive = (value == "1");
+		if self.IsActive then
+			self:DebugLog("TUTORIAL MANAGER ENABLED");
+			self:Begin();
+			EventRegistry:TriggerEvent("TutorialManager.TutorialsEnabled");
+		else
 			-- player is trying to shut the NPE Tutorial off
-			local _, _, _, completed = GetAchievementInfo(self.NPE_AchievementID);
-			-- they can  ONLY do that if the achievement is completed
-			if (completed) then
+			local _, _, _, completed = GetAchievementInfo(self.NPE_AchievementID);			
+			if (completed) then -- they can  ONLY do that if the achievement is completed
+				EventRegistry:TriggerEvent("TutorialManager.TutorialsDisabled", self.IsActive);
 				self:Shutdown();
 			end
 		end
@@ -66,7 +87,7 @@ function TutorialManager:AddTutorial(tutorialInstance, optionalOverrideKey, args
 		local key = optionalOverrideKey or tutorialInstance:Name();
 		self.Tutorials[key] = tutorialInstance;
 		if tutorialInstance.OnAdded then
-			self:DebugLog("ADD TUTORIAL: "..key);
+			self:DebugLog("  ADD TUTORIAL: "..key);
 			tutorialInstance:OnAdded(args);
 		end
 	end
@@ -75,7 +96,7 @@ end
 
 function TutorialManager:RemoveTutorial(tutorialKey)
 	self.Tutorials[tutorialKey] = nil;
-	self:DebugLog("REMOVE TUTORIAL: "..tutorialKey);
+	self:DebugLog("  REMOVE TUTORIAL: "..tutorialKey);
 end
 
 function TutorialManager:GetTutorial(tutorialKey)
@@ -84,13 +105,13 @@ end
 
 function TutorialManager:Queue(tutorialKey, ...)
 	local tutorial = self:GetTutorial(tutorialKey);
-	self:DebugLog("  QUEUE: "..tutorialKey);
+	self:DebugLog("    QUEUE: "..tutorialKey);
 	TutorialQueue:Add(tutorial, ...);
 end
 
 function TutorialManager:Finished(tutorialKey)
 	local tutorial = self:GetTutorial(tutorialKey);
-	self:DebugLog("  FINISH: "..tutorialKey);
+	self:DebugLog("    FINISHED: "..tutorialKey);
 	TutorialQueue:NotifyDone(tutorial);
 end
 
@@ -107,12 +128,11 @@ function TutorialManager:AddWatcher(tutorialInstance, autoStart, optionalOverrid
 	if tutorialInstance and (tutorialInstance:Name() or optionalOverrideKey) then
 		local key = optionalOverrideKey or tutorialInstance:Name();
 		self.Watchers[key] = tutorialInstance;
-		self:DebugLog("ADD WATCHER: "..key);
+		self:DebugLog("  ADD WATCHER: "..key);
 		if tutorialInstance.OnAdded then
 			tutorialInstance:OnAdded(args);
 		end
 		if autoStart then
-			self:DebugLog("    AND START WATCHER: "..key);
 			self:StartWatcher(key);
 		end
 	end
@@ -121,7 +141,7 @@ end
 
 function TutorialManager:RemoveWatcher(tutorialKey)
 	self.Watchers[tutorialKey] = nil;
-	self:DebugLog("REMOVE WATCHER: "..tutorialKey);
+	self:DebugLog("  REMOVE WATCHER: "..tutorialKey);
 end
 
 function TutorialManager:GetWatcher(tutorialKey)
@@ -133,6 +153,7 @@ function TutorialManager:StartWatcher(tutorialKey)
 	if watcher then
 		watcher:Begin();
 		watcher:StartWatching();
+		self:DebugLog("    START WATCHER: "..tutorialKey);
 	end
 end
 
@@ -156,6 +177,13 @@ function TutorialManager:ShutdownWatcher(tutorialKey)
 		watcher:Interrupt();
 	end
 	self:RemoveWatcher(tutorialKey);
+end
+
+function TutorialManager:CheckHasCompletedFrameTutorial(tutorial, callback)
+	EventUtil.ContinueOnVariablesLoaded(function()
+		local hasCompleted = GetCVarBitfield("closedInfoFrames", tutorial);
+		callback(hasCompleted);
+	end);
 end
 
 TutorialManager:Initialize();

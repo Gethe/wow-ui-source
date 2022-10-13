@@ -226,6 +226,7 @@ function TalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
 	if self:CanCascadeRepurchaseRanks() then
 		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
 	elseif self:IsGhosted() then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
 		GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_CLEAR_REPURCHASE_INSTRUCTIONS, BRIGHTBLUE_FONT_COLOR);
 	end
 end

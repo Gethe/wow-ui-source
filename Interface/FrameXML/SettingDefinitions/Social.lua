@@ -85,9 +85,6 @@ local function Register()
 		end);
 	end
 
-	-- Spam Filter
-	Settings.SetupCVarCheckBox(category, "spamFilter", SPAM_FILTER, OPTION_TOOLTIP_SPAM_FILTER);
-
 	-- Guild Member Alert
 	Settings.SetupCVarCheckBox(category, "guildMemberNotify", GUILDMEMBER_ALERT, OPTION_TOOLTIP_GUILDMEMBER_ALERT);
 

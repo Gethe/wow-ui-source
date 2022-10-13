@@ -124,20 +124,6 @@ local MajorFactions =
 			},
 		},
 		{
-			Name = "IsMajorFaction",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "factionID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "IsMajorFaction", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsPlayerInRenownCatchUpMode",
 			Type = "Function",
 
@@ -222,7 +208,6 @@ local MajorFactions =
 				{ Name = "renownLevelThreshold", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "string", Nilable = false },
 				{ Name = "celebrationSoundKit", Type = "number", Nilable = false },
-				{ Name = "upgradeTabSelectSoundKitID", Type = "number", Nilable = false },
 				{ Name = "renownFanfareSoundKitID", Type = "number", Nilable = false },
 			},
 		},

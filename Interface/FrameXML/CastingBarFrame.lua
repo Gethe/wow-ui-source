@@ -967,3 +967,13 @@ end
 function OverlayPlayerCastingBarMixin:GetEffectiveType(isChannel, notInterruptible, isTradeSkill, isEmpowered)
 	return self.overrideBarType or CastingBarMixin.GetEffectiveType(self, isChannel, notInterruptible, isTradeSkill, isEmpowered);
 end
+
+function OverlayPlayerCastingBarMixin:OnShow()
+	CastingBarMixin.OnShow(self);
+	EventRegistry:TriggerEvent("OverlayPlayerCastBar.OnShow");
+end
+
+function OverlayPlayerCastingBarMixin:OnHide()
+	CastingBarMixin.OnHide(self);
+	EventRegistry:TriggerEvent("OverlayPlayerCastBar.OnHide");
+end

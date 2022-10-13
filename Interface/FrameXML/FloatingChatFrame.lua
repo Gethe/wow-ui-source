@@ -806,7 +806,7 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 		chatTab.conversationIcon = conversationIcon;
 
 		chatTab.Text:ClearAllPoints(); 
-		chatTab.Text:SetPoint("LEFT", chatTab.leftTexture, "RIGHT", 10, -6);
+		chatTab.Text:SetPoint("LEFT", chatTab.Left, "RIGHT", 10, -6);
 		chatTab.Text:SetJustifyH("LEFT");
 		chatTab.sizePadding = 10;
 

@@ -1130,14 +1130,7 @@ function QuestInfoReputationRewardButtonMixin:SetUpMajorFactionReputationReward(
 	self.Name:SetText(QUEST_REPUTATION_REWARD_TITLE:format(self.factionName));
 	self.RewardAmount:SetText(AbbreviateNumbers(self.rewardAmount));
 	
-	-- TODO: Remove this once we fully switch to Major Factions art
-	local majorFactionTextureKits = {
-		[2503] = "Centaur",
-		[2507] = "Expedition",
-		[2510] = "Valdrakken",
-		[2511] = "Tuskarr",
-	};
-	local majorFactionIcon = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(majorFactionTextureKits[majorFactionData.factionID]);
+	local majorFactionIcon = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(majorFactionData.textureKit);
 	self.Icon:SetTexture(majorFactionIcon);	
 end
 

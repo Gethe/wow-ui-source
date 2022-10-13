@@ -2,11 +2,13 @@ MajorFactionUnlockToasts = {};
 
 local majorFactionSwirlEffects = 
 {
-	Kyrian = {91},
-	Venthyr = {92},
-	NightFae = {93, 96},
-	Necrolord = {94},
+	Expedition = {152},
+	Centaur = {152},
+	Tuskarr = {152},
+	Valdrakken = {152},
 };
+
+local majorFactionColorFormat = "%s_MAJOR_FACTION_COLOR";
 
 function MajorFactionUnlockToasts.GetSwirlEffectsByTextureKit(textureKit)
 	return majorFactionSwirlEffects[textureKit];
@@ -24,9 +26,7 @@ end
 
 function MajorFactionCelebrationBannerMixin:SetMajorFactionTextureKit(textureKit)
 	local textureKitRegions = {
-		[self.GlowLineTop] = "CovenantChoice-Celebration-%sCloudyLine",
-		[self.GlowLineTopAdditive] = "CovenantChoice-Celebration-%s-DetailLine",
-		[self.Icon.Tex] = "CovenantChoice-Celebration-%sSigil",
+		[self.Icon.Texture] = "majorfaction-celebration-%s",
 	};
 
 	SetupTextureKitOnFrames(textureKit, textureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
@@ -41,4 +41,8 @@ function MajorFactionCelebrationBannerMixin:AddSwirlEffects(textureKit)
 	for i, effect in ipairs(swirlEffects) do
 		self.IconSwirlModelScene:AddEffect(effect, self);
 	end
+end
+
+function MajorFactionCelebrationBannerMixin:GetFactionColorByTextureKit(textureKit)
+	return _G[majorFactionColorFormat:format(strupper(textureKit))];
 end

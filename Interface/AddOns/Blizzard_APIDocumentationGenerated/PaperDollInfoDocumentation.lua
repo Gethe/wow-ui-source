@@ -217,6 +217,7 @@ local PaperDollInfo =
 			Payload =
 			{
 				{ Name = "skillLineID", Type = "number", Nilable = false },
+				{ Name = "isTool", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -119,6 +119,8 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 
 	local function CustomSetupFunction(dropDownButtonInfo, standardFunc)
 		dropDownButtonInfo.fontObject = self.dropDownOptionFont;
+		dropDownButtonInfo.tooltipBackdropStyle = self.dropdownTooltipBackdropStyle;
+		dropDownButtonInfo.iconTooltipBackdropStyle = self.dropdownTooltipBackdropStyle;
 		dropDownButtonInfo.topPadding = 2;
 
 		local hasRightClickCallback = (self.rightClickCallback ~= nil);

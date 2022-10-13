@@ -59,13 +59,7 @@ end
 function BankFrameItemButton_OnEnter (self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-	local hasItem, hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInventoryItem("player", self:GetInventorySlot());
-	if(speciesID and speciesID > 0) then
-		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-		CursorUpdate(self);
-		return;
-	end
-
+	local hasItem = GameTooltip:SetInventoryItem("player", self:GetInventorySlot());
 	if (self.isBag) then
 		if ContainerFrame_CanContainerUseFilterMenu(self:GetBagID()) then
 			for i, flag in ContainerFrameUtil_EnumerateBagGearFilters() do
@@ -79,6 +73,7 @@ function BankFrameItemButton_OnEnter (self)
 
 	if ( not hasItem ) then
 		if ( self.isBag ) then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip:SetText(self.tooltipText);
 		end
 	end
@@ -489,7 +484,7 @@ function BankFrame_AutoSortButtonOnClick()
 	if (self.activeTabIndex == 1) then
 		C_Container.SortBankBags();
 	elseif (self.activeTabIndex == 2) then
-		SortReagentBankBags();
+		C_Container.SortReagentBankBags();
 	end
 end
 

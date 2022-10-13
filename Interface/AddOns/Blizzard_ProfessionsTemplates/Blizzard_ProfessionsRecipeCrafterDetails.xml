@@ -358,6 +358,14 @@
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
+
+			<Frame parentKey="Spacer">
+				<Size x="1" y="15"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+			</Frame>
 			
 			<Frame parentKey="FinishingReagentSlotContainer">
 				<Size x="260" y="126"/>

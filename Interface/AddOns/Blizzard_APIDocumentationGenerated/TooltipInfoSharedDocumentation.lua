@@ -5,12 +5,12 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataLineType",
 			Type = "Enumeration",
-			NumValues = 14,
+			NumValues = 15,
 			MinValue = 0,
-			MaxValue = 13,
+			MaxValue = 14,
 			Fields =
 			{
-				{ Name = "Generic", Type = "TooltipDataLineType", EnumValue = 0 },
+				{ Name = "None", Type = "TooltipDataLineType", EnumValue = 0 },
 				{ Name = "Blank", Type = "TooltipDataLineType", EnumValue = 1 },
 				{ Name = "UnitName", Type = "TooltipDataLineType", EnumValue = 2 },
 				{ Name = "GemSocket", Type = "TooltipDataLineType", EnumValue = 3 },
@@ -24,14 +24,15 @@ local TooltipInfoShared =
 				{ Name = "SellPrice", Type = "TooltipDataLineType", EnumValue = 11 },
 				{ Name = "ProfessionCraftingQuality", Type = "TooltipDataLineType", EnumValue = 12 },
 				{ Name = "SpellName", Type = "TooltipDataLineType", EnumValue = 13 },
+				{ Name = "CurrencyTotal", Type = "TooltipDataLineType", EnumValue = 14 },
 			},
 		},
 		{
 			Name = "TooltipDataType",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 27,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 26,
 			Fields =
 			{
 				{ Name = "Item", Type = "TooltipDataType", EnumValue = 0 },
@@ -41,6 +42,26 @@ local TooltipInfoShared =
 				{ Name = "Object", Type = "TooltipDataType", EnumValue = 4 },
 				{ Name = "Currency", Type = "TooltipDataType", EnumValue = 5 },
 				{ Name = "BattlePet", Type = "TooltipDataType", EnumValue = 6 },
+				{ Name = "UnitAura", Type = "TooltipDataType", EnumValue = 7 },
+				{ Name = "AzeriteEssence", Type = "TooltipDataType", EnumValue = 8 },
+				{ Name = "CompanionPet", Type = "TooltipDataType", EnumValue = 9 },
+				{ Name = "Mount", Type = "TooltipDataType", EnumValue = 10 },
+				{ Name = "PetAction", Type = "TooltipDataType", EnumValue = 11 },
+				{ Name = "Achievement", Type = "TooltipDataType", EnumValue = 12 },
+				{ Name = "EnhancedConduit", Type = "TooltipDataType", EnumValue = 13 },
+				{ Name = "EquipmentSet", Type = "TooltipDataType", EnumValue = 14 },
+				{ Name = "InstanceLock", Type = "TooltipDataType", EnumValue = 15 },
+				{ Name = "PvPBrawl", Type = "TooltipDataType", EnumValue = 16 },
+				{ Name = "RecipeRankInfo", Type = "TooltipDataType", EnumValue = 17 },
+				{ Name = "Totem", Type = "TooltipDataType", EnumValue = 18 },
+				{ Name = "Toy", Type = "TooltipDataType", EnumValue = 19 },
+				{ Name = "CorruptionCleanser", Type = "TooltipDataType", EnumValue = 20 },
+				{ Name = "MinimapMouseover", Type = "TooltipDataType", EnumValue = 21 },
+				{ Name = "Flyout", Type = "TooltipDataType", EnumValue = 22 },
+				{ Name = "Quest", Type = "TooltipDataType", EnumValue = 23 },
+				{ Name = "QuestPartyProgress", Type = "TooltipDataType", EnumValue = 24 },
+				{ Name = "Macro", Type = "TooltipDataType", EnumValue = 25 },
+				{ Name = "Debug", Type = "TooltipDataType", EnumValue = 26 },
 			},
 		},
 		{
@@ -59,7 +80,6 @@ local TooltipInfoShared =
 			{
 				{ Name = "lines", Type = "table", InnerType = "TooltipDataLine", Nilable = false },
 				{ Name = "args", Type = "table", InnerType = "TooltipDataArg", Nilable = false },
-				{ Name = "comparisonItem", Type = "table", Nilable = true },
 			},
 		},
 		{

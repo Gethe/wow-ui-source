@@ -12,6 +12,18 @@ function ProfessionsReagentSlotMixin:Reset()
 		self.continuableContainer:Cancel();
 	end
 	self.continuableContainer = ContinuableContainer:Create();
+	self:SetCheckboxShown(false);
+	self:SetCheckboxCallback(nilCallback);
+	self:SetCheckboxTooltipText(nilTooltipText);
+	self:SetHighlightShown(false);
+	local skipUpdate = true;
+	self:SetOverrideNameColor(nilOverrideColor, skipUpdate)
+	self:SetShowOnlyRequired(false, skipUpdate);
+	self:SetCheckmarkShown(false);
+	self:SetCheckmarkTooltipText(nilTooltipText);
+	self:SetOverrideQuantity(nilOverrideQuantity, skipUpdate)
+	self:SetColorOverlay(nilOverlayColor);
+	self:SetAddIconDesaturated(false);
 end
 
 function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
@@ -74,37 +86,81 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 	end);
 end
 
+function ProfessionsReagentSlotMixin:SetOverrideNameColor(color, skipUpdate)
+	self.overrideNameColor = color;
+	if not skipUpdate then
+		self:Update();
+	end
+end
+
+function ProfessionsReagentSlotMixin:SetOverrideQuantity(quantity, skipUpdate)
+	self.overrideQuantity = quantity;
+	if not skipUpdate then
+		self:Update();
+	end
+end
+
+function ProfessionsReagentSlotMixin:GetNameColor()
+	local transaction = self:GetTransaction();
+
+	if self.overrideNameColor then
+		return self.overrideNameColor;
+	end
+
+	if self:GetReagentSlotSchematic().reagentType == Enum.CraftingReagentType.Optional or transaction:HasAllocations(self:GetSlotIndex()) then
+		return HIGHLIGHT_FONT_COLOR;
+	end
+
+	return DISABLED_REAGENT_COLOR;
+end
+
 function ProfessionsReagentSlotMixin:Update()
 	self:UpdateAllocationText();
 	self:UpdateQualityOverlay();
 
 	if self.Name:IsShown() and self.nameText ~= nil then
-		local transaction = self:GetTransaction();
-		local color = (self:GetReagentSlotSchematic().reagentType == Enum.CraftingReagentType.Optional or transaction:HasAllocations(self:GetSlotIndex()))
-					  and HIGHLIGHT_FONT_COLOR 
-					  or DISABLED_REAGENT_COLOR;
-		self.Name:SetText(color:WrapTextInColorCode(self.nameText));
+		self.Name:SetText(self:GetNameColor():WrapTextInColorCode(self.nameText));
+	end
+end
+
+function ProfessionsReagentSlotMixin:SetShowOnlyRequired(value, skipUpdate)
+	self.showOnlyRequired = value;
+	if not skipUpdate then
+		self:Update();
 	end
 end
 
 function ProfessionsReagentSlotMixin:UpdateAllocationText()
 	local reagentSlotSchematic = self:GetReagentSlotSchematic();
-	if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
+	if reagentSlotSchematic and reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
+		-- First try only allocations
 		local foundMultiple, foundIndex = self:GetAllocationDetails();
 
+		-- Then include inventory if necessary
+		if not foundMultiple and not foundIndex then
+			foundMultiple, foundIndex = self:GetInventoryDetails();
+		end
+
 		local quantity = 0;
+		if self.overrideQuantity then
+			quantity = self.overrideQuantity;
+		else
 		if foundMultiple then
 			quantity = TRADESKILL_QUANTITY_MULTIPLE;
 		else
 			if foundIndex then
 				local reagent = reagentSlotSchematic.reagents[foundIndex];
-				quantity = ItemUtil.GetCraftingReagentCount(reagent.itemID);
+				quantity = Professions.GetReagentQuantityInPossession(reagent);
+			else
+				quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
 			end
+		end
 		end
 
 		local reagent = reagentSlotSchematic.reagents[1];
 		local item = Item:CreateFromItemID(reagent.itemID);
-		self:SetNameText(("%s %s"):format(TRADESKILL_REAGENT_COUNT:format(quantity, reagentSlotSchematic.quantityRequired), item:GetItemName()));
+		local quantityText = self.showOnlyRequired and reagentSlotSchematic.quantityRequired or TRADESKILL_REAGENT_COUNT:format(quantity, reagentSlotSchematic.quantityRequired);
+		self:SetNameText(("%s %s"):format(quantityText, item:GetItemName() or ""));
 	end
 end
 
@@ -124,9 +180,33 @@ function ProfessionsReagentSlotMixin:GetAllocationDetails()
 	return foundMultiple, foundIndex;
 end
 
+function ProfessionsReagentSlotMixin:GetInventoryDetails()
+	local reagentSlotSchematic = self:GetReagentSlotSchematic();
+	local foundMultiple = nil;
+	local foundIndex = nil;
+	for index, reagent in ipairs(reagentSlotSchematic.reagents) do
+		local quantity = Professions.GetReagentQuantityInPossession(reagent);
+		if quantity > 0 then
+			if foundIndex then
+				foundMultiple = true;
+			end
+			foundIndex = index;
+		end
+	end
+	return foundMultiple, foundIndex;
+end
+
 function ProfessionsReagentSlotMixin:UpdateQualityOverlay()
-	if Professions.GetReagentInputMode(self:GetReagentSlotSchematic()) == Professions.ReagentInputMode.Quality then
+	local reagentSlotSchematic = self:GetReagentSlotSchematic();
+	if reagentSlotSchematic and Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
+		-- First try only allocations
 		local foundMultiple, foundIndex = self:GetAllocationDetails();
+
+		-- Then include inventory if necessary
+		if not foundMultiple and not foundIndex then
+			foundMultiple, foundIndex = self:GetInventoryDetails();
+		end
+
 		if foundMultiple then
 			self.Button.QualityOverlay:SetAtlas("Professions-Icon-Quality-Mixed-Inv", TextureKitConstants.UseAtlasSize);
 		elseif foundIndex then
@@ -134,6 +214,8 @@ function ProfessionsReagentSlotMixin:UpdateQualityOverlay()
 		else
 			self.Button.QualityOverlay:SetAtlas(nil);
 		end
+	else
+		self.Button.QualityOverlay:SetAtlas(nil);
 	end
 end
 
@@ -166,6 +248,7 @@ function ProfessionsReagentSlotMixin:SetItem(item)
 
 	if item then
 		self.Button:SetItem(item:GetItemID());
+	self.Button.InputOverlay.AddIcon:Hide();
 		self:SetNameText(item:GetItemName());
 	else
 		local reagentSlotSchematic = self:GetReagentSlotSchematic();
@@ -205,4 +288,64 @@ end
 
 function ProfessionsReagentSlotMixin:SetAllocateIconShown(shown)
 	self.Button.AddIcon:SetShown(shown);
+end
+
+local function SetElementTooltipText(text, element, tooltipParent)
+	if text then
+		element:SetScript("OnEnter", function()
+			GameTooltip:SetOwner(tooltipParent or element, "ANCHOR_RIGHT", 0, 0);
+			GameTooltip_AddNormalLine(GameTooltip, text);
+			GameTooltip:Show();
+		end);
+	else
+		element:SetScript("OnEnter", nil);
+	end
+end
+
+function ProfessionsReagentSlotMixin:SetCheckboxShown(shown)
+	return self.Checkbox:SetShown(shown);
+end
+
+function ProfessionsReagentSlotMixin:SetCheckboxChecked(checked)
+	self.Checkbox:SetChecked(checked);
+end
+
+function ProfessionsReagentSlotMixin:SetCheckboxEnabled(enabled)
+	self.Checkbox:SetEnabled(enabled);
+end
+
+function ProfessionsReagentSlotMixin:SetCheckboxCallback(cb)
+	if cb then
+		self.Checkbox:SetScript("OnClick", function() cb(self.Checkbox:GetChecked()); end);
+	else
+		self.Checkbox:SetScript("OnClick", nil);
+	end
+end
+
+function ProfessionsReagentSlotMixin:SetCheckboxTooltipText(text)
+	SetElementTooltipText(text, self.Checkbox);
+end
+
+function ProfessionsReagentSlotMixin:SetHighlightShown(shown)
+	self.Button.HighlightTexture:SetShown(shown);
+end
+
+function ProfessionsReagentSlotMixin:SetCheckmarkShown(shown)
+	self.Checkmark:SetShown(shown);
+end
+
+function ProfessionsReagentSlotMixin:SetCheckmarkTooltipText(text)
+	SetElementTooltipText(text, self.Checkmark);
+end
+
+function ProfessionsReagentSlotMixin:SetColorOverlay(color, alpha)
+	self.Button.ColorOverlay:SetShown(color ~= nil);
+	if color then
+		local r, g, b = color:GetRGB();
+		self.Button.ColorOverlay:SetColorTexture(r, g, b, alpha or 0.5);
+	end
+end
+
+function ProfessionsReagentSlotMixin:SetAddIconDesaturated(desaturated)
+	self.Button.InputOverlay.AddIcon:SetDesaturated(desaturated);
 end

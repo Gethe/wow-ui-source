@@ -142,15 +142,12 @@
 			<AnimationGroup parentKey="FlashAnim" setToFinalAlpha="true">
 				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.2"/>
 			</AnimationGroup>
-			<AnimationGroup parentKey="StandardFinish" looping="REPEAT" setToFinalAlpha="true">
+			<AnimationGroup parentKey="StandardFinish" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate" looping="REPEAT" setToFinalAlpha="true">
 				<Translation childKey="EnergyGlow" duration="0.5" order="1" offsetX="0" offsetY="220" smoothing="NONE"/>
 				<Translation childKey="Flakes01" duration="0.5" order="1" offsetX="0" offsetY="100" startDelay="0" smoothing="IN"/>
 				<Translation childKey="Flakes02" duration="0.5" order="1" offsetX="0" offsetY="90" smoothing="OUT"/>
 				<Translation childKey="Flakes03" duration="0.5" order="1" offsetX="0" offsetY="25" startDelay="0.25" smoothing="IN"/>
 				<Alpha childKey="EnergyGlow" fromAlpha="0" toAlpha="1" duration="0.0"/>
-				<Alpha childKey="Flakes01" fromAlpha="0" toAlpha="1" duration="0.0"/>
-				<Alpha childKey="Flakes02" fromAlpha="0" toAlpha="1" duration="0.0"/>
-				<Alpha childKey="Flakes03" fromAlpha="0" toAlpha="1" duration="0.0"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="CraftingFinish" looping="NONE" setToFinalAlpha="true">
 				<Translation childKey="Shine" duration="0.5" order="1" offsetX="0" offsetY="180" smoothing="NONE"/>
@@ -262,17 +259,17 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="5">
-				<Texture parentKey="Flakes01" alpha="0" alphaMode="ADD" atlas="Cast_Standard_Flakes01" useAtlasSize="true" scale="0.5">
+				<Texture parentKey="Flakes01" alphaMode="ADD" atlas="Cast_Standard_Flakes01" useAtlasSize="true" scale="0.5">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="-25"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Flakes02" alpha="0" alphaMode="ADD" atlas="Cast_Standard_Flakes02" useAtlasSize="true" scale="0.5">
+				<Texture parentKey="Flakes02" alphaMode="ADD" atlas="Cast_Standard_Flakes02" useAtlasSize="true" scale="0.5">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="-45"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Flakes03" alpha="0" alphaMode="ADD" atlas="Cast_Standard_Flakes03" useAtlasSize="true" scale="0.5">
+				<Texture parentKey="Flakes03" alphaMode="ADD" atlas="Cast_Standard_Flakes03" useAtlasSize="true" scale="0.5">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="-25"/>
 					</Anchors>

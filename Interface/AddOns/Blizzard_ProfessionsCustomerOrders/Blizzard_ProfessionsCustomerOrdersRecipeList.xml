@@ -48,8 +48,8 @@
 			<Frame parentKey="HeaderContainer">
 				<Size y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="3" y="-3"/>
-					<Anchor point="TOPRIGHT" x="-25" y="-3"/>
+					<Anchor point="TOPLEFT" x="3" y="-1"/>
+					<Anchor point="TOPRIGHT" x="-25" y="-1"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">

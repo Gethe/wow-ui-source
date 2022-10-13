@@ -1363,6 +1363,8 @@ function LFGListApplicationViewer_OnEvent(self, event, ...)
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		LFGListApplicationViewer_UpdateAvailability(self);
 		LFGListApplicationViewer_UpdateInfo(self);
+		LFGListApplicationViewer_UpdateResultList(self);
+		LFGListApplicationViewer_UpdateResults(self);
 	elseif ( event == "LFG_LIST_APPLICANT_LIST_UPDATED" ) then
 		LFGListApplicationViewer_UpdateResultList(self);
 		LFGListApplicationViewer_UpdateResults(self);
@@ -1371,13 +1373,15 @@ function LFGListApplicationViewer_OnEvent(self, event, ...)
 		local id = ...;
 		if ( not LFGListUtil_IsEntryEmpowered() ) then
 			C_LFGList.RemoveApplicant(id);
-		end
-
-		local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
-			return frame:GetElementData().id == id;
-		end);
-		if frame then
-			LFGListApplicationViewer_UpdateApplicant(frame, id);
+			LFGListApplicationViewer_UpdateResultList(self);
+			LFGListApplicationViewer_UpdateResults(self);
+		else
+			local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
+				return frame:GetElementData().id == id;
+			end);
+			if frame then
+				LFGListApplicationViewer_UpdateApplicant(frame, id);
+			end
 		end
 
 		--Update whether we can invite people
@@ -2239,8 +2243,8 @@ function LFGListSearchPanel_UpdateButtonStatus(self)
 			self.ScrollBox.StartGroupButton:Disable();
 			self.ScrollBox.StartGroupButton.tooltip = errorText;
 		elseif (canBrowseWhileQueued) then 
-			startGroupButton:Disable(); 
-			startGroupButton.tooltip = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED; 
+			self.ScrollBox.StartGroupButton:Disable(); 
+			self.ScrollBox.StartGroupButton.tooltip = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED; 
 		else
 			self.ScrollBox.StartGroupButton:Enable();
 			self.ScrollBox.StartGroupButton.tooltip = nil;

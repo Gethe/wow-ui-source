@@ -67,6 +67,10 @@ function TabSystemButtonMixin:OnEnter()
 	if not self:IsEnabled() and self.errorReason ~= nil then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
 		GameTooltip_AddErrorLine(GameTooltip, self.errorReason);
+		if self.tooltipText then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, self.tooltipText);
+		end
 		GameTooltip:Show();
 	elseif self.tooltipText then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);

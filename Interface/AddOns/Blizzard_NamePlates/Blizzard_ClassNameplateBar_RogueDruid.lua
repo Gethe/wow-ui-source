@@ -2,10 +2,14 @@ ClassNameplateBarRogueDruid = {};
 
 function ClassNameplateBarRogueDruid:OnLoad()
 	ClassResourceBarMixin.OnLoad(self);
-end 
+end
 
 function ClassNameplateBarRogueDruid:UpdateMaxPower()
 	ClassResourceBarMixin.UpdateMaxPower(self);
+end
+
+function ClassNameplateBarRogueDruid:Setup()
+	ClassResourceBarMixin.Setup(self);
 end
 
 function ClassNameplateBarRogueDruid:SetupDruid()
@@ -20,19 +24,19 @@ function ClassNameplateBarRogueDruid:SetupDruid()
 	else
 		self:HideNameplateBar();
 	end
-	return showBar; 
+	return showBar;
 end
 
 function ClassNameplateBarRogueDruid:SetupRogue()
 	local showBar = ClassNameplateBar.Setup(self);
-	if(showBar) then 
+	if(showBar) then
 		self:ShowNameplateBar();
-	end 
-	return showBar; 
+	end
+	return showBar;
 end
 
 function ClassNameplateBarRogueDruid:UpdatePower()
-	if ( self.delayedUpdate ) then
+	if ( self.delayedUpdate or not self:IsShown() ) then
 		return;
 	end
 

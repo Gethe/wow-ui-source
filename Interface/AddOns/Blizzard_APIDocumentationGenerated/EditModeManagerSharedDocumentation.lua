@@ -122,7 +122,7 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeActionBarSystemIndices",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 11,
 			MinValue = 1,
 			MaxValue = 13,
 			Fields =
@@ -132,6 +132,9 @@ local EditModeManagerShared =
 				{ Name = "Bar3", Type = "EditModeActionBarSystemIndices", EnumValue = 3 },
 				{ Name = "RightBar1", Type = "EditModeActionBarSystemIndices", EnumValue = 4 },
 				{ Name = "RightBar2", Type = "EditModeActionBarSystemIndices", EnumValue = 5 },
+				{ Name = "ExtraBar1", Type = "EditModeActionBarSystemIndices", EnumValue = 6 },
+				{ Name = "ExtraBar2", Type = "EditModeActionBarSystemIndices", EnumValue = 7 },
+				{ Name = "ExtraBar3", Type = "EditModeActionBarSystemIndices", EnumValue = 8 },
 				{ Name = "StanceBar", Type = "EditModeActionBarSystemIndices", EnumValue = 11 },
 				{ Name = "PetActionBar", Type = "EditModeActionBarSystemIndices", EnumValue = 12 },
 				{ Name = "PossessActionBar", Type = "EditModeActionBarSystemIndices", EnumValue = 13 },

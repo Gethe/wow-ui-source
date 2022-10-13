@@ -386,6 +386,10 @@ function GameTooltip_ClearMoney(self)
 	self.shownMoneyFrames = nil;
 end
 
+GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT_DARK = {
+	layoutType = "TooltipDefaultDarkLayout",
+};
+
 GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
 	layoutType = "TooltipAzeriteLayout",
 
@@ -416,6 +420,10 @@ GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY = {
 	overlayAtlasTopYOffset = -2,
 
 	padding = { left = 6, right = 6, top = 6, bottom = 6 },
+};
+
+GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT = {
+	layoutType = "TooltipDefaultDarkLayout",
 };
 
 GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
@@ -504,7 +512,7 @@ end
 function GameTooltip_ShowCompareItem(self, anchorFrame)
 	local tooltip = self or GameTooltip;
 	local tooltipData = tooltip.info and tooltip.info.tooltipData;
-	local comparisonItem = tooltipData and tooltipData.comparisonItem;
+	local comparisonItem = TooltipComparisonManager:CreateComparisonItem(tooltipData);
 	TooltipComparisonManager:CompareItem(comparisonItem, tooltip, anchorFrame);
 end
 
@@ -581,7 +589,7 @@ function GameTooltip_ShowHyperlink(self, hyperlinkString, classID, specID, clear
 		-- quest reward hyperlinks are handled in lua
 		GameTooltip_AddQuestRewardsToTooltip(self, questRewardID, TOOLTIP_QUEST_REWARDS_STYLE_NO_HEADER);
 	else
-		local tooltipInfo = MakeBaseTooltipInfo("GetHyperlink", hyperlinkString, classID, specID);
+		local tooltipInfo = CreateBaseTooltipInfo("GetHyperlink", hyperlinkString, classID, specID);
 		tooltipInfo.append = not clearTooltip;
 		self:ProcessInfo(tooltipInfo);
 	end
@@ -718,10 +726,10 @@ function GameTooltip_AddQuest(self, questID)
 
 		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, questID, self.questRewardTooltipStyle or TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT);
 
-		if ( self.worldQuest and C_TooltipInfo.GM.GetDebugWorldQuestInfo ) then
+		if ( self.worldQuest and C_TooltipInfo.GM ) then
 			local tooltipData = C_TooltipInfo.GM.GetDebugWorldQuestInfo(questID);
 			if tooltipData then
-				local tooltipInfo = { tooltipData = tooltipData };
+				local tooltipInfo = { tooltipData = tooltipData, append = true };
 				GameTooltip:ProcessInfo(tooltipInfo);
 				GameTooltip:Show();
 			end
@@ -864,7 +872,7 @@ function EmbeddedItemTooltip_SetSpellWithTextureByID(self, spellID, texture)
 		self:Show();
 		EmbeddedItemTooltip_PrepareForSpell(self);
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
-		local tooltipInfo = MakeBaseTooltipInfo("GetSpellByID", spellID);
+		local tooltipInfo = CreateBaseTooltipInfo("GetSpellByID", spellID);
 		GameTooltip:ProcessInfo(tooltipInfo);
 		SetItemButtonQuality(self, Enum.ItemQuality.Common);
 		SetItemButtonCount(self, 0);
@@ -966,14 +974,13 @@ end
 -- replacements for GetX API that's been removed
 
 function GameTooltipDataMixin:GetItem()
-	local tooltipData = self:GetTooltipData();
-	local comparisonItem = tooltipData and tooltipData.comparisonItem;
-	if comparisonItem then
+	if self:IsTooltipType(Enum.TooltipDataType.Item) then
+		local tooltipData = self:GetTooltipData();
 		local hyperlink;
-		if comparisonItem.guid then
-			hyperlink = C_Item.GetItemLinkByGUID(comparisonItem.guid);
-		elseif comparisonItem.hyperlink then
-			hyperlink = comparisonItem.hyperlink;
+		if tooltipData.guid then
+			hyperlink = C_Item.GetItemLinkByGUID(tooltipData.guid);
+		elseif tooltipData.hyperlink then
+			hyperlink = tooltipData.hyperlink;
 		end
 		if hyperlink then
 			local name = GetItemInfo(hyperlink);

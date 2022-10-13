@@ -128,7 +128,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		ReadyCheck_Finish(PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.ReadyCheck, DEFAULT_READY_CHECK_STAY_TIME);
 	elseif (event == "UNIT_ENTERED_VEHICLE") then
 		if (arg1 == "player") then
-			self.inSeat = true;
 			if (UnitInVehicleHidesPetFrame("player")) then
 				self.vehicleHidesPet = true;
 			end
@@ -137,7 +136,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 	elseif (event == "UNIT_EXITING_VEHICLE") then
 		if (arg1 == "player") then
 			if (self.state == "vehicle") then
-				self.inSeat = false;
 				PlayerFrame_UpdateArt(self);
 			else
 				self.updatePetFrame = true;
@@ -146,7 +144,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		end
 	elseif (event == "UNIT_EXITED_VEHICLE") then
 		if (arg1 == "player") then
-			self.inSeat = true;
 			PlayerFrame_UpdateArt(self);
 		end
 	elseif (event == "PVP_TIMER_UPDATE") then
@@ -231,26 +228,10 @@ end
 
 function PlayerFrame_UpdatePlayerNameTextAnchor()
 	if PlayerFrame.unit == "vehicle" then
-			PlayerName:SetPoint("TOPLEFT", 96, -27);
-		else
-			PlayerName:SetPoint("TOPLEFT", 88, -27);
+		PlayerName:SetPoint("TOPLEFT", 96, -27);
+	else
+		PlayerName:SetPoint("TOPLEFT", 88, -27);
 	end
-end
-
-function PlayerFrame_UpdateLevelTextAnchor()
-	PlayerLevelText:SetPoint("TOPRIGHT", -24.5, -28);
-end
-
-function PlayerFrame_UpdateHealthBarTextAnchors()
-	PlayerFrameHealthBarText:SetPoint("CENTER", 0, 0);
-	PlayerFrameHealthBarTextLeft:SetPoint("LEFT", 2, 0);
-	PlayerFrameHealthBarTextRight:SetPoint("RIGHT", -2, 0);
-end
-
-function PlayerFrame_UpdateManaBarTextAnchors()
-	PlayerFrameManaBarText:SetPoint("CENTER", 0, 0);
-	PlayerFrameManaBarTextLeft:SetPoint("LEFT", 2, 0);
-	PlayerFrameManaBarTextRight:SetPoint("RIGHT", -2, 0);
 end
 
 --
@@ -277,7 +258,6 @@ function PlayerFrame_UpdateLevel()
 		else
 			PlayerLevelText:SetVertexColor(1.0, 0.82, 0.0, 1.0);
 		end
-		PlayerFrame_UpdateLevelTextAnchor();
 		PlayerLevelText:SetText(effectiveLevel);
 	end
 end
@@ -397,13 +377,13 @@ function PlayerFrame_UpdateRolesAssigned()
 end
 
 function PlayerFrame_UpdateArt(self)
-	if (self.inSeat) then
-		if (UnitHasVehiclePlayerFrameUI("player")) then
-			PlayerFrame_ToVehicleArt(self);
-		else
-			PlayerFrame_ToPlayerArt(self);
-		end
-	elseif (self.updatePetFrame) then
+	if (UnitHasVehiclePlayerFrameUI("player")) then
+		PlayerFrame_ToVehicleArt(self);
+	else
+		PlayerFrame_ToPlayerArt(self);
+	end
+
+	if (self.updatePetFrame) then
 		-- leaving a vehicle that didn't change player art
 		self.updatePetFrame = false;
 		PetFrame:Update();
@@ -544,13 +524,11 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrameHealthBar:SetWidth(118);
 	PlayerFrameHealthBar:SetHeight(20);
 	PlayerFrameHealthBar:SetPoint("TOPLEFT", 91, -40);
-	PlayerFrame_UpdateHealthBarTextAnchors();
 
 	-- Update mana bar
 	PlayerFrameManaBar:SetWidth(118);
 	PlayerFrameManaBar:SetHeight(10);
 	PlayerFrameManaBar:SetPoint("TOPLEFT",91,-61);
-	PlayerFrame_UpdateManaBarTextAnchors();
 
 	local manaBarMask = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarMask;
 	manaBarMask:SetWidth(121);
@@ -609,13 +587,11 @@ function PlayerFrame_ToPlayerArt(self)
 	PlayerFrameHealthBar:SetHeight(20);
 	PlayerFrameHealthBar:SetWidth(124);
 	PlayerFrameHealthBar:SetPoint("TOPLEFT", 85, -40);
-	PlayerFrame_UpdateHealthBarTextAnchors();
 
 	-- Update mana bar
 	PlayerFrameManaBar:SetHeight(10);
 	PlayerFrameManaBar:SetWidth(124);
 	PlayerFrameManaBar:SetPoint("TOPLEFT", 85, -61);
-	PlayerFrame_UpdateManaBarTextAnchors();
 
 	local manaBarMask = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarMask;
 	manaBarMask:SetWidth(128);
@@ -775,10 +751,10 @@ end
 
 local function AnchorCastBarToPlayerFrame()
 	PlayerCastingBarFrame:ClearAllPoints()
-	if(PlayerFrameBottomManagedFramesContainer:IsShown()) then
+	if(PlayerFrameBottomManagedFramesContainer:IsShown() and PlayerFrameBottomManagedFramesContainer:GetHeight() > 0) then
 		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrameBottomManagedFramesContainer, "BOTTOM", -10, -5);
 	else
-		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", -10, -5);
+		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 20, 10);
 	end
 end
 
@@ -814,4 +790,11 @@ function PlayerFrame_AdjustAttachments()
 	if (PlayerCastingBarFrame.attachedToPlayerFrame) then
 		AnchorCastBarToPlayerFrame();
 	end
+end
+
+PlayerFrameBottomManagedFramesContainerMixin = {};
+
+function PlayerFrameBottomManagedFramesContainerMixin:Layout()
+	LayoutMixin.Layout(self);
+	PlayerFrame_AdjustAttachments();
 end

@@ -131,6 +131,7 @@ function CovenantRenownMixin:SetUpCovenantData()
 		-- the track
 		local renownLevelsInfo = C_CovenantSanctumUI.GetRenownLevels(covenantID);
 		for i, levelInfo in ipairs(renownLevelsInfo) do
+			levelInfo.textureKit = textureKit;
 			levelInfo.rewardInfo = C_CovenantSanctumUI.GetRenownRewardsForLevel(g_covenantID, i);
 		end
 		self.TrackFrame:Init(renownLevelsInfo);

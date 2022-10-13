@@ -795,6 +795,24 @@ local TooltipInfo =
 			},
 		},
 		{
+			Name = "GetRecipeResultItemForOrder",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
+				{ Name = "orderID", Type = "number", Nilable = true },
+				{ Name = "recipeLevel", Type = "number", Nilable = true },
+				{ Name = "overrideQualityID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "TooltipData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRuneforgeResultItem",
 			Type = "Function",
 
@@ -1013,6 +1031,20 @@ local TooltipInfo =
 			{
 				{ Name = "entryID", Type = "number", Nilable = false },
 				{ Name = "rank", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "TooltipData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTransmogrifyItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =

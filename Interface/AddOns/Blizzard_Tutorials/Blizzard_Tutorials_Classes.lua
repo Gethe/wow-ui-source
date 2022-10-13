@@ -6,15 +6,15 @@ function Class_ChangeSpec:OnInitialize()
 end
 
 function Class_ChangeSpec:OnAdded(args)
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC_CHANGES) and IsPlayerInitialSpec() then
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC_CHANGES) and not IsPlayerInitialSpec() then
+		TutorialManager:RemoveTutorial(self:Name());
+	else
 		if C_SpecializationInfo.CanPlayerUseTalentSpecUI() and IsPlayerInitialSpec() then
 			TutorialManager:Queue(self:Name());
 		else
 			Dispatcher:RegisterEvent("PLAYER_TALENT_UPDATE", self);
 			Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
 		end
-	else
-		TutorialManager:RemoveTutorial(self:Name());
 	end
 end
 
@@ -71,13 +71,16 @@ function Class_ChangeSpec:EvaluateTalentFrame()
 end
 
 function Class_ChangeSpec:EnableHelp(helpEnabled)
-	ClassTalentFrame.SpecTab:ShowTutorialHelp(helpEnabled);
+	if ClassTalentFrame then
+		ClassTalentFrame.SpecTab:ShowTutorialHelp(helpEnabled);
+	end
 end
 
 function Class_ChangeSpec:PLAYER_SPECIALIZATION_CHANGED()
 	if IsPlayerInitialSpec() then
 		return;
 	end
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC_CHANGES, true);
 	Dispatcher:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED", self);
 	EventRegistry:UnregisterCallback("TalentFrame.OpenFrame", self);
 	EventRegistry:UnregisterCallback("TalentFrame.CloseFrame", self);
@@ -92,8 +95,7 @@ end
 function Class_ChangeSpec:OnComplete()
 	self:EnableHelp(false);
 	ActionButton_HideOverlayGlow(TalentMicroButton);
-	self:HidePointerTutorials();	
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC_CHANGES, true);
+	self:HidePointerTutorials();
 	TutorialManager:RemoveTutorial(self:Name());
 end
 
@@ -131,7 +133,7 @@ function Class_ChangeSpec_NPE:OnBegin()
 	EventRegistry:RegisterCallback("TalentFrame.OpenFrame", self.EvaluateTalentFrame, self);
 	EventRegistry:RegisterCallback("TalentFrame.CloseFrame", self.EvaluateTalentFrame, self);
 	EventRegistry:RegisterCallback("TalentFrame.SpecTab.ActivateSpec", self.EnableHelp, self);
-	questObjectives = C_QuestLog.GetQuestObjectives(self.specQuestID);
+	local questObjectives = C_QuestLog.GetQuestObjectives(self.specQuestID);
 	local spokeToTrainer = questObjectives[1].finished;
 	if spokeToTrainer then
 		local newSpecActivated = questObjectives[2].finished;
@@ -249,7 +251,7 @@ function Class_TalentPoints:EvaluateTalentFrame()
 		if ClassTalentFrame.SpecTab:IsShown() then
 			EventRegistry:RegisterCallback("TalentFrame.TalentTab.Show", self.TalentFrameTalentsTabShow, self);
 			local talentsTab = ClassTalentFrame:GetTalentsTabButton();
-			self:ShowPointerTutorial(NPEV2_SELECT_TALENTS_TAB, "DOWN", talentsTab, 0, 10, nil, "DOWN");
+			self:ShowPointerTutorial(NPEV2_SELECT_TALENTS_TAB, "DOWN", talentsTab, 0, -10, nil, "DOWN");
 		else
 			EventRegistry:RegisterCallback("TalentFrame.SpecTab.Show", self.TalentFrameSpecTabShow, self);
 		end
@@ -257,7 +259,7 @@ function Class_TalentPoints:EvaluateTalentFrame()
 		if C_ClassTalents.HasUnspentTalentPoints() then
 			self:ShowTalentButtonPointer();
 		else
-			self.TalentTutorialFinished();
+			self:TalentTutorialFinished();
 		end
 	end
 end
@@ -287,6 +289,10 @@ function Class_TalentPoints:TalentTutorialFinished()
 	end
 end
 
+function Class_TalentPoints:OnInterrupt(interruptedBy)
+	TutorialManager:Finished(self:Name());
+end
+
 function Class_TalentPoints:OnComplete()
 	self:HidePointerTutorials();
 	ActionButton_HideOverlayGlow(TalentMicroButton);
@@ -305,15 +311,13 @@ end
 Class_StarterTalentWatcher = class("StarterTalentWatcher", Class_TutorialBase);
 	local helpTipInfo = {
 		text = NPEV2_TALENTS_STARTER_BUILD,
-		buttonStyle = HelpTip.ButtonStyle.Close,
 		cvarBitfield = "closedInfoFrames",
 		bitfieldFlag = LE_FRAME_TUTORIAL_TALENT_STARTER_HELP,
 		buttonStyle = HelpTip.ButtonStyle.GotIt,
 		targetPoint = HelpTip.Point.TopEdgeCenter,
-		offsetX = 0,
 		alignment = HelpTip.Alignment.Center,
 		acknowledgeOnHide = false,
-		onAcknowledgeCallback = function() SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP, true); end,
+		handlesGlobalMouseEventCallback = function() return true; end,
 	};
 function Class_StarterTalentWatcher:OnInitialize()
 end
@@ -341,10 +345,9 @@ function Class_StarterTalentWatcher:EvaluateTalentFrame()
 end
 
 function Class_StarterTalentWatcher:ShowStarterTalentsHelp(pointerTarget)
+	HelpTip:Hide(ClassTalentFrame.TalentsTab.LoadoutDropDown, NPEV2_TALENTS_STARTER_BUILD);
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
 		EventRegistry:RegisterCallback("UIDropDownMenu.Show", self.TalentFrameDropDownShow, self);
-
-		HelpTip:Hide(ClassTalentFrame.TalentsTab.LoadoutDropDown, NPEV2_TALENTS_STARTER_BUILD);
 		HelpTip:Show(ClassTalentFrame.TalentsTab.LoadoutDropDown, helpTipInfo, pointerTarget);
 	end
 end
@@ -376,6 +379,13 @@ function Class_StarterTalentWatcher:DelayedEvaluateTalentFrame()
 	end);
 end
 
+function Class_StarterTalentWatcher:StarterBuildSelected(starterBuildSelected)
+	if starterBuildSelected then
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP, true);
+		self:TalentFrameClosed();
+	end
+end
+
 function Class_StarterTalentWatcher:TalentFrameClosed()
 	self:HideStarterTalentsHelp();
 	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
@@ -388,15 +398,14 @@ function Class_StarterTalentWatcher:StartWatching()
 	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
 		TutorialManager:StopWatcher(self:Name(), true);
 	else
-		EventRegistry:RegisterCallback("TalentFrame.OpenFrame", self.DelayedEvaluateTalentFrame, self);
 		EventRegistry:RegisterCallback("TalentFrame.CloseFrame", self.TalentFrameClosed, self);
 		EventRegistry:RegisterCallback("TalentFrame.TalentTab.Show", self.DelayedEvaluateTalentFrame, self);
 		EventRegistry:RegisterCallback("TalentFrame.SpecTab.Show", self.DelayedEvaluateTalentFrame, self);
+		EventRegistry:RegisterCallback("TalentFrame.TalentTab.StarterBuild", self.StarterBuildSelected, self);
 	end
 end
 
 function Class_StarterTalentWatcher:StopWatching()	
-	EventRegistry:UnregisterCallback("TalentFrame.OpenFrame", self);
 	EventRegistry:UnregisterCallback("TalentFrame.CloseFrame", self);
 	EventRegistry:UnregisterCallback("TalentFrame.TalentTab.Show", self);
 	EventRegistry:UnregisterCallback("TalentFrame.SpecTab.Show", self);
@@ -416,11 +425,10 @@ end
 Class_StarterTalentWatcher_NPE = class("StarterTalentWatcher_NPE", Class_StarterTalentWatcher);
 function Class_StarterTalentWatcher_NPE:ShowStarterTalentsHelp(pointerTarget)
 	HelpTip:SetHelpTipsEnabled("NPEv2", true);
+	HelpTip:Hide(ClassTalentFrame.TalentsTab.LoadoutDropDown, NPEV2_TALENTS_STARTER_BUILD);
 
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
 		EventRegistry:RegisterCallback("UIDropDownMenu.Show", self.TalentFrameDropDownShow, self);
-
-		HelpTip:Hide(ClassTalentFrame.TalentsTab.LoadoutDropDown, NPEV2_TALENTS_STARTER_BUILD);
 		HelpTip:Show(ClassTalentFrame.TalentsTab.LoadoutDropDown, helpTipInfo, pointerTarget);
 	end
 end

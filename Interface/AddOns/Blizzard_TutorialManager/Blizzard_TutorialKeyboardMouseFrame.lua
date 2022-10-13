@@ -51,6 +51,7 @@ function TutorialKeyboardMouseFrameMixin:UpdateScale()
 end
 
 function TutorialKeyboardMouseFrameMixin:_AnimateIn()
+	self:Show();
 	if (self:GetAlpha() < 1) then
 		self.DesiredAlpha = 1;
 		self:_HookUpdate();

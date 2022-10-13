@@ -162,6 +162,7 @@ function ProfessionsSpecFrameMixin:OnShow()
 
 	C_Traits.StageConfig(self:GetConfigID());
 
+	self:SetTitle();
 	self:UpdateTabs();
 	self:UpdateSelectedTabState();
 	self:UpdateTreeCurrencyInfo();
@@ -573,6 +574,10 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 end
 
 function ProfessionsSpecFrameMixin:Refresh(professionInfo)
+	if self:IsVisible() then
+		self:SetTitle();
+	end
+
 	local configID = C_ProfSpecs.GetConfigIDForSkillLine(professionInfo.professionID);
 	if not Professions.InLocalCraftingMode() 
 	   or not C_ProfSpecs.SkillLineHasSpecialization(professionInfo.professionID)
@@ -818,6 +823,16 @@ end
 function ProfessionsSpecFrameMixin:PlayCompleteDialAnimation()
 	self.DetailedView.Path.CompleteDialAnimation:Restart();
 	PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_FINISHED);
+end
+
+function ProfessionsSpecFrameMixin:SetTitle()
+	local professionFrame = self:GetParent();
+	local professionInfo = professionFrame.professionInfo;
+	if not professionInfo then
+		return;
+	end
+
+	professionFrame:SetTitle(PROFESSIONS_SPECIALIZATIONS_PAGE_NAME:format(professionInfo.professionName or professionInfo.parentProfessionName));
 end
 
 

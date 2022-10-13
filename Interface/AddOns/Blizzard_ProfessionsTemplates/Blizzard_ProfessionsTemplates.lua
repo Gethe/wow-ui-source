@@ -11,7 +11,14 @@ ProfessionsTableConstants.Name =
 };
 ProfessionsTableConstants.Tip = 
 {
-	Width = 50,
+	Width = 130,
+	Padding = ProfessionsTableConstants.StandardPadding,
+	LeftCellPadding = ProfessionsTableConstants.NoPadding,
+	RightCellPadding = ProfessionsTableConstants.NoPadding,
+};
+ProfessionsTableConstants.NumAvailable = 
+{
+	Width = 100,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,
@@ -25,21 +32,21 @@ ProfessionsTableConstants.Quality =
 };
 ProfessionsTableConstants.Reagents = 
 {
-	Width = 125,
+	Width = 100,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,
 };
 ProfessionsTableConstants.Expiration = 
 {
-	Width = 80,
+	Width = 60,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,
 };
 ProfessionsTableConstants.ItemName = 
 {
-	Width = 300,
+	Width = 349,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,
@@ -72,8 +79,20 @@ ProfessionsTableConstants.Skill =
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,
 };
-
-ProfessionsSortOrder = EnumUtil.MakeEnum("Name", "Tip", "Reagents", "Quality", "Expiration", "ItemName", "Ilvl", "Slots", "Level", "Skill");
+ProfessionsTableConstants.Status = 
+{
+	Width = 200,
+	Padding = ProfessionsTableConstants.StandardPadding,
+	LeftCellPadding = ProfessionsTableConstants.NoPadding,
+	RightCellPadding = ProfessionsTableConstants.NoPadding,
+};
+ProfessionsTableConstants.CustomerName = 
+{
+	Width = 130,
+	Padding = ProfessionsTableConstants.StandardPadding,
+	LeftCellPadding = ProfessionsTableConstants.NoPadding,
+	RightCellPadding = ProfessionsTableConstants.NoPadding,
+};
 
 local function GetHeaderNameFromSortOrder(sortOrder)
 	if sortOrder == ProfessionsSortOrder.Name then
@@ -85,7 +104,7 @@ local function GetHeaderNameFromSortOrder(sortOrder)
 	elseif sortOrder == ProfessionsSortOrder.Reagents then
 		return PROFESSIONS_COLUMN_HEADER_REAGENTS;
 	elseif sortOrder == ProfessionsSortOrder.Expiration then
-		return PROFESSIONS_COLUMN_HEADER_EXPIRATION;
+		return CreateAtlasMarkup("auctionhouse-icon-clock", 16, 16, 2, -2);
 	elseif sortOrder == ProfessionsSortOrder.ItemName then
 		return AUCTION_HOUSE_BROWSE_HEADER_NAME;
 	elseif sortOrder == ProfessionsSortOrder.Ilvl then
@@ -96,6 +115,16 @@ local function GetHeaderNameFromSortOrder(sortOrder)
 		return AUCTION_HOUSE_BROWSE_HEADER_REQUIRED_LEVEL;
 	elseif sortOrder == ProfessionsSortOrder.Skill then
 		return AUCTION_HOUSE_BROWSE_HEADER_RECIPE_SKILL;
+	elseif sortOrder == ProfessionsSortOrder.Status then
+		return CRAFTING_ORDERS_BROWSE_HEADER_STATUS;
+	elseif sortOrder == ProfessionsSortOrder.AverageTip then
+		return CRAFTING_ORDERS_BROWSE_HEADER_AVG_TIP;
+	elseif sortOrder == ProfessionsSortOrder.MaxTip then
+		return CRAFTING_ORDERS_BROWSE_HEADER_MAX_TIP;
+	elseif sortOrder == ProfessionsSortOrder.NumAvailable then
+		return CRAFTING_ORDERS_BROWSE_HEADER_AVAILABLE;
+	elseif sortOrder == ProfessionsSortOrder.CustomerName then
+		return CRAFTING_ORDERS_BROWSE_HEADER_CUSTOMER_NAME;
 	end
 end
 
@@ -112,6 +141,10 @@ end
 ProfessionsCrafterTableHeaderStringMixin = CreateFromMixins(TableBuilderElementMixin);
 
 function ProfessionsCrafterTableHeaderStringMixin:OnClick()
+	if not self.sortOrder then
+		return;
+	end
+	
 	self.owner:SetSortOrder(self.sortOrder);
 	self:UpdateArrow();
 end
@@ -222,58 +255,251 @@ end
 ProfessionsCrafterTableCellReagentsMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCrafterTableCellReagentsMixin:Populate(rowData, dataIndex)
-	local order = rowData;
-	local text = Professions.GetOrderReagentsSummaryText(order);
+	local order = rowData.option;
+	local text;
+	if order.reagentState == Enum.CraftingOrderReagentsType.All then
+		text = PROFESSIONS_COLUMN_REAGENTS_ALL;
+	elseif order.reagentState == Enum.CraftingOrderReagentsType.Some then
+		text = PROFESSIONS_COLUMN_REAGENTS_PARTIAL;
+	elseif order.reagentState == Enum.CraftingOrderReagentsType.None then
+		text = PROFESSIONS_COLUMN_REAGENTS_NONE;
+	end
 	ProfessionsTableCellTextMixin.SetText(self, text);
+end
+
+local function ReagentIconFrameReset(pool, frame)
+	frame:Reset();
+	frame:ClearAllPoints();
+	frame:Hide();
+	frame:SetParent(nil);
+end
+local reagentIconFramePool = CreateFramePool("BUTTON", nil, "ProfessionsCrafterTableCellReagentsButtonTemplate", ReagentIconFrameReset);
+
+function ProfessionsCrafterTableCellReagentsMixin:OnEnter()
+	self:GetParent().HighlightTexture:Show();
+
+	local order = self.rowData.option;
+
+	if order.reagentState ~= Enum.CraftingOrderReagentsType.None then
+		local reagents = {};
+		for _, orderReagentInfo in ipairs(order.reagents) do
+			if orderReagentInfo.source == Enum.CraftingOrderReagentSource.Any and orderReagentInfo.isBasicReagent then
+				local itemID = orderReagentInfo.reagent.itemID;
+				local reagentSlot = orderReagentInfo.reagentSlot;
+
+				local _, existingReagent = FindInTableIf(reagents, function(r) return r.reagentSlot == reagentSlot; end);
+				if existingReagent == nil then
+					table.insert(reagents, {reagentSlot = reagentSlot, itemID = itemID, multipleQualities = false});
+				else
+					existingReagent.multipleQualities = true;
+				end
+			end
+		end
+
+		table.sort(reagents, function(l, r) return l.reagentSlot < r.reagentSlot; end);
+
+		for idx, reagent in ipairs(reagents) do
+			local reagentIconFrame = reagentIconFramePool:Acquire();
+			reagentIconFrame:SetItem(reagent.itemID);
+			reagentIconFrame.layoutIndex = idx;
+			reagentIconFrame:SetParent(self.ReagentsContainer);
+
+			if reagent.multipleQualities and reagentIconFrame.ProfessionQualityOverlay and reagentIconFrame.ProfessionQualityOverlay:IsShown() then
+				reagentIconFrame.ProfessionQualityOverlay:SetAtlas("Professions-Icon-Quality-Mixed-Inv", TextureKitConstants.UseAtlasSize);
+			end
+
+			reagentIconFrame:Show();
+		end
+		self.ReagentsContainer:Layout();
+
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_InsertFrame(GameTooltip, self.ReagentsContainer);
+		GameTooltip:Show();
+	end
+end
+
+function ProfessionsCrafterTableCellReagentsMixin:OnLeave()
+	self:GetParent().HighlightTexture:Hide();
+
+	GameTooltip:Hide();
+	reagentIconFramePool:ReleaseAll();
+end
+
+ProfessionsCrafterTableCellCommissionMixin = CreateFromMixins(TableBuilderCellMixin);
+
+function ProfessionsCrafterTableCellCommissionMixin:Populate(rowData, dataIndex)
+	local order = rowData.option;
+	self.TipMoneyDisplayFrame:SetAmount(order[self.tipKey]);
+end
+
+ProfessionsCrafterTableCellItemNameMixin = CreateFromMixins(TableBuilderCellMixin);
+
+function ProfessionsCrafterTableCellItemNameMixin:Populate(rowData, dataIndex)
+	local order = rowData.option;
+	local item = Item:CreateFromItemID(order.itemID);
+	item:ContinueOnItemLoad(function()
+		if item:GetItemID() ~= self.rowData.option.itemID then
+			-- Callback from a previous async request
+			return;
+		end
+		local icon = item:GetItemIcon();
+		self.Icon:SetTexture(icon);
+
+		local qualityColor = item:GetItemQualityColor().color;
+		local itemName = qualityColor:WrapTextInColorCode(item:GetItemName());
+		if order.isRecraft then
+			itemName = PROFESSIONS_RECRAFT_ORDER_NAME_FMT:format(itemName);
+		end
+		if order.minQuality and order.minQuality > 1 then
+			local qualityAtlas = CreateAtlasMarkup(string.format("Professions-ChatIcon-Quality-Tier%d", order.minQuality), 12, 12, 0, 0);
+			itemName = itemName.." "..qualityAtlas;
+		end
+
+		self.Text:SetText(itemName);
+	end);
 end
 
 ProfessionsCrafterTableCellExpirationMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCrafterTableCellExpirationMixin:Populate(rowData, dataIndex)
-	local order = rowData;
-	local text = Professions.GetOrderDurationText(order.duration);
-	ProfessionsTableCellTextMixin.SetText(self, text);
+	local order = rowData.option;
+	local remainingTime = Professions.GetCraftingOrderRemainingTime(order.expirationTime);
+	local seconds = remainingTime >= 60 and remainingTime or 60; -- Never show < 1min
+	self.remainingTime = seconds;
+	local fmt, time = SecondsToTimeAbbrev(seconds);
+	local twoHrsSeconds = 60 * 60 * 2;
+	if seconds <= twoHrsSeconds then
+		fmt = ERROR_COLOR:WrapTextInColorCode(fmt);
+	end
+	ProfessionsTableCellTextMixin.SetText(self, fmt:format(time));
+end
+
+function ProfessionsCrafterTableCellExpirationMixin:OnEnter()
+	self:GetParent().HighlightTexture:Show();
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local noSeconds = true;
+	GameTooltip_AddNormalLine(GameTooltip, AUCTION_HOUSE_TOOLTIP_DURATION_FORMAT:format(SecondsToTime(self.remainingTime, noSeconds)));
+	local twoHrsSeconds = 60 * 60 * 2;
+	if self.remainingTime <= twoHrsSeconds and self.rowData.option.orderType == Enum.CraftingOrderType.Public then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_ORDER_ABOUT_TO_EXPIRE);
+	end
+	GameTooltip:Show();
+end
+
+function ProfessionsCrafterTableCellExpirationMixin:OnLeave()
+	self:GetParent().HighlightTexture:Hide();
+
+	GameTooltip:Hide();
+end
+
+ProfessionsCrafterTableCellNumAvailableMixin = CreateFromMixins(TableBuilderCellMixin);
+
+function ProfessionsCrafterTableCellNumAvailableMixin:Populate(rowData, dataIndex)
+	local order = rowData.option;
+	ProfessionsTableCellTextMixin.SetText(self, order.numAvailable);
+end
+
+ProfessionsCrafterTableCellCustomerNameMixin = CreateFromMixins(TableBuilderCellMixin);
+
+function ProfessionsCrafterTableCellCustomerNameMixin:Populate(rowData, dataIndex)
+	local order = rowData.option;
+	ProfessionsTableCellTextMixin.SetText(self, order.customerName);
 end
 
 ProfessionsCustomerTableCellItemNameMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCustomerTableCellItemNameMixin:Populate(rowData, dataIndex)
-	local option = rowData.option;
-	local item = Item:CreateFromItemID(option.itemID);
+	local order = rowData.option;
+	local item = Item:CreateFromItemID(order.itemID);
 	item:ContinueOnItemLoad(function()
 		local icon = item:GetItemIcon();
 		self.Icon:SetTexture(icon);
 
 		local qualityColor = item:GetItemQualityColor().color;
-		local name = qualityColor:WrapTextInColorCode(option.itemName);
-		self.Text:SetText(name);
+		local itemName = qualityColor:WrapTextInColorCode(item:GetItemName());
+		if order.isRecraft then
+			itemName = PROFESSIONS_RECRAFT_ORDER_NAME_FMT:format(itemName);
+		end
+		if order.minQuality and order.minQuality > 1 then
+			local qualityAtlas = CreateAtlasMarkup(string.format("Professions-ChatIcon-Quality-Tier%d", order.minQuality), 12, 12, 0, 0);
+			itemName = itemName.." "..qualityAtlas;
+		end
+
+		self.Text:SetText(itemName);
 	end);
 end
 
 ProfessionsCustomerTableCellIlvlMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCustomerTableCellIlvlMixin:Populate(rowData, dataIndex)
-	local option = rowData.option;
-	ProfessionsTableCellTextMixin.SetText(self, option.iLvl);
+	local order = rowData.option;
+	ProfessionsTableCellTextMixin.SetText(self, order.iLvl);
 end
 
 ProfessionsCustomerTableCellSlotsMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCustomerTableCellSlotsMixin:Populate(rowData, dataIndex)
-	local option = rowData.option;
-	ProfessionsTableCellTextMixin.SetText(self, option.slots);
+	local order = rowData.option;
+	ProfessionsTableCellTextMixin.SetText(self, order.slots);
 end
 
 ProfessionsCustomerTableCellLevelMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCustomerTableCellLevelMixin:Populate(rowData, dataIndex)
-	local option = rowData.option;
-	ProfessionsTableCellTextMixin.SetText(self, option.level);
+	local order = rowData.option;
+	ProfessionsTableCellTextMixin.SetText(self, order.level);
 end
 
 ProfessionsCustomerTableCellSkillMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCustomerTableCellSkillMixin:Populate(rowData, dataIndex)
-	local option = rowData.option;
-	ProfessionsTableCellTextMixin.SetText(self, option.skill);
+	local order = rowData.option;
+	ProfessionsTableCellTextMixin.SetText(self, order.skill);
+end
+
+ProfessionsCustomerTableCellStatusMixin = CreateFromMixins(TableBuilderCellMixin);
+
+function ProfessionsCustomerTableCellStatusMixin:Populate(rowData, dataIndex)
+	local order = rowData.option;
+
+	local statusText;
+	if order.orderState == Enum.CraftingOrderState.Creating or order.orderState == Enum.CraftingOrderState.Created then
+		statusText = PROFESSIONS_CRAFTING_ORDER_LISTED;
+	else
+		statusText = PROFESSIONS_CRAFTING_ORDER_IN_PROGRESS;
+	end
+
+	ProfessionsTableCellTextMixin.SetText(self, statusText);
+end
+
+ProfessionsCustomerTableCellExpirationMixin = CreateFromMixins(TableBuilderCellMixin);
+
+function ProfessionsCustomerTableCellExpirationMixin:Populate(rowData, dataIndex)
+	local order = rowData.option;
+	local remainingTime = Professions.GetCraftingOrderRemainingTime(order.expirationTime);
+	local seconds = remainingTime >= 60 and remainingTime or 60; -- Never show < 1min
+	self.remainingTime = seconds;
+	local fmt, time = SecondsToTimeAbbrev(seconds);
+	local twoHrsSeconds = 60 * 60 * 2;
+	if seconds <= twoHrsSeconds then
+		fmt = ERROR_COLOR:WrapTextInColorCode(fmt);
+	end
+	ProfessionsTableCellTextMixin.SetText(self, fmt:format(time));
+end
+
+function ProfessionsCustomerTableCellExpirationMixin:OnEnter()
+	self:GetParent().HighlightTexture:Show();
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local noSeconds = true;
+	GameTooltip_AddNormalLine(GameTooltip, AUCTION_HOUSE_TOOLTIP_DURATION_FORMAT:format(SecondsToTime(self.remainingTime, noSeconds)));
+	GameTooltip:Show();
+end
+
+function ProfessionsCustomerTableCellExpirationMixin:OnLeave()
+	self:GetParent().HighlightTexture:Hide();
+
+	GameTooltip:Hide();
 end

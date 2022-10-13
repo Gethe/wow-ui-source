@@ -91,9 +91,7 @@ end
 function ClassTalentTalentsTabMixin:OnUpdate()
 	TalentFrameBaseMixin.OnUpdate(self);
 
-	if self.searchString then
-		self:UpdateFullSearchResults();
-	end
+	self:UpdateFullSearchResults();
 
 	self:UpdateConfigButtonsState();
 
@@ -119,6 +117,8 @@ function ClassTalentTalentsTabMixin:OnShow()
 
 	self:UpdateConfigButtonsState();
 
+	self:UpdateStarterBuildHighlights();
+
 	self:SetBackgroundAnimationsPlaying(true);
 end
 
@@ -131,12 +131,11 @@ end
 function ClassTalentTalentsTabMixin:UpdateClassVisuals()
 	local classVisuals = ClassTalentUtil.GetVisualsForClassID(self:GetClassID());
 
-	if self.ActivationClassFx then
+	if self.classActivationTextures then
 		if classVisuals and classVisuals.activationFX and C_Texture.GetAtlasInfo(classVisuals.activationFX) then
-			self.ActivationClassFx:SetAtlas(classVisuals.activationFX, TextureKitConstants.UseAtlasSize);
-			self.ActivationClassFx2:SetAtlas(classVisuals.activationFX, TextureKitConstants.UseAtlasSize);	
-			self.ActivationClassFx3:SetAtlas(classVisuals.activationFX, TextureKitConstants.UseAtlasSize);
-			self.ActivationClassFx4:SetAtlas(classVisuals.activationFX, TextureKitConstants.UseAtlasSize);					
+			for i, fxTexture in ipairs(self.classActivationTextures) do
+				fxTexture:SetAtlas(classVisuals.activationFX, TextureKitConstants.UseAtlasSize);
+			end
 		end
 	end
 
@@ -223,12 +222,15 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 			self:RefreshLoadoutOptions();
 
 			local configID = configInfo.ID;
-			if C_ClassTalents.IsConfigReady(configID) then
-				local autoApply = true;
-				self:SetSelectedSavedConfigID(configID, autoApply);
-			else
-				-- We'll get an update when the config is ready later.
+
+			if self.nextNewConfigRequiresPopulatedCheck and not C_ClassTalents.IsConfigPopulated(configID) then
+				-- We'll get an update when the config is ready to load later
+				self.nextNewConfigRequiresPopulatedCheck = false;
 				self.autoLoadNewConfigID = configID;
+			else
+				-- Check either passed or not required, process the new config
+				self.nextNewConfigRequiresPopulatedCheck = false;
+				self:OnTraitConfigCreateFinished(configID);
 			end
 		end
 	elseif event == "TRAIT_CONFIG_LIST_UPDATED" then
@@ -305,9 +307,7 @@ function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 		local skipButtonUpdates = true;
 		self:UpdateTreeCurrencyInfo(skipButtonUpdates);
 	elseif configID == self.autoLoadNewConfigID then
-		local autoApply = true;
-		self:SetSelectedSavedConfigID(self.autoLoadNewConfigID, autoApply);
-		self.autoLoadNewConfigID = nil;
+		self:OnTraitConfigCreateFinished(self.autoLoadNewConfigID);
 	end
 
 	-- There are expected cases for TRAIT_CONFIG_UPDATED being fired that we don't need to react to
@@ -318,14 +318,32 @@ function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 end
 
 function ClassTalentTalentsTabMixin:OnTraitConfigDeleted(configID)
-	if not configID or self.lastSelectedConfigID ~= configID then
-		-- Deleted Loadout is not the current one, just refresh options
-		self:RefreshLoadoutOptions();
-		return;
-	end
+	self:RefreshLoadoutOptions();
 
-	-- Handle deletion of the loadout we're currently on by falling back to the default base spec loadout
-	self:ClearLastSelectedConfigID();
+	if configID and self.lastSelectedConfigID == configID then
+		-- Handle deletion of the loadout we're currently on by falling back to the default base spec loadout
+		self:ClearLastSelectedConfigID();
+	end
+end
+
+function ClassTalentTalentsTabMixin:OnTraitConfigCreateStarted(newConfigHasPurchasedRanks)
+	-- Only configs with purchased ranks require a populated check to ensure their ranks have been applied
+	self.nextNewConfigRequiresPopulatedCheck = newConfigHasPurchasedRanks;
+	local active = true;
+	local skipSpinnerDelay = true;
+	self:SetCommitVisualsActive(active, skipSpinnerDelay);
+end
+
+function ClassTalentTalentsTabMixin:OnTraitConfigCreateFinished(configID)
+	self:SetCommitVisualsActive(false);
+
+	local autoApply = true;
+	self:SetSelectedSavedConfigID(configID, autoApply);
+	self.autoLoadNewConfigID = nil;
+	-- Only do completion visuals if SetSelectedSavedConfigID's load did not put us into an in-progress commit
+	if not self:IsCommitInProgress() then
+		self:SetCommitCompleteVisualsActive(true);
+	end
 end
 
 function ClassTalentTalentsTabMixin:ResetToLastConfigID()
@@ -357,7 +375,14 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 	self:RefreshConfigID();
 
 	local function NewEntryCallback(entryName)
-		C_ClassTalents.RequestNewConfig(entryName);
+		-- The new config will have all the state of the current config
+		-- So if we have ranks now, the new one will have ranks too
+		local newConfigHasPurchasedRanks = self:HasAnyPurchasedRanks();
+		local success = C_ClassTalents.RequestNewConfig(entryName);
+
+		if success then
+			self:OnTraitConfigCreateStarted(newConfigHasPurchasedRanks);
+		end
 
 		-- Don't select the new config until the server responds.
 		return nil;
@@ -824,15 +849,18 @@ function ClassTalentTalentsTabMixin:UpdateConfigButtonsState()
 	local canChangeTalents, canAdd, canChangeError = self:CanChangeTalents();
 
 	local hasAnyChanges = self:HasAnyConfigChanges();
-	self.ApplyButton:SetEnabled((self.isConfigReadyToApply or hasAnyChanges) and (canChangeTalents or canAdd));
 
-	if ((self.isConfigReadyToApply or hasAnyChanges) and not canChangeTalents and canChangeError) then
+	local isAnythingPending = self.isConfigReadyToApply or hasAnyChanges;
+
+	self.ApplyButton:SetEnabled(isAnythingPending and (canChangeTalents or canAdd));
+
+	if (isAnythingPending and not canChangeTalents and canChangeError) then
 		self.ApplyButton:SetDisabledTooltip(canChangeError);
 	else
 		self.ApplyButton:SetDisabledTooltip(nil);
 	end
 
-	if hasAnyChanges or self.isConfigReadyToApply then
+	if isAnythingPending then
 		if self.ApplyButton:IsEnabled() then
 			GlowEmitterFactory:Show(self.ApplyButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
 			self.ApplyButton.YellowGlow:Hide();
@@ -850,6 +878,22 @@ function ClassTalentTalentsTabMixin:UpdateConfigButtonsState()
 	self.ResetButton:SetShown(not shouldShowUndo);
 	self.ResetButton:SetEnabledState(self:HasValidConfig() and self:HasAnyPurchasedRanks() and not self:IsCommitInProgress());
 	self.LoadoutDropDown:SetEnabledState(not self:IsCommitInProgress());
+
+	self:UpdatePendingChangeState(isAnythingPending);
+end
+
+function ClassTalentTalentsTabMixin:HasAnyPendingChanges()
+	return self.isAnythingPending;
+end
+
+function ClassTalentTalentsTabMixin:UpdatePendingChangeState(isAnythingPending)
+	local wasAnythingPending = self.isAnythingPending;
+	self.isAnythingPending = isAnythingPending;
+
+	if wasAnythingPending ~= isAnythingPending then
+		self:UpdateTalentActionBarStatuses();
+		self:UpdateEnabledSearchTypes();
+	end
 end
 
 function ClassTalentTalentsTabMixin:HasAnyPurchasedRanks()
@@ -925,7 +969,7 @@ function ClassTalentTalentsTabMixin:UpdateInspecting()
 
 	self:RefreshCurrencyDisplay();
 
-	ClassTalentTalentsSearchMixin.UpdateInspecting(self);
+	self:UpdateEnabledSearchTypes();
 end
 
 function ClassTalentTalentsTabMixin:IsInspecting()
@@ -1065,6 +1109,7 @@ function ClassTalentTalentsTabMixin:GetIsStarterBuildActive()
 end
 
 function ClassTalentTalentsTabMixin:SetStarterBuildActive(isActive)
+	EventRegistry:TriggerEvent("TalentFrame.TalentTab.StarterBuild", isActive);
 	return C_ClassTalents.SetStarterBuildActive(isActive);
 end
 

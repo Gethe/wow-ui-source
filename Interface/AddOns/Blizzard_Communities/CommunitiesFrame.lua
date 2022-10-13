@@ -561,6 +561,9 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 };
 
 function CommunitiesFrameMixin:HasCommunityFinderPermissions(clubId, clubInfo)
+	if(not clubId) then 
+		return false;
+	end 
 	local privileges = C_Club.GetClubPrivileges(clubId);
 	local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
 

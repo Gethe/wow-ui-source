@@ -304,6 +304,9 @@
 
 	<Frame name="EssencePlayerFrame" inherits="EssencePlayerFrameTemplate">
 		<Size x="126" y="24"/>
+		<KeyValues>
+			<KeyValue key="topPadding" value="5" type="number"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOP" relativePoint="BOTTOM" x="32" y="30"/>
 		</Anchors>

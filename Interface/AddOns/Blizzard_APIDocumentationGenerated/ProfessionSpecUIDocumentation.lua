@@ -84,7 +84,7 @@ local ProfessionSpecUI =
 
 			Returns =
 			{
-				{ Name = "defaultSpecSkillLine", Type = "number", Nilable = false },
+				{ Name = "defaultSpecSkillLine", Type = "number", Nilable = true },
 			},
 		},
 		{

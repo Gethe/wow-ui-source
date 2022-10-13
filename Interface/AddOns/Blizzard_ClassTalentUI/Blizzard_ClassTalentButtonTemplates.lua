@@ -35,10 +35,11 @@ ClassTalentButtonBaseMixin = {};
 function ClassTalentButtonBaseMixin:OnLoad()
 	self.BorderSheenMask:SetAtlas(self.sheenMaskAtlas, TextureKitConstants.UseAtlasSize);
 	self.SelectableGlow:SetAtlas(self.artSet.glow, TextureKitConstants.IgnoreAtlasSize);
+	self.tooltipBackdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT;
 end
 
 function ClassTalentButtonBaseMixin:UpdateActionBarStatus()
-	self.missingFromActionBar = not self:IsInspecting() and ClassTalentUtil.IsTalentMissingFromActionBars(self:GetNodeInfo(), self:GetSpellID());
+	self.missingFromActionBar = not self:IsInspecting() and not self:FrameHasAnyPendingChanges() and ClassTalentUtil.IsTalentMissingFromActionBars(self:GetNodeInfo(), self:GetSpellID());
 end
 
 function ClassTalentButtonBaseMixin:IsMissingFromActionBar()
@@ -92,6 +93,10 @@ function ClassTalentButtonBaseMixin:OnRelease()
 	TalentDisplayMixin.OnRelease(self);
 end
 
+function ClassTalentButtonBaseMixin:FrameHasAnyPendingChanges()
+	return self:GetTalentFrame():HasAnyPendingChanges();
+end
+
 
 --------------------------------------------------
 -- Spend Mixin (standard select/deselect)
@@ -129,7 +134,7 @@ end
 function ClassTalentButtonSpendMixin:AddTooltipInstructions(tooltip)
 	-- Overrides TalentButtonSpendMixin.
 
-	if self.missingFromActionBar then
+	if self:IsMissingFromActionBar() then
 		GameTooltip:AddLine(TALENT_BUTTON_TOOLTIP_NOT_ON_ACTION_BAR, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b);
 	end
 	TalentButtonSpendMixin.AddTooltipInstructions(self, tooltip);
@@ -274,6 +279,8 @@ function ClassTalentSelectionChoiceMixin:OnLoad()
 
 	TalentButtonArtMixin.OnLoad(self);
 	self.BorderSheenMask:SetAtlas(self.sheenMaskAtlas, TextureKitConstants.UseAtlasSize);
+
+	self.tooltipBackdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT;
 end
 
 function ClassTalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, selectionIndex)
@@ -285,7 +292,7 @@ function ClassTalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectCh
 	local nodeInfo = self:GetNodeInfo();
 	local talentFrame = self:GetTalentFrame();
 
-	self.missingFromActionBar = ClassTalentUtil.IsEntryTalentMissingFromActionBars(entryID, nodeInfo, self:GetSpellID());
+	self.missingFromActionBar = not self:IsInspecting() and not talentFrame:HasAnyPendingChanges() and ClassTalentUtil.IsEntryTalentMissingFromActionBars(entryID, nodeInfo, self:GetSpellID());
 
 	self:SetSearchMatchType(nodeInfo and talentFrame:GetSearchMatchTypeForEntry(nodeInfo.ID, entryID) or nil);
 	self:SetGlowing(talentFrame:IsHighlightedStarterBuildEntry(entryID));

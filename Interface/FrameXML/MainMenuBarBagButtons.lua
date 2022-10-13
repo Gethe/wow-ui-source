@@ -116,6 +116,7 @@ function BaseBagSlotButtonMixin:OnEnterInternal()
 			end
 		else
 			local title = ContainerFrame_IsReagentBag(self:GetBagID()) and EQUIP_CONTAINER_REAGENT or EQUIP_CONTAINER;
+			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 			GameTooltip_SetTitle(GameTooltip, title);
 		end
 

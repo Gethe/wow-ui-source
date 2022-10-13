@@ -515,14 +515,14 @@ function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth
 			width = absoluteSize;
 		end
 
-		textWidth = width - 10;
+		textWidth = width - TAB_SIDES_PADDING - (padding or 0);
 	else
 		if maxWidth and width > maxWidth then
 			width = maxWidth;
-			textWidth = width - 10;
+			textWidth = width - TAB_SIDES_PADDING - (padding or 0);
 		elseif minWidth and width < minWidth then
 			width = minWidth;
-			textWidth = width - 10;
+			textWidth = width - TAB_SIDES_PADDING - (padding or 0);
 		end
 	end
 
@@ -570,7 +570,7 @@ function PanelTemplates_AnchorTabs(frame, numTabs)
 	for i = 2, frame.numTabs do
 		local lastTab = GetTabByIndex(frame, i - 1);
 		local thisTab = GetTabByIndex(frame, i);
-		thisTab:SetPoint("TOPLEFT", lastTab, "TOPRIGHT", 1, 0);
+		thisTab:SetPoint("TOPLEFT", lastTab, "TOPRIGHT", 3, 0);
 	end
 end
 

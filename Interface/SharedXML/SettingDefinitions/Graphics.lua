@@ -379,10 +379,10 @@ function SettingsAdvancedQualitySectionInitializer:GetExtent()
 	return reservedHeight;
 end
 
-function CreateAdvancedQualitySectionInitializer(name, settings, raid)
+function CreateAdvancedQualitySectionInitializer(name, settings, raid, expanded)
 	local initializer = CreateFromMixins(SettingsAdvancedQualitySectionInitializer, SettingsElementHierarchyMixin);
 	initializer:Init("SettingsAdvancedQualitySectionTemplate");
-	initializer.data = {name=name, settings=settings, raid=raid};
+	initializer.data = {name=name, settings=settings, raid=raid, expanded=expanded};
 	initializer:AddSearchTags(SHADOW_QUALITY, LIQUID_DETAIL, PARTICLE_DENSITY, SSAO_LABEL, DEPTH_EFFECTS, COMPUTE_EFFECTS, 
 		OUTLINE_MODE, TEXTURE_DETAIL, SPELL_DENSITY, PROJECTED_TEXTURES, FARCLIP, ENVIRONMENT_DETAIL, GROUND_CLUTTER);
 	return initializer;
@@ -902,7 +902,7 @@ local function Register()
 		graphicsInitializer = Settings.CreateSlider(category, graphicsSetting, options, OPTION_TOOLTIP_GRAPHICS_QUALITY);
 	end
 
-	local advInitializer = CreateAdvancedQualitySectionInitializer(ADVANCED_LABEL, advSettings);
+	local advInitializer = CreateAdvancedQualitySectionInitializer(ADVANCED_LABEL, advSettings, false, true);
 	layout:AddInitializer(advInitializer);
 
 	local raidSetting = Settings.RegisterCVarSetting(category, RaidSettingsEnabledCVar, Settings.VarType.Boolean, RAID_SETTINGS_ENABLED);

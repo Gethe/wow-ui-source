@@ -140,7 +140,7 @@ end
 function PartyMemberAuraMixin:SetDebuff(debuffFrame, aura)
 	debuffFrame.auraInstanceID = aura.auraInstanceID;
 	debuffFrame.isBossBuff = aura.isBossAura and aura.isHelpful;
-	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid;
+	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid or nil;
 
 	if aura.icon then
 		debuffFrame.Icon:SetTexture(aura.icon);
@@ -197,17 +197,24 @@ function PartyMemberFrameMixin:ToPlayerArt()
 	self.PartyMemberOverlay.Status:SetAtlas("ui-hud-unitframe-party-portraiton-status", TextureKitConstants.UseAtlasSize);
 	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
 
-	self.HealthBar:SetWidth(71);
-	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 44, -19);
+	self.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
+	self.HealthBar:SetWidth(70);
+	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
+	self:UpdateHealthBarTextAnchors();
 
-	self.ManaBar:SetWidth(71);
-	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 44, -30);
+	self.ManaBar:SetWidth(74);
+	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 41, -30);
+	self:UpdateManaBarTextAnchors();
 
-	self.Name:SetPoint("TOPLEFT", self, "TOPLEFT", 43, -6);
+	self.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
+	self.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 14, -26);
+
+	self.Name:SetWidth(57);
+	self:UpdateNameTextAnchors();
 
 	UnitFrame_SetUnit(self, self.unit, self.HealthBar, self.ManaBar);
 	UnitFrame_SetUnit(self.PetFrame, self.PetFrame.unit, self.PetFrame.HealthBar, nil);
-	UnitFrame_Update(self, true)
+	UnitFrame_Update(self, true);
 end
 
 function PartyMemberFrameMixin:ToVehicleArt()
@@ -223,17 +230,68 @@ function PartyMemberFrameMixin:ToVehicleArt()
 	self.PartyMemberOverlay.Status:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Status", TextureKitConstants.UseAtlasSize);
 	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", -3, 3);
 
-	self.HealthBar:SetWidth(66);
-	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 49, -18);
+	self.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health", TextureKitConstants.UseAtlasSize);
+	self.HealthBar:SetWidth(67);
+	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 48, -18);
+	self:UpdateHealthBarTextAnchors();
 
-	self.ManaBar:SetWidth(66);
-	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 49, -29);
+	self.ManaBar:SetWidth(70);
+	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -29);
+	self:UpdateManaBarTextAnchors();
 
-	self.Name:SetPoint("TOPLEFT", self, "TOPLEFT", 48, -6);
+	self.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
+	self.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 16, -25);
+
+	self.Name:SetWidth(56);
+	self:UpdateNameTextAnchors();
 
 	UnitFrame_SetUnit(self, self.petUnitToken, self.HealthBar, self.ManaBar);
 	UnitFrame_SetUnit(self.PetFrame, self.overrideUnit, self.PetFrame.HealthBar, nil);
-	UnitFrame_Update(self, true)
+	UnitFrame_Update(self, true);
+end
+
+function PartyMemberFrameMixin:UpdateHealthBarTextAnchors()
+	local healthBarTextOffsetY = 0;
+	if (LOCALE_koKR) then
+		healthBarTextOffsetY = 1;
+	elseif (LOCALE_zhCN) then
+		healthBarTextOffsetY = 2;
+	end
+
+	self.HealthBar.CenterText:SetPoint("CENTER", self.HealthBar, "CENTER", 0, healthBarTextOffsetY);
+	self.HealthBar.LeftText:SetPoint("LEFT", self.HealthBar, "LEFT", 0, healthBarTextOffsetY);
+	self.HealthBar.RightText:SetPoint("RIGHT", self.HealthBar, "RIGHT", 0, healthBarTextOffsetY);
+end
+
+function PartyMemberFrameMixin:UpdateManaBarTextAnchors()
+	local manaBarTextOffsetY = 0;
+	if (LOCALE_koKR) then
+		manaBarTextOffsetY = 1;
+	elseif (LOCALE_zhCN) then
+		manaBarTextOffsetY = 2;
+	end
+
+	self.ManaBar.CenterText:SetPoint("CENTER", self.ManaBar, "CENTER", 2, manaBarTextOffsetY);
+	self.ManaBar.RightText:SetPoint("RIGHT", self.ManaBar, "RIGHT", 0, manaBarTextOffsetY);
+
+	if(self.state == "player") then
+		self.ManaBar.LeftText:SetPoint("LEFT", self.ManaBar, "LEFT", 4, manaBarTextOffsetY);
+	else
+		self.ManaBar.LeftText:SetPoint("LEFT", self.ManaBar, "LEFT", 3, manaBarTextOffsetY);
+	end
+end
+
+function PartyMemberFrameMixin:UpdateNameTextAnchors()
+	local nameTextOffsetY = -6;
+	if (LOCALE_zhCN or LOCALE_zhTW) then
+		nameTextOffsetY = -4;
+	end
+
+	if(self.state == "player") then
+		self.Name:SetPoint("TOPLEFT", self, "TOPLEFT", 46, nameTextOffsetY);
+	else
+		self.Name:SetPoint("TOPLEFT", self, "TOPLEFT", 49, nameTextOffsetY);
+	end
 end
 
 function PartyMemberFrameMixin:Setup()
@@ -242,10 +300,10 @@ function PartyMemberFrameMixin:Setup()
 
 	self.debuffCountdown = 0;
 	self.numDebuffs = 0;
-	
+
 	self.PetFrame:Setup();
 
-	UnitFrame_Initialize(self, self.unitToken, self.Name, nil, self.Portrait,
+	UnitFrame_Initialize(self, self.unitToken, self.Name, self.frameType, self.Portrait,
 		   self.HealthBar, self.HealthBar.CenterText,
 		   self.ManaBar, self.ManaBar.CenterText,
 		   self.Flash, nil, nil, self.HealthBar.MyHealPredictionBar, self.HealthBar.OtherHealPredictionBar,
@@ -260,6 +318,9 @@ function PartyMemberFrameMixin:Setup()
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
+
+	self.ManaBar:GetStatusBarTexture():AddMaskTexture(self.ManaBarMask);
+
 	self:UpdateMember();
 	self:UpdateLeader();
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");

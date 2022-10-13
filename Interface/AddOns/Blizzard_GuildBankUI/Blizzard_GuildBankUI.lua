@@ -721,10 +721,7 @@ end
 
 function GuildBankItemButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
-	if(speciesID and speciesID > 0) then
-		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-	end
+	GameTooltip:SetGuildBankItem(GetCurrentGuildBankTab(), self:GetID());
 end
 
 function GuildBankItemButtonMixin:OnLeave()

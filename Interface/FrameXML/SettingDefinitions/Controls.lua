@@ -111,6 +111,9 @@ local function Register()
 			Settings.VarType.Boolean, ENABLE_INTERACT_TEXT, defaultValue, GetValue, SetValue);
 		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_ENABLE_INTERACT);
 	end
+
+	-- Enable Interact Key Sound
+	Settings.SetupCVarCheckBox(category, "softTargettingInteractKeySound", ENABLE_INTERACT_SOUND_OPTION, ENABLE_INTERACT_SOUND_OPTION_TOOLTIP);
 	
 	-- Interact Key
 	do

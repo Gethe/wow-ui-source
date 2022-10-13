@@ -924,7 +924,9 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseHorizontalGroups()
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingCastBarOnSide()
-	self:SetCastBarPosition(self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.CastBarOnSide));
+	if self.SetCastBarPosition then
+		self:SetCastBarPosition(self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.CastBarOnSide));
+	end
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingShowCastTime()

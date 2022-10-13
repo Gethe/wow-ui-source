@@ -71,6 +71,12 @@ local customTextureKitInfo = {
 	Kyrian = {
 		uniqueCorners = true,
 	},
+
+	Dragonflight = {
+		closeButtonX = -2,
+		closeButtonY = -8,
+		uniqueCorners = true,
+	},
 };
 
 local defaultTextureKitInfo = {
@@ -109,6 +115,8 @@ function PlayerChoiceFrameMixin:TryShow()
 	end
 
 	self.choiceInfo = choiceInfo;
+
+	choiceInfo.uiTextureKit = "Dragonflight";
 
 	if choiceInfo.uiTextureKit then
 		self.uiTextureKit = choiceInfo.uiTextureKit;

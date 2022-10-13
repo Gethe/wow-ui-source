@@ -198,12 +198,15 @@ function ClassTalentImportExportMixin:ImportLoadout(importText, loadoutName)
 	local loadoutContent = self:ReadLoadoutContent(importStream, treeInfo.ID);
 	local loadoutEntryInfo = self:ConvertToImportLoadoutEntryInfo(treeInfo.ID, loadoutContent);
 
+	local newConfigHasPurchasedRanks = #loadoutEntryInfo > 0;
 	local configInfo = C_Traits.GetConfigInfo(configID);
 	local success, errorString = C_ClassTalents.ImportLoadout(configID, loadoutEntryInfo, loadoutName);
 	if(not success) then
 		self:ShowImportError(errorString or LOADOUT_ERROR_IMPORT_FAILED);
 		return false;
 	end
+
+	self:OnTraitConfigCreateStarted(newConfigHasPurchasedRanks);
 
 	return true;
 end

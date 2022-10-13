@@ -35,10 +35,10 @@ function MajorFactionsRenownToastMixin:ShowRenownLevelUpToast(majorFactionID, re
 		end
 		TopBannerManager_Show(self, { 
 			majorFactionID = majorFactionID,
-			name = majorFactionData.name, 
 			renownLevel = renownLevel,
-			covenantColor = COVENANT_COLORS[majorFactionData.textureKit],
+			factionColor = self:GetFactionColorByTextureKit(majorFactionData.textureKit),
 			textureKit = majorFactionData.textureKit,
+			celebrationSoundKit = majorFactionData.celebrationSoundKit,
 		});
 	end
 end
@@ -84,31 +84,18 @@ function MajorFactionsRenownToastMixin:SetupRewardVisuals(majorFactionID, renown
 	end
 end
 
-local SOUND_KIT_BY_TEXTURE_KIT = 
-{
-	Kyrian = { default = 172612, milestone = 172613, final = 172614, },
-	Venthyr = { default = 172642, milestone = 172645, final = 172649, },
-	NightFae = { default = 172643, milestone = 172646, final = 172650, },
-	Necrolord = { default = 172644, milestone = 172648, final = 172651, },
-};
-
 function MajorFactionsRenownToastMixin:PlayBanner(data)
-	self.FactionName:SetText(data.name or "");
 	self.RenownLabel:SetFormattedText(MAJOR_FACTION_RENOWN_LEVEL_TOAST, data.renownLevel);
-	self.RenownLabel:SetTextColor(data.covenantColor:GetRGB());
+	self.RenownLabel:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
 
 	local textureKitRegions = {
-		[self.GlowLineTopBottom] = "CovenantChoice-Celebration-%sGlowLine",
+		[self.GlowLineBottom] = "majorfaction-celebration-bottomglowline",
 	};
 
 	SetupTextureKitOnFrames(data.textureKit, textureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
 	self.ToastBG:SetAlpha(0);
-	self.GlowLineTop:SetAlpha(0);
-	self.GlowLineTopAdditive:SetAlpha(0);
-	self.Stars1:SetAlpha(0);
-	self.Stars2:SetAlpha(0);
 	self.IconSwirlModelScene:SetAlpha(0);
 	self.Icon:SetAlpha(0);
 	self.RenownLabel:SetAlpha(0);
@@ -118,16 +105,9 @@ function MajorFactionsRenownToastMixin:PlayBanner(data)
 
 	self:SetupRewardVisuals(data.majorFactionID, data.renownLevel);
 
-	local soundKitData = SOUND_KIT_BY_TEXTURE_KIT[data.textureKit]
-	local levels = C_MajorFactions.GetRenownLevels(data.majorFactionID);
-	local levelInfo = levels[data.renownLevel];
-	local soundID = soundKitData.default;
-	if data.renownLevel == #levels then
-		soundID = soundKitData.final;
-	elseif levelInfo and levelInfo.isMilestone then
-		soundID = soundKitData.milestone;
+	if data.celebrationSoundKit then
+		PlaySound(data.celebrationSoundKit);
 	end
-	PlaySound(soundID);
 
 	self.bannerData = data;
 

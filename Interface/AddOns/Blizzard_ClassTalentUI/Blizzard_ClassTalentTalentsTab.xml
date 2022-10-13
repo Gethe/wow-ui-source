@@ -32,6 +32,7 @@
 			<KeyValue key="disabledOverlayAlpha" value=".3" type="number"/>
 			<KeyValue key="enableCommitEndFlash" value="true" type="boolean"/>
 			<KeyValue key="enableCommitCastBar" value="true" type="boolean"/>
+			<KeyValue key="enableCommitSpinner" value="true" type="boolean"/>
 			<KeyValue key="commitSound" value="SOUNDKIT.UI_CLASS_TALENT_APPLY_CHANGES" type="global"/>
 		</KeyValues>
 		<Layers>
@@ -145,22 +146,22 @@
 					</MaskedTextures>
 				</MaskTexture>
 
-				<Texture parentKey="ActivationClassFx" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="ActivationClassFx" parentArray="classActivationTextures" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="ActivationClassFx2" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="ActivationClassFx2" parentArray="classActivationTextures" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.ActivationClassFx" relativePoint="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="ActivationClassFx3" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="ActivationClassFx3" parentArray="classActivationTextures" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.ActivationClassFx" relativePoint="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="ActivationClassFx4" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="ActivationClassFx4" parentArray="classActivationTextures" atlas="talents-animations-class-druid" useAtlasSize="true" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.ActivationClassFx" relativePoint="CENTER"/>
 					</Anchors>
@@ -200,6 +201,9 @@
 			</Frame>
 
 			<Frame parentKey="LoadoutDropDown" inherits="DropDownLoadSystemTemplate">
+				<KeyValues>
+					<KeyValue key="dropdownTooltipBackdropStyle" value="GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT" type="global"/>
+				</KeyValues>
 				<Size x="170" y="30"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.BottomBar" relativePoint="LEFT" x="48" y="0"/>

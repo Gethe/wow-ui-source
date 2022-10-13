@@ -93,6 +93,7 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterUnitEvent("UNIT_AURA", unit);
+	self:RegisterUnitEvent("UNIT_TARGET", unit);
 
 	local showmenu;
 	if (menuFunc) then
@@ -207,6 +208,10 @@ function TargetFrameMixin:OnEvent(event, ...)
 			local unitAuraUpdateInfo = select(2, ...);
 			self:UpdateAuras(unitAuraUpdateInfo);
 		end
+	elseif (event == "UNIT_TARGET") then
+		if (self.totFrame) then
+			self.totFrame:Update();
+		end
 	elseif (event == "PLAYER_FLAGS_CHANGED") then
 		if (arg1 == self.unit) then
 			self:CheckPartyLeader();
@@ -240,7 +245,10 @@ function TargetFrameMixin:OnEvent(event, ...)
 end
 
 function TargetFrameMixin:OnHide()
-	PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT);
+	-- "Soft" target changes should not cause this sound to play
+	if (not IsTargetLoose()) then
+		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT);
+	end
 	CloseDropDownMenus();
 end
 

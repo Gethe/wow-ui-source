@@ -36,6 +36,7 @@ local TradeSkillUI =
 				{ Name = "numCasts", Type = "number", Nilable = false, Default = 1 },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 				{ Name = "recipeLevel", Type = "number", Nilable = true },
+				{ Name = "orderID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -132,6 +133,22 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetCraftingOperationInfoForOrder",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = false },
+				{ Name = "orderID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CraftingOperationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCraftingReagentBonusText",
 			Type = "Function",
 
@@ -191,6 +208,21 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetHideUnownedFlags",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "cannotModifyHideUnowned", Type = "bool", Nilable = false },
+				{ Name = "alwaysShowUnowned", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemCraftedQualityByItemInfo",
 			Type = "Function",
 
@@ -233,6 +265,20 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetItemSlotModificationsForOrder",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "orderID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "slotMods", Type = "table", InnerType = "CraftingItemSlotModification", Nilable = false },
+			},
+		},
+		{
 			Name = "GetOriginalCraftRecipeID",
 			Type = "Function",
 
@@ -244,6 +290,7 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = true },
+				{ Name = "skillLineAbilityID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -267,6 +314,15 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "info", Type = "ProfessionInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetProfessionInventorySlots",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "invSlots", Type = "table", InnerType = "InventorySlots", Nilable = false },
 			},
 		},
 		{
@@ -313,6 +369,20 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetQualitiesForRecipe",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "qualityIDs", Type = "table", InnerType = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetReagentDifficultyText",
 			Type = "Function",
 
@@ -335,6 +405,7 @@ local TradeSkillUI =
 			{
 				{ Name = "mcrSlotID", Type = "number", Nilable = false },
 				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+				{ Name = "skillLineAbilityID", Type = "number", Nilable = false },
 			},
 
 			Returns =
@@ -381,6 +452,21 @@ local TradeSkillUI =
 			Arguments =
 			{
 				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+				{ Name = "recipeLevel", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "recipeInfo", Type = "TradeSkillRecipeInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRecipeInfoForSkillLineAbility",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "skillLineAbilityID", Type = "number", Nilable = false },
 				{ Name = "recipeLevel", Type = "number", Nilable = true },
 			},
 
@@ -461,7 +547,7 @@ local TradeSkillUI =
 
 			Arguments =
 			{
-				{ Name = "recipeID", Type = "number", Nilable = false },
+				{ Name = "recipeID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -502,6 +588,29 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetSkillLineForGear",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "skillLineID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSourceTypeFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "sourceTypeFilter", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTradeSkillDisplayName",
 			Type = "Function",
 
@@ -513,6 +622,15 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "professionDisplayName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "HasFavoriteOrderRecipes",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasFavorites", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -531,6 +649,20 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsNearProfessionSpellFocus",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "profession", Type = "Profession", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "nearFocus", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -652,6 +784,31 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "RecraftRecipeForOrder",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "itemGUID", Type = "string", Nilable = false },
+				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetOnlyShowAvailableForOrders",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "flag", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetProfessionChildSkillLineID",
 			Type = "Function",
 
@@ -686,6 +843,15 @@ local TradeSkillUI =
 			Arguments =
 			{
 				{ Name = "flag", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSourceTypeFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sourceTypeFilter", Type = "number", Nilable = false },
 			},
 		},
 	},
@@ -780,6 +946,11 @@ local TradeSkillUI =
 			Name = "TradeSkillDetailsUpdate",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_DETAILS_UPDATE",
+		},
+		{
+			Name = "TradeSkillFavoritesChanged",
+			Type = "Event",
+			LiteralName = "TRADE_SKILL_FAVORITES_CHANGED",
 		},
 		{
 			Name = "TradeSkillItemCraftedResult",

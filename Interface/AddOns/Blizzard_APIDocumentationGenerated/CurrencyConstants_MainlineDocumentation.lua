@@ -27,9 +27,9 @@ local CurrencyConstants_Mainline =
 		{
 			Name = "CurrencySource",
 			Type = "Enumeration",
-			NumValues = 57,
+			NumValues = 61,
 			MinValue = 0,
-			MaxValue = 56,
+			MaxValue = 60,
 			Fields =
 			{
 				{ Name = "ConvertOldItem", Type = "CurrencySource", EnumValue = 0 },
@@ -88,7 +88,11 @@ local CurrencyConstants_Mainline =
 				{ Name = "PhBuffer_53", Type = "CurrencySource", EnumValue = 53 },
 				{ Name = "PhBuffer_54", Type = "CurrencySource", EnumValue = 54 },
 				{ Name = "RenownRepGain", Type = "CurrencySource", EnumValue = 55 },
-				{ Name = "Last", Type = "CurrencySource", EnumValue = 56 },
+				{ Name = "CraftingOrder", Type = "CurrencySource", EnumValue = 56 },
+				{ Name = "CatalystBalancing", Type = "CurrencySource", EnumValue = 57 },
+				{ Name = "CatalystCraft", Type = "CurrencySource", EnumValue = 58 },
+				{ Name = "ProfessionInitialAward", Type = "CurrencySource", EnumValue = 59 },
+				{ Name = "Last", Type = "CurrencySource", EnumValue = 60 },
 			},
 		},
 	},

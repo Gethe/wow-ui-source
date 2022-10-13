@@ -4,6 +4,9 @@
 
 	<Frame name="ProfessionsRecipeListTemplate" mixin="ProfessionsRecipeListMixin" virtual="true">
 		<Size x="300" y="505"/>
+		<KeyValues>
+			<KeyValue key="hideCraftableCount" value="false" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Backgroud" atlas="Professions-background-summarylist" setAllPoints="true"/>

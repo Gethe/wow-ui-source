@@ -66,6 +66,9 @@ function EssencePointButtonMixin:AnimOut()
 		self.EssenceEmpty:Hide(); 
 		self.EssenceFillDone:Hide();
 		self.EssenceFull:Hide(); 
+		self.EssenceFilling.FillingAnim:Stop();
+		self.EssenceFilling.CircleAnim:Stop();
+		self:SetScript("OnUpdate", nil);
 	end 
 end
 

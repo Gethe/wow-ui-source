@@ -140,9 +140,13 @@ function TokenButton_OnClick(self)
 					TokenFrame_UpdatePopup(self);
 				end
 			else
-				TokenFramePopup:SetShown(TokenFramePopup:IsShown() or TokenFrame.selectedID ~= self.index);
-				TokenFrame.selectedID = self.index;
-				TokenFrame_UpdatePopup(self);
+				local showPopup = not TokenFramePopup:IsShown() or TokenFrame.selectedID ~= self.index;
+				TokenFramePopup:SetShown(showPopup);
+
+				if showPopup then
+					TokenFrame.selectedID = self.index;
+					TokenFrame_UpdatePopup(self);
+				end
 			end
 		end
 	end
@@ -198,13 +202,12 @@ end
 
 function BackpackCurrencyCheckBoxMixin:OnClick()
 	local watched = self:GetChecked();
-	local success = TokenFrame_SetTokenWatched(TokenFrame.selectedID, watched);
-	if success then
-		if watched then
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		else
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-		end
+	TokenFrame_SetTokenWatched(TokenFrame.selectedID, watched);
+
+	if watched then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 end
 
@@ -215,18 +218,9 @@ function BackpackCurrencyCheckBoxMixin:OnEnter()
 end
 
 function TokenFrame_SetTokenWatched(id, watched)
-	if watched then
-		local maxWatched = BackpackTokenFrame:GetMaxTokensWatched();
-		if GetNumWatchedTokens() >= maxWatched then
-			UIErrorsFrame:AddMessage(TOO_MANY_WATCHED_TOKENS:format(maxWatched), 1.0, 0.1, 0.1, 1.0);
-			return false;
-		end
-	end
-
 	C_CurrencyInfo.SetCurrencyBackpack(id, watched);
 	TokenFrame_Update();
 	BackpackTokenFrame:Update();
-	return true;
 end
 
 BackpackTokenFrameMixin = {};
@@ -350,6 +344,6 @@ function BackpackTokenMixin:OnClick()
 	if IsModifiedClick("CHATLINK") then
 		HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyLink(self.currencyID));
 	else
-		ToggleCharacter("TokenFrame");
+		CharacterFrame_ToggleTokenFrame();
 	end
 end

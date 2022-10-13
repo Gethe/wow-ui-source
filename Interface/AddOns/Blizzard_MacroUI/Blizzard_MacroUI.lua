@@ -328,7 +328,7 @@ function MacroFrameMixin:SaveMacro()
 	if self.textChanged and (selectedMacroIndex ~= nil) then
 		local actualIndex = self:GetMacroDataIndex(selectedMacroIndex);
 		EditMacro(actualIndex, nil, nil, MacroFrameText:GetText());
-		self:SelectMacro(actualIndex); -- Make sure we update the selected icon art if needed (default overridden icon case).
+		self:SelectMacro(selectedMacroIndex); -- Make sure we update the selected icon art if needed (default overridden icon case).
 		self.textChanged = nil;
 	end
 end

@@ -490,7 +490,7 @@ function Class_XPBarWatcher:QUEST_TURNED_IN(completedQuestID)
 	Dispatcher:UnregisterEvent("QUEST_TURNED_IN", self);
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
 
-	TutorialManager:GetWatcher(Class_UI_Watcher.name):SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
+	TutorialManager:GetWatcher("UI_Watcher"):SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
 
 	if self.questID == completedQuestID then
 		self.pointerTutorial = self:ShowPointerTutorial(NPEV2_XP_BAR_TUTORIAL, "DOWN", StatusTrackingBarManager, 0, -5, nil, "DOWN");
@@ -511,7 +511,10 @@ function Class_XPBarWatcher:OnComplete()
 	if self.pointerTutorial then
 		self:HidePointerTutorial(self.pointerTutorial);
 	end
-	TutorialManager:GetWatcher(Class_UI_Watcher.name):SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
+	local watcher = TutorialManager:GetWatcher("UI_Watcher");
+	if watcher then
+		watcher:SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
+	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------

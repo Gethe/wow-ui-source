@@ -267,7 +267,7 @@ function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, frameHeight, n
 	local offset = self.RoleIcon:GetWidth()/2 - length;
 
 	self.RoleIcon:ClearAllPoints();
-	self.RoleIcon:SetPoint("TOP", self.SpecName, "BOTTOM", offset, -15);
+	self.RoleIcon:SetPoint("TOP", self.SpecName, "BOTTOM", offset, -11);
 
 	self.RoleName:ClearAllPoints();
 	self.RoleName:SetPoint("LEFT", self.RoleIcon, "RIGHT", ROLE_ICON_TEXT_MARGIN, 0);

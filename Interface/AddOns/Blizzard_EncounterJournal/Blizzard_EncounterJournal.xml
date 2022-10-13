@@ -1246,7 +1246,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EncounterItemDividerTemplate" virtual="true">
+	<Frame name="EncounterItemDividerTemplate" mixin="EncounterJournalItemHeaderMixin" virtual="true">
 		<Size x="321" y="45"/>
 		<Layers>
 			<Layer level="OVERLAY">

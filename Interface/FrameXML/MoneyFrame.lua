@@ -717,6 +717,7 @@ local DENOMINATION_DISPLAY_WIDTH = 36; -- Space for two characters and an anchor
 function MoneyDisplayFrameMixin:OnLoad()
 	self.CopperDisplay:SetShowsZeroAmount(true);
 	self.SilverDisplay:SetShowsZeroAmount(true);
+	self.GoldDisplay:SetShowsZeroAmount(self.alwaysShowGold);
 	self.GoldDisplay:SetFormatter(BreakUpLargeNumbers);
 
 	if self.hideCopper then

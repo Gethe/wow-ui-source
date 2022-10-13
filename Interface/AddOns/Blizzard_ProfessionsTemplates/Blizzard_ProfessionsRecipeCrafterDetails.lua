@@ -7,11 +7,11 @@ local craftCompleteSoundKits = {
 };
 
 local nextQualitySoundKits = {
-	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY1,
-	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY2,
-	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY3,
-	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY4,
-	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY5,
+	SOUNDKIT.UI_PROFESSION_CRAFTING_EXPECTED_QUALITY1,
+	SOUNDKIT.UI_PROFESSION_CRAFTING_EXPECTED_QUALITY2,
+	SOUNDKIT.UI_PROFESSION_CRAFTING_EXPECTED_QUALITY3,
+	SOUNDKIT.UI_PROFESSION_CRAFTING_EXPECTED_QUALITY4,
+	SOUNDKIT.UI_PROFESSION_CRAFTING_EXPECTED_QUALITY5,
 };
 
 local DetailsFrameEvents =
@@ -237,7 +237,10 @@ end
 function ProfessionsRecipeCrafterDetailsMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, DetailsFrameEvents);
 
-	self:ClearData();
+	if not self:IsShown() then
+		-- Details may have been set shown again while the OnHide script was deferred
+		self:ClearData();
+	end
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:ClearData()
@@ -310,6 +313,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 	--	self.pendingStats = {operationInfo = operationInfo, supportsQualities = supportsQualities, isGatheringRecipe = isGatheringRecipe};
 	--else
 		self.QualityMeter:SetShown(supportsQualities);
+		self.Spacer:SetShown(not supportsQualities);
 		if supportsQualities then
 			self.QualityMeter:SetQuality(operationInfo.quality, self.recipeInfo.maxQuality);
 		end
@@ -324,6 +328,10 @@ end
 
 function ProfessionsRecipeCrafterDetailsMixin:Reset()
 	self.QualityMeter:Reset();
+end
+
+function ProfessionsRecipeCrafterDetailsMixin:GetProjectedQuality()
+	return self.craftingQuality;
 end
 
 ProfessionsQualityMeterMixin = {};
@@ -527,12 +535,6 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 	end
 
 	local function PlayBeginAnimation()
-		local craftingQuality = resultData.craftingQuality;
-		local soundKit = craftingQuality and craftCompleteSoundKits[craftingQuality];
-		if soundKit then
-			PlaySound(soundKit);
-		end
-
 		--assert(self.onAnimationsFinished);
 		--local statsChanged = self.onAnimationsFinished();
 
@@ -557,6 +559,12 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 	end
 
 	local function PlayEndAnimation()
+		local craftingQuality = resultData.craftingQuality;
+		local soundKit = craftingQuality and craftCompleteSoundKits[craftingQuality];
+		if soundKit then
+			PlaySound(soundKit);
+		end
+
 		self.Flare.FlareTransitionIn:Restart();
 		self.DividerGlow.TransitionOut:Restart();
 

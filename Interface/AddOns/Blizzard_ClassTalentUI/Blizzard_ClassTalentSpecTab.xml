@@ -70,37 +70,37 @@
 	<Frame name="ClassSpecContentFrameTemplate" mixin="ClassSpecContentFrameMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="HoverBackground" atlas="spec-hover-background" alpha="0.1" alphaMode="ADD" hidden="true"/>
+				<Texture parentKey="HoverBackground" atlas="spec-hover-background" alpha="0.01" alphaMode="ADD" hidden="true"/>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SpecImageBorderOff" atlas="spec-thumbnailborder-off" useAtlasSize="true">
 					<Size x="306" y="186"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-38"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="HoverSpecImageBorder" atlas="spec-thumbnailborder-off" useAtlasSize="true" alphaMode="ADD" alpha="0.1">
 					<Size x="306" y="186"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-38"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="SpecImageBorderOn" atlas="spec-thumbnailborder-on" useAtlasSize="true">
 					<Size x="306" y="186"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-38"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="ActivatedSpecImageBorder" atlas="spec-thumbnailborder-on" useAtlasSize="true" alphaMode="ADD" hidden="true">
 					<Size x="306" y="186"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-40"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-38"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="SpecImage" useAtlasSize="true">
-					<Size x="310" y="190"/>
+					<Size x="306" y="186"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.SpecImageBorderOff"/>
 					</Anchors>
@@ -120,13 +120,13 @@
 				<FontString parentKey="SpecName" inherits="Game30Font" justifyH="CENTER">
 					<Color r="1" g="1" b="1"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SpecImage" relativePoint="BOTTOM" x="0" y="-50"/>
+						<Anchor point="TOP" relativeKey="$parent.SpecImage" relativePoint="BOTTOM" x="0" y="-54"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="RoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES">
 					<Size x="30" y="30"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="-20" y="-15"/>
+						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="-20" y="-11"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="RoleName" inherits="GameFontNormalMed2">
@@ -135,9 +135,9 @@
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER">
-					<Size x="280" y="100"/>
+					<Size x="280"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="0" y="-90"/>
+						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="0" y="-100"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SampleAbilityText" inherits="GameFontHighlightMed2" text="SAMPLE_ABILITIES">
@@ -148,14 +148,14 @@
 				<FontString parentKey="ActivatedText" inherits="GameFontNormalLarge2" text="SPEC_ACTIVE">
 					<Color r="0" g="1.0" b="0"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="100"/>
+						<Anchor point="BOTTOM" x="0" y="97"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="Separator" atlas="spec-dividerline" alpha="0.2" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="0" y="-70"/>
+						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="0" y="-73"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="ColumnDivider" atlas="spec-columndivider" useAtlasSize="true">
@@ -263,7 +263,7 @@
 			<Button parentKey="ActivateButton" inherits="MagicButtonTemplate" text="TALENT_SPEC_ACTIVATE">
 				<Size x="160" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="100"/>
+					<Anchor point="BOTTOM" x="0" y="95"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

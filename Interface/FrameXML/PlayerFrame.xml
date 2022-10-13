@@ -416,7 +416,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="PlayerFrameBottomManagedFramesContainer" inherits="PlayerFrameManagedContainerTemplate">
+	<Frame name="PlayerFrameBottomManagedFramesContainer" inherits="PlayerFrameManagedContainerTemplate" mixin="PlayerFrameBottomManagedFramesContainerMixin">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="160" type="number"/>
 		</KeyValues>

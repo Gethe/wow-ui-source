@@ -28,14 +28,6 @@ local finalToastSwirlEffects = {
 	-- TODO	
 };
 
--- TODO: Remove this once we fully switch to Major Factions art
-local majorFactionTextureKits = {
-	[2503] = "Centaur",
-	[2507] = "Expedition",
-	[2510] = "Valdrakken",
-	[2511] = "Tuskarr",
-};
-
 local MajorFactionsLayout =
 {
 	["TopRightCorner"] = { atlas = "%s-NineSlice-CornerTopRight" },
@@ -55,7 +47,7 @@ local currentFactionID;
 local currentFactionData;
 
 local function SetupTextureKit(frame, regions)
-	SetupTextureKitOnRegions(majorFactionTextureKits[currentFactionData.factionID], frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnRegions(currentFactionData.textureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
 local function SetupRenownFrameNineSlice(textureKit)
@@ -175,7 +167,7 @@ function MajorFactionRenownMixin:SetUpMajorFactionData()
 		local nineSliceTextureKit = expansionName;
 		SetupRenownFrameNineSlice(nineSliceTextureKit);
 
-		local textureKit = majorFactionTextureKits[currentFactionData.factionID];
+		local textureKit = currentFactionData.textureKit;
 		local renownFrameTextureKitRegions = mainTextureKitRegions;
 		local backgroundFormat = expansionName .. "-MajorFactions-%s-Background";
 		renownFrameTextureKitRegions.Background = backgroundFormat;

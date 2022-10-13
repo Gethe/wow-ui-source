@@ -340,10 +340,7 @@ function InboxFrameItem_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( self.hasItem ) then
 		if ( self.itemCount == 1) then
-			local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInboxItem(self.index);
-			if(speciesID and speciesID > 0) then
-				BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-			end
+			GameTooltip:SetInboxItem(self.index);
 		else
 			GameTooltip:AddLine(MAIL_MULTIPLE_ITEMS.." ("..self.itemCount..")");
 		end
@@ -535,7 +532,7 @@ function OpenMail_Update()
 	OpenMailSender.Name:SetText(sender);
 	OpenMailSubject:SetText(subject);
 	-- Set Text
-	local bodyText, stationeryID1, stationeryID2, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
+	local bodyText, stationeryID1, stationeryID2, isTakeable, isInvoice, isConsortium = GetInboxText(InboxFrame.openMailID);
 	OpenMailBodyText:SetText(bodyText, true);
 	if ( stationeryID1 and stationeryID2 ) then
 		OpenStationeryBackgroundLeft:SetTexture(stationeryID1);
@@ -625,6 +622,45 @@ function OpenMail_Update()
 		end
 	else
 		OpenMailInvoiceFrame:Hide();
+	end
+
+	if ( isConsortium ) then
+		ConsortiumMailFrame:Show();
+
+		local info = C_Mail.GetCraftingOrderMailInfo(InboxFrame.openMailID);
+
+		if ( info.reason == Enum.RcoCloseReason.RcoCloseCancel ) then
+			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_CANCELED_BODY);
+			ConsortiumMailFrame.CrafterText:Hide();
+			ConsortiumMailFrame.CrafterNote:Hide();
+			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
+
+		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseExpire ) then
+			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_EXPIRED_BODY);
+			ConsortiumMailFrame.CrafterText:Hide();
+			ConsortiumMailFrame.CrafterNote:Hide();
+			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
+
+		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseFulfill ) then
+			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
+			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_FULFILLED_BY:format(info.crafterName or ""));
+			ConsortiumMailFrame.CrafterText:Show();
+			ConsortiumMailFrame.CrafterNote:SetText(info.crafterNote);
+			ConsortiumMailFrame.CrafterNote:Show();
+			ConsortiumMailFrame.CommissionPaidDisplay.MoneyDisplayFrame:SetFontObject(NumberFontNormalRightRed);
+			ConsortiumMailFrame.CommissionPaidDisplay.MoneyDisplayFrame:SetAmount(info.commissionPaid);
+			ConsortiumMailFrame.CommissionPaidDisplay:Show();
+
+		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseReject ) then
+			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
+			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_REJECTED_BY:format(info.crafterName or ""));
+			ConsortiumMailFrame.CrafterText:Show();
+			ConsortiumMailFrame.CrafterNote:SetText(info.crafterNote);
+			ConsortiumMailFrame.CrafterNote:Show();
+			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
+		end
+	else
+		ConsortiumMailFrame:Hide();
 	end
 
 	local itemButtonCount, itemRowCount = OpenMail_GetItemCounts(isTakeable, textCreated, money);
@@ -823,10 +859,7 @@ end
 
 function OpenMailAttachment_OnEnter(self, index)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInboxItem(InboxFrame.openMailID, index);
-	if(speciesID and speciesID > 0) then
-		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-	end
+	GameTooltip:SetInboxItem(InboxFrame.openMailID, index);
 
 	if ( OpenMailFrame.cod ) then
 		SetTooltipMoney(GameTooltip, OpenMailFrame.cod);
@@ -1105,10 +1138,7 @@ function SendMailAttachment_OnEnter(self)
 	local index = self:GetID();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( HasSendMailItem(index) ) then
-		local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetSendMailItem(index);
-		if(speciesID and speciesID > 0) then
-			BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-		end
+		GameTooltip:SetSendMailItem(index);
 	else
 		GameTooltip:SetText(ATTACHMENT_TEXT, 1.0, 1.0, 1.0);
 	end

@@ -2,7 +2,6 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsCustomerOrdersRecipeCategoryList.lua"/>
 
-	<!-- Largely copied from AuctionCategoryButtonTemplate -->
 	<Button name="ProfessionsCustomerOrdersCategoryButtonTemplate" inherits="TruncatedTooltipScriptTemplate" mixin="ProfessionsCustomerOrdersCategoryButtonMixin" virtual="true">
 		<Size x="132" y="21"/>
 		<Scripts>
@@ -12,12 +11,12 @@
 		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Lines" atlas="auctionhouse-nav-button-tertiary-filterline" useAtlasSize="true">
+				<Texture parentKey="Lines" atlas="auctionhouse-nav-button-tertiary-filterline" parentArray="buttonRegions" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="LEFT" x="18" y="3"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="NormalTexture" atlas="auctionhouse-nav-button" useAtlasSize="false">
+				<Texture parentKey="NormalTexture" atlas="auctionhouse-nav-button" useAtlasSize="false" parentArray="buttonRegions">
 					<Size x="136" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-2" y="0"/>
@@ -32,15 +31,23 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="SelectedTexture" atlas="auctionhouse-nav-button-select" alphaMode="ADD" hidden="true">
+				<Texture parentKey="SelectedTexture" atlas="auctionhouse-nav-button-select" parentArray="buttonRegions" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.NormalTexture" relativePoint="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
+				<!-- HRO TODO: Get real asset -->
+				<Texture parentKey="SpacerLine" parentArray="spacerRegions">
+					<Size x="120" y="1"/>
+					<Color color="NORMAL_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-3" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
-		<ButtonText parentKey="Text" justifyH="LEFT">
+		<ButtonText parentKey="Text" justifyH="LEFT" parentArray="buttonRegions">
 			<Size x="0" y="8"/>
 			<Anchors>
 				<Anchor point="LEFT" x="4" y="0"/>

@@ -656,7 +656,7 @@ function ScrollBoxListMixin:Update(forceLayout)
 	if changed then
 		view:InvokeInitializers();
 
-		self:TriggerEvent(ScrollBoxListMixin.Event.OnDataRangeChanged);
+		self:TriggerEvent(ScrollBoxListMixin.Event.OnDataRangeChanged, self:GetDataIndexBegin(), self:GetDataIndexEnd());
 	end
 
 	self:TriggerEvent(ScrollBoxListMixin.Event.OnUpdate);

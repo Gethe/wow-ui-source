@@ -130,7 +130,7 @@ end
 
 function Professions.GetReagentSlotStatus(reagentSlotSchematic, recipeInfo)
 	local slotInfo = reagentSlotSchematic.slotInfo;
-	local locked, lockedReason = C_TradeSkillUI.GetReagentSlotStatus(slotInfo.mcrSlotID, recipeInfo.recipeID);
+	local locked, lockedReason = C_TradeSkillUI.GetReagentSlotStatus(slotInfo.mcrSlotID, recipeInfo.recipeID, recipeInfo.skillLineAbilityID);
 	if not locked then
 		local categoryInfo = C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID);
 		while not categoryInfo.skillLineCurrentLevel and categoryInfo.parentCategoryID do
@@ -336,8 +336,8 @@ end
 function Professions.SetupQualityReagentTooltip(slot, transaction)
 	local itemID = slot.Button:GetItemID();
 	if itemID then
-		local tooltipInfo = MakeBaseTooltipInfo("GetItemByID", slot.Button:GetItemID());
-		tooltipInfo.lineFilters = {
+		local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", slot.Button:GetItemID());
+		tooltipInfo.excludeLines = {
 				Enum.TooltipDataLineType.SellPrice,
 				Enum.TooltipDataLineType.ProfessionCraftingQuality,
 		};
@@ -363,7 +363,7 @@ function Professions.SetupQualityReagentTooltip(slot, transaction)
 	end
 end
 
-function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, slotText, exchangeOnly, recraftItemGUID)
+function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, slotText, exchangeOnly, recraftItemGUID, suppressInstruction)
 	local itemID = slot.Button:GetItemID();
 	if itemID then
 		local item = Item:CreateFromItemID(itemID);
@@ -372,18 +372,22 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, sl
 	
 		Professions.AddCommonOptionalTooltipInfo(item, GameTooltip, recipeID, recraftItemGUID);
 
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		if exchangeOnly then
-			GameTooltip_AddInstructionLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_EXCHANGE);
-		else
-			local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_REMOVE or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
-			GameTooltip_AddInstructionLine(GameTooltip, instruction);
+		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			if exchangeOnly then
+				GameTooltip_AddInstructionLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_EXCHANGE);
+			else
+				local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_REMOVE or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
+				GameTooltip_AddInstructionLine(GameTooltip, instruction);
+			end
 		end
 	else
 		local title = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText) or EMPTY_OPTIONAL_REAGENT_TOOLTIP_TITLE;
 		GameTooltip_SetTitle(GameTooltip, title, nil, false);
-		local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
-		GameTooltip_AddInstructionLine(GameTooltip, instruction);
+		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
+			local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			GameTooltip_AddInstructionLine(GameTooltip, instruction);
+		end
 	end
 end
 
@@ -428,6 +432,21 @@ function Professions.AllocateAllBasicReagents(transaction, useBestQuality)
 	end
 end
 
+function Professions.CanAllocateReagents(transaction, slotIndex)
+	local reagentSlotSchematic = transaction:GetReagentSlotSchematic(slotIndex);
+	local quantityRequired = reagentSlotSchematic.quantityRequired;
+	for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
+		local quantity = Professions.GetReagentQuantityInPossession(reagent);
+		quantityRequired = quantityRequired - quantity;
+
+		if quantityRequired <= 0 then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 local function HandleReagentLink(link)
 	if not HandleModifiedItemClick(link) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -463,7 +482,7 @@ function Professions.FindFirstQualityAllocated(transaction, reagentSlotSchematic
 end
 
 function Professions.GetReagentInputMode(reagentSlotSchematic)
-	if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
+	if reagentSlotSchematic and reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
 		local count = #reagentSlotSchematic.reagents;
 		if count == 1 then
 			return Professions.ReagentInputMode.Fixed;
@@ -694,7 +713,11 @@ function Professions.SetDefaultOrderRecipient(index)
 end
 
 function Professions.GetDefaultOrderRecipient()
-	return tonumber(GetCVar("professionsOrderRecipientDropdown"));
+	local recipient = tonumber(GetCVar("professionsOrderRecipientDropdown"));
+	if recipient == Enum.CraftingOrderType.Guild and not IsInGuild() then
+		recipient = Enum.CraftingOrderType.Public;
+	end
+	return recipient;
 end
 
 function Professions.GetIconForQuality(quality, small)
@@ -738,12 +761,12 @@ function Professions.SetInventorySlotFilter(inventorySlotIndex)
 	end
 end
 
-function Professions.IsUsingDefaultFilters()
+function Professions.IsUsingDefaultFilters(ignoreSkillLine)
 	local showAllRecipes = not C_TradeSkillUI.GetOnlyShowMakeableRecipes() and 
 		not C_TradeSkillUI.GetOnlyShowSkillUpRecipes() and 
 		not C_TradeSkillUI.GetOnlyShowFirstCraftRecipes();
-	local newestKnownProfessionInfo = Professions.GetNewestKnownProfessionInfo()
-	local isDefaultSkillLine = newestKnownProfessionInfo == nil or C_TradeSkillUI.GetChildProfessionInfo().professionID == Professions.GetNewestKnownProfessionInfo().professionID;
+	local newestKnownProfessionInfo = Professions.GetNewestKnownProfessionInfo();
+	local isDefaultSkillLine = ignoreSkillLine or newestKnownProfessionInfo == nil or (C_TradeSkillUI.GetChildProfessionInfo().professionID == Professions.GetNewestKnownProfessionInfo().professionID);
 	return showAllRecipes and isDefaultSkillLine and not C_TradeSkillUI.AreAnyInventorySlotsFiltered() and 
 		not C_TradeSkillUI.AnyRecipeCategoriesFiltered() and Professions.AreAllSourcesUnfiltered() and not C_TradeSkillUI.GetShowUnlearned() and C_TradeSkillUI.GetShowLearned();
 end
@@ -777,7 +800,7 @@ function Professions.AreAllSourcesUnfiltered()
 	return true;
 end
 
-function Professions.SetDefaultFilters()
+function Professions.SetDefaultFilters(ignoreSkillLine)
 	C_TradeSkillUI.SetShowLearned(true);
 	C_TradeSkillUI.SetShowUnlearned(false);
 	C_TradeSkillUI.SetOnlyShowMakeableRecipes(false);
@@ -787,9 +810,54 @@ function Professions.SetDefaultFilters()
 	Professions.SetAllSourcesFiltered(false);
 	C_TradeSkillUI.ClearRecipeSourceTypeFilter();
 	C_TradeSkillUI.ClearRecipeCategoryFilter();
-	local newestKnownProfessionInfo = Professions.GetNewestKnownProfessionInfo();
-	if newestKnownProfessionInfo then
-		EventRegistry:TriggerEvent("Professions.SelectSkillLine", newestKnownProfessionInfo);
+
+	-- Default filters are set when opening the UI, however we want want to stomp the desired
+	-- profession info when we're talking to an NPC crafter.
+	if not ignoreSkillLine and not C_TradeSkillUI.IsNPCCrafting() then
+		local newestKnownProfessionInfo = Professions.GetNewestKnownProfessionInfo();
+		if newestKnownProfessionInfo then
+			EventRegistry:TriggerEvent("Professions.SelectSkillLine", newestKnownProfessionInfo);
+		end
+	end
+end
+
+function Professions.GetCurrentFilterSet()
+	local filterSet =
+	{
+		showOnlyMakeable = C_TradeSkillUI.GetOnlyShowMakeableRecipes(),
+		showOnlySkillUps = C_TradeSkillUI.GetOnlyShowSkillUpRecipes(),
+		showOnlyFirstCraft = C_TradeSkillUI.GetOnlyShowFirstCraftRecipes(),
+		professionInfo = C_TradeSkillUI.GetChildProfessionInfo(),
+		showUnlearned = C_TradeSkillUI.GetShowUnlearned(),
+		showLearned = C_TradeSkillUI.GetShowLearned(),
+		sourceTypeFilter = C_TradeSkillUI.GetSourceTypeFilter(),
+	};
+
+	filterSet.invTypeFilters = {};
+	for idx = 1, C_TradeSkillUI.GetAllFilterableInventorySlotsCount() do
+		filterSet.invTypeFilters[idx] = C_TradeSkillUI.IsInventorySlotFiltered(idx);
+	end
+	return filterSet;
+end
+
+function Professions.ApplyfilterSet(filterSet)
+	if filterSet then
+		C_TradeSkillUI.SetShowLearned(filterSet.showLearned);
+		C_TradeSkillUI.SetShowUnlearned(filterSet.showUnlearned);
+		C_TradeSkillUI.SetOnlyShowMakeableRecipes(filterSet.showOnlyMakeable);
+		C_TradeSkillUI.SetOnlyShowSkillUpRecipes(filterSet.showOnlySkillUps);
+		C_TradeSkillUI.SetOnlyShowFirstCraftRecipes(filterSet.showOnlyFirstCraft);
+		C_TradeSkillUI.SetSourceTypeFilter(filterSet.sourceTypeFilter);
+
+		for idx, filtered in ipairs(filterSet.invTypeFilters) do
+			C_TradeSkillUI.SetInventorySlotFilter(idx, not filtered);
+		end
+
+		if filterSet.professionInfo then
+			EventRegistry:TriggerEvent("Professions.SelectSkillLine", filterSet.professionInfo);
+		end
+	else
+		Professions.SetDefaultFilters();
 	end
 end
 
@@ -801,7 +869,7 @@ function Professions.GetNewestKnownProfessionInfo()
 	end
 end
 
-function Professions.InitFilterMenu(dropdown, level, onUpdate)
+function Professions.InitFilterMenu(dropdown, level, onUpdate, ignoreSkillLine)
 	local filterSystem = {};
 	filterSystem.onUpdate = onUpdate;
 	filterSystem.filters = 
@@ -911,7 +979,7 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate)
 		end
 	end
 
-	do
+	if not ignoreSkillLine then
 		if not C_TradeSkillUI.IsNPCCrafting() then
 			local childProfessionInfos = C_TradeSkillUI.GetChildProfessionInfos();
 			if #childProfessionInfos > 0 then
@@ -1102,4 +1170,101 @@ function Professions.GetProfessionType(professionInfo)
 	end
 
 	return Professions.ProfessionType.Crafting;
+end
+
+function Professions.GetCraftingOrderRemainingTime(endTime)
+	return math.max(endTime - C_CraftingOrders.GetCraftingOrderTime(), 0);
+end
+
+function Professions.IsRecipeOnCooldown(recipeID)
+	local cooldown, isDayCooldown, charges, maxCharges = C_TradeSkillUI.GetRecipeCooldown(recipeID);
+	if not cooldown then
+		return false;
+	end
+
+	if charges > 0 then
+		return false;
+	end
+
+	return true;
+end
+
+function Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isRecraft)
+	local newOrder =
+	{
+		itemID = itemID,
+		spellID = spellID,
+		skillLineAbilityID = skillLineAbilityID,
+		orderType = Professions.GetDefaultOrderRecipient(),
+		orderState = Enum.CraftingOrderState.None,
+		tipAmount = 0,
+		isRecraft = isRecraft,
+		minQuality = 1,
+	};
+
+	return newOrder
+end
+
+ProfessionsSortOrder = EnumUtil.MakeEnum("Name", "Tip", "Reagents", "Quality", "Expiration", "ItemName", "Ilvl", "Slots", "Level", "Skill", "Status",
+										 "AverageTip", "MaxTip", "NumAvailable", "CustomerName");
+									 
+local SortOrderToSortEnum =
+{
+	[ProfessionsSortOrder.ItemName] = Enum.CraftingOrderSortType.ItemName,
+	[ProfessionsSortOrder.AverageTip] = Enum.CraftingOrderSortType.AveTip,
+	[ProfessionsSortOrder.MaxTip] = Enum.CraftingOrderSortType.MaxTip,
+	[ProfessionsSortOrder.NumAvailable] = Enum.CraftingOrderSortType.Quantity,
+	[ProfessionsSortOrder.Reagents] = Enum.CraftingOrderSortType.Reagents,
+	[ProfessionsSortOrder.Tip] = Enum.CraftingOrderSortType.Tip,
+	[ProfessionsSortOrder.Expiration] = Enum.CraftingOrderSortType.TimeRemaining,
+	[ProfessionsSortOrder.Status] = Enum.CraftingOrderSortType.Status,
+};
+
+function Professions.TranslateSearchSort(sort)
+	if not sort or not SortOrderToSortEnum[sort.order] then
+		return nil;
+	end
+
+	local translatedSort = 
+	{
+		sortType = SortOrderToSortEnum[sort.order],
+		reversed = not sort.ascending,
+	};
+	return translatedSort;
+end
+
+function Professions.ApplySortOrder(sortOrder, lhs, rhs)
+	if sortOrder == ProfessionsSortOrder.ItemName then
+		local lhsItem = Item:CreateFromItemID(lhs.option.itemID);
+		local rhsItem = Item:CreateFromItemID(rhs.option.itemID);
+		local lhsItemName = lhsItem:GetItemName();
+		local rhsItemName = rhsItem:GetItemName();
+		return SortUtil.CompareUtf8i(lhsItemName, rhsItemName), lhsItemName == rhsItemName;
+
+	elseif sortOrder == ProfessionsSortOrder.Status then
+		return SortUtil.CompareNumeric(lhs.option.orderState, rhs.option.orderState), lhs.option.orderState == rhs.option.orderState;
+
+	elseif sortOrder == ProfessionsSortOrder.Expiration then
+		local lhsRemainingTime = Professions.GetCraftingOrderRemainingTime(lhs.option.expirationTime);
+		local rhsRemainingTime = Professions.GetCraftingOrderRemainingTime(rhs.option.expirationTime);
+		return SortUtil.CompareNumeric(lhsRemainingTime, rhsRemainingTime), lhsRemainingTime == rhsRemainingTime;
+
+	elseif sortOrder == ProfessionsSortOrder.AverageTip then
+		return SortUtil.CompareNumeric(lhs.option.tipAmountAvg, rhs.option.tipAmountAvg), lhs.option.tipAmountAvg == rhs.option.tipAmountAvg;
+
+	elseif sortOrder == ProfessionsSortOrder.MaxTip then
+		return SortUtil.CompareNumeric(lhs.option.tipAmountMax, rhs.option.tipAmountMax), lhs.option.tipAmountMax == rhs.option.tipAmountMax;
+
+	elseif sortOrder == ProfessionsSortOrder.NumAvailable then
+		return SortUtil.CompareNumeric(lhs.option.numAvailable, rhs.option.numAvailable), lhs.option.numAvailable == rhs.option.numAvailable;
+
+	elseif sortOrder == ProfessionsSortOrder.Reagents then
+		return SortUtil.CompareNumeric(lhs.option.reagentState, rhs.option.reagentState), lhs.option.reagentState == rhs.option.reagentState;
+
+	elseif sortOrder == ProfessionsSortOrder.Tip then
+		return SortUtil.CompareNumeric(lhs.option.tipAmount, rhs.option.tipAmount), lhs.option.tipAmount == rhs.option.tipAmount;
+
+	end
+
+	return nil, false;
 end

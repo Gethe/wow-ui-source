@@ -194,6 +194,7 @@ local TradeSkillUITypes =
 				{ Name = "dataSlotType", Type = "TradeskillSlotDataType", Nilable = false, Default = "Reagent" },
 				{ Name = "dataSlotIndex", Type = "number", Nilable = false },
 				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "orderSource", Type = "CraftingOrderReagentSource", Nilable = true },
 			},
 		},
 		{
@@ -285,6 +286,15 @@ local TradeSkillUITypes =
 			},
 		},
 		{
+			Name = "RegularReagentInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "TradeSkillRecipeInfo",
 			Type = "Structure",
 			Fields =
@@ -306,6 +316,7 @@ local TradeSkillUITypes =
 				{ Name = "craftable", Type = "bool", Nilable = false, Default = true },
 				{ Name = "disabledReason", Type = "string", Nilable = true },
 				{ Name = "recipeID", Type = "number", Nilable = false },
+				{ Name = "skillLineAbilityID", Type = "number", Nilable = false },
 				{ Name = "previousRecipeID", Type = "number", Nilable = true },
 				{ Name = "nextRecipeID", Type = "number", Nilable = true },
 				{ Name = "icon", Type = "number", Nilable = true },

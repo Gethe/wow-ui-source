@@ -136,7 +136,7 @@ function EquipmentManager_EquipInventoryItem (action)
 end
 
 function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to be used.
-	if ( location < 0 ) then -- Thanks Seerah!
+	if ( location < 0 ) then
 		return false, false, false, 0;
 	end
 

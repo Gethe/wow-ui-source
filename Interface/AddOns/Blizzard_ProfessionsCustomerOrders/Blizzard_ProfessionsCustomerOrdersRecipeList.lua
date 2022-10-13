@@ -18,7 +18,8 @@ function ProfessionsCustomerOrdersRecipeListElementMixin:OnLineEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	local reagents = {};
-	GameTooltip:SetRecipeResultItem(self.option.spellID, reagents);
+	local qualityIDs = C_TradeSkillUI.GetQualitiesForRecipe(self.option.spellID);
+	GameTooltip:SetRecipeResultItem(self.option.spellID, reagents, nil, nil, qualityIDs and qualityIDs[1]);
 
 	if IsModifiedClick("DRESSUP") then
 		ShowInspectCursor();
@@ -56,21 +57,20 @@ end
 
 function ProfessionsCustomerOrdersRecipeListElementMixin:OnClick(button)
 	if button == "LeftButton" then
-		local function UseItemLink(callback)
-			local item = Item:CreateFromItemID(self.option.itemID);
-			item:ContinueOnItemLoad(function()
-				callback(item:GetItemLink());
-			end);
-		end
+	local function UseItemLink(callback)
+		local item = Item:CreateFromItemID(self.option.itemID);
+		item:ContinueOnItemLoad(function()
+			callback(item:GetItemLink());
+		end);
+	end
 
-		if IsModifiedClick("DRESSUP") then
-			UseItemLink(DressUpLink);
-		elseif IsModifiedClick("CHATLINK") then
-			UseItemLink(ChatEdit_InsertLink);
-		else
-			local isRecraft = false;
-			EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", C_TradeSkillUI.GetRecipeSchematic(self.option.spellID, isRecraft));
-		end
+	if IsModifiedClick("DRESSUP") then
+		UseItemLink(DressUpLink);
+	elseif IsModifiedClick("CHATLINK") then
+		UseItemLink(ChatEdit_InsertLink);
+	else
+		EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", self.option.itemID, self.option.spellID, self.option.skillLineAbilityID);
+	end
 	elseif button == "RightButton" then
 		ToggleDropDownMenu(1, self.option.spellID, self.contextMenu, "cursor");
 	end

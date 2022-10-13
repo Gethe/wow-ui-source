@@ -206,6 +206,7 @@ function AuraFrameMixin:UpdateAuraButtons()
 		-- Show example auras
 		for index, exampleAuraFrame in ipairs(self.exampleAuraFrames) do
 			if index <= maxExampleAuras then
+				exampleAuraFrame:SetScale(self.AuraContainer.iconScale or 1);
 				exampleAuraFrame:Show();
 				table.insert(self.auraFrames, exampleAuraFrame);
 			else
@@ -224,15 +225,17 @@ function AuraFrameMixin:UpdateAuraButtons()
 		local isExpanded = self:IsExpanded();
 
 		for index, aura in ipairs(self.auraInfo) do
-			local auraFrame;
-			if aura.isTempEnchant then
-				auraFrame = self.auraPool:Acquire("TempEnchantButtonTemplate");
-			else
-				auraFrame = self.auraPool:Acquire(self.auraTemplate);
+			if not aura.hideUnlessExpanded or isExpanded then
+				local auraFrame;
+				if aura.isTempEnchant then
+					auraFrame = self.auraPool:Acquire("TempEnchantButtonTemplate");
+				else
+					auraFrame = self.auraPool:Acquire(self.auraTemplate);
+				end
+				auraFrame:SetScale(self.AuraContainer.iconScale or 1);
+				auraFrame:Update(aura, isExpanded);
+				table.insert(self.auraFrames, auraFrame);
 			end
-			auraFrame:SetScale(self.AuraContainer.iconScale or 1);
-			auraFrame:Update(aura, isExpanded);
-			table.insert(self.auraFrames, auraFrame);
 		end
 	end
 end
@@ -250,14 +253,14 @@ function AuraFrameMixin:Update()
 end
 
 function AuraFrameMixin:UpdateSize(auraWidth, auraHeight, perRow, iconPadding, scale, isHorizontal)
-	local totalRows = math.ceil(self.maxAuras / perRow); 
-	local frameWidth = (auraWidth + iconPadding) * (isHorizontal and perRow or totalRows); 
-	local frameHeight = (auraHeight + iconPadding) * (isHorizontal and (totalRows) or perRow); 
+	local totalRows = math.ceil(self.maxAuras / perRow);
+	local frameWidth = (auraWidth + iconPadding) * (isHorizontal and perRow or totalRows);
+	local frameHeight = (auraHeight + iconPadding) * (isHorizontal and (totalRows) or perRow);
 
-	local expandButtonWidth = self.CollapseAndExpandButton and self.CollapseAndExpandButton:GetWidth() or 0; 
-	local expandButtonHeight = self.CollapseAndExpandButton and  self.CollapseAndExpandButton:GetHeight() or 0; 
-	local totalWidth = isHorizontal and frameWidth + expandButtonWidth or frameWidth; 
-	local totalHeight = not isHorizontal and frameHeight + expandButtonHeight or frameHeight; 
+	local expandButtonWidth = self.CollapseAndExpandButton and self.CollapseAndExpandButton:GetWidth() or 0;
+	local expandButtonHeight = self.CollapseAndExpandButton and  self.CollapseAndExpandButton:GetHeight() or 0;
+	local totalWidth = isHorizontal and frameWidth + expandButtonWidth or frameWidth;
+	local totalHeight = not isHorizontal and frameHeight + expandButtonHeight or frameHeight;
 	self:SetSize(totalWidth * scale, totalHeight * scale);
 end
 
@@ -380,23 +383,19 @@ function BuffFrameMixin:UpdateAuraButtons()
 end
 
 function BuffFrameMixin:UpdatePlayerBuffs()
-	local isExpanded = self:IsExpanded();
-
 	self.numHideableBuffs = 0;
 
 	AuraUtil.ForEachAura(PlayerFrame.unit, "HELPFUL", self.maxAuras, function(...)
 		local _, texture, count, debuffType, duration, expirationTime, _, _, _, _, _, _, _, _, timeMod = ...;
 		local timeLeft = (expirationTime - GetTime());
-		local hideBuff = (duration == 0) or (expirationTime == 0) or ((timeLeft) > BUFF_DURATION_WARNING_TIME); --Aubrie TODO filter with a flag on the aura.
+		local hideUnlessExpanded = (duration == 0) or (expirationTime == 0) or ((timeLeft) > BUFF_DURATION_WARNING_TIME); --Aubrie TODO filter with a flag on the aura.
 
-		if hideBuff then
+		if hideUnlessExpanded then
 			self.numHideableBuffs = self.numHideableBuffs + 1;
 		end
 
-		if not hideBuff or isExpanded then
-			local index = #self.auraInfo + 1;
-			self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration,  expirationTime = expirationTime, timeMod = timeMod, hideUnlessExpanded = nil };
-		end
+		local index = #self.auraInfo + 1;
+		self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration,  expirationTime = expirationTime, timeMod = timeMod, hideUnlessExpanded = hideUnlessExpanded};
 
 		return #self.auraInfo > self.maxAuras;
 	end);
@@ -414,7 +413,7 @@ function BuffFrameMixin:UpdateTemporaryEnchantments(...)
 
 	for itemIndex = numItems, 1, -1 do	--Loop through the items from the back.
 		-- If we can't display any more buffs then stop
-		if #self.auraInfo > BUFF_MAX_DISPLAY then
+		if #self.auraInfo > self.maxAuras then
 			break;
 		end
 
@@ -463,7 +462,7 @@ function DebuffFrameMixin:UpdateAuras()
 
 		local deadlyDebuffInfo = C_SpellBook.GetDeadlyDebuffInfo(spellID);
 		if(deadlyDebuffInfo) then
-			local deadlyDebuff = { index = 0, texture = texture, count = count, debuffType = debuffType, duration = duration, expirationTime = expirationTime, timeMod = timeMod, warningText = deadlyDebuffInfo.warningText, soundKitID = deadlyDebuffInfo.soundKitID, priority = deadlyDebuffInfo.priority };
+			local deadlyDebuff = { index = 0, texture = texture, count = count, debuffType = debuffType, duration = duration, expirationTime = expirationTime, timeMod = timeMod, warningText = deadlyDebuffInfo.warningText, soundKitID = deadlyDebuffInfo.soundKitID, priority = deadlyDebuffInfo.priority, criticalTimeRemaining = deadlyDebuffInfo.overrideCriticalTimeRemaining };
 			table.insert(self.deadlyDebuffInfo, deadlyDebuff);
 		else
 			local index = #self.auraInfo + 1;
@@ -472,7 +471,10 @@ function DebuffFrameMixin:UpdateAuras()
 
 		return (#self.auraInfo + #self.deadlyDebuffInfo) > self.maxAuras;
 	end);
+	self:SetupDeadlyDebuffs();
+end
 
+function DebuffFrameMixin:SetupDeadlyDebuffs()
 	-- Setup DeadlyDebuffFrame
 	local mostCriticalDebuffIndex = nil;
 
@@ -483,14 +485,34 @@ function DebuffFrameMixin:UpdateAuras()
 			local currentTime = GetTime();
 			local timeRemaining1 = self.deadlyDebuffInfo[i].expirationTime - currentTime;
 			local timeRemaining2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].expirationTime - currentTime;
-			if timeRemaining1 < timeRemaining2 then
+
+			local priority1 = self.deadlyDebuffInfo[i].priority;
+			local priority2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].priority;
+
+			--If the deadly debuff has an override critical time, use that to determine the critical state, if not.. use the default
+			local isInCriticalTimeRemaining1 = (self.deadlyDebuffInfo[i].overrideCriticalTimeRemaining) and (self.deadlyDebuffInfo[i].overrideCriticalTimeRemaining <= timeRemaining1) or (DEBUFF_CRITICAL_TIME_REMAINING >= timeRemaining1)
+			local isInCriticalTimeRemaining2 = (self.deadlyDebuffInfo[mostCriticalDebuffIndex].overrideCriticalTimeRemaining) and (self.deadlyDebuffInfo[mostCriticalDebuffIndex].overrideCriticalTimeRemaining <= timeRemaining2)
+
+			--If the debuffs are both in their critical state, prioritize the one with the highest priority, if they have the same priority, use the time remaining. 
+			if (isInCriticalTimeRemaining1 and isInCriticalTimeRemaining2) then
+				if (priority1 > priority2) then 
+					mostCriticalDebuffIndex = i;
+				elseif (timeRemaining1 < timeRemaining2) then
+					mostCriticalDebuffIndex = i;
+				end 
+			-- If 1 is in critical time remaining.. use that. 
+			elseif (isInCriticalTimeRemaining1) then 
 				mostCriticalDebuffIndex = i;
 			else
-				local priority1 = self.deadlyDebuffInfo[i].priority;
-				local priority2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].priority;
-				if priority1 > priority2 then
-					mostCriticalDebuffIndex = i;
-				end
+				--Keep using the mostCriticalDebuffIndex unless the current debuff info is a higher priorty or has less time remaining. 
+				--If the previous compared debuff is in the critical state, show that instead since it's more critical
+				if (not isInCriticalTimeRemaining2) then 
+					if (priority1 > priority2) then
+						mostCriticalDebuffIndex = i;
+					elseif (timeRemaining1 < timeRemaining2) then
+						mostCriticalDebuffIndex = i;
+					end
+				end 
 			end
 		end
 	end
@@ -505,11 +527,8 @@ function DebuffFrameMixin:UpdateAuras()
 		else
 			DeadlyDebuffFrame:SetPoint("TOP", UIErrorsFrame, "BOTTOM");
 		end
-
 		-- Remove deadly debuff which is being shown in DeadlyDebuffFrame so it only appears in one place
 		table.remove(self.deadlyDebuffInfo, mostCriticalDebuffIndex);
-	else
-		DeadlyDebuffFrame:Hide();
 	end
 
 	-- Add remaining deadly debuffs onto end of aura list so they appear at the end
@@ -519,7 +538,8 @@ function DebuffFrameMixin:UpdateAuras()
 	end
 end
 
-AuraButtonMixin = { }; 
+AuraButtonMixin = { };
+
 function AuraButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 	GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
@@ -528,12 +548,12 @@ end
 
 function AuraButtonMixin:OnLeave()
 	GameTooltip:Hide();
-end 
+end
 
 function AuraButtonMixin:UpdateExpirationTime(buttonInfo)
 	if ( buttonInfo.expirationTime and buttonInfo.expirationTime > 0 ) then
 		self.duration:SetShown(CVarCallbackRegistry:GetCVarValueBool("buffDurations"));
-		 
+
 		local timeLeft = (buttonInfo.expirationTime - GetTime());
 		if( buttonInfo.timeMod and buttonInfo.timeMod > 0) then
 			self.timeMod = buttonInfo.timeMod;
@@ -559,10 +579,10 @@ function AuraButtonMixin:Update(buttonInfo, expanded)
 	end 
 	local helpful = (self:GetFilter() == "HELPFUL");
 	self.unit = PlayerFrame.unit;
-	self.buttonInfo = buttonInfo; 
-	
-	local canShow = (not buttonInfo.hideUnlessExpanded) or expanded; 
-	self:SetShown(canShow); 
+	self.buttonInfo = buttonInfo;
+
+	local canShow = (not buttonInfo.hideUnlessExpanded) or expanded;
+	self:SetShown(canShow);
 	if ( not helpful ) then
 		if ( self.Border ) then
 			local color;
@@ -598,7 +618,7 @@ function AuraButtonMixin:Update(buttonInfo, expanded)
 end
 
 function AuraButtonMixin:OnUpdate()
-	local index = self.buttonInfo.index; 
+	local index = self.buttonInfo.index;
 	if ( self.timeLeft and self.timeLeft < BUFF_WARNING_TIME ) then
 		self:SetAlpha(1.0);
 	else
@@ -607,7 +627,7 @@ function AuraButtonMixin:OnUpdate()
 
 	-- Update duration
 	securecall(self.UpdateDuration, self, self.timeLeft); -- Taint issue with SecondsToTimeAbbrev 
-	
+
 	-- Update our timeLeft
 	local timeLeft = self.buttonInfo.expirationTime - GetTime();
 	if ( self.buttonInfo.timeMod and self.buttonInfo.timeMod > 0 ) then
@@ -629,6 +649,16 @@ function AuraButtonMixin:OnUpdate()
 	if ( GameTooltip:IsOwned(self) and not self:GetID() ) then
 		GameTooltip:SetUnitAura(PlayerFrame.unit, index, self:GetFilter());
 	end
+
+	if (self.isDeadlyDebuff and self.timeLeft <= 0) then 
+		DeadlyDebuffFrame:Hide() 
+	elseif ((self.buttonInfo.criticalTimeRemaining and self.buttonInfo.criticalTimeRemaining > 0) and timeLeft <= self.buttonInfo.criticalTimeRemaining) then
+		DebuffFrame:SetupDeadlyDebuffs(); 
+	end
+end
+
+function AuraButtonMixin:GetID()
+	return self.buttonInfo.ID;
 end
 
 function AuraButtonMixin:UpdateDuration(timeLeft)

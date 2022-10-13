@@ -125,15 +125,32 @@ function ProfessionsItemFlyoutMixin:OnEvent(event, ...)
 	end
 end
 
-function ProfessionsItemFlyoutMixin:ShouldHideUnownedItems()
-	return GetCVarBool(HideUnownedCvar);
-end
-
 function ProfessionsItemFlyoutMixin:InitializeContents()
-	local filterOwned = self.canFilter and self:ShouldHideUnownedItems();
-	local elements = self:GetElementsImplementation(filterOwned);
-	self.HideUnownedCheckBox:SetShown(self.canFilter);
+	local cannotModifyHideUnowned, alwaysShowUnowned = false, false;
+	if self.transaction then
+		local recipeID = self.transaction:GetRecipeID();
+		cannotModifyHideUnowned, alwaysShowUnowned = C_TradeSkillUI.GetHideUnownedFlags(recipeID);
+	end
+	
+	local canShowCheckBox = self.canModifyFilter and not cannotModifyHideUnowned;
+	self.HideUnownedCheckBox:SetShown(canShowCheckBox);
 
+	local hideUnownedCvar = GetCVarBool(HideUnownedCvar);
+	if canShowCheckBox then
+		self.HideUnownedCheckBox:SetChecked(hideUnownedCvar);
+	end
+
+	local hideUnowned;
+	if cannotModifyHideUnowned then
+		-- Determined in data, supercedes player preference.
+		hideUnowned = not alwaysShowUnowned;
+	else
+		local alwaysHide = not self.canModifyFilter;
+		local preferHide = canShowCheckBox and hideUnownedCvar;
+		hideUnowned = alwaysHide or preferHide;
+	end
+
+	local elements = self:GetElementsImplementation(hideUnowned);
 	local count = #elements.items;
 	if count > 0 then
 		self.Text:Hide();
@@ -142,7 +159,7 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 		continuableContainer:AddContinuables(elements.items);
 		continuableContainer:ContinueOnLoad(function()
 			local rows = math.min(MaxRows, math.ceil(count / MaxColumns));
-			local columns = self.canFilter and MaxColumns or (math.max(1, math.min(MaxColumns, count)));
+			local columns = self.canModifyFilter and MaxColumns or (math.max(1, math.min(MaxColumns, count)));
 
 			local padding = self.ScrollBox:GetPadding();
 			local vSpacing = padding:GetVerticalSpacing();
@@ -162,7 +179,7 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 			end
 
 			local totalHeight = height + adjustment;
-			if self.canFilter then
+			if canShowCheckBox then
 				totalHeight = totalHeight + 25;
 			end
 
@@ -196,13 +213,15 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 	PlaySound(SOUNDKIT.UI_PROFESSION_FILTER_MENU_OPEN_CLOSE);
 end
 
-function ProfessionsItemFlyoutMixin:Init(owner, transaction, cannotFilter)
-	self.owner = owner;
-	self.canFilter = not cannotFilter;
-	-- FIXME Visual states required for reagents already in transaction.
-	--self.transaction = transaction;
+function ProfessionsItemFlyoutMixin:Init(owner, transaction, canModifyFilter)
+	if canModifyFilter == nil then
+		canModifyFilter = true;
+	end
 
-	self.HideUnownedCheckBox:SetChecked(self:ShouldHideUnownedItems());
+	self.owner = owner;
+	self.canModifyFilter = canModifyFilter;
+	self.transaction = transaction;
+	-- FIXME Visual states required for reagents already in transaction.
 
 	self:InitializeContents();
 end

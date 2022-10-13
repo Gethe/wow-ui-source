@@ -271,7 +271,7 @@ end
 function IsBagOpen(id)
 	local combinedbagIndex = ContainerFrameCombinedBags:IsBagOpen(id);
 	if combinedbagIndex then
-		return combinedbagIndex;
+		return true;
 	end
 
 	local _, index = ContainerFrameUtil_GetShownFrameForID(id);
@@ -619,7 +619,7 @@ function ContainerFrame_OnEvent(self, event, ...)
 		end
 	elseif event == "BAG_CLOSED" then
 		local bagID = ...;
-		if self:GetID() == bagID then
+		if self:MatchesBagID(bagID) then
 			CloseBag(bagID);
 		end
 	elseif event == "BAG_UPDATE" then
@@ -630,9 +630,9 @@ function ContainerFrame_OnEvent(self, event, ...)
 	elseif event == "BAG_CONTAINER_UPDATE" then
 		ContainerFrameSettingsManager:OnBagContainerUpdate(self);
 	elseif event == "ITEM_LOCK_CHANGED" then
-		local bagID, slot = ...;
-		if bagID and slot and (bagID == self:GetID()) then
-			ContainerFrame_UpdateLockedItem(self, slot);
+		local bagID, slotID = ...;
+		if bagID and slotID and self:MatchesBagID(bagID) then
+			ContainerFrame_UpdateLockedItem(bagID, slotID);
 		end
 	elseif event == "BAG_UPDATE_COOLDOWN" then
 		self:UpdateCooldowns();
@@ -651,14 +651,14 @@ function ContainerFrame_OnEvent(self, event, ...)
 		self:UpdateSearchResults();
 	elseif event == "BAG_SLOT_FLAGS_UPDATED" then
 		local bagID = ...;
-		if self:GetID() == bagID then
+		if self:MatchesBagID(bagID) then
 			ContainerFrameSettingsManager:ClearFilterFlag(bagID);
 			self:UpdateFilterIcon();
 		end
 	elseif event == "BANK_BAG_SLOT_FLAGS_UPDATED" then
 		local bagID = ...;
 		local bankBagID = bagID + NUM_TOTAL_EQUIPPED_BAG_SLOTS;
-		if self:GetID() == bankBagID then
+		if self:MatchesBagID(bagID) then
 			ContainerFrameSettingsManager:ClearFilterFlag(bankBagID);
 			self:UpdateFilterIcon();
 		end
@@ -1102,19 +1102,17 @@ function ContainerFrame_UpdateAll()
 end
 
 function ContainerFrame_UpdateLocked(frame)
-	local id = frame:GetID();
 	local locked, info;
 	for i, itemButton in frame:EnumerateValidItems() do
-		info = C_Container.GetContainerItemInfo(id, itemButton:GetID());
+		info = C_Container.GetContainerItemInfo(itemButton:GetBagID(), itemButton:GetID());
 		locked = info and info.isLocked;
 		SetItemButtonDesaturated(itemButton, locked);
 	end
 end
 
-function ContainerFrame_UpdateLockedItem(frame, slot)
-	local index = frame.size + 1 - slot;
-	local itemButton = frame.Items[index];
-	local info = C_Container.GetContainerItemInfo(frame:GetID(), itemButton:GetID());
+function ContainerFrame_UpdateLockedItem(bagID, slotID)
+	local itemButton = ContainerFrameUtil_GetItemButtonAndContainer(bagID, slotID);
+	local info = C_Container.GetContainerItemInfo(bagID, slotID);
 	local locked = info and info.isLocked;
 	SetItemButtonDesaturated(itemButton, locked);
 end
@@ -1827,6 +1825,8 @@ local function OpenAllBagsInternal(includeBank)
 	for i = startIndex, endIndex do
 		OpenBag(i);
 	end
+
+	EventRegistry:TriggerEvent("ContainerFrame.OpenAllBags");
 end
 
 function OpenAllBags(frame, forceUpdate)
@@ -1880,6 +1880,7 @@ function ToggleAllBags()
 	if bagsOpen < totalBags then
 		local excludeBank = false;
 		OpenAllBagsInternal(excludeBank);
+		return;
 	elseif BankFrame:IsShown() then
 		bagsOpen = 0;
 		totalBags = 0;
@@ -1897,26 +1898,42 @@ function ToggleAllBags()
 		if bagsOpen < totalBags then
 			local includeBank = true;
 			OpenAllBagsInternal(includeBank);
+			return;
 		end
 	end
+
+	assert(IsAnyBagOpen() == false);
+	EventRegistry:TriggerEvent("ContainerFrame.CloseAllBags");
 end
 
-local function IsAnyBagOpen_Internal(startBagID, endBagID)
+local function CheckIsBagOpen_Internal(startBagID, endBagID, checkingAny)
 	for i = startBagID, endBagID do
-		if IsBagOpen(i) then
-			return true;
+		if IsBagOpen(i) == checkingAny then
+			return checkingAny;
 		end
 	end
 
-	return false;
+	return not checkingAny;
 end
 
 function IsAnyBagOpen()
-	return IsAnyBagOpen_Internal(0, NUM_TOTAL_BAG_FRAMES);
+	local checkingAny = true;
+	return CheckIsBagOpen_Internal(0, NUM_TOTAL_BAG_FRAMES, checkingAny);
 end
 
 function IsAnyStandardHeldBagOpen()
-	return IsAnyBagOpen_Internal(0, NUM_BAG_FRAMES);
+	local checkingAny = true;
+	return CheckIsBagOpen_Internal(0, NUM_BAG_FRAMES, checkingAny);
+end
+
+function AreAllBagsOpen()
+	local checkingAll = false;
+	return CheckIsBagOpen_Internal(0, NUM_TOTAL_BAG_FRAMES, checkingAll);
+end
+
+function AreAllStandardHeldBagsOpen()
+	local checkingAll = false;
+	return CheckIsBagOpen_Internal(0, NUM_BAG_FRAMES, checkingAll);
 end
 
 function OpenAllBagsMatchingContext(frame)
@@ -1953,6 +1970,8 @@ function CloseAllBags(frame, forceUpdate)
 	for i=1, NUM_TOTAL_BAG_FRAMES, 1 do
 		bagsClosed = CloseBag(i) or bagsClosed;
 	end
+
+	EventRegistry:TriggerEvent("ContainerFrame.CloseAllBags");
 
 	return bagsClosed;
 end
