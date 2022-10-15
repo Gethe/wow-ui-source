@@ -247,6 +247,7 @@ ColorPickerFrame.xml
 GossipFrame.xml
 MailFrame.xml
 ..\..\Interface_Wrath\FrameXML\PetStable.xml
+..\..\Interface_Wrath\FrameXML\VehicleSeatIndicator.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
 ..\..\Interface_Wrath\FrameXML\WorldStateFrame.xml
@@ -260,8 +261,7 @@ VoiceChatTranscriptionFrame.xml
 TextToSpeechCommands.lua
 TextToSpeechFrame.xml
 TextToSpeech.xml
-..\..\Interface_Wrath\FrameXML\ChatConfigFrame_Wrath.lua
-ChatConfigFrame.xml
+..\..\Interface_Wrath\FrameXML\ChatConfigFrame_Wrath.xml
 MovieFrame.xml
 AnimationSystem.lua
 ..\..\Interface_Wrath\FrameXML\CompactUnitFrame.xml

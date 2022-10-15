@@ -3176,7 +3176,7 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 		arg2 = Ambiguate(arg2, "none")
 	end
 
-	if ( arg12 and info and Chat_ShouldColorChatByClass(info) ) then
+	if ( info and info.colorNameByClass and arg12 and arg12 ~= "" ) then
 		local localizedClass, englishClass, localizedRace, englishRace, sex = GetPlayerInfoByGUID(arg12)
 
 		if ( englishClass ) then

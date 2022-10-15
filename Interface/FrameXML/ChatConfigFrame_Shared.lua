@@ -675,8 +675,10 @@ end
 function ChatConfigFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Chat Settings
+		local template = GetTemplateForChatConfigFrame();
+
 		ChatConfigFrame_ReplaceChatConfigLeftTooltips(C_SocialRestrictions.IsChatDisabled());
-		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, "ChatConfigWideCheckBoxWithSwatchTemplate", PLAYER_MESSAGES);
+		ChatConfig_CreateCheckboxes(ChatConfigChatSettingsLeft, CHAT_CONFIG_CHAT_LEFT, template, PLAYER_MESSAGES);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsCombat, CHAT_CONFIG_OTHER_COMBAT, "ChatConfigCheckBoxWithSwatchTemplate", COMBAT);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsPVP, CHAT_CONFIG_OTHER_PVP, "ChatConfigCheckBoxWithSwatchTemplate", PVP);
 		ChatConfig_CreateCheckboxes(ChatConfigOtherSettingsSystem, CHAT_CONFIG_OTHER_SYSTEM, "ChatConfigCheckBoxWithSwatchTemplate", OTHER);
@@ -809,6 +811,9 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		else
 			text = _G[value.type];
 		end
+
+		HideClassColors(value, checkBoxName);
+
 		checkBox.type = value.type;
 		checkBoxFontString = _G[checkBoxName.."CheckText"];
 		checkBoxFontString:SetText(text);
@@ -1045,6 +1050,10 @@ function ChatConfig_UpdateCheckboxes(frame)
 					colorSwatch:Show();
 				end
 			end
+
+			--Color class names
+			UpdateColorClassCheckboxes(baseName, value);
+			
 		end
 		frame:SetHeight( topnum * height + padding );
 	end
@@ -1266,17 +1275,6 @@ function ToggleChatMessageGroup(checked, group)
 	end
 end
 
-function ToggleChatColorNamesByClassGroup(checked, group)
-	local info = ChatTypeGroup[group];
-	if ( info ) then
-		for key, value in pairs(info) do
-			SetChatColorNameByClass(strsub(value, 10), checked);	--strsub gets rid of CHAT_MSG_
-		end
-	else
-		SetChatColorNameByClass(group, checked);
-	end
-end
-
 function ToggleChatChannel(checked, channel)
 	if ( checked ) then
 		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
@@ -1391,22 +1389,6 @@ function IsListeningForMessageType(messageType)
 		end
 	end
 	return false;
-end
-
-function IsClassColoringMessageType(messageType)
-	local groupInfo = ChatTypeGroup[messageType];
-	if ( groupInfo ) then
-		for key, value in pairs(groupInfo) do	--If any of the sub-categories color by name, we'll consider the entire thing as colored by name.
-			local info = ChatTypeInfo[strsub(value, 10)];
-			if ( info and Chat_ShouldColorChatByClass(info) ) then
-				return true;
-			end
-		end
-		return false;
-	else
-		local info = ChatTypeInfo[messageType];
-		return info and Chat_ShouldColorChatByClass(info);
-	end
 end
 
 COMBATCONFIG_COLORPICKER_FUNCTIONS = {
@@ -2109,9 +2091,11 @@ function ChatConfigChatSettings_OnShow()
 end
 
 function ChatConfigChannelSettings_OnShow()
+	local template, descriptionText = GetChatConfigChannelInfo();
+
 	-- Have to build it here since the channel list doesn't exist on load
 	CreateChatChannelList(ChatConfigChannelSettings, GetChannelList());
-	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS);
+	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, template, descriptionText);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 
 	ChatConfig_CreateBoxes(ChatConfigChannelSettingsAvailable, CHAT_CONFIG_AVAILABLE_CHANNEL_LIST, "ChatConfigTextBoxTemplateWithButton", AVAILABLE_CHANNELS);

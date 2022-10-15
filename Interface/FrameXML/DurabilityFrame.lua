@@ -74,7 +74,7 @@ function DurabilityFrame_SetAlerts()
 	end
 	DurabilityFrame:SetWidth(width);
 
-	if ( numAlerts > 0 ) then
+	if ( numAlerts > 0 and (VehicleSeatIndicator and not VehicleSeatIndicator:IsShown()) ) then
 		DurabilityFrame:Show();
 	else
 		DurabilityFrame:Hide();

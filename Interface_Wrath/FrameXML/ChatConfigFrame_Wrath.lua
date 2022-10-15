@@ -25,3 +25,55 @@ COMBAT_CONFIG_MESSAGETYPES_MISC = {
 		tooltip = DEATHS_COMBATLOG_TOOLTIP,
 	},
 };
+
+function GetTemplateForChatConfigFrame()
+	return "ChatConfigCheckBoxWithSwatchAndClassColorTemplate";
+end
+
+function GetChatConfigChannelInfo()
+	return "ChatConfigCheckBoxWithSwatchAndClassColorTemplate", CHANNELS;
+end
+
+function ColorClassesCheckBox_OnClick(self, checked)
+	ToggleChatColorNamesByClassGroup(checked, self:GetParent().type);
+end
+
+function UpdateColorClassCheckboxes(baseName, value)
+	local colorClasses = _G[baseName.."ColorClasses"];
+	if ( colorClasses ) then
+		colorClasses:SetChecked(IsClassColoringMessageType(value.type));
+	end
+end
+
+function HideClassColors(value, checkBoxName)
+	if ( value.noClassColor ) then
+		_G[checkBoxName.."ColorClasses"]:Hide();
+	end
+end
+
+function ToggleChatColorNamesByClassGroup(checked, group)	
+	local info = ChatTypeGroup[group];	
+	if ( info ) then
+		for key, value in pairs(info) do
+			SetChatColorNameByClass(strsub(value, 10), checked);	--strsub gets rid of CHAT_MSG_
+		end
+	else
+		SetChatColorNameByClass(group, checked);
+	end
+end
+
+function IsClassColoringMessageType(messageType)
+	local groupInfo = ChatTypeGroup[messageType];
+	if ( groupInfo ) then
+		for key, value in pairs(groupInfo) do	--If any of the sub-categories color by name, we'll consider the entire thing as colored by name.
+			local info = ChatTypeInfo[strsub(value, 10)];
+			if ( info and info.colorNameByClass ) then
+				return true;
+			end
+		end
+		return false;
+	else
+		local info = ChatTypeInfo[messageType];
+		return info and info.colorNameByClass;
+	end
+end

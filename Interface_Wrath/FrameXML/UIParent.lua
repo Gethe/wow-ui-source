@@ -2609,6 +2609,21 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		anchorY = anchorY - UIWidgetBelowMinimapContainerFrame:GetHeight() - 4;
 	end
 
+	--Setup Vehicle seat indicator offset
+	if ( VehicleSeatIndicator ) then
+		if ( VehicleSeatIndicator and VehicleSeatIndicator:IsShown() ) then
+			anchorY = anchorY - VehicleSeatIndicator:GetHeight() - 18;	--The -18 is there to give a small buffer for things like the QuestTimeFrame below the Seat Indicator
+		end
+
+		if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 ) then
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -100, 0);
+		elseif ( SHOW_MULTI_ACTIONBAR_3 ) then
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -62, 0);
+		else
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", 0, 0);
+		end
+	end
+
 	-- Boss frames - need to move below buffs/debuffs if both right action bars are showing
 	local numBossFrames = 0;
 	for i = 1, MAX_BOSS_FRAMES do
