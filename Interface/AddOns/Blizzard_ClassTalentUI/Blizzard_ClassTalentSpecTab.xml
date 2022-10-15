@@ -257,6 +257,29 @@
 						<Anchor point="RIGHT" x="-3.5" y="0"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="ActivatedExpandFx" atlas="talents-animations-gridburst" useAtlasSize="false" alpha="0" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="120" y="120"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="ActivatedExpandFxMask" atlas="spec-animations-mask-filigree-activate" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="218" y="-84"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ActivatedExpandFx"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<MaskTexture parentKey="ActivatedExpandFxMask2" atlas="talents-animations-mask-full" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ActivatedExpandFx"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -280,10 +303,12 @@
 			<Frame parentKey="AnimationHolder">
 				<Animations>
 					<AnimationGroup parentKey="ActivationFlashBack" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
-						<Alpha childKey="$parent.ActivatedSpecImageBorder" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="$parent.ActivatedExpandFx" smoothing="IN" duration="1.4" fromScaleX="1" fromScaleY="1" toScaleX="30" toScaleY="30"/>
+						<Alpha childKey="$parent.ActivatedExpandFx" smoothing="IN" duration="1.4" fromAlpha="0.65" toAlpha="0"/>
+						<!--<Alpha childKey="$parent.ActivatedSpecImageBorder" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
 						<Alpha childKey="$parent.ActivatedSpecImage" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
 						<Alpha childKey="$parent.ActivatedBackgroundBack1" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="$parent.ActivatedBackgroundBack2" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="$parent.ActivatedBackgroundBack2" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>-->
 					</AnimationGroup>
 					<AnimationGroup parentKey="ActivationFlashLeft" setToFinalAlpha="true" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
 						<Alpha childKey="$parent.ActivatedBackgroundLeft1" startDelay="0" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>

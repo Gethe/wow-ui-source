@@ -224,7 +224,7 @@ local function FillToggleButtonsIfNeeded()
 end
 
 function PlayerChoiceToggle_ShouldShow()
-	return C_PlayerChoice.IsWaitingForPlayerChoiceResponse() and C_PlayerChoice.GetRemainingTime() ~= 0;
+	return C_PlayerChoice.IsWaitingForPlayerChoiceResponse() and C_PlayerChoice.GetRemainingTime();
 end
 
 function PlayerChoiceToggle_TryShow()
@@ -247,7 +247,9 @@ function PlayerChoiceToggle_GetActiveToggle()
 	local textureKit = choiceInfo and choiceInfo.uiTextureKit;
 
 	for _, button in pairs(toggleButtons) do
-		if button.textureKit == textureKit then
+		if(button:IsShown()) then 
+			return button; 
+		elseif button.textureKit == textureKit then
 			return button;
 		end
 	end

@@ -37,7 +37,7 @@ local function Register()
 				SetActionBarToggle(index, value);
 			end
 
-			local defaultValue = true;
+			local defaultValue = false;
 			local setting = Settings.RegisterProxySetting(category, data.variable, Settings.DefaultVarLocation,
 				Settings.VarType.Boolean, data.label, defaultValue, GetValue, SetValue);
 			actionBars[index].setting = setting;

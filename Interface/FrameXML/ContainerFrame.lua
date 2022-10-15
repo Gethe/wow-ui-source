@@ -75,18 +75,16 @@ function ContainerFrame_CanContainerUseFilterMenu(id)
 	return not (ContainerFrame_IsProfessionBag(id) or ContainerFrame_IsReagentBag(id));
 end
 
-function ContainerFrame_GetContainerNumSlotsWithBase(id)
-	local numSlotsBase = GetContainerNumSlots(id);
-	if (id == 0 and not IsAccountSecured()) then
-		return numSlotsBase + 4, numSlotsBase;
+function ContainerFrame_GetContainerNumSlots(bagId)
+	local currentNumSlots = GetContainerNumSlots(bagId);
+	local maxNumSlots = currentNumSlots;
+
+	if bagId == 0 and not IsAccountSecured() then
+		-- If your account isn't secured then the max number of slots you can have in your backpack is 4 more than your current
+		maxNumSlots = currentNumSlots + 4;
 	end
 
-	return numSlotsBase, numSlotsBase;
-end
-
-function ContainerFrame_GetContainerNumSlots(id)
-	local numSlots = ContainerFrame_GetContainerNumSlotsWithBase(id);
-	return numSlots;
+	return maxNumSlots, currentNumSlots;
 end
 
 function ContainerFrame_AllowedToOpenBags()
@@ -1585,13 +1583,11 @@ function ContainerFrameItemButtonMixin:GetSlotAndBagID()
 	return self:GetID(), self:GetBagID();
 end
 
-function ContainerFrameItemButtonMixin:ChangeOwnership(bag, slot, newParent, containerBaseNumSlots)
+function ContainerFrameItemButtonMixin:ChangeOwnership(bag, slot, newParent)
 	self:SetBagID(bag);
 	self:SetID(slot);
 	self:SetParent(newParent);
-
-	-- This is unfortunately the most convenient place to set this state.
-	self:SetIsExtended(slot > containerBaseNumSlots);
+	self:UpdateExtended();
 
 	-- Potentially temporary, item slots don't have a background, so when they're used in a combined inventory setup
 	-- they need to make their own.
@@ -1732,18 +1728,27 @@ function ContainerFrameItemButtonMixin:IsExtended()
 end
 
 function ContainerFrameItemButtonMixin:UpdateExtended()
-	if self:IsExtended() then
-		if not self.extendedFrame then
-			self.extendedFrame = CreateFrame("FRAME", nil, self, "ContainerFrameExtendedItemButtonTemplate");
-			self.extendedFrame:SetAllPoints(self);
+	local oldIsExtended = self.isExtended;
+
+	local slotId, bagId = self:GetSlotAndBagID();
+	local _, currentNumSlots = ContainerFrame_GetContainerNumSlots(bagId);
+	-- If a slotId is greater than our currentNumSlots then it is an extended (locked) slot which can't be used until your account is secured 
+	self:SetIsExtended(slotId > currentNumSlots);
+
+	if self.isExtended ~= oldIsExtended then
+		if self:IsExtended() then
+			if not self.extendedFrame then
+				self.extendedFrame = CreateFrame("FRAME", nil, self, "ContainerFrameExtendedItemButtonTemplate");
+				self.extendedFrame:SetAllPoints(self);
+			end
+			self.extendedFrame:Show();
+			self:EnableMouse(false);
+		else
+			if self.extendedFrame then
+				self.extendedFrame:Hide();
+			end
+			self:EnableMouse(true);
 		end
-		self.extendedFrame:Show();
-		self:EnableMouse(false);
-	else
-		if self.extendedFrame then
-			self.extendedFrame:Hide();
-		end
-		self:EnableMouse(true);
 	end
 end
 
@@ -1768,7 +1773,7 @@ end
 function ContainerFramePortraitButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	local waitingOnData = false;
-	if ContainerFrame_IsBackpack(self:GetID()) then
+	if self:GetParent():MatchesBagID(0) then
 		GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
 		if (GetBindingKey("TOGGLEBACKPACK")) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
@@ -2251,13 +2256,13 @@ function ContainerFrameSettingsManager:SetupBagsGeneric(overrideParent)
 	local startIndex, endIndex, increment = GetBagSetupIndices(ascendingOrder);
 
 	for bag = startIndex, endIndex, increment do
-		local bagSize, baseSize = ContainerFrame_GetContainerNumSlotsWithBase(bag);
-		for i = 1, bagSize do
+		local numBagSlots = ContainerFrame_GetContainerNumSlots(bag);
+		for i = 1, numBagSlots do
 			local containerFrame = UIParent.ContainerFrames[bag + 1];
 			local itemButton = containerFrame.Items[i];
-			local slot = bagSize - i + 1;
+			local slot = numBagSlots - i + 1;
 
-			itemButton:ChangeOwnership(bag, slot, overrideParent or containerFrame, baseSize);
+			itemButton:ChangeOwnership(bag, slot, overrideParent or containerFrame);
 
 			if isOverrideParent then
 				overrideParent:AddItem(itemButton);

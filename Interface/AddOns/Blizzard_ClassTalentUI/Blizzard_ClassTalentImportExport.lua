@@ -150,7 +150,7 @@ function ClassTalentImportExportMixin:GetLoadoutExportString()
 	local configID = self:GetConfigID();
 	local currentSpecID = PlayerUtil.GetCurrentSpecID();
 	local treeInfo = self:GetTreeInfo();
-	local treeHash = C_Traits.GetTreeHash(configID, treeInfo.ID);
+	local treeHash = C_Traits.GetTreeHash(treeInfo.ID);
 
 
 	self:WriteLoadoutHeader(exportStream, LOADOUT_SERIALIZATION_VERSION, currentSpecID, treeHash);
@@ -189,7 +189,7 @@ function ClassTalentImportExportMixin:ImportLoadout(importText, loadoutName)
 
 	if not self:IsHashEmpty(treeHash) then
 		-- allow third-party sites to generate loadout strings with an empty tree hash, which bypasses hash validation
-		if not self:HashEquals(treeHash, C_Traits.GetTreeHash(configID, treeInfo.ID)) then
+		if not self:HashEquals(treeHash, C_Traits.GetTreeHash(treeInfo.ID)) then
 			self:ShowImportError(LOADOUT_ERROR_TREE_CHANGED);
 			return false;
 		end

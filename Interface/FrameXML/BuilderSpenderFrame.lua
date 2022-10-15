@@ -20,6 +20,12 @@ function BuilderSpender:Initialize(textureInfo, unit, powerType)
 	self.initialized = true;
 end
 
+function BuilderSpender:AddMaskTexture(mask)
+	self.BarTexture:AddMaskTexture(mask);
+	self.GainGlowTexture:AddMaskTexture(mask);
+	self.LossGlowTexture:AddMaskTexture(mask);
+end
+
 function BuilderSpender_OnUpdateFeedbackGain(self)
 	local timeEnd = 0.5;
 	local timeElapsed = GetTime() - self.animGainStartTime;

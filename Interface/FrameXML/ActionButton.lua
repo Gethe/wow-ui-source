@@ -1098,7 +1098,7 @@ function ActionBarActionButtonMixin:UpdateFlyout(isButtonDownOverride)
 	-- If you are on an action bar then base your direction based on the action bar's orientation
 	local actionBar = self:GetParent();
 	if (actionBar.actionButtons) then
-		arrowDirection = actionBar.isHorizontal and "UP" or "LEFT";
+		arrowDirection = actionBar:GetSpellFlyoutDirection();
 	end
 
 	if (arrowDirection == "LEFT") then

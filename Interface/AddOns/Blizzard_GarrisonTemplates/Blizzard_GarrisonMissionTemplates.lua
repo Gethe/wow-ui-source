@@ -7,6 +7,7 @@ GarrisonMission = {};
 
 function GarrisonMission:OnLoadMainFrame()
 	PanelTemplates_SetNumTabs(self, 2);
+	self.Tab2:SetPoint("TOPLEFT", self.Tab1, "TOPRIGHT", 10, 0);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
 end

@@ -22,6 +22,8 @@ function BannerDataProvider:AddBanner(mapBannerInfo)
 			local omitSeconds = true;
 			return SecondsToTime(math.max(seconds, 60), omitSeconds);
 		end
+
+		return "";
  	end
 
 	local info = C_Texture.GetAtlasInfo(mapBannerInfo.atlasName);

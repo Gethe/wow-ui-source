@@ -305,7 +305,6 @@ local SharedTraits =
 
 			Arguments =
 			{
-				{ Name = "configID", Type = "number", Nilable = false },
 				{ Name = "treeID", Type = "number", Nilable = false },
 			},
 

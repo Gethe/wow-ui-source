@@ -102,7 +102,7 @@ function LootFrameMixin:OnEvent(event, ...)
 		end);
 
 		if frame then
-			if self.isAutoLoot then
+			if self.isAutoLoot and frame.SlideOutRightAnim then
 				frame.SlideOutRightAnim:Play();
 			else
 				frame:Hide();

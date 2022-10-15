@@ -229,7 +229,7 @@ function PTR_IssueReporter.AttachMultipleChoiceNoQuestion(frame, answers, canSel
     local checkBoxMargin = (questionFrameWidth/numberOfCurrentCheckboxes)-10
     
     if (PTR_IssueReporter.StandaloneSurvey) and (PTR_IssueReporter.StandaloneSurvey.submitButton) then
-        PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(false)
+        PTR_IssueReporter.SetSubmitButtonEnabled(false)
     end
     
     for key, choiceInfo in pairs (answers) do
@@ -498,13 +498,22 @@ function PTR_IssueReporter.SetSurveyButtonEnabledState()
                 end
             end
             
-            PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(submitEnabled)
+            PTR_IssueReporter.SetSubmitButtonEnabled(submitEnabled)
         else
-            PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(true)
+            PTR_IssueReporter.SetSubmitButtonEnabled(true)
         end
     end
 end
-
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetSubmitButtonEnabled(enabledStatus)
+    if (enabledStatus) then
+        PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(true)
+        PTR_IssueReporter.StandaloneSurvey.submitButton.Tooltip:Hide()
+    else
+        PTR_IssueReporter.StandaloneSurvey.submitButton:SetEnabled(false)
+        PTR_IssueReporter.StandaloneSurvey.submitButton.Tooltip:Show()
+    end
+end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.AttachModelViewer(surveyFrame, survey, dataPackage)
 

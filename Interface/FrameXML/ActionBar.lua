@@ -163,6 +163,31 @@ function ActionBarMixin:UpdateShownButtons()
     end
 end
 
+function ActionBarMixin:GetSpellFlyoutDirection()
+    local direction = self.isHorizontal and "UP" or "LEFT";
+
+	local actionBarCenterX, actionBarCenterY = self:GetCenter();
+	if actionBarCenterX and actionBarCenterY then
+		if direction == "UP" then
+			local halfScreen = GetScreenHeight() / 2;
+			direction = actionBarCenterY < halfScreen and "UP" or "DOWN";
+		elseif direction == "LEFT" then
+			local halfScreen = GetScreenWidth() / 2;
+			direction = actionBarCenterX > halfScreen and "LEFT" or "RIGHT";
+		end
+	end
+
+	return direction;
+end
+
+function ActionBarMixin:UpdateFlyouts()
+    for i, actionButton in pairs(self.actionButtons) do
+        if actionButton.UpdateFlyout then
+            actionButton:UpdateFlyout();
+        end
+    end
+end
+
 EditModeActionBarMixin = {}
 
 function EditModeActionBarMixin:EditModeActionBar_OnLoad()

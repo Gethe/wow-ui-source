@@ -75,6 +75,7 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self.auraPools:CreatePool("FRAME", self, "TargetBuffFrameTemplate");
 
 	targetFrameContentMain.ManaBar:GetStatusBarTexture():AddMaskTexture(targetFrameContentMain.ManaBarMask);
+	targetFrameContentMain.MyHealPredictionBar:AddMaskTexture(targetFrameContentMain.ManaBarMask);
 
 	self:Update();
 

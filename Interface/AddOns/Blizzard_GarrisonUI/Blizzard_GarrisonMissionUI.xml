@@ -1870,16 +1870,12 @@
 			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_6_0" type="global"/>
 		</KeyValues>
 		<Frames>
-			<Button name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">
+			<Button name="$parentTab1" parentKey="Tab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="11" y="-42"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FOLLOWERS">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>
-			</Button>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FOLLOWERS"/>
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList">
 				<Size x="305" y="535"/>
 				<KeyValues>

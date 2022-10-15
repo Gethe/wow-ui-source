@@ -864,13 +864,25 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local frameHeight = contentOffsetY + currentTierHeight + layoutOptions.spacingBottom;	-- add currentTierHeight to account for the last tier
 	self:SetSize(frameWidth, frameHeight);
 
+	-- hide old font strings
+	if self.fontStrings then
+		for _, oldString in ipairs(self.fontStrings) do
+			if oldString ~= nil then
+				oldString:Hide();
+			end
+		end
+		self.fontStrings = nil;
+	end
+
 	-- Set up custom font strings
 	if layoutOptions.fontStrings then
-		for _, stringDesc in ipairs(layoutOptions.fontStrings) do
+		self.fontStrings = {};
+		for i, stringDesc in ipairs(layoutOptions.fontStrings) do
 			local newString = self.fontStringPools:Acquire(stringDesc.template, self, stringDesc.layer, stringDesc.subLayer);
 			newString:SetText(stringDesc.text);
 			newString:SetPoint(stringDesc.point, self, stringDesc.relativePoint, stringDesc.xOfs, stringDesc.yOfs);
 			newString:Show();
+			self.fontStrings[i] = newString;
 		end
 	end
 

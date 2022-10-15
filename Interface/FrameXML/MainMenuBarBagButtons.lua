@@ -130,8 +130,7 @@ function BaseBagSlotButtonMixin:BagSlotOnLeave()
 end
 
 function BaseBagSlotButtonMixin:UpdateBagButtonHighlight(containerFrame)
-	local isMatchingContainer = containerFrame:IsCombinedBagContainer() or (self:GetBagID() == containerFrame:GetBagID());
-	if isMatchingContainer then
+	if containerFrame:MatchesBagID(self:GetBagID()) then
 		self.SlotHighlightTexture:SetShown(containerFrame:IsShown());
 	end
 end

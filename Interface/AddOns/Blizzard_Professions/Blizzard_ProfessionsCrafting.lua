@@ -603,7 +603,7 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	end
 
 	if not currentRecipeInfo then
-		currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
+		currentRecipeInfo = (not changedProfessionID) and self.SchematicForm:GetRecipeInfo();
 		if currentRecipeInfo then
 			-- The form may not be the base recipe ID, so find the first info
 			-- if we expect to retrieve it from the data provider.

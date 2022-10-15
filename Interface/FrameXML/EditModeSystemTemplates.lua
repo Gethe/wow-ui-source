@@ -483,6 +483,7 @@ end
 
 function EditModeSystemMixin:OnEditModeExit()
 	self:ClearHighlight();
+	self:StopMovingOrSizing();
 	EditModeSystemSettingsDialog:Hide();
 end
 
@@ -535,6 +536,11 @@ function EditModeActionBarSystemMixin:OnEditModeExit()
 
 	-- Some action bars have special visibility rules so use their method for whether to turn them on/off on exit
 	self:UpdateVisibility();
+end
+
+function EditModeActionBarSystemMixin:ApplySystemAnchor()
+	EditModeSystemMixin.ApplySystemAnchor(self);
+	self:UpdateFlyouts();
 end
 
 function EditModeActionBarSystemMixin:GetRightAnchoredWidth()
@@ -753,7 +759,8 @@ end
 
 local function openActionBarSettings()
 	EditModeManagerFrame:ClearSelectedSystem();
-	EditModeManagerFrame:SetEditModeLockState("showSelections");
+	EditModeManagerFrame:SetEditModeLockState("hideSelections");
+	HideUIPanel(EditModeManagerFrame);
 	Settings.OpenToCategory(Settings.ACTION_BAR_CATEGORY_ID);
 end
 

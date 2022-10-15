@@ -9,44 +9,46 @@
 				<Texture parentKey="LeftActive" file="Interface\AchievementFrame\UI-Achievement-Header">
 					<Size x="21" y="59"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="3"/>
+						<Anchor point="TOPLEFT" x="-10" y="3"/>
 					</Anchors>
 					<TexCoords left="0.47265625" right="0.513671875" top="0.76953125" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="RightActive" file="Interface\AchievementFrame\UI-Achievement-Header">
+					<Size x="18" y="59"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="5" y="3"/>
+					</Anchors>
+					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
 				</Texture>
 				<Texture parentKey="MiddleActive" file="Interface\AchievementFrame\UI-Achievement-Header">
 					<Size x="88" y="59"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.LeftActive" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.RightActive" relativePoint="LEFT"/>
 					</Anchors>
 					<TexCoords left="0.513671875" right="0.685546875" top="0.76953125" bottom="1.0"/>
-				</Texture>
-				<Texture parentKey="RightActive" file="Interface\AchievementFrame\UI-Achievement-Header">
-					<Size x="18" y="59"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.MiddleActive" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
 				</Texture>
 				<Texture parentKey="Left" file="Interface\AchievementFrame\UI-Achievement-Header">
 					<Size x="21" y="49"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPLEFT" x="-10"/>
 					</Anchors>
 					<TexCoords left="0.47265625" right="0.513671875" top="0.76953125" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\AchievementFrame\UI-Achievement-Header">
+					<Size x="18" y="49"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="5" y="-3.5"/>
+					</Anchors>
+					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
 				</Texture>
 				<Texture parentKey="Middle" file="Interface\AchievementFrame\UI-Achievement-Header">
 					<Size x="88" y="49"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
 					</Anchors>
 					<TexCoords left="0.513671875" right="0.685546875" top="0.76953125" bottom="1.0"/>
-				</Texture>
-				<Texture parentKey="Right" file="Interface\AchievementFrame\UI-Achievement-Header">
-					<Size x="18" y="49"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.685546875" right="0.720703125" top="0.76953125" bottom="1.0"/>
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
