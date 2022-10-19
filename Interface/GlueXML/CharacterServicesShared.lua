@@ -186,12 +186,17 @@ function VASCharacterSelectBlockBase:OnAdvance()
 	CharacterServicesCharacterSelector:Hide();
 	self:SetResultsShown(true);
 
-	local selectedButtonIndex = math.min(self:GetSelectedCharacterIndex(), MAX_CHARACTERS_DISPLAYED);
-	local numDisplayedCharacters = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
+	local selectedCharacterGUID = self:GetSelectedCharacterGUID();
+	local selectedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(elementData)
+		local guid = select(15, GetCharacterInfo(elementData.index));
+		return guid == selectedCharacterGUID;
+	end);
 
-	for buttonIndex = 1, numDisplayedCharacters do
-		if (buttonIndex ~= selectedButtonIndex) then
-			CharacterSelect_SetCharacterButtonEnabled(buttonIndex, false);
+	if selectedButton then
+		for _, button in ipairs(CharacterSelectCharacterFrame.ScrollBox:GetFrames()) do
+			if button ~= selectedButton then
+				CharacterSelect_SetCharacterButtonEnabled(button, false);
+			end
 		end
 	end
 end
@@ -209,7 +214,11 @@ function VASCharacterSelectBlockBase:GetResult()
 end
 
 function VASCharacterSelectBlockBase:GetSelectedCharacterIndex()
-	return self:GetResult().characterButtonID or CharacterSelect.selectedIndex;
+	return self:GetResult().characterIndex or CharacterSelect.selectedIndex;
+end
+
+function VASCharacterSelectBlockBase:GetSelectedCharacterGUID()
+	return self:GetResult().selectedCharacterGUID;
 end
 
 function VASCharacterSelectBlockBase:FormatResult()
