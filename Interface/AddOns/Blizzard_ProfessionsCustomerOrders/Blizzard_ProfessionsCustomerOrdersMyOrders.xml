@@ -17,7 +17,7 @@
 	</Button>
 
 	<Frame name="ProfessionsCustomerOrdersMyOrdersTemplate" mixin="ProfessionsCustomerOrdersMyOrdersMixin" virtual="true">
-		<Size x="800" y="538"/>
+		<Size x="825" y="568"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -37,14 +37,14 @@
 			<Frame parentKey="OrderList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-60"/>
-					<Anchor point="BOTTOMRIGHT" x="-5" y="25"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="22"/>
 				</Anchors>
 				<Layers>
 					<Layer>
 						<Texture parentKey="Background" atlas="auctionhouse-background-index" useAtlasSize="false">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="2" y="-35"/>
-								<Anchor point="BOTTOMRIGHT" x="-25" y="5"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
 							</Anchors>							
 						</Texture>
 					</Layer>
@@ -54,7 +54,7 @@
 						<Size y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="-14"/>
-							<Anchor point="TOPRIGHT" x="-25" y="-14"/>
+							<Anchor point="TOPRIGHT" x="-20" y="-14"/>
 						</Anchors>						
 					</Frame>
 					<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
@@ -63,19 +63,19 @@
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="-1" y="-32"/>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="768" y="2"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>											
 					</Frame>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="-15" y="0"/>
 						</Anchors>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.NineSlice" relativePoint="TOPRIGHT" x="0" y="-2"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.NineSlice" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-2"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
 					</EventFrame>
 					<Frame parentKey="LoadingSpinner" hidden="true" frameLevel="2000">

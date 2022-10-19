@@ -1274,6 +1274,7 @@ local QuestLog =
 				{ Name = "suggestedGroup", Type = "number", Nilable = false },
 				{ Name = "frequency", Type = "QuestFrequency", Nilable = true },
 				{ Name = "isHeader", Type = "bool", Nilable = false },
+				{ Name = "useMinimalHeader", Type = "bool", Nilable = false },
 				{ Name = "isCollapsed", Type = "bool", Nilable = false },
 				{ Name = "startEvent", Type = "bool", Nilable = false },
 				{ Name = "isTask", Type = "bool", Nilable = false },

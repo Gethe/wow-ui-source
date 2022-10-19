@@ -27,7 +27,11 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
         self:SetOrder(self.order); -- Refresh all
     end);
 
-    self.CompleteOrderButton:SetScript("OnClick", function() C_CraftingOrders.FulfillOrder(self.order.orderID, self.OrderDetails.FulfillmentForm.NoteEditBox.ScrollingEditBox:GetInputText(), C_TradeSkillUI.GetChildProfessionInfo().profession); end);
+    self.CompleteOrderButton:SetScript("OnClick", function() 
+        local note = self.OrderDetails.FulfillmentForm.NoteEditBox.ScrollingEditBox:GetInputText();
+        note = string.gsub(note, "\n", "");
+        C_CraftingOrders.FulfillOrder(self.order.orderID, note, C_TradeSkillUI.GetChildProfessionInfo().profession);
+    end);
     
     self.DeclineOrderDialog.ConfirmButton:SetScript("OnClick", function() C_CraftingOrders.RejectOrder(self.order.orderID, self.DeclineOrderDialog.NoteEditBox.ScrollingEditBox:GetInputText(), C_TradeSkillUI.GetChildProfessionInfo().profession) end);
     self.DeclineOrderDialog.CancelButton:SetScript("OnClick", function() self.DeclineOrderDialog:Hide(); end);
@@ -87,6 +91,9 @@ local ProfessionsCrafterOrderViewEvents =
     "CRAFTINGORDERS_CLAIMED_ORDER_ADDED",
     "CRAFTINGORDERS_CLAIMED_ORDER_REMOVED",
     "CRAFTINGORDERS_CLAIMED_ORDER_UPDATED",
+    "UNIT_SPELLCAST_INTERRUPTED",
+    "UNIT_SPELLCAST_FAILED",
+    "UPDATE_TRADESKILL_CAST_COMPLETE",
 };
 function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     if event == "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE" then
@@ -139,6 +146,8 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
         if orderID == self.order.orderID then
             self:SetOrder(C_CraftingOrders.GetClaimedOrder());
         end
+    elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" or event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
+		self:StopOverridingCastBar();
     end
 end
 
@@ -156,6 +165,7 @@ function ProfessionsCrafterOrderViewMixin:OnHide()
     FrameUtil.UnregisterFrameForEvents(self, ProfessionsCrafterOrderViewEvents);
     self:SetScript("OnUpdate", nil);
     EventRegistry:UnregisterCallback("Professions.AllocationUpdated", self);
+    self:StopOverridingCastBar();
 end
 
 function ProfessionsCrafterOrderViewMixin:OnUpdate()
@@ -227,6 +237,7 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
 
             if self.order.orderState == Enum.CraftingOrderState.Created then
                 slot:SetUnallocatable(true);
+                slot:SetAddIconDesaturated(true);
             end
 
             if reagentType == Enum.CraftingReagentType.Optional then
@@ -304,7 +315,10 @@ function ProfessionsCrafterOrderViewMixin:UpdateStartOrderButton()
     local errorReason;
 
     local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.order.spellID);
-    if not recipeInfo or not recipeInfo.learned then
+    if self.order.customerGuid == UnitGUID("player") then
+        enabled = false;
+        errorReason = PROFESSIONS_CRAFTER_CANT_CLAIM_OWN;
+    elseif not recipeInfo or not recipeInfo.learned then
         enabled = false;
         errorReason = PROFESSIONS_CRAFTER_CANT_CLAIM_UNLEARNED;
     elseif not self.hasOptionalReagentSlots then
@@ -420,7 +434,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
             self.OrderDetails.FulfillmentForm.ItemName:SetText(itemNameText);
             self.OrderDetails.FulfillmentForm.ItemName:SetWidth(self.OrderDetails.FulfillmentForm.ItemName:GetStringWidth());
 
-            self.OrderDetails.FulfillmentForm.OrderCompleteText:SetPoint("TOP", self.OrderDetails.FulfillmentForm.ItemName, "TOP", 0, -15);
+            self.OrderDetails.FulfillmentForm.OrderCompleteText:SetPoint("TOPLEFT", self.OrderDetails.FulfillmentForm.ItemName, "TOPLEFT", 0, -15);
         end
     end
 
@@ -451,7 +465,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
 
         if self.order.isFulfillable and self.recraftingOrderID ~= self.order.orderID then
             showCompleteOrderButton = true;
-            showStartRecraftButton = C_TradeSkillUI.RecipeCanBeRecrafted(self.order.spellID);
+            showStartRecraftButton = C_CraftingOrders.OrderCanBeRecrafted(self.order.orderID);
             showFulfillmentForm = true;
         else
             showCreateButton = true;
@@ -475,10 +489,13 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     self.OrderInfo.DeclineOrderButton:SetShown(showDeclineOrderButton);
 
     self.OrderInfo.StartOrderButton:ClearAllPoints();
-    self.OrderInfo.StartOrderButton:SetPoint("BOTTOM", self.OrderInfo, "BOTTOM", showDeclineOrderButton and 70 or 0, 20);
+    local xOfs = showDeclineOrderButton and -70 or 0;
+    local yOfs = showDeclineOrderButton and 8 or 125;
+    self.OrderInfo.StartOrderButton:SetPoint("BOTTOM", self.OrderInfo, "BOTTOM", xOfs, yOfs);
 end
 
 function ProfessionsCrafterOrderViewMixin:CraftOrder()
+    self:StartOverridingCastBar();
     local recipeID = self.order.spellID;
     local count = 1;
     local predicate = function(reagentTbl, slotIndex)
@@ -490,6 +507,7 @@ function ProfessionsCrafterOrderViewMixin:CraftOrder()
 end
 
 function ProfessionsCrafterOrderViewMixin:RecraftOrder()
+    self:StartOverridingCastBar();
     local predicate = function(reagentTbl, slotIndex)
 		return reagentTbl.reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent and not self.reagentSlotProvidedByCustomer[slotIndex];
 	end
@@ -514,4 +532,15 @@ end
 
 function ProfessionsCrafterOrderViewMixin:IsRecrafting()
     return self.order.isRecraft or self.recraftingOrderID == self.order.orderID
+end
+
+function ProfessionsCrafterOrderViewMixin:StartOverridingCastBar()
+	local overrideBarType = nil;
+	local overrideAnchor = nil;
+	local hideBarText = true;
+	OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.OverlayCastBarAnchor, overrideBarType, overrideAnchor, hideBarText);
+end
+
+function ProfessionsCrafterOrderViewMixin:StopOverridingCastBar()
+	OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
 end

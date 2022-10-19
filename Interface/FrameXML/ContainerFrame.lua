@@ -1,7 +1,7 @@
 NUM_CONTAINER_FRAMES = 13;
-NUM_BAG_FRAMES = 4;
-NUM_REAGENTBAG_FRAMES = 1;
-NUM_TOTAL_BAG_FRAMES = NUM_BAG_FRAMES + NUM_REAGENTBAG_FRAMES;
+NUM_BAG_FRAMES = Constants.InventoryConstants.NumBagSlots;
+NUM_REAGENTBAG_FRAMES = Constants.InventoryConstants.NumReagentBagSlots;
+NUM_TOTAL_BAG_FRAMES = Constants.InventoryConstants.NumBagSlots + Constants.InventoryConstants.NumReagentBagSlots;
 CONTAINER_OFFSET_Y = 85;
 CONTAINER_OFFSET_X = -4;
 
@@ -43,20 +43,20 @@ local function ContainerFrame_IsBankBag(id)
 end
 
 local function ContainerFrame_IsHeldBag(id)
-	return id >= 0 and id <= NUM_TOTAL_BAG_FRAMES;
+	return id >= Enum.BagIndex.Backpack and id <= NUM_TOTAL_BAG_FRAMES;
 end
 
 local function ContainerFrame_IsGenericHeldBag(id)
 	-- This doesn't include specialized bags like the reagent bag or bank bags; it includes the backpack
-	return id >= 0 and id <= NUM_BAG_FRAMES;
+	return id >= Enum.BagIndex.Backpack and id <= Constants.InventoryConstants.NumBagSlots;
 end
 
 local function ContainerFrame_IsMainBank(id)
-	return id == -1;
+	return id == Enum.BagIndex.Bank;
 end
 
 local function ContainerFrame_IsBackpack(id)
-	return id == 0;
+	return id == Enum.BagIndex.Backpack;
 end
 
 function ContainerFrame_IsReagentBag(id)
@@ -75,18 +75,16 @@ function ContainerFrame_CanContainerUseFilterMenu(id)
 	return not (ContainerFrame_IsProfessionBag(id) or ContainerFrame_IsReagentBag(id));
 end
 
-function ContainerFrame_GetContainerNumSlotsWithBase(id)
-	local numSlotsBase = C_Container.GetContainerNumSlots(id);
-	if (id == 0 and not IsAccountSecured()) then
-		return numSlotsBase + 4, numSlotsBase;
+function ContainerFrame_GetContainerNumSlots(bagId)
+	local currentNumSlots = C_Container.GetContainerNumSlots(bagId);
+	local maxNumSlots = currentNumSlots;
+
+	if bagId == Enum.BagIndex.Backpack and not IsAccountSecured() then
+		-- If your account isn't secured then the max number of slots you can have in your backpack is 4 more than your current
+		maxNumSlots = currentNumSlots + 4;
 	end
 
-	return numSlotsBase, numSlotsBase;
-end
-
-function ContainerFrame_GetContainerNumSlots(id)
-	local numSlots = ContainerFrame_GetContainerNumSlotsWithBase(id);
-	return numSlots;
+	return maxNumSlots, currentNumSlots;
 end
 
 function ContainerFrame_AllowedToOpenBags()
@@ -106,7 +104,7 @@ function ToggleBackpack_Individual()
 	if backpack then
 		CloseAllBags();
 	else
-		ToggleBag(0);
+		ToggleBag(Enum.BagIndex.Backpack);
 	end
 end
 
@@ -195,7 +193,7 @@ end
 
 local function OpenBag_Combined(id, force)
 	if not IsBagOpen(id) then
-		ContainerFrame_GenerateFrame(ContainerFrameCombinedBags, 0, 0);
+		ContainerFrame_GenerateFrame(ContainerFrameCombinedBags, 0, Enum.BagIndex.Backpack);
 	end
 end
 
@@ -284,7 +282,7 @@ function OpenBackpack()
 	end
 
 	if ContainerFrameSettingsManager:IsUsingCombinedBags() then
-		OpenBag(0);
+		OpenBag(Enum.BagIndex.Backpack);
 		return;
 	end
 
@@ -302,7 +300,7 @@ function UpdateNewItemList(containerFrame)
 end
 
 function SearchBagsForItem(itemID)
-	for i = 0, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
+	for i = Enum.BagIndex.Backpack, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 		for j = 1, C_Container.GetContainerNumSlots(i) do
 			local id = C_Container.GetContainerItemID(i, j);
 			if (id == itemID and C_NewItems.IsNewItem(i, j)) then
@@ -314,7 +312,7 @@ function SearchBagsForItem(itemID)
 end
 
 function SearchBagsForItemLink(itemLink)
-	for i = 0, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
+	for i = Enum.BagIndex.Backpack, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 		for j = 1, C_Container.GetContainerNumSlots(i) do
 			local info = C_Container.GetContainerItemInfo(i, j);
 			local link = info and info.hyperlink;
@@ -536,7 +534,7 @@ do
 			info.notCheckable = 1;
 			UIDropDownMenu_AddButton(info, level);
 
-			for i = 0, NUM_BAG_FRAMES do
+			for i = 0, Constants.InventoryConstants.NumBagSlots do
 				local info = UIDropDownMenu_CreateInfo();
 				info.text = bagNames[i];
 				info.hasArrow = true;
@@ -1594,13 +1592,11 @@ function ContainerFrameItemButtonMixin:GetSlotAndBagID()
 	return self:GetID(), self:GetBagID();
 end
 
-function ContainerFrameItemButtonMixin:ChangeOwnership(bag, slot, newParent, containerBaseNumSlots)
+function ContainerFrameItemButtonMixin:ChangeOwnership(bag, slot, newParent)
 	self:SetBagID(bag);
 	self:SetID(slot);
 	self:SetParent(newParent);
-
-	-- This is unfortunately the most convenient place to set this state.
-	self:SetIsExtended(slot > containerBaseNumSlots);
+	self:UpdateExtended();
 
 	-- Potentially temporary, item slots don't have a background, so when they're used in a combined inventory setup
 	-- they need to make their own.
@@ -1720,18 +1716,27 @@ function ContainerFrameItemButtonMixin:IsExtended()
 end
 
 function ContainerFrameItemButtonMixin:UpdateExtended()
-	if self:IsExtended() then
-		if not self.extendedFrame then
-			self.extendedFrame = CreateFrame("FRAME", nil, self, "ContainerFrameExtendedItemButtonTemplate");
-			self.extendedFrame:SetAllPoints(self);
+	local oldIsExtended = self.isExtended;
+
+	local slotId, bagId = self:GetSlotAndBagID();
+	local _, currentNumSlots = ContainerFrame_GetContainerNumSlots(bagId);
+	-- If a slotId is greater than our currentNumSlots then it is an extended (locked) slot which can't be used until your account is secured
+	self:SetIsExtended(slotId > currentNumSlots);
+
+	if self.isExtended ~= oldIsExtended then
+		if self:IsExtended() then
+			if not self.extendedFrame then
+				self.extendedFrame = CreateFrame("FRAME", nil, self, "ContainerFrameExtendedItemButtonTemplate");
+				self.extendedFrame:SetAllPoints(self);
+			end
+			self.extendedFrame:Show();
+			self:EnableMouse(false);
+		else
+			if self.extendedFrame then
+				self.extendedFrame:Hide();
+			end
+			self:EnableMouse(true);
 		end
-		self.extendedFrame:Show();
-		self:EnableMouse(false);
-	else
-		if self.extendedFrame then
-			self.extendedFrame:Hide();
-		end
-		self:EnableMouse(true);
 	end
 end
 
@@ -1756,7 +1761,7 @@ end
 function ContainerFramePortraitButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	local waitingOnData = false;
-	if ContainerFrame_IsBackpack(self:GetID()) then
+	if self:GetParent():MatchesBagID(Enum.BagIndex.Backpack) then
 		GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
 		if (GetBindingKey("TOGGLEBACKPACK")) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
@@ -1819,7 +1824,7 @@ end
 local function OpenAllBagsInternal(includeBank)
 	OpenBackpack();
 
-	local startIndex  = ContainerFrameSettingsManager:IsUsingCombinedBags() and (NUM_BAG_FRAMES + 1) or 1;
+	local startIndex  = ContainerFrameSettingsManager:IsUsingCombinedBags() and (Constants.InventoryConstants.NumBagSlots + 1) or 1;
 	local endIndex = includeBank and NUM_CONTAINER_FRAMES or NUM_TOTAL_BAG_FRAMES;
 
 	for i = startIndex, endIndex do
@@ -1857,7 +1862,7 @@ function ToggleAllBags()
 
 	local bagsOpen = 0;
 	local totalBags = 1;
-	if IsBagOpen(0) then
+	if IsBagOpen(Enum.BagIndex.Backpack) then
 		bagsOpen = bagsOpen + 1;
 		CloseBackpack();
 	end
@@ -1923,7 +1928,7 @@ end
 
 function IsAnyStandardHeldBagOpen()
 	local checkingAny = true;
-	return CheckIsBagOpen_Internal(0, NUM_BAG_FRAMES, checkingAny);
+	return CheckIsBagOpen_Internal(0, Constants.InventoryConstants.NumBagSlots, checkingAny);
 end
 
 function AreAllBagsOpen()
@@ -1933,7 +1938,7 @@ end
 
 function AreAllStandardHeldBagsOpen()
 	local checkingAll = false;
-	return CheckIsBagOpen_Internal(0, NUM_BAG_FRAMES, checkingAll);
+	return CheckIsBagOpen_Internal(0, Constants.InventoryConstants.NumBagSlots, checkingAll);
 end
 
 function OpenAllBagsMatchingContext(frame)
@@ -2033,7 +2038,7 @@ do
 		InitializeFrameEnumerator(1, NUM_CONTAINER_FRAMES, containerFrames);
 
 		if not ContainerFrameSettingsManager:IsUsingCombinedBags() then
-			InitializeFrameEnumerator(1, NUM_BAG_FRAMES, bagFrames);
+			InitializeFrameEnumerator(1, Constants.InventoryConstants.NumBagSlots, bagFrames);
 		end
 	end
 
@@ -2156,9 +2161,9 @@ function ContainerFrameSettingsManager:OnBagContainerUpdate(container)
 	if self:IsUsingCombinedBags() and container:IsCombinedBagContainer() then
 		self:MarkBagSetupDirty();
 
-		if IsBagOpen(0) then
-			CloseBag(0);
-			OpenBag(0);
+		if IsBagOpen(Enum.BagIndex.Backpack) then
+			CloseBag(Enum.BagIndex.Backpack);
+			OpenBag(Enum.BagIndex.Backpack);
 		end
 	end
 end
@@ -2229,9 +2234,9 @@ function ContainerFrameSettingsManager:SetupBagsGeneric(overrideParent)
 
 	local function GetBagSetupIndices(ascendingOrder)
 		if ascendingOrder then
-			return 0, NUM_BAG_FRAMES, 1;
+			return 0, Constants.InventoryConstants.NumBagSlots, 1;
 		else
-			return NUM_BAG_FRAMES, 0, -1;
+			return Constants.InventoryConstants.NumBagSlots, 0, -1;
 		end
 	end
 
@@ -2239,13 +2244,13 @@ function ContainerFrameSettingsManager:SetupBagsGeneric(overrideParent)
 	local startIndex, endIndex, increment = GetBagSetupIndices(ascendingOrder);
 
 	for bag = startIndex, endIndex, increment do
-		local bagSize, baseSize = ContainerFrame_GetContainerNumSlotsWithBase(bag);
-		for i = 1, bagSize do
+		local numBagSlots = ContainerFrame_GetContainerNumSlots(bag);
+		for i = 1, numBagSlots do
 			local containerFrame = UIParent.ContainerFrames[bag + 1];
 			local itemButton = containerFrame.Items[i];
-			local slot = bagSize - i + 1;
+			local slot = numBagSlots - i + 1;
 
-			itemButton:ChangeOwnership(bag, slot, overrideParent or containerFrame, baseSize);
+			itemButton:ChangeOwnership(bag, slot, overrideParent or containerFrame);
 
 			if isOverrideParent then
 				overrideParent:AddItem(itemButton);
@@ -2423,7 +2428,7 @@ function ContainerFrameBackpackMixin:IsBackpack()
 end
 
 function ContainerFrameBackpackMixin:CanUseForBagID(id)
-	return id == 0;
+	return id == Enum.BagIndex.Backpack;
 end
 
 function ContainerFrameBackpackMixin:GetInitialItemAnchor()
@@ -2471,7 +2476,7 @@ function ContainerFrameCombinedBagsMixin:IsCombinedBagContainer()
 end
 
 function ContainerFrameCombinedBagsMixin:IsBagOpen(id)
-	if self:IsShown() and id <= NUM_BAG_FRAMES then
+	if self:IsShown() and id <= Constants.InventoryConstants.NumBagSlots then
 		return id;
 	end
 
@@ -2481,7 +2486,7 @@ end
 do
 	local function GetTotalSlotsForCombinedBag()
 		local totalSlots = 0;
-		for i = 0, NUM_BAG_FRAMES do
+		for i = 0, Constants.InventoryConstants.NumBagSlots do
 			totalSlots = totalSlots + ContainerFrame_GetContainerNumSlots(i);
 		end
 

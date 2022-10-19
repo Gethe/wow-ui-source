@@ -32,13 +32,8 @@ local minimapPulseLocks = EnumUtil.MakeEnum(
 	"MajorFactionUnlocked"
 );
 
-function DragonflightLandingOverlayMixin.IsOverlayUnlocked(completedQuestID)
-	local playerFactionGroup = UnitFactionGroup("player");
-	if playerFactionGroup == "Alliance" then
-		return completedQuestID == MAJOR_FACTIONS_INTRO_QUEST_ID_ALLIANCE or C_QuestLog.IsQuestFlaggedCompleted(MAJOR_FACTIONS_INTRO_QUEST_ID_ALLIANCE);
-	elseif playerFactionGroup == "Horde" then
-		return completedQuestID == MAJOR_FACTIONS_INTRO_QUEST_ID_HORDE or C_QuestLog.IsQuestFlaggedCompleted(MAJOR_FACTIONS_INTRO_QUEST_ID_HORDE);
-	end
+function DragonflightLandingOverlayMixin.IsOverlayUnlocked()
+	return C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_DRAGONFLIGHT);
 end
 
 function DragonflightLandingOverlayMixin.GetMinimapDisplayInfo()

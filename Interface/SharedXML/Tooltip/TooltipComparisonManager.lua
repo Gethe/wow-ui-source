@@ -31,6 +31,7 @@ function TooltipComparisonManager:Clear(tooltip)
 	-- if no tooltip specific, clear any
 	if self.tooltip and (self.tooltip == tooltip or not tooltip) then
 		self.comparisonItem = nil;
+		self.comparisonIndex = nil;
 		self.compareInfo = nil;
 		self.anchorFrame = nil;
 		
@@ -185,7 +186,7 @@ function TooltipComparisonManager:IsComparisonItemDifferent(comparisonItem)
 end
 
 function TooltipComparisonManager:CycleItem()
-	if GetCVarBool("allowCompareWithToggle") then
+	if self.comparisonIndex and GetCVarBool("allowCompareWithToggle") then
 		self.comparisonIndex = self.comparisonIndex + 1;
 		self:RefreshItems();
 	end
@@ -227,6 +228,8 @@ function TooltipComparisonManager:SetItemTooltip(isPrimaryTooltip)
 	if not tooltipData then
 		return;
 	end
+
+	tooltip:ClearLines();
 
 	local isPairedItem = comparisonMethod == Enum.TooltipComparisonMethod.WithBagMainHandItem or comparisonMethod == Enum.TooltipComparisonMethod.WithBagOffHandItem;
 

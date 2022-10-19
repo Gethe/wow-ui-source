@@ -7,8 +7,12 @@ local landingPageOverlay = {
 ExpansionLandingPageMixin = {};
 
 ExpansionLandingPageEvents = {
-	"QUEST_TURNED_IN",
+	"ACHIEVEMENT_EARNED",
 	"PLAYER_LOGIN",
+	"PLAYER_LEVEL_UP",
+	"QUEST_REMOVED",
+	"QUEST_TURNED_IN",
+	"ZONE_CHANGED",
 };
 
 function ExpansionLandingPageMixin:OnLoad()
@@ -24,10 +28,7 @@ function ExpansionLandingPageMixin:OnHide()
 end
 
 function ExpansionLandingPageMixin:OnEvent(event, ...)
-	if event == "QUEST_TURNED_IN" then
-		local completedQuestID, xpReward, moneyReward = ...;
-		self:RefreshExpansionOverlay(completedQuestID);
-	elseif event == "PLAYER_LOGIN" then
+	if tContains(ExpansionLandingPageEvents, event) then
 		self:RefreshExpansionOverlay();
 	end
 
@@ -43,17 +44,17 @@ function ExpansionLandingPageMixin:IsOverlayApplied()
 	return self.overlay ~= nil;
 end
 
-function ExpansionLandingPageMixin:GetNewestExpansionOverlayForPlayer(completedQuestID)
+function ExpansionLandingPageMixin:GetNewestExpansionOverlayForPlayer()
 	for expansion = LE_EXPANSION_LEVEL_CURRENT, LE_EXPANSION_CLASSIC, -1 do
 		local overlay = landingPageOverlay[expansion];
-		if overlay and overlay.IsOverlayUnlocked(completedQuestID) then
+		if overlay and overlay.IsOverlayUnlocked() then
 			return overlay;
 		end
 	end
 end
 
-function ExpansionLandingPageMixin:RefreshExpansionOverlay(completedQuestID)	
-	local newestOverlay = self:GetNewestExpansionOverlayForPlayer(completedQuestID);
+function ExpansionLandingPageMixin:RefreshExpansionOverlay()	
+	local newestOverlay = self:GetNewestExpansionOverlayForPlayer();
 	if newestOverlay and newestOverlay ~= self.overlay then
 		self.overlay = newestOverlay;
 		newestOverlay.CreateOverlay(self.Overlay);

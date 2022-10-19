@@ -3,7 +3,7 @@ ProfessionsCustomerOrdersMode = EnumUtil.MakeEnum("Browse", "Orders");
 local ProfessionOrderFrameTitles =
 {
     [ProfessionsCustomerOrdersMode.Browse] = PLACE_CRAFTING_ORDERS,
-    [ProfessionsCustomerOrdersMode.Orders] = PLACE_CRAFTING_ORDERS,
+    [ProfessionsCustomerOrdersMode.Orders] = MY_ORDERS,
 };
 
 

@@ -3,6 +3,8 @@ ProfessionsRecraftSlotMixin = {};
 function ProfessionsRecraftSlotMixin:OnLoad()
 	self.InputSlot:SetScript("OnLeave", GameTooltip_Hide);
 	self.OutputSlot:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.Background:SetShown(not self.hideBackdrop);
 end
 
 function ProfessionsRecraftSlotMixin:Init(transaction, overridePredicate, overrideItemTransition, inputHyperlink)

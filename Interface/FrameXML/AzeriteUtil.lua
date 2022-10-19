@@ -19,7 +19,7 @@ do
 	end
 
 	function AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems()
-		return AzeriteEmpoweredItemIterator, nil, EQUIPPED_FIRST - 1;
+		return AzeriteEmpoweredItemIterator, nil, INVSLOT_FIRST_EQUIPPED - 1;
 	end
 end
 

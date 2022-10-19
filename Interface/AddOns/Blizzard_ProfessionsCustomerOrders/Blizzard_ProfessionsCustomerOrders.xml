@@ -9,7 +9,7 @@
 	</Button>
 
 	<Frame name="ProfessionsCustomerOrdersFrame" mixin="ProfessionsCustomerOrdersMixin" parent="UIParent" toplevel="true" enableMouse="true" inherits="PortraitFrameTemplate" hidden="true">
-		<Size x="800" y="538"/>
+		<Size x="825" y="568"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>

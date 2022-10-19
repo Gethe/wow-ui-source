@@ -301,13 +301,13 @@ function MinimapClusterMixin:CheckTutorials()
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFrames",
 			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_TRACKING_CHANGES,
-			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
 			offsetX = 0,
-			alignment = HelpTip.Alignment.Center,
+			alignment = HelpTip.Alignment.Right,
 			onAcknowledgeCallback = GenerateClosure(self.CheckTutorials, self),
 			useParentStrata	= false,
 		};
-		HelpTip:Show(UIParent, helpTipInfo, self);
+		HelpTip:Show(UIParent, helpTipInfo, self.Tracking);
 	end
 end
 

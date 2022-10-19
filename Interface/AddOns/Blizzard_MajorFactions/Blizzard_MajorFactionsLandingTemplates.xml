@@ -60,6 +60,10 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
 			</Frame>
 
 			<Button parentKey="UnlockedState" mixin="MajorFactionButtonUnlockedStateMixin">

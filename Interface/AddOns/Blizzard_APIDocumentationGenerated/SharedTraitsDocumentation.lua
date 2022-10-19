@@ -194,6 +194,15 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetLoadoutSerializationVersion",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "serializationVersion", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNodeCost",
 			Type = "Function",
 
@@ -284,6 +293,15 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetTraitSystemWidgetSetID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiWidgetSetID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTreeCurrencyInfo",
 			Type = "Function",
 
@@ -305,7 +323,6 @@ local SharedTraits =
 
 			Arguments =
 			{
-				{ Name = "configID", Type = "number", Nilable = false },
 				{ Name = "treeID", Type = "number", Nilable = false },
 			},
 

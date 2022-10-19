@@ -44,6 +44,7 @@
 		<Scripts>
 			<OnLoad method="ActionBar_OnLoad" inherit="prepend"/>
 			<OnEvent method="ActionBar_OnEvent" inherit="append"/>
+			<OnShow method="ActionBar_OnShow"/> <!--Don't want LayoutFrame's OnShow since we are calling our own layout calls OnShow-->
 		</Scripts>
 	</Frame>
 
@@ -51,8 +52,6 @@
 		<Scripts>
 			<OnLoad method="EditModeActionBar_OnLoad"/>
 			<OnEvent method="EditModeActionBar_OnEvent" inherit="append"/>
-			<OnShow method="EditModeActionBar_OnShow" inherit="append"/>
-			<OnHide method="EditModeActionBar_OnHide" inherit="append"/>
 		</Scripts>
 	</Frame>
 </Ui>

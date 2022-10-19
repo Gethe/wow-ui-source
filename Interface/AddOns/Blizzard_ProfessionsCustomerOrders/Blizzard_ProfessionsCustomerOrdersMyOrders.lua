@@ -8,7 +8,8 @@ function ProfessionsCustomerOrderListElementMixin:OnLineEnter()
 
 	local reagents = {};
 	local qualityIDs = C_TradeSkillUI.GetQualitiesForRecipe(self.option.spellID);
-	GameTooltip:SetRecipeResultItem(self.option.spellID, reagents, nil, nil, qualityIDs and qualityIDs[1]);
+	local minQuality = self.option.minQuality >= 1 or 1;
+	GameTooltip:SetRecipeResultItem(self.option.spellID, reagents, nil, nil, qualityIDs and qualityIDs[minQuality]);
 
 	if IsModifiedClick("DRESSUP") then
 		ShowInspectCursor();
@@ -85,6 +86,12 @@ function ProfessionsCustomerOrdersMyOrdersMixin:InitOrderList()
 
 	self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Status.Width, PTC.Status.LeftCellPadding,
 										  PTC.Status.RightCellPadding, ProfessionsSortOrder.Status, "ProfessionsCustomerTableCellStatusTemplate");
+
+	self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Tip.Width, PTC.Tip.LeftCellPadding,
+										  PTC.Tip.RightCellPadding, ProfessionsSortOrder.Tip, "ProfessionsCustomerTableCellActualCommissionTemplate");
+
+	self.tableBuilder:AddUnsortableFixedWidthColumn(self, PTC.NoPadding, PTC.OrderType.Width, PTC.OrderType.LeftCellPadding,
+										  PTC.OrderType.RightCellPadding, CRAFTING_ORDERS_BROWSE_HEADER_ORDER_TYPE, "ProfessionsCustomerTableCellTypeTemplate");
 
 	self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Expiration.Width, PTC.Expiration.LeftCellPadding,
 										  PTC.Expiration.RightCellPadding, ProfessionsSortOrder.Expiration, "ProfessionsCustomerTableCellExpirationTemplate");

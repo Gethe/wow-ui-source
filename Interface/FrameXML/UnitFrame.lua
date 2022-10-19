@@ -124,15 +124,11 @@ function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar,
 
 	if (self.healthbar) then
 		self.healthbar.capNumericDisplay = true;
+		self.healthbar.unitFrame = self;
 	end
 	if (self.manabar) then
 		self.manabar.capNumericDisplay = true;
-
-		if (self.frameType) then
-			self.manabar.frameType = self.frameType;
-		end
-
-		self.manabar.portraitType = self.portrait and "PortraitOn" or "PortraitOff";
+		self.manabar.unitFrame = self;
 	end
 
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
@@ -508,7 +504,7 @@ function UnitFrameManaBar_UpdateTypeOld(manaBar)
 	if ( not manaBar ) then
 		return;
 	end
-	local unitFrame = manaBar:GetParent();
+
 	local powerType, powerToken, altR, altG, altB = UnitPowerType(manaBar.unit);
 	local prefix = _G[powerToken];
 	local info = PowerBarColor[powerToken];
@@ -560,10 +556,10 @@ function UnitFrameManaBar_UpdateTypeOld(manaBar)
 			manaBar.FeedbackFrame:StopFeedbackAnim();
 		end
 		manaBar.currValue = UnitPower("player", powerType);
-		if unitFrame.myManaCostPredictionBar then
-			unitFrame.myManaCostPredictionBar:Hide();
+		if manaBar.unitFrame.myManaCostPredictionBar then
+			manaBar.unitFrame.myManaCostPredictionBar:Hide();
 		end
-		unitFrame.predictedPowerCost = 0;
+		manaBar.unitFrame.predictedPowerCost = 0;
 	end
 
 	-- Update the manabar text
@@ -571,7 +567,7 @@ function UnitFrameManaBar_UpdateTypeOld(manaBar)
 
 	-- Setup newbie tooltip
 	if ( manaBar.unit ~= "pet") then
-	    if ( unitFrame:GetName() == "PlayerFrame" ) then
+	    if ( manaBar.unitFrame:GetName() == "PlayerFrame" ) then
 		    manaBar.tooltipTitle = prefix;
 		    manaBar.tooltipText = _G["NEWBIE_TOOLTIP_MANABAR_"..powerType];
 	    else
@@ -586,25 +582,26 @@ function UnitFrameManaBar_UpdateType(manaBar)
 		return;
 	end
 
-	if(not manaBar.frameType) then
+	if(not manaBar.unitFrame.frameType) then
 		UnitFrameManaBar_UpdateTypeOld(manaBar);
 		return;
 	end
 
-	local unitFrame = manaBar:GetParent();
 	local powerType, powerToken, altR, altG, altB = UnitPowerType(manaBar.unit);
 	local info = PowerBarColor[powerToken];
+
+	local portraitType = manaBar.unitFrame.portrait and "PortraitOn" or "PortraitOff";
 
 	-- Some mana bar art is different for a frame depending on if they are in a vehicle or not.
 	-- Special case for the party frame.
 	local vehicleText = "";
-	if(manaBar.frameType == "Party" and unitFrame.state == "vehicle") then
+	if(manaBar.unitFrame.frameType == "Party" and manaBar.unitFrame.state == "vehicle") then
 		vehicleText = "-Vehicle";
 	end
 
 	if (info) then
-		if (manaBar.frameType and info.atlasElementName) then
-			local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType..vehicleText.."-Bar-"..info.atlasElementName;
+		if (manaBar.unitFrame.frameType and info.atlasElementName) then
+			local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.unitFrame.frameType.."-"..portraitType..vehicleText.."-Bar-"..info.atlasElementName;
 			manaBar:SetStatusBarTexture(manaBarTexture);
 		elseif (info.atlas) then
 			manaBar:SetStatusBarTexture(info.atlas);
@@ -626,12 +623,12 @@ function UnitFrameManaBar_UpdateType(manaBar)
 		end
 	else
 		-- If we cannot find the info for what the mana bar should be, default either to Mana or Mana-Status (colorable).
-		local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType..vehicleText.."-Bar-Mana";
+		local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.unitFrame.frameType.."-"..portraitType..vehicleText.."-Bar-Mana";
 		manaBar:SetStatusBarColor(1, 1, 1);
 
 		if (altR) then
 			-- This steps around manaBar.lockColor as it is initially setting things.
-			manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.frameType.."-"..manaBar.portraitType..vehicleText.."-Bar-Mana-Status";
+			manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.unitFrame.frameType.."-"..portraitType..vehicleText.."-Bar-Mana-Status";
 			manaBar:SetStatusBarColor(altR, altG, altB);
 		end
 
@@ -651,10 +648,10 @@ function UnitFrameManaBar_UpdateType(manaBar)
 		end
 
 		manaBar.currValue = UnitPower("player", powerType);
-		if (unitFrame.myManaCostPredictionBar) then
-			unitFrame.myManaCostPredictionBar:Hide();
+		if (manaBar.unitFrame.myManaCostPredictionBar) then
+			manaBar.unitFrame.myManaCostPredictionBar:Hide();
 		end
-		unitFrame.predictedPowerCost = 0;
+		manaBar.unitFrame.predictedPowerCost = 0;
 	end
 
 	-- Update the manabar text
@@ -680,7 +677,7 @@ function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpd
 	statusbar:SetScript("OnEvent", UnitFrameHealthBar_OnEvent);
 
 	-- Setup newbie tooltip
-	if ( statusbar and (statusbar:GetParent() == PlayerFrame) ) then
+	if ( statusbar and (statusbar.unitFrame == PlayerFrame) ) then
 		statusbar.tooltipTitle = HEALTH;
 		statusbar.tooltipText = NEWBIE_TOOLTIP_HEALTHBAR;
 	else
@@ -845,7 +842,7 @@ function UnitFrameHealthBar_OnUpdate(self)
 				self:SetValue(currValue);
 				self.currValue = currValue;
 				TextStatusBar_UpdateTextString(self);
-				UnitFrameHealPredictionBars_Update(self:GetParent());
+				UnitFrameHealPredictionBars_Update(self.unitFrame);
 			end
 		end
 
@@ -893,7 +890,7 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 		end
 	end
 	TextStatusBar_UpdateTextString(statusbar);
-	UnitFrameHealPredictionBars_Update(statusbar:GetParent());
+	UnitFrameHealPredictionBars_Update(statusbar.unitFrame);
 end
 
 function UnitFrameHealthBar_OnValueChanged(self, value)
@@ -963,7 +960,7 @@ end
 
 function UnitFrameManaBar_OnUpdate(self)
 	if ( not self.disconnected and not self.lockValues ) then
-		local predictedCost = self:GetParent().predictedPowerCost;
+		local predictedCost = self.unitFrame.predictedPowerCost;
 		local currValue = UnitPower(self.unit, self.powerType);
 		if (predictedCost) then
 			currValue = currValue - predictedCost;
@@ -1010,7 +1007,7 @@ function UnitFrameManaBar_Update(statusbar, unit)
 				statusbar:SetStatusBarColor(0.5, 0.5, 0.5);
 			end
 		else
-			local predictedCost = statusbar:GetParent().predictedPowerCost;
+			local predictedCost = statusbar.unitFrame.predictedPowerCost;
 			local currValue = UnitPower(unit, statusbar.powerType);
 			if (predictedCost) then
 				currValue = currValue - predictedCost;

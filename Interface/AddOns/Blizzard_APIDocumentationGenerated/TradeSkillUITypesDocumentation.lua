@@ -245,6 +245,16 @@ local TradeSkillUITypes =
 			},
 		},
 		{
+			Name = "CraftingTargetItem",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemGUID", Type = "string", Nilable = false },
+				{ Name = "hyperlink", Type = "string", Nilable = true },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GatheringOperationBonusStatInfo",
 			Type = "Structure",
 			Fields =

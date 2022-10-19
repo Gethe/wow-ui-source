@@ -190,7 +190,7 @@ function BankSlotsFrame_OnLoad(self)
 	self:SetID(BANK_CONTAINER);
 
 	local parent = self:GetParent();
-	parent:SetBagSize(28); -- This onload runs first
+	parent:SetBagSize(Constants.InventoryConstants.NumGenericBankSlots); -- This onload runs first
 	self["Item1"] = self.Item1; -- For consistency
 	parent["Item1"] = self.Item1; -- So that enumerateItems will work
 
@@ -229,7 +229,7 @@ function BankSlotsFrame_OnLoad(self)
 end
 
 function BankFrame_OnLoad (self)
-	self:SetBagSize(28);
+	self:SetBagSize(Constants.InventoryConstants.NumGenericBankSlots);
 	self:SetID(BANK_CONTAINER);
 
 	PanelTemplates_SetNumTabs(self, #BANK_PANELS);

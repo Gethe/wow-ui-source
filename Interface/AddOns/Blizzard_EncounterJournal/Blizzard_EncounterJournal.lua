@@ -157,6 +157,7 @@ ExpansionEnumToEJTierDataTableId = {
 	[LE_EXPANSION_LEGION] = 7,
 	[LE_EXPANSION_BATTLE_FOR_AZEROTH] = 8,
 	[LE_EXPANSION_SHADOWLANDS] = 9,
+	[LE_EXPANSION_DRAGONFLIGHT] = 10,
 }
 
 function GetEJTierDataTableID(expansion)

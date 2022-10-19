@@ -57,6 +57,10 @@ function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 	else
 		self:SetScript("OnMouseUp", nil);
 	end
+
+	if poiInfo.isAlwaysOnFlightmap then
+		self:SetAlphaLimits(1.0, 1.0, 1.0);
+	end
 end
 
 function AreaPOIPinMixin:OnMouseEnter()

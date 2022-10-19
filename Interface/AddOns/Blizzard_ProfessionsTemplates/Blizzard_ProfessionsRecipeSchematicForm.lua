@@ -229,6 +229,15 @@ function ProfessionsRecipeSchematicFormMixin:OnUpdate(dt)
 	end
 end
 
+function ProfessionsRecipeSchematicFormMixin:Refresh()
+	local recipeInfo = self:GetRecipeInfo();
+	if recipeInfo then
+		-- Details may have changed due to purchasing specialization points
+		self:Init(recipeInfo);
+		self:UpdateDetailsStats();
+	end
+end
+
 function ProfessionsRecipeSchematicFormMixin:GetRecipeOperationInfo()
 	local recipeInfo = self.currentRecipeInfo;
 	if recipeInfo then
@@ -254,6 +263,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	local yPadding = 4;
 	local anchor = AnchorUtil.CreateAnchor("TOPLEFT", self.OutputIcon, "BOTTOMLEFT", 7, -15);
 	local organizer = CreateVerticalLayoutOrganizer(anchor, xPadding, yPadding);
+
+	self.UpdateRequiredTools = nil;
 
 	self.OutputIcon:Hide();
 	self.OutputText:Hide();
@@ -561,16 +572,18 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			fontString:SetHeight(fontString:GetStringHeight());
 		end
 
-		local fontString = isRecraft and self.RecraftingRequiredTools or self.RequiredTools;
-		fontString:Show();
 
-		self.UpdateRequiredTools = function()
-			local tools = BuildColoredListString(C_TradeSkillUI.GetRecipeTools(recipeID));
-			if tools then
+		local tools = BuildColoredListString(C_TradeSkillUI.GetRecipeTools(recipeID));
+		if tools then
+			local fontString = isRecraft and self.RecraftingRequiredTools or self.RequiredTools;
+			fontString:Show();
+			
+			self.UpdateRequiredTools = function()
 				SetRequiredToolsText(fontString, PROFESSIONS_REQUIRED_TOOLS:format(tools));
 			end
+
+			self.UpdateRequiredTools();
 		end
-		self.UpdateRequiredTools();
 
 		if self.Stars:IsShown() then
 			self.RequiredTools:SetPoint("TOPLEFT", self.OutputText, "BOTTOMLEFT", 0, -20);
@@ -874,9 +887,12 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		
 					flyout.GetElementsImplementation = function(self, filterOwned)
 						local itemIDs = C_TradeSkillUI.GetSalvagableItemIDs(recipeID);
-						local items = Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned);
-						local elementData = {items = items, onlyCountStack = true,};
-						return elementData;
+						local targetItems = C_TradeSkillUI.GetCraftingTargetItems(itemIDs);
+						local items = {};
+						for index, targetItem in ipairs(targetItems) do
+							table.insert(items, Item:CreateFromItemGUID(targetItem.itemGUID));
+						end
+						return {items = items, onlyCountStack = true,};
 					end
 
 					flyout.OnElementEnterImplementation = function(elementData, tooltip)

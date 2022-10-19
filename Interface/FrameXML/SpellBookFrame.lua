@@ -193,9 +193,6 @@ function SpellBookFrame_OnShow(self)
 	MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLBOOK);
 	UpdateMicroButtons();
 
-	SpellBookFrame_PlayOpenSound();
-	MicroButtonPulseStop(SpellbookMicroButton);
-
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterUnitEvent("PLAYER_GUILD_UPDATE", "player");
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
@@ -244,6 +241,19 @@ function SpellBookFrame_Update()
 	end
 
 	PanelTemplates_SetNumTabs(SpellBookFrame, numTabs);
+
+	SpellBookFrame_PlayOpenSound();
+	MicroButtonPulseStop(SpellbookMicroButton);
+	MainMenuMicroButton_HideAlert(SpellbookMicroButton);
+	if ( SpellbookMicroButton.suggestedTabButton ) then
+		SpellBookFrame.showProfessionSpellHighlights = true;
+		if SpellbookMicroButton.suggestedTabButton.bookType ~= SpellBookFrame.bookType then
+			SpellBookFrameTabButton_OnClick(SpellbookMicroButton.suggestedTabButton);
+		end
+		SpellbookMicroButton.suggestedTabButton = nil;
+	else
+		SpellBookFrame.showProfessionSpellHighlights = false;
+	end
 
 	-- Make sure the correct tab is selected
 	for i=1,MaxSpellBookTypes do
@@ -1524,18 +1534,27 @@ function FormatProfession(frame, index)
 			frame.statusBar.rankText:SetFormattedText(TRADESKILL_RANK, rank, maxRank);
 		end
 
+		local hasSpell = false;
 		if numSpells <= 0 then
 			frame.SpellButton1:Hide();
 			frame.SpellButton2:Hide();
 		elseif numSpells == 1 then
+			hasSpell = true;
 			frame.SpellButton2:Hide();
 			frame.SpellButton1:Show();
 			UpdateProfessionButton(frame.SpellButton1);
 		else -- if numSpells >= 2 then
+			hasSpell = true;
 			frame.SpellButton1:Show();
 			frame.SpellButton2:Show();
 			UpdateProfessionButton(frame.SpellButton1);
 			UpdateProfessionButton(frame.SpellButton2);
+		end
+
+		if hasSpell and SpellBookFrame.showProfessionSpellHighlights and C_ProfSpecs.ShouldShowPointsReminderForSkillLine(skillLine) then
+			UIFrameFlash(frame.SpellButton1.Flash, 0.5, 0.5, -1);
+		else
+			UIFrameFlashStop(frame.SpellButton1.Flash);
 		end
 
 		if numSpells >  2 then

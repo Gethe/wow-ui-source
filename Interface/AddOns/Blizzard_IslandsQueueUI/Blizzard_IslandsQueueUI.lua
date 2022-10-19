@@ -172,7 +172,7 @@ end
 function IslandsQueueFrameMixin:OnLoad()
 	UIPanelWindows[self:GetName()] = { area = "center", pushable = 0, whileDead = 0, checkFit = 1, allowOtherPanels = 1, };
 
-	self.portrait:Hide();
+	self.PortraitContainer.portrait:Hide();
 	SetPortraitToTexture(self.ArtOverlayFrame.portrait, "Interface\\Icons\\icon_treasuremap");
 	self.IslandCardsFrame:RegisterForWidgetSet(ISLANDS_QUEUE_WIDGET_SET_ID, WidgetsLayout, WidgetInit);
 end

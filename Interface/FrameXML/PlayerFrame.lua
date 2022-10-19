@@ -32,6 +32,8 @@ function PlayerFrame_OnLoad(self)
 	self.statusSign = -1;
 
 	PlayerFrameManaBar:GetStatusBarTexture():AddMaskTexture(playerFrameContent.ManaBarMask);
+	PlayerFrameManaBar.FeedbackFrame:AddMaskTexture(playerFrameContent.ManaBarMask);
+	playerFrameContent.ManaCostPredictionBar:AddMaskTexture(playerFrameContent.ManaBarMask);
 
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
 	PlayerFrame_Update();

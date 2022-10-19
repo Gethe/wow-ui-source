@@ -785,16 +785,14 @@ local function CheckOpenMissionPageAndHasTroopInList(missionFrame)
 	end
 
 	-- find a follower that is a troop
-	for _, index in ipairs(missionFrame.FollowerList.followersList) do
-		if (index ~= 0) then
-			local follower = missionFrame.FollowerList.followers[index];
-			if (not follower.status) then
-				if (follower.isTroop) then
-					return true;
-				end
+	for _, follower in ipairs(missionFrame.FollowerList.followers) do
+		if (not follower.status) then
+			if (follower.isTroop) then
+				return true;
 			end
 		end
 	end
+	
 	return false;
 end
 
@@ -869,25 +867,15 @@ local function PositionAtFirstEnemy(missionFrame)
 end
 
 local function PositionAtFirstTroop(missionFrame)
-	local troopButtonIndex;
-
 	-- find a follower that is a troop
-	for buttonIndex, index in ipairs(missionFrame.FollowerList.followersList) do
-		if (index ~= 0) then
-			local follower = missionFrame.FollowerList.followers[index];
-			if (not follower.status) then
-				if (follower.isTroop) then
-					troopButtonIndex = buttonIndex;
-					break;
-				end
-			end
-		end
-	end
+	local firstTroopFrame = missionFrame.FollowerList.ScrollBox:FindFrameByPredicate(function(entry)
+		local entryData = entry:GetElementData();
+		local follower = entryData and entryData.follower or nil;
+		return follower and not follower.status and follower.isTroop;
+	end);
 
-	if (troopButtonIndex) then
-		local frames = OrderHallMissionFrame.FollowerList.ScrollBox:GetFrames();
-		local durabilityFrame = frames[troopButtonIndex] and frames[troopButtonIndex].Follower.DurabilityFrame or nil;
-		return HelpTip.Point.TopEdgeCenter, 8, 25, durabilityFrame;
+	if (firstTroopFrame and firstTroopFrame.Follower and firstTroopFrame.Follower.DurabilityFrame) then
+		return HelpTip.Point.TopEdgeCenter, 8, 25, firstTroopFrame.Follower.DurabilityFrame;
 	else
 		return HelpTip.Point.TopEdgeCenter, -10, -520, OrderHallMissionFrame.FollowerList.ScrollBox;
 	end

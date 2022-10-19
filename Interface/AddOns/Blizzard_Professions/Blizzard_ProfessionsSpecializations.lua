@@ -626,14 +626,14 @@ end
 function ProfessionsSpecFrameMixin:InitDetailedPanelPerks()
 	self.perksPool:ReleaseAll();
 
-	local perkIDs = C_ProfSpecs.GetPerksForPath(self:GetDetailedPanelNodeID());
-	for _, perkID in ipairs(perkIDs) do
+	local perkInfos = C_ProfSpecs.GetPerksForPath(self:GetDetailedPanelNodeID());
+	for _, perkInfo in ipairs(perkInfos) do
 		local perk = self.perksPool:Acquire();
 		perk:Init(self);
-		perk:SetPerkID(perkID);
+		perk:SetPerk(perkInfo);
 
 		local rotation = perk:GetRotation();
-		local distanceFromPath = 181;
+		local distanceFromPath = perkInfo.isMajorPerk and 189 or 177;
 		-- sin/cos swapped due to 90 degree phase shift, negation due to clockwise rotation
 		local xOfs = -(distanceFromPath * math.sin(rotation));
 		local yOfs = -(distanceFromPath * math.cos(rotation));
@@ -642,15 +642,10 @@ function ProfessionsSpecFrameMixin:InitDetailedPanelPerks()
 		perk:SetPoint("CENTER", self:GetDetailedPanelPath(), "CENTER", xOfs, yOfs);
 		
 		perk.PendingGlow:ClearAllPoints();
-		local isFinalPip = perk.unlockRank == perk:GetParentMaxRank();
-		if isFinalPip then
-			perk.PendingGlow:SetPoint("CENTER", perk, "CENTER", 16, -14);
-		else
-			local highlightDistanceFromPerk = 8;
-			local highlightXOfs = -(highlightDistanceFromPerk * math.sin(rotation));
-			local highlightYOfs = -(highlightDistanceFromPerk * math.cos(rotation));
-			perk.PendingGlow:SetPoint("CENTER", perk, "CENTER", highlightXOfs, highlightYOfs);
-		end
+		local highlightDistanceFromPerk = 8;
+		local highlightXOfs = -(highlightDistanceFromPerk * math.sin(rotation));
+		local highlightYOfs = -(highlightDistanceFromPerk * math.cos(rotation));
+		perk.PendingGlow:SetPoint("CENTER", perk, "CENTER", highlightXOfs, highlightYOfs);
 
 		perk:Show();
 	end

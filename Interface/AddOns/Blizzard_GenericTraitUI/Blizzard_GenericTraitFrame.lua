@@ -179,11 +179,7 @@ function GenericTraitFrameMixin:UpdateTreeCurrencyInfo()
 
 	local currencyInfo = self.treeCurrencyInfo[1];
 	local displayText = currencyInfo and self.getDisplayTextFromTreeCurrency(currencyInfo) or nil;
-
-	local currencyCostText = GENERIC_TRAIT_FRAME_CURRENCY_TEXT:format(currencyInfo and currencyInfo.quantity or 0, displayText);
-	local currencyText = WHITE_FONT_COLOR:WrapTextInColorCode(currencyCostText);
-
-	self.Currency.UnspentPointsCount:SetText(currencyText);
+	self.Currency:Setup(currencyInfo, displayText); 
 end
 
 function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo)
@@ -215,3 +211,49 @@ function GenericTraitFrameMixin:PurchaseRank(nodeID)
 
 	StaticPopup_ShowCustomGenericConfirmation(customData);
 end
+
+local genericTraitCurrencyTutorials = 
+{ 
+	-- DragonRiding
+	[2563] = 
+	{ 
+		tutorial = 
+		{
+			text = DRAGON_RIDING_CURRENCY_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_DRAGON_RIDING_GLYPHS,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			useParentStrata = true,
+		},
+	},
+}
+
+GenericTraitFrameCurrencyFrameMixin = { }; 
+function GenericTraitFrameCurrencyFrameMixin:UpdateWidgetSet()	
+	self.uiWidgetSetID = C_Traits.GetTraitSystemWidgetSetID(); 
+end 
+
+function GenericTraitFrameCurrencyFrameMixin:Setup(currencyInfo, displayText) 
+	local currencyCostText = GENERIC_TRAIT_FRAME_CURRENCY_TEXT:format(currencyInfo and currencyInfo.quantity or 0, displayText);
+	local currencyText = WHITE_FONT_COLOR:WrapTextInColorCode(currencyCostText);
+
+	self.UnspentPointsCount:SetText(currencyText);
+	self:UpdateWidgetSet();
+
+	if (currencyInfo and currencyInfo.traitCurrencyID) then 
+		local tutorialInfo = genericTraitCurrencyTutorials[currencyInfo.traitCurrencyID];
+		if tutorialInfo and not GetCVarBitfield("closedInfoFrames", tutorialInfo.tutorial.bitfieldFlag) then
+			HelpTip:Show(self, tutorialInfo.tutorial);
+		end
+	end
+end
+
+function GenericTraitFrameCurrencyFrameMixin:OnEnter()
+	if(not self.uiWidgetSetID) then 
+		return; 
+	end
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddWidgetSet(GameTooltip, self.uiWidgetSetID);
+	GameTooltip:Show();
+end 

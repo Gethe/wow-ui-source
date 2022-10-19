@@ -42,11 +42,12 @@ local ClassTalentTalentsTabEvents = {
 	"TRAIT_CONFIG_DELETED",
 	"TRAIT_CONFIG_UPDATED",
 	"TRAIT_CONFIG_LIST_UPDATED",
-	"ACTIONBAR_SLOT_CHANGED"
+	"ACTIONBAR_SLOT_CHANGED",
 };
 
 local ClassTalentTalentsTabUnitEvents = {
 	"UNIT_AURA",
+	"UNIT_SPELLCAST_SUCCEEDED",
 };
 
 ClassTalentTalentsTabMixin:GenerateCallbackEvents(
@@ -249,8 +250,7 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 			self:ResetToLastConfigID();
 		end
 	elseif event == "STARTER_BUILD_ACTIVATION_FAILED" then
-		local isCommitFailure = true;
-		self:SetCommitStarted(nil, isCommitFailure);
+		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitFailed);
 		self:ResetToLastConfigID();
 		UIErrorsFrame:AddExternalErrorMessage("ERR_INTERNAL_ERROR");
 	elseif event == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" then
@@ -271,6 +271,12 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 	-- TODO:: Replace this events with more proper "CanChangeTalent" signal(s).
 	elseif (event == "PLAYER_REGEN_ENABLED") or (event == "PLAYER_REGEN_DISABLED") or (event == "UNIT_AURA") then
 		self:UpdateConfigButtonsState();
+	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local spellID = select(3, ...);
+		if spellID == Constants.TraitConsts.COMMIT_COMBAT_TRAIT_CONFIG_CHANGES_SPELL_ID then
+			self:SetCommitVisualsActive(false);
+			self:SetCommitCompleteVisualsActive(true);
+		end
 	end
 
 	TalentFrameBaseMixin.OnEvent(self, event, ...);
@@ -293,7 +299,7 @@ function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 
 		local commitedConfigID = self.commitedConfigID;
 
-		self:SetCommitStarted(nil);
+		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitSucceeded);
 
 		-- Avoid overwriting last selected loadout by saving the base spec config id as the selected config
 		-- (The spec config will be both GetConfigID and the commited id in the case of applying changes to an active loadout)
@@ -340,8 +346,9 @@ function ClassTalentTalentsTabMixin:OnTraitConfigCreateFinished(configID)
 	local autoApply = true;
 	self:SetSelectedSavedConfigID(configID, autoApply);
 	self.autoLoadNewConfigID = nil;
-	-- Only do completion visuals if SetSelectedSavedConfigID's load did not put us into an in-progress commit
-	if not self:IsCommitInProgress() then
+
+	-- Only do completion visuals if SetSelectedSavedConfigID's load did not put us into an in-progress commit or partial loadout.
+	if not self:IsCommitInProgress() and not self:HasAnyConfigChanges() then
 		self:SetCommitCompleteVisualsActive(true);
 	end
 end
@@ -351,7 +358,8 @@ function ClassTalentTalentsTabMixin:ResetToLastConfigID()
 		-- Have a valid last selected config, reset back to that
 		local autoApply = false;
 		local skipLoad = false;
-		self:SetSelectedSavedConfigID(self.lastSelectedConfigID, autoApply, skipLoad);
+		local forceSkipAnimation = true;
+		self:SetSelectedSavedConfigID(self.lastSelectedConfigID, autoApply, skipLoad, forceSkipAnimation);
 	else
 		-- No valid last selected config, reset to the base spec config
 		self:ClearLastSelectedConfigID();
@@ -467,11 +475,10 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 	local function LoadConfiguration(configID, isUserInput)
 		if isUserInput then
 			local function FinishLoadConfiguration()
-				-- Eventually, this should probably check if we're previewing talents somewhere we can't change them.
 				local autoApply = true;
 				self:LoadConfigInternal(configID, autoApply);
 			end
-			
+
 			local function CancelLoadConfiguration()
 				if self.lastSelectedConfigID then
 					self.LoadoutDropDown:SetSelectionID(self.lastSelectedConfigID);
@@ -622,17 +629,19 @@ function ClassTalentTalentsTabMixin:LoadTalentTreeInternal()
 	self:UpdateConfigButtonsState();
 end
 
-function ClassTalentTalentsTabMixin:SetSelectedSavedConfigID(configID, autoApply, skipLoad)
+function ClassTalentTalentsTabMixin:SetSelectedSavedConfigID(configID, autoApply, skipLoad, forceSkipAnimation)
 	self:UpdateLastSelectedConfigID(configID);
 
-	if self.LoadoutDropDown:GetSelectionID() == configID then
+	local previousSelection = self.LoadoutDropDown:GetSelectionID();
+	if previousSelection == configID then
 		return;
 	end
 
 	self.LoadoutDropDown:SetSelectionID(configID);
 
 	if not skipLoad then
-		self:LoadConfigInternal(configID, not not autoApply);
+		local skipAnimation = forceSkipAnimation or (previousSelection == nil);
+		self:LoadConfigInternal(configID, not not autoApply, skipAnimation);
 	end
 end
 
@@ -670,8 +679,15 @@ function ClassTalentTalentsTabMixin:SetTalentTreeID(talentTreeID, forceUpdate)
 	end
 end
 
-function ClassTalentTalentsTabMixin:SetCommitStarted(configID, commitFailed)
-	TalentFrameBaseMixin.SetCommitStarted(self, configID, commitFailed);
+function ClassTalentTalentsTabMixin:CanCommitInstantly()
+	-- Overrides TalentFrameBaseMixin.
+
+	-- return C_ClassTalents.CanCommitInstantly();
+	return false;
+end
+
+function ClassTalentTalentsTabMixin:SetCommitStarted(configID, reason, skipAnimation)
+	TalentFrameBaseMixin.SetCommitStarted(self, configID, reason, skipAnimation);
 
 	self:UpdateConfigButtonsState();
 end
@@ -681,41 +697,47 @@ function ClassTalentTalentsTabMixin:SetCommitCompleteVisualsActive(active)
 
 	if self.commitFlashAnims then
 		for i, animGroup in ipairs(self.commitFlashAnims) do
-			if active then
-				animGroup:Restart();
-			else
-				animGroup:Stop();
+			local isPlaying = animGroup:IsPlaying();
+			if isPlaying ~= active then
+				if active then
+					animGroup:Restart();
+				else
+					animGroup:Stop();
+				end
 			end
 		end
 	end
 
-	if active and self.stagedPurchaseNodes then
-		-- Delay purchase animations a moment to allow post-commit refreshes/updates to process
-		-- Otherwise the immediate frame gets clogged up and visuals get missed
-		C_Timer.After(PurchaseFXDelay, function()
-			if not self.stagedPurchaseNodes then
-				return;
-			end
-	
-			for i, nodeID in ipairs(self.stagedPurchaseNodes) do
-				local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
-				if buttonWithPurchase and buttonWithPurchase.PlayPurchaseEffect then
-					buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene);
+	if active then
+		if self.stagedPurchaseNodes and not self.stagedPurchaseTimer then
+			-- Delay purchase animations a moment to allow post-commit refreshes/updates to process
+			-- Otherwise the immediate frame gets clogged up and visuals get missed
+			self.stagedPurchaseTimer = C_Timer.After(PurchaseFXDelay, function()
+				if not self.stagedPurchaseNodes then
+					return;
 				end
-			end
 
-			-- Play sound for collective node purchase effects
-			PlaySound(SOUNDKIT.UI_CLASS_TALENT_APPLY_COMPLETE);
+				for i, nodeID in ipairs(self.stagedPurchaseNodes) do
+					local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
+					if buttonWithPurchase and buttonWithPurchase.PlayPurchaseEffect then
+						buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene);
+					end
+				end
 
-			self.stagedPurchaseNodes = nil;
-		end);
+				-- Play sound for collective node purchase effects
+				PlaySound(SOUNDKIT.UI_CLASS_TALENT_APPLY_COMPLETE);
+
+				self.stagedPurchaseNodes = nil;
+				self.stagedPurchaseTimer = nil;
+			end);
+		end
 	elseif not active then
 		self.stagedPurchaseNodes = nil;
 		self.FxModelScene:ClearEffects();
 	end
 end
 
-function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply)
+function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply, skipAnimation)
 	local loadResult = nil;
 
 	if configID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
@@ -741,8 +763,10 @@ function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply)
 		if self.unflagStarterBuildAfterNextCommit then
 			self:UnflagStarterBuild();
 		end
+
+		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit, skipAnimation);
 	elseif (loadResult == Enum.LoadConfigResult.LoadInProgress) and autoApply then
-		self:SetCommitStarted(configID);
+		self:SetCommitStarted(configID, TalentFrameBaseMixin.CommitUpdateReasons.CommitStarted, skipAnimation);
 	end
 
 	self:UpdateConfigButtonsState();
@@ -756,6 +780,7 @@ end
 
 function ClassTalentTalentsTabMixin:ApplyConfig()
 	if self:HasAnyConfigChanges() then
+		self.isConfigReadyToApply = false;
 		self:CommitConfig();
 	else
 		self.isConfigReadyToApply = not C_ClassTalents.SaveConfig(self.LoadoutDropDown:GetSelectionID());
@@ -768,7 +793,6 @@ function ClassTalentTalentsTabMixin:CommitConfigInternal()
 
 	local selectedConfigID = self.LoadoutDropDown:GetSelectionID();
 
-	self:SetCommitCompleteVisualsActive(false);
 	-- Cache nodes with staged purchases so we can animate them once the commit is complete
 	self.stagedPurchaseNodes = C_Traits.GetStagedPurchases(self:GetConfigID());
 

@@ -140,7 +140,7 @@ local ProfessionSpecUI =
 
 			Returns =
 			{
-				{ Name = "perkIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "perkInfos", Type = "table", InnerType = "SpecPerkInfo", Nilable = false },
 			},
 		},
 		{
@@ -308,6 +308,29 @@ local ProfessionSpecUI =
 			Returns =
 			{
 				{ Name = "unlockRank", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "ShouldShowPointsReminder",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "showReminder", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldShowPointsReminderForSkillLine",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "showReminder", Type = "bool", Nilable = false },
 			},
 		},
 		{

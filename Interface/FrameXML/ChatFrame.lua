@@ -1285,11 +1285,11 @@ SecureCmdList["EQUIP_TO_SLOT"] = function(msg)
 				EquipItemByName(parsedItem, slot);
 			else
 				-- user specified a bad slot number (slot that you can't equip an item to)
-				ChatFrame_DisplayUsageError(format(ERROR_SLASH_EQUIP_TO_SLOT, EQUIPPED_FIRST, EQUIPPED_LAST));
+				ChatFrame_DisplayUsageError(format(ERROR_SLASH_EQUIP_TO_SLOT, INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED));
 			end
 		elseif ( slot ) then
 			-- user specified a slot but not an item
-			ChatFrame_DisplayUsageError(format(ERROR_SLASH_EQUIP_TO_SLOT, EQUIPPED_FIRST, EQUIPPED_LAST));
+			ChatFrame_DisplayUsageError(format(ERROR_SLASH_EQUIP_TO_SLOT, INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED));
 		end
 	end
 end

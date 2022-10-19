@@ -927,7 +927,7 @@ end
 --	Call to use this casting bar over the specified frame INSTEAD of showing the default PlayerCastingBar.
 --	Will display any currently active Player cast, and any future Player casts until EndReplacingPlayerBar is called.
 --]]
-function OverlayPlayerCastingBarMixin:StartReplacingPlayerBarAt(parentFrame, overrideBarType, overrideAnchor)
+function OverlayPlayerCastingBarMixin:StartReplacingPlayerBarAt(parentFrame, overrideBarType, overrideAnchor, hideBarText)
 	-- Disable real Player Cast Bar
 	PlayerCastingBarFrame:SetAndUpdateShowCastbar(false);
 
@@ -944,6 +944,8 @@ function OverlayPlayerCastingBarMixin:StartReplacingPlayerBarAt(parentFrame, ove
 	end
 
 	self.overrideBarType = overrideBarType;
+
+	self.Text:SetShown(not hideBarText);
 
 	-- SetAndUpdateShowCastbar will show self on next Player Cast OR now if a Player Cast is active
 	self:SetAndUpdateShowCastbar(true);

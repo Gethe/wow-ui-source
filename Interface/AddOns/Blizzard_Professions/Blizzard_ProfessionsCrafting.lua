@@ -13,6 +13,7 @@ local ProfessionsCraftingPageEvents =
 	"BAG_UPDATE",
 	"BAG_UPDATE_DELAYED",
 	"UNIT_SPELLCAST_INTERRUPTED",
+	"UNIT_SPELLCAST_FAILED",
 };
 
 function ProfessionsCraftingPageMixin:OnLoad()
@@ -132,10 +133,18 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 				end);
 			end
 		end
+
+		-- This is also expected to refresh the UI from equipment changes because those
+		-- also trigger the enclosing events.
+		self.SchematicForm:Refresh();
 		self:ValidateControls();
-	elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
+	elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" then
 		self:ClearCraftingQueue();
-			self:ValidateControls();
+		self:ValidateControls();
+		self:StopOverridingCastBar();
+	elseif event == "UNIT_AURA" then
+		self.SchematicForm:Refresh();
+		self:ValidateControls();
 	end
 end
 
@@ -184,6 +193,8 @@ end
 function ProfessionsCraftingPageMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, ProfessionsCraftingPageEvents);
 
+	self:RegisterUnitEvent("UNIT_AURA", "player");
+
 	self:SetTitle();
 	self.RecipeList.SearchBox:SetText(C_TradeSkillUI.GetRecipeItemNameFilter());
 end
@@ -191,12 +202,15 @@ end
 function ProfessionsCraftingPageMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ProfessionsCraftingPageEvents);
 
+	self:UnregisterEvent("UNIT_AURA");
+
 	self.CraftingOutputLog:Close();
 	if self:IsTutorialShown() then
 		HelpPlate_Hide(false);
 	end
 
 	self:Reset();
+	self:StopOverridingCastBar();
 end
 
 function ProfessionsCraftingPageMixin:Reset()
@@ -367,13 +381,20 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 		self.ViewGuildCraftersButton:Hide();
 
 		local transaction = self.SchematicForm:GetTransaction();
+		local castBarXOfs, castBarYOfs;
 		if currentRecipeInfo.createsItem and not transaction:HasRecraftAllocation() then
 			self.CreateAllButton:Show();
 			self.CreateMultipleInputBox:Show();
+			castBarXOfs = 2;
+			castBarYOfs = 17;
 		else
 			self.CreateAllButton:Hide();
 			self.CreateMultipleInputBox:Hide();
+			castBarXOfs = 120;
+			castBarYOfs = 17;
 		end
+		self.OverlayCastBarAnchor:ClearAllPoints();
+		self.OverlayCastBarAnchor:SetPoint("BOTTOM", self, "BOTTOM", castBarXOfs, castBarYOfs);
 
 		local countMax = self:GetCraftableCount();
 		if countMax > 0 then
@@ -597,7 +618,7 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	end
 
 	if not currentRecipeInfo then
-		currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
+		currentRecipeInfo = (not changedProfessionID) and self.SchematicForm:GetRecipeInfo();
 		if currentRecipeInfo then
 			-- The form may not be the base recipe ID, so find the first info
 			-- if we expect to retrieve it from the data provider.
@@ -613,8 +634,8 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 		self.RecipeList:SelectRecipe(currentRecipeInfo, scrollToRecipe);
 	else
 		self.SchematicForm:Init(nil);
-		self:ValidateControls();
 	end
+	self:ValidateControls();
 end
 
 function ProfessionsCraftingPageMixin:Refresh(professionInfo)
@@ -649,6 +670,7 @@ function ProfessionsCraftingPageMixin:ContinueCrafting()
 	if self.craftingQueue then
 		if not self.craftingCallback() then
 			self:ClearCraftingQueue();
+			self:StopOverridingCastBar();
 		end
 	else
 		C_TradeSkillUI.ContinueRecast();
@@ -663,6 +685,7 @@ function ProfessionsCraftingPageMixin:ClearCraftingQueue()
 end
 
 function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLevel)
+	self:StartOverridingCastBar();
 	local transaction = self.SchematicForm:GetTransaction();
 	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 		local salvageItem = transaction:GetSalvageAllocation();
@@ -984,4 +1007,15 @@ function ProfessionsCraftingPageMixin:SetTitle()
 	end
 
 	professionFrame:SetTitle(professionInfo.professionName or professionInfo.parentProfessionName);
+end
+
+function ProfessionsCraftingPageMixin:StartOverridingCastBar()
+	local overrideBarType = nil;
+	local overrideAnchor = nil;
+	local hideBarText = true;
+	OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.OverlayCastBarAnchor, overrideBarType, overrideAnchor, hideBarText);
+end
+
+function ProfessionsCraftingPageMixin:StopOverridingCastBar()
+	OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
 end

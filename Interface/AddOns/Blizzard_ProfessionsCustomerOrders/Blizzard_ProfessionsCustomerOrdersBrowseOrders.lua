@@ -247,6 +247,9 @@ function ProfessionsCustomerOrdersBrowsePageMixin:SetupTable(extraColumnType)
 
 	if extraColumnType ~= nil and extraColumnType ~= Enum.AuctionHouseExtraColumn.None then
 		self.tableBuilder:AddFixedWidthColumn(self, GetColumnInfoFromType(extraColumnType));
+		if extraColumnType == Enum.AuctionHouseExtraColumn.Ilvl then
+			self:SetSortOrder(ProfessionsSortOrder.Ilvl);
+		end
 	end
 
 	self.tableBuilder:Arrange();

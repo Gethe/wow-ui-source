@@ -773,7 +773,7 @@ function CovenantMission:QueueAutoTroopsTutorial()
 			checkCVars = true,
 		}
 
-		self:QueueTutorial(self, helpTipInfo, frame);
+		self:QueueTutorial(helpTipInfo, frame);
 	end
 end
 

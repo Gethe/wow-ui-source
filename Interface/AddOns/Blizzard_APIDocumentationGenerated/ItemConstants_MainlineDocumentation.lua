@@ -3,20 +3,6 @@ local ItemConstants_Mainline =
 	Tables =
 	{
 		{
-			Name = "BagIndex",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = -5,
-			MaxValue = -1,
-			Fields =
-			{
-				{ Name = "Backback", Type = "BagIndex", EnumValue = -1 },
-				{ Name = "Bank", Type = "BagIndex", EnumValue = -2 },
-				{ Name = "Reagentbank", Type = "BagIndex", EnumValue = -4 },
-				{ Name = "Bankbag", Type = "BagIndex", EnumValue = -5 },
-			},
-		},
-		{
 			Name = "ItemGemSubclass",
 			Type = "Enumeration",
 			NumValues = 12,
@@ -110,6 +96,17 @@ local ItemConstants_Mainline =
 				{ Name = "ProfessionRatingFinessePercent", Type = "PointsModifierSourceType", EnumValue = 61 },
 				{ Name = "ProfessionRatingPerceptionPercent", Type = "PointsModifierSourceType", EnumValue = 62 },
 				{ Name = "ProfessionTraitRanksByLabel", Type = "PointsModifierSourceType", EnumValue = 63 },
+			},
+		},
+		{
+			Name = "InventoryConstants",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "NumBagSlots", Type = "number", Value = NUM_BAG_SLOTS },
+				{ Name = "NumGenericBankSlots", Type = "number", Value = BANK_NUM_GENERIC_SLOTS },
+				{ Name = "NumBankBagSlots", Type = "number", Value = NUM_BANKBAG_SLOTS },
+				{ Name = "NumReagentBagSlots", Type = "number", Value = NUM_REAGENTBAG_SLOTS },
 			},
 		},
 	},

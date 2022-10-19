@@ -468,7 +468,7 @@ local function Register()
 	do
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			local monitor = monitorSetting:GetValue() + 1;
+			local monitor = monitorSetting:GetValue();
 			local fullscreen = displayModeSetting:GetValue();
 			
 			if fullscreen then
@@ -485,7 +485,7 @@ local function Register()
 		end
 	
 		local function GetValue()
-			local monitor = monitorSetting:GetValue() + 1;
+			local monitor = monitorSetting:GetValue();
 			local fullscreen = displayModeSetting:GetValue();
 			local size = C_VideoOptions.GetCurrentGameWindowSize(monitor, fullscreen);
 			local value = FormatScreenResolution(size.x, size.y);

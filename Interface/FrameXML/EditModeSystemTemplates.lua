@@ -483,6 +483,7 @@ end
 
 function EditModeSystemMixin:OnEditModeExit()
 	self:ClearHighlight();
+	self:StopMovingOrSizing();
 	EditModeSystemSettingsDialog:Hide();
 end
 
@@ -535,6 +536,11 @@ function EditModeActionBarSystemMixin:OnEditModeExit()
 
 	-- Some action bars have special visibility rules so use their method for whether to turn them on/off on exit
 	self:UpdateVisibility();
+end
+
+function EditModeActionBarSystemMixin:ApplySystemAnchor()
+	EditModeSystemMixin.ApplySystemAnchor(self);
+	self:UpdateSpellFlyoutDirection();
 end
 
 function EditModeActionBarSystemMixin:GetRightAnchoredWidth()
@@ -651,8 +657,8 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingIconSize()
 		buttonOrSpacer:SetScale(iconScale);
 	end
 
-	-- Since size of buttons changed we'll want to update the grid layout so we can resize the bar's frame
-	self:MarkGridLayoutDirty();
+	-- Changing icon size will effect the size of the ResizeLayoutFrame
+	self:Layout();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingIconPadding()
@@ -753,7 +759,8 @@ end
 
 local function openActionBarSettings()
 	EditModeManagerFrame:ClearSelectedSystem();
-	EditModeManagerFrame:SetEditModeLockState("showSelections");
+	EditModeManagerFrame:SetEditModeLockState("hideSelections");
+	HideUIPanel(EditModeManagerFrame);
 	Settings.OpenToCategory(Settings.ACTION_BAR_CATEGORY_ID);
 end
 
@@ -825,7 +832,11 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 			return not self:UseCombinedGroups();
 		end
 	elseif setting == Enum.EditModeUnitFrameSetting.SortPlayersBy then
-		return self:UseCombinedGroups();
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		else
+			return self:UseCombinedGroups();
+		end
 	elseif setting == Enum.EditModeUnitFrameSetting.RowSize then
 		return self:UseCombinedGroups();
 	elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop and self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
@@ -981,14 +992,22 @@ end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingSortPlayersBy()
 	local sortBySettingValue = self:GetSettingValue(Enum.EditModeUnitFrameSetting.SortPlayersBy);
+
+	local sortFunc;
 	if sortBySettingValue == Enum.SortPlayersBy.Group then
-		CompactRaidFrameContainer:SetFlowSortFunction(CRFSort_Group);
+		sortFunc = CRFSort_Group;
 	elseif sortBySettingValue == Enum.SortPlayersBy.Alphabetical then
-		CompactRaidFrameContainer:SetFlowSortFunction(CRFSort_Alphabetical);
+		sortFunc = CRFSort_Alphabetical;
 	else
-		CompactRaidFrameContainer:SetFlowSortFunction(CRFSort_Role);
+		sortFunc = CRFSort_Role;
 	end
-	EditModeManagerFrame:UpdateRaidContainerFlow();
+
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		CompactRaidFrameContainer:SetFlowSortFunction(sortFunc);
+		EditModeManagerFrame:UpdateRaidContainerFlow();
+	else
+		CompactPartyFrame_SetFlowSortFunction(sortFunc);
+	end 
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingRowSize()

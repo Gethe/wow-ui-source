@@ -112,9 +112,6 @@ local function Register()
 		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_ENABLE_INTERACT);
 	end
 
-	-- Enable Interact Key Sound
-	Settings.SetupCVarCheckBox(category, "softTargettingInteractKeySound", ENABLE_INTERACT_SOUND_OPTION, ENABLE_INTERACT_SOUND_OPTION_TOOLTIP);
-	
 	-- Interact Key
 	do
 		local action = "INTERACTTARGET";
@@ -124,6 +121,9 @@ local function Register()
 		layout:AddInitializer(initializer);
 	end
 
+	-- Enable Interact Key Sound
+	Settings.SetupCVarCheckBox(category, "softTargettingInteractKeySound", ENABLE_INTERACT_SOUND_OPTION, ENABLE_INTERACT_SOUND_OPTION_TOOLTIP);
+	
 	---- Mouse
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(MOUSE_LABEL));
 

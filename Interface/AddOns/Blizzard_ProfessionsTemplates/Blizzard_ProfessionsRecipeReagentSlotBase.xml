@@ -93,7 +93,7 @@
 				</KeyValues>
 				<Size x="25" y="25"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="14" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
 			</Button>
 

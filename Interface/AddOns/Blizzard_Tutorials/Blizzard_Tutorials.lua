@@ -10,15 +10,8 @@ function GameTutorials:OnTutorialsEnabled()
 		return;
 	end
 
-	TutorialManager:AddWatcher(Class_StarterTalentWatcher:new(), true);
-	TutorialManager:AddTutorial(Class_ChangeSpec:new());
-	TutorialManager:AddTutorial(Class_TalentPoints:new());
-
-	local _, raceFilename = UnitRace("Player");
-	if raceFilename == "Dracthyr" then
-		TutorialManager:AddWatcher(Class_DracthyrEssenceWatcher:new(), true);
-		TutorialManager:AddWatcher(Class_DracthyrEmpoweredSpellWatcher:new(), true);
-	end
+	AddSpecAndTalentTutorials();
+	AddDracthyrTutorials();
 
 	if CanShowProfessionEquipmentTutorial() then
 		TutorialManager:AddTutorial(Class_EquipProfessionGear:new());

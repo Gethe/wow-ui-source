@@ -253,10 +253,12 @@ function QueueStatusButtonMixin:OnShow()
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 
 	self.Eye:StartInitialAnimation();
+	EventRegistry:TriggerEvent("QueueStatusButton.OnShow");
 end
 
 function QueueStatusButtonMixin:OnHide()
 	QueueStatusFrame:Hide();
+	EventRegistry:TriggerEvent("QueueStatusButton.OnHide");
 end
 
 --Will play the sound numPingSounds times (or forever if nil)

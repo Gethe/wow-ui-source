@@ -4291,6 +4291,14 @@ StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
 	exclusive = 1,
 }
 
+StaticPopupDialogs["CRAFTING_HOUSE_DISABLED"] = {
+	text = ERR_CRAFTING_HOUSE_DISABLED,
+	button1 = OKAY,
+	timeout = 0,
+	showAlertGear = 1,
+	hideOnEscape = 1
+};
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then

@@ -202,8 +202,9 @@ function Class_EquipProfessionGear:PrepBags()
 	TutorialDragButton:Hide();
 
 	if self.data then
+		local data = self.data;
 		self.Timer = C_Timer.NewTimer(0.1, function()
-			self:ShowPointerTutorial(self.data.isTool and PROFESSION_EQUIPMENT_NEWITEM_TOOL_HELPTIP or PROFESSION_EQUIPMENT_NEWITEM_ACCESSORY_HELPTIP, "DOWN", MainMenuBarBackpackButton, 0, 0);
+			self:ShowPointerTutorial(data and PROFESSION_EQUIPMENT_NEWITEM_TOOL_HELPTIP or PROFESSION_EQUIPMENT_NEWITEM_ACCESSORY_HELPTIP, "DOWN", MainMenuBarBackpackButton, 0, 0);
 		end);
 	end
 end
@@ -415,3 +416,38 @@ function Class_EquipProfessionGear:OnComplete()
 	Dispatcher:UnregisterEvent("ZONE_CHANGED_NEW_AREA", self);
 	Dispatcher:UnregisterEvent("SKILL_LINES_CHANGED", self);
 end
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Specialization points reminder
+-- ------------------------------------------------------------------------------------------------------------
+local SpecPointsChecker = {};
+local reminderShownThisSession = false;
+
+function SpecPointsChecker:ShowReminder()
+	reminderShownThisSession = true;
+
+	if ProfessionsFrame and ProfessionsFrame:IsVisible() then
+		return;
+	end
+
+	MainMenuMicroButton_ShowAlert(SpellbookMicroButton, PROFESSIONS_UNSPENT_SPEC_POINTS_REMINDER);
+	MicroButtonPulse(SpellbookMicroButton);
+	SpellbookMicroButton.suggestedTabButton = SpellBookFrameTabButton2;
+end
+
+function SpecPointsChecker:CheckShowReminder()
+	if reminderShownThisSession then
+		return;
+	end
+
+	if C_ProfSpecs.ShouldShowPointsReminder() then
+		self:ShowReminder();
+	end
+end
+
+EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
+EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function(checker, isLogin)
+	if isLogin then
+		SpecPointsChecker:CheckShowReminder();
+	end
+end, SpecPointsChecker);

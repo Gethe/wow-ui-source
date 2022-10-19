@@ -3,13 +3,13 @@
 	<Script file="Blizzard_AzeriteRespecUI.lua"/>
 
 	<Frame name="AzeriteRespecFrame" inherits="EtherealFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" mixin="AzeriteRespecMixin" hidden="true">
-		<Size x="343" y="261"/>
+		<Size x="326" y="246"/>
 
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-4">
+			<Layer level="BORDER" textureSubLevel="-4">
 				<Texture parentKey="Background" atlas="azeritereforger-background" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOM" y="35" />
+						<Anchor point="BOTTOM" y="25" />
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -70,8 +70,8 @@
 							<OnLeave method="OnMouseLeave" />
 						</Scripts>
 					</Button>
-					<Frame parentKey="MoneyFrameEdge" inherits="ThinGoldEdgeTemplate" >
-						<Size x="182" y="24"/>
+					<Frame parentKey="MoneyFrameEdge" inherits="ThinGoldEdgeTemplate">
+						<Size x="162" y="24"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-160" y="3"/>
 						</Anchors>

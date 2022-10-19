@@ -92,6 +92,7 @@ local AreaPoiInfo =
 				{ Name = "atlasName", Type = "string", Nilable = true },
 				{ Name = "uiTextureKit", Type = "string", Nilable = true },
 				{ Name = "shouldGlow", Type = "bool", Nilable = false },
+				{ Name = "isAlwaysOnFlightmap", Type = "bool", Nilable = false },
 			},
 		},
 	},

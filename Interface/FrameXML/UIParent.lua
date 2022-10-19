@@ -38,7 +38,7 @@ UIPanelWindows = {};
 --Center Menu Frames
 UIPanelWindows["GameMenuFrame"] =				{ area = "center",		pushable = 0,	whileDead = 1, centerFrameSkipAnchoring = true };
 UIPanelWindows["HelpFrame"] =					{ area = "center",		pushable = 0,	whileDead = 1 };
-UIPanelWindows["EditModeManagerFrame"] =		{ area = "center",		pushable = 0,	whileDead = 1 };
+UIPanelWindows["EditModeManagerFrame"] =		{ area = "center",		pushable = 0,	whileDead = 1, neverAllowOtherPanels = 1 };
 
 -- Frames using the new Templates
 UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,	whileDead = 1};
@@ -331,6 +331,7 @@ function UIParent_OnLoad(self)
 
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
+	self:RegisterEvent("CRAFTING_HOUSE_DISABLED");
 	self:RegisterEvent("CRAFTINGORDERS_SHOW_CUSTOMER");
 	self:RegisterEvent("CRAFTINGORDERS_HIDE_CUSTOMER");
 	self:RegisterEvent("CRAFTINGORDERS_SHOW_CRAFTER");
@@ -797,18 +798,6 @@ function NPE_LoadUI()
 	end
 end
 
-function BoostTutorial_AttemptLoad()
-	if IsBoostTutorialScenario() and not IsAddOnLoaded("Blizzard_BoostTutorial") then
-		UIParentLoadAddOn("Blizzard_BoostTutorial");
-	end
-end
-
-function ClassTrial_AttemptLoad()
-	if C_ClassTrial.IsClassTrialCharacter() and not IsAddOnLoaded("Blizzard_ClassTrial") then
-		UIParentLoadAddOn("Blizzard_ClassTrial");
-	end
-end
-
 function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
 	return ExpansionTrialThanksForPlayingDialog and ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
 end
@@ -1181,7 +1170,7 @@ function TogglePVPUI()
 end
 
 function ToggleStoreUI()
-	if (Kiosk.IsEnabled()) then
+	if (AreAllPanelsDisallowed() or Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -1746,8 +1735,6 @@ function UIParent_OnEvent(self, event, ...)
 		self.battlefieldBannerShown = nil;
 
 		NPETutorial_AttemptToBegin(event);
-		ClassTrial_AttemptLoad();
-		BoostTutorial_AttemptLoad();
 
 		if Kiosk.IsEnabled() then
 			LoadAddOn("Blizzard_Kiosk");
@@ -1995,6 +1982,8 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
 		ProfessionsFrame_LoadUI();
 		ShowUIPanel(ProfessionsFrame);
+	elseif ( event == "CRAFTING_HOUSE_DISABLED") then
+		StaticPopup_Show("CRAFTING_HOUSE_DISABLED");	
 	elseif ( event == "CRAFTINGORDERS_SHOW_CUSTOMER" ) then
 		if ( GameLimitedMode_IsActive() ) then
 			UIErrorsFrame:AddExternalErrorMessage(ERR_FEATURE_RESTRICTED_TRIAL);
@@ -2292,8 +2281,6 @@ function UIParent_OnEvent(self, event, ...)
 			FlightMap_LoadUI();
 			ShowUIPanel(FlightMapFrame);
 		end
-	elseif (event == "SCENARIO_UPDATE") then
-		BoostTutorial_AttemptLoad();
 	elseif (event == "DEBUG_MENU_TOGGLED") then
 		UpdateUIParentPosition();
 	elseif (event == "REVEAL_CAPTURE_TOGGLED") then
@@ -2579,7 +2566,7 @@ FramePositionDelegate:SetScript("OnAttributeChanged", FramePositionDelegate_OnAt
 
 function FramePositionDelegate:ShowUIPanel(frame, force)
 	local frameArea = GetUIPanelAttribute(frame, "area");
-	if ( not CanOpenPanels() and frameArea ~= "center" and frameArea ~= "full" ) then
+	if ( AreAllPanelsDisallowed() or (not CanOpenPanels() and frameArea ~= "center" and frameArea ~= "full") ) then
 		self:ShowUIPanelFailed(frame);
 		return;
 	end
@@ -3274,6 +3261,19 @@ function CanOpenPanels()
 	end
 
 	return 1;
+end
+
+function AreAllPanelsDisallowed()
+	local currentWindow = GetUIPanel("center");
+	if not currentWindow then
+		currentWindow = GetUIPanel("full");
+		if not currentWindow then
+			return false;
+		end
+	end
+
+	local neverAllowOtherPanels = GetUIPanelAttribute(currentWindow, "neverAllowOtherPanels");
+	return neverAllowOtherPanels;
 end
 
 -- this function handles possibly tainted values and so

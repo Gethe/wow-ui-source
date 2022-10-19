@@ -235,9 +235,9 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 		direction = "UP";
 	end
 
-	-- If you're on an action bar then base your direction on the action bar's orientation
+	-- If you're on an action bar then base your direction on the action bar's orientation and position
 	if (isActionBar) then
-		direction = actionBar.isHorizontal and "UP" or "LEFT";
+		direction = actionBar:GetSpellFlyoutDirection();
 	end
 
 	-- Update all spell buttons for this flyout

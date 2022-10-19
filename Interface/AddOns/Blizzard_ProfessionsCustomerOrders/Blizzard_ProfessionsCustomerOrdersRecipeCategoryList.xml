@@ -37,10 +37,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
-				<!-- HRO TODO: Get real asset -->
-				<Texture parentKey="SpacerLine" parentArray="spacerRegions">
-					<Size x="120" y="1"/>
-					<Color color="NORMAL_FONT_COLOR"/>
+				<Texture parentKey="SpacerLine" atlas="RecipeList-Divider" parentArray="spacerRegions" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="-3" y="0"/>
 					</Anchors>
@@ -65,7 +62,7 @@
 	</Button>
 
 	<Frame name="ProfessionsCustomerOrdersRecipeCategoryListTemplate" mixin="ProfessionsCustomerOrdersRecipeCategoryListMixin" virtual="true">
-		<Size x="168" y="438"/>
+		<Size x="160" y="468"/>
 		<KeyValues>
 			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
 		</KeyValues>
@@ -78,21 +75,22 @@
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-6"/>
-					<Anchor point="BOTTOMRIGHT" x="-25" y="2"/>
+					<Anchor point="BOTTOMRIGHT" x="-16" y="2"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="auctionhouse-background-categories" useAtlasSize="true">
+				<Texture parentKey="Background" atlas="CraftingOrders-Categories-Background" useAtlasSize="false">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>

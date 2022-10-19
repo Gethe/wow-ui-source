@@ -89,7 +89,9 @@ function PlayerChoiceToggleButtonMixin:OnClick()
 		PlayerChoiceFrame:TryShow();
 	end
 
-	self.FadeIn:Restart();
+	if not self.noFade then
+		self.FadeIn:Restart();
+	end
 end
 
 
@@ -163,6 +165,17 @@ function CypherPlayerChoiceToggleButtonMixin:UpdateButtonState()
 	end
 end
 
+GenericPlayerChoiceToggleButtonMixin = CreateFromMixins(PlayerChoiceToggleButtonMixin);
+
+function GenericPlayerChoiceToggleButtonMixin:UpdateButtonState()
+	if not self:ShouldShow() then
+		self:Hide();
+		return;
+	end
+
+	local choiceFrameShown = PlayerChoiceFrame:IsShown();
+	self:SetText(choiceFrameShown and HIDE or SHOW);
+end
 
 PlayerChoiceRerollButtonMixin = {};
 
@@ -219,12 +232,13 @@ local function FillToggleButtonsIfNeeded()
 		{
 			TorghastPlayerChoiceToggleButton,
 			CypherPlayerChoiceToggleButton,
+			GenericPlayerChoiceToggleButton,
 		};
 	end
 end
 
 function PlayerChoiceToggle_ShouldShow()
-	return C_PlayerChoice.IsWaitingForPlayerChoiceResponse() and C_PlayerChoice.GetRemainingTime() ~= 0;
+	return C_PlayerChoice.IsWaitingForPlayerChoiceResponse() and C_PlayerChoice.GetRemainingTime();
 end
 
 function PlayerChoiceToggle_TryShow()
@@ -247,7 +261,9 @@ function PlayerChoiceToggle_GetActiveToggle()
 	local textureKit = choiceInfo and choiceInfo.uiTextureKit;
 
 	for _, button in pairs(toggleButtons) do
-		if button.textureKit == textureKit then
+		if(button:IsShown()) then 
+			return button; 
+		elseif button.textureKit == textureKit then
 			return button;
 		end
 	end

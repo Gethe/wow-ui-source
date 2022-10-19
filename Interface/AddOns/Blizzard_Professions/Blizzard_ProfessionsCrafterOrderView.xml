@@ -29,8 +29,8 @@
 						<FontString parentKey="PostedByTitle" inherits="GameFontNormal" justifyH="LEFT" text="PROFESSIONS_ORDER_POSTED_BY">
 							<Size x="300" y="15"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="15" y="-50"/>
-							</Anchors>													
+								<Anchor point="TOPLEFT" x="15" y="-60"/>
+							</Anchors>																		
 						</FontString>
 						<FontString parentKey="PostedByValue" inherits="GameFontHighlight" justifyH="LEFT">
 							<Size x="0" y="15"/>
@@ -41,7 +41,7 @@
 						<FontString parentKey="CommissionTitle" inherits="GameFontNormal" justifyH="RIGHT" text="PROFESSIONS_CRAFTER_FORM_TIP">
 							<Size x="130" y="15"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="4" y="-260"/>
+								<Anchor point="TOPLEFT" x="4" y="-274"/>
 							</Anchors>																
 						</FontString>
 						<FontString parentKey="ConsortiumCutTitle" inherits="GameFontNormal" justifyH="RIGHT" text="CRAFTING_ORDER_CONSORTIUM_CUT">
@@ -50,9 +50,7 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.CommissionTitle" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 							</Anchors>																
 						</FontString>
-						<Texture parentKey="CutDivider">
-							<Size x="230" y="1"/>
-							<Color color="GRAY_FONT_COLOR" a="0.5"/>
+						<Texture parentKey="CutDivider" atlas="CraftingOrder-Divider" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.ConsortiumCutTitle" relativePoint="BOTTOM" x="85" y="-10"/>
 							</Anchors>
@@ -87,47 +85,41 @@
 					<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
 						<Size x="90" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="15" y="-20"/>
-						</Anchors>		
+							<Anchor point="TOPLEFT" x="7" y="-8"/>
+						</Anchors>
 					</Button>
 
 					<Frame parentKey="NoteBox">
 						<Size x="280" y="140"/>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-100"/>
+							<Anchor point="TOP" x="0" y="-108"/>
 						</Anchors>						
 						<Frames>
 							<Frame parentKey="Background" useParentLevel="true" setAllPoints="true">
 								<Layers>
 									<Layer level="ARTWORK">
-										<Texture parentKey="Art" atlas="auctionhouse-background-index" useAtlasSize="false">
+										<Texture parentKey="Border" atlas="CraftingOrders-NoteFrameNarrow" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="TOPLEFT" x="3" y="-3"/>
-												<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+												<Anchor point="CENTER" x="0" y="-17"/>
 											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="OVERLAY">
-										<Texture parentKey="Overlay">
-											<Color r="0" b="0" g="0" a="0.45"/>
 										</Texture>
 									</Layer>
 								</Layers>
 							</Frame>
-
-							<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
-								<KeyValues>
-									<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
-								</KeyValues>
-							</Frame>
 						</Frames>
 						<Layers>
 							<Layer level="OVERLAY">
-								<FontString parentKey="NoteText" inherits="GameFontDisable" justifyH="LEFT" justifyV="TOP">
+								<FontString parentKey="NoteTitle" inherits="GameFontNormal" text="PROFESSIONS_NOTE_TO_CRAFTER" justifyH="LEFT" justifyV="TOP">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="10" y="-10"/>
-										<Anchor point="BOTTOMRIGHT" x="-10" y="6"/>
+										<Anchor point="TOPLEFT" x="10" y="-3"/>
 									</Anchors>
+								</FontString>
+
+								<FontString parentKey="NoteText" inherits="GameFontDisable" justifyH="LEFT" justifyV="TOP" nonspacewrap="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="12" y="-23"/>
+										<Anchor point="BOTTOMRIGHT" x="-22" y="3"/>
+									</Anchors>									
 								</FontString>
 							</Layer>
 						</Layers>
@@ -138,14 +130,12 @@
 						<Scripts>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
-						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="20"/>
-						</Anchors>
+						<!-- Anchored Dynamically -->
 					</Button>
 					<Button parentKey="DeclineOrderButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_DECLINE_ORDER">
 						<Size x="140" y="22"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.StartOrderButton" relativePoint="LEFT" x="0" y="0"/>
+							<Anchor point="BOTTOM" x="70" y="8"/>
 						</Anchors>		
 					</Button>
 		
@@ -250,50 +240,26 @@
 							</Frame>
 
 							<Frame parentKey="NoteEditBox">
-								<Size x="330" y="160"/>
+								<Size y="144" x="300"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" x="20" y="-100"/>
+									<Anchor point="TOPLEFT" x="20" y="-105"/>
 								</Anchors>								
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Border" atlas="CraftingOrders-NoteFrameNarrow" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="-17"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
 								<Frames>
-									<Frame parentKey="Background" useParentLevel="true" setAllPoints="true">
-										<Layers>
-											<Layer level="ARTWORK">
-												<Texture parentKey="Art" atlas="auctionhouse-background-index" useAtlasSize="false">
-													<Anchors>
-														<Anchor point="TOPLEFT" x="3" y="-3"/>
-														<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
-													</Anchors>
-												</Texture>
-											</Layer>
-											<Layer level="OVERLAY">
-												<Texture parentKey="Overlay">
-													<Color r="0" b="0" g="0" a="0.45"/>
-												</Texture>
-											</Layer>
-										</Layers>
-									</Frame>
-		
 									<Frame parentKey="TitleBox">
 										<Anchors>
-											<Anchor point="TOPLEFT"/>
-											<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-23"/>
-										</Anchors>
-										<Frames>
-											<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
-												<KeyValues>
-													<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
-												</KeyValues>
-											</Frame>
-										</Frames>
+											<Anchor point="TOPLEFT" x="16" y="0"/>
+											<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-24" y="-23"/>
+										</Anchors>									
 										<Layers>
-											<Layer level="ARTWORK">
-												<Texture parentKey="Background" atlas="auctionhouse-background-index" useAtlasSize="false">
-													<Anchors>
-														<Anchor point="TOPLEFT" x="3" y="-3"/>
-														<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
-													</Anchors>
-												</Texture>
-											</Layer>
 											<Layer level="OVERLAY">
 												<FontString parentKey="Title" inherits="GameFontNormal" text="PROFESSIONS_NOTE_TO_CUSTOMER" justifyH="LEFT">
 													<Size x="200" y="1"/>
@@ -312,15 +278,9 @@
 											<KeyValue key="maxLetters" value="250" type="number"/>
 										</KeyValues>
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeKey="$parent.TitleBox" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
-											<Anchor point="BOTTOMRIGHT" x="-10" y="6"/>
+											<Anchor point="TOPLEFT" relativeKey="$parent.TitleBox" relativePoint="BOTTOMLEFT" x="10" y="-3"/>
+											<Anchor point="BOTTOMRIGHT" x="-32" y="5"/>
 										</Anchors>
-									</Frame>
-		
-									<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
-										<KeyValues>
-											<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
-										</KeyValues>
 									</Frame>
 								</Frames>
 							</Frame>
@@ -338,7 +298,7 @@
 								<FontString parentKey="OrderCompleteText" inherits="GameFontNormal" justifyH="CENTER" text="PROFESSIONS_ORDER_COMPLETE">
 									<Size x="200" y="30"/>
 									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.ItemName" x="0" y="-15"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" x="0" y="-15"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -359,7 +319,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-20" y="4"/>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="7"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="CompleteOrderButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_COMPLETE_ORDER">
@@ -410,46 +370,22 @@
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.ConfirmationText" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Border" atlas="CraftingOrders-NoteFrameNarrow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="-17"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 						<Frames>
-							<Frame parentKey="Background" useParentLevel="true" setAllPoints="true">
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="Art" atlas="auctionhouse-background-index" useAtlasSize="false">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="3" y="-3"/>
-												<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="OVERLAY">
-										<Texture parentKey="Overlay">
-											<Color r="0" b="0" g="0" a="0.45"/>
-										</Texture>
-									</Layer>
-								</Layers>
-							</Frame>
-
 							<Frame parentKey="TitleBox">
 								<Anchors>
-									<Anchor point="TOPLEFT"/>
-									<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-23"/>
-								</Anchors>
-								<Frames>
-									<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
-										<KeyValues>
-											<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
-										</KeyValues>
-									</Frame>
-								</Frames>
+									<Anchor point="TOPLEFT" x="26" y="-9"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-43" y="-32"/>
+								</Anchors>															
 								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="Background" atlas="auctionhouse-background-index" useAtlasSize="false">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="3" y="-3"/>
-												<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
-											</Anchors>
-										</Texture>
-									</Layer>
 									<Layer level="OVERLAY">
 										<FontString parentKey="Title" inherits="GameFontNormal" text="PROFESSIONS_ORDER_DECLINE_NOTE_TITLE" justifyH="LEFT">
 											<Size x="200" y="1"/>
@@ -461,12 +397,6 @@
 								</Layers>
 							</Frame>
 
-							<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
-								<KeyValues>
-									<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
-								</KeyValues>
-							</Frame>
-
 							<Frame parentKey="ScrollingEditBox" inherits="ScrollingEditBoxTemplate" frameStrata="DIALOG">
 								<KeyValues>
 									<KeyValue key="fontName" value="GameFontHighlight" type="string"/>
@@ -474,26 +404,33 @@
 									<KeyValue key="maxLetters" value="250" type="number"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TitleBox" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
-									<Anchor point="BOTTOMRIGHT" x="-10" y="6"/>
-								</Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.TitleBox" relativePoint="BOTTOMLEFT" x="12" y="-3"/>
+									<Anchor point="BOTTOMRIGHT" x="-48" y="12"/>
+								</Anchors>								
 							</Frame>
 						</Frames>
 					</Frame>
 
-					<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate" text="YES">
+					<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="NO">
 						<Size x="100" y="22"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.NoteEditBox" relativePoint="BOTTOM" y="-15" x="55"/>
 						</Anchors>
 					</Button>
-					<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="NO">
+					<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate" text="YES">
 						<Size x="100" y="22"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.ConfirmButton" relativePoint="LEFT" y="0" x="-10"/>
+							<Anchor point="RIGHT" relativeKey="$parent.CancelButton" relativePoint="LEFT" y="0" x="-10"/>
 						</Anchors>
 					</Button>
 				</Frames>
+			</Frame>
+
+			<Frame parentKey="OverlayCastBarAnchor">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="15"/>
+				</Anchors>
 			</Frame>
 		</Frames>
 	</Frame>

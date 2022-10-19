@@ -1,3 +1,18 @@
+
+function AddSpecAndTalentTutorials()
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
+		TutorialManager:AddWatcher(Class_StarterTalentWatcher:new(), true);
+	end
+
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC_CHANGES) and IsPlayerInitialSpec() then
+		TutorialManager:AddTutorial(Class_ChangeSpec:new());
+	end
+
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) then
+		TutorialManager:AddTutorial(Class_TalentPoints:new());
+	end
+end
+
 -- ------------------------------------------------------------------------------------------------------------
 -- Change Spec
 -- ------------------------------------------------------------------------------------------------------------
@@ -6,15 +21,11 @@ function Class_ChangeSpec:OnInitialize()
 end
 
 function Class_ChangeSpec:OnAdded(args)
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC_CHANGES) and not IsPlayerInitialSpec() then
-		TutorialManager:RemoveTutorial(self:Name());
+	if C_SpecializationInfo.CanPlayerUseTalentSpecUI() and IsPlayerInitialSpec() then
+		TutorialManager:Queue(self:Name());
 	else
-		if C_SpecializationInfo.CanPlayerUseTalentSpecUI() and IsPlayerInitialSpec() then
-			TutorialManager:Queue(self:Name());
-		else
-			Dispatcher:RegisterEvent("PLAYER_TALENT_UPDATE", self);
-			Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
-		end
+		Dispatcher:RegisterEvent("PLAYER_TALENT_UPDATE", self);
+		Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
 	end
 end
 
@@ -61,7 +72,7 @@ function Class_ChangeSpec:ShowSpecButtonPointer()
 end
 
 function Class_ChangeSpec:EvaluateTalentFrame()
-	if ( ClassTalentFrame:IsShown() ) then
+	if ( ClassTalentFrame and ClassTalentFrame:IsShown() ) then
 		self:HidePointerTutorials();
 		self:EnableHelp(true);
 		Dispatcher:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", self);
@@ -184,7 +195,7 @@ end
 
 function Class_TalentPoints:OnAdded(args)
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) then
-		if not AreTalentsLocked() and C_ClassTalents.HasUnspentTalentPoints() then
+		if PlayerUtil.CanUseClassTalents() and C_ClassTalents.HasUnspentTalentPoints() then
 			TutorialManager:Queue(self:Name());
 		else
 			Dispatcher:RegisterEvent("PLAYER_TALENT_UPDATE", self);
@@ -197,9 +208,9 @@ function Class_TalentPoints:OnAdded(args)
 end
 
 function Class_TalentPoints:StartSelf()
-	local areTalentsLocked = AreTalentsLocked();
+	local canUseTalents = PlayerUtil.CanUseClassTalents();
 	local hasUnspentTalentPoints = C_ClassTalents.HasUnspentTalentPoints();
-	if not areTalentsLocked and hasUnspentTalentPoints then
+	if canUseTalents and hasUnspentTalentPoints then
 		Dispatcher:UnregisterEvent("PLAYER_TALENT_UPDATE", self);
 		Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 		Dispatcher:UnregisterEvent("ACTIVE_COMBAT_CONFIG_CHANGED", self);
@@ -220,14 +231,14 @@ function Class_TalentPoints:ACTIVE_COMBAT_CONFIG_CHANGED()
 end
 
 function Class_TalentPoints:CanBegin()
-	if not AreTalentsLocked() and C_ClassTalents.HasUnspentTalentPoints() then
+	if PlayerUtil.CanUseClassTalents() and C_ClassTalents.HasUnspentTalentPoints() then
 		return true;
 	end
 	return false;
 end
 
 function Class_TalentPoints:OnBegin()
-	if not AreTalentsLocked() and C_ClassTalents.HasUnspentTalentPoints() then
+	if PlayerUtil.CanUseClassTalents() and C_ClassTalents.HasUnspentTalentPoints() then
 		EventRegistry:RegisterCallback("TalentFrame.OpenFrame", self.EvaluateTalentFrame, self);
 		C_Timer.After(0.1, function()
 			self:EvaluateTalentFrame();
@@ -319,14 +330,6 @@ Class_StarterTalentWatcher = class("StarterTalentWatcher", Class_TutorialBase);
 		acknowledgeOnHide = false,
 		handlesGlobalMouseEventCallback = function() return true; end,
 	};
-function Class_StarterTalentWatcher:OnInitialize()
-end
-
-function Class_StarterTalentWatcher:OnAdded()
-end
-
-function Class_StarterTalentWatcher:OnBegin()
-end
 
 function Class_StarterTalentWatcher:EvaluateTalentFrame()
 	if ClassTalentFrame and ClassTalentFrame:IsShown() and C_ClassTalents.HasUnspentTalentPoints() then

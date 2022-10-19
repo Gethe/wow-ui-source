@@ -75,6 +75,16 @@
 		</Scripts>
 	</Button>
 
+	<Button name="CampaignHeaderCollapseButtonTemplate" registerForClicks="LeftButtonUp" mixin="CampaignCollapseButtonMixin" virtual="true">
+		<Size x="20" y="20"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
+	</Button>
+
 	<Frame name="CampaignHeaderDisplayTemplate" inherits="ResizeLayoutFrame" mixin="CampaignHeaderDisplayMixin" virtual="true">
 		<Size x="1" y="1"/>
 		<Layers>
@@ -145,7 +155,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="CampaignHeaderTemplate" inherits="CampaignHeaderDisplayTemplate" mixin="CampaignHeaderMixin" virtual="true">
+	<Frame name="CampaignHeaderTemplate" inherits="CampaignHeaderDisplayTemplate" mixin="CampaignHeaderMixin, CampaignHeaderCollapsibleMixin, CampaignHeaderTooltipableMixin" virtual="true">
 		<KeyValues>
 			<!-- NOTE: topPadding will be assigned programatically -->
 			<KeyValue key="fixedWidth" value="260" type="number"/>
@@ -163,16 +173,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CollapseButton" registerForClicks="LeftButtonUp" mixin="CampaignCollapseButtonMixin">
-				<Size x="20" y="20"/>
+			<Button parentKey="CollapseButton" inherits="CampaignHeaderCollapseButtonTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Background" x="18" y="6"/>
 				</Anchors>
-				<Scripts>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-				</Scripts>
-				<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
 			</Button>
 			<Button parentKey="LoreButton" inherits="LoreButtonTemplate">
 				<Anchors>
@@ -207,6 +211,61 @@
 			<OnHide method="OnLeave"/> <!-- Necessary because OnUpdate will stop when hidden -->
 			<OnMouseUp method="OnMouseUp"/>
 			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CampaignHeaderMinimalTemplate" inherits="ResizeLayoutFrame" mixin="QuestLogHeaderCodeMixin, CampaignHeaderMinimalMixin, CampaignHeaderCollapsibleMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="leftPadding" value="4" type="number"/>
+		</KeyValues>
+		<Size x="1" y="1"/>
+		<Frames>
+			<Button parentKey="CollapseButton" inherits="CampaignHeaderCollapseButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightMedium" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
+					<Size x="175" y="15"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.CollapseButton" x="26" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NextObjective" inherits="ResizeLayoutFrame" mixin="CampaignNextObjectiveMixin">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="205" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 	</Frame>
 </Ui>

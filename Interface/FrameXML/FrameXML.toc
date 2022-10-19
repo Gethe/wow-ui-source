@@ -420,6 +420,7 @@ WeeklyReward.lua
 PlayerInteractionFrameManager.xml
 TalkingHeadUI.xml
 ArenaUI.xml
+FramerateFrame.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

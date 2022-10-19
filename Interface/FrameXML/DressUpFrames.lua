@@ -648,10 +648,12 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 			GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
 			local slotName = TransmogUtil.GetSlotName(self.slotID);
 			GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
+			self:CheckForWarningString();
 			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNUSABLE);
 		else
 			local hideVendorPrice = true;
 			GameTooltip:SetHyperlink(self.item:GetItemLink(), nil, nil, hideVendorPrice);
+			self:CheckForWarningString();
 			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNCOLLECTABLE);
 		end
 	elseif self.slotState == OUTFIT_SLOT_STATE_UNCOLLECTED then
@@ -663,6 +665,7 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 			GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
 			local slotName = TransmogUtil.GetSlotName(self.slotID);
 			GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
+			self:CheckForWarningString();
 			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
 		end
 	else
@@ -670,9 +673,17 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 		GameTooltip_AddColoredLine(GameTooltip, self.name, nameColor);
 		local slotName = TransmogUtil.GetSlotName(self.slotID);
 		GameTooltip_AddColoredLine(GameTooltip, _G[slotName], HIGHLIGHT_FONT_COLOR);
+		self:CheckForWarningString();
 		GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK, GREEN_FONT_COLOR);
 	end
 	GameTooltip:Show();
+end
+
+function DressUpOutfitDetailsSlotMixin:CheckForWarningString()
+	local warningString = CollectionWardrobeUtil.GetVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation);
+	if warningString then
+		GameTooltip_AddNormalLine(GameTooltip, warningString);
+	end
 end
 
 function DressUpOutfitDetailsSlotMixin:OnLeave()
@@ -718,7 +729,8 @@ function DressUpOutfitDetailsSlotMixin:RefreshAppearanceTooltip()
 	local inLegionArtifactCategory = false;
 	local slotName = TransmogUtil.GetSlotName(self.slotID);
 	local subheaderString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(_G[slotName]);
-	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, self.transmogID, self.tooltipSourceIndex, showUseError, inLegionArtifactCategory, subheaderString);
+	local warningString = CollectionWardrobeUtil.GetVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation);
+	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, self.transmogID, self.tooltipSourceIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString);
 	GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
 	GameTooltip:Show();
 end

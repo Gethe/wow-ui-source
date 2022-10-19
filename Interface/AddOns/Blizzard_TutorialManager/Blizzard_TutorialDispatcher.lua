@@ -183,13 +183,28 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function Dispatcher:OnEvent(event, ...)
-	if (self.Events[event] ~= nil) then
-		for id, CallbackData in pairs(self.Events[event]) do
-			CallbackData:Invoke(...);
+	if (self.Events[event] == nil) then
+		return;
+	end
 
-			if (CallbackData.OneTime) then
-				self:UnregisterEvent(event, id);
-			end
+	-- Making a copy for safe iteration as listeners may Register/Unregister to this same event within their callbacks
+	-- Specifically, 'more than one removal + any additions to the table' during iteration will result in an invalid key error
+	local shallow = true;
+	local callbackTableCopy = CopyTable(self.Events[event], shallow);
+
+	local idsToUnregister = {};
+	for id, CallbackData in pairs(callbackTableCopy) do
+		CallbackData:Invoke(...);
+
+		if (CallbackData.OneTime) then
+			-- Delay unregistering until after iteration to avoid errors
+			table.insert(idsToUnregister, id);
+		end
+	end
+
+	if #idsToUnregister > 0 then
+		for _, id in ipairs(idsToUnregister) do
+			self:UnregisterEvent(event, id);
 		end
 	end
 end
@@ -354,6 +369,10 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function Dispatcher:UnregisterScript(frame, script, ownerOrID)
+	if (self.Scripts[frame] == nil or ownerOrID == nil) then
+		return;
+	end
+
 	local callbackTable = self.Scripts[frame][script];
 
 	local id = ownerOrID;
@@ -384,15 +403,28 @@ end
 function Dispatcher:OnScript(frame, script, ...)
 	-- print("Dispatcher - OnScript", frame, script, ...)
 
-	if (self.Scripts[frame]) then
-		if (self.Scripts[frame][script]) then
-			for id, callbackData in pairs(self.Scripts[frame][script]) do
-				callbackData:Invoke(...);
+	if (not self.Scripts[frame] or not self.Scripts[frame][script]) then
+		return;
+	end
 
-				if (callbackData.OneTime) then
-					self.Scripts[frame][script][id] = nil;
-				end
-			end
+	-- Making a copy for safe iteration as listeners may Register/Unregister to this same script within their callbacks
+	-- Specifically, 'more than one removal + any additions to the table' during iteration will result in an invalid key error
+	local shallow = true;
+	local callbackTableCopy = CopyTable(self.Scripts[frame][script], shallow);
+
+	local idsToRemove = {};
+	for id, callbackData in pairs(callbackTableCopy) do
+		callbackData:Invoke(...);
+
+		if (callbackData.OneTime) then
+			-- Delay unregistering until after iteration to avoid errors
+			table.insert(idsToRemove, id);
+		end
+	end
+
+	if #idsToRemove > 0 and self.Scripts[frame][script] then
+		for _, id in ipairs(idsToRemove) do
+			self.Scripts[frame][script][id] = nil;
 		end
 	end
 end

@@ -183,8 +183,7 @@ function ReagentBagTutorialMixin:HasReagentBagInInventory()
 end
 
 function ReagentBagTutorialMixin:HasReagentBagEquipped()
-	-- TODO: Use constant, not literal.
-	return ContainerFrame_GetContainerNumSlots(5) > 0;
+	return ContainerFrame_GetContainerNumSlots(Enum.BagIndex.ReagentBag) > 0;
 end
 
 function ReagentBagTutorialMixin:AcknowledgeTutorial()

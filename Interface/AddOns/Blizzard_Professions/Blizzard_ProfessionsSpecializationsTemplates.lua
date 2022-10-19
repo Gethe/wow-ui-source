@@ -21,8 +21,7 @@ local professionVertexColors =
 };
 
 function ProfessionDial_GetRelativeRotation(currRank, maxRank, inPct)
-	local finalPipRotation = 5.61; -- Final pip has hard-coded rotation due to offset in art
-	local rads = (currRank == maxRank) and finalPipRotation or (currRank / maxRank) * (2 * math.pi - dialBaseAngle) + (dialBaseAngle / 2);
+	local rads = (currRank / maxRank) * (2 * math.pi - dialBaseAngle) + (dialBaseAngle / 2);
 	return inPct and rads / (2 * math.pi) or rads;
 end
 
@@ -159,7 +158,7 @@ function ProfessionSpecTabMixin:Init(traitTreeID)
 
 	local minWidth = 180;
 	local bufferWidth = 40;
-	local stretchWidth = self.Text:GetWidth() + (self.StateIcon:GetWidth() * 2) + bufferWidth;
+	local stretchWidth = self.Text:GetStringWidth() + (self.StateIcon:GetWidth() * 2) + bufferWidth;
 	self:SetTabWidth(math.max(minWidth, stretchWidth));
 
 	return true;
@@ -317,8 +316,9 @@ function ProfessionsSpecPathMixin:ShouldDisplaySource()
 end
 
 function ProfessionsSpecPathMixin:GetNextPerkDescription()
-	local perkIDs = C_ProfSpecs.GetPerksForPath(self.nodeInfo.ID);
-	for _, perkID in ipairs(perkIDs) do
+	local perkInfos = C_ProfSpecs.GetPerksForPath(self.nodeInfo.ID);
+	for _, perkInfo in ipairs(perkInfos) do
+		local perkID = perkInfo.perkID;
 		if C_ProfSpecs.GetStateForPerk(perkID, self:GetConfigID()) == Enum.ProfessionsSpecPerkState.Unearned then
 			local unlockRank = C_ProfSpecs.GetUnlockRankForPerk(perkID);
 			local perkDescription = C_ProfSpecs.GetDescriptionForPerk(perkID);
@@ -507,10 +507,11 @@ function ProfessionsSpecPerkMixin:GetRotation()
 	return ProfessionDial_GetRelativeRotation(self.unlockRank, self:GetParentMaxRank());
 end
 
-function ProfessionsSpecPerkMixin:SetPerkID(perkID)
+function ProfessionsSpecPerkMixin:SetPerk(perkInfo)
 	self.PipLockinAnim:Stop();
 	self.state = nil;
-	self.perkID = perkID;
+	self.perkID = perkInfo.perkID;
+	self.isMajorPerk = perkInfo.isMajorPerk;
 	self.unlockRank = C_ProfSpecs.GetUnlockRankForPerk(self.perkID);
 
 	self:UpdateAssets();
@@ -521,11 +522,10 @@ function ProfessionsSpecPerkMixin:SetPerkID(perkID)
 	-- Asset starts facting up, but we rotate from the bottom
 	rotation = rotation + math.pi;
 	for _, texture in ipairs(self.RotatedTextures) do
-		-- Final perk assets are pre-rotated
-		texture:SetRotation(self.unlockRank ~= self:GetParentMaxRank() and rotation or 0);
+		texture:SetRotation(rotation);
 	end
 
-	local entryID = C_ProfSpecs.GetEntryIDForPerk(perkID);
+	local entryID = C_ProfSpecs.GetEntryIDForPerk(perkInfo.perkID);
 	self:SetEntryID(entryID);
 end
 
@@ -620,8 +620,7 @@ end
 function ProfessionsSpecPerkMixin:UpdateAssets()
 	-- TODO:: Re-enable specialized pips
 	local kitSpecifier = "Tailoring"; --Professions.GetAtlasKitSpecifier(self:GetTalentFrame().professionInfo);
-	local isFinalPip = self.unlockRank == self:GetParentMaxRank();
-	local pipArtAtlasFormat = isFinalPip and "SpecDial_EndPip_Flipbook_%s" or "SpecDial_Pip_Flipbook_%s";
+	local pipArtAtlasFormat = self.isMajorPerk and "SpecDial_EndPip_Flipbook_%s" or "SpecDial_Pip_Flipbook_%s";
 	local stylizedPipAtlasName = kitSpecifier and pipArtAtlasFormat:format(kitSpecifier);
 	local stylizedPipInfo = stylizedPipAtlasName and C_Texture.GetAtlasInfo(stylizedPipAtlasName);
 	if not stylizedPipInfo then
@@ -648,7 +647,7 @@ function ProfessionsSpecPerkMixin:UpdateAssets()
 	self.finalTop = 1 - self.initialBottom;
 	self.finalBottom = 1;
 
-	self.PendingGlow:SetAtlas(isFinalPip and "SpecDial_LastPip_BorderGlow" or "SpecDial_Pip_BorderGlow", TextureKitConstants.UseAtlasSize);
+	self.PendingGlow:SetAtlas(self.isMajorPerk and "SpecDial_LastPip_BorderGlow" or "SpecDial_Pip_BorderGlow", TextureKitConstants.UseAtlasSize);
 end
 
 

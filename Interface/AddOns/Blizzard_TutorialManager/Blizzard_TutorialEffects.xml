@@ -33,6 +33,9 @@
 	</Frame>
 	<Frame name="TutorialDragTargetFrame" hidden="true">
 		<Size x="76" y="76"/>
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean" />
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture atlas="newplayertutorial-drag-slotblue" useAtlasSize="true" alphaMode="ADD">

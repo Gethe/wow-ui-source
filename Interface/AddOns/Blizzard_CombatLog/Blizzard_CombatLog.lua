@@ -3484,8 +3484,6 @@ function SetItemRef(link, text, button, chatFrame)
 			EasyMenu(Blizzard_CombatLog_CreateUnitMenu(name, guid), CombatLogDropDown, "cursor", nil, nil, "MENU");
 			return;
 		end
-        
-        EventRegistry:TriggerEvent("ItemRefTooltip.UnitSet", name, guid);
 	elseif ( strsub(link, 1, 4) == "icon") then
 		local _, bit, direction = strsplit(":", link);
 		local texture = string.gsub(text,".*|h(.*)|h.*","%1");

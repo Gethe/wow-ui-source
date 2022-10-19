@@ -185,7 +185,8 @@ function ExhaustionTickMixin:UpdateTickPosition()
 		self:SetPoint("CENTER", self:GetParent() , "RIGHT", 0, 0);
 	end
 
-	if ( not exhaustionThreshold ) then
+	if ( not exhaustionThreshold or exhaustionThreshold <= 0 or IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled() ) then
+		-- Hide exhaustion if player has no exhaustion, player is max level, or XP is turned off
 		self:Hide();
 		self:GetParent().ExhaustionLevelFillBar:Hide();
 	else
@@ -203,11 +204,6 @@ function ExhaustionTickMixin:UpdateTickPosition()
 			self:GetParent().ExhaustionLevelFillBar:SetWidth(exhaustionTickSet);
 			self:GetParent().ExhaustionLevelFillBar:SetTexCoord(0, widthRatio, 0, 1);
 		end
-	end
-
-	-- Hide exhaustion tick if player is max level or XP is turned off
-	if ( IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled() ) then
-		self:Hide();
 	end
 end
 

@@ -77,6 +77,16 @@ local customTextureKitInfo = {
 		closeButtonY = -8,
 		uniqueCorners = true,
 	},
+
+	genericplayerchoice = {
+		optionFrameTemplate = "PlayerChoiceGenericPowerChoiceOptionTemplate",
+		optionsTopPadding = 120,
+		optionsBottomPadding = 120,
+		showOptionsOnly = true,
+		frameYOffset = 95,
+		timerXOffset = 0,
+		timerYOffset = -5,
+	},
 };
 
 local defaultTextureKitInfo = {
@@ -115,8 +125,6 @@ function PlayerChoiceFrameMixin:TryShow()
 	end
 
 	self.choiceInfo = choiceInfo;
-
-	choiceInfo.uiTextureKit = "Dragonflight";
 
 	if choiceInfo.uiTextureKit then
 		self.uiTextureKit = choiceInfo.uiTextureKit;

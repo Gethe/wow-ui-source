@@ -180,8 +180,6 @@ end
 -- [[ AchievementFrame ]] --
 
 function AchievementFrame_ToggleAchievementFrame(toggleStatFrame, toggleGuildView)
-	ClearSelectedCategories();
-
 	AchievementFrameComparison:Hide();
 	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 	if ( not toggleStatFrame ) then
@@ -603,7 +601,7 @@ end
 
 function AchievementFrameCategories_OnShow (self)
 	AchievementFrameCategories_UpdateDataProvider();
-	AchievementFrameCategories_SelectDefaultElementData();
+	AchievementFrame_GetOrSelectCurrentCategory();
 end
 
 function AchievementFrameCategories_SelectDefaultElementData()
@@ -923,9 +921,10 @@ GUILDACHIEVEMENTBUTTON_MINHEIGHT = 128;
 AchievementTemplateMixin = {};
 
 function AchievementTemplateMixin:OnLoad()
+	self.DateCompleted = self.Shield.DateCompleted;
+
 	AchievementButton_Localize(self);
 
-	self.DateCompleted = self.Shield.DateCompleted;
 	if ( not ACHIEVEMENTUI_FONTHEIGHT ) then
 		local _, fontHeight = self.Description:GetFont();
 		ACHIEVEMENTUI_FONTHEIGHT = fontHeight;

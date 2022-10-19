@@ -581,7 +581,7 @@ function TalentMicroButtonMixin:HasTalentAlertToShow()
 
 	local alert;
 
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) and canUseTalentUI and not AreTalentsLocked() and C_ClassTalents.HasUnspentTalentPoints() then
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) and canUseTalentUI and C_ClassTalents.HasUnspentTalentPoints() then
 		alert = "TALENT_MICRO_BUTTON_UNSPENT_TALENTS";
 	end
 
@@ -1257,13 +1257,15 @@ function MainMenuMicroButtonMixin:OnMouseUp(button)
 		self.down = nil;
 		if ( self:IsMouseOver() ) then
 			if ( not GameMenuFrame:IsShown() ) then
-				if ( SettingsPanel:IsShown() ) then
-					SettingsPanel:Close();
+				if ( not AreAllPanelsDisallowed() ) then
+					if ( SettingsPanel:IsShown() ) then
+						SettingsPanel:Close();
+					end
+					CloseMenus();
+					CloseAllWindows();
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+					ShowUIPanel(GameMenuFrame);
 				end
-				CloseMenus();
-				CloseAllWindows();
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-				ShowUIPanel(GameMenuFrame);
 			else
 				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 				HideUIPanel(GameMenuFrame);

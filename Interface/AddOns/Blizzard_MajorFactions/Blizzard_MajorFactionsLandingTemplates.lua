@@ -128,6 +128,7 @@ function MajorFactionButtonMixin:Init(majorFactionData)
 
 	local expansionName = _G["EXPANSION_NAME" .. self.expansionID];
 	self.LockedState.Background:SetAtlas(buttonLockedAtlasFormat:format(expansionName), TextureKitConstants.UseAtlasSize);
+	self.LockedState.unlockDescription = majorFactionData.unlockDescription;
 	self.UnlockedState.normalAtlas = buttonAtlasFormat:format(expansionName, majorFactionData.textureKit);
 	self.UnlockedState.hoverAtlas = buttonHoverAtlasFormat:format(expansionName, majorFactionData.textureKit);
 	self.UnlockedState.Background:SetAtlas(self.UnlockedState.normalAtlas, TextureKitConstants.UseAtlasSize);
@@ -148,6 +149,18 @@ end
 ----------------------------------- Major Faction Button Locked State -----------------------------------
 
 MajorFactionButtonLockedStateMixin = {};
+
+function MajorFactionButtonLockedStateMixin:OnEnter()
+	if self.unlockDescription then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_AddErrorLine(GameTooltip, self.unlockDescription);
+		GameTooltip:Show();
+	end
+end
+
+function MajorFactionButtonLockedStateMixin:OnLeave()
+	GameTooltip_Hide();
+end
 
 function MajorFactionButtonLockedStateMixin:Refresh(majorFactionData)
 	self.Title:SetText(majorFactionData.name or "");

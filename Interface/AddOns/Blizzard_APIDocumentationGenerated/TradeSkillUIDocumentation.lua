@@ -166,6 +166,20 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetCraftingTargetItems",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "items", Type = "table", InnerType = "CraftingTargetItem", Nilable = false },
+			},
+		},
+		{
 			Name = "GetEnchantItems",
 			Type = "Function",
 
@@ -323,6 +337,20 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "invSlots", Type = "table", InnerType = "InventorySlots", Nilable = false },
+			},
+		},
+		{
+			Name = "GetProfessionNameForSkillLineAbility",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "skillLineAbilityID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "professionNmae", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -752,20 +780,6 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "opened", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "RecipeCanBeRecrafted",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "recipeID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "recraftable", Type = "bool", Nilable = false },
 			},
 		},
 		{

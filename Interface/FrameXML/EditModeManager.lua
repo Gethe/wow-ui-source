@@ -185,6 +185,7 @@ function EditModeManagerFrameMixin:ExitEditMode()
 	self.AccountSettings:OnEditModeExit();
 	C_EditMode.OnEditModeExit();
     EventRegistry:TriggerEvent("EditMode.Exit");
+	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 end
 
 function EditModeManagerFrameMixin:OnShow()
@@ -583,6 +584,11 @@ function EditModeManagerFrameMixin:UpdateRightActionBarPositions()
 				end
 			end
 
+			-- Bar position changed so we should update our flyout direction
+			if bar.UpdateSpellFlyoutDirection then
+				bar:UpdateSpellFlyoutDirection();
+			end
+
 			leftMostBar = bar;
 		end
 	end
@@ -615,6 +621,11 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 				else
 					bar:SetPoint("BOTTOMLEFT", topMostBar, "TOPLEFT", 0, 5);
 				end
+			end
+
+			-- Bar position changed so we should update our flyout direction
+			if bar.UpdateSpellFlyoutDirection then
+				bar:UpdateSpellFlyoutDirection();
 			end
 
 			topMostBar = bar;

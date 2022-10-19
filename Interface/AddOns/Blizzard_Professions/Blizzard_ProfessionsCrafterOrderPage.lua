@@ -70,17 +70,6 @@ function ProfessionsCraftingOrderPageMixin:InitButtons()
 		self:RequestOrders(selectedRecipe, searchFavorites, initialNonPublicSearch);
 	end);
 
-	self.BrowseFrame.RefreshButton:SetScript("OnClick", function()
-		if self.lastRequest then
-			self:SendOrderRequest(self.lastRequest);
-		end
-	end);
-	self.BrowseFrame.RefreshButton:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(self.BrowseFrame.RefreshButton, "ANCHOR_RIGHT");
-		GameTooltip_AddHighlightLine(GameTooltip, REFRESH);
-		GameTooltip:Show();
-	end);
-
 	self.BrowseFrame.SearchButton:SetScript("OnClick", function()
 		local selectedRecipe = nil;
 		local searchFavorites = false;
@@ -117,30 +106,24 @@ function ProfessionsCraftingOrderPageMixin:InitOrderTypeTabs()
 		[Enum.CraftingOrderType.Guild] = PROFESSIONS_CRAFTER_ORDER_TAB_GUILD,
 		[Enum.CraftingOrderType.Personal] = PROFESSIONS_CRAFTER_ORDER_TAB_PERSONAL,
 	};
+
+	local isInGuild = IsInGuild();
+	self.BrowseFrame.GuildOrdersButton:SetShown(isInGuild);
+	self.BrowseFrame.PersonalOrdersButton:ClearAllPoints();
+	self.BrowseFrame.PersonalOrdersButton:SetPoint("LEFT", isInGuild and self.BrowseFrame.GuildOrdersButton or self.BrowseFrame.PublicOrdersButton, "RIGHT", 0, 0);
+
 	for _, typeTab in ipairs(self.BrowseFrame.orderTypeTabs) do
-		local enabled = true;
+		typeTab:SetScript("OnClick", function()
+			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+			self:SetCraftingOrderType(typeTab.orderType);
 
-		if typeTab.orderType == Enum.CraftingOrderType.Guild and not IsInGuild() then
-			enabled = false;
-		end
-		typeTab.LeftHighlight:SetAlpha(enabled and 1.0 or 0.0);
-		typeTab.MiddleHighlight:SetAlpha(enabled and 1.0 or 0.0);
-		typeTab.RightHighlight:SetAlpha(enabled and 1.0 or 0.0);
-		if enabled then
-			typeTab:SetScript("OnClick", function()
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-				self:SetCraftingOrderType(typeTab.orderType);
-
-				self:ClearCachedRequests();
-				self:StartDefaultSearch();
-			end);
-		else
-			typeTab:SetScript("OnClick", nil);
-		end
+			self:ClearCachedRequests();
+			self:StartDefaultSearch();
+		end);
 
 		typeTab:HandleRotation();
 		local title = orderTypeTabTitles[typeTab.orderType];
-		typeTab.Text:SetText(enabled and title or DISABLED_FONT_COLOR:WrapTextInColorCode(title));
+		typeTab.Text:SetText(title);
 		local minWidth = 180;
 		local bufferWidth = 40;
 		local stretchWidth = typeTab.Text:GetWidth() + bufferWidth;
@@ -349,6 +332,7 @@ local ProfessionsCraftingOrderPageEvents =
 	"TRADE_SKILL_FAVORITES_CHANGED",
 	"CURRENCY_DISPLAY_UPDATE",
 	"CRAFTINGORDERS_CAN_REQUEST",
+	"TRADE_SKILL_LIST_UPDATE",
 };
 function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 	if event == "TRADE_SKILL_FAVORITES_CHANGED" then
@@ -362,7 +346,9 @@ function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 			self:SetCraftingOrderType(Enum.CraftingOrderType.Public);
 		end
 	elseif event == "CRAFTINGORDERS_CAN_REQUEST" then
-		self.BrowseFrame.RefreshButton:SetEnabledState(true);
+	elseif event == "TRADE_SKILL_LIST_UPDATE" then
+		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+		self:Refresh(professionInfo);
 	end
 end
 
@@ -580,7 +566,6 @@ function ProfessionsCraftingOrderPageMixin:SendOrderRequest(request)
 		self.BrowseFrame.RecipeList:ClearSelectedRecipe();
 		self.selectedRecipe = nil;
 	end
-	self.BrowseFrame.RefreshButton:SetEnabledState(false);
 
 	if request.offset == 0 then
 		self.lastRequest = request;

@@ -231,7 +231,7 @@ local unlockableSpecHelpTipInfo =
 	onAcknowledgeCallback = function() ProfessionsFrame.unlockSpecHelptipAcknowledged = true; end,
 };
 
-local unspentPointsHelpTipInfo =
+local pendingPointsHelpTipInfo =
 {
 	text = PROFESSIONS_SPECS_PENDING_POINTS,
 	buttonStyle = HelpTip.ButtonStyle.Close,
@@ -239,6 +239,16 @@ local unspentPointsHelpTipInfo =
 	system = helptipSystemName,
 	autoHorizontalSlide = true,
 	onAcknowledgeCallback = function() ProfessionsFrame.pendingPointsHelptipAcknowledged = true; end,
+};
+
+local unspentPointsHelpTipInfo =
+{
+	text = PROFESSIONS_UNSPENT_SPEC_POINTS_REMINDER,
+	buttonStyle = HelpTip.ButtonStyle.Close,
+	targetPoint = HelpTip.Point.BottomEdgeCenter,
+	system = helptipSystemName,
+	autoHorizontalSlide = true,
+	onAcknowledgeCallback = function() ProfessionsFrame.unspentPointsHelptipAcknowledged = true; end,
 };
 
 function ProfessionsMixin:SetTab(tabID, forcedOpen)
@@ -253,9 +263,6 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	local specializationTab = self:GetTabButton(self.specializationsTabID);
 	local specTabInfo = C_ProfSpecs.GetSpecTabInfo();
 	local specTabEnabled = specTabInfo.enabled;
-	specializationTab.Glow:SetShown(specTabEnabled and not isSpecTab);
-	local shouldPlaySpecGlow = specTabEnabled and (not isSpecTab) and (hasPendingSpecChanges or hasUnlockableTab);
-	specializationTab.GlowAnim:SetPlaying(shouldPlaySpecGlow);
 
 	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
 
@@ -265,17 +272,22 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	if (hasUnlockableTab or hasPendingSpecChanges) and specTabEnabled then
 		local shouldShowUnlockHelptip = hasUnlockableTab and not self.unlockSpecHelptipAcknowledged;
 		local shouldShowPendingHelptip = hasPendingSpecChanges and not self.pendingPointsHelptipAcknowledged and not shouldShowUnlockHelptip;
+		local shouldShowUnspentPointsHelptip = (not self.unspentPointsHelpTipInfo) and (not shouldShowPendingHelptip) and (not shouldShowUnlockHelptip) and C_ProfSpecs.ShouldShowPointsReminderForSkillLine(C_ProfSpecs.GetDefaultSpecSkillLine());
 		if isSpecTab then
 			if shouldShowUnlockHelptip and not forcedOpen and not tabAlreadyShown then
 				self.unlockSpecHelptipAcknowledged = true;
 			elseif shouldShowPendingHelptip and not forcedOpen and not tabAlreadyShown then
 				self.pendingPointsHelptipAcknowledged = true;
+			elseif shouldShowUnspentPointsHelptip and not forcedOpen and not tabAlreadyShown then
+				self.unspentPointsHelpTipInfo = true;
 			end
 		else
 			local helpTipInfo;
 			if shouldShowUnlockHelptip then
 				helpTipInfo = unlockableSpecHelpTipInfo;
 			elseif shouldShowPendingHelptip then
+				helpTipInfo = pendingPointsHelpTipInfo;
+			elseif shouldShowUnspentPointsHelptip then
 				helpTipInfo = unspentPointsHelpTipInfo;
 			end
 			if helpTipInfo then
@@ -326,6 +338,10 @@ function ProfessionsMixin:OnShow()
 	EventRegistry:TriggerEvent("ProfessionsFrame.Show");
 	EventRegistry:TriggerEvent("ItemButton.UpdateCraftedProfessionQualityShown");
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_OPEN);
+
+	MicroButtonPulseStop(SpellbookMicroButton);
+	MainMenuMicroButton_HideAlert(SpellbookMicroButton);
+	SpellbookMicroButton.suggestedTabButton = nil;
 end
 
 function ProfessionsMixin:OnHide()
@@ -345,7 +361,7 @@ end
 local spellFocusProximityCheckTime = 1;
 function ProfessionsMixin:OnUpdate(dt)
 	self.timeSinceLastFocusCheck = (self.timeSinceLastFocusCheck or 0) + dt;
-	if self.timeSinceLastFocusCheck > spellFocusProximityCheckTime then
+	if self.timeSinceLastFocusCheck > spellFocusProximityCheckTime and self.professionInfo and self.professionInfo.profession then
 		self.timeSinceLastFocusCheck = 0;
 		local shouldOrdersTabBeEnabled = C_TradeSkillUI.IsNearProfessionSpellFocus(self.professionInfo.profession);
 		if shouldOrdersTabBeEnabled ~= self.isCraftingOrdersTabEnabled then

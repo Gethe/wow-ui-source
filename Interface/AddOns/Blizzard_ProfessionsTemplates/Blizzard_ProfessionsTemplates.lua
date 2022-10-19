@@ -46,7 +46,7 @@ ProfessionsTableConstants.Expiration =
 };
 ProfessionsTableConstants.ItemName = 
 {
-	Width = 349,
+	Width = 330,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,
@@ -81,12 +81,19 @@ ProfessionsTableConstants.Skill =
 };
 ProfessionsTableConstants.Status = 
 {
-	Width = 200,
+	Width = 130,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,
 };
 ProfessionsTableConstants.CustomerName = 
+{
+	Width = 130,
+	Padding = ProfessionsTableConstants.StandardPadding,
+	LeftCellPadding = ProfessionsTableConstants.NoPadding,
+	RightCellPadding = ProfessionsTableConstants.NoPadding,
+};
+ProfessionsTableConstants.OrderType = 
 {
 	Width = 130,
 	Padding = ProfessionsTableConstants.StandardPadding,
@@ -467,17 +474,52 @@ function ProfessionsCustomerTableCellStatusMixin:Populate(rowData, dataIndex)
 	local statusText;
 	if order.orderState == Enum.CraftingOrderState.Creating or order.orderState == Enum.CraftingOrderState.Created then
 		statusText = PROFESSIONS_CRAFTING_ORDER_LISTED;
-	else
+	elseif order.orderState == Enum.CraftingOrderState.Claiming or order.orderState == Enum.CraftingOrderState.Claimed or order.orderState == Enum.CraftingOrderState.Crafting or order.orderState == Enum.CraftingOrderState.Recrafting then
 		statusText = PROFESSIONS_CRAFTING_ORDER_IN_PROGRESS;
+	elseif order.orderState == Enum.CraftingOrderState.Expiring or order.orderState == Enum.CraftingOrderState.Expired then
+		statusText = PROFESSIONS_CRAFTING_ORDER_EXPIRED;
+	elseif order.orderState == Enum.CraftingOrderState.Fulfilling or order.orderState == Enum.CraftingOrderState.Fulfilled then
+		statusText = PROFESSIONS_CRAFTING_ORDER_COMPLETED;
+	elseif order.orderState == Enum.CraftingOrderState.Rejecting or order.orderState == Enum.CraftingOrderState.Rejected then
+		statusText = PROFESSIONS_CRAFTING_ORDER_REJECTED;
+	elseif order.orderState == Enum.CraftingOrderState.Canceling or order.orderState == Enum.CraftingOrderState.Canceled then
+		statusText = PROFESSIONS_CRAFTING_ORDER_CANCELED;
 	end
 
 	ProfessionsTableCellTextMixin.SetText(self, statusText);
+end
+
+ProfessionsCustomerTableCellTypeMixin = CreateFromMixins(TableBuilderCellMixin);
+
+function ProfessionsCustomerTableCellTypeMixin:Populate(rowData, dataIndex)
+	local order = rowData.option;
+
+	local typeText;
+	if order.orderType == Enum.CraftingOrderType.Public then
+		typeText = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PUBLIC;
+	elseif order.orderType == Enum.CraftingOrderType.Guild then
+		typeText = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_GUILD;
+	elseif order.orderType == Enum.CraftingOrderType.Personal then
+		typeText = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PRIVATE;
+	end
+
+	ProfessionsTableCellTextMixin.SetText(self, typeText);
 end
 
 ProfessionsCustomerTableCellExpirationMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCustomerTableCellExpirationMixin:Populate(rowData, dataIndex)
 	local order = rowData.option;
+	self.isClaimed = order.orderState == Enum.CraftingOrderState.Claiming or order.orderState == Enum.CraftingOrderState.Claimed or order.orderState == Enum.CraftingOrderState.Crafting or order.orderState == Enum.CraftingOrderState.Recrafting;
+	if not (self.isClaimed or order.orderState == Enum.CraftingOrderState.Creating or order.orderState == Enum.CraftingOrderState.Created) then
+		self:SetScript("OnEnter", nil);
+		self:SetMouseMotionEnabled(false);
+		ProfessionsTableCellTextMixin.SetText(self, "");
+		return;
+	end
+	self:SetScript("OnEnter", self.OnEnter);
+	self:SetMouseMotionEnabled(true);
+
 	local remainingTime = Professions.GetCraftingOrderRemainingTime(order.expirationTime);
 	local seconds = remainingTime >= 60 and remainingTime or 60; -- Never show < 1min
 	self.remainingTime = seconds;
@@ -486,7 +528,11 @@ function ProfessionsCustomerTableCellExpirationMixin:Populate(rowData, dataIndex
 	if seconds <= twoHrsSeconds then
 		fmt = ERROR_COLOR:WrapTextInColorCode(fmt);
 	end
-	ProfessionsTableCellTextMixin.SetText(self, fmt:format(time));
+	local text = fmt:format(time);
+	if self.isClaimed then
+		text = text..CRAFTING_ORDER_PENDING;
+	end
+	ProfessionsTableCellTextMixin.SetText(self, text);
 end
 
 function ProfessionsCustomerTableCellExpirationMixin:OnEnter()
@@ -495,6 +541,10 @@ function ProfessionsCustomerTableCellExpirationMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local noSeconds = true;
 	GameTooltip_AddNormalLine(GameTooltip, AUCTION_HOUSE_TOOLTIP_DURATION_FORMAT:format(SecondsToTime(self.remainingTime, noSeconds)));
+	if self.isClaimed then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddNormalLine(GameTooltip, CRAFTING_ORDER_WONT_EXPIRE);
+	end
 	GameTooltip:Show();
 end
 

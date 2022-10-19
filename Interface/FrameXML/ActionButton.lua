@@ -380,10 +380,6 @@ function ActionBarActionButtonMixin:Update()
 			ActionBarActionEventsFrame:RegisterFrame(self);
 			self.eventsRegistered = true;
 		end
-
-		if ( not self:GetAttribute("statehidden") ) then
-			self:Show();
-		end
 		self:UpdateState();
 		self:UpdateUsable();
 		ActionButton_UpdateCooldown(self);
@@ -1098,7 +1094,7 @@ function ActionBarActionButtonMixin:UpdateFlyout(isButtonDownOverride)
 	-- If you are on an action bar then base your direction based on the action bar's orientation
 	local actionBar = self:GetParent();
 	if (actionBar.actionButtons) then
-		arrowDirection = actionBar.isHorizontal and "UP" or "LEFT";
+		arrowDirection = actionBar:GetSpellFlyoutDirection();
 	end
 
 	if (arrowDirection == "LEFT") then
@@ -1134,7 +1130,6 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 				C_ActionBar.ToggleAutoCastPetAction(self.action);
 			end
 		else
-			local useKeyDownCvar = GetCVarBool("ActionButtonUseKeyDown");
 			local actionBarLocked = Settings.GetValue("lockActionBars");
 
 			local isModifiedClickLockedBarDoNothing = IsModifiedClick("PICKUPACTION");
@@ -1145,14 +1140,13 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 			end
 
 			local lockedBarDoNothing = actionBarLocked and down and isModifiedClickLockedBarDoNothing;
-			local unlockedBarDoNothing = not actionBarLocked and (self:GetAttribute("pressAndHoldAction") or (useKeyDownCvar and down));
+			local unlockedBarDoNothing = not actionBarLocked and (self:GetAttribute("pressAndHoldAction") and down);
 			if lockedBarDoNothing or unlockedBarDoNothing then
 				return;
 			end
 
-			local useDown = down or (useKeyDownCvar and not actionBarLocked);
 			local isKeyPress = false;
-			SecureActionButton_OnClick(self, button, useDown, isKeyPress);
+			SecureActionButton_OnClick(self, button, down, isKeyPress);
 		end
 	end
 
@@ -1230,14 +1224,15 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		end
 
 		-- Don't show dividers if we have multiple rows or any extra padding
-		if (not shown or self:GetParent().numRows > 1 or self:GetParent().buttonPadding > 3) then
+		local parent = self:GetParent();
+		if (not shown or parent.numRows > 1 or parent.buttonPadding > parent.minButtonPadding) then
 			self.RightDivider:Hide();
 			self.BottomDivider:Hide();
 			return;
 		end
 
 		-- Right now buttons are only added to the right for horizontal and below for vertical
-		if (self:GetParent().isHorizontal) then
+		if (parent.isHorizontal) then
 			self.RightDivider:Show();
 			self.BottomDivider:Hide();
 		else

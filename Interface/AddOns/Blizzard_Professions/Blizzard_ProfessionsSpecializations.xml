@@ -106,7 +106,7 @@
 							<KeyValue key="isDetailedView" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-60"/>
+							<Anchor point="TOP" x="0" y="-75"/>
 						</Anchors>
 						<Scripts>
 							<OnUpdate method="OnUpdate"/>

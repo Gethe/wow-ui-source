@@ -50,6 +50,24 @@
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Flipbook" setAllPoints="true" hidden="true"/>
+						<MaskTexture parentKey="FlipbookMask" atlas="AlphaMask2" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Flipbook"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FillupFlipbookAnim" looping="REPEAT">
+						<FlipBook childKey="Flipbook" startDelay="0" endDelay="0" smoothing="NONE" duration="1.2" flipBookRows="5" flipBookColumns="4" flipBookFrames="20" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
 			</StatusBar>	
 		</Frames>
 	</StatusBar>

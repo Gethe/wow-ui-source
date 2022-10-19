@@ -3,34 +3,12 @@ FRAMERATE_FREQUENCY = 0.25;
 local TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
 local TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 20;
 
-function ToggleFramerate(benchmark)
-	FramerateText.benchmark = benchmark;
-	if ( FramerateText:IsShown() ) then
-		FramerateLabel:Hide();
-		FramerateText:Hide();
-	else
-		FramerateLabel:Show();
-		FramerateText:Show();
-	end
-	WorldFrame.fpsTime = 0;
-end
-
 function WorldFrame_OnLoad(self)
 	TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
 	TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 10;
 end
 
 function WorldFrame_OnUpdate(self, elapsed)
-	if ( FramerateText:IsShown() ) then
-		local timeLeft = self.fpsTime - elapsed
-		if ( timeLeft <= 0 ) then
-			self.fpsTime = FRAMERATE_FREQUENCY;
-			local framerate = GetFramerate();
-			FramerateText:SetFormattedText("%.1f", framerate);
-		else
-			self.fpsTime = timeLeft;
-		end
-	end
 	-- Process dialog onUpdates if the map is up or the ui is hidden
 	local dialog;
 	for i = 1, STATICPOPUP_NUMDIALOGS, 1 do

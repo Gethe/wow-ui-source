@@ -64,15 +64,6 @@
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.RecipeList" relativePoint="TOPLEFT" x="0" y="0"/>
 						</Anchors>
 					</Button>
-		
-					<Button parentKey="RefreshButton" inherits="RefreshButtonTemplate" motionScriptsWhileDisabled="true">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-20" y="-40"/>
-						</Anchors>									
-						<Scripts>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</Button>
 
 					<Button parentKey="SearchButton" inherits="UIPanelButtonTemplate" text="SEARCH" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true">
 						<Size x="90" y="22"/>
@@ -81,11 +72,15 @@
 						</Anchors>		
 					</Button>
 		
-					<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true">
-						<Size x="90" y="22"/>
+					<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" registerForClicks="LeftButtonUp">
+						<Size x="28" y="28"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.SearchButton" relativePoint="RIGHT"/>
-						</Anchors>		
+							<Anchor point="LEFT" relativeKey="$parent.SearchButton" relativePoint="RIGHT" x="5" y="0"/>
+						</Anchors>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 		
 					<Frame parentKey="OrderList">
@@ -100,7 +95,7 @@
 								<Texture parentKey="Background" atlas="auctionhouse-background-index" useAtlasSize="false">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="3" y="-22"/>
-										<Anchor point="BOTTOMRIGHT"  x="-30" y="0"/>
+										<Anchor point="BOTTOMRIGHT"  x="-6" y="0"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -119,19 +114,19 @@
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="0" y="-19"/>
-									<Anchor point="BOTTOMRIGHT" x="-27" y="0"/>
+									<Anchor point="BOTTOMRIGHT" x="-22" y="0"/>
 								</Anchors>
 							</Frame>
 							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="-14" y="0"/>
 								</Anchors>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.NineSlice" relativePoint="TOPRIGHT" x="0" y="-2"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.NineSlice" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-2"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="2"/>
 								</Anchors>
 							</EventFrame>
 							<Frame parentKey="ContextMenu" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
@@ -203,8 +198,10 @@
 						</Anchors>						
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentKey="Background" setAllPoints="true">
-									<Color r="0" g="0" b="0" a="0.5"/>
+								<Texture parentKey="Background" atlas="CraftingOrder-RemainingOrders-Frame" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">

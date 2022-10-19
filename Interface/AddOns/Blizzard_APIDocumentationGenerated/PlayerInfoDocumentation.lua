@@ -103,6 +103,20 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsExpansionLandingPageUnlockedForPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "expansionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerEligibleForNPE",
 			Type = "Function",
 

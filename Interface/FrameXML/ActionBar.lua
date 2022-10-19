@@ -1,10 +1,9 @@
-local MIN_BUTTON_PADDING = 2;
-
 ActionBarMixin = {}
 
 function ActionBarMixin:ActionBar_OnLoad()
     self.numShowingButtons = self.numButtons;
-    self.buttonPadding = MIN_BUTTON_PADDING;
+    self.minButtonPadding = 2;
+    self.buttonPadding = self.minButtonPadding;
     self.actionButtons = {};
     self.buttonsAndSpacers = {};
 
@@ -14,13 +13,13 @@ function ActionBarMixin:ActionBar_OnLoad()
         -- Different naming for these bars is to avoid errors with legacy code
         -- Ideally this wouldn't be needed
         local name;
-        if (self == MainMenuBar) then
+        if self == MainMenuBar then
             name = "ActionButton"..i;
-        elseif (self == StanceBar) then
+        elseif self == StanceBar then
             name = "StanceButton"..i;
-        elseif (self == PetActionBar) then
+        elseif self == PetActionBar then
             name = "PetActionButton"..i;
-        elseif (self == PossessActionBar) then
+        elseif self == PossessActionBar then
             name = "PossessButton"..i;
         else
             name = self:GetName().."Button"..i;
@@ -30,48 +29,89 @@ function ActionBarMixin:ActionBar_OnLoad()
         actionButton.index = i;
         actionButton.isLastActionButton = i == self.numButtons;
 
-        if (self.commandNamePrefix) then
+        if self.commandNamePrefix then
             actionButton.commandName = self.commandNamePrefix.."BUTTON"..i;
         end
 
-        self.actionButtons[#self.actionButtons + 1] = actionButton;
-        self.buttonsAndSpacers[#self.buttonsAndSpacers + 1] = actionButton;
+        table.insert(self.actionButtons, actionButton);
+        table.insert(self.buttonsAndSpacers, actionButton);
 
-        if (not self.noSpacers) then
+        if not self.noSpacers then
             -- Create button spacer
             -- Spacers are used to keep size of bar the same when we aren't showing the grid
             local spacer = CreateFrame("Frame", "ActionBarButtonSpacer"..i, self, "ActionBarButtonSpacerTemplate", i);
             spacer:SetSize(actionButton:GetWidth(), actionButton:GetHeight()); -- Spacer size should match the size of the action buttons
-            self.buttonsAndSpacers[#self.buttonsAndSpacers + 1] = spacer;
+            table.insert(self.buttonsAndSpacers, spacer);
         end
     end
 
     self:UpdateShownButtons();
     self:UpdateGridLayout();
 
-    if (self.showGridEventName) then
+    if self.showGridEventName then
         self:RegisterEvent(self.showGridEventName);
     end
-    if (self.hideGridEventName) then
+    if self.hideGridEventName then
         self:RegisterEvent(self.hideGridEventName);
     end
 end
 
 function ActionBarMixin:ActionBar_OnEvent(event, ...)
-    if (event == self.showGridEventName) then
+    if event == self.showGridEventName then
         self:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
-	elseif (event == self.hideGridEventName) then
+	elseif event == self.hideGridEventName then
 		self:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
     end
 end
 
+function ActionBarMixin:ActionBar_OnShow()
+    self:UpdateGridLayout();
+end
+
+function ActionBarMixin:CacheGridSettings(numLayoutObjects)
+    self.oldGridSettings = {
+        numLayoutObjects = numLayoutObjects,
+        numShowingButtons = self.numShowingButtons,
+        numRows = self.numRows,
+        isHorizontal = self.isHorizontal,
+        addButtonsToRight = self.addButtonsToRight,
+        addButtonsToTop = self.addButtonsToTop,
+        buttonPadding = self.buttonPadding,
+    };
+end
+
+function ActionBarMixin:ShouldUpdateGrid(numLayoutObjects)
+    return self:IsShown()
+        and (self.oldGridSettings == nil
+            or self.oldGridSettings.numLayoutObjects ~= numLayoutObjects
+            or self.oldGridSettings.numShowingButtons ~= self.numShowingButtons
+            or self.oldGridSettings.numRows ~= self.numRows
+            or self.oldGridSettings.isHorizontal ~= self.isHorizontal
+            or self.oldGridSettings.addButtonsToRight ~= self.addButtonsToRight
+            or self.oldGridSettings.addButtonsToTop ~= self.addButtonsToTop
+            or self.oldGridSettings.buttonPadding ~= self.buttonPadding);
+end
+
 function ActionBarMixin:UpdateGridLayout()
+    -- Determine which things will be laid out in the grid
+    local shownButtonsAndSpacers = {};
+    for i, buttonOrSpacer in pairs(self.buttonsAndSpacers) do
+        if buttonOrSpacer:IsShown() then
+            table.insert(shownButtonsAndSpacers, buttonOrSpacer);
+        end
+    end
+
+    local numLayoutObjects = #shownButtonsAndSpacers;
+    if not self:ShouldUpdateGrid(numLayoutObjects) then
+        return;
+    end
+
     -- Stride is the number of buttons per row (or column if we are vertical)
     -- Set stride so that if we can have the same number of icons per row we do
     local stride = math.ceil(self.numShowingButtons / self.numRows);
 
     -- Set button padding. User can set padding through edit mode
-    local buttonPadding = math.max(MIN_BUTTON_PADDING, self.buttonPadding);
+    local buttonPadding = math.max(self.minButtonPadding, self.buttonPadding);
 
     -- Multipliers determine the direction the bar grows for grid layouts 
     -- Positive means right/up
@@ -81,7 +121,7 @@ function ActionBarMixin:UpdateGridLayout()
 
     -- Create the grid layout according to whether we are horizontal or vertical
     local layout;
-    if (self.isHorizontal) then
+    if self.isHorizontal then
         layout = GridLayoutUtil.CreateStandardGridLayout(stride, buttonPadding, buttonPadding, xMultiplier, yMultiplier);
     else
         layout = GridLayoutUtil.CreateVerticalGridLayout(stride, buttonPadding, buttonPadding, xMultiplier, yMultiplier);
@@ -89,43 +129,33 @@ function ActionBarMixin:UpdateGridLayout()
 
     -- Need to change where the buttons anchor based on how the bar grows
     local anchorPoint;
-    if (self.addButtonsToTop) then
-        if (self.addButtonsToRight) then
+    if self.addButtonsToTop then
+        if self.addButtonsToRight then
             anchorPoint = "BOTTOMLEFT";
         else
             anchorPoint = "BOTTOMRIGHT";
         end
     else
-        if (self.addButtonsToRight) then
+        if self.addButtonsToRight then
             anchorPoint = "TOPLEFT";
         else
             anchorPoint = "TOPRIGHT";
         end
     end
 
-    local shownButtonsAndSpacers = {};
-    for i, buttonOrSpacer in pairs(self.buttonsAndSpacers) do
-        if (buttonOrSpacer:IsShown()) then
-            shownButtonsAndSpacers[#shownButtonsAndSpacers + 1] = buttonOrSpacer;
-        end
-
-        -- We will want to update our flyout if our orientation changes
-        if (buttonOrSpacer.UpdateFlyout) then
-            buttonOrSpacer:UpdateFlyout();
-        end
-    end
-
     -- Apply the layout and then update our size
 	GridLayoutUtil.ApplyGridLayout(shownButtonsAndSpacers, AnchorUtil.CreateAnchor(anchorPoint, self, anchorPoint), layout);
     self:Layout();
+    self:UpdateSpellFlyoutDirection();
+    self:CacheGridSettings(numLayoutObjects);
 end
 
 function ActionBarMixin:SetShowGrid(showGrid, reason)
-    if (not showGrid and KeybindFrames_InQuickKeybindMode()) then
+    if not showGrid and KeybindFrames_InQuickKeybindMode() then
         return; -- Don't hide grid if we are in QuickKeybindMode
     end
 
-    if (reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT) then
+    if reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT then
         self.ShowAllButtons = showGrid;
     end
 
@@ -153,7 +183,7 @@ function ActionBarMixin:UpdateShownButtons()
 
         actionButton:SetShown(showButton);
 
-        if (not self.noSpacers) then
+        if not self.noSpacers then
             if  (not showButton and i <= self.numShowingButtons) then
                 self.ButtonSpacers[i]:Show();
             else
@@ -161,6 +191,39 @@ function ActionBarMixin:UpdateShownButtons()
             end
         end
     end
+end
+
+function ActionBarMixin:UpdateSpellFlyoutDirection()
+    local direction = self.isHorizontal and "UP" or "LEFT";
+
+	local actionBarCenterX, actionBarCenterY = self:GetCenter();
+	if actionBarCenterX and actionBarCenterY then
+		if self.isHorizontal then
+			local halfScreen = GetScreenHeight() / 2;
+			direction = actionBarCenterY < halfScreen and "UP" or "DOWN";
+		else
+			local halfScreen = GetScreenWidth() / 2;
+			direction = actionBarCenterX > halfScreen and "LEFT" or "RIGHT";
+		end
+	end
+
+    if self.flyoutDirection ~= direction then
+        self.flyoutDirection = direction;
+
+        for i, actionButton in pairs(self.actionButtons) do
+            if actionButton.UpdateFlyout then
+                actionButton:UpdateFlyout();
+            end
+        end
+    end
+end
+
+function ActionBarMixin:GetSpellFlyoutDirection()
+    if not self.flyoutDirection then
+        self:UpdateSpellFlyoutDirection();
+    end
+
+	return self.flyoutDirection;
 end
 
 EditModeActionBarMixin = {}
@@ -186,30 +249,19 @@ function EditModeActionBarMixin:EditModeActionBar_OnLoad()
 end
 
 function EditModeActionBarMixin:EditModeActionBar_OnEvent(event, ...)
-    if (event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED") then
+    if event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" then
         -- Update shown state when combat state changes to account for bar visibility setting
         -- Apparently regen being enabled/disabled is a good way to tell whether the player's combat state has changed
 		self:UpdateVisibility();
     end
 end
 
-function EditModeActionBarMixin:EditModeActionBar_OnShow()
-    self:UpdateGridLayout();
-    EditModeManagerFrame:UpdateActionBarLayout(self);
-end
-
-function EditModeActionBarMixin:EditModeActionBar_OnHide()
-    EditModeManagerFrame:UpdateActionBarLayout(self);
-end
-
 function EditModeActionBarMixin:IsShownOverride()
     -- This is needed since the bar may technically be hidden due to visibility settings but we don't actually want things to
     -- interpret it as truly hidden since a lot of things will use this info to know whether they need to show/hide the bar
     -- and that literal shown state doesn't accurately represent what the bar's state is
-    if (self.visibility) then
-        if (self.visibility == "InCombat" or self.visibility == "OutOfCombat") then
-            return self.isShownExternal;
-        end
+    if self.visibility and self.visibility ~= "Always" then
+        return self.isShownExternal;
     end
 
     -- If the bar isn't using visibility settings then just return the base IsShown
@@ -217,7 +269,7 @@ function EditModeActionBarMixin:IsShownOverride()
 end
 
 function EditModeActionBarMixin:SetShownOverride(shown)
-    if (shown) then
+    if shown then
         self:ShowOverride();
     else
         self:HideOverride();
@@ -239,48 +291,35 @@ function EditModeActionBarMixin:HideOverride()
 end
 
 function EditModeActionBarMixin:UpdateVisibility()
-    -- If we don't have visiblity settings, then just follow whatever we are told to do externally
-    if (not self.visibility) then
+    if not self.visibility then
+        -- If we don't have visiblity settings, then just follow whatever we are told to do externally
         self:SetShownBase(self.isShownExternal or self.editModeForceShow);
-        return;
-    end
-
-    -- If we are being hidden externally then don't change that
-    if (not self.isShownExternal) then
+    elseif not self.isShownExternal then
+        -- If we are being hidden externally then don't change that
         self:HideBase();
-        return;
-    end
-
-    -- If we are showing all buttons likely due to an icon being dragged then show the bar
-    if (self.ShowAllButtons) then
+    elseif self.ShowAllButtons then
+        -- If we are showing all buttons likely due to an icon being dragged then show the bar
         self:ShowBase();
-        return;
-    end
-
-    -- If edit mode manager is showing then show
-    if (EditModeManagerFrame:IsEditModeActive()) then
+    elseif EditModeManagerFrame:IsEditModeActive() then
+        -- If edit mode manager is showing then show
         self:ShowBase();
-        return;
-    end
-
-    -- If we care about combat visibility, update visibility based on whether you're in combat
-    if (self.visibility == "InCombat" or self.visibility == "OutOfCombat") then
+    elseif self.visibility == "InCombat" or self.visibility == "OutOfCombat" then
+        -- If we care about combat visibility, update visibility based on whether you're in combat
         local isInCombat = UnitAffectingCombat("player");
 
-        if (self.visibility == "InCombat") then
+        if self.visibility == "InCombat" then
             self:SetShownBase(isInCombat);
         else -- Out of combat
             self:SetShownBase(not isInCombat);
         end
-        return;
-    end
-
-    -- If we are set to be hidden then hide
-    if (self.visibility == "Hidden") then
+    elseif self.visibility == "Hidden" then
+        -- If we are set to be hidden then hide
         self:HideBase();
-        return;
+    else
+        -- If no other rules, show the bar
+        self:ShowBase();
     end
 
-    -- If no other rules, show the bar
-    self:ShowBase();
+    self:UpdateGridLayout();
+    EditModeManagerFrame:UpdateActionBarLayout(self);
 end

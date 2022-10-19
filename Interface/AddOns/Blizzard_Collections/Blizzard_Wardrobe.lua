@@ -1244,12 +1244,13 @@ function WardrobeCollectionFrameMixin:UpdateTabButtons()
 	self.SetsTab.FlashFrame:SetShown(C_TransmogSets.GetLatestSource() ~= Constants.Transmog.NoTransmogID and not C_Transmog.IsAtTransmogNPC());
 end
 
-function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources, primarySourceID)
+function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources, primarySourceID, warningString)
 	self.tooltipContentFrame = contentFrame;
 	local selectedIndex = self.tooltipSourceIndex;
 	local showUseError = true;
 	local inLegionArtifactCategory = TransmogUtil.IsCategoryLegionArtifact(self.ItemsCollectionFrame:GetActiveCategory());
-	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory)
+	local subheaderString = nil;
+	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString);
 end
 
 function WardrobeCollectionFrameMixin:HideAppearanceTooltip()
@@ -2300,6 +2301,7 @@ end
 
 function WardrobeItemsCollectionMixin:SetAppearanceTooltip(frame)
 	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+	self.tooltipModel = frame;
 	self.tooltipVisualID = frame.visualInfo.visualID;
 	self:RefreshAppearanceTooltip();
 end
@@ -2309,8 +2311,9 @@ function WardrobeItemsCollectionMixin:RefreshAppearanceTooltip()
 		return;
 	end
 	local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(self.tooltipVisualID, self.activeCategory, self.transmogLocation);
-	local chosenSourceID = self:GetChosenVisualSource(self.tooltipVisualID);
-	self:GetParent():SetAppearanceTooltip(self, sources, chosenSourceID);
+	local chosenSourceID = self:GetChosenVisualSource(self.tooltipVisualID);	
+	local warningString = CollectionWardrobeUtil.GetVisibilityWarning(self.tooltipModel, self.transmogLocation);	
+	self:GetParent():SetAppearanceTooltip(self, sources, chosenSourceID, warningString);
 end
 
 function WardrobeItemsCollectionMixin:ClearAppearanceTooltip()
@@ -2468,6 +2471,7 @@ function WardrobeItemsModelMixin:OnEnter()
 		return;
 	end
 	self:SetScript("OnUpdate", self.OnUpdate);
+	self.needsItemGeo = false;
 	local itemsCollectionFrame = self:GetParent();
 	if ( C_TransmogCollection.IsNewAppearance(self.visualInfo.visualID) ) then
 		C_TransmogCollection.ClearNewAppearance(self.visualInfo.visualID);
@@ -2487,6 +2491,7 @@ function WardrobeItemsModelMixin:OnEnter()
 		end
 		GameTooltip:Show();
 	else
+		self.needsItemGeo = not self:IsGeoReady();
 		itemsCollectionFrame:SetAppearanceTooltip(self);
 	end
 end
@@ -2502,6 +2507,11 @@ function WardrobeItemsModelMixin:OnUpdate()
 		ShowInspectCursor();
 	else
 		ResetCursor();
+	end
+	if self.needsItemGeo then
+		if self:IsGeoReady() then
+			self:GetParent():SetAppearanceTooltip(self);
+		end
 	end
 end
 
@@ -3694,8 +3704,9 @@ function WardrobeSetsCollectionMixin:RefreshAppearanceTooltip()
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(self.tooltipPrimarySourceID);
 		tinsert(sources, sourceInfo);
 	end
-	CollectionWardrobeUtil.SortSources(sources, sources[1].visualID, self.tooltipPrimarySourceID);
-	self:GetParent():SetAppearanceTooltip(self, sources, self.tooltipPrimarySourceID);
+	CollectionWardrobeUtil.SortSources(sources, sources[1].visualID, self.tooltipPrimarySourceID); 
+	local warningString = CollectionWardrobeUtil.GetVisibilityWarning(self.Model, self.transmogLocation);	
+	self:GetParent():SetAppearanceTooltip(self, sources, self.tooltipPrimarySourceID, warningString);
 end
 
 function WardrobeSetsCollectionMixin:ClearAppearanceTooltip()

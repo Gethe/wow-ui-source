@@ -207,6 +207,20 @@ local CraftingOrderUI =
 			},
 		},
 		{
+			Name = "OrderCanBeRecrafted",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "orderID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "recraftable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ParseCustomerOptions",
 			Type = "Function",
 		},
@@ -295,6 +309,11 @@ local CraftingOrderUI =
 
 	Events =
 	{
+		{
+			Name = "CraftingHouseDisabled",
+			Type = "Event",
+			LiteralName = "CRAFTING_HOUSE_DISABLED",
+		},
 		{
 			Name = "CraftingordersCanRequest",
 			Type = "Event",

@@ -221,7 +221,7 @@
 								<Texture name="$parentSpecPortrait">
 									<Size x="22" y="22"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="2" y="2"/>
+										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="4" y="0"/>
 									</Anchors>
 								</Texture>
 							</Layer>

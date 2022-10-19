@@ -122,8 +122,9 @@
 		<Frames>
 			<Button parentKey="SkillUps">
 				<Size x="26" y="15"/>
+				<!-- Dynamically anchored -->
 				<Anchors>
-					<Anchor point="LEFT" x="-3"/>
+					<Anchor point="LEFT" x="-9"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">

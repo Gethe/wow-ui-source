@@ -326,7 +326,6 @@ function ArenaEnemyMatchFrameMixin:UpdateCrowdControl()
 end
 
 function ArenaEnemyMatchFrameMixin:OnShow()
-	self:SetFrameLevel(2);
 	C_PvP.RequestCrowdControlSpell(self.unit);
 	ArenaEnemyFramesContainer:Update();
 end
@@ -357,7 +356,6 @@ end
 ArenaEnemyPrepFrameMixin = {};
 
 function ArenaEnemyPrepFrameMixin:OnShow()
-	self:SetFrameLevel(2);
 	ArenaEnemyFramesContainer:Update();
 end
 

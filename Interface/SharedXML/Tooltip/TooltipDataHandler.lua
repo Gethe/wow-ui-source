@@ -1,13 +1,32 @@
 -- =======================================================================
--- Singleton tooltip data processor
+-- Tooltip data callback processor
 -- =======================================================================
 
-local TooltipPreCalls = { };
-local TooltipPostCalls = { };
-local LinePreCalls = { };
-local LinePostCalls = { };
+local SecureTooltipPreCalls = { };
+local SecureTooltipPostCalls = { };
+local SecureLinePreCalls = { };
+local SecureLinePostCalls = { };
 
-local function AddCall(tbl, keyType, func)
+local InsecureTooltipPreCalls = { };
+local InsecureTooltipPostCalls = { };
+local InsecureLinePreCalls = { };
+local InsecureLinePostCalls = { };
+
+local secureTables = {
+	tooltipPreCall = SecureTooltipPreCalls,
+	tooltipPostCall = SecureTooltipPostCalls,
+	linePreCall = SecureLinePreCalls,
+	linePostCall = SecureLinePostCalls,
+};
+
+local insecureTables = {
+	tooltipPreCall = InsecureTooltipPreCalls,
+	tooltipPostCall = InsecureTooltipPostCalls,
+	linePreCall = InsecureLinePreCalls,
+	linePostCall = InsecureLinePostCalls,
+};
+
+local function InternalAddCall(tbl, keyType, func)
 	if not keyType then
 		return;
 	end
@@ -19,7 +38,7 @@ local function AddCall(tbl, keyType, func)
 	table.insert(calls, func);
 end
 
-local function MakeCalls(funcTbl, canTerminate, keyType, ...)
+local function MakeSecureCalls(funcTbl, canTerminate, keyType, ...)
 	if not funcTbl then
 		return;
 	end
@@ -30,51 +49,149 @@ local function MakeCalls(funcTbl, canTerminate, keyType, ...)
 	end
 end
 
-local function Process(tbl, canTerminate, keyType, ...)
-	if MakeCalls(tbl[TooltipDataProcessor.AllTypes], canTerminate, ...) and canTerminate then
+local function MakeInsecureCalls(funcTbl, canTerminate, keyType, ...)
+	if not funcTbl then
+		return;
+	end
+	for i, func in ipairs(funcTbl) do
+		local result = securecallfunction(func, keyType, ...);
+		if result and canTerminate then
+			return true;
+		end
+	end
+end
+
+local function ProcessSecureCalls(tbl, canTerminate, keyType, ...)
+	if MakeSecureCalls(tbl[TooltipDataProcessor.AllTypes], canTerminate, ...) and canTerminate then
 		return true;
 	end
-	if MakeCalls(tbl[keyType], canTerminate, ...) and canTerminate then
+	if MakeSecureCalls(tbl[keyType], canTerminate, ...) and canTerminate then
 		return true;
 	end
 end
+
+local function ProcessInsecureCalls(tbl, canTerminate, keyType, ...)
+	if MakeInsecureCalls(tbl[TooltipDataProcessor.AllTypes], canTerminate, ...) and canTerminate then
+		return true;
+	end
+	if MakeInsecureCalls(tbl[keyType], canTerminate, ...) and canTerminate then
+		return true;
+	end
+end
+
+local InsertCallbackAttributes = {
+	[InsecureTooltipPreCalls] = "insert-tooltip-pre-call",
+	[InsecureTooltipPostCalls] = "insert-tooltip-post-call",
+	[InsecureLinePreCalls] = "insert-line-pre-call",
+	[InsecureLinePostCalls] = "insert-line-post-call",
+};
+
+local InsertCallbackTables = tInvert(InsertCallbackAttributes);
+
+local ProcessCallbackAttributes = {
+	[InsecureTooltipPreCalls] = "process-tooltip-pre-call",
+	[InsecureTooltipPostCalls] = "process-tooltip-post-call",
+	[InsecureLinePreCalls] = "process-line-pre-call",
+	[InsecureLinePostCalls] = "process-line-post-call",
+};
+
+local ProcessCallbackTables = tInvert(ProcessCallbackAttributes);
+local ProcessCallbackResultAttribute = "process-callback-result";
+
+local AttributeDelegate = CreateFrame("FRAME");
+AttributeDelegate:SetForbidden();
+AttributeDelegate:SetScript("OnAttributeChanged", function(self, attribute, value)
+	local callTable = InsertCallbackTables[attribute];
+	if callTable then
+		local keyType, func = securecallfunction(unpack, value);
+		InternalAddCall(callTable, keyType, func);
+	end
+
+	local processTable = ProcessCallbackTables[attribute];
+	if processTable then
+		local argCount = securecallfunction(rawget, value, "n");
+		AttributeDelegate:SetAttribute(ProcessCallbackResultAttribute, ProcessInsecureCalls(processTable, securecallfunction(unpack, value, 1, argCount)));
+	end
+end);
 
 local CAN_TERMINATE = true;
 
 local function ProcessTooltipPreCalls(tooltipType, ...)
-	return Process(TooltipPreCalls, CAN_TERMINATE, tooltipType, ...);
+	local result = ProcessSecureCalls(SecureTooltipPreCalls, CAN_TERMINATE, tooltipType, ...);
+	if result then
+		return result;
+	end
+
+	if next(InsecureTooltipPreCalls) then
+		AttributeDelegate:SetAttribute(ProcessCallbackAttributes[InsecureTooltipPreCalls], SafePack(CAN_TERMINATE, tooltipType, ...));
+		return AttributeDelegate:GetAttribute(ProcessCallbackResultAttribute);
+	end
 end
 
 local function ProcessTooltipPostCalls(tooltipType, ...)
-	return Process(TooltipPostCalls, not CAN_TERMINATE, tooltipType, ...);
+	local result = ProcessSecureCalls(SecureTooltipPostCalls, not CAN_TERMINATE, tooltipType, ...);
+	if result then
+		return result;
+	end
+
+	if next(InsecureTooltipPostCalls) then
+		AttributeDelegate:SetAttribute(ProcessCallbackAttributes[InsecureTooltipPostCalls], SafePack(not CAN_TERMINATE, tooltipType, ...));
+		return AttributeDelegate:GetAttribute(ProcessCallbackResultAttribute);
+	end
 end
 
 local function ProcessLinePreCalls(lineType, ...)
-	return Process(LinePreCalls, CAN_TERMINATE, lineType, ...);
+	local result = ProcessSecureCalls(SecureLinePreCalls, CAN_TERMINATE, lineType, ...);
+	if result then
+		return result;
+	end
+
+	if next(InsecureLinePreCalls) then
+		AttributeDelegate:SetAttribute(ProcessCallbackAttributes[InsecureLinePreCalls], SafePack(CAN_TERMINATE, lineType, ...));
+		return AttributeDelegate:GetAttribute(ProcessCallbackResultAttribute);
+	end
 end
 
 local function ProcessLinePostCalls(lineType, ...)
-	return Process(LinePostCalls, not CAN_TERMINATE, lineType, ...);
+	local result = ProcessSecureCalls(SecureLinePostCalls, not CAN_TERMINATE, lineType, ...);
+	if result then
+		return result;
+	end
+
+	if next(InsecureLinePostCalls) then
+		AttributeDelegate:SetAttribute(ProcessCallbackAttributes[InsecureLinePostCalls], SafePack(not CAN_TERMINATE, lineType, ...));
+		return AttributeDelegate:GetAttribute(ProcessCallbackResultAttribute);
+	end
 end
 
 TooltipDataProcessor = {
 	AllTypes = "ALL";
 };
 
-function TooltipDataProcessor.AddTooltipPreCall(tooltipType, func) 
-	AddCall(TooltipPreCalls, tooltipType, func);
+local function AddCall(callType, keyType, func)
+	if issecure() then
+		local tbl = secureTables[callType];
+		InternalAddCall(tbl, keyType, func);
+	else
+		local tbl = insecureTables[callType];
+		AttributeDelegate:SetAttribute(InsertCallbackAttributes[tbl], { keyType, func });
+	end
 end
 
-function TooltipDataProcessor.AddTooltipPostCall(tooltipType, func) 
-	AddCall(TooltipPostCalls, tooltipType, func);
+function TooltipDataProcessor.AddTooltipPreCall(tooltipType, func)
+	AddCall("tooltipPreCall", tooltipType, func);
 end
 
-function TooltipDataProcessor.AddLinePreCall(lineType, func) 
-	AddCall(LinePreCalls, lineType, func);
+function TooltipDataProcessor.AddTooltipPostCall(tooltipType, func)
+	AddCall("tooltipPostCall", tooltipType, func);
 end
 
-function TooltipDataProcessor.AddLinePostCall(lineType, func) 
-	AddCall(LinePostCalls, lineType, func);
+function TooltipDataProcessor.AddLinePreCall(lineType, func)
+	AddCall("linePreCall", lineType, func);
+end
+
+function TooltipDataProcessor.AddLinePostCall(lineType, func)
+	AddCall("linePostCall", lineType, func);
 end
 
 -- =======================================================================
@@ -176,6 +293,7 @@ function TooltipDataHandlerMixin:ProcessLineData(lineData, excludeLines, linePre
 
 	if not lineConsumed then
 		self:AddLineDataText(lineData);
+		lineData.lineIndex = self:NumLines();
 		if linePostCall then
 			linePostCall(self, lineData);
 		end

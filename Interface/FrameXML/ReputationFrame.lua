@@ -246,7 +246,7 @@ function ReputationFrame_InitReputationRow(factionRow, elementData)
 			
 			local isMajorFaction = factionID and C_Reputation.IsMajorFaction(factionID);
 			ReputationDetailFrame:SetHeight(isMajorFaction and 228 or 203);
-			ReputationDetailViewRenownButton:SetShown(isMajorFaction);
+			ReputationDetailViewRenownButton:Refresh();
 
 			factionContainer.ReputationBar.Highlight1:Show();
 			factionContainer.ReputationBar.Highlight2:Show();
@@ -366,21 +366,30 @@ end
 
 ReputationDetailViewRenownButtonMixin = {};
 
-function ReputationDetailViewRenownButtonMixin:OnClick()
-	local selectedFactionIndex = GetSelectedFaction();
-	local factionID = select(14, GetFactionInfo(selectedFactionIndex));
-
-	if not factionID or not C_Reputation.IsMajorFaction(factionID) then
+function ReputationDetailViewRenownButtonMixin:Refresh()
+	self.factionID = select(14, GetFactionInfo(GetSelectedFaction()));
+	if not self.factionID or not C_Reputation.IsMajorFaction(self.factionID) then
+		self:Disable();
+		self:Hide();
 		return;
 	end
 
+	local majorFactionData = C_MajorFactions.GetMajorFactionData(self.factionID);
+
+	self.disabledTooltip = majorFactionData.unlockDescription;
+	self:SetEnabled(majorFactionData.isUnlocked);
+	self:Show();
+end
+
+
+function ReputationDetailViewRenownButtonMixin:OnClick()
 	MajorFactions_LoadUI();
 
-	if MajorFactionRenownFrame:IsShown() and MajorFactionRenownFrame:GetCurrentFactionID() == factionID then
+	if MajorFactionRenownFrame:IsShown() and MajorFactionRenownFrame:GetCurrentFactionID() == self.factionID then
 		ToggleMajorFactionRenown();
 	else
 		HideUIPanel(MajorFactionRenownFrame);
-		EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", factionID);
+		EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", self.factionID);
 		ShowUIPanel(MajorFactionRenownFrame);
 	end
 end

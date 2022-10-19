@@ -70,6 +70,7 @@
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="50" type="number"/>
 			<KeyValue key="layoutOnBottom" value="true" type="boolean"/>
+			<KeyValue key="leftPadding" value="15" type="number"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" y="20"/>

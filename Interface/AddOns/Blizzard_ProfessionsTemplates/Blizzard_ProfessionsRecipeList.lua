@@ -261,7 +261,7 @@ function ProfessionsRecipeListRecipeMixin:Init(node, hideCraftableCount)
 		table.insert(rightFrames, self.LockedIcon);
 	elseif recipeInfo.canSkillUp and not C_TradeSkillUI.IsTradeSkillGuild() and not C_TradeSkillUI.IsNPCCrafting() and not C_TradeSkillUI.IsRuneforging() then
 		local skillUpAtlas;
-		local xOfs = -3;
+		local xOfs = -9;
 		local yOfs = 0;
 
 		local isDifficultyOptimal = recipeInfo.relativeDifficulty == Enum.TradeskillRelativeDifficulty.Optimal;

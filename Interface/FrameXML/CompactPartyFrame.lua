@@ -2,11 +2,6 @@ function CompactPartyFrame_OnLoad(self)
 	self.applyFunc = CompactRaidGroup_ApplyFunctionToAllFrames;
 	self.isParty = true;
 
-	local unitFrame = _G[self:GetName().."Member1"];
-	CompactUnitFrame_SetUnit(unitFrame, "player");
-	CompactUnitFrame_SetUpFrame(unitFrame, DefaultCompactUnitFrameSetup);
-	CompactUnitFrame_SetUpdateAllEvent(unitFrame, "GROUP_ROSTER_UPDATE");
-
 	for i=1, MEMBERS_PER_RAID_GROUP do
 		local unitFrame = _G["CompactPartyFrameMember"..i];
 		unitFrame.isParty = true;
@@ -34,27 +29,43 @@ function CompactPartyFrame_RefreshMembers()
 		return;
 	end
 
-	for i=2, MEMBERS_PER_RAID_GROUP do
-		local unitFrame = _G["CompactPartyFrameMember"..i];
+	local units = {};
 
-		local realPartyMemberToken;
-		if IsInRaid() then
-			realPartyMemberToken = "raid"..i;
-		else
-			realPartyMemberToken = "party"..(i-1);
+	if IsInRaid() then
+		for i=1, MEMBERS_PER_RAID_GROUP do
+			table.insert(units, "raid"..i);
 		end
+	else
+		table.insert(units, "player");
+
+		for i=2, MEMBERS_PER_RAID_GROUP do
+			table.insert(units, "party"..(i-1));
+		end
+	end
+
+	table.sort(units, CompactPartyFrame.flowSortFunc);
+
+	for index, realPartyMemberToken in ipairs(units) do
+		local unitFrame = _G["CompactPartyFrameMember"..index];
+
 		local usePlayerOverride = EditModeManagerFrame:ArePartyFramesForcedShown() and not UnitExists(realPartyMemberToken);
 		local unitToken = usePlayerOverride and "player" or realPartyMemberToken;
 
 		CompactUnitFrame_SetUnit(unitFrame, unitToken);
-		if not usePlayerOverride then
-			CompactUnitFrame_SetUpFrame(unitFrame, DefaultCompactUnitFrameSetup);
-			CompactUnitFrame_SetUpdateAllEvent(unitFrame, "GROUP_ROSTER_UPDATE");
-		end
+		CompactUnitFrame_SetUpFrame(unitFrame, DefaultCompactUnitFrameSetup);
+		CompactUnitFrame_SetUpdateAllEvent(unitFrame, "GROUP_ROSTER_UPDATE");
 	end
 
 	CompactRaidGroup_UpdateBorder(CompactPartyFrame);
 	PartyFrame:UpdatePaddingAndLayout();
+end
+
+function CompactPartyFrame_SetFlowSortFunction(flowSortFunc)
+	if not CompactPartyFrame then
+		return;
+	end
+	CompactPartyFrame.flowSortFunc = flowSortFunc;
+	CompactPartyFrame_RefreshMembers();
 end
 
 function CompactPartyFrame_Generate()
@@ -62,6 +73,7 @@ function CompactPartyFrame_Generate()
 	local didCreate = false;
 	if not frame then
 		frame = CreateFrame("Frame", "CompactPartyFrame", PartyFrame, "CompactPartyFrameTemplate");
+		frame.flowSortFunc = CRFSort_Group;
 		CompactRaidGroup_UpdateBorder(frame);
 		PartyFrame:UpdatePaddingAndLayout();
 		frame:RegisterEvent("GROUP_ROSTER_UPDATE");

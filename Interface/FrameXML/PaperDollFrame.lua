@@ -1,6 +1,3 @@
-EQUIPPED_FIRST = 1;
-EQUIPPED_LAST = 19;
-
 NUM_STATS = 5;
 NUM_SHOPPING_TOOLTIPS = 2;
 MAX_SPELL_SCHOOLS = 7;
@@ -356,7 +353,7 @@ function PaperDoll_IsEquippedSlot(slot)
 	if ( slot ) then
 		slot = tonumber(slot);
 		if ( slot ) then
-			return slot >= EQUIPPED_FIRST and slot <= EQUIPPED_LAST;
+			return slot >= INVSLOT_FIRST_EQUIPPED and slot <= INVSLOT_LAST_EQUIPPED;
 		end
 	end
 	return false;

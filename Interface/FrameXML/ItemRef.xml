@@ -30,7 +30,7 @@
 			<OnDragStop method="OnDragStop"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</GameTooltip>
 </Ui>

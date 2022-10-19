@@ -122,6 +122,13 @@ TalentFrameBaseMixin:GenerateCallbackEvents(
 	"TalentButtonReleased",
 });
 
+TalentFrameBaseMixin.CommitUpdateReasons = {
+	CommitStarted = 1,
+	CommitSucceeded = 2,
+	CommitFailed = 3,
+	InstantCommit = 4,
+};
+
 function TalentFrameBaseMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
@@ -300,8 +307,7 @@ function TalentFrameBaseMixin:OnEvent(event, ...)
 		self:OnTraitConfigUpdated(configID);
 	elseif event == "CONFIG_COMMIT_FAILED" then
 		if self:IsCommitInProgress() then
-			local isCommitFailure = true;
-			self:SetCommitStarted(nil, isCommitFailure);
+			self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitFailed);
 			self:UpdateTreeCurrencyInfo();
 		end
 	end
@@ -309,7 +315,7 @@ end
 
 function TalentFrameBaseMixin:OnTraitConfigUpdated(configID)
 	if (configID == self.commitedConfigID) and self:IsCommitInProgress() then
-		self:SetCommitStarted(nil);
+		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitSucceeded);
 		self:UpdateTreeCurrencyInfo();
 	end
 end
@@ -1082,26 +1088,32 @@ function TalentFrameBaseMixin:OnCommitCastBarShow()
 end
 
 function TalentFrameBaseMixin:SetCommitCompleteVisualsActive(active)
-	if self.enableCommitEndFlash then
+	local playingBackgroundFlash = self.AnimationHolder.BackgroundFlashAnim:IsPlaying();
+	if self.enableCommitEndFlash and (active ~= playingBackgroundFlash) then
 		if active then
 			self.AnimationHolder.BackgroundFlashAnim:Restart();
-			self.playingBackgroundFlash = true;
-		elseif self.playingBackgroundFlash then
+		else
 			self.BackgroundFlash:SetAlpha(0);
 			self.AnimationHolder.BackgroundFlashAnim:Stop();
-			self.playingBackgroundFlash = false;
 		end
 	end
 end
 
-function TalentFrameBaseMixin:SetCommitStarted(configID, isCommitFailure)
+function TalentFrameBaseMixin:CanCommitInstantly()
+	-- Override in your derived mixin.
+	return false;
+end
+
+function TalentFrameBaseMixin:SetCommitStarted(configID, reason, skipAnimation)
 	local isCommitStarted = (configID ~= nil);
 	local wasCommitActive = self:IsCommitInProgress();
 
 	self.commitedConfigID = configID;
 
-	if isCommitStarted ~= wasCommitActive then
-		self:SetCommitVisualsActive(isCommitStarted);
+	if reason == TalentFrameBaseMixin.CommitUpdateReasons.CommitFailed then
+		self:SetCommitVisualsActive(false);
+	elseif isCommitStarted ~= wasCommitActive then
+		self:SetCommitVisualsActive(isCommitStarted and (reason ~= TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit));
 	end
 
 	if not isCommitStarted and self.commitTimer then
@@ -1110,12 +1122,18 @@ function TalentFrameBaseMixin:SetCommitStarted(configID, isCommitFailure)
 	end
 
 	if self:IsShown() then
-		if isCommitFailure then
+		if reason == TalentFrameBaseMixin.CommitUpdateReasons.CommitFailed then
 			self:SetCommitCompleteVisualsActive(false);
-		elseif not isCommitStarted and wasCommitActive then
-			self:SetCommitCompleteVisualsActive(true);
+		elseif not skipAnimation then
+			if reason == TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit then
+				self:SetCommitCompleteVisualsActive(true);
+			elseif (self.previousCommitUpdateReason ~= TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit) and (reason == TalentFrameBaseMixin.CommitUpdateReasons.CommitSucceeded) then
+				self:SetCommitCompleteVisualsActive(true);
+			end
 		end
 	end
+
+	self.previousCommitUpdateReason = reason;
 end
 
 function TalentFrameBaseMixin:GetMaximumCommitTime()
@@ -1129,12 +1147,11 @@ function TalentFrameBaseMixin:CommitConfig()
 
 	self:PlayCommitConfigSound();
 
-	self:SetCommitStarted(self:GetConfigID());
+	self:SetCommitStarted(self:GetConfigID(), self:CanCommitInstantly() and TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit or TalentFrameBaseMixin.CommitUpdateReasons.CommitStarted);
 
-	-- TODO:: Replace this backup once we're confident with the proper flow.
-	-- Wait until we have server to client error messaging as well WOW10-27631
+	-- TODO:: Consider removing this backup now that we're confident with the proper flow.
 	self.commitTimer = C_Timer.NewTimer(self:GetMaximumCommitTime(), function()
-		self:SetCommitStarted(nil);
+		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitFailed);
 	end);
 
 	return self:CommitConfigInternal();

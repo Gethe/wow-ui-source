@@ -1,0 +1,51 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Frame name="PlayerChoiceGenericPowerChoiceOptionTemplate" inherits="PlayerChoicePowerChoiceTemplate" mixin="PlayerChoiceGenericPowerChoiceOptionTemplateMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="selectedEffectID" value="154" type="number"/>
+			<KeyValue key="minOptionHeight" value="345" type="number"/>
+			<KeyValue key="choiceSelectedSound" value="SOUNDKIT.UI_PLAYER_CHOICE_GENERIC_POWER" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" scale="0.8">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="GlowBG" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CircleBorder"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Header" inherits="PlayerChoiceBaseCenteredFrame, ResizeLayoutFrame">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontHighlightLarge" justifyV="MIDDLE" maxLines="3">
+							<Size x="165" y="50"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnimations" looping="REPEAT" parentArray="PassiveAnimations">
+				<Rotation childKey="GlowBG" duration="30" order="1" degrees="-360"/>
+				<Alpha childKey="GlowBG" smoothing="OUT" duration="1" order="1" fromAlpha="0.70" toAlpha="1"/>
+				<Alpha childKey="GlowBG" smoothing="OUT" startDelay="1" duration="1" order="2" fromAlpha="1" toAlpha="0.70"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

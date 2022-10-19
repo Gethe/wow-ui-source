@@ -203,6 +203,7 @@ local MajorFactions =
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "bountySetID", Type = "number", Nilable = false },
 				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+				{ Name = "unlockDescription", Type = "string", Nilable = true },
 				{ Name = "renownLevel", Type = "number", Nilable = false },
 				{ Name = "renownReputationEarned", Type = "number", Nilable = false },
 				{ Name = "renownLevelThreshold", Type = "number", Nilable = false },

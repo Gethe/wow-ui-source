@@ -79,16 +79,29 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 	end
 end
 
+function Professions.FindItemsMatchingItemID(itemID)
+	local items = {};
+	local function FindMatchingItemID(itemLocation)
+		if C_Item.GetItemID(itemLocation) == itemID then
+			local itemGUID = C_Item.GetItemGUID(itemLocation);
+			table.insert(items, Item:CreateFromItemGUID(itemGUID));
+		end
+	end
+
+	ItemUtil.IteratePlayerInventoryAndEquipment(FindMatchingItemID);
+	return items;
+end
+
 function Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned)
 	local items = {};
 	if filterOwned then
 		for index, itemID in ipairs(itemIDs) do
-			local foundItems = ItemUtil.FindPlayerInventoryAndEquipmentItemsMatchingItemID(itemID);
+			local foundItems = Professions.FindItemsMatchingItemID(itemID);
 			tAppendAll(items, foundItems);
 		end
 	else
 		for index, itemID in ipairs(itemIDs) do
-			local foundItems = ItemUtil.FindPlayerInventoryAndEquipmentItemsMatchingItemID(itemID);
+			local foundItems = Professions.FindItemsMatchingItemID(itemID);
 			if #foundItems == 0 then
 				table.insert(items, Item:CreateFromItemID(itemID));
 			else
@@ -705,7 +718,11 @@ function Professions.SetDefaultOrderDuration(index)
 end
 
 function Professions.GetDefaultOrderDuration()
-	return tonumber(GetCVar("professionsOrderDurationDropdown"));
+	local duration = tonumber(GetCVar("professionsOrderDurationDropdown"));
+	if not duration or duration < Enum.CraftingOrderDuration.Short or duration > Enum.CraftingOrderDuration.Long then
+		duration = Enum.CraftingOrderType.Medium;
+	end
+	return duration;
 end
 
 function Professions.SetDefaultOrderRecipient(index)
@@ -715,6 +732,9 @@ end
 function Professions.GetDefaultOrderRecipient()
 	local recipient = tonumber(GetCVar("professionsOrderRecipientDropdown"));
 	if recipient == Enum.CraftingOrderType.Guild and not IsInGuild() then
+		recipient = Enum.CraftingOrderType.Public;
+	end
+	if not recipient or recipient < Enum.CraftingOrderType.Public or recipient > Enum.CraftingOrderType.Personal then
 		recipient = Enum.CraftingOrderType.Public;
 	end
 	return recipient;

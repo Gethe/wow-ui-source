@@ -131,8 +131,7 @@ function BaseBagSlotButtonMixin:BagSlotOnLeave()
 end
 
 function BaseBagSlotButtonMixin:UpdateBagButtonHighlight(containerFrame)
-	local isMatchingContainer = containerFrame:IsCombinedBagContainer() or (self:GetBagID() == containerFrame:GetBagID());
-	if isMatchingContainer then
+	if containerFrame:MatchesBagID(self:GetBagID()) then
 		self.SlotHighlightTexture:SetShown(containerFrame:IsShown());
 	end
 end
@@ -146,8 +145,8 @@ function BaseBagSlotButtonMixin:GetIsBarExpanded()
 end
 
 function BaseBagSlotButtonMixin:GetBagID()
-	if ( self:GetID() == 0 ) then
-		return 0;
+	if ( self:GetID() == Enum.BagIndex.Backpack ) then
+		return Enum.BagIndex.Backpack;
 	end
 
 	return (self:GetID() - CharacterBag0Slot:GetID()) + 1;

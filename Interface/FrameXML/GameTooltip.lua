@@ -971,41 +971,19 @@ function GameTooltipDataMixin:SetWorldCursor(anchorType)
 	end
 end
 
--- replacements for GetX API that's been removed
+-- Temp replacements for GetX API that's been removed
+-- TODO: Evaluate for removal
 
 function GameTooltipDataMixin:GetItem()
-	if self:IsTooltipType(Enum.TooltipDataType.Item) then
-		local tooltipData = self:GetTooltipData();
-		local hyperlink;
-		if tooltipData.guid then
-			hyperlink = C_Item.GetItemLinkByGUID(tooltipData.guid);
-		elseif tooltipData.hyperlink then
-			hyperlink = tooltipData.hyperlink;
-		end
-		if hyperlink then
-			local name = GetItemInfo(hyperlink);
-			return name, hyperlink;
-		end
-	end
+	return TooltipUtil.GetDisplayedItem(self);
 end
 
 function GameTooltipDataMixin:GetSpell()
-	local tooltipData = self:GetTooltipData();
-	if tooltipData and tooltipData.type == Enum.TooltipDataType.Spell then
-		local id = tooltipData.id;
-		local name = GetSpellInfo(id);
-		return name, id;
-	end
+	return TooltipUtil.GetDisplayedSpell(self);
 end
 
 function GameTooltipDataMixin:GetUnit()
-	local tooltipData = self:GetTooltipData();
-	if tooltipData and tooltipData.type == Enum.TooltipDataType.Unit then
-		local guid = tooltipData.guid;
-		local unit = guid and UnitTokenFromGUID(guid);
-		local name = unit and UnitName(unit);
-		return name, unit, guid;
-	end
+	return TooltipUtil.GetDisplayedUnit(self);
 end
 
 GameTooltipUnitHealthBarMixin = { };

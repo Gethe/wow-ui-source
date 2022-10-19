@@ -24,7 +24,11 @@ function EssencePowerBar:UpdatePower()
 	local animationSpeedMultiplier = FillingAnimationTime / cooldownDuration;
 	if (not isAtMaxPoints and self.classResourceButtonTable[comboPoints + 1] and not self.classResourceButtonTable[comboPoints + 1].EssenceFull:IsShown()) then 
 		self.classResourceButtonTable[comboPoints + 1]:AnimIn(animationSpeedMultiplier)
-	end 
+	end
+end
+
+function EssencePowerBar:UpdateChargedPowerPoints()
+	self:UpdatePower();
 end
 
 function EssencePowerBar:SetupEvoker()
