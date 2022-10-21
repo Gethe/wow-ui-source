@@ -231,7 +231,7 @@ TaxiFrame.xml
 ..\..\Interface_TBC\FrameXML\BankFrame.xml
 ItemRef.xml
 ..\..\Interface_Wrath\FrameXML\FriendsFrame.xml
-RaidFrame.xml
+..\..\Interface_Wrath\FrameXML\RaidFrame.xml
 PetActionBarFrame.xml
 MultiCastActionBarFrame.xml
 ..\..\Interface_Wrath\FrameXML\MainMenuBarBagButtons.xml
