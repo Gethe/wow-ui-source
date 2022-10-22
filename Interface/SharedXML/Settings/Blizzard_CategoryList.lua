@@ -1,3 +1,6 @@
+
+local securecallfunction = securecallfunction;
+
 local g_selectionBehavior;
 
 local function CreateHeaderInitializer(label, headerIndex)
@@ -207,7 +210,8 @@ end
 function SettingsCategoryListMixin:GetCategory(categoryID)
 	for index, tbl in ipairs(self.groups) do
 		for index, category in ipairs(tbl.categories) do
-			if category:GetID() == categoryID then
+			local id = securecallfunction(SettingsCategoryMixin.GetID, category);
+			if id == categoryID then
 				return category;
 			end
 		end
@@ -218,7 +222,8 @@ end
 local SETTING_GROUP_ADDONS = "AddOns";
 
 function SettingsCategoryListMixin:AddCategoryInternal(category, group, addOn)
-	if category:HasParentCategory() then
+	local hasParentCategory = securecallfunction(SettingsCategoryMixin.HasParentCategory, category);
+	if hasParentCategory then
 		-- FIXME Will replace when we're not building the whole category list on insert/removal.
 		self:CreateCategories();
 		return;

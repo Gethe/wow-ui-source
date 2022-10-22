@@ -581,7 +581,7 @@ function TalentMicroButtonMixin:HasTalentAlertToShow()
 
 	local alert;
 
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) and canUseTalentUI and not AreTalentsLocked() and C_ClassTalents.HasUnspentTalentPoints() then
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) and canUseTalentUI and C_ClassTalents.HasUnspentTalentPoints() then
 		alert = "TALENT_MICRO_BUTTON_UNSPENT_TALENTS";
 	end
 

@@ -354,7 +354,7 @@ function ClassTalentTalentsTabMixin:OnTraitConfigCreateFinished(configID)
 end
 
 function ClassTalentTalentsTabMixin:ResetToLastConfigID()
-	if self.lastSelectedConfigID and self.LoadoutDropDown:IsSelectionIDValid(self.lastSelectedConfigID) then
+	if self.lastSelectedConfigID and self.LoadoutDropDown:IsSelectionIDValid(self.lastSelectedConfigID) and not self:IsStarterBuildConfig(self.lastSelectedConfigID) then
 		-- Have a valid last selected config, reset back to that
 		local autoApply = false;
 		local skipLoad = false;
@@ -412,7 +412,7 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 
 	local function CanEditLoadoutCallback(configID)
 		-- TODO: Enable modified loadout settings dialog for Starter Build
-		return configID ~= Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID;
+		return not self:IsStarterBuildConfig(configID);
 	end
 
 	self.LoadoutDropDown:SetEditEntryCallback(EditLoadoutCallback, TALENT_FRAME_DROP_DOWN_TOOLTIP_EDIT, CanEditLoadoutCallback);
@@ -436,7 +436,7 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 		CopyToClipboard(exportString);
 
 		local configName = nil;
-		if configID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
+		if self:IsStarterBuildConfig(configID) then
 			configName = TALENT_FRAME_DROP_DOWN_STARTER_BUILD;
 		elseif configInfo and self.LoadoutDropDown:IsSelectionIDValid(configID) then
 			configName = configInfo.name;
@@ -592,7 +592,7 @@ function ClassTalentTalentsTabMixin:RefreshLoadoutOptions()
 	end
 
 	local function SelectionTooltipTranslation(configID)
-		if configID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
+		if self:IsStarterBuildConfig(configID) then
 			return YELLOW_FONT_COLOR:WrapTextInColorCode(TALENT_FRAME_DROP_DOWN_STARTER_BUILD_TOOLTIP);
 		end
 
@@ -740,7 +740,11 @@ end
 function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply, skipAnimation)
 	local loadResult = nil;
 
-	if configID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
+	if self:IsStarterBuildConfig(configID) then
+		if not self:GetHasStarterBuild() then
+			error("Error loading Talents: Attempted to load Starter Build when Starter Build is not available");
+		end
+
 		loadResult = self:SetStarterBuildActive(true);
 	else
 		if self:GetIsStarterBuildActive() then
@@ -783,7 +787,14 @@ function ClassTalentTalentsTabMixin:ApplyConfig()
 		self.isConfigReadyToApply = false;
 		self:CommitConfig();
 	else
-		self.isConfigReadyToApply = not C_ClassTalents.SaveConfig(self.LoadoutDropDown:GetSelectionID());
+		local selectedConfig = self.LoadoutDropDown:GetSelectionID();
+		if selectedConfig and not self:IsStarterBuildConfig(selectedConfig) then
+			-- Selected config is a loadout, save to that config
+			self.isConfigReadyToApply = not C_ClassTalents.SaveConfig(selectedConfig);
+		else
+			-- Selected config is "Default Loadout" or StarterBuild, no need to save as changes exist in active config
+			self.isConfigReadyToApply = false;
+		end
 		self:UpdateConfigButtonsState();
 	end
 end
@@ -940,8 +951,14 @@ function ClassTalentTalentsTabMixin:CanSetDropDownValue(selectedValue, isUserInp
 		return true; -- The dropdown can always be cleared.
 	end
 
-	if not isUserInput and selectedValue == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID and not self:GetIsStarterBuildActive() then
-		return false; -- Cannot auto-select starter build unless already in it, or the player is switching to it
+	if self:IsStarterBuildConfig(selectedValue) then
+		if not isUserInput and not self:GetIsStarterBuildActive() then
+			return false; -- Cannot auto-select starter build unless already in it, or the player is switching to it
+		end
+
+		if not self:GetHasStarterBuild() then
+			return false; -- Cannot select Starter Build if it is not available
+		end
 	end
 
 	local currentSelectionID = self.LoadoutDropDown:GetSelectionID();
@@ -1124,6 +1141,10 @@ function ClassTalentTalentsTabMixin:WillDeviateFromStarterBuild(selectedNodeID, 
 			(selectedEntryID and starterEntryID and starterEntryID ~= selectedEntryID);
 end
 
+function ClassTalentTalentsTabMixin:IsStarterBuildConfig(configID)
+	return configID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID;
+end
+
 function ClassTalentTalentsTabMixin:GetHasStarterBuild()
 	return C_ClassTalents.GetHasStarterBuild();
 end
@@ -1139,7 +1160,7 @@ end
 
 function ClassTalentTalentsTabMixin:UnflagStarterBuild()
 	self.unflagStarterBuildAfterNextCommit = false;
-	if self.lastSelectedConfigID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
+	if self:IsStarterBuildConfig(self.lastSelectedConfigID) then
 		self:ClearLastSelectedConfigID();
 	end
 	self:SetStarterBuildActive(false);

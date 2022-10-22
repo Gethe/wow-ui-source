@@ -146,7 +146,8 @@ local function CreateSearchableSettings(redirectCategory)
 		for _, bindingData in ipairs(bindingCategory) do
 			local bindingIndex, action = unpack(bindingData);
 			local initializer = CreateKeybindingEntryInitializer(bindingIndex, true);
-			initializer:AddSearchTags(GetBindingName(action));
+			local bindingName = securecallfunction(GetBindingName, action);
+			initializer:AddSearchTags(bindingName);
 			layout:AddInitializer(initializer);
 		end
 	end

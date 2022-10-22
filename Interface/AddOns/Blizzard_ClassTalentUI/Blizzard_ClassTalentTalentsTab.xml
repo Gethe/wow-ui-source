@@ -64,7 +64,7 @@
 						<Anchor point="BOTTOM" relativeKey="$parent.BottomBar" relativePoint="TOP"/>
 					</Anchors>
 				</Texture>
-				<MaskTexture parentKey="OverlayBackgroundRightMask" atlas="talents-animations-mask-specart">
+				<MaskTexture parentKey="OverlayBackgroundRightMask" atlas="talents-animations-mask-specart" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					</Anchors>
@@ -78,7 +78,7 @@
 						<Anchor point="BOTTOM" relativeKey="$parent.BottomBar" relativePoint="TOP"/>
 					</Anchors>
 				</Texture>
-				<MaskTexture parentKey="OverlayBackgroundMidMask" atlas="talents-animations-mask-specart-mid">
+				<MaskTexture parentKey="OverlayBackgroundMidMask" atlas="talents-animations-mask-specart-mid" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					</Anchors>
@@ -106,7 +106,7 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<MaskTexture parentKey="GridMask" atlas="talents-animations-mask-filigree">
+				<MaskTexture parentKey="GridMask" atlas="talents-animations-mask-filigree" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					</Anchors>
@@ -137,7 +137,7 @@
 						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="CENTER"/>
 					</Anchors>
 				</Texture>
-				<MaskTexture parentKey="ActivationExpandFxMask" atlas="talents-animations-mask-filigree-activate">
+				<MaskTexture parentKey="ActivationExpandFxMask" atlas="talents-animations-mask-filigree-activate" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 					</Anchors>
@@ -172,7 +172,7 @@
 					</Anchors>
 				</Texture>
 				
-				<MaskTexture parentKey="FullMask" atlas="talents-animations-mask-full">
+				<MaskTexture parentKey="FullMask" atlas="talents-animations-mask-full" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>

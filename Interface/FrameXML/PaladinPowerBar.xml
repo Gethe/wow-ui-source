@@ -5,6 +5,7 @@
 	<Frame name="PaladinPowerBarFrame" inherits="ClassPowerBarFrame, PlayerFrameBottomManagedFrameTemplate" mixin="ClassPowerBar, PaladinPowerBar">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="3" type="number"/>
+			<KeyValue key="topPadding" value="-6" type="number"/>
 		</KeyValues>
 		<Animations>
 			<AnimationGroup parentKey="showAnim">

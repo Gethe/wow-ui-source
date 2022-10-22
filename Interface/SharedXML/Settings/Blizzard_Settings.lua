@@ -114,25 +114,26 @@ function Settings.CreateCategory(name)
 end
 
 function Settings.AssignLayoutToCategory(category, layout)
-	SettingsPanel:AssignLayoutToCategory(category, layout);
+	SettingsInbound.AssignLayoutToCategory(category, layout);
 end
 
 function Settings.RegisterCategory(category, group)
 	local addon = false;
-	SettingsPanel:RegisterCategory(category, group, addon);
+	SettingsInbound.RegisterCategory(category, group, addon);
 end
 
 function Settings.RegisterAddOnCategory(category)
 	local addon = true;
-	SettingsPanel:RegisterCategory(category, nil, addon);
+	local group = nil;
+	SettingsInbound.RegisterCategory(category, group, addon);
 end
 
 function Settings.SetKeybindingsCategory(category)
-	SettingsPanel:SetKeybindingsCategory(category);
+	SettingsInbound.SetKeybindingsCategory(category);
 end
 
 function Settings.OpenToCategory(categoryID, scrollToElementName)
-	return SettingsPanel:OpenToCategory(categoryID, scrollToElementName);
+	return SettingsInbound.OpenToCategory(categoryID, scrollToElementName);
 end
 
 function Settings.SafeLoadBindings(bindingSet)
@@ -142,56 +143,44 @@ function Settings.SafeLoadBindings(bindingSet)
 end
 
 function Settings.RegisterVerticalLayoutCategory(name)
-	local category = Settings.CreateCategory(name);
-	local layout = CreateVerticalLayout(category);
-	Settings.AssignLayoutToCategory(category, layout);
-	return category, layout;
+	return SettingsInbound.RegisterVerticalLayoutCategory(name);
 end
 
 function Settings.RegisterVerticalLayoutSubcategory(parentCategory, name)
-	local subcategory = parentCategory:CreateSubcategory(name);
-	local layout = CreateVerticalLayout(subcategory);
-	Settings.AssignLayoutToCategory(subcategory, layout);
-	return subcategory, layout;
+	return SettingsInbound.RegisterVerticalLayoutSubcategory(parentCategory, name);
 end
 
 function Settings.RegisterCanvasLayoutCategory(frame, name)
-	local category = Settings.CreateCategory(name);
-	local layout = CreateCanvasLayout(frame);
-	Settings.AssignLayoutToCategory(category, layout);
-	return category, layout;
+	return SettingsInbound.RegisterCanvasLayoutCategory(frame, name);
 end
 
 function Settings.RegisterCanvasLayoutSubcategory(parentCategory, frame, name)
-	local subcategory = parentCategory:CreateSubcategory(name);
-	local layout = CreateCanvasLayout(frame);
-	Settings.AssignLayoutToCategory(subcategory, layout);
-	return subcategory, layout;
+	return SettingsInbound.RegisterCanvasLayoutSubcategory(parentCategory, frame, name);
 end
 
 function Settings.RegisterInitializer(category, initializer)
-	SettingsPanel:RegisterInitializer(category, initializer);
+	SettingsInbound.RegisterInitializer(category, initializer);
 end
 
-function Settings.RegisterGroups(...)
-	SettingsPanel:RegisterGroups(...);
+function Settings.RegisterAddOnSetting(categoryTbl, name, variable, variableType, defaultValue)
+	return SettingsInbound.CreateAddOnSetting(categoryTbl, name, variable, variableType, defaultValue);
 end
 
 function Settings.RegisterProxySetting(categoryTbl, variable, variableTbl, variableType, name, defaultValue, getValue, setValue, commitValue)
 	local setting = CreateAndInitFromMixin(ProxySettingMixin, name, variable, variableTbl, variableType, defaultValue, getValue, setValue, commitValue);
-	SettingsPanel:RegisterSetting(categoryTbl, setting);
+	SettingsInbound.RegisterSetting(categoryTbl, setting);
 	return setting;
 end
 
 function Settings.RegisterCVarSetting(categoryTbl, variable, variableType, name)
 	local setting = CreateAndInitFromMixin(CVarSettingMixin, name, variable, variableType);
-	SettingsPanel:RegisterSetting(categoryTbl, setting);
+	SettingsInbound.RegisterSetting(categoryTbl, setting);
 	return setting;
 end
 
 function Settings.RegisterModifiedClickSetting(categoryTbl, variable, name, defaultValue)
 	local setting = CreateAndInitFromMixin(ModifiedClickSettingMixin, name, variable, defaultValue);
-	SettingsPanel:RegisterSetting(categoryTbl, setting);
+	SettingsInbound.RegisterSetting(categoryTbl, setting);
 	return setting;
 end
 
@@ -316,13 +305,7 @@ function Settings.CreateElementInitializer(frameTemplate, data)
 end
 
 function Settings.CreateSettingInitializer(frameTemplate, data)
-	local initializer = CreateFromMixins(SettingsListElementInitializer);
-	initializer:Init(frameTemplate, data);
-	local setting = initializer:GetSetting();
-	if setting then
-		initializer:AddSearchTags(setting:GetName());
-	end
-	return initializer;
+	return SettingsInbound.CreateSettingInitializer(frameTemplate, data);
 end
 
 function Settings.CreatePanelInitializer(frameTemplate, data)

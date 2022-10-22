@@ -1400,7 +1400,7 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.isWowMobile, accountInfo.rafLinkType, accountInfo.gameAccountInfo.areaName);
 				end
 
-				button.gameIcon:SetAtlas(BNet_GetClientAtlas(accountInfo.gameAccountInfo.clientProgram));
+				button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(accountInfo.gameAccountInfo.clientProgram));
 
 				local fadeIcon = (accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (accountInfo.gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID);
 				if fadeIcon then

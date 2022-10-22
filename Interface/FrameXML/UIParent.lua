@@ -797,6 +797,18 @@ function NPE_LoadUI()
 	end
 end
 
+function BoostTutorial_AttemptLoad()
+	if IsBoostTutorialScenario() and not IsAddOnLoaded("Blizzard_BoostTutorial") then
+		UIParentLoadAddOn("Blizzard_BoostTutorial");
+	end
+end
+
+function ClassTrial_AttemptLoad()
+	if C_ClassTrial.IsClassTrialCharacter() and not IsAddOnLoaded("Blizzard_ClassTrial") then
+		UIParentLoadAddOn("Blizzard_ClassTrial");
+	end
+end
+
 function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
 	return ExpansionTrialThanksForPlayingDialog and ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
 end
@@ -1721,6 +1733,8 @@ function UIParent_OnEvent(self, event, ...)
 		self.battlefieldBannerShown = nil;
 
 		NPETutorial_AttemptToBegin(event);
+		ClassTrial_AttemptLoad();
+		BoostTutorial_AttemptLoad();
 
 		if Kiosk.IsEnabled() then
 			LoadAddOn("Blizzard_Kiosk");
@@ -2281,6 +2295,8 @@ function UIParent_OnEvent(self, event, ...)
 			FlightMap_LoadUI();
 			ShowUIPanel(FlightMapFrame);
 		end
+	elseif (event == "SCENARIO_UPDATE") then
+		BoostTutorial_AttemptLoad();
 	elseif (event == "DEBUG_MENU_TOGGLED") then
 		UpdateUIParentPosition();
 	elseif (event == "REVEAL_CAPTURE_TOGGLED") then

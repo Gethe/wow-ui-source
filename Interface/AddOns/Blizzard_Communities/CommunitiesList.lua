@@ -410,11 +410,12 @@ function CommunitiesListEntryMixin:Init(elementData)
 	local clubInfo = elementData.clubInfo;
 	local isInvitation = clubInfo and clubInfo.isInvitation;
 	local isClubFinderInvitation = clubInfo and clubInfo.isClubFinderInvitation;
-	if isInvitation then
+
+	if (isInvitation) then
 		self.overrideOnClick = function(self, button)
-			if button == "LeftButton" then
+			if (button == "LeftButton") then
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				local communitiesFrame = self:GetCommunitiesFrame(); 
+				local communitiesFrame = self:GetCommunitiesFrame();
 				communitiesFrame:SelectClub(self.clubId);
 				self:UpdateUnreadNotification();
 			end
@@ -423,22 +424,30 @@ function CommunitiesListEntryMixin:Init(elementData)
 		self.overrideOnClick = nil;
 	end
 
+	-- Club tickets have the real club info one layer down.
+	local isTicket = clubInfo and clubInfo.isTicket;
+	if (isTicket) then
+		clubInfo = clubInfo.clubInfo;
+	end
+
 	local communitiesList = self:GetCommunitiesList();
 	local shouldShowFlash = clubInfo and communitiesList:ShouldShowNewCommunityFlash(clubInfo.clubId);
 	local isFlashing = UIFrameIsFlashing(self.NewCommunityFlash);
-	if shouldShowFlash and not isFlashing then
+	if (shouldShowFlash and not isFlashing) then
 		UIFrameFlash(self.NewCommunityFlash, 1.0, 1.0, NEW_COMMUNITY_FLASH_DURATION, false, 0, 0);
 		communitiesList:OnNewCommunityFlashStarted();
-	elseif not shouldShowFlash and isFlashing then
+	elseif (not shouldShowFlash and isFlashing) then
 		UIFrameFlashStop(self.NewCommunityFlash);
 	end
 
-	if clubInfo then
-		if isClubFinderInvitation then 
-			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));		
+	if (clubInfo) then
+		local isGuild = clubInfo.clubType == Enum.ClubType.Guild;
+
+		if (isClubFinderInvitation) then
+			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));
 			self.clubInfo = clubInfo;
 			self.overrideOnClick = function(self, button)
-				if button == "LeftButton" then
+				if (button == "LeftButton") then
 					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					local communitiesFrame = self:GetCommunitiesFrame();
 					communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION);
@@ -447,7 +456,7 @@ function CommunitiesListEntryMixin:Init(elementData)
 				end
 			end;
 
-			if clubInfo.isGuild then
+			if (isGuild) then
 				self.Background:SetAtlas("communities-nav-button-green-normal");
 				self.Background:SetTexCoord(0, 1, 0, 1);
 				self.Selection:SetAtlas("communities-nav-button-green-pressed");
@@ -458,12 +467,12 @@ function CommunitiesListEntryMixin:Init(elementData)
 				self.Selection:SetTexture("Interface\\Common\\bluemenu-main");
 				self.Selection:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
 			end
-		
+
 			local isBattleNet = false;
-			self.Name:SetTextColor(GetFontColor(isBattleNet, clubInfo.isGuild, isInvitation):GetRGB());
+			self.Name:SetTextColor(GetFontColor(isBattleNet, isGuild, isInvitation):GetRGB());
 			self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 11, 0);
 			self.isInvitation = isInvitation;
-			self.isTicket = clubInfo.isTicket;
+			self.isTicket = isTicket;
 			self.Selection:SetShown(true);
 			self.FavoriteIcon:SetShown(false);
 			self.InvitationIcon:SetShown(isClubFinderInvitation);
@@ -476,17 +485,16 @@ function CommunitiesListEntryMixin:Init(elementData)
 			self.Icon:SetPoint("TOPLEFT", 11, -15);
 			self.CircleMask:SetShown(false);
 			self.IconRing:SetShown(false);
-			return; 
-		end 
+			return;
+		end
 
-		if isInvitation then
+		if (isInvitation) then
 			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));
 		else
 			self.Name:SetText(clubInfo.name);
 		end
-		
-		local isGuild = clubInfo.clubType == Enum.ClubType.Guild;
-		if isGuild then
+
+		if (isGuild) then
 			self.Background:SetAtlas("communities-nav-button-green-normal");
 			self.Background:SetTexCoord(0, 1, 0, 1);
 			self.Selection:SetAtlas("communities-nav-button-green-pressed");
@@ -497,7 +505,7 @@ function CommunitiesListEntryMixin:Init(elementData)
 			self.Selection:SetTexture("Interface\\Common\\bluemenu-main");
 			self.Selection:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
 		end
-		
+
 		local isBattleNet = clubInfo.clubType == Enum.ClubType.BattleNet;
 		self.Name:SetTextColor(GetFontColor(isBattleNet, isGuild, isInvitation):GetRGB());
 		self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 11, 0);
@@ -519,11 +527,11 @@ function CommunitiesListEntryMixin:Init(elementData)
 		self.IconRing:SetAtlas(isBattleNet and "communities-ring-blue" or "communities-ring-gold");
 		C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
 		self:UpdateUnreadNotification();
-	elseif elementData.setGuildFinder then
+	elseif (elementData.setGuildFinder) then
 		self:SetGuildFinder();
-	elseif elementData.setFindCommunity then
+	elseif (elementData.setFindCommunity) then
 		self:SetFindCommunity();
-	elseif elementData.setJoinCommunity then
+	elseif (elementData.setJoinCommunity) then
 		self:SetAddCommunity();
 	end
 end

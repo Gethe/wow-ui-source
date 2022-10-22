@@ -283,3 +283,25 @@ function ModifiedClickSettingMixin:Init(name, modifier, defaultValue)
 
 	self:SetCommitFlags(Settings.CommitFlag.SaveBindings);
 end
+
+AddOnSettingMixin = CreateFromMixins(SettingMixin);
+
+function AddOnSettingMixin:Init(name, variable, variableType, defaultValue)
+	SettingMixin.Init(self, name, variable, variableType)
+
+	self.defaultValue = defaultValue;
+	self.internalValue = defaultValue;
+end
+
+function AddOnSettingMixin:SetValueInternal(value)
+	self.internalValue = value;
+	return value;
+end
+
+function AddOnSettingMixin:GetDefaultValueInternal()
+	return self.defaultValue;
+end
+
+function AddOnSettingMixin:GetValueInternal()
+	return self.internalValue;
+end

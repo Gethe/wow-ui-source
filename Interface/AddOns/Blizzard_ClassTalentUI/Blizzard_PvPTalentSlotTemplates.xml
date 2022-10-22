@@ -19,7 +19,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<MaskTexture parentKey="TextureMask" atlas="talents-node-choice-mask" useAtlasSize="false">
+				<MaskTexture parentKey="TextureMask" atlas="talents-node-choice-mask" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="CENTER"/>

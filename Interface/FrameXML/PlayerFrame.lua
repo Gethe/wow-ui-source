@@ -31,9 +31,24 @@ function PlayerFrame_OnLoad(self)
 	self.statusCounter = 0;
 	self.statusSign = -1;
 
-	PlayerFrameManaBar:GetStatusBarTexture():AddMaskTexture(playerFrameContent.ManaBarMask);
-	PlayerFrameManaBar.FeedbackFrame:AddMaskTexture(playerFrameContent.ManaBarMask);
-	playerFrameContent.ManaCostPredictionBar:AddMaskTexture(playerFrameContent.ManaBarMask);
+	-- Mask the various bar assets, to avoid any overflow with the frame shape.
+	local healthBarMask = playerFrameContent.HealthBarMask;
+	PlayerFrameHealthBar:GetStatusBarTexture():AddMaskTexture(healthBarMask);
+	playerFrameContent.MyHealPredictionBar:AddMaskTexture(healthBarMask);
+	playerFrameContent.OtherHealPredictionBar:AddMaskTexture(healthBarMask);
+	playerFrameContent.TotalAbsorbBar:AddMaskTexture(healthBarMask);
+	playerFrameContent.TotalAbsorbBarOverlay:AddMaskTexture(healthBarMask);
+	playerFrameContent.OverAbsorbGlow:AddMaskTexture(healthBarMask);
+	playerFrameContent.OverHealAbsorbGlow:AddMaskTexture(healthBarMask);
+	playerFrameContent.HealAbsorbBar:AddMaskTexture(healthBarMask);
+	playerFrameContent.HealAbsorbBarLeftShadow:AddMaskTexture(healthBarMask);
+	playerFrameContent.HealAbsorbBarRightShadow:AddMaskTexture(healthBarMask);
+	playerFrameContent.HealthBarArea.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture():AddMaskTexture(healthBarMask);
+
+	local manaBarMask = playerFrameContent.ManaBarMask;
+	PlayerFrameManaBar:GetStatusBarTexture():AddMaskTexture(manaBarMask);
+	PlayerFrameManaBar.FeedbackFrame:AddMaskTexture(manaBarMask);
+	playerFrameContent.ManaCostPredictionBar:AddMaskTexture(manaBarMask);
 
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
 	PlayerFrame_Update();
@@ -527,6 +542,9 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrameHealthBar:SetHeight(20);
 	PlayerFrameHealthBar:SetPoint("TOPLEFT", 91, -40);
 
+	local healthBarMask = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarMask;
+	healthBarMask:SetPoint("TOPLEFT", healthBarMask:GetParent(), "TOPLEFT", 90, -34);
+
 	-- Update mana bar
 	PlayerFrameManaBar:SetWidth(118);
 	PlayerFrameManaBar:SetHeight(10);
@@ -589,6 +607,9 @@ function PlayerFrame_ToPlayerArt(self)
 	PlayerFrameHealthBar:SetHeight(20);
 	PlayerFrameHealthBar:SetWidth(124);
 	PlayerFrameHealthBar:SetPoint("TOPLEFT", 85, -40);
+
+	local healthBarMask = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarMask;
+	healthBarMask:SetPoint("TOPLEFT", healthBarMask:GetParent(), "TOPLEFT", 83, -35);
 
 	-- Update mana bar
 	PlayerFrameManaBar:SetHeight(10);

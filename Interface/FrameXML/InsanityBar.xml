@@ -5,7 +5,7 @@
 	<Frame name="InsanityBarFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, InsanityPowerBar">
 		<Size x="128" y="128"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" x="-25" y="56"/>
+			<Anchor point="TOPLEFT" x="-44" y="50"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="InsanityOn" alpha="0">
@@ -42,7 +42,7 @@
 						<Texture parentKey="TopShadowStay" hidden="false" alpha="1" alphaMode="ADD" atlas="Insanity-TopPurpleShadow">
 							<Size x="90" y="52"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.PortraitOverlay" x="-60" y="20"/>
+								<Anchor point="CENTER" relativeKey="$parent.PortraitOverlay" x="-63" y="20"/>
 							</Anchors>
 						</Texture>
 					</Layer>

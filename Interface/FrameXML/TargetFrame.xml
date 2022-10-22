@@ -171,7 +171,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="TargetFrameContent" setAllPoints="true" useParentLevel="true">
+			<Frame parentKey="TargetFrameContent" setAllPoints="true">
 				<Frames>
 					<Frame parentKey="TargetFrameContentMain" setAllPoints="true">
 						<Layers>
@@ -205,6 +205,11 @@
 										<Anchor point="TOPLEFT" relativeKey="$parent.ReputationColor" relativePoint="TOPRIGHT" x="-133" y="-2"/>
 									</Anchors>
 								</FontString>
+								<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="22" y="-33"/>
+									</Anchors>
+								</MaskTexture>
 								<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="-38" y="-58"/>
@@ -456,7 +461,12 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Portrait" relativePoint="TOPRIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
-				<!-- Note that using the party mask asset here is intentional. -->
+				<!-- Note that using the party mask assets here is intentional. -->
+				<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-14"/>
+					</Anchors>
+				</MaskTexture>
 				<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="13" y="-24"/>

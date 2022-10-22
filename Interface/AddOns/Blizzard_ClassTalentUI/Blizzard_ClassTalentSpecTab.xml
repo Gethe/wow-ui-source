@@ -263,7 +263,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<MaskTexture parentKey="ActivatedExpandFxMask" atlas="spec-animations-mask-filigree-activate" useAtlasSize="true">
+				<MaskTexture parentKey="ActivatedExpandFxMask" atlas="spec-animations-mask-filigree-activate" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="CENTER" x="218" y="-84"/>
 					</Anchors>
@@ -271,7 +271,7 @@
 						<MaskedTexture childKey="ActivatedExpandFx"/>
 					</MaskedTextures>
 				</MaskTexture>
-				<MaskTexture parentKey="ActivatedExpandFxMask2" atlas="talents-animations-mask-full" useAtlasSize="false">
+				<MaskTexture parentKey="ActivatedExpandFxMask2" atlas="talents-animations-mask-full" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT"/>

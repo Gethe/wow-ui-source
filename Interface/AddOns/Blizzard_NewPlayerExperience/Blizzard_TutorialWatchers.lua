@@ -60,6 +60,8 @@ function Class_AbilityWatcher:StartWatching()
 end
 
 function Class_AbilityWatcher:StopWatching()
+	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+	Dispatcher:UnregisterEvent("PLAYER_ENTERING_WORLD", self);
 end
 
 function Class_AbilityWatcher:CheckAbilities()
@@ -413,11 +415,20 @@ end
 
 function Class_TurnInQuestWatcher:StopWatching()
 	Dispatcher:UnregisterEvent("QUEST_COMPLETE", self);
+
+	if self.onHideCallbackID then
+		Dispatcher:UnregisterScript(QuestFrame, "OnHide", self.onHideCallbackID);
+		self.onHideCallbackID = nil;
+	end
+	if self.onClickCallbackID then
+		Dispatcher:UnregisterScript(QuestFrameCompleteQuestButton, "OnClick", self.onClickCallbackID);
+		self.onClickCallbackID = nil;
+	end
 end
 
 function Class_TurnInQuestWatcher:QUEST_COMPLETE()
-	Dispatcher:RegisterScript(QuestFrame, "OnHide", function() self:HideGlow() end, true);
-	Dispatcher:RegisterScript(QuestFrameCompleteQuestButton, "OnClick", function(QuestFrameCompleteQuestButton, button, down)
+	self.onHideCallbackID = Dispatcher:RegisterScript(QuestFrame, "OnHide", function() self:HideGlow() end, true);
+	self.onClickCallbackID = Dispatcher:RegisterScript(QuestFrameCompleteQuestButton, "OnClick", function(QuestFrameCompleteQuestButton, button, down)
 		self:HideGlow()
 		end, true);
 	if self.Timer then
@@ -490,7 +501,10 @@ function Class_XPBarWatcher:QUEST_TURNED_IN(completedQuestID)
 	Dispatcher:UnregisterEvent("QUEST_TURNED_IN", self);
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
 
-	TutorialManager:GetWatcher("UI_Watcher"):SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
+	local watcher = TutorialManager:GetWatcher("UI_Watcher");
+	if watcher then
+		watcher:SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
+	end
 
 	if self.questID == completedQuestID then
 		self.pointerTutorial = self:ShowPointerTutorial(NPEV2_XP_BAR_TUTORIAL, "DOWN", StatusTrackingBarManager, 0, -5, nil, "DOWN");
@@ -507,7 +521,7 @@ function Class_XPBarWatcher:OnInterrupt(interruptedBy)
 end
 
 function Class_XPBarWatcher:OnComplete()
-	self:StopWatching();
+	TutorialManager:StopWatcher(self:Name());
 	if self.pointerTutorial then
 		self:HidePointerTutorial(self.pointerTutorial);
 	end
@@ -627,11 +641,12 @@ function Class_StealthWatcher:StartWatching()
 end
 
 function Class_StealthWatcher:StopWatching()
+	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 end
 
 function Class_StealthWatcher:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
-	if newLevel <= TutorialData.ROGUE_STEALTH_LEVEL then
+	if newLevel >= TutorialData.ROGUE_STEALTH_LEVEL then
 		Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 		self.pointerID = self:AddPointerTutorial(NPEV2_STEALTH_TUTORIAL, "DOWN", StanceButton1, 0, 10, nil, "DOWN");
@@ -675,6 +690,7 @@ end
 
 function Class_DruidFormWatcher:StopWatching()
 	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 end
 
 function Class_DruidFormWatcher:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
@@ -768,6 +784,16 @@ function Class_LootCorpseWatcher:StartWatching()
 end
 
 function Class_LootCorpseWatcher:StopWatching()
+	Dispatcher:UnregisterEvent("PLAYER_REGEN_DISABLED", self);
+	Dispatcher:UnregisterEvent("PLAYER_REGEN_ENABLED", self);
+	Dispatcher:UnregisterEvent("CHAT_MSG_LOOT", self);
+	Dispatcher:UnregisterEvent("CHAT_MSG_MONEY", self);
+	Dispatcher:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
+
+	if (self.canLootTimer) then
+		self.canLootTimer:Cancel();
+		self.canLootTimer = nil;
+	end
 end
 
 function Class_LootCorpseWatcher:WatchQuestMob(unitID)
@@ -822,7 +848,7 @@ function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, logEvent
 	local unitGUID = eventData[8];
 	if ((logEvent == "UNIT_DIED") or (logEvent == "UNIT_DESTROYED")) then
 		-- Wait for mirror data
-		C_Timer.After(1, function()
+		self.canLootTimer = C_Timer.After(1, function()
 			if CanLootUnit(unitGUID) then
 				self:UnitLootable(unitGUID);
 			end

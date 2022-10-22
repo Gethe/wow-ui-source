@@ -380,10 +380,6 @@ function ActionBarActionButtonMixin:Update()
 			ActionBarActionEventsFrame:RegisterFrame(self);
 			self.eventsRegistered = true;
 		end
-
-		if ( not self:GetAttribute("statehidden") ) then
-			self:Show();
-		end
 		self:UpdateState();
 		self:UpdateUsable();
 		ActionButton_UpdateCooldown(self);
@@ -1228,14 +1224,15 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		end
 
 		-- Don't show dividers if we have multiple rows or any extra padding
-		if (not shown or self:GetParent().numRows > 1 or self:GetParent().buttonPadding > 3) then
+		local parent = self:GetParent();
+		if (not shown or parent.numRows > 1 or parent.buttonPadding > parent.minButtonPadding) then
 			self.RightDivider:Hide();
 			self.BottomDivider:Hide();
 			return;
 		end
 
 		-- Right now buttons are only added to the right for horizontal and below for vertical
-		if (self:GetParent().isHorizontal) then
+		if (parent.isHorizontal) then
 			self.RightDivider:Show();
 			self.BottomDivider:Hide();
 		else

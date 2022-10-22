@@ -17,14 +17,26 @@ function PetFrameMixin:OnLoad()
 						 PetFrameManaBar, PetFrameManaBarText,
 						 PetFrameFlash, nil, nil,
 						 PetFrameMyHealPredictionBar, PetFrameOtherHealPredictionBar,
-						 PetFrameTotalAbsorbBar, PetFrameTotalAbsorbBarOverlay, 
+						 PetFrameTotalAbsorbBar, PetFrameTotalAbsorbBarOverlay,
 						 PetFrameOverAbsorbGlow, PetFrameOverHealAbsorbGlow, PetFrameHealAbsorbBar,
 						 PetFrameHealAbsorbBarLeftShadow, PetFrameHealAbsorbBarRightShadow);
 
 	self.attackModeCounter = 0;
 	self.attackModeSign = -1;
 
-	PetFrameManaBar:GetStatusBarTexture():AddMaskTexture(ManaBarMask);
+	-- Mask the various bar assets, to avoid any overflow with the frame shape.
+	PetFrameHealthBar:GetStatusBarTexture():AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameMyHealPredictionBar:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameOtherHealPredictionBar:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameTotalAbsorbBar:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameTotalAbsorbBarOverlay:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameOverAbsorbGlow:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameOverHealAbsorbGlow:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameHealAbsorbBar:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameHealAbsorbBarLeftShadow:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameHealAbsorbBarRightShadow:AddMaskTexture(PetFrameHealthBarMask);
+
+	PetFrameManaBar:GetStatusBarTexture():AddMaskTexture(PetFrameManaBarMask);
 
 	CombatFeedback_Initialize(self, PetHitIndicator, 30);
 	self:Update();

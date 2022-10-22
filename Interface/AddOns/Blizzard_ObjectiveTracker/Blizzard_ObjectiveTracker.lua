@@ -816,7 +816,7 @@ function ObjectiveTracker_UpdateHeight()
 end
 
 function ObjectiveTracker_OnShow(self)
-	UIParentManagedFrameMixin.OnShow(self); 
+	UIParentManagedFrameMixin.OnShow(self);
 	ObjectiveTracker_UpdateHeight();
 end
 
@@ -864,7 +864,6 @@ function ObjectiveTracker_Initialize(self)
 	WorldMapFrame:RegisterCallback("SetFocusedQuestID", ObjectiveTracker_OnFocusedQuestChanged, self);
 	WorldMapFrame:RegisterCallback("ClearFocusedQuestID", ObjectiveTracker_OnFocusedQuestChanged, self);
 
-	QuestSuperTracking_Initialize();
 	ProfessionsRecipeTracking_Initialize();
 
 	self.initialized = true;

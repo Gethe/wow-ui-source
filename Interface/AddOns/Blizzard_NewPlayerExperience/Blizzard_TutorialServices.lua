@@ -158,6 +158,7 @@ end
 function Class_AddSpellToActionBarService:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	Dispatcher:UnregisterEvent("UPDATE_SHAPESHIFT_FORM", self);
+	Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
 	EventRegistry:UnregisterCallback("SpellBookFrame.Show", self);
 	EventRegistry:UnregisterCallback("SpellBookFrame.Hide", self);
 	self:HidePointerTutorials();

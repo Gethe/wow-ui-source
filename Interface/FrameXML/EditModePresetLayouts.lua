@@ -276,6 +276,7 @@ local modernSystemMap =
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
+				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -764,6 +765,7 @@ local classicSystemMap =
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
+				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",

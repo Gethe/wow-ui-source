@@ -143,7 +143,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="BuffFrame" parent="UIParent" inherits="AuraFrameTemplate" mixin="BuffFrameMixin" frameStrata="LOW" passThroughButtons="LeftButton, MiddleButton, RightButton">
+	<Frame name="BuffFrame" parent="UIParent" inherits="AuraFrameTemplate" mixin="BuffFrameMixin" frameStrata="LOW">
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="MinimapCluster" x="-10" y="0" />
 		</Anchors>
@@ -190,7 +190,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="DebuffFrame" parent="UIParent" inherits="AuraFrameTemplate" mixin="DebuffFrameMixin" frameStrata="LOW" passThroughButtons="LeftButton, MiddleButton, RightButton">
+	<Frame name="DebuffFrame" parent="UIParent" inherits="AuraFrameTemplate" mixin="DebuffFrameMixin" frameStrata="LOW">
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="BOTTOMRIGHT" x="-13" y="-5" />
 		</Anchors>
