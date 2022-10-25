@@ -15,7 +15,7 @@
 					UnitFrame_UpdateTooltip(TargetFrame);
 				end
 			</OnEnter>
-			<OnLeave  autoEnableInput="false">
+			<OnLeave autoEnableInput="false">
 				HideTextStatusBarText(self);
 				GameTooltip:Hide();
 			</OnLeave>

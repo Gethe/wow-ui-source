@@ -25,7 +25,10 @@ PTR_IssueReporter.ReportEventTypes = {
     GameMenuButtonLogout = "GameMenuButtonLogout",
     GameMenuFrameClosed = "GameMenuFrameClosed",
     BarberShopOpened = "BarberShopOpened",
-    BarberShopClosed = "BarberShopClosed"
+    BarberShopClosed = "BarberShopClosed",
+    EditModeEntered = "EditModeEntered",
+    EditModeExit = "EditModeExit",
+    UIPanelButtonClicked = "UIPanelButtonClicked",
 }
 
 local previousQuestProgress = {}
@@ -245,6 +248,14 @@ if (GameMenuButtonQuit) then
         PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.GameMenuButtonQuit)
     end)
 end
+----------------------------------------------------------------------------------------------------
+EventRegistry:RegisterCallback("EditMode.Enter", function()
+    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.EditModeEntered)
+end, "PTR_IssueReporter")
+
+EventRegistry:RegisterCallback("EditMode.Exit", function()
+    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.EditModeExit)
+end, "PTR_IssueReporter")
 ----------------------------------------------------------------------------------------------------
 local function PTR_Event_Frame_OnEvent(self, event, ...)
     if (PTR_IssueReporter.Data.IsLoaded) or (event == "PLAYER_ENTERING_WORLD") then

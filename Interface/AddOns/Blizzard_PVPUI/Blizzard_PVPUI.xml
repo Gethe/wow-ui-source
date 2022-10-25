@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_PVPUI.lua"/>
 
 	<Frame name="SeasonRewardFrameTemplate" mixin="PVPAchievementRewardMixin" virtual="true">
@@ -23,7 +23,7 @@
 		</Scripts>
 	</Frame>
 
-	<FontString name="PVPSeasonChangesDescriptionTemplate" parentArray="SeasonDescriptions" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true" virtual="true">
+	<FontString name="PVPSeasonChangesDescriptionTemplate" parentArray="SeasonDescriptions" font="SystemFont_Med3" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true" virtual="true">
 		<Size x="380" y="0"/>
 		<Color r="0.2824" g="0.0157" b="0.0157"/>
 	</FontString>
@@ -140,7 +140,7 @@
 					</Anchors>
 					<Color r="0" g="0" b="0"/>
 				</FontString>
-				<FontString parentKey="SeasonDescriptionHeader" font="SystemFont_Med3" justifyH="center" justifyV="center" wordwrap="true">
+				<FontString parentKey="SeasonDescriptionHeader" font="SystemFont_Med3" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true">
 					<Size x="380" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NewSeason" relativePoint="BOTTOM" y="-14"/>
@@ -660,27 +660,27 @@
 	</Button>
 
 	<Button name="PVPRatedActivityButtonTemplate" virtual="true">
-		<Size x="365" y="91"/>
+		<Size x="365" y="62"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="pvpqueue-button-selected" setAllPoints="true" alphaMode="ADD" hidden="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Anchor">
-					<Size x="365" y="91"/>
+					<Size x="365" y="62"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="TeamSizeText" inherits="GameFontNormalHuge2">
+				<FontString parentKey="TeamSizeText" inherits="GameFontNormalHuge">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="20" y="9"/>
+						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="20" y="7"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="TeamTypeText" inherits="GameFontDisable">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Anchor" x="19" y="0"/>
-						<Anchor point="TOP" relativeKey="$parent.TeamSizeText" relativePoint="BOTTOM" x="0" y="-4"/>
+						<Anchor point="TOP" relativeKey="$parent.TeamSizeText" relativePoint="BOTTOM" x="0" y="-3"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="TierIcon">
@@ -945,17 +945,9 @@
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</Frame>
-							<Button name="$parentCloseButton" inherits="UIPanelCloseButton" parentKey="CloseButton">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-										<Offset x="4" y="5"/>
-									</Anchor>
-								</Anchors>
+							<Button name="$parentCloseButton" inherits="UIPanelCloseButtonDefaultAnchors" parentKey="CloseButton" mixin="PVPTalentPrestigeLevelDialogCloseButtonMixin">
 								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
-										self:GetParent():Hide();
-									</OnClick>
+									<OnClick method="OnClick"/>
 								</Scripts>
 							</Button>
 							<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="PVP_PRESTIGE_RANK_UP_ACCEPT">
@@ -972,16 +964,13 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+							<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL" mixin="PVPTalentPrestigeLevelDialogCloseButtonMixin">
 								<Size x="126" y="22"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="4" y="20"/>
 								</Anchors>
 								<Scripts>
-									<OnClick>
-										PlaySound(SOUNDKIT.UI_PVP_HONOR_PRESTIGE_WINDOW_CLOSE);
-										self:GetParent():Hide();
-									</OnClick>
+									<OnClick method="OnClick"/>
 								</Scripts>
 							</Button>
 						</Frames>
@@ -1105,25 +1094,23 @@
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="6" y="-1"/>
 								</Anchors>
 							</Frame>
-							<ScrollFrame name="$parentSpecificFrame" inherits="HybridScrollFrameTemplate" parentKey="SpecificFrame" hidden="true">
+							<Frame parentKey="SpecificScrollBox" inherits="WowScrollBoxList" hidden="true" frameStrata="HIGH">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="2" y="-2"/>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="-21" y="2"/>
 								</Anchors>
-								<Frames>
-									<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
-											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="11"/>
-										</Anchors>
-									</Slider>
-								</Frames>
 								<Scripts>
 									<OnShow>
 										HonorFrameSpecificList_Update();
 									</OnShow>
 								</Scripts>
-							</ScrollFrame>
+							</Frame>
+							<EventFrame parentKey="SpecificScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-27" y="-87"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="22"/>
+								</Anchors>
+							</EventFrame>
 							<Frame parentKey="BonusFrame" hidden="true">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
@@ -1217,7 +1204,7 @@
 									<OnEnter>
 										if ( self.tooltip ) then
 											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-											GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+											GameTooltip:SetText(self.tooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
 											GameTooltip:Show();
 										end
 									</OnEnter>
@@ -1303,28 +1290,37 @@
 									</OnLoad>
 								</Scripts>
 							</Button>
-							<Button parentKey="Arena2v2" inherits="PVPRatedActivityButtonTemplate" id="1">
+							<Button parentKey="RatedSoloShuffle" inherits="PVPRatedActivityButtonTemplate" id="1">
+								<KeyValues>
+									 <KeyValue key="toolTipTitle" value="PVP_RATED_SOLO_SHUFFLE" type="global"/>
+									 <KeyValue key="modeDescription" value="RATED_SOLO_SHUFFLE_MODE_DESCRIPTION" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Inset" y="-13"/>
+								</Anchors>
+							</Button>
+							<Button parentKey="Arena2v2" inherits="PVPRatedActivityButtonTemplate" id="2">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_2V2" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Inset" y="-9"/>
+									<Anchor point="TOP" relativeKey="$parent.RatedSoloShuffle" relativePoint="BOTTOM" y="-8"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="Arena3v3" inherits="PVPRatedActivityButtonTemplate" id="2">
+							<Button parentKey="Arena3v3" inherits="PVPRatedActivityButtonTemplate" id="3">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_3V3" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Arena2v2" relativePoint="BOTTOM" y="-1"/>
+									<Anchor point="TOP" relativeKey="$parent.Arena2v2" relativePoint="BOTTOM" y="-8"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="RatedBG" inherits="PVPRatedActivityButtonTemplate" id="3">
+							<Button parentKey="RatedBG" inherits="PVPRatedActivityButtonTemplate" id="4">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="PVP_RATED_BATTLEGROUNDS" type="global"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Arena3v3" relativePoint="BOTTOM" y="-1"/>
+									<Anchor point="TOP" relativeKey="$parent.Arena3v3" relativePoint="BOTTOM" y="-8"/>
 								</Anchors>
 							</Button>
 							<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
@@ -1404,6 +1400,7 @@
 							<OnLoad function="ConquestFrame_OnLoad" />
 							<OnEvent function="ConquestFrame_OnEvent"/>
 							<OnShow function="ConquestFrame_OnShow" />
+							<OnHide function="ConquestFrame_OnHide"/>
 							<OnHide>
 								self:GetParent().NewSeasonPopup:Hide();
 							</OnHide>
@@ -1706,8 +1703,12 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ConquestTooltip" parent="UIParent" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" inherits="TooltipBackdropTemplate">
-		<Size x="200" y="199"/>
+	<Frame name="ConquestTooltip" parent="UIParent" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" inherits="TooltipBackdropTemplate, ResizeLayoutFrame">
+		<KeyValues>
+			<KeyValue key="minimumWidth" value="152" type="number"/>
+			<KeyValue key="widthPadding" value="10" type="number"/>
+			<KeyValue key="heightPadding" value="16" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" parentArray="Content" inherits="GameFontNormalMed3">
@@ -1720,6 +1721,11 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="SpecRank" parentArray="Content" inherits="GameFontHighlight" text="PVP_SPECIALIZATION_RANK">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Tier" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="WeeklyLabel" parentArray="Content" inherits="GameFontNormalMed3" text="ARENA_WEEKLY_STATS">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Tier" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
@@ -1730,19 +1736,24 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyGamesWon" parentArray="Content" inherits="GameFontHighlight" text="">
+				<FontString parentKey="WeeklyWon" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyGamesPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
+				<FontString parentKey="WeeklyPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyGamesWon" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyWon" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WeeklyMostPlayedSpec" parentArray="Content" inherits="GameFontHighlight" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyPlayed" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SeasonLabel" parentArray="Content" inherits="GameFontNormalMed3" text="ARENA_SEASON_STATS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyPlayed" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SeasonBest" parentArray="Content" inherits="GameFontHighlight" text="">
@@ -1755,9 +1766,19 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonBest" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SeasonGamesPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
+				<FontString parentKey="SeasonPlayed" parentArray="Content" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonWon" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SeasonMostPlayedSpec" parentArray="Content" inherits="GameFontHighlight" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonPlayed" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ModeDescription" parentArray="Content" wordwrap="true" inherits="GameFontNormal" text="" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonMostPlayedSpec" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
 			</Layer>

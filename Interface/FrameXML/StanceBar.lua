@@ -1,72 +1,49 @@
-
-NUM_STANCE_SLOTS = 10;
-
-
 -------------------------------------------------------
 ------- StanceBar (Shapsfit,Auras,Aspects) Code -------
 -------------------------------------------------------
+StanceBarMixin = {};
 
-function StanceBar_OnLoad(self)
+function StanceBarMixin:OnLoad()
 	self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN");
 end
 
-function StanceBar_OnEvent(self, event)
+function StanceBarMixin:OnEvent(event)
 	if(event == "UPDATE_SHAPESHIFT_COOLDOWN") then
-		StanceBar_UpdateState();
+		self:UpdateState();
 	end
 end
 
-function StanceBar_Update()
-	local numForms = GetNumShapeshiftForms();
-	local needFrameMgrUpdate = false;
-	if ( numForms > 0 and not IsPossessBarVisible()) then
-		if ( StanceBarFrame.numForms ~= numForms ) then
-			--Setup the Stance bar to display the appropriate number of slots
-			if ( numForms == 1 ) then
-				StanceBarMiddle:Hide();
-				StanceBarRight:SetPoint("LEFT", "StanceBarLeft", "LEFT", 12, 0);
-			elseif ( numForms == 2 ) then
-				StanceBarMiddle:Hide();
-				StanceBarRight:SetPoint("LEFT", "StanceBarLeft", "RIGHT", 1, 0);
-			else
-				StanceBarMiddle:Show();
-				StanceBarMiddle:SetPoint("LEFT", "StanceBarLeft", "RIGHT", 0, 0);
-				StanceBarMiddle:SetWidth(37 * (numForms-2));
-				StanceBarMiddle:SetTexCoord(0, numForms-2, 0, 1);
-				StanceBarRight:SetPoint("LEFT", "StanceBarMiddle", "RIGHT", 0, 0);
-			end
-			StanceBarFrame.numForms = numForms;
-			needFrameMgrUpdate = true;
-		end
-		
-		if ( not StanceBarFrame:IsShown() ) then
-			StanceBarFrame:Show();
-			needFrameMgrUpdate = true;
-		end
-		StanceBar_UpdateState();
-	elseif (StanceBarFrame:IsShown() ) then
-		StanceBarFrame:Hide();
-		needFrameMgrUpdate = true;
-		StanceBarFrame.numForms = nil;
+function StanceBarMixin:ShouldShow()
+	return self.numForms > 0
+		and not IsPossessBarVisible()
+		and ActionBarController_GetCurrentActionBarState() ~= LE_ACTIONBAR_STATE_OVERRIDE;
+end
+
+function StanceBarMixin:Update()
+	self.numForms = GetNumShapeshiftForms();
+	if ( self.numForms > 0) then
+		self:UpdateState();
 	end
-	
-	if ( needFrameMgrUpdate ) then
-		UIParent_ManageFramePositions();
+
+	-- Don't update shown if action bars are busy
+	-- This is often related to vehicle bars or pet battles
+	if not ActionBarBusy() then
+		self:SetShown(self:ShouldShow());
 	end
 end
 
-function StanceBar_UpdateState ()
+function StanceBarMixin:UpdateState()
 	local numForms = GetNumShapeshiftForms();
 	local texture, isActive, isCastable;
-	local button, icon, cooldown;
+	local icon, cooldown;
 	local start, duration, enable;
-	for i=1, NUM_STANCE_SLOTS do
-		button = StanceBarFrame.StanceButtons[i];
+
+	for i, button in pairs(self.actionButtons) do
 		icon = button.icon;
 		if ( i <= numForms ) then
 			texture, isActive, isCastable = GetShapeshiftFormInfo(i);
 			icon:SetTexture(texture);
-			
+
 			--Cooldown stuffs
 			cooldown = button.cooldown;
 			if ( texture ) then
@@ -76,9 +53,9 @@ function StanceBar_UpdateState ()
 			end
 			start, duration, enable = GetShapeshiftFormCooldown(i);
 			CooldownFrame_Set(cooldown, start, duration, enable);
-			
+
 			if ( isActive ) then
-				StanceBarFrame.lastSelected = button:GetID();
+				self.lastSelected = button:GetID();
 				button:SetChecked(true);
 			else
 				button:SetChecked(false);
@@ -89,25 +66,47 @@ function StanceBar_UpdateState ()
 			else
 				icon:SetVertexColor(0.4, 0.4, 0.4);
 			end
-
-			button:Show();
-		else
-			button:Hide();
 		end
 	end
+
+	self:UpdateShownButtons();
+	self:UpdateGridLayout();
 end
 
-function StanceBar_Select(id)
-	StanceBarFrame.lastSelected = id;
+function StanceBarMixin:Select(id)
+	self.lastSelected = id;
 	CastShapeshiftForm(id);
 end
 
-function StanceButton_OnEnter(self)
+StanceButtonMixin = {}
+
+function StanceButtonMixin:OnLoad()
+	self.cooldown:SetSwipeColor(0, 0, 0);
+	self:RegisterForClicks("AnyUp");
+end
+
+function StanceButtonMixin:OnClick()
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		self:SetChecked(not self:GetChecked());
+		StanceBar:Select(self:GetID());
+	end
+end
+
+function StanceButtonMixin:OnEnter()
 	if ( GetCVarBool("UberTooltips") or KeybindFrames_InQuickKeybindMode() ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 	GameTooltip:SetShapeshift(self:GetID());
-	self.UpdateTooltip = StanceButton_OnEnter;
+	self.UpdateTooltip = self.OnEnter;
+end
+
+function StanceButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+-- Used by action bar template
+function StanceButtonMixin:HasAction()
+    return GetShapeshiftFormInfo(self.index);
 end

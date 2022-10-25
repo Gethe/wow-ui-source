@@ -41,7 +41,12 @@ local xpBarTextureList = {
 
 local MAX_ALT_SPELLBUTTONS = 6;
 
-function OverrideActionBar_OnLoad(self)
+OverrideActionBarMixin = {};
+
+function OverrideActionBarMixin:OnLoad()
+	-- Overriding is shown so that it returns false if the frame is animating out as well
+	self.IsShownBase = self.IsShown;
+	self.IsShown = self.IsShownOverride;
 
 	--Setup the XP bar
 	local divWidth = self.xpBar.XpMid:GetWidth()/19;
@@ -54,17 +59,17 @@ function OverrideActionBar_OnLoad(self)
 		xpBarTextureList[#xpBarTextureList + 1] = "XpDiv"..i;
 		xpos = xpos + divWidth;
 	end
-	
+
 	--Add Leave Button Textures
 	self["LeaveUp"] = self.LeaveButton:GetNormalTexture();
 	self["LeaveDown"] = self.LeaveButton:GetPushedTexture();
 	self["LeaveHighlight"] = self.LeaveButton:GetHighlightTexture();
-	
+
 	--Add PitchUp button Textures
 	self["PitchUpUp"] = self.PitchUpButton:GetNormalTexture();
 	self["PitchUpDown"] = self.PitchUpButton:GetPushedTexture();
 	self["PitchUpHighlight"] = self.PitchUpButton:GetHighlightTexture();
-	
+
 	--Add PitchDown button Textures
 	self["PitchDownUp"] = self.PitchDownButton:GetNormalTexture();
 	self["PitchDownDown"] = self.PitchDownButton:GetPushedTexture();
@@ -76,113 +81,128 @@ function OverrideActionBar_OnLoad(self)
 end
 
 
-function OverrideActionBar_OnEvent(self, event, ...)
+function OverrideActionBarMixin:OnEvent(event, ...)
 	local arg1 = ...;
 	if ( event == "VEHICLE_ANGLE_UPDATE" ) then
-		OverrideActionBar_SetPitchValue(arg1);
+		self:SetPitchValue(arg1);
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
-		OverrideActionBar_UpdateXpBar(arg1);
+		self:UpdateXpBar(arg1);
 	elseif ( event == "PLAYER_XP_UPDATE" ) then
-		OverrideActionBar_UpdateXpBar();
+		self:UpdateXpBar();
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
-		OverrideActionBar_UpdateSkin();
+		self:UpdateSkin();
 	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
 		self.HasExit, self.HasPitch = select(6, ...);
 	elseif ( event == "UNIT_EXITED_VEHICLE") then
 		self.HasExit = nil;
 		self.HasPitch = nil;
 		if GetOverrideBarSkin() then
-			OverrideActionBar_CalcSize();
+			self:CalcSize();
 		end
 	end
 end
 
-function OverrideActionBar_OnShow(self)
-	OverrideActionBar_UpdateMicroButtons();
+function OverrideActionBarMixin:OnShow()
+	self:UpdateMicroButtons();
+
+	UIParentBottomManagedFrameContainer:UpdateManagedFramesAlphaState();
+	UIParentRightManagedFrameContainer:UpdateManagedFramesAlphaState();
+
+	EditModeManagerFrame:BlockEnteringEditMode(self);
+	EditModeManagerFrame:UpdateBottomActionBarPositions();
 end
 
-function OverrideActionBar_UpdateMicroButtons()
+function OverrideActionBarMixin:OnHide()
+	UIParentBottomManagedFrameContainer:UpdateManagedFramesAlphaState();
+	UIParentRightManagedFrameContainer:UpdateManagedFramesAlphaState();
+
+	UIParent_ManageFramePositions();
+
+	EditModeManagerFrame:UnblockEnteringEditMode(self);
+end
+
+function OverrideActionBarMixin:UpdateMicroButtons()
 	if ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_OVERRIDE then
-		local anchorX, anchorY = OverrideActionBar_GetMicroButtonAnchor();
-		UpdateMicroButtonsParent(OverrideActionBar);
-		MoveMicroButtons("BOTTOMLEFT", OverrideActionBar, "BOTTOMLEFT", anchorX, anchorY, true);
+		local anchorX, anchorY = self:GetMicroButtonAnchor();
+		UpdateMicroButtonsParent(self);
+		MoveMicroButtons("BOTTOMLEFT", self, "BOTTOMLEFT", anchorX, anchorY, true);
 	end
 end
 
-function OverrideActionBar_UpdateSkin()
+function OverrideActionBarMixin:UpdateSkin()
 	-- For now, a vehicle has precedence over override bars (hopefully designers make it so these never conflict)
 	if ( HasVehicleActionBar() ) then
-		OverrideActionBar_Setup(UnitVehicleSkin("player"), GetVehicleBarIndex());
-		OverrideActionBar_UpdateMicroButtons();
+		self:Setup(UnitVehicleSkin("player"), GetVehicleBarIndex());
+		self:UpdateMicroButtons();
 	else
-		OverrideActionBar_Setup(GetOverrideBarSkin(), GetOverrideBarIndex());
+		self:Setup(GetOverrideBarSkin(), GetOverrideBarIndex());
 	end
 end
 
-function OverrideActionBar_SetSkin(skin)
+function OverrideActionBarMixin:SetSkin(skin)
 	local textureFile = skin;
 	for _,tex in pairs(textureList) do
-		OverrideActionBar[tex]:SetTexture(textureFile, strsub(tex, 1, 1) == "_", strsub(tex, 1, 1) == "|");
+		self[tex]:SetTexture(textureFile, strsub(tex, 1, 1) == "_", strsub(tex, 1, 1) == "|");
 	end
 	for _,tex in pairs(xpBarTextureList) do
-		OverrideActionBar.xpBar[tex]:SetTexture(textureFile, strsub(tex, 1, 1) == "_", strsub(tex, 1, 1) == "|");
-	end	
+		self.xpBar[tex]:SetTexture(textureFile, strsub(tex, 1, 1) == "_", strsub(tex, 1, 1) == "|");
+	end
 end
 
 
-function OverrideActionBar_CalcSize()
+function OverrideActionBarMixin:CalcSize()
 	local width, xpWidth, anchor, buttonAnchor;
-	OverrideActionBar.pitchFrame:Hide();
-	OverrideActionBar.leaveFrame:Hide();
-	if OverrideActionBar.HasExit and OverrideActionBar.HasPitch then
+	self.pitchFrame:Hide();
+	self.leaveFrame:Hide();
+
+	if self.HasExit and self.HasPitch then
 		width, xpWidth, anchor, buttonAnchor = 1020, 580, 103, -234;
-		OverrideActionBar.pitchFrame:Show();
-		OverrideActionBar.leaveFrame:Show();
-	elseif OverrideActionBar.HasPitch then
+		self.pitchFrame:Show();
+		self.leaveFrame:Show();
+	elseif self.HasPitch then
 		width, xpWidth, anchor, buttonAnchor = 945, 500, 145, -192;
-		OverrideActionBar.pitchFrame:Show();
-	elseif OverrideActionBar.HasExit then
+		self.pitchFrame:Show();
+	elseif self.HasExit then
 		width, xpWidth, anchor, buttonAnchor = 930, 490, 60, -277;
-		OverrideActionBar.leaveFrame:Show();
+		self.leaveFrame:Show();
 	else
 		width, xpWidth, anchor, buttonAnchor = 860, 460, 100, -237;
 	end
-	
-	OverrideActionBar:SetWidth(width);
-	OverrideActionBar.xpBar.XpMid:SetWidth(xpWidth);
-	OverrideActionBar.xpBar:SetWidth(xpWidth+16);
-	OverrideActionBar.Divider2:SetPoint("BOTTOM", anchor, 0);
-	OverrideActionBar.SpellButton1:SetPoint("BOTTOM", buttonAnchor, 17);
 
-	
-	local divWidth = OverrideActionBar.xpBar.XpMid:GetWidth()/19;
-	local xpos = divWidth-15;	
+	self:SetWidth(width);
+	self.xpBar.XpMid:SetWidth(xpWidth);
+	self.xpBar:SetWidth(xpWidth+16);
+	self.Divider2:SetPoint("BOTTOM", anchor, 0);
+	self.SpellButton1:SetPoint("BOTTOM", buttonAnchor, 17);
+
+	local divWidth = self.xpBar.XpMid:GetWidth()/19;
+	local xpos = divWidth-15;
 	for i=1,19 do
-		local texture = OverrideActionBar.xpBar["XpDiv"..i];
-		texture:SetPoint("LEFT", OverrideActionBar.xpBar.XpMid, "LEFT", floor(xpos), 10);
+		local texture = self.xpBar["XpDiv"..i];
+		texture:SetPoint("LEFT", self.xpBar.XpMid, "LEFT", floor(xpos), 10);
 		xpos = xpos + divWidth;
 	end
-	OverrideActionBar_UpdateXpBar();
-	
+	self:UpdateXpBar();
+
 	UnitFrameHealthBar_Update(OverrideActionBarHealthBar, "vehicle");
 	UnitFrameManaBar_Update(OverrideActionBarPowerBar, "vehicle");
 end
 
 
-function OverrideActionBar_GetMicroButtonAnchor()
-	local x, y = 543, 43;
-	if OverrideActionBar.HasExit and OverrideActionBar.HasPitch then
-		x = 626;
-	elseif OverrideActionBar.HasPitch then
-		x = 630;
-	elseif OverrideActionBar.HasExit then
-		x = 538;
+function OverrideActionBarMixin:GetMicroButtonAnchor()
+	local x, y = 562, 42;
+	if self.HasExit and self.HasPitch then
+		x = 645;
+	elseif self.HasPitch then
+		x = 650;
+	elseif self.HasExit then
+		x = 558;
 	end
 	return x,y
 end
 
 
-function OverrideActionBar_Leave(self)
+function OverrideActionBarMixin:Leave()
 	self:UnregisterEvent("PLAYER_LEVEL_UP");
 	self:UnregisterEvent("PLAYER_XP_UPDATE");
 	VehicleExit();
@@ -206,18 +226,17 @@ function OverrideActionBar_StatusBars_ShowTooltip(self)
 end
 
 
-function OverrideActionBar_SetPitchValue(pitch)
-	OverrideActionBar.pitchFrame.PitchMarker:SetPoint("CENTER", OverrideActionBar.pitchFrame.PitchOverlay, "BOTTOM", 0, pitch * (OverrideActionBar.pitchFrame.PitchOverlay:GetHeight() - 35) + 14);
+function OverrideActionBarMixin:SetPitchValue(pitch)
+	self.pitchFrame.PitchMarker:SetPoint("CENTER", self.pitchFrame.PitchOverlay, "BOTTOM", 0, pitch * (self.pitchFrame.PitchOverlay:GetHeight() - 35) + 14);
 end
 
+function OverrideActionBarMixin:Setup(skin, barIndex)
+	self:SetSkin(skin);
+	self:CalcSize();
+	self:SetAttribute("actionpage", barIndex);
 
-function OverrideActionBar_Setup(skin, barIndex)
-	OverrideActionBar_SetSkin(skin);
-	OverrideActionBar_CalcSize();
-	OverrideActionBar:SetAttribute("actionpage", barIndex);
-	
 	for k=1,MAX_ALT_SPELLBUTTONS do
-		local button = OverrideActionBar["SpellButton"..k];
+		local button = self["SpellButton"..k];
 		button:UpdateAction();
 		button:Update();
 		local _, spellID = GetActionInfo(button.action);
@@ -229,7 +248,7 @@ function OverrideActionBar_Setup(skin, barIndex)
 			button:Hide();
 		end
 	end
-	
+
 	local shouldShowHealthBar;
 	local shouldShowManaBar;
 	--vehicles always show both bars, override bars check their flags
@@ -253,21 +272,39 @@ function OverrideActionBar_Setup(skin, barIndex)
 		OverrideActionBarPowerBar:Hide();
 	end
 
-	OverrideActionBar:RegisterEvent("PLAYER_LEVEL_UP");	
-	OverrideActionBar:RegisterEvent("PLAYER_XP_UPDATE");
-	
-	OverrideActionBar_UpdateXpBar();
+	self:RegisterEvent("PLAYER_LEVEL_UP");	
+	self:RegisterEvent("PLAYER_XP_UPDATE");
+
+	self:UpdateXpBar();
 end
 
-function OverrideActionBar_UpdateXpBar(newLevel)
+function OverrideActionBarMixin:UpdateXpBar(newLevel)
 	local level = newLevel or UnitLevel("player");
 	if ( IsLevelAtEffectiveMaxLevel(level) or IsXPUserDisabled() ) then
-		OverrideActionBar.xpBar:Hide();
+		self.xpBar:Hide();
 	else
 		local currXP = UnitXP("player");
 		local nextXP = UnitXPMax("player");
-		OverrideActionBar.xpBar:Show();
-		OverrideActionBar.xpBar:SetMinMaxValues(min(0, currXP), nextXP);
-		OverrideActionBar.xpBar:SetValue(currXP);
+		self.xpBar:Show();
+		self.xpBar:SetMinMaxValues(min(0, currXP), nextXP);
+		self.xpBar:SetValue(currXP);
 	end
+end
+
+function OverrideActionBarMixin:GetBottomAnchoredHeight()
+	local height = 0;
+	if self:IsShown() then
+		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(1);
+		height = self:GetHeight() + offsetY;
+
+		if self.xpBar:IsShown() then
+			height =  height + self.xpBar:GetHeight();
+		end
+	end
+
+	return height;
+end
+
+function OverrideActionBarMixin:IsShownOverride()
+	return self:IsShownBase() and (not self.slideOut:IsPlaying() or self.slideOut:IsReverse());
 end

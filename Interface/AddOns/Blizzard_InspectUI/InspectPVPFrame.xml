@@ -60,12 +60,6 @@
 						<Anchor point="TOP" x="0" y="-36"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="PortraitBackground" hidden="true">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="InspectFrame" relativePoint="TOPLEFT" x="-6" y="7" />
-					</Anchors>
-				</Texture>
 				<FontString parentKey="HonorLevel" inherits="GameFontNormalLarge">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-84"/>
@@ -112,6 +106,16 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="RatedSoloShuffle" inherits="InspectPvpStatTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Arena3v3" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.BGType:SetText(PVP_RATED_SOLO_SHUFFLE);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Button parentKey="TalentSlot1" parentArray="Slots" inherits="InspectPvpTalentSlotTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.BG" x="-36" y="-60"/>
@@ -131,7 +135,6 @@
 		<Scripts>
 			<OnLoad function="InspectPVPFrame_OnLoad"/>
 			<OnShow function="InspectPVPFrame_OnShow"/>
-			<OnHide function="InspectPVPFrame_OnHide"/>
 			<OnEvent function="InspectPVPFrame_OnEvent"/>
 		</Scripts>
 	</Frame>

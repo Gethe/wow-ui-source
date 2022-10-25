@@ -31,6 +31,7 @@ local select = select;
 local wipe = wipe;
 local tonumber = tonumber;
 local pcall = pcall;
+local strjoin = strjoin;
 
 local t_insert = table.insert;
 local t_maxn = table.maxn;
@@ -41,6 +42,7 @@ local t_remove = table.remove;
 local s_gsub = string.gsub;
 
 local InCombatLockdown = InCombatLockdown;
+local PrintToDebugWindow = PrintToDebugWindow;
 
 ---------------------------------------------------------------------------
 -- Somewhat extensible print infrastructure for debugging, modelled around
@@ -89,12 +91,16 @@ function tostringall(...)
     return unpack(LOCAL_ToStringAllTemp);
 end
 
+local tostringall = tostringall;
+
 local LOCAL_PrintHandler =
     function(...)
-       if DEFAULT_CHAT_FRAME then
-           DEFAULT_CHAT_FRAME:AddMessage(strjoin(" ", tostringall(...)));
-	   end
-    end
+		local printMsg = strjoin(" ", tostringall(...));
+		if DEFAULT_CHAT_FRAME then
+			DEFAULT_CHAT_FRAME:AddMessage(printMsg);
+		end
+		PrintToDebugWindow(printMsg);
+	end
 
 function setprinthandler(func)
     if (type(func) ~= "function") then

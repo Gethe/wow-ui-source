@@ -2,15 +2,11 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ComboFrame.lua"/>
 	<Frame name="ComboPointTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="12" y="12"/>
-		</Size>
+		<Size x="12" y="12"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\ComboFrame\ComboPoint">
-					<Size>
-						<AbsDimension x="12" y="16"/>
-					</Size>
+					<Size x="12" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -19,30 +15,18 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Highlight" file="Interface\ComboFrame\ComboPoint">
-					<Size>
-						<AbsDimension x="8" y="16"/>
-					</Size>
+					<Size x="8" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="2" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="2" y="0"/>
 					</Anchors>
 					<TexCoords left="0.375" right="0.5625" top="0" bottom="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Shine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
-					<Size>
-						<AbsDimension x="14" y="16"/>
-					</Size>
+					<Size x="14" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="0" y="4"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="0" y="4"/>
 					</Anchors>
 					<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
 					<Color r="1" g="1" b="1" a="0"/>
@@ -51,15 +35,9 @@
 		</Layers>
 	</Frame>
 	<Frame name="ComboFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true" alpha="0">
-		<Size>
-			<AbsDimension x="256" y="32"/>
-		</Size>
+		<Size x="256" y="32"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="TargetFrame">
-				<Offset>
-					<AbsDimension x="-44" y="-9"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPRIGHT" relativeTo="TargetFrame" x="-44" y="-9"/>
 		</Anchors>
 		<Frames>
 			<Frame name="ComboPoint1" parentArray="ComboPoints" inherits="ComboPointTemplate">

@@ -1,12 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="RosterButton.lua"/>
 
 	<Button name="ChannelRosterButtonTemplate" mixin="ChannelRosterButtonMixin" hidden="true" virtual="true">
 		<Size x="160" y="22"/>
 		<Layers>
 			<Layer level="BORDER">
-				<FontString parentKey="Name" justifyH="LEFT" wordWrap="false" inherits="GameFontHighlightSmall">
+				<FontString parentKey="Name" justifyH="LEFT" wordwrap="false" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="LEFT" x="8" y="0" />
 					</Anchors>
@@ -14,7 +14,7 @@
 				<Texture parentKey="Rank">
 					<Size x="12" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" x="0" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>

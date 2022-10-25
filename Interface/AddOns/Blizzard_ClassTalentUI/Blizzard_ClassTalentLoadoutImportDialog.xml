@@ -1,0 +1,79 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Script file="Blizzard_ClassTalentLoadoutImportDialog.lua"/>
+
+	<Frame name="ClassTalentLoadoutImportDialog" inherits="ClassTalentLoadoutDialogTemplate" mixin="ClassTalentLoadoutImportDialogMixin" parent="UIParent" hidden="true">
+		<KeyValues>
+			<KeyValue key="titleText" value="HUD_CLASS_TALENTS_IMPORT_DIALOG_TITLE" type="global"/>
+		</KeyValues>
+		<Size x="460" y="275"/>
+		<Frames>
+			<Frame parentKey="ImportControl" mixin="ClassTalentLoadoutImportDialogImportControlMixin">
+				<KeyValues>
+					<KeyValue key="labelText" value="HUD_CLASS_TALENTS_IMPORT_DIALOG_EDIT_BOX_LABEL" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ContentArea"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.ContentArea"/>
+				</Anchors>
+				<Size y="100"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ScrollFrame parentKey="InputContainer" inherits="InputScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.Label" y="-10"/>
+							<Anchor point="RIGHT"/>
+							<Anchor point="BOTTOM"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="maxLetters" value="1000" type="number"/>
+							<KeyValue key="instructions" value="HUD_CLASS_TALENTS_IMPORT_INSTRUCTIONS" type="global"/>
+							<KeyValue key="hideCharCount" value="true" type="boolean"/>
+						</KeyValues>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnHide method="OnShow"/>
+				</Scripts>
+			</Frame>
+			
+			<Frame parentKey="NameControl" inherits="ClassTalentLoadoutDialogNameControlTemplate" mixin="ClassTalentLoadoutImportDialogNameControlMixin">
+				<KeyValues>
+					<KeyValue key="labelText" value="HUD_CLASS_TALENTS_IMPORT_DIALOG_NAME_LABEL" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.ImportControl" y="-25"/>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.ContentArea" y="-25"/>
+				</Anchors>
+			</Frame>
+			
+			<Button parentKey="AcceptButton" inherits="ClassTalentLoadoutDialogButtonTemplate" text="HUD_CLASS_TALENTS_IMPORT_LOADOUT_ACCEPT_BUTTON">
+				<KeyValues>
+					<KeyValue key="disabledTooltip" value="HUD_CLASS_TALENTS_IMPORT_ERROR_IMPORT_STRING_AND_NAME" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" relativeKey="$parent.ContentArea" x="-5"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="ClassTalentLoadoutDialogButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" relativeKey="$parent.ContentArea" x="5"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

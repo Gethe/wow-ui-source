@@ -118,21 +118,13 @@
 		</Scripts>
 	</Frame>
 	<CheckButton name="LFRFrameSideTabTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
+		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-3" y="11"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-3" y="11"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -310,43 +302,6 @@
 										</FontString>
 									</Layer>
 								</Layers>
-								<Frames>
-									<Frame name="$parentListButton1" inherits="LFRFrameDungeonChoiceTemplate" id="1">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="10" y="-116"/>
-										</Anchors>
-									</Frame>
-									<!-- Other 13 ListButtons are made in LFRFrame_OnLoad -->
-									<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
-										<Size x="308" y="254"/>
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="TOPLEFT" x="0" y="0"/>
-										</Anchors>
-										<Layers>
-											<Layer level="BACKGROUND">
-												<Texture name="$parentScrollBackgroundTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-													<Size x="31" y="200"/>
-													<Anchors>
-														<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
-													</Anchors>
-													<TexCoords left="0" right="0.484375" top="0" bottom="0.78125"/>
-												</Texture>
-												<Texture name="$parentScrollBackgroundBottomRight" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-													<Size x="31" y="106"/>
-													<Anchors>
-														<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
-													</Anchors>
-													<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-												</Texture>
-											</Layer>
-										</Layers>
-										<Scripts>
-											<OnVerticalScroll>
-												FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFRQueueFrameSpecificList_Update);
-											</OnVerticalScroll>
-										</Scripts>
-									</ScrollFrame>
-								</Frames>
 								<Scripts>
 									<OnShow>
 										LFRQueueFrame_Update();
@@ -568,50 +523,6 @@
 									</OnLoad>
 								</Scripts>
 							</Button>
-							<Button name="$parentListButton1" inherits="LFRBrowseButtonTemplate" id="1">
-								<Anchors>
-									<Anchor point="TOPLEFT" x="13" y="-83"/>
-								</Anchors>
-							</Button>
-							<!-- Other 18 ListButtons are made in LFRFrame_OnLoad -->
-							<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
-								<Size x="304" y="336"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="15" y="-86"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size x="29" y="102"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="LFRBrowseFrame" relativePoint="TOPRIGHT" x="-33" y="-82"/>
-											</Anchors>
-											<TexCoords left="0" right="0.445" top="0" bottom="0.4"/>
-										</Texture>
-										<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size x="29" y="106"/>
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativeTo="LFRBrowseFrame" relativePoint="BOTTOMRIGHT" x="-33" y="27"/>
-											</Anchors>
-											<TexCoords left="0.515625" right="0.960625" top="0" bottom="0.4140625"/>
-										</Texture>
-										<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size x="29" y="1"/>
-											<Anchors>
-												<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-												<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
-											</Anchors>
-											<TexCoords left="0" right="0.445" top=".75" bottom="1.0"/>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnVerticalScroll>
-										FauxScrollFrame_OnVerticalScroll(self, offset, 16, LFRBrowseFrameList_Update);
-									</OnVerticalScroll>
-									<OnShow function="RefreshLFGList"/>
-								</Scripts>
-							</ScrollFrame>
 							<Button name="$parentSendMessageButton" inherits="UIPanelButtonTemplate" text="SEND_MESSAGE">
 								<Size x="113" y="22"/>
 								<Anchors>
@@ -685,7 +596,7 @@
 					<OnEvent function="LFRFrame_OnEvent"/>
 					<OnShow>
 						LFRBrowseFrame.timeToClear = nil;	--Never clear browsing while shown.
-						RaidParentFrame.TitleText:SetText(LOOKING_FOR_RAID);
+						RaidParentFrame:SetTitle(LOOKING_FOR_RAID);
 					</OnShow>
 					<OnHide>
 						LFRBrowseFrame.timeToClear = 40;	--Clear all browsing after 40 seconds of being hidden.

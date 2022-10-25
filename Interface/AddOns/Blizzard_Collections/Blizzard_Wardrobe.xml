@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_Wardrobe.lua"/>
 
 	<DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemsModelMixin" virtual="true">
@@ -200,7 +200,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="WardrobeSetsScrollFrameButtonTemplate" virtual="true">
+	<Button name="WardrobeSetsScrollFrameButtonTemplate" mixin="WardrobeSetsScrollFrameButtonMixin" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
 		<Size x="208" y="46"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -262,19 +262,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnMouseUp>
-				if ( button == "LeftButton" ) then
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					self:GetParent():GetParent():GetParent():SelectSetFromButton(self.setID);
-				elseif ( button == "RightButton" ) then
-					local dropDown = self:GetParent():GetParent().FavoriteDropDown;
-					dropDown.baseSetID = self.setID;
-					ToggleDropDownMenu(1, nil, dropDown, self, 0, 0);
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				end
-			</OnMouseUp>
+			<OnClick method="OnClick"/>
 		</Scripts>
-	</Frame>
+	</Button>
 
 	<Frame name="WardrobeSetsDetailsItemFrameTemplate" mixin="WardrobeSetsDetailsItemMixin" virtual="true">
 		<Size x="32" y="32"/>
@@ -299,7 +289,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 					<Animations>
-						<AnimationGroup parentKey="Anim" looping="repeat">
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
 							<Alpha duration="1" order="1" fromAlpha="0.8" toAlpha="1"/>
 							<Alpha duration="1" order="2" fromAlpha="1" toAlpha="0.8"/>
 						</AnimationGroup>
@@ -316,7 +306,7 @@
 
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" mixin="WardrobeCollectionFrameMixin" setAllPoints="true" hidden="true">
 		<Frames>
-			<Button name="$parentTab1" parentKey="ItemsTab" inherits="TabButtonTemplate" text="WARDROBE_ITEMS" id="1" frameLevel="4" parentArray="Tabs">
+			<Button name="$parentTab1" parentKey="ItemsTab" inherits="PanelTopTabButtonTemplate" text="WARDROBE_ITEMS" id="1" frameLevel="4">
 				<KeyValues>
 					<KeyValue key="minWidth" value="57" type="number"/>
 				</KeyValues>
@@ -329,7 +319,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" parentKey="SetsTab" inherits="TabButtonTemplate" text="WARDROBE_SETS" id="2" frameLevel="4" parentArray="Tabs">
+			<Button name="$parentTab2" parentKey="SetsTab" inherits="PanelTopTabButtonTemplate" text="WARDROBE_SETS" id="2" frameLevel="4">
 				<KeyValues>
 					<KeyValue key="minWidth" value="57" type="number"/>
 				</KeyValues>
@@ -789,7 +779,7 @@
 							</Layer>
 						</Layers>
 						<Animations>
-							<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="REPEAT">
 								<Translation childKey="Wisp1" duration="2" order="1" offsetX="-70" offsetY="0"/>
 								<Alpha childKey="Wisp1" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp1" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -821,11 +811,11 @@
 								<Alpha childKey="Wisp8" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp8" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0" endDelay="0.4"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="REPEAT">
 								<Alpha childKey="Glowframe" duration="1.2" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Glowframe" startDelay="1.2" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="REPEAT">
 								<Translation childKey="Wisp9" duration="4.4" order="1" offsetX="-70" offsetY="0"/>
 								<Alpha childKey="Wisp9" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp9" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -842,7 +832,7 @@
 								<Alpha childKey="Wisp12" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp12" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="REPEAT">
 								<Scale childKey="Smoke1" duration="3.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
 								<Alpha childKey="Smoke1" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
 								<Alpha childKey="Smoke1" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
@@ -850,7 +840,7 @@
 								<Alpha childKey="Smoke2" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
 								<Alpha childKey="Smoke2" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="REPEAT">
 								<Scale childKey="Smoke3" duration="5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
 								<Alpha childKey="Smoke3" duration="1.4" order="1" fromAlpha="0" toAlpha="0.5"/>
 								<Alpha childKey="Smoke3" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
@@ -891,19 +881,20 @@
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate" mixin="WardrobeSetsCollectionScrollFrameMixin">
+					<Frame parentKey="ListContainer" mixin="WardrobeSetsCollectionContainerMixin" frameStrata="HIGH">
 						<Size x="255" y="499"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="3" y="-36"/>
 						</Anchors>
 						<Frames>
-							<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
+							<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBoxList"/>
+							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="20"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="8"/>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="3" y="36"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="3" y="-8"/>
 								</Anchors>
-							</Slider>
-							<Frame name="WardrobeSetsFavoriteDropDown" parentKey="FavoriteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
+							</EventFrame>
+							<Frame parentKey="FavoriteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
 						</Frames>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
@@ -911,7 +902,7 @@
 							<OnHide method="OnHide"/>
 							<OnEvent method="OnEvent"/>
 						</Scripts>
-					</ScrollFrame>
+					</Frame>
 					<DressUpModel parentKey="Model" mixin="WardrobeSetsDetailsModelMixin">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" x="3" y="-3"/>
@@ -1215,7 +1206,7 @@
 							</Layer>
 						</Layers>
 						<Animations>
-							<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="REPEAT">
 								<Translation childKey="Wisp1" duration="2" order="1" offsetX="-121" offsetY="0"/>
 								<Alpha childKey="Wisp1" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp1" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -1247,11 +1238,11 @@
 								<Alpha childKey="Wisp8" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp8" startDelay="1.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0" endDelay="0.4"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim2" setToFinalAlpha="true" looping="REPEAT">
 								<Alpha childKey="Glowframe" duration="1.2" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Glowframe" startDelay="1.2" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim3" setToFinalAlpha="true" looping="REPEAT">
 								<Translation childKey="Wisp9" duration="4.4" order="1" offsetX="-121" offsetY="0"/>
 								<Alpha childKey="Wisp9" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp9" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -1268,7 +1259,7 @@
 								<Alpha childKey="Wisp12" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="Wisp12" startDelay="3.9" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim4" setToFinalAlpha="true" looping="REPEAT">
 								<Scale childKey="Smoke1" duration="3.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
 								<Alpha childKey="Smoke1" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
 								<Alpha childKey="Smoke1" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
@@ -1276,7 +1267,7 @@
 								<Alpha childKey="Smoke2" duration="1.4" order="1" fromAlpha="0" toAlpha="0.75"/>
 								<Alpha childKey="Smoke2" startDelay="1.8" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0"/>
 							</AnimationGroup>
-							<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="repeat">
+							<AnimationGroup parentKey="TransmogSelectedAnim5" setToFinalAlpha="true" looping="REPEAT">
 								<Scale childKey="Smoke3" duration="5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2.6"/>
 								<Alpha childKey="Smoke3" duration="1.4" order="1" fromAlpha="0" toAlpha="0.5"/>
 								<Alpha childKey="Smoke3" startDelay="3.6" duration="1.4" order="1" fromAlpha="0.5" toAlpha="0"/>
@@ -1617,10 +1608,7 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="Anim">
-						<Alpha childKey="OuterGlow" duration="0.15" change="1" order="1"/>
-						<Alpha childKey="OuterGlow" duration="0.15" change="-1" order="2"/>
 						<Scale childKey="Transition" duration="0.2" scaleX="1.381" scaleY="1.381" order="2"/>
-						<Alpha childKey="Glow" change="-1.0" duration="0.2" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():GetParent():OnAnimFinished();

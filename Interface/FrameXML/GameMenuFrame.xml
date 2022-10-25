@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="GameMenuFrame.lua"/>
 	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
-		<Size x="195" y="312"/>
+		<Size x="195" y="280"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -69,7 +69,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="GameMenuButtonOptions" inherits="GameMenuButtonTemplate" text="SYSTEMOPTIONS_MENU">
+			<Button name="GameMenuButtonSettings" inherits="GameMenuButtonTemplate" text="GAMEMENU_OPTIONS">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="GameMenuButtonWhatsNew" relativePoint="BOTTOM" x="0" y="-16"/>
 				</Anchors>
@@ -79,41 +79,27 @@
 					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-						ShowOptionsPanel(VideoOptionsFrame, GameMenuFrame);
+						SettingsPanel:Open();
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="GameMenuButtonUIOptions" inherits="GameMenuButtonTemplate" text="UIOPTIONS_MENU">
+			<Button name="GameMenuButtonEditMode" inherits="GameMenuButtonTemplate" text="HUD_EDIT_MODE_MENU">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonOptions" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeTo="GameMenuButtonSettings" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						self:SetEnabled(EditModeManagerFrame:CanEnterEditMode());
+					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-						ShowOptionsPanel(InterfaceOptionsFrame, GameMenuFrame);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="GameMenuButtonKeybindings" inherits="GameMenuButtonTemplate" text="KEY_BINDINGS">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonUIOptions" relativePoint="BOTTOM" x="0" y="-1"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-						KeyBindingFrame_LoadUI();
-						KeyBindingFrame.mode = 1;
-						ShowUIPanel(KeyBindingFrame);
+						ShowUIPanel(EditModeManagerFrame);
 					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="GameMenuButtonMacros" inherits="GameMenuButtonTemplate" text="MACROS">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonKeybindings" relativePoint="BOTTOM" x="0" y="-1"/>
+					<Anchor point="TOP" relativeTo="GameMenuButtonEditMode" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -225,7 +211,7 @@
 			<OnShow function="GameMenuFrame_OnShow"/>
 			<OnHide>
 				UpdateMicroButtons();
-				Enable_BagButtons();
+				MainMenuBarBagManager:SetBagButtonsEnabled(true);
 				if (CanAutoSetGamePadCursorControl(false)) then
 					SetGamePadCursorControl(false);
 				end

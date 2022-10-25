@@ -176,14 +176,17 @@
 				<BarTexture parentKey="barTexture" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" />
 			</StatusBar>
 			
-			<StatusBar parentKey="castBar" frameLevel="100" hidden="true">
+			<StatusBar parentKey="castBar" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsTemplate" frameLevel="100" hidden="true">
 				<KeyValues>
 					<KeyValue key="iconWhenNoninterruptible" value="true" type="boolean"/>
 				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="background">
-							<Color r=".2" g=".2" b=".2" a=".85"/>
+						<Texture parentKey="Background" atlas="ui-castingbar-background">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="1" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
@@ -202,30 +205,28 @@
 						<Texture parentKey="Icon" hidden="true" ignoreParentAlpha="true">
 							<Size x="10" y="10"/>
 							<Anchors>
-								<Anchor point="LEFT" x="-2" y="-1"/>
+								<Anchor point="LEFT" x="-2" y="-2"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
-							<Size x="16" y="16" />
+						<Texture parentKey="Spark" atlas="ui-castingbar-pip">
+							<Size x="4" y="12"/>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Flash" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill" alphaMode="ADD" />
+						<Texture parentKey="Flash" atlas="ui-castingbar-full-glow-standard" alphaMode="ADD" />
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						CastingBarFrame_OnLoad(self, nil, false, true);
+						self:OnLoad(nil, false, true);
 					</OnLoad>
-					<OnEvent function="CastingBarFrame_OnEvent" />
-					<OnUpdate function="CastingBarFrame_OnUpdate" />
-					<OnShow function="CastingBarFrame_OnShow" />
+					<OnEvent method="OnEvent" />
+					<OnUpdate method="OnUpdate" />
+					<OnShow method="OnShow" />
 				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-				<BarColor r="1.0" g="0.7" b="0.0"/>
 			</StatusBar>
 
 			<Frame parentKey="WidgetContainer" inherits="UIWidgetContainerTemplate" hidden="true">
@@ -277,6 +278,17 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="SoftTargetFrame">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.name" relativePoint="TOP" y="-8" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -318,6 +330,18 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
+
+	<Frame name="PersonalFriendlyBuffFrame" inherits="HorizontalLayoutFrame" mixin="PersonalFriendlyBuffContainerMixin">
+		<Size x="200" y="14"/>
+		<KeyValues>
+			<KeyValue key="spacing" value="4" type="number"/>
+			<KeyValue key="fixedHeight" value="14" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
 
 	<Button name="NamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />
 	<Button name="ForbiddenNamePlateUnitFrameTemplate" inherits="BaseNamePlateUnitFrameTemplate" virtual="true" />

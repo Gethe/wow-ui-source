@@ -1,0 +1,6 @@
+## Interface: 0
+## Title: Blizzard Auction House Shared
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_AuctionHouseShared.lua
+Blizzard_AuctionHouseShared.xml

@@ -56,6 +56,8 @@ function QuestSuperTracking_Initialize()
 	SuperTrackEventFrame:CacheCurrentSuperTrackInfo();
 end
 
+QuestSuperTracking_Initialize(); -- TODO: Rewrite, use EventRegistry
+
 function QuestSuperTracking_OnQuestTracked(questID)
 	-- We should supertrack quest if it got added to the top of the tracker
 	-- First check if we have POI info. Could be missing if 1) we didn't know about this quest before, 2) just doesn't have POIs

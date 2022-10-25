@@ -13,6 +13,7 @@ ItemButtonUtil.ItemContextEnum = {
 	UpgradableItem = 9,
 	RunecarverScrapping = 10,
 	ItemConversion = 11,
+	ItemRecrafting = 12,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -51,6 +52,8 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.RunecarverScrapping;
 	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.ItemConversion then
 		return ItemButtonUtil.ItemContextEnum.ItemConversion;
+	elseif ProfessionsFrame and ProfessionsFrame:IsShown() and ProfessionsFrame:GetCurrentRecraftingRecipeID() ~= nil then
+		return ItemButtonUtil.ItemContextEnum.ItemRecrafting;
 	elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
 		return RuneforgeFrame:GetItemContext();
 	elseif TargetSpellReplacesBonusTree() then
@@ -126,6 +129,15 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 				return ItemButtonUtil.ItemContextMatchResult.Match;
 			end
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.ItemRecrafting then
+			local itemGUID = C_Item.GetItemGUID(itemLocation);
+			if itemGUID and C_TradeSkillUI.IsOriginalCraftRecipeLearned(itemGUID) then
+				local recipeID = ProfessionsFrame:GetCurrentRecraftingRecipeID();
+				if recipeID and C_TradeSkillUI.DoesRecraftingRecipeAcceptItem(itemLocation, recipeID) then
+					return ItemButtonUtil.ItemContextMatchResult.Match;
+				end
+			end
+			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else
 			return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 		end
@@ -180,7 +192,7 @@ function ItemUtil.PickupBagItem(itemLocation)
 	end
 end
 
-function ItemUtil.GetOptionalReagentCount(itemID)
+function ItemUtil.GetCraftingReagentCount(itemID)
 	local includeBank = true;
 	local includeUses = false;
 	local includeReagentBank = true;
@@ -188,8 +200,8 @@ function ItemUtil.GetOptionalReagentCount(itemID)
 end
 
 function ItemUtil.IteratePlayerInventory(callback)
-	-- Only includes the backpack and primary 4 bag slots.
-	for bag = 0, NUM_BAG_FRAMES do
+	-- Only includes the backpack and held bag slots.
+	for bag = 0, NUM_TOTAL_BAG_FRAMES do
 		for slot = 1, ContainerFrame_GetContainerNumSlots(bag) do
 			local bagItem = ItemLocation:CreateFromBagAndSlot(bag, slot);
 			if C_Item.DoesItemExist(bagItem) then
@@ -214,6 +226,33 @@ function ItemUtil.IteratePlayerInventoryAndEquipment(callback)
 	end
 end
 
+function ItemUtil.FilterOwnedItems(itemIDs)
+	local found = {};
+	ItemUtil.IteratePlayerInventory(function(itemLocation)
+		local itemID = C_Item.GetItemID(itemLocation);
+		TableUtil.TrySet(found, itemID);
+	end);
+
+	local filtered = {};
+	for index, itemID in ipairs(itemIDs) do
+		if found[itemID] then
+			table.insert(filtered, itemID);
+		end
+	end
+	return filtered;
+end
+
+function ItemUtil.FindPlayerInventoryAndEquipmentItemsMatchingItemID(itemID)
+	local items = {};
+	ItemUtil.IteratePlayerInventoryAndEquipment(function(itemLocation)
+		if C_Item.GetItemID(itemLocation) == itemID then
+			local itemGUID = C_Item.GetItemGUID(itemLocation);
+			table.insert(items, Item:CreateFromItemGUID(itemGUID));
+		end
+	end);
+	return items;
+end
+
 function ItemUtil.DoesAnyItemSlotMatchItemContext()
 	local matchFound = false;
 	local function ItemSlotMatchItemContextCallback(itemLocation)
@@ -229,6 +268,39 @@ end
 
 function ItemUtil.CreateItemTransmogInfo(appearanceID, secondaryAppearanceID, illusionID)
 	return CreateAndInitFromMixin(ItemTransmogInfoMixin, appearanceID, secondaryAppearanceID, illusionID);
+end
+
+function ItemUtil.TransformItemIDsToItems(itemIDs)
+	local items = {};
+	for index, itemID in ipairs(itemIDs) do
+		table.insert(items, Item:CreateFromItemID(itemID));
+	end
+	return items;
+end
+
+function ItemUtil.TransformItemLocationsToItems(itemLocations)
+	local items = {};
+	for index, itemLocation in ipairs(itemLocations) do
+		table.insert(items, Item:CreateFromItemLocation(itemLocation));
+	end
+	return items;
+end
+
+function ItemUtil.TransformItemGUIDsToItems(itemGUIDs)
+	local items = {};
+	for index, itemGUID in ipairs(itemGUIDs) do
+		local item = Item:CreateFromItemGUID(itemGUID);
+		table.insert(items, item);
+	end
+	return items;
+end
+
+function ItemUtil.TransformItemLocationItemsToGUIDItems(items)
+	local items = {};
+	for index, itemLocation in ipairs(itemLocations) do
+		table.insert(items, Item:CreateFromItemLocation(itemLocation));
+	end
+	return items;
 end
 
 ItemTransmogInfoMixin = {};

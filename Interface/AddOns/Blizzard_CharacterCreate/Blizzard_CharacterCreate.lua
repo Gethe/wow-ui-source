@@ -12,7 +12,7 @@ local ZONE_CHOICE_ZOOM_AMOUNT = 100;
 local ZONE_CHOICE_ZOOM_TIME = 0.6;
 local ZOOM_TIME_SECONDS = 0.25;
 local ROTATION_ADJUST_SECONDS = 0.25;
-local CLASS_ANIM_WAIT_TIME_SECONDS = 5;
+local CLASS_ANIM_WAIT_TIME_SECONDS = 3;
 
 local HIGH_PRIORITY = 1;
 local MEDIUM_PRIORITY = 2;
@@ -24,15 +24,19 @@ local ClassTrialSpecs;
 local ZoneChoiceFrame;
 local NewPlayerTutorial;
 
+local EVOKER_CLASS_ID = 13;
+local HUMAN_RADE_ID = 1;
+local ORC_RACE_ID = 2;
+
 NineSliceUtil.AddLayout("CharacterCreateThickBorder", {
-	TopLeftCorner =	{ atlas = "charactercreate-DiamondMetal-CornerTopLeft-8x", },
-	TopRightCorner =	{ atlas = "charactercreate-DiamondMetal-CornerTopRight-8x", },
-	BottomLeftCorner =	{ atlas = "charactercreate-DiamondMetal-CornerBottomLeft-8x", },
-	BottomRightCorner =	{ atlas = "charactercreate-DiamondMetal-CornerBottomRight-8x", },
-	TopEdge = { atlas = "_charactercreate-DiamondMetal-EdgeTop-8x", },
-	BottomEdge = { atlas = "_charactercreate-DiamondMetal-EdgeBottom-8x", },
-	LeftEdge = { atlas = "!charactercreate-DiamondMetal-EdgeLeft-8x", },
-	RightEdge = { atlas = "!charactercreate-DiamondMetal-EdgeRight-8x", },
+	TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
+	TopRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopRight", },
+	BottomLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomLeft", },
+	BottomRightCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerBottomRight", },
+	TopEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeTop", },
+	BottomEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeBottom", },
+	LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
+	RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
 });
 
 GlueDialogTypes["CHARACTER_CREATE_FAILURE"] = {
@@ -230,21 +234,25 @@ end
 function CharacterCreateMixin:SetPaidServiceInfo(serviceType, characterID)
 	self.paidServiceType = serviceType;
 	self.paidServiceCharacterID = characterID;
+	C_CharacterCreation.SetPaidService(serviceType ~= nil);
 end
 
 function CharacterCreateMixin:SetVASInfo(vasType, info)
 	self.vasType = vasType;
 	self.vasInfo = info;
+	C_CharacterCreation.SetPaidService(vasType ~= nil);
 end
 
 function CharacterCreateMixin:ClearPaidServiceInfo()
 	self.paidServiceType = nil;
 	self.paidServiceCharacterID = nil;
+	C_CharacterCreation.SetPaidService(false);
 end
 
 function CharacterCreateMixin:ClearVASInfo()
 	self.vasType = nil;
 	self.vasInfo = nil;	
+	C_CharacterCreation.SetPaidService(false);
 end
 
 function CharacterCreateMixin:BeginVASTransaction()
@@ -719,8 +727,12 @@ end
 function CharacterCreateMixin:NavForward()
 	if self:CanNavForward() then
 		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
-			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
-			self:UpdateMode(1);
+			if C_CharacterCreation.IsNewPlayerRestricted() and C_CharacterCreation.GetSelectedClass().classID == EVOKER_CLASS_ID then
+				GlueDialog_Show("EVOKER_NEW_PLAYER_WARNING");
+			else
+				PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+				self:UpdateMode(1);
+			end
 		elseif self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE and ZoneChoiceFrame:ShouldShow() then
 			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 			self:UpdateMode(1);
@@ -767,6 +779,11 @@ function CharacterCreateNavButtonMixin:OnEnter()
 	end
 end
 
+function CharacterCreateNavButtonMixin:OnLeave()
+	local tooltip = self:GetAppropriateTooltip();
+	tooltip:Hide();
+end
+
 function CharacterCreateNavButtonMixin:UpdateText(text, arrow)
 	local appendArrowName = self:IsEnabled() and "" or "-disable";
 
@@ -799,6 +816,7 @@ local classLayoutIndices = {
 	MONK = 10,
 	DEMONHUNTER = 11,
 	DEATHKNIGHT = 12,
+	EVOKER = 13,
 };
 
 function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
@@ -817,6 +835,12 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 
 	self:SetEnabledState(buttonEnabled);
 	self.ClassName:SetText(classData.name);
+
+	-- Prevent tooltip of far right elements from overlapping races buttons
+	if (self.layoutIndex > 11) then
+		self.tooltipAnchor = "ANCHOR_LEFT";
+	end
+	
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(classData.description);
@@ -837,11 +861,11 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 			local validHordeRaceNames = {};
 			for _, raceData in ipairs(validRaces) do
 				if not raceData.isAlliedRace or not C_CharacterCreation.UseBeginnerMode() then
-					if raceData.isNeutralRace or (raceData.factionInternalName == "Alliance") then 
+					if raceData.isNeutralRace or (raceData.factionInternalName == "Alliance") then
 						tinsert(validAllianceRaceNames, raceData.name);
 					end
 
-					if raceData.isNeutralRace or (raceData.factionInternalName == "Horde") then 
+					if raceData.isNeutralRace or (raceData.factionInternalName == "Horde") then
 						tinsert(validHordeRaceNames, raceData.name);
 					end
 				end
@@ -928,20 +952,11 @@ function CharacterCreateRaceButtonMixin:AddExtraStuffToTooltip()
 	end
 end
 
-function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedSexID, selectedRaceID, selectedFaction, layoutIndex)
+function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, selectedFaction, layoutIndex)
 	self.raceData = raceData;
 	self.layoutIndex = layoutIndex;
 
-	local sexString;
-	if selectedSexID == Enum.UnitSex.Male then
-		sexString = "male";
-	else
-		sexString = "female";
-	end
-
-	local useHiRez = true;
-	local atlas = GetRaceAtlas(strlower(raceData.fileName), sexString, useHiRez);
-	self:SetIconAtlas(atlas);
+	self:SetIconAtlas(raceData.createScreenIconAtlas);
 
 	local isValidRace = RaceAndClassFrame:IsRaceValid(raceData, self.faction);
 	self.allowSelectionOnDisable = not isValidRace and not CharacterCreateFrame:HasService();
@@ -1151,7 +1166,7 @@ function CharacterCreateRaceAndClassMixin:OnLoad()
 	self.ClassTrialCheckButton.Button:SetScript("OnLeave", function() self.ClassTrialCheckButton.OnLeave(self.ClassTrialCheckButton); end);
 
 	self.buttonPool = CreateFramePoolCollection();
-	self.buttonPool:CreatePool("CHECKBUTTON", self.Sexes, "CharCustomizeSexButtonTemplate");
+	self.buttonPool:CreatePool("CHECKBUTTON", self.BodyTypes, "CharCustomizeBodyTypeButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.AllianceRaces, "CharacterCreateAllianceButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.AllianceAlliedRaces, "CharacterCreateAllianceAlliedRaceButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.HordeRaces, "CharacterCreateHordeButtonTemplate");
@@ -1160,7 +1175,7 @@ function CharacterCreateRaceAndClassMixin:OnLoad()
 
 	self.createdModelIndices = {};
 
-	self.spellVisualKitStartAction = 
+	self.spellVisualKitStartAction =
 	{
 		-- Druid
 		[129374] = { auxModelInfoFunc = GetDruidCatModelInfo, createAuxModel = true, hideAuxModel = true },
@@ -1169,7 +1184,7 @@ function CharacterCreateRaceAndClassMixin:OnLoad()
 		[129051] = { auxModelInfoFunc = GetDHMetaModelInfo, createAuxModel = true, hideAuxModel = true },
 	};
 
-	self.spellVisualKitCompletionAction = 
+	self.spellVisualKitCompletionAction =
 	{
 		-- Druid
 		[129374] = { hidePlayerModel = true, auxModelInfoFunc = GetDruidCatModelInfo, showAuxModel = true, startAuxModelAnim = true, onCompletionFunc = GetDruidNormalModelInfo },
@@ -1207,6 +1222,7 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 	local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
 	local isTrialRestricted = C_CharacterCreation.IsTrialAccountRestricted();
 	local useNewPlayerMode = C_CharacterCreation.UseBeginnerMode();
+	local blockedRaces = C_CharacterCreation.GetBlockedRaces();
 	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode);
 	self.HordeAlliedRaces:SetShown(not useNewPlayerMode);
 
@@ -1292,7 +1308,7 @@ function CharacterCreateRaceAndClassMixin:PlayClassAnimations()
 			self:GetParent():RotateCharacterToTarget(C_CharacterCreation.GetDefaultCharacterCreateFacing(), 0);
 
 			self.currentSpellVisualKitID = spellVisualKitID;
-			
+
 			local startTargetingSequence = true;
 			local noBlending = (self.allowClassAnimationsAfterSeconds == 0);
 			C_CharacterCreation.PlaySpellVisualKitOnCharacter(spellVisualKitID, startTargetingSequence, noBlending);
@@ -1464,7 +1480,7 @@ function CharacterCreateRaceAndClassMixin:GetRaceButtonTemplates(raceData)
 end
 
 function CharacterCreateRaceAndClassMixin:LayoutButtons()
-	self.Sexes:MarkDirty();
+	self.BodyTypes:MarkDirty();
 	self.AllianceRaces:MarkDirty();
 	self.AllianceAlliedRaces:MarkDirty();
 	self.HordeRaces:MarkDirty();
@@ -1477,6 +1493,10 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 	end
 
 	if self.classValidRaces and not self.classValidRaces[raceData.raceID] then
+		return false;
+	end
+
+	if self.blockedRaces and self.blockedRaces[raceData.raceID] then
 		return false;
 	end
 
@@ -1525,13 +1545,13 @@ end
 
 function CharacterCreateRaceAndClassMixin:UpdateSexButtons(releaseButtons)
 	if releaseButtons then
-		self.buttonPool:ReleaseAllByTemplate("CharCustomizeSexButtonTemplate");
+		self.buttonPool:ReleaseAllByTemplate("CharCustomizeBodyTypeButtonTemplate");
 	end
 
 	local sexes = {Enum.UnitSex.Male, Enum.UnitSex.Female};
 	for index, sexID in ipairs(sexes) do
-		local button = self.buttonPool:Acquire("CharCustomizeSexButtonTemplate");
-		button:SetSex(sexID, self.selectedSexID, index);
+		local button = self.buttonPool:Acquire("CharCustomizeBodyTypeButtonTemplate");
+		button:SetBodyType(sexID, self.selectedSexID, index);
 		button:Show();
 	end
 end
@@ -1561,7 +1581,7 @@ function CharacterCreateRaceAndClassMixin:UpdateRaceButtons(releaseButtons)
 				templateCount[buttonTemplate] = templateCount[buttonTemplate] + 1;
 			end
 
-			button:SetRace(raceData, self.selectedSexID, self.selectedRaceID, self.selectedFaction, templateCount[buttonTemplate]);
+			button:SetRace(raceData, self.selectedRaceID, self.selectedFaction, templateCount[buttonTemplate]);
 			button:Show();
 		end
 	end
@@ -1640,6 +1660,8 @@ function ClassTrialCheckButtonMixin:OnShow()
 end
 
 function ClassTrialCheckButtonMixin:OnCheckButtonClick()
+	ResizeCheckButtonMixin.OnCheckButtonClick(self);
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	C_CharacterCreation.SetCharacterCreateType(self.Button:GetChecked() and Enum.CharacterCreateType.TrialBoost or Enum.CharacterCreateType.Normal);
 end
@@ -1938,5 +1960,16 @@ end
 CharacterCreateStartingZoneButtonMixin = {};
 
 function CharacterCreateStartingZoneButtonMixin:OnCheckButtonClick()
+	ResizeCheckButtonMixin.OnCheckButtonClick(self);
+
 	ZoneChoiceFrame:SetUseNPE(self:GetParent().isNPE);
+end
+
+function SelectOtherRaceAvailable()
+	currentFaction = C_CharacterCreation.GetFactionForRace(C_CharacterCreation.GetSelectedRace());
+	if (currentFaction == "Alliance") then
+		RaceAndClassFrame:SetCharacterRace(HUMAN_RADE_ID);
+	elseif (currentFaction == "Horde") then
+		RaceAndClassFrame:SetCharacterRace(ORC_RACE_ID);
+	end
 end

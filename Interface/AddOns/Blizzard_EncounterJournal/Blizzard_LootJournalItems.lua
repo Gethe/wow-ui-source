@@ -324,7 +324,8 @@ function LootJournalItemSetsMixin:ConfigureItemButton(button)
 	elseif ( itemQuality == Enum.ItemQuality.Epic ) then
 		button.Border:SetAtlas("loottab-set-itemborder-purple", true);
 	end
-	button:GetParent().SetName:SetTextColor(GetItemQualityColor(itemQuality));
+	local r, g, b = GetItemQualityColor(itemQuality);
+	button:GetParent().SetName:SetTextColor(r, g, b);
 	self:CheckItemButtonTooltip(button);
 end
 

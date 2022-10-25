@@ -92,7 +92,7 @@ function ContributionStatusMixin:Update()
 
 	self:SetValue(stateAmount);
 
-	self:SetStatusBarAtlas(appearance.statusBarAtlas);
+	self:SetStatusBarTexture(appearance.statusBarAtlas);
 	self.Spark:SetShown(state == Enum.ContributionState.Building and stateAmount > 0 and stateAmount < 1);
 
 	local text;
@@ -506,12 +506,4 @@ end
 
 function ContributionCollectionMixin:ReleaseReward(reward)
 	self.rewardPool:Release(reward);
-end
-
-function ContributionCollectionUI_Show()
-	ShowUIPanel(ContributionCollectionFrame);
-end
-
-function ContributionCollectionUI_Hide()
-	HideUIPanel(ContributionCollectionFrame);
 end

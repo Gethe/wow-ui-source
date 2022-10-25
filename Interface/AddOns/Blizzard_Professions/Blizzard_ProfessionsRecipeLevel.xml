@@ -1,0 +1,36 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsRecipeLevel.lua"/>
+	
+	<StatusBar name="ProfessionsRecipeLevelBar" mixin="ProfessionsRecipeLevelBarMixin" inherits="ProfessionsStatusBarArtTemplate" virtual="true">
+		<Size x="80" y="14"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</StatusBar>
+
+	<DropDownToggleButton name="ProfessionsRecipeLevelSelectorTemplate" mixin="ProfessionsRecipeLevelSelectorMixin" inherits="UIMenuButtonStretchTemplate" virtual="true">
+		<Size x="110" y="22"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+					<Size x="10" y="12"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="ProfessionsRecipeLevelDropDown" parentKey="RecipeLevelDropDown" inherits="UIDropDownMenuTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+	</DropDownToggleButton>
+</Ui>

@@ -7,9 +7,7 @@
 *******************************************************************************
 -->
 	<Button name="GuildRosterButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="299" y="20"/>
-		</Size>
+		<Size x="299" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentStripe" setAllPoints="true" file="Interface\GuildFrame\GuildFrame" parentKey="stripe">
@@ -18,9 +16,7 @@
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentBarTexture" hidden="true" file="Interface\TargetingFrame\UI-StatusBar" parentKey="barTexture">
-					<Size>
-						<AbsDimension x="10" y="20"/>
-					</Size>
+					<Size x="10" y="20"/>
 					<Anchors>
 						<Anchor point="LEFT" x="60" y="0"/>
 					</Anchors>
@@ -32,47 +28,35 @@
 					<Anchors>
 						<Anchor point="LEFT" x="36" y="0"/>
 					</Anchors>
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
+					<Size x="16" y="16"/>
 					<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
 				</Texture>
 				<FontString name="$parentString1" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string1">
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentString2" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string2">
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentString3" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string3">
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentString4" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string4">
-					<Size>
-						<AbsDimension x="10" y="10"/>
-					</Size>
+					<Size x="10" y="10"/>
 					<Anchors>
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentBarLabel" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="LEFT" hidden="true" parentKey="barLabel">
-					<Size>
-						<AbsDimension x="40" y="10"/>
-					</Size>
+					<Size x="40" y="10"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentString2" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
@@ -179,33 +163,25 @@
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
 	</Button>
 	<Button name="GuildRosterColumnButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="10" y="24"/>
-		</Size>
+		<Size x="10" y="24"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="5" y="24"/>
-					</Size>
+					<Size x="5" y="24"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
 				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="53" y="24"/>
-					</Size>
+					<Size x="53" y="24"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="4" y="24"/>
-					</Size>
+					<Size x="4" y="24"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
 					</Anchors>
@@ -218,26 +194,14 @@
 		</Scripts>
 		<ButtonText>
 			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="8" y="0"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" x="8" y="0"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="$parentLeft">
-					<Offset>
-						<AbsDimension x="-2" y="5"/>
-					</Offset>
-				</Anchor>
-				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight">
-					<Offset>
-						<AbsDimension x="2" y="-7"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOPLEFT" relativeTo="$parentLeft" x="-2" y="5"/>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" x="2" y="-7"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
@@ -251,11 +215,7 @@
 			<Frame name="GuildMemberDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame name="GuildRosterViewDropdown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-12" y="-34"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -272,95 +232,53 @@
 			</Frame>
 			<Button name="GuildRosterColumnButton1" inherits="GuildRosterColumnButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="7" y="-68"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="7" y="-68"/>
 				</Anchors>
 			</Button>
 			<Button name="GuildRosterColumnButton2" inherits="GuildRosterColumnButtonTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton1" relativePoint="RIGHT" x="-2" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="GuildRosterColumnButton3" inherits="GuildRosterColumnButtonTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton2" relativePoint="RIGHT" x="-2" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="GuildRosterColumnButton4" inherits="GuildRosterColumnButtonTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton3" relativePoint="RIGHT" x="-2" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="GuildRosterColumnButton5" inherits="GuildRosterColumnButtonTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton4" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="GuildRosterColumnButton4" relativePoint="RIGHT" x="-2" y="0"/>
 				</Anchors>
 			</Button>
 			<ScrollFrame name="GuildRosterContainer" inherits="HybridScrollFrameTemplate">
 				<Size x="302" y="300"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-27" y="-95"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-27" y="-95"/>
 				</Anchors>
 				<Frames>
 					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="-12"/>
-								</Offset>
-							</Anchor>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="12"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="12"/>
 						</Anchors>
 					</Slider>
 				</Frames>
 			</ScrollFrame>
 			<CheckButton name="GuildRosterShowOfflineButton">
-				<Size>
-					<AbsDimension x="20" y="20"/>
-				</Size>
+				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="6" y="3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="6" y="3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString inherits="GameFontHighlightSmall" text="SHOW_OFFLINE_MEMBERS">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="2" y="1"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -396,15 +314,9 @@
 *******************************************************************************
 -->
 	<Frame name="GuildMemberDetailFrame" toplevel="true" enableMouse="true" hidden="true" parent="GuildFrame" inherits="BackdropTemplate">
-		<Size>
-			<AbsDimension x="212" y="270"/>
-		</Size>
+		<Size x="212" y="270"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="-28"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="0" y="-28"/>
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
@@ -414,119 +326,67 @@
 				<FontString name="GuildMemberDetailName" justifyH="LEFT" inherits="GameFontNormal">
 					<Size x="165" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="17" y="-18"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="17" y="-18"/>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailLevel" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailName" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailZoneLabel" inherits="GameFontNormalSmall" text="ZONE_COLON">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailLevel" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-11"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailLevel" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailZoneText" inherits="GameFontHighlight" justifyH="LEFT">
 					<Size x="147" y="12"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="GuildMemberDetailZoneLabel" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="2" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="GuildMemberDetailZoneLabel" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailRankLabel" inherits="GameFontNormalSmall" text="RANK_COLON">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailZoneLabel" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailZoneLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailRankText" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="2" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailOnlineLabel" inherits="GameFontNormalSmall" text="LAST_ONLINE_COLON">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailOnlineText" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="GuildMemberDetailOnlineLabel" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="2" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="GuildMemberDetailOnlineLabel" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailNoteLabel" inherits="GameFontNormalSmall" text="NOTE_COLON">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailOnlineLabel" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-8"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailOnlineLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 					</Anchors>
 				</FontString>
 				<FontString name="GuildMemberDetailOfficerNoteLabel" inherits="GameFontNormalSmall" text="OFFICER_NOTE_COLON">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailNoteLabel" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-43"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailNoteLabel" relativePoint="BOTTOMLEFT" x="0" y="-43"/>
 					</Anchors>
 				</FontString>
 				<Texture file="Interface\FriendsFrame\UI-GuildMember-Patch">
-					<Size>
-						<AbsDimension x="256" y="32"/>
-					</Size>
+					<Size x="256" y="32"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="12" y="3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="12" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="GuildMemberDetailCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="-6" y="-7"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="-6" y="-7"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -534,11 +394,7 @@
 		<Frames>
 			<Button name="GuildMemberDetailCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-3" y="-3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -548,15 +404,9 @@
 				</Scripts>
 			</Button>
 			<Button name="GuildMemberRemoveButton" inherits="UIPanelButtonTemplate" text="REMOVE">
-				<Size>
-					<AbsDimension x="96" y="22"/>
-				</Size>
+				<Size x="96" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="10" y="12"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="10" y="12"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -568,15 +418,9 @@
 				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
 			<Button name="GuildMemberGroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
-				<Size>
-					<AbsDimension x="96" y="22"/>
-				</Size>
+				<Size x="96" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildMemberRemoveButton" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="1" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="GuildMemberRemoveButton" relativePoint="RIGHT" x="1" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -589,39 +433,23 @@
 			</Button>
 			<Frame name="GuildMemberRankDropdown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="-3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="GuildMemberDetailRankLabel" relativePoint="RIGHT" x="-16" y="-3"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="GuildMemberRankDropdown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<Frame name="GuildMemberNoteBackground" enableMouse="true" inherits="TooltipBackdropTemplate">
-				<Size>
-					<AbsDimension x="181" y="40"/>
-				</Size>
+				<Size x="181" y="40"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailNoteLabel" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailNoteLabel" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="PersonalNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
-							<Size>
-								<AbsDimension x="165" y="32"/>
-							</Size>
+							<Size x="165" y="32"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="1" y="-6"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" x="1" y="-6"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -637,28 +465,16 @@
 				</Scripts>
 			</Frame>
 			<Frame name="GuildMemberOfficerNoteBackground" inherits="TooltipBackdropTemplate">
-				<Size>
-					<AbsDimension x="181" y="40"/>
-				</Size>
+				<Size x="181" y="40"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailOfficerNoteLabel" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="GuildMemberDetailOfficerNoteLabel" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="OfficerNoteText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
-							<Size>
-								<AbsDimension x="165" y="32"/>
-							</Size>
+							<Size x="165" y="32"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="1" y="-6"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" x="1" y="-6"/>
 							</Anchors>
 						</FontString>
 					</Layer>

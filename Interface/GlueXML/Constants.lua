@@ -17,6 +17,7 @@ EXPANSION_GLUE_AMBIENCE = {
 	[LE_EXPANSION_LEGION]					= SOUNDKIT.AMB_GLUESCREEN_LEGION,
 	[LE_EXPANSION_BATTLE_FOR_AZEROTH]		= SOUNDKIT.AMB_GLUESCREEN_BATTLE_FOR_AZEROTH,
 	[LE_EXPANSION_SHADOWLANDS]				= SOUNDKIT.AMB_GLUESCREEN_SHADOWLANDS,
+	[LE_EXPANSION_DRAGONFLIGHT]				= SOUNDKIT.AMB_GLUESCREEN_DRAGONFLIGHT,
 };
 
 --Music
@@ -29,6 +30,7 @@ EXPANSION_GLUE_MUSIC = {
 	[LE_EXPANSION_LEGION]					= SOUNDKIT.MUS_70_MAIN_TITLE,
 	[LE_EXPANSION_BATTLE_FOR_AZEROTH]		= SOUNDKIT.MUS_80_MAIN_TITLE,
 	[LE_EXPANSION_SHADOWLANDS]				= SOUNDKIT.MUS_90_MAIN_TITLE,
+	[LE_EXPANSION_DRAGONFLIGHT]				= SOUNDKIT.MUS_100_MAIN_TITLE,
 };
 
 GLUE_AMBIENCE_TRACKS = {
@@ -102,29 +104,6 @@ CREDITS_TITLES = {
 	[LE_EXPANSION_BATTLE_FOR_AZEROTH] = CREDITS_WOW_8_0,
 };
 
---Backgrounds
-EXPANSION_HIGH_RES_BG = {
-	[LE_EXPANSION_BURNING_CRUSADE] = "Interface\\Glues\\Models\\UI_MainMenu_BurningCrusade\\UI_MainMenu_BurningCrusade.m2",
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Interface\\Glues\\Models\\UI_MainMenu_Northrend\\UI_MainMenu_Northrend.m2",
-	[LE_EXPANSION_CATACLYSM] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
-	[LE_EXPANSION_MISTS_OF_PANDARIA] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",
-	[LE_EXPANSION_LEGION] = "Interface\\Glues\\Models\\UI_MainMenu_Legion\\UI_MainMenu_Legion.m2",
-	[LE_EXPANSION_BATTLE_FOR_AZEROTH] = "Interface\\Glues\\Models\\UI_MAINMENU_BATTLEFORAZEROTH\\UI_MainMenu_BattleForAzeroth.m2",
-	[LE_EXPANSION_SHADOWLANDS] = "Interface\\Glues\\Models\\UI_MAINMENU_SHADOWLANDS\\UI_MainMenu_Shadowlands.m2",
-};
-
-EXPANSION_LOW_RES_BG = {
-	[LE_EXPANSION_BURNING_CRUSADE] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
-	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
-	[LE_EXPANSION_CATACLYSM] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
-	[LE_EXPANSION_MISTS_OF_PANDARIA] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
-	[LE_EXPANSION_WARLORDS_OF_DRAENOR] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",
-	[LE_EXPANSION_LEGION] =  "Interface\\Glues\\Models\\UI_MainMenu_Legion\\UI_MainMenu_Legion_LowBandwidth.m2",
-	[LE_EXPANSION_BATTLE_FOR_AZEROTH] =  "Interface\\Glues\\Models\\UI_MAINMENU_BFA_LOWBANDWIDTH\\UI_MainMenu_BFA_LowBandwidth.m2",
-	[LE_EXPANSION_SHADOWLANDS] = "Interface\\Glues\\Models\\UI_MAINMENU_SHADOWLANDS\\UI_MainMenu_Shadowlands_LowBandwidth.m2",
-};
-
 --Tooltip
 GLUE_BACKDROP_COLOR = CreateColor(0.09, 0.09, 0.09);
 GLUE_BACKDROP_BORDER_COLOR = CreateColor(0.8, 0.8, 0.8);
@@ -151,6 +130,8 @@ MOVIE_LIST = {
   { 852 },
   -- Movie sequence 9 = Shadowlands
   { 936 },
+  -- Movie sequence 10 = Dragonflight
+  { 960 },
 };
 
 --Credits
@@ -176,6 +157,7 @@ GLUE_CREDITS_SOUND_KITS = {
 	[LE_EXPANSION_LEGION]					= SOUNDKIT.MENU_CREDITS07,
 	[LE_EXPANSION_BATTLE_FOR_AZEROTH] 		= SOUNDKIT.MENU_CREDITS08,
 	[LE_EXPANSION_SHADOWLANDS] 				= SOUNDKIT.MENU_CREDITS09,
+	[LE_EXPANSION_DRAGONFLIGHT]				= SOUNDKIT.MENU_CREDITS10,
 };
 
 AUTO_LOGIN_WAIT_TIME = 1.75;

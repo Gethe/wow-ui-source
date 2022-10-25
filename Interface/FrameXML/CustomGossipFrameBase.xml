@@ -6,7 +6,7 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="CustomGossipFrameBaseTemplate" mixin="CustomGossipFrameBaseMixin" parent="UIParent" topLevel="true" enableMouse="true" virtual="true">
+	<Frame name="CustomGossipFrameBaseTemplate" mixin="CustomGossipFrameBaseMixin" parent="UIParent" toplevel="true" enableMouse="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" setAllPoints="true">

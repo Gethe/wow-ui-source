@@ -1,0 +1,74 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_TutorialEffects.lua" />
+
+	<Frame name="TutorialQuestBangGlowTemplate" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconGlow" file="Interface/GossipFrame/AvailableQuestIcon" alphaMode="ADD" alpha="1" />
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" looping="REPEAT">
+				<Alpha childKey="IconGlow" fromAlpha="0" toAlpha="1" smoothing="IN_OUT" duration="0.5" order="1"/>
+				<Scale childKey="IconGrow" fromScaleX="1" toScaleX="1.25" fromScaleY="1" toScaleY="1.25" smoothing="IN_OUT" duration="0.5" order="1"/>
+				<Alpha childKey="IconGlow" fromAlpha="1" toAlpha="0" smoothing="IN_OUT" duration="0.5" order="2"/>
+				<Scale childKey="IconGrow" fromScaleX="1" toScaleX="0.8" fromScaleY="1" toScaleY="0.8" smoothing="IN_OUT" duration="0.5" order="2"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
+	<Frame name="TutorialDragOriginFrame" hidden="true">
+		<Size x="76" y="76"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="newplayertutorial-drag-slotgreen" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="TutorialDragTargetFrame" hidden="true">
+		<Size x="76" y="76"/>
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean" />
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="newplayertutorial-drag-slotblue" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="TutorialDragAnimationFrame" frameStrata="DIALOG" hidden="true" alpha="0.6">
+		<Size x="76" y="76"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture atlas="newplayertutorial-drag-cursor" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="9" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" looping="REPEAT">
+				<Translation parentKey="Move" duration="2" order="1" endDelay="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

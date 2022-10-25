@@ -133,7 +133,7 @@ function TimeManagerFrame_OnLoad(self)
 	else
 		UIDropDownMenu_SetWidth(TimeManagerAlarmAMPMDropDown, 40, 40);
 	end
-	
+
 	--get rid of button bar at bottom
 	ButtonFrameTemplate_HideButtonBar(self);
 
@@ -386,7 +386,7 @@ function TimeManager_ToggleTimeFormat()
 	-- TimeManagerClockButton_OnUpdate will pick up the clock change
 	if ( CalendarFrame_UpdateTimeFormat ) then
 		-- update the Calendar's time format if it's available
-		CalendarFrame_UpdateTimeFormat();	
+		CalendarFrame_UpdateTimeFormat();
 	end
 end
 
@@ -410,9 +410,9 @@ end
 -- TimeManagerClockButton
 function TimeManagerClockButton_OnLoad(self)
 	if ( CLOCK_TICKER_Y_OVERRIDE ) then
-		TimeManagerClockTicker:SetPoint("CENTER", select(4, TimeManagerClockTicker:GetPoint("CENTER")), CLOCK_TICKER_Y_OVERRIDE);
+		TimeManagerClockTicker:SetPoint("CENTER", select(4, TimeManagerClockTicker:GetPoint(1)), CLOCK_TICKER_Y_OVERRIDE);
 	end
-	
+
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 	TimeManagerClockButton_Update();
 	if ( Settings.alarmEnabled ) then

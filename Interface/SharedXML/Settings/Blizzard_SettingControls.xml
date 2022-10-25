@@ -1,0 +1,212 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SettingControls.lua"/>
+
+	<Frame name="SettingsListSectionHeaderTemplate" mixin="SettingsListSectionHeaderMixin" virtual="true">
+		<Size y="45"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-16"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="SettingsListElementTemplate" mixin="SettingsListElementMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" wordwrap="false"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Tooltip" mixin="DefaultTooltipMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-80"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameLevel="100" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-20" y="3"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<CheckButton name="SettingsCheckBoxTemplate" mixin="SettingsCheckBoxMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="30" y="29"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+		<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+		<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+		<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+	</CheckButton>
+
+	<Frame name="SettingsCheckBoxControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SettingsSliderControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsSliderControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SettingsDropDownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsDropDownControlMixin" virtual="true">
+		<!--<KeyValues>
+			<KeyValue key="dropDownType" value="" type="string"/>
+			<KeyValue key="dropDownTemplate" value="" type="string"/>
+		</KeyValues>-->
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SettingButtonControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsButtonControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="SettingsCheckBoxWithButtonControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxWithButtonControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SettingsCheckBoxSliderControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxSliderControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SettingsCheckBoxDropDownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxDropDownControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="SettingsSelectionPopoutEntryTemplate" inherits="SelectionPopoutEntryTemplate" motionScriptsWhileDisabled="true" mixin="SettingsSelectionPopoutEntryMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="defaultWidth" value="225" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="SelectionDetails" setAllPoints="true" mixin="SettingsSelectionPopoutDetailsMixin">
+				<KeyValues>
+					<KeyValue key="selectionNamePadding" value="14" type="number"/>
+				</KeyValues>
+				<Size x="250" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="14" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="LEFT" maxLines="1" hidden="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="SettingsSelectionPopoutWithButtonsTemplate" inherits="SelectionPopoutWithButtonsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="decrementOffsetX" value="4" type="number"/>
+			<KeyValue key="incrementOffsetX" value="-4" type="number"/>
+		</KeyValues>
+		<Frames>
+			<EventButton parentKey="Button" inherits="SelectionPopoutButtonTemplate" mixin="SettingsSelectionPopoutButtonMixin">
+				<Size x="250" y="38"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="selectionEntryTemplates" value="SettingsSelectionPopoutEntryTemplate" type="string"/>
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="SelectionDetails" setAllPoints="true" mixin="SettingsSelectionPopoutDetailsMixin">
+						<Size x="250" y="20"/>
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<FontString parentKey="SelectionName" font="GameFontNormal" justifyH="CENTER" maxLines="1" hidden="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</EventButton>
+		</Frames>
+	</Frame>
+
+	<Frame name="SettingsTextDropDownControlTemplate" inherits="SettingsDropDownControlTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="dropDownType" value="Frame" type="string"/>
+			<KeyValue key="dropDownTemplate" value="SettingsSelectionPopoutWithButtonsTemplate" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<EventFrame name="SettingsExpandableSectionTemplate" mixin="SettingsExpandableSectionMixin" virtual="true">
+		<Size y="25"/>
+		<Frames>
+			<Button parentKey="Button">
+				<Size y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="TOPRIGHT" x="-20" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Left" atlas="Options_ListExpand_Left" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="Options_ListExpand_Right" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="_Options_ListExpand_Middle" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" font="GameFontNormal" justifyH="CENTER" maxLines="1">
+							<Anchors>
+								<Anchor point="LEFT" x="21" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</EventFrame>
+</Ui>

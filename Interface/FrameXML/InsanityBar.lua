@@ -15,7 +15,7 @@ end
 function InsanityPowerBar:OnEvent(event, arg1, arg2)
 	if (event == "UNIT_AURA") then
 		local insane = IsInsane();
-		
+
 		if (insane and not self.insane) then
 			-- Gained insanity	
 			self:StopInsanityVisuals();
@@ -27,13 +27,14 @@ function InsanityPowerBar:OnEvent(event, arg1, arg2)
 		elseif (not insane and self.insane) then
 			-- Lost insanity
 			self:StopInsanityVisuals();
-			
+
 			self.InsanityOn.Fadeout:Play();
 			self.DrippyPurpleMid.Fadeout:Play();
 			self.DrippyPurpleLoop.Fadeout:Play();
 			self.InsanitySpark.Fadeout:Play();
 		end
 		self.insane = insane;
+		self:UpdatePower();
 	else
 		ClassPowerBar.OnEvent(self, event, arg1, arg2);
 	end

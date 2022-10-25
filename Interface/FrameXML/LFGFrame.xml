@@ -156,7 +156,7 @@
 					<Size x="0" y="16"/>
 					<Anchors>
 						<Anchor point="LEFT" x="40" y="0"/>
-						<Anchor point="RIGHT" relativeTo="$parentInstanceLevel" relativePoint="LEFT" x="-10" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.level" relativePoint="LEFT" x="-10" y="0"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentLockedIndicator"  file="Interface/LFGFrame/UI-LFG-ICON-LOCK" parentKey="lockedIndicator">
@@ -172,7 +172,7 @@
 			<CheckButton name="$parentEnableButton" parentKey="enableButton">
 				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parentLockedIndicator" relativePoint="CENTER"/>
+					<Anchor point="CENTER" relativeKey="$parent.lockedIndicator" relativePoint="CENTER"/>
 				</Anchors>
 				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
@@ -898,216 +898,110 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString name="$parentDescription" parentKey="description" inherits="GameFontNormal" text="LFG_RANDOM_COOLDOWN_OTHER" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="300" y="0"/>
-					</Size>
+					<Size x="300" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-30"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-30"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentTime" parentKey="time" inherits="GameFontHighlightLarge" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="-10"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentName1" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
-					<Size>
-						<AbsDimension x="120" y="0"/>
-					</Size>
+					<Size x="120" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="25" y="-60"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT" x="25" y="-60"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentStatus1" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
-					<Size>
-						<AbsDimension x="110" y="0"/>
-					</Size>
+					<Size x="110" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName1" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentName1" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentName2" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
-					<Size>
-						<AbsDimension x="120" y="0"/>
-					</Size>
+					<Size x="120" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentName1" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentName1" relativePoint="BOTTOM" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentStatus2" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
-					<Size>
-						<AbsDimension x="110" y="0"/>
-					</Size>
+					<Size x="110" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName2" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentName2" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentName3" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
-					<Size>
-						<AbsDimension x="120" y="0"/>
-					</Size>
+					<Size x="120" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentName2" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentName2" relativePoint="BOTTOM" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentStatus3" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
-					<Size>
-						<AbsDimension x="110" y="0"/>
-					</Size>
+					<Size x="110" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName3" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentName3" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentName4" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
-					<Size>
-						<AbsDimension x="120" y="0"/>
-					</Size>
+					<Size x="120" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentName3" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentName3" relativePoint="BOTTOM" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentStatus4" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
-					<Size>
-						<AbsDimension x="110" y="0"/>
-					</Size>
+					<Size x="110" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName4" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentName4" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentName5" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
-					<Size>
-						<AbsDimension x="120" y="0"/>
-					</Size>
+					<Size x="120" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentName4" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentName4" relativePoint="BOTTOM" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentStatus5" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
-					<Size>
-						<AbsDimension x="110" y="0"/>
-					</Size>
+					<Size x="110" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName5" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentName5" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentName6" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
-					<Size>
-						<AbsDimension x="120" y="0"/>
-					</Size>
+					<Size x="120" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentName5" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentName5" relativePoint="BOTTOM" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentStatus6" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
-					<Size>
-						<AbsDimension x="110" y="0"/>
-					</Size>
+					<Size x="110" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName6" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentName6" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentName7" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
-					<Size>
-						<AbsDimension x="120" y="0"/>
-					</Size>
+					<Size x="120" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentName6" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentName6" relativePoint="BOTTOM" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentStatus7" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
-					<Size>
-						<AbsDimension x="110" y="0"/>
-					</Size>
+					<Size x="110" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName7" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentName7" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentName8" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
-					<Size>
-						<AbsDimension x="120" y="0"/>
-					</Size>
+					<Size x="120" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentName7" relativePoint="BOTTOM">
-							<Offset>
-								<AbsDimension x="0" y="-5"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" relativeTo="$parentName7" relativePoint="BOTTOM" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentStatus8" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
-					<Size>
-						<AbsDimension x="110" y="0"/>
-					</Size>
+					<Size x="110" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName8" relativePoint="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="$parentName8" relativePoint="TOPRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1126,30 +1020,18 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Description" name="$parentDescription" inherits="GameFontNormal" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="300" y="0"/>
-					</Size>
+					<Size x="300" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="-0" y="-70"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="-0" y="-70"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate" text="YES">
-				<Size>
-					<AbsDimension x="153" y="22"/>
-				</Size>
+				<Size x="153" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentDescription" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="-5" y="-10"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="$parentDescription" relativePoint="BOTTOM" x="-5" y="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -1159,15 +1041,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate" text="HIDE">
-				<Size>
-					<AbsDimension x="153" y="22"/>
-				</Size>
+				<Size x="153" y="22"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="5" y="-10"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOM" x="5" y="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

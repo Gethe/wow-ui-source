@@ -1,6 +1,6 @@
 PlayerChoiceTorghastOptionTemplateMixin = {};
 
-local rarityToSwirlPostfix = 
+local rarityToSwirlPostfix =
 {
 	[Enum.PlayerChoiceRarity.Common] = "",
 	[Enum.PlayerChoiceRarity.Uncommon] = "-QualityUncommon",

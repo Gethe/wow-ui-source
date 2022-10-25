@@ -192,24 +192,14 @@
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString parentKey="Label" inherits="GlueFontNormal" justifyH="CENTER" text="ACCOUNT_NAME">
-									<Size>
-										<AbsDimension x="600" y="64"/>
-									</Size>
+									<Size x="600" y="64"/>
 									<Anchors>
-										<Anchor point="BOTTOM" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-23"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-23"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="Fill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="CENTER">
-											<Offset>
-												<AbsDimension x="0" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" relativePoint="CENTER" x="0" y="3"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -251,15 +241,9 @@
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString inherits="GlueFontNormal" justifyH="CENTER" text="PASSWORD">
-									<Size>
-										<AbsDimension x="256" y="64"/>
-									</Size>
+									<Size x="256" y="64"/>
 									<Anchors>
-										<Anchor point="BOTTOM" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-23"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-23"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -433,15 +417,9 @@
 						</Scripts>
 					</Button>
 					<Frame name="ServerAlertFrame" hidden="true" inherits="ServerAlertTemplate">
-						<Size>
-							<AbsDimension x="352" y="400"/>
-						</Size>
+						<Size x="352" y="400"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="10" y="-130"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="10" y="-130"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="WoWAccountSelectDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
@@ -525,9 +503,7 @@
 												</Anchors>
 											</Button>
 											<ScrollFrame parentKey="ScrollFrame" name="WoWAccountSelectDialogScrollFrame" inherits="GlueScrollFrameTemplate">
-												<Size>
-													<AbsDimension x="219" y="162"/>
-												</Size>
+												<Size x="219" y="162"/>
 												<Anchors>
 													<Anchor point="TOPLEFT">
 														<Offset x="0" y="-6"/>
@@ -587,9 +563,7 @@
 						</Layers>
 						<Frames>
 							<Frame parentKey="Background">
-								<Size>
-									<AbsDimension x="372" y="200"/>
-								</Size>
+								<Size x="372" y="200"/>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="-20"/>
 								</Anchors>

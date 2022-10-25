@@ -55,16 +55,15 @@ function ScrappingMachineMixin:OnShow()
 	PlaySound(SOUNDKIT.UI_80_SCRAPPING_WINDOW_OPEN);
 	self:UpdateScrapButtonState();
 	self:RegisterEvent("BAG_UPDATE");
-	self:RegisterEvent("SCRAPPING_MACHINE_CLOSE");
 	self:RegisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
 	self:RegisterEvent("SCRAPPING_MACHINE_SCRAPPING_FINISHED");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
-	self.TitleText:SetText(C_ScrappingMachineUI.GetScrappingMachineName());
-	
+	self:SetTitle(C_ScrappingMachineUI.GetScrappingMachineName());
+
 	OpenAllBags(self);
-	
+
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
 
@@ -84,8 +83,6 @@ function ScrappingMachineMixin:OnEvent(event, ...)
 			self.scrapCastLineID = nil;
 			C_ScrappingMachineUI.ValidateScrappingList();
 		end
-	elseif (event == "SCRAPPING_MACHINE_CLOSE") then
-		HideUIPanel(self);
 	elseif (event == "SCRAPPING_MACHINE_SCRAPPING_FINISHED") then
 		C_ScrappingMachineUI.RemoveAllScrapItems();
 	elseif (event == "UNIT_SPELLCAST_SUCCEEDED") then
@@ -107,14 +104,13 @@ function ScrappingMachineMixin:OnHide()
 	self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
 	self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 	self:UnregisterEvent("BAG_UPDATE");
-	self:UnregisterEvent("SCRAPPING_MACHINE_CLOSE");
 	self:UnregisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
 	self:UnregisterEvent("SCRAPPING_MACHINE_SCRAPPING_FINISHED");
 	PlaySound(SOUNDKIT.UI_80_SCRAPPING_WINDOW_CLOSE);
 	self:CloseScrappingMachine();
-	
+
 	CloseAllBags(self);
-	
+
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
 

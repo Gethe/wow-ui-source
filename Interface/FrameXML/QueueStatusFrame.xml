@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="QueueStatusFrame.lua"/>
 	<Frame name="QueueStatusRoleCountTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="40" y="40"/>
-		</Size>
+		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTexture" file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="Texture"/>
@@ -120,39 +118,246 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Button name="QueueStatusMinimapButton" parent="MinimapBackdrop" inherits="MiniMapButtonTemplate" hidden="true">
-		<Size>
-			<AbsDimension x="33" y="33"/>
-		</Size>
+	<Frame name="EyeTemplate" mixin="EyeTemplateMixin" virtual="true" hidden="true">
+		<Size x="45" y="45"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture setAllPoints="true" parentKey="texture" atlas="groupfinder-eye-single" useAtlasSize="false" hidden="true">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="EyeInitial" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GlowFront" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-frontglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CircShine" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-circshine" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="GlowBack" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-backglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="EyeInitialTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-initial">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeInitialAnim" looping="NONE" setToFinalAlpha="true">
+						<FlipBook startDelay="0" endDelay="0" smoothing="NONE" childKey="EyeInitialTexture" duration="1.5" order="1" flipBookRows="5" flipBookColumns="11" flipBookFrames="52" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha startDelay="0" endDelay="0" smoothing="NONE" childKey="GlowFront" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha smoothing="NONE" childKey="GlowBack" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Rotation startDelay=".5" endDelay="0" smoothing="IN_OUT" childKey="CircShine" duration="1" order="1" degrees="360">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha smoothing="NONE" childKey="CircShine" duration=".5" order="1" fromAlpha="1" toAlpha=".5"/>
+						<Rotation startDelay=".5" endDelay="0" smoothing="IN_OUT" childKey="CircShine" duration="1" order="1" degrees="360">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha smoothing="NONE" childKey="CircShine" duration="2" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyeSearchingLoop" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyeSearchingTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-searching">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeSearchingLoopAnim" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyeSearchingTexture" duration="2" order="1" flipBookRows="8" flipBookColumns="11" flipBookFrames="80" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyeMouseOver" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyeMouseOverTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-mouseover">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeMouseOverAnim" looping="NONE" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyeMouseOverTexture" duration=".4" order="1" flipBookRows="1" flipBookColumns="12" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyeFoundInitial" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="SpriteShards" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-foundfx">
+							<Size x="75" y="75"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="37"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GlowFront" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-frontglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="GlowBack" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-backglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyeFoundInitialTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-found-initial">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeFoundInitialAnim" looping="NONE" setToFinalAlpha="true">
+						<FlipBook startDelay="0" smoothing="NONE" childKey="SpriteShards" duration="2" order="1" flipBookRows="5" flipBookColumns="15" flipBookFrames="75" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook smoothing="NONE" childKey="EyeFoundInitialTexture" duration="2" order="1" flipBookRows="7" flipBookColumns="11" flipBookFrames="70" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha smoothing="NONE" childKey="GlowFront" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha smoothing="NONE" childKey="GlowBack" duration="2" order="1" fromAlpha="1" toAlpha=".2"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyeFoundLoop" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyeFoundLoopTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-found-loop">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeFoundLoopAnim" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyeFoundLoopTexture" duration="1.5" order="1" flipBookRows="4" flipBookColumns="11" flipBookFrames="41" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="GlowBackLoop" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="GlowBack" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-backglow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="GlowBackLoopAnim" looping="BOUNCE" setToFinalAlpha="true">
+						<Alpha smoothing="NONE" childKey="GlowBack" duration="1.5" order="1" fromAlpha=".2" toAlpha=".4"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyePokeInitial" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyePokeInitialTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-poke-initial">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyePokeInitialAnim" looping="NONE" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyePokeInitialTexture" duration="1.5" order="1" flipBookRows="6" flipBookColumns="11" flipBookFrames="66" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyePokeLoop" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyePokeLoopTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-poke-loop">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyePokeLoopAnim" looping="REPEAT" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyePokeLoopTexture" duration="1.5" order="1" flipBookRows="6" flipBookColumns="11" flipBookFrames="62" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="EyePokeEnd" frameStrata="MEDIUM" alpha="1" setAllPoints="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="EyePokeEndTexture" alpha="1" alphaMode="BLEND" atlas="groupfinder-eye-flipbook-poke-end">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyePokeEndAnim" looping="NONE" setToFinalAlpha="true">
+						<FlipBook smoothing="NONE" childKey="EyePokeEndTexture" duration="1.2" order="1" flipBookRows="4" flipBookColumns="11" flipBookFrames="38" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Button name="QueueStatusButton" mixin="QueueStatusButtonMixin" parent="MicroButtonAndBagsBar" hidden="true">
+		<Size x="45" y="45"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="22" y="-100"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" x="-45" y="4"/>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
-					<Size>
-						<AbsDimension x="52" y="52"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="1" y="-1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentGroupSize" inherits="NumberFontNormalYellow" hidden="true" parentKey="groupSize">
-					<Anchors>
-						<Anchor point="CENTER" x="1" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Highlight" hidden="true" alpha="0" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="true">
+				<Texture parentKey="Highlight" hidden="true" alpha="0" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="false">
+					<Size x="96" y="96"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="1"/>
 					</Anchors>
@@ -165,7 +370,7 @@
 				<Alpha childKey="Highlight" startDelay="0.1" smoothing="NONE" duration="1.0" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scripts>
 					<OnLoop>
-						if ( QueueStatusMinimapButton_OnGlowPulse(self:GetParent()) ) then
+						if ( QueueStatusButton:OnGlowPulse(self:GetParent()) ) then
 							PlaySound(SOUNDKIT.UI_GROUP_FINDER_RECEIVE_APPLICATION);
 						end
 					</OnLoop>
@@ -188,23 +393,23 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="QueueStatusMinimapButton_OnLoad"/>
-			<OnEnter function="QueueStatusMinimapButton_OnEnter"/>
-			<OnLeave function="QueueStatusMinimapButton_OnLeave"/>
-			<OnClick function="QueueStatusMinimapButton_OnClick"/>
-			<OnShow function="QueueStatusMinimapButton_OnShow"/>
-			<OnHide function="QueueStatusMinimapButton_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
-		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 	</Button>
-	<Frame name="QueueStatusFrame" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" parent="UIParent" inherits="TooltipBackdropTemplate">
+	<Frame name="QueueStatusFrame" mixin="QueueStatusFrameMixin" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" parent="UIParent" inherits="TooltipBackdropTemplate">
 		<Size x="275" y="150"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="QueueStatusMinimapButton" relativePoint="TOPLEFT" x="0" y="0"/>
+			<Anchor point="RIGHT" relativeTo="QueueStatusButton" relativePoint="LEFT" x="0" y="28"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad function="QueueStatusFrame_OnLoad" inherit="append" />
-			<OnEvent function="QueueStatusFrame_OnEvent"/>
+			<OnLoad method="OnLoad" inherit="append" />
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -1,7 +1,7 @@
 ExpBarMixin = CreateFromMixins(StatusTrackingBarMixin);
 
 function ExpBarMixin:GetPriority()
-	return self.priority; 
+	return self.priority;
 end
 
 function ExpBarMixin:ShouldBeVisible()
@@ -14,7 +14,7 @@ function ExpBarMixin:Update()
 	local level = UnitLevel("player");
 
 	local minBar, maxBar = 0, nextXP;
-	
+
 	local isCapped = false;
 	if (GameLimitedMode_IsActive()) then
 		local rLevel = GetRestrictedAccountData();
@@ -22,14 +22,14 @@ function ExpBarMixin:Update()
 			isCapped = true;
 			self:SetBarValues(1, 0, 1, level);
 			self.StatusBar:ProcessChangesInstantly();
-			self:SetBarColor(0.58, 0.0, 0.55, 1.0);
+			self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Experience");
 		end
 	end
 	if (not isCapped) then
 		self:SetBarValues(currXP, minBar, maxBar, level);
 	end
 
-	self.currXP = currXP; 
+	self.currXP = currXP;
 	self.maxBar = maxBar;
 
 	self:UpdateCurrentText();
@@ -44,12 +44,12 @@ function ExpBarMixin:UpdateCurrentText()
 			currXP = UnitTrialXP("player");
 		end
 	end
-	self:SetBarText(XP_STATUS_BAR_TEXT:format(currXP, maxBar)); 
+	self:SetBarText(XP_STATUS_BAR_TEXT:format(currXP, maxBar));
 end
 
 function ExpBarMixin:OnLoad()
 	TextStatusBar_Initialize(self);
-	
+
 	self:Update();
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -58,10 +58,10 @@ function ExpBarMixin:OnLoad()
 	self.priority = 3; 
 end
 
-function ExpBarMixin:OnEvent(event, ...) 
+function ExpBarMixin:OnEvent(event, ...)
 	if( event == "CVAR_UPDATE") then
 		local cvar = ...;
-		if( cvar == "XP_BAR_TEXT" ) then
+		if( cvar == "xpBarText" ) then
 			self:UpdateTextVisibility();
 		end
 	elseif ( event == "PLAYER_XP_UPDATE" or event == "PLAYER_ENTERING_WORLD" ) then
@@ -79,7 +79,7 @@ function ExpBarMixin:OnEnter()
 	self:UpdateCurrentText();
 	self.ExhaustionTick.timer = 1;
 	local label = XPBAR_LABEL;
-	
+
 	if ( GameLimitedMode_IsActive() ) then
 		local rLevel = GetRestrictedAccountData();
 		if UnitLevel("player") >= rLevel then
@@ -130,26 +130,28 @@ end
 
 ExhaustionTickMixin = { }
 function ExhaustionTickMixin:ExhaustionToolTipText()
-	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
+	if(not exhaustionStateID) then 
+		return; 
+	end
+	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
 	local exhaustionCurrXP, exhaustionMaxXP;
 	local exhaustionThreshold = GetXPExhaustion();
 	local exhaustionCountdown = nil;
-	
+
 	exhaustionStateMultiplier = exhaustionStateMultiplier * 100;
-	
+
 	if ( GetTimeToWellRested() ) then
 		exhaustionCountdown = GetTimeToWellRested() / 60;
 	end
-	
+
 	local currXP = UnitXP("player");
 	local nextXP = UnitXPMax("player");
 	local percentXP = math.ceil(currXP/nextXP*100);
 	local XPText = format( XP_TEXT, BreakUpLargeNumbers(currXP), BreakUpLargeNumbers(nextXP), percentXP );
 	local tooltipText = XPText..format(EXHAUST_TOOLTIP1, exhaustionStateName, exhaustionStateMultiplier);
 	local append = nil;
-	
+
 	if ( IsResting() ) then
 		if ( exhaustionThreshold and exhaustionCountdown ) then
 			append = format(EXHAUST_TOOLTIP4, exhaustionCountdown);
@@ -178,45 +180,39 @@ function ExhaustionTickMixin:UpdateTickPosition()
 	local playerMaxXP = UnitXPMax("player");
 	local exhaustionThreshold = GetXPExhaustion();
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
-		
+
 	if ( exhaustionStateID and exhaustionStateID >= 3 ) then
 		self:SetPoint("CENTER", self:GetParent() , "RIGHT", 0, 0);
 	end
 
-	if ( not exhaustionThreshold ) then
+	if ( not exhaustionThreshold or exhaustionThreshold <= 0 or IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled() ) then
+		-- Hide exhaustion if player has no exhaustion, player is max level, or XP is turned off
 		self:Hide();
 		self:GetParent().ExhaustionLevelFillBar:Hide();
 	else
-		local exhaustionTickSet = max(((playerCurrXP + exhaustionThreshold) / playerMaxXP) * (self:GetParent():GetWidth()), 0);
+		local widthRatio = max((playerCurrXP + exhaustionThreshold) / playerMaxXP, 0);
+		self:SetShown(widthRatio >= 0.01 and widthRatio <= 0.99); -- Hide pip at edges of bar since it doesn't look good at edges
+
+		local exhaustionTickSet = max(widthRatio * (self:GetParent():GetWidth()), 0);
 		self:ClearAllPoints();
-		
+
 		if ( exhaustionTickSet > self:GetParent():GetWidth() ) then
-			self:Hide();
 			self:GetParent().ExhaustionLevelFillBar:Hide();
 		else
-			self:Show();
 			self:SetPoint("CENTER", self:GetParent(), "LEFT", exhaustionTickSet, 2);
 			self:GetParent().ExhaustionLevelFillBar:Show();
-			self:GetParent().ExhaustionLevelFillBar:SetPoint("TOPRIGHT", self:GetParent(), "TOPLEFT", exhaustionTickSet, 0);
+			self:GetParent().ExhaustionLevelFillBar:SetWidth(exhaustionTickSet);
+			self:GetParent().ExhaustionLevelFillBar:SetTexCoord(0, widthRatio, 0, 1);
 		end
 	end
-
-	-- Hide exhaustion tick if player is max level or XP is turned off
-	if ( IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled() ) then
-		self:Hide();
-	end			
 end
 
 function ExhaustionTickMixin:UpdateExhaustionColor()
 	local exhaustionStateID = GetRestState();
 	if ( exhaustionStateID == 1 ) then
-		self:GetParent():SetBarColor(0.0, 0.39, 0.88, 1.0);
-		self:GetParent().ExhaustionLevelFillBar:SetVertexColor(0.0, 0.39, 0.88, 0.25);
-		self.Highlight:SetVertexColor(0.0, 0.39, 0.88);
+		self:GetParent().StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Rested");
 	elseif ( exhaustionStateID == 2 ) then
-		self:GetParent():SetBarColor(0.58, 0.0, 0.55, 1.0);
-		self:GetParent().ExhaustionLevelFillBar:SetVertexColor(0.58, 0.0, 0.55, 0.25);
-		self.Highlight:SetVertexColor(0.58, 0.0, 0.55);
+		self:GetParent().StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Experience");
 	end
 end
 
@@ -224,21 +220,21 @@ function ExhaustionTickMixin:OnEvent(event, ...)
 	if (IsRestrictedAccount()) then
 		local rlevel = GetRestrictedAccountData();
 		if (UnitLevel("player") >= rlevel) then
-			self:GetParent():SetBarColor(0.0, 0.39, 0.88, 1.0);
+			self:GetParent().StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Rested");
 			self:Hide();
 			self:GetParent().ExhaustionLevelFillBar:Hide();
-			self:UnregisterAllEvents();	
+			self:UnregisterAllEvents();
 			return;
 		end
 	end
 	if ( event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_XP_UPDATE" or event == "UPDATE_EXHAUSTION" or event == "PLAYER_LEVEL_UP" ) then
-		self:UpdateTickPosition(); 
+		self:UpdateTickPosition();
 	end
-	
+
 	if ( event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_EXHAUSTION" ) then
 		self:UpdateExhaustionColor();
 	end
-	
+
 	if ( not self:IsShown() ) then
 		self:Hide();
 	end

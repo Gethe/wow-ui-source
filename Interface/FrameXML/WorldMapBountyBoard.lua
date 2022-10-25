@@ -168,7 +168,7 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 		local selected = self.selectedBountyIndex == bountyIndex;
 		tab:SetNormalAtlas(selected and "worldquest-tracker-ring-selected" or "worldquest-tracker-ring");
 		if selected then
-			tab:SetHighlightTexture(nil);
+			tab:ClearHighlightTexture();
 		else
 			tab:SetHighlightAtlas("worldquest-tracker-ring");
 			tab:GetHighlightTexture():SetAlpha(0.4);
@@ -196,7 +196,7 @@ function WorldMapBountyBoardMixin:RefreshBountyTabs()
 		local tab = self.bountyTabPool:Acquire();
 
 		tab:SetNormalAtlas("worldquest-tracker-ring");
-		tab:SetHighlightTexture(nil);
+		tab:ClearHighlightTexture();
 		tab.CheckMark:Hide();
 		tab.Icon:Hide();
 		tab.EmptyIcon:Show();

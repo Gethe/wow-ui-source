@@ -21,7 +21,8 @@ function ClassNameplateBar:OnEvent(event, ...)
 			self:UpdateMaxPower();
 			return true;
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+	elseif ( event == "UNIT_DISPLAYPOWER" or event == "PLAYER_ENTERING_WORLD" ) then
+		self:Setup();
 		self:UpdatePower();
 		return true;
 	elseif (event == "PLAYER_TALENT_UPDATE" ) then
@@ -60,12 +61,14 @@ function ClassNameplateBar:Setup()
 		if ( self:MatchesSpec() ) then
 			self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
 			self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
+			self:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit);
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			showBar = true;
 		else
 			self:UnregisterEvent("UNIT_POWER_FREQUENT");
 			self:UnregisterEvent("UNIT_MAXPOWER");
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+			self:UnregisterEvent("UNIT_DISPLAYPOWER");
 		end
 
 		self:RegisterEvent("PLAYER_TALENT_UPDATE");
@@ -141,6 +144,8 @@ function ClassNameplateManaBar:OnEvent(event, ...)
 	elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" ) then
 		self:UpdatePredictedPowerCost(event == "UNIT_SPELLCAST_START");
 		self:SetupBar();
+	elseif ( event == "PLAYER_GAINS_VEHICLE_DATA" or event == "PLAYER_LOSES_VEHICLE_DATA" ) then
+		self:SetupBar();
 	else
 		ClassNameplateBar.OnEvent(self, event, ...);
 	end
@@ -173,6 +178,8 @@ function ClassNameplateManaBar:Setup()
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player");
+	self:RegisterUnitEvent("PLAYER_GAINS_VEHICLE_DATA", "player");
+	self:RegisterUnitEvent("PLAYER_LOSES_VEHICLE_DATA", "player");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 	local statusBarTexture = self:GetStatusBarTexture();
@@ -186,11 +193,15 @@ function ClassNameplateManaBar:Setup()
 end
 
 function ClassNameplateManaBar:SetupBar()
-	local powerType, powerToken = UnitPowerType("player");
+	local powerType, powerToken, altR, altG, altB = UnitPowerType("player");
 	if (powerToken) then
-		local info = NameplatePowerBarColor[powerToken];
-		if (not info) then
-			info = PowerBarColor[powerToken];
+		local info = NameplatePowerBarColor[powerToken] or PowerBarColor[powerToken];
+		if not info then
+			if altR then
+				info = CreateColor(altR, altG, altB);
+			else
+				info = PowerBarColor[powerType];
+			end
 		end
 		self:SetStatusBarColor(info.r, info.g, info.b);
 

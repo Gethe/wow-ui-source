@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonMonumentUI.lua"/>
 	
 	<Frame name="GarrisonMonumentFrame" parent="UIParent" frameStrata="HIGH" enableMouse="true" toplevel="true" hidden="true">
@@ -14,7 +14,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Title" inherits="GameFontHighlightSmall" justifyH="CENTER" justifyV="CENTER" text="GARRISON_MONUMENTS_TITLE">
+				<FontString parentKey="Title" inherits="GameFontHighlightSmall" justifyH="CENTER" justifyV="MIDDLE" text="GARRISON_MONUMENTS_TITLE">
 					<Size x="120" y="20"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Background" x="0" y="-13"/>
@@ -22,10 +22,10 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="QuestFont_Huge" justifyH="CENTER" justifyV="CENTER" text="Badass Statue 1" setAllPoints="true">
+				<FontString parentKey="Text" inherits="QuestFont_Huge" justifyH="CENTER" justifyV="MIDDLE" text="Badass Statue 1" setAllPoints="true">
 					<Size x="160" y="32"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Background" x="0-" y="-6"/>
+						<Anchor point="CENTER" relativeKey="$parent.Background" x="0" y="-6"/>
 					</Anchors>
 					<Color r="1" g=".82" b="0"/>
 				</FontString>

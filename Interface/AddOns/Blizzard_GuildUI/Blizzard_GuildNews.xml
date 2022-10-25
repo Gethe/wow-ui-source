@@ -7,18 +7,12 @@
 *******************************************************************************
 -->
 	<CheckButton name="GuildNewsCheckButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="24" y="24"/>
-		</Size>
+		<Size x="24" y="24"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" name="$parentText" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="1" y="1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="1" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -64,17 +58,13 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString	inherits="GameFontNormal" text="GUILD_NEWS">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
+					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentHeader" x="10" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentNoNews" inherits="GameFontDisable" text="GUILD_NO_GUILD_NEWS" hidden="true">
-					<Size>
-						<AbsDimension x="0" y="0"/>
-					</Size>
+					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="-11"/>
 					</Anchors>
@@ -163,9 +153,7 @@
 *******************************************************************************
 -->	
 	<Frame name="GuildNewsFiltersFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="GuildFrame" enableMouse="true" inherits="TranslucentFrameTemplate">
-		<Size>
-			<AbsDimension x="264" y="230"/>
-		</Size>
+		<Size x="264" y="230"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="0" y="-20"/>
 		</Anchors>
@@ -181,11 +169,7 @@
 		<Frames>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-4" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
 			</Button>
 			<CheckButton parentKey="GuildAchievement" parentArray="GuildNewsFilterButtons" inherits="GuildNewsCheckButtonTemplate" id="1">

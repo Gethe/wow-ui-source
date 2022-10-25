@@ -78,11 +78,12 @@
 		</Scripts>
 	</Button>
 	<!-- If you change anything about RuneFrame (specifically anchors), make sure to change the relevant information in UnitFrame_SetUnit -->
-	<Frame name="RuneFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false" mixin="RuneFrameMixin">
+	<Frame name="RuneFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false" inherits="PlayerFrameBottomManagedFrameTemplate" mixin="RuneFrameMixin">
 		<Size x="130" y="24" />
-		<Anchors>
-			<Anchor point="TOP" relativePoint="BOTTOM" x="54" y="34" />
-		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="2" type="number"/>
+			<KeyValue key="leftPadding" value="10" type="number"/>
+		</KeyValues>
 		<Frames>
 			<Button parentKey="Rune1" parentArray="Runes" inherits="RuneButtonIndividualTemplate">
 				<Anchors>

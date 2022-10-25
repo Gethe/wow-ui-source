@@ -1,14 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CompactPartyFrame.lua"/>
-	<Frame name="CompactPartyFrameTemplate" inherits="CompactRaidGroupTemplate" virtual="true">
+	<Frame name="CompactPartyFrameTemplate" inherits="CompactRaidGroupTemplate" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="1" type="number"/>
+		</KeyValues>
 		<Scripts>
-			<OnLoad>
-				CompactPartyFrame_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				--Overriding the RaidGroup OnEvent.
-			</OnEvent>
+			<OnLoad function="CompactPartyFrame_OnLoad"/>
+			<OnEvent function="CompactPartyFrame_RefreshMembers"/>
 		</Scripts>
 	</Frame>
 </Ui>

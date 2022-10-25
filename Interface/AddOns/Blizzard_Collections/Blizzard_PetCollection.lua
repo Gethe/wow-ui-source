@@ -101,10 +101,14 @@ function PetJournal_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
 	self:RegisterEvent("PET_BATTLE_QUEUE_STATUS");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("CompanionListButtonTemplate", function(button, elementData)
+		PetJournal_InitPetButton(button, elementData);
+	end);
+	view:SetPadding(0,0,44,0,0);
 
-	self.listScroll.update = PetJournal_UpdatePetList;
-	self.listScroll.scrollBar.doNotHide = true;
-	HybridScrollFrame_CreateButtons(self.listScroll, "CompanionListButtonTemplate", 44, 0);
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	UIDropDownMenu_Initialize(self.petOptionsMenu, PetOptionsMenu_Init, "MENU");
 
@@ -187,44 +191,29 @@ function PetJournal_OnEvent(self, event, ...)
 end
 
 function PetJournal_SelectSpecies(self, targetSpeciesID)
-	local numPets = C_PetJournal.GetNumPets();
-	local petIndex = nil;
-	for i = 1,numPets do
-		local petID, speciesID, owned = C_PetJournal.GetPetInfoByIndex(i);
-		if (speciesID == targetSpeciesID) then
-			petIndex = i;
-			break;
-		end
+	local function FindPet(elementData)
+		return elementData.speciesID == targetSpeciesID;
+	end;
+
+	local foundFrame = self.ScrollBox:FindFrameByPredicate(FindPet);
+	if not foundFrame then
+		self.ScrollBox:ScrollToElementDataByPredicate(FindPet);
 	end
 
-	if ( petIndex ) then --Might be filtered out and have no index.
-		PetJournalPetList_UpdateScrollPos(self.listScroll, petIndex);
-	end
 	PetJournal_ShowPetCardBySpeciesID(targetSpeciesID);
 end
 
-function PetJournal_SelectPet(self, targetPetID)
-	local numPets = C_PetJournal.GetNumPets();
-	local petIndex = nil;
-	for i = 1,numPets do
-		local petID, speciesID, owned = C_PetJournal.GetPetInfoByIndex(i);
-		if (petID == targetPetID) then
-			petIndex = i;
-			break;
-		end
+function PetJournal_SelectPet(self, petID)
+	local function FindPet(elementData)
+		return elementData.petID == petID;
+	end;
+
+	local foundFrame = self.ScrollBox:FindFrameByPredicate(FindPet);
+	if not foundFrame then
+		self.ScrollBox:ScrollToElementDataByPredicate(FindPet);
 	end
 
-	if ( petIndex ) then --Might be filtered out and have no index.
-		PetJournalPetList_UpdateScrollPos(self.listScroll, petIndex);
-	end
-	PetJournal_ShowPetCardByID(targetPetID);
-end
-
-function PetJournalPetList_UpdateScrollPos(self, visibleIndex)
-	local buttons = self.buttons;
-	local height = math.max(0, math.floor(self.buttonHeight * (visibleIndex - (#buttons)/2)));
-	HybridScrollFrame_SetOffset(self, height);
-	self.scrollBar:SetValue(height);
+	PetJournal_ShowPetCardByID(petID);
 end
 
 function PetJournal_UpdateSummonButtonState()
@@ -399,7 +388,8 @@ function PetJournalSummonRandomFavoritePetButton_OnEvent(self, event, ...)
 end
 
 function PetJournalSummonRandomFavoritePetButton_OnClick(self)
-	C_PetJournal.SummonRandomPet(true);
+	local hasFavoritePets = C_PetJournal.HasFavoritePets();
+	C_PetJournal.SummonRandomPet(hasFavoritePets);
 end
 
 function PetJournalSummonRandomFavoritePetButton_OnDragStart(self)
@@ -787,125 +777,119 @@ function PetJournal_UpdateAll()
 	PetJournal_HidePetDropdown();
 end
 
+function PetJournal_InitPetButton(pet, elementData)
+	local index = elementData.index;
+
+	local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, _, _, _, _, canBattle = C_PetJournal.GetPetInfoByIndex(index);
+	local needsFanfare = petID and C_PetJournal.PetNeedsFanfare(petID);
+
+	if customName then
+		pet.name:SetText(customName);
+		pet.name:SetHeight(12);
+		pet.subName:Show();
+		pet.subName:SetText(name);
+	else
+		pet.name:SetText(name);
+		pet.name:SetHeight(30);
+		pet.subName:Hide();
+	end
+
+	pet.icon:SetTexture(needsFanfare and COLLECTIONS_FANFARE_ICON or icon);
+	pet.new:SetShown(needsFanfare);
+	pet.newGlow:SetShown(needsFanfare);
+	pet.petTypeIcon:SetTexture(GetPetTypeTexture(petType));
+	pet.petTypeIcon:SetShown(canBattle);
+
+	if (favorite) then
+		pet.dragButton.favorite:Show();
+	else
+		pet.dragButton.favorite:Hide();
+	end
+
+	CollectionItemListButton_SetRedOverlayShown(pet, false);
+
+	if isOwned then
+		local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(petID);
+
+		pet.dragButton.levelBG:SetShown(canBattle);
+		pet.dragButton.level:SetShown(canBattle);
+		pet.dragButton.level:SetText(level);
+
+		pet.icon:SetDesaturated(false);
+		pet.name:SetFontObject("GameFontNormal");
+		pet.petTypeIcon:SetDesaturated(false);
+		pet.dragButton:Enable();
+		pet.iconBorder:Show();
+		pet.iconBorder:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);
+		if (health and health <= 0) then
+			pet.isDead:Show();
+		else
+			pet.isDead:Hide();
+		end
+		if(isRevoked) then
+			pet.dragButton.levelBG:Hide();
+			pet.dragButton.level:Hide();
+			pet.iconBorder:Hide();
+			pet.icon:SetDesaturated(true);
+			pet.petTypeIcon:SetDesaturated(true);
+			pet.dragButton:Disable();
+		else
+			-- Only display the unusable texture if you'll never be able to summon this pet.
+			local isSummonable, error, errorText = C_PetJournal.GetPetSummonInfo(petID);
+			local neverUsable = error == Enum.PetJournalError.InvalidFaction or error == Enum.PetJournalError.InvalidCovenant;
+			pet.iconBorder:SetShown(not neverUsable);
+			CollectionItemListButton_SetRedOverlayShown(pet, neverUsable);
+		end
+	else
+		pet.dragButton.levelBG:Hide();
+		pet.dragButton.level:Hide();
+		pet.icon:SetDesaturated(true);
+		pet.iconBorder:Hide();
+		pet.name:SetFontObject("GameFontDisable");
+		pet.petTypeIcon:SetDesaturated(true);
+		pet.dragButton:Disable();
+		pet.isDead:Hide();
+	end
+
+	local summonedPetID = C_PetJournal.GetSummonedPetGUID();
+	if ( petID and petID == summonedPetID ) then
+		pet.dragButton.ActiveTexture:Show();
+	else
+		pet.dragButton.ActiveTexture:Hide();
+	end
+
+	pet.petID = petID;
+	pet.speciesID = speciesID;
+	pet.index = index;
+	pet.owned = isOwned;
+
+	--Update Petcard Button
+	if PetJournalPetCard.petIndex == index then
+		pet.selected = true;
+		pet.selectedTexture:Show();
+	else
+		pet.selected = false;
+		pet.selectedTexture:Hide()
+	end
+
+	if ( petID ) then
+		local start, duration, enable = C_PetJournal.GetPetCooldownByGUID(pet.petID);
+		if (start) then
+			CooldownFrame_Set(pet.dragButton.Cooldown, start, duration, enable);
+		end
+	end
+end
+
 function PetJournal_UpdatePetList()
-	local scrollFrame = PetJournal.listScroll;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local petButtons = scrollFrame.buttons;
-	local pet, index;
+	local newDataProvider = CreateDataProvider();
+	for index = 1, C_PetJournal.GetNumPets() do
+		local petID, speciesID = C_PetJournal.GetPetInfoByIndex(index);
+		newDataProvider:Insert({index = index, petID = petID, speciesID = speciesID});
+	end
+	PetJournal.ScrollBox:SetDataProvider(newDataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	local numPets, numOwned = C_PetJournal.GetNumPets();
 	PetJournal.PetCount.Count:SetText(numOwned);
-
-	local summonedPetID = C_PetJournal.GetSummonedPetGUID();
-
-	for i = 1,#petButtons do
-		pet = petButtons[i];
-		index = offset + i;
-		if index <= numPets then
-			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, _, _, _, _, canBattle = C_PetJournal.GetPetInfoByIndex(index);
-			local needsFanfare = petID and C_PetJournal.PetNeedsFanfare(petID);
-
-			if customName then
-				pet.name:SetText(customName);
-				pet.name:SetHeight(12);
-				pet.subName:Show();
-				pet.subName:SetText(name);
-			else
-				pet.name:SetText(name);
-				pet.name:SetHeight(30);
-				pet.subName:Hide();
-			end
-
-			pet.icon:SetTexture(needsFanfare and COLLECTIONS_FANFARE_ICON or icon);
-			pet.new:SetShown(needsFanfare);
-			pet.newGlow:SetShown(needsFanfare);
-			pet.petTypeIcon:SetTexture(GetPetTypeTexture(petType));
-
-			if (favorite) then
-				pet.dragButton.favorite:Show();
-			else
-				pet.dragButton.favorite:Hide();
-			end
-
-			if isOwned then
-				local health, maxHealth, attack, speed, rarity = C_PetJournal.GetPetStats(petID);
-
-				pet.dragButton.levelBG:SetShown(canBattle);
-				pet.dragButton.level:SetShown(canBattle);
-				pet.dragButton.level:SetText(level);
-
-				pet.icon:SetDesaturated(false);
-				pet.name:SetFontObject("GameFontNormal");
-				pet.petTypeIcon:SetShown(canBattle);
-				pet.petTypeIcon:SetDesaturated(false);
-				pet.dragButton:Enable();
-				pet.iconBorder:Show();
-				pet.iconBorder:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);
-				if (health and health <= 0) then
-					pet.isDead:Show();
-				else
-					pet.isDead:Hide();
-				end
-				if(isRevoked) then
-					pet.dragButton.levelBG:Hide();
-					pet.dragButton.level:Hide();
-					pet.iconBorder:Hide();
-					pet.icon:SetDesaturated(true);
-					pet.petTypeIcon:SetDesaturated(true);
-					pet.dragButton:Disable();
-				else
-					-- Only display the unusable texture if you'll never be able to summon this pet.
-					local isSummonable, error, errorText = C_PetJournal.GetPetSummonInfo(petID);
-					local neverUsable = error == Enum.PetJournalError.InvalidFaction or error == Enum.PetJournalError.InvalidCovenant;
-					pet.iconBorder:SetShown(not neverUsable);
-					CollectionItemListButton_SetRedOverlayShown(pet, neverUsable);
-				end
-			else
-				pet.dragButton.levelBG:Hide();
-				pet.dragButton.level:Hide();
-				pet.icon:SetDesaturated(true);
-				pet.iconBorder:Hide();
-				pet.name:SetFontObject("GameFontDisable");
-				pet.petTypeIcon:SetShown(canBattle);
-				pet.petTypeIcon:SetDesaturated(true);
-				pet.dragButton:Disable();
-				pet.isDead:Hide();
-			end
-
-			if ( petID and petID == summonedPetID ) then
-				pet.dragButton.ActiveTexture:Show();
-			else
-				pet.dragButton.ActiveTexture:Hide();
-			end
-
-			pet.petID = petID;
-			pet.speciesID = speciesID;
-			pet.index = index;
-			pet.owned = isOwned;
-			pet:Show();
-
-			--Update Petcard Button
-			if PetJournalPetCard.petIndex == index then
-				pet.selected = true;
-				pet.selectedTexture:Show();
-			else
-				pet.selected = false;
-				pet.selectedTexture:Hide()
-			end
-
-			if ( petID ) then
-				local start, duration, enable = C_PetJournal.GetPetCooldownByGUID(pet.petID);
-				if (start) then
-					CooldownFrame_Set(pet.dragButton.Cooldown, start, duration, enable);
-				end
-			end
-		else
-			pet:Hide();
-		end
-	end
-
-	local totalHeight = numPets * COMPANION_BUTTON_HEIGHT;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, scrollFrame:GetHeight());
 end
 
 
@@ -927,14 +911,13 @@ function PetJournalListItem_OnClick(self, button)
 		if self.owned then
 			PetJournal_ShowPetDropdown(self.index, self, 80, 20);
 		end
+	elseif SpellIsTargeting() then
+		C_PetJournal.SpellTargetBattlePet(self.petID);
+	elseif GetCursorInfo() == "battlepet" then
+		PetJournal_UpdatePetLoadOut();
+		ClearCursor();
 	else
-		local type, petID = GetCursorInfo();
-		if type == "battlepet" then
-			PetJournal_UpdatePetLoadOut();
-			ClearCursor();
-		else
-			PetJournal_ShowPetCard(self.index);
-		end
+		PetJournal_ShowPetCard(self.index);
 	end
 end
 
@@ -963,14 +946,13 @@ function PetJournalDragButton_OnClick(self, button)
 		if ( parent.owned ) then
 			PetJournal_ShowPetDropdown(parent.index, self, 0, 0);
 		end
+	elseif SpellIsTargeting() then
+		C_PetJournal.SpellTargetBattlePet(self:GetParent().petID);
+	elseif GetCursorInfo() == "battlepet" then
+		PetJournal_UpdatePetLoadOut();
+		ClearCursor();
 	else
-		local type, petID = GetCursorInfo();
-		if type == "battlepet" then
-			PetJournal_UpdatePetLoadOut();
-			ClearCursor();
-		else
-			PetJournalDragButton_OnDragStart(self);
-		end
+		PetJournalDragButton_OnDragStart(self);
 	end
 end
 

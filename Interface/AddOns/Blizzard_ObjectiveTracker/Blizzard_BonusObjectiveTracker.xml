@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 
 	<Script file="Blizzard_BonusObjectiveTracker.lua"/>
 
@@ -207,9 +207,7 @@
 				<Alpha childKey="AnimBarGlow" startDelay="0.3" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
 				<Translation parentKey="TransAnim3" childKey="AnimBarGlow" duration="0.25" order="1" offsetX="5" offsetY="0"/>
 				<Scale childKey="AnimBarGlow" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="0.75" toScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="20" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 			</AnimationGroup>
 		</Animations>
@@ -256,9 +254,7 @@
 				<Alpha childKey="BarGlow" startDelay="0.3" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
 				<Translation parentKey="TransAnim" childKey="BarGlow" duration="0.25" order="1" offsetX="2" offsetY="0"/>
 				<Scale childKey="BarGlow" duration="0.25" order="1" fromScaleX="0.15" fromScaleY="1" toScaleX="0.2" toScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="20" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 			</AnimationGroup>
 		</Animations>
@@ -277,7 +273,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="BarFrame" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+						<Texture parentKey="BarFrame" atlas="bonusobjectives-bar-frame-5" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="LEFT" x="-8" y="-1"/>
 							</Anchors>
@@ -294,14 +290,14 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
-						<Texture parentKey="BarFrame2" parentArray="AlphaTextures" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+						<Texture parentKey="BarFrame2" parentArray="AlphaTextures" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame-5" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.BarFrame"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
-						<Texture parentKey="BarFrame3" parentArray="AlphaTextures" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+						<Texture parentKey="BarFrame3" parentArray="AlphaTextures" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame-5" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.BarFrame"/>
 							</Anchors>

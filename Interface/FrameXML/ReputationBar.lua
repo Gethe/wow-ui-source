@@ -1,10 +1,10 @@
-ReputationBarMixin = CreateFromMixins(StatusTrackingBarMixin);
+ReputationStatusBarMixin = CreateFromMixins(StatusTrackingBarMixin);
 
-function ReputationBarMixin:GetPriority()
+function ReputationStatusBarMixin:GetPriority()
 	return self.priority; 
 end
 
-function ReputationBarMixin:UpdateCurrentText()
+function ReputationStatusBarMixin:UpdateCurrentText()
 	if ( self.isCapped ) then
 		self:SetBarText(self.name);
 	else
@@ -12,50 +12,60 @@ function ReputationBarMixin:UpdateCurrentText()
 	end
 end
 
-function ReputationBarMixin:ShouldBeVisible()
+function ReputationStatusBarMixin:ShouldBeVisible()
 	local name, reaction, minFaction, maxFaction, value, factionID = GetWatchedFactionInfo();
 	return name ~= nil;
 end
 
-function ReputationBarMixin:Update() 
+function ReputationStatusBarMixin:Update() 
 	local name, reaction, minBar, maxBar, value, factionID = GetWatchedFactionInfo();
-	local colorIndex = reaction;
+	local barTexture = FACTION_BAR_Textures[reaction];
 	local isCapped;
-	local friendshipID = GetFriendshipReputation(factionID);
-	
+	local reputationInfo = C_GossipInfo.GetFriendshipReputation(factionID);
+	local friendshipID = reputationInfo.friendshipFactionID;
 	if ( self.factionID ~= factionID ) then
-			self.factionID = factionID;
-			self.friendshipID = GetFriendshipReputation(factionID);
-		end
-	
+		self.factionID = factionID;
+		reputationInfo = C_GossipInfo.GetFriendshipReputation(factionID);
+		self.friendshipID = reputationInfo.friendshipFactionID
+	end
+
 	-- do something different for friendships
 	local level;
-	
+
 	if ( C_Reputation.IsFactionParagon(factionID) ) then
 		local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
 		minBar, maxBar  = 0, threshold;
 		value = currentValue % threshold;
-		if ( hasRewardPending ) then 
+		if ( hasRewardPending ) then
 			value = value + threshold;
 		end
-	elseif ( friendshipID ) then
-		local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
-		level = GetFriendshipReputationRanks(factionID);
-		if ( nextFriendThreshold ) then
-			minBar, maxBar, value = friendThreshold, nextFriendThreshold, friendRep;
+		if ( C_Reputation.IsMajorFaction(factionID) ) then
+			barTexture = "UI-HUD-ExperienceBar-Fill-Reputation-Faction-Blue";
+		end
+	elseif ( C_Reputation.IsMajorFaction(factionID) ) then
+		local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
+		minBar, maxBar = 0, majorFactionData.renownLevelThreshold;
+		barTexture = "UI-HUD-ExperienceBar-Fill-Reputation-Faction-Blue";
+	elseif ( friendshipID > 0) then
+		local repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
+		local repRankInfo = C_GossipInfo.GetFriendshipReputationRanks(factionID);
+		level = repRankInfo.currentLevel;
+		if ( repInfo.nextThreshold ) then
+			minBar, maxBar, value = repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing;
 		else
 			-- max rank, make it look like a full bar
 			minBar, maxBar, value = 0, 1, 1;
 			isCapped = true;
 		end
-		colorIndex = 5;		-- always color friendships green
+		local friendshipTextureIndex = 5; -- Friendships always use same texture
+		barTexture = FACTION_BAR_Textures[friendshipTextureIndex];
 	else
 		level = reaction;
 		if ( reaction == MAX_REPUTATION_REACTION ) then
 			isCapped = true;
 		end
 	end
-	
+
 	-- Normalize values
 	maxBar = maxBar - minBar;
 	value = value - minBar;
@@ -64,51 +74,49 @@ function ReputationBarMixin:Update()
 		value = 1;
 	end
 	minBar = 0;
-	
-	self:SetBarValues(value, minBar, maxBar, level); 
-	
+
+	self:SetBarValues(value, minBar, maxBar, level);
+
 	if ( isCapped ) then
 		self:SetBarText(name);
 	else
 		name = name.." %d / %d";
-		self:SetBarText(name:format(value, maxBar)); 
+		self:SetBarText(name:format(value, maxBar));
 	end
-	
-	local color = FACTION_BAR_COLORS[colorIndex];
-	
-	self:SetBarColor(color.r, color.g, color.b, 1); 
-	
-	self.isCapped = isCapped; 
+
+	self.StatusBar:SetStatusBarTexture(barTexture);
+
+	self.isCapped = isCapped;
 	self.name = name;
-	self.value = value; 
-	self.max = maxBar; 
+	self.value = value;
+	self.max = maxBar;
 end
 
-function ReputationBarMixin:OnLoad()
+function ReputationStatusBarMixin:OnLoad()
 	self:RegisterEvent("CVAR_UPDATE");
 	self.priority = 1; 
 end
 
-function ReputationBarMixin:OnEvent(event, ...)
+function ReputationStatusBarMixin:OnEvent(event, ...)
 	if( event == "CVAR_UPDATE") then
 		local cvar = ...;
-		if( cvar == "XP_BAR_TEXT" ) then
+		if( cvar == "xpBarText" ) then
 			self:UpdateTextVisibility();
 		end
 	end
 end
 
-function ReputationBarMixin:OnEnter()
+function ReputationStatusBarMixin:OnEnter()
 	self:ShowText();
 	self:UpdateCurrentText();
 	ReputationParagonWatchBar_OnEnter(self);
 end
 
-function ReputationBarMixin:OnShow()
+function ReputationStatusBarMixin:OnShow()
 	self:UpdateTextVisibility();
 end
 
-function ReputationBarMixin:OnLeave()
+function ReputationStatusBarMixin:OnLeave()
 	self:HideText();
 	ReputationParagonWatchBar_OnLeave(self);
 end

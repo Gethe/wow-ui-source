@@ -1,88 +1,51 @@
-local function disableScripts(button)
-	button:SetScript("OnClick", nil);
-	button:SetScript("OnDoubleClick", nil);
-	button:SetScript("OnDragStart", nil);
-	button:SetScript("OnDragStop", nil);
-	button:SetScript("OnMouseDown", nil);
-	button:SetScript("OnMouseUp", nil);
-	button.upButton:SetScript("OnClick", nil);
-	button.downButton:SetScript("OnClick", nil);
-	button:SetScript("OnEnter", nil);
-	button:SetScript("OnLeave", nil);
-end
-
-local function resetScripts(button)
+local function restoreButtonScripts(button)
 	button:SetScript("OnClick", CharacterSelectButton_OnClick);
 	button:SetScript("OnDoubleClick", CharacterSelectButton_OnDoubleClick);
 	button:SetScript("OnDragStart", CharacterSelectButton_OnDragStart);
 	button:SetScript("OnDragStop", CharacterSelectButton_OnDragStop);
-	-- Functions here copied from CharacterSelect.xml
-	button:SetScript("OnMouseDown", function(self)
-		CharacterSelect.pressDownButton = self;
-		CharacterSelect.pressDownTime = 0;
-	end);
-	button.upButton:SetScript("OnClick", function(self)
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		local index = self:GetParent().index;
-		MoveCharacter(index, index - 1);
-	end);
-	button.downButton:SetScript("OnClick", function(self)
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		local index = self:GetParent().index;
-		MoveCharacter(index, index + 1);
-	end);
-	button:SetScript("OnEnter", function(self)
-		if ( self.selection:IsShown() ) then
-			CharacterSelectButton_ShowMoveButtons(self);
-		end
-		if ( self.isVeteranLocked ) then
-			GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
-			GlueTooltip:Show();
-			GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
-			CharSelectAccountUpgradeButtonPointerFrame:Show();
-			CharSelectAccountUpgradeButtonGlow:Show();
-		end
-	end);
-	button:SetScript("OnLeave", function(self)
-		if ( self.upButton:IsShown() and not (self.upButton:IsMouseOver() or self.downButton:IsMouseOver()) ) then
-			self.upButton:Hide();
-			self.downButton:Hide();
-		end
-		CharSelectAccountUpgradeButtonPointerFrame:Hide();
-		CharSelectAccountUpgradeButtonGlow:Hide();
-		GlueTooltip:Hide();
-	end);
+	button:SetScript("OnMouseDown", CharacterSelectButton_OnMouseDown);
 	button:SetScript("OnMouseUp", CharacterSelectButton_OnDragStop);
+	button:SetScript("OnEnter", CharacterSelectButton_OnEnter);
+	button:SetScript("OnLeave", CharacterSelectButton_OnLeave);
 end
 
-local function disableAllScripts()
-	for i = 1, math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED) do
-		local button = _G["CharSelectCharacterButton"..i];
-		disableScripts(button);
-		button.upButton:Hide();
-		button.downButton:Hide();
-	end
+local function restoreAllButtonScripts()
+	CharacterSelectCharacterFrame.ScrollBox:ForEachFrame(function(button)
+		restoreButtonScripts(button);
+	end);
 end
 
 CharacterServicesCharacterSelectorMixin = {};
 
 function CharacterServicesCharacterSelectorMixin:OnLoad()
 	self.ButtonPools = CreateFramePoolCollection();
-	self.ButtonPools:CreatePool("Frame", self, "CharacterServicesArrowTemplate");
-	self.ButtonPools:CreatePool("Frame", self, "CharacterServicesBonusIconTemplate");
+	self.ButtonPools:CreatePool("Frame", self, "CharacterServicesArrowTemplate", function(pool, obj)
+		FramePool_HideAndClearAnchors(pool, obj);
+		obj:GetParent().SelectionEnabledArrow = nil;
+	end);
+
+	self.ButtonPools:CreatePool("Frame", self, "CharacterServicesBonusIconTemplate", function(pool, obj)
+		FramePool_HideAndClearAnchors(pool, obj);
+		obj:GetParent().SelectionBonusIcon = nil;
+	end);
+
+	local doNotIterateExisting = false;
+	ScrollUtil.AddInitializedFrameCallback(CharacterSelectCharacterFrame.ScrollBox, self.UpdateSingleCharacter, self, doNotIterateExisting);
 end
 
 function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
 	CharacterSelect_SetScrollEnabled(true);
 	CharacterSelect_SaveCharacterOrder();
 
+	self:SetBlock(block);
+
 	local numCharacters = GetNumCharacters();
 	local numDisplayedCharacters = math.min(numCharacters, MAX_CHARACTERS_DISPLAYED);
 
 	-- Set up the GlowBox around the show characters
 	self.GlowBox:SetHeight(53 * numDisplayedCharacters);
-	self.GlowBox:SetPoint("TOP", CharSelectCharacterButton1, -20, 0);
-	self.GlowBox:SetWidth(CharacterSelectCharacterFrame.scrollBar:IsShown() and 238 or 244);
+	self.GlowBox:SetPoint("TOP", CharacterSelectCharacterFrame, -11, -64);
+	self.GlowBox:SetWidth(CharacterSelectCharacterFrame.ScrollBar:IsShown() and 238 or 244);
 
 	self.ButtonPools:ReleaseAll();
 
@@ -90,34 +53,55 @@ function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
 	CharacterSelect.selectedIndex = -1;
 	UpdateCharacterSelection(CharacterSelect);
 
-	disableAllScripts();
-
 	local hasAnyValidCharacter = false;
-
-	for i = 1, numDisplayedCharacters do
-		local button = _G["CharSelectCharacterButton"..i];
-		_G["CharSelectPaidService"..i]:Hide();
-
-		local characterID = GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET);
-
-		local isEnabled, showBonus = self:ProcessCharacterFromBlock(characterID, button, block);
-		CharacterSelect_SetCharacterButtonEnabled(i, isEnabled);
-
-		if isEnabled then
-			hasAnyValidCharacter = true;
-			local arrow = self.ButtonPools:Acquire("CharacterServicesArrowTemplate");
-			arrow:SetPoint("RIGHT", button, "LEFT", -8, 8);
-			arrow:Show();
-
-			if showBonus then
-				local bonus = self.ButtonPools:Acquire("CharacterServicesBonusIconTemplate");
-				bonus:SetPoint("LEFT", button.buttonText.name, "RIGHT", -1, 0);
-				bonus:Show();
-			end
-		end
-	end
+	CharacterSelectCharacterFrame.ScrollBox:ForEachFrame(function(button)
+		hasAnyValidCharacter = self:UpdateSingleCharacter(button) or hasAnyValidCharacter;
+	end);
 
 	self.GlowBox:SetShown(hasAnyValidCharacter);
+end
+
+function CharacterServicesCharacterSelectorMixin:UpdateSingleCharacter(button)
+	if not self:IsActive() then
+		return false;
+	end
+
+	button.paidService:Hide();
+
+	local characterID = GetCharIDFromIndex(button.index);
+	local isEnabled, showBonus = self:ProcessCharacterFromBlock(characterID, button, self:GetBlock());
+	CharacterSelect_SetCharacterButtonEnabled(button, isEnabled);
+	self:SetupAttachedCharacterButtonFrames(button, isEnabled, showBonus);
+
+	return isEnabled;
+end
+
+function CharacterServicesCharacterSelectorMixin:SetupAttachedCharacterButtonFrames(button, isEnabled, showBonus)
+	if isEnabled then
+		if not button.SelectionEnabledArrow then
+			local arrow = self.ButtonPools:Acquire("CharacterServicesArrowTemplate");
+			button.SelectionEnabledArrow = arrow;
+
+			arrow:SetParent(button);
+			arrow:SetPoint("RIGHT", button, "LEFT", -8, 8);
+			arrow:Show();
+		end
+	elseif button.SelectionEnabledArrow then
+		self.ButtonPools:Release(button.SelectionEnabledArrow);
+		button.SelectionEnabledArrow = nil;
+	end
+
+	if isEnabled and showBonus then
+		if not button.SelectionBonusIcon then
+			local bonusIcon = self.ButtonPools:Acquire("CharacterServicesBonusIconTemplate");
+			button.SelectionBonusIcon = bonusIcon;
+			bonusIcon.SelectionBonusIcon:SetPoint("LEFT", button.buttonText.name, "RIGHT", -1, 0);
+			bonusIcon.SelectionBonusIcon:Show();
+		end
+	elseif button.SelectionBonusIcon then
+		self.ButtonPools:Release(button.SelectionBonusIcon);
+		button.SelectionBonusIcon = nil;
+	end
 end
 
 function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(characterID, characterButton, block)
@@ -130,7 +114,7 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(chara
 				return;
 			end
 			block:SaveResultInfo(characterButton, serviceInfo.playerguid);
-		
+
 			-- The user entered a normal boost flow and selected a trial boost character, at this point
 			-- put the flow into the auto-select state.
 			if serviceInfo.checkTrialBoost then
@@ -152,6 +136,7 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(chara
 		end
 	elseif serviceInfo.checkErrors then
 		characterButton:SetScript("OnEnter", function(self)
+			local serviceInfo = block:GetServiceInfoByCharacterID(characterID);
 			if #serviceInfo.errors > 0 then
 				local tooltip = GetAppropriateTooltip();
 				tooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -25, 70);
@@ -179,27 +164,39 @@ end
 
 function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 	self:Hide();
+	self.ButtonPools:ReleaseAll();
 	CharacterSelect_SetScrollEnabled(true);
+	CharacterUpgradeCharacterSelectBlock_SetFilteringByBoostable(false);
 
-	for i = 1, math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED) do
-		local button = _G["CharSelectCharacterButton"..i];
-		resetScripts(button);
-		CharacterSelect_SetCharacterButtonEnabled(i, true);
-
-		if (button.padlock) then
-			button.padlock:Show();
-		end
-	end
+	CharacterSelectCharacterFrame.ScrollBox:Rebuild();
+	restoreAllButtonScripts();
 
 	UpdateCharacterList(true);
 	local selectedCharacterIndex;
 	if selectedButtonIndex and selectedButtonIndex > 0 then
-		selectedCharacterIndex = selectedButtonIndex + CHARACTER_LIST_OFFSET;
+		selectedCharacterIndex = selectedButtonIndex;
 	else
 		selectedCharacterIndex = self.initialSelectedCharacterIndex;
 	end
-	if selectedCharacterIndex and selectedCharacterIndex > 0 then
+
+	local button = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(elementData)
+		return elementData.index == selectedCharacterIndex;
+	end);
+
+	if button then
 		CharacterSelect.selectedIndex = selectedCharacterIndex;
 		UpdateCharacterSelection(CharacterSelect);
 	end
+end
+
+function CharacterServicesCharacterSelectorMixin:IsActive()
+	return self:IsShown();
+end
+
+function CharacterServicesCharacterSelectorMixin:SetBlock(block)
+	self.block = block;
+end
+
+function CharacterServicesCharacterSelectorMixin:GetBlock()
+	return self.block;
 end

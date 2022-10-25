@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AdventuresRewardsScreen.lua"/>
 	
 	<Frame name="AdventuresRewardsFollowerTemplate" inherits="AdventuresLevelPortraitTemplate" mixin="AdventuresRewardsFollowerMixin" virtual="true">
@@ -117,7 +117,7 @@
 								<Anchor point="BOTTOM" relativeKey="$parent.CombatCompleteLineTop" relativePoint="TOP" y="-71"/>
 							</Anchors>
 						</Texture>
-						<FontString parentKey="TextCenter" text="COVENANT_MISSIONS_COMBAT_COMPLETE" inherits="QuestFont_Enormous" justifyH="CENTER" justifyV="MIDDLE" hidden="False">
+						<FontString parentKey="TextCenter" text="COVENANT_MISSIONS_COMBAT_COMPLETE" inherits="QuestFont_Enormous" justifyH="CENTER" justifyV="MIDDLE" hidden="false">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -202,12 +202,8 @@
 						<Scripts>
 							<OnClick method="OnClick"/>
 						</Scripts>
-						<NormalFont style="GameFontNormal">
-							<Color r="0.827" g="0.659" b="0.463"/>
-						</NormalFont>
-						<HighlightFont style="GameFontNormal">
-							<Color r="0.973" g="0.902" b="0.581"/>
-						</HighlightFont>
+						<NormalFont style="GameFontNormal"/>
+						<HighlightFont style="GameFontNormal"/>
 						<DisabledFont style="GameFontHighlightMedium"/>
 						<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 						<Layers>
@@ -222,7 +218,7 @@
 						</Layers>
 						<Animations>
 							<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
-								<Alpha childKey="Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1" fromAlpha="0.75" toAlpha="0"/>
+								<Alpha childKey="Flash" duration="1.0" smoothing="IN_OUT" order="1" fromAlpha="0.75" toAlpha="0"/>
 							</AnimationGroup>
 						</Animations>
 						<Scripts>

@@ -1,0 +1,244 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsCrafting.lua"/>
+
+	<ItemButton name="ProfessionsGearSlotTemplate" mixin="ProfessionsGearSlotTemplateMixin" parentArray="InventorySlots" virtual="true">
+		<Scripts>
+			<OnLoad>
+				PaperDollItemSlotButton_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				PaperDollItemSlotButton_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnShow>
+				PaperDollItemSlotButton_OnShow(self);
+			</OnShow>
+			<OnHide>
+				PaperDollItemSlotButton_OnHide(self);
+			</OnHide>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					PaperDollItemSlotButton_OnModifiedClick(self, button);
+				else
+					PaperDollItemSlotButton_OnClick(self, button);
+				end
+			</OnClick>
+			<OnDragStart>
+				PaperDollItemSlotButton_OnClick(self, "LeftButton");
+			</OnDragStart>
+			<OnReceiveDrag>
+				PaperDollItemSlotButton_OnClick(self, "LeftButton");
+			</OnReceiveDrag>
+			<OnEnter>
+				PaperDollItemSlotButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				PaperDollItemSlotButton_OnLeave(self, motion);
+			</OnLeave>
+		</Scripts>
+	</ItemButton>
+	
+	<Frame name="ProfessionsCraftingPageTemplate" parent="ProfessionsFrame" setAllPoints="true" mixin="ProfessionsCraftingPageMixin" virtual="true">
+		<Frames>
+			<Button parentKey="TutorialButton" inherits="MainHelpPlateButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="39" y="20" />
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="RecipeList" inherits="ProfessionsRecipeListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-72"/>
+					<Anchor point="BOTTOMLEFT" y="5"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SchematicForm" inherits="ProfessionsRecipeSchematicFormTemplate" useParentLevel="true">
+				<Size x="853" y="553"/>
+				<KeyValues>
+					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RecipeList" relativePoint="TOPRIGHT" x="2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="RankBar" frameStrata="HIGH" inherits="ProfessionsRankBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="330" y="-44"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="CreateButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="4"/>
+				</Anchors>
+				<Scripts>
+				</Scripts>
+			</Button>
+
+			<EditBox parentKey="CreateMultipleInputBox" inherits="NumericInputSpinnerTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CreateButton" relativePoint="LEFT" x="-30"/>
+				</Anchors>
+			</EditBox>
+
+			<Button parentKey="CreateAllButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CreateMultipleInputBox" relativePoint="LEFT" x="-30"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="ViewGuildCraftersButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="GUILD_TRADE_SKILL_VIEW_CRAFTERS" hidden="true">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="4"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="GuildFrame" inherits="ProfessionsGuildListingTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-14" y="146"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CraftingOutputLog" inherits="ProfessionsCraftingOutputLogTemplate" frameStrata="DIALOG" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="20"/>
+				</Anchors>
+			</Frame>
+
+			<ItemButton parentKey="Prof0ToolSlot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="Prof0ToolSlot" type="string"/>
+					<KeyValue key="slotID" value="20" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-26" y="-31"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="Prof0Gear0Slot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="Prof0Gear0Slot" type="string"/>
+					<KeyValue key="slotID" value="21" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Prof0ToolSlot" x="-21" y="0"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="Prof0Gear1Slot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="Prof0Gear1Slot" type="string"/>
+					<KeyValue key="slotID" value="22" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Prof0Gear0Slot" x="-5" y="0"/>
+				</Anchors>
+			</ItemButton>
+
+			<ItemButton parentKey="Prof1ToolSlot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="Prof1ToolSlot" type="string"/>
+					<KeyValue key="slotID" value="23" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-26" y="-31"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="Prof1Gear0Slot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="Prof1Gear0Slot" type="string"/>
+					<KeyValue key="slotID" value="24" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Prof1ToolSlot" x="-21" y="0"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="Prof1Gear1Slot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="Prof1Gear1Slot" type="string"/>
+					<KeyValue key="slotID" value="25" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Prof1Gear0Slot" x="-5" y="0"/>
+				</Anchors>
+			</ItemButton>
+
+			<ItemButton parentKey="CookingToolSlot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="CookingToolSlot" type="string"/>
+					<KeyValue key="slotID" value="26" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-26" y="-31"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="CookingGear0Slot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="CookingGear0Slot" type="string"/>
+					<KeyValue key="slotID" value="27" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.CookingToolSlot" x="-21" y="0"/>
+				</Anchors>
+			</ItemButton>
+
+			<ItemButton parentKey="FishingToolSlot" inherits="ProfessionsGearSlotTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="FishingToolSlot" type="string"/>
+					<KeyValue key="slotID" value="28" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-26" y="-31"/>
+				</Anchors>
+			</ItemButton>
+
+			<Frame parentKey="GearSlotDivider">
+				<Size x="5" y="37"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Prof0ToolSlot" x="-8" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="Professions-Equipment-Divider" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Button parentKey="LinkButton" mixin="DropDownToggleButtonMixin">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.RankBar" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
+						GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-LinkProfession-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-LinkProfession-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Frame parentKey="LinkDropDown" inherits="UIDropDownMenuTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

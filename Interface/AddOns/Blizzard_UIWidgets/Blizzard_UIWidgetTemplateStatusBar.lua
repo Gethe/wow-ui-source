@@ -57,7 +57,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	local fillAtlas = fillTextureKitFormatString:format(widgetInfo.frameTextureKit, widgetInfo.fillTextureKit);
 	local fillAtlasInfo = C_Texture.GetAtlasInfo(fillAtlas);
 	if fillAtlasInfo then
-		self.Bar:SetStatusBarAtlas(fillAtlas);
+		self.Bar:SetStatusBarTexture(fillAtlas);
 		self.Bar:SetHeight(fillAtlasInfo.height);
 		self.Bar:GetStatusBarTexture():SetHorizTile(fillAtlasInfo.tilesHorizontally);
 	end
@@ -66,9 +66,12 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	local overrideHeight = nil;
 	local barColor = barColorFromTintValue[widgetInfo.colorTint];
-	if(barColor) then 
+	if barColor then 
 		self.Bar:SetStatusBarColor(barColor:GetRGB());
 		self.Bar.Spark:SetVertexColor(barColor:GetRGB());
+	else
+		self.Bar:SetStatusBarColor(WHITE_FONT_COLOR:GetRGB());
+		self.Bar.Spark:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
 	end 
 
 	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
@@ -122,10 +125,11 @@ function UIWidgetTemplateStatusBarMixin:EvaluateTutorials()
 			cvarBitfield = "closedInfoFrames",
 			bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR,
 			checkCVars = true,
+			autoEdgeFlipping = true;
 			targetPoint = HelpTip.Point.LeftEdgeCenter,
 			onAcknowledgeCallback = evaluateTutorialsClosure,
 		};
-		
+
 		HelpTip:Show(self, barHelpTipInfo);
 
 		if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR_CUTOFF) then
@@ -138,9 +142,9 @@ function UIWidgetTemplateStatusBarMixin:EvaluateTutorials()
 					bitfieldFlag = LE_FRAME_TUTORIAL_TORGHAST_DOMINANCE_BAR_CUTOFF,
 					checkCVars = true,
 					targetPoint = HelpTip.Point.BottomEdgeCenter,
-					alignment = HelpTip.Alignment.Right,
+					alignment = (ObjectiveTrackerFrame and ObjectiveTrackerFrame.isOnLeftSideOfScreen) and HelpTip.Alignment.Left or HelpTip.Alignment.Right,
 				};
-		
+
 				HelpTip:Show(firstPartition, cutoffHelpTipInfo);
 			end
 		end

@@ -7,9 +7,7 @@
 *******************************************************************************
 -->
 	<Frame name="GuildProgressBarTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="264" y="20"/>
-		</Size>
+		<Size x="264" y="20"/>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
@@ -87,9 +85,7 @@
 	</Frame>
 
 	<Button name="GuildPerksButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="314" y="44"/>
-		</Size>
+		<Size x="314" y="44"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\GuildFrame\GuildFrame">
@@ -121,21 +117,13 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIconTexture" parentKey="icon">
-					<Size>
-						<AbsDimension x="39" y="39"/>
-					</Size>
+					<Size x="39" y="39"/>
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" parentKey="name">
-					<Size>
-						<AbsDimension x="0" y="36"/>
-					</Size>
+					<Size x="0" y="36"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLeft" x="6" y="0"/>
 						<Anchor point="RIGHT" x="-12" y="0"/>
@@ -214,33 +202,25 @@
 		</Scripts>
 	</Button>
 	<Button name="GuildFrameColumnHeaderTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="10" y="24"/>
-		</Size>
+		<Size x="10" y="24"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="5" y="24"/>
-					</Size>
+					<Size x="5" y="24"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
 				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="53" y="24"/>
-					</Size>
+					<Size x="53" y="24"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
 				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size>
-						<AbsDimension x="4" y="24"/>
-					</Size>
+					<Size x="4" y="24"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
 					</Anchors>
@@ -259,33 +239,19 @@
 		</Scripts>
 		<ButtonText>
 			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="8" y="0"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" x="8" y="0"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="$parentLeft">
-					<Offset>
-						<AbsDimension x="-2" y="5"/>
-					</Offset>
-				</Anchor>
-				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight">
-					<Offset>
-						<AbsDimension x="2" y="-7"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOPLEFT" relativeTo="$parentLeft" x="-2" y="5"/>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" x="2" y="-7"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
 	<Button name="GuildNewsButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="298" y="18"/>
-		</Size>
+		<Size x="298" y="18"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentHeader" file="Interface\GuildFrame\GuildFrame" parentKey="header" setAllPoints="true" hidden="true">
@@ -337,7 +303,7 @@
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
 	</Button>
-	<Button name="GuildFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Button name="GuildFrameTabButtonTemplate" inherits="PanelTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
 				GuildFrame_TabClicked(self);
@@ -347,7 +313,6 @@
 			<OnShow>
 				PanelTemplates_TabResize(self, 0);
 			</OnShow>
-			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 <!--
@@ -530,9 +495,7 @@
 				</Scripts>
 			</Frame>
 			<Frame name="GuildFactionFrame">
-				<Size>
-					<AbsDimension x="170" y="16"/>
-				</Size>
+				<Size x="170" y="16"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="12" y="8"/>
 				</Anchors>
@@ -557,9 +520,7 @@
 				</Layers>
 				<Frames>
 					<Frame name="GuildFactionBar" inherits="GuildProgressBarTemplate">
-						<Size>
-							<AbsDimension x="184" y="20"/>
-						</Size>
+						<Size x="184" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="-1" y="2"/>
 						</Anchors>

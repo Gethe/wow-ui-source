@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\FrameXML\UI_shared.xsd">
 	<!-- This script turns on verbose messages in the FrameXML log -->
 	<Script>
 		--FrameXML_Debug(1);
@@ -137,7 +137,7 @@
 		<Frames>
 			<Button name="$parentClose" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="2" y="1"/>
+					<Anchor point="TOPRIGHT" x="-2" y="-4"/>
 				</Anchors>
 			</Button>
 		</Frames>

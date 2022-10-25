@@ -62,11 +62,6 @@ local covenantGarrisonStyleData =
 	BackgroundTile = "Adventures-Missions-BG-02",
 };
 
-local function SetupMissionList(self, styleData)
-	HybridScrollFrame_CreateButtons(self.MissionTab.MissionList.listScroll, "CovenantMissionListButtonTemplate", 13, -8, nil, nil, nil, -4);
-	self.MissionTab.MissionList:Update();
-end
-
 local function SetupBorder(self, styleData)
 	self.GarrCorners:Hide();
 	self.Bottom:SetTexCoord(0, 1, 1, 0);
@@ -116,10 +111,22 @@ function CovenantMission:OnLoadMainFrame()
 	GarrisonMission.OnLoadMainFrame(self);
 
 	self.TitleText:Hide();
+	
+	SetupTabOffset(self);
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("CovenantMissionListButtonTemplate", function(button, elementData)
+		CovenantMissionButton_InitButton(button, elementData);
+	end);
+	view:SetPadding(8,0,13,0,-4);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.MissionTab.MissionList.ScrollBox, self.MissionTab.MissionList.ScrollBar, view);
 
 	self:SetupCompleteDialog();
 	self:UpdateCurrencyInfo();
 	self:UpdateTextures();
+	self.MissionTab.MissionList:Update();
+
 	PanelTemplates_SetNumTabs(self, 3);
 	self:SelectTab(self:DefaultTab());
 
@@ -269,20 +276,17 @@ function CovenantMission:SetupTabs()
    -- don't show any tabs if there's only 1
    if (#tabList > 1) then
 		local tab = self["Tab"..tabList[1]];
-		local prevTab = tab;
 		tab:ClearAllPoints();
-		
 		tab:SetPoint("BOTTOMLEFT", self, tab.xOffset or 7, tab.yOffset or -31);
 		tab:Show();
 		
 		for i = 2, #tabList do
 			tab = self["Tab"..tabList[i]];
-			tab:ClearAllPoints();
-			tab:SetPoint("LEFT", prevTab, "RIGHT", -16, 0);
 			tab:Show();
-			prevTab = tab;
 		end
    end
+
+   PanelTemplates_SetNumTabs(self, #tabList);
 
    -- If the selected tab is not a valid one, switch to the default. Additionally, if the missions tab is newly available, then select it.
    local selectedTab = PanelTemplates_GetSelectedTab(self);
@@ -631,10 +635,7 @@ function CovenantMission:UpdateTextures()
 
 	self.BackgroundTile:SetAtlas("Adventures-Missions-BG-02");
 
-	local styleData = covenantGarrisonStyleData;
-	SetupTabOffset(self);
-	SetupMissionList(self, styleData);
-	SetupBorder(self, styleData);
+	SetupBorder(self, covenantGarrisonStyleData);
 end
 
 function CovenantMission:AssignFollowerToMission(frame, info)
@@ -756,34 +757,23 @@ function CovenantMission:TriggerOnAssignFollowerTutorials(followerInfo)
 end
 
 function CovenantMission:QueueAutoTroopsTutorial()
-	local scrollFrame = self.FollowerList.listScroll;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numFollowers = #self.FollowerList.followersList;
-	local numButtons = #buttons;
+	local frame = self.FollowerList.ScrollBox:FindFrameByPredicate(function(frame)
+		return frame.Follower.info and frame.Follower.info.isAutoTroop;
+	end);
+	if frame then
+		local helpTipInfo = {
+			text = COVENANT_MISSIONS_TUTORIAL_TROOPS,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "covenantMissionTutorial",
+			bitfieldFlag = Enum.GarrAutoCombatTutorial.TroopTutorial,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			offsetX = 0,
+			offsetY = 0,
+			onHideCallback = function(acknowledged, closeFlag) self:ProcessTutorials(); end;
+			checkCVars = true,
+		}
 
-	--Make sure the troops section is visible if we're showing this tutorial
-	local maxVisibleElements = 11;
-	if (numFollowers - offset) < maxVisibleElements then 
-		for i = 1, numButtons do
-			local button = buttons[i];
-			if button.Follower.info and button.Follower.info.isAutoTroop then
-				local helpTipInfo = {
-					text = COVENANT_MISSIONS_TUTORIAL_TROOPS,
-					buttonStyle = HelpTip.ButtonStyle.Close,
-					cvarBitfield = "covenantMissionTutorial",
-					bitfieldFlag = Enum.GarrAutoCombatTutorial.TroopTutorial,
-					targetPoint = HelpTip.Point.RightEdgeCenter,
-					offsetX = 0,
-					offsetY = 0,
-					onHideCallback = function(acknowledged, closeFlag) self:ProcessTutorials(); end;
-					checkCVars = true,
-				}
-
-				self:QueueTutorial(helpTipInfo, button);
-				return;
-			end
-		end
+		self:QueueTutorial(self, helpTipInfo, frame);
 	end
 end
 

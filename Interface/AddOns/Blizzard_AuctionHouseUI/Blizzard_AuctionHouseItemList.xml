@@ -59,26 +59,19 @@
 					<Anchor point="TOPRIGHT" x="-26" y="-1"/>
 				</Anchors>
 			</Frame>
-			<ScrollFrame parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderContainer" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
 					<Anchor point="RIGHT" relativeKey="$parent.HeaderContainer" relativePoint="RIGHT"/>
 					<Anchor point="BOTTOM" x="0" y="3"/>
 				</Anchors>
-				<Frames>
-					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="-10"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="11"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
-							</Layer>
-						</Layers>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="4" y="6"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="4" y="-5"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">

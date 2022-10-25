@@ -29,8 +29,9 @@ FilterComponent = EnumUtil.MakeEnum(
 				  set = [Function],
 				  isSet = [Function],
 				  numFilters = [Function],
-				  filterValidation = [Function],
-				  globalPrepend = [String],
+				  filterValidation = [Function], -- OPTIONAL 
+				  nameFunction = [Function] -- OPTIONAL - Mutually exclusive with globalPrepend
+				  globalPrepend = [String], -- OPTIONAL - Mutually exclusive with nameFunction
 				  globalPrependOffset = [Number] -- OPTIONAL 
 				},
 				{ type = FilterComponent.Space, },
@@ -87,7 +88,7 @@ function FilterDropDownSystem.SetUpDropDownLevel(dropdown, filterSystem, level)
 								filterSystem.onUpdate();
 							end
 						end
-			FilterDropDownSystem.AddTextButton(filterInfo.text, set, level);
+			FilterDropDownSystem.AddTextButton(filterInfo.text, set, level, filterInfo.hideMenuOnClick);
 		elseif filterInfo.type == FilterComponent.Checkbox then
 			local set = function(_, _, _, value)
 						filterInfo.set(value);
@@ -96,7 +97,7 @@ function FilterDropDownSystem.SetUpDropDownLevel(dropdown, filterSystem, level)
 						end
 					end
 			local isSet = filterInfo.isSet(filterInfo.filter);
-			FilterDropDownSystem.AddCheckBoxButton(filterInfo.text, set, isSet, level);
+			FilterDropDownSystem.AddCheckBoxButton(filterInfo.text, set, isSet, level, filterInfo.hideMenuOnClick);
 		elseif filterInfo.type == FilterComponent.Radio then
 			local set = function(_, _, _, value)
 						filterInfo.set(value);
@@ -105,7 +106,7 @@ function FilterDropDownSystem.SetUpDropDownLevel(dropdown, filterSystem, level)
 						end
 					end
 			local isSet = filterInfo.isSet(filterInfo.filter);
-			FilterDropDownSystem.AddRadioButton(filterInfo.text, set, isSet, level);
+			FilterDropDownSystem.AddRadioButton(filterInfo.text, set, isSet, level, filterInfo.hideMenuOnClick);
 		elseif filterInfo.type == FilterComponent.DynamicFilterSet then
 			-- Pass this function through since we may need it as well
 			filterInfo.onUpdate = filterSystem.onUpdate;
@@ -124,9 +125,9 @@ function FilterDropDownSystem.SetUpDropDownLevel(dropdown, filterSystem, level)
 	end
 end
 
-function FilterDropDownSystem.AddTextButton(text, set, level)
+function FilterDropDownSystem.AddTextButton(text, set, level, hideMenuOnClick)
 	local textButtonInfo = {
-		keepShownOnClick = true,
+		keepShownOnClick = not hideMenuOnClick,
 		isNotRadio = true,
 		notCheckable = true,
 		func = set,
@@ -136,7 +137,7 @@ function FilterDropDownSystem.AddTextButton(text, set, level)
 	UIDropDownMenu_AddButton(textButtonInfo, level);
 end
 
-function FilterDropDownSystem.AddTextButtonToFilterSystem(filterSystem, text, set, level)
+function FilterDropDownSystem.AddTextButtonToFilterSystem(filterSystem, text, set, level, hideMenuOnClick)
 	local setWrapper = function(button, buttonName, down)
 		set(button, buttonName, down);
 
@@ -145,12 +146,12 @@ function FilterDropDownSystem.AddTextButtonToFilterSystem(filterSystem, text, se
 		end
 	end
 
-	FilterDropDownSystem.AddTextButton(text, setWrapper, level);
+	FilterDropDownSystem.AddTextButton(text, setWrapper, level, hideMenuOnClick);
 end
 
-function FilterDropDownSystem.AddCheckBoxButton(text, setChecked, isChecked, level)
+function FilterDropDownSystem.AddCheckBoxButton(text, setChecked, isChecked, level, hideMenuOnClick)
 	local checkBoxInfo = {
-		keepShownOnClick = true,
+		keepShownOnClick = not hideMenuOnClick,
 		isNotRadio = true,
 		text = text,
 		func = setChecked,
@@ -160,7 +161,7 @@ function FilterDropDownSystem.AddCheckBoxButton(text, setChecked, isChecked, lev
 	UIDropDownMenu_AddButton(checkBoxInfo, level);
 end
 
-function FilterDropDownSystem.AddCheckBoxButtonToFilterSystem(filterSystem, text, setChecked, isChecked, level)
+function FilterDropDownSystem.AddCheckBoxButtonToFilterSystem(filterSystem, text, setChecked, isChecked, level, hideMenuOnClick)
 	local setCheckedWrapper = function(button, arg1, arg2, value)
 		setChecked(button, arg1, arg2, value);
 
@@ -169,11 +170,12 @@ function FilterDropDownSystem.AddCheckBoxButtonToFilterSystem(filterSystem, text
 		end
 	end
 	
-	FilterDropDownSystem.AddCheckBoxButton(text, setCheckedWrapper, isChecked, level);
+	FilterDropDownSystem.AddCheckBoxButton(text, setCheckedWrapper, isChecked, level, hideMenuOnClick);
 end
 
-function FilterDropDownSystem.AddRadioButton(text, setSelected, isSelected, level)
+function FilterDropDownSystem.AddRadioButton(text, setSelected, isSelected, level, hideMenuOnClick)
 	local radioButtonInfo = {
+		keepShownOnClick = not hideMenuOnClick,
 		text = text,
 		func = setSelected,
 		checked = isSelected,
@@ -182,7 +184,7 @@ function FilterDropDownSystem.AddRadioButton(text, setSelected, isSelected, leve
 	UIDropDownMenu_AddButton(radioButtonInfo, level);
 end
 
-function FilterDropDownSystem.AddRadioButtonToFilterSystem(filterSystem, text, setSelected, isSelected, level)
+function FilterDropDownSystem.AddRadioButtonToFilterSystem(filterSystem, text, setSelected, isSelected, level, hideMenuOnClick)
 	local setSelectedWrapper = function()
 		setSelected();
 
@@ -190,17 +192,29 @@ function FilterDropDownSystem.AddRadioButtonToFilterSystem(filterSystem, text, s
 			filterSystem.onUpdate();
 		end
 	end
-	FilterDropDownSystem.AddRadioButton(text, setSelectedWrapper, isSelected, level);
+	FilterDropDownSystem.AddRadioButton(text, setSelectedWrapper, isSelected, level, hideMenuOnClick);
 end
 
 function FilterDropDownSystem.AddDynamicFilterSet(filterSetInfo, level)
 	local numFilters = filterSetInfo.numFilters();
 	for i = 1, numFilters, 1 do
-		local filterValidation = filterSetInfo.filterValidation;
-		local isValidFilter = (filterValidation == nil) or filterValidation(i);
-		if isValidFilter then
-			local offset = filterSetInfo.globalPrependOffset;
-			local globalPrepend = filterSetInfo.globalPrepend .. (offset and offset + i or i);
+		local validated = not filterSetInfo.filterValidation or filterSetInfo.filterValidation(i);
+		if validated then
+			local function GetFilterName(i)
+				if filterSetInfo.nameFunction then
+					return filterSetInfo.nameFunction(i);
+				end
+
+				if filterSetInfo.globalPrepend then
+					local offset = filterSetInfo.globalPrependOffset;
+					local globalPrepend = filterSetInfo.globalPrepend .. (offset and offset + i or i);
+					return _G[globalPrepend];
+				end
+				
+				return "";
+			end
+
+			local name = GetFilterName(i);
 			if filterSetInfo.buttonType == FilterComponent.TextButton then
 				local set =	function()
 							filterSetInfo.set();
@@ -208,7 +222,7 @@ function FilterDropDownSystem.AddDynamicFilterSet(filterSetInfo, level)
 								filterSetInfo.onUpdate();
 							end
 						end					
-				FilterDropDownSystem.AddTextButton(_G[globalPrepend], set, level)
+				FilterDropDownSystem.AddTextButton(name, set, level, filterSetInfo.hideMenuOnClick)
 			else
 				local set =	function(_, _, _, value)
 							filterSetInfo.set(i, value);
@@ -218,9 +232,9 @@ function FilterDropDownSystem.AddDynamicFilterSet(filterSetInfo, level)
 						end
 				local isSet = function() return filterSetInfo.isSet(i); end;
 				if filterSetInfo.buttonType == FilterComponent.Checkbox then
-					FilterDropDownSystem.AddCheckBoxButton(_G[globalPrepend], set, isSet, level);
+					FilterDropDownSystem.AddCheckBoxButton(name, set, isSet, level, filterSetInfo.hideMenuOnClick);
 				elseif filterSetInfo.buttonType == FilterComponent.Radio then
-					FilterDropDownSystem.AddRadioButton(_G[globalPrepend], set, isSet, level);
+					FilterDropDownSystem.AddRadioButton(name, set, isSet, level, filterSetInfo.hideMenuOnClick);
 				end
 			end
 		end

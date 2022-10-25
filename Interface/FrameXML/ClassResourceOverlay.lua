@@ -1,13 +1,5 @@
 ClassResourceOverlayParent = {};
 
-function ClassResourceOverlayParent:OnShow()
-	UIParent_ManageFramePositions();
-end
-
-function ClassResourceOverlayParent:OnHide()
-	UIParent_ManageFramePositions();
-end
-
 function ClassResourceOverlayParent:SetClassResourceOverlay(overlay, show)
 	self:SetSize(overlay:GetSize());
 	self:SetShown(show);

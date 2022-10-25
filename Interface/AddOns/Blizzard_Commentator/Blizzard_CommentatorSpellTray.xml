@@ -1,4 +1,5 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_CommentatorSpellTray.lua"/>
 
 	<Frame name="CommentatorSpellTrayTemplate" mixin="CommentatorSpellTrayMixin" virtual="true">
@@ -11,21 +12,21 @@
 	<Frame name="CommentatorDefensiveTrayTemplate" inherits="CommentatorSpellTrayTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="spellTemplate" value="CommentatorSpellTemplate"/>
-			<KeyValue key="category" value="Enum.TrackedSpellCategory.Defensive" type="Global"/>
+			<KeyValue key="category" value="Enum.TrackedSpellCategory.Defensive" type="global"/>
 		</KeyValues>
 	</Frame>
 	
 	<Frame name="CommentatorDebuffTrayTemplate" inherits="CommentatorSpellTrayTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="spellTemplate" value="CommentatorDebuffTemplate"/>
-			<KeyValue key="category" value="Enum.TrackedSpellCategory.Debuff" type="Global"/>
+			<KeyValue key="category" value="Enum.TrackedSpellCategory.Debuff" type="global"/>
 		</KeyValues>
 	</Frame>
 
 	<Frame name="CommentatorOffensiveTrayTemplate" inherits="CommentatorSpellTrayTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="spellTemplate" value="CommentatorSpellTemplate"/>
-			<KeyValue key="category" value="Enum.TrackedSpellCategory.Offensive" type="Global"/>
+			<KeyValue key="category" value="Enum.TrackedSpellCategory.Offensive" type="global"/>
 		</KeyValues>
 	</Frame>
 </Ui>

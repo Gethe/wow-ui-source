@@ -187,13 +187,18 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 		self.InviteButton.Text:SetFontObject(GameFontHighlightSmall);
 	end 
 
+	if (self:IsMouseOver()) then 
+		self:OnEnter(); 
+	else
+		self:OnLeave();
+	end 
 end 
 
 function ClubFinderApplicantEntryMixin:OnEnter()
 	if (not self.ClassName) then
 		return; 
 	end 
-
+	
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_AddColoredLine(GameTooltip, self.Info.name, self.ClassColor);
 	if(self.faction and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[self.faction])) then 
@@ -204,7 +209,7 @@ function ClubFinderApplicantEntryMixin:OnEnter()
 	GameTooltip_AddNormalLine(GameTooltip, LFG_LIST_ITEM_LEVEL_CURRENT:format(self.Info.ilvl));
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddNormalLine(GameTooltip, CLUB_FINDER_SPECIALIZATIONS);
-
+	
 	if(#self.Info.specIds == 0) then 
 		GameTooltip_AddColoredLine(GameTooltip, CLUB_FINDER_APPLICANT_LIST_NO_MATCHING_SPECS, RED_FONT_COLOR);
 	else 
@@ -274,9 +279,12 @@ function ClubFinderApplicantListMixin:OnLoad()
 	self.ColumnDisplay:LayoutColumns(APPLICANT_COLUMN_INFO);
 	self.ColumnDisplay:Show();
 
-	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "ClubFinderApplicantEntryTemplate", 0, 0);
-	HybridScrollFrame_SetDoNotHideScrollBar(self.ListScrollFrame, true);
-	self.ListScrollFrame.update = function() self:RefreshLayout() end;
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("ClubFinderApplicantEntryTemplate", function(button, elementData)
+		button:UpdateMemberInfo(elementData);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
 function ClubFinderApplicantListMixin:OnShow()
@@ -513,39 +521,12 @@ function ClubFinderApplicantListMixin:BuildList()
 end 
 
 function ClubFinderApplicantListMixin:RefreshLayout()
-	local scrollFrame = self.ListScrollFrame;
 	if (not self.ApplicantInfoList or #self.ApplicantInfoList == 0) then 
 		return; 
 	end 
 
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local showingCards = 0; 
-	local index; 
-
-	scrollFrame.scrollBar:Show();
-	scrollFrame:Show();
-
-	for i = 1, #scrollFrame.buttons do 
-		index = offset + i; 
-		local applicantInfo = self.ApplicantInfoList[index];
-		if (applicantInfo) then 
-			scrollFrame.buttons[i]:UpdateMemberInfo(applicantInfo); 
-			scrollFrame.buttons[i]:Show(); 
-			if (scrollFrame.buttons[i]:IsVisible() and scrollFrame.buttons[i]:IsMouseOver()) then 
-				scrollFrame.buttons[i]:OnEnter(); 
-			else 
-				scrollFrame.buttons[i]:OnLeave();
-			end 
-			showingCards = showingCards + 1;
-		else 
-			scrollFrame.buttons[i]:Hide();
-		end 
-	end 
-
-	local displayedHeight = showingCards * 20; 
-	local totalHeight = #self.ApplicantInfoList * 20; 
-
-	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
+	local dataProvider = CreateDataProvider(self.ApplicantInfoList);
+	self.ScrollBox:SetDataProvider(dataProvider);
 end 
 
 ClubFinderApplicantInviteButtonMixin = { }; 

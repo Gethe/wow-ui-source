@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="UIMenu.lua"/>
 	<Button name="UIMenuButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="128" y="16"/>
-		</Size>
+		<Size x="128" y="16"/>
 		<Scripts>
 			<OnLoad>
 				UIMenuButton_OnLoad(self);

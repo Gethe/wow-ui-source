@@ -43,7 +43,8 @@ function PVPMatchResultsMixin:OnLoad()
 	self:RegisterEvent("PVP_MATCH_ACTIVE");
 	
 	local tabContainer = self.content.tabContainer;
-	self.scrollFrame = self.content.scrollFrame;
+	self.scrollBox = self.content.scrollBox;
+	self.scrollBar = self.content.scrollBar;
 	self.scrollCategories = self.content.scrollCategories;
 	self.tabGroup = tabContainer.tabGroup;
 	self.tab1 = self.tabGroup.tab1;
@@ -71,7 +72,7 @@ function PVPMatchResultsMixin:OnLoad()
 	self.ratingButton = self.progressContainer.rating.button;
 	self.earningsArt = self.content.earningsArt;
 	self.earningsBackground = self.earningsArt.background;
-	self.tintFrames = {self.glowTop, self.earningsBackground, self.scrollFrame.background};
+	self.tintFrames = {self.glowTop, self.earningsBackground, self.scrollBox.background};
 	self.progressFrames = {self.honorFrame, self.conquestFrame, self.ratingFrame};
 
 	self.header:SetShadowOffset(1,-1);
@@ -94,15 +95,14 @@ function PVPMatchResultsMixin:OnLoad()
 	end
 	PanelTemplates_SetTab(self, 1);
 
-	HybridScrollFrame_OnLoad(self.scrollFrame);
-	HybridScrollFrame_CreateButtons(self.scrollFrame, "PVPTableRowTemplate");
-	HybridScrollFrame_SetDoNotHideScrollBar(self.scrollFrame, true);
-
 	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-GenericMetal-ExitButtonBorder", -1, 1);
 
 	self.itemPool = CreateFramePool("BUTTON", self.itemContainer, "PVPMatchResultsLoot");
-	self.tableBuilder = CreateTableBuilder(HybridScrollFrame_GetButtons(self.scrollFrame));
+	
+	self.tableBuilder = CreateTableBuilder();
 	self.tableBuilder:SetHeaderContainer(self.scrollCategories);
+
+	PVPMatchUtil.InitScrollBox(self.scrollBox, self.scrollBar, self.tableBuilder);
 end
 
 function PVPMatchResultsMixin:Init()
@@ -285,8 +285,8 @@ function PVPMatchResultsMixin:DisplayRewards()
 		end
 	end
 	
-	-- Skirmish is considered rated, ignore it.
-	if C_PvP.IsRatedMap() and not IsArenaSkirmish() and not PVPMatchUtil.InSoloShuffleBrawl() then
+	-- Skirmish and Brawl Solo Shuffle are considered registered/rated, ignore them.
+	if C_PvP.IsRatedMap() and not IsArenaSkirmish() and not C_PvP.IsBrawlSoloShuffle() then
 		self:InitRatingFrame();
 	end
 
@@ -380,7 +380,8 @@ function PVPMatchResultsMixin:OnUpdate()
 		self:UpdateLeaveButton();
 	end
 
-	PVPMatchUtil.UpdateTable(self.tableBuilder, self.scrollFrame);
+	local forceNewDataProvider = false;
+	PVPMatchUtil.UpdateDataProvider(self.scrollBox, forceNewDataProvider);
 end
 
 local scoreWidgetSetID = 249;
@@ -470,8 +471,6 @@ function PVPMatchResultsMixin:InitRatingFrame()
 end
 
 function PVPMatchResultsMixin:SetupArtwork(factionIndex, isFactionalMatch)
-	PVPMatchUtil.SetupTableButtonColors(factionIndex, isFactionalMatch, self.scrollFrame);
-
 	local themeDecoration = self.overlay.decorator;
 	local theme;
 	if isFactionalMatch then
@@ -521,6 +520,9 @@ function PVPMatchResultsMixin:OnTabGroupClicked(tab)
 	PanelTemplates_SetTab(self, tab:GetID());
 	SetBattlefieldScoreFaction(tab.factionEnum);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+
+	local forceNewDataProvider = true;
+	PVPMatchUtil.UpdateDataProvider(self.scrollBox, forceNewDataProvider);
 end
 
 PVPMatchResultsRatingMixin = {};
@@ -533,10 +535,16 @@ function PVPMatchResultsRatingMixin:Init(rating, ratingChange)
 		C_PvP.GetTeamInfo(0),
 		C_PvP.GetTeamInfo(1), 
 	};
-	local factionIndex = GetBattlefieldArenaFaction();
-	self.friendlyMMR = BATTLEGROUND_YOUR_AVERAGE_RATING:format(teamInfos[factionIndex+1].ratingMMR);
-	local enemyFactionIndex = (factionIndex+1)%2;
-	self.enemyMMR = BATTLEGROUND_ENEMY_AVERAGE_RATING:format(teamInfos[enemyFactionIndex+1].ratingMMR);
+	if C_PvP.IsRatedSoloShuffle() then
+		-- For Rated Solo Shuffle your MMR is always first, followed by the match average
+		self.friendlyMMR = BATTLEGROUND_YOUR_PERSONAL_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(teamInfos[1].ratingMMR));
+		self.enemyMMR = BATTLEGROUND_MATCH_AVERAGE_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(teamInfos[2].ratingMMR));
+	else
+		local factionIndex = GetBattlefieldArenaFaction();
+		local enemyFactionIndex = (factionIndex+1)%2;
+		self.friendlyMMR = BATTLEGROUND_YOUR_AVERAGE_RATING:format(teamInfos[factionIndex+1].ratingMMR);
+		self.enemyMMR = BATTLEGROUND_ENEMY_AVERAGE_RATING:format(teamInfos[enemyFactionIndex+1].ratingMMR);
+	end
 end
 
 function PVPMatchResultsRatingMixin:OnEnter()
@@ -552,8 +560,9 @@ function PVPMatchResultsRatingMixin:OnEnter()
 		GameTooltip_AddNormalLine(GameTooltip, PVP_RATING_CURRENT:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(self.ratingNew)));
 	end
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddNormalLine(GameTooltip, self.friendlyMMR);
-	GameTooltip_AddNormalLine(GameTooltip, self.enemyMMR);
+	local wrapText = false;
+	GameTooltip_AddNormalLine(GameTooltip, self.friendlyMMR, wrapText);
+	GameTooltip_AddNormalLine(GameTooltip, self.enemyMMR, wrapText);
 	
 	GameTooltip:Show();
 end

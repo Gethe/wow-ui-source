@@ -13,12 +13,12 @@ local RuneforgePowerFilterOrder = {
 
 RuneforgeLegendaryPowerLootJournalMixin = CreateFromMixins(RuneforgePowerBaseMixin);
 
-function RuneforgeLegendaryPowerLootJournalMixin:InitElement(lootJournal)
-	self.lootJournal = lootJournal;
+function RuneforgeLegendaryPowerLootJournalMixin:Init(elementData)
+	self:SetPowerID(elementData.powerID);
 end
 
-function RuneforgeLegendaryPowerLootJournalMixin:UpdateDisplay()
-	self:SetPowerID(self.lootJournal:GetPowerID(self:GetListIndex()));
+function RuneforgeLegendaryPowerLootJournalMixin:OnClick()
+	self:OnSelected();
 end
 
 function RuneforgeLegendaryPowerLootJournalMixin:OnPowerSet(oldPowerID, newPowerID)
@@ -73,15 +73,14 @@ function LootJournalMixin:OnLoad()
 	self:SetClassAndSpecFilters(RuneforgeUtil.GetPreviewClassAndSpec());
 	self:UpdateRuneforgePowerFilterButtonText();
 
-	self.PowersFrame:SetElementTemplate("RuneforgeLegendaryPowerLootJournalTemplate", self);
-
-	self.PowersFrame:SetGetNumResultsFunction(GenerateClosure(self.GetNumPowers, self));
-
 	local stride = 2;
-	local xPadding = 20;
-	local yPadding = 0;
-	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, xPadding, yPadding);
-	self.PowersFrame:SetLayout(layout);
+	local view = CreateScrollBoxListGridView(stride);
+	view:SetElementInitializer("RuneforgeLegendaryPowerLootJournalTemplate", function(button, elementData)
+		button:Init(elementData);
+	end);
+	view:SetPadding(0,0,0,0,20,0);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
 function LootJournalMixin:OnShow()
@@ -112,47 +111,31 @@ function LootJournalMixin:GetPendingPowerID()
 end
 
 function LootJournalMixin:OpenToPowerID(powerID)
-	if not self:ScrollToPowerID(powerID) then
+	local FindPower = function(elementData)
+		return elementData.powerID == powerID;
+	end;
+
+	if not self.ScrollBox:FindByPredicate(FindPower) then
 		self:SetRuneforgePowerFilter(Enum.RuneforgePowerFilter.All);
-		if not self:ScrollToPowerID(powerID) then
-			local classID = RuneforgeUtil.GetPreviewClassAndSpec();
-			self:SetClassAndSpecFilters(classID, NO_SPEC_FILTER);
-			self:ScrollToPowerID(powerID);
+		
+		if not self.ScrollBox:FindByPredicate(FindPower) then
+			self:SetClassAndSpecFilters(RuneforgeUtil.GetPreviewClassAndSpec(), NO_SPEC_FILTER);
 		end
 	end
+
+	self:ScrollToPowerID(powerID);
 end
 
 function LootJournalMixin:ScrollToPowerID(powerID)
-	for elementFrame in self.PowersFrame:EnumerateElementFrames() do
-		if elementFrame:GetPowerID() == powerID then
-			-- Scroll to the frame that has a matching power.
-			local yOffset = select(5, elementFrame:GetPoint());
-			local function UpdateScrollBar()
-				self.PowersFrame.ScrollBar:SetValue(-yOffset);
-			end
-
-			-- We have to delay the update until the scroll bar has been properly initialized.
-			-- Unforunately there's no easy way to force this to happen and we just have to wait
-			-- until OnLayerUpdate refreshes the scroll bar.
-			C_Timer.After(0, UpdateScrollBar);
-			return true;
-		end
-	end
-
-	return false;
-end
-
-function LootJournalMixin:GetNumPowers()
-	return #self.powers;
-end
-
-function LootJournalMixin:GetPowerID(listIndex)
-	return self.powers[listIndex];
+	self.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
+		return elementData.powerID == powerID;
+	end);
 end
 
 function LootJournalMixin:Refresh()
 	if self:IsShown() then
-		self.PowersFrame:RefreshListDisplay();
+		local dataProvider = CreateDataProviderWithAssignedKey(self.powers, "powerID");
+		self.ScrollBox:SetDataProvider(dataProvider);
 	end
 end
 

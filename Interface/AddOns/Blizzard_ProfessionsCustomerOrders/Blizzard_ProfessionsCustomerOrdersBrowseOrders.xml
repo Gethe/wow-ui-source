@@ -1,0 +1,91 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsCustomerOrdersBrowseOrders.lua"/>
+
+	<!-- Largely copied from AuctionHouseFrame -->
+	<Frame name="ProfessionsCustomerOrdersBrowseOrdersTemplate" mixin="ProfessionsCustomerOrdersBrowsePageMixin" virtual="true">
+		<Size x="800" y="538"/>
+		<KeyValues>
+			<KeyValue key="mode" value="ProfessionsCustomerOrdersMode.Browse" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+		<Frames>
+			<Frame parentKey="SearchBar">
+				<Size x="618" y="40"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-12" y="-29"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="FavoritesSearchButton" inherits="SquareIconButtonTemplate" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true">
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</Button>
+					<EditBox parentKey="SearchBox" autoFocus="false" historyLines="1" bytes="64" inherits="SearchBoxTemplate">
+						<Size x="241" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.FavoritesSearchButton" relativePoint="RIGHT" x="9" y="0"/>
+						</Anchors>
+					</EditBox>
+					<Button parentKey="SearchButton" text="AUCTION_HOUSE_SEARCH_BUTTON" registerForClicks="LeftButtonDown" inherits="UIPanelButtonTemplate">
+						<Size x="132" y="22"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" registerForClicks="LeftButtonDown" text="FILTER">
+						<Size x="93" y="22"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.SearchButton" relativePoint="LEFT" x="-10" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+									<Size x="10" y="12"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="LevelRangeFrame" inherits="AuctionHouseLevelRangeFrameTemplate"/>
+							<Button parentKey="ClearFiltersButton">
+								<Size x="23" y="23"/>
+								<Anchors>
+									<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-3" y="0"/>
+								</Anchors>
+								<NormalTexture atlas="auctionhouse-ui-filter-redx">
+									<Size x="23" y="23"/>
+								</NormalTexture>
+								<HighlightTexture atlas="auctionhouse-ui-filter-redx" alphaMode="ADD" alpha="0.4">
+									<Size x="23" y="23"/>
+								</HighlightTexture>
+							</Button>
+							<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
+							<Frame parentKey="LevelRangeFrame" inherits="AuctionHouseLevelRangeFrameTemplate"/>
+						</Frames>
+					</DropDownToggleButton>
+				</Frames>
+			</Frame>
+			<Frame parentKey="CategoryList" inherits="ProfessionsCustomerOrdersRecipeCategoryListTemplate">
+				<Anchors>
+					<Anchor point="LEFT" x="4" y="0"/>
+					<Anchor point="TOP" relativeKey="$parent.SearchBar" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="RecipeList" inherits="ProfessionsCustomerOrdersRecipeListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CategoryList" relativePoint="TOPRIGHT"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.CategoryList" relativePoint="BOTTOMRIGHT"/>
+					<Anchor point="TOPRIGHT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

@@ -1,18 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Script file="Blizzard_AuctionHouseWoWTokenFrame.lua"/>	
+	<Script file="Blizzard_AuctionHouseWoWTokenFrame.lua"/>
 
-	<Slider name="DummyScrollBarTemplate" inherits="HybridScrollBarTemplate" virtual="true">
+	<EventFrame name="DummyAuctionHouseScrollBarTemplate" inherits="WowTrimScrollBar" virtual="true">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="-17"/>
-			<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-1" y="14"/>
+			<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="0"/>
+			<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-1" y="-1"/>
 		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
-			</Layer>
-		</Layers>
-	</Slider>
+	</EventFrame>
 	
 	<Frame name="BrowseWowTokenResultsTemplate" inherits="AuctionHouseBackgroundTemplate" virtual="true">
 		<KeyValues>
@@ -289,7 +284,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<Slider parentKey="DummyScrollBar" inherits="DummyScrollBarTemplate"/>
+			<Slider parentKey="DummyScrollBar" inherits="DummyAuctionHouseScrollBarTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnLoad function="BrowseWowTokenResults_OnLoad"/>
@@ -412,7 +407,7 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
 				</Anchors>
 				<Frames>
-					<Slider parentKey="DummyScrollBar" inherits="DummyScrollBarTemplate"/>
+					<Slider parentKey="DummyScrollBar" inherits="DummyAuctionHouseScrollBarTemplate"/>
 				</Frames>
 			</Frame>
 			<Button parentKey="DummyRefreshButton" inherits="RefreshButtonTemplate">

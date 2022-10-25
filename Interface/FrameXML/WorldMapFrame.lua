@@ -171,8 +171,7 @@ function TaskPOI_OnEnter(self, skipSetOwner)
 	end
 
 	GameTooltip_AddQuest(self);
-
-	EventRegistry:TriggerEvent("TaskPOI.TooltipShown", self, self.questID);
+	EventRegistry:TriggerEvent("TaskPOI.TooltipShown", self, self.questID, self);
 end
 
 function TaskPOI_OnLeave(self)

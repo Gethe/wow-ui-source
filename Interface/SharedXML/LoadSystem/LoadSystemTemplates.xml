@@ -1,0 +1,52 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="LoadSystemTemplates.lua"/>
+
+	<Frame name="LargeDropDownLoadSystemTemplate" mixin="DropDownLoadSystemMixin" virtual="true">
+		<!--
+		dropDownSelectionFont: font to use on the selected option text.
+		dropDownOptionFont: font to use for each option name in the dropdown flyout.
+		dropdownTooltipBackdropStyle: backdropStyle to use for button and icon tooltips.
+		-->
+		<KeyValues>
+			<KeyValue key="dropDownSelectionFont" value="GameFontHighlight" type="string"/>
+			<KeyValue key="dropDownOptionFont" value="GameFontNormal" type="string"/>
+			<KeyValue key="dropdownTooltipBackdropStyle" value="nil" type="global"/>
+		</KeyValues>
+		<Size x="150" y="30"/>
+		<Frames>
+			<Frame parentKey="DropDownControl" inherits="LargeDropDownControlTemplate">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="DropDownLoadSystemTemplate" mixin="DropDownLoadSystemMixin" virtual="true">
+		<!--
+		dropDownSelectionFont: font to use on the selected option text.
+		dropDownOptionFont: font to use for each option name in the dropdown flyout.
+		dropdownTooltipBackdropStyle: backdropStyle to use for button and icon tooltips.
+		-->
+		<KeyValues>
+			<KeyValue key="dropDownSelectionFont" value="GameFontHighlightSmall" type="string"/>
+			<KeyValue key="dropDownOptionFont" value="GameFontNormalSmall" type="string"/>
+			<KeyValue key="dropdownTooltipBackdropStyle" value="nil" type="global"/>
+		</KeyValues>
+		<Size x="150" y="30"/>
+		<Frames>
+			<Frame parentKey="DropDownControl" inherits="DropDownControlTemplate">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

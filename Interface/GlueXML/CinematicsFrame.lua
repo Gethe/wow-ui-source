@@ -11,7 +11,7 @@ function CinematicsFrame_OnLoad(self)
 			break;
 		end
 		button:Show();
-		if i < columnSize then
+		if i <= columnSize then
 			height = height + button:GetHeight() + buttonPadding;
 		else
 			rightColumnHeight = rightColumnHeight + button:GetHeight() + buttonPadding;

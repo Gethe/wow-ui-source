@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="FM_FlightPathDataProvider.lua"/>
 
 	<Frame name="FlightMap_FlightPointPinTemplate" hidden="true" enableMouse="true" mixin="FlightMap_FlightPointPinMixin" virtual="true">
@@ -33,9 +33,7 @@
 			<AnimationGroup parentKey="RevealAnim" setToFinalAlpha="true">
 				<Alpha parentKey="Alpha" childKey="Fill" duration=".03" fromAlpha="0" toAlpha="1" order="1"/>
 				<LineScale parentKey="Scale" childKey="Fill" duration=".03" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="1" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</LineScale>
 			</AnimationGroup>
 			<AnimationGroup parentKey="FadeAnim" setToFinalAlpha="true">
@@ -54,9 +52,7 @@
 			<AnimationGroup parentKey="RevealAnim" setToFinalAlpha="true">
 				<Alpha parentKey="Alpha" childKey="Fill" duration=".15" fromAlpha="0" toAlpha=".85" order="1"/>
 				<LineScale parentKey="Scale" childKey="Fill" smoothing="IN" duration=".15" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="1" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</LineScale>
 			</AnimationGroup>
 		</Animations>

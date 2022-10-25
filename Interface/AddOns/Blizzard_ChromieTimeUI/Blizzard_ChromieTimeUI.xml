@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ChromieTimeUI.lua"/>
 
 	<Button name="ChromieTimeExpansionButtonTemplate" motionScriptsWhileDisabled="true" mixin="ChromieTimeExpansionButtonMixin" virtual="true">
@@ -14,7 +14,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="GameFontNormal">
+				<FontString parentKey="Name" justifyH="LEFT" justifyV="BOTTOM" inherits="GameFontNormal">
 					<Size x="190" y="0"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="18" y="17"/>
@@ -146,14 +146,14 @@
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PortraitBorder" x="-9" y="9"/>
 							</Anchors>
 						</Texture>
-							<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="QuestFont_Super_Huge" text="CHROMIE_TIME_PREVIEW_CARD_DEFAULT_TITLE">
+							<FontString parentKey="Name" justifyH="LEFT" justifyV="BOTTOM" inherits="QuestFont_Super_Huge" text="CHROMIE_TIME_PREVIEW_CARD_DEFAULT_TITLE">
 								<Size x="310" y="0"/>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.Portrait" relativePoint="BOTTOM" x="0" y="-20"/>
 								</Anchors>
 								<Color r="0.2824" g="0.0157" b="0.0157"/>
 							</FontString>
-							<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Med3" text="CHROMIE_TIME_PREVIEW_CARD_DEFAULT_DESCRIPTION">
+							<FontString parentKey="Description" justifyH="LEFT" justifyV="TOP" inherits="SystemFont_Med3" text="CHROMIE_TIME_PREVIEW_CARD_DEFAULT_DESCRIPTION">
 								<Size x="310" y="0"/>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-10"/>
@@ -174,7 +174,6 @@
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -27,7 +27,7 @@
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	
-	<Button name="CommunitiesGuildNewsButtonTemplate" virtual="true">
+	<Button name="CommunitiesGuildNewsButtonTemplate" mixin="CommunitiesGuildNewsButtonMixin" virtual="true">
 		<Size x="300" y="18"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -347,20 +347,23 @@
 				</Scripts>
 				<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
 			</Button>
-			<ScrollFrame name="$parentContainer" parentKey="Container" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Size x="301" y="305"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-25"/>
 				</Anchors>
-				<Frames>
-					<Slider parentKey="ScrollBar" inherits="HybridScrollBarTemplate">
-						<KeyValues>
-							<KeyValue key="doNotHide" value="true" type="boolean"/>
-						</KeyValues>
-						<!-- Anchored in code based on whether the GMImpeachButton is shown or not -->
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-10" y="2"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-9" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</EventFrame>
 			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
 				<Size x="10" y="10"/>
 				<Scripts>

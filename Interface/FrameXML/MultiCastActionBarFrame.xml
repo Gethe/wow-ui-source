@@ -33,9 +33,7 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 	</CheckButton>
 	<CheckButton name="MultiCastActionButtonTemplate" inherits="ActionBarButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="30" y="30"/>
-		</Size>
+		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture file="Interface\Buttons\UI-TotemBar" parentKey="overlayTex">
@@ -68,28 +66,16 @@
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="MultiCastSpellButton" inherits="SecureFrameTemplate, ActionButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="30" y="30"/>
-		</Size>
+		<Size x="30" y="30"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="36" y="3"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" x="36" y="3"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
-					<Size>
-						<AbsDimension x="36" y="10"/>
-					</Size>
+					<Size x="36" y="10"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-2" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-2" y="-2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -140,17 +126,13 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 	</CheckButton>
 
-	<Frame name="MultiCastActionBarFrame" parent="MainMenuBar" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="230" y="38"/>
-		</Size>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBar" relativePoint="TOPLEFT">
-				<Offset>
-					<AbsDimension x="30" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
+	<Frame name="MultiCastActionBarFrame" inherits="UIParentBottomManagedFrameTemplate" enableMouse="true" hidden="true">
+		<Size x="230" y="38"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="203" type="number"/>
+			<KeyValue key="align" value="left" type="string"/>
+			<KeyValue key="layoutOnBottom" value="true" type="boolean"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="MultiCastFlyoutFrame" hidden="true">
 				<Size x="32" y="30"/>
@@ -232,15 +214,9 @@
 				</HighlightTexture>
 			</Button>
 			<CheckButton name="MultiCastSummonSpellButton" inherits="MultiCastSpellButton" id="1">
-				<Size>
-					<AbsDimension x="30" y="30"/>
-				</Size>
+				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="3" y="3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="3" y="3"/>
 				</Anchors>
 				<Frames>
 					<Button name="$parentFlyoutButton" parentKey="flyoutButton" hidden="true">
@@ -285,84 +261,48 @@
 			</CheckButton>
 			<CheckButton name="MultiCastSlotButton1" inherits="MultiCastSlotButtonTemplate" id="1">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="36" y="3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="36" y="3"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="MultiCastSlotButton2" inherits="MultiCastSlotButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="MultiCastSlotButton1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="8" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="MultiCastSlotButton1" relativePoint="RIGHT" x="8" y="0"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="MultiCastSlotButton3" inherits="MultiCastSlotButtonTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="MultiCastSlotButton2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="8" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="MultiCastSlotButton2" relativePoint="RIGHT" x="8" y="0"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="MultiCastSlotButton4" inherits="MultiCastSlotButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="MultiCastSlotButton3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="8" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="MultiCastSlotButton3" relativePoint="RIGHT" x="8" y="0"/>
 				</Anchors>
 			</CheckButton>
 			<Frame name="MultiCastActionPage1" id="1">
 				<Size x="144" y="30"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="36" y="3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="36" y="3"/>
 				</Anchors>
 				<Frames>
 					<CheckButton name="MultiCastActionButton1" inherits="MultiCastActionButtonTemplate" id="1">
 						<Anchors>
-							<Anchor point="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" x="0" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="MultiCastActionButton2" inherits="MultiCastActionButtonTemplate" id="2">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="MultiCastActionButton1" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="8" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="MultiCastActionButton1" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="MultiCastActionButton3" inherits="MultiCastActionButtonTemplate" id="3">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="MultiCastActionButton2" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="8" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="MultiCastActionButton2" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="MultiCastActionButton4" inherits="MultiCastActionButtonTemplate" id="4">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="MultiCastActionButton3" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="8" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="MultiCastActionButton3" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
 					</CheckButton>
 				</Frames>
@@ -370,47 +310,27 @@
 			<Frame name="MultiCastActionPage2" id="2" hidden="true">
 				<Size x="144" y="30"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="36" y="3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="36" y="3"/>
 				</Anchors>
 				<Frames>
 					<CheckButton name="MultiCastActionButton5" inherits="MultiCastActionButtonTemplate" id="5">
 						<Anchors>
-							<Anchor point="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" x="0" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="MultiCastActionButton6" inherits="MultiCastActionButtonTemplate" id="6">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="MultiCastActionButton5" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="8" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="MultiCastActionButton5" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="MultiCastActionButton7" inherits="MultiCastActionButtonTemplate" id="7">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="MultiCastActionButton6" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="8" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="MultiCastActionButton6" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="MultiCastActionButton8" inherits="MultiCastActionButtonTemplate" id="8">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="MultiCastActionButton7" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="8" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="MultiCastActionButton7" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
 					</CheckButton>
 				</Frames>
@@ -418,61 +338,35 @@
 			<Frame name="MultiCastActionPage3" id="3" hidden="true">
 				<Size x="144" y="30"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="36" y="3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="36" y="3"/>
 				</Anchors>
 				<Frames>
 					<CheckButton name="MultiCastActionButton9" inherits="MultiCastActionButtonTemplate" id="9">
 						<Anchors>
-							<Anchor point="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" x="0" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="MultiCastActionButton10" inherits="MultiCastActionButtonTemplate" id="10">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="MultiCastActionButton9" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="8" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="MultiCastActionButton9" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="MultiCastActionButton11" inherits="MultiCastActionButtonTemplate" id="11">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="MultiCastActionButton10" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="8" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="MultiCastActionButton10" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
 					</CheckButton>
 					<CheckButton name="MultiCastActionButton12" inherits="MultiCastActionButtonTemplate" id="12">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="MultiCastActionButton11" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="8" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativeTo="MultiCastActionButton11" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
 					</CheckButton>
 				</Frames>
 			</Frame>
 			<CheckButton name="MultiCastRecallSpellButton" inherits="MultiCastSpellButton" id="1">
-				<Size>
-					<AbsDimension x="30" y="30"/>
-				</Size>
+				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="MultiCastActionButton4" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="8" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="MultiCastActionButton4" relativePoint="RIGHT" x="8" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="MultiCastRecallSpellButton_OnLoad"/>
@@ -484,8 +378,6 @@
 			<OnLoad function="MultiCastActionBarFrame_OnLoad"/>
 			<OnEvent function="MultiCastActionBarFrame_OnEvent"/>
 			<OnUpdate function="MultiCastActionBarFrame_OnUpdate"/>
-			<OnShow function="UIParent_ManageFramePositions"/>
-			<OnHide function="UIParent_ManageFramePositions"/>
 		</Scripts>
 	</Frame>
 </Ui>

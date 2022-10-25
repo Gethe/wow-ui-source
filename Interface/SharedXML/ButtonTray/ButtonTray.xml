@@ -1,0 +1,57 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="ButtonTray.lua"/>
+
+	<Frame name="BaseButtonTrayTemplate" mixin="BaseButtonTrayMixin" virtual="true">
+		<!--
+		buttonTemplate: template to use for new buttons.
+		buttonSetup(button, label, callback): function to initialize button.
+		-->
+		<KeyValues>
+			<KeyValue key="templateType" value="BUTTON" type="string"/>
+			<KeyValue key="buttonTemplate" value="UIPanelButtonTemplate" type="string"/>
+
+			<!--
+			<KeyValue key="buttonSetup" value="foo" type="global"/>
+			-->
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HorizontalButtonTrayTemplate" mixin="HorizontalButtonTrayMixin" inherits="BaseButtonTrayTemplate, HorizontalLayoutFrame" virtual="true">
+		<!-- LayoutFrame key values
+		expand: expand the frame to encompass the child frames.
+		spacing: spacing for each button in the layout frame.
+		-->
+		<KeyValues>
+			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="spacing" value="10" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HorizontalGridButtonTrayTemplate" mixin="GridButtonTrayMixin" inherits="BaseButtonTrayTemplate, ResizeLayoutFrame" virtual="true">
+		<!--
+		baseWidth: width to calculate the grid off of. Alternatively, specify left/right anchors to control the width.
+		<KeyValues>
+			<KeyValue key="baseWidth" value="400" type="number"/>
+		</KeyValues>
+		-->
+		<!-- 
+		xPadding: override to change the grid's horizontal padding.
+		yPadding: override to change the grid's vertical padding.
+		-->
+		<KeyValues>
+			<KeyValue key="xPadding" value="10" type="number"/>
+			<KeyValue key="yPadding" value="5" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+		</Scripts>
+	</Frame>
+</Ui>

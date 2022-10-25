@@ -2,6 +2,7 @@
 ## Title: Blizzard Auction House UI
 ## Secure: 1
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_AuctionHouseShared
 ## SavedVariables: g_auctionHouseSortsBySearchContext
 ## SavedVariablesPerCharacter: g_activeBidAuctionIDs
 Blizzard_AuctionHouseUtil.lua

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="ChannelFrame.lua"/>
 
 	<Frame name="ChannelFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" mixin="ChannelFrameMixin" inherits="ButtonFrameTemplate">
@@ -15,14 +15,6 @@
 						<Anchor point="TOPLEFT" x="-5" y="7"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="TitleText" inherits="GameFontNormal" text="CHAT_CHANNELS">
-					<Size x="0" y="16"/>
-					<Anchors>
-						<Anchor point="TOP" y="-3"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -58,21 +50,21 @@
 			<Frame parentKey="LeftInset" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ChannelList" x="-5" y="7" />
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChannelList" x="0" y="-2" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChannelList" x="20" y="-2" />
 				</Anchors>
 			</Frame>
 
 			<Frame parentKey="ChannelRoster" inherits="ChannelRosterTemplate" enableMouseMotion="true">
-				<Size x="1" y="0" />
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-26" y="-64" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" relativePoint="TOPRIGHT"/>
 					<Anchor point="BOTTOMRIGHT" x="-26" y="28" />
 				</Anchors>
 			</Frame>
 			<Frame parentKey="RightInset" inherits="InsetFrameTemplate">
+				<Size x="191"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ChannelRoster" x="0" y="4" />
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChannelRoster.ScrollFrame.scrollBar" relativePoint="BOTTOMLEFT" x="-2" y="-16" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.ChannelRoster"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 			</Frame>
 

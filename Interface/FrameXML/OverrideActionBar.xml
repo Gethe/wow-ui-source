@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="OverrideActionBar.lua"/>
 	<CheckButton name="OverrideActionBarButtonTemplate" inherits="ActionBarButtonTemplate" virtual="true">
-		<Size x="52" y="52"/>
+		<Size x="45" y="45"/>
 		<Scripts>
 			<OnLoad inherit="append">
 				self:SetFrameLevel(self:GetFrameLevel() + 2);
@@ -12,7 +12,7 @@
 		</Scripts>
 	</CheckButton>
 
-	<Frame name="OverrideActionBar" frameStrata="MEDIUM" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
+	<Frame name="OverrideActionBar" mixin="OverrideActionBarMixin" frameStrata="MEDIUM" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
 		<Animations>
 			<AnimationGroup parentKey="slideOut">
 				<Translation offsetX="0" offsetY="-180" duration="0.4" order="1"/>
@@ -270,7 +270,9 @@
 							<Anchor point="CENTER" relativeTo="$parentExitBG" x="0" y="-5"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="OverrideActionBar_Leave"/>
+							<OnClick>
+								OverrideActionBar:Leave();
+							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip_SetTitle(GameTooltip, LEAVE_VEHICLE);
@@ -456,6 +458,7 @@
 						self.tooltipAnchorPoint = "ANCHOR_LEFT";
 						self.alwaysShow = true;
 						self.ignoreNoUnit = true;
+						self.unitFrame = self:GetParent();
 						UnitFrameHealthBar_Initialize("vehicle", self, self.text, true);
 						UnitFrameHealthBar_Update(self, "vehicle");
 					</OnLoad>
@@ -512,6 +515,7 @@
 						self.tooltipAnchorPoint = "ANCHOR_RIGHT";
 						self.alwaysShow = true;
 						self.ignoreNoUnit = true;
+						self.unitFrame = self:GetParent();
 						UnitFrameManaBar_Initialize ("vehicle", self, self.text, true);
 						UnitFrameManaBar_Update(self, "vehicle");
 					</OnLoad>
@@ -553,9 +557,10 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad function="OverrideActionBar_OnLoad"/>
-			<OnEvent function="OverrideActionBar_OnEvent"/>
-			<OnShow function="OverrideActionBar_OnShow"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

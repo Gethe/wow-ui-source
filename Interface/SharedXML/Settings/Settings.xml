@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_SettingsRegistrar.lua"/>
+	<Script file="Blizzard_Settings.lua"/>
+	<Script file="Blizzard_SettingsInbound.lua"/>
+	<Script file="Blizzard_SettingsCanvas.lua"/>
+	<Script file="Blizzard_Category.lua"/>
+	<Include file="Blizzard_CategoryList.xml"/>
+	<Include file="Blizzard_SettingsList.xml"/>
+	<Script file="Blizzard_SettingsPanel.lua"/>
+	<Script file="Blizzard_Setting.lua"/>
+	<Include file="Blizzard_SettingsPanel.xml"/>
+	<Include file="Blizzard_SettingControls.xml"/>
+	<Include file="Blizzard_Keybindings.xml"/>
+	<Script file="Blizzard_Dialogs.lua"/>
+	<Script file="Blizzard_SettingsLayouts.lua"/>
+	<Script file="Blizzard_Registration.lua"/>
+	<Script file="Blizzard_Deprecated.lua"/>
+</Ui>

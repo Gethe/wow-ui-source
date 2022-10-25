@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
   <Script file="ShardBar.lua"/>
 
-	<Frame name="ShardTemplate" parentArray="Shards" virtual="true" mixin="WarlockShardMixin">
+	<Frame name="ShardTemplate" virtual="true" mixin="WarlockShardMixin">
 		<Animations>
 			<AnimationGroup parentKey="animIn" setToFinalAlpha="true">
 				<Alpha childKey="ShardFill" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
@@ -25,6 +25,13 @@
 		</Animations>
 		<Size x="52" y="29"/>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ShardOff" atlas="Warlock-EmptyShard" hidden="false" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture atlas="Warlock-ReadyShard-Glow" parentKey="ShardGlow" alphaMode="ADD" alpha="0">
 					<Size x="26" y="23"/>
@@ -69,19 +76,23 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="WarlockPowerFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, WarlockPowerBar">
+	<Frame name="WarlockPowerFrameTemplate" inherits="ClassResourceBarTemplate" mixin="WarlockPowerBar" virtual="true">
+		<KeyValues>
+			<KeyValue key="powerToken" value="SOUL_SHARDS" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.SoulShards" type="global"/>
+			<KeyValue key="tooltip1" value="SOUL_SHARDS_POWER" type="global"/>
+			<KeyValue key="tooltip2" value="SOUL_SHARDS_TOOLTIP" type="global"/>
+			<KeyValue key="resourcePointTemplate" value="ShardTemplate" type="string"/>
+			<KeyValue key="resourcePointSetupFunc" value="WarlockShardMixin.Setup" type="global"/>
+			<KeyValue key="spacing" value="-30" type="number"/>
+			<KeyValue key="class" value="WARLOCK" type="string"/>
+			<KeyValue key="requiredShownLevel" value="10" type="number"/>
+			<KeyValue key="leftPadding" value="30" type="number"/>
+			<KeyValue key="topPadding" value="-2" type="number"/>
+		</KeyValues>
+	</Frame>
+	
+	<Frame name="WarlockPowerFrame" inherits="WarlockPowerFrameTemplate">
 		<Size x="110" y="25"/>
-		<Anchors>
-			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="50" y="34"/>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture atlas="Warlock-Bar-EmptyShards" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 	</Frame>
 </Ui>

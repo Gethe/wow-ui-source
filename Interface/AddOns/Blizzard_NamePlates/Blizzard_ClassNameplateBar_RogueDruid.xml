@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_RogueDruid.lua"/>
   
-	<Frame name="ClassNameplateBarComboPointFrame" virtual="true">
+	<Frame name="ClassNameplateBarComboPointFrame" mixin="ClassNameplateBarComboPointFrameMixin" virtual="true">
 		<Size x="13" y="13"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -22,64 +22,34 @@
 		</Animations>
 	</Frame>
 		
-	<Frame name="ClassNameplateBarRogueDruidFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ComboPointPowerBar, ClassNameplateBarRogueDruid" ignoreParentScale="true">
+	<Frame name="ClassNameplateBarRogueFrame" inherits="ClassResourceBarTemplate" mixin="ClassNameplateBar, ClassNameplateBarRogueDruid" ignoreParentScale="true">
 		<Size x="80" y="13"/>
-		<Frames>
-			<Frame parentKey="Combo1" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Combo2" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Combo1" relativePoint="RIGHT" x="4" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Combo3" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Combo2" relativePoint="RIGHT" x="4" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Combo4" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Combo3" relativePoint="RIGHT" x="4" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Combo5" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Combo4" relativePoint="RIGHT" x="4" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Combo6" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Combo5" relativePoint="RIGHT" x="4" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Combo7" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Combo6" relativePoint="RIGHT" x="4" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Combo8" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Combo7" relativePoint="RIGHT" x="4" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Combo9" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Combo8" relativePoint="RIGHT" x="4" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Combo10" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Combo9" relativePoint="RIGHT" x="4" y="0"/>
-				</Anchors>
-			</Frame>
-		</Frames>
+		<KeyValues>
+			<KeyValue key="resourceBarMixin" value="ClassNameplateBar" type="global"/>
+			<KeyValue key="powerToken" value="COMBO_POINTS" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.ComboPoints" type="global"/>
+			<KeyValue key="class" value="ROGUE" type="string"/>
+			<KeyValue key="unit" value="player" type="string"/>
+			<KeyValue key="resourcePointTemplate" value="ClassNameplateBarComboPointFrame" type="string"/>
+			<KeyValue key="resourcePointSetupFunc" value="ClassNameplateBarComboPointFrameMixin.Setup" type="global"/>
+			<KeyValue key="showBarFunc" value="ClassNameplateBarRogueDruid.SetupRogue" type="global"/>
+			<KeyValue key="spacing" value="2" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="ClassNameplateBarDruidFrame" inherits="ClassResourceBarTemplate" mixin="ClassNameplateBar, ClassNameplateBarRogueDruid" ignoreParentScale="true">
+		<Size x="80" y="13"/>
+		<KeyValues>
+			<KeyValue key="powerToken" value="COMBO_POINTS" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.ComboPoints" type="global"/>
+			<KeyValue key="resourceBarMixin" value="ClassNameplateBar" type="global"/>
+			<KeyValue key="class" value="DRUID" type="string"/>
+			<KeyValue key="unit" value="player" type="string"/>
+			<KeyValue key="resourcePointTemplate" value="ClassNameplateBarComboPointFrame" type="string"/>
+			<KeyValue key="resourcePointSetupFunc" value="ClassNameplateBarComboPointFrameMixin.Setup" type="global"/>
+			<KeyValue key="showBarFunc" value="ClassNameplateBarRogueDruid.SetupDruid" type="global"/>
+			<KeyValue key="spacing" value="2" type="number"/>
+		</KeyValues>
 	</Frame>
 </Ui>
 

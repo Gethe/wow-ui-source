@@ -106,7 +106,7 @@ function AzeriteEmpoweredItemUIMixin:OnEvent(event, ...)
 		if self.azeriteItemDataSource:DidEquippedItemChange(equipmentSlot) then
 			self:Clear();
 		end
-	elseif event == "SCRAPPING_MACHINE_SCRAPPING_FINISHED" then  
+	elseif event == "SCRAPPING_MACHINE_SCRAPPING_FINISHED" then
 		HideUIPanel(self);
 	end
 end
@@ -170,20 +170,20 @@ end
 function AzeriteEmpoweredItemUIMixin:GetPowerIdsForFinalSelectedTier()
 	local powerIds = { }
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
-		if(not tierFrame:IsFinalTier()) then 
+		if(not tierFrame:IsFinalTier()) then
 			table.insert(powerIds, tierFrame:GetSelectedPowerID());
 		end
 	end
 	return powerIds;
 end
 
-function AzeriteEmpoweredItemUIMixin:IsFinalPowerSelected() 
+function AzeriteEmpoweredItemUIMixin:IsFinalPowerSelected()
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
-		if(tierFrame:IsFinalTier()) then 
+		if(tierFrame:IsFinalTier()) then
 			return tierFrame:HasAnySelected();
 		end
 	end
-end 
+end
 
 function AzeriteEmpoweredItemUIMixin:IsAnyTierRevealing()
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
@@ -263,13 +263,13 @@ function AzeriteEmpoweredItemUIMixin:OnItemSet()
 
 	self.PreviewItemOverlayFrame:SetShown(self.azeriteItemDataSource:IsPreviewSource());
 
-	self.BorderFrame.TitleText:SetText("");
+	self.BorderFrame:SetTitle("");
 
 	local azeriteEmpoweredItem = self.azeriteItemDataSource:GetItem();
 	azeriteEmpoweredItem:LockItem();
 	self.itemDataLoadedCancelFunc = azeriteEmpoweredItem:ContinueWithCancelOnItemLoad(function()
 		self.BorderFrame:SetPortraitToAsset(azeriteEmpoweredItem:GetItemIcon());
-		self.BorderFrame.TitleText:SetText(azeriteEmpoweredItem:GetItemName());
+		self.BorderFrame:SetTitle(azeriteEmpoweredItem:GetItemName());
 	end);
 
 	self.oldItemGUID = azeriteEmpoweredItem:GetItemGUID();

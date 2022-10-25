@@ -81,7 +81,7 @@ function ArchaeologyFrame_OnLoad(self)
 	end
 
 	local name = GetArchaeologyInfo();
-	self.TitleText:SetText(name);
+	self:SetTitle(name);
 	self.helpPage.titleText:SetText(name);
 
 

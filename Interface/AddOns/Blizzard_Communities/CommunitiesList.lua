@@ -9,10 +9,6 @@ local COMMUNITIES_LIST_EVENTS = {
 	"CLUB_FINDER_APPLICANT_INVITE_RECIEVED",
 };
 	
-local COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET = -28;
-local COMMUNITIES_LIST_INITLAL_BOTTOM_BORDER_OFFSET = 40;
-local COMMUNITIES_LIST_GUILD_FINDER_OFFSET = 28;
-
 local NEW_COMMUNITY_FLASH_DURATION = 6.0;
 
 CommunitiesListMixin = {};
@@ -167,17 +163,6 @@ function CommunitiesListMixin:ClearTickets(ticketId)
 	self.ticket = nil;
 end
 
-function CommunitiesListMixin:GetFirstMatchingClubEntry(predicate)
-	local buttons = self.ListScrollFrame.buttons;
-	for i, button in ipairs(buttons) do
-		if predicate(button) then
-			return button;
-		end
-	end
-	
-	return nil;
-end
-
 function CommunitiesListMixin:SortCommunitiesList()
 	CommunitiesUtil.SortClubs(self:GetCommunitiesList());
 end
@@ -194,161 +179,98 @@ function CommunitiesListMixin:GetCommunitiesList()
 end
 
 function CommunitiesListMixin:Update()
-	local scrollFrame = self.ListScrollFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	
-	local selectedClubId = self:GetCommunitiesFrame():GetSelectedClubId();
 	local clubs = self:GetCommunitiesList();
 	self:ValidateTickets();
-	local isInGuild = IsInGuild();
-	local invitations = self:GetInvitations();
-	local clubFinderInvitations = self:GetClubFinderInvitations(); 
-	local clubFinderEnabled = C_ClubFinder.IsEnabled();
-	local numFinderInvitations = 0; 
 	
-	if	(clubFinderInvitations and clubFinderEnabled) then 
-		numFinderInvitations = #clubFinderInvitations
-	end 
-
-	local tickets = self:GetTickets();
-	local totalNumClubs = numFinderInvitations + #invitations + #tickets + #clubs;
-
-	if not isInGuild and clubFinderEnabled then
-		totalNumClubs = totalNumClubs + 1;
-	end
-
-	local height = buttons[1]:GetHeight();
 	-- TODO:: Determine if this player is at the maximum number of allowed clubs or not.
 	-- We probably need to change the create flow as well, since it's possible you are
 	-- allowed to create more bnet groups, but not more wow communities or vice versa.
-	local shouldAddJoinCommunityEntry = C_Club.ShouldAllowClubType(Enum.ClubType.Character) or C_Club.ShouldAllowClubType(Enum.ClubType.BattleNet); 
-	local shouldFindCommunityEntry = clubFinderEnabled;
+	local dataProvider = CreateDataProvider();
+	for index, clubInfo in ipairs(self:GetTickets()) do
+		clubInfo.isTicket = true;
+		dataProvider:Insert({clubInfo = clubInfo});
+	end
 	
-	-- We need 1 for the blank entry at the top of the list.
-	local clubsHeight = height * (totalNumClubs + 1);
-	if shouldAddJoinCommunityEntry then
-		clubsHeight = clubsHeight + height;
-		if(shouldFindCommunityEntry) then 
-			clubsHeight = clubsHeight + height; 
+	local invitations = self:GetInvitations();
+	if invitations then
+		for index, clubInfo in ipairs(invitations) do
+			local club = clubInfo.club;
+			club.isInvitation = true;
+			dataProvider:Insert({clubInfo = club});
 		end
 	end
 	
-	local usedHeight = height;
-	local shownGuildFinderButton = false; 
-	for i=1, #buttons do
-		local button = buttons[i];
-		local displayIndex = i + offset;
-
-		-- We leave a space at the top of the scroll frame. This is accomplished most easily with a blank entry.
-		if displayIndex == 1 then
-			buttons[displayIndex]:SetClubInfo(nil);
-			buttons[displayIndex]:Hide();
-		else
-			displayIndex = displayIndex - 1;
-			local clubInfo = nil;
-			local isTicket = displayIndex <= #tickets;
-			local isInvitation = displayIndex > #tickets and displayIndex <= #tickets + #invitations;
-			local isClubFinderInvitation = displayIndex > #tickets + #invitations and displayIndex <= numFinderInvitations + #tickets + #invitations; 
-
-			if isTicket then
-				clubInfo = tickets[displayIndex].clubInfo;
-			elseif isInvitation then
-				displayIndex = displayIndex - #tickets;
-				clubInfo = invitations[displayIndex].club;
-			elseif isClubFinderInvitation then 
-				displayIndex = displayIndex - #tickets - #invitations; 
-				clubInfo = clubFinderInvitations[displayIndex];
-			else
-				displayIndex = displayIndex - #tickets - #invitations - numFinderInvitations;
-				if not isInGuild and clubFinderEnabled then
-					displayIndex = displayIndex - 1;
-				end
-				if displayIndex > 0 and displayIndex <= #clubs then
-					clubInfo = clubs[displayIndex];
-				end
-			end
-			if (not isInGuild and displayIndex == 0 and clubFinderEnabled) then
-				button:SetGuildFinder();
-				local communitiesFrame = self:GetCommunitiesFrame();
-				communitiesFrame.GuildFinderFrame.isGuildType = true;
-				communitiesFrame.GuildFinderFrame:UpdateType(); 
-				button:Show();
-				shownGuildFinderButton = true;
-				usedHeight = usedHeight + height;
-			elseif clubInfo then
-				button:SetClubInfo(clubInfo, isInvitation, isTicket, isClubFinderInvitation);
-				button:Show();
-				usedHeight = usedHeight + height;
-			elseif shouldFindCommunityEntry then
-				button:SetFindCommunity(); 
-				button:Show();
-				usedHeight = usedHeight + height;
-				shouldFindCommunityEntry = false;
-			elseif shouldAddJoinCommunityEntry then 
-				button:SetAddCommunity();
-				button:Show(); 
-				usedHeight = usedHeight + height; 
-				shouldAddJoinCommunityEntry = false;
-			elseif isInGuild and not shownGuildFinderButton  and clubFinderEnabled then 
-				button:SetGuildFinder();
-				button:Show();
-				shownGuildFinderButton = true;
-				usedHeight = usedHeight + height + COMMUNITIES_LIST_GUILD_FINDER_OFFSET;
-			else
-				button:SetClubInfo(nil);
-				button:Hide();
-			end
+	local clubFinderInvitations = self:GetClubFinderInvitations(); 
+	if clubFinderInvitations then
+		for index, clubInfo in ipairs(clubFinderInvitations) do
+			clubInfo.isClubFinderInvitation = true;
+			dataProvider:Insert({clubInfo = clubInfo});
 		end
 	end
-	local totalHeight = clubsHeight + COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET + COMMUNITIES_LIST_INITLAL_BOTTOM_BORDER_OFFSET;
 
-	if (isInGuild and clubFinderEnabled) then 
-		totalHeight = totalHeight + COMMUNITIES_LIST_GUILD_FINDER_OFFSET;
+	for index, clubInfo in ipairs(clubs) do
+		clubInfo.isClub = true;
+		dataProvider:Insert({clubInfo = clubInfo});
+	end
+
+	local clubFinderEnabled = C_ClubFinder.IsEnabled();
+	if clubFinderEnabled then
+		dataProvider:Insert({setFindCommunity = true});
+	end
+	
+	if C_Club.ShouldAllowClubType(Enum.ClubType.Character) or C_Club.ShouldAllowClubType(Enum.ClubType.BattleNet) then
+		dataProvider:Insert({setJoinCommunity = true});
+	end
+
+	if clubFinderEnabled then
+		local guildFinderFrame = self:GetCommunitiesFrame().GuildFinderFrame;
+		guildFinderFrame.isGuildType = true;
+		guildFinderFrame:UpdateType()
+
+		dataProvider:Insert({setGuildFinder = true});
 	end 
 
-	HybridScrollFrame_Update(scrollFrame, totalHeight, usedHeight);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end
 
-function CommunitiesListMixin:UpdateClubInfo(newClubInfo)
+function CommunitiesListMixin:UpdateClub(clubInfo)
 	local clubs = self:GetCommunitiesList();
 	if clubs then
+		local clubId = clubInfo.clubId;
 		for i, club in ipairs(clubs) do
-			if club.clubId == newClubInfo.clubId then
-				clubs[i] = newClubInfo;
+			if club.clubId == clubId then
+				clubs[i] = clubInfo;
 				break;
 			end
 		end
 	end
-end
-
-function CommunitiesListMixin:UpdateClub(clubInfo)
-	self:UpdateClubInfo(clubInfo);
 	
-	local scrollFrame = self.ListScrollFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	for i, button in ipairs(buttons) do
-		if button:GetClubId() == clubInfo.clubId then
-			local isInvitation = false;
-			local isTicket = false;
-			local isClubFinderInvitation = false;
-			button:SetClubInfo(clubInfo, isInvitation, isTicket, isClubFinderInvitation);
-			return;
-		end
-	end
+	-- Notifying the button is complicated because its data resides in a different data provider. We can't simply
+	-- replace that data without notifications to signal the ScrollBox to be reinitialized correctly.
+	self:Update();
 end
 
 function CommunitiesListMixin:OnLoad()
-	self.ListScrollFrame.update = function() 
-		self:Update(); 
-	end;
 	C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.All);
-	self.ListScrollFrame.ScrollBar.doNotHide = true;
-	self.ListScrollFrame.ScrollBar:SetValue(0);
+	
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("CommunitiesListEntryTemplate", function(button, elementData)
+		button:Init(elementData);
+	end);
+	view:SetPadding(40,0,0,0,0);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnScroll, self.OnScrollBoxScroll, self);
 	
 	self.declinedInvitationIds = {};
 	self.pendingFavorites = {};
+end
+
+function CommunitiesListMixin:OnScrollBoxScroll(scrollPercentage, visibleExtentPercentage, panExtentPercentag)
+	if self:GetSelectedEntryForDropDown() ~= nil then
+		HideDropDownMenu(1);
+	end
 end
 
 function CommunitiesListMixin:RegisterEventCallbacks()
@@ -372,7 +294,6 @@ end
 function CommunitiesListMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
 
-	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "CommunitiesListEntryTemplate", 0, -COMMUNITIES_LIST_INITLAL_TOP_BORDER_OFFSET);
 	self:UpdateCommunitiesList();
 	self:UpdateInvitations();
 	self:Update();
@@ -386,43 +307,10 @@ function CommunitiesListMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
 end
 
-function CommunitiesListMixin:ScrollToClub(clubId)
-	local hasScrollBar = self.ListScrollFrame.totalHeight > self.ListScrollFrame:GetHeight();
-	if not hasScrollBar then
-		return;
-	end
-	
-	local clubs = self:GetCommunitiesList();
-	if clubs ~= nil then
-		local clubIndex = nil;
-		for i, club in ipairs(clubs) do
-			if club.clubId == clubId then
-				clubIndex = i;
-				break;
-			end
-		end
-		
-		if clubIndex ~= nil then
-			local invitations = self:GetInvitations();
-			local numInvitiations = invitations ~= nil and #invitations or 0;
-			clubIndex = clubIndex + numInvitiations;
-			
-			-- Count the blank entry at the top of the scroll frame.
-			clubIndex = clubIndex + 1;
-			
-			-- Count the guild finder.
-			if not IsInGuild() then
-				clubIndex = clubIndex + 1;
-			end
-			
-			local buttons = self.ListScrollFrame.buttons;
-			local buttonHeight = buttons[1]:GetHeight();
-			
-			local height = math.max(0, math.floor(buttonHeight * (clubIndex - (#buttons)/2.5)));
-			HybridScrollFrame_SetOffset(self.ListScrollFrame, height);
-			self.ListScrollFrame.ScrollBar:SetValue(height);
-		end
-	end
+function CommunitiesListMixin:ScrollToClub(clubId, noScrollInterpolation)
+	self.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
+		return elementData.clubInfo and elementData.clubInfo.clubId == clubId;
+	end, ScrollBoxConstants.AlignCenter, noScrollInterpolation);
 end
 
 function CommunitiesListMixin:OnClubSelected(clubId)
@@ -475,16 +363,10 @@ function CommunitiesListMixin:PredictFavorites(clubs)
 end
 
 function CommunitiesListMixin:IsFinderVisible()
-	local buttons = self.ListScrollFrame.buttons;
-	local numVisibleButtons = #buttons - 1;
-	for i = 1, numVisibleButtons do
-		local button = buttons[i];
-		if button.Name:GetText() == COMMUNITY_FINDER_FIND_COMMUNITY then
-			return true;
-		end
-	end
-
-	return false;
+	local button = self.ScrollBox:FindFrameByPredicate(function(button, elementData)
+		return button.Name:GetText() == COMMUNITY_FINDER_FIND_COMMUNITY;
+	end);
+	return button ~= nil;
 end
 
 function CommunitiesListMixin:OnNewCommunityFlashStarted()
@@ -522,14 +404,18 @@ local function GetFontColor(isBattleNet, isGuild, isInvitation)
 	return NORMAL_FONT_COLOR;
 end
 
-function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket, isInviteFromFinder)
+function CommunitiesListEntryMixin:Init(elementData)
 	self:SetEntryEnabled(true);
 
-	if isInvitation then
+	local clubInfo = elementData.clubInfo;
+	local isInvitation = clubInfo and clubInfo.isInvitation;
+	local isClubFinderInvitation = clubInfo and clubInfo.isClubFinderInvitation;
+
+	if (isInvitation) then
 		self.overrideOnClick = function(self, button)
-			if button == "LeftButton" then
+			if (button == "LeftButton") then
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				local communitiesFrame = self:GetCommunitiesFrame(); 
+				local communitiesFrame = self:GetCommunitiesFrame();
 				communitiesFrame:SelectClub(self.clubId);
 				self:UpdateUnreadNotification();
 			end
@@ -538,22 +424,30 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 		self.overrideOnClick = nil;
 	end
 
+	-- Club tickets have the real club info one layer down.
+	local isTicket = clubInfo and clubInfo.isTicket;
+	if (isTicket) then
+		clubInfo = clubInfo.clubInfo;
+	end
+
 	local communitiesList = self:GetCommunitiesList();
 	local shouldShowFlash = clubInfo and communitiesList:ShouldShowNewCommunityFlash(clubInfo.clubId);
 	local isFlashing = UIFrameIsFlashing(self.NewCommunityFlash);
-	if shouldShowFlash and not isFlashing then
+	if (shouldShowFlash and not isFlashing) then
 		UIFrameFlash(self.NewCommunityFlash, 1.0, 1.0, NEW_COMMUNITY_FLASH_DURATION, false, 0, 0);
 		communitiesList:OnNewCommunityFlashStarted();
-	elseif not shouldShowFlash and isFlashing then
+	elseif (not shouldShowFlash and isFlashing) then
 		UIFrameFlashStop(self.NewCommunityFlash);
 	end
 
-	if clubInfo then
-		if(isInviteFromFinder) then 
-			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));		
+	if (clubInfo) then
+		local isGuild = clubInfo.clubType == Enum.ClubType.Guild;
+
+		if (isClubFinderInvitation) then
+			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));
 			self.clubInfo = clubInfo;
 			self.overrideOnClick = function(self, button)
-				if button == "LeftButton" then
+				if (button == "LeftButton") then
 					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					local communitiesFrame = self:GetCommunitiesFrame();
 					communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.INVITATION);
@@ -562,7 +456,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 				end
 			end;
 
-			if clubInfo.isGuild then
+			if (isGuild) then
 				self.Background:SetAtlas("communities-nav-button-green-normal");
 				self.Background:SetTexCoord(0, 1, 0, 1);
 				self.Selection:SetAtlas("communities-nav-button-green-pressed");
@@ -573,15 +467,15 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 				self.Selection:SetTexture("Interface\\Common\\bluemenu-main");
 				self.Selection:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
 			end
-		
+
 			local isBattleNet = false;
-			self.Name:SetTextColor(GetFontColor(isBattleNet, clubInfo.isGuild, isInvitation):GetRGB());
+			self.Name:SetTextColor(GetFontColor(isBattleNet, isGuild, isInvitation):GetRGB());
 			self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 11, 0);
 			self.isInvitation = isInvitation;
 			self.isTicket = isTicket;
 			self.Selection:SetShown(true);
 			self.FavoriteIcon:SetShown(false);
-			self.InvitationIcon:SetShown(isInviteFromFinder);
+			self.InvitationIcon:SetShown(isClubFinderInvitation);
 			SetLargeGuildTabardTextures("player", self.GuildTabardEmblem, self.GuildTabardBackground, self.GuildTabardBorder);
 			self.GuildTabardEmblem:SetShown(false);
 			self.GuildTabardBackground:SetShown(false);
@@ -591,17 +485,16 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 			self.Icon:SetPoint("TOPLEFT", 11, -15);
 			self.CircleMask:SetShown(false);
 			self.IconRing:SetShown(false);
-			return; 
-		end 
+			return;
+		end
 
-		if isInvitation then
+		if (isInvitation) then
 			self.Name:SetText(COMMUNITIES_LIST_INVITATION_DISPLAY:format(clubInfo.name));
 		else
 			self.Name:SetText(clubInfo.name);
 		end
-		
-		local isGuild = clubInfo.clubType == Enum.ClubType.Guild;
-		if isGuild then
+
+		if (isGuild) then
 			self.Background:SetAtlas("communities-nav-button-green-normal");
 			self.Background:SetTexCoord(0, 1, 0, 1);
 			self.Selection:SetAtlas("communities-nav-button-green-pressed");
@@ -612,7 +505,7 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 			self.Selection:SetTexture("Interface\\Common\\bluemenu-main");
 			self.Selection:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
 		end
-		
+
 		local isBattleNet = clubInfo.clubType == Enum.ClubType.BattleNet;
 		self.Name:SetTextColor(GetFontColor(isBattleNet, isGuild, isInvitation):GetRGB());
 		self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 11, 0);
@@ -634,13 +527,12 @@ function CommunitiesListEntryMixin:SetClubInfo(clubInfo, isInvitation, isTicket,
 		self.IconRing:SetAtlas(isBattleNet and "communities-ring-blue" or "communities-ring-gold");
 		C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
 		self:UpdateUnreadNotification();
-	else
-		self.Name:SetText(nil);
-		self.clubId = nil;
-		self.Selection:Hide();
-		self.Icon:SetTexture(nil);
-		self.UnreadNotificationIcon:Hide();
-		self:Hide();
+	elseif (elementData.setGuildFinder) then
+		self:SetGuildFinder();
+	elseif (elementData.setFindCommunity) then
+		self:SetFindCommunity();
+	elseif (elementData.setJoinCommunity) then
+		self:SetAddCommunity();
 	end
 end
 
@@ -986,13 +878,6 @@ function CommunitiesListDropDownMenuMixin:UpdateUnreadNotification()
 		self.NotificationOverlay:SetShown(false);
 	end
 
-end
-
-function CommunitiesListScrollFrame_OnVerticalScroll(self)
-	local communitiesList = self:GetParent();
-	if communitiesList:GetSelectedEntryForDropDown() ~= nil then
-		HideDropDownMenu(1);
-	end
 end
 
 function CommunitiesListDropDownMenu_Initialize(self)

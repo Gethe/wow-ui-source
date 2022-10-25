@@ -1,15 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
 	<ScrollingMessageFrame name="GMChatFrame" hidden="true" inherits="FloatingChatFrameTemplate" hyperlinksEnabled="true" clampedToScreen="true">
-		<Size>
-			<AbsDimension x="430" y="120"/>
-		</Size>
+		<Size x="430" y="120"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="32" y="395"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOMLEFT" x="32" y="395"/>
 		</Anchors>
 		<Frames>
 			<Frame name="GMChatTab" parent="GMChatFrame" useParentLevel="true">

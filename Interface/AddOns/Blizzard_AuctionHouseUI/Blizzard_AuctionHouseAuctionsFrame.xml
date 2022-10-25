@@ -8,8 +8,17 @@
 		</Scripts>
 	</Button>
 
-	<Button name="AuctionHouseAuctionsSummaryLineTemplate" mixin="AuctionHouseAuctionsSummaryLineMixin" inherits="ScrollListLineTextTemplate, TruncatedTooltipScriptTemplate" virtual="true">
+	<Button name="AuctionHouseAuctionsSummaryLineTemplate" mixin="AuctionHouseAuctionsSummaryLineMixin" inherits="TruncatedTooltipScriptTemplate" virtual="true">
+		<Size x="0" y="21"/>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" wordwrap="false">
+					<Anchors>
+						<Anchor point="LEFT" x="4" y="0"/>
+						<Anchor point="RIGHT" x="-4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="Icon">
 					<Size x="14" y="14"/>
@@ -25,6 +34,9 @@
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedHighlight" atlas="auctionhouse-ui-row-select" alpha=".8" hidden="true" alphaMode="ADD"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -42,17 +54,13 @@
 
 	<Frame name="AuctionHouseAuctionsFrameTemplate" mixin="AuctionHouseAuctionsFrameMixin" virtual="true">
 		<Frames>
-			<Button name="$parentAuctionsTab" parentKey="AuctionsTab" parentArray="Tabs" id="1" inherits="AuctionHouseAuctionsFrameTabTemplate" frameLevel="300" text="AUCTION_HOUSE_AUCTIONS_SUB_TAB">
+			<Button name="$parentAuctionsTab" parentKey="AuctionsTab" id="1" inherits="AuctionHouseAuctionsFrameTabTemplate" frameLevel="300" text="AUCTION_HOUSE_AUCTIONS_SUB_TAB">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="47" y="-1"/>
 				</Anchors>
 			</Button>
 
-			<Button name="$parentBidsTab" parentKey="BidsTab" parentArray="Tabs" id="2" inherits="AuctionHouseAuctionsFrameTabTemplate" useParentLevel="true" text="AUCTION_HOUSE_BIDS_SUB_TAB">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AuctionsTab" relativePoint="TOPRIGHT" x="0" y="0"/>
-				</Anchors>
-			</Button>
+			<Button name="$parentBidsTab" parentKey="BidsTab" id="2" inherits="AuctionHouseAuctionsFrameTabTemplate" useParentLevel="true" text="AUCTION_HOUSE_BIDS_SUB_TAB"/>
 
 			<Button parentKey="CancelAuctionButton" mixin="CancelAuctionButtonMixin" inherits="UIPanelButtonTemplate" text="AUCTION_HOUSE_CANCEL_AUCTION_BUTTON">
 				<Size x="158" y="22"/>
@@ -76,7 +84,7 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="SummaryList" inherits="ScrollListTemplate, AuctionHouseBackgroundTemplate" mixin="AuctionHouseAuctionsSummaryListMixin" useParentLevel="true">
+			<Frame parentKey="SummaryList" inherits="AuctionHouseBackgroundTemplate" mixin="AuctionHouseAuctionsSummaryListMixin" useParentLevel="true">
 				<KeyValues>
 					<KeyValue key="backgroundAtlas" value="auctionhouse-background-summarylist" type="string"/>
 				</KeyValues>
@@ -86,6 +94,21 @@
 					<Anchor point="BOTTOM" relativeKey="$parent.CancelAuctionButton" relativePoint="TOP"/>
 					<Anchor point="LEFT" x="-1"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Size x="148" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="3" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" x="-27" y="3"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="2"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-5"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>

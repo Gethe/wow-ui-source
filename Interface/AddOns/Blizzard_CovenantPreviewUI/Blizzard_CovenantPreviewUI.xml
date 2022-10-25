@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_CovenantPreviewUI.lua"/>
 	
 		<Button name="CovenantAbilityButtonTemplate" mixin="CovenantAbilityButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
@@ -160,26 +160,23 @@
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<FontString parentKey="Name" JustifyH="LEFT" JustifyV="BOTTOM" inherits="Fancy32Font">
+						<FontString parentKey="Name" justifyH="LEFT" justifyV="BOTTOM" inherits="Fancy32Font">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="100" y="-40"/>
 							</Anchors>
-							<Color font="BLACK_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="Location" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Large">
+						<FontString parentKey="Location" justifyH="LEFT" justifyV="TOP" inherits="SystemFont_Large">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-5"/>
 							</Anchors>
-							<Color font="BLACK_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="Description" JustifyH="LEFT" JustifyV="TOP" inherits="SystemFont_Med3">
+						<FontString parentKey="Description" justifyH="LEFT" justifyV="TOP" inherits="SystemFont_Med3">
 							<Size x="490" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="30" y="-38"/>
 							</Anchors>
-							<Color font="BLACK_FONT_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -191,12 +188,12 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
-								<FontString parentKey="AbilitiesLabel" JustifyH="CENTER" JustifyV="TOP" inherits="SystemFont_Med3" text="COVENANT_PREVIEW_ABILITIE_LABEL">
+								<FontString parentKey="AbilitiesLabel" justifyH="CENTER" justifyV="TOP" inherits="SystemFont_Med3" text="COVENANT_PREVIEW_ABILITIE_LABEL">
 									<Size x="150" y="0"/>
 									<Anchors>
 										<Anchor point="TOP" x="0" y="-5"/>
 									</Anchors>
-									<Color font="BLACK_FONT_COLOR"/>
+									<Color color="BLACK_FONT_COLOR"/>
 								</FontString>
 							</Layer>
 							<Layer level="BACKGROUND">
@@ -216,12 +213,12 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
-								<FontString parentKey="SoulbindsLabel" JustifyH="CENTER" JustifyV="TOP" inherits="SystemFont_Med3" text="COVENANT_PREVIEW_SOULBINDS">
+								<FontString parentKey="SoulbindsLabel" justifyH="CENTER" justifyV="TOP" inherits="SystemFont_Med3" text="COVENANT_PREVIEW_SOULBINDS">
 									<Size x="280" y="0"/>
 									<Anchors>
 										<Anchor point="TOP" x="-20" y="-5"/>
 									</Anchors>
-									<Color font="BLACK_FONT_COLOR"/>
+									<Color color="BLACK_FONT_COLOR"/>
 								</FontString>
 							</Layer>
 						</Layers>
@@ -233,12 +230,12 @@
 						</Anchors>
             <Layers>
               <Layer level="ARTWORK">
-                <FontString parentKey="Label" JustifyH="CENTER" JustifyV="TOP" inherits="SystemFont_Med3" text="COVENANT_PREVIEW_SANCTUM_FEATURE">
+                <FontString parentKey="Label" justifyH="CENTER" justifyV="TOP" inherits="SystemFont_Med3" text="COVENANT_PREVIEW_SANCTUM_FEATURE">
 									<Size x="100" y="0"/>
 									<Anchors>
 										<Anchor point="TOP" x="0" y="-5"/>
 									</Anchors>
-									<Color font="BLACK_FONT_COLOR"/>
+									<Color color="BLACK_FONT_COLOR"/>
 								</FontString>
               </Layer>
             </Layers>

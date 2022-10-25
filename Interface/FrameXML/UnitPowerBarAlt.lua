@@ -482,8 +482,6 @@ function UnitPowerBarAltStatus_OnEvent(self, event, ...)
 	local doUpdate = false;
 	if ( self.cvar and cvar == self.cvarLabel ) then
 		UnitPowerBarAltStatus_ToggleFrame(self);
-	elseif ( cvar == "STATUS_TEXT_DISPLAY" ) then
-		UnitPowerBarAltStatus_UpdateText(self);
 	end
 end
 
@@ -497,6 +495,36 @@ function UnitPowerBarAltStatus_ToggleFrame(self)
 	end
 end
 
+PlayerPowerBarAltMixin = {};
+
+function PlayerPowerBarAltMixin:OnLoad()
+	self.isPlayerBar = true;
+	UnitPowerBarAlt_Initialize(self, "player", 1);
+end
+
+function PlayerPowerBarAltMixin:SetupPlayerPowerBarPosition()
+	local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
+	if(barInfo and barInfo.anchorTop) then
+		self:SetParent(UIParent);
+		self:ClearAllPoints();
+		self:SetPoint("TOP", 0, -30);
+		return;
+	end
+
+	self:SetParent(EncounterBar);
+	EncounterBar:Layout();
+	if EncounterBar:IsInDefaultPosition() then
+		UIParent_ManageFramePositions();
+	end
+end
+
+function PlayerPowerBarAltMixin:OnShow()
+	self:SetupPlayerPowerBarPosition();
+end
+
+function PlayerPowerBarAltMixin:OnHide()
+	self:SetupPlayerPowerBarPosition();
+end
 
 ---------------------------------
 ------- Counter Bar Code --------

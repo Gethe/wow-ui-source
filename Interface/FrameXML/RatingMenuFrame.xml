@@ -57,7 +57,7 @@
 					<KeyValue key="textString" value="RATINGS_MENU" type="global"/>
 				</KeyValues>
 			</Frame>
-			<Button name="RatingMenuButtonOkay" inherits="OptionsButtonTemplate" text="OKAY">
+			<Button name="RatingMenuButtonOkay" inherits="UIPanelButtonTemplate" text="OKAY">
 				<Size x="100" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-16" y="16"/>

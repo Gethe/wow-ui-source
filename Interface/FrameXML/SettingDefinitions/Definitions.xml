@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\UI.xsd">
+	
+	<Script file="Groups.lua"/>
+	<Include file="..\..\SharedXML\SettingDefinitions\Graphics.xml"/>
+	<Include file="..\..\SharedXML\SettingDefinitions\Audio.xml"/>
+	<Include file="..\..\SharedXML\SettingDefinitions\Languages.xml"/>
+	<Script file="..\..\SharedXML\SettingDefinitions\Network.lua"/>
+	<Script file="..\..\SharedXML\SettingDefinitions\Mac.lua"/>
+	<Script file="Mac.lua"/>
+	<Include file="Controls.xml"/>
+	<Script file="Interface.lua"/>
+	<Script file="Combat.lua"/>
+	<Script file="ActionBars.lua"/>
+	<Include file="Social.xml"/>
+	<Include file="Keybindings.xml"/>
+	<Script file="Accessibility.lua"/>
+	<Include file="Colorblind.xml"/>
+	<Include file="TextToSpeech.xml"/>
+</Ui>

@@ -135,7 +135,7 @@ local DISPLAY_DATA = {
 	[30] = { --TUTORIAL_INNS
 		tileHeight = 11,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
-		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 32, yOff = -4, width = 85, height = 85},
+		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 11, yOff = -7, width = 85, height = 85},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		notNPE = true,
 	},
@@ -143,7 +143,7 @@ local DISPLAY_DATA = {
 	[32] = { --TUTORIAL_PVP
 		tileHeight = 10,
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
-		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 34, yOff = -6, width = 78, height = 78},
+		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 11, yOff = -7, width = 85, height = 85},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		notNPE = true,
 	},
@@ -1001,7 +1001,7 @@ function Main_HelpPlate_Button_ShowTooltip(self)
 	HelpPlateTooltip.ArrowRIGHT:Show();
 	HelpPlateTooltip.ArrowGlowRIGHT:Show();
 	HelpPlateTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0);
-	HelpPlateTooltip.Text:SetText(MAIN_HELP_BUTTON_TOOLTIP);
+	HelpPlateTooltip.Text:SetText(self.MainHelpPlateButtonTooltipText or MAIN_HELP_BUTTON_TOOLTIP);
 	HelpPlateTooltip:Show();
 end
 
@@ -1048,7 +1048,7 @@ function HelpPlate_Button_AnimGroup_Show_OnFinished(self)
 end
 
 function HelpPlate_Button_OnShow(self)
-	local point, relative, relPoint, xOff, yOff = self:GetPoint();
+	local point, relative, relPoint, xOff, yOff = self:GetPoint(1);
 	self.animGroup_Show.translate:SetOffset( (-1*xOff), (-1*yOff) );
 	self.animGroup_Show.translate:SetDuration(0.5);
 	self.animGroup_Show.alpha:SetDuration(0.5);

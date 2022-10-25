@@ -114,6 +114,14 @@ BACKDROP_CHARACTER_CREATE_TOOLTIP_32_32 = {
 	insets = { left = 8, right = 4, top = 4, bottom = 8 },
 };
 
+BACKDROP_WRATH_CHARACTER_CREATE_TOOLTIP_32_32 = {
+	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+	tile = true,
+	tileSize = 32,
+	insets = { left = 10, right = 0, top = 10, bottom = 6 },
+};
+
+
 BACKDROP_TUTORIAL_16_16 = {
 	bgFile = "Interface\\TutorialFrame\\TutorialFrameBackground",
 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",

@@ -50,8 +50,8 @@
 				<FontString name="$parentDifficulty" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="difficulty">
 					<Size x="160" y="1"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentName" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.name" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.name" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentReset" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="reset">
@@ -63,8 +63,8 @@
 				<FontString name="$parentExtended" inherits="GameFontHighlightSmall" text="EXTENDED" justifyH="RIGHT" parentKey="extended">
 					<Size x="150" y="1"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentReset" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentReset" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.reset" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.reset" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -95,7 +95,7 @@
 	</Button>
 	<Frame name="RaidParentFrame"  toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Frames>
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" text="RAID" id="1">
+			<Button name="$parentTab1" inherits="PanelTabButtonTemplate" text="RAID" id="1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
 						<Offset x="19" y="-30"/>
@@ -108,13 +108,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="LOOKING_FOR_RAID" id="2">
+			<Button name="$parentTab2" inherits="PanelTabButtonTemplate" text="LOOKING_FOR_RAID" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -291,46 +287,23 @@
 							<Anchor point="TOPRIGHT" x="-2" y="-3"/>
 						</Anchors>
 					</Button>
-					<ScrollFrame name="RaidInfoScrollFrame" inherits="HybridScrollFrameTemplate">
-						<Size x="305" y="157"/>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Size x="290" y="157"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="16" y="-58"/>
 						</Anchors>
-						<Frames>
-							<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate" parentKey="scrollBar">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-13"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="14"/>
-								</Anchors>
-								<Scripts>
-									<OnShow>
-										local parent = self:GetParent();
-										parent:SetWidth(295);
-										RaidInfoInstanceLabel:SetWidth(143);
-										for _, frame in pairs(parent.buttons) do
-											frame:SetWidth(275);
-											frame.name:SetWidth(120);
-										end
-									</OnShow>
-									<OnHide>
-										local parent = self:GetParent();
-										parent:SetWidth(310);
-										RaidInfoInstanceLabel:SetWidth(173);
-										for _, frame in pairs(parent.buttons) do
-											frame:SetWidth(305);
-											frame.name:SetWidth(150);
-										end
-									</OnHide>
-								</Scripts>
-							</Slider>
-						</Frames>
 						<Scripts>
-							<OnLoad function="RaidInfoScrollFrame_OnLoad"/>
 							<OnShow>
-								RaidInfoFrame_Update()
+								RaidInfoFrame_Update();
 							</OnShow>
 						</Scripts>
-					</ScrollFrame>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="3"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+						</Anchors>
+					</EventFrame>
 					<Button name="RaidInfoExtendButton" inherits="UIPanelButtonTemplate" text="EXTEND_RAID_LOCK">
 						<Size x="200" y="20"/>
 						<Anchors>

@@ -101,7 +101,7 @@ end
 
 function ScrollControllerMixin:GetScrollInterpolator()
 	if not self.interpolator then
-		self.interpolator = CreateFromMixins(InterpolatorMixin);
+		self.interpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseOut);
 	end
 	return self.interpolator;
 end

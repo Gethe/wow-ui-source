@@ -1,7 +1,42 @@
 local _, addonTable = ...;
-
 local TutorialData = {};
 addonTable.TutorialData = TutorialData;
+
+
+TutorialData.MAX_SPELL_HELP_LEVEL = 10;
+TutorialData.MAX_ITEM_HELP_LEVEL = 10;
+TutorialData.MAX_UI_HIDE_LEVEL = 3;
+TutorialData.MAX_QUEST_HELPER_LEVEL = 4;
+TutorialData.MAX_QUEST_COMPLETE_LEVEL = 2;
+TutorialData.MAX_XP_BAR_LEVEL = 2;
+TutorialData.INTRO_LEVEL = 1;
+TutorialData.ROGUE_STEALTH_LEVEL = 5;
+TutorialData.DRUID_CAT_FORM_LEVEL = 5;
+TutorialData.DRUID_BEAR_FORM_LEVEL = 8;
+TutorialData.HUNTER_STABLE_MAX_LEVEL = 9;
+TutorialData.LOW_HEALTH_PERCENTAGE = 0.5;
+TutorialData.MAX_LOOT_CORPSE_LEVEL = 4;
+
+TutorialData.UI_Elements = {};
+TutorialData.UI_Elements.BACKPACK =	{MainMenuBarBackpackButton};
+TutorialData.UI_Elements.BAGS_BAR =	{MicroButtonAndBagsBar};
+TutorialData.UI_Elements.MAIN_BAGS_BUTTON =	{MainMenuBarBackpackButton};
+TutorialData.UI_Elements.SPELLBOOK_MICROBUTTON = {SpellbookMicroButton};
+TutorialData.UI_Elements.OTHER_MICROBUTTONS = {CharacterMicroButton, GuildMicroButton, TalentMicroButton, MainMenuMicroButton, AchievementMicroButton, CollectionsMicroButton, QuestLogMicroButton, LFDMicroButton, EJMicroButton};
+TutorialData.UI_Elements.STORE_MICROBUTTON = {StoreMicroButton};
+TutorialData.UI_Elements.TARGET_FRAME = {TargetFrame};
+TutorialData.UI_Elements.STATUS_TRACKING_BAR = {StatusTrackingBarManager};
+
+
+-- ------------------------------------------------------------------------------------------------------------
+function TutorialData:GetRacialData()
+	return TutorialData[TutorialHelper:GetRace()];
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+function TutorialData:GetFactionData()
+	return TutorialData[TutorialHelper:GetFaction()];
+end
 
 TutorialData.LevelAbilitiesTable = {
 	WARRIOR = {
@@ -87,7 +122,7 @@ TutorialData.LevelAbilitiesTable = {
 		688,	-- Summon Imp, level 3
 		104773,	-- Unending Resolve, level 4
 		5782,	-- Fear, level 5
-		702,	-- Curse of Weakness, level 6
+		nil,	-- 
 		6201,	-- Create Healthstone, level 7
 		755,	-- Health Funnel, level 8
 		234153,	-- Drain Life, level 9

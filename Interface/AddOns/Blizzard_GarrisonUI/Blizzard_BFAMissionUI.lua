@@ -227,9 +227,13 @@ function BFAMission:ShouldShowMissionsAndFollowersTabs()
 end
 
 function BFAMission:SetupMissionList()
-	self.MissionTab.MissionList.listScroll.update = function() self.MissionTab.MissionList:Update(); end;
-	HybridScrollFrame_CreateButtons(self.MissionTab.MissionList.listScroll, "OrderHallMissionListButtonTemplate", 13, -8, nil, nil, nil, -4);
-	self.MissionTab.MissionList:Update();
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("GarrisonMissionListButtonTemplate", function(button, elementData)
+		GarrisonMissionList_InitButton(button, elementData, self);
+	end);
+	view:SetPadding(8,0,13,13,4);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.MissionTab.MissionList.ScrollBox, self.MissionTab.MissionList.ScrollBar, view);
 
 	GarrisonMissionListTab_SetTab(self.MissionTab.MissionList.Tab1);
 end

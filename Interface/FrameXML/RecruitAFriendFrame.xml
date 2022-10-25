@@ -262,7 +262,7 @@
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="ClaimGlowSpinAnim" looping="REPEAT">
-				<Rotation childKey="ClaimGlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+				<Rotation childKey="ClaimGlowSpin" degrees="-360" duration="15"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="ClaimGlowInAnim" setToFinalAlpha="true">
 				<Alpha childKey="ClaimGlow" fromAlpha="0" toAlpha="0.8" duration="0.4"/>
@@ -470,7 +470,7 @@
 						</Frames>
 						<Animations>
 							<AnimationGroup parentKey="ClaimGlowSpinAnim" looping="REPEAT">
-								<Rotation childKey="ClaimGlowSpin" degrees="-360" x="2" y="-4" duration="15"/>
+								<Rotation childKey="ClaimGlowSpin" degrees="-360" duration="15"/>
 							</AnimationGroup>
 							<AnimationGroup parentKey="ClaimGlowInAnim" setToFinalAlpha="true">
 								<Alpha childKey="ClaimGlow" fromAlpha="0" toAlpha="0.8" duration=".4"/>
@@ -556,12 +556,18 @@
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame parentKey="ScrollFrame" inherits="FriendsFrameScrollFrame">
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Size x="303" y="188"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" y="-3"/>
 						</Anchors>
-					</ScrollFrame>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+						</Anchors>
+					</EventFrame>
 				</Frames>
 			</Frame>
 			 <Button parentKey="RecruitmentButton" inherits="FriendsFrameButtonTemplate_BottomLeft" text="RAF_RECRUITMENT" mixin="RecruitAFriendRecruitmentButtonMixin">

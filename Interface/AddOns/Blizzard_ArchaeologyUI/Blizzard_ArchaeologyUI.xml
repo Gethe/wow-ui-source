@@ -274,30 +274,20 @@
 				</Scripts>
 			</Frame>
 			<StatusBar name="$parentRankBar" drawLayer="BACKGROUND" enableMouse="false" parentKey="rankBar">
-				<Size>
-					<AbsDimension x="246" y="13"/>
-				</Size>
+				<Size x="246" y="13"/>
 				<Anchors>
 					<Anchor point="TOP" x="20" y="-60"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentSkillRank" inherits="TextStatusBarText" justifyH="CENTER" parentKey="text">
-							<Size>
-								<AbsDimension x="0" y="9"/>
-							</Size>
+							<Size x="0" y="9"/>
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</FontString>
 						<Texture name="$parentBorder" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
-							<Size>
-								<AbsDimension x="255" y="29"/>
-							</Size>
+							<Size x="255" y="29"/>
 							<Anchors>
 								<Anchor point="LEFT" x="-5" y="0"/>
 							</Anchors>
@@ -432,9 +422,7 @@
 							<TexCoords left="0.00195313" right="0.08398438" top="0.84375000" bottom="0.94921875"/>
 						</Texture>
 						<FontString name="$parentPageText" inherits="GameFontBlack" justifyH="RIGHT" parentKey="pageText" text="PAGE">
-							<Size>
-								<AbsDimension x="102" y="0"/>
-							</Size>
+							<Size x="102" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT"  x="-110" y="22"/>
 							</Anchors>
@@ -609,9 +597,7 @@
 							<TexCoords left="0.00195313" right="0.08398438" top="0.84375000" bottom="0.94921875"/>
 						</Texture>
 						<FontString name="$parentPageText" inherits="GameFontBlack" justifyH="RIGHT" parentKey="pageText" text="PAGE">
-							<Size>
-								<AbsDimension x="102" y="0"/>
-							</Size>
+							<Size x="102" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT"  x="-110" y="22"/>
 							</Anchors>
@@ -852,11 +838,7 @@
 									<Layer level="OVERLAY">
 										<FontString name="$parentText" inherits="TextStatusBarText" parentKey="text">
 											<Anchors>
-												<Anchor point="CENTER">
-													<Offset>
-														<AbsDimension x="0" y="0"/>
-													</Offset>
-												</Anchor>
+												<Anchor point="CENTER" x="0" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>

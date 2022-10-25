@@ -6,7 +6,7 @@
 		<Size x="135" y="80"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentkey="PortraitRing" atlas="QuestSharing-Dialog-Portrait" useAtlasSize="true">
+				<Texture parentKey="PortraitRing" atlas="QuestSharing-Dialog-Portrait" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>

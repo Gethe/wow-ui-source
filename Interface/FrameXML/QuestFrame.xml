@@ -56,17 +56,6 @@
 					<Anchor point="LEFT" relativeTo="QuestFramePortrait" relativePoint="RIGHT" x="10" y="0"/>
 					<Anchor point="RIGHT" x="-38" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="QuestFrameNpcNameText" inherits="GameFontHighlight">
-							<Size x="235" y="20"/>
-							<Anchors>
-								<Anchor point="LEFT"/>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad function="RaiseFrameLevelByTwo"/>
 				</Scripts>
@@ -283,6 +272,11 @@
 					<OnShow function="QuestFrameGreetingPanel_OnShow"/>
 				</Scripts>
 			</Frame>
+			<StatusBar parentKey="FriendshipStatusBar" inherits="NPCFriendshipStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="80" y="-41"/>
+				</Anchors>
+			</StatusBar>
 		</Frames>
 		<Scripts>
 			<OnLoad function="QuestFrame_OnLoad"/>
@@ -293,16 +287,10 @@
 	</Frame>
 	<ModelScene name="QuestModelScene" inherits="PanningModelSceneMixinTemplate">
 		<Size x="198" y="230"/>
-		<Frames>
-			<KeyValues>
-				<KeyValue key="normalIntensity" value="0.75" type="number"/>
-				<KeyValue key="highlightIntensity" value="1.2" type="number"/>
-			</KeyValues>
-			<Anchors>
-				<Anchor point="TOPLEFT" x="0" y="0"/>
-				<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-			</Anchors>
-		</Frames>
+		<KeyValues>
+			<KeyValue key="normalIntensity" value="0.75" type="number"/>
+			<KeyValue key="highlightIntensity" value="1.2" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="QuestNPCModelBg" inherits="QuestPortrait-MrBrownstone">

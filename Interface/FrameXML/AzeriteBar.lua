@@ -51,10 +51,10 @@ function AzeriteBarMixin:AnimatedValueChangedCallback()
 	self:UpdatePointsTooltip();
 end
 
-function AzeriteBarMixin:OnLoad() 
-	self:SetBarColor(ARTIFACT_BAR_COLOR:GetRGB());
+function AzeriteBarMixin:OnLoad()
+	self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-ArtifactPower");
 	self.StatusBar:SetOnAnimatedValueChangedCallback(function() self:AnimatedValueChangedCallback(); end)
-	self.priority = 0; 
+	self.priority = 0;
 end
 
 function AzeriteBarMixin:OnEvent(event, ...)
@@ -63,12 +63,12 @@ function AzeriteBarMixin:OnEvent(event, ...)
 			self:Update();
 		elseif ( event == "CVAR_UPDATE" ) then
 			local name, value = ...;
-			if ( name == "XP_BAR_TEXT" ) then
+			if ( name == "xpBarText" ) then
 				self:UpdateTextVisibility();
 			end
 		elseif ( event == "BAG_UPDATE" ) then
 			local bagID = ...;
-			if bagID > NUM_BAG_SLOTS then
+			if bagID > NUM_TOTAL_EQUIPPED_BAG_SLOTS then
 				self:Update();
 			end
 		end

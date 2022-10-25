@@ -1,65 +1,26 @@
 ClassNameplateBarWarlock = {};
 
 function ClassNameplateBarWarlock:OnLoad()
-	self.class = "WARLOCK";
-	self.powerToken = "SOUL_SHARDS";
-	self.Shards = {};
+	ClassResourceBarMixin.OnLoad(self);
+end 
 
-	ClassNameplateBar.OnLoad(self);
+function ClassNameplateBarWarlock:SetupWarlock()
+	self:ShowNameplateBar();
+	return true; 
 end
 
-function ClassNameplateBarWarlock:Setup()
-	local showBar = ClassNameplateBar.Setup(self);
-
-	if (showBar and UnitLevel("player") < SHARDBAR_SHOW_LEVEL) then
-		self:RegisterEvent("PLAYER_LEVEL_UP");
-		self:HideNameplateBar();
-	end
-end
-
-function ClassNameplateBarWarlock:OnEvent(event, ...)
-	local handled = ClassNameplateBar.OnEvent(self, event, ...);
-	if handled then
-		return handled;
-	elseif event == "PLAYER_LEVEL_UP" then
-		local level = ...;
-		if level >= SHARDBAR_SHOW_LEVEL then
-			self:UnregisterEvent("PLAYER_LEVEL_UP");
-			self:Setup();
-		end
-	else
-		return false;
-	end
-
-	return true;
-end
-
-function ClassNameplateBarWarlock:CreateShards()
-	local maxShards = UnitPowerMax("player", Enum.PowerType.SoulShards);
-
-	while #self.Shards < maxShards do
-		local shard = CreateFrame("FRAME", nil, self, "ClassNameplateBarShardFrame");
-		shard:Setup(#self.Shards - 1);
-
-		if self.shardPoolAnchor then
-			shard:SetPoint("LEFT", self.shardPoolAnchor, "RIGHT", 6, 0);
-		else
-			shard:SetPoint("LEFT", self, "LEFT", -4, -4);
-		end
-
-		self.shardPoolAnchor = shard;
-		shard:Show();
-	end
+function ClassNameplateBarWarlock:UpdateMaxPower()
+	ClassResourceBarMixin.UpdateMaxPower(self);
 end
 
 function ClassNameplateBarWarlock:UpdatePower()
-	WarlockPowerBar_UpdatePower(self);
-end
+	WarlockPowerBar.UpdatePower(self);
+end 
 
 ClassNameplateBarWarlockShardMixin = CreateFromMixins(WarlockShardMixin);
 
-function ClassNameplateBarWarlockShardMixin:Setup(shardIndex)
-	WarlockShardMixin.Setup(self, shardIndex);
+function ClassNameplateBarWarlockShardMixin:Setup()
+	WarlockShardMixin.Setup(self, self.layoutIndex);
 	self.widthByFillAmount = {
 		[0] = 0,
 		[1] = 2,
@@ -76,7 +37,7 @@ function ClassNameplateBarWarlockShardMixin:Setup(shardIndex)
 end
 
 function ClassNameplateBarWarlockShardMixin:Update(powerAmount)
-	local fillAmount = Saturate(powerAmount - self.shardIndex);
+	local fillAmount = Saturate(powerAmount - (self.layoutIndex - 1));
 	local active = fillAmount >= 1;
 
 	local bar = self:GetParent();

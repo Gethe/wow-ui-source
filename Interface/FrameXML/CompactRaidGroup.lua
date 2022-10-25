@@ -26,9 +26,8 @@ function CompactRaidGroup_GenerateForGroup(groupIndex)
 	local didCreate = false;
 	local frame = _G["CompactRaidGroup"..groupIndex]
 	if (  not frame ) then
-		frame = CreateFrame("Frame", "CompactRaidGroup"..groupIndex, UIParent, "CompactRaidGroupTemplate");
+		frame = CreateFrame("Frame", "CompactRaidGroup"..groupIndex, CompactRaidFrameContainer, "CompactRaidGroupTemplate");
 		CompactRaidGroup_InitializeForGroup(frame, groupIndex);
-		--CompactRaidGroup_UpdateLayout(frame);	--Update border calls UpdateLayout.
 		CompactRaidGroup_UpdateBorder(frame);
 		didCreate = true;
 	end
@@ -47,21 +46,35 @@ function CompactRaidGroup_InitializeForGroup(frame, groupIndex)
 end
 
 function CompactRaidGroup_UpdateUnits(frame)
-	local groupIndex = frame:GetID();
-	local frameIndex = 1;
+	if not frame.isParty and ShouldShowRaidFrames() then
+		local groupIndex = frame:GetID();
+		local frameIndex = 1;
 
-	if ( IsInRaid() ) then
 		for i=1, GetNumGroupMembers() do
 			local name, rank, subgroup = GetRaidRosterInfo(i);
 			if ( subgroup == groupIndex and frameIndex <= MEMBERS_PER_RAID_GROUP ) then
-				CompactUnitFrame_SetUnit(_G[frame:GetName().."Member"..frameIndex], "raid"..i);
+				local unitToken;
+				if IsInRaid() then
+					unitToken = "raid"..i;
+				else
+					if i == 1 then
+						unitToken = "player";
+					else
+						unitToken = "party"..(i - 1);
+					end
+				end
+
+				CompactUnitFrame_SetUnit(_G[frame:GetName().."Member"..frameIndex], unitToken);
 				frameIndex = frameIndex + 1;
 			end
 		end
 		
+		local forcedShown = EditModeManagerFrame:AreRaidFramesForcedShown();
+
 		for i=frameIndex, MEMBERS_PER_RAID_GROUP do
+			local unitToken = forcedShown and "player" or nil;
 			local unitFrame = _G[frame:GetName().."Member"..i];
-			CompactUnitFrame_SetUnit(unitFrame, nil);
+			CompactUnitFrame_SetUnit(unitFrame, unitToken);
 		end
 	end
 end
@@ -69,7 +82,9 @@ end
 function CompactRaidGroup_UpdateLayout(frame)
 	local totalHeight = frame.title:GetHeight();
 	local totalWidth = 0;
-	if ( CUF_HORIZONTAL_GROUPS ) then
+
+	local useHorizontalGroups = EditModeManagerFrame:ShouldRaidFrameUseHorizontalRaidGroups(frame.isParty);
+	if useHorizontalGroups then
 		frame.title:ClearAllPoints();
 		frame.title:SetPoint("TOPLEFT");
 		
@@ -84,6 +99,10 @@ function CompactRaidGroup_UpdateLayout(frame)
 		end
 		totalHeight = totalHeight + _G[frame:GetName().."Member1"]:GetHeight();
 		totalWidth = totalWidth + _G[frame:GetName().."Member1"]:GetWidth() * MEMBERS_PER_RAID_GROUP;
+
+		if frame.borderFrame:IsShown() then
+			totalWidth = totalWidth + 4;
+		end
 	else
 		frame.title:ClearAllPoints();
 		frame.title:SetPoint("TOP");
@@ -99,44 +118,18 @@ function CompactRaidGroup_UpdateLayout(frame)
 		end
 		totalHeight = totalHeight + _G[frame:GetName().."Member1"]:GetHeight() * MEMBERS_PER_RAID_GROUP;
 		totalWidth = totalWidth + _G[frame:GetName().."Member1"]:GetWidth();
-	end
-	
-	if ( frame.borderFrame:IsShown() ) then
-		totalWidth = totalWidth + 12;
-		totalHeight = totalHeight + 4;
+
+		if frame.borderFrame:IsShown() then
+			totalWidth = totalWidth + 12;
+			totalHeight = totalHeight + 2;
+		end
 	end
 	
 	frame:SetSize(totalWidth, totalHeight);
 end
 
 function CompactRaidGroup_UpdateBorder(frame)	
-	if ( CUF_SHOW_BORDER ) then
-		frame.borderFrame:Show();
-	else
-		frame.borderFrame:Hide();
-	end
+	local displayBorder = EditModeManagerFrame:ShouldRaidFrameDisplayBorder(frame.isParty);
+	frame.borderFrame:SetShown(displayBorder);
 	CompactRaidGroup_UpdateLayout(frame);
-end
-
-function CompactRaidGroup_StartMoving(frame)
-	--Move the frame right onto the cursor.
-	local cursorX, cursorY = GetCursorPosition();
-	frame:ClearAllPoints();
-	frame:SetPoint("TOP", UIParent, "BOTTOMLEFT", cursorX / UIParent:GetScale(), cursorY / UIParent:GetScale() + 10);
-	
-	frame:StartMoving();
-	MOVING_COMPACT_RAID_FRAME = frame;
-end
-
-function CompactRaidGroup_StopMoving(frame)
-	frame:StopMovingOrSizing();
-	if ( MOVING_COMPACT_RAID_FRAME == frame ) then
-		MOVING_COMPACT_RAID_FRAME = nil;
-	end
-end
-
-function CompactRaidGroup_StopAllMoving()
-	if ( MOVING_COMPACT_RAID_FRAME ) then
-		CompactRaidGroup_StopMoving(MOVING_COMPACT_RAID_FRAME)
-	end
 end

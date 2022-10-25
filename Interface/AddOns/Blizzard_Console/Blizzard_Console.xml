@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
 	<Frame name="DeveloperConsoleBackgroundTemplate" virtual="true" useParentLevel="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="-1" y="2" />
@@ -205,6 +205,57 @@
 				</Frames>
 			</Frame>
 			
+			<Button parentKey="CheatBrowserToggle" hidden="true">
+				<Size x="110" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Filters" x="0" y="2" />
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Filters" x="0" y="-2" />
+				</Anchors>
+				<ButtonText parentKey="Label" inherits="ConsoleFontNormal" text="Cheat Browser">
+					<Anchors>
+						<Anchor point="LEFT" x="23" y="0"/>
+					</Anchors>	
+					<Color r="1" g="0.82" b="0"/>
+				</ButtonText>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\ICONS\INV_Shield_1H_NzothRaid_D_01">
+							<Size x="18" y="18"/>
+						</Texture>
+						<FontString inherits="ConsoleFontNormal" text="Cheat Browser">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4" y="0"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0" a="0"/>
+						</FontString>
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="1" a="0.1"/>
+						</Texture>
+						<Texture parentKey="Border">
+							<Size x="1" />
+							<Anchors>
+								<Anchor point="TOP" y="2"/>
+								<Anchor point="BOTTOM" y="-2"/>
+								<Anchor point="LEFT" relativePoint="RIGHT"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</Texture>						
+					</Layer>				
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						<!-- for some reason this didn't work in the XML ANCHOR tag -->
+						self.Icon:ClearAllPoints();
+						self.Icon:SetPoint("RIGHT", self.Label, "LEFT", -2, 0);
+					</OnLoad>
+					<OnClick>
+						EnableAddOn("CheatBrowser");
+						LoadAddOn("CheatBrowser");
+						CheatBrowser:Toggle();
+					</OnClick>
+				</Scripts>
+			</Button>
+
 			<ScrollingMessageFrame parentKey="MessageFrame" enableMouseClicks="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Filters" relativePoint="BOTTOMLEFT" x="0" y="-4" />

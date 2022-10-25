@@ -180,7 +180,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="6">
+			<Layer level="OVERLAY" textureSubLevel="5">
 				<Texture parentKey="StarBurst" alpha="0" alphaMode="ADD" atlas="ArtifactsFX-StarBurst" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -222,7 +222,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="8">
+			<Layer level="OVERLAY" textureSubLevel="6">
 				<Texture parentKey="Tier2AnimatedBorder1" alpha="0" alphaMode="ADD" atlas="Artifacts-PerkRing-Final" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -249,7 +249,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="10">
+			<Layer level="OVERLAY" textureSubLevel="7">
 				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alpha="0" alphaMode="ADD" parentKey="Shine">
 					<Size x="67" y="1"/>
 					<Anchors>
@@ -270,7 +270,7 @@
 			<!-- Animation Textures -->
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="FirstPointWaitingAnimation" setToFinalAlpha="true" looping="repeat">
+			<AnimationGroup parentKey="FirstPointWaitingAnimation" setToFinalAlpha="true" looping="REPEAT">
 				<Alpha childKey="RingGlow" duration=".8" order="1" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="RingGlow" startDelay=".8" smoothing="IN_OUT" duration=".8" order="1" fromAlpha="1" toAlpha="0"/>
 
@@ -290,16 +290,12 @@
 				<Alpha childKey="RingGlow" startDelay="0.75" smoothing="NONE" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="PointBurstLeft" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="PointBurstLeft" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
-					<Origin point="RIGHT">
-						<Offset x="-4" y="0"/>
-					</Origin>
+					<Origin point="RIGHT"/>
 				</Scale>
 				<Alpha childKey="PointBurstLeft" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="PointBurstRight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="PointBurstRight" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
-					<Origin point="LEFT">
-						<Offset x="4" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 				<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
@@ -328,16 +324,12 @@
 				<Scale childKey="RingBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
 				<Alpha childKey="PointBurstLeft" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="PointBurstLeft" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
-					<Origin point="RIGHT">
-						<Offset x="-4" y="0"/>
-					</Origin>
+					<Origin point="RIGHT"/>
 				</Scale>
 				<Alpha childKey="PointBurstLeft" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="PointBurstRight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="PointBurstRight" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
-					<Origin point="LEFT">
-						<Offset x="4" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 				<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="RankBorderFinal" startDelay="4" duration="1" order="4" fromAlpha="1" toAlpha="0"/>
@@ -370,16 +362,12 @@
 				<Alpha childKey="BigGlow" startDelay="1" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="PointBurstLeft" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="PointBurstLeft" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
-					<Origin point="RIGHT">
-						<Offset x="-4" y="0"/>
-					</Origin>
+					<Origin point="RIGHT"/>
 				</Scale>
 				<Alpha childKey="PointBurstLeft" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="PointBurstRight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="PointBurstRight" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
-					<Origin point="LEFT">
-						<Offset x="4" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 				<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="DragonShake" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
@@ -417,16 +405,12 @@
 				<Scale childKey="RingBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
 				<Alpha childKey="PointBurstLeft" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="PointBurstLeft" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
-					<Origin point="RIGHT">
-						<Offset x="-4" y="0"/>
-					</Origin>
+					<Origin point="RIGHT"/>
 				</Scale>
 				<Alpha childKey="PointBurstLeft" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="PointBurstRight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="PointBurstRight" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
-					<Origin point="LEFT">
-						<Offset x="4" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 				<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
@@ -455,16 +439,12 @@
 				<Scale childKey="RingBurst" startDelay="0.25" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
 				<Alpha childKey="PointBurstLeft" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="PointBurstLeft" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
-					<Origin point="RIGHT">
-						<Offset x="-4" y="0"/>
-					</Origin>
+					<Origin point="RIGHT"/>
 				</Scale>
 				<Alpha childKey="PointBurstLeft" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="PointBurstRight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="PointBurstRight" smoothing="IN_OUT" duration="0.4" order="1" fromScaleX="0.25" fromScaleY="0.75" toScaleX="1.5" toScaleY="1.0">
-					<Origin point="LEFT">
-						<Offset x="4" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 				<Alpha childKey="PointBurstRight" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="RankBorderFinal" startDelay="4" duration="1" order="4" fromAlpha="1" toAlpha="0"/>

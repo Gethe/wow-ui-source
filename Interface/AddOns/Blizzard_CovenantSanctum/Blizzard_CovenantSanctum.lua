@@ -1,11 +1,6 @@
 CovenantSanctumMixin = {};
 
-local TAB_UPGRADES = 1;
-local TAB_RENOWN = 2;
-
 function CovenantSanctumMixin:OnLoad()
-	PanelTemplates_SetNumTabs(self, 2);
-
 	local attributes =
 	{
 		area = "center",
@@ -15,32 +10,20 @@ function CovenantSanctumMixin:OnLoad()
 	RegisterUIPanel(CovenantSanctumFrame, attributes);
 end
 
-local CovenantSanctumEvents = {
-	"COVENANT_SANCTUM_INTERACTION_ENDED",
-};
-
 function CovenantSanctumMixin:OnShow()
-	FrameUtil.RegisterFrameForEvents(self, CovenantSanctumEvents);
-
 	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_OPEN_WINDOW);
 end
 
 function CovenantSanctumMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, CovenantSanctumEvents);
-
 	C_CovenantSanctumUI.EndInteraction();
 
 	PlaySound(SOUNDKIT.UI_COVENANT_SANCTUM_CLOSE_WINDOW);
 end
 
-function CovenantSanctumMixin:OnEvent(event, ...)
-	if event == "COVENANT_SANCTUM_INTERACTION_STARTED" then
-		self:SetCovenantInfo();
-		ShowUIPanel(self);
-	elseif event == "COVENANT_SANCTUM_INTERACTION_ENDED" then
-		HideUIPanel(self);
-	end
-end
+function CovenantSanctumMixin:InteractionStarted() 
+	self:SetCovenantInfo();
+	ShowUIPanel(self);
+end		
 
 function CovenantSanctumMixin:SetCovenantInfo()
 	local covenantID = C_Covenants.GetActiveCovenantID();

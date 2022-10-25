@@ -54,6 +54,8 @@ Blizzard_UIWidgetTemplateSpacer.lua
 Blizzard_UIWidgetTemplateSpacer.xml
 Blizzard_UIWidgetTemplateUnitPowerBar.lua
 Blizzard_UIWidgetTemplateUnitPowerBar.xml
+Blizzard_UIWidgetTemplateFillUpFrames.lua
+Blizzard_UIWidgetTemplateFillUpFrames.xml
 
 Blizzard_UIWidgetTopCenterFrame.lua
 Blizzard_UIWidgetTopCenterFrame.xml
@@ -61,3 +63,5 @@ Blizzard_UIWidgetBelowMinimapFrame.lua
 Blizzard_UIWidgetBelowMinimapFrame.xml
 Blizzard_UIWidgetPowerBarFrame.lua
 Blizzard_UIWidgetPowerBarFrame.xml
+Blizzard_UIWidgetCenterScreenFrame.lua
+Blizzard_UIWidgetCenterScreenFrame.xml

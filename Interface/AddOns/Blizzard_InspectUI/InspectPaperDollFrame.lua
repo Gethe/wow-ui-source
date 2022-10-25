@@ -70,6 +70,8 @@ function InspectPaperDollFrame_UpdateButtons()
 	InspectPaperDollItemSlotButton_Update(InspectTrinket1Slot);
 	InspectPaperDollItemSlotButton_Update(InspectMainHandSlot);
 	InspectPaperDollItemSlotButton_Update(InspectSecondaryHandSlot);
+
+	InspectPaperDollItemsFrame.InspectTalents:SetEnabled(C_Traits.HasValidInspectData());
 end
 
 local factionLogoTextures = {
@@ -189,4 +191,30 @@ end
 function InspectPaperDollViewButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	DressUpItemTransmogInfoList(C_TransmogCollection.GetInspectItemTransmogInfoList());
+end
+
+InspectPaperDollFrameTalentsButtonMixin = {};
+
+function InspectPaperDollFrameTalentsButtonMixin:OnClick()
+	if C_Traits.HasValidInspectData() then
+		ClassTalentFrame_LoadUI();
+
+		local suggestedTab = nil;
+		local inspectUnit = InspectFrame.unit;
+		ToggleTalentFrame(suggestedTab, inspectUnit);
+	end
+end
+
+function InspectPaperDollFrameTalentsButtonMixin:OnEnter()
+	local hasValidInspectData = C_Traits.HasValidInspectData();
+	self:SetEnabled(hasValidInspectData);
+	if not hasValidInspectData then
+		GameTooltip:SetOwner(self);
+		GameTooltip_AddErrorLine(GameTooltip, UNAVAILABLE);
+		GameTooltip:Show();
+	end
+end
+
+function InspectPaperDollFrameTalentsButtonMixin:OnLeave()
+	GameTooltip_Hide();
 end

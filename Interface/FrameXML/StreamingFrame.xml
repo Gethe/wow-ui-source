@@ -22,15 +22,11 @@
 			</AnimationGroup>
 		</Animations>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="GhostFrame" relativePoint="RIGHT" >
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="GhostFrame" relativePoint="RIGHT" x="0" y="0"/>
 		</Anchors>
 		<Size x="48" y="48"/>
 		<Frames>
-            <Frame name="$parentFrame" setAllPoints="true" >
+			<Frame name="$parentFrame" setAllPoints="true" >
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" />
@@ -51,20 +47,16 @@
 				</Layers>
 			</Frame>
 		</Frames>
-        <Scripts>
-            <OnEnter>
-                if(self.tooltip ~= nil) then
+		<Scripts>
+			<OnEnter>
+				if(self.tooltip ~= nil) then
 					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-                    GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-                end
-            </OnEnter>
-            <OnLeave function="GameTooltip_Hide"/>
+					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnLoad function="StreamingIcon_OnLoad"/>
- 			<OnEvent function="StreamingIcon_OnEvent"/>
+			<OnEvent function="StreamingIcon_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>
-
-
-
-

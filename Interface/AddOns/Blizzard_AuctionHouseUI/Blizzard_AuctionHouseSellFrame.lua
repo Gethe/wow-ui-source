@@ -268,7 +268,7 @@ end
 AuctionHouseSellFrameMixin = CreateFromMixins(AuctionHouseSortOrderSystemMixin);
 
 local AUCTION_HOUSE_SELL_FRAME_EVENTS = {
-	"CURSOR_UPDATE",
+	"CURSOR_CHANGED",
 	"AUCTION_HOUSE_THROTTLED_SYSTEM_READY",
 	"AUCTION_HOUSE_THROTTLED_MESSAGE_SENT",
 }
@@ -325,7 +325,7 @@ function AuctionHouseSellFrameMixin:OnHide()
 end
 
 function AuctionHouseSellFrameMixin:OnEvent(event, ...)
-	if event == "CURSOR_UPDATE" then
+	if event == "CURSOR_CHANGED" then
 		if self.Overlay:IsMouseOver() then
 			self:OnOverlayEnter();
 		end

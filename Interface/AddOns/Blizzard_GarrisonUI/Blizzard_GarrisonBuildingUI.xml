@@ -1,7 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonBuildingUI.lua"/>
 
+	<Frame name="GarrisonBuildingFollowerButtonTemplate" inherits="GarrisonMissionFollowerOrCategoryListButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.Follower:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);
+				self.Follower:SetScript("OnEnter", GarrisonBuildingFollowerButton_OnEnter);
+				self.Follower:SetScript("OnLeave", GarrisonBuildingFollowerButton_OnLeave);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
 	<Frame name="GarrisonBaseInfoBoxTemplate" useParentLevel="true" virtual="true">
 		<Layers>
 			<Layer level="BORDER">
@@ -329,9 +339,7 @@
 		<Animations>
             <AnimationGroup parentKey="BuildingGlowPulseAnim" setToFinalAlpha="true" looping="REPEAT">
                 <Scale childKey="BuildingPulse" duration="0.5" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.3" toScaleY="1.3">
-                    <Origin point="CENTER">
-                        <Offset x="0" y="0"/>
-                    </Origin>
+                    <Origin point="CENTER"/>
                 </Scale>
                 <Alpha childKey="BuildingPulse" smoothing="NONE" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
                 <Alpha childKey="BuildingPulse" smoothing="NONE" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
@@ -350,9 +358,7 @@
             </AnimationGroup>
 			<AnimationGroup parentKey="BuildingCreateFlareAnim" setToFinalAlpha="true">
                 <Scale childKey="BuildGlow" duration="0.5" order="1" fromScaleX="1.5" fromScaleY="0.8" toScaleX="1.5" toScaleY="1.2">
-                    <Origin point="CENTER">
-                        <Offset x="0" y="0"/>
-                    </Origin>
+                    <Origin point="CENTER"/>
                 </Scale>
                 <Alpha childKey="BuildGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
                 <Alpha childKey="BuildGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
@@ -1212,7 +1218,7 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="BORDER" textureSubLevel="-1">>
+							<Layer level="BORDER" textureSubLevel="-1">
 								<Texture parentKey="Building" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="BOTTOM"/>
@@ -1286,9 +1292,7 @@
 						<Animations>
 							<AnimationGroup parentKey="BuildingGlowPulseAnim" setToFinalAlpha="true" looping="REPEAT">
 								<Scale childKey="BuildingPulse" duration="0.5" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.3" toScaleY="1.3">
-									<Origin point="CENTER">
-										<Offset x="0" y="0"/>
-									</Origin>
+									<Origin point="CENTER"/>
 								</Scale>
 								<Alpha childKey="BuildingPulse" smoothing="NONE" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 								<Alpha childKey="BuildingPulse" smoothing="NONE" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>

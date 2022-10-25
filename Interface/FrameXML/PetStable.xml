@@ -40,9 +40,7 @@
 	</Texture>
 
 	<Button name="PetStableSlotTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="37" y="37"/>
-		</Size>
+		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentIconTexture"/>
@@ -87,16 +85,7 @@
 			<OnDragStart>
 				PickupStablePet(self.petSlot);
 			</OnDragStart>
-			<OnReceiveDrag>
-				if (self:IsEnabled()) then
-					local cursorType, petSlot = GetCursorInfo();
-					if (cursorType == "pet") then
-						SetPetSlot(petSlot, self.petSlot);
-						ClearCursor();
-					end
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				end
-			</OnReceiveDrag>
+			<OnReceiveDrag function="PetStableSlot_OnReceiveDrag"/>
 		</Scripts>
 		<PushedTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
@@ -191,9 +180,7 @@
 
 				<Frames>
 					<Button name="PetStableModelRotateLeftButton" mixin="ModelControlRotateButtonMixin">
-						<Size>
-							<AbsDimension x="35" y="35"/>
-						</Size>
+						<Size x="35" y="35"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
 						</Anchors>
@@ -206,9 +193,7 @@
 					</Button>
 
 					<Button name="PetStableModelRotateRightButton" mixin="ModelControlRotateButtonMixin">
-						<Size>
-							<AbsDimension x="35" y="35"/>
-						</Size>
+						<Size x="35" y="35"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PetStableModelRotateLeftButton" relativePoint="TOPRIGHT"/>
 						</Anchors>
@@ -265,9 +250,7 @@
 				</Layers>
 				<Frames>
 					<Frame name="PetStableDiet" enableMouse="true" hidden="false">
-						<Size>
-							<AbsDimension x="25" y="23"/>
-						</Size>
+						<Size x="25" y="23"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-3" y="-2"/>
 						</Anchors>

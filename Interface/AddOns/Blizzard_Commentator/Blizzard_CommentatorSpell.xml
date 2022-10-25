@@ -1,4 +1,5 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_CommentatorSpell.lua"/>
 
 	<Frame name="CommentatorSpellBaseTemplate" inherits="CooldownFrameTemplate" useParentLevel="true" mixin="CommentatorSpellBaseMixin" virtual="true">
@@ -17,7 +18,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Cooldown" hideCountdownNumbers="false" inherits="CooldownFrameTemplate" Mixin="CommentatorCooldownMixin" >
+			<Cooldown parentKey="Cooldown" hideCountdownNumbers="false" inherits="CooldownFrameTemplate" mixin="CommentatorCooldownMixin" >
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>

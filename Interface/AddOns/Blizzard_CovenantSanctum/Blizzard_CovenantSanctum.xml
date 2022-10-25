@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_CovenantSanctum.lua"/>
 	
 	<Frame name="CovenantSanctumFrame" parent="UIParent" mixin="CovenantSanctumMixin" hidden="true" enableMouse="true" toplevel="true">
@@ -48,7 +48,6 @@
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

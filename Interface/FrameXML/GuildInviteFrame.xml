@@ -2,9 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="GuildInviteFrame.lua"/>
 	<Frame name="GuildInviteFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
-		<Size>
-			<AbsDimension x="310" y="188"/>
-		</Size>
+		<Size x="310" y="188"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>

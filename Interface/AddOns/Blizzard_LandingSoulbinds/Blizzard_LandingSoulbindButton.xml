@@ -1,16 +1,16 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_LandingSoulbindButton.lua"/>
 	<Button name="LandingPageSoulbindButtonTemplate" mixin="LandingPageSoulbindButtonMixin" enableMouse="true" virtual="true">
 		<Size x="241" y="63"/>
 		<Layers>
-			<Layer level="Artwork">
+			<Layer level="ARTWORK">
 				<Texture parentKey="Portrait" useAtlasSize="true"/>
 			</Layer>
-			<Layer level="Overlay" textureSubLevel="1">
+			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="Press" atlas="shadowlands-landingpage-soulbindsbutton-down" useAtlasSize="true" hidden="true"/>
 			</Layer>
-			<Layer level="Overlay" textureSubLevel="3">
+			<Layer level="OVERLAY" textureSubLevel="3">
 				<Texture parentKey="Highlight" atlas="shadowlands-landingpage-soulbindsbutton-highlight" alphaMode="ADD" useAtlasSize="true" hidden="true"/>
 				<FontString parentKey="Label" inherits="SystemFont_Shadow_Med3">
 					<Anchors>

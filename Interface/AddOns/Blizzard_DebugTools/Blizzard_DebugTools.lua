@@ -16,6 +16,10 @@ function FrameStackTooltip_OnDisplaySizeChanged(self)
 	end
 end
 
+function FrameStackTooltip_IsFramestackEnabled()
+	return GetCVarBool("fstack_enabled");
+end
+
 function FrameStackTooltip_IsShowHiddenEnabled()
 	return GetCVarBool("fstack_showhidden");
 end
@@ -33,11 +37,13 @@ function FrameStackTooltip_IsShowAnchorsEnabled()
 end
 
 function FrameStackTooltip_OnFramestackVisibilityUpdated(self)
-	if ( self:IsVisible() ) then
-		--[[Since these properties impact the contents displayed on the framestack,
-		toggle the framestack off and then on to reinitialize it.--]]
-		FrameStackTooltip_Hide(self);
+	local show = FrameStackTooltip_IsFramestackEnabled();
+	
+	--[[Since these properties impact the contents displayed on the framestack,
+	toggle the framestack off and then on to reinitialize it.--]]
+	FrameStackTooltip_Hide(self);
 
+	if ( show ) then
 		local showHidden = FrameStackTooltip_IsShowHiddenEnabled();
 		local showRegions = FrameStackTooltip_IsShowRegionsEnabled();
 		local showAnchors = FrameStackTooltip_IsShowAnchorsEnabled();
@@ -226,24 +232,33 @@ function FrameStackTooltip_Hide(self)
 	FrameStackHighlight:Hide();
 end
 
+local function FrameStack_SetCVarEnabled(enabled)
+	SetCVar("fstack_enabled", enabled);
+end
+
 function FrameStackTooltip_ToggleDefaults()
 	local tooltip = FrameStackTooltip;
 	if ( tooltip:IsVisible() ) then
 		FrameStackTooltip_Hide(tooltip);
+		FrameStack_SetCVarEnabled(false);
 	else
 		local showHidden = FrameStackTooltip_IsShowHiddenEnabled();
 		local showRegions = FrameStackTooltip_IsShowRegionsEnabled();
 		local showAnchors = FrameStackTooltip_IsShowAnchorsEnabled();
 		FrameStackTooltip_Show(tooltip, showHidden, showRegions, showAnchors);
+		FrameStack_SetCVarEnabled(true);
 	end
 end
 
 function FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors)
 	local tooltip = FrameStackTooltip;
+
 	if ( tooltip:IsVisible() ) then
 		FrameStackTooltip_Hide(tooltip);
+		FrameStack_SetCVarEnabled(false);
 	else
 		FrameStackTooltip_Show(tooltip, showHidden, showRegions, showAnchors);
+		FrameStack_SetCVarEnabled(true);
 	end
 end
 

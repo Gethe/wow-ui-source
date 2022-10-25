@@ -14,7 +14,7 @@ function FlightMapMixin:ResetTitleAndPortraitIcon()
 end
 
 function FlightMapMixin:UpdateTitleAndPortraitIcon(titleText, portraitIcon)
-	self.BorderFrame.TitleText:SetText(titleText);
+	self.BorderFrame:SetTitle(titleText);
 	self.BorderFrame:SetPortraitToAsset(portraitIcon);
 end
 

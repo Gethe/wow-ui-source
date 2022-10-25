@@ -537,6 +537,6 @@ function TorghastLevelPickerOpenPortalButtonMixin:OnClick()
 	if(not selectedPortal) then 
 		return; 
 	end
-	C_GossipInfo.SelectOption(selectedPortal.index); 
+	C_GossipInfo.SelectOption(selectedPortal.optionInfo.gossipOptionID); 
 	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_PORTAL); 
 end 

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AnimaDiversionUI.lua"/>
-	
+
 	<Frame name="AnimaDiversionBolsterProgressGemTemplate" frameLevel="512" virtual="true">
 		<Size x="24" y="24"/>
 		<Layers>
@@ -19,7 +19,7 @@
 		<Size x="200" y="18"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Quantity" justifyV="CENTER" justifyH="CENTER" inherits="GameFontHighlight">
+				<FontString parentKey="Quantity" justifyV="MIDDLE" justifyH="CENTER" inherits="GameFontHighlight">
 					<Size x="200" y="18"/>
 				</FontString>
 			</Layer>
@@ -49,7 +49,7 @@
 				</Anchors>
 			</Frame>
 			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate"/>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="3" y="3" />
 				</Anchors>
@@ -72,7 +72,7 @@
 			<Button parentKey="AnimaDiversionCurrencyFrame" mixin="AnimaDiversionCurrencyFrameMixin" enableMouse="true" frameLevel="512">
 				<Size x="189" y="37"/>
 				<Anchors>
-					<Anchor point="TOP" x="0" y="8"/> 
+					<Anchor point="TOP" x="0" y="8"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -113,7 +113,7 @@
 			<Frame parentKey="ReinforceInfoFrame" mixin="ReinforceInfoFrameMixin" frameLevel="512">
 				<Size x="312" y="50"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.ReinforceProgressFrame" relativePoint="TOP" x="0" y="10"/> 
+					<Anchor point="BOTTOM" relativeKey="$parent.ReinforceProgressFrame" relativePoint="TOP" x="0" y="10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">

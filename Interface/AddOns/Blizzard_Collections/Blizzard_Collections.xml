@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_Collections.lua"/>
 
-	<Button name="CollectionsJournalTab" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Button name="CollectionsJournalTab" inherits="PanelTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
 				CollectionsJournal_SetTab(self:GetParent(), self:GetID());

@@ -295,8 +295,8 @@ function GroupFinderFrame_EvaluateHelpTips(self)
 end
 
 function GroupFinderFrame_OnShow(self)
-	PVEFrame:SetPortraitToAsset("Interface\\LFGFrame\\UI-LFG-PORTRAIT");
-	PVEFrame.TitleText:SetText(GROUP_FINDER);
+	PVEFrame:SetPortraitAtlasRaw("groupfinder-eye-frame");
+	PVEFrame:SetTitle(GROUP_FINDER);
 	GroupFinderFrame_EvaluateButtonVisibility(self);
 	GroupFinderFrame_EvaluateHelpTips(self);
 end

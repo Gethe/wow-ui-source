@@ -172,6 +172,9 @@ COMBATLOG_EVENT_LIST = {
 	["SPELL_BUILDING_DAMAGE"] = true,
 	["SPELL_BUILDING_HEAL"] = true,
 	["UNIT_DISSIPATES"] = true,
+	["SPELL_EMPOWER_START"] = true,
+	["SPELL_EMPOWER_END"] = true,
+	["SPELL_EMPOWER_INTERRUPT"] = true,
 };
 
 COMBATLOG_FLAG_LIST = {
@@ -187,7 +190,9 @@ COMBATLOG_FLAG_LIST = {
 EVENT_TEMPLATE_FORMATS = {
 	["SPELL_AURA_BROKEN_SPELL"] = TEXT_MODE_A_STRING_3,
 	["SPELL_CAST_START"] = TEXT_MODE_A_STRING_2,
-	["SPELL_CAST_SUCCESS"] = TEXT_MODE_A_STRING_2
+	["SPELL_CAST_SUCCESS"] = TEXT_MODE_A_STRING_2,
+	["SPELL_EMPOWER_START"] = TEXT_MODE_A_STRING_2,
+	["SPELL_EMPOWER_END"] = TEXT_MODE_A_STRING_2
 };
 
 --
@@ -425,7 +430,10 @@ Blizzard_CombatLog_Filter_Defaults = {
 					      ["PARTY_KILL"] = true,
 					      ["UNIT_DIED"] = false,
 					      ["UNIT_DESTROYED"] = true,
-					      ["UNIT_DISSIPATES"] = true
+					      ["UNIT_DISSIPATES"] = true,
+					      ["SPELL_EMPOWER_START"] = false,
+					      ["SPELL_EMPOWER_END"] = false,
+					      ["SPELL_EMPOWER_INTERRUPT"] = false,
 					};
 					sourceFlags = {
 						[COMBATLOG_FILTER_MINE] = true
@@ -658,11 +666,14 @@ function Blizzard_CombatLog_RefilterUpdate()
 	-- Clear the combat log
 	local total = 0;
 	while (valid and total < COMBATLOG_LIMIT_PER_FRAME) do
-		-- Log to the window
-		local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
-		-- NOTE: be sure to pass in nil for the color id or the color id may override the r, g, b values for this message
-		if ( text ) then
-			COMBATLOG:BackFillMessage(text, r, g, b);
+		local show = CombatLogShowCurrentEntry();
+		if (show) then
+			-- Log to the window
+			local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEntry());
+			-- NOTE: be sure to pass in nil for the color id or the color id may override the r, g, b values for this message
+			if ( text ) then
+				COMBATLOG:BackFillMessage(text, r, g, b);
+			end
 		end
 
 		-- count can be
@@ -2566,7 +2577,17 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			resultEnabled = false;
 			valueEnabled = true;
 			valueTypeEnabled = false;
-
+		elseif ( event == "SPELL_EMPOWER_START" ) then
+			-- Disable appropriate sections
+			resultEnabled = false;
+			valueEnabled = false;
+			valueTypeEnabled = false;
+		elseif ( event == "SPELL_EMPOWER_END" or event == "SPELL_EMPOWER_INTERRUPT" ) then
+			amount = select(4, ...);
+			-- Disable appropriate sections
+			resultEnabled = false;
+			valueEnabled = true;
+			valueTypeEnabled = false;
 		end
 	elseif ( subVal == "RANGE" ) then
 		--spellName = ACTION_RANGED;
@@ -3356,14 +3377,14 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	CombatLogQuickButtonFrameTexture = _G.CombatLogQuickButtonFrame_CustomTexture
 
 	-- Parent it to the tab so that we just inherit the tab's alpha. No need to do special fading for it.
-	CombatLogQuickButtonFrame:SetParent(COMBATLOG:GetName() .. "Tab");
+	CombatLogQuickButtonFrame:SetParent(_G[COMBATLOG:GetName() .. "Tab"]);
 	CombatLogQuickButtonFrame:ClearAllPoints();
-	CombatLogQuickButtonFrame:SetPoint("BOTTOMLEFT", COMBATLOG, "TOPLEFT");
+	CombatLogQuickButtonFrame:SetPoint("BOTTOMLEFT", COMBATLOG, "TOPLEFT", 0, 3);
 
 	if COMBATLOG.ScrollBar then
-		CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT", COMBATLOG.ScrollBar:GetWidth(), 0);
+		CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT", COMBATLOG.ScrollBar:GetWidth(), 3);
 	else
-		CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT");
+		CombatLogQuickButtonFrame:SetPoint("BOTTOMRIGHT", COMBATLOG, "TOPRIGHT", 0, 3);
 	end
 
 	CombatLogQuickButtonFrameProgressBar:Hide();
@@ -3389,6 +3410,7 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	end
 
 	FCF_SetButtonSide(COMBATLOG, COMBATLOG.buttonSide, true);
+	FCF_DockUpdate();
 end
 
 local oldFCF_DockUpdate = FCF_DockUpdate;
@@ -3453,7 +3475,7 @@ function SetItemRef(link, text, button, chatFrame)
 
 	if ( strsub(link, 1, 4) == "unit") then
 		local _, guid, name = strsplit(":", link);
-
+        
 		if ( IsModifiedClick("CHATLINK") ) then
 			ChatEdit_InsertLink (name);
 			return;
@@ -3462,6 +3484,8 @@ function SetItemRef(link, text, button, chatFrame)
 			EasyMenu(Blizzard_CombatLog_CreateUnitMenu(name, guid), CombatLogDropDown, "cursor", nil, nil, "MENU");
 			return;
 		end
+        
+        EventRegistry:TriggerEvent("ItemRefTooltip.UnitSet", name, guid);
 	elseif ( strsub(link, 1, 4) == "icon") then
 		local _, bit, direction = strsplit(":", link);
 		local texture = string.gsub(text,".*|h(.*)|h.*","%1");

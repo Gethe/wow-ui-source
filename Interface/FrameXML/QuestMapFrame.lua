@@ -185,7 +185,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 				TriggerTutorial(11);
 			end
 		end
-		if questLogIndex and AUTO_QUEST_WATCH == "1" and GetNumQuestLeaderBoards(questLogIndex) > 0 and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
+		if questLogIndex and GetCVarBool("autoQuestWatch") and GetNumQuestLeaderBoards(questLogIndex) > 0 and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
 			C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
 		end
 	elseif ( event == "QUEST_WATCH_LIST_CHANGED" ) then
@@ -224,7 +224,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		self:Refresh();
 	elseif ( event == "CVAR_UPDATE" ) then
 		local arg1 =...;
-		if ( arg1 == "QUEST_POI" ) then
+		if ( arg1 == "questPOI" ) then
 			QuestMapFrame_UpdateAll();
 		end
 	end
@@ -912,6 +912,8 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 	local info = C_QuestLog.GetInfo(questLogIndex);
 	if not info then return end
 
+	info.questSortType = QuestUtils_GetQuestSortType(info);
+
 	questInfoContainer[questLogIndex] = info;
 
 	-- Precompute whether or not the headers should display so that it's easier to add them later.
@@ -959,7 +961,7 @@ local function QuestLogQuests_GetCampaignInfos(questInfoContainer)
 
 	-- questInfoContainer is sorted with all campaigns coming first
 	for index, info in ipairs(questInfoContainer) do
-		if info.campaignID then
+		if info.questSortType == QuestSortType.Campaign then
 			table.insert(infos, info);
 		else
 			break;
@@ -973,7 +975,7 @@ local function QuestLogQuests_GetCovenantCallingsInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if info.isCalling then
+		if info.questSortType == QuestSortType.Calling then
 			table.insert(infos, info);
 		end
 	end
@@ -985,7 +987,7 @@ local function QuestLogQuests_GetQuestInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if not info.campaignID and not info.isCalling then
+		if info.questSortType == QuestSortType.Normal then
 			table.insert(infos, info);
 		end
 	end
@@ -1295,9 +1297,9 @@ local function QuestLogQuests_AddHeaderButton(displayState, info)
 	displayState.hasShownAnyHeader = true;
 
 	local button;
-	if info.campaignID then
+	if info.questSortType == QuestSortType.Campaign then
 		button = QuestLogQuests_AddCampaignHeaderButton(displayState, info);
-	elseif info.isCalling then
+	elseif info.questSortType == QuestSortType.Calling then
 		button = QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info);
 	else
 		button = QuestLogQuests_AddStandardHeaderButton(displayState, info);
@@ -1577,6 +1579,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	GameTooltip:Show();
 	tooltipButton = self;
+    EventRegistry:TriggerEvent("QuestMapLogTittleButton.OnEnter", self, questID);
 end
 
 function QuestMapLogTitleButton_OnLeave(self)
@@ -1623,14 +1626,14 @@ function QuestMapLogTitleButton_OnClick(self, button)
 end
 
 function QuestMapLogTitleButton_OnMouseDown(self)
-	local anchor, _, _, x, y = self.Text:GetPoint();
+	local anchor, _, _, x, y = self.Text:GetPoint(1);
 	self.Text:SetPoint(anchor, x + 1, y - 1);
 	anchor, _, _, x, y = self.TagTexture:GetPoint(2);
 	self.TagTexture:SetPoint(anchor, x + 1, y - 1);
 end
 
 function QuestMapLogTitleButton_OnMouseUp(self)
-	local anchor, _, _, x, y = self.Text:GetPoint();
+	local anchor, _, _, x, y = self.Text:GetPoint(1);
 	self.Text:SetPoint(anchor, x - 1, y + 1);
 	anchor, _, _, x, y = self.TagTexture:GetPoint(2);
 	self.TagTexture:SetPoint(anchor, x - 1, y + 1);

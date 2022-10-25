@@ -1,0 +1,86 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Script file="Blizzard_ProfessionsRecipeReagentSlotBase.lua"/>
+	
+	<Frame name="ProfessionsReagentSlotBaseTemplate" virtual="true">
+		<Size x="180" y="50"/>
+		<Frames>
+			<ItemButton parentKey="Button" inherits="ProfessionsReagentButtonTemplate" mixin="ProfessionsReagentSlotButtonMixin">
+				<Anchors>
+					<Anchor point="LEFT" x="10" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="7">
+						<Texture parentKey="QualityOverlay">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-3" y="2"/>
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="AddIcon" atlas="tradeskills-icon-add" alphaMode="ADD" useAtlasSize="true" scale=".5" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="InputOverlay" setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="AddIcon" atlas="Professions-Slot-Plus" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-4" y="2"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="AddIconHighlight" atlas="Professions-Slot-Plus-Over" useAtlasSize="true" alphaMode="ADD" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.AddIcon"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="LockedIcon" atlas="AdventureMapIcon-Lock" useAtlasSize="false" hidden="true">
+									<Size x="16" y="21"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</ItemButton>
+
+			<Button parentKey="UndoButton" hidden="true" inherits="IconButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
+					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="14" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="CustomerState" hidden="true">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".7"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" inherits="GameFontHighlight_NoShadow" justifyH="LEFT">
+					<Size x="148" y="36" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="10" y="0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

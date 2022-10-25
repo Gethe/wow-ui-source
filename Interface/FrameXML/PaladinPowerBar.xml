@@ -2,7 +2,11 @@
 ..\FrameXML\UI.xsd">
   <Script file="PaladinPowerBar.lua"/>
 
-	<Frame name="PaladinPowerBarFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, PaladinPowerBar">
+	<Frame name="PaladinPowerBarFrame" inherits="ClassPowerBarFrame, PlayerFrameBottomManagedFrameTemplate" mixin="ClassPowerBar, PaladinPowerBar">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="3" type="number"/>
+			<KeyValue key="topPadding" value="-6" type="number"/>
+		</KeyValues>
 		<Animations>
 			<AnimationGroup parentKey="showAnim">
 				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
@@ -23,7 +27,7 @@
 		</Animations>
 		<Size x="136" y="39"/>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="43" y="39"/>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="25" y="32"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="17" right="17" top="7" bottom="4"/>
@@ -233,5 +237,3 @@
 		</Frames>
 	</Frame>
 </Ui>
-
-

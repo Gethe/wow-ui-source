@@ -37,14 +37,14 @@ function AlternatePowerBar_OnEvent(self, event, ...)
 		AlternatePowerBar_UpdatePowerType(self);
 	elseif( (event == "UNIT_MAXPOWER") ) then
 		local unitTag = ...;
-		local parent = self:GetParent();
+		local parent = self:GetParent():GetParent();
 		if unitTag == parent.unit then
 			AlternatePowerBar_UpdateMaxValues(self);
 		end
 	elseif ( self:IsShown() ) then
 		if ( (event == "UNIT_POWER_UPDATE") ) then
 			local unitTag = ...;
-			local parent = self:GetParent();
+			local parent = self:GetParent():GetParent();
 			if unitTag == parent.unit then
 				AlternatePowerBar_UpdateValue(self);
 			end
@@ -58,13 +58,15 @@ function AlternatePowerBar_OnUpdate(self, elapsed)
 end
 
 function AlternatePowerBar_UpdateValue(self)
-	local currentPower = UnitPower(self:GetParent().unit,self.powerIndex);
+	local unit = self.unit or self:GetParent():GetParent().unit;
+	local currentPower = UnitPower(unit,self.powerIndex);
 	self:SetValue(currentPower);
-	self.value = currentPower
+	self.value = currentPower;
 end
 
 function AlternatePowerBar_UpdateMaxValues(self)
-	local maxPower = UnitPowerMax(self:GetParent().unit,self.powerIndex);
+	local unit = self.unit or self:GetParent():GetParent().unit;
+	local maxPower = UnitPowerMax(unit,self.powerIndex);
 	self:SetMinMaxValues(0, maxPower);
 end
 
@@ -85,13 +87,15 @@ function AlternatePowerBar_ShouldDisplayPower(self)
 		return false;
 	end
 
-	if UnitPowerMax(self:GetParent().unit, self.powerIndex) == 0 then
+	local unit = self.unit or self:GetParent():GetParent().unit;
+
+	if UnitPowerMax(unit, self.powerIndex) == 0 then
 		return false;
 	end
 
-	local _, class = UnitClass(self:GetParent().unit);
+	local _, class = UnitClass(unit);
 	if ALT_MANA_BAR_PAIR_DISPLAY_INFO[class] then
-		local powerType = UnitPowerType(self:GetParent().unit);
+		local powerType = UnitPowerType(unit);
 		return ALT_MANA_BAR_PAIR_DISPLAY_INFO[class][powerType];
 	end
 

@@ -1,0 +1,74 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<StatusBar name="UIWidgetFillUpFrameTemplate" inherits="ResizeLayoutFrame" mixin="UIWidgetFillUpFrameTemplateMixin" orientation="VERTICAL" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Spark" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="SparkMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Spark"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="Frame">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Flash" alphaMode="ADD" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="FlashAnim" setToFinalAlpha="true">
+							<Alpha parentKey="FadeIn" duration="0.5" fromAlpha="0" toAlpha="1" order="1"/>
+							<Alpha parentKey="FadeOut" duration="0.5" fromAlpha="1" toAlpha="0" order="2"/>
+						</AnimationGroup>
+						<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true" looping="REPEAT">
+							<Alpha parentKey="FadeIn" duration="1.5" fromAlpha="0" toAlpha="1" order="1"/>
+							<Alpha parentKey="FadeOut" duration="1.5" fromAlpha="1" toAlpha="0" order="2" endDelay="0.8"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="Bar" orientation="VERTICAL" useParentLevel="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</StatusBar>	
+		</Frames>
+	</StatusBar>
+	
+	<Frame name="UIWidgetTemplateFillUpFrames" inherits="UIWidgetBaseTemplate, HorizontalLayoutFrame" virtual="true" mixin="UIWidgetTemplateFillUpFramesMixin">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DecorLeft">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="0" type="number"/>
+					</KeyValues>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="DecorRight">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="10" type="number"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

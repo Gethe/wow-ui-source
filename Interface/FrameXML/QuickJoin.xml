@@ -69,7 +69,18 @@
 	<Frame name="QuickJoinFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="QuickJoinMixin">
 		<Frames>
 			<Frame name="QuickJoinFrameDropDown" inherits="UIDropDownMenuTemplate"/>
-			<ScrollFrame name="QuickJoinScrollFrame" parentKey="ScrollFrame" inherits="FriendsFrameScrollFrame" />
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-88"/>
+					<Anchor point="BOTTOMRIGHT" x="-29" y="29"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="1" y="2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="1" y="-2"/>
+				</Anchors>
+			</EventFrame>
 			<Button parentKey="JoinQueueButton" inherits="MagicButtonTemplate" text="JOIN_QUEUE" motionScriptsWhileDisabled="true">
 				<Size x="135" y="21"/>
 				<Anchors>

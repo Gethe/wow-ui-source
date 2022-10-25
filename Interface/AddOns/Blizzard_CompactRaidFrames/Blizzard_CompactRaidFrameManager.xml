@@ -104,13 +104,6 @@
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 					</Anchors>
 				</Texture>
-				<!--Texture name="$parentBorderLeft" file="Interface\RaidFrame\RaidPanel-Left" vertTile="true">
-					<Size x="16" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="BOTTOMLEFT" x="-1" y="0"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBottomLeft" relativePoint="TOPLEFT" x="-1" y="0"/>
-					</Anchors>
-				</Texture-->
 				<Texture name="$parentBorderRight" file="Interface\RaidFrame\RaidPanel-Right" vertTile="true">
 					<Size x="16" y="0"/>
 					<Anchors>
@@ -127,134 +120,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentContainerResizeFrame" frameStrata="LOW" resizable="true" movable="true" dontSavePosition="true" clampedToScreen="true" parentKey="containerResizeFrame">
-				<Size x="300" y="200"/>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture name="$parentBorderTopLeft" file="Interface\RaidFrame\RaidPanel-UpperLeft">
-							<Size x="32" y="32"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-5" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentBorderTopRight" file="Interface\RaidFrame\Raid-Move-TopFade">
-							<Size x="32" y="16"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentBorderBottomLeft" file="Interface\RaidFrame\RaidPanel-BottomLeft">
-							<Size x="32" y="32"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="-5" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentBorderBottomRight" file="Interface\RaidFrame\Raid-Move-BottomFade">
-							<Size x="32" y="16"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentBorderTop" file="Interface\RaidFrame\RaidPanel-UpperMiddle" horizTile="true">
-							<Size x="0" y="16"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="TOPRIGHT" x="0" y="1"/>
-								<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="TOPLEFT" x="0" y="1"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentBorderBottom" file="Interface\RaidFrame\RaidPanel-BottomMiddle" horizTile="true">
-							<Size x="0" y="16"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBottomLeft" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentBorderLeft" file="Interface\RaidFrame\RaidPanel-Left" vertTile="true">
-							<Size x="16" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="BOTTOMLEFT" x="-1" y="0"/>
-								<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBottomLeft" relativePoint="TOPLEFT" x="-1" y="0"/>
-							</Anchors>
-						</Texture>
-						<!--Texture name="$parentBorderRight" file="Interface\RaidFrame\RaidPanel-Right" vertTile="true">
-							<Size x="16" y="0"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="BOTTOMRIGHT" x="2" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" relativePoint="TOPRIGHT" x="2" y="0"/>
-							</Anchors>
-						</Texture-->
-						<!--Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" x="7" y="-6"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBottomRight" x="-7" y="7"/>
-							</Anchors>
-						</Texture-->
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button name="$parentMover" parentKey="mover">
-						<Size x="32" y="16"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
-								<Offset>
-									<AbsDimension x="5" y="-8"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:RegisterForDrag("LeftButton");
-							</OnLoad>
-							<OnMouseDown>
-								--SetCursor("UI-Cursor-Move");
-
-								CompactRaidFrameManager_ResizeFrame_OnDragStart(self:GetParent():GetParent());
-							</OnMouseDown>
-							<OnMouseUp>
-								--SetCursor(nil);
-
-								CompactRaidFrameManager_ResizeFrame_OnDragStop(self:GetParent():GetParent());
-							</OnMouseUp>
-							<OnEnter>
-								self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8);
-							</OnEnter>
-							<OnLeave>
-								self:GetNormalTexture():SetVertexColor(1, 1, 1);
-							</OnLeave>
-						</Scripts>
-						<NormalTexture file="Interface\RaidFrame\Raid-Move-Up"/>
-					</Button>
-					<Button name="$parentResizer" parentKey="resizer">
-						<Size x="32" y="16"/>
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="$parent">
-								<Offset>
-									<AbsDimension x="0" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnMouseDown>
-								--SetCursor("UI-Cursor-Size");	--Hide the cursor
-
-								CompactRaidFrameManager_ResizeFrame_OnResizeStart(self:GetParent():GetParent());
-							</OnMouseDown>
-							<OnMouseUp>
-								--SetCursor(nil); --Show the cursor again
-
-								CompactRaidFrameManager_ResizeFrame_OnResizeStop(self:GetParent():GetParent());
-							</OnMouseUp>
-							<OnEnter>
-								self:GetNormalTexture():SetVertexColor(0.8, 0.8, 0.8);
-							</OnEnter>
-							<OnLeave>
-								self:GetNormalTexture():SetVertexColor(1, 1, 1);
-							</OnLeave>
-						</Scripts>
-						<NormalTexture file="Interface\RaidFrame\Raid-Move-Down"/>
-					</Button>
-				</Frames>
-			</Frame>
 			<Button name="$parentToggleButton" parentKey="toggleButton">
 				<Size x="16" y="64"/>
 				<Anchors>
@@ -265,7 +130,7 @@
 						self:GetNormalTexture():SetDrawLayer("OVERLAY");
 					</OnLoad>
 					<OnClick>
-						CompactRaidFrameManager_Toggle(self:GetParent());
+						CompactRaidFrameManager_Toggle();
 					</OnClick>
 					<OnMouseDown>
 						local tex = self:GetNormalTexture();
@@ -321,9 +186,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								InterfaceOptionsFrame_OpenToCategory(COMPACT_UNIT_FRAME_PROFILES_LABEL);
+								Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL);
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-								--ToggleRaidFrame();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -332,11 +196,6 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentHeaderDelineator" relativePoint="BOTTOMLEFT" x="-10" y="4"/>
 						</Anchors>
-					</Frame>
-					<Frame name="$parentProfileSelector" inherits="UIDropDownMenuTemplate" parentKey="profileSelector">
-						<Scripts>
-							<OnShow function="CompactRaidFrameManagerDisplayFrameProfileSelector_SetUp"/>
-						</Scripts>
 					</Frame>
 					<Frame name="$parentFilterOptions" parentKey="filterOptions">
 						<Size x="200" y="85"/>
@@ -427,13 +286,15 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<Button name="$parentLockedModeToggle" parentKey="lockedModeToggle" inherits="UIMenuButtonStretchTemplate">
+					<Button name="$parentEditMode" parentKey="editMode" inherits="UIMenuButtonStretchTemplate" text="HUD_EDIT_MODE_GROUP_MANAGER">
 						<Size x="85" y="20"/>
 						<Scripts>
+							<OnShow>
+								self:SetEnabled(EditModeManagerFrame:CanEnterEditMode());
+							</OnShow>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								SetRaidProfileOption(GetActiveRaidProfile(), "locked", self.lockMode);
-								CompactRaidFrameManager_SetSetting("Locked", self.lockMode);
+								ShowUIPanel(EditModeManagerFrame);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -442,8 +303,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								SetRaidProfileOption(GetActiveRaidProfile(), "shown", self.shownMode);
-								CompactRaidFrameManager_SetSetting("IsShown", self.shownMode);
+								SetCVar("raidOptionIsShown", not GetCVarBool("raidOptionIsShown"));
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -599,10 +459,10 @@
 								self:SetChecked(IsEveryoneAssistant());
 								if ( UnitIsGroupLeader("player") ) then
 									self:Enable();
-									self.text:SetFontObject(GameFontNormalSmall);
+									self.Text:SetFontObject(GameFontNormalSmall);
 								else
 									self:Disable();
-									self.text:SetFontObject(GameFontDisableSmall);
+									self.Text:SetFontObject(GameFontDisableSmall);
 								end
 							</OnEvent>
 							<OnClick>

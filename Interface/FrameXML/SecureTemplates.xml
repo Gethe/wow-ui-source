@@ -10,6 +10,8 @@
     <!-- A button template for click-cast style action buttons -->
     <Button name="SecureActionButtonTemplate" inherits="SecureFrameTemplate" mixin="SecureActionButtonMixin" virtual="true">
         <Scripts>
+			<!-- SecureActionButton_OnClick takes two extra custom arguments. Our usage of this template will always override this
+				and supply the extra arguments, and for now AddOns won't be able to have isKeyPress or isSecureAction set. -->
             <OnClick function="SecureActionButton_OnClick"/>
         </Scripts>
     </Button>
@@ -17,7 +19,8 @@
 	<!-- A template that can perform secure actions outside of combat -->
 	<Button name="InsecureActionButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick> if not InCombatLockdown() then SecureActionButton_OnClick(self, button, down); end</OnClick>
+			<!-- For now AddOns won't be able to have isKeyPress or isSecureAction set. -->
+			<OnClick> if not InCombatLockdown() then SecureActionButton_OnClick(self, button, down); end </OnClick>
 		</Scripts>
 	</Button>
 

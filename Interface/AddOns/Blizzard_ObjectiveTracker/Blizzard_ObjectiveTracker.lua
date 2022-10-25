@@ -40,6 +40,7 @@ OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT				= 0x00040;
 OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED			= 0x00080;
 OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED		= 0x00100;
 OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED		= 0x00200;
+OBJECTIVE_TRACKER_UPDATE_MOVED						= 0x80000;
 -- these are for the specific module ONLY!
 OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST				= 0x00400;
 OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP	= 0x00800;
@@ -49,6 +50,8 @@ OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO			= 0x04000;
 OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT			= 0x08000;
 OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS			= 0x10000;
 OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS			= 0x20000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE	= 0x40000;
+
 -- special updates
 OBJECTIVE_TRACKER_UPDATE_STATIC						= 0x0000;
 OBJECTIVE_TRACKER_UPDATE_ALL						= 0xFFFFFFFF;
@@ -790,6 +793,33 @@ function ObjectiveTracker_OnLoad(self)
 	QuestPOI_Initialize(self.BlocksFrame, function(self) self:SetScale(0.9); self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); end );
 end
 
+function ObjectiveTracker_UpdateHeight()
+	local self = ObjectiveTrackerFrame;
+
+	if not self:IsInDefaultPosition() then
+		-- Assure we can fit the scenario block since it has gameplay implications
+		local isScenarioBlockShowing = ScenarioBlocksFrame and ScenarioBlocksFrame:IsShown();
+		local scenarioBlockHeight = isScenarioBlockShowing and (ScenarioBlocksFrame:GetHeight() + ObjectiveTrackerBlocksFrame.ScenarioHeader:GetHeight() + 10) or 0;
+
+		local newHeight = math.max(self.editModeHeight or 800, scenarioBlockHeight);
+		self:SetHeight(newHeight);
+		return;
+	end
+
+	local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(1);
+	if offsetY then
+		local parentHeight = self:GetParent():GetHeight();
+		local setHeight = parentHeight + offsetY;
+		setHeight = math.max(setHeight, 20);
+		self:SetHeight(setHeight);
+	end
+end
+
+function ObjectiveTracker_OnShow(self)
+	UIParentManagedFrameMixin.OnShow(self);
+	ObjectiveTracker_UpdateHeight();
+end
+
 function ObjectiveTracker_Initialize(self)
 	self.MODULES = {	SCENARIO_CONTENT_TRACKER_MODULE,
 						UI_WIDGET_TRACKER_MODULE,
@@ -798,6 +828,7 @@ function ObjectiveTracker_Initialize(self)
 						CAMPAIGN_QUEST_TRACKER_MODULE,
 						QUEST_TRACKER_MODULE,
 						ACHIEVEMENT_TRACKER_MODULE,
+						PROFESSION_RECIPE_TRACKER_MODULE,
 	};
 	self.MODULES_UI_ORDER = {	SCENARIO_CONTENT_TRACKER_MODULE,
 								UI_WIDGET_TRACKER_MODULE,
@@ -806,6 +837,7 @@ function ObjectiveTracker_Initialize(self)
 								BONUS_OBJECTIVE_TRACKER_MODULE,
 								WORLD_QUEST_TRACKER_MODULE,
 								ACHIEVEMENT_TRACKER_MODULE,
+								PROFESSION_RECIPE_TRACKER_MODULE,
 	};
 
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -832,7 +864,7 @@ function ObjectiveTracker_Initialize(self)
 	WorldMapFrame:RegisterCallback("SetFocusedQuestID", ObjectiveTracker_OnFocusedQuestChanged, self);
 	WorldMapFrame:RegisterCallback("ClearFocusedQuestID", ObjectiveTracker_OnFocusedQuestChanged, self);
 
-	QuestSuperTracking_Initialize();
+	ProfessionsRecipeTracking_Initialize();
 
 	self.initialized = true;
 end
@@ -856,7 +888,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 					ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, questID);
 				end
 			else
-				if ( AUTO_QUEST_WATCH == "1" and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES ) then
+				if ( GetCVarBool("autoQuestWatch") and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES ) then
 					C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
 					QuestSuperTracking_OnQuestTracked(questID);
 				end
@@ -932,7 +964,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		self.lastMapID = C_Map.GetBestMapForUnit("player");
 	elseif ( event == "CVAR_UPDATE" ) then
 		local arg1 =...;
-		if ( arg1 == "QUEST_POI" ) then
+		if ( arg1 == "questPOI" ) then
 			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 		end
 	elseif ( event == "VARIABLES_LOADED" ) then
@@ -1105,7 +1137,7 @@ local function InternalAddBlock(block)
 		return false;
 	end
 
-	local offsetY = AnchorBlock(block, blocksFrame.currentBlock, true);
+	local offsetY = AnchorBlock(block, blocksFrame.currentBlock, not module.ignoreFit);
 	if ( not offsetY ) then
 		return false;
 	end
@@ -1332,6 +1364,27 @@ end
 
 function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 	local tracker = ObjectiveTrackerFrame;
+
+	if not reason or reason == OBJECTIVE_TRACKER_UPDATE_ALL or reason == OBJECTIVE_TRACKER_UPDATE_MOVED then
+		local trackerCenterX = tracker:GetCenter();
+		if not trackerCenterX then
+			return;
+		end
+
+		local halfScreenWidth = GetScreenWidth() / 2;
+		tracker.isOnLeftSideOfScreen = trackerCenterX < halfScreenWidth;
+
+		tracker.HeaderMenu.MinimizeButton:ClearAllPoints();
+		tracker.HeaderMenu.Title:ClearAllPoints();
+		if tracker.isOnLeftSideOfScreen then
+			tracker.HeaderMenu.MinimizeButton:SetPoint("LEFT", tracker.HeaderMenu, "LEFT", 0, 0);
+			tracker.HeaderMenu.Title:SetPoint("LEFT", tracker.HeaderMenu.MinimizeButton, "RIGHT", 3, 0);
+		else
+			tracker.HeaderMenu.MinimizeButton:SetPoint("RIGHT", tracker.HeaderMenu, "RIGHT", 0, 0);
+			tracker.HeaderMenu.Title:SetPoint("RIGHT", tracker.HeaderMenu.MinimizeButton, "LEFT", -3, 0);
+		end
+	end
+
 	if tracker.isUpdating then
 		-- Trying to update while we're already updating, try again next frame
 		tracker.isUpdateDirty = true;
@@ -1412,6 +1465,10 @@ function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 
 	tracker.BlocksFrame.currentBlock = nil;
 	tracker.isUpdating = false;
+
+	if tracker:IsInDefaultPosition() then
+		UIParent_ManageFramePositions();
+	end
 end
 
 function ObjectiveTracker_CheckAndHideHeader(moduleHeader)
@@ -1478,10 +1535,15 @@ function ObjectiveTracker_ReorderModules()
 				anchorBlock = module.lastBlock;
 			end
 
+			local headerPoint = ObjectiveTrackerFrame.isOnLeftSideOfScreen and "LEFT" or "RIGHT";
 			if header then
-				header:SetPoint("RIGHT", module.Header, "RIGHT", 0, 0);
+				header:ClearAllPoints();
+				header:SetPoint(headerPoint, module.Header, headerPoint, ObjectiveTrackerFrame.isOnLeftSideOfScreen and -10 or 0, 0);
 				header = nil;
 			end
+
+			module.Header.Text:ClearAllPoints();
+			module.Header.Text:SetPoint("LEFT", module.Header, "LEFT", ObjectiveTrackerFrame.isOnLeftSideOfScreen and 30 or 4, -1);
 
 			-- Side-step annoying "uncollapse" issue by allowing a collapsed module to continue showing its minimize button even if
 			-- it's the only remaining visible module
@@ -1489,7 +1551,8 @@ function ObjectiveTracker_ReorderModules()
 
 			module.Header.MinimizeButton:SetShown(shouldShowThisModuleMinimizeButton);
 			if shouldShowThisModuleMinimizeButton then
-				module.Header.MinimizeButton:SetPoint("RIGHT", module.Header, "RIGHT", -21, 0);
+				module.Header.MinimizeButton:ClearAllPoints();
+				module.Header.MinimizeButton:SetPoint(headerPoint, module.Header, headerPoint, ObjectiveTrackerFrame.isOnLeftSideOfScreen and 9 or -20, 0);
 			end
 		end
 	end
@@ -1544,3 +1607,4 @@ function QuestHeaderMixin:UpdateHeader()
 		self.Text:SetText(TRACKER_HEADER_QUESTS);
 	end
 end
+

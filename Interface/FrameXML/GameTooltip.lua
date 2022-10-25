@@ -1,3 +1,6 @@
+TooltipConstants = {
+	WrapText = true,
+}
 
 --[[ Optionals:
 	headerText - string
@@ -168,7 +171,23 @@ end
 
 function GameTooltip_SetDefaultAnchor(tooltip, parent)
 	tooltip:SetOwner(parent, "ANCHOR_NONE");
-	tooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y);
+
+	-- If GameTooltipDefaultContainer isn't corner anchored then find the nearest corner to anchor to
+	local point, relativeTo, relativePoint, offsetX, offsetY = GameTooltipDefaultContainer:GetPoint(1);
+	if not (point == "BOTTOMRIGHT" or point == "BOTTOMLEFT" or point == "TOPRIGHT" or point == "TOPLEFT") then
+		if point == "TOP" or point == "BOTTOM" then
+			point = offsetX > 0 and point.."RIGHT" or point.."LEFT";
+		elseif point =="LEFT" or point == "RIGHT" then
+			point = offsetY > 0 and "TOP"..point or "BOTTOM"..point;
+		else -- CENTER
+			local topBottom = offsetY > 0 and "TOP" or "BOTTOM";
+			local rightLeft = offsetX > 0 and "RIGHT" or "LEFT";
+			point = topBottom..rightLeft;
+		end
+	end
+
+	-- Anchor tooltip to corner
+	tooltip:SetPoint(point, GameTooltipDefaultContainer);
 end
 
 function GameTooltip_SetBasicTooltip(tooltip, text, x, y, wrap)
@@ -229,6 +248,9 @@ function GameTooltip_CalculatePadding(tooltip)
 	local isBottomFontStringShown = tooltip.BottomFontString and tooltip.BottomFontString:IsShown();
 
 	if not isItemTooltipShown and not isBottomFontStringShown then
+		if tooltip.SetPadding then
+			tooltip:SetPadding(0, 0, 0, 0);
+		end
 		return;
 	end
 
@@ -318,8 +340,8 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 		name = moneyFrame:GetName();
 		MoneyFrame_SetType(moneyFrame, "STATIC");
 	end
-	_G[name.."PrefixText"]:SetText(prefixText);
-	_G[name.."SuffixText"]:SetText(suffixText);
+	moneyFrame.PrefixText:SetText(prefixText);
+	moneyFrame.SuffixText:SetText(suffixText);
 	if ( type ) then
 		MoneyFrame_SetType(moneyFrame, type);
 	end
@@ -361,6 +383,10 @@ function GameTooltip_ClearMoney(self)
 	self.shownMoneyFrames = nil;
 end
 
+GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT_DARK = {
+	layoutType = "TooltipDefaultDarkLayout",
+};
+
 GAME_TOOLTIP_BACKDROP_STYLE_AZERITE_ITEM = {
 	layoutType = "TooltipAzeriteLayout",
 
@@ -391,6 +417,10 @@ GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY = {
 	overlayAtlasTopYOffset = -2,
 
 	padding = { left = 6, right = 6, top = 6, bottom = 6 },
+};
+
+GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT = {
+	layoutType = "TooltipDefaultDarkLayout",
 };
 
 GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {

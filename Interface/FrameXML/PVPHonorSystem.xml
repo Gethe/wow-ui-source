@@ -183,7 +183,7 @@
 					<AnimationGroup parentKey="PrestigeSpinAnimation" setToFinalAlpha="true" looping="REPEAT">
 						<Rotation childKey="PrestigeSpin" order="1" duration="30" degrees="-360"/>
 					</AnimationGroup>
-					<AnimationGroup parentKey="PrestigePulseAnimation" setToFinalAlpha="true" looping="repeat">
+					<AnimationGroup parentKey="PrestigePulseAnimation" setToFinalAlpha="true" looping="REPEAT">
 						<Alpha childKey="PrestigePulse" duration="1.4" order="1" fromAlpha="0.25" toAlpha="0.75"/>
 						<Alpha childKey="PrestigePulse" startDelay="1.4" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0.25"/>
 						<Alpha childKey="BorderPulse" duration="1.4" order="1" fromAlpha="0" toAlpha="1"/>
@@ -412,7 +412,7 @@
 					<AnimationGroup parentKey="PrestigeSpinAnimation" setToFinalAlpha="true" looping="REPEAT">
 						<Rotation childKey="PrestigeSpin" order="1" duration="30" degrees="-360"/>
 					</AnimationGroup>
-					<AnimationGroup parentKey="PrestigePulseAnimation" setToFinalAlpha="true" looping="repeat">
+					<AnimationGroup parentKey="PrestigePulseAnimation" setToFinalAlpha="true" looping="REPEAT">
 						<Alpha childKey="PrestigePulse" duration="1.4" order="1" fromAlpha="0.25" toAlpha="0.75"/>
 						<Alpha childKey="PrestigePulse" startDelay="1.4" duration="1.4" order="1" fromAlpha="0.75" toAlpha="0.25"/>
 						<Alpha childKey="BorderPulse" duration="1.4" order="1" fromAlpha="0" toAlpha="1"/>
@@ -876,9 +876,7 @@
 				<Scale childKey="Starcrown" smoothing="IN" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="0.001" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="Starcrown" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scale childKey="Starcrown" startDelay="7.5" smoothing="IN" duration="0.46" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55">
-					<Origin point="CENTER">
-						<Offset x="0" y="-50"/>
-					</Origin>
+					<Origin point="CENTER"/>
 				</Scale>
 				<!--<Alpha childKey="WingLeft" startDelay="0.5" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="WingLeft" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1">

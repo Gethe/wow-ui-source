@@ -140,54 +140,45 @@
 		</Scripts>
 	</Frame>
 
-    <Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
+	<Button name="CharacterFrameTabTemplate" inherits="PanelTabButtonTemplate" mixin="CharacterFrameTabButtonMixin" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
         <Frames>
-            <Button name="CharacterFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER">
-                <Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="11" y="2"/>
-						</Offset>
-					</Anchor>
+            <Button name="CharacterFrameTab1" inherits="CharacterFrameTabTemplate" id="1" text="CHARACTER">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
                 </Anchors>
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(CHARACTER_INFO, "TOGGLECHARACTER0"), 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-			<Button name="CharacterFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="REPUTATION_ABBR">
+			<Button name="CharacterFrameTab2" inherits="CharacterFrameTabTemplate" id="2" text="REPUTATION_ABBR">
                 <Anchors>
-                   <Anchor point="LEFT" relativeTo="CharacterFrameTab1" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-15" y="0"/>
-                        </Offset>
-                    </Anchor>
+                   <Anchor point="TOPLEFT" relativeTo="CharacterFrameTab1" relativePoint="TOPRIGHT" x="1" y="0"/>
                 </Anchors>
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(REPUTATION, "TOGGLECHARACTER2"), 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
-			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="CURRENCY" hidden="true">
+			<Button name="CharacterFrameTab3" inherits="CharacterFrameTabTemplate" id="3" text="CURRENCY" hidden="true">
                 <Anchors>
-                   <Anchor point="LEFT" relativeTo="CharacterFrameTab2" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-15" y="0"/>
-                        </Offset>
-                    </Anchor>
+                   <Anchor point="TOPLEFT" relativeTo="CharacterFrameTab2" relativePoint="TOPRIGHT" x="1" y="0"/>
                 </Anchors>
                 <Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(MicroButtonTooltipText(CURRENCY, "TOGGLECURRENCY"), 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
             </Button>
 			<Frame name="$parentInsetRight" parentKey="InsetRight" inherits="InsetFrameTemplate" hidden="true">

@@ -21,8 +21,6 @@ StaticPopupDialogs["CONFIRM_SELECT_WEEKLY_REWARD"] = {
 }
 
 local WEEKLY_REWARDS_EVENTS = {
-	"WEEKLY_REWARDS_SHOW",
-	"WEEKLY_REWARDS_HIDE",
 	"WEEKLY_REWARDS_UPDATE",
 	"CHALLENGE_MODE_COMPLETED",
 	"CHALLENGE_MODE_MAPS_UPDATE",
@@ -62,11 +60,7 @@ function WeeklyRewardsMixin:OnHide()
 end
 
 function WeeklyRewardsMixin:OnEvent(event)
-	if event == "WEEKLY_REWARDS_SHOW" then
-		self:FullRefresh();
-	elseif event == "WEEKLY_REWARDS_HIDE" then
-		HideUIPanel(self);
-	elseif event == "WEEKLY_REWARDS_UPDATE" then
+	if event == "WEEKLY_REWARDS_UPDATE" then
 		if not self.hasAvailableRewards and C_WeeklyRewards.HasAvailableRewards() then
 			-- this means the week ticked over with the UI open
 			-- hide the UI so the rewards can be generated when the user reopens it

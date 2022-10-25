@@ -66,22 +66,21 @@ function ExtraActionButtonKey(id, isDown)
 	end
 
 	local button = _G["ExtraActionButton"..id];
-	
 	if isDown then
 		if ( button:GetButtonState() == "NORMAL" ) then
 			button:SetButtonState("PUSHED");
 		end
-		if (GetCVarBool("ActionButtonUseKeyDown")) then
-			SecureActionButton_OnClick(button, "LeftButton");
-			button:UpdateState();
-		end
+		TryUseActionButton(button, isDown);
 	else
 		if ( button:GetButtonState() == "PUSHED" ) then
 			button:SetButtonState("NORMAL");
-			if (not GetCVarBool("ActionButtonUseKeyDown")) then
-				SecureActionButton_OnClick(button, "LeftButton");
-				button:UpdateState();
-			end
+			TryUseActionButton(button, isDown);
 		end
 	end
+end
+
+ExtraActionButtonMixin = {};
+
+function ExtraActionButtonMixin:ExtraActionButton_OnLoad()
+	self.QuickKeybindHighlightTexture:SetSize(54, 53);
 end

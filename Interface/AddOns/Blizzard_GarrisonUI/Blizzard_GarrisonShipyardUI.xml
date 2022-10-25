@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonShipyardUI.lua"/>
 
 	<!-- This represents one of the naval mission icons on the naval map -->
@@ -191,8 +191,6 @@
 
 	<Frame name="GarrisonShipyardBonusAreaFrameTemplate" virtual="true" hidden="true">
 		<Size x="132" y="132"/>
-		<NormalTexture parentKey="Icon" atlas="ShipMissionIcon-Combat-Map" useAtlasSize="true"/>
-		<HighlightTexture parentKey="HighlightIcon" atlas="ShipMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="0">
 				<Texture parentKey="CircleTexture" alpha="1" alphaMode="BLEND" atlas="NavalMap-SmallBonusCircle" useAtlasSize="true">
@@ -1016,47 +1014,18 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-6"/>
-					<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+					<Anchor point="BOTTOMRIGHT" x="-31" y="8"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-12"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="12"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="colorRed" value="1.0" type="number"/>
-							<KeyValue key="colorGreen" value="1.0" type="number"/>
-							<KeyValue key="colorBlue" value="1.0" type="number"/>
-						</KeyValues>
-						<Scripts>
-							<OnLoad>
-								self.trackBG:Show();
-								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
-								self.doNotHide = true;
-
-								self.Top:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.Bottom:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.Middle:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.thumbTexture:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-
-								self.UpButton.Normal:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.UpButton.Pushed:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.UpButton.Disabled:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.UpButton.Highlight:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-
-								self.DownButton.Normal:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.DownButton.Pushed:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.DownButton.Disabled:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								self.DownButton.Highlight:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-							</OnLoad>
-						</Scripts>
-					</Slider>
-				</Frames>
-			</ScrollFrame>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-25" y="-6"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 	</Frame>
 
@@ -1374,9 +1343,7 @@
 		<Animations>
 			<AnimationGroup parentKey="MapFogFadeOutAnim" setToFinalAlpha="true">
 				<Scale parentKey="ScaleAnim" childKey="FogAnimTexture" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.2" toScaleY="1.2">
-					<Origin point="TOPLEFT">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="TOPLEFT"/>
 				</Scale>
 				<Alpha childKey="HighlightAnimTexture" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="HighlightAnimTexture" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
@@ -1692,29 +1659,23 @@
 		<Frames>
 
 			<!-- Naval Map tab button -->
-			<Button name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_NAVAL_MAP">
+			<Button name="$parentTab1" parentKey="Tab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_NAVAL_MAP">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="11" y="-42"/>
 				</Anchors>
 			</Button>
 
 			<!-- Fleet tab button -->
-			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FLEET" motionScriptsWhileDisabled="true">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FLEET" motionScriptsWhileDisabled="true">
 				<Scripts>
 					<OnEnter>
 						if (self.isDisabled) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 							GameTooltip:SetText(GARRISON_SHIPYARD_NO_SHIPS_TOOLTIP, nil, nil, nil, nil, true);
 							GameTooltip:Show();
-						else
-							GarrisonMissionFrameTab_OnEnter(self);
 						end
 					</OnEnter>
 					<OnLeave>
-						GarrisonMissionFrameTab_OnLeave(self);
 						GameTooltip_Hide(self);
 					</OnLeave>
 				</Scripts>
@@ -1922,9 +1883,7 @@
 				<Frames>
 					<Button parentKey="CloseButton2" inherits="UIPanelCloseButtonNoScripts">
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-								<Offset x="4" y="5"/>
-							</Anchor>
+							<Anchor point="TOPRIGHT"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>

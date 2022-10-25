@@ -2,6 +2,11 @@ function ReloadUI()
 	C_UI.Reload();
 end
 
+function PrintToDebugWindow(msg)
+	if C_Debug and C_Debug.PrintToDebugWindow then
+		C_Debug.PrintToDebugWindow(msg);
+	end
+end
 
 StoreInterfaceUtil = {};
 

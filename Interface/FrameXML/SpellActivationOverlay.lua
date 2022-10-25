@@ -2,17 +2,25 @@ local sizeScale = 0.8;
 local longSide = 256 * sizeScale;
 local shortSide = 128 * sizeScale;
 
-function SpellActivationOverlay_OnLoad(self)
+SpellActivationOverlayMixin = {};
+
+function SpellActivationOverlayMixin:OnLoad()
 	self.overlaysInUse = {};
 	self.unusedOverlays = {};
 	
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE");
+	self:RegisterEvent("SETTINGS_LOADED");
 	
 	self:SetSize(longSide, longSide)
+
+	local function OnValueChanged(o, setting, value)
+		self:SetAlpha(value);
+	end
+	Settings.SetOnValueChangedCallback("spellActivationOverlayOpacity", OnValueChanged);
 end
 
-function SpellActivationOverlay_OnEvent(self, event, ...)
+function SpellActivationOverlayMixin:OnEvent(event, ...)
 	if ( event == "SPELL_ACTIVATION_OVERLAY_SHOW" ) then
 		local spellID, texture, positions, scale, r, g, b = ...;
 		if ( GetCVarBool("displaySpellActivationOverlays") ) then 
@@ -25,6 +33,8 @@ function SpellActivationOverlay_OnEvent(self, event, ...)
 		else
 			SpellActivationOverlay_HideAllOverlays(self);
 		end
+	elseif ( event == "SETTINGS_LOADED") then
+		self:SetAlpha(Settings.GetValue("spellActivationOverlayOpacity"));
 	end
 end
 

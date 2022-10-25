@@ -1,0 +1,38 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+<EditBox name="AuctionHouseLevelRangeEditBoxTemplate" mixin="AuctionHouseLevelRangeEditBoxMixin" inherits="InputBoxTemplate" letters="3" numeric="true" autoFocus="false" virtual="true">
+    <Size x="28" y="16"/>
+    <Scripts>
+        <OnTextChanged method="OnTextChanged"/>
+    </Scripts>
+</EditBox>
+
+<Frame name="AuctionHouseLevelRangeFrameTemplate" mixin="AuctionHouseLevelRangeFrameMixin" inherits="UIDropDownCustomMenuEntryTemplate" virtual="true">
+    <Size x="80" y="22"/>
+    <Frames>
+        <EditBox parentKey="MinLevel" inherits="AuctionHouseLevelRangeEditBoxTemplate">
+            <Anchors>
+                <Anchor point="LEFT" x="8" y="0"/>
+            </Anchors>
+            <Layers>
+                <Layer level="ARTWORK">
+                    <FontString parentKey="Dash" inherits="GameFontHighlightSmall" text="-">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeKey="$parent.MinLevel" relativePoint="RIGHT" x="0" y="0"/>
+                        </Anchors>
+                    </FontString>
+                </Layer>
+            </Layers>
+        </EditBox>
+        <EditBox parentKey="MaxLevel" inherits="AuctionHouseLevelRangeEditBoxTemplate">
+            <Anchors>
+                <Anchor point="LEFT" relativeKey="$parent.MinLevel" relativePoint="RIGHT" x="10" y="0"/>
+            </Anchors>
+        </EditBox>
+    </Frames>
+    <Scripts>
+        <OnLoad method="OnLoad"/>
+        <OnHide method="OnHide"/>
+    </Scripts>
+</Frame>
+</Ui>

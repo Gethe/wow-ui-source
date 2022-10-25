@@ -351,6 +351,33 @@ do -- Recipes
 	recipesCategory:SortSubCategories();
 end
 
+do -- Profession Equipment
+	local professionEquipmentCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_PROFESSION_EQUIPMENT);
+	professionEquipmentCategory:SetDetailColumnString(ITEM_LEVEL_ABBR);
+
+	local ProfessionGearSubclasses = {
+		Enum.ItemProfessionSubclass.Inscription,
+		Enum.ItemProfessionSubclass.Tailoring,
+		Enum.ItemProfessionSubclass.Leatherworking,
+		Enum.ItemProfessionSubclass.Jewelcrafting,
+		Enum.ItemProfessionSubclass.Alchemy,
+		Enum.ItemProfessionSubclass.Blacksmithing,
+		Enum.ItemProfessionSubclass.Engineering,
+		Enum.ItemProfessionSubclass.Enchanting,
+		Enum.ItemProfessionSubclass.Mining,
+		Enum.ItemProfessionSubclass.Herbalism,
+		Enum.ItemProfessionSubclass.Skinning,
+		Enum.ItemProfessionSubclass.Cooking,
+		Enum.ItemProfessionSubclass.Fishing,
+	};
+
+	for _, subclass in ipairs(ProfessionGearSubclasses) do
+		local newCategory = professionEquipmentCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Profession, subclass);
+		newCategory:CreateNamedSubCategoryAndFilter(AUCTION_SUBCATEGORY_PROFESSION_TOOLS, Enum.ItemClass.Profession, subclass, Enum.InventoryType.IndexProfessionToolType);
+		newCategory:CreateNamedSubCategoryAndFilter(AUCTION_SUBCATEGORY_PROFESSION_ACCESSORIES, Enum.ItemClass.Profession, subclass, Enum.InventoryType.IndexProfessionGearType);
+	end
+end
+
 do -- Battle Pets
 	local battlePetsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_BATTLE_PETS);
 	battlePetsCategory:SetDetailColumnString(AUCTION_HOUSE_BROWSE_HEADER_PET_LEVEL);

@@ -137,7 +137,7 @@ function RuneforgeModifierSelectionMixin:SetState(state)
 	if state == RuneforgeModifierSelectionState.Available then
 		self.StateTexture:SetAtlas("runecarving-icon-reagent-border", true);
 		self:SetAlpha(1.0);
-		self.icon:SetDesaturation(false);
+		self.icon:SetDesaturated(false);
 		self:SetEnabled(true);
 	elseif state == RuneforgeModifierSelectionState.SelectedInThisSlot then
 		self.StateTexture:SetAtlas("runecarving-menu-reagent-selected", true);
@@ -166,7 +166,7 @@ function RuneforgeModifierSelectionMixin:GetState(count)
 		return RuneforgeModifierSelectionState.SelectedInOtherSlot;
 	end
 
-	count = count or ItemUtil.GetOptionalReagentCount(self:GetItemID());
+	count = count or ItemUtil.GetCraftingReagentCount(self:GetItemID());
 	if count <= 0 then
 		return RuneforgeModifierSelectionState.Unavailable;
 	end
@@ -183,7 +183,7 @@ function RuneforgeModifierSelectionMixin:SetModifierItem(itemID, selectedInThisS
 	self.selectedInOtherSlot = selectedInOtherSlot;
 	self:SetItem(itemID);
 
-	local count = ItemUtil.GetOptionalReagentCount(itemID);
+	local count = ItemUtil.GetCraftingReagentCount(itemID);
 	self:RefreshState(count);
 end
 
@@ -424,5 +424,8 @@ function RuneforgeModifierFrameMixin:SetModifierTooltip(tooltip, slot, itemID)
 
 	local wrap = true;
 	GameTooltip_SetTitle(tooltip, name, HIGHLIGHT_FONT_COLOR, wrap);
-	GameTooltip_AddNormalLine(tooltip, description, wrap);
+
+	for _, str in ipairs(description) do
+		GameTooltip_AddNormalLine(tooltip, str, wrap);
+	end
 end

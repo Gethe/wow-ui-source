@@ -315,8 +315,9 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 		content = message.content;
 	end
 	
-	if CHAT_TIMESTAMP_FORMAT then
-		return BetterDate(CHAT_TIMESTAMP_FORMAT, message.messageId.epoch / 1000000)..COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
+	local format = GetChatTimestampFormat();
+	if format then
+		return BetterDate(format, message.messageId.epoch / 1000000)..COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
 	else
 		return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
 	end

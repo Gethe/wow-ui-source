@@ -66,15 +66,6 @@ function InspectPVPFrame_OnShow()
 	InspectPVPFrame_Update();
 end
 
-function InspectPVPFrame_OnHide(self)
-	local parent = self:GetParent();
-	self.PortraitBackground:Hide();
-	parent.portrait:SetSize(61, 61);
-	parent.portrait:ClearAllPoints();
-	parent.portrait:SetPoint("TOPLEFT", -6, 8);
-	SetPortraitTexture(InspectFramePortrait, INSPECTED_UNIT);
-end
-
 function InspectPVPFrame_Update()
 	local parent = InspectPVPFrame:GetParent();
 	local factionGroup = UnitFactionGroup(INSPECTED_UNIT);
@@ -105,6 +96,11 @@ function InspectPVPFrame_Update()
 			frame.Record:SetFormattedText(PVP_RECORD_DESCRIPTION, seasonWon, (seasonPlayed - seasonWon));
 			frame:Show();
 		end
+		local ratedSoloShuffleStats = C_PaperDollInfo.GetInspectRatedSoloShuffleData();
+		InspectPVPFrame.RatedSoloShuffle.Rating:SetText(ratedSoloShuffleStats.rating);
+		InspectPVPFrame.RatedSoloShuffle.Record:SetFormattedText(PVP_RECORD_DESCRIPTION, ratedSoloShuffleStats.roundsWon, (ratedSoloShuffleStats.roundsPlayed - ratedSoloShuffleStats.roundsWon));
+		InspectPVPFrame.RatedSoloShuffle:Show();
+		
 		InspectPVPFrame.talentGroup = GetActiveSpecGroup(true);
 		for i, slot in ipairs(InspectPVPFrame.Slots) do
 			slot:Update();

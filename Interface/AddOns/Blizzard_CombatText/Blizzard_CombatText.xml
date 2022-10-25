@@ -3,23 +3,13 @@
 	<Script file="Blizzard_CombatText.lua"/>
 	<FontString name="CombatTextTemplate" inherits="CombatTextFont" hidden="true" virtual="true">
 		<Anchors>
-			<Anchor point="TOP" relativeTo="WorldFrame" relativePoint="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="384"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOP" relativeTo="WorldFrame" relativePoint="BOTTOM" x="0" y="384"/>
 		</Anchors>
 	</FontString>
 	<Frame name="CombatText" toplevel="true" parent="UIParent" hidden="false">
-		<Size>
-			<AbsDimension x="10" y="10"/>
-		</Size>
+		<Size x="10" y="10"/>
 		<Anchors>
-			<Anchor point="CENTER">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">

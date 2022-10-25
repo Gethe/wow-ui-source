@@ -1,0 +1,120 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_DragonflightLandingPage.lua"/>
+	
+	<Frame name="DragonflightLandingOverlayTemplate" mixin="DragonflightLandingOverlayMixin" inherits="LandingPageExpansionOverlayTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Dragonflight-Landingpage-Background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="Dragonflight" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GoldDetailTop" atlas="dragonflight-golddetailtop" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="0" y="-12"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GoldDetailBottom" atlas="dragonflight-golddetailbottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="Header">
+				<Size x="830" y="52"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-65"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="Fancy48Font" text="DRAGONFLIGHT_LANDING_PAGE_TITLE">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="TitleDivider" atlas="header-horizontal-rule" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Frame parentKey="DragonridingPanel">
+				<Size x="328" y="406"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header.TitleDivider" relativePoint="BOTTOMLEFT" x="-10" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="dragonflight-landingpage-talentbutton" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="Game27Font" text="LANDING_DRAGONRIDING_PANEL_TITLE">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="-80"/>
+							</Anchors>
+							<Color color="LIGHTERBLUE_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="Subtitle" inherits="Game20Font" text="LANDING_DRAGONRIDING_PANEL_SUBTITLE">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-6"/>
+							</Anchors>
+							<Color color="HIGHLIGHT_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="SkillsButton" mixin="DragonridingPanelSkillsButtonMixin" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="LANDING_DRAGONRIDING_TREE_BUTTON">
+						<Size x="80" y="22"/>
+						<KeyValues>
+							<KeyValue key="disabledTooltip" value="LANDING_DRAGONRIDING_TREE_BUTTON_DISABLED" type="global"/>
+							<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Subtitle" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

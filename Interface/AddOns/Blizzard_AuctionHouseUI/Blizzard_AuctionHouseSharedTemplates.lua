@@ -17,7 +17,7 @@ AuctionHouseItemDisplayMixin = {};
 
 function AuctionHouseItemDisplayMixin:OnLoad()
 	AuctionHouseBackgroundMixin.OnLoad(self);
-	
+
 	self.ItemButton:SetPoint("LEFT", self.itemButtonXOffset or 0, self.itemButtonYOffset or 0);
 end
 
@@ -361,7 +361,7 @@ end
 AuctionHouseItemDisplayItemButtonMixin = {};
 
 function AuctionHouseItemDisplayItemButtonMixin:OnLoad()
-	self:SetHighlightTexture(nil);
+	self:ClearHighlightTexture();
 end
 
 function AuctionHouseItemDisplayItemButtonMixin:OnClick(...)
@@ -493,7 +493,7 @@ function AuctionHouseInteractableItemDisplayMixin:SetItemLocation(itemLocation, 
 	if currentItemLocation and C_Item.DoesItemExist(currentItemLocation) then
 		C_Item.UnlockItem(currentItemLocation);
 	end
-	
+
 	if itemLocation then
 		if C_Item.DoesItemExist(itemLocation) then
 			C_Item.LockItem(itemLocation);
@@ -604,7 +604,7 @@ local function AuctionHouseFavoriteDropDown_Initialize(self)
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = 1;
 	info.text = isFavorite and AUCTION_HOUSE_DROPDOWN_REMOVE_FAVORITE or AUCTION_HOUSE_DROPDOWN_SET_FAVORITE;
-	
+
 	local function CanChangeFavoriteState()
 		return C_AuctionHouse.FavoritesAreAvailable() and (isFavorite or not C_AuctionHouse.HasMaxFavorites());
 	end
@@ -676,7 +676,7 @@ function AuctionHouseBidFrameMixin:SetPrice(minBid, isOwnerItem, isPlayerHighBid
 	else
 		MoneyInputFrame_SetEnabled(self.BidAmount, true);
 		self.BidButton:SetDisableTooltip(nil);
-	end	
+	end
 end
 
 function AuctionHouseBidFrameMixin:GetPrice()

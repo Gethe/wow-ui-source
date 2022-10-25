@@ -88,14 +88,8 @@ function AuctionHouseCommoditiesListMixin:RefreshScrollFrame()
 	end
 
 	local numEntries = C_AuctionHouse.GetNumCommoditySearchResults(self.itemID);
-	if numEntries > 0 then
-		local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame);
-		local buttonCount = #buttons;
-		local offset = self:GetScrollOffset();
-		local lastDisplayedEntry = offset + buttonCount;
-		if numEntries - lastDisplayedEntry < COMMODITIES_LIST_SCROLL_OFFSET_REFRESH_THRESHOLD then
-			C_AuctionHouse.RequestMoreCommoditySearchResults(self.itemID);
-		end
+	if numEntries > 0 and (numEntries - self.ScrollBox:GetDataIndexEnd() < COMMODITIES_LIST_SCROLL_OFFSET_REFRESH_THRESHOLD) then
+		C_AuctionHouse.RequestMoreCommoditySearchResults(self.itemID);
 	end
 end
 
@@ -109,7 +103,11 @@ function AuctionHouseCommoditiesBuyListMixin:OnLoad()
 
 	self.quantitySelected = 1;
 
-	self.ScrollFrame:SetPoint("TOPLEFT", self.HeaderContainer, "TOPLEFT", 0, -6);
+	self.getEntryInfoCallback = function(index)
+		return C_AuctionHouse.GetCommoditySearchResultInfo(self.itemID, index);
+	end
+
+	self.ScrollBox:SetPoint("TOPLEFT", self.HeaderContainer, "TOPLEFT", 0, -6);
 end
 
 function AuctionHouseCommoditiesBuyListMixin:OnEnterListLine(line, rowData)
@@ -132,39 +130,18 @@ function AuctionHouseCommoditiesBuyListMixin:UpdateDynamicCallbacks()
 	-- on the earlier ones, so these callbacks also need to be reset when the scroll frame is refreshed.
 
 	self:UpdateListHighlightCallback();
-	self:UpdateGetEntryInfoCallback();
-end
-
-function AuctionHouseCommoditiesBuyListMixin:GetQuantityToHighlight()
-	local quantityScrolled = AuctionHouseUtil.AggregateSearchResults(self.itemID, self:GetScrollOffset());
-	return math.max(self.quantitySelected - quantityScrolled, 0);
 end
 
 function AuctionHouseCommoditiesBuyListMixin:UpdateListHighlightCallback()
-	local quantityToHighlight = self:GetQuantityToHighlight();
-	if quantityToHighlight == 0 then
+	if not self.quantitySelected or self.quantitySelected == 0 then
 		self:SetHighlightCallback(nil);
 	else
-		self:SetHighlightCallback(function(currentRowData, selectedRowData)
-			local shouldHighlight = quantityToHighlight > 0 and (currentRowData.quantity > currentRowData.numOwnerItems);
-			local highlightAlpha = (currentRowData.containsOwnerItem or currentRowData.containsAccountItem or (quantityToHighlight < currentRowData.quantity)) and 0.5 or 1.0;
-			quantityToHighlight = math.max(quantityToHighlight - (currentRowData.quantity - currentRowData.numOwnerItems), 0);
+		self:SetHighlightCallback(function(currentRowData, selectedRowData, currentRowIndex)
+			local shouldHighlight = currentRowIndex <= (self.resultsMaxHighlightIndex or 0);
+			local highlightAlpha = (currentRowData.containsOwnerItem or currentRowData.containsAccountItem or 
+				(currentRowIndex == self.resultsMaxHighlightIndex and self.resultsPartiallyPurchased)) and 0.5 or 1.0;
 			return shouldHighlight, highlightAlpha;
 		end);
-	end
-end
-
-function AuctionHouseCommoditiesBuyListMixin:UpdateGetEntryInfoCallback()
-	local quantityToHighlight = self:GetQuantityToHighlight();
-	self.getEntryInfoCallback = function(index)
-		local searchResult = C_AuctionHouse.GetCommoditySearchResultInfo(self.itemID, index);
-		if not searchResult then
-			return searchResult;
-		end
-
-		searchResult.maximumToHighlight = quantityToHighlight;
-		quantityToHighlight = math.max(quantityToHighlight - searchResult.quantity, 0);
-		return searchResult;
 	end
 end
 
@@ -173,21 +150,17 @@ function AuctionHouseCommoditiesBuyListMixin:SetQuantitySelected(quantity)
 		return;
 	end
 
-	self.quantitySelected = quantity;
-
-	local _, _, searchResultIndex = AuctionHouseUtil.AggregateSearchResultsByQuantity(self.itemID, quantity);
-	local scrollOffset = self:GetScrollOffset();
-	local numButtons = self:GetNumButtons();
-	if searchResultIndex + MINIMUM_UNSELECTED_ENTRIES > scrollOffset then
-		-- Scroll down if necessary.
-		self:SetScrollOffset((searchResultIndex + MINIMUM_UNSELECTED_ENTRIES) - numButtons);
-	elseif (searchResultIndex - MINIMUM_UNSELECTED_ENTRIES) < numButtons then
-		-- Always prefer to be at the top of the list, if there's still enough unselected results shown.
-		self:SetScrollOffset(0);
-	elseif (searchResultIndex - MINIMUM_UNSELECTED_ENTRIES) < scrollOffset then
-		-- Scroll up if necessary.
-		self:SetScrollOffset(math.max(0, searchResultIndex - MINIMUM_UNSELECTED_ENTRIES));
+	local quantityClamped = math.min(C_AuctionHouse.GetCommoditySearchResultsQuantity(self.itemID), quantity);
+	if quantityClamped == self.quantitySelected then
+		return;
 	end
+
+	self.quantitySelected = quantityClamped;
+
+	self.resultsMaxHighlightIndex, self.resultsPartiallyPurchased = select(3, AuctionHouseUtil.AggregateSearchResultsByQuantity(self.itemID, self.quantitySelected));
+
+	local scrollIndex = math.min(self.ScrollBox:GetDataProviderSize(), self.resultsMaxHighlightIndex + MINIMUM_UNSELECTED_ENTRIES);
+	self.ScrollBox:ScrollToElementDataIndex(scrollIndex, ScrollBoxConstants.AlignEnd, ScrollBoxConstants.NoScrollInterpolation);
 
 	self:UpdateDynamicCallbacks();
 	self:DirtyScrollFrame();

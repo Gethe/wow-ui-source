@@ -254,6 +254,83 @@
 		 </Frames>
 	 </Button>
 
+	<Button name="LargeQuestInfoRewardReputationTemplate" mixin="QuestInfoReputationRewardButtonMixin" virtual="true">
+		<Size x="147" y="41"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="39" y="39"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+					<Size x="128" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-10" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="90" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" relativePoint="LEFT" x="15" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="RewardAmount" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="SmallQuestInfoRewardReputationTemplate" mixin="QuestInfoReputationRewardButtonMixin" virtual="true">
+		<Size x="130" y="30"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NameFrame" atlas="QuestItemBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" inherits="GameFontWhiteTiny" justifyH="LEFT">
+					<Size x="92" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" relativePoint="LEFT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="RewardAmount" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="3" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
 	 <Button name="QuestInfoHonorFrameScriptTemplate" virtual="true">
 		 <Scripts>
 			 <OnEnter>
@@ -527,6 +604,7 @@
 				self.spellRewardPool = CreateFramePool("BUTTON", self, "QuestSpellTemplate, QuestInfoRewardSpellCodeTemplate");
 				self.followerRewardPool = CreateFramePool("BUTTON", self, "LargeQuestInfoRewardFollowerTemplate");
 				self.spellHeaderPool = CreateFontStringPool(self, "BACKGROUND", 0, "QuestInfoSpellHeaderTemplate");
+				self.reputationRewardPool = CreateFramePool("BUTTON", self, "LargeQuestInfoRewardReputationTemplate");
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -634,6 +712,7 @@
 				self.spellRewardPool = CreateFramePool("BUTTON", self, "SmallItemButtonTemplate, QuestInfoRewardSpellCodeTemplate");
 				self.followerRewardPool = CreateFramePool("BUTTON", self, "SmallQuestInfoRewardFollowerTemplate");
 				self.spellHeaderPool = CreateFontStringPool(self, "BACKGROUND", 0, "MapQuestInfoSpellHeaderTemplate");
+				self.reputationRewardPool = CreateFramePool("BUTTON", self, "SmallQuestInfoRewardReputationTemplate");
 
 				self.MoneyFrame.Icon:SetTexture("Interface\\Icons\\inv_misc_coin_01");
 				self.MoneyFrame.Name:SetFontObject("GameFontHighlight");

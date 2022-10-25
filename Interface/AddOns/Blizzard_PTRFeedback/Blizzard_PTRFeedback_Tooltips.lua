@@ -10,6 +10,7 @@ PTR_IssueReporter.TooltipTypes = {
     petBattleCreature = "Pet Battle Creature",
     azerite = "Azerite Essence",
     talent = "Talent",
+    recipe = "Recipe",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSpellTooltips()
@@ -42,6 +43,17 @@ function PTR_IssueReporter.SetupSpellTooltips()
 
     GameTooltip:HookScript("OnTooltipSetSpell", onTooltipSetSpellFunction)
     EmbeddedItemTooltip:HookScript("OnTooltipSetSpell", onTooltipSetSpellFunction)
+    
+    local bindingFunc = function(self, talentFrame, tooltip)
+        if (talentFrame) and (tooltip) then
+            local spellID = talentFrame:GetSpellID()
+            local name = GetSpellInfo(spellID)
+            
+            PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.spell, spellID, name)
+        end
+    end
+    
+    EventRegistry:RegisterCallback("TalentDisplay.TooltipCreated", bindingFunc, "PTR_IssueReporter")
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupItemTooltips()
@@ -49,15 +61,17 @@ function PTR_IssueReporter.SetupItemTooltips()
         local name, link = self:GetItem()
         if (link) and (name) then
             local id = string.match(link, "item:(%d*)")
-            if (id == "" or id == "0") and TradeSkillFrame ~= nil and TradeSkillFrame:IsVisible() and GetMouseFocus().reagentIndex then
-                local selectedRecipe = TradeSkillFrame.RecipeList:GetSelectedRecipeID()
-                for i = 1, 8 do
-                    if GetMouseFocus().reagentIndex == i then
-                        id = C_TradeSkillUI.GetRecipeReagentItemLink(selectedRecipe, i):match("item:(%d+):") or nil
-                        break
-                    end
-                end
-            end
+			-- Professions refactor requires an update to this code in both fetching the current recipe ID and retrieving the
+			-- reagent information from the mouse position.
+           --if (id == "" or id == "0") and TradeSkillFrame ~= nil and TradeSkillFrame:IsVisible() and GetMouseFocus().reagentIndex then
+           --    local selectedRecipe = TradeSkillFrame.RecipeList:GetSelectedRecipeID()
+           --    for i = 1, 8 do
+           --        if GetMouseFocus().reagentIndex == i then
+           --            id = C_TradeSkillUI.GetRecipeReagentItemLink(selectedRecipe, i):match("item:(%d+):") or nil
+           --            break
+           --        end
+           --    end
+           --end
             if (id) then
                 PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.item, id, name, nil, nil, link)
             end
@@ -82,51 +96,61 @@ function PTR_IssueReporter.SetupUnitTooltips()
             end
         end
     end)
+    
+    local bindingFunc = function(sender, name, guid)
+        if (name) and (guid) then
+            local id = select(6, strsplit("-", guid))
+            
+            --The actual method that sets the tooltip is in c++, so we can't fire a lua event during the set process, only just before
+            --the delay is to make sure the hook isn't until after the tooltip has been built
+            C_Timer.After(0.1, function()
+                PTR_IssueReporter.HookIntoTooltip(ItemRefTooltip, PTR_IssueReporter.TooltipTypes.unit, id, name)
+            end)
+        end
+    end
+
+    EventRegistry:RegisterCallback("ItemRefTooltip.UnitSet", bindingFunc, "JiraIntegration")
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupQuestTooltips()
-    local function HookIntoQuestTooltip(self)
-        if self.questID then
-            local title = C_QuestLog.GetTitleForQuestID(self.questID);
-            if title then
-                PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, self.questID, title)
-            end
+    local function HookIntoQuestTooltip(sender, self, questID, isGroup)    
+        local title = C_QuestLog.GetTitleForQuestID(questID)        
+        if (isGroup ~= null and not isGroup) then
+            --If isGroup is null, that means the event always shows tooltip
+            --If isGroup is a bool, it only shows a tooltip if true, so when false we must provide our own
+            GameTooltip:ClearAllPoints()
+            GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, 0)
+            GameTooltip:SetOwner(self, "ANCHOR_PRESERVE")
+            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, questID, title, true)
+            GameTooltip:Show()
+        else
+            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.quest, questID, title)
         end
     end
 
-    hooksecurefunc("QuestMapLogTitleButton_OnEnter", HookIntoQuestTooltip)
-
-    local function OnTaskPOITooltipShown(self, owningFrame)
-        HookIntoQuestTooltip(owningFrame)
-    end
-
-    -- Commented out for now as they are some details to work out still.
-    -- EventRegistry:RegisterCallback("TaskPOI.TooltipShown", OnTaskPOITooltipShown, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("TaskPOI.TooltipShown", HookIntoQuestTooltip, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("QuestPin.OnEnter", HookIntoQuestTooltip, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("QuestMapLogTittleButton.OnEnter", HookIntoQuestTooltip, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("OnQuestBlockHeader.OnEnter", HookIntoQuestTooltip, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("TaskPOI.TooltipShown", HookIntoQuestTooltip, PTR_IssueReporter)
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.SetupAchievementTooltips()
-    local frame = CreateFrame("frame")
-    frame:RegisterEvent("ADDON_LOADED")
-    frame:SetScript("OnEvent", function(_, _, eventSender)
-        if eventSender == "Blizzard_AchievementUI" then
-            for i,button in ipairs(AchievementFrameAchievementsContainer.buttons) do
-                button:HookScript("OnEnter", function()
-                    GameTooltip:SetOwner(button, "ANCHOR_NONE")
-                    GameTooltip:SetPoint("TOPLEFT", button, "TOPRIGHT", 0, 0)
-                    local id = button.id
-                    if (id) then
-                        local achievementTitle = select(2, GetAchievementInfo(id))
-                        PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.achievement,id, achievementTitle, true)
-                        GameTooltip:Show()
-                    end
-                end)
-                button:HookScript("OnLeave", function()
-                    GameTooltip:Hide()
-                end)
-            end
-            frame:UnregisterEvent("ADDON_LOADED")
-        end
-    end)
+function PTR_IssueReporter.SetupAchievementTooltips()    
+    local bindingFunc = function(sender, self, achievementID)        
+        local title = select(2, GetAchievementInfo(achievementID))
+        
+        GameTooltip:ClearAllPoints();
+        GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);
+        GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+        PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.achievement, achievementID, achievementTitle, true)        GameTooltip:Show()
+    end
+    
+    local exitBindingFunc = function()
+        GameTooltip:Hide()
+    end
+
+    EventRegistry:RegisterCallback("AchievementFrameAchievement.OnEnter", bindingFunc, PTR_IssueReporter)    
+    EventRegistry:RegisterCallback("AchievementFrameAchievement.OnLeave", exitBindingFunc, PTR_IssueReporter)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupCurrencyTooltips()
@@ -177,6 +201,20 @@ function PTR_IssueReporter.SetupGarrisonTalentTooltips()
     EventRegistry:RegisterCallback("GarrisonTalentButtonMixin.TalentTooltipShown", bindingFunc, "PTR_IssueReporter")
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupReagentListTooltips()
+    local bindingFunc = function(sender, self, recipeID, recipeName, iconID)
+        if (recipeID) and (recipeName) and (iconID) then
+            GameTooltip:ClearAllPoints();
+            GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);
+            GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");  
+            PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.recipe, recipeID, recipeName, true, nil, iconID)
+            GameTooltip:Show()
+        end
+    end
+
+    EventRegistry:RegisterCallback("Professions.RecipeListOnEnter", bindingFunc, "PTR_IssueReporter")
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupSpellTooltips()
     PTR_IssueReporter.SetupItemTooltips()
@@ -187,5 +225,6 @@ function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupAzeriteTooltips()
     PTR_IssueReporter.SetupMapPinTooltips()
     PTR_IssueReporter.SetupGarrisonTalentTooltips()
+    PTR_IssueReporter.SetupReagentListTooltips()
 end
 ----------------------------------------------------------------------------------------------------

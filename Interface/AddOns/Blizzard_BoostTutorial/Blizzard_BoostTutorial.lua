@@ -130,7 +130,7 @@ function BoostTutorial:HighlightSpell(spellID, textID)
 		for i = 1, GetNumShapeshiftForms() do
 			local id = select(4, GetShapeshiftFormInfo(i));
 			if (id == spellID) then
-				frame = _G["StanceButton" .. i];
+				frame = StanceBar.actionButtons[i];
 				exists = true;
 				break;
 			end
@@ -222,9 +222,6 @@ function BoostTutorial:Init()
 	eventFrame:RegisterEvent("SCENARIO_UPDATE");
 
 	if (C_CharacterServicesPublic.ShouldSeeControlPopup()) then
-		if (not NPE_TutorialKeyboardMouseFrame_Frame) then
-			UIParentLoadAddOn("Blizzard_Tutorial");
-		end
 		NPE_TutorialKeyboardMouseFrame_Frame:Show();
 	end
 end

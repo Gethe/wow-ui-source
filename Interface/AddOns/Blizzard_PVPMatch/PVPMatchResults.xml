@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="PVPMatchResults.lua"/>
 	
 	<Button name="PVPMatchResultsLoot" inherits="PVPLootTemplate" enableMouse="true" virtual="true">
@@ -142,30 +142,30 @@
 							<Anchor point="TOPRIGHT" x="-25" y="-3"/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame parentKey="scrollFrame" inherits="HybridScrollFrameTemplate">
+
+					<Frame parentKey="scrollBox" inherits="WowScrollBoxList">
 						<Size y="256"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.scrollCategories" relativePoint="BOTTOMLEFT"/>
-							<Anchor point="TOPRIGHT" x="-22"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.scrollCategories" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
 						<Layers>
 							<Layer>
-								<Texture parentKey="background" atlas="pvpscoreboard-background-color" alphaMode="ADD" setAllPoints="true"/>
+								<Texture parentKey="Background" atlas="pvpscoreboard-background-color" alphaMode="ADD" setAllPoints="true"/>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Slider inherits="HybridScrollBarTemplate" parentKey="scrollBar">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="36"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" y="14"/>
-								</Anchors>
-							</Slider>
-						</Frames>
-					</ScrollFrame>
+					</Frame>
+					<EventFrame parentKey="scrollBar" inherits="WowTrimScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-22" y="-3"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="123"/>
+						</Anchors>
+					</EventFrame>
+					
 					<Frame parentKey="tabContainer">
 						<Size y="42"/>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.scrollFrame" relativePoint="BOTTOM"/>
+							<Anchor point="TOP" relativeKey="$parent.scrollBox" relativePoint="BOTTOM"/>
 							<Anchor point="LEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT"/>
 							<Anchor point="TOPRIGHT"/>
 						</Anchors>
@@ -197,29 +197,23 @@
 									<Anchor point="TOPLEFT" x="10" y="-50"/>
 								</Anchors>
 								<Frames>
-									<Button name="PVPScoreFrameTab1" parentKey="tab1" inherits="CharacterFrameTabButtonTemplate" id="1">
+									<Button name="PVPScoreFrameTab1" parentKey="tab1" inherits="PanelTabButtonTemplate" id="1">
 										<KeyValues>
 											<KeyValue key="factionEnum" value="-1" type="number"/>
 										</KeyValues>
 											<Anchors>
-											<Anchor point="TOPLEFT" y="50"/>
+											<Anchor point="TOPLEFT" y="46"/>
 										</Anchors>
 									</Button>
-									<Button name="PVPScoreFrameTab2"  parentKey="tab2" inherits="CharacterFrameTabButtonTemplate" id="2">
+									<Button name="PVPScoreFrameTab2"  parentKey="tab2" inherits="PanelTabButtonTemplate" id="2">
 										<KeyValues>
 											<KeyValue key="factionEnum" value="1" type="number"/>
 										</KeyValues>
-										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent.tab1" relativePoint="RIGHT" x="-14"/>
-										</Anchors>
 									</Button>
-									<Button name="PVPScoreFrameTab3"  parentKey="tab3" inherits="CharacterFrameTabButtonTemplate" id="3">
+									<Button name="PVPScoreFrameTab3"  parentKey="tab3" inherits="PanelTabButtonTemplate" id="3">
 										<KeyValues>
 											<KeyValue key="factionEnum" value="0" type="number"/>
 										</KeyValues>
-										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent.tab2" relativePoint="RIGHT" x="-14"/>
-										</Anchors>
 									</Button>
 								</Frames>
 							</Frame>

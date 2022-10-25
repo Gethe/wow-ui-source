@@ -4,32 +4,6 @@
 	<Script file="HonorBar.lua"/>
 	<Frame name="HonorStatusBarTemplate" useParentLevel="true" inherits="StatusTrackingBarTemplate" hidden="true" mixin="HonorBarMixin" virtual="true">
 		<Size x="804" y="11"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture parentKey="ExhaustionLevelFillBar">
-					<Size x="0" y="10"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.HonorBar" x="0" y="0"/>
-					</Anchors>
-					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="ExhaustionTick" hidden="true" frameStrata="MEDIUM">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="HonorExhaustionTick_OnLoad"/>
-					<OnEnter function="HonorExhaustionToolTipText"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-				<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
-				<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
-			</Button>
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

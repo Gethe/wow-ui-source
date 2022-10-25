@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-../FrameXML/UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonMissionUI.lua"/>
 
 	<CinematicModel name="GarrisonCinematicModelBaseTemplate" virtual="true">
@@ -223,7 +223,7 @@
 				<Layers>
 					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture parentKey="LockBackground" setAllPoints="true" hidden="true">
-							<Color a="0.35" r="0.0" g="0.0" b="0.0b"/>
+							<Color a="0.35" r="0.0" g="0.0" b="0.0"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
@@ -266,9 +266,7 @@
 				<Alpha childKey="IconButton.SmokeyCenter2" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="IconButton.WideGlow" startDelay="0.15" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="IconButton.WideGlow" startDelay="0.15" smoothing="IN_OUT" duration="0.5" order="1" fromScaleX="0.5" fromScaleY="1" toScaleX="1.25" toScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="25" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 				<Translation childKey="IconButton.WideGlow" startDelay="0.15" duration="1" order="1" offsetX="25" offsetY="0"/>
 				<Alpha childKey="IconButton.WideGlow" startDelay="0.65" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
@@ -894,16 +892,12 @@
 			<AnimationGroup parentKey="SuccessAnim" setToFinalAlpha="true">
 				<Alpha childKey="CheckMarkLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="CheckMarkLeft" duration="0.1" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
-					<Origin point="CENTER">
-						<Offset x="-24" y="-2"/>
-					</Origin>
+					<Origin point="CENTER"/>
 				</Scale>
 				<Alpha childKey="CheckMarkLeft" startDelay="2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="CheckMarkRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="CheckMarkRight" startDelay="0.1" duration="0.1" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
-					<Origin point="CENTER">
-						<Offset x="-11" y="-22"/>
-					</Origin>
+					<Origin point="CENTER"/>
 				</Scale>
 				<Alpha childKey="CheckMarkRight" startDelay="2.1" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="CheckMark" startDelay="0.15" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
@@ -1309,9 +1303,7 @@
 						<Translation childKey="MissionStart" startDelay="0.4" smoothing="IN" duration="0.25" order="2" offsetX="0" offsetY="-20"/>
 						<Alpha childKey="MissionStart" startDelay="0.4" duration="0.3" order="2" fromAlpha="1" toAlpha="0"/>
 						<Scale childKey="MissionStartText" startDelay="0.4" duration="0.3" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="0.5">
-							<Origin point="LEFT">
-								<Offset x="30" y="4"/>
-							</Origin>
+							<Origin point="LEFT"/>
 						</Scale>
 						<Translation childKey="MissionStartText" startDelay="0.4" smoothing="IN" duration="0.25" order="2" offsetX="0" offsetY="-20"/>
 						<Alpha childKey="MissionStartText" startDelay="0.4" duration="0.3" order="2" fromAlpha="1" toAlpha="0"/>
@@ -1558,7 +1550,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="ItemWeapon" inherits="GarrisonFollowerItemButtonTemplate" hidden="true" frameLevel="20">>
+			<Frame parentKey="ItemWeapon" inherits="GarrisonFollowerItemButtonTemplate" hidden="true" frameLevel="20">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="38" y="110"/>
 				</Anchors>
@@ -1878,16 +1870,12 @@
 			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_6_0" type="global"/>
 		</KeyValues>
 		<Frames>
-			<Button name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">
+			<Button name="$parentTab1" parentKey="Tab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="11" y="-42"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FOLLOWERS">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>
-			</Button>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FOLLOWERS"/>
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList">
 				<Size x="305" y="535"/>
 				<KeyValues>

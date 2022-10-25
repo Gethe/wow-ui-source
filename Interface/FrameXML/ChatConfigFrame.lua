@@ -1,5 +1,3 @@
-COMBATLOG_FILTERS_TO_DISPLAY = 4;
-CHATCONFIG_FILTER_HEIGHT = 16;
 GRAY_CHECKED = 1;
 UNCHECKED_ENABLED = 2;
 UNCHECKED_DISABLED = 3;
@@ -680,6 +678,13 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_BUILDING_HEAL"); end;
 				tooltip = BUILDING_HEAL_COMBATLOG_TOOLTIP,
 			},
+			[11] = {
+				text = EMPOWERS,
+				type = {"SPELL_EMPOWER_START", "SPELL_EMPOWER_END", "SPELL_EMPOWER_INTERRUPT"};
+				checked = function () return HasMessageType("SPELL_EMPOWER_START"); end;
+				func = function (self, checked) ToggleMessageType(checked, "SPELL_EMPOWER_START", "SPELL_EMPOWER_END", "SPELL_EMPOWER_INTERRUPT"); end;
+				tooltip = EMPOWERS_COMBATLOG_TOOLTIP,
+			},
 		}
 	},
 	[2] = {
@@ -857,6 +862,9 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		end
 		if ( value.text ) then
 			text = value.text;
+			if type(text) == "function" then
+				text = text();
+			end
 		else
 			text = _G[value.type];
 		end
@@ -1051,17 +1059,9 @@ function ChatConfig_UpdateCheckboxes(frame)
 				end
 			end
 			if ( type(value.disabled) == "function" ) then
-				if( value.disabled() ) then
-					BlizzardOptionsPanel_CheckButton_Disable(checkBox);
-				else
-					BlizzardOptionsPanel_CheckButton_Enable(checkBox, true);
-				end
+				checkBox:SetEnabled(not value.disabled());
 			else
-				if ( value.disabled ) then
-					BlizzardOptionsPanel_CheckButton_Disable(checkBox);
-				else
-					BlizzardOptionsPanel_CheckButton_Enable(checkBox, true);
-				end
+				checkBox:SetEnabled(not value.disabled);
 			end
 
 			checkBox.tooltip = value.tooltip;
@@ -1090,7 +1090,8 @@ function ChatConfig_UpdateCheckboxes(frame)
 				if ( value.isBlank ) then
 					colorSwatch:Hide();
 				else
-					_G[baseName.."ColorSwatch"].Color:SetVertexColor(GetMessageTypeColor(value.type));
+					local r, g, b = GetMessageTypeColor(value.type);
+					_G[baseName.."ColorSwatch"].Color:SetVertexColor(r, g, b);
 					colorSwatch.type = value.type;
 					colorSwatch:Show();
 				end
@@ -1189,11 +1190,7 @@ function ChatConfig_UpdateTieredCheckboxes(frame, index)
 				end
 			end
 
-			if ( groupChecked ) then
-				BlizzardOptionsPanel_CheckButton_Enable(subCheckBox, true);
-			else
-				BlizzardOptionsPanel_CheckButton_Disable(subCheckBox);
-			end
+			subCheckBox:SetEnabled(groupChecked);
 		end
 	end
 end
@@ -1207,21 +1204,13 @@ function CombatConfig_Colorize_Update()
 
 	-- Spell Names
 	CombatConfigColorsColorizeSpellNamesCheck:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.abilityColoring);
-	if ( CHATCONFIG_SELECTED_FILTER.settings.abilityColoring ) then
-		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeSpellNamesSchoolColoring, true);
-	else
-		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeSpellNamesSchoolColoring, true);
-	end
+	CombatConfigColorsColorizeSpellNamesSchoolColoring:SetEnabled(CHATCONFIG_SELECTED_FILTER.settings.abilityColoring);
 	CombatConfigColorsColorizeSpellNamesSchoolColoring:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.abilitySchoolColoring);
 	CombatConfigColorsColorizeSpellNamesColorSwatchNormalTexture:SetVertexColor(GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell));
 
 	-- Damage Number
 	CombatConfigColorsColorizeDamageNumberCheck:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.amountColoring);
-	if ( CHATCONFIG_SELECTED_FILTER.settings.amountColoring ) then
-		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeDamageNumberSchoolColoring, true);
-	else
-		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeDamageNumberSchoolColoring, true);
-	end
+	CombatConfigColorsColorizeDamageNumberSchoolColoring:SetEnabled(CHATCONFIG_SELECTED_FILTER.settings.amountColoring);
 	CombatConfigColorsColorizeDamageNumberSchoolColoring:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.amountSchoolColoring);
 	CombatConfigColorsColorizeDamageNumberColorSwatchNormalTexture:SetVertexColor(GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.damage));
 
@@ -1230,13 +1219,9 @@ function CombatConfig_Colorize_Update()
 
 	-- Line Coloring
 	CombatConfigColorsColorizeEntireLineCheck:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.lineColoring);
-	if ( CHATCONFIG_SELECTED_FILTER.settings.lineColoring ) then
-		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeEntireLineBySource, true);
-		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeEntireLineByTarget, true);
-	else
-		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeEntireLineBySource);
-		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeEntireLineByTarget);
-	end
+	CombatConfigColorsColorizeEntireLineBySource:SetEnabled(CHATCONFIG_SELECTED_FILTER.settings.lineColoring);
+	CombatConfigColorsColorizeEntireLineByTarget:SetEnabled(CHATCONFIG_SELECTED_FILTER.settings.lineColoring);
+
 	if ( CHATCONFIG_SELECTED_FILTER.settings.lineColorPriority == 1 ) then
 		CombatConfigColorsColorizeEntireLineBySource:SetChecked(true);
 		CombatConfigColorsColorizeEntireLineByTarget:SetChecked(false);
@@ -1264,15 +1249,11 @@ end
 function CombatConfig_Formatting_Update()
 	CombatConfigFormattingShowTimeStamp:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.timestamp);
 	CombatConfigFormattingShowBraces:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.braces);
-	if ( CHATCONFIG_SELECTED_FILTER.settings.braces ) then
-		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigFormattingUnitNames, true);
-		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigFormattingSpellNames, true);
-		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigFormattingItemNames, true);
-	else
-		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigFormattingUnitNames);
-		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigFormattingSpellNames);
-		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigFormattingItemNames);
-	end
+
+	CombatConfigFormattingUnitNames:SetEnabled(CHATCONFIG_SELECTED_FILTER.settings.braces);
+	CombatConfigFormattingSpellNames:SetEnabled(CHATCONFIG_SELECTED_FILTER.settings.braces);
+	CombatConfigFormattingItemNames:SetEnabled(CHATCONFIG_SELECTED_FILTER.settings.braces);
+
 	CombatConfigFormattingUnitNames:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.unitBraces);
 	CombatConfigFormattingSpellNames:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.spellBraces);
 	CombatConfigFormattingItemNames:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.itemBraces);
@@ -1289,15 +1270,9 @@ end
 
 function CombatConfig_Settings_Update()
 	CombatConfigSettingsShowQuickButton:SetChecked(CHATCONFIG_SELECTED_FILTER.hasQuickButton);
-	if ( CHATCONFIG_SELECTED_FILTER.hasQuickButton ) then
-		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigSettingsSolo, true);
-		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigSettingsParty, true);
-		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigSettingsRaid, true);
-	else
-		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigSettingsSolo);
-		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigSettingsParty);
-		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigSettingsRaid);
-	end
+	CombatConfigSettingsSolo:SetEnabled(CHATCONFIG_SELECTED_FILTER.hasQuickButton);
+	CombatConfigSettingsParty:SetEnabled(CHATCONFIG_SELECTED_FILTER.hasQuickButton);
+	CombatConfigSettingsRaid:SetEnabled(CHATCONFIG_SELECTED_FILTER.hasQuickButton);
 	CombatConfigSettingsSolo:SetChecked(CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.solo);
 	CombatConfigSettingsParty:SetChecked(CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.party);
 	CombatConfigSettingsRaid:SetChecked(CHATCONFIG_SELECTED_FILTER.quickButtonDisplay.raid);
@@ -1749,7 +1724,7 @@ function ChatConfigCombat_OnLoad()
 	-- Create tabs
 	local tab;
 	local tabName = CHAT_CONFIG_COMBAT_TAB_NAME;
-	local name, text;
+	local name;
 	for index, value in ipairs(COMBAT_CONFIG_TABS) do
 		name = tabName..index;
 		if ( not _G[name] ) then
@@ -1760,11 +1735,33 @@ function ChatConfigCombat_OnLoad()
 				tab:SetPoint("BOTTOMLEFT", ChatConfigBackgroundFrame, "TOPLEFT", 2, -1);
 			end
 
-			text = _G[name.."Text"];
-			text:SetText(value.text);
+			tab.Text:SetText(value.text);
 			tab:SetID(index);
 			PanelTemplates_TabResize(tab, 0);
 		end
+	end
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("ConfigFilterButtonTemplate", function(button, elementData)
+		ChatConfigCombat_InitButton(button, elementData);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(ChatConfigCombatSettings.Filters.ScrollBox, ChatConfigCombatSettings.Filters.ScrollBar, view);
+end
+
+function ChatConfigCombatButton_OnClick(button, buttonName, down)
+	ChatConfigFilter_OnClick(button:GetElementData().index);
+end
+
+function ChatConfigCombat_InitButton(button, elementData)
+	local index = elementData.index;
+	local text = elementData.filter.name;
+	button.NormalText:SetText(text);
+	button.name = text;
+	if ( index == ChatConfigCombatSettingsFilters.selectedFilter ) then
+		button:LockHighlight();
+	else
+		button:UnlockHighlight();
 	end
 end
 
@@ -1780,32 +1777,12 @@ function ChatConfigCombat_OnHide()
 end
 
 function ChatConfig_UpdateFilterList()
-	local index;
-	local offset = FauxScrollFrame_GetOffset(ChatConfigCombatSettingsFiltersScrollFrame);
-	local button, buttonName, filter, text;
-	for i=1, COMBATLOG_FILTERS_TO_DISPLAY do
-		index = offset+i;
-		buttonName = "ChatConfigCombatSettingsFiltersButton"..i;
-		button = _G[buttonName];
-		if ( index <= #Blizzard_CombatLog_Filters.filters ) then
-			text = Blizzard_CombatLog_Filters.filters[index].name;
-			_G[buttonName.."NormalText"]:SetText(text);
-			button.name = text;
-			button:Show();
-			if ( index == ChatConfigCombatSettingsFilters.selectedFilter ) then
-				button:LockHighlight();
-			else
-				button:UnlockHighlight();
-			end
-		else
-			button:Hide();
-		end
+	local dataProvider = CreateDataProvider();
+	for index, filter in ipairs(Blizzard_CombatLog_Filters.filters) do
+		dataProvider:Insert{index=index, filter=filter};
 	end
-	if ( FauxScrollFrame_Update(ChatConfigCombatSettingsFiltersScrollFrame, #Blizzard_CombatLog_Filters.filters, COMBATLOG_FILTERS_TO_DISPLAY, CHATCONFIG_FILTER_HEIGHT ) ) then
-		ChatConfigCombatSettingsFiltersButton1:SetPoint("TOPRIGHT", ChatConfigCombatSettingsFilters, "TOPRIGHT", -29, -7);
-	else
-		ChatConfigCombatSettingsFiltersButton1:SetPoint("TOPRIGHT", ChatConfigCombatSettingsFilters, "TOPRIGHT", -5, -7);
-	end
+
+	ChatConfigCombatSettings.Filters.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	-- Update the combat log quick buttons
 	Blizzard_CombatLog_Update_QuickButtons();
 end
@@ -1877,6 +1854,10 @@ function ChatConfig_ResetChatSettings()
 end
 
 function UsesGUID(direction)
+	if not CHATCONFIG_SELECTED_FILTER then
+		return false;
+	end
+
 	if ( direction == "SOURCE" and CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags ) then
 		for k,v in pairs( CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags ) do
 			if ( type(k) == "string" ) then
@@ -1957,21 +1938,20 @@ function GetMessageTypeState(messageType)
 end
 
 function ChatConfig_UpdateCombatTabs(selectedTabID)
-	local tab, text, frame;
+	local tab, frame;
 	for index, value in ipairs(COMBAT_CONFIG_TABS) do
 		tab = _G[CHAT_CONFIG_COMBAT_TAB_NAME..index];
-		text = _G[CHAT_CONFIG_COMBAT_TAB_NAME..index.."Text"];
 		frame = _G[value.frame];
 		if ( (not Blizzard_CombatLog_Filters) or #Blizzard_CombatLog_Filters.filters == 0 ) then
 			tab:SetAlpha(0.75);
-			text:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			tab.Text:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		elseif ( index == selectedTabID ) then
 			tab:SetAlpha(1.0);
-			text:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			tab.Text:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			frame:Show();
 		else
 			tab:SetAlpha(0.75);
-			text:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			tab.Text:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 			frame:Hide();
 		end
 
@@ -2004,7 +1984,7 @@ function CombatConfig_CreateCombatFilter(name, filter)
 	newFilter.tooltip = "";
 	tinsert(Blizzard_CombatLog_Filters.filters, newFilter);
 	-- Scroll filters to top of list
-	ChatConfigCombatSettingsFiltersScrollFrameScrollBar:SetValue(0);
+	ChatConfigCombatSettingsFilters.ScrollBox:ScrollToBegin();
 	-- Select the new filter
 	ChatConfigFilter_OnClick(#Blizzard_CombatLog_Filters.filters);
 	-- If creating a filter when there wasn't any before then update the tabs with the first one selected
@@ -2025,7 +2005,7 @@ function CombatConfig_DeleteCurrentCombatFilter()
 	end
 
 	-- Scroll filters to top of list
-	ChatConfigCombatSettingsFiltersScrollFrameScrollBar:SetValue(0);
+	ChatConfigCombatSettingsFilters.ScrollBox:ScrollToBegin();
 	-- Select the first filter
 	ChatConfigFilter_OnClick(1);
 end
@@ -2569,8 +2549,8 @@ TextToSpeechCharacterSpecificButtonMixin = {};
 
 function TextToSpeechCharacterSpecificButtonMixin:OnLoad()
 	local descriptionText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(CHARACTER_SPECIFIC_SETTINGS);
-	self.text:SetText(descriptionText);
-	self.text:SetFontObject(GameFontNormal);
+	self.Text:SetText(descriptionText);
+	self.Text:SetFontObject(GameFontNormal);
 end
 
 function TextToSpeechCharacterSpecificButtonMixin:OnShow()

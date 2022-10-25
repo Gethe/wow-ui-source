@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 
 	<Script file="Blizzard_ObjectiveTracker.lua"/>
 
@@ -93,9 +93,7 @@
 				<Alpha childKey="LineGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="LineGlow" startDelay="0.25" duration="0.65" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scale childKey="LineGlow" duration="0.15" order="1" fromScaleX="0.1" fromScaleY="1.5" toScaleX="2" toScaleY="1.5">
-					<Origin point="CENTER">
-						<Offset x="-50" y="0"/>
-					</Origin>
+					<Origin point="CENTER"/>
 				</Scale>
 				<Translation childKey="LineGlow" duration="0.75" order="1" offsetX="50" offsetY="0"/>
 				<Alpha childKey="SoftGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
@@ -347,11 +345,11 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ObjectiveTrackerFrame" parent="UIParent" frameStrata="LOW">
+	<Frame name="ObjectiveTrackerFrame" inherits="UIParentRightManagedFrameTemplate, EditModeObjectiveTrackerSystemTemplate" frameStrata="LOW">
 		<Size x="235" y="140"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT"/>
-		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="50" type="number"/>
+		</KeyValues>
 		<Frames>
 			<Frame name="ObjectiveTrackerBlocksFrame" parentKey="BlocksFrame" hidden="false">
 				<Anchors>
@@ -367,6 +365,7 @@
 							<OnEvent method="OnEvent"/>
 						</Scripts>
 					</Frame>
+					<Frame parentKey="ProfessionHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="AchievementHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="ScenarioHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="UIWidgetsHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
@@ -397,10 +396,11 @@
 			<Frame name="ObjectiveTrackerBlockDropDown" parentKey="BlockDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
-			<OnLoad function="ObjectiveTracker_OnLoad"/>
+			<OnLoad function="ObjectiveTracker_OnLoad" inherit="prepend"/>
 			<OnEvent function="ObjectiveTracker_OnEvent"/>
 			<OnUpdate function="ObjectiveTracker_OnUpdate"/>
 			<OnSizeChanged function="ObjectiveTracker_OnSizeChanged"/>
+			<OnShow function="ObjectiveTracker_OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

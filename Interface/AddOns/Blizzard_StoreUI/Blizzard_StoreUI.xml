@@ -192,9 +192,7 @@
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture" />
 		</Button>
 		<CheckButton name="StoreCheckButtonTemplate" virtual="true">
-			<Size>
-				<AbsDimension x="32" y="32" />
-			</Size>
+			<Size x="32" y="32"/>
 			<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
 			<PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
 			<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" />
@@ -880,7 +878,7 @@
 					</FontString>
 				</Layer>
 				<Layer level="OVERLAY">
-					<FontString parentKey="BrowseNotice" inherits="GameFontHighlightSmall2" justifyH="CENTERED" justifyV="TOP">
+					<FontString parentKey="BrowseNotice" inherits="GameFontHighlightSmall2" justifyH="CENTER" justifyV="TOP">
 						<Size x="180" y="40" />
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="40" y="22" />
@@ -1150,7 +1148,7 @@
 				</Button>
 				<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="5" y="4" />
+						<Anchor point="TOPRIGHT" x="1" y="0"/>
 					</Anchors>
 					<Scripts>
 						<OnClick function="StoreFrameCloseButton_OnClick" />
@@ -1449,7 +1447,7 @@
 					</Scripts>
 					<FontString inherits="GameFontBlackSmall2" justifyH="LEFT" />
 				</SimpleHTML>
-				<SimpleHTML parentKey="ProductInstructions" justifyH="LEFT">
+				<SimpleHTML parentKey="ProductInstructions" >
 					<Size x="280" y="600"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="8" y="-30"/>
@@ -1555,7 +1553,7 @@
 											<Anchor point="LEFT" relativeKey="$parent.FromIcon" relativePoint="RIGHT" x="4" y="0"/>
 										</Anchors>
 									</Texture>
-									<FontString parentKey="ViewRaces" inherits="GameFontBlackSmall" justifyH="CENTER" justifyV="CENTER">
+									<FontString parentKey="ViewRaces" inherits="GameFontBlackSmall" justifyH="CENTER" justifyV="MIDDLE">
 										<Size x="90" y="26"/>
 										<Anchors>
 											<Anchor point="LEFT" relativeKey="$parent.ArrowTex" relativePoint="RIGHT" x="34" y="0"/>

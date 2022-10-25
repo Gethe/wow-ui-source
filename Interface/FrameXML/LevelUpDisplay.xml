@@ -65,9 +65,7 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
-		<Size>
-			<AbsDimension x="230" y="44"/>
-		</Size>
+		<Size x="230" y="44"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" parentKey="icon">
@@ -216,14 +214,10 @@
 										self:GetParent():GetParent():Show();
 									</OnFinished>
 								</Scripts>
-								<Origin point="BOTTOM">
-									<Offset x="0" y="0"/>
-								 </Origin>
+								<Origin point="BOTTOM"/>
 							</Scale>
 							<Scale scaleX="1.0" scaleY="1000.0" startDelay="0.25" duration="0.15" order="2">
-								 <Origin point="BOTTOM">
-									<Offset x="0" y="0"/>
-								 </Origin>
+								 <Origin point="BOTTOM"/>
 							</Scale>
 						</AnimationGroup>
 					</Animations>
@@ -1066,16 +1060,12 @@
 				<Alpha childKey="RightFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="37" offsetY="0"/>
 				<Scale childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
-					<Origin point="BOTTOMLEFT">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="BOTTOMLEFT"/>
 				</Scale>
 				<Alpha childKey="LeftFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="LeftFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="-37" offsetY="0"/>
 				<Scale childKey="LeftFillagree" startDelay="0.15" duration="0.15" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
-					<Origin point="BOTTOMRIGHT">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="BOTTOMRIGHT"/>
 				</Scale>
 				<Alpha childKey="BannerTopGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BannerTopGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
@@ -1094,17 +1084,13 @@
 				<Alpha childKey="RedFlash" startDelay="0.25" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="FlashBurst" startDelay="0.25" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="FlashBurst" startDelay="0.25" duration="0.4" order="2" fromScaleX="1" fromScaleY="0.75" toScaleX="1.25" toScaleY="0.75">
-					<Origin point="LEFT">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 				</Scale>
 				<Translation childKey="FlashBurst" startDelay="0.25" duration="0.5" order="2" offsetX="10" offsetY="0"/>
 				<Alpha childKey="FlashBurst" startDelay="0.25" duration="0.4" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="FlashBurstLeft" startDelay="0.25" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="FlashBurstLeft" startDelay="0.25" duration="0.5" order="2" fromScaleX="1" fromScaleY="0.75" toScaleX="1.25" toScaleY="0.75">
-					<Origin point="RIGHT">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="RIGHT"/>
 				</Scale>
 				<Translation childKey="FlashBurstLeft" startDelay="0.25" duration="0.5" order="2" offsetX="-10" offsetY="0"/>
 				<Alpha childKey="FlashBurstLeft" startDelay="0.25" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>

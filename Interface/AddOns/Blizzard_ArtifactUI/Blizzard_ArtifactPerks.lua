@@ -58,26 +58,26 @@ local TIER2_SLAM_EFFECT_MODEL_SCENE_INFO = StaticModelInfo.CreateModelSceneEntry
 
 -------------------- Animation Constants End --------------------
 
-function ArtifactPerksMixin:OnLoad()	
+function ArtifactPerksMixin:OnLoad()
 	self.powerButtonPool = CreateFramePool("BUTTON", self, "ArtifactPowerButtonTemplate");
 	self.callbackTimers = {};
 end
 
-function ArtifactPerksMixin:OnShow()	
+function ArtifactPerksMixin:OnShow()
 	self.modelTransformElapsed = 0;
-	self:RegisterEvent("CURSOR_UPDATE");
+	self:RegisterEvent("CURSOR_CHANGED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 end
 
 function ArtifactPerksMixin:OnHide()
-	self:UnregisterEvent("CURSOR_UPDATE");
+	self:UnregisterEvent("CURSOR_CHANGED");
 	self:UnregisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:CancelAllTimedAnimations();
 	self:SkipTier2Animation();
 end
 
 function ArtifactPerksMixin:OnEvent(event, ...)
-	if event == "CURSOR_UPDATE" then
+	if event == "CURSOR_CHANGED" then
 		self:OnCursorUpdate();
 	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		self:RefreshPowerTiers();
@@ -144,7 +144,10 @@ function ArtifactsModelTemplate_OnModelLoaded(self)
 	if self.uiCameraID then
 		Model_ApplyUICamera(self, self.uiCameraID);
 	end
-	self:SetLight(true, false, 0, 0, 0, .7, 1.0, 1.0, 1.0);
+
+	local lightValues = { omnidirectional = false, point = CreateVector3D(0, 0, 0), ambientIntensity = .7, ambientColor = CreateColor(1, 1, 1), diffuseIntensity = 0, diffuseColor = CreateColor(1, 1, 1) };
+	local enabled = true;
+	self:SetLight(enabled, lightValues);
 	self:SetViewTranslation(-88, 0);
 
 	self:SetAnimation(animationSequence, 0);
@@ -153,7 +156,7 @@ function ArtifactsModelTemplate_OnModelLoaded(self)
 		self:SetDesaturation(1);
 		self:SetParticlesEnabled(false);
 		self:SetPaused(true);
-	else	
+	else
 		if ( self.useShadowEffect ) then
 			self:SetShadowEffect(1);
 		else
@@ -292,7 +295,7 @@ function ArtifactPerksMixin:RefreshPowerTiers()
 			self.CrestFrame:ClearAllPoints();
 			self.CrestFrame:SetPoint("CENTER", finalTier2Button, "CENTER");
 			self.CrestFrame:Show();
-			
+
 			local forceUpdate = true;
 
 			self.Tier2ForgingScene:Show();
@@ -385,7 +388,7 @@ function ArtifactPerksMixin:TryRefresh()
 		self.perksDirty = false;
 		self.newItem = nil;
 		self.isAppearanceChanging = nil;
-		
+
 		if not self.numArtifactTraitsRefunded and (C_ArtifactUI.GetArtifactTier() == 2 or C_ArtifactUI.IsMaxedByRulesOrEffect())then
 			if self.preppingTierTwoReveal then
 				self:HideTier2();
@@ -399,14 +402,14 @@ function ArtifactPerksMixin:TryRefresh()
 				if finalTier1Button then
 					finalTier1Button:Show();
 				end
-				
+
 				local finalTier2Button = self:GetFinalPowerButtonByTier(2);
 				if finalTier2Button then
 					finalTier2Button:Show();
 				end
 			end
 		end
-		
+
 		if self.queuePlayingReveal then
 			self:PlayReveal(1);
 		elseif self.numArtifactTraitsRefunded then
@@ -415,7 +418,7 @@ function ArtifactPerksMixin:TryRefresh()
 		elseif not finalTier2WasUnlocked and self.wasFinalPowerButtonUnlockedByTier[2] then
 			self:AnimateInCurvedLine(4);
 		else
-			if C_ArtifactUI:IsAtForge() and self:ShouldShowTierGlow() then 
+			if C_ArtifactUI:IsAtForge() and self:ShouldShowTierGlow() then
 				-- We may need to change self.tierGlowSeen to take into account the tier you've seen
 				-- rather than just the artifact ID since you could tier up twice without reloading the UI (in theory?).
 				self:ShowTierGlow();
@@ -429,7 +432,7 @@ function ArtifactPerksMixin:HasPurchasedAnythingInCurrentTier()
 	if C_ArtifactUI.IsMaxedByRulesOrEffect() then
 		return true;
 	end
-	
+
 	local tier = C_ArtifactUI.GetArtifactTier();
 	if tier == 1 then
 		return C_ArtifactUI.GetTotalPurchasedRanks() > 0;
@@ -440,7 +443,7 @@ function ArtifactPerksMixin:HasPurchasedAnythingInCurrentTier()
 			return true;
 		end
 	end
-	
+
 	return false;
 end
 
@@ -448,7 +451,7 @@ function ArtifactPerksMixin:ShouldShowTierGlow()
 	if self:HasPurchasedAnythingInCurrentTier() then
 		return false;
 	end
-	
+
 	local artifactItemID = C_ArtifactUI.GetArtifactInfo();
 	return artifactItemID and (not self.tierGlowSeen or self.tierGlowSeen ~= artifactItemID);
 end
@@ -465,7 +468,7 @@ function ArtifactPerksMixin:ShowTierGlow()
 			end
 		end
 	end
-	
+
 	if shouldShowGlow then
 		self.tierGlowSeen = C_ArtifactUI.GetArtifactInfo();
 		for i, button in ipairs(buttonsToHighlight) do
@@ -582,7 +585,7 @@ function ArtifactPerksMixin:GenerateCurvedLine(startButton, endButton, state, ar
 		previousLineContainer = lineContainer;
 		previousEndPoint = toPoint;
 	end
-	
+
 	return previousLineContainer;
 end
 
@@ -647,7 +650,7 @@ function ArtifactPerksMixin:RefreshDependencies(powers)
 
 									lineContainer:SetEndPoints(fromButton, toButton);
 									lineContainer:SetScrollAnimationProgressOffset(0);
-				
+
 									lineContainer:SetState(state);
 									fromButton.links[toPowerID] = lineContainer;
 									toButton.links[fromPowerID] = lineContainer;
@@ -788,10 +791,10 @@ local function QueueReveal(self, powerButton, distance, tier)
 	if noAnimation or powerButton:QueueRevealAnimation(distance * ARTIFACT_REVEAL_DELAY_SECS_PER_DISTANCE[tier]) then
 		for linkedPowerID, linkedLineContainer in pairs(powerButton.links) do
 			local linkedPowerButton = self.powerIDToPowerButton[linkedPowerID];
-			
+
 			if linkedPowerButton.hasSpentAny then
 				QueueReveal(self, linkedPowerButton, distance, tier);
-			else 
+			else
 				local distanceToLink = RegionUtil.CalculateDistanceBetween(powerButton, linkedPowerButton);
 				local totalDistance = distance + distanceToLink;
 
@@ -816,7 +819,7 @@ function ArtifactPerksMixin:HideTier2()
 			button:Hide();
 		end
 	end
-	
+
 	self.CrestFrame.CrestRune1:Hide();
 
 	if self.CurvedDependencyLines then
@@ -836,7 +839,7 @@ function ArtifactPerksMixin:ShowTier2()
 			button:Show();
 		end
 	end
-	
+
 	if self.CurvedDependencyLines then
 		for i = 1, self.numUsedCurvedLines do
 			local lineContainer = self.CurvedDependencyLines[i];
@@ -854,17 +857,17 @@ function ArtifactPerksMixin:SkipTier2Animation()
 	end
 
 	self:CancelAllTimedAnimations();
-	
+
 	if C_ArtifactUI.GetArtifactTier() == 2 then
 		self.CrestFrame.CrestRune1:SetAlpha(1.0);
-		
+
 		if self.CurvedDependencyLines then
 			for i = 1, self.numUsedCurvedLines do
 				local lineContainer = self.CurvedDependencyLines[i];
 				lineContainer:PlayLineFadeAnim(lineContainer.animType);
 			end
 		end
-		
+
 		self.CrestFrame.RuneAnim:Stop();
 		self.CrestFrame.IntroCrestAnim:Stop();
 	end
@@ -876,7 +879,7 @@ function ArtifactPerksMixin:TraitRefundSetup(numTraitsRefunded)
 	self.TitleContainer.PointsRemainingLabel:SnapToTarget();
 	self:HideTier2();
 	if self:GetFinalPowerButtonByTier(1) then self:GetFinalPowerButtonByTier(1).Rank:SetText(1 + numTraitsRefunded); end
-	
+
 	local startingSound = SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_REFUND_START;
 	local loopingSound = SOUNDKIT.UI_72_ARTIFACT_FORGE_FINAL_TRAIT_REFUND_LOOP;
 
@@ -901,9 +904,9 @@ function ArtifactPerksMixin:CancelAllTimedAnimations()
 	for i, timer in ipairs(self.callbackTimers) do
 		timer:Cancel();
 	end
-	
+
 	self.callbackTimers = {};
-	
+
 	if self.traitRefundSoundEmitter then
 		self.traitRefundSoundEmitter:CancelLoopingSound();
 	end
@@ -928,25 +931,25 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 	local button = self:GetFinalPowerButtonByTier(1);
 	if not button or numTraitsRefunded == 0 then
 		self:PrepTierTwoReveal(ARTIFACT_TIER_2_REVEAL_START_DELAY);
-		
+
 		return;
 	end
 
 	self:TraitRefundSetup(numTraitsRefunded);
 	self:StartWithDelay(ARTIFACT_TIER_2_REVEAL_START_DELAY, function ()
 		self.traitRefundSoundEmitter:StartLoopingSound();
-		
+
 		-- This is the time it takes to animate the floating numbers.
 		self.TitleContainer.PointsRemainingLabel:SetAnimatedDurationTimeSec(0.6 + ARTIFACT_TIER_2_REFUND_NUMBER_TICK_SPEED * numTraitsRefunded);
 		self.TitleContainer.PointsRemainingLabel:SetAnimatedValue(C_ArtifactUI.GetPointsRemaining());
-		
+
 		local targetX = ArtifactFrame.PerksTab:GetWidth() / 2;
 		local targetY = ArtifactFrame.PerksTab.TitleContainer:GetHeight();
-		local point, parent, relativePoint, sourceX, sourceY = button:GetPoint();
+		local point, parent, relativePoint, sourceX, sourceY = button:GetPoint(1);
 		sourceY = -sourceY;
 		sourceY = sourceY;
 		sourceX = sourceX + (button:GetWidth() / 2);
-		
+
 		local currentRank = numTraitsRefunded + 1;
 		self:StartWithDelay(ARTIFACT_TIER_2_REFUND_NUMBER_TICK_SPEED, function ()
 			if ( currentRank <= 1 ) then return; end
@@ -954,7 +957,7 @@ function ArtifactPerksMixin:AnimateTraitRefund(numTraitsRefunded)
 			if not button.FloatingNumbers or not button.FloatingNumbers[numberIndex] then
 				CreateFrame("Frame", nil, button, "ArtifactFloatingRankStringTemplate");
 			end
-			
+
 			local animatedNumber = button.FloatingNumbers[numberIndex];
 			animatedNumber:SetPoint(point, parent, relativePoint, sourceX, -sourceY);
 			animatedNumber.Rune:SetAtlas(button:GenerateRune(), true);
@@ -1000,27 +1003,27 @@ function ArtifactPerksMixin:AnimateInTierTwoPowers()
 	self.preppingTierTwoReveal = nil;
 	self:ShowTier2();
 	self.CrestFrame.CrestRune1:SetAlpha(0.0);
-	
+
 	for i = 1, self.numUsedCurvedLines do
 		local lineContainer = self.CurvedDependencyLines[i];
 		lineContainer.Fill:SetVertexColor(lineContainer.connectedColor:GetRGB());
 		lineContainer:SetAlpha(0.0);
 	end
-	
+
 	self:PlayReveal(2);
-	
+
 	self:StartWithDelay(ARTIFACT_TIER_2_FIRST_CURVED_LINE_DELAY, function ()
 		self:AnimateInCurvedLine(3);
 	end);
-	
+
 	self:StartWithDelay(ARTIFACT_TIER_2_SECOND_CURVED_LINE_DELAY, function ()
 		self:AnimateInCurvedLine(1);
 	end);
-	
+
 	self:StartWithDelay(ARTIFACT_TIER_2_THIRD_CURVED_LINE_DELAY, function ()
 		self:AnimateInCurvedLine(2);
 	end);
-	
+
 	self:StartWithDelay(ARTIFACT_TIER_2_CREST_DELAY, function ()
 		self:AnimateInCrest();
 	end);
@@ -1031,7 +1034,7 @@ function ArtifactPerksMixin:AnimateInCurvedLine(curvedLineIndex)
 	if curvedLineIndex * NUM_CURVED_LINE_SEGEMENTS > self.numUsedCurvedLines then
 		return;
 	end
-	
+
 	local baseIndex = (curvedLineIndex - 1) * NUM_CURVED_LINE_SEGEMENTS;
 	for i = 1, NUM_CURVED_LINE_SEGEMENTS do
 		local lineContainer = self.CurvedDependencyLines[baseIndex + i];
@@ -1071,7 +1074,7 @@ function ArtifactPerksMixin:AnimateInCrest()
 			self.Tier2ForgingScene.ForgingEffectAnimOut:Play();
 		end);
 	end
-	
+
 	self:StartWithDelay(TIER_2_BACKGROUND_FRONT_INTENSITY_OUT_DELAY, function ()
 		self.Model.ForgingEffectAnimOut:Play();
 	end);
@@ -1080,7 +1083,7 @@ function ArtifactPerksMixin:AnimateInCrest()
 	self:StartWithDelay(ARTIFACT_TIER_2_SHAKE_DELAY, function ()
 		ScriptAnimationUtil.ShakeFrame(self:GetParent(), ARTIFACT_TIER_2_SHAKE, ARTIFACT_TIER_2_SHAKE_DURATION, ARTIFACT_TIER_2_SHAKE_FREQUENCY);
 	end);
-	
+
 	self:StartWithDelay(TIER_2_SLAM_EFFECT_DELAY, function ()
 		self.Tier2SlamEffectModelScene:Show();
 		self.CrestFrame.CracksAnim:Play();
@@ -1144,7 +1147,7 @@ function ArtifactTitleTemplateMixin:RefreshTitle()
 		else
 			self.Background:Hide();
 		end
-		
+
 		disabledFrame:Hide();
 	end
 end
@@ -1154,8 +1157,8 @@ function ArtifactTitleTemplateMixin:OnShow()
 	self:EvaluateRelics();
 
 	self:RegisterEvent("ARTIFACT_UPDATE");
-	self:RegisterEvent("CURSOR_UPDATE");
-	
+	self:RegisterEvent("CURSOR_CHANGED");
+
 	if C_ArtifactUI.IsArtifactDisabled() then
 		self:SetScript("OnUpdate", nil);
 		self.PointsRemainingLabel:Hide();
@@ -1167,7 +1170,7 @@ end
 
 function ArtifactTitleTemplateMixin:OnHide()
 	self:UnregisterEvent("ARTIFACT_UPDATE");
-	self:UnregisterEvent("CURSOR_UPDATE");
+	self:UnregisterEvent("CURSOR_CHANGED");
 	StaticPopup_Hide("CONFIRM_RELIC_REPLACE");
 end
 
@@ -1179,7 +1182,7 @@ function ArtifactTitleTemplateMixin:OnEvent(event, ...)
 		end
 		self:EvaluateRelics();
 		self:RefreshRelicTooltips();
-	elseif event == "CURSOR_UPDATE" then
+	elseif event == "CURSOR_CHANGED" then
 		self:OnCursorUpdate();
 	end
 end
@@ -1340,7 +1343,7 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 			relicSlot:GetNormalTexture():SetAlpha(.5);
 			relicSlot:Disable();
 			relicSlot.LockedIcon:Show();
-			relicSlot.Icon:SetMask(nil);
+			relicSlot.Icon:SetMask("");
 			relicSlot.Icon:SetAtlas("Relic-SlotBG", true);
 			relicSlot.Glass:Hide();
 			relicSlot.relicLink = nil;
@@ -1352,24 +1355,24 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 			relicSlot.LockedIcon:Hide();
 			if relicIcon then
 				relicSlot.Icon:SetSize(34, 34);
-				relicSlot.Icon:SetMask(nil);
+				relicSlot.Icon:SetMask("");
 				relicSlot.Icon:SetTexCoord(0, 1, 0, 1); -- Masks may overwrite our tex coords (even ones set by an atlas), force it back to using the full item icon texture
 				relicSlot.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 				relicSlot.Icon:SetTexture(relicIcon);
 				relicSlot.Glass:Show();
 			else
-				relicSlot.Icon:SetMask(nil);
+				relicSlot.Icon:SetMask("");
 				relicSlot.Icon:SetAtlas("Relic-SlotBG", true);
 				relicSlot.Glass:Hide();
 			end
 			relicSlot.relicLink = relicLink;
 		end
 
-		
+
 		relicSlot.relicType = relicType;
 		relicSlot.relicSlotIndex = i;
 		relicSlot.lockedReason = lockedReason;
-		
+
 		relicSlot:ClearAllPoints();
 		local PADDING = 0;
 		if i == 1 then

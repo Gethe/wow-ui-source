@@ -1,6 +1,6 @@
 function GameMenuFrame_OnShow(self)
 	UpdateMicroButtons();
-	Disable_BagButtons();
+	MainMenuBarBagManager:SetBagButtonsEnabled(false);
 	if (CanAutoSetGamePadCursorControl(true)) then
 		SetGamePadCursorControl(true);
 	end
@@ -9,8 +9,7 @@ function GameMenuFrame_OnShow(self)
 end
 
 function GameMenuFrame_UpdateVisibleButtons(self)
-	local height = 292;
-	GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
+	local height = 280;
 
 	local buttonToReanchor = GameMenuButtonWhatsNew;
 	local reanchorYOffset = -1;
@@ -18,11 +17,10 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 	if IsCharacterNewlyBoosted() or not C_SplashScreen.CanViewSplashScreen()  then
 		GameMenuButtonWhatsNew:Hide();
 		height = height - 20;
-		buttonToReanchor = GameMenuButtonOptions;
+		buttonToReanchor = GameMenuButtonSettings;
 		reanchorYOffset = -16;
 	else
 		GameMenuButtonWhatsNew:Show();
-		GameMenuButtonOptions:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOM", 0, -16);
 	end
 
 	if ( C_StorePublic.IsEnabled() ) then

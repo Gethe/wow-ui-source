@@ -78,6 +78,7 @@ function UnitPopupMenuPet:GetMenuButtons()
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
+		UnitPopupEnterEditModeMixin,
 		UnitPopupCancelButtonMixin,
 	}
 end
@@ -91,6 +92,7 @@ function UnitPopupMenuOtherPet:GetMenuButtons()
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
+		UnitPopupEnterEditModeMixin,
 		UnitPopupReportPetButtonMixin,
 		UnitPopupCancelButtonMixin,
 	}
@@ -105,6 +107,7 @@ function UnitPopupMenuBattlePet:GetMenuButtons()
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
+		UnitPopupEnterEditModeMixin,
 		UnitPopupCancelButtonMixin,
 	}
 end 
@@ -118,6 +121,7 @@ function UnitPopupMenuOtherBattlePet:GetMenuButtons()
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
+		UnitPopupEnterEditModeMixin,
 		UnitPopupReportBattlePetButtonMixin,
 		UnitPopupCancelButtonMixin,
 	}
@@ -144,6 +148,7 @@ function UnitPopupMenuPlayer:GetMenuButtons()
 		UnitPopupVoiceChatButtonMixin, 
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
+		UnitPopupEnterEditModeMixin,
 		UnitPopupReportInWorldButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
 		UnitPopupCancelButtonMixin,
@@ -180,6 +185,7 @@ function UnitPopupMenuRaid:GetMenuButtons()
 		UnitPopupVoiceChatButtonMixin, 
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
+		UnitPopupEnterEditModeMixin,
 		UnitPopupReportGroupMemberButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
 		UnitPopupPvpReportAfkButtonMixin,
@@ -306,6 +312,7 @@ function UnitPopupMenuVehicle:GetMenuButtons()
 		UnitPopupVehicleLeaveButtonMixin,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
+		UnitPopupEnterEditModeMixin,
 		UnitPopupCancelButtonMixin, 
 	}
 end
@@ -322,6 +329,7 @@ function UnitPopupMenuTarget:GetMenuButtons()
 		UnitPopupVoiceChatButtonMixin,
 		UnitPopupMovePlayerFrameButtonMixin,
 		UnitPopupMoveTargetFrameButtonMixin,
+		UnitPopupEnterEditModeMixin,
 		UnitPopupCancelButtonMixin, 
 	}
 end
@@ -346,6 +354,7 @@ function UnitPopupMenuFocus:GetMenuButtons()
 		UnitPopupVoiceChatButtonMixin,
 		UnitPopupLargeFocusButtonMixin,
 		UnitPopupMoveFocusButtonMixin,
+		UnitPopupEnterEditModeMixin,
 		UnitPopupCancelButtonMixin, 
 	}
 end
@@ -355,9 +364,10 @@ UnitPopupManager:RegisterMenu("BOSS", UnitPopupMenuBoss);
 function UnitPopupMenuBoss:GetMenuButtons()
 	return {
 		UnitPopupRaidTargetButtonMixin,
-		UnitPopupSetFocusButtonMixin, 
-		UnitPopupOtherSubsectionTitle, 
-		UnitPopupCancelButtonMixin, 
+		UnitPopupSetFocusButtonMixin,
+		UnitPopupOtherSubsectionTitle,
+		UnitPopupEnterEditModeMixin,
+		UnitPopupCancelButtonMixin,
 	}
 end
 

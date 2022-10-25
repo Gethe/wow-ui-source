@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="MinimalScrollBar.lua"/>
 	
 	<Frame name="MinimalScrollBarStepperScripts" mixin="MinimalScrollBarStepperScriptsMixin" virtual="true">
@@ -62,7 +62,7 @@
 							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
 						</KeyValues>
 						<Layers>
-							<Layer level="Background" textureSubLevel="1">
+							<Layer level="BACKGROUND" textureSubLevel="1">
 								<Texture parentKey="Middle" atlas="minimal-scrollbar-thumb-middle" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="TOPLEFT" y="-8"/>
@@ -70,7 +70,7 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="Background" textureSubLevel="2">
+							<Layer level="BACKGROUND" textureSubLevel="2">
 								<Texture parentKey="Begin" atlas="minimal-scrollbar-thumb-top" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="TOPLEFT"/>

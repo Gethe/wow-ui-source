@@ -238,7 +238,7 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="PulseEmptySlotGlow" looping="BOUNCE">
-						<Alpha childkey="EmptySlotGlow" duration="1" fromalpha="0.4" toalpha="1" />
+						<Alpha childKey="EmptySlotGlow" duration="1" fromAlpha="0.4" toAlpha="1" />
 					</AnimationGroup>
 				</Animations>
 				<Scripts>
@@ -263,7 +263,7 @@
 							</Anchors>
 						</FontString>
 
-						<FontString parentKey="ItemName" inherits="GameFontHighlightLarge2" justifyH="Left" maxLines="2">
+						<FontString parentKey="ItemName" inherits="GameFontHighlightLarge2" justifyH="LEFT" maxLines="2">
 							<Size x="245" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
@@ -349,7 +349,7 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="GlowAnim" looping="BOUNCE">
-						<Alpha childkey="Glow" duration="1" fromalpha="0.4" toalpha="1" />
+						<Alpha childKey="Glow" duration="1" fromAlpha="0.4" toAlpha="1" />
 					</AnimationGroup>
 				</Animations>
 				<Scripts>

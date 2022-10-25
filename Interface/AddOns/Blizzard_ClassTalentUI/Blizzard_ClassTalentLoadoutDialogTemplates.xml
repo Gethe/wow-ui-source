@@ -1,0 +1,72 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Script file="Blizzard_ClassTalentLoadoutDialogTemplates.lua"/>
+
+	<Button name="ClassTalentLoadoutDialogButtonTemplate" inherits="UIPanelButtonTemplate, UIButtonTemplate" virtual="true">
+		<Size x="120" y="22"/>
+	</Button>
+	
+	<Frame name="ClassTalentLoadoutDialogNameControlTemplate" mixin="ClassTalentLoadoutDialogNameControlMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="labelText" value="" type="global"/>
+		</KeyValues>
+		<Size x="260" y="50"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="EditBox" inherits="InputBoxTemplate" letters="30">
+				<Size x="260" y="32"/>
+				<FontString inherits="ChatFontNormal"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.Label" y="10"/>
+					<Anchor point="RIGHT"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ClassTalentLoadoutDialogTemplate" mixin="ClassTalentLoadoutDialogMixin" virtual="true" frameStrata="DIALOG" frameLevel="100">
+		<KeyValues>
+			<KeyValue key="titleText" value="" type="global"/>
+		</KeyValues>
+		<Size x="460" y="200"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight">
+					<Size x="250"/>
+					<Anchors>
+						<Anchor point="TOP" y="-20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
+			<Frame parentKey="ContentArea">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="40" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" x="-40" y="25"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

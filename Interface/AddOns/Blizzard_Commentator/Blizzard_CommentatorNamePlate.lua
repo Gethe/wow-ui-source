@@ -158,8 +158,8 @@ function CommentatorNamePlateMixin:SetPointsByPixelUtil()
 end
 
 function CommentatorNamePlateMixin:OnSetupOverride()
-	self.healthBar:SetStatusBarAtlas("_Bar-mid");
-	self.castBar:SetStatusBarAtlas("_Bar-mid");
+	self.healthBar:SetStatusBarTexture("_Bar-mid");
+	self.castBar:SetStatusBarTexture("_Bar-mid");
 	self.myHealPrediction:SetAtlas("_Bar-mid");
 	self.otherHealPrediction:SetAtlas("_Bar-mid");
 	self.myHealAbsorb:SetAtlas("_Bar-mid");

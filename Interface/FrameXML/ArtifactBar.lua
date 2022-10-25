@@ -48,14 +48,14 @@ function ArtifactBarMixin:AnimatedValueChangedCallback()
 	self:UpdateTick();
 end
 
-function ArtifactBarMixin:OnLoad() 
+function ArtifactBarMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 	self:RegisterEvent("ARTIFACT_XP_UPDATE");
 	self:RegisterEvent("UPDATE_EXTRA_ACTIONBAR");
 	self:RegisterEvent("CVAR_UPDATE");
-	self:SetBarColor(ARTIFACT_BAR_COLOR:GetRGB());
-	self.priority = 4; 
+	self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-ArtifactPower");
+	self.priority = 4;
 	self.StatusBar:SetOnAnimatedValueChangedCallback(self:AnimatedValueChangedCallback());
 end
 
@@ -65,7 +65,7 @@ function ArtifactBarMixin:OnEvent(event, ...)
 			self:Update();
 		elseif ( event == "CVAR_UPDATE" ) then
 			local name, value = ...;
-			if ( name == "XP_BAR_TEXT" ) then
+			if ( name == "xpBarText" ) then
 				self:UpdateTextVisibility();
 			end
 		end

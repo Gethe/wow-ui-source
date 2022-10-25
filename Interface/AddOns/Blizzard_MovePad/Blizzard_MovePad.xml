@@ -1,5 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
+	<Script file="Blizzard_MovePad.lua"/>
+	
 	<CheckButton name="MovePadCheckboxTemplate" inherits="UIPanelSquareButton" virtual="true">
 		<Size x="38" y="38" />
 		<CheckedTexture file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD">
@@ -7,10 +9,10 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<Frame name="MovePadFrame" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
+	<Frame name="MovePadFrame" mixin="MovePadMixin" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
 		<Size x="126" y="124" />
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="-90" y="-180"/>
+			<Anchor point="TOPRIGHT" x="-380" y="-280"/>
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="backdropColorAlpha" value="0.5" type="number"/>
@@ -216,24 +218,9 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
-			<OnLoad inherit="prepend">
-				self:RegisterForDrag("LeftButton");
-			</OnLoad>
-			<OnDragStart>
-				if( self.canMove ) then
-					self.moving = true;
-					self:SetFrameStrata("DIALOG");
-					self:StartMoving();
-				end
-			</OnDragStart>
-			<OnDragStop>
-				if( self.canMove and self.moving ) then
-					self.moving = false;
-					self:StopMovingOrSizing();
-					self:SetFrameStrata("BACKGROUND");
-					ValidateFramePosition(self, 25);
-				end
-			</OnDragStop>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
 		</Scripts>
 	</Frame>
 </Ui>

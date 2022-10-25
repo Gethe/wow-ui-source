@@ -385,7 +385,7 @@ function BonusObjectiveTracker_AnimateReward(block)
 		local numRewards = #data.rewards;
 		local contentsHeight = 12 + numRewards * 36;
 		rewardsFrame.Anim.RewardsBottomAnim:SetOffset(0, -contentsHeight);
-		rewardsFrame.Anim.RewardsShadowAnim:SetToScale(0.8, contentsHeight / 16);
+		rewardsFrame.Anim.RewardsShadowAnim:SetScaleTo(0.8, contentsHeight / 16);
 		rewardsFrame.Anim:Play();
 		PlaySound(SOUNDKIT.UI_BONUS_EVENT_SYSTEM_VIGNETTES);
 		-- configure reward frames

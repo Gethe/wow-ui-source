@@ -16,13 +16,48 @@ if tbl then
 	end
 
 	setfenv(1, tbl);
-	
+
 	Import("SetPortraitToTexture");
 	Import("SetPortraitTexture");
+	Import("SetBagPortraitTexture");
 end
 --------------------------------------------------
 
-PortraitFrameMixin = {};
+TitledPanelMixin = {};
+
+function TitledPanelMixin:GetTitleText()
+	return self.TitleContainer.TitleText;
+end
+
+function TitledPanelMixin:SetTitleColor(color)
+	self:GetTitleText():SetTextColor(color:GetRGBA());
+end
+
+function TitledPanelMixin:SetTitle(title)
+	self:GetTitleText():SetText(title);
+end
+
+function TitledPanelMixin:SetTitleFormatted(fmt, ...)
+	self:GetTitleText():SetFormattedText(fmt, ...);
+end
+
+function TitledPanelMixin:SetTitleMaxLinesAndHeight(maxLines, height)
+	self:GetTitleText():SetMaxLines(maxLines);
+	self:GetTitleText():SetHeight(height);
+end
+
+function TitledPanelMixin:SetTitleMaxLinesAndHeight(maxLines, height)
+	self:GetTitleText():SetMaxLines(maxLines);
+	self:GetTitleText():SetHeight(height);
+end
+
+DefaultPanelMixin = CreateFromMixins(TitledPanelMixin);
+
+PortraitFrameMixin = CreateFromMixins(TitledPanelMixin);
+
+function PortraitFrameMixin:GetPortrait()
+	return self.PortraitContainer.portrait;
+end
 
 function PortraitFrameMixin:SetBorder(layoutName)
 	local layout = NineSliceUtil.GetLayout(layoutName);
@@ -30,42 +65,39 @@ function PortraitFrameMixin:SetBorder(layoutName)
 end
 
 function PortraitFrameMixin:SetPortraitToAsset(texture)
-	SetPortraitToTexture(self.portrait, texture);
+	SetPortraitToTexture(self:GetPortrait(), texture);
 end
 
 function PortraitFrameMixin:SetPortraitToUnit(unit)
-	SetPortraitTexture(self.portrait, unit);
+	SetPortraitTexture(self:GetPortrait(), unit);
+end
+
+function PortraitFrameMixin:SetPortraitToBag(bagID)
+	SetBagPortraitTexture(self:GetPortrait(), bagID);
 end
 
 function PortraitFrameMixin:SetPortraitTextureRaw(texture)
-	self.portrait:SetTexture(texture);
+	self:GetPortrait():SetTexture(texture);
 end
 
 function PortraitFrameMixin:SetPortraitAtlasRaw(atlas, ...)
-	self.portrait:SetAtlas(atlas, ...);
+	self:GetPortrait():SetAtlas(atlas, ...);
 end
 
 function PortraitFrameMixin:SetPortraitTexCoord(...)
-	self.portrait:SetTexCoord(...);
+	self:GetPortrait():SetTexCoord(...);
 end
 
 function PortraitFrameMixin:SetPortraitShown(shown)
-	self.portrait:SetShown(shown);
+	self:GetPortrait():SetShown(shown);
 end
 
-function PortraitFrameMixin:SetTitleColor(color)
-	self.TitleText:SetTextColor(color:GetRGBA());
+function PortraitFrameMixin:SetPortraitTextureSizeAndOffset(size, offsetX, offsetY)
+	local portrait = self:GetPortrait();
+	portrait:SetSize(size, size);
+	portrait:SetPoint("TOPLEFT", self, "TOPLEFT", offsetX, offsetY);
 end
 
-function PortraitFrameMixin:SetTitle(title)
-	self.TitleText:SetText(title);
-end
-
-function PortraitFrameMixin:SetTitleFormatted(fmt, ...)
-	self.TitleText:SetFormattedText(fmt, ...);
-end
-
-function PortraitFrameMixin:SetTitleMaxLinesAndHeight(maxLines, height)
-	self.TitleText:SetMaxLines(maxLines);
-	self.TitleText:SetHeight(height);
+function PortraitFrameMixin:DefaultPortraitTextureSizeAndOffset()
+	self:SetPortraitTextureSizeAndOffset(60, -54, 7); -- [NB] TODO: Template lookup?
 end

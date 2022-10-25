@@ -132,9 +132,7 @@
 					</Anchors>
 				</Texture>
 				<FontString name="$parentFactionName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="FactionName">
-					<Size>
-						<AbsDimension x="150" y="0"/>
-					</Size>
+					<Size x="150" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Frame" relativePoint="RIGHT" x="6" y="0"/>
 					</Anchors>

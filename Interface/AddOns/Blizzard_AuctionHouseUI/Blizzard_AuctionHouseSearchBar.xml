@@ -17,42 +17,6 @@
 		</Scripts>
 	</Button>
 
-	<EditBox name="AuctionHouseLevelRangeEditBoxTemplate" mixin="AuctionHouseLevelRangeEditBoxMixin" inherits="InputBoxTemplate" letters="3" numeric="true" autoFocus="false" virtual="true">
-		<Size x="28" y="16"/>
-		<Scripts>
-			<OnTextChanged method="OnTextChanged"/>
-		</Scripts>
-	</EditBox>
-
-	<Frame name="AuctionHouseLevelRangeFrameTemplate" mixin="AuctionHouseLevelRangeFrameMixin" inherits="UIDropDownCustomMenuEntryTemplate" virtual="true">
-		<Size x="80" y="22"/>
-		<Frames>
-			<EditBox parentKey="MinLevel" inherits="AuctionHouseLevelRangeEditBoxTemplate">
-				<Anchors>
-					<Anchor point="LEFT" x="8" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Dash" inherits="GameFontHighlightSmall" text="-">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.MinLevel" relativePoint="RIGHT" x="0" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</EditBox>
-			<EditBox parentKey="MaxLevel" inherits="AuctionHouseLevelRangeEditBoxTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.MinLevel" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-			</EditBox>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnHide method="OnHide"/>
-		</Scripts>
-	</Frame>
-
 	<DropDownToggleButton name="AuctionHouseFilterButtonTemplate" mixin="AuctionHouseFilterButtonMixin" inherits="UIMenuButtonStretchTemplate" registerForClicks="LeftButtonDown" text="FILTER" virtual="true">
 		<Size x="93" y="22"/>
 		<Layers>
@@ -77,6 +41,9 @@
 				<NormalTexture atlas="auctionhouse-ui-filter-redx">
 					<Size x="23" y="23"/>
 				</NormalTexture>
+				<HighlightTexture atlas="auctionhouse-ui-filter-redx" alphaMode="ADD" alpha="0.4">
+					<Size x="23" y="23"/>
+				</HighlightTexture>
 			</Button>
 			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame parentKey="LevelRangeFrame" inherits="AuctionHouseLevelRangeFrameTemplate"/>

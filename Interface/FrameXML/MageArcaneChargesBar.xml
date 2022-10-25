@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
   <Script file="MageArcaneChargesBar.lua"/>
 	
-	<Frame name="ArcaneChargeTemplate" virtual="true">
+	<Frame name="ArcaneChargeTemplate" mixin="ArcaneChargeMixin" virtual="true">
 		<Size x="39" y="39"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -78,44 +78,22 @@
 		</Animations>
 	</Frame>
 
-	<Frame name="MageArcaneChargesFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, MagePowerBar">
-		<Size>
-		  <AbsDimension x="125" y="39"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="50" y="34"/>
-		</Anchors>
-
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="Mage-ArcaneChargeBar" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="Charge1" parentArray="Charges" inherits="ArcaneChargeTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="3" y="4"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Charge2" parentArray="Charges" inherits="ArcaneChargeTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Charge1" x="27" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Charge3" parentArray="Charges" inherits="ArcaneChargeTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Charge2" x="27" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Charge4" parentArray="Charges" inherits="ArcaneChargeTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Charge3" x="27" y="0"/>
-				</Anchors>
-			</Frame>
-		</Frames>
+	<Frame name="MageArcaneChargesFrameTemplate" inherits="ClassResourceBarTemplate" virtual="true">
+		<Size x="125" y="39"/>
+		<KeyValues>
+			<KeyValue key="powerToken" value="ARCANE_CHARGES" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.ArcaneCharges" type="global"/>
+			<KeyValue key="tooltip1" value="ARCANE_CHARGES" type="global"/>
+			<KeyValue key="tooltip2" value="ARCANE_CHARGES_TOOLTIP" type="global"/>
+			<KeyValue key="spacing" value="-10" type="number"/>
+			<KeyValue key="class" value="MAGE" type="string"/>
+			<KeyValue key="spec" value="SPEC_MAGE_ARCANE" type="global"/>
+		</KeyValues>
+	</Frame>
+	<Frame name="MageArcaneChargesFrame" inherits="MageArcaneChargesFrameTemplate" mixin="MagePowerBar">
+		<KeyValues>
+			<KeyValue key="resourcePointTemplate" value="ArcaneChargeTemplate" type="string"/>
+			<KeyValue key="resourcePointSetupFunc" value="ArcaneChargeMixin.Setup" type="global"/>
+		</KeyValues>
 	</Frame>
 </Ui>

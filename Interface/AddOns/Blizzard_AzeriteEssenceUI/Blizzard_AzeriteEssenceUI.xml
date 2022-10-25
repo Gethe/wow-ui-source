@@ -399,7 +399,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="Glow" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="add">
+				<Texture parentKey="Glow" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="ADD">
 					<Size x="206" y="68"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -410,7 +410,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-				<Texture parentKey="Glow2" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="add">
+				<Texture parentKey="Glow2" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="ADD">
 					<Size x="206" y="68"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -421,7 +421,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-				<Texture parentKey="Glow3" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="add">
+				<Texture parentKey="Glow3" atlas="heartofazeroth-list-item-glow" alpha="0" alphaMode="ADD">
 					<Size x="206" y="68"/>
 					<Anchors>
 						<Anchor point="CENTER"/>

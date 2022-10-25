@@ -435,6 +435,18 @@ function UIPanelButton_OnEnable(self)
 	self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 end
 
+UIButtonFitToTextBehaviorMixin = {};
+
+function UIButtonFitToTextBehaviorMixin:SetTextToFit(text)
+	self:SetText(text);
+	self:FitToText();
+end
+
+function UIButtonFitToTextBehaviorMixin:FitToText()
+	local minWidth = self.fitTextCanWidthDecrease and 0 or self:GetWidth();
+	self:SetWidth(math.max(minWidth, self:GetTextWidth() + self.fitTextWidthPadding));
+end
+
 UIPanelButtonNoTooltipResizeToFitMixin = {};
 
 function UIPanelButtonNoTooltipResizeToFitMixin:OnLoad()

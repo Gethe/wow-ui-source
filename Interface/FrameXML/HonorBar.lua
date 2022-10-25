@@ -11,14 +11,9 @@ end
 function HonorBarMixin:Update()
 	local current = UnitHonor("player");
 	local maxHonor = UnitHonorMax("player");
-
 	local level = UnitHonorLevel("player");
-	
-
 	self:SetBarValues(current, 0, maxHonor, level);
-	
-	
-	self:SetBarColor(1.0, 0.24, 0);
+	self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Honor");
 end
 
 function HonorBarMixin:UpdateOverlayFrameText()
@@ -48,7 +43,7 @@ end
 function HonorBarMixin:OnEvent(event, ...)
 	if( event == "CVAR_UPDATE") then
 		local cvar = ...;
-		if( cvar == "XP_BAR_TEXT" ) then
+		if( cvar == "xpBarText" ) then
 			self:UpdateTextVisibility();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "HONOR_XP_UPDATE" or event == "ZONE_CHANGED"

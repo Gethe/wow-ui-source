@@ -1,0 +1,143 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="DeprecatedTemplates.lua"/>
+
+	<CheckButton name="OptionsBaseCheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<Size x="26" y="26"/>
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				else
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+				end
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+
+	<CheckButton name="InterfaceOptionsCheckButtonTemplate" inherits="OptionsBaseCheckButtonTemplate" virtual="true"/>
+	<CheckButton name="InterfaceOptionsBaseCheckButtonTemplate" inherits="OptionsBaseCheckButtonTemplate" virtual="true"/>
+
+	<Slider name="OptionsSliderTemplate" inherits="UISliderTemplateWithLabels" virtual="true">
+		<Size x="144" y="17"/>
+	</Slider>
+
+	<Button name="OptionsFrameTabButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="deselectedTextY" value="-3" type="number"/>
+			<KeyValue key="selectedTextY" value="-2" type="number"/>
+		</KeyValues>
+		<Size x="115" y="24"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentLeftDisabled" file="Interface\OptionsFrame\UI-OptionsFrame-ActiveTab">
+					<Size x="20" y="24"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentMiddleDisabled" file="Interface\OptionsFrame\UI-OptionsFrame-ActiveTab">
+					<Size x="88" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRightDisabled" file="Interface\OptionsFrame\UI-OptionsFrame-ActiveTab">
+					<Size x="20" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentLeft" file="Interface\OptionsFrame\UI-OptionsFrame-InActiveTab">
+					<Size x="20" y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\OptionsFrame\UI-OptionsFrame-InActiveTab">
+					<Size x="88" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\OptionsFrame\UI-OptionsFrame-InActiveTab">
+					<Size x="20" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow>
+				PanelTemplates_TabResize(self, 0);
+				self:GetHighlightTexture():SetWidth(self:GetTextWidth() + 30);
+			</OnShow>
+		</Scripts>
+		<ButtonText name="$parentText">
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="-3"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontHighlightSmall"/>
+		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="LEFT" x="10" y="-4"/>
+				<Anchor point="RIGHT" x="-10" y="-4"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Button name="OptionsListButtonTemplate" virtual="true">
+		<Size x="175" y="18"/>
+		<Frames>
+			<Button parentKey="Toggle" hidden="true">
+				<Size x="14" y="14"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-6" y="-1"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:GetParent().toggle = self;
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						OptionsListButtonToggle_OnClick(self);
+					</OnClick>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-MinusButton-UP"/>
+				<PushedTexture name="$parentPushedTexture" file="Interface\Buttons\UI-MinusButton-DOWN"/>
+				<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				OptionsListButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				OptionsListButton_OnClick(self, button);
+			</OnClick>
+			<OnEnter function="OptionsListButton_OnEnter"/>
+			<OnLeave function="OptionsListButton_OnLeave"/>
+		</Scripts>
+		<ButtonText parentKey="Text" name="$parentText" justifyH="LEFT" wordwrap="false"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="0" y="1"/>
+				<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+</Ui>

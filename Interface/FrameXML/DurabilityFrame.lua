@@ -112,7 +112,7 @@ function DurabilityFrameMixin:SetAlerts()
 	end
 	DurabilityFrame:SetWidth(width);
 
-	if ( numAlerts > 0 and (not VehicleSeatIndicator:IsShown()) and ((not ArenaEnemyFrames) or (not ArenaEnemyFrames:IsShown())) ) then
+	if ( numAlerts > 0 and (not VehicleSeatIndicator:IsShown()) and ((not ArenaEnemyFramesContainer) or (not ArenaEnemyFramesContainer:IsShown())) ) then
 		DurabilityFrame:Show();
 	else
 		DurabilityFrame:Hide();

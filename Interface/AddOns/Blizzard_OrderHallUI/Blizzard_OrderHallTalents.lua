@@ -38,7 +38,7 @@ local TalentTreeLayoutOptions = { };
 TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers] = {
 	buttonInfo = {
 		[Enum.GarrTalentType.Standard] = { size = 40, spacingX = 62, spacingY = 19 },
-	},	
+	},
 	spacingTop = 86,
 	spacingBottom = 33,
 	spacingHorizontal = 144,
@@ -68,7 +68,7 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
 local CustomTalentTreeLayoutOptions = {};
 
 local TORGHAST_TALENT_TREE_ID = 461;
-CustomTalentTreeLayoutOptions[TORGHAST_TALENT_TREE_ID] = 
+CustomTalentTreeLayoutOptions[TORGHAST_TALENT_TREE_ID] =
 {
 	buttonInfo = {
 		[Enum.GarrTalentType.Standard] = { size = 40, spacingX = 21, spacingY = 29 },
@@ -105,9 +105,9 @@ do
 	local stringTitleY = -(spacingTop - titleSpacing);
 	local stringSubtitleY = stringTitleY - subtitleSpacing;
 
-	CustomTalentTreeLayoutOptions[CYPHER_TALENT_TREE_ID] = 
+	CustomTalentTreeLayoutOptions[CYPHER_TALENT_TREE_ID] =
 	{
-		buttonInfo = 
+		buttonInfo =
 		{
 			[Enum.GarrTalentType.Standard] = { size = buttonSize, spacingX = spacingX, spacingY = spacingY },
 		},
@@ -233,7 +233,7 @@ end
 local function GetResearchSoundForTalentType(talentType)
 	local garrTalentTreeID = C_Garrison.GetCurrentGarrTalentTreeID();
 	if garrTalentTreeID then
-		
+
 		local layoutOptions = GetTalentTreeLayoutOptions(garrTalentTreeID);
 		if layoutOptions then
 			if talentType == Enum.GarrTalentType.Major then
@@ -350,7 +350,6 @@ function OrderHallTalentFrameMixin:UpdateThemedFrameVisibility(isThemed)
 	-- Default/base elements
 	local isBase = not isThemed;
 	self.TopTileStreaks:SetShown(isBase);
-	self.TitleBg:SetShown(isBase);
 	self.Bg:SetShown(isBase);
 	self.Inset:SetShown(isBase);
 	self:SetPortraitShown(isBase);
@@ -363,7 +362,7 @@ end
 
 function OrderHallTalentFrameMixin:OnLoad()
 	self.buttonPool = CreateFramePool("BUTTON", self, "GarrisonTalentButtonTemplate", FramePool_HideAndClearAnchorsWithResetCallback);
-	self.prerequisiteArrowPool = CreateFramePool("FRAME", self, "GarrisonTalentPrerequisiteArrowTemplate");	
+	self.prerequisiteArrowPool = CreateFramePool("FRAME", self, "GarrisonTalentPrerequisiteArrowTemplate");
 	self.talentRankPool = CreateFramePool("FRAME", self, "TalentRankDisplayTemplate");
 	self.choiceTrackTexturePool = CreateTexturePool(self, "BACKGROUND", 1, "GarrisonTalentTrackTemplate");
 	self.choiceTexturePool = CreateTexturePool(self, "OVERLAY", 1, "GarrisonTalentChoiceTemplate");
@@ -384,7 +383,7 @@ function OrderHallTalentFrameMixin:SetGarrisonType(garrType, garrTalentTreeID)
 	-- It's possible for the Garrison Talent Tree to specify a currency different from the Garrison Type. (Chromie/MOTHER Research Archive, etc)
 	if (garrTalentTreeCurrency) then
 		self.currency = garrTalentTreeCurrency;
-	else 
+	else
 		self.currency = garrTypeCurrency;
 	end
 end
@@ -542,7 +541,7 @@ local function SortTree(talentA, talentB, ignorePrereqs)
 	local hasPrereqB = (talentB.prerequisiteTalentID ~= nil);
 	if hasPrereqA ~= hasPrereqB and not ignorePrereqs then
 		return not hasPrereqA;
-	end	
+	end
 	if talentA.uiOrder ~= talentB.uiOrder then
 		return talentA.uiOrder < talentB.uiOrder;
 	end
@@ -601,19 +600,19 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	self:SetUseThemedTextures(isThemed);
 	local title = treeInfo.title;
 	if isThemed then
-		self.TitleText:Hide();
+		self:GetTitleText():Hide();
 		self.BackButton:Hide();
 	elseif isClassAgnostic and not isThemed and layoutOptions.canHaveBackButton then
-		self.TitleText:SetText(UnitName("npc"));
-		self.TitleText:Show();
+		self:SetTitle(UnitName("npc"));
+		self:GetTitleText():Show();
 		self.BackButton:Show();
 	elseif title ~= "" then
-		self.TitleText:SetText(title);
-		self.TitleText:Show();
+		self:SetTitle(title);
+		self:GetTitleText():Show();
 		self.BackButton:Hide();
 	else
-		self.TitleText:SetText(ORDER_HALL_TALENT_TITLE);
-		self.TitleText:Show();
+		self:SetTitle(ORDER_HALL_TALENT_TITLE);
+		self:GetTitleText():Show();
 		self.BackButton:Hide();
 	end
 
@@ -639,15 +638,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 	local friendshipFactionID = C_Garrison.GetCurrentGarrTalentTreeFriendshipFactionID();
 	if friendshipFactionID and friendshipFactionID > 0 then
-		NPCFriendshipStatusBar_Update(self, friendshipFactionID);
 		self.Currency:Hide();
 		self.CurrencyHitTest:Hide();
-		NPCFriendshipStatusBar:ClearAllPoints();
-		NPCFriendshipStatusBar:SetPoint("TOPLEFT", 86, -42);
+		self.FriendshipStatusBar:Update(friendshipFactionID);
 	else
-		if NPCFriendshipStatusBar:GetParent() == self then
-			NPCFriendshipStatusBar:Hide();
-		end
+		self.FriendshipStatusBar:Hide();
 
 		local showCurrency = not layoutOptions.noCurrencyUsed;
 		self.Currency:SetShown(showCurrency);
@@ -669,7 +664,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local currentTierTotalTalentCount, currentTierBaseTalentCount, currentTierDependentTalentCount, currentTierResearchableTalentCount, currentTierTalentIndex, currentTierWidth, currentTierHeight;
 	local contentOffsetY = layoutOptions.spacingTop;
 	local maxContentWidth = 0;
-	
+
 	local function EvaluateCurrentTier(startingIndex)
 		currentTierTotalTalentCount = 0;
 		currentTierDependentTalentCount = 0;
@@ -677,7 +672,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		currentTierTalentIndex = 0;
 		currentTierWidth = 0;
 		currentTierHeight = 0;
-		
+
 		for i = startingIndex, #talents do
 			local talent = talents[i];
 			if talent.tier ~= currentTier then
@@ -828,7 +823,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				else
 					choiceBackgound:SetAtlas("orderhalltalents-choice-talent-middle", true, nil, true);
 					xOfs = 0;
-				end 
+				end
 				choiceBackgound:SetPoint("CENTER", talentFrame, "CENTER", xOfs, 0);
 				choiceBackgound:Show();
 
@@ -869,13 +864,25 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	local frameHeight = contentOffsetY + currentTierHeight + layoutOptions.spacingBottom;	-- add currentTierHeight to account for the last tier
 	self:SetSize(frameWidth, frameHeight);
 
+	-- hide old font strings
+	if self.fontStrings then
+		for _, oldString in ipairs(self.fontStrings) do
+			if oldString ~= nil then
+				oldString:Hide();
+			end
+		end
+		self.fontStrings = nil;
+	end
+
 	-- Set up custom font strings
 	if layoutOptions.fontStrings then
-		for _, stringDesc in ipairs(layoutOptions.fontStrings) do
+		self.fontStrings = {};
+		for i, stringDesc in ipairs(layoutOptions.fontStrings) do
 			local newString = self.fontStringPools:Acquire(stringDesc.template, self, stringDesc.layer, stringDesc.subLayer);
 			newString:SetText(stringDesc.text);
 			newString:SetPoint(stringDesc.point, self, stringDesc.relativePoint, stringDesc.xOfs, stringDesc.yOfs);
 			newString:Show();
+			self.fontStrings[i] = newString;
 		end
 	end
 
@@ -989,7 +996,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 			GameTooltip_AddColoredLine(GameTooltip, TOOLTIP_TALENT_NEXT_RANK, HIGHLIGHT_FONT_COLOR);
 			GameTooltip:AddLine(talent.researchDescription, nil, nil, nil, true);
 		end
-	else 
+	else
 		GameTooltip:AddLine(talent.name, 1, 1, 1);
 		GameTooltip:AddLine(talent.description, nil, nil, nil, true);
 	end
@@ -1259,7 +1266,7 @@ function GarrisonTalentButtonAnimationMixin:StartHighlightAnimation(icon)
 	self:ClearFlashTimer();
 	self.HighlightFlash.Icon:SetTexture(icon:GetTexture());
 	self.HighlightFlash.Icon:SetSize(icon:GetSize());
-	
+
 	local function playFlash()
 		self.HighlightFlash:Show();
 		self.HighlightFlash.Anim:Play();

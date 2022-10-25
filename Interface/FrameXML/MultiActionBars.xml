@@ -1,37 +1,20 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MultiActionBars.lua"/>
-	
-	<CheckButton name="MultiBarButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentFloatingBG" file="Interface\Buttons\UI-Quickslot" alpha="0.4">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-15" y="15"/>
-						<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</CheckButton>
-	
-	<CheckButton name="MultiBar1ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
+
+	<CheckButton name="MultiBar1ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<KeyValues>
 			<KeyValue key="buttonType" value="MULTIACTIONBAR1BUTTON" type="string"/>
 		</KeyValues>
 	</CheckButton>
-	<CheckButton name="MultiBar2ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
+
+	<CheckButton name="MultiBar2ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<KeyValues>
 			<KeyValue key="buttonType" value="MULTIACTIONBAR2BUTTON" type="string"/>
 		</KeyValues>
 	</CheckButton>
-	<CheckButton name="MultiBar2ButtonNoBackgroundTemplate" virtual="true" inherits="ActionBarButtonTemplate">
-		<KeyValues>
-			<KeyValue key="noGrid" value="true" type="boolean"/>
-			<KeyValue key="buttonType" value="MULTIACTIONBAR2BUTTON" type="string"/>
-		</KeyValues>
-	</CheckButton>
-	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
+
+	<CheckButton name="MultiBar3ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<KeyValues>
 			<KeyValue key="buttonType" value="MULTIACTIONBAR3BUTTON" type="string"/>
 		</KeyValues>
@@ -41,7 +24,8 @@
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
-	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="MultiBarButtonTemplate">
+
+	<CheckButton name="MultiBar4ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
 		<KeyValues>
 			<KeyValue key="buttonType" value="MULTIACTIONBAR4BUTTON" type="string"/>
 		</KeyValues>
@@ -51,8 +35,39 @@
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
-	<Frame name="HorizontalMultiBar1" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
-		<Size x="500" y="38"/>
+
+	<CheckButton name="MultiBar5ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR5BUTTON" type="string"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="MultiBar6ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR6BUTTON" type="string"/>
+		</KeyValues>
+	</CheckButton>
+
+	<CheckButton name="MultiBar7ButtonTemplate" virtual="true" inherits="ActionBarButtonTemplate">
+		<KeyValues>
+			<KeyValue key="buttonType" value="MULTIACTIONBAR7BUTTON" type="string"/>
+		</KeyValues>
+	</CheckButton>
+
+	<Frame name="MultiBarBottomLeft" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="454" y="35"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar1ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR1" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar2" type="global"/>
+		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="6"/>
 		</Attributes>
@@ -60,112 +75,27 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_TopLeftBar_Glow" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="CENTER" x="-1" y="8"/>
+						<Anchor point="CENTER" relativePoint="CENTER" x="-1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<CheckButton name="$parentButton1" inherits="MultiBar1ButtonTemplate" id="1">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON1" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton2" inherits="MultiBar1ButtonTemplate" id="2">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON2" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton3" inherits="MultiBar1ButtonTemplate" id="3">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON3" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton4" inherits="MultiBar1ButtonTemplate" id="4">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON4" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton5" inherits="MultiBar1ButtonTemplate" id="5">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON5" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton4" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton6" inherits="MultiBar1ButtonTemplate" id="6">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON6" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton5" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton7" inherits="MultiBar1ButtonTemplate" id="7">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON7" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton6" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton8" inherits="MultiBar1ButtonTemplate" id="8">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON8" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton7" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton9" inherits="MultiBar1ButtonTemplate" id="9">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON9" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton8" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton10" inherits="MultiBar1ButtonTemplate" id="10">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON10" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton9" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton11" inherits="MultiBar1ButtonTemplate" id="11">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON11" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton10" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton12" inherits="MultiBar1ButtonTemplate" id="12">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR1BUTTON12" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton11" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-		</Frames>
 	</Frame>
-	<Frame name="HorizontalMultiBar2" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
-		<Size x="250" y="38"/>
+
+	<Frame name="MultiBarBottomRight" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="454" y="35"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar2ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR2" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar3" type="global"/>
+		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="5"/>
 		</Attributes>
@@ -173,225 +103,27 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_TopRightBar_Glow" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="CENTER" x="-2" y="49"/>
+						<Anchor point="CENTER" relativePoint="CENTER" x="-2" y="25"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<CheckButton name="$parentButton1" inherits="MultiBar2ButtonNoBackgroundTemplate" id="1">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON1" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton2" inherits="MultiBar2ButtonNoBackgroundTemplate" id="2">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON2" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton3" inherits="MultiBar2ButtonNoBackgroundTemplate" id="3">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON3" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton4" inherits="MultiBar2ButtonNoBackgroundTemplate" id="4">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON4" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton5" inherits="MultiBar2ButtonNoBackgroundTemplate" id="5">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON5" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton4" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton6" inherits="MultiBar2ButtonNoBackgroundTemplate" id="6">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON6" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton5" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton7" inherits="MultiBar2ButtonTemplate" id="7">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON7" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentButton1" relativePoint="TOPLEFT" x="0" y="13"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton8" inherits="MultiBar2ButtonTemplate" id="8">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON8" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton7" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton9" inherits="MultiBar2ButtonTemplate" id="9">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON9" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton8" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton10" inherits="MultiBar2ButtonTemplate" id="10">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON10" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton9" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton11" inherits="MultiBar2ButtonTemplate" id="11">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON11" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton10" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton12" inherits="MultiBar2ButtonTemplate" id="12">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR2BUTTON12" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton11" relativePoint="RIGHT" x="6" y="0"/>
-				</Anchors>
-			</CheckButton>
-		</Frames>
 	</Frame>
-	<Frame name="VerticalMultiBar3" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
-		<Size x="41" y="503"/>
-		<Attributes>
-			<Attribute name="actionpage" type="number" value="3"/>
-		</Attributes>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-7">
-				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_SideBar_Glow" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton name="$parentButton1" inherits="MultiBar3ButtonTemplate" id="1">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON1" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton2" inherits="MultiBar3ButtonTemplate" id="2">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON2" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton3" inherits="MultiBar3ButtonTemplate" id="3">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON3" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton4" inherits="MultiBar3ButtonTemplate" id="4">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON4" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton5" inherits="MultiBar3ButtonTemplate" id="5">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON5" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton6" inherits="MultiBar3ButtonTemplate" id="6">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON6" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton7" inherits="MultiBar3ButtonTemplate" id="7">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON7" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton6" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton8" inherits="MultiBar3ButtonTemplate" id="8">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON8" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton7" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton9" inherits="MultiBar3ButtonTemplate" id="9">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON9" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton8" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton10" inherits="MultiBar3ButtonTemplate" id="10">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON10" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton9" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton11" inherits="MultiBar3ButtonTemplate" id="11">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON11" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton10" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton12" inherits="MultiBar3ButtonTemplate" id="12">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR3BUTTON12" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton11" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-		</Frames>
-	</Frame>
-	<Frame name="VerticalMultiBar4" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
-		<Size x="41" y="503"/>
+
+	<Frame name="MultiBarLeft" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="35" y="454"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar4ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR4" type="string"/>
+			<KeyValue key="isHorizontal" value="false" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="false" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.RightBar2" type="global"/>
+		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="4"/>
 		</Attributes>
@@ -404,159 +136,117 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<CheckButton name="$parentButton1" inherits="MultiBar4ButtonTemplate" id="1">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON1" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton2" inherits="MultiBar4ButtonTemplate" id="2">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON2" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton3" inherits="MultiBar4ButtonTemplate" id="3">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON3" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton4" inherits="MultiBar4ButtonTemplate" id="4">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON4" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM" x="0" y="-6"/>				
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton5" inherits="MultiBar4ButtonTemplate" id="5">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON5" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton6" inherits="MultiBar4ButtonTemplate" id="6">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON6" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="-6"/>				
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton7" inherits="MultiBar4ButtonTemplate" id="7">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON7" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton6" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton8" inherits="MultiBar4ButtonTemplate" id="8">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON8" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton7" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton9" inherits="MultiBar4ButtonTemplate" id="9">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON9" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton8" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton10" inherits="MultiBar4ButtonTemplate" id="10">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON10" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton9" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton11" inherits="MultiBar4ButtonTemplate" id="11">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON11" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton10" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentButton12" inherits="MultiBar4ButtonTemplate" id="12">
-				<KeyValues>
-					<KeyValue key="commandName" value="MULTIACTIONBAR4BUTTON12" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton11" relativePoint="BOTTOM" x="0" y="-6"/>
-				</Anchors>
-			</CheckButton>
-		</Frames>
 	</Frame>
-	<Frame name="MultiBarBottomLeft" inherits="HorizontalMultiBar1" parent="MainMenuBarArtFrame">
-		<Anchors>
-			<Anchor point="TOP" relativeTo="MainMenuBarArtFrame" relativePoint="TOP" y="16"/>
-		</Anchors>
+
+	<Frame name="MultiBarRight" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="35" y="454"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar3ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR3" type="string"/>
+			<KeyValue key="isHorizontal" value="false" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="false" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.RightBar1" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="3"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-7">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_SideBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
-	<Frame name="MultiBarBottomRight" inherits="HorizontalMultiBar2" parent="MainMenuBarArtFrame">
-		<Anchors>
-			<Anchor point="TOP" relativeTo="MainMenuBarArtFrame" relativePoint="TOP" x="-30" y="90"/>
-		</Anchors>
+
+	<Frame name="MultiBar5" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="454" y="35"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar5ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR5" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.ExtraBar1" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="13"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_TopLeftBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
-	<Frame name="VerticalMultiBarsContainer" parent="UIParent">
-		<Size x="141" y="503"/>
-		<Anchors>
-			<Anchor point="RIGHT" x="0"/>
-		</Anchors>
-		<Frames>
-			<Frame name="MultiBarRight" inherits="VerticalMultiBar3">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="0"/>
-				</Anchors>
-				<Animations>
-					<AnimationGroup parentKey="slideOut">
-						<Translation offsetX="200" offsetY="0" duration="0.7" order="1"/>
-						<Scripts>
-							<OnFinished>
-								if not MainMenuBar:IsShown() then
-									MultiBarRight:Hide();
-								end
-							</OnFinished>
-						</Scripts>
-					</AnimationGroup>
-				</Animations>
-			</Frame>
-			<Frame name="MultiBarLeft" inherits="VerticalMultiBar4" parent="UIParent">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="MultiBarRight" relativePoint="BOTTOM" x="0" y="-20"/>
-				</Anchors>
-				<Animations>
-					<AnimationGroup parentKey="slideOut">
-						<Translation offsetX="200" offsetY="0" duration="0.7" order="1"/>
-						<Scripts>
-							<OnFinished>
-								if not MainMenuBar:IsShown() then
-									MultiBarLeft:Hide();
-								end
-							</OnFinished>
-						</Scripts>
-					</AnimationGroup>
-				</Animations>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad function="MultiActionBar_OnLoad"/>
-			<OnEvent function="MultiActionBar_OnEvent"/>
-		</Scripts>
+
+	<Frame name="MultiBar6" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="454" y="35"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar6ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR6" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.ExtraBar2" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="14"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_TopLeftBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="MultiBar7" inherits="EditModeActionBarTemplate" parent="UIParent" frameStrata="MEDIUM" hidden="true">
+		<Size x="454" y="35"/>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MultiBar7ButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR7" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.ExtraBar3" type="global"/>
+		</KeyValues>
+		<Attributes>
+			<Attribute name="actionpage" type="number" value="15"/>
+		</Attributes>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="QuickKeybindGlow" atlas="QuickKeybind_TopLeftBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

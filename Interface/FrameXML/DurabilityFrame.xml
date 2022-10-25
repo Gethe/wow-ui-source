@@ -1,11 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="DurabilityFrame.lua"/>
-	<Frame name="DurabilityFrame" parent="UIParent" frameStrata="LOW" hidden="false" mixin="DurabilityFrameMixin">
+	<Frame name="DurabilityFrame" frameStrata="LOW" hidden="false" parent="UIParent" inherits="UIParentRightManagedFrameTemplate" mixin="DurabilityFrameMixin">
 		<Size x="60" y="75"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT" x="40" y="15"/>
-		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="9" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="DurabilityHead" file="Interface\Durability\UI-Durability-Icons">
@@ -99,8 +99,6 @@
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnShow function="UIParent_ManageFramePositions"/>
-			<OnHide function="UIParent_ManageFramePositions"/>
 		</Scripts>
 	</Frame>
 </Ui>

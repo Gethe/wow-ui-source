@@ -14,6 +14,7 @@ function GarrisonCapacitiveDisplayFrame_OnLoad(self)
     self:RegisterEvent("SHIPMENT_CRAFTER_INFO");
     self:RegisterEvent("SHIPMENT_CRAFTER_REAGENT_UPDATE");
     self:RegisterEvent("SHIPMENT_UPDATE");
+	self.available = 0;
 end
 
 local shipmentUpdater;
@@ -175,7 +176,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
 
 		local _, buildingName = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
 
-		self.TitleText:SetText(buildingName);
+		self:SetTitle(buildingName);
 		self.StartWorkOrderButton:SetEnabled(self.available > 0);
 
 		if UnitExists("npc") then

@@ -471,7 +471,7 @@ function RuneforgeFrameMixin:GetNumAvailableModifierTypes()
 	local count = 0;
 	local modifierItemIDs = C_LegendaryCrafting.GetRuneforgeModifiers();
 	for i, modifierItemID in ipairs(modifierItemIDs) do
-		if ItemUtil.GetOptionalReagentCount(modifierItemID) > 0 then
+		if ItemUtil.GetCraftingReagentCount(modifierItemID) > 0 then
 			count = count + 1;
 		end
 	end

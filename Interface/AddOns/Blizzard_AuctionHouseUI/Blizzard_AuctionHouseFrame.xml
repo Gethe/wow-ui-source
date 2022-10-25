@@ -42,7 +42,7 @@
 			<!-- Base Frame -->
 
 			<!-- Tabs -->
-			<Button name="$parentBuyTab" parentKey="BuyTab" parentArray="Tabs" inherits="AuctionHouseFrameDisplayModeTabTemplate" text="AUCTION_HOUSE_BUY_TAB">
+			<Button name="$parentBuyTab" parentKey="BuyTab" inherits="AuctionHouseFrameDisplayModeTabTemplate" text="AUCTION_HOUSE_BUY_TAB">
 				<KeyValues>
 					<KeyValue key="displayMode" value="AuctionHouseFrameDisplayMode.Buy" type="global"/>
 				</KeyValues>
@@ -50,7 +50,7 @@
 					<Anchor point="BOTTOMLEFT" x="20" y="-28"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentSellTab" parentKey="SellTab" parentArray="Tabs" inherits="AuctionHouseFrameDisplayModeTabTemplate" text="AUCTION_HOUSE_SELL_TAB">
+			<Button name="$parentSellTab" parentKey="SellTab" inherits="AuctionHouseFrameDisplayModeTabTemplate" text="AUCTION_HOUSE_SELL_TAB">
 				<KeyValues>
 					<KeyValue key="displayMode" value="AuctionHouseFrameDisplayMode.ItemSell" type="global"/>
 				</KeyValues>
@@ -58,7 +58,7 @@
 					<Anchor point="LEFT" relativeKey="$parent.BuyTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentAuctionsTab" parentKey="AuctionsTab" parentArray="Tabs" inherits="AuctionHouseFrameDisplayModeTabTemplate" text="AUCTION_HOUSE_AUCTIONS_SUB_TAB">
+			<Button name="$parentAuctionsTab" parentKey="AuctionsTab" inherits="AuctionHouseFrameDisplayModeTabTemplate" text="AUCTION_HOUSE_AUCTIONS_SUB_TAB">
 				<KeyValues>
 					<KeyValue key="displayMode" value="AuctionHouseFrameDisplayMode.Auctions" type="global"/>
 				</KeyValues>

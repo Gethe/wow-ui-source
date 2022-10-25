@@ -2,6 +2,9 @@
 ..\FrameXML\UI.xsd">
 	<Script file="TutorialFrame.lua"/>
 	<Frame name="TutorialFrame" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" frameStrata="HIGH" hidden="true" propagateKeyboardInput="true">
+		<KeyValues>
+			<KeyValue key="onCloseCallback" value="TutorialFrame_Hide" type="global"/>
+		</KeyValues>
 		<Animations>
 			<AnimationGroup name="AnimateMouse" looping="BOUNCE">
 				<Alpha target="TutorialFrameMouse" fromAlpha="0" toAlpha="1" duration="0.8" smoothing="IN_OUT"/>
@@ -53,7 +56,7 @@
 					<Size x="76" y="101"/>
 					<TexCoords left="0.0019531" right="0.1484375" top="0.2246094" bottom="0.4199219"/>
 				</Texture>
-				
+
 				<Texture name="$parentArrowUp" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="68" y="89"/>
 					<TexCoords left="0.1542969" right="0.2851563" top="0.6269531" bottom="0.7988281"/>
@@ -70,7 +73,7 @@
 					<Size x="89" y="68"/>
 					<TexCoords left="0.4785156" right="0.3066406" top="0.2246094" bottom="0.3554688"/>
 				</Texture>
-				
+
 				<Texture name="$parentArrowCurveUpRight" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
 					<Size x="66" y="81"/>
 					<TexCoords left="0.3066406" right="0.4335938" top="0.3613281" bottom="0.5175781"/>
@@ -143,7 +146,7 @@
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 									<Color r="1.0" g="1.0" b="1.0"/>
-								</FontString>									
+								</FontString>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -173,24 +176,15 @@
 					<KeyValue key="backdropBorderBlendMode" value="ADD" type="string"/>
 				</KeyValues>
 			</Frame>
-            <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
-                <Anchors>
-                    <Anchor point="TOPRIGHT" x="4" y="-8"/>
-                </Anchors>
-				<Scripts>
-					<OnClick function="TutorialFrame_Hide"/>
-				</Scripts>
-            </Button>
-			<Button name="$parentOkayButton">
-				<Size>
-					<AbsDimension x="108" y="22"/>
-				</Size>
+            <Button name="$parentCloseButton" inherits="UIPanelCloseButtonDefaultAnchors">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-7" y="7"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="0" y="-13"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentOkayButton">
+				<Size x="108" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="TutorialFrame_Hide"/>
@@ -278,11 +272,11 @@
 			<OnMouseDown function="TutorialFrame_OnMouseDown"/>
 		</Scripts>
 	</Frame>
-	<Button name="TutorialFrameAlertButton" parent="UIParent" frameStrata="DIALOG" hidden="true" >
+	<Button name="TutorialFrameAlertButton" inherits="UIParentBottomManagedFrameTemplate" hidden="true" frameStrata="DIALOG">
 		<Size x="116" y="71"/>
-		<Anchors>
-			<Anchor point="BOTTOM" x="0" y="0"/>
-		</Anchors>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="24" type="number"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");

@@ -1,18 +1,15 @@
 
 --------------------------------------------------
--- CHARACTER MODEL FRAME MIXIN
-CharacterModelFrameMixin = CreateFromMixins(ModelFrameMixin);
+-- CHARACTER MODEL SCENE MIXIN
+CharacterModelSceneMixin = CreateFromMixins(PanningModelSceneMixin);
 
-function CharacterModelFrameMixin:OnLoad()
-	ModelFrameMixin.OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
-end
-
-function CharacterModelFrameMixin:PostMouseUp(button)
+function CharacterModelSceneMixin:OnMouseUp(button)
+	PanningModelSceneMixin.OnMouseUp(self, button)
 	if ( button == "LeftButton" ) then
 		AutoEquipCursorItem();
 	end	
 end
 
-function CharacterModelFrameMixin:OnReceiveDrag()
+function CharacterModelSceneMixin:OnReceiveDrag()
 	AutoEquipCursorItem();
 end

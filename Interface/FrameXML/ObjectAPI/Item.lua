@@ -46,6 +46,41 @@ end
 	return item;
 end
 
+--[[static]] function Item:CreateFromItemGUID(itemGUID)
+	if type(itemGUID) ~= "string" then
+		error("Usage: Item:CreateFromItemGUID(itemGUIDString)", 2);
+	end
+	local item = CreateFromMixins(ItemMixin);
+	item:SetItemGUID(itemGUID);
+	return item;
+end
+
+--[[static]] function Item:DoItemsMatch(item1, item2)
+	if not item1 or not item2 then
+		return false;
+	end
+
+	return item1:Matches(item2);
+end
+
+function ItemMixin:Matches(item)
+	if not item then
+		return false;
+	end
+
+	local itemID = item:GetItemID();
+	if (itemID ~= nil) and (self:GetItemID() == itemID) then
+		return true;
+	end
+
+	local itemLocation = item:GetItemLocation();
+	if (itemLocation ~= nil) and itemLocation:IsEqualTo(self:GetItemLocation()) then
+		return true;
+	end
+
+	return false;
+end
+
 function ItemMixin:SetItemLocation(itemLocation)
 	self:Clear();
 	self.itemLocation = itemLocation;
@@ -61,8 +96,32 @@ function ItemMixin:SetItemID(itemID)
 	self.itemID = itemID;
 end
 
+function ItemMixin:SetItemGUID(itemGUID)
+	self:Clear();
+	self.itemGUID = itemGUID;
+end
+
 function ItemMixin:GetItemLocation()
-	return self.itemLocation;
+	if self.itemLocation then
+		return self.itemLocation;
+	end
+
+	if self.itemGUID then
+		return C_Item.GetItemLocation(self.itemGUID);
+	end
+	return nil;
+end
+
+function ItemMixin:GetItemGUID()
+	if self.itemGUID then
+		return self.itemGUID;
+	end
+
+	if self.itemLocation then
+		return C_Item.GetItemGUID(self.itemLocation);
+	end
+
+	return nil;
 end
 
 function ItemMixin:HasItemLocation()
@@ -73,6 +132,7 @@ function ItemMixin:Clear()
 	self.itemLocation = nil;
 	self.itemLink = nil;
 	self.itemID = nil;
+	self.itemGUID = nil;
 end
 
 function ItemMixin:IsItemEmpty()
@@ -89,7 +149,11 @@ end
 
 function ItemMixin:IsItemInPlayersControl()
 	local itemLocation = self:GetItemLocation();
-	return itemLocation and C_Item.DoesItemExist(itemLocation);
+	if itemLocation and C_Item.DoesItemExist(itemLocation) then
+		return true;
+	end
+
+	return false;
 end
 
 -- Item API
@@ -167,6 +231,13 @@ function ItemMixin:GetItemQuality() -- requires item data to be loaded
 	return nil;
 end
 
+function ItemMixin:GetStackCount() -- requires item data to be loaded
+	if not self:IsItemEmpty() then
+		return C_Item.GetStackCount(self:GetItemLocation());
+	end
+	return nil;
+end
+
 function ItemMixin:GetCurrentItemLevel() -- requires item data to be loaded
 	if self:GetStaticBackingItem() then
 		return (GetDetailedItemLevelInfo(self:GetStaticBackingItem()));
@@ -183,6 +254,27 @@ function ItemMixin:GetItemQualityColor() -- requires item data to be loaded
 	return ITEM_QUALITY_COLORS[itemQuality]; -- may be nil if item data isn't loaded
 end
 
+function ItemMixin:GetItemQualityColorRGB() -- requires item data to be loaded
+	local colorTbl = self:GetItemQualityColor();
+	return colorTbl.color:GetRGB();
+end
+
+function ItemMixin:GetItemMaxStackSize() -- requires item data to be loaded
+	if self:GetStaticBackingItem() then
+		return C_Item.GetItemMaxStackSizeByID(self:GetStaticBackingItem());
+	end
+
+	if not self:IsItemEmpty() then
+		return C_Item.GetItemMaxStackSize(self:GetItemLocation());
+	end
+	return nil;
+end
+
+function ItemMixin:IsStackable() -- requires item data to be loaded
+	local maxStackSize = self:GetItemMaxStackSize();
+	return maxStackSize and maxStackSize > 1;
+end
+
 function ItemMixin:GetInventoryType()
 	if self:GetStaticBackingItem() then
 		return C_Item.GetItemInventoryTypeByID(self:GetStaticBackingItem());
@@ -190,17 +282,6 @@ function ItemMixin:GetInventoryType()
 
 	if not self:IsItemEmpty() then
 		return C_Item.GetItemInventoryType(self:GetItemLocation());
-	end
-	return nil;
-end
-
-function ItemMixin:GetItemGUID()
-	if self:GetStaticBackingItem() then
-		return nil;
-	end
-
-	if not self:IsItemEmpty() then
-		return C_Item.GetItemGUID(self:GetItemLocation());
 	end
 	return nil;
 end
@@ -238,9 +319,27 @@ end
 
 -- Same as ContinueOnItemLoad, except it returns a function that when called will cancel the continue
 function ItemMixin:ContinueWithCancelOnItemLoad(callbackFunction)
-	if type(callbackFunction) ~= "function" or self:IsItemEmpty() then
+	if type(callbackFunction) ~= "function" then
+		error("Usage: NonEmptyItem:ContinueWithCancelOnItemLoad(callbackFunction)", 2);
+	end
+
+	if self:IsItemEmpty() then
+		if self.itemLink then
+			error(("Usage: NonEmptyItem:ContinueWithCancelOnItemLoad(callbackFunction) invalid itemLink: <%s>"):format(self.itemLink), 2);
+		elseif self.itemID then
+			error(("Usage: NonEmptyItem:ContinueWithCancelOnItemLoad(callbackFunction) invalid itemID: <%d>"):format(self.itemID), 2);
+		end
 		error("Usage: NonEmptyItem:ContinueWithCancelOnItemLoad(callbackFunction)", 2);
 	end
 
 	return ItemEventListener:AddCancelableCallback(self:GetItemID(), callbackFunction);
+end
+
+-- Generic aliases for use with ContinuableContainer
+function ItemMixin:ContinueWithCancelOnRecordLoad(callbackFunction)
+	return self:ContinueWithCancelOnItemLoad(callbackFunction);
+end
+
+function ItemMixin:IsRecordDataCached()
+	return self:IsItemDataCached();
 end

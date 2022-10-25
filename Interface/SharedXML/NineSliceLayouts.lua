@@ -35,6 +35,7 @@ NineSliceLayouts =
 
 	PortraitFrameTemplate =
 	{
+		disableSharpening = true,
 		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-PortraitMetal-CornerTopLeft", x = -13, y = 16, },
 		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16, },
 		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -13, y = -3, },
@@ -47,6 +48,7 @@ NineSliceLayouts =
 
 	PortraitFrameTemplateMinimizable =
 	{
+		disableSharpening = true,
 		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-PortraitMetal-CornerTopLeft", x = -13, y = 16, },
 		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRightDouble", x = 4, y = 16, },
 		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -13, y = -3, },
@@ -59,9 +61,10 @@ NineSliceLayouts =
 
 	ButtonFrameTemplateNoPortrait =
 	{
-		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopLeft", x = -12, y = 16, },
+		disableSharpening = true,
+		TopLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopLeft", x = -8, y = 16, },
 		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16, },
-		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -12, y = -3, },
+		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -8, y = -3, },
 		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
 		TopEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", },
 		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", },
@@ -169,7 +172,6 @@ NineSliceLayouts =
 		RightEdge = { atlas = "!Neutral-NineSlice-EdgeRight", mirrorLayout = false, },
 	},
 
-
 	Runeforge =
 	{
 		TopLeftCorner =	{ atlas = "UI-Frame-DiamondMetal-CornerTopLeft", },
@@ -220,6 +222,18 @@ NineSliceLayouts =
 		Center = { atlas = "ChatBubble-NineSlice-Center", },
 	},
 
+	SelectionFrameTemplate =
+	{
+		TopLeftCorner =	{ atlas = "macropopup-topleft", },
+		TopRightCorner =	{ atlas = "macropopup-topright", },
+		BottomLeftCorner =	{ atlas = "macropopup-bottomleft", },
+		BottomRightCorner =	{ atlas = "macropopup-bottomright", },
+		TopEdge = { atlas = "_macropopup-top", },
+		BottomEdge = { atlas = "_macropopup-bottom", },
+		LeftEdge = { atlas = "!macropopup-left", },
+		RightEdge = { atlas = "!macropopup-right", },
+	},
+
 	UniqueCornersLayout =
 	{
 		["TopRightCorner"] = { atlas = "%s-NineSlice-CornerTopRight" },
@@ -257,6 +271,19 @@ NineSliceLayouts =
 		["LeftEdge"] = { atlas = "!Tooltip-NineSlice-EdgeLeft" },
 		["RightEdge"] = { atlas = "!Tooltip-NineSlice-EdgeRight" },
 		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
+	};
+
+	TooltipDefaultDarkLayout =
+	{
+		["TopRightCorner"] = { atlas = "Tooltip-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "Tooltip-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "Tooltip-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "Tooltip-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_Tooltip-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_Tooltip-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!Tooltip-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!Tooltip-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-Azerite-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
 	};
 
 	TooltipAzeriteLayout =
@@ -324,6 +351,19 @@ NineSliceLayouts =
 		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -8, y = 10, x1 = 8, y1 = -7, },
 	};
 
+	HeldBagLayout =
+	{
+		disableSharpening = true,
+		TopLeftCorner =	{ layer = "OVERLAY", atlas = "ui-frame-portraitmetal-cornertopleftsmall", x = -13, y = 16, },
+		TopRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16, },
+		BottomLeftCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -13, y = -3, },
+		BottomRightCorner =	{ layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3, },
+		TopEdge = { layer="OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop", x = 0, y = 0, x1 = 0, y1 = 0, },
+		BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom", x = 0, y = 0, x1 = 0, y1 = 0, },
+		LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft", x = 0, y = 0, x1 = 0, y1 = 0 },
+		RightEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeRight", x = 0, y = 0, x1 = 0, y1 = 0, },
+	};
+
 	IdenticalCornersLayoutNoCenter =
 	{
 		["TopRightCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, },
@@ -347,5 +387,21 @@ NineSliceLayouts =
 		["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
 		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
 		["Center"] = { atlas = "%s-NineSlice-Center" },
+	};
+
+	ThreeSliceVerticalLayout =
+	{
+		threeSliceVertical = true,
+		["TopEdge"] = { atlas = "%s-ThreeSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "%s-ThreeSlice-EdgeBottom" },
+		["Center"] = { atlas = "!%s-ThreeSlice-Center" },
+	};
+
+	ThreeSliceHorizontalLayout =
+	{
+		threeSliceHorizontal = true,
+		["LeftEdge"] = { atlas = "%s-ThreeSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "%s-ThreeSlice-EdgeRight" },
+		["Center"] = { atlas = "_%s-ThreeSlice-Center" },
 	};
 };

@@ -1,0 +1,139 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Graphics.lua"/>
+
+	<Frame name="SettingsAdvancedDropdownTemplate" mixin="SettingsAdvancedDropdownMixin" virtual="true">
+		<Size y="26"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer>
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" x="67"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="DropDown" inherits="SettingsSelectionPopoutWithButtonsTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="CENTER" x="-40"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SettingsAdvancedSliderTemplate" mixin="SettingsAdvancedSliderMixin" virtual="true">
+		<Size y="26"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer>
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" x="67"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="SliderWithSteppers" inherits="MinimalSliderWithSteppersTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="CENTER" x="-80" y="3"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<EventFrame name="SettingsAdvancedQualitySectionTemplate" inherits="SettingsExpandableSectionTemplate" mixin="SettingsAdvancedQualitySectionMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="Control1" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-40"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control2" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control1" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control3" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control2" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control4" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control3" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control5" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control4" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control6" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control5" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control7" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control6" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control8" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control7" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control9" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control8" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control10" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control9" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control11" parentArray="Controls" inherits="SettingsAdvancedSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control10" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control12" parentArray="Controls" inherits="SettingsAdvancedSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control11" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Control13" parentArray="Controls" inherits="SettingsAdvancedSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Control12" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+			</Frame>
+			
+		</Frames>
+	</EventFrame>
+</Ui>

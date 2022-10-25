@@ -3,13 +3,9 @@
     <Script file="Blizzard_InspectUI.lua"/>
     <Frame name="InspectFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate">
         <Frames>
-			<Button name="InspectFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="CHARACTER">
+			<Button name="InspectFrameTab1" inherits="PanelTabButtonTemplate" id="1" text="CHARACTER">
                 <Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="11" y="2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
                 </Anchors>
                 <Scripts>
 					<OnClick function="InspectFrameTab_OnClick"/>
@@ -17,16 +13,11 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(CHARACTER_INFO, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
 			</Button>
-			<Button name="InspectFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="PVP">
+			<Button name="InspectFrameTab2" inherits="PanelTabButtonTemplate" id="2" text="PVP">
                 <Anchors>
-                   <Anchor point="LEFT" relativeTo="InspectFrameTab1" relativePoint="RIGHT">
-                        <Offset>
-                            <AbsDimension x="-16" y="0"/>
-                        </Offset>
-                    </Anchor>
+                   <Anchor point="LEFT" relativeTo="InspectFrameTab1" relativePoint="RIGHT" x="-16" y="0"/>
                 </Anchors>
                 <Scripts>
 					<OnClick function="InspectFrameTab_OnClick"/>
@@ -34,33 +25,11 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(PLAYER_V_PLAYER, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
                 </Scripts>
 			</Button>
-			<Button name="InspectFrameTab3" inherits="CharacterFrameTabButtonTemplate" id="3" text="TALENTS">
+			<Button name="InspectFrameTab3" inherits="PanelTabButtonTemplate" id="3" text="GUILD">
 				<Anchors>
-				   <Anchor point="LEFT" relativeTo="InspectFrameTab2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="InspectFrameTab_OnClick"/>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(TALENTS, 1.0,1.0,1.0 );
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
-			<Button name="InspectFrameTab4" inherits="CharacterFrameTabButtonTemplate" id="4" text="GUILD">
-				<Anchors>
-				   <Anchor point="LEFT" relativeTo="InspectFrameTab3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="InspectFrameTab2" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="InspectFrameTab_OnClick"/>
@@ -68,7 +37,6 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(GUILD, 1.0,1.0,1.0 );
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 		</Frames>

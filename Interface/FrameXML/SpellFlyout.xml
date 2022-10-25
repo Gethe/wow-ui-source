@@ -2,14 +2,8 @@
 ..\FrameXML\UI.xsd">
 	<Script file="SpellFlyout.lua"/>
 
-	<Texture name="ActionBarFlyoutButton-FlyoutTop" file="Interface\Buttons\ActionBarFlyoutButton" virtual="true" >
-		<Size x="37" y="22"/>
-		<TexCoords left="0.01562500" right="0.59375000" top="0.74218750" bottom="0.91406250"/>
-	</Texture>
-
-	<CheckButton name="SpellFlyoutButtonTemplate" inherits="ActionButtonTemplate,SecureFrameTemplate" virtual="true" motionScriptsWhileDisabled="true">
+	<CheckButton name="SpellFlyoutButtonTemplate" inherits="SmallActionButtonTemplate,SecureFrameTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<!-- This doesn't actually use any of the behavior of an ActionButtonTemplate, just the appearance -->
-		<Size x="28" y="28"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="GlyphIcon" hidden="true" alpha="1" alphaMode="BLEND" atlas="GlyphIcon-Spellbook" useAtlasSize="true">
@@ -37,11 +31,10 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="append">
 				self:RegisterForDrag("LeftButton");
 				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", 0, 0);
 				self.maxDisplayCount = 99;
-				_G[self:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64);
 			</OnLoad>
 			<OnClick>
 				SpellFlyoutButton_OnClick(self);
@@ -78,24 +71,23 @@
 				<Alpha childKey="AbilityHighlight" startDelay="0.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0.5"/>
 			</AnimationGroup>
 		</Animations>
-		<NormalTexture/>
 	</CheckButton>
 
-	<Frame name="SpellFlyout" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate" enableMouse="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="SpellFlyoutBackgroundEnd" inherits="ActionBarFlyoutButton-FlyoutTop" parentKey="BgEnd"/>
-				<Texture name="SpellFlyoutHorizontalBackground" file="Interface\Buttons\ActionBarFlyoutButton-FlyoutMidLeft" parentKey="HorizBg" horizTile="true" hidden="true">
-					<Size x="32" y="37"/>
-					<TexCoords left="0" right="1" top="0" bottom="0.578125"/>
-				</Texture>
-				<Texture name="SpellFlyoutVerticalBackground" file="Interface\Buttons\ActionBarFlyoutButton-FlyoutMid" parentKey="VertBg" vertTile="true" hidden="true">
-					<Size x="37" y="32"/>
-					<TexCoords left="0" right="0.578125" top="0" bottom="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Frame name="SpellFlyout" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate, ResizeLayoutFrame" enableMouse="true">
 		<Frames>
+			<Frame parentKey="Background" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="End" atlas="UI-HUD-ActionBar-IconFrame-FlyoutButton" useAtlasSize="true"/>
+						<Texture parentKey="HorizontalMiddle" atlas="_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft" useAtlasSize="true" horizTile="true" hidden="true"/>
+						<Texture parentKey="VerticalMiddle" atlas="!UI-HUD-ActionBar-IconFrame-FlyoutMid" useAtlasSize="true" vertTile="true" hidden="true"/>
+						<Texture parentKey="Start" atlas="UI-HUD-ActionBar-IconFrame-FlyoutBottom" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+				<KeyValues>
+					<KeyValue key="ignoreInlayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
 			<CheckButton name="SpellFlyoutButton1" inherits="SpellFlyoutButtonTemplate"/>
 		</Frames>
 		<Scripts>

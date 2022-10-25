@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_WorldMap.lua"/>
 
 	<Frame name="WorldMapFrameTemplate" inherits="MapCanvasFrameTemplate" mixin="QuestLogOwnerMixin, WorldMapMixin" virtual="true">
@@ -70,7 +70,7 @@
 					</Button>
 					<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="8.5" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="-1" y="0"/>
 						</Anchors>
 					</Frame>
 				</Frames>

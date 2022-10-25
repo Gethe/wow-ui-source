@@ -1,0 +1,174 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_MajorFactionsLandingTemplates.lua"/>
+
+	<Frame name="LandingPageMajorFactionListTemplate" mixin="MajorFactionListMixin" virtual="true" scale="0.875">
+		<Size x="450" y="520"/>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="MajorFactionButtonTemplate" virtual="true" mixin="MajorFactionButtonMixin" scale="0.875">
+		<Size x="458" y="122"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="LockedState" mixin="MajorFactionButtonLockedStateMixin">
+				<Size x="458" y="122"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="dragonflight-landingpage-renownbutton-tuskarr" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0.2" g="0.2" b="0.2" a="1"/>
+						</Texture>
+					</Layer>
+
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFontHighlightLarge2" justifyH="LEFT">
+							<Size x="350" y="22"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="22" y="-5"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="1"/>
+						</FontString>
+						<FontString parentKey="StateInfo" inherits="GameFontHighlightLarge2" justifyH="LEFT" text="MAJOR_FACTION_BUTTON_FACTION_LOCKED">
+							<Size x="350" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Button parentKey="UnlockedState" mixin="MajorFactionButtonUnlockedStateMixin">
+				<Size x="458" y="122"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="LEFT" x="40" y ="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontHighlightLarge2">
+							<Size x="350" y="22"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="RenownLevel" justifyH="LEFT" inherits="GameFontNormalLarge2">
+							<Size x="350" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton parentKey="WatchFactionButton" hidden="true" mixin="MajorFactionWatchFactionButtonMixin" inherits="UICheckButtonArtTemplate">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="12" y="-6"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormalSmall" justifyH="LEFT" text="MAJOR_FACTION_WATCH_FACTION_BUTTON_LABEL">
+									<KeyValues>
+										<KeyValue key="minLineHeight" value="8" type="number"/>
+									</KeyValues>
+									<Size x="280" y="14"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="4" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnClick method="OnClick"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</CheckButton>
+
+					<Cooldown parentKey="RenownProgressBar" reverse="true" hideCountdownNumbers="true" rotation="180" useParentLevel="true" mixin="MajorFactionRenownProgressBarMixin">
+						<Size x="100" y="100"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+						</Anchors>
+						<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
+					</Cooldown>
+
+					<Frame parentKey="UnlockFlash" hidden="true">
+						<Size x="458" y="122"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="UnlockFlashBackground" atlas="dragonflight-landingpage-renownbutton-tuskarr" useAtlasSize="true" alphaMode="ADD">
+									<Color r="1" g="1" b="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+								<Alpha childKey="UnlockFlashBackground" duration="0.4" fromAlpha="0" toAlpha="1" />
+								<Alpha childKey="UnlockFlashBackground" duration="0.4" fromAlpha="1" toAlpha="0" startDelay="0.5"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
+					<OnUpdate method="OnUpdate"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

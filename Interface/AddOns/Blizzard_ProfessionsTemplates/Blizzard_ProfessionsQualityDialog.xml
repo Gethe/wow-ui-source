@@ -1,0 +1,70 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ProfessionsQualityDialog.lua"/>
+
+	<Frame name="ProfessionsQualityContainerTemplate" mixin="" virtual="true">
+		<Size x="100" y="75"/>
+		<Frames>
+			<ItemButton parentKey="Button" inherits="ProfessionsReagentButtonTemplate">
+				<KeyValues>
+					<KeyValue key="minDisplayCount" value="0" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="0"/>
+				</Anchors>
+			</ItemButton>
+			<EditBox parentKey="EditBox" inherits="NumericInputSpinnerTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Button" relativePoint="BOTTOM" y="-15"/>
+				</Anchors>
+			</EditBox>
+		</Frames>
+	</Frame>
+	
+	<Frame name="ProfessionsQualityDialogTemplate" mixin="ProfessionsQualityDialogMixin" inherits="DefaultPanelFlatTemplate" enableMouse="true" virtual="true">
+		<Size x="329" y="207"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="Professions-QualityWindow-Background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-22"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Frame parentKey="Container2" inherits="ProfessionsQualityContainerTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="5" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Container1" inherits="ProfessionsQualityContainerTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Container2" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Container3" inherits="ProfessionsQualityContainerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Container2" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.CancelButton" relativePoint="TOPLEFT" x="-5"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>
