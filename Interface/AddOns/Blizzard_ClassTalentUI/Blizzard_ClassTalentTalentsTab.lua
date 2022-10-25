@@ -363,8 +363,13 @@ function ClassTalentTalentsTabMixin:ResetToLastConfigID()
 	else
 		-- No valid last selected config, reset to the base spec config
 		self:ClearLastSelectedConfigID();
-		local autoApply = false;
-		self:LoadConfigInternal(C_ClassTalents.GetActiveConfigID(), autoApply);
+
+		local baseConfigID = C_ClassTalents.GetActiveConfigID();
+		if baseConfigID then
+			local autoApply = false;
+			self:LoadConfigInternal(baseConfigID, autoApply);
+		end
+		-- If there's no base config either, nothing we can do except wait and hope we'll get a talent load event or something
 	end
 end
 

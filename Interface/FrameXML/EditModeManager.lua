@@ -1899,9 +1899,12 @@ end
 EditModeManagerTutorialMixin = {};
 
 local HelpTipInfos = {
-	[1] = { text = EDIT_MODE_HELPTIPS_1, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="LayoutDropdown" },
-	[2] = { text = EDIT_MODE_HELPTIPS_2, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="AccountSettings" },
-	[3] = { text = EDIT_MODE_HELPTIPS_3, buttonStyle = HelpTip.ButtonStyle.GotIt, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.BottomEdgeCenter, hideArrow = true },
+	[1] = { text = EDIT_MODE_HELPTIPS_1, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="LayoutDropdown",
+			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, },
+	[2] = { text = EDIT_MODE_HELPTIPS_2, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="AccountSettings",
+			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, },
+	[3] = { text = EDIT_MODE_HELPTIPS_3, buttonStyle = HelpTip.ButtonStyle.GotIt, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.BottomEdgeCenter, hideArrow = true,
+			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, },
 };
 
 function EditModeManagerTutorialMixin:OnLoad()
@@ -1911,18 +1914,28 @@ function EditModeManagerTutorialMixin:OnLoad()
 	end
 end
 
+function EditModeManagerTutorialMixin:OnShow()
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER) then
+		self:BeginHelpTips();
+	end
+end
+
 function EditModeManagerTutorialMixin:OnClick()
 	if HelpTip:IsShowingAny(self) then
 		HelpTip:HideAll(self);
 	else
-		-- Expand the account setttings for the help tips
-		local expanded = true;
-		local isUserInput = true;
-		EditModeManagerFrame.AccountSettings:SetExpandedState(expanded, isUserInput)
-
-		self.currentTipIndex = 1;
-		self:ShowHelpTip();
+		self:BeginHelpTips();
 	end
+end
+
+function EditModeManagerTutorialMixin:BeginHelpTips()
+	-- Expand the account setttings for the help tips
+	local expanded = true;
+	local isUserInput = true;
+	EditModeManagerFrame.AccountSettings:SetExpandedState(expanded, isUserInput)
+
+	self.currentTipIndex = 1;
+	self:ShowHelpTip();
 end
 
 function EditModeManagerTutorialMixin:ShowHelpTip()
@@ -1942,6 +1955,7 @@ function EditModeManagerTutorialMixin:ProgressHelpTips()
 
 	self:ShowHelpTip();
 end
+
 EditModeLootFrameCheckButtonMixin = {};
 
 function EditModeLootFrameCheckButtonMixin:OnEnter()

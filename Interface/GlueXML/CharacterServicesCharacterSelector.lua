@@ -136,6 +136,7 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(chara
 		end
 	elseif serviceInfo.checkErrors then
 		characterButton:SetScript("OnEnter", function(self)
+			local serviceInfo = block:GetServiceInfoByCharacterID(characterID);
 			if #serviceInfo.errors > 0 then
 				local tooltip = GetAppropriateTooltip();
 				tooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -25, 70);
