@@ -7,6 +7,7 @@ TalentSelectionChoiceFrameMixin = {};
 
 local TalentSelectionChoiceFrameEvents = {
 	"GLOBAL_MOUSE_DOWN",
+	"GLOBAL_MOUSE_UP",
 };
 
 TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition = {
@@ -33,6 +34,11 @@ function TalentSelectionChoiceFrameMixin:OnEvent(event, ...)
 	if event == "GLOBAL_MOUSE_DOWN" then
 		local buttonName = ...;
 		FrameUtil.DialogStyleGlobalMouseDown(self, buttonName);
+	elseif event == "GLOBAL_MOUSE_UP" then
+		local mouseFocus = GetMouseFocus();
+		if not DoesAncestryInclude(self, mouseFocus) then
+			self:Hide();
+		end
 	end
 end
 
@@ -122,6 +128,25 @@ function TalentSelectionChoiceFrameMixin:GetHorizontalSelectionPositionForIndex(
 	end
 end
 
+function TalentSelectionChoiceFrameMixin:IsDraggingSpell()
+	if not IsMouseButtonDown("LeftButton") then
+		return false;
+	end
+
+	local type, _, _, spellID = GetCursorInfo();
+	if type ~= "spell" then
+		return false;
+	end
+
+	for i, selectionFrame in ipairs(self.selectionFrameArray) do
+		if selectionFrame:GetSpellID() == spellID then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function TalentSelectionChoiceFrameMixin:GetSelectionCount()
 	return self.selectionCount;
 end
@@ -165,7 +190,6 @@ function TalentSelectionChoiceMixin:OnClick(button)
 			end
 	
 			if self.isCurrentSelection then
-				selectionChoiceFrame:Hide();
 				return;
 			end
 	

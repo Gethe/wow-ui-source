@@ -1414,9 +1414,14 @@ function EditModeAuraFrameSystemMixin:RefreshAuraButtons()
 	end
 end
 
-function EditModeAuraFrameSystemMixin:UpdateSystemSettingOrientation()
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingOrientation(entireSystemUpdate)
 	local isHorizontal = self:DoesSettingValueEqual(Enum.EditModeAuraFrameSetting.Orientation, Enum.AuraFrameOrientation.Horizontal);
 	self.AuraContainer.isHorizontal = isHorizontal;
+
+	-- If this is for an entire system update then no need to update icon wrap or direction
+	if entireSystemUpdate then
+		return;
+	end
 
 	-- Update icon wrap and direction based on new orientation
 	-- This is to try and keep the icons in roughly the same location when swapping orientations
@@ -1537,7 +1542,7 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 	end
 
 	if setting == Enum.EditModeAuraFrameSetting.Orientation and self:HasSetting(Enum.EditModeAuraFrameSetting.Orientation) then
-		self:UpdateSystemSettingOrientation();
+		self:UpdateSystemSettingOrientation(entireSystemUpdate);
 	elseif setting == Enum.EditModeAuraFrameSetting.IconWrap and self:HasSetting(Enum.EditModeAuraFrameSetting.IconWrap) then
 		self:UpdateSystemSettingIconWrap();
 	elseif setting == Enum.EditModeAuraFrameSetting.IconDirection and self:HasSetting(Enum.EditModeAuraFrameSetting.IconDirection) then

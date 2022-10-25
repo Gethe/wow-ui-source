@@ -105,7 +105,8 @@ end
 
 function TryUseActionButton(self, checkingFromDown)
 	local isKeyPress = true;
-	local usedActionButton = SecureActionButton_OnClick(self, "LeftButton", checkingFromDown, isKeyPress);
+	local isSecureAction = true;
+	local usedActionButton = SecureActionButton_OnClick(self, "LeftButton", checkingFromDown, isKeyPress, isSecureAction);
 	if usedActionButton then
 		if GetNewActionHighlightMark(self.action) then
 			ClearNewActionHighlight(self.action);
@@ -1146,7 +1147,8 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 			end
 
 			local isKeyPress = false;
-			SecureActionButton_OnClick(self, button, down, isKeyPress);
+			local isSecureAction = true;
+			SecureActionButton_OnClick(self, button, down, isKeyPress, isSecureAction);
 		end
 	end
 

@@ -727,14 +727,23 @@ local function OnActionButtonPressAndHoldRelease(self, inputButton)
 	PerformAction(self, button, unit, actionType, false);
 end
 
-function SecureActionButton_OnClick(self, inputButton, down, isKeyPress)
+function SecureActionButton_OnClick(self, inputButton, down, isKeyPress, isSecureAction)
+	-- Why are we adding extra arguments, 'isKeyPress' and 'isSecureAction', to an _OnClick handler?
+	-- We want to prevent mouse actions from triggering press-and-hold behavior for now, but we do want to allow AddOns
+	-- to function as they did before. This is a problem since there's no difference between an AddOn's key press behavior
+	-- and mouse click behavior. So if we don't know where this is coming from, it's from an AddOn and should be treated as
+	-- a key press not a mouse press for 'useOnKeyDown' purposes.
+	local isSecureMousePress = not isKeyPress and isSecureAction;
 	local pressAndHoldAction = SecureButton_GetAttribute(self, "pressAndHoldAction");
-	local useOnKeyDown = isKeyPress and (GetCVarBool("ActionButtonUseKeyDown") or pressAndHoldAction);
+	local useOnKeyDown = not isSecureMousePress and (GetCVarBool("ActionButtonUseKeyDown") or pressAndHoldAction);
 	local clickAction = (down and useOnKeyDown) or (not down and not useOnKeyDown);
 	local releasePressAndHoldAction = (not down) and (pressAndHoldAction or GetCVarBool("ActionButtonUseKeyHeldSpell"));
 
 	if clickAction then
-		OnActionButtonClick(self, inputButton, down, isKeyPress);
+		-- Only treat a key down action as a key press. Treating key up actions as a key press will result in the held
+		-- spell being cast indefinitely since there's no release to stop it.
+		local treatAsKeyPress = down and isKeyPress;
+		OnActionButtonClick(self, inputButton, down, treatAsKeyPress);
 		return true;
 	elseif releasePressAndHoldAction then
 		OnActionButtonPressAndHoldRelease(self, inputButton);
