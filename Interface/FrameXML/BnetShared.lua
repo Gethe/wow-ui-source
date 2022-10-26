@@ -8,7 +8,7 @@ function BNet_GetClientAtlas(atlasPrefix, clientName)
 	end
 
 	-- If you couldn't get the atlas then just return the default bnet client
-	return atlasPrefix.."-App";
+	return atlasPrefix.."App";
 end
 
 function BNet_GetClientEmbeddedAtlas(client, width, height, xOffset, yOffset)

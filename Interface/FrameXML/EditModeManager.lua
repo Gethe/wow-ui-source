@@ -1601,7 +1601,6 @@ function EditModeAccountSettingsMixin:SetupActionBar(bar)
 	local isShown = bar:IsShown();
 	self.oldActionBarSettings[bar] = {
 		isShown = isShown;
-		numShowingButtons = bar.numShowingButtons;
 	}
 
 	-- If the bar is already showing then set control checked
@@ -1613,8 +1612,6 @@ function EditModeAccountSettingsMixin:SetupActionBar(bar)
 end
 
 function EditModeAccountSettingsMixin:ResetActionBarShown(bar)
-	bar.numShowingButtons = self.oldActionBarSettings[bar].numShowingButtons;
-
 	if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
 		bar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 	end
@@ -1629,9 +1626,8 @@ function EditModeAccountSettingsMixin:RefreshActionBarShown(bar)
 
 	if show then
 		bar.editModeForceShow = true;
-		bar.numShowingButtons = bar.numButtons;
 
-		if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
+		if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) and (bar.numShowingButtonsOrSpacers == 0 or not bar.dontShowAllButtonsInEditMode) then
 			bar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 		end
 

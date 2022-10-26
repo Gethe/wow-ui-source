@@ -661,7 +661,7 @@ end
 
 function EditModeActionBarSystemMixin:UpdateButtonArt()
 	for i, actionButton in pairs(self.actionButtons) do
-		actionButton:UpdateButtonArt(i >= self.numShowingButtons);
+		actionButton:UpdateButtonArt(i >= self.numButtonsShowable);
 	end
 end
 
@@ -694,7 +694,7 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingNumRows()
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingNumIcons()
-	self.numShowingButtons = self:GetSettingValue(Enum.EditModeActionBarSetting.NumIcons);
+	self.numButtonsShowable = self:GetSettingValue(Enum.EditModeActionBarSetting.NumIcons);
 	self:UpdateShownButtons();
 
 	-- Since the num icons changed we'll want to update the grid layout
