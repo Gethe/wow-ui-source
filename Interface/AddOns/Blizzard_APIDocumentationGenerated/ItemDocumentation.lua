@@ -801,6 +801,16 @@ local Item =
 			},
 		},
 		{
+			Name = "ReplaceTradeskillEnchant",
+			Type = "Event",
+			LiteralName = "REPLACE_TRADESKILL_ENCHANT",
+			Payload =
+			{
+				{ Name = "existing", Type = "string", Nilable = false },
+				{ Name = "replacement", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "TradeReplaceEnchant",
 			Type = "Event",
 			LiteralName = "TRADE_REPLACE_ENCHANT",

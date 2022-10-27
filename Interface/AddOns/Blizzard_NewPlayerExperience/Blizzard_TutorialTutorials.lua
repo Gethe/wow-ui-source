@@ -83,6 +83,7 @@ function Class_Intro_KeyboardMouse:OnComplete()
 		self.GlowTimer:Cancel();
 	end
 	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
+	EventRegistry:UnregisterCallback("TutorialKeyboardMouseFrame.Closed", self);
 	self:HideMouseKeyboardTutorial();
 	if not self.earlyExit then
 		TutorialManager:Queue(Class_Intro_CameraLook.name);
@@ -234,6 +235,7 @@ end
 
 function Class_Intro_Interact:OnComplete()
 	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
+	Dispatcher:UnregisterEvent("QUEST_ACCEPTED", self);
 	self:HideScreenTutorial();
 end
 
@@ -508,6 +510,8 @@ function Class_Intro_CombatTactics:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
 	Dispatcher:UnregisterEvent("QUEST_LOG_UPDATE", self);
+	Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
+	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 	self:HideResourceCallout();
 	self:HideAbilityPrompt();
 	self:HidePointerTutorials();
@@ -706,8 +710,8 @@ function Class_QuestRewardChoice:OnBegin(args)
 		self:ShowPointerTutorial(prompt, "LEFT", QuestFrame, -15, 0);
 	end
 
-	Dispatcher:RegisterEvent("QUEST_TURNED_IN", function() TutorialManager:Finished(self:Name()); end, true);
-	Dispatcher:RegisterScript(QuestFrame, "OnHide", function() TutorialManager:Finished(self:Name()); end, true);
+	self.turnedInCallbackID = Dispatcher:RegisterEvent("QUEST_TURNED_IN", function() TutorialManager:Finished(self:Name()); end, true);
+	self.hideCallbackID = Dispatcher:RegisterScript(QuestFrame, "OnHide", function() TutorialManager:Finished(self:Name()); end, true);
 end
 
 function Class_QuestRewardChoice:OnInterrupt(interruptedBy)
@@ -715,6 +719,14 @@ function Class_QuestRewardChoice:OnInterrupt(interruptedBy)
 end
 
 function Class_QuestRewardChoice:OnComplete()
+	if self.turnedInCallbackID then
+		Dispatcher:UnregisterEvent("QUEST_TURNED_IN", self.turnedInCallbackID);
+		self.turnedInCallbackID = nil;
+	end
+	if self.hideCallbackID then
+		Dispatcher:UnregisterScript(QuestFrame, "OnHide", self.hideCallbackID);
+		self.hideCallbackID = nil;
+	end
 	self:HidePointerTutorials();
 end
 
@@ -1607,6 +1619,7 @@ end
 
 function Class_EnhancedCombatTactics_Warrior:OnComplete()
 	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
+	Dispatcher:UnregisterEvent("UNIT_TARGETABLE_CHANGED", self);
 	Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
 	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	self:CleanUp();
@@ -2056,6 +2069,14 @@ function Class_AddHunterTameSpells:AddHunterSpellsToActionBar()
 end
 
 function Class_AddHunterTameSpells:OnComplete()	
+	Dispatcher:UnregisterEvent("SPELLS_CHANGED", self);
+	Dispatcher:UnregisterEvent("UPDATE_EXTRA_ACTIONBAR", self);
+	Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_TAB", self);
+	Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
+	if self.actionBarEventID then
+		Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self.actionBarEventID);
+		self.actionBarEventID = nil;
+	end
 	TutorialManager:Queue(Class_HunterTame.name);
 end
 
@@ -2135,6 +2156,7 @@ function Class_HunterTame:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	Dispatcher:UnregisterEvent("PET_STABLE_UPDATE", self);
 	Dispatcher:UnregisterEvent("QUEST_LOG_UPDATE", self);
+	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
 	self:HidePointerTutorials();
 end
 
@@ -2246,6 +2268,7 @@ end
 
 function Class_EatFood:OnComplete()
 	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
+	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 	Dispatcher:UnregisterEvent("PLAYER_REGEN_DISABLED", self);
 	Dispatcher:UnregisterEvent("PLAYER_REGEN_ENABLED", self);
 	Dispatcher:UnregisterEvent("PLAYER_DEAD", self);
@@ -2403,6 +2426,10 @@ function Class_UseVendor:OnComplete()
 	EventRegistry:UnregisterCallback("MerchantFrame.BuyBackTabShow", self);
 	EventRegistry:UnregisterCallback("MerchantFrame.MerchantTabShow", self);
 	Dispatcher:UnregisterEvent("MERCHANT_SHOW", self);
+	Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
+	Dispatcher:UnregisterEvent("BAG_NEW_ITEMS_UPDATED", self);
+	Dispatcher:UnregisterEvent("MERCHANT_CLOSED", self);
+	Dispatcher:UnregisterEvent("ITEM_LOCKED", self);
 	self.buyPointerID = nil;
 	self.sellPointerID = nil;
 	self:HidePointerTutorials();
@@ -2473,6 +2500,7 @@ end
 
 function Class_PromptLFG:CloseTutorialElements()
 	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
+	Dispatcher:UnregisterEvent("QUEST_LOG_UPDATE", self);
 	if self.onShowID then
 		Dispatcher:UnregisterScript(PVEFrame, "OnShow", self.onShowID);
 		self.onShowID = nil;
@@ -2644,7 +2672,9 @@ function Class_LookingForGroup:OnComplete()
 	GlowEmitterFactory:Hide(LFDQueueFrameFindGroupButton);
 	Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
 	Dispatcher:UnregisterEvent("LFG_PROPOSAL_FAILED", self);
-	Dispatcher:UnregisterEvent("LFG_QUEUE_STATUS_UPDATE", self);
+	Dispatcher:UnregisterEvent("LFG_PROPOSAL_SHOW", self);
+	Dispatcher:UnregisterEvent("LFG_UPDATE", self);
+	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
 
 	EventRegistry:UnregisterCallback("LFDQueueFrameSpecificList_Update.EmptyDungeonList", self);
 	EventRegistry:UnregisterCallback("LFDQueueFrameSpecificList_Update.DungeonListReady", self);
@@ -2726,7 +2756,7 @@ function Class_MountReceived:OnBegin()
 	if container and slot then
 		-- Dirty hack to make sure all bags are closed
 		TutorialHelper:CloseAllBags();
-		Dispatcher:RegisterFunction("ToggleBackpack", function() self:BackpackOpened() end, true);
+		self.backpackCallbackID = Dispatcher:RegisterFunction("ToggleBackpack", function() self:BackpackOpened() end, true);
 		local key = TutorialHelper:GetBagBinding();
 		local tutorialString = TutorialHelper:FormatString(string.format(NPEV2_MOUNT_TUTORIAL_INTRO, key))
 		self:ShowPointerTutorial(tutorialString, "DOWN", MainMenuBarBackpackButton, 0, 10, nil, "DOWN");
@@ -2770,12 +2800,14 @@ function Class_MountReceived:NEW_MOUNT_ADDED(data)
 	self:HidePointerTutorials();
 
 	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_NEW_MOUNT_ADDED, "DOWN", CollectionsMicroButton, 0, 10, nil, "DOWN");
-	Dispatcher:RegisterFunction("ToggleCollectionsJournal", function()
-		SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
-		MountJournal_SelectByMountID(self.mountID);
-		self.proceed = true;
-		TutorialManager:Finished(self:Name());
-	end, true);
+	if not self.collectionCallbackID then
+		self.collectionCallbackID = Dispatcher:RegisterFunction("ToggleCollectionsJournal", function()
+			SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+			MountJournal_SelectByMountID(self.mountID);
+			self.proceed = true;
+			TutorialManager:Finished(self:Name());
+		end, true);
+	end
 end
 
 function Class_MountReceived:OnInterrupt(interruptedBy)
@@ -2784,6 +2816,16 @@ end
 
 function Class_MountReceived:OnComplete()
 	Dispatcher:UnregisterEvent("NEW_MOUNT_ADDED", self);
+	if self.backpackCallbackID then
+		Dispatcher:UnregisterFunction("ToggleBackpack", self.backpackCallbackID);
+		self.backpackCallbackID = nil;
+	end
+
+	if self.collectionCallbackID then
+		Dispatcher:UnregisterFunction("ToggleCollectionsJournal", self.collectionCallbackID);
+		self.collectionCallbackID = nil;
+	end
+
 	self:HidePointerTutorials();
 	ActionButton_HideOverlayGlow(CollectionsMicroButton);
 	if self.proceed == true then
@@ -2926,6 +2968,7 @@ end
 function Class_UseMount:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_UPDATE_USABLE", self);
 	Dispatcher:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
+	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
 	self:HidePointerTutorials();
 	if self.Timer then
 		self.Timer:Cancel();
@@ -2958,6 +3001,7 @@ function Class_Death_ReleaseCorpse:OnInterrupt(interruptedBy)
 end
 
 function Class_Death_ReleaseCorpse:OnComplete()
+	Dispatcher:UnregisterEvent("PLAYER_ALIVE", self);
 	self:HidePointerTutorials();
 	if (UnitIsGhost("player")) then
 		TutorialManager:Queue(Class_Death_MapPrompt.name);
@@ -2997,6 +3041,8 @@ function Class_Death_MapPrompt:OnInterrupt(interruptedBy)
 end
 
 function Class_Death_MapPrompt:OnComplete()
+	Dispatcher:UnregisterEvent("CORPSE_IN_RANGE", self);
+	Dispatcher:UnregisterEvent("PLAYER_UNGHOST", self);
 	self:HideSingleKeyTutorial();
 	if (UnitIsGhost("player")) then
 		TutorialManager:Queue(Class_Death_ResurrectPrompt.name);
@@ -3029,6 +3075,7 @@ end
 
 function Class_Death_ResurrectPrompt:OnComplete()
 	GlowEmitterFactory:Hide(StaticPopup1Button1);
+	Dispatcher:UnregisterEvent("PLAYER_UNGHOST", self);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -3101,6 +3148,10 @@ function Class_LootCorpse:OnInterrupt(interruptedBy)
 end
 
 function Class_LootCorpse:OnComplete()
+	Dispatcher:UnregisterEvent("LOOT_CLOSED", self);
+	Dispatcher:UnregisterEvent("CHAT_MSG_LOOT", self);
+	Dispatcher:UnregisterEvent("CHAT_MSG_MONEY", self);
+
 	if self.Timer then
 		self.Timer:Cancel();
 	end
@@ -3144,4 +3195,9 @@ function Class_LootPointer:LOOT_CLOSED()
 		self.LootHelpTimer:Cancel();
 	end
 	self:HidePointerTutorials();
+end
+
+function Class_LootPointer:OnComplete()
+	Dispatcher:UnregisterEvent("LOOT_OPENED", self);
+	Dispatcher:UnregisterEvent("LOOT_CLOSED", self);
 end

@@ -1,7 +1,11 @@
 local iconAtlasFormat = "majorFactions_icons_%s512";
-local buttonAtlasFormat = "%s-landingpage-renownbutton-%s";
-local buttonHoverAtlasFormat = "%s-landingpage-renownbutton-%s-hover";
-local buttonLockedAtlasFormat = "%s-landingpage-renownbutton-locked";
+local buttonAtlasFormatsByExpansion = {
+	[LE_EXPANSION_DRAGONFLIGHT] = {
+		normalAtlas = "dragonflight-landingpage-renownbutton-%s";
+		hoverAtlas = "dragonflight-landingpage-renownbutton-%s-hover";
+		lockedAtlas = "dragonflight-landingpage-renownbutton-locked";
+	},
+};
 
 LandingPageMajorFactionList = {};
 
@@ -126,11 +130,11 @@ function MajorFactionButtonMixin:Init(majorFactionData)
 	self.expansionID = majorFactionData.expansionID;
 	self.bountySetID = majorFactionData.bountySetID;
 
-	local expansionName = _G["EXPANSION_NAME" .. self.expansionID];
-	self.LockedState.Background:SetAtlas(buttonLockedAtlasFormat:format(expansionName), TextureKitConstants.UseAtlasSize);
+	local atlasFormats = buttonAtlasFormatsByExpansion[majorFactionData.expansionID];
+	self.LockedState.Background:SetAtlas(atlasFormats.lockedAtlas, TextureKitConstants.UseAtlasSize);
 	self.LockedState.unlockDescription = majorFactionData.unlockDescription;
-	self.UnlockedState.normalAtlas = buttonAtlasFormat:format(expansionName, majorFactionData.textureKit);
-	self.UnlockedState.hoverAtlas = buttonHoverAtlasFormat:format(expansionName, majorFactionData.textureKit);
+	self.UnlockedState.normalAtlas = atlasFormats.normalAtlas:format(majorFactionData.textureKit);
+	self.UnlockedState.hoverAtlas = atlasFormats.hoverAtlas:format(majorFactionData.textureKit);
 	self.UnlockedState.Background:SetAtlas(self.UnlockedState.normalAtlas, TextureKitConstants.UseAtlasSize);
 	
 	self.UnlockedState.Icon:SetAtlas(iconAtlasFormat:format(majorFactionData.textureKit), TextureKitConstants.IgnoreAtlasSize);

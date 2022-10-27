@@ -531,17 +531,21 @@ function TalentFrameBaseMixin:AreSelectionsOpen(button)
 end
 
 function TalentFrameBaseMixin:ToggleSelections(button, selectionOptions, canSelectChoice, currentSelection, baseCost)
-	if self:AreSelectionsOpen(button) then
-		self:HideSelections();
-	else
-		self:ShowSelections(button, selectionOptions, canSelectChoice, currentSelection, baseCost);
+	if not self.SelectionChoiceFrame:IsDraggingSpell() then
+		if self:AreSelectionsOpen(button) then
+			self:HideSelections();
+		else
+			self:ShowSelections(button, selectionOptions, canSelectChoice, currentSelection, baseCost);
+		end
 	end
 end
 
 function TalentFrameBaseMixin:ShowSelections(button, selectionOptions, canSelectChoice, currentSelection, baseCost)
-	self.SelectionChoiceFrame:SetPoint("BOTTOM", button, "TOP", 0, -10);
-	self.SelectionChoiceFrame:SetSelectionOptions(button, selectionOptions, canSelectChoice, currentSelection, baseCost);
-	self.SelectionChoiceFrame:Show();
+	if not self.SelectionChoiceFrame:IsDraggingSpell() then
+		self.SelectionChoiceFrame:SetPoint("BOTTOM", button, "TOP", 0, -10);
+		self.SelectionChoiceFrame:SetSelectionOptions(button, selectionOptions, canSelectChoice, currentSelection, baseCost);
+		self.SelectionChoiceFrame:Show();
+	end
 end
 
 function TalentFrameBaseMixin:UpdateSelections(button, canSelectChoice, currentSelection, baseCost)
@@ -552,7 +556,10 @@ end
 
 function TalentFrameBaseMixin:HideSelections(button)
 	if self:AreSelectionsOpen(button) then
-		self.SelectionChoiceFrame:Hide();
+		-- Leave the choice frame open if we're dragging from it.
+		if not self.SelectionChoiceFrame:IsDraggingSpell() then
+			self.SelectionChoiceFrame:Hide();
+		end
 	end
 end
 

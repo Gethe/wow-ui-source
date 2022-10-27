@@ -62,12 +62,18 @@ end
 
 function ProfessionSpecTabMixin:OnLoad()
 	local function TabSelectedCallback(_, selectedID)
-		local isSelected = (selectedID == self.traitTreeID);
-		self:SetTabSelected(isSelected);
-		self.StateIconGlow:SetShown(self.state ~= Enum.ProfessionsSpecTabState.Unlocked and not isSelected);
-		self.BottomBorderGlow:SetShown(isSelected);
+		self.isSelected = (selectedID == self.traitTreeID);
+		self:SetTabSelected(self.isSelected);
+		self.StateIconGlow:SetShown(self.state == Enum.ProfessionsSpecTabState.Unlockable and not self.isSelected);
+		self.BottomBorderGlow:SetShown(self.isSelected);
 	end
 	EventRegistry:RegisterCallback("ProfessionsSpecializations.TabSelected", TabSelectedCallback, self);
+
+	self.StateIcon:SetScript("OnEnter", function(frame)
+		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_NEW_CHOICE_SPECIALIZATION:format(self:GetParent().professionInfo.professionName));
+		GameTooltip:Show();
+	end);
 
 	self:HandleRotation();
 end
@@ -85,6 +91,8 @@ function ProfessionSpecTabMixin:SetState(state)
 	end
 
 	local unlockable = (state == Enum.ProfessionsSpecTabState.Unlockable);
+	self.StateIcon:SetMouseMotionEnabled(unlockable);
+	self.StateIconGlow:SetShown(self.state == Enum.ProfessionsSpecTabState.Unlockable and not self.isSelected);
 	if unlockable then
 		self.StateIconGlowAnim:Play();
 	else
@@ -261,11 +269,11 @@ function ProfessionsSpecPathMixin:GetSpendText() -- Override
 end
 
 function ProfessionsSpecPathMixin:CanPurchaseUnlock()
-	return C_Traits.CanPurchaseRank(self:GetConfigID(), self.nodeInfo.ID, C_ProfSpecs.GetUnlockEntryForPath(self.nodeInfo.ID)) and self:CanAfford();
+	return self.nodeInfo and self:GetConfigID() and C_Traits.CanPurchaseRank(self:GetConfigID(), self.nodeInfo.ID, C_ProfSpecs.GetUnlockEntryForPath(self.nodeInfo.ID)) and self:CanAfford();
 end
 
 function ProfessionsSpecPathMixin:CanPurchaseSpend()
-	return C_Traits.CanPurchaseRank(self:GetConfigID(), self.nodeInfo.ID, C_ProfSpecs.GetSpendEntryForPath(self.nodeInfo.ID)) and self:CanAfford();
+	return self.nodeInfo and self:GetConfigID() and C_Traits.CanPurchaseRank(self:GetConfigID(), self.nodeInfo.ID, C_ProfSpecs.GetSpendEntryForPath(self.nodeInfo.ID)) and self:CanAfford();
 end
 
 function ProfessionsSpecPathMixin:OnEvent(event, ...)

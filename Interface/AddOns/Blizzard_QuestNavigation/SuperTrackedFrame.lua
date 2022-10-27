@@ -50,6 +50,7 @@ do
 		[Enum.NavigationState.Invalid] = 0.0,
 		[Enum.NavigationState.Occluded] = 0.6,
 		[Enum.NavigationState.InRange] = 1.0,
+		[Enum.NavigationState.Disabled] = 0.0,
 	};
 
 	function SuperTrackedFrameMixin:GetTargetAlphaBaseValue()

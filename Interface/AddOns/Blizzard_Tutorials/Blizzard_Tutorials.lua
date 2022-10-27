@@ -12,6 +12,7 @@ function GameTutorials:OnTutorialsEnabled()
 
 	AddSpecAndTalentTutorials();
 	AddDracthyrTutorials();
+	AddFrameTutorials(); --Misc tutorials
 
 	if CanShowProfessionEquipmentTutorial() then
 		TutorialManager:AddTutorial(Class_EquipProfessionGear:new());

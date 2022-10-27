@@ -265,5 +265,20 @@ function ProfessionsCustomerOrdersMyOrdersMixin:UpdateOrderList(result, expectMo
 	local anyOrders = (#orders > 0);
 	self.OrderList.ResultsText:SetShown(not anyOrders);
 
+	if anyOrders and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS_CO_ORDER_PLACED) then
+		local orderPlacedHelpTipInfo =
+		{
+			text = CRAFTING_ORDER_PLACED_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.RightEdgeTop,
+			offsetX = -15,
+			offsetY = -12,
+			acknowledgeOnHide = true,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_CO_ORDER_PLACED,
+		};
+		HelpTip:Show(self, orderPlacedHelpTipInfo, self.OrderList.ScrollBox);
+	end
+
 	self.requestCallback = nil;
 end

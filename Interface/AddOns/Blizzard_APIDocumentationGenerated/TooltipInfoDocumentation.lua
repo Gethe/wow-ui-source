@@ -1200,6 +1200,20 @@ local TooltipInfo =
 			},
 		},
 		{
+			Name = "GetWeeklyReward",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemDBID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "TooltipData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWorldCursor",
 			Type = "Function",
 

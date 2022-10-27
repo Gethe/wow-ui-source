@@ -6,12 +6,6 @@ local ProfessionsRankBarEvents =
 
 ProfessionsRankBarMixin = {};
 
-function ProfessionsRankBarMixin:OnLoad(event, ...)
-	if event == "SKILL_LINES_CHANGED" or event == "TRIAL_STATUS_UPDATE" then
-		self:Update(C_TradeSkillUI.GetChildProfessionInfo());
-	end
-end
-
 function ProfessionsRankBarMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, ProfessionsRankBarEvents);
 end
@@ -71,9 +65,9 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 	self.Rank.Text:SetText(rankText);
 
 	self.Fill:SetAtlas("Skillbar_Fill_Flipbook_DefaultBlue", TextureKitConstants.IgnoreAtlasSize);
+	local professionChanged = self.lastProfession ~= professionInfo.profession;
 	-- TODO:: Re-activate specialized fills
 	--[[
-	local professionChanged = self.lastProfession ~= professionInfo.profession;
 	if professionChanged then
 		self.lastProfession = professionInfo.profession;
 		

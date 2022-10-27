@@ -154,6 +154,11 @@
 						<Anchor point="TOPLEFT" x="46" y="-6"/>
 					</Anchors>
 				</FontString>
+				<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-16"/>
+					</Anchors>
+				</MaskTexture>
 				<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="14" y="-26"/>

@@ -159,6 +159,7 @@ UIGenericWidgetDisplayDocumentation.lua
 UIMacrosDocumentation.lua
 UIManagerDocumentation.lua
 UIModelInfoDocumentation.lua
+UISystemVisibilityManagerDocumentation.lua
 UITimerDocumentation.lua
 UIWidgetManagerDocumentation.lua
 UnitDocumentation.lua
@@ -307,6 +308,7 @@ ValidateNameConstantsDocumentation.lua
 VectorSharedDocumentation.lua
 VehicleConstantsDocumentation.lua
 VignetteConstantsDocumentation.lua
+WeeklyRewardsSharedDocumentation.lua
 AuctionHouseConstants_MainlineDocumentation.lua
 ClickBindingsConstantsDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua
@@ -325,5 +327,4 @@ SoulbindsConstantsDocumentation.lua
 SuperTrackManagerSharedDocumentation.lua
 TransmogConstantsDocumentation.lua
 UnitConstantsDocumentation.lua
-WeeklyRewardsSharedDocumentation.lua
 # End documentation files here

@@ -9,8 +9,8 @@ local COMMUNITIES_AVATAR_PICKER_DIALOG_SCROLL_FRAME_EVENTS = {
 function CommunitiesAvatarPicker_OpenDialog(clubType, avatarId, onOkay, onCancel)
 	CommunitiesAvatarPickerDialog:SetClubType(clubType);
 	CommunitiesAvatarPickerDialog:SetAvatarId(avatarId);
-	CommunitiesAvatarPickerDialog.OnOkay = onOkay;
-	CommunitiesAvatarPickerDialog.OnCancel = onCancel;
+	CommunitiesAvatarPickerDialog.Selector.OnOkay = onOkay;
+	CommunitiesAvatarPickerDialog.Selector.OnCancel = onCancel;
 	CommunitiesAvatarPickerDialog:Show();
 end
 

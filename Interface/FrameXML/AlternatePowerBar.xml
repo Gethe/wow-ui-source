@@ -4,7 +4,7 @@
 	<StatusBar name="AlternatePowerBarTemplate" inherits="TextStatusBar" virtual="true">
 		<Size x="78" y="12"/>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture name="$parentBackground" setAllPoints="true" parentKey="DefaultBackground">
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
@@ -16,7 +16,7 @@
 					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
+			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture name="$parentBorder" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator" parentKey="DefaultBorder">
 					<Size x="0" y="16"/>
 					<Anchors>
@@ -46,6 +46,8 @@
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.5"/>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
 				<FontString name="$parentText" inherits="TextStatusBarText">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>

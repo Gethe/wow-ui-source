@@ -6,12 +6,14 @@ local function AccessoryTutorialShown()
 	return GetCVarBool("professionAccessorySlotsExampleShown");
 end
 
+local professionEquipmentTutorialSquelched = false;
+
 function CanShowProfessionEquipmentTutorial()
-	return (not ToolTutorialShown()) or (not AccessoryTutorialShown());
+	return (not professionEquipmentTutorialSquelched) and ((not ToolTutorialShown()) or (not AccessoryTutorialShown()));
 end
 
 -- ------------------------------------------------------------------------------------------------------------
--- Inventory Watcher
+-- Profession Gear Inventory Watcher
 -- ------------------------------------------------------------------------------------------------------------
 Class_ProfessionInventoryWatcher = class("ProfessionInventoryWatcher", Class_TutorialBase);
 
@@ -67,16 +69,19 @@ function Class_ProfessionGearCheckingService:OnInitialize()
 end
 
 function Class_ProfessionGearCheckingService:CanBegin()
-	return true;
+	return CanShowProfessionEquipmentTutorial();
 end
 
 function Class_ProfessionGearCheckingService:OnBegin()
-	local profGear = self:GetProfessionGear();
-	local slot, item = next(profGear);
+	if CanShowProfessionEquipmentTutorial() then
+		local profGear = self:GetProfessionGear();
+		local slot, item = next(profGear);
 
-	if item then
-		TutorialManager:Queue(Class_EquipProfessionGear.name, item);
+		if item then
+			TutorialManager:Queue(Class_EquipProfessionGear.name, item);
+		end
 	end
+	
 	TutorialManager:Finished(self:Name());
 end
 
@@ -98,7 +103,8 @@ function Class_ProfessionGearCheckingService:GetProfessionGear()
 
 	for _, i in ipairs(profInvSlots) do
 		local potentialGear = {};
-		GetInventoryItemsForSlot(i, potentialGear);
+		local slotNumber = i + 1; -- System is set up to use incremented lua index values...
+		GetInventoryItemsForSlot(slotNumber, potentialGear);
 
 		for packedLocation, itemLink in pairs(potentialGear) do
 			local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(packedLocation);
@@ -106,7 +112,7 @@ function Class_ProfessionGearCheckingService:GetProfessionGear()
 			local isTool = (invType == "INVTYPE_PROFESSION_TOOL");
 			local hasBeenShown = isTool and ToolTutorialShown() or AccessoryTutorialShown();
 			if player and bags and (not hasBeenShown) then
-				table.insert(professionGear, self:STRUCT_ItemContainer(itemLink, i, bag, slot, isTool));
+				table.insert(professionGear, self:STRUCT_ItemContainer(itemLink, slotNumber, bag, slot, isTool));
 			end
 		end
 	end
@@ -188,10 +194,24 @@ function Class_EquipProfessionGear:ZONE_CHANGED_NEW_AREA()
 	end);
 end
 
+function Class_EquipProfessionGear:GetHelptipSystem()
+	return "Profession Equipment";
+end
+
+function Class_EquipProfessionGear:HideAllHelptips()
+	HelpTip:HideAllSystem(self:GetHelptipSystem());
+end
+
+function Class_EquipProfessionGear:SquelchTutorial()
+	HelpTip:HideAllSystem(self:GetHelptipSystem());
+	professionEquipmentTutorialSquelched = true;
+	TutorialManager:Finished(self:Name());
+end
+
 function Class_EquipProfessionGear:Reset()
 	self.success = false;
 	TutorialDragButton:Hide();
-	self:HidePointerTutorials();
+	self:HideAllHelptips();
 	self:PrepBags();
 end
 
@@ -203,9 +223,17 @@ function Class_EquipProfessionGear:PrepBags()
 
 	if self.data then
 		local data = self.data;
-		self.Timer = C_Timer.NewTimer(0.1, function()
-			self:ShowPointerTutorial(data and PROFESSION_EQUIPMENT_NEWITEM_TOOL_HELPTIP or PROFESSION_EQUIPMENT_NEWITEM_ACCESSORY_HELPTIP, "DOWN", MainMenuBarBackpackButton, 0, 0);
-		end);
+		local helptipInfo =
+		{
+			text = data.IsTool and PROFESSION_EQUIPMENT_NEWITEM_TOOL_HELPTIP or PROFESSION_EQUIPMENT_NEWITEM_ACCESSORY_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			alignment = HelpTip.Alignment.Right,
+			offsetX = -10,
+			system = self:GetHelptipSystem(),
+			onAcknowledgeCallback = function() self:SquelchTutorial(); end,
+		};
+		HelpTip:Show(MainMenuBarBackpackButton, helptipInfo, MainMenuBarBackpackButton);
 	end
 end
 
@@ -255,18 +283,37 @@ function Class_EquipProfessionGear:UpdateState()
 	if self.success then
 		TutorialManager:Finished(self:Name());
 	elseif self:IsProfessionsFrameVisible() and self:IsCorrectProfessionSelected() and self:IsCorrectProfessionTabSelected() then
-		self:HidePointerTutorials();
+		self:HideAllHelptips();
+		if self.AnimTimer then
+			self.AnimTimer:Cancel();
+		end
 		self.AnimTimer = C_Timer.NewTimer(0.1, function()
 			self:StartAnimation();
 		end);
 	elseif self:IsProfessionsFrameVisible() and self:IsCorrectProfessionSelected() and not self:IsCorrectProfessionTabSelected() then
-		self:HidePointerTutorials();
+		self:HideAllHelptips();
 		TutorialDragButton:Hide();
-		self:ShowPointerTutorial(PROFESSION_EQUIPMENT_NEWITEM_TAB_HELPTIP, "UP", ProfessionsFrame:GetTabButton(ProfessionsFrame.recipesTabID), 0, 0);
+		local helptipInfo =
+		{
+			text = PROFESSION_EQUIPMENT_NEWITEM_TAB_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			system = self:GetHelptipSystem(),
+			onAcknowledgeCallback = function() self:SquelchTutorial(); end,
+		};
+		HelpTip:Show(ProfessionsFrame:GetTabButton(ProfessionsFrame.recipesTabID), helptipInfo, ProfessionsFrame:GetTabButton(ProfessionsFrame.recipesTabID));
 	elseif self.originFrame then
-		self:HidePointerTutorials();
+		self:HideAllHelptips();
 		TutorialDragButton:Hide();
-		self:ShowPointerTutorial(PROFESSION_EQUIPMENT_NEWITEM_EQUIP_HELPTIP, "RIGHT", self.originFrame, 0, 0);
+		local helptipInfo =
+		{
+			text = PROFESSION_EQUIPMENT_NEWITEM_EQUIP_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			system = self:GetHelptipSystem(),
+			onAcknowledgeCallback = function() self:SquelchTutorial(); end,
+		};
+		HelpTip:Show(UIParent, helptipInfo, self.originFrame);
 	end
 end
 
@@ -306,8 +353,16 @@ function Class_EquipProfessionGear:StartAnimation()
 	self.destFrame = Slot[self.data.CharacterSlot];
 
 	if self.originFrame and self.destFrame then
-		self:HidePointerTutorials();
-		self.newItemPointerID = self:AddPointerTutorial(NPEV2_DRAG_TO_EQUIP, "DOWN", self.originFrame, 0, 0);
+		self:HideAllHelptips();
+		local helptipInfo =
+		{
+			text = PROFESSION_EQUIPMENT_NEWITEM_EQUIP_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			system = self:GetHelptipSystem(),
+			onAcknowledgeCallback = function() self:SquelchTutorial(); end,
+		};
+		HelpTip:Show(UIParent, helptipInfo, self.originFrame);
 
 		TutorialDragButton:Show(self.originFrame, self.destFrame);
 		self.animationPlaying = true;
@@ -349,27 +404,6 @@ function Class_EquipProfessionGear:UpdateItemContainerAndSlotInfo()
 	end
 end
 
-function Class_EquipProfessionGear:UpdateDragOrigin()
-	local item = Item:CreateFromItemLink(self.data.ItemLink);
-	local currentItemID = item:GetItemID();
-	local itemInfo = C_Container.GetContainerItemInfo(self.data.Container, self.data.ContainerSlot);
-
-	if itemInfo and itemInfo.itemID == currentItemID then
-		-- nothing in the inventory changed that affected the current tutorial
-	else
-		self:UpdateItemContainerAndSlotInfo()
-		if self.data then
-			local itemFrame = TutorialHelper:GetItemContainerFrame(self.data.Container, self.data.ContainerSlot);
-			if itemFrame then
-				self:HidePointerTutorial(self.newItemPointerID);
-				self:StartAnimation();
-			else
-				TutorialManager:Finished(self:Name());
-			end
-		end
-	end
-end
-
 function Class_EquipProfessionGear:BAG_UPDATE_DELAYED()
 	-- check to see if the player moved the item being tutorialized
 	self:UpdateItemContainerAndSlotInfo()
@@ -387,7 +421,7 @@ end
 
 function Class_EquipProfessionGear:OnComplete()
 	TutorialDragButton:Hide();
-	self:HidePointerTutorials();
+	self:HideAllHelptips();
 	self.originFrame = nil;
 	self.destFrame = nil;
 	self.animationPlaying = false;
@@ -402,6 +436,11 @@ function Class_EquipProfessionGear:OnComplete()
 	if self.AnimTimer then
 		self.AnimTimer:Cancel();
 		self.AnimTimer = nil;
+	end
+
+	if self.Timer then
+		self.Timer:Cancel();
+		self.Timer = nil;
 	end
 
 	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);

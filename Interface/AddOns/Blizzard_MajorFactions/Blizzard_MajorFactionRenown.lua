@@ -6,26 +6,33 @@ local mainTextureKitRegions = {
 };
 local headerTextureKitRegions = {
 	["Background"] = "UI-%s-HeaderOrb",
-}
+};
 local trackTextureKitRegions = {
 	["Glow"] = "UI-%s-Highlight-Middle",
-}
+};
 local rewardTextureKitRegions = {
 	["Toast"] = "UI-%s-Reward-Slate",
 	["IconBorder"] = "UI-%s-RewardFrame",
 };
-local renownFrameDecorations = {
-	["Dragonflight"] = {
-		["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",
-		["TopRightBorderDecoration"] = "Dragonflight-DragonHeadRight",
-		["BottomBorderDecoration"] = "dragonflight-golddetailbottom",
-	},
-};
+
+-- "Burst" effect on the renown reward as you unlock it
 local levelEffects = {
-	["Dragonflight"] = 144,
-};
+	[LE_EXPANSION_DRAGONFLIGHT] = 144,
+}
+-- Animated Effects behind the renown reward;
 local finalToastSwirlEffects = {
-	-- TODO	
+};
+
+local ExpansionLayoutInfo =
+{
+	[LE_EXPANSION_DRAGONFLIGHT] = {
+		textureKit = "Dragonflight",
+		renownFrameDecorations = {
+			["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",
+			["TopRightBorderDecoration"] = "Dragonflight-DragonHeadRight",
+			["BottomBorderDecoration"] = "dragonflight-golddetailbottom",
+		},
+	},
 };
 
 local MajorFactionsLayout =
@@ -50,7 +57,7 @@ local function SetupTextureKit(frame, regions)
 	SetupTextureKitOnRegions(currentFactionData.textureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
-local function SetupRenownFrameNineSlice(textureKit)
+local function SetupRenownFrameNineSlice(textureKit, renownFrameDecorations)
 	local frame = MajorFactionRenownFrame;
 
 	NineSliceUtil.ApplyLayout(frame.NineSlice, MajorFactionsLayout, textureKit);
@@ -65,8 +72,8 @@ local function SetupRenownFrameNineSlice(textureKit)
 	frame.NineSlice.TopRightBorder:ClearAllPoints();
 	frame.NineSlice.TopRightBorder:SetPoint("TOPRIGHT", frame.NineSlice.TopRightCorner, "TOPLEFT");
 
-	if renownFrameDecorations[textureKit] then
-		SetupAtlasesOnRegions(frame.NineSlice, renownFrameDecorations[textureKit], TextureKitConstants.UseAtlasSize);
+	if renownFrameDecorations then
+		SetupAtlasesOnRegions(frame.NineSlice, renownFrameDecorations, TextureKitConstants.UseAtlasSize);
 	end
 end
 
@@ -163,19 +170,18 @@ function MajorFactionRenownMixin:SetUpMajorFactionData()
 		currentFactionID = majorFactionID;
 		currentFactionData = majorFactionData;
 
-		local expansionName = _G["EXPANSION_NAME" .. currentFactionData.expansionID];
-		local nineSliceTextureKit = expansionName;
-		SetupRenownFrameNineSlice(nineSliceTextureKit);
+		local layoutInfo = ExpansionLayoutInfo[currentFactionData.expansionID];
+		SetupRenownFrameNineSlice(layoutInfo.textureKit, layoutInfo.renownFrameDecorations);
 
-		local textureKit = currentFactionData.textureKit;
+		local factionTextureKit = currentFactionData.textureKit;
 		local renownFrameTextureKitRegions = mainTextureKitRegions;
-		local backgroundFormat = expansionName .. "-MajorFactions-%s-Background";
+		local backgroundFormat = layoutInfo.textureKit .. "-MajorFactions-%s-Background";
 		renownFrameTextureKitRegions.Background = backgroundFormat;
 		SetupTextureKit(self, renownFrameTextureKitRegions);
 
 		SetupTextureKit(self.HeaderFrame, headerTextureKitRegions);
 		local majorFactionIconFormat = "majorFactions_icons_%s512";
-		self.HeaderFrame.Icon:SetAtlas(majorFactionIconFormat:format(textureKit), TextureKitConstants.IgnoreAtlasSize);
+		self.HeaderFrame.Icon:SetAtlas(majorFactionIconFormat:format(factionTextureKit), TextureKitConstants.IgnoreAtlasSize);
 
 		-- the track
 		local renownLevelsInfo = C_MajorFactions.GetRenownLevels(majorFactionID);
@@ -260,8 +266,11 @@ function MajorFactionRenownMixin:OnLevelEffectFinished()
 end
 
 function MajorFactionRenownMixin:PlayLevelEffect()
-	local expansionName = _G["EXPANSION_NAME" .. currentFactionData.expansionID];
-	local effectID = levelEffects[expansionName];
+	local effectID = levelEffects[currentFactionData.expansionID];
+	if not effectID then
+		return;
+	end
+
 	local target, onEffectFinish = nil, nil;
 	local onEffectResolution = GenerateClosure(self.OnLevelEffectFinished, self);
 	self.levelEffect = self.LevelModelScene:AddEffect(effectID, self.TrackFrame, self.TrackFrame, onEffectFinish, onEffectResolution);

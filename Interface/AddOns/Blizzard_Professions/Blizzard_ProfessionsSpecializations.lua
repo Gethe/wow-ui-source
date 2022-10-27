@@ -1,6 +1,7 @@
 
 g_professionsSpecsSelectedTabs = {};
 g_professionsSpecsSelectedPaths = {};
+local helptipSystemName = "Profession Specializations";
 
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB"] = 
 {
@@ -101,6 +102,7 @@ function ProfessionsSpecFrameMixin:CheckConfirmPurchaseTab()
 			self:PurchaseRank(self.tabInfo.rootNodeID);
 			self:CommitConfig();
 			self:PlayDialLockInAnimation();
+			HelpTip:HideAllSystem(helptipSystemName);
 
 			self:ClearSuppressedSounds();
 		end;
@@ -263,9 +265,14 @@ function ProfessionsSpecFrameMixin:InitializeTabs()
 	local tabTreeIDs = C_ProfSpecs.GetSpecTabIDsForSkillLine(professionID);
 
 	local lastTab;
+	local anyTabUnlocked = false;
 	for _, traitTreeID in ipairs(tabTreeIDs) do
 		local tab = self.tabsPool:Acquire();
 		if tab:Init(traitTreeID) then
+			if tab:GetState() == Enum.ProfessionsSpecTabState.Unlocked then
+				anyTabUnlocked = true;
+			end
+
 			tab:ClearAllPoints();
 
 			if lastTab then
@@ -276,6 +283,20 @@ function ProfessionsSpecFrameMixin:InitializeTabs()
 
 			lastTab = tab;
 		end
+	end
+
+	if lastTab and not anyTabUnlocked then
+		local unlockableSpecHelpTipInfo =
+		{
+			text = PROFESSIONS_NEW_CHOICE_AVAILABLE_SPECIALIZATION_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			system = helptipSystemName,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_SPEC_CHOICE,
+			autoHorizontalSlide = true,
+		};
+		HelpTip:Show(self, unlockableSpecHelpTipInfo, lastTab);
 	end
 
 	EventRegistry:TriggerEvent("ProfessionsSpecializations.TabSelected", self:GetDefaultTab(tabTreeIDs));
@@ -773,7 +794,7 @@ end
 function ProfessionsSpecFrameMixin:UpdateConfigButtonsState()
 	local hasAnyChanges = self:HasAnyConfigChanges();
 	self.ApplyButton:SetEnabled(hasAnyChanges);
-	self.UndoButton:SetEnabledState(hasAnyChanges);
+	self.UndoButton:SetShown(hasAnyChanges);
 
 	if hasAnyChanges then
 		GlowEmitterFactory:Show(self.ApplyButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);

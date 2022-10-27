@@ -2065,6 +2065,24 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="Fancy36Font" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\MORPHEUS.TTF" height="36"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.TTF" height="36"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="36"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="36"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.TTF" height="36"/>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="Fancy40Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\MORPHEUS.TTF" height="40"/>

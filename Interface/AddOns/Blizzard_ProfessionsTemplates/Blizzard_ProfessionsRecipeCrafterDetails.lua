@@ -409,9 +409,9 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 	self.Left.AppearIcon:SetAtlas(("GemAppear_T%d_Flipbook"):format(self.craftingQuality));
 	self.Left.DissolveIcon:SetAtlas(("GemDissolve_T%d_Flipbook"):format(self.craftingQuality));
 	
-	local canPromoteTier = self.craftingQuality < maxQuality;
-	self.Right:SetShown(canPromoteTier);
-	if canPromoteTier then
+	self.atMaxTier = self.craftingQuality >= maxQuality;
+	self.Right:SetShown(not self.atMaxTier);
+	if not self.atMaxTier then
 		self.Right.AppearIcon:SetAtlas(("GemAppear_T%d_Flipbook"):format(self.craftingQuality + 1));
 	end
 	
@@ -422,8 +422,13 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 		end
 	--end
 
-	local backgroundTier = math.min(math.max(1, self.craftingQuality), 4);
-	local backgroundAtlas = ("Professions-QualityBar-BarBGx2-Tier%d"):format(backgroundTier);
+	local backgroundAtlas;
+	if quality == maxQuality then
+		backgroundAtlas = ("Professions-QualityBar-BarBGx2-Tier%dCap"):format(maxQuality);
+	else
+		backgroundAtlas = ("Professions-QualityBar-BarBGx2-Tier%d"):format(self.craftingQuality);
+	end
+	
 	self.Center.Background:SetAtlas(backgroundAtlas);
 	self.Center.Background:SetSize((372/2), (52/2));
 
@@ -437,8 +442,19 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 	end
 
 	local markerX = qualityRemainder * (374.25/2);
-	self.Marker:SetPoint("CENTER", self.Center.Fill, "TOPLEFT", markerX, -13);
-	self.DividerGlow:SetPoint("CENTER", self.Marker);
+	if not self.atMaxTier then
+		self.Marker:ClearAllPoints();
+		self.Marker:SetPoint("CENTER", self.Center.Fill, "TOPLEFT", markerX, -13);
+		self.Marker:Show();
+		self.DividerGlow:Show();
+		self.DividerGlow:SetPoint("CENTER", self.Marker);
+	else
+		self.Marker:ClearAllPoints();
+		self.Marker:SetPoint("CENTER", self.Center.Fill, "TOPRIGHT", 0, 0);
+		self.Marker:Hide();
+		self.DividerGlow:ClearAllPoints();
+		self.DividerGlow:Hide();
+	end
 end
 
 function ProfessionsQualityMeterMixin:SetBarAtlas(quality)
@@ -457,7 +473,7 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 	if self.sequencer then
 		self.sequencer:Cancel();
 	end
-
+	
 	self.Left.AppearIcon.Anim:SetAnimationSpeedMultiplier(animSpeedMultiplier);
 	self.Left.AppearIcon.ScaleUp:SetAnimationSpeedMultiplier(animSpeedMultiplier);
 	self.Left.DissolveIcon.Anim:SetAnimationSpeedMultiplier(animSpeedMultiplier);
@@ -510,10 +526,10 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 	-- the more complicated weaving of element animations.
 	self.sequencer = CreateSequencer();
 	do
-		local fillToWidth = GetFillToPct(operationInfo) * (374.25/2);
-		local unitsPerSecond = 200;
-		local time = (fillToWidth / unitsPerSecond) / animSpeedMultiplier;
-		self.sequencer:AddInterpolated(0, 1, time, InterpolatorUtil.InterpolateEaseOut, function(value)
+		local fillToPct = self.atMaxTier and 1 or GetFillToPct(operationInfo);
+		local fillToWidth = fillToPct * (374.25/2);
+
+		local function InterpolateBar(value)
 			local maskWidth = fillToWidth * value;
 			self.Center.Fill.BarMask:SetWidth(maskWidth);
 			-- Mask with 0 extent causes the mask to be ignored. Show the bar
@@ -531,7 +547,16 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 			-- where the marker is.
 			local dividerX = math.max(0, maskWidth - x);
 			self.DividerGlow:SetPoint("CENTER", self.Marker, "CENTER", dividerX, 0);
-		end);
+		end
+
+		if self.atMaxTier then
+			local time = .25;
+			self.sequencer:AddInterpolated(1, 1, time, InterpolatorUtil.InterpolateEaseOut, InterpolateBar);
+		else
+			local unitsPerSecond = 200;
+			local time = (fillToWidth / unitsPerSecond) / animSpeedMultiplier;
+			self.sequencer:AddInterpolated(0, 1, time, InterpolatorUtil.InterpolateEaseOut, InterpolateBar);
+		end
 	end
 
 	local function PlayBeginAnimation()
@@ -565,21 +590,25 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 			PlaySound(soundKit);
 		end
 
-		self.Flare.FlareTransitionIn:Restart();
-		self.DividerGlow.TransitionOut:Restart();
+		if not self.atMaxTier then
+			self.Flare.FlareTransitionIn:Restart();
+			self.DividerGlow.TransitionOut:Restart();
+		end
 
 		if resultData.isCrit then
-			local modifier = Clamp(tonumber(GetCVar("ShakeStrengthUI")) or 0, 0, 1);
-			local magnitude = 10 * modifier;
-			if magnitude > 0 then
-				ScriptAnimationUtil.ShakeFrameRandom(self, magnitude, .25, .05);
+			if not self.atMaxTier then
+				local modifier = Clamp(tonumber(GetCVar("ShakeStrengthUI")) or 0, 0, 1);
+				local magnitude = 10 * modifier;
+				if magnitude > 0 then
+					ScriptAnimationUtil.ShakeFrameRandom(self, magnitude, .25, .05);
+				end
+
+				local effectID = 146;
+				local source = self.Flare.Fx;
+				self.flareEffect = GlobalFXDialogModelScene:AddEffect(effectID, source, nil, OnFxFinished);
+
+				self.Flare.FxTransitionOut:Restart();
 			end
-
-			local effectID = 146;
-			local source = self.Flare.Fx;
-			self.flareEffect = GlobalFXDialogModelScene:AddEffect(effectID, source, nil, OnFxFinished);
-
-			self.Flare.FxTransitionOut:Restart();
 		end
 
 		if promotedTier then

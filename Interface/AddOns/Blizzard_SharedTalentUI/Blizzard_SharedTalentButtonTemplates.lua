@@ -941,12 +941,12 @@ function TalentButtonSpendMixin:Init(...)
 end
 
 function TalentButtonSpendMixin:CanPurchaseRank()
-	return not self:IsLocked() and self.nodeInfo.canPurchaseRank and self:CanAfford();
+	return self.nodeInfo and not self:IsLocked() and self.nodeInfo.canPurchaseRank and self:CanAfford();
 end
 
 function TalentButtonSpendMixin:CanRefundRank()
 	-- We shouldn't be checking ranksPurchased directly.
-	return not self:IsLocked() and self.nodeInfo.canRefundRank and self.nodeInfo.ranksPurchased and (self.nodeInfo.ranksPurchased > 0);
+	return self.nodeInfo and not self:IsLocked() and self.nodeInfo.canRefundRank and self.nodeInfo.ranksPurchased and (self.nodeInfo.ranksPurchased > 0);
 end
 
 function TalentButtonSpendMixin:PurchaseRank()
@@ -971,7 +971,7 @@ function TalentButtonSpendMixin:IsMaxed()
 end
 
 function TalentButtonSpendMixin:HasProgress()
-	return self.nodeInfo.activeRank > 0;
+	return self.nodeInfo and self.nodeInfo.activeRank > 0;
 end
 
 function TalentButtonSpendMixin:ResetDynamic()

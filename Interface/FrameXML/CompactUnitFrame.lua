@@ -1171,7 +1171,7 @@ function CompactUnitFrame_UpdateClassificationIndicator(frame)
 				frame.classificationIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star");
 				frame.classificationIndicator:Show();
 			elseif (classification == "rareelite") then
-				frame.classificationIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare");
+				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
 				frame.classificationIndicator:Show();
 			else
 				frame.classificationIndicator:Hide();

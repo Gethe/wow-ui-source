@@ -4,9 +4,9 @@ do
 	local function AzeriteEmpoweredItemIterator(_, equipSlotIndex)
 		equipSlotIndex = equipSlotIndex + 1;
 
-		if equipSlotIndex <= EQUIPPED_LAST then
+		if equipSlotIndex <= INVSLOT_LAST_EQUIPPED then
 			local itemLocation = ItemLocation:CreateEmpty();
-			while equipSlotIndex <= EQUIPPED_LAST do
+			while equipSlotIndex <= INVSLOT_LAST_EQUIPPED do
 				itemLocation:SetEquipmentSlot(equipSlotIndex);
 
 				if C_Item.DoesItemExist(itemLocation) and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(itemLocation) then

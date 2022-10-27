@@ -1,5 +1,8 @@
 
 local textureKitBackgroundFormat = "%s-Background"; 
+local widgetContainerYOffsetsByTextureKit = { 
+	["completiondialog-dragonflightcampaign"] = 43, 
+}
 
 WidgetCenterDisplayFrameMixin = { };
 function WidgetCenterDisplayFrameMixin:OnLoad()
@@ -29,7 +32,12 @@ function WidgetCenterDisplayFrameMixin:Setup(displayInfo)
 	self.WidgetContainer:UnregisterForWidgetSet();
 
 	if(displayInfo.uiWidgetSetID) then 
-		self.WidgetContainer:RegisterForWidgetSet(displayInfo.uiWidgetSetID, DefaultWidgetLayout);	 
+		self.WidgetContainer:RegisterForWidgetSet(displayInfo.uiWidgetSetID, DefaultWidgetLayout);
+		local widgetContainerOffsetY = widgetContainerYOffsetsByTextureKit[displayInfo.uiTextureKit];
+		if (widgetContainerOffsetY) then 
+			self.WidgetContainer:ClearAllPoints(); 
+			self.WidgetContainer:SetPoint("TOP", self.TitleContainer, "BOTTOM", 0, widgetContainerOffsetY);
+		end
 	end
 
 	if(displayInfo.uiTextureKit) then 
@@ -45,6 +53,7 @@ function WidgetCenterDisplayFrameMixin:Setup(displayInfo)
 	self.fixedHeight = displayInfo.frameHeight > 0 and displayInfo.frameHeight or nil; 
 	
 	self.TitleContainer.fixedWidth = self.fixedWidth or self:GetWidth();
+	self.TitleContainer.Title:SetWidth(self.TitleContainer.fixedWidth);
 	self.TitleContainer:Layout();
 	self:Layout();
 end 

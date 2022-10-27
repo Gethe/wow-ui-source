@@ -277,9 +277,9 @@ function ProfessionsCraftingOutputLogMixin:ProcessPendingResultData(resultData)
 	-- This item or currency may have arrived before or after the original item, so we
 	-- always need to consider saving off this data in case an item with bonusCraft arrives.
 	local inserted = false;
-	if resultData.associatedItemGUID then
+	if resultData.operationID then
 		local parentResultData = FindValueInTableIf(self.pendingResultData, function(data)
-			return data.itemGUID == resultData.associatedItemGUID;
+			return data.operationID == resultData.operationID;
 		end);
 		if parentResultData then
 			table.insert(parentResultData.bonusData, resultData);
@@ -324,7 +324,7 @@ function ProfessionsCraftingOutputLogMixin:FinalizePendingResultData()
 
 	for index, resultData in ipairs_reverse(self.pendingResultData) do
 		local childResultData = FindValueInTableIf(self.pendingResultData, function(data)
-			return data.associatedItemGUID and (resultData.itemGUID == data.associatedItemGUID);
+			return data.operationID and data.firstCraftReward and (resultData.operationID == data.operationID);
 		end);
 		if childResultData then
 			table.remove(self.pendingResultData, index);
@@ -335,7 +335,7 @@ function ProfessionsCraftingOutputLogMixin:FinalizePendingResultData()
 	for index, resultData in ipairs_reverse(self.pendingResultData) do
 		-- We're only expecting to display the original item with bonus items
 		-- and currencies contained within it.
-		if not resultData.associatedItemGUID then
+		if resultData.operationID and not resultData.firstCraftReward then
 			self.ScrollBox:InsertElementData(resultData);
 		end
 	end

@@ -56,7 +56,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="PlayerFrameContent" setAllPoints="true" useParentLevel="true">
+			<Frame parentKey="PlayerFrameContent" setAllPoints="true">
 				<Frames>
 					<Frame parentKey="PlayerFrameContentMain" setAllPoints="true">
 						<Layers>
@@ -91,6 +91,11 @@
 										<Anchor point="CENTER" relativeKey="$parent.$parent.$parent.PlayerFrameContainer.PlayerPortrait" relativePoint="CENTER"/>
 									</Anchors>
 								</FontString>
+								<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="83" y="-35"/>
+									</Anchors>
+								</MaskTexture>
 								<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="83" y="-59"/>

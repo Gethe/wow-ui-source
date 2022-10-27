@@ -93,7 +93,7 @@ function ProfessionsCraftingOrderPageMixin:InitButtons()
 		else
 			tooltipText = CRAFTING_ORDERS_CLAIMS_REMAINING_TOOLTIP:format(claimInfo.claimsRemaining);
 		end
-		GameTooltip_AddHighlightLine(GameTooltip, tooltipText);
+		GameTooltip_AddNormalLine(GameTooltip, tooltipText);
 		GameTooltip:Show();
 	end);
 	self.BrowseFrame.OrdersRemainingDisplay:SetScript("OnLeave", GameTooltip_Hide);

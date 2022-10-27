@@ -1,0 +1,193 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ClassTrial.lua"/>
+	<Script file="Blizzard_ClassTrialOutbound.lua"/>
+	<Script file="Blizzard_ClassTrialSecure.lua"/>
+
+	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+		<Frame name="ClassTrialSecureFrame" hidden="true" mixin="ClassTrialSecureFrameMixin">
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnEvent method="OnEvent"/>
+				<OnAttributeChanged method="OnAttributeChanged"/>
+			</Scripts>
+		</Frame>
+	</ScopedModifier>
+
+	<Frame name="ClassTrialThanksForPlayingDialog" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" parent="UIParent" setAllPoints="true" mixin="ClassTrialDialogMixin" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="DialogFrame" atlas="ClassTrial-End-Frame">
+					<Size x="563" y="345"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-135"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ClassIcon">
+					<Size x="188" y="188"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.DialogFrame" x="-40.0" y="-12.0" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="ThanksText" inherits="QuestFont_Huge" text="CLASS_TRIAL_THANKS_DIALOG_THANKS_MESSAGE_PART1">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DialogFrame" x="40.0" y="-92.0" />
+						<Anchor point="RIGHT" relativeKey="$parent.ClassIcon" relativePoint="LEFT" x="0" y="0" />
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</FontString>
+				<FontString parentKey="ClassNameText" inherits="QuestFont_Enormous">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ThanksText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ThanksText" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</FontString>
+				<FontString parentKey="DialogText" inherits="Game13Font">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DialogFrame" relativePoint="LEFT" x="90.0" y="-26.0" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.DialogFrame" relativePoint="RIGHT" x="-90.0" y="-26.0" />
+					</Anchors>
+					<Color r="0" g="0" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="BuyCharacterBoostButton" inherits="UIPanelButtonTemplate" text="CLASS_TRIAL_THANKS_DIALOG_BUY_BOOST_BUTTON">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():BuyCharacterBoost()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="DecideLaterButton" inherits="UIPanelButtonTemplate" text="CLASS_TRIAL_THANKS_DIALOG_CLOSE_BUTTON">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.BuyCharacterBoostButton" relativePoint="RIGHT" x="22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():DecideLater()
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnKeyDown function="nop"/>
+			<OnKeyUp function="nop"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ExpansionTrialThanksForPlayingDialog" toplevel="true" frameStrata="DIALOG" parent="UIParent" inherits="BaseExpandableDialog" mixin="ExpansionTrialDialogMixin">
+		<Size x="521" y="250"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightShadowOutline22" justifyH="CENTER" justifyV="TOP">
+					<Size x="270" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-45"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ExpansionImage">
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-5" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER" justifyV="TOP">
+					<Size x="360" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ExpansionImage" relativePoint="BOTTOM" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="EatAllInput" frameStrata="LOW" enableMouse="true" enableKeyboard="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="Button" inherits="UIPanelButtonTemplate" text="EXPANSION_TRIAL_THANKS_BUTTON">
+				<Size x="250" y="22"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnButtonClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnKeyDown function="nop"/>
+			<OnKeyUp function="nop"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ClassTrialTimerDisplay" enableMouse="true" parent="UIParent" mixin="ClassTrialTimerDisplayMixin" hidden="true">
+		<Size x="304" y="81"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMLEFT" x="-10" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundLeft" atlas="ClassTrial-Timer">
+					<Size x="279" y="81"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundRight" atlas="ClassTrial-Timer-RightCorner">
+					<Size x="25" y="81"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TimerText" inherits="Game13Font" justifyH="LEFT">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="58" y="-6" />
+					<Anchor point="BOTTOMRIGHT" x="-22" y="6" />
+				</Anchors>
+					<Color r="1" g=".82" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+</Ui>

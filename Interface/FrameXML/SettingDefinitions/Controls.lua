@@ -85,17 +85,6 @@ local function Register()
 	-- Use Combined Inventory Bags
 	Settings.SetupCVarCheckBox(category, "combinedBags", USE_COMBINED_BAGS_TEXT, OPTION_TOOLTIP_USE_COMBINED_BAGS);
 
-	-- Enable Dracthyr Tap Controls (Mirrored in Accessibility)
-	do
-		local function GetTapControlOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(0, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION_TOOLTIP);
-			container:Add(1, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION_TOOLTIP);
-			return container:GetData();
-		end
-		Settings.SetupCVarDropDown(category, "empowerTapControls", Settings.VarType.Number, GetTapControlOptions, SETTING_EMPOWERED_SPELL_INPUT, SETTING_EMPOWERED_SPELL_INPUT_TOOLTIP);
-	end
-
 	-- Enable Interact Key
 	do
 		local function GetValue()

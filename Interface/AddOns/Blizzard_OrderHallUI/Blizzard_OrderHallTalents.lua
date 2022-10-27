@@ -141,6 +141,7 @@ CustomTalentTreeLayoutOptions[DRAGONSCALE_EXPEDITION_TALENT_TREE_ID] =
 	singleCost = false,
 	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_DRAGONSCALE_EXPEDITION_RESEARCH_COMPLETE,
 	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
+	alignOffsetByUiOrder = true, -- uses uiOrder to align talents by their column instead of middle aligning
 };
 setmetatable(CustomTalentTreeLayoutOptions[DRAGONSCALE_EXPEDITION_TALENT_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic]});
 
@@ -744,6 +745,14 @@ function OrderHallTalentFrameMixin:RefreshAllData()
     local completeTalent = C_Garrison.GetCompleteTalent(self.garrisonType);
 	local researchingTalentID = self:GetResearchingTalentID();
 
+	local maxUiOrder = 0;
+	for i = 1, #talents do
+		local talent = talents[i];
+		if talent.uiOrder > maxUiOrder then
+			maxUiOrder = talent.uiOrder;
+		end
+	end
+
 	local currentTier = nil;
 	local currentTierTotalTalentCount, currentTierBaseTalentCount, currentTierDependentTalentCount, currentTierResearchableTalentCount, currentTierTalentIndex, currentTierWidth, currentTierHeight;
 	local contentOffsetY = layoutOptions.spacingTop;
@@ -886,6 +895,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 					middleTalentIndex = middleTalentIndex + 0.5;
 				end
 				local offsetX = currentTierTalentIndex - middleTalentIndex;
+
+				if layoutOptions.alignOffsetByUiOrder then
+					local middleTalentOrder = maxUiOrder / 2;
+					offsetX = talent.uiOrder - middleTalentOrder;
+				end
 				offsetX = offsetX * (buttonInfo.size + buttonInfo.spacingX);
 				talentFrame:SetPoint("TOP", offsetX, -contentOffsetY);
 			end
@@ -1124,6 +1138,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 			self.Highlight:Hide();
 		end
 	end
+
 	self.tooltip = GameTooltip;
 	GameTooltip:Show();
 	EventRegistry:TriggerEvent("GarrisonTalentButtonMixin.TalentTooltipShown", GameTooltip, talent, garrTalentTreeID);

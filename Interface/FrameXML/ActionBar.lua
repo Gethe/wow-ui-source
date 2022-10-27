@@ -68,9 +68,9 @@ function ActionBarMixin:ActionBar_OnShow()
     self:UpdateGridLayout();
 end
 
-function ActionBarMixin:CacheGridSettings(numLayoutObjects)
+function ActionBarMixin:CacheGridSettings(layoutChildren)
     self.oldGridSettings = {
-        numLayoutObjects = numLayoutObjects,
+        layoutChildren = layoutChildren,
         numShowingButtons = self.numShowingButtons,
         numRows = self.numRows,
         isHorizontal = self.isHorizontal,
@@ -80,16 +80,32 @@ function ActionBarMixin:CacheGridSettings(numLayoutObjects)
     };
 end
 
-function ActionBarMixin:ShouldUpdateGrid(numLayoutObjects)
-    return self:IsShown()
-        and (self.oldGridSettings == nil
-            or self.oldGridSettings.numLayoutObjects ~= numLayoutObjects
-            or self.oldGridSettings.numShowingButtons ~= self.numShowingButtons
-            or self.oldGridSettings.numRows ~= self.numRows
-            or self.oldGridSettings.isHorizontal ~= self.isHorizontal
-            or self.oldGridSettings.addButtonsToRight ~= self.addButtonsToRight
-            or self.oldGridSettings.addButtonsToTop ~= self.addButtonsToTop
-            or self.oldGridSettings.buttonPadding ~= self.buttonPadding);
+function ActionBarMixin:ShouldUpdateGrid(layoutChildren)
+    if not self:IsShown() then
+        return false;
+    end
+
+    if self.oldGridSettings == nil then
+        return true;
+    end
+
+    if self.oldGridSettings.numShowingButtons ~= self.numShowingButtons
+    or self.oldGridSettings.numRows ~= self.numRows
+    or self.oldGridSettings.isHorizontal ~= self.isHorizontal
+    or self.oldGridSettings.addButtonsToRight ~= self.addButtonsToRight
+    or self.oldGridSettings.addButtonsToTop ~= self.addButtonsToTop
+    or self.oldGridSettings.buttonPadding ~= self.buttonPadding
+    or #self.oldGridSettings.layoutChildren ~= #layoutChildren then
+        return true;
+    end
+
+    for index, layoutChild in ipairs(layoutChildren) do
+        if self.oldGridSettings.layoutChildren[index] ~= layoutChild then
+            return true;
+        end
+    end
+
+    return false;
 end
 
 function ActionBarMixin:UpdateGridLayout()
@@ -101,8 +117,7 @@ function ActionBarMixin:UpdateGridLayout()
         end
     end
 
-    local numLayoutObjects = #shownButtonsAndSpacers;
-    if not self:ShouldUpdateGrid(numLayoutObjects) then
+    if not self:ShouldUpdateGrid(shownButtonsAndSpacers) then
         return;
     end
 
@@ -147,7 +162,7 @@ function ActionBarMixin:UpdateGridLayout()
 	GridLayoutUtil.ApplyGridLayout(shownButtonsAndSpacers, AnchorUtil.CreateAnchor(anchorPoint, self, anchorPoint), layout);
     self:Layout();
     self:UpdateSpellFlyoutDirection();
-    self:CacheGridSettings(numLayoutObjects);
+    self:CacheGridSettings(shownButtonsAndSpacers);
 end
 
 function ActionBarMixin:SetShowGrid(showGrid, reason)

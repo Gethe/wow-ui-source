@@ -34,7 +34,7 @@
 		<Size x="1" y="1"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="BackHighlight" atlas="Callings-BackHighlight" useAtlasSize="true">
+				<Texture parentKey="BackHighlight" atlas="Callings-Backhighlight-Full" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

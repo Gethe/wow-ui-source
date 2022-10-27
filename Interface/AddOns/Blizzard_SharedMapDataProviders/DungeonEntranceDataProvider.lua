@@ -31,6 +31,7 @@ function DungeonEntranceDataProviderMixin:RefreshAllData(fromOnShow)
 	local dungeonEntrances = C_EncounterJournal.GetDungeonEntrancesForMap(mapID);
 	for i, dungeonEntranceInfo in ipairs(dungeonEntrances) do
 		local pin = self:GetMap():AcquirePin("DungeonEntrancePinTemplate", dungeonEntranceInfo);
+		pin.dataProvider = self;
 		pin:UpdateSupertrackedHighlight();
 	end
 end
@@ -49,7 +50,14 @@ function DungeonEntrancePinMixin:OnMouseClickAction()
 	EncounterJournal_OpenJournal(nil, self.journalInstanceID);
 end
 
+function DungeonEntrancePinMixin:GetHighlightType() -- override
+	if QuestSuperTracking_ShouldHighlightDungeons(self:GetMap():GetMapID()) then
+		return MapPinHighlightType.SupertrackedHighlight;
+	end
+	
+	return MapPinHighlightType.None;
+end
+
 function DungeonEntrancePinMixin:UpdateSupertrackedHighlight()
-	local highlight = QuestSuperTracking_ShouldHighlightDungeons(self:GetMap():GetMapID());
-	MapPinHighlight_CheckHighlightPin(highlight, self, self.Texture);
+	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture);
 end

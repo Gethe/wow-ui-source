@@ -10,11 +10,18 @@ function EditModeSystemMixin:OnSystemLoad()
 	self.SetScaleBase = self.SetScale;
 	self.SetScale = self.SetScaleOverride;
 
+	self.SetPointBase = self.SetPoint;
+	self.SetPoint = self.SetPointOverride;
+
+	self.ClearAllPointsBase = self.ClearAllPoints;
+	self.ClearAllPoints = self.ClearAllPointsOverride;
+
 	EditModeManagerFrame:RegisterSystemFrame(self);
 
 	self.systemName = (self.addSystemIndexToName and self.systemIndex) and self.systemNameString:format(self.systemIndex) or self.systemNameString;
 	self.Selection:SetLabelText(self.systemName);
 	self:SetupSettingsDialogAnchor();
+	self.snappedFrames = {};
 
 	self.settingDisplayInfoMap = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(self.system);
 end
@@ -49,6 +56,16 @@ function EditModeSystemMixin:SetScaleOverride(newScale)
 	if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
 		UIParent_ManageFramePositions();
 	end
+end
+
+function EditModeSystemMixin:SetPointOverride(point, relativeTo, relativePoint, offsetX, offsetY)
+	self:SetPointBase(point, relativeTo, relativePoint, offsetX, offsetY);
+	self:SetSnappedToFrame(relativeTo);
+end
+
+function EditModeSystemMixin:ClearAllPointsOverride()
+	self:ClearAllPointsBase();
+	self:ClearFrameSnap();
 end
 
 function EditModeSystemMixin:UpdateClampOffsets()
@@ -132,6 +149,7 @@ function EditModeSystemMixin:ResetToDefaultPosition()
 	self.systemInfo.anchorInfo = EditModePresetLayoutManager:GetModernSystemAnchorInfo(self.system, self.systemIndex);
 	self.systemInfo.anchorInfo2 = nil;
 	self.systemInfo.isInDefaultPosition = true;
+	self:BreakSnappedFrames();
 	self:ApplySystemAnchor();
 	EditModeSystemSettingsDialog:UpdateDialog(self);
 	self:SetHasActiveChanges(true);
@@ -395,6 +413,47 @@ function EditModeSystemMixin:GetSnapOffsets(frameInfo)
 	return offsetX, offsetY;
 end
 
+function EditModeSystemMixin:AddSnappedFrame(frame)
+	self.snappedFrames[frame] = true;
+end
+
+function EditModeSystemMixin:RemoveSnappedFrame(frame)
+	self.snappedFrames[frame] = nil;
+end
+
+function EditModeSystemMixin:BreakSnappedFrames()
+	for snappedFrame in pairs(self.snappedFrames) do
+		snappedFrame:BreakFrameSnap();
+	end
+end
+
+function EditModeSystemMixin:SetSnappedToFrame(frame)
+	if type(frame) == "string" then
+		frame = _G[frame];
+	end
+
+	if frame and type(frame) == "table" and frame.AddSnappedFrame then
+		frame:AddSnappedFrame(self);
+		self.snappedToFrame = frame;
+	end
+end
+
+function EditModeSystemMixin:ClearFrameSnap()
+	if self.snappedToFrame then
+		self.snappedToFrame:RemoveSnappedFrame(self);
+		self.snappedToFrame = nil;
+	end
+end
+
+function EditModeSystemMixin:BreakFrameSnap()
+	local frameCenterX, frameCenterY = self:GetCenter();
+	self:ClearAllPoints();
+	self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", frameCenterX, frameCenterY);
+	EditModeManagerFrame:UpdateSystemAnchorInfo(self);
+
+	self:ClearFrameSnap();
+end
+
 function EditModeSystemMixin:SnapToFrame(frameInfo)
 	local offsetX, offsetY = self:GetSnapOffsets(frameInfo);
 	self:SetPoint(frameInfo.point, frameInfo.frame, frameInfo.relativePoint, offsetX, offsetY);
@@ -500,7 +559,7 @@ function EditModeSystemMixin:OnDragStart()
 		if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
 			self:SetParent(UIParent);
 		end
-
+		self:ClearFrameSnap();
 		self:StartMoving();
 	end
 end
@@ -511,8 +570,7 @@ function EditModeSystemMixin:OnDragStop()
 		if EditModeManagerFrame:IsSnapEnabled() then
 			EditModeMagnetismManager:ApplyMagnetism(self);
 		end
-		local isInDefaultPositionNo = false;
-		EditModeManagerFrame:OnSystemPositionChange(self, isInDefaultPositionNo);
+		EditModeManagerFrame:OnSystemPositionChange(self);
 	end
 end
 
@@ -549,7 +607,8 @@ function EditModeActionBarSystemMixin:GetRightAnchoredWidth()
 	end
 
 	if self:IsShown() and self:IsInDefaultPosition() then
-		return self:GetWidth() - self.systemInfo.anchorInfo.offsetX;
+		local offsetX = select(4, self:GetPoint(1));
+		return self:GetWidth() - offsetX;
 	end
 
 	return 0;
@@ -561,7 +620,8 @@ function EditModeActionBarSystemMixin:GetBottomAnchoredHeight()
 	end
 
 	if self:IsShown() and self:IsInDefaultPosition() then
-		return self:GetHeight() + self.systemInfo.anchorInfo.offsetY;
+		local offsetY = select(5, self:GetPoint(1));
+		return self:GetHeight() + offsetY;
 	end
 
 	return 0;
@@ -1103,13 +1163,6 @@ end
 
 EditModeArenaUnitFrameSystemMixin = {};
 
-function EditModeArenaUnitFrameSystemMixin:OnSystemLoad()
-	EditModeSystemMixin.OnSystemLoad(self);
-
-	-- Gotta call this ourselves since arena frames are loaded in as needed on the fly so they won't be setup yet
-	EditModeManagerFrame:UpdateSystem(self);
-end
-
 function EditModeArenaUnitFrameSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);
 
@@ -1509,13 +1562,6 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 end
 
 EditModeTalkingHeadFrameSystemMixin = {};
-
-function EditModeTalkingHeadFrameSystemMixin:OnSystemLoad()
-	EditModeSystemMixin.OnSystemLoad(self);
-
-	-- Gotta call this ourselves since talking head is loaded in as needed on the fly so it won't be setup yet
-	EditModeManagerFrame:UpdateSystem(self);
-end
 
 function EditModeTalkingHeadFrameSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);

@@ -850,6 +850,11 @@ local Unit =
 			},
 		},
 		{
+			Name = "PlayerSoftTargetInteraction",
+			Type = "Event",
+			LiteralName = "PLAYER_SOFT_TARGET_INTERACTION",
+		},
+		{
 			Name = "PlayerSpecializationChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SPECIALIZATION_CHANGED",

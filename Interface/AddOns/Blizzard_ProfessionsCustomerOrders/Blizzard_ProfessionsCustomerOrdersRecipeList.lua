@@ -4,8 +4,20 @@ ProfessionsCustomerOrdersRecipeListElementMixin = CreateFromMixins(ScrollListLin
 function ProfessionsCustomerOrdersRecipeListElementMixin:OnLoad()
 	self:RegisterEvent("CRAFTINGORDERS_CUSTOMER_FAVORITES_CHANGED");
 
-	self.FavoriteButton:SetScript("OnLeave", function() self:OnLineLeave(); end);
-	self.FavoriteButton:SetScript("OnClick", function() C_CraftingOrders.SetCustomerOptionFavorited(self.option.spellID, not self:IsFavorite()); end);
+	self.FavoriteButton:SetScript("OnLeave", function()
+		GameTooltip_Hide();
+		self:OnLineLeave();
+	end);
+	local function OnFavoriteButtonEnter(frame)
+		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+		GameTooltip_AddHighlightLine(GameTooltip, self:IsFavorite() and AUCTION_HOUSE_DROPDOWN_REMOVE_FAVORITE or AUCTION_HOUSE_DROPDOWN_SET_FAVORITE);
+		GameTooltip:Show();
+	end
+	self.FavoriteButton:SetScript("OnEnter", OnFavoriteButtonEnter);
+	self.FavoriteButton:SetScript("OnClick", function(frame)
+		C_CraftingOrders.SetCustomerOptionFavorited(self.option.spellID, not self:IsFavorite());
+		OnFavoriteButtonEnter(frame);
+	 end);
 end
 
 function ProfessionsCustomerOrdersRecipeListElementMixin:OnEvent()

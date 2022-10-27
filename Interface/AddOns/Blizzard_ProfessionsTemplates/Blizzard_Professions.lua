@@ -747,6 +747,17 @@ function Professions.GetIconForQuality(quality, small)
 	return ("Professions-Icon-Quality-Tier%d"):format(quality);
 end
 
+function Professions.GetChatIconMarkupForQuality(quality, small, overrideOffsetY)
+	local atlas = ("professions-chaticon-quality-tier%d"):format(quality);
+	local offsetX = nil;
+	local offsetY = overrideOffsetY or (small and 0 or 1);
+	local rVertexColor = nil;
+	local gVertexColor = nil;
+	local bVertexColor = nil;
+	local scale = small and 0.4 or 0.5;
+	return CreateAtlasMarkupWithAtlasSize(atlas, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor, scale);
+end
+
 function Professions.GetOrderDurationText(duration)
 	if duration == Enum.TradeskillOrderDuration.Short then
 		return PROFESSIONS_LISTING_DURATION_ONE;
@@ -789,6 +800,14 @@ function Professions.IsUsingDefaultFilters(ignoreSkillLine)
 	local isDefaultSkillLine = ignoreSkillLine or newestKnownProfessionInfo == nil or (C_TradeSkillUI.GetChildProfessionInfo().professionID == Professions.GetNewestKnownProfessionInfo().professionID);
 	return showAllRecipes and isDefaultSkillLine and not C_TradeSkillUI.AreAnyInventorySlotsFiltered() and 
 		not C_TradeSkillUI.AnyRecipeCategoriesFiltered() and Professions.AreAllSourcesUnfiltered() and not C_TradeSkillUI.GetShowUnlearned() and C_TradeSkillUI.GetShowLearned();
+end
+
+
+function Professions.SetAllInventorySlotsFiltered(filtered)
+	local numSources = C_TradeSkillUI.GetAllFilterableInventorySlotsCount();
+	for i = 1, numSources do
+		C_TradeSkillUI.SetInventorySlotFilter(i, filtered);
+	end
 end
 
 function Professions.SetAllSourcesFiltered(filtered)
@@ -844,6 +863,7 @@ end
 function Professions.GetCurrentFilterSet()
 	local filterSet =
 	{
+		textFilter = C_TradeSkillUI.GetRecipeItemNameFilter(),
 		showOnlyMakeable = C_TradeSkillUI.GetOnlyShowMakeableRecipes(),
 		showOnlySkillUps = C_TradeSkillUI.GetOnlyShowSkillUpRecipes(),
 		showOnlyFirstCraft = C_TradeSkillUI.GetOnlyShowFirstCraftRecipes(),
@@ -862,6 +882,7 @@ end
 
 function Professions.ApplyfilterSet(filterSet)
 	if filterSet then
+		Professions.OnRecipeListSearchTextChanged(filterSet.textFilter);
 		C_TradeSkillUI.SetShowLearned(filterSet.showLearned);
 		C_TradeSkillUI.SetShowUnlearned(filterSet.showUnlearned);
 		C_TradeSkillUI.SetOnlyShowMakeableRecipes(filterSet.showOnlyMakeable);
@@ -877,6 +898,7 @@ function Professions.ApplyfilterSet(filterSet)
 			EventRegistry:TriggerEvent("Professions.SelectSkillLine", filterSet.professionInfo);
 		end
 	else
+		Professions.OnRecipeListSearchTextChanged("");
 		Professions.SetDefaultFilters();
 	end
 end
@@ -925,16 +947,16 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate, ignoreSkillLine)
 						type = FilterComponent.TextButton,
 						text = CHECK_ALL,
 						set = function()
-							Professions.SetAllSourcesFiltered(false)
-							UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL)
+							Professions.SetAllSourcesFiltered(false);
+							UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
 						end
 					},
 					{
 						type = FilterComponent.TextButton,
 						text = UNCHECK_ALL,
 						set = function()
-							Professions.SetAllSourcesFiltered(true)
-							UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL)
+							Professions.SetAllSourcesFiltered(true);
+							UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
 						end
 					},
 					{
@@ -970,6 +992,22 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate, ignoreSkillLine)
 		value = 1,
 		childrenInfo = {
 			filters = {
+				{
+					type = FilterComponent.TextButton,
+					text = CHECK_ALL,
+					set = function()
+						Professions.SetAllInventorySlotsFiltered(true);
+						UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
+					end
+				},
+				{
+					type = FilterComponent.TextButton,
+					text = UNCHECK_ALL,
+					set = function()
+						Professions.SetAllInventorySlotsFiltered(false);
+						UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
+					end
+				},
 				{
 					type = FilterComponent.DynamicFilterSet,
 					buttonType = FilterComponent.Checkbox,

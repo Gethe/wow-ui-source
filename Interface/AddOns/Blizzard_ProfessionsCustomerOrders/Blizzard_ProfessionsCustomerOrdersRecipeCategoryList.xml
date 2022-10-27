@@ -8,6 +8,8 @@
 			<OnLoad method="OnLoad"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">

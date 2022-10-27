@@ -642,9 +642,9 @@ local SharedTraits =
 			Fields =
 			{
 				{ Name = "spellID", Type = "number", Nilable = true },
-				{ Name = "overrideName", Type = "string", Nilable = false },
-				{ Name = "overrideSubtext", Type = "string", Nilable = false },
-				{ Name = "overrideDescription", Type = "string", Nilable = false },
+				{ Name = "overrideName", Type = "string", Nilable = true },
+				{ Name = "overrideSubtext", Type = "string", Nilable = true },
+				{ Name = "overrideDescription", Type = "string", Nilable = true },
 				{ Name = "overrideIcon", Type = "number", Nilable = true },
 				{ Name = "overriddenSpellID", Type = "number", Nilable = true },
 			},

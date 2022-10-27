@@ -20,13 +20,31 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.RefreshAllData, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.RefreshAllData, self);
+	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
 end
 
 function QuestDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
+	self:GetMap():UnregisterCallback("SetBounty", self.SetBounty, self);
 
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
+end
+
+function QuestDataProviderMixin:SetBounty(bountyQuestID, bountyFactionID, bountyFrameType)
+	local changed = self.bountyQuestID ~= bountyQuestID;
+	if changed then
+		self.bountyQuestID = bountyQuestID;
+		self.bountyFactionID = bountyFactionID;
+		self.bountyFrameType = bountyFrameType;
+		if self:GetMap() then
+			self:RefreshAllData();
+		end
+	end
+end
+
+function QuestDataProviderMixin:GetBountyInfo()
+	return self.bountyQuestID, self.bountyFactionID, self.bountyFrameType;
 end
 
 function QuestDataProviderMixin:OnEvent(event, ...)
@@ -148,6 +166,7 @@ end
 function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWaypoint)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = questID;
+	pin.dataProvider = self;
 	QuestPOI_SetPinScale(pin, 2.5);
 
 	local isSuperTracked = questID == C_SuperTrack.GetSuperTrackedQuestID();
@@ -180,6 +199,8 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 	end
 
 	QuestPOI_UpdateButtonStyle(pin);
+
+	MapPinHighlight_CheckHighlightPin(pin:GetHighlightType(), pin, pin.NormalTexture);
 
 	pin:SetPosition(x, y);
 	return pin;
@@ -250,6 +271,17 @@ end
 
 function QuestPinMixin:SetQuestNumber(questNumber)
 	self.index = questNumber;
+end
+
+function QuestPinMixin:GetHighlightType() -- override
+	local bountyQuestID, bountyFactionID, bountyFrameType = self.dataProvider:GetBountyInfo();
+	if bountyFrameType == BountyFrameType.ActivityTracker then
+		if bountyFactionID and self.questID and C_QuestLog.DoesQuestAwardReputationWithFaction(self.questID, bountyFactionID) then
+			return MapPinHighlightType.SupertrackedHighlight;
+		end
+	end
+
+	return MapPinHighlightType.None;
 end
 
 function QuestPinMixin:OnMouseDownAction()

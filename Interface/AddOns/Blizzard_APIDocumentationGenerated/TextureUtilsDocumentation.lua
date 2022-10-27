@@ -21,6 +21,20 @@ local TextureUtils =
 			},
 		},
 		{
+			Name = "GetCraftingReagentQualityChatIcon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "quality", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "textureMarkup", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFilenameFromFileDataID",
 			Type = "Function",
 

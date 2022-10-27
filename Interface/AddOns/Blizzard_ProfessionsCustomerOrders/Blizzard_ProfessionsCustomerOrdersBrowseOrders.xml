@@ -20,6 +20,9 @@
 				</Anchors>
 				<Frames>
 					<Button parentKey="FavoritesSearchButton" inherits="SquareIconButtonTemplate" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true">
+						<Scripts>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
 						<Anchors>
 							<Anchor point="LEFT"/>
 						</Anchors>

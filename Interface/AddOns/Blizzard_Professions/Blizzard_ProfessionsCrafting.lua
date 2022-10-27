@@ -370,13 +370,21 @@ end
 	return 0;
 end
 
+function ProfessionsCraftingPageMixin:SetCreateButtonTooltipText(tooltipText)
+	if tooltipText then
+		tooltipText = RED_FONT_COLOR:WrapTextInColorCode(tooltipText);
+	end
+	self.CreateButton.tooltipText = tooltipText;
+	self.CreateAllButton.tooltipText = tooltipText;
+end
+
 function ProfessionsCraftingPageMixin:ValidateControls()
 	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
 	if currentRecipeInfo ~= nil and currentRecipeInfo.learned and (Professions.InLocalCraftingMode() or C_TradeSkillUI.IsNPCCrafting() or isRuneforging)
-	   and not currentRecipeInfo.isRecraft
-	   and not currentRecipeInfo.isDummyRecipe and not currentRecipeInfo.isGatheringRecipe then
+		and not currentRecipeInfo.isRecraft
+		and not currentRecipeInfo.isDummyRecipe and not currentRecipeInfo.isGatheringRecipe then
 		self.CreateButton:Show();
 		self.ViewGuildCraftersButton:Hide();
 
@@ -441,24 +449,21 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 		local enabled;
 		if PartialPlayTime() then
 			local reasonText = PLAYTIME_TIRED_ABILITY:format(REQUIRED_REST_HOURS - math.floor(GetBillingTimeRested() / 60));
-			self.CreateButton.tooltipText = reasonText;
-			self.CreateAllButton.tooltipText = reasonText;
+			self:SetCreateButtonTooltipText(reasonText);
 			enabled = false;
 		elseif NoPlayTime() then
 			local reasonText = PLAYTIME_UNHEALTHY_ABILITY:format(REQUIRED_REST_HOURS - math.floor(GetBillingTimeRested() / 60));
-			self.CreateButton.tooltipText = reasonText;
-			self.CreateAllButton.tooltipText = reasonText;
+			self:SetCreateButtonTooltipText(reasonText);
 			enabled = false;
 		elseif Professions.IsRecipeOnCooldown(currentRecipeInfo.recipeID) then
-			self.CreateButton.tooltipText = PROFESSIONS_RECIPE_COOLDOWN;
-			self.CreateAllButton.tooltipText = PROFESSIONS_RECIPE_COOLDOWN;
+			self:SetCreateButtonTooltipText(PROFESSIONS_RECIPE_COOLDOWN);
 			enabled = false;
 		else
-			self.CreateButton.tooltipText = nil;
-			self.CreateAllButton.tooltipText = nil;
+			self:SetCreateButtonTooltipText(nil);
 			
 			local requiresCount = not isRuneforging;
 			if requiresCount and countMax <= 0 then
+				self:SetCreateButtonTooltipText(PROFESSIONS_INSUFFICIENT_REAGENTS);
 				enabled = false;
 			elseif not currentRecipeInfo.craftable or currentRecipeInfo.disabled then
 				enabled = false;
@@ -469,31 +474,41 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 
 		local restrictAllButton = false;
 		if enabled then
-			-- Enchanting does not require the optional target to be set. When it is not,
-			-- clicking the create button creates a targeting cursor.
-			if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
-				enabled = transaction:HasAllocatedSalvageRequirements();
-			else
-				if not transaction:HasAllocatedReagentRequirements() then
-					enabled = false;
-				end
+			local requirements = C_TradeSkillUI.GetRecipeRequirements(currentRecipeInfo.recipeID);
+			local anyRequirementMissing = ContainsIf(requirements, function(requirement)
+				return not requirement.met;
+			end);
 
-				if transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
-					local doesTargetSupportStacks = false;
-					local enchantItem = transaction:GetEnchantAllocation();
-					if enchantItem then
-						doesTargetSupportStacks = enchantItem:IsStackable();
-					end
-
-					if not doesTargetSupportStacks then
-						restrictAllButton = true;
-					end
+			enabled = not anyRequirementMissing;
+			if not enabled then
+				if not enabled then
+					self:SetCreateButtonTooltipText(PROFESSIONS_MISSING_REQUIREMENT);
 				end
 			end
 
-			if not enabled then
-				self.CreateButton.tooltipText = PROFESSIONS_INSUFFICIENT_REAGENTS;
-				self.CreateAllButton.tooltipText = PROFESSIONS_INSUFFICIENT_REAGENTS;
+			if enabled then
+				if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
+					enabled = transaction:HasAllocatedSalvageRequirements();
+				else
+					enabled = transaction:HasAllocatedReagentRequirements();
+				end
+				if not enabled then
+					self:SetCreateButtonTooltipText(PROFESSIONS_INSUFFICIENT_REAGENTS);
+				end
+			end
+		end
+
+		-- Enchanting does not require the optional target to be set. When it is not,
+		-- clicking the create button creates a targeting cursor.
+		if transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
+			local doesTargetSupportStacks = false;
+			local enchantItem = transaction:GetEnchantAllocation();
+			if enchantItem then
+				doesTargetSupportStacks = enchantItem:IsStackable();
+			end
+
+			if not doesTargetSupportStacks then
+				restrictAllButton = true;
 			end
 		end
 
@@ -880,18 +895,17 @@ end
 ProfessionsCraftingPage_HelpPlate = 
 {
 	FramePos = { x = 5,	y = -22 },
-	[1] = { ButtonPos = { x = 125,	y = -44 }, HighLightBox = { x = 0, y = -52, width = 297, height = 30 }, ToolTipDir = "DOWN", ToolTipText = PROFESSIONS_CRAFTING_HELP_FILTERS },
 };
 
 function ProfessionsCraftingPageMixin:UpdateTutorial()
 	ProfessionsCraftingPage_HelpPlate.FrameSize = { width = self:GetDesiredPageWidth(), height = 635 };
 
-	local numStaticAreas = 1;
-	local maxTutorializedAreas = 7;
-	for i = (numStaticAreas + 1), maxTutorializedAreas do
+	local maxTutorializedAreas = 8;
+	for i = 1, maxTutorializedAreas do
 		ProfessionsCraftingPage_HelpPlate[i] = nil;
 	end
 
+	table.insert(ProfessionsCraftingPage_HelpPlate, { ButtonPos = { x = 125,	y = -44 }, HighLightBox = { x = 0, y = -52, width = 297, height = 30 }, ToolTipDir = "DOWN", ToolTipText = ProfessionsFrame.professionType == Professions.ProfessionType.Gathering and PROFESSIONS_GATHERING_JOURNAL_LIST_HELP or PROFESSIONS_CRAFTING_HELP_FILTERS });
 
 	if self.SchematicForm.Reagents:IsShown() then
 		local reagentsTopPoint = self.SchematicForm.Reagents:GetTop() - self:GetTop() + 30;
@@ -915,12 +929,13 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		if self.SchematicForm.OptionalReagents:IsShown() then
 			local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
 			local padding = 5;
+			local optioanlReagentsWidth = 240;
 			local optionalReagentsSection =
 			{
 				ButtonPos = { x = basicReagentsBoxLeft + reagentsBoxWidth + padding + reagentsButtonXOfs, y = basicReagentsBoxTop + reagentsButtonYOfs },
-				HighLightBox = { x = basicReagentsBoxLeft + reagentsBoxWidth + padding, y = basicReagentsBoxTop, width = reagentsBoxWidth, height = reagentsBoxHeight },
+				HighLightBox = { x = basicReagentsBoxLeft + reagentsBoxWidth + padding, y = basicReagentsBoxTop, width = optioanlReagentsWidth, height = reagentsBoxHeight },
 				ToolTipDir = "UP",
-				ToolTipText = (currentRecipeInfo and currentRecipeInfo.supportsQualities and C_TradeSkillUI.RecipeCanBeRecrafted(currentRecipeInfo.recipeID)) and PROFESSIONS_CRAFTING_HELP_OPTIONAL_REAGENTS_RECRAFTABLE or PROFESSIONS_CRAFTING_HELP_OPTIONAL_REAGENTS,
+				ToolTipText = PROFESSIONS_CRAFTING_HELP_OPTIONAL_REAGENTS,
 			};
 			table.insert(ProfessionsCraftingPage_HelpPlate, optionalReagentsSection);
 		end
@@ -931,7 +946,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 			local bestQualityCheckboxSection =
 			{
 				ButtonPos = { x = basicReagentsBoxLeft + width - 25, y = y },
-				HighLightBox = { x = basicReagentsBoxLeft, y = y, width = width, height = 60 },
+				HighLightBox = { x = basicReagentsBoxLeft, y = y, width = width, height = 50 },
 				ToolTipDir = "RIGHT",
 				ToolTipText = PROFESSIONS_CRAFTING_HELP_BEST_QUALITY,
 			};
@@ -939,8 +954,10 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		end
 	end
 
-	local detailsShown = self.SchematicForm.Details:IsShown();
+	local details = self.SchematicForm.Details;
+	local detailsShown = details:IsShown();
 	local qualityMeter = self.SchematicForm.Details.QualityMeter;
+	local finishingReagents = self.SchematicForm.Details.FinishingReagentSlotContainer;
 	if detailsShown and qualityMeter:IsShown() then
 		local qualityMeterTopPoint = qualityMeter:GetTop() - self:GetTop() + 14;
 		local qualityMeterLeftPoint = qualityMeter:GetLeft() - self:GetLeft() - 5;
@@ -954,8 +971,28 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		};
 		table.insert(ProfessionsCraftingPage_HelpPlate, qualityMeterSection);
 	end
+	if detailsShown then
+		local statsTopPoint = details:GetTop() - self:GetTop() + 4;
+		local statsLeftPoint = details:GetLeft() - self:GetLeft();
+		local statsBoxWidth = 250;
+		local statsBoxHeight;
+		if qualityMeter:IsShown() then
+			statsBoxHeight = details:GetTop() - qualityMeter:GetTop() - 25;
+		elseif finishingReagents:IsShown() then
+			statsBoxHeight = details:GetTop() - finishingReagents:GetTop() - 10;
+		else
+			statsBoxHeight = details:GetHeight() - 40;
+		end
+		local statsSection =
+		{
+			ButtonPos = { x = statsLeftPoint + statsBoxWidth - 25, y = statsTopPoint },
+			HighLightBox = { x = statsLeftPoint, y = statsTopPoint, width = statsBoxWidth, height = statsBoxHeight },
+			ToolTipDir = "RIGHT",
+			ToolTipText = details.recipeInfo.isGatheringRecipe and PROFESSIONS_GATHERING_JOURNAL_STATS_HELP or PROFESSIONS_CRAFTING_HELP_STATS,
+		};
+		table.insert(ProfessionsCraftingPage_HelpPlate, statsSection);
+	end
 
-	local finishingReagents = self.SchematicForm.Details.FinishingReagentSlotContainer;
 	if detailsShown and finishingReagents:IsShown() then
 		local finishingReagentsTopPoint = finishingReagents:GetTop() - self:GetTop();
 		local finishingReagentsLeftPoint = finishingReagents:GetLeft() - self:GetLeft() + 50;
@@ -974,7 +1011,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		local gearSection =
 		{
 			ButtonPos = { x = 1066, y = -3 },
-			HighLightBox = { x = 937, y = 1, width = 153, height = 56 },
+			HighLightBox = { x = 927, y = 1, width = 163, height = 56 },
 			ToolTipDir = "RIGHT",
 			ToolTipText = PROFESSIONS_CRAFTING_HELP_GEAR,
 		};

@@ -137,6 +137,7 @@
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnAttributeChanged method="OnAttributeChanged"/>
 		</Scripts>
 	</Frame>
 

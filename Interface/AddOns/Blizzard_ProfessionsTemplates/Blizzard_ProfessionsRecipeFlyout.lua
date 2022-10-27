@@ -99,6 +99,8 @@ function ProfessionsItemFlyoutMixin:OnHide()
 	self:UnregisterEvents();
 
 	self.owner = nil;
+	self.OnElementEnterImplementation = nil;
+	self.OnElementEnabledImplementation = nil;
 	--[[
 		NOTE: OnHide triggers when the frame is no longer visible, not when it is no longer shown.
 		This frame may become non-visible because its parent gets hidden, but it may itself still be shown.

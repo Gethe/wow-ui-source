@@ -481,7 +481,6 @@ local ALWAYS_ON_FILTERS = {
 local CONDITIONAL_FILTERS = {
 	[Enum.MinimapTrackingFilter.Target] = true,
 	[Enum.MinimapTrackingFilter.Digsites] = true,
-	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
 	[Enum.MinimapTrackingFilter.Repair] = true,
 };
 
@@ -489,9 +488,14 @@ local OPTIONAL_FILTERS = {
 	[Enum.MinimapTrackingFilter.Banker] = true,
 	[Enum.MinimapTrackingFilter.Auctioneer] = true,
 	[Enum.MinimapTrackingFilter.Barber] = true,
+	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
 	[Enum.MinimapTrackingFilter.TrivialQuests] = true,
 	[Enum.MinimapTrackingFilter.Transmogrifier] = true,
 	[Enum.MinimapTrackingFilter.Mailbox] = true,
+};
+
+local LOW_PRIORITY_TRACKING_SPELLS = {
+	[261764] = true; -- Track Warboards
 };
 
 function MiniMapTrackingDropDown_SetTrackingNone()
@@ -567,6 +571,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		UIDropDownMenu_AddButton(info, level)
 	end
 
+	local trackingInfos = { };
 	for id=1, count do
 		name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
 
@@ -600,11 +605,29 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 				(nested < 0 or -- this tracking shouldn't be nested
 				(nested == HUNTER_TRACKING and class ~= "HUNTER") or
 				(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
-				UIDropDownMenu_AddButton(info, level);
+				table.insert(trackingInfos, info);
 			elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
-				UIDropDownMenu_AddButton(info, level);
+				table.insert(trackingInfos, info);
 			end
 		end
+	end
+
+	table.sort(trackingInfos, function(a, b)
+		-- Sort low priority tracking spells to the end
+		local filterA = C_Minimap.GetTrackingFilter(a.arg1);
+		local filterB = C_Minimap.GetTrackingFilter(b.arg1);
+		local lowPriorityA = LOW_PRIORITY_TRACKING_SPELLS[filterA.spellID] or false;
+		local lowPriorityB = LOW_PRIORITY_TRACKING_SPELLS[filterB.spellID] or false;
+		if lowPriorityA ~= lowPriorityB then
+			return not lowPriorityA;
+		end
+
+		-- Sort by id
+		return a.arg1 < b.arg1;
+	end);
+
+	for _, info in ipairs(trackingInfos) do
+		UIDropDownMenu_AddButton(info, level);
 	end
 
 end

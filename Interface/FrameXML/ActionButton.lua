@@ -343,11 +343,6 @@ function ActionBarActionButtonMixin:UpdatePressAndHoldAction()
 		local actionType, id = GetActionInfo(self.action);
 		if actionType == "spell" then
 			pressAndHoldAction = IsPressHoldReleaseSpell(id);
-		elseif actionType == "macro" then
-			local spellID = GetMacroSpell(id);
-			if spellID then
-				pressAndHoldAction = IsPressHoldReleaseSpell(spellID);
-			end
 		end
 	end
 

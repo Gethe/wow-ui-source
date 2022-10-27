@@ -238,7 +238,7 @@ local function FillToggleButtonsIfNeeded()
 end
 
 function PlayerChoiceToggle_ShouldShow()
-	return C_PlayerChoice.IsWaitingForPlayerChoiceResponse() and C_PlayerChoice.GetRemainingTime();
+	return C_PlayerChoice.IsWaitingForPlayerChoiceResponse() or C_PlayerChoice.GetRemainingTime();
 end
 
 function PlayerChoiceToggle_TryShow()

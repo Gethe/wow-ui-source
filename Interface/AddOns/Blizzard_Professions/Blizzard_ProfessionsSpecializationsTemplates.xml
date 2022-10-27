@@ -18,8 +18,11 @@
 		</Scripts>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="StateIcon" atlas="Professions_Specialization_Lock" useAtlasSize="false">
+				<Texture parentKey="StateIcon" atlas="Professions_Specialization_Lock" passThroughButtons="LeftButton" useAtlasSize="false">
 					<Size x="26" y="32"/>
+					<Scripts>
+						<OnLeave function="GameTooltip_Hide"/>
+					</Scripts>
 					<Anchors>
 						<!-- Re-anchored dynamically -->
 						<Anchor point="CENTER"/>

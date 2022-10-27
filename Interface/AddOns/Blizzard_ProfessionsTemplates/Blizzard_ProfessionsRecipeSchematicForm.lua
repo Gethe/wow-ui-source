@@ -258,6 +258,15 @@ function ProfessionsRecipeSchematicFormMixin:ClearTransaction()
 	self.transaction = nil;
 end
 
+local function GetRequirements(recipeID)
+	local requirements = {};
+	for index, recipeRequirement in ipairs(C_TradeSkillUI.GetRecipeRequirements(recipeID)) do
+		table.insert(requirements, recipeRequirement.name);
+		table.insert(requirements, recipeRequirement.met);
+	end
+	return requirements;
+end
+
 function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	local xPadding = 0;
 	local yPadding = 4;
@@ -307,14 +316,14 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	if isRecraft == nil then
 		isRecraft = isRecipeInfoRecraft;
 	end
-	self.isRecraftOverride = isRecraftOverride
+	self.isRecraftOverride = isRecraftOverride;
 
 	local recraftTransitionData = Professions.GetRecraftingTransitionData();
 	if recraftTransitionData and isRecraftOverride == nil then
 		isRecraft = true;
 	end
 
-	local newTransaction = not self.transaction or recraftTransitionData or (self.transaction:GetRecipeID() ~= recipeID);
+	local newTransaction = not self.transaction or (self.transaction:GetRecipeID() ~= recipeID);
 	if not newTransaction and (self.transaction and self.transaction:IsRecraft()) and isRecraftOverride == nil then
 		isRecraft = true;
 	end
@@ -334,7 +343,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.OutputText:Show();
 	end
 
-	local showFavoriteButton = self.canShowFavoriteButton and not isRecraft;
+	local showFavoriteButton = self.canShowFavoriteButton and recipeInfo.learned and not isRecraft;
 	self.FavoriteButton:SetShown(showFavoriteButton);
 	if showFavoriteButton then
 		local isFavorite = C_TradeSkillUI.IsRecipeFavorite(recipeID);
@@ -361,20 +370,22 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.transaction:SetAllocationsChangedHandler(nil);
 	end
 
-	local function AllocateModification(slotIndex, reagentSlotSchematic)
-		local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
-		if modification and modification.itemID > 0 then
-			local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
-			self.transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
-		end
-	end
-
 	if recraftTransitionData then
 		self.transaction:SetRecraftAllocation(recraftTransitionData.itemGUID);
 
-		for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
-			if reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent then
-				AllocateModification(slotIndex, reagentSlotSchematic);
+		if newTransaction then
+			local function AllocateModification(slotIndex, reagentSlotSchematic)
+				local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
+				if modification and modification.itemID > 0 then
+					local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
+					self.transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
+				end
+			end
+
+			for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
+				if reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent then
+					AllocateModification(slotIndex, reagentSlotSchematic);
+				end
 			end
 		end
 	end
@@ -572,14 +583,13 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			fontString:SetHeight(fontString:GetStringHeight());
 		end
 
-
-		local tools = BuildColoredListString(C_TradeSkillUI.GetRecipeTools(recipeID));
-		if tools then
+		if #C_TradeSkillUI.GetRecipeRequirements(recipeInfo.recipeID) > 0 then
 			local fontString = isRecraft and self.RecraftingRequiredTools or self.RequiredTools;
 			fontString:Show();
 			
 			self.UpdateRequiredTools = function()
-				SetRequiredToolsText(fontString, PROFESSIONS_REQUIRED_TOOLS:format(tools));
+				local requirementsText = BuildColoredListString(unpack(GetRequirements(recipeInfo.recipeID)));
+				SetRequiredToolsText(fontString, PROFESSIONS_REQUIRED_TOOLS:format(requirementsText));
 			end
 
 			self.UpdateRequiredTools();
@@ -678,7 +688,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 
 	if isRecipeInfoRecraft then
-		self.RecraftingDescription:SetPoint("TOPLEFT", self.recraftSlot, "BOTTOMLEFT", 0, -20);
+		self.RecraftingDescription:SetPoint("TOPLEFT", self.recraftSlot, "BOTTOMLEFT");
 		self.RecraftingDescription:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 	end
 
@@ -892,6 +902,17 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 						for index, targetItem in ipairs(targetItems) do
 							table.insert(items, Item:CreateFromItemGUID(targetItem.itemGUID));
 						end
+
+						if not filterOwned then
+							for index, itemID in ipairs(itemIDs) do
+								local contained = ContainsIf(targetItems, function(targetItem)
+									return targetItem.itemID == itemID;
+								end);
+								if not contained then
+									table.insert(items, Item:CreateFromItemID(itemID));
+								end
+							end
+						end
 						return {items = items, onlyCountStack = true,};
 					end
 
@@ -1010,18 +1031,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end);
 	end
 
-	local learned = recipeInfo.learned;
-	if not learned then
-		for key, reagentType in pairs(Enum.CraftingReagentType) do
-			local slots = self:GetSlotsByReagentType(reagentType);
-			if slots then
-				for index, slot in ipairs(slots) do
-					slot:SetUnallocatable(true);
-				end
-			end
-		end
-	end
-
 	local basicSlots;
 	if isSalvage then
 		basicSlots = {self.salvageSlot};
@@ -1044,7 +1053,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.Reagents:Show();
 
 		if isRecraft then
-			self.Reagents:SetPoint("TOP", self.OutputIcon, "BOTTOM", 75, -123);
+			self.Reagents:SetPoint("TOP", self.OutputIcon, "BOTTOM", 75, -98);
 		else
 			self.Reagents:SetPoint("TOP", self.OutputIcon, "BOTTOM", 75, -65);
 		end

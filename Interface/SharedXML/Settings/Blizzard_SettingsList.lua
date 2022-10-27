@@ -1,3 +1,17 @@
+
+local securecallfunction = securecallfunction;
+local pairs = pairs;
+
+-- Matches a similar function reused in multiple places
+local function EnumerateTaintedKeysTable(tableToIterate)
+	local pairsIterator, enumerateTable, initialIteratorKey = securecallfunction(pairs, tableToIterate);
+	local function IteratorFunction(tbl, key)
+		return securecallfunction(pairsIterator, tbl, key);
+	end
+
+	return IteratorFunction, enumerateTable, initialIteratorKey;
+end
+
 SettingsListSearchCategoryMixin = {};
 
 function SettingsListSearchCategoryMixin:Init(initializer)
@@ -27,7 +41,7 @@ end
 
 SettingsListMixin = {};
 
-function SettingsListMixin:OnLoad(elementData)
+function SettingsListMixin:OnLoad()
 	local verticalPad = 10;
 	local pad = 0;
 	local spacing = 9;
@@ -35,18 +49,18 @@ function SettingsListMixin:OnLoad(elementData)
 
 	local function Factory(factory, elementData)
 		local function Initializer(frame, elementData)
-			elementData:InitFrame(frame);
+			securecallfunction(elementData.InitFrame, elementData, frame);
 		end
-		elementData:Factory(factory, Initializer);
+		securecallfunction(elementData.Factory, elementData, factory, Initializer);
 	end
 
 	local function Resetter(frame, elementData)
-		elementData:Resetter(frame);
+		securecallfunction(elementData.Resetter, elementData, frame);
 	end
 
 	local function ExtentCalculator(dataIndex, elementData)
-		local extent = elementData:GetExtent();
-		return extent or view:CreateTemplateExtent(elementData:GetTemplate());
+		local extent = securecallfunction(elementData.GetExtent, elementData);
+		return extent or view:CreateTemplateExtent(securecallfunction(elementData.GetTemplate, elementData));
 	end
 
 	view:SetElementFactory(Factory);
@@ -79,10 +93,18 @@ function SettingsListMixin:GetInputBlocker()
 end
 
 function SettingsListMixin:Display(initializers)
-	local dataProvider = CreateDataProvider(initializers);
-	self.ScrollBox:SetDataProvider(dataProvider);
+	local dataProvider = CreateDataProvider();
+	for key, initializer in EnumerateTaintedKeysTable(initializers) do
+		dataProvider:Insert(initializer)
+	end
+
+	securecallfunction(self.ScrollBox.SetDataProvider, self.ScrollBox, dataProvider);
 end
 
 function SettingsListMixin:ScrollToElementByName(name)
-	self.ScrollBox:ScrollToElementDataByPredicate(function(elementData) return elementData.data.name == name; end, ScrollBoxConstants.AlignBegin);
+	self.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
+		local data = securecallfunction(rawget, elementData, "data");
+		local elementName = securecallfunction(rawget, data, "name");
+		return elementName == name;
+	end, ScrollBoxConstants.AlignBegin);
 end

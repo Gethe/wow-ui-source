@@ -263,10 +263,7 @@ function AuctionHouseItemDisplayMixin:SetItemInternal(item)
 	local itemLinkForQuality = not isPet and itemLink or nil;
 	SetItemButtonQuality(self.ItemButton, itemQuality, itemLinkForQuality);
 
-	local displayText = itemName;
-	if self.itemLevelShown and not isPet then
-		displayText = AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemName, itemLevel);
-	end
+	local displayText = self:GetItemDisplayText(itemName, itemLevel, isPet);
 
 	self.Name:SetText(ITEM_QUALITY_COLORS[itemQuality].color:WrapTextInColorCode(displayText));
 
@@ -287,6 +284,15 @@ function AuctionHouseItemDisplayMixin:IsPet()
 	end
 
 	return LinkUtil.IsLinkType(itemLink, "battlepet");
+end
+
+function AuctionHouseItemDisplayMixin:GetItemDisplayText(itemName, itemLevel, isPet)
+	if isPet then
+		return itemName;
+	end
+
+	local craftingQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(self.item);
+	return AuctionHouseUtil.GetItemDisplayText(itemName, self.itemLevelShown and itemLevel or nil, craftingQuality);
 end
 
 function AuctionHouseItemDisplayMixin:GetItemInfo()
@@ -516,6 +522,16 @@ function AuctionHouseInteractableItemDisplayMixin:SwitchItemWithCursor(skipCallb
 			ItemUtil.PickupBagItem(currentItemLocation);
 		end
 	end
+end
+
+function AuctionHouseInteractableItemDisplayMixin:GetItemDisplayText(itemName, itemLevel, isPet)
+	if isPet then
+		return AuctionHouseItemDisplayMixin.GetItemDisplayText(self, itemName, itemLevel, isPet);
+	end
+
+	-- Never display crafting quality in the item text since it will display as an overlay on top of the icon.
+	local craftingQuality = nil;
+	return AuctionHouseUtil.GetItemDisplayText(itemName, self.itemLevelShown and itemLevel or nil, craftingQuality);
 end
 
 

@@ -2957,6 +2957,18 @@ StaticPopupDialogs["REPLACE_ENCHANT"] = {
 	showAlert = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["REPLACE_TRADESKILL_ENCHANT"] = {
+	text = REPLACE_ENCHANT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		ReplaceTradeskillEnchant();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["TRADE_REPLACE_ENCHANT"] = {
 	text = REPLACE_ENCHANT,
 	button1 = YES,

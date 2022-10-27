@@ -1,13 +1,26 @@
 local function CallDefaultOnFrame(frame)
 	if frame.OnDefault then
 		frame:OnDefault();
-	end	
+	end
 end
 
 local function CallRefreshOnFrame(frame)
 	if frame.OnRefresh then
 		frame:OnRefresh();
-	end	
+	end
+end
+
+local securecallfunction = securecallfunction;
+local pairs = pairs;
+
+-- Matches a similar function reused in multiple places
+local function EnumerateTaintedKeysTable(tableToIterate)
+	local pairsIterator, enumerateTable, initialIteratorKey = securecallfunction(pairs, tableToIterate);
+	local function IteratorFunction(tbl, key)
+		return securecallfunction(pairsIterator, tbl, key);
+	end
+
+	return IteratorFunction, enumerateTable, initialIteratorKey;
 end
 
 SettingsPanelMixin = {};
@@ -69,6 +82,82 @@ function SettingsPanelMixin:OnLoad()
 	self:RegisterEvent("UPDATE_BINDINGS");
 end
 
+function SettingsPanelMixin:OnAttributeChanged(name, value)
+	if name == SettingsInbound.OpenToCategoryAttribute then
+		local categoryID, scrollToElementName = securecallfunction(unpack, value);
+		local successful = self:OpenToCategory(categoryID, scrollToElementName);
+		self:SetSecureAttributeResults(successful);
+	elseif name == SettingsInbound.RegisterCategoryAttribute then
+		local category, group, addon = securecallfunction(unpack, value, 1, 3);
+		self:RegisterCategory(category, group, addon);
+	elseif name == SettingsInbound.RegisterVerticalLayoutCategoryAttribute then
+		local category = CreateAndInitFromMixin(SettingsCategoryMixin, value);
+		local layout = CreateVerticalLayout();
+		self:AssignLayoutToCategory(category, layout);
+		self:SetSecureAttributeResults(category, layout);
+	elseif name == SettingsInbound.RegisterVerticalLayoutSubcategoryAttribute then
+		local parentCategory, categoryName = securecallfunction(unpack, value);
+
+		-- Use SettingsCategoryMixin.CreateSubcategory to avoid taint.
+		local subcategory = securecallfunction(SettingsCategoryMixin.CreateSubcategory, parentCategory, categoryName);
+		local layout = CreateVerticalLayout();
+		self:AssignLayoutToCategory(subcategory, layout);
+		self:SetSecureAttributeResults(subcategory, layout);
+	elseif name == SettingsInbound.RegisterCanvasLayoutCategoryAttribute then
+		local frame, categoryName = securecallfunction(unpack, value);
+		local category = CreateAndInitFromMixin(SettingsCategoryMixin, categoryName);
+		local layout = CreateCanvasLayout(frame);
+		self:AssignLayoutToCategory(category, layout);
+		self:SetSecureAttributeResults(category, layout);
+	elseif name == SettingsInbound.RegisterCanvasLayoutSubcategoryAttribute then
+		local parentCategory, frame, categoryName = securecallfunction(unpack, value);
+
+		-- Use SettingsCategoryMixin.CreateSubcategory to avoid taint.
+		local subcategory = securecallfunction(SettingsCategoryMixin.CreateSubcategory, parentCategory, categoryName);
+		local layout = CreateCanvasLayout(frame);
+		self:AssignLayoutToCategory(subcategory, layout);
+		self:SetSecureAttributeResults(subcategory, layout);
+	elseif name == SettingsInbound.AssignLayoutToCategoryAttribute then
+		local category, layout = securecallfunction(unpack, value);
+		self:AssignLayoutToCategory(category, layout);
+	elseif name == SettingsInbound.SetKeybindingsCategoryAttribute then
+		self:SetKeybindingsCategory(value);
+	elseif name == SettingsInbound.CreateAddOnSettingAttribute then
+		local categoryTbl, settingName, variable, variableType, defaultValue = securecallfunction(unpack, value);
+		local setting = CreateAndInitFromMixin(AddOnSettingMixin, settingName, variable, variableType, defaultValue);
+		self:RegisterSetting(categoryTbl, setting);
+		self:SetSecureAttributeResults(setting);
+	elseif name == SettingsInbound.RegisterSettingAttribute then
+		local categoryTbl, setting = securecallfunction(unpack, value);
+		self:RegisterSetting(categoryTbl, setting);
+	elseif name == SettingsInbound.RegisterInitializerAttribute then
+		local category, initializer = securecallfunction(unpack, value);
+		self:RegisterInitializer(category, initializer);
+	elseif name == SettingsInbound.CreateSettingInitializerAttribute then
+		local frameTemplate, data = securecallfunction(unpack, value);
+		local initializer = CreateFromMixins(SettingsListElementInitializer);
+		initializer:Init(frameTemplate, data);
+		local setting = securecallfunction(SettingsListElementInitializer.GetSetting, initializer);
+		if setting then
+			local settingName = securecallfunction(setting.GetName, setting);
+			initializer:AddSearchTags(settingName);
+		end
+
+		self:SetSecureAttributeResults(initializer);
+	elseif name == SettingsInbound.OnSettingValueChangedAttribute then
+		local setting, newValue, oldValue, originalValue = securecallfunction(unpack, value);
+		self:OnSettingValueChanged(setting, newValue, oldValue, originalValue);
+	end
+end
+
+function SettingsPanelMixin:SetSecureAttributeResults(...)
+	self.secureAttributeResults = { ... };
+end
+
+function SettingsPanelMixin:GetSecureAttributeResults()
+	return unpack(self.secureAttributeResults);
+end
+
 function SettingsPanelMixin:OnTabSelected(tab, tabIndex)
 	self:GetCategoryList():SetCategorySet(tab.categorySet);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
@@ -87,8 +176,8 @@ function SettingsPanelMixin:OnCVarChanged(cvar, cvarValue)
 		local force = true;
 		-- Value is converted from the cvar string representation into a format the setting expects. Note
 		-- this is done manually because we normally are strict about the value being the correct type.
-		local value = setting:ConvertValueInternal(cvarValue);
-		setting:SetValue(value, force);
+		local value = securecallfunction(setting.ConvertValueInternal, setting, cvarValue);
+		securecallfunction(setting.SetValue, setting, value, force);
 	end
 end
 
@@ -190,8 +279,8 @@ function SettingsPanelMixin:ExitWithoutCommit()
 	for setting, record in pairs(self.modified) do
 		-- The settings under affect of IgnoreApply flag shouldn't be in the self.modified table after having been applied
 		-- Needs bug investigation
-		if (setting:HasCommitFlag(Settings.CommitFlag.Revertable) or setting:HasCommitFlag(Settings.CommitFlag.Apply)) and not setting:HasCommitFlag(Settings.CommitFlag.IgnoreApply) then
-			setting:Revert();
+		if (securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Apply)) and not securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.IgnoreApply) then
+			securecallfunction(setting.Revert, setting);
 		end
 	end
 
@@ -276,21 +365,20 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 	end);
 
 	for index, setting in ipairs(commits) do
-		saveBindings = saveBindings or setting:HasCommitFlag(Settings.CommitFlag.SaveBindings);
-		gxRestart = gxRestart or setting:HasCommitFlag(Settings.CommitFlag.GxRestart);
-		windowUpdate = windowUpdate or setting:HasCommitFlag(Settings.CommitFlag.UpdateWindow);
+		saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
+		gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
+		windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
 		
 		if not unrevertable then
-			if setting:HasCommitFlag(Settings.CommitFlag.Revertable) then
-				local originalValue = setting:GetOriginalValue();
+			if securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) then
+				local originalValue = securecallfunction(setting.GetOriginalValue, setting);
 				table.insert(self.revertableSettings, {setting = setting, originalValue = originalValue});
 			end
 		end
 		
-		setting:Commit();
+		securecallfunction(setting.Commit, setting);
 	end
 	
-	--print("saveBindings, gxRestart, windowUpdate", saveBindings, gxRestart, windowUpdate)
 	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate);
 
 	if #self.revertableSettings > 0 then
@@ -331,13 +419,13 @@ function SettingsPanelMixin:RevertSettings()
 
 	for index, data in ipairs(self.revertableSettings) do
 		local setting = data.setting;
-		saveBindings = saveBindings or setting:HasCommitFlag(Settings.CommitFlag.SaveBindings);
-		gxRestart = gxRestart or setting:HasCommitFlag(Settings.CommitFlag.GxRestart);
-		windowUpdate = windowUpdate or setting:HasCommitFlag(Settings.CommitFlag.UpdateWindow);
+		saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
+		gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
+		windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
 
 		local originalValue = data.originalValue;
-		setting:SetValue(originalValue);
-		setting:Commit();
+		securecallfunction(setting.SetValue, setting, originalValue);
+		securecallfunction(setting.Commit, setting);
 	end
 
 	self:WipeModifiedTable();
@@ -358,10 +446,10 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 	local windowUpdate = false;
 
 	for setting, category in pairs(self.settings) do
-		if setting:SetValueToDefault() then
-			saveBindings = saveBindings or setting:HasCommitFlag(Settings.CommitFlag.SaveBindings);
-			gxRestart = gxRestart or setting:HasCommitFlag(Settings.CommitFlag.GxRestart);
-			windowUpdate = windowUpdate or setting:HasCommitFlag(Settings.CommitFlag.UpdateWindow);
+		if securecallfunction(setting.SetValueToDefault, setting) then
+			saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
+			gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
+			windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
 		end
 	end
 
@@ -381,12 +469,10 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 	local currentCategory = self:GetCurrentCategory();
 	for setting, category in pairs(self.settings) do
 		if category == currentCategory then
-			--local oldValue = setting:GetValue();
-			if setting:SetValueToDefault() then
-				--print("Defaulting", setting:GetName(), oldValue, setting:GetValue())
-				saveBindings = saveBindings or setting:HasCommitFlag(Settings.CommitFlag.SaveBindings);
-				gxRestart = gxRestart or setting:HasCommitFlag(Settings.CommitFlag.GxRestart);
-				windowUpdate = windowUpdate or setting:HasCommitFlag(Settings.CommitFlag.UpdateWindow);
+			if securecallfunction(setting.SetValueToDefault, setting) then
+				saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
+				gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
+				windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
 			end
 			self.modified[setting] = nil;
 		end
@@ -398,7 +484,7 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 			local layoutType = layout:GetLayoutType();
 			if layoutType == SettingsLayoutMixin.LayoutType.Canvas then
 				local frame = layout:GetFrame();
-				CallDefaultOnFrame(frame);
+				securecallfunction(CallDefaultOnFrame, frame);
 			end
 		end
 	end
@@ -414,7 +500,7 @@ end
 
 function SettingsPanelMixin:HasUnappliedSettings()
 	for setting in pairs(self.modified) do
-		if setting:HasCommitFlag(Settings.CommitFlag.Apply) and not setting:HasCommitFlag(Settings.CommitFlag.IgnoreApply) then
+		if securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Apply) and not securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.IgnoreApply) then
 			return true;
 		end
 	end
@@ -499,7 +585,7 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 	for index, category in ipairs(self:GetAllCategories()) do
 		ParseCategory(category);
 
-		for index, subcategory in ipairs(category:GetSubcategories()) do
+		for index, subcategory in EnumerateTaintedKeysTable(category:GetSubcategories()) do
 			ParseCategory(subcategory, category);
 		end
 	end
@@ -583,8 +669,12 @@ end
 
 function SettingsPanelMixin:RegisterSetting(category, setting)
 	self.settings[setting] = category;
-	Settings.SetOnValueChangedCallback(setting:GetVariable(), self.OnSettingValueChanged, self);
-	SettingsInitializedRegistry:TriggerEvent(setting:GetVariable(), setting:GetValue());
+
+	local variable = securecallfunction(setting.GetVariable, setting);
+	SettingsInbound.RegisterOnSettingValueChanged(variable);
+
+	local value = securecallfunction(setting.GetValue, setting);
+	SettingsInitializedRegistry:TriggerEvent(variable, value);
 end
 
 function SettingsPanelMixin:RegisterInitializer(category, initializer)
@@ -602,7 +692,8 @@ end
 
 function SettingsPanelMixin:GetSetting(variable)
 	for setting, category in pairs(self.settings) do
-		if setting:GetVariable() == variable then
+		local settingVariable = securecallfunction(setting.GetVariable, setting);
+		if settingVariable == variable then
 			return setting;
 		end
 	end
@@ -615,8 +706,9 @@ function SettingsPanelMixin:OnSettingValueChanged(setting, value, oldValue, orig
 		return;
 	end
 
-	self.modified[setting] = setting:IsModified() and setting or nil;
-	setting:UpdateIgnoreApplyFlag();
+	local isModified = securecallfunction(setting.IsModified, setting);
+	self.modified[setting] = isModified and setting or nil;
+	securecallfunction(setting.UpdateIgnoreApplyFlag, setting);
 	self:CheckApplyButton();
 end
 
@@ -703,7 +795,8 @@ function SettingsPanelMixin:DisplayLayout(layout)
 	local settingsCanvas = self:GetSettingsCanvas();
 	local layoutType = layout:GetLayoutType();
 	if layoutType == SettingsLayoutMixin.LayoutType.Vertical then
-		settingsList:Display(layout:GetInitializers());
+		local initializers = securecallfunction(layout.GetInitializers, layout);
+		settingsList:Display(initializers);
 		settingsList:Show();
 		settingsCanvas:Hide();
 	elseif layoutType == SettingsLayoutMixin.LayoutType.Canvas then
@@ -722,7 +815,7 @@ function SettingsPanelMixin:DisplayLayout(layout)
 
 		frame:Show();
 
-		CallRefreshOnFrame(frame);
+		securecallfunction(CallRefreshOnFrame, frame);
 
 		settingsCanvas:Show();
 		settingsList:Hide();

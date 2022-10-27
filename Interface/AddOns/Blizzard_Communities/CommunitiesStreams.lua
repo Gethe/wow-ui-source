@@ -318,12 +318,12 @@ function CommunitiesMassNotificationsSettingsButton_OnClick(self)
 end
 
 function CommunitiesNotificationSettingsDialogOkayButton_OnClick(self)
-	self:GetParent():SaveSettings();
-	self:GetParent():Hide();
+	CommunitiesFrame.NotificationSettingsDialog:SaveSettings();
+	CommunitiesFrame.NotificationSettingsDialog:Hide();
 end
 
 function CommunitiesNotificationSettingsDialogCancelButton_OnClick(self)
-	self:GetParent():Cancel();
+	CommunitiesFrame.NotificationSettingsDialog:Cancel();
 end
 
 CommunitiesAddToChatMixin = {};

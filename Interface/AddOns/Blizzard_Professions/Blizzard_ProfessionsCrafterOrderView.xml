@@ -322,14 +322,20 @@
 					<Anchor point="BOTTOMRIGHT" x="-20" y="7"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="CompleteOrderButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_COMPLETE_ORDER">
+			<Button parentKey="CompleteOrderButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_COMPLETE_ORDER" motionScriptsWhileDisabled="true">
 				<Size x="160" y="22"/>
+				<Scripts>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-20" y="4"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="StartRecraftButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_CRAFTING_RECRAFT">
+			<Button parentKey="StartRecraftButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_CRAFTING_RECRAFT" motionScriptsWhileDisabled="true">
 				<Size x="120" y="22"/>
+				<Scripts>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CompleteOrderButton" relativePoint="LEFT" x="-5" y="0"/>
 				</Anchors>

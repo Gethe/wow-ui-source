@@ -114,11 +114,12 @@ function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isF
 	end
 
 	local fillAtlasInfo = C_Texture.GetAtlasInfo(fillAtlas);
-	if fillAtlasInfo then
+	if fillAtlasInfo and fillAtlas ~= self.lastFillAtlas then
 		self.Bar:SetStatusBarTexture(fillAtlas);
 		self.Bar:SetSize(fillAtlasInfo.width, fillAtlasInfo.height);
 		self.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "TOP", 0, 0);
 		self.Bar.FlipbookMask:SetPoint("TOP", self.Bar:GetStatusBarTexture(), "TOP", 0, 0);
+		self.lastFillAtlas = fillAtlas;
 	end
 
 	local flipbookAtlas = fillFlipbookTextureKitFormatString:format(textureKit);

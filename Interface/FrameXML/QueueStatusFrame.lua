@@ -239,7 +239,6 @@ function QueueStatusButtonMixin:CheckTutorials()
 			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			offsetX = 0,
-			textJustifyH = "CENTER",
 			alignment = HelpTip.Alignment.Center,
 			acknowledgeOnHide = true,
 		};

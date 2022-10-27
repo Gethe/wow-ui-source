@@ -859,6 +859,18 @@ function CastingBarMixin:UpdateStage()
 				stagePip.StageAnim:Play();
 			end
 		end
+
+		if self.playCastFX then
+			if maxStage == self.NumStages - 1 then
+				if self.StageFinish then
+					self.StageFinish:Play();
+				end
+			elseif maxStage > 0 then
+				if self.StageFlash then
+					self.StageFlash:Play();
+				end
+			end
+		end
 		
 		local chargeTierName = "ChargeTier" .. self.CurrSpellStage;
 		local chargeTier = self[chargeTierName];
@@ -874,6 +886,9 @@ function CastingBarMixin:ClearStages()
 
 	if self.ChargeGlow then
 		self.ChargeGlow:SetShown(false);
+	end
+	if self.ChargeFlash then
+		self.ChargeFlash:SetAlpha(0);
 	end
 
 	for _, stagePip in pairs(self.StagePips) do

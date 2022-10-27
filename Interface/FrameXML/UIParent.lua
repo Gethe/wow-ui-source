@@ -50,7 +50,7 @@ UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 1, 	whileDead = 1 };
 UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
 UIPanelWindows["CollectionsJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 733};
-UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1};
+UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["LootFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0};
@@ -279,6 +279,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("BIND_ENCHANT");
 	self:RegisterEvent("ACTION_WILL_BIND_ITEM");
 	self:RegisterEvent("REPLACE_ENCHANT");
+	self:RegisterEvent("REPLACE_TRADESKILL_ENCHANT");
 	self:RegisterEvent("TRADE_REPLACE_ENCHANT");
 	self:RegisterEvent("END_BOUND_TRADEABLE");
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
@@ -795,6 +796,18 @@ function NPE_LoadUI()
 	local isRestricted = C_PlayerInfo.IsPlayerNPERestricted();
 	if  isRestricted then
 		UIParentLoadAddOn("Blizzard_NewPlayerExperience");
+	end
+end
+
+function BoostTutorial_AttemptLoad()
+	if IsBoostTutorialScenario() and not IsAddOnLoaded("Blizzard_BoostTutorial") then
+		UIParentLoadAddOn("Blizzard_BoostTutorial");
+	end
+end
+
+function ClassTrial_AttemptLoad()
+	if C_ClassTrial.IsClassTrialCharacter() and not IsAddOnLoaded("Blizzard_ClassTrial") then
+		UIParentLoadAddOn("Blizzard_ClassTrial");
 	end
 end
 
@@ -1414,6 +1427,7 @@ function UIParent_OnEvent(self, event, ...)
 			end
 			StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
 			StaticPopup_Hide("END_BOUND_TRADEABLE");
+			StaticPopup_Hide("REPLACE_TRADESKILL_ENCHANT");
 			if ( not SpellCanTargetGarrisonFollower(0) ) then
 				StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
 				StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
@@ -1735,6 +1749,8 @@ function UIParent_OnEvent(self, event, ...)
 		self.battlefieldBannerShown = nil;
 
 		NPETutorial_AttemptToBegin(event);
+		ClassTrial_AttemptLoad();
+		BoostTutorial_AttemptLoad();
 
 		if Kiosk.IsEnabled() then
 			LoadAddOn("Blizzard_Kiosk");
@@ -1807,6 +1823,8 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("REPLACE_ENCHANT", arg1, arg2);
 	elseif ( event == "TRADE_REPLACE_ENCHANT" ) then
 		StaticPopup_Show("TRADE_REPLACE_ENCHANT", arg1, arg2);
+	elseif ( event == "REPLACE_TRADESKILL_ENCHANT" ) then
+		StaticPopup_Show("REPLACE_TRADESKILL_ENCHANT", arg1, arg2);
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
@@ -2281,6 +2299,8 @@ function UIParent_OnEvent(self, event, ...)
 			FlightMap_LoadUI();
 			ShowUIPanel(FlightMapFrame);
 		end
+	elseif (event == "SCENARIO_UPDATE") then
+		BoostTutorial_AttemptLoad();
 	elseif (event == "DEBUG_MENU_TOGGLED") then
 		UpdateUIParentPosition();
 	elseif (event == "REVEAL_CAPTURE_TOGGLED") then

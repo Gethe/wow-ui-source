@@ -1300,8 +1300,8 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		refundItemLink = GetInventoryItemLink("player", slot);
 	else
 		local info = C_Container.GetContainerItemInfo(bag, slot);
-		refundItemTexture = info.iconFileID;
-		refundItemLink = item.hyperlink;
+		refundItemTexture = info and info.iconFileID;
+		refundItemLink = info and info.hyperlink;
 	end
 	local itemName, _, itemQuality = GetItemInfo(refundItemLink);
 	local r, g, b = GetItemQualityColor(itemQuality);
@@ -1557,8 +1557,8 @@ function ContainerFrameItemButtonMixin:OnModifiedClick(button)
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
 		local info = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID());
-		local itemCount = info.stackCount;
-		local locked = info.isLocked;
+		local itemCount = info and info.stackCount;
+		local locked = info and info.isLocked;
 		if ( not locked and itemCount and itemCount > 1) then
 			self.SplitStack = SplitStack;
 			StackSplitFrame:OpenStackSplitFrame(itemCount, self, "BOTTOMRIGHT", "TOPRIGHT");

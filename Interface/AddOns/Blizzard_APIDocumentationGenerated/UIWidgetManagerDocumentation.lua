@@ -717,16 +717,35 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetTextSizeType",
 			Type = "Enumeration",
+			NumValues = 9,
+			MinValue = 0,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "Small12Pt", Type = "UIWidgetTextSizeType", EnumValue = 0 },
+				{ Name = "Medium16Pt", Type = "UIWidgetTextSizeType", EnumValue = 1 },
+				{ Name = "Large24Pt", Type = "UIWidgetTextSizeType", EnumValue = 2 },
+				{ Name = "Huge27Pt", Type = "UIWidgetTextSizeType", EnumValue = 3 },
+				{ Name = "Standard14Pt", Type = "UIWidgetTextSizeType", EnumValue = 4 },
+				{ Name = "Small10Pt", Type = "UIWidgetTextSizeType", EnumValue = 5 },
+				{ Name = "Small11Pt", Type = "UIWidgetTextSizeType", EnumValue = 6 },
+				{ Name = "Medium18Pt", Type = "UIWidgetTextSizeType", EnumValue = 7 },
+				{ Name = "Large20Pt", Type = "UIWidgetTextSizeType", EnumValue = 8 },
+			},
+		},
+		{
+			Name = "UIWidgetTextureAndTextSizeType",
+			Type = "Enumeration",
 			NumValues = 5,
 			MinValue = 0,
 			MaxValue = 4,
 			Fields =
 			{
-				{ Name = "Small", Type = "UIWidgetTextSizeType", EnumValue = 0 },
-				{ Name = "Medium", Type = "UIWidgetTextSizeType", EnumValue = 1 },
-				{ Name = "Large", Type = "UIWidgetTextSizeType", EnumValue = 2 },
-				{ Name = "Huge", Type = "UIWidgetTextSizeType", EnumValue = 3 },
-				{ Name = "Standard", Type = "UIWidgetTextSizeType", EnumValue = 4 },
+				{ Name = "Small", Type = "UIWidgetTextureAndTextSizeType", EnumValue = 0 },
+				{ Name = "Medium", Type = "UIWidgetTextureAndTextSizeType", EnumValue = 1 },
+				{ Name = "Large", Type = "UIWidgetTextureAndTextSizeType", EnumValue = 2 },
+				{ Name = "Huge", Type = "UIWidgetTextureAndTextSizeType", EnumValue = 3 },
+				{ Name = "Standard", Type = "UIWidgetTextureAndTextSizeType", EnumValue = 4 },
 			},
 		},
 		{
@@ -1456,6 +1475,7 @@ local UIWidgetManager =
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
 				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
+				{ Name = "spacing", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1474,7 +1494,7 @@ local UIWidgetManager =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "entries", Type = "table", InnerType = "TextureAndTextEntryInfo", Nilable = false },
-				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
+				{ Name = "textSizeType", Type = "UIWidgetTextureAndTextSizeType", Nilable = false },
 				{ Name = "fixedWidth", Type = "number", Nilable = true },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },

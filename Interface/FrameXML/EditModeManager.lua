@@ -323,55 +323,60 @@ function EditModeManagerFrameMixin:HasActiveChanges()
 	return self.hasActiveChanges;
 end
 
-local function UpdateSystemAnchorInfo(systemInfo, systemFrame)
-	local anchorInfoChanged = false;
-
-	local point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(1);
-
-	-- Undo offset changes due to scale so we're always working as if we're at 1.0 scale
-	local frameScale = systemFrame:GetScale();
-	offsetX = offsetX * frameScale;
-	offsetY = offsetY * frameScale;
-
-	local newAnchorInfo = ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY);
-	if not AreAnchorsEqual(systemInfo.anchorInfo, newAnchorInfo) then
-		CopyAnchorInfo(systemInfo.anchorInfo, newAnchorInfo);
-		anchorInfoChanged = true;
-	end
-
-	point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(2);
-
-	-- Undo offset changes due to scale so we're always working as if we're at 1.0 scale
-	-- May not always have a second point so nil check first
-	if point ~= nil then
-		offsetX = offsetX * frameScale;
-		offsetY = offsetY * frameScale;
-	end
-
-	newAnchorInfo = ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY);
-	if not AreAnchorsEqual(systemInfo.anchorInfo2, newAnchorInfo) then
-		CopyAnchorInfo(systemInfo.anchorInfo2, newAnchorInfo);
-		anchorInfoChanged = true;
-	end
-
-	return anchorInfoChanged;
-end
-
-function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame, isInDefaultPosition)
+function EditModeManagerFrameMixin:UpdateSystemAnchorInfo(systemFrame)
 	local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
 	if systemInfo then
-		if UpdateSystemAnchorInfo(systemInfo, systemFrame) then
-			systemFrame:SetHasActiveChanges(true);
-			systemInfo.isInDefaultPosition = isInDefaultPosition;
+		local anchorInfoChanged = false;
 
-			self:UpdateActionBarLayout(systemFrame);
+		local point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(1);
 
-			if systemFrame.isBottomManagedFrame or systemFrame.isRightManagedFrame then
-				UIParent_ManageFramePositions();
-			end
+		-- Undo offset changes due to scale so we're always working as if we're at 1.0 scale
+		local frameScale = systemFrame:GetScale();
+		offsetX = offsetX * frameScale;
+		offsetY = offsetY * frameScale;
 
-			EditModeSystemSettingsDialog:UpdateDialog(systemFrame);
+		local newAnchorInfo = ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY);
+		if not AreAnchorsEqual(systemInfo.anchorInfo, newAnchorInfo) then
+			CopyAnchorInfo(systemInfo.anchorInfo, newAnchorInfo);
+			anchorInfoChanged = true;
 		end
+
+		point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(2);
+
+		-- Undo offset changes due to scale so we're always working as if we're at 1.0 scale
+		-- May not always have a second point so nil check first
+		if point ~= nil then
+			offsetX = offsetX * frameScale;
+			offsetY = offsetY * frameScale;
+		end
+
+		newAnchorInfo = ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, offsetY);
+		if not AreAnchorsEqual(systemInfo.anchorInfo2, newAnchorInfo) then
+			CopyAnchorInfo(systemInfo.anchorInfo2, newAnchorInfo);
+			anchorInfoChanged = true;
+		end
+
+		if anchorInfoChanged then
+			systemInfo.isInDefaultPosition = false;
+		end
+
+		return anchorInfoChanged;
+	end
+
+	return false;
+end
+
+function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame)
+	if self:UpdateSystemAnchorInfo(systemFrame) then
+		systemFrame:SetHasActiveChanges(true);
+
+		self:UpdateActionBarLayout(systemFrame);
+
+		if systemFrame.isBottomManagedFrame or systemFrame.isRightManagedFrame then
+			UIParent_ManageFramePositions();
+		end
+
+		EditModeSystemSettingsDialog:UpdateDialog(systemFrame);
 	end
 end
 
@@ -401,6 +406,7 @@ function EditModeManagerFrameMixin:RevertSystemChanges(systemFrame)
 			if systemInfo.system == systemFrame.system and systemInfo.systemIndex == systemFrame.systemIndex then
 				activeLayoutInfo.systems[index] = systemFrame.savedSystemInfo;
 
+				systemFrame:BreakSnappedFrames();
 				systemFrame:UpdateSystem(systemFrame.savedSystemInfo);
 				self:CheckForSystemActiveChanges();
 				return;
@@ -552,8 +558,13 @@ function EditModeManagerFrameMixin:UpdateActionBarLayout(systemFrame)
 	end
 end
 
+function EditModeManagerFrameMixin:UpdateActionBarPositions()
+	self:UpdateBottomActionBarPositions();
+	self:UpdateRightActionBarPositions();
+end
+
 function EditModeManagerFrameMixin:UpdateRightActionBarPositions()
-	if not self:IsInitialized() then
+	if not self:IsInitialized() or self.layoutApplyInProgress then
 		return;
 	end
 
@@ -597,7 +608,7 @@ function EditModeManagerFrameMixin:UpdateRightActionBarPositions()
 end
 
 function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
-	if not self:IsInitialized() then
+	if not self:IsInitialized() or self.layoutApplyInProgress then
 		return;
 	end
 
@@ -860,6 +871,7 @@ function EditModeManagerFrameMixin:AreLayoutsFullyMaxed()
 end
 
 function EditModeManagerFrameMixin:UpdateLayoutInfo(layoutInfo, reconcileLayouts)
+	self.layoutApplyInProgress = true;
 	self.layoutInfo = layoutInfo;
 
 	if reconcileLayouts then
@@ -879,6 +891,9 @@ function EditModeManagerFrameMixin:UpdateLayoutInfo(layoutInfo, reconcileLayouts
 	if self:IsShown() then
 		self:UpdateDropdownOptions();
 	end
+
+	self.layoutApplyInProgress = false;
+	self:UpdateActionBarPositions();
 end
 
 function EditModeManagerFrameMixin:GetLayouts()
@@ -1439,22 +1454,14 @@ function EditModeAccountSettingsMixin:OnEvent(event, ...)
 end
 
 function EditModeAccountSettingsMixin:OnEditModeEnter()
+	self.oldActionBarSettings = {};
+	self:SetupActionBar(StanceBar);
+	self:SetupActionBar(PetActionBar);
+	self:SetupActionBar(PossessActionBar);
+
 	self:RefreshTargetAndFocus();
 	self:RefreshPartyFrames();
-	self:RefreshRaidFrames();
-
-	self.oldActionBarSettings = {};
-	local function SetupActionBar(bar)
-		self.oldActionBarSettings[bar] = {
-			isShown = bar:IsShown();
-			numShowingButtons = bar.numShowingButtons;
-		}
-		self:RefreshActionBarShown(bar);
-	end
-	SetupActionBar(StanceBar);
-	SetupActionBar(PetActionBar);
-	SetupActionBar(PossessActionBar);
-
+	self:RefreshRaidFrames()
 	self:RefreshCastBar();
 	self:RefreshEncounterBar();
 	self:RefreshExtraAbilities();
@@ -1588,6 +1595,21 @@ function EditModeAccountSettingsMixin:SetRaidFramesShown(shown, isUserInput)
 	else
 		self.Settings.RaidFrames:SetControlChecked(shown);
 	end
+end
+
+function EditModeAccountSettingsMixin:SetupActionBar(bar)
+	local isShown = bar:IsShown();
+	self.oldActionBarSettings[bar] = {
+		isShown = isShown;
+		numShowingButtons = bar.numShowingButtons;
+	}
+
+	-- If the bar is already showing then set control checked
+	if isShown then
+		self.Settings[bar:GetName()]:SetControlChecked(true);
+	end
+
+	self:RefreshActionBarShown(bar);
 end
 
 function EditModeAccountSettingsMixin:ResetActionBarShown(bar)

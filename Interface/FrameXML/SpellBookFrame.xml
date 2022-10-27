@@ -531,12 +531,11 @@
 					<Color r="0.1" g="0.05" b="0.05"/>
 				</FontString>
 				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="rank" text="TRADE_SKILLS">
-					<Size x="0" y="0"/>
+					<Size x="182" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-33"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.professionName" x="0" y="-43"/>
 					</Anchors>
 				</FontString>
-
 				<Texture name="$parentIconBorder" file="Interface\Spellbook\ProfessionsBook">
 					<Size x="72" y="72"/>
 					<Anchors>
@@ -621,7 +620,7 @@
 					<Anchor point="BOTTOMLEFT" x="16" y="-1"/>
 				</Anchors>
 			</StatusBar>
-		</Frames>		
+		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="rank" text="TRADE_SKILLS">
@@ -630,7 +629,7 @@
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.statusBar" relativePoint="TOPLEFT" x="-14" y="4"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.statusBar" relativePoint="TOPRIGHT" x="25" y="4"/>
 					</Anchors>
-				</FontString>				
+				</FontString>
 				<FontString name="$parentProfessionName" inherits="QuestFont_Shadow_Small" justifyH="LEFT" parentKey="professionName" text="TRADE_SKILLS">
 					<Size x="0" y="0" />
 					<Anchors>

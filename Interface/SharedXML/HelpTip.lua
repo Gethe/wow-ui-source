@@ -365,6 +365,13 @@ end
 
 function HelpTipTemplateMixin:OnUpdate()
 	local rx, ry = self.relativeRegion:GetCenter();
+
+	-- skip this update if relativeRegion's Rect info isn't valid
+	-- this can occur if relativeRegion was just instantiated from a pool the same frame as showing this HelpTip
+	if not rx or not ry then
+		return;
+	end
+
 	local targetPoint = self.info.targetPoint;
 	local targetAlignment = self.info.alignment;
 

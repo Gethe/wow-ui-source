@@ -6,7 +6,7 @@
 			<KeyValue key="layoutType" value="Dialog" type="string"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="CENTER" x="0" y="50"/>
+			<Anchor point="CENTER" x="0" y="96"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -33,12 +33,14 @@
 					<Anchor point="TOP"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="topPadding" value="100" type="number"/>
+					<KeyValue key="topPadding" value="80" type="number"/>
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Title" inherits="QuestFont_Enormous" justifyH="CENTER" justifyV="TOP">
-							<Color r=".901" g=".8" b=".501" />
+						<FontString parentKey="Title" inherits="QuestFont_39" justifyH="CENTER" justifyV="TOP">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -51,7 +53,7 @@
 			<Button parentKey="CloseButton" mixin="UIWidgetCenterDisplayFrameButtonMixin" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="185" y="25"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="20"/>
+					<Anchor point="BOTTOM" x="0" y="30"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>

@@ -8,11 +8,14 @@ ExpansionLandingPageMixin = {};
 
 ExpansionLandingPageEvents = {
 	"ACHIEVEMENT_EARNED",
+	"NEW_MOUNT_ADDED",
 	"PLAYER_LOGIN",
 	"PLAYER_LEVEL_UP",
 	"QUEST_REMOVED",
 	"QUEST_TURNED_IN",
 	"ZONE_CHANGED",
+	"ZONE_CHANGED_NEW_AREA",
+	"ZONE_CHANGED_INDOORS",
 };
 
 function ExpansionLandingPageMixin:OnLoad()

@@ -18,7 +18,7 @@
 		<HighlightTexture atlas="communities-create-avatar-border-hover" alphaMode="ADD"/>
 	</Button>
 	
-	<Frame name="CommunitiesAvatarPickerDialog" parent="UIParent" toplevel="true" inherits="SelectionFrameTemplate" enableMouse="true" mixin="CommunitiesAvatarPickerDialogMixin" hidden="true">
+	<Frame name="CommunitiesAvatarPickerDialog" parent="UIParent" toplevel="true" enableMouse="true" mixin="CommunitiesAvatarPickerDialogMixin" hidden="true">
 		<Size x="510" y="480"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-140"/>
@@ -42,6 +42,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Selector" inherits="SelectionFrameTemplate" setAllPoints="true" />
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="27" y="-71"/>

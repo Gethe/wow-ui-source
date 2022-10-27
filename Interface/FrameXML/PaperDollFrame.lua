@@ -654,13 +654,8 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			end
 		-- Agility
 		elseif ( statIndex == LE_UNIT_STAT_AGILITY ) then
-			local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
-			local tooltip = STAT_TOOLTIP_BONUS_AP;
-			if (HasAPEffectsSpellPower()) then
-				tooltip = STAT_TOOLTIP_BONUS_AP_SP;
-			end
 			if (not primaryStat or primaryStat == LE_UNIT_STAT_AGILITY) then
-				statFrame.tooltip2 = format(tooltip, BreakUpLargeNumbers(attackPower));
+				statFrame.tooltip2 = HasAPEffectsSpellPower() and STAT_TOOLTIP_BONUS_AP_SP or STAT_TOOLTIP_BONUS_AP;
 				if ( role == "TANK" ) then
 					local increasedDodgeChance = GetDodgeChanceFromAttribute();
 					if ( increasedDodgeChance > 0 ) then
@@ -675,21 +670,12 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			statFrame.tooltip2 = format(statFrame.tooltip2, BreakUpLargeNumbers(((effectiveStat*UnitHPPerStamina("player")))*GetUnitMaxHealthModifier("player")));
 		-- Intellect
 		elseif ( statIndex == LE_UNIT_STAT_INTELLECT ) then
-			if ( UnitHasMana("player") ) then
-				if (HasAPEffectsSpellPower()) then
-					statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
-				else
-					local result, druid = HasSPEffectsAttackPower();
-					if (result and druid) then
-						statFrame.tooltip2 = format(STAT_TOOLTIP_SP_AP_DRUID, max(0, effectiveStat), max(0, effectiveStat));
-					elseif (result) then
-						statFrame.tooltip2 = format(STAT_TOOLTIP_BONUS_AP_SP, max(0, effectiveStat));
-					elseif (not primaryStat or primaryStat == LE_UNIT_STAT_INTELLECT) then
-						statFrame.tooltip2 = format(statFrame.tooltip2, max(0, effectiveStat));
-					else
-						statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
-					end
-				end
+			if ( HasAPEffectsSpellPower() ) then
+				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
+			elseif ( HasSPEffectsAttackPower() ) then
+					statFrame.tooltip2 = STAT_TOOLTIP_BONUS_AP_SP;
+			elseif ( not primaryStat or primaryStat == LE_UNIT_STAT_INTELLECT ) then
+				statFrame.tooltip2 = format(statFrame.tooltip2, max(0, effectiveStat));
 			else
 				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end

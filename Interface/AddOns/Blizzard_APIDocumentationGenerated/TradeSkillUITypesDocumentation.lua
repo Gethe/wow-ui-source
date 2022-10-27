@@ -90,7 +90,8 @@ local TradeSkillUITypes =
 			{
 				{ Name = "currencyID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "quantity", Type = "number", Nilable = false, Default = 0 },
-				{ Name = "associatedItemGUID", Type = "string", Nilable = false },
+				{ Name = "operationID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "firstCraftReward", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -109,7 +110,8 @@ local TradeSkillUITypes =
 				{ Name = "recraftable", Type = "bool", Nilable = false, Default = false },
 				{ Name = "bonusCraft", Type = "bool", Nilable = false, Default = false },
 				{ Name = "multicraft", Type = "number", Nilable = false, Default = 0 },
-				{ Name = "associatedItemGUID", Type = "string", Nilable = false },
+				{ Name = "operationID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "firstCraftReward", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -150,6 +152,7 @@ local TradeSkillUITypes =
 				{ Name = "craftingDataID", Type = "number", Nilable = false },
 				{ Name = "lowerSkillThreshold", Type = "number", Nilable = false },
 				{ Name = "upperSkillTreshold", Type = "number", Nilable = false },
+				{ Name = "guaranteedCraftingQualityID", Type = "number", Nilable = false },
 				{ Name = "bonusStats", Type = "table", InnerType = "CraftingOperationBonusStatInfo", Nilable = false },
 			},
 		},
@@ -208,6 +211,15 @@ local TradeSkillUITypes =
 			},
 		},
 		{
+			Name = "CraftingRecipeRequirement",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "met", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CraftingRecipeSchematic",
 			Type = "Structure",
 			Fields =
@@ -249,6 +261,7 @@ local TradeSkillUITypes =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "itemGUID", Type = "string", Nilable = false },
 				{ Name = "hyperlink", Type = "string", Nilable = true },
 				{ Name = "quantity", Type = "number", Nilable = false },

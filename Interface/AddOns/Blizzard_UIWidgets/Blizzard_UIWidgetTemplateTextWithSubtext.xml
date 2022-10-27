@@ -2,6 +2,9 @@
 ..\..\FrameXML\UI.xsd">
 	<Frame name="UIWidgetTemplateTextWithSubtext" inherits="UIWidgetBaseTemplate, VerticalLayoutFrame" virtual="true" mixin="UIWidgetTemplateTextWithSubtextMixin">
 		<Size x="237" y="32"/>
+		<KeyValues>
+			<KeyValue key="spacing" value="2" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" mixin="UIWidgetBaseTextMixin" inherits="GameTooltipText" justifyH="LEFT">

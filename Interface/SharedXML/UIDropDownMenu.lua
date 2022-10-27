@@ -1387,18 +1387,18 @@ function UIDropDownMenu_ClearAll(frame)
 	end
 end
 
-function UIDropDownMenu_JustifyText(frame, justification, customXOffset)
+function UIDropDownMenu_JustifyText(frame, justification, customXOffset, customYOffset)
 	local frameName = frame:GetName();
 	local text = GetChild(frame, frameName, "Text");
 	text:ClearAllPoints();
 	if ( justification == "LEFT" ) then
-		text:SetPoint("LEFT", GetChild(frame, frameName, "Left"), "LEFT", customXOffset or 27, 2);
+		text:SetPoint("LEFT", GetChild(frame, frameName, "Left"), "LEFT", customXOffset or 27, customYOffset or 2);
 		text:SetJustifyH("LEFT");
 	elseif ( justification == "RIGHT" ) then
-		text:SetPoint("RIGHT", GetChild(frame, frameName, "Right"), "RIGHT", customXOffset or -43, 2);
+		text:SetPoint("RIGHT", GetChild(frame, frameName, "Right"), "RIGHT", customXOffset or -43, customYOffset or 2);
 		text:SetJustifyH("RIGHT");
 	elseif ( justification == "CENTER" ) then
-		text:SetPoint("CENTER", GetChild(frame, frameName, "Middle"), "CENTER", customXOffset or -5, 2);
+		text:SetPoint("CENTER", GetChild(frame, frameName, "Middle"), "CENTER", customXOffset or -5, customYOffset or 2);
 		text:SetJustifyH("CENTER");
 	end
 end

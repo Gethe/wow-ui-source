@@ -47,10 +47,25 @@ function ProfessionsCustomerOrdersCategoryButtonMixin:OnMouseUp()
 	self.Text:AdjustPointsOffset(-1, 1);
 end
 
+function ProfessionsCustomerOrdersCategoryButtonMixin:OnEnter()
+	TruncatedTooltipScript_OnEnter(self);
+
+	if not self.isSpacer then
+		self.HighlightTexture:Show();
+	end
+end
+
+function ProfessionsCustomerOrdersCategoryButtonMixin:OnLeave()
+	TruncatedTooltipScript_OnLeave(self);
+
+	self.HighlightTexture:Hide();
+end
+
 function ProfessionsCustomerOrdersCategoryButtonMixin:Init(categoryInfo, categoryFilters, isRecraftCategory, isSpacer)
 	self.categoryInfo = categoryInfo;
 	-- Reference to the category filters set on the parent
 	self.categoryFilters = categoryFilters;
+	self.isSpacer = isSpacer;
 
 	for _, region in ipairs(self.buttonRegions) do
 		region:SetShown(not isSpacer);

@@ -545,6 +545,20 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetRecipeRequirements",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "requirements", Type = "table", InnerType = "CraftingRecipeRequirement", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRecipeSchematic",
 			Type = "Function",
 

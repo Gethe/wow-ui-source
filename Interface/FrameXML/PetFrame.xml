@@ -104,8 +104,13 @@
 										<Anchor point="TOPLEFT" relativeTo="PetPortrait" relativePoint="TOPRIGHT" x="2" y="0"/>
 									</Anchors>
 								</FontString>
-								<!-- Note that using the party mask asset here is intentional. -->
-								<MaskTexture name="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+								<!-- Note that using the party mask assets here is intentional. -->
+								<MaskTexture name="PetFrameHealthBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="15" y="-14"/>
+									</Anchors>
+								</MaskTexture>
+								<MaskTexture name="PetFrameManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="13" y="-24"/>
 									</Anchors>

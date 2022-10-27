@@ -18,6 +18,13 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
         end
      end);
 
+    self.StartRecraftButton:SetScript("OnEnter", function(frame)
+        if not frame:IsEnabled() then
+            GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+            GameTooltip_AddErrorLine(GameTooltip, CRAFTING_ORDER_CANT_RECRAFT_CRAFTER);
+            GameTooltip:Show();
+        end
+    end);
     self.StartRecraftButton:SetScript("OnClick", function()
         self.recraftingOrderID = self.order.orderID;
         self:SetOrder(self.order); -- Refresh all
@@ -63,7 +70,9 @@ function ProfessionsCrafterOrderViewMixin:InitRegions()
 
     self.OrderDetails.MinimumQualityIcon:SetScript("OnEnter", function(icon)
         GameTooltip:SetOwner(icon, "ANCHOR_RIGHT");
-        GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_ORDER_HAS_MINIMUM_QUALITY_FMT:format(CreateAtlasMarkup(string.format("Professions-ChatIcon-Quality-Tier%d", self.order.minQuality), 12, 12, 0, 0)));
+
+		local smallIcon = true;
+        GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_ORDER_HAS_MINIMUM_QUALITY_FMT:format(Professions.GetChatIconMarkupForQuality(self.order.minQuality, smallIcon)));
         GameTooltip:Show();
     end);
     self.OrderDetails.MinimumQualityIcon:SetScript("OnLeave", function()
@@ -94,6 +103,7 @@ local ProfessionsCrafterOrderViewEvents =
     "UNIT_SPELLCAST_INTERRUPTED",
     "UNIT_SPELLCAST_FAILED",
     "UPDATE_TRADESKILL_CAST_COMPLETE",
+    "PLAYER_MONEY",
 };
 function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     if event == "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE" then
@@ -148,6 +158,8 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
         end
     elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" or event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
 		self:StopOverridingCastBar();
+    elseif event == "PLAYER_MONEY" then
+        self:UpdateFulfillButton();
     end
 end
 
@@ -315,9 +327,13 @@ function ProfessionsCrafterOrderViewMixin:UpdateStartOrderButton()
     local errorReason;
 
     local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.order.spellID);
+    local claimInfo = C_CraftingOrders.GetOrderClaimInfo(C_TradeSkillUI.GetChildProfessionInfo().profession);
     if self.order.customerGuid == UnitGUID("player") then
         enabled = false;
         errorReason = PROFESSIONS_CRAFTER_CANT_CLAIM_OWN;
+    elseif self.order.orderType == Enum.CraftingOrderType.Public and claimInfo.claimsRemaining <= 0 and Professions.GetCraftingOrderRemainingTime(self.order.expirationTime) > Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD then
+        enabled = false;
+        errorReason = PROFESSIONS_CRAFTER_OUT_OF_CLAIMS_FMT:format(claimInfo.hoursToRecharge);
     elseif not recipeInfo or not recipeInfo.learned then
         enabled = false;
         errorReason = PROFESSIONS_CRAFTER_CANT_CLAIM_UNLEARNED;
@@ -339,6 +355,28 @@ function ProfessionsCrafterOrderViewMixin:UpdateStartOrderButton()
             GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_START_ORDER_TOOLTIP);
             GameTooltip:Show();
         end);
+    end
+end
+
+function ProfessionsCrafterOrderViewMixin:UpdateFulfillButton()
+    local enabled = true;
+    local errorReason;
+
+    local maxGold = 99999999999;
+    if GetMoney() + self.order.tipAmount - self.order.consortiumCut > maxGold then
+        enabled = false;
+        errorReason = ERR_TOO_MUCH_GOLD;
+    end
+
+    self.CompleteOrderButton:SetEnabled(enabled);
+    if not enabled then
+        self.CompleteOrderButton:SetScript("OnEnter", function()
+            GameTooltip:SetOwner(self.CompleteOrderButton, "ANCHOR_RIGHT");
+		    GameTooltip_AddErrorLine(GameTooltip, errorReason);
+		    GameTooltip:Show();
+        end);
+    else
+        self.CompleteOrderButton:SetScript("OnEnter", nil);
     end
 end
 
@@ -370,7 +408,9 @@ function ProfessionsCrafterOrderViewMixin:UpdateCreateButton()
         errorReason = PROFESSIONS_INSUFFICIENT_REAGENTS;
     elseif self.order.minQuality and self.OrderDetails.SchematicForm.Details:GetProjectedQuality() and self.order.minQuality > self.OrderDetails.SchematicForm.Details:GetProjectedQuality() then
         enabled = false;
-        errorReason = PROFESSIONS_ORDER_HAS_MINIMUM_QUALITY_FMT:format(CreateAtlasMarkup(string.format("Professions-ChatIcon-Quality-Tier%d", self.order.minQuality), 12, 12, 0, 0));
+
+		local smallIcon = true;
+        errorReason = PROFESSIONS_ORDER_HAS_MINIMUM_QUALITY_FMT:format(Professions.GetChatIconMarkupForQuality(self.order.minQuality, smallIcon));
     end
 
     self.CreateButton:SetEnabled(enabled);
@@ -405,6 +445,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
     local highestRecipe = Professions.GetHighestLearnedRecipe(recipeInfo);
 	self.OrderDetails.SchematicForm:Init(highestRecipe or recipeInfo, isRecraft);
     self:UpdateStartOrderButton(); -- Must get called after the schematic form is initialized
+    self:UpdateFulfillButton();
 
     if order.outputItemHyperlink then
         self.OrderDetails.FulfillmentForm.ItemIcon:SetShown(not order.isRecraft);
@@ -452,6 +493,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     local showFulfillmentForm = false;
     local showCompleteOrderButton = false;
     local showStartRecraftButton = false;
+    local enableStartRecraftButton = false;
     local showStopRecraftButton = false;
     local showDeclineOrderButton = false;
 
@@ -466,6 +508,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
         if self.order.isFulfillable and self.recraftingOrderID ~= self.order.orderID then
             showCompleteOrderButton = true;
             showStartRecraftButton = C_CraftingOrders.OrderCanBeRecrafted(self.order.orderID);
+            enableStartRecraftButton = showStartRecraftButton and (C_TradeSkillUI.GetItemCraftedQualityByItemInfo(self.order.outputItemHyperlink) < #C_TradeSkillUI.GetQualitiesForRecipe(self.order.spellID));
             showFulfillmentForm = true;
         else
             showCreateButton = true;
@@ -485,6 +528,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     self.OrderDetails.FulfillmentForm:SetShown(showFulfillmentForm);
     self.CompleteOrderButton:SetShown(showCompleteOrderButton);
     self.StartRecraftButton:SetShown(showStartRecraftButton);
+    self.StartRecraftButton:SetEnabled(enableStartRecraftButton);
     self.StopRecraftButton:SetShown(showStopRecraftButton);
     self.OrderInfo.DeclineOrderButton:SetShown(showDeclineOrderButton);
 

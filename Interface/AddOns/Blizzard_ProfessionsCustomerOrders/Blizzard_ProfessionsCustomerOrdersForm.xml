@@ -239,6 +239,25 @@
 						</Anchors>
 					</Frame>
 				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="RecraftInfoText" inherits="GameFontHighlight" text="PROFESSIONS_RECRAFT_ORDER_INSTRUCTION" justifyH="LEFT">
+							<Size x="400" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.RecraftSlot" relativePoint="BOTTOMLEFT" x="15" y="-15"/>
+							</Anchors>
+							<Color color="GRAY_FONT_COLOR"/>
+						</FontString>
+
+						<FontString parentKey="RecraftWarningText" inherits="GameFontHighlight" text="CRAFTING_ORDER_RECRAFT_WARNING1" justifyH="CENTER">
+							<Size x="480" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="20"/>
+							</Anchors>
+							<Color color="RED_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Frame>
 
 			<Frame parentKey="PaymentContainer">
@@ -350,7 +369,10 @@
 						<Size x="27" y="26"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.TipMoneyInputFrame" relativePoint="RIGHT" x="-48" y="2"/>
-						</Anchors>						
+						</Anchors>
+						<Scripts>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>			
 						<NormalTexture parentKey="NormalTexture" atlas="UI-CraftingOrderIcon-Up"/>
 						<HighlightTexture parentKey="HighlightTexture" atlas="UI-CraftingOrderIcon-Up" alphaMode="ADD" alpha="0.3"/>
 						<PushedTexture parentKey="PushedTexture" atlas="UI-CraftingOrderIcon-Down"/>

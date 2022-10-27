@@ -849,12 +849,24 @@ function OpenMail_Delete()
 	HideUIPanel(OpenMailFrame);
 end
 
-function OpenMail_ReportSpam()
+local function ReportMail()
 	local reportInfo = ReportInfo:CreateMailReportInfo(Enum.ReportType.Mail, InboxFrame.openMailID);
-	if(reportInfo) then
-		ReportFrame:InitiateReport(reportInfo, InboxFrame.openMailSender);
+	if (reportInfo) then
+		local reportTarget = ConsortiumMailFrame:IsShown() and C_Mail.GetCraftingOrderMailInfo(InboxFrame.openMailID).crafterName or InboxFrame.openMailSender;
+		ReportFrame:InitiateReport(reportInfo, reportTarget);
 	end
 	OpenMailReportSpamButton:Disable();
+end		
+
+function OpenMail_ReportSpam()
+	local numItemsAttached = GetInboxNumItems(); 
+
+	if(ConsortiumMailFrame:IsShown() and numItemsAttached > 0) then 
+		local data = {text = PROFESSIONS_CRAFTING_ORDER_MAIL_REPORT_WARNING, callback = ReportMail, acceptText = ACCEPT, cancelText = CANCEL,  }
+		StaticPopup_ShowCustomGenericConfirmation(data);
+	else 
+		ReportMail();
+	end
 end
 
 function OpenMailAttachment_OnEnter(self, index)

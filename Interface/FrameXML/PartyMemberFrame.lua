@@ -202,6 +202,8 @@ function PartyMemberFrameMixin:ToPlayerArt()
 	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
 	self:UpdateHealthBarTextAnchors();
 
+	self:AddHealthBarMaskTexture();
+
 	self.ManaBar:SetWidth(74);
 	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 41, -30);
 	self:UpdateManaBarTextAnchors();
@@ -234,6 +236,9 @@ function PartyMemberFrameMixin:ToVehicleArt()
 	self.HealthBar:SetWidth(67);
 	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 48, -18);
 	self:UpdateHealthBarTextAnchors();
+
+	-- Party frames when in a vehicle do not have a mask for the health bar, so remove any applied target mask that would not fit.
+	self:RemoveHealthBarMaskTexture();
 
 	self.ManaBar:SetWidth(70);
 	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -29);
@@ -318,6 +323,9 @@ function PartyMemberFrameMixin:Setup()
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
+
+	-- Mask the various bar assets, to avoid any overflow with the frame shape.
+	self:AddHealthBarMaskTexture();
 
 	self.ManaBar:GetStatusBarTexture():AddMaskTexture(self.ManaBarMask);
 
@@ -459,6 +467,36 @@ function PartyMemberFrameMixin:UpdateMemberHealth(elapsed)
 		end
 		self.Portrait:SetAlpha(alpha);
 	end
+end
+
+function PartyMemberFrameMixin:AddHealthBarMaskTexture()
+	local healthBar = self.HealthBar;
+
+	healthBar:GetStatusBarTexture():AddMaskTexture(self.HealthBarMask);
+	healthBar.MyHealPredictionBar:AddMaskTexture(self.HealthBarMask);
+	healthBar.OtherHealPredictionBar:AddMaskTexture(self.HealthBarMask);
+	self.TotalAbsorbBar:AddMaskTexture(self.HealthBarMask);
+	self.TotalAbsorbBarOverlay:AddMaskTexture(self.HealthBarMask);
+	healthBar.OverAbsorbGlow:AddMaskTexture(self.HealthBarMask);
+	healthBar.OverHealAbsorbGlow:AddMaskTexture(self.HealthBarMask);
+	healthBar.HealAbsorbBar:AddMaskTexture(self.HealthBarMask);
+	healthBar.HealAbsorbBarLeftShadow:AddMaskTexture(self.HealthBarMask);
+	healthBar.HealAbsorbBarRightShadow:AddMaskTexture(self.HealthBarMask);
+end
+
+function PartyMemberFrameMixin:RemoveHealthBarMaskTexture()
+	local healthBar = self.HealthBar;
+
+	healthBar:GetStatusBarTexture():RemoveMaskTexture(self.HealthBarMask);
+	healthBar.MyHealPredictionBar:RemoveMaskTexture(self.HealthBarMask);
+	healthBar.OtherHealPredictionBar:RemoveMaskTexture(self.HealthBarMask);
+	self.TotalAbsorbBar:RemoveMaskTexture(self.HealthBarMask);
+	self.TotalAbsorbBarOverlay:RemoveMaskTexture(self.HealthBarMask);
+	healthBar.OverAbsorbGlow:RemoveMaskTexture(self.HealthBarMask);
+	healthBar.OverHealAbsorbGlow:RemoveMaskTexture(self.HealthBarMask);
+	healthBar.HealAbsorbBar:RemoveMaskTexture(self.HealthBarMask);
+	healthBar.HealAbsorbBarLeftShadow:RemoveMaskTexture(self.HealthBarMask);
+	healthBar.HealAbsorbBarRightShadow:RemoveMaskTexture(self.HealthBarMask);
 end
 
 function PartyMemberFrameMixin:UpdateLeader()

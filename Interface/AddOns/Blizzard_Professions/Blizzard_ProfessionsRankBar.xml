@@ -20,7 +20,7 @@
 							<Anchor point="TOPLEFT" x="5" y="-3"/>
 						</Anchors>						
 					</Texture>
-					<MaskTexture parentKey="Mask" atlas="Professions-skillbar-mask" useAtlasSize="true" hWrapMode="REPEAT" vWrapMode="REPEAT">
+					<MaskTexture parentKey="Mask" atlas="Professions-skillbar-mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Fill"/>
 						</Anchors>
@@ -31,7 +31,7 @@
 				</Layer>
 
 				<Layer level="ARTWORK" textureSubLevel="3">
-					<Texture parentKey="Border" atlas="Professions-skillbar-frame" useAtlasSize="true">
+					<Texture parentKey="Border" texelSnappingBias="1.0" atlas="Professions-skillbar-frame" useAtlasSize="true">
 						<Size x="451" y="29"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
@@ -100,7 +100,6 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>

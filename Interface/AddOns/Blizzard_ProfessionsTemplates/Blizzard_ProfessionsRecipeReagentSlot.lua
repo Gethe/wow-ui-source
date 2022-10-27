@@ -47,11 +47,13 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 			for index, allocation in allocations:Enumerate() do
 				local reagent = allocation:GetReagent();
 				self:SetItem(Item:CreateFromItemID(reagent.itemID));
-				break;
+				return;
 			end
+
+			self:SetItem(nil);
 		end
 		
-		local modification = transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
+		local modification = transaction:GetOriginalModification(reagentSlotSchematic.dataSlotIndex);
 		if modification and modification.itemID > 0 then
 			self:SetOriginalItem(Item:CreateFromItemID(modification.itemID));
 		end
@@ -239,16 +241,21 @@ function ProfessionsReagentSlotMixin:RestoreOriginalItem()
 	self:SetItem(self.originalItem);
 end
 
+function ProfessionsReagentSlotMixin:IsOriginalItemSet()
+	return not self.originalItem or Item:DoItemsMatch(self.originalItem, self.item);
+end
+
 function ProfessionsReagentSlotMixin:SetOriginalItem(item)
 	self.originalItem = item;
 end
 
 function ProfessionsReagentSlotMixin:SetItem(item)
 	self.Button:Reset();
+	self.item = item;
 
 	if item then
 		self.Button:SetItem(item:GetItemID());
-	self.Button.InputOverlay.AddIcon:Hide();
+		self.Button.InputOverlay.AddIcon:Hide();
 		self:SetNameText(item:GetItemName());
 	else
 		local reagentSlotSchematic = self:GetReagentSlotSchematic();
@@ -256,7 +263,7 @@ function ProfessionsReagentSlotMixin:SetItem(item)
 		self:SetNameText(slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX);
 	end
 
-	if not self.originalItem or Item:DoItemsMatch(self.originalItem, item) then
+	if self:IsOriginalItemSet() then
 		self.UndoButton:Hide();
 	else
 		self.UndoButton:Show();

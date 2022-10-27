@@ -506,11 +506,15 @@ end
 function ProfessionsRecipeTransactionMixin:GetModification(dataSlotIndex)
 	-- If expected item mods have been set then we've sent off the transaction to the
 	-- server and we're waiting for the item mods to be officially stamped onto the item.
-	local itemMods = self.recraftExpectedItemMods or self.recraftItemMods;
-	if itemMods then
-		return itemMods[dataSlotIndex];
-	end
-	return nil;
+	return self:GetModificationInternal(dataSlotIndex, self.recraftExpectedItemMods or self.recraftItemMods);
+end
+
+function ProfessionsRecipeTransactionMixin:GetOriginalModification(dataSlotIndex)
+	return self:GetModificationInternal(dataSlotIndex, self.recraftItemMods);
+end
+
+function ProfessionsRecipeTransactionMixin:GetModificationInternal(dataSlotIndex, itemMods)
+	return itemMods and itemMods[dataSlotIndex] or nil;
 end
 
 function ProfessionsRecipeTransactionMixin:HasModification(dataSlotIndex)

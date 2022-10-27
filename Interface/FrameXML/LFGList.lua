@@ -48,7 +48,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[6] = "legion",
 	[7] = "battleforazeroth",
 	[8] = "shadowlands",
-	[9] = "expansion9",
+	[9] = "dragonflight",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {

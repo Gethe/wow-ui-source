@@ -170,6 +170,15 @@ local WeeklyRewards =
 			Type = "Function",
 		},
 		{
+			Name = "ShouldShowFinalRetirementMessage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "showRetirementMessage", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ShouldShowRetirementMessage",
 			Type = "Function",
 

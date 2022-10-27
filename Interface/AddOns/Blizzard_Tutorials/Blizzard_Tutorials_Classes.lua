@@ -104,10 +104,22 @@ function Class_ChangeSpec:OnInterrupt(interruptedBy)
 end
 
 function Class_ChangeSpec:OnComplete()
+	Dispatcher:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED", self);
+	Dispatcher:UnregisterEvent("PLAYER_TALENT_UPDATE", self);
+	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
+	EventRegistry:UnregisterCallback("TalentFrame.OpenFrame", self);
+	EventRegistry:UnregisterCallback("TalentFrame.CloseFrame", self);
+	EventRegistry:UnregisterCallback("TalentFrame.SpecTab.ActivateSpec", self);
+
+	self:CleanUpCallbacks();
+
 	self:EnableHelp(false);
 	ActionButton_HideOverlayGlow(TalentMicroButton);
 	self:HidePointerTutorials();
 	TutorialManager:RemoveTutorial(self:Name());
+end
+
+function Class_ChangeSpec:CleanUpCallbacks()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -186,6 +198,15 @@ function Class_ChangeSpec_NPE:GOSSIP_CLOSED()
 	end
 end
 
+function Class_ChangeSpec_NPE:CleanUpCallbacks()
+	Dispatcher:UnregisterEvent("GOSSIP_CLOSED", self);
+	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
+	Dispatcher:UnregisterEvent("UNIT_QUEST_LOG_CHANGED", self);
+	EventRegistry:UnregisterCallback("TalentFrame.OpenFrame", self);
+	EventRegistry:UnregisterCallback("TalentFrame.CloseFrame", self);
+	EventRegistry:UnregisterCallback("TalentFrame.SpecTab.ActivateSpec", self);
+end
+
 -- ------------------------------------------------------------------------------------------------------------
 -- Talent Points
 -- ------------------------------------------------------------------------------------------------------------
@@ -250,6 +271,9 @@ end
 
 function Class_TalentPoints:ShowTalentButtonPointer()
 	self:HidePointerTutorials();
+	if HelpTip:IsShowingAnyInSystem("MicroButtons") then
+		HelpTip:HideAllSystem("MicroButtons");
+	end
 	self:ShowPointerTutorial(TALENT_MICRO_BUTTON_UNSPENT_TALENTS, "DOWN", TalentMicroButton, 0, 10, nil, "DOWN");
 	ActionButton_ShowOverlayGlow(TalentMicroButton);
 end
@@ -307,6 +331,9 @@ end
 function Class_TalentPoints:OnComplete()
 	self:HidePointerTutorials();
 	ActionButton_HideOverlayGlow(TalentMicroButton);
+	Dispatcher:UnregisterEvent("PLAYER_TALENT_UPDATE", self);
+	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
+	Dispatcher:UnregisterEvent("ACTIVE_COMBAT_CONFIG_CHANGED", self);
 	EventRegistry:UnregisterCallback("TalentFrame.SpecTab.Show", self);
 	EventRegistry:UnregisterCallback("TalentFrame.TalentTab.Show", self);
 	EventRegistry:UnregisterCallback("TalentFrame.OpenFrame", self);
@@ -412,6 +439,9 @@ function Class_StarterTalentWatcher:StopWatching()
 	EventRegistry:UnregisterCallback("TalentFrame.CloseFrame", self);
 	EventRegistry:UnregisterCallback("TalentFrame.TalentTab.Show", self);
 	EventRegistry:UnregisterCallback("TalentFrame.SpecTab.Show", self);
+	EventRegistry:UnregisterCallback("TalentFrame.TalentTab.StarterBuild", self);
+	EventRegistry:UnregisterCallback("UIDropDownMenu.Show", self);
+	EventRegistry:UnregisterCallback("UIDropDownMenu.Hide", self);
 end
 
 function Class_StarterTalentWatcher:OnInterrupt(interruptedBy)

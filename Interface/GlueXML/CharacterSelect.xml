@@ -85,20 +85,20 @@
 					<Anchor point="RIGHT" relativePoint="LEFT" x="-8" y="7"/>
 				</Anchors>
 			</Frame>
-			
+
 			<Button parentKey="upgradeIcon" inherits="CharacterServicesProcessingIconTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="LEFT" x="-20" y="4"/>
 				</Anchors>
 			</Button>
-			
+
 			<Button parentKey="paidService" inherits="CharSelectPaidServiceTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativePoint="TOP" x="0" y="6"/>
 					<Anchor point="RIGHT" relativePoint="LEFT" x="-20" y="0"/>
 				</Anchors>
 			</Button>
-			
+
 			<Frame setAllPoints="true" parentKey="buttonText">
 				<Layers>
 					<Layer level="BORDER">
@@ -1244,7 +1244,7 @@
 							</Frame>
 							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-13" y="-14" />
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-18" y="-18" />
 								</Anchors>
 								<Scripts>
 									<OnClick>

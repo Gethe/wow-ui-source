@@ -923,16 +923,16 @@
 			<Frame parentKey="TitleContainer" frameLevel="510">
 				<Size x="0" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" y="-1"/>
-					<Anchor point="TOPRIGHT" y="-1"/>
+					<Anchor point="TOPLEFT" x="30" y="-1"/>
+					<Anchor point="TOPRIGHT" x="-24" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<FontString name="$parentTitleText" inherits="GameFontNormal" parentKey="TitleText" wordwrap="false">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-5"/>
-								<Anchor point="LEFT" x="37" y="0"/>
-								<Anchor point="RIGHT" x="-37" y="0"/>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1006,16 +1006,16 @@
 			<Frame parentKey="TitleContainer" frameLevel="510">
 				<Size x="0" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" y="-1"/>
-					<Anchor point="TOPRIGHT" y="-1"/>
+					<Anchor point="TOPLEFT" x="58" y="-1"/>
+					<Anchor point="TOPRIGHT" x="-24" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText" wordwrap="false">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-5"/>
-								<Anchor point="LEFT" x="37" y="0"/>
-								<Anchor point="RIGHT" x="-37" y="0"/>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
 							</Anchors>
 						</FontString>
 					</Layer>

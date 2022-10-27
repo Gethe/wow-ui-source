@@ -25,6 +25,9 @@ function UIWidgetTemplateTextWithSubtextMixin:Setup(widgetInfo, widgetContainer)
 	local subTextWidth = self.SubText:GetStringWidth() or 0;
 	local width = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or math.max(subTextWidth, textWidth); 
 
+	self.spacing = widgetInfo.spacing; 
+	self.SubText:SetWidth(width); 
+	self.Text:SetWidth(width);
 	self.fixedWidth = width; 
 	self:Layout(); 
 end

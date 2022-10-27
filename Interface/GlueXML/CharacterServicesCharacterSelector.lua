@@ -173,7 +173,7 @@ function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 	UpdateCharacterList(true);
 	local selectedCharacterIndex;
 	if selectedButtonIndex and selectedButtonIndex > 0 then
-		selectedCharacterIndex = selectedButtonIndex + CharacterSelectCharacterFrame.ScrollBox:GetDataIndexBegin();
+		selectedCharacterIndex = selectedButtonIndex;
 	else
 		selectedCharacterIndex = self.initialSelectedCharacterIndex;
 	end

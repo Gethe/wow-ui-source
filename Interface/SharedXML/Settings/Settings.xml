@@ -2,6 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_SettingsRegistrar.lua"/>
 	<Script file="Blizzard_Settings.lua"/>
+	<Script file="Blizzard_SettingsInbound.lua"/>
 	<Script file="Blizzard_SettingsCanvas.lua"/>
 	<Script file="Blizzard_Category.lua"/>
 	<Include file="Blizzard_CategoryList.xml"/>

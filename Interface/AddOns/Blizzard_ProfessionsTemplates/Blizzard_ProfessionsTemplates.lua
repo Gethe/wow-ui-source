@@ -358,7 +358,8 @@ function ProfessionsCrafterTableCellItemNameMixin:Populate(rowData, dataIndex)
 			itemName = PROFESSIONS_RECRAFT_ORDER_NAME_FMT:format(itemName);
 		end
 		if order.minQuality and order.minQuality > 1 then
-			local qualityAtlas = CreateAtlasMarkup(string.format("Professions-ChatIcon-Quality-Tier%d", order.minQuality), 12, 12, 0, 0);
+			local smallIcon = true;
+			local qualityAtlas = Professions.GetChatIconMarkupForQuality(order.minQuality, smallIcon);
 			itemName = itemName.." "..qualityAtlas;
 		end
 
@@ -374,8 +375,7 @@ function ProfessionsCrafterTableCellExpirationMixin:Populate(rowData, dataIndex)
 	local seconds = remainingTime >= 60 and remainingTime or 60; -- Never show < 1min
 	self.remainingTime = seconds;
 	local fmt, time = SecondsToTimeAbbrev(seconds);
-	local twoHrsSeconds = 60 * 60 * 2;
-	if seconds <= twoHrsSeconds then
+	if seconds <= Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD then
 		fmt = ERROR_COLOR:WrapTextInColorCode(fmt);
 	end
 	ProfessionsTableCellTextMixin.SetText(self, fmt:format(time));
@@ -387,8 +387,7 @@ function ProfessionsCrafterTableCellExpirationMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local noSeconds = true;
 	GameTooltip_AddNormalLine(GameTooltip, AUCTION_HOUSE_TOOLTIP_DURATION_FORMAT:format(SecondsToTime(self.remainingTime, noSeconds)));
-	local twoHrsSeconds = 60 * 60 * 2;
-	if self.remainingTime <= twoHrsSeconds and self.rowData.option.orderType == Enum.CraftingOrderType.Public then
+	if self.remainingTime <= Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD and self.rowData.option.orderType == Enum.CraftingOrderType.Public then
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_ORDER_ABOUT_TO_EXPIRE);
 	end
@@ -430,7 +429,8 @@ function ProfessionsCustomerTableCellItemNameMixin:Populate(rowData, dataIndex)
 			itemName = PROFESSIONS_RECRAFT_ORDER_NAME_FMT:format(itemName);
 		end
 		if order.minQuality and order.minQuality > 1 then
-			local qualityAtlas = CreateAtlasMarkup(string.format("Professions-ChatIcon-Quality-Tier%d", order.minQuality), 12, 12, 0, 0);
+			local smallIcon = true;
+			local qualityAtlas = Professions.GetChatIconMarkupForQuality(order.minQuality, smallIcon);
 			itemName = itemName.." "..qualityAtlas;
 		end
 

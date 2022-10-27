@@ -22,6 +22,7 @@ TIMER_NUMBERS_SETS["BigGold"]  = {	texture = "Interface\\Timer\\BigTimerNumbers"
 function TimerTracker_OnLoad(self)
 	self.timerList = {};
 	self:RegisterEvent("START_TIMER");
+	self:RegisterEvent("STOP_TIMER_OF_TYPE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
@@ -134,6 +135,14 @@ function TimerTracker_OnEvent(self, event, ...)
 			timer:Show();
 		end
 		StartTimer_SetGoTexture(timer);
+	elseif event == "STOP_TIMER_OF_TYPE" then
+		local timerType = ...;
+		for a,timer in pairs(self.timerList) do
+			if(timer.type == timerType) then 
+				FreeTimerTrackerTimer(timer);
+				timer:Hide();
+			end
+		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		for a,timer in pairs(self.timerList) do
 			if(timer.type == TIMER_TYPE_PVP) then 

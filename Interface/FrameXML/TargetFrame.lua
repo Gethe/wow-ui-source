@@ -74,8 +74,12 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");
 	self.auraPools:CreatePool("FRAME", self, "TargetBuffFrameTemplate");
 
-	targetFrameContentMain.ManaBar:GetStatusBarTexture():AddMaskTexture(targetFrameContentMain.ManaBarMask);
-	targetFrameContentMain.MyHealPredictionBar:AddMaskTexture(targetFrameContentMain.ManaBarMask);
+	-- Mask the various bar assets, to avoid any overflow with the frame shape.
+	self:AddHealthBarMaskTexture();
+
+	local manaBarMask = targetFrameContentMain.ManaBarMask;
+	targetFrameContentMain.ManaBar:GetStatusBarTexture():AddMaskTexture(manaBarMask);
+	targetFrameContentMain.MyHealPredictionBar:AddMaskTexture(manaBarMask);
 
 	self:Update();
 
@@ -369,12 +373,13 @@ end
 
 function TargetFrameMixin:CheckClassification()
 	local classification = UnitClassification(self.unit);
-	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
+	local healthBar = self.TargetFrameContent.TargetFrameContentMain.HealthBar;
+	local manaBar = self.TargetFrameContent.TargetFrameContentMain.ManaBar;
 
 	-- Base frame/health/mana pieces
-	targetFrameContentMain.ManaBar.pauseUpdates = false;
-	targetFrameContentMain.ManaBar:Show();
-	TextStatusBar_UpdateTextString(targetFrameContentMain.ManaBar);
+	manaBar.pauseUpdates = false;
+	manaBar:Show();
+	TextStatusBar_UpdateTextString(manaBar);
 
 	if (classification == "minus") then
 		self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn", TextureKitConstants.UseAtlasSize);
@@ -384,28 +389,38 @@ function TargetFrameMixin:CheckClassification()
 			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
 		end
 
-		targetFrameContentMain.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
-		targetFrameContentMain.HealthBar:SetHeight(12);
-		targetFrameContentMain.HealthBar:SetWidth(125);
-		targetFrameContentMain.HealthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 0, -3);
+		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
+		healthBar:SetHeight(12);
+		healthBar:SetWidth(125);
+		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 0, -3);
 
-		targetFrameContentMain.ManaBar.pauseUpdates = true;
-		targetFrameContentMain.ManaBar:Hide();
-		targetFrameContentMain.ManaBar.TextString:Hide();
-		targetFrameContentMain.ManaBar.LeftText:Hide();
-		targetFrameContentMain.ManaBar.RightText:Hide();
+		-- Minus mobs do not have a mask for the health bar, so remove the applied target mask that would not fit.
+		self:RemoveHealthBarMaskTexture();
+
+		manaBar.pauseUpdates = true;
+		manaBar:Hide();
+		manaBar.TextString:Hide();
+		manaBar.LeftText:Hide();
+		manaBar.RightText:Hide();
 	else
-		self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn", TextureKitConstants.UseAtlasSize);
+		if (classification == "rare" or classification == "rareelite") then
+			self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-Rare-PortraitOn", TextureKitConstants.UseAtlasSize);
+		else
+			self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn", TextureKitConstants.UseAtlasSize);
+		end
 
 		-- self.threatIndicator should just be set to self.TargetFrameContainer.Flash.  See 'threatFrame' in TargetFrameMixin:OnLoad.
 		if (self.threatIndicator) then
 			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
 		end
 
-		targetFrameContentMain.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
-		targetFrameContentMain.HealthBar:SetHeight(20);
-		targetFrameContentMain.HealthBar:SetWidth(126);
-		targetFrameContentMain.HealthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 1, -11);
+		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
+		healthBar:SetHeight(20);
+		healthBar:SetWidth(126);
+		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 1, -11);
+
+		-- Mask the various bar assets, to avoid any overflow with the frame shape.
+		self:AddHealthBarMaskTexture();
 	end
 
 	-- Boss frame pieces (dragon frame, icons)
@@ -414,7 +429,11 @@ function TargetFrameMixin:CheckClassification()
 		bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold-Winged", TextureKitConstants.UseAtlasSize);
 		bossPortraitFrameTexture:SetPoint("TOPRIGHT", 8, -8);
 		bossPortraitFrameTexture:Show();
-	elseif (classification == "elite" or classification == "rareelite") then
+	elseif (classification == "rareelite") then
+		bossPortraitFrameTexture:SetAtlas("ui-hud-unitframe-target-portraiton-boss-rare-silver", TextureKitConstants.UseAtlasSize);
+		bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8);
+		bossPortraitFrameTexture:Show();
+	elseif (classification == "elite") then
 		bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold", TextureKitConstants.UseAtlasSize);
 		bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8);
 		bossPortraitFrameTexture:Show();
@@ -432,11 +451,8 @@ function TargetFrameMixin:CheckClassification()
 	-- Quest icon showing trumps rarity icon.
 	if (targetFrameContenContextual.QuestIcon and isQuestBoss) then
 		targetFrameContenContextual.BossIcon:Hide();
-	elseif (classification == "rare") then
+	elseif (classification == "rare" or classification == "rareelite") then
 		targetFrameContenContextual.BossIcon:SetAtlas("UnitFrame-Target-PortraitOn-Boss-Rare-Star", TextureKitConstants.UseAtlasSize);
-		targetFrameContenContextual.BossIcon:Show();
-	elseif ( classification == "rareelite") then
-		targetFrameContenContextual.BossIcon:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare", TextureKitConstants.UseAtlasSize);
 		targetFrameContenContextual.BossIcon:Show();
 	else
 		targetFrameContenContextual.BossIcon:Hide();
@@ -871,6 +887,38 @@ function TargetFrameMixin:HealthUpdate(elapsed, unit)
 	end
 end
 
+function TargetFrameMixin:AddHealthBarMaskTexture()
+	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
+	local healthBarMask = targetFrameContentMain.HealthBarMask;
+
+	targetFrameContentMain.HealthBar:GetStatusBarTexture():AddMaskTexture(healthBarMask);
+	targetFrameContentMain.MyHealPredictionBar:AddMaskTexture(healthBarMask);
+	targetFrameContentMain.OtherHealPredictionBar:AddMaskTexture(healthBarMask);
+	targetFrameContentMain.TotalAbsorbBar:AddMaskTexture(healthBarMask);
+	targetFrameContentMain.TotalAbsorbBarOverlay:AddMaskTexture(healthBarMask);
+	targetFrameContentMain.OverAbsorbGlow:AddMaskTexture(healthBarMask);
+	targetFrameContentMain.OverHealAbsorbGlow:AddMaskTexture(healthBarMask);
+	targetFrameContentMain.HealAbsorbBar:AddMaskTexture(healthBarMask);
+	targetFrameContentMain.HealAbsorbBarLeftShadow:AddMaskTexture(healthBarMask);
+	targetFrameContentMain.HealAbsorbBarRightShadow:AddMaskTexture(healthBarMask);
+end
+
+function TargetFrameMixin:RemoveHealthBarMaskTexture()
+	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
+	local healthBarMask = targetFrameContentMain.HealthBarMask;
+
+	targetFrameContentMain.HealthBar:GetStatusBarTexture():RemoveMaskTexture(healthBarMask);
+	targetFrameContentMain.MyHealPredictionBar:RemoveMaskTexture(healthBarMask);
+	targetFrameContentMain.OtherHealPredictionBar:RemoveMaskTexture(healthBarMask);
+	targetFrameContentMain.TotalAbsorbBar:RemoveMaskTexture(healthBarMask);
+	targetFrameContentMain.TotalAbsorbBarOverlay:RemoveMaskTexture(healthBarMask);
+	targetFrameContentMain.OverAbsorbGlow:RemoveMaskTexture(healthBarMask);
+	targetFrameContentMain.OverHealAbsorbGlow:RemoveMaskTexture(healthBarMask);
+	targetFrameContentMain.HealAbsorbBar:RemoveMaskTexture(healthBarMask);
+	targetFrameContentMain.HealAbsorbBarLeftShadow:RemoveMaskTexture(healthBarMask);
+	targetFrameContentMain.HealAbsorbBarRightShadow:RemoveMaskTexture(healthBarMask);
+end
+
 function TargetFrameDropDown_Initialize(self)
 	local menu;
 	local name;
@@ -988,6 +1036,8 @@ function TargetFrameMixin:CreateTargetofTarget(unit)
 	UnitFrame_Initialize(frame, unit, frame.Name, frame.frameType, frame.Portrait,
 						 frame.HealthBar, nil, frame.ManaBar, nil);
 	SetTextStatusBarTextZeroText(frame.HealthBar, DEAD);
+
+	frame.HealthBar:GetStatusBarTexture():AddMaskTexture(frame.HealthBarMask);
 
 	frame.ManaBar:GetStatusBarTexture():AddMaskTexture(frame.ManaBarMask);
 
@@ -1209,6 +1259,11 @@ function BossTargetFrameMixin:OnLoad()
 	healthBar:SetHeight(10);
 	healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", -2, -8);
 
+	local healthBarMask = targetFrameContentMain.HealthBarMask;
+	-- The boss frame mask is the same shape as the party frame, so we just use that.
+	healthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+	healthBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 40, -43);
+
 	local manaBar = targetFrameContentMain.ManaBar;
 	manaBar:SetWidth(84);
 	manaBar:SetHeight(7);
@@ -1216,10 +1271,10 @@ function BossTargetFrameMixin:OnLoad()
 	manaBar.ManaBarText:SetPoint("CENTER", 0, 0);
 	manaBar.RightText:SetPoint("RIGHT", -5, 0);
 
-	local manaBarMask = self.TargetFrameContent.TargetFrameContentMain.ManaBarMask;
+	local manaBarMask = targetFrameContentMain.ManaBarMask;
 	-- The boss frame mask is the same shape as the party frame, so we just use that.
-	manaBarMask:SetAtlas("UI-HUD-UnitFrame-PartyFrame-PortraitOff-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
-	manaBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 0, -52);
+	manaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
+	manaBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 40, -52);
 
 	self.TargetFrameContent.TargetFrameContentContextual.RaidTargetIcon:SetPoint("RIGHT", -90, 0);
 	self.threatNumericIndicator:SetPoint("BOTTOM", self, "TOP", -28, -33);

@@ -87,7 +87,7 @@ function WeeklyRewardsMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, WEEKLY_REWARDS_EVENTS);
 	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_OPEN_WINDOW);
 	C_WeeklyRewards.OnUIInteract();
-	WeeklyRewardExpirationWarningDialog:SetShown(C_WeeklyRewards.ShouldShowRetirementMessage());
+	WeeklyRewardExpirationWarningDialog:SetShown(C_WeeklyRewards.ShouldShowRetirementMessage() or C_WeeklyRewards.ShouldShowFinalRetirementMessage());
 	self:FullRefresh();
 	self:SetupTextures();
 end
@@ -989,9 +989,10 @@ end
 GreatVaultRetirementWarningFrameMixin = { };
 
 function GreatVaultRetirementWarningFrameMixin:OnShow()
-	local title = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT + 1]; 
+	local title = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT]; 
 	if(title) then 
-		self.Description:SetText(GREAT_VAULT_RETIRE_WARNING:format(title)); 
+		local text = C_WeeklyRewards.ShouldShowFinalRetirementMessage() and GREAT_VAULT_RETIRE_WARNING_FINAL_WEEK:format(title) or GREAT_VAULT_RETIRE_WARNING:format(title);
+		self.Description:SetText(text); 
 	end 
 end 
 

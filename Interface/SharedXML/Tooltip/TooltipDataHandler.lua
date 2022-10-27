@@ -2,6 +2,9 @@
 -- Tooltip data callback processor
 -- =======================================================================
 
+local issecure = issecure;
+local forceinsecure = forceinsecure;
+
 local SecureTooltipPreCalls = { };
 local SecureTooltipPostCalls = { };
 local SecureLinePreCalls = { };
@@ -38,23 +41,23 @@ local function InternalAddCall(tbl, keyType, func)
 	table.insert(calls, func);
 end
 
-local function MakeSecureCalls(funcTbl, canTerminate, keyType, ...)
+local function MakeSecureCalls(funcTbl, canTerminate, ...)
 	if not funcTbl then
 		return;
 	end
 	for i, func in ipairs(funcTbl) do
-		if func(keyType, ...) and canTerminate then
+		if func(...) and canTerminate then
 			return true;
 		end
 	end
 end
 
-local function MakeInsecureCalls(funcTbl, canTerminate, keyType, ...)
+local function MakeInsecureCalls(funcTbl, canTerminate, ...)
 	if not funcTbl then
 		return;
 	end
 	for i, func in ipairs(funcTbl) do
-		local result = securecallfunction(func, keyType, ...);
+		local result = securecallfunction(func, ...);
 		if result and canTerminate then
 			return true;
 		end
@@ -174,7 +177,11 @@ local function AddCall(callType, keyType, func)
 		InternalAddCall(tbl, keyType, func);
 	else
 		local tbl = insecureTables[callType];
-		AttributeDelegate:SetAttribute(InsertCallbackAttributes[tbl], { keyType, func });
+		local function InsecureCallback(...)
+			forceinsecure();
+			return func(...);
+		end
+		AttributeDelegate:SetAttribute(InsertCallbackAttributes[tbl], { keyType, InsecureCallback });
 	end
 end
 
@@ -221,7 +228,15 @@ local SurfaceArgs = TooltipUtil.SurfaceArgs;
 
 TooltipDataHandlerMixin = { };
 
+function TooltipDataHandlerMixin:SetLineDataAttribute(attribute, value)
+	LineAttributeDelegate:SetAttribute(attribute, value);
+end
+
 function TooltipDataHandlerMixin:ProcessInfo(info)
+	return securecallfunction(self.InternalProcessInfo, self, info);
+end
+
+function TooltipDataHandlerMixin:InternalProcessInfo(info)
 	if not info then
 		return false;
 	end

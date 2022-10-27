@@ -52,7 +52,7 @@ function WorldQuestDataProviderMixin:SetCheckBounties(checkBounties)
 	self.checkBounties = checkBounties;
 	if checkedBounties ~= checkBounties then
 		self:EvaluateCheckBounties();
-		self:SetBountyQuestID(nil);
+		self:SetBounty(nil);
 	end
 end
 
@@ -66,9 +66,9 @@ function WorldQuestDataProviderMixin:EvaluateCheckBounties()
 	end
 
 	if self:IsCheckingBounties() then
-		self:GetMap():RegisterCallback("SetBountyQuestID", self.OnSetBountyQuestID, self);
+		self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
 	else
-		self:GetMap():UnregisterCallback("SetBountyQuestID", self);
+		self:GetMap():UnregisterCallback("SetBounty", self);
 	end
 end
 
@@ -78,10 +78,6 @@ end
 
 function WorldQuestDataProviderMixin:OnClearFocusedQuestID(...)
 	self:ClearFocusedQuestID(...);
-end
-
-function WorldQuestDataProviderMixin:OnSetBountyQuestID(...)
-	self:SetBountyQuestID(...);
 end
 
 function WorldQuestDataProviderMixin:OnPingQuestID(...)
@@ -110,7 +106,7 @@ function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.OnSetFocusedQuestID, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.OnClearFocusedQuestID, self);
-	self:GetMap():RegisterCallback("SetBountyQuestID", self.OnSetBountyQuestID, self);
+	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
 	self:GetMap():RegisterCallback("PingQuestID", self.OnPingQuestID, self);
 
 	self:EvaluateSpellEffectPin();
@@ -120,7 +116,7 @@ end
 function WorldQuestDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
-	self:GetMap():UnregisterCallback("SetBountyQuestID", self);
+	self:GetMap():UnregisterCallback("SetBounty", self);
 	self:GetMap():UnregisterCallback("PingQuestID", self);
 
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
@@ -136,18 +132,20 @@ function WorldQuestDataProviderMixin:ClearFocusedQuestID(questID)
 	self:RefreshAllData();
 end
 
-function WorldQuestDataProviderMixin:SetBountyQuestID(questID)
-	local changed = self.bountyQuestID ~= questID;
+function WorldQuestDataProviderMixin:SetBounty(bountyQuestID, bountyFactionID, bountyFrameType)
+	local changed = self.bountyQuestID ~= bountyQuestID;
 	if changed then
-		self.bountyQuestID = questID;
+		self.bountyQuestID = bountyQuestID;
+		self.bountyFactionID = bountyFactionID;
+		self.bountyFrameType = bountyFrameType;
 		if self:GetMap() then
 			self:RefreshAllData();
 		end
 	end
 end
 
-function WorldQuestDataProviderMixin:GetBountyQuestID()
-	return self.bountyQuestID;
+function WorldQuestDataProviderMixin:GetBountyInfo()
+	return self.bountyQuestID, self.bountyFactionID, self.bountyFrameType;
 end
 
 function WorldQuestDataProviderMixin:PingQuestID(questID)
@@ -265,13 +263,13 @@ function WorldQuestDataProviderMixin:ShouldShowQuest(info)
 	end
 
 	if self.focusedQuestID then
-		return C_QuestLog.IsQuestCalling(self.focusedQuestID) and self:ShouldHighlightInfo(info.questId);
+		return C_QuestLog.IsQuestCalling(self.focusedQuestID) and self:ShouldSupertrackHighlightInfo(info.questId);
 	end
 
 	return true;
 end
 
-function WorldQuestDataProviderMixin:ShouldHighlightInfo(questID, tagInfo)
+function WorldQuestDataProviderMixin:ShouldSupertrackHighlightInfo(questID, tagInfo)
 	local mapID = self:GetMap():GetMapID();
 	if QuestSuperTracking_ShouldHighlightWorldQuests(mapID) then
 		return true;
@@ -415,9 +413,7 @@ function WorldQuestPinMixin:RefreshVisuals()
 		end
 	end
 
-	local bountyQuestID = self.dataProvider:GetBountyQuestID();
-	self.BountyRing:SetShown(bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID));
-	self:UpdateSupertrackedHighlight();
+	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Background);
 
 	local inProgress = self.dataProvider:IsMarkingActiveQuests() and C_QuestLog.IsOnQuest(self.questID);
 	local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(self.worldQuestType, inProgress, tagInfo.tradeskillLineID, self.questID);
@@ -429,9 +425,30 @@ function WorldQuestPinMixin:RefreshVisuals()
 	end
 end
 
+function WorldQuestPinMixin:GetHighlightType() -- override
+	local bountyQuestID, bountyFactionID, bountyFrameType = self.dataProvider:GetBountyInfo();
+	local questTitle, taskFactionID, capped, displayAsObjective = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
+	if bountyFrameType == BountyFrameType.BountyBoard then
+		local countsForBounty = bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID);
+		if countsForBounty then
+			return MapPinHighlightType.BountyRing;
+		end
+	elseif bountyFrameType == BountyFrameType.ActivityTracker then
+		local countsForBounty = (bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID)) or (taskFactionID == bountyFactionID);
+		if countsForBounty then
+			return MapPinHighlightType.SupertrackedHighlight;
+		end
+	end
+	
+	if self.dataProvider:ShouldSupertrackHighlightInfo(self.questID, self.tagInfo) then
+		return MapPinHighlightType.SupertrackedHighlight;
+	end
+
+	return MapPinHighlightType.None;
+end
+
 function WorldQuestPinMixin:UpdateSupertrackedHighlight()
-	local highlight = self.dataProvider:ShouldHighlightInfo(self.questID, self.tagInfo);
-	MapPinHighlight_CheckHighlightPin(highlight, self, self.Background);
+	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Background);
 end
 
 function WorldQuestPinMixin:OnMouseEnter()
