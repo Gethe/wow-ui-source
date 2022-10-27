@@ -1167,7 +1167,10 @@ function CompactUnitFrame_UpdateClassificationIndicator(frame)
 			return;
 		elseif (frame.optionTable.showClassificationIndicator) then
 			local classification = UnitClassification(frame.unit);
-			if (classification == "rare") then
+			if (classification == "elite" or classification == "worldboss") then
+				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-gold");
+				frame.classificationIndicator:Show();
+			elseif (classification == "rare") then
 				frame.classificationIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star");
 				frame.classificationIndicator:Show();
 			elseif (classification == "rareelite") then

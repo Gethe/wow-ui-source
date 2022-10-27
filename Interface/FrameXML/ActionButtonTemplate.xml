@@ -223,8 +223,11 @@
 				<Size x="40" y="40"/>
 			</Frame>
 
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown">
-				<Size x="44" y="44"/>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" useParentLevel="true" parentKey="cooldown">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="3" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-3" y="3"/>
+				</Anchors>				
 				<SwipeTexture>
 					<Color r="1" g="1" b="1" a="0.8"/>
 				</SwipeTexture>

@@ -365,6 +365,13 @@ function ActionBarActionButtonMixin:UpdateAction(force)
 		self.action = action;
 		SetActionUIButton(self, action, self.cooldown);
 		self:Update();
+
+		-- If on an action bar and layout fields are set, ask  it to update visibility of its buttons
+		local actionBar = self:GetParent();
+		if (self.index and actionBar and actionBar.UpdateShownButtons) then
+			actionBar:UpdateShownButtons();
+			actionBar:UpdateGridLayout();
+		end
 	end
 end
 
@@ -392,7 +399,6 @@ function ActionBarActionButtonMixin:Update()
 			ActionBarActionEventsFrame:UnregisterFrame(self);
 			self.eventsRegistered = nil;
 		end
-
 
 		buttonCooldown:Hide();
 
@@ -471,7 +477,7 @@ end
 function SharedActionButton_RefreshSpellHighlight(button, shown)
 	if ( shown ) then
 		button.SpellHighlightTexture:Show();
-	button.SpellHighlightAnim:Play();
+		button.SpellHighlightAnim:Play();
 	else
 		button.SpellHighlightTexture:Hide();
 		button.SpellHighlightAnim:Stop();
@@ -794,7 +800,7 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "ACTIONBAR_SLOT_CHANGED" ) then
 		if ( arg1 == 0 or arg1 == tonumber(self.action) ) then
 			ClearNewActionHighlight(self.action, true);
-			self:Update();
+			self:UpdateAction(true);
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:Update();
@@ -1195,6 +1201,9 @@ BaseActionButtonMixin = {}
 
 function BaseActionButtonMixin:BaseActionButtonMixin_OnLoad()
 	self:UpdateButtonArt(self.isLastActionButton);
+
+	self.NormalTexture:SetDrawLayer("OVERLAY");
+	self.PushedTexture:SetDrawLayer("OVERLAY");
 end
 
 function BaseActionButtonMixin:GetShowGrid()
@@ -1249,9 +1258,11 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		self.SlotBackground:Hide();
 
 		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame");
+		self.NormalTexture:SetDrawLayer("OVERLAY");
 		self.NormalTexture:SetSize(46, 45);
 
 		self:SetPushedAtlas("UI-HUD-ActionBar-IconFrame-Down");
+		self.PushedTexture:SetDrawLayer("OVERLAY");
 		self.PushedTexture:SetSize(46, 45);
 	else
 		SetDividerShown(false);
@@ -1259,9 +1270,11 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		self.SlotBackground:Show();
 
 		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow");
+		self.NormalTexture:SetDrawLayer("OVERLAY");
 		self.NormalTexture:SetSize(51, 51);
 
 		self:SetPushedAtlas("UI-HUD-ActionBar-IconFrame-AddRow-Down");
+		self.PushedTexture:SetDrawLayer("OVERLAY");
 		self.PushedTexture:SetSize(51, 51);
 	end
 end
@@ -1300,6 +1313,10 @@ function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.SpellHighlightTexture:SetSize(31.6, 30.9);
 	self.Border:SetSize(31.6, 30.9);
 	self.Flash:SetSize(31.6, 30.9);
+
+	self.cooldown:ClearAllPoints();
+	self.cooldown:SetPoint("TOPLEFT", self.icon, "TOPLEFT", 1.7, -1.7);
+	self.cooldown:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT", -1, 1);
 end
 
 function SmallActionButtonMixin:UpdateButtonArt(hideDivider)

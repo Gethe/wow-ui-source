@@ -242,6 +242,11 @@ end
 
 function AuraFrameMixin:UpdateGridLayout()
 	self.AuraContainer:UpdateGridLayout(self.auraFrames);
+	self:UpdateAuraContainerAnchor();
+end
+
+function AuraFrameMixin:UpdateAuraContainerAnchor()
+	-- Override this as necessary
 end
 
 function AuraFrameMixin:Update()
@@ -282,7 +287,7 @@ function BuffFrameMixin:OnEvent(event, ...)
 	end
 end
 
-function BuffFrameMixin:UpdateCollapseAndExpandButtonAnchor()
+function BuffFrameMixin:UpdateAuraContainerAnchor()
 	self.AuraContainer:ClearAllPoints();
 	self.CollapseAndExpandButton:ClearAllPoints();
 
@@ -349,11 +354,6 @@ function BuffFrameMixin:Update()
 	AuraFrameMixin.Update(self);
 
 	self:RefreshCollapseExpandButtonState();
-end
-
-function BuffFrameMixin:UpdateGridLayout()
-	self.AuraContainer:UpdateGridLayout(self.auraFrames);
-	self:UpdateCollapseAndExpandButtonAnchor();
 end
 
 function BuffFrameMixin:IsExpanded()
@@ -535,6 +535,24 @@ function DebuffFrameMixin:SetupDeadlyDebuffs()
 	for index, deadlyDebuff in ipairs(self.deadlyDebuffInfo) do
 		deadlyDebuff.index = #self.auraInfo + 1;
 		self.auraInfo[deadlyDebuff.index] = deadlyDebuff;
+	end
+end
+
+function DebuffFrameMixin:UpdateAuraContainerAnchor()
+	self.AuraContainer:ClearAllPoints();
+
+	if self.AuraContainer.addIconsToRight then
+		if self.AuraContainer.addIconsToTop then
+			self.AuraContainer:SetPoint("BOTTOMLEFT", self.AuraContainer:GetParent(), "BOTTOMLEFT");
+		else
+			self.AuraContainer:SetPoint("TOPLEFT", self.AuraContainer:GetParent(), "TOPLEFT");
+		end
+	else
+		if self.AuraContainer.addIconsToTop then
+			self.AuraContainer:SetPoint("BOTTOMRIGHT", self.AuraContainer:GetParent(), "BOTTOMRIGHT");
+		else
+			self.AuraContainer:SetPoint("TOPRIGHT", self.AuraContainer:GetParent(), "TOPRIGHT");
+		end
 	end
 end
 

@@ -285,6 +285,8 @@ end
 function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 	-- Overrides TalentFrameBaseMixin.
 
+	TalentMicroButton:EvaluateAlertVisibility();
+
 	if self.unflagStarterBuildAfterNextCommit and self.commitedConfigID then
 		-- Player committed changes, it is now save to unflag them as using the Starter Build
 		self:UnflagStarterBuild();

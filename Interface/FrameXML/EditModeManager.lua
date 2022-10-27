@@ -1678,18 +1678,11 @@ end
 function EditModeAccountSettingsMixin:RefreshEncounterBar()
 	local showEncounterbar = self.Settings.EncounterBar:IsControlChecked();
 	if showEncounterbar then
-		EncounterBar.minimumWidth = 230;
-		EncounterBar.minimumHeight = 30;
-
 		EncounterBar:HighlightSystem();
 	else
-		EncounterBar.minimumWidth = nil;
-		EncounterBar.minimumHeight = nil;
-
 		EncounterBar:ClearHighlight();
 	end
 
-	EncounterBar:Layout();
 	UIParent_ManageFramePositions();
 end
 

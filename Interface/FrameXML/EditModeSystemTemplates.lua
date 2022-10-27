@@ -1298,16 +1298,6 @@ end
 
 EditModeEncounterBarSystemMixin = {};
 
-function EditModeEncounterBarSystemMixin:OnEditModeExit()
-	EditModeSystemMixin.OnEditModeExit(self);
-
-	-- Undo encounter bar min size stuff so we don't have extra spacing in bottom managed container
-	EncounterBar.minimumWidth = nil;
-	EncounterBar.minimumHeight = nil;
-	EncounterBar:Layout();
-	UIParent_ManageFramePositions();
-end
-
 function EditModeEncounterBarSystemMixin:ApplySystemAnchor()
 	EditModeSystemMixin.ApplySystemAnchor(self);
 	self:Layout();

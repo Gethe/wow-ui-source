@@ -102,7 +102,7 @@
 			<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT" x="0" y="0"/>
 		</Anchors>
 	</ItemButton>
-	<ItemButton name="CharacterReagentBag0Slot" inherits="BaseBagSlotButtonTemplate" mixin="CharacterReagentBagMixin" parent="MicroButtonAndBagsBar">
+	<ItemButton name="CharacterReagentBag0Slot" inherits="BaseBagSlotButtonTemplate" mixin="CharacterReagentBagMixin" parent="MicroButtonAndBagsBar" hidden="true"> <!-- Disabled until 10.0.2, those items aren't active yet -->
 		<KeyValues>
 			<KeyValue key="commandName" value="TOGGLEREAGENTBAG1" type="string"/>
 		</KeyValues>

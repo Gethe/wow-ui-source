@@ -426,7 +426,11 @@ function QueueStatusFrameMixin:Update()
 				makeEyeStatic = false;
 
 				--Gates the animation from playing from anything that isn't a static eye -> queued eye
-				if ( QueueStatusButton.Eye.currAnim ~= LFG_EYE_SEARCHING_ANIM and QueueStatusButton.Eye.currAnim ~= LFG_EYE_INIT_ANIM and QueueStatusButton.Eye.currAnim ~= LFG_EYE_HOVER_ANIM and QueueStatusButton.Eye.currAnim ~= LFG_EYE_NONE_ANIM ) then
+				if ( QueueStatusButton.Eye.currAnim
+				and	QueueStatusButton.Eye.currAnim ~= LFG_EYE_SEARCHING_ANIM
+				and QueueStatusButton.Eye.currAnim ~= LFG_EYE_INIT_ANIM
+				and QueueStatusButton.Eye.currAnim ~= LFG_EYE_HOVER_ANIM
+				and QueueStatusButton.Eye.currAnim ~= LFG_EYE_NONE_ANIM ) then
 					QueueStatusButton.Eye:StartSearchingAnimation();
 				end
 			end
@@ -545,7 +549,12 @@ function QueueStatusFrameMixin:Update()
 
 	--Update the minimap icon
 	if ( nextEntry > 1 ) then
-		QueueStatusButton:Show();
+		--Handle case where the button is already showing, but we need to reset the animation on it, like when hitting a loading screen.
+		if ( QueueStatusButton:IsShown() ) then
+			QueueStatusButton.Eye:StartInitialAnimation();
+		else
+			QueueStatusButton:Show();
+		end
 	else
 		QueueStatusButton:Hide();
 	end
