@@ -179,7 +179,11 @@ function ActionBarMixin:SetShowGrid(showGrid, reason)
         actionButton:SetShowGrid(showGrid, reason);
     end
 
-	local shouldBeRaised = showGrid and (reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+    -- If you are dragging a spell then raise the bar's frame strata
+    -- Do this so bars can appear above talents UI since it's pretty big and likely covers your bars
+    -- Don't do for other cursor types (specifically items since we don't want bars to cover bag slots when dragging items)
+    local cursorType = GetCursorInfo();
+	local shouldBeRaised = showGrid and (reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT) and cursorType == "spell";
 	self:UpdateFrameStrata(shouldBeRaised);
 
     self:UpdateShownButtons();

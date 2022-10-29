@@ -2167,13 +2167,13 @@ function LFGListSearchPanel_UpdateResults(self)
 			self.ScrollBox.StartGroupButton:ClearAllPoints();
 			self.ScrollBox.StartGroupButton:SetPoint("BOTTOM", self.ScrollBox.NoResultsFound, "BOTTOM", 0, - 27);
 			self.ScrollBox.NoResultsFound:SetText(self.searchFailed and LFG_LIST_SEARCH_FAILED or LFG_LIST_NO_RESULTS_FOUND);
-		elseif(self.shouldAlwaysShowCreateGroupButton) then
+		else
 			self.ScrollBox.NoResultsFound:Hide();
 			self.ScrollBox.StartGroupButton:SetShown(false);
 
-			dataProvider:Insert({startGroup=true});
-		else
-			self.ScrollBox.NoResultsFound:Hide();
+			if(self.shouldAlwaysShowCreateGroupButton) then
+				dataProvider:Insert({startGroup=true});
+			end
 		end
 
 		self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);

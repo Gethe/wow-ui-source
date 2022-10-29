@@ -238,6 +238,7 @@ end
 function PVPReadyDialog_OnLoad(self)
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
+	self:RegisterEvent("PVP_ROLE_POPUP_HIDE");
 end
 
 function PVPReadyDialog_OnEvent(self, event, ...)
@@ -249,6 +250,8 @@ function PVPReadyDialog_OnEvent(self, event, ...)
 		if (self.battlefieldIndex) then 
 			PVPReadyDialog_Update(self, self.battlefieldIndex);
 		end
+	elseif ( event == "PVP_ROLE_POPUP_HIDE" ) then
+		StaticPopupSpecial_Hide(self);
 	end
 end
 

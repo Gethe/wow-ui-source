@@ -5,7 +5,7 @@
 	<Button name="BattlefieldMapTab" hidden="false" frameStrata="LOW" parent="UIParent" movable="true" mixin="BattlefieldMapTabMixin">
 		<Size x="64" y="32"/>
 		<Anchors>
-			<Anchor point="BOTTOMRIGHT" x="-200" y="200"/>
+			<Anchor point="BOTTOMRIGHT" x="-520" y="200"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -50,7 +50,7 @@
 		<ButtonText parentKey="Text" text="BATTLEFIELD_MINIMAP">
 			<Size x="0" y="8"/>
 			<Anchors>
-				<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="0" y="-5"/>
+				<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="-5" y="-5"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>
@@ -134,7 +134,7 @@
 				<Frames>
 					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="5" y="9"/>
+							<Anchor point="TOPRIGHT" x="1" y="5"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>

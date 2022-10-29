@@ -445,7 +445,7 @@ function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, 
 		-- In case the setting get value was a lazy initializer, attempt once again.
 		settingValue = setting:GetValue();
 	end
-	assert(settingValue ~= nil);
+	assertsafe(settingValue ~= nil, ("Missing value for setting '%s'"):format(setting:GetName()));
 
 	local selectionIndex = FindInTableIf(options, function(data)
 		return data.value == settingValue;
@@ -456,10 +456,16 @@ function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, 
 
 	-- Temporary to be removed once a bug has been fixed.
 	if not result then
-		UIErrorsFrame:AddExternalWarningMessage(("Failed to setup setting '%s'"):format(setting:GetName()), settingValue);
-		print(("Failed to setup setting '%s'"):format(setting:GetName()), settingValue);
+		local errorMsg = ("Failed to setup setting '%s' with value '%s'"):format(setting:GetName(), tostring(settingValue));
+		if UIErrorsFrame then
+			UIErrorsFrame:AddExternalWarningMessage(errorMsg);
+		end
+		print(errorMsg);
+		assertsafe(false, errorMsg);
 		LoadAddOn("Blizzard_DebugTools");
-		Dump(options);
+		if Dump then
+			Dump(options);
+		end
 	end
 	return selectionIndex;
 end

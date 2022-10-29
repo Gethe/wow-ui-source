@@ -13,6 +13,7 @@ EyeTemplateMixin = {};
 function EyeTemplateMixin:OnLoad()
 	self.currActiveAnims = {};
 	self.activeAnim = LFG_EYE_NONE_ANIM;
+	self.isStatic = false;
 end
 
 function EyeTemplateMixin:StartInitialAnimation()
@@ -80,6 +81,24 @@ function EyeTemplateMixin:StartPokeAnimationEnd()
 	self.currAnim = LFG_EYE_POKE_END_ANIM;
 end
 
+function EyeTemplateMixin:SetStaticMode(set)
+	self.isStatic = set;
+
+	for _, currAnim in ipairs(self.currActiveAnims) do
+		if (self.isStatic) then
+			currAnim[1]:Hide();
+			currAnim[2]:Pause();
+		else
+			currAnim[1]:Show();
+			currAnim[2]:Play();
+		end
+	end
+end
+
+function EyeTemplateMixin:IsStaticMode()
+	return self.isStatic;
+end
+
 function EyeTemplateMixin:PlayAnim(parentFrame, anim)
 	parentFrame:Show();
 	anim:Play();
@@ -141,7 +160,7 @@ function QueueStatusButtonMixin:IsPokeEndAnimFinished()
 end
 
 function QueueStatusButtonMixin:OnUpdate()
-	if ( self.makeEyeStatic ) then
+	if ( self.Eye:IsStaticMode() ) then
 		self.Eye.texture:Show();
 		return;
 	end
@@ -171,7 +190,7 @@ function QueueStatusButtonMixin:OnEnter()
 	QueueStatusFrame:Show();
 	self.cursorOnButton = true;
 
-	if ( self.makeEyeStatic ) then
+	if ( self.Eye:IsStaticMode() ) then
 		return;
 	end
 
@@ -184,7 +203,7 @@ function QueueStatusButtonMixin:OnLeave()
 	QueueStatusFrame:Hide();
 	self.cursorOnButton = false;
 	
-	if ( self.makeEyeStatic ) then
+	if ( self.Eye:IsStaticMode() ) then
 		return;
 	end
 
@@ -559,10 +578,7 @@ function QueueStatusFrameMixin:Update()
 		QueueStatusButton:Hide();
 	end
 
-	QueueStatusButton.makeEyeStatic = makeEyeStatic;
-	if (makeEyeStatic and QueueStatusButton.Eye.currAnim ~= LFG_EYE_INIT_ANIM) then
-		QueueStatusButton.Eye:StopAnimating();
-	end
+	QueueStatusButton.Eye:SetStaticMode(makeEyeStatic);
 end
 
 ----------------------------------------------
