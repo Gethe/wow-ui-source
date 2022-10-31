@@ -427,3 +427,10 @@ end
 function UnitPopupPartyLeaveButtonMixin:OnClick()
 	LeaveParty();
 end
+
+function UnitPopupReportGroupMemberButtonMixin:CanShow()
+	local isBattleground = UnitInBattleground("player");
+	isBattleground = isBattleground ~= nil and isBattleground > 0;
+	
+	return (not isBattleground or (isBattleground and GetCVar("enablePVPNotifyAFK") == "0")) and UnitPopupReportButtonMixin.CanShow(self);
+end
