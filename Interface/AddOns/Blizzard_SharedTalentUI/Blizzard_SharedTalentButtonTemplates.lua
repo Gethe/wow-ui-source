@@ -544,7 +544,7 @@ end
 
 function TalentButtonBaseMixin:IsGhosted()
 	-- Override in your derived mixin as desired.
-	return not self.nodeInfo or (self:IsCascadeRepurchasable() and not self:IsSelectable());
+	return not self.nodeInfo or self:IsCascadeRepurchasable();
 end
 
 function TalentButtonBaseMixin:CanAfford()
@@ -746,10 +746,6 @@ function TalentButtonArtMixin:OnLoad()
 	if self.SearchIcon then
 		self.SearchIcon.Mouseover:SetScript("OnEnter", GenerateClosure(self.OnSearchIconEnter, self));
 	end
-
-	if self.SearchIcon then
-		self.SearchIcon.Mouseover:SetScript("OnEnter", GenerateClosure(self.OnSearchIconEnter, self));
-	end
 end
 
 function TalentButtonArtMixin:ApplyVisualState(visualState)
@@ -857,6 +853,19 @@ function TalentButtonArtMixin:OnSearchIconEnter()
 		end
 		GameTooltip_AddNormalLine(GameTooltip, self.searchIconTooltipText);
 		GameTooltip:Show();
+	end
+end
+
+function TalentButtonArtMixin:PlayPurchaseEffect(fxModelScene, fxIDs)
+	
+	if (fxIDs) then
+		for _, fxID in ipairs(fxIDs) do
+			fxModelScene:AddEffect(fxID, self, self);
+		end
+	end
+
+	if self.PurchaseVisuals and self.PurchaseVisuals.Anim then
+		self.PurchaseVisuals.Anim:SetPlaying(true);
 	end
 end
 

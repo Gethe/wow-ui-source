@@ -40,7 +40,7 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="AppearIcon" scale=".6">
-					<Size x="62" y="62"/>
+					<Size x="55" y="55"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -345,11 +345,13 @@
 					
 					<Frame parentKey="Left" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="11">
 						<Anchors>
+							<!-- Anchored dynamically based on quality -->
 							<Anchor point="RIGHT" relativeKey="$parent.Center" relativePoint="LEFT"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="Right" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="12">
 						<Anchors>
+							<!-- Anchored dynamically based on quality -->
 							<Anchor point="LEFT" relativeKey="$parent.Center" relativePoint="RIGHT"/>
 						</Anchors>
 					</Frame>

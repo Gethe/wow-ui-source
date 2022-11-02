@@ -13,12 +13,22 @@ function GameTutorials:OnTutorialsEnabled()
 	AddSpecAndTalentTutorials();
 	AddDracthyrTutorials();
 	AddFrameTutorials(); --Misc tutorials
+	AddDragonridingTutorials();
 
 	if CanShowProfessionEquipmentTutorial() then
 		TutorialManager:AddTutorial(Class_EquipProfessionGear:new());
 		TutorialManager:AddTutorial(Class_ProfessionGearCheckingService:new());
 		local autoStart = true;
 		TutorialManager:AddWatcher(Class_ProfessionInventoryWatcher:new(), autoStart);
+	end
+
+	if PlayerHasPrimaryProfession() then
+		-- If the player already has a profession, mark the tutorial as seen
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_PROFESSION, true);
+	else
+		TutorialManager:AddTutorial(Class_FirstProfessionTutorial:new());
+		local autoStart = true;
+		TutorialManager:AddWatcher(Class_FirstProfessionWatcher:new(), autoStart);
 	end
 end
 

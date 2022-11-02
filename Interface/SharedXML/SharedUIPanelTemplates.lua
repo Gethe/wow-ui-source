@@ -574,6 +574,14 @@ function PanelTemplates_AnchorTabs(frame, numTabs)
 	end
 end
 
+function PanelTemplates_SetTabEnabled(frame, index, enabled)
+	if (enabled) then
+		PanelTemplates_EnableTab(frame, index);
+	else
+		PanelTemplates_DisableTab(frame, index);
+	end
+end
+
 function PanelTemplates_DisableTab(frame, index)
 	GetTabByIndex(frame, index).isDisabled = 1;
 	PanelTemplates_UpdateTabs(frame);

@@ -615,6 +615,15 @@ function ItemButtonMixin:SetItemButtonCount(count)
 	SetItemButtonCount(self, count);
 end
 
+function ItemButtonMixin:SetItemButtonAnchorPoint(point, x, y)
+	self.Count:ClearAllPoints();
+	self.Count:SetPoint(point, x, y);
+end
+
+function ItemButtonMixin:SetItemButtonScale(scale)
+	self.Count:SetScale(scale);
+end
+
 function ItemButtonMixin:GetItemButtonCount()
 	return GetItemButtonCount(self);
 end

@@ -162,6 +162,15 @@ function ClassTalentImportExportMixin:ShowImportError(errorString)
 end
 
 function ClassTalentImportExportMixin:ImportLoadout(importText, loadoutName)
+	if(self:IsInspecting()) then
+		self:ShowImportError(LOADOUT_ERROR_IMPORT_FAILED);
+		return false;
+	end
+
+	if(not loadoutName or loadoutName == "") then
+		self:ShowImportError(LOADOUT_ERROR_IMPORT_FAILED);
+		return false;
+	end
 
 	local importStream = ExportUtil.MakeImportDataStream(importText);
 

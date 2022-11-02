@@ -7,6 +7,7 @@ local ProfessionsFrameEvents =
 	"GARRISON_TRADESKILL_NPC_CLOSED",
 	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
 	"SKILL_LINE_SPECS_UNLOCKED",
+	"IGNORELIST_UPDATE",
 };
 
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE"] =
@@ -111,6 +112,8 @@ function ProfessionsMixin:OnEvent(event, ...)
 		self:UpdateTabs();
 	elseif event == "SKILL_LINE_SPECS_UNLOCKED" then
 		self:UpdateTabs();
+	elseif event == "IGNORELIST_UPDATE" then
+		C_CraftingOrders.UpdateIgnoreList();
 	end
 end
 

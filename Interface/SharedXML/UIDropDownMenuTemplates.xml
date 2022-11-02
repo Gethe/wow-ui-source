@@ -316,7 +316,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="NumberFont_Small" wordwrap="false" justifyH="RIGHT">
+				<FontString parentKey="Text" inherits="GameFontHighlight" wordwrap="false" justifyH="RIGHT">
 					<Size x="0" y="10"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.Button" relativePoint="LEFT" x="-4" y="1"/>

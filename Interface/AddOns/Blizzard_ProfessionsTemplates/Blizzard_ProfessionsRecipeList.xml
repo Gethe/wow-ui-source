@@ -11,6 +11,14 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Backgroud" atlas="Professions-background-summarylist" setAllPoints="true"/>
 			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NoResultsText" inherits="GameFontNormal" text="PROFESSIONS_NO_JOURNAL_ENTRIES" hidden="true">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-60"/>
+					</Anchors>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="BackgroundNineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">

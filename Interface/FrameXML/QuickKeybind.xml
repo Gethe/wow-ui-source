@@ -17,10 +17,10 @@
 	</Button>
 	<GameTooltip name="QuickKeybindTooltip" parent="UIParent" toplevel="true" inherits="SharedTooltipTemplate"/>
 
-	<Button name="QuickKeybindFrameTemplate" enableMouse="true" enableKeyboard="true" mixin="QuickKeybindFrameMixin" virtual="true">
+	<Button name="QuickKeybindFrameTemplate" mixin="QuickKeybindFrameMixin" enableKeyboard="true" enableMouse="true" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
 		<Size x="450" y="250"/>
 		<Anchors>
-			<Anchor point="CENTER"/>
+			<Anchor point="CENTER" y="150"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
@@ -81,8 +81,10 @@
 			<OnKeyDown method="OnKeyDown"/>
 			<OnGamePadButtonDown method="OnKeyDown"/>
 			<OnMouseWheel method="OnMouseWheel"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
 		</Scripts>
 	</Button>
 
-	<Button name="QuickKeybindFrame" inherits="QuickKeybindFrameTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" movable="true" hidden="true" />
+	<Button name="QuickKeybindFrame" inherits="QuickKeybindFrameTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true"/>
 </Ui>

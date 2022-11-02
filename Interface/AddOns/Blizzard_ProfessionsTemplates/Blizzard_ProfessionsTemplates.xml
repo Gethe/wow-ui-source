@@ -53,7 +53,7 @@
 				<Texture parentKey="IconBorder" atlas="Professions-Slot-Frame" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 				</Texture>
 			</Layer>

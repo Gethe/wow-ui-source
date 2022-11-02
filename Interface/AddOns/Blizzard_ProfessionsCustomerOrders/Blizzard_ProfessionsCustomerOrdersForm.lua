@@ -152,6 +152,8 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		GameTooltip_AddHighlightLine(GameTooltip, CRAFTING_ORDER_VIEW_ORDERS);
 		GameTooltip:Show();
 	 end);
+
+	 self.PaymentContainer.DurationDropDown.Text:SetFontObject(Number12Font);
 end
 
 function ProfessionsCustomerOrderFormMixin:InitCurrentListings()
@@ -275,6 +277,10 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 	if event == "UNIT_INVENTORY_CHANGED" or event == "BAG_UPDATE" then
 		self:UpdateReagentSlots();
 	elseif event == "CRAFTINGORDERS_ORDER_PLACEMENT_RESPONSE" or event == "CRAFTINGORDERS_ORDER_CANCEL_RESPONSE" then
+		if event == "CRAFTINGORDERS_ORDER_PLACEMENT_RESPONSE" then
+			self.pendingOrderPlacement = false;
+			self:UpdateListOrderButton();
+		end
 		local result = ...;
 		local success = (result == Enum.CraftingOrderResult.Ok);
 		if success then
@@ -287,6 +293,8 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 					errorText = CRAFTING_ORDER_FAILED_INVALID_TARGET;
 				elseif result == Enum.CraftingOrderResult.TargetCannotCraft then
 					errorText = CRAFTING_ORDER_FAILED_TARGET_CANT_CRAFT;
+				elseif result == Enum.CraftingOrderResult.MaxOrdersReached then
+					errorText = PROFESSIONS_MAX_ORDERS_REACHED;
 				else
 					errorText = PROFESSIONS_ORDER_PLACEMENT_FAILED;
 				end
@@ -382,7 +390,7 @@ function ProfessionsCustomerOrderFormMixin:SetupDurationDropDown()
 		
 		for _, duration in ipairs(durationTypes) do
 			local info = UIDropDownMenu_CreateInfo();
-			info.fontObject = GameFontHighlightSmall;
+			info.fontObject = Number12Font;
 			info.text = duration.text;
 			info.minWidth = 108;
 			info.value = duration.value;
@@ -911,6 +919,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 		self.loader = nil;
 	end
 	self:HideCurrentListings();
+	self.pendingOrderPlacement = false;
 
 	self.OutputIcon:SetShown(not order.isRecraft);
 	self.RecipeName:SetShown(not order.isRecraft);
@@ -925,18 +934,31 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 	editBox:SetEnabled(not self.committed);
 
 	local completed = (order.orderState == Enum.CraftingOrderState.Expired or order.orderState == Enum.CraftingOrderState.Rejected or order.orderState == Enum.CraftingOrderState.Canceled or order.orderState == Enum.CraftingOrderState.Fulfilled);
+
+	local function ShouldShowRegionCompleted(region)
+		if region.hideWhenCompleted then
+			return not completed;
+		end
+
+		if region.hideWhenNotCompleted then
+			return completed;
+		end
+
+		return true;
+	end
+
 	for _, region in ipairs(self.uncommittedRegions) do
-		region:SetShown(not self.committed and (not region.hideWhenCompleted or not completed));
+		region:SetShown(not self.committed and ShouldShowRegionCompleted(region));
 	end
 	for _, region in ipairs(self.PaymentContainer.uncommittedRegions) do
-		region:SetShown(not self.committed and (not region.hideWhenCompleted or not completed));
+		region:SetShown(not self.committed and ShouldShowRegionCompleted(region));
 	end
 
 	for _, region in ipairs(self.committedRegions) do
-		region:SetShown(self.committed and (not region.hideWhenCompleted or not completed));
+		region:SetShown(self.committed and ShouldShowRegionCompleted(region));
 	end
 	for _, region in ipairs(self.PaymentContainer.committedRegions) do
-		region:SetShown(self.committed and (not region.hideWhenCompleted or not completed));
+		region:SetShown(self.committed and ShouldShowRegionCompleted(region));
 	end
 
 	self.PaymentContainer.PostingFee:ClearAllPoints();
@@ -957,7 +979,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 		self.ProfessionText:Hide();
 		self.MinimumQualityIcon:Hide();
 
-		if not self.committed and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS_CO_RECRAFT) then
+		if not self.committed and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS_RECRAFT) then
 			local recraftSlotHelpTipInfo =
 			{
 				text = CRAFTING_ORDER_TUTORIAL_RECRAFT,
@@ -966,7 +988,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 				system = helptipSystemName,
 				acknowledgeOnHide = true,
 				cvarBitfield = "closedInfoFrames",
-				bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_CO_RECRAFT,
+				bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_RECRAFT,
 			};
 			HelpTip:Show(self, recraftSlotHelpTipInfo, self.RecraftSlot.InputSlot);
 		end
@@ -1036,7 +1058,9 @@ function ProfessionsCustomerOrderFormMixin:UpdateListOrderButton()
 	local enabled = true;
 	local errorText;
 
-	if self.order.isRecraft and not self.order.skillLineAbilityID then
+	if self.pendingOrderPlacement then
+		enabled = false;
+	elseif self.order.isRecraft and not self.order.skillLineAbilityID then
 		enabled = false;
 		errorText = PROFESSIONS_MUST_SELECT_RECRAFT_TARGET;
 	elseif self.order.isRecraft and self:GetPendingRecraftItemQuality() == #self.minQualityIDs and self.changedOptionalReagents == 0 then
@@ -1130,6 +1154,8 @@ function ProfessionsCustomerOrderFormMixin:ListOrder()
 	end
 
 	C_CraftingOrders.PlaceNewOrder(newOrderInfo);
+	self.pendingOrderPlacement = true;
+	self:UpdateListOrderButton();
 end
 
 local baseFrameWidth = 800;

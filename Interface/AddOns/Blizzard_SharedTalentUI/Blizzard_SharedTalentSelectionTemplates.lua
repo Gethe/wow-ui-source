@@ -403,7 +403,7 @@ function TalentSelectionChoiceMixin:CanCascadeRepurchaseRanks()
 end
 
 function TalentSelectionChoiceMixin:IsGhosted()
-	return not self:GetNodeInfo() or (self:IsCascadeRepurchasable() and not self:IsChoiceAvailable());
+	return not self:GetNodeInfo() or self:IsCascadeRepurchasable();
 end
 
 function TalentSelectionChoiceMixin:GetSpellID()

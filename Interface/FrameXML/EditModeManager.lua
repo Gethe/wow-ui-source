@@ -55,7 +55,6 @@ function EditModeManagerFrameMixin:OnLoad()
 	local newLayoutButtonTextDisabled = HUD_EDIT_MODE_NEW_LAYOUT_DISABLED:format(CreateAtlasMarkup("editmode-new-layout-plus-disabled"));
 	local dropdownButtonWidth = 210;
 	local shareDropdownButtonMaxTextWidth = 190;
-	local shareSubDropdownButtonWidth = 220;
 	local copyRenameSubDropdownButtonWidth = 150;
 	local subMenuButton = true;
 	local disableOnMaxLayouts = true;
@@ -79,11 +78,11 @@ function EditModeManagerFrameMixin:OnLoad()
 			dropDownButtonInfo.customFrame = newButton;
 		elseif dropDownButtonInfo.value == "copyToClipboard" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, copyToClipboard, disableOnMaxLayoutsNo, disableOnActiveChangesNo, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
+			newButton:Init(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, copyToClipboard, disableOnMaxLayoutsNo, disableOnActiveChangesNo, nil, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;
 		--[[elseif dropDownButtonInfo.value == "postInChat" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_POST_IN_CHAT, postInChat, disableOnMaxLayoutsNo, disableOnActiveChangesNo, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
+			newButton:Init(HUD_EDIT_MODE_POST_IN_CHAT, postInChat, disableOnMaxLayoutsNo, disableOnActiveChangesNo, nil, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;]]--
 		elseif dropDownButtonInfo.value == "copyLayout" then
 			local newButton = self.buttonEntryPool:Acquire();
@@ -585,14 +584,12 @@ function EditModeManagerFrameMixin:UpdateRightActionBarPositions()
 		bar:SetScale(isInDefaultPosition and newScale or 1);
 
 		if bar and bar:IsShown() and isInDefaultPosition then
-			local point, relativeTo, relativePoint, offsetX, offsetY = bar:GetPoint(1);
-			if relativeTo ~= leftMostBar then
-				bar:ClearAllPoints();
-				if leftMostBar == UIParent then
-					bar:SetPoint("RIGHT", leftMostBar, "RIGHT", RIGHT_ACTION_BAR_DEFAULT_OFFSET_X, RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y);
-				else
-					bar:SetPoint("TOPRIGHT", leftMostBar, "TOPLEFT", -5, 0);
-				end
+			bar:ClearAllPoints();
+
+			if leftMostBar == UIParent then
+				bar:SetPoint("RIGHT", leftMostBar, "RIGHT", RIGHT_ACTION_BAR_DEFAULT_OFFSET_X, RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y);
+			else
+				bar:SetPoint("TOPRIGHT", leftMostBar, "TOPLEFT", -5, 0);
 			end
 
 			-- Bar position changed so we should update our flyout direction
@@ -621,17 +618,14 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 
 	for index, bar in ipairs(barsToUpdate) do
 		if bar and bar:IsShown() and bar:IsInDefaultPosition() then
-			local point, relativeTo, relativePoint, offsetX, offsetY = bar:GetPoint(1);
-			if relativeTo ~= topMostBar then
-				bar:ClearAllPoints();
-				if topMostBar == UIParent then
-					bar:SetPoint("BOTTOM", topMostBar, "BOTTOM", 0, MAIN_ACTION_BAR_DEFAULT_OFFSET_Y);
-				elseif topMostBar == OverrideActionBar then
-					local xpBarHeight = OverrideActionBar.xpBar:IsShown() and OverrideActionBar.xpBar:GetHeight() or 0;
-					bar:SetPoint("BOTTOM", topMostBar, "TOP", 0, 10 + xpBarHeight);
-				else
-					bar:SetPoint("BOTTOMLEFT", topMostBar, "TOPLEFT", 0, 5);
-				end
+			bar:ClearAllPoints();
+			if topMostBar == UIParent then
+				bar:SetPoint("BOTTOM", topMostBar, "BOTTOM", 0, MAIN_ACTION_BAR_DEFAULT_OFFSET_Y);
+			elseif topMostBar == OverrideActionBar then
+				local xpBarHeight = OverrideActionBar.xpBar:IsShown() and OverrideActionBar.xpBar:GetHeight() or 0;
+				bar:SetPoint("BOTTOM", topMostBar, "TOP", 0, 10 + xpBarHeight);
+			else
+				bar:SetPoint("BOTTOMLEFT", topMostBar, "TOPLEFT", 0, 5);
 			end
 
 			-- Bar position changed so we should update our flyout direction
@@ -1601,7 +1595,6 @@ function EditModeAccountSettingsMixin:SetupActionBar(bar)
 	local isShown = bar:IsShown();
 	self.oldActionBarSettings[bar] = {
 		isShown = isShown;
-		numShowingButtons = bar.numShowingButtons;
 	}
 
 	-- If the bar is already showing then set control checked
@@ -1613,8 +1606,6 @@ function EditModeAccountSettingsMixin:SetupActionBar(bar)
 end
 
 function EditModeAccountSettingsMixin:ResetActionBarShown(bar)
-	bar.numShowingButtons = self.oldActionBarSettings[bar].numShowingButtons;
-
 	if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
 		bar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 	end
@@ -1629,9 +1620,8 @@ function EditModeAccountSettingsMixin:RefreshActionBarShown(bar)
 
 	if show then
 		bar.editModeForceShow = true;
-		bar.numShowingButtons = bar.numButtons;
 
-		if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
+		if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) and (bar.numShowingButtonsOrSpacers == 0 or not bar.dontShowAllButtonsInEditMode) then
 			bar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 		end
 
@@ -1664,10 +1654,14 @@ end
 
 function EditModeAccountSettingsMixin:RefreshCastBar()
 	local showCastBar = self.Settings.CastBar:IsControlChecked();
-	PlayerCastingBarFrame:StopAnims();
-	PlayerCastingBarFrame:SetAlpha(0);
-	PlayerCastingBarFrame:SetShown(showCastBar);
-	UIParent_ManageFramePositions();
+	if showCastBar then
+		PlayerCastingBarFrame.isInEditMode = true;
+		PlayerCastingBarFrame:HighlightSystem();
+	else
+		PlayerCastingBarFrame.isInEditMode = false;
+		PlayerCastingBarFrame:ClearHighlight();
+	end
+	PlayerCastingBarFrame:UpdateShownState();
 end
 
 function EditModeAccountSettingsMixin:SetEncounterBarShown(shown, isUserInput)
@@ -1682,18 +1676,11 @@ end
 function EditModeAccountSettingsMixin:RefreshEncounterBar()
 	local showEncounterbar = self.Settings.EncounterBar:IsControlChecked();
 	if showEncounterbar then
-		EncounterBar.minimumWidth = 230;
-		EncounterBar.minimumHeight = 30;
-
 		EncounterBar:HighlightSystem();
 	else
-		EncounterBar.minimumWidth = nil;
-		EncounterBar.minimumHeight = nil;
-
 		EncounterBar:ClearHighlight();
 	end
 
-	EncounterBar:Layout();
 	UIParent_ManageFramePositions();
 end
 
@@ -1899,9 +1886,12 @@ end
 EditModeManagerTutorialMixin = {};
 
 local HelpTipInfos = {
-	[1] = { text = EDIT_MODE_HELPTIPS_1, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="LayoutDropdown" },
-	[2] = { text = EDIT_MODE_HELPTIPS_2, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="AccountSettings" },
-	[3] = { text = EDIT_MODE_HELPTIPS_3, buttonStyle = HelpTip.ButtonStyle.GotIt, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.BottomEdgeCenter, hideArrow = true },
+	[1] = { text = EDIT_MODE_HELPTIPS_1, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="LayoutDropdown",
+			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, },
+	[2] = { text = EDIT_MODE_HELPTIPS_2, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="AccountSettings",
+			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, },
+	[3] = { text = EDIT_MODE_HELPTIPS_3, buttonStyle = HelpTip.ButtonStyle.GotIt, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.BottomEdgeCenter, hideArrow = true,
+			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, },
 };
 
 function EditModeManagerTutorialMixin:OnLoad()
@@ -1911,18 +1901,28 @@ function EditModeManagerTutorialMixin:OnLoad()
 	end
 end
 
+function EditModeManagerTutorialMixin:OnShow()
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER) then
+		self:BeginHelpTips();
+	end
+end
+
 function EditModeManagerTutorialMixin:OnClick()
 	if HelpTip:IsShowingAny(self) then
 		HelpTip:HideAll(self);
 	else
-		-- Expand the account setttings for the help tips
-		local expanded = true;
-		local isUserInput = true;
-		EditModeManagerFrame.AccountSettings:SetExpandedState(expanded, isUserInput)
-
-		self.currentTipIndex = 1;
-		self:ShowHelpTip();
+		self:BeginHelpTips();
 	end
+end
+
+function EditModeManagerTutorialMixin:BeginHelpTips()
+	-- Expand the account setttings for the help tips
+	local expanded = true;
+	local isUserInput = true;
+	EditModeManagerFrame.AccountSettings:SetExpandedState(expanded, isUserInput)
+
+	self.currentTipIndex = 1;
+	self:ShowHelpTip();
 end
 
 function EditModeManagerTutorialMixin:ShowHelpTip()
@@ -1942,6 +1942,7 @@ function EditModeManagerTutorialMixin:ProgressHelpTips()
 
 	self:ShowHelpTip();
 end
+
 EditModeLootFrameCheckButtonMixin = {};
 
 function EditModeLootFrameCheckButtonMixin:OnEnter()

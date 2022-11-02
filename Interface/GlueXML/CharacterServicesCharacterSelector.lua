@@ -136,6 +136,7 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(chara
 		end
 	elseif serviceInfo.checkErrors then
 		characterButton:SetScript("OnEnter", function(self)
+			local serviceInfo = block:GetServiceInfoByCharacterID(characterID);
 			if #serviceInfo.errors > 0 then
 				local tooltip = GetAppropriateTooltip();
 				tooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -25, 70);
@@ -178,8 +179,8 @@ function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 		selectedCharacterIndex = self.initialSelectedCharacterIndex;
 	end
 
-	local button = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(elementData)
-		return elementData.index == selectedCharacterIndex;
+	local button = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		return frame.index == selectedCharacterIndex;
 	end);
 
 	if button then

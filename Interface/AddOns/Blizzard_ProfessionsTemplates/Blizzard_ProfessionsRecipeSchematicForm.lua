@@ -1,3 +1,5 @@
+PROFESSIONS_SCHEMATIC_REAGENTS_Y_OFFSET = 0; -- Extra space for localization.
+
 StaticPopupDialogs["PROFESSIONS_RECRAFT_REPLACE_OPTIONAL_REAGENT"] = {
 	text = "",
 	button1 = ACCEPT,
@@ -25,7 +27,7 @@ cooldownFormatter:Init(
 	SecondsFormatterConstants.DontRoundUpLastUnit, 
 	SecondsFormatterConstants.DontConvertToLower);
 
-local LayoutEntry = EnumUtil.MakeEnum("Cooldown", "Description", "Source");
+local LayoutEntry = EnumUtil.MakeEnum("Cooldown", "Description", "Source", "FirstCraftBonus");
 
 local function CreateVerticalLayoutOrganizer(anchor, xPadding, yPadding)
 	local OrganizerMixin = {entries = {}};
@@ -119,9 +121,9 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 		local checked = button:GetChecked();
 		if checked then
-			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_USE_LOWEST_QUALITY_REAGENTS);
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_USE_LOWEST_QUALITY_REAGENTS);
 		else
-			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_USE_HIGHEST_QUALITY_REAGENTS);
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_USE_HIGHEST_QUALITY_REAGENTS);
 		end
 		GameTooltip:Show();
 	end);
@@ -169,6 +171,12 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 	end);
 
 	self.FavoriteButton:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.FirstCraftBonus:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(self.FirstCraftBonus, "ANCHOR_RIGHT");
+		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_FIRST_CRAFT_DESCRIPTION);
+		GameTooltip:Show();
+	end);
 end
 
 function ProfessionsRecipeSchematicFormMixin:OnShow()
@@ -258,13 +266,21 @@ function ProfessionsRecipeSchematicFormMixin:ClearTransaction()
 	self.transaction = nil;
 end
 
-local function GetRequirements(recipeID)
-	local requirements = {};
-	for index, recipeRequirement in ipairs(C_TradeSkillUI.GetRecipeRequirements(recipeID)) do
-		table.insert(requirements, recipeRequirement.name);
-		table.insert(requirements, recipeRequirement.met);
+local RequirementTypeToString =
+{
+	[Enum.RecipeRequirementType.SpellFocus] = "SpellFocusRequirement",
+	[Enum.RecipeRequirementType.Totem] = "TotemRequirement",
+	[Enum.RecipeRequirementType.Area] = "AreaRequirement",
+};
+local StringToRequirementType = tInvert(RequirementTypeToString);
+
+local function FormatRequirements(requirements)
+	local formattedRequirements = {};
+	for index, recipeRequirement in ipairs(requirements) do
+		table.insert(formattedRequirements, LinkUtil.FormatLink(RequirementTypeToString[recipeRequirement.type], recipeRequirement.name));
+		table.insert(formattedRequirements, recipeRequirement.met);
 	end
-	return requirements;
+	return formattedRequirements;
 end
 
 function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
@@ -290,6 +306,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	self.Cooldown:Hide();
 	self.Cooldown:SetText("");
 	self.RecipeSourceButton:Hide();
+	self.FirstCraftBonus:Hide();
 	self.FavoriteButton:Hide();
 	self.TrackRecipeCheckBox:Hide();
 	self.AllocateBestQualityCheckBox:Hide();
@@ -473,6 +490,11 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		organizer:Add(self.RecipeSourceButton, LayoutEntry.Source, 0, 10);
 	end
 
+	if recipeInfo.learned and not self.RecipeSourceButton:IsVisible() and recipeInfo.firstCraft then
+		self.FirstCraftBonus:Show();
+		organizer:Add(self.FirstCraftBonus, LayoutEntry.FirstCraftBonus, 0, 10);
+	end
+
 	if self.loader then
 		self.loader:Cancel();
 	end
@@ -501,8 +523,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		local text;
 		if outputItemInfo.hyperlink then
 			local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
-			local color = item:GetItemQualityColor().color;
-			text = WrapTextInColor(item:GetItemName(), color);
+			local qualityColor = item:GetItemQualityColor();
+			local color = qualityColor and qualityColor.color;
+			text = color and WrapTextInColor(item:GetItemName(), color) or item:GetItemName();
 		else
 			text = WrapTextInColor(self.recipeSchematic.name, NORMAL_FONT_COLOR);
 		end
@@ -541,9 +564,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end);
 
 	self.OutputIcon:SetScript("OnClick", function()
-		-- HRO TODO: Make this get a hyperlink with quality
-		local link = C_TradeSkillUI.GetRecipeItemLink(recipeID);
-		HandleModifiedItemClick(link);
+		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID());
+		HandleModifiedItemClick(outputItemInfo.hyperlink);
 	end);
 
 	if Professions.HasRecipeRanks(recipeInfo) then
@@ -588,7 +610,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			fontString:Show();
 			
 			self.UpdateRequiredTools = function()
-				local requirementsText = BuildColoredListString(unpack(GetRequirements(recipeInfo.recipeID)));
+				-- Requirements need to be fetched on every update because it contains the updated
+				-- .met field that we need to colorize the string correctly.
+				local requirements = C_TradeSkillUI.GetRecipeRequirements(recipeInfo.recipeID);
+				local requirementsText = BuildColoredListString(unpack(FormatRequirements(requirements)));
 				SetRequiredToolsText(fontString, PROFESSIONS_REQUIRED_TOOLS:format(requirementsText));
 			end
 
@@ -1053,9 +1078,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.Reagents:Show();
 
 		if isRecraft then
-			self.Reagents:SetPoint("TOP", self.OutputIcon, "BOTTOM", 75, -98);
+			self.Reagents:SetPoint("TOP", self.OutputIcon, "BOTTOM", 75, -98 + PROFESSIONS_SCHEMATIC_REAGENTS_Y_OFFSET);
 		else
-			self.Reagents:SetPoint("TOP", self.OutputIcon, "BOTTOM", 75, -65);
+			self.Reagents:SetPoint("TOP", self.OutputIcon, "BOTTOM", 75, -65 + PROFESSIONS_SCHEMATIC_REAGENTS_Y_OFFSET);
 		end
 	else
 		self.Reagents:Hide();
@@ -1173,6 +1198,22 @@ end
 
 function ProfessionsRecipeSchematicFormMixin:GetCurrentRecipeLevel()
 	return self.currentRecipeInfo and self:GetSelectedRecipeLevel(self.currentRecipeInfo.recipeID);
+end
+
+function ProfessionsRecipeSchematicFormMixin:OnHyperlinkEnter(link, text, fontString, left, bottom, width, height)
+	local requirementType = StringToRequirementType[link];
+	if requirementType == Enum.RecipeRequirementType.Totem or requirementType == Enum.RecipeRequirementType.SpellFocus then
+		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+		GameTooltip:ClearAllPoints();
+		GameTooltip:SetPoint("BOTTOMLEFT", fontString, "TOPLEFT", left + width, bottom);
+		local sourceText = (requirementType == Enum.RecipeRequirementType.Totem) and PROFESSIONS_REQUIREMENT_TOOL or PROFESSIONS_REQUIREMENT_TABLE;
+		GameTooltip_AddNormalLine(GameTooltip, sourceText);
+		GameTooltip:Show();
+	end
+end
+
+function ProfessionsRecipeSchematicFormMixin:OnHyperlinkLeave()
+	GameTooltip_Hide();
 end
 
 ProfessionsFavoriteButtonMixin = {};

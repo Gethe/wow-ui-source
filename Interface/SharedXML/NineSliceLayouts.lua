@@ -135,6 +135,19 @@ NineSliceLayouts =
 		RightEdge = { atlas = "!Oribos-NineSlice-EdgeLeft", },
 	},
 
+	DragonflightMissionFrame =
+	{
+		mirrorLayout = false,
+		TopLeftCorner =		{ atlas = "Dragonflight-NineSlice-CornerTopLeft", x = -6, y = 6, },
+		TopRightCorner =	{ atlas = "Dragonflight-NineSlice-CornerTopRight", x = 6, y = 6, },
+		BottomLeftCorner =	{ atlas = "Dragonflight-NineSlice-CornerBottomLeft", x = -6, y = -6, },
+		BottomRightCorner =	{ atlas = "Dragonflight-NineSlice-CornerBottomRight", x = 6, y = -6, },
+		TopEdge = { atlas = "_dragonflight-nineslice-edgetop", },
+		BottomEdge = { atlas = "_dragonflight-nineslice-edgebottom", },
+		LeftEdge = { atlas = "!Dragonflight-NineSlice-EdgeLeft", },
+		RightEdge = { atlas = "!Dragonflight-NineSlice-EdgeRight", },
+	},
+
 	GenericMetal =
 	{
 		TopLeftCorner =	{ atlas = "UI-Frame-GenericMetal-Corner", x = -6, y = 6, mirrorLayout = true, },

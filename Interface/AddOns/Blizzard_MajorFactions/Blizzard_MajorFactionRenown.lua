@@ -149,6 +149,7 @@ function MajorFactionRenownMixin:OnEvent(event, ...)
 			MajorFactionRenownHeaderFrameMixin.OnEnter(self.HeaderFrame);
 		end 
 	elseif event == "UPDATE_FACTION" then
+		self:RefreshCurrentFactionData();
 		self.HeaderFrame.RenownProgressBar:RefreshBar();
 	end
 end
@@ -161,6 +162,12 @@ function MajorFactionRenownMixin:OnMouseWheel(direction)
 	local skipSound = false;
 	local overrideStopSound = SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START;
 	track:SetSelection(centerIndex, forceRefresh, skipSound, overrideStopSound);
+end
+
+function MajorFactionRenownMixin:RefreshCurrentFactionData()
+	if currentFactionID then
+		currentFactionData = C_MajorFactions.GetMajorFactionData(currentFactionID);
+	end
 end
 
 function MajorFactionRenownMixin:SetUpMajorFactionData()
@@ -424,18 +431,34 @@ function MajorFactionRenownTrackProgressBarMixin:OnLoad()
 end
 
 function MajorFactionRenownTrackProgressBarMixin:RefreshBar()
-	local newData = C_MajorFactions.GetMajorFactionData(currentFactionID);
-	if newData then
-		-- Show a full bar if we have max renown
-		local currentValue = C_MajorFactions.HasMaximumRenown(currentFactionID) and newData.renownLevelThreshold or newData.renownReputationEarned;
-		local maxValue = newData.renownLevelThreshold;
-		if not currentValue or not maxValue or maxValue == 0 then
-			return;
-		end
-	
-		-- We don't want the progress bar to wrap all the way around and cover up the art at the bottom of the header frame
-		local maxDisplayableProgress = 0.89;
-		local finalValue = (currentValue / maxValue) * maxDisplayableProgress;
-		CooldownFrame_SetDisplayAsPercentage(self, finalValue);
+	-- Show a full bar if we have max renown
+	local currentValue = C_MajorFactions.HasMaximumRenown(currentFactionID) and currentFactionData.renownLevelThreshold or currentFactionData.renownReputationEarned;
+	local maxValue = currentFactionData.renownLevelThreshold;
+	if not currentValue or not maxValue or maxValue == 0 then
+		return;
 	end
+
+	local fillArtAtlas= "UI-%s-HeaderFill";
+	local fillInfo = C_Texture.GetAtlasInfo(fillArtAtlas:format(currentFactionData.textureKit));
+	self:SetSwipeTexture(fillInfo.file or fillInfo.filename);
+	local lowTexCoords =
+	{
+		x = fillInfo.leftTexCoord,
+		y = fillInfo.topTexCoord,
+	};
+	local highTexCoords =
+	{
+		x = fillInfo.rightTexCoord,
+		y = fillInfo.bottomTexCoord,
+	};	
+	self:SetTexCoordRange(lowTexCoords, highTexCoords);
+
+	local renownProgressPercentage = (currentValue / maxValue);
+	-- The bottom portion of the circular progress bar is covered by the renown level
+	-- Because of this, the progress bar fill art is a semi circle and we need some special logic to determine the correct display percentage
+	local barPercentageCovered = 0.16;
+	local barDegreesCovered = 360 * barPercentageCovered;
+	local barDegreesVisible = 360 - barDegreesCovered;
+	local finalDisplayPercentage = ((renownProgressPercentage * barDegreesVisible) + (barDegreesCovered / 2)) / 360;
+	CooldownFrame_SetDisplayAsPercentage(self, finalDisplayPercentage);
 end

@@ -18,7 +18,7 @@ EditModeDropdownEntryMixin = {};
 local maxLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType, Constants.EditModeConsts.EditModeMaxLayoutsPerType);
 
 function EditModeDropdownEntryMixin:Init(text, onClick, disableOnMaxLayouts, disableOnActiveChanges, width, maxTextWidth, showArrow, isSubmenuButton, disabledText)
-	if width then	
+	if width then
 		self:SetWidth(width);
 		maxTextWidth = maxTextWidth or width;
 	end
@@ -43,6 +43,10 @@ function EditModeDropdownEntryMixin:Init(text, onClick, disableOnMaxLayouts, dis
 
 	if maxTextWidth and self.Text:GetStringWidth() > maxTextWidth then
 		self.Text:SetWidth(maxTextWidth);
+	end
+
+	if not width then
+		self:SetWidth(self.Text:GetWidth() + 5);
 	end
 
 	self.Arrow:SetShown(showArrow or false);

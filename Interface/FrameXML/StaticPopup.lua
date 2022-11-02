@@ -4289,7 +4289,7 @@ StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
 		local playerFactionGroup = UnitFactionGroup("player"); 
 		local factionCity = playerFactionGroup and factionMajorCities[playerFactionGroup] or nil; 
 		if(factionCity) then 
-			self.text:SetText(NORMAL_FONT_COLOR:WrapTextInColorCode(RETURNING_PLAYER_PROMPT:format(factionCity)));
+			self.text:SetText(RETURNING_PLAYER_PROMPT:format(factionCity));
 		end
 	end,
 	OnAccept = function(self)

@@ -64,6 +64,7 @@ GLUE_AMBIENCE_TRACKS = {
 	["KULTIRAN"] 				= SOUNDKIT.AMB_GLUESCREEN_AR_KULTIRAN,
 	["MECHAGNOME"] 				= SOUNDKIT.AMB_GLUESCREEN_AR_MECHAGNOME,
 	["VULPERA"] 				= SOUNDKIT.AMB_GLUESCREEN_AR_VULPERA,
+	["DRACTHYR"] 				= SOUNDKIT.AMB_GLUESCREEN_DRACTHYR,
 };
 
 CHAR_MODEL_FOG_INFO = {
@@ -107,32 +108,6 @@ CREDITS_TITLES = {
 --Tooltip
 GLUE_BACKDROP_COLOR = CreateColor(0.09, 0.09, 0.09);
 GLUE_BACKDROP_BORDER_COLOR = CreateColor(0.8, 0.8, 0.8);
-
---Movie
-MOVIE_CAPTION_FADE_TIME = 1.0;
--- These are movieID from the MOVIE database file.
-MOVIE_LIST = {
-  -- Movie sequence 1 = Wow Classic
-  { 1, 2 },
-  -- Movie sequence 2 = BC
-  { 27 },
-  -- Movie sequence 3 = LK
-  { 18 },
-  -- Movie sequence 4 = CC
-  { 23 },
-  -- Movie sequence 5 = MP
-  { 115 },
-  -- Movie sequence 6 = WoD
-  { 195 },
-  -- Movie sequence 7 = Legion
-  { 470 },
-  -- Movie sequence 8 = BFA
-  { 852 },
-  -- Movie sequence 9 = Shadowlands
-  { 936 },
-  -- Movie sequence 10 = Dragonflight
-  { 960 },
-};
 
 --Credits
 CREDITS_SCROLL_RATE_REWIND = -160;

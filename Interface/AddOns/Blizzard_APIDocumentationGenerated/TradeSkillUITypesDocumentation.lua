@@ -3,6 +3,19 @@ local TradeSkillUITypes =
 	Tables =
 	{
 		{
+			Name = "RecipeRequirementType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "SpellFocus", Type = "RecipeRequirementType", EnumValue = 0 },
+				{ Name = "Totem", Type = "RecipeRequirementType", EnumValue = 1 },
+				{ Name = "Area", Type = "RecipeRequirementType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "TradeskillOrderDuration",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -217,6 +230,7 @@ local TradeSkillUITypes =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "met", Type = "bool", Nilable = false },
+				{ Name = "type", Type = "RecipeRequirementType", Nilable = false },
 			},
 		},
 		{

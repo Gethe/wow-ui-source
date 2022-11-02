@@ -166,6 +166,8 @@ local CraftingOrderUIConstants =
 				{ Name = "crafterNote", Type = "string", Nilable = true },
 				{ Name = "crafterGUID", Type = "string", Nilable = true },
 				{ Name = "crafterName", Type = "string", Nilable = true },
+				{ Name = "customerGUID", Type = "string", Nilable = true },
+				{ Name = "customerName", Type = "string", Nilable = true },
 			},
 		},
 		{

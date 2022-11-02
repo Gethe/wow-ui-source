@@ -258,6 +258,7 @@ CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
+ExpansionLandingPageConstantsDocumentation.lua
 GamePadConstDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua

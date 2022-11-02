@@ -195,6 +195,21 @@ function ProfessionsSpecPathMixin:OnLoad()
 		end
 		EventRegistry:RegisterCallback("ProfessionsSpecializations.PathSelected", PathSelectedCallback, self);
 	end
+
+	self:SetScript("OnShow", self.OnShow);
+	self:SetScript("OnHide", self.OnHide);
+end
+
+function ProfessionsSpecPathMixin:OnShow()
+	if not self.isDetailedView then
+		self.AvailableGlowAnim:Play();
+	end
+end
+
+function ProfessionsSpecPathMixin:OnHide()
+	if not self.isDetailedView then
+		self.AvailableGlowAnim:Pause();
+	end
 end
 
 function ProfessionsSpecPathMixin:SetAndApplySize(width, height) -- Override
@@ -452,6 +467,9 @@ function ProfessionsSpecPathMixin:SetVisualState(state) -- Override
 		local overrideSize = 60;
 		self:SetSize(overrideSize, overrideSize);
 	end
+
+	local isUnlockable = (state == Enum.ProfessionsSpecPathState.Locked and self:CanPurchaseUnlock() and not self.isDetailedView);
+	self.ProgressBarAvailableGlow:SetShown(isUnlockable);
 end
 
 function ProfessionsSpecPathMixin:UpdateProgressBar()
@@ -487,8 +505,7 @@ function ProfessionsSpecPathMixin:SetNodeID(nodeID, skipUpdate) -- Override
 end
 
 function ProfessionsSpecPathMixin:UpdateAssets()
-	-- TODO:: Re-enable specialized fills
-	local kitSpecifier = "Tailoring";--Professions.GetAtlasKitSpecifier(self:GetTalentFrame().professionInfo);
+	local kitSpecifier = Professions.GetAtlasKitSpecifier(self:GetTalentFrame().professionInfo);
 	local stylizedProgressBarAtlasName = kitSpecifier and string.format("Professions-Specialization-Node-%s", kitSpecifier);
 	local stylizedProgressBarInfo = stylizedProgressBarAtlasName and C_Texture.GetAtlasInfo(stylizedProgressBarAtlasName);
 	self.ProgressBar:SetSwipeTexture(stylizedProgressBarInfo.file or stylizedProgressBarInfo.filename);
@@ -626,13 +643,12 @@ function ProfessionsSpecPerkMixin:OnLeave()
 end
 
 function ProfessionsSpecPerkMixin:UpdateAssets()
-	-- TODO:: Re-enable specialized pips
-	local kitSpecifier = "Tailoring"; --Professions.GetAtlasKitSpecifier(self:GetTalentFrame().professionInfo);
+	local kitSpecifier = Professions.GetAtlasKitSpecifier(self:GetTalentFrame().professionInfo);
 	local pipArtAtlasFormat = self.isMajorPerk and "SpecDial_EndPip_Flipbook_%s" or "SpecDial_Pip_Flipbook_%s";
 	local stylizedPipAtlasName = kitSpecifier and pipArtAtlasFormat:format(kitSpecifier);
 	local stylizedPipInfo = stylizedPipAtlasName and C_Texture.GetAtlasInfo(stylizedPipAtlasName);
 	if not stylizedPipInfo then
-		stylizedPipAtlasName = pipArtAtlasFormat:format("Blacksmithing");
+		stylizedPipAtlasName = pipArtAtlasFormat:format("Tailoring");
 		stylizedPipInfo = C_Texture.GetAtlasInfo(stylizedPipAtlasName);
 	end
 
@@ -681,9 +697,8 @@ function ProfessionSpecEdgeArrowMixin:UpdateState() -- Override
 
 	local r, g, b = 1, 1, 1;
 	if overrideArrowColor then
-		-- TODO:: Re-enable specialized colors
-		local profession = Enum.Profession.Tailoring;--endButton:GetTalentFrame().professionInfo.profession;
-		local color = professionVertexColors[profession];
+		local profession = endButton:GetTalentFrame().professionInfo and endButton:GetTalentFrame().professionInfo.profession;
+		local color = profession and professionVertexColors[profession] or HIGHLIGHT_FONT_COLOR;
 		r, g, b = color:GetRGB();
 	end
 	self.Line:SetVertexColor(r, g, b);

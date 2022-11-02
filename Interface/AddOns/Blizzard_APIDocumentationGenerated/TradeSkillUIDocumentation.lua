@@ -512,6 +512,7 @@ local TradeSkillUI =
 				{ Name = "recipeSpellID", Type = "number", Nilable = false },
 				{ Name = "reagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 				{ Name = "allocationItemGUID", Type = "string", Nilable = true },
+				{ Name = "overrideQualityID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -1017,6 +1018,10 @@ local TradeSkillUI =
 			Name = "UpdateTradeskillCastComplete",
 			Type = "Event",
 			LiteralName = "UPDATE_TRADESKILL_CAST_COMPLETE",
+			Payload =
+			{
+				{ Name = "isScrapping", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "UpdateTradeskillRecast",

@@ -45,7 +45,9 @@ function TabSystemButtonArtMixin:SetTabSelected(isSelected)
 	self.MiddleActive:SetShown(isSelected);
 	self.RightActive:SetShown(isSelected);
 
-	self:SetNormalFontObject(isSelected and GameFontHighlightSmall or GameFontNormalSmall);
+	local selectedFontObject = self.selectedFontObject or GameFontHighlightSmall;
+	local unselectedFontObject = self.unselectedFontObject or GameFontNormalSmall;
+	self:SetNormalFontObject(isSelected and selectedFontObject or unselectedFontObject);
 
 	self:SetEnabled(not isSelected and not self.forceDisabled);
 

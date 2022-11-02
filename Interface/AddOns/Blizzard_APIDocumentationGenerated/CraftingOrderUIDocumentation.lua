@@ -207,6 +207,14 @@ local CraftingOrderUI =
 			},
 		},
 		{
+			Name = "OpenCrafterCraftingOrders",
+			Type = "Function",
+		},
+		{
+			Name = "OpenCustomerCraftingOrders",
+			Type = "Function",
+		},
+		{
 			Name = "OrderCanBeRecrafted",
 			Type = "Function",
 
@@ -304,6 +312,10 @@ local CraftingOrderUI =
 			{
 				{ Name = "hasOrders", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "UpdateIgnoreList",
+			Type = "Function",
 		},
 	},
 
@@ -434,6 +446,16 @@ local CraftingOrderUI =
 			{
 				{ Name = "customerName", Type = "string", Nilable = false },
 				{ Name = "orderID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CraftingordersUpdateOrderCount",
+			Type = "Event",
+			LiteralName = "CRAFTINGORDERS_UPDATE_ORDER_COUNT",
+			Payload =
+			{
+				{ Name = "orderType", Type = "CraftingOrderType", Nilable = false },
+				{ Name = "numOrders", Type = "number", Nilable = false },
 			},
 		},
 	},

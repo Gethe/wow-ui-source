@@ -164,7 +164,7 @@ end
 
 function ToySpellButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		if ( ToyBox.fanfareToys[self.itemID] ~= nil ) then
+		if ( (ToyBox.fanfareToys[self.itemID] ~= nil) and (ToyBox.fanfareToys[self.itemID] == true) ) then
 			ToyBox.fanfareToys[self.itemID] = false;
 			ToyBox.newToys[self.itemID] = nil;
 

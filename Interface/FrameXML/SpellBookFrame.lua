@@ -74,6 +74,8 @@ function ToggleSpellBook(bookType)
 		SpellBookFrame.bookType = bookType;
 		ShowUIPanel(SpellBookFrame);
 	end
+
+	EventRegistry:TriggerEvent("SpellBookFrame.ChangeBookType");
 end
 
 function SpellBookFrame_UpdateHelpPlate()
@@ -200,6 +202,19 @@ function SpellBookFrame_OnShow(self)
 	if InClickBindingMode() then
 		ClickBindingFrame:SetFocusedFrame(self);
 	end
+
+	SpellBookFrame_PlayOpenSound();
+	MicroButtonPulseStop(SpellbookMicroButton);
+	MainMenuMicroButton_HideAlert(SpellbookMicroButton);
+	if ( SpellbookMicroButton.suggestedTabButton ) then
+		SpellBookFrame.showProfessionSpellHighlights = true;
+		if SpellbookMicroButton.suggestedTabButton.bookType ~= SpellBookFrame.bookType then
+			SpellBookFrameTabButton_OnClick(SpellbookMicroButton.suggestedTabButton);
+		end
+		SpellbookMicroButton.suggestedTabButton = nil;
+	else
+		SpellBookFrame.showProfessionSpellHighlights = false;
+	end
 end
 
 function SpellBookFrame_Update()
@@ -241,19 +256,6 @@ function SpellBookFrame_Update()
 	end
 
 	PanelTemplates_SetNumTabs(SpellBookFrame, numTabs);
-
-	SpellBookFrame_PlayOpenSound();
-	MicroButtonPulseStop(SpellbookMicroButton);
-	MainMenuMicroButton_HideAlert(SpellbookMicroButton);
-	if ( SpellbookMicroButton.suggestedTabButton ) then
-		SpellBookFrame.showProfessionSpellHighlights = true;
-		if SpellbookMicroButton.suggestedTabButton.bookType ~= SpellBookFrame.bookType then
-			SpellBookFrameTabButton_OnClick(SpellbookMicroButton.suggestedTabButton);
-		end
-		SpellbookMicroButton.suggestedTabButton = nil;
-	else
-		SpellBookFrame.showProfessionSpellHighlights = false;
-	end
 
 	-- Make sure the correct tab is selected
 	for i=1,MaxSpellBookTypes do
@@ -641,7 +643,7 @@ function SpellButtonMixin:OnEnter()
 	end
 
 	-- Update action bar highlights
-	ActionBarController_UpdateAll(true);
+	ActionBarController_UpdateAllSpellHighlights();
 	GameTooltip:Show();
 end
 
@@ -650,7 +652,7 @@ function SpellButtonMixin:OnLeave()
 	PetActionBar:ClearPetActionHighlightMarks();
 
 	-- Update action bar highlights
-	ActionBarController_UpdateAll(true);
+	ActionBarController_UpdateAllSpellHighlights();
 	PetActionBar:Update();
 	GameTooltip:Hide();
 end

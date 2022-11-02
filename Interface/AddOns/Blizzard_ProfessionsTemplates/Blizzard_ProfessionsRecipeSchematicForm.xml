@@ -22,7 +22,7 @@
 		</Animations>
 	</Frame>
 
-	<Frame name="ProfessionsRecipeSchematicFormTemplate" mixin="ProfessionsRecipeSchematicFormMixin" virtual="true">
+	<Frame name="ProfessionsRecipeSchematicFormTemplate" mixin="ProfessionsRecipeSchematicFormMixin" hyperlinksEnabled="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="canShowFavoriteButton" value="true" type="boolean"/>
 			<KeyValue key="showTrackRecipe" value="true" type="boolean"/>
@@ -142,6 +142,33 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
+
+			<Frame parentKey="FirstCraftBonus" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="16" type="number"/>
+					<KeyValue key="spacing" value="5" type="number"/>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="professions_icon_firsttimecraft" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+							</KeyValues>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE" text="PROFESSIONS_FIRST_CRAFT">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+							</KeyValues>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		
 		<Layers>
@@ -201,6 +228,8 @@
 			<OnUpdate method="OnUpdate"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnHyperlinkEnter method="OnHyperlinkEnter"/>
+			<OnHyperlinkLeave method="OnHyperlinkLeave"/>
 		</Scripts>
 	</Frame>
 	

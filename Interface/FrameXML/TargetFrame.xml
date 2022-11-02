@@ -209,6 +209,17 @@
 									<Anchors>
 										<Anchor point="TOPLEFT" x="22" y="-33"/>
 									</Anchors>
+									<MaskedTextures>
+										<MaskedTexture childKey="MyHealPredictionBar"/>
+										<MaskedTexture childKey="OtherHealPredictionBar"/>
+										<MaskedTexture childKey="TotalAbsorbBar"/>
+										<MaskedTexture childKey="TotalAbsorbBarOverlay"/>
+										<MaskedTexture childKey="OverAbsorbGlow"/>
+										<MaskedTexture childKey="OverHealAbsorbGlow"/>
+										<MaskedTexture childKey="HealAbsorbBar"/>
+										<MaskedTexture childKey="HealAbsorbBarLeftShadow"/>
+										<MaskedTexture childKey="HealAbsorbBarRightShadow"/>
+									</MaskedTextures>
 								</MaskTexture>
 								<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 									<Anchors>

@@ -6,6 +6,11 @@ local ProfessionsRankBarEvents =
 
 ProfessionsRankBarMixin = {};
 
+function ProfessionsRankBarMixin:OnLoad()
+	self.Flare:ClearAllPoints();
+	self.Flare:SetPoint("RIGHT", self.Mask, "RIGHT", 0, 0);
+end
+
 function ProfessionsRankBarMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, ProfessionsRankBarEvents);
 end
@@ -50,24 +55,11 @@ local function GenerateRankText(professionName, skillLevel, maxSkillLevel, skill
 	return rankText;
 end
 
-local flipbookAnimDuration =
-{
-	[Enum.Profession.Blacksmithing] = 2.6,
-	[Enum.Profession.Enchanting] = 2.6,
-	[Enum.Profession.Tailoring] = 2.6,
-	[Enum.Profession.Jewelcrafting] = 2.6,
-	[Enum.Profession.Alchemy] = 1.5,
-	[Enum.Profession.Leatherworking] = 1.5,
-};
-
 function ProfessionsRankBarMixin:Update(professionInfo)
 	local rankText = GenerateRankText(professionInfo.professionName, professionInfo.skillLevel, professionInfo.maxSkillLevel, professionInfo.skillModifier);
 	self.Rank.Text:SetText(rankText);
 
-	self.Fill:SetAtlas("Skillbar_Fill_Flipbook_DefaultBlue", TextureKitConstants.IgnoreAtlasSize);
 	local professionChanged = self.lastProfession ~= professionInfo.profession;
-	-- TODO:: Re-activate specialized fills
-	--[[
 	if professionChanged then
 		self.lastProfession = professionInfo.profession;
 		
@@ -75,11 +67,9 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 		local fillArtAtlasFormat = "Skillbar_Fill_Flipbook_%s";
 		local stylizedFillAtlasName = kitSpecifier and fillArtAtlasFormat:format(kitSpecifier);
 		local stylizedFillInfo = stylizedFillAtlasName and C_Texture.GetAtlasInfo(stylizedFillAtlasName);
-		local duration = flipbookAnimDuration[professionInfo.profession];
-		if not stylizedFillInfo or not duration then
-			stylizedFillAtlasName = fillArtAtlasFormat:format("Blacksmithing");
+		if not stylizedFillInfo then
+			stylizedFillAtlasName = fillArtAtlasFormat:format("DefaultBlue");
 			stylizedFillInfo = C_Texture.GetAtlasInfo(stylizedFillAtlasName);
-			duration = flipbookAnimDuration[Enum.Profession.Blacksmithing];
 		end
 		self.Fill:SetAtlas(stylizedFillAtlasName, TextureKitConstants.IgnoreAtlasSize);
 
@@ -87,31 +77,41 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 		local flipBookNumRows = stylizedFillInfo.height / frameHeight;
 		self.BarAnimation.Flipbook:SetFlipBookRows(flipBookNumRows);
 		self.BarAnimation.Flipbook:SetFlipBookFrames(flipBookNumRows * self.BarAnimation.Flipbook:GetFlipBookColumns());
-		self.BarAnimation.Flipbook:SetDuration(duration);
+
+		local flareArtAtlasFormat = "Skillbar_Flare_%s";
+		local stylizedFlareAtlasName = kitSpecifier and flareArtAtlasFormat:format(kitSpecifier);
+		local stylizedFlareInfo = stylizedFlareAtlasName and C_Texture.GetAtlasInfo(stylizedFlareAtlasName);
+		self.Flare:SetShown(stylizedFlareInfo ~= nil);
+		if stylizedFlareInfo then
+			self.Flare:SetAtlas(stylizedFlareAtlasName, TextureKitConstants.IgnoreAtlasSize);
+		end
 	end
-	--]]
 
 	local newRatio = 0;
 	if professionInfo.maxSkillLevel > 0 then
-		newRatio = professionInfo.skillLevel / professionInfo.maxSkillLevel;
+		newRatio = math.min(professionInfo.skillLevel / professionInfo.maxSkillLevel, 1);
 	end
 
 	local sameRatio = self.ratio == newRatio;
-
-	-- TODO:: Re-activate animation
-	--[[
 	if professionChanged or not sameRatio then
 		self.BarAnimation:Restart();
 	end
-	--]]
 
-	if sameRatio then
-		return;
+	local isBarFull = (professionInfo.maxSkillLevel > 0 and professionInfo.skillLevel == professionInfo.maxSkillLevel);
+	if isBarFull and not professionChanged and not sameRatio then
+		self.FlareFadeOut:Restart();
+	else
+		self.FlareFadeOut:Stop();
+		self.Flare:SetAlpha(isBarFull and 0 or 1);
 	end
 
 	if self.interpolator then
 		self.interpolator:Cancel();
 		self.interpolator = nil;
+	end
+
+	if sameRatio then
+		return;
 	end
 
 	local width = self.Fill:GetWidth();

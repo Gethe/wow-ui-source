@@ -1,7 +1,8 @@
 ActionBarMixin = {}
 
 function ActionBarMixin:ActionBar_OnLoad()
-    self.numShowingButtons = self.numButtons;
+    self.numShowingButtonsOrSpacers = 0;
+    self.numButtonsShowable = self.numButtons;
     self.minButtonPadding = 2;
     self.buttonPadding = self.minButtonPadding;
     self.actionButtons = {};
@@ -71,7 +72,7 @@ end
 function ActionBarMixin:CacheGridSettings(layoutChildren)
     self.oldGridSettings = {
         layoutChildren = layoutChildren,
-        numShowingButtons = self.numShowingButtons,
+        numShowingButtonsOrSpacers = self.numShowingButtonsOrSpacers,
         numRows = self.numRows,
         isHorizontal = self.isHorizontal,
         addButtonsToRight = self.addButtonsToRight,
@@ -89,7 +90,7 @@ function ActionBarMixin:ShouldUpdateGrid(layoutChildren)
         return true;
     end
 
-    if self.oldGridSettings.numShowingButtons ~= self.numShowingButtons
+    if self.oldGridSettings.numShowingButtonsOrSpacers ~= self.numShowingButtonsOrSpacers
     or self.oldGridSettings.numRows ~= self.numRows
     or self.oldGridSettings.isHorizontal ~= self.isHorizontal
     or self.oldGridSettings.addButtonsToRight ~= self.addButtonsToRight
@@ -123,7 +124,7 @@ function ActionBarMixin:UpdateGridLayout()
 
     -- Stride is the number of buttons per row (or column if we are vertical)
     -- Set stride so that if we can have the same number of icons per row we do
-    local stride = math.ceil(self.numShowingButtons / self.numRows);
+    local stride = math.ceil(self.numShowingButtonsOrSpacers / self.numRows);
 
     -- Set button padding. User can set padding through edit mode
     local buttonPadding = math.max(self.minButtonPadding, self.buttonPadding);
@@ -178,7 +179,11 @@ function ActionBarMixin:SetShowGrid(showGrid, reason)
         actionButton:SetShowGrid(showGrid, reason);
     end
 
-	local shouldBeRaised = showGrid and (reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT);
+    -- If you are dragging a spell then raise the bar's frame strata
+    -- Do this so bars can appear above talents UI since it's pretty big and likely covers your bars
+    -- Don't do for other cursor types (specifically items since we don't want bars to cover bag slots when dragging items)
+    local cursorType = GetCursorInfo();
+	local shouldBeRaised = showGrid and (reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT) and cursorType == "spell";
 	self:UpdateFrameStrata(shouldBeRaised);
 
     self:UpdateShownButtons();
@@ -191,16 +196,23 @@ function ActionBarMixin:UpdateFrameStrata(shouldBeRaised)
 end
 
 function ActionBarMixin:UpdateShownButtons()
+    self.numShowingButtonsOrSpacers = 0;
+
     for i, actionButton in pairs(self.actionButtons) do
-        local showButton = actionButton.index <= self.numShowingButtons  -- Show button if it is within the num shown buttons
+        local showButton = actionButton.index <= self.numButtonsShowable  -- Show button if it is within the num buttons which are showable
             and not actionButton:GetAttribute("statehidden") -- and it isn't being hidden by an attribute
             and (actionButton:GetShowGrid() or actionButton:HasAction(actionButton)); -- And either the grid is being shown or the button has an action
 
         actionButton:SetShown(showButton);
 
+        if showButton then
+            self.numShowingButtonsOrSpacers = self.numShowingButtonsOrSpacers + 1;
+        end
+
         if not self.noSpacers then
-            if  (not showButton and i <= self.numShowingButtons) then
+            if not showButton and i <= self.numButtonsShowable then
                 self.ButtonSpacers[i]:Show();
+                self.numShowingButtonsOrSpacers = self.numShowingButtonsOrSpacers + 1;
             else
                 self.ButtonSpacers[i]:Hide();
             end

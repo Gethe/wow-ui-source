@@ -4,6 +4,8 @@ local BaseYOffset = 1500;
 local BaseRowHeight = 600;
 local PurchaseFXDelay = 1.2;
 
+local NODE_PURCHASE_FX_1 = 150;
+
 
 ClassTalentCurrencyDisplayMixin = {};
 
@@ -40,9 +42,11 @@ local ClassTalentTalentsTabEvents = {
 	"PLAYER_REGEN_DISABLED",
 	"STARTER_BUILD_ACTIVATION_FAILED",
 	"TRAIT_CONFIG_DELETED",
-	"TRAIT_CONFIG_UPDATED",
 	"TRAIT_CONFIG_LIST_UPDATED",
 	"ACTIONBAR_SLOT_CHANGED",
+
+	-- TRAIT_CONFIG_UPDATED is handled with special code. See OnTraitConfigUpdated.
+	-- "TRAIT_CONFIG_UPDATED",
 };
 
 local ClassTalentTalentsTabUnitEvents = {
@@ -178,6 +182,11 @@ function ClassTalentTalentsTabMixin:CheckSetSelectedConfigID()
 		return;
 	end
 
+	local currentSelection = self.LoadoutDropDown:GetSelectionID();
+	if (currentSelection ~= nil) and self.LoadoutDropDown:IsSelectionIDValid(currentSelection) then
+		return;
+	end
+
 	local currentSpecID = PlayerUtil.GetCurrentSpecID();
 	if not currentSpecID then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE");
@@ -236,8 +245,6 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 		end
 	elseif event == "TRAIT_CONFIG_LIST_UPDATED" then
 		self:RefreshLoadoutOptions();
-	elseif event == "TRAIT_CONFIG_UPDATED" then
-		self:RefreshLoadoutOptions();
 	elseif event ==  "TRAIT_CONFIG_DELETED" then
 		local configID = ...;
 		self:OnTraitConfigDeleted(configID);
@@ -285,6 +292,8 @@ end
 function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 	-- Overrides TalentFrameBaseMixin.
 
+	TalentMicroButton:EvaluateAlertVisibility();
+
 	if self.unflagStarterBuildAfterNextCommit and self.commitedConfigID then
 		-- Player committed changes, it is now save to unflag them as using the Starter Build
 		self:UnflagStarterBuild();
@@ -298,6 +307,7 @@ function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 		self:SetConfigID(configID, forceUpdate);
 
 		local commitedConfigID = self.commitedConfigID;
+		self:UpdateLastSelectedConfigID(commitedConfigID);
 
 		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitSucceeded);
 
@@ -314,6 +324,7 @@ function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 		self:UpdateTreeCurrencyInfo(skipButtonUpdates);
 	elseif configID == self.autoLoadNewConfigID then
 		self:OnTraitConfigCreateFinished(self.autoLoadNewConfigID);
+		self:UpdateLastSelectedConfigID(configID);
 	end
 
 	-- There are expected cases for TRAIT_CONFIG_UPDATED being fired that we don't need to react to
@@ -363,8 +374,13 @@ function ClassTalentTalentsTabMixin:ResetToLastConfigID()
 	else
 		-- No valid last selected config, reset to the base spec config
 		self:ClearLastSelectedConfigID();
-		local autoApply = false;
-		self:LoadConfigInternal(C_ClassTalents.GetActiveConfigID(), autoApply);
+
+		local baseConfigID = C_ClassTalents.GetActiveConfigID();
+		if baseConfigID then
+			local autoApply = false;
+			self:LoadConfigInternal(baseConfigID, autoApply);
+		end
+		-- If there's no base config either, nothing we can do except wait and hope we'll get a talent load event or something
 	end
 end
 
@@ -567,8 +583,8 @@ end
 
 function ClassTalentTalentsTabMixin:RefreshCurrencyDisplay()
 	local classCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[1] or nil;
-	local classInfo = self:GetClassInfo();
-	self.ClassCurrencyDisplay:SetPointTypeText(string.upper(classInfo.className));
+	local className = self:GetClassName();
+	self.ClassCurrencyDisplay:SetPointTypeText(string.upper(className));
 	self.ClassCurrencyDisplay:SetAmount(classCurrencyInfo and classCurrencyInfo.quantity or 0);
 
 	local specCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[2] or nil;
@@ -630,8 +646,6 @@ function ClassTalentTalentsTabMixin:LoadTalentTreeInternal()
 end
 
 function ClassTalentTalentsTabMixin:SetSelectedSavedConfigID(configID, autoApply, skipLoad, forceSkipAnimation)
-	self:UpdateLastSelectedConfigID(configID);
-
 	local previousSelection = self.LoadoutDropDown:GetSelectionID();
 	if previousSelection == configID then
 		return;
@@ -695,6 +709,10 @@ end
 function ClassTalentTalentsTabMixin:SetCommitCompleteVisualsActive(active)
 	TalentFrameBaseMixin.SetCommitCompleteVisualsActive(self, active);
 
+	if active and not self:IsVisible() then
+		return;
+	end
+
 	if self.commitFlashAnims then
 		for i, animGroup in ipairs(self.commitFlashAnims) do
 			local isPlaying = animGroup:IsPlaying();
@@ -720,7 +738,7 @@ function ClassTalentTalentsTabMixin:SetCommitCompleteVisualsActive(active)
 				for i, nodeID in ipairs(self.stagedPurchaseNodes) do
 					local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
 					if buttonWithPurchase and buttonWithPurchase.PlayPurchaseEffect then
-						buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene);
+						buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene, {NODE_PURCHASE_FX_1});
 					end
 				end
 
@@ -759,9 +777,7 @@ function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply, skip
 	local isConfigReadyToApply = (loadResult == Enum.LoadConfigResult.Ready);
 	self.isConfigReadyToApply = isConfigReadyToApply;
 
-	if isConfigReadyToApply then
-		self:UpdateLastSelectedConfigID(configID);
-	elseif loadResult == Enum.LoadConfigResult.NoChangesNecessary then
+	if loadResult == Enum.LoadConfigResult.NoChangesNecessary then
 		self:UpdateLastSelectedConfigID(configID);
 
 		if self.unflagStarterBuildAfterNextCommit then
@@ -1038,8 +1054,13 @@ function ClassTalentTalentsTabMixin:GetClassID()
 	return PlayerUtil.GetClassID();
 end
 
-function ClassTalentTalentsTabMixin:GetClassInfo()
-	return C_CreatureInfo.GetClassInfo(self:GetClassID());
+function ClassTalentTalentsTabMixin:GetClassName()
+	if self:IsInspecting() then
+		local className = UnitClass(self:GetInspectUnit());
+		return className;
+	end
+
+	return PlayerUtil.GetClassName();
 end
 
 function ClassTalentTalentsTabMixin:GetSpecID()
@@ -1171,3 +1192,67 @@ function ClassTalentTalentsTabMixin:UpdateTalentActionBarStatuses()
 		button:UpdateActionBarStatus();
 	end
 end
+
+
+--------------------------- Script Command Helpers --------------------------------
+-- TODO:: Add localized error messages for all command errors
+function ClassTalentTalentsTabMixin:LoadConfigByPredicate(predicate)
+	if self:IsInspecting() then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	if not self.configIDs or not self.variablesLoaded then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	if self:IsCommitInProgress() then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	local configIDToLoad = nil;
+	for index, configID in ipairs(self.configIDs) do
+		if predicate(index, configID) then
+			configIDToLoad = configID;
+			break;
+		end
+	end
+
+	if configIDToLoad then
+		local autoApply = true;
+		self:LoadConfigInternal(configIDToLoad, autoApply);
+	else
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+	end
+end
+
+function ClassTalentTalentsTabMixin:LoadConfigByName(name)
+	if not name or name == "" then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	self:LoadConfigByPredicate(function(_, configID)
+		return self.configIDToName[configID] and (strcmputf8i(self.configIDToName[configID], name) == 0);
+	end);
+end
+
+function ClassTalentTalentsTabMixin:LoadConfigByIndex(index)
+	if not self.configIDs then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	if index <= 0 or index > #self.configIDs then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	self:LoadConfigByPredicate(function(_, configID)
+		local lowerConfigName = self.configIDToName[configID] and self.configIDToName[configID]:lower();
+		return lowerConfigName == lowerTargetName;
+	end);
+end
+--------------------------- End Script Command Helpers --------------------------------

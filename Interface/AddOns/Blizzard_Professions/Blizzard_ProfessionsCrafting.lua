@@ -1,4 +1,6 @@
 
+local helpTipSystem = "Professions Crafting Helptips";
+
 ProfessionsGearSlotTemplateMixin = CreateFromMixins(PaperDollItemSlotButtonMixin);
 
 
@@ -106,6 +108,8 @@ function ProfessionsCraftingPageMixin:OnLoad()
 		SetUIPanelAttribute(ProfessionsFrame, "width", width);
 		UpdateUIPanelPositions(ProfessionsFrame);
 	end);
+
+	self.SchematicForm.postInit = function() self:SchematicPostInit(); end;
 end
 
 function ProfessionsCraftingPageMixin:OnEvent(event, ...)
@@ -114,7 +118,10 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 		self:Reset();
 		self.GuildFrame:Clear();
 	elseif event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
-		self:ContinueCrafting();
+		local isScrapping = ...;
+		if not isScrapping then
+			self:ContinueCrafting();
+		end
 	elseif event == "TRADE_SKILL_CLOSE" then
 		HideUIPanel(self);
 	elseif event == "BAG_UPDATE" or event == "BAG_UPDATE_DELAYED" then
@@ -141,7 +148,7 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 	elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" then
 		self:ClearCraftingQueue();
 		self:ValidateControls();
-		self:StopOverridingCastBar();
+		self:SetOverrideCastBarActive(false);
 	elseif event == "UNIT_AURA" then
 		self.SchematicForm:Refresh();
 		self:ValidateControls();
@@ -210,7 +217,8 @@ function ProfessionsCraftingPageMixin:OnHide()
 	end
 
 	self:Reset();
-	self:StopOverridingCastBar();
+	self:SetOverrideCastBarActive(false);
+	HelpTip:HideAllSystem(helpTipSystem);
 end
 
 function ProfessionsCraftingPageMixin:Reset()
@@ -248,6 +256,7 @@ function ProfessionsCraftingPageMixin:OnRecipeSelected(recipeInfo, recipeList)
 	Professions.EraseRecraftingTransitionData();
 
 	self:SelectRecipe(recipeInfo);
+	self:CheckShowHelptips();
 end
 
 function ProfessionsCraftingPageMixin:SelectRecipe(recipeInfo, skipSelectInList)
@@ -378,6 +387,58 @@ function ProfessionsCraftingPageMixin:SetCreateButtonTooltipText(tooltipText)
 	self.CreateAllButton.tooltipText = tooltipText;
 end
 
+local FailValidationReason = EnumUtil.MakeEnum("Cooldown", "InsufficientReagents", "Disabled", "Requirement", "LockedReagentSlot");
+
+local FailValidationTooltips = {
+	[FailValidationReason.Cooldown] = PROFESSIONS_RECIPE_COOLDOWN,
+	[FailValidationReason.InsufficientReagents] = PROFESSIONS_INSUFFICIENT_REAGENTS,
+	[FailValidationReason.Requirement] = PROFESSIONS_MISSING_REQUIREMENT,
+	[FailValidationReason.LockedReagentSlot] = PROFESSIONS_INSUFFICIENT_REAGENT_SLOTS,
+};
+
+function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInfo, transaction, isRuneforging, countMax)
+	if not currentRecipeInfo.craftable or currentRecipeInfo.disabled then
+		return FailValidationReason.Disabled;
+	end
+
+	if Professions.IsRecipeOnCooldown(currentRecipeInfo.recipeID) then
+		return FailValidationReason.Cooldown;
+	end
+	
+	local requirements = C_TradeSkillUI.GetRecipeRequirements(currentRecipeInfo.recipeID);
+	local anyRequirementMissing = ContainsIf(requirements, function(requirement)
+		return not requirement.met;
+	end);
+	if anyRequirementMissing then
+		return FailValidationReason.Requirement;
+	end
+
+	if not isRuneforging and countMax <= 0 then
+		return FailValidationReason.InsufficientReagents;
+	end
+	
+	local validAllocations = false;
+	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
+		validAllocations = transaction:HasAllocatedSalvageRequirements();
+	else
+		validAllocations = transaction:HasAllocatedReagentRequirements();
+	end
+	if not validAllocations then
+		return FailValidationReason.InsufficientReagents;
+	end
+
+	local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+	for _, slot in ipairs(optionalReagentSlots or {}) do
+		local reagentSlotSchematic = slot:GetReagentSlotSchematic();
+		local hasAllocation = transaction:HasAllocations(reagentSlotSchematic.slotIndex);
+		if hasAllocation and slot.Button.locked then
+			return FailValidationReason.LockedReagentSlot;
+		end
+	end
+
+	return nil;
+end
+
 function ProfessionsCraftingPageMixin:ValidateControls()
 	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
 
@@ -418,7 +479,6 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 			self:SetupMultipleInputBox(0, 0);
 		end
 
-
 		if transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
 			self.CreateButton:SetTextToFit(CREATE_PROFESSION_ENCHANT);
 			local quantity = math.min(1, countMax);
@@ -430,6 +490,8 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 			elseif currentRecipeInfo.alternateVerb then
 				-- alternateVerb is profession-level override
 				self.CreateButton:SetTextToFit(currentRecipeInfo.alternateVerb);
+			elseif self.SchematicForm.recraftSlot and self.SchematicForm.recraftSlot.InputSlot:IsVisible() then
+				self.CreateButton:SetTextToFit(PROFESSIONS_CRAFTING_RECRAFT);
 			else
 				self.CreateButton:SetTextToFit(CREATE_PROFESSION);
 			end
@@ -446,7 +508,7 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 
 		-- CAIS not relevant anymore since the client is denied login. Nevertheless, this is carried over from the
 		-- previous implementation in case the CAIS system changes.
-		local enabled;
+		local enabled = true;
 		if PartialPlayTime() then
 			local reasonText = PLAYTIME_TIRED_ABILITY:format(REQUIRED_REST_HOURS - math.floor(GetBillingTimeRested() / 60));
 			self:SetCreateButtonTooltipText(reasonText);
@@ -455,61 +517,21 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 			local reasonText = PLAYTIME_UNHEALTHY_ABILITY:format(REQUIRED_REST_HOURS - math.floor(GetBillingTimeRested() / 60));
 			self:SetCreateButtonTooltipText(reasonText);
 			enabled = false;
-		elseif Professions.IsRecipeOnCooldown(currentRecipeInfo.recipeID) then
-			self:SetCreateButtonTooltipText(PROFESSIONS_RECIPE_COOLDOWN);
-			enabled = false;
-		else
-			self:SetCreateButtonTooltipText(nil);
-			
-			local requiresCount = not isRuneforging;
-			if requiresCount and countMax <= 0 then
-				self:SetCreateButtonTooltipText(PROFESSIONS_INSUFFICIENT_REAGENTS);
-				enabled = false;
-			elseif not currentRecipeInfo.craftable or currentRecipeInfo.disabled then
-				enabled = false;
-			else
-				enabled = true;
-			end
 		end
 
-		local restrictAllButton = false;
 		if enabled then
-			local requirements = C_TradeSkillUI.GetRecipeRequirements(currentRecipeInfo.recipeID);
-			local anyRequirementMissing = ContainsIf(requirements, function(requirement)
-				return not requirement.met;
-			end);
-
-			enabled = not anyRequirementMissing;
-			if not enabled then
-				if not enabled then
-					self:SetCreateButtonTooltipText(PROFESSIONS_MISSING_REQUIREMENT);
-				end
-			end
-
-			if enabled then
-				if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
-					enabled = transaction:HasAllocatedSalvageRequirements();
-				else
-					enabled = transaction:HasAllocatedReagentRequirements();
-				end
-				if not enabled then
-					self:SetCreateButtonTooltipText(PROFESSIONS_INSUFFICIENT_REAGENTS);
-				end
-			end
+			local failValidationReason = self:ValidateCraftRequirements(currentRecipeInfo, transaction, isRuneforging, countMax);
+			enabled = failValidationReason == nil;
+			self:SetCreateButtonTooltipText(FailValidationTooltips[failValidationReason]);
 		end
 
 		-- Enchanting does not require the optional target to be set. When it is not,
 		-- clicking the create button creates a targeting cursor.
+		local restrictAllButton = false;
 		if transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
-			local doesTargetSupportStacks = false;
 			local enchantItem = transaction:GetEnchantAllocation();
-			if enchantItem then
-				doesTargetSupportStacks = enchantItem:IsStackable();
-			end
-
-			if not doesTargetSupportStacks then
-				restrictAllButton = true;
-			end
+			local doesTargetSupportStacks = enchantItem and enchantItem:IsStackable();
+			restrictAllButton = not doesTargetSupportStacks;
 		end
 
 		self.CreateButton:SetEnabled(enabled);
@@ -583,6 +605,7 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	else
 		self.RecipeList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	end
+	self.RecipeList.NoResultsText:SetShown(dataProvider:IsEmpty());
 
 	-- Because we're rebuilding the data provider, we need to either make an initial selection or
 	-- reselect the recipe we previously had selected. If we've selected a recipe from another profession
@@ -685,7 +708,7 @@ function ProfessionsCraftingPageMixin:ContinueCrafting()
 	if self.craftingQueue then
 		if not self.craftingCallback() then
 			self:ClearCraftingQueue();
-			self:StopOverridingCastBar();
+			self:SetOverrideCastBarActive(false);
 		end
 	else
 		C_TradeSkillUI.ContinueRecast();
@@ -700,7 +723,7 @@ function ProfessionsCraftingPageMixin:ClearCraftingQueue()
 end
 
 function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLevel)
-	self:StartOverridingCastBar();
+	self:SetOverrideCastBarActive(true);
 	local transaction = self.SchematicForm:GetTransaction();
 	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 		local salvageItem = transaction:GetSalvageAllocation();
@@ -964,9 +987,9 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		local qualityMeterBoxWidth = 250;
 		local qualityMeterSection =
 		{
-			ButtonPos = { x = qualityMeterLeftPoint + qualityMeterBoxWidth - 25, y = qualityMeterTopPoint },
+			ButtonPos = { x = qualityMeterLeftPoint - 22, y = qualityMeterTopPoint - 5 },
 			HighLightBox = { x = qualityMeterLeftPoint, y = qualityMeterTopPoint, width = qualityMeterBoxWidth, height = 60 },
-			ToolTipDir = "RIGHT",
+			ToolTipDir = "DOWN",
 			ToolTipText = PROFESSIONS_CRAFTING_HELP_BAR,
 		};
 		table.insert(ProfessionsCraftingPage_HelpPlate, qualityMeterSection);
@@ -977,7 +1000,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		local statsBoxWidth = 250;
 		local statsBoxHeight;
 		if qualityMeter:IsShown() then
-			statsBoxHeight = details:GetTop() - qualityMeter:GetTop() - 25;
+			statsBoxHeight = details:GetTop() - qualityMeter:GetTop() - 23;
 		elseif finishingReagents:IsShown() then
 			statsBoxHeight = details:GetTop() - finishingReagents:GetTop() - 10;
 		else
@@ -985,9 +1008,9 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		end
 		local statsSection =
 		{
-			ButtonPos = { x = statsLeftPoint + statsBoxWidth - 25, y = statsTopPoint },
+			ButtonPos = { x = statsLeftPoint - 23, y = statsTopPoint - 45},
 			HighLightBox = { x = statsLeftPoint, y = statsTopPoint, width = statsBoxWidth, height = statsBoxHeight },
-			ToolTipDir = "RIGHT",
+			ToolTipDir = "DOWN",
 			ToolTipText = details.recipeInfo.isGatheringRecipe and PROFESSIONS_GATHERING_JOURNAL_STATS_HELP or PROFESSIONS_CRAFTING_HELP_STATS,
 		};
 		table.insert(ProfessionsCraftingPage_HelpPlate, statsSection);
@@ -999,9 +1022,9 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		local width = 150;
 		local finishingReagentsSection =
 		{
-			ButtonPos = { x = finishingReagentsLeftPoint + width - 25, y = finishingReagentsTopPoint - 25 },
+			ButtonPos = { x = finishingReagentsLeftPoint + width - 25, y = finishingReagentsTopPoint - 30 },
 			HighLightBox = { x = finishingReagentsLeftPoint, y = finishingReagentsTopPoint, width = width, height = 80 },
-			ToolTipDir = "RIGHT",
+			ToolTipDir = "DOWN",
 			ToolTipText = PROFESSIONS_CRAFTING_HELP_FINISHING_REAGENTS,
 		};
 		table.insert(ProfessionsCraftingPage_HelpPlate, finishingReagentsSection);
@@ -1010,9 +1033,9 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 	if self:AnyInventorySlotShown() then
 		local gearSection =
 		{
-			ButtonPos = { x = 1066, y = -3 },
-			HighLightBox = { x = 927, y = 1, width = 163, height = 56 },
-			ToolTipDir = "RIGHT",
+			ButtonPos = { x = 894, y = -3 },
+			HighLightBox = { x = 915, y = 1, width = 175, height = 56 },
+			ToolTipDir = "DOWN",
 			ToolTipText = PROFESSIONS_CRAFTING_HELP_GEAR,
 		};
 		table.insert(ProfessionsCraftingPage_HelpPlate, gearSection);
@@ -1046,13 +1069,170 @@ function ProfessionsCraftingPageMixin:SetTitle()
 	professionFrame:SetTitle(professionInfo.professionName or professionInfo.parentProfessionName);
 end
 
-function ProfessionsCraftingPageMixin:StartOverridingCastBar()
-	local overrideBarType = nil;
-	local overrideAnchor = nil;
-	local hideBarText = true;
-	OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.OverlayCastBarAnchor, overrideBarType, overrideAnchor, hideBarText);
+function ProfessionsCraftingPageMixin:SetOverrideCastBarActive(active)
+	if active == self.isOverrideCastBarActive then
+		return;
+	end
+
+	if active then
+		-- Only override the cast bar if the Player Cast Bar is currently locked to the Player Frame
+		if PlayerCastingBarFrame:IsAttachedToPlayerFrame() then
+			OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.OverlayCastBarAnchor, { hideBarText = true });
+			self.isOverrideCastBarActive = true;
+		end
+	else
+		OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
+		self.isOverrideCastBarActive = false;
+	end
 end
 
-function ProfessionsCraftingPageMixin:StopOverridingCastBar()
-	OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
+function ProfessionsCraftingPageMixin:SchematicPostInit()
+	local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+	for _, slot in ipairs(optionalReagentSlots or {}) do
+		local reagentSlotSchematic = slot:GetReagentSlotSchematic();
+		local hasAllocation = self.SchematicForm.transaction:HasAllocations(reagentSlotSchematic.slotIndex);
+		if hasAllocation and slot.Button.locked then
+			slot:SetOverrideNameColor(ERROR_COLOR);
+            slot:SetColorOverlay(ERROR_COLOR);
+		end
+	end
+end
+
+function ProfessionsCraftingPageMixin:CheckShowHelptips()
+	HelpTip:HideAllSystem(helpTipSystem);
+	if not Professions.InLocalCraftingMode() or not self:IsVisible() or not self.SchematicForm.currentRecipeInfo then
+		return;
+	end
+
+	-- Quality reagent helptip
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSION_QUALITY_REAGENTS) then
+		local basicReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Basic);
+		for _, slot in ipairs(basicReagentSlots or {}) do
+			if Professions.GetReagentInputMode(slot:GetReagentSlotSchematic()) == Professions.ReagentInputMode.Quality then
+				local helpTipInfo =
+				{
+					text = PROFESSIONS_TUTORIAL_REAGENT_QUALITY,
+					buttonStyle = HelpTip.ButtonStyle.Close,
+					targetPoint = HelpTip.Point.LeftEdgeCenter,
+					system = helpTipSystem,
+					acknowledgeOnHide = true,
+					onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
+					cvarBitfield = "closedInfoFrames",
+					bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSION_QUALITY_REAGENTS,
+				};
+				HelpTip:Show(UIParent, helpTipInfo, slot);
+				return;
+			end
+		end
+	end
+
+	-- Quality bar helptip
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSION_QUALITY_BAR) then
+		if self.SchematicForm.Details.QualityMeter:IsVisible() then
+			local helpTipInfo =
+			{
+				text = PROFESSIONS_TUTORIAL_QUALITY_BAR,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				system = helpTipSystem,
+				acknowledgeOnHide = true,
+				onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSION_QUALITY_BAR,
+			};
+			HelpTip:Show(UIParent, helpTipInfo, self.SchematicForm.Details.QualityMeter);
+			return;
+		end
+	end
+
+	-- New optional reagent helptip
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSION_OPTIONAL_REAGENTS_NEW) then
+		if self.SchematicForm.currentRecipeInfo.supportsCraftingStats then
+			local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+			for _, slot in ipairs(optionalReagentSlots or {}) do
+				local _, haveAnyInPosession = slot:GetInventoryDetails();
+				if haveAnyInPosession and not slot.Button.locked then
+					local helpTipInfo =
+					{
+						text = PROFESSIONS_TUTORIAL_OPTIONAL_REAGENT,
+						buttonStyle = HelpTip.ButtonStyle.Close,
+						targetPoint = HelpTip.Point.LeftEdgeCenter,
+						system = helpTipSystem,
+						acknowledgeOnHide = true,
+						onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
+						cvarBitfield = "closedInfoFrames",
+						bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSION_OPTIONAL_REAGENTS_NEW,
+					};
+					HelpTip:Show(UIParent, helpTipInfo, slot);
+					return;
+				end
+			end
+		end
+	end
+
+	-- Old optional reagent helptip
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_OPTIONAL_REAGENT_CRAFTING) then
+		if not self.SchematicForm.currentRecipeInfo.supportsCraftingStats then
+			local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+			for _, slot in ipairs(optionalReagentSlots or {}) do
+				local _, haveAnyInPosession = slot:GetInventoryDetails();
+				if haveAnyInPosession and not slot.Button.locked then
+					local helpTipInfo =
+					{
+						text = OPTIONAL_REAGENT_TUTORIAL_SLOT,
+						buttonStyle = HelpTip.ButtonStyle.Close,
+						targetPoint = HelpTip.Point.LeftEdgeCenter,
+						system = helpTipSystem,
+						acknowledgeOnHide = true,
+						onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
+						cvarBitfield = "closedInfoFrames",
+						bitfieldFlag = LE_FRAME_TUTORIAL_OPTIONAL_REAGENT_CRAFTING,
+					};
+					HelpTip:Show(UIParent, helpTipInfo, slot);
+					return;
+				end
+			end
+		end
+	end
+
+	-- Finishing reagent helptip
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSION_FINISHING_REAGENTS) then
+		local finishingReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing);
+		for _, slot in ipairs(finishingReagentSlots or {}) do
+			if not slot.Button.locked then
+				local helpTipInfo =
+				{
+					text = PROFESSIONS_TUTORIAL_FINISHING_REAGENT,
+					buttonStyle = HelpTip.ButtonStyle.Close,
+					targetPoint = HelpTip.Point.RightEdgeCenter,
+					system = helpTipSystem,
+					acknowledgeOnHide = true,
+					onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
+					cvarBitfield = "closedInfoFrames",
+					bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSION_FINISHING_REAGENTS,
+				};
+				HelpTip:Show(UIParent, helpTipInfo, slot.Button);
+				return;
+			end
+		end
+	end
+
+	-- Recrafting helptip
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS_RECRAFT) then
+		if self.SchematicForm.recraftSlot and self.SchematicForm.recraftSlot.InputSlot:IsVisible() and not self.SchematicForm.transaction:GetRecraftAllocation() then
+			local helpTipInfo =
+			{
+				text = PROFESSIONS_TUTORIAL_RECRAFT,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				system = helpTipSystem,
+				acknowledgeOnHide = true,
+				onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_RECRAFT,
+			};
+			HelpTip:Show(UIParent, helpTipInfo, self.SchematicForm.recraftSlot.InputSlot);
+			return;
+		end
+	end
 end

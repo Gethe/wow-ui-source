@@ -97,12 +97,8 @@
 						<Size x="339" y="339"/>
 						<KeyValues>
 							<KeyValue key="iconSize" value="63" type="number"/>
-							<KeyValue key="progressBarSizeX" value="328" type="number"/>
-							<KeyValue key="progressBarSizeY" value="328" type="number"/>
-							<!-- TODO:: Revert to sizes fit for specialized fills
-							<KeyValue key="progressBarSizeX" value="335" type="number"/>
-							<KeyValue key="progressBarSizeY" value="338" type="number"/>
-							!-->
+							<KeyValue key="progressBarSizeX" value="336" type="number"/>
+							<KeyValue key="progressBarSizeY" value="336" type="number"/>
 							<KeyValue key="isDetailedView" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>

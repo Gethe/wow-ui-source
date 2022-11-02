@@ -6,6 +6,7 @@
 	<ItemButton name="BaseBagSlotButtonTemplate" mixin="BaseBagSlotButtonMixin" inherits="QuickKeybindButtonTemplate, CircularItemButtonTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="showMatchHighlight" value="false" type="boolean"/>
+			<KeyValue key="quickKeybindHighlightAtlas" value="QuickKeybind-Bag-Iconframe-Glow" type="string"/>
 		</KeyValues>
 		<Size x="30" y="30"/>
 		<Layers>
@@ -46,6 +47,7 @@
 	<ItemButton name="MainMenuBarBackpackButton" mixin="MainMenuBarBackpackMixin" inherits="QuickKeybindButtonTemplate, BaseBagSlotButtonTemplate" parent="MicroButtonAndBagsBar" id="0">
 		<KeyValues>
 			<KeyValue key="commandName" value="TOGGLEBACKPACK" type="string"/>
+			<KeyValue key="quickKeybindHighlightAtlas" value="QuickKeybind-MainBag-Iconframe-Glow" type="string"/>
 		</KeyValues>
 		<Size x="48" y="48"/>
 		<Anchors>

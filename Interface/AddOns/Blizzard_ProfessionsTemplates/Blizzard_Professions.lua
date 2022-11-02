@@ -146,11 +146,11 @@ function Professions.GetReagentSlotStatus(reagentSlotSchematic, recipeInfo)
 	local locked, lockedReason = C_TradeSkillUI.GetReagentSlotStatus(slotInfo.mcrSlotID, recipeInfo.recipeID, recipeInfo.skillLineAbilityID);
 	if not locked then
 		local categoryInfo = C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID);
-		while not categoryInfo.skillLineCurrentLevel and categoryInfo.parentCategoryID do
+		while categoryInfo and not categoryInfo.skillLineCurrentLevel and categoryInfo.parentCategoryID do
 			categoryInfo = C_TradeSkillUI.GetCategoryInfo(categoryInfo.parentCategoryID);
 		end
 
-		if categoryInfo.skillLineCurrentLevel then
+		if categoryInfo and categoryInfo.skillLineCurrentLevel then
 			local requiredSkillRank = slotInfo.requiredSkillRank;
 			locked = categoryInfo.skillLineCurrentLevel < requiredSkillRank;
 			if locked then
@@ -356,21 +356,25 @@ function Professions.SetupQualityReagentTooltip(slot, transaction)
 		};
 		GameTooltip:ProcessInfo(tooltipInfo);
 
-		if not slot:IsUnallocatable() then
+		local quantities = Professions.GetQuantitiesAllocated(transaction, slot:GetReagentSlotSchematic());
+		local slotsAllocated = AccumulateOp(quantities, function(quantity)
+			return math.min(quantity, 1);
+		end);
+
+		local blankLineAdded = false;
+		if slotsAllocated > 1 then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			blankLineAdded = true;
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_ALLOCATIONS_TOOLTIP:format(
+			quantities[1], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier1-Small"), 
+			quantities[2], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier2-Small"),  
+			quantities[3], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier3-Small")));
+		end
 
-			local quantities = Professions.GetQuantitiesAllocated(transaction, slot:GetReagentSlotSchematic());
-			local slotsAllocated = AccumulateOp(quantities, function(quantity)
-				return math.min(quantity, 1);
-			end);
-
-			if slotsAllocated > 1 then
-				GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_ALLOCATIONS_TOOLTIP:format(
-					quantities[1], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier1-Small"), 
-					quantities[2], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier2-Small"),  
-					quantities[3], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier3-Small")));
+		if not slot:IsUnallocatable() then
+			if not blankLineAdded then
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			end
-			
 			GameTooltip_AddInstructionLine(GameTooltip, BASIC_REAGENT_TOOLTIP_CLICK_TO_ALLOCATE);
 		end
 	end
@@ -936,6 +940,8 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate, ignoreSkillLine)
 		}
 	};
 
+	local isGatheringProfession = Professions.GetProfessionType(C_TradeSkillUI.GetChildProfessionInfo()) == Professions.ProfessionType.Gathering;
+	
 	if not C_TradeSkillUI.IsNPCCrafting() then
 		local sourcesFilters = {
 			type = FilterComponent.Submenu,
@@ -977,52 +983,56 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate, ignoreSkillLine)
 		};
 		table.insert(filterSystem.filters, sourcesFilters);
 
-		local firstCraftFilters = {
-			type = FilterComponent.Checkbox,
-			text = PROFESSION_RECIPES_IS_FIRST_CRAFT,
-			set = C_TradeSkillUI.SetOnlyShowFirstCraftRecipes,
-			isSet = C_TradeSkillUI.GetOnlyShowFirstCraftRecipes
-		};
-		table.insert(filterSystem.filters, 3, firstCraftFilters);
+		if not isGatheringProfession then
+			local firstCraftFilters = {
+				type = FilterComponent.Checkbox,
+				text = PROFESSION_RECIPES_IS_FIRST_CRAFT,
+				set = C_TradeSkillUI.SetOnlyShowFirstCraftRecipes,
+				isSet = C_TradeSkillUI.GetOnlyShowFirstCraftRecipes
+			};
+			table.insert(filterSystem.filters, 3, firstCraftFilters);
+		end
 	end
 
-	local slotsFilters = {
-		type = FilterComponent.Submenu,
-		text = TRADESKILL_FILTER_SLOTS,
-		value = 1,
-		childrenInfo = {
-			filters = {
-				{
-					type = FilterComponent.TextButton,
-					text = CHECK_ALL,
-					set = function()
-						Professions.SetAllInventorySlotsFiltered(true);
-						UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-					end
-				},
-				{
-					type = FilterComponent.TextButton,
-					text = UNCHECK_ALL,
-					set = function()
-						Professions.SetAllInventorySlotsFiltered(false);
-						UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-					end
-				},
-				{
-					type = FilterComponent.DynamicFilterSet,
-					buttonType = FilterComponent.Checkbox,
-					set = C_TradeSkillUI.SetInventorySlotFilter,
-					isSet = function(filter)
-						return not C_TradeSkillUI.IsInventorySlotFiltered(filter);
-					end,
-					numFilters = C_TradeSkillUI.GetAllFilterableInventorySlotsCount,
-					nameFunction = C_TradeSkillUI.GetFilterableInventorySlotName,
+	if not isGatheringProfession then
+		local slotsFilters = {
+			type = FilterComponent.Submenu,
+			text = TRADESKILL_FILTER_SLOTS,
+			value = 1,
+			childrenInfo = {
+				filters = {
+					{
+						type = FilterComponent.TextButton,
+						text = CHECK_ALL,
+						set = function()
+							Professions.SetAllInventorySlotsFiltered(true);
+							UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
+						end
+					},
+					{
+						type = FilterComponent.TextButton,
+						text = UNCHECK_ALL,
+						set = function()
+							Professions.SetAllInventorySlotsFiltered(false);
+							UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
+						end
+					},
+					{
+						type = FilterComponent.DynamicFilterSet,
+						buttonType = FilterComponent.Checkbox,
+						set = C_TradeSkillUI.SetInventorySlotFilter,
+						isSet = function(filter)
+							return not C_TradeSkillUI.IsInventorySlotFiltered(filter);
+						end,
+						numFilters = C_TradeSkillUI.GetAllFilterableInventorySlotsCount,
+						nameFunction = C_TradeSkillUI.GetFilterableInventorySlotName,
+					}
 				}
 			}
-		}
-	};
-	table.insert(filterSystem.filters, slotsFilters);
-
+		};
+		table.insert(filterSystem.filters, slotsFilters);
+	end
+	
 	if not C_TradeSkillUI.IsTradeSkillGuild() then
 		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
 		local isNPCCrafting = C_TradeSkillUI.IsNPCCrafting() and professionInfo.maxSkillLevel == 0;

@@ -70,10 +70,15 @@ function ProfessionsCrafterDetailsStatLineMixin:OnEnter()
 	if self.statLineType ~= nil and self.professionType ~= nil and self.baseValue ~= nil then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:ClearLines();
-		local statString = self.bonusValue and PROFESSIONS_CRAFTING_STAT_QUANTITY_TT_FMT:format(self.baseValue + self.bonusValue, self.baseValue, self.bonusValue) or PROFESSIONS_CRAFTING_STAT_NO_BONUS_TT_FMT:format(self.baseValue);
-		GameTooltip_AddColoredDoubleLine(GameTooltip, statLineLabels[self.professionType][self.statLineType], 
-													  statString,
-													  HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
+		local statString;
+		if self.bonusValue then
+			statString = PROFESSIONS_CRAFTING_STAT_QUANTITY_TT_FMT:format(self.baseValue + self.bonusValue, self.baseValue, self.bonusValue);
+		else
+			statString = PROFESSIONS_CRAFTING_STAT_NO_BONUS_TT_FMT:format(self.baseValue);
+		end
+
+		local label = statLineLabels[self.professionType][self.statLineType];
+		GameTooltip_AddColoredDoubleLine(GameTooltip, label, statString, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
 		GameTooltip_AddNormalLine(GameTooltip, statLineDescriptions[self.professionType][self.statLineType]);
 		GameTooltip:Show();
 	end
@@ -85,14 +90,21 @@ end
 
 function ProfessionsCrafterDetailsStatLineMixin:InitBonusStat(label, desc, value, pctValue, bonusPctValue)
 	self:SetLabel(label);
-	self:SetValue(self.displayAsPct and pctValue or value);
+
+	local displayValue = self.displayAsPct and pctValue or value;
+	self:SetValue(displayValue);
 
 	self:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, label);
+
+		local statString = self:GetStatFormat():format(math.ceil(displayValue));
+		GameTooltip_AddColoredDoubleLine(GameTooltip, label, statString, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
+
 		GameTooltip_AddNormalLine(GameTooltip, desc);
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_STAT_TT_FMT:format(label, value, bonusPctValue));
+		if value > 0 then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_STAT_TT_FMT:format(label, value, bonusPctValue));
+		end
 		GameTooltip:Show();
 	end);
 end
@@ -101,12 +113,15 @@ function ProfessionsCrafterDetailsStatLineMixin:SetLabel(label)
 	self.LeftLabel:SetText(label);
 end
 
+function ProfessionsCrafterDetailsStatLineMixin:GetStatFormat()
+	return self.displayAsPct and "%d%%" or "%d";
+end
+
 function ProfessionsCrafterDetailsStatLineMixin:SetValue(baseValue, bonusValue)
 	self.baseValue = baseValue;
 	self.bonusValue = bonusValue;
 
-	local fmt = self.displayAsPct and "%d%%" or "%d";
-	self.RightLabel:SetText(fmt:format(math.ceil(baseValue + (bonusValue or 0))));
+	self.RightLabel:SetText(self:GetStatFormat():format(math.ceil(baseValue + (bonusValue or 0))));
 end
 
 ProfessionsRecipeCrafterDetailsMixin = {};
@@ -137,6 +152,10 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 	self.QualityMeter.Center:SetScript("OnLeave", GameTooltip_Hide);
 
 	local function OnCapEntered(cap, isRight)
+		if not self:HasData() then
+			return;
+		end
+
 		local qualityIndex = self.QualityMeter.craftingQuality + (isRight and 1 or 0);
 
 		GameTooltip:SetOwner(cap, "ANCHOR_RIGHT");
@@ -153,15 +172,13 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 		-- Item modified by quality
 		elseif self.recipeInfo.qualityIlvlBonuses ~= nil then
 			GameTooltip_SetTitle(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUSES:format(self.itemName));
-			local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeInfo.recipeID, self.transaction:CreateOptionalCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID());
-			if outputItemInfo.hyperlink then
+			for index, ilvlBonus in ipairs(self.recipeInfo.qualityIlvlBonuses) do
+				local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeInfo.recipeID, self.transaction:CreateOptionalCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), self.recipeInfo.qualityIDs[index]);
 				local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 				if item:IsItemDataCached() then
-					for index, ilvlBonus in ipairs(self.recipeInfo.qualityIlvlBonuses) do
-						local atlasSize = 25;
-						local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(index), atlasSize, atlasSize);
-						GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUS_INCR:format(atlasMarkup, item:GetCurrentItemLevel() + ilvlBonus, ilvlBonus));
-					end
+					local atlasSize = 25;
+					local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(index), atlasSize, atlasSize);
+					GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUS_INCR:format(atlasMarkup, item:GetCurrentItemLevel(), ilvlBonus));
 				else
 					local continuableContainer = ContinuableContainer:Create();
 					continuableContainer:AddContinuable(item);
@@ -405,14 +422,27 @@ end
 function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 	local oldCraftingQuality = self.craftingQuality;
 	self.craftingQuality = math.floor(quality);
+
+	local tierIconOffsets =
+	{
+		[1] = 2,
+		[2] = 3,
+		[3] = 3,
+		[4] = 2,
+		[5] = 3,
+	};
 	
 	self.Left.AppearIcon:SetAtlas(("GemAppear_T%d_Flipbook"):format(self.craftingQuality));
 	self.Left.DissolveIcon:SetAtlas(("GemDissolve_T%d_Flipbook"):format(self.craftingQuality));
+	self.Left:ClearAllPoints();
+	self.Left:SetPoint("RIGHT", self.Center, "LEFT", -tierIconOffsets[self.craftingQuality], 0);
 	
 	self.atMaxTier = self.craftingQuality >= maxQuality;
 	self.Right:SetShown(not self.atMaxTier);
 	if not self.atMaxTier then
 		self.Right.AppearIcon:SetAtlas(("GemAppear_T%d_Flipbook"):format(self.craftingQuality + 1));
+		self.Right:ClearAllPoints();
+		self.Right:SetPoint("LEFT", self.Center, "RIGHT", tierIconOffsets[self.craftingQuality + 1], 0);
 	end
 	
 	--if not self.lockedForAnimations then
@@ -433,9 +463,10 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 	self.Center.Background:SetSize((372/2), (52/2));
 
 	local qualityRemainder = math.fmod(quality, 1);
-	if qualityRemainder <= MathUtil.ApproxZero then
+	local swapAssetThreshold = 0.05;
+	if qualityRemainder <= swapAssetThreshold then
 		self.Marker.Marker:SetAtlas("Professions-QualityBar-marker-left", TextureKitConstants.UseAtlasSize);
-	elseif qualityRemainder >= MathUtil.ApproxOne then
+	elseif qualityRemainder >= 1 - swapAssetThreshold then
 		self.Marker.Marker:SetAtlas("Professions-QualityBar-marker-right", TextureKitConstants.UseAtlasSize);
 	else
 		self.Marker.Marker:SetAtlas("Professions-QualityBar-marker", TextureKitConstants.UseAtlasSize);

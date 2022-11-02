@@ -165,6 +165,22 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("SOCIAL_CONTRACT_STATUS_UPDATE");
 
     SetCharSelectModelFrame("CharacterSelectModel");
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("CharSelectCharacterButtonTemplate", function(button, elementData)
+		if elementData.index > 0 then
+			CharacterSelect_InitCharacterButton(button, elementData);
+		end
+	end);
+
+	-- Scroll box extends far to the left and then counterpositioned to make space
+	-- for services, service arrows, and locks.
+	local left = 125;
+	local pad = 3;
+	local spacing = -13;
+	view:SetPadding(pad, pad, left, pad, spacing);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(CharacterSelectCharacterFrame.ScrollBox, CharacterSelectCharacterFrame.ScrollBar, view);
 end
 
 function CharacterSelect_OnShow(self)
@@ -291,30 +307,14 @@ function CharacterSelect_OnShow(self)
 	if not self.showSocialContract then
 		C_SocialContractGlue.GetShouldShowSocialContract();
 	end
-
-	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("CharSelectCharacterButtonTemplate", function(button, elementData)
-		if elementData.index > 0 then
-			CharacterSelect_InitCharacterButton(button, elementData);
-		end
-	end);
-
-	-- Scroll box extends far to the left and then counterpositioned to make space
-	-- for services, service arrows, and locks.
-	local left = 125;
-	local pad = 3;
-	local spacing = -13;
-	view:SetPadding(pad,pad,left,pad,spacing);
-
-	ScrollUtil.InitScrollBoxListWithScrollBar(CharacterSelectCharacterFrame.ScrollBox, CharacterSelectCharacterFrame.ScrollBar, view);
 end
 
 function CharacterSelect_OnHide(self)
 	-- FIXME SCROLLBOX REIMPLEMENTATION
 	-- the user may have gotten d/c while dragging
     if CharacterSelect.draggedIndex then
-		local draggedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(elementData)
-			return elementData.index == CharacterSelect.draggedIndex;
+		local draggedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+			return frame.index == CharacterSelect.draggedIndex;
 		end);
 		if draggedButton then
 			CharacterSelectButton_OnDragStop(draggedButton);
@@ -481,9 +481,6 @@ function CharacterSelect_OnKeyDown(self,key)
         elseif C_Login.IsLauncherLogin() then
             GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
         elseif CharSelectServicesFlowFrame:IsShown() then
-			if CharacterServicesMaster.flow then
-				CharacterServicesMaster.flow:Cancel();
-			end
             CharSelectServicesFlowFrame:Hide();
         elseif CopyCharacterFrame:IsShown() then
             CopyCharacterFrame:Hide();
@@ -772,8 +769,8 @@ function CharacterSelect_SetCharacterButtonEnabled(button, enabled)
 end
 
 function CharacterSelect_GetCharacterButton(buttonIndex)
-	return CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(elementData)
-		return elementData.index == buttonIndex;
+	return CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		return frame.index == buttonIndex;
 	end);
 end
 
@@ -1185,6 +1182,9 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.selectGuid = nil;
 		CharacterSelect.undeleteGuid = nil;
 	end
+
+	-- update the actual list of characters
+	UpdateCharacterSelection(CharacterSelect);
 
     CharacterSelect_UpdateButtonState();
 

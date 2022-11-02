@@ -149,12 +149,12 @@ function Class_EquipProfessionGear:OnBegin(args)
 	Dispatcher:RegisterEvent("BAG_UPDATE_DELAYED", self);
 	Dispatcher:RegisterEvent("SKILL_LINES_CHANGED", self);
 
-	EventRegistry:RegisterCallback("ContainerFrame.OpenBag", function() self:BagOpened(); end);
-	EventRegistry:RegisterCallback("ContainerFrame.CloseBag", function() self:UpdateState(); end);
-	EventRegistry:RegisterCallback("ProfessionsFrame.Show", function() self:UpdateState(); end);
-	EventRegistry:RegisterCallback("ProfessionsFrame.Hide", function() self:UpdateState(); end);
-	EventRegistry:RegisterCallback("ProfessionsFrame.TabSet", function() self:UpdateState(); end);
-	EventRegistry:RegisterCallback("Professions.ProfessionSelected", function() self:UpdateState(); end);
+	EventRegistry:RegisterCallback("ContainerFrame.OpenBag", function() self:BagOpened(); end, self);
+	EventRegistry:RegisterCallback("ContainerFrame.CloseBag", function() self:UpdateState(); end, self);
+	EventRegistry:RegisterCallback("ProfessionsFrame.Show", function() self:UpdateState(); end, self);
+	EventRegistry:RegisterCallback("ProfessionsFrame.Hide", function() self:UpdateState(); end, self);
+	EventRegistry:RegisterCallback("ProfessionsFrame.TabSet", function() self:UpdateState(); end, self);
+	EventRegistry:RegisterCallback("Professions.ProfessionSelected", function() self:UpdateState(); end, self);
 	
 	if not C_Container.GetContainerItemID(self.data.Container, self.data.ContainerSlot) then
 		TutorialManager:Finished(self:Name());
@@ -490,3 +490,155 @@ EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function(ch
 		SpecPointsChecker:CheckShowReminder();
 	end
 end, SpecPointsChecker);
+
+
+function PlayerHasPrimaryProfession()
+	local prof1, prof2 = GetProfessions();
+	return prof1 or prof2; -- prof2 should never be non-nil when prof1 is nil, but it doesn't hurt
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+-- First Profession Watcher
+-- ------------------------------------------------------------------------------------------------------------
+Class_FirstProfessionWatcher = class("FirstProfessionWatcher", Class_TutorialBase);
+
+function Class_FirstProfessionWatcher:OnInitialize()
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_PROFESSION) or PlayerHasPrimaryProfession() then
+		self:Complete();
+	end
+end
+
+function Class_FirstProfessionWatcher:OnBegin()
+end
+
+function Class_FirstProfessionWatcher:StartWatching()
+	Dispatcher:RegisterEvent("SKILL_LINES_CHANGED", self);
+end
+
+function Class_FirstProfessionWatcher:StopWatching()
+	Dispatcher:UnregisterEvent("SKILL_LINES_CHANGED", self);
+end
+
+function Class_FirstProfessionWatcher:SKILL_LINES_CHANGED()
+	if PlayerHasPrimaryProfession() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_PROFESSION) then
+		TutorialManager:Queue(Class_FirstProfessionTutorial.name);
+	end
+end
+
+function Class_FirstProfessionWatcher:OnInterrupt()
+	self:Complete();
+end
+
+function Class_FirstProfessionWatcher:OnComplete()
+	self:StopWatching();
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+-- First Profession Tutorial
+-- ------------------------------------------------------------------------------------------------------------
+Class_FirstProfessionTutorial = class("FirstProfessionTutorial", Class_TutorialBase);
+
+function Class_FirstProfessionTutorial:OnInitialize()
+end
+
+function Class_FirstProfessionTutorial:CanBegin(args)
+	return PlayerHasPrimaryProfession() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_PROFESSION);
+end
+
+function Class_FirstProfessionTutorial:OnBegin(args)
+	if not self:CanBegin() then
+		TutorialManager:Finished(self:Name());
+	end
+
+	self.success = false;
+
+	EventRegistry:RegisterCallback("ProfessionsFrame.Show", function() 
+		self.success = true;
+		TutorialManager:Finished(self:Name());
+	end);
+	EventRegistry:RegisterCallback("SpellBookFrame.Show", function() self:Update(); end, self);
+	EventRegistry:RegisterCallback("SpellBookFrame.Hide", function() self:Update(); end, self);
+	EventRegistry:RegisterCallback("SpellBookFrame.ChangeBookType", function() self:Update(); end, self);
+	Dispatcher:RegisterEvent("SKILL_LINES_CHANGED", self);
+
+	self:Update();
+end
+
+function Class_FirstProfessionTutorial:SKILL_LINES_CHANGED()
+	if not PlayerHasPrimaryProfession() then
+		TutorialManager:Finished(self:Name());
+	end
+end
+
+function Class_FirstProfessionTutorial:GetHelptipSystem()
+	return "First Time Profession";
+end
+
+function Class_FirstProfessionTutorial:HideAllHelptips()
+	HelpTip:HideAllSystem(self:GetHelptipSystem());
+end
+
+function Class_FirstProfessionTutorial:AcknowledgeTutorial()
+	HelpTip:HideAllSystem(self:GetHelptipSystem());
+	self.success = true;
+	TutorialManager:Finished(self:Name());
+end
+
+function Class_FirstProfessionTutorial:Update()
+	HelpTip:HideAllSystem(self:GetHelptipSystem());
+
+	if self.success then
+		TutorialManager:Finished(self:Name());
+	elseif not SpellBookFrame or not SpellBookFrame:IsVisible() then
+		local helpTipInfo = 
+		{
+			text = PROFESSIONS_NEW_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			system = self:GetHelptipSystem(),
+			onAcknowledgeCallback = function() self:AcknowledgeTutorial(); end,
+			autoHorizontalSlide = true,
+		};
+		HelpTip:Show(UIParent, helpTipInfo, SpellbookMicroButton);
+		MicroButtonPulse(SpellbookMicroButton);
+	elseif not SpellBookProfessionFrame or not SpellBookProfessionFrame:IsShown() then
+		local helpTipInfo = 
+		{
+			text = PROFESSIONS_NEW_TUTORIAL_TAB,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			system = self:GetHelptipSystem(),
+			onAcknowledgeCallback = function() self:AcknowledgeTutorial(); end,
+			autoHorizontalSlide = true,
+		};
+		HelpTip:Show(UIParent, helpTipInfo, SpellBookFrameTabButton2);
+	else
+		local helpTipInfo = 
+		{
+			text = PROFESSIONS_NEW_TUTORIAL_ICON,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			system = self:GetHelptipSystem(),
+			onAcknowledgeCallback = function() self:AcknowledgeTutorial(); end,
+			autoHorizontalSlide = true,
+		};
+		HelpTip:Show(UIParent, helpTipInfo, PrimaryProfession1SpellButtonBottom);
+	end
+end
+
+function Class_FirstProfessionTutorial:OnInterrupt()
+	TutorialManager:Finished(self:Name());
+end
+
+function Class_FirstProfessionTutorial:OnComplete()
+	HelpTip:HideAllSystem(self:GetHelptipSystem());
+	if self.success then
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_PROFESSION, true);
+	end
+
+	EventRegistry:UnregisterCallback("ProfessionsFrame.Show", self);
+	EventRegistry:UnregisterCallback("SpellBookFrame.Show", self);
+	EventRegistry:UnregisterCallback("SpellBookFrame.Hide", self);
+	EventRegistry:UnregisterCallback("SpellBookFrame.ChangeBookType", self);
+	Dispatcher:UnregisterEvent("SKILL_LINES_CHANGED", self);
+end

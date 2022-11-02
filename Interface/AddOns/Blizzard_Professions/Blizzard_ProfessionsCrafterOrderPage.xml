@@ -6,6 +6,8 @@
 		<Size x="180" y="30"/>
 		<KeyValues>
 			<KeyValue key="isTabOnTop" value="true" type="boolean"/>
+			<KeyValue key="selectedFontObject" value="GameFontHighlight" type="global"/>
+			<KeyValue key="unselectedFontObject" value="GameFontNormal" type="global"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -23,6 +25,8 @@
 				<Alpha childKey="Glow" smoothing="NONE" duration="1" startDelay="0.3" order="2" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
 	</Button>
 
 	<Button name="ProfessionsCrafterOrderListElementTemplate" mixin="ProfessionsCrafterOrderListElementMixin" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">

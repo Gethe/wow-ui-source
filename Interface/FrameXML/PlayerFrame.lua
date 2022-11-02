@@ -31,24 +31,13 @@ function PlayerFrame_OnLoad(self)
 	self.statusCounter = 0;
 	self.statusSign = -1;
 
-	-- Mask the various bar assets, to avoid any overflow with the frame shape.
 	local healthBarMask = playerFrameContent.HealthBarMask;
 	PlayerFrameHealthBar:GetStatusBarTexture():AddMaskTexture(healthBarMask);
-	playerFrameContent.MyHealPredictionBar:AddMaskTexture(healthBarMask);
-	playerFrameContent.OtherHealPredictionBar:AddMaskTexture(healthBarMask);
-	playerFrameContent.TotalAbsorbBar:AddMaskTexture(healthBarMask);
-	playerFrameContent.TotalAbsorbBarOverlay:AddMaskTexture(healthBarMask);
-	playerFrameContent.OverAbsorbGlow:AddMaskTexture(healthBarMask);
-	playerFrameContent.OverHealAbsorbGlow:AddMaskTexture(healthBarMask);
-	playerFrameContent.HealAbsorbBar:AddMaskTexture(healthBarMask);
-	playerFrameContent.HealAbsorbBarLeftShadow:AddMaskTexture(healthBarMask);
-	playerFrameContent.HealAbsorbBarRightShadow:AddMaskTexture(healthBarMask);
 	playerFrameContent.HealthBarArea.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture():AddMaskTexture(healthBarMask);
 
 	local manaBarMask = playerFrameContent.ManaBarMask;
 	PlayerFrameManaBar:GetStatusBarTexture():AddMaskTexture(manaBarMask);
 	PlayerFrameManaBar.FeedbackFrame:AddMaskTexture(manaBarMask);
-	playerFrameContent.ManaCostPredictionBar:AddMaskTexture(manaBarMask);
 
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
 	PlayerFrame_Update();
@@ -792,6 +781,7 @@ function PlayerFrame_AttachCastBar()
 	UIParentBottomManagedFrameContainer:RemoveManagedFrame(PlayerCastingBarFrame);
 	PlayerCastingBarFrame.attachedToPlayerFrame = true;
 	PlayerCastingBarFrame:SetLook("UNITFRAME");
+	PlayerCastingBarFrame:SetFixedFrameStrata(false); -- Inherit parent strata while locked
 	PlayerCastingBarFrame:SetParent(PlayerFrame);
 	AnchorCastBarToPlayerFrame();
 end
@@ -806,6 +796,8 @@ function PlayerFrame_DetachCastBar()
 	PlayerCastingBarFrame.ignoreFramePositionManager = nil;
 	PlayerCastingBarFrame.attachedToPlayerFrame = false;
 	PlayerCastingBarFrame:SetLook("CLASSIC");
+	PlayerCastingBarFrame:SetFrameStrata("HIGH"); -- Maintain HIGH strata while unlocked
+	PlayerCastingBarFrame:SetFixedFrameStrata(true);
 	-- Will be re-anchored via edit mode
 end
 

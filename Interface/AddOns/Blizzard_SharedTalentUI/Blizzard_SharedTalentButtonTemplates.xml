@@ -134,7 +134,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Ghost" alphaMode="ADD" hidden="true">
+				<Texture parentKey="Ghost" hidden="true">
 					<Size x="48" y="48"/>
 					<Anchors>
 						<Anchor point="CENTER"/>

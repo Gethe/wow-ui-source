@@ -1,7 +1,23 @@
 
 local ignoreSkillLine = true;
 local OrderBrowseType = EnumUtil.MakeEnum("Flat", "Bucketed", "None");
+local orderTypeTabTitles =
+{
+	[Enum.CraftingOrderType.Public] = PROFESSIONS_CRAFTER_ORDER_TAB_PUBLIC,
+	[Enum.CraftingOrderType.Guild] = PROFESSIONS_CRAFTER_ORDER_TAB_GUILD,
+	[Enum.CraftingOrderType.Personal] = PROFESSIONS_CRAFTER_ORDER_TAB_PERSONAL,
+};
 
+local function SetTabTitleWithCount(tabButton, type, count)
+	if tabButton then
+		local title = orderTypeTabTitles[type];
+		if type == Enum.CraftingOrderType.Public then
+			tabButton.Text:SetText(title);
+		else
+			tabButton.Text:SetText(string.format("%s (%s)", title, count));
+		end
+	end
+end
 
 ProfessionsCrafterOrderListElementMixin = CreateFromMixins(ScrollListLineMixin, TableBuilderRowMixin);
 
@@ -100,13 +116,6 @@ function ProfessionsCraftingOrderPageMixin:InitButtons()
 end
 
 function ProfessionsCraftingOrderPageMixin:InitOrderTypeTabs()
-	local orderTypeTabTitles =
-	{
-		[Enum.CraftingOrderType.Public] = PROFESSIONS_CRAFTER_ORDER_TAB_PUBLIC,
-		[Enum.CraftingOrderType.Guild] = PROFESSIONS_CRAFTER_ORDER_TAB_GUILD,
-		[Enum.CraftingOrderType.Personal] = PROFESSIONS_CRAFTER_ORDER_TAB_PERSONAL,
-	};
-
 	local isInGuild = IsInGuild();
 	self.BrowseFrame.GuildOrdersButton:SetShown(isInGuild);
 	self.BrowseFrame.PersonalOrdersButton:ClearAllPoints();
@@ -122,10 +131,10 @@ function ProfessionsCraftingOrderPageMixin:InitOrderTypeTabs()
 		end);
 
 		typeTab:HandleRotation();
-		local title = orderTypeTabTitles[typeTab.orderType];
-		typeTab.Text:SetText(title);
-		local minWidth = 180;
-		local bufferWidth = 40;
+		local count = 0;
+		SetTabTitleWithCount(typeTab, typeTab.orderType, count);
+		local minWidth = 200;
+		local bufferWidth = 100;
 		local stretchWidth = typeTab.Text:GetWidth() + bufferWidth;
 		typeTab:SetTabWidth(math.max(minWidth, stretchWidth));
 	end
@@ -326,6 +335,7 @@ local ProfessionsCraftingOrderPageAlwaysListenEvents =
 {
 	"PLAYER_GUILD_UPDATE",
 	"PLAYER_ENTERING_WORLD",
+	"CRAFTINGORDERS_UPDATE_ORDER_COUNT",
 };
 local ProfessionsCraftingOrderPageEvents =
 {
@@ -349,6 +359,16 @@ function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 	elseif event == "TRADE_SKILL_LIST_UPDATE" then
 		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
 		self:Refresh(professionInfo);
+	elseif event == "CRAFTINGORDERS_UPDATE_ORDER_COUNT" then
+		local type, count = ...;
+		local tabButton;
+		if type == Enum.CraftingOrderType.Guild then
+			tabButton = self.BrowseFrame.GuildOrdersButton;
+		elseif type == Enum.CraftingOrderType.Personal then
+			tabButton = self.BrowseFrame.PersonalOrdersButton;
+		end
+
+		SetTabTitleWithCount(tabButton, type, count);
 	end
 end
 
@@ -397,6 +417,8 @@ function ProfessionsCraftingOrderPageMixin:OnShow()
 
 	self.BrowseFrame.RecipeList.SearchBox:SetText(C_TradeSkillUI.GetRecipeItemNameFilter());
 
+	C_CraftingOrders.OpenCrafterCraftingOrders();
+	
 	-- Delay a frame so that the recipe list does not get thrashed because of the delayed event from flag changes
 	RunNextFrame(function() self:StartDefaultSearch(); end);
 	self:CheckForClaimedOrder();
@@ -518,6 +540,7 @@ function ProfessionsCraftingOrderPageMixin:Init(professionInfo)
 	else
 		self.BrowseFrame.RecipeList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	end
+	self.BrowseFrame.RecipeList.NoResultsText:SetShown(dataProvider:IsEmpty());
 end
 
 function ProfessionsCraftingOrderPageMixin:SelectRecipeFromBucket(buckectInfo)

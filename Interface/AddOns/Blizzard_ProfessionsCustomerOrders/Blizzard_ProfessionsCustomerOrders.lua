@@ -90,6 +90,7 @@ function ProfessionsCustomerOrdersMixin:OnShow()
     PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN);
 
 	self:ShowCurrentPage();
+	C_CraftingOrders.OpenCustomerCraftingOrders();
 end
 
 function ProfessionsCustomerOrdersMixin:OnHide()

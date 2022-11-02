@@ -39,6 +39,10 @@
 
 			- This is used to determine if spacers should be used when hiding buttons. Spacers help keep the bar a static size when buttons are hidden. If this is true then spacers won't be used.
 			<KeyValue key="noSpacers" value="false" type="boolean"/>
+
+			- This is used to determine if we should not automatically show all buttons when entering edit mode if this is a conditional action bar (one which isn't always shown like stance, pet, and possess)
+			- Note that if this bar already has a "Always Show Buttons" setting then that will determine if the buttons are shown, not this
+			<KeyValue key="dontShowAllButtonsInEditMode" value="true" type="boolean"/>
 		-->
 
 		<Scripts>

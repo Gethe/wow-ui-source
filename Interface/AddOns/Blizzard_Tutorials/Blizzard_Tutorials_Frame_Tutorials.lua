@@ -89,7 +89,7 @@ end
 Class_InteractKeyNoKeybindWatcher = class("InteractKeyNoKeybindWatcher", Class_TutorialBase);
 
 local function CanShowInteractKeyNoKeybindTutorial()
-	if (tonumber(GetCVar("softTargetInteract")) > Enum.SoftTargetEnableFlags.Gamepad and not GetBindingKeyText()) then 
+	if ((not GetCVarBool("interactKeyWarningTutorial")) and tonumber(GetCVar("softTargetInteract")) > Enum.SoftTargetEnableFlags.Gamepad and not GetBindingKeyText()) then 
 		return true;
 	else 
 		return false; 
@@ -99,13 +99,14 @@ end
 function Class_InteractKeyNoKeybindWatcher:GetHelptip()
 	local helpTipInfo = {
 		text = INTERACT_KEY_TUTORIAL_NO_INTERACT_KEY_ASSIGNED,
-		buttonStyle = HelpTip.ButtonStyle.None,
+		buttonStyle = HelpTip.ButtonStyle.Close,
 		alignment = HelpTip.Alignment.Center,
 		targetPoint = HelpTip.Point.LeftEdgeCenter,
+		cvar = "interactKeyWarningTutorial",
+		cvarValue = 1,
 		offsetX = 700, 
 		offsetY = 50,
 		hideArrow = true,
-		acknowledgeOnHide = false,
 		handlesGlobalMouseEventCallback = function() return true; end,
 	};
 	return helpTipInfo; 
@@ -124,7 +125,7 @@ function Class_InteractKeyNoKeybindWatcher:EvaluateHelptip()
 end
 
 function Class_InteractKeyNoKeybindWatcher:StopWatching()
-	HelpTip:Hide(UIParent, INTERACT_KEY_TUTORIAL_NO_INTERACT_KEY_ASSIGNED);
+	Dispatcher:UnregisterEvent("UPDATE_BINDINGS", self);
 end 
 
 function Class_InteractKeyNoKeybindWatcher:UPDATE_BINDINGS()

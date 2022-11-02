@@ -424,13 +424,23 @@ function GlueParent_CloseSecondaryScreen()
 	end
 end
 
+-- playIntroMovie CVar is set to the index of the last cinematic played.
+-- So we will play the cinematic at that index + 1 if there is one.
 function GlueParent_CheckCinematic()
-	local cinematicIndex = tonumber(GetCVar("playIntroMovie"));
-	local displayExpansionLevel = LE_EXPANSION_LEVEL_CURRENT;
-	if ( not cinematicIndex or cinematicIndex <= displayExpansionLevel ) then
-		SetCVar("playIntroMovie", displayExpansionLevel + 1);
-		MovieFrame.version = C_Login.IsNewPlayer() and 1 or tonumber(GetCVar("playIntroMovie"));
-		GlueParent_OpenSecondaryScreen("movie");
+	local firstCinematicIndex, lastCinematicIndex = CinematicsFrame_GetIndexRangeForExpansion(LE_EXPANSION_LEVEL_CURRENT);
+	if not firstCinematicIndex or not lastCinematicIndex then
+		return;
+	end
+	local nextCinematicIndex = (tonumber(GetCVar("playIntroMovie")) or 0) + 1;
+	nextCinematicIndex = math.max(nextCinematicIndex, firstCinematicIndex);
+	while nextCinematicIndex <= lastCinematicIndex do
+		SetCVar("playIntroMovie", nextCinematicIndex);
+		if not CinematicFrame_IsAutoPlayDisabled(nextCinematicIndex) then
+			MovieFrame.version = C_Login.IsNewPlayer() and 1 or tonumber(GetCVar("playIntroMovie"));
+			GlueParent_OpenSecondaryScreen("movie");
+			break;
+		end
+		nextCinematicIndex = nextCinematicIndex + 1;
 	end
 end
 
@@ -530,6 +540,7 @@ local glueScreenTags =
 		["KULTIRAN"] = true,
 		["MECHAGNOME"] = true,
 		["VULPERA"] = true,
+		["DRACTHYR"] = true,
 	},
 };
 

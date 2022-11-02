@@ -1,9 +1,11 @@
 local iconAtlasFormat = "majorFactions_icons_%s512";
 local buttonAtlasFormatsByExpansion = {
 	[LE_EXPANSION_DRAGONFLIGHT] = {
-		normalAtlas = "dragonflight-landingpage-renownbutton-%s";
-		hoverAtlas = "dragonflight-landingpage-renownbutton-%s-hover";
-		lockedAtlas = "dragonflight-landingpage-renownbutton-locked";
+		normalAtlas = "dragonflight-landingpage-renownbutton-%s",
+		hoverAtlas = "dragonflight-landingpage-renownbutton-%s-hover",
+		lockedAtlas = "dragonflight-landingpage-renownbutton-locked",
+		progressBarBorderAtlas = "dragonflight-landingpage-radial-frame",
+		progressBarFillAtlas = "dragonflight-landingpage-radial-%s",
 	},
 };
 
@@ -67,10 +69,10 @@ function MajorFactionListMixin:Refresh()
 		tinsert(factionList, majorFactionData);
 	end
 
-	local function AlphabeticalSort(faction1, faction2)
-		return strcmputf8i(faction1.name, faction2.name) < 0;
+	local function UnlockOrderSort(faction1, faction2)
+		return faction1.unlockOrder < faction2.unlockOrder;
 	end
-	table.sort(factionList, AlphabeticalSort);
+	table.sort(factionList, UnlockOrderSort);
 
 	local dataProvider = CreateDataProvider(factionList);
 	self.ScrollBox:SetDataProvider(dataProvider);
@@ -89,7 +91,7 @@ end
 
 function MajorFactionListMixin:SetSelectedFaction(majorFactionID)
 	local function SetSelected(majorFactionID, selected)
-		local function FindFactionButton(majorFactionData)
+		local function FindFactionButton(button, majorFactionData)
 			return majorFactionData.factionID == majorFactionID;
 		end	
 
@@ -136,6 +138,23 @@ function MajorFactionButtonMixin:Init(majorFactionData)
 	self.UnlockedState.normalAtlas = atlasFormats.normalAtlas:format(majorFactionData.textureKit);
 	self.UnlockedState.hoverAtlas = atlasFormats.hoverAtlas:format(majorFactionData.textureKit);
 	self.UnlockedState.Background:SetAtlas(self.UnlockedState.normalAtlas, TextureKitConstants.UseAtlasSize);
+
+	local progressBarBorderAtlas = atlasFormats.progressBarBorderAtlas;
+	self.UnlockedState.RenownProgressBar.Border:SetAtlas(progressBarBorderAtlas, TextureKitConstants.UseAtlasSize);
+	local fillAtlas = atlasFormats.progressBarFillAtlas:format(majorFactionData.textureKit);
+	local fillInfo = C_Texture.GetAtlasInfo(fillAtlas);
+	self.UnlockedState.RenownProgressBar:SetSwipeTexture(fillInfo.file or fillInfo.filename);
+	local lowTexCoords =
+	{
+		x = fillInfo.leftTexCoord,
+		y = fillInfo.topTexCoord,
+	};
+	local highTexCoords =
+	{
+		x = fillInfo.rightTexCoord,
+		y = fillInfo.bottomTexCoord,
+	};
+	self.UnlockedState.RenownProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
 	
 	self.UnlockedState.Icon:SetAtlas(iconAtlasFormat:format(majorFactionData.textureKit), TextureKitConstants.IgnoreAtlasSize);
 	self.UnlockedState.Icon:Show();
@@ -383,6 +402,15 @@ local MAJOR_FACTION_WATCH_FACTION_BUTTON_EVENTS = {
 }
 
 MajorFactionWatchFactionButtonMixin = {};
+
+function MajorFactionWatchFactionButtonMixin:OnLoad()
+	-- Need to make sure the checkbox + label fit in the top right corner
+	self:ClearAllPoints();
+	local totalWidth = self:GetWidth() + self.Label:GetStringWidth();
+	local padding = 2;
+	local xOffset, yOffset = (totalWidth + padding) * -1, -6;
+	self:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", xOffset, yOffset);
+end
 
 function MajorFactionWatchFactionButtonMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, MAJOR_FACTION_WATCH_FACTION_BUTTON_EVENTS);

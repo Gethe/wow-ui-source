@@ -444,9 +444,6 @@
 				</Layers>
 			</Frame>
 			<Frame parentKey="RaisedBorder" inherits="NineSlicePanelTemplate" frameLevel="3000">
-				<KeyValues>
-					<KeyValue key="layoutType" value="CovenantMissionFrame" type="string"/>
-				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>

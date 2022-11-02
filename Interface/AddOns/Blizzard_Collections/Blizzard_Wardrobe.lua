@@ -3906,8 +3906,7 @@ function WardrobeSetsCollectionContainerMixin:OnEvent(event, ...)
 end
 
 function WardrobeSetsCollectionContainerMixin:ReinitializeButtonWithBaseSetID(baseSetID)
-	local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
-		local elementData = frame:GetElementData();
+	local frame = self.ScrollBox:FindFrameByPredicate(function(frame, elementData)
 		return elementData.setID == baseSetID;
 	end);
 

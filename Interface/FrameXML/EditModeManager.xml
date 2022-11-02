@@ -32,6 +32,7 @@
 				</KeyValues>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>

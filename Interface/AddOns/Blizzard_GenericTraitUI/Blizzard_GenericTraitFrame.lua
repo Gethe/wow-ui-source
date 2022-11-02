@@ -23,6 +23,7 @@ local GenericTraitFrameLayoutOptions =
 		CurrencyOffset = { x=0, y=50 },
 		CurrencyBackgroundAtlas = nil,
 		PanOffset = {x=0, y=0},
+		ButtonPurchaseFXIDs = nil,
 	},
 	Dragonflight = {
 		NineSliceTextureKit = "Dragonflight", 
@@ -39,9 +40,43 @@ local GenericTraitFrameLayoutOptions =
 		CurrencyOffset = { x=0, y=-20 },
 		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
 		PanOffset = {x=-80, y=-35},
+		ButtonPurchaseFXIDs = {150, 142, 143},
 	}
 };
 
+local genericTraitFrameTutorials = 
+{ 
+	-- DragonRiding TreeID
+	[672] = 
+	{ 
+		tutorial = 
+		{
+			text = DRAGON_RIDING_SKILLS_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_DRAGON_RIDING_SKILLS,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			useParentStrata = false,
+		},
+	},
+}
+
+local genericTraitCurrencyTutorials = 
+{ 
+	-- DragonRiding
+	[2563] = 
+	{ 
+		tutorial = 
+		{
+			text = DRAGON_RIDING_CURRENCY_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_DRAGON_RIDING_GLYPHS,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			useParentStrata = true,
+		},
+	},
+}
 
 GenericTraitFrameMixin = {};
 
@@ -88,6 +123,8 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 
 	self.basePanOffsetX = layoutInfo.PanOffset.x;
 	self.basePanOffsetY = layoutInfo.PanOffset.y;
+
+	self.buttonPurchaseFXIDs = layoutInfo.ButtonPurchaseFXIDs;
 end
 
 function GenericTraitFrameMixin:OnShow()
@@ -96,6 +133,7 @@ function GenericTraitFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, GenericTraitFrameEvents);
 
 	self:UpdateTreeCurrencyInfo();
+	self:ShowGenericTraitFrameTutorial();
 
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_OPEN_WINDOW);
 end
@@ -168,6 +206,11 @@ function GenericTraitFrameMixin:AttemptConfigOperation(...)
 	end
 end
 
+function GenericTraitFrameMixin:SetSelection(nodeID, entryID)
+	TalentFrameBaseMixin.SetSelection(self, nodeID, entryID );
+	self:ShowPurchaseVisuals(nodeID);
+end
+
 function GenericTraitFrameMixin:GetConfigCommitErrorString()
 	-- Overrides TalentFrameBaseMixin.
 
@@ -202,7 +245,8 @@ function GenericTraitFrameMixin:PurchaseRank(nodeID)
 	local costStrings = self:GetCostStrings(cost);
 	local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
 
-	local purchaseRankCallback = GenerateClosure(TalentFrameBaseMixin.PurchaseRank, self, nodeID);
+
+	local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID);
 	local customData = {
 		text = costString,
 		callback = purchaseRankCallback,
@@ -212,22 +256,35 @@ function GenericTraitFrameMixin:PurchaseRank(nodeID)
 	StaticPopup_ShowCustomGenericConfirmation(customData);
 end
 
-local genericTraitCurrencyTutorials = 
-{ 
-	-- DragonRiding
-	[2563] = 
-	{ 
-		tutorial = 
-		{
-			text = DRAGON_RIDING_CURRENCY_TUTORIAL,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_DRAGON_RIDING_GLYPHS,
-			targetPoint = HelpTip.Point.RightEdgeCenter,
-			useParentStrata = true,
-		},
-	},
-}
+function GenericTraitFrameMixin:PurchaseRankCallback( nodeID )
+	TalentFrameBaseMixin.PurchaseRank(self, nodeID);
+	self:ShowPurchaseVisuals(nodeID);
+end
+
+
+function GenericTraitFrameMixin:ShowGenericTraitFrameTutorial()
+	
+	local treeID = self:GetTalentTreeID();
+	local nodeIDs = C_Traits.GetTreeNodes(self.talentTreeID);
+
+	local firstButton = self:GetTalentButtonByNodeID(nodeIDs[1]);
+	local tutorialInfo = genericTraitFrameTutorials[self.talentTreeID];
+	if tutorialInfo and not GetCVarBitfield("closedInfoFrames", tutorialInfo.tutorial.bitfieldFlag) then
+			HelpTip:Show(self, tutorialInfo.tutorial, firstButton);
+	end
+	
+end
+
+function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
+	if (self.buttonPurchaseFXIDs == nil) then
+		return;
+	end
+
+	local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
+	if buttonWithPurchase and buttonWithPurchase.PlayPurchaseEffect then
+		buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene, self.buttonPurchaseFXIDs);
+	end
+end
 
 GenericTraitFrameCurrencyFrameMixin = { }; 
 function GenericTraitFrameCurrencyFrameMixin:UpdateWidgetSet()	

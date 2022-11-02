@@ -48,7 +48,12 @@ function ClassResourceBarMixin:OnEvent(event, arg1, arg2)
 	elseif (event == "UNIT_MAXPOWER") then
 		self:UpdateMaxPower();
 	elseif (event == "UNIT_POWER_POINT_CHARGE") then
-		self:UpdateChargedPowerPoints();
+		-- Not all classes have power point visuals but may receive this event due to specific spell auras
+		if self.UpdateChargedPowerPoints then
+			self:UpdateChargedPowerPoints();
+		else
+			self:UpdatePower();
+		end
 	else
 		self.resourceBarMixin.OnEvent(self, event, arg1, arg2);
 	end

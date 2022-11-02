@@ -3,11 +3,30 @@ local TooltipInfoShared =
 	Tables =
 	{
 		{
+			Name = "TooltipDataItemBinding",
+			Type = "Enumeration",
+			NumValues = 9,
+			MinValue = 0,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "Quest", Type = "TooltipDataItemBinding", EnumValue = 0 },
+				{ Name = "Account", Type = "TooltipDataItemBinding", EnumValue = 1 },
+				{ Name = "BnetAccount", Type = "TooltipDataItemBinding", EnumValue = 2 },
+				{ Name = "Soulbound", Type = "TooltipDataItemBinding", EnumValue = 3 },
+				{ Name = "BindToAccount", Type = "TooltipDataItemBinding", EnumValue = 4 },
+				{ Name = "BindToBnetAccount", Type = "TooltipDataItemBinding", EnumValue = 5 },
+				{ Name = "BindOnPickup", Type = "TooltipDataItemBinding", EnumValue = 6 },
+				{ Name = "BindOnEquip", Type = "TooltipDataItemBinding", EnumValue = 7 },
+				{ Name = "BindOnUse", Type = "TooltipDataItemBinding", EnumValue = 8 },
+			},
+		},
+		{
 			Name = "TooltipDataLineType",
 			Type = "Enumeration",
-			NumValues = 15,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 14,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "None", Type = "TooltipDataLineType", EnumValue = 0 },
@@ -25,6 +44,12 @@ local TooltipInfoShared =
 				{ Name = "ProfessionCraftingQuality", Type = "TooltipDataLineType", EnumValue = 12 },
 				{ Name = "SpellName", Type = "TooltipDataLineType", EnumValue = 13 },
 				{ Name = "CurrencyTotal", Type = "TooltipDataLineType", EnumValue = 14 },
+				{ Name = "ItemEnchantmentPermanent", Type = "TooltipDataLineType", EnumValue = 15 },
+				{ Name = "UnitOwner", Type = "TooltipDataLineType", EnumValue = 16 },
+				{ Name = "QuestTitle", Type = "TooltipDataLineType", EnumValue = 17 },
+				{ Name = "QuestPlayer", Type = "TooltipDataLineType", EnumValue = 18 },
+				{ Name = "NestedBlock", Type = "TooltipDataLineType", EnumValue = 19 },
+				{ Name = "ItemBinding", Type = "TooltipDataLineType", EnumValue = 20 },
 			},
 		},
 		{
@@ -102,19 +127,6 @@ local TooltipInfoShared =
 			Fields =
 			{
 				{ Name = "args", Type = "table", InnerType = "TooltipDataArg", Nilable = false },
-			},
-		},
-		{
-			Name = "TooltipDataLineText",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "leftText", Type = "string", Nilable = false },
-				{ Name = "rightText", Type = "string", Nilable = true },
-				{ Name = "leftColor", Type = "table", Mixin = "ColorMixin", Nilable = true },
-				{ Name = "rightColor", Type = "table", Mixin = "ColorMixin", Nilable = true },
-				{ Name = "wrapped", Type = "bool", Nilable = true },
-				{ Name = "leftOffsetPixels", Type = "number", Nilable = true },
 			},
 		},
 	},

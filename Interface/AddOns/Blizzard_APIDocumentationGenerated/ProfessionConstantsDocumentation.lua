@@ -60,9 +60,9 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderResult",
 			Type = "Enumeration",
-			NumValues = 40,
+			NumValues = 41,
 			MinValue = 0,
-			MaxValue = 39,
+			MaxValue = 40,
 			Fields =
 			{
 				{ Name = "Ok", Type = "CraftingOrderResult", EnumValue = 0 },
@@ -105,6 +105,7 @@ local ProfessionConstants =
 				{ Name = "TargetCannotCraft", Type = "CraftingOrderResult", EnumValue = 37 },
 				{ Name = "Timeout", Type = "CraftingOrderResult", EnumValue = 38 },
 				{ Name = "TooManyItems", Type = "CraftingOrderResult", EnumValue = 39 },
+				{ Name = "MaxOrdersReached", Type = "CraftingOrderResult", EnumValue = 40 },
 			},
 		},
 		{

@@ -2000,14 +2000,6 @@ function ContainerFrameUtil_GetItemButtonAndContainer(bagID, slot)
 	end
 end
 
-function ContainerFrame_GetItemButtonCheckSecuredAccount(bagID, slot)
-	if bagID == 0 and not IsAccountSecured() then
-		slot = slot + 4;
-	end
-
-	return ContainerFrameUtil_GetItemButtonAndContainer(bagID, slot);
-end
-
 ContainerFrameUtil_EnumerateContainerFrames = nil;
 ContainerFrameUtil_EnumerateBagFrames = nil;
 ContainerFrameUtil_EnumerateBagGearFilters = nil;

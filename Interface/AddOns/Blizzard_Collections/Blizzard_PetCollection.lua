@@ -191,8 +191,8 @@ function PetJournal_OnEvent(self, event, ...)
 end
 
 function PetJournal_SelectSpecies(self, targetSpeciesID)
-	local function FindPet(elementData)
-		return elementData.speciesID == targetSpeciesID;
+	local function FindPet(frame, elementData)
+		return frame.speciesID == targetSpeciesID;
 	end;
 
 	local foundFrame = self.ScrollBox:FindFrameByPredicate(FindPet);
@@ -204,8 +204,8 @@ function PetJournal_SelectSpecies(self, targetSpeciesID)
 end
 
 function PetJournal_SelectPet(self, petID)
-	local function FindPet(elementData)
-		return elementData.petID == petID;
+	local function FindPet(frame, elementData)
+		return frame.petID == petID;
 	end;
 
 	local foundFrame = self.ScrollBox:FindFrameByPredicate(FindPet);

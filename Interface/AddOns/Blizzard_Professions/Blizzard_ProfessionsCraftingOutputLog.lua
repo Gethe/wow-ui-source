@@ -6,6 +6,11 @@ local ScrollBoxPad = 6;
 local ScrollBoxSpacing = 7;
 local ElementBonusRowHeight = 31;
 
+local function ReconfigureCountPointAndScale(itemButton)
+	itemButton:SetItemButtonAnchorPoint("BOTTOMRIGHT", 0, 2);
+	itemButton:SetItemButtonScale(1.4);
+end
+
 ProfessionsCraftingOutputLogElementMixin = {};
 
 function ProfessionsCraftingOutputLogElementMixin:OnLoad()
@@ -106,6 +111,7 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 				local item = Item:CreateFromItemID(resource.itemID);
 				itemButton:SetItem(resource.itemID);
 				itemButton:SetItemButtonCount(resource.quantity);
+				ReconfigureCountPointAndScale(itemButton);
 				itemButton:Show();
 
 				itemButton:SetScript("OnLeave", GameTooltip_Hide);
@@ -163,6 +169,7 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 					local item = Item:CreateFromItemID(bonusData.itemID);
 					itemButton:SetItem(bonusData.itemID);
 					itemButton:SetItemButtonCount(bonusData.quantity);
+					ReconfigureCountPointAndScale(itemButton);
 
 					itemButton:SetScript("OnEnter", function(button)
 						GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
@@ -172,6 +179,7 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 					local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(bonusData.currencyID);
 					itemButton:SetItemButtonTexture(currencyInfo.iconFileID);
 					itemButton:SetItemButtonCount(bonusData.quantity);
+					ReconfigureCountPointAndScale(itemButton);
 
 					itemButton:SetScript("OnEnter", function(button)
 						GameTooltip:SetOwner(button, "ANCHOR_RIGHT", 0, 0);

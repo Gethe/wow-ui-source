@@ -56,8 +56,7 @@ local SPEC_FORMAT_STRINGS = {
 ClassTalentSpecTabMixin={}
 
 local ClassTalentSpecTabUnitEvents = {
-	"UNIT_LEVEL",
-	"PLAYER_SPECIALIZATION_CHANGED",
+	"UNIT_LEVEL"
 };
 
 function ClassTalentSpecTabMixin:OnLoad()
@@ -67,6 +66,9 @@ function ClassTalentSpecTabMixin:OnLoad()
 	-- TODO: Replace with bespoke spec change state flow
 	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
+
+	-- This needs to always be registered so that the entire spec change process is always captured.
+	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
 
 	self:UpdateSpecContents();
 	self:UpdateSpecFrame();
@@ -82,6 +84,10 @@ function ClassTalentSpecTabMixin:OnShow()
 	if self:IsActivateInProgress() then
 		self:SetActivateVisualsActive(true);
 	end
+
+	self:UpdateActivateButtons();
+
+	self:GetTalentsTab():RegisterCallback(TalentFrameBaseMixin.Event.CommitStatusChanged, self.OnCommitStatusChanged, self);
 end
 
 function ClassTalentSpecTabMixin:OnHide()
@@ -89,10 +95,14 @@ function ClassTalentSpecTabMixin:OnHide()
 
 	EventRegistry:TriggerEvent("TalentFrame.SpecTab.Hide");
 
-	if self:IsActivateInProgress() then
-		self:SetActivateVisualsActive(false);
-	end
+	self:SetActivateVisualsActive(false);
 	self:ShowTutorialHelp(false);
+
+	self:GetTalentsTab():UnregisterCallback(TalentFrameBaseMixin.Event.CommitStatusChanged, self);
+end
+
+function ClassTalentSpecTabMixin:OnCommitStatusChanged()
+	self:UpdateActivateButtons();
 end
 
 function ClassTalentSpecTabMixin:ShowTutorialHelp(showHelpFeature)
@@ -102,6 +112,13 @@ function ClassTalentSpecTabMixin:ShowTutorialHelp(showHelpFeature)
 		else
 			GlowEmitterFactory:Hide(specContentFrame.ActivateButton);
 		end
+	end
+end
+
+function ClassTalentSpecTabMixin:UpdateActivateButtons()
+	local shouldBeEnabled = not self:IsCommitInProgress();
+	for specContentFrame in self.SpecContentFramePool:EnumerateActive() do
+		specContentFrame.ActivateButton:SetEnabled(shouldBeEnabled)
 	end
 end
 
@@ -141,6 +158,7 @@ function ClassTalentSpecTabMixin:UpdateSpecContents()
 	self.isInitialized = true;
 
 	local numSpecs = GetNumSpecializations(false, false);
+	self.numSpecs = numSpecs;
 	if numSpecs == 0 then 
 		return;
 	end
@@ -190,6 +208,10 @@ function ClassTalentSpecTabMixin:IsActivateInProgress()
 	return self.activatedSpecIndex ~= nil;
 end
 
+function ClassTalentSpecTabMixin:IsCommitInProgress()
+	return self:GetTalentsTab():IsCommitInProgress();
+end
+
 function ClassTalentSpecTabMixin:GetCurrentSpecIndex()
 	local talentGroup = 1;
 	return GetSpecialization(nil, false, talentGroup);
@@ -207,14 +229,82 @@ function ClassTalentSpecTabMixin:SetSpecActivateStarted(specIndex)
 end
 
 function ClassTalentSpecTabMixin:SetActivateVisualsActive(active)
+	if active and not self:IsVisible() then
+		return;
+	end
+
 	if active then
-		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, "applyingtalents");
+		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, { overrideBarType = "applyingtalents" });
 		self.DisabledOverlay:SetShown(true);
 	else
 		OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
 		self.DisabledOverlay:SetShown(false);
 	end
 end
+
+function ClassTalentSpecTabMixin:GetClassTalentFrame()
+	return self:GetParent();
+end
+
+function ClassTalentSpecTabMixin:GetTalentsTab()
+	return self:GetClassTalentFrame().TalentsTab;
+end
+
+function ClassTalentSpecTabMixin:IsInspecting()
+	return self:GetClassTalentFrame():IsInspecting();
+end
+
+
+--------------------------- Script Command Helpers --------------------------------
+-- TODO:: Add localized error messages for all command errors
+function ClassTalentSpecTabMixin:ActivateSpecByPredicate(predicate)
+	if self:IsInspecting() then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	if not self.isInitialized or not self.numSpecs or self.numSpecs == 0 then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	local specFrameToActivate = nil;
+	for specContentFrame in self.SpecContentFramePool:EnumerateActive() do
+		if predicate(specContentFrame) then
+			specFrameToActivate = specContentFrame;
+			break;
+		end
+	end
+
+	if specFrameToActivate then
+		specFrameToActivate:OnActivateClicked();
+	else
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+	end
+end
+
+function ClassTalentSpecTabMixin:ActivateSpecByName(specName)
+	if not specName or specName == "" then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	self:ActivateSpecByPredicate(function(specFrame)
+		return specFrame.name and (strcmputf8i(specFrame.name, specName) == 0);
+	end);
+end
+
+function ClassTalentSpecTabMixin:ActivateSpecByIndex(specIndex)
+	if specIndex <= 0 or specIndex > self.numSpecs then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	self:ActivateSpecByPredicate(function(specFrame)
+		return specFrame.specIndex == specIndex;
+	end);
+end
+--------------------------- End Script Command Helpers --------------------------------
 
 ClassSpecContentFrameMixin={}
 
@@ -248,6 +338,9 @@ function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, frameHeight, n
 	if not specID then
 		return;
 	end
+
+	self.name = name;
+
 	local atlasName = SPEC_TEXTURE_FORMAT:format(SPEC_FORMAT_STRINGS[specID]);
 	if C_Texture.GetAtlasInfo(atlasName) then
 		self.SpecImage:SetAtlas(atlasName);
@@ -369,7 +462,9 @@ function ClassSpecContentFrameMixin:SetActivationFlashPlaying(playFlash)
 end
 
 function ClassSpecContentFrameMixin:OnActivateClicked()
-	PlaySound(SOUNDKIT.UI_CLASS_TALENT_SPEC_ACTIVATE);
+	if self:IsVisible() then
+		PlaySound(SOUNDKIT.UI_CLASS_TALENT_SPEC_ACTIVATE);
+	end
 	if SetSpecialization(self.specIndex, false) then
 		self:GetParent():SetSpecActivateStarted(self.specIndex);
 	end

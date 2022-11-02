@@ -1328,8 +1328,8 @@ function LFGListEntryCreationActivityFinder_Select(self, activityID)
 
 	local function UpdateButtonSelection(id, selected)
 		if id then
-			local button = self.Dialog.ScrollBox:FindFrameByPredicate(function(button)
-				return button:GetElementData().id == id;
+			local button = self.Dialog.ScrollBox:FindFrameByPredicate(function(button, elementData)
+				return elementData.id == id;
 			end);
 			if button then
 				LFGListEntryCreationActivityFinder_SetButtonSelected(button, selected);
@@ -1376,8 +1376,8 @@ function LFGListApplicationViewer_OnEvent(self, event, ...)
 			LFGListApplicationViewer_UpdateResultList(self);
 			LFGListApplicationViewer_UpdateResults(self);
 		else
-			local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
-				return frame:GetElementData().id == id;
+			local frame = self.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+				return elementData.id == id;
 			end);
 			if frame then
 				LFGListApplicationViewer_UpdateApplicant(frame, id);
@@ -2167,13 +2167,13 @@ function LFGListSearchPanel_UpdateResults(self)
 			self.ScrollBox.StartGroupButton:ClearAllPoints();
 			self.ScrollBox.StartGroupButton:SetPoint("BOTTOM", self.ScrollBox.NoResultsFound, "BOTTOM", 0, - 27);
 			self.ScrollBox.NoResultsFound:SetText(self.searchFailed and LFG_LIST_SEARCH_FAILED or LFG_LIST_NO_RESULTS_FOUND);
-		elseif(self.shouldAlwaysShowCreateGroupButton) then
+		else
 			self.ScrollBox.NoResultsFound:Hide();
 			self.ScrollBox.StartGroupButton:SetShown(false);
 
-			dataProvider:Insert({startGroup=true});
-		else
-			self.ScrollBox.NoResultsFound:Hide();
+			if(self.shouldAlwaysShowCreateGroupButton) then
+				dataProvider:Insert({startGroup=true});
+			end
 		end
 
 		self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);

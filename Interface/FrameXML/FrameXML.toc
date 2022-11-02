@@ -421,6 +421,7 @@ PlayerInteractionFrameManager.xml
 TalkingHeadUI.xml
 ArenaUI.xml
 FramerateFrame.xml
+ClassTalentHelper.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

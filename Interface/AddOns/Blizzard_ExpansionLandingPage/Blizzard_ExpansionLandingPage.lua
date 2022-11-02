@@ -68,6 +68,10 @@ function ExpansionLandingPageMixin:RefreshExpansionOverlay()
 		end
 
 		EventRegistry:TriggerEvent("ExpansionLandingPage.OverlayChanged");
+
+		if self.overlay.TryCelebrateUnlock then
+			self.overlay:TryCelebrateUnlock();
+		end
 	end
 end
 

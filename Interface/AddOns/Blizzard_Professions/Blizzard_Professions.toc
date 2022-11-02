@@ -14,3 +14,4 @@ Blizzard_ProfessionsCrafterOrderView.xml
 Blizzard_ProfessionsCrafterOrderPage.xml
 Blizzard_ProfessionsFrame.xml
 Blizzard_ProfessionsRegistration.lua
+Localization.lua

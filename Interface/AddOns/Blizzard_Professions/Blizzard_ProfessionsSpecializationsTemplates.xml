@@ -43,7 +43,7 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	<Animations>
+		<Animations>
 			<AnimationGroup parentKey="StateIconGlowAnim" setToFinalAlpha="true" looping="REPEAT">
 				<Alpha childKey="StateIconGlow" fromAlpha=".5" toAlpha="1" duration="1" order="1" smoothing="NONE"/>
 				<Alpha childKey="StateIconGlow" fromAlpha="1" toAlpha=".5" duration="1" order="2" smoothing="NONE"/>
@@ -97,6 +97,7 @@
 			<KeyValue key="isDetailedView" value="false" type="boolean"/>
 		</KeyValues>
 		<Scripts>
+			<!-- OnShow and OnHide set dynamically -->
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 		<Frames>
@@ -110,13 +111,20 @@
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ProgressBarBackground" atlas="Professions-Specialization-Node-EmptyPath" useAtlasSize="true">
+				<Texture parentKey="ProgressBarBackground" atlas="Professions-Specialization-Node-EmptyPath" useAtlasSize="false">
+					<Size x="78" y="78"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture parentKey="ProgressBarAvailableGlow" atlas="Professions-Specialization-Node-ChoiceGlow" alpha="0.5" hidden="true" useAtlasSize="false">
+					<Size x="78" y="78"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="IconMouseoverHighlight" alpha="0.2" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
@@ -155,5 +163,11 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="AvailableGlowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="ProgressBarAvailableGlow" fromAlpha=".25" toAlpha="0.5" duration="1" order="1" smoothing="NONE"/>
+				<Alpha childKey="ProgressBarAvailableGlow" fromAlpha="0.5" toAlpha="0.25" duration="1" order="2" smoothing="NONE"/>
+			</AnimationGroup>
+		</Animations>
 	</Button>
 </Ui>

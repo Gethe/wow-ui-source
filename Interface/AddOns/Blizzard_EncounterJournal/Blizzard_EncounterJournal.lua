@@ -106,6 +106,7 @@ local EJ_TIER_DATA =
 	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth", r = 0.8, g = 0.4, b = 0.0 },
 	[9] = { backgroundAtlas = "UI-EJ-Shadowlands", r = 0.278, g = 0.471, b = .937 },
 	[10] = { backgroundAtlas = "UI-EJ-Dragonflight", r = 0.2, g = 0.8, b = 1.0 },
+	[11] = { backgroundAtlas = "UI-EJ-Dragonflight", r = 0.2, g = 0.8, b = 1.0 },
 }
 
 EJButtonMixin = {}
@@ -449,11 +450,11 @@ function EncounterJournal_OnLoad(self)
 	-- check if tabs are active
 	local dungeonInstanceID = EJ_GetInstanceByIndex(1, false);
 	if( not dungeonInstanceID ) then
-		self.dungeonsTab.grayBox:Show();
+		EJ_ContentTab_SetEnabled(self.dungeonsTab, false);
 	end
 	local raidInstanceID = EJ_GetInstanceByIndex(1, true);
 	if( not raidInstanceID ) then
-		self.raidsTab.grayBox:Show();
+		EJ_ContentTab_SetEnabled(self.raidsTab, false);
 	end
 	-- set the suggestion panel frame to open by default
 	EJSuggestFrame_OpenFrame();
@@ -628,6 +629,22 @@ function EncounterJournal_OnHide(self)
 	end
 	EJ_EndSearch();
 	self.shouldDisplayDifficulty = nil;
+end
+
+function EncounterJournal_IsSuggestTabSelected(self)
+	return self.selectedTab == self.suggestTab:GetID();
+end
+
+function EncounterJournal_IsDungeonTabSelected(self)
+	return self.selectedTab == self.dungeonsTab:GetID();
+end
+
+function EncounterJournal_IsRaidTabSelected(self)
+	return self.selectedTab == self.raidsTab:GetID();
+end
+
+function EncounterJournal_IsLootTabSelected(self)
+	return self.selectedTab == self.LootJournalTab:GetID();
 end
 
 local function EncounterJournal_IsHeaderTypeOverview(headerType)
@@ -806,7 +823,7 @@ function EncounterJournal_ListInstances()
 	instanceSelect:Show();
 
 	local dataIndex = 1;
-	local showRaid = not EncounterJournal.raidsTab:IsEnabled();
+	local showRaid = EncounterJournal_IsRaidTabSelected(EncounterJournal);
 	local instanceID, name, description, _, buttonImage, _, _, _, link, _, mapID = EJ_GetInstanceByIndex(dataIndex, showRaid);
 
 	--No instances in this tab
@@ -814,10 +831,10 @@ function EncounterJournal_ListInstances()
 		--disable this tab and select the other one.
 		infiniteLoopPolice = true;
 		if ( showRaid ) then
-			EncounterJournal.raidsTab.grayBox:Show();
+			EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, false);
 			EJ_ContentTab_Select(EncounterJournal.dungeonsTab:GetID());
 		else
-			EncounterJournal.dungeonsTab.grayBox:Show();
+			EJ_ContentTab_SetEnabled(EncounterJournal.dungeonsTab, false);
 			EJ_ContentTab_Select(EncounterJournal.raidsTab:GetID());
 		end
 		return;
@@ -847,9 +864,9 @@ function EncounterJournal_ListInstances()
 	if not otherInstanceID then
 		--disable the other tab.
 		if ( showRaid ) then
-			EncounterJournal.dungeonsTab.grayBox:Show();
+			EJ_ContentTab_SetEnabled(EncounterJournal.dungeonsTab, false);
 		else
-			EncounterJournal.raidsTab.grayBox:Show();
+			EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, false);
 		end
 	end
 end
@@ -1981,7 +1998,7 @@ end
 
 function EncounterJournal_LootCallback(itemID)
 	local scrollBox = EncounterJournal.encounter.info.LootContainer.ScrollBox;
-	local button = scrollBox:FindFrameByPredicate(function(button)
+	local button = scrollBox:FindFrameByPredicate(function(button, elementData)
 		return button.itemID == itemID;
 	end);
 	if button then
@@ -2625,7 +2642,7 @@ function EJ_ContentTab_Select(id)
 		instanceSelect.ScrollBox:Hide();
 		instanceSelect.ScrollBar:Hide();
 		EncounterJournal.suggestFrame:Show();
-		if ( not EncounterJournal.dungeonsTab.grayBox:IsShown() or not EncounterJournal.raidsTab.grayBox:IsShown() ) then
+		if ( not EncounterJournal.dungeonsTab.isDisabled or not EncounterJournal.raidsTab.isDisabled ) then
 			EncounterJournal_DisableTierDropDown(true);
 		else
 			EncounterJournal_EnableTierDropDown();
@@ -2646,6 +2663,10 @@ function EJ_ContentTab_Select(id)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
     EventRegistry:TriggerEvent("EncounterJournal.TabSet", EncounterJournal, id);
+end
+
+function EJ_ContentTab_SetEnabled(self, enabled)
+	PanelTemplates_SetTabEnabled(EncounterJournal, self:GetID(), enabled);
 end
 
 function EJ_HideSuggestPanel()
@@ -2706,8 +2727,8 @@ end
 function EncounterJournal_TierDropDown_Select(_, tier)
 	EJ_SelectTier(tier);
 	local instanceSelect = EncounterJournal.instanceSelect;
-	EncounterJournal.dungeonsTab.grayBox:Hide();
-	EncounterJournal.raidsTab.grayBox:Hide();
+	EJ_ContentTab_SetEnabled(EncounterJournal.dungeonsTab, true);
+	EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, true);
 
 	local tierData = GetEJTierData(tier);
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
@@ -2968,7 +2989,7 @@ end
 
 function EJSuggestFrame_OnEvent(self, event, ...)
 	if ( event == "AJ_REFRESH_DISPLAY" ) then
-		if self:GetParent().selectedTab == EncounterJournal.suggestTab:GetID() then
+		if EncounterJournal_IsSuggestTabSelected(EncounterJournal) then
 			EJSuggestFrame_RefreshDisplay();
 			local newAdventureNotice = ...;
 			if ( newAdventureNotice ) then

@@ -95,11 +95,25 @@
 									<Anchors>
 										<Anchor point="TOPLEFT" x="83" y="-35"/>
 									</Anchors>
+									<MaskedTextures>
+										<MaskedTexture childKey="MyHealPredictionBar"/>
+										<MaskedTexture childKey="OtherHealPredictionBar"/>
+										<MaskedTexture childKey="TotalAbsorbBar"/>
+										<MaskedTexture childKey="TotalAbsorbBarOverlay"/>
+										<MaskedTexture childKey="OverAbsorbGlow"/>
+										<MaskedTexture childKey="OverHealAbsorbGlow"/>
+										<MaskedTexture childKey="HealAbsorbBar"/>
+										<MaskedTexture childKey="HealAbsorbBarLeftShadow"/>
+										<MaskedTexture childKey="HealAbsorbBarRightShadow"/>
+									</MaskedTextures>
 								</MaskTexture>
 								<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="83" y="-59"/>
 									</Anchors>
+									<MaskedTextures>
+										<MaskedTexture childKey="ManaCostPredictionBar"/>
+									</MaskedTextures>
 								</MaskTexture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="2">

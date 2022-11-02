@@ -18,6 +18,7 @@ SEND_MAIL_TAB_LIST[5] = "SendMailMoneyCopper";
 local MAX_INBOX_SIZE = 100;
 
 function MailFrame_OnLoad(self)
+	self:SetPortraitToAsset("Interface\\MailFrame\\Mail-Icon");
 	-- Init pagenum
 	InboxFrame.pageNum = 1;
 	-- Tab Handling code
@@ -634,12 +635,18 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CrafterText:Hide();
 			ConsortiumMailFrame.CrafterNote:Hide();
 			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
+			ConsortiumMailFrame.CommissionReceived:Hide();
+			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
+			ConsortiumMailFrame.ConsortiumNote:Hide();
 
 		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseExpire ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_EXPIRED_BODY);
 			ConsortiumMailFrame.CrafterText:Hide();
 			ConsortiumMailFrame.CrafterNote:Hide();
 			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
+			ConsortiumMailFrame.CommissionReceived:Hide();
+			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
+			ConsortiumMailFrame.ConsortiumNote:Hide();
 
 		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseFulfill ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
@@ -650,6 +657,9 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CommissionPaidDisplay.MoneyDisplayFrame:SetFontObject(NumberFontNormalRightRed);
 			ConsortiumMailFrame.CommissionPaidDisplay.MoneyDisplayFrame:SetAmount(info.commissionPaid);
 			ConsortiumMailFrame.CommissionPaidDisplay:Show();
+			ConsortiumMailFrame.CommissionReceived:Hide();
+			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
+			ConsortiumMailFrame.ConsortiumNote:Hide();
 
 		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseReject ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
@@ -657,6 +667,21 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CrafterText:Show();
 			ConsortiumMailFrame.CrafterNote:SetText(info.crafterNote);
 			ConsortiumMailFrame.CrafterNote:Show();
+			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
+			ConsortiumMailFrame.CommissionReceived:Hide();
+			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
+			ConsortiumMailFrame.ConsortiumNote:Hide();
+
+		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseCrafterFulfill ) then
+			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
+			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_FULFILLED_TO:format(info.customerName or ""));
+			ConsortiumMailFrame.CrafterText:Show();
+			ConsortiumMailFrame.CommissionReceived:Show();
+			ConsortiumMailFrame.CommissionReceivedDisplay:Show();
+			ConsortiumMailFrame.CommissionReceivedDisplay:SetAmount(info.commissionPaid or 0);
+			ConsortiumMailFrame.ConsortiumNote:SetText(CRAFTING_ORDER_AUTO_FULFILL_BODY:format(UnitName("player"), info.recipeName, info.customerName or ""));
+			ConsortiumMailFrame.ConsortiumNote:Show();
+			ConsortiumMailFrame.CrafterNote:Hide();
 			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
 		end
 	else
@@ -859,9 +884,7 @@ local function ReportMail()
 end		
 
 function OpenMail_ReportSpam()
-	local numItemsAttached = GetInboxNumItems(); 
-
-	if(ConsortiumMailFrame:IsShown() and numItemsAttached > 0) then 
+	if (ConsortiumMailFrame:IsShown() and (OpenMailFrame.itemButtonCount > 0 or OpenMailFrame.money)) then 
 		local data = {text = PROFESSIONS_CRAFTING_ORDER_MAIL_REPORT_WARNING, callback = ReportMail, acceptText = ACCEPT, cancelText = CANCEL,  }
 		StaticPopup_ShowCustomGenericConfirmation(data);
 	else 

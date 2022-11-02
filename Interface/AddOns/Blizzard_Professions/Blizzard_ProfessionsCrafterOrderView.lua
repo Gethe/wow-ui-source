@@ -9,6 +9,24 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
         self.DeclineOrderDialog.NoteEditBox.ScrollingEditBox:SetText("");
         self.DeclineOrderDialog:Show();
     end);
+    self.OrderInfo.IgnoreButton:SetScript("OnClick", function() 
+        local referenceKey = self;
+		if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+			local customData = 
+            {
+				text = CRAFTING_ORDERS_IGNORE_CONFIRMATION,
+                text_arg1 = self.order.customerName,
+				callback = function()
+                    C_FriendList.AddIgnore(self.order.customerName);
+                end,
+				acceptText = YES,
+				cancelText = NO,
+				referenceKey = referenceKey,
+			};
+
+			StaticPopup_ShowCustomGenericConfirmation(customData);
+		end
+     end);
 
     self.CreateButton:SetScript("OnClick", function()
         if self:IsRecrafting() then
@@ -46,7 +64,6 @@ end
 
 function ProfessionsCrafterOrderViewMixin:InitRegions()
     self.OrderDetails.FulfillmentForm.OrderCompleteText:SetText(PROFESSIONS_ORDER_COMPLETE);
-    self.OrderDetails.FulfillmentForm.OrderCompleteText:SetWidth(self.OrderDetails.FulfillmentForm.OrderCompleteText:GetStringWidth());
     self.OrderDetails.FulfillmentForm.ItemIcon:SetScript("OnEnter", function(icon)
         if self.order.outputItemHyperlink then
             GameTooltip:SetOwner(icon, "ANCHOR_RIGHT");
@@ -82,6 +99,20 @@ function ProfessionsCrafterOrderViewMixin:InitRegions()
     self.DeclineOrderDialog:SetTitle(PROFESSIONS_DECLINE_DIALOG_TITLE);
 
     self.OrderInfo.ConsortiumCutMoneyDisplayFrame:SetFontObject(NumberFontNormalRightRed);
+
+	self.CraftingOutputLog:SetScript("OnShow", function()
+		local p, r, rp, x, y = self.CraftingOutputLog:GetPointByName("TOPLEFT");
+		local width = ProfessionsFrame:GetWidth() + self.CraftingOutputLog:GetMaxPossibleWidth() + x;
+		SetUIPanelAttribute(ProfessionsFrame, "width", width);
+		UpdateUIPanelPositions(ProfessionsFrame);
+	end);
+
+	self.CraftingOutputLog:SetScript("OnHide", function()
+		ProfessionsCraftingOutputLogMixin.OnHide(self.CraftingOutputLog);
+		local width = ProfessionsFrame:GetWidth();
+		SetUIPanelAttribute(ProfessionsFrame, "width", width);
+		UpdateUIPanelPositions(ProfessionsFrame);
+	end);
 end
 
 function ProfessionsCrafterOrderViewMixin:OnLoad()
@@ -104,6 +135,7 @@ local ProfessionsCrafterOrderViewEvents =
     "UNIT_SPELLCAST_FAILED",
     "UPDATE_TRADESKILL_CAST_COMPLETE",
     "PLAYER_MONEY",
+    "IGNORELIST_UPDATE",
 };
 function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     if event == "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE" then
@@ -157,9 +189,13 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
             self:SetOrder(C_CraftingOrders.GetClaimedOrder());
         end
     elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" or event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
-		self:StopOverridingCastBar();
+		self:SetOverrideCastBarActive(false);
     elseif event == "PLAYER_MONEY" then
         self:UpdateFulfillButton();
+    elseif event == "IGNORELIST_UPDATE" then
+        if C_FriendList.IsIgnoredByGuid(self.order.customerGuid) then
+            self:CloseOrder();
+        end
     end
 end
 
@@ -174,10 +210,12 @@ function ProfessionsCrafterOrderViewMixin:OnShow()
 end
 
 function ProfessionsCrafterOrderViewMixin:OnHide()
+	self.CraftingOutputLog:Close();
     FrameUtil.UnregisterFrameForEvents(self, ProfessionsCrafterOrderViewEvents);
     self:SetScript("OnUpdate", nil);
     EventRegistry:UnregisterCallback("Professions.AllocationUpdated", self);
-    self:StopOverridingCastBar();
+    self:SetOverrideCastBarActive(false);
+    StaticPopup_Hide("GENERIC_CONFIRMATION");
 end
 
 function ProfessionsCrafterOrderViewMixin:OnUpdate()
@@ -253,6 +291,10 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
             end
 
             if reagentType == Enum.CraftingReagentType.Optional then
+				local modification = transaction:GetModification(slot:GetReagentSlotSchematic().dataSlotIndex);
+				if modification and modification.itemID > 0 then
+					slot:SetItem(Item:CreateFromItemID(modification.itemID));
+				end
                 local locked, lockedReason = Professions.GetReagentSlotStatus(slot:GetReagentSlotSchematic(), recipeInfo);
 
                 if providedByCustomer then
@@ -327,11 +369,12 @@ function ProfessionsCrafterOrderViewMixin:UpdateStartOrderButton()
     local errorReason;
 
     local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.order.spellID);
-    local claimInfo = C_CraftingOrders.GetOrderClaimInfo(C_TradeSkillUI.GetChildProfessionInfo().profession);
+	local profession = C_TradeSkillUI.GetChildProfessionInfo().profession;
+    local claimInfo = profession and C_CraftingOrders.GetOrderClaimInfo(profession);
     if self.order.customerGuid == UnitGUID("player") then
         enabled = false;
         errorReason = PROFESSIONS_CRAFTER_CANT_CLAIM_OWN;
-    elseif self.order.orderType == Enum.CraftingOrderType.Public and claimInfo.claimsRemaining <= 0 and Professions.GetCraftingOrderRemainingTime(self.order.expirationTime) > Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD then
+    elseif claimInfo and self.order.orderType == Enum.CraftingOrderType.Public and claimInfo.claimsRemaining <= 0 and Professions.GetCraftingOrderRemainingTime(self.order.expirationTime) > Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD then
         enabled = false;
         errorReason = PROFESSIONS_CRAFTER_OUT_OF_CLAIMS_FMT:format(claimInfo.hoursToRecharge);
     elseif not recipeInfo or not recipeInfo.learned then
@@ -392,6 +435,8 @@ function ProfessionsCrafterOrderViewMixin:UpdateCreateButton()
         elseif recipeInfo.alternateVerb then
             -- alternateVerb is profession-level override
             self.CreateButton:SetText(recipeInfo.alternateVerb);
+        elseif self:IsRecrafting() then
+            self.CreateButton:SetText(PROFESSIONS_CRAFTING_RECRAFT);
         else
             self.CreateButton:SetText(CREATE_PROFESSION);
         end
@@ -496,12 +541,14 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     local enableStartRecraftButton = false;
     local showStopRecraftButton = false;
     local showDeclineOrderButton = false;
+    local showIgnoreCustomerButton = false;
 
     if orderState == Enum.CraftingOrderState.Created then
         showBackButton = true;
         showStartOrderButton = true;
         showSchematic = true;
         showDeclineOrderButton = self.order.orderType == Enum.CraftingOrderType.Personal;
+        showIgnoreCustomerButton = self.order.customerGuid ~= UnitGUID("player");
     elseif orderState == Enum.CraftingOrderState.Claimed then
         showTimeRemaining = true;
 
@@ -519,6 +566,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     end
 
     self.OrderInfo.BackButton:SetShown(showBackButton);
+    self.OrderInfo.IgnoreButton:SetShown(showIgnoreCustomerButton);
     self.OrderInfo.StartOrderButton:SetShown(showStartOrderButton);
     self.OrderInfo.ReleaseOrderButton:SetShown(showReleaseOrderButton);
     self.OrderInfo.TimeRemainingTitle:SetShown(showTimeRemaining);
@@ -539,7 +587,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
 end
 
 function ProfessionsCrafterOrderViewMixin:CraftOrder()
-    self:StartOverridingCastBar();
+    self:SetOverrideCastBarActive(true);
     local recipeID = self.order.spellID;
     local count = 1;
     local predicate = function(reagentTbl, slotIndex)
@@ -548,10 +596,11 @@ function ProfessionsCrafterOrderViewMixin:CraftOrder()
     local craftingReagentTbl = self.OrderDetails.SchematicForm.transaction:CreateCraftingReagentInfoTblIf(predicate);
     local recipeLevel = self.OrderDetails.SchematicForm:GetCurrentRecipeLevel();
     C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel, self.order.orderID);
+	self.CraftingOutputLog:StartListening();
 end
 
 function ProfessionsCrafterOrderViewMixin:RecraftOrder()
-    self:StartOverridingCastBar();
+    self:SetOverrideCastBarActive(true);
     local predicate = function(reagentTbl, slotIndex)
 		return reagentTbl.reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent and not self.reagentSlotProvidedByCustomer[slotIndex];
 	end
@@ -572,19 +621,26 @@ function ProfessionsCrafterOrderViewMixin:RecraftOrder()
         end
     end
     C_TradeSkillUI.RecraftRecipeForOrder(self.order.orderID, self.order.outputItemGUID, craftingReagentTbl);
+	self.CraftingOutputLog:StartListening();
 end
 
 function ProfessionsCrafterOrderViewMixin:IsRecrafting()
     return self.order.isRecraft or self.recraftingOrderID == self.order.orderID
 end
 
-function ProfessionsCrafterOrderViewMixin:StartOverridingCastBar()
-	local overrideBarType = nil;
-	local overrideAnchor = nil;
-	local hideBarText = true;
-	OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.OverlayCastBarAnchor, overrideBarType, overrideAnchor, hideBarText);
-end
+function ProfessionsCrafterOrderViewMixin:SetOverrideCastBarActive(active)
+	if active == self.isOverrideCastBarActive then
+		return;
+	end
 
-function ProfessionsCrafterOrderViewMixin:StopOverridingCastBar()
-	OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
+	if active then
+		-- Only override the cast bar if the Player Cast Bar is currently locked to the Player Frame
+		if PlayerCastingBarFrame:IsAttachedToPlayerFrame() then
+			OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.OverlayCastBarAnchor, { hideBarText = true });
+			self.isOverrideCastBarActive = true;
+		end
+	else
+		OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
+		self.isOverrideCastBarActive = false;
+	end
 end

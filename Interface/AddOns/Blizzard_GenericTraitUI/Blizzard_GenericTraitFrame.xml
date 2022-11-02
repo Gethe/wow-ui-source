@@ -11,6 +11,7 @@
 			<KeyValue key="rightPadding" value="3" type="number"/>
 			<KeyValue key="basePanOffsetX" value="0" type="number"/>
 			<KeyValue key="basePanOffsetY" value="0" type="number"/>
+			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
 		</KeyValues>
 		<Size x="650" y="750"/>
 
@@ -115,6 +116,14 @@
 					</Layer>
 				</Layers>
 			</Button>
+
+			<ModelScene parentKey="FxModelScene" frameStrata="HIGH" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="4000">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</ModelScene>
+			
 		</Frames>
 	</Frame>
 </Ui>

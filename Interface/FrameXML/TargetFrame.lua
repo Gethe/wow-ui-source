@@ -74,12 +74,11 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");
 	self.auraPools:CreatePool("FRAME", self, "TargetBuffFrameTemplate");
 
-	-- Mask the various bar assets, to avoid any overflow with the frame shape.
-	self:AddHealthBarMaskTexture();
+	local healthBarMask = targetFrameContentMain.HealthBarMask;
+	targetFrameContentMain.HealthBar:GetStatusBarTexture():AddMaskTexture(healthBarMask);
 
 	local manaBarMask = targetFrameContentMain.ManaBarMask;
 	targetFrameContentMain.ManaBar:GetStatusBarTexture():AddMaskTexture(manaBarMask);
-	targetFrameContentMain.MyHealPredictionBar:AddMaskTexture(manaBarMask);
 
 	self:Update();
 
@@ -394,8 +393,9 @@ function TargetFrameMixin:CheckClassification()
 		healthBar:SetWidth(125);
 		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 0, -3);
 
-		-- Minus mobs do not have a mask for the health bar, so remove the applied target mask that would not fit.
-		self:RemoveHealthBarMaskTexture();
+		local healthBarMask = self.TargetFrameContent.TargetFrameContentMain.HealthBarMask;
+		healthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBarMask:SetPoint("TOPLEFT", 22, -37);
 
 		manaBar.pauseUpdates = true;
 		manaBar:Hide();
@@ -419,8 +419,9 @@ function TargetFrameMixin:CheckClassification()
 		healthBar:SetWidth(126);
 		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 1, -11);
 
-		-- Mask the various bar assets, to avoid any overflow with the frame shape.
-		self:AddHealthBarMaskTexture();
+		local healthBarMask = self.TargetFrameContent.TargetFrameContentMain.HealthBarMask;
+		healthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBarMask:SetPoint("TOPLEFT", 22, -33);
 	end
 
 	-- Boss frame pieces (dragon frame, icons)
@@ -794,6 +795,9 @@ function TargetFrame_UpdateDebuffAnchor(self, buff, index, numBuffs, anchorBuff,
 	buff:SetWidth(size);
 	buff:SetHeight(size);
 	local debuffFrame = buff.Border;
+	if (not debuffFrame) then
+		local x = 0;
+	end
 	debuffFrame:SetWidth(size+2);
 	debuffFrame:SetHeight(size+2);
 end
@@ -885,38 +889,6 @@ function TargetFrameMixin:HealthUpdate(elapsed, unit)
 			end
 		end
 	end
-end
-
-function TargetFrameMixin:AddHealthBarMaskTexture()
-	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
-	local healthBarMask = targetFrameContentMain.HealthBarMask;
-
-	targetFrameContentMain.HealthBar:GetStatusBarTexture():AddMaskTexture(healthBarMask);
-	targetFrameContentMain.MyHealPredictionBar:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.OtherHealPredictionBar:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.TotalAbsorbBar:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.TotalAbsorbBarOverlay:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.OverAbsorbGlow:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.OverHealAbsorbGlow:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBar:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBarLeftShadow:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBarRightShadow:AddMaskTexture(healthBarMask);
-end
-
-function TargetFrameMixin:RemoveHealthBarMaskTexture()
-	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
-	local healthBarMask = targetFrameContentMain.HealthBarMask;
-
-	targetFrameContentMain.HealthBar:GetStatusBarTexture():RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.MyHealPredictionBar:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.OtherHealPredictionBar:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.TotalAbsorbBar:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.TotalAbsorbBarOverlay:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.OverAbsorbGlow:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.OverHealAbsorbGlow:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBar:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBarLeftShadow:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBarRightShadow:RemoveMaskTexture(healthBarMask);
 end
 
 function TargetFrameDropDown_Initialize(self)

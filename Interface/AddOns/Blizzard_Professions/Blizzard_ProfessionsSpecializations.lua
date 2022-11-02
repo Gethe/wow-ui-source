@@ -747,7 +747,7 @@ end
 
 function ProfessionsSpecFrameMixin:PurchaseRank(pathID)
 	self:AttemptConfigOperation(C_Traits.PurchaseRank, pathID)
-	self.DetailedView.Path.AddKnowledgeAnim:Restart();
+	RunNextFrame(function() self.DetailedView.Path.AddKnowledgeAnim:Restart(); end);
 	self:SetDefaultPath(pathID);
 	self:SetDefaultTab(self:GetTalentTreeID());
 end
@@ -885,32 +885,20 @@ local flipbookAnimDuration =
 	[Enum.Profession.Jewelcrafting] = 1.2,
 	[Enum.Profession.Alchemy] = 2.2,
 	[Enum.Profession.Leatherworking] = 2.5,
+	[Enum.Profession.Engineering] = 1.5,
+	[Enum.Profession.Herbalism] = 1.5,
+	[Enum.Profession.Mining] = 1.5,
+	[Enum.Profession.Skinning] = 1.5,
+	[Enum.Profession.Inscription] = 1.5,
 };
 
 local flipbookAnimEndDelay =
 {
 	[Enum.Profession.Jewelcrafting] = 2,
+	[Enum.Profession.Mining] = 1.5,
 };
 
 function ProfessionsDetailedSpecPathMixin:UpdateAssets() -- Override
-	local fillArtAtlas= "SpecDial_Fill_Flipbook_DefaultBlue";
-	local fillInfo = C_Texture.GetAtlasInfo(fillArtAtlas);
-	self.ProgressBar:SetSwipeTexture(fillInfo.file or fillInfo.filename);
-	local lowTexCoords =
-	{
-		x = fillInfo.leftTexCoord,
-		y = fillInfo.topTexCoord,
-	};
-	local highTexCoords =
-	{
-		x = fillInfo.rightTexCoord,
-		y = fillInfo.bottomTexCoord,
-	};
-	self.ProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
-	self.DividerGlow:SetAtlas("SpecDial_DividerGlow_Tailoring", TextureKitConstants.UseAtlasSize);
-
-	-- TODO:: Re-enable specialized fills (also re-adjust size)
-	--[[
 	local professionInfo = self:GetTalentFrame().professionInfo;
 	local kitSpecifier = Professions.GetAtlasKitSpecifier(professionInfo);
 	local fillArtAtlasFormat = "SpecDial_Fill_Flipbook_%s";
@@ -918,7 +906,7 @@ function ProfessionsDetailedSpecPathMixin:UpdateAssets() -- Override
 	local stylizedFillInfo = stylizedFillAtlasName and C_Texture.GetAtlasInfo(stylizedFillAtlasName);
 	local duration = flipbookAnimDuration[professionInfo.profession];
 	if not stylizedFillInfo or not duration then
-		stylizedFillAtlasName = fillArtAtlasFormat:format("Blacksmithing");
+		stylizedFillAtlasName = fillArtAtlasFormat:format("DefaultBlue");
 		stylizedFillInfo = C_Texture.GetAtlasInfo(stylizedFillAtlasName);
 		duration = flipbookAnimDuration[Enum.Profession.Blacksmithing];
 	end
@@ -945,12 +933,9 @@ function ProfessionsDetailedSpecPathMixin:UpdateAssets() -- Override
 		stylizedDividerAtlasName = dividerAtlasFormat:format("Blacksmithing");
 	end
 	self.DividerGlow:SetAtlas(stylizedDividerAtlasName, TextureKitConstants.UseAtlasSize);
-	--]]
 end
 
 function ProfessionsDetailedSpecPathMixin:OnUpdate(dt)
-	-- TODO:: Re-enable animation
-	--[[
 	if not self.timePerFrame then
 		return;
 	end
@@ -987,5 +972,4 @@ function ProfessionsDetailedSpecPathMixin:OnUpdate(dt)
 		};
 		self.ProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
 	end
-	--]]
 end

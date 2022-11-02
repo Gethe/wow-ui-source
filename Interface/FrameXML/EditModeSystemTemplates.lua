@@ -172,6 +172,13 @@ function EditModeSystemMixin:ApplySystemAnchor()
 
 	self:ClearAllPoints();
 
+	if self:IsInDefaultPosition() and (EditModeUtil:IsRightAnchoredActionBar(self) or EditModeUtil:IsBottomAnchoredActionBar(self)) then
+		-- If this is a right or bottom anchored action bar in default position let UpdateActionBarLayout handle all anchoring
+		self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
+		EditModeManagerFrame:UpdateActionBarLayout(self);
+		return;
+	end
+
 	-- Make sure offsets are relative to our current scale
 	local scale = self:GetScale();
 	self:SetPoint(self.systemInfo.anchorInfo.point, self.systemInfo.anchorInfo.relativeTo, self.systemInfo.anchorInfo.relativePoint, self.systemInfo.anchorInfo.offsetX / scale, self.systemInfo.anchorInfo.offsetY / scale);
@@ -661,7 +668,7 @@ end
 
 function EditModeActionBarSystemMixin:UpdateButtonArt()
 	for i, actionButton in pairs(self.actionButtons) do
-		actionButton:UpdateButtonArt(i >= self.numShowingButtons);
+		actionButton:UpdateButtonArt(i >= self.numButtonsShowable);
 	end
 end
 
@@ -694,7 +701,7 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingNumRows()
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingNumIcons()
-	self.numShowingButtons = self:GetSettingValue(Enum.EditModeActionBarSetting.NumIcons);
+	self.numButtonsShowable = self:GetSettingValue(Enum.EditModeActionBarSetting.NumIcons);
 	self:UpdateShownButtons();
 
 	-- Since the num icons changed we'll want to update the grid layout
@@ -1207,6 +1214,13 @@ end
 
 EditModeCastBarSystemMixin = {};
 
+function EditModeCastBarSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
 function EditModeCastBarSystemMixin:ApplySystemAnchor()
 	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
 	if lockToPlayerFrame then
@@ -1297,16 +1311,6 @@ function EditModeCastBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpd
 end
 
 EditModeEncounterBarSystemMixin = {};
-
-function EditModeEncounterBarSystemMixin:OnEditModeExit()
-	EditModeSystemMixin.OnEditModeExit(self);
-
-	-- Undo encounter bar min size stuff so we don't have extra spacing in bottom managed container
-	EncounterBar.minimumWidth = nil;
-	EncounterBar.minimumHeight = nil;
-	EncounterBar:Layout();
-	UIParent_ManageFramePositions();
-end
 
 function EditModeEncounterBarSystemMixin:ApplySystemAnchor()
 	EditModeSystemMixin.ApplySystemAnchor(self);
@@ -1414,9 +1418,14 @@ function EditModeAuraFrameSystemMixin:RefreshAuraButtons()
 	end
 end
 
-function EditModeAuraFrameSystemMixin:UpdateSystemSettingOrientation()
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingOrientation(entireSystemUpdate)
 	local isHorizontal = self:DoesSettingValueEqual(Enum.EditModeAuraFrameSetting.Orientation, Enum.AuraFrameOrientation.Horizontal);
 	self.AuraContainer.isHorizontal = isHorizontal;
+
+	-- If this is for an entire system update then no need to update icon wrap or direction
+	if entireSystemUpdate then
+		return;
+	end
 
 	-- Update icon wrap and direction based on new orientation
 	-- This is to try and keep the icons in roughly the same location when swapping orientations
@@ -1537,7 +1546,7 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 	end
 
 	if setting == Enum.EditModeAuraFrameSetting.Orientation and self:HasSetting(Enum.EditModeAuraFrameSetting.Orientation) then
-		self:UpdateSystemSettingOrientation();
+		self:UpdateSystemSettingOrientation(entireSystemUpdate);
 	elseif setting == Enum.EditModeAuraFrameSetting.IconWrap and self:HasSetting(Enum.EditModeAuraFrameSetting.IconWrap) then
 		self:UpdateSystemSettingIconWrap();
 	elseif setting == Enum.EditModeAuraFrameSetting.IconDirection and self:HasSetting(Enum.EditModeAuraFrameSetting.IconDirection) then
