@@ -284,6 +284,8 @@ function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
 	if buttonWithPurchase and buttonWithPurchase.PlayPurchaseEffect then
 		buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene, self.buttonPurchaseFXIDs);
 	end
+
+	PlaySound(SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT);
 end
 
 GenericTraitFrameCurrencyFrameMixin = { }; 

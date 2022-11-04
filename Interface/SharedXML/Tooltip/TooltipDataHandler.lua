@@ -214,6 +214,7 @@ end
 	excludeLines	: Table of line types to exclude from the tooltip.
 	linePreCall		: Callback for each line before it's added.
 	linePostCall	: Callback for each line after it's added.
+	tooltipPostCall : Callback for the tooltip after it has processed the info.
 ]]--
 
 function CreateBaseTooltipInfo(getterName, ...)
@@ -273,6 +274,10 @@ function TooltipDataHandlerMixin:InternalProcessInfo(info)
 	end
 
 	self:ProcessLines();
+
+	if self.info.tooltipPostCall then
+		self.info.tooltipPostCall(self);
+	end
 
 	ProcessTooltipPostCalls(tooltipType, self, tooltipData);
 

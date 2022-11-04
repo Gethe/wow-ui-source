@@ -406,9 +406,9 @@ local ItemConstants =
 		{
 			Name = "UIItemInteractionFlags",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 1,
-			MaxValue = 16,
+			MaxValue = 32,
 			Fields =
 			{
 				{ Name = "DisplayWithInset", Type = "UIItemInteractionFlags", EnumValue = 1 },
@@ -416,6 +416,7 @@ local ItemConstants =
 				{ Name = "ConversionMode", Type = "UIItemInteractionFlags", EnumValue = 4 },
 				{ Name = "ClickShowsFlyout", Type = "UIItemInteractionFlags", EnumValue = 8 },
 				{ Name = "AddCurrency", Type = "UIItemInteractionFlags", EnumValue = 16 },
+				{ Name = "UsesCharges", Type = "UIItemInteractionFlags", EnumValue = 32 },
 			},
 		},
 		{

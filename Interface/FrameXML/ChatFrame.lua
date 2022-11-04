@@ -1607,6 +1607,11 @@ SecureCmdList["CLICK"] = function(msg)
 		if ( not name ) then
 			name = action;
 		end
+		if ( not mouseButton ) then
+			mouseButton = "LeftButton";
+		end
+		down = StringToBoolean(down or "", false);
+		
 		local button = GetClickFrame(name);
 		if ( button and button:IsObjectType("Button") and not button:IsForbidden() ) then
 			button:Click(mouseButton, down);

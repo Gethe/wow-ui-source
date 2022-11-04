@@ -477,7 +477,7 @@ function SettingsDropDownControlMixin:InitDropDown()
 	local selectionIndex = Settings.InitSelectionDropDown(self.DropDown, setting, options, 200, initTooltip);
 	if not initializer.skipAssertMissingOption then
 		assertsafe(selectionIndex ~= nil, ("Failed to matching option matching value '%s' for setting name '%s'"):format(
-			tostring(settingValue), setting:GetName()));
+			tostring(setting:GetValue()), setting:GetName()));
 	end
 end
 

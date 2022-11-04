@@ -567,11 +567,13 @@ function QueueStatusFrameMixin:Update()
 	--Update the size of this frame to fit everything
 	self:SetHeight(totalHeight);
 
-	--Update the minimap icon
+	--Update the queue icon
 	if ( nextEntry > 1 ) then
-		--Handle case where the button is already showing, but we need to reset the animation on it, like when hitting a loading screen.
+		--Handle case where the button is already showing, but we need to reset the animation on it.
 		if ( QueueStatusButton:IsShown() ) then
-			QueueStatusButton.Eye:StartInitialAnimation();
+			if ( QueueStatusButton.Eye:IsStaticMode() and not makeEyeStatic and #QueueStatusButton.Eye.currActiveAnims == 0 ) then
+				QueueStatusButton.Eye:StartInitialAnimation();
+			end
 		else
 			QueueStatusButton:Show();
 		end

@@ -458,7 +458,9 @@ function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, 
 		if UIErrorsFrame then
 			UIErrorsFrame:AddExternalWarningMessage(errorMsg);
 		end
-		print(errorMsg);
+		if print then
+			print(errorMsg);
+		end
 		assertsafe(false, errorMsg);
 		LoadAddOn("Blizzard_DebugTools");
 		if Dump then

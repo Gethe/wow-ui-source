@@ -65,7 +65,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString parentKey="TreeName" inherits="GameFontHighlightLarge" justifyH="LEFT">
-							<Size x="250" y="30"/>
+							<Size x="600" y="30"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="30" y="-12"/>
 							</Anchors>

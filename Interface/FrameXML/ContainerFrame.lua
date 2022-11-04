@@ -72,7 +72,7 @@ function ContainerFrame_CanContainerUseFilterMenu(id)
 		return false;
 	end
 
-	return not (ContainerFrame_IsProfessionBag(id) or ContainerFrame_IsReagentBag(id));
+	return not (ContainerFrame_IsBackpack(id) or ContainerFrame_IsProfessionBag(id) or ContainerFrame_IsReagentBag(id));
 end
 
 function ContainerFrame_GetContainerNumSlots(bagId)
@@ -433,6 +433,10 @@ do
 	end
 
 	local function AddButtons_BagFilters(bagID, level)
+		if not ContainerFrame_CanContainerUseFilterMenu(bagID) then
+			return;
+		end
+
 		local info = UIDropDownMenu_CreateInfo();
 		info.text = BAG_FILTER_ASSIGN_TO;
 		info.isTitle = 1;
@@ -453,7 +457,7 @@ do
 		end
 	end
 
-	local function AddButtons_BagCleanup(containerFrame, level)
+	local function AddButtons_BagCleanup(bagID, level)
 		local info = UIDropDownMenu_CreateInfo();
 
 		info.text = BAG_FILTER_CLEANUP;
@@ -461,33 +465,31 @@ do
 		info.notCheckable = 1;
 		UIDropDownMenu_AddButton(info, level);
 
-		local id = containerFrame:GetBagID();
-
 		info = UIDropDownMenu_CreateInfo();
 		info.text = BAG_FILTER_IGNORE;
 		info.func = function(_, _, _, value)
-			if ContainerFrame_IsMainBank(id) then
+			if ContainerFrame_IsMainBank(bagID) then
 				C_Container.SetBankAutosortDisabled(not value);
-			elseif ContainerFrame_IsBackpack(id) then
+			elseif ContainerFrame_IsBackpack(bagID) then
 				C_Container.SetBackpackAutosortDisabled(not value);
 			else
-				C_Container.SetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort, not value);
+				C_Container.SetBagSlotFlag(bagID, Enum.BagSlotFlags.DisableAutoSort, not value);
 			end
 		end
 
-		if ContainerFrame_IsMainBank(id) then
+		if ContainerFrame_IsMainBank(bagID) then
 			info.checked = C_Container.GetBankAutosortDisabled();
-		elseif ContainerFrame_IsBackpack(id) then
+		elseif ContainerFrame_IsBackpack(bagID) then
 			info.checked = C_Container.GetBackpackAutosortDisabled();
 		else
-			info.checked = C_Container.GetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort);
+			info.checked = C_Container.GetBagSlotFlag(bagID, Enum.BagSlotFlags.DisableAutoSort);
 		end
 
 		UIDropDownMenu_AddButton(info, level);
 	end
 
 	local function AddButtons_BagModeToggle(containerFrame, level)
-		if ContainerFrame_IsGenericHeldBag(containerFrame:GetBagID()) then
+		if containerFrame:IsCombinedBagContainer() or ContainerFrame_IsGenericHeldBag(containerFrame:GetBagID()) then
 			local info = UIDropDownMenu_CreateInfo();
 			info.text = ContainerFrameSettingsManager:IsUsingCombinedBags() and BAG_COMMAND_CONVERT_TO_INDIVIDUAL or BAG_COMMAND_CONVERT_TO_COMBINED;
 			info.notCheckable = 1;
@@ -502,17 +504,14 @@ do
 
 	ContainerFrameFilterDropDown_Initialize = function(self, level, addFiltersForAllBags)
 		local frame = self:GetParent();
-		local id = frame:GetBagID();
+		local bagID = frame:GetBagID();
 
-		if not (ContainerFrame_IsHeldBag(id) or ContainerFrame_IsBankBag(id)) then
+		if not (ContainerFrame_IsHeldBag(bagID) or ContainerFrame_IsBankBag(bagID)) then
 			return;
 		end
 
-		if ContainerFrame_CanContainerUseFilterMenu(id) then
-			AddButtons_BagFilters(id, level);
-		end
-
-		AddButtons_BagCleanup(frame, level);
+		AddButtons_BagFilters(bagID, level);
+		AddButtons_BagCleanup(bagID, level);
 		AddButtons_BagModeToggle(frame, level);
 	end
 
@@ -539,13 +538,14 @@ do
 				info.text = bagNames[i];
 				info.hasArrow = true;
 				info.notCheckable = true;
-				info.value = i; -- save off the bag id to use on level 2, it will be stored in the global UIDROPDOWNMENU_MENU_VALUE
+				info.value = i; -- save off the bagID to use on level 2, it will be stored in the global UIDROPDOWNMENU_MENU_VALUE
 				UIDropDownMenu_AddButton(info, level);
 			end
 
 			AddButtons_BagModeToggle(self:GetParent(), level);
 		elseif level == 2 then
 			AddButtons_BagFilters(UIDROPDOWNMENU_MENU_VALUE, level);
+			AddButtons_BagCleanup(UIDROPDOWNMENU_MENU_VALUE, level);
 		end
 	end
 end

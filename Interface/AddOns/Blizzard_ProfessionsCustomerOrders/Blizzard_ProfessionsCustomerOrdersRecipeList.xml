@@ -10,7 +10,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="FavoriteButton">
+			<Button parentKey="FavoriteButton" frameStrata="HIGH">
 				<Size x="12" y="13"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-5" y="0"/>

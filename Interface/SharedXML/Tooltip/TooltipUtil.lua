@@ -47,3 +47,27 @@ function TooltipUtil.GetDisplayedUnit(tooltip)
 		return name, unit, guid;
 	end
 end
+
+function TooltipUtil.FindLinesFromGetter(lineTypeTable, getterName, ...)
+	local tooltipData = C_TooltipInfo[getterName](...);
+	return TooltipUtil.FindLinesFromData(lineTypeTable, tooltipData);
+end
+
+function TooltipUtil.FindLinesFromData(lineTypeTable, tooltipData)
+	local resultTable = { };
+
+	if lineTypeTable and tooltipData then
+		local lineTypes = tInvert(lineTypeTable);
+
+		for i, lineData in ipairs(tooltipData.lines) do
+			if not lineData.type then
+				TooltipUtil.SurfaceArgs(lineData);
+			end
+			if lineTypes[lineData.type] then
+				tinsert(resultTable, lineData);
+			end
+		end
+	end
+
+	return resultTable;
+end

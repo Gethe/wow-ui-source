@@ -86,6 +86,8 @@ local CraftingOrderUIConstants =
 				{ Name = "itemName", Type = "string", Nilable = false },
 				{ Name = "primaryCategoryID", Type = "number", Nilable = false },
 				{ Name = "iLvl", Type = "number", Nilable = false },
+				{ Name = "qualityIlvlBonuses", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "craftingQualityIDs", Type = "table", InnerType = "number", Nilable = true },
 				{ Name = "quality", Type = "ItemQuality", Nilable = true },
 				{ Name = "slots", Type = "number", Nilable = true },
 				{ Name = "level", Type = "number", Nilable = true },

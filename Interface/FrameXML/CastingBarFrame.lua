@@ -481,7 +481,7 @@ function CastingBarMixin:OnUpdate(elapsed)
 		if ( self.value >= self.maxValue ) then
 			self:SetValue(self.maxValue);
 			if (not self.reverseChanneling) then
-				self:FinishSpell(self.Spark, self.Flash);
+				self:FinishSpell();
 			else
 				if self.FlashLoopingAnim and not self.FlashLoopingAnim:IsPlaying() then
 					self.FlashLoopingAnim:Play();

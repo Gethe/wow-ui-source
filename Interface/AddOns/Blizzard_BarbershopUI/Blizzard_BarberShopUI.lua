@@ -15,7 +15,11 @@ function BarberShopMixin:OnEvent(event, ...)
 	if event == "BARBER_SHOP_RESULT" then
 		local success = ...;
 		if success then
-			PlaySound(SOUNDKIT.BARBERSHOP_HAIRCUT);
+			if (C_BarberShop.GetCustomizationScope() == Enum.CustomizationScope.DragonCompanion) then
+				PlaySound(SOUNDKIT.BARBERSHOP_DRAGONRIDING_ACCEPT);
+			else
+				PlaySound(SOUNDKIT.BARBERSHOP_DEFAULT_ACCEPT);
+			end
 		end
 	elseif event == "BARBER_SHOP_COST_UPDATE" then
 		self:UpdateButtons();
@@ -45,7 +49,11 @@ function BarberShopMixin:OnShow()
 	local reset = true;
 	self:UpdateCharCustomizationFrame(reset);
 
-	PlaySound(SOUNDKIT.BARBERSHOP_SIT);
+	if (C_BarberShop.GetCustomizationScope() == Enum.CustomizationScope.DragonCompanion) then
+		PlaySound(SOUNDKIT.BARBERSHOP_DRAGONRIDING_OPEN);
+	else
+		PlaySound(SOUNDKIT.BARBERSHOP_DEFAULT_OPEN);
+	end
 end
 
 function BarberShopMixin:UpdateSex()

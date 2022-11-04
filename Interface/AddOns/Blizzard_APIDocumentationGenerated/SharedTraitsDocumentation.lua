@@ -647,6 +647,7 @@ local SharedTraits =
 				{ Name = "overrideDescription", Type = "string", Nilable = true },
 				{ Name = "overrideIcon", Type = "number", Nilable = true },
 				{ Name = "overriddenSpellID", Type = "number", Nilable = true },
+				{ Name = "subType", Type = "TraitDefinitionSubType", Nilable = true },
 			},
 		},
 		{

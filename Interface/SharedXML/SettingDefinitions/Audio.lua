@@ -394,6 +394,7 @@ local function Register()
 		end
 
 		Settings.SetupCVarDropDown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
+		Settings.SetOnValueChangedCallback("Sound_OutputDriverIndex", Sound_GameSystem_RestartSoundSystem);
 	end
 
 	-- Sound Channels

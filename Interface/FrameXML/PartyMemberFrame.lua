@@ -202,15 +202,15 @@ function PartyMemberFrameMixin:ToPlayerArt()
 	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
 	self:UpdateHealthBarTextAnchors();
 
-	self.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-	self.HealthBarMask:SetPoint("TOPLEFT", 16, -16);
+	self.HealthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+	self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -29, 3);
 
 	self.ManaBar:SetWidth(74);
 	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 41, -30);
 	self:UpdateManaBarTextAnchors();
 
-	self.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
-	self.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 14, -26);
+	self.ManaBar.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
+	self.ManaBar.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 14, -26);
 
 	self.Name:SetWidth(57);
 	self:UpdateNameTextAnchors();
@@ -239,15 +239,15 @@ function PartyMemberFrameMixin:ToVehicleArt()
 	self:UpdateHealthBarTextAnchors();
 
 	-- Party frames when in a vehicle do not have a mask for the health bar, so remove any applied target mask that would not fit.
-	self.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-	self.HealthBarMask:SetPoint("TOPLEFT", 18, -15);
+	self.HealthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+	self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -30, 3);
 
 	self.ManaBar:SetWidth(70);
 	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -29);
 	self:UpdateManaBarTextAnchors();
 
-	self.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
-	self.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 16, -25);
+	self.ManaBar.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
+	self.ManaBar.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 16, -25);
 
 	self.Name:SetWidth(56);
 	self:UpdateNameTextAnchors();
@@ -314,7 +314,7 @@ function PartyMemberFrameMixin:Setup()
 		   self.HealthBar, self.HealthBar.CenterText,
 		   self.ManaBar, self.ManaBar.CenterText,
 		   self.Flash, nil, nil, self.HealthBar.MyHealPredictionBar, self.HealthBar.OtherHealPredictionBar,
-		   self.TotalAbsorbBar, self.TotalAbsorbBarOverlay, self.HealthBar.OverAbsorbGlow,
+		   self.HealthBar.TotalAbsorbBar, self.HealthBar.TotalAbsorbBarOverlay, self.HealthBar.OverAbsorbGlow,
 		   self.HealthBar.OverHealAbsorbGlow, self.HealthBar.HealAbsorbBar, self.HealthBar.HealAbsorbBarLeftShadow,
 		   self.HealthBar.HealAbsorbBarRightShadow);
 	SetTextStatusBarTextZeroText(self.HealthBar, DEAD);
@@ -327,19 +327,9 @@ function PartyMemberFrameMixin:Setup()
 	self.unitHPPercent = 1;
 
 	-- Mask the various bar assets, to avoid any overflow with the frame shape.
-	local healthBar = self.HealthBar;
-	healthBar:GetStatusBarTexture():AddMaskTexture(self.HealthBarMask);
-	healthBar.MyHealPredictionBar:AddMaskTexture(self.HealthBarMask);
-	healthBar.OtherHealPredictionBar:AddMaskTexture(self.HealthBarMask);
-	self.TotalAbsorbBar:AddMaskTexture(self.HealthBarMask);
-	self.TotalAbsorbBarOverlay:AddMaskTexture(self.HealthBarMask);
-	healthBar.OverAbsorbGlow:AddMaskTexture(self.HealthBarMask);
-	healthBar.OverHealAbsorbGlow:AddMaskTexture(self.HealthBarMask);
-	healthBar.HealAbsorbBar:AddMaskTexture(self.HealthBarMask);
-	healthBar.HealAbsorbBarLeftShadow:AddMaskTexture(self.HealthBarMask);
-	healthBar.HealAbsorbBarRightShadow:AddMaskTexture(self.HealthBarMask);
+	self.HealthBar:GetStatusBarTexture():AddMaskTexture(self.HealthBar.HealthBarMask);
 
-	self.ManaBar:GetStatusBarTexture():AddMaskTexture(self.ManaBarMask);
+	self.ManaBar:GetStatusBarTexture():AddMaskTexture(self.ManaBar.ManaBarMask);
 
 	self:UpdateMember();
 	self:UpdateLeader();

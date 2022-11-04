@@ -17,9 +17,9 @@
 			</Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="Name" inherits="GameFontHighlight_NoShadow" justifyH="LEFT">
-					<Size x="148" y="36" />
+					<Size x="108" y="36" />
 					<Anchors>
-						<Anchor point="LEFT" x="59" y="0" />
+						<Anchor point="LEFT" x="46" y="0" />
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -27,7 +27,7 @@
 		<Frames>
 			<ItemButton parentKey="Button" inherits="ProfessionsReagentButtonTemplate" mixin="ProfessionsReagentSlotButtonMixin">
 				<Anchors>
-					<Anchor point="LEFT" x="10" y="0"/>
+					<Anchor point="LEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">

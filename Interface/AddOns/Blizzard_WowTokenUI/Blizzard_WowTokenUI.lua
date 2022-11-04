@@ -17,6 +17,7 @@ Import("C_Timer");
 Import("C_StoreSecure");
 Import("C_RecruitAFriend");
 
+Import("assert");
 Import("math");
 Import("string");
 Import("pairs");
@@ -326,6 +327,7 @@ local currencySpecific = {
 local function currencyInfo()
 	local currency = C_StoreSecure.GetCurrencyID();
 	local info = currencySpecific[currency];
+	assert(info ~= nil, ("Missing currency info for currency ID '%d'"):format(currency));
 	return info;
 end
 

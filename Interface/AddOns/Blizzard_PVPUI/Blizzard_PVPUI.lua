@@ -1957,7 +1957,7 @@ function NewPvpSeasonMixin:OnShow()
 			seasonDescription:Hide();
 		end
 	else
-		self.SeasonDescriptionHeader:SetText(SL_SEASON_NUMBER:format(PVPUtil.GetCurrentSeasonNumber()));
+		self.SeasonDescriptionHeader:SetText(PLAYER_V_PLAYER_SEASON:format(PVPUtil.GetCurrentSeasonNumber()));
 
 		local rewardTextAnchor = self.SeasonDescriptionHeader;
 		for i = 1, MAX_NUMBER_OF_PVP_SEASON_DESCRIPTIONS do
@@ -2015,7 +2015,8 @@ function PVPWeeklyChestMixin:OnShow()
 	self.ChestTexture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 	self.Highlight:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 
-	local desaturated = not ConquestFrame_HasActiveSeason();
+	local hasActiveSeason = ConquestFrame_HasActiveSeason();
+	local desaturated = not hasActiveSeason;
 	self.ChestTexture:SetDesaturated(desaturated);
 	self.Highlight:SetDesaturated(desaturated);
 
@@ -2030,7 +2031,6 @@ function PVPWeeklyChestMixin:OnEnter()
 		GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
 		GameTooltip_AddDisabledLine(GameTooltip, UNAVAILABLE);
 		GameTooltip_AddNormalLine(GameTooltip, CONQUEST_REQUIRES_PVP_SEASON);
-		GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 		GameTooltip:Show();
 		return;
 	end
@@ -2058,6 +2058,14 @@ function PVPWeeklyChestMixin:OnEnter()
 	GameTooltip_AddNormalLine(GameTooltip, description);
 	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 	GameTooltip:Show();
+end
+
+function PVPWeeklyChestMixin:OnMouseUp(...)
+	if not ConquestFrame_HasActiveSeason() then
+		return;
+	end
+
+	WeeklyRewardMixin.OnMouseUp(self, ...);
 end
 
 function PVPNewSeasonPopupOnClick(self)

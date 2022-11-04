@@ -63,15 +63,21 @@ MOVIE_LIST = {
 	upAtlas="StreamCinematic-Dragonflight-Up", 
 	downAtlas="StreamCinematic-Dragonflight-Down",
   },
-  -- Movie sequence 11
-  { expansion=LE_EXPANSION_DRAGONFLIGHT, 
-	movieIDs = { 973 }, 
-	upAtlas="StreamCinematic-Dragonflight2-Up", 
-	downAtlas="StreamCinematic-Dragonflight2-Up", 
-	title=DRAGONFLIGHT_TOTHESKIES,
-	disableAutoPlay=true,
-  },
 };
+
+do
+	local function FilterMovieList()
+		local filteredMovieList = {};
+		local maxExpansion = GetClientDisplayExpansionLevel();
+		for _, movieEntry in ipairs(MOVIE_LIST) do
+			if movieEntry.expansion <= maxExpansion then
+				table.insert(filteredMovieList, movieEntry);
+			end
+		end
+		MOVIE_LIST = filteredMovieList;
+	end
+	FilterMovieList();
+end
 
 function CinematicFrame_IsAutoPlayDisabled(movieIndex)
 	local movieEntry = MOVIE_LIST[movieIndex];

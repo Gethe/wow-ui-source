@@ -106,7 +106,7 @@ function EquipmentManager_EquipContainerItem (action)
 		return false;
 	end
 
-	if ( not CursorCanGoInSlot(action.invSlot) ) then
+	if ( not C_PaperDollInfo.CanCursorCanGoInSlot(action.invSlot) ) then
 		return false;
 	elseif ( IsInventoryItemLocked(action.invSlot) ) then
 		return false;
@@ -123,7 +123,7 @@ end
 function EquipmentManager_EquipInventoryItem (action)
 	ClearCursor();
 	PickupInventoryItem(action.slot);
-	if ( not CursorCanGoInSlot(action.invSlot) ) then
+	if ( not C_PaperDollInfo.CanCursorCanGoInSlot(action.invSlot) ) then
 		return false;
 	elseif ( IsInventoryItemLocked(action.invSlot) ) then
 		return false;

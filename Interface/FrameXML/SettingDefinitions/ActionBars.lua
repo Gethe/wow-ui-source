@@ -1,3 +1,7 @@
+local ActionBarSettingsTogglesCache = nil;
+local ActionBarSettingsLastCacheTime = 0;
+local ActionBarSettingsCacheTimeout = 10;
+
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(ACTIONBARS_LABEL);
 	Settings.ACTION_BAR_CATEGORY_ID = category:GetID();
@@ -12,9 +16,18 @@ local function Register()
 		end
 
 		local function SetActionBarToggle(index, value)
-			local toggles = {GetActionBarToggles()};
-			toggles[index] = value;
-			SetActionBarToggles(unpack(toggles));
+			-- Use local cache instead of GetActionBarToggles since it could lead to inconsistencies between UI and server state.
+			-- If SetActionBarToggle is called multiple times before the server has mirrored the data back to the client, the client will send an outdated mask to the server and clear out values that were just set.
+			-- Timeout the cache so we use latest mirror data after a period of time. This is incase actionbar toggles are set through macros or other addons, we need to make sure the settings still syncs with mirror data.
+			if ( (ActionBarSettingsTogglesCache == nil) or (GetTime() - ActionBarSettingsLastCacheTime > ActionBarSettingsCacheTimeout) ) then
+				ActionBarSettingsTogglesCache = {GetActionBarToggles()};
+			end
+
+			-- reset cache timeout each time set actionbar is called so that it doesnt timeout while toggling quickly
+			ActionBarSettingsLastCacheTime = GetTime();
+
+			ActionBarSettingsTogglesCache[index] = value;
+			SetActionBarToggles(unpack(ActionBarSettingsTogglesCache));
 		end
 
 		local actionBars = 

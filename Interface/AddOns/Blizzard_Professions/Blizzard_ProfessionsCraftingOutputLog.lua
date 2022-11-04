@@ -178,7 +178,7 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 				elseif bonusData.currencyID then
 					local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(bonusData.currencyID);
 					itemButton:SetItemButtonTexture(currencyInfo.iconFileID);
-					itemButton:SetItemButtonCount(bonusData.quantity);
+					itemButton:SetItemButtonCount(bonusData.showCurrencyText and bonusData.quantity or 1);
 					ReconfigureCountPointAndScale(itemButton);
 
 					itemButton:SetScript("OnEnter", function(button)
@@ -286,12 +286,14 @@ function ProfessionsCraftingOutputLogMixin:ProcessPendingResultData(resultData)
 	-- always need to consider saving off this data in case an item with bonusCraft arrives.
 	local inserted = false;
 	if resultData.operationID then
-		local parentResultData = FindValueInTableIf(self.pendingResultData, function(data)
-			return data.operationID == resultData.operationID;
-		end);
-		if parentResultData then
-			table.insert(parentResultData.bonusData, resultData);
-			inserted = true;
+		if resultData.bonusCraft or resultData.firstCraftReward then
+			local parentResultData = FindValueInTableIf(self.pendingResultData, function(data)
+				return data.operationID == resultData.operationID;
+			end);
+			if parentResultData then
+				table.insert(parentResultData.bonusData, resultData);
+				inserted = true;
+			end
 		end
 	end
 	

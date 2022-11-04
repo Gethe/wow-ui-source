@@ -62,6 +62,11 @@ function TextToSpeech_GetSelectedVoice(voiceType)
 	local voiceID = C_TTSSettings.GetVoiceOptionID(voiceType);
 	local _, voice = FindVoiceByID(voices, voiceID);
 
+	-- Default to voice 1 if settings are invalid.
+	if not voice and #voices > 0 then
+		voice = voices[1];
+	end
+
 	return voice;
 end
 
@@ -701,6 +706,10 @@ function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters, ig
 		if alternateVoice then
 			voice = alternateVoice;
 		end
+	end
+
+	if not voice then
+		return;
 	end
 
 	if ( not ignoreActivitySound and C_TTSSettings.GetSetting(Enum.TtsBoolSetting.PlayActivitySoundWhenNotFocused) and not frame:IsShown() ) then

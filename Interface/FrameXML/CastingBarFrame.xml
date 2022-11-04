@@ -333,7 +333,7 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="Spark" atlas="ui-castingbar-pip">
-					<Size x="5" y="30"/>
+					<Size x="8" y="20"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>

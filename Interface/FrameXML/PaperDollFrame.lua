@@ -109,6 +109,23 @@ PAPERDOLL_SIDEBARS = {
 	},
 };
 
+local ProfessionEquipError =
+{
+	[Enum.Profession.Blacksmithing] = PAPERDOLL_AUTO_EQUIP_BLACKSMITHING_ONLY,
+	[Enum.Profession.Leatherworking] = PAPERDOLL_AUTO_EQUIP_LEATHERWORKING_ONLY,
+	[Enum.Profession.Alchemy] = PAPERDOLL_AUTO_EQUIP_ALCHEMY_ONLY,
+	[Enum.Profession.Herbalism] = PAPERDOLL_AUTO_EQUIP_HERBALISM_ONLY,
+	[Enum.Profession.Cooking] = PAPERDOLL_AUTO_EQUIP_COOKING_ONLY,
+	[Enum.Profession.Mining] = PAPERDOLL_AUTO_EQUIP_MINING_ONLY,
+	[Enum.Profession.Tailoring] = PAPERDOLL_AUTO_EQUIP_TAILORING_ONLY,
+	[Enum.Profession.Engineering] = PAPERDOLL_AUTO_EQUIP_ENGINEERING_ONLY,
+	[Enum.Profession.Enchanting] = PAPERDOLL_AUTO_EQUIP_ENCHANTING_ONLY,
+	[Enum.Profession.Fishing] = PAPERDOLL_AUTO_EQUIP_FISHING_ONLY,
+	[Enum.Profession.Skinning] = PAPERDOLL_AUTO_EQUIP_SKINNING_ONLY,
+	[Enum.Profession.Jewelcrafting] = PAPERDOLL_AUTO_EQUIP_JEWELCRAFTING_ONLY,
+	[Enum.Profession.Inscription] = PAPERDOLL_AUTO_EQUIP_INSCRIPTION_ONLY,
+};
+
 function GetPaperDollSideBarFrame(index)
 	if index == 1 then
 		return CharacterStatsPane;
@@ -1549,7 +1566,7 @@ function PaperDollItemSlotButton_OnEvent(self, event, ...)
 	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
 		PaperDollItemSlotButton_Update(self);
 	elseif ( event == "CURSOR_CHANGED" ) then
-		if ( CursorCanGoInSlot(self:GetID()) ) then
+		if C_PaperDollInfo.CanCursorCanGoInSlot(self:GetID()) then
 			self:LockHighlight();
 		else
 			self:UnlockHighlight();
@@ -1571,6 +1588,15 @@ function PaperDollItemSlotButton_OnEvent(self, event, ...)
 	end
 end
 
+function PaperDollItemSlotButton_SetAutoEquipSlotIDs(...)
+	local slots = {...};
+	local slotIDs = {};
+	for index, slot in ipairs(slots) do
+		table.insert(slotIDs, slot.slotID);
+		slot.autoEquipSlotIDs = slotIDs;
+	end
+end
+
 function PaperDollItemSlotButton_OnClick(self, button)
 	MerchantFrame_ResetRefundItem();
 	if ( button == "LeftButton" ) then
@@ -1578,7 +1604,32 @@ function PaperDollItemSlotButton_OnClick(self, button)
 		if ( type == "merchant" and MerchantFrame.extendedCost ) then
 			MerchantFrame_ConfirmExtendedItemCost(MerchantFrame.extendedCost);
 		else
-			PickupInventoryItem(self:GetID());
+			local validateAutoEquip = CursorHasItem() and self.autoEquipSlotIDs;
+			-- If there isn't any special auto equip requirement, we can continue calling PickupInventoryItem,
+			-- otherwise, we need to first verify that the cursor item could occupy any of the desired slots before
+			-- we allow PickupInventoryItem to auto-equip for us.
+			local canPickupInventoryItem = not validateAutoEquip;
+			if ( validateAutoEquip ) then
+				for index, slotID in ipairs(self.autoEquipSlotIDs) do
+					if ( C_PaperDollInfo.CanCursorCanGoInSlot(slotID) ) then
+						canPickupInventoryItem = true;
+						break;
+					end
+				end
+			end
+
+			if ( canPickupInventoryItem ) then
+				PickupInventoryItem(self:GetID());
+			end
+			
+			if ( validateAutoEquip and not canPickupInventoryItem ) then
+				local profession = C_TradeSkillUI.GetProfessionByInventorySlot(self:GetID());
+				local tag = profession and ProfessionEquipError[profession] or nil;
+				if tag then
+					UIErrorsFrame:AddExternalErrorMessage(tag);
+				end
+			end
+
 			if ( CursorHasItem() ) then
 				MerchantFrame_SetRefundItem(self, 1);
 			end

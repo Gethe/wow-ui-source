@@ -442,7 +442,45 @@ ProfessionsCustomerTableCellIlvlMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCustomerTableCellIlvlMixin:Populate(rowData, dataIndex)
 	local order = rowData.option;
-	ProfessionsTableCellTextMixin.SetText(self, order.iLvl);
+	local text = order.qualityIlvlBonuses and CRAFTING_ORDER_ILVL_DISPLAY:format(order.iLvl) or order.iLvl;
+	ProfessionsTableCellTextMixin.SetText(self, text);
+end
+
+function ProfessionsCustomerTableCellIlvlMixin:OnEnter()
+	self:GetParent():OnLineEnter();
+
+	local order = self.rowData.option;
+
+	if not order.qualityIlvlBonuses or not order.craftingQualityIDs then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUSES:format(order.itemName));
+	for index, ilvlBonus in ipairs(order.qualityIlvlBonuses) do
+		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(order.spellID, {}, nil, order.craftingQualityIDs[index]);
+		local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
+		if item:IsItemDataCached() then
+			local atlasSize = 25;
+			local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(index), atlasSize, atlasSize);
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUS_INCR:format(atlasMarkup, item:GetCurrentItemLevel(), ilvlBonus));
+		else
+			local continuableContainer = ContinuableContainer:Create();
+			continuableContainer:AddContinuable(item);
+			continuableContainer:ContinueOnLoad(function()
+				self:OnEnter(cap, isRight);
+			end);
+		end
+	end
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_OPTIONAL_REAGENTS_ILVL_DISCLAIMER);
+	GameTooltip:Show();
+end
+
+function ProfessionsCustomerTableCellIlvlMixin:OnLeave()
+	self:GetParent():OnLineLeave();
+
+	GameTooltip:Hide();
 end
 
 ProfessionsCustomerTableCellSlotsMixin = CreateFromMixins(TableBuilderCellMixin);

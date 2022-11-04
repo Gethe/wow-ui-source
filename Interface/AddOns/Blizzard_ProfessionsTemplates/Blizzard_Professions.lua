@@ -336,11 +336,20 @@ end
 
 function Professions.GetQuantitiesAllocated(transaction, reagentSlotSchematic)
 	local quantities = {0, 0, 0};
-	for _, allocation in transaction:EnumerateAllocations(reagentSlotSchematic.slotIndex) do
+	for allocationIndex, allocation in transaction:EnumerateAllocations(reagentSlotSchematic.slotIndex) do
 		local index = FindInTableIf(reagentSlotSchematic.reagents, function(reagent)
 			return Professions.CraftingReagentMatches(reagent, allocation.reagent);
 		end);
-		assert(index and quantities[index] ~= nil, index);
+
+		if not index or quantities[index] == nil then
+			local reagent = allocation.reagent;
+			local id = reagent.itemID or reagent.currencyID;
+			assert(false, ("recipeID = %d, allocationIndex = %d, foundIndex = %d, reagentsSize = %d, id = %d"):format(
+				transaction:GetRecipeID(), allocationIndex, 
+				(reagentSlotSchematic.reagents and #reagentSlotSchematic.reagents or 0),
+				(index and index or -1), id)
+			);
+		end
 		quantities[index] = allocation.quantity;
 	end
 	return quantities;
@@ -662,12 +671,24 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 	local recipeInfos = {};
 
 	local favoritesCategoryInfo = {name = PROFESSIONS_CATEGORY_FAVORITE, recipes = {}, uiOrder = -1};
-
+	local showAllRecipes = searching or C_TradeSkillUI.IsNPCCrafting();
 	for index, recipeID in ipairs(C_TradeSkillUI.GetFilteredRecipeIDs()) do
 		local recipeInfo = Professions.GetFirstRecipe(C_TradeSkillUI.GetRecipeInfo(recipeID));
-		if searching or C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsRecipeInSkillLine(recipeID, professionID) then
+		local showRecipe = showAllRecipes;
+		if not showRecipe then
+			showRecipe = C_TradeSkillUI.IsRecipeInSkillLine(recipeID, professionID);
+			-- Temporary fix for expansionless recipes not appearing in the list. This will cause the
+			-- recipe to appear in every expansion in an undesirable categorization. Once these recipes
+			-- are reorganized this function may be removed.
+			if not showRecipe then
+				showRecipe = C_TradeSkillUI.IsRecipeInBaseSkillLine(recipeID);
+			end
+		end
+
+		if showRecipe then
 			recipeInfos[recipeInfo.recipeID] = recipeInfo;
 		end
+	
 		if not searching and recipeInfo.favorite then
 			local favoritesRecipeInfo = CopyTable(recipeInfo);
 			favoritesRecipeInfo.favoritesInstance = true;
@@ -680,7 +701,8 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 	-- a header, which we drop on the floor.
 	CreateRecipeCategoryHierarchy(categoryMap, recipeInfos);
 
-	if not searching or C_TradeSkillUI.IsNPCCrafting() then
+	local discardRootCategories = not searching or C_TradeSkillUI.IsNPCCrafting();
+	if discardRootCategories then
 		-- Strip out every root category if it doesnt have any recipes. We're only interested in seeing these if
 		-- we're in a search so we can reconcile which expansion the recipe pertains to. For an example of
 		-- a root category that has recipes, see ID 390.
@@ -688,10 +710,10 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 			if not noStripCategories or not tContains(noStripCategories, category.categoryID) then
 				local categoryInMap = categoryMap[category.categoryID];
 				if not categoryInMap or not categoryInMap.recipes or #categoryInMap.recipes == 0 then
-				categoryMap[category.categoryID] = nil;
+					categoryMap[category.categoryID] = nil;
+				end
 			end
 		end
-	end
 	end
 
 	if next(favoritesCategoryInfo.recipes) ~= nil then
@@ -1060,7 +1082,7 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate, ignoreSkillLine)
 						text = professionInfo.expansionName,
 						set = function() EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo); end, 
 						isSet = function() return C_TradeSkillUI.GetChildProfessionInfo().professionID == professionInfo.professionID; end,
-							hideMenuOnClick = true,
+						hideMenuOnClick = true,
 					};
 					table.insert(filterSystem.filters, skillLine);
 				end
@@ -1114,7 +1136,7 @@ function Professions.LayoutReagentSlots(reagentSlots, reagentsContainer, optiona
 	end
 	
 	do
-		local anchor = CreateAnchor("TOPLEFT", reagentsContainer, "TOPLEFT", 0, -30);
+		local anchor = CreateAnchor("TOPLEFT", reagentsContainer, "TOPLEFT", 1, -23);
 		Layout(reagentSlots, anchor, layout);
 		reagentsContainer:Layout();
 	end
@@ -1136,14 +1158,14 @@ end
 function Professions.LayoutFinishingSlots(finishingSlots, finishingSlotContainer)
 	if finishingSlots then
 		local stride = 2;
-		local spacing = 15;
+		local spacing = 8;
 		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing, 40);
 			
 		local anchor;
 		if #finishingSlots == 1 then
-			anchor = CreateAnchor("TOP", finishingSlotContainer, "TOP", 60, -48)
+			anchor = CreateAnchor("TOP", finishingSlotContainer, "TOP", 69, -40)
 		else
-			anchor = CreateAnchor("TOPLEFT", finishingSlotContainer, "TOPLEFT", 70, -48)
+			anchor = CreateAnchor("TOPLEFT", finishingSlotContainer, "TOPLEFT", 86, -40)
 		end
 
 		AnchorUtil.GridLayout(finishingSlots, anchor, layout);

@@ -211,7 +211,12 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="ProfessionsCustomerTableCellIlvlTemplate" mixin="ProfessionsCustomerTableCellIlvlMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
+	<Frame name="ProfessionsCustomerTableCellIlvlTemplate" mixin="ProfessionsCustomerTableCellIlvlMixin" inherits="ProfessionsTableCellTextTemplate" passThroughButtons="LeftButton, RightButton" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
 	<Frame name="ProfessionsCustomerTableCellSlotsTemplate" mixin="ProfessionsCustomerTableCellSlotsMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
 	<Frame name="ProfessionsCustomerTableCellLevelTemplate" mixin="ProfessionsCustomerTableCellLevelMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
 	<Frame name="ProfessionsCustomerTableCellSkillTemplate" mixin="ProfessionsCustomerTableCellSkillMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>

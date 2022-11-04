@@ -1815,6 +1815,7 @@ local powerTypeToStringLookup =
 	[Enum.PowerType.ArcaneCharges] = ARCANE_CHARGES_POWER,
 	[Enum.PowerType.Fury] = FURY,
 	[Enum.PowerType.Pain] = PAIN,
+	[Enum.PowerType.Essence] = POWER_TYPE_ESSENCE,
 };
 
 local alternatePowerEnumValue = Enum.PowerType.Alternate; -- Upvalue for marginally faster access.

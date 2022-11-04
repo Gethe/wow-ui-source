@@ -15,6 +15,15 @@
 -- from TalentDisplayTemplate.
 
 
+local SubTypeToColor = {
+	[Enum.TraitDefinitionSubType.DragonflightRed] = DRAGONFLIGHT_RED_COLOR,
+	[Enum.TraitDefinitionSubType.DragonflightBlue] = DRAGONFLIGHT_BLUE_COLOR,
+	[Enum.TraitDefinitionSubType.DragonflightGreen] = DRAGONFLIGHT_GREEN_COLOR,
+	[Enum.TraitDefinitionSubType.DragonflightBronze] = DRAGONFLIGHT_BRONZE_COLOR,
+	[Enum.TraitDefinitionSubType.DragonflightBlack] = DRAGONFLIGHT_BLACK_COLOR,
+};
+
+
 TalentDisplayMixin = {};
 
 function TalentDisplayMixin:OnEnter()
@@ -156,6 +165,7 @@ end
 
 function TalentDisplayMixin:UpdateVisualState()
 	self:SetVisualState(self:CalculateVisualState());
+	self:UpdateMouseOverInfo();
 end
 
 function TalentDisplayMixin:FullUpdate()
@@ -201,13 +211,6 @@ function TalentDisplayMixin:AddTooltipTitle(tooltip)
 end
 
 function TalentDisplayMixin:AddTooltipInfo(tooltip)
-	if self:ShouldShowSubText() then
-		local talentSubtext = self:GetSubtext();
-		if talentSubtext then
-			GameTooltip_AddDisabledLine(tooltip, talentSubtext);
-		end
-	end
-
 	local spellID = self:GetSpellID();
 	if spellID then
 		local overrideSpellID = C_SpellBook.GetOverrideSpell(spellID);
@@ -223,10 +226,25 @@ function TalentDisplayMixin:AddTooltipInfo(tooltip)
 end
 
 function TalentDisplayMixin:AddTooltipDescription(tooltip)
+	local blankLineAdded = false;
+	if self:ShouldShowSubText() then
+		local talentSubtext = self:GetSubtext();
+		if talentSubtext and (talentSubtext ~= "") then
+			blankLineAdded = true;
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+
+			local color = self.definitionInfo and self.definitionInfo.subType and SubTypeToColor[self.definitionInfo.subType];
+			GameTooltip_AddColoredLine(tooltip, talentSubtext, color or DISABLED_FONT_COLOR);
+		end
+	end
+
 	if self.nodeInfo then
 		local activeEntry = self.nodeInfo.activeEntry;
 		if activeEntry then
-			GameTooltip_AddBlankLineToTooltip(tooltip);
+			if not blankLineAdded then
+				GameTooltip_AddBlankLineToTooltip(tooltip);
+			end
+
 			local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", activeEntry.entryID, activeEntry.rank);
 			tooltipInfo.append = true;
 			tooltip:ProcessInfo(tooltipInfo);
@@ -244,14 +262,22 @@ function TalentDisplayMixin:AddTooltipDescription(tooltip)
 		-- If this tooltip isn't coming from a node, we can't know what rank to show other than 1.
 		local rank = 1;
 		local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", self.entryID, rank);
-		tooltipInfo.append = true;		
+		tooltipInfo.append = true;
 		tooltip:ProcessInfo(tooltipInfo);
 	end
 end
 
 function TalentDisplayMixin:AddTooltipErrors(tooltip)
+	local talentFrame = self:GetTalentFrame();
+
 	local shouldAddSpacer = true;
-	self:GetTalentFrame():AddConditionsToTooltip(tooltip, self.entryInfo.conditionIDs, shouldAddSpacer);
+	talentFrame:AddConditionsToTooltip(tooltip, self.entryInfo.conditionIDs, shouldAddSpacer);
+
+	local isLocked, errorMessage = talentFrame:IsLocked();
+	if isLocked and errorMessage then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddErrorLine(tooltip, errorMessage);
+	end
 end
 
 function TalentDisplayMixin:SetSearchMatchType(matchType)
@@ -289,8 +315,7 @@ function TalentDisplayMixin:CalculateVisualState()
 end
 
 function TalentDisplayMixin:ShouldShowSubText()
-	-- Implement in your derived mixin.
-	return false;
+	return self.definitionInfo and self.definitionInfo.subType and SubTypeToColor[self.definitionInfo.subType];
 end
 
 function TalentDisplayMixin:AddTooltipCost(tooltip)
@@ -428,12 +453,20 @@ function TalentButtonBaseMixin:UpdateSpendText()
 end
 
 function TalentButtonBaseMixin:FullUpdate()
+	local wasGhosted = self.isGhosted;
+
 	-- TODO: need a better way to handle additional visual states on top of base state
 	self.isGhosted = self:IsGhosted();
 
 	TalentDisplayMixin.FullUpdate(self);
 
 	self:UpdateSpendText();
+
+	if wasGhosted and not self.isGhosted then
+		self:MarkEdgesDirty();
+	end
+
+	self:UpdateMouseOverInfo();
 end
 
 function TalentButtonBaseMixin:ResetDynamic()
@@ -497,12 +530,16 @@ end
 function TalentButtonBaseMixin:AddTooltipErrors(tooltip)
 	-- Overrides TalentDisplayMixin.
 
-	local shouldAddSpacer = true;
-	self:GetTalentFrame():AddConditionsToTooltip(tooltip, self.nodeInfo.conditionIDs, shouldAddSpacer);
-	self:GetTalentFrame():AddEdgeRequirementsToTooltip(tooltip, self:GetNodeID(), shouldAddSpacer);
+	local talentFrame = self:GetTalentFrame()
 
-	if not self.nodeInfo.meetsEdgeRequirements then
-		GameTooltip_AddErrorLine(tooltip, TALENT_BUTTON_TOOLTIP_NO_ACTIVE_LINKS);
+	local shouldAddSpacer = true;
+	talentFrame:AddConditionsToTooltip(tooltip, self.nodeInfo.conditionIDs, shouldAddSpacer);
+	talentFrame:AddEdgeRequirementsToTooltip(tooltip, self:GetNodeID(), shouldAddSpacer);
+
+	local isLocked, errorMessage = talentFrame:IsLocked();
+	if isLocked and errorMessage then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddErrorLine(tooltip, errorMessage);
 	end
 end
 
@@ -531,7 +568,7 @@ end
 
 function TalentButtonBaseMixin:IsLocked()
 	-- Override in your derived mixin as desired.
-	return not self.nodeInfo or not self.nodeInfo.meetsEdgeRequirements;
+	return not self.nodeInfo or not self.nodeInfo.meetsEdgeRequirements or self:GetTalentFrame():IsLocked();
 end
 
 function TalentButtonBaseMixin:IsCascadeRepurchasable()

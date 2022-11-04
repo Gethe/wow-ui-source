@@ -49,6 +49,18 @@ local CharacterCustomizationShared =
 			},
 		},
 		{
+			Name = "CustomizationScope",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Player", Type = "CustomizationScope", EnumValue = 0 },
+				{ Name = "DragonCompanion", Type = "CustomizationScope", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "CharCustomizationCategory",
 			Type = "Structure",
 			Fields =

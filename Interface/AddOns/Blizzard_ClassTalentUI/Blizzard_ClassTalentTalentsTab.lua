@@ -121,6 +121,7 @@ function ClassTalentTalentsTabMixin:OnShow()
 	EventRegistry:TriggerEvent("TalentFrame.TalentTab.Show");
 
 	self:UpdateConfigButtonsState();
+	self:UpdateAllButtons();
 
 	self:UpdateStarterBuildHighlights();
 
@@ -278,6 +279,7 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 	-- TODO:: Replace this events with more proper "CanChangeTalent" signal(s).
 	elseif (event == "PLAYER_REGEN_ENABLED") or (event == "PLAYER_REGEN_DISABLED") or (event == "UNIT_AURA") then
 		self:UpdateConfigButtonsState();
+		self:UpdateAllButtons();
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local spellID = select(3, ...);
 		if spellID == Constants.TraitConsts.COMMIT_COMBAT_TRAIT_CONFIG_CHANGES_SPELL_ID then
@@ -590,6 +592,13 @@ function ClassTalentTalentsTabMixin:RefreshCurrencyDisplay()
 	local specCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[2] or nil;
 	self.SpecCurrencyDisplay:SetPointTypeText(string.upper(self:GetSpecName()));
 	self.SpecCurrencyDisplay:SetAmount(specCurrencyInfo and specCurrencyInfo.quantity or 0);
+end
+
+function ClassTalentTalentsTabMixin:IsLocked()
+	-- Overrides TalentFrameBaseMixin.
+
+	local canEditTalents, errorMessage = C_ClassTalents.CanEditTalents();
+	return not canEditTalents, errorMessage;
 end
 
 function ClassTalentTalentsTabMixin:RefreshLoadoutOptions()

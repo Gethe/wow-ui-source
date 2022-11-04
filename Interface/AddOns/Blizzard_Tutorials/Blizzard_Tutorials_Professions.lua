@@ -110,7 +110,12 @@ function Class_ProfessionGearCheckingService:GetProfessionGear()
 			local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(packedLocation);
 			local invType = select(9, GetItemInfo(itemLink));
 			local isTool = (invType == "INVTYPE_PROFESSION_TOOL");
-			local hasBeenShown = isTool and ToolTutorialShown() or AccessoryTutorialShown();
+			local hasBeenShown;
+			if isTool then
+				hasBeenShown = ToolTutorialShown();
+			else
+				hasBeenShown = AccessoryTutorialShown();
+			end
 			if player and bags and (not hasBeenShown) then
 				table.insert(professionGear, self:STRUCT_ItemContainer(itemLink, slotNumber, bag, slot, isTool));
 			end
@@ -208,7 +213,26 @@ function Class_EquipProfessionGear:SquelchTutorial()
 	TutorialManager:Finished(self:Name());
 end
 
+function Class_EquipProfessionGear:CheckAlreadyShown()
+	local alreadyShown;
+	if self.data.IsTool then
+		alreadyShown = ToolTutorialShown();
+	else
+		alreadyShown = AccessoryTutorialShown();
+	end
+	if alreadyShown then
+		TutorialManager:Finished(self:Name());
+		return true;
+	end
+
+	return false;
+end
+
 function Class_EquipProfessionGear:Reset()
+	if self:CheckAlreadyShown() then
+		return;
+	end
+
 	self.success = false;
 	TutorialDragButton:Hide();
 	self:HideAllHelptips();
@@ -269,7 +293,7 @@ function Class_EquipProfessionGear:IsCorrectProfessionTabSelected()
 end
 
 function Class_EquipProfessionGear:UpdateState()
-	if not self.data then
+	if not self.data or self:CheckAlreadyShown() then
 		return;
 	end
 

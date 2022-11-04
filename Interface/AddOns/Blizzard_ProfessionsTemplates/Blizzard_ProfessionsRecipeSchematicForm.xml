@@ -33,7 +33,7 @@
 					<KeyValue key="noProfessionQualityOverlay" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="-30"/>
+					<Anchor point="TOPLEFT" x="28" y="-33"/>
 				</Anchors>
 			</Button>
 
@@ -50,12 +50,11 @@
 			</Frame>
 
 			<CheckButton parentKey="TrackRecipeCheckBox" inherits="UICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-83" y="-8"/>
-				</Anchors>
+				<Size x="26" y="26"/>
 			</CheckButton>
 
 			<CheckButton parentKey="AllocateBestQualityCheckBox" inherits="UICheckButtonTemplate">
+				<Size x="26" y="26"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="30" y="20"/>
 				</Anchors>
@@ -75,7 +74,7 @@
 					<KeyValue key="labelText" value="PROFESSIONS_OPTIONAL_REAGENT_CONTAINER_LABEL" type="global"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="TOPRIGHT" x="56"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="TOPLEFT" x="235" y="0"/>
 				</Anchors>
 			</Frame>
 
@@ -120,7 +119,7 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" text="PROFESSIONS_RECIPE_UNLEARNED">
 							<Anchors>
-								<Anchor point="LEFT"/>
+								<Anchor point="LEFT" x="23"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -128,7 +127,7 @@
 				<NormalTexture parentKey="LetterI" file="Interface\common\help-i">
 					<Size x="30" y="30"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" x="-6" y="0"/>
 					</Anchors>
 				</NormalTexture>
 				<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
@@ -202,8 +201,8 @@
 					</Anchors>
 				</FontString>
 				
-				<FontString parentKey="RequiredTools" inherits="GameFontHighlightSmall2" justifyH="LEFT">
-					<Size x="400" y="20"/>
+				<FontString parentKey="RequiredTools" inherits="GameFontHighlightSmall2" wordwrap="true" justifyV="TOP" justifyH="LEFT">
+					<Size x="392" y="60"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.OutputText" relativePoint="BOTTOMLEFT" y="-3"/>
 					</Anchors>
@@ -217,7 +216,7 @@
 					<Size x="400" y="0"/>
 				</FontString>
 				
-				<FontString parentKey="Description" inherits="GameFontHighlightSmall2" maxLines="4" justifyH="LEFT">
+				<FontString parentKey="Description" inherits="GameFontHighlightSmall2" justifyV="TOP" justifyH="LEFT">
 					<Size x="460" y="0"/>
 				</FontString>
 			</Layer>

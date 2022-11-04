@@ -278,6 +278,7 @@ function MinimapClusterMixin:OnLoad()
 	CacheFramePoints(self.Minimap);
 	CacheFramePoints(self.BorderTop);
 	CacheFramePoints(self.InstanceDifficulty);
+	CacheFramePoints(self.MailFrame);
 end
 
 function MinimapClusterMixin:OnEvent(event, ...)
@@ -328,10 +329,14 @@ function MinimapClusterMixin:SetHeaderUnderneath(headerUnderneath)
 
 		self.InstanceDifficulty:ClearAllPoints();
 		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self.BorderTop, "TOPRIGHT", -2, -2);
+
+		self.MailFrame:ClearAllPoints();
+		self.MailFrame:SetPoint("BOTTOMRIGHT", self.Tracking, "TOPRIGHT");
 	else
 		ResetFramePoints(self.Minimap);
 		ResetFramePoints(self.BorderTop);
 		ResetFramePoints(self.InstanceDifficulty);
+		ResetFramePoints(self.MailFrame);
 	end
 	
 	self.InstanceDifficulty:SetFlipped(headerUnderneath);

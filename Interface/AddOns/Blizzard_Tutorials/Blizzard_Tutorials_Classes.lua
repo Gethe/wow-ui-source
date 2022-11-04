@@ -4,7 +4,9 @@ function AddSpecAndTalentTutorials()
 		TutorialManager:AddWatcher(Class_StarterTalentWatcher:new(), true);
 	end
 
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC_CHANGES) and IsPlayerInitialSpec() then
+	local _, raceFilename = UnitRace("Player");
+	local playerIsDracthyr = raceFilename == "Dracthyr";-- the Dracthyrs have a separate quest for spec introduction
+	if not playerIsDracthyr and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC_CHANGES) and IsPlayerInitialSpec() then
 		TutorialManager:AddTutorial(Class_ChangeSpec:new());
 	end
 

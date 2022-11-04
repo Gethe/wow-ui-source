@@ -1,11 +1,6 @@
 REQUIRED_REST_HOURS = 5;
 
 function PlayerFrame_OnLoad(self)
-	PlayerFrameHealthBar.LeftText = PlayerFrameHealthBarTextLeft;
-	PlayerFrameHealthBar.RightText = PlayerFrameHealthBarTextRight;
-	PlayerFrameManaBar.LeftText = PlayerFrameManaBarTextLeft;
-	PlayerFrameManaBar.RightText = PlayerFrameManaBarTextRight;
-
 	PlayerFrame.PlayerFrameContainer.FrameTexture:SetTexelSnappingBias(0);
 	PlayerFrame.PlayerFrameContainer.FrameTexture:SetSnapToPixelGrid(false);
 
@@ -13,31 +8,33 @@ function PlayerFrame_OnLoad(self)
 	PlayerFrame.PlayerFrameContainer.FrameFlash:SetSnapToPixelGrid(false);
 
 	local playerFrameContent = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain;
+	local healthBar = playerFrameContent.HealthBarArea.HealthBar;
+	local manaBar = playerFrameContent.ManaBarArea.ManaBar;
 	UnitFrame_Initialize(self, "player", PlayerName, self.frameType, self.PlayerFrameContainer.PlayerPortrait,
-						 PlayerFrameHealthBar, PlayerFrameHealthBarText,
-						 PlayerFrameManaBar, PlayerFrameManaBarText,
+						 healthBar,
+						 healthBar.HealthBarText,
+						 manaBar,
+						 manaBar.ManaBarText,
 						 PlayerFrame.PlayerFrameContainer.FrameFlash, nil, nil,
-						 playerFrameContent.MyHealPredictionBar,
-						 playerFrameContent.OtherHealPredictionBar,
-						 playerFrameContent.TotalAbsorbBar,
-						 playerFrameContent.TotalAbsorbBarOverlay,
-						 playerFrameContent.OverAbsorbGlow,
-						 playerFrameContent.OverHealAbsorbGlow,
-						 playerFrameContent.HealAbsorbBar,
-						 playerFrameContent.HealAbsorbBarLeftShadow,
-						 playerFrameContent.HealAbsorbBarRightShadow,
-						 playerFrameContent.ManaCostPredictionBar);
+						 healthBar.MyHealPredictionBar,
+						 healthBar.OtherHealPredictionBar,
+						 healthBar.TotalAbsorbBar,
+						 healthBar.TotalAbsorbBarOverlay,
+						 healthBar.OverAbsorbGlow,
+						 healthBar.OverHealAbsorbGlow,
+						 healthBar.HealAbsorbBar,
+						 healthBar.HealAbsorbBarLeftShadow,
+						 healthBar.HealAbsorbBarRightShadow,
+						 manaBar.ManaCostPredictionBar);
 
 	self.statusCounter = 0;
 	self.statusSign = -1;
 
-	local healthBarMask = playerFrameContent.HealthBarMask;
-	PlayerFrameHealthBar:GetStatusBarTexture():AddMaskTexture(healthBarMask);
-	playerFrameContent.HealthBarArea.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture():AddMaskTexture(healthBarMask);
+	healthBar:GetStatusBarTexture():AddMaskTexture(healthBar.HealthBarMask);
+	playerFrameContent.HealthBarArea.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture():AddMaskTexture(healthBar.HealthBarMask);
 
-	local manaBarMask = playerFrameContent.ManaBarMask;
-	PlayerFrameManaBar:GetStatusBarTexture():AddMaskTexture(manaBarMask);
-	PlayerFrameManaBar.FeedbackFrame:AddMaskTexture(manaBarMask);
+	manaBar:GetStatusBarTexture():AddMaskTexture(manaBar.ManaBarMask);
+	manaBar.FeedbackFrame:AddMaskTexture(manaBar.ManaBarMask);
 
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
 	PlayerFrame_Update();
@@ -509,8 +506,11 @@ end
 function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrame.state = "vehicle";
 
+	local healthBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar;
+	local manaBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar;
+
 	--Swap pet and player frames
-	UnitFrame_SetUnit(self, "vehicle", PlayerFrameHealthBar, PlayerFrameManaBar);
+	UnitFrame_SetUnit(self, "vehicle", healthBar, manaBar);
 	UnitFrame_SetUnit(PetFrame, "player", PetFrameHealthBar, PetFrameManaBar);
 
 	-- Swap frame textures
@@ -527,21 +527,18 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 11, -8);
 
 	-- Update health bar
-	PlayerFrameHealthBar:SetWidth(118);
-	PlayerFrameHealthBar:SetHeight(20);
-	PlayerFrameHealthBar:SetPoint("TOPLEFT", 91, -40);
+	healthBar:SetWidth(118);
+	healthBar:SetHeight(20);
+	healthBar:SetPoint("TOPLEFT", 91, -40);
 
-	local healthBarMask = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarMask;
-	healthBarMask:SetPoint("TOPLEFT", healthBarMask:GetParent(), "TOPLEFT", 90, -34);
+	healthBar.HealthBarMask:SetPoint("TOPLEFT", healthBar.HealthBarMask:GetParent(), "TOPLEFT", -8, 6);
 
 	-- Update mana bar
-	PlayerFrameManaBar:SetWidth(118);
-	PlayerFrameManaBar:SetHeight(10);
-	PlayerFrameManaBar:SetPoint("TOPLEFT",91,-61);
+	manaBar:SetWidth(118);
+	manaBar:SetHeight(10);
+	manaBar:SetPoint("TOPLEFT",91,-61);
 
-	local manaBarMask = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarMask;
-	manaBarMask:SetWidth(121);
-	manaBarMask:SetPoint("TOPLEFT", manaBarMask:GetParent(), "TOPLEFT", 90, -58);
+	manaBar.ManaBarMask:SetWidth(121);
 
 	-- Update power bar
 	local _, class = UnitClass("player");
@@ -575,8 +572,11 @@ end
 function PlayerFrame_ToPlayerArt(self)
 	PlayerFrame.state = "player";
 
+	local healthBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar;
+	local manaBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar;
+
 	-- Unswap pet and player frames
-	UnitFrame_SetUnit(self, "player", PlayerFrameHealthBar, PlayerFrameManaBar);
+	UnitFrame_SetUnit(self, "player", healthBar, manaBar);
 	UnitFrame_SetUnit(PetFrame, "pet", PetFrameHealthBar, PetFrameManaBar);
 
 	-- Swap frame textures
@@ -593,21 +593,18 @@ function PlayerFrame_ToPlayerArt(self)
 	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 18, -14);
 
 	-- Update health bar
-	PlayerFrameHealthBar:SetHeight(20);
-	PlayerFrameHealthBar:SetWidth(124);
-	PlayerFrameHealthBar:SetPoint("TOPLEFT", 85, -40);
+	healthBar:SetHeight(20);
+	healthBar:SetWidth(124);
+	healthBar:SetPoint("TOPLEFT", 85, -40);
 
-	local healthBarMask = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarMask;
-	healthBarMask:SetPoint("TOPLEFT", healthBarMask:GetParent(), "TOPLEFT", 83, -35);
+	healthBar.HealthBarMask:SetPoint("TOPLEFT", healthBar.HealthBarMask:GetParent(), "TOPLEFT", -2, 6);
 
 	-- Update mana bar
-	PlayerFrameManaBar:SetHeight(10);
-	PlayerFrameManaBar:SetWidth(124);
-	PlayerFrameManaBar:SetPoint("TOPLEFT", 85, -61);
+	manaBar:SetHeight(10);
+	manaBar:SetWidth(124);
+	manaBar:SetPoint("TOPLEFT", 85, -61);
 
-	local manaBarMask = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarMask;
-	manaBarMask:SetWidth(128);
-	manaBarMask:SetPoint("TOPLEFT", manaBarMask:GetParent(), "TOPLEFT", 83, -59);
+	manaBar.ManaBarMask:SetWidth(128);
 
 	-- Update power bar
 	local _, class = UnitClass("player");

@@ -1748,7 +1748,7 @@ function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
 		return;
 	end
 
-	if not entries then
+	if not entries or #entries == 0 then
 		return;
 	end
 

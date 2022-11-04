@@ -105,6 +105,15 @@
 				</Anchors>
 			</Button>
 
+			<CheckButton parentKey="FavoriteButton" mixin="ProfessionsFavoriteButtonMixin" hidden="true">
+				<Size x="20" y="18"/>
+				<NormalTexture parentKey="NormalTexture" atlas="auctionhouse-icon-favorite"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-icon-favorite-off" alphaMode="ADD"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.RecipeHeader" x="-5" y="-5"/>
+				</Anchors>
+			</CheckButton>
+
 			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="25" y="-25"/>
@@ -471,6 +480,30 @@
 					</Button>
 				</Frames>
 			</Frame>
+
+			<Frame parentKey="TrackRecipeCheckBox" inherits="ResizeLayoutFrame">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ReagentContainer" x="5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton parentKey="Checkbox" inherits="UICheckButtonTemplate">
+						<Size x="26" y="26"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="2" y="0"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
 		
 			<Frame parentKey="QualityDialog" inherits="ProfessionsQualityDialogTemplate" frameStrata="DIALOG" hidden="true">
 				<Anchors>
@@ -571,7 +604,7 @@
 						</Anchors>
 					</Button>
 				</Frames>
-			</Frame>
+			</Frame>	
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

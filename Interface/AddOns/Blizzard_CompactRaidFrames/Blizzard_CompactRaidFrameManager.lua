@@ -62,11 +62,9 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 end
 
 function CompactRaidFrameManager_UpdateShown()
-	if ShouldShowRaidFrames() or ShouldShowPartyFrames() then
-		CompactRaidFrameManager:Show();
-	else
-		CompactRaidFrameManager:Hide();
-	end
+	local showManager = IsInGroup() or EditModeManagerFrame:AreRaidFramesForcedShown() or EditModeManagerFrame:ArePartyFramesForcedShown();
+	CompactRaidFrameManager:SetShown(showManager);
+
 	CompactRaidFrameManager_UpdateOptionsFlowContainer();
 	CompactRaidFrameManager_UpdateContainerVisibility();
 end

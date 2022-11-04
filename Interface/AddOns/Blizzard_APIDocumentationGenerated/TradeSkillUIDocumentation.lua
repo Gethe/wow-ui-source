@@ -308,12 +308,35 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetProfessionByInventorySlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "profession", Type = "Profession", Nilable = true },
+			},
+		},
+		{
 			Name = "GetProfessionChildSkillLineID",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "skillLineID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetProfessionForCursorItem",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "profession", Type = "Profession", Nilable = true },
 			},
 		},
 		{
@@ -521,6 +544,20 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetRecipeQualityItemIDs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "qualityItemIDs", Type = "table", InnerType = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetRecipeQualityReagentItemLink",
 			Type = "Function",
 
@@ -720,6 +757,20 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "learned", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRecipeInBaseSkillLine",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{

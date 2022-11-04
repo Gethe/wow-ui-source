@@ -290,8 +290,10 @@ function ProfessionsCraftingOrderPageMixin:SetupTable()
 										  	  PTC.CustomerName.RightCellPadding, CRAFTING_ORDERS_BROWSE_HEADER_CUSTOMER_NAME, "ProfessionsCrafterTableCellCustomerNameTemplate");
 		self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Tip.Width, PTC.Tip.LeftCellPadding,
 										  	  PTC.Tip.RightCellPadding, ProfessionsSortOrder.Tip, "ProfessionsCrafterTableCellActualCommissionTemplate");
-		self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Reagents.Width, PTC.Reagents.LeftCellPadding,
-										  	  PTC.Reagents.RightCellPadding, ProfessionsSortOrder.Reagents, "ProfessionsCrafterTableCellReagentsTemplate");
+		if self.orderType ~= Enum.CraftingOrderType.Public then
+			self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Reagents.Width, PTC.Reagents.LeftCellPadding,
+										  		  PTC.Reagents.RightCellPadding, ProfessionsSortOrder.Reagents, "ProfessionsCrafterTableCellReagentsTemplate");
+			end
 		self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Expiration.Width, PTC.Expiration.LeftCellPadding,
 										  	  PTC.Expiration.RightCellPadding, ProfessionsSortOrder.Expiration, "ProfessionsCrafterTableCellExpirationTemplate");
 	elseif browseType == OrderBrowseType.Bucketed then
@@ -562,6 +564,7 @@ function ProfessionsCraftingOrderPageMixin:SetCraftingOrderType(orderType)
 	end
 
 	self:UpdateOrdersRemaining();
+	self:SetupTable();
 end
 
 local defaultBucketSecondarySort =

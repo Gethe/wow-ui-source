@@ -739,6 +739,10 @@ function TalentFrameBaseMixin:UpdateAllButtons()
 	for talentButton in self:EnumerateAllTalentButtons() do
 		talentButton:FullUpdate();
 	end
+
+	if self.SelectionChoiceFrame:IsShown() then
+		self.SelectionChoiceFrame:UpdateVisualState();
+	end
 end
 
 function TalentFrameBaseMixin:OnButtonNodeIDSet(talentButton, oldNodeID, newNodeID)
@@ -1286,6 +1290,13 @@ end
 
 function TalentFrameBaseMixin:GetNodeCost(nodeID)
 	return C_Traits.GetNodeCost(self:GetConfigID(), nodeID);
+end
+
+function TalentFrameBaseMixin:IsLocked()
+	-- Override in your derived mixin.
+
+	-- Returns whether or not the frame is globally locked, and if so, an optional error message.
+	return false, nil;
 end
 
 function TalentFrameBaseMixin:CanAfford(traitCurrenciesCost)

@@ -19,6 +19,11 @@ local ProfessionsCraftingPageEvents =
 };
 
 function ProfessionsCraftingPageMixin:OnLoad()
+	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.Prof0ToolSlot, self.Prof0Gear0Slot, self.Prof0Gear1Slot);
+	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.Prof1ToolSlot, self.Prof1Gear0Slot, self.Prof1Gear1Slot);
+	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.CookingToolSlot, self.CookingGear0Slot);
+	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.FishingToolSlot);
+
 	self.RecipeList.FilterButton:SetResetFunction(Professions.SetDefaultFilters);
 	self.RecipeList.FilterButton:SetScript("OnMouseDown", function(button, buttonName, down)
 		UIMenuButtonStretchMixin.OnMouseDown(self.RecipeList.FilterButton, buttonName);
@@ -227,7 +232,7 @@ end
 
 function ProfessionsCraftingPageMixin:GetDesiredPageWidth()
 	local compact = C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsRuneforging();
-	return compact and 811 or 1105;
+	return compact and 811 or 1112;
 end
 
 function ProfessionsCraftingPageMixin:OnReagentClicked(reagentName)
@@ -685,7 +690,7 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
 	local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or isRuneforging;
-	local schematicWidth = useCondensedPanel and 500 or 793;
+	local schematicWidth = useCondensedPanel and 500 or 799;
 	self.SchematicForm:SetWidth(schematicWidth);
 	
 	if Professions.UpdateRankBarVisibility(self.RankBar, professionInfo) then

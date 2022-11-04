@@ -942,6 +942,25 @@ local WARDROBE_MODEL_SETUP = {
 	["FEETSLOT"]		= { useTransmogSkin = false, useTransmogChoices = true,  obeyHideInTransmogFlag = true,  slots = { CHESTSLOT = true,  HANDSSLOT = true,  LEGSSLOT = true,  FEETSLOT = false, HEADSLOT = true  } },
 }
 
+local function GetUseTransmogSkin(slot)
+	local modelSetupTable = WARDROBE_MODEL_SETUP[slot];
+	if not modelSetupTable or modelSetupTable.useTransmogSkin then
+		return true;
+	end
+
+	-- this exludes head slot
+	if modelSetupTable.useTransmogChoices then
+		local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+		if transmogLocation then
+			if not C_PlayerInfo.HasVisibleInvSlot(transmogLocation.slotID) then
+				return true;
+			end
+		end
+	end
+
+	return false;
+end
+
 local WARDROBE_MODEL_SETUP_GEAR = {
 	["CHESTSLOT"] = 78420,
 	["LEGSSLOT"] = 78425,
@@ -1652,7 +1671,7 @@ function WardrobeItemsCollectionMixin:ChangeModelsSlot(newTransmogLocation, oldT
 	if ( newSlotIsArmor ) then
 		local oldSlotIsArmor = oldTransmogLocation and oldTransmogLocation:GetArmorCategoryID();
 		if ( oldSlotIsArmor ) then
-			if ( (WARDROBE_MODEL_SETUP[oldSlot].useTransmogSkin ~= WARDROBE_MODEL_SETUP[newSlot].useTransmogSkin) or
+			if ( (GetUseTransmogSkin(oldSlot) ~= GetUseTransmogSkin(newSlot)) or
 				 (WARDROBE_MODEL_SETUP[oldSlot].useTransmogChoices ~= WARDROBE_MODEL_SETUP[newSlot].useTransmogChoices) or
 				 (WARDROBE_MODEL_SETUP[oldSlot].obeyHideInTransmogFlag ~= WARDROBE_MODEL_SETUP[newSlot].obeyHideInTransmogFlag) ) then
 				reloadModel = true;
@@ -2518,7 +2537,8 @@ end
 function WardrobeItemsModelMixin:Reload(reloadSlot)
 	if ( self:IsShown() ) then
 		if ( WARDROBE_MODEL_SETUP[reloadSlot] ) then
-			self:SetUseTransmogSkin(WARDROBE_MODEL_SETUP[reloadSlot].useTransmogSkin);
+			local useTransmogSkin = GetUseTransmogSkin(reloadSlot);	
+			self:SetUseTransmogSkin(useTransmogSkin);
 			self:SetUseTransmogChoices(WARDROBE_MODEL_SETUP[reloadSlot].useTransmogChoices);
 			self:SetObeyHideInTransmogFlag(WARDROBE_MODEL_SETUP[reloadSlot].obeyHideInTransmogFlag);
 			self:SetUnit("player", false, PlayerUtil.ShouldUseNativeFormInModelScene());

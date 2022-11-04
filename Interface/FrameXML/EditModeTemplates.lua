@@ -93,6 +93,7 @@ function EditModeDropdownLayoutEntryMixin:OnLoad()
 	self.DeleteLayoutButton:SetOnClickHandler(GenerateClosure(EditModeManagerFrame.ShowDeleteLayoutDialog, EditModeManagerFrame, self));
 end
 
+local layoutEntryWidth = 210;
 local layoutEntryMaxTextWidth = 150;
 local maxLayoutsCopyErrorText = HUD_EDIT_MODE_ERROR_COPY_MAX_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType, Constants.EditModeConsts.EditModeMaxLayoutsPerType);
 
@@ -100,7 +101,7 @@ function EditModeDropdownLayoutEntryMixin:Init(layoutIndex, layoutData, isSelect
 	local text = (layoutData.layoutType == Enum.EditModeLayoutType.Preset) and HUD_EDIT_MODE_PRESET_LAYOUT:format(layoutData.layoutName) or layoutData.layoutName;
 	local disableOnMaxLayoutsNo = false;
 	local disableOnActiveChangesNo = false;
-	EditModeDropdownEntryMixin.Init(self, text, onClick, disableOnMaxLayoutsNo, disableOnActiveChangesNo, nil, layoutEntryMaxTextWidth);
+	EditModeDropdownEntryMixin.Init(self, text, onClick, disableOnMaxLayoutsNo, disableOnActiveChangesNo, layoutEntryWidth, layoutEntryMaxTextWidth);
 
 	local layoutsMaxed = EditModeManagerFrame:AreLayoutsFullyMaxed();
 	self.CopyLayoutButton.disabledTooltip = layoutsMaxed and maxLayoutsCopyErrorText or HUD_EDIT_MODE_ERROR_COPY;

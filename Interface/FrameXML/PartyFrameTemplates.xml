@@ -132,7 +132,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
 				<Texture parentKey="Texture" atlas="UI-HUD-UnitFrame-Party-PortraitOn" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="-2"/>
@@ -154,19 +153,6 @@
 						<Anchor point="TOPLEFT" x="46" y="-6"/>
 					</Anchors>
 				</FontString>
-				<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="16" y="-16"/>
-					</Anchors>
-				</MaskTexture>
-				<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="14" y="-26"/>
-					</Anchors>
-				</MaskTexture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -187,14 +173,20 @@
 					<Anchor point="TOPLEFT" x="45" y="-19"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
+					<Layer level="BACKGROUND">
 						<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
 						<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+						<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
 						<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
 						<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
 						<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
 						<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 						<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
 						<FontString parentKey="CenterText" inherits="TextStatusBarText">
 							<Anchors>
 								<Anchor point="CENTER"/>
@@ -210,6 +202,24 @@
 								<Anchor point="RIGHT"/>
 							</Anchors>
 						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-29" y="3"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="MyHealPredictionBar"/>
+								<MaskedTexture childKey="OtherHealPredictionBar"/>
+								<MaskedTexture childKey="TotalAbsorbBar"/>
+								<MaskedTexture childKey="TotalAbsorbBarOverlay"/>
+								<MaskedTexture childKey="OverAbsorbGlow"/>
+								<MaskedTexture childKey="OverHealAbsorbGlow"/>
+								<MaskedTexture childKey="HealAbsorbBar"/>
+								<MaskedTexture childKey="HealAbsorbBarLeftShadow"/>
+								<MaskedTexture childKey="HealAbsorbBarRightShadow"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -244,7 +254,7 @@
 					<Anchor point="TOPLEFT" x="41" y="-30"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
+					<Layer level="OVERLAY" textureSubLevel="1">
 						<FontString parentKey="CenterText" inherits="TextStatusBarText">
 							<Anchors>
 								<Anchor point="CENTER" x="2" y="0"/>
@@ -260,6 +270,13 @@
 								<Anchor point="RIGHT"/>
 							</Anchors>
 						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="14" y="-26"/>
+							</Anchors>
+						</MaskTexture>
 					</Layer>
 				</Layers>
 				<Scripts>

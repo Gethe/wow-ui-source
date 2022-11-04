@@ -11,7 +11,7 @@
 				<MaskTexture parentKey="IconMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Size x="76" y="76"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.icon" y="-1"/>
+						<Anchor point="CENTER" relativeKey="$parent.icon" x="0.5" y="-1.5"/>
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="icon"/>
@@ -31,11 +31,12 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="OVERLAY">
 				<Texture name="$parentFlash" parentKey="Flash" atlas="UI-HUD-ActionBar-IconFrame-Flash" hidden="true">
-					<Size x="54" y="53"/>
+					<Size x="52" y="52"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="1.8" y="-1"/>
 					</Anchors>
 				</Texture>
 				<Texture file="Interface\UnitPowerBarAlt\SpellPush-Frame" parentKey="style">
@@ -47,37 +48,25 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown">
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" useParentLevel="true" parentKey="cooldown">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="5" y="-4"/>
-					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+					<Anchor point="TOPLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
 				</Anchors> 
 			</Cooldown>
 		</Frames>
-		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" atlas="UI-HUD-ActionBar-IconFrame">
-			<Size x="55" y="54"/>
+		<PushedTexture parentKey="PushedTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="TOPLEFT"/>
-			</Anchors>
-		</NormalTexture>
-		<PushedTexture atlas="UI-HUD-ActionBar-IconFrame-Down" parentKey="PushedTexture">
-			<Size x="55" y="54"/>
-			<Anchors>
-				<Anchor point="TOPLEFT"/>
+				<Anchor point="TOPLEFT" x="0" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1.8" y="-1"/>
 			</Anchors>
 		</PushedTexture>
-		<HighlightTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="HighlightTexture">
-			<Size x="54" y="53"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.7">
 			<Anchors>
-				<Anchor point="TOPLEFT"/>
+				<Anchor point="TOPLEFT" x="0" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1.8" y="-1"/>
 			</Anchors>
 		</HighlightTexture>
-		<CheckedTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="CheckedTexture">
-			<Size x="54" y="53"/>
-			<Anchors>
-				<Anchor point="TOPLEFT"/>
-			</Anchors>
-		</CheckedTexture>
 		<KeyValues>
 			<KeyValue key="isExtra" value="true" type="boolean"/>
 			<KeyValue key="buttonType" value="EXTRAACTIONBUTTON" type="string"/>

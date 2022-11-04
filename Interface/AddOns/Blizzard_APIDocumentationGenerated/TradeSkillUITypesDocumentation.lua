@@ -105,6 +105,7 @@ local TradeSkillUITypes =
 				{ Name = "quantity", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "operationID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "firstCraftReward", Type = "bool", Nilable = false, Default = false },
+				{ Name = "showCurrencyText", Type = "bool", Nilable = false, Default = true },
 			},
 		},
 		{

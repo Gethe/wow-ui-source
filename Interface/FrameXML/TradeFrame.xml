@@ -163,18 +163,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="TradeFrameRecipientNameText" inherits="GameFontNormal" text="Player Name">
-					<Size x="80" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="230" y="-5"/>
-					</Anchors>
-				</FontString>
-				<FontString name="TradeFramePlayerNameText" inherits="GameFontNormal" text="Recipient Name">
-					<Size x="100" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="65" y="-5"/>
-					</Anchors>
-				</FontString>
 				<FontString name="TradeFramePlayerEnchantText" inherits="GameFontHighlightSmall" text="TRADEFRAME_ENCHANT_SLOT_LABEL">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="15" y="-360"/>
@@ -188,6 +176,24 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame frameStrata="HIGH">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="TradeFrameRecipientNameText" inherits="GameFontNormal" text="Player Name">
+							<Size x="80" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="230" y="-5"/>
+							</Anchors>
+						</FontString>
+						<FontString name="TradeFramePlayerNameText" inherits="GameFontNormal" text="Recipient Name">
+							<Size x="100" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="65" y="-5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="RecipientOverlay" frameLevel="550" inherits="ResizeLayoutFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-180" y="7"/>
@@ -197,14 +203,14 @@
 						<Texture parentKey="portrait">
 							<Size x="60" y="60"/>
 							<Anchors>
-								<Anchor point="TOPLEFT"/>
+								<Anchor point="TOPLEFT" x="2"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
-						<Texture parentKey="portraitFrame" inherits="UI-Frame-Portrait">
+						<Texture parentKey="portraitFrame" atlas="UI-Frame-PortraitMetal-CornerTopLeft" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="-6" y="4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="-8" y="9"/>
 							</Anchors>
 						</Texture>
 					</Layer>
