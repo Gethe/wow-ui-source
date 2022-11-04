@@ -20,7 +20,7 @@
 							<Anchor point="TOPLEFT" x="5" y="-3"/>
 						</Anchors>						
 					</Texture>
-					<MaskTexture parentKey="Mask" atlas="Professions-skillbar-mask" useAtlasSize="true" hWrapMode="REPEAT" vWrapMode="REPEAT">
+					<MaskTexture parentKey="Mask" atlas="Professions-skillbar-mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Fill"/>
 						</Anchors>

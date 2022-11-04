@@ -79,7 +79,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetItemContainerFrame(container, slot)
-	local item = ContainerFrame_GetItemButtonCheckSecuredAccount(container, slot);
+	local item = ContainerFrameUtil_GetItemButtonAndContainer(container, slot);
 	return item;
 end
 

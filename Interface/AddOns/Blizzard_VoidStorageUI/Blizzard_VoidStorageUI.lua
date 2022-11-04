@@ -208,6 +208,7 @@ function VoidStorageFrame_OnHide(self)
 	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_CLOSE);
 	StaticPopup_Hide("VOID_DEPOSIT_CONFIRM");
 	CloseSideDressUpFrame(self);
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.VoidStorage);
 end
 
 function VoidStorageFrame_SetUpBlockingFrame(frame)

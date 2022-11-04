@@ -51,7 +51,11 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 			end
 
 			local reagent = reagentSlotSchematic.reagents[1];
-			self.Button:SetItem(reagent.itemID);
+			if reagent.currencyID then
+				self.Button:SetCurrency(reagent.currencyID);
+			else
+				self.Button:SetItem(reagent.itemID);
+			end
 		elseif reagentType == Enum.CraftingReagentType.Optional then
 			local slotInfo = reagentSlotSchematic.slotInfo;
 			self:SetNameText(slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX);
@@ -109,10 +113,18 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 				quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
 			end
 		end
-
+		
+		local quantityText = self.showOnlyRequired and reagentSlotSchematic.quantityRequired or TRADESKILL_REAGENT_COUNT:format(quantity, reagentSlotSchematic.quantityRequired);
 		local reagent = reagentSlotSchematic.reagents[1];
-		local item = Item:CreateFromItemID(reagent.itemID);
-		self:SetNameText(("%s %s"):format(TRADESKILL_REAGENT_COUNT:format(quantity, reagentSlotSchematic.quantityRequired), item:GetItemName()));
+		local reagentName;
+		if reagent.currencyID then
+			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
+			reagentName = currencyInfo and currencyInfo.name or UNKNOWN;
+		else
+			local item = Item:CreateFromItemID(reagent.itemID);
+			reagentName = item:GetItemName();
+		end
+		self:SetNameText(("%s %s"):format(quantityText, reagentName or ""));
 	end
 end
 
@@ -195,6 +207,7 @@ end
 
 function ProfessionsReagentSlotMixin:SetItem(item)
 	self.Button:Reset();
+	self.currencyID = nil;
 
 	if item then
 		self.Button:SetItem(item:GetItemID());
@@ -210,6 +223,27 @@ function ProfessionsReagentSlotMixin:SetItem(item)
 	else
 		self.UndoButton:Show();
 	end
+
+	self:Update();
+end
+
+function ProfessionsReagentSlotMixin:SetCurrency(currencyID)
+	self.Button:Reset();
+	self.item = nil;
+	self.currencyID = currencyID;
+
+	if currencyID then
+		self.Button:SetCurrency(currencyID);
+		self.Button.InputOverlay.AddIcon:Hide();
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+		self:SetNameText(currencyInfo and currencyInfo.name or UNKNOWN);
+	else
+		local reagentSlotSchematic = self:GetReagentSlotSchematic();
+		local slotInfo = reagentSlotSchematic.slotInfo;
+		self:SetNameText(slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX);
+	end
+
+	self.UndoButton:Hide();
 
 	self:Update();
 end

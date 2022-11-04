@@ -65,6 +65,11 @@ function PlayerUtil.GetClassID()
 	return classID;
 end
 
+function PlayerUtil.GetClassName()
+	local className = UnitClass("player");
+	return className;
+end
+
 function PlayerUtil.GetClassInfo()
 	local classID = PlayerUtil.GetClassID();
 	return C_CreatureInfo.GetClassInfo(classID);

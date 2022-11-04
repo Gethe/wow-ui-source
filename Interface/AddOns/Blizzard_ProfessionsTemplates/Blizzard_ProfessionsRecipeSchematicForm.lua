@@ -712,7 +712,12 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo)
 
 				slot.Button:SetScript("OnEnter", function()
 					GameTooltip:SetOwner(slot.Button, "ANCHOR_RIGHT");
-					GameTooltip:SetRecipeReagentItem(recipeID, reagentSlotSchematic.dataSlotIndex);
+					local currencyID = slot.Button:GetCurrencyID();
+					if currencyID then
+						GameTooltip:SetCurrencyByID(currencyID);
+					else
+						GameTooltip:SetRecipeReagentItem(recipeID, reagentSlotSchematic.dataSlotIndex);
+					end
 					GameTooltip:Show();
 				end);
 			end

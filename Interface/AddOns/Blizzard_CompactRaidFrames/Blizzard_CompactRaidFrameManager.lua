@@ -62,7 +62,7 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 end
 
 function CompactRaidFrameManager_UpdateShown()
-	if ShouldShowRaidFrames() then
+	if ShouldShowRaidFrames() or ShouldShowPartyFrames() then
 		CompactRaidFrameManager:Show();
 	else
 		CompactRaidFrameManager:Hide();

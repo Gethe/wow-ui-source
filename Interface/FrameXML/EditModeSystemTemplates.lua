@@ -172,6 +172,13 @@ function EditModeSystemMixin:ApplySystemAnchor()
 
 	self:ClearAllPoints();
 
+	if self:IsInDefaultPosition() and (EditModeUtil:IsRightAnchoredActionBar(self) or EditModeUtil:IsBottomAnchoredActionBar(self)) then
+		-- If this is a right or bottom anchored action bar in default position let UpdateActionBarLayout handle all anchoring
+		self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
+		EditModeManagerFrame:UpdateActionBarLayout(self);
+		return;
+	end
+
 	-- Make sure offsets are relative to our current scale
 	local scale = self:GetScale();
 	self:SetPoint(self.systemInfo.anchorInfo.point, self.systemInfo.anchorInfo.relativeTo, self.systemInfo.anchorInfo.relativePoint, self.systemInfo.anchorInfo.offsetX / scale, self.systemInfo.anchorInfo.offsetY / scale);
@@ -1206,6 +1213,13 @@ function EditModeMinimapSystemMixin:UpdateSystemSetting(setting, entireSystemUpd
 end
 
 EditModeCastBarSystemMixin = {};
+
+function EditModeCastBarSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
 
 function EditModeCastBarSystemMixin:ApplySystemAnchor()
 	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);

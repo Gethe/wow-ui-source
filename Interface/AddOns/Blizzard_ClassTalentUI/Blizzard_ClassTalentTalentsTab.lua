@@ -574,8 +574,8 @@ end
 
 function ClassTalentTalentsTabMixin:RefreshCurrencyDisplay()
 	local classCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[1] or nil;
-	local classInfo = self:GetClassInfo();
-	self.ClassCurrencyDisplay:SetPointTypeText(string.upper(classInfo.className));
+	local className = self:GetClassName();
+	self.ClassCurrencyDisplay:SetPointTypeText(string.upper(className));
 	self.ClassCurrencyDisplay:SetAmount(classCurrencyInfo and classCurrencyInfo.quantity or 0);
 
 	local specCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[2] or nil;
@@ -1045,8 +1045,13 @@ function ClassTalentTalentsTabMixin:GetClassID()
 	return PlayerUtil.GetClassID();
 end
 
-function ClassTalentTalentsTabMixin:GetClassInfo()
-	return C_CreatureInfo.GetClassInfo(self:GetClassID());
+function ClassTalentTalentsTabMixin:GetClassName()
+	if self:IsInspecting() then
+		local className = UnitClass(self:GetInspectUnit());
+		return className;
+	end
+
+	return PlayerUtil.GetClassName();
 end
 
 function ClassTalentTalentsTabMixin:GetSpecID()

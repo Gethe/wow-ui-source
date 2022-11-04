@@ -101,6 +101,7 @@
 		<KeyValues>
 			<KeyValue key="system" value="Enum.EditModeSystem.CastBar" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_CAST_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>

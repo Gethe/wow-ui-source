@@ -1732,7 +1732,7 @@ function ContainerFrameItemButtonMixin:UpdateExtended()
 
 	local slotId, bagId = self:GetSlotAndBagID();
 	local _, currentNumSlots = ContainerFrame_GetContainerNumSlots(bagId);
-	-- If a slotId is greater than our currentNumSlots then it is an extended (locked) slot which can't be used until your account is secured 
+	-- If a slotId is greater than our currentNumSlots then it is an extended (locked) slot which can't be used until your account is secured
 	self:SetIsExtended(slotId > currentNumSlots);
 
 	if self.isExtended ~= oldIsExtended then
@@ -2010,14 +2010,6 @@ function ContainerFrameUtil_GetItemButtonAndContainer(bagID, slot)
 			end
 		end
 	end
-end
-
-function ContainerFrame_GetItemButtonCheckSecuredAccount(bagID, slot)
-	if bagID == 0 and not IsAccountSecured() then
-		slot = slot + 4;
-	end
-
-	return ContainerFrameUtil_GetItemButtonAndContainer(bagID, slot);
 end
 
 ContainerFrameUtil_EnumerateContainerFrames = nil;

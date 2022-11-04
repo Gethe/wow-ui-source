@@ -585,14 +585,12 @@ function EditModeManagerFrameMixin:UpdateRightActionBarPositions()
 		bar:SetScale(isInDefaultPosition and newScale or 1);
 
 		if bar and bar:IsShown() and isInDefaultPosition then
-			local point, relativeTo, relativePoint, offsetX, offsetY = bar:GetPoint(1);
-			if relativeTo ~= leftMostBar then
-				bar:ClearAllPoints();
-				if leftMostBar == UIParent then
-					bar:SetPoint("RIGHT", leftMostBar, "RIGHT", RIGHT_ACTION_BAR_DEFAULT_OFFSET_X, RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y);
-				else
-					bar:SetPoint("TOPRIGHT", leftMostBar, "TOPLEFT", -5, 0);
-				end
+			bar:ClearAllPoints();
+
+			if leftMostBar == UIParent then
+				bar:SetPoint("RIGHT", leftMostBar, "RIGHT", RIGHT_ACTION_BAR_DEFAULT_OFFSET_X, RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y);
+			else
+				bar:SetPoint("TOPRIGHT", leftMostBar, "TOPLEFT", -5, 0);
 			end
 
 			-- Bar position changed so we should update our flyout direction
@@ -621,17 +619,14 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 
 	for index, bar in ipairs(barsToUpdate) do
 		if bar and bar:IsShown() and bar:IsInDefaultPosition() then
-			local point, relativeTo, relativePoint, offsetX, offsetY = bar:GetPoint(1);
-			if relativeTo ~= topMostBar then
-				bar:ClearAllPoints();
-				if topMostBar == UIParent then
-					bar:SetPoint("BOTTOM", topMostBar, "BOTTOM", 0, MAIN_ACTION_BAR_DEFAULT_OFFSET_Y);
-				elseif topMostBar == OverrideActionBar then
-					local xpBarHeight = OverrideActionBar.xpBar:IsShown() and OverrideActionBar.xpBar:GetHeight() or 0;
-					bar:SetPoint("BOTTOM", topMostBar, "TOP", 0, 10 + xpBarHeight);
-				else
-					bar:SetPoint("BOTTOMLEFT", topMostBar, "TOPLEFT", 0, 5);
-				end
+			bar:ClearAllPoints();
+			if topMostBar == UIParent then
+				bar:SetPoint("BOTTOM", topMostBar, "BOTTOM", 0, MAIN_ACTION_BAR_DEFAULT_OFFSET_Y);
+			elseif topMostBar == OverrideActionBar then
+				local xpBarHeight = OverrideActionBar.xpBar:IsShown() and OverrideActionBar.xpBar:GetHeight() or 0;
+				bar:SetPoint("BOTTOM", topMostBar, "TOP", 0, 10 + xpBarHeight);
+			else
+				bar:SetPoint("BOTTOMLEFT", topMostBar, "TOPLEFT", 0, 5);
 			end
 
 			-- Bar position changed so we should update our flyout direction
@@ -1660,10 +1655,14 @@ end
 
 function EditModeAccountSettingsMixin:RefreshCastBar()
 	local showCastBar = self.Settings.CastBar:IsControlChecked();
-	PlayerCastingBarFrame:StopAnims();
-	PlayerCastingBarFrame:SetAlpha(0);
-	PlayerCastingBarFrame:SetShown(showCastBar);
-	UIParent_ManageFramePositions();
+	if showCastBar then
+		PlayerCastingBarFrame.isInEditMode = true;
+		PlayerCastingBarFrame:HighlightSystem();
+	else
+		PlayerCastingBarFrame.isInEditMode = false;
+		PlayerCastingBarFrame:ClearHighlight();
+	end
+	PlayerCastingBarFrame:UpdateShownState();
 end
 
 function EditModeAccountSettingsMixin:SetEncounterBarShown(shown, isUserInput)

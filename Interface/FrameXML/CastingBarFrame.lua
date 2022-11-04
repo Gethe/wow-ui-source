@@ -61,7 +61,23 @@ function CastingBarMixin:OnLoad(unit, showTradeSkills, showShield)
 	if ( point == "CENTER" ) then
 		self.Spark.offsetY = offsetY;
 	end
-	
+end
+
+function CastingBarMixin:UpdateShownState(desiredShow)
+	if self.isInEditMode then
+		-- If we are in edit mode then override and just show
+		self:StopFinishAnims();
+		self:ApplyAlpha(1.0);
+		self:Show();
+		return;
+	end
+
+	if desiredShow ~= nil then
+		self:SetShown(desiredShow);
+		return;
+	end
+
+	self:SetShown(self.casting and self.showCastbar);
 end
 
 -- Fades additional widgets along with the cast bar, in case these widgets are not parented or use ignoreParentAlpha
@@ -117,7 +133,8 @@ function CastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
 			self:UnregisterEvent("UNIT_SPELLCAST_FAILED");
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 
-			self:Hide();
+			local desiredShowFalse = false;
+			self:UpdateShownState(desiredShowFalse);
 		end
 	end
 end
@@ -197,7 +214,8 @@ function CastingBarMixin:OnEvent(event, ...)
 	if ( event == "UNIT_SPELLCAST_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-			self:Hide();
+			local desiredShowFalse = false;
+			self:UpdateShownState(desiredShowFalse);
 			return;
 		end
 
@@ -242,12 +260,12 @@ function CastingBarMixin:OnEvent(event, ...)
 				end
 			end
 		end
-		if ( self.showCastbar ) then
-			self:Show();
-		end
+
+		self:UpdateShownState(self.showCastbar);
 	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP") then
 		if ( not self:IsVisible() ) then
-			self:Hide();
+			local desiredShowFalse = false;
+			self:UpdateShownState(desiredShowFalse);
 		end
 		if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
 		     ((self.channeling or self.reverseChanneling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP")) ) then
@@ -298,7 +316,7 @@ function CastingBarMixin:OnEvent(event, ...)
 					self.Text:SetText(INTERRUPTED);
 				end
 			end
-			
+
 			self.casting = nil;
 			self.channeling = nil;
 			self.reverseChanneling = nil;
@@ -310,7 +328,8 @@ function CastingBarMixin:OnEvent(event, ...)
 			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
 			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 				-- if there is no name, there is no bar
-				self:Hide();
+				local desiredShowFalse = false;
+				self:UpdateShownState(desiredShowFalse);
 				return;
 			end
 			self.value = (GetTime() - (startTime / 1000));
@@ -328,7 +347,7 @@ function CastingBarMixin:OnEvent(event, ...)
 				self.casting = true;
 				self.channeling = nil;
 				self.reverseChanneling = nil;
-				
+
 				self:StopAnims();
 			end
 		end
@@ -336,7 +355,8 @@ function CastingBarMixin:OnEvent(event, ...)
 		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID, _, numStages = UnitChannelInfo(unit);
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			-- if there is no name, there is no bar
-			self:Hide();
+			local desiredShowFalse = false;
+			self:UpdateShownState(desiredShowFalse);
 			return;
 		end
 
@@ -400,9 +420,8 @@ function CastingBarMixin:OnEvent(event, ...)
 				end
 			end
 		end
-		if ( self.showCastbar ) then
-			self:Show();
-		end
+
+		self:UpdateShownState(self.showCastbar);
 
 		-- AddStages after Show so that the layout is valid
 		if (isChargeSpell) then
@@ -413,7 +432,8 @@ function CastingBarMixin:OnEvent(event, ...)
 			local name, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(unit);
 			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 				-- if there is no name, there is no bar
-				self:Hide();
+				local desiredShowFalse = false;
+				self:UpdateShownState(desiredShowFalse);
 				return;
 			end
 			self.value = ((endTime / 1000) - GetTime());
@@ -613,12 +633,12 @@ function CastingBarMixin:PlayFadeAnim()
 	if self.FadeOutAnim and self:GetAlpha() > 0 and self:IsVisible() then
 		if self.reverseChanneling and self.CurrSpellStage < self.NumStages then
 			self.HoldFadeOutAnim:Play();
-		else
+		elseif not self.isInEditMode then
 			self.FadeOutAnim:Play();
 		end
 	end
 end
-	
+
 function CastingBarMixin:PlayFinishAnim()
 	if not self.playCastFX then
 		return;
@@ -670,7 +690,8 @@ function CastingBarMixin:UpdateIsShown()
 	if ( self.casting and self.showCastbar ) then
 		self:OnEvent("PLAYER_ENTERING_WORLD")
 	else
-		self:Hide();
+		local desiredShowFalse = false;
+		self:UpdateShownState(desiredShowFalse);
 	end
 end
 
