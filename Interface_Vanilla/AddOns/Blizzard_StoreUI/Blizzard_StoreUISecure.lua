@@ -3826,6 +3826,9 @@ function VASRealmList_BuildAutoCompleteList()
 		if (infoA.categoryID ~= infoB.categoryID) then
 			return infoA.categoryID < infoB.categoryID;
 		end
+		if (infoA.expansionLevel ~= infoB.expansionLevel) then
+			return infoA.expansionLevel > infoB.expansionLevel;
+		end
 		return infoA.name < infoB.name;
 	end);
 end
@@ -3862,12 +3865,16 @@ function VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick(sel
 	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 	local character = characters[SelectedCharacter];
 
+	-- Russian realms are all part of the same CFG_Categories, so we cannot use that to differentiate between progression/era/seasonal
+	-- We can figure out progression servers by expansionLevel, but we can't distinguish era vs seasonal, so we ignore that tag.
+	local doRussianCategoryHack = (realmInfo.categoryID == 12 and C_StoreSecure.GetCurrentRealmContentSet() >= 1 and realmInfo.expansionLevel >= 1);
+
 	if (character and realmInfo and realmInfo.factionRestriction >= 0 and realmInfo.factionRestriction ~= character.faction) then
 		frame.TransferRealmCheckbox.Warning:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
 		frame.TransferRealmCheckbox.Warning:SetText(BLIZZARD_STORE_VAS_TRANSFER_INELIGIBLE_FACTION_WARNING);
 		frame.TransferRealmCheckbox.Warning:Show();
 	elseif (realmInfo and realmInfo.categoryID and realmInfo.category and
-			realmInfo.categoryID ~= C_StoreSecure.GetCurrentRealmCategory()) then
+			(realmInfo.categoryID ~= C_StoreSecure.GetCurrentRealmCategory() or doRussianCategoryHack)) then
 		-- Show an informative realm category warning if the realm we're transferring to is in a different tab than our currently connected realm.
 		-- A better way to do this would be to get the realm category of the source realm we're transferring from, but that's actually a fair bit more work.
 		-- Just using our current realm connection should be adequate for the vast majority of cases.
@@ -3935,8 +3942,12 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 			tag = _G.VAS_RP_PARENTHESES;
 		end
 
+		-- Russian realms are all part of the same CFG_Categories, so we cannot use that to differentiate between progression/era/seasonal
+		-- We can figure out progression servers by expansionLevel, but we can't distinguish era vs seasonal, so we ignore that tag.
+		local doRussianCategoryHack = (rpPvpInfo.categoryID == 12 and C_StoreSecure.GetCurrentRealmContentSet() >= 1 and rpPvpInfo.expansionLevel >= 1);
+
 		local realmCategoryPrefix = "";
-		if (C_StoreSecure.GetCurrentRealmContentSet() >= 1 and rpPvpInfo.categoryID ~= currentRealmCategoryID) then
+		if (C_StoreSecure.GetCurrentRealmContentSet() >= 1 and (rpPvpInfo.categoryID ~= currentRealmCategoryID or doRussianCategoryHack)) then
 			if (rpPvpInfo.expansionLevel >= 1) then
 				realmCategoryPrefix = "[" .. "|cff5babdc"..WRATH_OF_THE_LICH_KING.."|r" .. "] ";
 			else
