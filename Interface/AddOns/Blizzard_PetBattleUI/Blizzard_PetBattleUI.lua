@@ -1059,7 +1059,7 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 	--Update the pet rarity border
 	if (self.Border) then
 		local rarity = C_PetBattles.GetBreedQuality(petOwner, petIndex);
-		if (ENABLE_COLORBLIND_MODE == "1") then 
+		if (CVarCallbackRegistry:GetCVarValueBool("colorblindMode")) then 
 			self.Name:SetText(self.Name:GetText().." (".._G["BATTLE_PET_BREED_QUALITY"..rarity]..")");
 		else
 			self.Border:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);		

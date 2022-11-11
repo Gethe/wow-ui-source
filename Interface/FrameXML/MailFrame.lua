@@ -1118,7 +1118,7 @@ function SendMailFrame_CanSend()
 		checksRequired = checksRequired + 1;
 		-- COD must be less than 10000 gold
 		if ( MoneyInputFrame_GetCopper(SendMailMoney) > MAX_COD_AMOUNT * COPPER_PER_GOLD ) then
-			if ( ENABLE_COLORBLIND_MODE ~= "1" ) then
+			if ( not CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 				SendMailErrorCoin:Show();
 			end
 			SendMailErrorText:Show();

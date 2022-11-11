@@ -104,7 +104,23 @@ function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom,
 		local sheatheWeapons = true;
 		local autoDress = true;
 		local hideWeapons = true;
-		SetupPlayerForModelScene(display.ModelScene, itemModifiedAppearanceIDs, sheathWeapons, autoDress, hideWeapons);
+		local useNativeForm = true;
+		local playerRaceName;
+		if IsOnGlueScreen() then
+			local _, _, raceFilename = GetCharacterInfo(GetCharacterSelection());
+			playerRaceName = raceFilename and raceFilename:lower();
+		else
+			local _, raceFilename = UnitRace("player");
+			playerRaceName = raceFilename:lower();
+		end
+
+		local overrideActorName;
+		if playerRaceName == "dracthyr" then
+			overrideActorName = "dracthyr-alt";
+			useNativeForm = false;
+		end
+
+		SetupPlayerForModelScene(display.ModelScene, overrideActorName, itemModifiedAppearanceIDs, sheathWeapons, autoDress, hideWeapons, useNativeForm);
 	end
 	ModelPreviewFrame:Show();
 end

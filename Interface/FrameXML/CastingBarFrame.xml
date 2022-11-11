@@ -117,6 +117,10 @@
 			</AnimationGroup>
 		</Animations>
 	</StatusBar>
+
+	<!-- WARNING: TargetsVisibleWhilePlayingAnimGroupTemplate is likely to fail to find its targets since they're defined
+		in a child frame, which will cause the base frame to be hidden instead. That's ok with CastingBarFrameTemplate
+		since the template is split and CastingBarFrameBaseTemplate will load first. -->
 	<StatusBar name="CastingBarFrameAnimsFXTemplate" inherits="CastingBarFrameAnimsTemplate" virtual="true">
 		<Animations>
 			<AnimationGroup parentKey="FlashLoopingAnim" looping="NONE" setToFinalAlpha="true">
@@ -199,7 +203,7 @@
 			</AnimationGroup>
 		</Animations>
 	</StatusBar>
-	<StatusBar name="CastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" drawLayer="BORDER" virtual="true">
+	<StatusBar name="CastingBarFrameBaseTemplate" mixin="CastingBarMixin" drawLayer="BORDER" virtual="true">
 		<BarTexture atlas="ui-castingbar-filling-standard" useAtlasSize="true"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
@@ -402,6 +406,9 @@
 			<OnShow method="OnShow" />
 		</Scripts>
 	</StatusBar>
+
+	<StatusBar name="CastingBarFrameTemplate" inherits="CastingBarFrameBaseTemplate, CastingBarFrameAnimsFXTemplate" virtual="true"/>
+
 	<StatusBar name="SmallCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsTemplate" drawLayer="BORDER" virtual="true">
 		<Size x="150" y="20"/>
 		<Layers>

@@ -451,7 +451,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateMinimumQuality()
 end
 
 function ProfessionsCustomerOrderFormMixin:UpdateDepositCost()
-	if not self.order.skillLineAbilityID then
+	if not self.order or not self.order.skillLineAbilityID or not self.order.orderType or not self.duration then
 		return;
 	end
 

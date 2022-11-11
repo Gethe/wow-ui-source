@@ -1,5 +1,7 @@
 ColorblindSelectorMixin = {};
 
+CVarCallbackRegistry:SetCVarCachable("colorblindMode");
+
 function ColorblindSelectorMixin:OnLoad()
 	local qualityIDs = 
 	{

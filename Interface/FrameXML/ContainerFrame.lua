@@ -1480,7 +1480,7 @@ function ContainerFrameItemButtonMixin:OnLeave()
 		ResetCursor();
 	end
 
-	if ( ArtifactFrame ) then
+	if ( ArtifactFrame and self:HasItem() ) then
 		ArtifactFrame:OnInventoryItemMouseLeave(self:GetBagID(), self:GetID());
 	end
 end

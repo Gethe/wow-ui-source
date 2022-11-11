@@ -213,10 +213,10 @@ function Professions.GetProfessionCategories(sorted)
 end
 
 function Professions.GetFirstRecipe(recipeInfo)
-	local previousRecipeID = recipeInfo.previousRecipeID;
+	local previousRecipeID = recipeInfo and recipeInfo.previousRecipeID;
 	while previousRecipeID do
 		recipeInfo = C_TradeSkillUI.GetRecipeInfo(previousRecipeID);
-		previousRecipeID = recipeInfo.previousRecipeID;
+		previousRecipeID = recipeInfo and recipeInfo.previousRecipeID;
 	end
 	
 	return recipeInfo;

@@ -1248,7 +1248,7 @@ function FriendsFrame_GetBNetAccountNameAndStatus(accountInfo, noCharacterName)
 			if accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW and CanCooperateWithGameAccount(accountInfo) then
 				nameText = nameText.." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;
 			else
-				if ENABLE_COLORBLIND_MODE == "1" then
+				if CVarCallbackRegistry:GetCVarValueBool("colorblindMode") then
 					characterName = accountInfo.gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL;
 				end
 				nameText = nameText.." "..FRIENDS_OTHER_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;

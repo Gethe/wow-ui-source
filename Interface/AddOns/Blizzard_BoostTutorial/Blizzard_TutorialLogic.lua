@@ -1018,7 +1018,8 @@ function Class_HealthBarCallout:OnBegin()
 	local prompt = string.format(formatStr(NPE_HEALTHBAR), resourceText);
 
 	C_Timer.After(2, function()
-			self:ShowPointerTutorial(prompt, "UP", PlayerFrameManaBar, 0, 0);
+			local playerFrameManaBar = PlayerFrame_GetManaBar();
+			self:ShowPointerTutorial(prompt, "UP", playerFrameManaBar, 0, 0);
 
 			if (UnitAffectingCombat("player")) then
 				Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", function()

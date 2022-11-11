@@ -21,7 +21,7 @@ function OpenCoinPickupFrame(multiplier, maxMoney, parent)
 		return;
 	end
 
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		if ( not CoinPickupFrame.colorBlind ) then
 			CoinPickupCopperIcon:Hide();
 			CoinPickupSilverIcon:Hide();

@@ -7,9 +7,8 @@ function PlayerFrame_OnLoad(self)
 	PlayerFrame.PlayerFrameContainer.FrameFlash:SetTexelSnappingBias(0);
 	PlayerFrame.PlayerFrameContainer.FrameFlash:SetSnapToPixelGrid(false);
 
-	local playerFrameContent = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain;
-	local healthBar = playerFrameContent.HealthBarArea.HealthBar;
-	local manaBar = playerFrameContent.ManaBarArea.ManaBar;
+	local healthBar = PlayerFrame_GetHealthBar();
+	local manaBar = PlayerFrame_GetManaBar();
 	UnitFrame_Initialize(self, "player", PlayerName, self.frameType, self.PlayerFrameContainer.PlayerPortrait,
 						 healthBar,
 						 healthBar.HealthBarText,
@@ -31,7 +30,7 @@ function PlayerFrame_OnLoad(self)
 	self.statusSign = -1;
 
 	healthBar:GetStatusBarTexture():AddMaskTexture(healthBar.HealthBarMask);
-	playerFrameContent.HealthBarArea.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture():AddMaskTexture(healthBar.HealthBarMask);
+	PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture():AddMaskTexture(healthBar.HealthBarMask);
 
 	manaBar:GetStatusBarTexture():AddMaskTexture(manaBar.ManaBarMask);
 	manaBar.FeedbackFrame:AddMaskTexture(manaBar.ManaBarMask);
@@ -226,6 +225,22 @@ function PlayerFrame_OnReceiveDrag()
 end
 
 --
+-- Helper functions to access frequently needed UI.
+--
+
+function PlayerFrame_GetPlayerFrameContentContextual()
+	return PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual;
+end
+
+function PlayerFrame_GetHealthBar()
+	return PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar;
+end
+
+function PlayerFrame_GetManaBar()
+	return PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar;
+end
+
+--
 -- Functions related to localization anchoring, which can be overritten in LocalizationPost for different languages.
 --
 
@@ -266,25 +281,29 @@ function PlayerFrame_UpdateLevel()
 end
 
 function PlayerFrame_UpdatePartyLeader()
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	if (UnitIsGroupLeader("player")) then
-		PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.LeaderIcon:SetShown(not HasLFGRestrictions());
-		PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.GuideIcon:SetShown(HasLFGRestrictions());
+		playerFrameTargetContextual.LeaderIcon:SetShown(not HasLFGRestrictions());
+		playerFrameTargetContextual.GuideIcon:SetShown(HasLFGRestrictions());
 	else
-		PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.LeaderIcon:Hide();
-		PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.GuideIcon:Hide();
+		playerFrameTargetContextual.LeaderIcon:Hide();
+		playerFrameTargetContextual.GuideIcon:Hide();
 	end
 end
 
 function PlayerFrame_CanPlayPVPUpdateSound()
-	return not PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PVPIcon:IsShown()
-	and not PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PrestigePortrait:IsShown();
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+
+	return not playerFrameTargetContextual.PVPIcon:IsShown() and not playerFrameTargetContextual.PrestigePortrait:IsShown();
 end
 
 function PlayerFrame_UpdatePvPStatus()
 	local factionGroup, factionName = UnitFactionGroup("player");
-	local pvpIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PVPIcon;
-	local prestigePortrait = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PrestigePortrait;
-	local prestigeBadge = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PrestigeBadge;
+
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	local pvpIcon = playerFrameTargetContextual.PVPIcon;
+	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
+	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
 
 	if (UnitIsPVPFreeForAll("player")) then
 		if (PlayerFrame_CanPlayPVPUpdateSound()) then
@@ -414,8 +433,9 @@ function PlayerFrame_UpdateReadyCheck()
 end
 
 function PlayerFrame_UpdateStatus()
-	local attackIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.AttackIcon;
-	local playerPortraitCornerIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPortraitCornerIcon;
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	local attackIcon = playerFrameTargetContextual.AttackIcon;
+	local playerPortraitCornerIcon = playerFrameTargetContextual.PlayerPortraitCornerIcon;
 	local statusTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture;
 
 	if (IsResting()) then
@@ -483,8 +503,9 @@ function PlayerFrame_UpdateGroupIndicator()
 end
 
 function PlayerFrame_UpdatePlaytime()
-	local playerPlayTime = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPlayTime;
-	local playTimeIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPlayTime.PlayTimeIcon;
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	local playerPlayTime = playerFrameTargetContextual.PlayerPlayTime;
+	local playTimeIcon = playerFrameTargetContextual.PlayerPlayTime.PlayTimeIcon;
 
 	if (PartialPlayTime()) then
 		playTimeIcon:SetAtlas("UI-HUD-UnitFrame-Player-PlayTimeTired", TextureKitConstants.UseAtlasSize);
@@ -506,8 +527,8 @@ end
 function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrame.state = "vehicle";
 
-	local healthBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar;
-	local manaBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar;
+	local healthBar = PlayerFrame_GetHealthBar();
+	local manaBar = PlayerFrame_GetManaBar();
 
 	--Swap pet and player frames
 	UnitFrame_SetUnit(self, "vehicle", healthBar, manaBar);
@@ -562,18 +583,18 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	ComboFrame_Update(ComboFrame);
 
 	PlayerFrame_UpdatePlayerNameTextAnchor();
-	local PlayerFrameContentContextual = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual;
-	PlayerFrameContentContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -26);
-	PlayerFrameContentContextual.RoleIcon:SetPoint("TOPLEFT", 194, -27);
-	PlayerFrameContentContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -87);
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -26);
+	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 194, -27);
+	playerFrameTargetContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -87);
 	PlayerLevelText:Hide();
 end
 
 function PlayerFrame_ToPlayerArt(self)
 	PlayerFrame.state = "player";
 
-	local healthBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar;
-	local manaBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar;
+	local healthBar = PlayerFrame_GetHealthBar();
+	local manaBar = PlayerFrame_GetManaBar();
 
 	-- Unswap pet and player frames
 	UnitFrame_SetUnit(self, "player", healthBar, manaBar);
@@ -629,10 +650,10 @@ function PlayerFrame_ToPlayerArt(self)
 
 	PlayerFrame_UpdateRolesAssigned();
 	PlayerFrame_UpdatePlayerNameTextAnchor();
-	local PlayerFrameContentContextual = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual;
-	PlayerFrameContentContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -27);
-	PlayerFrameContentContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
-	PlayerFrameContentContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -82);
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -27);
+	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
+	playerFrameTargetContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -82);
 	PlayerLevelText:Show();
 end
 

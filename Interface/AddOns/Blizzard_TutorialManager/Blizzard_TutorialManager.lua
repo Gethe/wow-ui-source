@@ -43,6 +43,7 @@ function TutorialManager:Shutdown()
 end
 
 function TutorialManager:OnSettingsLoaded(cvar, value)
+	EventRegistry:TriggerEvent("TutorialManager.TutorialsInit");
 	local tutorialsEnabled = Settings.GetSetting("showTutorials");
 	self.IsActive = tutorialsEnabled:GetValue();
 	if self.IsActive then

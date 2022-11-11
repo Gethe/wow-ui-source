@@ -1857,6 +1857,7 @@ end
 function EditModeAccountSettingsMixin:RefreshHudTooltip()
 	local showHudTooltip = self.Settings.HudTooltip:IsControlChecked();
 	if showHudTooltip then
+		GameTooltip_Hide();
 		GameTooltipDefaultContainer:Show();
 	else
 		GameTooltipDefaultContainer:Hide();

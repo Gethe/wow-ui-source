@@ -271,7 +271,7 @@
 	<GameTooltip name="ShoppingTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<GameTooltip name="ShoppingTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 
-	<Frame name="GameTooltipDefaultContainer" frameStrata="TOOLTIP" inherits="EditModeHudTooltipSystemTemplate" parent="UIParent" hidden="true">
+	<Frame name="GameTooltipDefaultContainer" frameStrata="LOW" inherits="EditModeHudTooltipSystemTemplate" parent="UIParent" hidden="true">
 		<Size x="250" y="150"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="-9" y="85"/>
@@ -300,7 +300,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow function="GameTooltip_CalculatePadding"/>
+			<OnShow function="GameTooltip_OnShow"/>
 			<OnUpdate function="GameTooltip_OnUpdate"/>
 		</Scripts>
 	</GameTooltip>

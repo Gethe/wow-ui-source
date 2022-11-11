@@ -3,17 +3,23 @@ function AddDracthyrTutorials()
 	local _, raceFilename = UnitRace("Player");
 	if raceFilename == "Dracthyr" then
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_ESSENCE) then
-			TutorialManager:AddWatcher(Class_DracthyrEssenceWatcher:new(), true);
+			local class = Class_DracthyrEssenceWatcher:new();
+			class:OnInitialize();
+			class:StartWatching();
 		end
 
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_EMPOWERED) then
-			TutorialManager:AddWatcher(Class_DracthyrEmpoweredSpellWatcher:new(), true);
+			local class = Class_DracthyrEmpoweredSpellWatcher:new();
+			class:OnInitialize();
+			class:StartWatching();
 		end
 
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_LOW_HEALTH) then
 			local usingSelfCast = Settings.GetSetting("autoSelfCast");
 			if usingSelfCast then
-				TutorialManager:AddWatcher(Class_DracthyrLowHealthWatcher:new(), true);
+				local class = Class_DracthyrLowHealthWatcher:new();
+				class:OnInitialize();
+				class:StartWatching();
 			end
 		end
 	end
@@ -67,7 +73,7 @@ function Class_DracthyrEssenceWatcher:OnInterrupt(interruptedBy)
 end
 
 function Class_DracthyrEssenceWatcher:FinishTutorial()
-	TutorialManager:StopWatcher(self:Name(), true);
+	self:StopWatching();
 	HelpTip:Hide(EssencePlayerFrame, TUTORIAL_DRACTHYR_ESSENCE);
 end
 
@@ -193,7 +199,7 @@ end
 
 function Class_DracthyrEmpoweredSpellWatcher:FinishTutorial()
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_EMPOWERED, true);
-	TutorialManager:StopWatcher(self:Name(), true);
+	self:StopWatching();
 	HelpTip:Hide(self.actionButton, self.helpString);
 end
 
@@ -246,6 +252,6 @@ end
 
 function Class_DracthyrLowHealthWatcher:FinishTutorial()
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_LOW_HEALTH, true);
-	TutorialManager:StopWatcher(self:Name(), true);
+	self:StopWatching();
 	HelpTip:Hide(self.actionButton, self.helpString);
 end

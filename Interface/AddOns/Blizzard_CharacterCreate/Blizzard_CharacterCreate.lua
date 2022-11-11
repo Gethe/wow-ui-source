@@ -116,6 +116,8 @@ function CharacterCreateMixin:OnEvent(event, ...)
 			elseif C_CharacterCreation.IsUsingCharacterTemplate() then
 				CharacterSelect.selectLast = true;
 			end
+
+			self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 			GlueParent_SetScreen("charselect");
 		else
 			showError = errorCode;
@@ -251,7 +253,7 @@ end
 
 function CharacterCreateMixin:ClearVASInfo()
 	self.vasType = nil;
-	self.vasInfo = nil;	
+	self.vasInfo = nil;
 	C_CharacterCreation.SetPaidService(false);
 end
 
@@ -551,11 +553,14 @@ function CharacterCreateMixin:NavBack()
 			self:Exit();
 		end
 	else
+		self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 		self:UpdateMode(-1);
 	end
 end
 
 function CharacterCreateMixin:Exit()
+	self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
+
 	CharacterSelect.backFromCharCreate = true;
 	GlueParent_SetScreen("charselect");
 end
@@ -840,7 +845,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 	if (self.layoutIndex > 11) then
 		self.tooltipAnchor = "ANCHOR_LEFT";
 	end
-	
+
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(classData.description);
@@ -850,7 +855,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 	local tooltipDisabledReason;
 	if not classData.enabled then
 		if classData.disabledReason == Enum.CreationClassDisabledReason.DoesNotHaveExpansion then
-			local currentExpansionName = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT]; 
+			local currentExpansionName = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT];
 			tooltipDisabledReason = CHAR_CREATE_NEED_EXPANSION:format(currentExpansionName);
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForTemplates then
 			tooltipDisabledReason = CHAR_CREATE_CLASS_DISABLED_TEMPLATE;
@@ -993,7 +998,7 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 
 	if not raceData.enabled then
 		if raceData.disabledReason == Enum.CreationRaceDisabledReason.DoesNotHaveExpansion then
-			local currentExpansionName = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT]; 
+			local currentExpansionName = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT];
 			self:AddPostTooltipLine(CHAR_CREATE_NEED_EXPANSION:format(currentExpansionName), RED_FONT_COLOR);
 		elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.RaceLimitServer then
 			self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_DUPLICATE, RED_FONT_COLOR);
@@ -1232,11 +1237,21 @@ function CharacterCreateRaceAndClassMixin:GetBoostCharacterFactionID()
 	return PLAYER_FACTION_GROUP[self.selectedFaction];
 end
 
+function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
+	return C_CharacterServices.IsTrialBoostEnabled() and
+		not C_CharacterCreation.IsNewPlayerRestricted() and
+		not C_CharacterCreation.IsTrialAccountRestricted() and
+		not CharacterCreateFrame:HasService() and
+		(self.selectedClassID ~= EVOKER_CLASS_ID) and
+		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost);
+end
+
 function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
-	local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
-	local isTrialRestricted = C_CharacterCreation.IsTrialAccountRestricted();
-	local isEvoker = (self.selectedClassID == EVOKER_CLASS_ID);
-	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not isTrialRestricted and not isEvoker and not CharacterCreateFrame:HasService() and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
+	local showTrialBoost = self:CanTrialBoostCharacter();
+	local isVisibilityChanging = showTrialBoost ~= self.ClassTrialCheckButton:IsVisible();
+
+	self.ClassTrialCheckButton:SetShown(showTrialBoost);
+	self.ClassTrialCheckButton:UpdateDesiredState(showTrialBoost, isVisibilityChanging);
 end
 
 function CharacterCreateRaceAndClassMixin:OnShow()
@@ -1698,7 +1713,51 @@ function ClassTrialCheckButtonMixin:OnCheckButtonClick()
 	ResizeCheckButtonMixin.OnCheckButtonClick(self);
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	self:UpdateCharacterCreateTypeFromChecked();
+end
+
+function ClassTrialCheckButtonMixin:UpdateDesiredState(showTrialBoost, isVisibilityChanging)
+	if isVisibilityChanging then
+		if showTrialBoost then
+			-- Predicated on the assumption that if the button shows then it's legal to use class trial
+			self:ReapplyDesiredState();
+		else
+			self:SaveDesiredStateAndUncheck();
+		end
+	end
+end
+
+function ClassTrialCheckButtonMixin:ReapplyDesiredState()
+	if self:GetDesiredState() ~= nil then
+		self.Button:SetChecked(self:GetDesiredState());
+		self:UpdateCharacterCreateTypeFromChecked();
+		self:ResetDesiredState();
+	end
+end
+
+function ClassTrialCheckButtonMixin:SaveDesiredStateAndUncheck()
+	local currentState = self.Button:GetChecked();
+
+	self:ResetDesiredState();
+	self.Button:SetChecked(false);
+	self:UpdateCharacterCreateTypeFromChecked();
+	self:SetDesiredState(currentState);
+end
+
+function ClassTrialCheckButtonMixin:UpdateCharacterCreateTypeFromChecked()
 	C_CharacterCreation.SetCharacterCreateType(self.Button:GetChecked() and Enum.CharacterCreateType.TrialBoost or Enum.CharacterCreateType.Normal);
+end
+
+function ClassTrialCheckButtonMixin:SetDesiredState(desiredState)
+	self.desiredState = desiredState;
+end
+
+function ClassTrialCheckButtonMixin:ResetDesiredState()
+	self:SetDesiredState(nil);
+end
+
+function ClassTrialCheckButtonMixin:GetDesiredState()
+	return self.desiredState;
 end
 
 CharacterCreateFrameRacialAbilityMixin = {};

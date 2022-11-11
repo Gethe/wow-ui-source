@@ -517,6 +517,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 		if not isRecraft then
 			local firstRecipeInfo = Professions.GetFirstRecipe(recipeInfo);
+			if not firstRecipeInfo then
+				return;
+			end
 			local spell = Spell:CreateFromSpellID(firstRecipeInfo.recipeID);
 			local description = C_TradeSkillUI.GetRecipeDescription(spell:GetSpellID(), reagents, self.transaction:GetAllocationItemGUID());
 			if description and description ~= "" then

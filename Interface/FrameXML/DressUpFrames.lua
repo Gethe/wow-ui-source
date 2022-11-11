@@ -312,12 +312,13 @@ function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh)
 		frame.ModelScene:ReleaseAllActors();
 		frame.ModelScene:TransitionToModelSceneID(DRESS_UP_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 
+		local overrideActorName = nil;
 		local sheatheWeapons = false;
 		local autoDress = true;
 		local hideWeapons = false;
 		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 		local useNativeForm = not inAlternateForm;
-		SetupPlayerForModelScene(frame.ModelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
+		SetupPlayerForModelScene(frame.ModelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 	end
 end
 

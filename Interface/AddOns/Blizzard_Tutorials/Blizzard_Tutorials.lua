@@ -3,6 +3,11 @@ GameTutorials = {};
 function GameTutorials:Initialize()
 	EventRegistry:RegisterCallback("TutorialManager.TutorialsEnabled", self.OnTutorialsEnabled, self);
 	EventRegistry:RegisterCallback("TutorialManager.TutorialsDisabled", self.OnTutorialsDisabled, self);
+	EventRegistry:RegisterCallback("TutorialManager.TutorialsInit", self.OnTutorialsInit, self);
+end
+
+function GameTutorials:OnTutorialsInit()
+	AddDracthyrTutorials();
 end
 
 function GameTutorials:OnTutorialsEnabled()
@@ -11,7 +16,6 @@ function GameTutorials:OnTutorialsEnabled()
 	end
 
 	AddSpecAndTalentTutorials();
-	AddDracthyrTutorials();
 	AddFrameTutorials(); --Misc tutorials
 	AddDragonridingTutorials();
 

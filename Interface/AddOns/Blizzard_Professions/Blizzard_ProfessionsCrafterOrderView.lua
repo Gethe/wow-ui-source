@@ -136,6 +136,7 @@ local ProfessionsCrafterOrderViewEvents =
     "UPDATE_TRADESKILL_CAST_COMPLETE",
     "PLAYER_MONEY",
     "IGNORELIST_UPDATE",
+	"TRADE_SKILL_LIST_UPDATE",
 };
 function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     if event == "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE" then
@@ -196,6 +197,9 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
         if C_FriendList.IsIgnoredByGuid(self.order.customerGuid) then
             self:CloseOrder();
         end
+	elseif event == "TRADE_SKILL_LIST_UPDATE" then
+		self:UpdateCreateButton();
+		self:UpdateStartOrderButton();
     end
 end
 
@@ -429,10 +433,10 @@ function ProfessionsCrafterOrderViewMixin:UpdateCreateButton()
     if transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
         self.CreateButton:SetText(CREATE_PROFESSION_ENCHANT);
     else
-        if recipeInfo.abilityVerb then
+        if recipeInfo and recipeInfo.abilityVerb then
             -- abilityVerb is recipe-level override
             self.CreateButton:SetText(recipeInfo.abilityVerb);
-        elseif recipeInfo.alternateVerb then
+        elseif recipeInfo and recipeInfo.alternateVerb then
             -- alternateVerb is profession-level override
             self.CreateButton:SetText(recipeInfo.alternateVerb);
         elseif self:IsRecrafting() then

@@ -259,7 +259,7 @@ function AutoComplete_UpdateResults(self, results, context)
 		local displayName = Ambiguate(results[i].name, context or "all");
 		local displayText;
 		local displayInfo = AUTOCOMPLETE_COLOR_KEYS[results[i].priority]
-		if ( ENABLE_COLORBLIND_MODE == "1" ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 			displayText = displayName.." "..displayInfo.text;
 		else
 			local colorCode;

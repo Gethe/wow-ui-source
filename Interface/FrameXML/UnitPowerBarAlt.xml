@@ -202,7 +202,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EncounterBar" parent="UIParent" inherits="VerticalLayoutFrame, UIParentBottomManagedFrameTemplate, EditModeEncounterBarSystemTemplate">
+	<Frame name="EncounterBar" parent="UIParent" inherits="VerticalLayoutFrame, UIParentBottomManagedFrameTemplate, EditModeEncounterBarSystemTemplate" frameStrata="MEDIUM" fixedFrameStrata="true" frameLevel="70" fixedFrameLevel="true">
 		<Size x="250" y="30"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

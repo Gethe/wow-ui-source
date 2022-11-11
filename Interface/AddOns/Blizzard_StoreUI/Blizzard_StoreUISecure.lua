@@ -3753,7 +3753,26 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 			local actor = self.ModelScene:GetActorByTag(actorTag);
 			SetupItemPreviewActor(actor, card.creatureDisplayInfoID);
 		else
-			SetupPlayerForModelScene(self.ModelScene, card.itemModifiedAppearanceIDs);
+			local useNativeForm = true;
+			local playerRaceName;
+			if IsOnGlueScreen() then
+				local _, _, raceFilename = GetCharacterInfo(GetCharacterSelection());
+				playerRaceName = raceFilename and raceFilename:lower();
+			else
+				local _, raceFilename = UnitRace("player");
+				playerRaceName = raceFilename:lower();
+			end
+
+			local overrideActorName;
+			if playerRaceName == "dracthyr" then
+				useNativeForm = false;
+				overrideActorName = "dracthyr-alt";
+			end
+
+			local sheatheWeapons = true;
+			local autoDress = true;
+			local hideWeapons = true;
+			SetupPlayerForModelScene(self.ModelScene, overrideActorName, card.itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 		end
 	end
 

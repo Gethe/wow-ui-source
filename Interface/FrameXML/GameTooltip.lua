@@ -430,6 +430,19 @@ GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
 	["jailerstower"] = GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY;
 };
 
+function GameTooltip_OnShow(self)
+	-- Do not show HUD tooltips when in edit mode with the HUD tooltip section enabled, to prevent layering issues.
+	if (EditModeManagerFrame:IsEditModeActive() and GameTooltipDefaultContainer:IsShown()) then
+		local relativeTo = select(2, self:GetPoint());
+		if (relativeTo == GameTooltipDefaultContainer) then
+			self:Hide();
+			return;
+		end
+	end
+
+	GameTooltip_CalculatePadding(self);
+end
+
 function GameTooltip_OnHide(self)
 	self.waitingForData = false;
 	local style = nil;
@@ -440,9 +453,7 @@ function GameTooltip_OnHide(self)
 	GameTooltip_ClearWidgetSet(self);
 	TooltipComparisonManager:Clear(self);
 
-	if (BattlePetTooltip) then
-		BattlePetTooltip:Hide();
-	end
+	GameTooltip_HideBattlePetTooltip();
 
 	if self.ItemTooltip then
 		EmbeddedItemTooltip_Hide(self.ItemTooltip);
@@ -916,9 +927,7 @@ GameTooltipDataMixin = CreateFromMixins(TooltipDataHandlerMixin);
 function GameTooltipDataMixin:OnLoad()
 	GameTooltip_OnLoad(self);
 	self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
-	if (BattlePetTooltip) then
-		BattlePetTooltip:Hide();
-	end
+	GameTooltip_HideBattlePetTooltip();
 end
 
 function GameTooltipDataMixin:RefreshData()

@@ -32,12 +32,13 @@ function Class_InteractKeyWatcher:GetHelptip()
 	local helptipText = INTERACT_KEY_TUTORIAL:format(bindingText, tonumber(GetCVar("softTargetInteractionTutorialTotalInteractions")))
 	local helpTipInfo = {
 		text = helptipText,
-		buttonStyle = HelpTip.ButtonStyle.None,
+		buttonStyle = HelpTip.ButtonStyle.Close,
 		alignment = HelpTip.Alignment.Center,
 		targetPoint = HelpTip.Point.LeftEdgeCenter,
 		offsetX = 700, 
 		offsetY = 50,
 		hideArrow = true,
+		onAcknowledgeCallback = GenerateClosure(self.CloseTutorial, self),
 		acknowledgeOnHide = false,
 		system = "TutorialSoftTargetInteraction",
 		handlesGlobalMouseEventCallback = function() return true; end,
@@ -69,7 +70,6 @@ function Class_InteractKeyWatcher:PLAYER_SOFT_INTERACT_CHANGED(...)
 	end
 end
 
-
 function Class_InteractKeyWatcher:PLAYER_SOFT_TARGET_INTERACTION(...)
 	local currInteractions = tonumber(GetCVar("softTargetInteractionTutorialTotalInteractions")); 
 	local interactionNumber = currInteractions + 1;
@@ -81,7 +81,10 @@ function Class_InteractKeyWatcher:PLAYER_SOFT_TARGET_INTERACTION(...)
 	end
 end
 
-
+function Class_InteractKeyWatcher:CloseTutorial()
+	TutorialManager:StopWatcher(self:Name(), true);
+	HelpTip:HideAllSystem("TutorialSoftTargetInteraction");
+end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Interact Key No Interact Key

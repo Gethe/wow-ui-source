@@ -987,7 +987,7 @@ local function QuestLogQuests_GetTitle(displayState, info)
 		end
 	end
 
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		title = "["..info.difficultyLevel.."] "..title;
 	end
 

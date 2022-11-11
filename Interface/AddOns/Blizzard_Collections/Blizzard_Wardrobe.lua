@@ -2646,6 +2646,10 @@ function WardrobeSetsTransmogModelMixin:OnLeave()
 	self:GetParent().tooltipModel = nil;
 end
 
+function WardrobeSetsTransmogModelMixin:OnShow()
+	self:SetUnit("player", false, PlayerUtil.ShouldUseNativeFormInModelScene());
+end
+
 function WardrobeSetsTransmogModelMixin:OnHide()
 	self.setID = nil;
 end
@@ -3965,6 +3969,10 @@ function WardrobeSetsDetailsModelMixin:OnLoad()
 	local lightValues = { omnidirectional = false, point = CreateVector3D(-1, 0, 0), ambientIntensity = .7, ambientColor = CreateColor(.7, .7, .7), diffuseIntensity = .6, diffuseColor = CreateColor(1, 1, 1) };
 	local enabled = true;
 	self:SetLight(enabled, lightValues);
+end
+
+function WardrobeSetsDetailsModelMixin:OnShow()
+	self:SetUnit("player", false, PlayerUtil.ShouldUseNativeFormInModelScene());
 end
 
 function WardrobeSetsDetailsModelMixin:UpdatePanAndZoomModelType()

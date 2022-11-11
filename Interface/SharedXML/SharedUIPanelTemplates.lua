@@ -98,14 +98,36 @@ function ButtonFrameTemplate_ShowAttic(self)
 	end
 end
 
+local function ButtonFrameTemplate_UpdateRegionAnchor(region, desiredOffsetX)
+	-- It's unfortunate that region needs to be checked here, but there's code that uses ButtonFrameTemplate_*Portrait calls
+	-- on frames that don't actually inherit from ButtonFrameTemplate.
+	if region then
+		local point, relativeTo, relativePoint, currentOffsetX, offsetY = region:GetPointByName("TOPLEFT");
+		if point then
+			region:SetPoint(point, relativeTo, relativePoint, desiredOffsetX, offsetY);
+		end
+	end
+end
+
+local function ButtonFrameTemplate_UpdateBGAnchors(self, isPortraitMode)
+	ButtonFrameTemplate_UpdateRegionAnchor(self.Bg, isPortraitMode and 2 or 7);
+	ButtonFrameTemplate_UpdateRegionAnchor(self.Inset, isPortraitMode and 4 or 9);
+end
+
 function ButtonFrameTemplate_HidePortrait(self)
 	self:SetBorder("ButtonFrameTemplateNoPortrait");
 	self:SetPortraitShown(false);
+
+	local isPortraitMode = false;
+	ButtonFrameTemplate_UpdateBGAnchors(self, isPortraitMode);
 end
 
 function ButtonFrameTemplate_ShowPortrait(self)
 	self:SetBorder("PortraitFrameTemplate");
 	self:SetPortraitShown(true);
+
+	local isPortraitMode = true;
+	ButtonFrameTemplate_UpdateBGAnchors(self, isPortraitMode);
 end
 
 function ButtonFrameTemplateMinimizable_HidePortrait(self)
@@ -2363,7 +2385,7 @@ function DropDownControlMixin:AddTopLabel(labelText, labelFont, labelOffsetX, la
 	self.Label:SetPoint("BOTTOMLEFT", self.DropDownMenu, "TOPLEFT", labelOffsetX, labelOffsetY)
 
 	self:SetHeight(32 + self.Label:GetHeight() + labelOffsetY);
-	
+
 	self.DropDownMenu:ClearAllPoints();
 	self.DropDownMenu:SetPoint("BOTTOM", 0, 0);
 end
@@ -2627,7 +2649,7 @@ function LabeledEnumDropDownControlMixin:OnLoad()
 	EnumDropDownControlMixin.OnLoad(self);
 
 	self:SetHeight(self:GetHeight() + 20);
-	
+
 	self.DropDownMenu:ClearAllPoints();
 	self.DropDownMenu:SetPoint("BOTTOM", 0, 2);
 end

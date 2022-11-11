@@ -835,7 +835,7 @@
 						SendMailRadioButton_OnClick(self, 1);
 					</OnLoad>
 					<OnShow>
-						if ( ENABLE_COLORBLIND_MODE == "1" ) then
+						if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 							SendMailErrorText:SetFormattedText(MAIL_COD_ERROR_COLORBLIND, MAX_COD_AMOUNT, GOLD_AMOUNT_SYMBOL);
 						else
 							SendMailErrorText:SetFormattedText(MAIL_COD_ERROR, MAX_COD_AMOUNT);

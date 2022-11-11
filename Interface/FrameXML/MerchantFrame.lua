@@ -197,8 +197,8 @@ function MerchantFrame_UpdateItemQualityBorders(self)
 end
 
 function MerchantFrame_UpdateMerchantInfo()
-	MerchantNameText:SetText(UnitName("NPC"));
-	SetPortraitTexture(MerchantFramePortrait, "NPC");
+	MerchantFrame:SetTitle(UnitName("npc"));
+	MerchantFrame:SetPortraitToUnit("npc");
 
 	local numMerchantItems = GetMerchantNumItems();
 
@@ -428,8 +428,8 @@ function MerchantFrame_UpdateAltCurrency(index, indexOnPage, canAfford)
 end
 
 function MerchantFrame_UpdateBuybackInfo()
-	MerchantNameText:SetText(MERCHANT_BUYBACK);
-	MerchantFramePortrait:SetTexture("Interface\\MerchantFrame\\UI-BuyBack-Icon");
+	MerchantFrame:SetTitle(MERCHANT_BUYBACK);
+	MerchantFrame:SetPortraitToAsset("Interface\\MerchantFrame\\UI-BuyBack-Icon");
 
 	-- Show Buyback specific items
 	MerchantItem11:Show();

@@ -170,7 +170,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 	local tooltipFrameHeight = tooltipFrameHeightBase;
 	tooltipFrame:SetSize(260, tooltipFrameHeight);
 
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		local qualityColor = data.quality;
 		if ( qualityColor == Enum.GarrFollowerQuality.Title ) then
 			qualityColor = Enum.GarrFollowerQuality.Epic;
@@ -390,7 +390,7 @@ function GarrisonFollowerTooltipTemplate_SetShipyardFollower(tooltipFrame, data,
 
 	local tooltipFrameHeightBase = 40;		-- this is the tooltip frame height w/ no abilities/traits being displayed
 	local tooltipFrameHeight = tooltipFrameHeightBase;
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		local qualityColor = data.quality;
 		if ( qualityColor == Enum.GarrFollowerQuality.Title ) then
 			qualityColor = Enum.GarrFollowerQuality.Epic;

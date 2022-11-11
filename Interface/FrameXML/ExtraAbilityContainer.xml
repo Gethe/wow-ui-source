@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ExtraAbilityContainer.lua"/>
 
-	<Frame name="ExtraAbilityContainer" inherits="HorizontalLayoutFrame, UIParentBottomManagedFrameTemplate, EditModeExtraAbilitiesSystemTemplate" mixin="ExtraAbilityContainerMixin" hidden="true">
+	<Frame name="ExtraAbilityContainer" inherits="HorizontalLayoutFrame, UIParentBottomManagedFrameTemplate, EditModeExtraAbilitiesSystemTemplate" mixin="ExtraAbilityContainerMixin" frameStrata="MEDIUM" fixedFrameStrata="true" frameLevel="70" fixedFrameLevel="true" hidden="true">
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>

@@ -149,8 +149,8 @@ function CharacterFrame_OnShow (self)
 	CharacterFrame_UpdatePortrait();
 	UpdateMicroButtons();
 
-	local playerFrameHealthBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar;
-	local playerFrameManaBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar;
+	local playerFrameHealthBar = PlayerFrame_GetHealthBar();
+	local playerFrameManaBar = PlayerFrame_GetManaBar();
 	playerFrameHealthBar.showNumeric = true;
 	playerFrameManaBar.showNumeric = true;
 	PlayerFrameAlternateManaBar.showNumeric = true;
@@ -185,8 +185,8 @@ function CharacterFrame_OnHide (self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
 
-	local playerFrameHealthBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar;
-	local playerFrameManaBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar;
+	local playerFrameHealthBar = PlayerFrame_GetHealthBar();
+	local playerFrameManaBar = PlayerFrame_GetManaBar();
 	playerFrameHealthBar.showNumeric = nil;
 	playerFrameManaBar.showNumeric = nil;
 	PlayerFrameAlternateManaBar.showNumeric = nil;
