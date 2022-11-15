@@ -106,6 +106,7 @@ local EJ_TIER_DATA =
 	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth", r = 0.8, g = 0.4, b = 0.0 },
 	[9] = { backgroundAtlas = "UI-EJ-Shadowlands", r = 0.278, g = 0.471, b = .937 },
 	[10] = { backgroundAtlas = "UI-EJ-Dragonflight", r = 0.2, g = 0.8, b = 1.0 },
+	[11] = { backgroundAtlas = "UI-EJ-Dragonflight", r = 0.2, g = 0.8, b = 1.0 },
 }
 
 EJButtonMixin = {}
@@ -157,6 +158,7 @@ ExpansionEnumToEJTierDataTableId = {
 	[LE_EXPANSION_LEGION] = 7,
 	[LE_EXPANSION_BATTLE_FOR_AZEROTH] = 8,
 	[LE_EXPANSION_SHADOWLANDS] = 9,
+	[LE_EXPANSION_DRAGONFLIGHT] = 10,
 }
 
 function GetEJTierDataTableID(expansion)
@@ -253,7 +255,21 @@ function EncounterJournalItemMixin:Init(elementData)
 	self.itemID = itemInfo and itemInfo.itemID;
 	self.link = itemInfo and itemInfo.link;
 	if self.showingTooltip then
-		EncounterJournal_SetTooltip(self.link);
+		GameTooltip:SetAnchorType("ANCHOR_RIGHT");
+		local useSpec = true;
+		EncounterJournal_SetTooltipWithCompare(GameTooltip, self.link, useSpec);
+	end
+end
+
+EncounterJournalItemHeaderMixin = {};
+
+function EncounterJournalItemHeaderMixin:Init(elementData)
+	self.name:SetText(elementData.text);
+	if elementData.helpText then
+		self.TipButton.elementData = elementData;
+		self.TipButton:Show();
+	else
+		self.TipButton:Hide();
 	end
 end
 
@@ -322,7 +338,7 @@ function EncounterJournal_OnLoad(self)
 	do
 		local view = CreateScrollBoxListLinearView();
 		view:SetElementExtentCalculator(function(dataIndex, elementData)
-			if elementData.perPlayerLootHeader then
+			if elementData.header then
 				return BOSS_LOOT_BUTTON_HEIGHT;
 			elseif EncounterJournal.encounterID then
 				return BOSS_LOOT_BUTTON_HEIGHT;
@@ -331,8 +347,10 @@ function EncounterJournal_OnLoad(self)
 			end
 		end);
 		view:SetElementFactory(function(factory, elementData)
-			if elementData.perPlayerLootHeader then
-				factory("EncounterItemDividerTemplate");
+			if elementData.header then
+				factory("EncounterItemDividerTemplate", function(button, elementData)
+					button:Init(elementData);
+				end);
 			else
 				factory("EncounterItemTemplate", function(button, elementData)
 					button:Init(elementData);
@@ -432,11 +450,11 @@ function EncounterJournal_OnLoad(self)
 	-- check if tabs are active
 	local dungeonInstanceID = EJ_GetInstanceByIndex(1, false);
 	if( not dungeonInstanceID ) then
-		self.dungeonsTab.grayBox:Show();
+		EJ_ContentTab_SetEnabled(self.dungeonsTab, false);
 	end
 	local raidInstanceID = EJ_GetInstanceByIndex(1, true);
 	if( not raidInstanceID ) then
-		self.raidsTab.grayBox:Show();
+		EJ_ContentTab_SetEnabled(self.raidsTab, false);
 	end
 	-- set the suggestion panel frame to open by default
 	EJSuggestFrame_OpenFrame();
@@ -444,8 +462,8 @@ end
 
 function EncounterItemTemplate_DividerFrameTipOnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(BONUS_LOOT_TOOLTIP_TITLE, 1, 1, 1);
-	GameTooltip:AddLine(BONUS_LOOT_TOOLTIP_BODY, nil, nil, nil, true);
+	GameTooltip:SetText(self.elementData.text, 1, 1, 1);
+	GameTooltip:AddLine(self.elementData.helpText, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 
@@ -611,6 +629,22 @@ function EncounterJournal_OnHide(self)
 	end
 	EJ_EndSearch();
 	self.shouldDisplayDifficulty = nil;
+end
+
+function EncounterJournal_IsSuggestTabSelected(self)
+	return self.selectedTab == self.suggestTab:GetID();
+end
+
+function EncounterJournal_IsDungeonTabSelected(self)
+	return self.selectedTab == self.dungeonsTab:GetID();
+end
+
+function EncounterJournal_IsRaidTabSelected(self)
+	return self.selectedTab == self.raidsTab:GetID();
+end
+
+function EncounterJournal_IsLootTabSelected(self)
+	return self.selectedTab == self.LootJournalTab:GetID();
 end
 
 local function EncounterJournal_IsHeaderTypeOverview(headerType)
@@ -789,7 +823,7 @@ function EncounterJournal_ListInstances()
 	instanceSelect:Show();
 
 	local dataIndex = 1;
-	local showRaid = not EncounterJournal.raidsTab:IsEnabled();
+	local showRaid = EncounterJournal_IsRaidTabSelected(EncounterJournal);
 	local instanceID, name, description, _, buttonImage, _, _, _, link, _, mapID = EJ_GetInstanceByIndex(dataIndex, showRaid);
 
 	--No instances in this tab
@@ -797,10 +831,10 @@ function EncounterJournal_ListInstances()
 		--disable this tab and select the other one.
 		infiniteLoopPolice = true;
 		if ( showRaid ) then
-			EncounterJournal.raidsTab.grayBox:Show();
+			EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, false);
 			EJ_ContentTab_Select(EncounterJournal.dungeonsTab:GetID());
 		else
-			EncounterJournal.dungeonsTab.grayBox:Show();
+			EJ_ContentTab_SetEnabled(EncounterJournal.dungeonsTab, false);
 			EJ_ContentTab_Select(EncounterJournal.raidsTab:GetID());
 		end
 		return;
@@ -830,9 +864,9 @@ function EncounterJournal_ListInstances()
 	if not otherInstanceID then
 		--disable the other tab.
 		if ( showRaid ) then
-			EncounterJournal.dungeonsTab.grayBox:Show();
+			EJ_ContentTab_SetEnabled(EncounterJournal.dungeonsTab, false);
 		else
-			EncounterJournal.raidsTab.grayBox:Show();
+			EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, false);
 		end
 	end
 end
@@ -1964,7 +1998,7 @@ end
 
 function EncounterJournal_LootCallback(itemID)
 	local scrollBox = EncounterJournal.encounter.info.LootContainer.ScrollBox;
-	local button = scrollBox:FindFrameByPredicate(function(button)
+	local button = scrollBox:FindFrameByPredicate(function(button, elementData)
 		return button.itemID == itemID;
 	end);
 	if button then
@@ -1980,10 +2014,17 @@ function EncounterJournal_LootUpdate()
 	local dataProvider = CreateDataProvider();
 	local loot = {};
 	local perPlayerLoot = {};
+	local veryRareLoot = {};
+	local extremelyRareLoot = {};
+
 	for i = 1, EJ_GetNumLoot() do
 		local itemInfo = C_EncounterJournal.GetLootInfoByIndex(i);
 		if itemInfo.displayAsPerPlayerLoot then
 			tinsert(perPlayerLoot, i);
+		elseif itemInfo.displayAsExtremelyRare then
+			tinsert(extremelyRareLoot, i);
+		elseif itemInfo.displayAsVeryRare then
+			tinsert(veryRareLoot, i);
 		else
 			tinsert(loot, i);
 		end
@@ -1992,12 +2033,22 @@ function EncounterJournal_LootUpdate()
 	for _,val in ipairs(loot) do
 		dataProvider:Insert({index=val});
 	end
-	if #perPlayerLoot > 0 then
-		dataProvider:Insert({perPlayerLootHeader=true});
-		for _,val in ipairs(perPlayerLoot) do
-			dataProvider:Insert({index=val});
+
+	local lootCategories = { 
+		{ loot=veryRareLoot,		headerTitle=EJ_ITEM_CATEGORY_VERY_RARE },
+		{ loot=extremelyRareLoot,	headerTitle=EJ_ITEM_CATEGORY_EXTREMELY_RARE },
+		{ loot=perPlayerLoot,		headerTitle=BONUS_LOOT_TOOLTIP_TITLE,			helpText=BONUS_LOOT_TOOLTIP_BODY },
+	};
+
+	for _,category in ipairs(lootCategories) do
+		if #category.loot > 0 then
+			dataProvider:Insert({header=true, text=category.headerTitle, helpText=category.helpText});
+			for _,val in ipairs(category.loot) do
+				dataProvider:Insert({index=val});
+			end
 		end
 	end
+
 	scrollBox:SetDataProvider(dataProvider);
 end
 
@@ -2018,25 +2069,26 @@ function EncounterJournal_Loot_OnClick(self)
 	end
 end
 
-function EncounterJournal_SetTooltip(link)
-	if (not link) then
+function EncounterJournal_SetTooltipWithCompare(tooltip, link, useSpec)
+	if not link then
 		return;
 	end
-
-	local classID, specID = EJ_GetLootFilter();
-
-	if (specID == 0) then
-		local spec = GetSpecialization();
-		if (spec and classID == select(3, UnitClass("player"))) then
-			specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
-		else
-			specID = -1;
+	
+	local classID, specID;
+	if useSpec then
+		local classID, specID = EJ_GetLootFilter();
+		if specID == 0 then
+			local spec = GetSpecialization();
+			if spec and classID == select(3, UnitClass("player")) then
+				specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
+			else
+				specID = -1;
+			end
 		end
 	end
-
-	GameTooltip:SetAnchorType("ANCHOR_RIGHT");
-	GameTooltip:SetHyperlink(link, classID, specID);
-	GameTooltip_ShowCompareItem();
+	local tooltipInfo = CreateBaseTooltipInfo("GetHyperlink", link, classID, specID);
+	tooltipInfo.compareItem = true;
+	tooltip:ProcessInfo(tooltipInfo);
 end
 
 function EncounterJournal_SetFlagIcon(texture, index)
@@ -2152,8 +2204,7 @@ function EncounterSearchResultLGMixin:Init(elementData)
 	if self.showingTooltip then
 		if itemLink then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip:SetHyperlink(itemLink);
-			GameTooltip_ShowCompareItem();
+			EncounterJournal_SetTooltipWithCompare(GameTooltip, itemLink);
 		else
 			GameTooltip:Hide();
 		end
@@ -2591,7 +2642,7 @@ function EJ_ContentTab_Select(id)
 		instanceSelect.ScrollBox:Hide();
 		instanceSelect.ScrollBar:Hide();
 		EncounterJournal.suggestFrame:Show();
-		if ( not EncounterJournal.dungeonsTab.grayBox:IsShown() or not EncounterJournal.raidsTab.grayBox:IsShown() ) then
+		if ( not EncounterJournal.dungeonsTab.isDisabled or not EncounterJournal.raidsTab.isDisabled ) then
 			EncounterJournal_DisableTierDropDown(true);
 		else
 			EncounterJournal_EnableTierDropDown();
@@ -2612,6 +2663,10 @@ function EJ_ContentTab_Select(id)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
     EventRegistry:TriggerEvent("EncounterJournal.TabSet", EncounterJournal, id);
+end
+
+function EJ_ContentTab_SetEnabled(self, enabled)
+	PanelTemplates_SetTabEnabled(EncounterJournal, self:GetID(), enabled);
 end
 
 function EJ_HideSuggestPanel()
@@ -2672,8 +2727,8 @@ end
 function EncounterJournal_TierDropDown_Select(_, tier)
 	EJ_SelectTier(tier);
 	local instanceSelect = EncounterJournal.instanceSelect;
-	EncounterJournal.dungeonsTab.grayBox:Hide();
-	EncounterJournal.raidsTab.grayBox:Hide();
+	EJ_ContentTab_SetEnabled(EncounterJournal.dungeonsTab, true);
+	EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, true);
 
 	local tierData = GetEJTierData(tier);
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
@@ -2934,7 +2989,7 @@ end
 
 function EJSuggestFrame_OnEvent(self, event, ...)
 	if ( event == "AJ_REFRESH_DISPLAY" ) then
-		if self:GetParent().selectedTab == EncounterJournal.suggestTab:GetID() then
+		if EncounterJournal_IsSuggestTabSelected(EncounterJournal) then
 			EJSuggestFrame_RefreshDisplay();
 			local newAdventureNotice = ...;
 			if ( newAdventureNotice ) then
@@ -3325,8 +3380,7 @@ function AdventureJournal_Reward_OnEnter(self)
 			tooltip:SetOwner(frame.Item1, "ANCHOR_NONE");
 			frame.Item1.UpdateTooltip = function() AdventureJournal_Reward_OnEnter(self) end;
 			if ( rewardData.itemLink ) then
-				tooltip:SetHyperlink(rewardData.itemLink);
-				GameTooltip_ShowCompareItem(tooltip, frame.Item1.tooltip);
+				EncounterJournal_SetTooltipWithCompare(tooltip, rewardData.itemLink);
 
 				local quality = select(3, GetItemInfo(rewardData.itemLink));
 				SetItemButtonQuality(frame.Item1, quality, rewardData.itemLink);

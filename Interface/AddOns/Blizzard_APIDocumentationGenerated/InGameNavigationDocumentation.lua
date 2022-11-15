@@ -76,14 +76,15 @@ local InGameNavigation =
 		{
 			Name = "NavigationState",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Invalid", Type = "NavigationState", EnumValue = 0 },
 				{ Name = "Occluded", Type = "NavigationState", EnumValue = 1 },
 				{ Name = "InRange", Type = "NavigationState", EnumValue = 2 },
+				{ Name = "Disabled", Type = "NavigationState", EnumValue = 3 },
 			},
 		},
 	},

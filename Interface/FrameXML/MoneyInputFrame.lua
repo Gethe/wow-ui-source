@@ -172,7 +172,7 @@ function MoneyInputFrame_SetOnValueChangedFunc(moneyFrame, func)
 end
 
 function MoneyInputFrame_OnShow(moneyFrame)
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		moneyFrame.copper.texture:Hide();
 		moneyFrame.gold.texture:Hide();
 		moneyFrame.silver.texture:Hide();

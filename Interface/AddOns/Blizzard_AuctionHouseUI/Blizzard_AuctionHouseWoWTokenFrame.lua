@@ -99,7 +99,7 @@ end
 
 local function GetFormattedWoWTokenPrice(price)
 	local gold = price / COPPER_PER_GOLD;
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		return FormatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
 	else
 		local xOffset = 2;

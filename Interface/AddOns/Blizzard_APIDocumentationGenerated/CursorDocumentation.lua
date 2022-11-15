@@ -41,6 +41,16 @@ local Cursor =
 			Type = "Event",
 			LiteralName = "MOUNT_CURSOR_CLEAR",
 		},
+		{
+			Name = "WorldCursorTooltipUpdate",
+			Type = "Event",
+			LiteralName = "WORLD_CURSOR_TOOLTIP_UPDATE",
+			Documentation = { "Sends an update when the mouse enters or leaves something in-world (object, unit, etc) that should display a tooltip" },
+			Payload =
+			{
+				{ Name = "anchorType", Type = "WorldCursorAnchorType", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
@@ -73,6 +83,20 @@ local Cursor =
 				{ Name = "Mount", Type = "UICursorType", EnumValue = 18 },
 				{ Name = "Toy", Type = "UICursorType", EnumValue = 19 },
 				{ Name = "ConduitCollectionItem", Type = "UICursorType", EnumValue = 20 },
+			},
+		},
+		{
+			Name = "WorldCursorAnchorType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "WorldCursorAnchorType", EnumValue = 0 },
+				{ Name = "Default", Type = "WorldCursorAnchorType", EnumValue = 1 },
+				{ Name = "Cursor", Type = "WorldCursorAnchorType", EnumValue = 2 },
+				{ Name = "Nameplate", Type = "WorldCursorAnchorType", EnumValue = 3 },
 			},
 		},
 	},

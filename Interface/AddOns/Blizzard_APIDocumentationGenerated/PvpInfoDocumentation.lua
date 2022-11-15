@@ -599,6 +599,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetUIDisplaySeason",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiDisplaySeason", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWarModeRewardBonus",
 			Type = "Function",
 

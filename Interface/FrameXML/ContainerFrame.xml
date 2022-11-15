@@ -391,7 +391,7 @@
 		<Scripts>
 			<OnClick>
 				PlaySound(SOUNDKIT.UI_BAG_SORTING_01);
-				SortBags();
+				C_Container.SortBags();
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self);

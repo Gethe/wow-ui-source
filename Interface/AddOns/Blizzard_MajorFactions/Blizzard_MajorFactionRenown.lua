@@ -6,34 +6,33 @@ local mainTextureKitRegions = {
 };
 local headerTextureKitRegions = {
 	["Background"] = "UI-%s-HeaderOrb",
-}
+};
 local trackTextureKitRegions = {
 	["Glow"] = "UI-%s-Highlight-Middle",
-}
+};
 local rewardTextureKitRegions = {
 	["Toast"] = "UI-%s-Reward-Slate",
 	["IconBorder"] = "UI-%s-RewardFrame",
 };
-local renownFrameDecorations = {
-	["Dragonflight"] = {
-		["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",
-		["TopRightBorderDecoration"] = "Dragonflight-DragonHeadRight",
-		["BottomBorderDecoration"] = "dragonflight-golddetailbottom",
-	},
-};
+
+-- "Burst" effect on the renown reward as you unlock it
 local levelEffects = {
-	["Dragonflight"] = 144,
-};
+	[LE_EXPANSION_DRAGONFLIGHT] = 144,
+}
+-- Animated Effects behind the renown reward;
 local finalToastSwirlEffects = {
-	-- TODO	
 };
 
--- TODO: Remove this once we fully switch to Major Factions art
-local majorFactionTextureKits = {
-	[2503] = "Centaur",
-	[2507] = "Expedition",
-	[2510] = "Valdrakken",
-	[2511] = "Tuskarr",
+local ExpansionLayoutInfo =
+{
+	[LE_EXPANSION_DRAGONFLIGHT] = {
+		textureKit = "Dragonflight",
+		renownFrameDecorations = {
+			["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",
+			["TopRightBorderDecoration"] = "Dragonflight-DragonHeadRight",
+			["BottomBorderDecoration"] = "dragonflight-golddetailbottom",
+		},
+	},
 };
 
 local MajorFactionsLayout =
@@ -55,10 +54,10 @@ local currentFactionID;
 local currentFactionData;
 
 local function SetupTextureKit(frame, regions)
-	SetupTextureKitOnRegions(majorFactionTextureKits[currentFactionData.factionID], frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	SetupTextureKitOnRegions(currentFactionData.textureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
-local function SetupRenownFrameNineSlice(textureKit)
+local function SetupRenownFrameNineSlice(textureKit, renownFrameDecorations)
 	local frame = MajorFactionRenownFrame;
 
 	NineSliceUtil.ApplyLayout(frame.NineSlice, MajorFactionsLayout, textureKit);
@@ -73,8 +72,8 @@ local function SetupRenownFrameNineSlice(textureKit)
 	frame.NineSlice.TopRightBorder:ClearAllPoints();
 	frame.NineSlice.TopRightBorder:SetPoint("TOPRIGHT", frame.NineSlice.TopRightCorner, "TOPLEFT");
 
-	if renownFrameDecorations[textureKit] then
-		SetupAtlasesOnRegions(frame.NineSlice, renownFrameDecorations[textureKit], TextureKitConstants.UseAtlasSize);
+	if renownFrameDecorations then
+		SetupAtlasesOnRegions(frame.NineSlice, renownFrameDecorations, TextureKitConstants.UseAtlasSize);
 	end
 end
 
@@ -150,6 +149,7 @@ function MajorFactionRenownMixin:OnEvent(event, ...)
 			MajorFactionRenownHeaderFrameMixin.OnEnter(self.HeaderFrame);
 		end 
 	elseif event == "UPDATE_FACTION" then
+		self:RefreshCurrentFactionData();
 		self.HeaderFrame.RenownProgressBar:RefreshBar();
 	end
 end
@@ -164,6 +164,12 @@ function MajorFactionRenownMixin:OnMouseWheel(direction)
 	track:SetSelection(centerIndex, forceRefresh, skipSound, overrideStopSound);
 end
 
+function MajorFactionRenownMixin:RefreshCurrentFactionData()
+	if currentFactionID then
+		currentFactionData = C_MajorFactions.GetMajorFactionData(currentFactionID);
+	end
+end
+
 function MajorFactionRenownMixin:SetUpMajorFactionData()
 	local majorFactionID = self.majorFactionID;
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
@@ -171,19 +177,18 @@ function MajorFactionRenownMixin:SetUpMajorFactionData()
 		currentFactionID = majorFactionID;
 		currentFactionData = majorFactionData;
 
-		local expansionName = _G["EXPANSION_NAME" .. currentFactionData.expansionID];
-		local nineSliceTextureKit = expansionName;
-		SetupRenownFrameNineSlice(nineSliceTextureKit);
+		local layoutInfo = ExpansionLayoutInfo[currentFactionData.expansionID];
+		SetupRenownFrameNineSlice(layoutInfo.textureKit, layoutInfo.renownFrameDecorations);
 
-		local textureKit = majorFactionTextureKits[currentFactionData.factionID];
+		local factionTextureKit = currentFactionData.textureKit;
 		local renownFrameTextureKitRegions = mainTextureKitRegions;
-		local backgroundFormat = expansionName .. "-MajorFactions-%s-Background";
+		local backgroundFormat = layoutInfo.textureKit .. "-MajorFactions-%s-Background";
 		renownFrameTextureKitRegions.Background = backgroundFormat;
 		SetupTextureKit(self, renownFrameTextureKitRegions);
 
 		SetupTextureKit(self.HeaderFrame, headerTextureKitRegions);
 		local majorFactionIconFormat = "majorFactions_icons_%s512";
-		self.HeaderFrame.Icon:SetAtlas(majorFactionIconFormat:format(textureKit), TextureKitConstants.IgnoreAtlasSize);
+		self.HeaderFrame.Icon:SetAtlas(majorFactionIconFormat:format(factionTextureKit), TextureKitConstants.IgnoreAtlasSize);
 
 		-- the track
 		local renownLevelsInfo = C_MajorFactions.GetRenownLevels(majorFactionID);
@@ -268,8 +273,11 @@ function MajorFactionRenownMixin:OnLevelEffectFinished()
 end
 
 function MajorFactionRenownMixin:PlayLevelEffect()
-	local expansionName = _G["EXPANSION_NAME" .. currentFactionData.expansionID];
-	local effectID = levelEffects[expansionName];
+	local effectID = levelEffects[currentFactionData.expansionID];
+	if not effectID then
+		return;
+	end
+
 	local target, onEffectFinish = nil, nil;
 	local onEffectResolution = GenerateClosure(self.OnLevelEffectFinished, self);
 	self.levelEffect = self.LevelModelScene:AddEffect(effectID, self.TrackFrame, self.TrackFrame, onEffectFinish, onEffectResolution);
@@ -423,18 +431,34 @@ function MajorFactionRenownTrackProgressBarMixin:OnLoad()
 end
 
 function MajorFactionRenownTrackProgressBarMixin:RefreshBar()
-	local newData = C_MajorFactions.GetMajorFactionData(currentFactionID);
-	if newData then
-		-- Show a full bar if we have max renown
-		local currentValue = C_MajorFactions.HasMaximumRenown(currentFactionID) and newData.renownLevelThreshold or newData.renownReputationEarned;
-		local maxValue = newData.renownLevelThreshold;
-		if not currentValue or not maxValue or maxValue == 0 then
-			return;
-		end
-	
-		-- We don't want the progress bar to wrap all the way around and cover up the art at the bottom of the header frame
-		local maxDisplayableProgress = 0.89;
-		local finalValue = (currentValue / maxValue) * maxDisplayableProgress;
-		CooldownFrame_SetDisplayAsPercentage(self, finalValue);
+	-- Show a full bar if we have max renown
+	local currentValue = C_MajorFactions.HasMaximumRenown(currentFactionID) and currentFactionData.renownLevelThreshold or currentFactionData.renownReputationEarned;
+	local maxValue = currentFactionData.renownLevelThreshold;
+	if not currentValue or not maxValue or maxValue == 0 then
+		return;
 	end
+
+	local fillArtAtlas= "UI-%s-HeaderFill";
+	local fillInfo = C_Texture.GetAtlasInfo(fillArtAtlas:format(currentFactionData.textureKit));
+	self:SetSwipeTexture(fillInfo.file or fillInfo.filename);
+	local lowTexCoords =
+	{
+		x = fillInfo.leftTexCoord,
+		y = fillInfo.topTexCoord,
+	};
+	local highTexCoords =
+	{
+		x = fillInfo.rightTexCoord,
+		y = fillInfo.bottomTexCoord,
+	};	
+	self:SetTexCoordRange(lowTexCoords, highTexCoords);
+
+	local renownProgressPercentage = (currentValue / maxValue);
+	-- The bottom portion of the circular progress bar is covered by the renown level
+	-- Because of this, the progress bar fill art is a semi circle and we need some special logic to determine the correct display percentage
+	local barPercentageCovered = 0.16;
+	local barDegreesCovered = 360 * barPercentageCovered;
+	local barDegreesVisible = 360 - barDegreesCovered;
+	local finalDisplayPercentage = ((renownProgressPercentage * barDegreesVisible) + (barDegreesCovered / 2)) / 360;
+	CooldownFrame_SetDisplayAsPercentage(self, finalDisplayPercentage);
 end

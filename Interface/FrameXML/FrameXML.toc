@@ -85,6 +85,11 @@
 MixinUtil.lua
 IconDataProvider.lua
 
+..\SharedXML\Tooltip\TooltipUtil.lua
+..\SharedXML\Tooltip\TooltipDataHandler.lua
+..\SharedXML\Tooltip\TooltipDataRules.lua
+..\SharedXML\Tooltip\TooltipComparisonManager.lua
+
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\DropDownToggleButton.xml
@@ -415,6 +420,8 @@ WeeklyReward.lua
 PlayerInteractionFrameManager.xml
 TalkingHeadUI.xml
 ArenaUI.xml
+FramerateFrame.xml
+ClassTalentHelper.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

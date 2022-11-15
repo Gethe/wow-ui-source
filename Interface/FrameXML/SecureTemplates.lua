@@ -709,7 +709,7 @@ local function OnActionButtonClick(self, inputButton, down, isKeyPress)
 		local slot = SecureButton_GetModifiedAttribute(self, "target-slot", button);
 		if slot then
 			if bag then
-				UseContainerItem(bag, slot);
+				C_Container.UseContainerItem(bag, slot);
 			else
 				UseInventoryItem(slot);
 			end

@@ -124,20 +124,6 @@ local MajorFactions =
 			},
 		},
 		{
-			Name = "IsMajorFaction",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "factionID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "IsMajorFaction", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsPlayerInRenownCatchUpMode",
 			Type = "Function",
 
@@ -217,6 +203,8 @@ local MajorFactions =
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "bountySetID", Type = "number", Nilable = false },
 				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+				{ Name = "unlockDescription", Type = "string", Nilable = true },
+				{ Name = "unlockOrder", Type = "number", Nilable = false },
 				{ Name = "renownLevel", Type = "number", Nilable = false },
 				{ Name = "renownReputationEarned", Type = "number", Nilable = false },
 				{ Name = "renownLevelThreshold", Type = "number", Nilable = false },

@@ -5,7 +5,7 @@
 	<Frame name="InsanityBarFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, InsanityPowerBar">
 		<Size x="128" y="128"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" x="-44" y="50"/>
+			<Anchor point="TOPLEFT" x="-44" y="47"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="InsanityOn" alpha="0">
@@ -24,7 +24,7 @@
 					<Layer level="ARTWORK" textureSubLevel="4">
 						<Texture parentKey="Tentacles" hidden="false" alpha="1" alphaMode="BLEND" atlas="Insanity-Tentacles" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.PortraitOverlay" x="62" y="-24"/>
+								<Anchor point="LEFT" relativeKey="$parent.PortraitOverlay" x="59" y="-24"/>
 							</Anchors>
 						</Texture>
 					</Layer>

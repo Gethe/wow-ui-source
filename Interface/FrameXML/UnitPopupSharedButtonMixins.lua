@@ -914,8 +914,10 @@ function UnitPopupReportGroupMemberButtonMixin:OnClick()
 end
 
 function UnitPopupReportGroupMemberButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	return UnitPopupReportButtonMixin.CanShow(self);
+	local isBattleground = UnitInBattleground("player");
+	isBattleground = isBattleground ~= nil and isBattleground > 0;
+	
+	return (C_PvP.IsRatedMap() or (not IsInActiveWorldPVP() and (not isBattleground or (isBattleground and GetCVar("enablePVPNotifyAFK") == "0")))) and UnitPopupReportButtonMixin.CanShow(self);
 end
 
 UnitPopupReportPvpScoreboardButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);

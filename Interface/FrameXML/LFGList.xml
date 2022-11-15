@@ -887,7 +887,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="LFGListSearchEntry_OnLoad"/>
-			<OnEvent function="LFGListSearchEntry_OnEvent"/>
 			<OnClick function="LFGListSearchEntry_OnClick"/>
 			<OnEnter function="LFGListSearchEntry_OnEnter"/>
 			<OnLeave function="LFGListSearchEntry_OnLeave"/>

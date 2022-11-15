@@ -65,6 +65,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "GetCustomizationScope",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "customizationScope", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetViewingChrModel",
 			Type = "Function",
 

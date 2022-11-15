@@ -17,27 +17,36 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Glow" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" alpha="0" alphaMode="ADD">
+			<Layer level="OVERLAY">
+				<Texture parentKey="StateIcon" atlas="Professions_Specialization_Lock" passThroughButtons="LeftButton" useAtlasSize="false">
+					<Size x="26" y="32"/>
+					<Scripts>
+						<OnLeave function="GameTooltip_Hide"/>
+					</Scripts>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-5"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
+						<!-- Re-anchored dynamically -->
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="StateIcon">
-					<Size x="18" y="24"/>
+
+				<Texture parentKey="StateIconGlow" atlas="Professions_Specialization_Lock_Glow" useAtlasSize="false" hidden="true">
+					<Size x="26" y="32"/>
 					<Anchors>
-						<Anchor point="RIGHT" x="0" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.StateIcon"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="BottomBorderGlow" atlas="Tab-Divider-Top-Glow" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="7"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" looping="BOUNCE">
-				<Alpha childKey="Glow" smoothing="NONE" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Glow" smoothing="NONE" duration="1" startDelay="0.3" order="2" fromAlpha="1" toAlpha="0"/>
+			<AnimationGroup parentKey="StateIconGlowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="StateIconGlow" fromAlpha=".5" toAlpha="1" duration="1" order="1" smoothing="NONE"/>
+				<Alpha childKey="StateIconGlow" fromAlpha="1" toAlpha=".5" duration="1" order="2" smoothing="NONE"/>
 			</AnimationGroup>
 		</Animations>
 	</Button>
@@ -83,16 +92,17 @@
 		-->
 		<KeyValues>
 			<KeyValue key="iconSize" value="46" type="number"/>
-			<KeyValue key="progressBarSizeX" value="60" type="number"/>
-			<KeyValue key="progressBarSizeY" value="60" type="number"/>
+			<KeyValue key="progressBarSizeX" value="78" type="number"/>
+			<KeyValue key="progressBarSizeY" value="78" type="number"/>
 			<KeyValue key="isDetailedView" value="false" type="boolean"/>
 		</KeyValues>
 		<Scripts>
+			<!-- OnShow and OnHide set dynamically -->
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 		<Frames>
 			<Cooldown parentKey="ProgressBar" reverse="true" hideCountdownNumbers="true" rotation="180" useParentLevel="true">
-				<Size x="60" y="60"/>
+				<Size x="78" y="78"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
@@ -101,51 +111,63 @@
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ProgressBarBackground" atlas="orderhalltalents-timer-bg">
+				<Texture parentKey="ProgressBarBackground" atlas="Professions-Specialization-Node-EmptyPath" useAtlasSize="false">
+					<Size x="78" y="78"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ProgressBar" x="1" y="-1"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ProgressBar" x="-1" y="1"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="SpendText" inherits="SystemFont18_Shadow_ThickOutline" justifyH="CENTER">
+				<Texture parentKey="ProgressBarAvailableGlow" atlas="Professions-Specialization-Node-ChoiceGlow" alpha="0.5" hidden="true" useAtlasSize="false">
+					<Size x="78" y="78"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="3" y="-8"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-				</FontString>
-				<Texture parentKey="SelectedOverlay" alphaMode="ADD" alpha="0.2" hidden="true">
+				</Texture>
+				<Texture parentKey="IconMouseoverHighlight" alpha="0.2" alphaMode="ADD" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-2"/>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IconMouseoverHighlightMask" atlas="talents-node-circle-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconMouseoverHighlight" x="0" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconMouseoverHighlight" x="0" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="IconMouseoverHighlight"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="SelectedOverlay" atlas="Professions-Specialization-Node-SelectedGlow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
 					</Anchors>
 					<KeyValues>
 						<KeyValue key="selected" type="boolean" value="true"/>
 					</KeyValues>
-					<Color color="FRIENDLY_STATUS_COLOR"/>
+				</Texture>
+				<Texture parentKey="MouseoverOverlay" atlas="Professions-Specialization-Node-SelectedGlow" useAtlasSize="true" alpha="0.2" alphaMode="ADD" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.Icon"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<MaskTexture parentKey="SelectedOverlayMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.SelectedOverlay"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.SelectedOverlay"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="SelectedOverlay"/>
-					</MaskedTextures>
-				</MaskTexture>
-				<Texture parentKey="LockedIcon" atlas="AdventureMapIcon-Lock" useAtlasSize="false">
+				<Texture parentKey="LockedIcon" atlas="Professions_Specialization_Lock" useAtlasSize="false">
 					<Size x="18" y="24"/>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.Icon" x="0" y="-8"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Icon" x="0" y="-10"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="AvailableGlowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="ProgressBarAvailableGlow" fromAlpha=".25" toAlpha="0.5" duration="1" order="1" smoothing="NONE"/>
+				<Alpha childKey="ProgressBarAvailableGlow" fromAlpha="0.5" toAlpha="0.25" duration="1" order="2" smoothing="NONE"/>
+			</AnimationGroup>
+		</Animations>
 	</Button>
 </Ui>

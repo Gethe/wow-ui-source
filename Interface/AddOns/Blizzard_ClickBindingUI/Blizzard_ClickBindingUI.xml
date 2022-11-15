@@ -255,8 +255,8 @@
 					<Anchor point="RIGHT" relativeKey="$parent.MacrosPortrait" relativePoint="LEFT" x="-5" y="0"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="TutorialFrame" inherits="ButtonFrameTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClickBindingTutorialMixin" hidden="true">
-				<Size x="487" y="256"/>
+			<Frame parentKey="TutorialFrame" inherits="PortraitFrameBaseTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClickBindingTutorialMixin" hidden="true">
+				<Size x="496" y="253"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPLEFT" x="300" y="0"/>
 				</Anchors>
@@ -264,7 +264,7 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Tutorial" atlas="clickcast-background-tutorial" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="4"/>
+								<Anchor point="BOTTOM" x="2" y="3"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -287,7 +287,7 @@
 						</FontString>
 						<FontString parentKey="ThrallName" inherits="GameFontNormalSmall" text="THRALL_NAME" wordwrap="false">
 							<Anchors>
-								<Anchor point="CENTER" relativePoint="CENTER" x="-80" y="4"/>
+								<Anchor point="CENTER" x="-124" y="11"/>
 							</Anchors>
 						</FontString>
 					</Layer>

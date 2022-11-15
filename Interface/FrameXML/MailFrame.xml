@@ -247,11 +247,7 @@
 			<OnEvent>
 				--GameTooltip:Hide();
 				if ( GameTooltip:IsOwned(self) ) then
-					local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInboxItem(InboxFrame.openMailID, self:GetID());
-					if(speciesID and speciesID > 0) then
-						BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-					end
-					GameTooltip:Show();
+					GameTooltip:SetInboxItem(InboxFrame.openMailID, self:GetID());
 				end
 			</OnEvent>
 			<OnClick>
@@ -278,14 +274,6 @@
 	</ItemButton>
 	<Frame name="MailFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture file="Interface\MailFrame\Mail-Icon">
-					<Size x="58" y="58"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="7"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="$parentTrialError" inherits="GameFontNormal" text="TRIAL_RESTRICTED" parentKey="trialError" hidden="true">
 					<Size x="250" y="0"/>
@@ -847,7 +835,7 @@
 						SendMailRadioButton_OnClick(self, 1);
 					</OnLoad>
 					<OnShow>
-						if ( ENABLE_COLORBLIND_MODE == "1" ) then
+						if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 							SendMailErrorText:SetFormattedText(MAIL_COD_ERROR_COLORBLIND, MAX_COD_AMOUNT, GOLD_AMOUNT_SYMBOL);
 						else
 							SendMailErrorText:SetFormattedText(MAIL_COD_ERROR, MAX_COD_AMOUNT);
@@ -1036,6 +1024,104 @@
 								</Anchors>
 								<FontString inherits="MailTextFontNormal" nonspacewrap="true" justifyH="LEFT"/>
 							</SimpleHTML>
+							<Frame name="ConsortiumMailFrame" setAllPoints="true">
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString parentKey="OpeningText" inherits="InvoiceTextFontNormal">
+											<Size x="250" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="30" y="-20"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="CrafterText" inherits="InvoiceTextFontNormal">
+											<Size x="250" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.OpeningText" relativePoint="BOTTOM" x="0" y="-4"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="CommissionReceived" inherits="InvoiceTextFontNormal" text="CRAFTING_ORDER_COMMISSION_ENCLOSED" justifyH="LEFT">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.CrafterText" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="CrafterNote" inherits="InvoiceTextFontNormal" wordwrap="true" nonspacewrap="true" justifyV="TOP" justifyH="LEFT">
+											<Size x="250" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.CrafterText" relativePoint="BOTTOM" x="0" y="-16"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="ConsortiumNote" inherits="InvoiceTextFontNormal" wordwrap="true" nonspacewrap="true" justifyV="TOP" justifyH="LEFT">
+											<Size x="250" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.CrafterText" relativePoint="BOTTOM" x="0" y="-30"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="CommissionReceivedDisplay" inherits="MoneyDisplayFrameTemplate">
+										<Size x="200" y="33"/>
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.CommissionReceived" relativePoint="RIGHT" x="5" y="0"/>
+										</Anchors>
+										<KeyValues>
+											<KeyValue key="hideCopper" value="true" type="boolean"/>
+											<KeyValue key="leftAlign" value="false" type="boolean"/>
+											<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+											<KeyValue key="resizeToFit" value="true" type="boolean"/>
+											<KeyValue key="alwaysShowGold" value="true" type="boolean"/>
+										</KeyValues>
+									</Frame>
+									<Frame parentKey="CommissionPaidDisplay">
+										<Size x="250" y="55"/>
+										<Anchors>
+											<Anchor point="BOTTOM"/>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<Texture parentKey="Separator">
+													<Size x="230" y="1"/>
+													<Anchors>
+														<Anchor point="TOP"/>
+													</Anchors>
+													<Color color="DEFAULT_MATERIAL_TEXT_COLOR" a="0.5"/>
+												</Texture>
+												<FontString parentKey="CommissionPaidText" inherits="InvoiceTextFontNormal" text="CRAFTING_ORDER_MAIL_COMMISSION_PAID" justifyH="RIGHT">
+													<Size x="250" y="0"/>
+													<Anchors>
+														<Anchor point="TOPRIGHT" relativeKey="$parent.Separator" relativePoint="BOTTOMRIGHT" x="0" y="-8"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Frames>
+											<Frame parentKey="MoneyDisplayFrame" inherits="MoneyDisplayFrameTemplate">
+												<Size x="200" y="33"/>
+												<Anchors>
+													<Anchor point="TOPRIGHT" relativeKey="$parent.CommissionPaidText" relativePoint="BOTTOMRIGHT" x="0" y="6"/>
+												</Anchors>
+												<KeyValues>
+													<KeyValue key="hideCopper" value="true" type="boolean"/>
+													<KeyValue key="leftAlign" value="false" type="boolean"/>
+													<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+													<KeyValue key="resizeToFit" value="true" type="boolean"/>
+													<KeyValue key="alwaysShowGold" value="true" type="boolean"/>
+												</KeyValues>
+												<Layers>
+													<Layer level="OVERLAY">
+														<FontString inherits="InvoiceTextFontNormal" text="-">
+															<Anchors>
+																<Anchor point="RIGHT" relativePoint="LEFT" x="-5" y="0"/>
+															</Anchors>
+														</FontString>
+													</Layer>
+												</Layers>
+											</Frame>
+										</Frames>
+									</Frame>
+								</Frames>
+							</Frame>
 							<Frame name="OpenMailInvoiceFrame" setAllPoints="true">
 								<Layers>
 									<Layer level="BACKGROUND">

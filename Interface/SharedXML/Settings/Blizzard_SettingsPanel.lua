@@ -220,6 +220,23 @@ function SettingsPanelMixin:OnShow()
 	self:CheckApplyButton();
 
 	self:CallRefreshOnCanvases();
+	self:CheckTutorials(); 
+end
+
+function SettingsPanelMixin:CheckTutorials()
+	if self.SearchBox:IsShown() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SETTINGS_SEARCH) then
+		local searchBoxTutorial = 
+		{
+			text = SETTINGS_SEARCH_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_SETTINGS_SEARCH,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			useParentStrata = true,
+			offsetX = 4,
+		}
+		HelpTip:Show(self.SearchBox, searchBoxTutorial);
+	end
 end
 
 function SettingsPanelMixin:Flush()

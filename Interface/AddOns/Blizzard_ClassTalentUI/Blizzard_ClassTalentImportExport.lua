@@ -8,7 +8,7 @@
 -- HEADER (fixed-size)
 
 -- 	Serialization Version, 8 bits. 
--- 	The version of the serialization method.  If the client updates the export algorithm, the version will be incremented, and loadouts exported with older serialization version will fail to import and need to be re-exported. Currently set to 1, as defined in the constant LOADOUT_SERIALIZATION_VERSION.
+-- 	The version of the serialization method.  If the client updates the export algorithm, the version will be incremented, and loadouts exported with older serialization version will fail to import and need to be re-exported. Currently set to 1, as defined by C_Traits.GetLoadoutSerializationVersion.
 
 -- 	Specialization ID, 16 bits.  
 -- 	The class specialization for this loadout.  Uses the player's currently assigned specialization.  Attempting to import a loadout for a different class specialization will result in a failure.
@@ -42,8 +42,6 @@
 
 -- Choice Entry Index, 2 bits.
 -- (Only written if isChoiceNode is true). The index of selected entry for the choice node. Zero-based index (first entry is index 0).
-
-local LOADOUT_SERIALIZATION_VERSION = 1;
 
 ClassTalentImportExportMixin = {};
 
@@ -151,9 +149,9 @@ function ClassTalentImportExportMixin:GetLoadoutExportString()
 	local currentSpecID = PlayerUtil.GetCurrentSpecID();
 	local treeInfo = self:GetTreeInfo();
 	local treeHash = C_Traits.GetTreeHash(treeInfo.ID);
+	local serializationVersion = C_Traits.GetLoadoutSerializationVersion()
 
-
-	self:WriteLoadoutHeader(exportStream, LOADOUT_SERIALIZATION_VERSION, currentSpecID, treeHash);
+	self:WriteLoadoutHeader(exportStream, serializationVersion, currentSpecID, treeHash);
 	self:WriteLoadoutContent(exportStream, configID, treeInfo.ID);
 
 	return exportStream:GetExportString();
@@ -164,17 +162,27 @@ function ClassTalentImportExportMixin:ShowImportError(errorString)
 end
 
 function ClassTalentImportExportMixin:ImportLoadout(importText, loadoutName)
+	if(self:IsInspecting()) then
+		self:ShowImportError(LOADOUT_ERROR_IMPORT_FAILED);
+		return false;
+	end
+
+	if(not loadoutName or loadoutName == "") then
+		self:ShowImportError(LOADOUT_ERROR_IMPORT_FAILED);
+		return false;
+	end
 
 	local importStream = ExportUtil.MakeImportDataStream(importText);
 
 	local headerValid, serializationVersion, specID, treeHash = self:ReadLoadoutHeader(importStream);
+	local currentSerializationVersion = C_Traits.GetLoadoutSerializationVersion();
 
 	if(not headerValid) then
 		self:ShowImportError(LOADOUT_ERROR_BAD_STRING);
 		return false;
 	end
 
-	if(serializationVersion ~= LOADOUT_SERIALIZATION_VERSION) then
+	if(serializationVersion ~= currentSerializationVersion) then
 		self:ShowImportError(LOADOUT_ERROR_SERIALIZATION_VERSION_MISMATCH);
 		return false;
 	end

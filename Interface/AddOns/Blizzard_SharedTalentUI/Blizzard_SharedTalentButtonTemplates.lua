@@ -15,6 +15,15 @@
 -- from TalentDisplayTemplate.
 
 
+local SubTypeToColor = {
+	[Enum.TraitDefinitionSubType.DragonflightRed] = DRAGONFLIGHT_RED_COLOR,
+	[Enum.TraitDefinitionSubType.DragonflightBlue] = DRAGONFLIGHT_BLUE_COLOR,
+	[Enum.TraitDefinitionSubType.DragonflightGreen] = DRAGONFLIGHT_GREEN_COLOR,
+	[Enum.TraitDefinitionSubType.DragonflightBronze] = DRAGONFLIGHT_BRONZE_COLOR,
+	[Enum.TraitDefinitionSubType.DragonflightBlack] = DRAGONFLIGHT_BLACK_COLOR,
+};
+
+
 TalentDisplayMixin = {};
 
 function TalentDisplayMixin:OnEnter()
@@ -156,6 +165,7 @@ end
 
 function TalentDisplayMixin:UpdateVisualState()
 	self:SetVisualState(self:CalculateVisualState());
+	self:UpdateMouseOverInfo();
 end
 
 function TalentDisplayMixin:FullUpdate()
@@ -201,13 +211,6 @@ function TalentDisplayMixin:AddTooltipTitle(tooltip)
 end
 
 function TalentDisplayMixin:AddTooltipInfo(tooltip)
-	if self:ShouldShowSubText() then
-		local talentSubtext = self:GetSubtext();
-		if talentSubtext then
-			GameTooltip_AddDisabledLine(tooltip, talentSubtext);
-		end
-	end
-
 	local spellID = self:GetSpellID();
 	if spellID then
 		local overrideSpellID = C_SpellBook.GetOverrideSpell(spellID);
@@ -223,29 +226,58 @@ function TalentDisplayMixin:AddTooltipInfo(tooltip)
 end
 
 function TalentDisplayMixin:AddTooltipDescription(tooltip)
+	local blankLineAdded = false;
+	if self:ShouldShowSubText() then
+		local talentSubtext = self:GetSubtext();
+		if talentSubtext and (talentSubtext ~= "") then
+			blankLineAdded = true;
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+
+			local color = self.definitionInfo and self.definitionInfo.subType and SubTypeToColor[self.definitionInfo.subType];
+			GameTooltip_AddColoredLine(tooltip, talentSubtext, color or DISABLED_FONT_COLOR);
+		end
+	end
+
 	if self.nodeInfo then
 		local activeEntry = self.nodeInfo.activeEntry;
 		if activeEntry then
-			GameTooltip_AddBlankLineToTooltip(tooltip);
-			tooltip:AddTraitEntry(activeEntry.entryID, activeEntry.rank);
+			if not blankLineAdded then
+				GameTooltip_AddBlankLineToTooltip(tooltip);
+			end
+
+			local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", activeEntry.entryID, activeEntry.rank);
+			tooltipInfo.append = true;
+			tooltip:ProcessInfo(tooltipInfo);
 		end
 
 		local nextEntry = self.nodeInfo.nextEntry;
 		if nextEntry and self.nodeInfo.ranksPurchased > 0 then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_AddHighlightLine(tooltip, TALENT_BUTTON_TOOLTIP_NEXT_RANK);
-			tooltip:AddTraitEntry(nextEntry.entryID, nextEntry.rank);
+			local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", nextEntry.entryID, nextEntry.rank);
+			tooltipInfo.append = true;
+			tooltip:ProcessInfo(tooltipInfo);
 		end
 	elseif self.entryID then
 		-- If this tooltip isn't coming from a node, we can't know what rank to show other than 1.
 		local rank = 1;
-		tooltip:AddTraitEntry(self.entryID, rank);
+		local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", self.entryID, rank);
+		tooltipInfo.append = true;
+		tooltip:ProcessInfo(tooltipInfo);
 	end
 end
 
 function TalentDisplayMixin:AddTooltipErrors(tooltip)
+	local talentFrame = self:GetTalentFrame();
+
 	local shouldAddSpacer = true;
-	self:GetTalentFrame():AddConditionsToTooltip(tooltip, self.entryInfo.conditionIDs, shouldAddSpacer);
+	talentFrame:AddConditionsToTooltip(tooltip, self.entryInfo.conditionIDs, shouldAddSpacer);
+
+	local isLocked, errorMessage = talentFrame:IsLocked();
+	if isLocked and errorMessage then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddErrorLine(tooltip, errorMessage);
+	end
 end
 
 function TalentDisplayMixin:SetSearchMatchType(matchType)
@@ -283,8 +315,7 @@ function TalentDisplayMixin:CalculateVisualState()
 end
 
 function TalentDisplayMixin:ShouldShowSubText()
-	-- Implement in your derived mixin.
-	return false;
+	return self.definitionInfo and self.definitionInfo.subType and SubTypeToColor[self.definitionInfo.subType];
 end
 
 function TalentDisplayMixin:AddTooltipCost(tooltip)
@@ -422,12 +453,20 @@ function TalentButtonBaseMixin:UpdateSpendText()
 end
 
 function TalentButtonBaseMixin:FullUpdate()
+	local wasGhosted = self.isGhosted;
+
 	-- TODO: need a better way to handle additional visual states on top of base state
 	self.isGhosted = self:IsGhosted();
 
 	TalentDisplayMixin.FullUpdate(self);
 
 	self:UpdateSpendText();
+
+	if wasGhosted and not self.isGhosted then
+		self:MarkEdgesDirty();
+	end
+
+	self:UpdateMouseOverInfo();
 end
 
 function TalentButtonBaseMixin:ResetDynamic()
@@ -491,12 +530,16 @@ end
 function TalentButtonBaseMixin:AddTooltipErrors(tooltip)
 	-- Overrides TalentDisplayMixin.
 
-	local shouldAddSpacer = true;
-	self:GetTalentFrame():AddConditionsToTooltip(tooltip, self.nodeInfo.conditionIDs, shouldAddSpacer);
-	self:GetTalentFrame():AddEdgeRequirementsToTooltip(tooltip, self:GetNodeID(), shouldAddSpacer);
+	local talentFrame = self:GetTalentFrame()
 
-	if not self.nodeInfo.meetsEdgeRequirements then
-		GameTooltip_AddErrorLine(tooltip, TALENT_BUTTON_TOOLTIP_NO_ACTIVE_LINKS);
+	local shouldAddSpacer = true;
+	talentFrame:AddConditionsToTooltip(tooltip, self.nodeInfo.conditionIDs, shouldAddSpacer);
+	talentFrame:AddEdgeRequirementsToTooltip(tooltip, self:GetNodeID(), shouldAddSpacer);
+
+	local isLocked, errorMessage = talentFrame:IsLocked();
+	if isLocked and errorMessage then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddErrorLine(tooltip, errorMessage);
 	end
 end
 
@@ -525,7 +568,7 @@ end
 
 function TalentButtonBaseMixin:IsLocked()
 	-- Override in your derived mixin as desired.
-	return not self.nodeInfo or not self.nodeInfo.meetsEdgeRequirements;
+	return not self.nodeInfo or not self.nodeInfo.meetsEdgeRequirements or self:GetTalentFrame():IsLocked();
 end
 
 function TalentButtonBaseMixin:IsCascadeRepurchasable()
@@ -538,7 +581,7 @@ end
 
 function TalentButtonBaseMixin:IsGhosted()
 	-- Override in your derived mixin as desired.
-	return not self.nodeInfo or (self:IsCascadeRepurchasable() and not self:IsSelectable());
+	return not self.nodeInfo or self:IsCascadeRepurchasable();
 end
 
 function TalentButtonBaseMixin:CanAfford()
@@ -740,10 +783,6 @@ function TalentButtonArtMixin:OnLoad()
 	if self.SearchIcon then
 		self.SearchIcon.Mouseover:SetScript("OnEnter", GenerateClosure(self.OnSearchIconEnter, self));
 	end
-
-	if self.SearchIcon then
-		self.SearchIcon.Mouseover:SetScript("OnEnter", GenerateClosure(self.OnSearchIconEnter, self));
-	end
 end
 
 function TalentButtonArtMixin:ApplyVisualState(visualState)
@@ -854,6 +893,19 @@ function TalentButtonArtMixin:OnSearchIconEnter()
 	end
 end
 
+function TalentButtonArtMixin:PlayPurchaseEffect(fxModelScene, fxIDs)
+	
+	if (fxIDs) then
+		for _, fxID in ipairs(fxIDs) do
+			fxModelScene:AddEffect(fxID, self, self);
+		end
+	end
+
+	if self.PurchaseVisuals and self.PurchaseVisuals.Anim then
+		self.PurchaseVisuals.Anim:SetPlaying(true);
+	end
+end
+
 function TalentButtonArtMixin:UpdateSearchIcon()
 	if not self.SearchIcon then
 		return;
@@ -935,12 +987,12 @@ function TalentButtonSpendMixin:Init(...)
 end
 
 function TalentButtonSpendMixin:CanPurchaseRank()
-	return not self:IsLocked() and self.nodeInfo.canPurchaseRank and self:CanAfford();
+	return self.nodeInfo and not self:IsLocked() and self.nodeInfo.canPurchaseRank and self:CanAfford();
 end
 
 function TalentButtonSpendMixin:CanRefundRank()
 	-- We shouldn't be checking ranksPurchased directly.
-	return not self:IsLocked() and self.nodeInfo.canRefundRank and self.nodeInfo.ranksPurchased and (self.nodeInfo.ranksPurchased > 0);
+	return self.nodeInfo and not self:IsLocked() and self.nodeInfo.canRefundRank and self.nodeInfo.ranksPurchased and (self.nodeInfo.ranksPurchased > 0);
 end
 
 function TalentButtonSpendMixin:PurchaseRank()
@@ -965,7 +1017,7 @@ function TalentButtonSpendMixin:IsMaxed()
 end
 
 function TalentButtonSpendMixin:HasProgress()
-	return self.nodeInfo.activeRank > 0;
+	return self.nodeInfo and self.nodeInfo.activeRank > 0;
 end
 
 function TalentButtonSpendMixin:ResetDynamic()

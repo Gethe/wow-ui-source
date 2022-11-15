@@ -106,6 +106,12 @@ function TalentSelectionChoiceFrameMixin:UpdateTrayLayout()
 	self:Layout();
 end
 
+function TalentSelectionChoiceFrameMixin:UpdateVisualState()
+	for i, selectionFrame in ipairs(self.selectionFrameArray) do
+		selectionFrame:UpdateVisualState();
+	end
+end
+
 function TalentSelectionChoiceFrameMixin:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo)
 	self.baseButton:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo);
 	self:Hide();
@@ -167,7 +173,17 @@ function TalentSelectionChoiceMixin:Init(talentFrame)
 
 	self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
 	self:RegisterForDrag("LeftButton");
+
+	local function OnShowHandler()
+		self:UpdateSpendText();
+	end
+
+	-- This has to be set after Init to avoid causing problems before the frame is ready to update.
+	self:SetScript("OnShow", OnShowHandler);
 end
+
+-- This is installed dynamically in Init.
+-- function TalentSelectionChoiceMixin:OnShow()
 
 function TalentSelectionChoiceMixin:OnClick(button)
 	EventRegistry:TriggerEvent("TalentButton.OnClick", self, button);
@@ -258,24 +274,28 @@ end
 function TalentSelectionChoiceMixin:AddTooltipErrors(tooltip)
 	-- Overrides TalentDisplayMixin.
 
+	local talentFrame = self:GetTalentFrame();
+
 	local shouldAddSpacer = true;
-	if self:GetTalentFrame():AddConditionsToTooltip(tooltip, self.entryInfo.conditionIDs, shouldAddSpacer) then
+	if talentFrame:AddConditionsToTooltip(tooltip, self.entryInfo.conditionIDs, shouldAddSpacer) then
 		return;
 	end
 
 	local baseButton = self:GetBaseButton();
 	if baseButton then
 		local nodeInfo = baseButton:GetNodeInfo();
-		if self:GetTalentFrame():AddConditionsToTooltip(tooltip, nodeInfo.conditionIDs, shouldAddSpacer) then
+		if talentFrame:AddConditionsToTooltip(tooltip, nodeInfo.conditionIDs, shouldAddSpacer) then
 			return;
 		end
 
-		if self:GetTalentFrame():AddEdgeRequirementsToTooltip(tooltip, baseButton:GetNodeID(), shouldAddSpacer) then
+		if talentFrame:AddEdgeRequirementsToTooltip(tooltip, baseButton:GetNodeID(), shouldAddSpacer) then
 			return;
 		end
 
-		if not nodeInfo.meetsEdgeRequirements then
-			GameTooltip_AddErrorLine(tooltip, TALENT_BUTTON_TOOLTIP_NO_ACTIVE_LINKS);
+		local isLocked, errorMessage = talentFrame:IsLocked();
+		if isLocked and errorMessage then
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+			GameTooltip_AddErrorLine(tooltip, errorMessage);
 		end
 
 		if not baseButton:IsSelectable() then
@@ -343,7 +363,7 @@ function TalentSelectionChoiceMixin:CanAffordChoice()
 end
 
 function TalentSelectionChoiceMixin:IsChoiceAvailable()
-	return self.canSelectChoice and self.entryInfo.isAvailable;
+	return self.canSelectChoice and self.entryInfo.isAvailable and not self:GetTalentFrame():IsLocked();
 end
 
 function TalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, selectionIndex)
@@ -378,14 +398,25 @@ function TalentSelectionChoiceMixin:UpdateSearchIcon()
 	end
 end
 
-function TalentSelectionChoiceMixin:UpdateSpendText()
-	local nodeInfo = self:GetNodeInfo();
-	if self.isCurrentSelection and nodeInfo and (nodeInfo.currentRank > 0) and
-		not self:GetParent():GetTalentFrame():ShouldHideSingleRankNumbers() then
-		TalentButtonUtil.SetSpendText(self, tostring(nodeInfo.currentRank));
-	else
-		TalentButtonUtil.SetSpendText(self, "");
+function TalentSelectionChoiceMixin:CalculateSpendText()
+	if not self:GetParent():GetTalentFrame():ShouldHideSingleRankNumbers() then
+		if not self.isCurrentSelection then
+			if self:IsChoiceAvailable() then
+				return "0";
+			end
+		else
+			local nodeInfo = self:GetNodeInfo();
+			if nodeInfo then
+				return tostring(nodeInfo.currentRank);
+			end
+		end
 	end
+
+	return "";
+end
+
+function TalentSelectionChoiceMixin:UpdateSpendText()
+	TalentButtonUtil.SetSpendText(self, self:CalculateSpendText());
 end
 
 function TalentSelectionChoiceMixin:IsCascadeRepurchasable()
@@ -403,7 +434,7 @@ function TalentSelectionChoiceMixin:CanCascadeRepurchaseRanks()
 end
 
 function TalentSelectionChoiceMixin:IsGhosted()
-	return not self:GetNodeInfo() or (self:IsCascadeRepurchasable() and not self:IsChoiceAvailable());
+	return not self:GetNodeInfo() or self:IsCascadeRepurchasable();
 end
 
 function TalentSelectionChoiceMixin:GetSpellID()

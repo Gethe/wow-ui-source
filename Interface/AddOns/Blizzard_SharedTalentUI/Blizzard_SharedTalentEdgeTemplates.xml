@@ -29,24 +29,22 @@
 	<Frame name="TalentEdgeArrowTemplate" mixin="TalentEdgeArrowMixin" inherits="TalentEdgeBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-2">
-				<Line parentKey="Line" thickness="8" hWrapMode="REPEAT"/>
+				<Line parentKey="Line" thickness="6" hWrapMode="REPEAT"/>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="ArrowHead" atlas="talents-arrow-head-gray">
-					<Size x="12" y="12"/>
+				<Texture parentKey="ArrowHead" atlas="talents-arrow-head-gray" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="GhostArrowHead" atlas="talents-arrow-head-ghost" alphaMode="ADD" hidden="true">
-					<Size x="12" y="12"/>
+				<Texture parentKey="GhostArrowHead" atlas="talents-arrow-head-ghost" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Line parentKey="GhostLine" atlas="talents-arrow-line-ghost" thickness="12" hWrapMode="REPEAT" alphaMode="ADD" hidden="true"/>
+				<Line parentKey="GhostLine" atlas="talents-arrow-line-ghost" thickness="6" hWrapMode="REPEAT" alphaMode="ADD" alpha="1" hidden="true"/>
 			</Layer>
 		</Layers>
 	</Frame>

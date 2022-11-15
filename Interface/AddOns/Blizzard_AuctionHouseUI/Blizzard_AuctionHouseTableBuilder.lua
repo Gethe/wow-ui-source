@@ -48,7 +48,7 @@ end
 
 function AuctionHouseTableCellItemKeyMixin:TryUpdateDisplay()
 	local itemKey = self.rowData.itemKey;
-	local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey, self.restrictQualityToFilter);
+	local itemKeyInfo = itemKey and C_AuctionHouse.GetItemKeyInfo(itemKey, self.restrictQualityToFilter) or nil;
 	if not itemKeyInfo then
 		self.pendingItemID = itemKey.itemID;
 		self:RegisterEvent("ITEM_KEY_ITEM_INFO_RECEIVED");
@@ -183,7 +183,8 @@ function AuctionHouseTableCellCommoditiesQuantityMixin:Init(...)
 end
 
 function AuctionHouseTableCellCommoditiesQuantityMixin:Populate(rowData, dataIndex)
-	self.Text:SetText(BreakUpLargeNumbers(rowData.quantity));
+	local rowQuantity = rowData.quantity or 0;
+	self.Text:SetText(BreakUpLargeNumbers(rowQuantity));
 end
 
 
@@ -815,13 +816,15 @@ function AuctionHouseTableCellItemQuantityMixin:Populate(rowData, dataIndex)
 	local bidStatus = self:GetAuctionHouseFrame():GetBidStatus(rowData);
 	local hasPlayerBid = bidStatus == AuctionHouseBidStatus.PlayerBid or bidStatus == AuctionHouseBidStatus.PlayerOutbid;
 	local showPlayerBid = hasPlayerBid and not self.hideBidStatus;
-	self.Text:SetShown(showPlayerBid or (rowData.quantity > 1));
+
+	local rowQuantity = rowData.quantity or 0;
+	self.Text:SetShown(showPlayerBid or (rowQuantity > 1));
 
 	if showPlayerBid then
 		self.Text:SetText(AuctionHouseUtil.GetBidTextFromStatus(bidStatus));
 		self.Text:SetFontObject(Number13FontGray);
 	else
-		self.Text:SetText(BreakUpLargeNumbers(rowData.quantity));
+		self.Text:SetText(BreakUpLargeNumbers(rowQuantity));
 		self.Text:SetFontObject(PriceFontWhite);
 	end
 end

@@ -4,7 +4,7 @@
 	<StatusBar name="AlternatePowerBarTemplate" inherits="TextStatusBar" virtual="true">
 		<Size x="78" y="12"/>
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="1">
+			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" setAllPoints="true" parentKey="DefaultBackground">
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
@@ -16,7 +16,7 @@
 					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
 				</Texture>
 			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="2">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentBorder" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator" parentKey="DefaultBorder">
 					<Size x="0" y="16"/>
 					<Anchors>
@@ -84,6 +84,7 @@
 	<StatusBar name="PlayerFrameAlternateManaBar" inherits="AlternatePowerBarTemplate, PlayerFrameBottomManagedFrameTemplate" parent="PlayerFrame">	<!--For Druids in forms -->
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="5" type="number"/>
+			<KeyValue key="topPadding" value="-2" type="number"/>
 		</KeyValues>
 		<Size x="104" y="12"/>
 	</StatusBar>

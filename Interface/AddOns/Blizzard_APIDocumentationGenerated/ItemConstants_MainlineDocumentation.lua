@@ -98,6 +98,17 @@ local ItemConstants_Mainline =
 				{ Name = "ProfessionTraitRanksByLabel", Type = "PointsModifierSourceType", EnumValue = 63 },
 			},
 		},
+		{
+			Name = "InventoryConstants",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "NumBagSlots", Type = "number", Value = NUM_BAG_SLOTS },
+				{ Name = "NumGenericBankSlots", Type = "number", Value = BANK_NUM_GENERIC_SLOTS },
+				{ Name = "NumBankBagSlots", Type = "number", Value = NUM_BANKBAG_SLOTS },
+				{ Name = "NumReagentBagSlots", Type = "number", Value = NUM_REAGENTBAG_SLOTS },
+			},
+		},
 	},
 };
 

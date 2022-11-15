@@ -50,7 +50,7 @@ UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 1, 	whileDead = 1 };
 UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
 UIPanelWindows["CollectionsJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 733};
-UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1};
+UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["LootFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0};
@@ -279,6 +279,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("BIND_ENCHANT");
 	self:RegisterEvent("ACTION_WILL_BIND_ITEM");
 	self:RegisterEvent("REPLACE_ENCHANT");
+	self:RegisterEvent("REPLACE_TRADESKILL_ENCHANT");
 	self:RegisterEvent("TRADE_REPLACE_ENCHANT");
 	self:RegisterEvent("END_BOUND_TRADEABLE");
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
@@ -331,6 +332,7 @@ function UIParent_OnLoad(self)
 
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
+	self:RegisterEvent("CRAFTING_HOUSE_DISABLED");
 	self:RegisterEvent("CRAFTINGORDERS_SHOW_CUSTOMER");
 	self:RegisterEvent("CRAFTINGORDERS_HIDE_CUSTOMER");
 	self:RegisterEvent("CRAFTINGORDERS_SHOW_CRAFTER");
@@ -482,6 +484,10 @@ function UIParent_OnLoad(self)
 	--Event(s) for soft targetting
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
 
+	-- Tooltip data events that need to go to GameTooltip
+	self:RegisterEvent("SHOW_HYPERLINK_TOOLTIP");
+	self:RegisterEvent("HIDE_HYPERLINK_TOOLTIP");
+	self:RegisterEvent("WORLD_CURSOR_TOOLTIP_UPDATE");
 end
 
 function UIParent_OnShow(self)
@@ -567,10 +573,6 @@ end
 
 function ProfessionsCustomerOrders_LoadUI()
 	UIParentLoadAddOn("Blizzard_ProfessionsCustomerOrders");
-end
-
-function ProfessionsCrafterOrders_LoadUI()
-	UIParentLoadAddOn("Blizzard_ProfessionsCrafterOrders");
 end
 
 function BattlefieldMap_LoadUI()
@@ -1303,6 +1305,16 @@ function OpenAzeriteEssenceUIFromItemLocation(itemLocation)
 	end
 end
 
+function OpenProfessionUIToSkillLine(skillLineID)
+	ProfessionsFrame_LoadUI();
+	local currBaseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
+	if currBaseProfessionInfo == nil or currBaseProfessionInfo.professionID ~= skillLineID then
+		C_TradeSkillUI.OpenTradeSkill(skillLineID);
+	end
+	ProfessionsFrame:SetTab(ProfessionsFrame.recipesTabID);
+	ShowUIPanel(ProfessionsFrame);
+end
+
 local function PlayBattlefieldBanner(self)
 	-- battlefields
 	if ( not self.battlefieldBannerShown ) then
@@ -1415,12 +1427,16 @@ function UIParent_OnEvent(self, event, ...)
 			end
 			StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
 			StaticPopup_Hide("END_BOUND_TRADEABLE");
+			StaticPopup_Hide("REPLACE_TRADESKILL_ENCHANT");
 			if ( not SpellCanTargetGarrisonFollower(0) ) then
 				StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
 				StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
 			end
 		end
 		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+	elseif event == "WORLD_CURSOR_TOOLTIP_UPDATE" then
+		local anchorType = ...;
+		GameTooltip:SetWorldCursor(anchorType);
 	elseif ( event == "CVAR_UPDATE" ) then
 		local cvarName = ...;
 		if cvarName and cvarName == "showTutorials" then
@@ -1807,6 +1823,8 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("REPLACE_ENCHANT", arg1, arg2);
 	elseif ( event == "TRADE_REPLACE_ENCHANT" ) then
 		StaticPopup_Show("TRADE_REPLACE_ENCHANT", arg1, arg2);
+	elseif ( event == "REPLACE_TRADESKILL_ENCHANT" ) then
+		StaticPopup_Show("REPLACE_TRADESKILL_ENCHANT", arg1, arg2);
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
@@ -1982,6 +2000,8 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
 		ProfessionsFrame_LoadUI();
 		ShowUIPanel(ProfessionsFrame);
+	elseif ( event == "CRAFTING_HOUSE_DISABLED") then
+		StaticPopup_Show("CRAFTING_HOUSE_DISABLED");	
 	elseif ( event == "CRAFTINGORDERS_SHOW_CUSTOMER" ) then
 		if ( GameLimitedMode_IsActive() ) then
 			UIErrorsFrame:AddExternalErrorMessage(ERR_FEATURE_RESTRICTED_TRIAL);
@@ -1993,28 +2013,12 @@ function UIParent_OnEvent(self, event, ...)
 		if ( ProfessionsCustomerOrdersFrame ) then
 			HideUIPanel(ProfessionsCustomerOrdersFrame);
 		end
-	elseif ( event == "CRAFTINGORDERS_SHOW_CRAFTER" ) then
-		if ( GameLimitedMode_IsActive() ) then
-			UIErrorsFrame:AddExternalErrorMessage(ERR_FEATURE_RESTRICTED_TRIAL);
-		else
-			ProfessionsCrafterOrders_LoadUI();
-			ShowUIPanel(ProfessionsCrafterOrdersFrame);
-		end
-	elseif ( event == "CRAFTINGORDERS_HIDE_CRAFTER" ) then
-		if ( ProfessionsCrafterOrdersFrame ) then
-			HideUIPanel(ProfessionsCrafterOrdersFrame);
-		end
 	elseif ( event == "PROFESSION_EQUIPMENT_CHANGED" ) then
-		if not GetCVarBool("professionGearSlotsExampleShown") then
-			SetCVar("professionGearSlotsExampleShown", "1");
-			ProfessionsFrame_LoadUI();
-			local skillLineID = ...;
-			local currBaseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
-			if currBaseProfessionInfo == nil or currBaseProfessionInfo.professionID ~= skillLineID then
-				C_TradeSkillUI.OpenTradeSkill(skillLineID);
-			end
-			ProfessionsFrame:SetTab(ProfessionsFrame.recipesTabID);
-			ShowUIPanel(ProfessionsFrame);
+		local skillLineID, isTool = ...;
+		local cvar = isTool and "professionToolSlotsExampleShown" or "professionAccessorySlotsExampleShown";
+		if not GetCVarBool(cvar) then
+			SetCVar(cvar, "1");
+			OpenProfessionUIToSkillLine(skillLineID);
 
 			local helpTipInfo =
 			{
@@ -2350,10 +2354,10 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "REPORT_PLAYER_RESULT") then
 		local success = ...;
 		if (success) then
-			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMITTED_SUCCESSFULLY);
+			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
 			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
 		else
-			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMISSION_FAILED);
+			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
 		end
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
@@ -2396,6 +2400,11 @@ function UIParent_OnEvent(self, event, ...)
 				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
 			end
 		end 
+	elseif event == "SHOW_HYPERLINK_TOOLTIP" then
+		local hyperlink = ...;
+		GameTooltip_ShowEventHyperlink(hyperlink);
+	elseif event == "HIDE_HYPERLINK_TOOLTIP" then
+		GameTooltip_HideEventHyperlink();
 	end
 end
 

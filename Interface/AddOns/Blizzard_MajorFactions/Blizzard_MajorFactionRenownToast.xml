@@ -8,33 +8,19 @@
 			<Anchor point="TOP" y="-160"/>
 		</Anchors>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Stars1" alpha="0" atlas="AftLevelup-Dots1" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="50" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Stars2" alpha="0" atlas="AftLevelup-Dots2" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="-50" y="-5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<FontString parentKey="FactionName" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE">
-					<Anchors>
-						<Anchor point="TOP" y="-93"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="RenownLabel" inherits="QuestFont_30" justifyH="CENTER" justifyV="MIDDLE">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.FactionName" relativePoint="BOTTOM" x="0" y="-5"/>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-116"/>
 					</Anchors>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
 				</FontString>
 				<Texture parentKey="RewardIcon" alpha="0">
 					<Size x="52" y="52" />
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.RenownLabel" relativePoint="BOTTOM" x="0" y="-17"/>
+						<Anchor point="TOP" relativeKey="$parent.RenownLabel" relativePoint="BOTTOM" x="0" y="-18"/>
 					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="RewardIconMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -49,29 +35,32 @@
 				<FontString parentKey="RewardDescription" inherits="SystemFont_Shadow_Med1" justifyH="CENTER" justifyV="TOP">
 					<Size x="256" />
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.RewardIcon" relativePoint="BOTTOM" y="-16"/>
+						<Anchor point="TOP" relativeKey="$parent.RewardIcon" relativePoint="BOTTOM" y="-10"/>
 					</Anchors>
 					<Color r="0.1" g="1.0" b="0.1"/>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
 				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ToastBG" atlas="CovenantChoice-Celebration-ToastBG" useAtlasSize="true">
+				<Texture parentKey="ToastBG" atlas="majorfaction-celebration-toastBG" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" y="-55"/>
-						<Anchor point="BOTTOM" relativeKey="$parent.RewardDescription" y="-20"/>
+						<Anchor point="TOP" y="-77"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.RewardDescription" y="-14"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="GlowLineTopBottom">
+				<Texture parentKey="GlowLineBottom">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.ToastBG" relativePoint="BOTTOM" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.ToastBG" relativePoint="BOTTOM"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="RewardIconRing" alpha="0" atlas="CovenantChoice-Celebration-Content-Ring" useAtlasSize="true">
-					<Size x="52" y="52" />
+				<Texture parentKey="RewardIconRing" alpha="0" atlas="majorfaction-celebration-content-ring" useAtlasSize="false">
+					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.RewardIcon" />
 					</Anchors>
@@ -102,16 +91,6 @@
 			<AnimationGroup parentKey="ShowAnim" setToFinalAlpha="true">
 				<Alpha childKey="IconSwirlModelScene" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Icon" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="GlowLineTop" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="GlowLineTopAdditive" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Stars1" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="Stars1" duration="0.5" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
-				<Alpha childKey="Stars1" startDelay="0.75" duration="0.5" fromAlpha="1" toAlpha="0"/>
-				<Translation childKey="Stars1" smoothing="IN_OUT" duration="1.5" offsetX="0" offsetY="40"/>
-				<Alpha childKey="Stars2" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="Stars2" duration="0.5" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
-				<Alpha childKey="Stars2" startDelay="0.75" duration="0.5" fromAlpha="1" toAlpha="0"/>
-				<Translation childKey="Stars2" smoothing="IN_OUT" duration="1.5" offsetX="0" offsetY="45"/>
 				<Alpha childKey="ToastBG" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="RenownLabel" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="RewardIconRing" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>

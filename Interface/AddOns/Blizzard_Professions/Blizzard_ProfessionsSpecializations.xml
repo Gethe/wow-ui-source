@@ -17,14 +17,30 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 		<Frames>
-			<Button parentKey="ApplyButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_FRAME_APPLY_BUTTON_TEXT">
+			<Frame parentKey="PanelFooter" frameLevel="500">
+				<Size x="1143" y="53"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="2"/>
+				</Anchors>				
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture atlas="Professions-Specializations-Background-Footer" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Button parentKey="ApplyButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_FRAME_APPLY_BUTTON_TEXT" frameLevel="1000">
 				<Size x="164" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="18"/>
 				</Anchors>
 			</Button>
 
-			<Button parentKey="UndoButton" inherits="IconButtonTemplate">
+			<Button parentKey="UndoButton" inherits="IconButtonTemplate" frameLevel="1000">
 				<KeyValues>
 					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
 					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
@@ -39,35 +55,29 @@
 			</Button>
 
 			<Frame parentKey="TreeView">
-				<Size x="706" y="520"/>
+				<Size x="706" y="521"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="2" y="-85"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
-				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background"/>
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString parentKey="TreeName" inherits="GameFontHighlightLarge" justifyH="LEFT">
-							<Size x="250" y="30"/>
+							<Size x="600" y="30"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="30" y="-25"/>
+								<Anchor point="TOPLEFT" x="30" y="-12"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="TreeDescription" inherits="GameFontNormalSmall" justifyH="LEFT" wordwrap="true">
-							<Size x="300" y="0"/>
+						<FontString parentKey="TreeDescription" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true">
+							<Size x="325" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.TreeName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-				<Frames>
-					<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
-				</Frames>
 			</Frame>
 
 			<Button parentKey="UnlockTabButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_SPECIALIZATION_UNLOCK_TAB" motionScriptsWhileDisabled="true" frameStrata="HIGH">
@@ -79,24 +89,20 @@
 
 			<Frame parentKey="DetailedView">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TreeView" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TreeView" relativePoint="TOPRIGHT" x="-40" y="0"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TreeView" relativePoint="BOTTOMRIGHT" x="434" y="0"/>
 				</Anchors>
-				<KeyValues>
-					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
-				</KeyValues>
 				<Frames>
-					<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
 					<Button parentKey="Path" inherits="ProfessionsSpecPathTemplate" mixin="ProfessionsDetailedSpecPathMixin" frameStrata="HIGH">
 						<Size x="339" y="339"/>
 						<KeyValues>
 							<KeyValue key="iconSize" value="63" type="number"/>
-							<KeyValue key="progressBarSizeX" value="335" type="number"/>
-							<KeyValue key="progressBarSizeY" value="338" type="number"/>
+							<KeyValue key="progressBarSizeX" value="336" type="number"/>
+							<KeyValue key="progressBarSizeY" value="336" type="number"/>
 							<KeyValue key="isDetailedView" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-60"/>
+							<Anchor point="TOP" x="0" y="-75"/>
 						</Anchors>
 						<Scripts>
 							<OnUpdate method="OnUpdate"/>
@@ -253,8 +259,11 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<!-- HRO TODO: Change to new asset -->
-								<Texture parentKey="CurrencyBackground" atlas="CovenantSanctum-Currency-Shadow" useAtlasSize="false"/>
+								<Texture parentKey="CurrencyBackground" atlas="Professions-Currency-Shadow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture parentKey="Icon">
@@ -277,10 +286,8 @@
 					</Frame>
 				</Frames>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="Professions-Recipe-Background" useAtlasSize="false"/>
-					</Layer>
 					<Layer level="ARTWORK">
+						<Texture parentKey="Background" atlas="Professions-Specializations-Background-Dial" useAtlasSize="false"/>
 						<FontString parentKey="PathName" inherits="GameFontHighlightLarge" justifyH="CENTER" wordwrap="false">
 							<Size x="400" y="1"/>
 							<Anchors>
@@ -296,20 +303,41 @@
 					</Layer>
 				</Layers>
 			</Frame>
+
+			<Frame parentKey="VerticalDivider">
+				<Size x="2" y="518"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.DetailedView" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture atlas="Professions-Specializations-Divider" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="TopDivider">
+				<Size y="14"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.TreeView" relativePoint="TOPLEFT" x="0" y="-8"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.DetailedView" relativePoint="TOPRIGHT" x="0" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture atlas="Tab-Divider-Top" horizTile="true">
+							<Size y="14"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
-		<Layers>
-			<Layer level="OVERLAY">
-				<!-- HRO TODO: Remove WIP text. -->
-				<FontString parentKey="WIPText" inherits="GameFontNormalLarge" text="Work In Progress UI Art">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="70" y="-33"/>
-					</Anchors>
-					<Color color="RED_FONT_COLOR"/>
-					<Shadow x="1" y="-1">
-						<Color r="0" g="0" b="0"/>
-					</Shadow>
-				</FontString>
-			</Layer>
-		</Layers>
 	</Frame>
 </Ui>

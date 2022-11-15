@@ -178,15 +178,23 @@ function MinimapMixin:OnEvent(event, ...)
 end
 
 function MinimapMixin:OnEnter()
+	self:SetScript("OnUpdate", Minimap_OnUpdate);
 	self.ZoomIn:Show();
 	self.ZoomOut:Show();
 end
 
 function MinimapMixin:OnLeave()
+	self:SetScript("OnUpdate", nil);
+	GameTooltip:Hide();
 	if not self.ZoomIn:IsMouseOver() and not self.ZoomOut:IsMouseOver() and not self.ZoomHitArea:IsMouseOver() then
 		self.ZoomIn:Hide();
 		self.ZoomOut:Hide();
 	end
+end
+
+function Minimap_OnUpdate(self)
+	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR");
+	GameTooltip:SetMinimapMouseover();
 end
 
 function Minimap_SetPing(x, y, playSound)
@@ -270,6 +278,7 @@ function MinimapClusterMixin:OnLoad()
 	CacheFramePoints(self.Minimap);
 	CacheFramePoints(self.BorderTop);
 	CacheFramePoints(self.InstanceDifficulty);
+	CacheFramePoints(self.MailFrame);
 end
 
 function MinimapClusterMixin:OnEvent(event, ...)
@@ -293,13 +302,13 @@ function MinimapClusterMixin:CheckTutorials()
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFrames",
 			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_TRACKING_CHANGES,
-			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
 			offsetX = 0,
-			alignment = HelpTip.Alignment.Center,
+			alignment = HelpTip.Alignment.Right,
 			onAcknowledgeCallback = GenerateClosure(self.CheckTutorials, self),
 			useParentStrata	= false,
 		};
-		HelpTip:Show(UIParent, helpTipInfo, self);
+		HelpTip:Show(UIParent, helpTipInfo, self.Tracking);
 	end
 end
 
@@ -320,10 +329,14 @@ function MinimapClusterMixin:SetHeaderUnderneath(headerUnderneath)
 
 		self.InstanceDifficulty:ClearAllPoints();
 		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self.BorderTop, "TOPRIGHT", -2, -2);
+
+		self.MailFrame:ClearAllPoints();
+		self.MailFrame:SetPoint("BOTTOMRIGHT", self.Tracking, "TOPRIGHT");
 	else
 		ResetFramePoints(self.Minimap);
 		ResetFramePoints(self.BorderTop);
 		ResetFramePoints(self.InstanceDifficulty);
+		ResetFramePoints(self.MailFrame);
 	end
 	
 	self.InstanceDifficulty:SetFlipped(headerUnderneath);
@@ -473,7 +486,6 @@ local ALWAYS_ON_FILTERS = {
 local CONDITIONAL_FILTERS = {
 	[Enum.MinimapTrackingFilter.Target] = true,
 	[Enum.MinimapTrackingFilter.Digsites] = true,
-	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
 	[Enum.MinimapTrackingFilter.Repair] = true,
 };
 
@@ -481,9 +493,14 @@ local OPTIONAL_FILTERS = {
 	[Enum.MinimapTrackingFilter.Banker] = true,
 	[Enum.MinimapTrackingFilter.Auctioneer] = true,
 	[Enum.MinimapTrackingFilter.Barber] = true,
+	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
 	[Enum.MinimapTrackingFilter.TrivialQuests] = true,
 	[Enum.MinimapTrackingFilter.Transmogrifier] = true,
 	[Enum.MinimapTrackingFilter.Mailbox] = true,
+};
+
+local LOW_PRIORITY_TRACKING_SPELLS = {
+	[261764] = true; -- Track Warboards
 };
 
 function MiniMapTrackingDropDown_SetTrackingNone()
@@ -559,6 +576,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		UIDropDownMenu_AddButton(info, level)
 	end
 
+	local trackingInfos = { };
 	for id=1, count do
 		name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
 
@@ -592,11 +610,29 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 				(nested < 0 or -- this tracking shouldn't be nested
 				(nested == HUNTER_TRACKING and class ~= "HUNTER") or
 				(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
-				UIDropDownMenu_AddButton(info, level);
+				table.insert(trackingInfos, info);
 			elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
-				UIDropDownMenu_AddButton(info, level);
+				table.insert(trackingInfos, info);
 			end
 		end
+	end
+
+	table.sort(trackingInfos, function(a, b)
+		-- Sort low priority tracking spells to the end
+		local filterA = C_Minimap.GetTrackingFilter(a.arg1);
+		local filterB = C_Minimap.GetTrackingFilter(b.arg1);
+		local lowPriorityA = LOW_PRIORITY_TRACKING_SPELLS[filterA.spellID] or false;
+		local lowPriorityB = LOW_PRIORITY_TRACKING_SPELLS[filterB.spellID] or false;
+		if lowPriorityA ~= lowPriorityB then
+			return not lowPriorityA;
+		end
+
+		-- Sort by id
+		return a.arg1 < b.arg1;
+	end);
+
+	for _, info in ipairs(trackingInfos) do
+		UIDropDownMenu_AddButton(info, level);
 	end
 
 end
@@ -669,13 +705,24 @@ function ExpansionLandingPageMinimapButtonMixin:OnEvent(event, ...)
 	end
 end
 
-local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow)
-	local info = C_Texture.GetAtlasInfo(up);
-	self:SetSize(info and info.width or 0, info and info.height or 0);
-	self:GetNormalTexture():SetAtlas(up, TextureKitConstants.UseAtlasSize);
-	self:GetPushedTexture():SetAtlas(down, TextureKitConstants.UseAtlasSize);
-	self:GetHighlightTexture():SetAtlas(highlight, TextureKitConstants.UseAtlasSize);
-	self.LoopingGlow:SetAtlas(glow, TextureKitConstants.UseAtlasSize);
+local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow, useDefaultButtonSize)
+	local width, height;
+	if useDefaultButtonSize then
+		width = self.defaultWidth;
+		height = self.defaultHeight;
+		self.LoopingGlow:SetSize(self.defaultGlowWidth, self.defaultGlowHeight);
+	else
+		local info = C_Texture.GetAtlasInfo(up);
+		width = info and info.width or 0;
+		height = info and info.height or 0;
+	end
+	self:SetSize(width, height);
+
+	local useAtlasSize = not useDefaultButtonSize;
+	self:GetNormalTexture():SetAtlas(up, useAtlasSize);
+	self:GetPushedTexture():SetAtlas(down, useAtlasSize);
+	self:GetHighlightTexture():SetAtlas(highlight, useAtlasSize);
+	self.LoopingGlow:SetAtlas(glow, useAtlasSize);
 end
 
 function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
@@ -683,9 +730,11 @@ function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
 		self:UpdateIconForGarrison();
 	else
 		local minimapDisplayInfo = ExpansionLandingPage:GetOverlayMinimapDisplayInfo();
-		SetLandingPageIconFromAtlases(self, minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas);
-		self.title = minimapDisplayInfo.title;
-		self.description = minimapDisplayInfo.description;
+		if minimapDisplayInfo then
+			SetLandingPageIconFromAtlases(self, minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas, minimapDisplayInfo.useDefaultButtonSize);
+			self.title = minimapDisplayInfo.title;
+			self.description = minimapDisplayInfo.description;
+		end
 	end
 end
 

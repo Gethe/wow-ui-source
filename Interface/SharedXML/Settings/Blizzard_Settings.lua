@@ -66,12 +66,10 @@ end
 function SettingsSearchableElementMixin:MatchesSearchTags(words)
 	if self.searchTags then
 		for _, val1 in ipairs(words) do
-			if strlen(val1) >= 3 then
-				for _, val2 in ipairs(self.searchTags) do
-					local first, last = string.find(val2, val1, nil, true);
-					if first and last then
-						return last - first;
-					end
+			for _, val2 in ipairs(self.searchTags) do
+				local first, last = string.find(val2, val1, nil, true);
+				if first and last then
+					return last - first;
 				end
 			end
 		end
@@ -460,7 +458,9 @@ function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, 
 		if UIErrorsFrame then
 			UIErrorsFrame:AddExternalWarningMessage(errorMsg);
 		end
-		print(errorMsg);
+		if print then
+			print(errorMsg);
+		end
 		assertsafe(false, errorMsg);
 		LoadAddOn("Blizzard_DebugTools");
 		if Dump then

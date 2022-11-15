@@ -752,7 +752,7 @@ end
 function ChallengesKeystoneSlotMixin:OnEnter()
 	if (C_ChallengeMode.HasSlottedKeystone()) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		C_ChallengeMode.SetKeystoneTooltip();
+		GameTooltip:SetSlottedKeystone();
 		GameTooltip:Show();
 	end
 end

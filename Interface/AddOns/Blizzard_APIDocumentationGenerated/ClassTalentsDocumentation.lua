@@ -9,6 +9,7 @@ local ClassTalents =
 		{
 			Name = "CanChangeTalents",
 			Type = "Function",
+			Documentation = { "Returns true only if the player has staged changes and can commit their talents in their current state." },
 
 			Returns =
 			{
@@ -24,6 +25,17 @@ local ClassTalents =
 			Returns =
 			{
 				{ Name = "canCreate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanEditTalents",
+			Type = "Function",
+			Documentation = { "Returns true if the player could switch talents if they staged a proper loadout." },
+
+			Returns =
+			{
+				{ Name = "canEdit", Type = "bool", Nilable = false },
+				{ Name = "changeError", Type = "string", Nilable = false },
 			},
 		},
 		{

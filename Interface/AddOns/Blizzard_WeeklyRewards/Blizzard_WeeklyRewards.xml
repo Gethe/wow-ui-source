@@ -66,7 +66,7 @@
 				<Texture parentKey="Background"/>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="Border" atlas="weeklyrewards-frame-mode" useAtlasSize="true">
+				<Texture parentKey="Border" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="LEFT"/>
 					</Anchors>
@@ -258,12 +258,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WeeklyRewardsNineSliceTemplate" inherits="NineSlicePanelTemplate" setAllPoints="true" virtual="true">
-		<KeyValues>
-			<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
-			<KeyValue key="layoutTextureKit" value="Oribos" type="string"/>
-		</KeyValues>
-	</Frame>
+	<Frame name="WeeklyRewardsNineSliceTemplate" inherits="NineSlicePanelTemplate" setAllPoints="true" virtual="true"/>
 
 	<Frame name="WeeklyRewardOverlayTemplate" mixin="WeeklyRewardOverlayMixin" frameStrata="HIGH" virtual="true">
 		<Size x="500" y="278"/>
@@ -298,7 +293,7 @@
 			<Frame setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Orb" atlas="weeklyrewards-orb-dialog" useAtlasSize="true">
+						<Texture parentKey="Orb" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="6"/>
 							</Anchors>
@@ -328,12 +323,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture atlas="weeklyrewards-divider" useAtlasSize="true">
+				<Texture parentKey="Divider1" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOP" y="-291"/>
 					</Anchors>
 				</Texture>
-				<Texture atlas="weeklyrewards-divider" useAtlasSize="true">
+				<Texture parentKey="Divider2" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOP" y="-446"/>
 					</Anchors>
@@ -437,12 +432,12 @@
 					</Layer>
 					<Layer level="BORDER">
 						<Texture atlas="weeklyrewards-frame-currency-unlocked" useAtlasSize="true"/>
-						<Texture atlas="weeklyrewards-divider-currency" useAtlasSize="true">
+						<Texture parentKey="Divider1" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativePoint="TOP" x="-18" y="11"/>
 							</Anchors>
 						</Texture>
-						<Texture atlas="weeklyrewards-divider-currency" useAtlasSize="true">
+						<Texture parentKey="Divider2" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativePoint="TOP" x="18" y="11"/>
 							</Anchors>
@@ -517,7 +512,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="-1">
-						<Texture atlas="weeklyrewards-frame-button" useAtlasSize="true">
+						<Texture parentKey="Background" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-3" y="0"/>
 							</Anchors>
@@ -541,6 +536,55 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WeeklyRewardExpirationWarningDialog" enableMouse="true" mixin="GreatVaultRetirementWarningFrameMixin" frameStrata="HIGH">
+		<Size x="420" y="69"/>
+		<KeyValues>
+			<KeyValue key="layoutType" value="TooltipMixedLayout" type="string"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="WeeklyRewardsFrame" relativePoint="BOTTOM" x="0" y="5"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="WarningIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Description" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="400" y="55"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.WarningIcon" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ExtraBG" atlas="Tooltip-NineSlice-Center">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="6" y="-6"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-7" y="7"/>
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetCenterColor(0, 0, 0, 1);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

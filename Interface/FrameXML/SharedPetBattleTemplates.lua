@@ -411,13 +411,13 @@ do
 
 		if ( multi > 1 ) then 
 			output = GREEN_FONT_COLOR_CODE..math.floor(baseDamage * multi)..FONT_COLOR_CODE_CLOSE;
-			if ( ENABLE_COLORBLIND_MODE == "1" ) then
+			if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 				output = output.."|Tinterface\\petbattles\\battlebar-abilitybadge-strong-small:0|t";
 			end
 			return output;
 		elseif ( multi < 1 ) then 
 			output = RED_FONT_COLOR_CODE..math.floor(baseDamage * multi)..FONT_COLOR_CODE_CLOSE;
-			if ( ENABLE_COLORBLIND_MODE == "1" ) then
+			if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 				output = output.."|Tinterface\\petbattles\\battlebar-abilitybadge-weak-small:0|t";
 			end
 			return output;
@@ -439,13 +439,13 @@ do
 
 		if ( finalMulti > 1 ) then 
 			output = GREEN_FONT_COLOR_CODE..math.floor(baseHeal * finalMulti)..FONT_COLOR_CODE_CLOSE;
-			if (ENABLE_COLORBLIND_MODE == "1") then
+			if (CVarCallbackRegistry:GetCVarValueBool("colorblindMode")) then
 				output = output.."|Tinterface\\petbattles\\battlebar-abilitybadge-strong-small:0|t";
 			end
 			return output;
 		elseif( finalMulti < 1 ) then 
 			output = RED_FONT_COLOR_CODE..math.floor(baseHeal * finalMulti)..FONT_COLOR_CODE_CLOSE;
-			if (ENABLE_COLORBLIND_MODE == "1") then
+			if (CVarCallbackRegistry:GetCVarValueBool("colorblindMode")) then
 				output = output.."|Tinterface\\petbattles\\battlebar-abilitybadge-weak-small:0|t";
 			end
 			return output;
@@ -470,12 +470,12 @@ do
 		local accuracyBonus = parserEnv.AccuracyBonus(...);
 		local output = string.format("%d%%", math.floor(parserEnv.SimpleAccuracy(...)));
 		if ( accuracyBonus > 0 ) then
-			if ( ENABLE_COLORBLIND_MODE == "1" ) then
+			if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 				output = output.."(+)";
 			end
 			output = GREEN_FONT_COLOR_CODE..output..FONT_COLOR_CODE_CLOSE;
 		elseif ( accuracyBonus < 0 ) then
-			if ( ENABLE_COLORBLIND_MODE == "1" ) then
+			if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 				output = output.."(-)";
 			end
 			output = RED_FONT_COLOR_CODE..output..FONT_COLOR_CODE_CLOSE;

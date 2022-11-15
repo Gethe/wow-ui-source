@@ -200,6 +200,11 @@ function GlueParent_UpdateDialogs()
 			if ( not localizedString ) then
 				local tag = string.format("%s_ERROR_%d", errorCategory, errorID);
 				localizedString = _G[tag];
+
+				-- some translations may need the HTML formatting even if we are not using the %s_ERROR_%d_HTML basetag
+				if localizedString and strfind(strlower(localizedString), "<html><body><p>") then
+					isHTML = true;
+				end
 			end
 
 			--If we still don't have one, just display a generic error with the ID
@@ -419,13 +424,23 @@ function GlueParent_CloseSecondaryScreen()
 	end
 end
 
+-- playIntroMovie CVar is set to the index of the last cinematic played.
+-- So we will play the cinematic at that index + 1 if there is one.
 function GlueParent_CheckCinematic()
-	local cinematicIndex = tonumber(GetCVar("playIntroMovie"));
-	local displayExpansionLevel = LE_EXPANSION_LEVEL_CURRENT;
-	if ( not cinematicIndex or cinematicIndex <= displayExpansionLevel ) then
-		SetCVar("playIntroMovie", displayExpansionLevel + 1);
-		MovieFrame.version = C_Login.IsNewPlayer() and 1 or tonumber(GetCVar("playIntroMovie"));
-		GlueParent_OpenSecondaryScreen("movie");
+	local firstCinematicIndex, lastCinematicIndex = CinematicsFrame_GetIndexRangeForExpansion(LE_EXPANSION_LEVEL_CURRENT);
+	if not firstCinematicIndex or not lastCinematicIndex then
+		return;
+	end
+	local nextCinematicIndex = (tonumber(GetCVar("playIntroMovie")) or 0) + 1;
+	nextCinematicIndex = math.max(nextCinematicIndex, firstCinematicIndex);
+	while nextCinematicIndex <= lastCinematicIndex do
+		SetCVar("playIntroMovie", nextCinematicIndex);
+		if not CinematicFrame_IsAutoPlayDisabled(nextCinematicIndex) then
+			MovieFrame.version = C_Login.IsNewPlayer() and 1 or tonumber(GetCVar("playIntroMovie"));
+			GlueParent_OpenSecondaryScreen("movie");
+			break;
+		end
+		nextCinematicIndex = nextCinematicIndex + 1;
 	end
 end
 
@@ -525,6 +540,7 @@ local glueScreenTags =
 		["KULTIRAN"] = true,
 		["MECHAGNOME"] = true,
 		["VULPERA"] = true,
+		["DRACTHYR"] = true,
 	},
 };
 

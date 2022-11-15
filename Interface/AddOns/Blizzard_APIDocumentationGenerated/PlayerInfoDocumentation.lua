@@ -103,6 +103,34 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "HasVisibleInvSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isVisible", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsExpansionLandingPageUnlockedForPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "expansionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerEligibleForNPE",
 			Type = "Function",
 

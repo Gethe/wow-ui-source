@@ -536,6 +536,11 @@ function AzeriteEmpoweredItemPowerMixin:OnEnter()
 
 		GameTooltip:Show();
 		self.UpdateTooltip = self.OnEnter;
+		if TooltipUtil.ShouldDoItemComparison() then
+			TooltipComparisonManager:CompareAzeritePower(self:GetAzeritePowerID(), itemLink, GameTooltip);
+		else
+			TooltipComparisonManager:Clear(GameTooltip);
+		end
 	end);
 end
 

@@ -1,4 +1,81 @@
-WorldMapBountyBoardMixin = {};
+BountyFrameType = EnumUtil.MakeEnum(
+	"BountyBoard",
+	"ActivityTracker"
+);
+
+local BountyLockType = EnumUtil.MakeEnum(
+	"None",
+	"ByQuest",
+	"NoBounties"
+);
+
+BountyFrameMixin = {};
+
+function BountyFrameMixin:GetDisplayLocation()
+	return self.displayLocation;
+end
+
+function BountyFrameMixin:GetMapID()
+	if self:GetParent().GetMapID then
+		return self:GetParent():GetMapID();
+	else
+		return self.mapID;
+	end
+end
+
+function BountyFrameMixin:GoToMap(mapID)
+	self:GetParent():SetMapID(mapID);
+end
+
+function BountyFrameMixin:InvalidateMapCache()
+	self.cachedMapInfo = nil;
+end
+
+function BountyFrameMixin:CacheMapsForSelectionBounty()
+	if self.cachedMapInfo then
+		return;
+	end
+
+	self.cachedMapInfo = {};
+	local mapID = self:GetMapID();
+	local bountySetMaps = MapUtil.GetBountySetMaps(self.bountySetID);
+	for i, zoneMapID in ipairs(bountySetMaps) do
+		local numActivities = self:CalculateNumActivitiesForSelectedBountyByMap(zoneMapID);
+		if numActivities > 0 then
+			table.insert(self.cachedMapInfo, { mapID = zoneMapID, count = numActivities });
+		end
+	end
+	table.sort(self.cachedMapInfo, function(left, right) return right.count < left.count end);
+end
+
+function BountyFrameMixin:SetNextMapForSelectedBounty(isNewSelection)
+	self:CacheMapsForSelectionBounty();
+
+	if #self.cachedMapInfo == 0 then
+		return;
+	end
+
+	local mapIndex = 1;
+	local mapID = self:GetMapID();
+	for i, cachedMapInfo in ipairs(self.cachedMapInfo) do
+		if mapID == cachedMapInfo.mapID then
+			if isNewSelection then
+				-- If we just selected this bounty and the map matches a quest then stay here until the next click
+				mapIndex = i;
+			else
+				-- We want the next map after the current one
+				mapIndex = i + 1;
+			end
+			break;
+		end
+	end
+	if mapIndex > #self.cachedMapInfo then
+		mapIndex = 1;
+	end
+	self:GoToMap(self.cachedMapInfo[mapIndex].mapID);
+end
+
+WorldMapBountyBoardMixin = CreateFromMixins(BountyFrameMixin);
 
 function WorldMapBountyBoardMixin:OnLoad()
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -31,22 +108,6 @@ function WorldMapBountyBoardMixin:SetMapAreaID(mapID)
 	end
 end
 
-function WorldMapBountyBoardMixin:GetMapID()
-	if self:GetParent().GetMapID then
-		return self:GetParent():GetMapID();
-	else
-		return self.mapID;
-	end
-end
-
-function WorldMapBountyBoardMixin:GoToMap(mapID)
-	self:GetParent():SetMapID(mapID);
-end
-
-function WorldMapBountyBoardMixin:GetDisplayLocation()
-	return self.displayLocation;
-end
-
 function WorldMapBountyBoardMixin:IsWorldQuestCriteriaForSelectedBounty(questID)
 	if self.bounties and self.selectedBountyIndex then
 		local bounty = self.bounties[self.selectedBountyIndex];
@@ -62,10 +123,6 @@ function WorldMapBountyBoardMixin:Clear()
 	self:SetSelectedBountyIndex(nil, skipRefresh);
 	self:Hide();
 end
-
-WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE = 1;
-WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_BY_QUEST = 2;
-WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES = 3;
 
 function WorldMapBountyBoardMixin:HideHelpTips()
 	HelpTip:Hide(self, BOUNTY_TUTORIAL_INTRO);
@@ -92,7 +149,13 @@ function WorldMapBountyBoardMixin:Refresh()
 		return;
 	end
 
-	self.displayLocation, self.lockedQuestID, self.bountySetID = C_QuestLog.GetBountySetInfoForMapID(mapID);
+	self.displayLocation, self.lockedQuestID, self.bountySetID, isActivitySet = C_QuestLog.GetBountySetInfoForMapID(mapID);
+	if isActivitySet then
+		self:Hide();
+		self.isRefreshing = false;
+		return;
+	end
+
 	self.bounties = C_QuestLog.GetBountiesForMapID(mapID) or {};
 
 	if self.lockedQuestID and not C_QuestLog.IsOnQuest(self.lockedQuestID) then
@@ -106,12 +169,12 @@ function WorldMapBountyBoardMixin:Refresh()
 	end
 
 	if self.lockedQuestID then
-		self:SetLockedType(WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_BY_QUEST);
+		self:SetLockedType(BountyLockType.ByQuest);
 	elseif #self.bounties == 0 then
-		self:SetLockedType(WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES);
+		self:SetLockedType(BountyLockType.NoBounties);
 		self:SetSelectedBountyIndex(nil);
 	else
-		self:SetLockedType(WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE);
+		self:SetLockedType(BountyLockType.None);
 		self:SetSelectedBountyIndex(self.bounties[self.selectedBountyIndex] and self.selectedBountyIndex or 1);
 	end
 
@@ -134,10 +197,10 @@ end
 function WorldMapBountyBoardMixin:SetLockedType(lockedType)
 	self.lockedType = lockedType;
 
-	self.DesaturatedTrackerBackground:SetShown(self.lockedType ~= WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE);
-	self.Locked:SetShown(self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_BY_QUEST);
+	self.DesaturatedTrackerBackground:SetShown(self.lockedType ~= BountyLockType.None);
+	self.Locked:SetShown(self.lockedType == BountyLockType.ByQuest);
 
-	if self.lockedType ~= WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE then
+	if self.lockedType ~= BountyLockType.None then
 		self.BountyName:SetText(BOUNTY_BOARD_LOCKED_TITLE);
 		self.BountyName:SetVertexColor(.5, .5, .5);
 
@@ -159,7 +222,7 @@ end
 function WorldMapBountyBoardMixin:RefreshBountyTabs()
 	self.bountyTabPool:ReleaseAll();
 
-	if self.lockedType ~= WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE and self.lockedType ~= WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES then
+	if self.lockedType ~= BountyLockType.None and self.lockedType ~= BountyLockType.NoBounties then
 		return;
 	end
 
@@ -211,7 +274,7 @@ end
 function WorldMapBountyBoardMixin:RefreshSelectedBounty()
 	self.bountyObjectivePool:ReleaseAll();
 
-	if self.lockedType ~= WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE then
+	if self.lockedType ~= BountyLockType.None then
 		return;
 	end
 
@@ -294,14 +357,16 @@ function WorldMapBountyBoardMixin:SetSelectedBountyIndex(selectedBountyIndex, sk
 		self:RefreshSelectedBounty();
 	end
 
-	local bountyQuestID;
+	local bountyQuestID, bountyFactionID;
 	if self.selectedBountyIndex then
 		local bounty = self.bounties[self.selectedBountyIndex];
 		if bounty then
 			bountyQuestID = bounty.questID;
+			bountyFactionID = bounty.factionID;
 		end
 	end
-	self:GetParent():TriggerEvent("SetBountyQuestID", bountyQuestID);
+
+	self:GetParent():TriggerEvent("SetBounty", bountyQuestID, bountyFactionID, BountyFrameType.BountyBoard);
 end
 
 function WorldMapBountyBoardMixin:GetSelectedBountyIndex()
@@ -389,13 +454,13 @@ function WorldMapBountyBoardMixin:ShowLockedByNoBountiesTooltip(bountyIndex)
 end
 
 function WorldMapBountyBoardMixin:OnEnter()
-	if self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE then
+	if self.lockedType == BountyLockType.None then
 		if self.selectedBountyIndex then
 			self:ShowBountyTooltip(self.selectedBountyIndex);
 		end
-	elseif self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_BY_QUEST then
+	elseif self.lockedType == BountyLockType.ByQuest then
 		self:ShowLockedByQuestTooltip();
-	elseif self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES then
+	elseif self.lockedType == BountyLockType.NoBounties then
 		self:ShowLockedByNoBountiesTooltip(nil);
 	end
 	self.UpdateTooltip = self.OnEnter;
@@ -430,11 +495,7 @@ function WorldMapBountyBoardMixin:OnTabClick(tab)
 	end
 end
 
-function WorldMapBountyBoardMixin:InvalidateMapCache()
-	self.cachedMapInfo = nil;
-end
-
-function WorldMapBountyBoardMixin:CalculateNumActiveWorldQuestsForSelectedBountyByMap(mapID)
+function WorldMapBountyBoardMixin:CalculateNumActivitiesForSelectedBountyByMap(mapID)
 	local numQuests = 0;
 	local taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
 	for i, info in ipairs(taskInfo) do
@@ -447,52 +508,8 @@ function WorldMapBountyBoardMixin:CalculateNumActiveWorldQuestsForSelectedBounty
 	return numQuests;
 end
 
-function WorldMapBountyBoardMixin:CacheMapsForSelectionBounty()
-	if self.cachedMapInfo then
-		return;
-	end
-
-	self.cachedMapInfo = {};
-	local mapID = self:GetMapID();
-	local bountySetMaps = MapUtil.GetBountySetMaps(self.bountySetID);
-	for i, zoneMapID in ipairs(bountySetMaps) do
-		local numQuests = self:CalculateNumActiveWorldQuestsForSelectedBountyByMap(zoneMapID);
-		if numQuests > 0 then
-			table.insert(self.cachedMapInfo, { mapID = zoneMapID, count = numQuests });
-		end
-	end
-	table.sort(self.cachedMapInfo, function(left, right) return right.count < left.count end);
-end
-
-function WorldMapBountyBoardMixin:SetNextMapForSelectedBounty(isNewTab)
-	self:CacheMapsForSelectionBounty();
-
-	if #self.cachedMapInfo == 0 then
-		return;
-	end
-
-	local mapIndex = 1;
-	local mapID = self:GetMapID();
-	for i, cachedMapInfo in ipairs(self.cachedMapInfo) do
-		if mapID == cachedMapInfo.mapID then
-			if isNewTab then
-				-- if we just selected this tab and the map matches a quest then stay here until the next click
-				mapIndex = i;
-				break;
-			end
-			-- we want the next map after the current one
-			mapIndex = i + 1;
-			break;
-		end
-	end
-	if mapIndex > #self.cachedMapInfo then
-		mapIndex = 1;
-	end
-	self:GoToMap(self.cachedMapInfo[mapIndex].mapID);
-end
-
 function WorldMapBountyBoardMixin:TryShowingIntroTutorial()
-	if self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE then
+	if self.lockedType == BountyLockType.None then
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_INTRO) then
 			local helpTipInfo = {
 				text = BOUNTY_TUTORIAL_INTRO,
@@ -519,7 +536,7 @@ function WorldMapBountyBoardMixin:TryShowingIntroTutorial()
 end
 
 function WorldMapBountyBoardMixin:TryShowingCompletionTutorial()
-	if self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE and self.firstCompletedTab then
+	if self.lockedType == BountyLockType.None and self.firstCompletedTab then
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_FINISHED) then
 			local helpTipInfo = {
 				text = BOUNTY_TUTORIAL_BOUNTY_FINISHED,
@@ -537,5 +554,255 @@ function WorldMapBountyBoardMixin:TryShowingCompletionTutorial()
 end
 
 function WorldMapBountyBoardMixin:AreBountiesAvailable()
-	return self:IsShown() and (self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NONE or self.lockedType == WORLD_MAP_BOUNTY_BOARD_LOCK_TYPE_NO_BOUNTIES);
+	return self:IsShown() and (self.lockedType == BountyLockType.None or self.lockedType == BountyLockType.NoBounties);
+end
+
+local function SortActivityBountiesAlphabetical(bounty1, bounty2)
+	local faction1Name = select(1, GetFactionInfoByID(bounty1.factionID));
+	local faction2Name = select(1, GetFactionInfoByID(bounty2.factionID));
+	return strcmputf8i(faction1Name, faction2Name) < 0;
+end
+
+WorldMapActivityTrackerMixin = CreateFromMixins(BountyFrameMixin);
+
+function WorldMapActivityTrackerMixin:OnLoad()
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterEvent("QUEST_LOG_UPDATE");
+
+	self.maps = {};
+end
+
+function WorldMapActivityTrackerMixin:OnEvent(event, ...)
+	if event == "QUEST_LOG_UPDATE" then
+		if not self:GetParent() or self:GetParent():IsVisible() then
+			self:Refresh();
+		end
+	end
+end
+
+function WorldMapActivityTrackerMixin:Refresh()
+	local mapID = self:GetMapID();
+	if not mapID then
+		self:Clear();
+		return;
+	end
+
+	self.displayLocation, self.lockedQuestID, self.bountySetID, isActivitySet = C_QuestLog.GetBountySetInfoForMapID(mapID);
+	if not isActivitySet then
+		self:Hide();
+		return;
+	end
+
+	self.bounties = C_QuestLog.GetBountiesForMapID(mapID) or {};
+	if #self.bounties > 0 then
+		table.sort(self.bounties, SortActivityBountiesAlphabetical);
+	end
+
+	if self.lockedQuestID and not C_QuestLog.IsOnQuest(self.lockedQuestID) then
+		self.lockedQuestID = nil;
+	end
+
+	if not self.displayLocation then
+		self:Clear();
+		return;
+	end
+
+	if self.lockedQuestID then
+		self:SetLockType(BountyLockType.ByQuest);
+	elseif #self.bounties == 0 then
+		self:SetLockType(BountyLockType.NoBounties);
+	else
+		self:SetLockType(BountyLockType.None);
+		self:SetSelectedBounty(self.selectedBounty or nil);
+	end
+
+	if self:GetParent().SetOverlayFrameLocation then
+		local bountyBoardLocation = self:GetDisplayLocation();
+		if bountyBoardLocation then
+			self:GetParent():SetOverlayFrameLocation(self, bountyBoardLocation);
+		end
+	end
+
+	self:Show();
+	self:TryShowingTutorials();
+end
+
+function WorldMapActivityTrackerMixin:TryShowingTutorials()
+	if self.lockType == BountyLockType.None then
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_ACTIVITY_TRACKER_LIST) then
+			local helpTipInfo = {
+				text = WORLD_MAP_ACTIVITY_TRACKER_LIST_INTRO,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_WORLD_MAP_ACTIVITY_TRACKER_LIST,
+				alignment = HelpTip.Alignment.Left,
+				offsetY = -5,
+				onAcknowledgeCallback = GenerateClosure(self.TryShowingTutorials, self),
+				system = "WorldMap",
+			};
+
+			local displayLocation = self:GetDisplayLocation();
+			if displayLocation == Enum.MapOverlayDisplayLocation.TopLeft or displayLocation == Enum.MapOverlayDisplayLocation.TopRight then
+				helpTipInfo.targetPoint = HelpTip.Point.BottomEdgeCenter;
+			else
+				helpTipInfo.targetPoint = HelpTip.Point.TopEdgeCenter;
+			end
+
+			HelpTip:Show(self.BountyDropdownButton, helpTipInfo);
+		end
+	end
+end
+
+function WorldMapActivityTrackerMixin:SetLockType(lockType)
+	self.lockType = lockType;
+	self.BountyDropdownButton:SetShown(self.lockType == BountyLockType.None);
+end
+
+function WorldMapActivityTrackerMixin:OnClick(button, down)
+	if self.lockType ~= BountyLockType.None or self.selectedBounty == nil then
+		return;
+	end
+
+	if button == "LeftButton" then
+		PlaySound(SOUNDKIT.UI_WORLDQUEST_MAP_SELECT);
+		self:SetNextMapForSelectedBounty();
+	elseif button == "RightButton" then
+		self:SetSelectedBounty(nil);
+		GameTooltip_Hide();
+	end
+end
+
+function WorldMapActivityTrackerMixin:OnShow()
+	self:Refresh();
+end
+
+function WorldMapActivityTrackerMixin:OnEnter()
+	if self.selectedBounty then
+		self:ShowMapJumpTooltip();
+	end
+end
+
+function WorldMapActivityTrackerMixin:ShowMapJumpTooltip()
+	local factionName = select(1, GetFactionInfoByID(self.selectedBounty.factionID));
+	if factionName then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_AddHighlightLine(GameTooltip, factionName);
+		local wrapText = false;
+		GameTooltip_AddInstructionLine(GameTooltip, WORLD_MAP_ACTIVITY_TRACKER_RING_TOOLTIP, wrapText);
+		GameTooltip:Show();
+	end
+end
+
+function WorldMapActivityTrackerMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+function WorldMapActivityTrackerMixin:Clear()
+	self:SetSelectedBounty(nil);
+	self:Hide();
+end
+
+function WorldMapActivityTrackerMixin:SetSelectedBounty(bountyInfo)
+	self:InvalidateMapCache();
+	self.selectedBounty = bountyInfo;
+	self.Background:SetShown(not bountyInfo or not bountyInfo.icon);
+	self.Icon:SetTexture(bountyInfo and bountyInfo.icon);
+	self.Highlight:SetAlpha(bountyInfo and 0.5 or 0);
+	if bountyInfo then
+		self:GetParent():TriggerEvent("SetBounty", bountyInfo.questID, bountyInfo.factionID, BountyFrameType.ActivityTracker);
+	else
+		self:GetParent():TriggerEvent("SetBounty", nil);
+	end
+end
+
+function WorldMapActivityTrackerMixin:CalculateNumActiveTaskQuestsForSelectedBountyByMap(mapID)
+	local numTaskQuests = 0;
+	local taskQuests = GetQuestsForPlayerByMapIDCached(mapID);
+	for i, taskInfo in ipairs(taskQuests) do
+		local questTitle, taskFactionID, capped, displayAsObjective = C_TaskQuest.GetQuestInfoByQuestID(taskInfo.questId);
+		if (C_QuestLog.IsQuestCriteriaForBounty(taskInfo.questId, self.selectedBounty.questID) or taskFactionID and taskFactionID == self.selectedBounty.factionID) and taskInfo.mapID == mapID then -- Ignore Task Quests that are on surrounding maps but viewable from this map
+			numTaskQuests = numTaskQuests + 1;
+		end
+	end
+
+	return numTaskQuests;
+end
+
+function WorldMapActivityTrackerMixin:CalculateNumActiveAreaPOIsForSelectedBountyFactionByMap(mapID)
+	local numAreaPOIs = 0;
+	local areaPoiInfo = GetAreaPOIsForPlayerByMapIDCached(mapID);
+	for i, poiID in ipairs(areaPoiInfo) do
+		local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(mapID, poiID);
+		if poiInfo.factionID and poiInfo.factionID == self.selectedBounty.factionID and poiInfo.isPrimaryMapForPOI then -- Ignore areaPOIs that are on surrounding maps but viewable from this map
+			numAreaPOIs = numAreaPOIs + 1;
+		end
+	end
+
+	return numAreaPOIs;
+end
+
+function WorldMapActivityTrackerMixin:CalculateNumActiveQuestsForSelectedBountyFactionByMap(mapID)
+	local numActiveQuests = 0;
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	if not MapUtil.IsMapTypeZone(mapID) then
+		return numActiveQuests;
+	end
+
+	local quests = C_QuestLog.GetQuestsOnMap(mapID);
+	for i, info in ipairs(quests) do
+		if C_QuestLog.DoesQuestAwardReputationWithFaction(info.questID, self.selectedBounty.factionID) and GetQuestUiMapID(info.questID) == mapID then -- Ignore Active Quests that are on surrounding maps but viewable from this map
+			numActiveQuests = numActiveQuests + 1;
+		end
+	end
+
+	return numActiveQuests;
+end
+
+function WorldMapActivityTrackerMixin:CalculateNumActivitiesForSelectedBountyByMap(mapID)
+	local numTaskQuests = self:CalculateNumActiveTaskQuestsForSelectedBountyByMap(mapID);
+	local numAreaPOIs = self:CalculateNumActiveAreaPOIsForSelectedBountyFactionByMap(mapID);
+	local numActiveQuests = self:CalculateNumActiveQuestsForSelectedBountyFactionByMap(mapID);
+
+	return numTaskQuests + numAreaPOIs + numActiveQuests;
+end
+
+WorldMapActivityTrackerDropDownMixin = {};
+
+function WorldMapActivityTrackerDropDownMixin:OnShow()
+	local xOffset, yOffset, point, relativeTo, relativePoint = -5, -5, "BOTTOMLEFT", self:GetParent().BountyDropdownButton, "TOPRIGHT";
+	UIDropDownMenu_SetAnchor(self, xOffset, yOffset, point, relativeTo, relativePoint);
+	UIDropDownMenu_Initialize(self, self.InitializeDropDown, "MENU");
+end
+
+function WorldMapActivityTrackerDropDownMixin:InitializeDropDown(level)
+	if not self:GetParent().bounties then
+		return;
+	end
+
+	local filterSystem = {
+		onUpdate = nil,
+		filters = {
+		},
+	};
+
+	for _, bountyInfo in ipairs(self:GetParent().bounties) do
+		local activityIcon = CreateSimpleTextureMarkup(bountyInfo.icon or [[Interface\Icons\INV_Misc_QuestionMark]], 16, 16);
+		local buttonText = activityIcon .. " " .. select(1, GetFactionInfoByID(bountyInfo.factionID));
+		local function SetBounty()
+			self:GetParent():SetSelectedBounty(bountyInfo); 
+			local isNewSelection = true;
+			self:GetParent():SetNextMapForSelectedBounty(isNewSelection);
+		end
+		table.insert(filterSystem.filters, { type = FilterComponent.TextButton, text = buttonText, set = SetBounty, hideMenuOnClick = true, });
+	end
+
+	FilterDropDownSystem.Initialize(self, filterSystem, level);
+end
+
+WorldMapActivityTrackerBountyDropdownButtonMixin = {};
+
+function WorldMapActivityTrackerBountyDropdownButtonMixin:OnMouseDown()
+	local dropDownLevel = 1;
+	local xOffset, yOffset = 0, 0;
+	ToggleDropDownMenu(dropDownLevel, nil, self:GetParent().BountyDropDown, self, xOffset, yOffset);
 end

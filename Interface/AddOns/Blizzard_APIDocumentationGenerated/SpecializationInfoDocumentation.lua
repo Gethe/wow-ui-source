@@ -71,6 +71,20 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "GetPvpTalentInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "talentID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "talentInfo", Type = "PvpTalentInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPvpTalentSlotInfo",
 			Type = "Function",
 
@@ -258,6 +272,24 @@ local SpecializationInfo =
 
 	Tables =
 	{
+		{
+			Name = "PvpTalentInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "talentID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "selected", Type = "bool", Nilable = false },
+				{ Name = "available", Type = "bool", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "unlocked", Type = "bool", Nilable = false },
+				{ Name = "known", Type = "bool", Nilable = false },
+				{ Name = "grantedByAura", Type = "bool", Nilable = false },
+				{ Name = "dependenciesUnmet", Type = "bool", Nilable = false },
+				{ Name = "dependenciesUnmetReason", Type = "string", Nilable = true },
+			},
+		},
 		{
 			Name = "PvpTalentSlotInfo",
 			Type = "Structure",

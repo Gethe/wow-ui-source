@@ -18,6 +18,7 @@ SEND_MAIL_TAB_LIST[5] = "SendMailMoneyCopper";
 local MAX_INBOX_SIZE = 100;
 
 function MailFrame_OnLoad(self)
+	self:SetPortraitToAsset("Interface\\MailFrame\\Mail-Icon");
 	-- Init pagenum
 	InboxFrame.pageNum = 1;
 	-- Tab Handling code
@@ -340,10 +341,7 @@ function InboxFrameItem_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( self.hasItem ) then
 		if ( self.itemCount == 1) then
-			local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInboxItem(self.index);
-			if(speciesID and speciesID > 0) then
-				BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-			end
+			GameTooltip:SetInboxItem(self.index);
 		else
 			GameTooltip:AddLine(MAIL_MULTIPLE_ITEMS.." ("..self.itemCount..")");
 		end
@@ -535,7 +533,7 @@ function OpenMail_Update()
 	OpenMailSender.Name:SetText(sender);
 	OpenMailSubject:SetText(subject);
 	-- Set Text
-	local bodyText, stationeryID1, stationeryID2, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
+	local bodyText, stationeryID1, stationeryID2, isTakeable, isInvoice, isConsortium = GetInboxText(InboxFrame.openMailID);
 	OpenMailBodyText:SetText(bodyText, true);
 	if ( stationeryID1 and stationeryID2 ) then
 		OpenStationeryBackgroundLeft:SetTexture(stationeryID1);
@@ -625,6 +623,69 @@ function OpenMail_Update()
 		end
 	else
 		OpenMailInvoiceFrame:Hide();
+	end
+
+	if ( isConsortium ) then
+		ConsortiumMailFrame:Show();
+
+		local info = C_Mail.GetCraftingOrderMailInfo(InboxFrame.openMailID);
+
+		if ( info.reason == Enum.RcoCloseReason.RcoCloseCancel ) then
+			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_CANCELED_BODY);
+			ConsortiumMailFrame.CrafterText:Hide();
+			ConsortiumMailFrame.CrafterNote:Hide();
+			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
+			ConsortiumMailFrame.CommissionReceived:Hide();
+			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
+			ConsortiumMailFrame.ConsortiumNote:Hide();
+
+		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseExpire ) then
+			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_EXPIRED_BODY);
+			ConsortiumMailFrame.CrafterText:Hide();
+			ConsortiumMailFrame.CrafterNote:Hide();
+			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
+			ConsortiumMailFrame.CommissionReceived:Hide();
+			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
+			ConsortiumMailFrame.ConsortiumNote:Hide();
+
+		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseFulfill ) then
+			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
+			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_FULFILLED_BY:format(info.crafterName or ""));
+			ConsortiumMailFrame.CrafterText:Show();
+			ConsortiumMailFrame.CrafterNote:SetText(info.crafterNote);
+			ConsortiumMailFrame.CrafterNote:Show();
+			ConsortiumMailFrame.CommissionPaidDisplay.MoneyDisplayFrame:SetFontObject(NumberFontNormalRightRed);
+			ConsortiumMailFrame.CommissionPaidDisplay.MoneyDisplayFrame:SetAmount(info.commissionPaid);
+			ConsortiumMailFrame.CommissionPaidDisplay:Show();
+			ConsortiumMailFrame.CommissionReceived:Hide();
+			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
+			ConsortiumMailFrame.ConsortiumNote:Hide();
+
+		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseReject ) then
+			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
+			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_REJECTED_BY:format(info.crafterName or ""));
+			ConsortiumMailFrame.CrafterText:Show();
+			ConsortiumMailFrame.CrafterNote:SetText(info.crafterNote);
+			ConsortiumMailFrame.CrafterNote:Show();
+			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
+			ConsortiumMailFrame.CommissionReceived:Hide();
+			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
+			ConsortiumMailFrame.ConsortiumNote:Hide();
+
+		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseCrafterFulfill ) then
+			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
+			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_FULFILLED_TO:format(info.customerName or ""));
+			ConsortiumMailFrame.CrafterText:Show();
+			ConsortiumMailFrame.CommissionReceived:Show();
+			ConsortiumMailFrame.CommissionReceivedDisplay:Show();
+			ConsortiumMailFrame.CommissionReceivedDisplay:SetAmount(info.commissionPaid or 0);
+			ConsortiumMailFrame.ConsortiumNote:SetText(CRAFTING_ORDER_AUTO_FULFILL_BODY:format(UnitName("player"), info.recipeName, info.customerName or ""));
+			ConsortiumMailFrame.ConsortiumNote:Show();
+			ConsortiumMailFrame.CrafterNote:Hide();
+			ConsortiumMailFrame.CommissionPaidDisplay:Hide();
+		end
+	else
+		ConsortiumMailFrame:Hide();
 	end
 
 	local itemButtonCount, itemRowCount = OpenMail_GetItemCounts(isTakeable, textCreated, money);
@@ -813,20 +874,27 @@ function OpenMail_Delete()
 	HideUIPanel(OpenMailFrame);
 end
 
-function OpenMail_ReportSpam()
+local function ReportMail()
 	local reportInfo = ReportInfo:CreateMailReportInfo(Enum.ReportType.Mail, InboxFrame.openMailID);
-	if(reportInfo) then
-		ReportFrame:InitiateReport(reportInfo, InboxFrame.openMailSender);
+	if (reportInfo) then
+		local reportTarget = ConsortiumMailFrame:IsShown() and C_Mail.GetCraftingOrderMailInfo(InboxFrame.openMailID).crafterName or InboxFrame.openMailSender;
+		ReportFrame:InitiateReport(reportInfo, reportTarget);
 	end
 	OpenMailReportSpamButton:Disable();
+end		
+
+function OpenMail_ReportSpam()
+	if (ConsortiumMailFrame:IsShown() and (OpenMailFrame.itemButtonCount > 0 or OpenMailFrame.money)) then 
+		local data = {text = PROFESSIONS_CRAFTING_ORDER_MAIL_REPORT_WARNING, callback = ReportMail, acceptText = ACCEPT, cancelText = CANCEL,  }
+		StaticPopup_ShowCustomGenericConfirmation(data);
+	else 
+		ReportMail();
+	end
 end
 
 function OpenMailAttachment_OnEnter(self, index)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInboxItem(InboxFrame.openMailID, index);
-	if(speciesID and speciesID > 0) then
-		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-	end
+	GameTooltip:SetInboxItem(InboxFrame.openMailID, index);
 
 	if ( OpenMailFrame.cod ) then
 		SetTooltipMoney(GameTooltip, OpenMailFrame.cod);
@@ -1050,7 +1118,7 @@ function SendMailFrame_CanSend()
 		checksRequired = checksRequired + 1;
 		-- COD must be less than 10000 gold
 		if ( MoneyInputFrame_GetCopper(SendMailMoney) > MAX_COD_AMOUNT * COPPER_PER_GOLD ) then
-			if ( ENABLE_COLORBLIND_MODE ~= "1" ) then
+			if ( not CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 				SendMailErrorCoin:Show();
 			end
 			SendMailErrorText:Show();
@@ -1105,10 +1173,7 @@ function SendMailAttachment_OnEnter(self)
 	local index = self:GetID();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( HasSendMailItem(index) ) then
-		local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetSendMailItem(index);
-		if(speciesID and speciesID > 0) then
-			BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-		end
+		GameTooltip:SetSendMailItem(index);
 	else
 		GameTooltip:SetText(ATTACHMENT_TEXT, 1.0, 1.0, 1.0);
 	end

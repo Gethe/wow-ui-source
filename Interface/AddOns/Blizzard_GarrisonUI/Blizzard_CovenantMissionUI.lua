@@ -5,6 +5,9 @@
 --This mission specifically has a tutorial flow to show 
 local STRATEGIC_POSITIONING_TUTORIAL_MISSION_ID = 2295;
 
+--This file also represents the DF adventure map so we use this ID to determine when we should apply DF style data.
+local DRAGON_ISLES_MAP_ID = 2057;
+
 -- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerSortFunc =  GarrisonFollowerList_DefaultMissionSort;
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
@@ -60,6 +63,14 @@ local covenantGarrisonStyleData =
 	nineSliceLayout = "CovenantMissionFrame",
 	materialFrameBG = "adventures_mission_materialframe",
 	BackgroundTile = "Adventures-Missions-BG-02",
+};
+
+local dragonflightStyleData =
+{
+	closeButtonX = -5,
+	closeButtonY = -6,
+
+	nineSliceLayout = "DragonflightMissionFrame",
 };
 
 local function SetupBorder(self, styleData)
@@ -175,7 +186,7 @@ end
 function CovenantMission:OnShowMainFrame()
 	GarrisonMission.OnShowMainFrame(self);
 	AdventureMapMixin.OnShow(self.MapTab);
-	FrameUtil.RegisterFrameForEvents(self, COVENANT_MISSION_EVENTS); 
+	FrameUtil.RegisterFrameForEvents(self, COVENANT_MISSION_EVENTS);
 
 	self:RegisterCallback(CovenantMission.Event.OnFollowerFrameMouseUp, self.OnMouseUpMissionFollower, self);
 	self:RegisterCallback(CovenantMission.Event.OnFollowerFrameDragStart, self.OnFollowerFrameDragStart, self);
@@ -189,6 +200,7 @@ function CovenantMission:OnShowMainFrame()
 	self:SetupTabs();
 
 	self:UpdateCurrency();
+	self:UpdateTextures();
 
 	PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_OPEN);
 end
@@ -635,7 +647,12 @@ function CovenantMission:UpdateTextures()
 
 	self.BackgroundTile:SetAtlas("Adventures-Missions-BG-02");
 
-	SetupBorder(self, covenantGarrisonStyleData);
+	-- Check that the map is Dragon Isles (ID 2057)
+	if C_AdventureMap.GetMapID() == DRAGON_ISLES_MAP_ID then
+		SetupBorder(self, dragonflightStyleData);
+	else
+		SetupBorder(self, covenantGarrisonStyleData);
+	end
 end
 
 function CovenantMission:AssignFollowerToMission(frame, info)
@@ -757,7 +774,7 @@ function CovenantMission:TriggerOnAssignFollowerTutorials(followerInfo)
 end
 
 function CovenantMission:QueueAutoTroopsTutorial()
-	local frame = self.FollowerList.ScrollBox:FindFrameByPredicate(function(frame)
+	local frame = self.FollowerList.ScrollBox:FindFrameByPredicate(function(frame, elementData)
 		return frame.Follower.info and frame.Follower.info.isAutoTroop;
 	end);
 	if frame then
@@ -773,7 +790,7 @@ function CovenantMission:QueueAutoTroopsTutorial()
 			checkCVars = true,
 		}
 
-		self:QueueTutorial(self, helpTipInfo, frame);
+		self:QueueTutorial(helpTipInfo, frame);
 	end
 end
 

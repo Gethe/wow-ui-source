@@ -116,6 +116,8 @@ function CharacterCreateMixin:OnEvent(event, ...)
 			elseif C_CharacterCreation.IsUsingCharacterTemplate() then
 				CharacterSelect.selectLast = true;
 			end
+
+			self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 			GlueParent_SetScreen("charselect");
 		else
 			showError = errorCode;
@@ -251,7 +253,7 @@ end
 
 function CharacterCreateMixin:ClearVASInfo()
 	self.vasType = nil;
-	self.vasInfo = nil;	
+	self.vasInfo = nil;
 	C_CharacterCreation.SetPaidService(false);
 end
 
@@ -551,11 +553,14 @@ function CharacterCreateMixin:NavBack()
 			self:Exit();
 		end
 	else
+		self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 		self:UpdateMode(-1);
 	end
 end
 
 function CharacterCreateMixin:Exit()
+	self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
+
 	CharacterSelect.backFromCharCreate = true;
 	GlueParent_SetScreen("charselect");
 end
@@ -840,7 +845,7 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 	if (self.layoutIndex > 11) then
 		self.tooltipAnchor = "ANCHOR_LEFT";
 	end
-	
+
 
 	self:ClearTooltipLines();
 	self:AddTooltipLine(classData.description);
@@ -850,11 +855,16 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 	local tooltipDisabledReason;
 	if not classData.enabled then
 		if classData.disabledReason == Enum.CreationClassDisabledReason.DoesNotHaveExpansion then
-			tooltipDisabledReason = CHAR_CREATE_NEED_EXPANSION;
+			local currentExpansionName = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT];
+			tooltipDisabledReason = CHAR_CREATE_NEED_EXPANSION:format(currentExpansionName);
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForTemplates then
 			tooltipDisabledReason = CHAR_CREATE_CLASS_DISABLED_TEMPLATE;
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForNewPlayers then
 			tooltipDisabledReason = CHAR_CREATE_NEW_PLAYER;
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.LimitServer then
+			tooltipDisabledReason = CHAR_CREATE_EVOKER_DUPLICATE;
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.LimitLevel then
+			tooltipDisabledReason = CHAR_CREATE_EVOKER_LEVEL_REQUIREMENT;
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForSelectedRace then
 			local validRaces = C_CharacterCreation.GetValidRacesForClass(classData.classID);
 			local validAllianceRaceNames = {};
@@ -871,14 +881,14 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 				end
 			end
 
-			-- Sort alphabetically
-			table.sort(validAllianceRaceNames);
-			table.sort(validHordeRaceNames);
+				-- Sort alphabetically
+				table.sort(validAllianceRaceNames);
+				table.sort(validHordeRaceNames);
 
-			local validAllianceRacesString = table.concat(validAllianceRaceNames, ", ");
-			local validHordeRacesString = table.concat(validHordeRaceNames, ", ");
+				local validAllianceRacesString = table.concat(validAllianceRaceNames, ", ");
+				local validHordeRacesString = table.concat(validHordeRaceNames, ", ");
 
-			tooltipDisabledReason = CLASS_DISABLED_FACTIONS:format(validAllianceRacesString, validHordeRacesString);
+				tooltipDisabledReason = CLASS_DISABLED_FACTIONS:format(validAllianceRacesString, validHordeRacesString);
 		else
 			tooltipDisabledReason = classData.disabledString;
 		end
@@ -959,7 +969,7 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 	self:SetIconAtlas(raceData.createScreenIconAtlas);
 
 	local isValidRace = RaceAndClassFrame:IsRaceValid(raceData, self.faction);
-	self.allowSelectionOnDisable = not isValidRace and not CharacterCreateFrame:HasService();
+	self.allowSelectionOnDisable = not CharacterCreateFrame:HasService() and (raceData.disabledReason == Enum.CreationRaceDisabledReason.DoesNotHaveAchievement);
 	self:SetEnabledState(isValidRace);
 
 	if isValidRace and RaceAndClassFrame.classValidRaces then
@@ -987,16 +997,25 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 	self:AddExpandedTooltipFrame(RaceAndClassFrame.RacialAbilityList);
 
 	if not raceData.enabled then
-		local requirements = C_CharacterCreation.GetAlliedRaceAchievementRequirements(raceData.raceID);
-		if requirements then
-			self:AddPostTooltipLine(ALLIED_RACE_UNLOCK_TEXT, RED_FONT_COLOR);
+		if raceData.disabledReason == Enum.CreationRaceDisabledReason.DoesNotHaveExpansion then
+			local currentExpansionName = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT];
+			self:AddPostTooltipLine(CHAR_CREATE_NEED_EXPANSION:format(currentExpansionName), RED_FONT_COLOR);
+		elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.RaceLimitServer then
+			self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_DUPLICATE, RED_FONT_COLOR);
+		elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.RaceLimitLevel then
+			self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_LEVEL_REQUIREMENT, RED_FONT_COLOR);
+		else
+			local requirements = C_CharacterCreation.GetAlliedRaceAchievementRequirements(raceData.raceID);
+			if requirements then
+				self:AddPostTooltipLine(ALLIED_RACE_UNLOCK_TEXT, RED_FONT_COLOR);
 
-			for _, requirement in ipairs(requirements) do
-				self:AddPostTooltipLine(DASH_WITH_TEXT:format(requirement), RED_FONT_COLOR);
+				for _, requirement in ipairs(requirements) do
+					self:AddPostTooltipLine(DASH_WITH_TEXT:format(requirement), RED_FONT_COLOR);
+				end
+
+				local embassy = (self.faction == "Horde") and CHAR_CREATE_HORDE_EMBASSY or CHAR_CREATE_ALLIANCE_EMBASSY;
+				self:AddPostTooltipLine(DASH_WITH_TEXT:format(embassy), RED_FONT_COLOR);
 			end
-
-			local embassy = (self.faction == "Horde") and CHAR_CREATE_HORDE_EMBASSY or CHAR_CREATE_ALLIANCE_EMBASSY;
-			self:AddPostTooltipLine(DASH_WITH_TEXT:format(embassy), RED_FONT_COLOR);
 		end
 	end
 
@@ -1218,17 +1237,31 @@ function CharacterCreateRaceAndClassMixin:GetBoostCharacterFactionID()
 	return PLAYER_FACTION_GROUP[self.selectedFaction];
 end
 
+function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
+	return C_CharacterServices.IsTrialBoostEnabled() and
+		not C_CharacterCreation.IsNewPlayerRestricted() and
+		not C_CharacterCreation.IsTrialAccountRestricted() and
+		not CharacterCreateFrame:HasService() and
+		(self.selectedClassID ~= EVOKER_CLASS_ID) and
+		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost);
+end
+
+function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
+	local showTrialBoost = self:CanTrialBoostCharacter();
+	local isVisibilityChanging = showTrialBoost ~= self.ClassTrialCheckButton:IsVisible();
+
+	self.ClassTrialCheckButton:SetShown(showTrialBoost);
+	self.ClassTrialCheckButton:UpdateDesiredState(showTrialBoost, isVisibilityChanging);
+end
+
 function CharacterCreateRaceAndClassMixin:OnShow()
-	local isNewPlayerRestricted = C_CharacterCreation.IsNewPlayerRestricted();
-	local isTrialRestricted = C_CharacterCreation.IsTrialAccountRestricted();
 	local useNewPlayerMode = C_CharacterCreation.UseBeginnerMode();
-	local blockedRaces = C_CharacterCreation.GetBlockedRaces();
+
 	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode);
 	self.HordeAlliedRaces:SetShown(not useNewPlayerMode);
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
-	self.ClassTrialCheckButton:SetShown(C_CharacterServices.IsTrialBoostEnabled() and not isNewPlayerRestricted and not isTrialRestricted and not CharacterCreateFrame:HasService() and (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost));
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()
@@ -1394,6 +1427,18 @@ function CharacterCreateRaceAndClassMixin:ClearClassAnimationCountdown()
 	self:ClearTimer();
 end
 
+function CharacterCreateRaceAndClassMixin:InitBlockedRaces()
+	local blockedRaces = C_CharacterCreation.GetBlockedRaces();
+	self.blockedRaces = {};
+	for _, raceBlockInfo in ipairs(blockedRaces) do
+		self.blockedRaces[raceBlockInfo.raceID] = raceBlockInfo.blockReason;
+	end
+end
+
+function CharacterCreateRaceAndClassMixin:IsRaceBlocked(raceID)
+	return self.blockedRaces[raceID] ~= nil;
+end
+
 function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 	self.selectedRaceID = C_CharacterCreation.GetSelectedRace();
 	self.selectedRaceData = C_CharacterCreation.GetRaceDataByID(self.selectedRaceID);
@@ -1402,6 +1447,10 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 		self.selectedFaction = selectedFaction;
 	elseif not self.selectedRaceData.isNeutralRace then
 		self.selectedFaction = self.selectedRaceData.factionInternalName;
+	end
+
+	if not self.blockedRaces then
+		self:InitBlockedRaces();
 	end
 
 	if not self:IsRaceValid(self.selectedRaceData, self.selectedFaction) and CharacterCreateFrame:HasService() then
@@ -1427,6 +1476,7 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 	CharacterCreateFrame:RemoveNavBlocker(CHAR_FACTION_CHANGE_CHOOSE_RACE);
 	CharacterCreateFrame:UpdateForwardButton();
 	self:UpdateButtons();
+	self:UpdateClassTrialButtonVisibility();
 end
 
 function CharacterCreateRaceAndClassMixin:SetCharacterRace(raceID, faction)
@@ -1496,7 +1546,7 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 		return false;
 	end
 
-	if self.blockedRaces and self.blockedRaces[raceData.raceID] then
+	if self:IsRaceBlocked(raceData.raceID) then
 		return false;
 	end
 
@@ -1663,7 +1713,51 @@ function ClassTrialCheckButtonMixin:OnCheckButtonClick()
 	ResizeCheckButtonMixin.OnCheckButtonClick(self);
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	self:UpdateCharacterCreateTypeFromChecked();
+end
+
+function ClassTrialCheckButtonMixin:UpdateDesiredState(showTrialBoost, isVisibilityChanging)
+	if isVisibilityChanging then
+		if showTrialBoost then
+			-- Predicated on the assumption that if the button shows then it's legal to use class trial
+			self:ReapplyDesiredState();
+		else
+			self:SaveDesiredStateAndUncheck();
+		end
+	end
+end
+
+function ClassTrialCheckButtonMixin:ReapplyDesiredState()
+	if self:GetDesiredState() ~= nil then
+		self.Button:SetChecked(self:GetDesiredState());
+		self:UpdateCharacterCreateTypeFromChecked();
+		self:ResetDesiredState();
+	end
+end
+
+function ClassTrialCheckButtonMixin:SaveDesiredStateAndUncheck()
+	local currentState = self.Button:GetChecked();
+
+	self:ResetDesiredState();
+	self.Button:SetChecked(false);
+	self:UpdateCharacterCreateTypeFromChecked();
+	self:SetDesiredState(currentState);
+end
+
+function ClassTrialCheckButtonMixin:UpdateCharacterCreateTypeFromChecked()
 	C_CharacterCreation.SetCharacterCreateType(self.Button:GetChecked() and Enum.CharacterCreateType.TrialBoost or Enum.CharacterCreateType.Normal);
+end
+
+function ClassTrialCheckButtonMixin:SetDesiredState(desiredState)
+	self.desiredState = desiredState;
+end
+
+function ClassTrialCheckButtonMixin:ResetDesiredState()
+	self:SetDesiredState(nil);
+end
+
+function ClassTrialCheckButtonMixin:GetDesiredState()
+	return self.desiredState;
 end
 
 CharacterCreateFrameRacialAbilityMixin = {};

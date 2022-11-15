@@ -231,9 +231,16 @@ function VignettePinMixin:UpdatePosition(bestUniqueVignette)
 	self:SetShown(showPin);
 end
 
+function VignettePinMixin:GetHighlightType() -- override
+	if (self:GetVignetteType() == Enum.VignetteType.Treasure) and QuestSuperTracking_ShouldHighlightTreasures(self:GetMap():GetMapID()) then
+		return MapPinHighlightType.SupertrackedHighlight;
+	end
+
+	return MapPinHighlightType.None;
+end
+
 function VignettePinMixin:UpdateSupertrackedHighlight()
-	local highlight = (self:GetVignetteType() == Enum.VignetteType.Treasure) and QuestSuperTracking_ShouldHighlightTreasures(self:GetMap():GetMapID());
-	MapPinHighlight_CheckHighlightPin(highlight, self, self.Texture);
+	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture);
 end
 
 function VignettePinMixin:OnMouseEnter()

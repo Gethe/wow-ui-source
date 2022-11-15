@@ -606,7 +606,7 @@ function AuraButtonMixin:Update(buttonInfo, expanded)
 			local color;
 			if ( buttonInfo.debuffType ) then
 				color = DebuffTypeColor[buttonInfo.debuffType];
-				if ( ENABLE_COLORBLIND_MODE == "1" ) then
+				if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 					self.symbol:Show();
 					self.symbol:SetText(DebuffTypeSymbol[buttonInfo.debuffType] or "");
 				else

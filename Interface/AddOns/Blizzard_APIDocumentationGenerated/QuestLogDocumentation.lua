@@ -55,6 +55,21 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "DoesQuestAwardReputationWithFaction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "awardsReputation", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAbandonQuest",
 			Type = "Function",
 
@@ -118,6 +133,7 @@ local QuestLog =
 				{ Name = "displayLocation", Type = "MapOverlayDisplayLocation", Nilable = false },
 				{ Name = "lockQuestID", Type = "number", Nilable = false },
 				{ Name = "bountySetID", Type = "number", Nilable = false },
+				{ Name = "isActivitySet", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1274,6 +1290,7 @@ local QuestLog =
 				{ Name = "suggestedGroup", Type = "number", Nilable = false },
 				{ Name = "frequency", Type = "QuestFrequency", Nilable = true },
 				{ Name = "isHeader", Type = "bool", Nilable = false },
+				{ Name = "useMinimalHeader", Type = "bool", Nilable = false },
 				{ Name = "isCollapsed", Type = "bool", Nilable = false },
 				{ Name = "startEvent", Type = "bool", Nilable = false },
 				{ Name = "isTask", Type = "bool", Nilable = false },

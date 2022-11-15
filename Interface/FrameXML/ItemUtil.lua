@@ -1,4 +1,3 @@
-
 ItemButtonUtil = {};
 
 ItemButtonUtil.ItemContextEnum = {
@@ -188,7 +187,7 @@ end
 function ItemUtil.PickupBagItem(itemLocation)
 	local bag, slot = itemLocation:GetBagAndSlot();
 	if bag and slot then
-		PickupContainerItem(bag, slot);
+		C_Container.PickupContainerItem(bag, slot);
 	end
 end
 
@@ -199,30 +198,45 @@ function ItemUtil.GetCraftingReagentCount(itemID)
 	return GetItemCount(itemID, includeBank, includeUses, includeReagentBank);
 end
 
-function ItemUtil.IteratePlayerInventory(callback)
+function ItemUtil.IterateBagSlots(bag, callback)
 	-- Only includes the backpack and held bag slots.
-	for bag = 0, NUM_TOTAL_BAG_FRAMES do
-		for slot = 1, ContainerFrame_GetContainerNumSlots(bag) do
-			local bagItem = ItemLocation:CreateFromBagAndSlot(bag, slot);
-			if C_Item.DoesItemExist(bagItem) then
-				if callback(bagItem) then
-					return;
-				end
+	for slot = 1, ContainerFrame_GetContainerNumSlots(bag) do
+		local itemLocation = ItemLocation:CreateFromBagAndSlot(bag, slot);
+		if C_Item.DoesItemExist(itemLocation) then
+			if callback(itemLocation) then
+				return true;
 			end
 		end
 	end
+	return false;
 end
 
-function ItemUtil.IteratePlayerInventoryAndEquipment(callback)
-	ItemUtil.IteratePlayerInventory(callback);
-
-	for i = EQUIPPED_FIRST, EQUIPPED_LAST do
-		local itemLocation = ItemLocation:CreateFromEquipmentSlot(i);
+function ItemUtil.IterateInventorySlots(firstSlot, lastSlot, callback)
+	for slot = firstSlot, lastSlot do
+		local itemLocation = ItemLocation:CreateFromEquipmentSlot(slot);
 		if C_Item.DoesItemExist(itemLocation) then
 			if callback(itemLocation) then
 				return;
 			end
 		end
+	end
+end
+
+function ItemUtil.IteratePlayerInventory(callback)
+	-- Only includes the backpack and held bag slots.
+	for bag = Enum.BagIndex.Backpack, NUM_TOTAL_BAG_FRAMES do
+		if ItemUtil.IterateBagSlots(bag, callback) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function ItemUtil.IteratePlayerInventoryAndEquipment(callback)
+	local found = ItemUtil.IteratePlayerInventory(callback);
+	if not found then
+		ItemUtil.IterateInventorySlots(INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED, callback);
 	end
 end
 
@@ -240,17 +254,6 @@ function ItemUtil.FilterOwnedItems(itemIDs)
 		end
 	end
 	return filtered;
-end
-
-function ItemUtil.FindPlayerInventoryAndEquipmentItemsMatchingItemID(itemID)
-	local items = {};
-	ItemUtil.IteratePlayerInventoryAndEquipment(function(itemLocation)
-		if C_Item.GetItemID(itemLocation) == itemID then
-			local itemGUID = C_Item.GetItemGUID(itemLocation);
-			table.insert(items, Item:CreateFromItemGUID(itemGUID));
-		end
-	end);
-	return items;
 end
 
 function ItemUtil.DoesAnyItemSlotMatchItemContext()

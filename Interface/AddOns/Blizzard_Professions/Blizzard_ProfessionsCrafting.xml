@@ -54,7 +54,7 @@
 			</Frame>
 
 			<Frame parentKey="SchematicForm" inherits="ProfessionsRecipeSchematicFormTemplate" useParentLevel="true">
-				<Size x="853" y="553"/>
+				<Size x="793" y="553"/>
 				<KeyValues>
 					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
 				</KeyValues>
@@ -80,7 +80,7 @@
 			<Button parentKey="CreateButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-20" y="4"/>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="7"/>
 				</Anchors>
 				<Scripts>
 				</Scripts>
@@ -233,6 +233,11 @@
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Frame parentKey="LinkDropDown" inherits="UIDropDownMenuTemplate"/>
+
+			<Frame parentKey="OverlayCastBarAnchor">
+				<Size x="1" y="1"/>
+				<!-- Anchored dynamically -->
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

@@ -581,7 +581,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetCurrencyTokenByID(self.currencyType);
+				GameTooltip:SetCurrencyByID(self.currencyType);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>

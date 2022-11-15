@@ -49,7 +49,7 @@ function BaseBagSlotButtonMixin:BagSlotOnEvent(event, ...)
 	elseif event == "BAG_UPDATE_DELAYED" then
 		PaperDollItemSlotButton_Update(self);
 	elseif event == "INVENTORY_SEARCH_UPDATE" then
-		self:SetMatchesSearch(not IsContainerFiltered(self:GetBagID()));
+		self:SetMatchesSearch(not C_Container.IsContainerFiltered(self:GetBagID()));
 	else
 		PaperDollItemSlotButton_OnEvent(self, event, ...);
 	end
@@ -116,6 +116,7 @@ function BaseBagSlotButtonMixin:OnEnterInternal()
 			end
 		else
 			local title = ContainerFrame_IsReagentBag(self:GetBagID()) and EQUIP_CONTAINER_REAGENT or EQUIP_CONTAINER;
+			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 			GameTooltip_SetTitle(GameTooltip, title);
 		end
 
@@ -144,8 +145,8 @@ function BaseBagSlotButtonMixin:GetIsBarExpanded()
 end
 
 function BaseBagSlotButtonMixin:GetBagID()
-	if ( self:GetID() == 0 ) then
-		return 0;
+	if ( self:GetID() == Enum.BagIndex.Backpack ) then
+		return Enum.BagIndex.Backpack;
 	end
 
 	return (self:GetID() - CharacterBag0Slot:GetID()) + 1;
@@ -277,7 +278,7 @@ local BACKPACK_FREESLOTS_FORMAT = "(%s)";
 function CalculateTotalNumberOfFreeBagSlots()
 	local totalFree, freeSlots, bagFamily = 0;
 	for i = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
-		freeSlots, bagFamily = GetContainerNumFreeSlots(i);
+		freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
 		if ( bagFamily == 0 ) then
 			totalFree = totalFree + freeSlots;
 		end

@@ -641,7 +641,7 @@ function CompactUnitFrame_UpdateName(frame)
 
 		frame.name:SetText(name);
 
-		if ( CompactUnitFrame_IsTapDenied(frame) or UnitIsDead(frame.unit) ) then
+		if ( CompactUnitFrame_IsTapDenied(frame) or (UnitIsDead(frame.unit) and not UnitIsPlayer(frame.unit)) ) then
 			-- Use grey if not a player and can't get tap on unit
 			frame.name:SetVertexColor(0.5, 0.5, 0.5);
 		elseif ( frame.optionTable.colorNameBySelection ) then
@@ -1174,7 +1174,7 @@ function CompactUnitFrame_UpdateClassificationIndicator(frame)
 				frame.classificationIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star");
 				frame.classificationIndicator:Show();
 			elseif (classification == "rareelite") then
-				frame.classificationIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare");
+				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
 				frame.classificationIndicator:Show();
 			else
 				frame.classificationIndicator:Hide();
@@ -1459,7 +1459,7 @@ function CompactUnitFrame_UtilSetBuff(buffFrame, aura)
 end
 
 function CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
-	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid;
+	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid or nil;
 	debuffFrame.icon:SetTexture(aura.icon);
 	if ( aura.applications > 1 ) then
 		local countText = aura.applications;
@@ -2108,7 +2108,7 @@ function DefaultCompactNamePlateFrameAnchorInternal(frame, setupOptions)
 
 	if not customOptions or not customOptions.ignoreIconPoint then
 	frame.castBar.Icon:ClearAllPoints();
-	PixelUtil.SetPoint(frame.castBar.Icon, "CENTER", frame.castBar, "LEFT", 0, -1);
+	PixelUtil.SetPoint(frame.castBar.Icon, "CENTER", frame.castBar, "LEFT", 0, 0);
 	end
 
 	if not customOptions or not customOptions.ignoreBarSize then

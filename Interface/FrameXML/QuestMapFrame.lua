@@ -1,7 +1,6 @@
-
-local MIN_STORY_TOOLTIP_WIDTH = 240;
-
 local tooltipButton;
+
+QuestLogButtonTypes = EnumUtil.MakeEnum("None", "Any", "Header", "HeaderCampaign", "HeaderCampaignMinimal", "HeaderCallings", "StoryHeader", "Quest");
 
 QuestLogMixin = { };
 
@@ -65,6 +64,15 @@ end
 
 QuestLogHeaderCodeMixin = {};
 
+function QuestLogHeaderCodeMixin:GetButtonType()
+	return QuestLogButtonTypes.Header;
+end
+
+function QuestLogHeaderCodeMixin:OnLoad()
+	local isMouseOver = false;
+	self:CheckHighlightTitle(isMouseOver);
+end
+
 function QuestLogHeaderCodeMixin:OnClick(button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if button == "LeftButton" then
@@ -80,26 +88,45 @@ function QuestLogHeaderCodeMixin:OnClick(button)
 end
 
 function QuestLogHeaderCodeMixin:OnEnter()
-	local text = self.ButtonText or self.Text;
-	text:SetTextColor(1, 1, 1);
-	if text:IsTruncated() then
-		GameTooltip:ClearAllPoints();
-		GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 239, 0);
-		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
-		GameTooltip:SetText(text:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1, 1);
-	end
+	local isMouseOver = true;
+	self:CheckHighlightTitle(isMouseOver);
+	self:CheckUpdateTooltip(isMouseOver);
 end
 
 function QuestLogHeaderCodeMixin:OnLeave()
-	local text = self.ButtonText or self.Text;
-	text:SetTextColor(0.7, 0.7, 0.7);
-	GameTooltip:Hide();
+	local isMouseOver = false;
+	self:CheckHighlightTitle(isMouseOver);
+	self:CheckUpdateTooltip(isMouseOver);
 end
 
-QuestLogHeaderMixin = {};
+function QuestLogHeaderCodeMixin:GetTitleRegion()
+	return self.ButtonText or self.Text;
+end
 
-function QuestLogHeaderMixin:OnLoad()
-	self.ButtonText:SetTextColor(0.7, 0.7, 0.7);
+function QuestLogHeaderCodeMixin:GetTitleColor(useHighlight)
+	return useHighlight and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
+end
+
+function QuestLogHeaderCodeMixin:IsTruncated()
+	return self:GetTitleRegion():IsTruncated();
+end
+
+function QuestLogHeaderCodeMixin:CheckHighlightTitle(isMouseOver)
+	local color = self:GetTitleColor(isMouseOver)
+	self:GetTitleRegion():SetTextColor(color:GetRGB());
+end
+
+function QuestLogHeaderCodeMixin:CheckUpdateTooltip(isMouseOver)
+	local tooltip = GetAppropriateTooltip();
+
+	if self:IsTruncated() and isMouseOver then
+		tooltip:ClearAllPoints();
+		tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 239, 0);
+		tooltip:SetOwner(self, "ANCHOR_PRESERVE");
+		GameTooltip_SetTitle(tooltip, self:GetTitleRegion():GetText(), nil, true);
+	else
+		tooltip:Hide();
+	end
 end
 
 function QuestMapFrame_OnLoad(self)
@@ -750,6 +777,7 @@ function QuestsFrame_OnLoad(self)
 	self.objectiveFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "QuestLogObjectiveTemplate");
 	self.headerFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogHeaderTemplate");
 	self.campaignHeaderFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "CampaignHeaderTemplate");
+	self.campaignHeaderMinimalFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "CampaignHeaderMinimalTemplate");
 	self.covenantCallingsHeaderFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "CovenantCallingsHeaderTemplate");
 	self.CampaignTooltip = CreateFrame("Frame", nil, UIParent, "CampaignTooltipTemplate");
 end
@@ -858,6 +886,92 @@ local function SetupObjectiveTextColor(text, isDisabledQuest, isHighlighted)
 	text:SetTextColor(color:GetRGB());
 end
 
+local function QuestLogQuests_GetPreviousButtonInfo(displayState)
+	return displayState.prevButton, displayState.prevButtonInfo;
+end
+
+local function QuestLogQuests_IsPreviousButtonCollapsed(displayState)
+	local _, info = QuestLogQuests_GetPreviousButtonInfo(displayState);
+	if info then
+		return info.isHeader and info.isCollapsed;
+	end
+
+	return false;
+end
+
+local function QuestLogQuests_SetPreviousButtonInfo(displayState, previousButton, previousButtonInfo)
+	displayState.prevButton = previousButton;
+	displayState.prevButtonInfo = previousButtonInfo;
+end
+
+local QuestLogQuests_UpdateButtonSpacing;
+do
+	local spacingData = {};
+	local function AddSpacingPair(previousButtonType, currentButtonType, spacing)
+		if not spacingData[currentButtonType] then
+			spacingData[currentButtonType] = {};
+		end
+
+		spacingData[currentButtonType][previousButtonType] = spacing;
+	end
+
+	local function GetButtonType(button)
+		return button and button:GetButtonType() or QuestLogButtonTypes.None;
+	end
+
+	local function GetSpacingData(dataTable, buttonType)
+		local data = dataTable[buttonType];
+		if data then
+			return data;
+		end
+
+		if buttonType ~= QuestLogButtonTypes.None then
+			return dataTable[QuestLogButtonTypes.Any];
+		end
+
+		return nil;
+	end
+
+	local function GetSpacing(displayState, previousButton, currentButton)
+		local currentButtonType = GetButtonType(currentButton);
+		local currentSpacingData = GetSpacingData(spacingData, currentButtonType);
+
+		if not currentSpacingData then
+			return 0;
+		end
+
+		local previousButtonType = GetButtonType(previousButton);
+		local spacing = GetSpacingData(currentSpacingData, previousButtonType);
+
+		if not spacing then
+			return 0;
+		end
+
+		if type(spacing) == "function" then
+			return spacing(displayState, previousButton, currentButton);
+		end
+
+		return spacing or 0;
+	end
+
+	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.Header, 8);
+	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.HeaderCampaignMinimal, 8);
+	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.HeaderCampaign, 0);
+	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.StoryHeader, -4);
+	AddSpacingPair(QuestLogButtonTypes.Any, QuestLogButtonTypes.StoryHeader, -18);
+	AddSpacingPair(QuestLogButtonTypes.HeaderCallings, QuestLogButtonTypes.Quest, 5);
+	AddSpacingPair(QuestLogButtonTypes.HeaderCampaign, QuestLogButtonTypes.HeaderCampaign, 12);
+	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.HeaderCampaign, 12);
+	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.HeaderCampaignMinimal, 10);
+	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.HeaderCallings, 0);
+	AddSpacingPair(QuestLogButtonTypes.Any, QuestLogButtonTypes.HeaderCallings, 10);
+
+	QuestLogQuests_UpdateButtonSpacing = function(displayState, button)
+		local previousButton = QuestLogQuests_GetPreviousButtonInfo(displayState);
+		button.topPadding = GetSpacing(displayState, previousButton, button);
+	end
+end
+
 local function QuestLogQuests_GetTitle(displayState, info)
 	local title = info.title;
 
@@ -873,7 +987,7 @@ local function QuestLogQuests_GetTitle(displayState, info)
 		end
 	end
 
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		title = "["..info.difficultyLevel.."] "..title;
 	end
 
@@ -912,8 +1026,6 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 	local info = C_QuestLog.GetInfo(questLogIndex);
 	if not info then return end
 
-	info.questSortType = QuestUtils_GetQuestSortType(info);
-
 	questInfoContainer[questLogIndex] = info;
 
 	-- Precompute whether or not the headers should display so that it's easier to add them later.
@@ -925,8 +1037,10 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 
 		local isCampaign = info.campaignID ~= nil;
 		info.shouldDisplay = isCampaign; -- Always display campaign headers, the rest start as hidden
+		info.questSortType = QuestUtils_GetQuestSortType(info);
 	else
 		info.isCalling = C_QuestLog.IsQuestCalling(info.questID);
+		info.questSortType = QuestUtils_GetQuestSortType(info);
 
 		if lastHeader and not lastHeader.shouldDisplay then
 			lastHeader.shouldDisplay = QuestLogQuests_ShouldShowQuestButton(info);
@@ -938,6 +1052,7 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 		-- Might as well just keep this in Lua
 		if info.isCalling and info.header then
 			info.header.isCalling = true;
+			info.header.questSortType = QuestUtils_GetQuestSortType(info.header);
 		end
 	end
 
@@ -1181,52 +1296,27 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	end
 
 	button:SetHeight(totalHeight);
-	button:ClearAllPoints();
 
-	if displayState.prevButton then
-		button:SetPoint("TOPLEFT", displayState.prevButton, "BOTTOMLEFT", 0, 0);
+	return button;
+end
+
+local function QuestLogQuests_GetCampaignHeaderButton(info)
+	if info.useMinimalHeader then
+		return QuestScrollFrame.campaignHeaderMinimalFramePool:Acquire();
 	else
-		button:SetPoint("TOPLEFT", 1, -6);
+		return QuestScrollFrame.campaignHeaderFramePool:Acquire();
 	end
-
-	button:Show();
-	displayState.prevButton = button;
-	displayState.prevButtonInfo = info;
-end
-
-local function QuestLogQuests_GetPreviousButtonInfo(displayState)
-	return displayState.prevButtonInfo;
-end
-
-local function QuestLogQuests_IsPreviousButtonCollapsed(displayState)
-	local info = QuestLogQuests_GetPreviousButtonInfo(displayState);
-	if info then
-		return info.isHeader and info.isCollapsed;
-	end
-
-	return false;
 end
 
 local function QuestLogQuests_AddCampaignHeaderButton(displayState, info)
-	local button = QuestScrollFrame.campaignHeaderFramePool:Acquire();
+	local button = QuestLogQuests_GetCampaignHeaderButton(info);
+
 	button:SetCampaignFromQuestHeader(info);
+
+	displayState.campaignShown = true;
 
 	button.questLogIndex = info.questLogIndex;
 	QuestMapFrame:SetFrameLayoutIndex(button);
-
-	-- Only set campaignShown to true, once it's true it should remain true for this display
-	-- NOTE: The topPadding hack is due to the container being a vertical layout frame, we don't want spacing
-	-- on the other elements, and we need the first header
-	if not displayState.campaignShown and button:IsShown() and not button:GetCampaign():IsComplete() then
-		displayState.campaignShown = true;
-		button.topPadding = 0;
-	else
-		if QuestLogQuests_IsPreviousButtonCollapsed(displayState) then
-			button.topPadding = 0;
-		else
-			button.topPadding = 12;
-		end
-	end
 
 	return button;
 end
@@ -1244,6 +1334,10 @@ local function QuestLogQuests_SetupStandardHeaderButton(button, displayState, in
 end
 
 CovenantCallingsHeaderMixin = {};
+
+function CovenantCallingsHeaderMixin:GetButtonType()
+	return QuestLogButtonTypes.HeaderCallings;
+end
 
 function CovenantCallingsHeaderMixin:OnLoadCovenantCallings()
 	EventRegistry:RegisterCallback("CovenantCallings.CallingsUpdated", self.UpdateText, self);
@@ -1271,11 +1365,6 @@ local function QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info
 	button:UpdateText();
 	button:UpdateBG();
 
-	button.topPadding = 20; -- Set the default
-	if QuestLogQuests_IsPreviousButtonCollapsed(displayState) then
-		button.topPadding = 0;
-	end
-
 	return button;
 end
 
@@ -1283,13 +1372,6 @@ local function QuestLogQuests_AddStandardHeaderButton(displayState, info)
 	local button = QuestScrollFrame.headerFramePool:Acquire();
 	QuestLogQuests_SetupStandardHeaderButton(button, displayState, info);
 	button:SetText(info.title);
-
-	-- Handle the case where there's nothing above this quest header
-	button.topPadding = 0;
-	if not QuestLogQuests_GetPreviousButtonInfo(displayState) then
-		button.topPadding = 8;
-	end
-
 	return button;
 end
 
@@ -1305,16 +1387,7 @@ local function QuestLogQuests_AddHeaderButton(displayState, info)
 		button = QuestLogQuests_AddStandardHeaderButton(displayState, info);
 	end
 
-	button:ClearAllPoints();
-	if displayState.prevButton then
-		button:SetPoint("TOPLEFT", displayState.prevButton, "BOTTOMLEFT", 0, 0);
-	else
-		button:SetPoint("TOPLEFT", 1, -6);
-	end
-
-	displayState.prevButton = button;
-	displayState.prevButtonInfo = info;
-	button:Show();
+	return button;
 end
 
 local function QuestLogQuests_DisplayQuestButton(displayState, info)
@@ -1325,9 +1398,9 @@ local function QuestLogQuests_DisplayQuestButton(displayState, info)
 	end
 
 	if QuestLogQuests_ShouldShowHeaderButton(info) then
-		QuestLogQuests_AddHeaderButton(displayState, info);
+		return QuestLogQuests_AddHeaderButton(displayState, info);
 	elseif QuestLogQuests_ShouldShowQuestButton(info) then
-		QuestLogQuests_AddQuestButton(displayState, info);
+		return QuestLogQuests_AddQuestButton(displayState, info);
 	end
 end
 
@@ -1352,7 +1425,13 @@ end
 
 local function QuestLogQuests_DisplayQuestsFromIndices(displayState, infos)
 	for index, info in ipairs(infos) do
-		QuestLogQuests_DisplayQuestButton(displayState, info);
+		local button = QuestLogQuests_DisplayQuestButton(displayState, info);
+		if button then
+			button:Show();
+			QuestLogQuests_UpdateButtonSpacing(displayState, button);
+			QuestLogQuests_SetPreviousButtonInfo(displayState, button, info);
+
+		end
 	end
 end
 
@@ -1361,6 +1440,7 @@ function QuestLogQuests_Update(poiTable)
 	QuestScrollFrame.objectiveFramePool:ReleaseAll();
 	QuestScrollFrame.headerFramePool:ReleaseAll();
 	QuestScrollFrame.campaignHeaderFramePool:ReleaseAll();
+	QuestScrollFrame.campaignHeaderMinimalFramePool:ReleaseAll();
 	QuestScrollFrame.covenantCallingsHeaderFramePool:ReleaseAll();
 	QuestPOI_ResetUsage(QuestScrollFrame.Contents);
 	QuestMapFrame:ResetLayoutIndex();
@@ -1392,14 +1472,9 @@ function QuestLogQuests_Update(poiTable)
 	end
 
 	if storyAchievementID then
-		if displayState.campaignShown then
-			QuestScrollFrame.Contents.StoryHeader.topPadding = -18;
-		else
-			QuestScrollFrame.Contents.StoryHeader.topPadding = -4;
-		end
-
 		QuestScrollFrame.Contents.StoryHeader:Show();
 		QuestMapFrame:SetFrameLayoutIndex(QuestScrollFrame.Contents.StoryHeader);
+		QuestLogQuests_UpdateButtonSpacing(displayState, QuestScrollFrame.Contents.StoryHeader);
 		local mapInfo = C_Map.GetMapInfo(storyMapID);
 		QuestScrollFrame.Contents.StoryHeader.Text:SetText(mapInfo and mapInfo.name or nil);
 		local numCriteria = GetAchievementNumCriteria(storyAchievementID);
@@ -1411,7 +1486,7 @@ function QuestLogQuests_Update(poiTable)
 			end
 		end
 		QuestScrollFrame.Contents.StoryHeader.Progress:SetFormattedText(QUEST_STORY_STATUS, completedCriteria, numCriteria);
-		displayState.prevButton = QuestScrollFrame.Contents.StoryHeader;
+		QuestLogQuests_SetPreviousButtonInfo(displayState, QuestScrollFrame.Contents.StoryHeader, nil);
 	else
 		QuestScrollFrame.Contents.StoryHeader:Hide();
 	end
@@ -1579,7 +1654,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	GameTooltip:Show();
 	tooltipButton = self;
-    EventRegistry:TriggerEvent("QuestMapLogTittleButton.OnEnter", self, questID);
+    EventRegistry:TriggerEvent("QuestMapLogTitleButton.OnEnter", self, questID);
 end
 
 function QuestMapLogTitleButton_OnLeave(self)
@@ -1600,6 +1675,18 @@ function QuestMapLogTitleButton_OnLeave(self)
 	QuestMapFrame:GetParent():ClearHighlightedQuestID();
 	GameTooltip:Hide();
 	tooltipButton = nil;
+end
+
+QuestLogTitleMixin = {};
+
+function QuestLogTitleMixin:GetButtonType()
+	return QuestLogButtonTypes.Quest;
+end
+
+QuestLogObjectiveMixin = {};
+
+function QuestLogObjectiveMixin:GetButtonType()
+	return QuestLogButtonTypes.Quest;
 end
 
 function QuestMapLogTitleButton_OnClick(self, button)
@@ -1699,7 +1786,7 @@ function QuestMapLog_ShowStoryTooltip(self)
 	totalHeight = totalHeight + tooltip.ProgressLabel:GetHeight() + tooltip.ProgressCount:GetHeight();
 
 	tooltip:ClearAllPoints();
-	local tooltipWidth = max(MIN_STORY_TOOLTIP_WIDTH, maxWidth + 20);
+	local tooltipWidth = max(240, maxWidth + 20);
 	if ( tooltipWidth > UIParent:GetRight() - QuestMapFrame:GetParent():GetRight() ) then
 		tooltip:SetPoint("TOPRIGHT", self:GetParent().StoryHeader, "TOPLEFT", -5, 0);
 	else
@@ -1763,4 +1850,10 @@ function QuestLogPopupDetailFrame_Update(resetScrollBar)
 	if ( resetScrollBar ) then
 		QuestLogPopupDetailFrame.ScrollFrame.ScrollBar:SetValue(0);
 	end
+end
+
+StoryHeaderMixin = {};
+
+function StoryHeaderMixin:GetButtonType()
+	return QuestLogButtonTypes.StoryHeader;
 end

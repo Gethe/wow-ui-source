@@ -156,7 +156,7 @@
 				</Frames>
 			</Frame>
 
-			<Button name="MainMenuBarVehicleLeaveButton" parentKey="VehicleLeaveButton" inherits="EditModeVehicleLeaveButtonSystemTemplate" mixin="MainMenuBarVehicleLeaveButtonMixin" hidden="true" motionScriptsWhileDisabled="true">
+			<Button name="MainMenuBarVehicleLeaveButton" parentKey="VehicleLeaveButton" inherits="EditModeVehicleLeaveButtonSystemTemplate" mixin="MainMenuBarVehicleLeaveButtonMixin" hidden="true" motionScriptsWhileDisabled="true"  frameLevel="70" fixedFrameLevel="true">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="0" y="0"/>

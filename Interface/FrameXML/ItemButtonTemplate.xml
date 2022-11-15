@@ -18,7 +18,7 @@
 			<Layer level="BORDER">
 				<Texture name="$parentIconTexture" parentKey="icon"/>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
+			<Layer level="ARTWORK">
 				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true" parentKey="Count">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
@@ -131,7 +131,7 @@
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="IconOverlay2" hidden="true"/>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="3">
+			<Layer level="OVERLAY">
 				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
@@ -195,7 +195,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="3">
+			<Layer level="OVERLAY">
 				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
@@ -292,7 +292,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
+			<Layer level="OVERLAY">
 				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" parentKey="Count">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1" y="1" />

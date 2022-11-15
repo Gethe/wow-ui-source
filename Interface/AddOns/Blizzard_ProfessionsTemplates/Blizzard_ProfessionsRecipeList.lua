@@ -38,7 +38,7 @@ function ProfessionsRecipeListMixin:OnLoad()
 			factory("ProfessionsRecipeListCategoryTemplate", Initializer);
 		elseif elementData.recipeInfo then
 			local function Initializer(button, node)
-				button:Init(node);
+				button:Init(node, self.hideCraftableCount);
 			
 				local selected = self.selectionBehavior:IsElementDataSelected(node);
 				button:SetSelected(selected);
@@ -115,11 +115,11 @@ function ProfessionsRecipeListMixin:OnLoad()
 			local newRecipeID = data.recipeInfo.recipeID;
 			local changed = self.previousRecipeID ~= newRecipeID;
 			if changed then
-				EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", data.recipeInfo);
+				EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", data.recipeInfo, self);
 				
 				if newRecipeID then
-					self.previousRecipeID = newRecipeID;
-				end
+				self.previousRecipeID = newRecipeID;
+			end
 			end
 
 		end
@@ -152,11 +152,22 @@ function ProfessionsRecipeListMixin:InitContextMenu(dropDown, level)
 	UIDropDownMenu_AddButton(info, level);
 end
 
-function ProfessionsRecipeListMixin:SelectRecipe(recipeInfo)
-	self.selectionBehavior:SelectElementDataByPredicate(function(node)
+function ProfessionsRecipeListMixin:SelectRecipe(recipeInfo, scrollToRecipe)
+	local elementData = self.selectionBehavior:SelectElementDataByPredicate(function(node)
 		local data = node:GetData();
 		return data.recipeInfo and data.recipeInfo.recipeID == recipeInfo.recipeID and data.recipeInfo.favoritesInstance == recipeInfo.favoritesInstance;
 	end);
+
+	if scrollToRecipe then
+		self.ScrollBox:ScrollToElementData(elementData);
+	end
+
+	return elementData;
+end
+
+function ProfessionsRecipeListMixin:ClearSelectedRecipe()
+	self.selectionBehavior:ClearSelections();
+	self.previousRecipeID = nil;
 end
 
 ProfessionsRecipeListCategoryMixin = {};
@@ -216,7 +227,7 @@ function ProfessionsRecipeListRecipeMixin:GetLabelColor()
 	return self.learned and PROFESSION_RECIPE_COLOR or DISABLED_FONT_COLOR;
 end
 
-function ProfessionsRecipeListRecipeMixin:Init(node)
+function ProfessionsRecipeListRecipeMixin:Init(node, hideCraftableCount)
 	local elementData = node:GetData();
 	local recipeInfo = Professions.GetHighestLearnedRecipe(elementData.recipeInfo) or elementData.recipeInfo;
 
@@ -250,7 +261,7 @@ function ProfessionsRecipeListRecipeMixin:Init(node)
 		table.insert(rightFrames, self.LockedIcon);
 	elseif recipeInfo.canSkillUp and not C_TradeSkillUI.IsTradeSkillGuild() and not C_TradeSkillUI.IsNPCCrafting() and not C_TradeSkillUI.IsRuneforging() then
 		local skillUpAtlas;
-		local xOfs = -3;
+		local xOfs = -9;
 		local yOfs = 0;
 
 		local isDifficultyOptimal = recipeInfo.relativeDifficulty == Enum.TradeskillRelativeDifficulty.Optimal;
@@ -312,7 +323,7 @@ function ProfessionsRecipeListRecipeMixin:Init(node)
 	
 	local count = C_TradeSkillUI.GetCraftableCount(recipeInfo.recipeID);
 	local hasCount = count > 0;
-	if hasCount then
+	if hasCount and not hideCraftableCount then
 		self.Count:SetFormattedText(" [%d] ", count);
 		self.Count:Show();
 	else

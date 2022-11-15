@@ -3,13 +3,19 @@ ProfessionsRecraftSlotMixin = {};
 function ProfessionsRecraftSlotMixin:OnLoad()
 	self.InputSlot:SetScript("OnLeave", GameTooltip_Hide);
 	self.OutputSlot:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.Background:SetShown(not self.hideBackdrop);
 end
 
-function ProfessionsRecraftSlotMixin:Init(transaction)
+function ProfessionsRecraftSlotMixin:Init(transaction, overridePredicate, overrideItemTransition, inputHyperlink)
 	local item;
-	local itemGUID = transaction:GetRecraftAllocation();
-	if itemGUID then
-		item = Item:CreateFromItemGUID(itemGUID);
+	if inputHyperlink then
+		item = Item:CreateFromItemLink(inputHyperlink);
+	else
+		local itemGUID = transaction and transaction:GetRecraftAllocation();
+		if itemGUID then
+			item = Item:CreateFromItemGUID(itemGUID);
+		end
 	end
 	self:SetItem(item);
 
@@ -23,11 +29,33 @@ function ProfessionsRecraftSlotMixin:Init(transaction)
 		self.DimArrow:Show();
 	end
 
-	local recipeID = transaction:GetRecipeID();
-	self.InputSlot:SetCursorItemPredicate(function(draggedItemGUID)
-		local itemGUIDs = C_TradeSkillUI.GetRecraftItems(recipeID);
-		return tContains(itemGUIDs, draggedItemGUID);
-	end)
+	if overridePredicate then
+		self.InputSlot:SetCursorItemPredicate(overridePredicate);
+	else
+		local recipeID = transaction:GetRecipeID();
+		self.InputSlot:SetCursorItemPredicate(function(draggedItemGUID)
+			local itemGUIDs = C_TradeSkillUI.GetRecraftItems(recipeID);
+			return tContains(itemGUIDs, draggedItemGUID);
+		end);
+	end
+
+	if overrideItemTransition then
+		self.InputSlot:SetCursorItemTransition(overrideItemTransition);
+	else
+		self.InputSlot:SetCursorItemTransition(function(cursorItemGUID) Professions.TransitionToRecraft(cursorItemGUID); end);
+	end
+end
+
+function ProfessionsRecraftSlotMixin:PlayAnimations()
+	self.DimArrow:Hide();
+	self.AnimatedArrow.Anim:Restart();
+	self.AnimatedArrow:Show();
+end
+
+function ProfessionsRecraftSlotMixin:StopAnimations()
+	self.AnimatedArrow.Anim:Stop();
+	self.AnimatedArrow:Hide();
+	self.DimArrow:Show();
 end
 
 function ProfessionsRecraftSlotMixin:SetItem(item)
@@ -75,6 +103,10 @@ function ProfessionsRecraftInputSlotMixin:SetCursorItemPredicate(cursorItemPredi
 	self.cursorItemPredicate = cursorItemPredicate;
 end
 
+function ProfessionsRecraftInputSlotMixin:SetCursorItemTransition(cursorItemTransition)
+	self.cursorItemTransition = cursorItemTransition;
+end
+
 function ProfessionsRecraftInputSlotMixin:Init(item)
 	self:ClearNormalTexture();
 	
@@ -104,7 +136,7 @@ function ProfessionsRecraftInputSlotMixin:OnReceiveDrag()
 	local cursorItemGUID = C_Item.GetItemGUID(cursorItemLocation);
 	local learned = C_TradeSkillUI.IsOriginalCraftRecipeLearned(cursorItemGUID);
 	if learned and self.cursorItemPredicate(cursorItemGUID) then
-		Professions.TransitionToRecraft(cursorItemGUID);
+		self.cursorItemTransition(cursorItemGUID);
 	end
 	ClearCursor();
 end

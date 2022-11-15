@@ -73,10 +73,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
-						if(speciesID and speciesID > 0) then
-							BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-						end
+						GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
 						CursorUpdate(self);
 					</OnEnter>
 					<OnLeave>
@@ -86,10 +83,7 @@
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
-							if(speciesID and speciesID > 0) then
-								BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-							end
+							GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
 						end
 						CursorOnUpdate(self);
 					</OnUpdate>
@@ -124,10 +118,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
-						if(speciesID and speciesID > 0) then
-							BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-						end
+						GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
 						CursorUpdate(self);
 					</OnEnter>
 					<OnLeave>
@@ -137,10 +128,7 @@
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
-							if(speciesID and speciesID > 0) then
-								BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-							end
+							GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
 						end
 						CursorOnUpdate(self);
 					</OnUpdate>
@@ -175,18 +163,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="TradeFrameRecipientNameText" inherits="GameFontNormal" text="Player Name">
-					<Size x="80" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="230" y="-5"/>
-					</Anchors>
-				</FontString>
-				<FontString name="TradeFramePlayerNameText" inherits="GameFontNormal" text="Recipient Name">
-					<Size x="100" y="12"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="65" y="-5"/>
-					</Anchors>
-				</FontString>
 				<FontString name="TradeFramePlayerEnchantText" inherits="GameFontHighlightSmall" text="TRADEFRAME_ENCHANT_SLOT_LABEL">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="15" y="-360"/>
@@ -200,6 +176,24 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame frameStrata="HIGH">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="TradeFrameRecipientNameText" inherits="GameFontNormal" text="Player Name">
+							<Size x="80" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="230" y="-5"/>
+							</Anchors>
+						</FontString>
+						<FontString name="TradeFramePlayerNameText" inherits="GameFontNormal" text="Recipient Name">
+							<Size x="100" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="TradeFrame" x="65" y="-5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="RecipientOverlay" frameLevel="550" inherits="ResizeLayoutFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-180" y="7"/>
@@ -209,14 +203,14 @@
 						<Texture parentKey="portrait">
 							<Size x="60" y="60"/>
 							<Anchors>
-								<Anchor point="TOPLEFT"/>
+								<Anchor point="TOPLEFT" x="2"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
-						<Texture parentKey="portraitFrame" inherits="UI-Frame-Portrait">
+						<Texture parentKey="portraitFrame" atlas="UI-Frame-PortraitMetal-CornerTopLeft" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="-6" y="4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="-8" y="9"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -363,10 +357,7 @@
 					<OnEnter>
 						if ( self.hasItem ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							local speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
-							if(speciesID and speciesID > 0) then
-								BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-							end
+							GameTooltip:SetTradePlayerItem(self:GetParent():GetID());
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>

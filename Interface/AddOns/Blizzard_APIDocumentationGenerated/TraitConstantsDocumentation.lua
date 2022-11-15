@@ -144,6 +144,21 @@ local TraitConstants =
 			},
 		},
 		{
+			Name = "TraitDefinitionSubType",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "DragonflightRed", Type = "TraitDefinitionSubType", EnumValue = 0 },
+				{ Name = "DragonflightBlue", Type = "TraitDefinitionSubType", EnumValue = 1 },
+				{ Name = "DragonflightGreen", Type = "TraitDefinitionSubType", EnumValue = 2 },
+				{ Name = "DragonflightBronze", Type = "TraitDefinitionSubType", EnumValue = 3 },
+				{ Name = "DragonflightBlack", Type = "TraitDefinitionSubType", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "TraitEdgeType",
 			Type = "Enumeration",
 			NumValues = 6,

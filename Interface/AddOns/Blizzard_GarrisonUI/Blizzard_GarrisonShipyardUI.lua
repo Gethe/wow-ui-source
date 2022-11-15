@@ -1855,7 +1855,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 	end
 	GarrisonTruncationFrame_Check(self.BoatName);
 
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		self.QualityFrame:Show();
 		self.QualityFrame.Text:SetText(_G["ITEM_QUALITY"..followerInfo.quality.."_DESC"]);
 	else

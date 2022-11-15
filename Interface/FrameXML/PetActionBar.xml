@@ -32,7 +32,7 @@
 		</Scripts>
 	</CheckButton>
 
-	<Frame name="PetActionBar" parent="UIParent" inherits="EditModeActionBarTemplate" mixin="PetActionBarMixin" enableMouse="true" hidden="true">
+	<Frame name="PetActionBar" parent="UIParent" inherits="EditModeActionBarTemplate" mixin="PetActionBarMixin" enableMouse="true" frameLevel="70" fixedFrameLevel="true" hidden="true">
 		<Size x="509" y="43"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

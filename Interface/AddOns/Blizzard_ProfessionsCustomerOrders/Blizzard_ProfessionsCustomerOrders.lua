@@ -3,7 +3,7 @@ ProfessionsCustomerOrdersMode = EnumUtil.MakeEnum("Browse", "Orders");
 local ProfessionOrderFrameTitles =
 {
     [ProfessionsCustomerOrdersMode.Browse] = PLACE_CRAFTING_ORDERS,
-    [ProfessionsCustomerOrdersMode.Orders] = PLACE_CRAFTING_ORDERS,
+    [ProfessionsCustomerOrdersMode.Orders] = MY_ORDERS,
 };
 
 
@@ -48,7 +48,7 @@ function ProfessionsCustomerOrdersMixin:OnLoad()
 
 		self.currentPage:Hide();
 
-		self:SetTabsShown(false);
+		self:SetTabsShown(true);
 	end
 
 	local function OnOrderSelected(o, order)
@@ -57,11 +57,19 @@ function ProfessionsCustomerOrdersMixin:OnLoad()
 
 	EventRegistry:RegisterCallback("ProfessionsCustomerOrders.OrderSelected", OnOrderSelected, self);
 
-	local function OnRecipeSelected(o, recipeSchematic)
-		OpenOrderForm(Professions.CreateNewOrderBySchematic(recipeSchematic));
+	local function OnRecipeSelected(o, itemID, spellID, skillLineAbilityID)
+		local isRecraft = false;
+		OpenOrderForm(Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isRecraft));
 	end
 
 	EventRegistry:RegisterCallback("ProfessionsCustomerOrders.RecipeSelected", OnRecipeSelected, self);
+
+	local function OnRecraftCategorySelected()
+		local isRecraft = true;
+		OpenOrderForm(Professions.CreateNewOrderInfo(nilItemID, nilSpellID, nilSkillLineAbilityID, isRecraft));
+	end
+
+	EventRegistry:RegisterCallback("ProfessionsCustomerOrders.RecraftCategorySelected", OnRecraftCategorySelected, self);
 
 	local function ListOrder(o, order)
 		self:ShowCurrentPage();
@@ -82,6 +90,7 @@ function ProfessionsCustomerOrdersMixin:OnShow()
     PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN);
 
 	self:ShowCurrentPage();
+	C_CraftingOrders.OpenCustomerCraftingOrders();
 end
 
 function ProfessionsCustomerOrdersMixin:OnHide()
@@ -113,6 +122,7 @@ end
 function ProfessionsCustomerOrdersMixin:SelectMode(mode)
     local title = ProfessionOrderFrameTitles[mode] or "";
 	self:SetTitle(title);
+	self.Form:Hide();
 
     for _, page in ipairs(self.Pages) do
         local showPage = (page.mode == mode);

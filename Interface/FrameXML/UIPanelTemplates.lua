@@ -29,7 +29,7 @@ function BagSearch_OnTextChanged(self, userChanged)
 			bar:SetText(self:GetText());
 		end
 	end
-	SetItemSearch(self:GetText());
+	C_Container.SetItemSearch(self:GetText());
 end
 
 function BagSearch_OnChar(self, text)

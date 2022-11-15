@@ -53,6 +53,7 @@ end
 -- *****************************************************************************************************
 -- ***** UPDATE FUNCTIONS
 -- *****************************************************************************************************
+local LINE_TYPE_ANIM = { template = "QuestObjectiveAnimLineTemplate", freeLines = { } };
 
 function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 	self:BeginLayout();
@@ -68,7 +69,6 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 			self.continuableContainer:AddContinuable(item);
 		end
 	end
-
 	local function Layout()
 		local colorStyle = OBJECTIVE_TRACKER_COLOR["Normal"];
 		local isRecraft = false;
@@ -87,7 +87,12 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 						local quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
 						local quantityRequired = reagentSlotSchematic.quantityRequired;
 						local text = PROFESSIONS_TRACKER_REAGENT_FORMAT:format(PROFESSIONS_TRACKER_REAGENT_COUNT_FORMAT:format(quantity, quantityRequired), itemName)
-						self:AddObjective(block, slotIndex, text, nil, nil, OBJECTIVE_DASH_STYLE_SHOW, colorStyle);
+						
+						local metQuantity = quantity >= quantityRequired;
+						local dashStyle = metQuantity and OBJECTIVE_DASH_STYLE_HIDE or OBJECTIVE_DASH_STYLE_SHOW;
+						local colorStyle = OBJECTIVE_TRACKER_COLOR[metQuantity and "Complete" or "Normal"];
+						line = self:AddObjective(block, slotIndex, text, LINE_TYPE_ANIM, nil, dashStyle, colorStyle);
+						line.Check:SetShown(metQuantity);
 					end
 				end
 			end

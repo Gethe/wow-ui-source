@@ -180,8 +180,6 @@ end
 -- [[ AchievementFrame ]] --
 
 function AchievementFrame_ToggleAchievementFrame(toggleStatFrame, toggleGuildView)
-	ClearSelectedCategories();
-
 	AchievementFrameComparison:Hide();
 	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 	if ( not toggleStatFrame ) then
@@ -603,7 +601,7 @@ end
 
 function AchievementFrameCategories_OnShow (self)
 	AchievementFrameCategories_UpdateDataProvider();
-	AchievementFrameCategories_SelectDefaultElementData();
+	AchievementFrame_GetOrSelectCurrentCategory();
 end
 
 function AchievementFrameCategories_SelectDefaultElementData()

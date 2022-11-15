@@ -146,6 +146,14 @@ function ProfessionsCustomerOrdersBrowsePageMixin:OnLoad()
 	-- Init favorites button
 	self.SearchBar.FavoritesSearchButton.Icon:SetAtlas("auctionhouse-icon-favorite");
 	self.SearchBar.FavoritesSearchButton:SetScript("OnClick", function() self:StartSearch(true); end);
+	self.SearchBar.FavoritesSearchButton:SetScript("OnEnter", function(frame)
+		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+		GameTooltip_AddHighlightLine(GameTooltip, FAVORITES);
+		if not C_CraftingOrders.HasFavoriteCustomerOptions() then
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_FAVORITES_SEARCH_TOOLTIP_NO_FAVORITES);
+		end
+		GameTooltip:Show();
+	 end);
 	self:UpdateFavoritesButton();
 
 	-- Init categories list
@@ -247,6 +255,9 @@ function ProfessionsCustomerOrdersBrowsePageMixin:SetupTable(extraColumnType)
 
 	if extraColumnType ~= nil and extraColumnType ~= Enum.AuctionHouseExtraColumn.None then
 		self.tableBuilder:AddFixedWidthColumn(self, GetColumnInfoFromType(extraColumnType));
+		if extraColumnType == Enum.AuctionHouseExtraColumn.Ilvl then
+			self:SetSortOrder(ProfessionsSortOrder.Ilvl);
+		end
 	end
 
 	self.tableBuilder:Arrange();

@@ -6,6 +6,11 @@ local ScrollBoxPad = 6;
 local ScrollBoxSpacing = 7;
 local ElementBonusRowHeight = 31;
 
+local function ReconfigureCountPointAndScale(itemButton)
+	itemButton:SetItemButtonAnchorPoint("BOTTOMRIGHT", 0, 2);
+	itemButton:SetItemButtonScale(1.4);
+end
+
 ProfessionsCraftingOutputLogElementMixin = {};
 
 function ProfessionsCraftingOutputLogElementMixin:OnLoad()
@@ -106,6 +111,7 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 				local item = Item:CreateFromItemID(resource.itemID);
 				itemButton:SetItem(resource.itemID);
 				itemButton:SetItemButtonCount(resource.quantity);
+				ReconfigureCountPointAndScale(itemButton);
 				itemButton:Show();
 
 				itemButton:SetScript("OnLeave", GameTooltip_Hide);
@@ -163,6 +169,7 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 					local item = Item:CreateFromItemID(bonusData.itemID);
 					itemButton:SetItem(bonusData.itemID);
 					itemButton:SetItemButtonCount(bonusData.quantity);
+					ReconfigureCountPointAndScale(itemButton);
 
 					itemButton:SetScript("OnEnter", function(button)
 						GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
@@ -171,11 +178,21 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 				elseif bonusData.currencyID then
 					local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(bonusData.currencyID);
 					itemButton:SetItemButtonTexture(currencyInfo.iconFileID);
+					itemButton:SetItemButtonCount(bonusData.showCurrencyText and bonusData.quantity or 1);
+					ReconfigureCountPointAndScale(itemButton);
 
 					itemButton:SetScript("OnEnter", function(button)
 						GameTooltip:SetOwner(button, "ANCHOR_RIGHT", 0, 0);
-						GameTooltip:SetCurrencyByID(bonusData.currencyID);
-						GameTooltip:Show();
+						
+						local tooltipInfo = CreateBaseTooltipInfo("GetCurrencyByID", bonusData.currencyID);
+						tooltipInfo.linePreCall = function(tooltip, lineData)
+							if lineData.type == Enum.TooltipDataLineType.CurrencyTotal then
+								local amountText = NORMAL_FONT_COLOR:WrapTextInColorCode(AMOUNT_RECEIVED_COLON);
+								GameTooltip_AddHighlightLine(tooltip, string.format("%s %d", amountText, bonusData.quantity));
+								return true;
+							end
+						end;
+						GameTooltip:ProcessInfo(tooltipInfo);
 					end);
 				end
 				itemButton:Show();
@@ -268,13 +285,15 @@ function ProfessionsCraftingOutputLogMixin:ProcessPendingResultData(resultData)
 	-- This item or currency may have arrived before or after the original item, so we
 	-- always need to consider saving off this data in case an item with bonusCraft arrives.
 	local inserted = false;
-	if resultData.associatedItemGUID then
-		local parentResultData = FindValueInTableIf(self.pendingResultData, function(data)
-			return data.itemGUID == resultData.associatedItemGUID;
-		end);
-		if parentResultData then
-			table.insert(parentResultData.bonusData, resultData);
-			inserted = true;
+	if resultData.operationID then
+		if resultData.bonusCraft or resultData.firstCraftReward then
+			local parentResultData = FindValueInTableIf(self.pendingResultData, function(data)
+				return data.operationID == resultData.operationID;
+			end);
+			if parentResultData then
+				table.insert(parentResultData.bonusData, resultData);
+				inserted = true;
+			end
 		end
 	end
 	
@@ -315,7 +334,7 @@ function ProfessionsCraftingOutputLogMixin:FinalizePendingResultData()
 
 	for index, resultData in ipairs_reverse(self.pendingResultData) do
 		local childResultData = FindValueInTableIf(self.pendingResultData, function(data)
-			return data.associatedItemGUID and (resultData.itemGUID == data.associatedItemGUID);
+			return data.operationID and data.firstCraftReward and (resultData.operationID == data.operationID);
 		end);
 		if childResultData then
 			table.remove(self.pendingResultData, index);
@@ -326,7 +345,7 @@ function ProfessionsCraftingOutputLogMixin:FinalizePendingResultData()
 	for index, resultData in ipairs_reverse(self.pendingResultData) do
 		-- We're only expecting to display the original item with bonus items
 		-- and currencies contained within it.
-		if not resultData.associatedItemGUID then
+		if resultData.operationID and not resultData.firstCraftReward then
 			self.ScrollBox:InsertElementData(resultData);
 		end
 	end

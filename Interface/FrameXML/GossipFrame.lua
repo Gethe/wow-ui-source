@@ -93,3 +93,7 @@ end
 function GossipFrameMixin:GetTutorialButtons()
 	return self.tutorialButtons;
 end
+
+function GossipFrameMixin:SortOrder(leftInfo, rightInfo)
+	return leftInfo.orderIndex < rightInfo.orderIndex;
+end

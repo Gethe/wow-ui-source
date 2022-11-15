@@ -395,6 +395,12 @@ function HandleModifiedItemClick(link, itemLocation)
 			OpenAzeriteEmpoweredItemUIFromLink(link);
 			return true;
 		end
+		
+		local skillLineID = C_TradeSkillUI.GetSkillLineForGear(link);
+		if skillLineID then
+			OpenProfessionUIToSkillLine(skillLineID);
+			return true;
+		end
 	end
 	return false;
 end
@@ -607,6 +613,15 @@ end
 
 function ItemButtonMixin:SetItemButtonCount(count)
 	SetItemButtonCount(self, count);
+end
+
+function ItemButtonMixin:SetItemButtonAnchorPoint(point, x, y)
+	self.Count:ClearAllPoints();
+	self.Count:SetPoint(point, x, y);
+end
+
+function ItemButtonMixin:SetItemButtonScale(scale)
+	self.Count:SetScale(scale);
 end
 
 function ItemButtonMixin:GetItemButtonCount()

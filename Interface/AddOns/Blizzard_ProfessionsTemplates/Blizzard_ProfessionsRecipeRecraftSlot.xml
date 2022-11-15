@@ -3,10 +3,13 @@
 	<Script file="Blizzard_ProfessionsRecipeRecraftSlot.lua"/>
 
 	<Frame name="ProfessionsRecraftSlotTemplate" mixin="ProfessionsRecraftSlotMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="hideBackdrop" value="false" type="boolean"/>
+		</KeyValues>
 		<Size x="260" y="105"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="Professions-Recrafting-Panel" useAtlasSize="true">
+				<Texture parentKey="Background" atlas="Professions-Recrafting-Panel" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>

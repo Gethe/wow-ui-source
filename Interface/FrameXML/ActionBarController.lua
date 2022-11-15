@@ -161,6 +161,12 @@ function ActionBarController_UpdateAll(force)
 	ValidateActionBarTransition();
 end
 
+function ActionBarController_UpdateAllSpellHighlights()
+	for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
+		frame:UpdateSpellHighlightMark();
+	end
+end
+
 function ActionBarController_ResetToDefault(force)
 	MainMenuBar:SetAttribute("actionpage", GetActionBarPage());
 	for k, frame in pairs(ActionBarButtonEventsFrame.frames) do

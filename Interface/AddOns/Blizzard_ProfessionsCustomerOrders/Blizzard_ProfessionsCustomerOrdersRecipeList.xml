@@ -10,7 +10,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="FavoriteButton">
+			<Button parentKey="FavoriteButton" frameStrata="HIGH">
 				<Size x="12" y="13"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-5" y="0"/>
@@ -36,10 +36,11 @@
 
 	<Frame name="ProfessionsCustomerOrdersRecipeListTemplate" mixin="ProfessionsCustomerOrdersRecipeListMixin" virtual="true">
 		<Layers>
-			<Layer>
-				<Texture parentKey="Background" atlas="auctionhouse-background-index" useAtlasSize="true">
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="auctionhouse-background-index" useAtlasSize="false">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-22"/>
+						<Anchor point="BOTTOMRIGHT" x="-5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -48,8 +49,8 @@
 			<Frame parentKey="HeaderContainer">
 				<Size y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="3" y="-3"/>
-					<Anchor point="TOPRIGHT" x="-25" y="-3"/>
+					<Anchor point="TOPLEFT" x="3" y="-1"/>
+					<Anchor point="TOPRIGHT" x="-25" y="-1"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
@@ -58,19 +59,19 @@
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="-19"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="601" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="-15"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.NineSlice" relativePoint="TOPRIGHT" x="0" y="-2"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.NineSlice" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 			</EventFrame>
 			<Frame parentKey="ContextMenu" inherits="UIDropDownMenuTemplate" enableMouse="true"/>

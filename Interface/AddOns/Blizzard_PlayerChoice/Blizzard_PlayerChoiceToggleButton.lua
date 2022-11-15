@@ -89,7 +89,9 @@ function PlayerChoiceToggleButtonMixin:OnClick()
 		PlayerChoiceFrame:TryShow();
 	end
 
-	self.FadeIn:Restart();
+	if not self.noFade then
+		self.FadeIn:Restart();
+	end
 end
 
 
@@ -163,6 +165,17 @@ function CypherPlayerChoiceToggleButtonMixin:UpdateButtonState()
 	end
 end
 
+GenericPlayerChoiceToggleButtonMixin = CreateFromMixins(PlayerChoiceToggleButtonMixin);
+
+function GenericPlayerChoiceToggleButtonMixin:UpdateButtonState()
+	if not self:ShouldShow() then
+		self:Hide();
+		return;
+	end
+
+	local choiceFrameShown = PlayerChoiceFrame:IsShown();
+	self:SetText(choiceFrameShown and HIDE or SHOW);
+end
 
 PlayerChoiceRerollButtonMixin = {};
 
@@ -219,6 +232,7 @@ local function FillToggleButtonsIfNeeded()
 		{
 			TorghastPlayerChoiceToggleButton,
 			CypherPlayerChoiceToggleButton,
+			GenericPlayerChoiceToggleButton,
 		};
 	end
 end

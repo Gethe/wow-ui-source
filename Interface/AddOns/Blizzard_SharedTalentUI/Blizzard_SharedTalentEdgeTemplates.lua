@@ -100,9 +100,10 @@ function TalentEdgeArrowMixin:UpdateState()
 	local edgeInfo = self:GetEdgeInfo();
 
 	local isStartButtonGhosted = self:GetStartButton():IsGhosted();
+	local isStartButtonCascadeRepurchaseable = self:GetStartButton():IsCascadeRepurchasable();
 	local isEndButtonGhosted = self:GetEndButton():IsGhosted();
 
-	local isLineGhosted = isStartButtonGhosted and isEndButtonGhosted;
+	local isLineGhosted = (isStartButtonGhosted or isStartButtonCascadeRepurchaseable) and isEndButtonGhosted;
 
 	self.GhostLine:SetShown(isLineGhosted);
 	self.GhostArrowHead:SetShown(isLineGhosted);
@@ -111,13 +112,13 @@ function TalentEdgeArrowMixin:UpdateState()
 	if edgeInfo.visualStyle == Enum.TraitEdgeVisualStyle.Straight then
 		if edgeInfo.isActive then
 			self.Line:SetAtlas("talents-arrow-line-yellow", TextureKitConstants.IgnoreAtlasSize);
-			self.ArrowHead:SetAtlas("talents-arrow-head-yellow", TextureKitConstants.IgnoreAtlasSize);
+			self.ArrowHead:SetAtlas("talents-arrow-head-yellow");
 		elseif (self:GetEndButton():GetVisualState() == TalentButtonUtil.BaseVisualState.Gated) then
 			self.Line:SetAtlas("talents-arrow-line-locked", TextureKitConstants.IgnoreAtlasSize);
-			self.ArrowHead:SetAtlas("talents-arrow-head-locked", TextureKitConstants.IgnoreAtlasSize);
+			self.ArrowHead:SetAtlas("talents-arrow-head-locked");
 		else
 			self.Line:SetAtlas("talents-arrow-line-gray", TextureKitConstants.IgnoreAtlasSize);
-			self.ArrowHead:SetAtlas("talents-arrow-head-gray", TextureKitConstants.IgnoreAtlasSize);
+			self.ArrowHead:SetAtlas("talents-arrow-head-gray");
 		end
 	end
 end

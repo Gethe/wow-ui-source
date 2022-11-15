@@ -26,6 +26,45 @@ local WEEKLY_REWARDS_EVENTS = {
 	"CHALLENGE_MODE_MAPS_UPDATE",
 };
 
+local weeklyRewardOverlayTextureKitRegions = { 
+	BackgroundTile = "UI-Frame-%s-BackgroundTile"
+}
+
+local weeklyRewardsFrameTextureKitRegions = {
+	BackgroundTile = "UI-Frame-%s-BackgroundTile",
+	Divider1 = "%s-weeklyrewards-divider",
+	Divider2 = "%s-weeklyrewards-divider",
+}
+
+local weeklyRewardsSelectRewardButtonTextureKitRegions = {
+	Background = "%s-weeklyrewards-frame-button",
+}
+
+local weeklyRewardsConcessionFrameTextureKitRegions = {
+	Divider1 = "%s-weeklyrewards-divider-currency",
+	Divider2 = "%s-weeklyrewards-divider-currency",
+}
+
+local headerFrameTextureKitRegions = 
+{
+	Left = "UI-Frame-%s-TitleLeft",
+	Right = "UI-Frame-%s-TitleRight",
+	Middle = "_UI-Frame-%s-TitleMiddle",
+}
+
+local weeklyRewardActivityTypeTextureKitRegions = {
+	Border = "%s-weeklyrewards-frame-mode",
+}
+
+local weeklyRewardActivityTextureKitRegions = { 
+	Orb = "%s-weeklyrewards-orb-unlocked",
+}
+
+local rewardUiModelSceneEffectByTextureKit = {
+	["Oribos"] = { effectID = 102, offsetX = -30, offsetY = -20},
+	["Dragonflight"] =  { effectID = 148, offsetX = -40, offsetY = -20},
+}
+
 WeeklyRewardsMixin = { };
 
 function WeeklyRewardsMixin:OnLoad()
@@ -48,7 +87,24 @@ function WeeklyRewardsMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, WEEKLY_REWARDS_EVENTS);
 	PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_OPEN_WINDOW);
 	C_WeeklyRewards.OnUIInteract();
+	WeeklyRewardExpirationWarningDialog:SetShown(C_WeeklyRewards.ShouldShowRetirementMessage() or C_WeeklyRewards.ShouldShowFinalRetirementMessage());
 	self:FullRefresh();
+	self:SetupTextures();
+end
+
+function WeeklyRewardsMixin:SetupTextures()
+	local textureKit = C_WeeklyRewards.GetWeeklyRewardTextureKit(); 
+	if(textureKit) then 
+		SetupTextureKitOnRegions(textureKit, self, weeklyRewardsFrameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnRegions(textureKit, self.HeaderFrame, headerFrameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnRegions(textureKit, self.RaidFrame, weeklyRewardActivityTypeTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnRegions(textureKit, self.PVPFrame, weeklyRewardActivityTypeTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
+		SetupTextureKitOnRegions(textureKit, self.MythicFrame, weeklyRewardActivityTypeTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
+		SetupTextureKitOnRegions(textureKit, self.ConcessionFrame, weeklyRewardsConcessionFrameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		SetupTextureKitOnRegions(textureKit, self.SelectRewardButton, weeklyRewardsSelectRewardButtonTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		self.NineSlice:Show(); 
+		NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice,textureKit);
+	end
 end
 
 function WeeklyRewardsMixin:OnHide()
@@ -57,6 +113,7 @@ function WeeklyRewardsMixin:OnHide()
 	self.selectedActivity = nil;
 	C_WeeklyRewards.CloseInteraction();
 	StaticPopup_Hide("CONFIRM_SELECT_WEEKLY_REWARD");
+	WeeklyRewardExpirationWarningDialog:Hide(); 
 end
 
 function WeeklyRewardsMixin:OnEvent(event)
@@ -393,9 +450,12 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 			self.ItemGlow:Show();
 			self:ClearActiveEffect();
 		else
-			self.Orb:SetAtlas("weeklyrewards-orb-unlocked", useAtlasSize);
+			local textureKit = C_WeeklyRewards.GetWeeklyRewardTextureKit(); 
+			if(textureKit) then 
+				SetupTextureKitOnRegions(textureKit, self, weeklyRewardActivityTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+				self:SetActiveEffect(rewardUiModelSceneEffectByTextureKit[textureKit]);
+			end 
 			self.ItemGlow:Hide();
-			self:SetActiveEffect(UNLOCKED_EFFECT_INFO);
 		end
 
 		if self.hasPendingSheenAnim then
@@ -662,7 +722,7 @@ function WeeklyRewardActivityItemMixin:OnLeave()
 end
 
 function WeeklyRewardActivityItemMixin:OnUpdate()
-	if IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems") then
+	if TooltipUtil.ShouldDoItemComparison() then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	else
 		GameTooltip_HideShoppingTooltips(GameTooltip);
@@ -925,3 +985,14 @@ function WeeklyRewardConfirmSelectionMixin:RefreshRewards()
 	end
 	self:SetHeight(heightUsed);
 end
+
+GreatVaultRetirementWarningFrameMixin = { };
+
+function GreatVaultRetirementWarningFrameMixin:OnShow()
+	local title = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT]; 
+	if(title) then 
+		local text = C_WeeklyRewards.ShouldShowFinalRetirementMessage() and GREAT_VAULT_RETIRE_WARNING_FINAL_WEEK:format(title) or GREAT_VAULT_RETIRE_WARNING:format(title);
+		self.Description:SetText(text); 
+	end 
+end 
+

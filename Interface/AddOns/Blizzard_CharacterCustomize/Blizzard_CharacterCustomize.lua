@@ -781,7 +781,7 @@ end
 function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
 	CharCustomizeFrame:OnOptionPopoutEntryMouseEnter(self, entry);
 
-	local tooltipText = entry:GetTooltipText();
+	local tooltipText, tooltipLockedText = entry:GetTooltipText();
 	if tooltipText or showDebugTooltipInfo then
 		local tooltip = self:GetAppropriateTooltip();
 
@@ -789,7 +789,11 @@ function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
 		tooltip:SetPoint("BOTTOMRIGHT", entry, "TOPLEFT", 0, 0);
 
 		if tooltipText then
-			GameTooltip_AddNormalLine(tooltip, tooltipText);
+			GameTooltip_AddHighlightLine(tooltip, tooltipText);
+		end
+
+		if tooltipLockedText then
+			GameTooltip_AddNormalLine(tooltip, tooltipLockedText);
 		end
 
 		if showDebugTooltipInfo then
@@ -840,7 +844,7 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 
 	local currentTooltip = self:GetTooltipText();
 	if currentTooltip then
-		self:AddTooltipLine(currentTooltip);
+		self:AddTooltipLine(currentTooltip, HIGHLIGHT_FONT_COLOR);
 	end
 
 	if showDebugTooltipInfo then
@@ -855,11 +859,14 @@ end
 CharCustomizeSelectionPopoutDetailsMixin = {};
 
 function CharCustomizeSelectionPopoutDetailsMixin:GetTooltipText()
-	if self.SelectionName:IsShown() and self.SelectionName:IsTruncated() then
-		return self.name;
+	local name, lockedText;
+	if (self.SelectionName:IsShown() and self.SelectionName:IsTruncated()) or self.lockedText or self.name=="Charger" then
+		name = self.name;
 	end
-
-	return nil;
+	if self.lockedText then
+		lockedText = BARBERSHOP_CUSTOMIZATION_SOURCE_FORMAT:format(self.lockedText);
+	end
+	return name, lockedText;
 end
 
 function CharCustomizeSelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaultWidth)
@@ -877,6 +884,10 @@ function CharCustomizeSelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, d
 		if multipleColumns then
 			width = 42;
 		end
+	end
+
+	if self:GetParent().popoutHasALockedChoice then
+		width = width + 24;
 	end
 
 	self:SetWidth(Round(width));
@@ -973,7 +984,7 @@ function CharCustomizeSelectionPopoutDetailsMixin:UpdateText(selectionData, isSe
 	self:SetShowAsNew(showAsNew);
 end
 
-function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq)
+function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq, hasALockedChoice)
 	if not index then
 		self.SelectionName:SetText(CHARACTER_CUSTOMIZE_POPOUT_UNSELECTED_OPTION);
 		self.SelectionName:Show();
@@ -991,6 +1002,7 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, in
 
 	self.name = selectionData.name;
 	self.index = index;
+	self.lockedText = selectionData.isLocked and selectionData.lockedText;
 
 	local color1 = selectionData.swatchColor1 or selectionData.swatchColor2;
 	local color2 = selectionData.swatchColor1 and selectionData.swatchColor2;
@@ -1034,6 +1046,8 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, in
 		self.ColorSwatch2:SetPoint("LEFT", self.SelectionNumber, "RIGHT", 18, -2);
 	end
 
+	self.LockIcon:SetShown(selectionData.isLocked);
+
 	self:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, color1);
 end
 
@@ -1047,6 +1061,7 @@ function CharCustomizeSelectionPopoutButtonMixin:UpdateButtonDetails()
 	if self.SelectionDetails.SelectionName:GetWidth() > maxNameWidth then
 		self.SelectionDetails.SelectionName:SetWidth(maxNameWidth);
 	end
+	self.SelectionDetails.LockIcon:Hide();
 
 	self.SelectionDetails:Layout();
 end
@@ -1064,9 +1079,9 @@ function CharCustomizeSelectionPopoutEntryMixin:ClearNewFlag()
 	self.parentButton:UpdatePopout();
 end
 
-function CharCustomizeSelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns, hasAFailedReq)
+function CharCustomizeSelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns, hasAFailedReq, hasALockedChoice)
 	self.isNew = selectionData.isNew;
-	SelectionPopoutEntryMixin.SetupEntry(self, selectionData, index, isSelected, multipleColumns, hasAFailedReq);	
+	SelectionPopoutEntryMixin.SetupEntry(self, selectionData, index, isSelected, multipleColumns, hasAFailedReq, hasALockedChoice);
 end
 
 function CharCustomizeSelectionPopoutEntryMixin:OnEnter()

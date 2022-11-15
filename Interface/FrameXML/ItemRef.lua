@@ -378,16 +378,11 @@ function SetItemRef(link, text, button, chatFrame)
 		local fixedLink = GetFixedLink(text);
 		HandleModifiedItemClick(fixedLink);
 	else
-		local itemName, itemLink = ItemRefTooltip:GetItem();
-		if itemLink == GetFixedLink(text) then
-			HideUIPanel(ItemRefTooltip);
-		else
-			ShowUIPanel(ItemRefTooltip);
-			if ( not ItemRefTooltip:IsShown() ) then
-				ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
-			end
-			ItemRefTooltip:ItemRefSetHyperlink(link);
+		ShowUIPanel(ItemRefTooltip);
+		if ( not ItemRefTooltip:IsShown() ) then
+			ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
 		end
+		ItemRefTooltip:ItemRefSetHyperlink(link);
 	end
 end
 
@@ -707,8 +702,13 @@ function ItemRefTooltipMixin:OnLoad()
 	GameTooltip_OnLoad(self);
 	self:RegisterForDrag("LeftButton");
 	self.shoppingTooltips = { ItemRefShoppingTooltip1, ItemRefShoppingTooltip2 };
-	self.updateTooltipTimer = 0;
-	self.UpdateTooltip = function(self, elapsed)
+end
+
+function ItemRefTooltipMixin:OnUpdate(elapsed)
+	if self.shouldRefreshData then
+		self:RefreshData();
+	end
+	if self.updateTooltipTimer then
 		if ( IsModifiedClick("COMPAREITEMS") ) then
 			self.updateTooltipTimer = self.updateTooltipTimer - elapsed;
 			if ( self.updateTooltipTimer > 0 ) then
@@ -717,20 +717,8 @@ function ItemRefTooltipMixin:OnLoad()
 			self.updateTooltipTimer = TOOLTIP_UPDATE_TIME;
 			GameTooltip_ShowCompareItem(self);
 		else
-			for _, frame in pairs(self.shoppingTooltips) do
-				frame:Hide();
-			end
-						
-			self.needsReset = true;
-			self.comparing = false;
+			TooltipComparisonManager:Clear(self);
 		end
-	end
-end
-
-function ItemRefTooltipMixin:OnTooltipSetItem()
-	self.updateTooltipTimer = 0;
-	if ( IsModifiedClick("COMPAREITEMS") and self:IsMouseOver() ) then
-		GameTooltip_ShowCompareItem(self);
 	end
 end
 
@@ -741,27 +729,17 @@ end
 function ItemRefTooltipMixin:OnDragStop()
 	self:StopMovingOrSizing();
 	ValidateFramePosition(self);
-	if ( IsModifiedClick("COMPAREITEMS") ) then --We do this to choose where the comparison is shown
-		GameTooltip_ShowCompareItem(self);
-	end
 end
 
 function ItemRefTooltipMixin:OnEnter()
 	self.updateTooltipTimer = 0;
-	self:SetScript("OnUpdate", self.UpdateTooltip);
 end
 
 function ItemRefTooltipMixin:OnLeave()
 	for _, frame in pairs(self.shoppingTooltips) do
 		frame:Hide();
 	end
-	self:SetScript("OnUpdate", nil);
-end
-
-function ItemRefTooltipMixin:OnHide()
-	GameTooltip_OnHide(self);
-	--While it is true that OnUpdate won't fire while the frame is hidden, we don't want to have to check-and-unregister when we show it
-	self:SetScript("OnUpdate", nil);
+	self.updateTooltipTimer = nil;
 end
 
 function ItemRefTooltipMixin:ItemRefSetHyperlink(link)
@@ -772,4 +750,18 @@ function ItemRefTooltipMixin:ItemRefSetHyperlink(link)
 		local xPadding = 16;
 		self:SetPadding(xPadding, 0);
 	end
-end	
+end
+
+function ItemRefTooltipMixin:SetHyperlink(...)
+	-- it's the same hyperlink as current data, close instead
+	if self.info and self.info.getterName == "GetHyperlink" then
+		local getterArgs = {...};
+		if tCompare(self.info.getterArgs, getterArgs) then
+			self:Hide();
+			return false;
+		end
+	end
+
+	local tooltipInfo = CreateBaseTooltipInfo("GetHyperlink", ...);
+	return self:ProcessInfo(tooltipInfo);
+end

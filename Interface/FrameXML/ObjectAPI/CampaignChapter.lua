@@ -2,7 +2,7 @@ local CampaignChapterMixin = {};
 
 function CampaignChapterMixin:Init(chapterID)
 	self.chapterID = chapterID;
-	Mixin(self, C_CampaignInfo.GetCampaignChapterInfo(chapterID));
+	Mixin(self, C_CampaignInfo.GetCampaignChapterInfo(chapterID) or { name = "", description = "", rewardQuestID = 0 });
 end
 
 function CampaignChapterMixin:IsComplete()

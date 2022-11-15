@@ -22,9 +22,10 @@
 		</Animations>
 	</Frame>
 
-	<Frame name="ProfessionsRecipeSchematicFormTemplate" mixin="ProfessionsRecipeSchematicFormMixin" virtual="true">
+	<Frame name="ProfessionsRecipeSchematicFormTemplate" mixin="ProfessionsRecipeSchematicFormMixin" hyperlinksEnabled="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="canShowFavoriteButton" value="true" type="boolean"/>
+			<KeyValue key="showTrackRecipe" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate">
@@ -32,7 +33,7 @@
 					<KeyValue key="noProfessionQualityOverlay" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="-30"/>
+					<Anchor point="TOPLEFT" x="28" y="-33"/>
 				</Anchors>
 			</Button>
 
@@ -49,12 +50,11 @@
 			</Frame>
 
 			<CheckButton parentKey="TrackRecipeCheckBox" inherits="UICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-83" y="-8"/>
-				</Anchors>
+				<Size x="26" y="26"/>
 			</CheckButton>
 
 			<CheckButton parentKey="AllocateBestQualityCheckBox" inherits="UICheckButtonTemplate">
+				<Size x="26" y="26"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="30" y="20"/>
 				</Anchors>
@@ -74,7 +74,7 @@
 					<KeyValue key="labelText" value="PROFESSIONS_OPTIONAL_REAGENT_CONTAINER_LABEL" type="global"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="TOPRIGHT" x="56"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="TOPLEFT" x="235" y="0"/>
 				</Anchors>
 			</Frame>
 
@@ -119,7 +119,7 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" text="PROFESSIONS_RECIPE_UNLEARNED">
 							<Anchors>
-								<Anchor point="LEFT"/>
+								<Anchor point="LEFT" x="23"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -127,7 +127,7 @@
 				<NormalTexture parentKey="LetterI" file="Interface\common\help-i">
 					<Size x="30" y="30"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" x="-6" y="0"/>
 					</Anchors>
 				</NormalTexture>
 				<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
@@ -141,6 +141,33 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
+
+			<Frame parentKey="FirstCraftBonus" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="16" type="number"/>
+					<KeyValue key="spacing" value="5" type="number"/>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="professions_icon_firsttimecraft" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+							</KeyValues>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE" text="PROFESSIONS_FIRST_CRAFT">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+							</KeyValues>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		
 		<Layers>
@@ -167,7 +194,6 @@
 					</Anchors>
 				</FontString>
 				
-				<!-- HRO TODO: Fix this up for crafting orders -->
 				<FontString parentKey="OutputSubText" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="300" y="20"/>
 					<Anchors>
@@ -175,8 +201,8 @@
 					</Anchors>
 				</FontString>
 				
-				<FontString parentKey="RequiredTools" inherits="GameFontHighlightSmall2" justifyH="LEFT">
-					<Size x="400" y="20"/>
+				<FontString parentKey="RequiredTools" inherits="GameFontHighlightSmall2" wordwrap="true" justifyV="TOP" justifyH="LEFT">
+					<Size x="392" y="60"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.OutputText" relativePoint="BOTTOMLEFT" y="-3"/>
 					</Anchors>
@@ -190,7 +216,7 @@
 					<Size x="400" y="0"/>
 				</FontString>
 				
-				<FontString parentKey="Description" inherits="GameFontHighlightSmall2" maxLines="4" justifyH="LEFT">
+				<FontString parentKey="Description" inherits="GameFontHighlightSmall2" justifyV="TOP" justifyH="LEFT">
 					<Size x="460" y="0"/>
 				</FontString>
 			</Layer>
@@ -198,8 +224,11 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnHyperlinkEnter method="OnHyperlinkEnter"/>
+			<OnHyperlinkLeave method="OnHyperlinkLeave"/>
 		</Scripts>
 	</Frame>
 	

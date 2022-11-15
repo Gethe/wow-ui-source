@@ -394,7 +394,11 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
-					<Button name="ReputationDetailViewRenownButton" mixin="ReputationDetailViewRenownButtonMixin" inherits="SharedGoldRedButtonSmallTemplate" text="VIEW_RENOWN_BUTTON_LABEL">
+					<Button name="ReputationDetailViewRenownButton" mixin="ReputationDetailViewRenownButtonMixin" inherits="SharedGoldRedButtonSmallTemplate, DisabledTooltipButtonTemplate" text="VIEW_RENOWN_BUTTON_LABEL">
+						<KeyValues>
+							<!-- Tooltip Text Set Dynamically -->
+							<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+						</KeyValues>
 						<Size x="120" y="16"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="18"/>

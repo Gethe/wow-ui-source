@@ -2271,7 +2271,7 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 	self:SetupXPBar(followerInfo);
 	GarrisonTruncationFrame_Check(self.Name);
 
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		self.QualityFrame:Show();
 		self.QualityFrame.Text:SetText(_G["ITEM_QUALITY"..followerInfo.quality.."_DESC"]);
 	else

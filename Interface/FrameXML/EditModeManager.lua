@@ -55,7 +55,6 @@ function EditModeManagerFrameMixin:OnLoad()
 	local newLayoutButtonTextDisabled = HUD_EDIT_MODE_NEW_LAYOUT_DISABLED:format(CreateAtlasMarkup("editmode-new-layout-plus-disabled"));
 	local dropdownButtonWidth = 210;
 	local shareDropdownButtonMaxTextWidth = 190;
-	local shareSubDropdownButtonWidth = 220;
 	local copyRenameSubDropdownButtonWidth = 150;
 	local subMenuButton = true;
 	local disableOnMaxLayouts = true;
@@ -79,11 +78,11 @@ function EditModeManagerFrameMixin:OnLoad()
 			dropDownButtonInfo.customFrame = newButton;
 		elseif dropDownButtonInfo.value == "copyToClipboard" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, copyToClipboard, disableOnMaxLayoutsNo, disableOnActiveChangesNo, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
+			newButton:Init(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, copyToClipboard, disableOnMaxLayoutsNo, disableOnActiveChangesNo, nil, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;
 		--[[elseif dropDownButtonInfo.value == "postInChat" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_POST_IN_CHAT, postInChat, disableOnMaxLayoutsNo, disableOnActiveChangesNo, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
+			newButton:Init(HUD_EDIT_MODE_POST_IN_CHAT, postInChat, disableOnMaxLayoutsNo, disableOnActiveChangesNo, nil, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;]]--
 		elseif dropDownButtonInfo.value == "copyLayout" then
 			local newButton = self.buttonEntryPool:Acquire();
@@ -1858,6 +1857,7 @@ end
 function EditModeAccountSettingsMixin:RefreshHudTooltip()
 	local showHudTooltip = self.Settings.HudTooltip:IsControlChecked();
 	if showHudTooltip then
+		GameTooltip_Hide();
 		GameTooltipDefaultContainer:Show();
 	else
 		GameTooltipDefaultContainer:Hide();

@@ -10,5 +10,8 @@ Blizzard_ProfessionsRecipeLevel.xml
 Blizzard_ProfessionsCrafting.xml
 Blizzard_ProfessionsSpecializationsTemplates.xml
 Blizzard_ProfessionsSpecializations.xml
+Blizzard_ProfessionsCrafterOrderView.xml
+Blizzard_ProfessionsCrafterOrderPage.xml
 Blizzard_ProfessionsFrame.xml
 Blizzard_ProfessionsRegistration.lua
+Localization.lua

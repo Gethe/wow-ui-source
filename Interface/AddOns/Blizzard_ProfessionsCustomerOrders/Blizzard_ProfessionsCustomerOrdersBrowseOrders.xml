@@ -4,7 +4,7 @@
 
 	<!-- Largely copied from AuctionHouseFrame -->
 	<Frame name="ProfessionsCustomerOrdersBrowseOrdersTemplate" mixin="ProfessionsCustomerOrdersBrowsePageMixin" virtual="true">
-		<Size x="800" y="538"/>
+		<Size x="825" y="568"/>
 		<KeyValues>
 			<KeyValue key="mode" value="ProfessionsCustomerOrdersMode.Browse" type="global"/>
 		</KeyValues>
@@ -20,6 +20,9 @@
 				</Anchors>
 				<Frames>
 					<Button parentKey="FavoritesSearchButton" inherits="SquareIconButtonTemplate" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true">
+						<Scripts>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
 						<Anchors>
 							<Anchor point="LEFT"/>
 						</Anchors>

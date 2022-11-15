@@ -99,6 +99,8 @@ function ProfessionsItemFlyoutMixin:OnHide()
 	self:UnregisterEvents();
 
 	self.owner = nil;
+	self.OnElementEnterImplementation = nil;
+	self.OnElementEnabledImplementation = nil;
 	--[[
 		NOTE: OnHide triggers when the frame is no longer visible, not when it is no longer shown.
 		This frame may become non-visible because its parent gets hidden, but it may itself still be shown.
@@ -126,8 +128,12 @@ function ProfessionsItemFlyoutMixin:OnEvent(event, ...)
 end
 
 function ProfessionsItemFlyoutMixin:InitializeContents()
-	local recipeID = self.transaction:GetRecipeID();
-	local cannotModifyHideUnowned, alwaysHideUnowned = C_TradeSkillUI.GetHideUnownedFlags(recipeID);
+	local cannotModifyHideUnowned, alwaysShowUnowned = false, false;
+	if self.transaction then
+		local recipeID = self.transaction:GetRecipeID();
+		cannotModifyHideUnowned, alwaysShowUnowned = C_TradeSkillUI.GetHideUnownedFlags(recipeID);
+	end
+	
 	local canShowCheckBox = self.canModifyFilter and not cannotModifyHideUnowned;
 	self.HideUnownedCheckBox:SetShown(canShowCheckBox);
 
@@ -136,7 +142,16 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 		self.HideUnownedCheckBox:SetChecked(hideUnownedCvar);
 	end
 
-	local hideUnowned = not self.canModifyFilter or alwaysHideUnowned or (canShowCheckBox and hideUnownedCvar);
+	local hideUnowned;
+	if cannotModifyHideUnowned then
+		-- Determined in data, supercedes player preference.
+		hideUnowned = not alwaysShowUnowned;
+	else
+		local alwaysHide = not self.canModifyFilter;
+		local preferHide = canShowCheckBox and hideUnownedCvar;
+		hideUnowned = alwaysHide or preferHide;
+	end
+
 	local elements = self:GetElementsImplementation(hideUnowned);
 	local count = #elements.items;
 	if count > 0 then

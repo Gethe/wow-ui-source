@@ -969,7 +969,7 @@ local AuctionHouse =
 		{
 			Name = "SendSellSearchQuery",
 			Type = "Function",
-			Documentation = { "Search queries are restricted to 100 calls per minute. These should not be used to query the entire auction house. See ReplicateItems" },
+			Documentation = { "Search queries are restricted to 100 calls per minute. These should not be used to query the entire auction house. See ReplicateItems. ItemKey should have its iLVL and suffix cleared before calling." },
 
 			Arguments =
 			{

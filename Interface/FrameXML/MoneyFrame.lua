@@ -328,13 +328,13 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	local maxDisplayWidth = frame.maxDisplayWidth;
 	
 	-- Set values for each denomination
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		if ( not frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
 			frame.colorblind = true;
 			frame.vadjust = MONEY_TEXT_VADJUST;
-			goldButton:SetNormalTexture("");
-			silverButton:SetNormalTexture("");
-			copperButton:SetNormalTexture("");
+			goldButton:ClearNormalTexture();
+			silverButton:ClearNormalTexture();
+			copperButton:ClearNormalTexture();
 			goldButton.Text:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
 			silverButton.Text:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
 			copperButton.Text:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
@@ -691,7 +691,7 @@ function MoneyDenominationDisplayMixin:SetAmount(amount)
 		amountText = self.formatter(amount);
 	end
 
-	local colorblindMode = ENABLE_COLORBLIND_MODE == "1";
+	local colorblindMode = CVarCallbackRegistry:GetCVarValueBool("colorblindMode");
 	if colorblindMode then
 		amountText = amountText..MONEY_DENOMINATION_SYMBOLS_BY_DISPLAY_TYPE[self.displayType];
 	end
@@ -717,6 +717,7 @@ local DENOMINATION_DISPLAY_WIDTH = 36; -- Space for two characters and an anchor
 function MoneyDisplayFrameMixin:OnLoad()
 	self.CopperDisplay:SetShowsZeroAmount(true);
 	self.SilverDisplay:SetShowsZeroAmount(true);
+	self.GoldDisplay:SetShowsZeroAmount(self.alwaysShowGold);
 	self.GoldDisplay:SetFormatter(BreakUpLargeNumbers);
 
 	if self.hideCopper then

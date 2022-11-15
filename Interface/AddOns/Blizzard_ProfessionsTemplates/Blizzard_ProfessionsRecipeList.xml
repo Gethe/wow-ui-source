@@ -4,9 +4,20 @@
 
 	<Frame name="ProfessionsRecipeListTemplate" mixin="ProfessionsRecipeListMixin" virtual="true">
 		<Size x="300" y="505"/>
+		<KeyValues>
+			<KeyValue key="hideCraftableCount" value="false" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Backgroud" atlas="Professions-background-summarylist" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NoResultsText" inherits="GameFontNormal" text="PROFESSIONS_NO_JOURNAL_ENTRIES" hidden="true">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-60"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -119,8 +130,9 @@
 		<Frames>
 			<Button parentKey="SkillUps">
 				<Size x="26" y="15"/>
+				<!-- Dynamically anchored -->
 				<Anchors>
-					<Anchor point="LEFT" x="-3"/>
+					<Anchor point="LEFT" x="-9"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">

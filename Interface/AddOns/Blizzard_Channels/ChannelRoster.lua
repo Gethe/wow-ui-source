@@ -46,7 +46,7 @@ function ChannelRosterMixin:OnUnitConnection()
 end
 
 function ChannelRosterMixin:GetRosterButtonForVoiceMemberID(voiceMemberID)
-	return self.ScrollBox:FindFrameByPredicate(function(frame)
+	return self.ScrollBox:FindFrameByPredicate(function(frame, elementData)
 		return frame:GetVoiceMemberID() == voiceMemberID;
 	end);
 end

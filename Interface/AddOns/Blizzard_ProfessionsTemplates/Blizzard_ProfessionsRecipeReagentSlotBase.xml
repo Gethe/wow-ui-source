@@ -5,13 +5,47 @@
 	
 	<Frame name="ProfessionsReagentSlotBaseTemplate" virtual="true">
 		<Size x="180" y="50"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="CustomerState" hidden="true">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".7"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" inherits="GameFontHighlight_NoShadow" justifyH="LEFT">
+					<Size x="108" y="36" />
+					<Anchors>
+						<Anchor point="LEFT" x="46" y="0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Frames>
 			<ItemButton parentKey="Button" inherits="ProfessionsReagentButtonTemplate" mixin="ProfessionsReagentSlotButtonMixin">
 				<Anchors>
-					<Anchor point="LEFT" x="10" y="0"/>
+					<Anchor point="LEFT"/>
 				</Anchors>
 				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="ColorOverlay" hidden="true">
+							<Size x="33" y="33"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="7">
+						<Texture parentKey="HighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" alpha="0.5" hidden="true">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+
 						<Texture parentKey="QualityOverlay">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-3" y="2"/>
@@ -59,28 +93,34 @@
 				</KeyValues>
 				<Size x="25" y="25"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="14" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
 			</Button>
+
+			<CheckButton parentKey="Checkbox" inherits="UICheckButtonTemplate" motionScriptsWhileDisabled="true" hidden="true">
+				<Size x="23" y="23"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</CheckButton>
+
+			<Frame parentKey="Checkmark" hidden="true">
+				<Size x="23" y="23"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Check" atlas="checkmark-minimal" useAtlasSize="false" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 		</Frames>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="CustomerState" hidden="true">
-					<Size x="10" y="10"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a=".7"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<FontString parentKey="Name" inherits="GameFontHighlight_NoShadow" justifyH="LEFT">
-					<Size x="148" y="36" />
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="10" y="0" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 	</Frame>
 </Ui>

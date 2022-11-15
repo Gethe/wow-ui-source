@@ -3,6 +3,11 @@ GameTutorials = {};
 function GameTutorials:Initialize()
 	EventRegistry:RegisterCallback("TutorialManager.TutorialsEnabled", self.OnTutorialsEnabled, self);
 	EventRegistry:RegisterCallback("TutorialManager.TutorialsDisabled", self.OnTutorialsDisabled, self);
+	EventRegistry:RegisterCallback("TutorialManager.TutorialsInit", self.OnTutorialsInit, self);
+end
+
+function GameTutorials:OnTutorialsInit()
+	AddDracthyrTutorials();
 end
 
 function GameTutorials:OnTutorialsEnabled()
@@ -11,7 +16,24 @@ function GameTutorials:OnTutorialsEnabled()
 	end
 
 	AddSpecAndTalentTutorials();
-	AddDracthyrTutorials();
+	AddFrameTutorials(); --Misc tutorials
+	AddDragonridingTutorials();
+
+	if CanShowProfessionEquipmentTutorial() then
+		TutorialManager:AddTutorial(Class_EquipProfessionGear:new());
+		TutorialManager:AddTutorial(Class_ProfessionGearCheckingService:new());
+		local autoStart = true;
+		TutorialManager:AddWatcher(Class_ProfessionInventoryWatcher:new(), autoStart);
+	end
+
+	if PlayerHasPrimaryProfession() then
+		-- If the player already has a profession, mark the tutorial as seen
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_PROFESSION, true);
+	else
+		TutorialManager:AddTutorial(Class_FirstProfessionTutorial:new());
+		local autoStart = true;
+		TutorialManager:AddWatcher(Class_FirstProfessionWatcher:new(), autoStart);
+	end
 end
 
 function GameTutorials:OnTutorialsDisabled()

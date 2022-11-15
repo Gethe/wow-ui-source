@@ -489,9 +489,6 @@ function UnitFrame_UpdateTooltip (self)
 	else
 		self.UpdateTooltip = nil;
 	end
-
-	local r, g, b = GameTooltip_UnitColor(self.unit);
-	GameTooltipTextLeft1:SetTextColor(r, g, b);
 end
 
 --[[

@@ -77,7 +77,10 @@ function PvPTalentSlotButtonMixin:Update()
 	if (self:IsInspecting()) then
 		local selectedTalentID = C_SpecializationInfo.GetInspectSelectedPvpTalent(self:GetInspectUnit(), self.slotIndex);
 		if (selectedTalentID) then
-			SetPortraitToTexture(self.Texture, select(3, GetPvpTalentInfoByID(selectedTalentID)));
+			local selectedTalentInfo = C_SpecializationInfo.GetPvpTalentInfo(selectedTalentID);
+			SetPortraitToTexture(self.Texture, selectedTalentInfo.icon);
+			self.Texture:SetVertexColor(1, 1, 1);
+
 			self.Texture:Show();
 
 			self.Border:SetAtlas("talents-node-pvp-inspect");
@@ -86,6 +89,11 @@ function PvPTalentSlotButtonMixin:Update()
 			self.Texture:SetAtlas("talents-node-pvp-inspect-empty");
 			self.Border:Hide();
 		end
+
+		if GameTooltip:GetOwner() == self then
+			self:OnEnter();
+		end
+
 		return;
 	else
 		self.Border:Show();
@@ -95,8 +103,14 @@ function PvPTalentSlotButtonMixin:Update()
 	self.Texture:Show();
 	local selectedTalentID = self:GetSelectedTalent();
 	if (selectedTalentID) then
-		local _, name, texture = GetPvpTalentInfoByID(selectedTalentID);
-		SetPortraitToTexture(self.Texture, texture);
+		local selectedTalentInfo = C_SpecializationInfo.GetPvpTalentInfo(selectedTalentID);
+		SetPortraitToTexture(self.Texture, selectedTalentInfo.icon);
+
+		if (selectedTalentInfo.dependenciesUnmet) then
+			self.Texture:SetVertexColor(0.9, 0, 0);
+		else
+			self.Texture:SetVertexColor(1, 1, 1);
+		end
 	else
 		self.Texture:SetAtlas("pvptalents-talentborder-empty");
 	end
@@ -122,6 +136,10 @@ function PvPTalentSlotButtonMixin:Update()
 	end
 	self.New:SetShown(showNewLabel);
 	self.NewGlow:SetShown(showNewLabel);
+
+	if GameTooltip:GetOwner() == self then
+		self:OnEnter();
+	end
 end
 
 function PvPTalentSlotButtonMixin:OnEnter()
@@ -141,6 +159,14 @@ function PvPTalentSlotButtonMixin:OnEnter()
 	local isInspecting = self:IsInspecting();
 	if (selectedTalentID) then
 		GameTooltip:SetPvpTalent(selectedTalentID, isInspecting, GetActiveSpecGroup(true), self.slotIndex);
+
+		if (not isInspecting) then
+			local selectedTalentInfo = C_SpecializationInfo.GetPvpTalentInfo(selectedTalentID);
+			if (selectedTalentInfo and selectedTalentInfo.dependenciesUnmet) then
+				local unmetReason = selectedTalentInfo.dependenciesUnmetReason or TALENT_BUTTON_TOOLTIP_PVP_TALENT_REQUIREMENT_ERROR;
+				GameTooltip_AddErrorLine(GameTooltip, unmetReason);
+			end
+		end
 	elseif (isInspecting) then
 		GameTooltip:SetText(TALENT_NOT_SELECTED, HIGHLIGHT_FONT_COLOR:GetRGB());
 	else
@@ -199,6 +225,7 @@ local PvPTalentSlotTrayEvents = {
 	"PLAYER_PVP_TALENT_UPDATE",
 	"PLAYER_ENTERING_WORLD",
 	"WAR_MODE_STATUS_UPDATE",
+	"TRAIT_CONFIG_UPDATED",
 };
 
 local PvPTalentSlotTrayUnitEvents = {
@@ -223,6 +250,8 @@ function PvPTalentSlotTrayMixin:OnEvent(event, ...)
 	elseif event == "WAR_MODE_STATUS_UPDATE" then
 		self:Update();
 	elseif event == "PLAYER_LEVEL_CHANGED" then
+		self:Update();
+	elseif event == "TRAIT_CONFIG_UPDATED" then
 		self:Update();
 	end
 end

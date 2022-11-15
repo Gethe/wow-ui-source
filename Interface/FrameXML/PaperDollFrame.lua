@@ -1,6 +1,3 @@
-EQUIPPED_FIRST = 1;
-EQUIPPED_LAST = 19;
-
 NUM_STATS = 5;
 NUM_SHOPPING_TOOLTIPS = 2;
 MAX_SPELL_SCHOOLS = 7;
@@ -110,6 +107,23 @@ PAPERDOLL_SIDEBARS = {
 			return C_EquipmentSet.GetNumEquipmentSets() > 0 or C_LFGInfo.CanPlayerUseLFD();
 		end
 	},
+};
+
+local ProfessionEquipError =
+{
+	[Enum.Profession.Blacksmithing] = PAPERDOLL_AUTO_EQUIP_BLACKSMITHING_ONLY,
+	[Enum.Profession.Leatherworking] = PAPERDOLL_AUTO_EQUIP_LEATHERWORKING_ONLY,
+	[Enum.Profession.Alchemy] = PAPERDOLL_AUTO_EQUIP_ALCHEMY_ONLY,
+	[Enum.Profession.Herbalism] = PAPERDOLL_AUTO_EQUIP_HERBALISM_ONLY,
+	[Enum.Profession.Cooking] = PAPERDOLL_AUTO_EQUIP_COOKING_ONLY,
+	[Enum.Profession.Mining] = PAPERDOLL_AUTO_EQUIP_MINING_ONLY,
+	[Enum.Profession.Tailoring] = PAPERDOLL_AUTO_EQUIP_TAILORING_ONLY,
+	[Enum.Profession.Engineering] = PAPERDOLL_AUTO_EQUIP_ENGINEERING_ONLY,
+	[Enum.Profession.Enchanting] = PAPERDOLL_AUTO_EQUIP_ENCHANTING_ONLY,
+	[Enum.Profession.Fishing] = PAPERDOLL_AUTO_EQUIP_FISHING_ONLY,
+	[Enum.Profession.Skinning] = PAPERDOLL_AUTO_EQUIP_SKINNING_ONLY,
+	[Enum.Profession.Jewelcrafting] = PAPERDOLL_AUTO_EQUIP_JEWELCRAFTING_ONLY,
+	[Enum.Profession.Inscription] = PAPERDOLL_AUTO_EQUIP_INSCRIPTION_ONLY,
 };
 
 function GetPaperDollSideBarFrame(index)
@@ -356,7 +370,7 @@ function PaperDoll_IsEquippedSlot(slot)
 	if ( slot ) then
 		slot = tonumber(slot);
 		if ( slot ) then
-			return slot >= EQUIPPED_FIRST and slot <= EQUIPPED_LAST;
+			return slot >= INVSLOT_FIRST_EQUIPPED and slot <= INVSLOT_LAST_EQUIPPED;
 		end
 	end
 	return false;
@@ -1165,11 +1179,15 @@ function Mastery_OnEnter(statFrame)
 	if (primaryTalentTree) then
 		local masterySpell, masterySpell2 = GetSpecializationMasterySpells(primaryTalentTree);
 		if (masterySpell) then
-			GameTooltip:AddSpellByID(masterySpell);
+			local tooltipInfo = CreateBaseTooltipInfo("GetSpellByID", masterySpell);
+			tooltipInfo.append = true;
+			GameTooltip:ProcessInfo(tooltipInfo);
 		end
 		if (masterySpell2) then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddSpellByID(masterySpell2);
+			local tooltipInfo = CreateBaseTooltipInfo("GetSpellByID", masterySpell2);
+			tooltipInfo.append = true;
+			GameTooltip:ProcessInfo(tooltipInfo);
 		end
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(format(STAT_MASTERY_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_MASTERY)), masteryBonus), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
@@ -1548,7 +1566,7 @@ function PaperDollItemSlotButton_OnEvent(self, event, ...)
 	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
 		PaperDollItemSlotButton_Update(self);
 	elseif ( event == "CURSOR_CHANGED" ) then
-		if ( CursorCanGoInSlot(self:GetID()) ) then
+		if C_PaperDollInfo.CanCursorCanGoInSlot(self:GetID()) then
 			self:LockHighlight();
 		else
 			self:UnlockHighlight();
@@ -1570,6 +1588,15 @@ function PaperDollItemSlotButton_OnEvent(self, event, ...)
 	end
 end
 
+function PaperDollItemSlotButton_SetAutoEquipSlotIDs(...)
+	local slots = {...};
+	local slotIDs = {};
+	for index, slot in ipairs(slots) do
+		table.insert(slotIDs, slot.slotID);
+		slot.autoEquipSlotIDs = slotIDs;
+	end
+end
+
 function PaperDollItemSlotButton_OnClick(self, button)
 	MerchantFrame_ResetRefundItem();
 	if ( button == "LeftButton" ) then
@@ -1577,7 +1604,32 @@ function PaperDollItemSlotButton_OnClick(self, button)
 		if ( type == "merchant" and MerchantFrame.extendedCost ) then
 			MerchantFrame_ConfirmExtendedItemCost(MerchantFrame.extendedCost);
 		else
-			PickupInventoryItem(self:GetID());
+			local validateAutoEquip = CursorHasItem() and self.autoEquipSlotIDs;
+			-- If there isn't any special auto equip requirement, we can continue calling PickupInventoryItem,
+			-- otherwise, we need to first verify that the cursor item could occupy any of the desired slots before
+			-- we allow PickupInventoryItem to auto-equip for us.
+			local canPickupInventoryItem = not validateAutoEquip;
+			if ( validateAutoEquip ) then
+				for index, slotID in ipairs(self.autoEquipSlotIDs) do
+					if ( C_PaperDollInfo.CanCursorCanGoInSlot(slotID) ) then
+						canPickupInventoryItem = true;
+						break;
+					end
+				end
+			end
+
+			if ( canPickupInventoryItem ) then
+				PickupInventoryItem(self:GetID());
+			end
+			
+			if ( validateAutoEquip and not canPickupInventoryItem ) then
+				local profession = C_TradeSkillUI.GetProfessionByInventorySlot(self:GetID());
+				local tag = profession and ProfessionEquipError[profession] or nil;
+				if tag then
+					UIErrorsFrame:AddExternalErrorMessage(tag);
+				end
+			end
+
 			if ( CursorHasItem() ) then
 				MerchantFrame_SetRefundItem(self, 1);
 			end
@@ -1682,23 +1734,21 @@ function PaperDollItemSlotButton_OnEnter(self)
 	if ( not EquipmentFlyout_SetTooltipAnchor(self) ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
-	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID(), nil, true);
+
+	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID(), true);
 	if ( not hasItem ) then
+		-- This SetOwner is needed because calling SetInventoryItem now hides tooltip if there is no item
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		local asRelic = self.checkRelic and UnitHasRelicSlot("player");
 		if asRelic then
 			GameTooltip:SetText(_G[RELICSLOT]);
 		else
 			local slotName = PaperDollItemSlotButton_GetSlotName(self);
 			GameTooltip:SetText(_G[strupper(slotName)]);
+			GameTooltip:Show();
 		end
 	end
-	if ( InRepairMode() and repairCost and (repairCost > 0) ) then
-		GameTooltip:AddLine(REPAIR_COST, nil, nil, nil, true);
-		SetTooltipMoney(GameTooltip, repairCost);
-		GameTooltip:Show();
-	else
-		CursorUpdate(self);
-	end
+	CursorUpdate(self);
 end
 
 function PaperDollItemSlotButton_OnLeave(self)

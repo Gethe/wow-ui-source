@@ -137,21 +137,27 @@ function CampaignHeaderDisplayMixin:UpdateNextObjective(state)
 end
 
 function CampaignHeaderDisplayMixin:UpdateTitle(isComplete)
-	local campaign = self:GetCampaign();
-	local color = isComplete and DISABLED_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
-	SetFieldText(self.Text, campaign.name, color);
+	local useHighlight = not isComplete;
+	SetFieldText(self.Text, self:GetCampaign().name, QuestLogHeaderCodeMixin.GetTitleColor(self, useHighlight));
 end
 
-local CampaignTextureKitInfo = {
-	Background = "Campaign_%s",
-	HighlightTexture = "Campaign_%s",
-};
+do
+
+	local CampaignTextureKitInfo = {
+		Background = "Campaign_%s",
+		HighlightTexture = "Campaign_%s",
+	};
+
+	function CampaignHeaderDisplayMixin:UpdateTextureKit()
+		SetupTextureKitOnRegions(self:GetCampaign().uiTextureKit, self, CampaignTextureKitInfo);
+	end
+end
 
 function CampaignHeaderDisplayMixin:SetCampaign(campaignID)
 	local campaign = CampaignCache:Get(campaignID);
 	self.campaign = campaign;
 
-	SetupTextureKitOnRegions(campaign.uiTextureKit, self, CampaignTextureKitInfo);
+	self:UpdateTextureKit();
 
 	local state = campaign:GetState();
 	local isComplete = state == Enum.CampaignState.Complete;
@@ -173,35 +179,87 @@ function CampaignHeaderDisplayMixin:SetCampaignFromQuestHeader(questHeader)
 	self:SetCampaign(questHeader.campaignID);
 end
 
-CampaignHeaderMixin = {};
-
-function CampaignHeaderMixin:SetCampaign(campaignID)
-	CampaignHeaderDisplayMixin.SetCampaign(self, campaignID);
-	self.LoreButton:SetMode("overview");
-	self:UpdateCollapsedState();
-
-	self:RegisterEvent("LORE_TEXT_UPDATED_CAMPAIGN");
-	self.hasLoreEntries = false;
-	C_LoreText.RequestLoreTextForCampaignID(campaignID);
+function CampaignHeaderDisplayMixin:GetQuestLogIndex()
+	return self.questLogIndex;
 end
 
-function CampaignHeaderMixin:UpdateCollapsedState()
-	local isCollapsed = self:IsCollapsed();
-	self.CollapseButton:UpdateState(isCollapsed);
-	self.SelectedHighlight:SetShown(not isCollapsed);
+function CampaignHeaderDisplayMixin:IsCollapsed()
+	return self.isCollapsed;
 end
 
-function CampaignHeaderMixin:SetCollapsed(collapsed)
+CampaignHeaderCollapsibleMixin = {};
+
+function CampaignHeaderCollapsibleMixin:OnClick(button)
+	if button == "LeftButton" then
+		local isCollapsed = self:ToggleCollapsed();
+
+		if isCollapsed then
+			PlaySound(SOUNDKIT.UI_JOURNEYS_COLLAPSE_HEADER);
+		else
+			PlaySound(SOUNDKIT.UI_JOURNEYS_EXPAND_HEADER);
+		end
+	end
+end
+
+function CampaignHeaderCollapsibleMixin:SetCollapsed(collapsed)
 	-- Make the request to the client, allow the update to refresh the visual state.
 	if collapsed then
 		CollapseQuestHeader(self.questLogIndex);
 	else
 		ExpandQuestHeader(self.questLogIndex);
 	end
+
+	return collapsed;
 end
 
-function CampaignHeaderMixin:IsCollapsed()
-	return self.isCollapsed;
+function CampaignHeaderCollapsibleMixin:ToggleCollapsed()
+	return self:SetCollapsed(not self:IsCollapsed());
+end
+
+function CampaignHeaderCollapsibleMixin:UpdateCollapsedState()
+	local isCollapsed = self:IsCollapsed();
+	self.CollapseButton:UpdateState(isCollapsed);
+	return isCollapsed;
+end
+
+CampaignHeaderTooltipableMixin = {};
+
+function CampaignHeaderTooltipableMixin:ShowTooltip()
+	local tooltip = QuestMapLog_GetCampaignTooltip();
+
+	tooltip:SetCampaign(self:GetCampaign());
+	tooltip:ClearAllPoints();
+	if (tooltip:GetWidth() > UIParent:GetRight() - WorldMapFrame:GetRight()) then
+		tooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 0);
+	else
+		tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 27, 0);
+	end
+	tooltip:Show();
+end
+
+CampaignHeaderMixin = CreateFromMixins(CampaignHeaderDisplayMixin);
+
+function CampaignHeaderMixin:GetButtonType()
+	return QuestLogButtonTypes.HeaderCampaign;
+end
+
+function CampaignHeaderMixin:SetCampaign(campaignID)
+	CampaignHeaderDisplayMixin.SetCampaign(self, campaignID);
+
+	self:UpdateCollapsedState();
+	self:RequestLore();
+end
+
+function CampaignHeaderMixin:RequestLore()
+	self.LoreButton:SetMode("overview");
+	self:RegisterEvent("LORE_TEXT_UPDATED_CAMPAIGN");
+	self.hasLoreEntries = false;
+	C_LoreText.RequestLoreTextForCampaignID(self:GetCampaign():GetID());
+end
+
+function CampaignHeaderMixin:UpdateCollapsedState()
+	local isCollapsed = CampaignHeaderCollapsibleMixin.UpdateCollapsedState(self);
+	self.SelectedHighlight:SetShown(not isCollapsed);
 end
 
 function CampaignHeaderMixin:OnUpdate()
@@ -225,9 +283,13 @@ function CampaignHeaderMixin:OnLeave()
 	QuestMapLog_GetCampaignTooltip():Hide();
 end
 
+function CampaignHeaderMixin:CheckOnLeave()
+	-- nop
+end
+
 function CampaignHeaderMixin:OnMouseUp(button, upInside)
-	if upInside and button == "LeftButton" then
-		self.CollapseButton:OnClick(button);
+	if upInside then
+		self:OnClick(button);
 	end
 end
 
@@ -245,19 +307,6 @@ end
 
 function CampaignHeaderMixin:HasLoreEntries()
 	return self.hasLoreEntries;
-end
-
-function CampaignHeaderMixin:ShowTooltip()
-	local tooltip = QuestMapLog_GetCampaignTooltip();
-
-	tooltip:SetCampaign(self:GetCampaign());
-	tooltip:ClearAllPoints();
-	if (tooltip:GetWidth() > UIParent:GetRight() - WorldMapFrame:GetRight()) then
-		tooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 0);
-	else
-		tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 27, 0);
-	end
-	tooltip:Show();
 end
 
 function CampaignHeaderMixin:UpdateLoreButtonVisibility()
@@ -312,21 +361,61 @@ function CampaignHeaderMixin:CheckShowLoreTutorial()
 	end
 end
 
+CampaignHeaderMinimalMixin = CreateFromMixins(CampaignHeaderDisplayMixin);
+
+function CampaignHeaderMinimalMixin:GetButtonType()
+	return QuestLogButtonTypes.HeaderCampaignMinimal;
+end
+
+function CampaignHeaderMinimalMixin:CheckOnLeave()
+	self:OnLeave();
+end
+
+function CampaignHeaderMinimalMixin:OnMouseUp(button, upInside)
+	if upInside then
+		self:OnClick(button);
+	end
+end
+
+function CampaignHeaderMinimalMixin:SetCampaign(campaignID)
+	CampaignHeaderDisplayMixin.SetCampaign(self, campaignID);
+
+	self:UpdateCollapsedState();
+end
+
+function CampaignHeaderMinimalMixin:UpdateTitle(isComplete)
+	local useHighlight = false;
+	SetFieldText(self.Text, self:GetCampaign().name, QuestLogHeaderCodeMixin.GetTitleColor(self, useHighlight));
+end
+
+function CampaignHeaderMinimalMixin:UpdateTextureKit()
+	-- nop
+end
+
+function CampaignHeaderMinimalMixin:UpdateComplete()
+	-- nop
+end
+
+function CampaignHeaderMinimalMixin:UpdateProgress()
+	-- nop
+end
+
+function CampaignHeaderMinimalMixin:UpdateTextureKit()
+	-- nop
+end
+
 CampaignCollapseButtonMixin = {};
 
-function CampaignCollapseButtonMixin:OnClick()
-	local header = self:GetParent();
-	local isCollapsed = header:IsCollapsed()
-	if(isCollapsed) then
-		PlaySound(SOUNDKIT.UI_JOURNEYS_EXPAND_HEADER);
-	else
-		PlaySound(SOUNDKIT.UI_JOURNEYS_COLLAPSE_HEADER);
-	end
-	header:SetCollapsed(not isCollapsed);
+function CampaignCollapseButtonMixin:OnClick(button, down)
+	self:GetParent():OnClick(button);
 end
 
 function CampaignCollapseButtonMixin:OnEnter()
 	self:GetParent():OnEnter();
+end
+
+function CampaignCollapseButtonMixin:OnLeave()
+	self:GetParent():CheckOnLeave();
 end
 
 function CampaignCollapseButtonMixin:UpdateState(isCollapsed)

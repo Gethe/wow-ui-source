@@ -22,12 +22,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
-			</Layer>
 			<Layer level="BORDER">
 				<Texture name="PetFrameTexture" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn" useAtlasSize="true">
 					<Anchors>
@@ -53,47 +47,10 @@
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-								<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
-							</Layer>
 							<Layer level="BORDER">
 								<FontString name="PetHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="5" y="-5"/>
-									</Anchors>
-								</FontString>
-								<FontString name="PetFrameHealthBarText" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT" x="79" y="-22"/>
-									</Anchors>
-								</FontString>
-								<FontString name="PetFrameHealthBarTextLeft" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="LEFT" relativePoint="TOPLEFT" x="44" y="-22"/>
-									</Anchors>
-								</FontString>
-								<FontString name="PetFrameHealthBarTextRight" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="TOPLEFT" x="114" y="-22"/>
-									</Anchors>
-								</FontString>
-								<FontString name="PetFrameManaBarText" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT" x="79" y="-32"/>
-									</Anchors>
-								</FontString>
-								<FontString name="PetFrameManaBarTextLeft" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="LEFT" relativePoint="TOPLEFT" x="44" y="-32"/>
-									</Anchors>
-								</FontString>
-								<FontString name="PetFrameManaBarTextRight" inherits="TextStatusBarText">
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="TOPLEFT" x="114" y="-32"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -104,19 +61,6 @@
 										<Anchor point="TOPLEFT" relativeTo="PetPortrait" relativePoint="TOPRIGHT" x="2" y="0"/>
 									</Anchors>
 								</FontString>
-								<!-- Note that using the party mask assets here is intentional. -->
-								<MaskTexture name="PetFrameHealthBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="15" y="-14"/>
-									</Anchors>
-								</MaskTexture>
-								<MaskTexture name="PetFrameManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="13" y="-24"/>
-									</Anchors>
-								</MaskTexture>
-								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
-								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -127,6 +71,46 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="PetPortrait" relativePoint="RIGHT" x="2" y="-3.5"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="PetFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+						<Texture name="PetFrameOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+						<Texture name="PetFrameTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
+						<Texture name="PetFrameHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+						<Texture name="PetFrameHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+						<Texture name="PetFrameHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="PetFrameTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
+						<Texture name="PetFrameOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+						<Texture name="PetFrameOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<FontString name="PetFrameHealthBarText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString name="PetFrameHealthBarTextLeft" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="LEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString name="PetFrameHealthBarTextRight" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<!-- Note that using the party mask assets here is intentional. -->
+						<MaskTexture name="PetFrameHealthBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-29" y="3"/>
+							</Anchors>
+						</MaskTexture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
@@ -139,6 +123,33 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="PetFrameHealthBar" relativePoint="BOTTOMLEFT" x="-4" y="-1"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<FontString name="PetFrameManaBarText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="CENTER" x="2" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString name="PetFrameManaBarTextLeft" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="LEFT" x="4" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString name="PetFrameManaBarTextRight" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<!-- Note that using the party mask assets here is intentional. -->
+						<MaskTexture name="PetFrameManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-27" y="4"/>
+							</Anchors>
+						</MaskTexture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>

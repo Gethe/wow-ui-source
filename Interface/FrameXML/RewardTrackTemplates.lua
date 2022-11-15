@@ -325,29 +325,31 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 	local level = self:GetLevel();
 	local earned = level <= displayLevel;
 	local borderAtlas;
+	-- There is no "Standard" milestone border, using the default instead
+	local textureKit = self.info.textureKit or "Standard";
 	if selected then
 		borderAtlas = "CovenantSanctum-Renown-Next-Border-%s";
 		if self.info.isCapstone then
 			borderAtlas = "CovenantSanctum-Renown-Hexagon-Next-Border-%s";
-		elseif self.info.isMilestone then
+		elseif self.info.isMilestone and textureKit ~= "Standard" then
 			borderAtlas = "CovenantSanctum-Renown-Special-Next-Border-%s";
 		end
 	elseif earned then
 		borderAtlas = "CovenantSanctum-Renown-Icon-Border-%s";
 		if self.info.isCapstone then
 			borderAtlas = "CovenantSanctum-Renown-Hexagon-Border-%s";
-		elseif self.info.isMilestone then
+		elseif self.info.isMilestone and textureKit ~="Standard" then
 			borderAtlas = "CovenantSanctum-Renown-Special-Border-%s";
 		end
 	else
 		borderAtlas = "CovenantSanctum-Renown-Icon-Border-Disabled";
 		if self.info.isCapstone then
 			borderAtlas = "CovenantSanctum-Renown-Hexagon-Border-Disabled";
-		elseif self.info.isMilestone then
+		elseif self.info.isMilestone and textureKit ~="Standard" then
 			borderAtlas = "CovenantSanctum-Renown-Special-Disabled-Border-%s";
 		end
 	end
-	self.IconBorder:SetAtlas(borderAtlas:format("Kyrian"), TextureKitConstants.UseAtlasSize);
+	self.IconBorder:SetAtlas(borderAtlas:format(textureKit), TextureKitConstants.UseAtlasSize);
 
 	if earned then
 		self.Icon:SetDesaturated(false);

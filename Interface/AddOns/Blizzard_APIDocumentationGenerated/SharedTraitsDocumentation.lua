@@ -194,6 +194,15 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetLoadoutSerializationVersion",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "serializationVersion", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNodeCost",
 			Type = "Function",
 
@@ -281,6 +290,15 @@ local SharedTraits =
 			Returns =
 			{
 				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTraitSystemWidgetSetID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiWidgetSetID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -629,6 +647,7 @@ local SharedTraits =
 				{ Name = "overrideDescription", Type = "string", Nilable = true },
 				{ Name = "overrideIcon", Type = "number", Nilable = true },
 				{ Name = "overriddenSpellID", Type = "number", Nilable = true },
+				{ Name = "subType", Type = "TraitDefinitionSubType", Nilable = true },
 			},
 		},
 		{

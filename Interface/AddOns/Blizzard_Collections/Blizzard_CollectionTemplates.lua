@@ -33,7 +33,7 @@ function CollectionsSpellButton_UpdateCooldown(self)
 	end
 
 	local cooldown = self.cooldown;
-	local start, duration, enable = GetItemCooldown(self.itemID);
+	local start, duration, enable = C_Container.GetItemCooldown(self.itemID);
 	if (cooldown and start and duration) then
 		if (enable) then
 			cooldown:Hide();

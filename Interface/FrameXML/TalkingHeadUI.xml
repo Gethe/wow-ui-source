@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="TalkingHeadUI.lua"/>
 
-	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" inherits="UIParentBottomManagedFrameTemplate, EditModeTalkingHeadFrameSystemTemplate" mixin="TalkingHeadFrameMixin" hidden="true" frameStrata="HIGH" frameLevel="1">
+	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" inherits="UIParentBottomManagedFrameTemplate, EditModeTalkingHeadFrameSystemTemplate" mixin="TalkingHeadFrameMixin" hidden="true" frameStrata="HIGH" fixedFrameStrata="true" frameLevel="1" fixedFrameLevel="true">
 		<Size x="570" y="155"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="8" type="number"/>

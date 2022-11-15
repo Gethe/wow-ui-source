@@ -54,32 +54,30 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	end
 
 	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
+	local healthBar = targetFrameContentMain.HealthBar;
+	local manaBar = targetFrameContentMain.ManaBar;
 	UnitFrame_Initialize(self, unit, targetFrameContentMain.Name, self.frameType, portraitFrame,
-						 targetFrameContentMain.HealthBar,
-						 targetFrameContentMain.HealthBar.HealthBarText,
-						 targetFrameContentMain.ManaBar,
-						 targetFrameContentMain.ManaBar.ManaBarText,
+						 healthBar,
+						 healthBar.HealthBarText,
+						 manaBar,
+						 manaBar.ManaBarText,
 						 threatFrame, "player", self.TargetFrameContent.TargetFrameContentContextual.NumericalThreat,
-						 targetFrameContentMain.MyHealPredictionBar,
-						 targetFrameContentMain.OtherHealPredictionBar,
-						 targetFrameContentMain.TotalAbsorbBar,
-						 targetFrameContentMain.TotalAbsorbBarOverlay,
-						 targetFrameContentMain.OverAbsorbGlow,
-						 targetFrameContentMain.OverHealAbsorbGlow,
-						 targetFrameContentMain.HealAbsorbBar,
-						 targetFrameContentMain.HealAbsorbBarLeftShadow,
-						 targetFrameContentMain.HealAbsorbBarRightShadow);
+						 healthBar.MyHealPredictionBar,
+						 healthBar.OtherHealPredictionBar,
+						 healthBar.TotalAbsorbBar,
+						 healthBar.TotalAbsorbBarOverlay,
+						 healthBar.OverAbsorbGlow,
+						 healthBar.OverHealAbsorbGlow,
+						 healthBar.HealAbsorbBar,
+						 healthBar.HealAbsorbBarLeftShadow,
+						 healthBar.HealAbsorbBarRightShadow);
 
 	self.auraPools = CreateFramePoolCollection();
 	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");
 	self.auraPools:CreatePool("FRAME", self, "TargetBuffFrameTemplate");
 
-	-- Mask the various bar assets, to avoid any overflow with the frame shape.
-	self:AddHealthBarMaskTexture();
-
-	local manaBarMask = targetFrameContentMain.ManaBarMask;
-	targetFrameContentMain.ManaBar:GetStatusBarTexture():AddMaskTexture(manaBarMask);
-	targetFrameContentMain.MyHealPredictionBar:AddMaskTexture(manaBarMask);
+	healthBar:GetStatusBarTexture():AddMaskTexture(healthBar.HealthBarMask);
+	manaBar:GetStatusBarTexture():AddMaskTexture(manaBar.ManaBarMask);
 
 	self:Update();
 
@@ -250,7 +248,10 @@ function TargetFrameMixin:OnEvent(event, ...)
 end
 
 function TargetFrameMixin:OnHide()
-	PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT);
+	-- "Soft" target changes should not cause this sound to play
+	if (not IsTargetLoose()) then
+		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT);
+	end
 	CloseDropDownMenus();
 end
 
@@ -391,8 +392,8 @@ function TargetFrameMixin:CheckClassification()
 		healthBar:SetWidth(125);
 		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 0, -3);
 
-		-- Minus mobs do not have a mask for the health bar, so remove the applied target mask that would not fit.
-		self:RemoveHealthBarMaskTexture();
+		healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBar.HealthBarMask:SetPoint("TOPLEFT", -1, 2);
 
 		manaBar.pauseUpdates = true;
 		manaBar:Hide();
@@ -400,7 +401,11 @@ function TargetFrameMixin:CheckClassification()
 		manaBar.LeftText:Hide();
 		manaBar.RightText:Hide();
 	else
-		self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn", TextureKitConstants.UseAtlasSize);
+		if (classification == "rare" or classification == "rareelite") then
+			self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-Rare-PortraitOn", TextureKitConstants.UseAtlasSize);
+		else
+			self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn", TextureKitConstants.UseAtlasSize);
+		end
 
 		-- self.threatIndicator should just be set to self.TargetFrameContainer.Flash.  See 'threatFrame' in TargetFrameMixin:OnLoad.
 		if (self.threatIndicator) then
@@ -412,8 +417,8 @@ function TargetFrameMixin:CheckClassification()
 		healthBar:SetWidth(126);
 		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 1, -11);
 
-		-- Mask the various bar assets, to avoid any overflow with the frame shape.
-		self:AddHealthBarMaskTexture();
+		healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBar.HealthBarMask:SetPoint("TOPLEFT", -1, 6);
 	end
 
 	-- Boss frame pieces (dragon frame, icons)
@@ -422,7 +427,11 @@ function TargetFrameMixin:CheckClassification()
 		bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold-Winged", TextureKitConstants.UseAtlasSize);
 		bossPortraitFrameTexture:SetPoint("TOPRIGHT", 8, -8);
 		bossPortraitFrameTexture:Show();
-	elseif (classification == "elite" or classification == "rareelite") then
+	elseif (classification == "rareelite") then
+		bossPortraitFrameTexture:SetAtlas("ui-hud-unitframe-target-portraiton-boss-rare-silver", TextureKitConstants.UseAtlasSize);
+		bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8);
+		bossPortraitFrameTexture:Show();
+	elseif (classification == "elite") then
 		bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold", TextureKitConstants.UseAtlasSize);
 		bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8);
 		bossPortraitFrameTexture:Show();
@@ -440,11 +449,8 @@ function TargetFrameMixin:CheckClassification()
 	-- Quest icon showing trumps rarity icon.
 	if (targetFrameContenContextual.QuestIcon and isQuestBoss) then
 		targetFrameContenContextual.BossIcon:Hide();
-	elseif (classification == "rare") then
+	elseif (classification == "rare" or classification == "rareelite") then
 		targetFrameContenContextual.BossIcon:SetAtlas("UnitFrame-Target-PortraitOn-Boss-Rare-Star", TextureKitConstants.UseAtlasSize);
-		targetFrameContenContextual.BossIcon:Show();
-	elseif ( classification == "rareelite") then
-		targetFrameContenContextual.BossIcon:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare", TextureKitConstants.UseAtlasSize);
 		targetFrameContenContextual.BossIcon:Show();
 	else
 		targetFrameContenContextual.BossIcon:Hide();
@@ -556,14 +562,19 @@ function TargetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 
 		if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
 			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
-				if self.activeDebuffs[auraInstanceID] ~= nil then
+				local wasInDebuff = self.activeDebuffs[auraInstanceID] ~= nil;
+				local wasInBuff = self.activeBuffs[auraInstanceID] ~= nil;
+				if wasInDebuff or wasInBuff then
 					local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(self.unit, auraInstanceID);
-					self.activeDebuffs[auraInstanceID] = newAura;
-					debuffsChanged = true;
-				elseif self.activeBuffs[auraInstanceID] ~= nil then
-					local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(self.unit, auraInstanceID);
-					self.activeBuffs[auraInstanceID] = newAura;
-					buffsChanged = true;
+					self.activeDebuffs[auraInstanceID] = nil;
+					self.activeBuffs[auraInstanceID] = nil;
+					local type = self:ProcessAura(newAura);
+					if type == AuraUpdateChangedType.Buff or wasInBuff then
+						buffsChanged = true;
+					end
+					if type == AuraUpdateChangedType.Debuff or wasInDebuff then
+						debuffsChanged = true;
+					end
 				end
 			end
 		end
@@ -646,13 +657,13 @@ function TargetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 	local maxRowWidth;
 	-- update buff positions
 	maxRowWidth = (haveTargetofTarget and self.TOT_AURA_ROW_WIDTH) or AURA_ROW_WIDTH;
-	self:UpdateAuraFrames(self.activeBuffs, numBuffs, numDebuffs, UpdateAuraFrame, TargetFrame_UpdateBuffAnchor, maxRowWidth, 3, mirrorAurasVertically);
+	self:UpdateAuraFrames(self.activeBuffs, numBuffs, numDebuffs, UpdateAuraFrame, TargetFrame_UpdateBuffAnchor, maxRowWidth, 3, mirrorAurasVertically, "TargetBuffFrameTemplate");
 	-- update debuff positions
 	maxRowWidth = (haveTargetofTarget and self.auraRows < NUM_TOT_AURA_ROWS and self.TOT_AURA_ROW_WIDTH) or AURA_ROW_WIDTH;
-	self:UpdateAuraFrames(self.activeDebuffs, numDebuffs, numBuffs, UpdateAuraFrame, TargetFrame_UpdateDebuffAnchor, maxRowWidth, 4, mirrorAurasVertically);
+	self:UpdateAuraFrames(self.activeDebuffs, numDebuffs, numBuffs, UpdateAuraFrame, TargetFrame_UpdateDebuffAnchor, maxRowWidth, 4, mirrorAurasVertically, "TargetDebuffFrameTemplate");
 	-- update the spell bar position
 	if self.spellbar ~= nil then
-		Target_Spellbar_AdjustPosition(self.spellbar);
+		self.spellbar:AdjustPosition();
 	end
 end
 
@@ -785,12 +796,12 @@ function TargetFrame_UpdateDebuffAnchor(self, buff, index, numBuffs, anchorBuff,
 	-- Resize
 	buff:SetWidth(size);
 	buff:SetHeight(size);
-	local debuffFrame = buff.Border;
-	debuffFrame:SetWidth(size+2);
-	debuffFrame:SetHeight(size+2);
+	local buffBorder = buff.Border;
+	buffBorder:SetWidth(size+2);
+	buffBorder:SetHeight(size+2);
 end
 
-function TargetFrameMixin:UpdateAuraFrames(auraList, numAuras, numOppositeAuras, setupFunc, anchorFunc, maxRowWidth, offsetX, mirrorAurasVertically)
+function TargetFrameMixin:UpdateAuraFrames(auraList, numAuras, numOppositeAuras, setupFunc, anchorFunc, maxRowWidth, offsetX, mirrorAurasVertically, template)
 	-- a lot of this complexity is in place to allow the auras to wrap around the target of target frame if it's shown
 
 	-- Position auras
@@ -807,7 +818,6 @@ function TargetFrameMixin:UpdateAuraFrames(auraList, numAuras, numOppositeAuras,
 		if i > numAuras then
 			return true;
 		end
-		local template = aura.isHarmful and "TargetDebuffFrameTemplate" or "TargetBuffFrameTemplate";
 		local pool = self.auraPools:GetPool(template);
 		local frame = pool:Acquire();
 		setupFunc(frame, aura);
@@ -877,38 +887,6 @@ function TargetFrameMixin:HealthUpdate(elapsed, unit)
 			end
 		end
 	end
-end
-
-function TargetFrameMixin:AddHealthBarMaskTexture()
-	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
-	local healthBarMask = targetFrameContentMain.HealthBarMask;
-
-	targetFrameContentMain.HealthBar:GetStatusBarTexture():AddMaskTexture(healthBarMask);
-	targetFrameContentMain.MyHealPredictionBar:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.OtherHealPredictionBar:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.TotalAbsorbBar:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.TotalAbsorbBarOverlay:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.OverAbsorbGlow:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.OverHealAbsorbGlow:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBar:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBarLeftShadow:AddMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBarRightShadow:AddMaskTexture(healthBarMask);
-end
-
-function TargetFrameMixin:RemoveHealthBarMaskTexture()
-	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
-	local healthBarMask = targetFrameContentMain.HealthBarMask;
-
-	targetFrameContentMain.HealthBar:GetStatusBarTexture():RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.MyHealPredictionBar:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.OtherHealPredictionBar:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.TotalAbsorbBar:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.TotalAbsorbBarOverlay:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.OverAbsorbGlow:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.OverHealAbsorbGlow:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBar:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBarLeftShadow:RemoveMaskTexture(healthBarMask);
-	targetFrameContentMain.HealAbsorbBarRightShadow:RemoveMaskTexture(healthBarMask);
 end
 
 function TargetFrameDropDown_Initialize(self)
@@ -1029,9 +1007,9 @@ function TargetFrameMixin:CreateTargetofTarget(unit)
 						 frame.HealthBar, nil, frame.ManaBar, nil);
 	SetTextStatusBarTextZeroText(frame.HealthBar, DEAD);
 
-	frame.HealthBar:GetStatusBarTexture():AddMaskTexture(frame.HealthBarMask);
+	frame.HealthBar:GetStatusBarTexture():AddMaskTexture(frame.HealthBar.HealthBarMask);
 
-	frame.ManaBar:GetStatusBarTexture():AddMaskTexture(frame.ManaBarMask);
+	frame.ManaBar:GetStatusBarTexture():AddMaskTexture(frame.ManaBar.ManaBarMask);
 
 	SecureUnitButton_OnLoad(frame, unit);
 end
@@ -1077,7 +1055,9 @@ function TargetFrameHealthBarMixin:OnSizeChanged()
 	UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
 end
 
-function Target_Spellbar_OnEvent(self, event, ...)
+TargetSpellBarMixin = CreateFromMixins(CastingBarMixin);
+
+function TargetSpellBarMixin:OnEvent(event, ...)
 	local arg1 = ...
 
 	--	Check for target specific events
@@ -1113,12 +1093,12 @@ function Target_Spellbar_OnEvent(self, event, ...)
 			return;
 		end
 		-- The position depends on the classification of the target
-		Target_Spellbar_AdjustPosition(self);
+		self:AdjustPosition();
 	end
-	self:OnEvent(event, arg1, select(2, ...));
+	CastingBarMixin.OnEvent(self, event, ...);
 end
 
-function Target_Spellbar_AdjustPosition(self)
+function TargetSpellBarMixin:AdjustPosition()
 	local parentFrame = self:GetParent();
 
 	-- If the buffs are on the bottom of the frame, and either:
@@ -1135,6 +1115,17 @@ function Target_Spellbar_AdjustPosition(self)
 	end
 
 	self:SetPoint("TOPLEFT", relativeKey, "BOTTOMLEFT", pointX, pointY);
+end
+
+BossSpellBarMixin = CreateFromMixins(TargetSpellBarMixin);
+
+function BossSpellBarMixin:AdjustPosition()
+	self:ClearAllPoints();
+	if (self.castBarOnSide) then
+		self:SetPoint("TOPRIGHT", self:GetParent(), "TOPLEFT", 45, -34);
+	else
+		self:SetPoint("TOPRIGHT", self:GetParent(), "BOTTOMRIGHT", -100, 17);
+	end
 end
 
 --
@@ -1161,7 +1152,7 @@ function TargetOfTargetMixin:Update()
 			self:Show();
 			if (parent.spellbar) then
 				parent.haveToT = true;
-				Target_Spellbar_AdjustPosition(parent.spellbar);
+				parent.spellbar:AdjustPosition();
 			end
 		end
 		UnitFrame_Update(self);
@@ -1173,7 +1164,7 @@ function TargetOfTargetMixin:Update()
 			self:Hide();
 			if (parent.spellbar) then
 				parent.haveToT = nil;
-				Target_Spellbar_AdjustPosition(parent.spellbar);
+				parent.spellbar:AdjustPosition();
 			end
 		end
 	end
@@ -1251,10 +1242,9 @@ function BossTargetFrameMixin:OnLoad()
 	healthBar:SetHeight(10);
 	healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", -2, -8);
 
-	local healthBarMask = targetFrameContentMain.HealthBarMask;
 	-- The boss frame mask is the same shape as the party frame, so we just use that.
-	healthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-	healthBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 40, -43);
+	healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+	healthBar.HealthBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 40, -43);
 
 	local manaBar = targetFrameContentMain.ManaBar;
 	manaBar:SetWidth(84);
@@ -1263,10 +1253,9 @@ function BossTargetFrameMixin:OnLoad()
 	manaBar.ManaBarText:SetPoint("CENTER", 0, 0);
 	manaBar.RightText:SetPoint("RIGHT", -5, 0);
 
-	local manaBarMask = targetFrameContentMain.ManaBarMask;
 	-- The boss frame mask is the same shape as the party frame, so we just use that.
-	manaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
-	manaBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 40, -52);
+	manaBar.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
+	manaBar.ManaBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 40, -52);
 
 	self.TargetFrameContent.TargetFrameContentContextual.RaidTargetIcon:SetPoint("RIGHT", -90, 0);
 	self.threatNumericIndicator:SetPoint("BOTTOM", self, "TOP", -28, -33);
@@ -1299,13 +1288,8 @@ function BossTargetFrameMixin:SetCastBarPosition(castBarOnSide)
 		return;
 	end
 	self.castBarOnSide = castBarOnSide;
-
-	self.spellbar:ClearAllPoints();
-	if (self.castBarOnSide) then
-		self.spellbar:SetPoint("TOPRIGHT", self, "TOPLEFT", 45, -34);
-	else
-		self.spellbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", -100, 17);
-	end
+	self.spellbar.castBarOnSide = castBarOnSide;
+	self.spellbar:AdjustPosition();
 end
 
 function BossTargetFrameDropDown_Initialize(self)

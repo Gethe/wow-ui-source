@@ -1,12 +1,10 @@
 ## Title: Blizzard Professions Templates
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
-## LoadWith: Blizzard_ProfessionsCrafting, Blizzard_ProfessionsCustomerOrders, Blizzard_ProfessionsCrafterOrders
+## LoadWith: Blizzard_ProfessionsCrafting, Blizzard_ProfessionsCustomerOrders
 Blizzard_Professions.lua
 Blizzard_ProfessionsRecipeLoader.lua
 Blizzard_ProfessionsTransaction.lua
-Blizzard_ProfessionsOrder.lua
-Blizzard_ProfessionsTemp.lua
 Blizzard_ProfessionsCraftingQueue.lua
 Blizzard_ProfessionsTemplates.xml
 Blizzard_ProfessionsRecipeList.xml

@@ -137,13 +137,13 @@
 			<Frame parentKey="HeaderFrame" mixin="MajorFactionRenownHeaderFrameMixin" frameLevel="510">
 				<Size x="150" y="150"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="40"/>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="50"/>
 				</Anchors>
 				<Frames>
-					<Cooldown parentKey="RenownProgressBar" reverse="true" hideCountdownNumbers="true" rotation="199" useParentLevel="true" mixin="MajorFactionRenownTrackProgressBarMixin">
-						<Size x="178" y="178"/>
+					<Cooldown parentKey="RenownProgressBar" reverse="true" hideCountdownNumbers="true" rotation="180" useParentLevel="true" mixin="MajorFactionRenownTrackProgressBarMixin">
+						<Size x="182" y="220"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="-1" y="12"/>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" y="-10"/>
 						</Anchors>
 						<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
 					</Cooldown>
@@ -152,7 +152,7 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background">
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="CENTER" y="-10"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -162,13 +162,13 @@
 								<Color r="0" g="0" b="0"/>
 							</Shadow>
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="9"/>
+								<Anchor point="BOTTOM" x="0" y="-1"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="Icon">
 							<Size x="80" y="80"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="15"/>
+								<Anchor point="CENTER" x="0" y="5"/>
 							</Anchors>
 						</Texture>
 					</Layer>

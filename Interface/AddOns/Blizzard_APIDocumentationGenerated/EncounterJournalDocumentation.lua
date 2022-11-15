@@ -242,6 +242,8 @@ local EncounterJournal =
 				{ Name = "handError", Type = "bool", Nilable = true },
 				{ Name = "weaponTypeError", Type = "bool", Nilable = true },
 				{ Name = "displayAsPerPlayerLoot", Type = "bool", Nilable = true },
+				{ Name = "displayAsVeryRare", Type = "bool", Nilable = true },
+				{ Name = "displayAsExtremelyRare", Type = "bool", Nilable = true },
 			},
 		},
 		{

@@ -48,7 +48,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[6] = "legion",
 	[7] = "battleforazeroth",
 	[8] = "shadowlands",
-	[9] = "expansion9",
+	[9] = "dragonflight",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {
@@ -1328,8 +1328,8 @@ function LFGListEntryCreationActivityFinder_Select(self, activityID)
 
 	local function UpdateButtonSelection(id, selected)
 		if id then
-			local button = self.Dialog.ScrollBox:FindFrameByPredicate(function(button)
-				return button:GetElementData().id == id;
+			local button = self.Dialog.ScrollBox:FindFrameByPredicate(function(button, elementData)
+				return elementData.id == id;
 			end);
 			if button then
 				LFGListEntryCreationActivityFinder_SetButtonSelected(button, selected);
@@ -1376,8 +1376,8 @@ function LFGListApplicationViewer_OnEvent(self, event, ...)
 			LFGListApplicationViewer_UpdateResultList(self);
 			LFGListApplicationViewer_UpdateResults(self);
 		else
-			local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
-				return frame:GetElementData().id == id;
+			local frame = self.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+				return elementData.id == id;
 			end);
 			if frame then
 				LFGListApplicationViewer_UpdateApplicant(frame, id);
@@ -2007,6 +2007,14 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 			if ( self.selectedResult ~= id ) then
 				LFGListSearchPanel_UpdateResults(self);
 			end
+		else
+			local updatedEntryFrame = self.ScrollBox:FindFrameByPredicate(function(frame)
+				local elementData = frame:GetElementData();
+				return elementData and elementData.resultID == id;
+			end);
+			if updatedEntryFrame then
+				LFGListSearchEntry_Update(updatedEntryFrame);
+			end
 		end
 		LFGListSearchPanel_UpdateButtonStatus(self);
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
@@ -2020,6 +2028,8 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_CONNECTION" ) then
 		LFGListSearchPanel_UpdateButtonStatus(self);
+	elseif ( event == "LFG_ROLE_CHECK_UPDATE" ) then
+		LFGListSearchPanel_UpdateResultList(self);
 	end
 
 	if ( tContains(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS, event) ) then
@@ -2404,14 +2414,18 @@ function LFGListSearchPanel_UpdateAutoComplete(self)
 end
 
 function LFGListSearchEntry_OnLoad(self)
-	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
-	self:RegisterEvent("LFG_ROLE_CHECK_UPDATE");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
 function LFGListSearchEntry_Update(self)
 	local resultID = self.resultID;
+
+	if not C_LFGList.HasSearchResultInfo(resultID) then
+		return;
+	end
+
 	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
+
 	local isApplication = (appStatus ~= "none" or pendingStatus);
 	local isAppFinished = LFGListUtil_IsStatusInactive(appStatus) or LFGListUtil_IsStatusInactive(pendingStatus);
 
@@ -2563,19 +2577,6 @@ function LFGListSearchEntry_UpdateExpiration(self)
 	local minutes = math.floor(duration / 60);
 	local seconds = duration % 60;
 	self.ExpirationTime:SetFormattedText("%d:%.2d", minutes, seconds);
-end
-
-function LFGListSearchEntry_OnEvent(self, event, ...)
-	if ( event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
-		local id = ...;
-		if ( id == self.resultID ) then
-			LFGListSearchEntry_Update(self);
-		end
-	elseif ( event == "LFG_ROLE_CHECK_UPDATE" ) then
-		if ( self.resultID ) then
-			LFGListSearchEntry_Update(self);
-		end
-	end
 end
 
 function LFGListSearchEntry_OnClick(self, button)

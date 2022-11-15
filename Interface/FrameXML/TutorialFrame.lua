@@ -75,14 +75,6 @@ local DISPLAY_DATA = {
 	-- layers can be BACKGROUND, BORDER, ARTWORK, OVERLAY, HIGHLIGHT
 	-- if you don't assign one it will default to ARTWORK
 
-
-	[16] = { --TUTORIAL_REPUTATION
-		tileHeight = 8,
-		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "CharacterMicroButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
-
 	[17] = { --TUTORIAL_TELLS
 		tileHeight = 6,
 		anchorData = {align = "LEFT", xOff = 25, yOff = -50},
@@ -99,19 +91,9 @@ local DISPLAY_DATA = {
 		notNPE = true,
 	},
 
-	[20] = { --TUTORIAL_BUYING_ITEMS
-		tileHeight = 17,
-		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 35},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LootCursor", align = "TOP", xOff = 0, yOff = -60},
-		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
-		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
-		notNPE = true,
-	},
-
 	[22] = { --TUTORIAL_FRIENDS
 		tileHeight = 10,
-		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
+		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
 		callOut	= {parent = "QuickJoinToastButton", align = "TOPLEFT", xOff = -4, yOff = 6, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		notNPE = true,
@@ -132,26 +114,9 @@ local DISPLAY_DATA = {
 		notNPE = true,
 	},
 
-	[30] = { --TUTORIAL_INNS
-		tileHeight = 11,
-		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
-		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 11, yOff = -7, width = 85, height = 85},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-		notNPE = true,
-	},
-
-	[32] = { --TUTORIAL_PVP
-		tileHeight = 10,
-		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
-		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 11, yOff = -7, width = 85, height = 85},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-		notNPE = true,
-	},
-
-
 	[37] = { --TUTORIAL_DURABILITY_BROKEN
 		tileHeight = 18,
-		anchorData = {align = "RIGHT", xOff = -25, yOff = -20},
+		anchorData = {align = "RIGHT", xOff = -105, yOff = -200},
 		callOut	= {parent = "DurabilityFrame", align = "TOPLEFT", xOff = -4, yOff = 8, align2 = "BOTTOMRIGHT", xOff2 = 4, yOff2 = -8},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-RepairCursor", align = "TOP", xOff = 0, yOff = -60},
@@ -159,23 +124,6 @@ local DISPLAY_DATA = {
 		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
 	},
 
-	[38] = { --TUTORIAL_PROFESSIONS
-		tileHeight = 18,
-		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -150, bottomRight_xOff = -29, bottomRight_yOff = 35},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TrainerCursor", align = "TOP", xOff = 0, yOff = -60},
-		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
-		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
-		notNPE = true,
-	},
-
-
-	[41] = { --TUTORIAL_ELITE_QUESTS
-		tileHeight = 21,
-		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-Elite", align = "TOP", xOff = 10, yOff = -50},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -160, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
 
 	[46] = { --TUTORIAL_RAID
 		tileHeight = 14,
@@ -183,74 +131,12 @@ local DISPLAY_DATA = {
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 
-	[48] = { --TUTORIAL_PVP_QUEUE
-		tileHeight = 7,
-		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
-		callOut	= {parent = "Minimap", align = "TOPLEFT", xOff = -8, yOff = 0, width = 151, height = 145},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
-
-	[51] = { --TUTORIAL_LOOKINGFORGROUP
-		tileHeight = 7,
-		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "LFDMicroButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 38, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
 
 	[52] = { --TUTORIAL_CRITTER
 		tileHeight = 11,
-		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
-		callOut	= {parent = "CollectionsMicroButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 38, height = 45},
+		anchorData = {align = "RIGHT", xOff = -105, yOff = -300},
+		callOut	= {parent = "CollectionsMicroButton", align = "TOPLEFT", xOff = -10, yOff = 9, width = 38, height = 42},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
-
-	[58] = { --TUTORIAL_BAG_FULL
-		tileHeight = 22,
-		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 35},
-		callOut	= {parent = "MainMenuBarBackpackButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 50, height = 45},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FullBackpack", align = "TOP", xOff = -22, yOff = -55},
-    },
-
-	[59] = { --TUTORIAL_BAG_ALMOST_FULL
-		tileHeight = 24,
-		anchorData = {align = "RIGHT", xOff = -25, yOff = 70},
-		callOut	= {parent = "MainMenuBarBackpackButton", align = "TOPLEFT", xOff = -5, yOff = 5, width = 50, height = 45},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -185, bottomRight_xOff = -29, bottomRight_yOff = 35},
-		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-FullBackpack", align = "TOP", xOff = -70, yOff = -65},
-		mouseData = {image = "RightClick", align = "TOP", xOff = 110, yOff = -65},
-    },
-
-
-	[61] = { --TUTORIAL_LEARN_SPELL_1
-		spellTutorial = true;
-		tileHeight = 21,
-		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
-	[62] = { --TUTORIAL_LEARN_SPELL_1
-		spellTutorial = true;
-		tileHeight = 21,
-		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
-	[63] = { --TUTORIAL_LEARN_SPELL_1
-		spellTutorial = true;
-		tileHeight = 21,
-		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
-	[64] = { --TUTORIAL_LEARN_SPELL_1
-		spellTutorial = true;
-		tileHeight = 21,
-		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
-	},
-	[65] = { --TUTORIAL_LEARN_SPELL_1
-		spellTutorial = true;
-		tileHeight = 21,
-		anchorData = {align = "RIGHT", xOff = 15, yOff = 0},
-		textBox = {topLeft_xOff = 33, topLeft_yOff = -180, bottomRight_xOff = -29, bottomRight_yOff = 35},
 	},
 };
 local DisplayDataFallback = {

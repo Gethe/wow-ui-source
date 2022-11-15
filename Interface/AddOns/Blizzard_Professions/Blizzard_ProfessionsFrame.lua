@@ -5,6 +5,9 @@ local ProfessionsFrameEvents =
 	"TRADE_SKILL_LIST_UPDATE",
 	"TRADE_SKILL_CLOSE",
 	"GARRISON_TRADESKILL_NPC_CLOSED",
+	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
+	"SKILL_LINE_SPECS_UNLOCKED",
+	"IGNORELIST_UPDATE",
 };
 
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE"] =
@@ -41,12 +44,16 @@ function ProfessionsMixin:OnLoad()
 
 	self.recipesTabID = self:AddNamedTab(PROFESSIONS_RECIPES_TAB_NAME, self.CraftingPage);
 	self.specializationsTabID = self:AddNamedTab(PROFESSIONS_SPECIALIZATIONS_TAB_NAME, self.SpecPage);
+	self.craftingOrdersTabID = self:AddNamedTab(PROFESSIONS_CRAFTING_ORDERS_TAB_NAME, self.OrdersPage);
 
 	self:InitializeButtons();
 
 	self:RegisterEvent("OPEN_RECIPE_RESPONSE");
 
-	EventRegistry:RegisterCallback("Professions.SelectSkillLine", function(_, info) self:SetProfessionInfo(info); end, self);
+	EventRegistry:RegisterCallback("Professions.SelectSkillLine", function(_, info) 
+		local useLastSkillLine = false;
+		self:SetProfessionInfo(info, useLastSkillLine);
+	 end, self);
 end
 
 function ProfessionsMixin:OnEvent(event, ...)
@@ -77,7 +84,8 @@ function ProfessionsMixin:OnEvent(event, ...)
 			professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
 		end
 
-		self:SetProfessionInfo(professionInfo);
+		local useLastSkillLine = true;
+		self:SetProfessionInfo(professionInfo, useLastSkillLine);
 	elseif event == "TRADE_SKILL_CLOSE" or event == "GARRISON_TRADESKILL_NPC_CLOSED" then
 		HideUIPanel(self);
 	elseif event == "OPEN_RECIPE_RESPONSE" then
@@ -93,12 +101,19 @@ function ProfessionsMixin:OnEvent(event, ...)
 			-- the recipe list, so treat this as if the profession info is changing (consistent
 			-- with a change when the dropdown is changed).
 			local newProfessionInfo = ProcessOpenRecipeResponse(openRecipeResponse);
-			self:SetProfessionInfo(newProfessionInfo);
+			local useLastSkillLine = false;
+			self:SetProfessionInfo(newProfessionInfo, useLastSkillLine);
 		else
 			-- We're in a different profession entirely. Defer handling the response until the
 			-- next TRADE_SKILL_LIST_UPDATE.
 			self.openRecipeResponse = openRecipeResponse;
 		end
+	elseif event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" then
+		self:UpdateTabs();
+	elseif event == "SKILL_LINE_SPECS_UNLOCKED" then
+		self:UpdateTabs();
+	elseif event == "IGNORELIST_UPDATE" then
+		C_CraftingOrders.UpdateIgnoreList();
 	end
 end
 
@@ -106,12 +121,16 @@ function ProfessionsMixin:SetOpenRecipeResponse(skillLineID, recipeID, openSpecT
 	self.openRecipeResponse = {skillLineID = skillLineID, recipeID = recipeID, openSpecTab = openSpecTab};
 end
 
-function ProfessionsMixin:SetProfessionInfo(professionInfo)
-	C_TradeSkillUI.SetProfessionChildSkillLineID(professionInfo.professionID);
+function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
+	local professionChanged = (not self.professionInfo) or (self.professionInfo.profession ~= professionInfo.profession);
+	if not self.professionInfo or (self.professionInfo.professionID ~= professionInfo.professionID) then
+		local useNewSkillLine = professionChanged or not useLastSkillLine;
+		C_TradeSkillUI.SetProfessionChildSkillLineID(useNewSkillLine and professionInfo.professionID or self.professionInfo.professionID);
+		professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+		self:Refresh();
+	end
 
 	EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
-
-	self:Refresh();
 end
 
 function ProfessionsMixin:SetTitle(skillLineName)
@@ -145,14 +164,13 @@ function ProfessionsMixin:SetProfessionType(professionType)
 end
 
 function ProfessionsMixin:Refresh()
-	local professionInfo = self:GetProfessionInfo();
-
-	self:SetTitle(professionInfo.professionName or professionInfo.parentProfessionName);
-	self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(professionInfo.professionID));
-	self:SetProfessionType(Professions.GetProfessionType(professionInfo));
+	self.professionInfo = self:GetProfessionInfo();
+	self:SetTitle(self.professionInfo.professionName or self.professionInfo.parentProfessionName);
+	self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(self.professionInfo.professionID));
+	self:SetProfessionType(Professions.GetProfessionType(self.professionInfo));
 
 	for _, page in ipairs(self.Pages) do
-		page:Refresh(professionInfo);
+		page:Refresh(self.professionInfo);
 	end
 
 	self:UpdateTabs();
@@ -165,6 +183,10 @@ local recipeTabName =
 	[Professions.ProfessionType.Gathering] = PROFESSIONS_JOURNAL_TAB_NAME,
 };
 function ProfessionsMixin:UpdateTabs()
+	if not self.professionInfo or not self:IsVisible() then
+		return;
+	end
+
 	local onlyShowRecipes = not Professions.InLocalCraftingMode() or C_TradeSkillUI.IsRuneforging();
 	for _, tabID in ipairs(self:GetTabSet()) do
 		self.TabSystem:SetTabShown(tabID, not onlyShowRecipes);
@@ -174,19 +196,37 @@ function ProfessionsMixin:UpdateTabs()
 	recipesTab.Text:SetText(recipeTabName[self.professionType]);
 
 	local shouldShowSpec = Professions.InLocalCraftingMode() and C_ProfSpecs.ShouldShowSpecTab();
-
 	local forceAwayFromSpec = not shouldShowSpec;
 	if not shouldShowSpec then
 		self.TabSystem:SetTabShown(self.specializationsTabID, false);
 	else
 		local specTabInfo = C_ProfSpecs.GetSpecTabInfo();
 		self.TabSystem:SetTabEnabled(self.specializationsTabID, specTabInfo.enabled, specTabInfo.errorReason);
+		local specTab = self:GetTabButton(self.specializationsTabID);
+		local specCurrencyInfo = C_ProfSpecs.GetCurrencyInfoForSkillLine(C_ProfSpecs.GetDefaultSpecSkillLine());
+		local currencyAvailableText = specCurrencyInfo and PROFESSIONS_CURRENCY_AVAILABLE:format(specCurrencyInfo.numAvailable, specCurrencyInfo.currencyName);
+		specTab:SetTooltipText(currencyAvailableText);
 		forceAwayFromSpec = not specTabInfo.enabled;
 	end
+
+	local shouldShowCraftingOrders = self.professionInfo.profession and C_CraftingOrders.ShouldShowCraftingOrderTab();
+	local forceAwayFromOrders = not shouldShowCraftingOrders;
+	if not shouldShowCraftingOrders then
+		self.TabSystem:SetTabShown(self.craftingOrdersTabID, false);
+		self:SetScript("OnUpdate", nil);
+		self.isCraftingOrdersTabEnabled = false;
+	else
+		self.isCraftingOrdersTabEnabled = C_TradeSkillUI.IsNearProfessionSpellFocus(self.professionInfo.profession);
+		self.TabSystem:SetTabEnabled(self.craftingOrdersTabID, self.isCraftingOrdersTabEnabled, self.isCraftingOrdersTabEnabled and "" or PROFESSIONS_ORDERS_MUST_BE_NEAR_TABLE);
+		forceAwayFromOrders = not self.isCraftingOrdersTabEnabled;
+		-- OnUpdate continuously validates if near a crafting table
+		self:SetScript("OnUpdate", self.OnUpdate);
+	end
+
 	self.TabSystem:Layout();
 
 	local selectedTab = self:GetTab();
-	if not selectedTab or onlyShowRecipes or (selectedTab == self.specializationsTabID and forceAwayFromSpec) then
+	if not selectedTab or onlyShowRecipes or (selectedTab == self.specializationsTabID and forceAwayFromSpec) or (selectedTab == self.craftingOrdersTabID and forceAwayFromOrders) then
 		selectedTab = self.recipesTabID;
 	end
 	self:SetTab(selectedTab);
@@ -202,7 +242,7 @@ local unlockableSpecHelpTipInfo =
 	onAcknowledgeCallback = function() ProfessionsFrame.unlockSpecHelptipAcknowledged = true; end,
 };
 
-local unspentPointsHelpTipInfo =
+local pendingPointsHelpTipInfo =
 {
 	text = PROFESSIONS_SPECS_PENDING_POINTS,
 	buttonStyle = HelpTip.ButtonStyle.Close,
@@ -212,37 +252,58 @@ local unspentPointsHelpTipInfo =
 	onAcknowledgeCallback = function() ProfessionsFrame.pendingPointsHelptipAcknowledged = true; end,
 };
 
+local unspentPointsHelpTipInfo =
+{
+	text = PROFESSIONS_UNSPENT_SPEC_POINTS_REMINDER,
+	buttonStyle = HelpTip.ButtonStyle.Close,
+	targetPoint = HelpTip.Point.BottomEdgeCenter,
+	system = helptipSystemName,
+	autoHorizontalSlide = true,
+	onAcknowledgeCallback = function() ProfessionsFrame.unspentPointsHelptipAcknowledged = true; end,
+};
+
 function ProfessionsMixin:SetTab(tabID, forcedOpen)
+	if self.changingTabs then
+		return;
+	end
+	self.changingTabs = true;
+
 	local isSpecTab = (tabID == self.specializationsTabID);
+	local isCraftingOrderTab = (tabID == self.craftingOrdersTabID);
+	local isRecipesTab = (tabID == self.recipesTabID);
+
+	local previousTab = self:GetTab();
 
 	local hasPendingSpecChanges = self.SpecPage:HasAnyConfigChanges();
 	local hasUnlockableTab = self.SpecPage:HasUnlockableTab();
 	local specializationTab = self:GetTabButton(self.specializationsTabID);
 	local specTabInfo = C_ProfSpecs.GetSpecTabInfo();
 	local specTabEnabled = specTabInfo.enabled;
-	specializationTab.Glow:SetShown(specTabEnabled and not isSpecTab);
-	local shouldPlaySpecGlow = specTabEnabled and (not isSpecTab) and (hasPendingSpecChanges or hasUnlockableTab);
-	specializationTab.GlowAnim:SetPlaying(shouldPlaySpecGlow);
 
 	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
 
-	local tabAlreadyShown = tabID == self:GetTab();
+	local tabAlreadyShown = (tabID == previousTab);
 
 	HelpTip:HideAllSystem(helptipSystemName);
 	if (hasUnlockableTab or hasPendingSpecChanges) and specTabEnabled then
 		local shouldShowUnlockHelptip = hasUnlockableTab and not self.unlockSpecHelptipAcknowledged;
 		local shouldShowPendingHelptip = hasPendingSpecChanges and not self.pendingPointsHelptipAcknowledged and not shouldShowUnlockHelptip;
+		local shouldShowUnspentPointsHelptip = (not self.unspentPointsHelpTipInfo) and (not shouldShowPendingHelptip) and (not shouldShowUnlockHelptip) and C_ProfSpecs.ShouldShowPointsReminderForSkillLine(C_ProfSpecs.GetDefaultSpecSkillLine());
 		if isSpecTab then
 			if shouldShowUnlockHelptip and not forcedOpen and not tabAlreadyShown then
 				self.unlockSpecHelptipAcknowledged = true;
 			elseif shouldShowPendingHelptip and not forcedOpen and not tabAlreadyShown then
 				self.pendingPointsHelptipAcknowledged = true;
+			elseif shouldShowUnspentPointsHelptip and not forcedOpen and not tabAlreadyShown then
+				self.unspentPointsHelpTipInfo = true;
 			end
 		else
 			local helpTipInfo;
 			if shouldShowUnlockHelptip then
 				helpTipInfo = unlockableSpecHelpTipInfo;
 			elseif shouldShowPendingHelptip then
+				helpTipInfo = pendingPointsHelpTipInfo;
+			elseif shouldShowUnspentPointsHelptip then
 				helpTipInfo = unspentPointsHelpTipInfo;
 			end
 			if helpTipInfo then
@@ -254,33 +315,80 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	local selectedPage = self:GetElementsForTab(tabID)[1];
 	local pageWidth = selectedPage:GetDesiredPageWidth();
 	if tabAlreadyShown and pageWidth == self:GetWidth() then
+		self.changingTabs = false;
 		return;
 	end
 
+	if previousTab == self.craftingOrdersTabID then
+		self.craftingOrdersFilters = Professions.GetCurrentFilterSet();
+	elseif previousTab == self.recipesTabID then
+		self.recipesFilters = Professions.GetCurrentFilterSet();
+	end
+
+	if isCraftingOrderTab then
+		Professions.ApplyfilterSet(self.craftingOrdersFilters);
+	elseif isRecipesTab then
+		Professions.ApplyfilterSet(self.recipesFilters);
+	end
+
+	local overrideSkillLine;
 	if isSpecTab and not C_ProfSpecs.SkillLineHasSpecialization(self:GetProfessionInfo().professionID) then
-		C_TradeSkillUI.SetProfessionChildSkillLineID(C_ProfSpecs.GetDefaultSpecSkillLine());
+		overrideSkillLine = C_ProfSpecs.GetDefaultSpecSkillLine();
+	elseif isCraftingOrderTab and not C_CraftingOrders.SkillLineHasOrders(self:GetProfessionInfo().professionID) then
+		overrideSkillLine = C_CraftingOrders.GetDefaultOrdersSkillLine();
+	end
+
+	if overrideSkillLine then
+		C_TradeSkillUI.SetProfessionChildSkillLineID(overrideSkillLine);
 		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
-		self:SetProfessionInfo(professionInfo);
+		local useLastSkillLine = false;
+		self:SetProfessionInfo(professionInfo, useLastSkillLine);
 		self:Refresh();
 	end
+
 	TabSystemOwnerMixin.SetTab(self, tabID);
 	self:SetWidth(pageWidth);
 	UpdateUIPanelPositions(self);
     EventRegistry:TriggerEvent("ProfessionsFrame.TabSet", ProfessionsFrame, tabID);
+	self.changingTabs = false;
 end
 
 function ProfessionsMixin:OnShow()
+	EventRegistry:TriggerEvent("ProfessionsFrame.Show");
 	EventRegistry:TriggerEvent("ItemButton.UpdateCraftedProfessionQualityShown");
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_OPEN);
+
+	MicroButtonPulseStop(SpellbookMicroButton);
+	MainMenuMicroButton_HideAlert(SpellbookMicroButton);
+	SpellbookMicroButton.suggestedTabButton = nil;
+
+	self:Refresh();
 end
 
 function ProfessionsMixin:OnHide()
+	EventRegistry:TriggerEvent("ProfessionsFrame.Hide");
 	EventRegistry:TriggerEvent("ItemButton.UpdateCraftedProfessionQualityShown");
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Professions);
 	StaticPopup_Hide("PROFESSIONS_SPECIALIZATION_CONFIRM_CLOSE");
 
 	C_Garrison.CloseGarrisonTradeskillNPC();
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_CLOSE);
+
+	C_TradeSkillUI.CloseTradeSkill();
+	C_CraftingOrders.CloseCrafterCraftingOrders();
+end
+
+-- Set dynamically
+local spellFocusProximityCheckTime = 1;
+function ProfessionsMixin:OnUpdate(dt)
+	self.timeSinceLastFocusCheck = (self.timeSinceLastFocusCheck or 0) + dt;
+	if self.timeSinceLastFocusCheck > spellFocusProximityCheckTime and self.professionInfo and self.professionInfo.profession then
+		self.timeSinceLastFocusCheck = 0;
+		local shouldOrdersTabBeEnabled = C_TradeSkillUI.IsNearProfessionSpellFocus(self.professionInfo.profession);
+		if shouldOrdersTabBeEnabled ~= self.isCraftingOrdersTabEnabled then
+			self:UpdateTabs();
+		end
+	end
 end
 
 function ProfessionsMixin:CheckConfirmClose()

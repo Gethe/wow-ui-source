@@ -114,6 +114,96 @@
 		</Scripts>
 	</Frame>
 
+	<Button name="WorldMapActivityTrackerTemplate" frameStrata="HIGH" mixin="WorldMapActivityTrackerMixin" enableMouse="true" virtual="true">
+		<Size x="82" y="82" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="dragonflight-majorfactions-emissary-empty" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+					<MaskTexture parentKey="BackgroundMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMP" vWrapMode="CLAMP">
+					<Size x="72" y="72"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Background"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="73" y="73"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="-1" y="2"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IconMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMP" vWrapMode="CLAMP">
+					<Size x="73" y="73"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" atlas="map_faction_ring" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" x="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropDownToggleButton parentKey="BountyDropdownButton" mixin="WorldMapActivityTrackerBountyDropdownButtonMixin" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-26" y="8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</DropDownToggleButton>
+			<Frame parentKey="BountyDropDown" inherits="UIDropDownMenuTemplate" mixin="WorldMapActivityTrackerDropDownMixin">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-100" y="200"/>
+				</Anchors>
+				<Scripts>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<HighlightTexture parentKey="Highlight" atlas="map_faction_ring" useAtlasSize="true" alphaMode="ADD" alpha="0.5">
+			<Anchors>
+				<Anchor point="CENTER" relativeKey="$parent"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
 	<Frame name="WorldMapActionButtonTemplate" frameStrata="HIGH" secureMixin="WorldMapActionButtonMixin" virtual="true">
 		<Size x="101" y="86" />
 		<Layers>

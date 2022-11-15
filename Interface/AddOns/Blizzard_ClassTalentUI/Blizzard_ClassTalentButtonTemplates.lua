@@ -1,5 +1,3 @@
-local NODE_PURCHASE_FX_1 = 150;
-
 
 --------------------------------------------------
 -- Base mixin for both the standard talent Buttons and the Selection Choice mixin.
@@ -26,6 +24,19 @@ function ClassTalentButtonArtMixin:UpdateStateBorder(visualState)
 	self.BorderSheen:SetShown(sheenAlpha > 0);
 end
 
+function ClassTalentButtonArtMixin:ShowActionBarHighlights()
+	local spellID = self:GetSpellID();
+	if spellID and not self:IsMissingFromActionBar() then
+		ClearOnBarHighlightMarks();
+		UpdateOnBarHighlightMarksBySpell(spellID);
+		ActionBarController_UpdateAllSpellHighlights();
+	end
+end
+
+function ClassTalentButtonArtMixin:HideActionBarHighlights()
+	ClearOnBarHighlightMarks();
+	ActionBarController_UpdateAllSpellHighlights();
+end
 
 --------------------------------------------------
 -- Base mixin for the standard talent Buttons.
@@ -44,13 +55,6 @@ end
 
 function ClassTalentButtonBaseMixin:IsMissingFromActionBar()
 	return self.missingFromActionBar;
-end
-
-function ClassTalentButtonBaseMixin:PlayPurchaseEffect(fxModelScene)
-	fxModelScene:AddEffect(NODE_PURCHASE_FX_1, self, self);
-	if self.PurchaseVisuals and self.PurchaseVisuals.Anim then
-		self.PurchaseVisuals.Anim:SetPlaying(true);
-	end
 end
 
 function ClassTalentButtonBaseMixin:ResetPurchaseEffects()
@@ -147,6 +151,19 @@ function ClassTalentButtonSpendMixin:ResetDynamic()
 	self:ResetPurchaseEffects();
 end
 
+function ClassTalentButtonSpendMixin:OnEnter()
+	-- Overrides TalentButtonSpendMixin.
+
+	TalentButtonSpendMixin.OnEnter(self);
+	self:ShowActionBarHighlights();
+end
+
+function ClassTalentButtonSpendMixin:OnLeave()
+	-- Overrides TalentDisplayMixin.
+
+	TalentDisplayMixin.OnLeave(self);
+	self:HideActionBarHighlights();
+end
 
 --------------------------------------------------
 -- Select Mixin (talent with multiple choices)
@@ -214,6 +231,19 @@ function ClassTalentButtonSelectMixin:ClearSelections()
 	self:UpdateGlow();
 end
 
+function ClassTalentButtonSelectMixin:OnEnter()
+	-- Overrides TalentButtonSelectMixin.
+
+	TalentButtonSelectMixin.OnEnter(self);
+	self:ShowActionBarHighlights();
+end
+
+function ClassTalentButtonSelectMixin:OnLeave()
+	-- Overrides TalentButtonSelectMixin.
+
+	TalentButtonSelectMixin.OnLeave(self);
+	self:HideActionBarHighlights();
+end
 
 --------------------------------------------------
 -- Split Select Mixin (talent with split icon with two choices)
@@ -256,19 +286,32 @@ function ClassTalentButtonSplitSelectMixin:UpdateGlow()
 end
 
 function ClassTalentButtonSplitSelectMixin:ShowSelections()
-	-- Overrides TalentButtonSelectMixin
+	-- Overrides TalentButtonSplitSelectMixin
 
-	TalentButtonSelectMixin.ShowSelections(self);
+	TalentButtonSplitSelectMixin.ShowSelections(self);
 	self:UpdateGlow();
 end
 
 function ClassTalentButtonSplitSelectMixin:ClearSelections()
-	-- Overrides TalentButtonSelectMixin
+	-- Overrides TalentButtonSplitSelectMixin
 
-	TalentButtonSelectMixin.ClearSelections(self);
+	TalentButtonSplitSelectMixin.ClearSelections(self);
 	self:UpdateGlow();
 end
 
+function ClassTalentButtonSplitSelectMixin:OnEnter()
+	-- Overrides TalentButtonSplitSelectMixin.
+
+	TalentButtonSplitSelectMixin.OnEnter(self);
+	self:ShowActionBarHighlights();
+end
+
+function ClassTalentButtonSplitSelectMixin:OnLeave()
+	-- Overrides TalentButtonSplitSelectMixin.
+
+	TalentButtonSplitSelectMixin.OnLeave(self);
+	self:HideActionBarHighlights();
+end
 
 --------------------------------------------------
 -- Selection Choice Mixin (flyout choice shown by select mixins)
@@ -304,4 +347,20 @@ function ClassTalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
 	end
 
 	TalentSelectionChoiceMixin.AddTooltipInstructions(self, tooltip);
+end
+
+function ClassTalentSelectionChoiceMixin:IsMissingFromActionBar()
+	return self.missingFromActionBar;
+end
+
+function ClassTalentSelectionChoiceMixin:OnEnter()
+	-- Overrides TalentDisplayMixin.
+	TalentDisplayMixin.OnEnter(self);
+	self:ShowActionBarHighlights();
+end
+
+function ClassTalentSelectionChoiceMixin:OnLeave()
+	-- Overrides TalentDisplayMixin.
+	TalentDisplayMixin.OnLeave(self);
+	self:HideActionBarHighlights();
 end

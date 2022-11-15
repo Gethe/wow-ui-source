@@ -24,9 +24,9 @@ end
 function LinkUtil.ExtractLink(text)
 	-- linkType: |H([^:]*): matches everything that's not a colon, up to the first colon.
 	-- linkOptions: ([^|]*)|h matches everything that's not a |, up to the first |h.
-	-- displayText: ([^|]*)|h matches everything that's not a |, up to the second |h.
+	-- displayText: (.*)|h matches everything up to the second |h.
 	-- Ex: |cffffffff|Htype:a:b:c:d|htext|h|r becomes type, a:b:c:d, text
-	return string.match(text, [[|H([^:]*):([^|]*)|h([^|]*)|h]]);
+	return string.match(text, [[|H([^:]*):([^|]*)|h(.*)|h]]);
 end
 
 function LinkUtil.IsLinkType(link, matchLinkType)

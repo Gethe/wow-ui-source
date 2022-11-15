@@ -211,6 +211,10 @@ function TreeListDataProviderMixin:GetSize()
 	return count;
 end
 
+function TreeListDataProviderMixin:IsEmpty()
+	return self:GetSize() == 0;
+end
+
 function TreeListDataProviderMixin:Insert(data)
 	return self.node:Insert(data);
 end

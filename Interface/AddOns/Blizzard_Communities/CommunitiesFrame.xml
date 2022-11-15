@@ -311,9 +311,9 @@
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="Portrait">
-							<Size x="61" y="61"/>
+							<Size x="60" y="60"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-6" y="8" />
+								<Anchor point="TOPLEFT" x="-5" y="8" />
 							</Anchors>
 						</Texture>
 						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -326,9 +326,9 @@
 							</MaskedTextures>
 						</MaskTexture>
 						<Texture parentKey="TabardBackground" file="Interface\GuildFrame\GuildFrame" hidden="true">
-							<Size x="62" y="62"/>
+							<Size x="60" y="60"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-7" y="8"/>
+								<Anchor point="TOPLEFT" x="-5" y="8"/>
 							</Anchors>
 							<TexCoords left="0.63183594" right="0.69238281" top="0.61914063" bottom="0.74023438"/>
 						</Texture>
@@ -337,15 +337,15 @@
 						<Texture parentKey="TabardEmblem" file="Interface\GuildFrame\GuildEmblemsLG_01" hidden="true">
 							<Size x="56" y="64"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="24" y="-24"/>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="25" y="-23"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="3">
 						<Texture parentKey="TabardBorder" file="Interface\GuildFrame\GuildFrame" hidden="true">
-							<Size x="61" y="60"/>
+							<Size x="60" y="59"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-6" y="7"/>
+								<Anchor point="TOPLEFT" x="-5" y="7"/>
 							</Anchors>
 							<TexCoords left="0.63183594" right="0.69238281" top="0.74414063" bottom="0.86523438"/>
 						</Texture>

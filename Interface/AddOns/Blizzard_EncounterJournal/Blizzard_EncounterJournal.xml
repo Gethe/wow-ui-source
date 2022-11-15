@@ -521,8 +521,7 @@
 			<OnEnter>
 				if self.link then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetHyperlink(self.link);
-					GameTooltip_ShowCompareItem();
+					EncounterJournal_SetTooltipWithCompare(GameTooltip, self.link);
 					self.showingTooltip = true;
 				end
 				EncounterJournal_SetSearchPreviewSelection(self:GetID());
@@ -591,8 +590,7 @@
 			<OnEnter>
 				if self.link then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetHyperlink(self.link);
-					GameTooltip_ShowCompareItem();
+					EncounterJournal_SetTooltipWithCompare(GameTooltip, self.link);
 					self.showingTooltip = true;
 				end
 			</OnEnter>
@@ -1248,7 +1246,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EncounterItemDividerTemplate" virtual="true">
+	<Frame name="EncounterItemDividerTemplate" mixin="EncounterJournalItemHeaderMixin" virtual="true">
 		<Size x="321" y="45"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -1382,8 +1380,9 @@
 				end
 			</OnClick>
 			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				EncounterJournal_SetTooltip(self.link);
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				local useSpec = true;
+				EncounterJournal_SetTooltipWithCompare(GameTooltip, self.link, useSpec);
 				self.showingTooltip = true;
 				self:SetScript("OnUpdate", EncounterJournal_Loot_OnUpdate);
 			</OnEnter>
@@ -1396,144 +1395,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="EncounterTierTabTemplate" virtual="true">
-		<Size x="120" y="36"/>
-		<HitRectInsets>
-			<AbsInset left="-12" right="-12" top="0" bottom="0"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentMid" inherits="_DungeonGridTab-Mid" parentKey="mid" horizTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeft" inherits="UI-EJ-DungeonGridTab-Left" parentKey="left">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRight" inherits="UI-EJ-DungeonGridTab-Right" parentKey="right">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentMidSelect" inherits="_DungeonGridTab-MidSelect" parentKey="midSelect" horizTile="true" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftSelect" inherits="UI-EJ-DungeonGridTab-LeftSelect" parentKey="leftSelect" hidden="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightSelect" inherits="UI-EJ-DungeonGridTab-RightSelect" parentKey="rightSelect" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentSelectedGlow" inherits="UI-EJ-DungeonGridTab-SelectedGlow" parentKey="selectedGlow" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-18" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="18" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture name="$parentMidHighlight" inherits="_DungeonGridTab-MidHighlight" parentKey="midHighlight" horizTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftHighlight" inherits="UI-EJ-DungeonGridTab-LeftHighlight" parentKey="leftHighlight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightHighlight" inherits="UI-EJ-DungeonGridTab-RightHighlight" parentKey="rightHighlight">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame enableMouse="true" parentKey="grayBox" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="-10" y="19"/>
-					<Anchor point="BOTTOMRIGHT" x="10" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="-25"/>
-								<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
-							</Anchors>
-							<Color a="0.6"/>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-		<NormalFont style="GameFontNormalMed1"/>
-		<ButtonText>
-			<Anchors>
-				<Anchor point="CENTER" x="0" y="-3"/>
-			</Anchors>
-		</ButtonText>
-		<Scripts>
-			<OnLoad>
-				self.storedHeight = self:GetHeight();
-				self:SetHeight(self.storedHeight-4);
-				self:SetWidth(max(self:GetTextWidth()+20, 70));
-			</OnLoad>
-			<OnEnable>
-				self.leftSelect:Hide();
-				self.midSelect:Hide();
-				self.rightSelect:Hide();
-				self:SetHeight(self.storedHeight-4);
-			</OnEnable>
-			<OnDisable>
-				self.leftSelect:Show();
-				self.midSelect:Show();
-				self.rightSelect:Show();
-				self:SetHeight(self.storedHeight);
-			</OnDisable>
-		</Scripts>
-	</Button>
 	<Button name="BottomEncounterTierTabTemplate" inherits="PanelTabButtonTemplate" virtual="true">
-		<Frames>
-			<Frame enableMouse="true" parentKey="grayBox" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="10" y="19"/>
-					<Anchor point="BOTTOMRIGHT" x="-10" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="-25"/>
-								<Anchor point="BOTTOMRIGHT" x="-3" y="7"/>
-							</Anchors>
-							<Color a="0.6"/>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnClick>
 				EJ_ContentTab_OnClick(self);
@@ -2989,6 +2851,7 @@
 					<GameTooltip name="$parentTooltip" parentKey="tooltip" inherits="GameTooltipTemplate">
 						<KeyValues>
 							<KeyValue key="IsEmbedded" value="true" type="boolean"/>
+							<KeyValue key="supportsItemComparison" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="0" y="10"/>

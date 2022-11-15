@@ -1,6 +1,7 @@
 
 g_professionsSpecsSelectedTabs = {};
 g_professionsSpecsSelectedPaths = {};
+local helptipSystemName = "Profession Specializations";
 
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB"] = 
 {
@@ -101,6 +102,7 @@ function ProfessionsSpecFrameMixin:CheckConfirmPurchaseTab()
 			self:PurchaseRank(self.tabInfo.rootNodeID);
 			self:CommitConfig();
 			self:PlayDialLockInAnimation();
+			HelpTip:HideAllSystem(helptipSystemName);
 
 			self:ClearSuppressedSounds();
 		end;
@@ -162,6 +164,7 @@ function ProfessionsSpecFrameMixin:OnShow()
 
 	C_Traits.StageConfig(self:GetConfigID());
 
+	self:SetTitle();
 	self:UpdateTabs();
 	self:UpdateSelectedTabState();
 	self:UpdateTreeCurrencyInfo();
@@ -262,9 +265,14 @@ function ProfessionsSpecFrameMixin:InitializeTabs()
 	local tabTreeIDs = C_ProfSpecs.GetSpecTabIDsForSkillLine(professionID);
 
 	local lastTab;
+	local anyTabUnlocked = false;
 	for _, traitTreeID in ipairs(tabTreeIDs) do
 		local tab = self.tabsPool:Acquire();
 		if tab:Init(traitTreeID) then
+			if tab:GetState() == Enum.ProfessionsSpecTabState.Unlocked then
+				anyTabUnlocked = true;
+			end
+
 			tab:ClearAllPoints();
 
 			if lastTab then
@@ -275,6 +283,20 @@ function ProfessionsSpecFrameMixin:InitializeTabs()
 
 			lastTab = tab;
 		end
+	end
+
+	if lastTab and not anyTabUnlocked then
+		local unlockableSpecHelpTipInfo =
+		{
+			text = PROFESSIONS_NEW_CHOICE_AVAILABLE_SPECIALIZATION_TUTORIAL,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			system = helptipSystemName,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_SPEC_CHOICE,
+			autoHorizontalSlide = true,
+		};
+		HelpTip:Show(self, unlockableSpecHelpTipInfo, lastTab);
 	end
 
 	EventRegistry:TriggerEvent("ProfessionsSpecializations.TabSelected", self:GetDefaultTab(tabTreeIDs));
@@ -383,7 +405,7 @@ local PathLayoutInfo =
 			[2] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
 			[3] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
 			[4] = { rotationBetweenChildren = 90, distanceToChild = 1200 },
-			[5] = { rotationBetweenChildren = 100, distanceToChild = 1200 },
+			[5] = { rotationBetweenChildren = 100, distanceToChild = 1300 },
 		},
 		[3] =
 		{
@@ -391,11 +413,11 @@ local PathLayoutInfo =
 			[2] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
 			[3] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
 			[4] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
-			[5] = { rotationBetweenChildren = 70, distanceToChild = 1200 },
+			[5] = { rotationBetweenChildren = 60, distanceToChild = 1300 },
 		},
 		[4] =
 		{
-			[1] = { rotationBetweenChildren = 60, distanceToChild = 1200 },
+			[1] = { rotationBetweenChildren = 50, distanceToChild = 1200 },
 			[2] = { rotationBetweenChildren = 60, distanceToChild = 1200 },
 			[3] = { rotationBetweenChildren = 55, distanceToChild = 1200 },
 		},
@@ -418,17 +440,17 @@ local PathLayoutInfo =
 		[2] =
 		{
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1200 },
-			[2] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
-			[3] = { rotationBetweenChildren = 60, distanceToChild = 1200 },
+			[2] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
+			[3] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
 			[4] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
-			[5] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
+			[5] = { rotationBetweenChildren = 35, distanceToChild = 1200 },
 		},
 		[3] =
 		{
 			[1] = { rotationBetweenChildren = 0, distanceToChild = 1200 },
 			[2] = { rotationBetweenChildren = 80, distanceToChild = 1200 },
-			[3] = { rotationBetweenChildren = 50, distanceToChild = 1200 },
-			[4] = { rotationBetweenChildren = 30, distanceToChild = 1200 },
+			[3] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
+			[4] = { rotationBetweenChildren = 40, distanceToChild = 1200 },
 			[5] = { rotationBetweenChildren = 30, distanceToChild = 1200 },
 		},
 		[4] =
@@ -501,7 +523,7 @@ function ProfessionsSpecFrameMixin:LoadTalentTreeInternal() -- Override
 		end
 	end
 
-	local rootPosX = 3670;
+	local rootPosX = 3470;
 	local rootPosY = 2910;
 	self:InstantiateTalentButton(self.tabInfo.rootNodeID, rootPosX, rootPosY);
 	SetUpChildren(self.tabInfo.rootNodeID, rootPosX, rootPosY, 0, PathLayers.Root);
@@ -551,7 +573,7 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 
 	self.tabInfo = C_ProfSpecs.GetTabInfo(traitTreeID);
 	self.TreeView.TreeName:SetText(self.tabInfo.name);
-	self.TreeView.TreeDescription:SetWidth(280);
+	self.TreeView.TreeDescription:SetWidth(325);
 	self.TreeView.TreeDescription:SetText(self.tabInfo.description);
 
 	local forceUpdate = true;
@@ -573,6 +595,10 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 end
 
 function ProfessionsSpecFrameMixin:Refresh(professionInfo)
+	if self:IsVisible() then
+		self:SetTitle();
+	end
+
 	local configID = C_ProfSpecs.GetConfigIDForSkillLine(professionInfo.professionID);
 	if not Professions.InLocalCraftingMode() 
 	   or not C_ProfSpecs.SkillLineHasSpecialization(professionInfo.professionID)
@@ -621,14 +647,14 @@ end
 function ProfessionsSpecFrameMixin:InitDetailedPanelPerks()
 	self.perksPool:ReleaseAll();
 
-	local perkIDs = C_ProfSpecs.GetPerksForPath(self:GetDetailedPanelNodeID());
-	for _, perkID in ipairs(perkIDs) do
+	local perkInfos = C_ProfSpecs.GetPerksForPath(self:GetDetailedPanelNodeID());
+	for _, perkInfo in ipairs(perkInfos) do
 		local perk = self.perksPool:Acquire();
 		perk:Init(self);
-		perk:SetPerkID(perkID);
+		perk:SetPerk(perkInfo);
 
 		local rotation = perk:GetRotation();
-		local distanceFromPath = 181;
+		local distanceFromPath = perkInfo.isMajorPerk and 189 or 177;
 		-- sin/cos swapped due to 90 degree phase shift, negation due to clockwise rotation
 		local xOfs = -(distanceFromPath * math.sin(rotation));
 		local yOfs = -(distanceFromPath * math.cos(rotation));
@@ -637,15 +663,10 @@ function ProfessionsSpecFrameMixin:InitDetailedPanelPerks()
 		perk:SetPoint("CENTER", self:GetDetailedPanelPath(), "CENTER", xOfs, yOfs);
 		
 		perk.PendingGlow:ClearAllPoints();
-		local isFinalPip = perk.unlockRank == perk:GetParentMaxRank();
-		if isFinalPip then
-			perk.PendingGlow:SetPoint("CENTER", perk, "CENTER", 16, -14);
-		else
-			local highlightDistanceFromPerk = 8;
-			local highlightXOfs = -(highlightDistanceFromPerk * math.sin(rotation));
-			local highlightYOfs = -(highlightDistanceFromPerk * math.cos(rotation));
-			perk.PendingGlow:SetPoint("CENTER", perk, "CENTER", highlightXOfs, highlightYOfs);
-		end
+		local highlightDistanceFromPerk = 8;
+		local highlightXOfs = -(highlightDistanceFromPerk * math.sin(rotation));
+		local highlightYOfs = -(highlightDistanceFromPerk * math.cos(rotation));
+		perk.PendingGlow:SetPoint("CENTER", perk, "CENTER", highlightXOfs, highlightYOfs);
 
 		perk:Show();
 	end
@@ -726,7 +747,7 @@ end
 
 function ProfessionsSpecFrameMixin:PurchaseRank(pathID)
 	self:AttemptConfigOperation(C_Traits.PurchaseRank, pathID)
-	self.DetailedView.Path.AddKnowledgeAnim:Restart();
+	RunNextFrame(function() self.DetailedView.Path.AddKnowledgeAnim:Restart(); end);
 	self:SetDefaultPath(pathID);
 	self:SetDefaultTab(self:GetTalentTreeID());
 end
@@ -773,7 +794,7 @@ end
 function ProfessionsSpecFrameMixin:UpdateConfigButtonsState()
 	local hasAnyChanges = self:HasAnyConfigChanges();
 	self.ApplyButton:SetEnabled(hasAnyChanges);
-	self.UndoButton:SetEnabledState(hasAnyChanges);
+	self.UndoButton:SetShown(hasAnyChanges);
 
 	if hasAnyChanges then
 		GlowEmitterFactory:Show(self.ApplyButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
@@ -820,6 +841,16 @@ function ProfessionsSpecFrameMixin:PlayCompleteDialAnimation()
 	PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_FINISHED);
 end
 
+function ProfessionsSpecFrameMixin:SetTitle()
+	local professionFrame = self:GetParent();
+	local professionInfo = professionFrame.professionInfo;
+	if not professionInfo then
+		return;
+	end
+
+	professionFrame:SetTitle(PROFESSIONS_SPECIALIZATIONS_PAGE_NAME:format(professionInfo.professionName or professionInfo.parentProfessionName));
+end
+
 
 ProfessionsDetailedSpecPathMixin = CreateFromMixins(ProfessionsSpecPathMixin);
 
@@ -854,14 +885,20 @@ local flipbookAnimDuration =
 	[Enum.Profession.Jewelcrafting] = 1.2,
 	[Enum.Profession.Alchemy] = 2.2,
 	[Enum.Profession.Leatherworking] = 2.5,
+	[Enum.Profession.Engineering] = 1.5,
+	[Enum.Profession.Herbalism] = 1.5,
+	[Enum.Profession.Mining] = 1.5,
+	[Enum.Profession.Skinning] = 1.5,
+	[Enum.Profession.Inscription] = 1.5,
 };
 
 local flipbookAnimEndDelay =
 {
 	[Enum.Profession.Jewelcrafting] = 2,
+	[Enum.Profession.Mining] = 1.5,
 };
 
-function ProfessionsDetailedSpecPathMixin:UpdateAssets()
+function ProfessionsDetailedSpecPathMixin:UpdateAssets() -- Override
 	local professionInfo = self:GetTalentFrame().professionInfo;
 	local kitSpecifier = Professions.GetAtlasKitSpecifier(professionInfo);
 	local fillArtAtlasFormat = "SpecDial_Fill_Flipbook_%s";
@@ -869,7 +906,7 @@ function ProfessionsDetailedSpecPathMixin:UpdateAssets()
 	local stylizedFillInfo = stylizedFillAtlasName and C_Texture.GetAtlasInfo(stylizedFillAtlasName);
 	local duration = flipbookAnimDuration[professionInfo.profession];
 	if not stylizedFillInfo or not duration then
-		stylizedFillAtlasName = fillArtAtlasFormat:format("Blacksmithing");
+		stylizedFillAtlasName = fillArtAtlasFormat:format("DefaultBlue");
 		stylizedFillInfo = C_Texture.GetAtlasInfo(stylizedFillAtlasName);
 		duration = flipbookAnimDuration[Enum.Profession.Blacksmithing];
 	end

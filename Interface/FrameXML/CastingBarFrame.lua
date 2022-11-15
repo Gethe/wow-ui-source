@@ -481,7 +481,7 @@ function CastingBarMixin:OnUpdate(elapsed)
 		if ( self.value >= self.maxValue ) then
 			self:SetValue(self.maxValue);
 			if (not self.reverseChanneling) then
-				self:FinishSpell(self.Spark, self.Flash);
+				self:FinishSpell();
 			else
 				if self.FlashLoopingAnim and not self.FlashLoopingAnim:IsPlaying() then
 					self.FlashLoopingAnim:Play();
@@ -555,13 +555,13 @@ function CastingBarMixin:ShowSpark()
 	local currentBarType = self.barType;
 
 	if currentBarType == "interrupted" then
-		self.Spark:SetAtlas("ui-castingbar-pip-red", TextureKitConstants.UseAtlasSize);
+		self.Spark:SetAtlas("ui-castingbar-pip-red");
 		self.Spark.offsetY = 0;
 	elseif currentBarType == "empowered" then
-		self.Spark:SetAtlas("ui-castingbar-empower-cursor", TextureKitConstants.UseAtlasSize);
+		self.Spark:SetAtlas("ui-castingbar-empower-cursor");
 		self.Spark.offsetY = 4;
 	else
-		self.Spark:SetAtlas("ui-castingbar-pip", TextureKitConstants.UseAtlasSize);
+		self.Spark:SetAtlas("ui-castingbar-pip");
 		self.Spark.offsetY = 0;
 	end
 
@@ -703,17 +703,15 @@ end
 function CastingBarMixin:SetLook(look)
 	if ( look == "CLASSIC" ) then
 		self.playCastFX = true;
-		self:SetWidth(209);
+		self:SetWidth(208);
 		self:SetHeight(11);
-		-- border
-		self.Border:ClearAllPoints();
-		self.Border:SetAllPoints();
 		-- bordershield
 		self.BorderShield:ClearAllPoints();
 		self.BorderShield:SetWidth(256);
 		self.BorderShield:SetHeight(64);
 		self.BorderShield:SetPoint("TOP", 0, 28);
 		-- text
+		self.Text:Show();
 		self.Text:ClearAllPoints();
 		self.Text:SetWidth(185);
 		self.Text:SetHeight(16);
@@ -725,17 +723,14 @@ function CastingBarMixin:SetLook(look)
 		end
 		-- icon
 		self.Icon:Hide();
-		-- bar flash
-		self.Flash:ClearAllPoints();
-		self.Flash:SetAllPoints();
-		self.Flash:SetPoint("TOP", 0, 2);
+		-- drop shadow
+		if self.DropShadow then
+			self.DropShadow:Hide();
+		end
 	elseif ( look == "UNITFRAME" ) then
 		self.playCastFX = false;
 		self:SetWidth(150);
 		self:SetHeight(10);
-		-- border
-		self.Border:ClearAllPoints();
-		self.Border:SetAllPoints();
 		-- bordershield
 		self.BorderShield:ClearAllPoints();
 		self.BorderShield:SetWidth(0);
@@ -743,6 +738,7 @@ function CastingBarMixin:SetLook(look)
 		self.BorderShield:SetPoint("TOPLEFT", -28, 20);
 		self.BorderShield:SetPoint("TOPRIGHT", 18, 20);
 		-- text
+		self.Text:Show();
 		self.Text:ClearAllPoints();
 		self.Text:SetWidth(0);
 		self.Text:SetHeight(16);
@@ -755,9 +751,36 @@ function CastingBarMixin:SetLook(look)
 		end
 		-- icon
 		self.Icon:Show();
-		-- bar flash
-		self.Flash:ClearAllPoints();
-		self.Flash:SetAllPoints();
+		-- drop shadow
+		if self.DropShadow then
+			self.DropShadow:Hide();
+		end
+	elseif ( look == "OVERLAY" ) then
+		self.playCastFX = true;
+		self:SetWidth(208);
+		self:SetHeight(11);
+		-- bordershield
+		self.BorderShield:ClearAllPoints();
+		self.BorderShield:SetWidth(256);
+		self.BorderShield:SetHeight(64);
+		self.BorderShield:SetPoint("TOP", 0, 28);
+		-- text
+		self.Text:Show();
+		self.Text:ClearAllPoints();
+		self.Text:SetWidth(300);
+		self.Text:SetHeight(20);
+		self.Text:SetPoint("TOP", 0, 30);
+		self.Text:SetFontObject("GameFontNormalLarge");
+		-- text border
+		if self.TextBorder then
+			self.TextBorder:Hide();
+		end
+		-- icon
+		self.Icon:Hide();
+		-- drop shadow
+		if self.DropShadow then
+			self.DropShadow:Show();
+		end
 	end
 end
 
@@ -880,6 +903,18 @@ function CastingBarMixin:UpdateStage()
 				stagePip.StageAnim:Play();
 			end
 		end
+
+		if self.playCastFX then
+			if maxStage == self.NumStages - 1 then
+				if self.StageFinish then
+					self.StageFinish:Play();
+				end
+			elseif maxStage > 0 then
+				if self.StageFlash then
+					self.StageFlash:Play();
+				end
+			end
+		end
 		
 		local chargeTierName = "ChargeTier" .. self.CurrSpellStage;
 		local chargeTier = self[chargeTierName];
@@ -895,6 +930,9 @@ function CastingBarMixin:ClearStages()
 
 	if self.ChargeGlow then
 		self.ChargeGlow:SetShown(false);
+	end
+	if self.ChargeFlash then
+		self.ChargeFlash:SetAlpha(0);
 	end
 
 	for _, stagePip in pairs(self.StagePips) do
@@ -918,6 +956,8 @@ function CastingBarMixin:ClearStages()
 	table.wipe(self.StageTiers);
 end
 
+
+
 PlayerCastingBarMixin = {};
 
 function PlayerCastingBarMixin:OnLoad()
@@ -932,6 +972,12 @@ function PlayerCastingBarMixin:OnShow()
 	UIParentManagedFrameMixin.OnShow(self); 
 end
 
+function PlayerCastingBarMixin:IsAttachedToPlayerFrame()
+	return self.attachedToPlayerFrame;
+end
+
+
+
 -- Alternate Player Casting Bar for use over frames whose content triggers contextual player casts
 OverlayPlayerCastingBarMixin = {};
 
@@ -941,30 +987,44 @@ function OverlayPlayerCastingBarMixin:OnLoad()
 	CastingBarMixin.OnLoad(self, "player", showTradeSkills, showShieldNo);
 	self.Icon:Hide();
 	self.showCastbar = false;
-	self.TextBorder:Hide();
 end
 
 --[[
 --	Call to use this casting bar over the specified frame INSTEAD of showing the default PlayerCastingBar.
 --	Will display any currently active Player cast, and any future Player casts until EndReplacingPlayerBar is called.
+--
+--	overrideInfo:
+--		overrideBarType = [CASTING_BAR_TYPES] -- Use a specific bar type rather than have it determined by the type of spell being cast, defines textures used (Default: nil)
+--		overrideLook 	= ["CLASSIC", "UNIT", "OVERLAY"] -- Use a specific bar look, defines component sizing and anchoring (Default: "OVERLAY")
+--		overrideAnchor 	= [AnchorUtilAnchorInstance] -- Specify a point to anchor the cast bar to, should be created via CreateAnchor (Default: Center of parentFrame)
+--		hideBarText		= [BOOLEAN] -- Disable showing text on the cast bar (Default: false)
 --]]
-function OverlayPlayerCastingBarMixin:StartReplacingPlayerBarAt(parentFrame, overrideBarType, overrideAnchor)
+function OverlayPlayerCastingBarMixin:StartReplacingPlayerBarAt(parentFrame, overrideInfo)
 	-- Disable real Player Cast Bar
 	PlayerCastingBarFrame:SetAndUpdateShowCastbar(false);
+
+	overrideInfo = overrideInfo or {};
+	self.overrideBarType = overrideInfo.overrideBarType;
 
 	self:SetParent(parentFrame);
 	self:SetFrameLevel(parentFrame:GetFrameLevel() + 10);
 	self:ClearAllPoints();
 
-	-- overrideAnchor should be created via CreateAnchor
-	if overrideAnchor then
-		overrideAnchor:SetPoint(self);
+	if overrideInfo.overrideAnchor then
+		overrideInfo.overrideAnchor:SetPoint(self);
 	else
-		-- Default to center of parentFrame if anchor not specified
 		self:SetPoint("CENTER", parentFrame);
 	end
 
-	self.overrideBarType = overrideBarType;
+	-- Run through override look adjusting sizing and shown components
+	local overrideLook = overrideInfo.overrideLook or "OVERLAY";
+	self:SetLook(overrideLook);
+
+	-- Hide text components if needed, avoid using Show/SetShown and overriding SetLook having already hidden either
+	if overrideInfo.hideBarText then
+		self.Text:Hide();
+		self.TextBorder:Hide();
+	end
 
 	-- SetAndUpdateShowCastbar will show self on next Player Cast OR now if a Player Cast is active
 	self:SetAndUpdateShowCastbar(true);

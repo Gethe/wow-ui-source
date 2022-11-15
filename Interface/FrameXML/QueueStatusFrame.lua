@@ -258,7 +258,6 @@ function QueueStatusButtonMixin:CheckTutorials()
 			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			offsetX = 0,
-			textJustifyH = "CENTER",
 			alignment = HelpTip.Alignment.Center,
 			acknowledgeOnHide = true,
 		};
@@ -272,10 +271,12 @@ function QueueStatusButtonMixin:OnShow()
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 
 	self.Eye:StartInitialAnimation();
+	EventRegistry:TriggerEvent("QueueStatusButton.OnShow");
 end
 
 function QueueStatusButtonMixin:OnHide()
 	QueueStatusFrame:Hide();
+	EventRegistry:TriggerEvent("QueueStatusButton.OnHide");
 end
 
 --Will play the sound numPingSounds times (or forever if nil)
@@ -566,11 +567,13 @@ function QueueStatusFrameMixin:Update()
 	--Update the size of this frame to fit everything
 	self:SetHeight(totalHeight);
 
-	--Update the minimap icon
+	--Update the queue icon
 	if ( nextEntry > 1 ) then
-		--Handle case where the button is already showing, but we need to reset the animation on it, like when hitting a loading screen.
+		--Handle case where the button is already showing, but we need to reset the animation on it.
 		if ( QueueStatusButton:IsShown() ) then
-			QueueStatusButton.Eye:StartInitialAnimation();
+			if ( QueueStatusButton.Eye:IsStaticMode() and not makeEyeStatic and #QueueStatusButton.Eye.currActiveAnims == 0 ) then
+				QueueStatusButton.Eye:StartInitialAnimation();
+			end
 		else
 			QueueStatusButton:Show();
 		end

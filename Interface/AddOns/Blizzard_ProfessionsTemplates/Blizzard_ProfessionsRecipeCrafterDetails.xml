@@ -40,7 +40,7 @@
 					</Anchors>
 				</Texture>
 				<Texture parentKey="AppearIcon" scale=".6">
-					<Size x="62" y="62"/>
+					<Size x="55" y="55"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -133,6 +133,7 @@
 					<KeyValue key="topPadding" value="15" type="number"/>
 					<KeyValue key="align" value="center" type="string"/>
 					<KeyValue key="minimumHeight" value="65" type="number"/>
+					<KeyValue key="spacing" value="-3" type="number"/>
 				</KeyValues>
 				<Frames>
 					<Frame parentKey="DifficultyStatLine" parentArray="StatLines" inherits="ProfessionsCrafterDetailsStatLineTemplate">
@@ -156,8 +157,8 @@
 				<Size x="250" y="75"/>
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="4" type="number"/>
-					<KeyValue key="topPadding" value="15" type="number"/>
 					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="topPadding" value="-6" type="number"/>
 				</KeyValues>
 				<Frames>
 					<Frame parentKey="Center">
@@ -345,11 +346,13 @@
 					
 					<Frame parentKey="Left" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="11">
 						<Anchors>
+							<!-- Anchored dynamically based on quality -->
 							<Anchor point="RIGHT" relativeKey="$parent.Center" relativePoint="LEFT"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="Right" inherits="ProfessionsQualityMeterCapTemplate" frameLevel="12">
 						<Anchors>
+							<!-- Anchored dynamically based on quality -->
 							<Anchor point="LEFT" relativeKey="$parent.Center" relativePoint="RIGHT"/>
 						</Anchors>
 					</Frame>
@@ -358,12 +361,20 @@
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
+
+			<Frame parentKey="Spacer">
+				<Size x="1" y="15"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+			</Frame>
 			
 			<Frame parentKey="FinishingReagentSlotContainer">
-				<Size x="260" y="126"/>
+				<Size x="260" y="108"/>
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="5" type="number"/>
-					<KeyValue key="topPadding" value="-18" type="number"/>
+					<KeyValue key="topPadding" value="-32" type="number"/>
 					<KeyValue key="align" value="center" type="string"/>
 				</KeyValues>
 				<Layers>

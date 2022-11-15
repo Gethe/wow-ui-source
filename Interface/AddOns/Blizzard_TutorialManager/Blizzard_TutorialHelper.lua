@@ -249,11 +249,12 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:FindItemInContainer(itemID)
-	for containerIndex = 0, 4 do
-		local slots = GetContainerNumSlots(containerIndex);
+	for containerIndex = Enum.BagIndex.Backpack, Constants.InventoryConstants.NumBagSlots do
+		local slots = C_Container.GetContainerNumSlots(containerIndex);
 		if (slots > 0) then
 			for slotIndex = 1, slots do
-				local id = select(10, GetContainerItemInfo(containerIndex, slotIndex));
+				local info = C_Container.GetContainerItemInfo(containerIndex, slotIndex);
+				local id = info and info.itemID;
 				if (id == itemID) then
 					return containerIndex, slotIndex;
 				end

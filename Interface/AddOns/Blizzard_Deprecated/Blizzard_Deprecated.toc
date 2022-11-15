@@ -4,8 +4,4 @@
 ## Version: 1.0
 ## LoadOnDemand: 0
 
-Deprecated_9_0_5.lua
-Deprecated_9_1_0.lua
-Deprecated_9_1_5.lua
-Deprecated_9_2_0.lua
-Deprecated_9_2_5.lua
+Deprecated_10_0_0.lua

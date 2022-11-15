@@ -2,22 +2,23 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsCustomerOrdersRecipeCategoryList.lua"/>
 
-	<!-- Largely copied from AuctionCategoryButtonTemplate -->
 	<Button name="ProfessionsCustomerOrdersCategoryButtonTemplate" inherits="TruncatedTooltipScriptTemplate" mixin="ProfessionsCustomerOrdersCategoryButtonMixin" virtual="true">
 		<Size x="132" y="21"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Lines" atlas="auctionhouse-nav-button-tertiary-filterline" useAtlasSize="true">
+				<Texture parentKey="Lines" atlas="auctionhouse-nav-button-tertiary-filterline" parentArray="buttonRegions" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="LEFT" x="18" y="3"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="NormalTexture" atlas="auctionhouse-nav-button" useAtlasSize="false">
+				<Texture parentKey="NormalTexture" atlas="auctionhouse-nav-button" useAtlasSize="false" parentArray="buttonRegions">
 					<Size x="136" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-2" y="0"/>
@@ -32,15 +33,20 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="SelectedTexture" atlas="auctionhouse-nav-button-select" alphaMode="ADD" hidden="true">
+				<Texture parentKey="SelectedTexture" atlas="auctionhouse-nav-button-select" parentArray="buttonRegions" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.NormalTexture" relativePoint="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="SpacerLine" atlas="RecipeList-Divider" parentArray="spacerRegions" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-3" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
-		<ButtonText parentKey="Text" justifyH="LEFT">
+		<ButtonText parentKey="Text" justifyH="LEFT" parentArray="buttonRegions">
 			<Size x="0" y="8"/>
 			<Anchors>
 				<Anchor point="LEFT" x="4" y="0"/>
@@ -58,7 +64,7 @@
 	</Button>
 
 	<Frame name="ProfessionsCustomerOrdersRecipeCategoryListTemplate" mixin="ProfessionsCustomerOrdersRecipeCategoryListMixin" virtual="true">
-		<Size x="168" y="438"/>
+		<Size x="160" y="468"/>
 		<KeyValues>
 			<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
 		</KeyValues>
@@ -71,21 +77,22 @@
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="3" y="-6"/>
-					<Anchor point="BOTTOMRIGHT" x="-25" y="2"/>
+					<Anchor point="BOTTOMRIGHT" x="-16" y="2"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="auctionhouse-background-categories" useAtlasSize="true">
+				<Texture parentKey="Background" atlas="CraftingOrders-Categories-Background" useAtlasSize="false">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>

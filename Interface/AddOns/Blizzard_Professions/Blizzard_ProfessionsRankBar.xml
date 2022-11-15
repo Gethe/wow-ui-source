@@ -20,18 +20,23 @@
 							<Anchor point="TOPLEFT" x="5" y="-3"/>
 						</Anchors>						
 					</Texture>
+					<Texture parentKey="Flare" alphaMode="ADD">
+						<Size x="53" y="16"/>
+						<!-- Anchored dynamically -->
+					</Texture>
 					<MaskTexture parentKey="Mask" atlas="Professions-skillbar-mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.Fill"/>
+							<Anchor point="LEFT" relativeKey="$parent.Fill" x="1" y="0"/>
 						</Anchors>
 						<MaskedTextures>
 							<MaskedTexture childKey="Fill"/>
+							<MaskedTexture childKey="Flare"/>
 						</MaskedTextures>
 					</MaskTexture>
 				</Layer>
 
 				<Layer level="ARTWORK" textureSubLevel="3">
-					<Texture parentKey="Border" atlas="Professions-skillbar-frame" useAtlasSize="true">
+					<Texture parentKey="Border" texelSnappingBias="1.0" atlas="Professions-skillbar-frame" useAtlasSize="true">
 						<Size x="451" y="29"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
@@ -40,43 +45,6 @@
 				</Layer>
 			</Layers>
 		<Frames>
-			<Frame parentKey="Experience" alpha=".30" hidden="true">
-				<Size x="300" y="1"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="3">
-						<Texture parentKey="Left" atlas="ProfessionsShadow-ThreeSlice-EdgeLeft" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="LEFT" x="0" y="-2"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Right" atlas="ProfessionsShadow-ThreeSlice-EdgeRight" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="RIGHT" y="-2"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Center" atlas="ProfessionsShadow-ThreeSlice-Center" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Left" relativePoint="BOTTOMRIGHT"/>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-
-					<Layer level="ARTWORK">
-						<FontString parentKey="RankText" inherits="WhiteNormalNumberFont" justifyH="CENTER">
-							<Size x="0" y="9"/>
-							<Anchors>
-								<Anchor point="CENTER" y="-2"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
 			<Frame parentKey="Rank" frameLevel="5" hidden="true">
 				<Size x="300" y="18"/>
 				<Anchors>
@@ -93,10 +61,41 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="Experience" alpha=".30" hidden="true">
+				<Size x="300" y="1"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="3">
+						<Texture parentKey="Left" atlas="ProfessionsShadow-ThreeSlice-EdgeLeft" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.$parent.Rank.Text" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Right" atlas="ProfessionsShadow-ThreeSlice-EdgeRight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.$parent.Rank.Text" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Center" atlas="ProfessionsShadow-ThreeSlice-Center" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Left" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="BarAnimation" looping="NONE" setToFinalAlpha="true">
-				<FlipBook parentKey="Flipbook" smoothing="OUT" childKey="Fill" duration="1.5" order="1" flipBookRows="30" flipBookColumns="2" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				<FlipBook parentKey="Flipbook" smoothing="NONE" childKey="Fill" duration="2.0" order="1" flipBookRows="30" flipBookColumns="2" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlareFadeOut" looping="NONE" setToFinalAlpha="true">
+				<Alpha smoothing="OUT" childKey="Flare" duration="1.0" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

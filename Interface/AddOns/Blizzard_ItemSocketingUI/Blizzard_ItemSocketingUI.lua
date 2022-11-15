@@ -133,7 +133,7 @@ function ItemSocketingFrame_Update()
 				end
 				SetupTextureKitOnFrame(gemInfo.textureKit, openBracket, openBracketAtlas, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
 				SetupTextureKitOnFrame(gemInfo.textureKit, closedBracket, closedBracketAtlas, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
-				if ( ENABLE_COLORBLIND_MODE == "1" ) then
+				if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 					gemColorText:SetText(_G[strupper(gemColor) .. "_GEM"]);
 					gemColorText:Show();
 				else

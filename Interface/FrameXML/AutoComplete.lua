@@ -115,6 +115,7 @@ local AUTOCOMPLETE_LIST = AUTOCOMPLETE_LIST;
 	AUTOCOMPLETE_LIST.LOOT_MASTER		= AUTOCOMPLETE_LIST_TEMPLATES.IN_GROUP;
 	AUTOCOMPLETE_LIST.WARGAME			= AUTOCOMPLETE_LIST_TEMPLATES.BNET_NOT_IN_PARTY;
 	AUTOCOMPLETE_LIST.COMMUNITY			= AUTOCOMPLETE_LIST_TEMPLATES.ALL_OTHER_CHARS;
+	AUTOCOMPLETE_LIST.CRAFTINGORDER		= AUTOCOMPLETE_LIST_TEMPLATES.ALL_CHARS;
 
 AUTOCOMPLETE_COLOR_KEYS = 
 {
@@ -258,7 +259,7 @@ function AutoComplete_UpdateResults(self, results, context)
 		local displayName = Ambiguate(results[i].name, context or "all");
 		local displayText;
 		local displayInfo = AUTOCOMPLETE_COLOR_KEYS[results[i].priority]
-		if ( ENABLE_COLORBLIND_MODE == "1" ) then
+		if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 			displayText = displayName.." "..displayInfo.text;
 		else
 			local colorCode;

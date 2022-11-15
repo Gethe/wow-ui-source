@@ -2962,7 +2962,7 @@ end
 function GarrisonMissionPageCostWithTooltipMixin:OnEnter()
 	if self.currency then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetCurrencyTokenByID(self.currency);
+		GameTooltip:SetCurrencyByID(self.currency);
 		GameTooltip:Show();
 	end
 end

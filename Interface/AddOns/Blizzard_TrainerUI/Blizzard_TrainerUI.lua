@@ -327,8 +327,8 @@ function ClassTrainer_SetSelection(id)
 	SelectTrainerService(id);
 
 	local function ReinitializeButton(skillIndex)
-		local button = ClassTrainerFrame.ScrollBox:FindFrameByPredicate(function(frame)
-			return frame:GetElementData().skillIndex == skillIndex;
+		local button = ClassTrainerFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+			return elementData.skillIndex == skillIndex;
 		end);
 		if button then
 			ClassTrainerFrame_InitServiceButton(button, button:GetElementData());

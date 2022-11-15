@@ -2,24 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsFrame.lua"/>
 
-	<Button name="ProfessionsFrameTabTemplate" inherits="TabSystemButtonTemplate" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Glow" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" alpha="0" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="2"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true" looping="BOUNCE">
-				<Alpha childKey="Glow" smoothing="NONE" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Glow" smoothing="NONE" duration="1" startDelay="0.3" order="2" fromAlpha="1" toAlpha="0"/>
-			</AnimationGroup>
-		</Animations>
-	</Button>
+	<Button name="ProfessionsFrameTabTemplate" inherits="TabSystemButtonTemplate" virtual="true"/>
 
 	<Frame name="ProfessionsFrame" mixin="ProfessionsMixin" inherits="PortraitFrameTemplateNoCloseButton, TabSystemOwnerTemplate" parent="UIParent" toplevel="true" hidden="true" enableMouse="true">
 		<Size x="1" y="658"/>
@@ -39,12 +22,14 @@
 
 			<Frame parentKey="CraftingPage" inherits="ProfessionsCraftingPageTemplate" parentArray="Pages" frameLevel="100" hidden="true"/>
 			<Frame parentKey="SpecPage" inherits="ProfessionsSpecPageTemplate" parentArray="Pages" frameLevel="100" hidden="true"/>
+			<Frame parentKey="OrdersPage" inherits="ProfessionsCraftingOrderPageTemplate" parentArray="Pages" frameLevel="100" hidden="true"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<!-- OnUpdate set dynamically -->
 		</Scripts>
 	</Frame>
 </Ui>

@@ -15,9 +15,6 @@
 			<OnUpdate>
 				MonkStaggerBar_OnUpdate(self, elapsed);
 			</OnUpdate>
-			<OnMouseUp>
-				self:GetParent():Click(button);
-			</OnMouseUp>
 		</Scripts>
 	</StatusBar>
 </Ui>

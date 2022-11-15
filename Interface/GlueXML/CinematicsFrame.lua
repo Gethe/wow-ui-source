@@ -1,62 +1,168 @@
+
+MOVIE_CAPTION_FADE_TIME = 1.0;
+
+-- These are movieID from the MOVIE database file.
+MOVIE_LIST = {
+  -- Movie sequence 1 = Wow Classic
+  { expansion=LE_EXPANSION_CLASSIC, 
+	movieIDs = { 1, 2 }, 
+	upAtlas="StreamCinematic-Classic-Up", 
+	downAtlas="StreamCinematic-Classic-Down",
+  },
+  -- Movie sequence 2 = BC
+  { expansion=LE_EXPANSION_BURNING_CRUSADE, 
+	movieIDs = { 27 }, 
+	upAtlas="StreamCinematic-BC-Up", 
+	downAtlas="StreamCinematic-BC-Down",
+  },
+  -- Movie sequence 3 = LK
+  { expansion=LE_EXPANSION_WRATH_OF_THE_LICH_KING, 
+	movieIDs = { 18 }, 
+	upAtlas="StreamCinematic-LK-Up", 
+	downAtlas="StreamCinematic-LK-Down",
+  },
+  -- Movie sequence 4 = CC
+  { expansion=LE_EXPANSION_CATACLYSM, 
+	movieIDs = { 23 }, 
+	upAtlas="StreamCinematic-CC-Up", 
+	downAtlas="StreamCinematic-CC-Down",
+  },
+  -- Movie sequence 5 = MP
+  { expansion=LE_EXPANSION_MISTS_OF_PANDARIA, 
+	movieIDs = { 115 }, 
+	upAtlas="StreamCinematic-MOP-Up", 
+	downAtlas="StreamCinematic-MOP-Down",
+  },
+  -- Movie sequence 6 = WoD
+  { expansion=LE_EXPANSION_WARLORDS_OF_DRAENOR,
+	movieIDs = { 195 }, 
+	upAtlas="StreamCinematic-WOD-Up", 
+	downAtlas="StreamCinematic-WOD-Down",
+  },
+  -- Movie sequence 7 = Legion
+  { expansion=LE_EXPANSION_LEGION, 
+	movieIDs = { 470 }, 
+	upAtlas="StreamCinematic-Legion-Up", 
+	downAtlas="StreamCinematic-Legion-Down",
+  },
+  -- Movie sequence 8 = BFA
+  { expansion=LE_EXPANSION_BATTLE_FOR_AZEROTH, 
+	movieIDs = { 852 }, 
+	upAtlas="StreamCinematic-BFA-Up", 
+	downAtlas="StreamCinematic-BFA-Down",
+  },
+  -- Movie sequence 9 = Shadowlands
+  { expansion=LE_EXPANSION_SHADOWLANDS, 
+	movieIDs = { 936 }, 
+	upAtlas="StreamCinematic-Shadowlands-Up", 
+	downAtlas="StreamCinematic-Shadowlands-Down",
+  },
+  -- Movie sequence 10 = Dragonflight
+  { expansion=LE_EXPANSION_DRAGONFLIGHT, 
+	movieIDs = { 960 }, 
+	upAtlas="StreamCinematic-Dragonflight-Up", 
+	downAtlas="StreamCinematic-Dragonflight-Down",
+  },
+};
+
+do
+	local function FilterMovieList()
+		local filteredMovieList = {};
+		local maxExpansion = GetClientDisplayExpansionLevel();
+		for _, movieEntry in ipairs(MOVIE_LIST) do
+			if movieEntry.expansion <= maxExpansion then
+				table.insert(filteredMovieList, movieEntry);
+			end
+		end
+		MOVIE_LIST = filteredMovieList;
+	end
+	FilterMovieList();
+end
+
+function CinematicFrame_IsAutoPlayDisabled(movieIndex)
+	local movieEntry = MOVIE_LIST[movieIndex];
+	return movieEntry and movieEntry.disableAutoPlay;
+end
+
+function CinematicsFrame_GetIndexRangeForExpansion(expansion)
+	local firstEntry, lastEntry;
+	for i, movieEntry in ipairs(MOVIE_LIST) do
+		if movieEntry.expansion == expansion then
+			firstEntry = firstEntry or i;
+			lastEntry = i;
+		end
+	end
+	return firstEntry, lastEntry;
+end
+
+local function GetMovieIDs(movieIndex)
+	local movieEntry = MOVIE_LIST[movieIndex];
+	local movieIDs = movieEntry and movieEntry.movieIDs;
+	return movieIDs;
+end
+
 function CinematicsFrame_OnLoad(self)
 	local buttonPadding = 8;
 	local framePadding = 80;
-	local maxVideos = GetClientDisplayExpansionLevel() + 1;
-	local columnSize = math.ceil(maxVideos / 2);
-	local height = 0;
-	local rightColumnHeight = 0;
+	local columnSize = math.ceil(#MOVIE_LIST / 2);
+	local buttonHeight = 0;
 
-	for i, button in ipairs(self.CinematicsButtons) do
-		if(i > maxVideos) then
-			break;
-		end
-		button:Show();
-		if i <= columnSize then
-			height = height + button:GetHeight() + buttonPadding;
+	local prevButton = nil;
+	self.cinematicsButtonPool = CreateFramePool("BUTTON", self, "CinematicsButtonTemplate")
+	for i, movieEntry in ipairs(MOVIE_LIST) do
+		local button = self.cinematicsButtonPool:Acquire();
+		if i == 1 then
+			button:SetPoint("TOPLEFT", self, "TOPLEFT", 40, -44);
+		elseif i == columnSize + 1 then
+			button:SetPoint("TOPRIGHT", self, "TOPRIGHT", -40, -44);
 		else
-			rightColumnHeight = rightColumnHeight + button:GetHeight() + buttonPadding;
+			button:SetPoint("TOP", prevButton, "BOTTOM", 0, -8);
 		end
+		button:SetID(i);
+
+		local buttonText = movieEntry.title or _G["EXPANSION_NAME"..movieEntry.expansion];
+		button:SetText(buttonText);
+		button:Show();
+		button:SetNormalAtlas(movieEntry.upAtlas);
+		button:SetPushedAtlas(movieEntry.downAtlas);
+		buttonHeight = button:GetHeight();
+		prevButton = button;
 	end
 
-	if maxVideos > 1 then
-		self.CinematicsButtons[columnSize+1]:ClearAllPoints();
-		self.CinematicsButtons[columnSize+1]:SetPoint("TOPRIGHT", self, "TOPRIGHT", -40, -44);
-	end
-
-	height = math.max(height, rightColumnHeight) + framePadding;
-	CinematicsFrame:SetHeight(height);
+	local frameHeight = (buttonHeight + buttonPadding) * columnSize + framePadding;
+	CinematicsFrame:SetHeight(frameHeight);
 end
 
-function CinematicsFrame_IsMovieListLocal(id)
-	local MOVIE_LIST = MOVIE_LIST[id];
-	if (not MOVIE_LIST) then return false; end
-	for _, movieId in ipairs(MOVIE_LIST) do
-		if (not IsMovieLocal(movieId)) then 
+local function CheckMovieList(movieIndex, func)
+	local movieIDs = GetMovieIDs(movieIndex)
+	if (not movieIDs) then 
+		return false; 
+	end
+	for _, movieId in ipairs(movieIDs) do
+		if (not func(movieId)) then 
 			return false;
 		end
 	end
 	return true;
 end
 
-function CinematicsFrame_IsMovieListPlayable(id)
-	local MOVIE_LIST = MOVIE_LIST[id];
-	if (not MOVIE_LIST) then return false; end
-	for _, movieId in ipairs(MOVIE_LIST) do
-		if (not IsMoviePlayable(movieId)) then 
-			return false;
-		end
-	end
-	return true;
+function CinematicsFrame_IsMovieListLocal(movieIndex)
+	return CheckMovieList(movieIndex, IsMovieLocal);
 end
 
-function CinematicsFrame_GetMovieDownloadProgress(id)
-	local MOVIE_LIST = MOVIE_LIST[id];
-	if (not MOVIE_LIST) then return; end
-	
+function CinematicsFrame_IsMovieListPlayable(movieIndex)
+	return CheckMovieList(movieIndex, IsMoviePlayable);
+end
+
+function CinematicsFrame_GetMovieDownloadProgress(movieIndex)
+	local movieIDs = GetMovieIDs(movieIndex);
+	if (not movieIDs) then
+		return;
+	end
 	local anyInProgress = false;
 	local allDownloaded = 0;
 	local allTotal = 0;
-	for _, movieId in ipairs(MOVIE_LIST) do
+	for _, movieId in ipairs(movieIDs) do
 		local inProgress, downloaded, total = GetMovieDownloadProgress(movieId);
 		anyInProgress = anyInProgress or inProgress;
 		allDownloaded = allDownloaded + downloaded;
@@ -134,11 +240,8 @@ end
 
 function CinematicsFrame_OnShow(self)
 	self:Raise();
-	local numMovies = GetClientDisplayExpansionLevel() + 1;
-	for i, button in ipairs(self.CinematicsButtons) do
-		if(i > numMovies) then
-			break;
-		end
+	local numMovies = #MOVIE_LIST;
+	for button in self.cinematicsButtonPool:EnumerateActive() do
 		CinematicsButton_Update(button);
 	end
 	GlueParent_AddModalFrame(self);
@@ -164,21 +267,14 @@ function CinematicsButton_OnClick(self)
 		GlueParent_OpenSecondaryScreen("movie");
 	else
 		local inProgress, downloaded, total = CinematicsFrame_GetMovieDownloadProgress(self:GetID());
-		if (inProgress) then
-			local MOVIE_LIST = MOVIE_LIST[self:GetID()];
-			if (MOVIE_LIST) then
-				for _, movieId in ipairs(MOVIE_LIST) do
-					if (not IsMovieLocal(movieId)) then 
-						CancelPreloadingMovie(movieId);
-					end
-				end
-			end
-		else
-			local MOVIE_LIST = MOVIE_LIST[self:GetID()];
-			if (MOVIE_LIST) then
-				for _, movieId in ipairs(MOVIE_LIST) do
-					if (not IsMovieLocal(movieId)) then 
-						PreloadMovie(movieId);
+		local movieIDs = GetMovieIDs(self:GetID());
+		if (movieIDs) then
+			for _, movieID in ipairs(movieIDs) do
+				if (not IsMovieLocal(movieID)) then 
+					if (inProgress) then
+						CancelPreloadingMovie(movieID);
+					else
+						PreloadMovie(movieID);
 					end
 				end
 			end

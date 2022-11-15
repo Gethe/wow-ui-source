@@ -326,10 +326,21 @@ function AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData, bidStatus
 	end
 end
 
+function AuctionHouseUtil.GetItemDisplayText(itemName, itemLevel, craftingQuality)
+	if itemLevel then
+		return AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemName, itemLevel);
+	elseif craftingQuality then
+		local icon = C_Texture.GetCraftingReagentQualityChatIcon(craftingQuality);
+		return AUCTION_HOUSE_CRAFTING_REAGANT_QUALITY_FORMAT:format(itemName, icon);
+	end
+
+	return itemName;
+end
+
 function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo)
+	local craftingQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemKey.itemID);
+	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, itemKeyInfo.isEquipment and itemKey.itemLevel or nil, craftingQuality);
 	local itemQuality = itemKeyInfo.quality;
-	local useEquipmentFormat = itemKeyInfo.isEquipment and not hideItemLevel;
-	local itemDisplayText = useEquipmentFormat and AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemKeyInfo.itemName, itemKey.itemLevel) or itemKeyInfo.itemName;
 	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
 	return itemQualityColor.color:WrapTextInColorCode(itemDisplayText);
 end
@@ -355,7 +366,8 @@ end
 
 function AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(ownedAuctionData, itemKeyInfo)
 	local itemKey = ownedAuctionData.itemKey;
-	local itemDisplayText = itemKeyInfo.isEquipment and AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemKeyInfo.itemName, itemKey.itemLevel) or itemKeyInfo.itemName;
+	local craftingQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemKey.itemID);
+	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, itemKeyInfo.isEquipment and itemKey.itemLevel or nil, craftingQuality);
 
 	if ownedAuctionData.quantity > 1 then
 		itemDisplayText = AUCTION_HOUSE_ITEM_WITH_QUANTITY_FORMAT:format(itemDisplayText, BreakUpLargeNumbers(ownedAuctionData.quantity));
@@ -528,7 +540,7 @@ function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
 		tooltip = GameTooltip;
 		if tooltipType == AuctionHouseTooltipType.ItemLink then
 			local hideVendorPrice = true;
-			GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, nil, hideVendorPrice);
+			GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, hideVendorPrice);
 		elseif tooltipType == AuctionHouseTooltipType.ItemKey then
 			GameTooltip:SetItemKey(data.itemID, data.itemLevel, data.itemSuffix, C_AuctionHouse.GetItemKeyRequiredLevel(data));
 		end

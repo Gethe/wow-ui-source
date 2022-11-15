@@ -1,3 +1,16 @@
+EditModeDialogMixin = {};
+
+function EditModeDialogMixin:EditModeDialog_OnLoad()
+	EventRegistry:RegisterCallback("EditMode.Exit", function() self:OnEditModeExit() end);
+end
+
+function EditModeDialogMixin:OnEditModeExit()
+	-- Override this as necessary
+	if self.OnCancel then
+		self:OnCancel();
+	end
+end
+
 EditModeNewLayoutDialogMixin = {};
 
 function EditModeNewLayoutDialogMixin:OnLoad()

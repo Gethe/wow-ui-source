@@ -161,18 +161,18 @@ function LootFrameMixin:Open()
 		dataProvider:Insert({slotIndex = slotIndex, group = group, quality = quality});
 	end
 
-	dataProvider:SetSortComparator(function(a, b)
-		if a.group ~= b.group then
-			return a.group > b.group;
-		end
-
-		if a.quality ~= b.quality then
-			return a.quality > b.quality;
-		end
-
-		return a.slotIndex < b.slotIndex;
-	end);
-
+	--dataProvider:SetSortComparator(function(a, b)
+	--	if a.group ~= b.group then
+	--		return a.group > b.group;
+	--	end
+	--
+	--	if a.quality ~= b.quality then
+	--		return a.quality > b.quality;
+	--	end
+	--
+	--	return a.slotIndex < b.slotIndex;
+	--end);
+	--
 	self.ScrollBox:SetDataProvider(dataProvider);
 
 	if GetCVarBool("lootUnderMouse") then
