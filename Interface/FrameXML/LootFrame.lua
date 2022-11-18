@@ -143,16 +143,8 @@ function LootFrameMixin:Open()
 	for slotIndex = 1, GetNumLootItems() do
 		local texture, item, quantity, currencyID, itemQuality, locked, isQuestItem, questID, isActive, isCoin = GetLootSlotInfo(slotIndex);
 
-		if not itemQuality then
-			print("NO QUALITY LOOT "..tostring(item)..", currencyID"..tostring(currencyID)..", quantity"..tostring(quantity)..", slotIndex"..tostring(slotIndex)..", isCoin"..tostring(isCoin));
-		end
-
 		if currencyID then 
 			item, texture, quantity, itemQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, itemQuality);
-
-			if not itemQuality then
-				print("NO QUALITY CURRENCY "..tostring(item)..", currencyID"..tostring(currencyID)..", quantity"..tostring(quantity)..", slotIndex"..tostring(slotIndex)..", isCoin"..tostring(isCoin));
-			end
 		end
 
 		local quality = itemQuality or Enum.ItemQuality.Common;

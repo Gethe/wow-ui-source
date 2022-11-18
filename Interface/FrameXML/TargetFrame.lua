@@ -1095,7 +1095,7 @@ function TargetSpellBarMixin:OnEvent(event, ...)
 		-- The position depends on the classification of the target
 		self:AdjustPosition();
 	end
-	CastingBarMixin.OnEvent(self, event, ...);
+	CastingBarMixin.OnEvent(self, event, arg1, select(2, ...));
 end
 
 function TargetSpellBarMixin:AdjustPosition()

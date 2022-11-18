@@ -10,6 +10,12 @@ local function CallRefreshOnFrame(frame)
 	end
 end
 
+local SecureSettingsCategoryMixin = CreateSecureMixinCopy(SettingsCategoryMixin);
+local SecureAddOnSettingMixin = CreateSecureMixinCopy(AddOnSettingMixin);
+local SecureSettingsListElementInitializer = CreateSecureMixinCopy(SettingsListElementInitializer);
+
+local CreateAndInitFromMixin = CreateAndInitFromMixin;
+local CreateFromMixins = CreateFromMixins;
 local securecallfunction = securecallfunction;
 local pairs = pairs;
 
@@ -21,6 +27,27 @@ local function EnumerateTaintedKeysTable(tableToIterate)
 	end
 
 	return IteratorFunction, enumerateTable, initialIteratorKey;
+end
+
+local select = select;
+local error = error;
+local type = type;
+
+local function ErrorIfFunctionArgs(...)
+	for i = 1, select("#", ...) do
+		if type(select(i, ...)) == "function" then
+			error("Function values are not allowed for settings APIs");
+			return nil;
+		end
+	end
+
+	return ...;
+end
+
+local unpack = unpack;
+
+local function SecureUnpackArgs(argTable, expectedNumArgs)
+	return ErrorIfFunctionArgs(securecallfunction(unpack, argTable, 1, expectedNumArgs));
 end
 
 SettingsPanelMixin = {};
@@ -84,60 +111,60 @@ end
 
 function SettingsPanelMixin:OnAttributeChanged(name, value)
 	if name == SettingsInbound.OpenToCategoryAttribute then
-		local categoryID, scrollToElementName = securecallfunction(unpack, value);
+		local categoryID, scrollToElementName = SecureUnpackArgs(value);
 		local successful = self:OpenToCategory(categoryID, scrollToElementName);
 		self:SetSecureAttributeResults(successful);
 	elseif name == SettingsInbound.RegisterCategoryAttribute then
-		local category, group, addon = securecallfunction(unpack, value, 1, 3);
+		local category, group, addon = SecureUnpackArgs(value, 3);
 		self:RegisterCategory(category, group, addon);
 	elseif name == SettingsInbound.RegisterVerticalLayoutCategoryAttribute then
-		local category = CreateAndInitFromMixin(SettingsCategoryMixin, value);
+		local category = CreateAndInitFromMixin(SecureSettingsCategoryMixin, value);
 		local layout = CreateVerticalLayout();
 		self:AssignLayoutToCategory(category, layout);
 		self:SetSecureAttributeResults(category, layout);
 	elseif name == SettingsInbound.RegisterVerticalLayoutSubcategoryAttribute then
-		local parentCategory, categoryName = securecallfunction(unpack, value);
+		local parentCategory, categoryName = SecureUnpackArgs(value);
 
-		-- Use SettingsCategoryMixin.CreateSubcategory to avoid taint.
-		local subcategory = securecallfunction(SettingsCategoryMixin.CreateSubcategory, parentCategory, categoryName);
+		-- Use SecureSettingsCategoryMixin.CreateSubcategory to avoid taint.
+		local subcategory = securecallfunction(SecureSettingsCategoryMixin.CreateSubcategory, parentCategory, categoryName);
 		local layout = CreateVerticalLayout();
 		self:AssignLayoutToCategory(subcategory, layout);
 		self:SetSecureAttributeResults(subcategory, layout);
 	elseif name == SettingsInbound.RegisterCanvasLayoutCategoryAttribute then
-		local frame, categoryName = securecallfunction(unpack, value);
-		local category = CreateAndInitFromMixin(SettingsCategoryMixin, categoryName);
+		local frame, categoryName = SecureUnpackArgs(value);
+		local category = CreateAndInitFromMixin(SecureSettingsCategoryMixin, categoryName);
 		local layout = CreateCanvasLayout(frame);
 		self:AssignLayoutToCategory(category, layout);
 		self:SetSecureAttributeResults(category, layout);
 	elseif name == SettingsInbound.RegisterCanvasLayoutSubcategoryAttribute then
-		local parentCategory, frame, categoryName = securecallfunction(unpack, value);
+		local parentCategory, frame, categoryName = SecureUnpackArgs(value);
 
-		-- Use SettingsCategoryMixin.CreateSubcategory to avoid taint.
-		local subcategory = securecallfunction(SettingsCategoryMixin.CreateSubcategory, parentCategory, categoryName);
+		-- Use SecureSettingsCategoryMixin.CreateSubcategory to avoid taint.
+		local subcategory = securecallfunction(SecureSettingsCategoryMixin.CreateSubcategory, parentCategory, categoryName);
 		local layout = CreateCanvasLayout(frame);
 		self:AssignLayoutToCategory(subcategory, layout);
 		self:SetSecureAttributeResults(subcategory, layout);
 	elseif name == SettingsInbound.AssignLayoutToCategoryAttribute then
-		local category, layout = securecallfunction(unpack, value);
+		local category, layout = SecureUnpackArgs(value);
 		self:AssignLayoutToCategory(category, layout);
 	elseif name == SettingsInbound.SetKeybindingsCategoryAttribute then
 		self:SetKeybindingsCategory(value);
 	elseif name == SettingsInbound.CreateAddOnSettingAttribute then
-		local categoryTbl, settingName, variable, variableType, defaultValue = securecallfunction(unpack, value);
-		local setting = CreateAndInitFromMixin(AddOnSettingMixin, settingName, variable, variableType, defaultValue);
+		local categoryTbl, settingName, variable, variableType, defaultValue = SecureUnpackArgs(value);
+		local setting = CreateAndInitFromMixin(SecureAddOnSettingMixin, settingName, variable, variableType, defaultValue);
 		self:RegisterSetting(categoryTbl, setting);
 		self:SetSecureAttributeResults(setting);
 	elseif name == SettingsInbound.RegisterSettingAttribute then
-		local categoryTbl, setting = securecallfunction(unpack, value);
+		local categoryTbl, setting = SecureUnpackArgs(value);
 		self:RegisterSetting(categoryTbl, setting);
 	elseif name == SettingsInbound.RegisterInitializerAttribute then
-		local category, initializer = securecallfunction(unpack, value);
+		local category, initializer = SecureUnpackArgs(value);
 		self:RegisterInitializer(category, initializer);
 	elseif name == SettingsInbound.CreateSettingInitializerAttribute then
-		local frameTemplate, data = securecallfunction(unpack, value);
-		local initializer = CreateFromMixins(SettingsListElementInitializer);
+		local frameTemplate, data = SecureUnpackArgs(value);
+		local initializer = CreateFromMixins(SecureSettingsListElementInitializer);
 		initializer:Init(frameTemplate, data);
-		local setting = securecallfunction(SettingsListElementInitializer.GetSetting, initializer);
+		local setting = securecallfunction(SecureSettingsListElementInitializer.GetSetting, initializer);
 		if setting then
 			local settingName = securecallfunction(setting.GetName, setting);
 			initializer:AddSearchTags(settingName);
@@ -145,7 +172,7 @@ function SettingsPanelMixin:OnAttributeChanged(name, value)
 
 		self:SetSecureAttributeResults(initializer);
 	elseif name == SettingsInbound.OnSettingValueChangedAttribute then
-		local setting, newValue, oldValue, originalValue = securecallfunction(unpack, value);
+		local setting, newValue, oldValue, originalValue = SecureUnpackArgs(value);
 		self:OnSettingValueChanged(setting, newValue, oldValue, originalValue);
 	end
 end

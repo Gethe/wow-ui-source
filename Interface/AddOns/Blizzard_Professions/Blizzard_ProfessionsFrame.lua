@@ -59,7 +59,7 @@ end
 function ProfessionsMixin:OnEvent(event, ...)
 	local function ProcessOpenRecipeResponse(openRecipeResponse)
 		C_TradeSkillUI.SetProfessionChildSkillLineID(openRecipeResponse.skillLineID);
-		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+		local professionInfo = Professions.GetProfessionInfo();
 		professionInfo.openRecipeID = openRecipeResponse.recipeID;
 		professionInfo.openSpecTab = openRecipeResponse.openSpecTab;
 		self:Refresh();
@@ -81,7 +81,7 @@ function ProfessionsMixin:OnEvent(event, ...)
 			local forcedOpen = true;
 			self:SetTab(professionInfo.openSpecTab and self.specializationsTabID or self.recipesTabID, forcedOpen);
 		else
-			professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+			professionInfo = Professions.GetProfessionInfo();
 		end
 
 		local useLastSkillLine = true;
@@ -91,7 +91,7 @@ function ProfessionsMixin:OnEvent(event, ...)
 	elseif event == "OPEN_RECIPE_RESPONSE" then
 		local recipeID, professionSkillLineID, expansionSkillLineID = ...;
 		local openRecipeResponse = {skillLineID = expansionSkillLineID, recipeID = recipeID};
-		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+		local professionInfo = Professions.GetProfessionInfo();
 		if expansionSkillLineID == professionInfo.professionID then
 			-- We're in the same expansion profession so the recipe should exist in the list.
 			professionInfo.openRecipeID = openRecipeResponse.recipeID;
@@ -126,7 +126,7 @@ function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
 	if not self.professionInfo or (self.professionInfo.professionID ~= professionInfo.professionID) then
 		local useNewSkillLine = professionChanged or not useLastSkillLine;
 		C_TradeSkillUI.SetProfessionChildSkillLineID(useNewSkillLine and professionInfo.professionID or self.professionInfo.professionID);
-		professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+		professionInfo = Professions.GetProfessionInfo();
 		self:Refresh();
 	end
 
@@ -147,16 +147,7 @@ function ProfessionsMixin:SetTitle(skillLineName)
 end
 
 function ProfessionsMixin:GetProfessionInfo()
-	local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
-
-	-- Child profession info will be unavailable in some NPC crafting contexts. In these cases,
-	-- use the base profession info instead.
-	if professionInfo.professionID == 0 then
-		professionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
-	end
-	professionInfo.displayName = professionInfo.parentProfessionName and professionInfo.parentProfessionName or professionInfo.professionName;
-
-	return professionInfo;
+	return Professions.GetProfessionInfo();
 end
 
 function ProfessionsMixin:SetProfessionType(professionType)
@@ -314,7 +305,8 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 
 	local selectedPage = self:GetElementsForTab(tabID)[1];
 	local pageWidth = selectedPage:GetDesiredPageWidth();
-	if tabAlreadyShown and pageWidth == self:GetWidth() then
+	-- We can't check against self:GetWidth() because it could have rounding problems
+	if tabAlreadyShown and pageWidth == self.currentPageWidth then
 		self.changingTabs = false;
 		return;
 	end
@@ -340,13 +332,14 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 
 	if overrideSkillLine then
 		C_TradeSkillUI.SetProfessionChildSkillLineID(overrideSkillLine);
-		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+		local professionInfo = Professions.GetProfessionInfo();
 		local useLastSkillLine = false;
 		self:SetProfessionInfo(professionInfo, useLastSkillLine);
 		self:Refresh();
 	end
 
 	TabSystemOwnerMixin.SetTab(self, tabID);
+	self.currentPageWidth = pageWidth;
 	self:SetWidth(pageWidth);
 	UpdateUIPanelPositions(self);
     EventRegistry:TriggerEvent("ProfessionsFrame.TabSet", ProfessionsFrame, tabID);

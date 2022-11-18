@@ -859,7 +859,7 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 end
 
 function ProfessionsCraftingPageMixin:OnViewGuildCraftersClicked()
-	local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+	local professionInfo = Professions.GetProfessionInfo();
 	local effectiveSkillLineID = professionInfo.parentProfessionID or professionInfo.professionID;
 	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
 	if effectiveSkillLineID and currentRecipeInfo.recipeID then

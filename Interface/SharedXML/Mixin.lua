@@ -21,6 +21,9 @@ if tbl then
 end
 ---------------
 
+local select = select;
+local pairs = pairs;
+
 -- where ​... are the mixins to mixin
 function Mixin(object, ...)
 	for i = 1, select("#", ...) do
@@ -33,13 +36,24 @@ function Mixin(object, ...)
 	return object;
 end
 
+local PrivateMixin = Mixin;
+
 -- where ​... are the mixins to mixin
 function CreateFromMixins(...)
-	return Mixin({}, ...)
+	return PrivateMixin({}, ...)
 end
 
+local PrivateCreateFromMixins = CreateFromMixins;
+
 function CreateAndInitFromMixin(mixin, ...)
-	local object = CreateFromMixins(mixin);
+	local object = PrivateCreateFromMixins(mixin);
 	object:Init(...);
 	return object;
+end
+
+-- Note: This should only be used for security purposes during the initial load process in-game.
+function CreateSecureMixinCopy(mixin)
+	local mixinCopy = PrivateMixin({}, mixin);
+	setmetatable(mixinCopy, { __metatable = false, });
+	return mixinCopy;
 end

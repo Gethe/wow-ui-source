@@ -1101,7 +1101,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 
 	local operationInfo;
-	local professionLearned = C_TradeSkillUI.GetChildProfessionInfo().skillLevel > 0;
+	local professionLearned = Professions.GetProfessionInfo().skillLevel > 0;
 	if professionLearned then
 		operationInfo = self:GetRecipeOperationInfo();
 	end

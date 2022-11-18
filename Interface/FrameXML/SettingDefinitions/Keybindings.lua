@@ -221,21 +221,26 @@ local function Register()
 	
 
 	-- Keybinding sections
-	local bindingsCategories = {
-		[BINDING_HEADER_MOVEMENT]		= {order = 1, bindings={}},
-		[BINDING_HEADER_INTERFACE]		= {order = 2, bindings={}},
-		[BINDING_HEADER_ACTIONBAR]		= {order = 3, bindings={}},
-		[BINDING_HEADER_MULTIACTIONBAR] = {order = 4, bindings={}},
-		[BINDING_HEADER_CHAT]			= {order = 5, bindings={}},
-		[BINDING_HEADER_TARGETING]		= {order = 6, bindings={}},
-		[BINDING_HEADER_RAID_TARGET]	= {order = 7, bindings={}},
-		[BINDING_HEADER_VEHICLE]		= {order = 8, bindings={}},
-		[BINDING_HEADER_CAMERA]			= {order = 9, bindings={}},
-		[BINDING_HEADER_MISC]			= {order = 10, bindings={}},
-		[BINDING_HEADER_OTHER]			= {order = 11, bindings={}},
-	};
+	local bindingsCategories = {};
+	local nextOrder = 1;
+	local function AddBindingCategory(key)
+		if not bindingsCategories[key] then
+			bindingsCategories[key] = {order = nextOrder, bindings = {}};
+			nextOrder = nextOrder + 1;
+		end
+	end
 
-	local nextOrderIndex = 12;
+	AddBindingCategory(BINDING_HEADER_MOVEMENT);
+	AddBindingCategory(BINDING_HEADER_INTERFACE);
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR);
+	AddBindingCategory(BINDING_HEADER_MULTIACTIONBAR);
+	AddBindingCategory(BINDING_HEADER_CHAT);
+	AddBindingCategory(BINDING_HEADER_TARGETING);
+	AddBindingCategory(BINDING_HEADER_RAID_TARGET);
+	AddBindingCategory(BINDING_HEADER_VEHICLE);
+	AddBindingCategory(BINDING_HEADER_CAMERA);
+	AddBindingCategory(BINDING_HEADER_MISC);
+	AddBindingCategory(BINDING_HEADER_OTHER);
 
 	for bindingIndex = 1, GetNumBindings() do
 		local action, cat, binding1, binding2 = GetBinding(bindingIndex);
@@ -244,10 +249,7 @@ local function Register()
 			tinsert(bindingsCategories[BINDING_HEADER_OTHER], {bindingIndex, action});
 		else
 			cat = _G[cat] or cat;
-			if not bindingsCategories[cat] then
-				bindingsCategories[cat] = { order = nextOrderIndex, bindings={} };
-				nextOrderIndex = nextOrderIndex + 1;
-			end
+			AddBindingCategory(cat);
 
 			if strsub(action, 1, 6) == "HEADER" then
 				tinsert(bindingsCategories[cat].bindings, KeybindingSpacer);

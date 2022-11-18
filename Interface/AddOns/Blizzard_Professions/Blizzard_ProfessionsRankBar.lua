@@ -24,7 +24,7 @@ end
 
 function ProfessionsRankBarMixin:OnEvent(event, ...)
 	if event == "SKILL_LINES_CHANGED" or event == "TRIAL_STATUS_UPDATE" then
-		self:Update(C_TradeSkillUI.GetChildProfessionInfo());
+		self:Update(Professions.GetProfessionInfo());
 	end
 end
 
