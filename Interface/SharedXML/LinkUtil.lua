@@ -1,10 +1,43 @@
+
+LinkUtil = {};
+
+function LinkUtil.FormatLink(linkType, linkDisplayText, ...)
+	local linkFormatTable = { ("|H%s"):format(linkType), ... };
+	local returnLink = table.concat(linkFormatTable, ":");
+	if linkDisplayText then
+		return returnLink .. ("|h%s|h"):format(linkDisplayText);
+	else
+		return returnLink .. "|h";
+	end
+end
+
+function LinkUtil.SplitLinkData(linkData)
+	return string.match(linkData, "(.-):(.*)");
+end
+
+function LinkUtil.SplitLink(link) -- returns linkText and displayText
+	return link:match("^|H(.+)|h(.*)|h$");
+end
+
+-- Extract the first link from the text given, ignoring leading and trailing characters.
+-- returns linkType, linkOptions, displayText
+function LinkUtil.ExtractLink(text)
+	-- linkType: |H([^:]*): matches everything that's not a colon, up to the first colon.
+	-- linkOptions: ([^|]*)|h matches everything that's not a |, up to the first |h.
+	-- displayText: (.*)|h matches everything up to the second |h.
+	-- Ex: |cffffffff|Htype:a:b:c:d|htext|h|r becomes type, a:b:c:d, text
+	return string.match(text, [[|H([^:]*):([^|]*)|h(.*)|h]]);
+end
+
+function LinkUtil.IsLinkType(link, matchLinkType)
+	local linkType, linkOptions, displayText = LinkUtil.ExtractLink(link);
+	return linkType == matchLinkType;
+end
+
+
 function ExtractHyperlinkString(linkString)
 	local preString, hyperlinkString, postString = linkString:match("^(.*)|H(.+)|h(.*)$");
 	return preString ~= nil, preString, hyperlinkString, postString;
-end
-
-function ExtractLinkData(link)
-	return string.match(link, "(.-):(.*)");
 end
 
 function ExtractQuestRewardID(linkString)
@@ -19,8 +52,8 @@ function GetItemInfoFromHyperlink(link)
 end
 
 function GetAchievementInfoFromHyperlink(link)
-	local linkType, linkData = ExtractLinkData(link);
-	if linkType:match("|Hachievement") then
+	local linkType, linkData = LinkUtil.SplitLinkData(link);
+	if linkType and linkType:match("|Hachievement") then
 		local achievementID, _, complete = strsplit(":", linkData);
 		return tonumber(achievementID), complete == "1";
 	end

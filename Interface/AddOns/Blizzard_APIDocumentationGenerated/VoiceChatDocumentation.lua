@@ -172,7 +172,7 @@ local VoiceChat =
 
 			Returns =
 			{
-				{ Name = "statusCode", Type = "VoiceChatStatusCode", Nilable = false },
+				{ Name = "statusCode", Type = "VoiceChatStatusCode", Nilable = true },
 			},
 		},
 		{
@@ -530,6 +530,15 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "isAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsVoiceChatConnected",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "connected", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1170,6 +1179,11 @@ local VoiceChat =
 			Name = "VoiceChatTtsVoicesUpdate",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_TTS_VOICES_UPDATE",
+		},
+		{
+			Name = "VoiceChatVadSettingsUpdated",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_VAD_SETTINGS_UPDATED",
 		},
 	},
 

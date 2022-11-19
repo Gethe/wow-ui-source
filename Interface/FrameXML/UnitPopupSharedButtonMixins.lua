@@ -914,8 +914,10 @@ function UnitPopupReportGroupMemberButtonMixin:OnClick()
 end
 
 function UnitPopupReportGroupMemberButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	return UnitPopupReportButtonMixin.CanShow(self);
+	local isBattleground = UnitInBattleground("player");
+	isBattleground = isBattleground ~= nil and isBattleground > 0;
+	
+	return (C_PvP.IsRatedMap() or (not IsInActiveWorldPVP() and (not isBattleground or (isBattleground and GetCVar("enablePVPNotifyAFK") == "0")))) and UnitPopupReportButtonMixin.CanShow(self);
 end
 
 UnitPopupReportPvpScoreboardButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
@@ -1701,7 +1703,7 @@ function UnitPopupLargeFocusButtonMixin:OnClick()
 	local setting = GetCVarBool("fullSizeFocusFrame");
 	setting = not setting;
 	SetCVar("fullSizeFocusFrame", setting and "1" or "0" )
-	FocusFrame_SetSmallSize(not setting, true);
+	FocusFrame:SetSmallSize(not setting, true);
 end
 
 function UnitPopupLargeFocusButtonMixin:IsCheckable()
@@ -1721,11 +1723,11 @@ function UnitPopupLockFocusButtonMixin:GetText()
 end
 
 function UnitPopupLockFocusButtonMixin:CanShow()
-	return not FocusFrame_IsLocked()
+	return not FocusFrame:IsLocked();
 end
 
 function UnitPopupLockFocusButtonMixin:OnClick()
-	FocusFrame_SetLock(true);
+	FocusFrame:SetLock(true);
 end
 
 UnitPopupUnlockFocusButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1734,11 +1736,11 @@ function UnitPopupUnlockFocusButtonMixin:GetText()
 end
 
 function UnitPopupUnlockFocusButtonMixin:CanShow()
-	return FocusFrame_IsLocked()
+	return FocusFrame:IsLocked();
 end
 
 function UnitPopupUnlockFocusButtonMixin:OnClick()
-	FocusFrame_SetLock(false);
+	FocusFrame:SetLock(false);
 end
 
 UnitPopupMoveFocusButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -3008,6 +3010,13 @@ end
 UnitPopupLegacyRaidSubsectionTitle = CreateFromMixins(UnitPopupSubsectionTitleMixin);
 function UnitPopupLegacyRaidSubsectionTitle:GetText()
 	return UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_LEGACY_RAID;
+end
+
+UnitPopupEnterEditModeMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+-- Overriden in UnitPopupButtons
+function UnitPopupEnterEditModeMixin:CanShow()
+	return false; 
 end
 
 UnitPopupSelectRoleButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);

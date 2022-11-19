@@ -113,8 +113,7 @@ function RealmList_Update()
 				button.Load:SetText(LOAD_NEW);
 				button.Load:SetTextColor(BLUE_FONT_COLOR:GetRGB());
 			elseif ( populationState == "RECOMMENDED" ) then
-				--button.Load:SetText(LOAD_RECOMMENDED);
-				button.Load:SetText(RECOMMENDED);
+				button.Load:SetText(LOAD_RECOMMENDED);
 				button.Load:SetTextColor(BLUE_FONT_COLOR:GetRGB());
 			elseif ( populationState == "FULL" ) then
 				button.Load:SetText(LOAD_FULL);

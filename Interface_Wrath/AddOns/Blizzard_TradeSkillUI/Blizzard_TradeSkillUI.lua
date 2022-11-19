@@ -177,7 +177,7 @@ function TradeSkillFrame_Update()
 				if ( not skillName ) then
 					return;
 				end
-				skillButton:SetNormalTexture("");
+				skillButton:ClearNormalTexture();
 				_G["TradeSkillSkill"..i.."Highlight"]:SetTexture("");
 				-- None creatable, no brackets needed
 				if ( numAvailable <= 0 ) then
@@ -285,7 +285,12 @@ function TradeSkillFrame_SetSelection(id)
 	else
 		TradeSkillSkillCooldown:SetText("");
 	end
-	TradeSkillSkillIcon:SetNormalTexture(GetTradeSkillIcon(id));
+	local icon = GetTradeSkillIcon(id);
+	if (icon) then
+		TradeSkillSkillIcon:SetNormalTexture(icon);
+	else
+		TradeSkillSkillIcon:ClearNormalTexture();
+	end
 	local minMade,maxMade = GetTradeSkillNumMade(id);
 	if ( maxMade > 1 ) then
 		if ( minMade == maxMade ) then

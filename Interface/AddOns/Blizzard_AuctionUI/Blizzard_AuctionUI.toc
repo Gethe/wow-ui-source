@@ -1,0 +1,5 @@
+## Title: Blizzard Auction UI
+## LoadOnDemand: 1
+Blizzard_AuctionData.lua
+Blizzard_AuctionUI.xml
+Localization.lua

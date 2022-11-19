@@ -24,6 +24,30 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetHolidayBGLossRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetHolidayBGRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+			},
+		},
+		{
 			Name = "GetRandomBGLossRewards",
 			Type = "Function",
 
@@ -63,6 +87,15 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "isPVPMap", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRatedMap",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedMap", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -276,6 +309,98 @@ local PvpInfo =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "texture", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "BattlefieldRewards",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+			},
+		},
+		{
+			Name = "BattlemasterListInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "instanceType", Type = "number", Nilable = false },
+				{ Name = "minPlayers", Type = "number", Nilable = false },
+				{ Name = "maxPlayers", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "longDescription", Type = "string", Nilable = false },
+				{ Name = "shortDescription", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "HonorRewardInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "honorLevelName", Type = "string", Nilable = false },
+				{ Name = "badgeFileDataID", Type = "number", Nilable = false },
+				{ Name = "achievementRewardedID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PvpBrawlInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "brawlID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "shortDescription", Type = "string", Nilable = false },
+				{ Name = "longDescription", Type = "string", Nilable = false },
+				{ Name = "active", Type = "bool", Nilable = false },
+				{ Name = "minLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "groupsAllowed", Type = "bool", Nilable = false },
+				{ Name = "timeLeftUntilNextChange", Type = "number", Nilable = true },
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
+				{ Name = "brawlType", Type = "BrawlType", Nilable = false },
+				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "includesAllArenas", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "PvpScalingData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "scalingDataID", Type = "number", Nilable = false },
+				{ Name = "specializationID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "value", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PvpTierInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "descendRating", Type = "number", Nilable = false },
+				{ Name = "ascendRating", Type = "number", Nilable = false },
+				{ Name = "descendTier", Type = "number", Nilable = false },
+				{ Name = "ascendTier", Type = "number", Nilable = false },
+				{ Name = "pvpTierEnum", Type = "number", Nilable = false },
+				{ Name = "tierIconID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RandomBGInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "canQueue", Type = "bool", Nilable = false },
+				{ Name = "bgID", Type = "number", Nilable = false },
+				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
+				{ Name = "minLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
 			},
 		},
 	},

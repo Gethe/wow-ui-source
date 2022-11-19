@@ -20,6 +20,16 @@ function HasTimePassed(testTime, amountOfTime)
 end
 
 SecondsFormatter = {};
+
+SecondsFormatterConstants = 
+{
+	ZeroApproximationThreshold = 0,
+	ConvertToLower = true,
+	DontConvertToLower = false,
+	RoundUpLastUnit = true,
+	DontRoundUpLastUnit = false,
+}
+
 SecondsFormatter.Abbreviation = 
 {
 	None = 1, -- seconds, minutes, hours...
@@ -52,11 +62,13 @@ SecondsFormatterMixin = {}
 -- roundUpLastUnit: determines if the last unit in the output format string is ceiled (floored by default).
 -- convertToLower: converts the format string to lowercase.
 function SecondsFormatterMixin:Init(approximationSeconds, defaultAbbreviation, roundUpLastUnit, convertToLower)
-	self.approximationSeconds = approximationSeconds or 0;
-	self.defaultAbbreviation = defaultAbbreviation or SecondsFormatter.Abbreviation.None;
-	self.roundUpLastUnit = roundUpLastUnit or false;
-	self.stripIntervalWhitespace = false;
-	self.convertToLower = convertToLower or false;
+	self:SetApproximationSeconds(approximationSeconds or 0);
+	self:SetMinInterval(SecondsFormatter.Interval.Seconds);
+	self:SetDefaultAbbreviation(defaultAbbreviation or SecondsFormatter.Abbreviation.None);
+	self:SetCanRoundUpLastUnit(roundUpLastUnit or false);
+	self:SetDesiredUnitCount(2);
+	self:SetStripIntervalWhitespace(false);
+	self:SetConvertToLower(convertToLower or false);
 end
 
 function SecondsFormatterMixin:SetStripIntervalWhitespace(strip)
@@ -65,6 +77,10 @@ end
 
 function SecondsFormatterMixin:GetStripIntervalWhitespace()
 	return self.stripIntervalWhitespace;
+end
+
+function SecondsFormatterMixin:SetConvertToLower(convertToLower)
+	self.convertToLower = convertToLower;
 end
 
 function SecondsFormatterMixin:GetMaxInterval()
@@ -84,24 +100,46 @@ function SecondsFormatterMixin:CanApproximate(seconds)
 	return (seconds > 0 and seconds < self:GetApproximationSeconds());
 end
 
+function SecondsFormatterMixin:SetDefaultAbbreviation(defaultAbbreviation)
+	self.defaultAbbreviation = defaultAbbreviation;
+end
+
 function SecondsFormatterMixin:GetDefaultAbbreviation()
 	return self.defaultAbbreviation;
+end
+
+function SecondsFormatterMixin:SetApproximationSeconds(approximationSeconds)
+	self.approximationSeconds = approximationSeconds;
 end
 
 function SecondsFormatterMixin:GetApproximationSeconds()
 	return self.approximationSeconds;
 end
 
+function SecondsFormatterMixin:SetCanRoundUpLastUnit(roundUpLastUnit)
+	self.roundUpLastUnit = roundUpLastUnit;
+end
+
 function SecondsFormatterMixin:CanRoundUpLastUnit()
 	return self.roundUpLastUnit;
 end
 
+function SecondsFormatterMixin:SetDesiredUnitCount(unitCount)
+	self.unitCount = unitCount;
+end
+
 function SecondsFormatterMixin:GetDesiredUnitCount(seconds)
-	return 2;
+	-- seconds ignored in base implementation, but instances of this mixin can override this function
+	return self.unitCount;
+end
+
+function SecondsFormatterMixin:SetMinInterval(interval)
+	self.minInterval = interval;
 end
 
 function SecondsFormatterMixin:GetMinInterval(seconds)
-	return SecondsFormatter.Interval.Seconds;
+	-- seconds ignored in base implementation, but instances of this mixin can override this function
+	return self.minInterval;
 end
 
 function SecondsFormatterMixin:GetFormatString(interval, abbreviation, convertToLower)
@@ -224,6 +262,7 @@ function SecondsToClock(seconds, displayZeroHours)
 	end
 end
 
+-- Deprecated. See SecondsFormatter for intended replacement
 function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	local time = "";
 	local count = 0;
@@ -291,6 +330,7 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	return time;
 end
 
+-- Deprecated. See SecondsFormatter for intended replacement
 function MinutesToTime(mins, hideDays)
 	local time = "";
 	local count = 0;
@@ -316,6 +356,7 @@ function MinutesToTime(mins, hideDays)
 	return time;
 end
 
+-- Deprecated. See SecondsFormatter for intended replacement
 function SecondsToTimeAbbrev(seconds)
 	local tempTime;
 	if ( seconds >= 86400  ) then

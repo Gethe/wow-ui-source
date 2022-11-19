@@ -70,7 +70,7 @@ Import("type");
 Import("string");
 Import("strtrim");
 Import("LoadURLIndex");
-Import("GetContainerNumFreeSlots");
+Import("C_Container");
 Import("GetCursorPosition");
 Import("PlaySound");
 Import("SetPortraitToTexture");
@@ -285,6 +285,7 @@ Import("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
+Import("WRATH_OF_THE_LICH_KING");
 
 --Lua enums
 Import("SOUNDKIT");
@@ -346,7 +347,7 @@ local function SetCurrentCategoryToExclusiveState(shouldBeExclusive)
 	end
 
 	showExclusiveCategory = shouldBeExclusive;
-	
+
 	if not shouldBeExclusive then
 		StoreFrame_UpdateSelectedCategory();
 		StoreFrame_SetCategory();
@@ -1987,7 +1988,7 @@ end
 
 function StoreFrame_HasFreeBagSlots()
 	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		local freeSlots, bagFamily = GetContainerNumFreeSlots(i);
+		local freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
 		if ( freeSlots > 0 and bagFamily == 0 ) then
 			return true;
 		end
@@ -2048,7 +2049,7 @@ local VASServiceCanChangeAccount = nil;
 local SelectedRealm = nil;
 local SelectedCharacter = nil;
 local NewCharacterName = nil;
-local SelectedDestinationRealm = nil;
+local SelectedDestinationRealmID = nil;
 local DestinationRealmMapping = {};
 local StoreDropdownLists = {};
 local SelectedDestinationWowAccount = nil;
@@ -2069,9 +2070,9 @@ function StoreConfirmationFrame_OnLoad(self)
 	self.Title:SetText(BLIZZARD_STORE_CONFIRMATION_TITLE);
 	self.NoticeFrame.TotalLabel:SetText(BLIZZARD_STORE_FINAL_PRICE_LABEL);
 
-	self.LicenseAcceptText:SetTextColor(0.8, 0.8, 0.8);
+	self.LicenseAcceptText:SetTextColor("P", 0.8, 0.8, 0.8);
 
-	self.NoticeFrame.Notice:SetSpacing(6);
+	self.NoticeFrame.Notice:SetSpacing("P", 6);
 
 	self:RegisterEvent("STORE_CONFIRM_PURCHASE");
 end
@@ -2099,8 +2100,8 @@ function BuildCharacterTransferConfirmationString(character)
 		sep = ", ";
 	end
 
-	if (SelectedDestinationRealm) then
-		confStr = confStr .. sep .. SelectedDestinationRealm
+	if (SelectedDestinationRealmID and RealmInfoMap and RealmInfoMap[SelectedDestinationRealmID]) then
+		confStr = confStr .. sep .. RealmInfoMap[SelectedDestinationRealmID].name
 	end
 
 	return confStr;
@@ -2382,7 +2383,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	local realmList = C_StoreSecure.GetRealmList();
 	SelectedRealm = #realmList > 0 and realmList[1] or _G.GetServerName();
 
-	SelectedDestinationRealm = nil;
+	SelectedDestinationRealmID = nil;
 	SelectedDestinationWowAccount = nil;
 	SelectedDestinationBnetAccount = nil;
 	SelectedDestinationBnetWowAccount = nil;
@@ -2841,7 +2842,7 @@ function StoreProductCard_CheckShowStorePreviewOnClick(self)
 		showPreview = IsModifiedClick("DRESSUP");
 	end
 	if ( showPreview ) then
-		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());		
+		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
 		if ( entryInfo.displayID ) then
 			StoreFrame_ShowPreview(entryInfo.name, entryInfo.displayID, entryInfo.modelSceneID);
 		end
@@ -3801,23 +3802,37 @@ function VASRealmList_BuildAutoCompleteList()
 			local pvp = realms[i].pvp;
 			local rp = realms[i].rp;
 			local name = realms[i].realmName;
+			local realmID = realms[i].realmID;
+			local expansionLevel = realms[i].expansionLevel;
 			local categoryID = realms[i].categoryID;
 			local category = realms[i].category;
 			local factionRestriction = realms[i].factionRestriction;
-			RealmInfoMap[name] = { rp=rp, pvp=pvp, categoryID=categoryID, category=category, factionRestriction=factionRestriction };
-			infoTable[#infoTable + 1] = name;
-			DestinationRealmMapping[name] = realms[i].virtualRealmAddress;
+			RealmInfoMap[realmID] = { name=name, rp=rp, pvp=pvp, categoryID=categoryID, category=category, factionRestriction=factionRestriction, expansionLevel=expansionLevel };
+			infoTable[#infoTable + 1] = realmID;
+			DestinationRealmMapping[realmID] = realms[i].virtualRealmAddress;
 		end
 	end
 
 	RealmAutoCompleteList = infoTable;
+	table.sort(RealmAutoCompleteList, function(a, b) 
+		local infoA = RealmInfoMap[a];
+		local infoB = RealmInfoMap[b];
+		if (infoA.categoryID ~= infoB.categoryID) then
+			return infoA.categoryID < infoB.categoryID;
+		end
+		if (infoA.expansionLevel ~= infoB.expansionLevel) then
+			return infoA.expansionLevel > infoB.expansionLevel;
+		end
+		return infoA.name < infoB.name;
+	end);
 end
 
 function VASRealmList_GetAutoCompleteEntries(text, cursorPosition)
 	local entries = {};
 	local str = string.lower(string.sub(text, 1, cursorPosition));
 	for i, v in ipairs(RealmAutoCompleteList) do
-		if (string.find(string.lower(v), str)) then
+		local realmName = RealmInfoMap[v].name;
+		if (string.find(string.lower(realmName), str, 1, true)) then
 			table.insert(entries, v);
 		end
 	end
@@ -3835,26 +3850,38 @@ function VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick(sel
 	VAS_AUTO_COMPLETE_SELECTION = nil;
 	VAS_AUTO_COMPLETE_OFFSET = 0;
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+	local realmInfo = RealmInfoMap[self.info];
 
-	frame.TransferRealmEditbox:SetText(self.info);
+	SelectedDestinationRealmID = self.info;
+	frame.TransferRealmEditbox:SetText(realmInfo.name);
 	frame.TransferRealmEditbox.TransferRealmAutoCompleteBox:Hide();
 
 	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 	local character = characters[SelectedCharacter];
 
-	local realmInfo = RealmInfoMap[self.info];
+	-- Russian realms are all part of the same CFG_Categories, so we cannot use that to differentiate between progression/era/seasonal
+	-- We can figure out progression servers by expansionLevel, but we can't distinguish era vs seasonal, so we ignore that tag.
+	local doRussianCategoryHack = (realmInfo.categoryID == 12 and C_StoreSecure.GetCurrentRealmContentSet() >= 1 and realmInfo.expansionLevel >= 1);
 
 	if (character and realmInfo and realmInfo.factionRestriction >= 0 and realmInfo.factionRestriction ~= character.faction) then
 		frame.TransferRealmCheckbox.Warning:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
 		frame.TransferRealmCheckbox.Warning:SetText(BLIZZARD_STORE_VAS_TRANSFER_INELIGIBLE_FACTION_WARNING);
 		frame.TransferRealmCheckbox.Warning:Show();
 	elseif (realmInfo and realmInfo.categoryID and realmInfo.category and
-			realmInfo.categoryID ~= C_StoreSecure.GetCurrentRealmCategory()) then
+			(realmInfo.categoryID ~= C_StoreSecure.GetCurrentRealmCategory() or doRussianCategoryHack)) then
 		-- Show an informative realm category warning if the realm we're transferring to is in a different tab than our currently connected realm.
 		-- A better way to do this would be to get the realm category of the source realm we're transferring from, but that's actually a fair bit more work.
 		-- Just using our current realm connection should be adequate for the vast majority of cases.
+		
+		local categoryText;
+		if (C_StoreSecure.GetCurrentRealmContentSet() >= 1 and realmInfo.expansionLevel >= 1) then
+			categoryText = "|cff295f61"..WRATH_OF_THE_LICH_KING.."|r";
+		else
+			categoryText = "|cffA01919"..realmInfo.category.."|r";
+		end
+
 		frame.TransferRealmCheckbox.Warning:SetTextColor(0, 0, 0);
-		frame.TransferRealmCheckbox.Warning:SetText(BLIZZARD_STORE_VAS_TRANSFER_REALM_CATEGORY_WARNING:format("|cffA01919"..RealmInfoMap[self.info].category.."|r"));
+		frame.TransferRealmCheckbox.Warning:SetText(BLIZZARD_STORE_VAS_TRANSFER_REALM_CATEGORY_WARNING:format(categoryText));
 		frame.TransferRealmCheckbox.Warning:Show();
 	else
 		frame.TransferRealmCheckbox.Warning:Hide();
@@ -3867,7 +3894,7 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 	end
 	VAS_AUTO_COMPLETE_ENTRIES = VASRealmList_GetAutoCompleteEntries(text, cursorPosition);
 
-	if (text == VAS_AUTO_COMPLETE_ENTRIES[1]) then
+	if (#VAS_AUTO_COMPLETE_ENTRIES > 0 and text == RealmInfoMap[VAS_AUTO_COMPLETE_ENTRIES[1]].name) then
 		return;
 	end
 
@@ -3887,6 +3914,7 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 
 	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 	local character = characters[SelectedCharacter];
+	local currentRealmCategoryID = C_StoreSecure.GetCurrentRealmCategory();
 
 	local hasMore = (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET) > VAS_AUTO_COMPLETE_MAX_ENTRIES;
 	for i = 1 + buttonOffset, math.min(VAS_AUTO_COMPLETE_MAX_ENTRIES, (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET)) + buttonOffset do
@@ -3907,6 +3935,20 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 		elseif (rpPvpInfo.rp) then
 			tag = _G.VAS_RP_PARENTHESES;
 		end
+
+		-- Russian realms are all part of the same CFG_Categories, so we cannot use that to differentiate between progression/era/seasonal
+		-- We can figure out progression servers by expansionLevel, but we can't distinguish era vs seasonal, so we ignore that tag.
+		local doRussianCategoryHack = (rpPvpInfo.categoryID == 12 and C_StoreSecure.GetCurrentRealmContentSet() >= 1 and rpPvpInfo.expansionLevel >= 1);
+
+		local realmCategoryPrefix = "";
+		if (C_StoreSecure.GetCurrentRealmContentSet() >= 1 and (rpPvpInfo.categoryID ~= currentRealmCategoryID or doRussianCategoryHack)) then
+			if (rpPvpInfo.expansionLevel >= 1) then
+				realmCategoryPrefix = "[" .. "|cff5babdc"..WRATH_OF_THE_LICH_KING.."|r" .. "] ";
+			else
+				realmCategoryPrefix = "[" .. "|cfffe8452"..rpPvpInfo.category.."|r" .. "] ";
+			end
+		end
+
 		if (character and rpPvpInfo.factionRestriction >= 0 and rpPvpInfo.factionRestriction ~= character.faction) then
 			-- This source-destination pair doesn't allow our current faction. Gray it out.
 			button:SetNormalFontObject("GameFontDisableTiny2");
@@ -3915,7 +3957,7 @@ function VASCharacterSelectionTransferRealmEditBox_UpdateAutoComplete(self, text
 			button:SetNormalFontObject("GameFontWhiteTiny2");
 			button:SetHighlightFontObject("GameFontWhiteTiny2");
 		end
-		button.Text:SetText(VAS_AUTO_COMPLETE_ENTRIES[entryIndex] .. " " .. tag);
+		button.Text:SetText(realmCategoryPrefix .. rpPvpInfo.name .. " " .. tag);
 		button:Show();
 		if (i - buttonOffset == VAS_AUTO_COMPLETE_SELECTION) then
 			button:LockHighlight();
@@ -4012,7 +4054,7 @@ function StoreAutoCompleteSelectionEnterPressed()
 		VAS_AUTO_COMPLETE_OFFSET = 0;
 		local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 
-		frame.TransferRealmEditbox:SetText(info);
+		frame.TransferRealmEditbox:SetText(RealmInfoMap[info].name);
 		frame.TransferRealmEditbox.TransferRealmAutoCompleteBox:Hide();
 	end
 end
@@ -4028,7 +4070,7 @@ end
 function TransferRealmCheckbox_OnClick(self)
 	PlayCheckboxSound(self);
 	if (not self:GetChecked()) then
-		SelectedDestinationRealm = nil;
+		SelectedDestinationRealmID = nil;
 		self:GetParent().TransferRealmEditbox:SetText("");
 		self:GetParent().TransferRealmEditbox.TransferRealmAutoCompleteBox:Hide();
 		self:GetParent().TransferRealmCheckbox.Warning:SetText("");
@@ -4141,12 +4183,12 @@ local timeoutTicker;
 
 function VASCharacterSelectionStartTimeout()
 	VASCharacterSelectionCancelTimeout();
-	timeoutTicker = NewSecureTicker(TIMEOUT_SECS, VASCharacterSelectionTimeout, 1);
+	timeoutTicker = C_Timer.NewTicker(TIMEOUT_SECS, VASCharacterSelectionTimeout, 1);
 end
 
 function VASCharacterSelectionCancelTimeout()
 	if (timeoutTicker) then
-		SecureCancelTicker(timeoutTicker);
+		timeoutTicker:Cancel();
 		timeoutTicker = nil;
 	end
 end
@@ -4216,7 +4258,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 		end
 	end
 	
-	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealm], wowAccountGUID, bnetAccountGUID, CharacterTransferFactionChangeBundle) ) then
+	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealmID], wowAccountGUID, bnetAccountGUID, CharacterTransferFactionChangeBundle) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		WaitingOnVASToCompleteToken = WaitingOnVASToComplete;
@@ -4318,12 +4360,25 @@ function VASCharacterSelectionTransferCheckEditBoxes()
 	return valid;
 end
 
+function VASCharacterSelectionTransferGetRealmsWithName(realmName)
+	local realms = {};
+	if (RealmInfoMap) then
+		for id, info in pairs(RealmInfoMap) do
+			if (info.name == realmName) then
+				realms[#realms + 1] = id;
+			end
+		end
+	end
+	return realms;
+end
+
 function VASCharacterSelectionTransferGatherAndValidateData()
 	local noCheck = true;
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	local button = frame.ContinueButton;
 	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 	local character = characters[SelectedCharacter];
+	local matchingRealms = VASCharacterSelectionTransferGetRealmsWithName(frame.TransferRealmEditbox:GetText());
 
 	StoreVASValidationFrame_UpdateCharacterTransferValidationPosition();
 
@@ -4332,11 +4387,17 @@ function VASCharacterSelectionTransferGatherAndValidateData()
 		return;
 	end
 
+	if (#matchingRealms == 0) then
+		SelectedDestinationRealmID = nil;
+	elseif(#matchingRealms == 1) then
+		SelectedDestinationRealmID = matchingRealms[1];
+	end
+
 	button:Disable();
 	if (frame.TransferRealmCheckbox:GetChecked()) then
 		noCheck = false;
-		SelectedDestinationRealm = frame.TransferRealmEditbox:GetText();
-		if (not DestinationRealmMapping[SelectedDestinationRealm] or DestinationRealmMapping[SelectedDestinationRealm] == character.currentServer) then
+
+		if (not DestinationRealmMapping[SelectedDestinationRealmID] or DestinationRealmMapping[SelectedDestinationRealmID] == character.currentServer) then
 			return;
 		end
 	end
@@ -4358,9 +4419,8 @@ function VASCharacterSelectionTransferGatherAndValidateData()
 	end
 
 	-- If the realm transfer has a faction restriction, validate it.
-	SelectedDestinationRealm = frame.TransferRealmEditbox:GetText();
-	if (SelectedDestinationRealm) then
-		local realmInfo = RealmInfoMap[SelectedDestinationRealm];
+	if (SelectedDestinationRealmID) then
+		local realmInfo = RealmInfoMap[SelectedDestinationRealmID];
 		if (character and realmInfo and realmInfo.factionRestriction >= 0 and realmInfo.factionRestriction ~= character.faction) then
 			-- Error message is shown in VASCharacterSelectionTransferRealmEditBoxAutoCompleteButton_OnClick.
 			return;
@@ -4469,39 +4529,6 @@ end
 --------------------------------------
 local priceUpdateTimer, currentPollTimeSeconds;
 
-------------------------------------------------------------------------------------------------------------------------------------------------------
--- This code is replicated from C_TimerAugment.lua to ensure that the timers are secure.
-------------------------------------------------------------------------------------------------------------------------------------------------------
---Cancels a ticker or timer. May be safely called within the ticker's callback in which
---case the ticker simply won't be started again.
---Cancel is guaranteed to be idempotent.
-function SecureCancelTicker(ticker)
-	ticker._cancelled = true;
-end
-
-function NewSecureTicker(duration, callback, iterations)
-	local ticker = {};
-	ticker._remainingIterations = iterations;
-	ticker._callback = function()
-		if ( not ticker._cancelled ) then
-			callback(ticker);
-
-			--Make sure we weren't cancelled during the callback
-			if ( not ticker._cancelled ) then
-				if ( ticker._remainingIterations ) then
-					ticker._remainingIterations = ticker._remainingIterations - 1;
-				end
-				if ( not ticker._remainingIterations or ticker._remainingIterations > 0 ) then
-					C_Timer.After(duration, ticker._callback);
-				end
-			end
-		end
-	end;
-
-	C_Timer.After(duration, ticker._callback);
-	return ticker;
-end
-
 function StoreFrame_UpdateMarketPrice()
 	C_WowTokenPublic.UpdateMarketPrice();
 end
@@ -4512,14 +4539,14 @@ function StoreFrame_CheckMarketPriceUpdates()
 		local _, pollTimeSeconds = C_WowTokenPublic.GetCommerceSystemStatus();
 		if (not priceUpdateTimer or pollTimeSeconds ~= currentPollTimeSeconds) then
 			if (priceUpdateTimer) then
-				SecureCancelTicker(priceUpdateTimer);
+				priceUpdateTimer:Cancel();
 			end
-			priceUpdateTimer = NewSecureTicker(pollTimeSeconds, StoreFrame_UpdateMarketPrice);
+			priceUpdateTimer = C_Timer.NewTicker(pollTimeSeconds, StoreFrame_UpdateMarketPrice);
 			currentPollTimeSeconds = pollTimeSeconds;
 		end
 	else
 		if (priceUpdateTimer) then
-			SecureCancelTicker(priceUpdateTimer);
+			priceUpdateTimer:Cancel();
 		end
 	end
 end

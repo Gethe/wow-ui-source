@@ -82,7 +82,6 @@ UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0,		xoffset = 
 UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["ArenaRegistrarFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["PetitionFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
-UIPanelWindows["BattlefieldFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["AuctionFrame"] =				{ area = "doublewide",		pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 840 }
 UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	showFailedFunc = CloseTaxiMap };
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
@@ -1672,10 +1671,10 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "REPORT_PLAYER_RESULT") then
 		local success = ...;
 		if (success) then
-			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMITTED_SUCCESSFULLY);
+			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
 			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
 		else
-			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMISSION_FAILED);
+			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
 		end
 	end
@@ -2610,6 +2609,21 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		anchorY = anchorY - UIWidgetBelowMinimapContainerFrame:GetHeight() - 4;
 	end
 
+	--Setup Vehicle seat indicator offset
+	if ( VehicleSeatIndicator ) then
+		if ( VehicleSeatIndicator and VehicleSeatIndicator:IsShown() ) then
+			anchorY = anchorY - VehicleSeatIndicator:GetHeight() - 18;	--The -18 is there to give a small buffer for things like the QuestTimeFrame below the Seat Indicator
+		end
+
+		if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 ) then
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -100, 0);
+		elseif ( SHOW_MULTI_ACTIONBAR_3 ) then
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -62, 0);
+		else
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", 0, 0);
+		end
+	end
+
 	-- Boss frames - need to move below buffs/debuffs if both right action bars are showing
 	local numBossFrames = 0;
 	for i = 1, MAX_BOSS_FRAMES do
@@ -2644,21 +2658,23 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 
 	-- QuestWatchFrame
-	local numArenaOpponents = GetNumArenaOpponents();
-	if ( not WatchFrame:IsUserPlaced() and ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
-		WatchFrame:ClearAllPoints();
-		WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
-	elseif ( not WatchFrame:IsUserPlaced() ) then -- We're using Simple Quest Tracking, automagically size and position!
-		WatchFrame:ClearAllPoints();
-		-- move up if only the minimap cluster is above, move down a little otherwise
-		if ( anchorY == 0 ) then
-			anchorY = 10;
+	if not ( WatchFrame:IsUserPlaced() ) then
+		local numArenaOpponents = GetNumArenaOpponents();
+		if ( ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
+			WatchFrame:ClearAllPoints();
+			WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+		else -- We're using Simple Quest Tracking, automagically size and position!
+			WatchFrame:ClearAllPoints();
+			-- move up if only the minimap cluster is above, move down a little otherwise
+			if ( anchorY == 0 ) then
+				anchorY = 10;
+			end
+			WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+			-- OnSizeChanged for WatchFrame handles its redraw
 		end
-		WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-		-- OnSizeChanged for WatchFrame handles its redraw
+
+		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 	end
-	
-	WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 	
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
@@ -3586,6 +3602,8 @@ function ToggleGameMenu()
 		ChallengesKeystoneFrame:Hide();
 	elseif ( CanAutoSetGamePadCursorControl(false) and (not IsModifierKeyDown()) ) then
 		SetGamePadCursorControl(false);
+	elseif ( ReportFrame:IsShown() ) then
+		ReportFrame:Hide();
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);

@@ -275,9 +275,9 @@ end
 function MiniMapTracking_Update()
 	local currentTexture = MiniMapTrackingIcon:GetTexture();
 	local bestTexture = [[Interface\Minimap\Tracking\None]];
-	local count = GetNumTrackingTypes();
+	local count = C_Minimap.GetNumTrackingTypes();
 	for id = 1, count do
-		local texture, active, category  = select(2, GetTrackingInfo(id));
+		local texture, active, category  = select(2, C_Minimap.GetTrackingInfo(id));
 		if active then
 			if (category == "spell") then 
 				if (currentTexture == texture) then
@@ -312,15 +312,15 @@ function MiniMapTracking_SetTracking(self, id, unused, on)
 end
 
 function MiniMapTrackingDropDownButton_IsActive(button)
-	local name, texture, active, category = GetTrackingInfo(button.arg1);
+	local name, texture, active, category = C_Minimap.GetTrackingInfo(button.arg1);
 	return active;
 end
 
 function MiniMapTrackingDropDown_IsNoTrackingActive()
 	local name, texture, active, category;
-	local count = GetNumTrackingTypes();
+	local count = C_Minimap.GetNumTrackingTypes();
 	for id = 1, count do
-		name, texture, active, category  = GetTrackingInfo(id);
+		name, texture, active, category  = C_Minimap.GetTrackingInfo(id);
 		if (active) then
 			return false;
 		end
@@ -330,14 +330,14 @@ end
 
 function MiniMapTrackingDropDown_Initialize(self, level)
 	local name, texture, active, category, nested, numTracking;
-	local count = GetNumTrackingTypes();
+	local count = C_Minimap.GetNumTrackingTypes();
 	local info;
 	local _, class = UnitClass("player");
 
 	if (level == 1) then
 		numTracking = 0; -- make sure there are at least two options in dropdown
 		for id = 1, count do
-			name, texture, active, category, nested = GetTrackingInfo(id);
+			name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
 			if (category == "spell") then
 				numTracking = numTracking + 1;
 			end
@@ -357,7 +357,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 	end
 
 	for id = 1, count do
-		name, texture, active, category, nested = GetTrackingInfo(id);
+		name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
 		info = UIDropDownMenu_CreateInfo();
 		info.text = name;
 		info.checked = MiniMapTrackingDropDownButton_IsActive;

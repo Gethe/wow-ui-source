@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\Interface\FrameXML\UI.xsd">
 	<Script file="Blizzard_RaidUI.lua"/>
 	<Button name="RaidClassButtonTemplate" virtual="true">
 		<Size x="18" y="18"/>

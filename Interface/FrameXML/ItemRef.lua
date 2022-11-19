@@ -401,11 +401,6 @@ function GetFixedLink(text, quality)
 	return text;
 end
 
-local function FormatLink(linkType, linkDisplayText, ...)
-	local linkFormatTable = { ("|H%s"):format(linkType), ... };
-	return table.concat(linkFormatTable, ":") .. ("|h%s|h"):format(linkDisplayText);
-end
-
 function GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed)
 	local id, name = C_PetBattles.GetAbilityInfoByID(abilityID);
 	if not name then
@@ -413,27 +408,27 @@ function GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed)
 		return "";
 	end
 
-	return ("|cff4e96f7%s|r"):format(FormatLink("battlePetAbil", name, abilityID, maxHealth or 100, power or 0, speed or 0));
+	return ("|cff4e96f7%s|r"):format(LinkUtil.FormatLink("battlePetAbil", name, abilityID, maxHealth or 100, power or 0, speed or 0));
 end
 
 function GetPlayerLink(characterName, linkDisplayText, lineID, chatType, chatTarget)
 	-- Use simplified link if possible
 	if lineID or chatType or chatTarget then
-		return FormatLink("player", linkDisplayText, characterName, lineID or 0, chatType or 0, chatTarget or "");
+		return LinkUtil.FormatLink("player", linkDisplayText, characterName, lineID or 0, chatType or 0, chatTarget or "");
 	else
-		return FormatLink("player", linkDisplayText, characterName);
+		return LinkUtil.FormatLink("player", linkDisplayText, characterName);
 	end
 end
 
 function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
-	return FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
+	return LinkUtil.FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
 end
 
 function GetGMLink(gmName, linkDisplayText, lineID)
 	if lineID then
-		return FormatLink("playerGM", linkDisplayText, gmName, lineID or 0);
+		return LinkUtil.FormatLink("playerGM", linkDisplayText, gmName, lineID or 0);
 	else
-		return FormatLink("playerGM", linkDisplayText, gmName);
+		return LinkUtil.FormatLink("playerGM", linkDisplayText, gmName);
 	end
 end
 
@@ -452,16 +447,16 @@ end
 
 function GetBNPlayerCommunityLink(playerName, linkDisplayText, bnetIDAccount, clubId, streamId, epoch, position)
 	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
-	return FormatLink("BNplayerCommunity", linkDisplayText, playerName, bnetIDAccount, clubId, streamId, epoch, position);
+	return LinkUtil.FormatLink("BNplayerCommunity", linkDisplayText, playerName, bnetIDAccount, clubId, streamId, epoch, position);
 end
 
 function GetPlayerCommunityLink(playerName, linkDisplayText, clubId, streamId, epoch, position)
 	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
-	return FormatLink("playerCommunity", linkDisplayText, playerName, clubId, streamId, epoch, position);
+	return LinkUtil.FormatLink("playerCommunity", linkDisplayText, playerName, clubId, streamId, epoch, position);
 end
 
 function GetClubTicketLink(ticketId, clubName, clubType)
-	local link = FormatLink("clubTicket", CLUB_INVITE_HYPERLINK_TEXT:format(clubName), ticketId);
+	local link = LinkUtil.FormatLink("clubTicket", CLUB_INVITE_HYPERLINK_TEXT:format(clubName), ticketId);
 	if clubType == Enum.ClubType.BattleNet then
 		return BATTLENET_FONT_COLOR:WrapTextInColorCode(link);
 	else 

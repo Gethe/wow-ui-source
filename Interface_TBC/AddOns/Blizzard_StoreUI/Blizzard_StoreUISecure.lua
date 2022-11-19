@@ -70,7 +70,7 @@ Import("type");
 Import("string");
 Import("strtrim");
 Import("LoadURLIndex");
-Import("GetContainerNumFreeSlots");
+Import("C_Container");
 Import("GetCursorPosition");
 Import("PlaySound");
 Import("SetPortraitToTexture");
@@ -93,6 +93,7 @@ Import("IsVeteranTrialAccount");
 Import("PortraitFrameTemplateMixin");
 Import("SecondsToTime");
 Import("BackdropTemplateMixin");
+Import("GetExpansionLevel");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -290,6 +291,7 @@ Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
 --Lua enums
 Import("SOUNDKIT");
 Import("LE_MODEL_BLEND_OPERATION_NONE");
+Import("LE_EXPANSION_WRATH_OF_THE_LICH_KING");
 
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
@@ -360,7 +362,7 @@ local function SetCurrentCategoryToExclusiveState(shouldBeExclusive)
 	end
 
 	showExclusiveCategory = shouldBeExclusive;
-	
+
 	if not shouldBeExclusive then
 		StoreFrame_UpdateSelectedCategory();
 		StoreFrame_SetCategory();
@@ -519,12 +521,26 @@ local vasErrorData = {
 	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
 			local str = "";
-			if (character.level > 50) then
-				str = GetSecureMoneyString(5000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level > 30) then
-				str = GetSecureMoneyString(500 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
-			elseif (character.level >= 10) then
-				str = GetSecureMoneyString(100 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			local moneyCapForLevel = 0;
+			if GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+				if (character.level > 50) then
+					moneyCapForLevel = 25000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				elseif (character.level > 30) then
+					moneyCapForLevel = 2500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				else
+					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				end
+			else
+				if (character.level > 50) then
+					moneyCapForLevel = 5000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				elseif (character.level > 30) then
+					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				else
+					moneyCapForLevel = 100 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				end
+			end
+			if (moneyCapForLevel > 0) then
+				str = GetSecureMoneyString(moneyCapForLevel, true, true);
 			end
 			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
 		end
@@ -2057,7 +2073,7 @@ end
 
 function StoreFrame_HasFreeBagSlots()
 	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		local freeSlots, bagFamily = GetContainerNumFreeSlots(i);
+		local freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
 		if ( freeSlots > 0 and bagFamily == 0 ) then
 			return true;
 		end
@@ -2139,9 +2155,9 @@ function StoreConfirmationFrame_OnLoad(self)
 	self.Title:SetText(BLIZZARD_STORE_CONFIRMATION_TITLE);
 	self.NoticeFrame.TotalLabel:SetText(BLIZZARD_STORE_FINAL_PRICE_LABEL);
 
-	self.LicenseAcceptText:SetTextColor(0.8, 0.8, 0.8);
+	self.LicenseAcceptText:SetTextColor("P", 0.8, 0.8, 0.8);
 
-	self.NoticeFrame.Notice:SetSpacing(6);
+	self.NoticeFrame.Notice:SetSpacing("P", 6);
 
 	self:RegisterEvent("STORE_CONFIRM_PURCHASE");
 end
@@ -2911,7 +2927,7 @@ function StoreProductCard_CheckShowStorePreviewOnClick(self)
 		showPreview = IsModifiedClick("DRESSUP");
 	end
 	if ( showPreview ) then
-		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());		
+		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
 		if ( entryInfo.displayID ) then
 			StoreFrame_ShowPreview(entryInfo.name, entryInfo.displayID, entryInfo.modelSceneID);
 		end
@@ -4208,12 +4224,12 @@ local timeoutTicker;
 
 function VASCharacterSelectionStartTimeout()
 	VASCharacterSelectionCancelTimeout();
-	timeoutTicker = NewSecureTicker(TIMEOUT_SECS, VASCharacterSelectionTimeout, 1);
+	timeoutTicker = C_Timer.NewTicker(TIMEOUT_SECS, VASCharacterSelectionTimeout, 1);
 end
 
 function VASCharacterSelectionCancelTimeout()
 	if (timeoutTicker) then
-		SecureCancelTicker(timeoutTicker);
+		timeoutTicker:Cancel();
 		timeoutTicker = nil;
 	end
 end
@@ -4282,7 +4298,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 			wowAccountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(SelectedDestinationWowAccount, true);
 		end
 	end
-	
+
 	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealm], wowAccountGUID, bnetAccountGUID, CharacterTransferFactionChangeBundle) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
@@ -4536,39 +4552,6 @@ end
 --------------------------------------
 local priceUpdateTimer, currentPollTimeSeconds;
 
-------------------------------------------------------------------------------------------------------------------------------------------------------
--- This code is replicated from C_TimerAugment.lua to ensure that the timers are secure.
-------------------------------------------------------------------------------------------------------------------------------------------------------
---Cancels a ticker or timer. May be safely called within the ticker's callback in which
---case the ticker simply won't be started again.
---Cancel is guaranteed to be idempotent.
-function SecureCancelTicker(ticker)
-	ticker._cancelled = true;
-end
-
-function NewSecureTicker(duration, callback, iterations)
-	local ticker = {};
-	ticker._remainingIterations = iterations;
-	ticker._callback = function()
-		if ( not ticker._cancelled ) then
-			callback(ticker);
-
-			--Make sure we weren't cancelled during the callback
-			if ( not ticker._cancelled ) then
-				if ( ticker._remainingIterations ) then
-					ticker._remainingIterations = ticker._remainingIterations - 1;
-				end
-				if ( not ticker._remainingIterations or ticker._remainingIterations > 0 ) then
-					C_Timer.After(duration, ticker._callback);
-				end
-			end
-		end
-	end;
-
-	C_Timer.After(duration, ticker._callback);
-	return ticker;
-end
-
 function StoreFrame_UpdateMarketPrice()
 	C_WowTokenPublic.UpdateMarketPrice();
 end
@@ -4579,14 +4562,14 @@ function StoreFrame_CheckMarketPriceUpdates()
 		local _, pollTimeSeconds = C_WowTokenPublic.GetCommerceSystemStatus();
 		if (not priceUpdateTimer or pollTimeSeconds ~= currentPollTimeSeconds) then
 			if (priceUpdateTimer) then
-				SecureCancelTicker(priceUpdateTimer);
+				priceUpdateTimer:Cancel();
 			end
-			priceUpdateTimer = NewSecureTicker(pollTimeSeconds, StoreFrame_UpdateMarketPrice);
+			priceUpdateTimer = C_Timer.NewTicker(pollTimeSeconds, StoreFrame_UpdateMarketPrice);
 			currentPollTimeSeconds = pollTimeSeconds;
 		end
 	else
 		if (priceUpdateTimer) then
-			SecureCancelTicker(priceUpdateTimer);
+			priceUpdateTimer:Cancel();
 		end
 	end
 end

@@ -127,10 +127,10 @@ function QuestLog_Update(self)
 
 	-- ScrollFrame update
 	FauxScrollFrame_Update(QuestLogListScrollFrame, numEntries, QUESTS_DISPLAYED, QUESTLOG_QUEST_HEIGHT, nil, nil, nil, QuestLogHighlightFrame, 293, 316 )
-	
+
 	-- Update the quest listing
 	QuestLogHighlightFrame:Hide();
-	
+
 	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questHighlight, questCheck;
 	local questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete, color;
 	local numPartyMembers, partyMembersOnQuest, tempWidth, textWidth;
@@ -150,11 +150,11 @@ function QuestLog_Update(self)
 				else
 					questLogTitle:SetText("");
 				end
-				
+
 				if ( isCollapsed ) then
 					questLogTitle:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
 				else
-					questLogTitle:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up"); 
+					questLogTitle:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
 				end
 				questHighlight:SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
 				questNumGroupMates:SetText("");
@@ -164,7 +164,7 @@ function QuestLog_Update(self)
 				--Set Dummy text to get text width *SUPER HACK*
 				QuestLogDummyText:SetText("  "..questLogTitleText);
 
-				questLogTitle:SetNormalTexture("");
+				questLogTitle:ClearNormalTexture();
 				questHighlight:SetTexture("");
 
 				-- If not a header see if any nearby group mates are on this quest
@@ -193,15 +193,15 @@ function QuestLog_Update(self)
 				questTitleTag:SetText("("..questTag..")");
 				-- Shrink text to accomdate quest tags without wrapping
 				tempWidth = 275 - 15 - questTitleTag:GetWidth();
-				
+
 				if ( QuestLogDummyText:GetWidth() > tempWidth ) then
 					textWidth = tempWidth;
 				else
 					textWidth = QuestLogDummyText:GetWidth();
 				end
-				
+
 				questNormalText:SetWidth(tempWidth);
-				
+
 				-- If there's quest tag position check accordingly
 				questCheck:Hide();
 				if ( IsQuestWatched(questIndex) ) then
@@ -313,7 +313,7 @@ function QuestLog_SetSelection(questID)
 
 	-- Get xml id
 	local id = questID - FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
-	
+
 	SelectQuestLogEntry(questID);
 	local titleButton = _G["QuestLogTitle"..id];
 	local titleButtonTag = _G["QuestLogTitle"..id.."Tag"];
@@ -359,7 +359,7 @@ function QuestLog_UpdateQuestDetails(doNotScroll)
 	local questObjectives;
 	questDescription, questObjectives = GetQuestLogQuestText();
 	QuestLogObjectivesText:SetText(questObjectives);
-	
+
 	local questTimer = GetQuestLogTimeLeft();
 	if ( questTimer ) then
 		QuestLogFrame.hasTimer = 1;
@@ -372,10 +372,10 @@ function QuestLog_UpdateQuestDetails(doNotScroll)
 		QuestLogTimerText:Hide();
 		QuestLogObjective1:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
 	end
-	
+
 	-- Show Quest Watch if track quest is checked
 	local numObjectives = GetNumQuestLeaderBoards();
-	
+
 	for i=1, numObjectives, 1 do
 		local string = _G["QuestLogObjective"..i];
 		local text;
@@ -406,9 +406,9 @@ function QuestLog_UpdateQuestDetails(doNotScroll)
 		else
 			QuestLogRequiredMoneyText:SetPoint("TOPLEFT", "QuestLogObjectivesText", "BOTTOMLEFT", 0, -10);
 		end
-		
+
 		MoneyFrame_Update("QuestLogRequiredMoneyFrame", GetQuestLogRequiredMoney());
-		
+
 		if ( GetQuestLogRequiredMoney() > GetMoney() ) then
 			-- Not enough money
 			QuestLogRequiredMoneyText:SetTextColor(0, 0, 0);
@@ -518,6 +518,19 @@ function QuestLogTitleButton_OnEnter(self)
 	QuestLog_UpdatePartyInfoTooltip(self);
 end
 
+function QuestLogTitleButton_OnLeave(self)
+	if (self:GetID() ~= (QuestLogFrame.selectedButtonID - FauxScrollFrame_GetOffset(QuestLogListScrollFrame))) then
+		local tag = getglobal(self:GetName().."Tag");
+		if self.r and self.g and self.b then
+			tag:SetTextColor(self.r, self.g, self.b);
+		else
+			tag:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		end
+	end
+
+	GameTooltip:Hide();
+end
+
 function QuestLog_UpdatePartyInfoTooltip(self)
 	local index = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
 	local numPartyMembers = GetNumSubgroupMembers();
@@ -525,7 +538,7 @@ function QuestLog_UpdatePartyInfoTooltip(self)
 		return;
 	end
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
-	
+
 	local questLogTitleText = GetQuestLogTitle(index);
 	GameTooltip:SetText(questLogTitleText);
 
@@ -625,7 +638,7 @@ function QuestWatch_Update()
 		questIndex = GetQuestIndexForWatch(i);
 		if ( questIndex ) then
 			numObjectives = GetNumQuestLeaderBoards(questIndex);
-		
+
 			--If there are objectives set the title
 			if ( numObjectives > 0 ) then
 				-- Set title
@@ -685,7 +698,7 @@ function QuestWatch_Update()
 	else
 		QuestLogTrackTracking:SetVertexColor(1.0, 0, 0);
 	end
-	
+
 	-- If no watch lines used then hide the frame and return
 	if ( watchTextIndex == 1 ) then
 		QuestWatchFrame:Hide();
@@ -779,7 +792,7 @@ end
 function AutoQuestWatch_OnUpdate(self, elapsed)
 	for index, value in ipairs(QUEST_WATCH_LIST) do
 		if ( value.timer ~= QUEST_WATCH_NO_EXPIRE ) then
-			value.timer = value.timer - elapsed;	
+			value.timer = value.timer - elapsed;
 			if ( value.timer < 0 ) then
 				RemoveQuestWatch(GetQuestLogIndexByID(value.id));
 				tremove(QUEST_WATCH_LIST, index);

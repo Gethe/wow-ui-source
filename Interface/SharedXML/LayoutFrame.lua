@@ -54,7 +54,7 @@ function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 	end
 end
 
-local function LayoutIndexComparator(left, right)
+function LayoutIndexComparator(left, right)
 	if (left.layoutIndex == right.layoutIndex and left ~= right) then
 		GMError("Duplicate layoutIndex found: " .. left.layoutIndex);
 	end
@@ -141,6 +141,10 @@ function LayoutMixin:GetChildPadding(child)
 	end
 end
 
+local function GetSize(desired, fixed, minimum, maximum)
+	return fixed or Clamp(desired, minimum or desired, maximum or desired);
+end
+
 function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
 	local frameWidth, frameHeight;
 	local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding();
@@ -160,7 +164,7 @@ function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
 	else
 		frameHeight = self.fixedHeight or childrenHeight;
 	end
-	return frameWidth, frameHeight;
+	return GetSize(frameWidth, nil, self.minimumWidth, self.maximumWidth), GetSize(frameHeight, nil, self.minimumHeight, self.maximumHeight);
 end
 
 function LayoutMixin:Layout()
@@ -209,6 +213,13 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 			child:SetWidth(childWidth);
 			childHeight = child:GetHeight();
 		end
+
+		if self.respectChildScale then
+			local childScale = child:GetScale();
+			childWidth = childWidth * childScale;
+			childHeight = childHeight * childScale;
+		end
+
 		childrenWidth = math.max(childrenWidth, childWidth + leftPadding + rightPadding);
 		childrenHeight = childrenHeight + childHeight + topPadding + bottomPadding;
 		if (i > 1) then
@@ -264,6 +275,13 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 			child:SetHeight(childHeight);
 			childWidth = child:GetWidth();
 		end
+
+		if self.respectChildScale then
+			local childScale = child:GetScale();
+			childWidth = childWidth * childScale;
+			childHeight = childHeight * childScale;
+		end
+
 		childrenHeight = math.max(childrenHeight, childHeight + topPadding + bottomPadding);
 		childrenWidth = childrenWidth + childWidth + leftPadding + rightPadding;
 		if (i > 1) then
@@ -306,10 +324,6 @@ local function GetExtents(childFrame, left, right, top, bottom, layoutFrameScale
 	bottom = bottom and math.min(frameBottom, bottom) or frameBottom;
 
 	return left, right, top, bottom, defaulted;
-end
-
-local function GetSize(desired, fixed, minimum, maximum)
-	return fixed or Clamp(desired, minimum or desired, maximum or desired);
 end
 
 function ResizeLayoutMixin:IgnoreLayoutIndex()

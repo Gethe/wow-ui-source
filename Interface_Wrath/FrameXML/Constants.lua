@@ -313,14 +313,14 @@ INVSLOTS_EQUIPABLE_IN_COMBAT = {
 ITEM_INVENTORY_BANK_BAG_OFFSET	= 4; -- Number of bags before the first bank bag
 CONTAINER_BAG_OFFSET = 19; -- Used for PutItemInBag
 
-BACKPACK_CONTAINER = 0;
-BANK_CONTAINER = -1;
+BACKPACK_CONTAINER = Enum.BagIndex.Backpack;
+BANK_CONTAINER = Enum.BagIndex.Bank;
 BANK_CONTAINER_INVENTORY_OFFSET = 39; -- Used for PickupInventoryItem
-KEYRING_CONTAINER = -2;
+KEYRING_CONTAINER = Enum.BagIndex.Keyring;
 
-NUM_BAG_SLOTS = 4;
-NUM_BANKGENERIC_SLOTS = 28;
-NUM_BANKBAGSLOTS = 7;
+NUM_BAG_SLOTS = Constants.InventoryConstants.NumBagSlots;
+NUM_BANKGENERIC_SLOTS = Constants.InventoryConstants.NumGenericBankSlots;
+NUM_BANKBAGSLOTS = Constants.InventoryConstants.NumBankBagSlots;
 
 -- Item IDs
 HEARTHSTONE_ITEM_ID = 6948;
@@ -961,143 +961,6 @@ CALENDAR_INVITESTATUS_INFO = {
 
 -- SPECTATOR MODE
 MAX_SPECTATED_PER_TEAM = 15;
-
--- "Generic" GamePad button labels
-KEY_PADDUP				= "GamePad Up";
-KEY_PADDRIGHT			= "GamePad Right";
-KEY_PADDDOWN			= "GamePad Down";
-KEY_PADDLEFT			= "GamePad Left";
-KEY_PAD1				= "GamePad 1";
-KEY_PAD2				= "GamePad 2";
-KEY_PAD3				= "GamePad 3";
-KEY_PAD4				= "GamePad 4";
-KEY_PAD5				= "GamePad 5";
-KEY_PAD6				= "GamePad 6";
-KEY_PADLSTICK			= "GamePad L Stick In";
-KEY_PADRSTICK			= "GamePad R Stick In";
-KEY_PADLSHOULDER		= "GamePad L Shoulder";
-KEY_PADRSHOULDER		= "GamePad R Shoulder";
-KEY_PADLTRIGGER			= "GamePad L Trigger";
-KEY_PADRTRIGGER			= "GamePad R Trigger";
-KEY_PADLSTICKUP			= "GamePad L Stick Up";
-KEY_PADLSTICKRIGHT		= "GamePad L Stick Right";
-KEY_PADLSTICKDOWN		= "GamePad L Stick Down";
-KEY_PADLSTICKLEFT		= "GamePad L Stick Left";
-KEY_PADRSTICKUP			= "GamePad R Stick Up";
-KEY_PADRSTICKRIGHT		= "GamePad R Stick Right";
-KEY_PADRSTICKDOWN		= "GamePad R Stick Down";
-KEY_PADRSTICKLEFT		= "GamePad R Stick Left";
-KEY_PADPADDLE1			= "GamePad Paddle 1";
-KEY_PADPADDLE2			= "GamePad Paddle 2";
-KEY_PADPADDLE3			= "GamePad Paddle 3";
-KEY_PADPADDLE4			= "GamePad Paddle 4";
-KEY_PADFORWARD			= "GamePad Forward";
-KEY_PADBACK				= "GamePad Back";
-KEY_PADSYSTEM			= "GamePad System";
-KEY_PADSOCIAL			= "GamePad Social";
--- "Letters" label style specializations
-KEY_PAD1_LTR			= "GamePad A";
-KEY_PAD2_LTR			= "GamePad B";
-KEY_PAD3_LTR			= "GamePad X";
-KEY_PAD4_LTR			= "GamePad Y";
-KEY_PADLSHOULDER_LTR	= "GamePad L Bumper";
-KEY_PADRSHOULDER_LTR	= "GamePad R Bumper";
-KEY_PADFORWARD_LTR		= "GamePad Start";
-KEY_PADBACK_LTR			= "GamePad Back";
--- "Reverse" label style specializations
-KEY_PAD1_REV			= "GamePad B";
-KEY_PAD2_REV			= "GamePad A";
-KEY_PAD3_REV			= "GamePad Y";
-KEY_PAD4_REV			= "GamePad X";
-KEY_PADLSHOULDER_REV	= "GamePad L";
-KEY_PADRSHOULDER_REV	= "GamePad R";
-KEY_PADLTRIGGER_REV		= "GamePad ZL";
-KEY_PADRTRIGGER_REV		= "GamePad ZR";
-KEY_PADFORWARD_REV		= "GamePad +";
-KEY_PADBACK_REV			= "GamePad -";
--- "Shapes" label style specializations
-KEY_PAD1_SHP			= "GamePad X";
-KEY_PAD2_SHP			= "GamePad O";
-KEY_PAD3_SHP			= "GamePad Square";
-KEY_PAD4_SHP			= "GamePad Triangle";
-KEY_PAD5_SHP			= "GamePad Mute";
-KEY_PADLSTICK_SHP		= "GamePad L3";
-KEY_PADRSTICK_SHP		= "GamePad R3";
-KEY_PADLSHOULDER_SHP	= "GamePad L1";
-KEY_PADRSHOULDER_SHP	= "GamePad R1";
-KEY_PADLTRIGGER_SHP		= "GamePad L2";
-KEY_PADRTRIGGER_SHP		= "GamePad R2";
-KEY_PADFORWARD_SHP		= "GamePad Options";
-KEY_PADBACK_SHP			= "GamePad TouchPad";
-KEY_PADSOCIAL_SHP		= "GamePad Share";
-
--- "Generic" GamePad abbreviated button labels
-KEY_ABBR_PADDUP				= "u";
-KEY_ABBR_PADDRIGHT			= "r";
-KEY_ABBR_PADDDOWN			= "d";
-KEY_ABBR_PADDLEFT			= "l";
-KEY_ABBR_PAD1				= "1";
-KEY_ABBR_PAD2				= "2";
-KEY_ABBR_PAD3				= "3";
-KEY_ABBR_PAD4				= "4";
-KEY_ABBR_PAD5				= "5";
-KEY_ABBR_PAD6				= "6";
-KEY_ABBR_PADLSTICK			= "Li";
-KEY_ABBR_PADRSTICK			= "Ri";
-KEY_ABBR_PADLSHOULDER		= "Ls";
-KEY_ABBR_PADRSHOULDER		= "Rs";
-KEY_ABBR_PADLTRIGGER		= "Lt";
-KEY_ABBR_PADRTRIGGER		= "Rt";
-KEY_ABBR_PADLSTICKUP		= "Lu";
-KEY_ABBR_PADLSTICKRIGHT		= "Lr";
-KEY_ABBR_PADLSTICKDOWN		= "Ld";
-KEY_ABBR_PADLSTICKLEFT		= "Ll";
-KEY_ABBR_PADRSTICKUP		= "Ru";
-KEY_ABBR_PADRSTICKRIGHT		= "Rr";
-KEY_ABBR_PADRSTICKDOWN		= "Rd";
-KEY_ABBR_PADRSTICKLEFT		= "Rl";
-KEY_ABBR_PADPADDLE1			= "p1";
-KEY_ABBR_PADPADDLE2			= "p2";
-KEY_ABBR_PADPADDLE3			= "p3";
-KEY_ABBR_PADPADDLE4			= "p4";
-KEY_ABBR_PADFORWARD			= "Fw";
-KEY_ABBR_PADBACK			= "Bk";
-KEY_ABBR_PADSYSTEM			= "Sy";
-KEY_ABBR_PADSOCIAL			= "So";
--- "Letters" abbreviated label style specializations
-KEY_ABBR_PAD1_LTR			= "A";
-KEY_ABBR_PAD2_LTR			= "B";
-KEY_ABBR_PAD3_LTR			= "X";
-KEY_ABBR_PAD4_LTR			= "Y";
-KEY_ABBR_PADLSHOULDER_LTR	= "LB";
-KEY_ABBR_PADRSHOULDER_LTR	= "RB";
-KEY_ABBR_PADFORWARD_LTR		= "St";
-KEY_ABBR_PADBACK_LTR		= "Bk";
--- "Reverse" abbreviated label style specializations
-KEY_ABBR_PAD1_REV			= "B";
-KEY_ABBR_PAD2_REV			= "A";
-KEY_ABBR_PAD3_REV			= "Y";
-KEY_ABBR_PAD4_REV			= "X";
-KEY_ABBR_PADLSHOULDER_REV	= "L";
-KEY_ABBR_PADRSHOULDER_REV	= "R";
-KEY_ABBR_PADLTRIGGER_REV	= "ZL";
-KEY_ABBR_PADRTRIGGER_REV	= "ZR";
-KEY_ABBR_PADFORWARD_REV		= "+";
-KEY_ABBR_PADBACK_REV		= "-";
--- "Shapes" abbreviated label style specializations
-KEY_ABBR_PAD1_SHP			= "X";
-KEY_ABBR_PAD2_SHP			= "O";
-KEY_ABBR_PAD3_SHP			= "S";
-KEY_ABBR_PAD4_SHP			= "T";
-KEY_ABBR_PADLSTICK_SHP		= "L3";
-KEY_ABBR_PADRSTICK_SHP		= "R3";
-KEY_ABBR_PADLSHOULDER_SHP	= "L1";
-KEY_ABBR_PADRSHOULDER_SHP	= "R1";
-KEY_ABBR_PADLTRIGGER_SHP	= "L2";
-KEY_ABBR_PADRTRIGGER_SHP	= "R2";
-KEY_ABBR_PADFORWARD_SHP		= "Op";
-KEY_ABBR_PADBACK_SHP		= "Tp";
-KEY_ABBR_PADSOCIAL_SHP		= "Sh";
 
 WOW_PROJECT_MAINLINE = 1;
 WOW_PROJECT_CLASSIC = 2;

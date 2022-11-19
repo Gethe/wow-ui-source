@@ -2,21 +2,13 @@
 ..\FrameXML\UI.xsd">
 	<Script file="MirrorTimer.lua"/>
 	<Frame name="MirrorTimerTemplate" toplevel="true" parent="UIParent" hidden="true" virtual="true">
-		<Size>
-			<AbsDimension x="206" y="26"/>
-		</Size>
+		<Size x="206" y="26"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture>
-					<Size>
-						<AbsDimension x="195" y="13"/>
-					</Size>
+					<Size x="195" y="13"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-2"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>		
@@ -24,38 +16,22 @@
 			<Layer level="OVERLAY">
 				<FontString name="$parentText" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border">
-					<Size>
-						<AbsDimension x="256" y="64"/>
-					</Size>
+					<Size x="256" y="64"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="25"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="25"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<StatusBar name="$parentStatusBar">
-				<Size>
-					<AbsDimension x="195" y="13"/>
-				</Size>
+				<Size x="195" y="13"/>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="0" y="-2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="0" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -79,11 +55,7 @@
 	</Frame>
 	<Frame name="MirrorTimer1" inherits="MirrorTimerTemplate">
 		<Anchors>
-			<Anchor point="TOP">
-				<Offset>
-					<AbsDimension x="0" y="-96"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOP" x="0" y="-96"/>
 		</Anchors>
 	</Frame>
 	<Frame name="MirrorTimer2" inherits="MirrorTimerTemplate">

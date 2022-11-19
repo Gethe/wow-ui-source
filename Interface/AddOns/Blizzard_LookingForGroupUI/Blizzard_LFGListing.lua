@@ -42,14 +42,14 @@ function LFGListingMixin:OnLoad()
 	self.viewState = LFGLISTING_VIEWSTATE_ACTIVITIES;
 
 	self:ClearUI();
-	self:LoadSoloRolesFromTalentGroups();
+	self:LoadSoloRolesOnStartup();
 	self:UpdateFrameView();
 end
 
 function LFGListingMixin:OnEvent(event, ...)
 	if ( event == "GROUP_LEFT" ) then
 		local partyCategory, partyGUID = ...;
-		if (partyCategory == LE_PARTY_CATEGORY_HOME and not C_LFGList.HasActiveEntryInfo()) then
+		if ( partyCategory == LE_PARTY_CATEGORY_HOME and not C_LFGList.HasActiveEntryInfo() ) then
 			-- If we just left a party and we don't have an activeEntry, assume that
 			-- any activeEntry information we have was inherited from the group and should probably be thrown out.
 			self:ClearCategorySelection();
@@ -60,16 +60,14 @@ function LFGListingMixin:OnEvent(event, ...)
 		local createdNew = ...;
 		self:LoadActiveEntry();
 		if (C_LFGList.HasActiveEntryInfo()) then
-			if (createdNew or PENDING_LISTING_UPDATE) then
-				-- Play sound, only if the update was manual.
+			if ( createdNew or PENDING_LISTING_UPDATE ) then
+				-- If this is either a brand new entry, or it was a manual update that we ourselves made, play a sound and swap to the browser.
+				-- Notable case: if this is an update to an existing listing from our party leader, but we ourselves didn't do anything, don't deliver feedback.
 				PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
-			end
-			if ( createdNew ) then
-				-- Search LFM based on the active entry.
 				LFGParentFrame_SearchActiveEntry();
 			end
 		else
-			if (PENDING_LISTING_UPDATE) then
+			if ( PENDING_LISTING_UPDATE ) then
 				-- Play sound, only if the update was manual.
 				PlaySound(SOUNDKIT.LFG_DENIED);
 			end
@@ -353,6 +351,16 @@ end
 ----------Button Control
 -------------------------------------------------------
 function LFGListingMixin:UpdatePostButtonEnableState()
+	if (not LFGListingUtil_CanEditListing()) then
+		if (C_LFGList.HasActiveEntryInfo()) then
+			self.PostButton.errorText = LFG_LIST_ONLY_LEADER_UPDATE;
+		else
+			self.PostButton.errorText = LFG_LIST_ONLY_LEADER_CREATE;
+		end
+		self.PostButton:SetEnabled(false);
+		return;
+	end
+
 	-- If our dirty flag is not set, disable the Post button.
 	-- Alternatively, if we do not have an activeEntry, and also do not have any activities set, disable the Post button. (An initial listing needs at least one activity.)
 	if (not self.dirty or (not C_LFGList.HasActiveEntryInfo() and not self:IsAnyActivitySelected())) then
@@ -409,14 +417,12 @@ end
 -------------------------------------------------------
 ----------Solo Role UI
 -------------------------------------------------------
-function LFGListingMixin:LoadSoloRolesFromTalentGroups()
-	for i=1,GetNumTalentGroups() do
-		for _,roleButton in ipairs(self.SoloRoleButtons.RoleButtons) do
-			if (GetTalentGroupRole(i) == roleButton.roleID) then
-				roleButton.CheckButton:SetChecked(true);
-			end
-		end
-	end
+function LFGListingMixin:LoadSoloRolesOnStartup()
+	local roles = C_LFGList.GetSavedRoles();
+	self.SoloRoleButtons.Tank.CheckButton:SetChecked(roles.tank);
+	self.SoloRoleButtons.Healer.CheckButton:SetChecked(roles.healer);
+	self.SoloRoleButtons.DPS.CheckButton:SetChecked(roles.dps);
+
 	self:SaveSoloRoles();
 end
 
@@ -658,50 +664,49 @@ function LFGListingActivityView_OnLoad(self)
 		local elementData = node:GetData();
 
 		if (elementData.buttonType == LFGLISTING_BUTTONTYPE_ACTIVITYGROUP) then
-			local frame = factory("Frame", "LFGListingActivityRowTemplate");
+			factory("LFGListingActivityRowTemplate", function(frame, unused)
+				LFGListingActivityView_InitActivityGroupButton(frame, elementData, node:IsCollapsed());
 
-			frame.CheckButton:SetScript("OnClick", function(button, buttonName, down)
-				local node = button:GetParent():GetElementData();
-				local parentFrame = view:FindFrame(node);
-				local parentData = node:GetData();
-				local activityGroupID = parentData.activityGroupID;
-				local allSelected = LFGListingFrame:IsAnyActivityForActivityGroupSelected(activityGroupID);
-				LFGListingFrame:SetAllActivitiesForActivityGroup(activityGroupID, not allSelected, true);
+				frame.CheckButton:SetScript("OnClick", function(button, buttonName, down)
+					local node = button:GetParent():GetElementData();
+					local parentFrame = view:FindFrame(node);
+					local parentData = node:GetData();
+					local activityGroupID = parentData.activityGroupID;
+					local allSelected = LFGListingFrame:IsAnyActivityForActivityGroupSelected(activityGroupID);
+					LFGListingFrame:SetAllActivitiesForActivityGroup(activityGroupID, not allSelected, true);
 
-				LFGListingActivityView_InitActivityGroupButton(parentFrame, parentData, node:IsCollapsed());
-				for index, child in ipairs(node.nodes) do
-					local childFrame = view:FindFrame(child);
-					if (childFrame) then
-						LFGListingActivityView_InitActivityButton(childFrame, child:GetData());
+					LFGListingActivityView_InitActivityGroupButton(parentFrame, parentData, node:IsCollapsed());
+					for index, child in ipairs(node.nodes) do
+						local childFrame = view:FindFrame(child);
+						if (childFrame) then
+							LFGListingActivityView_InitActivityButton(childFrame, child:GetData());
+						end
 					end
-				end
+				end)
+
+				frame.ExpandOrCollapseButton:SetScript("OnClick", function(button, buttonName, down)
+					local node = button:GetParent():GetElementData();
+					node:ToggleCollapsed(true);
+					LFGListingActivityView_InitActivityGroupButton(view:FindFrame(node), node:GetData(), node:IsCollapsed());
+				end)
 			end)
-
-			frame.ExpandOrCollapseButton:SetScript("OnClick", function(button, buttonName, down)
-				local node = button:GetParent():GetElementData();
-				node:ToggleCollapsed(true);
-				LFGListingActivityView_InitActivityGroupButton(view:FindFrame(node), node:GetData(), node:IsCollapsed());
-			end)
-
-			LFGListingActivityView_InitActivityGroupButton(frame, elementData, node:IsCollapsed());
-
 		elseif (elementData.buttonType == LFGLISTING_BUTTONTYPE_ACTIVITY) then
-			local frame = factory("Frame", "LFGListingActivityRowTemplate");
+			factory("LFGListingActivityRowTemplate", function(frame, unused)
+				LFGListingActivityView_InitActivityButton(frame, elementData);
 
-			frame.CheckButton:SetScript("OnClick", function(button, buttonName, down)
-				local node = button:GetParent():GetElementData();
-				local activityID = node:GetData().activityID;
-				LFGListingFrame:ToggleActivity(activityID, false, true);
+				frame.CheckButton:SetScript("OnClick", function(button, buttonName, down)
+					local node = button:GetParent():GetElementData();
+					local activityID = node:GetData().activityID;
+					LFGListingFrame:ToggleActivity(activityID, false, true);
 
-				if (node.parent) then
-					local parentFrame = view:FindFrame(node.parent);
-					if (parentFrame) then
-						LFGListingActivityView_InitActivityGroupButton(parentFrame, node.parent:GetData(), node.parent:IsCollapsed());
+					if (node.parent) then
+						local parentFrame = view:FindFrame(node.parent);
+						if (parentFrame) then
+							LFGListingActivityView_InitActivityGroupButton(parentFrame, node.parent:GetData(), node.parent:IsCollapsed());
+						end
 					end
-				end
+				end)
 			end)
-
-			LFGListingActivityView_InitActivityButton(frame, elementData);
 		end
 	end);
 
@@ -761,10 +766,17 @@ function LFGListingActivityView_UpdateActivities(self, categoryID)
 		local lhs = lhsNode:GetData();
 		local rhs = rhsNode:GetData();
 
-		if (lhs.orderIndex ~= rhs.orderIndex) then return lhs.orderIndex > rhs.orderIndex;
-		elseif (lhs.maxLevel ~= rhs.maxLevel) then return lhs.maxLevel > rhs.maxLevel;
-		elseif (lhs.minLevel ~= rhs.minLevel) then return lhs.minLevel > rhs.minLevel;
-		else return strcmputf8i(lhs.name, rhs.name) < 0;
+		if (lhs.orderIndex ~= rhs.orderIndex) then
+			return lhs.orderIndex > rhs.orderIndex;
+		elseif (lhs.maxLevel ~= rhs.maxLevel) then
+			if (lhs.maxLevel == 0 or rhs.maxLevel == 0) then
+				return lhs.maxLevel == 0;
+			end
+			return lhs.maxLevel > rhs.maxLevel;
+		elseif (lhs.minLevel ~= rhs.minLevel) then
+			return lhs.minLevel > rhs.minLevel;
+		else
+			return strcmputf8i(lhs.name, rhs.name) < 0;
 		end
 	end
 	local function ActivityGroupSortComparator(lhsNode, rhsNode)
@@ -787,12 +799,13 @@ function LFGListingActivityView_UpdateActivities(self, categoryID)
 		for _, activityID in ipairs(activities) do
 			local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
 			local name = activityInfo.shortName ~= "" and activityInfo.shortName or activityInfo.fullName;
+			local maxLevel = activityInfo.maxLevel ~= 0 and activityInfo.maxLevel or activityInfo.maxLevelSuggestion;
 			dataProvider:Insert({
 				buttonType = LFGLISTING_BUTTONTYPE_ACTIVITY,
 				activityID = activityID,
 				name = name,
 				minLevel = activityInfo.minLevel,
-				maxLevel = activityInfo.maxLevel,
+				maxLevel = maxLevel,
 				orderIndex = activityInfo.orderIndex,
 			});
 		end
@@ -816,13 +829,14 @@ function LFGListingActivityView_UpdateActivities(self, categoryID)
 			for _, activityID in ipairs(activities) do
 				local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
 				local name = activityInfo.shortName ~= "" and activityInfo.shortName or activityInfo.fullName;
+				local maxLevel = activityInfo.maxLevel ~= 0 and activityInfo.maxLevel or activityInfo.maxLevelSuggestion;
 				 
 				groupTree:Insert({
 					buttonType = LFGLISTING_BUTTONTYPE_ACTIVITY,
 					activityID = activityID,
 					name = name,
 					minLevel = activityInfo.minLevel,
-					maxLevel = activityInfo.maxLevel,
+					maxLevel = maxLevel,
 					orderIndex = activityInfo.orderIndex
 				});
 
@@ -888,7 +902,13 @@ function LFGListingActivityView_InitActivityButton(button, elementData)
 	-- Name
 	button.NameButton.Name:SetWidth(0);
 	button.NameButton.Name:SetText(elementData.name);
-	button.NameButton.Name:SetFontObject(LFGActivityEntry);
+	if (elementData.maxLevel ~= 0 and elementData.maxLevel < UnitLevel("player")) then
+		button.NameButton.Name:SetFontObject(LFGActivityEntryTrivial);
+		button.Level:SetFontObject(LFGActivityEntryTrivial);
+	else
+		button.NameButton.Name:SetFontObject(LFGActivityEntry);
+		button.Level:SetFontObject(LFGActivityEntry);
+	end
 	button.NameButton:SetWidth(button.NameButton.Name:GetWidth());
 
 	-- Level

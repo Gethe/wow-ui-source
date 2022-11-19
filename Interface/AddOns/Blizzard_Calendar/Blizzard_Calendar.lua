@@ -2137,12 +2137,12 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 		UIMenu_AddButton(self, CALENDAR_CREATE_EVENT, nil, CalendarDayContextMenu_CreateEvent);
 
 
-		--DISABLING THIS FOR NOW UNTIL WE FIX CLASS-17077
+		--disabling guild announcements until we can refactor the calendar guild system
 		-- add guild selections if the player has a guild
-		--if ( CanEditGuildEvent() ) then
-			--UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
+		if ( CanEditGuildEvent() ) then
+			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
 			--UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
-		--end
+		end
 
 		needSpacer = true;
 	end
@@ -2153,7 +2153,6 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 		-- add context items for the selected event
 		if ( _CalendarFrame_IsPlayerCreatedEvent(event.calendarType) ) then
 			local canEdit = C_Calendar.ContextMenuEventCanEdit(monthOffset, day, eventIndex);
-			local canRemove = C_Calendar.ContextMenuEventCanRemove(monthOffset, day, eventIndex);
 			if ( canEdit ) then
 				-- spacer
 				if ( needSpacer ) then
@@ -2165,17 +2164,15 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 				if ( canPaste ) then
 					UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
 				end
+				-- delete
+				UIMenu_AddButton(self, CALENDAR_DELETE_EVENT, nil, CalendarDayContextMenu_DeleteEvent);
+				needSpacer = true;
 			elseif ( canPaste ) then
 				if ( needSpacer ) then
 					UIMenu_AddButton(self, "");
 				end
 				-- paste
 				UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
-				needSpacer = true;
-			end
-			if ( canRemove ) then
-				-- delete
-				UIMenu_AddButton(self, CALENDAR_DELETE_EVENT, nil, CalendarDayContextMenu_DeleteEvent);
 				needSpacer = true;
 			end
 			if ( event.calendarType ~= "GUILD_ANNOUNCEMENT" ) then
@@ -2829,9 +2826,7 @@ function CalendarCreateEventInviteList_OnLoad(self)
 	};
 
 	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("Button", "CalendarCreateEventInviteListButtonTemplate", function(button, elementData)
-	--view:SetElementInitializer("CalendarCreateEventInviteListButtonTemplate", function(button, elementData)
-	--view:SetElementInitializer("CalendarCreateEventInviteListButtonTemplate", function(button, elementData)
+	view:SetElementInitializer("CalendarCreateEventInviteListButtonTemplate", function(button, elementData)
 		CalendarCreateEventInviteList_InitButton(button, elementData);
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
@@ -3366,8 +3361,7 @@ function CalendarViewEventInviteList_OnLoad(self)
 
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementExtent(14);
-	view:SetElementInitializer("Button", "CalendarViewEventInviteListButtonTemplate", function(button, elementData)
-	--view:SetElementInitializer("CalendarViewEventInviteListButtonTemplate", function(button, elementData)
+	view:SetElementInitializer("CalendarViewEventInviteListButtonTemplate", function(button, elementData)
 		CalendarViewEventInviteList_InitButton(button, elementData);
 	end);
 	local calculator = function(dataIndex, elementData)
@@ -4236,13 +4230,15 @@ function CalendarCreateEventInviteContextMenu_Initialize(self, inviteButton)
 		UIMenu_AddButton(self, REMOVE, nil, CalendarInviteContextMenu_RemoveInvite);
 		-- spacer
 		--UIMenu_AddButton(self, "");
-		if ( inviteInfo.modStatus == "MODERATOR" ) then
+
+		--disabling permission changes until we can refactor the calendar guild system
+		--if ( inviteInfo.modStatus == "MODERATOR" ) then
 			-- clear moderator status
-			UIMenu_AddButton(self, CALENDAR_INVITELIST_CLEARMODERATOR, nil, CalendarInviteContextMenu_ClearModerator);
-		else
+			--UIMenu_AddButton(self, CALENDAR_INVITELIST_CLEARMODERATOR, nil, CalendarInviteContextMenu_ClearModerator);
+		--else
 			-- set moderator status
-			UIMenu_AddButton(self, CALENDAR_INVITELIST_SETMODERATOR, nil, CalendarInviteContextMenu_SetModerator);
-		end
+			--UIMenu_AddButton(self, CALENDAR_INVITELIST_SETMODERATOR, nil, CalendarInviteContextMenu_SetModerator);
+		--end
 	end
 	if ( CalendarCreateEventFrame.mode == "edit" ) then
 		if ( needSpacer ) then
@@ -4684,8 +4680,7 @@ function CalendarEventPickerFrame_OnLoad(self)
 	
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementExtent(16);
-	view:SetElementInitializer("Button", "CalendarEventPickerButtonTemplate", function(button, elementData)
-	--view:SetElementInitializer("CalendarEventPickerButtonTemplate", function(button, elementData)
+	view:SetElementInitializer("CalendarEventPickerButtonTemplate", function(button, elementData)
 		CalendarEventPickerFrame_InitButton(button, elementData);
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
@@ -4880,8 +4875,7 @@ function CalendarTexturePickerFrame_OnLoad(self)
 	
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementExtent(16);
-	view:SetElementInitializer("Button", "CalendarTexturePickerButtonTemplate", function(button, elementData)
-	--view:SetElementInitializer("CalendarTexturePickerButtonTemplate", function(button, elementData)
+	view:SetElementInitializer("CalendarTexturePickerButtonTemplate", function(button, elementData)
 		CalendarTexturePicker_InitButton(button, elementData);
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);

@@ -1413,14 +1413,13 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
     if (translatedIndex <= 0 or translatedIndex > GetNumVisibleCharacters()) then
         -- Somehow our character order got borked, reset the offset and get an updated character list.
         CHARACTER_LIST_OFFSET = 0;
-        PAID_SERVICE_CHARACTER_ID = nil;
-        PAID_SERVICE_TYPE = nil;
+		CharacterCreateFrame:ClearPaidServiceInfo();
         CharacterSelect_GetCharacterListUpdate();
         return;
     end
 
-    PAID_SERVICE_CHARACTER_ID = translatedIndex;
-    PAID_SERVICE_TYPE = service;
+	CharacterCreateFrame:SetPaidServiceInfo(service, translatedIndex);
+
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
     if (CharacterSelect.undeleting) then
         local guid = select(15, GetCharacterInfo(PAID_SERVICE_CHARACTER_ID));
@@ -2826,13 +2825,13 @@ function CharacterServicesTokenBoost_OnEnter(self)
     GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
 	if self.data.isExpansionTrial then
 		GlueTooltip:AddLine(self.data.popupInfo.title, 1.0, 1.0, 1.0);
-		GlueTooltip:AddLine(self.data.popupInfo.description, nil, nil, nil, true);
+		GlueTooltip:AddLine(self.data.popupInfo.description, nil, nil, nil, 1.0, true);
 	else
 		if not C_CharacterServices.IsBoostEnabled() then
 			GlueTooltip:SetText(BOOST_REALM_RESTRICTED);
 		else
 			GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_TITLE:format(self.data.level), 1.0, 1.0, 1.0);
-			GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level), nil, nil, nil, true);
+			GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level), nil, nil, nil, 1.0, true);
 		end
 	end
     GlueTooltip:Show();

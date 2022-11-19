@@ -55,8 +55,9 @@ function LFGBrowseMixin:OnLoad()
 
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementFactory(function(factory, elementData)
-		local frame = factory("Button", "LFGBrowseSearchEntryTemplate");
-		LFGBrowseSearchEntry_Init(frame, elementData);
+		factory("LFGBrowseSearchEntryTemplate", function(frame, elementData)
+			LFGBrowseSearchEntry_Init(frame, elementData);
+		end);
 	end);
 	view:SetElementExtent(36);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
@@ -79,7 +80,7 @@ function LFGBrowseMixin:OnLoad()
 		self:UpdateButtonState();
 	end;
 
-	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorPolicy.Deselectable);
+	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorFlags.Deselectable);
 	self.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
 
 	self:UpdateButtonState();

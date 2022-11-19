@@ -160,6 +160,14 @@ function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, r
 	);
 end
 
+function CreateSimpleTextureMarkup(file, width, height)
+	return ("|T%s:%d:%d|t"):format(
+		  file
+		, height or width
+		, width
+	);
+end
+
 function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor)
 	-- Setting any vertex color will override existing colors
 	if ( rVertexColor or gVertexColor or bVertexColor ) then
@@ -184,9 +192,11 @@ function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY, rVertexCo
 	end
 end
 
-function CreateAtlasMarkupWithAtlasSize(atlasName, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor)
+function CreateAtlasMarkupWithAtlasSize(atlasName, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor, scale)
 	local atlasInfo = C_Texture.GetAtlasInfo(atlasName);
-	return CreateAtlasMarkup(atlasName, atlasInfo.width, atlasInfo.height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor);
+	local width = scale and Round(atlasInfo.width * scale) or atlasInfo.width;
+	local height = scale and Round(atlasInfo.height * scale) or atlasInfo.height;
+	return CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor);
 end
 
 -- NOTE: Many of the TextureKit functions below use the following parameters
@@ -207,7 +217,7 @@ function SetupAtlasesOnRegions(frame, regionsToAtlases, useAtlasSize)
 	for region, atlas in pairs(regionsToAtlases) do
 		if frame[region] then
 			if frame[region]:GetObjectType() == "StatusBar" then
-				frame[region]:SetStatusBarAtlas(atlas);
+				frame[region]:SetStatusBarTexture(atlas);
 			elseif frame[region].SetAtlas then
 				frame[region]:SetAtlas(atlas, useAtlasSize);
 			end
@@ -235,7 +245,7 @@ function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibility, useAtlasS
 
 	if textureKit then
 		if frame:GetObjectType() == "StatusBar" then
-			success = frame:SetStatusBarAtlas(GetFinalNameFromTextureKit(fmt, textureKit));
+			success = frame:SetStatusBarTexture(GetFinalNameFromTextureKit(fmt, textureKit));
 		elseif frame.SetAtlas then
 			success = frame:SetAtlas(GetFinalNameFromTextureKit(fmt, textureKit), useAtlasSize);
 		end

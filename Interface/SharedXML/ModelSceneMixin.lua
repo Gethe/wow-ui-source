@@ -24,6 +24,7 @@ if tbl then
 	setfenv(1, tbl);
 
 	Import("C_ModelInfo");
+	Import("C_PlayerInfo");
 
 	function nop() end;
 end
@@ -165,18 +166,23 @@ function ModelSceneMixin:GetActorByTag(tag)
 	return self.tagToActor[tag];
 end
 
-function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID)
+function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID, usePlayerNativeForm)
 	local playerActor = self:GetPlayerActor("player-rider");
 	if (playerActor) then
 		if disablePlayerMountPreview or isSelfMount then
 			playerActor:ClearModel();
 		else
 			local sheathWeapons = true;
-			if (playerActor:SetModelByUnit("player", sheathWeapons)) then
+			local autoDress = true;
+			local hideWeapons = false;
+			if (playerActor:SetModelByUnit("player", sheathWeapons, autoDress, hideWeapons, usePlayerNativeForm)) then
 				local calcMountScale = mountActor:CalculateMountScale(playerActor);
 				local inverseScale = 1 / calcMountScale; 
 				playerActor:SetRequestedScale( inverseScale );
 				mountActor:AttachToMount(playerActor, animID, spellVisualKitID);
+			else
+				playerActor:ClearModel();
+				mountActor:ClearModel();
 			end
 		end
 	end
@@ -190,12 +196,13 @@ function ModelSceneMixin:GetPlayerActor(overrideActorName)
 	if overrideActorName then
 		actor = self:GetActorByTag(overrideActorName);
 	else
-
+		local hasAlternateForm, inAlternateForm = false, false;
 		if IsOnGlueScreen() then
 			local _, raceName, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
 			playerRaceName = raceFilename;
 			playerGender = genderEnum;
 		else
+			hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 			local _, raceFilename = UnitRace("player");
 			playerRaceName = raceFilename;
 			playerGender = UnitSex("player");
@@ -206,7 +213,12 @@ function ModelSceneMixin:GetPlayerActor(overrideActorName)
 		end
 		playerGender = (playerGender == 2) and "male" or "female";
 		playerRaceName = playerRaceName:lower();
+		
+		if hasAlternateForm and inAlternateForm then
+			playerRaceName = playerRaceName.."-alt";
+		end
 		local playerRaceActor = playerRaceName.."-"..playerGender;
+
 		actor = self:GetActorByTag(playerRaceActor);
 		if not actor then		
 			actor = self:GetActorByTag(playerRaceName);

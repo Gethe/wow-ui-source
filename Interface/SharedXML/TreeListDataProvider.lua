@@ -24,6 +24,10 @@ function TreeListNodeMixin:Init(dataProvider, parent, data)
 	self.data = data;
 end
 
+function TreeListNodeMixin:GetNodes()
+	return self.nodes;
+end
+
 function TreeListNodeMixin:GetDepth()
 	return self.parent and self.parent:GetDepth() + 1 or 0;
 end
@@ -175,6 +179,10 @@ local function EnumerateInternal(indexBegin, indexEnd, root, includeCollapsed)
 	return Enumerator;
 end
 
+function TreeListDataProviderMixin:GetChildrenNodes()
+	return self.node:GetNodes();
+end
+
 function TreeListDataProviderMixin:GetRootNode()
 	return self.node;
 end
@@ -201,6 +209,10 @@ function TreeListDataProviderMixin:GetSize()
 		count = count + 1;
 	end
 	return count;
+end
+
+function TreeListDataProviderMixin:IsEmpty()
+	return self:GetSize() == 0;
 end
 
 function TreeListDataProviderMixin:Insert(data)

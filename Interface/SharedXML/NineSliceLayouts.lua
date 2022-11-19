@@ -122,4 +122,16 @@ NineSliceLayouts =
 		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
 		["Center"] = { atlas = "%s-NineSlice-Center" },
 	};
+
+	ButtonFrameTemplateNoPortrait =
+	{
+		TopLeftCorner = {  atlas = "UI-Frame-TopLeftCornerNoPortrait"},
+		TopRightCorner = {  atlas = "UI-Frame-TopCornerRight"},
+		BottomLeftCorner = {  atlas = "UI-Frame-BotCornerLeft",},
+		BottomRightCorner = {  atlas = "UI-Frame-BotCornerRight",},
+		TopEdge = {  atlas = "_UI-Frame-TitleTile", },
+		BottomEdge = {  atlas = "_UI-Frame-Bot"},
+		LeftEdge = {  atlas = "!UI-Frame-LeftTile", },
+		RightEdge = {  atlas = "!UI-Frame-RightTile",  x = -8, x1 = 8},
+	};
 };

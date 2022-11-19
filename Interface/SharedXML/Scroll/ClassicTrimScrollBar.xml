@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="TrimScrollBar.lua"/>
 
-	<Frame name="WowClassicScrollBarThumbScripts" mixin="ScrollBarButtonBehaviorMixin" virtual="true">
+	<Frame name="WowClassicScrollBarThumbScripts" inherits="WowTrimScrollBarThumbScripts" virtual="true">
 	</Frame>
 	<EventFrame name="WowClassicScrollBar" inherits="VerticalScrollBarTemplate" mixin="WowTrimScrollBarMixin" virtual="true">
 		<Size x="25" y="560"/>
@@ -57,6 +57,26 @@
 							<Anchor point="LEFT" x="2"/>
 						</Anchors>
 						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture parentKey="Middle">
+									<Anchors>
+										<Anchor point="TOPLEFT" y="-5"/>
+										<Anchor point="BOTTOMRIGHT" y="5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="2">
+								<Texture parentKey="Begin">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="End">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 							<Layer level="Background" textureSubLevel="1">
 								<Texture name="$parentThumbTexture" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
 									<Size x="18" y="24"/>

@@ -24,15 +24,22 @@ end
 
 MathUtil = 
 {
-	Epsilon = .000001;
+	Epsilon = .000001,
 };
 
+MathUtil.ApproxZero = MathUtil.Epsilon;
+MathUtil.ApproxOne = 1.0 - MathUtil.Epsilon;
+
+local securecallfunction = securecallfunction;
 function CreateCounter(initialCount)
 	local count = initialCount or 0;
-	return function()
+	local counter = function()
 		count = count + 1;
 		return count;
-	end
+	end;
+    return function()
+        return securecallfunction(counter);
+    end;
 end
 
 function Lerp(startValue, endValue, amount)
@@ -99,8 +106,17 @@ function Round(value)
 	return math.floor(value + .5);
 end
 
+function RoundToSignificantDigits(value, numDigits)
+	local multiplier = 10 ^ numDigits;
+	return Round(value * multiplier) / multiplier;
+end
+
 function Square(value)
 	return value * value;
+end
+
+function Sign(value)
+	return value > 0 and 1 or (value == 0 and 0 or -1);
 end
 
 function WithinRange(value, min, max)

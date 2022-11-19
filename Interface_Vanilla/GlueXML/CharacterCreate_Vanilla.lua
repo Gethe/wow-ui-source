@@ -29,68 +29,6 @@ RACE_ICON_TCOORDS = {
 	["ORC_FEMALE"]		= {0.75, 1.0, 0.75, 1.0}, 
 };
 
-function CharacterCreateEnumerateRaces()
-	local races = C_CharacterCreation.GetAvailableRaces();
-	CharacterCreate.numRaces = #races;
-	if ( CharacterCreate.numRaces > MAX_RACES ) then
-		message("Too many races!  Update MAX_RACES");
-		return;
-	end
-
-	local coords;
-	local button;
-	local gender;
-	if ( C_CharacterCreation.GetSelectedSex() == Enum.UnitSex.Male ) then
-		gender = "MALE";
-	else
-		gender = "FEMALE";
-	end
-	for index, raceData in pairs(races) do
-		coords = RACE_ICON_TCOORDS[strupper(raceData.fileName.."_"..gender)];
-		_G["CharacterCreateRaceButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-		button = _G["CharacterCreateRaceButton"..index];
-		button:Show();
-		button.tooltip = raceData.name;
-		button.raceID = raceData.raceID;
-	end
-	for i=#races + 1, MAX_RACES, 1 do
-		_G["CharacterCreateRaceButton"..i]:Hide();
-	end
-end
-
-function CharacterCreateEnumerateClasses()
-	local classes = C_CharacterCreation.GetAvailableClasses();
-
-	local numRaceAvailableClasses = 0;
-	local raceAvailableClasses = {};
-	for index, classData in pairs(classes) do
-		if (classData.enabled) then
-			numRaceAvailableClasses = numRaceAvailableClasses + 1;
-			raceAvailableClasses[#raceAvailableClasses+1] = index;
-		end
-	end
-	CharacterCreate.numClasses = numRaceAvailableClasses;
-	if ( CharacterCreate.numClasses > MAX_CLASSES_PER_RACE ) then
-		message("Too many classes!  Update MAX_CLASSES_PER_RACE");
-		return;
-	end
-
-	local coords;
-	local button;
-	for index, classIndex in ipairs(raceAvailableClasses) do
-		local classData = classes[classIndex];
-		coords = CLASS_ICON_TCOORDS[strupper(classData.fileName)];
-		_G["CharacterCreateClassButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-		button = _G["CharacterCreateClassButton"..index];
-		button:Show();
-		button.tooltip = classData.name;
-		button.classID = classData.classID;
-	end
-	for i=numRaceAvailableClasses+1, MAX_CLASSES_PER_RACE, 1 do
-		_G["CharacterCreateClassButton"..i]:Hide();
-	end
-end
-
 function SetCharacterRace(id)
 	CharacterCreate.selectedRace = id;
 

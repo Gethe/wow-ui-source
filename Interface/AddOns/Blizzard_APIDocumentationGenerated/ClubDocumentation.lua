@@ -1409,33 +1409,6 @@ local Club =
 			},
 		},
 		{
-			Name = "ValidateNameResult",
-			Type = "Enumeration",
-			NumValues = 17,
-			MinValue = 0,
-			MaxValue = 16,
-			Fields =
-			{
-				{ Name = "NameSuccess", Type = "ValidateNameResult", EnumValue = 0 },
-				{ Name = "NameFailure", Type = "ValidateNameResult", EnumValue = 1 },
-				{ Name = "NameNoName", Type = "ValidateNameResult", EnumValue = 2 },
-				{ Name = "NameTooShort", Type = "ValidateNameResult", EnumValue = 3 },
-				{ Name = "NameTooLong", Type = "ValidateNameResult", EnumValue = 4 },
-				{ Name = "NameInvalidCharacter", Type = "ValidateNameResult", EnumValue = 5 },
-				{ Name = "NameMixedLanguages", Type = "ValidateNameResult", EnumValue = 6 },
-				{ Name = "NameProfane", Type = "ValidateNameResult", EnumValue = 7 },
-				{ Name = "NameReserved", Type = "ValidateNameResult", EnumValue = 8 },
-				{ Name = "NameInvalidApostrophe", Type = "ValidateNameResult", EnumValue = 9 },
-				{ Name = "NameMultipleApostrophes", Type = "ValidateNameResult", EnumValue = 10 },
-				{ Name = "NameThreeConsecutive", Type = "ValidateNameResult", EnumValue = 11 },
-				{ Name = "NameInvalidSpace", Type = "ValidateNameResult", EnumValue = 12 },
-				{ Name = "NameConsecutiveSpaces", Type = "ValidateNameResult", EnumValue = 13 },
-				{ Name = "NameRussianConsecutiveSilentCharacters", Type = "ValidateNameResult", EnumValue = 14 },
-				{ Name = "NameRussianSilentCharacterAtBeginningOrEnd", Type = "ValidateNameResult", EnumValue = 15 },
-				{ Name = "NameDeclensionDoesntMatchBaseName", Type = "ValidateNameResult", EnumValue = 16 },
-			},
-		},
-		{
 			Name = "ClubInfo",
 			Type = "Structure",
 			Fields =
@@ -1472,6 +1445,14 @@ local Club =
 				{ Name = "invitationId", Type = "string", Nilable = false },
 				{ Name = "isMyInvitation", Type = "bool", Nilable = false },
 				{ Name = "invitee", Type = "ClubMemberInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "ClubLimits",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "maximumNumberOfStreams", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1587,6 +1568,17 @@ local Club =
 				{ Name = "canEditOwnMessage", Type = "bool", Nilable = false },
 				{ Name = "canPinMessage", Type = "bool", Nilable = false },
 				{ Name = "kickableRoleIds", Type = "table", InnerType = "number", Nilable = false, Documentation = { "Roles that can be kicked and banned" } },
+			},
+		},
+		{
+			Name = "ClubRoleInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "roleId", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "required", Type = "bool", Nilable = false, Documentation = { "At least one user must be in this role" } },
+				{ Name = "unique", Type = "bool", Nilable = false, Documentation = { "At most one user can be in this role" } },
 			},
 		},
 		{

@@ -278,10 +278,12 @@ end
 
 function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
 	if( not maxcost ) then --We just have 1 price to display
-		SetTooltipMoney(self, cost, nil);
+		SetTooltipMoney(self, cost, nil, string.format("%s:", SELL_PRICE));
 	else
-		SetTooltipMoney(self, cost, nil, string.format("%s:", MINIMUM));
-		SetTooltipMoney(self, maxcost, nil, string.format("%s:", MAXIMUM));
+		GameTooltip_AddColoredLine(self, ("%s:"):format(SELL_PRICE), HIGHLIGHT_FONT_COLOR);
+		local indent = string.rep(" ",4)
+		SetTooltipMoney(self, cost, nil, string.format("%s%s:", indent, MINIMUM));
+		SetTooltipMoney(self, maxcost, nil, string.format("%s%s:", indent, MAXIMUM));
 	end
 end
 

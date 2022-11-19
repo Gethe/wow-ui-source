@@ -1,11 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="ReportFrame.lua"/>
 	<CheckButton name="ReportingFrameMinorCategoryButtonTemplate" mixin="ReportingFrameMinorCategoryButtonMixin" virtual="true">
 		<Size x="350" y="41"/>
 		<Layers>
-			<Layer level="DIALOG">
-				<FontString parentKey="Text" inherits="GameFontHighlight" JustifyH="CENTER" JustifyV="CENTER" text="BEHAVIORAL_DETAILS_TITLE_BAR">
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE" text="BEHAVIORAL_DETAILS_TITLE_BAR">
 					<Size x="200" y="0"/>
 				</FontString>
 			</Layer>
@@ -65,7 +65,7 @@
 						<Anchor point="TOPRIGHT" x="-6" y="7" relativeKey="$parent.BottomInset"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="ThankYouText" inherits="GameFontHighlightLarge" JustifyH="CENTER" text="ERR_REPORT_SUBMITTED_SUCCESSFULLY">
+				<FontString parentKey="ThankYouText" inherits="GameFontHighlightLarge" justifyH="CENTER" text="ERR_REPORT_SUBMITTED_SUCCESSFULLY">
 					<Size x="400" y="270"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -80,7 +80,7 @@
 					</Anchors>
 					<Color color="NORMAL_FONT_COLOR"/>
 				</FontString>
-				<FontString parentKey="ReportString" inherits="GameFontHighlightLarge" JustifyH="LEFT" text="REPORTING_REPORT_PLAYER">
+				<FontString parentKey="ReportString" inherits="GameFontHighlightLarge" justifyH="LEFT" text="REPORTING_REPORT_PLAYER">
 					<Size x="350" y="25"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.TitleText" relativePoint="BOTTOM" x="0" y="-10"/>
@@ -102,7 +102,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Label" text="REPORTING_REPORT_REASON" JustifyH="LEFT" inherits="GameFontNormal">
+						<FontString parentKey="Label" text="REPORTING_REPORT_REASON" justifyH="LEFT" inherits="GameFontNormal">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="20" y="13"/>
@@ -149,7 +149,7 @@
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="MinorReportDescription" inherits="GameFontNormal" JustifyH="LEFT" text="REPORTING_REPORT_DETAILS" hidden="true">
+				<FontString parentKey="MinorReportDescription" inherits="GameFontNormal" justifyH="LEFT" text="REPORTING_REPORT_DETAILS" hidden="true">
 					<Size x="350" y="25"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.ReportingMajorCategoryDropdown" relativePoint="BOTTOM" x="70" y="0"/>

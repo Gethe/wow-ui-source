@@ -18,12 +18,28 @@ end
 
 FlagsUtil = {};
 
+function FlagsUtil.MakeFlags(...)
+	local flags = {};
+	for index = 1, select("#", ...) do
+		flags[select(index,...)] = bit.lshift(1, (index-1));
+	end
+	return flags;
+end
+
 function FlagsUtil.IsSet(bitMask, flagOrMask)
 	return bit.band(bitMask, flagOrMask) == flagOrMask;
 end
 
 function FlagsUtil.IsAnySet(bitMask, mask)
 	return bit.band(bitMask, mask) ~= 0;
+end
+
+function FlagsUtil.Combine(lhsFlagOrMask, rhsFlagOrMask, shouldSet)
+	if shouldSet then
+		return bit.bor(lhsFlagOrMask, rhsFlagOrMask);
+	else
+		return bit.band(lhsFlagOrMask, bit.bnot(rhsFlagOrMask));
+	end
 end
 
 FlagsMixin = {};

@@ -87,7 +87,7 @@ function ContainerFrame_OnEvent(self, event, ...)
 end
 
 function ContainerFrame_GetContainerNumSlots(id)
-	local num = GetContainerNumSlots(id);
+	local num = C_Container.GetContainerNumSlots(id);
 	if (id == 0 and ContainerFrame1.forceExtended) then
 		num = num + 4;
 	end
@@ -139,7 +139,7 @@ function ToggleBackpack()
 		return;
 	end
 	
-	if ( IsBagOpen(0) ) then
+	if ( IsBagOpen(Enum.BagIndex.Backpack) ) then
 		for i=1, NUM_CONTAINER_FRAMES, 1 do
 			local frame = _G["ContainerFrame"..i];
 			if ( frame:IsShown() ) then
@@ -151,7 +151,7 @@ function ToggleBackpack()
 			end
 		end
 	else
-		ToggleBag(0);
+		ToggleBag(Enum.BagIndex.Backpack);
 		-- If there are tokens watched then show the bar
 		if ( ManageBackpackTokenFrame ) then
 			BackpackTokenFrame_Update();
@@ -172,7 +172,7 @@ function ContainerFrame_OnHide(self)
 
 	UpdateNewItemList(self);
 
-	if ( self:GetID() == 0 ) then
+	if ( self:GetID() == Enum.BagIndex.Backpack ) then
 		MainMenuBarBackpackButton:SetChecked(false);
 	else
 		local bagButton = _G["CharacterBag"..(self:GetID() - 1).."Slot"];
@@ -230,13 +230,13 @@ function ContainerFrame_OnShow(self)
 	self:RegisterEvent("BAG_SLOT_FLAGS_UPDATED");
 
 	--self.FilterIcon:Hide();
-	if ( self:GetID() == 0 ) then
+	if ( self:GetID() == Enum.BagIndex.Backpack ) then
 		local shouldShow = true;
 		if (FRAME_THAT_OPENED_BAGS ~= nil or Kiosk.IsEnabled()) then
 			shouldShow = false;
 		else
 			for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
-				if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
+				if ( not GetInventoryItemID("player", C_Container.ContainerIDToInventoryID(i)) ) then
 					shouldShow = false;
 					break;
 				end
@@ -252,18 +252,18 @@ function ContainerFrame_OnShow(self)
 			BagHelpBox:Show();
 		end
 		MainMenuBarBackpackButton:SetChecked(true);
-	elseif ( self:GetID() > 0) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
+	elseif ( self:GetID() > Enum.BagIndex.Backpack) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
 		local button = _G["CharacterBag"..(self:GetID() - 1).."Slot"];
 		if ( button ) then
 			button:SetChecked(true);
 		end
-		if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(self:GetID()))) then
+		if (not IsInventoryItemProfessionBag("player", C_Container.ContainerIDToInventoryID(self:GetID()))) then
 			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
 				local active = false;
 				if ( self:GetID() > NUM_BAG_SLOTS ) then
-					active = GetBankBagSlotFlag(self:GetID() - NUM_BAG_SLOTS, i);
+					active = C_Container.GetBagSlotFlag(self:GetID() - NUM_BAG_SLOTS, i);
 				else
-					active = GetBagSlotFlag(self:GetID(), i);
+					active = C_Container.GetBagSlotFlag(self:GetID(), i);
 				end
 				--[[
 				if ( active ) then
@@ -400,7 +400,7 @@ function CheckBagSettingsTutorial()
 		shouldShow = false;
 	else
 		for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
-			if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
+			if ( not GetInventoryItemID("player", C_Container.ContainerIDToInventoryID(i)) ) then
 				shouldShow = false;
 				break;
 			end
@@ -431,8 +431,8 @@ end
 
 function SearchBagsForItem(itemID)
 	for i = 0, NUM_BAG_SLOTS do
-		for j = 1, GetContainerNumSlots(i) do
-			local id = GetContainerItemID(i, j);
+		for j = 1, C_Container.GetContainerNumSlots(i) do
+			local id = C_Container.GetContainerItemID(i, j);
 			if (id == itemID and C_NewItems.IsNewItem(i, j)) then
 				return i;
 			end
@@ -443,8 +443,9 @@ end
 
 function SearchBagsForItemLink(itemLink)
 	for i = 0, NUM_BAG_SLOTS do
-		for j = 1, GetContainerNumSlots(i) do
-			local _, _, _, _, _, _, link = GetContainerItemInfo(i, j);
+		for j = 1, C_Container.GetContainerNumSlots(i) do
+			local info = C_Container.GetContainerItemInfo(i, j);
+			local link = info and info.hyperlink;
 			if (link == itemLink and C_NewItems.IsNewItem(i, j)) then
 				return i;
 			end
@@ -495,17 +496,17 @@ function ContainerFrame_Update(frame)
 	local battlepayItemTexture, newItemTexture, flash, newItemAnim;
 --]]
 	local tooltipOwner = GameTooltip:GetOwner();
-	local baseSize = GetContainerNumSlots(id);	
+	local baseSize = C_Container.GetContainerNumSlots(id);	
 --[[
 	frame.FilterIcon:Hide();
 --]]
-	if ( id ~= 0 and id ~= KEYRING_CONTAINER and not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id)) ) then
+	if ( id ~= Enum.BagIndex.Backpack and id ~= KEYRING_CONTAINER and not IsInventoryItemProfessionBag("player", C_Container.ContainerIDToInventoryID(id)) ) then
 		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
 			local active = false;
 			if ( id > NUM_BAG_SLOTS ) then
-				active = GetBankBagSlotFlag(id - NUM_BAG_SLOTS, i);
+				active = C_Container.GetBagSlotFlag(id - NUM_BAG_SLOTS, i);
 			else
-				active = GetBagSlotFlag(id, i);
+				active = C_Container.GetBagSlotFlag(id, i);
 			end
 			--[[
 			if ( active ) then
@@ -539,7 +540,15 @@ function ContainerFrame_Update(frame)
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
 		
-		texture, itemCount, locked, quality, readable, _, _, isFiltered, noValue, itemID = GetContainerItemInfo(id, itemButton:GetID());
+		local info = C_Container.GetContainerItemInfo(id, itemButton:GetID());
+		texture = info and info.iconFileID;
+		itemCount = info and info.stackCount;
+		locked = info and info.isLocked;
+		quality = info and info.quality;
+		readable = info and info.isReadable;
+		isFiltered = info and info.isFiltered;
+		noValue = info and info.hasNoValue;
+		itemID = info and info.itemID;
 		
 		SetItemButtonTexture(itemButton, texture);
 		SetItemButtonQuality(itemButton, quality, itemID);
@@ -609,7 +618,7 @@ function ContainerFrame_Update(frame)
 		itemButton.readable = readable;
 		
 		if ( itemButton == tooltipOwner ) then
-			if (GetContainerItemInfo(frame:GetID(), itemButton:GetID())) then
+			if (C_Container.GetContainerItemInfo(frame:GetID(), itemButton:GetID())) then
 				itemButton.UpdateTooltip(itemButton);
 			else
 				GameTooltip:Hide();
@@ -642,7 +651,8 @@ function ContainerFrame_UpdateSearchResults(frame)
 	
 	for i=1, frame.size, 1 do
 		itemButton = _G[name..i] or frame["Item"..i];
-		_, _, _, _, _, _, _, isFiltered = GetContainerItemInfo(id, itemButton:GetID());	
+		local info = C_Container.GetContainerItemInfo(id, itemButton:GetID());
+		isFiltered = info and info.isFiltered;
 		if ( isFiltered ) then
 			itemButton.searchOverlay:Show();
 		else
@@ -658,7 +668,8 @@ function ContainerFrame_UpdateLocked(frame)
 	local _, locked;
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
-		_, _, locked = GetContainerItemInfo(id, itemButton:GetID());
+		local info = C_Container.GetContainerItemInfo(id, itemButton:GetID());
+		locked = info and info.isLocked;
 		SetItemButtonDesaturated(itemButton, locked);
 	end
 end
@@ -666,7 +677,8 @@ end
 function ContainerFrame_UpdateLockedItem(frame, slot)
 	local index = frame.size + 1 - slot;
 	local itemButton = _G[frame:GetName().."Item"..index];
-	local _, _, locked = GetContainerItemInfo(frame:GetID(), itemButton:GetID());
+	local info = C_Container.GetContainerItemInfo(frame:GetID(), itemButton:GetID());
+	local locked = info and info.isLocked;
 	SetItemButtonDesaturated(itemButton, locked);
 end
 
@@ -675,7 +687,7 @@ function ContainerFrame_UpdateCooldowns(frame)
 	local name = frame:GetName();
 	for i=1, frame.size, 1 do
 		local itemButton = _G[name.."Item"..i];
-		if ( GetContainerItemInfo(id, itemButton:GetID()) ) then
+		if ( C_Container.GetContainerItemInfo(id, itemButton:GetID()) ) then
 			ContainerFrame_UpdateCooldown(id, itemButton);
 		else
 			_G[name.."Item"..i.."Cooldown"]:Hide();
@@ -685,7 +697,7 @@ end
 
 function ContainerFrame_UpdateCooldown(container, button)
 	local cooldown = _G[button:GetName().."Cooldown"];
-	local start, duration, enable = GetContainerItemCooldown(container, button:GetID());
+	local start, duration, enable = C_Container.GetContainerItemCooldown(container, button:GetID());
 	CooldownFrame_Set(cooldown, start, duration, enable);
 	if ( duration > 0 and enable == 0 ) then
 		SetItemButtonTextureVertexColor(button, 0.4, 0.4, 0.4);
@@ -913,7 +925,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 		frame:SetHeight(70);	
 		frame:SetWidth(99);
 		_G[frame:GetName().."Name"]:SetText("");
-		SetBagPortraitTexture(_G[frame:GetName().."Portrait"], id);
+		C_Container.SetBagPortraitTexture(_G[frame:GetName().."Portrait"], id);
 		local itemButton = _G[name.."Item1"];
 		itemButton:SetID(1);
 		itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -10, 5);
@@ -926,11 +938,11 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			_G[frame:GetName().."Name"]:SetText(KEYRING);
 			SetPortraitToTexture(frame:GetName().."Portrait", "Interface\\ContainerFrame\\KeyRing-Bag-Icon");
 		else
-			_G[frame:GetName().."Name"]:SetText(GetBagName(id));
-			SetBagPortraitTexture(_G[frame:GetName().."Portrait"], id);
+			_G[frame:GetName().."Name"]:SetText(C_Container.GetBagName(id));
+			C_Container.SetBagPortraitTexture(_G[frame:GetName().."Portrait"], id);
 		end
 
-		local baseSize = GetContainerNumSlots(id);
+		local baseSize = C_Container.GetContainerNumSlots(id);
 		local index, itemButton;
 		for i=1, size, 1 do
 			index = size - i + 1;
@@ -1045,7 +1057,7 @@ function ContainerFrameItemButton_OnLoad(self)
 	self:RegisterForDrag("LeftButton");
 
 	self.SplitStack = function(button, split)
-		SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
+		C_Container.SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 	end
 	self.UpdateTooltip = ContainerFrameItemButton_OnEnter;
 	self.timeSinceUpgradeCheck = 0;
@@ -1104,7 +1116,7 @@ function ContainerFrameItemButton_SetForceExtended(itemButton, extended)
 		itemButton.ExtendedOverlay:Show();
 		itemButton.ExtendedOverlay2:Show();
 		itemButton.ExtendedSlot:Show();
-		if ((itemButton:GetID() - 1) == GetContainerNumSlots(0)) then
+		if ((itemButton:GetID() - 1) == C_Container.GetContainerNumSlots(0)) then
 			itemButton.BagStaticBottom:Show();
 			itemButton.BagStaticTop:Show();
 			itemButton:SetScript("OnUpdate", ContainerFrameItemButton_BagStatic_AnimateUpdate);
@@ -1133,7 +1145,13 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	local slot = itemButton:GetID();
 	local bag = itemButton:GetParent():GetID();
 
-	local money, itemCount, refundSec, currencyCount, hasEnchants = GetContainerItemPurchaseInfo(bag, slot, isEquipped);
+	isEquipped = isEquipped or false;
+	local info = C_Container.GetContainerItemPurchaseInfo(bag, slot, isEquipped);
+	local money = info and info.money;
+	local itemCount = info and info.itemCount;
+	local refundSec = info and info.refundSeconds;
+	local currencyCount = info and info.currencyCount;
+	local hasEnchants = info and info.hasEnchants;
 	if ( not refundSec or ((itemCount == 0) and (money == 0) and (currencyCount == 0)) ) then
 		return false;
 	end
@@ -1148,7 +1166,10 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	
 	local maxQuality = 0;
 	for i=1, itemCount, 1 do
-		local itemTexture, itemQuantity, itemLink = GetContainerItemPurchaseItem(bag, slot, i, isEquipped);
+		local info = C_Container.GetContainerItemPurchaseItem(bag, slot, i, isEquipped);
+		local itemTexture = info and info.iconFileDataID;
+		local itemQuantity = info and info.itemCount;
+		local itemLink = info and info.hyperlink;
 		if ( itemLink ) then
 			local _, _, itemQuality = GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
@@ -1161,7 +1182,10 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	end
 	
 	for i=1, currencyCount, 1 do
-		local currencyTexture, currencyQuantity, currencyName = GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
+		local info = C_Container.GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
+		local currencyTexture = info and info.iconFileDataID;
+		local currencyQuantity = info and info.currencyCount;
+		local currencyName = info and info.name;
 		if ( currencyName ) then
 			local extraArgs = "";
 			if ( currencyTexture == HONOR_POINT_TEXTURES[1] or currencyTexture == HONOR_POINT_TEXTURES[2] ) then
@@ -1191,7 +1215,9 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		refundItemTexture = GetInventoryItemTexture("player", slot);
 		refundItemLink = GetInventoryItemLink("player", slot);
 	else
-		refundItemTexture, _, _, _, _, _, refundItemLink = GetContainerItemInfo(bag, slot);
+		local info = C_Container.GetContainerItemInfo(bag, slot);
+		refundItemTexture = info and info.iconFileID;
+		refundItemLink = info and info.hyperlink;
 	end
 	local itemName, _, itemQuality = GetItemInfo(refundItemLink);
 	local r, g, b = GetItemQualityColor(itemQuality);
@@ -1211,7 +1237,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 		local type, money = GetCursorInfo();
 		if ( SpellCanTargetItem() or SpellCanTargetItemID() ) then
 			-- Target the spell with the selected item
-			UseContainerItem(self:GetParent():GetID(), self:GetID());
+			C_Container.UseContainerItem(self:GetParent():GetID(), self:GetID());
 		elseif ( type == "guildbankmoney" ) then
 			WithdrawGuildBankMoney(money);
 			ClearCursor();
@@ -1224,10 +1250,10 @@ function ContainerFrameItemButton_OnClick(self, button)
 			elseif ( MerchantFrame.highPrice ) then
 				MerchantFrame_ConfirmHighCostItem(MerchantFrame.highPrice);
 			else
-				PickupContainerItem(self:GetParent():GetID(), self:GetID());
+				C_Container.PickupContainerItem(self:GetParent():GetID(), self:GetID());
 			end
 		else
-			PickupContainerItem(self:GetParent():GetID(), self:GetID());
+			C_Container.PickupContainerItem(self:GetParent():GetID(), self:GetID());
 			if ( CursorHasItem() ) then
 				MerchantFrame_SetRefundItem(self);
 			end
@@ -1244,7 +1270,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 				return;
 			end
 		end
-		UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
+		C_Container.UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
 		StackSplitFrame:Hide();
 	end
 end
@@ -1253,20 +1279,23 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID());
 		if C_Item.DoesItemExist(itemLocation) then
-			if SocketContainerItem(self:GetParent():GetID(), self:GetID()) then
+			if C_Container.SocketContainerItem(self:GetParent():GetID(), self:GetID()) then
 				return;
 			end
 		end
 	end
 
-	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
+	if ( HandleModifiedItemClick(C_Container.GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
 		return;
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
-		local texture, itemCount, locked = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
+		local info = C_Container.GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
+		local texture = info and info.iconFileID;
+		local itemCount = info and info.stackCount;
+		local locked = info and info.isLocked;
 		if ( not locked and itemCount and itemCount > 1) then
 			self.SplitStack = function(button, split)
-				SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
+				C_Container.SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 			end
 			OpenStackSplitFrame(itemCount, self, "BOTTOMRIGHT", "TOPRIGHT");
 		end
@@ -1358,7 +1387,7 @@ function ContainerFrameItemButton_OnEnter(self)
 	if ( IsModifiedClick("DRESSUP") and self.hasItem ) then
 		ShowInspectCursor();
 	elseif ( showSell ) then
-		ShowContainerSellCursor(self:GetParent():GetID(),self:GetID());
+		C_Container.ShowContainerSellCursor(self:GetParent():GetID(),self:GetID());
 	elseif ( self.readable ) then
 		ShowInspectCursor();
 	else
@@ -1382,6 +1411,7 @@ end
 function ContainerFramePortraitButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	local waitingOnData = false;
+		local bagID = C_Container.ContainerIDToInventoryID(self:GetID());
 	if ( self:GetID() == 0 ) then
 		GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
 		if (GetBindingKey("TOGGLEBACKPACK")) then
@@ -1393,15 +1423,15 @@ function ContainerFramePortraitButton_OnEnter(self)
 		if ( binding ) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
 		end
-	elseif ( GameTooltip:SetInventoryItem("player", ContainerIDToInventoryID(self:GetID())) ) then
-		local bagID = ContainerIDToInventoryID(self:GetID());
+	elseif ( GameTooltip:SetInventoryItem("player", C_Container.ContainerIDToInventoryID(self:GetID())) ) then
+		local bagID = C_Container.ContainerIDToInventoryID(self:GetID());
 		local binding = GetBindingKey("TOGGLEBAG"..(4 - self:GetID() + 1));
 		if ( binding ) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
 		end
 		if (not IsInventoryItemProfessionBag("player", bagID)) then
 			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-				if ( GetBagSlotFlag(bagID, i) ) then
+				if ( C_Container.GetBagSlotFlag(bagID, i) ) then
 					GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
 					break;
 				end
@@ -1430,7 +1460,7 @@ function ToggleAllBags()
 	end
 
 	for i=1, NUM_BAG_FRAMES, 1 do
-		if ( GetContainerNumSlots(i) > 0 ) then		
+		if ( C_Container.GetContainerNumSlots(i) > 0 ) then		
 			totalBags = totalBags +1;
 		end
 		if ( IsBagOpen(i) ) then
@@ -1450,7 +1480,7 @@ function ToggleAllBags()
 		bagsOpen = 0;
 		totalBags = 0;
 		for i=NUM_BAG_FRAMES+1, NUM_CONTAINER_FRAMES, 1 do
-			if ( GetContainerNumSlots(i) > 0 ) then		
+			if ( C_Container.GetContainerNumSlots(i) > 0 ) then		
 				totalBags = totalBags +1;
 			end
 			if ( IsBagOpen(i) ) then

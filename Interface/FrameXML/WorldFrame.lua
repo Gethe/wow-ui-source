@@ -16,7 +16,6 @@ function ToggleFramerate(benchmark)
 end
 
 function WorldFrame_OnLoad(self)
-	self:IgnoreDepth(true);
 	TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
 	TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 10;
 end
@@ -63,7 +62,7 @@ function WorldFrame_OnUpdate(self, elapsed)
 	if ( StopwatchTicker and not StopwatchTicker:IsVisible() and Stopwatch_IsPlaying() ) then
 		StopwatchTicker_OnUpdate(StopwatchTicker, elapsed);
 	end
-	
+
 	-- need to do some polling for a few tutorials
 	if ( not IsTutorialFlagged(4) and IsTutorialFlagged(10) and not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH ) then
 		TUTORIAL_TIMER_CLOSE_TO_QUEST = TUTORIAL_TIMER_CLOSE_TO_QUEST + elapsed;

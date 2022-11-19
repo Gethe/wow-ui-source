@@ -47,6 +47,15 @@ local ReputationInfo =
 				{ Name = "factionID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "SetWatchedFaction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

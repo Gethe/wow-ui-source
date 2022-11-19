@@ -27,6 +27,7 @@ local Unit =
 			{
 				{ Name = "textureObject", Type = "table", Nilable = false },
 				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "disableMasking", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -37,6 +38,23 @@ local Unit =
 			{
 				{ Name = "textureObject", Type = "table", Nilable = false },
 				{ Name = "creatureDisplayID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetUnitCursorTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "textureObject", Type = "table", Nilable = false },
+				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "style", Type = "CursorStyle", Nilable = true },
+				{ Name = "includeLowPriority", Type = "bool", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "hasCursor", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -178,6 +196,11 @@ local Unit =
 
 	Events =
 	{
+		{
+			Name = "ActivePlayerSpecializationChanged",
+			Type = "Event",
+			LiteralName = "ACTIVE_PLAYER_SPECIALIZATION_CHANGED",
+		},
 		{
 			Name = "ArenaCooldownsUpdate",
 			Type = "Event",
@@ -425,6 +448,31 @@ local Unit =
 			LiteralName = "PLAYER_REGEN_ENABLED",
 		},
 		{
+			Name = "PlayerSoftEnemyChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_SOFT_ENEMY_CHANGED",
+		},
+		{
+			Name = "PlayerSoftFriendChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_SOFT_FRIEND_CHANGED",
+		},
+		{
+			Name = "PlayerSoftInteractChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_SOFT_INTERACT_CHANGED",
+			Payload =
+			{
+				{ Name = "oldTarget", Type = "string", Nilable = false },
+				{ Name = "newTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerSoftTargetInteraction",
+			Type = "Event",
+			LiteralName = "PLAYER_SOFT_TARGET_INTERACTION",
+		},
+		{
 			Name = "PlayerStartedLooking",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_LOOKING",
@@ -653,6 +701,15 @@ local Unit =
 			Name = "UnitFlags",
 			Type = "Event",
 			LiteralName = "UNIT_FLAGS",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitFormChanged",
+			Type = "Event",
+			LiteralName = "UNIT_FORM_CHANGED",
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "string", Nilable = false },

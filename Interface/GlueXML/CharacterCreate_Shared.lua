@@ -15,7 +15,118 @@ FACTION_BACKDROP_COLOR_TABLE = {
 	},
 };
 
-function CharacterCreate_OnLoad(self)
+function CharacterCreateEnumerateRaces()
+	local races = C_CharacterCreation.GetAvailableRaces();
+	CharacterCreate.numRaces = #races;
+	if ( CharacterCreate.numRaces > MAX_RACES ) then
+		message("Too many races!  Update MAX_RACES");
+		return;
+	end
+
+	local isBoostedCharacter = CharacterUpgrade_IsCreatedCharacterUpgrade() or CharacterUpgrade_IsCreatedCharacterTrialBoost();
+	local coords;
+	local button;
+	local gender;
+	if ( C_CharacterCreation.GetSelectedSex() == Enum.UnitSex.Male ) then
+		gender = "MALE";
+	else
+		gender = "FEMALE";
+	end
+	for index, raceData in pairs(races) do
+		coords = RACE_ICON_TCOORDS[strupper(raceData.fileName.."_"..gender)];
+		_G["CharacterCreateRaceButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		button = _G["CharacterCreateRaceButton"..index];
+		button:Show();
+
+		local disable = true;
+		if CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+			local _, currentFaction = C_PaidServices.GetCurrentFaction();
+			if CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+				currentFaction = select(29, GetCharacterInfoByGUID(CharacterCreateFrame.vasInfo.selectedCharacterGUID));
+			end
+			local currentClass = C_PaidServices.GetCurrentClassID();
+			if (currentFaction ~= raceData.factionInternalName and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass)) then
+				disable = false;
+			end
+		elseif isBoostedCharacter and CharacterUpgradeFlow and CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.boostType and C_CharacterServices.DoesBoostTypeRestrictRace(CharacterUpgradeFlow.data.boostType, raceData.raceID) then
+			disable = true;
+			button.tooltip = CHAR_CREATE_NO_BOOST;
+		else
+			disable = false;
+		end
+
+		if disable then
+			button:Disable();
+			local texture = button:GetNormalTexture();
+			if ( texture ) then
+				texture:SetDesaturated(true);
+			end
+			button:SetText("");			
+		else
+			button:Enable();
+			local texture = button:GetNormalTexture();
+			if ( texture ) then
+				texture:SetDesaturated(false);
+			end
+			button.tooltip = raceData.name;
+		end
+
+		button.raceID = raceData.raceID;
+	end
+	for i=#races + 1, MAX_RACES, 1 do
+		_G["CharacterCreateRaceButton"..i]:Hide();
+	end
+end
+
+
+function CharacterCreateEnumerateClasses()
+	local classes = C_CharacterCreation.GetAvailableClasses();
+
+	CharacterCreate.numClasses = #classes;
+	if ( CharacterCreate.numClasses > MAX_CLASSES_PER_RACE ) then
+		message("Too many classes!  Update MAX_CLASSES_PER_RACE");
+		return;
+	end
+
+	local isBoostedCharacter = CharacterUpgrade_IsCreatedCharacterUpgrade() or CharacterUpgrade_IsCreatedCharacterTrialBoost();
+	local coords;
+	local button;
+	for index, classData in pairs(classes) do
+		coords = CLASS_ICON_TCOORDS[strupper(classData.fileName)];
+		_G["CharacterCreateClassButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		button = _G["CharacterCreateClassButton"..index];
+
+		local disable = true;
+		if (CharacterCreateFrame:HasService()) then
+			disable = C_PaidServices.GetCurrentClassID() ~= classData.classID;
+		elseif (isBoostedCharacter and CharacterUpgradeFlow and CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.boostType and C_CharacterServices.DoesBoostTypeRestrictClass(CharacterUpgradeFlow.data.boostType, classData.classID)) then
+			disable = true;
+			button.tooltip = CHAR_CREATE_NO_BOOST_CLASS;
+		elseif (not classData.enabled) then 
+			disable = true;
+			button.tooltip = nil;
+		else
+			disable = false;
+			button.tooltip = classData.name;
+		end
+
+		if (disable) then
+			button:Disable();
+			_G["CharacterCreateClassButton"..index.."DisableTexture"]:Show();
+		else
+			button:Enable();
+			_G["CharacterCreateClassButton"..index.."DisableTexture"]:Hide();
+		end
+		button.classID = classData.classID;
+	end
+	for i=CharacterCreate.numClasses+1, MAX_CLASSES_PER_RACE, 1 do
+		_G["CharacterCreateClassButton"..i]:Hide();
+	end
+end
+
+CharacterCreateMixin = {}
+
+function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("RANDOM_CHARACTER_NAME_RESULT");
 	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
 	self:RegisterEvent("CHARACTER_CREATION_RESULT");
@@ -24,8 +135,8 @@ function CharacterCreate_OnLoad(self)
 	self:RegisterEvent("RACE_FACTION_CHANGE_STARTED");
 	self:RegisterEvent("RACE_FACTION_CHANGE_RESULT");
 
-	self:SetSequence(0);
-	self:SetCamera(0);
+	CharacterCreate:SetSequence(0);
+	CharacterCreate:SetCamera(0);
 
 	CharacterCreate.numRaces = 0;
 	CharacterCreate.selectedRace = 0;
@@ -47,12 +158,23 @@ function CharacterCreate_OnLoad(self)
 	CharacterCreateNameEdit:SetBackdropColor(backdropColor.color:GetRGB());
 end
 
-function CharacterCreate_OnShow(self)
+function CharacterCreateMixin:OnShow()
 	InitializeCharacterScreenData();
 	SetInCharacterCreate(true);
 
-	--randomly selects a combination
-	C_CharacterCreation.ResetCharCustomize();
+	local _, selectedFaction;
+	local existingCharacterID = self:GetExistingCharacterID();
+	if existingCharacterID then
+		C_CharacterCreation.CustomizeExistingCharacter(existingCharacterID);
+		self.currentPaidServiceName = C_PaidServices.GetName();
+		_, selectedFaction = C_PaidServices.GetCurrentFaction();
+		CharacterCreateNameEdit:SetText(self.currentPaidServiceName);
+	else
+		self.currentPaidServiceName = nil;
+		--randomly selects a combination
+		C_CharacterCreation.ResetCharCustomize();
+		CharacterCreateNameEdit:SetText("");
+	end
 
 	CharacterCreateEnumerateRaces();
 	SetDefaultRace();
@@ -62,7 +184,6 @@ function CharacterCreate_OnShow(self)
 
 	SetCharacterGender(C_CharacterCreation.GetSelectedSex())
 	
-	CharacterCreateNameEdit:SetText("");
 	C_CharacterCreation.SetCharacterCreateFacing(-15);
 
 	-- Set in locale files. We only support random names for English.
@@ -82,11 +203,13 @@ function CharacterCreate_OnShow(self)
 	end
 end
 
-function CharacterCreate_OnHide()
+function CharacterCreateMixin:OnHide()
 	SetInCharacterCreate(false);
+	CharacterCreateFrame:ClearPaidServiceInfo();
+	CharacterCreateFrame:ClearVASInfo();
 end
 
-function CharacterCreate_OnEvent(self, event, ...)
+function CharacterCreateMixin:OnEvent(event, ...)
 	if ( event == "RANDOM_CHARACTER_NAME_RESULT" ) then
 		local success, name = ...;
 		if ( not success ) then
@@ -140,20 +263,57 @@ function CharacterCreate_OnEvent(self, event, ...)
 	end
 end
 
-function CharacterCreateFrame_OnMouseDown(button)
+function CharacterCreateMixin:SetPaidServiceInfo(serviceType, characterID)
+	self.paidServiceType = serviceType;
+	self.paidServiceCharacterID = characterID;
+	C_CharacterCreation.SetPaidService(serviceType ~= nil);
+end
+
+function CharacterCreateMixin:SetVASInfo(vasType, info)
+	self.vasType = vasType;
+	self.vasInfo = info;
+	C_CharacterCreation.SetPaidService(vasType ~= nil);
+end
+
+function CharacterCreateMixin:ClearPaidServiceInfo()
+	self.paidServiceType = nil;
+	self.paidServiceCharacterID = nil;
+	C_CharacterCreation.SetPaidService(false);
+end
+
+function CharacterCreateMixin:ClearVASInfo()
+	self.vasType = nil;
+	self.vasInfo = nil;	
+	C_CharacterCreation.SetPaidService(false);
+end
+
+function CharacterCreateMixin:HasService()
+	return (self.paidServiceType or self.vasType) and true or false;
+end
+
+function CharacterCreateMixin:GetExistingCharacterID()
+	if self.paidServiceType then
+		return self.paidServiceCharacterID;
+	elseif self.vasType then
+		return self.vasInfo.characterIndex;
+	end
+	return nil;
+end
+
+function CharacterCreateMixin:OnMouseDown(button)
 	if ( button == "LeftButton" ) then
 		CHARACTER_CREATE_ROTATION_START_X = GetCursorPosition();
 		CHARACTER_CREATE_INITIAL_FACING = C_CharacterCreation.GetCharacterCreateFacing();
 	end
 end
 
-function CharacterCreateFrame_OnMouseUp(button)
+function CharacterCreateMixin:OnMouseUp(button)
 	if ( button == "LeftButton" ) then
 		CHARACTER_CREATE_ROTATION_START_X = nil
 	end
 end
 
-function CharacterCreateFrame_OnUpdate(self, elapsed)
+function CharacterCreateMixin:OnUpdate(self, elapsed)
 	if ( CHARACTER_CREATE_ROTATION_START_X ) then
 		local x = GetCursorPosition();
 		local diff = (x - CHARACTER_CREATE_ROTATION_START_X) * CHARACTER_ROTATION_CONSTANT;

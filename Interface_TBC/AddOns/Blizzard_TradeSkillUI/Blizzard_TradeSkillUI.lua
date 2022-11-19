@@ -3,10 +3,10 @@ MAX_TRADE_SKILL_REAGENTS = 8;
 TRADE_SKILL_HEIGHT = 16;
 
 TradeSkillTypeColor = { };
-TradeSkillTypeColor["optimal"]	= { r = 1.00, g = 0.50, b = 0.25, font = "GameFontNormalLeftOrange" };       
-TradeSkillTypeColor["medium"]	= { r = 1.00, g = 1.00, b = 0.00, font = "GameFontNormalLeftYellow" };       
-TradeSkillTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25, font = "GameFontNormalLeftLightGreen" };   
-TradeSkillTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50, font = "GameFontNormalLeftGrey" };         
+TradeSkillTypeColor["optimal"]	= { r = 1.00, g = 0.50, b = 0.25, font = "GameFontNormalLeftOrange" };
+TradeSkillTypeColor["medium"]	= { r = 1.00, g = 1.00, b = 0.00, font = "GameFontNormalLeftYellow" };
+TradeSkillTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25, font = "GameFontNormalLeftLightGreen" };
+TradeSkillTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50, font = "GameFontNormalLeftGrey" };
 TradeSkillTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,    font = "GameFontNormalLeft" };
 
 -- Current Trade Skill name. Used for detecting if the player swaps which tradeskill the window should show.
@@ -27,7 +27,7 @@ function TradeSkillFrame_OnShow(self)
 		TradeSkillFrame_SetSelection(GetTradeSkillSelectionIndex());
 	end
 	FauxScrollFrame_SetOffset(TradeSkillListScrollFrame, 0);
-	TradeSkillListScrollFrameScrollBar:SetMinMaxValues(0, 0); 
+	TradeSkillListScrollFrameScrollBar:SetMinMaxValues(0, 0);
 	TradeSkillListScrollFrameScrollBar:SetValue(0);
 	SetPortraitTexture(TradeSkillFramePortrait, "player");
 	TradeSkillFrame_Update();
@@ -114,7 +114,7 @@ function TradeSkillFrame_Update()
 		local skillIndex = i + skillOffset;
 		local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(skillIndex);
 		local skillButton = getglobal("TradeSkillSkill"..i);
-		if ( skillIndex <= numTradeSkills ) then	
+		if ( skillIndex <= numTradeSkills ) then
 			-- Set button widths if scrollbar is shown or hidden
 			if ( TradeSkillListScrollFrame:IsVisible() ) then
 				skillButton:SetWidth(293);
@@ -125,7 +125,7 @@ function TradeSkillFrame_Update()
 			if ( color ) then
 				skillButton:SetNormalFontObject(color.font);
 			end
-			
+
 			skillButton:SetID(skillIndex);
 			skillButton:Show();
 			-- Handle headers
@@ -142,14 +142,14 @@ function TradeSkillFrame_Update()
 				if ( not skillName ) then
 					return;
 				end
-				skillButton:SetNormalTexture("");
+				skillButton:ClearNormalTexture();
 				getglobal("TradeSkillSkill"..i.."Highlight"):SetTexture("");
 				if ( numAvailable == 0 ) then
 					skillButton:SetText(" "..skillName);
 				else
 					skillButton:SetText(" "..skillName.." ["..numAvailable.."]");
 				end
-				
+
 				-- Place the highlight and lock the highlight state
 				if ( GetTradeSkillSelectionIndex() == skillIndex ) then
 					TradeSkillHighlightFrame:SetPoint("TOPLEFT", "TradeSkillSkill"..i, "TOPLEFT", 0, 0);
@@ -159,12 +159,12 @@ function TradeSkillFrame_Update()
 					getglobal("TradeSkillSkill"..i):UnlockHighlight();
 				end
 			end
-			
+
 		else
 			skillButton:Hide();
 		end
 	end
-	
+
 	-- Set the expand/collapse all button texture
 	local numHeaders = 0;
 	local notExpanded = 0;
@@ -230,7 +230,12 @@ function TradeSkillFrame_SetSelection(id)
 	else
 		TradeSkillSkillCooldown:SetText("");
 	end
-	TradeSkillSkillIcon:SetNormalTexture(GetTradeSkillIcon(id));
+	local icon = GetTradeSkillIcon(id);
+	if (icon) then
+		TradeSkillSkillIcon:SetNormalTexture(icon);
+	else
+		TradeSkillSkillIcon:ClearNormalTexture();
+	end
 	local minMade,maxMade = GetTradeSkillNumMade(id);
 	if ( maxMade > 1 ) then
 		if ( minMade == maxMade ) then
@@ -244,7 +249,7 @@ function TradeSkillFrame_SetSelection(id)
 	else
 		TradeSkillSkillIconCount:SetText("");
 	end
-	
+
 	-- Reagents
 	local creatable = 1;
 	local numReagents = GetTradeSkillNumReagents(id);
@@ -286,7 +291,7 @@ function TradeSkillFrame_SetSelection(id)
 	if ( (numReagents > 0) and (mod(numReagents, 2) == 0) ) then
 		reagentToAnchorTo = reagentToAnchorTo - 1;
 	end
-	
+
 	for i=numReagents + 1, MAX_TRADE_SKILL_REAGENTS, 1 do
 		getglobal("TradeSkillReagent"..i):Hide();
 	end
@@ -453,7 +458,7 @@ function TradeSkillFilterFrame_LoadInvSlots(...)
 		info.checked = allChecked;
 		UIDropDownMenu_AddButton(info);
 	end
-	
+
 	local checked;
 	for i=1, argN, 1 do
 		if ( allChecked and argN > 1 ) then

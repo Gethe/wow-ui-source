@@ -19,7 +19,7 @@ function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
 	self.showCastbar = true;
 	self.notInterruptible = false;
 
-	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint();
+	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint(1);
 	if ( point == "CENTER" ) then
 		self.Spark.offsetY = offsetY;
 	end
@@ -125,7 +125,7 @@ end
 
 function CastingBarFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
-	
+
 	local unit = self.unit;
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		local nameChannel = UnitChannelInfo(unit);
@@ -144,7 +144,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	if ( arg1 ~= unit ) then
 		return;
 	end
-	
+
 	if ( event == "UNIT_SPELLCAST_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, castID--[[, notInterruptible]] = UnitCastingInfo(unit);
 		local notInterruptible = false;
@@ -161,7 +161,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		else
 			self.Flash:SetVertexColor(1, 1, 1);
 		end
-		
+
 		if ( self.Spark ) then
 			self.Spark:Show();
 		end

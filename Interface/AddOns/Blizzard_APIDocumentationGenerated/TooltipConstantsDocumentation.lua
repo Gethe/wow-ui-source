@@ -1,17 +1,5 @@
 local TooltipConstants =
 {
-	Name = "Tooltip",
-	Type = "System",
-	Namespace = "C_Tooltip",
-
-	Functions =
-	{
-	},
-
-	Events =
-	{
-	},
-
 	Tables =
 	{
 		{

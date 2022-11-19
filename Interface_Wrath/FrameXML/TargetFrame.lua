@@ -70,9 +70,9 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	                     threatFrame, "player", _G[thisName.."NumericalThreat"],
 						 nil, nil,
 						 nil, nil, nil,
-						 nil, nil, 
+						 nil, nil,
 						 nil, nil);
-						
+
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_HEALTH");
@@ -159,7 +159,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		TargetFrame_UpdateRaidTargetIcon(self);
 		CloseDropDownMenus();
 
-		if ( UnitExists(self.unit) and not IsReplacingUnit()) then
+		if ( UnitExists(self.unit) and not C_PlayerInteractionManager.IsReplacingUnit()) then
 			if ( UnitIsEnemy(self.unit, "player") ) then
 				PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT);
 			elseif ( UnitIsFriend("player", self.unit) ) then
@@ -1033,7 +1033,7 @@ function TargetFrame_CreateSpellbar(self, event, boss)
 end
 
 function Target_Spellbar_OnEvent(self, event, ...)
-	if( GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE ) then 
+	if( GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE ) then
 		return;
 	end
 
@@ -1152,7 +1152,7 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
 	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
-	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint("CENTER")));
+	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint(1)));
 	self.raidTargetIcon:SetPoint("RIGHT", -90, 0);
 	self.threatNumericIndicator:SetPoint("BOTTOM", self, "TOP", -85, -22);
 	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss-Flash");

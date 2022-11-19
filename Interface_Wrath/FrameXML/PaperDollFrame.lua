@@ -2368,6 +2368,7 @@ end
 -- Handles scrolling to the icon selected, and pushing equipment to the front of the icon list 
 function RecalculateGearManagerDialogPopup()
 	local popup = GearManagerDialogPopup;
+	RefreshEquipmentSetIconInfo();
 	local selectedSet = GearManagerDialog.selectedSet;
 	if ( selectedSet ) then
 		-- Try to find index of the icon
@@ -2390,7 +2391,6 @@ function RecalculateGearManagerDialogPopup()
 	To do this, we need to find the current set (by icon) and move the offset of the GearManagerDialogPopup
 	to display it.
 	]]
-	RefreshEquipmentSetIconInfo();
 	_TotalItems = #iconsTable + _numItems; -- Icons plus unique equipment
 	_specialIcon = nil;
 	local texture;

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\Interface\FrameXML\UI.xsd">
 	<Include file="..\..\..\Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUIPatchwerk.xml" />
 	<Script file="..\..\..\Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUIInbound.lua" />
 	<Script file="..\..\..\Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUIOutbound.lua" />
@@ -1574,7 +1574,7 @@
 			</Frames>
 		</Frame>
 		<Button name="StoreAutoCompleteButtonTemplate" parentArray="Buttons" virtual="true">
-			<Size x="140" y="14"/>
+			<Size x="230" y="14"/>
 			<ButtonText parentKey="Text" justifyH="LEFT"/>
 			<NormalFont style="GameFontWhiteTiny2"/>
 			<HighlightFont style="GameFontWhiteTiny2"/>
@@ -2576,9 +2576,9 @@
 							</Layers>
 							<Frames>
 								<Frame parentKey="TransferRealmAutoCompleteBox" hidden="true">
-									<Size x="154" y="5"/>
+									<Size x="244" y="5"/>
 									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="0"/>
+										<Anchor point="TOP" relativePoint="BOTTOM" x="-47" y="0"/>
 									</Anchors>
 									<Layers>
 										<Layer level="BACKGROUND">

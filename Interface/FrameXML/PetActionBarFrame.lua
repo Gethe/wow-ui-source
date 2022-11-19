@@ -245,7 +245,7 @@ function PetActionBar_UpdatePositionValues()
 	elseif ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
 		PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
 	elseif ( StanceBarFrame and GetNumShapeshiftForms() > 0 ) then
-		PETACTIONBAR_XPOS = _G["StanceButton"..GetNumShapeshiftForms()]:GetRight() + 20;
+		PETACTIONBAR_XPOS = StanceBarFrame.StanceButtons[GetNumShapeshiftForms()]:GetRight() + 20;
 	elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
 		PETACTIONBAR_XPOS = 500;
 	else

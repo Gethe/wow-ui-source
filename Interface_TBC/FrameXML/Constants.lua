@@ -23,20 +23,16 @@ MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_BURNING_CRUSADE] = 70;
 NPE_TUTORIAL_COMPLETE_LEVEL = 10;
 
 
-AREA_NAME_FONT_COLOR = CreateColor(1.0, 0.9294, 0.7607);
-AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
-INVASION_FONT_COLOR = CreateColor(0.78, 1, 0);
-INVASION_DESCRIPTION_FONT_COLOR = CreateColor(1, 0.973, 0.035);
-
-FACTION_BAR_COLORS = {
-	[1] = {r = 0.8, g = 0.3, b = 0.22},
-	[2] = {r = 0.8, g = 0.3, b = 0.22},
-	[3] = {r = 0.75, g = 0.27, b = 0},
-	[4] = {r = 0.9, g = 0.7, b = 0},
-	[5] = {r = 0, g = 0.6, b = 0.1},
-	[6] = {r = 0, g = 0.6, b = 0.1},
-	[7] = {r = 0, g = 0.6, b = 0.1},
-	[8] = {r = 0, g = 0.6, b = 0.1},
+FACTION_BAR_COLORS = 
+{
+	FACTION_RED_COLOR,
+	FACTION_RED_COLOR,
+	FACTION_ORANGE_COLOR,
+	FACTION_YELLOW_COLOR,
+	FACTION_GREEN_COLOR,
+	FACTION_GREEN_COLOR,
+	FACTION_GREEN_COLOR,
+	FACTION_GREEN_COLOR,
 };
 
 WORLD_QUEST_ICONS_BY_PROFESSION = {
@@ -64,35 +60,27 @@ CHAT_FONT_HEIGHTS = {
 	[4] = 18
 };
 
-MATERIAL_TEXT_COLOR_TABLE = {
-	["Default"] = {0.18, 0.12, 0.06},
-	["Stone"] = {1.0, 1.0, 1.0},
-	["Parchment"] = {0.18, 0.12, 0.06},
-	["Marble"] = {0, 0, 0},
-	["Silver"] = {0.12, 0.12, 0.12},
-	["Bronze"] = {0.18, 0.12, 0.06},
-	["ParchmentLarge"] = {.141, 0, 0}
-};
-MATERIAL_TITLETEXT_COLOR_TABLE = {
-	["Default"] = {0, 0, 0},
-	["Stone"] = {0.93, 0.82, 0},
-	["Parchment"] = {0, 0, 0},
-	["Marble"] = {0.93, 0.82, 0},
-	["Silver"] = {0.93, 0.82, 0},
-	["Bronze"] = {0.93, 0.82, 0},
-	["ParchmentLarge"] = {.208, 0, 0}
+MATERIAL_TEXT_COLOR_TABLE = 
+{
+	["Default"] = DEFAULT_MATERIAL_TEXT_COLOR,
+	["Stone"] = STONE_MATERIAL_TEXT_COLOR,
+	["Parchment"] = PARCHMENT_MATERIAL_TEXT_COLOR,
+	["Marble"] = MARBLE_MATERIAL_TEXT_COLOR,
+	["Silver"] = SILVER_MATERIAL_TEXT_COLOR,
+	["Bronze"] = BRONZE_MATERIAL_TEXT_COLOR,
+	["ParchmentLarge"] = PARCHMENTLARGE_MATERIAL_TEXT_COLOR,
 };
 
-FRIENDS_BNET_NAME_COLOR = CreateColor(0.510, 0.773, 1.0);
-FRIENDS_BNET_BACKGROUND_COLOR = CreateColor(0, 0.694, 0.941, 0.05);
-FRIENDS_WOW_NAME_COLOR = CreateColor(0.996, 0.882, 0.361);
-FRIENDS_WOW_BACKGROUND_COLOR = CreateColor(1.0, 0.824, 0.0, 0.05);
-FRIENDS_GRAY_COLOR = CreateColor(0.486, 0.518, 0.541);
-FRIENDS_OFFLINE_BACKGROUND_COLOR = CreateColor(0.588, 0.588, 0.588, 0.05);
-FRIENDS_BNET_NAME_COLOR_CODE = "|cff82c5ff";
-FRIENDS_BROADCAST_TIME_COLOR_CODE = "|cff4381a8"
-FRIENDS_WOW_NAME_COLOR_CODE = "|cfffde05c";
-FRIENDS_OTHER_NAME_COLOR_CODE = "|cff7b8489";
+MATERIAL_TITLETEXT_COLOR_TABLE = 
+{
+	["Default"] = DEFAULT_MATERIAL_TITLETEXT_COLOR,
+	["Stone"] = STONE_MATERIAL_TITLETEXT_COLOR,
+	["Parchment"] = PARCHMENT_MATERIAL_TITLETEXT_COLOR,
+	["Marble"] = MARBLE_MATERIAL_TITLETEXT_COLOR,
+	["Silver"] = SILVER_MATERIAL_TITLETEXT_COLOR,
+	["Bronze"] = BRONZE_MATERIAL_TITLETEXT_COLOR,
+	["ParchmentLarge"] = PARCHMENTLARGE_MATERIAL_TITLETEXT_COLOR,
+};
 
 HTML_START = "<html><body><p>";
 HTML_START_CENTERED = "<html><body><p align=\"center\">";
@@ -226,16 +214,17 @@ NUM_EVALUATION_TREE_FLAGS				= 2;
 ITEM_UNIQUE_EQUIPPED = -1;
 MAX_NUM_SOCKETS = 3;
 
-BAG_ITEM_QUALITY_COLORS = {
-	[LE_ITEM_QUALITY_COMMON] = {r=0.65882,g=0.65882,b=0.65882},
-	[LE_ITEM_QUALITY_UNCOMMON] = {r=0.08235, g=0.70196, b=0},
-	[LE_ITEM_QUALITY_RARE] = {r=0, g=0.56863, b=0.94902},
-	[LE_ITEM_QUALITY_EPIC] = {r=0.78431, g=0.27059, b=0.98039},
-	[LE_ITEM_QUALITY_LEGENDARY] = {r=1, g=0.50196, b=0},
-	[LE_ITEM_QUALITY_ARTIFACT] = {r=0.90196, g=0.8, b=0.50196},
-	[LE_ITEM_QUALITY_HEIRLOOM] = {r=0, g=0.8, b=1},
-	[LE_ITEM_QUALITY_WOW_TOKEN] = {r=0, g=0.8, b=1},
-}
+BAG_ITEM_QUALITY_COLORS = 
+{
+	[LE_ITEM_QUALITY_COMMON] = COMMON_GRAY_COLOR,
+	[LE_ITEM_QUALITY_UNCOMMON] = UNCOMMON_GREEN_COLOR,
+	[LE_ITEM_QUALITY_RARE] = RARE_BLUE_COLOR,
+	[LE_ITEM_QUALITY_EPIC] = EPIC_PURPLE_COLOR,
+	[LE_ITEM_QUALITY_LEGENDARY] = LEGENDARY_ORANGE_COLOR,
+	[LE_ITEM_QUALITY_ARTIFACT] = ARTIFACT_GOLD_COLOR,
+	[LE_ITEM_QUALITY_HEIRLOOM] = HEIRLOOM_BLUE_COLOR,
+	[LE_ITEM_QUALITY_WOW_TOKEN] = ITEM_WOW_TOKEN_COLOR,
+};
 
 NEW_ITEM_ATLAS_BY_QUALITY = {
 	[LE_ITEM_QUALITY_POOR] = "bags-glow-white",
@@ -303,14 +292,14 @@ INVSLOTS_EQUIPABLE_IN_COMBAT = {
 ITEM_INVENTORY_BANK_BAG_OFFSET	= 4; -- Number of bags before the first bank bag
 CONTAINER_BAG_OFFSET = 19; -- Used for PutItemInBag
 
-BACKPACK_CONTAINER = 0;
-BANK_CONTAINER = -1;
+BACKPACK_CONTAINER = Enum.BagIndex.Backpack;
+BANK_CONTAINER = Enum.BagIndex.Bank;
 BANK_CONTAINER_INVENTORY_OFFSET = 39; -- Used for PickupInventoryItem
-KEYRING_CONTAINER = -2;
+KEYRING_CONTAINER = Enum.BagIndex.Keyring;
 
-NUM_BAG_SLOTS = 4;
-NUM_BANKGENERIC_SLOTS = 28;
-NUM_BANKBAGSLOTS = 7;
+NUM_BAG_SLOTS = Constants.InventoryConstants.NumBagSlots;
+NUM_BANKGENERIC_SLOTS = Constants.InventoryConstants.NumGenericBankSlots;
+NUM_BANKBAGSLOTS = Constants.InventoryConstants.NumBankBagSlots;
 
 -- Item IDs
 HEARTHSTONE_ITEM_ID = 6948;
@@ -576,7 +565,11 @@ SHOW_SEARCH_BAR_NUM_FRIENDS = 12;
 MIN_CHARACTER_SEARCH = 3;
 
 -- faction
-PLAYER_FACTION_COLORS = { [0] = CreateColor(0.90, 0.05, 0.07), [1] = CreateColor(0.29, 0.33, 0.91) }
+PLAYER_FACTION_COLORS = 
+{ 
+	[0] = PLAYER_FACTION_COLOR_HORDE, 
+	[1] = PLAYER_FACTION_COLOR_ALLIANCE,
+};
 
 -- Panel default size
 PANEL_DEFAULT_WIDTH = 338;
@@ -907,143 +900,6 @@ RELIC_TALENT_LINK_STYLE_AVAILABLE = 5;
 
 -- SPECTATOR MODE
 MAX_SPECTATED_PER_TEAM = 15;
-
--- "Generic" GamePad button labels
-KEY_PADDUP				= "GamePad Up";
-KEY_PADDRIGHT			= "GamePad Right";
-KEY_PADDDOWN			= "GamePad Down";
-KEY_PADDLEFT			= "GamePad Left";
-KEY_PAD1				= "GamePad 1";
-KEY_PAD2				= "GamePad 2";
-KEY_PAD3				= "GamePad 3";
-KEY_PAD4				= "GamePad 4";
-KEY_PAD5				= "GamePad 5";
-KEY_PAD6				= "GamePad 6";
-KEY_PADLSTICK			= "GamePad L Stick In";
-KEY_PADRSTICK			= "GamePad R Stick In";
-KEY_PADLSHOULDER		= "GamePad L Shoulder";
-KEY_PADRSHOULDER		= "GamePad R Shoulder";
-KEY_PADLTRIGGER			= "GamePad L Trigger";
-KEY_PADRTRIGGER			= "GamePad R Trigger";
-KEY_PADLSTICKUP			= "GamePad L Stick Up";
-KEY_PADLSTICKRIGHT		= "GamePad L Stick Right";
-KEY_PADLSTICKDOWN		= "GamePad L Stick Down";
-KEY_PADLSTICKLEFT		= "GamePad L Stick Left";
-KEY_PADRSTICKUP			= "GamePad R Stick Up";
-KEY_PADRSTICKRIGHT		= "GamePad R Stick Right";
-KEY_PADRSTICKDOWN		= "GamePad R Stick Down";
-KEY_PADRSTICKLEFT		= "GamePad R Stick Left";
-KEY_PADPADDLE1			= "GamePad Paddle 1";
-KEY_PADPADDLE2			= "GamePad Paddle 2";
-KEY_PADPADDLE3			= "GamePad Paddle 3";
-KEY_PADPADDLE4			= "GamePad Paddle 4";
-KEY_PADFORWARD			= "GamePad Forward";
-KEY_PADBACK				= "GamePad Back";
-KEY_PADSYSTEM			= "GamePad System";
-KEY_PADSOCIAL			= "GamePad Social";
--- "Letters" label style specializations
-KEY_PAD1_LTR			= "GamePad A";
-KEY_PAD2_LTR			= "GamePad B";
-KEY_PAD3_LTR			= "GamePad X";
-KEY_PAD4_LTR			= "GamePad Y";
-KEY_PADLSHOULDER_LTR	= "GamePad L Bumper";
-KEY_PADRSHOULDER_LTR	= "GamePad R Bumper";
-KEY_PADFORWARD_LTR		= "GamePad Start";
-KEY_PADBACK_LTR			= "GamePad Back";
--- "Reverse" label style specializations
-KEY_PAD1_REV			= "GamePad B";
-KEY_PAD2_REV			= "GamePad A";
-KEY_PAD3_REV			= "GamePad Y";
-KEY_PAD4_REV			= "GamePad X";
-KEY_PADLSHOULDER_REV	= "GamePad L";
-KEY_PADRSHOULDER_REV	= "GamePad R";
-KEY_PADLTRIGGER_REV		= "GamePad ZL";
-KEY_PADRTRIGGER_REV		= "GamePad ZR";
-KEY_PADFORWARD_REV		= "GamePad +";
-KEY_PADBACK_REV			= "GamePad -";
--- "Shapes" label style specializations
-KEY_PAD1_SHP			= "GamePad X";
-KEY_PAD2_SHP			= "GamePad O";
-KEY_PAD3_SHP			= "GamePad Square";
-KEY_PAD4_SHP			= "GamePad Triangle";
-KEY_PAD5_SHP			= "GamePad Mute";
-KEY_PADLSTICK_SHP		= "GamePad L3";
-KEY_PADRSTICK_SHP		= "GamePad R3";
-KEY_PADLSHOULDER_SHP	= "GamePad L1";
-KEY_PADRSHOULDER_SHP	= "GamePad R1";
-KEY_PADLTRIGGER_SHP		= "GamePad L2";
-KEY_PADRTRIGGER_SHP		= "GamePad R2";
-KEY_PADFORWARD_SHP		= "GamePad Options";
-KEY_PADBACK_SHP			= "GamePad TouchPad";
-KEY_PADSOCIAL_SHP		= "GamePad Share";
-
--- "Generic" GamePad abbreviated button labels
-KEY_ABBR_PADDUP				= "u";
-KEY_ABBR_PADDRIGHT			= "r";
-KEY_ABBR_PADDDOWN			= "d";
-KEY_ABBR_PADDLEFT			= "l";
-KEY_ABBR_PAD1				= "1";
-KEY_ABBR_PAD2				= "2";
-KEY_ABBR_PAD3				= "3";
-KEY_ABBR_PAD4				= "4";
-KEY_ABBR_PAD5				= "5";
-KEY_ABBR_PAD6				= "6";
-KEY_ABBR_PADLSTICK			= "Li";
-KEY_ABBR_PADRSTICK			= "Ri";
-KEY_ABBR_PADLSHOULDER		= "Ls";
-KEY_ABBR_PADRSHOULDER		= "Rs";
-KEY_ABBR_PADLTRIGGER		= "Lt";
-KEY_ABBR_PADRTRIGGER		= "Rt";
-KEY_ABBR_PADLSTICKUP		= "Lu";
-KEY_ABBR_PADLSTICKRIGHT		= "Lr";
-KEY_ABBR_PADLSTICKDOWN		= "Ld";
-KEY_ABBR_PADLSTICKLEFT		= "Ll";
-KEY_ABBR_PADRSTICKUP		= "Ru";
-KEY_ABBR_PADRSTICKRIGHT		= "Rr";
-KEY_ABBR_PADRSTICKDOWN		= "Rd";
-KEY_ABBR_PADRSTICKLEFT		= "Rl";
-KEY_ABBR_PADPADDLE1			= "p1";
-KEY_ABBR_PADPADDLE2			= "p2";
-KEY_ABBR_PADPADDLE3			= "p3";
-KEY_ABBR_PADPADDLE4			= "p4";
-KEY_ABBR_PADFORWARD			= "Fw";
-KEY_ABBR_PADBACK			= "Bk";
-KEY_ABBR_PADSYSTEM			= "Sy";
-KEY_ABBR_PADSOCIAL			= "So";
--- "Letters" abbreviated label style specializations
-KEY_ABBR_PAD1_LTR			= "A";
-KEY_ABBR_PAD2_LTR			= "B";
-KEY_ABBR_PAD3_LTR			= "X";
-KEY_ABBR_PAD4_LTR			= "Y";
-KEY_ABBR_PADLSHOULDER_LTR	= "LB";
-KEY_ABBR_PADRSHOULDER_LTR	= "RB";
-KEY_ABBR_PADFORWARD_LTR		= "St";
-KEY_ABBR_PADBACK_LTR		= "Bk";
--- "Reverse" abbreviated label style specializations
-KEY_ABBR_PAD1_REV			= "B";
-KEY_ABBR_PAD2_REV			= "A";
-KEY_ABBR_PAD3_REV			= "Y";
-KEY_ABBR_PAD4_REV			= "X";
-KEY_ABBR_PADLSHOULDER_REV	= "L";
-KEY_ABBR_PADRSHOULDER_REV	= "R";
-KEY_ABBR_PADLTRIGGER_REV	= "ZL";
-KEY_ABBR_PADRTRIGGER_REV	= "ZR";
-KEY_ABBR_PADFORWARD_REV		= "+";
-KEY_ABBR_PADBACK_REV		= "-";
--- "Shapes" abbreviated label style specializations
-KEY_ABBR_PAD1_SHP			= "X";
-KEY_ABBR_PAD2_SHP			= "O";
-KEY_ABBR_PAD3_SHP			= "S";
-KEY_ABBR_PAD4_SHP			= "T";
-KEY_ABBR_PADLSTICK_SHP		= "L3";
-KEY_ABBR_PADRSTICK_SHP		= "R3";
-KEY_ABBR_PADLSHOULDER_SHP	= "L1";
-KEY_ABBR_PADRSHOULDER_SHP	= "R1";
-KEY_ABBR_PADLTRIGGER_SHP	= "L2";
-KEY_ABBR_PADRTRIGGER_SHP	= "R2";
-KEY_ABBR_PADFORWARD_SHP		= "Op";
-KEY_ABBR_PADBACK_SHP		= "Tp";
-KEY_ABBR_PADSOCIAL_SHP		= "Sh";
 
 WOW_PROJECT_MAINLINE = 1;
 WOW_PROJECT_CLASSIC = 2;

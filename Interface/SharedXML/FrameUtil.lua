@@ -40,6 +40,78 @@ function FrameUtil.RegisterFrameForUnitEvents(frame, events, ...)
 	end
 end
 
+function FrameUtil.DialogStyleGlobalMouseDown(frame, buttonName, ...)
+	local mouseFocus = GetMouseFocus();
+	if DoesAncestryInclude(frame, mouseFocus) then
+		return;
+	end
+
+	for i = 1, select("#", ...) do
+		local alternateFrame = select(i, ...);
+		if DoesAncestryInclude(alternateFrame, mouseFocus) then
+			return;
+		end
+	end
+
+	frame:Hide();
+end
+
+local StandardScriptHandlerSet = {
+	OnLoad = true,
+	OnShow = true,
+	OnHide = true,
+	OnEvent = true,
+	OnEnter = true,
+	OnLeave = true,
+	OnClick = true,
+	OnDragStart = true,
+	OnReceiveDrag = true,
+
+	-- Other scripts can/should be added here as needed.
+
+	-- Many OnUpdates are set dynamically. Leave this off for now.
+	-- OnUpdate = false,
+};
+
+-- ... is a list of tables to mixin.
+function FrameUtil.SpecializeFrameWithMixins(frame, ...)
+	Mixin(frame, ...);
+	FrameUtil.ReflectStandardScriptHandlers(frame);
+end
+
+function FrameUtil.ReflectStandardScriptHandlers(frame)
+	for scriptHandlerKey, shouldBeSet in pairs(StandardScriptHandlerSet) do
+		local scriptHandler = frame[scriptHandlerKey];
+		if scriptHandler ~= nil then
+			frame:SetScript(scriptHandlerKey, scriptHandler);
+		end
+	end
+
+	if frame.OnLoad then
+		frame:OnLoad();
+	end
+
+	if frame.OnShow and frame:IsVisible() then
+		frame:OnShow();
+	end
+end
+
+-- This doesn't strictly speaking require a frame, but that's the likely usage of it so I'm leaving it here for now.
+function FrameUtil.RegisterForVariablesLoaded(frame, loadMethod)
+	if frame.savedVariablesEventRegistered then
+		error("Cannot re-register for variables loaded.");
+		return;
+	end
+
+	frame.savedVariablesEventRegistered = true;
+
+	local function VariablesLoadedCallback(callbackSelf)
+		loadMethod(frame);
+	end
+
+	EventUtil.ContinueOnVariablesLoaded(VariablesLoadedCallback);
+end
+
 function DoesAncestryInclude(ancestry, frame)
 	if ancestry then
 		local currentFrame = frame;
@@ -89,13 +161,13 @@ function FitToParent(parent, frame)
 
 end
 
-function UpdateScaleForFit(frame)
-	local horizRatio = UIParent:GetWidth() / GetUIPanelWidth(frame);
-	local vertRatio = UIParent:GetHeight() / GetUIPanelHeight(frame);
+function UpdateScaleForFit(frame, extraWidth, extraHeight)
+	frame:SetScale(1);
+
+	local horizRatio = UIParent:GetWidth() / GetUIPanelWidth(frame, extraWidth);
+	local vertRatio = UIParent:GetHeight() / GetUIPanelHeight(frame, extraHeight);
 
 	if ( horizRatio < 1 or vertRatio < 1 ) then
 		frame:SetScale(min(horizRatio, vertRatio));
-	else
-		frame:SetScale(1);
 	end
-end 
+end

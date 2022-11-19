@@ -22,10 +22,6 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
-			Name = "CloseAzeriteEmpoweredItemRespec",
-			Type = "Function",
-		},
-		{
 			Name = "ConfirmAzeriteEmpoweredItemRespec",
 			Type = "Function",
 
@@ -271,16 +267,6 @@ local AzeriteEmpoweredItem =
 			{
 				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
 			},
-		},
-		{
-			Name = "RespecAzeriteEmpoweredItemClosed",
-			Type = "Event",
-			LiteralName = "RESPEC_AZERITE_EMPOWERED_ITEM_CLOSED",
-		},
-		{
-			Name = "RespecAzeriteEmpoweredItemOpened",
-			Type = "Event",
-			LiteralName = "RESPEC_AZERITE_EMPOWERED_ITEM_OPENED",
 		},
 	},
 

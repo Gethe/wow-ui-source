@@ -74,6 +74,10 @@ function ScrollBoxBaseMixin:SetView(view)
 	if oldDataProvider then
 		view:SetDataProvider(oldDataProvider);
 	end
+	
+	if oldView then
+		self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
+	end
 end
 
 function ScrollBoxBaseMixin:GetView()
@@ -125,8 +129,16 @@ function ScrollBoxBaseMixin:IsUpdateLocked()
 end
 
 function ScrollBoxBaseMixin:FullUpdateInternal()
+	-- The OnSizeChanged script is removed during a full update. This is to address the problem where calling 
+	-- GetDerivedScrollOffset results in a call to GetSize() that triggers this script and executes a separate update.
+	-- That update will cause erroneous executions including accessing element extents that have not yet been calculated
+	-- aside from the obvious problem of running an update inside an update. The only update we expect is below after the
+	-- derived extents have been recalculated.
+	local oldOnSizeChanged = self:GetScript("OnSizeChanged");
+	self:SetScript("OnSizeChanged", nil);
+
 	local oldScrollOffset = self:GetDerivedScrollOffset();
-	
+
 	-- Note to do some optimizations so that recalculations of element extents is only
 	-- done when either data provider size changes or an element's size changes, and to avoid
 	-- recalculating every extent if we can just recalculate a single element.
@@ -147,6 +159,8 @@ function ScrollBoxBaseMixin:FullUpdateInternal()
 	self:Update(forceLayout);
 
 	self:TriggerEvent(BaseScrollBoxEvents.OnLayout);
+
+	self:SetScript("OnSizeChanged", oldOnSizeChanged);
 end
 
 function ScrollBoxBaseMixin:Layout()
@@ -282,7 +296,7 @@ function ScrollBoxBaseMixin:CalculateScrollPercentage()
 end
 
 function ScrollBoxBaseMixin:HasScrollableExtent()
-	return WithinRangeExclusive(self:GetVisibleExtentPercentage(), 0, 1);
+	return WithinRangeExclusive(self:GetVisibleExtentPercentage(), MathUtil.Epsilon, 1 - MathUtil.Epsilon);
 end
 
 function ScrollBoxBaseMixin:SetScrollAllowed(allowScroll)
@@ -436,6 +450,14 @@ function ScrollBoxBaseMixin:SetShadowsShown(showLower, showUpper)
 	self:GetUpperShadowTexture():SetShown(showUpper);
 end
 
+function ScrollBoxBaseMixin:SetShadowsFrameLevel(frameLevel)
+	self.Shadows:SetFrameLevel(frameLevel);
+end
+
+function ScrollBoxBaseMixin:SetShadowsScale(uiScale)
+	self.Shadows:SetScale(uiScale);
+end
+
 ScrollBoxListMixin = CreateFromMixins(ScrollBoxBaseMixin);
 
 ScrollBoxListMixin:GenerateCallbackEvents(
@@ -445,8 +467,10 @@ ScrollBoxListMixin:GenerateCallbackEvents(
 		BaseScrollBoxEvents.OnAllowScrollChanged,
 		BaseScrollBoxEvents.OnLayout,
 		"OnAcquiredFrame",
+		"OnInitializedFrame",
 		"OnReleasedFrame",
 		"OnDataRangeChanged",
+		"OnUpdate",
 	}
 );
 
@@ -461,6 +485,7 @@ function ScrollBoxListMixin:SetView(view)
 	if oldView then
 		oldView:UnregisterCallback(ScrollBoxListViewMixin.Event.OnDataChanged, self);
 		oldView:UnregisterCallback(ScrollBoxListViewMixin.Event.OnAcquiredFrame, self);
+		oldView:UnregisterCallback(ScrollBoxListViewMixin.Event.OnInitializedFrame, self);
 		oldView:UnregisterCallback(ScrollBoxListViewMixin.Event.OnReleasedFrame, self);
 	end
 
@@ -468,6 +493,7 @@ function ScrollBoxListMixin:SetView(view)
 
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnDataChanged, self.OnViewDataChanged, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnAcquiredFrame, self.OnViewAcquiredFrame, self);
+	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnInitializedFrame, self.OnViewInitializedFrame, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnReleasedFrame, self.OnViewReleasedFrame, self);
 end
 
@@ -587,6 +613,10 @@ function ScrollBoxListMixin:OnViewAcquiredFrame(frame, elementData, new)
 	self:TriggerEvent(ScrollBoxListMixin.Event.OnAcquiredFrame, frame, elementData, new);
 end
 
+function ScrollBoxListMixin:OnViewInitializedFrame(frame, elementData)
+	self:TriggerEvent(ScrollBoxListMixin.Event.OnInitializedFrame, frame, elementData);
+end
+
 function ScrollBoxListMixin:OnViewReleasedFrame(frame, oldElementData)
 	self:TriggerEvent(ScrollBoxListMixin.Event.OnReleasedFrame, frame, oldElementData);
 end
@@ -606,23 +636,31 @@ function ScrollBoxListMixin:Update(forceLayout)
 	if self:IsUpdateLocked() or self:IsAcquireLocked() then
 		return;
 	end
-	self:SetUpdateLocked(true);
 
 	local view = self:GetView();
-	if view then
-		local changed = view:ValidateDataRange(self);
-		if changed or forceLayout then
-			self:Layout();
-		end
-
-		self:SetScrollTargetOffset(self:GetDerivedScrollOffset() - view:GetDataScrollOffset(self));
-		self:SetPanExtentPercentage(self:CalculatePanExtentPercentage());
-		
-		if changed then
-			self:TriggerEvent(ScrollBoxListMixin.Event.OnDataRangeChanged);
-		end
+	if not view then
+		return;
 	end
 
+	self:SetUpdateLocked(true);
+
+	local changed = view:ValidateDataRange(self);
+	local requiresLayout = changed or forceLayout;
+	if requiresLayout then
+		self:Layout();
+	end
+
+	self:SetScrollTargetOffset(self:GetDerivedScrollOffset() - view:GetDataScrollOffset(self));
+	self:SetPanExtentPercentage(self:CalculatePanExtentPercentage());
+	
+	if changed then
+		view:InvokeInitializers();
+
+		self:TriggerEvent(ScrollBoxListMixin.Event.OnDataRangeChanged, self:GetDataIndexBegin(), self:GetDataIndexEnd());
+	end
+
+	self:TriggerEvent(ScrollBoxListMixin.Event.OnUpdate);
+	
 	self:SetUpdateLocked(false);
 end
 

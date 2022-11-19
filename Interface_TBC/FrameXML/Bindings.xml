@@ -870,11 +870,11 @@
 	</Binding>
 	<Binding name="INTERACTMOUSEOVER" category="BINDING_HEADER_TARGETING">
 		if ( not InteractUnit("mouseover") ) then
-			InteractUnit("target");
+			InteractUnit("anyinteract");
 		end
 	</Binding>
 	<Binding name="INTERACTTARGET" category="BINDING_HEADER_TARGETING">
-		InteractUnit("target");
+		InteractUnit("anyinteract");
 	</Binding>
 	<Binding name="ASSISTTARGET" category="BINDING_HEADER_TARGETING">
 		AssistUnit("target");
@@ -1110,6 +1110,9 @@
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		C_Commentator.ToggleCheats();
+	</Binding>
+	<Binding name="DUMPMOVEMENTCAPTURE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		DumpMovementCapture();
 	</Binding>
 
 	<!-- Camera key bindings header="CAMERA" -->

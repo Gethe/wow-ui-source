@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
 	<Script file="Blizzard_SocialUI.lua"/>
 	<Script file="Blizzard_SocialUIInbound.lua" />
 
@@ -193,8 +193,10 @@
 			<OnMouseUp function="SocialScreenshotCrop_Move_OnMouseUp"/>
 		</Scripts>
 	</Frame>
-	
-	<OffScreenFrame name="OffScreenFrame" hidden="true">
+		
+		<Frame name="AchievementFrameAchievementsObjectivesOffScreen" inherits="AchievementFrameAchievementsObjectivesTemplate" />
+
+		<OffScreenFrame name="OffScreenFrame" hidden="true">
 		<Size x="1024" y="1024"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" />
@@ -202,6 +204,9 @@
 		</Anchors>
 		<Frames>
 			<Button name="$parentAchievement" hidden="true" parentKey="Achievement" inherits="AchievementTemplate">
+				<KeyValues>
+					<KeyValue key="useOffscreenObjectiveFrame" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
@@ -290,7 +295,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY" textureSubLevel="0">
-								<Texture parentKey="Texture" alphaMode="DISABLE">>
+								<Texture parentKey="Texture" alphaMode="DISABLE">
  									<Anchors>
 										<Anchor point="TOPLEFT" x="4" y="-4"/>
 										<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>

@@ -15,15 +15,14 @@ end
 
 EquipmentManager = CreateFrame("FRAME");
 
-local workTable = {};
 function EquipmentManager_UpdateFreeBagSpace ()
 	local bagSlots = EQUIPMENTMANAGER_BAGSLOTS;
 	
 	for i = BANK_CONTAINER, NUM_BAG_SLOTS + GetNumBankSlots() do
-		wipe(workTable);
-		local _, bagType = GetContainerNumFreeSlots(i);
-		if ( GetContainerFreeSlots(i, workTable) ) then
-			for index, slot in next, workTable do
+		local _, bagType = C_Container.GetContainerNumFreeSlots(i);
+		local freeSlots = C_Container.GetContainerFreeSlots(i);
+		if ( freeSlots ) then
+			for index, slot in ipairs(freeSlots) do
 				if ( bagSlots[i] and not bagSlots[i][slot] and bagType == 0 ) then -- Don't overwrite locked slots, don't reset empty slots to empty, only use normal bags
 					bagSlots[i][slot] = SLOT_EMPTY;
 				end
@@ -94,7 +93,7 @@ end
 function EquipmentManager_EquipContainerItem (action)
 	ClearCursor();
 	
-	PickupContainerItem(action.bag, action.slot);
+	C_Container.PickupContainerItem(action.bag, action.slot);
 	
 	if ( not CursorHasItem() ) then
 		return false;
@@ -243,7 +242,7 @@ function EquipmentManager_PutItemInInventory (action)
 					end
 					if ( firstSlot ) then
 						bagSlots[bag][firstSlot] = SLOT_LOCKED;
-						PickupContainerItem(bag, firstSlot);
+						C_Container.PickupContainerItem(bag, firstSlot);
 						
 						if ( action ) then
 							action.bag = bag;
@@ -279,15 +278,18 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		setTooltip = function () GameTooltip:SetInventoryItem("player", slot) end;
 		gem1, gem2, gem3 = GetInventoryItemGems(slot);
 	else -- bags
-		id = GetContainerItemID(bag, slot);
+		id = C_Container.GetContainerItemID(bag, slot);
 		name, _, _, _, _, _, _, _, invType = GetItemInfo(id);
-		textureName, count, locked = GetContainerItemInfo(bag, slot);
-		start, duration, enable = GetContainerItemCooldown(bag, slot);
+		local info = C_Container.GetContainerItemInfo(bag, slot);
+		textureName = info and info.iconFileDataID;
+		count = info and info.stackCount;
+		locked = info and info.isLocked;
+		start, duration, enable = C_Container.GetContainerItemCooldown(bag, slot);
 		
-		durability, maxDurability = GetContainerItemDurability(bag, slot);
+		durability, maxDurability = C_Container.GetContainerItemDurability(bag, slot);
 		
 		setTooltip = function () GameTooltip:SetBagItem(bag, slot); end;
-		gem1, gem2, gem3 = GetContainerItemGems(bag, slot);
+		gem1, gem2, gem3 = C_Container.GetContainerItemGems(bag, slot);
 	end
 	
 	return id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3;

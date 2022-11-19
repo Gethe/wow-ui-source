@@ -21,6 +21,16 @@ local ItemConstants_Classic =
 				{ Name = "Prismatic", Type = "ItemGemSubclass", EnumValue = 8 },
 			},
 		},
+		{
+			Name = "InventoryConstants",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "NumBagSlots", Type = "number", Value = NUM_BAG_SLOTS },
+				{ Name = "NumGenericBankSlots", Type = "number", Value = BANK_NUM_GENERIC_SLOTS },
+				{ Name = "NumBankBagSlots", Type = "number", Value = NUM_BANKBAG_SLOTS },
+			},
+		},
 	},
 };
 
