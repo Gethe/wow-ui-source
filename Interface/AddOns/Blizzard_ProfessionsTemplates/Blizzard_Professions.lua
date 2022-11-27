@@ -547,130 +547,78 @@ function Professions.CreateRecipeItemIDsForAllBasicReagents(recipeID, predicate)
 	return Professions.CreateRecipeItemIDListByPredicate(recipeID, IsBasicReagent);
 end
 
-function Professions.GenerateCraftingDataProvider(professionID, searching, noStripCategories)
-	local function CreateRecipeCategoryRecursive(categoryMap, categoryID)
-		local categoryInfo = categoryMap[categoryID];
-		if not categoryInfo then
-			categoryInfo = C_TradeSkillUI.GetCategoryInfo(categoryID);
-			if not categoryInfo then
-				-- headers....
-				return;
-			end
-			categoryInfo.subcategories = {};
-			categoryInfo.recipes = {};
-			categoryMap[categoryID] = categoryInfo;
-		end
+local function SortNodeData(lhs, rhs)
+	local lhsData = lhs:GetData();
+	local rhsData = rhs:GetData();
+	local lhsCategoryInfo = lhsData.categoryInfo;
+	local rhsCategoryInfo = rhsData.categoryInfo;
 
-		if categoryInfo.parentCategoryID then
-			local parentCategoryInfo = CreateRecipeCategoryRecursive(categoryMap, categoryInfo.parentCategoryID);
-			-- headers....
-			if parentCategoryInfo then
-				table.insert(categoryInfo.subcategories, parentCategoryInfo);
-			end
-		end
-
-		return categoryInfo;
-	end
-
-	local function CreateRecipeCategoryHierarchy(categoryMap, recipeInfos)
-		for index, recipeInfo in pairs(recipeInfos) do
-			local categoryInfo = CreateRecipeCategoryRecursive(categoryMap, recipeInfo.categoryID);
-			if not categoryInfo then
-				-- headers....
-				return;
-			end
-			table.insert(categoryInfo.recipes, recipeInfo);
-		end
-	end
-	
-	local function SortCategoriesOrRecipes(lhs, rhs)
-		local lhsData = lhs:GetData();
-		local rhsData = rhs:GetData();
-		local lhsCategoryInfo = lhsData.categoryInfo;
-		local rhsCategoryInfo = rhsData.categoryInfo;
-		if lhsCategoryInfo or rhsCategoryInfo then
-			if lhsData.categoryInfo and not rhsCategoryInfo then
-				return true;
-			elseif not lhsCategoryInfo and rhsCategoryInfo then
-				return false;
-			elseif lhsCategoryInfo and rhsCategoryInfo then
-				return lhsCategoryInfo.uiOrder < rhsCategoryInfo.uiOrder;
-			end
-		end
-
-		if lhsData.topPadding or rhsData.topPadding then
-			return lhsData.topPadding;
-		end
-
-		if lhsData.bottomPadding or rhsData.bottomPadding then
-			return not lhsData.bottomPadding;
-		end
-
-		local lhsRecipeInfo = lhsData.recipeInfo;
-		local rhsRecipeInfo = rhsData.recipeInfo;
-		local lhsDifficulty = lhsRecipeInfo.difficulty;
-		local rhsDifficulty = rhsRecipeInfo.difficulty;
-		if lhsDifficulty ~= rhsDifficulty then
-			return lhsDifficulty < rhsDifficulty;
-		else
-			local lhsMaxTrivialLevel = lhsRecipeInfo.maxTrivialLevel;
-			local rhsMaxTrivialLevel = rhsRecipeInfo.maxTrivialLevel;
-			if lhsMaxTrivialLevel ~= rhsMaxTrivialLevel then
-				return lhsMaxTrivialLevel > rhsMaxTrivialLevel;
-			else
-				local lhsItemLevel = lhsRecipeInfo.itemLevel;
-				local rhsItemLevel = rhsRecipeInfo.itemLevel;
-				if lhsItemLevel ~= rhsItemLevel then
-					return lhsItemLevel > rhsItemLevel;
+	if lhsCategoryInfo or rhsCategoryInfo then
+		-- Special case for the "Unlearned" divider which only appears adjacent to categories.
+		do
+			local lhsGroup = (lhsCategoryInfo and lhsCategoryInfo.group) or lhsData.group or nil;
+			local rhsGroup = (rhsCategoryInfo and rhsCategoryInfo.group) or rhsData.group or nil;
+			if lhsGroup ~= nil and rhsGroup ~= nil then
+				if lhsGroup < rhsGroup then
+					return true;
+				elseif lhsGroup > rhsGroup then
+					return false;
 				end
 			end
 		end
-		return strcmputf8i(lhsRecipeInfo.name, rhsRecipeInfo.name) < 0;
-	end
 
-	local function AttachTreeDataRecursive(categoryMap, categoryNodes, categoryInfo, node)
-		-- The root and any nodes passed as categories need a sort comparator.
-		if not node:HasSortComparator() then
-			local affectChildren = false;
-			local skipSort = false;
-			node:SetSortComparator(SortCategoriesOrRecipes, affectChildren, skipSort);
-		end
-
-		local parentCategoryID = categoryInfo.parentCategoryID;
-		local parentCategoryInfo = categoryMap[parentCategoryID];
-		if parentCategoryInfo then
-			node = AttachTreeDataRecursive(categoryMap, categoryNodes, parentCategoryInfo, node);
-		end
-
-		local categoryNode = categoryNodes[categoryInfo];
-		if not categoryNode then
-			categoryNode = node:Insert({categoryInfo=categoryInfo});
-			categoryNodes[categoryInfo] = categoryNode;
-
-			-- The new category can have categories or recipes.
-			local affectChildren = false;
-			local skipSort = false;
-			categoryNode:SetSortComparator(SortCategoriesOrRecipes, affectChildren, skipSort);
-		end
-
-		if categoryInfo.recipes and #categoryInfo.recipes > 0 then
-			categoryNode:Insert({topPadding=true});
-			for index, recipeInfo in ipairs(categoryInfo.recipes) do
-				categoryNode:Insert({recipeInfo=recipeInfo});
-				-- Recipes are leaf-most, so we don't need any sort comparator.
+		if lhsData.categoryInfo and not rhsCategoryInfo then
+			return true;
+		elseif not lhsCategoryInfo and rhsCategoryInfo then
+			return false;
+		elseif lhsCategoryInfo and rhsCategoryInfo then
+			local lhsGroup = lhsCategoryInfo.group;
+			local rhsGroup = rhsCategoryInfo.group;
+			if lhsGroup < rhsGroup then
+				return true;
+			elseif lhsGroup > rhsGroup then
+				return false;
 			end
-			categoryNode:Insert({bottomPadding=true});
-		end	
 
-		return categoryNode;
+			return lhsCategoryInfo.uiOrder < rhsCategoryInfo.uiOrder;
+		end
 	end
 
-	
-	local categoryMap = {};
-	local categoryNodes = {};
-	local recipeInfos = {};
+	if lhsData.topPadding or rhsData.topPadding then
+		return lhsData.topPadding;
+	end
 
-	local favoritesCategoryInfo = {name = PROFESSIONS_CATEGORY_FAVORITE, recipes = {}, uiOrder = -1};
+	if lhsData.bottomPadding or rhsData.bottomPadding then
+		return not lhsData.bottomPadding;
+	end
+
+	local lhsRecipeInfo = lhsData.recipeInfo;
+	local rhsRecipeInfo = rhsData.recipeInfo;
+	local lhsDifficulty = lhsRecipeInfo.difficulty;
+	local rhsDifficulty = rhsRecipeInfo.difficulty;
+	if lhsDifficulty ~= rhsDifficulty then
+		return lhsDifficulty < rhsDifficulty;
+	else
+		local lhsMaxTrivialLevel = lhsRecipeInfo.maxTrivialLevel;
+		local rhsMaxTrivialLevel = rhsRecipeInfo.maxTrivialLevel;
+		if lhsMaxTrivialLevel ~= rhsMaxTrivialLevel then
+			return lhsMaxTrivialLevel > rhsMaxTrivialLevel;
+		else
+			local lhsItemLevel = lhsRecipeInfo.itemLevel;
+			local rhsItemLevel = rhsRecipeInfo.itemLevel;
+			if lhsItemLevel ~= rhsItemLevel then
+				return lhsItemLevel > rhsItemLevel;
+			end
+		end
+	end
+	return strcmputf8i(lhsRecipeInfo.name, rhsRecipeInfo.name) < 0;
+end
+
+local Group = EnumUtil.MakeEnum("Favorite", "Learned", "UnlearnedDivider", "Unlearned");
+
+function Professions.GenerateCraftingDataProvider(professionID, searching, noStripCategories)
+	local recipeInfos = {};
+	local favoritesCategoryInfo = {name = PROFESSIONS_CATEGORY_FAVORITE, uiOrder = 0, group = Group.Favorite};
 	local showAllRecipes = searching or C_TradeSkillUI.IsNPCCrafting();
 	for index, recipeID in ipairs(C_TradeSkillUI.GetFilteredRecipeIDs()) do
 		local recipeInfo = Professions.GetFirstRecipe(C_TradeSkillUI.GetRecipeInfo(recipeID));
@@ -682,39 +630,140 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 		if not searching and recipeInfo.favorite then
 			local favoritesRecipeInfo = CopyTable(recipeInfo);
 			favoritesRecipeInfo.favoritesInstance = true;
+
+			if not favoritesCategoryInfo.recipes then
+				favoritesCategoryInfo.recipes = {};
+			end
 			table.insert(favoritesCategoryInfo.recipes, favoritesRecipeInfo);
 		end
 	end
 
+
+	local favoritesCategoryMap = {favoritesCategoryInfo};
+	local learnedCategoryMap = {};
+	local unlearnedCategoryMap = {};
+	local categoryMaps = { learnedCategoryMap, unlearnedCategoryMap };
+
 	local dataProvider = CreateLinearizedTreeListDataProvider();
-	-- Create the category hierarchy for the recipe. This includes every category until
-	-- a header, which we drop on the floor.
-	CreateRecipeCategoryHierarchy(categoryMap, recipeInfos);
+	-- Create a category hierarchy for each recipe. Learned and unlearned recipes are now separated into potentially
+	-- identical but cloned hierarchies for the sake of organization.
+	do
+		local function CreateCategoryInfoRecursive(categoryMap, categoryID, group, unlearned)
+			local categoryInfo = categoryMap[categoryID];
+			if not categoryInfo then
+				categoryInfo = C_TradeSkillUI.GetCategoryInfo(categoryID);
+				if categoryInfo then
+					categoryInfo.group = group;
+					categoryInfo.unlearned = unlearned;
+					categoryMap[categoryID] = categoryInfo;
+				end
+			end
+
+			if categoryInfo and categoryInfo.parentCategoryID then
+				CreateCategoryInfoRecursive(categoryMap, categoryInfo.parentCategoryID, group, unlearned);
+			end
+
+			return categoryInfo;
+		end
+
+		for index, recipeInfo in pairs(recipeInfos) do
+			local learned = recipeInfo.learned;
+			local categoryMap = learned and learnedCategoryMap or unlearnedCategoryMap;
+			local group = learned and Group.Learned or Group.Unlearned;
+			local categoryInfo = CreateCategoryInfoRecursive(categoryMap, recipeInfo.categoryID, group, not learned);
+			if categoryInfo then
+				if not categoryInfo.recipes then
+					categoryInfo.recipes = {};
+				end
+				table.insert(categoryInfo.recipes, recipeInfo);
+			end
+		end
+	end
 
 	local discardRootCategories = not searching or C_TradeSkillUI.IsNPCCrafting();
 	if discardRootCategories then
-		-- Strip out every root category if it doesnt have any recipes. We're only interested in seeing these if
-		-- we're in a search so we can reconcile which expansion the recipe pertains to. For an example of
-		-- a root category that has recipes, see ID 390.
+		-- Strip out every category if it doesnt have any recipes. The intention here is to remove
+		-- "header" categories (roots), but we can't isolate those easily. Once we've tagged categories as being
+		-- visible in the default view we can be more specific in the culling. For an example of a root category 
+		-- that has recipes, see ID 390.
 		for _, category in ipairs(Professions.GetProfessionCategories()) do
-			if not noStripCategories or not tContains(noStripCategories, category.categoryID) then
-				local categoryInMap = categoryMap[category.categoryID];
-				if not categoryInMap or not categoryInMap.recipes or #categoryInMap.recipes == 0 then
-					categoryMap[category.categoryID] = nil;
+			local categoryID = category.categoryID;
+			if not noStripCategories or not tContains(noStripCategories, categoryID) then
+				for _, categoryMap in ipairs(categoryMaps) do
+					local categoryInfo = categoryMap[categoryID];
+					if categoryInfo and not categoryInfo.recipes then
+						categoryMap[categoryID] = nil;
+					end
 				end
 			end
 		end
 	end
 
-	if next(favoritesCategoryInfo.recipes) ~= nil then
-		categoryMap[-1] = favoritesCategoryInfo;
-	end
-
 	-- Insert the categories into the tree, using the group category data as the root parent.
 	if next(recipeInfos) ~= nil then
-		local node = dataProvider:GetRootNode();
-		for _, categoryInfo in pairs(categoryMap) do
-			AttachTreeDataRecursive(categoryMap, categoryNodes, categoryInfo, node);
+		local maps = {};
+		if favoritesCategoryInfo.recipes and next(favoritesCategoryInfo.recipes) ~= nil then
+			table.insert(maps, favoritesCategoryMap);
+		end
+		tAppendAll(maps, categoryMaps);
+		
+		do
+			local function SetSortComparator(node)
+				local affectChildren = false;
+				local skipSort = false;
+				node:SetSortComparator(SortNodeData, affectChildren, skipSort);
+			end
+			
+			local categoryNodes = {};
+			local addedRecipe = false;
+			local function AttachTreeDataRecursive(categoryMap, categoryNodes, categoryInfo, node)
+				-- The root and any nodes passed as categories need a sort comparator.
+				if not node:HasSortComparator() then
+					SetSortComparator(node);
+				end
+
+				local parentCategoryID = categoryInfo.parentCategoryID;
+				local parentCategoryInfo = categoryMap[parentCategoryID];
+				if parentCategoryInfo then
+					node = AttachTreeDataRecursive(categoryMap, categoryNodes, parentCategoryInfo, node);
+				end
+
+				local categoryNode = categoryNodes[categoryInfo];
+				if not categoryNode then
+					categoryNode = node:Insert({categoryInfo=categoryInfo});
+					categoryNodes[categoryInfo] = categoryNode;
+
+					-- The new category can have categories or recipes.
+					SetSortComparator(categoryNode);
+				end
+
+				if categoryInfo.recipes and #categoryInfo.recipes > 0 then
+					categoryNode:Insert({topPadding=true});
+					for index, recipeInfo in ipairs(categoryInfo.recipes) do
+						categoryNode:Insert({recipeInfo=recipeInfo});
+						addedRecipe = true;
+						-- Recipes are leaf-most, so we don't need any sort comparator.
+					end
+					categoryNode:Insert({bottomPadding=true});
+				end	
+
+				return categoryNode;
+			end
+
+			local addUnlearnedDivider = false;
+			local node = dataProvider:GetRootNode();
+			for _, categoryMap in ipairs(maps) do
+				for _, categoryInfo in pairs(categoryMap) do
+					AttachTreeDataRecursive(categoryMap, categoryNodes, categoryInfo, node);
+				end
+				addUnlearnedDivider = addUnlearnedDivider or (addedRecipe and categoryMap == unlearnedCategoryMap);
+				addedRecipe = false;
+			end
+
+			if addUnlearnedDivider and C_TradeSkillUI.GetShowUnlearned() then
+				-- Categories and dividers ordered by group, position this divider just before the unlearned group.
+				node:Insert({isDivider = true, dividerHeight = 30, group = Group.UnlearnedDivider});
+			end
 		end
 	end
 
@@ -815,7 +864,7 @@ function Professions.IsUsingDefaultFilters(ignoreSkillLine)
 	local newestKnownProfessionInfo = Professions.GetNewestKnownProfessionInfo();
 	local isDefaultSkillLine = ignoreSkillLine or newestKnownProfessionInfo == nil or (Professions.GetProfessionInfo().professionID == Professions.GetNewestKnownProfessionInfo().professionID);
 	return showAllRecipes and isDefaultSkillLine and not C_TradeSkillUI.AreAnyInventorySlotsFiltered() and 
-		not C_TradeSkillUI.AnyRecipeCategoriesFiltered() and Professions.AreAllSourcesUnfiltered() and not C_TradeSkillUI.GetShowUnlearned() and C_TradeSkillUI.GetShowLearned();
+		not C_TradeSkillUI.AnyRecipeCategoriesFiltered() and Professions.AreAllSourcesUnfiltered() and C_TradeSkillUI.GetShowUnlearned() and C_TradeSkillUI.GetShowLearned();
 end
 
 
@@ -857,7 +906,7 @@ end
 
 function Professions.SetDefaultFilters(ignoreSkillLine)
 	C_TradeSkillUI.SetShowLearned(true);
-	C_TradeSkillUI.SetShowUnlearned(false);
+	C_TradeSkillUI.SetShowUnlearned(true);
 	C_TradeSkillUI.SetOnlyShowMakeableRecipes(false);
 	C_TradeSkillUI.SetOnlyShowSkillUpRecipes(false);
 	C_TradeSkillUI.SetOnlyShowFirstCraftRecipes(false);
@@ -1134,7 +1183,7 @@ function Professions.LayoutReagentSlots(reagentSlots, reagentsContainer, optiona
 	do
 		local optionalShown = optionalReagentsSlots and #optionalReagentsSlots > 0;
 		if optionalShown then
-			local anchor = CreateAnchor("TOPLEFT", optionalReagentsContainer, "TOPLEFT", 0, -30);
+			local anchor = CreateAnchor("TOPLEFT", optionalReagentsContainer, "TOPLEFT", 1, -23);
 			Layout(optionalReagentsSlots, anchor, layout);
 			optionalReagentsContainer:Layout();
 		end

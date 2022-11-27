@@ -251,6 +251,7 @@ function ProfessionsCraftingOrderPageMixin:SetSortOrder(sortOrder)
 	end
 
 	if self.lastRequest then
+		self.lastRequest.offset = 0; -- Get a fresh page of sorted results
 		self:SendOrderRequest(self.lastRequest);
 	end
 end
@@ -570,13 +571,13 @@ end
 local defaultBucketSecondarySort =
 {
 	sortType = Enum.CraftingOrderSortType.MaxTip,
-	reversed = false,
+	reversed = true,
 };
 
 local defaultFlatSecondarySort =
 {
 	sortType = Enum.CraftingOrderSortType.Tip,
-	reversed = false,
+	reversed = true,
 };
 
 function ProfessionsCraftingOrderPageMixin:SendOrderRequest(request)

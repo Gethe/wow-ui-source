@@ -494,6 +494,8 @@ function ProfessionsCustomerOrderFormMixin:SetMinimumQualityIndex(index)
 	self.order.minQuality = index;
 	self.ReagentContainer.RecraftWarningText:SetShown(self:OrderCouldReduceQuality());
 
+	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, index);
+
 	UIDropDownMenu_SetSelectedValue(self.MinimumQuality.DropDown, index);
 end
 
@@ -850,6 +852,7 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 		end
 	end
 	self.RecraftSlot:Init(self.transaction, AnyRecraftablePredicate, function(itemGUID) self:SetRecraftItemGUID(itemGUID); end, self.order.recraftItemHyperlink);
+	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, self.order.minQuality or 1);
 
 	self.minQualityIDs = recipeID and C_TradeSkillUI.GetQualitiesForRecipe(recipeID);
 
@@ -973,6 +976,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 	editBox:SetDefaultTextEnabled(not self.committed);
 	editBox:SetText(order.customerNotes or "");
 	editBox:SetEnabled(not self.committed);
+	self.PaymentContainer.NoteEditBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
 
 	local completed = (order.orderState == Enum.CraftingOrderState.Expired or order.orderState == Enum.CraftingOrderState.Rejected or order.orderState == Enum.CraftingOrderState.Canceled or order.orderState == Enum.CraftingOrderState.Fulfilled);
 

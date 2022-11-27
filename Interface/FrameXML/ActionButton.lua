@@ -385,6 +385,7 @@ function ActionBarActionButtonMixin:Update()
 		end
 		self:UpdateState();
 		self:UpdateUsable();
+		self:UpdateProfessionQuality();
 		ActionButton_UpdateCooldown(self);
 		self:UpdateFlash();
 		self:UpdateHighlightMark();
@@ -401,6 +402,7 @@ function ActionBarActionButtonMixin:Update()
 
 		self:ClearFlash();
 		self:SetChecked(false);
+		self:ClearProfessionQuality();
 
 		if self.LevelLinkLockIcon then
 			self.LevelLinkLockIcon:SetShown(false);
@@ -514,6 +516,30 @@ function ActionBarActionButtonMixin:UpdateUsable()
 
 	if self.LevelLinkLockIcon then
 		self.LevelLinkLockIcon:SetShown(isLevelLinkLocked);
+	end
+end
+
+function ActionBarActionButtonMixin:UpdateProfessionQuality()
+	if IsItemAction(self.action) then
+		local quality = C_ActionBar.GetProfessionQuality(self.action);
+		if quality then
+			if not self.ProfessionQualityOverlayFrame then
+				self.ProfessionQualityOverlayFrame = CreateFrame("Frame", nil, self, "ActionButtonProfessionOverlayTemplate");
+				self.ProfessionQualityOverlayFrame:SetPoint("TOPLEFT", 14, -14);
+			end
+
+			local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);
+			self.ProfessionQualityOverlayFrame:Show();
+			self.ProfessionQualityOverlayFrame.Texture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+			return;
+		end
+	end
+	self:ClearProfessionQuality();
+end
+
+function ActionBarActionButtonMixin:ClearProfessionQuality()
+	if self.ProfessionQualityOverlayFrame then
+		self.ProfessionQualityOverlayFrame:Hide();
 	end
 end
 

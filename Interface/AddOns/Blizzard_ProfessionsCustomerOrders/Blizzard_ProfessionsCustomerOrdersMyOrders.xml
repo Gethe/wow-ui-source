@@ -44,7 +44,7 @@
 						<Texture parentKey="Background" atlas="auctionhouse-background-index" useAtlasSize="false">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="2" y="-35"/>
-								<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="7"/>
 							</Anchors>							
 						</Texture>
 					</Layer>
@@ -63,7 +63,7 @@
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="-1" y="-32"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="3" y="-2"/>
 						</Anchors>											
 					</Frame>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
@@ -74,8 +74,8 @@
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-2"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="1" y="-2"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="1"/>
 						</Anchors>
 					</EventFrame>
 					<Frame parentKey="LoadingSpinner" hidden="true" frameLevel="2000">

@@ -396,18 +396,18 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.transaction:SetAllocationsChangedHandler(nil);
 	end
 
+	local function AllocateModification(slotIndex, reagentSlotSchematic)
+		local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
+		if modification and modification.itemID > 0 then
+			local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
+			self.transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
+		end
+	end
+
 	if recraftTransitionData then
 		self.transaction:SetRecraftAllocation(recraftTransitionData.itemGUID);
 
 		if newTransaction then
-			local function AllocateModification(slotIndex, reagentSlotSchematic)
-				local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
-				if modification and modification.itemID > 0 then
-					local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
-					self.transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
-				end
-			end
-
 			for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
 				if reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent then
 					AllocateModification(slotIndex, reagentSlotSchematic);
@@ -504,7 +504,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		organizer:Add(self.RecipeSourceButton, LayoutEntry.Source, 0, 10);
 	end
 
-	if recipeInfo.learned and not self.RecipeSourceButton:IsVisible() and recipeInfo.firstCraft then
+	if recipeInfo.learned and not self.RecipeSourceButton:IsVisible() and recipeInfo.firstCraft and not isRecraft then
 		self.FirstCraftBonus:Show();
 		organizer:Add(self.FirstCraftBonus, LayoutEntry.FirstCraftBonus, 0, 10);
 	end

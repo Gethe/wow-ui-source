@@ -73,7 +73,7 @@
 
 			<Frame parentKey="RankBar" frameStrata="HIGH" inherits="ProfessionsRankBarTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="330" y="-44"/>
+					<Anchor point="TOPLEFT" x="330" y="-40"/>
 				</Anchors>
 			</Frame>
 
@@ -218,7 +218,7 @@
 			<Button parentKey="LinkButton" mixin="DropDownToggleButtonMixin">
 				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.RankBar" x="0" y="0"/>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.RankBar" x="0" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>

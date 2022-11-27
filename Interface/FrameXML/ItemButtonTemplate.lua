@@ -464,7 +464,7 @@ function ItemButtonMixin:UpdateCraftedProfessionsQualityShown()
 	end
 
 	-- Stackable items with quality always show quality overlay
-	local shouldShow = self.isProfessionItem and ((not self.isCraftedItem) or (ProfessionsFrame and ProfessionsFrame:IsShown()));
+	local shouldShow = self.isProfessionItem and ((not self.isCraftedItem) or (ProfessionsFrame and ProfessionsFrame:IsShown() or self.alwaysShowProfessionsQuality));
 	self.ProfessionQualityOverlay:SetShown(shouldShow);
 end
 

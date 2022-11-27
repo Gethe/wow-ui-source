@@ -27,14 +27,14 @@
 				<FontString parentKey="RecipeName" inherits="GameFontNormalMed2" justifyH="LEFT">
 					<Size x="415" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="85" y="-30"/>
+						<Anchor point="TOPLEFT" x="90" y="-29"/>
 					</Anchors>
 				</FontString>
 
 				<FontString parentKey="RecraftRecipeName" inherits="GameFontHighlightMed2" justifyH="LEFT">
 					<Size x="305" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="200" y="-17"/>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="200" y="-37"/>
 					</Anchors>
 				</FontString>
 
@@ -116,7 +116,7 @@
 
 			<Button parentKey="OutputIcon" inherits="ProfessionsOutputButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="25" y="-25"/>
+					<Anchor point="TOPLEFT" x="30" y="-24"/>
 				</Anchors>
 			</Button>
 
@@ -481,9 +481,9 @@
 				</Frames>
 			</Frame>
 
-			<Frame parentKey="TrackRecipeCheckBox" inherits="ResizeLayoutFrame">
+			<Frame parentKey="TrackRecipeCheckBox" inherits="ResizeLayoutFrame" scale="0.9">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ReagentContainer" x="5" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RecipeHeader" x="5" y="2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

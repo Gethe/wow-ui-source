@@ -137,6 +137,8 @@ local ProfessionsCrafterOrderViewEvents =
     "PLAYER_MONEY",
     "IGNORELIST_UPDATE",
 	"TRADE_SKILL_LIST_UPDATE",
+	"BAG_UPDATE",
+	"BAG_UPDATE_DELAYED",
 };
 function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     if event == "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE" then
@@ -187,6 +189,8 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     elseif event == "CRAFTINGORDERS_CLAIMED_ORDER_UPDATED" then
         local orderID = ...;
         if orderID == self.order.orderID then
+			-- Clear recrafting so that we go back to the order complete view if we were recrafting
+			self.recraftingOrderID = nil;
             self:SetOrder(C_CraftingOrders.GetClaimedOrder());
         end
     elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" or event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
@@ -200,6 +204,11 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 	elseif event == "TRADE_SKILL_LIST_UPDATE" then
 		self:UpdateCreateButton();
 		self:UpdateStartOrderButton();
+	elseif event == "BAG_UPDATE" or event == "BAG_UPDATE_DELAYED" then
+		local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.order.spellID);
+		local highestRecipe = Professions.GetHighestLearnedRecipe(recipeInfo);
+		self.OrderDetails.SchematicForm:Init(highestRecipe or recipeInfo, self:IsRecrafting());
+		self:UpdateCreateButton();
     end
 end
 
@@ -355,17 +364,21 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
         self.OrderDetails.SchematicForm.recraftSlot.InputSlot:SetScript("OnMouseDown", nil);
     end
 
-    self.OrderDetails.MinimumQualityIcon:SetShown(self.order.minQuality > 1);
-    if self.order.minQuality > 1 then
+    self.OrderDetails.SchematicForm:UpdateDetailsStats();
+    self:UpdateCreateButton();
+end
+
+function ProfessionsCrafterOrderViewMixin:UpdateMinimumQualityIcon()
+	-- NOTE: FulfillmentForm check must be IsShown() since IsVisible() will not toggle until the frame after the form gets shown
+	local showMinimumQuality = self.order.minQuality > 1 and not self.OrderDetails.FulfillmentForm:IsShown();
+    self.OrderDetails.MinimumQualityIcon:SetShown(showMinimumQuality);
+    if showMinimumQuality then
         local small = true;
         self.OrderDetails.MinimumQualityIcon:SetAtlas(Professions.GetIconForQuality(self.order.minQuality, small), TextureKitConstants.UseAtlasSize);
         self.OrderDetails.MinimumQualityIcon:ClearAllPoints();
         local outputText = self:IsRecrafting() and self.OrderDetails.SchematicForm.RecraftingOutputText or self.OrderDetails.SchematicForm.OutputText;
         self.OrderDetails.MinimumQualityIcon:SetPoint("LEFT", outputText, "RIGHT", 5, 0);
     end
-
-    self.OrderDetails.SchematicForm:UpdateDetailsStats();
-    self:UpdateCreateButton();
 end
 
 function ProfessionsCrafterOrderViewMixin:UpdateStartOrderButton()
@@ -381,7 +394,7 @@ function ProfessionsCrafterOrderViewMixin:UpdateStartOrderButton()
     elseif claimInfo and self.order.orderType == Enum.CraftingOrderType.Public and claimInfo.claimsRemaining <= 0 and Professions.GetCraftingOrderRemainingTime(self.order.expirationTime) > Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD then
         enabled = false;
         errorReason = PROFESSIONS_CRAFTER_OUT_OF_CLAIMS_FMT:format(claimInfo.hoursToRecharge);
-    elseif not recipeInfo or not recipeInfo.learned then
+    elseif not recipeInfo or not recipeInfo.learned or (self.order.isRecraft and not C_CraftingOrders.OrderCanBeRecrafted(self.order.orderID)) then
         enabled = false;
         errorReason = PROFESSIONS_CRAFTER_CANT_CLAIM_UNLEARNED;
     elseif not self.hasOptionalReagentSlots then
@@ -479,10 +492,13 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
 
     self.OrderInfo.PostedByValue:SetText(order.customerName);
     self.OrderInfo.NoteBox.NoteText:SetText(order.customerNotes);
+	self.OrderInfo.NoteBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
     self.OrderInfo.CommissionTitleMoneyDisplayFrame:SetAmount(order.tipAmount);
     self.OrderInfo.ConsortiumCutMoneyDisplayFrame:SetAmount(order.consortiumCut);
     self.OrderInfo.FinalTipMoneyDisplayFrame:SetAmount(order.tipAmount - order.consortiumCut);
     self.OrderDetails.FulfillmentForm.NoteEditBox.ScrollingEditBox:SetText("");
+	self.OrderDetails.FulfillmentForm.NoteEditBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
+	self.DeclineOrderDialog.NoteEditBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
 
     local isRecraft = self:IsRecrafting();
 	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, isRecraft);
@@ -588,6 +604,8 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     local xOfs = showDeclineOrderButton and -70 or 0;
     local yOfs = showDeclineOrderButton and 8 or 125;
     self.OrderInfo.StartOrderButton:SetPoint("BOTTOM", self.OrderInfo, "BOTTOM", xOfs, yOfs);
+
+	self:UpdateMinimumQualityIcon();
 end
 
 function ProfessionsCrafterOrderViewMixin:CraftOrder()

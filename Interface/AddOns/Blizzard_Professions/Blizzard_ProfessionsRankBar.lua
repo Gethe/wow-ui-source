@@ -28,16 +28,6 @@ function ProfessionsRankBarMixin:OnEvent(event, ...)
 	end
 end
 
-function ProfessionsRankBarMixin:OnEnter()
-	self.Experience:Show();
-	self.Rank:Show();
-end
-
-function ProfessionsRankBarMixin:OnLeave()
-	self.Experience:Hide();
-	self.Rank:Hide();
-end
-
 local function GenerateRankText(professionName, skillLevel, maxSkillLevel, skillModifier)
 	local rankText;
 	if skillModifier > 0  then

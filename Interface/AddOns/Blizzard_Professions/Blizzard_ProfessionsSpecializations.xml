@@ -17,10 +17,10 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 		<Frames>
-			<Frame parentKey="PanelFooter" frameLevel="500">
+			<Frame parentKey="PanelFooter" frameLevel="400">
 				<Size x="1143" y="53"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="2"/>
+					<Anchor point="BOTTOM" x="0" y="4"/>
 				</Anchors>				
 				<Layers>
 					<Layer level="OVERLAY">
@@ -36,7 +36,7 @@
 			<Button parentKey="ApplyButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_FRAME_APPLY_BUTTON_TEXT" frameLevel="1000">
 				<Size x="164" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="18"/>
+					<Anchor point="BOTTOM" x="0" y="20"/>
 				</Anchors>
 			</Button>
 
@@ -287,7 +287,12 @@
 				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Background" atlas="Professions-Specializations-Background-Dial" useAtlasSize="false"/>
+						<Texture parentKey="Background" atlas="Professions-Specializations-Background-Dial" useAtlasSize="false">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="-4"/>
+							</Anchors>
+						</Texture>
 						<FontString parentKey="PathName" inherits="GameFontHighlightLarge" justifyH="CENTER" wordwrap="false">
 							<Size x="400" y="1"/>
 							<Anchors>

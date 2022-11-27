@@ -77,13 +77,14 @@
 
 	<Frame name="ProfessionsRecipeCrafterDetailsTemplate" mixin="ProfessionsRecipeCrafterDetailsMixin" inherits="VerticalLayoutFrame" virtual="true">
 		<KeyValues>
-			<KeyValue key="fixedWidth" value="260" type="number"/>
+			<KeyValue key="fixedWidth" value="263" type="number"/>
 			<KeyValue key="minimumHeight" value="199" type="number"/>
 			<KeyValue key="bottomPadding" value="12" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="BackgroundTop" atlas="Professions-QualityPane-bg-top" useAtlasSize="true">
+				<Texture parentKey="BackgroundTop" atlas="Professions-QualityPane-bg-top" useAtlasSize="false">
+					<Size x="263" y="100"/>
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -91,7 +92,8 @@
 						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="BackgroundBottom" atlas="Professions-QualityPane-bg-bottom" useAtlasSize="true">
+				<Texture parentKey="BackgroundBottom" atlas="Professions-QualityPane-bg-bottom" useAtlasSize="false">
+					<Size x="263" y="100"/>
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -99,7 +101,7 @@
 						<Anchor point="BOTTOM"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="BackgroundMiddle" atlas="Professions-QualityPane-bg-middle" useAtlasSize="true">
+				<Texture parentKey="BackgroundMiddle" atlas="Professions-QualityPane-bg-middle" useAtlasSize="false">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>

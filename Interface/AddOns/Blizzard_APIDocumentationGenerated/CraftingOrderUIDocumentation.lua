@@ -7,6 +7,15 @@ local CraftingOrderUI =
 	Functions =
 	{
 		{
+			Name = "AreOrderNotesDisabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areNotesDisabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CalculateCraftingOrderPostingFee",
 			Type = "Function",
 
