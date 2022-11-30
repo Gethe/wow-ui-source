@@ -613,16 +613,21 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.RecraftingRequiredTools:Hide();
 		self.RequiredTools:Hide();
 
-		if #C_TradeSkillUI.GetRecipeRequirements(recipeInfo.recipeID) > 0 then
+		if #C_TradeSkillUI.GetRecipeRequirements(recipeID) > 0 then
 			local fontString = isRecraft and self.RecraftingRequiredTools or self.RequiredTools;
 			fontString:Show();
 			
 			self.UpdateRequiredTools = function()
 				-- Requirements need to be fetched on every update because it contains the updated
 				-- .met field that we need to colorize the string correctly.
-				local requirements = C_TradeSkillUI.GetRecipeRequirements(recipeInfo.recipeID);
-				local requirementsText = BuildColoredListString(unpack(FormatRequirements(requirements)));
-				fontString:SetText(PROFESSIONS_REQUIRED_TOOLS:format(requirementsText));
+				assertsafe(recipeID == self.currentRecipeInfo.recipeID, ("Mismatch between captured recipeID '%s' and frame self.currentRecipeInfo.recipeID '%s'"):format(tostring(recipeID), tostring(self.currentRecipeInfo.recipeID)));
+				local requirements = C_TradeSkillUI.GetRecipeRequirements(recipeID);
+				if (#requirements > 0) then
+					local requirementsText = BuildColoredListString(unpack(FormatRequirements(requirements)));
+					fontString:SetText(PROFESSIONS_REQUIRED_TOOLS:format(requirementsText));
+				else
+					fontString:SetText("");
+				end
 			end
 
 			self.UpdateRequiredTools();

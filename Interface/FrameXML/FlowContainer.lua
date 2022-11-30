@@ -95,6 +95,10 @@ function FlowContainer_SetStartingOffset(container, xOffset, yOffset)
 	end
 end
 
+local function isFrameTypeExemptFromFlowCount(frameType)
+	return frameType == "flagged" or frameType == "target" or frameType == "pet";
+end
+
 --:GetWidth() and :GetHeight() are used in this function. --meta-comment: Comment added in case anyone ever searches all files for these.
 function FlowContainer_DoLayout(container)
 	if ( container.flowPauseUpdates ) then
@@ -123,6 +127,7 @@ function FlowContainer_DoLayout(container)
 	local atomicAddStart = nil;
 	local atomicAtBeginning = nil;
 	local i = 1;
+	local targetVerticalOffset = nil;
 	while ( i <= #container.flowFrames ) do
 		local object = container.flowFrames[i];
 		local doContinue = false;
@@ -155,19 +160,30 @@ function FlowContainer_DoLayout(container)
 				
 				--Add it.
 				object:ClearAllPoints();
-				if ( container.flowOrientation == "horizontal" ) then
-					object:SetPoint("TOPLEFT", container, "TOPLEFT", currentSecondaryOffset, -currentPrimaryOffset);
+				if container.flowOrientation == "horizontal" then
+					object:SetPoint("TOPLEFT", container, "TOPLEFT", currentSecondaryOffset, -currentPrimaryOffset - (targetVerticalOffset or 0));
+
+					if object.frameType == "target" and not targetVerticalOffset then
+						targetVerticalOffset = object["Get"..secondaryDirection](object);
+					else
+						targetVerticalOffset = nil;
+					end
 				else
 					object:SetPoint("TOPLEFT", container, "TOPLEFT", currentPrimaryOffset, -currentSecondaryOffset);
 				end
-				
-				currentSecondaryOffset = currentSecondaryOffset + object["Get"..primaryDirection](object) + primarySpacing;
-				
+
+				if not targetVerticalOffset then
+					currentSecondaryOffset = currentSecondaryOffset + object["Get"..primaryDirection](object) + primarySpacing;
+				end
+
 				if ( not atomicAddStart ) then	--If we're in the middle of an atomic add, we'll save off the last part when we finish the add.
 					maxSecondaryOffset = max(maxSecondaryOffset, currentSecondaryOffset);
 				end
 				
-				currentPrimaryLine = currentPrimaryLine + 1;
+				if not isFrameTypeExemptFromFlowCount(object.frameType) then
+					currentPrimaryLine = currentPrimaryLine + 1;
+				end
+
 				lineMaxSize = max(lineMaxSize, object["Get"..secondaryDirection](object));
 			elseif ( objectType == "number" ) then	--This is a spacer.
 				currentSecondaryOffset = currentSecondaryOffset + object;

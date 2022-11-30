@@ -198,6 +198,10 @@ function GenericTraitFrameMixin:SetConfigID(configID, forceUpdate)
 	self:SetTalentTreeID(self.configurationInfo.treeIDs[1], forceTreeUpdate);
 end
 
+function GenericTraitFrameMixin:GetConfigID()
+	return self.configurationInfo and self.configurationInfo.ID or nil;
+end
+
 function GenericTraitFrameMixin:AttemptConfigOperation(...)
 	if TalentFrameBaseMixin.AttemptConfigOperation(self, ...) then
 		if not self:CommitConfig() then
@@ -289,8 +293,13 @@ function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
 end
 
 GenericTraitFrameCurrencyFrameMixin = { }; 
-function GenericTraitFrameCurrencyFrameMixin:UpdateWidgetSet()	
-	self.uiWidgetSetID = C_Traits.GetTraitSystemWidgetSetID(); 
+function GenericTraitFrameCurrencyFrameMixin:UpdateWidgetSet()
+	local configID = self:GetParent():GetConfigID();
+	if configID then
+		self.uiWidgetSetID = C_Traits.GetTraitSystemWidgetSetID(configID); 
+	else
+		self.uiWidgetSetID = nil;
+	end
 end 
 
 function GenericTraitFrameCurrencyFrameMixin:Setup(currencyInfo, displayText) 

@@ -718,6 +718,7 @@ function TargetFrame_UpdateBuffAnchor(self, buff, index, numDebuffs, anchorBuff,
 		auraOffsetY = AURA_OFFSET_Y;
 	end
 
+	buff:ClearAllPoints();
 	local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
 	if (index == 1) then
 		if (UnitIsFriend("player", self.unit) or numDebuffs == 0) then
@@ -767,6 +768,7 @@ function TargetFrame_UpdateDebuffAnchor(self, buff, index, numBuffs, anchorBuff,
 		auraOffsetY = AURA_OFFSET_Y;
 	end
 
+	buff:ClearAllPoints();
 	local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
 	if (index == 1) then
 		if (isFriend and numBuffs > 0) then

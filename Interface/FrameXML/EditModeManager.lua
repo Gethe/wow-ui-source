@@ -1113,7 +1113,14 @@ function EditModeManagerFrameMixin:ImportLayout(newLayoutInfo, layoutType, layou
 	self:MakeNewLayout(newLayoutInfo, layoutType, layoutName);
 end
 
+function EditModeManagerFrameMixin:PrepareSystemsForSave()
+	for _, systemFrame in ipairs(self.registeredSystemFrames) do
+		systemFrame:PrepareForSave();
+	end
+end
+
 function EditModeManagerFrameMixin:SaveLayouts()
+	self:PrepareSystemsForSave();
 	C_EditMode.SaveLayouts(self.layoutInfo);
 	self:ClearActiveChangesFlags();
 end

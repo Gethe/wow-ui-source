@@ -1098,6 +1098,14 @@ function ClassTalentTalentsTabMixin:GetClassTalentFrame()
 	return self:GetParent();
 end
 
+function ClassTalentTalentsTabMixin:GetSpecializationTab()
+	return self:GetClassTalentFrame().SpecTab;
+end
+
+function ClassTalentTalentsTabMixin:IsSpecActivationInProgress()
+	return self:GetSpecializationTab():IsActivateInProgress();
+end
+
 function ClassTalentTalentsTabMixin:IsHighlightedStarterBuildEntry(entryID)
 	return self.activeStarterBuildHighlight and self.activeStarterBuildHighlight.entryID == entryID;
 end
@@ -1216,7 +1224,7 @@ function ClassTalentTalentsTabMixin:LoadConfigByPredicate(predicate)
 		return;
 	end
 
-	if self:IsCommitInProgress() then
+	if self:IsCommitInProgress() or self:IsSpecActivationInProgress() then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
 		return;
 	end
@@ -1254,14 +1262,13 @@ function ClassTalentTalentsTabMixin:LoadConfigByIndex(index)
 		return;
 	end
 
-	if index <= 0 or index > #self.configIDs then
+	if not index or index <= 0 or index > #self.configIDs then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
 		return;
 	end
 
-	self:LoadConfigByPredicate(function(_, configID)
-		local lowerConfigName = self.configIDToName[configID] and self.configIDToName[configID]:lower();
-		return lowerConfigName == lowerTargetName;
+	self:LoadConfigByPredicate(function(configIndex, _)
+		return configIndex == index;
 	end);
 end
 --------------------------- End Script Command Helpers --------------------------------

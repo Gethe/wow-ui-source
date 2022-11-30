@@ -155,7 +155,13 @@ function ProfessionsMixin:SetProfessionType(professionType)
 end
 
 function ProfessionsMixin:Refresh()
-	self.professionInfo = self:GetProfessionInfo();
+	local professionInfo = self:GetProfessionInfo();
+	if professionInfo.professionID == 0 then
+		return;
+	end
+
+	self.professionInfo = professionInfo;
+
 	self:SetTitle(self.professionInfo.professionName or self.professionInfo.parentProfessionName);
 	self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(self.professionInfo.professionID));
 	self:SetProfessionType(Professions.GetProfessionType(self.professionInfo));

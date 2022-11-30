@@ -76,6 +76,8 @@
 			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Boss" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_BOSS_FRAMES_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="breakSnappedFramesOnSave" value="true" type="boolean"/>
+			<KeyValue key="alwaysUseTopRightAnchor" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>
 
@@ -84,6 +86,8 @@
 			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Arena" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ARENA_FRAMES_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="breakSnappedFramesOnSave" value="true" type="boolean"/>
+			<KeyValue key="alwaysUseTopRightAnchor" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>
 
@@ -219,6 +223,7 @@
 		<KeyValues>
 			<KeyValue key="system" value="Enum.EditModeSystem.ObjectiveTracker" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_OBJECTIVE_TRACKER_LABEL" type="global"/>
+			<KeyValue key="breakSnappedFramesOnSave" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>

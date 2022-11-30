@@ -32,6 +32,16 @@ function EditModeSystemMixin:OnSystemHide()
 	end
 end
 
+function EditModeSystemMixin:PrepareForSave()
+	if self.breakSnappedFramesOnSave then
+		self:BreakSnappedFrames();
+	end
+
+	if not self:IsInDefaultPosition() and (self.alwaysUseTopLeftAnchor or self.alwaysUseTopRightAnchor) then
+		self:BreakFrameSnap();
+	end
+end
+
 function EditModeSystemMixin:SetScaleOverride(newScale)
 	local oldScale = self:GetScale();
 
@@ -453,12 +463,17 @@ function EditModeSystemMixin:ClearFrameSnap()
 end
 
 function EditModeSystemMixin:BreakFrameSnap()
-	local frameCenterX, frameCenterY = self:GetCenter();
 	self:ClearAllPoints();
-	self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", frameCenterX, frameCenterY);
+	if self.alwaysUseTopRightAnchor then
+		local offsetX = -(UIParent:GetWidth() - self:GetRight());
+		local offsetY = -(UIParent:GetHeight() - self:GetTop());
+		self:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", offsetX, offsetY);
+	else
+		local offsetX = self:GetLeft();
+		local offsetY = -(UIParent:GetHeight() - self:GetTop());
+		self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", offsetX, offsetY);
+	end
 	EditModeManagerFrame:UpdateSystemAnchorInfo(self);
-
-	self:ClearFrameSnap();
 end
 
 function EditModeSystemMixin:SnapToFrame(frameInfo)
@@ -613,8 +628,8 @@ function EditModeActionBarSystemMixin:GetRightAnchoredWidth()
 		return 0;
 	end
 
-	if self:IsShown() and self:IsInDefaultPosition() then
-		local offsetX = select(4, self:GetPoint(1));
+	local offsetX = select(4, self:GetPoint(1));
+	if self:IsShown() and self:IsInDefaultPosition() and offsetX then
 		return self:GetWidth() - offsetX;
 	end
 
@@ -626,8 +641,8 @@ function EditModeActionBarSystemMixin:GetBottomAnchoredHeight()
 		return 0;
 	end
 
-	if self:IsShown() and self:IsInDefaultPosition() then
-		local offsetY = select(5, self:GetPoint(1));
+	local offsetY = select(5, self:GetPoint(1));
+	if self:IsShown() and self:IsInDefaultPosition() and offsetY then
 		return self:GetHeight() + offsetY;
 	end
 
@@ -1018,6 +1033,7 @@ end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameWidth()
 	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
+	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
 	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
 	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
 
@@ -1030,6 +1046,7 @@ end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameHeight()
 	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
+	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
 	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
 	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
 

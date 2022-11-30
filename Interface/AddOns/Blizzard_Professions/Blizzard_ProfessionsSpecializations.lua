@@ -595,18 +595,15 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 end
 
 function ProfessionsSpecFrameMixin:Refresh(professionInfo)
-	if self:IsVisible() then
-		self:SetTitle();
-	end
-
 	local configID = C_ProfSpecs.GetConfigIDForSkillLine(professionInfo.professionID);
 	if not Professions.InLocalCraftingMode() 
 	   or not C_ProfSpecs.SkillLineHasSpecialization(professionInfo.professionID)
 	   or configID == 0 then
-		self:SetConfigID(nil);
-		self.tabsPool:ReleaseAll();
-		self.professionInfo = nil;
 		return;
+	end
+
+	if self:IsVisible() then
+		self:SetTitle();
 	end
 
 	if self.professionInfo ~= nil and self.professionInfo.professionID == professionInfo.professionID then

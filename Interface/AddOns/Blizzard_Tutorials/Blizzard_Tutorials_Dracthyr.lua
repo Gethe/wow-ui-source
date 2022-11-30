@@ -117,9 +117,10 @@ end
 
 function Class_DracthyrEmpoweredSpellWatcher:OnQuestAccepted(questID)
 	if questID == self.questID then
+		EventRegistry:RegisterFrameEventAndCallback("QUEST_TURNED_IN", self.OnQuestTurnedIn, self);
 		EventRegistry:RegisterFrameEventAndCallback("QUEST_REMOVED", self.OnQuestRemoved, self);
 		EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_START", self.OnStartEmpowerCast, self);
-		EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_STOP", function() C_Timer.After(0.1, GenerateClosure(self.OnStopEmpowerCast, self)) end, self);
+		EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_STOP", function() C_Timer.After(1, GenerateClosure(self.OnStopEmpowerCast, self)) end, self);
 		C_Timer.After(4.0, function()
 			self:ShowHelpTip();
 		end);
@@ -176,7 +177,7 @@ function Class_DracthyrEmpoweredSpellWatcher:StartWatching()
 				EventRegistry:RegisterFrameEventAndCallback("QUEST_TURNED_IN", self.OnQuestTurnedIn, self);
 				EventRegistry:RegisterFrameEventAndCallback("QUEST_REMOVED", self.OnQuestRemoved, self);
 				EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_START", self.OnStartEmpowerCast, self);
-				EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_STOP", function() C_Timer.After(0.1, GenerateClosure(self.OnStopEmpowerCast, self)) end, self);
+				EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_STOP", function() C_Timer.After(1, GenerateClosure(self.OnStopEmpowerCast, self)) end, self);
 				C_Timer.After(0.1, function()
 					self:ShowHelpTip();
 				end);

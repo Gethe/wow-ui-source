@@ -1783,7 +1783,8 @@ DefaultCompactMiniFrameSetUpOptions = {
 function DefaultCompactMiniFrameSetup(frame)
 	local options = DefaultCompactMiniFrameSetUpOptions;
 	frame:SetAlpha(1);
-	frame:SetSize(options.width, options.height);
+	local frameWidth = EditModeManagerFrame:GetRaidFrameWidth(frame.isParty) or options.width;
+	frame:SetSize(frameWidth, options.height);
 	frame.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Bg");
 	frame.background:SetTexCoord(0, 1, 0, 0.53125);
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);

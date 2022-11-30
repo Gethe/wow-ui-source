@@ -1,28 +1,37 @@
 local ReceiptMixin = {};
 
 function ReceiptMixin:OnLoad()
-	self:RegisterEvent("MERCHANT_SHOW");
-	self:RegisterEvent("MERCHANT_CLOSED");
-	self:RegisterEvent("MAIL_SHOW");
-	self:RegisterEvent("MAIL_CLOSED");
+	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW");
+	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_HIDE");
 	self:SetScript("OnEvent", self.OnEvent);
 end
 
-local beginTrackingEvents = {
-	MERCHANT_SHOW = true,
-	MAIL_SHOW = true, 
-};
+do
+	local eventToTrackingType =
+	{
+		PLAYER_INTERACTION_MANAGER_FRAME_SHOW = "begin",
+		PLAYER_INTERACTION_MANAGER_FRAME_HIDE = "end",
+	};
 
-local endTrackingEvents = {
-	MERCHANT_CLOSED = true,
-	MAIL_CLOSED = true, 
-};
+	local relevantInteractionTypes =
+	{
+		[Enum.PlayerInteractionType.Merchant] = true,
+		[Enum.PlayerInteractionType.MailInfo] = true,
+	};
 
-function ReceiptMixin:OnEvent(event, ...)
-	if beginTrackingEvents[event] then
-		self:BeginTracking();
-	elseif endTrackingEvents[event] then
-		self:EndTracking();
+	local function GetTrackingEventType(event, interactionType)
+		if relevantInteractionTypes[interactionType] then
+			return eventToTrackingType[event];
+		end
+	end
+
+	function ReceiptMixin:OnEvent(event, ...)
+		local trackingType = GetTrackingEventType(event, ...);
+		if trackingType == "begin" then
+			self:BeginTracking();
+		elseif trackingType == "end" then
+			self:EndTracking();
+		end
 	end
 end
 
