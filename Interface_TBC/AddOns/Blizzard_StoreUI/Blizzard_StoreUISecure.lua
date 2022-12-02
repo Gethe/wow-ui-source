@@ -2449,7 +2449,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 		if (productInfo.sharedData.vasServiceType == Enum.VasServiceType.CharacterTransfer or productInfo.sharedData.vasServiceType == Enum.VasServiceType.FactionChange ) then
 			disclaimer = string.format(disclaimer, VAS_QUEUE_SEVERAL_MINUTES);
 		end
-		self.Disclaimer:SetTextColor(0, 0, 0);
+		self.Disclaimer:SetTextColor("P", 0, 0, 0);
 		self.Disclaimer:SetText(HTML_START_CENTERED..disclaimer..HTML_END);
 		self.Disclaimer:Show();
 	end
@@ -2648,9 +2648,9 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			queueTime = factionTransfer;
 		end
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
-				self.Disclaimer:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+				self.Disclaimer:SetTextColor("P",_G.RED_FONT_COLOR:GetRGB());
 		else
-				self.Disclaimer:SetTextColor(0, 0, 0);
+				self.Disclaimer:SetTextColor("P",0, 0, 0);
 		end
 		local currencyInfo = SecureCurrencyUtil.GetActiveCurrencyInfo();
 		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
@@ -2727,7 +2727,7 @@ function StoreVASValidationFrame_SetErrors(errors)
 	frame.RealmSelector.Button:Enable();
 	frame.CharacterSelector.Button:Enable();
 	frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
-	frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
+	frame.ValidationDescription:SetTextColor("P", 1.0, 0.1, 0.1);
 	frame.ValidationDescription:SetText(desc);
 	frame.ValidationDescription:Show();
 	StoreVASValidationState_Unlock();

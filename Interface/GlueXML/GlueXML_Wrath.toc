@@ -106,7 +106,9 @@ CharacterServicesPatchwerk.xml
 ..\..\Interface_TBC\GlueXML\CharacterSelect.xml
 AccountReactivate.xml
 KioskModeSplash.xml
+CharacterServicesShared.lua
 CharacterServices.xml
+CharacterServicesPaidFactionChange.xml
 ..\..\Interface_Wrath\GlueXML\CharacterCreate.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml

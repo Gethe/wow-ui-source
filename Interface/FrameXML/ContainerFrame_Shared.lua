@@ -788,7 +788,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 				end
 				if (extended and ContainerFrame1.forceExtended) then
 					if (not frame.extendedOverlay) then
-						frame.extendedOverlay = frame:CreateTexture(nil, "OVERLAY", 1);
+						frame.extendedOverlay = frame:CreateTexture(nil, "OVERLAY");
 						frame.extendedOverlay:SetColorTexture(0.603, 0.875, 1);
 						frame.extendedOverlay:SetAlpha(1);
 						frame.extendedOverlay:SetBlendMode("MOD");

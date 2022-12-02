@@ -2137,11 +2137,10 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 		UIMenu_AddButton(self, CALENDAR_CREATE_EVENT, nil, CalendarDayContextMenu_CreateEvent);
 
 
-		--disabling guild announcements until we can refactor the calendar guild system
 		-- add guild selections if the player has a guild
 		if ( CanEditGuildEvent() ) then
 			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
-			--UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
+			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
 		end
 
 		needSpacer = true;
@@ -2153,6 +2152,7 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 		-- add context items for the selected event
 		if ( _CalendarFrame_IsPlayerCreatedEvent(event.calendarType) ) then
 			local canEdit = C_Calendar.ContextMenuEventCanEdit(monthOffset, day, eventIndex);
+			local canRemove = C_Calendar.ContextMenuEventCanRemove(monthOffset, day, eventIndex);
 			if ( canEdit ) then
 				-- spacer
 				if ( needSpacer ) then
@@ -2164,15 +2164,17 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 				if ( canPaste ) then
 					UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
 				end
-				-- delete
-				UIMenu_AddButton(self, CALENDAR_DELETE_EVENT, nil, CalendarDayContextMenu_DeleteEvent);
-				needSpacer = true;
 			elseif ( canPaste ) then
 				if ( needSpacer ) then
 					UIMenu_AddButton(self, "");
 				end
 				-- paste
 				UIMenu_AddButton(self, CALENDAR_PASTE_EVENT, nil, CalendarDayContextMenu_PasteEvent);
+				needSpacer = true;
+			end
+			if ( canRemove ) then
+				-- delete
+				UIMenu_AddButton(self, CALENDAR_DELETE_EVENT, nil, CalendarDayContextMenu_DeleteEvent);
 				needSpacer = true;
 			end
 			if ( event.calendarType ~= "GUILD_ANNOUNCEMENT" ) then
@@ -4231,14 +4233,13 @@ function CalendarCreateEventInviteContextMenu_Initialize(self, inviteButton)
 		-- spacer
 		--UIMenu_AddButton(self, "");
 
-		--disabling permission changes until we can refactor the calendar guild system
-		--if ( inviteInfo.modStatus == "MODERATOR" ) then
+		if ( inviteInfo.modStatus == "MODERATOR" ) then
 			-- clear moderator status
-			--UIMenu_AddButton(self, CALENDAR_INVITELIST_CLEARMODERATOR, nil, CalendarInviteContextMenu_ClearModerator);
-		--else
+			UIMenu_AddButton(self, CALENDAR_INVITELIST_CLEARMODERATOR, nil, CalendarInviteContextMenu_ClearModerator);
+		else
 			-- set moderator status
-			--UIMenu_AddButton(self, CALENDAR_INVITELIST_SETMODERATOR, nil, CalendarInviteContextMenu_SetModerator);
-		--end
+			UIMenu_AddButton(self, CALENDAR_INVITELIST_SETMODERATOR, nil, CalendarInviteContextMenu_SetModerator);
+		end
 	end
 	if ( CalendarCreateEventFrame.mode == "edit" ) then
 		if ( needSpacer ) then
@@ -4401,10 +4402,7 @@ function CalendarCreateEventMassInviteButton_OnUpdate(self)
 end
 
 function CalendarCreateEventMassInviteButton_Update()
-
-	local clubs = C_Club.GetSubscribedClubs()
-
-	if (#clubs > 0) then
+	if ( C_Calendar.CanSendInvite() and CanEditGuildEvent() ) then
 		CalendarCreateEventMassInviteButton:Enable();
 	else
 		CalendarCreateEventMassInviteButton:Disable();
@@ -4631,43 +4629,32 @@ end
 
 function CalendarMassInviteCommunityDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
-	local clubs = C_Club.GetSubscribedClubs()
-	for i, clubInfo in ipairs(clubs) do
-		if (clubInfo.clubType ~= Enum.ClubType.BattleNet) then
-			if (clubInfo.clubType == Enum.ClubType.Guild) then
-				info.text = GREEN_FONT_COLOR:WrapTextInColorCode(clubInfo.name);
-			else
-				info.text = clubInfo.name;
-			end
-			info.arg1 = clubInfo.clubId;
-			info.func = CalendarMassInviteCommunityDropDown_OnClick;
-			info.checked = clubInfo.clubId == CalendarMassInviteFrame.selectedClubId;
-			UIDropDownMenu_AddButton(info);
+
+	for i = 1, GuildControlGetNumRanks() do
+		info.text = GuildControlGetRankName(i);
+		info.func = CalendarMassInviteCommunityDropDown_OnClick;
+		if ( i == CalendarMassInviteFrame.selectedRank ) then
+			info.checked = 1;
+			--UIDropDownMenu_SetText(CalendarMassInviteCommunityDropDown, info.text);
+		else
+			info.checked = nil;
 		end
+		UIDropDownMenu_AddButton(info);
 	end
 end
 
 function CalendarMassInviteCommunityDropDown_OnClick(self, clubId)
-	local clubInfo = C_Club.GetClubInfo(clubId)
-	if(clubInfo == nil) then
-		return;
-	end
+	CalendarMassInviteFrame.selectedRank = self:GetID();
 
 	UIDropDownMenu_SetSelectedValue(CalendarMassInviteCommunityDropDown, self:GetText());
-	CalendarMassInviteFrame.selectedClubId = clubId;
+	CalendarMassInviteFrame.selectedClubId = self:GetID();
 	CalendarMassInvite_Update();
 end
 
 function CalendarMassInviteAcceptButton_OnClick(self)
 	local minLevel = CalendarMassInviteMinLevelEdit:GetNumber();
 	local maxLevel = CalendarMassInviteMaxLevelEdit:GetNumber();
-
-	local clubInfo = C_Club.GetClubInfo(CalendarMassInviteFrame.selectedClubId)
-	if (clubInfo and  clubInfo.clubType == Enum.ClubType.Guild) then
-		C_Calendar.MassInviteGuild(minLevel, maxLevel, CalendarMassInviteFrame.selectedRank);
-	else
-		C_Calendar.MassInviteCommunity(CalendarMassInviteFrame.selectedClubId, minLevel, maxLevel)
-	end
+	C_Calendar.MassInviteGuild(minLevel, maxLevel, CalendarMassInviteFrame.selectedRank);
 	CalendarMassInviteFrame:Hide();
 end
 

@@ -23,6 +23,10 @@ function DataProviderMixin:Enumerate(indexBegin, indexEnd)
 	return CreateTableEnumerator(self.collection, indexBegin, indexEnd);
 end
 
+function DataProviderMixin:GetCollection()
+	return self.collection;
+end
+
 function DataProviderMixin:GetSize()
 	return #self.collection;
 end

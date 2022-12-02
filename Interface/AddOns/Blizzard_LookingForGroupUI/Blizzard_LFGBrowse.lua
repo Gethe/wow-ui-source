@@ -293,7 +293,11 @@ function LFGBrowseSearchEntry_Update(self)
 		activityText = string.format(activityString, #activitiesToDisplay);
 	end
 
+	local leaderClassFileName = select(3, C_LFGList.GetSearchResultLeaderInfo(self.resultID));
 	local nameColor = NORMAL_FONT_COLOR;
+	if (leaderClassFileName) then
+		nameColor = RAID_CLASS_COLORS[leaderClassFileName];
+	end
 	local levelColor = GRAY_FONT_COLOR;
 	local activityColor = LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR;
 	if ( searchResultInfo.isDelisted ) then

@@ -31,7 +31,7 @@
 							self:GetParent():Hide();
 						</OnClick>
 						<OnMouseDown>
-							self:SetHighlightTexture(nil);
+							self:ClearHighlightTexture();
 						</OnMouseDown>
 						<OnMouseUp>
 							self:SetHighlightAtlas("simplecheckout-close-hover-1x");

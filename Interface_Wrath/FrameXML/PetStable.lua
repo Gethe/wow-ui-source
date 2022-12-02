@@ -13,6 +13,7 @@ end
 function PetStable_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( event == "PET_STABLE_SHOW" ) then
+		HideUIPanel(GossipFrame);
 		ShowUIPanel(self);
 		if ( not self:IsVisible() ) then
 			ClosePetStables();

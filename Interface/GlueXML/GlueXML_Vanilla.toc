@@ -105,6 +105,8 @@ CharacterServicesPatchwerk.xml
 ..\..\Interface_Vanilla\GlueXML\CharacterSelect.xml
 AccountReactivate.xml
 KioskModeSplash.xml
+CharacterServicesShared.lua
+CharacterServicesPaidFactionChange.xml
 CharacterServices.xml
 ..\..\Interface_Vanilla\GlueXML\CharacterCreate.xml
 PromotionFrame.xml

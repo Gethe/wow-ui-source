@@ -646,7 +646,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		self:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED");
 		
 		updateTrackedAchievements(GetTrackedAchievements());
-	elseif ( event == "ACHIEVEMENT_EARNED" ) then
+	elseif ( event == "ACHIEVEMENT_EARNED" and self:IsVisible()) then
 		local achievementID = ...;
 		AchievementFrameCategories_Update();
 		AchievementFrameCategories_UpdateTooltip();
@@ -658,8 +658,8 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		end
 		AchievementFrameHeaderPoints:SetText(GetTotalAchievementPoints());
 
-	elseif ( event == "CRITERIA_UPDATE" ) then
-		if ( AchievementFrameAchievements.selection ) then
+	elseif ( event == "CRITERIA_UPDATE" and self:IsVisible() ) then
+		if ( AchievementFrameAchievements.selection) then
 			local id = AchievementFrameAchievementsObjectives.id;
 			local button = AchievementFrameAchievementsObjectives:GetParent();
 			AchievementFrameAchievementsObjectives.id = nil;
@@ -1610,7 +1610,7 @@ end
 -- [[ StatsFrames ]]--
 
 function AchievementFrameStats_OnEvent (self, event, ...)
-	if ( event == "CRITERIA_UPDATE" and self:IsShown() ) then
+	if ( event == "CRITERIA_UPDATE" and self:IsVisible() ) then
 		AchievementFrameStats_Update();
 	end
 end

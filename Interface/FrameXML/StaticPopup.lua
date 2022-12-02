@@ -3370,13 +3370,19 @@ StaticPopupDialogs["CONFIRM_BINDER"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ConfirmBinder();
+		C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.Binder);
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( not CheckBinderDist() ) then
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.Binder) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
 			self:Hide();
 		end
 	end,
+	OnCancel = function(self)
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
+		self:Hide();
+	end,	
 	timeout = 0,
 	hideOnEscape = 1
 };
