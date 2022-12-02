@@ -41,9 +41,6 @@ function EquipmentManager_OnEvent (self, event, ...)
 		for i = #EQUIPMENTMANAGER_BAGSLOTS + 1, NUM_BAG_SLOTS + GetNumBankSlots() do
 			EQUIPMENTMANAGER_BAGSLOTS[i] = {};
 		end
-	elseif ( event == "WEAR_EQUIPMENT_SET" ) then
-		local setName = ...;
-		EquipmentManager_EquipSet(setName);
 	elseif ( event == "ITEM_UNLOCKED" ) then
 		local arg1, arg2 = ...; -- inventory slot or bag and slot
 		
@@ -63,7 +60,6 @@ end
 EquipmentManager:SetScript("OnEvent", EquipmentManager_OnEvent);
 EquipmentManager:RegisterEvent("PLAYER_ENTERING_WORLD");
 EquipmentManager:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
-EquipmentManager:RegisterEvent("WEAR_EQUIPMENT_SET");
 EquipmentManager:RegisterEvent("ITEM_UNLOCKED");
 EquipmentManager:RegisterEvent("BANKFRAME_OPENED");
 EquipmentManager:RegisterEvent("BANKFRAME_CLOSED");

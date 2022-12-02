@@ -2214,9 +2214,9 @@ function GearManagerDialog_Update ()
 	local selectedName = dialog.selectedSetName;
 	local name, texture, button;
 	dialog.selectedSet = nil;
-	for i = 0, numSets do
+	for ite, i in ipairs(C_EquipmentSet.GetEquipmentSetIDs()) do
 		name, texture = C_EquipmentSet.GetEquipmentSetInfo(i);
-		button = buttons[i+1];
+		button = buttons[ite];
 		button:Enable();
 		button.name = name;
 		button.id = i; --EquipmentSetID
