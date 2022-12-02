@@ -60,6 +60,7 @@ local EJ_DIFFICULTIES = {
 	DifficultyUtil.ID.DungeonNormal,
 	DifficultyUtil.ID.DungeonHeroic,
 	DifficultyUtil.ID.DungeonMythic,
+	DifficultyUtil.ID.DungeonChallenge,
 	DifficultyUtil.ID.DungeonTimewalker,
 	DifficultyUtil.ID.RaidLFR,
 	DifficultyUtil.ID.Raid10Normal,

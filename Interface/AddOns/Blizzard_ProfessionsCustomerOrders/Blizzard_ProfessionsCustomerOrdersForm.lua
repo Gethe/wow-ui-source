@@ -860,8 +860,7 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 		Professions.AllocateAllBasicReagents(self.transaction, true);
 	else
 		for _, reagentInfo in ipairs(self.order.reagents) do
-			local allocations = self.transaction:GetAllocations(reagentInfo.reagentSlot);
-			allocations:Allocate(reagentInfo.reagent, reagentInfo.reagent.quantity);
+			self.transaction:OverwriteAllocation(reagentInfo.reagentSlot, reagentInfo.reagent, reagentInfo.reagent.quantity);
 		end
 	end
 

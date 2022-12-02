@@ -45,6 +45,20 @@ local MythicPlusInfo =
 			},
 		},
 		{
+			Name = "GetEndOfRunGearSequenceLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "keystoneLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sequenceLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetLastWeeklyBestInformation",
 			Type = "Function",
 

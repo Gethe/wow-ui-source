@@ -182,10 +182,15 @@ function ClassTalentTalentsTabMixin:CheckSetSelectedConfigID()
 	if not self.variablesLoaded or not self:IsShown() or self:IsInspecting() then
 		return;
 	end
-
+	
 	local currentSelection = self.LoadoutDropDown:GetSelectionID();
 	if (currentSelection ~= nil) and self.LoadoutDropDown:IsSelectionIDValid(currentSelection) then
-		return;
+		-- Check to see if starter build is the correct selection, as on spec change it's a valid choice but may not be active for the new spec
+		if (currentSelection ~= Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID) then
+			return;
+		elseif self:GetIsStarterBuildActive() then
+			return;
+		end
 	end
 
 	local currentSpecID = PlayerUtil.GetCurrentSpecID();
@@ -309,7 +314,9 @@ function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 		self:SetConfigID(configID, forceUpdate);
 
 		local commitedConfigID = self.commitedConfigID;
-		self:UpdateLastSelectedConfigID(commitedConfigID);
+		if commitedConfigID then
+			self:UpdateLastSelectedConfigID(commitedConfigID);
+		end
 
 		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitSucceeded);
 

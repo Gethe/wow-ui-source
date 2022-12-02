@@ -463,17 +463,23 @@ function EditModeSystemMixin:ClearFrameSnap()
 end
 
 function EditModeSystemMixin:BreakFrameSnap()
-	self:ClearAllPoints();
-	if self.alwaysUseTopRightAnchor then
-		local offsetX = -(UIParent:GetWidth() - self:GetRight());
-		local offsetY = -(UIParent:GetHeight() - self:GetTop());
-		self:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", offsetX, offsetY);
-	else
-		local offsetX = self:GetLeft();
-		local offsetY = -(UIParent:GetHeight() - self:GetTop());
-		self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", offsetX, offsetY);
+	local top = self:GetTop();
+	if top then
+		local offsetX, offsetY, anchorPoint;
+		if self.alwaysUseTopRightAnchor then
+			offsetX = -(UIParent:GetWidth() - self:GetRight());
+			offsetY = -(UIParent:GetHeight() - top);
+			anchorPoint = "TOPRIGHT";
+		else
+			offsetX = self:GetLeft();
+			offsetY = -(UIParent:GetHeight() - top);
+			anchorPoint = "TOPLEFT";
+		end
+
+		self:ClearAllPoints();
+		self:SetPoint(anchorPoint, UIParent, anchorPoint, offsetX, offsetY);
+		EditModeManagerFrame:UpdateSystemAnchorInfo(self);
 	end
-	EditModeManagerFrame:UpdateSystemAnchorInfo(self);
 end
 
 function EditModeSystemMixin:SnapToFrame(frameInfo)

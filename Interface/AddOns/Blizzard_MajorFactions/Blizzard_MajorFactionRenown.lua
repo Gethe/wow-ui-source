@@ -136,6 +136,7 @@ function MajorFactionRenownMixin:OnHide()
 
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.MajorFactionRenown);
 
+	currentFactionID = nil;
 	PlaySound(SOUNDKIT.UI_MAJOR_FACTION_RENOWN_CLOSE_WINDOW);
 end
 
@@ -329,6 +330,12 @@ function MajorFactionRenownMixin:SetRewards(level)
 	local rewardUnlocked = level <= renownLevel;
 
 	for i, rewardInfo in ipairs(rewards) do
+		-- We can only display up to 4 rewards at once in the UI
+		-- Todo: Add priority system to determine the "best" 4 rewards to show
+		if i > 4 then
+			break;
+		end
+
 		local rewardFrame = self.rewardsPool:Acquire();
 		rewardFrame:SetScale((numRewards > 1 and 0.8 or 1), (numRewards > 1 and 0.8 or 1));
 		if numRewards == 1 then

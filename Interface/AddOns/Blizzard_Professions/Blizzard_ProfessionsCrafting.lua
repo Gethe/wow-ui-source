@@ -155,8 +155,7 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 		self:ValidateControls();
 		self:SetOverrideCastBarActive(false);
 	elseif event == "UNIT_AURA" then
-		self.SchematicForm:Refresh();
-		self:ValidateControls();
+		self.SchematicForm:UpdateDetailsStats();
 	end
 end
 
