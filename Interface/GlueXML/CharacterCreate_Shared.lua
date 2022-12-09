@@ -134,6 +134,8 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("CUSTOMIZE_CHARACTER_RESULT");
 	self:RegisterEvent("RACE_FACTION_CHANGE_STARTED");
 	self:RegisterEvent("RACE_FACTION_CHANGE_RESULT");
+	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
+	self:RegisterEvent("ASSIGN_VAS_RESPONSE");
 
 	CharacterCreate:SetSequence(0);
 	CharacterCreate:SetCamera(0);
@@ -260,6 +262,11 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		else
 			GlueDialog_Show("OKAY", _G[err]);
 		end
+	elseif event == "STORE_VAS_PURCHASE_ERROR" then
+		self:OnStoreVASPurchaseError();
+	elseif event == "ASSIGN_VAS_RESPONSE" then
+		local token, storeError, vasPurchaseResult = ...;
+		self:OnAssignVASResponse(token, storeError, vasPurchaseResult);
 	end
 end
 
@@ -285,6 +292,45 @@ function CharacterCreateMixin:ClearVASInfo()
 	self.vasType = nil;
 	self.vasInfo = nil;	
 	C_CharacterCreation.SetPaidService(false);
+end
+
+function CharacterCreateMixin:BeginVASTransaction()
+	if self.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+		local noIsValidateOnly = false;
+		C_CharacterServices.AssignPFCDistribution(self.vasInfo.selectedCharacterGUID, CharacterCreateFrame:GetSelectedName(), noIsValidateOnly);
+	end
+end
+
+function CharacterCreateMixin:IsVASErrorUserFixable(errorID)
+	return errorID == Enum.VasError.NameNotAvailable or errorID == Enum.VasError.DuplicateCharacterName;
+end
+
+function CharacterCreateMixin:OnStoreVASPurchaseError()
+	if self.vasType then
+		local displayMsg = VASErrorData_GetCombinedMessage(self.vasInfo.selectedCharacterGUID);
+		local errors = C_StoreSecure.GetVASErrors();
+		local exitAfterError = false;
+		for index, errorID in ipairs(errors) do
+			if not self:IsVASErrorUserFixable(errorID) then
+				exitAfterError = true;
+				break;
+			end
+		end
+		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, exitAfterError);
+	end
+end
+
+function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchaseResult)
+	if self.vasType then
+		local purchaseComplete, errorMsg = IsVASAssignmentValid(storeError, vasPurchaseResult, self.vasInfo.selectedCharacterGUID);
+		if purchaseComplete then
+			CharacterSelect.selectGuid = self.vasInfo.selectedCharacterGUID;
+			CharacterCreateFrame:Exit();
+		else
+			local exitAfterError = not self:IsVASErrorUserFixable(vasPurchaseResult);
+			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, exitAfterError);
+		end
+	end
 end
 
 function CharacterCreateMixin:HasService()
@@ -322,6 +368,15 @@ function CharacterCreateMixin:OnUpdate(self, elapsed)
 	end
 end
 
+function CharacterCreateMixin:GetSelectedName()
+	return CharacterCreateNameEdit:GetText();
+end
+
+function CharacterCreateMixin:Exit()
+	CHARACTER_SELECT_BACK_FROM_CREATE = true;
+	GlueParent_SetScreen("charselect");
+end
+
 function CharacterCreate_OnChar()
 end
 
@@ -342,13 +397,19 @@ end
 function CharacterCreate_Okay()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CREATE_CHAR);
 
-	if( Kiosk.IsEnabled() ) then
-		KioskModeSplash:SetAutoEnterWorld(true);
+	if CharacterCreateFrame.paidServiceType then
+		GlueDialog_Show("CONFIRM_PAID_SERVICE");
+	elseif CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
-		KioskModeSplash:SetAutoEnterWorld(false)
-	end
+		if( Kiosk.IsEnabled() ) then
+			KioskModeSplash:SetAutoEnterWorld(true);
+		else
+			KioskModeSplash:SetAutoEnterWorld(false)
+		end
 
-	C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
+		C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
+	end
 end
 
 function CharacterCreate_Back()

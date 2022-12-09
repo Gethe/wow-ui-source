@@ -188,17 +188,17 @@ function VASCharacterSelectBlockBase:OnAdvance()
 	self:SetResultsShown(true);
 
 	local selectedCharacterGUID = self:GetSelectedCharacterGUID();
-	local selectedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+	local selectedButton = CharacterSelect_FindCharacterButtonByPredicate(function(frame, elementData)
 		local guid = select(15, GetCharacterInfo(frame.index));
 		return guid == selectedCharacterGUID;
 	end);
 
 	if selectedButton then
-		for _, button in ipairs(CharacterSelectCharacterFrame.ScrollBox:GetFrames()) do
+		CharacterSelect_ForEachVisibleCharacterButton(function(button)
 			if button ~= selectedButton then
 				CharacterSelect_SetCharacterButtonEnabled(button, false);
 			end
-		end
+		end);
 	end
 end
 

@@ -193,9 +193,30 @@ GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
 	button1 = DONE,
 	button2 = CANCEL,
 	OnAccept = function()
-		-- need to get desired faction in case of pandaren doing faction change to another pandaren
-		-- this will be nil in any other case
-		C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), PandarenFactionButtons_GetSelectedFaction());
+		C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
+	end,
+}
+
+GlueDialogTypes["CONFIRM_VAS_FACTION_CHANGE"] = {
+	text = CONFIRM_PAID_SERVICE,
+	button1 = DONE,
+	button2 = CANCEL,
+	OnAccept = function()
+		CharacterCreateFrame:BeginVASTransaction();
+	end,
+	OnCancel = function()
+		CharacterCreateFrame:UpdateForwardButton();
+	end,
+}
+
+GlueDialogTypes["CHARACTER_CREATE_VAS_ERROR"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
+	OnAccept = function ()
+		if GlueDialog.data then
+			CharacterCreateFrame:Exit();
+		end
 	end,
 }
 

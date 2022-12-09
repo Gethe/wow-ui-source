@@ -552,7 +552,7 @@ function KeybindingsCategoryListButton_OnClick(self, button)
 end
 
 function CharacterSpecificButton_OnLoad(self)
-	self.text:SetText(HIGHLIGHT_FONT_COLOR_CODE..CHARACTER_SPECIFIC_KEYBINDINGS..FONT_COLOR_CODE_CLOSE);
+	self.Text:SetText(HIGHLIGHT_FONT_COLOR_CODE..CHARACTER_SPECIFIC_KEYBINDINGS..FONT_COLOR_CODE_CLOSE);
 end
 
 function CharacterSpecificButton_OnClick(self)

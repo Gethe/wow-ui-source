@@ -307,7 +307,7 @@ function MiniMapTrackingDropDown_OnEvent(self, event, ...)
 end
 
 function MiniMapTracking_SetTracking(self, id, unused, on)
-	SetTracking(id, on);
+	C_Minimap.SetTracking(id, on);
 	HideDropDownMenu(2);
 end
 

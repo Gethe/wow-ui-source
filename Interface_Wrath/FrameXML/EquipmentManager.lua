@@ -277,7 +277,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		id = C_Container.GetContainerItemID(bag, slot);
 		name, _, _, _, _, _, _, _, invType = GetItemInfo(id);
 		local info = C_Container.GetContainerItemInfo(bag, slot);
-		textureName = info and info.iconFileDataID;
+		textureName = info and info.iconFileID;
 		count = info and info.stackCount;
 		locked = info and info.isLocked;
 		start, duration, enable = C_Container.GetContainerItemCooldown(bag, slot);

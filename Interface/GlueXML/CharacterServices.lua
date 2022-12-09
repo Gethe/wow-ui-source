@@ -879,6 +879,15 @@ function CharacterUpgradeCharacterSelectBlock:FormatResult()
 	return SELECT_CHARACTER_RESULTS_FORMAT:format(RAID_CLASS_COLORS[classFileName].colorStr, name, level, class);
 end
 
+local g_filteringByBoostsOnly = nil;
+function CharacterUpgradeCharacterSelectBlock_IsFilteringByBoostable()
+	return g_filteringByBoostsOnly;
+end
+
+function CharacterUpgradeCharacterSelectBlock_SetFilteringByBoostable(boostsOnly)
+	g_filteringByBoostsOnly = boostsOnly;
+end
+
 function CharacterUpgradeCharacterSelectBlock:OnHide()
 	enableScroll(CharacterSelectCharacterFrame.scrollBar);
 

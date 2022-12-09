@@ -46,17 +46,16 @@ function PFCCharacterSelectBlock:SetResultsShown(shown)
 end
 
 local function DoesClientThinkTheCharacterIsEligibleForPFC(characterID)
-	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, faction, _, mailSenders, _, _, characterServiceRequiresLogin = select(7, GetCharacterInfo(characterID));
+	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, faction, mailSenders = select(7, GetCharacterInfo(characterID));
 	local errors = {};
 
 	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
 	CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #mailSenders == 0);
-	CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
 	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE, faction ~= "Neutral");
 	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, C_StoreSecure.IsVASEligibleCharacterGUID(playerguid));
 
 	local canTransfer = #errors == 0;
-	return canTransfer, errors, playerguid, characterServiceRequiresLogin;
+	return canTransfer, errors, playerguid, false;
 end
 
 function PFCCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)
@@ -67,6 +66,13 @@ function PFCCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)
 	serviceInfo.playerguid = playerguid;
 	serviceInfo.requiresLogin = characterServiceRequiresLogin;
 	return serviceInfo;
+end
+
+local PFCReviewChoicesBlock = CreateFromMixins(VASReviewChoicesBlockBase);
+
+function PFCReviewChoicesBlock:Initialize(results, wasFromRewind)
+	VASReviewChoicesBlockBase.Initialize(results, wasFromRewind);
+	CharacterServicesCharacterSelector:UpdateDisplay(self);
 end
 
 local PFCChoiceVerificationBlock = CreateFromMixins(VASChoiceVerificationBlockBase);
@@ -111,7 +117,7 @@ PaidFactionChangeFlow = Mixin(
 
 		Steps = {
 			PFCCharacterSelectBlock,
-			CreateFromMixins(VASReviewChoicesBlockBase),
+			PFCReviewChoicesBlock,
 			PFCChoiceVerificationBlock,
 			PFCAssignConfirmationBlock,
 			PFCEndStep,

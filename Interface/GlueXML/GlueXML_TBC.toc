@@ -39,6 +39,8 @@ GlueCheck.lua
 ..\SharedXML\PixelUtilSecure.lua
 ..\SharedXML\PixelUtil.lua
 ..\SharedXML\Dump.lua
+..\SharedXML\VASErrorLookup.lua
+
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\Constants.lua
@@ -108,6 +110,7 @@ KioskModeSplash.xml
 CharacterServicesShared.lua
 CharacterServices.xml
 CharacterServicesPaidFactionChange.xml
+CharacterServicesCharacterSelector.xml
 ..\..\Interface_TBC\GlueXML\CharacterCreate.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml

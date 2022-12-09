@@ -691,6 +691,35 @@ function CharacterSelect_UpdateModel(self)
     self:AdvanceTime();
 end
 
+function CharacterSelect_SetCharacterButtonEnabled(button, enabled)
+	if enabled then
+		button.buttonText.name:SetTextColor(1, 0.82, 0);
+		button.buttonText.Info:SetTextColor(1, 1, 1);
+		if button.coloredClassName then
+			button.buttonText.Info:SetText(button.coloredClassName);
+		end
+		button.buttonText.Location:SetTextColor(0.5, 0.5, 0.5);
+	else
+		button.buttonText.name:SetTextColor(0.25, 0.25, 0.25);
+		if button.uncoloredClassName then
+			button.buttonText.Info:SetText(button.uncoloredClassName);
+		end
+		button.buttonText.Info:SetTextColor(0.25, 0.25, 0.25);
+		button.buttonText.Location:SetTextColor(0.25, 0.25, 0.25);
+	end
+
+	button.buttonText.Info:SetFixedColor(not enabled);
+	button:SetEnabled(enabled);
+end
+
+function CharacterSelect_HidePaidServiceButtons()
+	local numDisplayedCharacters = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
+
+	for buttonIndex = 1, numDisplayedCharacters do
+		_G["CharSelectPaidService"..buttonIndex]:Hide();
+	end
+end
+
 function UpdateCharacterSelection(self)
     local button, paidServiceButton;
 
@@ -710,6 +739,7 @@ function UpdateCharacterSelection(self)
         else
             CharacterSelectButton_EnableDrag(button);
         end
+		button.characterID = GetCharIDFromIndex(i);
     end
 
     local index = self.selectedIndex - CHARACTER_LIST_OFFSET;
@@ -1261,6 +1291,25 @@ function CharacterSelect_SelectCharacter(index, noCreate)
     end
 end
 
+function CharacterSelect_ForEachVisibleCharacterButton(func)
+	local num = math.min(GetNumVisibleCharacters(), MAX_CHARACTERS_DISPLAYED);
+	for i = 1, num do
+		local button = _G["CharSelectCharacterButton"..i];
+		func(button);
+	end
+end
+
+function CharacterSelect_FindCharacterButtonByPredicate(predicate)
+	local num = math.min(GetNumVisibleCharacters(), MAX_CHARACTERS_DISPLAYED);
+	for i = 1, num do
+		local button = _G["CharSelectCharacterButton"..i];
+		if predicate(button) then
+			return button;
+		end		
+	end
+	return nil;
+end
+
 function CharacterSelect_SelectCharacterByGUID(guid)
     local num = math.min(GetNumVisibleCharacters(), MAX_CHARACTERS_DISPLAYED);
 
@@ -1434,6 +1483,12 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
     else
         GlueParent_SetScreen("charcreate");
     end
+end
+
+function CharacterSelect_StartCustomizeForVAS(vasType, info)
+	CharacterCreateFrame:SetVASInfo(vasType, info);
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+	GlueParent_SetScreen("charcreate");
 end
 
 function CharacterSelectGoldPanelButton_DeathKnightSwap(self)
@@ -1794,6 +1849,26 @@ function CharacterSelect_ScrollToCharacter(self, characterGUID)
 	end
 
 	CharacterSelect_ScrollList(self, maxScroll);
+end
+
+local function disableScroll(scrollBar)
+	scrollBar.ScrollUpButton:SetEnabled(false);
+	scrollBar.ScrollDownButton:SetEnabled(false);
+	scrollBar:GetParent():EnableMouseWheel(false);
+end
+
+local function enableScroll(scrollBar)
+	scrollBar.ScrollUpButton:SetEnabled(true);
+	scrollBar.ScrollDownButton:SetEnabled(true);
+	scrollBar:GetParent():EnableMouseWheel(true);
+end
+
+function CharacterSelect_SetScrollEnabled(enabled)
+	if enabled then
+		enableScroll(CharacterSelectCharacterFrame.scrollBar);
+	else
+		disableScroll(CharacterSelectCharacterFrame.scrollBar);
+	end
 end
 
 function CharacterTemplatesFrame_Update()

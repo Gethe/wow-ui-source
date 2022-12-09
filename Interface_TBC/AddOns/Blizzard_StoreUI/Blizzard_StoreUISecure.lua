@@ -471,145 +471,6 @@ local errorData = {
 	},
 };
 
---VAS Error message data
-local vasErrorData = {
-	[Enum.VasError.InvalidDestinationAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT,
-	},
-	[Enum.VasError.InvalidSourceAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT,
-	},
-	[Enum.VasError.DisallowedSourceAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT,
-	},
-	[Enum.VasError.DisallowedDestinationAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT,
-	},
-	[Enum.VasError.LowerBoxLevel] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL,
-	},
-	[Enum.VasError.RealmNotEligible] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE,
-	},
-	[Enum.VasError.CannotMoveGuildMaster] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER,
-	},
-	[Enum.VasError.MaxCharactersOnServer] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER,
-	},
-	[Enum.VasError.NoMixedAlliance] = {
-		msg = CHAR_CREATE_PVP_TEAMS_VIOLATION,
-	},
-	[Enum.VasError.DuplicateCharacterName] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,
-	},
-	[Enum.VasError.HasMail] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_MAIL,
-	},
-	[Enum.VasError.UnderMinLevelReq] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
-	},
-	[Enum.VasError.IneligibleTargetRealm] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_TARGET_REALM,
-	},
-	[Enum.VasError.CharacterTransferTooSoon] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
-	},
-	[Enum.VasError.AllianceNotEligible] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_ALLIANCE_NOT_ELIGIBLE,
-	},
-	[Enum.VasError.TooMuchMoneyForLevel] = {
-		msg = function(character)
-			local str = "";
-			local moneyCapForLevel = 0;
-			if GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
-				if (character.level > 50) then
-					moneyCapForLevel = 25000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				elseif (character.level > 30) then
-					moneyCapForLevel = 2500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				else
-					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				end
-			else
-				if (character.level > 50) then
-					moneyCapForLevel = 5000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				elseif (character.level > 30) then
-					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				else
-					moneyCapForLevel = 100 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				end
-			end
-			if (moneyCapForLevel > 0) then
-				str = GetSecureMoneyString(moneyCapForLevel, true, true);
-			end
-			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
-		end
-	},
-	[Enum.VasError.HasAuctions] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_AUCTIONS,
-	},
-	[Enum.VasError.NameNotAvailable] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NAME_NOT_AVAILABLE,
-	},
-	[Enum.VasError.LastRenameTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT,
-	},
-	[Enum.VasError.CustomizeAlreadyRequested] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED,
-	},
-	[Enum.VasError.LastCustomizeTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_CUSTOMIZE_TOO_SOON,
-	},
-	[Enum.VasError.FactionChangeTooSoon] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
-	},
-	[Enum.VasError.RaceClassComboIneligible] = { --We should still handle this one even though we shortcut it in case something slips through
-		msg = BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE,
-	},
-	[Enum.VasError.PendingItemAudit] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_PENDING_ITEM_AUDIT,
-	},
-	[Enum.VasError.IneligibleMapID] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,
-	},
-	[Enum.VasError.BattlepayDeliveryPending] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING,
-	},
-	[Enum.VasError.HasWoWToken] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN,
-	},
-	[Enum.VasError.HasHeirloom] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM,
-	},
-	[Enum.VasError.CharLocked] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
-		notUserFixable = true,
-	},
-	[Enum.VasError.LastSaveTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
-		notUserFixable = true,
-	},
-	[Enum.VasError.HasCagedBattlePet] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET,
-	},
-	[Enum.VasError.LastSaveTooDistant] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
-	},
-	[Enum.VasError.BoostedTooRecently] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
-		notUserFixable = true,
-	},
-	[Enum.VasError.PvEToPvPTransferNotAllowed] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_PVE_TO_PVP_TRANSFER_NOT_ALLOWED,
-	},
-	[Enum.VasError.NeedsEraChoice] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NEEDS_ERA_CHOICE;
-	},
-	[Enum.VasError.ArenaTeamCaptain] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_ARENA_TEAM_CAPTAIN;
-	}
-};
-
 local factionColors = {
 	[0] = "ffe50d12",
 	[1] = "ff4a54e8",
@@ -1807,10 +1668,10 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			local errors = data.errors;
 			local hasOther = false;
 			local hasNonUserFixable = false;
-			for i = 1, #errors do
-				if (not vasErrorData[errors[i]]) then
+			for index, errorID in ipairs(errors) do
+				if not VASErrorData_HasError(errorID) then
 					hasOther = true;
-				elseif (vasErrorData[errors[i]].notUserFixable) then
+				elseif not VASErrorData_IsUserFixableError(errorID) then
 					hasNonUserFixable = true;
 				end
 			end
@@ -1818,15 +1679,12 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			desc = "";
 			if (hasOther) then
 				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-			elseif (hasNonUserFixable) then
-				for i = 1, #errors do
-					if (vasErrorData[errors[i]].notUserFixable) then
-						desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
-					end
-				end
 			else
-				for i = 1, #errors do
-					desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
+				desc = hasNonUserFixable and "" or BLIZZARD_STORE_VAS_ERROR_LABEL;
+				for index, errorID in ipairs(errors) do
+					if hasNonUserFixable == not VASErrorData_IsUserFixableError(errorID) then
+						desc = StoreVASValidationFrame_AppendError(desc, errorID, character, index == 1);
+					end
 				end
 			end
 
@@ -2515,14 +2373,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 end
 
 function StoreVASValidationFrame_AppendError(desc, errorID, character, firstAppend)
-	local errorData = vasErrorData[errorID];
-	local str;
-	if (type(errorData.msg) == "function") then
-		str = errorData.msg(character);
-	else
-		str = errorData.msg;
-	end
-
+	local str = VASErrorData_GetMessage(errorID, character);
 	local sep = desc ~= "" and (firstAppend and "|n|n" or "|n") or "";
 	return desc .. sep .. str;
 end
@@ -2691,10 +2542,10 @@ function StoreVASValidationFrame_SetErrors(errors)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	local hasOther = false;
 	local hasNonUserFixable = false;
-	for i = 1, #errors do
-		if (not vasErrorData[errors[i]]) then
+	for index, errorID in ipairs(errors) do
+		if not VASErrorData_HasError(errorID) then
 			hasOther = true;
-		elseif (vasErrorData[errors[i]].notUserFixable) then
+		elseif not VASErrorData_IsUserFixableError(errorID) then
 			hasNonUserFixable = true;
 		end
 	end
@@ -2702,17 +2553,15 @@ function StoreVASValidationFrame_SetErrors(errors)
 	local desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
 	if (hasOther) then
 		desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-	elseif (hasNonUserFixable) then
-		for i = 1, #errors do
-			if (vasErrorData[errors[i]].notUserFixable) then
-				desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
+	else
+		desc = hasNonUserFixable and "" or BLIZZARD_STORE_VAS_ERROR_LABEL;
+		for index, errorID in ipairs(errors) do
+			if hasNonUserFixable == not VASErrorData_IsUserFixableError(errorID) then
+				desc = StoreVASValidationFrame_AppendError(desc, errorID, character, index == 1);
 			end
 		end
-	else
-		for i = 1, #errors do
-			desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
-		end
 	end
+
 	frame.ChangeIconFrame:Hide();
 	if (VASServiceType == Enum.VasServiceType.NameChange) then
 		frame.ValidationDescription:ClearAllPoints();
