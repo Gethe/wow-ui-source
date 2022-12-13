@@ -156,10 +156,12 @@ function EditModeManagerFrameMixin:OnDragStop()
 	self:StopMovingOrSizing();
 end
 
+local function callOnEditModeEnter(index, systemFrame)
+	systemFrame:OnEditModeEnter();
+end
+
 function EditModeManagerFrameMixin:ShowSystemSelections()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		systemFrame:OnEditModeEnter();
-	end
+	secureexecuterange(self.registeredSystemFrames, callOnEditModeEnter);
 end
 
 function EditModeManagerFrameMixin:EnterEditMode()
@@ -171,10 +173,12 @@ function EditModeManagerFrameMixin:EnterEditMode()
     EventRegistry:TriggerEvent("EditMode.Enter");
 end
 
+local function callOnEditModeExit(index, systemFrame)
+	systemFrame:OnEditModeExit();
+end
+
 function EditModeManagerFrameMixin:HideSystemSelections()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		systemFrame:OnEditModeExit();
-	end
+	secureexecuterange(self.registeredSystemFrames, callOnEditModeExit);
 end
 
 function EditModeManagerFrameMixin:ExitEditMode()
@@ -255,13 +259,14 @@ function EditModeManagerFrameMixin:RegisterSystemFrame(systemFrame)
 end
 
 function EditModeManagerFrameMixin:GetRegisteredSystemFrame(system, systemIndex)
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		if systemFrame.system == system and systemFrame.systemIndex == systemIndex then
-			return systemFrame;
+	local foundSystem = nil;
+	local function findSystem(index, systemFrame)
+		if not foundSystem and systemFrame.system == system and systemFrame.systemIndex == systemIndex then
+			foundSystem = systemFrame;
 		end
 	end
-
-	return nil;
+	secureexecuterange(self.registeredSystemFrames, findSystem);
+	return foundSystem;
 end
 
 local function AreAnchorsEqual(anchorInfo, otherAnchorInfo)
@@ -301,19 +306,24 @@ local function ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, of
 end
 
 function EditModeManagerFrameMixin:SetHasActiveChanges(hasActiveChanges)
-	self.hasActiveChanges = hasActiveChanges;
+	-- Clear taint off of the value passed in
+	if hasActiveChanges then
+		self.hasActiveChanges = true;
+	else
+		self.hasActiveChanges = false;
+	end	
 	self.SaveChangesButton:SetEnabled(hasActiveChanges);
 	self.RevertAllChangesButton:SetEnabled(hasActiveChanges);
 end
 
 function EditModeManagerFrameMixin:CheckForSystemActiveChanges()
 	local hasActiveChanges = false;
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		if systemFrame:HasActiveChanges() then
+	local function checkIfSystemHasActiveChanges(index, systemFrame)
+		if not hasActiveChanges and systemFrame:HasActiveChanges() then
 			hasActiveChanges = true;
-			break;
 		end
 	end
+	secureexecuterange(self.registeredSystemFrames, checkIfSystemHasActiveChanges);
 
 	self:SetHasActiveChanges(hasActiveChanges);
 end
@@ -642,7 +652,7 @@ end
 
 function EditModeManagerFrameMixin:SelectSystem(selectFrame)
 	if not self:IsEditModeLocked() then
-		for _, systemFrame in ipairs(self.registeredSystemFrames) do
+		local function selectMatchingSystem(index, systemFrame)
 			if systemFrame == selectFrame then
 				systemFrame:SelectSystem();
 			else
@@ -652,16 +662,19 @@ function EditModeManagerFrameMixin:SelectSystem(selectFrame)
 				end
 			end
 		end
+		secureexecuterange(self.registeredSystemFrames, selectMatchingSystem);
+	end
+end
+
+local function clearSelectedSystem(index, systemFrame)
+	-- Only highlight a system if it was already highlighted
+	if systemFrame.isHighlighted then
+		systemFrame:HighlightSystem();
 	end
 end
 
 function EditModeManagerFrameMixin:ClearSelectedSystem()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		-- Only highlight a system if it was already highlighted
-		if systemFrame.isHighlighted then
-			systemFrame:HighlightSystem();
-		end
-	end
+	secureexecuterange(self.registeredSystemFrames, clearSelectedSystem);
 	EditModeSystemSettingsDialog:Hide();
 end
 
@@ -996,17 +1009,20 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 	self.LayoutDropdown:SetOptions(options, self.layoutInfo.activeLayout);
 end
 
+local function initSystemAnchor(index, systemFrame)
+	systemFrame:ClearAllPoints();
+	systemFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
+end
+
 function EditModeManagerFrameMixin:InitSystemAnchors()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		systemFrame:ClearAllPoints();
-		systemFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
-	end
+	secureexecuterange(self.registeredSystemFrames, initSystemAnchor);
 end
 
 function EditModeManagerFrameMixin:UpdateSystems()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
+	local function callUpdateSystem(index, systemFrame)
 		self:UpdateSystem(systemFrame);
 	end
+	secureexecuterange(self.registeredSystemFrames, callUpdateSystem);
 end
 
 function EditModeManagerFrameMixin:UpdateSystem(systemFrame)
@@ -1101,10 +1117,12 @@ function EditModeManagerFrameMixin:LinkActiveLayoutToChat()
 end
 ]]--
 
+local function clearActiveChangesFlag(index, systemFrame)
+	systemFrame:SetHasActiveChanges(false);
+end
+
 function EditModeManagerFrameMixin:ClearActiveChangesFlags()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		systemFrame:SetHasActiveChanges(false);
-	end
+	secureexecuterange(self.registeredSystemFrames, clearActiveChangesFlag);
 	self:SetHasActiveChanges(false);
 end
 
@@ -1113,10 +1131,12 @@ function EditModeManagerFrameMixin:ImportLayout(newLayoutInfo, layoutType, layou
 	self:MakeNewLayout(newLayoutInfo, layoutType, layoutName);
 end
 
+local function callPrepareForSave(index, systemFrame)
+	systemFrame:PrepareForSave();
+end
+
 function EditModeManagerFrameMixin:PrepareSystemsForSave()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		systemFrame:PrepareForSave();
-	end
+	secureexecuterange(self.registeredSystemFrames, callPrepareForSave);
 end
 
 function EditModeManagerFrameMixin:SaveLayouts()

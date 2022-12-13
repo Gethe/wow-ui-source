@@ -221,6 +221,13 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="recraftSlot" inherits="ProfessionsRecraftSlotTemplate" parentArray="extraSlotFrames" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RecraftingOutputText" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

@@ -87,7 +87,6 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
 	self.elapsed = 0;
-	self.extraSlotFrames = {};
 
 	local function PoolReset(pool, slot)
 		slot:Reset();
@@ -653,11 +652,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	};
 
 	if isRecraft then
-		if not self.recraftSlot then
-			self.recraftSlot = CreateFrame("FRAME", nil, self, "ProfessionsRecraftSlotTemplate");
-			self.recraftSlot:SetPoint("TOPLEFT", self.RecraftingOutputText, "BOTTOMLEFT", 0, -30);
-			table.insert(self.extraSlotFrames, self.recraftSlot);
-		end
 		self.recraftSlot:Show();
 		self.recraftSlot:Init(self.transaction);
 

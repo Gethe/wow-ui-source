@@ -149,6 +149,7 @@ function WorldMapBountyBoardMixin:Refresh()
 		return;
 	end
 
+	local isActivitySet;
 	self.displayLocation, self.lockedQuestID, self.bountySetID, isActivitySet = C_QuestLog.GetBountySetInfoForMapID(mapID);
 	if isActivitySet then
 		self:Hide();
@@ -587,6 +588,7 @@ function WorldMapActivityTrackerMixin:Refresh()
 		return;
 	end
 
+	local isActivitySet;
 	self.displayLocation, self.lockedQuestID, self.bountySetID, isActivitySet = C_QuestLog.GetBountySetInfoForMapID(mapID);
 	if not isActivitySet then
 		self:Hide();

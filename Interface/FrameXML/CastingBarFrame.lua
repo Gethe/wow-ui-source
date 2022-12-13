@@ -379,7 +379,7 @@ function CastingBarMixin:OnEvent(event, ...)
 		self:ClearStages();
 		
 		if (isChargeSpell) then
-			self.value = (startTime / 1000) - GetTime();
+			self.value = GetTime() - (startTime / 1000);
 		else
 			self.value = (endTime / 1000) - GetTime();
 		end

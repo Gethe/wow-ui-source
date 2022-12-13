@@ -621,7 +621,8 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 		for index, node in dataProvider:Enumerate() do
 			local data = node:GetData();
 			local recipeInfo = data.recipeInfo;
-			if recipeInfo then
+			-- Don't select recrafting as the initial recipe, since its filtering can cause confusion
+			if recipeInfo and not recipeInfo.isRecraft then
 				return recipeInfo;
 			end
 		end
