@@ -47,6 +47,20 @@ local MountJournal =
 			Type = "Function",
 		},
 		{
+			Name = "GetAllCreatureDisplayIDsForMountID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mountID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "creatureDisplayIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAppliedMountEquipmentID",
 			Type = "Function",
 

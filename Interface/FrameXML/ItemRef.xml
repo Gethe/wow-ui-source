@@ -9,19 +9,15 @@
 			<Anchor point="BOTTOM" x="0" y="80"/>
 		</Anchors>
 		<Frames>
-			<Button parentKey="CloseButton">
-				<Size x="32" y="32"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="1" y="0"/>
+					<Anchor point="TOPRIGHT" x="2" y="2"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
 						HideUIPanel(ItemRefTooltip);
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>

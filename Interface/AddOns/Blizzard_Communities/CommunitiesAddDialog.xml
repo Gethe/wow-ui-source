@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="CommunitiesAddDialog.lua"/>
-	
+
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
 		<Frame name="CommunitiesAddDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesAddDialogMixin" hidden="true">
 			<Size x="514" y="426"/>
@@ -154,10 +154,9 @@
 					<HighlightTexture atlas="communities-create-button-bnet-highlight"/>
 					<DisabledTexture atlas="communities-create-button-bnet-up" desaturated="true"/>
 				</Button>
-				<Button parentKey="CloseButton">
-					<Size x="32" y="32"/>
+				<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 					</Anchors>
 					<Scripts>
 						<OnClick>
@@ -165,10 +164,6 @@
 							self:GetParent():Hide();
 						</OnClick>
 					</Scripts>
-					<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
-					<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-					<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-					<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 				</Button>
 			</Frames>
 			<Scripts>

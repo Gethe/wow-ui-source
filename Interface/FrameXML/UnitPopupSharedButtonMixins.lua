@@ -896,6 +896,14 @@ function UnitPopupReportButtonMixin:CanShow()
 	return isValidPlayerLocation and C_ReportSystem.CanReportPlayer(playerLocation);
 end
 
+function UnitPopupReportButtonMixin:OnClick()
+	local guid = UnitPopupSharedUtil.GetGUID();
+	local playerLocation = UnitPopupSharedUtil:TryCreatePlayerLocation(guid);
+	local reportInfo = ReportInfo:CreateReportInfoFromType(self:GetReportType())
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	ReportFrame:InitiateReport(reportInfo, UnitPopupSharedUtil.GetFullPlayerName(), playerLocation, dropdownMenu.bnetIDAccount ~= nil);
+end
+
 UnitPopupReportGroupMemberButtonMixin = CreateFromMixins(UnitPopupReportButtonMixin);
 function UnitPopupReportGroupMemberButtonMixin:GetText()
 	return REPORT_GROUP_MEMBER;
@@ -905,22 +913,32 @@ function UnitPopupReportGroupMemberButtonMixin:GetReportType()
 	return Enum.ReportType.GroupMember;
 end
 
-function UnitPopupReportGroupMemberButtonMixin:OnClick()
-	local guid = UnitPopupSharedUtil.GetGUID();
-	local playerLocation = UnitPopupSharedUtil:TryCreatePlayerLocation(guid);
-	local reportInfo = ReportInfo:CreateReportInfoFromType(self:GetReportType())
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	ReportFrame:InitiateReport(reportInfo, UnitPopupSharedUtil.GetFullPlayerName(), playerLocation, dropdownMenu.bnetIDAccount ~= nil);
-end
-
 function UnitPopupReportGroupMemberButtonMixin:CanShow()
-	local isBattleground = UnitInBattleground("player");
-	isBattleground = isBattleground ~= nil and isBattleground > 0;
-	
-	return (C_PvP.IsRatedMap() or (not IsInActiveWorldPVP() and (not isBattleground or (isBattleground and GetCVar("enablePVPNotifyAFK") == "0")))) and UnitPopupReportButtonMixin.CanShow(self);
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	local inBattleground = UnitInBattleground("player");
+
+	if (inBattleground) then
+		return false; 
+	elseif ( dropdownMenu.unit ) then
+		if ( UnitIsUnit(dropdownMenu.unit,"player") ) then
+			return false; 
+		elseif (UnitInBattleground(dropdownMenu.unit) or IsInActiveWorldPVP(dropdownMenu.unit) ) then
+			return false; 
+		end
+	elseif ( dropdownMenu.name ) then
+		if ( dropdownMenu.name == UnitName("player") ) then
+			return false; 
+		elseif ( UnitInBattleground(dropdownMenu.name) ) then
+			return false; 
+		end
+	end
+
+
+
+	return UnitPopupReportButtonMixin.CanShow(self);
 end
 
-UnitPopupReportPvpScoreboardButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
+UnitPopupReportPvpScoreboardButtonMixin = CreateFromMixins(UnitPopupReportButtonMixin);
 function UnitPopupReportPvpScoreboardButtonMixin:GetText()
 	return REPORT_PVP_SCOREBOARD;
 end
@@ -929,7 +947,7 @@ function UnitPopupReportPvpScoreboardButtonMixin:GetReportType()
 	return Enum.ReportType.PvPScoreboard;
 end
 
-UnitPopupReportInWorldButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
+UnitPopupReportInWorldButtonMixin = CreateFromMixins(UnitPopupReportButtonMixin);
 function UnitPopupReportInWorldButtonMixin:GetText()
 	return REPORT_IN_WORLD_PLAYER;
 end
@@ -938,7 +956,40 @@ function UnitPopupReportInWorldButtonMixin:GetReportType()
 	return Enum.ReportType.InWorld;
 end
 
-UnitPopupReportFriendButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
+UnitPopupPvpReportGroupMemberButtonMixin = CreateFromMixins(UnitPopupReportButtonMixin);
+function UnitPopupPvpReportGroupMemberButtonMixin:GetText()
+	return REPORT_IN_WORLD_PLAYER;
+end
+
+function UnitPopupPvpReportGroupMemberButtonMixin:GetReportType()
+	return Enum.ReportType.PvPGroupMember;
+end
+
+function UnitPopupPvpReportGroupMemberButtonMixin:CanShow()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	local inBattleground = UnitInBattleground("player");
+
+
+	if ( not inBattleground) then
+		return false; 
+	elseif ( dropdownMenu.unit ) then
+		if ( UnitIsUnit(dropdownMenu.unit,"player") ) then
+			return false; 
+		elseif ( not UnitInBattleground(dropdownMenu.unit) and not IsInActiveWorldPVP(dropdownMenu.unit) ) then
+			return false; 
+		end
+	elseif ( dropdownMenu.name ) then
+		if ( dropdownMenu.name == UnitName("player") ) then
+			return false; 
+		elseif ( not UnitInBattleground(dropdownMenu.name) ) then
+			return false; 
+		end
+	end
+
+	return UnitPopupReportButtonMixin.CanShow(self);
+end
+
+UnitPopupReportFriendButtonMixin = CreateFromMixins(UnitPopupReportButtonMixin);
 function UnitPopupReportFriendButtonMixin:GetText()
 	return REPORT_IN_WORLD_PLAYER;
 end
@@ -957,7 +1008,7 @@ function UnitPopupReportFriendButtonMixin:CanShow()
 	return not playerLocation:IsChatLineID() and not playerLocation:IsCommunityData();
 end
 
-UnitPopupReportClubMemberButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
+UnitPopupReportClubMemberButtonMixin = CreateFromMixins(UnitPopupReportButtonMixin);
 function UnitPopupReportClubMemberButtonMixin:GetText()
 	return REPORT_CLUB_MEMBER;
 end
@@ -966,7 +1017,7 @@ function UnitPopupReportClubMemberButtonMixin:GetReportType()
 	return Enum.ReportType.ClubMember;
 end
 
-UnitPopupReportChatButtonMixin = CreateFromMixins(UnitPopupReportGroupMemberButtonMixin);
+UnitPopupReportChatButtonMixin = CreateFromMixins(UnitPopupReportButtonMixin);
 function UnitPopupReportChatButtonMixin:GetText()
 	return REPORT_CHAT;
 end
@@ -1619,7 +1670,7 @@ end
 
 UnitPopupPvpReportAfkButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupPvpReportAfkButtonMixin:GetText()
-	return REPORT_PLAYER;
+	return PVP_REPORT_AFK;
 end
 
 --Override in UnitPopupButtons

@@ -26,9 +26,9 @@ function TutorialLogic:CheckFormSpells()
 	local form = GetShapeshiftFormID();
 	local formSpells = nil;
 
-	if form == BEAR_FORM then
+	if form == DRUID_BEAR_FORM then
 		formSpells = TutorialData.DruidAnimalFormSpells.bearSpells;
-	elseif form == CAT_FORM then
+	elseif form == DRUID_CAT_FORM then
 		formSpells = TutorialData.DruidAnimalFormSpells.catSpells;
 	elseif form == ROGUE_STEALTH then
 		formSpells = TutorialData.RogueStealthSpells;

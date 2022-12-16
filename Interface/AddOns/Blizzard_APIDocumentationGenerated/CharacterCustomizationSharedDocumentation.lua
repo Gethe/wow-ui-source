@@ -119,17 +119,6 @@ local CharacterCustomizationShared =
 				{ Name = "isSound", Type = "bool", Nilable = false },
 			},
 		},
-		{
-			Name = "CharacterAlternateFormData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "raceID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "fileName", Type = "string", Nilable = false },
-				{ Name = "createScreenIconAtlas", Type = "string", Nilable = false },
-			},
-		},
 	},
 };
 

@@ -12,6 +12,10 @@ function ClassNameplateBarRogueDruid:Setup()
 	ClassResourceBarMixin.Setup(self);
 end
 
+function ClassNameplateBarRogueDruid:OnShow()
+	self:UpdatePower();
+end
+
 function ClassNameplateBarRogueDruid:SetupDruid()
 	local powerType, powerToken = UnitPowerType("player");
 	local showBar = false;
@@ -36,7 +40,7 @@ function ClassNameplateBarRogueDruid:SetupRogue()
 end
 
 function ClassNameplateBarRogueDruid:UpdatePower()
-	if ( self.delayedUpdate or not self:IsShown() ) then
+	if ( self.delayedUpdate or not self:IsShown() or (self.classResourceButtonTable and #self.classResourceButtonTable <= 0)) then
 		return;
 	end
 

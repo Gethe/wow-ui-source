@@ -21,8 +21,7 @@ function MainMenuBarMixin:OnLoad()
 end
 
 function MainMenuBarMixin:OnShow()
-	UpdateMicroButtonsParent(MicroButtonAndBagsBar);
-	MoveMicroButtons("BOTTOMLEFT", MicroButtonAndBagsBar, "BOTTOMLEFT", 7, 6, false);
+	ResetMicroMenuPosition();
 end
 
 function MainMenuBarMixin:SetYOffset(yOffset)
@@ -288,7 +287,6 @@ function MainMenuBarMixin:SetQuickKeybindModeEffectsShown(showEffects)
 	self.QuickKeybindBottomShadow:SetShown(showEffects);
 	self.QuickKeybindGlowSmall:SetShown(showEffects);
 	self.QuickKeybindGlowLarge:SetShown(showEffects);
-	MicroButtonAndBagsBar.QuickKeybindsMicroBagBarGlow:SetShown(showEffects);
 	local useRightShadow = MultiBarRight:IsShown();
 	self.QuickKeybindRightShadow:SetShown(useRightShadow and showEffects);
 end

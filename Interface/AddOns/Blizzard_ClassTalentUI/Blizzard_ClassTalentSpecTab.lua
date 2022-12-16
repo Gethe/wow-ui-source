@@ -256,20 +256,19 @@ end
 
 
 --------------------------- Script Command Helpers --------------------------------
--- TODO:: Add localized error messages for all command errors
 function ClassTalentSpecTabMixin:ActivateSpecByPredicate(predicate)
 	if self:IsInspecting() then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_INSPECTING);
 		return;
 	end
 
 	if not self.isInitialized or not self.numSpecs or self.numSpecs == 0 then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_NO_DATA);
 		return;
 	end
 
 	if self:IsActivateInProgress() or self:IsCommitInProgress() then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_COMMIT_IN_PROGRESS);
 		return;
 	end
 
@@ -284,13 +283,13 @@ function ClassTalentSpecTabMixin:ActivateSpecByPredicate(predicate)
 	if specFrameToActivate then
 		specFrameToActivate:OnActivateClicked();
 	else
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_INVALID_SPEC);
 	end
 end
 
 function ClassTalentSpecTabMixin:ActivateSpecByName(specName)
 	if not specName or specName == "" then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_INVALID_SPEC_NAME);
 		return;
 	end
 
@@ -301,12 +300,12 @@ end
 
 function ClassTalentSpecTabMixin:ActivateSpecByIndex(specIndex)
 	if not self.isInitialized or not self.numSpecs or self.numSpecs == 0 then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_NO_DATA);
 		return;
 	end
 
 	if not specIndex or specIndex <= 0 or specIndex > self.numSpecs then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_INVALID_SPEC_INDEX);
 		return;
 	end
 

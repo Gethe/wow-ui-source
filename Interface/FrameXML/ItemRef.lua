@@ -373,6 +373,13 @@ function SetItemRef(link, text, button, chatFrame)
 			EditModeManagerFrame:OpenAndShowImportLayoutLinkDialog(fixedLink);
 		end
 		return;
+	elseif ( strsub(link, 1, 13) == "perksactivity" ) then
+		local _, perksActivityID = strsplit(":", link);
+		if ( not EncounterJournal ) then
+			EncounterJournal_LoadUI();
+		end
+		MonthlyActivitiesFrame_OpenFrameToActivity(tonumber(perksActivityID));
+		return;
 	end
 	if ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);

@@ -35,6 +35,9 @@
 			<KeyValue key="showBarFunc" value="ClassNameplateBarRogueDruid.SetupRogue" type="global"/>
 			<KeyValue key="spacing" value="2" type="number"/>
 		</KeyValues>
+		<Scripts>
+			<OnShow method="OnShow" inherit="prepend"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="ClassNameplateBarDruidFrame" inherits="ClassResourceBarTemplate" mixin="ClassNameplateBar, ClassNameplateBarRogueDruid" ignoreParentScale="true">
@@ -50,6 +53,9 @@
 			<KeyValue key="showBarFunc" value="ClassNameplateBarRogueDruid.SetupDruid" type="global"/>
 			<KeyValue key="spacing" value="2" type="number"/>
 		</KeyValues>
+		<Scripts>
+			<OnShow method="OnShow" inherit="prepend"/>
+		</Scripts>
 	</Frame>
 </Ui>
 

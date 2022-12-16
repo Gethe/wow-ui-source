@@ -446,6 +446,7 @@ function FriendsTabHeaderMixin:SetRAFSystemEnabled(rafEnabled)
 
 	self.Tab3:SetShown(rafEnabled);
 	PanelTemplates_SetNumTabs(self, FRIEND_HEADER_TAB_COUNT);
+	PanelTemplates_UpdateTabs(self);
 end
 
 -- Used for the sub-tabs within Friends
@@ -701,16 +702,20 @@ function IgnoreList_Update()
 	end
 	IgnoreListFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
-	if not FriendsFrame.selectedSquelchType then
+	local selectedSquelchType, selectedSquelchIndex = IgnoreList_GetSelected();
+
+	local hasSelection = selectedSquelchType and selectedSquelchIndex > 0;
+	if not hasSelection then
 		local elementData = dataProvider:FindElementDataByPredicate(function(elementData)
 			return elementData.squelchType ~= nil;
 		end);
 		if elementData then
 			FriendsFrame_SelectSquelched(elementData.squelchType, elementData.index);
-		else
-			FriendsFrameUnsquelchButton:SetEnabled(false);
+			hasSelection = true;
 		end
 	end
+
+	FriendsFrameUnsquelchButton:SetEnabled(hasSelection);
 end
 
 function WhoList_InitButton(button, elementData)
@@ -947,8 +952,6 @@ function FriendsFrame_SelectSquelched(squelchType, index)
 
 	UpdateButtonSelection(oldSquelchType, oldSquelchIndex, false);
 	UpdateButtonSelection(squelchType, index, true);
-
-	FriendsFrameUnsquelchButton:SetEnabled(index > 0);
 end
 
 function FriendsFrameAddFriendButton_OnClick(self)

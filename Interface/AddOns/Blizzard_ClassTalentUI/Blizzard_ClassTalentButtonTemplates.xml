@@ -30,17 +30,6 @@
 				</MaskTexture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<!-- Art TODO: Uncomment & fill out layers for purchase animations -->
-			<!-- <Frame parentKey="PurchaseVisuals">
-				<Layers></Layers>
-				<Animations>
-					<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
-						<Alpha smoothing="NONE" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
-					</AnimationGroup>
-				</Animations>
-			</Frame> -->
-		</Frames>
 	</Frame>
 
 	<!-- Template for only the Class Talent buttons -->

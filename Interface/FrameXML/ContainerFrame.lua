@@ -168,23 +168,8 @@ do
 		[Enum.BagSlotFlags.PriorityQuestItems] = "bags-icon-questitem",
 	};
 
-	local function ContainerFrame_GetBestFilterIndex(id)
-		local filterFlag = ContainerFrameSettingsManager:GetFilterFlag(id);
-		if filterFlag then
-			return filterFlag;
-		end
-
-		if ContainerFrame_CanContainerUseFilterMenu(id) then
-			for i, flag in ContainerFrameUtil_EnumerateBagGearFilters() do
-				if C_Container.GetBagSlotFlag(id, flag) then
-					return flag;
-				end
-			end
-		end
-	end
-
 	ContainerFrame_GetBestFilterIcon = function(id)
-		local iconIndex = ContainerFrame_GetBestFilterIndex(id);
+		local iconIndex = ContainerFrameSettingsManager:GetFilterFlag(id);
 		if iconIndex then
 			return BAG_FILTER_ICONS[iconIndex];
 		end
@@ -617,9 +602,7 @@ function ContainerFrame_OnEvent(self, event, ...)
 		end
 	elseif event == "BAG_CLOSED" then
 		local bagID = ...;
-		if self:MatchesBagID(bagID) then
-			CloseBag(bagID);
-		end
+		ContainerFrameSettingsManager:OnBagClosed(bagID, self);
 	elseif event == "BAG_UPDATE" then
 		local bagID = ...;
 		if self:MatchesBagID(bagID) then
@@ -671,6 +654,7 @@ function ContainerFrame_OnLoad(self)
 
 	UIDropDownMenu_SetInitializeFunction(self.FilterDropDown, ContainerFrameFilterDropDown_Initialize);
 	self:SetPortraitTextureSizeAndOffset(36, -4, 1);
+	self:SetTitleOffsets(35);
 end
 
 function ContainerFrame_OnHide(self)
@@ -811,6 +795,14 @@ function ContainerFrameMixin:UpdateName()
 	self:SetTitle(C_Container.GetBagName(self:GetBagID()));
 end
 
+function ContainerFrameMixin:GetBackgroundColor()
+	return ContainerFrame_IsBankBag(self:GetBagID()) and BANK_BAG_BACKGROUND_COLOR or PANEL_BACKGROUND_COLOR;
+end
+
+function ContainerFrameMixin:UpdateBackground()
+	self:SetBackgroundColor(self:GetBackgroundColor());
+end
+
 function ContainerFrameMixin:UpdateMiscellaneousFrames()
 	if self:IsBackpack() then
 		self:SetPortraitToAsset("Interface/Icons/Inv_misc_bag_08");
@@ -921,7 +913,7 @@ end
 
 function ContainerFrameMixin:UpdateFilterIcon()
 	self.FilterIcon:Hide();
-	local filterIcon = ContainerFrame_GetBestFilterIcon(self:GetID());
+	local filterIcon = ContainerFrame_GetBestFilterIcon(self:GetBagID());
 	if filterIcon then
 		self.FilterIcon.Icon:SetAtlas(filterIcon);
 		self.FilterIcon:Show();
@@ -1126,6 +1118,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	frame:Raise();
 
 	frame:UpdateName();
+	frame:UpdateBackground();
 	frame:UpdateMiscellaneousFrames();
 	frame:UpdateFrameSize();
 	frame:UpdateItemLayout();
@@ -1780,12 +1773,11 @@ function ContainerFramePortraitButtonMixin:OnEnter()
 			waitingOnData = true;
 		end
 
-		if ContainerFrame_CanContainerUseFilterMenu(id) then
-			local filterFlag = ContainerFrameSettingsManager:GetFilterFlag(id);
-			if filterFlag then
-				GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[filterFlag]));
-			end
+		local filterFlag = ContainerFrameSettingsManager:GetFilterFlag(id);
+		if filterFlag then
+			GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[filterFlag]));
 		end
+
 		local binding = GetBindingKey("TOGGLEBAG"..(4 - self:GetID() + 1));
 		if ( binding ) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
@@ -2154,11 +2146,56 @@ function ContainerFrameSettingsManager:OnBagContainerUpdate(container)
 	if self:IsUsingCombinedBags() and container:IsCombinedBagContainer() then
 		self:MarkBagSetupDirty();
 
-		if IsBagOpen(Enum.BagIndex.Backpack) then
-			CloseBag(Enum.BagIndex.Backpack);
-			OpenBag(Enum.BagIndex.Backpack);
-		end
+		-- If the combined inventory is open it always needs to be refreshed because any other
+		-- bag that opens will potentially steal all of its frames if it doesn't refresh after
+		-- the bags are marked dirty.
+		self:OnBagClosed(Enum.BagIndex.Backpack, container);
 	end
+
+	self:CheckReopenBags();
+end
+
+function ContainerFrameSettingsManager:CheckReopenBags()
+	if self.checkReopenBags then
+		local bagsToOpen = {};
+		for _, bagID in ipairs(self.checkReopenBags) do
+			if ContainerFrame_GetContainerNumSlots(bagID) > 0 then
+				if self:IsUsingCombinedBags(bagID) then
+					bagsToOpen[Enum.BagIndex.Backpack] = true;
+				else
+					bagsToOpen[bagID] = true;
+				end
+			end
+		end
+
+		for bagID in pairs(bagsToOpen) do
+			OpenBag(bagID);
+		end
+
+		self.checkReopenBags = nil;
+	end
+end
+
+function ContainerFrameSettingsManager:OnBagClosed(bagID, container)
+	if container:MatchesBagID(bagID) then
+		if IsBagOpen(bagID) then
+			self:AddCheckReopenBag(bagID);
+		end
+
+		CloseBag(bagID);
+	end
+end
+
+function ContainerFrameSettingsManager:AddCheckReopenBag(bagID)
+	if not self.checkReopenBags then
+		self.checkReopenBags = {};
+	end
+
+	table.insert(self.checkReopenBags, bagID);
+end
+
+function ContainerFrameSettingsManager:ClearCheckReopenBags()
+	self.checkReopenBags = nil;
 end
 
 function ContainerFrameSettingsManager:MarkBagSetupDirty()
@@ -2296,14 +2333,16 @@ function ContainerFrameSettingsManager:ClearFilterFlag(bagID)
 end
 
 function ContainerFrameSettingsManager:GetFilterFlag(bagID)
-	if not self.filterFlags then
-		self.filterFlags = {};
-		self.filterFlags[bagID] = self:QueryFilterFlag(bagID);
-	elseif self.filterFlags[bagID] == nil then
-		self.filterFlags[bagID] = self:QueryFilterFlag(bagID);
-	end
+	if ContainerFrame_CanContainerUseFilterMenu(bagID) then
+		if not self.filterFlags then
+			self.filterFlags = {};
+			self.filterFlags[bagID] = self:QueryFilterFlag(bagID);
+		elseif self.filterFlags[bagID] == nil then
+			self.filterFlags[bagID] = self:QueryFilterFlag(bagID);
+		end
 
-	return self.filterFlags[bagID];
+		return self.filterFlags[bagID];
+	end
 end
 
 function ContainerFrameSettingsManager:QueryFilterFlag(bagID)
@@ -2552,6 +2591,10 @@ end
 
 function ContainerFrameCombinedBagsMixin:UpdateName()
 	self:SetTitle(COMBINED_BAG_TITLE);
+end
+
+function ContainerFrameCombinedBagsMixin:UpdateBackground()
+	-- nop, the background never changes
 end
 
 function ContainerFrameCombinedBagsMixin:UpdateFilterIcon()

@@ -26,7 +26,7 @@ end
 
 function ClassTalentButtonArtMixin:ShowActionBarHighlights()
 	local spellID = self:GetSpellID();
-	if spellID and not self:IsMissingFromActionBar() then
+	if spellID and self:GetActionBarStatus() == TalentButtonUtil.ActionBarStatus.NotMissing then
 		ClearOnBarHighlightMarks();
 		UpdateOnBarHighlightMarksBySpell(spellID);
 		ActionBarController_UpdateAllSpellHighlights();
@@ -50,17 +50,15 @@ function ClassTalentButtonBaseMixin:OnLoad()
 end
 
 function ClassTalentButtonBaseMixin:UpdateActionBarStatus()
-	self.missingFromActionBar = not self:IsInspecting() and not self:FrameHasAnyPendingChanges() and ClassTalentUtil.IsTalentMissingFromActionBars(self:GetNodeInfo(), self:GetSpellID());
-end
-
-function ClassTalentButtonBaseMixin:IsMissingFromActionBar()
-	return self.missingFromActionBar;
-end
-
-function ClassTalentButtonBaseMixin:ResetPurchaseEffects()
-	if self.PurchaseVisuals and self.PurchaseVisuals.Anim then
-		self.PurchaseVisuals.Anim:SetPlaying(false);
+	if self:IsInspecting() or self:FrameHasAnyPendingChanges() then
+		self.actionBarStatus = TalentButtonUtil.ActionBarStatus.NotMissing;
+	else
+		self.actionBarStatus = TalentButtonUtil.GetActionBarStatusForNode(self:GetNodeInfo(), self:GetSpellID());
 	end
+end
+
+function ClassTalentButtonBaseMixin:GetActionBarStatus()
+	return self.actionBarStatus;
 end
 
 function ClassTalentButtonBaseMixin:SetSelectableGlowDisabled(disabled)
@@ -88,13 +86,6 @@ function ClassTalentButtonBaseMixin:UpdateSelectableGlow()
 
 	local playSelectableGlow = canDoSelectableGlow and self.visualState == TalentButtonUtil.BaseVisualState.Selectable;
 	self.SelectableGlow.Anim:SetPlaying(playSelectableGlow);
-end
-
-function ClassTalentButtonBaseMixin:OnRelease()
-	-- Overrides TalentDisplayMixin.
-
-	self:ResetPurchaseEffects();
-	TalentDisplayMixin.OnRelease(self);
 end
 
 function ClassTalentButtonBaseMixin:FrameHasAnyPendingChanges()
@@ -138,17 +129,13 @@ end
 function ClassTalentButtonSpendMixin:AddTooltipInstructions(tooltip)
 	-- Overrides TalentButtonSpendMixin.
 
-	if self:IsMissingFromActionBar() then
-		GameTooltip:AddLine(TALENT_BUTTON_TOOLTIP_NOT_ON_ACTION_BAR, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b);
+	local statusTooltip = TalentButtonUtil.GetTooltipForActionBarStatus(self:GetActionBarStatus());
+	if statusTooltip then
+		local wrap = true;
+		GameTooltip_AddColoredLine(tooltip, statusTooltip, LIGHTBLUE_FONT_COLOR, wrap);
 	end
+
 	TalentButtonSpendMixin.AddTooltipInstructions(self, tooltip);
-end
-
-function ClassTalentButtonSpendMixin:ResetDynamic()
-	-- Overrides TalentButtonSpendMixin.
-
-	TalentButtonSpendMixin.ResetDynamic(self);
-	self:ResetPurchaseEffects();
 end
 
 function ClassTalentButtonSpendMixin:OnEnter()
@@ -196,13 +183,6 @@ function ClassTalentButtonSelectMixin:FullUpdate()
 
 	TalentButtonSelectMixin.FullUpdate(self);
 	self:UpdateActionBarStatus();
-end
-
-function ClassTalentButtonSelectMixin:ResetDynamic()
-	-- Overrides TalentButtonSelectMixin.
-
-	TalentButtonSelectMixin.ResetDynamic(self);
-	self:ResetPurchaseEffects();
 end
 
 function ClassTalentButtonSelectMixin:UpdateGlow()
@@ -264,13 +244,6 @@ function ClassTalentButtonSplitSelectMixin:FullUpdate()
 
 	TalentButtonSplitSelectMixin.FullUpdate(self);
 	self:UpdateActionBarStatus();
-end
-
-function ClassTalentButtonSplitSelectMixin:ResetDynamic()
-	-- Overrides TalentButtonSplitSelectMixin.
-
-	TalentButtonSplitSelectMixin.ResetDynamic(self);
-	self:ResetPurchaseEffects();
 end
 
 function ClassTalentButtonSplitSelectMixin:UpdateGlow()
@@ -335,22 +308,28 @@ function ClassTalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectCh
 	local nodeInfo = self:GetNodeInfo();
 	local talentFrame = self:GetTalentFrame();
 
-	self.missingFromActionBar = not self:IsInspecting() and not talentFrame:HasAnyPendingChanges() and ClassTalentUtil.IsEntryTalentMissingFromActionBars(entryID, nodeInfo, self:GetSpellID());
+	if self:IsInspecting() or talentFrame:HasAnyPendingChanges() then
+		self.actionBarStatus = TalentButtonUtil.ActionBarStatus.NotMissing;
+	else
+		self.actionBarStatus = TalentButtonUtil.GetActionBarStatusForNodeEntry(entryID, nodeInfo, self:GetSpellID());
+	end
 
 	self:SetSearchMatchType(nodeInfo and talentFrame:GetSearchMatchTypeForEntry(nodeInfo.ID, entryID) or nil);
 	self:SetGlowing(talentFrame:IsHighlightedStarterBuildEntry(entryID));
 end
 
 function ClassTalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
-	if self.missingFromActionBar then
-		GameTooltip:AddLine(TALENT_BUTTON_TOOLTIP_NOT_ON_ACTION_BAR, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b);
+	local statusTooltip = TalentButtonUtil.GetTooltipForActionBarStatus(self:GetActionBarStatus());
+	if statusTooltip then
+		local wrap = true;
+		GameTooltip_AddColoredLine(tooltip, statusTooltip, LIGHTBLUE_FONT_COLOR, wrap);
 	end
 
 	TalentSelectionChoiceMixin.AddTooltipInstructions(self, tooltip);
 end
 
-function ClassTalentSelectionChoiceMixin:IsMissingFromActionBar()
-	return self.missingFromActionBar;
+function ClassTalentSelectionChoiceMixin:GetActionBarStatus()
+	return self.actionBarStatus;
 end
 
 function ClassTalentSelectionChoiceMixin:OnEnter()

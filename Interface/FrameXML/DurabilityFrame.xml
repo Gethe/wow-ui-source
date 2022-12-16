@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="DurabilityFrame.lua"/>
-	<Frame name="DurabilityFrame" frameStrata="LOW" hidden="false" parent="UIParent" inherits="UIParentRightManagedFrameTemplate" mixin="DurabilityFrameMixin">
+	<Frame name="DurabilityFrame" frameStrata="LOW" hidden="false" parent="UIParent" inherits="EditModeDurabilityFrameSystemTemplate, UIParentRightManagedFrameTemplate" mixin="DurabilityFrameMixin">
 		<Size x="60" y="75"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="9" type="number"/>
@@ -95,7 +95,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>

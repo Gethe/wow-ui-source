@@ -110,11 +110,19 @@ function DurabilityFrameMixin:SetAlerts()
 	if ( hasLeft ) then
 		width = width + 14;
 	end
-	DurabilityFrame:SetWidth(width);
+	self:SetWidth(width);
 
-	if ( numAlerts > 0 and (not VehicleSeatIndicator:IsShown()) and ((not ArenaEnemyFramesContainer) or (not ArenaEnemyFramesContainer:IsShown())) ) then
-		DurabilityFrame:Show();
-	else
-		DurabilityFrame:Hide();
+	local isNotShowingVehicleSeatIndicator = not VehicleSeatIndicator:IsShown();
+	local isNotShowingArenaEnemyFrames = not ArenaEnemyFramesContainer or not ArenaEnemyFramesContainer:IsShown();
+	self.shouldShow = numAlerts > 0 and isNotShowingVehicleSeatIndicator and isNotShowingArenaEnemyFrames;
+	self:UpdateShownState();
+end
+
+function DurabilityFrameMixin:UpdateShownState()
+	local oldIsShown = self:IsShown();
+	self:SetShown(self.shouldShow or self.isInEditMode);
+
+	if self:IsShown() ~= oldIsShown then
+		UIParent_ManageFramePositions();
 	end
 end

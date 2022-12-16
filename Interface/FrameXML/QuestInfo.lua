@@ -460,11 +460,11 @@ local function QuestInfo_ShowRewardAsItemCommon(questItem, index, questLogQueryF
 	questItem:SetID(index);
 	questItem:Show();
 
-	local item = itemID and Item:CreateFromItemID(itemID);
-	if (not item) then 
-		return; 
-	end 
+	if not itemID then
+		return;
+	end
 
+	local item = Item:CreateFromItemID(itemID);
 	item:ContinueOnItemLoad(function()
 		if ( QuestInfoFrame.questLog ) then
 			name, texture, numItems, quality, isUsable = questLogQueryFunction(index);
@@ -1126,12 +1126,12 @@ function QuestInfoReputationRewardButtonMixin:SetUpMajorFactionReputationReward(
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(reputationRewardInfo.factionID);
 	self.factionName = majorFactionData.name;
 	self.rewardAmount = reputationRewardInfo.rewardAmount;
-	
+
 	self.Name:SetText(QUEST_REPUTATION_REWARD_TITLE:format(self.factionName));
 	self.RewardAmount:SetText(AbbreviateNumbers(self.rewardAmount));
-	
+
 	local majorFactionIcon = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(majorFactionData.textureKit);
-	self.Icon:SetTexture(majorFactionIcon);	
+	self.Icon:SetTexture(majorFactionIcon);
 end
 
 function QuestInfoReputationRewardButtonMixin:OnEnter()

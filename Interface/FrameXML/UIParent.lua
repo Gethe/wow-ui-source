@@ -82,7 +82,7 @@ UIPanelWindows["AnimaDiversionFrame"] =			{ area = "center",			pushable = 0, 		x
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16,	whileDead = 1 };
 UIPanelWindows["ChromieTimeFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	whileDead = 0, allowOtherPanels = 1 };
-UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -5,	whileDead = 1,	ignoreControlLost = true, };
+UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -125,	whileDead = 1,	ignoreControlLost = true, };
 UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -41,	whileDead = 1,	ignoreControlLost = true, };
 UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -41,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
@@ -99,7 +99,8 @@ UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		while
 UIPanelWindows["CovenantMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["BarberShopFrame"] =				{ area = "full",			pushable = 0,};
 UIPanelWindows["TorghastLevelPickerFrame"] =	{ area = "center",			pushable = 0, 		xoffset = -16,		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
-UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 880, 	yoffset = 9,	allowOtherPanels = 1};
+UIPanelWindows["PerksProgramFrame"] =			{ area = "full",			pushable = 0,};
+UIPanelWindows["ExpansionLandingPage"] =		{ area = "left",			pushable = 1,		whileDead = 1, 		width = 880, 	allowOtherPanels = 1};
 
 CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
 CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
@@ -357,6 +358,11 @@ function UIParent_OnLoad(self)
 	-- Events for BarberShop Handling
 	self:RegisterEvent("BARBER_SHOP_OPEN");
 	self:RegisterEvent("BARBER_SHOP_CLOSE");
+
+	-- Events for PerksProgram Handling
+	self:RegisterEvent("PERKS_PROGRAM_OPEN");
+	self:RegisterEvent("PERKS_PROGRAM_CLOSE");
+	self:RegisterEvent("PERKS_PROGRAM_DISABLED");
 
 	--Events for GMChatUI
 	self:RegisterEvent("CHAT_MSG_WHISPER");
@@ -657,6 +663,10 @@ end
 
 function BarberShopFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_BarberShopUI");
+end
+
+function PerksProgramFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_PerksProgram");	
 end
 
 function AchievementFrame_LoadUI()
@@ -2080,6 +2090,21 @@ function UIParent_OnEvent(self, event, ...)
 		if ( BarberShopFrame and BarberShopFrame:IsVisible() ) then
 			HideUIPanel(BarberShopFrame);
 		end
+
+	-- Event for PerksProgram handling
+	elseif ( event == "PERKS_PROGRAM_OPEN" ) then
+		if not PerksProgramFrame then
+			PerksProgramFrame_LoadUI();
+		end
+
+		ShowUIPanel(PerksProgramFrame);
+	elseif ( event == "PERKS_PROGRAM_CLOSE" ) then
+		if ( PerksProgramFrame and PerksProgramFrame:IsVisible() ) then
+			HideUIPanel(PerksProgramFrame);
+		end
+	elseif ( event == "PERKS_PROGRAM_DISABLED" ) then
+		StaticPopup_Show("PERKS_PROGRAM_DISABLED");
+
 	-- Display instance reset info
 	elseif ( event == "RAID_INSTANCE_WELCOME" ) then
 		local dungeonName = arg1;
@@ -2411,7 +2436,7 @@ end
 --Aubrie TODO.. Convert these into horizontal layout frames? It's fine for now tho..
 function UIParent_UpdateTopFramePositions()
 	local yOffset = 0;
-	local xOffset = -180;
+	local xOffset = -230;
 
 	if OrderHallCommandBar and OrderHallCommandBar:IsShown() then
 		yOffset = OrderHallCommandBar:GetHeight();
@@ -3004,7 +3029,9 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			self:SetUIPanel("center", nil, 1);
 			rightOffset = centerOffset + UIParent:GetAttribute("DEFAULT_FRAME_WIDTH");
 		end
-		frame:Raise();
+		if ( frame ) then
+			frame:Raise();
+		end
 	elseif ( not self:GetUIPanel("doublewide") ) then
 		local leftPanel = self:GetUIPanel("left");
 		if ( leftPanel ) then
@@ -3038,7 +3065,9 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			end
 			self:SetUIPanel("right", nil, 1);
 		end
-		frame:Raise();
+		if ( frame ) then
+			frame:Raise();
+		end
 	end
 
 	if ( currentFrame and GetUIPanelAttribute(currentFrame, "checkFit") == 1 ) then

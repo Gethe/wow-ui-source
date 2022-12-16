@@ -524,27 +524,23 @@ function Professions.GetReagentInputMode(reagentSlotSchematic)
 	return Professions.ReagentInputMode.Any;
 end
 
-function Professions.CreateRecipeItemIDListByPredicate(recipeID, predicate)
-	local itemIDs = {};
+function Professions.CreateRecipeReagentListByPredicate(recipeID, predicate)
+	local reagents = {};
 	local isRecraft = false;
 	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft);
 	for _, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
 		if predicate(reagentSlotSchematic) then
-			for _, reagent in ipairs(reagentSlotSchematic.reagents) do
-				if reagent.itemID then
-					table.insert(itemIDs, reagent.itemID);
-				end
-			end
+			tAppendAll(reagents, reagentSlotSchematic.reagents);
 		end
 	end
-	return itemIDs;
+	return reagents;
 end
 
-function Professions.CreateRecipeItemIDsForAllBasicReagents(recipeID, predicate)
+function Professions.CreateRecipeReagentsForAllBasicReagents(recipeID, predicate)
 	local function IsBasicReagent(reagentSlotSchematic)
 		return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic;
 	end
-	return Professions.CreateRecipeItemIDListByPredicate(recipeID, IsBasicReagent);
+	return Professions.CreateRecipeReagentListByPredicate(recipeID, IsBasicReagent);
 end
 
 local function SortNodeData(lhs, rhs)
@@ -770,12 +766,16 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 	return dataProvider;
 end
 
-function Professions.ShouldAllocateBestQualityReagents()
-	return GetCVarBool("professionsAllocateBestQualityReagents");
+local function GetBestQualityCVar(forCustomer)
+	return forCustomer and "professionsAllocateBestQualityReagentsCustomer" or "professionsAllocateBestQualityReagents";
 end
 
-function Professions.SetShouldAllocateBestQualityReagents(shouldUse)
-	SetCVar("professionsAllocateBestQualityReagents", shouldUse and "1" or "0");
+function Professions.ShouldAllocateBestQualityReagents(forCustomer)
+	return GetCVarBool(GetBestQualityCVar(forCustomer));
+end
+
+function Professions.SetShouldAllocateBestQualityReagents(shouldUse, forCustomer)
+	SetCVar(GetBestQualityCVar(forCustomer), shouldUse);
 end
 
 function Professions.SetDefaultOrderDuration(index)
@@ -1232,10 +1232,6 @@ function Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo)
 end
 
 function Professions.CanTrackRecipe(recipeInfo)
-	if recipeInfo.isRecraft then
-		return false;
-	end
-
 	if Professions.IsViewingExternalCraftingList() then
 		return false;
 	end

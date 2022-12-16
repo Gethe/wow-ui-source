@@ -5,17 +5,8 @@
 	<Frame name="MicroButtonAndBagsBar" parent="UIParent">
 		<Size x="232" y="80"/>
 		<Anchors>
-			<Anchor point="BOTTOMRIGHT" x="0"/>
+			<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
 		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture parentKey="QuickKeybindsMicroBagBarGlow" atlas="QuickKeybind_BagMicro_Glow" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.MicroBagBar" x="-30" y="30"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 	</Frame>
 
 	<Button name="MainMenuBarMicroButton" inherits="QuickKeybindButtonTemplate" mixin="MainMenuBarMicroButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
@@ -44,250 +35,246 @@
 		</Scripts>
 	</Button>
 
-	<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" mixin="CharacterMicroButtonMixin" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLECHARACTER0" type="string"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-CharacterInfo-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method ="OnMouseUp"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
-	</Button>
-	<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" mixin="SpellbookMicroButtonMixin" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLESPELLBOOK" type="string"/>
-		</KeyValues>
+	<Frame name="MicroMenu" inherits="GridLayoutFrame, EditModeMicroMenuSystemTemplate" parent="UIParent" mixin="MicroMenuMixin">
+		<Size x="1" y="1"/>
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="CharacterMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="MicroButtonAndBagsBar"/>
 		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpellbookAbilities-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick" inherit="append"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
-	</Button>
-	<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" mixin="TalentMicroButtonMixin" parent="UIParent">
 		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLETALENTS" type="string"/>
+			<KeyValue key="childXPadding" value="1" type="number"/>
+			<KeyValue key="childYPadding" value="1" type="number"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="stride" value="12" type="number"/>
+			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+			<KeyValue key="layoutFramesGoingUp" value="false" type="boolean"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
 		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpecTalents-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick" inherit="append"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
-	</Button>
-	<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" mixin="AchievementMicroButtonMixin" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEACHIEVEMENT" type="string"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Achievements-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
-			<OnEvent method="OnEvent"/>
-			<OnClick method="OnClick" inherit="append"/>
-		</Scripts>
-	</Button>
-	<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" mixin="QuestLogMicroButtonMixin" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEQUESTLOG" type="string"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="AchievementMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Questlog-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
-			<OnClick method="OnClick" inherit="append"/>
-		</Scripts>
-	</Button>
-	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEGUILDTAB" type="string"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GuildCommunities-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
 		<Frames>
-			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+			<Button name="CharacterMicroButton" inherits="MainMenuBarMicroButton" mixin="CharacterMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLECHARACTER0" type="string"/>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="UnreadNotificationIcon" atlas="UI-HUD-MicroMenu-Communities-Icon-Notification">
-							<Size x="10" y="11"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-CharacterInfo-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method ="OnMouseUp"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Button>
+			<Button name="SpellbookMicroButton" inherits="MainMenuBarMicroButton" mixin="SpellbookMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLESPELLBOOK" type="string"/>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpellbookAbilities-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick" inherit="append"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Button>
+			<Button name="TalentMicroButton" inherits="MainMenuBarMicroButton" mixin="TalentMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLETALENTS" type="string"/>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpecTalents-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick" inherit="append"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Button>
+			<Button name="AchievementMicroButton" inherits="MainMenuBarMicroButton" mixin="AchievementMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEACHIEVEMENT" type="string"/>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Achievements-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClick" inherit="append"/>
+				</Scripts>
+			</Button>
+			<Button name="QuestLogMicroButton" inherits="MainMenuBarMicroButton" mixin="QuestLogMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEQUESTLOG" type="string"/>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Questlog-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClick" inherit="append"/>
+				</Scripts>
+			</Button>
+			<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEGUILDTAB" type="string"/>
+					<KeyValue key="layoutIndex" value="6" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GuildCommunities-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="UnreadNotificationIcon" atlas="UI-HUD-MicroMenu-Communities-Icon-Notification">
+									<Size x="10" y="11"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="-1" y="-1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+					<OnClick method="OnClick" inherit="append"/>
+				</Scripts>
+			</Button>
+			<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" mixin="LFDMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEGROUPFINDER" type="string"/>
+					<KeyValue key="newbieText" value="NEWBIE_TOOLTIP_LFGPARENT" type="global"/>
+					<KeyValue key="layoutIndex" value="7" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Groupfinder-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClick" inherit="append"/>
+				</Scripts>
+			</Button>
+			<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="lastNumMountsNeedingFanfare" value="0" type="number"/>
+					<KeyValue key="lastNumPetsNeedingFanfare" value="0" type="number"/>
+					<KeyValue key="commandName" value="TOGGLECOLLECTIONS" type="string"/>
+					<KeyValue key="layoutIndex" value="8" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Collections-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+					<OnClick method="OnClick" inherit="append"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Button>
+			<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEENCOUNTERJOURNAL" type="string"/>
+					<KeyValue key="layoutIndex" value="9" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-AdventureGuide-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow" inherit="append"/>
+					<OnHide method="OnHide" inherit="append"/>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClick" inherit="append"/>
+				</Scripts>
+			</Button>
+			<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" mixin="HelpMicroButtonMixin" hidden="true">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="HELP_BUTTON" type="global"/>
+					<KeyValue key="layoutIndex" value="10" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GameMenu-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick function="ToggleHelpFrame"/>
+				</Scripts>
+			</Button>
+			<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" mixin="StoreMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="11" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Shop-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow function="MicroButton_KioskModeDisable"/>
+					<OnEvent method="OnEvent"/>
+					<OnClick function="ToggleStoreUI"/>
+				</Scripts>
+			</Button>
+			<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" mixin="MainMenuMicroButtonMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEGAMEMENU" type="string"/>
+					<KeyValue key="newbieText" value="NEWBIE_TOOLTIP_MAINMENU" type="global"/>
+					<KeyValue key="layoutIndex" value="12" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GameMenu-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
+							<Size x="19" y="39"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="-1" y="-1"/>
+								<Anchor point="BOTTOM" relativeTo="MainMenuMicroButton" relativePoint="BOTTOM" x="0" y="-2"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
-			</Frame>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
-			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
-			<OnClick method="OnClick" inherit="append"/>
-		</Scripts>
-	</Button>
-	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" mixin="LFDMicroButtonMixin" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEGROUPFINDER" type="string"/>
-			<KeyValue key="newbieText" value="NEWBIE_TOOLTIP_LFGPARENT" type="global"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Groupfinder-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad" />
-			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
-			<OnEvent method="OnEvent"/>
-			<OnClick method="OnClick" inherit="append"/>
-		</Scripts>
-	</Button>
-	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="lastNumMountsNeedingFanfare" value="0" type="number"/>
-			<KeyValue key="lastNumPetsNeedingFanfare" value="0" type="number"/>
-			<KeyValue key="commandName" value="TOGGLECOLLECTIONS" type="string"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Collections-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
-			<OnClick method="OnClick" inherit="append"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
-	</Button>
-	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEENCOUNTERJOURNAL" type="string"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="CollectionsMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-AdventureGuide-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow" inherit="append"/>
-			<OnHide method="OnHide" inherit="append"/>
-			<OnEvent method="OnEvent"/>
-			<OnClick method="OnClick" inherit="append"/>
-		</Scripts>
-	</Button>
-	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" mixin="StoreMicroButtonMixin" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Shop-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow function="MicroButton_KioskModeDisable"/>
-			<OnEvent method="OnEvent"/>
-			<OnClick function="ToggleStoreUI"/>
-		</Scripts>
-	</Button>
-	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" mixin="MainMenuMicroButtonMixin" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEGAMEMENU" type="string"/>
-			<KeyValue key="newbieText" value="NEWBIE_TOOLTIP_MAINMENU" type="global"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="StoreMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GameMenu-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-				<Texture parentKey="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
-					<Size x="19" y="39"/>
-					<Anchors>
-						<Anchor point="BOTTOM" relativeTo="MainMenuMicroButton" relativePoint="BOTTOM" x="0" y="-4"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnUpdate method="OnUpdate"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Button>
-	<Button name="HelpMicroButton" inherits="MainMenuBarMicroButton" mixin="HelpMicroButtonMixin" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
-		</Anchors>
-		<KeyValues>
-			<KeyValue key="MicroButton" value="HelpMicroButton" type="global"/>
-			<KeyValue key="tooltipText" value="HELP_BUTTON" type="global"/>
-			<KeyValue key="newbieText" value="NEWBIE_TOOLTIP_HELP" type="global"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GameMenu-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnClick function="ToggleHelpFrame"/>
-		</Scripts>
-	</Button>
+	</Frame>
 </Ui>

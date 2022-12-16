@@ -4,7 +4,8 @@ local BaseYOffset = 1500;
 local BaseRowHeight = 600;
 local PurchaseFXDelay = 1.2;
 
-local NODE_PURCHASE_FX_1 = 150;
+local NODE_PURCHASE_IN_PROGRESS_FX_1 = 153;
+local NODE_PURCHASE_COMPLETE_FX_1 = 150;
 
 
 ClassTalentCurrencyDisplayMixin = {};
@@ -65,16 +66,45 @@ ClassTalentTalentsTabMixin:GenerateCallbackEvents(
 function ClassTalentTalentsTabMixin:OnLoad()
 	self.initialBasePanOffsetX = self.basePanOffsetX;
 	self.initialBasePanOffsetY = self.basePanOffsetY;
+	
+	self.areClassTalentCommitCompleteVisualsActive = false;
+	self.areClassTalentCommitVisualsActive = false;
 
 	TalentFrameBaseMixin.OnLoad(self);
 
 	self:UpdateClassVisuals();
 
-	self.ResetButton:SetOnClickHandler(GenerateClosure(self.ResetTree, self));
+	local function ResetButtonDropDown_Initialize()
+		local titleInfo = UIDropDownMenu_CreateInfo();
+		titleInfo.notCheckable = 1;
+		titleInfo.text = TALENT_FRAME_RESET_BUTTON_DROPDOWN_TITLE;
+		titleInfo.isTitle = true;
+		UIDropDownMenu_AddButton(titleInfo);
+
+		local DropDownButtonInfo = {
+			{ text = TALENT_FRAME_RESET_BUTTON_DROPDOWN_LEFT, method = self.ResetClassTalents, },
+			{ text = TALENT_FRAME_RESET_BUTTON_DROPDOWN_RIGHT, method = self.ResetSpecTalents, },
+			{ text = TALENT_FRAME_RESET_BUTTON_DROPDOWN_ALL, method = self.ResetTree, },
+		};
+
+		for i, buttonInfo in ipairs(DropDownButtonInfo) do
+			local info = UIDropDownMenu_CreateInfo();
+			info.notCheckable = 1;
+			info.text = buttonInfo.text;
+			info.func = GenerateClosure(buttonInfo.method, self);
+			UIDropDownMenu_AddButton(info);
+		end
+	end
+
+	self.ResetButton:SetDropDown(self.ResetButton.DropDown, ResetButtonDropDown_Initialize, "MENU");
+	self.ResetButton:SetDropDownAnchor("BOTTOMLEFT", "TOPRIGHT");
 
 	self.ApplyButton:SetOnClickHandler(GenerateClosure(self.ApplyConfig, self));
 	self.ApplyButton:SetOnEnterHandler(GenerateClosure(self.UpdateConfigButtonsState, self));
 	self.UndoButton:SetOnClickHandler(GenerateClosure(self.RollbackConfig, self));
+
+	self.InspectCopyButton:SetTextToFit(TALENT_FRAME_INSPECT_COPY_BUTTON_TEXT);
+	self.InspectCopyButton:SetOnClickHandler(GenerateClosure(self.CopyInspectLoadout, self));
 
 	self.PvPTalentList:SetTalentFrame(self);
 	self.PvPTalentSlotTray:SetTalentFrame(self);
@@ -118,6 +148,9 @@ function ClassTalentTalentsTabMixin:OnShow()
 
 	FrameUtil.RegisterFrameForEvents(self, ClassTalentTalentsTabEvents);
 	FrameUtil.RegisterFrameForUnitEvents(self, ClassTalentTalentsTabUnitEvents, "player");
+
+	EventRegistry:RegisterCallback("ActionBarShownSettingUpdated", self.OnActionBarsChanged, self);
+
 	EventRegistry:TriggerEvent("TalentFrame.TalentTab.Show");
 
 	self:UpdateConfigButtonsState();
@@ -224,6 +257,8 @@ function ClassTalentTalentsTabMixin:OnHide()
 
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentTalentsTabEvents);
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentTalentsTabUnitEvents);
+	EventRegistry:UnregisterCallback("ActionBarShownSettingUpdated", self);
+
 	EventRegistry:TriggerEvent("TalentFrame.TalentTab.Hide");
 
 	self:SetBackgroundAnimationsPlaying(false);
@@ -277,10 +312,7 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:CheckSetSelectedConfigID();
 	elseif event == "ACTIONBAR_SLOT_CHANGED" then
-		if not self:IsInspecting() then
-			self:UpdateTalentActionBarStatuses();
-			self:UpdateFullSearchResults();
-		end
+		self:OnActionBarsChanged();
 	-- TODO:: Replace this events with more proper "CanChangeTalent" signal(s).
 	elseif (event == "PLAYER_REGEN_ENABLED") or (event == "PLAYER_REGEN_DISABLED") or (event == "UNIT_AURA") then
 		self:UpdateConfigButtonsState();
@@ -288,7 +320,7 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local spellID = select(3, ...);
 		if spellID == Constants.TraitConsts.COMMIT_COMBAT_TRAIT_CONFIG_CHANGES_SPELL_ID then
-			self:SetCommitVisualsActive(false);
+			self:SetCommitVisualsActive(false, TalentFrameBaseMixin.VisualsUpdateReasons.CommitStoppedComplete);
 			self:SetCommitCompleteVisualsActive(true);
 		end
 	end
@@ -357,11 +389,11 @@ function ClassTalentTalentsTabMixin:OnTraitConfigCreateStarted(newConfigHasPurch
 	self.nextNewConfigRequiresPopulatedCheck = newConfigHasPurchasedRanks;
 	local active = true;
 	local skipSpinnerDelay = true;
-	self:SetCommitVisualsActive(active, skipSpinnerDelay);
+	self:SetCommitVisualsActive(active, TalentFrameBaseMixin.VisualsUpdateReasons.CommitOngoing, skipSpinnerDelay);
 end
 
 function ClassTalentTalentsTabMixin:OnTraitConfigCreateFinished(configID)
-	self:SetCommitVisualsActive(false);
+	self:SetCommitVisualsActive(false, TalentFrameBaseMixin.VisualsUpdateReasons.CommitStoppedComplete);
 
 	local autoApply = true;
 	self:SetSelectedSavedConfigID(configID, autoApply);
@@ -454,22 +486,9 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 		return disabled, title, text, warning;
 	end
 
-	local function ExportCallback()	
-		local configID = self.lastSelectedConfigID or C_ClassTalents.GetActiveConfigID();
-		local configInfo = C_Traits.GetConfigInfo(configID);
-		local exportString = self:GetLoadoutExportString();
-		CopyToClipboard(exportString);
-
-		local configName = nil;
-		if self:IsStarterBuildConfig(configID) then
-			configName = TALENT_FRAME_DROP_DOWN_STARTER_BUILD;
-		elseif configInfo and self.LoadoutDropDown:IsSelectionIDValid(configID) then
-			configName = configInfo.name;
-		else
-			configName = TALENT_FRAME_DROP_DOWN_DEFAULT;
-		end
-
-		DEFAULT_CHAT_FRAME:AddMessage(TALENT_FRAME_EXPORT_TEXT:format(configName), YELLOW_FONT_COLOR:GetRGB());
+	local function ExportCallback()
+		CopyToClipboard(self:GetLoadoutExportString());
+		DEFAULT_CHAT_FRAME:AddMessage(TALENT_FRAME_EXPORT_TEXT, YELLOW_FONT_COLOR:GetRGB());
 	end
 
 	local function ExportDisabledCallback()
@@ -651,6 +670,16 @@ function ClassTalentTalentsTabMixin:RefreshLoadoutOptions()
 	end
 end
 
+function ClassTalentTalentsTabMixin:ResetClassTalents()
+	local classTraitCurrencyID = self.treeCurrencyInfo and self.treeCurrencyInfo[1] and self.treeCurrencyInfo[1].traitCurrencyID;
+	self:AttemptConfigOperation(C_Traits.ResetTreeByCurrency, self:GetTalentTreeID(), classTraitCurrencyID);
+end
+
+function ClassTalentTalentsTabMixin:ResetSpecTalents()
+	local specTraitCurrencyID = self.treeCurrencyInfo and self.treeCurrencyInfo[2] and self.treeCurrencyInfo[2].traitCurrencyID;
+	self:AttemptConfigOperation(C_Traits.ResetTreeByCurrency, self:GetTalentTreeID(), specTraitCurrencyID);
+end
+
 function ClassTalentTalentsTabMixin:ResetTree()
 	self:AttemptConfigOperation(C_Traits.ResetTree, self:GetTalentTreeID());
 end
@@ -659,6 +688,11 @@ function ClassTalentTalentsTabMixin:LoadTalentTreeInternal()
 	TalentFrameBaseMixin.LoadTalentTreeInternal(self);
 
 	self:UpdateConfigButtonsState();
+
+	-- If commit visuals are active, need to refresh them since nodes get reset and re-intialized on tree load
+	if self.areClassTalentCommitVisualsActive then
+		self:SetCommitVisualsActive(true, TalentFrameBaseMixin.VisualsUpdateReasons.TalentTreeReset);
+	end
 end
 
 function ClassTalentTalentsTabMixin:SetSelectedSavedConfigID(configID, autoApply, skipLoad, forceSkipAnimation)
@@ -717,20 +751,63 @@ function ClassTalentTalentsTabMixin:CanCommitInstantly()
 end
 
 function ClassTalentTalentsTabMixin:SetCommitStarted(configID, reason, skipAnimation)
+	if configID then
+		-- Cache nodes with staged purchases so we can animate them during the commit and once the commit is complete
+		self.stagedPurchaseNodes = self.stagedPurchaseNodesForNextCommit or C_Traits.GetStagedPurchases(self:GetConfigID());
+		self.stagedPurchaseNodesForNextCommit = nil;
+	end
+	
 	TalentFrameBaseMixin.SetCommitStarted(self, configID, reason, skipAnimation);
 
+	local isCommitOngoing = configID and (reason ~= TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit);
+	-- If commit isn't actively processing and complete visuals aren't using the staged nodes, we can clear them out
+	if not isCommitOngoing and not self.areClassTalentCommitCompleteVisualsActive then
+		self.stagedPurchaseNodes = nil;
+	end
+
 	self:UpdateConfigButtonsState();
+end
+
+function ClassTalentTalentsTabMixin:SetCommitVisualsActive(active, reason, skipSpinnerDelay)
+	TalentFrameBaseMixin.SetCommitVisualsActive(self, active, reason, skipSpinnerDelay);
+
+	local forceUpdateVisuals = reason == TalentFrameBaseMixin.VisualsUpdateReasons.TalentTreeReset;
+
+	if ((active and not self:IsVisible()) or (self.areClassTalentCommitVisualsActive == active)) and not forceUpdateVisuals then
+		return;
+	end
+
+	-- If deactivating due to hiding the frame, avoid actually deactivating purchase effects to prevent a delayed pop-in on showing the frame again
+	-- Reason check will still ensure they do get deactivated if the commit completes/fails while the frame is hidden
+	if not active and reason == TalentFrameBaseMixin.VisualsUpdateReasons.FrameHidden then
+		return;
+	end
+
+	if active then
+		if self.stagedPurchaseNodes then
+			self.areClassTalentCommitVisualsActive = true;
+			self:PlayPurchaseEffectOnNodes(self.stagedPurchaseNodes, "PlayPurchaseInProgressEffect", {NODE_PURCHASE_IN_PROGRESS_FX_1});
+		else
+			self.areClassTalentCommitVisualsActive = false;
+		end
+	else
+		self.areClassTalentCommitVisualsActive = false;
+		self.FxModelScene:ClearEffects();
+		self:StopPurchaseEffectOnNodes(self.stagedPurchaseNodes, "StopPurchaseInProgressEffect");
+	end
 end
 
 function ClassTalentTalentsTabMixin:SetCommitCompleteVisualsActive(active)
 	TalentFrameBaseMixin.SetCommitCompleteVisualsActive(self, active);
 
-	if active and not self:IsVisible() then
+	if (active and not self:IsVisible()) or (self.areClassTalentCommitCompleteVisualsActive == active) then
 		return;
 	end
 
+	self.areClassTalentCommitCompleteVisualsActive = active;
+
 	if self.commitFlashAnims then
-		for i, animGroup in ipairs(self.commitFlashAnims) do
+		for _, animGroup in ipairs(self.commitFlashAnims) do
 			local isPlaying = animGroup:IsPlaying();
 			if isPlaying ~= active then
 				if active then
@@ -748,31 +825,72 @@ function ClassTalentTalentsTabMixin:SetCommitCompleteVisualsActive(active)
 			-- Otherwise the immediate frame gets clogged up and visuals get missed
 			self.stagedPurchaseTimer = C_Timer.After(PurchaseFXDelay, function()
 				if not self.stagedPurchaseNodes then
+					self.areClassTalentCommitCompleteVisualsActive = false;
 					return;
 				end
 
-				for i, nodeID in ipairs(self.stagedPurchaseNodes) do
-					local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
-					if buttonWithPurchase and buttonWithPurchase.PlayPurchaseEffect then
-						buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene, {NODE_PURCHASE_FX_1});
-					end
-				end
+				self:PlayPurchaseEffectOnNodes(self.stagedPurchaseNodes, "PlayPurchaseCompleteEffect", {NODE_PURCHASE_COMPLETE_FX_1});
 
 				-- Play sound for collective node purchase effects
 				PlaySound(SOUNDKIT.UI_CLASS_TALENT_APPLY_COMPLETE);
 
 				self.stagedPurchaseNodes = nil;
 				self.stagedPurchaseTimer = nil;
+				self.areClassTalentCommitCompleteVisualsActive = false;
 			end);
+		elseif not self.stagedPurchaseNodes then
+			self.areClassTalentCommitCompleteVisualsActive = false;
 		end
 	elseif not active then
-		self.stagedPurchaseNodes = nil;
+		if self.stagedPurchaseTimer then
+			self.stagedPurchaseTimer:Cancel();
+			self.stagedPurchaseTimer = nil;
+		end
 		self.FxModelScene:ClearEffects();
+		self:StopPurchaseEffectOnNodes(self.stagedPurchaseNodes, "StopPurchaseCompleteEffect");
 	end
+end
+
+function ClassTalentTalentsTabMixin:PlayPurchaseEffectOnNodes(nodes, playMethodName, fxIDs)
+	-- If no nodes provided, don't play any purchase effects
+	if not nodes then
+		return;
+	end
+	for _, nodeID in ipairs(nodes) do
+		local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
+		if buttonWithPurchase and buttonWithPurchase[playMethodName] then
+			buttonWithPurchase[playMethodName](buttonWithPurchase, self.FxModelScene, fxIDs);
+		end
+	end
+end
+
+function ClassTalentTalentsTabMixin:StopPurchaseEffectOnNodes(nodes, stopMethodName)
+	local function StopPurchaseOnButton(button)
+		if button and button[stopMethodName] then
+			button[stopMethodName](button);
+		end
+	end
+
+	if nodes then
+		-- If nodes provided, stop effects on those buttons
+		for _, nodeID in ipairs(nodes) do
+			local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
+			StopPurchaseOnButton(buttonWithPurchase);
+		end
+	else
+		-- If no nodes provided, stop effects on all buttons
+		for button in self:EnumerateAllTalentButtons() do
+			StopPurchaseOnButton(button);
+		end
+	end
+	
 end
 
 function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply, skipAnimation)
 	local loadResult = nil;
+	local newlyLearnedNodes = nil;
+
+	self.stagedPurchaseNodesForNextCommit = nil;
 
 	if self:IsStarterBuildConfig(configID) then
 		if not self:GetHasStarterBuild() then
@@ -787,7 +905,7 @@ function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply, skip
 			self.unflagStarterBuildAfterNextCommit = true;
 		end
 
-		loadResult = C_ClassTalents.LoadConfig(configID, autoApply);
+		loadResult, newlyLearnedNodes = C_ClassTalents.LoadConfig(configID, autoApply);
 	end
 
 	local isConfigReadyToApply = (loadResult == Enum.LoadConfigResult.Ready);
@@ -802,6 +920,7 @@ function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply, skip
 
 		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit, skipAnimation);
 	elseif (loadResult == Enum.LoadConfigResult.LoadInProgress) and autoApply then
+		self.stagedPurchaseNodesForNextCommit = newlyLearnedNodes;
 		self:SetCommitStarted(configID, TalentFrameBaseMixin.CommitUpdateReasons.CommitStarted, skipAnimation);
 	end
 
@@ -836,10 +955,7 @@ function ClassTalentTalentsTabMixin:CommitConfigInternal()
 
 	local selectedConfigID = self.LoadoutDropDown:GetSelectionID();
 
-	-- Cache nodes with staged purchases so we can animate them once the commit is complete
-	self.stagedPurchaseNodes = C_Traits.GetStagedPurchases(self:GetConfigID());
-
-	C_ClassTalents.CommitConfig(selectedConfigID);
+	return C_ClassTalents.CommitConfig(selectedConfigID);
 end
 
 function ClassTalentTalentsTabMixin:RollbackConfig(...)
@@ -1031,6 +1147,8 @@ function ClassTalentTalentsTabMixin:UpdateInspecting()
 		frame:SetShown(not isInspecting);
 	end
 
+	self.InspectCopyButton:SetShown(isInspecting);
+
 	self.PvPTalentSlotTray:SetPoint("RIGHT", self.BottomBar, "RIGHT", isInspecting and -24 or -114, 0);
 
 	self.SearchBox:ClearAllPoints();
@@ -1055,6 +1173,14 @@ function ClassTalentTalentsTabMixin:GetInspectUnit()
 	-- Overrides TalentFrameBaseMixin.
 
 	return self:GetClassTalentFrame():GetInspectUnit();
+end
+
+function ClassTalentTalentsTabMixin:CopyInspectLoadout()
+	local loadoutString = C_Traits.GenerateInspectImportString(self:GetInspectUnit());
+	if loadoutString ~= "" then
+		CopyToClipboard(loadoutString);
+		DEFAULT_CHAT_FRAME:AddMessage(TALENT_FRAME_EXPORT_TEXT, YELLOW_FONT_COLOR:GetRGB());
+	end
 end
 
 function ClassTalentTalentsTabMixin:GetUnitSex()
@@ -1211,6 +1337,13 @@ function ClassTalentTalentsTabMixin:UnflagStarterBuild()
 	self:SetStarterBuildActive(false);
 end
 
+function ClassTalentTalentsTabMixin:OnActionBarsChanged()
+	if not self:IsInspecting() then
+		self:UpdateTalentActionBarStatuses();
+		self:UpdateFullSearchResults();
+	end
+end
+
 function ClassTalentTalentsTabMixin:UpdateTalentActionBarStatuses()
 	for button in self:EnumerateAllTalentButtons() do
 		button:UpdateActionBarStatus();
@@ -1219,20 +1352,19 @@ end
 
 
 --------------------------- Script Command Helpers --------------------------------
--- TODO:: Add localized error messages for all command errors
 function ClassTalentTalentsTabMixin:LoadConfigByPredicate(predicate)
 	if self:IsInspecting() then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_INSPECTING);
 		return;
 	end
 
 	if not self.configIDs or not self.variablesLoaded then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_NO_DATA);
 		return;
 	end
 
 	if self:IsCommitInProgress() or self:IsSpecActivationInProgress() then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_COMMIT_IN_PROGRESS);
 		return;
 	end
 
@@ -1248,13 +1380,13 @@ function ClassTalentTalentsTabMixin:LoadConfigByPredicate(predicate)
 		local autoApply = true;
 		self:LoadConfigInternal(configIDToLoad, autoApply);
 	else
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_INVALID_CONFIG);
 	end
 end
 
 function ClassTalentTalentsTabMixin:LoadConfigByName(name)
 	if not name or name == "" then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_INVALID_CONFIG_NAME);
 		return;
 	end
 
@@ -1265,12 +1397,12 @@ end
 
 function ClassTalentTalentsTabMixin:LoadConfigByIndex(index)
 	if not self.configIDs then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_NO_DATA);
 		return;
 	end
 
 	if not index or index <= 0 or index > #self.configIDs then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_INVALID_CONFIG_INDEX);
 		return;
 	end
 

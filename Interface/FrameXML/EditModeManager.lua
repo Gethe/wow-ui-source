@@ -839,6 +839,8 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetArenaFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowArenaFrames));
 	self.AccountSettings:SetLootFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowLootFrame));
 	self.AccountSettings:SetHudTooltipShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowHudTooltip));
+	self.AccountSettings:SetReputationBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowReputationBar));
+	self.AccountSettings:SetDurabilityFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDurabilityFrame));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -1025,9 +1027,13 @@ function EditModeManagerFrameMixin:UpdateSystems()
 	secureexecuterange(self.registeredSystemFrames, callUpdateSystem);
 end
 
-function EditModeManagerFrameMixin:UpdateSystem(systemFrame)
+function EditModeManagerFrameMixin:UpdateSystem(systemFrame, forceFullUpdate)
 	local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
 	if systemInfo then
+		if forceFullUpdate then
+			systemFrame:MarkAllSettingsDirty();
+		end
+
 		systemFrame:UpdateSystem(systemInfo);
 	end
 end
@@ -1452,6 +1458,16 @@ function EditModeAccountSettingsMixin:OnLoad()
 		self:SetHudTooltipShown(isChecked, isUserInput);
 	end
 	self.Settings.HudTooltip:SetCallback(onHudTooltipCheckboxChecked);
+
+	local function onReputationBarCheckboxChecked(isChecked, isUserInput)
+		self:SetReputationBarShown(isChecked, isUserInput);
+	end
+	self.Settings.ReputationBar:SetCallback(onReputationBarCheckboxChecked);
+
+	local function onDurabilityFrameCheckboxChecked(isChecked, isUserInput)
+		self:SetDurabilityFrameShown(isChecked, isUserInput);
+	end
+	self.Settings.DurabilityFrame:SetCallback(onDurabilityFrameCheckboxChecked);
 end
 
 function EditModeAccountSettingsMixin:OnEvent(event, ...)
@@ -1480,6 +1496,9 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:SetupActionBar(PetActionBar);
 	self:SetupActionBar(PossessActionBar);
 
+	self:SetupReputationBar();
+	self:SetupDurabilityFrame();
+
 	self:RefreshTargetAndFocus();
 	self:RefreshPartyFrames();
 	self:RefreshRaidFrames()
@@ -1494,6 +1513,8 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:RefreshArenaFrames();
 	self:RefreshLootFrame();
 	self:RefreshHudTooltip();
+	self:RefreshReputationBar();
+	self:RefreshDurabilityFrame();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
@@ -1592,6 +1613,7 @@ end
 function EditModeAccountSettingsMixin:RefreshRaidFrames()
 	local showRaidFrames = self.Settings.RaidFrames:IsControlChecked();
 	if showRaidFrames then
+		CompactRaidFrameManager_SetSetting("IsShown", true);
 		CompactRaidFrameContainer:HighlightSystem();
 	else
 		CompactRaidFrameContainer:ClearHighlight();
@@ -1758,7 +1780,6 @@ function EditModeAccountSettingsMixin:RefreshAuraFrame(frame)
 	end
 
 	frame:UpdateAuraButtons();
-	frame:UpdateGridLayout();
 end
 
 function EditModeAccountSettingsMixin:SetTalkingHeadFrameShown(shown, isUserInput)
@@ -1893,6 +1914,62 @@ end
 
 function EditModeAccountSettingsMixin:ResetHudTooltip()
 	GameTooltipDefaultContainer:Hide();
+end
+
+function EditModeAccountSettingsMixin:SetReputationBarShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowReputationBar, shown);
+		self:RefreshReputationBar();
+	else
+		self.Settings.ReputationBar:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetupReputationBar()
+	if SecondaryStatusTrackingBarContainer:IsShown() then
+		self.Settings.ReputationBar:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshReputationBar()
+	local showReputationBar = self.Settings.ReputationBar:IsControlChecked();
+	if showReputationBar then
+		SecondaryStatusTrackingBarContainer.isInEditMode = true;
+		SecondaryStatusTrackingBarContainer:HighlightSystem();
+	else
+		SecondaryStatusTrackingBarContainer.isInEditMode = false;
+		SecondaryStatusTrackingBarContainer:ClearHighlight();
+	end
+	SecondaryStatusTrackingBarContainer:UpdateShownState();
+end
+
+function EditModeAccountSettingsMixin:SetupDurabilityFrame()
+	-- If the frame is already showing then set control checked
+	if DurabilityFrame:IsShown() then
+		self.Settings.DurabilityFrame:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetDurabilityFrameShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowDurabilityFrame, shown);
+		self:RefreshDurabilityFrame();
+	else
+		self.Settings.DurabilityFrame:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshDurabilityFrame()
+	local showDurabilityFrame = self.Settings.DurabilityFrame:IsControlChecked();
+	if showDurabilityFrame then
+		DurabilityFrame.isInEditMode = true;
+		DurabilityFrame:HighlightSystem();
+	else
+		DurabilityFrame.isInEditMode = false;
+		DurabilityFrame:ClearHighlight();
+	end
+
+	DurabilityFrame:UpdateShownState();
 end
 
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)

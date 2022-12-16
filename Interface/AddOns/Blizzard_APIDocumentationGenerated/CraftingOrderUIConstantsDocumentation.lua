@@ -51,6 +51,14 @@ local CraftingOrderUIConstants =
 			},
 		},
 		{
+			Name = "CraftingOrderConsts",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "MAX_CRAFTING_ORDER_FAVORITE_RECIPES", Type = "number", Value = 100 },
+			},
+		},
+		{
 			Name = "CraftingOrderCustomerCategory",
 			Type = "Structure",
 			Fields =

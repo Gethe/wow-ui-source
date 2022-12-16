@@ -211,7 +211,6 @@
 			<OnShow function="GameMenuFrame_OnShow"/>
 			<OnHide>
 				UpdateMicroButtons();
-				MainMenuBarBagManager:SetBagButtonsEnabled(true);
 				if (CanAutoSetGamePadCursorControl(false)) then
 					SetGamePadCursorControl(false);
 				end

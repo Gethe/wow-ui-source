@@ -476,8 +476,9 @@ function SettingsDropDownControlMixin:InitDropDown()
 
 	local selectionIndex = Settings.InitSelectionDropDown(self.DropDown, setting, options, 200, initTooltip);
 	if not initializer.skipAssertMissingOption then
-		assertsafe(selectionIndex ~= nil, ("Failed to matching option matching value '%s' for setting name '%s'"):format(
-			tostring(setting:GetValue()), setting:GetName()));
+		-- Retained for debugging
+		--assertsafe(selectionIndex ~= nil, ("Failed to matching option matching value '%s' for setting name '%s'"):format(
+			--tostring(setting:GetValue()), setting:GetName()));
 	end
 end
 
@@ -934,6 +935,19 @@ function SettingsSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, 
 	end
 end
 
+function SettingsSelectionPopoutDetailsMixin:SetupCustomDetails()
+	self.label = CUSTOM;
+
+	self.SelectionName:Show();
+	self.SelectionName:SetText(self.label);
+	self.SelectionName:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
+
+	local maxNameWidth = 200;
+	if self.SelectionName:GetWidth() > maxNameWidth then
+		self.SelectionName:SetWidth(maxNameWidth);
+	end
+end
+
 function CreateSettingsSelectionCustomSelectedData(data, label)
 	data.selectedDataFunc = function()
 		return {label = label};
@@ -979,13 +993,12 @@ function SettingsSelectionPopoutButtonMixin:UpdateButtonDetails()
 		currentSelectedData = self.selectedDataFunc();
 	end
 
-	--assert(currentSelectedData);
 	if currentSelectedData then
 		self.SelectionDetails:SetupDetails(currentSelectedData, self.selectedIndex);
-		return true;
+	else
+		self.SelectionDetails:SetupCustomDetails();
 	end
-
-	return false;
+	return currentSelectedData ~= nil;
 end
 
 SettingsExpandableSectionMixin = {};

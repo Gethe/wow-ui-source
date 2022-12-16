@@ -155,9 +155,9 @@ local CovenantSanctumUpgradesEvents = {
 
 function CovenantSanctumUpgradesTabMixin:OnLoad()
 	-- attach bags glow
-	self.BagsGlowFrame:SetParent(MicroButtonAndBagsBar);
-	self.BagsGlowFrame:SetAllPoints(MicroButtonAndBagsBar);
-	self.BagsGlowFrame:SetFrameLevel(MainMenuBarBackpackButton:GetFrameLevel() + 1);
+	self.BagsGlowFrame:SetParent(BagsBar);
+	self.BagsGlowFrame:SetAllPoints(BagsBar);
+	self.BagsGlowFrame:SetFrameLevel(BagsBar:GetFrameLevel() + 1);
 
 	self:SetUpCurrencies();
 

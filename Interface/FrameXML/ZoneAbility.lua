@@ -31,31 +31,6 @@ local function DoZoneAbilitiesIncludeSpellID(zoneAbilities, spellID)
 	return false;
 end
 
-local function HasZoneAbilitySpellOnBar(spellID)
-	local slots = C_ActionBar.FindSpellActionButtons(spellID);
-	if slots == nil then
-		return false;
-	end
-
-	local currentBonusBarIndex = GetBonusBarIndex();
-	for i = 1, #slots do
-		local slot = slots[i];
-		local isOnPrimaryActionBar = IsOnPrimaryActionBar(slot);
-		local slotBonusBarIndex = C_ActionBar.GetBonusBarIndexForSlot(slot);
-
-		-- This action is on one of the extra action bars that are always available, or on the primary action bar while it is not being replaced.
-		if not slotBonusBarIndex and (not isOnPrimaryActionBar or (currentBonusBarIndex == 0)) then
-			return true;
-		end
-
-		if slotBonusBarIndex == currentBonusBarIndex then
-			return true;
-		end
-	end
-
-	return false;
-end
-
 local function HideZoneAbilityTutorial()
 	HelpTip:HideAll(ZoneAbilityFrame);
 end
@@ -92,6 +67,8 @@ function ZoneAbilityFrameMixin:OnLoad()
 	self:RegisterUnitEvent("UNIT_AURA", "player");
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
+
+	EventRegistry:RegisterCallback("ActionBarShownSettingUpdated", self.MarkDirty, self);
 
 	self.variablesLoaded = false;
 	-- Will be unregistered once received.
@@ -133,7 +110,8 @@ function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 	local displayedTextureKit = nil;
 	for i, zoneAbilityInfo in ipairs(zoneAbilities) do
 		local spellID = zoneAbilityInfo.spellID;
-		local hasZoneAbilityOnBar = HasZoneAbilitySpellOnBar(spellID);
+		local excludeNonPlayerBars = true;
+		local hasZoneAbilityOnBar = ActionButtonUtil.IsSpellOnAnyActiveActionBar(spellID, excludeNonPlayerBars);
 		activeAbilityIsDisplayedOnBar[spellID] = hasZoneAbilityOnBar;
 		if not hasZoneAbilityOnBar then
 			if #displayedZoneAbilities == 0 then

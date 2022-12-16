@@ -308,30 +308,31 @@ function ItemMixin:IsDataEvictable()
 	return true;
 end
 
--- Add a callback to be executed when item data is loaded, if the item data is already loaded then execute it immediately
-function ItemMixin:ContinueOnItemLoad(callbackFunction)
-	if type(callbackFunction) ~= "function" or self:IsItemEmpty() then
-		error("Usage: NonEmptyItem:ContinueOnLoad(callbackFunction)", 2);
+function ItemMixin:ValidateForContinueOnItemLoad(methodName, callbackFunction)
+	if type(callbackFunction) ~= "function" then
+		error(("Usage: NonEmptyItem:%s(callbackFunction): invalid callbackFunction"):format(methodName), 3);
 	end
 
+	if self:IsItemEmpty() then
+		if self.itemLink then
+			error(("Usage: NonEmptyItem:%s(callbackFunction) invalid itemLink: <%s>"):format(methodName, self.itemLink), 3);
+		elseif self.itemID then
+			error(("Usage: NonEmptyItem:%s(callbackFunction) invalid itemID: <%d>"):format(methodName, self.itemID), 3);
+		end
+
+		error(("Usage: NonEmptyItem:%s(callbackFunction): invalid item"):format(methodName), 3);
+	end
+end
+
+-- Add a callback to be executed when item data is loaded, if the item data is already loaded then execute it immediately
+function ItemMixin:ContinueOnItemLoad(callbackFunction)
+	self:ValidateForContinueOnItemLoad("ContinueOnItemLoad", callbackFunction);
 	ItemEventListener:AddCallback(self:GetItemID(), callbackFunction);
 end
 
 -- Same as ContinueOnItemLoad, except it returns a function that when called will cancel the continue
 function ItemMixin:ContinueWithCancelOnItemLoad(callbackFunction)
-	if type(callbackFunction) ~= "function" then
-		error("Usage: NonEmptyItem:ContinueWithCancelOnItemLoad(callbackFunction)", 2);
-	end
-
-	if self:IsItemEmpty() then
-		if self.itemLink then
-			error(("Usage: NonEmptyItem:ContinueWithCancelOnItemLoad(callbackFunction) invalid itemLink: <%s>"):format(self.itemLink), 2);
-		elseif self.itemID then
-			error(("Usage: NonEmptyItem:ContinueWithCancelOnItemLoad(callbackFunction) invalid itemID: <%d>"):format(self.itemID), 2);
-		end
-		error("Usage: NonEmptyItem:ContinueWithCancelOnItemLoad(callbackFunction)", 2);
-	end
-
+	self:ValidateForContinueOnItemLoad("ContinueWithCancelOnItemLoad", callbackFunction);
 	return ItemEventListener:AddCancelableCallback(self:GetItemID(), callbackFunction);
 end
 

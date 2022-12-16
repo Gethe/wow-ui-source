@@ -6,6 +6,7 @@ STATICPOPUP_TEXTURE_ALERT = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew";
 STATICPOPUP_TEXTURE_ALERTGEAR = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertOther";
 StaticPopupDialogs = { };
 
+local FullscreenFrame = UIParent;
 
 local function SetupLockOnDeclineButtonAndEscape(self, declineTimeLeft)
 	self.declineTimeLeft = declineTimeLeft or .5;
@@ -2840,7 +2841,7 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
 	OnUpdate = function(self, dialog)
 		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
 			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
-			self:Hide(); 
+			self:Hide();
 		end
 	end,
 	timeout = 0,
@@ -3196,7 +3197,7 @@ StaticPopupDialogs["CONFIRM_BINDER"] = {
 	OnCancel = function(self)
 		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
 		self:Hide();
-	end,	
+	end,
 	timeout = 0,
 	hideOnEscape = 1
 };
@@ -4286,14 +4287,14 @@ StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
 	button1 = YES,
 	button2 = NO,
 	OnShow = function(self)
-		local playerFactionGroup = UnitFactionGroup("player"); 
-		local factionCity = playerFactionGroup and factionMajorCities[playerFactionGroup] or nil; 
-		if(factionCity) then 
+		local playerFactionGroup = UnitFactionGroup("player");
+		local factionCity = playerFactionGroup and factionMajorCities[playerFactionGroup] or nil;
+		if(factionCity) then
 			self.text:SetText(RETURNING_PLAYER_PROMPT:format(factionCity));
 		end
 	end,
 	OnAccept = function(self)
-		C_ReturningPlayerUI.AcceptPrompt(); 
+		C_ReturningPlayerUI.AcceptPrompt();
 		self:Hide();
 	end,
 	OnCancel = function()
@@ -4305,6 +4306,14 @@ StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
 
 StaticPopupDialogs["CRAFTING_HOUSE_DISABLED"] = {
 	text = ERR_CRAFTING_HOUSE_DISABLED,
+	button1 = OKAY,
+	timeout = 0,
+	showAlertGear = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["PERKS_PROGRAM_DISABLED"] = {
+	text = ERR_PERKS_PROGRAM_DISABLED,
 	button1 = OKAY,
 	timeout = 0,
 	showAlertGear = 1,
@@ -4426,7 +4435,7 @@ function StaticPopup_Resize(dialog, which)
 	end
 	if ( dialog.SubText:IsShown() ) then
 		height = height + dialog.SubText:GetHeight() + 8;
-		-- Adding a bit more vertical space to prevent the text from feeling cramped 
+		-- Adding a bit more vertical space to prevent the text from feeling cramped
 		if ( info.normalSizedSubText and info.compactItemFrame) then
 			height = height + 18;
 		end
@@ -4448,7 +4457,7 @@ function StaticPopup_ShowNotification(systemPrefix, notificationType, message)
 	if StaticPopupDialogs[staticPopupToken] == nil then
 		StaticPopupDialogs[staticPopupToken] = {
 			text = "",
-			
+
 			OnShow = function(self, popupMessage)
 				self.text:SetText(popupMessage);
 			end,
@@ -4685,17 +4694,17 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 
 	-- Show or hide the close button
 	if ( info.closeButton ) then
-		local closeButton = _G[dialog:GetName().."CloseButton"];
+		local closeButton = dialog.CloseButton;
 		if ( info.closeButtonIsHide ) then
-			closeButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-HideButton-Up");
-			closeButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-HideButton-Down");
+			closeButton:SetNormalAtlas("RedButton-Exit");
+			closeButton:SetPushedAtlas("RedButton-exit-pressed");
 		else
-			closeButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up");
-			closeButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down");
+			closeButton:SetNormalAtlas("RedButton-MiniCondense");
+			closeButton:SetPushedAtlas("RedButton-MiniCondense-pressed");
 		end
 		closeButton:Show();
 	else
-		_G[dialog:GetName().."CloseButton"]:Hide();
+		dialog.CloseButton:Hide();
 	end
 
 	-- Set the editbox of the dialog
@@ -4794,7 +4803,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 				if ( data.useLinkForItemInfo ) then
 					dialog.ItemFrame:RetrieveInfo(data);
 				end
-				dialog.ItemFrame:DisplayInfo(data.link, data.name, data.color, data.texture, data.count);
+				dialog.ItemFrame:DisplayInfo(data.link, data.name, data.color, data.texture, data.count, data.tooltip);
 			end
 		end
 	else
@@ -4850,7 +4859,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		button:SetWidth(1);
 		button:ClearAllPoints();
 		button.PulseAnim:Stop();
-	
+
 		if not (info["button"..index] and ( not info["DisplayButton"..index] or info["DisplayButton"..index](dialog))) then
 			table.remove(buttons, index);
 		end
@@ -4889,13 +4898,13 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 			button:SetWidth(maxButtonWidth);
 			InitButton(button, index);
 		end
-		totalWidth = uncondensedTotalWidth; 
+		totalWidth = uncondensedTotalWidth;
 	else
 		totalWidth = totalButtonPadding;
 		for index, button in ipairs(buttons) do
 			local buttonWidth = math.max(minButtonWidth, button:GetTextWidth()) + buttonTextMargin;
 			button:SetWidth(buttonWidth);
-			totalWidth = totalWidth + buttonWidth; 
+			totalWidth = totalWidth + buttonWidth;
 			InitButton(button, index);
 		end
 	end
@@ -5225,6 +5234,10 @@ function StaticPopup_OnHide(self)
 	end
 end
 
+function StaticPopup_OnCloseButtonClicked(closeButton, button)
+	closeButton:GetParent():Hide();
+end
+
 local function StaticPopup_CallInfoHandler(dialog, handlerName, ...)
 	if ( dialog:IsShown() ) then
 		local which = dialog.which;
@@ -5373,11 +5386,13 @@ function StaticPopup_SetUpPosition(dialog)
 end
 
 function StaticPopup_SetUpAnchor(dialog, idx)
+	dialog:SetParent(FullscreenFrame);
+	dialog:SetFrameStrata("DIALOG");
 	local lastFrame = StaticPopup_DisplayedFrames[idx - 1];
 	if ( lastFrame ) then
 		dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0);
 	else
-		dialog:SetPoint("TOP", UIParent, "TOP", 0, dialog.topOffset or -135);
+		dialog:SetPoint("TOP", FullscreenFrame, "TOP", 0, dialog.topOffset or -135);
 	end
 end
 
@@ -5409,6 +5424,25 @@ function StaticPopupSpecial_Toggle(frame)
 	else
 		StaticPopupSpecial_Show(frame);
 	end
+end
+
+function StaticPopup_ReparentDialogs()
+	for _, frame in pairs(StaticPopup_DisplayedFrames) do
+		frame:SetParent(FullscreenFrame);
+		frame:SetFrameStrata("DIALOG");
+	end
+end
+
+function StaticPopup_SetFullScreenFrame(frame)
+	if frame then
+		FullscreenFrame = frame;
+		StaticPopup_ReparentDialogs();
+	end
+end
+
+function StaticPopup_ClearFullScreenFrame()
+	FullscreenFrame = UIParent;
+	StaticPopup_ReparentDialogs();
 end
 
 --Note that things will look sub-fantastic if toActivate is bigger than toReplace
@@ -5467,6 +5501,57 @@ function StaticPopup_HideExclusive()
 	end
 end
 
+function StaticPopup_OnAcceptWithSpinner(onAcceptCallback, onEventCallback, events, self)
+	onAcceptCallback(self);
+
+	self.button1:Disable();
+	self.button2:Disable();
+
+	local spinnerTimer = C_Timer.NewTimer(2, function()
+		self.DarkOverlay:Show();
+		self.LoadingSpinner:Show();
+		self.SpinnerAnim:Play();
+	end);
+
+	FrameUtil.RegisterFrameForEvents(self, events);
+
+	local oldOnEvent = self:GetScript("OnEvent");
+	local oldOnHide = self:GetScript("OnHide");
+
+	local function OnComplete()
+		spinnerTimer:Cancel();
+		self.LoadingSpinner:Hide();
+		self.SpinnerAnim:Stop();
+		self:SetScript("OnEvent", oldOnEvent);
+		self:SetScript("OnHide", oldOnHide);
+		FrameUtil.UnregisterFrameForEvents(self, events);
+		self:Hide();
+	end
+
+	self:SetScript("OnEvent", function(self, event, ...)
+		if oldOnEvent then
+			oldOnEvent(self, event, ...);
+		end
+
+		for i, registeredEvent in ipairs(events) do
+			if event == registeredEvent then
+				if onEventCallback(self, event, ...) then
+					OnComplete();
+				end
+			end
+		end
+	end);
+	self:SetScript("OnHide", function()
+		if oldOnHide then
+			oldOnHide(self);
+		end
+		OnComplete();
+	end);
+
+	return true;
+end
+
+
 
 StaticPopupItemFrameMixin = {};
 
@@ -5490,13 +5575,15 @@ function StaticPopupItemFrameMixin:OnEnter()
 	if ( self.customOnEnter ) then
 		self.customOnEnter(self);
 	elseif ( self.link ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetHyperlink(self.link);
+		local tooltip = self.tooltip or GameTooltip;
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		tooltip:SetHyperlink(self.link);
 	end
 end
 
 function StaticPopupItemFrameMixin:OnLeave()
-	GameTooltip:Hide();
+	local tooltip = self.tooltip or GameTooltip;
+	tooltip:Hide();
 end
 
 function StaticPopupItemFrameMixin:SetCustomOnEnter(customOnEnter)
@@ -5520,8 +5607,9 @@ function StaticPopupItemFrameMixin:RetrieveInfo(data)
 	end
 end
 
-function StaticPopupItemFrameMixin:DisplayInfo(link, name, color, texture, count)
+function StaticPopupItemFrameMixin:DisplayInfo(link, name, color, texture, count, tooltip)
 	self.link = link;
+	self.tooltip = tooltip;
 	_G[self:GetName().."IconTexture"]:SetTexture(texture);
 	local nameText = _G[self:GetName().."Text"];
 	nameText:SetTextColor(unpack(color or {1, 1, 1, 1}));

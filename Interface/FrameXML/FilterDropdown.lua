@@ -22,8 +22,8 @@ FilterComponent = EnumUtil.MakeEnum(
 				INSERT FILTERS HERE
 				Examples:
 				{ type = FilterComponent.TextButton, text = [String], set = [Function], },
-				{ type = FilterComponent.Checkbox, text = [String], set = [Function], isSet = [Function], },
-				{ type = FilterComponent.Radio, text = [String], set = [Function], isSet = [Function], },
+				{ type = FilterComponent.Checkbox, text = [String], set = [Function], isSet = [Function], filter = [nil, String/Number] (Optional, passed to "set" and "isSet"), },
+				{ type = FilterComponent.Radio, text = [String], set = [Function], isSet = [Function], filter = [nil, String/Number] (Optional, passed to "set" and "isSet"), },
 				{ type = FilterComponent.DynamicFilterSet,
 				  buttonType = [FilterComponent] -- Supports TextButton, Checkbox, Radio
 				  set = [Function],
@@ -42,7 +42,7 @@ FilterComponent = EnumUtil.MakeEnum(
 						},
 					},
 				},
-				{ type = FilterComponent.CustomFunction, customFunc = [Function], },
+				{ type = FilterComponent.CustomFunction, customFunc = [Function], Note: customFunc will recieve the FilterSystem as it's first argument },
 			},
 		};
 
@@ -96,16 +96,22 @@ function FilterDropDownSystem.SetUpDropDownLevel(dropdown, filterSystem, level)
 							filterSystem.onUpdate();
 						end
 					end
-			local isSet = filterInfo.isSet(filterInfo.filter);
+			local isSet = function() return filterInfo.isSet(filterInfo.filter); end;
 			FilterDropDownSystem.AddCheckBoxButton(filterInfo.text, set, isSet, level, filterInfo.hideMenuOnClick);
 		elseif filterInfo.type == FilterComponent.Radio then
 			local set = function(_, _, _, value)
 						filterInfo.set(value);
+
+						-- Only one radio button should be turned on at a time, force a refresh so the others can turn themselves off 
+						if not filterInfo.hideMenuOnClick then
+							UIDropDownMenu_RefreshAll(UIDROPDOWNMENU_OPEN_MENU);
+						end
+
 						if filterSystem.onUpdate then
 							filterSystem.onUpdate();
 						end
 					end
-			local isSet = filterInfo.isSet(filterInfo.filter);
+			local isSet = function() return filterInfo.isSet(filterInfo.filter); end;
 			FilterDropDownSystem.AddRadioButton(filterInfo.text, set, isSet, level, filterInfo.hideMenuOnClick);
 		elseif filterInfo.type == FilterComponent.DynamicFilterSet then
 			-- Pass this function through since we may need it as well
@@ -120,7 +126,7 @@ function FilterDropDownSystem.SetUpDropDownLevel(dropdown, filterSystem, level)
 		elseif filterInfo.type == FilterComponent.Submenu and filterInfo.childrenInfo ~= nil then
 			FilterDropDownSystem.AddSubMenuButton(filterInfo.text, filterInfo.value, filterInfo.set, level);
 		elseif filterInfo.type == FilterComponent.CustomFunction then
-			filterInfo.customFunc(level);
+			filterInfo.customFunc(filterSystem, level);
 		end
 	end
 end
@@ -188,6 +194,11 @@ function FilterDropDownSystem.AddRadioButtonToFilterSystem(filterSystem, text, s
 	local setSelectedWrapper = function()
 		setSelected();
 
+		-- Only one radio button should be turned on at a time, force a refresh so the others can turn themselves off  
+		if not hideMenuOnClick then
+			UIDropDownMenu_RefreshAll(UIDROPDOWNMENU_OPEN_MENU);
+		end
+
 		if filterSystem.onUpdate then
 			filterSystem.onUpdate();
 		end
@@ -224,16 +235,28 @@ function FilterDropDownSystem.AddDynamicFilterSet(filterSetInfo, level)
 						end					
 				FilterDropDownSystem.AddTextButton(name, set, level, filterSetInfo.hideMenuOnClick)
 			else
-				local set =	function(_, _, _, value)
-							filterSetInfo.set(i, value);
-							if filterSetInfo.onUpdate then
-								filterSetInfo.onUpdate();
-							end
-						end
 				local isSet = function() return filterSetInfo.isSet(i); end;
 				if filterSetInfo.buttonType == FilterComponent.Checkbox then
+					local set =	function(_, _, _, value)
+								filterSetInfo.set(i, value);
+								if filterSetInfo.onUpdate then
+									filterSetInfo.onUpdate();
+								end
+							end
 					FilterDropDownSystem.AddCheckBoxButton(name, set, isSet, level, filterSetInfo.hideMenuOnClick);
 				elseif filterSetInfo.buttonType == FilterComponent.Radio then
+					local set =	function(_, _, _, value)
+								filterSetInfo.set(i, value);
+								if filterSetInfo.onUpdate then
+									filterSetInfo.onUpdate();
+								end
+							
+								-- Only one radio button should be turned on at a time, force a refresh so the others can turn themselves off 
+								if not filterSetInfo.hideMenuOnClick then
+									UIDropDownMenu_RefreshAll(UIDROPDOWNMENU_OPEN_MENU);
+								end
+							end
+
 					FilterDropDownSystem.AddRadioButton(name, set, isSet, level, filterSetInfo.hideMenuOnClick);
 				end
 			end

@@ -2940,8 +2940,7 @@ function Class_UseMount:TryUseMount()
 end
 
 function Class_UseMount:QUEST_REMOVED(questIDRemoved)
-	local factionData = TutorialData:GetFactionData();
-	if (questIDRemoved == self.factionData.AnUrgentMeeting) then
+	if (questIDRemoved == TutorialData:GetFactionData().AnUrgentMeeting) then
 		TutorialManager:Finished(self:Name());
 	end
 end

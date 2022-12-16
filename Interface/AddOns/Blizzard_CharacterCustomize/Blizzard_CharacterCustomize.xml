@@ -23,28 +23,16 @@
 			<KeyValue key="textRight2Font" value="GameFontNormalMed2" type="string"/>
 		</KeyValues>
 	</GameTooltip>
-	
-	<Frame name="CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeFrameWithTooltipMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="tooltipAnchor" value="ANCHOR_TOPRIGHT" type="string"/>
-			<KeyValue key="tooltipXOffset" value="10" type="number"/>
-			<KeyValue key="tooltipYOffset" value="0" type="number"/>
-			<KeyValue key="tooltipMinWidth" value="300" type="number"/>
-			<KeyValue key="tooltipPadding" value="5" type="number"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-	</Frame>
 
 	<Button name="CharCustomizeBaseButtonTemplate" mixin="CharCustomizeBaseButtonMixin" virtual="true">
 		<Scripts>
 			<OnClick method="OnBaseButtonClick"/>
 		</Scripts>
 	</Button>
-	
+
+	<Frame name="CharCustomizeFrameWithTooltipTemplate" inherits="RingedFrameWithTooltipTemplate" mixin="CharCustomizeFrameWithTooltipMixin" virtual="true"/>
+	<CheckButton name="CharCustomizeMaskedButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, RingedMaskedButtonTemplate" mixin="CharCustomizeMaskedButtonMixin" virtual="true"/>
+		
 	<Button name="CharCustomizeSmallButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeSmallButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="48" y="48"/>
 		<KeyValues>
@@ -92,84 +80,6 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Button>
-	
-	<CheckButton name="CharCustomizeMaskedButtonTemplate" inherits="CharCustomizeBaseButtonTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeMaskedButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
-		<KeyValues>
-			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
-			<KeyValue key="circleMaskSizeOffset" value="2" type="number"/>
-			<KeyValue key="newTagYOffset" value="-5" type="number"/>
-		</KeyValues>
-		<NormalTexture parentKey="NormalTexture"/>
-		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.5"/>
-		<PushedTexture parentKey="PushedTexture">
-			<Anchors>
-				<Anchor point="TOPLEFT" x="1" y="-1"/>
-				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
-			</Anchors>
-		</PushedTexture>
-		<CheckedTexture parentKey="CheckedTexture" atlas="charactercreate-ring-select" texelSnappingBias="0.0" snapToPixelGrid="false">
-			<Anchors>
-				<Anchor point="CENTER" />
-			</Anchors>
-		</CheckedTexture>
-		
-		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture parentKey="DisabledOverlay" hidden="true" setAllPoints="true">
-					<Color r="0.0" g="0.0" b="0.0"/>
-				</Texture>
-				<Texture parentKey="Ring">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" />
-			</Layer>
-		</Layers>
-		
-		<Frames>
-			<Frame parentKey="Flash" setAllPoints="true" hidden="true">
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Portrait" setAllPoints="true" alphaMode="ADD" />
-						<Texture parentKey="Ring" alphaMode="ADD">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Ring2" alphaMode="ADD">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Animations>
-					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
-						<Alpha order="1" childKey="Portrait" duration="0.8" fromAlpha="0" toAlpha="0.6" />
-						<Alpha order="1" childKey="Portrait" duration="0.8" fromAlpha="0.6" toAlpha="0" startDelay="0.8" />
-						<Alpha order="1" childKey="Ring" duration="0.8" fromAlpha="0" toAlpha="1" />
-						<Alpha order="1" childKey="Ring" duration="0.8" fromAlpha="1" toAlpha="0" startDelay="0.8" />
-						<Alpha order="1" childKey="Ring2" duration="0.8" fromAlpha="1" toAlpha="0" />
-						<Scale order="1" childKey="Ring2" duration="0.8" fromScaleX="1.3" toScaleX="1" fromScaleY="1.3" toScaleY="1" smoothing="NONE" />
-					</AnimationGroup>
-				</Animations>
-			</Frame>
-			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="CENTER" relativePoint="BOTTOM"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		
-		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-			<OnClick method="OnClick" inherit="prepend"/>
-		</Scripts>
-	</CheckButton>
 
 	<CheckButton name="CharCustomizeAlteredFormButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeAlteredFormButtonMixin" virtual="true">
 		<Size x="79" y="79"/>
@@ -263,7 +173,7 @@
 			</Layer>
 		</Layers>
 	</CheckButton>
-	
+
 	<Frame name="CharCustomizeOptionSliderTemplate" inherits="SliderWithButtonsAndLabelTemplate, CharCustomizeFrameWithTooltipTemplate" mixin="CharCustomizeOptionSliderMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>

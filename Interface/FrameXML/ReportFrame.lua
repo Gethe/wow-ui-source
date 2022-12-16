@@ -4,50 +4,49 @@ function ReportFrameMixin:OnLoad()
 	NineSliceUtil.ApplyLayoutByName(self.Border, "Dialog");
 	self.minorCategoryFlags = CreateFromMixins(FlagsMixin);
 	self.minorCategoryFlags:OnLoad();
-	self.selectedMajorType = nil; 
+	self.selectedMajorType = nil;
 	self.MinorCategoryButtonPool = CreateFramePool("CHECKBUTTON", self, "ReportingFrameMinorCategoryButtonTemplate", FramePool_HideAndClearAnchors);
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
-end		
+end
 
 function ReportFrameMixin:OnHide()
 	self:Reset();
-	MainMenuBarBagManager:SetBagButtonsEnabled(true);
 end
 
 function ReportFrameMixin:OnEvent(event, ...)
-	if(event == "REPORT_PLAYER_RESULT") then 
+	if(event == "REPORT_PLAYER_RESULT") then
 		self:UpdateThankYouMessage(true);
-	end		
-end	
+	end
+end
 
 function ReportFrameMixin:Reset()
 	self.MinorCategoryButtonPool:ReleaseAll();
-	self.selectedMajorType = nil; 
-	self.Comment:ClearAllPoints(); 
+	self.selectedMajorType = nil;
+	self.Comment:ClearAllPoints();
 	self.reporPlayerLocation = nil;
-	self.reportInfo = nil; 
+	self.reportInfo = nil;
 	self.minorCategoryFlags:ClearAll();
 	self.Comment.EditBox:SetText("");
-	self:Layout(); 
+	self:Layout();
 end
 
 function ReportFrameMixin:UpdateThankYouMessage(showThankYouMessage)
-	self.MinorCategoryButtonPool:ReleaseAll(); 
-	self.Comment:SetShown(not showThankYouMessage); 
-	self.MinorReportDescription:SetShown(not showThankYouMessage); 
-	self.ReportString:SetShown(not showThankYouMessage); 
-	self.ReportButton:SetShown(not showThankYouMessage); 
+	self.MinorCategoryButtonPool:ReleaseAll();
+	self.Comment:SetShown(not showThankYouMessage);
+	self.MinorReportDescription:SetShown(not showThankYouMessage);
+	self.ReportString:SetShown(not showThankYouMessage);
+	self.ReportButton:SetShown(not showThankYouMessage);
 	self.ReportingMajorCategoryDropdown:SetShown(not showThankYouMessage);
-	self.ThankYouText:SetShown(showThankYouMessage); 
-	self.Watermark:SetShown(showThankYouMessage); 
-	self:Layout(); 
+	self.ThankYouText:SetShown(showThankYouMessage);
+	self.Watermark:SetShown(showThankYouMessage);
+	self:Layout();
 end
 
 function ReportFrameMixin:SetupDropdownByReportType(reportType)
-	self.ReportingMajorCategoryDropdown.reportType = reportType; 
+	self.ReportingMajorCategoryDropdown.reportType = reportType;
 	UIDropDownMenu_SetWidth(self.ReportingMajorCategoryDropdown, 200);
 	UIDropDownMenu_Initialize(self.ReportingMajorCategoryDropdown, ReportingMajorCategoryDropdownInitialize);
-	self.ReportingMajorCategoryDropdown:Show(); 
+	self.ReportingMajorCategoryDropdown:Show();
 end
 
 
@@ -62,99 +61,98 @@ function ReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation,
 	});
 end
 
-function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog) 	
-	if(not reportInfo) then 
+function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog)
+	if(not reportInfo) then
 		return;
-	end 
-
-	self.reportInfo = reportInfo; 
-	self:ReportByType(reportInfo.reportType);
-	self.reportPlayerLocation = playerLocation; 
-	self.playerName = playerName; 
-	self:UpdateThankYouMessage(false);
-	
-	self.isBnetReport = isBnetReport; 
-	self:SetShown(not sendReportWithoutDialog);
-	if (sendReportWithoutDialog) then 
-		self:SendReport(); 
-		self:Reset();
-		return; 
 	end
 
-	if(playerName) then 
+	self.reportInfo = reportInfo;
+	self:ReportByType(reportInfo.reportType);
+	self.reportPlayerLocation = playerLocation;
+	self.playerName = playerName;
+	self:UpdateThankYouMessage(false);
+
+	self.isBnetReport = isBnetReport;
+	self:SetShown(not sendReportWithoutDialog);
+	if (sendReportWithoutDialog) then
+		self:SendReport();
+		self:Reset();
+		return;
+	end
+
+	if(playerName) then
 		self.ReportString:SetText(REPORTING_REPORT_PLAYER:format(playerName));
-	end 
+	end
 	self.ReportString:SetShown(playerName)
 	self.MinorCategoryButtonPool:ReleaseAll();
-	self.selectedMajorType = nil; 
-	self.Comment:Hide(); 
+	self.selectedMajorType = nil;
+	self.Comment:Hide();
 	self.MinorReportDescription:Hide();
-	self.ReportButton:UpdateButtonState(); 
-	self:Layout(); 
-	MainMenuBarBagManager:SetBagButtonsEnabled(false);
-end		
+	self.ReportButton:UpdateButtonState();
+	self:Layout();
+end
 
 function ReportFrameMixin:ReportByType(reportType)
 	self:SetupDropdownByReportType(reportType);
 end
 
-function ReportFrameMixin:CanDisplayMinorCategory(minorCategory) 
-	if (minorCategory == Enum.ReportMinorCategory.BTag and not self.isBnetReport) then 
-		return false; 
-	elseif (minorCategory == Enum.ReportMinorCategory.GuildName) then 
-		if(self.reportInfo.clubFinderGUID) then 
+function ReportFrameMixin:CanDisplayMinorCategory(minorCategory)
+	if (minorCategory == Enum.ReportMinorCategory.BTag and not self.isBnetReport) then
+		return false;
+	elseif (minorCategory == Enum.ReportMinorCategory.GuildName) then
+		if(self.reportInfo.clubFinderGUID) then
 			local clubFinderType = C_ClubFinder.GetClubTypeFromFinderGUID(self.reportInfo.clubFinderGUID);
 			return clubFinderType and clubFinderType == Enum.ClubFinderRequestType.Guild;
-		else 
+		else
 			local playerLocationGUID =  self.reportPlayerLocation and self.reportPlayerLocation:GetGUID() or nil;
-			local reportedPlayer = playerLocationGUID and playerLocationGUID or self.reportInfo.reportTarget; 	
+			local reportedPlayer = playerLocationGUID and playerLocationGUID or self.reportInfo.reportTarget;
 			return IsPlayerInGuildFromGUID(reportedPlayer);
-		end 
-	elseif (self.reportInfo.reportType == Enum.ReportType.ClubFinderPosting and minorCategory == Enum.ReportMinorCategory.Name) then 
-		if (self.reportInfo.clubFinderGUID) then 
+		end
+	elseif (self.reportInfo.reportType == Enum.ReportType.ClubFinderPosting and minorCategory == Enum.ReportMinorCategory.Name) then
+		if (self.reportInfo.clubFinderGUID) then
 			local clubFinderType = C_ClubFinder.GetClubTypeFromFinderGUID(self.reportInfo.clubFinderGUID);
 			return clubFinderType and clubFinderType == Enum.ClubFinderRequestType.Community;
-		else 
-			return false; 
+		else
+			return false;
 		end
-	end		
-	return true; 
+	end
+	return true;
 end
 
 function ReportFrameMixin:MajorTypeSelected(reportType, majorType)
-	local minorCategories = C_ReportSystem.GetMinorCategoriesForReportTypeAndMajorCategory(reportType, majorType); 
-	self.selectedMajorType = majorType; 
+	local minorCategories = C_ReportSystem.GetMinorCategoriesForReportTypeAndMajorCategory(reportType, majorType);
+	self.selectedMajorType = majorType;
 	self.minorCategoryFlags:ClearAll();
-	if(not minorCategories) then 
-		return; 
-	end 
-	self.lastCategory = nil; 
-	self.MinorCategoryButtonPool:ReleaseAll(); 
-	for index, minorCategory in ipairs(minorCategories) do 
-		if (self:CanDisplayMinorCategory(minorCategory)) then 
+	if(not minorCategories) then
+		return;
+	end
+	self.lastCategory = nil;
+	self.MinorCategoryButtonPool:ReleaseAll();
+	for index, minorCategory in ipairs(minorCategories) do
+		if (self:CanDisplayMinorCategory(minorCategory)) then
 			self.lastCategory = self:AnchorMinorCategory(index, minorCategory);
 		end
-	end 
-	self.MinorReportDescription:Show(); 
-	self.Comment:ClearAllPoints(); 
+	end
+	self.MinorReportDescription:Show();
+	self.Comment:ClearAllPoints();
 	self.Comment:SetPoint("TOP", self.lastCategory, "BOTTOM", 0, -10);
-	self.Comment:Show(); 
-	self.ReportButton:UpdateButtonState(); 
-	self:Layout(); 
+	self.Comment:Show();
+	self.ReportButton:UpdateButtonState();
+	self:Layout();
 end
 
 function ReportFrameMixin:SetMajorType(type)
-	self.selectedMajorType = type; 
+	self.selectedMajorType = type;
 end
 
 function ReportFrameMixin:AnchorMinorCategory(index, minorCategory)
-	local minorCategoryButton = self.MinorCategoryButtonPool:Acquire(); 
+	local minorCategoryButton = self.MinorCategoryButtonPool:Acquire();
 
-	if(not self.lastCategory) then 
-		minorCategoryButton:SetPoint("TOP", self.MinorReportDescription, "BOTTOM", 0, -3); 
-	else 
+	if(not self.lastCategory) then
+		minorCategoryButton:SetPoint("TOP", self.MinorReportDescription, "BOTTOM", 0, -3);
+	else
 		minorCategoryButton:SetPoint("TOP", self.lastCategory, "BOTTOM", 0, -3);
-	end		
+	end
 
 	minorCategoryButton:SetupButton(minorCategory);
 	return minorCategoryButton;
@@ -162,218 +160,219 @@ end
 
 function ReportFrameMixin:SendReport()
 	if(not self.reportInfo) then
-		return; 
-	end		
+		return;
+	end
 
-	if(self.reportInfo.reportType == Enum.ReportType.PvP) then 
+	if(self.reportInfo.reportType == Enum.ReportType.PvP) then
 		ReportPlayerIsPVPAFK(self.playerName);
+		self:UpdateThankYouMessage(true);
 		return;
 	end
 
 	self.reportInfo:SetReportMajorCategory(self.selectedMajorType);
 	self.reportInfo:SetMinorCategoryFlags(self.minorCategoryFlags:GetFlags());
 	self.reportInfo:SetComment(self.Comment.EditBox:GetText());
-	C_ReportSystem.SendReport(self.reportInfo, self.reportPlayerLocation); 
-end 
+	C_ReportSystem.SendReport(self.reportInfo, self.reportPlayerLocation);
+end
 
 function ReportFrameMixin:SetMinorCategoryFlag(flag, flagValue)
 	self.minorCategoryFlags:SetOrClear(flag, flagValue);
-end 
+end
 
-ReportingMajorCategoryDropdownMixin = { }; 
+ReportingMajorCategoryDropdownMixin = { };
 function ReportingMajorCategoryDropdownInitialize(self)
-	if(not self.reportType) then 
-		return; 
-	end		
-	
+	if(not self.reportType) then
+		return;
+	end
+
 	local reportOptions = C_ReportSystem.GetMajorCategoriesForReportType(self.reportType);
-	if(not reportOptions) then 
-		return; 
+	if(not reportOptions) then
+		return;
 	end
-		
+
 	local info = UIDropDownMenu_CreateInfo();
-	local selectedMajorType = self:GetParent().selectedMajorType; 
-	for _, majorType in ipairs(reportOptions) do 
+	local selectedMajorType = self:GetParent().selectedMajorType;
+	for _, majorType in ipairs(reportOptions) do
 		local reportText = _G[C_ReportSystem.GetMajorCategoryString(majorType)];
-		if(reportText) then 
-			info.text = reportText; 
-			info.value = majorType; 
-			info.func = function() self:ValueSelected(self.reportType, majorType); end; 
-			info.checked = function() return selectedMajorType == majorType; end; 
+		if(reportText) then
+			info.text = reportText;
+			info.value = majorType;
+			info.func = function() self:ValueSelected(self.reportType, majorType); end;
+			info.checked = function() return selectedMajorType == majorType; end;
 			UIDropDownMenu_AddButton(info);
-		end		
+		end
 	end
-	self.Text:SetJustifyH("LEFT"); 
-	if (selectedMajorType) then 
+	self.Text:SetJustifyH("LEFT");
+	if (selectedMajorType) then
 		local selectedText = _G[C_ReportSystem.GetMajorCategoryString(selectedMajorType)];
 		UIDropDownMenu_SetText(self, selectedText);
-	else 
+	else
 		UIDropDownMenu_SetText(self, REPORTING_MAKE_SELECTION);
-	end 
+	end
 end
 
 function ReportingMajorCategoryDropdownMixin:ValueSelected(reportType, majorType)
 	self:GetParent():MajorTypeSelected(reportType, majorType);
 	UIDropDownMenu_SetText(self, _G[C_ReportSystem.GetMajorCategoryString(majorType)]);
-end	
+end
 
 ReportingFrameMinorCategoryButtonMixin = { };
 
 function ReportingFrameMinorCategoryButtonMixin:SetupButton(minorCategory)
-	if(not minorCategory) then 
-		return; 
-	end 
-	self.minorCategory = minorCategory; 
-	local categoryName = _G[C_ReportSystem.GetMinorCategoryString(minorCategory)];
-	if(not categoryName) then 
+	if(not minorCategory) then
 		return;
-	end 
+	end
+	self.minorCategory = minorCategory;
+	local categoryName = _G[C_ReportSystem.GetMinorCategoryString(minorCategory)];
+	if(not categoryName) then
+		return;
+	end
 
 	self:SetChecked(false);
 	self.Text:SetText(categoryName);
-	self:Show(); 
+	self:Show();
 end
 
 function ReportingFrameMinorCategoryButtonMixin:OnClick()
-	if(not self.minorCategory) then 
-		return; 
-	end 
+	if(not self.minorCategory) then
+		return;
+	end
 	self:GetParent():SetMinorCategoryFlag(self.minorCategory, self:GetChecked());
-	local parent = self:GetParent(); 
-	parent.ReportButton:UpdateButtonState(); 
+	local parent = self:GetParent();
+	parent.ReportButton:UpdateButtonState();
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
-ReportButtonMixin = { }; 
+ReportButtonMixin = { };
 function ReportButtonMixin:OnClick()
 	self:GetParent():SendReport();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 end
 
 function ReportButtonMixin:UpdateButtonState()
-	local parent = self:GetParent(); 	
+	local parent = self:GetParent();
 	self:SetEnabled(parent.selectedMajorType and parent.minorCategoryFlags:IsAnySet());
-end 
+end
 
 function ReportButtonMixin:OnEnter()
-	if(self:IsEnabled()) then 
+	if(self:IsEnabled()) then
 		return;
-	end 
+	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_AddErrorLine(GameTooltip, REPORTING_MAKE_SELECTION); 
-	GameTooltip:Show(); 
+	GameTooltip_AddErrorLine(GameTooltip, REPORTING_MAKE_SELECTION);
+	GameTooltip:Show();
 end
 
 function ReportButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
-	
+
 ReportInfo = { };
 function ReportInfo:CreateReportInfoFromType(reportType)
 	local reportInfo = CreateFromMixins(ReportInfoMixin);
 	reportInfo:SetReportType(reportType);
-	return reportInfo; 
+	return reportInfo;
 end
 
 function ReportInfo:CreateClubFinderReportInfo(reportType, clubFinderGUID)
 	local reportInfo = self:CreateReportInfoFromType(reportType);
 	reportInfo:SetClubFinderGUID(clubFinderGUID);
-	return reportInfo; 
+	return reportInfo;
 end
 
 function ReportInfo:CreatePetReportInfo(reportType, petGUID)
 	local reportInfo = self:CreateReportInfoFromType(reportType);
 	reportInfo:SetPetGUID(petGUID);
-	return reportInfo; 
+	return reportInfo;
 end
 
 function ReportInfo:CreateGroupFinderPostingReportInfo(reportType, postingID)
-	if(reportType ~= Enum.ReportType.GroupFinderPosting) then 
+	if(reportType ~= Enum.ReportType.GroupFinderPosting) then
 		return nil;
-	end 
+	end
 
 	local reportInfo = self:CreateReportInfoFromType(reportType);
-	reportInfo:SetGroupFinderSearchResultID(postingID); 
+	reportInfo:SetGroupFinderSearchResultID(postingID);
 	return reportInfo;
 end
 
 function ReportInfo:CreateGroupFinderApplicantReportInfo(reportType, applicantID)
-	if(reportType ~= Enum.ReportType.GroupFinderApplicant) then 
+	if(reportType ~= Enum.ReportType.GroupFinderApplicant) then
 		return nil;
-	end 
+	end
 	local reportInfo = self:CreateReportInfoFromType(reportType);
-	reportInfo:SetGroupFinderApplicantID(applicantID); 
-	return reportInfo; 
+	reportInfo:SetGroupFinderApplicantID(applicantID);
+	return reportInfo;
 end
 
 function ReportInfo:CreateMailReportInfo(reportType, mailIndex)
-	if(reportType ~= Enum.ReportType.Mail) then 
+	if(reportType ~= Enum.ReportType.Mail) then
 		return nil;
-	end 
+	end
 	local reportInfo = self:CreateReportInfoFromType(reportType);
 	reportInfo:SetMailIndex(mailIndex);
-	return reportInfo; 
+	return reportInfo;
 end
 
-ReportInfoMixin = { }; 
+ReportInfoMixin = { };
 function ReportInfoMixin:Clear()
 	self.reportType = nil;
 	self.majorCategory = nil;
 	self.minorCategoryFlags = nil;
 	self.reportTarget = nil;
-	self.comment = nil; 
+	self.comment = nil;
 	self.groupFinderSearchResultID = nil;
 	self.groupFinderApplicantID = nil;
 	self.clubFinderGUID = nil;
 	self.mailIndex = nil;
-	self.petGUID = nil; 
+	self.petGUID = nil;
 end
 
 function ReportInfoMixin:SetMailIndex(mailIndex)
 	self.mailIndex = mailIndex - 1;
-end 
+end
 
 function ReportInfoMixin:SetClubFinderGUID(clubFinderGUID)
-	self.clubFinderGUID = clubFinderGUID; 
-end		
+	self.clubFinderGUID = clubFinderGUID;
+end
 
 function ReportInfoMixin:SetReportTarget(reportTarget)
-	self.reportTarget = reportTarget; 
+	self.reportTarget = reportTarget;
 end
 
 function ReportInfoMixin:SetComment(comment)
-	self.comment = comment; 
-end		
+	self.comment = comment;
+end
 
-function ReportInfoMixin:SetGroupFinderSearchResultID(groupFinderSearchResultID) 
+function ReportInfoMixin:SetGroupFinderSearchResultID(groupFinderSearchResultID)
 	self.groupFinderSearchResultID = groupFinderSearchResultID
 end
 
-function ReportInfoMixin:SetGroupFinderApplicantID(groupFinderApplicantID) 
+function ReportInfoMixin:SetGroupFinderApplicantID(groupFinderApplicantID)
 	self.groupFinderApplicantID = groupFinderApplicantID
-end		
+end
 
 function ReportInfoMixin:SetReportType(reportType)
-	self.reportType = reportType; 
+	self.reportType = reportType;
 end
 
 function ReportInfoMixin:SetReportMajorCategory(majorCategory)
-	self.majorCategory = majorCategory; 
+	self.majorCategory = majorCategory;
 end
 
 function ReportInfoMixin:SetMinorCategoryFlags(minorCategoryFlags)
-	self.minorCategoryFlags = minorCategoryFlags; 
+	self.minorCategoryFlags = minorCategoryFlags;
 end
 
-function ReportInfoMixin:SetPetGUID(petGUID) 
-	self.petGUID = petGUID; 
-end		
+function ReportInfoMixin:SetPetGUID(petGUID)
+	self.petGUID = petGUID;
+end
 
 function ReportInfoMixin:SetBasicReportInfo(reportType, majorCategory, minorCategoryFlags)
-	self.majorCategory = majorCategory; 
-	self.minorCategoryFlags = minorCategoryFlags; 
-end	
+	self.majorCategory = majorCategory;
+	self.minorCategoryFlags = minorCategoryFlags;
+end
 
 do
 	local securecallfunction = securecallfunction;

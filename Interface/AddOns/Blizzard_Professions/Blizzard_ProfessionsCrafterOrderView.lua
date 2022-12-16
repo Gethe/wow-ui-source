@@ -189,9 +189,20 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     elseif event == "CRAFTINGORDERS_CLAIMED_ORDER_UPDATED" then
         local orderID = ...;
         if orderID == self.order.orderID then
-			-- Clear recrafting so that we go back to the order complete view if we were recrafting
-			self.recraftingOrderID = nil;
-            self:SetOrder(C_CraftingOrders.GetClaimedOrder());
+			local function Update()
+				-- Clear recrafting so that we go back to the order complete view if we were recrafting
+				self.recraftingOrderID = nil;
+				self:SetOrder(C_CraftingOrders.GetClaimedOrder());
+			end
+
+			if self.OrderDetails.SchematicForm.Details.QualityMeter.animating then
+				self.OrderDetails.SchematicForm.Details.QualityMeter:SetOnAnimationsFinished(function()
+					Update();
+					self.OrderDetails.SchematicForm.Details.QualityMeter:SetOnAnimationsFinished(nil);
+				end);
+			else
+				Update();
+			end
         end
     elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" or event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
 		self:SetOverrideCastBarActive(false);
@@ -263,6 +274,8 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
             if modification and modification.itemID > 0 then
                 local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
                 transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
+				self.reagentSlotProvidedByCustomer[slotIndex] = true;
+				reagentSlotToItemID[slotIndex] = modification.itemID;
             end
         end
     

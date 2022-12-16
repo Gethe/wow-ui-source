@@ -222,6 +222,11 @@ function DressUpMount(mountID, forcedFrame, shouldSetModelFromHyperlink, link)
 		return false;
 	end
 
+	local creatureDisplayID, _, _, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(mountID);
+	if ( not (shouldSetModelFromHyperlink and link) and not creatureDisplayID ) then
+		return false;
+	end
+
 	local frame = forcedFrame or GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
 
 	--Show the frame
@@ -229,8 +234,6 @@ function DressUpMount(mountID, forcedFrame, shouldSetModelFromHyperlink, link)
 		frame:SetMode("mount");
 		ShowUIPanel(frame);
 	end
-
-	local creatureDisplayID, _, _, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(mountID);
 
 	frame.ModelScene:ClearScene();
 	frame.ModelScene:SetViewInsets(0, 0, 0, 0);

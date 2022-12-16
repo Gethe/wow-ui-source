@@ -363,6 +363,22 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitPartialPower",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = false, Default = "NumPowerTypes" },
+				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "partialPower", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitPercentHealthFromGUID",
 			Type = "Function",
 
@@ -729,6 +745,11 @@ local Unit =
 			Name = "PetUiUpdate",
 			Type = "Event",
 			LiteralName = "PET_UI_UPDATE",
+		},
+		{
+			Name = "PlayerCanGlideChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_CAN_GLIDE_CHANGED",
 		},
 		{
 			Name = "PlayerDamageDoneMods",

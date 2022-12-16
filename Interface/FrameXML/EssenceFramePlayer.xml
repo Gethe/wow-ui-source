@@ -112,12 +112,6 @@
 						</Rotation>
 					</AnimationGroup>
 				</Animations>
-				<Scripts>
-					<OnShow>
-						self.FillingAnim:Play();
-						self.CircleAnim:Play();
-					</OnShow>
-				</Scripts>
 			</Frame>
 			
 			<Frame parentKey="EssenceFillDone" setAllPoints="true" frameStrata="MEDIUM" hidden="true">
@@ -279,11 +273,6 @@
 						<Translation smoothing="NONE" childKey="FXSmoke" duration=".3" order="1" offsetX="0" offsetY="2"/>
 					</AnimationGroup>
 				</Animations>
-				<Scripts>
-					<OnShow>
-						self.AnimIn:Play();
-					</OnShow>
-				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>

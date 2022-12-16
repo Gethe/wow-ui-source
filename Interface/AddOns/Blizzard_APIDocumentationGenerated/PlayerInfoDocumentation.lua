@@ -35,6 +35,20 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "CanUseItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUseable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAlternateFormInfo",
 			Type = "Function",
 
@@ -73,6 +87,26 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "GetDisplayID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "displayID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetGlidingInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isGliding", Type = "bool", Nilable = false },
+				{ Name = "canGlide", Type = "bool", Nilable = false },
+				{ Name = "forwardSpeed", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInstancesUnlockedAtLevel",
 			Type = "Function",
 
@@ -85,6 +119,15 @@ local PlayerInfo =
 			Returns =
 			{
 				{ Name = "dungeonID", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerCharacterData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "characterData", Type = "PlayerInfoCharacterData", Nilable = false },
 			},
 		},
 		{
@@ -166,6 +209,15 @@ local PlayerInfo =
 			Returns =
 			{
 				{ Name = "isRestricted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTravelersLogAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
 			},
 		},
 	},

@@ -126,13 +126,14 @@ function AuraContainerMixin:UpdateGridLayout(auras)
 	end
 
 	for index, aura in ipairs(auras) do
+		aura:SetScale(self.iconScale or 1);
 		aura:SetSize(auraWidth, auraHeight);
 
 		aura.Icon:ClearAllPoints();
 		aura.Icon:SetPoint(iconPoint, aura, iconPoint);
 
-		aura.duration:ClearAllPoints();
-		aura.duration:SetPoint(durationPoint, aura.Icon, durationRelativePoint);
+		aura.Duration:ClearAllPoints();
+		aura.Duration:SetPoint(durationPoint, aura.Icon, durationRelativePoint);
 	end
 	self:GetParent():UpdateSize(auraWidth, auraHeight, newLayoutInfo.iconStride or 1, newLayoutInfo.iconPadding or 0, self.iconScale or 1, newLayoutInfo.isHorizontal)
 
@@ -142,8 +143,6 @@ function AuraContainerMixin:UpdateGridLayout(auras)
 		newLayoutInfo.anchor,
 		newLayoutInfo.layout);
 
-	self:Layout();
-
 	-- Cache the new grid layout info so we know what needs to be update in future calls
 	self.currentGridLayoutInfo = newLayoutInfo;
 end
@@ -151,24 +150,32 @@ end
 AuraFrameMixin = {};
 
 function AuraFrameMixin:AuraFrame_OnLoad()
-	self.auraFrames = {};
-
 	self:RegisterUnitEvent("UNIT_AURA", "player", "vehicle");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
-	self.auraPool = CreateFramePoolCollection();
-	self.auraPool:CreatePool("BUTTON", self.AuraContainer, self.auraTemplate);
-	self.auraPool:CreatePool("Frame", self.AuraContainer, self.exampleAuraTemplate);
+	-- Create aura buttons
+	self.auraFrames = {};
+	for i = 1, self.maxAuras, 1 do
+		local auraFrame = CreateFrame("BUTTON", nil, self.AuraContainer, "AuraButtonTemplate");
+		table.insert(self.auraFrames, auraFrame);
+	end
+	self:UpdateGridLayout();
 end
 
 function AuraFrameMixin:AuraFrame_OnEvent(event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		self:Update();
 	elseif event == "UNIT_AURA" then
-		local unit = ...;
-		if unit == PlayerFrame.unit then
+		local unit, unitAuraUpdateInfo = ...;
+		local hasAurasToUpdate = unitAuraUpdateInfo ~= nil
+							and (unitAuraUpdateInfo.isFullUpdate
+								or (unitAuraUpdateInfo.addedAuras ~= nil and #unitAuraUpdateInfo.addedAuras > 0)
+								or (unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil and #unitAuraUpdateInfo.removedAuraInstanceIDs > 0)
+								or (unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil and #unitAuraUpdateInfo.updatedAuraInstanceIDs > 0));
+
+		if unit == PlayerFrame.unit and hasAurasToUpdate then
 			self:Update();
 		end
 	elseif event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
@@ -176,68 +183,82 @@ function AuraFrameMixin:AuraFrame_OnEvent(event, ...)
 	end
 end
 
--- Override this in frames which inherit AuraFrameMixin
-function AuraFrameMixin:UpdateAuras()
-end
-
 -- Override this in frames which inherit AuraFrameMixin if needed
 function AuraFrameMixin:IsExpanded()
 	return true;
 end
 
+function AuraFrameMixin:Update()
+	self:UpdateAuras();
+	self:UpdateAuraButtons();
+end
+
+-- Override this in frames which inherit AuraFrameMixin
+function AuraFrameMixin:UpdateAuras()
+	self.auraInfo = {};
+end
+
 function AuraFrameMixin:UpdateAuraButtons()
-	if not self.isInitialized then
+	if self:TryEditModeUpdateAuraButtons() then
 		return;
 	end
 
-	self.auraPool:ReleaseAllByTemplate(self.auraTemplate);
-	self.auraPool:ReleaseAllByTemplate("TempEnchantButtonTemplate");
-	self.auraFrames = {};
+	local isExpanded = self:IsExpanded();
+	local nextAuraInfoIndex = 1;
+	for _, auraFrame in ipairs(self.auraFrames) do
+		auraFrame.isExample = false;
 
-	if self.isInEditMode then
-		-- Decide num example auras to show
-		local maxExampleAuras;
-		if self.ShowFull then
-			maxExampleAuras = self.maxAuras;
+		if not self.auraInfo then
+			auraFrame:Hide();
 		else
-			maxExampleAuras = math.min(self.maxAuras, self.AuraContainer.iconStride + 3);
-		end
+			-- Get the auraInfo for the next showable aura
+			local auraInfo;
+			while nextAuraInfoIndex <= #self.auraInfo do
+				local potentialAuraInfo = self.auraInfo[nextAuraInfoIndex];
+				nextAuraInfoIndex = nextAuraInfoIndex + 1;
 
-		-- Show example auras
-		for index, exampleAuraFrame in ipairs(self.exampleAuraFrames) do
-			if index <= maxExampleAuras then
-				exampleAuraFrame:SetScale(self.AuraContainer.iconScale or 1);
-				exampleAuraFrame:Show();
-				table.insert(self.auraFrames, exampleAuraFrame);
-			else
-				exampleAuraFrame:Hide();
-			end
-		end
-	else
-		-- Hide example auras
-		if self.exampleAuraFrames then
-			for index, exampleAuraFrame in ipairs(self.exampleAuraFrames) do
-				exampleAuraFrame:Hide();
-			end
-		end
-
-		-- Setup and show normal auras
-		local isExpanded = self:IsExpanded();
-
-		for index, aura in ipairs(self.auraInfo) do
-			if not aura.hideUnlessExpanded or isExpanded then
-				local auraFrame;
-				if aura.isTempEnchant then
-					auraFrame = self.auraPool:Acquire("TempEnchantButtonTemplate");
-				else
-					auraFrame = self.auraPool:Acquire(self.auraTemplate);
+				-- Aura is only showable if we're expanded or the aura isn't hidden when collapsed
+				if isExpanded or not potentialAuraInfo.hideUnlessExpanded then
+					auraInfo = potentialAuraInfo;
+					break;
 				end
-				auraFrame:SetScale(self.AuraContainer.iconScale or 1);
-				auraFrame:Update(aura, isExpanded);
-				table.insert(self.auraFrames, auraFrame);
+			end
+
+			-- If we found a showable aura then set the button to that aura and show it, otherwise hide the button 
+			auraFrame:SetShown(auraInfo ~= nil);
+			if auraInfo then
+				auraFrame:Update(auraInfo);
 			end
 		end
 	end
+end
+
+function AuraFrameMixin:TryEditModeUpdateAuraButtons()
+	if self.isInEditMode then
+		if not self.hasInitializedForEditMode then
+			if not self.iconDataProvider then
+				local spellIconsOnly = true;
+				self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spell, spellIconsOnly);
+			end
+
+			local iconDataProviderNumIcons = self.iconDataProvider:GetNumIcons();
+
+			for index, auraFrame in ipairs(self.auraFrames) do
+				auraFrame.isExample = true;
+				auraFrame:UpdateAuraType(self.exampleAuraType);
+				auraFrame.Duration:SetFontObject(DEFAULT_AURA_DURATION_FONT);
+				auraFrame.Duration:SetFormattedText(SecondsToTimeAbbrev(index * 60));
+				auraFrame.Duration:Show();
+				auraFrame.Icon:SetTexture(self.iconDataProvider:GetIconByIndex(math.random(1, iconDataProviderNumIcons)));
+				auraFrame:Show();
+			end
+
+			self.hasInitializedForEditMode = true;
+		end
+	else
+		self.hasInitializedForEditMode = false;
+	end
+	return self.hasInitializedForEditMode;
 end
 
 function AuraFrameMixin:UpdateGridLayout()
@@ -247,14 +268,6 @@ end
 
 function AuraFrameMixin:UpdateAuraContainerAnchor()
 	-- Override this as necessary
-end
-
-function AuraFrameMixin:Update()
-	self.isInitialized = true;
-	self.auraInfo = {};
-	self:UpdateAuras();
-	self:UpdateAuraButtons();
-	self:UpdateGridLayout();
 end
 
 function AuraFrameMixin:UpdateSize(auraWidth, auraHeight, perRow, iconPadding, scale, isHorizontal)
@@ -276,9 +289,6 @@ function BuffFrameMixin:OnLoad()
 	self:RegisterEvent("WEAPON_SLOT_CHANGED");
 
 	self.isExpanded = true;
-	self.maxAuras = BUFF_MAX_DISPLAY;
-
-	self.auraPool:CreatePool("Button", self.AuraContainer, "TempEnchantButtonTemplate");
 end
 
 function BuffFrameMixin:OnEvent(event, ...)
@@ -367,10 +377,6 @@ function BuffFrameMixin:RefreshCollapseExpandButtonState()
 end
 
 function BuffFrameMixin:UpdateAuraButtons()
-	if not self.isInitialized then
-		return;
-	end
-
 	AuraFrameMixin.UpdateAuraButtons(self);
 
 	if self.isInEditMode then
@@ -395,7 +401,7 @@ function BuffFrameMixin:UpdatePlayerBuffs()
 		end
 
 		local index = #self.auraInfo + 1;
-		self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration,  expirationTime = expirationTime, timeMod = timeMod, hideUnlessExpanded = hideUnlessExpanded};
+		self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration,  expirationTime = expirationTime, timeMod = timeMod, hideUnlessExpanded = hideUnlessExpanded, auraType = "Buff"};
 
 		return #self.auraInfo > self.maxAuras;
 	end);
@@ -430,13 +436,15 @@ function BuffFrameMixin:UpdateTemporaryEnchantments(...)
 				self.numHideableBuffs = self.numHideableBuffs + 1;
 			end
 
-			local aura = { isTempEnchant = true, textureName = GetInventoryItemTexture("player", textureMapping[itemIndex]), ID = textureMapping[itemIndex], count = enchantCharges, expirationTime = expirationTime, hideUnlessExpanded = hideUnlessExpanded };
+			local aura = { isTempEnchant = true, textureName = GetInventoryItemTexture("player", textureMapping[itemIndex]), ID = textureMapping[itemIndex], count = enchantCharges, expirationTime = expirationTime, hideUnlessExpanded = hideUnlessExpanded, auraType = "TempEnchant" };
 			table.insert(self.auraInfo, aura);
 		end
 	end
 end
 
 function BuffFrameMixin:UpdateAuras()
+	AuraFrameMixin.UpdateAuras(self);
+
 	self:UpdatePlayerBuffs();
 	self:UpdateTemporaryEnchantments(GetWeaponEnchantInfo());
 end
@@ -450,11 +458,11 @@ DebuffFrameMixin = { };
 
 function DebuffFrameMixin:OnLoad()
 	self.maxAuras = DEBUFF_MAX_DISPLAY;
-
-	self.auraPool:CreatePool("BUTTON", self.AuraContainer, "DeadlyDebuffButtonTemplate");
 end
 
 function DebuffFrameMixin:UpdateAuras()
+	AuraFrameMixin.UpdateAuras(self);
+
 	self.deadlyDebuffInfo = {};
 
 	AuraUtil.ForEachAura(PlayerFrame.unit, "HARMFUL", self.maxAuras, function(...)
@@ -466,7 +474,7 @@ function DebuffFrameMixin:UpdateAuras()
 			table.insert(self.deadlyDebuffInfo, deadlyDebuff);
 		else
 			local index = #self.auraInfo + 1;
-			self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration, expirationTime = expirationTime, timeMod = timeMod, }
+			self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration, expirationTime = expirationTime, timeMod = timeMod, auraType = "Debuff" }
 		end
 
 		return (#self.auraInfo + #self.deadlyDebuffInfo) > self.maxAuras;
@@ -494,25 +502,25 @@ function DebuffFrameMixin:SetupDeadlyDebuffs()
 			local isInCriticalTimeRemaining2 = (self.deadlyDebuffInfo[mostCriticalDebuffIndex].overrideCriticalTimeRemaining) and (self.deadlyDebuffInfo[mostCriticalDebuffIndex].overrideCriticalTimeRemaining <= timeRemaining2)
 
 			--If the debuffs are both in their critical state, prioritize the one with the highest priority, if they have the same priority, use the time remaining. 
-			if (isInCriticalTimeRemaining1 and isInCriticalTimeRemaining2) then
-				if (priority1 > priority2) then 
+			if isInCriticalTimeRemaining1 and isInCriticalTimeRemaining2 then
+				if priority1 > priority2 then
 					mostCriticalDebuffIndex = i;
-				elseif (timeRemaining1 < timeRemaining2) then
+				elseif timeRemaining1 < timeRemaining2 then
 					mostCriticalDebuffIndex = i;
-				end 
+				end
 			-- If 1 is in critical time remaining.. use that. 
-			elseif (isInCriticalTimeRemaining1) then 
+			elseif isInCriticalTimeRemaining1 then
 				mostCriticalDebuffIndex = i;
 			else
 				--Keep using the mostCriticalDebuffIndex unless the current debuff info is a higher priorty or has less time remaining. 
 				--If the previous compared debuff is in the critical state, show that instead since it's more critical
-				if (not isInCriticalTimeRemaining2) then 
-					if (priority1 > priority2) then
+				if not isInCriticalTimeRemaining2 then
+					if priority1 > priority2 then
 						mostCriticalDebuffIndex = i;
-					elseif (timeRemaining1 < timeRemaining2) then
+					elseif timeRemaining1 < timeRemaining2 then
 						mostCriticalDebuffIndex = i;
 					end
-				end 
+				end
 			end
 		end
 	end
@@ -520,9 +528,9 @@ function DebuffFrameMixin:SetupDeadlyDebuffs()
 	if mostCriticalDebuffIndex then
 		DeadlyDebuffFrame:Setup(self.deadlyDebuffInfo[mostCriticalDebuffIndex]);
 
-		if (RaidBossEmoteFrame and RaidBossEmoteFrame:IsShown()) then
+		if RaidBossEmoteFrame and RaidBossEmoteFrame:IsShown() then
 			DeadlyDebuffFrame:SetPoint("TOP", RaidBossEmoteFrame, "BOTTOM");
-		elseif (RaidWarningFrame and RaidWarningFrame:IsShown()) then
+		elseif RaidWarningFrame and RaidWarningFrame:IsShown() then
 			DeadlyDebuffFrame:SetPoint("TOP", RaidWarningFrame, "BOTTOM");
 		else
 			DeadlyDebuffFrame:SetPoint("TOP", UIErrorsFrame, "BOTTOM");
@@ -534,6 +542,7 @@ function DebuffFrameMixin:SetupDeadlyDebuffs()
 	-- Add remaining deadly debuffs onto end of aura list so they appear at the end
 	for index, deadlyDebuff in ipairs(self.deadlyDebuffInfo) do
 		deadlyDebuff.index = #self.auraInfo + 1;
+		deadlyDebuff.auraType = "DeadlyDebuff";
 		self.auraInfo[deadlyDebuff.index] = deadlyDebuff;
 	end
 end
@@ -558,86 +567,82 @@ end
 
 AuraButtonMixin = { };
 
+function AuraButtonMixin:OnLoad()
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+
+	self:UpdateAuraType();
+end
+
+function AuraButtonMixin:OnClick(button)
+	if self.isExample then
+		return;
+	end
+
+	if self.auraType == "Buff" then
+		EventRegistry:TriggerEvent("BuffButton.OnClick", self, button);
+
+		if button == "RightButton" then
+			CancelUnitBuff(PlayerFrame.unit, self.buttonInfo.index, self:GetFilter());
+		end
+	elseif self.auraType == "Debuff" or self.auraType == "DeadlyDebuff" then
+		EventRegistry:TriggerEvent("BuffButton.OnClick", self, button);
+	elseif self.auraType == "TempEnchant" then
+		if button == "RightButton" then
+			--AubrieTODO: Figure out what we want to do with temp item enchants. 
+			if self:GetID() == 16 then
+				CancelItemTempEnchantment(1);
+			elseif self:GetID() == 17 then
+				CancelItemTempEnchantment(2);
+			elseif self:GetID() == 18 then
+				CancelItemTempEnchantment(3);
+			end
+		end
+	end
+end
+
 function AuraButtonMixin:OnEnter()
+	if self.isExample then
+		return;
+	end
+
+	if self.auraType == "TempEnchant" then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+		GameTooltip:SetInventoryItem("player", self:GetID());
+		return;
+	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 	GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
 	GameTooltip:SetUnitAura(PlayerFrame.unit, self.buttonInfo.index, self:GetFilter());
 end
 
 function AuraButtonMixin:OnLeave()
+	if self.isExample then
+		return;
+	end
+
 	GameTooltip:Hide();
 end
 
-function AuraButtonMixin:UpdateExpirationTime(buttonInfo)
-	if ( buttonInfo.expirationTime and buttonInfo.expirationTime > 0 ) then
-		self.duration:SetShown(CVarCallbackRegistry:GetCVarValueBool("buffDurations"));
-
-		local timeLeft = (buttonInfo.expirationTime - GetTime());
-		if( buttonInfo.timeMod and buttonInfo.timeMod > 0) then
-			self.timeMod = buttonInfo.timeMod;
-			timeLeft = timeLeft / buttonInfo.timeMod;
-		end
-
-		if ( not self.timeLeft ) then
-			self.timeLeft = timeLeft;
-			self:SetScript("OnUpdate", self.OnUpdate);
-		else
-			self.timeLeft = timeLeft;
-		end
-	else
-		self.duration:Hide();
-		self:SetScript("OnUpdate", nil);
-		self.timeLeft = nil;
-	end
-end
-
-function AuraButtonMixin:Update(buttonInfo, expanded)
-	if(not buttonInfo) then
-		return; 
-	end 
-	local helpful = (self:GetFilter() == "HELPFUL");
-	self.unit = PlayerFrame.unit;
-	self.buttonInfo = buttonInfo;
-
-	local canShow = (not buttonInfo.hideUnlessExpanded) or expanded;
-	self:SetShown(canShow);
-	if ( not helpful ) then
-		if ( self.Border ) then
-			local color;
-			if ( buttonInfo.debuffType ) then
-				color = DebuffTypeColor[buttonInfo.debuffType];
-				if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
-					self.symbol:Show();
-					self.symbol:SetText(DebuffTypeSymbol[buttonInfo.debuffType] or "");
-				else
-					self.symbol:Hide();
-				end
-			else
-				self.symbol:Hide();
-				color = DebuffTypeColor["none"];
-			end
-			self.Border:SetVertexColor(color.r, color.g, color.b);
-		end
-	end
-
-	self:UpdateExpirationTime(buttonInfo); 
-	self.Icon:SetTexture(buttonInfo.texture);
-
-	if ( buttonInfo.count > 1 ) then
-		self.count:SetText(buttonInfo.count);
-		self.count:Show();
-	else
-		self.count:Hide();
-	end
-
-	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetUnitAura(self.unit, buttonInfo.index, self:GetFilter());
-	end
-end
-
 function AuraButtonMixin:OnUpdate()
+	if self.isExample then
+		return;
+	end
+
+	if self.auraType == "TempEnchant" then
+		-- Update duration
+		if not PlayerFrame.unit or PlayerFrame.unit ~= "player" then
+			self:Hide();
+			return;
+		end
+
+		if GameTooltip:IsOwned(self) then
+			self:OnEnter();
+		end
+	end
+
 	local index = self.buttonInfo.index;
-	if ( self.timeLeft and self.timeLeft < BUFF_WARNING_TIME ) then
+	if self.timeLeft and self.timeLeft < BUFF_WARNING_TIME then
 		self:SetAlpha(1.0);
 	else
 		self:SetAlpha(1.0);
@@ -648,140 +653,172 @@ function AuraButtonMixin:OnUpdate()
 
 	-- Update our timeLeft
 	local timeLeft = self.buttonInfo.expirationTime - GetTime();
-	if ( self.buttonInfo.timeMod and self.buttonInfo.timeMod > 0 ) then
+	if self.buttonInfo.timeMod and self.buttonInfo.timeMod > 0 then
 		timeLeft = timeLeft / self.buttonInfo.timeMod;
 	end
 	self.timeLeft = max( timeLeft, 0 );
-	if ( SMALLER_AURA_DURATION_FONT_MIN_THRESHOLD ) then
+	if SMALLER_AURA_DURATION_FONT_MIN_THRESHOLD then
 		local aboveMinThreshold = self.timeLeft > SMALLER_AURA_DURATION_FONT_MIN_THRESHOLD;
 		local belowMaxThreshold = not SMALLER_AURA_DURATION_FONT_MAX_THRESHOLD or self.timeLeft < SMALLER_AURA_DURATION_FONT_MAX_THRESHOLD;
-		if ( aboveMinThreshold and belowMaxThreshold ) then
-			self.duration:SetFontObject(SMALLER_AURA_DURATION_FONT);
-			self.duration:SetPoint("TOP", self, "BOTTOM", 0, SMALLER_AURA_DURATION_OFFSET_Y);
+		if aboveMinThreshold and belowMaxThreshold then
+			self.Duration:SetFontObject(SMALLER_AURA_DURATION_FONT);
+			self.Duration:SetPoint("TOP", self, "BOTTOM", 0, SMALLER_AURA_DURATION_OFFSET_Y);
 		else
-			self.duration:SetFontObject(DEFAULT_AURA_DURATION_FONT);
-			self.duration:SetPoint("TOP", self, "BOTTOM");
+			self.Duration:SetFontObject(DEFAULT_AURA_DURATION_FONT);
+			self.Duration:SetPoint("TOP", self, "BOTTOM");
 		end
 	end
 
-	if ( GameTooltip:IsOwned(self) and not self:GetID() ) then
+	if GameTooltip:IsOwned(self) and not self:GetID() then
 		GameTooltip:SetUnitAura(PlayerFrame.unit, index, self:GetFilter());
 	end
 
-	if (self.isDeadlyDebuff and self.timeLeft <= 0) then 
-		DeadlyDebuffFrame:Hide() 
-	elseif ((self.buttonInfo.criticalTimeRemaining and self.buttonInfo.criticalTimeRemaining > 0) and timeLeft <= self.buttonInfo.criticalTimeRemaining) then
-		DebuffFrame:SetupDeadlyDebuffs(); 
+	if self.auraType == "DeadlyDebuff" and self.timeLeft <= 0 then
+		DeadlyDebuffFrame:Hide()
+	elseif (self.buttonInfo.criticalTimeRemaining and self.buttonInfo.criticalTimeRemaining > 0) and timeLeft <= self.buttonInfo.criticalTimeRemaining then
+		DebuffFrame:SetupDeadlyDebuffs();
+	end
+end
+
+function AuraButtonMixin:UpdateAuraType(auraType)
+	self.auraType = auraType;
+
+	self.Symbol:Hide();
+
+	if self.auraType == "Buff" then
+		self.DebuffBorder:Hide();
+		self.TempEnchantBorder:Hide();
+	elseif self.auraType == "Debuff" or self.auraType == "DeadlyDebuff" then
+		local color = DebuffTypeColor["none"];
+		self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
+		self.DebuffBorder:Show();
+		self.TempEnchantBorder:Hide();
+	elseif self.auraType == "TempEnchant" then
+		self.DebuffBorder:Hide();
+		self.TempEnchantBorder:Show();
+	end
+end
+
+function AuraButtonMixin:GetFilter()
+	if self.isExample then
+		return nil;
+	end
+
+	if self.auraType == "Buff" or self.auraType == "TempEnchant" then
+		return "HELPFUL";
+	elseif self.auraType == "Debuff" or self.auraType == "DeadlyDebuff" then
+		return "HARMFUL";
+	end
+
+	return nil;
+end
+
+function AuraButtonMixin:UpdateExpirationTime(buttonInfo)
+	if self.isExample then
+		return;
+	end
+
+	if buttonInfo.expirationTime and buttonInfo.expirationTime > 0 then
+		self.Duration:SetShown(CVarCallbackRegistry:GetCVarValueBool("buffDurations"));
+
+		local timeLeft = (buttonInfo.expirationTime - GetTime());
+		if buttonInfo.timeMod and buttonInfo.timeMod > 0 then
+			self.timeMod = buttonInfo.timeMod;
+			timeLeft = timeLeft / buttonInfo.timeMod;
+		end
+
+		if not self.timeLeft then
+			self.timeLeft = timeLeft;
+			self:SetScript("OnUpdate", self.OnUpdate);
+		else
+			self.timeLeft = timeLeft;
+		end
+	else
+		self.Duration:Hide();
+		self:SetScript("OnUpdate", nil);
+		self.timeLeft = nil;
+	end
+end
+
+function AuraButtonMixin:Update(buttonInfo)
+	if self.isExample then
+		return;
+	end
+
+	self:UpdateAuraType(buttonInfo.auraType);
+
+	self.buttonInfo = buttonInfo;
+	self.unit = PlayerFrame.unit;
+
+	if self.auraType == "TempEnchant" then
+		self.Icon:SetTexture(self.buttonInfo.textureName);
+		self:UpdateExpirationTime(buttonInfo);
+
+		if buttonInfo.count > 1 then
+			self.Count:SetText(buttonInfo.count);
+			self.Count:Show();
+		else
+			self.Count:Hide();
+		end
+
+		return;
+	end
+
+	if self:GetFilter() == "HARMFUL" then
+		local color;
+		if buttonInfo.debuffType then
+			color = DebuffTypeColor[buttonInfo.debuffType];
+			if CVarCallbackRegistry:GetCVarValueBool("colorblindMode") then
+				self.Symbol:Show();
+				self.Symbol:SetText(DebuffTypeSymbol[buttonInfo.debuffType] or "");
+			else
+				self.Symbol:Hide();
+			end
+		else
+			self.Symbol:Hide();
+			color = DebuffTypeColor["none"];
+		end
+		self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
+	end
+
+	self:UpdateExpirationTime(buttonInfo);
+	self.Icon:SetTexture(buttonInfo.texture);
+
+	if buttonInfo.count > 1 then
+		self.Count:SetText(buttonInfo.count);
+		self.Count:Show();
+	else
+		self.Count:Hide();
+	end
+
+	if GameTooltip:IsOwned(self) then
+		GameTooltip:SetUnitAura(self.unit, buttonInfo.index, self:GetFilter());
 	end
 end
 
 function AuraButtonMixin:GetID()
+	if self.isExample then
+		return nil;
+	end
+
 	return self.buttonInfo.ID;
 end
 
 function AuraButtonMixin:UpdateDuration(timeLeft)
-	local duration = self.duration;
-	if ( timeLeft and CVarCallbackRegistry:GetCVarValueBool("buffDurations") ) then
-		duration:SetFormattedText(SecondsToTimeAbbrev(timeLeft));
-		if ( timeLeft < BUFF_DURATION_WARNING_TIME ) then
-			duration:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	if self.isExample then
+		return;
+	end
+
+	if timeLeft and CVarCallbackRegistry:GetCVarValueBool("buffDurations") then
+		self.Duration:SetFormattedText(SecondsToTimeAbbrev(timeLeft));
+		if timeLeft < BUFF_DURATION_WARNING_TIME then
+			self.Duration:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		else
-			duration:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			self.Duration:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		end
-		duration:Show();
+		self.Duration:Show();
 	else
-		duration:Hide();
-	end
-end
-
-BuffButtonMixin = CreateFromMixins(AuraButtonMixin);
-function BuffButtonMixin:OnLoad()
-	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-end
-
-function BuffButtonMixin:GetFilter()
-	return "HELPFUL";
-end
-
-function BuffButtonMixin:OnClick(button)
-    EventRegistry:TriggerEvent("BuffButton.OnClick", self, button);
-
-    if(button == "RightButton") then
-        CancelUnitBuff(PlayerFrame.unit, self.buttonInfo.index, self:GetFilter());
-    end
-end
-
-DebuffButtonMixin = CreateFromMixins(AuraButtonMixin);
-function DebuffButtonMixin:GetFilter()
-	 return "HARMFUL";
-end
-
-function DebuffButtonMixin:OnClick(button)
-    EventRegistry:TriggerEvent("BuffButton.OnClick", self, button);
-end
-
-
-function DebuffButtonMixin:OnLoad()
-	self.duration:SetPoint("TOP", self, "BOTTOM", 0, -1);
-end
-
-TempEnchantButtonMixin = CreateFromMixins(AuraButtonMixin);
-
-function TempEnchantButtonMixin:OnLoad()
-	self:RegisterForClicks("RightButtonUp");
-end
-
-function TempEnchantButtonMixin:OnUpdate(elapsed)
-	-- Update duration
-	if( not PlayerFrame.unit or PlayerFrame.unit ~= "player") then
-		self:Hide();
-		return;
-	end
-
-	if ( GameTooltip:IsOwned(self) ) then
-		self:OnEnter();
-	end
-
-	AuraButtonMixin.OnUpdate(self, elapsed);
-end
-
-function TempEnchantButtonMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	GameTooltip:SetInventoryItem("player", self:GetID());
-end
-
-function TempEnchantButtonMixin:GetID()
-	return self.buttonInfo.ID;
-end
-
-function TempEnchantButtonMixin:Update(buttonInfo, expanded)
-	if (not buttonInfo) then
-		return;
-	end
-
-	self.buttonInfo = buttonInfo; 
-	self.Icon:SetTexture(self.buttonInfo.textureName);
-	self:UpdateExpirationTime(buttonInfo);
-
-	if (buttonInfo.count > 1) then
-		self.count:SetText(buttonInfo.count);
-		self.count:Show();
-	else
-		self.count:Hide();
-	end
-
-	local canShow = (not buttonInfo.hideUnlessExpanded) or expanded;
-	self:SetShown(canShow);
-end
-
---AubrieTODO: Figure out what we want to do with temp item enchants. 
-function TempEnchantButtonMixin:OnClick()
-	if ( self:GetID() == 16 ) then
-		CancelItemTempEnchantment(1);
-	elseif ( self:GetID() == 17 ) then
-		CancelItemTempEnchantment(2);
-	elseif ( self:GetID() == 18 ) then
-		CancelItemTempEnchantment(3);
+		self.Duration:Hide();
 	end
 end
 
@@ -831,16 +868,17 @@ function CollapseAndExpandButtonMixin:UpdateOrientation()
 	self:GetPushedTexture():SetRotation(rotation);
 end
 
-DeadlyDebuffFrameMixin = { };
+DeadlyDebuffFrameMixin = {};
+
 function DeadlyDebuffFrameMixin:OnShow()
 	self:RegisterEvent("CHAT_MSG_RAID_WARNING");
 	self:RegisterEvent("RAID_BOSS_EMOTE");
 end
 
 function DeadlyDebuffFrameMixin:OnEvent(event, ...)
-	if (event == "RAID_BOSS_EMOTE") then
+	if event == "RAID_BOSS_EMOTE" then
 		DeadlyDebuffFrame:SetPoint("TOP", RaidBossEmoteFrame, "BOTTOM");
-	elseif (event == "CHAT_MSG_RAID_WARNING") then
+	elseif event == "CHAT_MSG_RAID_WARNING" then
 		DeadlyDebuffFrame:SetPoint("TOP", RaidWarningFrame, "BOTTOM");
 	end
 end
@@ -853,15 +891,10 @@ end
 function DeadlyDebuffFrameMixin:Setup(deadlyDebuffInfo)
 	self.Debuff:Update(deadlyDebuffInfo);
 	self.WarningText:SetText(deadlyDebuffInfo.warningText)
-	if(deadlyDebuffInfo.soundKitID) then 
+
+	if deadlyDebuffInfo.soundKitID then
 		PlaySound(deadlyDebuffInfo.soundKitID);
 	end
-	self:Show(); 
-end 
 
-ExampleDebuffMixin = {};
-
-function ExampleDebuffMixin:Setup()
-	local color = DebuffTypeColor["none"];
-	self.Border:SetVertexColor(color.r, color.g, color.b)
+	self:Show();
 end

@@ -76,14 +76,6 @@
 			</ScrollFrame>
 			<Frame parentKey="BorderFrame" frameStrata="HIGH" setAllPoints="true">
 				<Layers>
-					<Layer level="BORDER">
-						<Texture parentKey="CloseButtonBorder" file="Interface\DialogFrame\UI-DialogBox-Corner">
-							<Size x="32" y="32"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="1" y="5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="TopLeft" atlas="battlefieldminimap-border-topleft" useAtlasSize="true">
 							<Anchors>
@@ -134,7 +126,7 @@
 				<Frames>
 					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="1" y="5"/>
+							<Anchor point="TOPRIGHT" x="2" y="6"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>

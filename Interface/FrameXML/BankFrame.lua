@@ -283,7 +283,7 @@ end
 
 function BankFrame_Open()
 	BankFrame_ShowPanel(BANK_PANELS[1].name);
-	SetPortraitTexture(BankPortraitTexture,"npc");
+	BankFrame:SetPortraitToUnit("npc");
 	ShowUIPanel(BankFrame);
 	if ( not BankFrame:IsShown() ) then
 		CloseBankFrame();

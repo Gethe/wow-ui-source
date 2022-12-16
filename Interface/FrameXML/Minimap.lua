@@ -503,6 +503,14 @@ local LOW_PRIORITY_TRACKING_SPELLS = {
 	[261764] = true; -- Track Warboards
 };
 
+local TRACKING_SPELL_OVERRIDE_TEXTURES = {
+	[43308] = "professions_tracking_fish";-- Find Fish
+	[2580] = "professions-crafting-orders-icon"; -- Find Minerals 1
+	[8388] = "professions-crafting-orders-icon"; -- Find Minerals 2
+	[2383] = "professions_tracking_herb"; -- Find Herbs 1
+	[8387] = "professions_tracking_herb"; -- Find Herbs 2
+};
+
 function MiniMapTrackingDropDown_SetTrackingNone()
 	C_Minimap.ClearAllTracking();
 	
@@ -578,7 +586,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 
 	local trackingInfos = { };
 	for id=1, count do
-		name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
+		name, texture, active, category, nested, spellID = C_Minimap.GetTrackingInfo(id);
 
 		if showAll or MiniMapTracking_FilterIsVisible(id) then
 			-- Remove nested townsfold unless showing all
@@ -590,7 +598,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 			info.text = name;
 			info.checked = MiniMapTrackingDropDown_IsActive;
 			info.func = MiniMapTrackingDropDown_SetTracking;
-			info.icon = texture;
+			info.icon = TRACKING_SPELL_OVERRIDE_TEXTURES[spellID] or texture;
 			info.arg1 = id;
 			info.isNotRadio = true;
 			info.keepShownOnClick = true;
@@ -665,6 +673,10 @@ function ExpansionLandingPageMinimapButtonMixin:OnLoad()
 
 	FrameUtil.RegisterFrameForEvents(self, GarrisonLandingPageEvents);
 	self.garrisonMode = true;
+end
+
+function ExpansionLandingPageMinimapButtonMixin:IsInGarrisonMode()
+	return self.garrisonMode;
 end
 
 function ExpansionLandingPageMinimapButtonMixin:RefreshButton()

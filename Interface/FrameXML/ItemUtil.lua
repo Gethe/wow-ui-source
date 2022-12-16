@@ -51,7 +51,7 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.RunecarverScrapping;
 	elseif ItemInteractionFrame and ItemInteractionFrame:IsShown() and ItemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.ItemConversion then
 		return ItemButtonUtil.ItemContextEnum.ItemConversion;
-	elseif ProfessionsFrame and ProfessionsFrame:IsShown() and ProfessionsFrame:GetCurrentRecraftingRecipeID() ~= nil then
+	elseif ProfessionsFrame and ProfessionsFrame.CraftingPage:IsVisible() and ProfessionsFrame:GetCurrentRecraftingRecipeID() ~= nil then
 		return ItemButtonUtil.ItemContextEnum.ItemRecrafting;
 	elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
 		return RuneforgeFrame:GetItemContext();

@@ -925,7 +925,7 @@ function MountJournalFilterDropDown_Initialize(self, level)
 	FilterDropDownSystem.Initialize(self, filterSystem, level);
 end
 
-function MountJournal_AddInMountTypes(level)
+function MountJournal_AddInMountTypes(filterSystem, level)
 	for i = 1, Enum.MountTypeMeta.NumValues do
 		if not C_MountJournal.IsValidTypeFilter(i) then
 			break;
@@ -936,7 +936,7 @@ function MountJournal_AddInMountTypes(level)
 					MountJournalResetFiltersButton_UpdateVisibility()
 				  end
 		local isSet = function() return C_MountJournal.IsTypeChecked(i) end;
-		FilterDropDownSystem.AddCheckBoxButton(mountTypeStrings[i - 1], set, isSet, level);
+		FilterDropDownSystem.AddCheckBoxButtonToFilterSystem(filterSystem, mountTypeStrings[i - 1], set, isSet, level);
 	end
 end
 

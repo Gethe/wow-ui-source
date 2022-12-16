@@ -51,7 +51,7 @@ OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT			= 0x08000;
 OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS			= 0x10000;
 OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS			= 0x20000;
 OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE	= 0x40000;
-
+OBJECTIVE_TRACKER_UPDATE_MODULE_MONTHLY_ACTIVITIES	= 0x80000;
 -- special updates
 OBJECTIVE_TRACKER_UPDATE_STATIC						= 0x0000;
 OBJECTIVE_TRACKER_UPDATE_ALL						= 0xFFFFFFFF;
@@ -829,6 +829,7 @@ function ObjectiveTracker_Initialize(self)
 						QUEST_TRACKER_MODULE,
 						ACHIEVEMENT_TRACKER_MODULE,
 						PROFESSION_RECIPE_TRACKER_MODULE,
+						MONTHLY_ACTIVITIES_TRACKER_MODULE,
 	};
 	self.MODULES_UI_ORDER = {	SCENARIO_CONTENT_TRACKER_MODULE,
 								UI_WIDGET_TRACKER_MODULE,
@@ -838,10 +839,13 @@ function ObjectiveTracker_Initialize(self)
 								WORLD_QUEST_TRACKER_MODULE,
 								ACHIEVEMENT_TRACKER_MODULE,
 								PROFESSION_RECIPE_TRACKER_MODULE,
+								MONTHLY_ACTIVITIES_TRACKER_MODULE,
 	};
 
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED");
+	self:RegisterEvent("PERKS_ACTIVITIES_TRACKED_UPDATED");
+	self:RegisterEvent("PERKS_ACTIVITY_COMPLETED");
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:RegisterEvent("QUEST_AUTOCOMPLETE");
 	self:RegisterEvent("QUEST_ACCEPTED");
@@ -878,6 +882,10 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
 	elseif ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
 		AchievementObjectiveTracker_OnAchievementUpdate(...);
+	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" ) then
+		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_MONTHLY_ACTIVITIES);
+	elseif ( event == "PERKS_ACTIVITY_COMPLETED" ) then
+		MonthlyActivitiesObjectiveTracker_OnActivityCompleted(...);
 	elseif ( event == "QUEST_ACCEPTED" ) then
 		local questID = ...;
 		if ( not C_QuestLog.IsQuestBounty(questID) ) then

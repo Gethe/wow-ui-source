@@ -61,7 +61,7 @@ function BarberShopMixin:UpdateSex()
 
 	local currentCharacterData = C_BarberShop.GetCurrentCharacterData();
 	if currentCharacterData then
-		CharCustomizeFrame:SetSelectedData(currentCharacterData.raceData, currentCharacterData.sex, C_BarberShop.IsViewingAlteredForm());
+		CharCustomizeFrame:SetSelectedData(currentCharacterData, currentCharacterData.sex, C_BarberShop.IsViewingAlteredForm());
 
 		local sexes = {Enum.UnitSex.Male, Enum.UnitSex.Female};
 		for index, sexID in ipairs(sexes) do

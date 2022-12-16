@@ -170,6 +170,15 @@ local CraftingOrderUI =
 			},
 		},
 		{
+			Name = "GetNumFavoriteCustomerOptions",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numFavorites", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetOrderClaimInfo",
 			Type = "Function",
 

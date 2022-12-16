@@ -229,4 +229,59 @@
 			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
+
+	<Frame name="EditModeMicroMenuSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeMicroMenuSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.MicroMenu" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_MICRO_MENU_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeBagsSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeBagsSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.Bags" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_BAGS_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeStatusTrackingBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeStatusTrackingBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.StatusTrackingBar" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeExperienceBarSystemTemplate" inherits="EditModeStatusTrackingBarSystemTemplate" mixin="EditModeExperienceBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeStatusTrackingBarSystemIndices.ExperienceBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_EXPERIENCE_BAR_LABEL" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeReputationBarContainer" inherits="EditModeStatusTrackingBarSystemTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeStatusTrackingBarSystemIndices.ReputationBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_REPUTATION_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeDurabilityFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeDurabilityFrameSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.DurabilityFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_DURABILITY_FRAME_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
 </Ui>

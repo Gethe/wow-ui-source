@@ -66,6 +66,8 @@ function TalentDisplayMixin:OnRelease()
 	self.matchType = nil;
 	self.shouldGlow = nil;
 	self.isGhosted = nil;
+
+	self:ResetActiveVisuals();
 end
 
 function TalentDisplayMixin:SetTooltipInternal()
@@ -299,7 +301,7 @@ function TalentDisplayMixin:IsInspecting()
 end
 
 function TalentDisplayMixin:UpdateMouseOverInfo()
-	if self:IsMouseOver() then
+	if GetMouseFocus() == self then
 		self:OnEnter();
 	end
 end
@@ -335,6 +337,11 @@ function TalentDisplayMixin:UpdateNonStateVisuals()
 	-- Should include updating visuals that are not dependent on the current VisualState.
 end
 
+function TalentDisplayMixin:ResetActiveVisuals()
+	-- Implement in your derived mixin.
+	-- Should include disabling active dynamic visuals like animations, FX, etc.
+end
+
 function TalentDisplayMixin:UpdateSearchIcon()
 	-- Implement in your derived mixin.
 end
@@ -348,6 +355,10 @@ function TalentDisplayMixin:OnEnterVisuals()
 end
 
 function TalentDisplayMixin:OnLeaveVisuals()
+	-- Implement in your derived mixin.
+end
+
+function TalentDisplayMixin:UpdateColorBlindVisuals(isColorBlindModeActive)
 	-- Implement in your derived mixin.
 end
 
@@ -470,6 +481,7 @@ function TalentButtonBaseMixin:FullUpdate()
 end
 
 function TalentButtonBaseMixin:ResetDynamic()
+	self:ResetActiveVisuals();
 	self:FullUpdate();
 end
 
@@ -523,8 +535,11 @@ end
 function TalentButtonBaseMixin:AddTooltipCost(tooltip)
 	-- Overrides TalentDisplayMixin.
 
-	local traitCurrenciesCost = self:GetTraitCurrenciesCost();
-	self:GetTalentFrame():AddCostToTooltip(tooltip, traitCurrenciesCost);
+	-- Only show cost if we can refund or increase the rank.
+	if self:CanRefundRank() or not self:IsMaxed() then
+		local traitCurrenciesCost = self:GetTraitCurrenciesCost();
+		self:GetTalentFrame():AddCostToTooltip(tooltip, traitCurrenciesCost);
+	end
 end
 
 function TalentButtonBaseMixin:AddTooltipErrors(tooltip)
@@ -657,6 +672,7 @@ TalentButtonBasicArtMixin.SizingAdjustment = {
 		{ region = "Ghost", adjust = 0, },
 		{ region = "Glow", adjust = 0, },
 		{ region = "SelectableGlow", adjust = 0, },
+		{ region = "SpendText", anchorX = 20 },
 	}
 };
 
@@ -692,10 +708,20 @@ function TalentButtonBasicArtMixin:ApplySize(width, height)
 		return;
 	end
 
-	for i, sizingAdjustmentInfo in ipairs(sizingAdjustment) do
-		local adjustment = sizingAdjustmentInfo.adjust;
-		if self[sizingAdjustmentInfo.region] then
-		self[sizingAdjustmentInfo.region]:SetSize(width + adjustment, height + adjustment);
+	for _, sizingAdjustmentInfo in ipairs(sizingAdjustment) do
+		local region = self[sizingAdjustmentInfo.region];
+		if region then
+			local sizeAdjustment = sizingAdjustmentInfo.adjust;
+			local anchorX = sizingAdjustmentInfo.anchorX;
+			local anchorY = sizingAdjustmentInfo.anchorY;
+
+			if sizeAdjustment then
+				region:SetSize(width + sizeAdjustment, height + sizeAdjustment);
+			end
+			if anchorX or anchorY then
+				local point, relativeTo, relativePoint, x, y = region:GetPoint();
+				region:SetPoint(point, relativeTo, relativePoint, anchorX or x, anchorY or y);
+			end
 		end
 	end
 end
@@ -714,6 +740,7 @@ TalentButtonArtMixin.ArtSet = {
 		locked = "talents-node-square-locked",
 		glow = "talents-node-square-greenglow",
 		ghost = "talents-node-square-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
 	},
 
 	Circle = {
@@ -726,6 +753,7 @@ TalentButtonArtMixin.ArtSet = {
 		locked = "talents-node-circle-locked",
 		glow = "talents-node-circle-greenglow",
 		ghost = "talents-node-circle-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
 	},
 
 	Choice = {
@@ -737,7 +765,8 @@ TalentButtonArtMixin.ArtSet = {
 		maxed = "talents-node-choice-yellow",
 		locked = "talents-node-choice-locked",
 		glow = "talents-node-choice-greenglow",
-		ghost = "talents-node-choice-ghost"
+		ghost = "talents-node-choice-ghost",
+		spendFont = "SystemFont16_Shadow_ThickOutline",
 	},
 
 	LargeSquare = {
@@ -750,6 +779,7 @@ TalentButtonArtMixin.ArtSet = {
 		locked = "talents-node-choiceflyout-square-locked",
 		glow = "talents-node-choiceflyout-square-greenglow",
 		ghost = "talents-node-choiceflyout-square-ghost",
+		spendFont = "SystemFont22_Shadow_ThickOutline",
 	},
 
 	LargeCircle = {
@@ -762,6 +792,7 @@ TalentButtonArtMixin.ArtSet = {
 		locked = "talents-node-choiceflyout-circle-locked",
 		glow = "talents-node-choiceflyout-circle-greenglow",
 		ghost = "talents-node-choiceflyout-circle-ghost",
+		spendFont = "SystemFont22_Shadow_ThickOutline",
 	},
 };
 
@@ -780,6 +811,13 @@ function TalentButtonArtMixin:OnLoad()
 	self.Ghost:SetAtlas(self.artSet.ghost, TextureKitConstants.UseAtlasSize);
 	self.Shadow:SetAtlas(self.artSet.shadow, TextureKitConstants.UseAtlasSize);
 
+	self.SpendText:SetFontObject(self.artSet.spendFont);
+	if self.spendTextShadows then
+		for _, shadow in ipairs(self.spendTextShadows) do
+			shadow:SetFontObject(self.artSet.spendFont);
+		end
+	end
+
 	if self.SearchIcon then
 		self.SearchIcon.Mouseover:SetScript("OnEnter", GenerateClosure(self.OnSearchIconEnter, self));
 	end
@@ -796,6 +834,10 @@ function TalentButtonArtMixin:ApplyVisualState(visualState)
 	local isDisabled = isGated or (visualState == TalentButtonUtil.BaseVisualState.Locked) or (visualState == TalentButtonUtil.BaseVisualState.Disabled);
 	self.Icon:SetDesaturated(isDisabled);
 	self.DisabledOverlay:SetShown(isDisabled);
+
+	if self.SelectableIcon then
+		self.SelectableIcon:SetShown(visualState == TalentButtonUtil.BaseVisualState.Selectable and CVarCallbackRegistry:GetCVarValueBool("colorblindMode"));
+	end
 
 	self:UpdateStateBorder(visualState);
 end
@@ -844,10 +886,20 @@ function TalentButtonArtMixin:ApplySize(width, height)
 		return;
 	end
 
-	for i, sizingAdjustmentInfo in ipairs(sizingAdjustment) do
-		local adjustment = sizingAdjustmentInfo.adjust;
-		if self[sizingAdjustmentInfo.region] then
-			self[sizingAdjustmentInfo.region]:SetSize(width + adjustment, height + adjustment);
+	for _, sizingAdjustmentInfo in ipairs(sizingAdjustment) do
+		local region = self[sizingAdjustmentInfo.region];
+		if region then
+			local sizeAdjustment = sizingAdjustmentInfo.adjust;
+			local anchorX = sizingAdjustmentInfo.anchorX;
+			local anchorY = sizingAdjustmentInfo.anchorY;
+
+			if sizeAdjustment then
+				region:SetSize(width + sizeAdjustment, height + sizeAdjustment);
+			end
+			if anchorX or anchorY then
+				local point, relativeTo, relativePoint, x, y = region:GetPoint();
+				region:SetPoint(point, relativeTo, relativePoint, anchorX or x, anchorY or y);
+			end
 		end
 	end
 end
@@ -893,19 +945,6 @@ function TalentButtonArtMixin:OnSearchIconEnter()
 	end
 end
 
-function TalentButtonArtMixin:PlayPurchaseEffect(fxModelScene, fxIDs)
-	
-	if (fxIDs) then
-		for _, fxID in ipairs(fxIDs) do
-			fxModelScene:AddEffect(fxID, self, self);
-		end
-	end
-
-	if self.PurchaseVisuals and self.PurchaseVisuals.Anim then
-		self.PurchaseVisuals.Anim:SetPlaying(true);
-	end
-end
-
 function TalentButtonArtMixin:UpdateSearchIcon()
 	if not self.SearchIcon then
 		return;
@@ -940,6 +979,64 @@ function TalentButtonArtMixin:OnLeaveVisuals()
 	if self.StateBorderHover then
 		self.StateBorderHover:Hide();
 	end
+end
+
+function TalentButtonArtMixin:UpdateColorBlindVisuals(isColorBlindModeActive)
+	local visualState = self:GetVisualState();
+	if self.SelectableIcon then
+		self.SelectableIcon:SetShown(visualState == TalentButtonUtil.BaseVisualState.Selectable and isColorBlindModeActive);
+	end
+end
+
+function TalentButtonArtMixin:PlayPurchaseInProgressEffect(fxModelScene, fxIDs)
+	self.purchaseInProgressEffects = self:InternalPlayAnimEffects(self.purchaseInProgressEffects, fxModelScene, fxIDs);
+end
+
+function TalentButtonArtMixin:StopPurchaseInProgressEffect()
+	self:InternalStopAnimEffects(self.purchaseInProgressEffects);
+	self.purchaseInProgressEffects = nil;
+end
+
+function TalentButtonArtMixin:PlayPurchaseCompleteEffect(fxModelScene, fxIDs)
+	self.purchaseCompleteEffects = self:InternalPlayAnimEffects(self.purchaseCompleteEffects, fxModelScene, fxIDs);
+end
+
+function TalentButtonArtMixin:StopPurchaseCompleteEffect()
+	self:InternalStopAnimEffects(self.purchaseCompleteEffects);
+	self.purchaseCompleteEffects = nil;
+end
+
+function TalentButtonArtMixin:InternalPlayAnimEffects(animEffectControllers, fxModelScene, fxIDs)
+	if animEffectControllers then
+		self:InternalStopAnimEffects();
+		animEffectControllers = nil;
+	end
+
+	if (fxIDs) then
+		animEffectControllers = {};
+		for _, fxID in ipairs(fxIDs) do
+			table.insert(animEffectControllers, fxModelScene:AddEffect(fxID, self, self));
+		end
+	end
+
+	return animEffectControllers;
+end
+
+function TalentButtonArtMixin:InternalStopAnimEffects(animEffectControllers)
+	if not animEffectControllers then
+		return;
+	end
+
+	for _, fxController in ipairs(animEffectControllers) do
+		if fxController and fxController.CancelEffect then
+			fxController:CancelEffect();
+		end
+	end
+end
+
+function TalentButtonArtMixin:ResetActiveVisuals()
+	self:StopPurchaseInProgressEffect();
+	self:StopPurchaseCompleteEffect();
 end
 
 TalentButtonSplitIconMixin = {};

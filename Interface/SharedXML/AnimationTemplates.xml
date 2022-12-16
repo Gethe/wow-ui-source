@@ -19,4 +19,12 @@
 			<OnFinished method="Hide"/>
 		</Scripts>
 	</AnimationGroup>
+
+	<AnimationGroup name="TargetsHiddenOnFinishedAnimGroupTemplate" mixin="TargetsVisibleWhilePlayingAnimGroupMixin" virtual="true">
+		<Scripts>
+			<OnPlay method="Show"/>
+			<OnStop method="Hide"/>
+			<OnFinished method="Hide"/>
+		</Scripts>
+	</AnimationGroup>
 </Ui>

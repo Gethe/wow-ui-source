@@ -884,7 +884,7 @@ function EmbeddedItemTooltip_SetSpellWithTextureByID(self, spellID, texture)
 		EmbeddedItemTooltip_PrepareForSpell(self);
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
 		local tooltipInfo = CreateBaseTooltipInfo("GetSpellByID", spellID);
-		GameTooltip:ProcessInfo(tooltipInfo);
+		self.Tooltip:ProcessInfo(tooltipInfo);
 		SetItemButtonQuality(self, Enum.ItemQuality.Common);
 		SetItemButtonCount(self, 0);
 		self.Icon:SetTexture(texture);
@@ -955,7 +955,7 @@ function GameTooltipDataMixin:SetWorldCursor(anchorType)
 	elseif anchorType == Enum.WorldCursorAnchorType.Cursor then
 		self:SetOwner(UIParent, "ANCHOR_CURSOR");
 	elseif anchorType == Enum.WorldCursorAnchorType.Nameplate then
-		self:SetOwner(UIParent);
+		self:SetOwner(UIParent, "ANCHOR_NONE");
 		self:SetObjectTooltipPosition();
 	end
 

@@ -130,7 +130,7 @@ function PVPHeaderStringMixin:Init(textID, textAlignment, sortType, tooltipText)
 	
 	-- Clamp the width to force wrapping, if applicable.
 	local width = text:GetStringWidth();
-	local maxColumnWidth = 80;
+	local maxColumnWidth = 85;
 	text:SetWidth(math.min(width, maxColumnWidth));
 
 	-- Reassign the wrapped width to ensure our region is confined to
@@ -412,6 +412,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		end
 	end
 	
+	local mmrPre = false;
 	local ratingPre = false;
 	local ratingPost = false;
 	local ratingChange = false;
@@ -420,6 +421,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 			-- Skirmish is considered rated for matchmaking reasons.
 			ratingChange = not IsArenaSkirmish();
 			ratingPost = true;
+			mmrPre = C_PvP.IsRatedSoloShuffle();
 		else
 			ratingPre = true;
 		end
@@ -444,6 +446,13 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_RATING_CHANGE, "CENTER", "bgratingChange", RATING_CHANGE_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "ratingChange", useAlternateColor);
+	end
+
+	if mmrPre then
+		column = tableBuilder:AddColumn();
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_MATCHMAKING_VALUE, "CENTER", "mmrPre", BATTLEGROUND_MATCHMAKING_VALUE);
+		column:ConstrainToHeader(textPadding);
+		column:ConstructCells("FRAME", "PVPCellStringTemplate", "prematchMMR", useAlternateColor);
 	end
 
 	tableBuilder:Arrange();

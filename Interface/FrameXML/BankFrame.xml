@@ -110,14 +110,6 @@
 	<Frame name="BankFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="PortraitFrameTemplate" mixin="BankFrameMixin">
 		<Size x="386" y="415"/>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="BankPortraitTexture" >
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\BankFrame\Bank-Background" horizTile="true" vertTile="true">
 					<Size x="256" y="256"/>

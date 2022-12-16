@@ -69,21 +69,37 @@ function SetKioskTooltip(frame)
 end
 
 --Positioning and visual states
-function UpdateMicroButtonsParent(parent)
-	for i=1, #MICRO_BUTTONS do
-		_G[MICRO_BUTTONS[i]]:SetParent(parent);
+function ResetMicroMenuPosition()
+	if EditModeManagerFrame:IsEditModeActive() then
+		MicroMenu:HighlightSystem();
 	end
+
+	MicroMenu:SetParent(UIParent);
+	MicroMenu.stride = MicroMenu.numButtons;
+
+	local forceFullUpdate = true;
+	EditModeManagerFrame:UpdateSystem(MicroMenu, forceFullUpdate);
+
+	UpdateMicroButtons();
 end
 
-function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked)
-	CharacterMicroButton:ClearAllPoints();
-	CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
-	LFDMicroButton:ClearAllPoints();
-	if ( isStacked ) then
-		LFDMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, -1);
-	else
-		LFDMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", 1, 0);
+function OverrideMicroMenuPosition(parent, anchor, anchorTo, relAnchor, x, y, isStacked)
+	if EditModeManagerFrame:IsEditModeActive() then
+		MicroMenu:ClearHighlight();
 	end
+
+	MicroMenu:SetScale(1);
+	MicroMenu:SetParent(parent);
+
+	MicroMenu.stride = (isStacked and MicroMenu.numButtons / 2 or MicroMenu.numButtons);
+	MicroMenu.isHorizontal = true;
+	MicroMenu.layoutFramesGoingRight = true;
+	MicroMenu.layoutFramesGoingUp = false;
+	MicroMenu:Layout();
+
+	MicroMenu:ClearAllPoints();
+	MicroMenu:SetPoint(anchor, anchorTo, relAnchor, x, y);
+
 	UpdateMicroButtons();
 end
 
@@ -1308,4 +1324,52 @@ end
 
 function MainMenuMicroButtonMixin:SetNormal()
 	self:SetButtonState("NORMAL");
+end
+
+MicroMenuMixin = {};
+
+-- Gets the button on the the extreme edge of the micro menu based on the inputs and the orientation of the bar
+function MicroMenuMixin:GetEdgeButton(rightMost, topMost)
+	local characterButtonX, characterButtonY = CharacterMicroButton:GetCenter();
+	local mainMenuButtonX, mainMenuButtonY = MainMenuMicroButton:GetCenter();
+
+	if self.isHorizontal then
+		if rightMost then
+			return characterButtonX > mainMenuButtonX and CharacterMicroButton or MainMenuMicroButton;
+		else -- leftMost
+			return characterButtonX < mainMenuButtonX and CharacterMicroButton or MainMenuMicroButton;
+		end
+	else
+		if topMost then
+			return characterButtonY > mainMenuButtonY and CharacterMicroButton or MainMenuMicroButton;
+		else -- bottomMost
+			return characterButtonY < mainMenuButtonY and CharacterMicroButton or MainMenuMicroButton;
+		end
+	end
+end
+
+function MicroMenuMixin:UpdateHelpTicketButtonAnchor()
+	if not HelpOpenWebTicketButton then
+		return;
+	end
+
+	-- Update help button anchor so it stays on screen
+	local scale = self:GetScale();
+	local centerX, centerY = self:GetCenter();
+	centerX = centerX * scale;
+	centerY = centerY * scale;
+
+	local halfScreenWidth = GetScreenWidth() / 2;
+	local halfScreenHeight = GetScreenHeight() / 2;
+	local isOnLeftSideOfScreen = centerX < halfScreenWidth;
+	local isOnBottomSideOfScreen = centerY < halfScreenHeight;
+
+	local relativeTo = self:GetEdgeButton(isOnLeftSideOfScreen, isOnBottomSideOfScreen);
+	local offsetY = isOnBottomSideOfScreen and 25 or -25;
+	HelpOpenWebTicketButton:SetPoint("CENTER", relativeTo, "CENTER", 0, offsetY);
+end
+
+function MicroMenuMixin:Layout()
+	GridLayoutFrameMixin.Layout(self);
+	self:UpdateHelpTicketButtonAnchor();
 end

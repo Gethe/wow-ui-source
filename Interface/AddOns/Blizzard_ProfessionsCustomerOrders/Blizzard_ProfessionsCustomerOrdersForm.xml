@@ -267,14 +267,6 @@
 							</Anchors>
 							<Color color="GRAY_FONT_COLOR"/>
 						</FontString>
-
-						<FontString parentKey="RecraftWarningText" inherits="GameFontHighlight" text="CRAFTING_ORDER_RECRAFT_WARNING1" justifyH="CENTER">
-							<Size x="480" y="0"/>
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="20"/>
-							</Anchors>
-							<Color color="RED_FONT_COLOR"/>
-						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -504,6 +496,13 @@
 					</CheckButton>
 				</Frames>
 			</Frame>
+
+			<CheckButton parentKey="AllocateBestQualityCheckBox" inherits="UICheckButtonTemplate">
+				<Size x="26" y="26"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ReagentContainer" x="6" y="-3"/>
+				</Anchors>
+			</CheckButton>
 		
 			<Frame parentKey="QualityDialog" inherits="ProfessionsQualityDialogTemplate" frameStrata="DIALOG" hidden="true">
 				<Anchors>

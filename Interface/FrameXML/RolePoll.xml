@@ -68,8 +68,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<Button name="$parentCloseButton">
-				<Size x="32" y="32"/>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButtonNoScripts">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 				</Anchors>
@@ -79,9 +78,6 @@
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentRoleButtonTank" inherits="RolePollRoleButtonTemplate" id="2">
 				<Size x="70" y="70"/>

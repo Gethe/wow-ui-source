@@ -4508,7 +4508,7 @@ end
 
 function ChatEdit_DeactivateChat(editBox)
 	if ( ACTIVE_CHAT_EDIT_BOX == editBox ) then
-		ACTIVE_CHAT_EDIT_BOX = nil;
+		_G.ACTIVE_CHAT_EDIT_BOX = nil;
 	end
 
 	ChatEdit_SetDeactivated(editBox);

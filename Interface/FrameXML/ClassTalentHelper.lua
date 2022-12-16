@@ -38,14 +38,14 @@ end
 
 --------------------------- Slash Command Helpers --------------------------------
 
-local function SwitchToLoadoutByNameCommand(msg)
+SlashCmdList["TALENT_LOADOUT_BY_NAME"] = function(msg)
 	local loadoutName = SecureCmdOptionParse(msg);
 	if loadoutName and loadoutName ~= "" then
 		ClassTalentHelper.SwitchToLoadoutByName(loadoutName);
 	end
 end
 
-local function SwitchToLoadoutByIndexCommand(msg)
+SlashCmdList["TALENT_LOADOUT_BY_INDEX"] = function(msg)
 	local loadoutIndex = SecureCmdOptionParse(msg);
 	if loadoutIndex and loadoutIndex ~= "" then
 		loadoutIndex = tonumber(loadoutIndex);
@@ -55,14 +55,14 @@ local function SwitchToLoadoutByIndexCommand(msg)
 	end
 end
 
-local function SwitchToSpecializationByNameCommand(msg)
+SlashCmdList["TALENT_SPEC_BY_NAME"] = function(msg)
 	local specName = SecureCmdOptionParse(msg);
 	if specName and specName ~= "" then
 		ClassTalentHelper.SwitchToSpecializationByName(specName);
 	end
 end
 
-local function SwitchToSpecializationByIndexCommand(msg)
+SlashCmdList["TALENT_SPEC_BY_INDEX"] = function(msg)
 	local specIndex = SecureCmdOptionParse(msg);
 	if specIndex and specIndex ~= "" then
 		specIndex = tonumber(specIndex);
@@ -71,9 +71,3 @@ local function SwitchToSpecializationByIndexCommand(msg)
 		end
 	end
 end
-
--- TODO:: Replace with localized slash command names
-RegisterNewSlashCommand(SwitchToLoadoutByNameCommand, "loadoutname", "lon");
-RegisterNewSlashCommand(SwitchToLoadoutByIndexCommand, "loadoutindex", "loi");
-RegisterNewSlashCommand(SwitchToSpecializationByNameCommand, "specname", "spn");
-RegisterNewSlashCommand(SwitchToSpecializationByIndexCommand, "specindex", "spi");

@@ -77,7 +77,7 @@ end
 
 function TotemButtonMixin:Update(startTime, duration, icon)
 	local buttonIcon = self.Icon.Texture;
-	local buttonDuration = self.duration; 
+	local buttonDuration = self.Duration;
 	local buttonCooldown = self.Icon.Cooldown;
 
 	if ( duration > 0 ) then

@@ -375,7 +375,7 @@ do	--Enclosure to make sure people go through SetSetting
 	end
 
 	local function CompactRaidFrameManager_SetIsShown(value)
-		if value and value ~= "0" then
+		if EditModeManagerFrame:AreRaidFramesForcedShown() or (value and value ~= "0") then
 			CompactRaidFrameManager.container.enabled = true;
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle:SetText(HIDE);
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = false;

@@ -11,19 +11,23 @@ function EssencePowerBar:UpdatePower()
 	for i = 1, min(comboPoints, self.maxUsablePoints) do
 		self.classResourceButtonTable[i]:SetEssennceFull(); 
 	end
-	for i = comboPoints + 1, self.maxUsablePoints do
+	for i = comboPoints + 2, self.maxUsablePoints do -- we skip comboPoints + 1 because it's about to start filing below
 		self.classResourceButtonTable[i]:AnimOut();
 	end
 	
 	local isAtMaxPoints = comboPoints == maxComboPoints; 
-	local peace,interrupted = GetPowerRegenForPowerType(Enum.PowerType.Essence)
-	if (peace == nil or peace == 0) then
-		peace = 0.2;
-	end
-	local cooldownDuration = 1 / peace;
-	local animationSpeedMultiplier = FillingAnimationTime / cooldownDuration;
-	if (not isAtMaxPoints and self.classResourceButtonTable[comboPoints + 1] and not self.classResourceButtonTable[comboPoints + 1].EssenceFull:IsShown()) then 
-		self.classResourceButtonTable[comboPoints + 1]:AnimIn(animationSpeedMultiplier)
+	local fillingPoint = self.classResourceButtonTable[comboPoints + 1];
+	if (not isAtMaxPoints and fillingPoint and not (fillingPoint.EssenceFilling.FillingAnim:IsPlaying() or fillingPoint.EssenceFull:IsShown())) then 
+		local peace,interrupted = GetPowerRegenForPowerType(Enum.PowerType.Essence)
+		if (peace == nil or peace == 0) then
+			peace = 0.2;
+		end
+		local cooldownDuration = 1 / peace;
+		local animationSpeedMultiplier = FillingAnimationTime / cooldownDuration;
+
+		local partialPoint = UnitPartialPower(unit, Enum.PowerType.Essence);
+		local elapsedPortion = (partialPoint / 1000.0);
+		self.classResourceButtonTable[comboPoints + 1]:AnimIn(animationSpeedMultiplier, elapsedPortion);
 	end
 end
 
@@ -52,11 +56,15 @@ function EssencePointButtonMixin:OnUpdate(elapsed)
 	self.EssenceFilling.CircleAnim:SetAnimationSpeedMultiplier(animationSpeedMultiplier);
 end
 
-function EssencePointButtonMixin:AnimIn(animationSpeedMultiplier)
+function EssencePointButtonMixin:AnimIn(animationSpeedMultiplier, animationElapsedPortion)
 	self.EssenceFilling.FillingAnim:SetAnimationSpeedMultiplier(animationSpeedMultiplier);
 	self.EssenceFilling.CircleAnim:SetAnimationSpeedMultiplier(animationSpeedMultiplier);
 	self:SetScript("OnUpdate", self.OnUpdate);
 	self.EssenceFilling:Show();
+	local fillingElapsedOffset = animationElapsedPortion * self.EssenceFilling.FillingAnim:GetDuration();
+	local circleElapsedOffset = animationElapsedPortion * self.EssenceFilling.CircleAnim:GetDuration();
+	self.EssenceFilling.FillingAnim:Play(false, fillingElapsedOffset);
+	self.EssenceFilling.CircleAnim:Play(false, circleElapsedOffset);
 	self.EssenceDepleting:Hide(); 
 	self.EssenceEmpty:Hide(); 
 	self.EssenceFillDone:Hide();
@@ -66,6 +74,9 @@ end
 function EssencePointButtonMixin:AnimOut()
 	if(self.EssenceFull:IsShown() or self.EssenceFilling:IsShown() or self.EssenceFillDone:IsShown()) then 
 		self.EssenceDepleting:Show();
+		if(not self.EssenceFilling.FillingAnim:IsPlaying()) then
+			self.EssenceDepleting.AnimIn:Play();
+		end
 		self.EssenceFilling:Hide(); 
 		self.EssenceEmpty:Hide(); 
 		self.EssenceFillDone:Hide();
