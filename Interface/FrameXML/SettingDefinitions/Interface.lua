@@ -5,8 +5,8 @@ local function Register()
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[INTERFACE_LABEL]);
 
-	-- Nameplates
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMEPLATES_LABEL));
+	-- Names
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMES_LABEL));
 
 	-- My name
 	Settings.SetupCVarCheckBox(category, "UnitNameOwn", UNIT_NAME_OWN, OPTION_TOOLTIP_UNIT_NAME_OWN);
@@ -105,6 +105,9 @@ local function Register()
 		initializer:SetParentInitializer(enemyPlayerNameInitializer);
 	end
 
+	-- Nameplates
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMEPLATES_LABEL));
+
 	-- Always Show Nameplates
 	do
 		Settings.SetupCVarCheckBox(category, "nameplateShowAll", UNIT_NAMEPLATES_AUTOMODE, OPTION_TOOLTIP_UNIT_NAMEPLATES_AUTOMODE);
@@ -161,10 +164,10 @@ local function Register()
 		end
 	end
 
-	-- Friendly Players
+	-- Friendly nameplates
 	do
 		local friendlyTooltip = Settings.WrapTooltipWithBinding(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDS, "FRIENDNAMEPLATES");
-		local friendUnitSetting, friendUnitInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowFriends", UNIT_NAMEPLATES_SHOW_FRIENDS, friendlyTooltip);
+		local friendUnitSetting, friendUnitInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowFriends", OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDS, friendlyTooltip);
 
 		-- Minions
 		local setting, initializer = Settings.SetupCVarCheckBox(category, "nameplateShowFriendlyMinions", UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDLY_MINIONS);

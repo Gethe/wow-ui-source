@@ -362,7 +362,10 @@ function AlertContainerMixin:UpdateAnchors()
 
 	local relativeFrame = self;
 	for i, alertFrameSubSystem in ipairs(self.alertFrameSubSystems) do
-		relativeFrame = alertFrameSubSystem:AdjustAnchors(relativeFrame);
+		local resultFrame = alertFrameSubSystem:AdjustAnchors(relativeFrame);
+		if not resultFrame or not resultFrame.IsInDefaultPosition or resultFrame:IsInDefaultPosition() then
+			relativeFrame = resultFrame;
+		end
 	end
 end
 

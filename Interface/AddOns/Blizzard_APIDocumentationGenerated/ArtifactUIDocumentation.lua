@@ -652,6 +652,20 @@ local ArtifactUI =
 			},
 		},
 		{
+			Name = "IsArtifactItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isArtifact", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAtForge",
 			Type = "Function",
 

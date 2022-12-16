@@ -313,8 +313,8 @@ function CharacterSelect_OnHide(self)
 	-- FIXME SCROLLBOX REIMPLEMENTATION
 	-- the user may have gotten d/c while dragging
     if CharacterSelect.draggedIndex then
-		local draggedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(elementData)
-			return elementData.index == CharacterSelect.draggedIndex;
+		local draggedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+			return frame.index == CharacterSelect.draggedIndex;
 		end);
 		if draggedButton then
 			CharacterSelectButton_OnDragStop(draggedButton);
@@ -769,8 +769,8 @@ function CharacterSelect_SetCharacterButtonEnabled(button, enabled)
 end
 
 function CharacterSelect_GetCharacterButton(buttonIndex)
-	return CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(elementData)
-		return elementData.index == buttonIndex;
+	return CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		return frame.index == buttonIndex;
 	end);
 end
 
@@ -799,13 +799,18 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 		CharacterSelectButton_EnableDrag(button);
 	end
 
-	local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction, lockedByExpansion, mailSenders, PCCDisabled, PFCDisabled = GetCharacterInfo(GetCharIDFromIndex(button.index));
+	button.characterID = GetCharIDFromIndex(button.index);
+	button.characterGUID = nil;
+
+	local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction, lockedByExpansion, mailSenders, PCCDisabled, PFCDisabled = GetCharacterInfo(button.characterID);
 
 	-- This is a hack, something about the PCT tokenization changes are causing character selection to update before any characters are in the list.
 	-- Adding this as a workaround and a point at which to help diagnose the failure.
 	if not name then
 		return;
 	end
+
+	button.characterGUID = guid;
 
 	local productID, vasServiceState, vasServiceErrors, productInfo;
     if (guid) then

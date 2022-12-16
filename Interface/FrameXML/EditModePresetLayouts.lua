@@ -1013,7 +1013,7 @@ end
 
 EditModePresetLayoutManager = {};
 
-EditModePresetLayoutManager.presetLayoutInfo = 
+EditModePresetLayoutManager.presetLayoutInfo =
 {
 	{
 		layoutIndex = Enum.EditModePresetLayouts.Modern;
@@ -1046,3 +1046,6 @@ function EditModePresetLayoutManager:GetModernSystemAnchorInfo(system, systemInd
 	local modernSystemInfo = systemIndex and modernSystemMap[system][systemIndex] or modernSystemMap[system];
 	return CopyTable(modernSystemInfo.anchorInfo);
 end
+
+EnableAddOn("Blizzard_ObjectiveTracker");
+EnableAddOn("Blizzard_CompactRaidFrames");

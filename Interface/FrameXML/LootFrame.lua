@@ -143,16 +143,8 @@ function LootFrameMixin:Open()
 	for slotIndex = 1, GetNumLootItems() do
 		local texture, item, quantity, currencyID, itemQuality, locked, isQuestItem, questID, isActive, isCoin = GetLootSlotInfo(slotIndex);
 
-		if not itemQuality then
-			print("NO QUALITY LOOT "..tostring(item)..", currencyID"..tostring(currencyID)..", quantity"..tostring(quantity)..", slotIndex"..tostring(slotIndex)..", isCoin"..tostring(isCoin));
-		end
-
 		if currencyID then 
 			item, texture, quantity, itemQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, itemQuality);
-
-			if not itemQuality then
-				print("NO QUALITY CURRENCY "..tostring(item)..", currencyID"..tostring(currencyID)..", quantity"..tostring(quantity)..", slotIndex"..tostring(slotIndex)..", isCoin"..tostring(isCoin));
-			end
 		end
 
 		local quality = itemQuality or Enum.ItemQuality.Common;
@@ -161,18 +153,18 @@ function LootFrameMixin:Open()
 		dataProvider:Insert({slotIndex = slotIndex, group = group, quality = quality});
 	end
 
-	dataProvider:SetSortComparator(function(a, b)
-		if a.group ~= b.group then
-			return a.group > b.group;
-		end
-
-		if a.quality ~= b.quality then
-			return a.quality > b.quality;
-		end
-
-		return a.slotIndex < b.slotIndex;
-	end);
-
+	--dataProvider:SetSortComparator(function(a, b)
+	--	if a.group ~= b.group then
+	--		return a.group > b.group;
+	--	end
+	--
+	--	if a.quality ~= b.quality then
+	--		return a.quality > b.quality;
+	--	end
+	--
+	--	return a.slotIndex < b.slotIndex;
+	--end);
+	--
 	self.ScrollBox:SetDataProvider(dataProvider);
 
 	if GetCVarBool("lootUnderMouse") then

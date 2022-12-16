@@ -56,10 +56,11 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	local fillAtlas = fillTextureKitFormatString:format(widgetInfo.frameTextureKit, widgetInfo.fillTextureKit);
 	local fillAtlasInfo = C_Texture.GetAtlasInfo(fillAtlas);
-	if fillAtlasInfo then
+	if fillAtlasInfo and fillAtlas ~= self.lastFillAtlas then
 		self.Bar:SetStatusBarTexture(fillAtlas);
 		self.Bar:SetHeight(fillAtlasInfo.height);
 		self.Bar:GetStatusBarTexture():SetHorizTile(fillAtlasInfo.tilesHorizontally);
+		self.lastFillAtlas = fillAtlas;
 	end
 
 	self.isJailersTowerBar = IsJailersTowerTextureKit(widgetInfo.frameTextureKit);

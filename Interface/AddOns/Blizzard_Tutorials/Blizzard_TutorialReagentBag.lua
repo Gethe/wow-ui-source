@@ -167,12 +167,14 @@ function ReagentBagTutorialMixin:HasReagentBagInInventory()
 	ItemUtil.IteratePlayerInventory(function(itemLocation)
 		local bag, slot = itemLocation:GetBagAndSlot();
 		if bag and slot then
-			local texture, itemCount, locked, quality, readable, hasLoot, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bag, slot);
-			local name, enchantLink, displayQuality, itemLevel, requiredLevel, className, subclassName, isStackable, inventoryType, iconFile, sellPrice, itemClassID, itemSubclassID, boundState, expansionID, itemSetID, isTradeskill = GetItemInfo(itemLink);
+			local info = C_Container.GetContainerItemInfo(bag, slot);
+			if info then
+				local name, enchantLink, displayQuality, itemLevel, requiredLevel, className, subclassName, isStackable, inventoryType, iconFile, sellPrice, itemClassID, itemSubclassID, boundState, expansionID, itemSetID, isTradeskill = GetItemInfo(info.hyperlink);
 
-			if itemClassID == 1 and itemSubclassID == 11 then
-				self.pointAtBagData = { bagID = bag, slotID = slot };
-				return true;
+				if itemClassID == 1 and itemSubclassID == 11 then
+					self.pointAtBagData = { bagID = bag, slotID = slot };
+					return true;
+				end
 			end
 		end
 	end);
@@ -181,8 +183,7 @@ function ReagentBagTutorialMixin:HasReagentBagInInventory()
 end
 
 function ReagentBagTutorialMixin:HasReagentBagEquipped()
-	-- TODO: Use constant, not literal.
-	return ContainerFrame_GetContainerNumSlots(5) > 0;
+	return ContainerFrame_GetContainerNumSlots(Enum.BagIndex.ReagentBag) > 0;
 end
 
 function ReagentBagTutorialMixin:AcknowledgeTutorial()

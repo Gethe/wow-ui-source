@@ -26,7 +26,7 @@ function MajorFactionUnlockToastMixin:PlayMajorFactionUnlockToast(majorFactionID
 	if majorFactionData then
 		TopBannerManager_Show(self, { 
 			name = majorFactionData.name, 
-			covenantColor = COVENANT_COLORS[majorFactionData.textureKit],
+			factionColor = self:GetFactionColorByTextureKit(majorFactionData.textureKit),
 			textureKit = majorFactionData.textureKit,
 			celebrationSoundKit = majorFactionData.celebrationSoundKit,
 		});
@@ -34,19 +34,21 @@ function MajorFactionUnlockToastMixin:PlayMajorFactionUnlockToast(majorFactionID
 end
 
 function MajorFactionUnlockToastMixin:PlayBanner(data)
-	self.MajorFactionName:SetText(data.name);
-	self.MajorFactionName:SetTextColor(data.covenantColor:GetRGB());
+	self.FactionName:SetText(data.name);
+	self.FactionName:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
+
+	local textureKitRegions = {
+		[self.GlowLineBottom] = "majorfaction-celebration-bottomglowline",
+	};
+
+	SetupTextureKitOnFrames(data.textureKit, textureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 	PlaySound(data.celebrationSoundKit);
 
 	self.ToastBG:SetAlpha(0);
-	self.GlowLineTop:SetAlpha(0);
-	self.GlowLineTopAdditive:SetAlpha(0);
-	self.Stars1:SetAlpha(0);
-	self.Stars2:SetAlpha(0);
 	self.IconSwirlModelScene:SetAlpha(0);
 	self.Icon:SetAlpha(0);
-	self.MajorFactionName:SetAlpha(0);
+	self.FactionName:SetAlpha(0);
 	self.HeaderText:SetAlpha(0);
 
 	self:SetAlpha(1);

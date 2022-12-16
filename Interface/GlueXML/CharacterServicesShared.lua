@@ -187,8 +187,8 @@ function VASCharacterSelectBlockBase:OnAdvance()
 	self:SetResultsShown(true);
 
 	local selectedCharacterGUID = self:GetSelectedCharacterGUID();
-	local selectedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(elementData)
-		local guid = select(15, GetCharacterInfo(elementData.index));
+	local selectedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		local guid = select(15, GetCharacterInfo(frame.index));
 		return guid == selectedCharacterGUID;
 	end);
 

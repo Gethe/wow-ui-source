@@ -88,4 +88,14 @@
 			</AnimationGroup>
 		</Animations>
 	</Button>
+
+	<Button name="GenericPlayerChoiceToggleButton" inherits="UIPanelButtonTemplate, PlayerChoiceToggleButtonTemplate" mixin="GenericPlayerChoiceToggleButtonMixin">
+		<Size x="120" y="22"/>
+		<KeyValues>
+			<KeyValue key="hidePowersSound" value="SOUNDKIT.UI_PLAYER_CHOICE_GENERIC_HIDE_POWERS" type="global"/>
+			<KeyValue key="showPowersSound" value="SOUNDKIT.UI_PLAYER_CHOICE_GENERIC_SHOW_POWERS" type="global"/>
+			<KeyValue key="textureKit" value="genericplayerchoice" type="string"/>
+			<KeyValue key="noFade" value="true" type="boolean"/>
+		</KeyValues>
+	</Button>
 </Ui>

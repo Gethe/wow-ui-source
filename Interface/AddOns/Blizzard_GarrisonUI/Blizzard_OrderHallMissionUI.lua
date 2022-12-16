@@ -868,9 +868,8 @@ end
 
 local function PositionAtFirstTroop(missionFrame)
 	-- find a follower that is a troop
-	local firstTroopFrame = missionFrame.FollowerList.ScrollBox:FindFrameByPredicate(function(entry)
-		local entryData = entry:GetElementData();
-		local follower = entryData and entryData.follower or nil;
+	local firstTroopFrame = missionFrame.FollowerList.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		local follower = elementData.follower or nil;
 		return follower and not follower.status and follower.isTroop;
 	end);
 
@@ -882,8 +881,8 @@ local function PositionAtFirstTroop(missionFrame)
 end
 
 local function PositionAtFirstMission(missionFrame)
-	local frame = missionFrame.MissionTab.MissionList.ScrollBox:FindFrameByPredicate(function(entry)
-		return entry.id == 1;
+	local frame = missionFrame.MissionTab.MissionList.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		return frame.id == 1;
 	end);
 
 	return HelpTip.Point.BottomEdgeCenter, -120, 6, frame;

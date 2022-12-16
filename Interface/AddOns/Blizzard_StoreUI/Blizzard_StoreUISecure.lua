@@ -61,6 +61,7 @@ Import("C_Timer");
 Import("C_WowTokenPublic");
 Import("C_StorePublic");
 Import("C_WowTokenSecure");
+Import("C_Container");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
 Import("HideGMOnly");
@@ -77,7 +78,6 @@ Import("type");
 Import("string");
 Import("strtrim");
 Import("LoadURLIndex");
-Import("GetContainerNumFreeSlots");
 Import("GetCursorPosition");
 Import("PlaySound");
 Import("SetPortraitToTexture");
@@ -249,6 +249,7 @@ Import("BLIZZARD_STORE_VAS_ERROR_GM_SENORITY_INSUFFICIENT");
 Import("BLIZZARD_STORE_VAS_ERROR_OPERATION_ALREADY_IN_PROGRESS");
 Import("BLIZZARD_STORE_VAS_ERROR_LOCKED_FOR_VAS");
 Import("BLIZZARD_STORE_VAS_ERROR_MOVE_IN_PROGRESS");
+Import("BLIZZARD_STORE_VAS_ERROR_HAS_CRAFTING_ORDERS");
 Import("BLIZZARD_STORE_VAS_ERROR_OTHER");
 Import("BLIZZARD_STORE_VAS_ERROR_LABEL");
 Import("BLIZZARD_STORE_LEGION_PURCHASE_READY");
@@ -1747,7 +1748,7 @@ function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
 		return;
 	end
 
-	if not entries then
+	if not entries or #entries == 0 then
 		return;
 	end
 
@@ -2816,7 +2817,7 @@ end
 
 function StoreFrame_HasFreeBagSlots()
 	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		local freeSlots, bagFamily = GetContainerNumFreeSlots(i);
+		local freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
 		if ( freeSlots > 0 and bagFamily == 0 ) then
 			return true;
 		end
@@ -3752,7 +3753,26 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 			local actor = self.ModelScene:GetActorByTag(actorTag);
 			SetupItemPreviewActor(actor, card.creatureDisplayInfoID);
 		else
-			SetupPlayerForModelScene(self.ModelScene, card.itemModifiedAppearanceIDs);
+			local useNativeForm = true;
+			local playerRaceName;
+			if IsOnGlueScreen() then
+				local _, _, raceFilename = GetCharacterInfo(GetCharacterSelection());
+				playerRaceName = raceFilename and raceFilename:lower();
+			else
+				local _, raceFilename = UnitRace("player");
+				playerRaceName = raceFilename:lower();
+			end
+
+			local overrideActorName;
+			if playerRaceName == "dracthyr" then
+				useNativeForm = false;
+				overrideActorName = "dracthyr-alt";
+			end
+
+			local sheatheWeapons = true;
+			local autoDress = true;
+			local hideWeapons = true;
+			SetupPlayerForModelScene(self.ModelScene, overrideActorName, card.itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 		end
 	end
 

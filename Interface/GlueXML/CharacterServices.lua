@@ -194,52 +194,64 @@ function CharacterUpgradeFlow:OnAdvance(controller, results)
 	end
 end
 
-function CharacterUpgradeFlow:Finish(controller)
-	if (not CharacterUpgradeSecondChanceWarningFrame.warningAccepted) then
-		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:SetText(self:GetFinishLabel());
-
-		if ( self:IsTrialBoost() ) then
-			if ( C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
-				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_TRIAL_BOOST_BUTTON_POPUP_TEXT);
-			else
-				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_TRIAL_BOOST_BUTTON_POPUP_TEXT);
-			end
-		else
-			if ( C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
-				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT);
-			else
-				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT);
-			end
+do
+	local function ValidateSpec(results)
+		if not results.spec and CharacterUpgradeFlow:ShouldSkipSpecSelect() then
+			local _, _, _, _, classFilename, classID, experienceLevel, _, _, _, _, _, _, _, playerguid, _, _, gender, _, _, _, _, _, _, _, _, specID = GetCharacterInfo(results.charid);
+			results.spec = specID;
+			results.classId = classID;
 		end
-
-		CharacterUpgradeSecondChanceWarningFrame:Show();
-		return false;
 	end
 
-	local results = self:BuildResults(self:GetNumSteps());
-	if self:IsUnrevoke() then
-		local guid = select(15, GetCharacterInfo(results.charid));
-		C_CharacterServices.RequestManualUnrevoke(guid);
-	else
+	function CharacterUpgradeFlow:Finish(controller)
+		if (not CharacterUpgradeSecondChanceWarningFrame.warningAccepted) then
+			CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:SetText(self:GetFinishLabel());
 
-		if (not results.faction) then
-			-- Non neutral character, convert faction group to id.
-			results.faction = PLAYER_FACTION_GROUP[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
-		end
-		local guid = select(15, GetCharacterInfo(results.charid));
-		if (guid ~= results.playerguid) then
-			-- Bail because guid has changed!
-			message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
-			self:Restart(controller);
+			if ( self:IsTrialBoost() ) then
+				if ( C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
+					CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_TRIAL_BOOST_BUTTON_POPUP_TEXT);
+				else
+					CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_TRIAL_BOOST_BUTTON_POPUP_TEXT);
+				end
+			else
+				if ( C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
+					CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT);
+				else
+					CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT);
+				end
+			end
+
+			CharacterUpgradeSecondChanceWarningFrame:Show();
 			return false;
 		end
 
-		self:SetTrialBoostGuid(nil);
+		local results = self:BuildResults(self:GetNumSteps());
+		if self:IsUnrevoke() then
+			local guid = select(15, GetCharacterInfo(results.charid));
+			C_CharacterServices.RequestManualUnrevoke(guid);
+		else
 
-		CharacterServicesMaster.pendingGuid = results.playerguid;
-		C_CharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.boostType, 0);
+			if (not results.faction) then
+				-- Non neutral character, convert faction group to id.
+				results.faction = PLAYER_FACTION_GROUP[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
+			end
+			local guid = select(15, GetCharacterInfo(results.charid));
+			if (guid ~= results.playerguid) then
+				-- Bail because guid has changed!
+				message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
+				self:Restart(controller);
+				return false;
+			end
+
+			self:SetTrialBoostGuid(nil);
+
+			CharacterServicesMaster.pendingGuid = results.playerguid;
+
+			ValidateSpec(results);
+			C_CharacterServices.AssignUpgradeDistribution(results.playerguid, results.faction, results.spec, results.classId, self.data.boostType, 0);
+		end
+		return true;
 	end
-	return true;
 end
 
 function CharacterUpgradeFlow:GetFinishLabel()

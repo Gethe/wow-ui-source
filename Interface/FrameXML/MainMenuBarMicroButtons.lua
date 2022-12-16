@@ -618,8 +618,10 @@ function TalentMicroButtonMixin:EvaluateAlertVisibility()
 		alertText = pvpAlertText;
 	end
 
+	MainMenuMicroButton_HideAlert(self);
+	MicroButtonPulseStop(self);
+
 	if not alertText then
-		MicroButtonPulseStop(self);
 		return false;
 	end
 

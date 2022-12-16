@@ -148,14 +148,17 @@ function CharacterFrame_OnShow (self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	CharacterFrame_UpdatePortrait();
 	UpdateMicroButtons();
-	PlayerFrameHealthBar.showNumeric = true;
-	PlayerFrameManaBar.showNumeric = true;
+
+	local playerFrameHealthBar = PlayerFrame_GetHealthBar();
+	local playerFrameManaBar = PlayerFrame_GetManaBar();
+	playerFrameHealthBar.showNumeric = true;
+	playerFrameManaBar.showNumeric = true;
 	PlayerFrameAlternateManaBar.showNumeric = true;
 	MonkStaggerBar.showNumeric = true;
 	PetFrameHealthBar.showNumeric = true;
 	PetFrameManaBar.showNumeric = true;
-	ShowTextStatusBarText(PlayerFrameHealthBar);
-	ShowTextStatusBarText(PlayerFrameManaBar);
+	ShowTextStatusBarText(playerFrameHealthBar);
+	ShowTextStatusBarText(playerFrameManaBar);
 	ShowTextStatusBarText(PlayerFrameAlternateManaBar);
 	ShowTextStatusBarText(MonkStaggerBar);
 	ShowTextStatusBarText(PetFrameHealthBar);
@@ -181,14 +184,17 @@ end
 function CharacterFrame_OnHide (self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
-	PlayerFrameHealthBar.showNumeric = nil;
-	PlayerFrameManaBar.showNumeric = nil;
+
+	local playerFrameHealthBar = PlayerFrame_GetHealthBar();
+	local playerFrameManaBar = PlayerFrame_GetManaBar();
+	playerFrameHealthBar.showNumeric = nil;
+	playerFrameManaBar.showNumeric = nil;
 	PlayerFrameAlternateManaBar.showNumeric = nil;
 	MonkStaggerBar.showNumeric = nil;
 	PetFrameHealthBar.showNumeric = nil;
 	PetFrameManaBar.showNumeric = nil;
-	HideTextStatusBarText(PlayerFrameHealthBar);
-	HideTextStatusBarText(PlayerFrameManaBar);
+	HideTextStatusBarText(playerFrameHealthBar);
+	HideTextStatusBarText(playerFrameManaBar);
 	HideTextStatusBarText(PlayerFrameAlternateManaBar);
 	HideTextStatusBarText(MonkStaggerBar);
 	HideTextStatusBarText(PetFrameHealthBar);

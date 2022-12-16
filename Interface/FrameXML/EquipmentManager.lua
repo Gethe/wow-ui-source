@@ -15,14 +15,13 @@ end
 
 EquipmentManager = CreateFrame("FRAME");
 
-local workTable = {};
 function EquipmentManager_UpdateFreeBagSpace ()
 	local bagSlots = EQUIPMENTMANAGER_BAGSLOTS;
 
 	for i = BANK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS + GetNumBankSlots() do
-		wipe(workTable);
-		local _, bagType = GetContainerNumFreeSlots(i);
-		if ( GetContainerFreeSlots(i, workTable) ) then
+		local _, bagType = C_Container.GetContainerNumFreeSlots(i);
+		local freeSlots = C_Container.GetContainerFreeSlots(i);
+		if ( freeSlots ) then
 			if (not bagSlots[i]) then
 				bagSlots[i] = {};
 			end
@@ -34,7 +33,7 @@ function EquipmentManager_UpdateFreeBagSpace ()
 				end
 			end
 
-			for index, slot in next, workTable do
+			for index, slot in ipairs(freeSlots) do
 				if ( bagSlots[i] and not bagSlots[i][slot] and bagType == 0 ) then -- Don't overwrite locked slots, don't reset empty slots to empty, only use normal bags
 					bagSlots[i][slot] = SLOT_EMPTY;
 				end
@@ -101,13 +100,13 @@ end
 function EquipmentManager_EquipContainerItem (action)
 	ClearCursor();
 
-	PickupContainerItem(action.bag, action.slot);
+	C_Container.PickupContainerItem(action.bag, action.slot);
 
 	if ( not CursorHasItem() ) then
 		return false;
 	end
 
-	if ( not CursorCanGoInSlot(action.invSlot) ) then
+	if ( not C_PaperDollInfo.CanCursorCanGoInSlot(action.invSlot) ) then
 		return false;
 	elseif ( IsInventoryItemLocked(action.invSlot) ) then
 		return false;
@@ -124,7 +123,7 @@ end
 function EquipmentManager_EquipInventoryItem (action)
 	ClearCursor();
 	PickupInventoryItem(action.slot);
-	if ( not CursorCanGoInSlot(action.invSlot) ) then
+	if ( not C_PaperDollInfo.CanCursorCanGoInSlot(action.invSlot) ) then
 		return false;
 	elseif ( IsInventoryItemLocked(action.invSlot) ) then
 		return false;
@@ -137,7 +136,7 @@ function EquipmentManager_EquipInventoryItem (action)
 end
 
 function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to be used.
-	if ( location < 0 ) then -- Thanks Seerah!
+	if ( location < 0 ) then
 		return false, false, false, 0;
 	end
 
@@ -256,7 +255,7 @@ function EquipmentManager_PutItemInInventory (action)
 					end
 					if ( firstSlot ) then
 						bagSlots[bag][firstSlot] = SLOT_LOCKED;
-						PickupContainerItem(bag, firstSlot);
+						C_Container.PickupContainerItem(bag, firstSlot);
 
 						if ( action ) then
 							action.bag = bag;
@@ -295,17 +294,19 @@ function EquipmentManager_GetItemInfoByLocation (location)
 			quality = GetInventoryItemQuality("player", slot);
 		end
 
-		isUpgrade = IsInventoryItemAnUpgrade("player", slot);
-
 		setTooltip = function () GameTooltip:SetInventoryItem("player", slot) end;
 	else -- bags
-		itemID = GetContainerItemID(bag, slot);
+		itemID = C_Container.GetContainerItemID(bag, slot);
 		name, _, _, _, _, _, _, _, invType = GetItemInfo(itemID);
-		textureName, count, locked, quality, _, _, _, _, _, _, isBound = GetContainerItemInfo(bag, slot);
-		start, duration, enable = GetContainerItemCooldown(bag, slot);
+		local info = C_Container.GetContainerItemInfo(bag, slot);
+		textureName = info.iconFileID;
+		count = info.stackCount;
+		locked = info.isLocked;
+		quality = info.quality;
+		isBound = info.isBound;
+		start, duration, enable = C_Container.GetContainerItemCooldown(bag, slot);
 
-		durability, maxDurability = GetContainerItemDurability(bag, slot);
-		isUpgrade = IsContainerItemAnUpgrade(bag, slot);
+		durability, maxDurability = C_Container.GetContainerItemDurability(bag, slot);
 
 		setTooltip = function () GameTooltip:SetBagItem(bag, slot); end;
 	end

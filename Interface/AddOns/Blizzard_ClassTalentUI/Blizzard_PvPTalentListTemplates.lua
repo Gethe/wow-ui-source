@@ -7,23 +7,24 @@ end
 
 function PvPTalentListButtonMixin:Init(elementData)
 	local talentID = elementData.talentID;
-	local selectedHere = elementData.selectedHere;
-	local selectedOther = elementData.selectedOther;
+	self.selectedHere = elementData.selectedHere;
+	self.selectedOther = elementData.selectedOther;
 	local owner = elementData.owner;
 	self:SetOwningFrame(owner);
 	self:SetPvpTalent(talentID);
-	self:Update(selectedHere, selectedOther);
+	self:Update();
 end
 
-function PvPTalentListButtonMixin:Update(selectedHere, selectedOther)
-	local talentID, name, icon, selected, available, spellID, unlocked = GetPvpTalentInfoByID(self.talentID);
+function PvPTalentListButtonMixin:Update()
+	self.talentInfo = C_SpecializationInfo.GetPvpTalentInfo(self.talentID);
 
 	self.New:Hide();
 	self.NewGlow:Hide();
 
-	if (not unlocked) then
+	if (not self.talentInfo.unlocked) then
 		self.Name:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		self.Icon:SetDesaturated(true);
+		self.Icon:SetVertexColor(1, 1, 1);
 		self.Selected:Hide();
 		self.disallowNormalClicks = true;
 	else
@@ -31,28 +32,34 @@ function PvPTalentListButtonMixin:Update(selectedHere, selectedOther)
 			self.New:Show();
 			self.NewGlow:Show();
 		end
-		if selectedHere or selectedOther then
+		if self.selectedHere or self.selectedOther then
 			self.Name:SetTextColor(YELLOW_FONT_COLOR:GetRGB());
 		else
 			self.Name:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		end
 		self.Icon:SetDesaturated(false);
-		self.Selected:SetShown(selectedHere);
-		self.disallowNormalClicks = false; 
+		self.Selected:SetShown(self.selectedHere);
+		self.disallowNormalClicks = false;
+
+		if (self.talentInfo.dependenciesUnmet) then
+			self.Icon:SetVertexColor(0.9, 0, 0);
+		else
+			self.Icon:SetVertexColor(1, 1, 1);
+		end
 	end
 
-	self.SelectedOtherCheck:SetShown(selectedOther);
+	self.SelectedOtherCheck:SetShown(self.selectedOther);
 
-	if selectedOther then
+	if self.selectedOther then
 		self:SetAlpha(0.4);
 	else
 		self:SetAlpha(1);
 	end
 
-	self.Border:SetShown(not selectedHere and not selectedOther);
+	self.Border:SetShown(not self.selectedHere and not self.selectedOther);
 
-	self.Name:SetText(name);
-	self.Icon:SetTexture(icon);
+	self.Name:SetText(self.talentInfo.name);
+	self.Icon:SetTexture(self.talentInfo.icon);
 
 	if GameTooltip:GetOwner() == self then
 		self:OnEnter();
@@ -82,7 +89,7 @@ function PvPTalentListButtonMixin:OnClick(button)
 end
 
 function PvPTalentListButtonMixin:OnEnter()
-	if (C_SpecializationInfo.IsPvpTalentLocked(self.talentID) and select(7,GetPvpTalentInfoByID(self.talentID))) then
+	if (C_SpecializationInfo.IsPvpTalentLocked(self.talentID) and self.talentInfo.unlocked) then
 		C_SpecializationInfo.SetPvpTalentLocked(self.talentID, false);
 		self.New:Hide();
 		self.NewGlow:Hide();
@@ -93,7 +100,16 @@ function PvPTalentListButtonMixin:OnEnter()
 	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
 	GameTooltip:SetPvpTalent(self.talentID, false, GetActiveSpecGroup(true), self.owner.selectedSlotIndex);
+
+	if (self.talentInfo.dependenciesUnmet) then
+		local unmetReason = self.talentInfo.dependenciesUnmetReason or TALENT_BUTTON_TOOLTIP_PVP_TALENT_REQUIREMENT_ERROR;
+		GameTooltip_AddErrorLine(GameTooltip, unmetReason);
+	end
+
+	EventRegistry:TriggerEvent("PvPTalentButton.TooltipHook", self);
+
 	GameTooltip:Show();
 end
 
@@ -134,14 +150,24 @@ function PvPTalentListMixin:OnShow()
 	local view = self.ScrollBox:GetView();
 	local viewHeight = view:GetExtent();
 	self:SetSize(self:GetWidth(), viewHeight);
+
+	self:RegisterEvent("TRAIT_CONFIG_UPDATED");
 end
 
 function PvPTalentListMixin:OnHide()
+	self:UnregisterEvent("TRAIT_CONFIG_UPDATED");
+
 	CallbackRegistrantMixin.OnHide(self);
 
 	local talentFrame = self:GetTalentFrame();
 	if talentFrame then
 		talentFrame:TriggerEvent(ClassTalentTalentsTabMixin.Event.PvPTalentListClosed);
+	end
+end
+
+function PvPTalentListMixin:OnEvent(event)
+	if (event == "TRAIT_CONFIG_UPDATED") then
+		self:UpdateShownTalents();
 	end
 end
 
@@ -154,6 +180,12 @@ end
 
 function PvPTalentListMixin:OnClosePvPTalentList()
 	self:Hide();
+end
+
+function PvPTalentListMixin:UpdateShownTalents()
+	self.ScrollBox:ForEachFrame(function(listButton)
+		listButton:Update();
+	end);
 end
 
 function PvPTalentListMixin:Update()
@@ -169,8 +201,11 @@ function PvPTalentListMixin:Update()
 		local availableTalentIDs = slotInfo.availableTalentIDs;
 
 		table.sort(availableTalentIDs, function(a, b)
-			local unlockedA = select(7,GetPvpTalentInfoByID(a));
-			local unlockedB = select(7,GetPvpTalentInfoByID(b));
+			local talentInfoA = C_SpecializationInfo.GetPvpTalentInfo(a);
+			local talentInfoB = C_SpecializationInfo.GetPvpTalentInfo(b);
+
+			local unlockedA = talentInfoA.unlocked;
+			local unlockedB = talentInfoB.unlocked;
 
 			if (unlockedA ~= unlockedB) then
 				return unlockedA;

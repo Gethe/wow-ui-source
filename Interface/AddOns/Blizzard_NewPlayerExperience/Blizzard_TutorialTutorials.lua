@@ -594,7 +594,9 @@ function Class_QuestCompleteHelp:OnBegin()
 end
 
 function Class_QuestCompleteHelp:ShowHelp()
-	self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", ObjectiveTrackerBlocksFrameHeader, -40, 0, nil, "RIGHT");
+	if ObjectiveTrackerBlocksFrameHeader and ObjectiveTrackerBlocksFrameHeader:IsShown() then
+		self:ShowPointerTutorial(NPEV2_QUEST_COMPLETE_HELP, "RIGHT", ObjectiveTrackerBlocksFrameHeader, -40, 0, nil, "RIGHT");
+	end
 end
 
 function Class_QuestCompleteHelp:QUEST_COMPLETE()
@@ -617,6 +619,9 @@ function Class_QuestCompleteHelp:OnInterrupt(interruptedBy)
 end
 
 function Class_QuestCompleteHelp:OnComplete()
+	if (self.QuestCompleteTimer) then
+		self.QuestCompleteTimer:Cancel()
+	end
 	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
 	Dispatcher:UnregisterEvent("QUEST_COMPLETE", self);
 	self:HidePointerTutorials();
@@ -1026,7 +1031,7 @@ function Class_ChangeEquipment:OnBegin(args)
 	EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
 	EventRegistry:RegisterCallback("ContainerFrame.CloseBag", self.BagClosed, self);
 
-	if (not GetContainerItemID(self.data.Container, self.data.ContainerSlot)) then
+	if (not C_Container.GetContainerItemID(self.data.Container, self.data.ContainerSlot)) then
 		TutorialManager:Finished(self:Name());
 		return;
 	end
@@ -1036,20 +1041,10 @@ end
 
 function Class_ChangeEquipment:PLAYER_DEAD()
 	TutorialManager:Finished(self:Name());
-
-	-- the player died in the middle of the tutorial, requeue it so that when the player is alive, they can try again
-	self.Timer = C_Timer.NewTimer(0.1, function()
-		TutorialManager:Queue(Class_ItemUpgradeCheckingService.name);
-	end);
 end
 
 function Class_ChangeEquipment:ZONE_CHANGED_NEW_AREA()
 	TutorialManager:Finished(self:Name());
-
-	-- the player changed zones in the middle of the tutorial, requeue it so that when the player can try again
-	self.Timer = C_Timer.NewTimer(0.1, function()
-		TutorialManager:Queue(Class_ItemUpgradeCheckingService.name);
-	end);
 end
 
 function Class_ChangeEquipment:Reset()
@@ -1216,15 +1211,14 @@ function Class_ChangeEquipment:UpdateItemContainerAndSlotInfo()
 	else
 		-- the origin has changed
 		local itemFrame = nil;
-		local maxNumContainters = 4;
 
 		local itemFound = false;
-		for containerIndex = 0, maxNumContainters do
-			local slots = GetContainerNumSlots(containerIndex);
+		for containerIndex = Enum.BagIndex.Backpack, Constants.InventoryConstants.NumBagSlots do
+			local slots = C_Container.GetContainerNumSlots(containerIndex);
 			if (slots > 0) then
 				for slotIndex = 1, slots do
-					local itemInfo = {GetContainerItemInfo(containerIndex, slotIndex)};
-					local itemID = itemInfo[10];
+					local itemInfo = C_Container.GetContainerItemInfo(containerIndex, slotIndex);
+					local itemID = itemInfo and itemInfo.itemID;
 					if itemID and itemID == currentItemID then
 						self.data.Container = containerIndex;
 						self.data.ContainerSlot = slotIndex;
@@ -1248,8 +1242,8 @@ function Class_ChangeEquipment:UpdateDragOrigin()
 		self:UpdateItemContainerAndSlotInfo()
 		if self.data then
 			itemFrame = TutorialHelper:GetItemContainerFrame(self.data.Container, self.data.ContainerSlot);
+			self:HidePointerTutorials();
 			if itemFrame then
-				self:HidePointerTutorial(self.newItemPointerID);
 				self:StartAnimation();
 			else
 				TutorialManager:Finished(self:Name());
@@ -2318,14 +2312,13 @@ function Class_UseVendor:UpdateGreyItemPointer()
 	end
 
 	local itemFrame = nil;
-	local maxNumContainters = 4;
 	local greyItemQuality = 0;
-	for containerIndex = 0, maxNumContainters do
-		local slots = GetContainerNumSlots(containerIndex);
+	for containerIndex = Enum.BagIndex.Backpack, Constants.InventoryConstants.NumBagSlots do
+		local slots = C_Container.GetContainerNumSlots(containerIndex);
 		if (slots > 0) then
 			for slotIndex = 1, slots do
-				local itemInfo = {GetContainerItemInfo(containerIndex, slotIndex)};
-				local itemQuality = itemInfo[4];
+				local itemInfo = C_Container.GetContainerItemInfo(containerIndex, slotIndex);
+				local itemQuality = itemInfo and itemInfo.quality;
 				if itemQuality == greyItemQuality then
 					itemFrame = TutorialHelper:GetItemContainerFrame(containerIndex, slotIndex);
 					break;

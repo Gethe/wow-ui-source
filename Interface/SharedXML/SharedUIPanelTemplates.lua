@@ -98,14 +98,36 @@ function ButtonFrameTemplate_ShowAttic(self)
 	end
 end
 
+local function ButtonFrameTemplate_UpdateRegionAnchor(region, desiredOffsetX)
+	-- It's unfortunate that region needs to be checked here, but there's code that uses ButtonFrameTemplate_*Portrait calls
+	-- on frames that don't actually inherit from ButtonFrameTemplate.
+	if region then
+		local point, relativeTo, relativePoint, currentOffsetX, offsetY = region:GetPointByName("TOPLEFT");
+		if point then
+			region:SetPoint(point, relativeTo, relativePoint, desiredOffsetX, offsetY);
+		end
+	end
+end
+
+local function ButtonFrameTemplate_UpdateBGAnchors(self, isPortraitMode)
+	ButtonFrameTemplate_UpdateRegionAnchor(self.Bg, isPortraitMode and 2 or 7);
+	ButtonFrameTemplate_UpdateRegionAnchor(self.Inset, isPortraitMode and 4 or 9);
+end
+
 function ButtonFrameTemplate_HidePortrait(self)
 	self:SetBorder("ButtonFrameTemplateNoPortrait");
 	self:SetPortraitShown(false);
+
+	local isPortraitMode = false;
+	ButtonFrameTemplate_UpdateBGAnchors(self, isPortraitMode);
 end
 
 function ButtonFrameTemplate_ShowPortrait(self)
 	self:SetBorder("PortraitFrameTemplate");
 	self:SetPortraitShown(true);
+
+	local isPortraitMode = true;
+	ButtonFrameTemplate_UpdateBGAnchors(self, isPortraitMode);
 end
 
 function ButtonFrameTemplateMinimizable_HidePortrait(self)
@@ -571,6 +593,14 @@ function PanelTemplates_AnchorTabs(frame, numTabs)
 		local lastTab = GetTabByIndex(frame, i - 1);
 		local thisTab = GetTabByIndex(frame, i);
 		thisTab:SetPoint("TOPLEFT", lastTab, "TOPRIGHT", 3, 0);
+	end
+end
+
+function PanelTemplates_SetTabEnabled(frame, index, enabled)
+	if (enabled) then
+		PanelTemplates_EnableTab(frame, index);
+	else
+		PanelTemplates_DisableTab(frame, index);
 	end
 end
 
@@ -1832,10 +1862,13 @@ function SelectionPopoutButtonMixin:UpdatePopout()
 	local buttons = {};
 
 	local hasIneligibleChoice = false;
+	local hasLockedChoice = false;
 	for _, selectionData in ipairs(selections) do
 		if selectionData.ineligibleChoice then
 			hasIneligibleChoice = true;
-			break;
+		end
+		if selectionData.isLocked then
+			hasLockedChoice = true;
 		end
 	end
 
@@ -1844,7 +1877,7 @@ function SelectionPopoutButtonMixin:UpdatePopout()
 		local button = self.buttonPool:Acquire();
 
 		local isSelected = (index == self.selectedIndex);
-		button:SetupEntry(selectionInfo, index, isSelected, numColumns > 1, hasIneligibleChoice);
+		button:SetupEntry(selectionInfo, index, isSelected, numColumns > 1, hasIneligibleChoice, hasLockedChoice);
 		maxDetailsWidth = math.max(maxDetailsWidth, button.SelectionDetails:GetWidth());
 
 		table.insert(buttons, button);
@@ -1922,6 +1955,9 @@ function SelectionPopoutButtonMixin:IsDataMatch(data1, data2)
 end
 
 function SelectionPopoutButtonMixin:OnEntryClicked(entryData)
+	if entryData.isLocked then
+		return;
+	end
 	local newIndex = self:FindIndex(function(element)
 		return self:IsDataMatch(element, entryData);
 	end);
@@ -1963,16 +1999,15 @@ function SelectionPopoutButtonMixin:GetAdjustedIndex(forward, selections)
 	if not self.selectedIndex then
 		return nil;
 	end
-
 	local offset = forward and 1 or -1;
 	local nextIndex = self.selectedIndex + offset;
 	local data = selections[nextIndex];
 	while data do
-		if data.disabled == nil then
+		if data.disabled == nil and not data.isLocked then
 			return nextIndex;
 		else
 			nextIndex = nextIndex + offset;
-			data = selections[currentIndex];
+			data = selections[nextIndex];
 		end
 	end
 
@@ -2124,12 +2159,13 @@ function SelectionPopoutEntryMixin:HandlesGlobalMouseEvent(buttonID, event)
 	return event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton";
 end
 
-function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns, hasAFailedReq)
+function SelectionPopoutEntryMixin:SetupEntry(selectionData, index, isSelected, multipleColumns, hasAFailedReq, hasALockedChoice)
 	self.isSelected = isSelected;
 	self.selectionData = selectionData;
 	self.popoutHasAFailedReq = hasAFailedReq;
+	self.popoutHasALockedChoice = hasALockedChoice;
 
-	self.SelectionDetails:SetupDetails(selectionData, index, isSelected, hasAFailedReq);
+	self.SelectionDetails:SetupDetails(selectionData, index, isSelected, hasAFailedReq, hasALockedChoice);
 	self.SelectionDetails:AdjustWidth(multipleColumns, self.defaultWidth);
 end
 
@@ -2349,7 +2385,7 @@ function DropDownControlMixin:AddTopLabel(labelText, labelFont, labelOffsetX, la
 	self.Label:SetPoint("BOTTOMLEFT", self.DropDownMenu, "TOPLEFT", labelOffsetX, labelOffsetY)
 
 	self:SetHeight(32 + self.Label:GetHeight() + labelOffsetY);
-	
+
 	self.DropDownMenu:ClearAllPoints();
 	self.DropDownMenu:SetPoint("BOTTOM", 0, 0);
 end
@@ -2613,7 +2649,7 @@ function LabeledEnumDropDownControlMixin:OnLoad()
 	EnumDropDownControlMixin.OnLoad(self);
 
 	self:SetHeight(self:GetHeight() + 20);
-	
+
 	self.DropDownMenu:ClearAllPoints();
 	self.DropDownMenu:SetPoint("BOTTOM", 0, 2);
 end

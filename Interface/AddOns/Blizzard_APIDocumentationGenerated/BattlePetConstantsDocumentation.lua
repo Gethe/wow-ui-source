@@ -239,9 +239,9 @@ local BattlePetConstants =
 		{
 			Name = "BattlePetSpeciesFlags",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 1,
-			MaxValue = 32768,
+			MaxValue = 65536,
 			Fields =
 			{
 				{ Name = "NoRename", Type = "BattlePetSpeciesFlags", EnumValue = 1 },
@@ -260,6 +260,7 @@ local BattlePetConstants =
 				{ Name = "AddsAllowedWithBoss", Type = "BattlePetSpeciesFlags", EnumValue = 8192 },
 				{ Name = "HideUntilLearned", Type = "BattlePetSpeciesFlags", EnumValue = 16384 },
 				{ Name = "MatchPlayerHighPetLevel", Type = "BattlePetSpeciesFlags", EnumValue = 32768 },
+				{ Name = "NoWildPetAddsAllowed", Type = "BattlePetSpeciesFlags", EnumValue = 65536 },
 			},
 		},
 		{
@@ -337,9 +338,9 @@ local BattlePetConstants =
 		{
 			Name = "BattlepetDbFlags",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 256,
+			MaxValue = 512,
 			Fields =
 			{
 				{ Name = "None", Type = "BattlepetDbFlags", EnumValue = 0 },
@@ -352,6 +353,7 @@ local BattlePetConstants =
 				{ Name = "Ability2Selection", Type = "BattlepetDbFlags", EnumValue = 64 },
 				{ Name = "FanfareNeeded", Type = "BattlepetDbFlags", EnumValue = 128 },
 				{ Name = "DisplayOverridden", Type = "BattlepetDbFlags", EnumValue = 256 },
+				{ Name = "AcquiredViaLicense", Type = "BattlepetDbFlags", EnumValue = 512 },
 				{ Name = "LockMask", Type = "BattlepetDbFlags", EnumValue = 12 },
 			},
 		},

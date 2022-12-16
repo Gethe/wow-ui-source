@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateTextWithSubtext" inherits="UIWidgetBaseTemplate, VerticalLayoutFrame" virtual="true" mixin="UIWidgetTemplateTextWithSubtextMixin">
+		<Size x="237" y="32"/>
+		<KeyValues>
+			<KeyValue key="spacing" value="2" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" mixin="UIWidgetBaseTextMixin" inherits="GameTooltipText" justifyH="LEFT">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="SubText" mixin="UIWidgetBaseTextMixin" inherits="GameTooltipText" justifyH="LEFT">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+					</KeyValues>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

@@ -119,8 +119,8 @@ function QuickJoinMixin:SelectGroup(guid)
 
 	local function UpdateButtonSelection(guid, selected)
 		if guid then
-			local button = self.ScrollBox:FindFrameByPredicate(function(button)
-				return button:GetElementData().guid == guid;
+			local button = self.ScrollBox:FindFrameByPredicate(function(button, elementData)
+				return elementData.guid == guid;
 			end);
 			if button then
 				button:SetSelected(selected);

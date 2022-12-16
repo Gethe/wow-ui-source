@@ -197,7 +197,7 @@ local function Register()
 
 	-- Twitter
 	do
-		if not Kiosk.IsEnabled() then
+		if not Kiosk.IsEnabled() and not LOCALE_zhCN then
 			local listener = Mixin(CreateFrame("Frame"), CallbackRegistryMixin);	
 			listener:GenerateCallbackEvents(
 				{

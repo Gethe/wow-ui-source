@@ -39,6 +39,49 @@
 		<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 		<BarColor r=".25" g=".25" b=".75"/>
 	</StatusBar>
+
+	<ItemButton name="ProfessionsReagentButtonTemplate" virtual="true">
+		<Size x="39" y="39" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="SlotBackground" atlas="Professions-Slot-bg"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" atlas="Professions-Slot-Frame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1" y="1" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</ItemButton>
 	
 	<Frame name="ProfessionsTableCellTextTemplate" mixin="ProfessionsTableCellTextMixin" virtual="true">
 		<Size x="0" y="16"/>
@@ -49,11 +92,95 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="ProfessionsCrafterTableCellNameTemplate" mixin="ProfessionsCrafterTableCellNameMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
-	<Frame name="ProfessionsCrafterTableCellTipTemplate" mixin="ProfessionsCrafterTableCellTipMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
-	<Frame name="ProfessionsCrafterTableCellQualityTemplate" mixin="ProfessionsCrafterTableCellQualityMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
-	<Frame name="ProfessionsCrafterTableCellReagentsTemplate" mixin="ProfessionsCrafterTableCellReagentsMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
-	<Frame name="ProfessionsCrafterTableCellExpirationTemplate" mixin="ProfessionsCrafterTableCellExpirationMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
+	<Frame name="ProfessionsCrafterTableCellItemNameTemplate" mixin="ProfessionsCrafterTableCellItemNameMixin" virtual="true">
+		<Size x="0" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Icon">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="IconBorder" atlas="auctionhouse-itemicon-small-border" useAtlasSize="false">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+
+				<FontString parentKey="Text" inherits="Number14FontWhite" justifyH="LEFT" maxLines="1">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4" y="-1"/>
+						<Anchor point="RIGHT" x="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<ItemButton name="ProfessionsCrafterTableCellReagentsButtonTemplate" inherits="ProfessionsReagentButtonTemplate" mixin="ItemButtonMixin" virtual="true"/>
+	<Frame name="ProfessionsCrafterTableCellReagentsTemplate" mixin="ProfessionsCrafterTableCellReagentsMixin" inherits="ProfessionsTableCellTextTemplate" passThroughButtons="LeftButton, RightButton" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<Frames>
+			<Frame parentKey="ReagentsContainer" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="ProfessionsCrafterTableCellCommissionTemplate" mixin="ProfessionsCrafterTableCellCommissionMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="TipMoneyDisplayFrame" inherits="MoneyDisplayFrameTemplate" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="hideCopper" value="true" type="boolean"/>
+					<KeyValue key="leftAlign" value="true" type="boolean"/>
+					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="ProfessionsCrafterTableCellMaxCommissionTemplate" inherits="ProfessionsCrafterTableCellCommissionTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tipKey" value="tipAmountMax" type="string"/>
+		</KeyValues>
+	</Frame>
+	<Frame name="ProfessionsCrafterTableCellAvgCommissionTemplate" inherits="ProfessionsCrafterTableCellCommissionTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tipKey" value="tipAmountAvg" type="string"/>
+		</KeyValues>
+	</Frame>
+	<Frame name="ProfessionsCrafterTableCellActualCommissionTemplate" inherits="ProfessionsCrafterTableCellCommissionTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tipKey" value="tipAmount" type="string"/>
+		</KeyValues>
+	</Frame>
+	<Frame name="ProfessionsCrafterTableCellExpirationTemplate" mixin="ProfessionsCrafterTableCellExpirationMixin" passThroughButtons="LeftButton, RightButton" virtual="true">
+		<Size x="0" y="16"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Text" inherits="Number14FontGray" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-30" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-33" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="ProfessionsCrafterTableCellNumAvailableTemplate" mixin="ProfessionsCrafterTableCellNumAvailableMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
+	<Frame name="ProfessionsCrafterTableCellCustomerNameTemplate" mixin="ProfessionsCrafterTableCellCustomerNameMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
 
 	<Frame name="ProfessionsCustomerTableCellItemNameTemplate" mixin="ProfessionsCustomerTableCellItemNameMixin" virtual="true">
 		<Size x="0" y="16"/>
@@ -84,10 +211,39 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="ProfessionsCustomerTableCellIlvlTemplate" mixin="ProfessionsCustomerTableCellIlvlMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
+	<Frame name="ProfessionsCustomerTableCellIlvlTemplate" mixin="ProfessionsCustomerTableCellIlvlMixin" inherits="ProfessionsTableCellTextTemplate" passThroughButtons="LeftButton, RightButton" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
 	<Frame name="ProfessionsCustomerTableCellSlotsTemplate" mixin="ProfessionsCustomerTableCellSlotsMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
 	<Frame name="ProfessionsCustomerTableCellLevelTemplate" mixin="ProfessionsCustomerTableCellLevelMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
 	<Frame name="ProfessionsCustomerTableCellSkillTemplate" mixin="ProfessionsCustomerTableCellSkillMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
+	<Frame name="ProfessionsCustomerTableCellStatusTemplate" mixin="ProfessionsCustomerTableCellStatusMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
+	<Frame name="ProfessionsCustomerTableCellTypeTemplate" mixin="ProfessionsCustomerTableCellTypeMixin" inherits="ProfessionsTableCellTextTemplate" virtual="true"/>
+	<Frame name="ProfessionsCustomerTableCellExpirationTemplate" mixin="ProfessionsCustomerTableCellExpirationMixin" passThroughButtons="LeftButton, RightButton" virtual="true">
+		<Size x="60" y="16"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Text" inherits="Number14FontGray" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ProfessionsCustomerTableCellActualCommissionTemplate" inherits="ProfessionsCrafterTableCellCommissionTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tipKey" value="tipAmount" type="string"/>
+		</KeyValues>
+	</Frame>
 
 	<Button name="ProfessionsCrafterTableHeaderStringTemplate" mixin="ProfessionsCrafterTableHeaderStringMixin" inherits="ColumnDisplayButtonShortTemplate" virtual="true">
 		<Size x="0" y="19"/>
@@ -104,49 +260,6 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	
-	<ItemButton name="ProfessionsReagentButtonTemplate" virtual="true">
-		<Size x="39" y="39" />
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="SlotBackground" atlas="Professions-Slot-bg"/>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon"/>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="IconBorder" atlas="Professions-Slot-Frame" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="IconOverlay" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="IconOverlay2" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1" y="1" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</ItemButton>
 
 	<Button name="ProfessionsOutputButtonTemplate" inherits="CircularGiantItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size x="47" y="47"/>
@@ -183,14 +296,5 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
-	</Frame>
-	
-	<Frame name="ProfessionsVerticalDividerTemplate" virtual="true">
-		<Size x="1" y="326"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture atlas="Professions-Recipe-Divider" useAtlasSize="true"/>
-			</Layer>
-		</Layers>
 	</Frame>
 </Ui>

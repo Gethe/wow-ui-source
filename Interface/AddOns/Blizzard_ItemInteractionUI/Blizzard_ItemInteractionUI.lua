@@ -135,7 +135,7 @@ end
 -- UiItemInteraction data only supports a single, flat currency cost.
 -- We need to add support for extended currency costs or move Item Conversion out of the Item Interaction UI.
 function ItemInteractionMixin:HasExtendedCurrencyCost()
-	return self.interactionType == Enum.UIItemInteractionType.ItemConversion;
+	return self.usesCharges;
 end
 
 function ItemInteractionMixin:HasCost()
@@ -151,7 +151,7 @@ function ItemInteractionMixin:CostsCurrency()
 end
 
 function ItemInteractionMixin:UsesCharges()
-	return self.chargeCurrencyTypeId and self.chargeCost > 0;
+	return self.usesCharges and self.chargeCost > 0;
 end
 
 --------------- Base Frame Functions -----------------------
@@ -266,6 +266,7 @@ function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 	self.dropInSlotSoundKitId = frameData.dropInSlotSoundKitId or SOUNDKIT.PUT_DOWN_SMALL_CHAIN;
 	self.flags = frameData.flags;
 	self.buttonTooltip = frameData.buttonTooltip;
+	self.slotTooltip = frameData.slotTooltip;
 	self.textureKit = frameData.textureKit;
 	local frameTextureKitRegions = {
 		[self.Background] = "%s-background",
@@ -274,6 +275,7 @@ function ItemInteractionMixin:LoadInteractionFrameData(frameData)
 
 	self.conversionMode = (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ConversionMode));
 	self.clickShowsFlyout = (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ClickShowsFlyout));
+	self.usesCharges = FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.UsesCharges);
 
 	self:SetupChargeCurrency();
 
@@ -357,7 +359,7 @@ end
 -- For now we're passing the "Charge" cost in through data and grabbing the extended currency cost of this interaction using C_ItemInteraction.GetItemConversionCurrencyCost().
 -- We need to either add support for a flat charge cost + an extended currency cost or move Item Conversion out of the Item Interaction UI.
 function ItemInteractionMixin:SetupChargeCurrency()
-	if (self.interactionType == Enum.UIItemInteractionType.ItemConversion) then
+	if (self.usesCharges) then
 		self.chargeCurrencyTypeId = self.currencyTypeId;
 		self.currencyTypeId = nil;
 
@@ -469,7 +471,7 @@ function ItemInteractionMixin:GetButtonTooltip()
 end
 
 function ItemInteractionMixin:GetConfirmationDescription()
-	if (self:HasExtendedCurrencyCost()) then
+	if self.interactionType == Enum.UIItemInteractionType.ItemConversion then
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currencyTypeId);
 		local file, fileWidth, fileHeight, width, height = currencyInfo.iconFileID, 64, 64, 16, 16;
 		local left, right, top, bottom = 0, 1, 0, 1;
@@ -701,7 +703,7 @@ function ItemInteractionMixin:SetInputItemSlotTooltip(itemSlot, itemLocation)
 	if (itemLocation) then
 		GameTooltip:SetOwner(itemSlot, "ANCHOR_RIGHT");
 		if (self.interactionType == Enum.UIItemInteractionType.CleanseCorruption) then
-			C_ItemInteraction.SetCorruptionReforgerItemTooltip();
+			GameTooltip:SetItemInteractionItem();
 		else
 			ItemLocation:ApplyLocationToTooltip(itemLocation, GameTooltip);
 		end
@@ -710,7 +712,11 @@ function ItemInteractionMixin:SetInputItemSlotTooltip(itemSlot, itemLocation)
 			GameTooltip:SetOwner(itemSlot, "ANCHOR_RIGHT");
 			-- We don't allow wrapping on the first line of the tooltip, so hack around that restriction.
 			GameTooltip_AddNormalLine(GameTooltip, "");
-			GameTooltip_AddNormalLine(GameTooltip, SL_SET_CONVERSION_INPUT_DESCRIPTION:format(PVPUtil.GetCurrentSeasonNumber()));
+			if self.slotTooltip then
+				GameTooltip_AddNormalLine(GameTooltip, self.slotTooltip);
+			else
+				GameTooltip_AddNormalLine(GameTooltip, GENERIC_ITEM_CONVERSION_SLOT_TOOLTIP);
+			end
 			if (not ItemUtil.DoesAnyItemSlotMatchItemContext()) then
 				GameTooltip_AddErrorLine(GameTooltip, ERR_ITEM_CONVERSION_NO_VALID_ITEMS);
 			end
@@ -1000,9 +1006,8 @@ function ItemInteractionItemConversionOutputSlotMixin:OnEnter()
 	if (itemLocation) then
 		if (itemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.ItemConversion) then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			C_ItemInteraction.SetItemConversionOutputTooltip();
-			GameTooltip:Show();
-		else
+			GameTooltip:SetItemInteractionItem();
+		else 
 			GameTooltip_Hide();
 		end
 	else

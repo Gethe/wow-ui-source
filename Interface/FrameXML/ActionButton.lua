@@ -344,11 +344,6 @@ function ActionBarActionButtonMixin:UpdatePressAndHoldAction()
 		local actionType, id = GetActionInfo(self.action);
 		if actionType == "spell" then
 			pressAndHoldAction = IsPressHoldReleaseSpell(id);
-		elseif actionType == "macro" then
-			local spellID = GetMacroSpell(id);
-			if spellID then
-				pressAndHoldAction = IsPressHoldReleaseSpell(spellID);
-			end
 		end
 	end
 
@@ -365,6 +360,13 @@ function ActionBarActionButtonMixin:UpdateAction(force)
 		self.action = action;
 		SetActionUIButton(self, action, self.cooldown);
 		self:Update();
+
+		-- If on an action bar and layout fields are set, ask  it to update visibility of its buttons
+		local actionBar = self:GetParent();
+		if (self.index and actionBar and actionBar.UpdateShownButtons) then
+			actionBar:UpdateShownButtons();
+			actionBar:UpdateGridLayout();
+		end
 	end
 end
 
@@ -383,6 +385,7 @@ function ActionBarActionButtonMixin:Update()
 		end
 		self:UpdateState();
 		self:UpdateUsable();
+		self:UpdateProfessionQuality();
 		ActionButton_UpdateCooldown(self);
 		self:UpdateFlash();
 		self:UpdateHighlightMark();
@@ -393,13 +396,13 @@ function ActionBarActionButtonMixin:Update()
 			self.eventsRegistered = nil;
 		end
 
-
 		buttonCooldown:Hide();
 
 		ClearChargeCooldown(self);
 
 		self:ClearFlash();
 		self:SetChecked(false);
+		self:ClearProfessionQuality();
 
 		if self.LevelLinkLockIcon then
 			self.LevelLinkLockIcon:SetShown(false);
@@ -471,7 +474,7 @@ end
 function SharedActionButton_RefreshSpellHighlight(button, shown)
 	if ( shown ) then
 		button.SpellHighlightTexture:Show();
-	button.SpellHighlightAnim:Play();
+		button.SpellHighlightAnim:Play();
 	else
 		button.SpellHighlightTexture:Hide();
 		button.SpellHighlightAnim:Stop();
@@ -513,6 +516,30 @@ function ActionBarActionButtonMixin:UpdateUsable()
 
 	if self.LevelLinkLockIcon then
 		self.LevelLinkLockIcon:SetShown(isLevelLinkLocked);
+	end
+end
+
+function ActionBarActionButtonMixin:UpdateProfessionQuality()
+	if IsItemAction(self.action) then
+		local quality = C_ActionBar.GetProfessionQuality(self.action);
+		if quality then
+			if not self.ProfessionQualityOverlayFrame then
+				self.ProfessionQualityOverlayFrame = CreateFrame("Frame", nil, self, "ActionButtonProfessionOverlayTemplate");
+				self.ProfessionQualityOverlayFrame:SetPoint("TOPLEFT", 14, -14);
+			end
+
+			local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);
+			self.ProfessionQualityOverlayFrame:Show();
+			self.ProfessionQualityOverlayFrame.Texture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+			return;
+		end
+	end
+	self:ClearProfessionQuality();
+end
+
+function ActionBarActionButtonMixin:ClearProfessionQuality()
+	if self.ProfessionQualityOverlayFrame then
+		self.ProfessionQualityOverlayFrame:Hide();
 	end
 end
 
@@ -662,24 +689,28 @@ end
 
 
 --Overlay stuff
-local unusedOverlayGlows = {};
-local numOverlays = 0;
-function ActionButton_GetOverlayGlow()
-	local overlay = tremove(unusedOverlayGlows);
-	if ( not overlay ) then
-		numOverlays = numOverlays + 1;
-		overlay = CreateFrame("Frame", "ActionButtonOverlay"..numOverlays, UIParent, "ActionBarButtonSpellActivationAlert");
+function ActionButton_SetupOverlayGlow(button)
+	-- If we already have a SpellActivationAlert then just early return. We should already be setup
+	if button.SpellActivationAlert then
+		return;
 	end
-	return overlay;
+
+	button.SpellActivationAlert = CreateFrame("Frame", nil, button, "ActionBarButtonSpellActivationAlert");
+
+	--Make the height/width available before the next frame:
+	local frameWidth, frameHeight = button:GetSize();
+	button.SpellActivationAlert:SetSize(frameWidth * 1.4, frameHeight * 1.4);
+	button.SpellActivationAlert:SetPoint("CENTER", button, "CENTER", 0, 0);
+	button.SpellActivationAlert:Hide();
 end
 
 function ActionBarActionButtonMixin:UpdateOverlayGlow()
 	local spellType, id, subType  = GetActionInfo(self.action);
-	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
+	if spellType == "spell" and IsSpellOverlayed(id) then
 		ActionButton_ShowOverlayGlow(self);
-	elseif ( spellType == "macro" ) then
+	elseif spellType == "macro" then
 		local spellId = GetMacroSpell(id);
-		if ( spellId and IsSpellOverlayed(spellId) ) then
+		if spellId and IsSpellOverlayed(spellId) then
 			ActionButton_ShowOverlayGlow(self);
 		else
 			ActionButton_HideOverlayGlow(self);
@@ -691,46 +722,39 @@ end
 
 -- Shared between action button and MainMenuBarMicroButton
 function ActionButton_ShowOverlayGlow(button)
-	if ( button.overlay ) then
-		if ( button.overlay.animOut:IsPlaying() ) then
-			button.overlay.animOut:Stop();
-			button.overlay.animIn:Play();
-		end
-	else
-		button.overlay = ActionButton_GetOverlayGlow();
-		local frameWidth, frameHeight = button:GetSize();
-		button.overlay:SetParent(button);
-		button.overlay:ClearAllPoints();
-		--Make the height/width available before the next frame:
-		button.overlay:SetSize(frameWidth * 1.4, frameHeight * 1.4);
-		button.overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2);
-		button.overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2);
-		button.overlay.animIn:Play();
+	ActionButton_SetupOverlayGlow(button);
+
+	if button.SpellActivationAlert.animOut:IsPlaying() then
+		button.SpellActivationAlert.animOut:Stop();
+	end
+
+	if not button.SpellActivationAlert:IsShown() then
+		button.SpellActivationAlert.animIn:Play();
 	end
 end
 
 -- Shared between action button and MainMenuBarMicroButton
 function ActionButton_HideOverlayGlow(button)
-	if ( button.overlay ) then
-		if ( button.overlay.animIn:IsPlaying() ) then
-			button.overlay.animIn:Stop();
-		end
-		if ( button:IsVisible() ) then
-			button.overlay.animOut:Play();
-		else
-			button.overlay.animOut:OnFinished();	--We aren't shown anyway, so we'll instantly hide it.
-		end
+	if not button.SpellActivationAlert then
+		return;
+	end
+
+	if button.SpellActivationAlert.animIn:IsPlaying() then
+		button.SpellActivationAlert.animIn:Stop();
+	end
+
+	if button:IsVisible() then
+		button.SpellActivationAlert.animOut:Play();
+	else
+		button.SpellActivationAlert.animOut:OnFinished();	--We aren't shown anyway, so we'll instantly hide it.
 	end
 end
 
 ActionBarOverlayGlowAnimOutMixin = {};
 
 function ActionBarOverlayGlowAnimOutMixin:OnFinished()
-	local overlay = self:GetParent();
-	local actionButton = overlay:GetParent();
-	overlay:Hide();
-	tinsert(unusedOverlayGlows, overlay);
-	actionButton.overlay = nil;
+	local frame = self:GetParent();
+	frame:Hide();
 end
 
 ActionBarOverlayGlowAnimInMixin = {};
@@ -794,7 +818,7 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "ACTIONBAR_SLOT_CHANGED" ) then
 		if ( arg1 == 0 or arg1 == tonumber(self.action) ) then
 			ClearNewActionHighlight(self.action, true);
-			self:Update();
+			self:UpdateAction(true);
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:Update();
@@ -1195,6 +1219,9 @@ BaseActionButtonMixin = {}
 
 function BaseActionButtonMixin:BaseActionButtonMixin_OnLoad()
 	self:UpdateButtonArt(self.isLastActionButton);
+
+	self.NormalTexture:SetDrawLayer("OVERLAY");
+	self.PushedTexture:SetDrawLayer("OVERLAY");
 end
 
 function BaseActionButtonMixin:GetShowGrid()
@@ -1249,9 +1276,11 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		self.SlotBackground:Hide();
 
 		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame");
+		self.NormalTexture:SetDrawLayer("OVERLAY");
 		self.NormalTexture:SetSize(46, 45);
 
 		self:SetPushedAtlas("UI-HUD-ActionBar-IconFrame-Down");
+		self.PushedTexture:SetDrawLayer("OVERLAY");
 		self.PushedTexture:SetSize(46, 45);
 	else
 		SetDividerShown(false);
@@ -1259,9 +1288,11 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		self.SlotBackground:Show();
 
 		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow");
+		self.NormalTexture:SetDrawLayer("OVERLAY");
 		self.NormalTexture:SetSize(51, 51);
 
 		self:SetPushedAtlas("UI-HUD-ActionBar-IconFrame-AddRow-Down");
+		self.PushedTexture:SetDrawLayer("OVERLAY");
 		self.PushedTexture:SetSize(51, 51);
 	end
 end
@@ -1300,6 +1331,10 @@ function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.SpellHighlightTexture:SetSize(31.6, 30.9);
 	self.Border:SetSize(31.6, 30.9);
 	self.Flash:SetSize(31.6, 30.9);
+
+	self.cooldown:ClearAllPoints();
+	self.cooldown:SetPoint("TOPLEFT", self.icon, "TOPLEFT", 1.7, -1.7);
+	self.cooldown:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT", -1, 1);
 end
 
 function SmallActionButtonMixin:UpdateButtonArt(hideDivider)

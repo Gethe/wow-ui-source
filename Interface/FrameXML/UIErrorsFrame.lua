@@ -64,6 +64,7 @@ local THROTTLED_MESSAGE_TYPES = {
 	[LE_GAME_ERR_SPELL_FAILED_ALREADY_AT_FULL_POWER_S] = true,
 	[LE_GAME_ERR_SPELL_FAILED_EQUIPPED_ITEM_CLASS_S] = true,
 	[LE_GAME_ERR_SPELL_FAILED_ALREADY_AT_FULL_HEALTH] = true,
+	[LE_GAME_ERR_SPELL_FAILED_CANT_FLY_HERE] = true,
 	[LE_GAME_ERR_GENERIC_NO_VALID_TARGETS] = true,
 
 	[LE_GAME_ERR_ITEM_COOLDOWN] = true,
@@ -94,6 +95,7 @@ local BLACK_LISTED_MESSAGE_TYPES = {
 	[LE_GAME_ERR_OUT_OF_RUNES] = true,
 	[LE_GAME_ERR_OUT_OF_FURY] = true,
 	[LE_GAME_ERR_OUT_OF_MAELSTROM] = true,
+	[LE_GAME_ERR_OUT_OF_ESSENCE] = true,
 };
 
 function UIErrorsMixin:FlashFontString(fontString)
@@ -129,7 +131,7 @@ function UIErrorsMixin:ShouldDisplayMessageType(messageType, message)
 			return false;
 		end
 	end
-
+	
 	return true;
 end
 

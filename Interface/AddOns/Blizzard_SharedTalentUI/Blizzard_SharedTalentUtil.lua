@@ -290,8 +290,7 @@ C_Traits.GetConditionInfo = function (...)
 				return tooltipFormat:format(achievementName);
 			elseif condInfo.specSetID then
 				local specName = PlayerUtil.GetSpecName() or "";
-				local classInfo = PlayerUtil.GetClassInfo();
-				local className = (classInfo and classInfo.className) or "";
+				local className = PlayerUtil.GetClassName() or "";
 				return tooltipFormat:format(specName, className);
 			elseif condInfo.playerLevel then
 				return tooltipFormat:format(condInfo.playerLevel);

@@ -68,14 +68,6 @@ local ItemInteractionUI =
 			Type = "Function",
 		},
 		{
-			Name = "SetCorruptionReforgerItemTooltip",
-			Type = "Function",
-		},
-		{
-			Name = "SetItemConversionOutputTooltip",
-			Type = "Function",
-		},
-		{
 			Name = "SetPendingItem",
 			Type = "Function",
 
@@ -146,6 +138,7 @@ local ItemInteractionUI =
 				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "buttonTooltip", Type = "string", Nilable = true },
 				{ Name = "confirmationDescription", Type = "string", Nilable = true },
+				{ Name = "slotTooltip", Type = "string", Nilable = true },
 				{ Name = "cost", Type = "number", Nilable = true },
 				{ Name = "currencyTypeId", Type = "number", Nilable = true },
 				{ Name = "dropInSlotSoundKitId", Type = "number", Nilable = true },

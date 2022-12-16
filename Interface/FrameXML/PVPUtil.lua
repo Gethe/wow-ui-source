@@ -25,5 +25,5 @@ function PVPUtil.IsInActiveBattlefield()
 end
 
 function PVPUtil.GetCurrentSeasonNumber()
-	return GetCurrentArenaSeason() - SL_START_SEASON + 1;
+	return C_PvP.GetUIDisplaySeason();
 end

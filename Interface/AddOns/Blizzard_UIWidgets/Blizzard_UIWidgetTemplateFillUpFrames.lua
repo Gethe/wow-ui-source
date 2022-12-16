@@ -90,6 +90,8 @@ local frameTextureKitRegions = {
 };
 
 local fillTextureKitFormatString = "%s_fill";
+local fillFullTextureKitFormatString = "%s_fillfull";
+local fillFlipbookTextureKitFormatString = "%s_fill_flipbook";
 
 local fixedSizeByTextureKit = {
 	dragonriding_vigor = {width=42, height=45};
@@ -104,13 +106,28 @@ function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isF
 
 	SetupTextureKitOnRegions(textureKit, self, frameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
-	local fillAtlas = fillTextureKitFormatString:format(textureKit);
+	local fillAtlas;
+	if isFull then
+		fillAtlas = fillFullTextureKitFormatString:format(textureKit);
+	else
+		fillAtlas = fillTextureKitFormatString:format(textureKit);
+	end
+
 	local fillAtlasInfo = C_Texture.GetAtlasInfo(fillAtlas);
-	if fillAtlasInfo then
+	if fillAtlasInfo and fillAtlas ~= self.lastFillAtlas then
 		self.Bar:SetStatusBarTexture(fillAtlas);
 		self.Bar:SetSize(fillAtlasInfo.width, fillAtlasInfo.height);
 		self.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "TOP", 0, 0);
+		self.Bar.FlipbookMask:SetPoint("TOP", self.Bar:GetStatusBarTexture(), "TOP", 0, 0);
+		self.lastFillAtlas = fillAtlas;
 	end
+
+	local flipbookAtlas = fillFlipbookTextureKitFormatString:format(textureKit);
+	local flipbookAtlasInfo = C_Texture.GetAtlasInfo(flipbookAtlas);
+	if flipbookAtlasInfo then
+		self.Bar.Flipbook:SetAtlas(flipbookAtlas, TextureKitConstants.UseAtlasSize);
+	end
+
 
 	self.Bar:SetMinMaxValues(min, max);
 
@@ -123,6 +140,7 @@ function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isF
 	end
 
 	if flashFrame then
+		self.Bar.Flipbook:Hide();
 		self.Flash.PulseAnim:Stop();
 		self.Flash.FlashAnim:Restart();
 		if flashFameSound[textureKit] then
@@ -131,8 +149,14 @@ function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isF
 	else
 		if pulseFrame then
 			self.Flash.PulseAnim:Play();
+			if flipbookAtlasInfo then
+				self.Bar.Flipbook:Show();
+				self.Bar.FillupFlipbookAnim:Play();
+			end
 		else
 			self.Flash.PulseAnim:Stop();
+			self.Bar.Flipbook:Hide();
+			self.Bar.FillupFlipbookAnim:Stop();
 		end
 	end
 

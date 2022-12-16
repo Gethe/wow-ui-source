@@ -733,14 +733,14 @@ end
 
 function EventToastAnimationsMixin:PauseAnimations()
 	self.hideAnim:Stop();
-	self.showAnim:Stop();
+	self.showAnim:Finish();
 
 	if(self.BannerFrame and self.BannerFrame:IsShown()) then 
 		self.BannerFrame:SetAlpha(1);
 	end 
 
 	if(self.NewStageTextureKit) then 
-		self.NewStageTextureKit:Stop();
+		self.NewStageTextureKit:Finish();
 	end 
 
 	self:SetAlpha(1);

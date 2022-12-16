@@ -6,11 +6,7 @@ function PVPConquestRewardMixin:Setup()
 	local displayType = weeklyProgress.displayType;
 
 	if progress < maxProgress then
-		if displayType == Enum.ConquestProgressBarDisplayType.Seasonal then
-			self:SetTexture("Interface\\icons\\achievement_legionpvp2tier3", 1);
-		else
-			self:SetTexture("Interface\\icons\\Inv_trinket_oribos_01_silver", 1);
-		end
+		self:SetTexture("Interface\\icons\\achievement_legionpvp2tier3", 1);
 		self.CheckMark:Hide();
 		self.Ring:SetDesaturated(false);
 	else

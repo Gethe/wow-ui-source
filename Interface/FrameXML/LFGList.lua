@@ -48,7 +48,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[6] = "legion",
 	[7] = "battleforazeroth",
 	[8] = "shadowlands",
-	[9] = "expansion9",
+	[9] = "dragonflight",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {
@@ -697,7 +697,7 @@ end
 
 --This function accepts any or all of categoryID, groupId, and activityID
 function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activityID)
-	filters, categoryID, groupID, activityID = LFGListUtil_AugmentWithBest(bit.bor(self.baseFilters,filters or 0), categoryID, groupID, activityID);
+	filters, categoryID, groupID, activityID = LFGListUtil_AugmentWithBest(bit.bor(self.baseFilters or 0, filters or 0), categoryID, groupID, activityID);
 	self.selectedCategory = categoryID;
 	self.selectedGroup = groupID;
 	self.selectedActivity = activityID;
@@ -1328,8 +1328,8 @@ function LFGListEntryCreationActivityFinder_Select(self, activityID)
 
 	local function UpdateButtonSelection(id, selected)
 		if id then
-			local button = self.Dialog.ScrollBox:FindFrameByPredicate(function(button)
-				return button:GetElementData().id == id;
+			local button = self.Dialog.ScrollBox:FindFrameByPredicate(function(button, elementData)
+				return elementData.id == id;
 			end);
 			if button then
 				LFGListEntryCreationActivityFinder_SetButtonSelected(button, selected);
@@ -1376,8 +1376,8 @@ function LFGListApplicationViewer_OnEvent(self, event, ...)
 			LFGListApplicationViewer_UpdateResultList(self);
 			LFGListApplicationViewer_UpdateResults(self);
 		else
-			local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
-				return frame:GetElementData().id == id;
+			local frame = self.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+				return elementData.id == id;
 			end);
 			if frame then
 				LFGListApplicationViewer_UpdateApplicant(frame, id);
@@ -1832,12 +1832,13 @@ LFGApplicationBrowseGroupsButtonMixin = { };
 function LFGApplicationBrowseGroupsButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local panel = self:GetParent();
+	local baseFilters = panel:GetParent().baseFilters;
 	local searchPanel = panel:GetParent().SearchPanel;
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	if(activeEntryInfo) then 
 		local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityID);
 		if(activityInfo) then 
-			LFGListSearchPanel_SetCategory(searchPanel, activityInfo.categoryID, activityInfo.filters);
+			LFGListSearchPanel_SetCategory(searchPanel, activityInfo.categoryID, activityInfo.filters, baseFilters);
 			LFGListFrame_SetActivePanel(panel:GetParent(), searchPanel);
 			LFGListSearchPanel_DoSearch(searchPanel);
 		end
@@ -2007,6 +2008,14 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 			if ( self.selectedResult ~= id ) then
 				LFGListSearchPanel_UpdateResults(self);
 			end
+		else
+			local updatedEntryFrame = self.ScrollBox:FindFrameByPredicate(function(frame)
+				local elementData = frame:GetElementData();
+				return elementData and elementData.resultID == id;
+			end);
+			if updatedEntryFrame then
+				LFGListSearchEntry_Update(updatedEntryFrame);
+			end
 		end
 		LFGListSearchPanel_UpdateButtonStatus(self);
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
@@ -2020,6 +2029,8 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_CONNECTION" ) then
 		LFGListSearchPanel_UpdateButtonStatus(self);
+	elseif ( event == "LFG_ROLE_CHECK_UPDATE" ) then
+		LFGListSearchPanel_UpdateResultList(self);
 	end
 
 	if ( tContains(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS, event) ) then
@@ -2074,7 +2085,7 @@ end
 function LFGListSearchPanel_SetCategory(self, categoryID, filters, preferredFilters)
 	self.categoryID = categoryID;
 	self.filters = filters;
-	self.preferredFilters = preferredFilters;
+	self.preferredFilters = preferredFilters or 0;
 
 	local categoryInfo = C_LFGList.GetLfgCategoryInfo(categoryID);
 	self.SearchBox.Instructions:SetText(categoryInfo.searchPromptOverride or FILTER);
@@ -2167,13 +2178,13 @@ function LFGListSearchPanel_UpdateResults(self)
 			self.ScrollBox.StartGroupButton:ClearAllPoints();
 			self.ScrollBox.StartGroupButton:SetPoint("BOTTOM", self.ScrollBox.NoResultsFound, "BOTTOM", 0, - 27);
 			self.ScrollBox.NoResultsFound:SetText(self.searchFailed and LFG_LIST_SEARCH_FAILED or LFG_LIST_NO_RESULTS_FOUND);
-		elseif(self.shouldAlwaysShowCreateGroupButton) then
+		else
 			self.ScrollBox.NoResultsFound:Hide();
 			self.ScrollBox.StartGroupButton:SetShown(false);
 
-			dataProvider:Insert({startGroup=true});
-		else
-			self.ScrollBox.NoResultsFound:Hide();
+			if(self.shouldAlwaysShowCreateGroupButton) then
+				dataProvider:Insert({startGroup=true});
+			end
 		end
 
 		self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
@@ -2404,14 +2415,18 @@ function LFGListSearchPanel_UpdateAutoComplete(self)
 end
 
 function LFGListSearchEntry_OnLoad(self)
-	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
-	self:RegisterEvent("LFG_ROLE_CHECK_UPDATE");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
 function LFGListSearchEntry_Update(self)
 	local resultID = self.resultID;
+
+	if not C_LFGList.HasSearchResultInfo(resultID) then
+		return;
+	end
+
 	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
+
 	local isApplication = (appStatus ~= "none" or pendingStatus);
 	local isAppFinished = LFGListUtil_IsStatusInactive(appStatus) or LFGListUtil_IsStatusInactive(pendingStatus);
 
@@ -2563,19 +2578,6 @@ function LFGListSearchEntry_UpdateExpiration(self)
 	local minutes = math.floor(duration / 60);
 	local seconds = duration % 60;
 	self.ExpirationTime:SetFormattedText("%d:%.2d", minutes, seconds);
-end
-
-function LFGListSearchEntry_OnEvent(self, event, ...)
-	if ( event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
-		local id = ...;
-		if ( id == self.resultID ) then
-			LFGListSearchEntry_Update(self);
-		end
-	elseif ( event == "LFG_ROLE_CHECK_UPDATE" ) then
-		if ( self.resultID ) then
-			LFGListSearchEntry_Update(self);
-		end
-	end
 end
 
 function LFGListSearchEntry_OnClick(self, button)

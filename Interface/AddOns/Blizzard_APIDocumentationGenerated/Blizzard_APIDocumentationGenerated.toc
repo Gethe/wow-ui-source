@@ -15,6 +15,7 @@ AuctionHouseDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
 AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
+BagIndexConstantsDocumentation.lua
 BankDocumentation.lua
 BarberShopDocumentation.lua
 BattleNetDocumentation.lua
@@ -65,12 +66,12 @@ LFGListInfoDocumentation.lua
 LoadingScreenDocumentation.lua
 LootDocumentation.lua
 LossOfControlDocumentation.lua
-MailInfoDocumentation.lua
 MapExplorationDocumentation.lua
 MerchantFrameDocumentation.lua
 MinimapDocumentation.lua
 MinimapFrameAPIDocumentation.lua
 NamePlateManagerDocumentation.lua
+NewItemsDocumentation.lua
 PaperDollInfoDocumentation.lua
 PartyInfoDocumentation.lua
 PartyPoseUIDocumentation.lua
@@ -146,17 +147,19 @@ SummonInfoDocumentation.lua
 TTSSettingsDocumentation.lua
 TaxiMapDocumentation.lua
 TextureUtilsDocumentation.lua
-TooltipConstantsDocumentation.lua
+TooltipComparisonDocumentation.lua
+TooltipInfoDocumentation.lua
 ToyBoxInfoDocumentation.lua
 TradeInfoDocumentation.lua
-TradeSkillUIDocumentation.lua
 TrainerDocumentation.lua
 TraitConfigDocumentation.lua
 TutorialDocumentation.lua
 UIColorDocumentation.lua
+UIGenericWidgetDisplayDocumentation.lua
 UIMacrosDocumentation.lua
 UIManagerDocumentation.lua
 UIModelInfoDocumentation.lua
+UISystemVisibilityManagerDocumentation.lua
 UITimerDocumentation.lua
 UIWidgetManagerDocumentation.lua
 UnitDocumentation.lua
@@ -204,6 +207,7 @@ LevelLinkDocumentation.lua
 LevelSquishDocumentation.lua
 LootJournalDocumentation.lua
 LoreTextDocumentation.lua
+MailInfoDocumentation.lua
 MajorFactionsDocumentation.lua
 MapDocumentation.lua
 MountJournalDocumentation.lua
@@ -225,6 +229,7 @@ SplashScreenDocumentation.lua
 SuperTrackManagerDocumentation.lua
 SystemDocumentation.lua
 TalkingHeadDocumentation.lua
+TradeSkillUIDocumentation.lua
 TransmogDocumentation.lua
 TransmogItemsDocumentation.lua
 TransmogSetsDocumentation.lua
@@ -253,6 +258,7 @@ CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
+ExpansionLandingPageConstantsDocumentation.lua
 GamePadConstDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua
@@ -288,6 +294,8 @@ SimpleHTMLSharedDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TooltipConstantsDocumentation.lua
+TooltipInfoSharedDocumentation.lua
 TradeSkillUITypesDocumentation.lua
 TraitConstantsDocumentation.lua
 TransmogSharedDocumentation.lua
@@ -301,6 +309,7 @@ ValidateNameConstantsDocumentation.lua
 VectorSharedDocumentation.lua
 VehicleConstantsDocumentation.lua
 VignetteConstantsDocumentation.lua
+WeeklyRewardsSharedDocumentation.lua
 AuctionHouseConstants_MainlineDocumentation.lua
 ClickBindingsConstantsDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua

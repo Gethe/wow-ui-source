@@ -38,7 +38,7 @@ function ProfessionsRecipeListMixin:OnLoad()
 			factory("ProfessionsRecipeListCategoryTemplate", Initializer);
 		elseif elementData.recipeInfo then
 			local function Initializer(button, node)
-				button:Init(node);
+				button:Init(node, self.hideCraftableCount);
 			
 				local selected = self.selectionBehavior:IsElementDataSelected(node);
 				button:SetSelected(selected);
@@ -73,6 +73,8 @@ function ProfessionsRecipeListMixin:OnLoad()
 				end);
 			end
 			factory("ProfessionsRecipeListRecipeTemplate", Initializer);
+		elseif elementData.isDivider then
+			factory("ProfessionsRecipeListDividerTemplate");
 		else
 			factory("Frame");
 		end
@@ -89,6 +91,10 @@ function ProfessionsRecipeListMixin:OnLoad()
 
 		if elementData.categoryInfo then
 			return baseElementHeight + categoryPadding;
+		end
+
+		if elementData.dividerHeight then
+			return elementData.dividerHeight;
 		end
 
 		if elementData.topPadding then
@@ -115,11 +121,11 @@ function ProfessionsRecipeListMixin:OnLoad()
 			local newRecipeID = data.recipeInfo.recipeID;
 			local changed = self.previousRecipeID ~= newRecipeID;
 			if changed then
-				EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", data.recipeInfo);
+				EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", data.recipeInfo, self);
 				
 				if newRecipeID then
-					self.previousRecipeID = newRecipeID;
-				end
+				self.previousRecipeID = newRecipeID;
+			end
 			end
 
 		end
@@ -152,11 +158,22 @@ function ProfessionsRecipeListMixin:InitContextMenu(dropDown, level)
 	UIDropDownMenu_AddButton(info, level);
 end
 
-function ProfessionsRecipeListMixin:SelectRecipe(recipeInfo)
-	self.selectionBehavior:SelectElementDataByPredicate(function(node)
+function ProfessionsRecipeListMixin:SelectRecipe(recipeInfo, scrollToRecipe)
+	local elementData = self.selectionBehavior:SelectElementDataByPredicate(function(node)
 		local data = node:GetData();
 		return data.recipeInfo and data.recipeInfo.recipeID == recipeInfo.recipeID and data.recipeInfo.favoritesInstance == recipeInfo.favoritesInstance;
 	end);
+
+	if scrollToRecipe then
+		self.ScrollBox:ScrollToElementData(elementData);
+	end
+
+	return elementData;
+end
+
+function ProfessionsRecipeListMixin:ClearSelectedRecipe()
+	self.selectionBehavior:ClearSelections();
+	self.previousRecipeID = nil;
 end
 
 ProfessionsRecipeListCategoryMixin = {};
@@ -179,6 +196,9 @@ function ProfessionsRecipeListCategoryMixin:Init(node)
 	local elementData = node:GetData();
 	local categoryInfo = elementData.categoryInfo;
 	self.Label:SetText(categoryInfo.name);
+
+	local color = categoryInfo.unlearned and DISABLED_FONT_COLOR or NORMAL_FONT_COLOR;
+	self.Label:SetVertexColor(color:GetRGB());
 
 	self:SetCollapseState(node:IsCollapsed());
 	if categoryInfo.hasProgressBar and not (C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember()) and not tContains({C_TradeSkillUI.GetCategories()}, categoryInfo.categoryID) then
@@ -216,7 +236,7 @@ function ProfessionsRecipeListRecipeMixin:GetLabelColor()
 	return self.learned and PROFESSION_RECIPE_COLOR or DISABLED_FONT_COLOR;
 end
 
-function ProfessionsRecipeListRecipeMixin:Init(node)
+function ProfessionsRecipeListRecipeMixin:Init(node, hideCraftableCount)
 	local elementData = node:GetData();
 	local recipeInfo = Professions.GetHighestLearnedRecipe(elementData.recipeInfo) or elementData.recipeInfo;
 
@@ -250,7 +270,7 @@ function ProfessionsRecipeListRecipeMixin:Init(node)
 		table.insert(rightFrames, self.LockedIcon);
 	elseif recipeInfo.canSkillUp and not C_TradeSkillUI.IsTradeSkillGuild() and not C_TradeSkillUI.IsNPCCrafting() and not C_TradeSkillUI.IsRuneforging() then
 		local skillUpAtlas;
-		local xOfs = -3;
+		local xOfs = -9;
 		local yOfs = 0;
 
 		local isDifficultyOptimal = recipeInfo.relativeDifficulty == Enum.TradeskillRelativeDifficulty.Optimal;
@@ -312,7 +332,7 @@ function ProfessionsRecipeListRecipeMixin:Init(node)
 	
 	local count = C_TradeSkillUI.GetCraftableCount(recipeInfo.recipeID);
 	local hasCount = count > 0;
-	if hasCount then
+	if hasCount and not hideCraftableCount then
 		self.Count:SetFormattedText(" [%d] ", count);
 		self.Count:Show();
 	else

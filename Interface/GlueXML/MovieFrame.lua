@@ -6,11 +6,13 @@ end
 
 function MovieFrame_PlayMovie(self, index)
 	self.movieIndex = index;
-	if ( not MOVIE_LIST[self.version] or not MOVIE_LIST[self.version][index] ) then
+	local movieEntry = MOVIE_LIST[self.version];
+	local movieID = movieEntry and movieEntry.movieIDs[index];
+	if ( not movieID ) then
 		GlueParent_CloseSecondaryScreen();
 		return;
 	end
-	local playSuccess, errorCode = self:StartMovie(MOVIE_LIST[self.version][index]);
+	local playSuccess, errorCode = self:StartMovie(movieID);
 	if ( playSuccess ) then
 		StopGlueMusic();
 		StopGlueAmbience();

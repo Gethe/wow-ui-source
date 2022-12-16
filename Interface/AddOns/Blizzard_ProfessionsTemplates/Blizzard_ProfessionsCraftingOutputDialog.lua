@@ -66,7 +66,7 @@ function ProfessionsCraftingOutputDialogMixin:Init(transaction, quality)
 
 		local reagents = transaction:CreateOptionalCraftingReagentInfoTbl();
 		self.OutputIcon:SetScript("OnUpdate", function() 
-			C_TradeSkillUI.SetTooltipRecipeResultItem(recipeID, reagents, transaction:GetAllocationItemGUID());
+			GameTooltip:SetRecipeResultItem(recipeID, reagents, transaction:GetAllocationItemGUID());
 		end);
 	end);
 	

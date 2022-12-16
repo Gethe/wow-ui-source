@@ -415,7 +415,7 @@ function CriteriaAlertFrame_SetUp(frame, achievementID, criteriaString)
 	frame.id = achievementID;
 end
 
-CriteriaAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("CriteriaAlertFrameTemplate", CriteriaAlertFrame_SetUp, 2, 0);
+CriteriaAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("CriteriaAlertFrameTemplate", CriteriaAlertFrame_SetUp, 2, 6);
 
 -- [[ LootAlertFrame shared ]] --
 function LootAlertFrame_OnEnter(self)
@@ -971,7 +971,7 @@ function NewRecipeLearnedAlertFrame_OnClick(self, button, down)
 	if currentSkillLineInfo ~= nil and currentSkillLineInfo.professionID == self.skillLineID then
 		local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.recipeID);
 		ProfessionsFrame:SetTab(ProfessionsFrame.recipesTabID);
-		EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", recipeInfo);
+		EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", recipeInfo, nilRecipeList);
 	elseif currBaseProfessionInfo ~= nil and currBaseProfessionInfo.professionID == self.tradeSkillID then
 		C_TradeSkillUI.SetProfessionChildSkillLineID(self.skillLineID);
 		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();

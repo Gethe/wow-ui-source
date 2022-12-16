@@ -658,7 +658,7 @@ function HonorFrame_UpdateQueueButtons()
 		if IsInGroup(LE_PARTY_CATEGORY_HOME) then
 			local brawlInfo = isSpecialBrawl and C_PvP.GetSpecialEventBrawlInfo() or C_PvP.GetAvailableBrawlInfo();
 			if brawlInfo then
-				disabledReason = QUEUE_UNAVAILABLE_PARTY_MIN_LEVEL:format(GetMaxLevelForPlayerExpansion());
+				disabledReason = QUEUE_UNAVAILABLE_PARTY_MIN_LEVEL:format(isSpecialBrawl and brawlInfo.minLevel or GetMaxLevelForPlayerExpansion());
 			end
 		else
 			disabledReason = INSTANCE_UNAVAILABLE_SELF_LEVEL_TOO_LOW;
@@ -668,7 +668,7 @@ function HonorFrame_UpdateQueueButtons()
 	if isSpecialBrawl and canQueue then
 		if (IsInGroup(LE_PARTY_CATEGORY_HOME)) then
 			local brawlInfo = C_PvP.GetSpecialEventBrawlInfo();
-			if(brawlInfo) then
+			if(brawlInfo and not brawlInfo.groupsAllowed) then
 				canQueue = false;
 				disabledReason = SOLO_BRAWL_CANT_QUEUE;
 			end
@@ -825,7 +825,8 @@ BONUS_BUTTON_TOOLTIPS = {
 	SpecialEventBrawl = {
 		func = function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip:SetSpecialPvpBrawl();
+			local specialBrawl = true;
+			GameTooltip:SetPvpBrawl(specialBrawl);
 		end,
 	}
 }
@@ -983,10 +984,9 @@ function HonorFrameBonusFrame_Update()
 		local brawlInfo = C_PvP.GetSpecialEventBrawlInfo();
 		button.isSpecialBrawl = true;
 		if (brawlInfo) then
-			local expansionMaxLevel = GetMaxLevelForPlayerExpansion();
-			local meetsMaxLevel = PartyUtil.GetMinLevel() == expansionMaxLevel;
-			button.canQueue = brawlInfo and brawlInfo.canQueue and meetsMaxLevel;
-			HonorFrameBonusFrame_SetButtonState(button, button.canQueue, expansionMaxLevel);
+			local meetsMinLevel = PartyUtil.GetMinLevel() >= brawlInfo.minLevel;
+			button.canQueue = brawlInfo.canQueue and meetsMinLevel;
+			HonorFrameBonusFrame_SetButtonState(button, button.canQueue, brawlInfo.minLevel);
 
 			if (brawlInfo and brawlInfo.canQueue) then
 				button.Title:SetText(brawlInfo.name);
@@ -1457,11 +1457,11 @@ function ConquestFrameButton_OnEnter(self)
 
 	tooltip.WeeklyBest:SetText(PVP_BEST_RATING..weeklyBest);
 	tooltip.WeeklyWon:SetText(isSoloShuffle and (PVP_ROUNDS_WON .. roundsWeeklyWon) or (PVP_GAMES_WON .. weeklyWon));
-	tooltip.WeeklyPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsWeeklyPlayed) or (PVP_GAMES_WON .. weeklyPlayed));
+	tooltip.WeeklyPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsWeeklyPlayed) or (PVP_GAMES_PLAYED .. weeklyPlayed));
 
 	tooltip.SeasonBest:SetText(PVP_BEST_RATING..seasonBest);
 	tooltip.SeasonWon:SetText(isSoloShuffle and (PVP_ROUNDS_WON .. roundsSeasonWon) or (PVP_GAMES_WON .. seasonWon));
-	tooltip.SeasonPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsSeasonPlayed) or (PVP_GAMES_WON .. seasonPlayed));
+	tooltip.SeasonPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsSeasonPlayed) or (PVP_GAMES_PLAYED .. seasonPlayed));
 
 	local specStats = isSoloShuffle and C_PvP.GetPersonalRatedSoloShuffleSpecStats();
 	if specStats then
@@ -1956,7 +1956,7 @@ function NewPvpSeasonMixin:OnShow()
 			seasonDescription:Hide();
 		end
 	else
-		self.SeasonDescriptionHeader:SetText(SL_SEASON_NUMBER:format(PVPUtil.GetCurrentSeasonNumber()));
+		self.SeasonDescriptionHeader:SetText(PLAYER_V_PLAYER_SEASON:format(PVPUtil.GetCurrentSeasonNumber()));
 
 		local rewardTextAnchor = self.SeasonDescriptionHeader;
 		for i = 1, MAX_NUMBER_OF_PVP_SEASON_DESCRIPTIONS do
@@ -2014,7 +2014,8 @@ function PVPWeeklyChestMixin:OnShow()
 	self.ChestTexture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 	self.Highlight:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 
-	local desaturated = not ConquestFrame_HasActiveSeason();
+	local hasActiveSeason = ConquestFrame_HasActiveSeason();
+	local desaturated = not hasActiveSeason;
 	self.ChestTexture:SetDesaturated(desaturated);
 	self.Highlight:SetDesaturated(desaturated);
 
@@ -2029,7 +2030,6 @@ function PVPWeeklyChestMixin:OnEnter()
 		GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
 		GameTooltip_AddDisabledLine(GameTooltip, UNAVAILABLE);
 		GameTooltip_AddNormalLine(GameTooltip, CONQUEST_REQUIRES_PVP_SEASON);
-		GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 		GameTooltip:Show();
 		return;
 	end
@@ -2057,6 +2057,14 @@ function PVPWeeklyChestMixin:OnEnter()
 	GameTooltip_AddNormalLine(GameTooltip, description);
 	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
 	GameTooltip:Show();
+end
+
+function PVPWeeklyChestMixin:OnMouseUp(...)
+	if not ConquestFrame_HasActiveSeason() then
+		return;
+	end
+
+	WeeklyRewardMixin.OnMouseUp(self, ...);
 end
 
 function PVPNewSeasonPopupOnClick(self)

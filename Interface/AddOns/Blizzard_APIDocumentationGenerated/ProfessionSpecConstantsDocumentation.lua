@@ -5,12 +5,13 @@ local ProfessionSpecConstants =
 		{
 			Name = "ProfTraitPerkNodeFlags",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 2,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "UnlocksSubpath", Type = "ProfTraitPerkNodeFlags", EnumValue = 1 },
+				{ Name = "IsMajorBonus", Type = "ProfTraitPerkNodeFlags", EnumValue = 2 },
 			},
 		},
 		{
@@ -60,6 +61,24 @@ local ProfessionSpecConstants =
 				{ Name = "rootNodeID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "SpecPerkInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "perkID", Type = "number", Nilable = false },
+				{ Name = "isMajorPerk", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SpecializationCurrencyInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "numAvailable", Type = "number", Nilable = false },
+				{ Name = "currencyName", Type = "string", Nilable = false },
 			},
 		},
 		{

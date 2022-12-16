@@ -14,7 +14,7 @@ function ScrollUtil.AddInitializedFrameCallback(scrollBox, callback, owner, iter
 	end
 
 	local function OnInitialized(o, frame, elementData)
-		callback(owner, frame, elementData);
+		callback(o, frame, elementData);
 	end
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnInitializedFrame, OnInitialized, owner);
 end
@@ -28,7 +28,7 @@ function ScrollUtil.AddAcquiredFrameCallback(scrollBox, callback, owner, iterate
 	end
 
 	local function OnAcquired(o, frame, elementData, new)
-		callback(frame, elementData, new);
+		callback(o, frame, elementData, new);
 	end
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnAcquiredFrame, OnAcquired, owner);
 end
@@ -37,7 +37,7 @@ end
 -- if you've opted into using a single template type for frames with varied behavior.
 function ScrollUtil.AddReleasedFrameCallback(scrollBox, callback, owner)
 	local function OnReleased(o, frame, elementData)
-		callback(frame, elementData);
+		callback(o, frame, elementData);
 	end
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, OnReleased, owner);
 end

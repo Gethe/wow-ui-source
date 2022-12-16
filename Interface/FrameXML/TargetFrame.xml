@@ -176,22 +176,11 @@
 					<Frame parentKey="TargetFrameContentMain" setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-								<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-								<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-								<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-								<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-								<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
 								<Texture parentKey="ReputationColor" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Type" useAtlasSize="true" hidden="false">
 									<Anchors>
 										<Anchor point="TOPRIGHT" x="-75" y="-25"/>
 									</Anchors>
 								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
-								<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
-								<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 							</Layer>
 							<Layer level="OVERLAY">
 								<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
@@ -205,16 +194,6 @@
 										<Anchor point="TOPLEFT" relativeKey="$parent.ReputationColor" relativePoint="TOPRIGHT" x="-133" y="-2"/>
 									</Anchors>
 								</FontString>
-								<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="22" y="-33"/>
-									</Anchors>
-								</MaskTexture>
-								<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-38" y="-58"/>
-									</Anchors>
-								</MaskTexture>
 							</Layer>
 						</Layers>
 						<Frames>
@@ -224,7 +203,20 @@
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.TargetFrameContainer.Portrait" relativePoint="LEFT" x="1" y="-11"/>
 								</Anchors>
 								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+										<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+										<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
+										<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+										<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+										<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+									</Layer>
 									<Layer level="ARTWORK">
+										<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
+										<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+										<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="1">
 										<FontString parentKey="HealthBarText" inherits="TextStatusBarText">
 											<Anchors>
 												<Anchor point="CENTER" x="0" y="0"/>
@@ -251,6 +243,24 @@
 											</Anchors>
 										</FontString>
 									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="2">
+										<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-1" y="6"/>
+											</Anchors>
+											<MaskedTextures>
+												<MaskedTexture childKey="MyHealPredictionBar"/>
+												<MaskedTexture childKey="OtherHealPredictionBar"/>
+												<MaskedTexture childKey="TotalAbsorbBar"/>
+												<MaskedTexture childKey="TotalAbsorbBarOverlay"/>
+												<MaskedTexture childKey="OverAbsorbGlow"/>
+												<MaskedTexture childKey="OverHealAbsorbGlow"/>
+												<MaskedTexture childKey="HealAbsorbBar"/>
+												<MaskedTexture childKey="HealAbsorbBarLeftShadow"/>
+												<MaskedTexture childKey="HealAbsorbBarRightShadow"/>
+											</MaskedTextures>
+										</MaskTexture>
+									</Layer>
 								</Layers>
 								<Scripts>
 									<OnLoad method="OnLoad"/>
@@ -265,7 +275,7 @@
 									<Anchor point="TOPRIGHT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMRIGHT" x="8" y="-1"/>
 								</Anchors>
 								<Layers>
-									<Layer level="ARTWORK">
+									<Layer level="OVERLAY" textureSubLevel="1">
 										<FontString parentKey="ManaBarText" inherits="TextStatusBarText">
 											<Anchors>
 												<Anchor point="CENTER" x="-4" y="0"/>
@@ -281,6 +291,13 @@
 												<Anchor point="RIGHT" x="-13" y="0"/>
 											</Anchors>
 										</FontString>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="2">
+										<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-61" y="3"/>
+											</Anchors>
+										</MaskTexture>
 									</Layer>
 								</Layers>
 								<Scripts>
@@ -461,17 +478,6 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Portrait" relativePoint="TOPRIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
-				<!-- Note that using the party mask assets here is intentional. -->
-				<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-14"/>
-					</Anchors>
-				</MaskTexture>
-				<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="13" y="-24"/>
-					</Anchors>
-				</MaskTexture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -493,6 +499,14 @@
 							</Anchors>
 						</FontString>
 					</Layer>
+					<Layer level="OVERLAY">
+						<!-- Note that using the party mask assets here is intentional. -->
+						<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-29" y="3"/>
+							</Anchors>
+						</MaskTexture>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
@@ -509,6 +523,16 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMLEFT" x="-4" y="-1"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<!-- Note that using the party mask assets here is intentional. -->
+						<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-27" y="4"/>
+							</Anchors>
+						</MaskTexture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						self.lockColor = true;
@@ -543,17 +567,17 @@
 			<OnEvent function="UnitFrame_OnEvent"/>
 		</Scripts>
 	</Button>
-	<StatusBar name="TargetSpellBarTemplate" inherits="SmallCastingBarFrameTemplate" hidden="true" virtual="true">
+	<StatusBar name="TargetSpellBarTemplate" inherits="SmallCastingBarFrameTemplate" mixin="TargetSpellBarMixin" hidden="true" virtual="true">
 		<Size x="150" y="10"/>
 		<Scripts>
-			<OnShow function="Target_Spellbar_AdjustPosition"/>
-			<OnEvent function="Target_Spellbar_OnEvent"/>
+			<OnShow method="AdjustPosition"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</StatusBar>
-	<StatusBar name="BossSpellBarTemplate" inherits="SmallCastingBarFrameTemplate" hidden="true" virtual="true">
+	<StatusBar name="BossSpellBarTemplate" inherits="SmallCastingBarFrameTemplate" mixin="BossSpellBarMixin" hidden="true" virtual="true">
 		<Size x="120" y="10"/>
 		<Scripts>
-			<OnEvent function="Target_Spellbar_OnEvent"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</StatusBar>
 	<Button name="TargetFrame" inherits="TargetFrameTemplate, EditModeUnitFrameSystemTemplate" mixin="TargetFrameMixin" movable="true">
@@ -591,6 +615,10 @@
 				self.threatNumericIndicator:SetScript("OnShow", function() self:UpdateAuras() end);
 				self.threatNumericIndicator:SetScript("OnHide", function() self:UpdateAuras() end);
 			</OnLoad>
+			<OnHide>
+				self:OnHide(); -- from TargetFrameMixin
+				self:OnSystemHide(); -- from EditModeSystemTemplate via EditModeUnitFrameSystemTemplate
+			</OnHide>
 		</Scripts>
 	</Button>
 	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate, EditModeUnitFrameSystemTemplate" mixin="FocusFrameMixin" clampedToScreen="true">

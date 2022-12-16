@@ -67,6 +67,91 @@ TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic] = {
 
 local CustomTalentTreeLayoutOptions = {};
 
+local FRODRUM_COMPANION_TALENT_TREE_ID = 486; 
+CustomTalentTreeLayoutOptions[FRODRUM_COMPANION_TALENT_TREE_ID] =
+{
+	buttonInfo =
+	{
+		[Enum.GarrTalentType.Standard] = { size = 40, spacingX = 62, spacingY = 60 },
+	},
+	spacingTop = 120,
+	spacingBottom = 50,
+	noCurrencyUsed = true,
+	canHaveBackButton = false,
+	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
+	fontStrings =
+		{
+			{
+				text = UI_FRODRUM_TALENTS_COMPANION_APPEARANCES,
+				layer = "OVERLAY",
+				template = "GameFontHighlightMedium",
+				point = "CENTER",
+				relativePoint = "TOP",
+				xOfs = 0,
+				yOfs = -40,
+			},
+			{
+				text = UI_FRODRUM_TALENTS_OHUNA,
+				layer = "OVERLAY",
+				template = "OrderHallTalentRowFont",
+				point = "CENTER",
+				relativePoint = "TOP",
+				xOfs = 0,
+				yOfs = -100,
+			},
+			{
+				text = UI_FRODRUM_TALENTS_BAKAR,
+				layer = "OVERLAY",
+				template = "OrderHallTalentRowFont",
+				point = "CENTER",
+				relativePoint = "TOP",
+				xOfs = 0,
+				yOfs = -200,
+			},
+		}
+};
+setmetatable(CustomTalentTreeLayoutOptions[FRODRUM_COMPANION_TALENT_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers]});
+
+local FRODRUM_HUNTING_TACTICS_TALENT_TREE_ID = 491; 
+CustomTalentTreeLayoutOptions[FRODRUM_HUNTING_TACTICS_TALENT_TREE_ID] =
+{
+	noCurrencyUsed = true,
+	canHaveBackButton = false,
+	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
+	fontStrings =
+		{
+			{
+				text = UI_FRODRUM_TALENTS_HUNTING_TACTICS,
+				layer = "OVERLAY",
+				template = "GameFontHighlightMedium",
+				point = "CENTER",
+				relativePoint = "TOP",
+				xOfs = 0,
+				yOfs = -40,
+			},
+			
+		}
+};
+setmetatable(CustomTalentTreeLayoutOptions[FRODRUM_HUNTING_TACTICS_TALENT_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Tiers]});
+
+local DRAGONSCALE_EXPEDITION_TALENT_TREE_ID = 489;
+CustomTalentTreeLayoutOptions[DRAGONSCALE_EXPEDITION_TALENT_TREE_ID] =
+{
+	spacingTop = 86,
+	singleCost = false,
+	researchSoundStandard = SOUNDKIT.UI_ORDERHALL_DRAGONSCALE_EXPEDITION_RESEARCH_COMPLETE,
+	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
+	alignOffsetByUiOrder = true, -- uses uiOrder to align talents by their column instead of middle aligning
+};
+setmetatable(CustomTalentTreeLayoutOptions[DRAGONSCALE_EXPEDITION_TALENT_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic]});
+
+local COBALT_ASSEMBLY_TALENT_TREE_ID = 493;
+CustomTalentTreeLayoutOptions[COBALT_ASSEMBLY_TALENT_TREE_ID] =
+{
+	talentSelectedEffect = TORGHAST_TALENT_SELECTED_SCRIPTED_ANIMATION_EFFECT_ID,
+};
+setmetatable(CustomTalentTreeLayoutOptions[COBALT_ASSEMBLY_TALENT_TREE_ID], {__index = TalentTreeLayoutOptions[Enum.GarrTalentTreeType.Classic]});
+
 local TORGHAST_TALENT_TREE_ID = 461;
 CustomTalentTreeLayoutOptions[TORGHAST_TALENT_TREE_ID] =
 {
@@ -660,6 +745,14 @@ function OrderHallTalentFrameMixin:RefreshAllData()
     local completeTalent = C_Garrison.GetCompleteTalent(self.garrisonType);
 	local researchingTalentID = self:GetResearchingTalentID();
 
+	local maxUiOrder = 0;
+	for i = 1, #talents do
+		local talent = talents[i];
+		if talent.uiOrder > maxUiOrder then
+			maxUiOrder = talent.uiOrder;
+		end
+	end
+
 	local currentTier = nil;
 	local currentTierTotalTalentCount, currentTierBaseTalentCount, currentTierDependentTalentCount, currentTierResearchableTalentCount, currentTierTalentIndex, currentTierWidth, currentTierHeight;
 	local contentOffsetY = layoutOptions.spacingTop;
@@ -802,6 +895,11 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 					middleTalentIndex = middleTalentIndex + 0.5;
 				end
 				local offsetX = currentTierTalentIndex - middleTalentIndex;
+
+				if layoutOptions.alignOffsetByUiOrder then
+					local middleTalentOrder = maxUiOrder / 2;
+					offsetX = talent.uiOrder - middleTalentOrder;
+				end
 				offsetX = offsetX * (buttonInfo.size + buttonInfo.spacingX);
 				talentFrame:SetPoint("TOP", offsetX, -contentOffsetY);
 			end
@@ -1040,6 +1138,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 			self.Highlight:Hide();
 		end
 	end
+
 	self.tooltip = GameTooltip;
 	GameTooltip:Show();
 	EventRegistry:TriggerEvent("GarrisonTalentButtonMixin.TalentTooltipShown", GameTooltip, talent, garrTalentTreeID);

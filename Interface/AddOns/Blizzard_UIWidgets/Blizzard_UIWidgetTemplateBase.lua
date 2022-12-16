@@ -727,14 +727,14 @@ UIWidgetBaseTextureAndTextTemplateMixin = CreateFromMixins(UIWidgetTemplateToolt
 
 local textFontSizes =
 {
-	[Enum.UIWidgetTextSizeType.Small]	= "GameFontNormal",
-	[Enum.UIWidgetTextSizeType.Medium]	= "GameFontNormalLarge",
-	[Enum.UIWidgetTextSizeType.Large]	= "GameFontNormalHuge2",
-	[Enum.UIWidgetTextSizeType.Huge]	= "GameFontNormalHuge4",
+	[Enum.UIWidgetTextureAndTextSizeType.Small]	= "GameFontNormal",
+	[Enum.UIWidgetTextureAndTextSizeType.Medium]	= "GameFontNormalLarge",
+	[Enum.UIWidgetTextureAndTextSizeType.Large]	= "GameFontNormalHuge2",
+	[Enum.UIWidgetTextureAndTextSizeType.Huge]	= "GameFontNormalHuge4",
 }
 
 local function GetTextSizeFont(textSizeType)
-	return textFontSizes[textSizeType] and textFontSizes[textSizeType] or textFontSizes[Enum.UIWidgetTextSizeType.Medium];
+	return textFontSizes[textSizeType] and textFontSizes[textSizeType] or textFontSizes[Enum.UIWidgetTextureAndTextSizeType.Medium];
 end
 
 function UIWidgetBaseTextureAndTextTemplateMixin:OnLoad()
@@ -1093,29 +1093,38 @@ UIWidgetBaseTextMixin = CreateFromMixins(UIWidgetBaseEnabledFrameMixin);
 
 local normalFonts =
 {
-	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Med1",
-	[Enum.UIWidgetTextSizeType.Standard]= "SystemFont_Med3",
-	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Large",
-	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Huge2",
-	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Huge4",
+	[Enum.UIWidgetTextSizeType.Small10Pt]	= "SystemFont_Small",
+	[Enum.UIWidgetTextSizeType.Small11Pt]	= "SystemFont_Small2",
+	[Enum.UIWidgetTextSizeType.Small12Pt]	= "SystemFont_Med1",
+	[Enum.UIWidgetTextSizeType.Standard14Pt]= "SystemFont_Med3",
+	[Enum.UIWidgetTextSizeType.Medium16Pt]	= "SystemFont_Large",
+	[Enum.UIWidgetTextSizeType.Large20Pt]	= "SystemFont_Huge1",
+	[Enum.UIWidgetTextSizeType.Large24Pt]	= "SystemFont_Huge2",
+	[Enum.UIWidgetTextSizeType.Huge27Pt]	= "SystemFont_Huge4",
 }
 
 local shadowFonts =
 {
-	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Shadow_Med1",
-	[Enum.UIWidgetTextSizeType.Standard]= "SystemFont_Shadow_Med3",
-	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Shadow_Large",
-	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Shadow_Huge2",
-	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4",
+	[Enum.UIWidgetTextSizeType.Small10Pt]	= "SystemFont_Shadow_Small",
+	[Enum.UIWidgetTextSizeType.Small11Pt]	= "SystemFont_Shadow_Small2",
+	[Enum.UIWidgetTextSizeType.Small12Pt]	= "SystemFont_Shadow_Med1",
+	[Enum.UIWidgetTextSizeType.Standard14Pt]= "SystemFont_Shadow_Med3",
+	[Enum.UIWidgetTextSizeType.Medium16Pt]	= "SystemFont_Shadow_Large",
+	[Enum.UIWidgetTextSizeType.Large20Pt]	= "SystemFont_Shadow_Huge1",
+	[Enum.UIWidgetTextSizeType.Large24Pt]	= "SystemFont_Shadow_Huge2",
+	[Enum.UIWidgetTextSizeType.Huge27Pt]	= "SystemFont_Shadow_Huge4",
 }
 
 local outlineFonts =
 {
-	[Enum.UIWidgetTextSizeType.Small]	= "SystemFont_Shadow_Med1_Outline",
-	[Enum.UIWidgetTextSizeType.Standard]= "SystemFont_Shadow_Med3_Outline",
-	[Enum.UIWidgetTextSizeType.Medium]	= "SystemFont_Shadow_Large_Outline",
-	[Enum.UIWidgetTextSizeType.Large]	= "SystemFont_Shadow_Huge2_Outline",
-	[Enum.UIWidgetTextSizeType.Huge]	= "SystemFont_Shadow_Huge4_Outline",
+	[Enum.UIWidgetTextSizeType.Small10Pt]	= "SystemFont_Shadow_Small_Outline",
+	[Enum.UIWidgetTextSizeType.Small11Pt]	= "SystemFont_Shadow_Small2_Outline",
+	[Enum.UIWidgetTextSizeType.Small12Pt]	= "SystemFont_Shadow_Med1_Outline",
+	[Enum.UIWidgetTextSizeType.Standard14Pt]= "SystemFont_Shadow_Med3_Outline",
+	[Enum.UIWidgetTextSizeType.Medium16Pt]	= "SystemFont_Shadow_Large_Outline",
+	[Enum.UIWidgetTextSizeType.Large20Pt]	= "SystemFont_Shadow_Huge1_Outline",
+	[Enum.UIWidgetTextSizeType.Large24Pt]	= "SystemFont_Shadow_Huge2_Outline",
+	[Enum.UIWidgetTextSizeType.Huge27Pt]	= "SystemFont_Shadow_Huge4_Outline",
 }
 
 local fontTypes =

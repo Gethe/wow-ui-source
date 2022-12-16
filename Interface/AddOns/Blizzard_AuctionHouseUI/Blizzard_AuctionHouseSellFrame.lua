@@ -430,7 +430,7 @@ function AuctionHouseSellFrameMixin:GetDefaultPrice()
 		local defaultPrice = COPPER_PER_SILVER;
 		if LinkUtil.IsLinkType(itemLink, "item") then
 			local vendorPrice = select(11, GetItemInfo(itemLink));
-			defaultPrice = vendorPrice ~= nil and (vendorPrice * 1.5) or COPPER_PER_SILVER;
+			defaultPrice = vendorPrice ~= nil and (vendorPrice * Constants.AuctionConstants.DEFAULT_AUCTION_PRICE_MULTIPLIER) or COPPER_PER_SILVER;
 			defaultPrice = defaultPrice + (COPPER_PER_SILVER - (defaultPrice % COPPER_PER_SILVER)); -- AH prices must be in silver increments.
 		end
 		return math.max(defaultPrice, COPPER_PER_SILVER);

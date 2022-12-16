@@ -74,7 +74,10 @@ end
 
 function ScrollBoxViewMixin:FindFrameByPredicate(predicate)
 	for index, frame in ipairs(self:GetFrames()) do
-		if predicate(frame) then
+		-- Passing elementData so it's not ambiguous what the first argument of the predicate is, and
+		-- to free the handler from needing to make the GetElementData() call themselves, which would
+		-- happen frequently.
+		if predicate(frame, frame:GetElementData()) then
 			return frame;
 		end
 	end

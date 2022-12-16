@@ -545,7 +545,7 @@ function ConduitListMixin:SetConduitListConduitsPulsePlaying(conduitType, playin
 end
 
 function ConduitListMixin:FindListSection(conduitType)
-	local section = self.ScrollBox:FindFrameByPredicate(function(frame)
+	local section = self.ScrollBox:FindFrameByPredicate(function(frame, elementData)
 		return frame.conduitType == conduitType;
 	end);
 	return section;

@@ -104,6 +104,17 @@ local function Register()
 		Settings.SetupModifiedClickDropDown(category, "FOCUSCAST", "ALT", FOCUS_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_FOCUS_CAST_KEY_TEXT);
 	end
 
+	-- Enable Dracthyr Tap Controls (Mirrored in Accessibility)
+	do
+		local function GetTapControlOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(0, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION_TOOLTIP);
+			container:Add(1, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION_TOOLTIP);
+			return container:GetData();
+		end
+		Settings.SetupCVarDropDown(category, "empowerTapControls", Settings.VarType.Number, GetTapControlOptions, SETTING_EMPOWERED_SPELL_INPUT, SETTING_EMPOWERED_SPELL_INPUT_TOOLTIP);
+	end
+
 	-- Spell Alert Opacity
 	do
 		local minValue, maxValue, step = 0, 1, .05;

@@ -459,7 +459,7 @@ function ClickBindingFrameMixin:InitializeScrollBox()
 		button.DeleteButton:SetScript("OnClick", function()
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			self.dataProvider:Remove(elementData);
-			if type == ElementDataTypes.NewSlot then
+			if elementData.elementType == ElementDataTypes.NewSlot then
 				self:SetHasNewSlot(false);
 			else
 				self.pendingChanges = true;
@@ -742,9 +742,8 @@ end
 ClickBindingTutorialMixin = {};
 
 function ClickBindingTutorialMixin:OnLoad()
-	ButtonFrameTemplate_HidePortrait(self);
-	ButtonFrameTemplate_HideAttic(self);
-	ButtonFrameTemplate_HideButtonBar(self);
+	self:SetBorder("ButtonFrameTemplateNoPortrait");
+	self:SetPortraitShown(false);
 	self:SetTitle(CLICK_CAST_ABOUT_HEADER);
 end
 

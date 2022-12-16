@@ -44,18 +44,19 @@
 
 	<Button name="QuestLogHeaderCodeTemplate" mixin="QuestLogHeaderCodeMixin" registerForClicks="LeftButtonUp" virtual="true">
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 
-	<Button name="QuestLogHeaderTemplate" inherits="QuestLogHeaderCodeTemplate" mixin="QuestLogHeaderMixin" virtual="true">
+	<Button name="QuestLogHeaderTemplate" inherits="QuestLogHeaderCodeTemplate" virtual="true">
 		<Size x="20" y="20"/>
 		<KeyValues>
 			<KeyValue key="leftPadding" value="4" type="number"/>
 		</KeyValues>
-		<ButtonText nonspacewrap="true" parentKey="ButtonText" justifyH="LEFT">
+		<ButtonText parentKey="ButtonText" nonspacewrap="true" justifyH="LEFT">
 			<Size x="234" y="10"/>
 			<Anchors>
 				<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
@@ -63,16 +64,11 @@
 		</ButtonText>
 		<NormalFont style="GameFontNormalMed3"/>
 		<HighlightFont style="GameFontHighlightMedium"/>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
 	</Button>
 
 	<Button name="CovenantCallingsHeaderTemplate" inherits="QuestLogHeaderTemplate" mixin="CovenantCallingsHeaderMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="leftPadding" value="18" type="number"/>
-			<KeyValue key="bottomPadding" value="10" type="number"/>
-			<KeyValue key="topPadding" value="0" type="number"/>
+			<KeyValue key="leftPadding" value="4" type="number"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="1" y="1"/>
@@ -82,7 +78,7 @@
 				<Texture parentKey="Background" atlas="StoryHeader-BG">
 					<Size x="260" y="36"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-19" y="7"/>
+						<Anchor point="TOPLEFT" x="-5" y="7"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -97,7 +93,7 @@
 			<Layer level="OVERLAY">
 				<Texture parentKey="Divider" atlas="ZoneStory_Divider" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-16" y="29"/>
+						<Anchor point="TOPLEFT" x="-2" y="29"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -105,7 +101,7 @@
 				<Texture parentKey="HighlightBackground" atlas="StoryHeader-BG" alphaMode="ADD" alpha=".5">
 					<Size x="260" y="36"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-19" y="7"/>
+						<Anchor point="TOPLEFT" x="-5" y="7"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -117,7 +113,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="QuestLogTitleTemplate" virtual="true">
+	<Button name="QuestLogTitleTemplate" mixin="QuestLogTitleMixin" virtual="true">
 		<Size x="255" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -172,7 +168,7 @@
 		<HighlightFont style="GameFontHighlightLeft"/>
 		<DisabledFont style="GameFontHighlightLeft"/>
 	</Button>
-	<Frame name="QuestLogObjectiveTemplate" virtual="true">
+	<Frame name="QuestLogObjectiveTemplate" mixin="QuestLogObjectiveMixin" virtual="true">
 		<Size x="220" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -390,10 +386,7 @@
 									</Layer>
 								</Layers>
 							</Frame>
-							<Frame parentKey="StoryHeader" hidden="true">
-								<KeyValues>
-									<KeyValue key="bottomPadding" value="7" type="number"/>
-								</KeyValues>
+							<Frame parentKey="StoryHeader" mixin="StoryHeaderMixin" hidden="true">
 								<Size x="260" y="62"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="1" y="1"/>

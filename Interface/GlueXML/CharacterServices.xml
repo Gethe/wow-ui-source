@@ -23,6 +23,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="StepActiveLabel" font="SystemFont_Large" justifyH="LEFT">
+					<Size x="260"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.StepNumber" relativePoint="RIGHT" x="9" y="3"/>
 					</Anchors>

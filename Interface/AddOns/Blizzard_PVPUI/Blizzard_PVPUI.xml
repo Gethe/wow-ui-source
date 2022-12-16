@@ -503,7 +503,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetCurrencyTokenByID(self.currencyID);
+				GameTooltip:SetCurrencyByID(self.currencyID);
 			</OnEnter>
 			<OnClick>
 				local parent = self:GetParent();
@@ -539,7 +539,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetCurrencyTokenByID(self.currencyID);
+				GameTooltip:SetCurrencyByID(self.currencyID);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

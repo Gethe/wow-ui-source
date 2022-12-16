@@ -214,8 +214,7 @@ function RaidInfoInstance_OnClick(self)
 
 		local function UpdateButtonSelected(index, isInstance, selected)
 			if index then
-				local button = RaidInfoFrame.ScrollBox:FindFrameByPredicate(function(button)
-					local elementData = button:GetElementData();
+				local button = RaidInfoFrame.ScrollBox:FindFrameByPredicate(function(button, elementData)
 					return elementData.index == index and elementData.isInstance == isInstance;
 				end);
 				if button then

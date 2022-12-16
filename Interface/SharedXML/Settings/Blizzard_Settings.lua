@@ -66,12 +66,10 @@ end
 function SettingsSearchableElementMixin:MatchesSearchTags(words)
 	if self.searchTags then
 		for _, val1 in ipairs(words) do
-			if strlen(val1) >= 3 then
-				for _, val2 in ipairs(self.searchTags) do
-					local first, last = string.find(val2, val1, nil, true);
-					if first and last then
-						return last - first;
-					end
+			for _, val2 in ipairs(self.searchTags) do
+				local first, last = string.find(val2, val1, nil, true);
+				if first and last then
+					return last - first;
 				end
 			end
 		end
@@ -445,7 +443,7 @@ function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, 
 		-- In case the setting get value was a lazy initializer, attempt once again.
 		settingValue = setting:GetValue();
 	end
-	assert(settingValue ~= nil);
+	assertsafe(settingValue ~= nil, ("Missing value for setting '%s'"):format(setting:GetName()));
 
 	local selectionIndex = FindInTableIf(options, function(data)
 		return data.value == settingValue;
@@ -456,10 +454,18 @@ function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, 
 
 	-- Temporary to be removed once a bug has been fixed.
 	if not result then
-		UIErrorsFrame:AddExternalWarningMessage(("Failed to setup setting '%s'"):format(setting:GetName()), settingValue);
-		print(("Failed to setup setting '%s'"):format(setting:GetName()), settingValue);
+		local errorMsg = ("Failed to setup setting '%s' with value '%s'"):format(setting:GetName(), tostring(settingValue));
+		if UIErrorsFrame then
+			UIErrorsFrame:AddExternalWarningMessage(errorMsg);
+		end
+		if print then
+			print(errorMsg);
+		end
+		assertsafe(false, errorMsg);
 		LoadAddOn("Blizzard_DebugTools");
-		Dump(options);
+		if Dump then
+			Dump(options);
+		end
 	end
 	return selectionIndex;
 end

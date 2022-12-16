@@ -369,16 +369,14 @@ function CommunitiesSettingsDialogMixin:HideOrShowCommunityFinderOptions(shouldS
 end 
 
 local function CommunitiesAvatarPickerDialog_OnOkay(self)
-	local communitiesAvatarPickerDialog = self:GetParent();
-	communitiesAvatarPickerDialog:Hide();
-	CommunitiesSettingsDialog:SetAvatarId(communitiesAvatarPickerDialog:GetAvatarId());
+	CommunitiesAvatarPickerDialog:Hide();
+	CommunitiesSettingsDialog:SetAvatarId(CommunitiesAvatarPickerDialog:GetAvatarId());
 	CommunitiesSettingsDialog:UpdatedPostingInformationInit();
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
 local function CommunitiesAvatarPickerDialog_OnCancel(self)
-	local communitiesAvatarPickerDialog = self:GetParent();
-	communitiesAvatarPickerDialog:Hide();
+	CommunitiesAvatarPickerDialog:Hide();
 	CommunitiesSettingsDialog:UpdatedPostingInformationInit();
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end

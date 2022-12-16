@@ -55,7 +55,6 @@ function EditModeManagerFrameMixin:OnLoad()
 	local newLayoutButtonTextDisabled = HUD_EDIT_MODE_NEW_LAYOUT_DISABLED:format(CreateAtlasMarkup("editmode-new-layout-plus-disabled"));
 	local dropdownButtonWidth = 210;
 	local shareDropdownButtonMaxTextWidth = 190;
-	local shareSubDropdownButtonWidth = 220;
 	local copyRenameSubDropdownButtonWidth = 150;
 	local subMenuButton = true;
 	local disableOnMaxLayouts = true;
@@ -79,11 +78,11 @@ function EditModeManagerFrameMixin:OnLoad()
 			dropDownButtonInfo.customFrame = newButton;
 		elseif dropDownButtonInfo.value == "copyToClipboard" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, copyToClipboard, disableOnMaxLayoutsNo, disableOnActiveChangesNo, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
+			newButton:Init(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, copyToClipboard, disableOnMaxLayoutsNo, disableOnActiveChangesNo, nil, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;
 		--[[elseif dropDownButtonInfo.value == "postInChat" then
 			local newButton = self.buttonEntryPool:Acquire();
-			newButton:Init(HUD_EDIT_MODE_POST_IN_CHAT, postInChat, disableOnMaxLayoutsNo, disableOnActiveChangesNo, shareSubDropdownButtonWidth, nil, nil, subMenuButton);
+			newButton:Init(HUD_EDIT_MODE_POST_IN_CHAT, postInChat, disableOnMaxLayoutsNo, disableOnActiveChangesNo, nil, nil, nil, subMenuButton);
 			dropDownButtonInfo.customFrame = newButton;]]--
 		elseif dropDownButtonInfo.value == "copyLayout" then
 			local newButton = self.buttonEntryPool:Acquire();
@@ -157,10 +156,12 @@ function EditModeManagerFrameMixin:OnDragStop()
 	self:StopMovingOrSizing();
 end
 
+local function callOnEditModeEnter(index, systemFrame)
+	systemFrame:OnEditModeEnter();
+end
+
 function EditModeManagerFrameMixin:ShowSystemSelections()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		systemFrame:OnEditModeEnter();
-	end
+	secureexecuterange(self.registeredSystemFrames, callOnEditModeEnter);
 end
 
 function EditModeManagerFrameMixin:EnterEditMode()
@@ -172,10 +173,12 @@ function EditModeManagerFrameMixin:EnterEditMode()
     EventRegistry:TriggerEvent("EditMode.Enter");
 end
 
+local function callOnEditModeExit(index, systemFrame)
+	systemFrame:OnEditModeExit();
+end
+
 function EditModeManagerFrameMixin:HideSystemSelections()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		systemFrame:OnEditModeExit();
-	end
+	secureexecuterange(self.registeredSystemFrames, callOnEditModeExit);
 end
 
 function EditModeManagerFrameMixin:ExitEditMode()
@@ -256,13 +259,14 @@ function EditModeManagerFrameMixin:RegisterSystemFrame(systemFrame)
 end
 
 function EditModeManagerFrameMixin:GetRegisteredSystemFrame(system, systemIndex)
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		if systemFrame.system == system and systemFrame.systemIndex == systemIndex then
-			return systemFrame;
+	local foundSystem = nil;
+	local function findSystem(index, systemFrame)
+		if not foundSystem and systemFrame.system == system and systemFrame.systemIndex == systemIndex then
+			foundSystem = systemFrame;
 		end
 	end
-
-	return nil;
+	secureexecuterange(self.registeredSystemFrames, findSystem);
+	return foundSystem;
 end
 
 local function AreAnchorsEqual(anchorInfo, otherAnchorInfo)
@@ -302,19 +306,24 @@ local function ConvertToAnchorInfo(point, relativeTo, relativePoint, offsetX, of
 end
 
 function EditModeManagerFrameMixin:SetHasActiveChanges(hasActiveChanges)
-	self.hasActiveChanges = hasActiveChanges;
+	-- Clear taint off of the value passed in
+	if hasActiveChanges then
+		self.hasActiveChanges = true;
+	else
+		self.hasActiveChanges = false;
+	end	
 	self.SaveChangesButton:SetEnabled(hasActiveChanges);
 	self.RevertAllChangesButton:SetEnabled(hasActiveChanges);
 end
 
 function EditModeManagerFrameMixin:CheckForSystemActiveChanges()
 	local hasActiveChanges = false;
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		if systemFrame:HasActiveChanges() then
+	local function checkIfSystemHasActiveChanges(index, systemFrame)
+		if not hasActiveChanges and systemFrame:HasActiveChanges() then
 			hasActiveChanges = true;
-			break;
 		end
 	end
+	secureexecuterange(self.registeredSystemFrames, checkIfSystemHasActiveChanges);
 
 	self:SetHasActiveChanges(hasActiveChanges);
 end
@@ -585,14 +594,12 @@ function EditModeManagerFrameMixin:UpdateRightActionBarPositions()
 		bar:SetScale(isInDefaultPosition and newScale or 1);
 
 		if bar and bar:IsShown() and isInDefaultPosition then
-			local point, relativeTo, relativePoint, offsetX, offsetY = bar:GetPoint(1);
-			if relativeTo ~= leftMostBar then
-				bar:ClearAllPoints();
-				if leftMostBar == UIParent then
-					bar:SetPoint("RIGHT", leftMostBar, "RIGHT", RIGHT_ACTION_BAR_DEFAULT_OFFSET_X, RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y);
-				else
-					bar:SetPoint("TOPRIGHT", leftMostBar, "TOPLEFT", -5, 0);
-				end
+			bar:ClearAllPoints();
+
+			if leftMostBar == UIParent then
+				bar:SetPoint("RIGHT", leftMostBar, "RIGHT", RIGHT_ACTION_BAR_DEFAULT_OFFSET_X, RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y);
+			else
+				bar:SetPoint("TOPRIGHT", leftMostBar, "TOPLEFT", -5, 0);
 			end
 
 			-- Bar position changed so we should update our flyout direction
@@ -621,17 +628,14 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 
 	for index, bar in ipairs(barsToUpdate) do
 		if bar and bar:IsShown() and bar:IsInDefaultPosition() then
-			local point, relativeTo, relativePoint, offsetX, offsetY = bar:GetPoint(1);
-			if relativeTo ~= topMostBar then
-				bar:ClearAllPoints();
-				if topMostBar == UIParent then
-					bar:SetPoint("BOTTOM", topMostBar, "BOTTOM", 0, MAIN_ACTION_BAR_DEFAULT_OFFSET_Y);
-				elseif topMostBar == OverrideActionBar then
-					local xpBarHeight = OverrideActionBar.xpBar:IsShown() and OverrideActionBar.xpBar:GetHeight() or 0;
-					bar:SetPoint("BOTTOM", topMostBar, "TOP", 0, 10 + xpBarHeight);
-				else
-					bar:SetPoint("BOTTOMLEFT", topMostBar, "TOPLEFT", 0, 5);
-				end
+			bar:ClearAllPoints();
+			if topMostBar == UIParent then
+				bar:SetPoint("BOTTOM", topMostBar, "BOTTOM", 0, MAIN_ACTION_BAR_DEFAULT_OFFSET_Y);
+			elseif topMostBar == OverrideActionBar then
+				local xpBarHeight = OverrideActionBar.xpBar:IsShown() and OverrideActionBar.xpBar:GetHeight() or 0;
+				bar:SetPoint("BOTTOM", topMostBar, "TOP", 0, 10 + xpBarHeight);
+			else
+				bar:SetPoint("BOTTOMLEFT", topMostBar, "TOPLEFT", 0, 5);
 			end
 
 			-- Bar position changed so we should update our flyout direction
@@ -648,7 +652,7 @@ end
 
 function EditModeManagerFrameMixin:SelectSystem(selectFrame)
 	if not self:IsEditModeLocked() then
-		for _, systemFrame in ipairs(self.registeredSystemFrames) do
+		local function selectMatchingSystem(index, systemFrame)
 			if systemFrame == selectFrame then
 				systemFrame:SelectSystem();
 			else
@@ -658,16 +662,19 @@ function EditModeManagerFrameMixin:SelectSystem(selectFrame)
 				end
 			end
 		end
+		secureexecuterange(self.registeredSystemFrames, selectMatchingSystem);
+	end
+end
+
+local function clearSelectedSystem(index, systemFrame)
+	-- Only highlight a system if it was already highlighted
+	if systemFrame.isHighlighted then
+		systemFrame:HighlightSystem();
 	end
 end
 
 function EditModeManagerFrameMixin:ClearSelectedSystem()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		-- Only highlight a system if it was already highlighted
-		if systemFrame.isHighlighted then
-			systemFrame:HighlightSystem();
-		end
-	end
+	secureexecuterange(self.registeredSystemFrames, clearSelectedSystem);
 	EditModeSystemSettingsDialog:Hide();
 end
 
@@ -1002,17 +1009,20 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 	self.LayoutDropdown:SetOptions(options, self.layoutInfo.activeLayout);
 end
 
+local function initSystemAnchor(index, systemFrame)
+	systemFrame:ClearAllPoints();
+	systemFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
+end
+
 function EditModeManagerFrameMixin:InitSystemAnchors()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		systemFrame:ClearAllPoints();
-		systemFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
-	end
+	secureexecuterange(self.registeredSystemFrames, initSystemAnchor);
 end
 
 function EditModeManagerFrameMixin:UpdateSystems()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
+	local function callUpdateSystem(index, systemFrame)
 		self:UpdateSystem(systemFrame);
 	end
+	secureexecuterange(self.registeredSystemFrames, callUpdateSystem);
 end
 
 function EditModeManagerFrameMixin:UpdateSystem(systemFrame)
@@ -1107,10 +1117,12 @@ function EditModeManagerFrameMixin:LinkActiveLayoutToChat()
 end
 ]]--
 
+local function clearActiveChangesFlag(index, systemFrame)
+	systemFrame:SetHasActiveChanges(false);
+end
+
 function EditModeManagerFrameMixin:ClearActiveChangesFlags()
-	for _, systemFrame in ipairs(self.registeredSystemFrames) do
-		systemFrame:SetHasActiveChanges(false);
-	end
+	secureexecuterange(self.registeredSystemFrames, clearActiveChangesFlag);
 	self:SetHasActiveChanges(false);
 end
 
@@ -1119,7 +1131,16 @@ function EditModeManagerFrameMixin:ImportLayout(newLayoutInfo, layoutType, layou
 	self:MakeNewLayout(newLayoutInfo, layoutType, layoutName);
 end
 
+local function callPrepareForSave(index, systemFrame)
+	systemFrame:PrepareForSave();
+end
+
+function EditModeManagerFrameMixin:PrepareSystemsForSave()
+	secureexecuterange(self.registeredSystemFrames, callPrepareForSave);
+end
+
 function EditModeManagerFrameMixin:SaveLayouts()
+	self:PrepareSystemsForSave();
 	C_EditMode.SaveLayouts(self.layoutInfo);
 	self:ClearActiveChangesFlags();
 end
@@ -1601,7 +1622,6 @@ function EditModeAccountSettingsMixin:SetupActionBar(bar)
 	local isShown = bar:IsShown();
 	self.oldActionBarSettings[bar] = {
 		isShown = isShown;
-		numShowingButtons = bar.numShowingButtons;
 	}
 
 	-- If the bar is already showing then set control checked
@@ -1613,8 +1633,6 @@ function EditModeAccountSettingsMixin:SetupActionBar(bar)
 end
 
 function EditModeAccountSettingsMixin:ResetActionBarShown(bar)
-	bar.numShowingButtons = self.oldActionBarSettings[bar].numShowingButtons;
-
 	if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
 		bar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 	end
@@ -1629,9 +1647,8 @@ function EditModeAccountSettingsMixin:RefreshActionBarShown(bar)
 
 	if show then
 		bar.editModeForceShow = true;
-		bar.numShowingButtons = bar.numButtons;
 
-		if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
+		if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) and (bar.numShowingButtonsOrSpacers == 0 or not bar.dontShowAllButtonsInEditMode) then
 			bar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 		end
 
@@ -1664,10 +1681,14 @@ end
 
 function EditModeAccountSettingsMixin:RefreshCastBar()
 	local showCastBar = self.Settings.CastBar:IsControlChecked();
-	PlayerCastingBarFrame:StopAnims();
-	PlayerCastingBarFrame:SetAlpha(0);
-	PlayerCastingBarFrame:SetShown(showCastBar);
-	UIParent_ManageFramePositions();
+	if showCastBar then
+		PlayerCastingBarFrame.isInEditMode = true;
+		PlayerCastingBarFrame:HighlightSystem();
+	else
+		PlayerCastingBarFrame.isInEditMode = false;
+		PlayerCastingBarFrame:ClearHighlight();
+	end
+	PlayerCastingBarFrame:UpdateShownState();
 end
 
 function EditModeAccountSettingsMixin:SetEncounterBarShown(shown, isUserInput)
@@ -1682,18 +1703,11 @@ end
 function EditModeAccountSettingsMixin:RefreshEncounterBar()
 	local showEncounterbar = self.Settings.EncounterBar:IsControlChecked();
 	if showEncounterbar then
-		EncounterBar.minimumWidth = 230;
-		EncounterBar.minimumHeight = 30;
-
 		EncounterBar:HighlightSystem();
 	else
-		EncounterBar.minimumWidth = nil;
-		EncounterBar.minimumHeight = nil;
-
 		EncounterBar:ClearHighlight();
 	end
 
-	EncounterBar:Layout();
 	UIParent_ManageFramePositions();
 end
 
@@ -1870,6 +1884,7 @@ end
 function EditModeAccountSettingsMixin:RefreshHudTooltip()
 	local showHudTooltip = self.Settings.HudTooltip:IsControlChecked();
 	if showHudTooltip then
+		GameTooltip_Hide();
 		GameTooltipDefaultContainer:Show();
 	else
 		GameTooltipDefaultContainer:Hide();

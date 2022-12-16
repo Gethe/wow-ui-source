@@ -62,7 +62,8 @@ end
 function InsanityPowerBar:UpdatePower()
 	if (self.insane) then
 		local insanity = UnitPower("player", Enum.PowerType.Insanity);
-		local tentacleWidth = 7 + insanity / 100 * PlayerFrameManaBar:GetWidth(); -- Tentacles start 7 pixels left of the insanity bar
+		local playerFrameManaBar = PlayerFrame_GetManaBar();
+		local tentacleWidth = 7 + insanity / 100 * playerFrameManaBar:GetWidth(); -- Tentacles start 7 pixels left of the insanity bar
 		self.InsanityOn.Tentacles:SetWidth(tentacleWidth);
 		self.InsanityOn.Tentacles:SetTexCoord(0, tentacleWidth / self.fullTentacleWidth, 0, 1);
 	end

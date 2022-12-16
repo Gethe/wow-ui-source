@@ -32,6 +32,16 @@ function EditModeSystemMixin:OnSystemHide()
 	end
 end
 
+function EditModeSystemMixin:PrepareForSave()
+	if self.breakSnappedFramesOnSave then
+		self:BreakSnappedFrames();
+	end
+
+	if not self:IsInDefaultPosition() and (self.alwaysUseTopLeftAnchor or self.alwaysUseTopRightAnchor) then
+		self:BreakFrameSnap();
+	end
+end
+
 function EditModeSystemMixin:SetScaleOverride(newScale)
 	local oldScale = self:GetScale();
 
@@ -171,6 +181,13 @@ function EditModeSystemMixin:ApplySystemAnchor()
 	end
 
 	self:ClearAllPoints();
+
+	if self:IsInDefaultPosition() and (EditModeUtil:IsRightAnchoredActionBar(self) or EditModeUtil:IsBottomAnchoredActionBar(self)) then
+		-- If this is a right or bottom anchored action bar in default position let UpdateActionBarLayout handle all anchoring
+		self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0);
+		EditModeManagerFrame:UpdateActionBarLayout(self);
+		return;
+	end
 
 	-- Make sure offsets are relative to our current scale
 	local scale = self:GetScale();
@@ -446,12 +463,23 @@ function EditModeSystemMixin:ClearFrameSnap()
 end
 
 function EditModeSystemMixin:BreakFrameSnap()
-	local frameCenterX, frameCenterY = self:GetCenter();
-	self:ClearAllPoints();
-	self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", frameCenterX, frameCenterY);
-	EditModeManagerFrame:UpdateSystemAnchorInfo(self);
+	local top = self:GetTop();
+	if top then
+		local offsetX, offsetY, anchorPoint;
+		if self.alwaysUseTopRightAnchor then
+			offsetX = -(UIParent:GetWidth() - self:GetRight());
+			offsetY = -(UIParent:GetHeight() - top);
+			anchorPoint = "TOPRIGHT";
+		else
+			offsetX = self:GetLeft();
+			offsetY = -(UIParent:GetHeight() - top);
+			anchorPoint = "TOPLEFT";
+		end
 
-	self:ClearFrameSnap();
+		self:ClearAllPoints();
+		self:SetPoint(anchorPoint, UIParent, anchorPoint, offsetX, offsetY);
+		EditModeManagerFrame:UpdateSystemAnchorInfo(self);
+	end
 end
 
 function EditModeSystemMixin:SnapToFrame(frameInfo)
@@ -606,8 +634,8 @@ function EditModeActionBarSystemMixin:GetRightAnchoredWidth()
 		return 0;
 	end
 
-	if self:IsShown() and self:IsInDefaultPosition() then
-		local offsetX = select(4, self:GetPoint(1));
+	local offsetX = select(4, self:GetPoint(1));
+	if self:IsShown() and self:IsInDefaultPosition() and offsetX then
 		return self:GetWidth() - offsetX;
 	end
 
@@ -619,8 +647,8 @@ function EditModeActionBarSystemMixin:GetBottomAnchoredHeight()
 		return 0;
 	end
 
-	if self:IsShown() and self:IsInDefaultPosition() then
-		local offsetY = select(5, self:GetPoint(1));
+	local offsetY = select(5, self:GetPoint(1));
+	if self:IsShown() and self:IsInDefaultPosition() and offsetY then
 		return self:GetHeight() + offsetY;
 	end
 
@@ -661,7 +689,7 @@ end
 
 function EditModeActionBarSystemMixin:UpdateButtonArt()
 	for i, actionButton in pairs(self.actionButtons) do
-		actionButton:UpdateButtonArt(i >= self.numShowingButtons);
+		actionButton:UpdateButtonArt(i >= self.numButtonsShowable);
 	end
 end
 
@@ -694,7 +722,7 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingNumRows()
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingNumIcons()
-	self.numShowingButtons = self:GetSettingValue(Enum.EditModeActionBarSetting.NumIcons);
+	self.numButtonsShowable = self:GetSettingValue(Enum.EditModeActionBarSetting.NumIcons);
 	self:UpdateShownButtons();
 
 	-- Since the num icons changed we'll want to update the grid layout
@@ -1011,6 +1039,7 @@ end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameWidth()
 	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
+	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
 	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
 	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
 
@@ -1023,6 +1052,7 @@ end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameHeight()
 	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
+	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
 	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
 	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
 
@@ -1207,6 +1237,13 @@ end
 
 EditModeCastBarSystemMixin = {};
 
+function EditModeCastBarSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
 function EditModeCastBarSystemMixin:ApplySystemAnchor()
 	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
 	if lockToPlayerFrame then
@@ -1297,16 +1334,6 @@ function EditModeCastBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpd
 end
 
 EditModeEncounterBarSystemMixin = {};
-
-function EditModeEncounterBarSystemMixin:OnEditModeExit()
-	EditModeSystemMixin.OnEditModeExit(self);
-
-	-- Undo encounter bar min size stuff so we don't have extra spacing in bottom managed container
-	EncounterBar.minimumWidth = nil;
-	EncounterBar.minimumHeight = nil;
-	EncounterBar:Layout();
-	UIParent_ManageFramePositions();
-end
 
 function EditModeEncounterBarSystemMixin:ApplySystemAnchor()
 	EditModeSystemMixin.ApplySystemAnchor(self);

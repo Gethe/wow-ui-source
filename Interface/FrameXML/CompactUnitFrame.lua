@@ -641,7 +641,7 @@ function CompactUnitFrame_UpdateName(frame)
 
 		frame.name:SetText(name);
 
-		if ( CompactUnitFrame_IsTapDenied(frame) or UnitIsDead(frame.unit) ) then
+		if ( CompactUnitFrame_IsTapDenied(frame) or (UnitIsDead(frame.unit) and not UnitIsPlayer(frame.unit)) ) then
 			-- Use grey if not a player and can't get tap on unit
 			frame.name:SetVertexColor(0.5, 0.5, 0.5);
 		elseif ( frame.optionTable.colorNameBySelection ) then
@@ -1167,11 +1167,14 @@ function CompactUnitFrame_UpdateClassificationIndicator(frame)
 			return;
 		elseif (frame.optionTable.showClassificationIndicator) then
 			local classification = UnitClassification(frame.unit);
-			if (classification == "rare") then
+			if (classification == "elite" or classification == "worldboss") then
+				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-gold");
+				frame.classificationIndicator:Show();
+			elseif (classification == "rare") then
 				frame.classificationIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star");
 				frame.classificationIndicator:Show();
 			elseif (classification == "rareelite") then
-				frame.classificationIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare");
+				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
 				frame.classificationIndicator:Show();
 			else
 				frame.classificationIndicator:Hide();
@@ -1456,7 +1459,7 @@ function CompactUnitFrame_UtilSetBuff(buffFrame, aura)
 end
 
 function CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
-	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid;
+	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid or nil;
 	debuffFrame.icon:SetTexture(aura.icon);
 	if ( aura.applications > 1 ) then
 		local countText = aura.applications;
@@ -1780,7 +1783,8 @@ DefaultCompactMiniFrameSetUpOptions = {
 function DefaultCompactMiniFrameSetup(frame)
 	local options = DefaultCompactMiniFrameSetUpOptions;
 	frame:SetAlpha(1);
-	frame:SetSize(options.width, options.height);
+	local frameWidth = EditModeManagerFrame:GetRaidFrameWidth(frame.isParty) or options.width;
+	frame:SetSize(frameWidth, options.height);
 	frame.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Bg");
 	frame.background:SetTexCoord(0, 1, 0, 0.53125);
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);
@@ -2105,7 +2109,7 @@ function DefaultCompactNamePlateFrameAnchorInternal(frame, setupOptions)
 
 	if not customOptions or not customOptions.ignoreIconPoint then
 	frame.castBar.Icon:ClearAllPoints();
-	PixelUtil.SetPoint(frame.castBar.Icon, "CENTER", frame.castBar, "LEFT", 0, -1);
+	PixelUtil.SetPoint(frame.castBar.Icon, "CENTER", frame.castBar, "LEFT", 0, 0);
 	end
 
 	if not customOptions or not customOptions.ignoreBarSize then

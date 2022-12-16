@@ -473,8 +473,8 @@ function FriendsListFrame_OnHide(self)
 end
 
 function FriendsListFrame_SetInviteHeaderAnimPlaying(playing)
-	local frame = FriendsListFrame.ScrollBox:FindFrameByPredicate(function(frame)
-		return frame:GetElementData().buttonType == FRIENDS_BUTTON_TYPE_INVITE_HEADER;
+	local frame = FriendsListFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		return elementData.buttonType == FRIENDS_BUTTON_TYPE_INVITE_HEADER;
 	end);
 	if frame then
 		frame.Flash.Anim:SetPlaying(playing);
@@ -758,8 +758,8 @@ function WhoList_SetSelectedButton(button)
 
 	local function UpdateButtonSelection(index, selected)
 		if index then
-			local button = WhoFrame.ScrollBox:FindFrameByPredicate(function(button)
-				return button:GetElementData().index == index;
+			local button = WhoFrame.ScrollBox:FindFrameByPredicate(function(button, elementData)
+				return elementData.index == index;
 			end);
 			if button then
 				WhoListButton_SetSelected(button, selected);
@@ -912,8 +912,7 @@ function FriendsFrame_SelectFriend(friendType, id)
 	FriendsFrame.selectedFriend = id;
 
 	local function UpdateButtonSelection(type, id, selected)
-		local button = FriendsListFrame.ScrollBox:FindFrameByPredicate(function(button)
-			local elementData = button:GetElementData();
+		local button = FriendsListFrame.ScrollBox:FindFrameByPredicate(function(button, elementData)
 			return elementData.buttonType == type and elementData.id == id;
 		end);
 		if button then
@@ -938,8 +937,7 @@ function FriendsFrame_SelectSquelched(squelchType, index)
 	FriendsFrame.selectedSquelchType = squelchType;
 
 	local function UpdateButtonSelection(type, index, selected)
-		local button = IgnoreListFrame.ScrollBox:FindFrameByPredicate(function(button)
-			local elementData = button:GetElementData();
+		local button = IgnoreListFrame.ScrollBox:FindFrameByPredicate(function(button, elementData)
 			return elementData.squelchType == type and elementData.index == index;
 		end);
 		if button then
@@ -1250,7 +1248,7 @@ function FriendsFrame_GetBNetAccountNameAndStatus(accountInfo, noCharacterName)
 			if accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW and CanCooperateWithGameAccount(accountInfo) then
 				nameText = nameText.." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;
 			else
-				if ENABLE_COLORBLIND_MODE == "1" then
+				if CVarCallbackRegistry:GetCVarValueBool("colorblindMode") then
 					characterName = accountInfo.gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL;
 				end
 				nameText = nameText.." "..FRIENDS_OTHER_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;
@@ -2160,8 +2158,8 @@ function FriendsFriends_SetSelection(friendID)
 
 	local function UpdateButtonSelection(friendID, selected)
 		if friendID then
-			local button = FriendsFriendsFrame.ScrollBox:FindFrameByPredicate(function(button)
-				return button:GetElementData().friendID == friendID;
+			local button = FriendsFriendsFrame.ScrollBox:FindFrameByPredicate(function(button, elementData)
+				return elementData.friendID == friendID;
 			end);
 			if button then
 				FriendsFriendsButton_SetSelected(button, selected);
@@ -2277,8 +2275,7 @@ function FriendsFrame_BattlenetInviteByIndex(friendIndex)
 			return;
 		end
 
-		local button = FriendsListFrame.ScrollBox:FindFrameByPredicate(function(frame)
-			local elementData = frame:GetElementData();
+		local button = FriendsListFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
 			return elementData.id == friendIndex and elementData.buttonType == FRIENDS_BUTTON_TYPE_BNET;
 		end);
 

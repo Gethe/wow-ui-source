@@ -91,7 +91,7 @@
 		<Frames>
 			<Button inherits="UIPanelCloseButton" parentKey="CloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="3" y="-9" />
+					<Anchor point="TOPRIGHT" x="-3" y="-14" />
 				</Anchors>
 				<Scripts>
 					<OnClick>

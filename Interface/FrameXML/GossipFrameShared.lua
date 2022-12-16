@@ -160,7 +160,7 @@ function GossipFrameSharedMixin:OnHide()
 end
 
 function GossipOptionSort(leftInfo, rightInfo)
-	return leftInfo.orderIndex < rightInfo.orderIndex;
+	return GossipFrameMixin:SortOrder(leftInfo, rightInfo)
 end
 
 function GossipFrameSharedMixin:HandleShow()

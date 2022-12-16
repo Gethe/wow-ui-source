@@ -20,6 +20,8 @@ function ClassTalentFrameMixin:OnLoad()
 end
 
 function ClassTalentFrameMixin:OnShow()
+	TalentMicroButton:EvaluateAlertVisibility();
+
 	if not self:GetTab() then
 		self:SetTab(PlayerUtil.CanUseClassTalents() and self.talentTabID or self.specTabID);
 	end
@@ -34,6 +36,8 @@ function ClassTalentFrameMixin:OnShow()
 end
 
 function ClassTalentFrameMixin:OnHide()
+	TalentMicroButton:EvaluateAlertVisibility();
+
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentFrameEvents);
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentFrameUnitEvents);
 

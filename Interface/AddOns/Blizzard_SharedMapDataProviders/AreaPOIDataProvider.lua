@@ -4,6 +4,34 @@ function AreaPOIDataProviderMixin:GetPinTemplate()
 	return "AreaPOIPinTemplate";
 end
 
+function AreaPOIDataProviderMixin:OnAdded(mapCanvas)
+	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
+
+	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
+end
+
+function AreaPOIDataProviderMixin:OnRemoved(mapCanvas)
+	self:GetMap():UnregisterCallback("SetBounty", self);
+
+	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
+end
+
+function AreaPOIDataProviderMixin:SetBounty(bountyQuestID, bountyFactionID, bountyFrameType)
+	local changed = self.bountyQuestID ~= bountyQuestID;
+	if changed then
+		self.bountyQuestID = bountyQuestID;
+		self.bountyFactionID = bountyFactionID;
+		self.bountyFrameType = bountyFrameType;
+		if self:GetMap() then
+			self:RefreshAllData();
+		end
+	end
+end
+
+function AreaPOIDataProviderMixin:GetBountyInfo()
+	return self.bountyQuestID, self.bountyFactionID, self.bountyFrameType;
+end
+
 function AreaPOIDataProviderMixin:OnShow()
 	self:RegisterEvent("AREA_POIS_UPDATED");
 end
@@ -26,10 +54,11 @@ function AreaPOIDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
 	local mapID = self:GetMap():GetMapID();
-	local areaPOIs = C_AreaPoiInfo.GetAreaPOIForMap(mapID);
+	local areaPOIs = GetAreaPOIsForPlayerByMapIDCached(mapID);
 	for i, areaPoiID in ipairs(areaPOIs) do
 		local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(mapID, areaPoiID);
 		if poiInfo then
+			poiInfo.dataProvider = self;
 			self:GetMap():AcquirePin(self:GetPinTemplate(), poiInfo);
 		end
 	end
@@ -43,8 +72,11 @@ local AREAPOI_HIGHLIGHT_PARAMS = { backgroundPadding = 20 };
 function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 	BaseMapPoiPinMixin.OnAcquired(self, poiInfo);
 
+	self.dataProvider = poiInfo.dataProvider;
 	self.areaPoiID = poiInfo.areaPoiID;
-	MapPinHighlight_CheckHighlightPin(poiInfo.shouldGlow, self, self.Texture, AREAPOI_HIGHLIGHT_PARAMS);
+	self.factionID = poiInfo.factionID;
+	self.shouldGlow = poiInfo.shouldGlow;
+	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture, AREAPOI_HIGHLIGHT_PARAMS);
 
 	if self.textureKit == "OribosGreatVault" then
 		local function OribosGreatVaultPOIOnMouseUp(self, button, upInside)
@@ -57,6 +89,25 @@ function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 	else
 		self:SetScript("OnMouseUp", nil);
 	end
+
+	if poiInfo.isAlwaysOnFlightmap then
+		self:SetAlphaLimits(1.0, 1.0, 1.0);
+	end
+end
+
+function AreaPOIPinMixin:GetHighlightType() -- override
+	if self.shouldGlow then
+		return MapPinHighlightType.SupertrackedHighlight;
+	end
+
+	local bountyQuestID, bountyFactionID, bountyFrameType = self.dataProvider:GetBountyInfo();
+	if bountyFrameType == BountyFrameType.ActivityTracker then
+		if bountyFactionID and self.factionID == bountyFactionID then
+			return MapPinHighlightType.SupertrackedHighlight;
+		end
+	end
+
+	return MapPinHighlightType.None;
 end
 
 function AreaPOIPinMixin:OnMouseEnter()

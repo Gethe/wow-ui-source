@@ -84,6 +84,10 @@ function ScrollBoxBaseMixin:GetView()
 	return self.view;
 end
 
+function ScrollBoxBaseMixin:HasView()
+	return self:GetView() ~= nil;
+end
+
 function ScrollBoxBaseMixin:GetScrollTarget()
 	return self.ScrollTarget;
 end
@@ -656,7 +660,7 @@ function ScrollBoxListMixin:Update(forceLayout)
 	if changed then
 		view:InvokeInitializers();
 
-		self:TriggerEvent(ScrollBoxListMixin.Event.OnDataRangeChanged);
+		self:TriggerEvent(ScrollBoxListMixin.Event.OnDataRangeChanged, self:GetDataIndexBegin(), self:GetDataIndexEnd());
 	end
 
 	self:TriggerEvent(ScrollBoxListMixin.Event.OnUpdate);

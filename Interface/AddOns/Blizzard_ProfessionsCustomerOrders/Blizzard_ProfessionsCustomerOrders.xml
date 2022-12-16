@@ -9,7 +9,7 @@
 	</Button>
 
 	<Frame name="ProfessionsCustomerOrdersFrame" mixin="ProfessionsCustomerOrdersMixin" parent="UIParent" toplevel="true" enableMouse="true" inherits="PortraitFrameTemplate" hidden="true">
-		<Size x="800" y="538"/>
+		<Size x="825" y="568"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -48,8 +48,7 @@
 
 			<Frame parentKey="Form" inherits="ProfessionsCustomerOrderFormTemplate" frameLevel="10" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" y="-60"/>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="TOPLEFT" x="5" y="-60"/>
 				</Anchors>
 			</Frame>
 
@@ -73,9 +72,9 @@
 					<KeyValue key="mode" value="ProfessionsCustomerOrdersMode.Browse" type="global"/>
 				</KeyValues>
 			</Button>
-			<Button name="$parentOrdersTab" parentKey="OrdersTab" inherits="ProfessionsCustomerOrdersFrameTabTemplate" text="[PH] My Orders">
+			<Button name="$parentOrdersTab" parentKey="OrdersTab" inherits="ProfessionsCustomerOrdersFrameTabTemplate" text="MY_ORDERS">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.BrowseTab" relativePoint="RIGHT" x="0" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.BrowseTab" relativePoint="RIGHT" x="-10" y="0"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="mode" value="ProfessionsCustomerOrdersMode.Orders" type="global"/>

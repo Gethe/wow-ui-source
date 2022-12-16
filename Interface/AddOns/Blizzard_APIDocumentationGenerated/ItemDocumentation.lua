@@ -274,6 +274,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemLinkByGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetItemLocation",
 			Type = "Function",
 
@@ -784,6 +798,16 @@ local Item =
 			{
 				{ Name = "existingStr", Type = "string", Nilable = false },
 				{ Name = "replacementStr", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ReplaceTradeskillEnchant",
+			Type = "Event",
+			LiteralName = "REPLACE_TRADESKILL_ENCHANT",
+			Payload =
+			{
+				{ Name = "existing", Type = "string", Nilable = false },
+				{ Name = "replacement", Type = "string", Nilable = false },
 			},
 		},
 		{

@@ -23,5 +23,6 @@ end
 
 ArcaneChargeMixin = { };
 function ArcaneChargeMixin:Setup()
-	self.on = false; 
+	self.on = false;
+	self.ChargeTexture:SetAlpha(0.3);
 end		

@@ -42,22 +42,23 @@ end
 function ActionButtonUtil.SetAllQuickKeybindButtonHighlights(show)
 	for _, actionBar in ipairs(ActionBars) do
 		for i = 1, NumActionBarButtons do
-			_G[actionBar..i].QuickKeybindHighlightTexture:SetShown(show);
+			_G[actionBar..i]:DoModeChange(show);
 		end
 	end
 	for i = 1, NumSpecialActionButtons do
-		PetActionBar.actionButtons[i].QuickKeybindHighlightTexture:SetShown(show);
-		StanceBar.actionButtons[i].QuickKeybindHighlightTexture:SetShown(show);
+		PetActionBar.actionButtons[i]:DoModeChange(show);
+		StanceBar.actionButtons[i]:DoModeChange(show);
 	end
-	ExtraActionButton1.QuickKeybindHighlightTexture:SetShown(show);
-	MainMenuBar.ActionBarPageNumber.UpButton.QuickKeybindHighlightTexture:SetShown(show);
-	MainMenuBar.ActionBarPageNumber.DownButton.QuickKeybindHighlightTexture:SetShown(show);
-	for i = 0, NumBagSlots do
-		_G["CharacterBag"..i.."Slot"].QuickKeybindHighlightTexture:SetShown(show);
+	ExtraActionButton1:DoModeChange(show);
+	MainMenuBar.ActionBarPageNumber.UpButton:DoModeChange(show);
+	MainMenuBar.ActionBarPageNumber.DownButton:DoModeChange(show);
+
+	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+		bagButton:DoModeChange(show);
 	end
-	MainMenuBarBackpackButton.QuickKeybindHighlightTexture:SetShown(show);
+
 	for _, microButton in ipairs(MicroButtons) do
-		_G[microButton].QuickKeybindHighlightTexture:SetShown(show);
+		_G[microButton]:DoModeChange(show);
 	end
 end
 

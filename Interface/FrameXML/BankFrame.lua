@@ -17,7 +17,7 @@ end
 function BankFrameItemButton_OnLoad (self)
 	BankFrameBaseButton_OnLoad (self);
 	self.SplitStack = function(button, split)
-		SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
+		C_Container.SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 	end
 end
 
@@ -42,7 +42,7 @@ end
 
 function BankFrameBagButton_OnEvent (self, event, ...)
 	if ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		if ( IsContainerFiltered(self:GetID()+NUM_TOTAL_EQUIPPED_BAG_SLOTS) ) then
+		if ( C_Container.IsContainerFiltered(self:GetID()+NUM_TOTAL_EQUIPPED_BAG_SLOTS) ) then
 			self.searchOverlay:Show();
 		else
 			self.searchOverlay:Hide();
@@ -59,13 +59,7 @@ end
 function BankFrameItemButton_OnEnter (self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-	local hasItem, hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInventoryItem("player", self:GetInventorySlot());
-	if(speciesID and speciesID > 0) then
-		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
-		CursorUpdate(self);
-		return;
-	end
-
+	local hasItem = GameTooltip:SetInventoryItem("player", self:GetInventorySlot());
 	if (self.isBag) then
 		if ContainerFrame_CanContainerUseFilterMenu(self:GetBagID()) then
 			for i, flag in ContainerFrameUtil_EnumerateBagGearFilters() do
@@ -79,6 +73,7 @@ function BankFrameItemButton_OnEnter (self)
 
 	if ( not hasItem ) then
 		if ( self.isBag ) then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip:SetText(self.tooltipText);
 		end
 	end
@@ -91,12 +86,16 @@ function BankFrameItemButton_Update (button)
 	local container = button:GetParent():GetID();
 	local buttonID = button:GetID();
 	if( button.isBag ) then
-		container = -4;
+		container = Enum.BagIndex.Bankbag;
 	end
 	local texture = button.icon;
 	local inventoryID = button:GetInventorySlot();
 	local textureName = GetInventoryItemTexture("player",inventoryID);
-	local _, _, _, quality, _, _, _, isFiltered, _, itemID, isBound = GetContainerItemInfo(container, buttonID);
+	local info = C_Container.GetContainerItemInfo(container, buttonID);
+	local quality = info and info.quality;
+	local isFiltered = info and info.isFiltered;
+	local itemID = info and info.itemID;
+	local isBound = info and info.isBound;
 	local slotName = button:GetName();
 	local id;
 	local slotTextureName;
@@ -105,7 +104,10 @@ function BankFrameItemButton_Update (button)
 	if( button.isBag ) then
 		id, slotTextureName = GetInventorySlotInfo("Bag"..buttonID);
 	else
-		local isQuestItem, questId, isActive = GetContainerItemQuestInfo(container, buttonID);
+		local questInfo = C_Container.GetContainerItemQuestInfo(container, buttonID);
+		local isQuestItem = questInfo.isQuestItem;
+		local questId = questInfo.questID;
+		local isActive = questInfo.isActive;
 		local questTexture = button["IconQuestTexture"];
 		if ( questId and not isActive ) then
 			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
@@ -161,13 +163,13 @@ function BankFrame_UpdateCooldown(container, button)
 	local start, duration, enable;
 	if ( button.isBag ) then
 		-- in case we ever have a bag with a cooldown...
-		local inventoryID = ContainerIDToInventoryID(button:GetID());
+		local inventoryID = C_Container.ContainerIDToInventoryID(button:GetID());
 		start, duration, enable = GetInventoryItemCooldown("player", inventoryID);
 	else
-		start, duration, enable = GetContainerItemCooldown(container, button:GetID());
+		start, duration, enable = C_Container.GetContainerItemCooldown(container, button:GetID());
 	end
 	CooldownFrame_Set(cooldown, start, duration, enable);
-	if ( duration > 0 and enable == 0 ) then
+	if ( duration and duration > 0 and enable == 0 ) then
 		SetItemButtonTextureVertexColor(button, 0.4, 0.4, 0.4);
 	end
 end
@@ -188,7 +190,7 @@ function BankSlotsFrame_OnLoad(self)
 	self:SetID(BANK_CONTAINER);
 
 	local parent = self:GetParent();
-	parent:SetBagSize(28); -- This onload runs first
+	parent:SetBagSize(Constants.InventoryConstants.NumGenericBankSlots); -- This onload runs first
 	self["Item1"] = self.Item1; -- For consistency
 	parent["Item1"] = self.Item1; -- So that enumerateItems will work
 
@@ -227,7 +229,7 @@ function BankSlotsFrame_OnLoad(self)
 end
 
 function BankFrame_OnLoad (self)
-	self:SetBagSize(28);
+	self:SetBagSize(Constants.InventoryConstants.NumGenericBankSlots);
 	self:SetID(BANK_CONTAINER);
 
 	PanelTemplates_SetNumTabs(self, #BANK_PANELS);
@@ -384,9 +386,9 @@ end
 function BankFrameItemButtonGeneric_OnClick (self, button)
 	local container = self:GetParent():GetID();
 	if ( button == "LeftButton" ) then
-		PickupContainerItem(container, self:GetID());
+		C_Container.PickupContainerItem(container, self:GetID());
 	else
-		UseContainerItem(container, self:GetID());
+		C_Container.UseContainerItem(container, self:GetID());
 	end
 end
 
@@ -396,11 +398,13 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 		return;
 	end
 	local itemLocation = ItemLocation:CreateFromBagAndSlot(container, self:GetID());
-	if ( HandleModifiedItemClick(GetContainerItemLink(container, self:GetID()), itemLocation) ) then
+	if ( HandleModifiedItemClick(C_Container.GetContainerItemLink(container, self:GetID()), itemLocation) ) then
 		return;
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
-		local _, itemCount, locked = GetContainerItemInfo(container, self:GetID());
+		local info = C_Container.GetContainerItemInfo(container, self:GetID());
+		local itemCount = info.stackCount;
+		local locked = info.isLocked;
 		if ( not locked and itemCount and itemCount > 1) then
 			StackSplitFrame:OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 		end
@@ -478,9 +482,9 @@ function BankFrame_AutoSortButtonOnClick()
 
 	PlaySound(SOUNDKIT.UI_BAG_SORTING_01);
 	if (self.activeTabIndex == 1) then
-		SortBankBags();
+		C_Container.SortBankBags();
 	elseif (self.activeTabIndex == 2) then
-		SortReagentBankBags();
+		C_Container.SortReagentBankBags();
 	end
 end
 
@@ -568,7 +572,7 @@ end
 function ReagentBankFrameItemButton_OnLoad(self)
 	ReagentBankFrameBaseButton_OnLoad (self);
 	self.SplitStack = function(button, split)
-		SplitContainerItem(REAGENTBANK_CONTAINER, button:GetID(), split);
+		C_Container.SplitContainerItem(REAGENTBANK_CONTAINER, button:GetID(), split);
 	end
 end
 

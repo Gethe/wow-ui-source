@@ -8,39 +8,40 @@
 			<Anchor point="TOP" y="-160"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="ToastBG" atlas="CovenantChoice-Celebration-Background">
-					<Size x="500" y="260"/>
+			<Layer level="OVERLAY">
+				<FontString parentKey="HeaderText" inherits="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" text="MAJOR_FACTION_UNLOCK_TOAST">
 					<Anchors>
-						<Anchor point="TOP" y="35"/>
+						<Anchor point="TOP" relativePoint="CENTER" y="-55"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR" />
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+				
+				<FontString parentKey="FactionName" inherits="QuestFont_30" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.HeaderText" relativePoint="BOTTOM" y="-5"/>
+					</Anchors>
+					<Shadow x="1" y="-1">
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ToastBG" atlas="majorfaction-celebration-toastbg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" y="-77"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.FactionName" y="-14"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Stars1" alpha="0" atlas="AftLevelup-Dots1" useAtlasSize="true">
+				<Texture parentKey="GlowLineBottom">
 					<Anchors>
-						<Anchor point="CENTER" x="50" y="-5"/>
+						<Anchor point="CENTER" relativeKey="$parent.ToastBG" relativePoint="BOTTOM"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Stars2" alpha="0" atlas="AftLevelup-Dots2" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="-50" y="-5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="HeaderText" inherits="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" text="MAJOR_FACTION_UNLOCK_TOAST">
-					<Anchors>
-						<Anchor point="TOP" relativePoint="CENTER" y="-32"/>
-					</Anchors>
-					<Color color="NORMAL_FONT_COLOR" />
-				</FontString>
-				
-				<FontString parentKey="MajorFactionName" inherits="QuestFont_39" justifyH="CENTER" justifyV="MIDDLE">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.HeaderText" relativePoint="BOTTOM" y="-5"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Animations>
@@ -48,18 +49,8 @@
 				<Alpha childKey="IconSwirlModelScene" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="IconSwirlModelScene" startDelay="4" smoothing="OUT" duration="0.2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Icon" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="GlowLineTop" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="GlowLineTopAdditive" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Stars1" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="Stars1" duration="0.5" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
-				<Alpha childKey="Stars1" startDelay="0.75" duration="0.5" fromAlpha="1" toAlpha="0"/>
-				<Translation childKey="Stars1" smoothing="IN_OUT" duration="1.5" offsetX="0" offsetY="40"/>
-				<Alpha childKey="Stars2" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="Stars2" duration="0.5" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
-				<Alpha childKey="Stars2" startDelay="0.75" duration="0.5" fromAlpha="1" toAlpha="0"/>
-				<Translation childKey="Stars2" smoothing="IN_OUT" duration="1.5" offsetX="0" offsetY="45"/>
 				<Alpha childKey="ToastBG" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="MajorFactionName" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="FactionName" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="HeaderText" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Alpha startDelay="4" duration="0.75" fromAlpha="1" toAlpha="0"/>
 				<Scripts>

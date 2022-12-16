@@ -476,8 +476,8 @@ function SettingsDropDownControlMixin:InitDropDown()
 
 	local selectionIndex = Settings.InitSelectionDropDown(self.DropDown, setting, options, 200, initTooltip);
 	if not initializer.skipAssertMissingOption then
-		assert(selectionIndex ~= nil, ("Failed to matching option matching value '%s' for setting name '%s'"):format(
-			tostring(settingValue), setting:GetName()));
+		assertsafe(selectionIndex ~= nil, ("Failed to matching option matching value '%s' for setting name '%s'"):format(
+			tostring(setting:GetValue()), setting:GetName()));
 	end
 end
 
@@ -910,7 +910,7 @@ function SettingsSelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaul
 	end
 end
 
-function SettingsSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq)
+function SettingsSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq, hasALockedChoice)
 	self.label = selectionData.label;
 
 	self.SelectionName:Show();

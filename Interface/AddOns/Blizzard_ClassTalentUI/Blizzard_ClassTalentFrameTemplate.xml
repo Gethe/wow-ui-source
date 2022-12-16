@@ -11,13 +11,13 @@
 						<Texture parentKey="Portrait" file="Interface\TargetingFrame\UI-Classes-Circles">
 							<Size x="60" y="60"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-6" y="8"/>
+								<Anchor point="TOPLEFT" x="-4" y="8"/>
 							</Anchors>
 						</Texture>
 
 						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Portrait" x="5" y="-3"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Portrait" x="2" y="-3"/>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Portrait" x="-3" y="3"/>
 							</Anchors>
 							<MaskedTextures>

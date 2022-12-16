@@ -71,6 +71,22 @@ local customTextureKitInfo = {
 	Kyrian = {
 		uniqueCorners = true,
 	},
+
+	Dragonflight = {
+		closeButtonX = -2,
+		closeButtonY = -8,
+		uniqueCorners = true,
+	},
+
+	genericplayerchoice = {
+		optionFrameTemplate = "PlayerChoiceGenericPowerChoiceOptionTemplate",
+		optionsTopPadding = 120,
+		optionsBottomPadding = 120,
+		showOptionsOnly = true,
+		frameYOffset = 95,
+		timerXOffset = 0,
+		timerYOffset = -5,
+	},
 };
 
 local defaultTextureKitInfo = {

@@ -26,12 +26,11 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnTooltipSetItem method="OnTooltipSetItem"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</GameTooltip>
 </Ui>

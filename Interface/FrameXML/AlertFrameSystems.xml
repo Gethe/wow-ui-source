@@ -2170,7 +2170,6 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<!-- HRO TODO: Get design -->
 	<ContainedAlertFrame name="SkillLineSpecsUnlockedAlertFrameTemplate" mixin="SkillLineSpecsUnlockedAlertFrameMixin" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="312" y="89"/>
 		<Animations>

@@ -92,6 +92,15 @@ function QuickKeybindButtonTemplateMixin:UpdateMouseWheelHandler()
 	end
 end
 
+function QuickKeybindButtonTemplateMixin:DoModeChange(isInQuickbindMode)
+	self.QuickKeybindHighlightTexture:SetShown(isInQuickbindMode);
+
+	if isInQuickbindMode then
+		local atlas = self.quickKeybindHighlightAtlas or "UI-HUD-ActionBar-IconFrame-Mouseover";
+		self.QuickKeybindHighlightTexture:SetAtlas(atlas);
+	end
+end
+
 QuickKeybindFrameMixin = {};
 
 function QuickKeybindFrameMixin:OnLoad()
@@ -106,7 +115,7 @@ function QuickKeybindFrameMixin:OnLoad()
 
 		HideUIPanel(self);
 	end);
-	
+
 	self.DefaultsButton:SetText(RESET_TO_DEFAULT);
 	self.DefaultsButton:SetScript("OnClick", function(button, buttonName, down)
 		StaticPopup_Show("CONFIRM_RESET_TO_DEFAULT_KEYBINDINGS");
@@ -138,6 +147,7 @@ function QuickKeybindFrameMixin:OnShow()
 
 	self.mouseOverButton = nil;
 
+	self.previousBagBarEnabled = MainMenuBarBagManager:AreBagButtonsEnabled();
 	MainMenuBarBagManager:SetBagButtonsEnabled(true);
 	ActionButtonUtil.ShowAllActionButtonGrids();
 	ActionButtonUtil.ShowAllQuickKeybindButtonHighlights();
@@ -157,7 +167,7 @@ function QuickKeybindFrameMixin:OnHide()
 		SettingsPanel:Open();
 	end
 
-	MainMenuBarBagManager:SetBagButtonsEnabled(false);
+	MainMenuBarBagManager:SetBagButtonsEnabled(self.previousBagBarEnabled);
 	ActionButtonUtil.HideAllActionButtonGrids();
 	ActionButtonUtil.HideAllQuickKeybindButtonHighlights();
 
@@ -235,4 +245,12 @@ end
 
 function QuickKeybindFrameMixin:OnKeybindRebindSuccess(action)
 	self:SetOutputText(KEY_BOUND);
+end
+
+function QuickKeybindFrameMixin:OnDragStart()
+	self:StartMoving();
+end
+
+function QuickKeybindFrameMixin:OnDragStop()
+	self:StopMovingOrSizing();
 end

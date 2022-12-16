@@ -21,6 +21,23 @@ function BonusObjectiveDataProviderMixin:OnAdded(mapCanvas)
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.OnSetFocusedQuestID, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.OnClearFocusedQuestID, self);
+	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
+end
+
+function BonusObjectiveDataProviderMixin:SetBounty(bountyQuestID, bountyFactionID, bountyFrameType)
+	local changed = self.bountyQuestID ~= bountyQuestID;
+	if changed then
+		self.bountyQuestID = bountyQuestID;
+		self.bountyFactionID = bountyFactionID;
+		self.bountyFrameType = bountyFrameType;
+		if self:GetMap() then
+			self:RefreshAllData();
+		end
+	end
+end
+
+function BonusObjectiveDataProviderMixin:GetBountyInfo()
+	return self.bountyQuestID, self.bountyFactionID, self.bountyFrameType;
 end
 
 function BonusObjectiveDataProviderMixin:OnSetFocusedQuestID(...)
@@ -36,6 +53,7 @@ end
 function BonusObjectiveDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
+	self:GetMap():UnregisterCallback("SetBounty", self);
 
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
@@ -61,6 +79,7 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 		for i, info in ipairs(taskInfo) do
 			local callback = QuestEventListener:AddCancelableCallback(info.questId, function()
 				if MapUtil.ShouldShowTask(mapID, info) and not QuestUtils_IsQuestWorldQuest(info.questId) then
+					info.dataProvider = self;
 					if C_QuestLog.IsThreatQuest(info.questId) then
 						local completed, x, y = QuestPOIGetIconInfo(info.questId);
 						if x and y then
@@ -100,6 +119,7 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	self.numObjectives = taskInfo.numObjectives;
 	self.isQuestStart = taskInfo.isQuestStart;
 	self.isCombatAllyQuest = taskInfo.isCombatAllyQuest;
+	self.dataProvider = taskInfo.dataProvider;
 	if C_QuestLog.IsQuestCalling(self.questID) then
 		self.Texture:SetAtlas("Quest-DailyCampaign-Available", false);
 	elseif taskInfo.isDaily then
@@ -109,6 +129,8 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	else
 		self.Texture:SetAtlas("QuestBonusObjective", false);
 	end
+
+	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture);
 
 	if taskInfo.isDaily or taskInfo.isQuestStart then
 		self:SetScalingLimits(1, 1.0, 1.2);
@@ -121,6 +143,19 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	if not HaveQuestRewardData(self.questID) then
 		C_TaskQuest.RequestPreloadRewardData(self.questID);
 	end
+end
+
+function BonusObjectivePinMixin:GetHighlightType() -- override
+	local bountyQuestID, bountyFactionID, bountyFrameType = self.dataProvider:GetBountyInfo();
+	if bountyFrameType == BountyFrameType.ActivityTracker then
+		local questTitle, taskFactionID, capped, displayAsObjective = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
+		local countsForBounty = (self.questID and bountyQuestID and C_QuestLog.IsQuestCriteriaForBounty(self.questID, bountyQuestID)) or (taskFactionID and taskFactionID == bountyFactionID);
+		if countsForBounty then
+			return MapPinHighlightType.SupertrackedHighlight;
+		end
+	end
+
+	return MapPinHighlightType.None;
 end
 
 function BonusObjectivePinMixin:OnMouseEnter()

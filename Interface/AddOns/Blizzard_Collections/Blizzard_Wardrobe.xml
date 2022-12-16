@@ -130,6 +130,7 @@
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnModelLoaded method="OnModelLoaded"/>
@@ -910,6 +911,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
 							<OnUpdate method="OnUpdate"/>
 							<OnMouseDown method="OnMouseDown"/>
 							<OnMouseUp method="OnMouseUp"/>

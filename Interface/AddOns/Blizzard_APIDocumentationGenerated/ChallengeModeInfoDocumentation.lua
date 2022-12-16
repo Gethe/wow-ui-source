@@ -277,10 +277,6 @@ local ChallengeModeInfo =
 			Type = "Function",
 		},
 		{
-			Name = "SetKeystoneTooltip",
-			Type = "Function",
-		},
-		{
 			Name = "SlotKeystone",
 			Type = "Function",
 		},

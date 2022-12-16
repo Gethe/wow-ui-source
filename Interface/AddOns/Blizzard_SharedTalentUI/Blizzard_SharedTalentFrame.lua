@@ -120,6 +120,7 @@ TalentFrameBaseMixin:GenerateCallbackEvents(
 {
 	"TalentButtonAcquired",
 	"TalentButtonReleased",
+	"CommitStatusChanged",
 });
 
 TalentFrameBaseMixin.CommitUpdateReasons = {
@@ -255,6 +256,8 @@ function TalentFrameBaseMixin:OnShow()
 		local active = true;
 		local skipSpinnerDelay = true;
 		self:SetCommitVisualsActive(active, skipSpinnerDelay);
+	else
+		self:SetCommitVisualsActive(false);
 	end
 end
 
@@ -736,6 +739,10 @@ function TalentFrameBaseMixin:UpdateAllButtons()
 	for talentButton in self:EnumerateAllTalentButtons() do
 		talentButton:FullUpdate();
 	end
+
+	if self.SelectionChoiceFrame:IsShown() then
+		self.SelectionChoiceFrame:UpdateVisualState();
+	end
 end
 
 function TalentFrameBaseMixin:OnButtonNodeIDSet(talentButton, oldNodeID, newNodeID)
@@ -960,6 +967,11 @@ end
 function TalentFrameBaseMixin:RefreshGates()
 	self.gatePool:ReleaseAll();
 
+	-- Possible we've put off loading tree info because frame hasn't been shown yet
+	if not self.talentTreeInfo or not self.talentTreeInfo.gates then
+		return;
+	end
+
 	for i, gateInfo in ipairs(self.talentTreeInfo.gates) do
 		local firstButton = self:GetTalentButtonByNodeID(gateInfo.topLeftNodeID);
 		local condInfo = self:GetAndCacheCondInfo(gateInfo.conditionID);
@@ -1041,7 +1053,7 @@ end
 function TalentFrameBaseMixin:SetCommitSpinnerShown(shown)
 	local isCastBarActive = self.enableCommitCastBar and OverlayPlayerCastingBarFrame:IsShown();
 
-	if shown and not isCastBarActive then
+	if shown and not isCastBarActive and self:IsVisible() then
 		self.CommitSpinner:Show();
 	else
 		if self.spinnerTimer then
@@ -1052,11 +1064,15 @@ function TalentFrameBaseMixin:SetCommitSpinnerShown(shown)
 end
 
 function TalentFrameBaseMixin:SetCommitVisualsActive(active, skipSpinnerDelay)
+	if active and not self:IsVisible() then
+		return;
+	end
+
 	self.DisabledOverlay:SetShown(active);
 
 	if self.enableCommitCastBar then
 		if active then
-			OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, "applyingtalents");
+			OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self.DisabledOverlay, { overrideBarType = "applyingtalents" });
 		else
 			OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
 		end
@@ -1095,6 +1111,10 @@ function TalentFrameBaseMixin:OnCommitCastBarShow()
 end
 
 function TalentFrameBaseMixin:SetCommitCompleteVisualsActive(active)
+	if active and not self:IsVisible() then
+		return;
+	end
+
 	local playingBackgroundFlash = self.AnimationHolder.BackgroundFlashAnim:IsPlaying();
 	if self.enableCommitEndFlash and (active ~= playingBackgroundFlash) then
 		if active then
@@ -1141,6 +1161,8 @@ function TalentFrameBaseMixin:SetCommitStarted(configID, reason, skipAnimation)
 	end
 
 	self.previousCommitUpdateReason = reason;
+
+	self:TriggerEvent(TalentFrameBaseMixin.Event.CommitStatusChanged);
 end
 
 function TalentFrameBaseMixin:GetMaximumCommitTime()
@@ -1270,6 +1292,13 @@ function TalentFrameBaseMixin:GetNodeCost(nodeID)
 	return C_Traits.GetNodeCost(self:GetConfigID(), nodeID);
 end
 
+function TalentFrameBaseMixin:IsLocked()
+	-- Override in your derived mixin.
+
+	-- Returns whether or not the frame is globally locked, and if so, an optional error message.
+	return false, nil;
+end
+
 function TalentFrameBaseMixin:CanAfford(traitCurrenciesCost)
 	for i, traitCurrencyCost in ipairs(traitCurrenciesCost) do
 		local treeCurrency = self.treeCurrencyInfoMap[traitCurrencyCost.ID];
@@ -1388,7 +1417,8 @@ function TalentFrameBaseMixin:GetIncomingEdgeInfoForNode(nodeID)
 	local i = 1;
 	for edgeFrame in self.edgePool:EnumerateActive() do
 		local edgeInfo = edgeFrame.edgeInfo;
-		if edgeInfo.targetNodeID == nodeID then
+		-- TODO: TraitEdge uses targetNodeID but SharedTraits uses targetNode. Update ShareTraits and change to targetNodeID
+		if edgeInfo.targetNode == nodeID  then
 			incomingEdges[i] = edgeInfo;
 			i = i + 1;
 		end

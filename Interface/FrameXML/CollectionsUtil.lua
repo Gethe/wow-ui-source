@@ -149,7 +149,7 @@ function CollectionWardrobeUtil.IsAppearanceUsable(appearanceInfo, inLegionArtif
 	return false;
 end
 
-function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString)
+function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString)
 	local canCycle = false;
 
 	for i = 1, #sources do
@@ -268,6 +268,10 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 		GameTooltip_AddColoredLine(tooltip, sourceText, sourceColor);
 	end
 
+	if warningString then
+		GameTooltip_AddNormalLine(tooltip, warningString);
+	end
+
 	local useError;
 	if ( #sources > 1 and not appearanceCollected ) then
 		-- only add "Other items using this appearance" if we're continuing to the same visualID
@@ -319,6 +323,8 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 	end
 
 	tooltip:Show();
+    
+    EventRegistry:TriggerEvent("CollectionWardrobe.SetAppearanceTooltip", tooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString);
 	return headerIndex, canCycle;
 end
 
@@ -384,4 +390,14 @@ function CollectionWardrobeUtil.PlayerCanCollectSource(sourceID)
 		return true, true;
 	end
 	return C_TransmogCollection.PlayerCanCollectSource(sourceID);
+end
+
+function CollectionWardrobeUtil.GetVisibilityWarning(model, transmogLocation)
+	if transmogLocation and model then
+		local slotID = transmogLocation.slotID;
+		if model:IsGeoReady() and model:IsSlotAllowed(slotID) and not model:IsSlotVisible(slotID) then
+			return TRANSMOG_DRACTHYR_APPEARANCE_INVISIBLE;
+		end
+	end
+	return nil;
 end

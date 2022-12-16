@@ -285,7 +285,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetCurrencyTokenByID(self:GetParent().currency);
+						GameTooltip:SetCurrencyByID(self:GetParent().currency);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>

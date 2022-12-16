@@ -82,5 +82,7 @@ end
 ExtraActionButtonMixin = {};
 
 function ExtraActionButtonMixin:ExtraActionButton_OnLoad()
-	self.QuickKeybindHighlightTexture:SetSize(54, 53);
+	self.QuickKeybindHighlightTexture:ClearAllPoints();
+	self.QuickKeybindHighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -1);
+	self.QuickKeybindHighlightTexture:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 1.8, -1);
 end

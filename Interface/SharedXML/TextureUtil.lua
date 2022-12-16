@@ -192,9 +192,11 @@ function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY, rVertexCo
 	end
 end
 
-function CreateAtlasMarkupWithAtlasSize(atlasName, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor)
+function CreateAtlasMarkupWithAtlasSize(atlasName, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor, scale)
 	local atlasInfo = C_Texture.GetAtlasInfo(atlasName);
-	return CreateAtlasMarkup(atlasName, atlasInfo.width, atlasInfo.height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor);
+	local width = scale and Round(atlasInfo.width * scale) or atlasInfo.width;
+	local height = scale and Round(atlasInfo.height * scale) or atlasInfo.height;
+	return CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor);
 end
 
 -- NOTE: Many of the TextureKit functions below use the following parameters

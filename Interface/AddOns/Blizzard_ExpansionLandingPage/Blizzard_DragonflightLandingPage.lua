@@ -1,17 +1,15 @@
 DragonflightLandingOverlayMixin = {};
 
-local MAJOR_FACTIONS_INTRO_QUEST_ID_ALLIANCE = 67700;
-local MAJOR_FACTIONS_INTRO_QUEST_ID_HORDE = 65444;
-
 local DRAGONRIDING_INTRO_QUEST_ID = 68798;
 local DRAGONRIDING_ACCOUNT_ACHIEVEMENT_ID = 15794;
 local DRAGONRIDING_TRAIT_SYSTEM_ID = 1;
 
-local minimapDisplayInfo = { 
-	["normalAtlas"] = "legionmission-landingbutton-druid-up",
-	["pushedAtlas"] = "legionmission-landingbutton-druid-down",
-	["highlightAtlas"] = "GarrLanding-CircleGlow",
-	["glowAtlas"] = "GarrLanding-CircleGlow",
+local minimapDisplayInfo = {
+	useDefaultButtonSize = true;
+	["normalAtlas"] = "dragonflight-landingbutton-up",
+	["pushedAtlas"] = "dragonflight-landingbutton-down",
+	["highlightAtlas"] = "dragonflight-landingbutton-circlehighlight",
+	["glowAtlas"] = "dragonflight-landingbutton-circleglow",
 	["title"] = DRAGONFLIGHT_LANDING_PAGE_TITLE,
 	["description"] = DRAGONFLIGHT_LANDING_PAGE_TOOLTIP,
 };
@@ -31,13 +29,8 @@ local minimapPulseLocks = EnumUtil.MakeEnum(
 	"MajorFactionUnlocked"
 );
 
-function DragonflightLandingOverlayMixin.IsOverlayUnlocked(completedQuestID)
-	local playerFactionGroup = UnitFactionGroup("player");
-	if playerFactionGroup == "Alliance" then
-		return completedQuestID == MAJOR_FACTIONS_INTRO_QUEST_ID_ALLIANCE or C_QuestLog.IsQuestFlaggedCompleted(MAJOR_FACTIONS_INTRO_QUEST_ID_ALLIANCE);
-	elseif playerFactionGroup == "Horde" then
-		return completedQuestID == MAJOR_FACTIONS_INTRO_QUEST_ID_HORDE or C_QuestLog.IsQuestFlaggedCompleted(MAJOR_FACTIONS_INTRO_QUEST_ID_HORDE);
-	end
+function DragonflightLandingOverlayMixin.IsOverlayUnlocked()
+	return C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_DRAGONFLIGHT);
 end
 
 function DragonflightLandingOverlayMixin.GetMinimapDisplayInfo()
@@ -56,6 +49,14 @@ function DragonflightLandingOverlayMixin.CreateOverlay(parent)
 	return CreateFrame("Frame", nil, parent, "DragonflightLandingOverlayTemplate");
 end
 
+function DragonflightLandingOverlayMixin:TryCelebrateUnlock()
+	if not GetCVarBitfield("unlockedExpansionLandingPages", Enum.ExpansionLandingPageType.Dragonflight) then
+		SetCVarBitfield("unlockedExpansionLandingPages", Enum.ExpansionLandingPageType.Dragonflight, true);
+		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerAlert", DRAGONFLIGHT_LANDING_PAGE_ALERT_SUMMARY_UNLOCKED);
+		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerPulseLock", minimapPulseLocks.DragonflightSummaryUnlocked);
+	end
+end
+
 function DragonflightLandingOverlayMixin.HandleUnlockEvent(event, ...)
 end
 
@@ -65,9 +66,6 @@ function DragonflightLandingOverlayMixin.HandleMinimapAnimationEvent(event, ...)
 		if questID == DRAGONRIDING_INTRO_QUEST_ID then
 			EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerAlert", DRAGONFLIGHT_LANDING_PAGE_ALERT_DRAGONRIDING_UNLOCKED);
 			EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerPulseLock", minimapPulseLocks.DragonridingUnlocked);
-		elseif questID == MAJOR_FACTIONS_INTRO_QUEST_ID_ALLIANCE or questID == MAJOR_FACTIONS_INTRO_QUEST_ID_HORDE then
-			EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerAlert", DRAGONFLIGHT_LANDING_PAGE_ALERT_SUMMARY_UNLOCKED);
-			EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerPulseLock", minimapPulseLocks.DragonflightSummaryUnlocked);
 		end
 	elseif event == "MAJOR_FACTION_UNLOCKED" then
 		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerAlert", DRAGONFLIGHT_LANDING_PAGE_ALERT_MAJOR_FACTION_UNLOCKED);

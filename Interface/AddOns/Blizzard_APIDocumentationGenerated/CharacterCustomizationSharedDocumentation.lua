@@ -49,6 +49,18 @@ local CharacterCustomizationShared =
 			},
 		},
 		{
+			Name = "CustomizationScope",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Player", Type = "CustomizationScope", EnumValue = 0 },
+				{ Name = "DragonCompanion", Type = "CustomizationScope", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "CharCustomizationCategory",
 			Type = "Structure",
 			Fields =
@@ -78,8 +90,8 @@ local CharacterCustomizationShared =
 				{ Name = "isNew", Type = "bool", Nilable = false },
 				{ Name = "swatchColor1", Type = "table", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "swatchColor2", Type = "table", Mixin = "ColorMixin", Nilable = true },
-				{ Name = "showLocked", Type = "bool", Nilable = false },
-				{ Name = "lockedTooltip", Type = "string", Nilable = false },
+				{ Name = "isLocked", Type = "bool", Nilable = false },
+				{ Name = "lockedText", Type = "string", Nilable = true },
 			},
 		},
 		{

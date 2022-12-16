@@ -17,6 +17,20 @@ local MailInfo =
 			},
 		},
 		{
+			Name = "GetCraftingOrderMailInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "inboxIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CraftingOrderMailInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "HasInboxMoney",
 			Type = "Function",
 

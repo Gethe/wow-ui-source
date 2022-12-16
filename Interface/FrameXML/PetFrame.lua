@@ -207,7 +207,7 @@ function PetCastingBarMixin:PetCastingBar_OnEvent(event, ...)
 		end
 		return;
 	end
-	CastingBarMixin.OnEvent(event, ...);
+	CastingBarMixin.OnEvent(self, event, ...);
 end
 
 PetManaBarMixin = {};

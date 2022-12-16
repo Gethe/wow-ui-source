@@ -60,20 +60,6 @@
 				<Frames>
 					<Frame parentKey="PlayerFrameContentMain" setAllPoints="true">
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-								<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-								<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-								<Texture parentKey="ManaCostPredictionBar" inherits="MyManaCostPredictionBarTemplate"/>
-								<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-								<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-								<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
-								<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
-								<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
-							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
 								<FontString name="PlayerName" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
 									<Size x="96" y="12"/>
@@ -91,23 +77,13 @@
 										<Anchor point="CENTER" relativeKey="$parent.$parent.$parent.PlayerFrameContainer.PlayerPortrait" relativePoint="CENTER"/>
 									</Anchors>
 								</FontString>
-								<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="83" y="-35"/>
-									</Anchors>
-								</MaskTexture>
-								<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="83" y="-59"/>
-									</Anchors>
-								</MaskTexture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="2">
 								<!-- StatusTexture is a flash texture for the player portrait and top bar (where the player name is).
 									 This is different from FrameFlash, which is a flash of the entire frame area.-->
 								<Texture parentKey="StatusTexture" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Status" useAtlasSize="true" hidden="true">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="18" y="-14"/>
+										<Anchor point="TOPLEFT" x="17" y="-14"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -121,28 +97,59 @@
 											<OnLoad method="OnLoad"/>
 										</Scripts>
 									</StatusBar>
-									<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar" enableMouseMotion="true" useParentLevel="true">
+									<StatusBar parentKey="HealthBar" inherits="TextStatusBar" enableMouseMotion="true" useParentLevel="true">
 										<Size x="124" y="20"/>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="85" y="-40"/>
 										</Anchors>
 										<Layers>
-											<Layer level="OVERLAY">
-												<FontString name="PlayerFrameHealthBarText" inherits="TextStatusBarText">
+											<Layer level="BACKGROUND">
+												<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+												<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+												<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
+												<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+												<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+												<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+											</Layer>
+											<Layer level="ARTWORK">
+												<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
+												<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+												<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="1">
+												<FontString parentKey="HealthBarText" inherits="TextStatusBarText">
 													<Anchors>
 														<Anchor point="CENTER" x="0" y="0"/>
 													</Anchors>
 												</FontString>
-												<FontString name="PlayerFrameHealthBarTextLeft" inherits="TextStatusBarText">
+												<FontString parentKey="LeftText" inherits="TextStatusBarText">
 													<Anchors>
 														<Anchor point="LEFT" x="2" y="0"/>
 													</Anchors>
 												</FontString>
-												<FontString name="PlayerFrameHealthBarTextRight" inherits="TextStatusBarText">
+												<FontString parentKey="RightText" inherits="TextStatusBarText">
 													<Anchors>
 														<Anchor point="RIGHT" x="-2" y="0"/>
 													</Anchors>
 												</FontString>
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="2">
+												<MaskTexture parentKey="HealthBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+													<Anchors>
+														<Anchor point="TOPLEFT" x="-2" y="6"/>
+													</Anchors>
+													<MaskedTextures>
+														<MaskedTexture childKey="MyHealPredictionBar"/>
+														<MaskedTexture childKey="OtherHealPredictionBar"/>
+														<MaskedTexture childKey="TotalAbsorbBar"/>
+														<MaskedTexture childKey="TotalAbsorbBarOverlay"/>
+														<MaskedTexture childKey="OverAbsorbGlow"/>
+														<MaskedTexture childKey="OverHealAbsorbGlow"/>
+														<MaskedTexture childKey="HealAbsorbBar"/>
+														<MaskedTexture childKey="HealAbsorbBarLeftShadow"/>
+														<MaskedTexture childKey="HealAbsorbBarRightShadow"/>
+													</MaskedTextures>
+												</MaskTexture>
 											</Layer>
 										</Layers>
 										<Scripts>
@@ -166,28 +173,41 @@
 							</Frame>
 							<Frame parentKey="ManaBarArea" setAllPoints="true" useParentLevel="true">
 								<Frames>
-									<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar" enableMouseMotion="true" useParentLevel="true">
+									<StatusBar parentKey="ManaBar" inherits="TextStatusBar" enableMouseMotion="true" useParentLevel="true">
 										<Size x="124" y="10"/>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="85" y="-61"/>
 										</Anchors>
 										<Layers>
-											<Layer level="OVERLAY">
-												<FontString name="PlayerFrameManaBarText" inherits="TextStatusBarText">
+											<Layer level="BACKGROUND">
+												<Texture parentKey="ManaCostPredictionBar" inherits="MyManaCostPredictionBarTemplate"/>
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="1">
+												<FontString parentKey="ManaBarText" inherits="TextStatusBarText">
 													<Anchors>
 														<Anchor point="CENTER" x="0" y="0"/>
 													</Anchors>
 												</FontString>
-												<FontString name="PlayerFrameManaBarTextLeft" inherits="TextStatusBarText">
+												<FontString parentKey="LeftText" inherits="TextStatusBarText">
 													<Anchors>
 														<Anchor point="LEFT" x="2" y="0"/>
 													</Anchors>
 												</FontString>
-												<FontString name="PlayerFrameManaBarTextRight" inherits="TextStatusBarText">
+												<FontString parentKey="RightText" inherits="TextStatusBarText">
 													<Anchors>
 														<Anchor point="RIGHT" x="-2" y="0"/>
 													</Anchors>
 												</FontString>
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="2">
+												<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+													<Anchors>
+														<Anchor point="TOPLEFT" x="-2" y="3"/>
+													</Anchors>
+													<MaskedTextures>
+														<MaskedTexture childKey="ManaCostPredictionBar"/>
+													</MaskedTextures>
+												</MaskTexture>
 											</Layer>
 										</Layers>
 										<Scripts>

@@ -1,6 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
+	<Frame name="EditModeDialogTemplate" virtual="true" mixin="EditModeDialogMixin">
+		<Scripts>
+			<OnLoad method="EditModeDialog_OnLoad"/>
+		</Scripts>
+	</Frame>
+
 	<EditBox name="EditModeDialogLayoutNameEditBoxTemplate" inherits="InputBoxTemplate" letters="30" mixin="EditModeDialogNameEditBoxMixin" virtual="true">
 		<Size x="260" y="32"/>
 		<Scripts>
@@ -21,7 +27,7 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="EditModeNewLayoutDialog" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeNewLayoutDialogMixin" frameLevel="100">
+	<Frame name="EditModeNewLayoutDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeNewLayoutDialogMixin" frameLevel="100">
 		<Size x="320" y="150"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -63,12 +69,12 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeImportLayoutDialog" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutDialogMixin" frameLevel="100">
+	<Frame name="EditModeImportLayoutDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutDialogMixin" frameLevel="100">
 		<Size x="320" y="370"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -131,12 +137,12 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeImportLayoutLinkDialog" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutLinkDialogMixin" frameLevel="100">
+	<Frame name="EditModeImportLayoutLinkDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutLinkDialogMixin" frameLevel="100">
 		<Size x="320" y="160"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -183,12 +189,12 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeUnsavedChangesDialog" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeUnsavedChangesDialogMixin" frameLevel="100">
+	<Frame name="EditModeUnsavedChangesDialog" inherits="EditModeDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeUnsavedChangesDialogMixin" frameLevel="100">
 		<Size x="450" y="130"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -225,7 +231,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
@@ -238,7 +244,7 @@
 		<Size x="330" y="28"/>
 	</Button>
 
-	<Frame name="EditModeSystemSettingsDialog" inherits="ResizeLayoutFrame" parent="UIParent" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" frameStrata="DIALOG"  frameLevel="200" mixin="EditModeSystemSettingsDialogMixin" hidden="true">
+	<Frame name="EditModeSystemSettingsDialog" inherits="EditModeDialogTemplate, ResizeLayoutFrame" parent="UIParent" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" frameStrata="DIALOG"  frameLevel="200" mixin="EditModeSystemSettingsDialogMixin" hidden="true">
 		<Size x="300" y="350"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
@@ -306,7 +312,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnHide method="OnHide"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>

@@ -26,7 +26,7 @@ function MapCanvasMixin:OnLoad()
 end
 
 function MapCanvasMixin:OnUpdate()
-	ClearCachedQuestsForPlayer();
+	ClearCachedActivitiesForPlayer();
 	self:UpdatePinNudging();
 	self:ProcessCursorHandlers();
 end
@@ -81,7 +81,7 @@ function MapCanvasMixin:GetMapInsetPool()
 end
 
 function MapCanvasMixin:OnShow()
-	ClearCachedQuestsForPlayer();
+	ClearCachedActivitiesForPlayer();
 
 	local FROM_ON_SHOW = true;
 	self:RefreshAll(FROM_ON_SHOW);
@@ -581,7 +581,7 @@ function MapCanvasMixin:OnMapInsetMouseLeave(mapInsetIndex)
 end
 
 function MapCanvasMixin:OnMapChanged()
-	ClearCachedQuestsForPlayer();
+	ClearCachedActivitiesForPlayer();
 
 	local function MapCanvasOnMapChangedCallback(dataProvider, included)
 		dataProvider:OnMapChanged();

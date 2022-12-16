@@ -581,7 +581,7 @@ function MountJournal_EvaluateListHelpTip(self)
 	HelpTip:Hide(self, MOUNT_JOURNAL_DRAGONRIDING_HELPTIP);
 
 	if self.dragonridingHelpTipMountIndex then
-		local frame = self.ScrollBox:FindFrameByPredicate(function(entry)
+		local frame = self.ScrollBox:FindFrameByPredicate(function(entry, elementData)
 			return entry.index == self.dragonridingHelpTipMountIndex;
 		end);
 		if ((frame and frame:IsShown()) and frame:GetTop() <= self.ScrollBox:GetTop() + 4 and frame:GetBottom() >= self.ScrollBox:GetBottom() - 4) then
@@ -715,9 +715,9 @@ function MountJournal_GetMountButtonHeight()
 end
 
 function MountJournal_GetMountButtonByMountID(mountID)
-	return MountJournal.ScrollBox:FindFrameByPredicate(function(elementData)
-			return elementData.mountID == mountID;
-		end);
+	return MountJournal.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		return elementData.mountID == mountID;
+	end);
 end
 
 function MountJournal_SetSelected(selectedMountID, selectedSpellID)
@@ -728,7 +728,7 @@ function MountJournal_SetSelected(selectedMountID, selectedSpellID)
 	MountJournal_UpdateMountDisplay();
 	
 	if oldSelectedID ~= selectedMountID then
-		local foundFrame = MountJournal.ScrollBox:FindFrameByPredicate(function(elementData)
+		local foundFrame = MountJournal.ScrollBox:FindFrameByPredicate(function(frame, elementData)
 			return elementData.mountID == oldSelectedID;
 		end);
 		if foundFrame then
@@ -737,12 +737,13 @@ function MountJournal_SetSelected(selectedMountID, selectedSpellID)
 	end
 
 	-- Scroll to the selected mount only if it is not in view.
-	local function FindSelectedMount(elementData)
+	local foundFrame = MountJournal.ScrollBox:FindFrameByPredicate(function(frame, elementData)
 		return elementData.mountID == selectedMountID;
-	end;
-	local foundFrame = MountJournal.ScrollBox:FindFrameByPredicate(FindSelectedMount);
+	end);
 	if not foundFrame then
-		MountJournal.ScrollBox:ScrollToElementDataByPredicate(FindSelectedMount);
+		MountJournal.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
+			return elementData.mountID == selectedMountID;
+		end);
 	else
 		MountJournal_InitMountButton(foundFrame, foundFrame:GetElementData());
 	end

@@ -4,5 +4,8 @@
 
 Blizzard_Tutorials_Classes.lua
 Blizzard_Tutorials_Dracthyr.lua
+Blizzard_Tutorials_Dragonriding.lua
 Blizzard_TutorialReagentBag.lua
+Blizzard_Tutorials_Professions.lua
+Blizzard_Tutorials_Frame_Tutorials.lua
 Blizzard_Tutorials.lua

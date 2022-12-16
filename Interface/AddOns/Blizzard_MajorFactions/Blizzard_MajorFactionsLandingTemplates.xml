@@ -7,8 +7,8 @@
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 			</Frame>
 
@@ -29,9 +29,6 @@
 
 	<Frame name="MajorFactionButtonTemplate" virtual="true" mixin="MajorFactionButtonMixin" scale="0.875">
 		<Size x="458" y="122"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
 		<Frames>
 			<Frame parentKey="LockedState" mixin="MajorFactionButtonLockedStateMixin">
 				<Size x="458" y="122"/>
@@ -40,11 +37,10 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="dragonflight-landingpage-renownbutton-tuskarr" useAtlasSize="true">
+						<Texture parentKey="Background">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
-							<Color r="0.2" g="0.2" b="0.2" a="1"/>
 						</Texture>
 					</Layer>
 
@@ -64,6 +60,10 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
 			</Frame>
 
 			<Button parentKey="UnlockedState" mixin="MajorFactionButtonUnlockedStateMixin">
@@ -76,7 +76,7 @@
 						<Texture parentKey="Icon">
 							<Size x="48" y="48"/>
 							<Anchors>
-								<Anchor point="LEFT" x="40" y ="-4"/>
+								<Anchor point="LEFT" x="40"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -91,7 +91,7 @@
 
 					<Layer level="ARTWORK">
 						<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontHighlightLarge2">
-							<Size x="350" y="22"/>
+							<Size x="350"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="30" y="0"/>
 							</Anchors>
@@ -106,24 +106,24 @@
 				</Layers>
 				<Frames>
 					<CheckButton parentKey="WatchFactionButton" hidden="true" mixin="MajorFactionWatchFactionButtonMixin" inherits="UICheckButtonArtTemplate">
-						<Size x="16" y="16"/>
+						<Size x="21" y="21"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="12" y="-6"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" y="-6"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Label" inherits="GameFontNormalSmall" justifyH="LEFT" text="MAJOR_FACTION_WATCH_FACTION_BUTTON_LABEL">
+								<FontString parentKey="Label" inherits="GameFontHighlightSmall" justifyH="LEFT" text="MAJOR_FACTION_WATCH_FACTION_BUTTON_LABEL">
 									<KeyValues>
 										<KeyValue key="minLineHeight" value="8" type="number"/>
 									</KeyValues>
-									<Size x="280" y="14"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="4" y="0"/>
+										<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnLoad method="OnLoad"/>
 							<OnShow method="OnShow"/>
 							<OnHide method="OnHide"/>
 							<OnClick method="OnClick"/>
@@ -132,10 +132,19 @@
 					</CheckButton>
 
 					<Cooldown parentKey="RenownProgressBar" reverse="true" hideCountdownNumbers="true" rotation="180" useParentLevel="true" mixin="MajorFactionRenownProgressBarMixin">
-						<Size x="100" y="100"/>
+						<Size x="96" y="96"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="Border" atlas="dragonflight-landingpage-radial-frame" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="$parent.Icon"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 						<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
 					</Cooldown>
 

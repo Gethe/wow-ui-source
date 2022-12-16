@@ -19,7 +19,7 @@ if tbl then
 
 	Import("SetPortraitToTexture");
 	Import("SetPortraitTexture");
-	Import("SetBagPortraitTexture");
+	Import("C_Container");
 end
 --------------------------------------------------
 
@@ -73,7 +73,7 @@ function PortraitFrameMixin:SetPortraitToUnit(unit)
 end
 
 function PortraitFrameMixin:SetPortraitToBag(bagID)
-	SetBagPortraitTexture(self:GetPortrait(), bagID);
+	C_Container.SetBagPortraitTexture(self:GetPortrait(), bagID);
 end
 
 function PortraitFrameMixin:SetPortraitTextureRaw(texture)

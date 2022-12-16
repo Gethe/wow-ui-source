@@ -12,7 +12,7 @@
 		</Scripts>
 	</CheckButton>
 
-	<Frame name="PossessActionBar" parent="UIParent" inherits="EditModeActionBarTemplate" mixin="PossessActionBarMixin" enableMouse="true" hidden="true">
+	<Frame name="PossessActionBar" parent="UIParent" inherits="EditModeActionBarTemplate" mixin="PossessActionBarMixin" enableMouse="true" frameLevel="70" fixedFrameLevel="true" hidden="true">
 		<Size x="30" y="30"/>
 		<Anchors>
 			<Anchor point="BOTTOM"/>

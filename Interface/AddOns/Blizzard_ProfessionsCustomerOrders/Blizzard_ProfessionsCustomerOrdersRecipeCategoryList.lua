@@ -18,6 +18,10 @@ local function GetChildCategoryType(type)
 end
 
 local function IsCategorySelected(categoryInfo, categoryFilters)
+	if not categoryInfo then
+		return false;
+	end
+	
 	if categoryInfo.type == Enum.CraftingOrderCustomerCategoryType.Primary then
 		return categoryInfo.categoryID == categoryFilters.primaryCategoryID;
 	elseif categoryInfo.type == Enum.CraftingOrderCustomerCategoryType.Secondary then
@@ -43,16 +47,42 @@ function ProfessionsCustomerOrdersCategoryButtonMixin:OnMouseUp()
 	self.Text:AdjustPointsOffset(-1, 1);
 end
 
-function ProfessionsCustomerOrdersCategoryButtonMixin:Init(categoryInfo, categoryFilters)
+function ProfessionsCustomerOrdersCategoryButtonMixin:OnEnter()
+	TruncatedTooltipScript_OnEnter(self);
+
+	if not self.isSpacer then
+		self.HighlightTexture:Show();
+	end
+end
+
+function ProfessionsCustomerOrdersCategoryButtonMixin:OnLeave()
+	TruncatedTooltipScript_OnLeave(self);
+
+	self.HighlightTexture:Hide();
+end
+
+function ProfessionsCustomerOrdersCategoryButtonMixin:Init(categoryInfo, categoryFilters, isRecraftCategory, isSpacer)
 	self.categoryInfo = categoryInfo;
 	-- Reference to the category filters set on the parent
 	self.categoryFilters = categoryFilters;
-	
+	self.isSpacer = isSpacer;
+
+	for _, region in ipairs(self.buttonRegions) do
+		region:SetShown(not isSpacer);
+	end
+	for _, region in ipairs(self.spacerRegions) do
+		region:SetShown(isSpacer);
+	end
+
+	if isSpacer then
+		return;
+	end
+
 	local normalText = self.Text;
 	local normalTexture = self.NormalTexture;
 	local line = self.Lines;
 
-	if categoryInfo.type == Enum.CraftingOrderCustomerCategoryType.Primary then
+	if isRecraftCategory or categoryInfo.type == Enum.CraftingOrderCustomerCategoryType.Primary then
 		self:SetNormalFontObject(GameFontNormalSmall);
 		self.NormalTexture:SetAtlas("auctionhouse-nav-button", false);
 		self.NormalTexture:SetSize(136,32);
@@ -107,7 +137,7 @@ function ProfessionsCustomerOrdersCategoryButtonMixin:Init(categoryInfo, categor
 	end
 	self:UpdateSelected();
 
-	self:SetText(categoryInfo.categoryName);
+	self:SetText(isRecraftCategory and PROFESSIONS_START_RECRAFTING_ORDER or categoryInfo.categoryName);
 end
 
 function ProfessionsCustomerOrdersCategoryButtonMixin:UpdateSelected()
@@ -136,12 +166,22 @@ function ProfessionsCustomerOrdersRecipeCategoryListMixin:OnLoad()
 	view:SetElementInitializer("ProfessionsCustomerOrdersCategoryButtonTemplate", function(button, node)
 		local data = node:GetData();
 		local categoryInfo = data.categoryInfo;
-		button:Init(categoryInfo, self.categoryFilters);
+		button:Init(categoryInfo, self.categoryFilters, data.isRecraftCategory, data.isSpacer);
 
-		button:SetScript("OnClick", function()
-			local wasCollapsed = node:IsCollapsed();
-			self:SetCategoryFilter(categoryInfo.type, wasCollapsed and categoryInfo.categoryID or nil);
-		end);
+		if data.isSpacer then
+			button:SetScript("OnClick", nil);
+		else
+			if data.isRecraftCategory then
+				button:SetScript("OnClick", function()
+					EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecraftCategorySelected");
+				end);
+			else
+				button:SetScript("OnClick", function()
+					local wasCollapsed = node:IsCollapsed();
+					self:SetCategoryFilter(categoryInfo.type, wasCollapsed and categoryInfo.categoryID or nil);
+				end);
+			end
+		end
 	end);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
@@ -154,7 +194,7 @@ function ProfessionsCustomerOrdersRecipeCategoryListMixin:OnDataLoadFinished()
 	local function InsertChildrenToTree(tree, childType)
 		while idx <= #categories and categories[idx].type == childType do
 			local currCategoryInfo = categories[idx];
-			local newChild = tree:Insert({categoryInfo = currCategoryInfo});
+			local newChild = tree:Insert({categoryInfo = currCategoryInfo, isRecraftCategory = false, isSpacer = false});
 			idx = idx + 1;
 
 			local subChildType = GetChildCategoryType(currCategoryInfo.type);
@@ -163,6 +203,8 @@ function ProfessionsCustomerOrdersRecipeCategoryListMixin:OnDataLoadFinished()
 	end
 
 	local dataProvider = CreateTreeListDataProvider();
+	dataProvider:Insert({isRecraftCategory = true});
+	dataProvider:Insert({isSpacer = true});
 	InsertChildrenToTree(dataProvider, Enum.CraftingOrderCustomerCategoryType.Primary);
 	dataProvider:CollapseAll();
 

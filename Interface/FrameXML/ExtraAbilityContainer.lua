@@ -7,6 +7,7 @@ ExtraAbilityContainerMixin = {};
 
 function ExtraAbilityContainerMixin:OnLoad()
 	self.frames = {};
+	self:Layout();
 end
 
 function ExtraAbilityContainerMixin:OnShow()

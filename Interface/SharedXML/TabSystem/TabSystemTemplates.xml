@@ -58,7 +58,8 @@
 						<Anchor point="TOPRIGHT" relativeKey="$parent.Right"/>
 					</Anchors>
 				</Texture>
-			</Layer>		</Layers>
+			</Layer>		
+		</Layers>
 		<ButtonText parentKey="Text">
 			<Size x="0" y="10"/>
 			<Anchors>

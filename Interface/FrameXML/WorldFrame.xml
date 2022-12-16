@@ -20,16 +20,6 @@
 	-->
 	<Script file="WorldFrame.lua"/>
 	<WorldFrame name="WorldFrame" movable="true" resizable="true" clipChildren="true" setAllPoints="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="FramerateLabel" hidden="true" inherits="SystemFont_Shadow_Med1" text="FRAMERATE_LABEL"/>
-				<FontString name="FramerateText" hidden="true" inherits="SystemFont_Shadow_Med1">
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="FramerateLabel" relativePoint="RIGHT"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Scripts>
 			<OnLoad function="WorldFrame_OnLoad"/>
 			<OnUpdate function="WorldFrame_OnUpdate"/>

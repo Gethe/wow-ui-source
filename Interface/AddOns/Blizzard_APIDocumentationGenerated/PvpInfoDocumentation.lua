@@ -599,6 +599,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetUIDisplaySeason",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiDisplaySeason", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWarModeRewardBonus",
 			Type = "Function",
 
@@ -980,7 +989,7 @@ local PvpInfo =
 			LiteralName = "PVP_ROLE_POPUP_HIDE",
 			Payload =
 			{
-				{ Name = "roleQueueInfo", Type = "table", InnerType = "PvpRoleQueueInfo", Nilable = false },
+				{ Name = "readyCheckInfo", Type = "PvpReadyCheckInfo", Nilable = false },
 			},
 		},
 		{
@@ -994,7 +1003,7 @@ local PvpInfo =
 			LiteralName = "PVP_ROLE_POPUP_SHOW",
 			Payload =
 			{
-				{ Name = "roleQueueInfo", Type = "table", InnerType = "PvpRoleQueueInfo", Nilable = false },
+				{ Name = "readyCheckInfo", Type = "PvpReadyCheckInfo", Nilable = false },
 			},
 		},
 		{
@@ -1222,6 +1231,9 @@ local PvpInfo =
 				{ Name = "shortDescription", Type = "string", Nilable = false },
 				{ Name = "longDescription", Type = "string", Nilable = false },
 				{ Name = "canQueue", Type = "bool", Nilable = false },
+				{ Name = "minLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "groupsAllowed", Type = "bool", Nilable = false },
 				{ Name = "timeLeftUntilNextChange", Type = "number", Nilable = true },
 				{ Name = "brawlType", Type = "BrawlType", Nilable = false },
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
@@ -1270,6 +1282,17 @@ local PvpInfo =
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "sex", Type = "number", Nilable = false },
 				{ Name = "isUpgraded", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PvpReadyCheckInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "roles", Type = "table", InnerType = "PvpRoleQueueInfo", Nilable = false },
+				{ Name = "numPlayersAccepted", Type = "number", Nilable = false },
+				{ Name = "numPlayersDeclined", Type = "number", Nilable = false },
+				{ Name = "totalNumPlayers", Type = "number", Nilable = false },
 			},
 		},
 		{

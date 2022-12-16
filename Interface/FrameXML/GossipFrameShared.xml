@@ -1,31 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="GossipFrameShared.lua"/>	
-	<Button name="GossipTitleButtonTemplate" virtual="true" mixin="GossipSharedTitleButtonMixin" hidden="false">
-		<Size x="300" y="16"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Icon" file="Interface\QuestFrame\UI-Quest-BulletPoint">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="1"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
-		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
-		<ButtonText>
-			<Size x="275" y="0"/>
-			<Anchors>
-				<Anchor point="LEFT" x="20" y="0"/>
-			</Anchors>
-		</ButtonText>
-		<NormalFont style="QuestFontLeft"/>
-	</Button>
 
 	<Button name="GossipTitleActiveQuestButtonTemplate" virtual="true" inherits="GossipTitleButtonTemplate" mixin="GossipActiveQuestButtonMixin">
 		<Scripts>
@@ -55,7 +30,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="GossipSpacerFrameTemplate" virtual="true">
+  <Frame name="GossipSpacerFrameTemplate" virtual="true">
 		<Size x="5" y="15"/>
 	</Frame>
 </Ui>

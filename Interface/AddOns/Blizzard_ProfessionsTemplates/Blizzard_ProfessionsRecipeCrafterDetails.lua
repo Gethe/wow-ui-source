@@ -7,11 +7,11 @@ local craftCompleteSoundKits = {
 };
 
 local nextQualitySoundKits = {
-	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY1,
-	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY2,
-	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY3,
-	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY4,
-	SOUNDKIT.UI_PROFESSION_CRAFTING_RESULT_QUALITY5,
+	SOUNDKIT.UI_PROFESSION_CRAFTING_EXPECTED_QUALITY1,
+	SOUNDKIT.UI_PROFESSION_CRAFTING_EXPECTED_QUALITY2,
+	SOUNDKIT.UI_PROFESSION_CRAFTING_EXPECTED_QUALITY3,
+	SOUNDKIT.UI_PROFESSION_CRAFTING_EXPECTED_QUALITY4,
+	SOUNDKIT.UI_PROFESSION_CRAFTING_EXPECTED_QUALITY5,
 };
 
 local DetailsFrameEvents =
@@ -70,10 +70,15 @@ function ProfessionsCrafterDetailsStatLineMixin:OnEnter()
 	if self.statLineType ~= nil and self.professionType ~= nil and self.baseValue ~= nil then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:ClearLines();
-		local statString = self.bonusValue and PROFESSIONS_CRAFTING_STAT_QUANTITY_TT_FMT:format(self.baseValue + self.bonusValue, self.baseValue, self.bonusValue) or PROFESSIONS_CRAFTING_STAT_NO_BONUS_TT_FMT:format(self.baseValue);
-		GameTooltip_AddColoredDoubleLine(GameTooltip, statLineLabels[self.professionType][self.statLineType], 
-													  statString,
-													  HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
+		local statString;
+		if self.bonusValue then
+			statString = PROFESSIONS_CRAFTING_STAT_QUANTITY_TT_FMT:format(self.baseValue + self.bonusValue, self.baseValue, self.bonusValue);
+		else
+			statString = PROFESSIONS_CRAFTING_STAT_NO_BONUS_TT_FMT:format(self.baseValue);
+		end
+
+		local label = statLineLabels[self.professionType][self.statLineType];
+		GameTooltip_AddColoredDoubleLine(GameTooltip, label, statString, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
 		GameTooltip_AddNormalLine(GameTooltip, statLineDescriptions[self.professionType][self.statLineType]);
 		GameTooltip:Show();
 	end
@@ -85,14 +90,21 @@ end
 
 function ProfessionsCrafterDetailsStatLineMixin:InitBonusStat(label, desc, value, pctValue, bonusPctValue)
 	self:SetLabel(label);
-	self:SetValue(self.displayAsPct and pctValue or value);
+
+	local displayValue = self.displayAsPct and pctValue or value;
+	self:SetValue(displayValue);
 
 	self:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, label);
+
+		local statString = self:GetStatFormat():format(math.ceil(displayValue));
+		GameTooltip_AddColoredDoubleLine(GameTooltip, label, statString, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR);
+
 		GameTooltip_AddNormalLine(GameTooltip, desc);
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_STAT_TT_FMT:format(label, value, bonusPctValue));
+		if value > 0 then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_STAT_TT_FMT:format(label, value, bonusPctValue));
+		end
 		GameTooltip:Show();
 	end);
 end
@@ -101,12 +113,15 @@ function ProfessionsCrafterDetailsStatLineMixin:SetLabel(label)
 	self.LeftLabel:SetText(label);
 end
 
+function ProfessionsCrafterDetailsStatLineMixin:GetStatFormat()
+	return self.displayAsPct and "%d%%" or "%d";
+end
+
 function ProfessionsCrafterDetailsStatLineMixin:SetValue(baseValue, bonusValue)
 	self.baseValue = baseValue;
 	self.bonusValue = bonusValue;
 
-	local fmt = self.displayAsPct and "%d%%" or "%d";
-	self.RightLabel:SetText(fmt:format(math.ceil(baseValue + (bonusValue or 0))));
+	self.RightLabel:SetText(self:GetStatFormat():format(math.ceil(baseValue + (bonusValue or 0))));
 end
 
 ProfessionsRecipeCrafterDetailsMixin = {};
@@ -137,31 +152,33 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 	self.QualityMeter.Center:SetScript("OnLeave", GameTooltip_Hide);
 
 	local function OnCapEntered(cap, isRight)
+		if not self:HasData() then
+			return;
+		end
+
 		local qualityIndex = self.QualityMeter.craftingQuality + (isRight and 1 or 0);
 
 		GameTooltip:SetOwner(cap, "ANCHOR_RIGHT");
 		-- Enchanting recipe
 		if self.recipeInfo.isEnchantingRecipe then
 			local recipeLevel = nil;
-			C_TradeSkillUI.SetTooltipRecipeResultItem(self.recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), recipeLevel, self.recipeInfo.qualityIDs[qualityIndex]);
+			GameTooltip:SetRecipeResultItem(self.recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), recipeLevel, self.recipeInfo.qualityIDs[qualityIndex]);
 		-- Generic tooltip (no specific item output)
 		elseif not self.recipeInfo.hasSingleItemOutput then
 			GameTooltip_AddHighlightLine(GameTooltip, PROFESSIONS_CRAFTING_GENERIC_QUALITY_DESCRIPTION);
 		-- Item ID per quality
 		elseif self.recipeInfo.qualityItemIDs ~= nil then
-			GameTooltip:SetItemByIDWithQuality(self.recipeInfo.qualityItemIDs[qualityIndex], self.recipeInfo.qualityIDs[qualityIndex]);
+			GameTooltip:SetItemByID(self.recipeInfo.qualityItemIDs[qualityIndex], self.recipeInfo.qualityIDs[qualityIndex]);
 		-- Item modified by quality
 		elseif self.recipeInfo.qualityIlvlBonuses ~= nil then
 			GameTooltip_SetTitle(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUSES:format(self.itemName));
-			local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeInfo.recipeID, self.transaction:CreateOptionalCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID());
-			if outputItemInfo.hyperlink then
+			for index, ilvlBonus in ipairs(self.recipeInfo.qualityIlvlBonuses) do
+				local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeInfo.recipeID, self.transaction:CreateOptionalCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), self.recipeInfo.qualityIDs[index]);
 				local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 				if item:IsItemDataCached() then
-					for index, ilvlBonus in ipairs(self.recipeInfo.qualityIlvlBonuses) do
-						local atlasSize = 25;
-						local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(index), atlasSize, atlasSize);
-						GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUS_INCR:format(atlasMarkup, item:GetCurrentItemLevel() + ilvlBonus, ilvlBonus));
-					end
+					local atlasSize = 25;
+					local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(index), atlasSize, atlasSize);
+					GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUS_INCR:format(atlasMarkup, item:GetCurrentItemLevel(), ilvlBonus));
 				else
 					local continuableContainer = ContinuableContainer:Create();
 					continuableContainer:AddContinuable(item);
@@ -237,7 +254,10 @@ end
 function ProfessionsRecipeCrafterDetailsMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, DetailsFrameEvents);
 
-	self:ClearData();
+	if not self:IsShown() then
+		-- Details may have been set shown again while the OnHide script was deferred
+		self:ClearData();
+	end
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:ClearData()
@@ -310,6 +330,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 	--	self.pendingStats = {operationInfo = operationInfo, supportsQualities = supportsQualities, isGatheringRecipe = isGatheringRecipe};
 	--else
 		self.QualityMeter:SetShown(supportsQualities);
+		self.Spacer:SetShown(not supportsQualities);
 		if supportsQualities then
 			self.QualityMeter:SetQuality(operationInfo.quality, self.recipeInfo.maxQuality);
 		end
@@ -324,6 +345,10 @@ end
 
 function ProfessionsRecipeCrafterDetailsMixin:Reset()
 	self.QualityMeter:Reset();
+end
+
+function ProfessionsRecipeCrafterDetailsMixin:GetProjectedQuality()
+	return self.craftingQuality;
 end
 
 ProfessionsQualityMeterMixin = {};
@@ -397,14 +422,27 @@ end
 function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 	local oldCraftingQuality = self.craftingQuality;
 	self.craftingQuality = math.floor(quality);
+
+	local tierIconOffsets =
+	{
+		[1] = 2,
+		[2] = 3,
+		[3] = 3,
+		[4] = 2,
+		[5] = 3,
+	};
 	
 	self.Left.AppearIcon:SetAtlas(("GemAppear_T%d_Flipbook"):format(self.craftingQuality));
 	self.Left.DissolveIcon:SetAtlas(("GemDissolve_T%d_Flipbook"):format(self.craftingQuality));
+	self.Left:ClearAllPoints();
+	self.Left:SetPoint("RIGHT", self.Center, "LEFT", -tierIconOffsets[self.craftingQuality], 0);
 	
-	local canPromoteTier = self.craftingQuality < maxQuality;
-	self.Right:SetShown(canPromoteTier);
-	if canPromoteTier then
+	self.atMaxTier = self.craftingQuality >= maxQuality;
+	self.Right:SetShown(not self.atMaxTier);
+	if not self.atMaxTier then
 		self.Right.AppearIcon:SetAtlas(("GemAppear_T%d_Flipbook"):format(self.craftingQuality + 1));
+		self.Right:ClearAllPoints();
+		self.Right:SetPoint("LEFT", self.Center, "RIGHT", tierIconOffsets[self.craftingQuality + 1], 0);
 	end
 	
 	--if not self.lockedForAnimations then
@@ -414,23 +452,40 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 		end
 	--end
 
-	local backgroundTier = math.min(math.max(1, self.craftingQuality), 4);
-	local backgroundAtlas = ("Professions-QualityBar-BarBGx2-Tier%d"):format(backgroundTier);
+	local backgroundAtlas;
+	if quality == maxQuality then
+		backgroundAtlas = ("Professions-QualityBar-BarBGx2-Tier%dCap"):format(maxQuality);
+	else
+		backgroundAtlas = ("Professions-QualityBar-BarBGx2-Tier%d"):format(self.craftingQuality);
+	end
+	
 	self.Center.Background:SetAtlas(backgroundAtlas);
 	self.Center.Background:SetSize((372/2), (52/2));
 
 	local qualityRemainder = math.fmod(quality, 1);
-	if qualityRemainder <= MathUtil.ApproxZero then
+	local swapAssetThreshold = 0.05;
+	if qualityRemainder <= swapAssetThreshold then
 		self.Marker.Marker:SetAtlas("Professions-QualityBar-marker-left", TextureKitConstants.UseAtlasSize);
-	elseif qualityRemainder >= MathUtil.ApproxOne then
+	elseif qualityRemainder >= 1 - swapAssetThreshold then
 		self.Marker.Marker:SetAtlas("Professions-QualityBar-marker-right", TextureKitConstants.UseAtlasSize);
 	else
 		self.Marker.Marker:SetAtlas("Professions-QualityBar-marker", TextureKitConstants.UseAtlasSize);
 	end
 
 	local markerX = qualityRemainder * (374.25/2);
-	self.Marker:SetPoint("CENTER", self.Center.Fill, "TOPLEFT", markerX, -13);
-	self.DividerGlow:SetPoint("CENTER", self.Marker);
+	if not self.atMaxTier then
+		self.Marker:ClearAllPoints();
+		self.Marker:SetPoint("CENTER", self.Center.Fill, "TOPLEFT", markerX, -13);
+		self.Marker:Show();
+		self.DividerGlow:Show();
+		self.DividerGlow:SetPoint("CENTER", self.Marker);
+	else
+		self.Marker:ClearAllPoints();
+		self.Marker:SetPoint("CENTER", self.Center.Fill, "TOPRIGHT", 0, 0);
+		self.Marker:Hide();
+		self.DividerGlow:ClearAllPoints();
+		self.DividerGlow:Hide();
+	end
 end
 
 function ProfessionsQualityMeterMixin:SetBarAtlas(quality)
@@ -449,7 +504,7 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 	if self.sequencer then
 		self.sequencer:Cancel();
 	end
-
+	
 	self.Left.AppearIcon.Anim:SetAnimationSpeedMultiplier(animSpeedMultiplier);
 	self.Left.AppearIcon.ScaleUp:SetAnimationSpeedMultiplier(animSpeedMultiplier);
 	self.Left.DissolveIcon.Anim:SetAnimationSpeedMultiplier(animSpeedMultiplier);
@@ -502,10 +557,10 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 	-- the more complicated weaving of element animations.
 	self.sequencer = CreateSequencer();
 	do
-		local fillToWidth = GetFillToPct(operationInfo) * (374.25/2);
-		local unitsPerSecond = 200;
-		local time = (fillToWidth / unitsPerSecond) / animSpeedMultiplier;
-		self.sequencer:AddInterpolated(0, 1, time, InterpolatorUtil.InterpolateEaseOut, function(value)
+		local fillToPct = self.atMaxTier and 1 or GetFillToPct(operationInfo);
+		local fillToWidth = fillToPct * (374.25/2);
+
+		local function InterpolateBar(value)
 			local maskWidth = fillToWidth * value;
 			self.Center.Fill.BarMask:SetWidth(maskWidth);
 			-- Mask with 0 extent causes the mask to be ignored. Show the bar
@@ -523,16 +578,19 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 			-- where the marker is.
 			local dividerX = math.max(0, maskWidth - x);
 			self.DividerGlow:SetPoint("CENTER", self.Marker, "CENTER", dividerX, 0);
-		end);
+		end
+
+		if self.atMaxTier then
+			local time = .25;
+			self.sequencer:AddInterpolated(1, 1, time, InterpolatorUtil.InterpolateEaseOut, InterpolateBar);
+		else
+			local unitsPerSecond = 200;
+			local time = (fillToWidth / unitsPerSecond) / animSpeedMultiplier;
+			self.sequencer:AddInterpolated(0, 1, time, InterpolatorUtil.InterpolateEaseOut, InterpolateBar);
+		end
 	end
 
 	local function PlayBeginAnimation()
-		local craftingQuality = resultData.craftingQuality;
-		local soundKit = craftingQuality and craftCompleteSoundKits[craftingQuality];
-		if soundKit then
-			PlaySound(soundKit);
-		end
-
 		--assert(self.onAnimationsFinished);
 		--local statsChanged = self.onAnimationsFinished();
 
@@ -557,21 +615,31 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 	end
 
 	local function PlayEndAnimation()
-		self.Flare.FlareTransitionIn:Restart();
-		self.DividerGlow.TransitionOut:Restart();
+		local craftingQuality = resultData.craftingQuality;
+		local soundKit = craftingQuality and craftCompleteSoundKits[craftingQuality];
+		if soundKit then
+			PlaySound(soundKit);
+		end
+
+		if not self.atMaxTier then
+			self.Flare.FlareTransitionIn:Restart();
+			self.DividerGlow.TransitionOut:Restart();
+		end
 
 		if resultData.isCrit then
-			local modifier = Clamp(tonumber(GetCVar("ShakeStrengthUI")) or 0, 0, 1);
-			local magnitude = 10 * modifier;
-			if magnitude > 0 then
-				ScriptAnimationUtil.ShakeFrameRandom(self, magnitude, .25, .05);
+			if not self.atMaxTier then
+				local modifier = Clamp(tonumber(GetCVar("ShakeStrengthUI")) or 0, 0, 1);
+				local magnitude = 10 * modifier;
+				if magnitude > 0 then
+					ScriptAnimationUtil.ShakeFrameRandom(self, magnitude, .25, .05);
+				end
+
+				local effectID = 146;
+				local source = self.Flare.Fx;
+				self.flareEffect = GlobalFXDialogModelScene:AddEffect(effectID, source, nil, OnFxFinished);
+
+				self.Flare.FxTransitionOut:Restart();
 			end
-
-			local effectID = 146;
-			local source = self.Flare.Fx;
-			self.flareEffect = GlobalFXDialogModelScene:AddEffect(effectID, source, nil, OnFxFinished);
-
-			self.Flare.FxTransitionOut:Restart();
 		end
 
 		if promotedTier then

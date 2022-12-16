@@ -3,15 +3,20 @@
 	<Script file="HealthBar.lua"/>
 	<Script file="GameTooltip.lua"/>
 
-	<GameTooltip name="GameTooltipTemplate" inherits="SharedTooltipTemplate" virtual="true">
+	<GameTooltip name="GameTooltipTemplate" mixin="GameTooltipDataMixin" inherits="SharedTooltipTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="supportsDataRefresh" value="true" type="boolean"/>
+		</KeyValues>
 		<Frames>
-			<StatusBar name="$parentStatusBar" hidden="true">
+			<StatusBar parentKey="StatusBar" name="$parentStatusBar" mixin="GameTooltipUnitHealthBarMixin" hidden="true">
 				<Size x="0" y="8"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="2" y="-1"/>
 					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-2" y="-1"/>
 				</Anchors>
 				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
 					<OnValueChanged>
 						HealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
@@ -25,11 +30,11 @@
 			<OnTooltipSetDefaultAnchor>
 				GameTooltip_SetDefaultAnchor(self, UIParent);
 			</OnTooltipSetDefaultAnchor>
-			<OnTooltipAddMoney function="GameTooltip_OnTooltipAddMoney"/>
 			<OnTooltipCleared>
 				GameTooltip_ClearMoney(self);
 				SharedTooltip_ClearInsertedFrames(self);
 			</OnTooltipCleared>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</GameTooltip>
 	
@@ -93,9 +98,6 @@
 					<OnSizeChanged>
 						EmbeddedItemTooltip_UpdateSize(self:GetParent());
 					</OnSizeChanged>
-					<OnTooltipSetItem>						
-						EmbeddedItemTooltip_OnTooltipSetItem(self:GetParent());
-					</OnTooltipSetItem>
 				</Scripts>
 			</GameTooltip>
 			<Frame name="$parentGarrisonFollowerTooltip" parentKey="FollowerTooltip" inherits="GarrisonFollowerTooltipContentsTemplate">
@@ -106,7 +108,7 @@
 		</Frames>
 	</Frame>	
 
-	<GameTooltip name="ShoppingTooltipTemplate" inherits="SharedTooltipTemplate" virtual="true">
+	<GameTooltip name="ShoppingTooltipTemplate" mixin="TooltipDataHandlerMixin" inherits="SharedTooltipTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameFontNormalSmall" type="string"/>
 			<KeyValue key="textRight1Font" value="GameFontNormal" type="string"/>
@@ -115,22 +117,22 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentTextLeft3" inherits="GameFontHighlightSmall" hidden="true">
+				<FontString name="$parentTextLeft3" inherits="GameFontHighlightSmall" justifyH="LEFT" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft2" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight3" inherits="GameFontHighlightSmall" hidden="true">
+				<FontString name="$parentTextRight3" inherits="GameFontHighlightSmall" justifyH="RIGHT" hidden="true">
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parentTextLeft3" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextLeft4" inherits="GameTooltipTextSmall" hidden="true">
+				<FontString name="$parentTextLeft4" inherits="GameTooltipTextSmall" justifyH="LEFT" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentTextRight4" inherits="GameFontHighlightSmall" hidden="true">
+				<FontString name="$parentTextRight4" inherits="GameFontHighlightSmall" justifyH="RIGHT" hidden="true">
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parentTextLeft4" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
@@ -144,7 +146,7 @@
 			<OnTooltipCleared>
 				GameTooltip_ClearMoney(self);
 				SharedTooltip_ClearInsertedFrames(self);
-				GameTooltip_UpdateStyle(self);
+				GameTooltip_ClearStyle(self);
 			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>
@@ -266,19 +268,10 @@
 		</Frames>
 	</Frame>
 	
-	<GameTooltip name="ShoppingTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate">
-		<Scripts>
-			<OnTooltipSetItem function="GameTooltip_OnTooltipSetShoppingItem" />
-		</Scripts>
-	</GameTooltip>
-	
-	<GameTooltip name="ShoppingTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate">
-		<Scripts>
-			<OnTooltipSetItem function="GameTooltip_OnTooltipSetShoppingItem" />
-		</Scripts>
-	</GameTooltip>
+	<GameTooltip name="ShoppingTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
+	<GameTooltip name="ShoppingTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 
-	<Frame name="GameTooltipDefaultContainer" frameStrata="TOOLTIP" inherits="EditModeHudTooltipSystemTemplate" parent="UIParent" hidden="true">
+	<Frame name="GameTooltipDefaultContainer" frameStrata="LOW" inherits="EditModeHudTooltipSystemTemplate" parent="UIParent" hidden="true">
 		<Size x="250" y="150"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="-9" y="85"/>
@@ -286,6 +279,9 @@
 	</Frame>
 	
 	<GameTooltip name="GameTooltip" inherits="GameTooltipTemplate" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="supportsItemComparison" value="true" type="boolean"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate" hidden="true">
 				<Size x="100" y="100"/>
@@ -303,17 +299,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				GameTooltip_OnLoad(self);
-				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
-				if (BattlePetTooltip) then
-					BattlePetTooltip:Hide();
-				end
-			</OnLoad>
-			<OnShow function="GameTooltip_CalculatePadding"/>
-			<OnTooltipSetUnit function="GameTooltip_OnTooltipSetUnit" />
-			<OnTooltipSetItem function="GameTooltip_OnTooltipSetItem" />
-			<OnTooltipSetSpell function="GameTooltip_OnTooltipSetSpell" />
+			<OnLoad method="OnLoad"/>
+			<OnShow function="GameTooltip_OnShow"/>
 			<OnUpdate function="GameTooltip_OnUpdate"/>
 		</Scripts>
 	</GameTooltip>

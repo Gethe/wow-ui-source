@@ -7,6 +7,29 @@ local PaperDollInfo =
 	Functions =
 	{
 		{
+			Name = "CanAutoEquipCursorItem",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canAutoEquip", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanCursorCanGoInSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slotIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canOccupySlot", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArmorEffectiveness",
 			Type = "Function",
 
@@ -217,6 +240,7 @@ local PaperDollInfo =
 			Payload =
 			{
 				{ Name = "skillLineID", Type = "number", Nilable = false },
+				{ Name = "isTool", Type = "bool", Nilable = false },
 			},
 		},
 		{

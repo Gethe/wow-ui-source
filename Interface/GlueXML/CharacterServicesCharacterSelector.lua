@@ -68,8 +68,7 @@ function CharacterServicesCharacterSelectorMixin:UpdateSingleCharacter(button)
 
 	button.paidService:Hide();
 
-	local characterID = GetCharIDFromIndex(button.index);
-	local isEnabled, showBonus = self:ProcessCharacterFromBlock(characterID, button, self:GetBlock());
+	local isEnabled, showBonus = self:ProcessCharacterFromBlock(button);
 	CharacterSelect_SetCharacterButtonEnabled(button, isEnabled);
 	self:SetupAttachedCharacterButtonFrames(button, isEnabled, showBonus);
 
@@ -104,56 +103,65 @@ function CharacterServicesCharacterSelectorMixin:SetupAttachedCharacterButtonFra
 	end
 end
 
-function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(characterID, characterButton, block)
-	local serviceInfo = block:GetServiceInfoByCharacterID(characterID);
-	if serviceInfo.isEligible then
-		characterButton:SetScript("OnClick", function(characterButton, button)
-			if serviceInfo.requiresLogin then
-				GlueDialog_Show("MUST_LOG_IN_FIRST");
-				CharSelectServicesFlowFrame:Hide();
-				return;
-			end
-			block:SaveResultInfo(characterButton, serviceInfo.playerguid);
+function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(characterButton)
+	local block = self:GetBlock();
+	local serviceInfo = block:GetServiceInfoByCharacterID(characterButton.characterID);
 
-			-- The user entered a normal boost flow and selected a trial boost character, at this point
-			-- put the flow into the auto-select state.
-			if serviceInfo.checkTrialBoost then
-				local trialBoostFlowGuid = serviceInfo.isTrialBoost and playerguid or nil;
-				CharacterUpgradeFlow:SetTrialBoostGuid(trialBoostFlowGuid);
-			end
-
-			CharacterSelectButton_OnClick(characterButton);
-			characterButton.selection:Show();
-			CharacterServicesMaster_Update();
-		end);
-
-		-- Determine if this should auto-advance and cache off relevant information
-		-- NOTE: CharacterUpgradeCharacterSelectBlock always uses auto-advance, there's no "next"
-		-- button, so once a character is selected it has to advance automatically.
-		if serviceInfo.checkAutoSelect and CharacterUpgradeFlow:GetAutoSelectGuid() == serviceInfo.playerguid then
-			block:SaveResultInfo(characterButton, serviceInfo.playerguid);
-			characterButton.selection:Show();
-		end
-	elseif serviceInfo.checkErrors then
-		characterButton:SetScript("OnEnter", function(self)
-			local serviceInfo = block:GetServiceInfoByCharacterID(characterID);
-			if #serviceInfo.errors > 0 then
-				local tooltip = GetAppropriateTooltip();
-				tooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -25, 70);
-				GameTooltip_SetTitle(tooltip, BLIZZARD_STORE_VAS_ERROR_LABEL);
-				for index, errorMsg in pairs(serviceInfo.errors) do
-					GameTooltip_AddErrorLine(tooltip, errorMsg);
-				end
-
-				tooltip:Show();
-			end
-		end);
-
-		characterButton:SetScript("OnLeave", function(self)
-			local tooltip = GetAppropriateTooltip();
-			tooltip:Hide();
-		end);
+	-- Determine if this should auto-advance and cache off relevant information
+	-- NOTE: CharacterUpgradeCharacterSelectBlock always uses auto-advance, there's no "next"
+	-- button, so once a character is selected it has to advance automatically.
+	if serviceInfo.isEligible and serviceInfo.checkAutoSelect and CharacterUpgradeFlow:GetAutoSelectGuid() == serviceInfo.playerguid then
+		block:SaveResultInfo(characterButton, serviceInfo.playerguid);
+		characterButton.selection:Show();
 	end
+
+	characterButton:SetScript("OnClick", function(characterButton, button)
+		local serviceInfo = block:GetServiceInfoByCharacterID(characterButton.characterID);
+		if not serviceInfo.isEligible then
+			return;
+		end
+
+		if serviceInfo.requiresLogin then
+			GlueDialog_Show("MUST_LOG_IN_FIRST");
+			CharSelectServicesFlowFrame:Hide();
+			return;
+		end
+		block:SaveResultInfo(characterButton, serviceInfo.playerguid);
+
+		-- The user entered a normal boost flow and selected a trial boost character, at this point
+		-- put the flow into the auto-select state.
+		if serviceInfo.checkTrialBoost then
+			local trialBoostFlowGuid = serviceInfo.isTrialBoost and playerguid or nil;
+			CharacterUpgradeFlow:SetTrialBoostGuid(trialBoostFlowGuid);
+		end
+
+		CharacterSelectButton_OnClick(characterButton);
+		characterButton.selection:Show();
+		CharacterServicesMaster_Update();
+	end);
+
+	characterButton:SetScript("OnEnter", function(characterButton)
+		local serviceInfo = block:GetServiceInfoByCharacterID(characterButton.characterID);
+		if not serviceInfo.checkErrors then
+			return;
+		end
+
+		if #serviceInfo.errors > 0 then
+			local tooltip = GetAppropriateTooltip();
+			tooltip:SetOwner(characterButton, "ANCHOR_BOTTOMLEFT", -25, 70);
+			GameTooltip_SetTitle(tooltip, BLIZZARD_STORE_VAS_ERROR_LABEL);
+			for index, errorMsg in pairs(serviceInfo.errors) do
+				GameTooltip_AddErrorLine(tooltip, errorMsg);
+			end
+
+			tooltip:Show();
+		end
+	end);
+
+	characterButton:SetScript("OnLeave", function(characterButton)
+		local tooltip = GetAppropriateTooltip();
+		tooltip:Hide();
+	end);
 
 	return serviceInfo.isEligible, serviceInfo.hasBonus;
 end
@@ -179,8 +187,8 @@ function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 		selectedCharacterIndex = self.initialSelectedCharacterIndex;
 	end
 
-	local button = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(elementData)
-		return elementData.index == selectedCharacterIndex;
+	local button = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		return frame.index == selectedCharacterIndex;
 	end);
 
 	if button then

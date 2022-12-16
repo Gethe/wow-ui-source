@@ -338,6 +338,24 @@
 			<Font font="Fonts\ARIALN.TTF" height="12"/>
 		</Member>
 	</FontFamily>
+
+	<FontFamily name="Number12FontOutline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="12" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_C.TTF" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\arheiuhk_bd.TTF" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="12" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
 	
 	<FontFamily name="Number13Font" virtual="true">
 		<Member alphabet="roman">
@@ -1305,6 +1323,34 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="OrderHallTalentRowFont" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\MORPHEUS.ttf" height="18">
+				<Color r="0.9" g="0.8" b="0.5"/>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="18">
+				<Color r="0.9" g="0.8" b="0.5"/>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="18">
+				<Color r="0.9" g="0.8" b="0.5"/>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="18">
+				<Color r="0.9" g="0.8" b="0.5"/>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="18">
+				<Color r="0.9" g="0.8" b="0.5"/>
+			</Font>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="DestinyFontHuge" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\MORPHEUS.ttf" height="32">
@@ -2034,6 +2080,24 @@
 		</Member>
 		<Member alphabet="russian">
 			<Font font="Fonts\MORPHEUS_CYR.TTF" height="32"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="Fancy36Font" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\MORPHEUS.TTF" height="36"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.TTF" height="36"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="36"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="36"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.TTF" height="36"/>
 		</Member>
 	</FontFamily>
 

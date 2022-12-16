@@ -688,9 +688,9 @@ EMOTE623_TOKEN = "WINCE"
 EMOTE624_TOKEN = "HUZZAH"
 EMOTE625_TOKEN = "IMPRESSED"
 EMOTE626_TOKEN = "MAGNIFICENT"
-
+EMOTE627_TOKEN = "QUACK"
 -- NOTE: The indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
-local MAXEMOTEINDEX = 626;
+local MAXEMOTEINDEX = 627;
 
 
 ICON_LIST = {
@@ -1162,7 +1162,7 @@ function SecureCmdItemParse(item)
 		slot = strmatch(item, "^(%d+)$");
 	end
 	if ( bag ) then
-		item = GetContainerItemLink(bag, slot);
+		item = C_Container.GetContainerItemLink(bag, slot);
 	elseif ( slot ) then
 		item = GetInventoryItemLink("player", slot);
 	end
@@ -1171,7 +1171,7 @@ end
 
 function SecureCmdUseItem(name, bag, slot, target)
 	if ( bag ) then
-		UseContainerItem(bag, slot, target);
+		C_Container.UseContainerItem(bag, slot, target);
 	elseif ( slot ) then
 		UseInventoryItem(slot, target);
 	else
@@ -1285,11 +1285,11 @@ SecureCmdList["EQUIP_TO_SLOT"] = function(msg)
 				EquipItemByName(parsedItem, slot);
 			else
 				-- user specified a bad slot number (slot that you can't equip an item to)
-				ChatFrame_DisplayUsageError(format(ERROR_SLASH_EQUIP_TO_SLOT, EQUIPPED_FIRST, EQUIPPED_LAST));
+				ChatFrame_DisplayUsageError(format(ERROR_SLASH_EQUIP_TO_SLOT, INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED));
 			end
 		elseif ( slot ) then
 			-- user specified a slot but not an item
-			ChatFrame_DisplayUsageError(format(ERROR_SLASH_EQUIP_TO_SLOT, EQUIPPED_FIRST, EQUIPPED_LAST));
+			ChatFrame_DisplayUsageError(format(ERROR_SLASH_EQUIP_TO_SLOT, INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED));
 		end
 	end
 end
@@ -1607,6 +1607,11 @@ SecureCmdList["CLICK"] = function(msg)
 		if ( not name ) then
 			name = action;
 		end
+		if ( not mouseButton ) then
+			mouseButton = "LeftButton";
+		end
+		down = StringToBoolean(down or "", false);
+		
 		local button = GetClickFrame(name);
 		if ( button and button:IsObjectType("Button") and not button:IsForbidden() ) then
 			button:Click(mouseButton, down);

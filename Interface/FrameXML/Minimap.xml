@@ -158,6 +158,12 @@
 						<Frames>
 							<Button name="ExpansionLandingPageMinimapButton" mixin="ExpansionLandingPageMinimapButtonMixin" hidden="true">
 								<Size x="53" y="53"/>
+								<KeyValues>
+									<KeyValue key="defaultWidth" value="53" type="number"/>
+									<KeyValue key="defaultHeight" value="53" type="number"/>
+									<KeyValue key="defaultGlowWidth" value="46" type="number"/>
+									<KeyValue key="defaultGlowHeight" value="46" type="number"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="-3" y="-150"/>
 								</Anchors>

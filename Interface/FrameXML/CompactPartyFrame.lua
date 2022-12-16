@@ -18,7 +18,8 @@ function CompactPartyFrame_UpdateVisibility()
 		return;
 	end
 	
-	local groupFramesShown = (IsInGroup() and not IsInRaid()) or EditModeManagerFrame:ArePartyFramesForcedShown();
+	local isInArena = IsActiveBattlefieldArena();
+	local groupFramesShown = (IsInGroup() and (isInArena or not IsInRaid())) or EditModeManagerFrame:ArePartyFramesForcedShown();
 	local showCompactPartyFrame = groupFramesShown and EditModeManagerFrame:UseRaidStylePartyFrames();
 	CompactPartyFrame:SetShown(showCompactPartyFrame);
 	PartyFrame:UpdatePaddingAndLayout();

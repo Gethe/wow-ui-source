@@ -6,6 +6,8 @@
 			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Raid" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_RAID_FRAMES_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="breakSnappedFramesOnSave" value="true" type="boolean"/>
+			<KeyValue key="alwaysUseTopLeftAnchor" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame name="$parentBorderFrame" parentKey="borderFrame">

@@ -65,12 +65,26 @@ local ProfessionSpecUI =
 			},
 		},
 		{
+			Name = "GetCurrencyInfoForSkillLine",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "SpecializationCurrencyInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDefaultSpecSkillLine",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "defaultSpecSkillLine", Type = "number", Nilable = false },
+				{ Name = "defaultSpecSkillLine", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -126,7 +140,7 @@ local ProfessionSpecUI =
 
 			Returns =
 			{
-				{ Name = "perkIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "perkInfos", Type = "table", InnerType = "SpecPerkInfo", Nilable = false },
 			},
 		},
 		{
@@ -297,7 +311,16 @@ local ProfessionSpecUI =
 			},
 		},
 		{
-			Name = "GetUnspentPointsForSkillLine",
+			Name = "ShouldShowPointsReminder",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "showReminder", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldShowPointsReminderForSkillLine",
 			Type = "Function",
 
 			Arguments =
@@ -307,7 +330,7 @@ local ProfessionSpecUI =
 
 			Returns =
 			{
-				{ Name = "unspentPoints", Type = "number", Nilable = false },
+				{ Name = "showReminder", Type = "bool", Nilable = false },
 			},
 		},
 		{

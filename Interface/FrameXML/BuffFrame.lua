@@ -242,6 +242,11 @@ end
 
 function AuraFrameMixin:UpdateGridLayout()
 	self.AuraContainer:UpdateGridLayout(self.auraFrames);
+	self:UpdateAuraContainerAnchor();
+end
+
+function AuraFrameMixin:UpdateAuraContainerAnchor()
+	-- Override this as necessary
 end
 
 function AuraFrameMixin:Update()
@@ -282,7 +287,7 @@ function BuffFrameMixin:OnEvent(event, ...)
 	end
 end
 
-function BuffFrameMixin:UpdateCollapseAndExpandButtonAnchor()
+function BuffFrameMixin:UpdateAuraContainerAnchor()
 	self.AuraContainer:ClearAllPoints();
 	self.CollapseAndExpandButton:ClearAllPoints();
 
@@ -349,11 +354,6 @@ function BuffFrameMixin:Update()
 	AuraFrameMixin.Update(self);
 
 	self:RefreshCollapseExpandButtonState();
-end
-
-function BuffFrameMixin:UpdateGridLayout()
-	self.AuraContainer:UpdateGridLayout(self.auraFrames);
-	self:UpdateCollapseAndExpandButtonAnchor();
 end
 
 function BuffFrameMixin:IsExpanded()
@@ -538,6 +538,24 @@ function DebuffFrameMixin:SetupDeadlyDebuffs()
 	end
 end
 
+function DebuffFrameMixin:UpdateAuraContainerAnchor()
+	self.AuraContainer:ClearAllPoints();
+
+	if self.AuraContainer.addIconsToRight then
+		if self.AuraContainer.addIconsToTop then
+			self.AuraContainer:SetPoint("BOTTOMLEFT", self.AuraContainer:GetParent(), "BOTTOMLEFT");
+		else
+			self.AuraContainer:SetPoint("TOPLEFT", self.AuraContainer:GetParent(), "TOPLEFT");
+		end
+	else
+		if self.AuraContainer.addIconsToTop then
+			self.AuraContainer:SetPoint("BOTTOMRIGHT", self.AuraContainer:GetParent(), "BOTTOMRIGHT");
+		else
+			self.AuraContainer:SetPoint("TOPRIGHT", self.AuraContainer:GetParent(), "TOPRIGHT");
+		end
+	end
+end
+
 AuraButtonMixin = { };
 
 function AuraButtonMixin:OnEnter()
@@ -588,7 +606,7 @@ function AuraButtonMixin:Update(buttonInfo, expanded)
 			local color;
 			if ( buttonInfo.debuffType ) then
 				color = DebuffTypeColor[buttonInfo.debuffType];
-				if ( ENABLE_COLORBLIND_MODE == "1" ) then
+				if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 					self.symbol:Show();
 					self.symbol:SetText(DebuffTypeSymbol[buttonInfo.debuffType] or "");
 				else

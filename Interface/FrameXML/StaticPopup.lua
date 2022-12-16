@@ -374,7 +374,7 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -398,7 +398,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -419,7 +419,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_ARENA_POINTS"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -440,7 +440,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR_AND_ARENA"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -2957,6 +2957,18 @@ StaticPopupDialogs["REPLACE_ENCHANT"] = {
 	showAlert = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["REPLACE_TRADESKILL_ENCHANT"] = {
+	text = REPLACE_ENCHANT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		ReplaceTradeskillEnchant();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["TRADE_REPLACE_ENCHANT"] = {
 	text = REPLACE_ENCHANT,
 	button1 = YES,
@@ -4277,7 +4289,7 @@ StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
 		local playerFactionGroup = UnitFactionGroup("player"); 
 		local factionCity = playerFactionGroup and factionMajorCities[playerFactionGroup] or nil; 
 		if(factionCity) then 
-			self.text:SetText(NORMAL_FONT_COLOR:WrapTextInColorCode(RETURNING_PLAYER_PROMPT:format(factionCity)));
+			self.text:SetText(RETURNING_PLAYER_PROMPT:format(factionCity));
 		end
 	end,
 	OnAccept = function(self)
@@ -4290,6 +4302,14 @@ StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
 	timeout = 0,
 	exclusive = 1,
 }
+
+StaticPopupDialogs["CRAFTING_HOUSE_DISABLED"] = {
+	text = ERR_CRAFTING_HOUSE_DISABLED,
+	button1 = OKAY,
+	timeout = 0,
+	showAlertGear = 1,
+	hideOnEscape = 1
+};
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];

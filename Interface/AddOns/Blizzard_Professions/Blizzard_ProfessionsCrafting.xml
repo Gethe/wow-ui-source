@@ -54,7 +54,7 @@
 			</Frame>
 
 			<Frame parentKey="SchematicForm" inherits="ProfessionsRecipeSchematicFormTemplate" useParentLevel="true">
-				<Size x="853" y="553"/>
+				<Size x="793" y="553"/>
 				<KeyValues>
 					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
 				</KeyValues>
@@ -73,14 +73,14 @@
 
 			<Frame parentKey="RankBar" frameStrata="HIGH" inherits="ProfessionsRankBarTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="330" y="-44"/>
+					<Anchor point="TOPLEFT" x="330" y="-40"/>
 				</Anchors>
 			</Frame>
 
 			<Button parentKey="CreateButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-20" y="4"/>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="7"/>
 				</Anchors>
 				<Scripts>
 				</Scripts>
@@ -218,7 +218,7 @@
 			<Button parentKey="LinkButton" mixin="DropDownToggleButtonMixin">
 				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.RankBar" x="0" y="0"/>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.RankBar" x="0" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -233,6 +233,11 @@
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Frame parentKey="LinkDropDown" inherits="UIDropDownMenuTemplate"/>
+
+			<Frame parentKey="OverlayCastBarAnchor">
+				<Size x="1" y="1"/>
+				<!-- Anchored dynamically -->
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
