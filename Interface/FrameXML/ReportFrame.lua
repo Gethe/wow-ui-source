@@ -167,6 +167,7 @@ function ReportFrameMixin:SendReport()
 
 	if(self.reportInfo.reportType == Enum.ReportType.PvP) then 
 		ReportPlayerIsPVPAFK(self.playerName);
+		self:UpdateThankYouMessage(true);
 		return;
 	end
 
