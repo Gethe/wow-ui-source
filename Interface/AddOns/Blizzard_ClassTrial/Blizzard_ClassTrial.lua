@@ -21,7 +21,7 @@ StaticPopupDialogs["CLASS_TRIAL_CHOOSE_BOOST_TYPE"] = {
 			self.button1:SetText(info1.flowTitle);
 			local info2 = C_CharacterServices.GetCharacterServiceDisplayData(self.data[2]);
 			self.button2:SetText(info2.flowTitle);
-			
+
 			local maxWidth = math.max(self.button1:GetTextWidth(), self.button2:GetTextWidth());
 			local buttonWidth = maxWidth + 60;
 			self.button1:SetWidth(buttonWidth);
@@ -236,7 +236,9 @@ function ExpansionTrialDialogMixin:OnEvent(event, ...)
 	end
 end
 
-function ExpansionTrialDialogMixin:SetupDialogType(expansionTrialUpgrade)
+function ExpansionTrialDialogMixin:SetupDialogType(expansionTrialUpgrade, suppressClassTrial)
+	self.suppressClassTrial = suppressClassTrial;
+
 	if expansionTrialUpgrade then
 		self.Title:SetText(EXPANSION_TRIAL_PURCHASE_THANKS_TITLE);
 		self.Description:SetText(EXPANSION_TRIAL_PURCHASE_THANKS_TEXT);
@@ -260,7 +262,9 @@ function ExpansionTrialDialogMixin:OnShow()
 end
 
 function ExpansionTrialDialogMixin:OnHide()
-	ClassTrialTimerDisplay:ShowTimer();
+	if not self.suppressClassTrial then
+		ClassTrialTimerDisplay:ShowTimer();
+	end
 end
 
 function ExpansionTrialDialogMixin:OnButtonClick()

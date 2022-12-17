@@ -372,6 +372,15 @@
 						<Anchor point="TOP" x="0" y="-4"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="IconBorder" atlas="services-ring" setAllPoints="true">
@@ -478,6 +487,15 @@
 								<Anchor point="TOP" x="0" y="-4"/>
 							</Anchors>
 						</Texture>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="0"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="IconBorder" atlas="services-ring" alpha="0.15" alphaMode="ADD">
@@ -1037,6 +1055,13 @@
 										</Texture>
 									</Layer>
 								</Layers>
+								<Frames>
+									<Frame parentKey="NewFeature" inherits="NewFeatureLabelNoAnimateTemplate" hidden="true">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="8" y="-1"/>
+										</Anchors>
+									</Frame>
+								</Frames>
 								<Scripts>
 									<OnLoad>
 										self:SetWidth(math.min(self:GetTextWidth() + 50, 190));

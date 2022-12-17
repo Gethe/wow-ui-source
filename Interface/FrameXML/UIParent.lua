@@ -488,6 +488,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SHOW_HYPERLINK_TOOLTIP");
 	self:RegisterEvent("HIDE_HYPERLINK_TOOLTIP");
 	self:RegisterEvent("WORLD_CURSOR_TOOLTIP_UPDATE");
+
+	ExpansionTrial_Initialize();
 end
 
 function UIParent_OnShow(self)
@@ -504,12 +506,12 @@ function UIParent_OnShow(self)
 		ActionStatus:UpdateParent();
 	end
 
-	if ( UIParentBottomManagedFrameContainer ) then 
-		UIParentBottomManagedFrameContainer:UpdateManagedFrames(); 
+	if ( UIParentBottomManagedFrameContainer ) then
+		UIParentBottomManagedFrameContainer:UpdateManagedFrames();
 	end
-	if ( UIParentRightManagedFrameContainer ) then 
-		UIParentRightManagedFrameContainer:UpdateManagedFrames(); 
-	end 
+	if ( UIParentRightManagedFrameContainer ) then
+		UIParentRightManagedFrameContainer:UpdateManagedFrames();
+	end
 end
 
 function UIParent_OnHide(self)
@@ -520,11 +522,11 @@ function UIParent_OnHide(self)
 	if ActionStatus then
 		ActionStatus:UpdateParent();
 	end
-	if ( UIParentBottomManagedFrameContainer ) then 
-		UIParentBottomManagedFrameContainer:ClearManagedFrames(); 
-	end 
-	if ( UIParentRightManagedFrameContainer ) then 
-		UIParentRightManagedFrameContainer:ClearManagedFrames(); 
+	if ( UIParentBottomManagedFrameContainer ) then
+		UIParentBottomManagedFrameContainer:ClearManagedFrames();
+	end
+	if ( UIParentRightManagedFrameContainer ) then
+		UIParentRightManagedFrameContainer:ClearManagedFrames();
 	end
 end
 
@@ -813,6 +815,41 @@ end
 
 function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
 	return ExpansionTrialThanksForPlayingDialog and ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
+end
+
+function ExpansionTrial_Initialize()
+	local isExpansionTrial = GetExpansionTrialInfo();
+	if isExpansionTrial then
+		local hitLevelLimit = function(playerLevel)
+			return playerLevel >= 63;
+		end
+
+		local displayPurchaseDialog = function()
+			UIParentLoadAddOn("Blizzard_ClassTrial");
+			local buyExpansionToContinue = false;
+			local suppressClassTrial = true;
+			ExpansionTrialThanksForPlayingDialog:SetupDialogType(buyExpansionToContinue, suppressClassTrial);
+			ExpansionTrialThanksForPlayingDialog:Show();
+		end
+
+		EventRegistry:RegisterFrameEventAndCallback("PLAYER_LEVEL_CHANGED", function(f, oldLevel, newLevel, hasRealLevelChanged)
+			if hasRealLevelChanged and hitLevelLimit(newLevel) then
+				displayPurchaseDialog();
+			end
+		end);
+
+		EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
+			if hitLevelLimit(UnitLevel("player")) then
+				displayPurchaseDialog();
+			end
+		end);
+
+		EventRegistry:RegisterFrameEventAndCallback("QUEST_TURNED_IN", function(f, questID)
+			if questID == 65794 then
+				displayPurchaseDialog();
+			end
+		end);
+	end
 end
 
 function DeathRecap_LoadUI()
@@ -2001,7 +2038,7 @@ function UIParent_OnEvent(self, event, ...)
 		ProfessionsFrame_LoadUI();
 		ShowUIPanel(ProfessionsFrame);
 	elseif ( event == "CRAFTING_HOUSE_DISABLED") then
-		StaticPopup_Show("CRAFTING_HOUSE_DISABLED");	
+		StaticPopup_Show("CRAFTING_HOUSE_DISABLED");
 	elseif ( event == "CRAFTINGORDERS_SHOW_CUSTOMER" ) then
 		if ( GameLimitedMode_IsActive() ) then
 			UIErrorsFrame:AddExternalErrorMessage(ERR_FEATURE_RESTRICTED_TRIAL);
@@ -2389,17 +2426,17 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
-	elseif (event == "RETURNING_PLAYER_PROMPT") then 
+	elseif (event == "RETURNING_PLAYER_PROMPT") then
 		StaticPopup_Show("RETURNING_PLAYER_PROMPT");
-	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then 
-		if(GetCVarBool("softTargettingInteractKeySound")) then 
-			local previousTarget, currentTarget = ...; 
-			if(not currentTarget) then 
+	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then
+		if(GetCVarBool("softTargettingInteractKeySound")) then
+			local previousTarget, currentTarget = ...;
+			if(not currentTarget) then
 				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_NOT_AVAILABLE);
 			elseif(previousTarget ~= currentTarget) then
 				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
 			end
-		end 
+		end
 	elseif event == "SHOW_HYPERLINK_TOOLTIP" then
 		local hyperlink = ...;
 		GameTooltip_ShowEventHyperlink(hyperlink);
@@ -2530,29 +2567,29 @@ end
 
 function UIParentManagedFrameContainerMixin:UpdateManagedFramesAlphaState()
 	local isActionBarOverriden = OverrideActionBar and OverrideActionBar:IsShown();
-	for frame in pairs(self.showingFrames) do 
-		if(frame.hideWhenActionBarIsOverriden) then 
+	for frame in pairs(self.showingFrames) do
+		if(frame.hideWhenActionBarIsOverriden) then
 			local setToAlpha = isActionBarOverriden and 0 or 1;
-			local currentFrameAlpha = frame:GetAlpha(); 
-			if(setToAlpha ~= currentFrameAlpha) then 
-				frame:SetAlpha(setToAlpha); 
+			local currentFrameAlpha = frame:GetAlpha();
+			if(setToAlpha ~= currentFrameAlpha) then
+				frame:SetAlpha(setToAlpha);
 			end
-		end 
+		end
 	end
 end
 
---Aubrie TODO determine if we want to actually apply a fade out for pet battles? 
+--Aubrie TODO determine if we want to actually apply a fade out for pet battles?
 function UIParentManagedFrameContainerMixin:AnimOutManagedFrames()
-	for frame in pairs(self.showingFrames) do 
-		frame:SetAlpha(0); 
+	for frame in pairs(self.showingFrames) do
+		frame:SetAlpha(0);
 	end
-end		
+end
 
 function UIParentManagedFrameContainerMixin:AnimInManagedFrames()
-	for frame in pairs(self.showingFrames) do 
-		frame:SetAlpha(1); 
+	for frame in pairs(self.showingFrames) do
+		frame:SetAlpha(1);
 	end
-end 
+end
 
 local function FramePositionDelegate_OnAttributeChanged(self, attribute)
 	if ( attribute == "panel-show" ) then
@@ -3095,7 +3132,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		rightAnchor:SetPoint(UIParentRightManagedFrameContainer, true);
 		UIParentRightManagedFrameContainer:Layout();
 		UIParentRightManagedFrameContainer.BottomManagedLayoutContainer:Layout();
-	end 
+	end
 	if(ObjectiveTrackerFrame and ObjectiveTrackerFrame:IsShown()) then
 		ObjectiveTracker_UpdateHeight();
 	end
