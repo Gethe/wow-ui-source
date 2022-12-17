@@ -1207,7 +1207,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
 	local isComplete = C_QuestLog.IsComplete(questID);
 	local tagID = QuestLogQuests_GetBestTagID(questID, info, isComplete);
-	local tagCoords = tagID and QUEST_TAG_TCOORDS[tagID];
+	local tagCoords = QuestUtils_GetQuestTagTextureCoords(tagID);
 	button.TagTexture:SetShown(tagCoords ~= nil);
 
 	if tagCoords then
@@ -1576,7 +1576,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 		end
 
 		local overrideQuestTag = tagInfo.tagID;
-		if ( QUEST_TAG_TCOORDS[tagInfo.tagID] ) then
+		if ( QuestUtils_GetQuestTagTextureCoords(tagInfo.tagID) ) then
 			if ( tagInfo.tagID == Enum.QuestTag.Account and factionGroup ) then
 				overrideQuestTag = "ALLIANCE";
 				if ( factionGroup == LE_QUEST_FACTION_HORDE ) then

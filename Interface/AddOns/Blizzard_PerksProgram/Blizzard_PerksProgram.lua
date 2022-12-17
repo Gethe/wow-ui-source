@@ -168,6 +168,7 @@ function PerksProgramMixin:OnShow()
 
 	StaticPopup_SetFullScreenFrame(self);
 	AlertFrame:SetFullScreenFrame(self, "HIGH");
+	ActionStatus:SetAlternateParentFrame(self);
 
 	EventRegistry:TriggerEvent("PerksProgramFrame.OnShow");
 
@@ -178,6 +179,7 @@ function PerksProgramMixin:OnHide()
 
 	StaticPopup_ClearFullScreenFrame();
 	AlertFrame:ClearFullScreenFrame();
+	ActionStatus:ClearAlternateParentFrame();
 
 	if self.modelFadeInTimer then
 		self.modelFadeInTimer:Cancel();
@@ -218,6 +220,9 @@ function PerksProgramMixin:OnKeyDown(key)
 		self:SelectNextProduct();
 	elseif key == "UP" then
 		self:SelectPreviousProduct();
+	elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
+		RunBinding("SCREENSHOT");
+		return;
 	end
 end
 

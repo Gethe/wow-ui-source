@@ -1466,15 +1466,16 @@ local CommentatorFrame =
 		{
 			Name = "TrackedSpellCategory",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Offensive", Type = "TrackedSpellCategory", EnumValue = 0 },
 				{ Name = "Defensive", Type = "TrackedSpellCategory", EnumValue = 1 },
 				{ Name = "Debuff", Type = "TrackedSpellCategory", EnumValue = 2 },
-				{ Name = "Count", Type = "TrackedSpellCategory", EnumValue = 3 },
+				{ Name = "RacialAbility", Type = "TrackedSpellCategory", EnumValue = 3 },
+				{ Name = "Count", Type = "TrackedSpellCategory", EnumValue = 4 },
 			},
 		},
 		{

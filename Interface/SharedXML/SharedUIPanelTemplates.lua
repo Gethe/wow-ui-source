@@ -754,11 +754,17 @@ NumericInputSpinnerMixin = {};
 -- "public"
 function NumericInputSpinnerMixin:SetValue(value)
 	local newValue = Clamp(value, self.min or -math.huge, self.max or math.huge);
-	if newValue ~= self.currentValue then
+	local clampIfExceededRange = self.clampIfInputExceedsRange and (value ~= newValue);
+	local changed = newValue ~= self.currentValue;
+	if clampIfExceededRange or changed then
 		self.currentValue = newValue;
 		self:SetNumber(newValue);
 
-		if self.onValueChangedCallback then
+		if self.highlightIfInputExceedsRange and clampIfExceededRange then
+			self:HighlightText();
+		end
+
+		if changed and self.onValueChangedCallback then
 			self.onValueChangedCallback(self, self:GetNumber());
 		end
 	end

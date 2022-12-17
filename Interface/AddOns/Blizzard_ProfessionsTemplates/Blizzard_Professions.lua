@@ -79,12 +79,17 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 	end
 end
 
-function Professions.FindItemsMatchingItemID(itemID)
+function Professions.FindItemsMatchingItemID(itemID, maxFindCount)
 	local items = {};
+	local max = maxFindCount or math.huge;
 	local function FindMatchingItemID(itemLocation)
 		if C_Item.GetItemID(itemLocation) == itemID then
 			local itemGUID = C_Item.GetItemGUID(itemLocation);
 			table.insert(items, Item:CreateFromItemGUID(itemGUID));
+
+			if #items >= max then
+				return true;
+			end
 		end
 	end
 
@@ -94,14 +99,15 @@ end
 
 function Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned)
 	local items = {};
+	local maxFindCount = 1;
 	if filterOwned then
 		for index, itemID in ipairs(itemIDs) do
-			local foundItems = Professions.FindItemsMatchingItemID(itemID);
+			local foundItems = Professions.FindItemsMatchingItemID(itemID, maxFindCount);
 			tAppendAll(items, foundItems);
 		end
 	else
 		for index, itemID in ipairs(itemIDs) do
-			local foundItems = Professions.FindItemsMatchingItemID(itemID);
+			local foundItems = Professions.FindItemsMatchingItemID(itemID, maxFindCount);
 			if #foundItems == 0 then
 				table.insert(items, Item:CreateFromItemID(itemID));
 			else

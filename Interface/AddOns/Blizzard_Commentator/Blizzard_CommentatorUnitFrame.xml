@@ -20,6 +20,47 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 	</Texture>
+
+	<Frame name="CooldownCircleTrackerTemplate" mixin="CooldownCircleTrackerMixin" virtual="true">
+		<Size x="42" y="42"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" scale=".9">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture atlas="CircleMaskScalable" useAtlasSize="true" scale=".7">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Overlay" atlas="Trinket-Frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" useParentLevel="true" hideCountdownNumbers="false" inherits="CommentatorRadialCooldownTemplate">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
 	
 	<Frame name="CommentatorUnitFrameTemplate" frameStrata="LOW" mixin="CommentatorUnitFrameMixin" virtual="true">
 		<Size x="300" y="100"/>
@@ -132,44 +173,15 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="CCRemover" frameLevel="12" >
-				<Size x="42" y="42"/>
+			<Frame parentKey="CCRemover" inherits="CooldownCircleTrackerTemplate" frameLevel="12">
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Circle" relativePoint="BOTTOMRIGHT" x="-30" y="21"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Icon" scale=".9">
-							<Size x="42" y="42"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<MaskTexture atlas="CircleMaskScalable" useAtlasSize="true" scale=".7">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-							<MaskedTextures>
-								<MaskedTexture childKey="Icon"/>
-							</MaskedTextures>
-						</MaskTexture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Overlay" atlas="Trinket-Frame" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Cooldown parentKey="Cooldown" useParentLevel="true" hideCountdownNumbers="false" inherits="CommentatorRadialCooldownTemplate">
-						<Size x="70" y="70"/>
-						<Anchors>
-							<Anchor point="CENTER"/>
-						</Anchors>
-					</Cooldown>
-				</Frames>
+			</Frame>
+			<Frame parentKey="RacialAbilityTracker" inherits="CooldownCircleTrackerTemplate" frameLevel="12">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Circle" relativePoint="BOTTOMLEFT" x="30" y="21"/>
+				</Anchors>
 			</Frame>
 			<Frame parentKey="Bars">
 				<Size x="239" y="80"/>

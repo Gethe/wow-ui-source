@@ -33,6 +33,10 @@ function MotionSicknessMixin:ApplySettings()
 	local focalCircleAtlasInfo = C_Texture.GetAtlasInfo(self.focalCircleAtlas);
 	self.FocalCircle:SetSize(focalCircleAtlasInfo.width * self.focalCircleArtScale, focalCircleAtlasInfo.height * self.focalCircleArtScale);
 	
+	self:ApplyDarkening();
+end
+
+function MotionSicknessMixin:ApplyDarkening()
 	local landscapeDarkeningAtlas = self.landscapeDarkeningUseOval and self.landscapeDarkeningOvalAtlas or self.landscapeDarkeningCircleAtlas;
 	self.LandscapeDarkeningCenter:SetAtlas(landscapeDarkeningAtlas, TextureKitConstants.UseAtlasSize);
 	self.LandscapeDarkeningCenter:SetPoint("CENTER", 0, self.landscapeDarkeningVerticalOffset);
@@ -41,6 +45,11 @@ function MotionSicknessMixin:ApplySettings()
 	self.LandscapeDarkeningCenter:SetSize(landscapeDarkeningAtlasInfo.width * self.landscapeDarkeningArtScale, landscapeDarkeningAtlasInfo.height * self.landscapeDarkeningArtScale);
 
 	self:UpdateScale();
+end
+
+function MotionSicknessMixin:SetLandscapeDarkeningUseOval(useOval)
+	self.landscapeDarkeningUseOval = useOval;
+	self:ApplySettings();
 end
 
 function MotionSicknessMixin:OnEvent(event, ...)

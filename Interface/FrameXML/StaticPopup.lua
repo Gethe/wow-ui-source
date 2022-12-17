@@ -5345,7 +5345,9 @@ function StaticPopup_OnKeyDown(self, key)
 				button = _G[frameName.."Button"..i];
 				if ( button ) then
 					if ( button:IsShown() ) then
-						StaticPopup_OnClick(self, i);
+						if ( button:IsEnabled() ) then
+							StaticPopup_OnClick(self, i);
+						end
 						return;
 					end
 					i = i + 1;

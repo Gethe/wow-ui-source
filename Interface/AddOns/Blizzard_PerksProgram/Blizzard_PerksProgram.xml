@@ -124,6 +124,33 @@
 												<Alpha startDelay=".5" smoothing="NONE" childKey="FrostLabelBG2" duration=".27" order="1" fromAlpha="0" toAlpha=".3"/>
 												<Alpha startDelay=".77" smoothing="NONE" childKey="FrostLabelBG2" duration=".5" order="1" fromAlpha=".3" toAlpha="0"/>
 											</AnimationGroup>
+											<AnimationGroup parentKey="UnfreezeAnim" looping="NONE" setToFinalAlpha="true">
+												<Alpha startDelay="0" smoothing="NONE" childKey="Tick" duration=".2" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha startDelay=".2" smoothing="NONE" childKey="Tick" duration=".33" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".53" smoothing="NONE" childKey="Tick" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="TickGlow" duration=".2" order="1" fromAlpha="0" toAlpha=".4"/>
+												<Alpha startDelay=".2" smoothing="NONE" childKey="TickGlow" duration=".33" order="1" fromAlpha=".4" toAlpha=".4"/>
+												<Alpha startDelay=".53" smoothing="NONE" childKey="TickGlow" duration=".2" order="1" fromAlpha=".4" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.ItemGlow" duration=".33" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha startDelay=".33" smoothing="NONE" childKey="FrozenButton.ItemGlow" duration=".13" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.ItemGlow" duration=".3" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.FrostFrame" duration=".46" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.Frost1" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.Frost1" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.Frost2" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.Frost2" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.Frost3" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.Frost3" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha startDelay="0" endDelay="0" smoothing="NONE" childKey="FrozenButton.UnfrozenSlot" duration=".37" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".37" smoothing="NONE" childKey="FrozenButton.UnfrozenSlot" duration=".27" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha startDelay="0" smoothing="NONE" childKey="FrostBG" duration=".46" order="1" fromAlpha=".35" toAlpha=".35"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="FrostBG" duration=".43" order="1" fromAlpha=".35" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrostLabelBG" duration="1" order="1" fromAlpha=".22" toAlpha="0"/>
+												<Alpha startDelay="0" smoothing="NONE" childKey="Label" duration="0" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha startDelay=".9" smoothing="NONE" childKey="Label" duration=".2" order="1" fromAlpha="0" toAlpha="1"/>
+												<Translation startDelay=".9" childKey="Label" offsetX="-10" offsetY="0" duration="0" order="1"/>
+												<Translation startDelay=".9" childKey="Label" offsetX="10" offsetY="0" duration="0.2" order="1"/>
+											</AnimationGroup>
 										</Animations>
 										<Frames>
 											<Button parentKey="FrozenButton" enableMouse="true" mixin="PerksProgramFrameDragDropMixin">
@@ -133,9 +160,9 @@
 												</Anchors>
 												<Animations>
 													<AnimationGroup parentKey="CancelledFreezeAnim" looping="NONE" setToFinalAlpha="true">
-														<Alpha smoothing="NONE" childKey="CancelledFrozenSlot" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
-														<Alpha smoothing="NONE" childKey="CancelledFrozenSlot" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
-														<Translation startDelay="0" childKey="CancelledFrozenSlot" offsetX="0" offsetY="-4" duration=".2" order="1"/>
+														<Alpha smoothing="NONE" childKey="OverlayFrozenSlot" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+														<Alpha smoothing="NONE" childKey="OverlayFrozenSlot" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
+														<Translation startDelay="0" childKey="OverlayFrozenSlot" offsetX="0" offsetY="-4" duration=".2" order="1"/>
 													</AnimationGroup>
 													<AnimationGroup parentKey="ConfirmedFreezeAnim" looping="NONE" setToFinalAlpha="true">
 														<Alpha startDelay="0" smoothing="NONE" childKey="ItemGlowFlash2" duration=".2" order="1" fromAlpha="1" toAlpha="1"/>
@@ -177,6 +204,10 @@
 												<Layers>
 													<Layer level="BACKGROUND" textureSubLevel="1">
 														<Texture parentKey="FrozenSlot" atlas="perks-slot-empty" useAtlasSize="true"/>
+													</Layer>
+													<Layer level="BACKGROUND" textureSubLevel="2">
+														<!-- Used for animations where frozen item animates away to reveal empty FrozenSlot beneath. -->
+														<Texture parentKey="UnfrozenSlot" atlas="perks-slot-empty" useAtlasSize="true" alpha="0"/>
 													</Layer>
 													<Layer level="OVERLAY" textureSubLevel="1">
 														<Texture parentKey="FrostFrame" alpha="0" alphaMode="BLEND" atlas="perks-frost-frame-1" useAtlasSize="true">
@@ -251,7 +282,8 @@
 														</Texture>
 													</Layer>
 													<Layer level="OVERLAY" textureSubLevel="2">
-														<Texture parentKey="CancelledFrozenSlot" atlas="perks-slot-empty" useAtlasSize="true" alpha="0"/>
+														<!-- Used for animations where pending frozen item animates away to reveal FrozenSlot beneath. -->
+														<Texture parentKey="OverlayFrozenSlot" atlas="perks-slot-empty" useAtlasSize="true" alpha="0"/>
 													</Layer>
 												</Layers>
 												<Scripts>
@@ -318,6 +350,18 @@
 														<Anchor point="LEFT" relativeKey="$parent.FrozenButton" relativePoint="RIGHT" x="10" y="0"/>
 													</Anchors>
 												</FontString>
+												<Texture parentKey="TickGlow" alpha="0" alphaMode="BLEND" atlas="perks-tick-glow" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="LEFT" relativeKey="$parent.FrozenButton" relativePoint="RIGHT" x="0" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="ARTWORK" textureSubLevel="2">
+												<Texture parentKey="Tick" alpha="0" alphaMode="BLEND" atlas="perks-tick" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="LEFT" relativeKey="$parent.FrozenButton" relativePoint="RIGHT" x="15" y="0"/>
+													</Anchors>
+												</Texture>
 											</Layer>
 										</Layers>
 										<Scripts>

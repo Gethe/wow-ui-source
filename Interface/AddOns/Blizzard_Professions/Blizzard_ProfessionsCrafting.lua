@@ -304,6 +304,7 @@ function ProfessionsCraftingPageMixin:SetupMultipleInputBox(count, countMax)
 	else
 		self.CreateMultipleInputBox:Disable();
 		self.CreateMultipleInputBox:SetValue(0);
+		self.CreateMultipleInputBox:ClearHighlightText();
 	end
 end
 
@@ -405,13 +406,14 @@ function ProfessionsCraftingPageMixin:SetCreateButtonTooltipText(tooltipText)
 	self.CreateAllButton.tooltipText = tooltipText;
 end
 
-local FailValidationReason = EnumUtil.MakeEnum("Cooldown", "InsufficientReagents", "Disabled", "Requirement", "LockedReagentSlot");
+local FailValidationReason = EnumUtil.MakeEnum("Cooldown", "InsufficientReagents", "Disabled", "Requirement", "LockedReagentSlot", "RecraftOptionalReagentLimit");
 
 local FailValidationTooltips = {
 	[FailValidationReason.Cooldown] = PROFESSIONS_RECIPE_COOLDOWN,
 	[FailValidationReason.InsufficientReagents] = PROFESSIONS_INSUFFICIENT_REAGENTS,
 	[FailValidationReason.Requirement] = PROFESSIONS_MISSING_REQUIREMENT,
 	[FailValidationReason.LockedReagentSlot] = PROFESSIONS_INSUFFICIENT_REAGENT_SLOTS,
+	[FailValidationReason.RecraftOptionalReagentLimit] = PROFESSIONS_UNIQUE_EQUIP_LIMITATION_DISC,
 };
 
 function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInfo, transaction, isRuneforging, countMax)
@@ -451,6 +453,20 @@ function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInf
 		local hasAllocation = transaction:HasAllocations(reagentSlotSchematic.slotIndex);
 		if hasAllocation and slot.Button.locked then
 			return FailValidationReason.LockedReagentSlot;
+		end
+	end
+
+	-- Separate loop from above so that ordering of errors is consistent
+	local recraftingEquipped = transaction:HasRecraftAllocation() and C_TradeSkillUI.IsRecraftItemEquipped(transaction:GetRecraftAllocation());
+	if recraftingEquipped then
+		for _, slot in ipairs(optionalReagentSlots or {}) do
+			local reagentSlotSchematic = slot:GetReagentSlotSchematic();
+			local allocation = transaction:GetAllocations(reagentSlotSchematic.slotIndex);
+			local allocs = allocation and allocation:SelectFirst();
+			local reagent = allocs and allocs:GetReagent();
+			if reagent and not C_TradeSkillUI.RecraftLimitCategoryValid(reagent.itemID) then
+				return FailValidationReason.RecraftOptionalReagentLimit;
+			end
 		end
 	end
 

@@ -23,9 +23,8 @@ local ACTIVITIES_MONTH_NAMES = {
 MonthlyActivities_HelpPlate = {
 	FramePos = { x = 2, y = 40 },
 	FrameSize = { width = 800, height = 480 },
-	[1] = { ButtonPos = { x = 6,	y = -110 }, HighLightBox = { x = 00,  y = -94, width = 630, height = 80 },		ToolTipDir = "RIGHT",   ToolTipText = MONTHLY_ACTIVITIES_HELP_1 },
+	[1] = { ButtonPos = { x = 6,	y = -110 }, HighLightBox = { x = 00,  y = -94, width = 790, height = 80 },		ToolTipDir = "RIGHT",   ToolTipText = MONTHLY_ACTIVITIES_HELP_1 },
 	[2] = { ButtonPos = { x = 230,  y = -176 }, HighLightBox = { x = 230, y = -176, width = 560, height = 295 },	ToolTipDir = "RIGHT",   ToolTipText = MONTHLY_ACTIVITIES_HELP_2 },
-	[3] = { ButtonPos = { x = 720,  y = -107 }, HighLightBox = { x = 650, y = -94, width = 140, height = 80 },		ToolTipDir = "RIGHT",   ToolTipText = MONTHLY_ACTIVITIES_HELP_3 },
 }
 
 function MonthlyActivities_ToggleTutorial()
@@ -56,7 +55,7 @@ function MonthlyActivitiesButtonMixin:Init(elementData)
 	self.Name:SetText(elementData.name);
 	self.Name:SetFontObject(elementData.completed and "GameFontBlackMedium" or "GameFontHighlightMedium");
 	self.Ribbon:SetShown(not restricted and (elementData.completed or elementData.rewardAvailable));
-	self.Points:SetText(elementData.points);
+	self.Points:SetText(FormatPercentage(elementData.points / elementData.thresholdMax));
 	self.Points:SetShown(not restricted and not elementData.completed and elementData.rewardAvailable and not elementData.pendingComplete);
 	self.Checkmark:SetShown(not restricted and elementData.completed and not elementData.pendingComplete);
 	self.CheckmarkFlipbook:SetShown(elementData.pendingComplete);
@@ -187,7 +186,9 @@ function MonthlyActivitiesRewardCurrencyMixin:SetCurrentPoints(points)
 	self.aboveThreshold = aboveThreshold;
 
 	if not initialSet and aboveThreshold then
-		PlaySound(SOUNDKIT.TRADING_POST_UI_REWARD_TIER_COMPLETE);
+		if self:IsVisible() then
+			PlaySound(SOUNDKIT.TRADING_POST_UI_REWARD_TIER_COMPLETE);
+		end
 		self.EarnedAnim:Play();
 	end
 
@@ -220,8 +221,6 @@ function MonthlyActivitiesRewardCurrencyMixin:OnEnter()
 	self.itemDataLoadedCancelFunc = nil;
 
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, MONTHLY_ACTIVITIES_THRESHOLD_TOOLTIP:format(BreakUpLargeNumbers(self.thresholdInfo.requiredContributionAmount)), NORMAL_FONT_COLOR, true);
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
 	local rewardFormat = self.thresholdInfo.itemReward and MONTHLY_ACTIVITIES_THRESHOLD_TOOLTIP_REWARDS or MONTHLY_ACTIVITIES_THRESHOLD_TOOLTIP_REWARD;
 	GameTooltip:AddLine(rewardFormat:format(self.thresholdInfo.currencyAwardAmount, CreateSimpleTextureMarkup([[Interface\ICONS\TradingPostCurrency]], 14, 14)), nil, nil, nil, true);
@@ -241,7 +240,6 @@ function MonthlyActivitiesRewardCurrencyMixin:OnEnter()
 	end
 
 	if self.thresholdInfo.pendingReward then
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		GameTooltip:AddLine(MONTHLY_ACTIVITIES_THRESHOLD_TOOLTIP_PENDING, nil, nil, nil, true);
 	end
 
@@ -499,7 +497,7 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 	-- Build UI - rewards text or threshold bar at the top, activities list below
 	self:UpdateTime(activitiesInfo.displayMonthName);
 	self:SetThresholds(activitiesInfo.thresholds, earnedThresholdAmount, thresholdMax);
-	self:SetActivities(activitiesInfo.activities, allRewardsEarned, retainScrollPosition);
+	self:SetActivities(activitiesInfo.activities, allRewardsEarned, thresholdMax, retainScrollPosition);
 
 	local currentMonth = tonumber(GetCVar("perksActivitiesCurrentMonth"));
 	if currentMonth ~= activitiesInfo.activePerksMonth then
@@ -527,7 +525,10 @@ function MonthlyActivitiesFrameMixin:TriggerNextPending()
 		frame.CoinAnim:Play();
 		frame.CheckmarkAnim:Play();
 		self:SetAnimating(true);
-		PlaySound(SOUNDKIT.TRADING_POST_UI_COMPLETED_ACTIVITY);
+
+		if self:IsVisible() then
+			PlaySound(SOUNDKIT.TRADING_POST_UI_COMPLETED_ACTIVITY);
+		end
 	else
 		self.pendingComplete = { };
 		self.ScrollBox:GetDataProvider():ForEach(function(elementData)
@@ -538,8 +539,7 @@ function MonthlyActivitiesFrameMixin:TriggerNextPending()
 		if self.pendingTargetValue then
 			self.targetValue = self.pendingTargetValue;
 			self.pendingTargetValue = nil;
-			local _, progressionSoundHandle = PlaySound(SOUNDKIT.TRADING_POST_UI_ACTIVITY_PROGRESSION);
-			self.progressionSoundHandle = progressionSoundHandle;
+			self.progressionSFXQueued = true;
 		end
 	end
 end
@@ -548,7 +548,7 @@ function MonthlyActivities_PendingAnimComplete(anim)
 	EncounterJournal.MonthlyActivitiesFrame:TriggerNextPending();
 end
 
-function MonthlyActivitiesFrameMixin:SetActivities(activities, allRewardsEarned, retainScrollPosition)
+function MonthlyActivitiesFrameMixin:SetActivities(activities, allRewardsEarned, thresholdMax, retainScrollPosition)
 	local selected = MonthlyActivityFilterSelection:GetFirstSelectedElementData();
 	local selectedFilter = selected and selected.filter;
 
@@ -574,6 +574,7 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, allRewardsEarned,
 				tracked = activity.tracked,
 				rewardAvailable = not allRewardsEarned,
 				pendingComplete = self.pendingComplete[activity.ID],
+				thresholdMax = thresholdMax,
 			});
 		end
 	end
@@ -596,6 +597,15 @@ end
 function MonthlyActivitiesFrameMixin:OnUpdate()
 	if not self.targetValue then
 		return;
+	end
+
+	if self.progressionSFXQueued then
+		self.progressionSFXQueued = false;
+
+		if not self.progressionSoundHandle then
+			local _, progressionSoundHandle = PlaySound(SOUNDKIT.TRADING_POST_UI_ACTIVITY_PROGRESSION);
+			self.progressionSoundHandle = progressionSoundHandle;
+		end
 	end
 
 	local curValue = self.ThresholdBar:GetValue();
@@ -628,7 +638,7 @@ function MonthlyActivitiesFrameMixin:SetCurrentPoints(curValue, barValue)
 		thresholdFrame:SetCurrentPoints(barValue);
 	end
 
-	self.ThresholdBar.Text:SetText(MONTHLY_ACTIVITIES_PROGRESS_TEXT:format(barValue, self.thresholdMax));
+	self.ThresholdBar.Text:SetText(FormatPercentage(barValue / self.thresholdMax));
 	self.ThresholdBar.BarEnd:SetShown(barValue > 0);
 
 	local allRewardsEarned = barValue >= self.thresholdMax;

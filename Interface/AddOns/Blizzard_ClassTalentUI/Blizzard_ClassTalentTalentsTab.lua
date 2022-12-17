@@ -518,16 +518,25 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 
 	local function LoadConfiguration(configID, isUserInput)
 		if isUserInput then
-			local function FinishLoadConfiguration()
-				local autoApply = true;
-				self:LoadConfigInternal(configID, autoApply);
-			end
-
 			local function CancelLoadConfiguration()
 				if self.lastSelectedConfigID then
 					self.LoadoutDropDown:SetSelectionID(self.lastSelectedConfigID);
 				else
 					self.LoadoutDropDown:ClearSelection();
+				end
+			end
+
+			local function FinishLoadConfiguration()
+				local autoApply = true;
+				local loadSuccess, changeError = self:LoadConfigInternal(configID, autoApply);
+				if not loadSuccess then
+					self:RollbackConfig();
+					CancelLoadConfiguration();
+					self:UpdateConfigButtonsState();
+
+					local systemPrefix = "CLASS_TALENTS";
+					local notificationType = "LOAD_ERROR";
+					StaticPopup_ShowNotification(systemPrefix, notificationType, RED_FONT_COLOR:WrapTextInColorCode(changeError));
 				end
 			end
 
@@ -888,6 +897,7 @@ end
 
 function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply, skipAnimation)
 	local loadResult = nil;
+	local changeError = nil;
 	local newlyLearnedNodes = nil;
 
 	self.stagedPurchaseNodesForNextCommit = nil;
@@ -905,7 +915,7 @@ function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply, skip
 			self.unflagStarterBuildAfterNextCommit = true;
 		end
 
-		loadResult, newlyLearnedNodes = C_ClassTalents.LoadConfig(configID, autoApply);
+		loadResult, changeError, newlyLearnedNodes = C_ClassTalents.LoadConfig(configID, autoApply);
 	end
 
 	local isConfigReadyToApply = (loadResult == Enum.LoadConfigResult.Ready);
@@ -925,6 +935,7 @@ function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply, skip
 	end
 
 	self:UpdateConfigButtonsState();
+	return loadResult ~= Enum.LoadConfigResult.Error, changeError;
 end
 
 function ClassTalentTalentsTabMixin:GetConfigCommitErrorString()

@@ -62,7 +62,8 @@ function ProfessionsMixin:OnEvent(event, ...)
 		local professionInfo = Professions.GetProfessionInfo();
 		professionInfo.openRecipeID = openRecipeResponse.recipeID;
 		professionInfo.openSpecTab = openRecipeResponse.openSpecTab;
-		self:Refresh();
+		local useLastSkillLine = false;
+		self:SetProfessionInfo(professionInfo, useLastSkillLine);
 		return professionInfo;
 	end
 
@@ -140,12 +141,15 @@ function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
 	local professionChanged = (not self.professionInfo) or (self.professionInfo.profession ~= professionInfo.profession);
 	if not self.professionInfo or (self.professionInfo.professionID ~= professionInfo.professionID) then
 		local useNewSkillLine = professionChanged or not useLastSkillLine;
+		if not useNewSkillLine then
+			return;
+		end
 		C_TradeSkillUI.SetProfessionChildSkillLineID(useNewSkillLine and professionInfo.professionID or self.professionInfo.professionID);
 		professionInfo = Professions.GetProfessionInfo();
+		self.professionInfo = professionInfo;
 		self:Refresh();
+		EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
 	end
-
-	EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
 end
 
 function ProfessionsMixin:SetTitle(skillLineName)
@@ -174,8 +178,6 @@ function ProfessionsMixin:Refresh()
 	if professionInfo.professionID == 0 then
 		return;
 	end
-
-	self.professionInfo = professionInfo;
 
 	self:SetTitle(self.professionInfo.professionName or self.professionInfo.parentProfessionName);
 	self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(self.professionInfo.professionID));
@@ -355,7 +357,6 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 		local professionInfo = Professions.GetProfessionInfo();
 		local useLastSkillLine = false;
 		self:SetProfessionInfo(professionInfo, useLastSkillLine);
-		self:Refresh();
 	end
 
 	TabSystemOwnerMixin.SetTab(self, tabID);
@@ -374,8 +375,6 @@ function ProfessionsMixin:OnShow()
 	MicroButtonPulseStop(SpellbookMicroButton);
 	MainMenuMicroButton_HideAlert(SpellbookMicroButton);
 	SpellbookMicroButton.suggestedTabButton = nil;
-
-	self:Refresh();
 end
 
 function ProfessionsMixin:OnHide()

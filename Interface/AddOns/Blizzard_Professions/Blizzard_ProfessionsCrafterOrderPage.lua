@@ -406,6 +406,7 @@ function ProfessionsCraftingOrderPageMixin:OnLoad()
 	self:SetCraftingOrderType(Enum.CraftingOrderType.Public);
 
 	FrameUtil.RegisterFrameForEvents(self, ProfessionsCraftingOrderPageAlwaysListenEvents);
+	EventRegistry:RegisterCallback("ProfessionsFrame.Hide", function() self:ClearCachedRequests(); end, self);
 end
 
 function ProfessionsCraftingOrderPageMixin:StartDefaultSearch()

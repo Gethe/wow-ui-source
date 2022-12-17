@@ -150,6 +150,14 @@ local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceIDs, item
 				actor:TryOn(itemModifiedAppearanceID);
 			end
 		elseif itemModifiedAppearanceID then
+			local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
+			local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+			if isWeapon then
+				local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
+				local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
+				actor:UndressSlot(mainHandSlotID);
+				actor:UndressSlot(offHandSlotID);
+			end
 			actor:TryOn(itemModifiedAppearanceID);
 		end
 		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);

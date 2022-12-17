@@ -16,7 +16,8 @@ StaticPopupDialogs["PERKS_PROGRAM_CONFIRM_PURCHASE"] = {
 	exclusive = 1,
 	hasItemFrame = 1,
 	fullScreenCover = true,
-	hideOnEscape = 1
+	enterClicksFirstButton = true,
+	hideOnEscape = true,
 };
 
 local function PerksProgramRefundOnAccept(popup)
@@ -36,7 +37,8 @@ StaticPopupDialogs["PERKS_PROGRAM_CONFIRM_REFUND"] = {
 	exclusive = 1,
 	hasItemFrame = 1,
 	fullScreenCover = true,
-	hideOnEscape = 1
+	enterClicksFirstButton = true,
+	hideOnEscape = true,
 };
 
 StaticPopupDialogs["PERKS_PROGRAM_SERVER_ERROR"] = {
@@ -45,7 +47,8 @@ StaticPopupDialogs["PERKS_PROGRAM_SERVER_ERROR"] = {
 	timeout = 0,
 	exclusive = 1,
 	fullScreenCover = true,
-	hideOnEscape = 1
+	enterClicksFirstButton = true,
+	hideOnEscape = true,
 };
 
 StaticPopupDialogs["PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM"] = {
@@ -59,7 +62,8 @@ StaticPopupDialogs["PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM"] = {
 	hasItemFrame = 1,
 	fullScreenCover = true,
 	acceptDelay = 5,
-	hideOnEscape = 1
+	enterClicksFirstButton = true,
+	hideOnEscape = true,
 };
 
 ----------------------------------------------------------------------------------
@@ -374,10 +378,17 @@ function PerksProgramFrameFrozenItemMixin:SetupFrozenVendorItem(frozenVendorItem
 
 		self.Label:SetText(frozenText);
 	else
+		-- Check to see if we are going from a frozen item to no frozen item.  If so play the 'unfreeze' fx for the transition.
+		if self.FrozenButton.itemID then
+			self.FrozenButton.UnfrozenSlot:SetTexture(self.FrozenButton.FrozenSlot:GetTexture());
+			self.UnfreezeAnim:Restart();
+		else
+			self.FrozenButton:ShowItemFrozen(false);
+			self:ShowFreezeBG(false);
+		end
+
 		self.FrozenButton.FrozenSlot:SetAtlas("perks-slot-empty", TextureKitConstants.UseAtlasSize);
 		self.FrozenButton.HighlightTexture:SetAtlas("perks-slot-empty", TextureKitConstants.UseAtlasSize);
-		self.FrozenButton:ShowItemFrozen(false);
-		self:ShowFreezeBG(false);
 
 		self.Label:SetText(PERKS_PROGRAM_FREEZE_ITEM_INSTRUCTIONS);
 	end
@@ -458,7 +469,7 @@ end
 
 function PerksProgramFrameDragDropMixin:TriggerCancelFrozenItem()
 	self:ShowItemGlow(false);
-	self.CancelledFrozenSlot:SetTexture(self.FrozenSlot:GetTexture());
+	self.OverlayFrozenSlot:SetTexture(self.FrozenSlot:GetTexture());
 	self.CancelledFreezeAnim:Restart();
 end
 

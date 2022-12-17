@@ -1332,8 +1332,9 @@ function MonthlyActivityAlertFrame_SetUp(frame, perksActivityID)
 	local info = C_PerksActivities.GetPerksActivityInfo(perksActivityID);
 
 	frame.Name:SetText(info.activityName);
-
 	frame.id = perksActivityID;
+
+	PlaySound(SOUNDKIT.TRADING_POST_UI_COMPLETED_ACTIVITY_TOAST);
 end
 
 function MonthlyActivityAlertFrame_OnClick (self, button, down)

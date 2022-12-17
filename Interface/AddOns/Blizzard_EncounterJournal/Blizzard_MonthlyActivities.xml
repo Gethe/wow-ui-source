@@ -110,7 +110,7 @@
 			<ItemButton parentKey="RewardItem" mixin="MonthlyActivitiesRewardButtonMixin" hidden="true">
 				<Size x="64" y="64"/>
 				<Anchors>
-					<Anchor point="CENTER" x="-16" y="16"/>
+					<Anchor point="CENTER" x="12" y="16"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
@@ -266,7 +266,7 @@
 				<BarTexture parentKey="BarFill" atlas="activities-bar-fill"/>
 				<Size x="663" y="33"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="50" y="-74"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="46" y="-74"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
