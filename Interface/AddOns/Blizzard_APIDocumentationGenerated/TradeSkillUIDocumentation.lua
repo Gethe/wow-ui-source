@@ -817,6 +817,20 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "IsRecraftItemEquipped",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recraftItemGUID", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEquipped", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRuneforging",
 			Type = "Function",
 
@@ -846,6 +860,20 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "opened", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RecraftLimitCategoryValid",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "reagentItemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "recraftValid", Type = "bool", Nilable = false },
 			},
 		},
 		{

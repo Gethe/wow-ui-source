@@ -527,7 +527,7 @@
 			</Button>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="600">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+					<Anchor point="TOPRIGHT" x="-8" y="-15"/>
 				</Anchors>
 			</Button>
 		</Frames>

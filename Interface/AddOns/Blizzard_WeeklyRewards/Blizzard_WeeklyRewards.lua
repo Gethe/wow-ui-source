@@ -26,10 +26,6 @@ local WEEKLY_REWARDS_EVENTS = {
 	"CHALLENGE_MODE_MAPS_UPDATE",
 };
 
-local weeklyRewardOverlayTextureKitRegions = { 
-	BackgroundTile = "UI-Frame-%s-BackgroundTile"
-}
-
 local weeklyRewardsFrameTextureKitRegions = {
 	BackgroundTile = "UI-Frame-%s-BackgroundTile",
 	Divider1 = "%s-weeklyrewards-divider",
@@ -68,8 +64,6 @@ local rewardUiModelSceneEffectByTextureKit = {
 WeeklyRewardsMixin = { };
 
 function WeeklyRewardsMixin:OnLoad()
-	UIPanelCloseButton_SetBorderAtlas(self.CloseButton, "UI-Frame-Oribos-ExitButtonBorder", -1, 1);
-
 	self:SetUpActivity(self.RaidFrame, RAIDS, "weeklyrewards-background-raid", Enum.WeeklyRewardChestThresholdType.Raid);
 	self:SetUpActivity(self.MythicFrame, MYTHIC_DUNGEONS, "weeklyrewards-background-mythic", Enum.WeeklyRewardChestThresholdType.MythicPlus);
 	self:SetUpActivity(self.PVPFrame, PVP, "weeklyrewards-background-pvp", Enum.WeeklyRewardChestThresholdType.RankedPvP);
@@ -381,9 +375,22 @@ end
 
 WeeklyRewardOverlayMixin = {};
 
+local weeklyRewardOverlayEffects = {
+	["Oribos"] = { effectID = 102, offsetX = 3, offsetY = 0 },
+	["Dragonflight"] =  { effectID = 148, offsetX = 3, offsetY = 0 },
+}
+
+local weeklyRewardOverlayTextureKitRegions = { 
+	BackgroundTile = "UI-Frame-%s-BackgroundTile"
+}
+
 function WeeklyRewardOverlayMixin:OnShow()
-	local effect = { effectID = 102, offsetX = 3, offsetY = 0 };
-	self.activeEffect = self.ModelScene:AddDynamicEffect(effect, self);
+	local textureKit = C_WeeklyRewards.GetWeeklyRewardTextureKit();
+	if textureKit then 
+		self.activeEffect = self.ModelScene:AddDynamicEffect(weeklyRewardOverlayEffects[textureKit], self);
+		SetupTextureKitOnRegions(textureKit, self, weeklyRewardOverlayTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+		NineSliceUtil.ApplyLayoutByName(self.NineSlice, "Dialog");
+	end
 end
 
 function WeeklyRewardOverlayMixin:OnHide()

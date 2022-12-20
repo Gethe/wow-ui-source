@@ -363,6 +363,22 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitPartialPower",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = false, Default = "NumPowerTypes" },
+				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "partialPower", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitPercentHealthFromGUID",
 			Type = "Function",
 
