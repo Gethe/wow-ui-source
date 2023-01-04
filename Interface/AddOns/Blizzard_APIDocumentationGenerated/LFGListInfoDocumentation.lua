@@ -63,6 +63,20 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetRedirectedMapDifficultyID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "redirectedMapDifficultyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRoles",
 			Type = "Function",
 
@@ -308,6 +322,9 @@ local LFGListInfo =
 				{ Name = "displayType", Type = "LFGListDisplayType", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "iconFileDataID", Type = "number", Nilable = false },
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+				{ Name = "redirectedDifficultyID", Type = "number", Nilable = false },
 				{ Name = "useDungeonRoleExpectations", Type = "bool", Nilable = false },
 			},
 		},

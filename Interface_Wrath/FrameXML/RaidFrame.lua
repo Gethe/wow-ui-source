@@ -141,7 +141,7 @@ function RaidInfoFrame_Update()
 		--RaidInfoScrollFrameScrollUpButton:SetPoint("BOTTOM", RaidInfoScrollFrame, "TOP", 0, 16);
 		for i=1, MAX_RAID_INFOS do
 			if ( i <=  savedInstances) then
-				instanceName, instanceID, instanceReset, _, _, _, _, _, _, instanceDifficulty = GetSavedInstanceInfo(i);
+				instanceName, instanceID, instanceReset, _, _, _, _, _, _, instanceDifficulty, _ = GetSavedInstanceInfo(i);
 				getglobal("RaidInfoInstance"..i.."Name"):SetText(instanceName);
 				getglobal("RaidInfoInstance"..i.."Difficulty"):SetText(instanceDifficulty);
 				getglobal("RaidInfoInstance"..i.."ID"):SetText(instanceID);

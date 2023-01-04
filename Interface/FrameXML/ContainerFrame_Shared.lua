@@ -1183,7 +1183,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	
 	for i=1, currencyCount, 1 do
 		local info = C_Container.GetContainerItemPurchaseCurrency(bag, slot, i, isEquipped);
-		local currencyTexture = info and info.iconFileDataID;
+		local currencyTexture = info and info.iconFileID;
 		local currencyQuantity = info and info.currencyCount;
 		local currencyName = info and info.name;
 		if ( currencyName ) then

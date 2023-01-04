@@ -36,7 +36,7 @@ RACE_ICON_TCOORDS = {
 };
 
 function CharacterCreateRaceButton_OnEnter(self)
-	if(self:IsEnabled()) then
+	if(self:IsEnabled() or self.tooltip == nil) then
 		return;
 	end
 	GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, -8);

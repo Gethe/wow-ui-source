@@ -59,6 +59,13 @@ function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
 	self.GlowBox:SetShown(hasAnyValidCharacter);
 end
 
+function CharacterServicesCharacterSelectorMixin:Refresh()
+	print("CharacterServicesCharacterSelectorMixin:Refresh()");
+	CharacterSelect_ForEachVisibleCharacterButton(function(button)
+		hasAnyValidCharacter = self:UpdateSingleCharacter(button) or hasAnyValidCharacter;
+	end);
+end
+
 function CharacterServicesCharacterSelectorMixin:UpdateSingleCharacter(button)
 	if not self:IsActive() then
 		return false;
@@ -172,6 +179,9 @@ function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 	CharacterSelect_SetScrollEnabled(true);
 	CharacterUpgradeCharacterSelectBlock_SetFilteringByBoostable(false);
 
+	CharacterSelect_ForEachVisibleCharacterButton(function(button)
+		CharacterSelect_SetCharacterButtonEnabled(button, true);
+	end);
 	restoreAllButtonScripts();
 
 	UpdateCharacterList(true);

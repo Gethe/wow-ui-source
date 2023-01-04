@@ -2576,7 +2576,7 @@ function StoreVASValidationFrame_SetErrors(errors)
 	frame.RealmSelector.Button:Enable();
 	frame.CharacterSelector.Button:Enable();
 	frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
-	frame.ValidationDescription:SetTextColor("P", 1.0, 0.1, 0.1);
+	frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
 	frame.ValidationDescription:SetText(desc);
 	frame.ValidationDescription:Show();
 	StoreVASValidationState_Unlock();

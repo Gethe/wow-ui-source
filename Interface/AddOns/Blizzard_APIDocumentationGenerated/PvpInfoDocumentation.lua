@@ -24,6 +24,35 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetBattlefieldVehicleInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "vehicleIndex", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "BattlefieldVehicleInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetBattlefieldVehicles",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "vehicles", Type = "table", InnerType = "BattlefieldVehicleInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHolidayBGLossRewards",
 			Type = "Function",
 
@@ -232,6 +261,11 @@ local PvpInfo =
 			LiteralName = "PVP_RATED_STATS_UPDATE",
 		},
 		{
+			Name = "PvpVehicleInfoUpdated",
+			Type = "Event",
+			LiteralName = "PVP_VEHICLE_INFO_UPDATED",
+		},
+		{
 			Name = "PvpWorldstateUpdate",
 			Type = "Event",
 			LiteralName = "PVP_WORLDSTATE_UPDATE",
@@ -320,6 +354,24 @@ local PvpInfo =
 				{ Name = "experience", Type = "number", Nilable = false },
 				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
 				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+			},
+		},
+		{
+			Name = "BattlefieldVehicleInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "isOccupied", Type = "bool", Nilable = false },
+				{ Name = "atlas", Type = "string", Nilable = false },
+				{ Name = "textureWidth", Type = "number", Nilable = false },
+				{ Name = "textureHeight", Type = "number", Nilable = false },
+				{ Name = "facing", Type = "number", Nilable = false },
+				{ Name = "isPlayer", Type = "bool", Nilable = false },
+				{ Name = "isAlive", Type = "bool", Nilable = false },
+				{ Name = "shouldDrawBelowPlayerBlips", Type = "bool", Nilable = false },
 			},
 		},
 		{

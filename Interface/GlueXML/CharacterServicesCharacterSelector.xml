@@ -2,28 +2,6 @@
 ..\FrameXML\UI.xsd">
 	<Script file="CharacterServicesCharacterSelector.lua"/>
 
-	<Frame name="CharacterServicesArrowTemplate" hidden="true" virtual="true">
-		<Size x="18" y="32"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Arrow" inherits="services-yellowarrow">
-					<Anchors>
-						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="CharacterServicesBonusIconTemplate" hidden="true" virtual="true">
-		<Size x="19" y="19"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" inherits="services-icon-bonus" setAllPoints="true"/>
-			</Layer>
-		</Layers>
-	</Frame>
-
 	<Frame name="CharacterServicesCharacterSelector" mixin="CharacterServicesCharacterSelectorMixin" parent="CharacterSelectCharacterFrame" hidden="true" frameStrata="DIALOG">
 		<Anchors>
 			<Anchor point="TOPLEFT"/>

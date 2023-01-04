@@ -11,7 +11,9 @@ end
 
 function ReportFrameMixin:OnHide()
 	self:Reset();
-	MainMenuBarBagManager:SetBagButtonsEnabled(true);
+	if( MainMenuBarBagManager ) then
+		MainMenuBarBagManager:SetBagButtonsEnabled(true);
+	end
 end
 
 function ReportFrameMixin:OnEvent(event, ...)
@@ -91,7 +93,9 @@ function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerL
 	self.MinorReportDescription:Hide();
 	self.ReportButton:UpdateButtonState(); 
 	self:Layout(); 
-	MainMenuBarBagManager:SetBagButtonsEnabled(false);
+	if( MainMenuBarBagManager ) then
+		MainMenuBarBagManager:SetBagButtonsEnabled(false);
+	end
 end		
 
 function ReportFrameMixin:ReportByType(reportType)
@@ -167,6 +171,7 @@ function ReportFrameMixin:SendReport()
 
 	if(self.reportInfo.reportType == Enum.ReportType.PvP) then 
 		ReportPlayerIsPVPAFK(self.playerName);
+		self:UpdateThankYouMessage(true);
 		return;
 	end
 

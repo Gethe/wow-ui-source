@@ -204,9 +204,6 @@ GlueDialogTypes["CONFIRM_VAS_FACTION_CHANGE"] = {
 	OnAccept = function()
 		CharacterCreateFrame:BeginVASTransaction();
 	end,
-	OnCancel = function()
-		CharacterCreateFrame:UpdateForwardButton();
-	end,
 }
 
 GlueDialogTypes["CHARACTER_CREATE_VAS_ERROR"] = {

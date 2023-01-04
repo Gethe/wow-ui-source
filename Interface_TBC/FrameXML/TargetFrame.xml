@@ -489,7 +489,7 @@
 			<OnDragStop function="TargetFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
-	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
+	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" mixin="FocusFrameMixin" clampedToScreen="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="250" y="-240"/>
 		</Anchors>

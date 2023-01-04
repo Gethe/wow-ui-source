@@ -2931,6 +2931,7 @@ StaticPopupDialogs["XP_LOSS"] = {
 			self.data = nil;
 			return 1;
 		else
+			C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer);
 			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
 	end,

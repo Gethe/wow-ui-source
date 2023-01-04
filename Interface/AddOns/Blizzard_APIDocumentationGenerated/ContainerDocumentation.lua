@@ -271,6 +271,22 @@ local Container =
 			},
 		},
 		{
+			Name = "GetItemCooldown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "enable", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsBagSlotFlagEnabledOnOtherBankBags",
 			Type = "Function",
 

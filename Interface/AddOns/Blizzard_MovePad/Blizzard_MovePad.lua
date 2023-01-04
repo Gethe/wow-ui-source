@@ -6,7 +6,10 @@ function MovePadMixin:OnLoad()
 	local function OnValueChanged(o, setting, value)
 		self:SetShown(value);
 	end
-	Settings.SetOnValueChangedCallback("enableMovePad", OnValueChanged);
+	
+	if Settings then
+		Settings.SetOnValueChangedCallback("enableMovePad", OnValueChanged);
+	end
 end
 
 function MovePadMixin:OnDragStart()

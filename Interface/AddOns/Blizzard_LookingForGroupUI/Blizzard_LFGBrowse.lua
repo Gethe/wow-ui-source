@@ -505,7 +505,7 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	-- Member Count
 	if (isSolo) then
 		self.MemberCount:SetText(string.format(LFG_LIST_TOOLTIP_MEMBERS_SIMPLE, numMembers));
-	else
+	elseif (memberCounts) then
 		self.MemberCount:SetText(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 	end
 
@@ -653,23 +653,25 @@ function LFGBrowseGroupDataDisplay_Update(self, displayType, maxNumPlayers, disp
 	if ( displayType == Enum.LFGListDisplayType.Comment ) then
 		self.Comment:Show();
 		LFGBrowseGroupDataDisplayComment_Update(self.Comment, comment, disabled);
-	elseif ( isSolo ) then
-		self.Solo:Show();
-		LFGBrowseGroupDataDisplaySolo_Update(self.Solo, displayData, disabled);
-	elseif ( displayType == Enum.LFGListDisplayType.RoleCount ) then
-		self.RoleCount:Show();
-		LFGBrowseGroupDataDisplayRoleCount_Update(self.RoleCount, displayData, disabled);
-	elseif ( displayType == Enum.LFGListDisplayType.RoleEnumerate ) then
-		self.Enumerate:Show();
-		LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_ROLE_ORDER);
-	elseif ( displayType == Enum.LFGListDisplayType.ClassEnumerate ) then
-		self.Enumerate:Show();
-		LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_CLASS_ORDER);
-	elseif ( displayType == Enum.LFGListDisplayType.PlayerCount ) then
-		self.PlayerCount:Show();
-		LFGBrowseGroupDataDisplayPlayerCount_Update(self.PlayerCount, displayData, disabled);
-	elseif ( displayType ~= Enum.LFGListDisplayType.HideAll ) then
-		GMError("Unknown display type");
+	elseif ( displayData ) then
+		if ( isSolo ) then
+			self.Solo:Show();
+			LFGBrowseGroupDataDisplaySolo_Update(self.Solo, displayData, disabled);
+		elseif ( displayType == Enum.LFGListDisplayType.RoleCount ) then
+			self.RoleCount:Show();
+			LFGBrowseGroupDataDisplayRoleCount_Update(self.RoleCount, displayData, disabled);
+		elseif ( displayType == Enum.LFGListDisplayType.RoleEnumerate ) then
+			self.Enumerate:Show();
+			LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_ROLE_ORDER);
+		elseif ( displayType == Enum.LFGListDisplayType.ClassEnumerate ) then
+			self.Enumerate:Show();
+			LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_CLASS_ORDER);
+		elseif ( displayType == Enum.LFGListDisplayType.PlayerCount ) then
+			self.PlayerCount:Show();
+			LFGBrowseGroupDataDisplayPlayerCount_Update(self.PlayerCount, displayData, disabled);
+		elseif ( displayType ~= Enum.LFGListDisplayType.HideAll ) then
+			GMError("Unknown display type");
+		end
 	end
 end
 

@@ -61,7 +61,8 @@ function CharacterCreateEnumerateRaces()
 			if ( texture ) then
 				texture:SetDesaturated(true);
 			end
-			button:SetText("");			
+			button:SetText("");
+			button.tooltip = nil;
 		else
 			button:Enable();
 			local texture = button:GetNormalTexture();

@@ -7,9 +7,9 @@ local function RequestAssignPFCForResults(results, isValidationOnly)
 	);
 end
 
-local factionColors = {
-	Alliance = CreateColor(0, 0.439, 0.867),
-	Horde = CreateColor(1, 0, 0);
+local factionInfoTable = {
+ 	Alliance = { color = CreateColor(0, 0.439, 0.867), name = FACTION_ALLIANCE },
+	Horde = { color = CreateColor(1, 0, 0), name = FACTION_HORDE },
 }
 
 local PFCCharacterSelectBlock = CreateFromMixins(VASCharacterSelectBlockBase);
@@ -31,15 +31,15 @@ function PFCCharacterSelectBlock:SetResultsShown(shown)
 			factionChangeDisabled, characterServiceRequiresLogin, eraChoiceState, lastActiveDay, lastActiveMonth, lastActiveYear = GetCharacterInfoByGUID(result.selectedCharacterGUID);
 
 			-- factions
-			for factionTag, color in pairs(factionColors) do
+			for factionTag, factionInfo in pairs(factionInfoTable) do
 				local fontString;
 				if factionTag == faction then
 					fontString = self.frame.ResultsFrame.CurrentFactionLabel;
 				else
 					fontString = self.frame.ResultsFrame.NewFactionLabel;
 				end
-				fontString:SetText(factionTag);
-				fontString:SetTextColor(color:GetRGB());
+				fontString:SetText(factionInfo.name);
+				fontString:SetTextColor(factionInfo.color:GetRGB());
 			end
 		end
 	end

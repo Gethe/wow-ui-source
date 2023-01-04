@@ -203,6 +203,32 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame name="$parentInstanceLockWarningIcon" parentKey="InstanceLockWarningIcon" hidden="true">
+				<Size x="13" y="13"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.NameButton" relativePoint="RIGHT" x="2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\EncounterJournal\UI-EJ-WarningTextIcon">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_BOTTOM");
+						GameTooltip:AddLine(string.format(BOSSES_KILLED, self.encountersCompleted, self.encountersTotal), 1, 0.1, 0.1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
 		</Frames>
 	</Frame>
 	<Frame name="LFGListingLockedViewActivityTemplate" virtual="true">

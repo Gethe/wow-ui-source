@@ -61,17 +61,21 @@ end
 function CharacterSelectLockedButtonMixin:OnEnter()
 	local requiresPurchase = IsExpansionTrialCharacter(self.guid) and CanUpgradeExpansion() or not C_CharacterServices.HasRequiredBoostForUnrevoke();
 
-    local tooltipFooter;
-    if requiresPurchase then
-		tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_SHOP;
-	else
-        tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_USE_BOOST;
-    end
+    local tooltipFooter = nil;
+	if not IsCharacterVASLocked(self.guid) then
+		if requiresPurchase then
+			tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_SHOP;
+		else
+			tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_USE_BOOST;
+		end
+	end
 
     -- TODO: Add color constants to glue?
     GlueTooltip:SetText(self.tooltipTitle, 1, 1, 1, 1, false);
     GlueTooltip:AddLine(self.tooltipText, nil, nil, nil, nil, true);
-    GlueTooltip:AddLine(tooltipFooter, .1, 1, .1, 1, true);
+	if tooltipFooter then
+		GlueTooltip:AddLine(tooltipFooter, .1, 1, .1, 1, true);
+	end
     GlueTooltip:Show();
     GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
 end
@@ -676,6 +680,8 @@ function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
     elseif revokedCharacterUpgrade then
         padlock.tooltipTitle = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE;
         padlock.tooltipText = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TEXT;
+	elseif IsCharacterVASLocked(guid) then
+		padlock.tooltipTitle = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE;
     else
         GMError("Invalid lock type");
     end
@@ -739,7 +745,7 @@ function UpdateCharacterSelection(self)
         else
             CharacterSelectButton_EnableDrag(button);
         end
-		button.characterID = GetCharIDFromIndex(i);
+		button.characterID = GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET);
     end
 
     local index = self.selectedIndex - CHARACTER_LIST_OFFSET;
@@ -765,6 +771,10 @@ function UpdateCharacterSelection(self)
             CharacterSelect_UpdateButtonState();
         end
     end
+
+	if( CharacterServicesCharacterSelector ) then
+		CharacterServicesCharacterSelector:Refresh();
+	end
 end
 
 function UpdateCharacterList(skipSelect)
@@ -821,7 +831,7 @@ function UpdateCharacterList(skipSelect)
         local productID, vasServiceState, vasServiceErrors, productInfo;
         if (guid) then
             productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
-        end
+		end
         if (productID) then
             productInfo = C_StoreSecure.GetProductInfo(productID);
         end
@@ -1004,21 +1014,23 @@ function UpdateCharacterList(skipSelect)
             upgradeIcon:Show();
             upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
             upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
-		elseif ( vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue and productInfo ) then
+		elseif ( vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue ) then
 			upgradeIcon:Show();
-            upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
-            upgradeIcon.tooltip2 = VAS_SERVICE_PROCESSING:format(productInfo.sharedData.name);
-            if (VAS_QUEUE_TIMES[guid] and VAS_QUEUE_TIMES[guid] > 0) then
-                upgradeIcon.tooltip2 = upgradeIcon.tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(VAS_QUEUE_TIMES[guid]*60, true, false, 2, true))
-            end
+			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
+			if productInfo then
+				upgradeIcon.tooltip2 = VAS_SERVICE_PROCESSING:format(productInfo.sharedData.name);
+				if (VAS_QUEUE_TIMES[guid] and VAS_QUEUE_TIMES[guid] > 0) then
+					upgradeIcon.tooltip2 = upgradeIcon.tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(VAS_QUEUE_TIMES[guid]*60, true, false, 2, true))
+				end
+			else
+				upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
+			end
 		elseif ( vasServiceState == Enum.VasPurchaseProgress.ProcessingFactionChange ) then
             upgradeIcon:Show();
             upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
             upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
 		elseif guid and IsCharacterVASLocked(guid) then
-			upgradeIcon:Show();
-			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
-			upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
+			CharacterSelect_SetupPadlockForCharacterButton(button, guid);
         elseif ( CharacterSelect.undeleting ) then
             paidServiceButton:Hide();
             paidServiceButton.serviceType = nil;

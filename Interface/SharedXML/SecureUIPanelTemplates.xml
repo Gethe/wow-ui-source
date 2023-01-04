@@ -134,8 +134,8 @@
 	</ScrollFrame>
 	<ScrollFrame name="InputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<KeyValues>
+			<KeyValue key="maxLetters" value="0" type="number"/>
 			<!--
-			<KeyValue key="maxLetters" value="127" type="number"/>
 			<KeyValue key="instructions" value="INSTRUCTION_TEXT" type="global"/>
 			<KeyValue key="hideCharCount" value="false" type="boolean"/>
 			-->

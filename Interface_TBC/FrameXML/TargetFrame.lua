@@ -239,7 +239,7 @@ function TargetFrame_OnVariablesLoaded()
 	TargetFrame_SetLocked(not TARGET_FRAME_UNLOCKED);
 	TargetFrame_UpdateBuffsOnTop();
 
-	FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
+	FocusFrame:SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
 	FocusFrame_UpdateBuffsOnTop();
 end
 
@@ -1131,16 +1131,19 @@ end
 -- Focus Frame
 -- *********************************************************************************
 
+local FOCUS_FRAME_LOCKED = true;
+
+FocusFrameMixin = {};
+
 function FocusFrameDropDown_Initialize(self)
 	UnitPopup_ShowMenu(self, "FOCUS", "focus", SET_FOCUS);
 end
 
-FOCUS_FRAME_LOCKED = true;
-function FocusFrame_IsLocked()
+function FocusFrameMixin:IsLocked()
 	return FOCUS_FRAME_LOCKED;
 end
 
-function FocusFrame_SetLock(locked)
+function FocusFrameMixin:SetLock(locked)
 	FOCUS_FRAME_LOCKED = locked;
 end
 
@@ -1170,7 +1173,7 @@ function FocusFrame_OnDragStop(self)
 	end
 end
 
-function FocusFrame_SetSmallSize(smallSize, onChange)
+function FocusFrameMixin:SetSmallSize(smallSize, onChange)
 	if ( smallSize and not FocusFrame.smallSize ) then
 		local x = FocusFrame:GetLeft();
 		local y = FocusFrame:GetTop();

@@ -35,11 +35,13 @@ function LFGListingMixin:OnLoad()
 	self:RegisterEvent("LFG_LIST_ROLE_UPDATE");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
+	self:RegisterEvent("UPDATE_INSTANCE_INFO");
 
 	self.activities = {};
 	self.categorySelection = nil;
 	self.dirty = false;
 	self.viewState = LFGLISTING_VIEWSTATE_ACTIVITIES;
+	self.savedInstances = {};
 
 	self:ClearUI();
 	self:LoadSoloRolesOnStartup();
@@ -91,6 +93,8 @@ function LFGListingMixin:OnEvent(event, ...)
 	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
 		UIDropDownMenu_Initialize(self.GroupRoleButtons.RoleDropDown, LFGListingRoleDropDown_Initialize);
 		LFGListingRoleIcon_UpdateRoleTexture(self.GroupRoleButtons.RoleIcon);
+	elseif ( event == "UPDATE_INSTANCE_INFO" ) then
+		self:FetchSavedInstances()
 	end
 end
 
@@ -105,6 +109,8 @@ function LFGListingMixin:OnShow()
 	else
 		self:SetDirty(self:IsAnyActivitySelected());
 	end
+
+	RequestRaidInfo();
 
 	self:UpdatePostButtonEnableState();
 	self:UpdateBackButtonEnableState();
@@ -154,6 +160,28 @@ end
 function LFGListingMixin:SetDirty(state)
 	self.dirty = state;
 	self:UpdatePostButtonEnableState();
+end
+
+function LFGListingMixin:FetchSavedInstances()
+	self.savedInstances = {};
+	local numSavedInstances = GetNumSavedInstances();
+	if ( numSavedInstances > 0 ) then
+		for i=1, MAX_RAID_INFOS do
+			if ( i <=  numSavedInstances) then
+				local instanceName, instanceID, _, difficultyID, _, _, _, _, _, _, encountersTotal, encountersCompleted, _, mapID = GetSavedInstanceInfo(i);
+				self.savedInstances[i] = {};
+				self.savedInstances[i].mapID = mapID;
+				self.savedInstances[i].difficultyID = difficultyID;
+				self.savedInstances[i].redirectedDifficultyID = C_LFGList.GetRedirectedMapDifficultyID(difficultyID);
+				self.savedInstances[i].encountersCompleted = encountersCompleted;
+				self.savedInstances[i].encountersTotal = encountersTotal;
+			end
+		end
+	end
+end
+
+function LFGListingMixin:GetSavedInstances()
+	return self.savedInstances;
 end
 
 -------------------------------------------------------
@@ -887,6 +915,9 @@ function LFGListingActivityView_InitActivityGroupButton(button, elementData, isC
 	button.NameButton.Name:SetFontObject(LFGActivityHeader);
 	button.NameButton:SetWidth(button.NameButton.Name:GetWidth());
 
+	-- Instance Lock Warning
+	button.InstanceLockWarningIcon:Hide();
+
 	-- Level
 	button.Level:Hide();
 end
@@ -910,6 +941,26 @@ function LFGListingActivityView_InitActivityButton(button, elementData)
 		button.Level:SetFontObject(LFGActivityEntry);
 	end
 	button.NameButton:SetWidth(button.NameButton.Name:GetWidth());
+
+	-- Instance Lock Warning
+	button.InstanceLockWarningIcon:Hide();
+	local activityInfo = C_LFGList.GetActivityInfoTable(elementData.activityID);
+	local savedInstances = LFGListingFrame:GetSavedInstances();
+	if (activityInfo and savedInstances) then
+		for i, instance in pairs(savedInstances) do
+			if (activityInfo.mapID and activityInfo.difficultyID and (activityInfo.mapID == instance.mapID)) then
+				local isSameInstanceDifficulty = activityInfo.difficultyID == instance.difficultyID;
+				local isInstanceLockShared = instance.redirectedDifficultyID == activityInfo.redirectedDifficultyID;
+				local isInstanceInProgressOrCompleted = (instance.encountersCompleted > 0) and (instance.encountersTotal > 0);
+
+				if (isInstanceInProgressOrCompleted and (isSameInstanceDifficulty or isInstanceLockShared)) then
+					button.InstanceLockWarningIcon.encountersCompleted = instance.encountersCompleted;
+					button.InstanceLockWarningIcon.encountersTotal = instance.encountersTotal;
+					button.InstanceLockWarningIcon:Show();
+				end
+			end
+		end
+	end
 
 	-- Level
 	button.Level:Show();

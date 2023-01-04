@@ -448,7 +448,7 @@
 									</Frame>
 									<Frame name="RaidInfoInstance10" inherits="RaidInfoInstanceTemplate">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance1" relativePoint="BOTTOMLEFT">
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance9" relativePoint="BOTTOMLEFT">
 												<Offset>
 													<AbsDimension x="0" y="0"/>
 												</Offset>
