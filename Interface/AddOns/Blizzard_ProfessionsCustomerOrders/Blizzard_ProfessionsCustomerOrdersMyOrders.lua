@@ -8,7 +8,7 @@ function ProfessionsCustomerOrderListElementMixin:OnLineEnter()
 
 	local reagents = {};
 	local qualityIDs = C_TradeSkillUI.GetQualitiesForRecipe(self.option.spellID);
-	local minQuality = self.option.minQuality >= 1 or 1;
+	local minQuality = self.option.minQuality >= 1 and self.option.minQuality or 1;
 	GameTooltip:SetRecipeResultItem(self.option.spellID, reagents, nil, nil, qualityIDs and qualityIDs[minQuality]);
 
 	if IsModifiedClick("DRESSUP") then

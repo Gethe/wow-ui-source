@@ -246,7 +246,7 @@ end
 function RaidInfoFrame_UpdateButtons()
 	if RaidInfoFrame.selectedIndex then
 		if RaidInfoFrame.selectedIsInstance then
-			local _, _, _, _, locked, extended, _, _, _, _, _, _, extendDisabled = GetSavedInstanceInfo(RaidInfoFrame.selectedIndex);
+			local _, _, _, _, locked, extended, _, _, _, _, _, _, extendDisabled, _ = GetSavedInstanceInfo(RaidInfoFrame.selectedIndex);
 			RaidInfoExtendButton:SetEnabled(not extendDisabled);
 			RaidInfoExtendButton.doExtend = not extended;
 			if extended then

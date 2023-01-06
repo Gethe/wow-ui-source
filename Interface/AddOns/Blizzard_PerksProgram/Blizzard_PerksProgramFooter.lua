@@ -23,6 +23,14 @@ function PerksProgramFooterFrameMixin:OnEvent(event, ...)
 		local selectedProduct = PerksProgramFrame:GetSelectedProduct();
 		self.purchaseButtonEnabled = C_PerksProgram.GetCurrencyAmount() >= selectedProduct.price;
 		self.PurchaseButton:SetEnabled(self.purchaseButtonEnabled);
+		if self.purchaseButtonEnabled then
+			GlowEmitterFactory:SetHeight(95);
+			GlowEmitterFactory:SetOffset(23.5, -0.5);
+
+			GlowEmitterFactory:Show(self.PurchaseButton, GlowEmitterMixin.Anims.GreenGlow);
+		else
+			GlowEmitterFactory:Hide(self.PurchaseButton);
+		end
 	end
 end
 
@@ -63,6 +71,14 @@ function PerksProgramFooterFrameMixin:OnProductSelected(data)
 
 	self.purchaseButtonEnabled = C_PerksProgram.GetCurrencyAmount() >= data.price;
 	self.PurchaseButton:SetEnabled(self.purchaseButtonEnabled);
+	if self.purchaseButtonEnabled then
+		GlowEmitterFactory:SetHeight(95);
+		GlowEmitterFactory:SetOffset(23.5, -0.5);
+
+		GlowEmitterFactory:Show(self.PurchaseButton, GlowEmitterMixin.Anims.GreenGlow);
+	else
+		GlowEmitterFactory:Hide(self.PurchaseButton);
+	end
 end
 
 function PerksProgramFooterFrameMixin:OnProductPurchasedStateChange(data)

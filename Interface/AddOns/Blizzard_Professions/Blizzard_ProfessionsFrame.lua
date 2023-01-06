@@ -147,9 +147,10 @@ function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
 		C_TradeSkillUI.SetProfessionChildSkillLineID(useNewSkillLine and professionInfo.professionID or self.professionInfo.professionID);
 		professionInfo = Professions.GetProfessionInfo();
 		self.professionInfo = professionInfo;
-		self:Refresh();
 		EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
 	end
+
+	self:Refresh();
 end
 
 function ProfessionsMixin:SetTitle(skillLineName)

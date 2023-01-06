@@ -36,12 +36,19 @@ function ProfessionsCustomerOrderFormMixin:InitPaymentContainer()
 	self.PaymentContainer.TipMoneyInputFrame.CopperBox:Hide();
 	
 	self.PaymentContainer.ListOrderButton:SetScript("OnClick", function()
+		local warning = nil;
 		if self:OrderCouldReduceQuality() then
+			warning = CRAFTING_ORDER_RECRAFT_WARNING2;
+		elseif self.order.unusableBOP then
+			warning = PROFESSIONS_ORDER_UNUSABLE_WARNING;
+		end
+
+		if warning then
 			local referenceKey = self;
 			if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
 				local customData = 
 				{
-					text = CRAFTING_ORDER_RECRAFT_WARNING2,
+					text = warning,
 					acceptText = YES,
 					cancelText = NO,
 					callback = function() self:ListOrder(); end,
@@ -1159,6 +1166,20 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 			orderTypeText = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PRIVATE;
 		end
 		self.OrderRecipientDisplay.PostedTo:SetText(orderTypeText);
+
+		local orderStateText;
+		if self.order.orderState == Enum.CraftingOrderState.Created then
+			orderStateText = CRAFTING_ORDER_NOT_CLAIMED;
+		elseif self.order.orderState == Enum.CraftingOrderState.Expired then
+			orderStateText = PROFESSIONS_ORDER_EXPIRED;
+		elseif self.order.orderState == Enum.CraftingOrderState.Canceled then
+			orderStateText = PROFESSIONS_ORDER_CANCELLED;
+		elseif self.order.orderState == Enum.CraftingOrderState.Rejected then
+			orderStateText = PROFESSIONS_ORDER_REJECTED;
+		else
+			orderStateText = PROFESSIONS_ORDER_COMPLETE;
+		end
+		self.OrderStateText:SetText(orderStateText);
 
 		self:UpdateCancelOrderButton();
 

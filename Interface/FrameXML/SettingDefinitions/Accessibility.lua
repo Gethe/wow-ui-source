@@ -120,6 +120,12 @@ local function Register()
 		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_MOTION_SICKNESS_DRAGONRIDING);
 	end
 
+	--Dragonriding High Speed Motion Sickness Option
+	do 
+		local setting, initializer = Settings.SetupCVarCheckBox(category, "DisableAdvancedFlyingVelocityVFX", MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS, MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS_TOOLTIP);
+		initializer:AddSearchTags(MOTION_SICKNESS_DROPDOWN);
+	end
+
 	-- Camera Shake
 	do
 		local INTENSITY_NONE = 0;

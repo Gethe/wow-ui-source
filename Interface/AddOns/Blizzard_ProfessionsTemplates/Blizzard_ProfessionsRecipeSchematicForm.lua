@@ -988,14 +988,28 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 						return {items = items, onlyCountStack = true,};
 					end
 
-					flyout.OnElementEnterImplementation = function(elementData, tooltip)
-						Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, self.transaction:GetAllocationItemGUID());
-					end
-
-					flyout.OnElementEnabledImplementation = function(button, elementData)
+					local function IsElementEnabled(elementData)
 						local item = elementData.item;
 						local quantity = item:GetItemGUID() and item:GetStackCount() or nil;
 						return (quantity ~= nil) and (quantity >= self.recipeSchematic.quantityMax);
+					end
+
+					flyout.OnElementEnterImplementation = function(elementData, tooltip)
+						local item = elementData.item;
+						local itemGUID = item:GetItemGUID();
+						if itemGUID then
+							tooltip:SetItemByGUID(itemGUID);
+						else
+							tooltip:SetItemByID(item:GetItemID());
+						end
+
+						if not IsElementEnabled(elementData) then
+							GameTooltip_AddErrorLine(tooltip, PROFESSIONS_INSUFFICIENT_REAGENTS);
+						end
+					end
+
+					flyout.OnElementEnabledImplementation = function(button, elementData)
+						return IsElementEnabled(elementData);
 					end
 
 					flyout:Init(self.salvageSlot.Button, self.transaction);

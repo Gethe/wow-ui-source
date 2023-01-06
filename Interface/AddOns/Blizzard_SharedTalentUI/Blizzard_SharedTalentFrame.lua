@@ -1260,6 +1260,11 @@ function TalentFrameBaseMixin:CheckAndReportCommitOperation()
 		return false;
 	end
 
+	if not self:GetConfigID() then
+		-- This is a silent error because it should never happen.
+		return false;
+	end
+
 	return true;
 end
 

@@ -295,6 +295,15 @@ function EditModeActionBarMixin:EditModeActionBar_OnEvent(event, ...)
     end
 end
 
+function EditModeActionBarMixin:ShouldUpdateGrid(layoutChildren)
+	if self:IsInitialized() and not self.gridInitialized then
+		self.gridInitialized = true;
+		return true;
+	end
+
+	return ActionBarMixin.ShouldUpdateGrid(self, layoutChildren);
+end
+
 function EditModeActionBarMixin:IsShownOverride()
     -- This is needed since the bar may technically be hidden due to visibility settings but we don't actually want things to
     -- interpret it as truly hidden since a lot of things will use this info to know whether they need to show/hide the bar

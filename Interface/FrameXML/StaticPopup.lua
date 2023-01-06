@@ -3744,7 +3744,12 @@ StaticPopupDialogs["CONFIRM_LEAVE_BATTLEFIELD"] = {
 	button1 = YES,
 	button2 = CANCEL,
 	OnShow = function(self)
-		if ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
+		local ratedDeserterPenalty = C_PvP.GetPVPActiveRatedMatchDeserterPenalty();
+		if ( ratedDeserterPenalty ) then
+			local ratingChange = math.abs(ratedDeserterPenalty.personalRatingChange);
+			local queuePenaltySpellLink, queuePenaltyDuration = C_SpellBook.GetSpellLinkFromSpellID(ratedDeserterPenalty.queuePenaltySpellID), SecondsToTime(ratedDeserterPenalty.queuePenaltyDuration);
+			self.text:SetText(CONFIRM_LEAVE_RATED_MATCH_WITH_PENALTY:format(ratingChange, queuePenaltyDuration, queuePenaltySpellLink));
+		elseif ( IsActiveBattlefieldArena() and not C_PvP.IsInBrawl() ) then
 			self.text:SetText(CONFIRM_LEAVE_ARENA);
 		else
 			self.text:SetText(CONFIRM_LEAVE_BATTLEFIELD);
@@ -3752,6 +3757,14 @@ StaticPopupDialogs["CONFIRM_LEAVE_BATTLEFIELD"] = {
 	end,
 	OnAccept = function(self, data)
 		LeaveBattlefield();
+	end,
+	OnHyperlinkEnter = function(self, link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight)
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+		GameTooltip:SetHyperlink(link);
+		GameTooltip:Show();
+	end,
+	OnHyperlinkLeave = function(self)
+		GameTooltip_Hide();
 	end,
 	whileDead = 1,
 	hideOnEscape = 1,

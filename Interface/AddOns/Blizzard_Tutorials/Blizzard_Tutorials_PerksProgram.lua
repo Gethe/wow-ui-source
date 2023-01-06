@@ -20,10 +20,6 @@ function AddPerksProgramTutorials()
 		TutorialManager:AddWatcher(Class_PerksProgramActivitiesOpenWatcher:new(), true);
 	end
 
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_MAX_INFLUENCE) then
-		TutorialManager:AddWatcher(Class_PerksProgramActivitiesMaxInfluenceWatcher:new(), true);
-	end
-
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_TRACKING) then
 		TutorialManager:AddWatcher(Class_PerksProgramActivitiesTrackingWatcher:new(), true);
 	end
@@ -241,7 +237,7 @@ end
 Class_PerksProgramActivitiesOpenWatcher = class("PerksProgramActivitiesOpenWatcher", Class_TutorialBase);
 function Class_PerksProgramActivitiesOpenWatcher:OnInitialize()
 	self.helpTipInfo = {
-		text = TUTORIAL_PERKS_PROGRAM_ACTIVITIES_INTRO,
+		text = MONTHLY_ACTIVITIES_HELP_1,
 		cvarBitfield = "closedInfoFrames",
 		bitfieldFlag = LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_INTRO,
 		buttonStyle = HelpTip.ButtonStyle.Close,
@@ -254,7 +250,7 @@ end
 
 function Class_PerksProgramActivitiesOpenWatcher:ShowHelpTip()
 	self.target = EncounterJournalMonthlyActivitiesFrame.ThresholdBar;
-	HelpTip:Show(self.target, self.helpTipInfo);
+	HelpTip:Show(EncounterJournalMonthlyActivitiesFrame, self.helpTipInfo, self.target);
 end
 
 function Class_PerksProgramActivitiesOpenWatcher:StartWatching()
@@ -287,61 +283,10 @@ function Class_PerksProgramActivitiesOpenWatcher:FinishTutorial()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-Class_PerksProgramActivitiesMaxInfluenceWatcher = class("PerksProgramActivitiesMaxInfluenceWatcher", Class_TutorialBase);
-function Class_PerksProgramActivitiesMaxInfluenceWatcher:OnInitialize()
-	self.helpTipInfo = {
-		text = TUTORIAL_PERKS_PROGRAM_ACTIVITIES_MAX_INFLUENCE,
-		cvarBitfield = "closedInfoFrames",
-		bitfieldFlag = LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_MAX_INFLUENCE,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.RightEdgeCenter,
-		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
-		alignment = HelpTip.Alignment.Left,
-		offsetX = 50,
-		offsetY	= 0,
-		acknowledgeOnHide = false,
-	};
-end
-
-function Class_PerksProgramActivitiesMaxInfluenceWatcher:ShowHelpTip()
-	self.target = EncounterJournalMonthlyActivitiesFrame.ThresholdBar;
-	HelpTip:Show(self.target, self.helpTipInfo);
-end
-
-function Class_PerksProgramActivitiesMaxInfluenceWatcher:StartWatching()
-	EventRegistry:RegisterCallback("EncounterJournal.TabSet", self.OnEncounterJournalTabOpened, self);
-end
-
-function Class_PerksProgramActivitiesMaxInfluenceWatcher:StopWatching()
-	EventRegistry:UnregisterCallback("EncounterJournal.TabSet", self);
-end
-
-function Class_PerksProgramActivitiesMaxInfluenceWatcher:OnEncounterJournalTabOpened(EJ, encounterJournalTabID)
-	if encounterJournalTabID == EncounterJournal.MonthlyActivitiesTab:GetID() then
-		C_Timer.After(0.1, function()
-			self:ShowHelpTip();
-		end);
-	else
-		if self.target then
-			HelpTip:Hide(self.target, TUTORIAL_PERKS_PROGRAM_ACTIVITIES_MAX_INFLUENCE);
-		end
-	end
-end
-
-function Class_PerksProgramActivitiesMaxInfluenceWatcher:OnInterrupt(interruptedBy)
-	self:Complete();
-end
-
-function Class_PerksProgramActivitiesMaxInfluenceWatcher:FinishTutorial()
-	TutorialManager:StopWatcher(self:Name(), true);
-	HelpTip:Hide(self.target, TUTORIAL_PERKS_PROGRAM_ACTIVITIES_MAX_INFLUENCE);
-end
-
--- ------------------------------------------------------------------------------------------------------------
 Class_PerksProgramActivitiesTrackingWatcher = class("PerksProgramActivitiesTrackingWatcher", Class_TutorialBase);
 function Class_PerksProgramActivitiesTrackingWatcher:OnInitialize()
 	self.helpTipInfo = {
-		text = TUTORIAL_PERKS_PROGRAM_ACTIVITIES_TRACKING,
+		text = MONTHLY_ACTIVITIES_HELP_2,
 		cvarBitfield = "closedInfoFrames",
 		bitfieldFlag = LE_FRAME_TUTORIAL_PERKS_PROGRAM_ACTIVITIES_TRACKING,
 		buttonStyle = HelpTip.ButtonStyle.Close,

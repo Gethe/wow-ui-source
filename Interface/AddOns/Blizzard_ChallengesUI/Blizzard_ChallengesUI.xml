@@ -206,7 +206,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ChallengesKeystoneFrame" hidden="true" parent="UIParent" mixin="ChallengesKeystoneFrameMixin">
+	<Frame name="ChallengesKeystoneFrame" hidden="true" parent="UIParent" mixin="ChallengesKeystoneFrameMixin" frameStrata="HIGH">
 		<Size x="398" y="548"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="40"/>
@@ -410,7 +410,7 @@
 		<Frames>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+					<Anchor point="TOPRIGHT" x="-8" y="-9"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -872,7 +872,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
-										<Texture parentKey="AnimTexture" atlas="mythicplus-greatvault-collect" useAtlasSize="true" alphaMode="ADD">
+										<Texture parentKey="AnimTexture" atlas="mythicplus-dragonflight-greatvault-collect" useAtlasSize="true" alphaMode="ADD">
 											<Anchors>
 												<Anchor point="CENTER"/>
 											</Anchors>
@@ -912,7 +912,7 @@
 										</FontString>
 									</Layer>
 								</Layers>
-								<Scripts> 
+								<Scripts>
 									<OnEnter method="OnEnter"/>
 									<OnLeave method="OnLeave"/>
 									<OnClick method="OnClick"/>

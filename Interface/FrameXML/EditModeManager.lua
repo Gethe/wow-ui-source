@@ -627,7 +627,7 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 	end
 
 	for index, bar in ipairs(barsToUpdate) do
-		if bar and bar:IsShown() and bar:IsInDefaultPosition() then
+		if bar and bar:IsInDefaultPosition() then
 			bar:ClearAllPoints();
 			if topMostBar == UIParent then
 				bar:SetPoint("BOTTOM", topMostBar, "BOTTOM", 0, MAIN_ACTION_BAR_DEFAULT_OFFSET_Y);
@@ -643,7 +643,9 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 				bar:UpdateSpellFlyoutDirection();
 			end
 
-			topMostBar = bar;
+			if bar:IsShown() then
+				topMostBar = bar;
+			end
 		end
 	end
 

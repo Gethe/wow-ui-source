@@ -56,7 +56,6 @@ function NamePlateDriverMixin:OnLoad()
 		["nameplateResourceOnTarget"] = true,
 		["nameplateHideHealthAndPower"] = true,
 		["NamePlateVerticalScale"] = true,
-		["nameplateShowOnlyNames"] = true,
 		["NameplatePersonalClickThrough"] = true,
 		["NamePlateHorizontalScale"] = true,
 		["NamePlateClassificationScale"] = true,
@@ -450,10 +449,9 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
 	DefaultCompactNamePlateEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
 
-	local showOnlyNames = GetCVarBool("nameplateShowOnlyNames");
 	DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInFriendlyNameplate");
-	DefaultCompactNamePlateFriendlyFrameOptions.hideHealthbar = showOnlyNames;
-	DefaultCompactNamePlateFriendlyFrameOptions.hideCastbar = showOnlyNames;
+	DefaultCompactNamePlateFriendlyFrameOptions.hideHealthbar = false;
+	DefaultCompactNamePlateFriendlyFrameOptions.hideCastbar = false;
 
 	DefaultCompactNamePlatePlayerFrameSetUpOptions.hideHealthbar = self.playerHideHealthandPowerBar;
 
@@ -476,8 +474,8 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateFrameSetUpOptions.castIconWidth = Lerp(10, 15, clampedZeroBasedScale);
 	DefaultCompactNamePlateFrameSetUpOptions.castIconHeight = Lerp(10, 15, clampedZeroBasedScale);
 
-	DefaultCompactNamePlateFrameSetUpOptions.hideHealthbar = showOnlyNames;
-	DefaultCompactNamePlateFrameSetUpOptions.hideCastbar = showOnlyNames;
+	DefaultCompactNamePlateFrameSetUpOptions.hideHealthbar = false;
+	DefaultCompactNamePlateFrameSetUpOptions.hideCastbar = false;
 
 	local personalNamePlateClickThrough = GetCVarBool("NameplatePersonalClickThrough");
 	C_NamePlate.SetNamePlateSelfClickThrough(personalNamePlateClickThrough);

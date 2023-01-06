@@ -1090,7 +1090,7 @@ local classicSystemMap =
 			},
 			anchorInfo = {
 				point = "BOTTOM",
-				relativeTo = "StatusTrackingBarManager.MainStatusTrackingBarContainer",
+				relativeTo = "MainStatusTrackingBarContainer",
 				relativePoint = "TOP",
 				offsetX = 0,
 				offsetY = 0,

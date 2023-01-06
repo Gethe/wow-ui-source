@@ -378,6 +378,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetPVPActiveRatedMatchDeserterPenalty",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "deserterPenalty", Type = "RatedMatchDeserterPenalty", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPVPSeasonRewardAchievementID",
 			Type = "Function",
 
@@ -726,6 +735,15 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "isInBrawl", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInRatedMatchWithDeserterPenalty",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInRatedMatchWithDeserterPenalty", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1411,6 +1429,16 @@ local PvpInfo =
 				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RatedMatchDeserterPenalty",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "personalRatingChange", Type = "number", Nilable = false },
+				{ Name = "queuePenaltySpellID", Type = "number", Nilable = false },
+				{ Name = "queuePenaltyDuration", Type = "number", Nilable = false },
 			},
 		},
 		{

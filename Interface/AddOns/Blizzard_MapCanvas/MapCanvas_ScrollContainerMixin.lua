@@ -745,7 +745,7 @@ end
 
 function MapCanvasScrollControllerMixin:GetCursorPosition()
 	local currentX, currentY = GetCursorPosition();
-	local effectiveScale = UIParent:GetEffectiveScale();
+	local effectiveScale = self:GetMap():GetEffectiveScale();
 	return currentX / effectiveScale, currentY / effectiveScale;
 end
 

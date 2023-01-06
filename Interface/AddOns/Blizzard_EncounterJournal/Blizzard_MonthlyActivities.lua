@@ -60,7 +60,7 @@ function MonthlyActivitiesButtonMixin:Init(elementData)
 	self.Checkmark:SetShown(not restricted and elementData.completed and not elementData.pendingComplete);
 	self.CheckmarkFlipbook:SetShown(elementData.pendingComplete);
 	self.ActiveBg:SetShown(self.id == MonthlyActivitySelected);
-	self.TrackingCheckmark:SetShown(elementData.tracked);
+	self.TrackingCheckmark:SetShown(elementData.tracked and not elementData.completed);
 
 	-- Handle scrolling down the list while anims are playing
 	if self.CheckmarkAnim:IsPlaying() or self.CoinAnim:IsPlaying() then

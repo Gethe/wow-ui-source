@@ -708,6 +708,8 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 		self:SetTitle();
 	end
 
+	self:Init(professionInfo);
+
 	self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();

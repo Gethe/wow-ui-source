@@ -1749,7 +1749,7 @@ function PaperDollItemSlotButton_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 
-	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID(), true);
+	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID());
 	if ( not hasItem ) then
 		-- This SetOwner is needed because calling SetInventoryItem now hides tooltip if there is no item
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

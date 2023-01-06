@@ -299,8 +299,11 @@ function ClassTalentImportExportMixin:ConvertToImportLoadoutEntryInfo(treeID, lo
 					result.selectionEntryID = treeNode.entryIDs[1];
 				end
 
-				results[count] = result;
-				count = count + 1;
+				-- There's something wrong with this loadout string if we still don't have an entry ID.
+				if (result.selectionEntryID ~= nil) then
+					results[count] = result;
+					count = count + 1;
+				end
 			end
 		end
 

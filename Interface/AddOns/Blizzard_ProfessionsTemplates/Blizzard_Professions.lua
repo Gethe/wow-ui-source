@@ -549,49 +549,53 @@ function Professions.CreateRecipeReagentsForAllBasicReagents(recipeID, predicate
 	return Professions.CreateRecipeReagentListByPredicate(recipeID, IsBasicReagent);
 end
 
-local function SortNodeData(lhs, rhs)
+local function SortRootData(lhs, rhs)
+	local lhsData = lhs:GetData();
+	local rhsData = rhs:GetData();
+	local lhsGroup = lhsData.group;
+	local rhsGroup = rhsData.group;
+
+	if lhsGroup ~= rhsGroup then
+		return lhsGroup < rhsGroup;
+	end
+
+	local lhsCategoryInfo = lhsData.categoryInfo;
+	local rhsCategoryInfo = rhsData.categoryInfo;
+	local lhsOrder = lhsCategoryInfo.uiOrder;
+	local rhsOrder = rhsCategoryInfo.uiOrder;
+	if lhsOrder ~= rhsOrder then
+		return lhsOrder < rhsOrder;
+	end
+
+	return strcmputf8i(lhsCategoryInfo.name, rhsCategoryInfo.name) < 0;
+end
+
+local function SortCategoryData(lhs, rhs)
 	local lhsData = lhs:GetData();
 	local rhsData = rhs:GetData();
 	local lhsCategoryInfo = lhsData.categoryInfo;
 	local rhsCategoryInfo = rhsData.categoryInfo;
 
 	if lhsCategoryInfo or rhsCategoryInfo then
-		-- Special case for the "Unlearned" divider which only appears adjacent to categories.
-		do
-			local lhsGroup = (lhsCategoryInfo and lhsCategoryInfo.group) or lhsData.group or nil;
-			local rhsGroup = (rhsCategoryInfo and rhsCategoryInfo.group) or rhsData.group or nil;
-			if lhsGroup ~= nil and rhsGroup ~= nil then
-				if lhsGroup < rhsGroup then
-					return true;
-				elseif lhsGroup > rhsGroup then
-					return false;
-				end
-			end
-		end
-
-		if lhsData.categoryInfo and not rhsCategoryInfo then
+		if lhsCategoryInfo and not rhsCategoryInfo then
 			return true;
 		elseif not lhsCategoryInfo and rhsCategoryInfo then
 			return false;
 		elseif lhsCategoryInfo and rhsCategoryInfo then
-			local lhsGroup = lhsCategoryInfo.group;
-			local rhsGroup = rhsCategoryInfo.group;
-			if lhsGroup < rhsGroup then
-				return true;
-			elseif lhsGroup > rhsGroup then
-				return false;
+			local lhsOrder = lhsCategoryInfo.uiOrder;
+			local rhsOrder = rhsCategoryInfo.uiOrder;
+			if lhsOrder ~= rhsOrder then
+				return lhsOrder < rhsOrder;
 			end
 
-			return lhsCategoryInfo.uiOrder < rhsCategoryInfo.uiOrder;
+			return strcmputf8i(lhsCategoryInfo.name, rhsCategoryInfo.name) < 0;
 		end
 	end
 
-	if lhsData.topPadding or rhsData.topPadding then
-		return lhsData.topPadding;
-	end
-
-	if lhsData.bottomPadding or rhsData.bottomPadding then
-		return not lhsData.bottomPadding;
+	local lhsOrder = lhsData.order;
+	local rhsOrder = rhsData.order;
+	if lhsOrder ~= rhsOrder then
+		return lhsOrder < rhsOrder;
 	end
 
 	local lhsRecipeInfo = lhsData.recipeInfo;
@@ -600,19 +604,20 @@ local function SortNodeData(lhs, rhs)
 	local rhsDifficulty = rhsRecipeInfo.difficulty;
 	if lhsDifficulty ~= rhsDifficulty then
 		return lhsDifficulty < rhsDifficulty;
-	else
-		local lhsMaxTrivialLevel = lhsRecipeInfo.maxTrivialLevel;
-		local rhsMaxTrivialLevel = rhsRecipeInfo.maxTrivialLevel;
-		if lhsMaxTrivialLevel ~= rhsMaxTrivialLevel then
-			return lhsMaxTrivialLevel > rhsMaxTrivialLevel;
-		else
-			local lhsItemLevel = lhsRecipeInfo.itemLevel;
-			local rhsItemLevel = rhsRecipeInfo.itemLevel;
-			if lhsItemLevel ~= rhsItemLevel then
-				return lhsItemLevel > rhsItemLevel;
-			end
-		end
 	end
+
+	local lhsMaxTrivialLevel = lhsRecipeInfo.maxTrivialLevel;
+	local rhsMaxTrivialLevel = rhsRecipeInfo.maxTrivialLevel;
+	if lhsMaxTrivialLevel ~= rhsMaxTrivialLevel then
+		return lhsMaxTrivialLevel > rhsMaxTrivialLevel;
+	end
+
+	local lhsItemLevel = lhsRecipeInfo.itemLevel;
+	local rhsItemLevel = rhsRecipeInfo.itemLevel;
+	if lhsItemLevel ~= rhsItemLevel then
+		return lhsItemLevel > rhsItemLevel;
+	end
+
 	return strcmputf8i(lhsRecipeInfo.name, rhsRecipeInfo.name) < 0;
 end
 
@@ -713,7 +718,7 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 			local function SetSortComparator(node)
 				local affectChildren = false;
 				local skipSort = false;
-				node:SetSortComparator(SortNodeData, affectChildren, skipSort);
+				node:SetSortComparator(SortCategoryData, affectChildren, skipSort);
 			end
 			
 			local categoryNodes = {};
@@ -732,7 +737,8 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 
 				local categoryNode = categoryNodes[categoryInfo];
 				if not categoryNode then
-					categoryNode = node:Insert({categoryInfo=categoryInfo});
+					assert(categoryInfo.group ~= nil, "Missing group for category '%s' ", categoryInfo.name);
+					categoryNode = node:Insert({categoryInfo = categoryInfo, group = categoryInfo.group});
 					categoryNodes[categoryInfo] = categoryNode;
 
 					-- The new category can have categories or recipes.
@@ -740,13 +746,13 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 				end
 
 				if categoryInfo.recipes and #categoryInfo.recipes > 0 then
-					categoryNode:Insert({topPadding=true});
+					categoryNode:Insert({topPadding=true, order = -1});
 					for index, recipeInfo in ipairs(categoryInfo.recipes) do
-						categoryNode:Insert({recipeInfo=recipeInfo});
+						categoryNode:Insert({recipeInfo = recipeInfo, order = 0});
 						addedRecipe = true;
 						-- Recipes are leaf-most, so we don't need any sort comparator.
 					end
-					categoryNode:Insert({bottomPadding=true});
+					categoryNode:Insert({bottomPadding=true, order = 1});
 				end	
 
 				return categoryNode;
@@ -754,6 +760,11 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 
 			local addUnlearnedDivider = false;
 			local node = dataProvider:GetRootNode();
+
+			local affectChildren = false;
+			local skipSort = false;
+			node:SetSortComparator(SortRootData, affectChildren, skipSort);
+
 			for _, categoryMap in ipairs(maps) do
 				for _, categoryInfo in pairs(categoryMap) do
 					AttachTreeDataRecursive(categoryMap, categoryNodes, categoryInfo, node);
@@ -1320,7 +1331,7 @@ function Professions.IsRecipeOnCooldown(recipeID)
 	return true;
 end
 
-function Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isRecraft)
+function Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isRecraft, unusableBOP)
 	local newOrder =
 	{
 		itemID = itemID,
@@ -1331,6 +1342,7 @@ function Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isR
 		tipAmount = 0,
 		isRecraft = isRecraft,
 		minQuality = 1,
+		unusableBOP = unusableBOP,
 	};
 
 	return newOrder

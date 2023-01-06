@@ -225,6 +225,9 @@ function InboxFrame_Update()
 			else
 				button.IconBorder:Hide();
 				button.IconOverlay:Hide();
+				if button.ProfessionQualityOverlay then
+					button.ProfessionQualityOverlay:Hide();
+				end
 			end
 
 			buttonIcon = _G["MailItem"..i.."ButtonIcon"];

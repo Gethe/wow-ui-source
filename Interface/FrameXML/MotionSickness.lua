@@ -58,7 +58,11 @@ function MotionSicknessMixin:OnEvent(event, ...)
 		if cvar == "motionSicknessFocalCircle" or "motionSicknessLandscapeDarkening" then
 			self:OnCVarChanged(cvar);
 		end
-	elseif event == "PLAYER_CAN_GLIDE_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
+	elseif event == "PLAYER_CAN_GLIDE_CHANGED" then
+		local eventCanGlide = ...;
+		self:UpdateFocalCircle(eventCanGlide);
+		self:UpdateLandscapeDarkening(eventCanGlide);
+	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:UpdateFocalCircle();
 		self:UpdateLandscapeDarkening();
 	elseif event == "UI_SCALE_CHANGED" then
@@ -80,6 +84,7 @@ end
 function MotionSicknessMixin:OnUpdate()
 	local isGliding, canGlide, forwardSpeed = C_PlayerInfo.GetGlidingInfo();
 	local alpha = 0;
+
 	if forwardSpeed >= self.landscapeDarkeningMaxSpeed then
 		alpha = self.landscapeDarkeningMaxAlpha;
 	elseif forwardSpeed >= self.landscapeDarkeningMinSpeed then
@@ -93,11 +98,16 @@ function MotionSicknessMixin:OnUpdate()
 	end
 end
 
-function MotionSicknessMixin:UpdateFocalCircle()
+function MotionSicknessMixin:UpdateFocalCircle(eventCanGlide)
 	local doShow = false;
 	if self.focalCircle then
 		local isGliding, canGlide, forwardSpeed = C_PlayerInfo.GetGlidingInfo();
-		doShow = canGlide;
+
+		if eventCanGlide == nil then
+			doShow = canGlide;
+		else
+			doShow = eventCanGlide
+		end
 	end
 	
 	self.FocalCircle:SetShown(doShow);
@@ -134,11 +144,16 @@ function MotionSicknessMixin:OnCVarChanged(cvar)
 	end
 end
 
-function MotionSicknessMixin:UpdateLandscapeDarkening()
+function MotionSicknessMixin:UpdateLandscapeDarkening(eventCanGlide)
 	local doShow = false;
 	if self.landscapeDarkening then
 		local isGliding, canGlide, forwardSpeed = C_PlayerInfo.GetGlidingInfo();
-		doShow = canGlide;
+
+		if eventCanGlide == nil then
+			doShow = canGlide;
+		else
+			doShow = eventCanGlide
+		end
 	end
 
 	if doShow then

@@ -109,10 +109,6 @@ function PortraitFrameMixin:SetPortraitTextureSizeAndOffset(size, offsetX, offse
 	portrait:SetPoint("TOPLEFT", self, "TOPLEFT", offsetX, offsetY);
 end
 
-function PortraitFrameMixin:DefaultPortraitTextureSizeAndOffset()
-	self:SetPortraitTextureSizeAndOffset(60, -54, 7); -- [NB] TODO: Template lookup?
-end
-
 do
 	local function SetFrameLevelInternal(frame, level)
 		if frame then

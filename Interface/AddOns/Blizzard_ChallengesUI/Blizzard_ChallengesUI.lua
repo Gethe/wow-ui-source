@@ -289,23 +289,23 @@ function ChallengeModeWeeklyChestMixin:Update(bestMapID, dungeonScore)
 	if C_WeeklyRewards.HasAvailableRewards() then
 		chestState = CHEST_STATE_COLLECT;
 
-		self.Icon:SetAtlas("mythicplus-greatvault-collect", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-greatvault-collect", TextureKitConstants.UseAtlasSize);
+		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-collect", TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-collect", TextureKitConstants.UseAtlasSize);
 		self.RunStatus:SetText(MYTHIC_PLUS_COLLECT_GREAT_VAULT);
 		self.AnimTexture:Show();
 		self.AnimTexture.Anim:Play();
 	elseif self:HasUnlockedRewards(Enum.WeeklyRewardChestThresholdType.MythicPlus) then
 		chestState = CHEST_STATE_COMPLETE;
 
-		self.Icon:SetAtlas("mythicplus-greatvault-complete", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-greatvault-complete", TextureKitConstants.UseAtlasSize);
+		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-complete", TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-complete", TextureKitConstants.UseAtlasSize);
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
 	elseif C_MythicPlus.GetOwnedKeystoneLevel() or (dungeonScore and dungeonScore > 0) then
 		chestState = CHEST_STATE_INCOMPLETE;
 
-		self.Icon:SetAtlas("mythicplus-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
+		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
 	end

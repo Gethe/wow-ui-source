@@ -89,7 +89,8 @@ function ProfessionsCustomerOrdersRecipeListElementMixin:OnClick(button)
 	elseif IsModifiedClick("CHATLINK") then
 		UseItemLink(ChatEdit_InsertLink);
 	else
-		EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", self.option.itemID, self.option.spellID, self.option.skillLineAbilityID);
+		local unusableBOP = self.option.bindOnPickup and not self.option.canUse;
+		EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", self.option.itemID, self.option.spellID, self.option.skillLineAbilityID, unusableBOP);
 	end
 	elseif button == "RightButton" then
 		ToggleDropDownMenu(1, self.option.spellID, self.contextMenu, "cursor");

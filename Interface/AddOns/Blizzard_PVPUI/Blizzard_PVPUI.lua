@@ -2010,7 +2010,7 @@ end
 
 function PVPWeeklyChestMixin:OnShow()
 	local state = self:GetState();
-	local atlas = "pvpqueue-chest-greatvault-"..state;
+	local atlas = "pvpqueue-chest-dragonflight-greatvault-"..state;
 	self.ChestTexture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 	self.Highlight:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 
