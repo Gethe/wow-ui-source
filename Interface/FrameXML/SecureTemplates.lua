@@ -145,7 +145,7 @@ function SecureButton_GetModifiedUnit(self, button)
                         unit = gsub(unit, "^[pP][lL][aA][yY][eE][rR][pP][eE][tT]", "pet");
                 end
 
-                --[[local noPet, hadPet = unit:gsub("[pP][eE][tT](%d)", "%1");
+                local noPet, hadPet = unit:gsub("[pP][eE][tT](%d)", "%1");
                 if ( hadPet == 0 ) then
                         noPet, hadPet = unit:gsub("^[pP][eE][tT]", "player");
                 end
@@ -163,7 +163,7 @@ function SecureButton_GetModifiedUnit(self, button)
                         elseif ( (hadTarget == 0) or SecureButton_GetModifiedAttribute(self, "allowVehicleTarget", button) ) then
                                 unit = unit:gsub("^[pP][lL][aA][yY][eE][rR]", "pet"):gsub("^([%a]+)([%d]+)", "%1pet%2");
                         end
-                end]]
+                end
 
                 return unit;
         end

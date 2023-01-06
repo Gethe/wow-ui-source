@@ -962,7 +962,6 @@ function AuctionFrameBrowse_Update()
 
 				yourBidText = _G[buttonName.."YourBidText"];
 				if ( highBidder ) then
-					yourBidText.Text:SetText("YOUR_BID");
 					yourBidText:Show();
 				elseif ( showPricePerUnit ) then
 					yourBidText.Text:SetText(string.format(BID_LABEL, count));

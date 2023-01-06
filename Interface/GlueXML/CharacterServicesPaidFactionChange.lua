@@ -45,7 +45,7 @@ function PFCCharacterSelectBlock:SetResultsShown(shown)
 	end
 end
 
-local function DoesClientThinkTheCharacterIsEligibleForPFC(characterID)
+function DoesClientThinkTheCharacterIsEligibleForPFC(characterID)
 	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, faction, mailSenders = select(7, GetCharacterInfo(characterID));
 	local errors = {};
 

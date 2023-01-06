@@ -60,7 +60,6 @@ function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
 end
 
 function CharacterServicesCharacterSelectorMixin:Refresh()
-	print("CharacterServicesCharacterSelectorMixin:Refresh()");
 	CharacterSelect_ForEachVisibleCharacterButton(function(button)
 		hasAnyValidCharacter = self:UpdateSingleCharacter(button) or hasAnyValidCharacter;
 	end);

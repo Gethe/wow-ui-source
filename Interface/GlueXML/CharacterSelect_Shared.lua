@@ -2289,7 +2289,15 @@ local function GetVASDistributions()
 		distributionsByVASType[distribution.serviceType] = distribution;
 	end
 
-	if GetNumCharacters() == 0 then
+	local hasAtLeastOneEligible = false;
+	for i = 1, GetNumCharacters() do
+		hasAtLeastOneEligible = DoesClientThinkTheCharacterIsEligibleForPFC(GetCharIDFromIndex(i));
+		if hasAtLeastOneEligible then
+			break;
+		end
+	end
+
+	if GetNumCharacters() == 0 or not hasAtLeastOneEligible then
 		local needsNoCharactersStatus = {
 			Enum.ValueAddedServiceType.PaidCharacterTransfer,
 			Enum.ValueAddedServiceType.PaidFactionChange
