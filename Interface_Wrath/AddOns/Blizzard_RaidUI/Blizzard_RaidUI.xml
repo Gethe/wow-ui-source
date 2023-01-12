@@ -784,7 +784,7 @@
 		<Scripts>
 			<OnClick>
 				DoReadyCheck();
-				PlaySound("UChatScrollButton");
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 			</OnClick>
 		</Scripts>
 		<NormalFont style="GameFontNormalSmall"/>

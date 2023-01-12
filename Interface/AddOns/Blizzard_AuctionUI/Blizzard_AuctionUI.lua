@@ -1,4 +1,8 @@
 -- keep last item sent to auction & it's price
+
+-- To experiment with different "20x" label strings, use:
+-- /script AUCTION_PRICE_STACK_SIZE_LABEL = "%dx"
+
 LAST_ITEM_AUCTIONED = "";
 LAST_ITEM_COUNT = 0;
 LAST_ITEM_START_BID = 0;
@@ -10,33 +14,6 @@ local PRICE_TYPE_STACK = 2;
 
 local activeTooltipPriceTooltipFrame = nil;
 local activeTooltipAuctionFrameItem = nil;
-
--- TODO - Add strings to GlobalStrings
-AUCTION_SORT_OPTIONS_TOOLTIP_TITLE = "Price Sorting Options";
---AUCTION_SORT_OPTIONS_TOOLTIP_TEXT = "Sort prices by unit price vs. total price, and buyout vs. bid price";
-AUCTION_SORT_OPTIONS_PROMPT = "Sort Prices By:";
-
-AUCTION_SORT_OPTION_BID_PRICE = "Current Bid";
-AUCTION_SORT_OPTION_BUYOUT_PRICE = "Buyout";
-AUCTION_SORT_OPTION_TOTAL_PRICE = "Total Price";
-AUCTION_SORT_OPTION_UNIT_PRICE = "Unit Price";
-
---CURRENT_BID = "Current Bid";
---BUYOUT = "Buyout"; -- Auctions column button label, Buyout button
---BUYOUT_COST = "Buyout"; -- Browse column button label
-UNIT_BUYOUT_COST = "Buyout"; -- /script UNIT_BUYOUT_COST = "Unit Buyout"
-BID_LABEL = "%dx" -- /script BID_LABEL = "%dx"
-
---AUCTION_BROWSE_UNIT_PRICE_SORT = "Price Per Unit";
-AUCTION_SORT_HEADER_TOTAL_BID_PRICE = "Current Bid";
-AUCTION_SORT_HEADER_TOTAL_BUYOUT_PRICE = "Buyout";
-AUCTION_SORT_HEADER_UNIT_BID_PRICE = "Current Bid (Per Unit)";
-AUCTION_SORT_HEADER_UNIT_BUYOUT_PRICE = "Buyout (Per Unit)";
-
---AUCTION_TOOLTIP_BID_PREFIX = "Price per unit:";
---AUCTION_TOOLTIP_BUYOUT_PREFIX = "Buyout price per unit:";
-AUCTION_TOOLTIP_TOTAL_BID_PREFIX = "Total bid:";
-AUCTION_TOOLTIP_TOTAL_BUYOUT_PREFIX = "Total buyout:";
 
 local function IsSortingByUnitPrice()
 	return GetCVarBool("auctionSortByUnitPrice");
@@ -962,9 +939,10 @@ function AuctionFrameBrowse_Update()
 
 				yourBidText = _G[buttonName.."YourBidText"];
 				if ( highBidder ) then
+					yourBidText.Text:SetText(YOUR_BID);
 					yourBidText:Show();
 				elseif ( showPricePerUnit ) then
-					yourBidText.Text:SetText(string.format(BID_LABEL, count));
+					yourBidText.Text:SetText(string.format(AUCTION_PRICE_STACK_SIZE_LABEL, count));
 					yourBidText:Show();
 				else
 					yourBidText:Hide();

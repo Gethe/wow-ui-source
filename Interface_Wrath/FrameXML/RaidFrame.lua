@@ -2,7 +2,7 @@
 MAX_RAID_MEMBERS = 40;
 NUM_RAID_GROUPS = 8;
 MEMBERS_PER_RAID_GROUP = 5;
-MAX_RAID_INFOS = 10;
+MAX_RAID_INFOS = 20;
 
 function RaidParentFrame_OnLoad(self)
 	SetPortraitToTexture(self.portrait, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");

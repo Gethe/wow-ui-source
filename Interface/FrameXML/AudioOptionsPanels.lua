@@ -55,6 +55,7 @@ SoundPanelOptions = {
 	Sound_EnablePetSounds = { text = "ENABLE_PET_SOUNDS" },
 	Sound_ZoneMusicNoDelay = { text = "ENABLE_MUSIC_LOOPING" },
 	Sound_EnableSoundWhenGameIsInBG = { text = "ENABLE_BGSOUND" },
+	Sound_EnableDSPEffects = { text = "ENABLE_DSP_EFFECTS" },
 	--Sound_EnableReverb = { text = "ENABLE_REVERB" },
 	--Sound_EnableHardware = { text = "ENABLE_HARDWARE" },
 	--Sound_EnablePositionalLowPassFilter = { text = "ENABLE_SOFTWARE_HRTF" },

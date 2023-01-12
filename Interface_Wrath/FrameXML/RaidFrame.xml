@@ -455,6 +455,96 @@
 											</Anchor>
 										</Anchors>
 									</Frame>
+									<Frame name="RaidInfoInstance11" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance10" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="RaidInfoInstance12" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance11" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="RaidInfoInstance13" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance12" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="RaidInfoInstance14" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance13" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="RaidInfoInstance15" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance14" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="RaidInfoInstance16" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance15" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="RaidInfoInstance17" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance16" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="RaidInfoInstance18" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance17" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="RaidInfoInstance19" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance18" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="RaidInfoInstance20" inherits="RaidInfoInstanceTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="RaidInfoInstance19" relativePoint="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</Frame>
 								</Frames>
 							</Frame>
 						</ScrollChild>

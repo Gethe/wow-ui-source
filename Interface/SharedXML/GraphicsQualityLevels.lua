@@ -106,7 +106,7 @@ VideoData["Graphics_Quality"]={
 			if (self.raid) then
 				graphicsQualityCVar = "RAIDgraphicsQuality";
 			end
-			BlizzardOptionsPanel_SetCVarSafe(graphicsQualityCVar, value);
+			BlizzardOptionsPanel_SetCVarSafe(graphicsQualityCVar, GetGraphicsCVarOffsetForCVar(value));
 		end,
 }
 

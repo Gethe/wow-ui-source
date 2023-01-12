@@ -393,7 +393,7 @@ end
 function Graphics_TableSetValue(self, value)
 	if(self.graphicsCVar) then
 		--New method: Call into helper functions and let the C-side handle values.
-		SetCVar(self.graphicsCVar, value);
+		SetCVar(self.graphicsCVar, GetGraphicsCVarOffsetForCVar(value));
 	elseif(self.data[value] and self.data[value].cvars ~= nil) then
 		for cvar, cvar_value in pairs(self.data[value].cvars) do
 			--Old method: Set CVars directly.
@@ -501,7 +501,7 @@ end
 -------------------------------------------------------------------------------------------------------
 function Graphics_TableGetValue(self)
 	if(self.graphicsCVar) then
-		return tonumber(GetCVar(self.graphicsCVar));
+		return tonumber(GetGraphicsCVarOffsetForUI(GetCVar(self.graphicsCVar)));
 	end
 
 	if(self.childOptions) then
