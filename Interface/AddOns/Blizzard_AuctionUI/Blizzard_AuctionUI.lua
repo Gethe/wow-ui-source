@@ -566,6 +566,57 @@ local function AuctionFrameBrowse_SearchHelper(...)
 	end
 end
 
+-- If string is quoted, return the string with the quotes removed, otherwise return nil.
+function DequoteString(s)
+	-- Recognize the ASCII double character quote or (unlike mainline) Unicode curly double quotes.
+	-- Also recognize the French "guillemet" double angle quote characters since the mainline
+	-- auction house converts those to ASCII double quotes in CaseAccentInsensitiveParseInternal().
+	-- Always recognize any of these quote characters, regardless of the user's locale setting.
+
+	-- Unicode code points as UTF-8 strings.
+	local doubleQuote = '"';					-- U+0022 Quotation Mark
+	local leftDoubleQuote = "\226\128\156";		-- U+201C Left Double Quotation Mark
+	local rightDoubleQuote = "\226\128\157";	-- U+201D Right Double Quotation Mark
+	local leftGuillemet = "\194\171";			-- U+00AB Left-Pointing Double Angle Quotation Mark
+	local rightGuillemet = "\194\187";			-- U+00BB Right-Pointing Double Angle Quotation Mark
+
+	-- Check is the search string starts with a recognized opening quote and get its UTF-8 length.
+	local quoteLen = 0;
+
+	if (#s >= #doubleQuote and string.sub(s, 1, #doubleQuote) == doubleQuote) then
+		quoteLen = #doubleQuote;
+	elseif (#s >= #leftDoubleQuote and string.sub(s, 1, #leftDoubleQuote) == leftDoubleQuote) then
+		quoteLen = #leftDoubleQuote;
+	elseif (#s >= #leftGuillemet and string.sub(s, 1, #leftGuillemet) == leftGuillemet) then
+		quoteLen = #leftGuillemet;
+	end
+
+	if (quoteLen == 0) then
+		return nil;
+	end
+
+	-- Trim the opening quote
+	s = string.sub(s, quoteLen + 1);
+
+	-- Check is the search string ends with a recognized closing quote and get its UTF-8 length.
+	quoteLen = 0;
+
+	if (#s >= #doubleQuote and string.sub(s, -#doubleQuote) == doubleQuote) then
+		quoteLen = #doubleQuote;
+	elseif (#s >= #rightDoubleQuote and string.sub(s, -#rightDoubleQuote) == rightDoubleQuote) then
+		quoteLen = #rightDoubleQuote;
+	elseif (#s >= #rightGuillemet and string.sub(s, -#rightGuillemet) == rightGuillemet) then
+		quoteLen = #rightGuillemet;
+	end
+
+	if (quoteLen == 0) then
+		return nil;
+	end
+
+	-- Trim the closing quote	
+	return string.sub(s, 1, -(quoteLen + 1));
+end
+
 function AuctionFrameBrowse_Search()
 	if (AuctionFrame_DoesCategoryHaveFlag("WOW_TOKEN_FLAG", AuctionFrameBrowse.selectedCategoryIndex)) then
 		AuctionWowToken_UpdateMarketPrice();
@@ -575,7 +626,17 @@ function AuctionFrameBrowse_Search()
 			AuctionFrameBrowse.page = 0;
 		end
 
-		AuctionFrameBrowse_SearchHelper(BrowseName:GetText(), BrowseMinLevel:GetNumber(), BrowseMaxLevel:GetNumber(), AuctionFrameBrowse.selectedCategoryIndex, AuctionFrameBrowse.selectedSubCategoryIndex, AuctionFrameBrowse.selectedSubSubCategoryIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown), false);
+		-- If the search string is in quotes, do an exact match on the dequoted string, otherwise
+		-- do the default substring search.
+		local exactMatch = false;
+		local text = BrowseName:GetText();
+		local dequotedText = DequoteString(text);
+		if ( dequotedText ~= nil ) then
+			exactMatch = true;
+			text = dequotedText;
+		end
+
+		AuctionFrameBrowse_SearchHelper(text, BrowseMinLevel:GetNumber(), BrowseMaxLevel:GetNumber(), AuctionFrameBrowse.selectedCategoryIndex, AuctionFrameBrowse.selectedSubCategoryIndex, AuctionFrameBrowse.selectedSubSubCategoryIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown), exactMatch);
 
 		-- Start "searching" messaging
 		AuctionFrameBrowse.isSearching = 1;

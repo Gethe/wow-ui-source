@@ -418,7 +418,7 @@ function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
 	end
 
 	local errorCode = Voice_GetGameErrorFromStatusCode(statusCode);
-	if errorCode then
+	if errorCode and errorString then
 		UIErrorsFrame:TryDisplayMessage(errorCode, errorString, RED_FONT_COLOR:GetRGB());
 	end
 end

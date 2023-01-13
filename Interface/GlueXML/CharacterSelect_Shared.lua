@@ -114,6 +114,9 @@ function CharacterSelectLockedButtonMixin:OnClick()
 			glueContextMenu:AddButton(CANCEL, CloseContextMenu);
 
 			glueContextMenu:Show();
+		elseif #availableBoostTypes == 1 then
+			local flowData = C_CharacterServices.GetCharacterServiceDisplayData(availableBoostTypes[1]);
+			CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, self.guid);
 		else
 			CharacterSelect_ShowBoostUnlockDialog(self.guid);
 		end

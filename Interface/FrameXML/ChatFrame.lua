@@ -4365,7 +4365,7 @@ function ChatEdit_InsertLink(text)
 			item = GetItemInfo(text);
 		end
 		if ( item ) then
-			BrowseName:SetText(item);
+			BrowseName:SetText('"'..item..'"');
 			return true;
 		end
 	end
