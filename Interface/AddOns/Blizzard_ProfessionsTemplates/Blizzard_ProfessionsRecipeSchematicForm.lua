@@ -252,7 +252,7 @@ end
 function ProfessionsRecipeSchematicFormMixin:GetRecipeOperationInfo()
 	local recipeInfo = self.currentRecipeInfo;
 	if recipeInfo then
-		if self.recipeSchematic.hasGatheringOperationInfo then
+		if self.recipeSchematic.recipeType == Enum.TradeskillRecipeType.Gathering then
 			return C_TradeSkillUI.GetGatheringOperationInfo(recipeInfo.recipeID);
 		elseif self.recipeSchematic.hasCraftingOperationInfo then
 			local recraftItemGUID, recraftOrderID = self.transaction:GetRecraftAllocation();
@@ -262,8 +262,8 @@ function ProfessionsRecipeSchematicFormMixin:GetRecipeOperationInfo()
 				return C_TradeSkillUI.GetCraftingOperationInfo(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID());
 			end
 		end
-		end
 	end
+end
 
 function ProfessionsRecipeSchematicFormMixin:ClearTransaction()
 	self.transaction = nil;
@@ -579,9 +579,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end
 
 		Professions.SetupOutputIcon(self.OutputIcon, self.transaction, outputItemInfo);
-		local showCount = not recipeInfo.isGatheringRecipe;
-		self.OutputIcon.Count:SetShown(showCount);
-		self.OutputIcon.CountShadow:SetShown(showCount);
 	end);
 
 	self.OutputIcon:SetScript("OnEnter", function()

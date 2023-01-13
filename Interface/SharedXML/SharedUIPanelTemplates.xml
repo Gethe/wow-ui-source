@@ -2438,7 +2438,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<!-- TODO:: This should be using InitButton -->
+			<!-- Note: This isn't using the InitButton pattern from UIButtonTemplate because there are load order issues if we do. -->
 			<OnLoad method="OnLoad"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>

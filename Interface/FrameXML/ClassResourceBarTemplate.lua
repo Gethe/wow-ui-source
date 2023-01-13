@@ -85,11 +85,10 @@ function ClassResourceBarMixin:Setup()
 	end
 
 	if showBar then
-		self.unit = self.unit or self:GetParent():GetParent().unit;
-		self.unit = self.unit or "player";
-		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit);
-		self:RegisterUnitEvent("UNIT_MAXPOWER", unit);
-		self:RegisterUnitEvent("UNIT_POWER_POINT_CHARGE", unit);
+		self.unit = self.unit or self:GetParent():GetParent().unit or "player";
+		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", self.unit);
+		self:RegisterUnitEvent("UNIT_MAXPOWER", self.unit);
+		self:RegisterUnitEvent("UNIT_POWER_POINT_CHARGE", self.unit);
 		if (self.unit == "player" and self.requiredShownLevel and UnitLevel(self.unit) < self.requiredShownLevel) then
 			self:RegisterEvent("PLAYER_LEVEL_UP");
 		else
@@ -107,8 +106,7 @@ function ClassResourceBarMixin:UpdateMaxPower()
 	self.classResourceButtonPool:ReleaseAll();
 	self.classResourceButtonTable = { };
 
-	self.unit = self.unit or self:GetParent():GetParent().unit;
-	self.unit = unit or "player";
+	self.unit = self.unit or self:GetParent():GetParent().unit or "player";
 	self.maxUsablePoints = UnitPowerMax(self.unit, self.powerType);
 	for i = 1, self.maxUsablePoints do
 		local resourcePoint = self.classResourceButtonPool:Acquire();

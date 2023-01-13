@@ -44,7 +44,13 @@ end
 MonthlyActivitiesButtonMixin = { };
 
 function MonthlyActivitiesButtonMixin:Init(elementData)
-	local restricted = AreMonthlyActivitiesRestricted();
+	-- Handle scrolling down the list while anims are playing on an existing button
+	if self.CheckmarkAnim:IsPlaying() or self.CoinAnim:IsPlaying() then
+		self.CheckmarkAnim:Stop();
+		self.CoinAnim:Stop();
+		self.pendingComplete = false;
+		MonthlyActivities_PendingAnimComplete();
+	end
 
 	self.id = elementData.id;
 	self.tracked = elementData.tracked;
@@ -54,26 +60,18 @@ function MonthlyActivitiesButtonMixin:Init(elementData)
 	self.completed = elementData.completed;
 	self.Name:SetText(elementData.name);
 	self.Name:SetFontObject(elementData.completed and "GameFontBlackMedium" or "GameFontHighlightMedium");
-	self.Ribbon:SetShown(not restricted and (elementData.completed or elementData.rewardAvailable));
-	self.Points:SetText(FormatPercentage(elementData.points / elementData.thresholdMax));
-	self.Points:SetShown(not restricted and not elementData.completed and elementData.rewardAvailable and not elementData.pendingComplete);
-	self.Checkmark:SetShown(not restricted and elementData.completed and not elementData.pendingComplete);
+	self.Ribbon:SetShown(not elementData.restricted and (elementData.completed or elementData.rewardAvailable));
+	self.Points:SetText(elementData.points);
+	self.Points:SetShown(not elementData.restricted and not elementData.completed and elementData.rewardAvailable and not elementData.pendingComplete);
+	self.Checkmark:SetShown(not elementData.restricted and elementData.completed and not elementData.pendingComplete);
 	self.CheckmarkFlipbook:SetShown(elementData.pendingComplete);
 	self.ActiveBg:SetShown(self.id == MonthlyActivitySelected);
 	self.TrackingCheckmark:SetShown(elementData.tracked and not elementData.completed);
 
-	-- Handle scrolling down the list while anims are playing
-	if self.CheckmarkAnim:IsPlaying() or self.CoinAnim:IsPlaying() then
-		self.CheckmarkAnim:Stop();
-		self.CoinAnim:Stop();
-		self.pendingComplete = false;
-		MonthlyActivities_PendingAnimComplete();
-	end
-
 	self:SetNormalAtlas(elementData.completed and "activities-complete" or "activities-incomplete");
 
 	-- Prevent hover state and tooltip when restricted
-	self:SetEnabled(not restricted);
+	self:SetEnabled(not elementData.restricted);
 
 	self:Show();
 end
@@ -334,7 +332,8 @@ function MonthlyActivitiesFilterListMixin:OnLoad()
 			self.ScrollBox:ScrollToElementData(elementData, ScrollBoxConstants.AlignNearest);
 		end
 
-		EncounterJournal.MonthlyActivitiesFrame:UpdateActivities(ScrollBoxConstants.RetainScrollPosition);
+		local activitiesInfo = C_PerksActivities.GetPerksActivitiesInfo();
+		EncounterJournal.MonthlyActivitiesFrame:SetActivities(activitiesInfo.activities, ScrollBoxConstants.RetainScrollPosition);
 	end;
 
 	MonthlyActivityFilterSelection = ScrollUtil.AddSelectionBehavior(self.ScrollBox);
@@ -380,7 +379,9 @@ function MonthlyActivitiesFilterListMixin:UpdateFilters()
 	
 	self.ScrollBox:SetDataProvider(dataProvider);
 
-	MonthlyActivityFilterSelection:SelectFirstElementData();
+	if not MonthlyActivityFilterSelection:HasSelection() then
+		MonthlyActivityFilterSelection:SelectFirstElementData();
+	end
 end
 
 -- MonthlyActivitiesFrame
@@ -459,7 +460,6 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 		return false;
 	end
 
-	local allRewardsCollected = true;
 	local thresholdMax = 0;
 	for _, thresholdInfo in pairs(activitiesInfo.thresholds) do
 		thresholdInfo.pendingReward = HasPendingReward(thresholdInfo.thresholdID);
@@ -467,12 +467,9 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 		if thresholdInfo.requiredContributionAmount > thresholdMax then
 			thresholdMax = thresholdInfo.requiredContributionAmount;
 		end
-
-		if thresholdInfo.pendingReward then
-			allRewardsCollected = false;
-		end
 	end
-	self.allRewardsCollected = allRewardsCollected;
+
+	self.allRewardsCollected = TableIsEmpty(pendingRewards);
 
 	-- Prevent divide by zero below
 	if thresholdMax == 0 then
@@ -497,19 +494,19 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 	-- Build UI - rewards text or threshold bar at the top, activities list below
 	self:UpdateTime(activitiesInfo.displayMonthName);
 	self:SetThresholds(activitiesInfo.thresholds, earnedThresholdAmount, thresholdMax);
-	self:SetActivities(activitiesInfo.activities, allRewardsEarned, thresholdMax, retainScrollPosition);
+	self:SetActivities(activitiesInfo.activities, retainScrollPosition);
+	self.FilterList:UpdateFilters();
 
 	local currentMonth = tonumber(GetCVar("perksActivitiesCurrentMonth"));
 	if currentMonth ~= activitiesInfo.activePerksMonth then
 		SetCVar("perksActivitiesCurrentMonth", activitiesInfo.activePerksMonth);
 		SetCVar("perksActivitiesLastPoints", 0);
-		self.FilterList:UpdateFilters();
 	end
 
 	local lastPoints = tonumber(GetCVar("perksActivitiesLastPoints"));
 	self:SetCurrentPoints(lastPoints, lastPoints);
 
-	if earnedThresholdAmount ~= lastPoints then
+	if earnedThresholdAmount ~= lastPoints or not TableIsEmpty(self.pendingComplete) then
 		self.pendingTargetValue = earnedThresholdAmount;
 		self.PauseAnim:Play();
 	end
@@ -548,9 +545,10 @@ function MonthlyActivities_PendingAnimComplete(anim)
 	EncounterJournal.MonthlyActivitiesFrame:TriggerNextPending();
 end
 
-function MonthlyActivitiesFrameMixin:SetActivities(activities, allRewardsEarned, thresholdMax, retainScrollPosition)
+function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosition)
 	local selected = MonthlyActivityFilterSelection:GetFirstSelectedElementData();
 	local selectedFilter = selected and selected.filter;
+	local restricted = AreMonthlyActivitiesRestricted();
 
 	-- Add activity buttons
 	local dataProvider = CreateDataProvider();
@@ -572,9 +570,10 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, allRewardsEarned,
 				completed = activity.completed,
 				requirementsList = activity.requirementsList,
 				tracked = activity.tracked,
-				rewardAvailable = not allRewardsEarned,
+				rewardAvailable = not self.allRewardsEarned,
 				pendingComplete = self.pendingComplete[activity.ID],
-				thresholdMax = thresholdMax,
+				thresholdMax = self.thresholdMax,
+				restricted = restricted,
 			});
 		end
 	end
@@ -638,7 +637,7 @@ function MonthlyActivitiesFrameMixin:SetCurrentPoints(curValue, barValue)
 		thresholdFrame:SetCurrentPoints(barValue);
 	end
 
-	self.ThresholdBar.Text:SetText(FormatPercentage(barValue / self.thresholdMax));
+	self.ThresholdBar.Text:SetText(MONTHLY_ACTIVITIES_PROGRESS_TEXT:format(barValue, self.thresholdMax));
 	self.ThresholdBar.BarEnd:SetShown(barValue > 0);
 
 	local allRewardsEarned = barValue >= self.thresholdMax;

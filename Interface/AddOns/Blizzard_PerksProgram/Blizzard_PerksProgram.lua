@@ -168,6 +168,7 @@ function PerksProgramMixin:OnShow()
 
 	StaticPopup_SetFullScreenFrame(self);
 	AlertFrame:SetFullScreenFrame(self, "HIGH");
+	AlertFrame:SetBaseAnchorFrame(self.FooterFrame.RotateButtonContainer);
 	ActionStatus:SetAlternateParentFrame(self);
 
 	EventRegistry:TriggerEvent("PerksProgramFrame.OnShow");
@@ -179,6 +180,7 @@ function PerksProgramMixin:OnHide()
 
 	StaticPopup_ClearFullScreenFrame();
 	AlertFrame:ClearFullScreenFrame();
+	AlertFrame:ResetBaseAnchorFrame();
 	ActionStatus:ClearAlternateParentFrame();
 
 	if self.modelFadeInTimer then
@@ -188,6 +190,9 @@ function PerksProgramMixin:OnHide()
 	self.ModelSceneContainerFrame:SetAlpha(0);
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.PerksProgramVendor);
 	EventRegistry:TriggerEvent("PerksProgramFrame.OnHide");
+
+	local scrollContainer = self.ProductsFrame.ProductsScrollBoxContainer;
+	scrollContainer.selectionBehavior:ClearSelections();
 
 	PlaySound(SOUNDKIT.TRADING_POST_UI_MENU_CLOSE);
 end
@@ -386,4 +391,18 @@ PerksProgramMixin.TimeLeftDetailsFormatter = CreateFromMixins(SecondsFormatterMi
 PerksProgramMixin.TimeLeftDetailsFormatter:Init(0, SecondsFormatter.Abbreviation.Truncate, false, true);
 function PerksProgramMixin.TimeLeftDetailsFormatter:GetMinInterval(seconds)
 	return SecondsFormatter.Interval.Minutes;
+end
+
+----------------------------------------------------------------------------------
+-- TimeLeftFooterFormatter
+----------------------------------------------------------------------------------
+PerksProgramMixin.TimeLeftFooterFormatter = CreateFromMixins(SecondsFormatterMixin);
+PerksProgramMixin.TimeLeftFooterFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, false, true);
+PerksProgramMixin.TimeLeftFooterFormatter:SetStripIntervalWhitespace(true);
+function PerksProgramMixin.TimeLeftFooterFormatter:GetMinInterval(seconds)
+	return SecondsFormatter.Interval.Minutes;
+end
+
+function PerksProgramMixin.TimeLeftFooterFormatter:GetDesiredUnitCount(seconds)
+	return 2;
 end

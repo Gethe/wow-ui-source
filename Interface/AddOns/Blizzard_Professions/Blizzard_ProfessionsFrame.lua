@@ -138,16 +138,21 @@ function ProfessionsMixin:SetOpenRecipeResponse(skillLineID, recipeID, openSpecT
 end
 
 function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
-	local professionChanged = (not self.professionInfo) or (self.professionInfo.profession ~= professionInfo.profession);
-	if not self.professionInfo or (self.professionInfo.professionID ~= professionInfo.professionID) then
+	local professionIDChanged = (not self.professionInfo) or (self.professionInfo.professionID ~= professionInfo.professionID);
+	if professionIDChanged then
+		local professionChanged = (not self.professionInfo) or (self.professionInfo.profession ~= professionInfo.profession);
 		local useNewSkillLine = professionChanged or not useLastSkillLine;
 		if not useNewSkillLine then
 			return;
 		end
 		C_TradeSkillUI.SetProfessionChildSkillLineID(useNewSkillLine and professionInfo.professionID or self.professionInfo.professionID);
-		professionInfo = Professions.GetProfessionInfo();
-		self.professionInfo = professionInfo;
-		EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
+	end
+
+	-- Always updating the profession info so we're not displaying any stale information in the refresh.
+	self.professionInfo = Professions.GetProfessionInfo();
+
+	if professionIDChanged then
+		EventRegistry:TriggerEvent("Professions.ProfessionSelected", self.professionInfo);
 	end
 
 	self:Refresh();

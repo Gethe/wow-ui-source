@@ -58,15 +58,16 @@ local TradeSkillUITypes =
 		{
 			Name = "TradeskillRecipeType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 1,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Item", Type = "TradeskillRecipeType", EnumValue = 1 },
 				{ Name = "Salvage", Type = "TradeskillRecipeType", EnumValue = 2 },
 				{ Name = "Enchant", Type = "TradeskillRecipeType", EnumValue = 3 },
 				{ Name = "Recraft", Type = "TradeskillRecipeType", EnumValue = 4 },
+				{ Name = "Gathering", Type = "TradeskillRecipeType", EnumValue = 5 },
 			},
 		},
 		{
@@ -252,7 +253,6 @@ local TradeSkillUITypes =
 				{ Name = "reagentSlotSchematics", Type = "table", InnerType = "CraftingReagentSlotSchematic", Nilable = false },
 				{ Name = "isRecraft", Type = "bool", Nilable = false },
 				{ Name = "hasCraftingOperationInfo", Type = "bool", Nilable = false },
-				{ Name = "hasGatheringOperationInfo", Type = "bool", Nilable = false },
 			},
 		},
 		{

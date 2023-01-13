@@ -61,7 +61,6 @@ function PerksProgramProductsFrameMixin:Init()
 	scrollContainer.selectionBehavior = ScrollUtil.AddSelectionBehavior(scrollContainer.ScrollBox);
 	scrollContainer.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnFilterChanged", self.OnFilterChanged, self);
-	self:UpdateProducts();
 end
 
 function PerksProgramProductsFrameMixin:ClearFrozenItemInProductList()
@@ -380,7 +379,9 @@ function PerksProgramProductsFrameMixin:UpdateProducts()
 		if PerksProgramFrame:GetFilterState(categoryID) then
 			frozenVendorItemInfo.isFrozen = true;
 			BuildVendorItemInfo(frozenVendorItemInfo);
-			dataProvider:Insert(frozenVendorItemInfo);
+			if PerksProgramProducts_PassFilterCheck(frozenVendorItemInfo) then
+				dataProvider:Insert(frozenVendorItemInfo);
+			end
 		end
 	end
 
@@ -436,6 +437,7 @@ function PerksProgramProductsFrameMixin:SelectPreviousProduct()
 end
 
 function PerksProgramProductsFrameMixin:OnShow()
+	self:UpdateProducts();
 	self.silenceSelectionSounds = true;
 	self.ProductsScrollBoxContainer.selectionBehavior:SelectFirstElementData();
 	self.silenceSelectionSounds = false;

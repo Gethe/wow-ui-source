@@ -25,6 +25,10 @@ do
 			button:Init(elementData);
 		end);
 
+		view:SetElementExtentCalculator(function(dataIndex, elementData)
+			return elementData:CalculateHeight();
+		end);
+
 		ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 		self.entries = CreateFromMixins(QuickJoinEntriesMixin);
@@ -562,8 +566,7 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 		frame.Queues[i]:Hide();
 	end
 
-	--Height
-	frame:SetHeight(self:GetFrameHeight());
+	frame:SetHeight(self:CalculateHeight());
 
 	if ( #self.displayedQueues > 0 and self.displayedQueues[1].queueData.queueType == "lfglist" ) then
 		frame.Icon:SetAtlas("socialqueuing-icon-group");
@@ -576,10 +579,12 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 	end
 end
 
-function QuickJoinEntryMixin:GetFrameHeight()
-	return		13	--Buffer height
-			+	math.max(	(16 + QUICK_JOIN_NAME_SEPARATION) * #self.displayedMembers, --Member height
-							(16 + QUICK_JOIN_NAME_SEPARATION) * min(MAX_NUM_DISPLAYED_QUEUES, #self.displayedQueues)); --Queues height
+function QuickJoinEntryMixin:CalculateHeight()
+	local bufferHeight = 13;
+	local height = (16 + QUICK_JOIN_NAME_SEPARATION);
+	local namesHeight = height * #self.displayedMembers;
+	local queuesHeight = height * min(#self.displayedQueues, MAX_NUM_DISPLAYED_QUEUES)
+	return bufferHeight + math.max(namesHeight, queuesHeight);
 end
 
 ----------------------------

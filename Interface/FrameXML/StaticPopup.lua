@@ -3769,6 +3769,7 @@ StaticPopupDialogs["CONFIRM_LEAVE_BATTLEFIELD"] = {
 	whileDead = 1,
 	hideOnEscape = 1,
 	showAlert = 1,
+	-- acceptDelay - Dynamically set in ConfirmOrLeaveBattlefield()
 }
 
 StaticPopupDialogs["CONFIRM_SURRENDER_ARENA"] = {

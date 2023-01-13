@@ -2095,7 +2095,7 @@ end
 
 SlashCmdList["CHAT_AFK"] = function(msg)
 	if C_PvP.IsInRatedMatchWithDeserterPenalty() then
-		StaticPopup_Show("CONFIRM_LEAVE_BATTLEFIELD");
+		ConfirmOrLeaveBattlefield();
 		return;
 	end
 		

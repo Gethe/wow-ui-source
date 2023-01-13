@@ -50,7 +50,7 @@ function PerksProgramFooterFrameMixin:OnProductSelected(data)
 	historyFrame.RefundIcon:SetShown(isRefundable);
 
 	if isRefundable then
-		local refundTimeLeft = PERKS_PROGRAM_REFUND_TIME_LEFT:format(PerksProgramFrame:FormatTimeLeft(C_PerksProgram.GetVendorItemInfoRefundTimeLeft(data.perksVendorItemID), PerksProgramFrame.TimeLeftListFormatter));
+		local refundTimeLeft = PERKS_PROGRAM_REFUND_TIME_LEFT:format(PerksProgramFrame:FormatTimeLeft(C_PerksProgram.GetVendorItemInfoRefundTimeLeft(data.perksVendorItemID), PerksProgramFrame.TimeLeftFooterFormatter));
 		historyFrame.RefundText:SetText(refundTimeLeft);
 	end
 

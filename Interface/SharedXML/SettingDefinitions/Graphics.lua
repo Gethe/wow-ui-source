@@ -599,6 +599,22 @@ local function Register()
 		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_NOTCH_MODE);
 	end
 
+	-- Low Latency Mode
+	do
+		local cvar = "LowLatencyMode";
+
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			AddValidatedCVarOption(container, cvar, 0, VIDEO_OPTIONS_DISABLED);
+			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_BUILTIN);
+			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_NVIDIA_REFLEX);
+			AddValidatedCVarOption(container, cvar, 3, VIDEO_OPTIONS_NVIDIA_REFLEX_BOOST);
+			return container:GetData();
+		end
+
+		Settings.SetupCVarDropDown(category, cvar, Settings.VarType.Number, GetOptions, LOW_LATENCY_MODE, OPTION_TOOLTIP_LOW_LATENCY_MODE);
+	end
+
 	do
 		local function SplitMSAA(msaa)
 			local msaa, coverage = strsplit(",", msaa);

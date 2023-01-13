@@ -145,20 +145,28 @@ local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceIDs, item
 			end
 		end
 
-		if itemModifiedAppearanceIDs then
-			for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
+		if itemModifiedAppearanceIDs then			
+			-- if all the itemModifiedAppearances have the same Category then only show the FIRST item, we will pop the carousel controls to rotate through the others
+			if PerksProgramUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceIDs) then
+				local itemModifiedAppearanceID = itemModifiedAppearanceIDs[1];
 				actor:TryOn(itemModifiedAppearanceID);
+			else
+				for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
+					actor:TryOn(itemModifiedAppearanceID);
+				end
 			end
 		elseif itemModifiedAppearanceID then
 			local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
 			local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+			local preferredHandSlot;
 			if isWeapon then
 				local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
 				local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
 				actor:UndressSlot(mainHandSlotID);
 				actor:UndressSlot(offHandSlotID);
+				preferredHandSlot = "MAINHANDSLOT";
 			end
-			actor:TryOn(itemModifiedAppearanceID);
+			actor:TryOn(itemModifiedAppearanceID, preferredHandSlot);
 		end
 		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
 		return actor;
@@ -459,6 +467,25 @@ local function UpdateDropShadow(texture, dropShadowSettings)
 	end
 end
 
+function PerksProgramModelSceneContainerFrameMixin:OnCarouselUpdated(data, perksVendorCategoryID, index)
+	if perksVendorCategoryID == Enum.PerksVendorCategoryType.Mount then
+		local overrideCreatureDisplayInfoID = data.creatureDisplays[index];
+		local modelSceneID = nil;
+		local forceSceneChange = false;
+		self:SetupModelSceneForMounts(data, modelSceneID, forceSceneChange, overrideCreatureDisplayInfoID);
+	elseif perksVendorCategoryID == Enum.PerksVendorCategoryType.Pet then
+		-- not yet
+	elseif perksVendorCategoryID == Enum.PerksVendorCategoryType.Toy then
+		-- not yet
+	elseif perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmog or perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmogset then
+		local itemModifiedAppearanceIDs = data and C_TransmogSets.GetAllSourceIDs(data.transmogSetID);
+		if itemModifiedAppearanceIDs then
+			local overrideItemModifiedAppearanceID = itemModifiedAppearanceIDs[index];
+			self:PlayerTryOnOverride(overrideItemModifiedAppearanceID);
+		end
+	end
+end
+
 -- MOUNTS
 function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForMounts(data, modelSceneID, forceSceneChange, overrideCreatureDisplayInfoID)
 	local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(data.mountID);
@@ -501,13 +528,6 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForMounts(data
 	self.ToyOverlayFrame:Hide();
 	self.PlayerModelScene:Hide();
 	EventRegistry:TriggerEvent("PerksProgram.OnModelSceneChanged", self.MainModelScene);
-end
-
-function PerksProgramModelSceneContainerFrameMixin:OnCarouselUpdated(data, index)
-	local overrideCreatureDisplayInfoID = data.creatureDisplays[index];
-	local modelSceneID = nil;
-	local forceSceneChange = false;
-	self:SetupModelSceneForMounts(data, modelSceneID, forceSceneChange, overrideCreatureDisplayInfoID);
 end
 
 -- PETS
@@ -570,6 +590,12 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForToys(data, 
 end
 
 -- TRANSMOGS
+function PerksProgramModelSceneContainerFrameMixin:PlayerTryOnOverride(overrideItemModifiedAppearanceID)
+	if self.playerActor and overrideItemModifiedAppearanceID then
+		self.playerActor:TryOn(overrideItemModifiedAppearanceID);
+	end
+end
+
 function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForTransmogs(data, modelSceneID, forceSceneChange)
 	if forceSceneChange then
 		self.PlayerModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);

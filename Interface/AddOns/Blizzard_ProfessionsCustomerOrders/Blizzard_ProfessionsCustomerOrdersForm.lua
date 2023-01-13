@@ -1156,7 +1156,16 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 		end
 		self.PaymentContainer.TimeRemainingDisplay.Text:SetText(timeRemainingText);
 
-		self.OrderRecipientDisplay.CrafterValue:SetText(order.crafterName or CRAFTING_ORDER_NOT_YET_CLAIMED);
+		local crafterText;
+		if order.crafterName then
+			crafterText = order.crafterName;
+		elseif self.order.orderState == Enum.CraftingOrderState.Created then
+			crafterText = CRAFTING_ORDER_NOT_YET_CLAIMED;
+		else
+			crafterText = CRAFTING_ORDER_NOT_CLAIMED;
+		end
+		self.OrderRecipientDisplay.CrafterValue:SetText(crafterText);
+
 		local orderTypeText;
 		if self.order.orderType == Enum.CraftingOrderType.Public then
 			orderTypeText = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PUBLIC;
@@ -1176,6 +1185,8 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 			orderStateText = PROFESSIONS_ORDER_CANCELLED;
 		elseif self.order.orderState == Enum.CraftingOrderState.Rejected then
 			orderStateText = PROFESSIONS_ORDER_REJECTED;
+		elseif self.order.orderState == Enum.CraftingOrderState.Claimed then
+			orderStateText = PROFESSIONS_CRAFTING_ORDER_IN_PROGRESS;
 		else
 			orderStateText = PROFESSIONS_ORDER_COMPLETE;
 		end

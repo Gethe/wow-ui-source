@@ -132,6 +132,10 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 	self.FinishingReagentSlotContainer.Label:SetText(PROFESSIONS_CRAFTING_FINISHING_HEADER);
 
 	self.QualityMeter.Center:SetScript("OnEnter", function(fill)
+		if not self.operationInfo then
+			return;
+		end
+
 		GameTooltip:SetOwner(fill, "ANCHOR_RIGHT");
 
 		local atlasSize = 25;

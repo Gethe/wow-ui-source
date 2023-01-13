@@ -60,7 +60,7 @@ function MotionSicknessMixin:OnEvent(event, ...)
 		end
 	elseif event == "PLAYER_CAN_GLIDE_CHANGED" then
 		local eventCanGlide = ...;
-		self:UpdateFocalCircle(eventCanGlide);
+		self:UpdateFocalCircle();
 		self:UpdateLandscapeDarkening(eventCanGlide);
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:UpdateFocalCircle();
@@ -96,20 +96,13 @@ function MotionSicknessMixin:OnUpdate()
 	for i, texture in ipairs(self.LandscapeDarkeningTextures) do
 		texture:SetAlpha(alpha);
 	end
+
+	local showFocalCircle = self.focalCircle and forwardSpeed > 0;
+	self.FocalCircle:SetShown(showFocalCircle);
 end
 
-function MotionSicknessMixin:UpdateFocalCircle(eventCanGlide)
-	local doShow = false;
-	if self.focalCircle then
-		local isGliding, canGlide, forwardSpeed = C_PlayerInfo.GetGlidingInfo();
-
-		if eventCanGlide == nil then
-			doShow = canGlide;
-		else
-			doShow = eventCanGlide
-		end
-	end
-	
+function MotionSicknessMixin:UpdateFocalCircle()
+	local doShow = self.focalCircle and (select(3, C_PlayerInfo.GetGlidingInfo()) > 0);
 	self.FocalCircle:SetShown(doShow);
 end
 

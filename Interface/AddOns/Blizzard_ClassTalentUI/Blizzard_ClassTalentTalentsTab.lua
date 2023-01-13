@@ -4,7 +4,7 @@ local BaseYOffset = 1500;
 local BaseRowHeight = 600;
 local PurchaseFXDelay = 1.2;
 
-local NODE_PURCHASE_IN_PROGRESS_FX_1 = 153;
+local NODE_PURCHASE_IN_PROGRESS_FX_1 = 166;
 local NODE_PURCHASE_COMPLETE_FX_1 = 150;
 
 

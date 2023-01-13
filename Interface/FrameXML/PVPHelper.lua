@@ -316,6 +316,11 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 		showTitle = false;
 		self.label:SetText(ARENA_IS_READY);
 		self.leaveButton:Hide();
+	elseif (queueType == "RATEDSHUFFLE") then
+		self.background:SetTexCoord(0, 1, 0, 1);
+		self.background:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-RANDOMDUNGEON");
+		self.label:SetText(BATTLEGROUND_IS_READY);
+		self.leaveButton:Hide();
 	elseif ( queueType == "WARGAME" ) then
 		self.background:SetTexCoord(0, 1, 0, 102/128);
 		self.background:SetTexture("Interface\\PVPFrame\\PvpBg-AlteracValley-ToastBG");
@@ -349,9 +354,53 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 end
 
 -------------------------------------------------------------------------
+---- PVP Ready Dialog Enter Button
+---------------------------------------------------------------------------
+PVPReadyDialogEnterButtonMixin = {};
+
+function PVPReadyDialogEnterButtonMixin:OnClick()
+	local acceptPort = true;
+	if ( AcceptBattlefieldPort(self:GetParent().activeIndex, acceptPort) ) then
+		if( StaticPopup_Visible("DEATH") ) then
+			StaticPopup_Hide("DEATH");
+		end
+		StaticPopupSpecial_Hide(self:GetParent());
+	end
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+end
+
+-------------------------------------------------------------------------
+---- PVP Ready Dialog Leave Button
+---------------------------------------------------------------------------
+PVPReadyDialogLeaveButtonMixin = {};
+
+function PVPReadyDialogLeaveButtonMixin:OnClick()
+	local queueIndex = self:GetParent().activeIndex;
+	local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType = GetBattlefieldStatus(queueIndex);
+	if status == "confirm" and not PVPHelper_QueueAllowsLeaveQueueWithMatchReady(queueType) then
+		UIErrorsFrame:AddExternalErrorMessage(PVP_MATCH_READY_ERROR);
+	else
+		local acceptPort = false;
+		if AcceptBattlefieldPort(queueIndex, acceptPort) then
+			StaticPopupSpecial_Hide(self:GetParent());
+		end
+	end
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+end
+
+-------------------------------------------------------------------------
 ---- PVP Helper Functions
 ---------------------------------------------------------------------------
 
 function PVPHelper_QueueNeedsRoles(queueType, isRated)
 	return queueType == "BATTLEGROUND" and not isRated;
 end
+
+function PVPHelper_QueueAllowsLeaveQueueWithMatchReady(queueType)
+	if queueType == "ARENA" or queueType == "ARENASKIRMISH" or queueType == "RATEDSHUFFLE" or (queueType == "BATTLEGROUND" and registeredMatch) then
+		return false;
+	end
+
+	return true;
+end
+

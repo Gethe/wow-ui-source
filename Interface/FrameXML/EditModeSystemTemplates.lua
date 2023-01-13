@@ -22,6 +22,7 @@ function EditModeSystemMixin:OnSystemLoad()
 	self.Selection:SetLabelText(self.systemName);
 	self:SetupSettingsDialogAnchor();
 	self.snappedFrames = {};
+	self.downKeys = {};
 
 	self.settingDisplayInfoMap = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(self.system);
 end
@@ -30,6 +31,55 @@ function EditModeSystemMixin:OnSystemHide()
 	if self.isSelected then
 		EditModeManagerFrame:ClearSelectedSystem();
 	end
+end
+
+function EditModeSystemMixin:ProcessMovementKey(key)
+	local deltaAmount = self:IsShiftKeyDown() and 10 or 1;
+	local xDelta, yDelta = 0, 0;
+	if key == "UP" then
+		yDelta = deltaAmount;
+	elseif key == "DOWN" then
+		yDelta = -deltaAmount;
+	elseif key == "LEFT" then
+		xDelta = -deltaAmount;
+	elseif key == "RIGHT" then
+		xDelta = deltaAmount;
+	end
+
+	if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
+		self:SetParent(UIParent);
+	end
+	self:ClearFrameSnap();
+
+	self:StopMovingOrSizing();
+	self:BreakFrameSnap(xDelta, yDelta);
+end
+
+local movementKeys = {
+	UP = true,
+	DOWN = true,
+	LEFT = true,
+	RIGHT = true,
+};
+
+function EditModeSystemMixin:OnKeyDown(key)
+	self.downKeys[key] = true;
+	if movementKeys[key] then
+		self:ProcessMovementKey(key);
+	end
+
+end
+
+function EditModeSystemMixin:OnKeyUp(key)
+	self.downKeys[key] = false;
+end
+
+function EditModeSystemMixin:ClearDownKeys()
+	self.downKeys = {};
+end
+
+function EditModeSystemMixin:IsShiftKeyDown()
+	return self.downKeys["LSHIFT"] or self.downKeys["RSHIFT"];
 end
 
 function EditModeSystemMixin:PrepareForSave()
@@ -470,7 +520,7 @@ function EditModeSystemMixin:ClearFrameSnap()
 	end
 end
 
-function EditModeSystemMixin:BreakFrameSnap()
+function EditModeSystemMixin:BreakFrameSnap(deltaX, deltaY)
 	local top = self:GetTop();
 	if top then
 		local scale = self:GetScale();
@@ -485,9 +535,17 @@ function EditModeSystemMixin:BreakFrameSnap()
 			anchorPoint = "TOPLEFT";
 		end
 
+		if deltaX then
+			offsetX = offsetX + deltaX;
+		end
+
+		if deltaY then
+			offsetY = offsetY + deltaY;
+		end
+
 		self:ClearAllPoints();
 		self:SetPoint(anchorPoint, UIParent, anchorPoint, offsetX, offsetY);
-		EditModeManagerFrame:UpdateSystemAnchorInfo(self);
+		EditModeManagerFrame:OnSystemPositionChange(self);
 	end
 end
 

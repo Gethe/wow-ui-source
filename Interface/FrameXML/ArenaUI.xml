@@ -372,7 +372,7 @@
 		<Frames>
 			<Frame name="ArenaEnemyPrepFramesContainer" hidden="true" inherits="VerticalLayoutFrame" mixin="ArenaEnemyPrepFramesContainerMixin">
 				<Anchors>
-					<Anchor point="TOPRIGHT"/>
+					<Anchor point="TOPRIGHT" x="-10"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="spacing" value="10" type="number"/>
@@ -433,7 +433,7 @@
 
 			<Frame name="ArenaEnemyMatchFramesContainer" hidden="true" inherits="VerticalLayoutFrame" mixin="ArenaEnemyMatchFramesContainerMixin">
 				<Anchors>
-					<Anchor point="TOPRIGHT"/>
+					<Anchor point="TOPRIGHT" x="-10"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="spacing" value="10" type="number"/>

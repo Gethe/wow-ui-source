@@ -90,10 +90,10 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="MonthlyActivitiesThresholdTemplate" mixin="MonthlyActivitiesThresholdMixin" virtual="true">
+	<Frame name="MonthlyActivitiesThresholdTemplate" mixin="MonthlyActivitiesThresholdMixin" useParentLevel="true" virtual="true">
 		<Size x="40" y="40"/>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="LineComplete" atlas="activities-complete-line" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="20"/>
@@ -283,14 +283,14 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="BORDER">
+					<Layer level="OVERLAY">
 						<Texture parentKey="BarBorder" atlas="activities-bar-border" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="-2"/>
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="BORDER" textureSubLevel="1">
+					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture parentKey="BarBorderGlow" atlas="activities-bar-border-glow" useAtlasSize="true" alphaMode="ADD" alpha="0">
 							<Anchors>
 								<Anchor point="CENTER" x="-2" y="1"/>
@@ -307,8 +307,7 @@
 						<FontString parentKey="Text" inherits="GameFontHighlight" text="650 / 1,000" justifyV="MIDDLE">
 							<Size x="0" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.barBackground" x="15" y="0"/>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.barBackground" x="15" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.barBackground" x="-30" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -323,6 +322,18 @@
 										<Anchor point="CENTER" x="0" y="0"/>
 									</Anchors>
 								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="TextContainer" frameStrata="HIGH" setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Points" inherits="GameFontHighlight" text="MONTHLY_ACTIVITIES_POINTS" justifyV="MIDDLE">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.$parent.barBackground" x="15" y="0"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
 					</Frame>

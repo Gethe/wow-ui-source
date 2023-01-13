@@ -306,7 +306,7 @@ function Professions.SetupOutputIcon(outputIcon, transaction, outputItemInfo)
 	local quantityMin, quantityMax = recipeSchematic.quantityMin, recipeSchematic.quantityMax;
 
 	-- Quantity min and max in the context of salvage recipes means the reagent cost, not the output quantity.
-	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
+	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) or transaction:IsRecipeType(Enum.TradeskillRecipeType.Gathering) then
 		quantityMin, quantityMax = 1, 1;
 	end
 

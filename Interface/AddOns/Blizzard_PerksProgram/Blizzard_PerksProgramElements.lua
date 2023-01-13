@@ -293,7 +293,7 @@ function PerksProgramCarouselFrameMixin:OnLoad()
 		self.carouselIndex = self.carouselIndex + button.incrementAmount;
 		self.carouselIndex = Clamp(self.carouselIndex, 1, #self.items);
 		self:UpdateCarousel();
-		EventRegistry:TriggerEvent("PerksProgram.OnCarouselUpdated", self.data, self.carouselIndex);
+		EventRegistry:TriggerEvent("PerksProgram.OnCarouselUpdated", self.data, self.perksVendorCategoryID, self.carouselIndex);
 	end
 	self.IncrementButton.incrementAmount = 1;
 	self.IncrementButton:SetScript("OnClick", OnCarouselButtonClick );
@@ -301,8 +301,23 @@ function PerksProgramCarouselFrameMixin:OnLoad()
 	self.DecrementButton:SetScript("OnClick", OnCarouselButtonClick );
 end
 
-function PerksProgramCarouselFrameMixin:OnProductSelectedAfterModel(data)
-	self:SetCarouselItems(data, data.creatureDisplays);
+function PerksProgramCarouselFrameMixin:OnProductSelectedAfterModel(data)	
+	local perksVendorCategoryID = data.perksVendorCategoryID;
+	local items;
+
+	if perksVendorCategoryID == Enum.PerksVendorCategoryType.Mount then
+		items = data.creatureDisplays;
+	elseif perksVendorCategoryID == Enum.PerksVendorCategoryType.Pet then
+		items = nil; -- not yet
+	elseif perksVendorCategoryID == Enum.PerksVendorCategoryType.Toy then
+		items = nil; -- not yet
+	elseif perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmog or perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmogset then
+		local itemModifiedAppearanceIDs = data and C_TransmogSets.GetAllSourceIDs(data.transmogSetID);
+		if itemModifiedAppearanceIDs and PerksProgramUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceIDs) then				
+			items = itemModifiedAppearanceIDs;
+		end
+	end
+	self:SetCarouselItems(data, items, perksVendorCategoryID);
 end
 
 function PerksProgramCarouselFrameMixin:UpdateCarouselText()
@@ -323,10 +338,11 @@ function PerksProgramCarouselFrameMixin:UpdateCarousel()
 	self:UpdateCarouselButtons();
 end
 
-function PerksProgramCarouselFrameMixin:SetCarouselItems(data, items)
+function PerksProgramCarouselFrameMixin:SetCarouselItems(data, items, perksVendorCategoryID)
 	self.carouselIndex = 1;	
 	self.data = data;
 	self.items = items;
+	self.perksVendorCategoryID = perksVendorCategoryID;
 	local count = items and #items or 0;
 	local showCarousel = count > 1;
 
@@ -667,4 +683,20 @@ function PerksModelSceneControlButtonMixin:OnMouseUp()
 		self.modelScene:StopCameraYaw();
 	end
 	self.Icon:SetPoint("CENTER", 0, 0);
+end
+
+PerksProgramUtil = {};
+function PerksProgramUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceIDs)
+	local firstCategoryID = nil;	
+	for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
+		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
+		if not firstCategoryID then
+			firstCategoryID = categoryID;
+		end
+
+		if firstCategoryID ~= categoryID then
+			return false;
+		end
+	end
+	return true;
 end

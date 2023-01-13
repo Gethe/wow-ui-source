@@ -3,7 +3,12 @@ MAX_PARTY_MEMBERS = 4;
 PartyFrameMixin={};
 
 function PartyFrameMixin:OnLoad()
-	self.PartyMemberFramePool = CreateFramePool("BUTTON", self, "PartyMemberFrameTemplate");
+	local function PartyMemberFrameReset(framePool, frame)
+		frame.layoutIndex = nil;
+		FramePool_HideAndClearAnchors(framePool, frame);
+	end
+
+	self.PartyMemberFramePool = CreateFramePool("BUTTON", self, "PartyMemberFrameTemplate", PartyMemberFrameReset);
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 end
 
@@ -22,6 +27,10 @@ function PartyFrameMixin:InitializePartyMemberFrames()
 	self.PartyMemberFramePool:ReleaseAll();
 	for i = 1, MAX_PARTY_MEMBERS do 	
 		 local memberFrame = self.PartyMemberFramePool:Acquire();
+
+		 -- Set for debugging purposes.
+		 memberFrame:SetParentKey("MemberFrame"..i);
+
 		 memberFrame:SetPoint("TOPLEFT");
 		 memberFrame.layoutIndex = i;
 		 memberFramesToSetup[i] = memberFrame;

@@ -56,7 +56,9 @@ end
 
 function LayoutIndexComparator(left, right)
 	if (left.layoutIndex == right.layoutIndex and left ~= right) then
-		GMError("Duplicate layoutIndex found: " .. left.layoutIndex);
+		local leftName = (left.GetDebugName and left:GetDebugName()) or "unnamed";
+		local rightName = (right.GetDebugName and right:GetDebugName()) or "unnamed";
+		GMError(("Duplicate layoutIndex found: %d for %s and %s"):format(left.layoutIndex, leftName, rightName));
 	end
 	return left.layoutIndex < right.layoutIndex;
 end

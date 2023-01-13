@@ -261,6 +261,7 @@ function AlertContainerMixin:OnLoad()
 
 	self.FullscreenFrame = UIParent;
 	self.FullscreenStrata = "DIALOG";
+	self.baseAnchorFrame = self;
 
 	-- True must always mean that a system is enabled, a single false will cause the system to queue alerts.
 	self.shouldQueueAlertsFlags = {
@@ -360,6 +361,14 @@ do
 	end
 end
 
+function AlertContainerMixin:SetBaseAnchorFrame(newBaseAnchorframe)
+	self.baseAnchorFrame = newBaseAnchorframe or self;
+end
+
+function AlertContainerMixin:ResetBaseAnchorFrame()
+	self.baseAnchorFrame = self;
+end
+
 function AlertContainerMixin:SetFullScreenFrame(frame, strata)
 	if frame then
 		self.FullscreenFrame = frame;
@@ -388,7 +397,7 @@ end
 function AlertContainerMixin:UpdateAnchors()
 	self:CleanAnchorPriorities();
 
-	local relativeFrame = self;
+	local relativeFrame = self.baseAnchorFrame;
 	for i, alertFrameSubSystem in ipairs(self.alertFrameSubSystems) do
 		local resultFrame = alertFrameSubSystem:AdjustAnchors(relativeFrame);
 		if not resultFrame or not resultFrame.IsInDefaultPosition or resultFrame:IsInDefaultPosition() then

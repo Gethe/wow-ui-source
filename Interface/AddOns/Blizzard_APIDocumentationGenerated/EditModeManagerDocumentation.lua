@@ -63,6 +63,7 @@ local EditModeManager =
 			Arguments =
 			{
 				{ Name = "addedLayoutIndex", Type = "number", Nilable = false },
+				{ Name = "activateNewLayout", Type = "bool", Nilable = false },
 			},
 		},
 		{

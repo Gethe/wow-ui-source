@@ -5077,6 +5077,7 @@ function ConfirmOrLeaveBattlefield()
 	if ( GetBattlefieldWinner() ) then
 		LeaveBattlefield();
 	else
+		StaticPopupDialogs["CONFIRM_LEAVE_BATTLEFIELD"].acceptDelay = C_PvP.IsInRatedMatchWithDeserterPenalty() and 5 or nil;
 		StaticPopup_Show("CONFIRM_LEAVE_BATTLEFIELD");
 	end
 end

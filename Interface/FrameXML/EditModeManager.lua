@@ -105,7 +105,7 @@ function EditModeManagerFrameMixin:OnLoad()
 	self.LayoutDropdown:SetCustomSetup(layoutEntryCustomSetup);
 
 	local function layoutSelectedCallback(value, isUserInput)
-		if isUserInput then
+		if isUserInput and not self:IsLayoutSelected(value) then
 			if self:HasActiveChanges() then
 				self:ShowRevertWarningDialog(value);
 			else
@@ -1068,6 +1068,14 @@ function EditModeManagerFrameMixin:SelectLayout(layoutIndex)
 	end
 end
 
+function EditModeManagerFrameMixin:IsLayoutSelected(layoutIndex)
+	return layoutIndex == self.layoutInfo.activeLayout;
+end
+
+function EditModeManagerFrameMixin:ResetDropdownToActiveLayout()
+	self.LayoutDropdown:SetSelectedValue(self.layoutInfo.activeLayout);
+end
+
 function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layoutName)
 	if newLayoutInfo and layoutName and layoutName ~= "" then
 		newLayoutInfo.layoutType = layoutType;
@@ -1082,9 +1090,11 @@ function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layo
 			newLayoutIndex = Enum.EditModePresetLayoutsMeta.NumValues + 1;
 		end
 
+		local activateNewLayout = not EditModeUnsavedChangesDialog:HasPendingSelectedLayout();
+
 		table.insert(self.layoutInfo.layouts, newLayoutIndex, newLayoutInfo);
 		self:SaveLayouts();
-		C_EditMode.OnLayoutAdded(newLayoutIndex);
+		C_EditMode.OnLayoutAdded(newLayoutIndex, activateNewLayout);
 	end
 end
 
@@ -1151,6 +1161,7 @@ function EditModeManagerFrameMixin:SaveLayouts()
 	self:PrepareSystemsForSave();
 	C_EditMode.SaveLayouts(self.layoutInfo);
 	self:ClearActiveChangesFlags();
+	EventRegistry:TriggerEvent("EditMode.SavedLayouts");
 end
 
 function EditModeManagerFrameMixin:SaveLayoutChanges()
