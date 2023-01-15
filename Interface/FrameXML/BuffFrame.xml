@@ -1,51 +1,47 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="BuffFrame.lua"/>
+
 	<Button name="AuraButtonTemplate" mixin="AuraButtonMixin" virtual="true">
 		<Size x="30" y="40"/>
+		<!-- <KeyValues>
+			<KeyValue key="auraType" value="Buff" type="string"/> Can be "Buff", "Debuff", "DeadlyDebuff", "TempEnchant"
+			<KeyValue key="isExample" value="false" type="boolean"/>
+		</KeyValues> -->
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" parentKey="Icon">
+				<Texture parentKey="Icon" file="Interface\ICONS\INV_Misc_QuestionMark.blp">
 					<Size x="30" y="30"/>
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
+				<FontString parentKey="Count" inherits="NumberFontNormal">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentDuration" inherits="GameFontNormalSmall" hidden="true" parentKey="duration">
+				<FontString parentKey="Duration" inherits="GameFontNormalSmall" hidden="true" >
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" />
 					</Anchors>
 				</FontString>
 			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnUpdate method="OnUpdate"/>
-		</Scripts>
-	</Button>
-	<Button name="BuffButtonTemplate" inherits="AuraButtonTemplate" mixin="BuffButtonMixin" virtual="true">
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
-		</Scripts>
-	</Button>
-	<Button name="DebuffButtonTemplate" inherits="AuraButtonTemplate" mixin="DebuffButtonMixin" virtual="true">
-		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
+				<Texture parentKey="DebuffBorder" file="Interface\Buttons\UI-Debuff-Overlays">
 					<Size x="33" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 				</Texture>
-				<FontString parentKey="symbol" inherits="TextStatusBarText">
+				<Texture parentKey="TempEnchantBorder" file="Interface\Buttons\UI-TempEnchant-Border">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Symbol" inherits="TextStatusBarText">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-2"/>
 					</Anchors>
@@ -55,63 +51,14 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
-		</Scripts>
-	</Button>
-
-	<Button name="DeadlyDebuffButtonTemplate" inherits="DebuffButtonTemplate" virtual="true"/>
-	<Button name="TempEnchantButtonTemplate" mixin="TempEnchantButtonMixin" inherits="AuraButtonTemplate" virtual="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-TempEnchant-Border">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnUpdate method="OnUpdate"/>
-			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Button>
 
-	<Frame name="ExampleAuraTemplate" virtual="true">
-		<Size x="30" y="40"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Icon" file="Interface\ICONS\INV_Misc_QuestionMark.blp">
-					<Size x="30" y="30"/>
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="duration" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="ExampleDebuffTemplate" inherits="ExampleAuraTemplate" mixin="ExampleDebuffMixin" virtual="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
-					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
-					<Size x="31" y="31"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="AuraContainerTemplate" inherits="ResizeLayoutFrame" mixin="AuraContainerMixin" virtual="true">
+	<Frame name="AuraContainerTemplate" mixin="AuraContainerMixin" virtual="true">
+		<Size x="1" y="1"/>
 		<KeyValues>
 			<KeyValue key="isHorizontal" value="true" type="boolean"/>
 			<KeyValue key="iconStride" value="8" type="number"/>
@@ -125,9 +72,8 @@
 	<Frame name="AuraFrameTemplate" inherits="EditModeAuraFrameSystemTemplate" mixin="AuraFrameMixin"  virtual="true">
 		<!-- 
 		<KeyValues>
-			<KeyValue key="auraTemplate" value="BuffButtonTemplate" type="string"/>
-			<KeyValue key="exampleAuraTemplate" value="ExampleBuffTemplate" type="string"/>
 			<KeyValue key="maxAuras" value="BUFF_MAX_DISPLAY" type="global"/>
+			<KeyValue key="exampleAuraType" value="Buff" type="string"/>
 		</KeyValues> 
 		-->
 		<Frames>
@@ -148,8 +94,7 @@
 			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="MinimapCluster" x="-10" y="0" />
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="auraTemplate" value="BuffButtonTemplate" type="string"/>
-			<KeyValue key="exampleAuraTemplate" value="ExampleAuraTemplate" type="string"/>
+			<KeyValue key="exampleAuraType" value="Buff" type="string"/>
 			<KeyValue key="maxAuras" value="BUFF_MAX_DISPLAY" type="global"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeAuraFrameSystemIndices.BuffFrame" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_BUFF_FRAME_LABEL" type="global"/>
@@ -195,8 +140,7 @@
 			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="BOTTOMRIGHT" x="-13" y="-5" />
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="auraTemplate" value="DebuffButtonTemplate" type="string"/>
-			<KeyValue key="exampleAuraTemplate" value="ExampleDebuffTemplate" type="string"/>
+			<KeyValue key="exampleAuraType" value="Debuff" type="string"/>
 			<KeyValue key="maxAuras" value="DEBUFF_MAX_DISPLAY" type="global"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeAuraFrameSystemIndices.DebuffFrame" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_DEBUFF_FRAME_LABEL" type="global"/>
@@ -223,9 +167,9 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="Debuff" inherits="DeadlyDebuffButtonTemplate">
+			<Button parentKey="Debuff" inherits="AuraButtonTemplate">
 				<KeyValues>
-					<KeyValue key="isDeadlyDebuff" value="true" type="boolean"/>
+					<KeyValue key="auraType" value="DeadlyDebuff" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.WarningText" relativePoint="BOTTOM" x="0" y="0"/>

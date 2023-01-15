@@ -754,11 +754,17 @@ NumericInputSpinnerMixin = {};
 -- "public"
 function NumericInputSpinnerMixin:SetValue(value)
 	local newValue = Clamp(value, self.min or -math.huge, self.max or math.huge);
-	if newValue ~= self.currentValue then
+	local clampIfExceededRange = self.clampIfInputExceedsRange and (value ~= newValue);
+	local changed = newValue ~= self.currentValue;
+	if clampIfExceededRange or changed then
 		self.currentValue = newValue;
 		self:SetNumber(newValue);
 
-		if self.onValueChangedCallback then
+		if self.highlightIfInputExceedsRange and clampIfExceededRange then
+			self:HighlightText();
+		end
+
+		if changed and self.onValueChangedCallback then
 			self.onValueChangedCallback(self, self:GetNumber());
 		end
 	end
@@ -1615,6 +1621,76 @@ end
 
 function ResizeCheckButtonMixin:IsControlEnabled()
 	return self.Button:IsEnabled();
+end
+
+SubFrameMouseoverButtonMixin = {};
+
+function SubFrameMouseoverButtonMixin:OnEnter()
+	self.timeSinceMouseover = nil;
+	self:SetSubFrameShown(true);
+end
+
+function SubFrameMouseoverButtonMixin:OnLeave()
+	local function DropDownMouseoverButton_OnUpdate(onUpdateSelf, dt)
+		if not onUpdateSelf:IsMouseOver() and not DoesAncestryInclude(self.subFrame, GetMouseFocus()) then
+			onUpdateSelf.timeSinceMouseOver = (onUpdateSelf.timeSinceMouseOver or 0) + dt;
+			if onUpdateSelf.timeSinceMouseOver > self.hideDelay then
+				onUpdateSelf.timeSinceMouseOver = nil;
+				self:SetSubFrameShown(false);
+				self:SetScript("OnUpdate", nil);
+			end
+		end
+	end
+
+	self:SetScript("OnUpdate", DropDownMouseoverButton_OnUpdate);
+end
+
+function SubFrameMouseoverButtonMixin:OnHide()
+	self:SetScript("OnUpdate", nil);
+end
+
+function SubFrameMouseoverButtonMixin:SetSubFrame(subFrame, customShownBehavior)
+	self.subFrame = subFrame;
+	self.customShownBehavior = customShownBehavior;
+end
+
+function SubFrameMouseoverButtonMixin:SetHideDelay(hideDelay)
+	self.hideDelay = hideDelay;
+end
+
+function SubFrameMouseoverButtonMixin:SetSubFrameShown(shown)
+	if self.customShownBehavior then
+		self.customShownBehavior(shown);
+	else
+		self.subFrame:SetShown(shown);
+	end
+end
+
+DropDownMouseoverButtonMixin = {};
+
+function DropDownMouseoverButtonMixin:SetDropDown(dropDown, dropDownInitialize, displayMode, level, menuList)
+	self.dropDown = dropDown;
+	UIDropDownMenu_Initialize(self.dropDown, dropDownInitialize, displayMode, level, menuList);
+
+	local dropDownList = DropDownList1;
+	local function DropDownMouseoverButton_SetSubFrameShown(shown)
+		if shown then
+			if not dropDownList:IsShown() or (UIDropDownMenu_GetCurrentDropDown() ~= self.dropDown) then
+				ToggleDropDownMenu(1, nil, self.dropDown, self, self.xOffset or 0, self.yOffset or 0);
+			end
+		else
+			HideDropDownMenu(1);
+		end
+	end
+
+	self:SetSubFrame(dropDownList, DropDownMouseoverButton_SetSubFrameShown);
+end
+
+function DropDownMouseoverButtonMixin:SetDropDownAnchor(point, relativePoint, xOffset, yOffset)
+	self.dropDown.point = point;
+	self.dropDown.relativePoint = relativePoint;
+	self.xOffset = xOffset;
+	self.yOffset = yOffset;
 end
 
 SharedEditBoxMixin = {}
@@ -2907,4 +2983,208 @@ end
 
 function IconSelectorEditBoxMixin:SetIconSelector(iconSelector)
 	self.editBoxIconSelector = iconSelector;
+end
+
+RingedFrameWithTooltipMixin = {};
+function RingedFrameWithTooltipMixin:OnLoad()
+	if self.simpleTooltipLine then
+		self:AddTooltipLine(self.simpleTooltipLine, HIGHLIGHT_FONT_COLOR);
+	end
+end
+
+function RingedFrameWithTooltipMixin:ClearTooltipLines()
+	self.tooltipLines = nil;
+end
+
+function RingedFrameWithTooltipMixin:AddTooltipLine(lineText, lineColor)
+	if not self.tooltipLines then
+		self.tooltipLines = {};
+	end
+
+	table.insert(self.tooltipLines, {text = lineText, color = lineColor or NORMAL_FONT_COLOR});
+end
+
+function RingedFrameWithTooltipMixin:AddBlankTooltipLine()
+	self:AddTooltipLine(" ");
+end
+
+function RingedFrameWithTooltipMixin:GetAppropriateTooltip()
+	error("You must implement GetAppropriateTooltip on your mixin!");
+end
+
+function RingedFrameWithTooltipMixin:SetupAnchors(tooltip)
+	if self.tooltipAnchor == "ANCHOR_TOPRIGHT" then
+		tooltip:SetOwner(self, "ANCHOR_NONE");
+		tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", self.tooltipXOffset, self.tooltipYOffset);
+	elseif self.tooltipAnchor == "ANCHOR_TOPLEFT" then
+		tooltip:SetOwner(self, "ANCHOR_NONE");
+		tooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -self.tooltipXOffset, self.tooltipYOffset);
+	elseif self.tooltipAnchor == "ANCHOR_BOTTOMRIGHT" then
+		tooltip:SetOwner(self, "ANCHOR_NONE");
+		tooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", self.tooltipXOffset, self.tooltipYOffset);
+	elseif self.tooltipAnchor == "ANCHOR_BOTTOMLEFT" then
+		tooltip:SetOwner(self, "ANCHOR_NONE");
+		tooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", -self.tooltipXOffset, self.tooltipYOffset);
+	else
+		tooltip:SetOwner(self, self.tooltipAnchor, self.tooltipXOffset, self.tooltipYOffset);
+	end
+end
+
+function RingedFrameWithTooltipMixin:AddExtraStuffToTooltip()
+end
+
+function RingedFrameWithTooltipMixin:OnEnter()
+	if self.tooltipLines then
+		local tooltip = self:GetAppropriateTooltip();
+
+		self:SetupAnchors(tooltip);
+
+		if self.tooltipMinWidth then
+			tooltip:SetMinimumWidth(self.tooltipMinWidth);
+		end
+
+		if self.tooltipPadding then
+			tooltip:SetPadding(self.tooltipPadding, self.tooltipPadding, self.tooltipPadding, self.tooltipPadding);
+		end
+
+		for _, lineInfo in ipairs(self.tooltipLines) do
+			GameTooltip_AddColoredLine(tooltip, lineInfo.text, lineInfo.color);
+		end
+
+		self:AddExtraStuffToTooltip();
+
+		tooltip:Show();
+	end
+end
+
+function RingedFrameWithTooltipMixin:OnLeave()
+	local tooltip = self:GetAppropriateTooltip();
+	tooltip:Hide();
+end
+
+RingedMaskedButtonMixin = CreateFromMixins(RingedFrameWithTooltipMixin);
+
+function RingedMaskedButtonMixin:OnLoad()
+	RingedFrameWithTooltipMixin.OnLoad(self);
+
+	self.CircleMask:SetPoint("TOPLEFT", self, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
+	self.CircleMask:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
+
+	self.New:SetPoint("CENTER", self, "BOTTOM", 0, self.newTagYOffset);
+
+	local hasRingSizes = self.ringWidth and self.ringHeight;
+	if hasRingSizes then
+		self.Ring:SetAtlas(self.ringAtlas);
+		self.Ring:SetSize(self.ringWidth, self.ringHeight);
+		self.Flash.Ring:SetAtlas(self.ringAtlas);
+		self.Flash.Ring:SetSize(self.ringWidth, self.ringHeight);
+		self.Flash.Ring2:SetAtlas(self.ringAtlas);
+		self.Flash.Ring2:SetSize(self.ringWidth, self.ringHeight);
+	else
+		self.Ring:SetAtlas(self.ringAtlas, true);
+		self.Flash.Ring:SetAtlas(self.ringAtlas, true);
+		self.Flash.Ring2:SetAtlas(self.ringAtlas, true);
+	end
+
+	self.NormalTexture:AddMaskTexture(self.CircleMask);
+	self.PushedTexture:AddMaskTexture(self.CircleMask);
+	self.DisabledOverlay:AddMaskTexture(self.CircleMask);
+	self.DisabledOverlay:SetAlpha(self.disabledOverlayAlpha);
+	self.CheckedTexture:SetSize(self.checkedTextureSize, self.checkedTextureSize);
+	self.Flash.Portrait:AddMaskTexture(self.CircleMask);
+
+	if self.flipTextures then
+		self.NormalTexture:SetTexCoord(1, 0, 0, 1);
+		self.PushedTexture:SetTexCoord(1, 0, 0, 1);
+		self.Flash.Portrait:SetTexCoord(1, 0, 0, 1);
+	end
+
+	if self.BlackBG then
+		self.BlackBG:AddMaskTexture(self.CircleMask);
+	end
+end
+
+function RingedMaskedButtonMixin:SetIconAtlas(atlas)
+	self:SetNormalAtlas(atlas);
+	self:SetPushedAtlas(atlas);
+	self.Flash.Portrait:SetAtlas(atlas);
+end
+
+function RingedMaskedButtonMixin:ClearFlashTimer()
+	if self.FlashTimer then
+		self.FlashTimer:Cancel();
+	end
+end
+
+function RingedMaskedButtonMixin:StartFlash()
+	self:ClearFlashTimer();
+
+	local function playFlash()
+		self.Flash:Show();
+		self.Flash.Anim:Play();
+	end
+
+	self.FlashTimer = C_Timer.NewTimer(0.8, playFlash);
+end
+
+function RingedMaskedButtonMixin:StopFlash()
+	self:ClearFlashTimer();
+	self.Flash.Anim:Stop();
+	self.Flash:Hide();
+end
+
+function RingedMaskedButtonMixin:SetEnabledState(enabled)
+	local buttonEnableState = enabled or self.allowSelectionOnDisable;
+	self:SetEnabled(buttonEnableState);
+
+	local normalTex = self:GetNormalTexture();
+	if normalTex then
+		normalTex:SetDesaturated(not enabled);
+	end
+
+	local pushedTex = self:GetPushedTexture();
+	if pushedTex then
+		pushedTex:SetDesaturated(not enabled);
+	end
+
+	self.Ring:SetAtlas(self.ringAtlas..(enabled and "" or "-disabled"));
+
+	self.DisabledOverlay:SetShown(not enabled);
+end
+
+function RingedMaskedButtonMixin:OnMouseDown(button)
+	if self:IsEnabled() then
+		self.CheckedTexture:SetPoint("CENTER", self, "CENTER", 1, -1);
+		self.CircleMask:SetPoint("TOPLEFT", self.PushedTexture, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
+		self.CircleMask:SetPoint("BOTTOMRIGHT", self.PushedTexture, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
+		self.Ring:SetPoint("CENTER", self, "CENTER", 1, -1);
+		self.Flash:SetPoint("CENTER", self, "CENTER", 1, -1);
+	end
+end
+
+function RingedMaskedButtonMixin:OnMouseUp(button)
+	if button == "RightButton" and self.expandedTooltipFrame then
+		self.tooltipsExpanded = not self.tooltipsExpanded;
+		if GetMouseFocus() == self then
+			self:OnEnter();
+		end
+	end
+
+	self.CheckedTexture:SetPoint("CENTER");
+	self.CircleMask:SetPoint("TOPLEFT", self.NormalTexture, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
+	self.CircleMask:SetPoint("BOTTOMRIGHT", self.NormalTexture, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
+	self.Ring:SetPoint("CENTER");
+	self.Flash:SetPoint("CENTER");
+end
+
+function RingedMaskedButtonMixin:UpdateHighlightTexture()
+	if self:GetChecked() then
+		self.HighlightTexture:SetAtlas("charactercreate-ring-select");
+		self.HighlightTexture:SetPoint("TOPLEFT", self.CheckedTexture);
+		self.HighlightTexture:SetPoint("BOTTOMRIGHT", self.CheckedTexture);
+	else
+		self.HighlightTexture:SetAtlas(self.ringAtlas);
+		self.HighlightTexture:SetPoint("TOPLEFT", self.Ring);
+		self.HighlightTexture:SetPoint("BOTTOMRIGHT", self.Ring);
+	end
 end

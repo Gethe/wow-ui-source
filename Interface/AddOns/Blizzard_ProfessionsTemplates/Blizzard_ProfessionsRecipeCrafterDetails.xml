@@ -178,7 +178,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="Fill" frameLevel="6">
+							<Frame parentKey="Fill" frameStrata="HIGH" frameLevel="6">
 								<Size x="1" y="1"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
@@ -233,7 +233,7 @@
 						</Frames>
 					</Frame>
 					
-					<Frame parentKey="DividerGlow" frameLevel="7">
+					<Frame parentKey="DividerGlow" frameStrata="HIGH" frameLevel="7">
 						<Size x="1" y="28"/>
 						<Layers>
 							<Layer level="ARTWORK" textureSubLevel="1">

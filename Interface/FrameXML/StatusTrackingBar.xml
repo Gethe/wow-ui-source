@@ -2,28 +2,35 @@
 ..\FrameXML\UI.xsd">
 	<Script file="StatusTrackingManager.lua"/>
 
+	<Frame name="StatusTrackingBarContainerTemplate" mixin="StatusTrackingBarContainerMixin" virtual="true" hidden="true">
+		<Size x="571" y="17"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BarFrameTexture" atlas="UI-HUD-ExperienceBar-Frame" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="StatusTrackingBarManager" parent="UIParent" frameStrata="MEDIUM" mixin="StatusTrackingManagerMixin">
 		<Size x="571" y="34"/>
 		<Anchors>
 			<Anchor point="BOTTOM"/>
 		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="BottomBarFrameTexture" atlas="UI-HUD-ExperienceBar-Frame" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopBarFrameTexture" atlas="UI-HUD-ExperienceBar-Frame" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomBarFrameTexture" relativePoint="TOPLEFT" y="-3"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+		<Frames>
+			<Frame name="MainStatusTrackingBarContainer" parentKey="MainStatusTrackingBarContainer" inherits="StatusTrackingBarContainerTemplate, EditModeExperienceBarSystemTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+			</Frame>
+			<Frame name="SecondaryStatusTrackingBarContainer" parentKey="SecondaryStatusTrackingBarContainer" inherits="StatusTrackingBarContainerTemplate, EditModeReputationBarContainer">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.MainStatusTrackingBar" relativePoint="TOP"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
-	</Frame> 
+	</Frame>
 </Ui>

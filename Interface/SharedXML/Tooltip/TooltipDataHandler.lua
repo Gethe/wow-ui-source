@@ -229,10 +229,6 @@ local SurfaceArgs = TooltipUtil.SurfaceArgs;
 
 TooltipDataHandlerMixin = { };
 
-function TooltipDataHandlerMixin:SetLineDataAttribute(attribute, value)
-	LineAttributeDelegate:SetAttribute(attribute, value);
-end
-
 function TooltipDataHandlerMixin:ProcessInfo(info)
 	return securecallfunction(self.InternalProcessInfo, self, info);
 end

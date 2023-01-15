@@ -10,6 +10,7 @@
 ..\SharedXML\EnumUtil.lua
 ..\SharedXML\LocaleUtil.lua
 ..\SharedXML\FunctionUtil.lua
+..\SharedXML\ObjectUpdater.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\ExportUtil.lua
 ..\SharedXML\Rectangle.lua
@@ -422,6 +423,7 @@ TalkingHeadUI.xml
 ArenaUI.xml
 FramerateFrame.xml
 ClassTalentHelper.lua
+MotionSickness.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

@@ -134,8 +134,8 @@
 	</ScrollFrame>
 	<ScrollFrame name="InputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<KeyValues>
+			<KeyValue key="maxLetters" value="0" type="number"/>
 			<!--
-			<KeyValue key="maxLetters" value="127" type="number"/>
 			<KeyValue key="instructions" value="INSTRUCTION_TEXT" type="global"/>
 			<KeyValue key="hideCharCount" value="false" type="boolean"/>
 			-->
@@ -245,6 +245,28 @@
 				<Size x="300" y="334"/>
 			</Frame>
 		</ScrollChild>
+	</ScrollFrame>
+	<ScrollFrame name="ListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ScrollBarTop" name="$parentTop" atlas="macropopup-scrollbar-top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ScrollBarBottom" name="$parentBottom" atlas="macropopup-scrollbar-bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMiddle" atlas="!macropopup-scrollbar-middle" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</ScrollFrame>
 	<Button name="UIPanelButtonNoTooltipTemplate" mixin="UIButtonFitToTextBehaviorMixin" virtual="true">
 		<KeyValues>

@@ -148,14 +148,6 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Corner" file="Interface\DialogFrame\UI-DialogBox-Corner">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-6" y="-7"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
@@ -185,7 +177,7 @@
 			</CheckButton>
 			<Button parentKey="$parent.CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-7" y="-7"/>
+					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 				</Anchors>
 			</Button>
 		</Frames>

@@ -33,6 +33,12 @@ HTML_START_CENTERED = "<html><body><p align=\"center\">";
 HTML_END = "</p></body></html>";
 
 --
+-- Trading Post
+--
+LOOT_SOURCE_TRADING_POST = 11;
+
+
+--
 -- Class
 --
 CLASS_SORT_ORDER = {
@@ -211,9 +217,6 @@ INVSLOTS_EQUIPABLE_IN_COMBAT = {
 }
 
 -- Container constants
-ITEM_INVENTORY_BANK_BAG_OFFSET	= 4; -- Number of bags before the first bank bag
-CONTAINER_BAG_OFFSET = 30; -- Used for PutItemInBag
-
 BACKPACK_CONTAINER = Enum.BagIndex.Backpack;
 BANK_CONTAINER = Enum.BagIndex.Bank;
 BANK_CONTAINER_INVENTORY_OFFSET = 39; -- Used for PickupInventoryItem
@@ -224,6 +227,9 @@ NUM_REAGENTBAG_SLOTS = Constants.InventoryConstants.NumReagentBagSlots;
 NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_BAG_SLOTS + NUM_REAGENTBAG_SLOTS;
 NUM_BANKGENERIC_SLOTS = Constants.InventoryConstants.NumGenericBankSlots;
 NUM_BANKBAGSLOTS = Constants.InventoryConstants.NumBankBagSlots;
+
+ITEM_INVENTORY_BANK_BAG_OFFSET = NUM_TOTAL_EQUIPPED_BAG_SLOTS; -- Number of bags before the first bank bag
+CONTAINER_BAG_OFFSET = 30; -- Used for PutItemInBag
 
 -- Item IDs
 HEARTHSTONE_ITEM_ID = 6948;
@@ -508,13 +514,30 @@ CALENDAR_FULLDATE_MONTH_NAMES = {
 };
 
 
--- Druid Forms.
-CAT_FORM = 1;
-BEAR_FORM = 5;
-MOONKIN_FORM = 31;
-
--- Rogue Forms
+-- Forms.
+DRUID_CAT_FORM = 1;
+DRUID_TREE_FORM = 2;
+DRUID_TRAVEL_FORM = 3;
+DRUID_ACQUATIC_FORM = 4;
+DRUID_BEAR_FORM = 5;
+SHAMAN_GHOST_WOLF_FORM = 16;
+DRUID_FLIGHT_FORM = 27;
+PRIEST_SHADOWFORM = 28;
+DRUID_MOONKIN_FORM_1 = 31;
+DRUID_MOONKIN_FORM_2 = 35;
 ROGUE_STEALTH = 30;
+
+ANIMAL_FORMS = {
+	[DRUID_CAT_FORM] = {actorTag = "druid-cat-form"};
+	[DRUID_TREE_FORM] = {actorTag = "animal-form"};
+	[DRUID_TRAVEL_FORM] = {actorTag = "druid-travel-form"};
+	[DRUID_ACQUATIC_FORM] = {actorTag = "druid-acquatic-form"};
+	[DRUID_BEAR_FORM] = {actorTag = "druid-bear-form"};
+	[SHAMAN_GHOST_WOLF_FORM] = {actorTag = "animal-form"};
+	[DRUID_FLIGHT_FORM] = {actorTag = "druid-flight-form"};
+	[DRUID_MOONKIN_FORM_1] = {actorTag = "druid-moonkin-form"};
+	[DRUID_MOONKIN_FORM_2] = {actorTag = "druid-moonkin-form"};
+};
 
 -- PVP Global Lua Constants
 CONQUEST_CURRENCY = 390;

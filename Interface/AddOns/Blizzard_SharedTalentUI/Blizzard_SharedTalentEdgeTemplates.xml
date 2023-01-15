@@ -37,14 +37,14 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="GhostArrowHead" atlas="talents-arrow-head-ghost" useAtlasSize="true" hidden="true">
+				<Texture parentKey="GhostArrowHead" atlas="talents-arrow-head-ghost" useAtlasSize="true" alpha="0.8" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Line parentKey="GhostLine" atlas="talents-arrow-line-ghost" thickness="6" hWrapMode="REPEAT" alphaMode="ADD" alpha="1" hidden="true"/>
+				<Line parentKey="GhostLine" atlas="talents-arrow-line-ghost" thickness="6" hWrapMode="REPEAT" alphaMode="ADD" alpha="0.8" hidden="true"/>
 			</Layer>
 		</Layers>
 	</Frame>

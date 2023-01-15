@@ -15,8 +15,10 @@
 			GetEdgeDiameterOffset: Method that takes the angle of the incoming edge to determine offset adjustment
 									required for the length of the edges. (self, angle) -> edgeDiameterOffset
 			artSet: A table of atlases, see TalentButtonArtMixin.
+			sizingAdjustment: A table of adjustments to make to the width and height of various regions, see TalentButtonArtMixin.
 			<KeyValue key="GetEdgeDiameterOffset" value="TalentButtonArtMixin.GetSquareEdgeDiameterOffset" type="global"/>
 			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.Square" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonBasicArtMixin.SizingAdjustment.Circle" type="global"/>
 			-->
 		</KeyValues>
 		<Layers>
@@ -45,12 +47,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="StateBorder">
+				<Texture parentKey="StateBorder" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="StateBorderHover" alphaMode="ADD" hidden="true">
+				<Texture parentKey="StateBorderHover" texelSnappingBias="0.0" snapToPixelGrid="false" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -62,6 +64,11 @@
 						<Anchor point="BOTTOM" x="11" y="4"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="SelectableIcon" atlas="talents-icon-learnableplus" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-3" y="-3"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<FontString parentKey="SpendTextShadow1" inherits="SystemFont16_Shadow_ThickOutline" justifyH="CENTER" parentArray="spendTextShadows">
@@ -134,7 +141,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Ghost" hidden="true">
+				<Texture parentKey="Ghost" texelSnappingBias="0.0" snapToPixelGrid="false" alpha="0.8" hidden="true">
 					<Size x="48" y="48"/>
 					<Anchors>
 						<Anchor point="CENTER"/>

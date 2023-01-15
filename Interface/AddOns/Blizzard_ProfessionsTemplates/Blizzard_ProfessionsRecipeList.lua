@@ -50,8 +50,9 @@ function ProfessionsRecipeListMixin:OnLoad()
 						if IsModifiedClick() then
 							local link = C_TradeSkillUI.GetRecipeLink(elementData.recipeInfo.recipeID);
 							if not HandleModifiedItemClick(link) and IsModifiedClick("RECIPEWATCHTOGGLE") and Professions.CanTrackRecipe(elementData.recipeInfo) then
-								local tracked = C_TradeSkillUI.IsRecipeTracked(elementData.recipeInfo.recipeID);
-								C_TradeSkillUI.SetRecipeTracked(elementData.recipeInfo.recipeID, not tracked);
+								local recrafting = false;
+								local tracked = C_TradeSkillUI.IsRecipeTracked(elementData.recipeInfo.recipeID, recrafting);
+								C_TradeSkillUI.SetRecipeTracked(elementData.recipeInfo.recipeID, not tracked, recrafting);
 							end
 						else
 							self.selectionBehavior:Select(button);

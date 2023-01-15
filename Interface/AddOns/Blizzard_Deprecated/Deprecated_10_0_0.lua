@@ -7,3 +7,11 @@ do
 	-- have different slot IDs for each profession.
 	CursorCanGoInSlot = C_PaperDollInfo.CanCursorCanGoInSlot;
 end
+
+do
+	-- Use C_TradeSkillUI.GetRemainingRecasts to return the number of casts
+	-- remaining, which excludes the current cast in progress.
+	C_TradeSkillUI.GetRecipeRepeatCount = function()
+		return C_TradeSkillUI.GetRemainingRecasts() + 1;
+	end;
+end

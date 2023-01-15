@@ -296,7 +296,8 @@ function ProfessionsSpecFrameMixin:InitializeTabs()
 			bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_SPEC_CHOICE,
 			autoHorizontalSlide = true,
 		};
-		HelpTip:Show(self, unlockableSpecHelpTipInfo, lastTab);
+		-- NOTE: Helptips are shown on the next game frame to side-step a bug if the frame they are pointing at is instantiated in the same game frame the helptip is shown in.
+		RunNextFrame(function() HelpTip:Show(self, unlockableSpecHelpTipInfo, lastTab); end);
 	end
 
 	EventRegistry:TriggerEvent("ProfessionsSpecializations.TabSelected", self:GetDefaultTab(tabTreeIDs));

@@ -110,6 +110,10 @@ function ScrollBoxListViewMixin:ForEachFrame(func)
 	end
 end
 
+function ScrollBoxListViewMixin:ForEachElementData(func)
+	self:GetDataProvider():ForEach(func);
+end
+
 function ScrollBoxListViewMixin:EnumerateFrames()
 	return ipairs(self:GetFrames());
 end

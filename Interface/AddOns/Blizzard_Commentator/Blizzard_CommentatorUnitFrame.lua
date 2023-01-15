@@ -1,3 +1,16 @@
+
+local MechagnomeEmergencyFailsafeSpellID = 312916;
+local MechagnomeRecentlyFailedSpellID = 313015;
+
+
+CooldownCircleTrackerMixin = {};
+
+function CooldownCircleTrackerMixin:OnLoad()
+	local seconds = 60;
+	self.Cooldown:SetCountdownAbbrevThreshold(seconds);
+	self.Cooldown:SetSwipeColor(0, 0, 0, .7);
+end
+
 CommentatorUnitFrameMixin = {};
 
 local CommentatorUnitFrameEvents =
@@ -22,9 +35,6 @@ function CommentatorUnitFrameMixin:OnLoad()
 	self.alignment = "LEFT";
 	self.Name:SetFontObjectsToTry(CommentatorFontMedium, CommentatorFontSmall);
 
-	local seconds = 60;
-	self.CCRemover.Cooldown:SetCountdownAbbrevThreshold(seconds);
-	self.CCRemover.Cooldown:SetSwipeColor(0, 0, 0, .7);
 	self.Circle.CCCooldown:SetHideCountdownNumbers(true);
 	self.Circle.CCCooldown:SetSwipeColor(0, 0, 0, .7);
 
@@ -35,6 +45,7 @@ function CommentatorUnitFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CommentatorUnitFrameEvents);
 
 	self:UpdateCCRemover();
+	self:UpdateRacialAbilityTracker();
 end
 
 function CommentatorUnitFrameMixin:OnHide()
@@ -55,6 +66,7 @@ function CommentatorUnitFrameMixin:SetAlignment(alignment)
 			{region = self.Role},
 			{region = self.Circle},
 			{region = self.CCRemover},
+			{region = self.RacialAbilityTracker},
 			{region = self.Name},
 			{region = self.DefensiveSpellTray},
 			{region = self.DebuffSpellTray},
@@ -116,8 +128,17 @@ function CommentatorUnitFrameMixin:OnUnfilteredCombatLogEvent(...)
 	if isActive or event == "SPELL_AURA_REMOVED" then
 		local sourceGUID = select(4, ...);
 		if self:GetGUID() == sourceGUID then
-			local trackedSpellID = C_Commentator.GetTrackedSpellID(select(12, ...));
+			local spellID = select(12, ...);
+			local trackedSpellID = C_Commentator.GetTrackedSpellID(spellID);
 			self:SetSpellActive(trackedSpellID, isActive);
+
+			if spellID == MechagnomeRecentlyFailedSpellID then
+				local spells = C_Commentator.GetTrackedSpellsByUnit(self.unitToken, Enum.TrackedSpellCategory.RacialAbility);
+				local primarySpellID = spells and spells[1];
+				if primarySpellID == MechagnomeEmergencyFailsafeSpellID then
+					self:UpdateRacialAbilityTracker();
+				end
+			end
 		end
 	elseif event == "ARENA_MATCH_START" then
 		-- Tempoary equipment change check.
@@ -134,6 +155,7 @@ function CommentatorUnitFrameMixin:OnEvent(event, ...)
 		local unitToken = ...;
 		if unitToken == self.unitToken then
 			self:UpdateCCRemover();
+			self:UpdateRacialAbilityTracker();
 			self:InitSpells();
 		end
 	elseif event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" then
@@ -369,31 +391,70 @@ function CommentatorUnitFrameMixin:SetSpellActive(trackedSpellID, isActive)
 end
 
 function CommentatorUnitFrameMixin:SetCCRemoverIcon(spellID)
-	self.CCRemover:SetShown(spellID > 0);
+	self:SetCircleTrackerIcon(self.CCRemover, spellID);
+end
 
-	if spellID ~= self.CCRemover.Icon.spellID then
+function CommentatorUnitFrameMixin:UpdateCCRemover()
+	if not self:UpdateCircleTracker(self.CCRemover, C_PvP.GetArenaCrowdControlInfo) and self.unitToken then
+		C_PvP.RequestCrowdControlSpell(self.unitToken);
+	end
+end
+
+function CommentatorUnitFrameMixin:SetRacialAbilityTrackerIcon(spellID)
+	self:SetCircleTrackerIcon(self.RacialAbilityTracker, spellID);
+end
+
+function CommentatorUnitFrameMixin:UpdateRacialAbilityTracker()
+	local function GetRacialAbilityInfo(unitToken)
+		local spells = C_Commentator.GetTrackedSpellsByUnit(unitToken, Enum.TrackedSpellCategory.RacialAbility);
+		local primarySpellID = spells and spells[1];
+		if not primarySpellID then
+			return nil, nil, nil;
+		end
+
+		-- Mechagnomes have a debuff-based passive "cooldown".
+		if primarySpellID == MechagnomeEmergencyFailsafeSpellID then
+			local start, duration = C_Commentator.GetPlayerAuraInfoByUnit(unitToken, MechagnomeRecentlyFailedSpellID);
+			return primarySpellID, (start or 0) * 1000, (duration or 0) * 1000; -- Adjust to milliseconds
+		end
+
+		local start, duration = C_Commentator.GetPlayerCooldownInfoByUnit(unitToken, primarySpellID);
+		return primarySpellID, (start or 0) * 1000, (duration or 0) * 1000; -- Adjust to milliseconds
+	end
+
+	self:UpdateCircleTracker(self.RacialAbilityTracker, GetRacialAbilityInfo);
+end
+
+function CommentatorUnitFrameMixin:SetCircleTrackerIcon(circleTracker, spellID)
+	circleTracker:SetShown(spellID > 0);
+
+	if spellID ~= circleTracker.Icon.spellID then
 		local textureID = select(3, GetSpellInfo(spellID));
-		local icon = self.CCRemover.Icon;
+		local icon = circleTracker.Icon;
 		icon.spellID = spellID;
 		icon:SetTexture(textureID);
 	end
 end
 
-function CommentatorUnitFrameMixin:UpdateCCRemover()
+function CommentatorUnitFrameMixin:UpdateCircleTracker(circleTracker, infoCallback)
 	if self.unitToken then
-		local spellID, startTimeMs, durationMs = C_PvP.GetArenaCrowdControlInfo(self.unitToken);
+		local spellID, startTimeMs, durationMs = infoCallback(self.unitToken);
 		if spellID then
-			self:SetCCRemoverIcon(spellID);
-			
+			self:SetCircleTrackerIcon(circleTracker, spellID);
+
 			if (startTimeMs ~= 0 and durationMs ~= 0) then
-				self.CCRemover.Cooldown:SetCooldown(startTimeMs / 1000.0, durationMs / 1000.0);
+				circleTracker.Cooldown:SetCooldown(startTimeMs / 1000.0, durationMs / 1000.0);
 			else
-				self.CCRemover.Cooldown:Clear();
+				circleTracker.Cooldown:Clear();
 			end
+
+			return true;
 		else
-			C_PvP.RequestCrowdControlSpell(self.unitToken);
+			return false;
 		end
 	end
+
+	return false;
 end
 
 function CommentatorUnitFrameMixin:UpdateCrowdControlAuras()

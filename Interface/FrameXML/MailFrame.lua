@@ -225,6 +225,9 @@ function InboxFrame_Update()
 			else
 				button.IconBorder:Hide();
 				button.IconOverlay:Hide();
+				if button.ProfessionQualityOverlay then
+					button.ProfessionQualityOverlay:Hide();
+				end
 			end
 
 			buttonIcon = _G["MailItem"..i.."ButtonIcon"];
@@ -1198,6 +1201,9 @@ end
 function OpenAllMailMixin:StartOpening()
 	self:Reset();
 	self:Disable();
+
+	C_Mail.SetOpeningAll(true);
+
 	self:SetText(OPEN_ALL_MAIL_BUTTON_OPENING);
 	self:RegisterEvent("MAIL_INBOX_UPDATE");
 	self:RegisterEvent("MAIL_FAILED");
@@ -1208,6 +1214,9 @@ end
 function OpenAllMailMixin:StopOpening()
 	self:Reset();
 	self:Enable();
+
+	C_Mail.SetOpeningAll(false);
+
 	self:SetText(OPEN_ALL_MAIL_BUTTON);
 	self:UnregisterEvent("MAIL_INBOX_UPDATE");
 	self:UnregisterEvent("MAIL_FAILED");

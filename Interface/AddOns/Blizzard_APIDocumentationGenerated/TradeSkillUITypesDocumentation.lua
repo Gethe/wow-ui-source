@@ -115,6 +115,7 @@ local TradeSkillUITypes =
 			{
 				{ Name = "resourcesReturned", Type = "table", InnerType = "CraftingResourceReturnInfo", Nilable = true },
 				{ Name = "craftingQuality", Type = "number", Nilable = true },
+				{ Name = "qualityProgress", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "itemID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "itemGUID", Type = "string", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false, Default = 0 },
@@ -126,6 +127,7 @@ local TradeSkillUITypes =
 				{ Name = "multicraft", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "operationID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "firstCraftReward", Type = "bool", Nilable = false, Default = false },
+				{ Name = "isEnchant", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -369,7 +371,7 @@ local TradeSkillUITypes =
 				{ Name = "qualityIlvlBonuses", Type = "table", InnerType = "number", Nilable = true },
 				{ Name = "maxQuality", Type = "number", Nilable = true },
 				{ Name = "qualityIDs", Type = "table", InnerType = "number", Nilable = true },
-				{ Name = "createsItem", Type = "bool", Nilable = false, Default = true },
+				{ Name = "canCreateMultiple", Type = "bool", Nilable = false, Default = true },
 				{ Name = "abilityVerb", Type = "string", Nilable = true },
 				{ Name = "abilityAllVerb", Type = "string", Nilable = true },
 				{ Name = "isRecraft", Type = "bool", Nilable = false, Default = false },

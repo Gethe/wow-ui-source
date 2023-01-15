@@ -278,7 +278,7 @@ function MinimapClusterMixin:OnLoad()
 	CacheFramePoints(self.Minimap);
 	CacheFramePoints(self.BorderTop);
 	CacheFramePoints(self.InstanceDifficulty);
-	CacheFramePoints(self.MailFrame);
+	CacheFramePoints(self.IndicatorFrame);
 end
 
 function MinimapClusterMixin:OnEvent(event, ...)
@@ -330,13 +330,13 @@ function MinimapClusterMixin:SetHeaderUnderneath(headerUnderneath)
 		self.InstanceDifficulty:ClearAllPoints();
 		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self.BorderTop, "TOPRIGHT", -2, -2);
 
-		self.MailFrame:ClearAllPoints();
-		self.MailFrame:SetPoint("BOTTOMRIGHT", self.Tracking, "TOPRIGHT");
+		self.IndicatorFrame:ClearAllPoints();
+		self.IndicatorFrame:SetPoint("BOTTOMRIGHT", self.Tracking, "TOPRIGHT");
 	else
 		ResetFramePoints(self.Minimap);
 		ResetFramePoints(self.BorderTop);
 		ResetFramePoints(self.InstanceDifficulty);
-		ResetFramePoints(self.MailFrame);
+		ResetFramePoints(self.IndicatorFrame);
 	end
 	
 	self.InstanceDifficulty:SetFlipped(headerUnderneath);
@@ -346,12 +346,21 @@ function MinimapClusterMixin:SetRotateMinimap(rotateMinimap)
 	SetCVar("rotateMinimap", rotateMinimap);
 end
 
+
+function MiniMapIndicatorFrame_UpdatePosition()
+	if MinimapCluster.Tracking:IsShown() then
+		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.Tracking, "BOTTOMRIGHT", 2, -1);
+	else
+		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.BorderTop, "TOPLEFT", -1, -1);
+	end
+end
+
+
 MiniMapMailFrameMixin = { };
 
 function MiniMapMailFrameMixin:OnLoad()
 	self:RegisterEvent("UPDATE_PENDING_MAIL");
 	self:SetFrameLevel(self:GetFrameLevel()+1);
-	MiniMapMailFrame_UpdatePosition();
 end
 
 function MiniMapMailFrameMixin:OnEvent(event)
@@ -364,6 +373,7 @@ function MiniMapMailFrameMixin:OnEvent(event)
 		else
 			self:Hide();
 		end
+		self:GetParent():Layout();
 	end
 end
 
@@ -378,20 +388,48 @@ function MiniMapMailFrameMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
-function MiniMapMailFrame_UpdatePosition()
-	if MinimapCluster.Tracking:IsShown() then
-		MinimapCluster.MailFrame:SetPoint("TOPRIGHT", MinimapCluster.Tracking, "BOTTOMRIGHT", 2, -1);
-	else
-		MinimapCluster.MailFrame:SetPoint("TOPRIGHT", MinimapCluster.BorderTop, "TOPLEFT", -1, -1);
-	end
-end
-
 function MinimapMailFrameUpdate()
 	local senders = { GetLatestThreeSenders() };
 	local headerText = #senders >= 1 and HAVE_MAIL_FROM or HAVE_MAIL;
 	FormatUnreadMailTooltip(GameTooltip, headerText, senders);
 	GameTooltip:Show();
 end
+
+
+MiniMapCraftingOrderFrameMixin = {};
+
+function MiniMapCraftingOrderFrameMixin:OnLoad()
+	self:RegisterEvent("CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:SetFrameLevel(self:GetFrameLevel()+1);
+end
+
+function MiniMapCraftingOrderFrameMixin:OnEvent(event)
+	if ( event == "CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS" or event == "PLAYER_ENTERING_WORLD" ) then
+		self.countInfos = C_CraftingOrders.GetPersonalOrdersInfo();
+		if ( #self.countInfos > 0 ) then
+			self:Show();
+		else
+			self:Hide();
+		end
+		self:GetParent():Layout();
+	end
+end
+
+function MiniMapCraftingOrderFrameMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+	local wrap = false;
+	GameTooltip_AddNormalLine(GameTooltip, MAILFRAME_CRAFTING_ORDERS_TOOLTIP_TITLE, wrap);
+	for _, countInfo in ipairs(self.countInfos) do
+		GameTooltip_AddNormalLine(GameTooltip, PERSONAL_CRAFTING_ORDERS_AVAIL_FMT:format(countInfo.numPersonalOrders, countInfo.professionName), wrap);
+	end
+	GameTooltip:Show();
+end
+
+function MiniMapCraftingOrderFrameMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
 
 MiniMapTrackingButtonMixin = { };
 
@@ -416,8 +454,8 @@ end
 
 function MiniMapTrackingButtonMixin:Show(shown)
 	MinimapCluster.Tracking:SetShown(shown);
-	if MinimapCluster.MailFrame then
-		MiniMapMailFrame_UpdatePosition();
+	if MinimapCluster.IndicatorFrame then
+		MiniMapIndicatorFrame_UpdatePosition();
 	end
 end
 
@@ -503,6 +541,14 @@ local LOW_PRIORITY_TRACKING_SPELLS = {
 	[261764] = true; -- Track Warboards
 };
 
+local TRACKING_SPELL_OVERRIDE_TEXTURES = {
+	[43308] = "professions_tracking_fish";-- Find Fish
+	[2580] = "professions-crafting-orders-icon"; -- Find Minerals 1
+	[8388] = "professions-crafting-orders-icon"; -- Find Minerals 2
+	[2383] = "professions_tracking_herb"; -- Find Herbs 1
+	[8387] = "professions_tracking_herb"; -- Find Herbs 2
+};
+
 function MiniMapTrackingDropDown_SetTrackingNone()
 	C_Minimap.ClearAllTracking();
 	
@@ -578,7 +624,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 
 	local trackingInfos = { };
 	for id=1, count do
-		name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
+		name, texture, active, category, nested, spellID = C_Minimap.GetTrackingInfo(id);
 
 		if showAll or MiniMapTracking_FilterIsVisible(id) then
 			-- Remove nested townsfold unless showing all
@@ -590,7 +636,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 			info.text = name;
 			info.checked = MiniMapTrackingDropDown_IsActive;
 			info.func = MiniMapTrackingDropDown_SetTracking;
-			info.icon = texture;
+			info.icon = TRACKING_SPELL_OVERRIDE_TEXTURES[spellID] or texture;
 			info.arg1 = id;
 			info.isNotRadio = true;
 			info.keepShownOnClick = true;
@@ -665,6 +711,10 @@ function ExpansionLandingPageMinimapButtonMixin:OnLoad()
 
 	FrameUtil.RegisterFrameForEvents(self, GarrisonLandingPageEvents);
 	self.garrisonMode = true;
+end
+
+function ExpansionLandingPageMinimapButtonMixin:IsInGarrisonMode()
+	return self.garrisonMode;
 end
 
 function ExpansionLandingPageMinimapButtonMixin:RefreshButton()

@@ -57,7 +57,7 @@ end
 
 function TreeListNodeMixin:Remove(node)
 	for index, node2 in ipairs(self.nodes) do
-		if node2 == data then
+		if node2 == node then
 			local removed = table.remove(self.nodes, index);
 			self:Invalidate();
 			return removed;

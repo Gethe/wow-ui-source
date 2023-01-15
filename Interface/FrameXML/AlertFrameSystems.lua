@@ -446,6 +446,7 @@ LOOTWONALERTFRAME_VALUES={
 	Azerite = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=AZERITE_EMPOWERED_ITEM_LOOT_LABEL, bgAtlas="LootToast-Azerite", glowAtlas="loottoast-glow", soundKit=SOUNDKIT.UI_AZERITE_EMPOWERED_ITEM_LOOT_TOAST},
 	Conduit = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=CONDUIT_ITEM_LOOT_LABEL, bgAtlas="loottoast-oribos", noIconBorder=true, glowAtlas="loottoast-glow"},
 	Corrupted = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=3, labelText=CORRUPTED_ITEM_LOOT_LABEL, bgAtlas="LootToast-Nzoth", glowAtlas="loottoast-glow", soundKit=SOUNDKIT.UI_CORRUPTED_ITEM_LOOT_TOAST},
+	TradingPostCurrency = { bgOffsetX=-4, bgOffsetY=0, labelOffsetX=7, labelOffsetY=1, labelText=TRADERS_CACHE, glowAtlas="CacheToast-Glow", bgAtlas="CacheToast", noIconBorder=true, iconUnderBG=true, soundKit=SOUNDKIT.TRADING_POST_UI_COLLECTING_COINS},
 }
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
@@ -476,6 +477,8 @@ function LootWonAlertFrame_SetUp(self, itemLink, originalQuantity, rollType, rol
 	else
 		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["GarrisonCache"];
+		elseif (lootSource == LOOT_SOURCE_TRADING_POST) then
+			windowInfo = LOOTWONALERTFRAME_VALUES["TradingPostCurrency"];
 		elseif ( isCorrupted ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["Corrupted"];
 		elseif ( lessAwesome ) then
@@ -1323,3 +1326,32 @@ function NewCosmeticAlertFrameMixin:OnRelease()
 	end
 	self.timers = { };
  end
+ 
+-- [[ MonthlyActivityAlertFrame ]] --
+function MonthlyActivityAlertFrame_SetUp(frame, perksActivityID)
+	local info = C_PerksActivities.GetPerksActivityInfo(perksActivityID);
+
+	frame.Name:SetText(info.activityName);
+	frame.id = perksActivityID;
+
+	PlaySound(SOUNDKIT.TRADING_POST_UI_COMPLETED_ACTIVITY_TOAST);
+end
+
+function MonthlyActivityAlertFrame_OnClick (self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
+
+	local id = self.id;
+	if ( not id ) then
+		return;
+	end
+
+	if ( not EncounterJournal ) then
+		EncounterJournal_LoadUI();
+	end
+
+	MonthlyActivitiesFrame_OpenFrameToActivity(id);
+end
+
+MonthlyActivityAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("MonthlyActivityFrameTemplate", MonthlyActivityAlertFrame_SetUp, 2, 6);

@@ -400,14 +400,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 16,
 			stepSize = 1,
 		},
-
-		-- ShowFull
-		{
-			setting = Enum.EditModeAuraFrameSetting.ShowFull,
-			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_SHOW_FULL,
-			type = Enum.EditModeSettingDisplayType.Checkbox,
-		},
-
 	},
 
 	[Enum.EditModeSystem.TalkingHeadFrame] =
@@ -441,6 +433,104 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 1000,
 			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
+		},
+	},
+
+	[Enum.EditModeSystem.MicroMenu] =
+	{
+		-- Orientation
+		{
+			setting = Enum.EditModeMicroMenuSetting.Orientation,
+			name = HUD_EDIT_MODE_SETTING_MICRO_MENU_ORIENTATION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.MicroMenuOrientation.Horizontal, text = HUD_EDIT_MODE_SETTING_MICRO_MENU_ORIENTATION_HORIZONTAL},
+				{value = Enum.MicroMenuOrientation.Vertical, text = HUD_EDIT_MODE_SETTING_MICRO_MENU_ORIENTATION_VERTICAL},
+			},
+		},
+
+		-- Order
+		{
+			setting = Enum.EditModeMicroMenuSetting.Order,
+			name = HUD_EDIT_MODE_SETTING_MICRO_MENU_ORDER,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.MicroMenuOrder.Default, text = HUD_EDIT_MODE_SETTING_MICRO_MENU_ORDER_DEFAULT},
+				{value = Enum.MicroMenuOrder.Reverse, text = HUD_EDIT_MODE_SETTING_MICRO_MENU_ORDER_REVERSE},
+			},
+		},
+
+		-- Size
+		{
+			setting = Enum.EditModeMicroMenuSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_MICRO_MENU_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 100,
+			maxValue = 200,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = showAsPercentage,
+		},
+	},
+
+	[Enum.EditModeSystem.Bags] =
+	{
+		-- Orientation
+		{
+			setting = Enum.EditModeBagsSetting.Orientation,
+			name = HUD_EDIT_MODE_SETTING_BAGS_ORIENTATION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.BagsOrientation.Horizontal, text = HUD_EDIT_MODE_SETTING_BAGS_ORIENTATION_HORIZONTAL},
+				{value = Enum.BagsOrientation.Vertical, text = HUD_EDIT_MODE_SETTING_BAGS_ORIENTATION_VERTICAL},
+			},
+		},
+
+		-- Direction
+		{
+			setting = Enum.EditModeBagsSetting.Direction,
+			name = HUD_EDIT_MODE_SETTING_BAGS_DIRECTION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.BagsDirection.Left, text = HUD_EDIT_MODE_SETTING_BAGS_DIRECTION_LEFT},
+				{value = Enum.BagsDirection.Right, text = HUD_EDIT_MODE_SETTING_BAGS_DIRECTION_RIGHT},
+			},
+		},
+
+		-- Size
+		{
+			setting = Enum.EditModeBagsSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_BAGS_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 75,
+			maxValue = 200,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = showAsPercentage,
+		},
+	},
+
+	[Enum.EditModeSystem.StatusTrackingBar] =
+	{
+
+	},
+
+	[Enum.EditModeSystem.DurabilityFrame] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeDurabilityFrameSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_DURABILITY_FRAME_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 75,
+			maxValue = 200,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = showAsPercentage,
 		},
 	},
 };

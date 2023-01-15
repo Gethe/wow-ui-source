@@ -10,7 +10,7 @@ local AZERITE_EMPOWERED_FRAME_EVENTS = {
 	"AZERITE_ITEM_POWER_LEVEL_CHANGED",
 	"AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
 	"PLAYER_EQUIPMENT_CHANGED",
-	"SCRAPPING_MACHINE_SCRAPPING_FINISHED",
+	"UPDATE_TRADESKILL_CAST_COMPLETE",
 };
 
 AZERITE_EMPOWERED_ITEM_MAX_TIERS = 5;
@@ -94,7 +94,7 @@ end
 
 function AzeriteEmpoweredItemUIMixin:OnEvent(event, ...)
 	if event == "AZERITE_ITEM_POWER_LEVEL_CHANGED" then
-		local azeriteItemLocation, oldPowerLevel, newPowerLevel = ...;
+		local azeriteItemLocation, oldPowerLevel, newPowerLevel, azeriteItemID = ...;
 		self:MarkDirty();
 	elseif event == "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED" then
 		local item = ...;
@@ -106,8 +106,11 @@ function AzeriteEmpoweredItemUIMixin:OnEvent(event, ...)
 		if self.azeriteItemDataSource:DidEquippedItemChange(equipmentSlot) then
 			self:Clear();
 		end
-	elseif event == "SCRAPPING_MACHINE_SCRAPPING_FINISHED" then
-		HideUIPanel(self);
+	elseif event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
+		local isScrapping = ...;
+		if isScrapping then
+			HideUIPanel(self);
+		end
 	end
 end
 

@@ -126,7 +126,16 @@ function ProfessionsCustomerOrdersBrowsePageMixin:InitContextMenu(dropDown, leve
 	
 	local currentlyFavorite = C_CraftingOrders.IsCustomerOptionFavorited(recipeID);
 	info.text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
-	info.func = GenerateClosure(C_CraftingOrders.SetCustomerOptionFavorited, recipeID, not currentlyFavorite);
+	if not currentlyFavorite and C_CraftingOrders.GetNumFavoriteCustomerOptions() >= Constants.CraftingOrderConsts.MAX_CRAFTING_ORDER_FAVORITE_RECIPES then
+		info.text = DISABLED_FONT_COLOR:WrapTextInColorCode(info.text);
+		info.disabled = true;
+		info.tooltipWhileDisabled = true;
+		info.tooltipOnButton = true;
+		info.tooltipTitle = "";
+		info.tooltipWarning = PROFESSIONS_CRAFTING_ORDERS_FAVORITES_FULL;
+	else
+		info.func = GenerateClosure(C_CraftingOrders.SetCustomerOptionFavorited, recipeID, not currentlyFavorite);
+	end
 
 	UIDropDownMenu_AddButton(info, level);
 end

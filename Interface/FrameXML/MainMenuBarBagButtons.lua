@@ -377,7 +377,7 @@ function MainMenuBarBackpackMixin:UpdateItemContextOverlayTextures(contextMode)
 end
 
 function MainMenuBarBackpackMixin:SetBarExpanded(isExpanded)
-	-- Remains shown during expand state change
+	-- Remains shown regardless of expand state
 end
 
 function MainMenuBarBackpackMixin:BagSlotOnDragStart(button)
@@ -391,30 +391,115 @@ function CharacterReagentBagMixin:GetSlotAtlases()
 end
 
 function CharacterReagentBagMixin:SetBarExpanded(isExpanded)
-	self:ClearAllPoints();
-	self:SetPoint("RIGHT", isExpanded and CharacterBag3Slot or BagBarExpandToggle, "LEFT");
+	-- Remains shown regardless of expand state
 end
 
 BagBarExpandToggleMixin = {};
-
-function BagBarExpandToggleMixin:OnLoad()
-	EventRegistry:RegisterCallback("MainMenuBarManager.OnExpandChanged", function(owner, manager)
-		self:OnExpandChanged(manager:IsBarUserExpanded());
-	end, self);
-
-	EventRegistry:RegisterFrameEventAndCallback("VARIABLES_LOADED", function()
-		self:OnExpandChanged(GetCVarBool("expandBagBar"));
-		EventRegistry:UnregisterFrameEventAndCallback("VARIABLES_LOADED", self);
-	end, self);
-end
 
 function BagBarExpandToggleMixin:OnClick()
 	MainMenuBarBagManager:ToggleExpandBar();
 end
 
-function BagBarExpandToggleMixin:OnExpandChanged(expanded)
-	local rotation = expanded and math.pi or 0;
+function BagBarExpandToggleMixin:GetRotation()
+	local isExpanded = MainMenuBarBagManager:ShouldBarExpand();
+	if BagsBar:IsHorizontal() then
+		local leftRotation = 0;
+		local rightRotation = math.pi;
+		if BagsBar:IsDirectionLeft() then
+			return isExpanded and rightRotation or leftRotation;
+		else
+			return isExpanded and leftRotation or rightRotation;
+		end
+	else -- vertical bags bar
+		local upRotation = 3 * math.pi / 2;
+		local downRotation = math.pi / 2;
+		if BagsBar:IsDirectionUp() then
+			return isExpanded and downRotation or upRotation;
+		else
+			return isExpanded and upRotation or downRotation;
+		end
+	end
+end
+
+function BagBarExpandToggleMixin:UpdateOrientation()
+	local rotation = self:GetRotation();
 	self:GetNormalTexture():SetRotation(rotation);
 	self:GetPushedTexture():SetRotation(rotation);
 	self:GetHighlightTexture():SetRotation(rotation);
+end
+
+BagsBarMixin = {};
+
+function BagsBarMixin:OnLoad()
+	self.initialWidth = self:GetWidth();
+	self.initialHeight = self:GetHeight();
+
+	self.bagBarExpandToggleInitialWidth = BagBarExpandToggle:GetWidth();
+	self.bagBarExpandToggleInitialHeight = BagBarExpandToggle:GetHeight();
+
+	EventUtil.ContinueOnVariablesLoaded(GenerateClosure(self.Layout, self));
+	EventRegistry:RegisterCallback("MainMenuBarManager.OnExpandChanged", self.Layout, self);
+end
+
+function BagsBarMixin:GetBagButtonAnchorPoints()
+	-- Returns Point, RelativePoint
+	if self:IsHorizontal() then
+		if self:IsDirectionLeft() then
+			return "RIGHT", "LEFT";
+		else
+			return "LEFT", "RIGHT";
+		end
+	else
+		if self:IsDirectionUp() then
+			return "BOTTOM", "TOP";
+		else
+			return "TOP", "BOTTOM";
+		end
+	end
+end
+
+function BagsBarMixin:Layout()
+	-- Set bar and toggle button size based on orientation
+	if self:IsHorizontal() then
+		self:SetSize(self.initialWidth, self.initialHeight);
+		BagBarExpandToggle:SetSize(self.bagBarExpandToggleInitialWidth, self.bagBarExpandToggleInitialHeight);
+	else
+		-- Swap width/height for vertical bags bar since the bar is horizontal by default
+		self:SetSize(self.initialHeight, self.initialWidth);
+		BagBarExpandToggle:SetSize(self.bagBarExpandToggleInitialHeight, self.bagBarExpandToggleInitialWidth);
+	end
+
+	-- Get new bag anchor points
+	local point, relativePoint = self:GetBagButtonAnchorPoints();
+
+	-- Setup backpack button anchor
+	MainMenuBarBackpackButton:ClearAllPoints();
+	MainMenuBarBackpackButton:SetPoint(point, self, point);
+
+	-- Update expand button
+	BagBarExpandToggle:UpdateOrientation();
+	BagBarExpandToggle:ClearAllPoints();
+	BagBarExpandToggle:SetPoint(point, MainMenuBarBackpackButton, relativePoint);
+
+	-- Update other bag button anchors
+	local anchorRelativeTo = BagBarExpandToggle;
+	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+		if bagButton:IsShown() and bagButton ~= MainMenuBarBackpackButton then
+			bagButton:ClearAllPoints();
+			bagButton:SetPoint(point, anchorRelativeTo, relativePoint);
+			anchorRelativeTo = bagButton;
+		end
+	end
+end
+
+function BagsBarMixin:IsHorizontal()
+	return self.isHorizontal;
+end
+
+function BagsBarMixin:IsDirectionLeft()
+	return self:IsHorizontal() and self.direction == Enum.BagsDirection.Left;
+end
+
+function BagsBarMixin:IsDirectionUp()
+	return not self:IsHorizontal() and self.direction == Enum.BagsDirection.Up;
 end

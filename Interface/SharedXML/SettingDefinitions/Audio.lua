@@ -396,30 +396,6 @@ local function Register()
 		Settings.SetupCVarDropDown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
 		Settings.SetOnValueChangedCallback("Sound_OutputDriverIndex", Sound_GameSystem_RestartSoundSystem);
 	end
-
-	-- Sound Channels
-	do
-		local minValue, maxValue, step = 20, 128, 1;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
-
-		Settings.SetupCVarSlider(category, "Sound_NumChannels", options, AUDIO_CHANNELS, OPTION_TOOLTIP_AUDIO_CHANNELS);
-	end
-
-	-- Sound Cache Size
-	do
-		local SMALL_CACHE_SIZE_BYTES = 67108864;
-		local LARGE_CACHE_SIZE_BYTES = 134217728;
-		local BYTE_PER_MB = 1024*1024;
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(SMALL_CACHE_SIZE_BYTES, AUDIO_CACHE_SIZE_SMALL:format(SMALL_CACHE_SIZE_BYTES/BYTE_PER_MB));
-			container:Add(LARGE_CACHE_SIZE_BYTES, AUDIO_CACHE_SIZE_LARGE:format(LARGE_CACHE_SIZE_BYTES/BYTE_PER_MB));
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropDown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
-	end
 	
 	do
 		local minValue, maxValue, step = 0, 1, .05;
@@ -511,6 +487,30 @@ local function Register()
 	
 	-- Distance Filtering
 	Settings.SetupCVarCheckBox(category, "Sound_EnablePositionalLowPassFilter", ENABLE_SOFTWARE_HRTF, OPTION_TOOLTIP_ENABLE_SOFTWARE_HRTF);
+
+	-- Sound Channels
+	do
+		local minValue, maxValue, step = 20, 128, 1;
+		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
+		Settings.SetupCVarSlider(category, "Sound_NumChannels", options, AUDIO_CHANNELS, OPTION_TOOLTIP_AUDIO_CHANNELS);
+	end
+
+	-- Sound Cache Size
+	do
+		local SMALL_CACHE_SIZE_BYTES = 67108864;
+		local LARGE_CACHE_SIZE_BYTES = 134217728;
+		local BYTE_PER_MB = 1024*1024;
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(SMALL_CACHE_SIZE_BYTES, AUDIO_CACHE_SIZE_SMALL:format(SMALL_CACHE_SIZE_BYTES/BYTE_PER_MB));
+			container:Add(LARGE_CACHE_SIZE_BYTES, AUDIO_CACHE_SIZE_LARGE:format(LARGE_CACHE_SIZE_BYTES/BYTE_PER_MB));
+			return container:GetData();
+		end
+
+		Settings.SetupCVarDropDown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
+	end
 
 	--Voice
 	if not IsOnGlueScreen() then

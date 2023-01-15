@@ -330,6 +330,7 @@ local ProfessionConstants =
 				{ Name = "MAX_CRAFTING_REAGENT_SLOTS", Type = "number", Value = 12 },
 				{ Name = "CRAFTING_ORDER_CLAIM_DURATION", Type = "number", Value = 0 },
 				{ Name = "PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD", Type = "number", Value = 0 },
+				{ Name = "CRAFTING_ORDER_ITEM_RETENTION", Type = "number", Value = 30 },
 			},
 		},
 	},

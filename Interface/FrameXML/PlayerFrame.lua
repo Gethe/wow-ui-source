@@ -582,6 +582,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	DebuffFrame:Update();
 	ComboFrame_Update(ComboFrame);
 
+	PlayerFrame_UpdateRolesAssigned();
 	PlayerFrame_UpdatePlayerNameTextAnchor();
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -26);
@@ -654,7 +655,6 @@ function PlayerFrame_ToPlayerArt(self)
 	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -27);
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
 	playerFrameTargetContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -82);
-	PlayerLevelText:Show();
 end
 
 --

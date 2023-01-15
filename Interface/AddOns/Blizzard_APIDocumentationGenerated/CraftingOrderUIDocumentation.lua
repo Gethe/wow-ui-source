@@ -170,6 +170,15 @@ local CraftingOrderUI =
 			},
 		},
 		{
+			Name = "GetNumFavoriteCustomerOptions",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numFavorites", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetOrderClaimInfo",
 			Type = "Function",
 
@@ -181,6 +190,15 @@ local CraftingOrderUI =
 			Returns =
 			{
 				{ Name = "claimInfo", Type = "CraftingOrderClaimsRemainingInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPersonalOrdersInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "infos", Type = "table", InnerType = "CraftingOrderPersonalOrdersInfo", Nilable = false },
 			},
 		},
 		{
@@ -448,6 +466,11 @@ local CraftingOrderUI =
 			LiteralName = "CRAFTINGORDERS_SHOW_CUSTOMER",
 		},
 		{
+			Name = "CraftingordersUnexpectedError",
+			Type = "Event",
+			LiteralName = "CRAFTINGORDERS_UNEXPECTED_ERROR",
+		},
+		{
 			Name = "CraftingordersUpdateCustomerName",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_UPDATE_CUSTOMER_NAME",
@@ -466,6 +489,11 @@ local CraftingOrderUI =
 				{ Name = "orderType", Type = "CraftingOrderType", Nilable = false },
 				{ Name = "numOrders", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "CraftingordersUpdatePersonalOrderCounts",
+			Type = "Event",
+			LiteralName = "CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS",
 		},
 	},
 

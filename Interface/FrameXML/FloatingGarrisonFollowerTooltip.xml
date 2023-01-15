@@ -55,7 +55,7 @@ UI.xsd">
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="GarrisonFollowerTooltipContentsTemplate" virtual="true">
 		<Size x="260" y="80"/>
 		<Layers>
@@ -243,20 +243,7 @@ UI.xsd">
 			<Anchor point="BOTTOM" x="0" y="80"/>
 		</Anchors>
 		<Frames>
-			<Button parentKey="CloseButton">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="1" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-			</Button>
+			<Button parentKey="CloseButton" inherits="FloatingFrameCloseButtonDefaultAnchors"/>
 		</Frames>
 		<Scripts>
 			<OnMouseDown>
@@ -274,20 +261,7 @@ UI.xsd">
 			<Anchor point="BOTTOM" x="0" y="80"/>
 		</Anchors>
 		<Frames>
-			<Button parentKey="CloseButton">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="1" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-			</Button>
+			<Button parentKey="CloseButton" inherits="FloatingFrameCloseButtonDefaultAnchors"/>
 		</Frames>
 		<Scripts>
 			<OnMouseDown>
@@ -453,20 +427,7 @@ UI.xsd">
 			<Anchor point="BOTTOM" x="0" y="80"/>
 		</Anchors>
 		<Frames>
-			<Button parentKey="CloseButton">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="1" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-			</Button>
+			<Button parentKey="CloseButton" inherits="FloatingFrameCloseButtonDefaultAnchors"/>
 		</Frames>
 		<Scripts>
 			<OnMouseDown>
@@ -508,20 +469,7 @@ UI.xsd">
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CloseButton">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="1" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-			</Button>
+			<Button parentKey="CloseButton" inherits="FloatingFrameCloseButtonDefaultAnchors"/>
 		</Frames>
 		<Scripts>
 			<OnMouseDown>

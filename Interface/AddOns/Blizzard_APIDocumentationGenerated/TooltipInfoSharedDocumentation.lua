@@ -24,9 +24,9 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataLineType",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 30,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 29,
 			Fields =
 			{
 				{ Name = "None", Type = "TooltipDataLineType", EnumValue = 0 },
@@ -50,6 +50,15 @@ local TooltipInfoShared =
 				{ Name = "QuestPlayer", Type = "TooltipDataLineType", EnumValue = 18 },
 				{ Name = "NestedBlock", Type = "TooltipDataLineType", EnumValue = 19 },
 				{ Name = "ItemBinding", Type = "TooltipDataLineType", EnumValue = 20 },
+				{ Name = "RestrictedRaceClass", Type = "TooltipDataLineType", EnumValue = 21 },
+				{ Name = "RestrictedFaction", Type = "TooltipDataLineType", EnumValue = 22 },
+				{ Name = "RestrictedSkill", Type = "TooltipDataLineType", EnumValue = 23 },
+				{ Name = "RestrictedPvPMedal", Type = "TooltipDataLineType", EnumValue = 24 },
+				{ Name = "RestrictedReputation", Type = "TooltipDataLineType", EnumValue = 25 },
+				{ Name = "RestrictedSpellKnown", Type = "TooltipDataLineType", EnumValue = 26 },
+				{ Name = "RestrictedLevel", Type = "TooltipDataLineType", EnumValue = 27 },
+				{ Name = "EquipSlot", Type = "TooltipDataLineType", EnumValue = 28 },
+				{ Name = "ItemName", Type = "TooltipDataLineType", EnumValue = 29 },
 			},
 		},
 		{

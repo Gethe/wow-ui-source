@@ -300,15 +300,6 @@ local EquipmentManager =
 			Type = "Event",
 			LiteralName = "TRANSMOG_OUTFITS_CHANGED",
 		},
-		{
-			Name = "WearEquipmentSet",
-			Type = "Event",
-			LiteralName = "WEAR_EQUIPMENT_SET",
-			Payload =
-			{
-				{ Name = "setID", Type = "number", Nilable = false },
-			},
-		},
 	},
 
 	Tables =

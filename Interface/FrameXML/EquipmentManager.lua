@@ -49,10 +49,7 @@ local function _EquipmentManager_BagsFullError()
 end
 
 function EquipmentManager_OnEvent (self, event, ...)
-	if ( event == "WEAR_EQUIPMENT_SET" ) then
-		local setID = ...;
-		EquipmentManager_EquipSet(setID);
-	elseif ( event == "ITEM_UNLOCKED" ) then
+	if ( event == "ITEM_UNLOCKED" ) then
 		local arg1, arg2 = ...; -- inventory slot or bag and slot
 
 		if ( not arg2 ) then
@@ -69,7 +66,6 @@ function EquipmentManager_OnEvent (self, event, ...)
 end
 
 EquipmentManager:SetScript("OnEvent", EquipmentManager_OnEvent);
-EquipmentManager:RegisterEvent("WEAR_EQUIPMENT_SET");
 EquipmentManager:RegisterEvent("ITEM_UNLOCKED");
 EquipmentManager:RegisterEvent("BANKFRAME_OPENED");
 EquipmentManager:RegisterEvent("BANKFRAME_CLOSED");

@@ -68,8 +68,12 @@ function StatusTrackingManagerMixin:UpdateBarsShown()
 end
 
 function StatusTrackingManagerMixin:HideStatusBars()
-	self.BottomBarFrameTexture:Hide();
-	self.TopBarFrameTexture:Hide();
+	self.MainStatusTrackingBarContainer.shouldShow = false;
+	self.MainStatusTrackingBarContainer:UpdateShownState();
+
+	self.SecondaryStatusTrackingBarContainer.shouldShow = false;
+	self.SecondaryStatusTrackingBarContainer:UpdateShownState();
+
 	for i, bar in ipairs(self.bars) do
 		bar:Hide();
 	end
@@ -79,14 +83,15 @@ function StatusTrackingManagerMixin:LayoutBar(bar, isTopBar)
 	bar:Update();
 	bar:Show();
 
-	local frameTexture = isTopBar and self.TopBarFrameTexture or self.BottomBarFrameTexture;
-	frameTexture:Show();
+	local barContainer = isTopBar and self.SecondaryStatusTrackingBarContainer or self.MainStatusTrackingBarContainer;
+	barContainer.shouldShow = true;
+	barContainer:UpdateShownState();
 
 	bar:ClearAllPoints();
-	bar:SetPoint("BOTTOMLEFT", frameTexture, "BOTTOMLEFT", 1, 5);
+	bar:SetPoint("BOTTOMLEFT", barContainer, "BOTTOMLEFT", 1, 5);
 
-	local frameHeight = frameTexture:GetHeight() - 6;
-	local frameWidth = frameTexture:GetWidth() - 6;
+	local frameHeight = barContainer:GetHeight() - 6;
+	local frameWidth = barContainer:GetWidth() - 6;
 	bar.StatusBar:SetSize(frameWidth, frameHeight);
 	bar:SetSize(frameWidth, frameHeight);
 end
@@ -141,4 +146,10 @@ function StatusTrackingManagerMixin:OnEvent(event, ...)
 		end
 	end
 	self:UpdateBarsShown();
+end
+
+StatusTrackingBarContainerMixin = {};
+
+function StatusTrackingBarContainerMixin:UpdateShownState()
+	self:SetShown(self.shouldShow or self.isInEditMode);
 end

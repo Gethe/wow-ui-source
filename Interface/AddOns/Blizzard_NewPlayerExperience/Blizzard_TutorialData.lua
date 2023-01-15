@@ -19,7 +19,7 @@ TutorialData.MAX_LOOT_CORPSE_LEVEL = 4;
 
 TutorialData.UI_Elements = {};
 TutorialData.UI_Elements.BACKPACK =	{MainMenuBarBackpackButton};
-TutorialData.UI_Elements.BAGS_BAR =	{MicroButtonAndBagsBar};
+TutorialData.UI_Elements.BAGS_BAR =	{BagsBar};
 TutorialData.UI_Elements.MAIN_BAGS_BUTTON =	{MainMenuBarBackpackButton};
 TutorialData.UI_Elements.SPELLBOOK_MICROBUTTON = {SpellbookMicroButton};
 TutorialData.UI_Elements.OTHER_MICROBUTTONS = {CharacterMicroButton, GuildMicroButton, TalentMicroButton, MainMenuMicroButton, AchievementMicroButton, CollectionsMicroButton, QuestLogMicroButton, LFDMicroButton, EJMicroButton};

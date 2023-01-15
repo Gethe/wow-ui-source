@@ -760,17 +760,23 @@ function GarrisonLandingPageReportList_Update()
 		GarrisonLandingPageReport.List.EmptyMissionText:SetText(nil);
 	end
 
+	local missionDataMatches = false;
 	local dataProvider = GarrisonLandingPageReport.List.ScrollBox:GetDataProvider();
-	if not dataProvider or #items ~= dataProvider:GetSize() then
-		dataProvider = CreateDataProvider(items);
-		GarrisonLandingPageReport.List.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
-	else
-		for index, mission in ipairs(items) do
+
+	-- If data provider exists with same number of missions, check if all existing mission ids match the current mission id list
+	if dataProvider and #items == dataProvider:GetSize() then
+		missionDataMatches = TableUtil.CompareValuesAsKeys(items, dataProvider:GetCollection(), function(mission)
+			return mission.missionID;
+		end);
+	end
+
+	if missionDataMatches then
+		-- New and existing mission ids match, update all the entries with current data to avoid rebuilding the data provider every frame
+		for _, mission in ipairs(items) do
 			local elementData = dataProvider:FindElementDataByPredicate(function(elementData)
 				return elementData.missionID == mission.missionID;
 			end);
 
-			-- Migrate the mission data into the elementData we want to keep.
 			if elementData then
 				MergeTable(elementData, mission);
 			end
@@ -779,6 +785,10 @@ function GarrisonLandingPageReportList_Update()
 		GarrisonLandingPageReport.List.ScrollBox:ForEachFrame(function(frame)
 			GarrisonLandingPageReportList_InitButton(frame, frame:GetElementData());
 		end);
+	else
+		-- Mission data doesn't match, recreate the provider with new data
+		dataProvider = CreateDataProvider(items);
+		GarrisonLandingPageReport.List.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	end
 end
 

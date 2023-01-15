@@ -117,6 +117,12 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	self.SchematicForm.postInit = function() self:SchematicPostInit(); end;
 end
 
+function ProfessionsCraftingPageMixin:Cleanup()
+	self.castingEnchantID = nil;
+	self:SetOverrideCastBarActive(false);
+	self:ValidateControls();
+end
+
 function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 	if event == "TRADE_SKILL_DATA_SOURCE_CHANGING" then	
 	elseif event == "TRADE_SKILL_DATA_SOURCE_CHANGED" then
@@ -125,7 +131,7 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 	elseif event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
 		local isScrapping = ...;
 		if not isScrapping then
-			self:ContinueCrafting();
+			self:Cleanup();
 		end
 	elseif event == "TRADE_SKILL_CLOSE" then
 		HideUIPanel(self);
@@ -134,10 +140,11 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 		if transaction then
 			transaction:SanitizeTargetAllocations();
 			-- If we are in the process of enchanting multiple vellums, we may need to reassign
-			-- a valid target if the previous item stack was depleted.
-			if self.craftingQueueEnchantID and not transaction:GetEnchantAllocation() then
+			-- a valid target if the previous item stack was depleted. This will go away entirely
+			-- once we update the API to accept the itemID and not require an actual item instance.
+			if self.castingEnchantID and not transaction:GetEnchantAllocation() then
 				ItemUtil.IteratePlayerInventory(function(itemLocation)
-					if C_Item.GetItemID(itemLocation) == self.craftingQueueEnchantID then
+					if C_Item.GetItemID(itemLocation) == self.castingEnchantID then
 						local item = Item:CreateFromItemGUID(C_Item.GetItemGUID(itemLocation));
 						transaction:SetEnchantAllocation(item);
 						return true;
@@ -151,9 +158,7 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 		self.SchematicForm:Refresh();
 		self:ValidateControls();
 	elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" then
-		self:ClearCraftingQueue();
-		self:ValidateControls();
-		self:SetOverrideCastBarActive(false);
+		self:Cleanup();
 	elseif event == "UNIT_AURA" then
 		self.SchematicForm:UpdateDetailsStats();
 	end
@@ -208,6 +213,8 @@ function ProfessionsCraftingPageMixin:OnShow()
 
 	self:SetTitle();
 	self.RecipeList.SearchBox:SetText(C_TradeSkillUI.GetRecipeItemNameFilter());
+
+	FrameUtil.RegisterUpdateFunction(self, .75, GenerateClosure(self.Update, self));
 end
 
 function ProfessionsCraftingPageMixin:OnHide()
@@ -223,6 +230,13 @@ function ProfessionsCraftingPageMixin:OnHide()
 	self:Reset();
 	self:SetOverrideCastBarActive(false);
 	HelpTip:HideAllSystem(helpTipSystem);
+
+	FrameUtil.UnregisterUpdateFunction(self);
+end
+
+function ProfessionsCraftingPageMixin:Update()
+	local skipConstrainCount = true;
+	self:ValidateControls(skipConstrainCount);
 end
 
 function ProfessionsCraftingPageMixin:Reset()
@@ -290,8 +304,9 @@ function ProfessionsCraftingPageMixin:SetupMultipleInputBox(count, countMax)
 	else
 		self.CreateMultipleInputBox:Disable();
 		self.CreateMultipleInputBox:SetValue(0);
-		end
+		self.CreateMultipleInputBox:ClearHighlightText();
 	end
+end
 
 function ProfessionsCraftingPageMixin:GetCraftableCount()
 	local transaction = self.SchematicForm:GetTransaction();
@@ -299,7 +314,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 
 	local function ClampInvervals(quantity, quantityMax)
 		intervals = math.min(intervals, math.floor(quantity / quantityMax));
-end
+	end
 
 	local function ClampAllocations(allocations)
 		for index, allocation in allocations:Enumerate() do
@@ -307,7 +322,7 @@ end
 			local quantityMax = allocation:GetQuantity();
 			ClampInvervals(quantity, quantityMax);
 		end
-		end
+	end
 
 	if transaction:IsManuallyAllocated() then
 		-- If manually allocated, we can only accumulate the reagents currently allocated.
@@ -316,7 +331,7 @@ end
 				ClampAllocations(allocations);
 			end
 		end
-			else
+	else
 		-- If automatically allocated, we can accumulate every compatible reagent regardless of what
 		-- is currently allocated.
 		for index, reagents in transaction:EnumerateAllSlotReagents() do
@@ -329,7 +344,7 @@ end
 				ClampInvervals(quantity, quantityMax);
 			end
 		end
-			end
+	end
 
 	-- Optionals and finishers are included unless the current reagent matches
 	-- a recrafting modification.
@@ -344,14 +359,14 @@ end
 					if modification.itemID == reagent.itemID then
 						clamp = false;
 					end
-		end
+				end
 				
 				if clamp then
 					ClampAllocations(allocations);
+				end
+			end
+		end
 	end
-end
-	end
-end
 
 	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 		local salvageItem = transaction:GetSalvageAllocation();
@@ -369,7 +384,7 @@ end
 				local quantity = ItemUtil.GetCraftingReagentCount(enchantItem:GetItemID());
 				local quantityMax = 1;
 				ClampInvervals(quantity, quantityMax); 
-	else
+			else
 				local quantity = 1;
 				local quantityMax = 1;
 				ClampInvervals(quantity, quantityMax); 
@@ -458,7 +473,12 @@ function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInf
 	return nil;
 end
 
-function ProfessionsCraftingPageMixin:ValidateControls()
+local function DoesEnchantTargetSupportStacks(transaction)
+	local enchantItem = transaction:GetEnchantAllocation();
+	return enchantItem and enchantItem:IsStackable();
+end
+
+function ProfessionsCraftingPageMixin:ValidateControls(skipConstrainCount)
 	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
@@ -469,8 +489,15 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 		self.ViewGuildCraftersButton:Hide();
 
 		local transaction = self.SchematicForm:GetTransaction();
+		local isEnchant = transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant);
+
+		local canCreateMultiple = currentRecipeInfo.canCreateMultiple and 
+			not isRuneforging and
+			not transaction:HasRecraftAllocation() and
+			(not isEnchant or DoesEnchantTargetSupportStacks(transaction));
+
 		local castBarXOfs, castBarYOfs;
-		if currentRecipeInfo.createsItem and not transaction:HasRecraftAllocation() then
+		if canCreateMultiple then
 			self.CreateAllButton:Show();
 			self.CreateMultipleInputBox:Show();
 			castBarXOfs = 2;
@@ -485,22 +512,18 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 		self.OverlayCastBarAnchor:SetPoint("BOTTOM", self, "BOTTOM", castBarXOfs, castBarYOfs);
 
 		local countMax = self:GetCraftableCount();
-		if countMax > 0 then
-			local count = 0;
-			if self.craftingQueue then
-				count = self.craftingQueue:GetTotal() + 1;
+		if not skipConstrainCount then
+			if countMax > 0 then
+				local total = C_TradeSkillUI.GetRemainingRecasts() + 1;
+				self:SetupMultipleInputBox(total, countMax);
 			else
-				count = C_TradeSkillUI.GetRecipeRepeatCount();
+				self:SetupMultipleInputBox(0, 0);
 			end
-
-			self:SetupMultipleInputBox(count, countMax);
-		else
-			self:SetupMultipleInputBox(0, 0);
 		end
 
-		if transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
+		if isEnchant then
 			self.CreateButton:SetTextToFit(CREATE_PROFESSION_ENCHANT);
-			local quantity = math.min(1, countMax);
+			local quantity = math.max(1, countMax);
 			self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_FORMAT:format(PROFESSIONS_ENCHANT_ALL, quantity));
 		else
 			if currentRecipeInfo.abilityVerb then
@@ -544,23 +567,9 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 			self:SetCreateButtonTooltipText(FailValidationTooltips[failValidationReason]);
 		end
 
-		-- Enchanting does not require the optional target to be set. When it is not,
-		-- clicking the create button creates a targeting cursor.
-		local restrictAllButton = false;
-		if transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
-			local enchantItem = transaction:GetEnchantAllocation();
-			local doesTargetSupportStacks = enchantItem and enchantItem:IsStackable();
-			restrictAllButton = not doesTargetSupportStacks;
-		end
-
 		self.CreateButton:SetEnabled(enabled);
-		self.CreateAllButton:SetEnabled(enabled and not restrictAllButton);
-		self.CreateMultipleInputBox:SetEnabled(enabled and not restrictAllButton);
-
-		if isRuneforging then
-			self.CreateAllButton:Hide();
-			self.CreateMultipleInputBox:Hide();
-		end
+		self.CreateAllButton:SetEnabled(enabled and canCreateMultiple);
+		self.CreateMultipleInputBox:SetEnabled(enabled and canCreateMultiple);
 	else
 		self.CreateButton:Hide();
 		self.CreateAllButton:Hide();
@@ -572,6 +581,36 @@ function ProfessionsCraftingPageMixin:ValidateControls()
 		else
 			self.ViewGuildCraftersButton:Hide();
 		end
+	end
+end
+
+local function FindFirstRecipe(dataProvider)
+	-- Select an initial recipe. As mentioned above, every recipe in the data provider is the
+	-- first recipe in the instance it has levels.
+	for index, node in dataProvider:Enumerate() do
+		local data = node:GetData();
+		local recipeInfo = data.recipeInfo;
+		-- Don't select recrafting as the initial recipe, since its filtering can cause confusion
+		if recipeInfo and not recipeInfo.isRecraft then
+			return recipeInfo;
+		end
+	end
+end
+
+local function FindRecipeInfo(dataProvider, recipeID)
+	if not recipeID then
+		return nil;
+	end
+
+	local node = dataProvider:FindElementDataByPredicate(function(node)
+		local data = node:GetData();
+		local recipeInfo = data.recipeInfo;
+		return recipeInfo and recipeInfo.recipeID == recipeID;
+	end);
+
+	if node then
+		local data = node:GetData();
+		return data.recipeInfo;
 	end
 end
 
@@ -630,49 +669,17 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	-- reselect the recipe we previously had selected. If we've selected a recipe from another profession
 	-- we ignore any previous selection.
 
-	local function SelectInitialRecipe()
-		-- Select an initial recipe. As mentioned above, every recipe in the data provider is the
-		-- first recipe in the instance it has levels.
-		for index, node in dataProvider:Enumerate() do
-			local data = node:GetData();
-			local recipeInfo = data.recipeInfo;
-			-- Don't select recrafting as the initial recipe, since its filtering can cause confusion
-			if recipeInfo and not recipeInfo.isRecraft then
-				return recipeInfo;
-			end
-		end
-	end
-
-	local function SetCurrentRecipeInfo(recipeID)
-		if not recipeID then
-			return nil;
-		end
-
-		local node = dataProvider:FindElementDataByPredicate(function(node)
-			local data = node:GetData();
-			local recipeInfo = data.recipeInfo;
-			return recipeInfo and recipeInfo.recipeID == recipeID;
-		end);
-
-		if node then
-			local data = node:GetData();
-			return data.recipeInfo;
-		end
-	end
-
 	local currentRecipeInfo = nil;
-	if changedProfessionID then
-		currentRecipeInfo = SelectInitialRecipe();
-	end
-
 	local openRecipeID = professionInfo.openRecipeID;
-	if not currentRecipeInfo then
-		currentRecipeInfo = SetCurrentRecipeInfo(openRecipeID);
+	if openRecipeID then
+		currentRecipeInfo = FindRecipeInfo(dataProvider, openRecipeID);
+	elseif changedProfessionID then
+		currentRecipeInfo = FindFirstRecipe(dataProvider);
 	end
 
 	if not currentRecipeInfo then
 		local previousRecipeID = self.RecipeList:GetPreviousRecipeID();
-		currentRecipeInfo = SetCurrentRecipeInfo(previousRecipeID);
+		currentRecipeInfo = FindRecipeInfo(dataProvider, previousRecipeID);
 	end
 
 	if not currentRecipeInfo then
@@ -682,7 +689,7 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 			-- if we expect to retrieve it from the data provider.
 			currentRecipeInfo = Professions.GetFirstRecipe(currentRecipeInfo);
 		else
-			currentRecipeInfo = SelectInitialRecipe();
+			currentRecipeInfo = FindFirstRecipe(dataProvider);
 		end
 	end
 
@@ -700,6 +707,8 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	if self:IsVisible() then
 		self:SetTitle();
 	end
+
+	self:Init(professionInfo);
 
 	self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
 
@@ -722,24 +731,6 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	self:UpdateFilterResetVisibility();
 
 	self:ValidateControls();
-end
-
-function ProfessionsCraftingPageMixin:ContinueCrafting()
-	if self.craftingQueue then
-		if not self.craftingCallback() then
-			self:ClearCraftingQueue();
-			self:SetOverrideCastBarActive(false);
-		end
-	else
-		C_TradeSkillUI.ContinueRecast();
-	end
-	self:ValidateControls();
-end
-
-function ProfessionsCraftingPageMixin:ClearCraftingQueue()
-	self.craftingCallback = nil;
-	self.craftingQueue = nil;
-	self.craftingQueueEnchantID = nil;
 end
 
 function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLevel)
@@ -781,79 +772,19 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 				transaction:GenerateExpectedItemModifications();
 			end
 		else
-			local function CraftRecipe(count, craftingReagentTbl)
-				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel);
+			local craftingReagentInfos;
+			if transaction:IsManuallyAllocated() then
+				craftingReagentInfos = transaction:CreateCraftingReagentInfoTbl();
+			else
+				craftingReagentInfos = transaction:CreateOptionalOrFinishingCraftingReagentInfoTbl();
 			end
 
 			local enchantItem = transaction:GetEnchantAllocation();
-
-			if count > 1 then
-				local ascending = not Professions.ShouldAllocateBestQualityReagents();
-				self.craftingQueue = CreateProfessionsCraftingQueue(transaction);
-				if transaction:IsManuallyAllocated() then
-					self.craftingQueue:SetPartitions(transaction, count);
-				else
-					self.craftingQueue:CalculatePartitions(transaction, count, ascending);
-				end
-
-				-- When creating multiple enchants, the server will remove the items in the order
-				-- discovered in inventory. Until this is fixed, replicate the expected order
-				-- so we always have a valid target.
-				local enchantQueue;
-				if enchantItem then
-					self.craftingQueueEnchantID = enchantItem:GetItemID();
-					enchantQueue = (function()
-						local queue = {};
-						ItemUtil.IteratePlayerInventoryAndEquipment(function(itemLocation)
-							if C_Item.GetItemID(itemLocation) == self.craftingQueueEnchantID then
-								local item = Item:CreateFromItemGUID(C_Item.GetItemGUID(itemLocation));
-								table.insert(queue, {itemLocation = itemLocation, count = item:GetStackCount()});
-							end
-						end);
-						return queue;
-					end)();
-				end
-
-				self.craftingCallback = function()
-					local partition = self.craftingQueue:Front();
-					if not partition then
-						return false;
-					end
-			
-					partition.quantity = partition.quantity - 1;
-					if partition.quantity <= 0 then
-						self.craftingQueue:Pop();
-					end
-					
-					local shallow = true;
-					local craftingReagentTbl = CopyTable(partition.craftingReagentInfos, shallow);
-
-					local count = 1;
-					if enchantQueue then
-						local index = 1;
-						local next = enchantQueue[index];
-						if next then
-							local itemLocation = next.itemLocation;
-							next.count = next.count - 1;
-							if next.count <= 0 then
-								table.remove(enchantQueue, index);
-							end
-							C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentTbl, itemLocation);
-						end
-					else
-						CraftRecipe(count, craftingReagentTbl);
-					end
-					
-					return true;
-				end
-				self.craftingCallback();
+			if enchantItem then
+				self.castingEnchantID = enchantItem:GetItemID();
+				C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentInfos, enchantItem:GetItemLocation());
 			else
-				local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
-				if enchantItem then
-					C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentTbl, enchantItem:GetItemLocation());
-				else
-					CraftRecipe(count, craftingReagentTbl);
-				end
+				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentInfos, recipeLevel);
 			end
 		end
 	end
@@ -1124,6 +1055,8 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 		return;
 	end
 
+	-- NOTE: Helptips are shown on the next game frame to side-step a bug if the frame they are pointing at is instantiated in the same game frame the helptip is shown in.
+
 	-- Quality reagent helptip
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSION_QUALITY_REAGENTS) then
 		local basicReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Basic);
@@ -1140,7 +1073,7 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 					cvarBitfield = "closedInfoFrames",
 					bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSION_QUALITY_REAGENTS,
 				};
-				HelpTip:Show(UIParent, helpTipInfo, slot);
+				RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, slot); end);
 				return;
 			end
 		end
@@ -1153,14 +1086,14 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 			{
 				text = PROFESSIONS_TUTORIAL_QUALITY_BAR,
 				buttonStyle = HelpTip.ButtonStyle.Close,
-				targetPoint = HelpTip.Point.RightEdgeCenter,
+				targetPoint = HelpTip.Point.LeftEdgeCenter,
 				system = helpTipSystem,
 				acknowledgeOnHide = true,
 				onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
 				cvarBitfield = "closedInfoFrames",
 				bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSION_QUALITY_BAR,
 			};
-			HelpTip:Show(UIParent, helpTipInfo, self.SchematicForm.Details.QualityMeter);
+			RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, self.SchematicForm.Details.QualityMeter); end);
 			return;
 		end
 	end
@@ -1183,7 +1116,7 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 						cvarBitfield = "closedInfoFrames",
 						bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSION_OPTIONAL_REAGENTS_NEW,
 					};
-					HelpTip:Show(UIParent, helpTipInfo, slot);
+					RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, slot); end);
 					return;
 				end
 			end
@@ -1208,7 +1141,7 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 						cvarBitfield = "closedInfoFrames",
 						bitfieldFlag = LE_FRAME_TUTORIAL_OPTIONAL_REAGENT_CRAFTING,
 					};
-					HelpTip:Show(UIParent, helpTipInfo, slot);
+					RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, slot); end);
 					return;
 				end
 			end
@@ -1224,14 +1157,14 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 				{
 					text = PROFESSIONS_TUTORIAL_FINISHING_REAGENT,
 					buttonStyle = HelpTip.ButtonStyle.Close,
-					targetPoint = HelpTip.Point.RightEdgeCenter,
+					targetPoint = HelpTip.Point.LeftEdgeCenter,
 					system = helpTipSystem,
 					acknowledgeOnHide = true,
 					onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
 					cvarBitfield = "closedInfoFrames",
 					bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSION_FINISHING_REAGENTS,
 				};
-				HelpTip:Show(UIParent, helpTipInfo, slot.Button);
+				RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, slot.Button); end);
 				return;
 			end
 		end
@@ -1251,7 +1184,7 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 				cvarBitfield = "closedInfoFrames",
 				bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_RECRAFT,
 			};
-			HelpTip:Show(UIParent, helpTipInfo, self.SchematicForm.recraftSlot.InputSlot);
+			RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, self.SchematicForm.recraftSlot.InputSlot); end);
 			return;
 		end
 	end

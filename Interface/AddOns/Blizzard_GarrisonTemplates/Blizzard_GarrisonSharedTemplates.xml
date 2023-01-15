@@ -522,13 +522,7 @@
 				self:RegisterForDrag("LeftButton");
 				self.PortraitFrame:SetFrameLevel(self.BusyFrame:GetFrameLevel() + 1);
 			</OnLoad>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					GarrisonFollowerListButton_OnModifiedClick(self, button);
-				else
-					GarrisonFollowerListButton_OnClick(self, button);
-				end
-			</OnClick>
+			<OnClick function="GarrisonFollowerListButton_OnUserClick"/>
 			<OnDragStart function="GarrisonFollowerListButton_OnDragStart"/>
 			<OnDragStop function="GarrisonFollowerListButton_OnDragStop"/>
 		</Scripts>

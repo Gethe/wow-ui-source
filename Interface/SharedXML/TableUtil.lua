@@ -68,6 +68,21 @@ function tContains(tbl, item)
 	return false;
 end
 
+function TableUtil.ContainsAllKeys(lhsTable, rhsTable)
+	for key, _ in pairs(lhsTable) do
+		if rhsTable[key] == nil then
+			return false;
+		end
+	end
+	return true;
+end
+
+function TableUtil.CompareValuesAsKeys(lhsTable, rhsTable, valueToKeyOp)
+	local lhsKeys = CopyTransformedValuesAsKeys(lhsTable, valueToKeyOp);
+	local rhsKeys = CopyTransformedValuesAsKeys(rhsTable, valueToKeyOp);
+	return TableUtil.ContainsAllKeys(lhsKeys, rhsKeys)
+end
+
 -- This is a deep compare on the values of the table (based on depth) but not a deep comparison
 -- of the keys, as this would be an expensive check and won't be necessary in most cases.
 function tCompare(lhsTable, rhsTable, depth)
@@ -313,6 +328,14 @@ function CopyValuesAsKeys(tbl)
 	local output = {};
 	for k, v in ipairs(tbl) do
 		output[v] = v;
+	end
+	return output;
+end
+
+function CopyTransformedValuesAsKeys(tbl, transformOp)
+	local output = {};
+	for _, v in ipairs(tbl) do
+		output[transformOp(v)] = v;
 	end
 	return output;
 end

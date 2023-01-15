@@ -37,15 +37,15 @@
 	</Texture>
 	<Texture name="_DungeonGridTab-MidHighlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
 		<Size x="64" y="36"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.52539063" bottom="0.59570313"/>
+		<TexCoords left="0.00000000" right="1.00000000" bottom="0.52539063" top="0.59570313"/>
 	</Texture>
 	<Texture name="_DungeonGridTab-MidSelect" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
 		<Size x="64" y="36"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.59960938" bottom="0.66992188"/>
+		<TexCoords left="0.00000000" right="1.00000000" bottom="0.59960938" top="0.66992188"/>
 	</Texture>
 	<Texture name="_DungeonGridTab-Mid" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
 		<Size x="64" y="36"/>
-		<TexCoords left="0.00000000" right="1.00000000" top="0.67382813" bottom="0.74414063"/>
+		<TexCoords left="0.00000000" right="1.00000000" bottom="0.67382813" top="0.74414063"/>
 	</Texture>
 
 	<!--size=512,1024-->
@@ -55,7 +55,7 @@
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-SelectedGlow" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="64" y="15"/>
-		<TexCoords left="0.52343750" right="0.64843750" top="0.00097656" bottom="0.01562500"/>
+		<TexCoords left="0.52343750" right="0.64843750" bottom="0.00097656" top="0.01562500"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-Shadow" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="128" y="15"/>
@@ -87,27 +87,27 @@
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-Left" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="12" y="36"/>
-		<TexCoords left="0.81835938" right="0.84179688" top="0.02246094" bottom="0.05761719"/>
+		<TexCoords left="0.81835938" right="0.84179688" bottom="0.02246094" top="0.05761719"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-LeftHighlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="12" y="36"/>
-		<TexCoords left="0.81835938" right="0.84179688" top="0.05957031" bottom="0.09472656"/>
+		<TexCoords left="0.81835938" right="0.84179688" bottom="0.05957031" top="0.09472656"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-LeftSelect" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="12" y="36"/>
-		<TexCoords left="0.84570313" right="0.86914063" top="0.02246094" bottom="0.05761719"/>
+		<TexCoords left="0.84570313" right="0.86914063" bottom="0.02246094" top="0.05761719"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-Right" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="12" y="36"/>
-		<TexCoords left="0.84570313" right="0.86914063" top="0.05957031" bottom="0.09472656"/>
+		<TexCoords left="0.84570313" right="0.86914063" bottom="0.05957031" top="0.09472656"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-RightHighlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="12" y="36"/>
-		<TexCoords left="0.87304688" right="0.89648438" top="0.02246094" bottom="0.05761719"/>
+		<TexCoords left="0.87304688" right="0.89648438" bottom="0.02246094" top="0.05761719"/>
 	</Texture>
 	<Texture name="UI-EJ-DungeonGridTab-RightSelect" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="12" y="36"/>
-		<TexCoords left="0.87304688" right="0.89648438" top="0.05957031" bottom="0.09472656"/>
+		<TexCoords left="0.87304688" right="0.89648438" bottom="0.05957031" top="0.09472656"/>
 	</Texture>
 	<Texture name="UI-EJ-FilterButtonSelect" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
 		<Size x="26" y="26"/>
@@ -1847,6 +1847,13 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="GameFontNormalLarge2" justifyH="LEFT" text="MONTHLY_ACTIVITIES_TAB">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="20" y="-15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
 				</Layers>
 				<Frames>
 					<Frame name="$parentTierDropDown" parentKey="tierDropDown" inherits="UIDropDownMenuTemplate">
@@ -2548,6 +2555,13 @@
 				</Frames>
 			</Frame>
 
+			<Frame name="$parentMonthlyActivitiesFrame" inherits="MonthlyActivitiesFrameTemplate" setAllPoints="true" parentKey="MonthlyActivitiesFrame" enableMouse="true" hidden="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="0" y="0" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+
 			<Frame name="$parentSuggestFrame" setAllPoints="true" parentKey="suggestFrame" enableMouse="true" hidden="true" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="5" y="-51" />
@@ -2744,22 +2758,27 @@
 					<OnMouseWheel function="EJSuggestFrame_OnMouseWheel"/>
 				</Scripts>
 			</Frame>
-			<Button name="$parentSuggestTab" inherits="BottomEncounterTierTabTemplate" text="AJ_SUGGESTED_CONTENT_TAB" id="1" parentKey="suggestTab">
+			<Button name="$parentMonthlyActivitiesTab" inherits="BottomEncounterTierTabTemplate" text="MONTHLY_ACTIVITIES_TAB" id="1" parentKey="MonthlyActivitiesTab" mixin="MonthlyActivitiesTabButtonMixin">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentDungeonTab" inherits="BottomEncounterTierTabTemplate" text="DUNGEONS"  id="2" parentKey="dungeonsTab">
+			<Button name="$parentSuggestTab" inherits="BottomEncounterTierTabTemplate" text="AJ_SUGGESTED_CONTENT_TAB" id="2" parentKey="suggestTab">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentMonthlyActivitiesTab" relativePoint="RIGHT" x="-15" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentDungeonTab" inherits="BottomEncounterTierTabTemplate" text="DUNGEONS"  id="3" parentKey="dungeonsTab">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentSuggestTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentRaidTab" inherits="BottomEncounterTierTabTemplate" text="RAIDS" id="3" parentKey="raidsTab">
+			<Button name="$parentRaidTab" inherits="BottomEncounterTierTabTemplate" text="RAIDS" id="4" parentKey="raidsTab">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentDungeonTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentLootJournalTab" inherits="BottomEncounterTierTabTemplate" text="LOOT" id="4" parentKey="LootJournalTab">
+			<Button name="$parentLootJournalTab" inherits="BottomEncounterTierTabTemplate" text="LOOT" id="5" parentKey="LootJournalTab">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRaidTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>

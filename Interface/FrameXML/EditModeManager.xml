@@ -260,6 +260,22 @@
 									<Anchor point="TOPLEFT" relativeKey="$parent.BossFrames" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Frame>
+							<Frame parentKey="ReputationBar" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_REPUTATION_BAR_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.LootFrame" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="DurabilityFrame" inherits="EditModeCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_DURABILITY_FRAME_LABEL" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.HudTooltip" relativePoint="BOTTOMLEFT"/>
+								</Anchors>
+							</Frame>
 						</Frames>
 					</Frame>
 					<Frame parentKey="Expander" inherits="ResizeLayoutFrame">

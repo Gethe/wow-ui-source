@@ -282,12 +282,29 @@ function ClassTalentImportExportMixin:ConvertToImportLoadoutEntryInfo(treeID, lo
 
 		if (indexInfo.isNodeSelected) then
 			local treeNode = C_Traits.GetNodeInfo(configID, treeNodeID);
-			local result = {};
-			result.nodeID = treeNode.ID;
-			result.ranksPurchased = indexInfo.isPartiallyRanked and indexInfo.partialRanksPurchased or treeNode.maxRanks;
-			result.selectionEntryID = indexInfo.isChoiceNode and treeNode.entryIDs[indexInfo.choiceNodeSelection] or treeNode.activeEntry.entryID;
-			results[count] = result;
-			count = count + 1;
+			if (treeNode) then
+				local result = {};
+				result.nodeID = treeNode.ID;
+				result.ranksPurchased = indexInfo.isPartiallyRanked and indexInfo.partialRanksPurchased or treeNode.maxRanks;
+
+				result.selectionEntryID = nil;
+
+				if (indexInfo.isChoiceNode and indexInfo.choiceNodeSelection) then
+					result.selectionEntryID = treeNode.entryIDs[indexInfo.choiceNodeSelection];
+				elseif (treeNode.activeEntry) then
+					result.selectionEntryID = treeNode.activeEntry.entryID;
+				end
+
+				if (not result.selectionEntryID) then
+					result.selectionEntryID = treeNode.entryIDs[1];
+				end
+
+				-- There's something wrong with this loadout string if we still don't have an entry ID.
+				if (result.selectionEntryID ~= nil) then
+					results[count] = result;
+					count = count + 1;
+				end
+			end
 		end
 
 	end

@@ -1465,7 +1465,7 @@ function PetJournalFilterDropDown_Initialize(self, level)
 	FilterDropDownSystem.Initialize(self, filterSystem, level);
 end
 
-function PetJournalFilterDropDown_AddInSortParameters(level)
+function PetJournalFilterDropDown_AddInSortParameters(filterSystem, level)
 	local sortParameters = {
 		{ text = NAME, parameter = LE_SORT_BY_NAME, },
 		{ text = LEVEL, parameter = LE_SORT_BY_LEVEL, },
@@ -1479,7 +1479,7 @@ function PetJournalFilterDropDown_AddInSortParameters(level)
 					PetJournal_UpdatePetList(); 
 				end
 		local isSelected = function() return C_PetJournal.GetPetSortParameter() == sortParameters.parameter end;
-		FilterDropDownSystem.AddRadioButton(sortParameters.text, setSelected, isSelected, level);
+		FilterDropDownSystem.AddRadioButtonToFilterSystem(filterSystem, sortParameters.text, setSelected, isSelected, level);
 	end
 end
 

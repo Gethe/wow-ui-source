@@ -41,6 +41,7 @@
 						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER">
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="3" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
 							</KeyValues>
 							<Anchors>
 								<Anchor point="CENTER" x="-1" y="-7"/>

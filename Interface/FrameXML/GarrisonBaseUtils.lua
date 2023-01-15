@@ -357,6 +357,10 @@ end
 ---------------------------------------------------------------------------------
 --- Landing Page                                                         ---
 ---------------------------------------------------------------------------------
+function IsGarrisonLandingPageFeatured()
+	return ExpansionLandingPageMinimapButton and ExpansionLandingPageMinimapButton:IsInGarrisonMode();
+end
+
 function ShowGarrisonLandingPage(garrTypeID)
 	if (not garrTypeID) then
 		garrTypeID = C_Garrison.GetLandingPageGarrisonType();

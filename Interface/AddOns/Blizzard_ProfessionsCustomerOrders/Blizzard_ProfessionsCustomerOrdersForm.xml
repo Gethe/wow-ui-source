@@ -44,14 +44,11 @@
 					<Color color="LIGHTGRAY_FONT_COLOR"/>
 				</FontString>
 
-				<FontString parentKey="OrderCompleteText" inherits="GameFontNormal" text="PROFESSIONS_ORDER_COMPLETE" justifyH="RIGHT" parentArray="committedRegions">
+				<FontString parentKey="OrderStateText" inherits="GameFontNormal" text="PROFESSIONS_ORDER_COMPLETE" justifyH="RIGHT" parentArray="committedRegions">
 					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-10" y="-10"/>
 					</Anchors>					
-					<KeyValues>
-						<KeyValue key="hideWhenNotCompleted" value="true" type="boolean"/>
-					</KeyValues>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -266,14 +263,6 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.RecraftSlot" relativePoint="BOTTOMLEFT" x="15" y="-15"/>
 							</Anchors>
 							<Color color="GRAY_FONT_COLOR"/>
-						</FontString>
-
-						<FontString parentKey="RecraftWarningText" inherits="GameFontHighlight" text="CRAFTING_ORDER_RECRAFT_WARNING1" justifyH="CENTER">
-							<Size x="480" y="0"/>
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="20"/>
-							</Anchors>
-							<Color color="RED_FONT_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -504,6 +493,13 @@
 					</CheckButton>
 				</Frames>
 			</Frame>
+
+			<CheckButton parentKey="AllocateBestQualityCheckBox" inherits="UICheckButtonTemplate">
+				<Size x="26" y="26"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ReagentContainer" x="6" y="-3"/>
+				</Anchors>
+			</CheckButton>
 		
 			<Frame parentKey="QualityDialog" inherits="ProfessionsQualityDialogTemplate" frameStrata="DIALOG" hidden="true">
 				<Anchors>

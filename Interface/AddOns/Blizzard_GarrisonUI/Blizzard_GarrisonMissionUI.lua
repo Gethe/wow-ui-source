@@ -631,8 +631,9 @@ function GarrisonFollowerMission:CheckTutorials(advance)
 					offsetX = tutorial.offsetX,
 					offsetY = tutorial.offsetY,
 				};
-				tutorialFrame:Show();
-				HelpTip:Show(tutorialFrame, helpTipInfo, relativeFrame);
+
+				local wasShown = HelpTip:Show(tutorialFrame, helpTipInfo, relativeFrame);
+				tutorialFrame:SetShown(wasShown);
 			end
 		end
 	end
@@ -853,7 +854,7 @@ function GarrisonMissionListMixin:OnUpdate()
 	if (self.showInProgress) then
 		C_Garrison.GetInProgressMissions(self.inProgressMissions, self:GetMissionFrame().followerTypeID);
 		self.Tab2:SetText(WINTERGRASP_IN_PROGRESS.." - "..#self.inProgressMissions)
-		
+
 		local dataProvider = self.ScrollBox:GetDataProvider();
 		if dataProvider then
 			for index, mission in ipairs(self.inProgressMissions) do
@@ -1024,7 +1025,7 @@ function GarrisonMissionList_InitButton(button, elementData, missionFrame)
 		if (button.NewHighlight) then
 			button.NewHighlight:Hide();
 		end
-	end	
+	end
 end
 
 function GarrisonMissionListMixin:Update()

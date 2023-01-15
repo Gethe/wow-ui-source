@@ -63,7 +63,12 @@ function ProfessionsCrafterOrderListElementMixin:OnClick(button)
 			self.pageFrame:ViewOrder(self.option);
 		end
 	elseif button == "RightButton" then
-		ToggleDropDownMenu(1, self.option.spellID, self.contextMenu, "cursor");
+		local dropdownInfo =
+		{
+			recipeID = self.option.spellID,
+			orderID = self.option.orderID,
+		};
+		ToggleDropDownMenu(1, dropdownInfo, self.contextMenu, "cursor");
 	end
 end
 
@@ -310,15 +315,21 @@ function ProfessionsCraftingOrderPageMixin:SetupTable()
 end
 
 function ProfessionsCraftingOrderPageMixin:InitContextMenu(dropDown, level)
-	local recipeID = UIDROPDOWNMENU_MENU_VALUE;
+	local dropdownInfo = UIDROPDOWNMENU_MENU_VALUE;
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = true;
 	
-	local currentlyFavorite = C_TradeSkillUI.IsRecipeFavorite(recipeID);
+	local currentlyFavorite = C_TradeSkillUI.IsRecipeFavorite(dropdownInfo.recipeID);
 	info.text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
-	info.func = GenerateClosure(C_TradeSkillUI.SetRecipeFavorite, recipeID, not currentlyFavorite);
-
+	info.func = GenerateClosure(C_TradeSkillUI.SetRecipeFavorite, dropdownInfo.recipeID, not currentlyFavorite);
 	UIDropDownMenu_AddButton(info, level);
+
+	if self.orderType == Enum.CraftingOrderType.Personal then
+		info.text = PROFESSIONS_DECLINE_ORDER;
+		local emptyRejectionNote = "";
+		info.func = GenerateClosure(C_CraftingOrders.RejectOrder, dropdownInfo.orderID, emptyRejectionNote, self.professionInfo.profession);
+		UIDropDownMenu_AddButton(info, level);
+	end
 end
 
 function ProfessionsCraftingOrderPageMixin:InitOrderList()
@@ -346,6 +357,7 @@ local ProfessionsCraftingOrderPageEvents =
 	"CURRENCY_DISPLAY_UPDATE",
 	"CRAFTINGORDERS_CAN_REQUEST",
 	"TRADE_SKILL_LIST_UPDATE",
+	"CRAFTINGORDERS_REJECT_ORDER_RESPONSE",
 };
 function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 	if event == "TRADE_SKILL_FAVORITES_CHANGED" then
@@ -358,7 +370,6 @@ function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 		if self.orderType == Enum.CraftingOrderType.Guild and not IsInGuild() then
 			self:SetCraftingOrderType(Enum.CraftingOrderType.Public);
 		end
-	elseif event == "CRAFTINGORDERS_CAN_REQUEST" then
 	elseif event == "TRADE_SKILL_LIST_UPDATE" then
 		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
 		self:Refresh(professionInfo);
@@ -372,6 +383,17 @@ function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 		end
 
 		SetTabTitleWithCount(tabButton, type, count);
+	elseif event == "CRAFTINGORDERS_REJECT_ORDER_RESPONSE" then
+		local result, orderID = ...;
+		local success = (result == Enum.CraftingOrderResult.Ok);
+        if success then
+			if self.lastRequest then
+				self.lastRequest.offset = 0; -- Get a fresh page of sorted results
+				self:SendOrderRequest(self.lastRequest);
+			end
+		else
+			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_REJECT_FAILED);
+        end
 	end
 end
 
@@ -384,6 +406,7 @@ function ProfessionsCraftingOrderPageMixin:OnLoad()
 	self:SetCraftingOrderType(Enum.CraftingOrderType.Public);
 
 	FrameUtil.RegisterFrameForEvents(self, ProfessionsCraftingOrderPageAlwaysListenEvents);
+	EventRegistry:RegisterCallback("ProfessionsFrame.Hide", function() self:ClearCachedRequests(); end, self);
 end
 
 function ProfessionsCraftingOrderPageMixin:StartDefaultSearch()

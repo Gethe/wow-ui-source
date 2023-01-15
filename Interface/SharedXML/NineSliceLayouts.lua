@@ -247,19 +247,6 @@ NineSliceLayouts =
 		RightEdge = { atlas = "!macropopup-right", },
 	},
 
-	UniqueCornersLayout =
-	{
-		["TopRightCorner"] = { atlas = "%s-NineSlice-CornerTopRight" },
-		["TopLeftCorner"] = { atlas = "%s-NineSlice-CornerTopLeft" },
-		["BottomLeftCorner"] = { atlas = "%s-NineSlice-CornerBottomLeft" },
-		["BottomRightCorner"] = { atlas = "%s-NineSlice-CornerBottomRight" },
-		["TopEdge"] = { atlas = "_%s-NineSlice-EdgeTop" },
-		["BottomEdge"] = { atlas = "_%s-NineSlice-EdgeBottom" },
-		["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
-		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
-		["Center"] = { atlas = "%s-NineSlice-Center" },
-	};
-
 	GMChatRequest =
 	{
 		["TopRightCorner"] = { atlas = "GMChat-NineSlice-CornerTopRight" },
@@ -401,6 +388,45 @@ NineSliceLayouts =
 		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
 		["Center"] = { atlas = "%s-NineSlice-Center" },
 	};
+
+	UniqueCornersLayout =
+	{
+		["TopRightCorner"] = { atlas = "%s-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "%s-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "%s-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "%s-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_%s-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_%s-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
+		["Center"] = { atlas = "%s-NineSlice-Center" },
+	};
+
+	PerksProgramProductsPanelTemplate =
+	{
+		TopLeftCorner =	{ atlas = "Perks-List-NineSlice-CornerTopLeft", x=-31, y=31},
+		TopRightCorner = { atlas = "Perks-List-NineSlice-CornerTopLeft", mirrorLayout = true, x=31, y=31 },
+		BottomLeftCorner = { atlas = "Perks-List-NineSlice-CornerTopLeft", mirrorLayout = true, x=-31, y=-31 },
+		BottomRightCorner =	{ atlas = "Perks-List-NineSlice-CornerTopLeft", mirrorLayout = true, x=31, y=-31 },
+		TopEdge = { atlas = "_Perks-List-NineSlice-EdgeTop" },
+		BottomEdge = { atlas = "_Perks-List-NineSlice-EdgeTop", mirrorLayout = true},
+		LeftEdge = { atlas = "!Perks-List-NineSlice-EdgeLeft" },
+		RightEdge = { atlas = "!Perks-List-NineSlice-EdgeLeft", mirrorLayout = true},
+		Center = { atlas = "Perks-List-NineSlice-Center" },
+	},
+
+	PerksProgramHoldPanelTemplate =
+	{
+		TopLeftCorner =	{ atlas = "Perks-Hold-NineSlice-CornerTopLeft" },
+		TopRightCorner = { atlas = "Perks-Hold-NineSlice-CornerTopLeft", mirrorLayout = true },
+		BottomLeftCorner = { atlas = "Perks-Hold-NineSlice-CornerBottomLeft" },
+		BottomRightCorner =	{ atlas = "Perks-Hold-NineSlice-CornerBottomRight"},
+		TopEdge = { atlas = "_Perks-Hold-NineSlice-EdgeTop", },
+		BottomEdge = { atlas = "_Perks-Hold-NineSlice-EdgeTop", mirrorLayout = true,},
+		LeftEdge = { atlas = "!Perks-Hold-NineSlice-EdgeLeft", },
+		RightEdge = { atlas = "!Perks-Hold-NineSlice-EdgeLeft", mirrorLayout = true,},
+		Center = { atlas = "Perks-Hold-NineSlice-Center", },
+	},
 
 	ThreeSliceVerticalLayout =
 	{

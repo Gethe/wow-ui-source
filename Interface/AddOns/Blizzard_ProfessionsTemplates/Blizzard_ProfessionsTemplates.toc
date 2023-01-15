@@ -5,7 +5,6 @@
 Blizzard_Professions.lua
 Blizzard_ProfessionsRecipeLoader.lua
 Blizzard_ProfessionsTransaction.lua
-Blizzard_ProfessionsCraftingQueue.lua
 Blizzard_ProfessionsTemplates.xml
 Blizzard_ProfessionsRecipeList.xml
 Blizzard_ProfessionsCraftingOutputDialog.xml

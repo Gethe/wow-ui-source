@@ -1583,8 +1583,7 @@
 						</Layers>
 						<Scripts>
 							<OnShow>
-								UpdateMicroButtonsParent(self);
-								MoveMicroButtons("TOPLEFT", self, "TOPLEFT", 9, -4, true);
+								OverrideMicroMenuPosition(self, "TOPLEFT", self, "TOPLEFT", 9, -4, true);
 							</OnShow>
 						</Scripts>
 					</Frame>

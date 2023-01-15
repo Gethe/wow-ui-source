@@ -2139,6 +2139,7 @@ function StoreFrame_OnLoad(self)
 	self:SetTitle(BLIZZARD_STORE);
 
 	self:SetPortraitToAsset("Interface\\Icons\\WoW_Store");
+	self:SetPortraitTextureSizeAndOffset(60, -5, 7);
 	StoreFrame_UpdateBuyButton();
 
 	if ( IsOnGlueScreen() ) then

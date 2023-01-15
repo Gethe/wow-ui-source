@@ -1,0 +1,837 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+		
+	<Frame name="PerksProgramFrame" inherits="DefaultScaleFrame" mixin="PerksProgramMixin" toplevel="true" setAllPoints="true" ignoreParentScale="true" enableKeyboard="true" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" />
+			<Anchor point="BOTTOMRIGHT" />
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="maxScale" value="0.75" type="number"/>
+		</KeyValues>
+		<Frames>
+
+			<GameTooltip name="PerksProgramTooltip" parentKey="PerksProgramTooltip" ignoreParentScale="true"  inherits="GameTooltipTemplate, DefaultScaleFrame"/>
+
+			<Frame parentKey="ProductsFrame" mixin="PerksProgramProductsFrameMixin"  frameLevel="500" movable="false" resizable="false" enableMouse="false" clampedToScreen="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ProductsScrollBoxContainer">
+						<Size x="527" y="751" />
+						<Anchors>
+							<Anchor point="LEFT" x="46" y="22"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="-58"/>
+									<Anchor point="BOTTOMRIGHT" x="-24" y="120"/>
+								</Anchors>
+							</Frame>
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-4"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="8"/>
+								</Anchors>
+							</EventFrame>
+						</Frames>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="PerksDividerTop" atlas="perks-divider-short" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" relativeKey="$parent.ScrollBox" relativePoint="TOP" x="0" y="4"/>
+										<Anchor point="LEFT" x="30" y="0"/>
+										<Anchor point="RIGHT" x="-30" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="NameSortButton" inherits="HeaderSortButtonTemplate" >
+								<KeyValues>
+									<KeyValue key="sortField" value="name" type="string"/>
+									<KeyValue key="labelText" value="PERKS_PROGRAM_NAME" type="global"/>
+									<KeyValue key="normalColor" value="NORMAL_FONT_COLOR" type="global"/>
+									<KeyValue key="highlightColor" value="WHITE_FONT_COLOR" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.PerksDividerTop" relativePoint="TOPLEFT" x="8" y="7"/>
+								</Anchors>
+							</Button>
+							<Button parentKey="TimeSortButton" inherits="HeaderSortButtonTemplate" >
+								<KeyValues>
+									<KeyValue key="sortField" value="timeRemaining" type="string"/>
+									<KeyValue key="iconAtlas" value="perks-clock" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PerksDividerTop" relativePoint="TOPRIGHT" x="-24" y="7"/>
+								</Anchors>
+							</Button>
+							<Button parentKey="PriceSortButton" inherits="HeaderSortButtonTemplate" >
+								<KeyValues>
+									<KeyValue key="sortField" value="price" type="string"/>
+									<KeyValue key="labelText" value="PERKS_PROGRAM_PRICE" type="global"/>
+									<KeyValue key="normalColor" value="NORMAL_FONT_COLOR" type="global"/>
+									<KeyValue key="highlightColor" value="WHITE_FONT_COLOR" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="RIGHT" relativeKey="$parent.TimeSortButton" relativePoint="LEFT" x="-48" y="0"/>
+								</Anchors>
+							</Button>
+							<Frame parentKey="PerksProgramHoldFrame" inherits="TooltipBackdropTemplate"  frameLevel="1000">
+								<KeyValues>
+									<KeyValue key="layoutType" value="PerksProgramHoldPanelTemplate" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.ScrollBox" relativePoint="BOTTOM" x="0" y="0"/>
+									<Anchor point="BOTTOM" x="0" y="0"/>
+									<Anchor point="LEFT" x="0" y="0"/>
+									<Anchor point="RIGHT" x="0" y="0"/>
+								</Anchors>
+								<Frames>
+									<Frame parentKey="FrozenItemFrame" mixin="PerksProgramFrameFrozenItemMixin">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="0" y="0"/>
+											<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+										</Anchors>
+										<Animations>
+											<AnimationGroup parentKey="PendingFreezeAnim" looping="NONE" setToFinalAlpha="true">
+												<Alpha smoothing="NONE" childKey="FrozenButton.ItemGlowFlash1" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.ItemGlowFlash2" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="Label" duration=".2" order="1" fromAlpha="0" toAlpha="1"/>
+												<Translation startDelay="0" childKey="Label" offsetX="-10" offsetY="0" duration="0" order="1"/>
+												<Translation startDelay="0" childKey="Label" offsetX="10" offsetY="0" duration="0.2" order="1"/>
+											</AnimationGroup>
+											<AnimationGroup parentKey="ConfirmedBackgroundFreezeAnim" looping="NONE" setToFinalAlpha="true">
+												<FlipBook smoothing="NONE" childKey="FrostFlipbook" duration="1" order="1" flipBookRows="3" flipBookColumns="5" flipBookFrames="13" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+												<Alpha smoothing="NONE" childKey="Snow1" duration=".1" order="1" fromAlpha="0" toAlpha="0"/>
+												<Alpha startDelay=".1" smoothing="NONE" childKey="Snow1" duration=".7" order="1" fromAlpha=".7" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrostBG" duration=".2" order="1" fromAlpha="0" toAlpha="0"/>
+												<Alpha startDelay=".2" smoothing="NONE" childKey="FrostBG" duration=".27" order="1" fromAlpha="0" toAlpha="0"/>
+												<Alpha startDelay=".47" smoothing="NONE" childKey="FrostBG" duration=".5" order="1" fromAlpha=".66" toAlpha=".35"/>
+												<Alpha smoothing="NONE" childKey="FrostBG2" duration=".2" order="1" fromAlpha="0" toAlpha="0"/>
+												<Alpha startDelay=".2" smoothing="NONE" childKey="FrostBG2" duration=".27" order="1" fromAlpha="0" toAlpha=".66"/>
+												<Alpha startDelay=".47" smoothing="NONE" childKey="FrostBG2" duration=".5" order="1" fromAlpha=".66" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrostBGFade" duration=".23" order="1" fromAlpha="0" toAlpha="0"/>
+												<Alpha startDelay=".23" smoothing="NONE" childKey="FrostBGFade" duration=".37" order="1" fromAlpha="0" toAlpha=".3"/>
+												<Alpha startDelay=".6" smoothing="NONE" childKey="FrostBGFade" duration=".43" order="1" fromAlpha=".3" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrostLabelBG" duration=".77" order="1" fromAlpha="0" toAlpha="0"/>
+												<Alpha startDelay=".77" smoothing="NONE" childKey="FrostLabelBG" duration=".5" order="1" fromAlpha="0" toAlpha=".22"/>
+												<Alpha smoothing="NONE" childKey="FrostLabelBG2" duration=".5" order="1" fromAlpha="0" toAlpha="0"/>
+												<Alpha startDelay=".5" smoothing="NONE" childKey="FrostLabelBG2" duration=".27" order="1" fromAlpha="0" toAlpha=".3"/>
+												<Alpha startDelay=".77" smoothing="NONE" childKey="FrostLabelBG2" duration=".5" order="1" fromAlpha=".3" toAlpha="0"/>
+											</AnimationGroup>
+											<AnimationGroup parentKey="UnfreezeAnim" looping="NONE" setToFinalAlpha="true">
+												<Alpha startDelay="0" smoothing="NONE" childKey="Tick" duration=".2" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha startDelay=".2" smoothing="NONE" childKey="Tick" duration=".33" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".53" smoothing="NONE" childKey="Tick" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="TickGlow" duration=".2" order="1" fromAlpha="0" toAlpha=".4"/>
+												<Alpha startDelay=".2" smoothing="NONE" childKey="TickGlow" duration=".33" order="1" fromAlpha=".4" toAlpha=".4"/>
+												<Alpha startDelay=".53" smoothing="NONE" childKey="TickGlow" duration=".2" order="1" fromAlpha=".4" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.ItemGlow" duration=".33" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha startDelay=".33" smoothing="NONE" childKey="FrozenButton.ItemGlow" duration=".13" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.ItemGlow" duration=".3" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.FrostFrame" duration=".46" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.Frost1" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.Frost1" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.Frost2" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.Frost2" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrozenButton.Frost3" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.Frost3" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha startDelay="0" endDelay="0" smoothing="NONE" childKey="FrozenButton.UnfrozenSlot" duration=".37" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".37" smoothing="NONE" childKey="FrozenButton.UnfrozenSlot" duration=".27" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha startDelay="0" smoothing="NONE" childKey="FrostBG" duration=".46" order="1" fromAlpha=".35" toAlpha=".35"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="FrostBG" duration=".43" order="1" fromAlpha=".35" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="FrostLabelBG" duration="1" order="1" fromAlpha=".22" toAlpha="0"/>
+												<Alpha startDelay="0" smoothing="NONE" childKey="Label" duration="0" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha startDelay=".9" smoothing="NONE" childKey="Label" duration=".2" order="1" fromAlpha="0" toAlpha="1"/>
+												<Translation startDelay=".9" childKey="Label" offsetX="-10" offsetY="0" duration="0" order="1"/>
+												<Translation startDelay=".9" childKey="Label" offsetX="10" offsetY="0" duration="0.2" order="1"/>
+											</AnimationGroup>
+										</Animations>
+										<Frames>
+											<Button parentKey="FrozenButton" enableMouse="true" mixin="PerksProgramFrameDragDropMixin">
+												<Size x="64" y="64"/>
+												<Anchors>
+													<Anchor point="LEFT" x="33" y="0"/>
+												</Anchors>
+												<Animations>
+													<AnimationGroup parentKey="CancelledFreezeAnim" looping="NONE" setToFinalAlpha="true">
+														<Alpha smoothing="NONE" childKey="OverlayFrozenSlot" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+														<Alpha smoothing="NONE" childKey="OverlayFrozenSlot" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
+														<Translation startDelay="0" childKey="OverlayFrozenSlot" offsetX="0" offsetY="-4" duration=".2" order="1"/>
+													</AnimationGroup>
+													<AnimationGroup parentKey="ConfirmedFreezeAnim" looping="NONE" setToFinalAlpha="true">
+														<Alpha startDelay="0" smoothing="NONE" childKey="ItemGlowFlash2" duration=".2" order="1" fromAlpha="1" toAlpha="1"/>
+														<Alpha startDelay=".2" smoothing="NONE" childKey="ItemGlowFlash2" duration=".7" order="1" fromAlpha="1" toAlpha="0"/>
+														<Alpha smoothing="NONE" childKey="ItemGlowFlash1" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
+														<Alpha smoothing="NONE" childKey="ItemGlow" duration=".3" order="1" fromAlpha="1" toAlpha="1"/>
+														<Alpha startDelay=".3" smoothing="NONE" childKey="ItemGlow" duration=".67" order="1" fromAlpha="1" toAlpha="0"/>
+														<Alpha startDelay="0" smoothing="NONE" childKey="Crack1" duration=".5" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay=".5" smoothing="NONE" childKey="Crack1" duration=".23" order="1" fromAlpha="0" toAlpha=".45"/>
+														<Alpha startDelay=".73" smoothing="NONE" childKey="Crack1" duration=".23" order="1" fromAlpha=".45" toAlpha="0"/>
+														<Alpha startDelay="0" smoothing="NONE" childKey="Crack2" duration=".7" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay=".7" smoothing="NONE" childKey="Crack2" duration=".23" order="1" fromAlpha="0" toAlpha=".4"/>
+														<Alpha startDelay=".93" smoothing="NONE" childKey="Crack2" duration=".37" order="1" fromAlpha=".4" toAlpha="0"/>
+														<Alpha smoothing="NONE" childKey="Crack3" duration=".87" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay=".87" smoothing="NONE" childKey="Crack3" duration=".23" order="1" fromAlpha="0" toAlpha="1"/>
+														<Alpha startDelay="1.1" smoothing="NONE" childKey="Crack3" duration=".53" order="1" fromAlpha="1" toAlpha="0"/>
+														<Alpha smoothing="NONE" childKey="FrostFrame" duration=".37" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay=".37" smoothing="NONE" childKey="FrostFrame" duration=".17" order="1" fromAlpha="0" toAlpha="1"/>
+														<Alpha smoothing="NONE" childKey="FrostShine1" duration=".67" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay=".67" smoothing="NONE" childKey="FrostShine1" duration=".33" order="1" fromAlpha="0" toAlpha=".45"/>
+														<Alpha startDelay="1" smoothing="NONE" childKey="FrostShine1" duration=".53" order="1" fromAlpha=".45" toAlpha="0"/>
+														<Alpha smoothing="NONE" childKey="FrostShine2" duration=".5" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay=".5" smoothing="NONE" childKey="FrostShine2" duration=".5" order="1" fromAlpha="0" toAlpha=".4"/>
+														<Alpha startDelay="1" smoothing="NONE" childKey="FrostShine2" duration=".6" order="1" fromAlpha=".4" toAlpha="0"/>
+														<Alpha smoothing="NONE" childKey="FrostShine3" duration=".5" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay=".5" smoothing="NONE" childKey="FrostShine3" duration=".6" order="1" fromAlpha="0" toAlpha="1"/>
+														<Alpha startDelay="1.1" smoothing="NONE" childKey="FrostShine3" duration=".3" order="1" fromAlpha="1" toAlpha="0"/>
+														<Alpha smoothing="NONE" childKey="FrostShine4" duration=".67" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay=".67" smoothing="NONE" childKey="FrostShine4" duration=".23" order="1" fromAlpha="0" toAlpha=".25"/>
+														<Alpha startDelay=".9" smoothing="NONE" childKey="FrostShine4" duration=".33" order="1" fromAlpha=".25" toAlpha="0"/>
+														<Alpha smoothing="NONE" childKey="Frost1" duration=".37" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay=".37" smoothing="NONE" childKey="Frost1" duration=".3" order="1" fromAlpha="0" toAlpha="1"/>
+														<Alpha smoothing="NONE" childKey="Frost2" duration=".67" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay="1" smoothing="NONE" childKey="Frost2" duration=".33" order="1" fromAlpha="0" toAlpha="1"/>
+														<Alpha smoothing="NONE" childKey="Frost3" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
+														<Alpha startDelay="1" smoothing="NONE" childKey="Frost3" duration=".4" order="1" fromAlpha="0" toAlpha="1"/>
+													</AnimationGroup>
+												</Animations>
+												<Layers>
+													<Layer level="BACKGROUND" textureSubLevel="1">
+														<Texture parentKey="FrozenSlot" atlas="perks-slot-empty" useAtlasSize="true"/>
+													</Layer>
+													<Layer level="BACKGROUND" textureSubLevel="2">
+														<!-- Used for animations where frozen item animates away to reveal empty FrozenSlot beneath. -->
+														<Texture parentKey="UnfrozenSlot" atlas="perks-slot-empty" useAtlasSize="true" alpha="0"/>
+													</Layer>
+													<Layer level="OVERLAY" textureSubLevel="1">
+														<Texture parentKey="FrostFrame" alpha="0" alphaMode="BLEND" atlas="perks-frost-frame-1" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="ItemGlow" alpha="0" alphaMode="BLEND" atlas="perks-frost-frame-glow-1" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="ItemGlowFlash1" alpha="0" alphaMode="BLEND" atlas="perks-frost-frame-glow-1" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="ItemGlowFlash2" alpha="0" alphaMode="BLEND" atlas="perks-frost-frame-glow-2" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="Crack1" alpha="0" alphaMode="BLEND" atlas="perks-crack-1" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="Crack2" alpha="0" alphaMode="BLEND" atlas="perks-crack-2" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="Crack3" alpha="0" alphaMode="BLEND" atlas="perks-crack-3" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="FrostShine1" alpha="0" alphaMode="BLEND" atlas="perks-frost-shine-1" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="FrostShine2" alpha="0" alphaMode="BLEND" atlas="perks-frost-shine-2" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="FrostShine3" alpha="0" alphaMode="BLEND" atlas="perks-frost-shine-3" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="FrostShine4" alpha="0" alphaMode="BLEND" atlas="perks-frost-shine-4" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="Frost1" alpha="0" alphaMode="BLEND" atlas="perks-frost-1" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="Frost2" alpha="0" alphaMode="BLEND" atlas="perks-frost-2" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+														<Texture parentKey="Frost3" alpha="0" alphaMode="BLEND" atlas="perks-frost-3" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="CENTER"/>
+															</Anchors>
+														</Texture>
+													</Layer>
+													<Layer level="OVERLAY" textureSubLevel="2">
+														<!-- Used for animations where pending frozen item animates away to reveal FrozenSlot beneath. -->
+														<Texture parentKey="OverlayFrozenSlot" atlas="perks-slot-empty" useAtlasSize="true" alpha="0"/>
+													</Layer>
+												</Layers>
+												<Scripts>
+													<OnLoad method="OnLoad"/>
+													<OnEnter method="OnEnter"/>
+													<OnLeave method="OnLeave"/>
+													<OnClick method="OnClick"/>
+													<OnReceiveDrag method="OnReceiveDrag"/>
+												</Scripts>
+												<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" atlas="perks-slot-empty">
+													<Color r="1" g="1" b="1" a=".4"/>
+												</HighlightTexture>
+											</Button>
+										</Frames>
+										<Layers>
+											<Layer level="BORDER" textureSubLevel="1">
+												<Texture parentKey="Snow1" alpha="0" alphaMode="BLEND" atlas="perks-snow-1">
+													<Size x="100" y="100"/>
+													<Anchors>
+														<Anchor point="LEFT"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="FrostBG" alpha="0" alphaMode="BLEND" atlas="perks-frost-BG" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="LEFT" x="10" y="0"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="FrostBG2" alpha="0" alphaMode="BLEND" atlas="perks-frost-BG-2" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="LEFT" x="10" y="0"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="FrostBGFade" alpha="0" alphaMode="BLEND" atlas="perks-frost-BG-fade" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="LEFT" x="15" y="5"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="BORDER" textureSubLevel="2">
+												<Texture parentKey="FrostLabelBG" alpha="0" alphaMode="BLEND" atlas="perks-frost-BG" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="LEFT" x="65" y="0"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="FrostLabelBG2" alpha="0" alphaMode="BLEND" atlas="perks-frost-BG-2" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="LEFT" x="65" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="BORDER" textureSubLevel="3">
+												<Texture parentKey="FrostFlipbook" alpha="0" alphaMode="BLEND" atlas="perks-frost-FX">
+													<Size x="120" y="104"/>
+													<Anchors>
+														<Anchor point="LEFT"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="ARTWORK" textureSubLevel="1">
+												<FontString parentKey="Label" justifyH="LEFT" text="PERKS_PROGRAM_FREEZE_ITEM_INSTRUCTIONS" inherits="GameFontNormalMed3" >
+													<Color color="WHITE_FONT_COLOR"/>
+													<Size x="270" y="48"/>
+													<Anchors>
+														<Anchor point="LEFT" relativeKey="$parent.FrozenButton" relativePoint="RIGHT" x="10" y="0"/>
+													</Anchors>
+												</FontString>
+												<Texture parentKey="TickGlow" alpha="0" alphaMode="BLEND" atlas="perks-tick-glow" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="LEFT" relativeKey="$parent.FrozenButton" relativePoint="RIGHT" x="0" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+											<Layer level="ARTWORK" textureSubLevel="2">
+												<Texture parentKey="Tick" alpha="0" alphaMode="BLEND" atlas="perks-tick" useAtlasSize="true">
+													<Anchors>
+														<Anchor point="LEFT" relativeKey="$parent.FrozenButton" relativePoint="RIGHT" x="15" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad method="OnLoad"/>
+											<OnEvent method="OnEvent"/>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+							<Frame parentKey="Border" useParentLevel="true" inherits="NineSlicePanelTemplate">
+								<KeyValues>
+									<KeyValue key="layoutType" value="PerksProgramProductsPanelTemplate" type="string"/>
+									<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+								</KeyValues>
+							</Frame>
+						</Frames>
+					</Frame>
+
+					<Frame parentKey="PerksProgramCurrencyFrame" mixin="PerksProgramCurrencyFrameMixin">
+						<Size x="200" y="50"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="RIGHT" />
+							<Anchor point="BOTTOM" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="TOP" y="15"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" >
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="RIGHT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Text" inherits="Game32Font_Shadow2">
+									<Color color="WHITE_FONT_COLOR"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-8" y="-1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+
+						<Frames>
+							<Frame parentKey="GlowSpin" hidden="true">
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture inherits="store-itemicon-border-glowspin" setAllPoints="true" alpha="0.09" alphaMode="ADD" />
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
+										<Rotation order="1" duration="15" degrees="-360"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+							<Frame parentKey="GlowPulse" hidden="true">
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture inherits="store-itemicon-border-glowpulse" setAllPoints="true" alpha="1" alphaMode="ADD" />
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture inherits="store-itemicon-border-glowpulse" setAllPoints="true" alpha=".5" alphaMode="ADD" />
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
+										<Alpha fromAlpha="1" toAlpha="0" duration="1.5" order="1"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>							
+						</Frames>
+						
+						<Scripts>
+							<OnLoad method="OnLoad" />
+							<OnEvent method="OnEvent"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="PerksProgramFilter" inherits="FilterDropDownContainerTemplate">
+						<Size x="172" y="48"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="LEFT" x="-8"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="TOP" y="15"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="PerksProgramProductDetailsContainerFrame" inherits="VerticalLayoutFrame" >
+						<KeyValues>
+							<KeyValue key="fixedWidth" value="360" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" x="-46" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="DetailsFrame" inherits="PerksProgramDetailsFrameTemplate" >
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="10" type="number"/>
+									<KeyValue key="topPadding" value="16" type="number"/>
+									<KeyValue key="leftPadding" value="20" type="number"/>
+									<KeyValue key="bottomPadding" value="16" type="number"/>
+									<KeyValue key="timeTextColor" value="WHITE_FONT_COLOR" type="global"/>
+									<KeyValue key="timeValueColor" value="WHITE_FONT_COLOR" type="global"/>
+								</KeyValues>								
+							</Frame>
+							<Frame parentKey="DividerFrame" mixin="PerksProgramDividerFrameMixin">
+								<Size x="340" y="3"/>
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="20" type="number"/>
+									<KeyValue key="topPadding" value="12" type="number"/>
+									<KeyValue key="leftPadding" value="10" type="number"/>
+									<KeyValue key="bottomPadding" value="12" type="number"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="PerksDividerShort" atlas="perks-divider-short" useAtlasSize="true"/>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="CarouselFrame" mixin="PerksProgramCarouselFrameMixin" hidden="true">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="30" type="number"/>
+									<KeyValue key="leftPadding" value="40" type="number"/>
+									<KeyValue key="bottomPadding" value="12" type="number"/>
+								</KeyValues>
+								<Size x="280" y="42"/>
+								<Frames>
+									<Button parentKey="DecrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
+										<Size x="42" y="42"/>
+										<NormalTexture parentKey="NormalTexture" atlas="perks-backbutton"/>
+										<PushedTexture parentKey="PushedTexture" atlas="perks-backbutton-down"/>
+										<DisabledTexture atlas="perks-backbutton-disabled"/>
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="0" y="0"/>
+										</Anchors>
+									</Button>
+								</Frames>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="CarouselText" justifyH="CENTER" text="PERKS_PROGRAM_CAROUSEL_INDEX" inherits="SystemFont_Huge2">
+											<Size x="196" y="42"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.DecrementButton" relativePoint="RIGHT" x="0" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button parentKey="IncrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
+										<Size x="42" y="42"/>
+										<NormalTexture parentKey="NormalTexture" atlas="perks-nextbutton"/>
+										<PushedTexture parentKey="PushedTexture" atlas="perks-nextbutton-down"/>
+										<DisabledTexture atlas="perks-nextbutton-disabled"/>
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.CarouselText" relativePoint="RIGHT" x="0" y="0"/>
+										</Anchors>
+									</Button>
+								</Frames>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="Border" useParentLevel="true" inherits="NineSlicePanelTemplate">
+								<KeyValues>
+									<KeyValue key="layoutType" value="PerksProgramProductsPanelTemplate" type="string"/>
+									<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+								</KeyValues>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="LeftBackgroundOverlay">
+							<Size x="950" />
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightBackgroundOverlay">
+							<Size x="600" />
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnShow method="OnShow"/>
+					<OnEvent method="OnEvent"/>
+					<OnUpdate method="OnUpdate"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="ModelSceneContainerFrame" mixin="PerksProgramModelSceneContainerFrameMixin" alpha="0" >
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="AlteredFormButton" inherits="RingedMaskedButtonTemplate" mixin="PerksProgramAlteredFormButtonMixin"  frameLevel="1000">
+						<Size x="79" y="79"/>
+						<KeyValues>
+							<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+							<KeyValue key="ringWidth" value="139" type="number"/>
+							<KeyValue key="ringHeight" value="140" type="number"/>
+							<KeyValue key="checkedTextureSize" value="118" type="number"/>
+							<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+							<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+							<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+							<KeyValue key="flipTextures" value="true" type="boolean"/>
+							<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
+						</KeyValues>						
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-68" y="-72"/>
+						</Anchors>						
+					</CheckButton>
+					<CheckButton parentKey="NormalFormButton" inherits="RingedMaskedButtonTemplate" mixin="PerksProgramAlteredFormButtonMixin" frameLevel="1000">
+						<Size x="79" y="79"/>
+						<KeyValues>
+							<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+							<KeyValue key="ringWidth" value="139" type="number"/>
+							<KeyValue key="ringHeight" value="140" type="number"/>
+							<KeyValue key="checkedTextureSize" value="118" type="number"/>
+							<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+							<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+							<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+							<KeyValue key="flipTextures" value="true" type="boolean"/>
+							<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.AlteredFormButton" relativePoint="LEFT" x="-16" y="0" />
+						</Anchors>
+					</CheckButton>
+					
+					<Frame parentKey="ToyOverlayFrame" frameLevel="1000" setAllPoints="true" hidden="true" >
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture parentKey="toyBackground" atlas="perks-item-background" >
+									<Size x="358" y="426"/>
+									<Anchors>
+										<Anchor point="CENTER" x="80" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" >
+								<Texture parentKey="Icon" >
+									<Size x="48" y="48"/>
+									<Anchors>
+										<Anchor point="CENTER" x="80" y="80"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="-1">
+								<Texture parentKey="IconBorder" atlas="collections-itemborder-collected" >
+									<Size x="63" y="63"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="-3"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="DetailsFrame" inherits="PerksProgramDetailsFrameTemplate" >
+								<KeyValues>
+									<KeyValue key="timeTextColor" value="NORMAL_FONT_COLOR" type="global"/>
+									<KeyValue key="timeValueColor" value="WHITE_FONT_COLOR" type="global"/>
+									<KeyValue key="fixedWidth" value="260" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-40" />
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+					<ModelScene parentKey="MainModelScene" inherits="NoZoomModelSceneMixinTemplate" drawLayer="BORDER" frameLevel="500" >
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="dropShadow" atlas="perks-char-shadow" alpha="0.6">
+									<Size x="280" y="74"/>
+									<Anchors>
+										<Anchor point="CENTER" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</ModelScene>
+					<ModelScene parentKey="PlayerModelScene" inherits="NoZoomModelSceneMixinTemplate" frameLevel="100" >
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="dropShadow" atlas="perks-char-shadow" alpha="0.6">
+									<Size x="280" y="74"/>
+									<Anchors>
+										<Anchor point="CENTER" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</ModelScene>
+					<ModelScene parentKey="CelebrateModelScene" inherits="NoZoomModelSceneMixinTemplate" frameLevel="10" >
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</ModelScene>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="FooterFrame" mixin="PerksProgramFooterFrameMixin" frameLevel="1000" >
+				<Size x="0" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="LeaveButton" inherits="PerksProgramButtonTemplate" frameLevel="2000" ignoreParentScale="true" >
+						<Size x="180" y="46"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.ProductsFrame.ProductsScrollBoxContainer" relativePoint="LEFT"/>
+							<Anchor point="BOTTOM" y="20"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="perksProgramOnClickMethod" value="Leave" type="string"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="PurchaseButton" inherits="PerksProgramPurchaseButtonTemplate" frameLevel="2000" ignoreParentScale="true" text="PERKS_PROGRAM_PURCHASE" hidden="true">
+						<Size x="180" y="46"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.$parent.ProductsFrame.PerksProgramProductDetailsContainerFrame" relativePoint="RIGHT"/>
+							<Anchor point="BOTTOM" x="0" y="20"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="perksProgramOnClickMethod" value="ConfirmPurchase" type="string"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="RefundButton" inherits="PerksProgramButtonTemplate" frameLevel="2000" ignoreParentScale="true" text="PERKS_PROGRAM_REFUND" hidden="true">
+						<Size x="180" y="46"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.$parent.ProductsFrame.PerksProgramProductDetailsContainerFrame" relativePoint="RIGHT"/>
+							<Anchor point="BOTTOM" x="0" y="20"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="perksProgramOnClickMethod" value="ConfirmRefund" type="string"/>
+						</KeyValues>
+					</Button>
+					<Frame parentKey="RotateButtonContainer">
+						<Size x="100" y="48"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="140" y="42" />
+						</Anchors>
+						<Frames>
+							<Button parentKey="RotateLeftButton" inherits="PerksModelSceneControlButtonTemplate" >
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="iconAtlas" value="perks-icon-rotate-left" type="string"/>
+									<KeyValue key="rotateDirection" value="left" type="string"/>
+									<KeyValue key="rotationIncrement" value="0.1" type="number"/>
+								</KeyValues>
+							</Button>
+							<Button parentKey="RotateRightButton" inherits="PerksModelSceneControlButtonTemplate" >
+								<Anchors>
+									<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="iconAtlas" value="perks-icon-rotate-right" type="string"/>
+									<KeyValue key="rotateDirection" value="right" type="string"/>
+									<KeyValue key="rotationIncrement" value="0.1" type="number"/>
+								</KeyValues>
+							</Button>
+						</Frames>
+					</Frame>
+					<CheckButton parentKey="TogglePlayerPreview" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
+						<KeyValues>
+							<KeyValue key="textString" value="PERKS_PROGRAM_PLAYER_PREVIEW" type="global"/>
+							<KeyValue key="perksProgramOnClickMethod" value="TogglePlayerPreviewOnClick" type="string"/>
+							<KeyValue key="perksProgramOnShowMethod" value="GetTogglePlayerSetting" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.RotateButtonContainer" relativePoint="TOP" y="10"/>
+							<Anchor point="LEFT" relativeKey="$parent.RotateButtonContainer" relativePoint="LEFT" x="-18"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="ToggleHideArmor" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
+						<KeyValues>
+							<KeyValue key="textString" value="PERKS_PROGRAM_HIDE_ARMOR" type="global"/>
+							<KeyValue key="perksProgramOnClickMethod" value="PlayerToggledHideArmorOnClick" type="string"/>
+							<KeyValue key="perksProgramOnShowMethod" value="GetHideArmorSetting" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.RotateButtonContainer" relativePoint="TOP" y="10"/>
+							<Anchor point="LEFT" relativeKey="$parent.RotateButtonContainer" relativePoint="LEFT" x="-18"/>
+						</Anchors>
+					</CheckButton>
+					<Frame parentKey="PurchasedHistoryFrame" hidden="true" >
+						<Size x="158" y="39"/>
+						<Anchors>
+							<Anchor point="RIGHT" x="-50"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.LeaveButton" relativePoint="BOTTOM" y="16"/>						
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								
+								<FontString parentKey="RefundText" justifyH="LEFT" inherits="GameFontNormalMed3">
+									<Size x="200" y="39"/>
+									<Color color="NORMAL_FONT_COLOR"/>
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-20" y="70"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="RefundIcon" atlas="perks-clock-large" hidden="false" >
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.RefundText" relativePoint="LEFT" x="-10" y="0"/>
+									</Anchors>
+								</Texture>
+
+								<FontString parentKey="PurchasedText" justifyH="LEFT" text="PERKS_PROGRAM_PURCHASED_TEXT" inherits="GameFontNormalMed3">
+									<Size x="200" y="39"/>
+									<Color color="NORMAL_FONT_COLOR"/>
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="PurchasedIcon" atlas="perks-owned-large" hidden="false" >
+									<Size x="38" y="39"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.PurchasedText" relativePoint="LEFT" x="-12" y="0"/>
+									</Anchors>
+								</Texture>
+								
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnShow method="OnShow" />
+					<OnHide method="OnHide" />
+					<OnEvent method="OnEvent" />
+				</Scripts>
+			</Frame>
+		</Frames>
+
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend" />
+			<OnEvent method="OnEvent" inherit="prepend" />
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnKeyDown method="OnKeyDown"/>
+		</Scripts>
+	</Frame>
+</Ui>

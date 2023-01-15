@@ -1410,7 +1410,20 @@ local CHARACTER_SHEET_MODEL_SCENE_ID = 595;
 function PaperDollFrame_SetPlayer()
 	CharacterModelScene:ReleaseAllActors();
 	CharacterModelScene:TransitionToModelSceneID(CHARACTER_SHEET_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, true);
-	
+
+	local form = GetShapeshiftFormID();
+	if form then
+		local actorTag = ANIMAL_FORMS[form] and ANIMAL_FORMS[form].actorTag or nil;
+		if actorTag then
+			local actor = CharacterModelScene:GetPlayerActor(actorTag);
+			local creatureDisplayID = C_PlayerInfo.GetDisplayID();
+			if actor and creatureDisplayID then
+				actor:SetModelByCreatureDisplayID(creatureDisplayID);
+				actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+				return;
+			end
+		end
+	end
 	local actor = CharacterModelScene:GetPlayerActor();
 	if actor then
 		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
@@ -1579,7 +1592,7 @@ function PaperDollItemSlotButton_OnEvent(self, event, ...)
 			PaperDollItemSlotButton_OnEnter(self);
 		end
 	elseif event == "AZERITE_ITEM_POWER_LEVEL_CHANGED" then
-		local azeriteItemLocation, oldPowerLevel, newPowerLevel = ...;
+		local azeriteItemLocation, oldPowerLevel, newPowerLevel, azeriteItemID = ...;
 		if azeriteItemLocation:IsEqualToEquipmentSlot(self:GetID()) then
 			PaperDollItemSlotButton_Update(self);
 		end
@@ -1736,7 +1749,7 @@ function PaperDollItemSlotButton_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 
-	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID(), true);
+	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID());
 	if ( not hasItem ) then
 		-- This SetOwner is needed because calling SetInventoryItem now hides tooltip if there is no item
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

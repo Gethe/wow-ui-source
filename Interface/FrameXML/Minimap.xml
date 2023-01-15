@@ -77,25 +77,60 @@
 					</DropDownToggleButton>
 				</Frames>
 			</Frame>
-			<Frame parentKey="MailFrame" mixin="MiniMapMailFrameMixin" enableMouse="true" hidden="true">
-				<Size x="20" y="15"/>
+			<Frame parentKey="IndicatorFrame" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="20" type="number"/>
+					<KeyValue key="fixedHeight" value="15" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.Tracking" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="MiniMapMailIcon" atlas="ui-hud-minimap-mail-up" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
+				<Frames>
+					<Frame parentKey="MailFrame" mixin="MiniMapMailFrameMixin" enableMouse="true" hidden="true">
+						<Size x="20" y="15"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="MiniMapMailIcon" atlas="ui-hud-minimap-mail-up" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="CraftingOrderFrame" mixin="MiniMapCraftingOrderFrameMixin" enableMouse="true" hidden="true">
+						<Size x="20" y="15"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="MiniMapCraftingOrderIcon" atlas="UI-HUD-Minimap-CraftingOrder-Up" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnEvent method="OnEvent"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
+					<OnLoad function="MiniMapIndicatorFrame_UpdatePosition"/>
 				</Scripts>
 			</Frame>
 			<Minimap name="Minimap" parentKey="Minimap" mixin="MinimapMixin" enableMouse="true">

@@ -285,8 +285,8 @@ function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
 	end
 
 	local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
-	if buttonWithPurchase and buttonWithPurchase.PlayPurchaseEffect then
-		buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene, self.buttonPurchaseFXIDs);
+	if buttonWithPurchase and buttonWithPurchase.PlayPurchaseCompleteEffect then
+		buttonWithPurchase:PlayPurchaseCompleteEffect(self.FxModelScene, self.buttonPurchaseFXIDs);
 	end
 
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT);

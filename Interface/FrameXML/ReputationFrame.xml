@@ -274,12 +274,6 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="ReputationDetailCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
-							<Size x="32" y="32"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-6" y="-7"/>
-							</Anchors>
-						</Texture>
 						<Texture name="ReputationDetailDivider" file="Interface\DialogFrame\UI-DialogBox-Divider">
 							<Size x="256" y="32"/>
 							<Anchors>
@@ -292,7 +286,7 @@
 					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 					<Button name="ReputationDetailCloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-7" y="-7"/>
+							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>

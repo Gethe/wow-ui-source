@@ -30,6 +30,8 @@ function ClassTalentTalentsSearchMixin:UpdateEnabledSearchTypes()
 
 	local isActionBarSearchEnabled = not self.searchInspectUnit and not self:HasAnyPendingChanges();
 	local wasActionBarSearchEnabled = self.actionBarSearch:GetIsEnabled();
+	local wasActionBarSearchActive = self.actionBarSearch:GetIsActive();
+
 	if isActionBarSearchEnabled ~= wasActionBarSearchEnabled then
 		self.actionBarSearch:SetEnabled(isActionBarSearchEnabled);
 
@@ -40,7 +42,7 @@ function ClassTalentTalentsSearchMixin:UpdateEnabledSearchTypes()
 		end
 	end
 
-	if oldInspectUnit ~= self.searchInspectUnit or isActionBarSearchEnabled ~= wasActionBarSearchEnabled then
+	if (oldInspectUnit ~= self.searchInspectUnit) or (isActionBarSearchEnabled ~= wasActionBarSearchEnabled and wasActionBarSearchActive) then
 		self:ClearActiveSearchState();
 	end
 end
@@ -374,6 +376,13 @@ end
 -- Search mixin for finding all committed, non-passive talents not slotted in the Action Bar
 ClassTalentActionBarSearchMixin = CreateFromMixins(ClassTalentSearchTypeBaseMixin);
 
+local MatchTypeForActionBarStatus = {
+	[TalentButtonUtil.ActionBarStatus.NotMissing] = nil,
+	[TalentButtonUtil.ActionBarStatus.MissingFromAllBars] = TalentButtonUtil.SearchMatchType.NotOnActionBar,
+	[TalentButtonUtil.ActionBarStatus.OnInactiveBonusBar] = TalentButtonUtil.SearchMatchType.OnInactiveBonusBar,
+	[TalentButtonUtil.ActionBarStatus.OnDisabledActionBar] = TalentButtonUtil.SearchMatchType.OnDisabledActionBar,
+}
+
 function ClassTalentActionBarSearchMixin:UpdateSearchResults()
 	-- Overrides ClassTalentSearchTypeBaseMixin.
 
@@ -382,7 +391,8 @@ function ClassTalentActionBarSearchMixin:UpdateSearchResults()
 	end
 
 	for talentButton in self:EnumerateAllTalentButtons() do
-		local matchType = talentButton:IsMissingFromActionBar() and TalentButtonUtil.SearchMatchType.NotOnActionBar or nil;
+		local matchType = MatchTypeForActionBarStatus[talentButton:GetActionBarStatus()];
+
 		talentButton:SetSearchMatchType(matchType);
 	end
 
@@ -403,7 +413,6 @@ function ClassTalentActionBarSearchMixin:GetSearchMatchTypeForEntry(nodeID, entr
 		return nil;
 	end
 
-	local isMissingFromActionBar = ClassTalentUtil.IsEntryTalentMissingFromActionBars(entryID, nodeInfo, definitionInfo.spellID);
-
-	return isMissingFromActionBar and TalentButtonUtil.SearchMatchType.NotOnActionBar or nil;
+	local actionbarStatus = TalentButtonUtil.GetActionBarStatusForNodeEntry(entryID, nodeInfo, definitionInfo.spellID);
+	return MatchTypeForActionBarStatus[actionbarStatus];
 end

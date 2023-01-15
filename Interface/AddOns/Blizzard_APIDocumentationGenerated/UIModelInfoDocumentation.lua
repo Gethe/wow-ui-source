@@ -104,6 +104,7 @@ local UIModelInfo =
 				{ Name = "modelSceneType", Type = "ModelSceneType", Nilable = false },
 				{ Name = "modelCameraIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "modelActorsIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "flags", Type = "number", Nilable = false },
 			},
 		},
 	},

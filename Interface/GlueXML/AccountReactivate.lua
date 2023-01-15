@@ -83,7 +83,7 @@ GlueDialogTypes["TOKEN_NONE_FOR_SALE"] = {
 function ReactivateAccountDialog_OnEvent(self, event, ...)
 	if (event == "TOKEN_BUY_CONFIRM_REQUIRED") then
 		local dialog = GoldReactivateConfirmationDialog;
-		
+
 		local now = time();
 		local newTime = now + (30 * 24 * 60 * 60); -- 30 days * 24 hours * 60 minutes * 60 seconds
 
@@ -231,13 +231,21 @@ function ReactivateAccountDialog_Open()
 	CharacterSelect_UpdateButtonState();
 end
 
+local function SafeGetTokenMarketPrice()
+	local enabled = C_WowTokenPublic.GetCommerceSystemStatus();
+	if enabled then
+		local marketPrice = C_WowTokenPublic.GetCurrentMarketPrice();
+		return enabled, marketPrice;
+	end
+end
+
 function SubscriptionRequestDialog_Open()
 	if (AccountReactivationInProgressDialog:IsShown()) then
 		return;
 	end
 	AccountReactivate_CloseDialogs(true);
 	local self = SubscriptionRequestDialog;
-	local enabled = C_WowTokenPublic.GetCommerceSystemStatus();
+	local enabled, marketPrice = SafeGetTokenMarketPrice();
 
 	if (C_WowTokenGlue.GetTokenCount() > 0 and enabled) then
 		self.redeem = true;
@@ -246,16 +254,16 @@ function SubscriptionRequestDialog_Open()
 		self.Reactivate:Show();
 		self.Reactivate:Enable();
 		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 50 + self.Reactivate:GetHeight());
-	elseif (C_WowTokenGlue.CanVeteranBuy() and C_WowTokenPublic.GetCurrentMarketPrice() and enabled) then	
+	elseif (C_WowTokenGlue.CanVeteranBuy() and marketPrice and enabled) then
 		self.redeem = false;
-		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
+		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(marketPrice, true)));
 		self.ButtonDivider:Show();
 		self.Reactivate:Show();
-		self.Reactivate:SetEnabled(C_WowTokenPublic.GetCurrentMarketPrice() > 0);
+		self.Reactivate:SetEnabled(marketPrice > 0);
 		self:SetHeight(self.Text:GetHeight() + 16 + self.ButtonDivider:GetHeight() + self.Accept:GetHeight() + 50 + self.Reactivate:GetHeight());
-	elseif (CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_SUCCESS_NO and enabled) then
+	elseif (CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_SUCCESS_NO and enabled and marketPrice) then
 		self.Reactivate.tooltip = ERR_NOT_ENOUGH_GOLD;
-		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
+		self.Reactivate:SetText(ACCOUNT_REACTIVATE_ACCEPT:format(GetMoneyString(marketPrice, true)));
 		self.ButtonDivider:Show();
 		self.Reactivate:Show();
 		self.Reactivate:Disable();
@@ -265,10 +273,10 @@ function SubscriptionRequestDialog_Open()
 		self.Reactivate:Hide();
 		self:SetHeight(self.Text:GetHeight() + 16 + self.Accept:GetHeight() + 50);
 	end
-	
-	
+
+
 	self:Show();
-	if (not C_WowTokenPublic.GetCurrentMarketPrice()) then
+	if (not marketPrice) then
 		ReactivateAccount_UpdateMarketPrice();
 	end
 	CharacterSelect_UpdateButtonState();
@@ -283,7 +291,7 @@ function ReactivateAccountDialog_OnReactivate(self)
 	end
 	self:GetParent():Hide();
 end
- 
+
 function ReactivateAccount_CreatePriceUpdateTicker()
 	local self = ReactivateAccountDialog;
 	local _, pollTimeSeconds = C_WowTokenPublic.GetCommerceSystemStatus();

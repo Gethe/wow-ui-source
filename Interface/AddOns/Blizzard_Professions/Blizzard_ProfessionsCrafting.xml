@@ -87,6 +87,10 @@
 			</Button>
 
 			<EditBox parentKey="CreateMultipleInputBox" inherits="NumericInputSpinnerTemplate">
+				<KeyValues>
+					<KeyValue key="clampIfInputExceedsRange" value="true" type="boolean"/>
+					<KeyValue key="highlightIfInputExceedsRange" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CreateButton" relativePoint="LEFT" x="-30"/>
 				</Anchors>

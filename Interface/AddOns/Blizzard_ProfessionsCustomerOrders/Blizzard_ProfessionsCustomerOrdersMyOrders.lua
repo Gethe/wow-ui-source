@@ -8,7 +8,7 @@ function ProfessionsCustomerOrderListElementMixin:OnLineEnter()
 
 	local reagents = {};
 	local qualityIDs = C_TradeSkillUI.GetQualitiesForRecipe(self.option.spellID);
-	local minQuality = self.option.minQuality >= 1 or 1;
+	local minQuality = self.option.minQuality >= 1 and self.option.minQuality or 1;
 	GameTooltip:SetRecipeResultItem(self.option.spellID, reagents, nil, nil, qualityIDs and qualityIDs[minQuality]);
 
 	if IsModifiedClick("DRESSUP") then
@@ -26,8 +26,18 @@ function ProfessionsCustomerOrderListElementMixin:OnLineLeave()
 	self:SetScript("OnUpdate", nil);
 end
 
-function ProfessionsCustomerOrderListElementMixin:OnClick()
-	EventRegistry:TriggerEvent("ProfessionsCustomerOrders.OrderSelected", self.option);
+function ProfessionsCustomerOrderListElementMixin:OnClick(button)
+	if button == "LeftButton" then
+		EventRegistry:TriggerEvent("ProfessionsCustomerOrders.OrderSelected", self.option);
+	elseif button == "RightButton" then
+		local dropdownInfo =
+		{
+			recipeID = self.option.spellID,
+			orderID = self.option.orderID,
+			orderState = self.option.orderState,
+		};
+		ToggleDropDownMenu(1, dropdownInfo, self.contextMenu, "cursor");
+	end
 end
 
 -- Set and cleared dynamically in OnEnter and OnLeave
@@ -41,6 +51,7 @@ end
 
 function ProfessionsCustomerOrderListElementMixin:Init(elementData)
 	self.option = elementData.option;
+	self.contextMenu = elementData.contextMenu;
 end
 
 
@@ -49,6 +60,7 @@ ProfessionsCustomerOrdersMyOrdersMixin = {};
 local myOrdersPageEvents =
 {
 	"CRAFTINGORDERS_CAN_REQUEST",
+	"CRAFTINGORDERS_ORDER_CANCEL_RESPONSE",
 };
 
 function ProfessionsCustomerOrdersMyOrdersMixin:InitButtons()
@@ -58,6 +70,18 @@ function ProfessionsCustomerOrdersMyOrdersMixin:InitButtons()
 		GameTooltip_AddHighlightLine(GameTooltip, REFRESH);
 		GameTooltip:Show();
 	end);
+end
+
+function ProfessionsCustomerOrdersMyOrdersMixin:InitContextMenu(dropDown, level)
+	local dropdownInfo = UIDROPDOWNMENU_MENU_VALUE;
+
+	if dropdownInfo.orderState == Enum.CraftingOrderState.Created then
+		local info = UIDropDownMenu_CreateInfo();
+		info.notCheckable = true;
+		info.text = PROFESSIONS_CRAFTING_FORM_CANCEL_ORDER;
+		info.func = GenerateClosure(C_CraftingOrders.CancelOrder, dropdownInfo.orderID);
+		UIDropDownMenu_AddButton(info, level);
+	end
 end
 
 function ProfessionsCustomerOrdersMyOrdersMixin:InitOrderList()
@@ -115,6 +139,9 @@ function ProfessionsCustomerOrdersMyOrdersMixin:InitOrderList()
 		end
 	end
 	self.OrderList.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, self);
+
+	UIDropDownMenu_SetInitializeFunction(self.OrderList.ContextMenu, GenerateClosure(self.InitContextMenu, self));
+	UIDropDownMenu_SetDisplayMode(self.OrderList.ContextMenu, "MENU");
 end
 
 function ProfessionsCustomerOrdersMyOrdersMixin:ResetSortOrder()
@@ -181,6 +208,14 @@ end
 function ProfessionsCustomerOrdersMyOrdersMixin:OnEvent(event, ...)
 	if event == "CRAFTINGORDERS_CAN_REQUEST" then
 		self.RefreshButton:SetEnabledState(true);
+	elseif event == "CRAFTINGORDERS_ORDER_CANCEL_RESPONSE" then
+		local result = ...;
+		local success = (result == Enum.CraftingOrderResult.Ok);
+		if success then
+			self:RefreshOrders();
+		else
+			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_CANCEL_FAILED);
+        end
 	end
 end
 
@@ -251,14 +286,14 @@ function ProfessionsCustomerOrdersMyOrdersMixin:UpdateOrderList(result, expectMo
 	if offset == 0 then
 		local dataProvider = CreateDataProvider();
 		for _, order in ipairs(orders) do
-			dataProvider:Insert({option = order});
+			dataProvider:Insert({option = order, contextMenu = self.OrderList.ContextMenu});
 		end
 		self.OrderList.ScrollBox:SetDataProvider(dataProvider);
 	else
 		local dataProvider = self.OrderList.ScrollBox:GetDataProvider();
 		for idx = offset + 1, #orders do
 			local order = orders[idx];
-			dataProvider:Insert({option = order});
+			dataProvider:Insert({option = order, contextMenu = self.OrderList.ContextMenu});
 		end
 	end
 
