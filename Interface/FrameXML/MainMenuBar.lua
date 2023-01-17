@@ -279,7 +279,7 @@ function MainMenuBarVehicleLeaveButton_Update()
 		if ( IsPossessBarVisible() ) then
 			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessButton2, "RIGHT", 30, 0);
 		elseif ( GetNumShapeshiftForms() > 0 ) then
-			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", "StanceButton"..GetNumShapeshiftForms(), "RIGHT", 30, 0);
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", StanceBarFrame.StanceButtons[GetNumShapeshiftForms()], "RIGHT", 30, 0);
 		elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
 			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", MultiCastActionBarFrame, "RIGHT", 30, 0);
 		else

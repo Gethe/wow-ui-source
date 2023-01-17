@@ -14,7 +14,7 @@ MoneyTypeInfo["PLAYER"] = {
 	OnloadFunc = function(self)
 		self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	end,
-	
+
 	UpdateFunc = function(self)
 		return MoneyFrame_UpdateTrialErrorButton(self);
 	end,
@@ -217,7 +217,7 @@ function MoneyFrame_OnEvent (self, event, ...)
 	end
 
 	local moneyType = self.moneyType;
-	
+
 	if ( event == "PLAYER_MONEY" and moneyType == "PLAYER" ) then
 		MoneyFrame_UpdateMoney(self);
 	elseif ( event == "TRIAL_STATUS_UPDATE" and moneyType == "PLAYER" ) then
@@ -241,7 +241,7 @@ end
 
 function MoneyFrame_OnEnter(moneyFrame)
 	if ( moneyFrame.showTooltip ) then
-		GameTooltip:SetOwner(_G[moneyFrame:GetName().."CopperButton"], "ANCHOR_TOPRIGHT", 20, 2);		
+		GameTooltip:SetOwner(_G[moneyFrame:GetName().."CopperButton"], "ANCHOR_TOPRIGHT", 20, 2);
 		SetTooltipMoney(GameTooltip, moneyFrame.staticMoney, "TOOLTIP", "");
 		GameTooltip:Show();
 	end
@@ -299,7 +299,7 @@ local function CreateMoneyButtonNormalTexture (button, iconWidth)
 	texture:SetHeight(iconWidth);
 	texture:SetPoint("RIGHT", -1, 1);
 	button:SetNormalTexture(texture);
-	
+
 	return texture;
 end
 
@@ -311,7 +311,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	else
 		frame = _G[frameName];
 	end
-	
+
 	local info = frame.info;
 	if ( not info ) then
 		message("Error moneyType not set");
@@ -335,15 +335,15 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	end
 
 	local maxDisplayWidth = frame.maxDisplayWidth;
-	
+
 	-- Set values for each denomination
 	if ( ENABLE_COLORBLIND_MODE == "1" ) then
 		if ( not frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
 			frame.colorblind = true;
 			frame.vadjust = MONEY_TEXT_VADJUST;
-			goldButton:SetNormalTexture("");
-			silverButton:SetNormalTexture("");
-			copperButton:SetNormalTexture("");
+			goldButton:ClearNormalTexture();
+			silverButton:ClearNormalTexture();
+			copperButton:ClearNormalTexture();
 			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
 			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
 			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
@@ -381,11 +381,11 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		copperButton:SetWidth(copperButton:GetTextWidth() + iconWidth);
 		copperButton:Show();
 	end
-		
+
 	-- Store how much money the frame is displaying
 	frame.staticMoney = money;
 	frame.showTooltip = nil;
-	
+
 	-- If not collapsable or not using maxDisplayWidth don't need to continue
 	if ( not info.collapse and not maxDisplayWidth ) then
 		return;
@@ -414,7 +414,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		if ( showLowerDenominations and info.fixedWidth ) then
 			silverButton:SetWidth(COIN_BUTTON_WIDTH);
 		end
-		
+
 		local silverWidth = silverButton:GetWidth();
 		goldButton:SetPoint("RIGHT", frameName.."SilverButton", "LEFT", spacing, 0);
 		if ( goldButton:IsShown() ) then
@@ -445,7 +445,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		if ( showLowerDenominations and info.fixedWidth ) then
 			copperButton:SetWidth(COIN_BUTTON_WIDTH);
 		end
-		
+
 		local copperWidth = copperButton:GetWidth();
 		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "LEFT", spacing, 0);
 		if ( silverButton:IsShown() or goldButton:IsShown() ) then
@@ -518,7 +518,7 @@ function MoneyFrame_UpdateTrialErrorButton(self)
 		local moneyIsRestricted = GameLimitedMode_IsActive() and money >= rMoney;
 		self.trialErrorButton:SetShown(moneyIsRestricted);
 	end
-	
+
 	return money;
 end
 
@@ -549,7 +549,7 @@ function SetMoneyFrameColor(frameName, color)
 			fontObject = NumberFontNormalLargeRight;
 		end
 	end
-	
+
 	local goldButton = _G[frameName.."GoldButton"];
 	local silverButton = _G[frameName.."SilverButton"];
 	local copperButton = _G[frameName.."CopperButton"];

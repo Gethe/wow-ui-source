@@ -61,17 +61,21 @@ end
 function CharacterSelectLockedButtonMixin:OnEnter()
 	local requiresPurchase = IsExpansionTrialCharacter(self.guid) and CanUpgradeExpansion() or not C_CharacterServices.HasRequiredBoostForUnrevoke();
 
-    local tooltipFooter;
-    if requiresPurchase then
-		tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_SHOP;
-	else
-        tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_USE_BOOST;
-    end
+    local tooltipFooter = nil;
+	if not IsCharacterVASLocked(self.guid) then
+		if requiresPurchase then
+			tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_SHOP;
+		else
+			tooltipFooter = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_HELP_USE_BOOST;
+		end
+	end
 
     -- TODO: Add color constants to glue?
     GlueTooltip:SetText(self.tooltipTitle, 1, 1, 1, 1, false);
     GlueTooltip:AddLine(self.tooltipText, nil, nil, nil, nil, true);
-    GlueTooltip:AddLine(tooltipFooter, .1, 1, .1, 1, true);
+	if tooltipFooter then
+		GlueTooltip:AddLine(tooltipFooter, .1, 1, .1, 1, true);
+	end
     GlueTooltip:Show();
     GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
 end
@@ -110,6 +114,9 @@ function CharacterSelectLockedButtonMixin:OnClick()
 			glueContextMenu:AddButton(CANCEL, CloseContextMenu);
 
 			glueContextMenu:Show();
+		elseif #availableBoostTypes == 1 then
+			local flowData = C_CharacterServices.GetCharacterServiceDisplayData(availableBoostTypes[1]);
+			CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, self.guid);
 		else
 			CharacterSelect_ShowBoostUnlockDialog(self.guid);
 		end
@@ -281,12 +288,11 @@ function CharacterSelect_OnEvent(self, event, ...)
     elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
         local result = ...;
         CharacterSelect_CheckVeteranStatus();
-    elseif (event == "VAS_CHARACTER_STATE_CHANGED" or event == "STORE_PRODUCTS_UPDATED") then
-        CharacterSelect_UpdateIfUpdateIsNotPending();
-
-		if (event == "STORE_PRODUCTS_UPDATED") then
-			TBCInfoPane_RefreshPrice();
-		end
+	elseif event == "VAS_CHARACTER_STATE_CHANGED" then
+		CharacterSelect_UpdateIfUpdateIsNotPending();
+	elseif event == "STORE_PRODUCTS_UPDATED" then
+		CharacterSelect_UpdateIfUpdateIsNotPending();
+		TBCInfoPane_RefreshPrice();
     elseif ( event == "CHARACTER_DELETION_RESULT" ) then
         local success, errorToken = ...;
         if ( success ) then
@@ -340,6 +346,12 @@ function CharacterSelect_OnEvent(self, event, ...)
 		if self.showSocialContract and GlueParent_GetCurrentScreen() == "charselect" then
 			CharacterSelect_UpdateIfUpdateIsNotPending();
 		end
+	end
+end
+
+function CharacterSelect_UpdateIfUpdateIsNotPending()
+	if ( not IsCharacterListUpdatePending() ) then
+		UpdateCharacterList();
 	end
 end
 
@@ -640,12 +652,6 @@ function CharacterSelect_OnKeyDown(self,key)
     end
 end
 
-function CharacterSelect_UpdateIfUpdateIsNotPending()
-	if ( not IsCharacterListUpdatePending() ) then
-		UpdateCharacterList();
-	end
-end
-
 function CharacterSelect_SetPendingTrialBoost(hasPendingTrialBoost, factionID, specID, guid)
     CharacterSelect.hasPendingTrialBoost = hasPendingTrialBoost;
     CharacterSelect.trialBoostFactionID = factionID;
@@ -677,6 +683,8 @@ function CharacterSelect_SetupPadlockForCharacterButton(button, guid)
     elseif revokedCharacterUpgrade then
         padlock.tooltipTitle = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE;
         padlock.tooltipText = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TEXT;
+	elseif IsCharacterVASLocked(guid) then
+		padlock.tooltipTitle = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE;
     else
         GMError("Invalid lock type");
     end
@@ -690,6 +698,35 @@ end
 function CharacterSelect_UpdateModel(self)
     UpdateSelectionCustomizationScene();
     self:AdvanceTime();
+end
+
+function CharacterSelect_SetCharacterButtonEnabled(button, enabled)
+	if enabled then
+		button.buttonText.name:SetTextColor(1, 0.82, 0);
+		button.buttonText.Info:SetTextColor(1, 1, 1);
+		if button.coloredClassName then
+			button.buttonText.Info:SetText(button.coloredClassName);
+		end
+		button.buttonText.Location:SetTextColor(0.5, 0.5, 0.5);
+	else
+		button.buttonText.name:SetTextColor(0.25, 0.25, 0.25);
+		if button.uncoloredClassName then
+			button.buttonText.Info:SetText(button.uncoloredClassName);
+		end
+		button.buttonText.Info:SetTextColor(0.25, 0.25, 0.25);
+		button.buttonText.Location:SetTextColor(0.25, 0.25, 0.25);
+	end
+
+	button.buttonText.Info:SetFixedColor(not enabled);
+	button:SetEnabled(enabled);
+end
+
+function CharacterSelect_HidePaidServiceButtons()
+	local numDisplayedCharacters = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
+
+	for buttonIndex = 1, numDisplayedCharacters do
+		_G["CharSelectPaidService"..buttonIndex]:Hide();
+	end
 end
 
 function UpdateCharacterSelection(self)
@@ -711,6 +748,7 @@ function UpdateCharacterSelection(self)
         else
             CharacterSelectButton_EnableDrag(button);
         end
+		button.characterID = GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET);
     end
 
     local index = self.selectedIndex - CHARACTER_LIST_OFFSET;
@@ -736,6 +774,10 @@ function UpdateCharacterSelection(self)
             CharacterSelect_UpdateButtonState();
         end
     end
+
+	if( CharacterServicesCharacterSelector ) then
+		CharacterServicesCharacterSelector:Refresh();
+	end
 end
 
 function UpdateCharacterList(skipSelect)
@@ -792,7 +834,7 @@ function UpdateCharacterList(skipSelect)
         local productID, vasServiceState, vasServiceErrors, productInfo;
         if (guid) then
             productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
-        end
+		end
         if (productID) then
             productInfo = C_StoreSecure.GetProductInfo(productID);
         end
@@ -975,17 +1017,23 @@ function UpdateCharacterList(skipSelect)
             upgradeIcon:Show();
             upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
             upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
-		elseif ( vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue and productInfo ) then
+		elseif ( vasServiceState == Enum.VasPurchaseProgress.WaitingOnQueue ) then
 			upgradeIcon:Show();
-            upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
-            upgradeIcon.tooltip2 = VAS_SERVICE_PROCESSING:format(productInfo.sharedData.name);
-            if (VAS_QUEUE_TIMES[guid] and VAS_QUEUE_TIMES[guid] > 0) then
-                upgradeIcon.tooltip2 = upgradeIcon.tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(VAS_QUEUE_TIMES[guid]*60, true, false, 2, true))
-            end
+			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
+			if productInfo then
+				upgradeIcon.tooltip2 = VAS_SERVICE_PROCESSING:format(productInfo.sharedData.name);
+				if (VAS_QUEUE_TIMES[guid] and VAS_QUEUE_TIMES[guid] > 0) then
+					upgradeIcon.tooltip2 = upgradeIcon.tooltip2 .. "|n" .. VAS_PROCESSING_ESTIMATED_TIME:format(SecondsToTime(VAS_QUEUE_TIMES[guid]*60, true, false, 2, true))
+				end
+			else
+				upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
+			end
 		elseif ( vasServiceState == Enum.VasPurchaseProgress.ProcessingFactionChange ) then
             upgradeIcon:Show();
             upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
             upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
+		elseif guid and IsCharacterVASLocked(guid) then
+			CharacterSelect_SetupPadlockForCharacterButton(button, guid);
         elseif ( CharacterSelect.undeleting ) then
             paidServiceButton:Hide();
             paidServiceButton.serviceType = nil;
@@ -1258,6 +1306,25 @@ function CharacterSelect_SelectCharacter(index, noCreate)
     end
 end
 
+function CharacterSelect_ForEachVisibleCharacterButton(func)
+	local num = math.min(GetNumVisibleCharacters(), MAX_CHARACTERS_DISPLAYED);
+	for i = 1, num do
+		local button = _G["CharSelectCharacterButton"..i];
+		func(button);
+	end
+end
+
+function CharacterSelect_FindCharacterButtonByPredicate(predicate)
+	local num = math.min(GetNumVisibleCharacters(), MAX_CHARACTERS_DISPLAYED);
+	for i = 1, num do
+		local button = _G["CharSelectCharacterButton"..i];
+		if predicate(button) then
+			return button;
+		end		
+	end
+	return nil;
+end
+
 function CharacterSelect_SelectCharacterByGUID(guid)
     local num = math.min(GetNumVisibleCharacters(), MAX_CHARACTERS_DISPLAYED);
 
@@ -1413,17 +1480,16 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
     if (translatedIndex <= 0 or translatedIndex > GetNumVisibleCharacters()) then
         -- Somehow our character order got borked, reset the offset and get an updated character list.
         CHARACTER_LIST_OFFSET = 0;
-        PAID_SERVICE_CHARACTER_ID = nil;
-        PAID_SERVICE_TYPE = nil;
+		CharacterCreateFrame:ClearPaidServiceInfo();
         CharacterSelect_GetCharacterListUpdate();
         return;
     end
 
-    PAID_SERVICE_CHARACTER_ID = translatedIndex;
-    PAID_SERVICE_TYPE = service;
+	CharacterCreateFrame:SetPaidServiceInfo(service, translatedIndex);
+
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
     if (CharacterSelect.undeleting) then
-        local guid = select(15, GetCharacterInfo(PAID_SERVICE_CHARACTER_ID));
+        local guid = select(15, GetCharacterInfo(translatedIndex));
         CharacterSelect.pendingUndeleteGuid = guid;
         local timeStr = SecondsToTime(CHARACTER_UNDELETE_COOLDOWN, false, true, 1, false);
         GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
@@ -1432,6 +1498,12 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
     else
         GlueParent_SetScreen("charcreate");
     end
+end
+
+function CharacterSelect_StartCustomizeForVAS(vasType, info)
+	CharacterCreateFrame:SetVASInfo(vasType, info);
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+	GlueParent_SetScreen("charcreate");
 end
 
 function CharacterSelectGoldPanelButton_DeathKnightSwap(self)
@@ -1794,6 +1866,26 @@ function CharacterSelect_ScrollToCharacter(self, characterGUID)
 	CharacterSelect_ScrollList(self, maxScroll);
 end
 
+local function disableScroll(scrollBar)
+	scrollBar.ScrollUpButton:SetEnabled(false);
+	scrollBar.ScrollDownButton:SetEnabled(false);
+	scrollBar:GetParent():EnableMouseWheel(false);
+end
+
+local function enableScroll(scrollBar)
+	scrollBar.ScrollUpButton:SetEnabled(true);
+	scrollBar.ScrollDownButton:SetEnabled(true);
+	scrollBar:GetParent():EnableMouseWheel(true);
+end
+
+function CharacterSelect_SetScrollEnabled(enabled)
+	if enabled then
+		enableScroll(CharacterSelectCharacterFrame.scrollBar);
+	else
+		disableScroll(CharacterSelectCharacterFrame.scrollBar);
+	end
+end
+
 function CharacterTemplatesFrame_Update()
     if (IsGMClient() and HideGMOnly()) then
         return;
@@ -1966,8 +2058,8 @@ function CharacterSelect_UpdateButtonState()
     CharSelectCreateCharacterButton:SetEnabled(canCreateCharacter and servicesEnabled and not redemptionInProgress);
     StoreButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
 
-    if( CharacterSelect.CharacterBoosts ) then
-        for _, frame in pairs(CharacterSelect.CharacterBoosts) do
+	if CharacterSelect.VASPools then
+		for frame in CharacterSelect.VASPools:EnumerateActive() do
             frame:SetEnabled(not redemptionInProgress);
         end
     end
@@ -2033,22 +2125,35 @@ function KioskMode_CheckEnterWorld()
     end
 end
 
+local function GetCharacterServiceDisplayOrder()
+	local displayOrder = C_CharacterServices.GetCharacterServiceDisplayInfo();
+	table.sort(displayOrder, function(left, right)
+		return left.priority < right.priority;
+	end)
+
+	return displayOrder;
+end
+
 -- CHARACTER BOOST (SERVICES)
 function CharacterServicesMaster_UpdateServiceButton()
-    if not CharacterSelect.CharacterBoosts  then
-        CharacterSelect.CharacterBoosts = {}
-    else
-        for _, frame in pairs(CharacterSelect.CharacterBoosts) do
+	if not CharacterSelect.VASPools then
+		local vasResetter = function(framePool, frame)
             frame:Hide();
             frame.Glow:Hide();
             frame.GlowSpin:Hide();
             frame.GlowPulse:Hide();
             frame.GlowSpin.SpinAnim:Stop();
             frame.GlowPulse.PulseAnim:Stop();
-        end
-    end
+			frame:ClearAllPoints();
+			frame.layoutIndex = nil;
+		end
 
-	CharacterSelect.numActiveCharacterBoosts = 0;
+		CharacterSelect.VASPools = CreateFramePoolCollection();
+		CharacterSelect.VASPools:CreatePool("BUTTON", CharacterSelectUI.VASTokenContainer, "CharacterBoostTemplate", vasResetter);
+		CharacterSelect.VASPools:CreatePool("BUTTON", CharacterSelectUI.VASTokenContainer, "CharacterVASTemplate", vasResetter);
+	end
+
+	CharacterSelect.VASPools:ReleaseAll();
 
     UpgradePopupFrame:Hide();
     CharacterSelectUI.WarningText:Hide();
@@ -2057,6 +2162,7 @@ function CharacterServicesMaster_UpdateServiceButton()
         return;
     end
 
+	local displayOrder = GetCharacterServiceDisplayOrder();
     local upgradeInfo = C_SharedCharacterServices.GetUpgradeDistributions();
     local hasPurchasedBoost = false;
     for id, data in pairs(upgradeInfo) do
@@ -2073,48 +2179,9 @@ function CharacterServicesMaster_UpdateServiceButton()
         CharacterSelectUI.WarningText:Show();
     end
 
-	local characterServiceDisplayInfo = C_CharacterServices.GetCharacterServiceDisplayOrder();
-    for _, boostType in pairs(characterServiceDisplayInfo) do
-		DisplayBattlepayTokens(upgradeInfo[boostType], boostType);
-	end
-
-	local accountExpansion = GetAccountExpansionLevel();
-	local MINIMUM_BOOST_POPUP_SHOWN = 7;
-
-	-- We don't show the free boost popup if your region doesn't sell boxes.
-	if DoesCurrentLocaleSellExpansionLevels() then
-	local freeFrame = nil;
-	for i = 1, CharacterSelect.numActiveCharacterBoosts do
-		local boostFrame = CharacterSelect.CharacterBoosts[i];
-			local boostFrameIsBetterCandidate = false;
-
-			if boostFrame.data.expansion >= MINIMUM_BOOST_POPUP_SHOWN then
-				if not freeFrame then
-					boostFrameIsBetterCandidate = true;
-				elseif boostFrame.data.isExpansionTrial then
-					boostFrameIsBetterCandidate = not freeFrame.data.isExpansionTrial or boostFrame.data.expansion > freeFrame.data.expansion;
-				else
-					boostFrameIsBetterCandidate = not freeFrame.data.isExpansionTrial and boostFrame.data.expansion > freeFrame.data.expansion;
-				end
-			end
-
-		if boostFrameIsBetterCandidate then
-				if boostFrame.data.isExpansionTrial then
-					if isExpansionTrial and boostFrame.data.expansion <= accountExpansion and boostFrame.data.expansion > C_SharedCharacterServices.GetLastSeenExpansionTrialPopup() then
-						freeFrame = boostFrame;
-					end
-				else
-					if boostFrame.data.expansion <= accountExpansion and boostFrame.data.expansion > C_SharedCharacterServices.GetLastSeenCharacterUpgradePopup() then
-				freeFrame = boostFrame;
-			end
-		end
-	end
-		end
-
-		if freeFrame then
-		DisplayBattlepayTokenFreeFrame(freeFrame);
-	end
-	end
+	CharacterServicesMaster_UpdateVASButtons(displayOrder);
+	CharacterServicesMaster_UpdateBoostButtons(displayOrder, upgradeInfo);
+	CharacterSelectUI.VASTokenContainer:Layout();
 end
 
 function DisplayBattlepayTokens(upgradeInfo, boostType)
@@ -2212,6 +2279,133 @@ function DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo)
 		frame:Show();
 	end
 end
+
+------------------------------------------------------------------
+-- API for VAS tokens:
+------------------------------------------------------------------
+local function GetVASDistributions()
+	local distributions = C_CharacterServices.GetVASDistributions();
+	local distributionsByVASType = {};
+	for index, distribution in ipairs(distributions) do
+		distribution.tokenStatus = distribution.inReview and "review" or "normal";
+		distribution.isVAS = true;
+		distributionsByVASType[distribution.serviceType] = distribution;
+	end
+
+	local hasAtLeastOneEligible = false;
+	for i = 1, GetNumCharacters() do
+		hasAtLeastOneEligible = DoesClientThinkTheCharacterIsEligibleForPFC(GetCharIDFromIndex(i));
+		if hasAtLeastOneEligible then
+			break;
+		end
+	end
+
+	if GetNumCharacters() == 0 or not hasAtLeastOneEligible then
+		local needsNoCharactersStatus = {
+			Enum.ValueAddedServiceType.PaidCharacterTransfer,
+			Enum.ValueAddedServiceType.PaidFactionChange
+		};
+		for i, serviceType in ipairs(needsNoCharactersStatus) do
+			local distribution = distributionsByVASType[serviceType];
+			if distribution then
+				distribution.tokenStatus = "noCharacters";
+			end
+		end
+	end
+
+	return distributionsByVASType;
+end
+
+local function GetVASTokenStatus(vasTokenInfo)
+	return vasTokenInfo.tokenStatus or "normal";
+end
+
+local function GetVASTokenAlpha(vasTokenInfo)
+	return GetVASTokenStatus(vasTokenInfo) == "normal" and 1 or .7;
+end
+
+local statusToTooltipLookup = {
+	review = VAS_TOKEN_TOOLTIP_STATUS_REVIEW,
+	noCharacters = VAS_TOKEN_TOOLTIP_STATUS_NO_CHARACTERS,
+};
+
+local function GetVASTokenStatusTooltip(vasTokenInfo)
+	-- nil is fine, it means no tooltip.
+	return statusToTooltipLookup[GetVASTokenStatus(vasTokenInfo)];
+end
+
+local function IsVASTokenUsable(vasTokenInfo)
+	return GetVASTokenStatus(vasTokenInfo) == "normal";
+end
+
+local function AddVASButton(charUpgradeDisplayData, upgradeInfo, template)
+	local frame = CharacterSelect.VASPools:Acquire(template);
+	frame.layoutIndex = CharacterSelect.VASPools:GetNumActive();
+
+	frame.data = charUpgradeDisplayData;
+	frame.upgradeInfo = upgradeInfo;
+	frame.data.isExpansionTrial = upgradeInfo.isExpansionTrial;
+	frame.data.isVAS = upgradeInfo.isVAS;
+	frame.hasFreeBoost = upgradeInfo.hasFree;
+	frame.remainingTime = upgradeInfo.remainingTime;
+
+	SetPortraitToTexture(frame.Icon, charUpgradeDisplayData.icon);
+	SetPortraitToTexture(frame.Highlight.Icon, charUpgradeDisplayData.icon);
+	frame.Highlight.IconBorder:SetAtlas(charUpgradeDisplayData.iconBorderAtlas);
+
+	frame:SetAlpha(GetVASTokenAlpha(upgradeInfo));
+
+	if upgradeInfo.remainingTime then
+		frame.Timer:StartTimer(upgradeInfo.remainingTime, 1, true);
+	else
+		frame.Timer:StopTimer();
+	end
+
+	if upgradeInfo.amount > 1 then
+		frame.Ring:Show();
+		frame.NumberBackground:Show();
+		frame.Number:Show();
+		frame.Number:SetText(upgradeInfo.amount);
+	else
+		frame.Ring:Hide();
+		frame.NumberBackground:Hide();
+		frame.Number:Hide();
+	end
+
+	frame:Show();
+end
+
+function CharacterServicesMaster_UpdateBoostButtons(displayOrder, upgradeInfo)
+	for _, characterService in pairs(displayOrder) do
+		if not characterService.isVAS then
+			local boostType = characterService.serviceID;
+			local boostUpgradeInfo = upgradeInfo[boostType];
+			if boostUpgradeInfo and boostUpgradeInfo.amount > 0 then
+				local charUpgradeDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
+				AddVASButton(charUpgradeDisplayData, boostUpgradeInfo, "CharacterBoostTemplate");
+			end
+		end
+	end
+end
+
+function CharacterServicesMaster_UpdateVASButtons(displayOrder)
+	local upgradeInfo = GetVASDistributions();
+	for _, characterService in pairs(displayOrder) do
+		if characterService.isVAS then
+			local vasType = characterService.serviceID;
+			local vasInfo = upgradeInfo[vasType];
+			if vasInfo and vasInfo.amount > 0 then
+				local vasDisplay = C_CharacterServices.GetCharacterServiceDisplayDataByVASType(vasType);
+				if vasDisplay then
+					AddVASButton(vasDisplay, vasInfo, "CharacterVASTemplate");
+				end
+			end
+		end
+	end
+end
+
+
+-- TBC Info Icon
 
 function GetTBCInfoIconFrame()
 	if CharacterSelect.notificationIconFrames and #CharacterSelect.notificationIconFrames > 0 then
@@ -2481,6 +2675,12 @@ function CharacterUpgradePopup_OnCharacterBoostDelivered(boostType, guid, reason
     end
 end
 
+local function BeginFlow(flow, data)
+    CharSelectServicesFlowFrame:Show();
+	flow:SetTarget(data); -- NOTE: It seems like data can be changed in the middle of a flow, so keeping this here until that is determined.
+	CharacterServicesMaster_SetFlow(CharacterServicesMaster, flow);
+end
+
 function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, guid)
 	CharacterUpgradeFlow:SetTrialBoostGuid(nil);
 
@@ -2494,10 +2694,18 @@ function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, guid)
 	end
 
 	CharacterUpgradePopup_CheckSetPopupSeen(data);
-    CharacterUpgradeFlow:SetTarget(data);
-    CharSelectServicesFlowFrame:Show();
-	CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
-	UpdateCharacterUndeleteStatus();
+	BeginFlow(CharacterUpgradeFlow, data);
+end
+
+function CharacterUpgradePopup_BeginVASFlow(data, guid)
+	assert(data.vasType ~= nil);
+	if data.vasType == Enum.ValueAddedServiceType.PaidCharacterTransfer then
+		BeginFlow(PaidCharacterTransferFlow, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.PaidFactionChange  then
+		BeginFlow(PaidFactionChangeFlow, data);
+	else
+		error("Unsupported VAS Type Flow");
+	end
 end
 
 function CharacterUpgradePopup_OnStartClick(self)
@@ -2530,6 +2738,41 @@ function CharacterUpgradePopup_OnTryNewClick(self)
     end
 end
 
+CharacterVASMixin = {};
+
+function CharacterVASMixin:OnClick()
+	if IsVASTokenUsable(self.upgradeInfo) then
+		CharacterUpgradePopup_BeginVASFlow(self.data);
+	end
+end
+
+function CharacterVASMixin:OnEnter()
+	self.Highlight:Show();
+
+	local tooltip = GetAppropriateTooltip();
+	tooltip:SetOwner(self, "ANCHOR_LEFT");
+
+	if self.data.isExpansionTrial or self.data.isVAS then
+		GameTooltip_SetTitle(tooltip, self.data.popupInfo.title);
+		GameTooltip_AddNormalLine(tooltip, self.data.popupInfo.description);
+
+		local statusLine = GetVASTokenStatusTooltip(self.upgradeInfo);
+		if statusLine then
+			GameTooltip_AddErrorLine(tooltip, statusLine);
+		end
+	else
+		GameTooltip_SetTitle(tooltip, self.data.flowTitle);
+		GameTooltip_AddNormalLine(tooltip, BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level));
+	end
+
+    tooltip:Show();
+end
+
+function CharacterVASMixin:OnLeave()
+    self.Highlight:Hide();
+	GetAppropriateTooltip():Hide();
+end
+
 function CharacterServicesTokenBoost_OnClick(self)
 	if not C_CharacterServices.IsBoostEnabled() then
 		return;
@@ -2548,6 +2791,24 @@ function CharacterServicesTokenBoost_OnClick(self)
     else
         GlueDialog_Show("CHARACTER_BOOST_NO_CHARACTERS_WARNING", nil, self.data);
     end
+end
+
+CharacterBoostMixin = {};
+
+function CharacterBoostMixin:OnClick()
+	if self.data.isExpansionTrial then
+		if UpgradePopupFrame:IsShown() then
+			UpgradePopupFrame:Hide();
+		else
+			DisplayBattlepayTokenFreeFrame(self);
+		end
+    elseif IsVeteranTrialAccount() then
+        GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_REACTIVATE);
+    elseif IsTrialAccount() then
+        GlueDialog_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_UPGRADE);
+    else
+        CharacterUpgradePopup_BeginCharacterUpgradeFlow(self.data);
+	end
 end
 
 function CharacterServicesMaster_OnLoad(self)
@@ -2597,6 +2858,7 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 
 			if CharacterUpgradeFlow.data then
 				CharSelectServicesFlowFrame:Show();
+				CharacterUpgradeFlow:SetTarget(CharacterUpgradeFlow.data);
 				CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 			end
 
@@ -2622,10 +2884,9 @@ end
 
 function CharacterServicesMaster_SetFlow(self, flow)
     self.flow = flow;
-    if (not self.flows[flow]) then
-        setmetatable(flow, { __index = CharacterServicesFlowPrototype });
-    end
-    self.flows[flow] = true;
+	self.flows[flow] = true;
+	CharacterServicesMaster_HideFlows(self);
+
     flow:Initialize(self);
     SetPortraitToTexture(self:GetParent().Icon, flow.data.icon);
     self:GetParent().TitleText:SetText(flow.data.flowTitle);
@@ -2734,12 +2995,20 @@ function CharacterServicesMaster_Update()
         end
     end
     self.currentTime = 0;
+
+	self.flow:CheckRewind(self);
 end
 
 function CharacterServicesMaster_OnHide(self)
     for flow, _ in pairs(self.flows) do
         flow:OnHide();
     end
+end
+
+function CharacterServicesMaster_HideFlows(self)
+	for flow in pairs(self.flows) do
+		flow:HideBlocks();
+	end
 end
 
 function CharacterServicesMaster_SetBlockActiveState(block)
@@ -2769,13 +3038,13 @@ function CharacterServicesMaster_SetBlockFinishedState(block)
     block.frame.ControlsFrame:Hide();
 end
 
-function CharacterServicesMasterBackButton_OnClick(self)
+function CharacterServicesMasterBackButton_OnClick()
     PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
     local master = CharacterServicesMaster;
     master.flow:Rewind(master);
 end
 
-function CharacterServicesMasterNextButton_OnClick(self)
+function CharacterServicesMasterNextButton_OnClick()
     PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
     local master = CharacterServicesMaster;
     if ( master.currentBlock.Popup and
@@ -2806,6 +3075,11 @@ function CharacterServicesMaster_Advance()
 end
 
 function CharacterServicesMasterFinishButton_OnClick(self)
+	if CharacterServicesMaster.flow:ShouldFinishBehaveLikeNext() then
+		CharacterServicesMasterNextButton_OnClick();
+		return;
+	end
+
     -- wait a bit after button is shown so no one accidentally upgrades the wrong character
     if ( GetTime() - CharacterServicesMaster.FinishTime < 0.5 ) then
         return;
@@ -2819,28 +3093,6 @@ function CharacterServicesMasterFinishButton_OnClick(self)
     else
         PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
     end
-end
-
-function CharacterServicesTokenBoost_OnEnter(self)
-    self.Highlight:Show();
-    GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
-	if self.data.isExpansionTrial then
-		GlueTooltip:AddLine(self.data.popupInfo.title, 1.0, 1.0, 1.0);
-		GlueTooltip:AddLine(self.data.popupInfo.description, nil, nil, nil, true);
-	else
-		if not C_CharacterServices.IsBoostEnabled() then
-			GlueTooltip:SetText(BOOST_REALM_RESTRICTED);
-		else
-			GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_TITLE:format(self.data.level), 1.0, 1.0, 1.0);
-			GlueTooltip:AddLine(BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level), nil, nil, nil, true);
-		end
-	end
-    GlueTooltip:Show();
-end
-
-function CharacterServicesTokenBoost_OnLeave(self)
-    self.Highlight:Hide();
-    GlueTooltip:Hide();
 end
 
 function CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick(self)
@@ -3327,6 +3579,63 @@ function CharacterSelect_ShowBoostUnlockDialog(guid)
     end
 
     return false;
+end
+
+CharacterSelectMailIndicationButtonMixin = {};
+
+function CharacterSelectMailIndicationButtonMixin:OnEnter()
+	if #self.mailSenders >= 1 then
+		GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
+		FormatUnreadMailTooltip(GlueTooltip, HAVE_MAIL_FROM, self.mailSenders);
+		GlueTooltip:Show();
+	end
+end
+
+function CharacterSelectMailIndicationButtonMixin:OnLeave()
+	GlueTooltip:Hide();
+end
+
+function CharacterSelectMailIndicationButtonMixin:SetMailSenders(mailSenders)
+	self.mailSenders = mailSenders;
+end
+
+CharSelectServicesFlowFrameMixin = {};
+
+function CharSelectServicesFlowFrameMixin:SetErrorMessage(msg)
+	self.ErrorMessageContainer.Text:SetText(msg);
+	self.ErrorMessageContainer.Text:SetJustifyH("LEFT");
+	self.ErrorMessageContainer.fullText = msg;
+
+	local isTruncated = self.ErrorMessageContainer.Text:IsTruncated();
+	self.ErrorMessageContainer.isTruncated = isTruncated;
+	if isTruncated then
+		-- HACK, avoid global string hotfix:
+		local errorLink = string.gsub('[' .. BLIZZARD_STORE_VAS_ERROR_LABEL .. ']', ':', '');
+		self.ErrorMessageContainer.Text:SetText(errorLink);
+		self.ErrorMessageContainer.Text:SetJustifyH("CENTER");
+	end
+end
+
+function CharSelectServicesFlowFrameMixin:ClearErrorMessage()
+	self.ErrorMessageContainer.Text:SetText("");
+	self.ErrorMessageContainer.fullText = nil;
+	self.ErrorMessageContainer.isTruncated = nil;
+end
+
+FlowErrorContainerMixin = {};
+
+function FlowErrorContainerMixin:OnEnter()
+	if self.isTruncated then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_LEFT");
+		GameTooltip_SetTitle(tooltip, BLIZZARD_STORE_VAS_ERROR_LABEL);
+		GameTooltip_AddErrorLine(tooltip, self.fullText);
+		tooltip:Show();
+	end
+end
+
+function FlowErrorContainerMixin:OnLeave()
+	GetAppropriateTooltip():Hide();
 end
 
 function CharSelectEnterWorldButton_OnEnter(button)

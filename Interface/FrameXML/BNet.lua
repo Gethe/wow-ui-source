@@ -6,26 +6,9 @@ local BN_TOAST_TYPE_NEW_INVITE = 5;
 local BN_TOAST_TYPE_CLUB_INVITATION = 6;
 
 BNET_CLIENT_WOW = "WoW";
-BNET_CLIENT_SC2 = "S2";
-BNET_CLIENT_D3 = "D3";
-BNET_CLIENT_WTCG = "WTCG";
 BNET_CLIENT_APP = "App";
 BNET_CLIENT_HEROES = "Hero";
-BNET_CLIENT_OVERWATCH = "Pro";
 BNET_CLIENT_CLNT = "CLNT";
-BNET_CLIENT_SC = "S1";
-BNET_CLIENT_DESTINY2 = "DST2";
-BNET_CLIENT_COD = "VIPR";
-BNET_CLIENT_COD_MW = "ODIN";
-BNET_CLIENT_COD_MW2 = "LAZR";
-BNET_CLIENT_COD_BOCW = "ZEUS";
-BNET_CLIENT_WC3 = "W3";
-BNET_CLIENT_ARCADE = "RTRO";
-BNET_CLIENT_CRASH4 = "WLBY";
-BNET_CLIENT_D2 = "OSI";
-BNET_CLIENT_COD_VANGUARD = "FORE";
-BNET_CLIENT_DI = "ANBS";
-BNET_CLIENT_ARCLIGHT = "GRY";
 
 --Name can be a realID or plain battletag with no 4 digit number (e.g. Murky McGrill or LichKing).
 function BNet_GetBNetIDAccount(name)
@@ -238,7 +221,7 @@ function BNToastMixin:ShowToast()
 
 		if (battleTag) then
 			characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
-			characterName = BNet_GetClientEmbeddedTexture(client, 14, 14, 0, -1)..characterName;
+			characterName = BNet_GetClientEmbeddedAtlas(client, 14, 14, 0, -1)..characterName;
 			middleLine:SetFormattedText(characterName);
 			middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
 			middleLine:Show();
@@ -357,101 +340,6 @@ function BNetTimeAlertMixin:OnUpdate(elapsed)
 	-- As long as this frame is shown, continue to update
 	self.Text:SetFormattedText(TIME_PLAYED_ALERT, SecondsToTime(GetSessionTime(), true, true));
 	self:SetHeight(self.Text:GetStringHeight() + 20);
-end
-
-function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
-	width = width or 0;
-	height = height or width;
-	xOffset = xOffset or 0;
-	yOffset = yOffset or 0;
-
-	local textureString;
-	if ( client == BNET_CLIENT_WOW ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-WOW";
-	elseif ( client == BNET_CLIENT_SC2 ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-SC2";
-	elseif ( client == BNET_CLIENT_D3 ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-D3";
-	elseif ( client == BNET_CLIENT_WTCG ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-WTCG";
-	elseif ( client == BNET_CLIENT_HEROES ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-HotS";
-	elseif ( client == BNET_CLIENT_OVERWATCH ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Overwatch";
-	elseif ( client == BNET_CLIENT_SC ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-SC";
-	elseif ( client == BNET_CLIENT_DESTINY2 ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Destiny2";
-	elseif ( client == BNET_CLIENT_COD ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyBlackOps4";
-	elseif ( client == BNET_CLIENT_COD_MW ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyMWicon";
-	elseif ( client == BNET_CLIENT_COD_MW2 ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyMW2icon";
-	elseif ( client == BNET_CLIENT_COD_BOCW ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyBlackOpsColdWaricon";
-	elseif ( client == BNET_CLIENT_WC3 ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Warcraft3Reforged";
-    elseif ( client == BNET_CLIENT_ARCADE ) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-BlizzardArcadeCollection";
- 	elseif ( client == BNET_CLIENT_CRASH4 ) then
- 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CrashBandicoot4";
- 	elseif ( client == BNET_CLIENT_D2 ) then
- 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-DiabloIIResurrected";
- 	elseif ( client == BNET_CLIENT_COD_VANGUARD ) then
- 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-CallOfDutyVanguard";
-	elseif ( client == BNET_CLIENT_DI) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-DiabloImmortal";
-	elseif ( client == BNET_CLIENT_ARCLIGHT) then
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-WarcraftArclightRumble";
-	else
-		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Battlenet";
-	end
-	return string.format("|T%s:%d:%d:%d:%d|t", textureString, width, height, xOffset, yOffset);
-end
-
-function BNet_GetClientTexture(client)
-	if ( client == BNET_CLIENT_WOW ) then
-		return "Interface\\FriendsFrame\\Battlenet-WoWicon";
-	elseif ( client == BNET_CLIENT_SC2 ) then
-		return "Interface\\FriendsFrame\\Battlenet-Sc2icon";
-	elseif ( client == BNET_CLIENT_D3 ) then
-		return "Interface\\FriendsFrame\\Battlenet-D3icon";
-	elseif ( client == BNET_CLIENT_WTCG ) then
-		return "Interface\\FriendsFrame\\Battlenet-WTCGicon";
-	elseif ( client == BNET_CLIENT_HEROES ) then
-		return "Interface\\FriendsFrame\\Battlenet-HotSicon";
-	elseif ( client == BNET_CLIENT_OVERWATCH ) then
-		return "Interface\\FriendsFrame\\Battlenet-Overwatchicon";
-	elseif ( client == BNET_CLIENT_SC ) then
-		return "Interface\\FriendsFrame\\Battlenet-SCicon";
-	elseif ( client == BNET_CLIENT_DESTINY2 ) then
-		return "Interface\\FriendsFrame\\Battlenet-Destiny2icon";
-	elseif ( client == BNET_CLIENT_COD ) then
-		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyBlackOps4icon";
-	elseif ( client == BNET_CLIENT_COD_MW ) then
-		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyMWicon";
-	elseif ( client == BNET_CLIENT_COD_MW2 ) then
-		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyMW2icon";
-	elseif ( client == BNET_CLIENT_COD_BOCW ) then
-		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyBlackOpsColdWaricon";
-	elseif ( client == BNET_CLIENT_WC3 ) then
-		return "Interface\\FriendsFrame\\Battlenet-Warcraft3Reforged";
-    elseif ( client == BNET_CLIENT_ARCADE ) then
- 		return "Interface\\FriendsFrame\\Battlenet-BlizzardArcadeCollectionicon";
- 	elseif ( client == BNET_CLIENT_CRASH4 ) then
- 		return "Interface\\FriendsFrame\\Battlenet-CrashBandicoot4icon";
- 	elseif ( client == BNET_CLIENT_D2 ) then
- 		return "Interface\\FriendsFrame\\Battlenet-DiabloIIResurrectedicon";
- 	elseif ( client == BNET_CLIENT_COD_VANGUARD ) then
- 		return "Interface\\FriendsFrame\\Battlenet-CallOfDutyVanguardicon";
-	elseif ( client == BNET_CLIENT_DI) then
-		return "Interface\\FriendsFrame\\Battlenet-DiabloImmortalicon";
-	elseif ( client == BNET_CLIENT_ARCLIGHT) then
-		return "Interface\\FriendsFrame\\Battlenet-WarcraftArclightRumbleicon";
-	else
-		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
-	end
 end
 
 -- if we don't have a character name or it's for a game that doesn't have toons like Heroes, use the battletag

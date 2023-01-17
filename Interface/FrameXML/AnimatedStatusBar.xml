@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="AnimatedStatusBar.lua"/>
 
 	<Frame name="AnimatedStatusBarGlowLinesTemplate" virtual="true">
@@ -65,8 +65,8 @@
 				<Translation childKey="SparkBurstMove" order="1" offsetY="0">
 					<KeyValues>
 						<KeyValue key="durationPerDistance" value="0.008" type="number"/>
-						<KeyValue key="adjustOffsetX" value="true" type="bool"/>
-						<KeyValue key="adjustAnchors" value="true" type="bool"/>
+						<KeyValue key="adjustOffsetX" value="true" type="boolean"/>
+						<KeyValue key="adjustAnchors" value="true" type="boolean"/>
 					</KeyValues>
 				</Translation>
 				<Scale childKey="SparkBurstMove" duration="0.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2">
@@ -77,15 +77,13 @@
 				<Alpha childKey="SparkBurstMove" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
 				
 				<Scale childKey="BarGain" duration="0.4" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 					<KeyValues>
-						<KeyValue key="setStatusBarOnUpdate" value="true" type="bool"/>
+						<KeyValue key="setStatusBarOnUpdate" value="true" type="boolean"/>
 						<KeyValue key="durationPerDistance" value="0.008" type="number"/>
 						<KeyValue key="scaleFactor" value=".02" type="number"/>
-						<KeyValue key="adjustAnchors" value="true" type="bool"/>
-						<KeyValue key="adjustScaleTo" value="true" type="bool"/>
+						<KeyValue key="adjustAnchors" value="true" type="boolean"/>
+						<KeyValue key="adjustScaleTo" value="true" type="boolean"/>
 					</KeyValues>
 				</Scale>
 				<Alpha childKey="BarGain" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
@@ -95,40 +93,34 @@
 				<Translation childKey="BarTrailGlow" order="1" offsetY="0">
 					<KeyValues>
 						<KeyValue key="durationPerDistance" value="0.008" type="number"/>
-						<KeyValue key="adjustOffsetX" value="true" type="bool"/>
-						<KeyValue key="adjustAnchors" value="true" type="bool"/>
+						<KeyValue key="adjustOffsetX" value="true" type="boolean"/>
+						<KeyValue key="adjustAnchors" value="true" type="boolean"/>
 					</KeyValues>
 				</Translation>
 				<Scale childKey="BarTrailGlow" order="1" fromScaleX="0.001" fromScaleY="1">
-					<Origin point="RIGHT">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="RIGHT"/>
 					<KeyValues>
 						<KeyValue key="durationPerDistance" value="0.008" type="number"/>
 						<KeyValue key="scaleFactor" value=".02" type="number"/>
-						<KeyValue key="adjustScaleTo" value="true" type="bool"/>
+						<KeyValue key="adjustScaleTo" value="true" type="boolean"/>
 					</KeyValues>
 				</Scale>
 				<Alpha childKey="BarTrailGlow" duration="0.5" order="2" fromAlpha="1" toAlpha="0" />
 				
 				<Scale childKey="BarGlow" order="1" fromScaleX="0.001" fromScaleY="1">
-					<Origin point="LEFT">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="LEFT"/>
 					<KeyValues>
 						<KeyValue key="durationPerDistance" value="0.008" type="number"/>
 						<KeyValue key="scaleFactor" value=".02" type="number"/>
-						<KeyValue key="adjustScaleTo" value="true" type="bool"/>
+						<KeyValue key="adjustScaleTo" value="true" type="boolean"/>
 					</KeyValues>
 				</Scale>
 				<Alpha childKey="BarGlow" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BarGlow" duration="0.4" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2">
-					<Origin point="BOTTOM">
-						<Offset x="0" y="0"/>
-					</Origin>
+					<Origin point="BOTTOM"/>
 					<KeyValues>
 						<KeyValue key="delayPerDistance" value="0.008" type="number"/>
-						<KeyValue key="adjustAnchors" value="true" type="bool"/>
+						<KeyValue key="adjustAnchors" value="true" type="boolean"/>
 					</KeyValues>
 				</Scale>
 				<Alpha childKey="BarGlow" duration="0.4" order="1" fromAlpha="1" toAlpha="0">

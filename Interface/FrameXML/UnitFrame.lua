@@ -313,7 +313,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 				if ( playerDeadOrGhost ) then
 					manaBar:SetStatusBarColor(0.6, 0.6, 0.6, 0.5);
 				else
-					manaBar:SetStatusBarColor(info.r, info.g, info.b);
+					manaBar:SetStatusBarColor(info.r, info.g, info.b, 1);
 				end
 			end
 

@@ -63,6 +63,20 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetRedirectedMapDifficultyID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "redirectedMapDifficultyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRoles",
 			Type = "Function",
 
@@ -308,6 +322,9 @@ local LFGListInfo =
 				{ Name = "displayType", Type = "LFGListDisplayType", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "iconFileDataID", Type = "number", Nilable = false },
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+				{ Name = "redirectedDifficultyID", Type = "number", Nilable = false },
 				{ Name = "useDungeonRoleExpectations", Type = "bool", Nilable = false },
 			},
 		},
@@ -355,6 +372,23 @@ local LFGListInfo =
 				{ Name = "isWarMode", Type = "bool", Nilable = false },
 				{ Name = "age", Type = "number", Nilable = false },
 				{ Name = "newPlayerFriendly", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "WowLocale",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "enUS", Type = "bool", Nilable = false, Default = false },
+				{ Name = "koKR", Type = "bool", Nilable = false, Default = false },
+				{ Name = "frFR", Type = "bool", Nilable = false, Default = false },
+				{ Name = "deDE", Type = "bool", Nilable = false, Default = false },
+				{ Name = "zhCN", Type = "bool", Nilable = false, Default = false },
+				{ Name = "zhTW", Type = "bool", Nilable = false, Default = false },
+				{ Name = "esES", Type = "bool", Nilable = false, Default = false },
+				{ Name = "esMX", Type = "bool", Nilable = false, Default = false },
+				{ Name = "ruRU", Type = "bool", Nilable = false, Default = false },
+				{ Name = "ptBR", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 	},

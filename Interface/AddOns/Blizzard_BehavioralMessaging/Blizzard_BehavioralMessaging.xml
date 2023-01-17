@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
 	<Script file="Blizzard_BehavioralMessaging.lua"/>
 
 	<Frame name="BehaviorMessagingBackgroundTemplate" inherits="TooltipBackdropTemplate" setAllPoints="true" virtual="true"/>
@@ -44,7 +44,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="1">>
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="TopInset" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
 					<Size y="36"/>
 					<Anchors>

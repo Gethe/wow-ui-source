@@ -808,6 +808,9 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		end
 		if ( value.text ) then
 			text = value.text;
+			if type(text) == "function" then
+				text = text();
+			end
 		else
 			text = _G[value.type];
 		end
@@ -1045,7 +1048,8 @@ function ChatConfig_UpdateCheckboxes(frame)
 				if ( value.isBlank ) then
 					colorSwatch:Hide();
 				else
-					_G[baseName.."ColorSwatchNormalTexture"]:SetVertexColor(GetMessageTypeColor(value.type));
+					r, g, b, _ = GetMessageTypeColor(value.type);
+					_G[baseName.."ColorSwatchNormalTexture"]:SetVertexColor(r, g, b);
 					colorSwatch.type = value.type;
 					colorSwatch:Show();
 				end
@@ -1670,6 +1674,28 @@ function CreateChatTextToSpeechChannelList(self, ...)
 		end
 end
 
+function CreateAvailableChatChannelList(self, ...)
+	local channelName;
+	local count = 1;
+	CHAT_CONFIG_AVAILABLE_CHANNEL_LIST = {};
+	for i=1, select("#", ...), 1 do
+		channelName = select(i, ...);
+		-- If not in the channel, add it to the list.
+		if (GetChannelName(channelName) == 0) then
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count] = {};
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].text = channelName;
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].channelName = channelName;
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].type = "CHANNEL_"..channelName;
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].buttonText = CHAT_JOIN;
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].buttonFunc = function (self)
+					SlashCmdList["JOIN"](CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[self:GetParent():GetID()].channelName); 
+				end;
+			count = count+1;
+		end
+	end
+end
+
 COMBAT_CONFIG_TABS = {
 	[1] = { text = MESSAGE_SOURCES, frame = "CombatConfigMessageSources" },
 	[2] = { text = MESSAGE_TYPES, frame = "CombatConfigMessageTypes" },
@@ -1797,6 +1823,10 @@ function ChatConfig_UpdateChatSettings()
 end
 
 function UsesGUID(direction)
+	if not CHATCONFIG_SELECTED_FILTER then
+		return false;
+	end
+
 	if ( direction == "SOURCE" and CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags ) then
 		for k,v in pairs( CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags ) do
 			if ( type(k) == "string" ) then
@@ -2044,7 +2074,6 @@ function ChatConfigCategoryFrame_Refresh(preserveCategorySelection)
 			ChatConfigCategory_OnClick(ChatConfigCategoryFrameButton1);
 		end
 	end
-
 	ChatConfigCategoryFrameButton1:SetShown(not isTextToSpeech);
 	ChatConfigCategoryFrameButton3:SetShown(not isTextToSpeech);
 	ChatConfigCategoryFrameButton4:SetShown(not isTextToSpeech);
@@ -2068,6 +2097,7 @@ function ChatConfigCategoryFrame_Refresh(preserveCategorySelection)
 	end
 
 	ChatConfigFrameHeaderText:SetText(format(CHATCONFIG_HEADER, currentChatFrame.name));
+	ChatConfigFrameHeaderText:SetText(format(CHATCONFIG_HEADER, FCF_GetCurrentChatFrame().name));
 	ChatConfigFrameHeader:SetWidth(ChatConfigFrameHeaderText:GetWidth()+200);
 end
 
@@ -2098,6 +2128,7 @@ function ChatConfigChannelSettings_OnShow()
 	ChatConfig_CreateCheckboxes(ChatConfigChannelSettingsLeft, CHAT_CONFIG_CHANNEL_LIST, template, descriptionText);
 	ChatConfig_UpdateCheckboxes(ChatConfigChannelSettingsLeft);
 
+	CreateAvailableChatChannelList(ChatConfigChannelSettings, EnumerateServerChannels());
 	ChatConfig_CreateBoxes(ChatConfigChannelSettingsAvailable, CHAT_CONFIG_AVAILABLE_CHANNEL_LIST, "ChatConfigTextBoxTemplateWithButton", AVAILABLE_CHANNELS);
 
 	UpdateDefaultButtons(false);
@@ -2137,15 +2168,15 @@ function ChatConfigTextToSpeechSettings_OnShow()
 	UpdateDefaultButtons(false, true);
 end
 
+function ChatConfigTextToSpeechChannelSettings_OnShow()
+	ChatConfigTextToSpeechChannelSettings_UpdateCheckboxes();
+	UpdateDefaultButtons(false, true);
+end
+
 function ChatConfigTextToSpeechChannelSettings_UpdateCheckboxes()
 	CreateChatTextToSpeechChannelList(ChatConfigTextToSpeechChannelSettings, GetChannelList());
 	ChatConfig_CreateCheckboxes(ChatConfigTextToSpeechChannelSettingsLeft, CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST, "ChatConfigCheckBoxSmallTemplate", CHANNELS);
 	ChatConfig_UpdateCheckboxes(ChatConfigTextToSpeechChannelSettingsLeft);
-end
-
-function ChatConfigTextToSpeechChannelSettings_OnShow()
-	ChatConfigTextToSpeechChannelSettings_UpdateCheckboxes();
-	UpdateDefaultButtons(false, true);
 end
 
 function ChatConfigFrameDefaultButton_OnClick()
@@ -2213,16 +2244,13 @@ function ChatWindowTabMixin:OnClick()
 end
 
 function ChatWindowTabMixin:SetChatWindowIndex(chatWindowIndex)
-
 	self:SetID(chatWindowIndex);
 	if chatWindowIndex ~= VOICE_WINDOW_ID then
-	local chatTab = _G["ChatFrame"..chatWindowIndex.."Tab"];
-	self.Text:SetText(chatTab.Text:GetText());
+		local chatTab = _G["ChatFrame"..chatWindowIndex.."Tab"];
+		self.Text:SetText(chatTab.Text:GetText());
 	else
 		self.Text:SetText(TEXT_TO_SPEECH);
 	end
-
-	
 end
 
 function ChatWindowTabMixin:UpdateWidth()
@@ -2240,10 +2268,6 @@ function ChatConfigFrameTabManagerMixin:OnLoad()
 end
 
 function ChatConfigFrameTabManagerMixin:OnShow()
-	self:UpdateTabDisplay();
-end
-
-function ChatConfigFrameTabManagerMixin:UpdateTabDisplay()
 	self.tabPool:ReleaseAll();
 	
 	local lastTab = nil;
@@ -2460,8 +2484,8 @@ TextToSpeechCharacterSpecificButtonMixin = {};
 
 function TextToSpeechCharacterSpecificButtonMixin:OnLoad()
 	local descriptionText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(CHARACTER_SPECIFIC_SETTINGS);
-	self.text:SetText(descriptionText);
-	self.text:SetFontObject(GameFontNormal);
+	self.Text:SetText(descriptionText);
+	self.Text:SetFontObject(GameFontNormal);
 end
 
 function TextToSpeechCharacterSpecificButtonMixin:OnShow()

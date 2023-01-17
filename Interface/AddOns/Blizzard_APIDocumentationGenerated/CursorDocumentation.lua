@@ -75,6 +75,20 @@ local Cursor =
 				{ Name = "ConduitCollectionItem", Type = "UICursorType", EnumValue = 20 },
 			},
 		},
+		{
+			Name = "WorldCursorAnchorType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "WorldCursorAnchorType", EnumValue = 0 },
+				{ Name = "Default", Type = "WorldCursorAnchorType", EnumValue = 1 },
+				{ Name = "Cursor", Type = "WorldCursorAnchorType", EnumValue = 2 },
+				{ Name = "Nameplate", Type = "WorldCursorAnchorType", EnumValue = 3 },
+			},
+		},
 	},
 };
 

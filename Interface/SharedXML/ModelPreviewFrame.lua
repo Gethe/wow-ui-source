@@ -1,7 +1,7 @@
 function ModelPreviewFrame_OnLoad(self)
 	ButtonFrameTemplate_HidePortrait(self);
 	ButtonFrameTemplate_HideAttic(self);
-	self.TitleText:SetText(PREVIEW);
+	self:SetTitle(PREVIEW);
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 end
 
@@ -104,7 +104,23 @@ function ModelPreviewFrame_ShowModelInternal(displayID, modelSceneID, allowZoom,
 		local sheatheWeapons = true;
 		local autoDress = true;
 		local hideWeapons = true;
-		SetupPlayerForModelScene(display.ModelScene, itemModifiedAppearanceIDs, sheathWeapons, autoDress, hideWeapons);
+		local useNativeForm = true;
+		local playerRaceName;
+		if IsOnGlueScreen() then
+			local _, _, raceFilename = GetCharacterInfo(GetCharacterSelection());
+			playerRaceName = raceFilename and raceFilename:lower();
+		else
+			local _, raceFilename = UnitRace("player");
+			playerRaceName = raceFilename:lower();
+		end
+
+		local overrideActorName;
+		if playerRaceName == "dracthyr" then
+			overrideActorName = "dracthyr-alt";
+			useNativeForm = false;
+		end
+
+		SetupPlayerForModelScene(display.ModelScene, overrideActorName, itemModifiedAppearanceIDs, sheathWeapons, autoDress, hideWeapons, useNativeForm);
 	end
 	ModelPreviewFrame:Show();
 end
@@ -120,7 +136,7 @@ end
 function ModelPreviewFrame_SetCarouselIndex(self, index, allowZoom, forceUpdate)
 	self.carouselIndex = index;
 	self.Display.CarouselText:SetText(MODEL_PREVIEW_FRAME_CAROUSEL_TEXT_FORMAT:format(self.carouselIndex, #self.carouselEntries));
-	
+
 	local displayInfoEntry = self.carouselEntries[self.carouselIndex];
 	ModelPreviewFrame_ShowModelInternal(displayInfoEntry.creatureDisplayInfoID, displayInfoEntry.modelSceneID, allowZoom, forceUpdate, displayInfoEntry.itemModifiedAppearanceIDs);
 	self.Display.Name:SetText(displayInfoEntry.title);
@@ -139,7 +155,7 @@ function ModelPreviewFrame_MoveCarousel(self, backward)
 			newCarouselIndex = 1;
 		end
 	end
-	
+
 	local display = self.Display;
 	ModelPreviewFrame_SetCarouselIndex(self, newCarouselIndex, display.allowZoom, true);
 end

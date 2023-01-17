@@ -579,7 +579,7 @@ function ToggleGuildFrame()
 		elseif ( C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None ) then
 			return;
 	end
-		
+
 		ToggleCommunitiesFrame();
 	elseif ( IsInGuild() ) then
 		GuildFrame_LoadUI();
@@ -775,7 +775,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PARTY_INVITE_REQUEST" ) then
 		FlashClientIcon();
-		
+
 		local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid = ...;
 		local text = isXRealm and INVITATION_XREALM or INVITATION;
 		text = string.format(text, name);
@@ -894,7 +894,7 @@ function UIParent_OnEvent(self, event, ...)
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 			StaticPopup_Show("DEATH");
 		end
-		
+
 		local alreadyShowingSummonPopup = StaticPopup_Visible("CONFIRM_SUMMON_STARTING_AREA") or StaticPopup_Visible("CONFIRM_SUMMON_SCENARIO") or StaticPopup_Visible("CONFIRM_SUMMON")
 		if ( not alreadyShowingSummonPopup and C_SummonInfo.GetSummonConfirmTimeLeft() > 0 ) then
 			local summonReason = C_SummonInfo.GetSummonReason();
@@ -1508,7 +1508,7 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(GarrisonRecruiterFrame);
 	elseif ( event == "GARRISON_TALENT_NPC_OPENED") then
 		OrderHall_LoadUI();
-		OrderHallTalentFrame:SetGarrisonType(...); 
+		OrderHallTalentFrame:SetGarrisonType(...);
 		ToggleOrderHallTalentUI();
 	elseif ( event == "BEHAVIORAL_NOTIFICATION") then
 		self:UnregisterEvent("BEHAVIORAL_NOTIFICATION");
@@ -1587,16 +1587,16 @@ function UIParent_OnEvent(self, event, ...)
 		AzeriteRespecFrame_LoadUI();
 		ShowUIPanel(AzeriteRespecFrame);
 	elseif (event == "ISLANDS_QUEUE_OPEN") then
-		IslandsQueue_LoadUI(); 
-		ShowUIPanel(IslandsQueueFrame); 
+		IslandsQueue_LoadUI();
+		ShowUIPanel(IslandsQueueFrame);
 	-- Events for Reporting system
 	elseif (event == "REPORT_PLAYER_RESULT") then
 		local success = ...;
 		if (success) then
-			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMITTED_SUCCESSFULLY);
+			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMITTED_SUCCESSFULLY);
 			DEFAULT_CHAT_FRAME:AddMessage(COMPLAINT_ADDED);
 		else
-			UIErrorsFrame:AddExternalErrorMessage(GERR_REPORT_SUBMISSION_FAILED);
+			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
 		end
 	end
@@ -2239,7 +2239,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	else
 		centerOffset = leftOffset;
 		UIParent:SetAttribute("CENTER_OFFSET", centerOffset);
-		
+
 		frame = self:GetUIPanel("doublewide");
 		if ( frame ) then
 			local xOff = GetUIPanelAttribute(frame,"xoffset") or 0;
@@ -2814,7 +2814,7 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 	end
 
 	found = securecall("CloseSpecialWindows") or found;
-	
+
 	UpdateUIPanelPositions();
 
 	return found;
@@ -3416,7 +3416,7 @@ function GetMaterialTextColors(material)
 		textColor = MATERIAL_TEXT_COLOR_TABLE["Default"];
 		titleColor = MATERIAL_TITLETEXT_COLOR_TABLE["Default"];
 	end
-	return textColor, titleColor;
+	return {textColor:GetRGB()}, {titleColor:GetRGB()};
 end
 
 function OrderHallMissionFrame_EscapePressed()
@@ -4533,7 +4533,7 @@ function ShakeFrame(frame, shake, maximumDuration, frequency)
 	if ( frame.shakeTicker and not frame.shakeTicker:IsCancelled() )  then
 		return;
 	end
-	local point, relativeFrame, relativePoint, x, y = frame:GetPoint();
+	local point, relativeFrame, relativePoint, x, y = frame:GetPoint(1);
 	local shakeIndex = 1;
 	local endTime = GetTime() + maximumDuration;
 	frame.shakeTicker = C_Timer.NewTicker(frequency, function()
@@ -4632,7 +4632,7 @@ function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 	if ( IsGuildMember(guid) ) then
 		return name, RGBTableToColorCode(ChatTypeInfo.GUILD), "guild", playerLink;
 	end
-	
+
 	if ( clubId ) then
 		return name, FRIENDS_WOW_NAME_COLOR_CODE, "club", playerLink;
 	end

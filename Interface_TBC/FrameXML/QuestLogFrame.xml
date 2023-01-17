@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\Interface\FrameXML\UI.xsd">
 	<Script file="QuestLogFrame.lua"/>
 	<Button name="QuestLogTitleButtonTemplate" virtual="true">
 		<Size>
@@ -59,10 +59,7 @@
 				QuestLogTitleButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				if (self:GetID() ~= (QuestLogFrame.selectedButtonID - FauxScrollFrame_GetOffset(QuestLogListScrollFrame))) then
-					getglobal(self:GetName().."Tag"):SetTextColor(self.r, self.g, self.b);
-				end
-				GameTooltip:Hide();
+				QuestLogTitleButton_OnLeave(self);
 			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
@@ -99,7 +96,7 @@
 						<AbsDimension x="20" y="0"/>
 					</Offset>
 				</Anchor>
-			</Anchors> 
+			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
@@ -152,7 +149,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</Texture>		
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\QuestFrame\UI-QuestLog-TopLeft">
@@ -162,7 +159,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
-				</Texture>		
+				</Texture>
 				<Texture file="Interface\QuestFrame\UI-QuestLog-TopRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>

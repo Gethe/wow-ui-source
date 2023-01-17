@@ -22,6 +22,15 @@ local WorldStateInfo =
 			},
 		},
 		{
+			Name = "StopTimerOfType",
+			Type = "Event",
+			LiteralName = "STOP_TIMER_OF_TYPE",
+			Payload =
+			{
+				{ Name = "timerType", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "WorldStateTimerStart",
 			Type = "Event",
 			LiteralName = "WORLD_STATE_TIMER_START",

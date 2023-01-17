@@ -1,0 +1,5 @@
+## Title: Blizzard_SharedWidgetFrames
+## LoadOnDemand: 0
+## RequiredDep: Blizzard_UIWidgets
+
+Blizzard_UIWidgetCenterDisplayFrame.xml

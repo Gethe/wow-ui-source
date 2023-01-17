@@ -1239,7 +1239,7 @@ function FriendsFrame_UpdateFriendButton(button)
 				end
 			end
 			
-			button.gameIcon:SetTexture(BNet_GetClientTexture(client));
+			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(client));
 
 			local fadeIcon = (client == BNET_CLIENT_WOW) and (wowProjectID ~= WOW_PROJECT_ID);
 			if fadeIcon then
@@ -1628,7 +1628,7 @@ function FriendsFrameTooltip_Show(self)
 				end
 				characterNameString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Name"];
 				gameAccountInfoString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Info"];
-				text = BNet_GetClientEmbeddedTexture(client, 18).." ";
+				text = BNet_GetClientEmbeddedAtlas(client, 18).." ";
 				if ( client == BNET_CLIENT_WOW and wowProjectID == WOW_PROJECT_ID ) then
 					if ( realmName == playerRealmName and faction == playerFactionGroup ) then
 						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName, level, race, class);
@@ -2254,7 +2254,7 @@ function TravelPassDropDown_Initialize(self)
 			end
 		else
 			restriction = INVITE_RESTRICTION_CLIENT;
-			info.text = BNet_GetClientEmbeddedTexture(client, 18)..characterName;
+			info.text = BNet_GetClientEmbeddedAtlas(client, 18)..characterName;
 		end
 		if ( restriction == INVITE_RESTRICTION_NONE ) then
 			info.arg1 = bnetIDGameAccount;

@@ -88,6 +88,17 @@ local AuctionHouse =
 
 	Tables =
 	{
+		{
+			Name = "ItemKey",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "itemLevel", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "itemSuffix", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "battlePetSpeciesID", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
 	},
 };
 

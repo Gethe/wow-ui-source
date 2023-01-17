@@ -55,7 +55,7 @@
 				if ( event == "BAG_UPDATE_DELAYED" ) then
 				PaperDollItemSlotButton_Update(self);
 				elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-				if ( IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
+				if ( C_Container.IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
 				self.searchOverlay:Show();
 				else
 				self.searchOverlay:Hide();

@@ -16,7 +16,7 @@ end
 function BankFrameItemButton_OnLoad (self) 
 	BankFrameBaseButton_OnLoad (self);
 	self.SplitStack = function(button, split)
-		SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
+		C_Container.SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 	end
 end
 
@@ -28,7 +28,7 @@ end
 
 function BankFrameBagButton_OnEvent (self, event, ...)
 	if ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		if ( IsContainerFiltered(self:GetID()+NUM_BAG_SLOTS) ) then
+		if ( C_Container.IsContainerFiltered(self:GetID()+NUM_BAG_SLOTS) ) then
 			self.searchOverlay:Show();
 		else
 			self.searchOverlay:Hide();
@@ -49,7 +49,7 @@ function BankFrameItemButton_OnEnter (self)
 	if (self.isBag) then
 		if (not IsInventoryItemProfessionBag("player", self:GetInventorySlot())) then
 			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-				if ( GetBankBagSlotFlag(self:GetID(), i) ) then
+				if C_Container.GetBagSlotFlag(self:GetID() + NUM_BAG_SLOTS, i) then -- [NB] TODO: Bank bags should use actual bank bag ids rather than translating in place or using a different API.
 					GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
 					break;
 				end
@@ -76,7 +76,10 @@ function BankFrameItemButton_Update (button)
 	local texture = button.icon;
 	local inventoryID = button:GetInventorySlot();
 	local textureName = GetInventoryItemTexture("player",inventoryID);
-	local _, _, _, quality, _, _, _, isFiltered, _, itemID = GetContainerItemInfo(container, buttonID);
+	local info = C_Container.GetContainerItemInfo(container, buttonID);
+	local quality = info and info.quality;
+	local isFiltered = info and info.isFiltered;
+	local itemID = info and info.itemID;
 	local slotName = button:GetName();
 	local id;
 	local slotTextureName;
@@ -133,13 +136,13 @@ function BankFrame_UpdateCooldown(container, button)
 	local start, duration, enable;
 	if ( button.isBag ) then
 		-- in case we ever have a bag with a cooldown...
-		local inventoryID = ContainerIDToInventoryID(button:GetID());
+		local inventoryID = C_Container.ContainerIDToInventoryID(button:GetID());
 		start, duration, enable = GetInventoryItemCooldown("player", inventoryID);
 	else
-		start, duration, enable = GetContainerItemCooldown(container, button:GetID());
+		start, duration, enable = C_Container.GetContainerItemCooldown(container, button:GetID());
 	end
 	CooldownFrame_Set(cooldown, start, duration, enable);
-	if ( duration > 0 and enable == 0 ) then
+	if ( duration and duration > 0 and enable == 0 ) then
 		SetItemButtonTextureVertexColor(button, 0.4, 0.4, 0.4);
 	end
 end
@@ -321,9 +324,9 @@ end
 function BankFrameItemButtonGeneric_OnClick (self, button)
 	local container = self:GetParent():GetID();
 	if ( button == "LeftButton" ) then
-		PickupContainerItem(container, self:GetID());
+		C_Container.PickupContainerItem(container, self:GetID());
 	else
-		UseContainerItem(container, self:GetID());
+		C_Container.UseContainerItem(container, self:GetID());
 	end
 end
 
@@ -332,11 +335,14 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 	if ( self.isBag ) then
 		return;
 	end
-	if ( HandleModifiedItemClick(GetContainerItemLink(container, self:GetID())) ) then
+	if ( HandleModifiedItemClick(C_Container.GetContainerItemLink(container, self:GetID())) ) then
 		return;
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
-		local texture, itemCount, locked = GetContainerItemInfo(container, self:GetID());
+		local info = C_Container.GetContainerItemInfo(container, self:GetID());
+		local texture = info and info.iconFileDataID;
+		local itemCount = info and info.stackCount;
+		local locked = info and info.isLocked;
 		if ( not locked and itemCount and itemCount > 1) then
 			OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 		end
@@ -424,14 +430,5 @@ function BankFrame_ShowPanel(sidePanelName, selection)
 		elseif ( panel ) then
 			panel:Hide();
 		end
-	end
-end
-
-function BankFrame_AutoSortButtonOnClick()
-	local self = BankFrame;
-
-	PlaySound(SOUNDKIT.UI_BAG_SORTING_01);
-	if (self.activeTabIndex == 1) then
-		SortBankBags();
 	end
 end

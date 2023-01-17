@@ -7,6 +7,20 @@ local KeyBindings =
 	Functions =
 	{
 		{
+			Name = "GetBindingIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "action", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bindingIndex", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCustomBindingType",
 			Type = "Function",
 
@@ -43,6 +57,20 @@ local KeyBindings =
 
 	Tables =
 	{
+		{
+			Name = "BindingSet",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Default", Type = "BindingSet", EnumValue = 0 },
+				{ Name = "Account", Type = "BindingSet", EnumValue = 1 },
+				{ Name = "Character", Type = "BindingSet", EnumValue = 2 },
+				{ Name = "Current", Type = "BindingSet", EnumValue = 3 },
+			},
+		},
 		{
 			Name = "CustomBindingType",
 			Type = "Enumeration",

@@ -21,11 +21,6 @@ local VoidStorageInfo =
 			},
 		},
 		{
-			Name = "VoidStorageClose",
-			Type = "Event",
-			LiteralName = "VOID_STORAGE_CLOSE",
-		},
-		{
 			Name = "VoidStorageContentsUpdate",
 			Type = "Event",
 			LiteralName = "VOID_STORAGE_CONTENTS_UPDATE",
@@ -38,11 +33,6 @@ local VoidStorageInfo =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
-		},
-		{
-			Name = "VoidStorageOpen",
-			Type = "Event",
-			LiteralName = "VOID_STORAGE_OPEN",
 		},
 		{
 			Name = "VoidStorageUpdate",

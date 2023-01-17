@@ -23,7 +23,7 @@ local SOCIAL_OFFSCREEN_STATE_SHOW_ITEM = 2;
 
 function SocialPostFrame_OnLoad(self)
 	self.SocialMessageFrame.EditBox:SetCountInvisibleLetters(false);
-	
+
 	self:RegisterEvent("TWITTER_POST_RESULT");
 	self:RegisterEvent("SOCIAL_ITEM_RECEIVED");
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
@@ -59,7 +59,7 @@ end
 function SocialPostFrame_OnShow(self)
 	SocialPostFrame_SetDefaultView();
 	self.SocialMessageFrame.EditBox:SetFocus();
-	
+
 	SocialScreenshotButton_Update();
 	SocialAchievementButton_Update();
 	SocialItemButton_Update();
@@ -112,7 +112,7 @@ end
 
 
 --------------------------------------------------------------------------------
--- Functions to show the window in various states. 
+-- Functions to show the window in various states.
 --------------------------------------------------------------------------------
 
 function SocialPostFrame_ShowAchievement(achievementID, earned)
@@ -167,7 +167,7 @@ function SocialPostButton_Update()
 	local maxTweetLength = C_Social.GetMaxTweetLength();
 	local text = SocialPostFrame.SocialMessageFrame.EditBox:GetDisplayText();
 	local tweetLength = C_Social.GetTweetLength(text);
-	
+
 	local charsLeft = maxTweetLength - tweetLength;
 	SocialPostFrame.PostButton.CharsLeftString:SetText(tostring(charsLeft));
 	if (charsLeft < 0) then
@@ -183,7 +183,7 @@ function SocialPostButton_Update()
 			SocialPostFrame.PostButton.tempEnabled = true;
 		end
 	end
-	
+
 	local button = SocialPostFrame.PostButton;
 	local timeToPost = C_Social.TwitterGetMSTillCanPost();
 	if (timeToPost > 0) then
@@ -194,7 +194,7 @@ function SocialPostButton_Update()
 		button.Timer = C_Timer.NewTimer(recheckTime, function() button.tooltip = nil; SocialPostButton_Update(); end);
 		return;
 	end
-	
+
 	if (SocialPostFrame.ImageFrame.TextureFrame.CropFrame:IsShown()) then
 		button:Disable();
 	end
@@ -277,7 +277,7 @@ function SocialPostFrame_SetImageView(width, height, imageType)
 	frame.TextureFrame.Texture:SetTexCoord(0, 1, 0, 1);
 	frame:SetSize(width, frameHeight);
 	frame:Show();
-	
+
 	local windowWidth = max(SOCIAL_DEFAULT_FRAME_WIDTH, width + SOCIAL_IMAGE_PADDING_WIDTH);
 	local windowHeight = SOCIAL_DEFAULT_FRAME_HEIGHT + frameHeight;
 	SocialPostFrame:SetSize(windowWidth, windowHeight);
@@ -315,7 +315,7 @@ function SocialPostFrame_SetScreenshotView(index, width, height)
 	-- Calculate how much space we need to fit the screenshot
 	local ssWidth, ssHeight = CalculateScreenshotSize(width, height, SOCIAL_IMAGE_FRAME_MAX_WIDTH, SOCIAL_IMAGE_FRAME_MAX_HEIGHT);
 	SocialPostFrame_SetImageView(ssWidth, ssHeight, SOCIAL_IMAGE_TYPE_SCREENSHOT);
-	
+
 	SocialScreenshotImage_Set(index);
 	SocialScreenshotCrop_SetEnabled(false);
 	SocialScreenshotCrop_ResetCropBox();
@@ -414,19 +414,19 @@ function SocialPostFrame_AddOffscreenFrameImage(offscreenSubFrame, imageType, re
 	if (frameWidth > SOCIAL_IMAGE_FRAME_MAX_WIDTH) then
 		frameWidth = SOCIAL_IMAGE_FRAME_MAX_WIDTH;
 	end
-	
+
 	SocialPostFrame_SetImageView(frameWidth, frameHeight, imageType);
 	if (height > SOCIAL_IMAGE_FRAME_MAX_HEIGHT) then
 		frame.TextureFrame:SetSize(frameHeight * aspectRatio, frameHeight);
 	end
-	
+
 	SocialScreenshotCrop_SetEnabled(false);
-	
+
 	OffScreenFrame:ApplySnapshot(frame.TextureFrame.Texture, SOCIAL_OFFSCREEN_SNAPSHOT_ID);
 	local texCoordX = width / OffScreenFrame:GetWidth();
 	local texCoordY = height / OffScreenFrame:GetHeight();
 	frame.TextureFrame.Texture:SetTexCoord(0, texCoordX, 0, texCoordY);
-	
+
 	frame.CropCancelButton:Hide();
 	frame.CropSaveButton:Hide();
 	frame.CropScreenshotButton:Hide();
@@ -455,7 +455,7 @@ function SocialPrefillAchievementText(achievementID, earned, name)
 		local ignored;
 		ignored, name = GetAchievementInfo(achievementID);
 	end
-	
+
 	-- Populate editbox with achievement prefill text
 	local achievementNameColored = format("%s[%s]|r", NORMAL_FONT_COLOR_CODE, name);
 	local prefillText;
@@ -497,19 +497,20 @@ local function TakeOffscreenSnapshot(offscreenSubFrame, imageType, removeImageTe
 end
 
 function SocialRenderAchievement(achievementID)
-	local button = OffScreenFrame.Achievement;
-	AchievementFrameAchievements_SetupButton(button);
-
-	-- Set button to collapsed state so that AchievementButton_DisplayAchievement() expands
-	-- the frame and renders all the objectives
-	AchievementButton_Collapse(button);
-	AchievementButton_DisplayAchievement (button, achievementID, nil, achievementID, true);
-	button.tracked:Hide();
-	button.plusMinus:Hide();
-	button.check:Hide();
+	local achievementButton = OffScreenFrame.Achievement;
+	-- GetElementData() being assigned to this achievement button because it is required as
+	-- an interface to ScrollBox, which this button's template was originally written for.
+	local elementData = {selected = true, id = achievementID};
+	achievementButton.GetElementData = function(self)
+		return elementData;
+	end;
+	achievementButton:Init(elementData);
+	achievementButton.Tracked:Hide();
+	achievementButton.PlusMinus:Hide();
+	achievementButton.Check:Hide();
 
 	UpdateOffScreenFrame(OffScreenFrame, SOCIAL_OFFSCREEN_STATE_SHOW_ACHIEVEMENT);
-	TakeOffscreenSnapshot(button, SOCIAL_IMAGE_TYPE_ACHIEVEMENT, SOCIAL_ACHIEVEMENT_REMOVE_BUTTON);
+	TakeOffscreenSnapshot(achievementButton, SOCIAL_IMAGE_TYPE_ACHIEVEMENT, SOCIAL_ACHIEVEMENT_REMOVE_BUTTON);
 end
 
 function SocialAchievementButton_OnClick(self)
@@ -565,25 +566,25 @@ end
 function SocialPrefillItemText(itemLink, earned)
 	local itemID = GetItemInfoFromHyperlink(itemLink);
 	local name = GetItemInfo(itemLink);
-	
+
 	local prefillText;
 	if (earned) then
 		prefillText = SOCIAL_ITEM_PREFILL_TEXT_EARNED;
 	else
 		prefillText = SOCIAL_ITEM_PREFILL_TEXT_GENERIC;
 	end
-	
+
 	-- Populate editbox with item prefill text
 	local itemName = format("[%s]", name);
 	local text = format(SOCIAL_ITEM_PREFILL_TEXT_ALL, prefillText, itemName);
-	
+
 	local prefillTextLength = strlen(prefillText);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetText(text);
 	SocialPostFrame.SocialMessageFrame.EditBox:HighlightText(0, prefillTextLength);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetCursorPosition(prefillTextLength);
 	SocialPostFrame.lastItemID = itemID;
 	SocialPostFrame.lastPrefilledText = prefillText;
-	
+
 	SocialRenderItem(itemID);
 end
 
@@ -629,14 +630,14 @@ end
 
 function SocialScreenshotCrop_ResetCropBox()
 	local self = SocialPostFrame.ImageFrame.TextureFrame.CropFrame;
-	
+
 	-- Set initial crop size to 75%
 	local parentWidth, parentHeight = self:GetParent():GetSize();
 	self.currentWidth = parentWidth * 0.75;
 	self.currentHeight = self.currentWidth / 2;
 	self.currentPosX = (parentWidth - self.currentWidth) / 2;
 	self.currentPosY = -(parentHeight - self.currentHeight) / 2;
-	
+
 	self:SetSize(self.currentWidth, self.currentHeight);
 	self:SetPoint("TOPLEFT", self.currentPosX, self.currentPosY);
 	SocialScreenshotCrop_UpdateDarkRects();
@@ -665,22 +666,22 @@ function SocialCropSaveButton_OnClick(self)
 	local textureFrame = self:GetParent().TextureFrame;
 	local frameWidth, frameHeight = textureFrame:GetSize();
 	local frameAspectRatio = frameWidth / frameHeight;
-	
-	local _, _, _, cropX, cropY = textureFrame.CropFrame:GetPoint(0);
+
+	local _, _, _, cropX, cropY = textureFrame.CropFrame:GetPoint(1);
 	local cropWidth, cropHeight = textureFrame.CropFrame:GetSize();
 	local cropAspectRatio = cropWidth / cropHeight;
-	
+
 	if (frameAspectRatio > cropAspectRatio) then -- cropped image is not as wide
 		textureFrame:SetSize(frameHeight * cropAspectRatio, frameHeight);
 	else
 		textureFrame:SetSize(frameWidth, frameWidth / cropAspectRatio);
 	end
-	
+
 	local texMinX = cropX / frameWidth;
 	local texMaxX = texMinX + cropWidth / frameWidth;
 	local texMinY = -cropY / frameHeight;
 	local texMaxY = texMinY + cropHeight / frameHeight;
-	
+
 	SocialScreenshotCrop_SetEnabled(false);
 	textureFrame.Texture:SetTexCoord(texMinX, texMaxX, texMinY, texMaxY);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
@@ -702,9 +703,9 @@ end
 function SocialScreenshotCrop_UpdateDarkRects()
 	local self = SocialPostFrame.ImageFrame.TextureFrame;
 	local frameWidth, frameHeight = self:GetSize();
-	local _, _, _, cropX, cropY = self.CropFrame:GetPoint(0);
+	local _, _, _, cropX, cropY = self.CropFrame:GetPoint(1);
 	local cropWidth, cropHeight = self.CropFrame:GetSize();
-	
+
 	self.DarkLeft:SetSize(cropX + 0.01, frameHeight);
 	self.DarkRight:SetSize(frameWidth - cropX - cropWidth + 0.01, frameHeight);
 	self.DarkTop:SetSize(cropWidth, -cropY + 0.01);
@@ -716,13 +717,13 @@ local function ClampMove(self, x, y)
 	local pWidth, pHeight = self:GetParent():GetSize();
 	local maxX = pWidth - myWidth;
 	local minY = -(pHeight - myHeight);
-	
+
 	if (x < 0) then
 		x = 0;
 	elseif (x > maxX) then
 		x = maxX;
 	end
-	
+
 	if (y > 0) then
 		y = 0;
 	elseif (y < minY) then
@@ -788,9 +789,9 @@ end
 
 function SocialScreenshotCrop_Move_OnMouseUp(self)
 	local _;
-	_, _, _, self.currentPosX, self.currentPosY = self:GetPoint(0);
+	_, _, _, self.currentPosX, self.currentPosY = self:GetPoint(1);
 	self:SetScript("OnUpdate", nil);
-	
+
 	if (not self:IsMouseOver()) then
 		ResetCursor();
 	end
@@ -825,11 +826,11 @@ end
 function SocialScreenshotCrop_Resize_OnMouseUp(self)
 	local parent = self:GetParent();
 	local _;
-	_, _, _, parent.currentPosX, parent.currentPosY = parent:GetPoint(0);
+	_, _, _, parent.currentPosX, parent.currentPosY = parent:GetPoint(1);
 	parent.currentWidth, parent.currentHeight = parent:GetSize();
 	parent.resizeType = nil;
 	self:SetScript("OnUpdate", nil);
-	
+
 	if (not self:IsMouseOver()) then
 		ResetCursor();
 	end
@@ -840,7 +841,7 @@ function SocialScreenshotCrop_Resize_OnUpdate(self)
 	local mouseX, mouseY = GetScaledCursorPosition();
 	local xDiff = mouseX - parent.startPosX;
 	local yDiff = mouseY - parent.startPosY;
-	
+
 	-- Calculate position of top-left corner of crop box
 	local newX = parent.currentPosX;
 	local newY = parent.currentPosY;
@@ -850,7 +851,7 @@ function SocialScreenshotCrop_Resize_OnUpdate(self)
 	if (parent.resizeType == "TOPLEFT" or parent.resizeType == "TOPRIGHT") then
 		newY = ClampResizePosY(newY + yDiff, parent);
 	end
-	
+
 	-- Calculate width and height of crop box
 	local newWidth = parent.currentWidth;
 	local newHeight = parent.currentHeight;
@@ -864,7 +865,7 @@ function SocialScreenshotCrop_Resize_OnUpdate(self)
 	else
 		newHeight = ClampResizeHeight(newHeight - yDiff, newY, parent);
 	end
-	
+
 	parent:SetSize(newWidth, newHeight);
 	parent:SetPoint("TOPLEFT", newX, newY);
 	SocialScreenshotCrop_UpdateDarkRects();

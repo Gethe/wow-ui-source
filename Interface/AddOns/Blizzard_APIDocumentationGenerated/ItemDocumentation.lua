@@ -59,7 +59,7 @@ local Item =
 
 			Returns =
 			{
-				{ Name = "itemGuid", Type = "string", Nilable = false },
+				{ Name = "itemGUID", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -144,6 +144,34 @@ local Item =
 			Returns =
 			{
 				{ Name = "itemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemMaxStackSize",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "stackSize", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemMaxStackSizeByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "stackSize", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -412,6 +440,16 @@ local Item =
 			{
 				{ Name = "existingStr", Type = "string", Nilable = false },
 				{ Name = "replacementStr", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ReplaceTradeskillEnchant",
+			Type = "Event",
+			LiteralName = "REPLACE_TRADESKILL_ENCHANT",
+			Payload =
+			{
+				{ Name = "existing", Type = "string", Nilable = false },
+				{ Name = "replacement", Type = "string", Nilable = false },
 			},
 		},
 		{

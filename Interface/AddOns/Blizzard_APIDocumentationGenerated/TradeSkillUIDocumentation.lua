@@ -22,19 +22,9 @@ local TradeSkillUI =
 			},
 		},
 		{
-			Name = "ObliterumForgeClose",
-			Type = "Event",
-			LiteralName = "OBLITERUM_FORGE_CLOSE",
-		},
-		{
 			Name = "ObliterumForgePendingItemChanged",
 			Type = "Event",
 			LiteralName = "OBLITERUM_FORGE_PENDING_ITEM_CHANGED",
-		},
-		{
-			Name = "ObliterumForgeShow",
-			Type = "Event",
-			LiteralName = "OBLITERUM_FORGE_SHOW",
 		},
 		{
 			Name = "TradeSkillClose",

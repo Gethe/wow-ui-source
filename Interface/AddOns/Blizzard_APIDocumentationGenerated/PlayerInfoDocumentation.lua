@@ -17,6 +17,20 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "HasVisibleInvSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isVisible", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsXPUserDisabled",
 			Type = "Function",
 

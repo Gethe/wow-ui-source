@@ -91,9 +91,17 @@ MOVIE_CAPTION_FADE_TIME = 1.0;
 -- These are movieID from the MOVIE database file.
 MOVIE_LIST = {
   -- Movie sequence 1 = Wow Classic
-  { 1, 2 },
+  { expansion=LE_EXPANSION_CLASSIC, 
+	movieIDs = { 1, 2 }, 
+	upAtlas="StreamCinematic-Classic-Up", 
+	downAtlas="StreamCinematic-Classic-Down",
+  },
   -- Movie sequence 2 = BC
-  { 27 },
+  { expansion=LE_EXPANSION_BURNING_CRUSADE, 
+	movieIDs = { 27 }, 
+	upAtlas="StreamCinematic-BC-Up", 
+	downAtlas="StreamCinematic-BC-Down",
+  }
 };
 
 --Credits

@@ -290,12 +290,12 @@ end
 
 function TokenButtonLinkButton_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
-		ChatEdit_InsertLink(GetCurrencyListLink(self:GetParent().index));
+		ChatEdit_InsertLink(C_CurrencyInfo.GetCurrencyListLink(self:GetParent().index));
 	end
 end
 
 function BackpackTokenButton_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
-		ChatEdit_InsertLink(GetCurrencyListLink(self.index));
+		ChatEdit_InsertLink(C_CurrencyInfo.GetCurrencyListLink(self.index));
 	end
 end

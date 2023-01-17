@@ -486,6 +486,15 @@ local UIWidgetManager =
 				{ Name = "widgetType", Type = "UIWidgetVisualizationType", Nilable = false },
 			},
 		},
+		{
+			Name = "UIWidgetTextTooltipPair",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+			},
+		},
 	},
 };
 

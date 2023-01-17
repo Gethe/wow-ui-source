@@ -19,6 +19,7 @@ local DefaultFilter =
 	{event="OBJECT_LEFT_AOI", enabled=true},
 	{event="SPELL_ACTIVATION_OVERLAY_HIDE", enabled=true},
 	{event="MODIFIER_STATE_CHANGED", enabled=true},
+	{event="IMGUI_RENDER_ENABLED", enabled=true},
 };
 
 local function GetDisplayEvent(elementData)
@@ -64,6 +65,12 @@ end
 
 EventTracePanelMixin = {};
 
+function EventTracePanelMixin:OnSetDebugToolVisible(addonName, showTool)
+	if addonName == "Blizzard_EventTrace" then
+		self:SetShown(showTool);
+	end
+end
+
 function EventTracePanelMixin:OnLoad()
 	ButtonFrameTemplate_HidePortrait(self)
 
@@ -96,13 +103,16 @@ function EventTracePanelMixin:OnLoad()
 
 	self.TitleBar:Init(self);
 	self.ResizeButton:Init(self, MinPanelWidth, MinPanelHeight);
-	self.TitleText:SetText(EVENTTRACE_HEADER);
+	self:SetTitle(EVENTTRACE_HEADER);
 
 	hooksecurefunc(EventRegistry, "TriggerEvent", function(registry, event, ...)
 		EventTrace:LogCallbackRegistryEvent(registry, event, ...);
 	end);
 
 	self:UpdatePlaybackButton();
+
+	EventRegistry:RegisterFrameEvent("SET_DEBUG_TOOL_VISIBLE");
+	EventRegistry:RegisterCallback("SET_DEBUG_TOOL_VISIBLE", self.OnSetDebugToolVisible, self);
 end
 
 function EventTracePanelMixin:OnShow()
@@ -261,14 +271,6 @@ function EventTracePanelMixin:InitializeLog()
 				self.Log.Search.ScrollBox:ScrollToEnd(ScrollBoxConstants.NoScrollInterpolation);
 			end
 		end
-
-		local alpha = empty and 1.0 or .5;
-		self.Log.Bar.MarkButton:SetAlpha(alpha);
-		self.Log.Bar.MarkButton:SetEnabled(empty);
-		self.Log.Bar.PlaybackButton:SetAlpha(alpha);
-		self.Log.Bar.PlaybackButton:SetEnabled(empty);
-		self.Log.Bar.DiscardAllButton:SetAlpha(alpha);
-		self.Log.Bar.DiscardAllButton:SetEnabled(empty);
 	end);
 
 	local function SetOnDataRangeChanged(scrollBox)
@@ -306,26 +308,36 @@ function EventTracePanelMixin:InitializeLog()
 		end
 
 		local view = CreateScrollBoxListLinearView();
-		view:SetElementExtent(20);
 		view:SetElementFactory(function(factory, elementData)
 			if elementData.event then
-				local button = factory("Button", "EventTraceLogEventButtonTemplate");
-				button:Init(elementData, self:IsShowingArguments(), self:IsShowingTimestamp());
+				factory("EventTraceLogEventButtonTemplate", function(button, elementData)
+					button:Init(elementData, self:IsShowingArguments(), self:IsShowingTimestamp());
 
-				button.HideButton:SetScript("OnMouseDown", function(button, buttonName)
-					AddEventToFilter(self.Filter.ScrollBox, elementData);
-				end);
+					button.HideButton:SetScript("OnMouseDown", function(button, buttonName)
+						AddEventToFilter(self.Filter.ScrollBox, elementData);
+					end);
 
-				button:SetScript("OnDoubleClick", function(button, buttonName)
-					LocateInSearch(elementData, elementData.event);
+					button:SetScript("OnClick", function(button, buttonName, down)
+						if buttonName == "RightButton" then
+							CopyToClipboard(elementData.event);
+						end
+					end);
+
+					button:SetScript("OnDoubleClick", function(button, buttonName)
+						if buttonName == "LeftButton" then
+							LocateInSearch(elementData, elementData.event);
+						end
+					end);
 				end);
 			elseif elementData.message then
-				local button = factory("Button", "EventTraceLogMessageButtonTemplate");
-				button:Init(elementData);
+				factory("EventTraceLogMessageButtonTemplate", function(button, elementData)
+					button:Init(elementData);
 
-				button:SetScript("OnDoubleClick", function(button, buttonName)
-					LocateInSearch(elementData, elementData.message);
+					button:SetScript("OnDoubleClick", function(button, buttonName)
+						LocateInSearch(elementData, elementData.message);
+					end);
 				end);
+
 			end
 		end);
 
@@ -354,25 +366,34 @@ function EventTracePanelMixin:InitializeLog()
 		end
 
 		local view = CreateScrollBoxListLinearView();
-		view:SetElementExtent(20);
 		view:SetElementFactory(function(factory, elementData)
 			if elementData.event then
-				local button = factory("Button", "EventTraceLogEventButtonTemplate");
-				button:Init(elementData, self:IsShowingArguments());
+				factory("EventTraceLogEventButtonTemplate", function(button, elementData)
+					button:Init(elementData, self:IsShowingArguments());
 
-				button.HideButton:SetScript("OnMouseDown", function(button, buttonName)
-					AddEventToFilter(self.Log.Search.ScrollBox, elementData);
-				end);
+					button.HideButton:SetScript("OnMouseDown", function(button, buttonName)
+						AddEventToFilter(self.Log.Search.ScrollBox, elementData);
+					end);
 
-				button:SetScript("OnDoubleClick", function(button, buttonName)
-					LocateInLog(elementData);
+					button:SetScript("OnClick", function(button, buttonName, down)
+						if buttonName == "RightButton" then
+							CopyToClipboard(elementData.event);
+						end
+					end);
+
+					button:SetScript("OnDoubleClick", function(button, buttonName)
+						if buttonName == "LeftButton" then
+							LocateInLog(elementData);
+						end
+					end);
 				end);
 			elseif elementData.message then
-				local button = factory("Button", "EventTraceLogMessageButtonTemplate");
-				button:Init(elementData);
+				factory("EventTraceLogMessageButtonTemplate", function(button, elementData)
+					button:Init(elementData);
 
-				button:SetScript("OnDoubleClick", function(button, buttonName)
-					LocateInLog(elementData);
+					button:SetScript("OnDoubleClick", function(button, buttonName)
+						LocateInLog(elementData);
+					end);
 				end);
 			end
 		end);
@@ -425,8 +446,7 @@ function EventTracePanelMixin:InitializeFilter()
 	end
 
 	local view = CreateScrollBoxListLinearView();
-	view:SetElementExtent(20);
-	view:SetElementInitializer("Button", "EventTraceFilterButtonTemplate", function(button, elementData)
+	view:SetElementInitializer("EventTraceFilterButtonTemplate", function(button, elementData)
 		button:Init(elementData, RemoveEventFromFilter);
 	end);
 
@@ -759,6 +779,11 @@ local function AddTooltipArguments(...)
 		local arg = select(index, ...);
 		GameTooltip_AddColoredDoubleLine(EventTraceTooltip, EVENTTRACE_ARG_FMT:format(index), FormatArgument(arg), HIGHLIGHT_FONT_COLOR, GetArgumentColor(arg));
 	end
+end
+
+function EventTraceLogEventButtonMixin:OnLoad()
+	self.HideButton:ClearAllPoints();
+	self.HideButton:SetPoint("LEFT", self, "LEFT", 3, 0);
 end
 
 function EventTraceLogEventButtonMixin:OnEnter()

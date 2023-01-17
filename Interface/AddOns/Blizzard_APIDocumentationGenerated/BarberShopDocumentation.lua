@@ -100,6 +100,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "GetViewingChrModel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "chrModelID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "HasAnyChanges",
 			Type = "Function",
 
@@ -242,6 +251,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "SetViewingChrModel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "chrModelID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "SetViewingShapeshiftForm",
 			Type = "Function",
 
@@ -332,6 +350,7 @@ local BarberShop =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "fileName", Type = "string", Nilable = false },
 				{ Name = "alternateFormRaceData", Type = "CharacterAlternateFormData", Nilable = true },
+				{ Name = "createScreenIconAtlas", Type = "string", Nilable = false },
 			},
 		},
 	},

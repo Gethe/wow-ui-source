@@ -55,8 +55,9 @@ function LFGBrowseMixin:OnLoad()
 
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementFactory(function(factory, elementData)
-		local frame = factory("Button", "LFGBrowseSearchEntryTemplate");
-		LFGBrowseSearchEntry_Init(frame, elementData);
+		factory("LFGBrowseSearchEntryTemplate", function(frame, elementData)
+			LFGBrowseSearchEntry_Init(frame, elementData);
+		end);
 	end);
 	view:SetElementExtent(36);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
@@ -79,7 +80,7 @@ function LFGBrowseMixin:OnLoad()
 		self:UpdateButtonState();
 	end;
 
-	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorPolicy.Deselectable);
+	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorFlags.Deselectable);
 	self.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
 
 	self:UpdateButtonState();
@@ -292,7 +293,11 @@ function LFGBrowseSearchEntry_Update(self)
 		activityText = string.format(activityString, #activitiesToDisplay);
 	end
 
+	local leaderClassFileName = select(3, C_LFGList.GetSearchResultLeaderInfo(self.resultID));
 	local nameColor = NORMAL_FONT_COLOR;
+	if (leaderClassFileName) then
+		nameColor = RAID_CLASS_COLORS[leaderClassFileName];
+	end
 	local levelColor = GRAY_FONT_COLOR;
 	local activityColor = LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR;
 	if ( searchResultInfo.isDelisted ) then
@@ -500,7 +505,7 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	-- Member Count
 	if (isSolo) then
 		self.MemberCount:SetText(string.format(LFG_LIST_TOOLTIP_MEMBERS_SIMPLE, numMembers));
-	else
+	elseif (memberCounts) then
 		self.MemberCount:SetText(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 	end
 
@@ -648,23 +653,25 @@ function LFGBrowseGroupDataDisplay_Update(self, displayType, maxNumPlayers, disp
 	if ( displayType == Enum.LFGListDisplayType.Comment ) then
 		self.Comment:Show();
 		LFGBrowseGroupDataDisplayComment_Update(self.Comment, comment, disabled);
-	elseif ( isSolo ) then
-		self.Solo:Show();
-		LFGBrowseGroupDataDisplaySolo_Update(self.Solo, displayData, disabled);
-	elseif ( displayType == Enum.LFGListDisplayType.RoleCount ) then
-		self.RoleCount:Show();
-		LFGBrowseGroupDataDisplayRoleCount_Update(self.RoleCount, displayData, disabled);
-	elseif ( displayType == Enum.LFGListDisplayType.RoleEnumerate ) then
-		self.Enumerate:Show();
-		LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_ROLE_ORDER);
-	elseif ( displayType == Enum.LFGListDisplayType.ClassEnumerate ) then
-		self.Enumerate:Show();
-		LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_CLASS_ORDER);
-	elseif ( displayType == Enum.LFGListDisplayType.PlayerCount ) then
-		self.PlayerCount:Show();
-		LFGBrowseGroupDataDisplayPlayerCount_Update(self.PlayerCount, displayData, disabled);
-	elseif ( displayType ~= Enum.LFGListDisplayType.HideAll ) then
-		GMError("Unknown display type");
+	elseif ( displayData ) then
+		if ( isSolo ) then
+			self.Solo:Show();
+			LFGBrowseGroupDataDisplaySolo_Update(self.Solo, displayData, disabled);
+		elseif ( displayType == Enum.LFGListDisplayType.RoleCount ) then
+			self.RoleCount:Show();
+			LFGBrowseGroupDataDisplayRoleCount_Update(self.RoleCount, displayData, disabled);
+		elseif ( displayType == Enum.LFGListDisplayType.RoleEnumerate ) then
+			self.Enumerate:Show();
+			LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_ROLE_ORDER);
+		elseif ( displayType == Enum.LFGListDisplayType.ClassEnumerate ) then
+			self.Enumerate:Show();
+			LFGBrowseGroupDataDisplayEnumerate_Update(self.Enumerate, maxNumPlayers, displayData, disabled, LFGBROWSE_GROUPDATA_CLASS_ORDER);
+		elseif ( displayType == Enum.LFGListDisplayType.PlayerCount ) then
+			self.PlayerCount:Show();
+			LFGBrowseGroupDataDisplayPlayerCount_Update(self.PlayerCount, displayData, disabled);
+		elseif ( displayType ~= Enum.LFGListDisplayType.HideAll ) then
+			GMError("Unknown display type");
+		end
 	end
 end
 

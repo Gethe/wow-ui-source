@@ -1,14 +1,15 @@
 ..\SharedXML\SharedConstants.lua
 ##DebugHook.lua
 
+..\SharedXML\middleclass.lua
 GlueCheck.lua
-..\SharedXML\C_TimerAugment.lua
 ..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
 ..\SharedXML\TableUtil.lua
 ..\SharedXML\EnumUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\Flags.lua
+..\SharedXML\MathUtil.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CvarUtil.lua
 ..\SharedXML\Color.lua
@@ -21,7 +22,6 @@ GlueCheck.lua
 ..\SharedXML\SmoothStatusBar.lua
 ..\SharedXML\PredictedSetting.lua
 ..\SharedXML\SecureUtil.lua
-..\SharedXML\MathUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\PixelUtilSecure.lua
@@ -30,6 +30,7 @@ GlueCheck.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\EventUtil.lua
 ..\..\Interface_Wrath\SharedXML\SoundKitConstants.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\CircularBuffer.lua
@@ -38,6 +39,8 @@ GlueCheck.lua
 ..\SharedXML\PixelUtilSecure.lua
 ..\SharedXML\PixelUtil.lua
 ..\SharedXML\Dump.lua
+..\SharedXML\VASErrorLookup.lua
+
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
 ..\SharedXML\Constants.lua
@@ -54,6 +57,7 @@ GlueFontStyles.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\KeyCommand.lua
+..\SharedXML\GlobalCallbackRegistry.lua
 GlueTemplates.xml
 ## add new files after here
 ..\..\Interface_Wrath\GlueXML\GlueButtons.xml
@@ -82,6 +86,7 @@ GlueContextMenu.xml
 ..\SharedXML\Scroll\ScrollBox.xml
 ..\SharedXML\Scroll\ScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
+..\SharedXML\ButtonStateBehavior.lua
 ..\SharedXML\Scroll\TrimScrollBar.xml
 ..\SharedXML\Scroll\ClassicTrimScrollBar.xml
 
@@ -103,7 +108,10 @@ CharacterServicesPatchwerk.xml
 ..\..\Interface_TBC\GlueXML\CharacterSelect.xml
 AccountReactivate.xml
 KioskModeSplash.xml
+CharacterServicesShared.lua
 CharacterServices.xml
+CharacterServicesPaidFactionChange.xml
+CharacterServicesCharacterSelector.xml
 ..\..\Interface_Wrath\GlueXML\CharacterCreate.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml

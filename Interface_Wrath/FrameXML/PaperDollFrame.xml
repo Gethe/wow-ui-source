@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\Interface\FrameXML\UI.xsd">
 	<Script file="PaperDollFrame.lua"/>
 	<Texture name="PaperDollFrameFlyoutTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" hidden="true" virtual="true"/>
 	<Button name="PaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
@@ -1127,7 +1127,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<ScrollFrame name="$parentScrollFrame" inherits="ListScrollFrameTemplate">
+					<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
 						<Size x="485" y="369"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-36" y="-70"/>

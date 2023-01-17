@@ -183,7 +183,7 @@ function PTR_IssueReporter.CreateReports()
     classicGlyphReport:PopulateDynamicTitleToken(1, "Name")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(classicGlyphReport)
     
-    classicGlyphReport:AddDataCollection(baseCollectors + 1, collector.FromDataPackage, "ID")
+    classicGlyphReport:AddDataCollection(baseCollectors + 1, collector.RunFunction, "ID")
     classicGlyphReport:AddDataCollection(baseCollectors + 2, collector.OpenEndedQuestion, "What was the issue with this glyph?")
 
     classicGlyphReport:RegisterPopEvent(event.Tooltip, tooltips.glyph)

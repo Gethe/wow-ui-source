@@ -1,0 +1,46 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CharacterServicesPaidFactionChange.lua"/>
+
+	<Frame name="PFCCharacterSelect" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="300" y="250"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true"/>
+			<Frame parentKey="ResultsFrame">
+				<Size x="260" y="250"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ResultsLabel" relativePoint="BOTTOMLEFT" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="CurrentFactionLabel" inherits="GameFontNormalMed3" justifyH="LEFT">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="WillBeChangedLabel" inherits="GameFontNormalMed3" justifyH="LEFT" text="PFC_FLOW_WILL_BE_CHANGED_TO">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.CurrentFactionLabel" relativePoint="BOTTOMLEFT" y="-38"/>
+							</Anchors>
+							<Color color="GRAY_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="NewFactionLabel" inherits="GameFontNormalMed3" justifyH="LEFT">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.WillBeChangedLabel" relativePoint="BOTTOMLEFT" y="-2"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="CustomizeLabel" inherits="GameFontNormal" justifyH="LEFT" text="PFC_FLOW_CUSTOMIZE_CHARACTER_STEP">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NewFactionLabel" relativePoint="BOTTOMLEFT" y="-38"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

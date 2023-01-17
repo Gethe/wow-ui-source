@@ -461,7 +461,7 @@ function RaidGroupFrame_Update()
 				else
 					subframes.loot:Hide();
 				end
-				
+
 
 				for i=1, buttonCount, 1 do
 					if ( i == 1 ) then

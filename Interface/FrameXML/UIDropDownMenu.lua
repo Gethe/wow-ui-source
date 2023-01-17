@@ -118,6 +118,10 @@ function UIDropDownMenu_SetDisplayMode(frame, displayMode)
 	end
 end
 
+function UIDropDownMenu_SetFrameStrata(frame, frameStrata)
+	frame.listFrameStrata = frameStrata;
+end
+
 function UIDropDownMenu_RefreshDropDownSize(self)
 	self.maxWidth = UIDropDownMenu_GetMaxButtonWidth(self);
 	self:SetWidth(self.maxWidth + 25);
@@ -201,7 +205,7 @@ function UIDropDownMenuButton_OnEnter(self)
 	if ( self.hasArrow ) then
 		local level =  self:GetParent():GetID() + 1;
 		local listFrame = _G["DropDownList"..level];
-		if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+		if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint(1)) ~= self ) then
 			ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
 		end
 	else
@@ -221,7 +225,7 @@ function UIDropDownMenuButton_OnEnter(self)
 			GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
 		end
 	end
-				
+
 	if ( self.mouseOverIcon ~= nil ) then
 		self.Icon:SetTexture(self.mouseOverIcon);
 		self.Icon:Show();
@@ -232,7 +236,7 @@ function UIDropDownMenuButton_OnLeave(self)
 	self.Highlight:Hide();
 	UIDropDownMenu_StartCounting(self:GetParent());
 	GameTooltip:Hide();
-				
+
 	if ( self.mouseOverIcon ~= nil ) then
 		if ( self.icon ~= nil ) then
 			self.Icon:SetTexture(self.icon);
@@ -572,7 +576,7 @@ function UIDropDownMenu_AddButton(info, level)
 			uncheck:SetDesaturated(false);
 			uncheck:SetAlpha(1);
 		end
-		
+
 		check:SetSize(16,16);
 		uncheck:SetSize(16,16);
 		normalText:SetPoint("LEFT", check, "RIGHT", 0, 0);
@@ -580,7 +584,7 @@ function UIDropDownMenu_AddButton(info, level)
 		if info.customCheckIconAtlas or info.customCheckIconTexture then
 			check:SetTexCoord(0, 1, 0, 1);
 			uncheck:SetTexCoord(0, 1, 0, 1);
-			
+
 			if info.customCheckIconAtlas then
 				check:SetAtlas(info.customCheckIconAtlas);
 				uncheck:SetAtlas(info.customUncheckIconAtlas or info.customCheckIconAtlas);
@@ -1109,6 +1113,12 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 
 		listFrame.onHide = dropDownFrame.onHide;
 
+		-- Set the listframe frameStrata
+		if dropDownFrame.listFrameStrata then
+			listFrame.baseFrameStrata = listFrame:GetFrameStrata();
+			listFrame:SetFrameStrata(dropDownFrame.listFrameStrata);
+		end
+
 
 		--  We just move level 1 enough to keep it on the screen. We don't necessarily change the anchors.
 		if ( level == 1 ) then
@@ -1194,6 +1204,10 @@ function UIDropDownMenu_OnHide(self)
 	if ( self.onHide ) then
 		self.onHide(id+1);
 		self.onHide = nil;
+	end
+	if ( self.baseFrameStrata ) then
+		self:SetFrameStrata(self.baseFrameStrata);
+		self.baseFrameStrata = nil;
 	end
 	CloseDropDownMenus(id+1);
 	OPEN_DROPDOWNMENUS[id] = nil;

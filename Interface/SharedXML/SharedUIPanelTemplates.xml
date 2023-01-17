@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="SharedUIPanelTemplates.lua"/>
+	<Script file="PortraitFrame.lua"/>
 
 	<Texture name="UIPanelButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
@@ -252,6 +253,11 @@
 			</OnClick>
 		</Scripts>
 	</Button>
+	<Button name="UIPanelCloseButtonDefaultAnchors" inherits="UIPanelCloseButton" virtual="true">
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="4" y="4"/>
+		</Anchors>
+	</Button>
 	<Frame name="ShadowOverlayTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -457,7 +463,7 @@
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="Text">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
 					</Anchors>
@@ -470,6 +476,23 @@
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
+
+	<Slider name="UISliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+		</HitRectInsets>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true">
+				<KeyValues>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="SliderBar" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<ThumbTexture parentKey="Thumb" name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size x="32" y="32"/>
+		</ThumbTexture>
+	</Slider>
 
 <!--
 *******************************************************************************
@@ -1674,6 +1697,8 @@
 		</HighlightTexture>
     </Button>
 
+		<Button name="PanelTopTabButtonTemplate" inherits="TabButtonTemplate" virtual="true"/> 
+
     <Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<Frames>
@@ -1837,6 +1862,81 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
+
+	<!--
+*******************************************************************************
+    Default Panel templates
+	This is a standard empty frame with a title.
+	It makes its own nine-slice border.
+*******************************************************************************
+-->
+	<Frame name="DefaultPanelBaseTemplate" mixin="DefaultPanelMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
+		</KeyValues>
+		<Size x="338" y="424"/>
+		<Frames>
+			<Frame parentKey="TitleContainer" frameLevel="510">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="30" y="-1"/>
+					<Anchor point="TOPRIGHT" x="-24" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-6">
+						<Texture name="$parentTitleBg" parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-23" y="-3"/>
+								<Anchor point="TOPRIGHT" x="0" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentTitleText" inherits="GameFontNormal" parentKey="TitleText" wordwrap="false">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-5"/>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="DefaultPanelTemplate" inherits="DefaultPanelBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture name="$parentTopTileStreaks" parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-21"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="DefaultPanelFlatTemplate" inherits="DefaultPanelBaseTemplate" virtual="true">
+		<Frames>
+			<Frame name="$parentBg" parentKey="Bg" inherits="FlatPanelBackgroundTemplate" frameLevel="0">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="6" y="-20"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
 	
 <!--
 *******************************************************************************
@@ -1963,7 +2063,8 @@
 		<KeyValues>
 			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
 			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
-			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+			<KeyValue key="tooltipTitle" value="REFRESH_BUTTON_TOOLTIP_TITLE" type="global"/>
+			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="global"/>
 			<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
 		</KeyValues>
 		-->
@@ -2166,5 +2267,200 @@
 				</Texture>
 			</Layer>
 		</Layers>
+	</Frame>
+	<!--
+*******************************************************************************
+    IconSelectorPopupFrameTemplate
+	Frame used for icon selections and naming.  Contains:
+	- Header area with name field and current selected icon
+	- Scroll area for icon list
+	- Footer with confirmation buttons
+*******************************************************************************
+-->
+	<Frame name="IconSelectorPopupFrameTemplate" mixin="IconSelectorPopupFrameTemplateMixin" virtual="true">
+		<Size x="525" y="495"/>
+		<!--
+		editBoxHeaderText: text to be used for font string just above edit box.
+		-->
+		<KeyValues>
+			<KeyValue key="editBoxHeaderText" value="" type="global"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" x="-7" y="7"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".80"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BorderBox" inherits="SelectionFrameTemplate" frameLevel="50" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<FontString parentKey="EditBoxHeaderText" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-21" />
+							</Anchors>
+						</FontString>
+						<FontString parentKey="IconSelectionText" inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="24" y="-69"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="SelectedIconArea">
+						<Size x="275" y="45"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-13" y="-13"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="SelectedIconButton" mixin="SelectedIconButtonMixin">
+								<Size x="36" y="36"/>
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-4.5" y="-3.5"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture file="Interface\Buttons\UI-EmptySlot-Disabled">
+											<Size x="45" y="45"/>
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="-1"/>
+											</Anchors>
+											<TexCoords left="0.140625" right="0.84375" top="0.140625" bottom="0.84375"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="SelectedTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" hidden="true"/>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnClick method="OnClick"/>
+								</Scripts>
+								<NormalTexture parentKey="Icon">
+									<Size x="36" y="36"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="-1"/>
+									</Anchors>
+								</NormalTexture>
+								<HighlightTexture parentKey="Highlight" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+							</Button>
+							<Frame parentKey="SelectedIconText" inherits="VerticalLayoutFrame">
+								<KeyValues>
+									<KeyValue key="spacing" value="2" type="number"/>
+									<KeyValue key="expand" value="true" type="boolean"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-46" y="-10.5"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString parentKey="SelectedIconHeader" inherits="GameFontNormalSmall">
+											<KeyValues>
+												<KeyValue key="layoutIndex" value="1" type="number"/>
+												<KeyValue key="align" value="right" type="string"/>
+											</KeyValues>
+										</FontString>
+										<FontString parentKey="SelectedIconDescription" inherits="GameFontHighlightSmall">
+											<KeyValues>
+												<KeyValue key="layoutIndex" value="2" type="number"/>
+												<KeyValue key="align" value="right" type="string"/>
+											</KeyValues>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame parentKey="IconDragArea" hidden="true">
+						<Size x="499" y="391"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="13" y="-68"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="IconDragAreaContent" inherits="HorizontalLayoutFrame">
+								<KeyValues>
+									<KeyValue key="spacing" value="5" type="number"/>
+									<KeyValue key="expand" value="true" type="boolean"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="PlusIcon" atlas="communities-icon-addchannelplus" useAtlasSize="true" alphaMode="ADD">
+											<KeyValues>
+												<KeyValue key="layoutIndex" value="1" type="number"/>
+											</KeyValues>
+										</Texture>
+										<FontString parentKey="IconDragText" inherits="GameFontGreenLarge" text="ICON_SELECTION_DRAG">
+											<KeyValues>
+												<KeyValue key="layoutIndex" value="2" type="number"/>
+											</KeyValues>
+											<Size x="0" y="32"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+					<EditBox parentKey="IconSelectorEditBox" mixin="IconSelectorEditBoxMixin" letters="16" historyLines="0">
+						<Size x="182" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="29" y="-35"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="IconSelectorPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="12" y="29"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-11" y="0"/>
+									</Anchors>
+									<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture parentKey="IconSelectorPopupNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="175" y="29"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.IconSelectorPopupNameLeft" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture parentKey="IconSelectorPopupNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+									<Size x="12" y="29"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.IconSelectorPopupNameMiddle" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnTextChanged method="OnTextChanged"/>
+							<OnEscapePressed method="OnEscapePressed"/>
+							<OnEnterPressed method="OnEnterPressed"/>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>
+				</Frames>
+			</Frame>
+			<Frame parentKey="IconSelector" inherits="ScrollBoxSelectorTemplate" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="21" y="-84"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 	</Frame>
 </Ui>

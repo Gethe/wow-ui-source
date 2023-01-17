@@ -49,6 +49,37 @@ local CharacterCustomizationShared =
 			},
 		},
 		{
+			Name = "CustomizationScope",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Player", Type = "CustomizationScope", EnumValue = 0 },
+				{ Name = "DragonCompanion", Type = "CustomizationScope", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "CharCustomizationCategory",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "string", Nilable = false },
+				{ Name = "selectedIcon", Type = "string", Nilable = false },
+				{ Name = "undressModel", Type = "bool", Nilable = false },
+				{ Name = "cameraZoomLevel", Type = "number", Nilable = false },
+				{ Name = "cameraDistanceOffset", Type = "number", Nilable = false },
+				{ Name = "spellShapeshiftFormID", Type = "number", Nilable = true },
+				{ Name = "chrModelID", Type = "number", Nilable = true },
+				{ Name = "options", Type = "table", InnerType = "CharCustomizationOption", Nilable = false },
+				{ Name = "hasNewChoices", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CharCustomizationChoice",
 			Type = "Structure",
 			Fields =
@@ -59,6 +90,8 @@ local CharacterCustomizationShared =
 				{ Name = "isNew", Type = "bool", Nilable = false },
 				{ Name = "swatchColor1", Type = "table", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "swatchColor2", Type = "table", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "isLocked", Type = "bool", Nilable = false },
+				{ Name = "lockedText", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -81,8 +114,20 @@ local CharacterCustomizationShared =
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "optionType", Type = "ChrCustomizationOptionType", Nilable = false },
 				{ Name = "choices", Type = "table", InnerType = "CharCustomizationChoice", Nilable = false },
-				{ Name = "currentChoiceIndex", Type = "number", Nilable = false },
+				{ Name = "currentChoiceIndex", Type = "number", Nilable = true },
 				{ Name = "hasNewChoices", Type = "bool", Nilable = false },
+				{ Name = "isSound", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CharacterAlternateFormData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "raceID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "fileName", Type = "string", Nilable = false },
+				{ Name = "createScreenIconAtlas", Type = "string", Nilable = false },
 			},
 		},
 	},

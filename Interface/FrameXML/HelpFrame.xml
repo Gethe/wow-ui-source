@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="HelpFrame.lua"/>
 
 
@@ -36,15 +36,16 @@
 		</Scripts>
 	</Browser>
 
-	<Frame name="HelpFrame" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" mixin="HelpFrameMixin">
+	<Frame name="HelpFrame" toplevel="true" parent="UIParent" inherits="DefaultPanelTemplate" hidden="true" enableMouse="true" mixin="HelpFrameMixin">
 		<Size x="974" y="628"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
 		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 			<Browser parentKey="Browser" name="HelpBrowser" inherits="BrowserTemplate" >
 				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-23"/>
+					<Anchor point="TOPLEFT" x="7" y="-22"/>
 					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
 				</Anchors>
 				<Scripts>
@@ -161,10 +162,10 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="HelpOpenWebTicketButton" parent="MainMenuMicroButton" hidden="true">
+	<Button name="HelpOpenWebTicketButton" parent="CharacterMicroButton" hidden="true">
 		<Size x="34" y="35"/>
 		<Anchors>
-			<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPRIGHT" x="-3" y="-26"/>
+			<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPLEFT" x="9" y="6"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
@@ -291,9 +292,7 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset x="0" y="0"/>
@@ -301,9 +300,7 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT">
 									<Offset x="0" y="0"/>
@@ -317,9 +314,7 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT">
 									<Offset x="0" y="0"/>
@@ -327,9 +322,7 @@
 							</Anchors>
 						</Texture>
 						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
-							<Size>
-								<AbsDimension x="8" y="8"/>
-							</Size>
+							<Size x="8" y="8"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT">
 									<Offset x="0" y="0"/>

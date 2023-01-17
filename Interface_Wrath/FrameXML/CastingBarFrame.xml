@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\Interface\FrameXML\UI.xsd">
 	<Script file="CastingBarFrame.lua"/>
 	<StatusBar name="CastingBarFrameTemplate" drawLayer="BORDER" virtual="true">
 		<Layers>
@@ -105,48 +105,39 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
 					<Size>
-						<AbsDimension x="0" y="49"/>
+						<AbsDimension x="0" y="56"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-23" y="20"/>
-						<Anchor point="TOPRIGHT" x="23" y="20"/>
+						<Anchor point="TOPLEFT" x="-23" y="23"/>
+						<Anchor point="TOPRIGHT" x="23" y="23"/>
 					</Anchors>
 				</Texture>
-								<FontString parentKey="Text" inherits="SystemFont_Shadow_Small">
-					<Size>
-						<AbsDimension x="0" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="4"/>
-						<Anchor point="TOPRIGHT" x="0" y="4"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
 					<Size>
-						<AbsDimension x="0" y="49"/>
+						<AbsDimension x="0" y="56"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-28" y="20"/>
-						<Anchor point="TOPRIGHT" x="18" y="20"/>
+						<Anchor point="TOPLEFT" x="-28" y="23"/>
+						<Anchor point="TOPRIGHT" x="18" y="23"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Icon">
 					<Size>
-						<AbsDimension x="16" y="16"/>
+						<AbsDimension x="16" y="17"/>
 					</Size>
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
 							<Offset>
-								<AbsDimension x="-5" y="0"/>
+								<AbsDimension x="-5" y="1"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
 					<Size>
-						<AbsDimension x="32" y="32"/>
+						<AbsDimension x="36" y="36"/>
 					</Size>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -154,13 +145,22 @@
 				</Texture>
 				<Texture parentKey="Flash" file="Interface\CastingBar\UI-CastingBar-Flash-Small" alphaMode="ADD">
 					<Size>
-						<AbsDimension x="0" y="49"/>
+						<AbsDimension x="0" y="56"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-23" y="20"/>
-						<Anchor point="TOPRIGHT" x="23" y="20"/>
+						<Anchor point="TOPLEFT" x="-23" y="23"/>
+						<Anchor point="TOPRIGHT" x="23" y="23"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="Text" inherits="SystemFont_Shadow_Small">
+					<Size>
+						<AbsDimension x="0" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="4"/>
+						<Anchor point="TOPRIGHT" x="0" y="4"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

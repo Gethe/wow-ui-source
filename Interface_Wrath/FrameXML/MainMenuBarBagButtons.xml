@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\Interface\FrameXML\UI.xsd">
 	<Script file="../../Interface/FrameXML/MainMenuBarBagButtons.lua"/>
 	<Frame name="ItemAnimTemplate" virtual="true">
 		<Animations>
@@ -55,7 +55,7 @@
 				if ( event == "BAG_UPDATE_DELAYED" ) then
 				PaperDollItemSlotButton_Update(self);
 				elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-				if ( IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
+				if ( C_Container.IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
 				self.searchOverlay:Show();
 				else
 				self.searchOverlay:Hide();

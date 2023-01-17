@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\Interface\FrameXML\UI.xsd">
 	<Script file="TargetFrame.lua"/>
 	<Frame name="TargetofTargetDebuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
 		<Size x="12" y="12"/>
@@ -525,7 +525,7 @@
 			<OnDragStop function="TargetFrame_OnDragStop"/>
 		</Scripts>
 	</Button>
-	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" clampedToScreen="true">
+	<Button name="FocusFrame" movable="true" inherits="TargetFrameTemplate" mixin="FocusFrameMixin" clampedToScreen="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="250" y="-240"/>
 		</Anchors>

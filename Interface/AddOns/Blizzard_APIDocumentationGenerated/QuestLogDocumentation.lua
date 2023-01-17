@@ -196,6 +196,19 @@ local QuestLog =
 	Tables =
 	{
 		{
+			Name = "QuestFrequency",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Default", Type = "QuestFrequency", EnumValue = 0 },
+				{ Name = "Daily", Type = "QuestFrequency", EnumValue = 1 },
+				{ Name = "Weekly", Type = "QuestFrequency", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "QuestTag",
 			Type = "Enumeration",
 			NumValues = 10,
@@ -225,6 +238,16 @@ local QuestLog =
 				{ Name = "finished", Type = "bool", Nilable = false },
 				{ Name = "numFulfilled", Type = "number", Nilable = false },
 				{ Name = "numRequired", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "QuestOnMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
 			},
 		},
 	},

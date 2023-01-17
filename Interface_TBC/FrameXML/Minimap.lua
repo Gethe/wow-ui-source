@@ -187,7 +187,7 @@ function MinimapButton_OnMouseDown(self, button)
 		return;
 	end
 	local button = _G[self:GetName().."Icon"];
-	local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint();
+	local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint(1);
 	button:SetPoint(point, relativeTo, relativePoint, offsetX+1, offsetY-1);
 	self.isDown = 1;
 end
@@ -196,7 +196,7 @@ function MinimapButton_OnMouseUp(self)
 		return;
 	end
 	local button = _G[self:GetName().."Icon"];
-	local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint();
+	local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint(1);
 	button:SetPoint(point, relativeTo, relativePoint, offsetX-1, offsetY+1);
 	self.isDown = nil;
 end
@@ -247,11 +247,11 @@ end
 function MiniMapTracking_Update()
 	local currentTexture = MiniMapTrackingIcon:GetTexture();
 	local bestTexture = [[Interface\Minimap\Tracking\None]];
-	local count = GetNumTrackingTypes();
+	local count = C_Minimap.GetNumTrackingTypes();
 	for id = 1, count do
-		local texture, active, category  = select(2, GetTrackingInfo(id));
+		local texture, active, category  = select(2, C_Minimap.GetTrackingInfo(id));
 		if active then
-			if (category == "spell") then 
+			if (category == "spell") then
 				if (currentTexture == texture) then
 					return;
 				end
@@ -279,20 +279,20 @@ function MiniMapTrackingDropDown_OnEvent(self, event, ...)
 end
 
 function MiniMapTracking_SetTracking(self, id, unused, on)
-	SetTracking(id, on);
+	C_Minimap.SetTracking(id, on);
 	HideDropDownMenu(2);
 end
 
 function MiniMapTrackingDropDownButton_IsActive(button)
-	local name, texture, active, category = GetTrackingInfo(button.arg1);
+	local name, texture, active, category = C_Minimap.GetTrackingInfo(button.arg1);
 	return active;
 end
 
 function MiniMapTrackingDropDown_IsNoTrackingActive()
 	local name, texture, active, category;
-	local count = GetNumTrackingTypes();
+	local count = C_Minimap.GetNumTrackingTypes();
 	for id = 1, count do
-		name, texture, active, category  = GetTrackingInfo(id);
+		name, texture, active, category  = C_Minimap.GetTrackingInfo(id);
 		if (active) then
 			return false;
 		end
@@ -302,19 +302,19 @@ end
 
 function MiniMapTrackingDropDown_Initialize(self, level)
 	local name, texture, active, category, nested, numTracking;
-	local count = GetNumTrackingTypes();
+	local count = C_Minimap.GetNumTrackingTypes();
 	local info;
 	local _, class = UnitClass("player");
 
 	if (level == 1) then
 		numTracking = 0; -- make sure there are at least two options in dropdown
 		for id = 1, count do
-			name, texture, active, category, nested = GetTrackingInfo(id);
+			name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
 			if (category == "spell") then
 				numTracking = numTracking + 1;
 			end
 		end
-			
+
 		if (numTracking > 1) then
 			info = UIDropDownMenu_CreateInfo();
 			info.text = TRACKING;
@@ -329,7 +329,7 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 	end
 
 	for id = 1, count do
-		name, texture, active, category, nested = GetTrackingInfo(id);
+		name, texture, active, category, nested = C_Minimap.GetTrackingInfo(id);
 		info = UIDropDownMenu_CreateInfo();
 		info.text = name;
 		info.checked = MiniMapTrackingDropDownButton_IsActive;
@@ -350,19 +350,19 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 			info.tCoordBottom = 1;
 		end
 
-		if ((level == 1 and category ~= "spell") or 
+		if ((level == 1 and category ~= "spell") or
 			(numTracking == 1 and category == "spell")) then -- this is a tracking ability, but you only have one
 			UIDropDownMenu_AddButton(info, level);
 		elseif (level == 2 and category == "spell") then
 			UIDropDownMenu_AddButton(info, level);
 		end
 	end
-	
+
 	if (level == 1) then -- the NONE button
 		info = UIDropDownMenu_CreateInfo();
 		info.text = MINIMAP_TRACKING_NONE;
 		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive;
-		info.func = ClearAllTracking;
+		info.func = C_Minimap.ClearAllTracking;
 		info.classicChecks = true;
 		info.icon = nil;
 		info.arg1 = nil;
@@ -430,7 +430,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 			end
 			info.isTitle = 1;
 			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);		
+			UIDropDownMenu_AddButton(info);
 
 			if ( status == "queued" ) then
 				-- FIXME: r855580
@@ -484,12 +484,12 @@ function MiniMapBattlefieldDropDown_Initialize()
 				if ( IsActiveBattlefieldArena() ) then
 					info.text = LEAVE_ARENA;
 				else
-					info.text = LEAVE_BATTLEGROUND;				
+					info.text = LEAVE_BATTLEGROUND;
 				end
 				info.func = LeaveBattlefield;
 				info.notCheckable = 1;
 				UIDropDownMenu_AddButton(info);
-			end		
+			end
 	end
 end
 
@@ -504,7 +504,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 	MiniMapBattlefieldFrame.tooltip = nil;
 	MiniMapBattlefieldFrame.waitTime = {};
 	MiniMapBattlefieldFrame.status = nil;
-	
+
 	-- Copy current queues into previous queues
 	if ( not tooltipOnly ) then
 		PREVIOUS_BATTLEFIELD_QUEUES = {};
@@ -538,14 +538,14 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 				timeInQueue = GetBattlefieldTimeWaited(i)/1000;
 				if ( waitTime == 0 ) then
 					waitTime = QUEUE_TIME_UNAVAILABLE;
-				elseif ( waitTime < 60000 ) then 
+				elseif ( waitTime < 60000 ) then
 					waitTime = LESS_THAN_ONE_MINUTE;
 				else
 					waitTime = SecondsToTime(waitTime/1000, 1);
 				end
 				MiniMapBattlefieldFrame.waitTime[i] = waitTime;
 				tooltip = format(BATTLEFIELD_IN_QUEUE, mapName, waitTime, SecondsToTime(timeInQueue));
-				
+
 				if ( not tooltipOnly ) then
 					if ( not IsAlreadyInQueue(mapName) ) then
 						PlaySound(SOUNDKIT.PVP_ENTER_QUEUE);
@@ -565,11 +565,11 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 			elseif ( status == "active" ) then
 				-- In the battleground
 				if ( teamSize ~= 0 ) then
-					tooltip = mapName;			
+					tooltip = mapName;
 				else
 					tooltip = format(BATTLEFIELD_IN_BATTLEFIELD, mapName);
 				end
-				
+
 				BATTLEFIELD_SHUTDOWN_TIMER = GetBattlefieldInstanceExpiration()/1000;
 				BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
 				PREVIOUS_BATTLEFIELD_MOD = 0;
@@ -590,7 +590,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 	if ( MiniMapBattlefieldFrame.tooltip and showRightClickText ) then
 		MiniMapBattlefieldFrame.tooltip = MiniMapBattlefieldFrame.tooltip.."\n"..RIGHT_CLICK_MESSAGE;
 	end
-	
+
 	if ( not tooltipOnly ) then
 		if ( numberQueues == 0 ) then
 			-- Clear everything out
@@ -598,7 +598,7 @@ function BattlefieldFrame_UpdateStatus(tooltipOnly)
 		else
 			MiniMapBattlefieldFrame:Show();
 		end
-		
+
 		-- Set minimap icon here since it bugs out on login
 		if ( UnitFactionGroup("player") ) then
 			MiniMapBattlefieldIcon:SetTexture("Interface\\BattlefieldFrame\\Battleground-"..UnitFactionGroup("player"));

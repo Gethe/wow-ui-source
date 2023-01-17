@@ -25,16 +25,6 @@ local ItemUpgrade =
 			LiteralName = "ITEM_UPGRADE_FAILED",
 		},
 		{
-			Name = "ItemUpgradeMasterClosed",
-			Type = "Event",
-			LiteralName = "ITEM_UPGRADE_MASTER_CLOSED",
-		},
-		{
-			Name = "ItemUpgradeMasterOpened",
-			Type = "Event",
-			LiteralName = "ITEM_UPGRADE_MASTER_OPENED",
-		},
-		{
 			Name = "ItemUpgradeMasterSetItem",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_MASTER_SET_ITEM",

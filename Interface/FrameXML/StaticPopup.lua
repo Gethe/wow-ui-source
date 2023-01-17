@@ -341,7 +341,7 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -365,7 +365,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -386,7 +386,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_ARENA_POINTS"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -407,7 +407,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR_AND_ARENA"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -2931,17 +2931,18 @@ StaticPopupDialogs["XP_LOSS"] = {
 			self.data = nil;
 			return 1;
 		else
-			AcceptXPLoss();
+			C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			CloseGossip();
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			self:Hide(); 
 		end
 	end,
 	OnCancel = function(self)
-		CloseGossip();
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2959,17 +2960,17 @@ StaticPopupDialogs["XP_LOSS_NO_DURABILITY"] = {
 			self.data = nil;
 			return 1;
 		else
-			AcceptXPLoss();
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			CloseGossip();
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			self:Hide(); 
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
 	end,
 	OnCancel = function(self)
-		CloseGossip();
+		C_PlayerInteractionManager.ClearInteraction();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2987,13 +2988,13 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS"] = {
 			self.data = nil;
 			return 1;
 		else
-			AcceptXPLoss();
+			 C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer)
 		end
 	end,
 	OnUpdate = function(self, dialog)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			CloseGossip();
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			self:Hide(); 
 		end
 	end,
 	OnCancel = function(self)
@@ -3010,16 +3011,16 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		AcceptXPLoss();
+		C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer);
 	end,
 	OnUpdate = function(self, dialog)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			CloseGossip();
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			self:Hide(); 
 		end
 	end,
 	OnCancel = function(self)
-		CloseGossip();
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3370,13 +3371,19 @@ StaticPopupDialogs["CONFIRM_BINDER"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ConfirmBinder();
+		C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.Binder);
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( not CheckBinderDist() ) then
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.Binder) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
 			self:Hide();
 		end
 	end,
+	OnCancel = function(self)
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
+		self:Hide();
+	end,	
 	timeout = 0,
 	hideOnEscape = 1
 };
@@ -3490,7 +3497,7 @@ StaticPopupDialogs["GOSSIP_CONFIRM"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		SelectGossipOption(data, "", true);
+		C_GossipInfo.SelectOption(data, "", true);
 	end,
 	hasMoneyFrame = 1,
 	timeout = 0,
@@ -3503,7 +3510,7 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	OnAccept = function(self, data)
-		SelectGossipOption(data, self.editBox:GetText(), true);
+		C_GossipInfo.SelectOption(data, self.editBox:GetText(), true);
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -3514,7 +3521,7 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 	end,
 	EditBoxOnEnterPressed = function(self, data)
 		local parent = self:GetParent();
-		SelectGossipOption(data, parent.editBox:GetText());
+		C_GossipInfo.SelectOption(data, parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)

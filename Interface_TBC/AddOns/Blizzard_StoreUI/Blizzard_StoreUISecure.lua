@@ -70,7 +70,7 @@ Import("type");
 Import("string");
 Import("strtrim");
 Import("LoadURLIndex");
-Import("GetContainerNumFreeSlots");
+Import("C_Container");
 Import("GetCursorPosition");
 Import("PlaySound");
 Import("SetPortraitToTexture");
@@ -362,7 +362,7 @@ local function SetCurrentCategoryToExclusiveState(shouldBeExclusive)
 	end
 
 	showExclusiveCategory = shouldBeExclusive;
-	
+
 	if not shouldBeExclusive then
 		StoreFrame_UpdateSelectedCategory();
 		StoreFrame_SetCategory();
@@ -469,145 +469,6 @@ local errorData = {
 		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
 		msg = BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE,
 	},
-};
-
---VAS Error message data
-local vasErrorData = {
-	[Enum.VasError.InvalidDestinationAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT,
-	},
-	[Enum.VasError.InvalidSourceAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT,
-	},
-	[Enum.VasError.DisallowedSourceAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT,
-	},
-	[Enum.VasError.DisallowedDestinationAccount] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT,
-	},
-	[Enum.VasError.LowerBoxLevel] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL,
-	},
-	[Enum.VasError.RealmNotEligible] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE,
-	},
-	[Enum.VasError.CannotMoveGuildMaster] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER,
-	},
-	[Enum.VasError.MaxCharactersOnServer] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER,
-	},
-	[Enum.VasError.NoMixedAlliance] = {
-		msg = CHAR_CREATE_PVP_TEAMS_VIOLATION,
-	},
-	[Enum.VasError.DuplicateCharacterName] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,
-	},
-	[Enum.VasError.HasMail] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_MAIL,
-	},
-	[Enum.VasError.UnderMinLevelReq] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
-	},
-	[Enum.VasError.IneligibleTargetRealm] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_TARGET_REALM,
-	},
-	[Enum.VasError.CharacterTransferTooSoon] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
-	},
-	[Enum.VasError.AllianceNotEligible] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_ALLIANCE_NOT_ELIGIBLE,
-	},
-	[Enum.VasError.TooMuchMoneyForLevel] = {
-		msg = function(character)
-			local str = "";
-			local moneyCapForLevel = 0;
-			if GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
-				if (character.level > 50) then
-					moneyCapForLevel = 25000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				elseif (character.level > 30) then
-					moneyCapForLevel = 2500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				else
-					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				end
-			else
-				if (character.level > 50) then
-					moneyCapForLevel = 5000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				elseif (character.level > 30) then
-					moneyCapForLevel = 500 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				else
-					moneyCapForLevel = 100 * COPPER_PER_SILVER * SILVER_PER_GOLD;
-				end
-			end
-			if (moneyCapForLevel > 0) then
-				str = GetSecureMoneyString(moneyCapForLevel, true, true);
-			end
-			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
-		end
-	},
-	[Enum.VasError.HasAuctions] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_AUCTIONS,
-	},
-	[Enum.VasError.NameNotAvailable] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NAME_NOT_AVAILABLE,
-	},
-	[Enum.VasError.LastRenameTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT,
-	},
-	[Enum.VasError.CustomizeAlreadyRequested] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED,
-	},
-	[Enum.VasError.LastCustomizeTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_CUSTOMIZE_TOO_SOON,
-	},
-	[Enum.VasError.FactionChangeTooSoon] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
-	},
-	[Enum.VasError.RaceClassComboIneligible] = { --We should still handle this one even though we shortcut it in case something slips through
-		msg = BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE,
-	},
-	[Enum.VasError.PendingItemAudit] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_PENDING_ITEM_AUDIT,
-	},
-	[Enum.VasError.IneligibleMapID] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,
-	},
-	[Enum.VasError.BattlepayDeliveryPending] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING,
-	},
-	[Enum.VasError.HasWoWToken] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN,
-	},
-	[Enum.VasError.HasHeirloom] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM,
-	},
-	[Enum.VasError.CharLocked] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
-		notUserFixable = true,
-	},
-	[Enum.VasError.LastSaveTooRecent] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
-		notUserFixable = true,
-	},
-	[Enum.VasError.HasCagedBattlePet] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET,
-	},
-	[Enum.VasError.LastSaveTooDistant] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
-	},
-	[Enum.VasError.BoostedTooRecently] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
-		notUserFixable = true,
-	},
-	[Enum.VasError.PvEToPvPTransferNotAllowed] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_PVE_TO_PVP_TRANSFER_NOT_ALLOWED,
-	},
-	[Enum.VasError.NeedsEraChoice] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_NEEDS_ERA_CHOICE;
-	},
-	[Enum.VasError.ArenaTeamCaptain] = {
-		msg = BLIZZARD_STORE_VAS_ERROR_ARENA_TEAM_CAPTAIN;
-	}
 };
 
 local factionColors = {
@@ -1807,10 +1668,10 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			local errors = data.errors;
 			local hasOther = false;
 			local hasNonUserFixable = false;
-			for i = 1, #errors do
-				if (not vasErrorData[errors[i]]) then
+			for index, errorID in ipairs(errors) do
+				if not VASErrorData_HasError(errorID) then
 					hasOther = true;
-				elseif (vasErrorData[errors[i]].notUserFixable) then
+				elseif not VASErrorData_IsUserFixableError(errorID) then
 					hasNonUserFixable = true;
 				end
 			end
@@ -1818,15 +1679,12 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			desc = "";
 			if (hasOther) then
 				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-			elseif (hasNonUserFixable) then
-				for i = 1, #errors do
-					if (vasErrorData[errors[i]].notUserFixable) then
-						desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
-					end
-				end
 			else
-				for i = 1, #errors do
-					desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
+				desc = hasNonUserFixable and "" or BLIZZARD_STORE_VAS_ERROR_LABEL;
+				for index, errorID in ipairs(errors) do
+					if hasNonUserFixable == not VASErrorData_IsUserFixableError(errorID) then
+						desc = StoreVASValidationFrame_AppendError(desc, errorID, character, index == 1);
+					end
 				end
 			end
 
@@ -2073,7 +1931,7 @@ end
 
 function StoreFrame_HasFreeBagSlots()
 	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		local freeSlots, bagFamily = GetContainerNumFreeSlots(i);
+		local freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
 		if ( freeSlots > 0 and bagFamily == 0 ) then
 			return true;
 		end
@@ -2155,9 +2013,9 @@ function StoreConfirmationFrame_OnLoad(self)
 	self.Title:SetText(BLIZZARD_STORE_CONFIRMATION_TITLE);
 	self.NoticeFrame.TotalLabel:SetText(BLIZZARD_STORE_FINAL_PRICE_LABEL);
 
-	self.LicenseAcceptText:SetTextColor(0.8, 0.8, 0.8);
+	self.LicenseAcceptText:SetTextColor("P", 0.8, 0.8, 0.8);
 
-	self.NoticeFrame.Notice:SetSpacing(6);
+	self.NoticeFrame.Notice:SetSpacing("P", 6);
 
 	self:RegisterEvent("STORE_CONFIRM_PURCHASE");
 end
@@ -2449,7 +2307,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 		if (productInfo.sharedData.vasServiceType == Enum.VasServiceType.CharacterTransfer or productInfo.sharedData.vasServiceType == Enum.VasServiceType.FactionChange ) then
 			disclaimer = string.format(disclaimer, VAS_QUEUE_SEVERAL_MINUTES);
 		end
-		self.Disclaimer:SetTextColor(0, 0, 0);
+		self.Disclaimer:SetTextColor("P", 0, 0, 0);
 		self.Disclaimer:SetText(HTML_START_CENTERED..disclaimer..HTML_END);
 		self.Disclaimer:Show();
 	end
@@ -2515,14 +2373,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 end
 
 function StoreVASValidationFrame_AppendError(desc, errorID, character, firstAppend)
-	local errorData = vasErrorData[errorID];
-	local str;
-	if (type(errorData.msg) == "function") then
-		str = errorData.msg(character);
-	else
-		str = errorData.msg;
-	end
-
+	local str = VASErrorData_GetMessage(errorID, character);
 	local sep = desc ~= "" and (firstAppend and "|n|n" or "|n") or "";
 	return desc .. sep .. str;
 end
@@ -2648,9 +2499,9 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			queueTime = factionTransfer;
 		end
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
-				self.Disclaimer:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+				self.Disclaimer:SetTextColor("P",_G.RED_FONT_COLOR:GetRGB());
 		else
-				self.Disclaimer:SetTextColor(0, 0, 0);
+				self.Disclaimer:SetTextColor("P",0, 0, 0);
 		end
 		local currencyInfo = SecureCurrencyUtil.GetActiveCurrencyInfo();
 		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
@@ -2691,10 +2542,10 @@ function StoreVASValidationFrame_SetErrors(errors)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	local hasOther = false;
 	local hasNonUserFixable = false;
-	for i = 1, #errors do
-		if (not vasErrorData[errors[i]]) then
+	for index, errorID in ipairs(errors) do
+		if not VASErrorData_HasError(errorID) then
 			hasOther = true;
-		elseif (vasErrorData[errors[i]].notUserFixable) then
+		elseif not VASErrorData_IsUserFixableError(errorID) then
 			hasNonUserFixable = true;
 		end
 	end
@@ -2702,17 +2553,15 @@ function StoreVASValidationFrame_SetErrors(errors)
 	local desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
 	if (hasOther) then
 		desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-	elseif (hasNonUserFixable) then
-		for i = 1, #errors do
-			if (vasErrorData[errors[i]].notUserFixable) then
-				desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
+	else
+		desc = hasNonUserFixable and "" or BLIZZARD_STORE_VAS_ERROR_LABEL;
+		for index, errorID in ipairs(errors) do
+			if hasNonUserFixable == not VASErrorData_IsUserFixableError(errorID) then
+				desc = StoreVASValidationFrame_AppendError(desc, errorID, character, index == 1);
 			end
 		end
-	else
-		for i = 1, #errors do
-			desc = StoreVASValidationFrame_AppendError(desc, errors[i], character, i == 1);
-		end
 	end
+
 	frame.ChangeIconFrame:Hide();
 	if (VASServiceType == Enum.VasServiceType.NameChange) then
 		frame.ValidationDescription:ClearAllPoints();
@@ -2927,7 +2776,7 @@ function StoreProductCard_CheckShowStorePreviewOnClick(self)
 		showPreview = IsModifiedClick("DRESSUP");
 	end
 	if ( showPreview ) then
-		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());		
+		local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
 		if ( entryInfo.displayID ) then
 			StoreFrame_ShowPreview(entryInfo.name, entryInfo.displayID, entryInfo.modelSceneID);
 		end
@@ -4224,12 +4073,12 @@ local timeoutTicker;
 
 function VASCharacterSelectionStartTimeout()
 	VASCharacterSelectionCancelTimeout();
-	timeoutTicker = NewSecureTicker(TIMEOUT_SECS, VASCharacterSelectionTimeout, 1);
+	timeoutTicker = C_Timer.NewTicker(TIMEOUT_SECS, VASCharacterSelectionTimeout, 1);
 end
 
 function VASCharacterSelectionCancelTimeout()
 	if (timeoutTicker) then
-		SecureCancelTicker(timeoutTicker);
+		timeoutTicker:Cancel();
 		timeoutTicker = nil;
 	end
 end
@@ -4298,7 +4147,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 			wowAccountGUID = C_StoreSecure.GetWoWAccountGUIDFromName(SelectedDestinationWowAccount, true);
 		end
 	end
-	
+
 	if ( C_StoreSecure.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, DestinationRealmMapping[SelectedDestinationRealm], wowAccountGUID, bnetAccountGUID, CharacterTransferFactionChangeBundle) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
@@ -4552,39 +4401,6 @@ end
 --------------------------------------
 local priceUpdateTimer, currentPollTimeSeconds;
 
-------------------------------------------------------------------------------------------------------------------------------------------------------
--- This code is replicated from C_TimerAugment.lua to ensure that the timers are secure.
-------------------------------------------------------------------------------------------------------------------------------------------------------
---Cancels a ticker or timer. May be safely called within the ticker's callback in which
---case the ticker simply won't be started again.
---Cancel is guaranteed to be idempotent.
-function SecureCancelTicker(ticker)
-	ticker._cancelled = true;
-end
-
-function NewSecureTicker(duration, callback, iterations)
-	local ticker = {};
-	ticker._remainingIterations = iterations;
-	ticker._callback = function()
-		if ( not ticker._cancelled ) then
-			callback(ticker);
-
-			--Make sure we weren't cancelled during the callback
-			if ( not ticker._cancelled ) then
-				if ( ticker._remainingIterations ) then
-					ticker._remainingIterations = ticker._remainingIterations - 1;
-				end
-				if ( not ticker._remainingIterations or ticker._remainingIterations > 0 ) then
-					C_Timer.After(duration, ticker._callback);
-				end
-			end
-		end
-	end;
-
-	C_Timer.After(duration, ticker._callback);
-	return ticker;
-end
-
 function StoreFrame_UpdateMarketPrice()
 	C_WowTokenPublic.UpdateMarketPrice();
 end
@@ -4595,14 +4411,14 @@ function StoreFrame_CheckMarketPriceUpdates()
 		local _, pollTimeSeconds = C_WowTokenPublic.GetCommerceSystemStatus();
 		if (not priceUpdateTimer or pollTimeSeconds ~= currentPollTimeSeconds) then
 			if (priceUpdateTimer) then
-				SecureCancelTicker(priceUpdateTimer);
+				priceUpdateTimer:Cancel();
 			end
-			priceUpdateTimer = NewSecureTicker(pollTimeSeconds, StoreFrame_UpdateMarketPrice);
+			priceUpdateTimer = C_Timer.NewTicker(pollTimeSeconds, StoreFrame_UpdateMarketPrice);
 			currentPollTimeSeconds = pollTimeSeconds;
 		end
 	else
 		if (priceUpdateTimer) then
-			SecureCancelTicker(priceUpdateTimer);
+			priceUpdateTimer:Cancel();
 		end
 	end
 end

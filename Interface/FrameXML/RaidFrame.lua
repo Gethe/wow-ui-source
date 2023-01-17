@@ -165,10 +165,10 @@ function RaidFrameAllAssistCheckButton_UpdateAvailable(self)
 	self:SetChecked(IsEveryoneAssistant());
 	if ( UnitIsGroupLeader("player") ) then
 		self:Enable();
-		self.text:SetFontObject(GameFontNormalSmall);
+		self.Text:SetFontObject(GameFontNormalSmall);
 	else
 		self:Disable();
-		self.text:SetFontObject(GameFontDisableSmall);
+		self.Text:SetFontObject(GameFontDisableSmall);
 	end
 end
 

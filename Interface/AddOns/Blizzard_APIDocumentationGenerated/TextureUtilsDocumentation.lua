@@ -20,6 +20,20 @@ local TextureUtils =
 				{ Name = "info", Type = "AtlasInfo", Nilable = false },
 			},
 		},
+		{
+			Name = "GetFilenameFromFileDataID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "fileDataID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "filename", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =

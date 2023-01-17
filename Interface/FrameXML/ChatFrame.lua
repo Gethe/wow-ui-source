@@ -1134,7 +1134,7 @@ function SecureCmdItemParse(item)
 		slot = strmatch(item, "^(%d+)$");
 	end
 	if ( bag ) then
-		item = GetContainerItemLink(bag, slot);
+		item = C_Container.GetContainerItemLink(bag, slot);
 	elseif ( slot ) then
 		item = GetInventoryItemLink("player", slot);
 	end
@@ -1143,7 +1143,7 @@ end
 
 function SecureCmdUseItem(name, bag, slot, target)
 	if ( bag ) then
-		UseContainerItem(bag, slot, target);
+		C_Container.UseContainerItem(bag, slot, target);
 	elseif ( slot ) then
 		UseInventoryItem(slot, target);
 	else
@@ -1595,6 +1595,11 @@ SecureCmdList["CLICK"] = function(msg)
 		if ( not name ) then
 			name = action;
 		end
+		if ( not mouseButton ) then
+			mouseButton = "LeftButton";
+		end
+		down = StringToBoolean(down or "", false);
+
 		local button = GetClickFrame(name);
 		if ( button and button:IsObjectType("Button") and not button:IsForbidden() ) then
 			button:Click(mouseButton, down);
@@ -3487,7 +3492,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				if (client and client ~= "") then
 					local _, _, battleTag = BNGetFriendInfoByID(arg13);
 					characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
-					local characterNameText = BNet_GetClientEmbeddedTexture(client, 14)..characterName;
+					local characterNameText = BNet_GetClientEmbeddedAtlas(client, 14)..characterName;
 					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterNameText);
 					local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
 					message = format(globalstring, playerLink);
@@ -4360,7 +4365,7 @@ function ChatEdit_InsertLink(text)
 			item = GetItemInfo(text);
 		end
 		if ( item ) then
-			BrowseName:SetText(item);
+			BrowseName:SetText('"'..item..'"');
 			return true;
 		end
 	end

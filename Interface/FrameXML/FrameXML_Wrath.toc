@@ -1,9 +1,9 @@
 ..\SharedXML\SharedConstants.lua
 
 ## add C namespace augmentations here
-..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
+..\SharedXML\middleclass.lua
 GlueCheck.lua
 ..\..\Interface_TBC\FrameXML\Localization.xml
 Fonts.xml
@@ -26,23 +26,24 @@ FontStyles.xml
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\Backdrop.xml
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\MathUtil.lua
 ..\SharedXML\Color.lua
 ..\..\Interface_TBC\SharedXML\ColorUtil.lua
 ..\SharedXML\Constants.lua
 ..\SharedXML\SharedTooltipTemplates.xml
+..\SharedXML\TableUtil.lua
+..\SharedXML\EnumUtil.lua
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
 
-..\SharedXML\TableUtil.lua
-..\SharedXML\EnumUtil.lua
-..\SharedXML\MathUtil.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CvarUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\EventUtil.lua
 ..\SharedXML\RegionUtil.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\LoopingSoundEffect.lua
@@ -74,6 +75,7 @@ MixinUtil.lua
 ..\SharedXML\Scroll\ScrollBox.xml
 ..\SharedXML\Scroll\ScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
+..\SharedXML\ButtonStateBehavior.lua
 ..\SharedXML\Scroll\TrimScrollBar.xml
 ..\SharedXML\Scroll\ClassicTrimScrollBar.xml
 ## intrinsics
@@ -114,11 +116,16 @@ WorldFrame.xml
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedEffectController.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedModelScene.xml
+..\SharedXML\Selector\Blizzard_SelectorUI.xml
+..\SharedXML\Selector\Blizzard_GridSelectorUI.xml
+..\SharedXML\Selector\Blizzard_ScrollBoxSelector.xml
+
 QuestUtils.lua
 MapUtil.lua
 AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
+IconDataProvider.lua
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml
 MoneyFrame.lua
@@ -243,6 +250,7 @@ TabardFrame.xml
 GuildRegistrarFrame.xml
 PetitionFrame.xml
 HelpFrame.xml
+GossipFrameShared.xml
 ColorPickerFrame.xml
 GossipFrame.xml
 MailFrame.xml
@@ -283,7 +291,9 @@ ArenaFrame.xml
 ArenaRegistrarFrame.xml
 RuneFrame.xml
 ..\..\Interface_Wrath\FrameXML\EquipmentManager.lua
+PlayerInteractionFrameManager.xml
 QueueReadyCheckFrame.xml
+
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

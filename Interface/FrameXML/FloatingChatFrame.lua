@@ -165,6 +165,8 @@ function FCF_GetChatWindowInfo(id)
 		end
 		return name, size, r, g, b, a, isShown, isLocked, isDocked, isUninteractable;
 	end
+
+	return "", CHAT_FRAME_DEFAULT_FONT_SIZE, 0, 0, 0, 0;
 end
 
 function FCF_CopyChatSettings(copyTo, copyFrom)
@@ -711,7 +713,7 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 	chatTab.selectedColorTable = { r = info.r, g = info.g, b = info.b };
 	FCFTab_UpdateColors(chatTab, not chatFrame.isDocked or chatFrame == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
 
-	chatFrame:SetMinResize(CHAT_FRAME_MIN_WIDTH, CHAT_FRAME_NORMAL_MIN_HEIGHT);
+	chatFrame:SetResizeBounds(CHAT_FRAME_MIN_WIDTH, CHAT_FRAME_NORMAL_MIN_HEIGHT);
 
 	--Set the icon
 	local icon;

@@ -61,9 +61,9 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	                     nil, "player", nil,
 						 nil, nil,
 						 nil, nil, nil,
-						 nil, nil, 
+						 nil, nil,
 						 nil, nil);
-						
+
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_HEALTH");
@@ -1107,7 +1107,7 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
 	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
-	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint("CENTER")));
+	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint(1)));
 	self.raidTargetIcon:SetPoint("RIGHT", -90, 0);
 	self:SetHitRectInsets(0, 95, 15, 30);
 	self:SetScale(0.75);

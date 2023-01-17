@@ -11,7 +11,9 @@ end
 
 function ReportFrameMixin:OnHide()
 	self:Reset();
-	Enable_BagButtons();
+	if( MainMenuBarBagManager ) then
+		MainMenuBarBagManager:SetBagButtonsEnabled(true);
+	end
 end
 
 function ReportFrameMixin:OnEvent(event, ...)
@@ -91,7 +93,9 @@ function ReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerL
 	self.MinorReportDescription:Hide();
 	self.ReportButton:UpdateButtonState(); 
 	self:Layout(); 
-	Disable_BagButtons(); 
+	if( MainMenuBarBagManager ) then
+		MainMenuBarBagManager:SetBagButtonsEnabled(false);
+	end
 end		
 
 function ReportFrameMixin:ReportByType(reportType)

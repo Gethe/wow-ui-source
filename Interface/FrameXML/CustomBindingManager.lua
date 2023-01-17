@@ -1,6 +1,24 @@
 CustomBindingManager = {};
 
 --[[public]] function CustomBindingManager:RegisterHandlerAndCreateButton(handler, template, parent)
+	local button = CreateFrame("BUTTON", nil, parent, template);
+	button:SetCustomBindingHandler(handler);
+
+	local customBindingType = handler:GetCustomBindingType();
+	button:SetCustomBindingType(customBindingType);
+	self:RegisterHandler(customBindingType, handler, button);
+	return button;
+end
+
+--[[public]] function CustomBindingManager:SetHandlerRegistered(button, registered)
+	if registered then
+		self:RegisterHandler(button:GetCustomBindingType(), button:GetCustomBindingHandler(), button);
+	else
+		self:UnregisterHandler(button:GetCustomBindingType(), button:GetCustomBindingHandler());
+	end
+end
+
+--[[private]] function CustomBindingManager:RegisterHandler(customBindingType, handler, button)
 	if not self.handlers then
 		self.handlers = {};
 	end
@@ -10,12 +28,14 @@ CustomBindingManager = {};
 		self.handlers[customBindingType] = {};
 	end
 
-	local frame = CreateFrame("BUTTON", nil, parent, template);
-	frame:SetCustomBindingType(customBindingType);
-	self.handlers[customBindingType][handler] = frame;
-	return frame;
+	self.handlers[customBindingType][handler] = button;
 end
 
+--[[private]] function CustomBindingManager:UnregisterHandler(customBindingType, handler)
+	if self.handlers and self.handlers[customBindingType] then
+		self.handlers[customBindingType][handler] = nil;
+	end
+end
 
 --[[private]] function CustomBindingManager:OnBindingModeActive(frame, isActive)
 	for handler in self:EnumerateHandlers(frame:GetCustomBindingType()) do

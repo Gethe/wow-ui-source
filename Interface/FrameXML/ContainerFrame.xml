@@ -166,7 +166,8 @@
 				local modifiedClick = IsModifiedClick();
 				-- If we can loot the item and autoloot toggle is active, then do a normal click
 				if ( button ~= "LeftButton" and modifiedClick and IsModifiedClick("AUTOLOOTTOGGLE") ) then
-					local _, _, _, _, _, lootable = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
+					local info = C_Container.GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
+					local lootable = info and info.hasLoot;
 					if ( lootable ) then
 						modifiedClick = false;
 					end

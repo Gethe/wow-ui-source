@@ -208,6 +208,26 @@ local LFGInfo =
 
 	Tables =
 	{
+		{
+			Name = "LFGDungeonInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "iconID", Type = "number", Nilable = false },
+				{ Name = "link", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "LFGLockInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "lfgID", Type = "number", Nilable = false },
+				{ Name = "reason", Type = "number", Nilable = false },
+				{ Name = "hideEntry", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

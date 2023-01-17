@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\FrameXML\UI_shared.xsd">
 	<Script file="LayoutFrame.lua"/>
 
 	<ScopedModifier scriptsUseGivenEnv="true">
@@ -18,6 +18,11 @@
 				<KeyValue key="fixedWidth" value="300" type="number"/>
 				<KeyValue key="fixedHeight" value="300" type="number"/>
 
+				<KeyValue key="minimumWidth" value="300" type="number"/>
+				<KeyValue key="minimumHeight" value="300" type="number"/>
+				<KeyValue key="maximumWidth" value="300" type="number"/>
+				<KeyValue key="maximumHeight" value="300" type="number"/>
+
 				If expand is set to true, the frame will expand to the width of the widest child.
 				If you have fixedWidth set, the frame width will be the the maximum of fixedWidth
 				and the width of the widest child.
@@ -31,6 +36,9 @@
 
 				Spacing is the number of pixels between child elements
 				<KeyValue key="spacing" value="10" type="number"/>
+
+				Determines if child scale is taken into account when laying out children
+				<KeyValue key="respectChildScale" value="true" type="boolean"/>
 			</KeyValues>
 			-->
 
@@ -53,11 +61,25 @@
 
 				If expand is set to true, the region/frame will expand to fit the parent layout frame
 				<KeyValue key="expand" value="true" type="boolean"/>
+				
+				The align keyValue can be used to control how this child is anchored relative to the VerticalLayoutFrame.
+				By default each child is anchored from TOPLEFT of the child to TOPLEFT of the VerticalLayoutFrame
+				Possible choices here are "center" (anchored TOP to TOP) and "right" (anchored TOPRIGHT to TOPRIGHT)
+				<KeyValue key="align" value="center" type="string"/>
 			-->
 		</Frame>
 
 		<Frame name="HorizontalLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="LayoutMixin, HorizontalLayoutMixin">
-			<!-- Uses the same key/value pairs as VerticalLayoutFrame -->
+			<!-- Uses the same key/value pairs as VerticalLayoutFrame EXCEPT for: 
+			
+				The align keyValue does the same thing as VerticalLayoutFrame, but the valid values are different.
+				Just like VerticalLayoutFrame, by default each child is anchored from TOPLEFT of the child to TOPLEFT of the HorizontalLayoutFrame
+				Possible choices here are "center" (anchored LEFT to LEFT) and "bottom" (anchored BOTTOMLEFT to BOTTOMLEFT)
+				<KeyValue key="align" value="center" type="string"/>
+
+				Determines if child scale is taken into account when laying out children
+				<KeyValue key="respectChildScale" value="true" type="boolean"/>
+			-->
 		</Frame>
 
 		<Frame name="ResizeLayoutFrame" virtual="true" inherits="BaseLayoutFrameTemplate" mixin="ResizeLayoutMixin">
@@ -74,10 +96,6 @@
 				calculated based on the sizes of child frames
 				<KeyValue key="fixedWidth" value="300" type="number"/>
 				<KeyValue key="fixedHeight" value="300" type="number"/>
-				<KeyValue key="minimumWidth" value="300" type="number"/>
-				<KeyValue key="minimumHeight" value="300" type="number"/>
-				<KeyValue key="maximumWidth" value="300" type="number"/>
-				<KeyValue key="maximumHeight" value="300" type="number"/>
 				<KeyValue key="widthPadding" value="300" type="number"/>
 				<KeyValue key="heightPadding" value="300" type="number"/>
 			</KeyValues>

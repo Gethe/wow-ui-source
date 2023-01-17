@@ -150,7 +150,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.text:SetText(COMMUNITIES_MEMBER_LIST_SHOW_OFFLINE);
+						self.Text:SetText(COMMUNITIES_MEMBER_LIST_SHOW_OFFLINE);
 					</OnLoad>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

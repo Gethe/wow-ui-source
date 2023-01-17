@@ -421,9 +421,9 @@ local Map =
 		{
 			Name = "UIMapFlag",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 17,
 			MinValue = 1,
-			MaxValue = 4096,
+			MaxValue = 65536,
 			Fields =
 			{
 				{ Name = "NoHighlight", Type = "UIMapFlag", EnumValue = 1 },
@@ -439,6 +439,10 @@ local Map =
 				{ Name = "HideIcons", Type = "UIMapFlag", EnumValue = 1024 },
 				{ Name = "HideVignettes", Type = "UIMapFlag", EnumValue = 2048 },
 				{ Name = "ForceAllOverlayExplored", Type = "UIMapFlag", EnumValue = 4096 },
+				{ Name = "FlightMapShowZoomOut", Type = "UIMapFlag", EnumValue = 8192 },
+				{ Name = "FlightMapAutoZoom", Type = "UIMapFlag", EnumValue = 16384 },
+				{ Name = "ForceOnNavbar", Type = "UIMapFlag", EnumValue = 32768 },
+				{ Name = "AlwaysAllowUserWaypoints", Type = "UIMapFlag", EnumValue = 65536 },
 			},
 		},
 		{
@@ -512,6 +516,21 @@ local Map =
 				{ Name = "mapID", Type = "number", Nilable = false },
 				{ Name = "relativeHeightIndex", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "UiMapHighlightInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "fileDataID", Type = "number", Nilable = false },
+				{ Name = "atlasID", Type = "string", Nilable = false },
+				{ Name = "texturePercentageX", Type = "number", Nilable = false },
+				{ Name = "texturePercentageY", Type = "number", Nilable = false },
+				{ Name = "textureX", Type = "number", Nilable = false },
+				{ Name = "textureY", Type = "number", Nilable = false },
+				{ Name = "scrollChildX", Type = "number", Nilable = false },
+				{ Name = "scrollChildY", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -1,14 +1,14 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
-	
+..\..\Interface\FrameXML\UI.xsd">
+
 	<Script file="WatchFrame.lua"/>
-		
+
 	<FontString name="WatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="MIDDLE">
 		<Size>
 			<AbsDimension x="0" y="16"/>
 		</Size>
 	</FontString>
-	
+
 	<Button name="WatchFrameLinkButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad> self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); </OnLoad>
@@ -17,7 +17,7 @@
 			<OnLeave> WatchFrameLinkButtonTemplate_Highlight(self, false); </OnLeave>
 		</Scripts>
 	</Button>
-	
+
 	<Button name="WatchFrameItemButtonTemplate" virtual="true">
 		<Size x="26" y="26"/>
 		<Layers>
@@ -55,7 +55,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-			</Layer>			
+			</Layer>
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
@@ -93,14 +93,14 @@
 			</Anchors>
 		</NormalTexture>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>		
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 	</Button>
-	
+
 	<Frame name="WatchFrameLineTemplate" virtual="true">
 		<Size x="150" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIcon" hidden="true">
+				<Texture name="$parentIcon" parentKey="Icon" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativePoint="LEFT">
@@ -115,11 +115,11 @@
 						</Anchor>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
-				</FontString>				
+				</FontString>
 				<FontString name="$parentText" inherits="WatchFontTemplate" parentKey="text">
 					<Size x="160" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentDash" relativePoint="RIGHT" />
+						<Anchor point="LEFT" relativeKey="$parent.dash" relativePoint="RIGHT" />
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -127,7 +127,7 @@
 				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" hidden="true">
 					<Size x="26" y="26"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="CENTER">
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER">
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
@@ -141,7 +141,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="WatchFrame" parent="UIParent" clampedToScreen="true" hidden="false" frameStrata="LOW">
 		<Size x="204" y="140"/>
 		<Anchors>
@@ -153,13 +153,13 @@
 			<Button name="$parentHeader">
 				<Size>
 					<AbsDimension x="160" y="16"/>
-				</Size>			
+				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="0" y="-6"/>
 					</Anchor>
 				</Anchors>
-				<Layers>		
+				<Layers>
 					<Layer level="OVERLAY">
 						<FontString name="WatchFrameTitle" inherits="GameFontNormal" text="OBJECTIVES_TRACKER_LABEL">
 							<Anchors>
@@ -167,7 +167,7 @@
 							</Anchors>
 						</FontString>
 					</Layer>
-				</Layers>				
+				</Layers>
 				<Scripts>
 					<OnLoad> self:RegisterForClicks("RightButtonUp"); </OnLoad>
 					<OnClick function="WatchFrameHeader_OnClick" />
@@ -211,7 +211,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-		</Frames>		
+		</Frames>
 		<Scripts>
 			<OnLoad function="WatchFrame_OnLoad"/>
 			<OnEvent function="WatchFrame_OnEvent"/>
@@ -226,7 +226,7 @@
 		<Scripts>
 			<OnLoad function="WatchFrameHeaderDropDown_OnLoad"/>
 		</Scripts>
-	</Frame>	
+	</Frame>
 	<Frame name="WatchFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 		<Size>
 			<AbsDimension x="10" y="10"/>

@@ -41,6 +41,10 @@ function DeveloperConsoleMixin:OnLoad()
 	end);
 
 	self.filterText = "";
+	
+	if IsGMClient() then
+		self.CheatBrowserToggle:Show();
+	end
 end
 
 function DeveloperConsoleMixin:RestoreMessageHistory()

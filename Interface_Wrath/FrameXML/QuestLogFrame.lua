@@ -235,8 +235,8 @@ function QuestLog_Update(self)
 				questLogTitle:SetText("  "..questLogTitleText);
 				--Set Dummy text to get text width *SUPER HACK*
 				QuestLogDummyText:SetText("  "..questLogTitleText);
-
-				questLogTitle:SetNormalTexture("");
+				questLogTitle:ClearHighlightTexture();
+				questLogTitle:ClearNormalTexture();
 
 				-- If not a header see if any nearby group mates are on this quest
 				partyMembersOnQuest = 0;
@@ -250,9 +250,6 @@ function QuestLog_Update(self)
 				else
 					questNumGroupMates:SetText("");
 				end
-				-- this isn't a header, hide the header textures
-				questLogTitle:SetNormalTexture("");
-				questLogTitle:SetHighlightTexture("");
 			end
 			-- Save if its a header or not
 			questLogTitle.isHeader = isHeader;
