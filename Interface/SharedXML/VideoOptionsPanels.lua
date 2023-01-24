@@ -765,6 +765,14 @@ function VideoOptions_Disable(self)
 		BlizzardOptionsPanel_CheckButton_Disable(self);
 	end
 end
+
+function VideoOptions_SetEnabled(self, enabled)
+	if enabled then
+		VideoOptions_Enable(self);
+	else
+		VideoOptions_Disable(self);
+	end
+end
 -------------------------------------------------------------------------------------------------------
 -- control OnLoad
 --

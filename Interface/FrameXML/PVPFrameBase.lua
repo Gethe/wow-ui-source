@@ -167,9 +167,12 @@ function PVPTeam_SoloUpdate()
 			end
 			getglobal(standard.."Emblem"):SetTexture(emblem);
 			getglobal(standard.."Emblem"):SetVertexColor(emblemColor.r, emblemColor.g, emblemColor.b);
+			local emblemPoint, emblemRelativeTo, emblemRelativePoint, emblemOffsetX, emblemOffsetY = getglobal(standard.."Emblem"):GetPoint();
+			local emblemFrame = getglobal(standard.."Emblem");
 			if (rank > 0) then
-				local emblemPoint, emblemRelativeTo, emblemRelativePoint, emblemOffsetX, emblemOffsetY = getglobal(standard.."Emblem"):GetPoint();
-				getglobal(standard.."Emblem"):SetPoint(emblemPoint, emblemRelativeTo, emblemRelativePoint, emblemOffsetX, emblemOffsetY+4);
+				emblemFrame:SetPoint(emblemPoint, emblemRelativeTo, emblemRelativePoint, emblemOffsetX, 21);
+			else
+				emblemFrame:SetPoint(emblemPoint, emblemRelativeTo, emblemRelativePoint, emblemOffsetX, 17);
 			end
 
 			-- Set visual elements

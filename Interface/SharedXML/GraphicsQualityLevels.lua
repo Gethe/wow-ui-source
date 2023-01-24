@@ -61,9 +61,9 @@ VideoData["Graphics_Quality"]={
 	setinitialslider = function(self)
 		self.noclick = true;
 		if (self.raid) then
-			RaidGraphics_Quality:SetValue(BlizzardOptionsPanel_GetCVarSafe("RAIDgraphicsQuality"));	-- set the slider only
+			RaidGraphics_Quality:SetValue(GetGraphicsCVarOffsetForUI(BlizzardOptionsPanel_GetCVarSafe("RAIDgraphicsQuality")));	-- set the slider only
 		else
-			Graphics_Quality:SetValue(BlizzardOptionsPanel_GetCVarSafe("graphicsQuality"));	-- set the slider only
+			Graphics_Quality:SetValue(GetGraphicsCVarOffsetForUI(BlizzardOptionsPanel_GetCVarSafe("graphicsQuality")));	-- set the slider only
 		end
 		self.noclick = false;
 	end,
@@ -936,14 +936,8 @@ VideoData["Advanced_MaxFPSSlider"]={
 	tooltip = OPTION_MAXFPS,
 	initialize = 
 		function(self)
-			local value = self:GetCurrentValue();
-			if(value == 0) then
-				_G["Advanced_MaxFPSCheckBox"]:SetChecked(false);
-				VideoOptions_Disable(self);
-			else
-				_G["Advanced_MaxFPSCheckBox"]:SetChecked(true);
-				VideoOptions_Enable(self);
-			end
+			local value = BlizzardOptionsPanel_GetCVarSafe("useMaxFPS")
+			VideoOptions_SetEnabled(self, value ~= 0);
 		end,
 }
 VideoData["Advanced_MaxFPSBKSlider"]={
@@ -951,14 +945,8 @@ VideoData["Advanced_MaxFPSBKSlider"]={
 	tooltip = OPTION_MAXFPSBK,
 	initialize = 
 		function(self)
-			local value = self:GetCurrentValue();
-			if(value == 0) then
-				_G["Advanced_MaxFPSBKCheckBox"]:SetChecked(false);
-				VideoOptions_Disable(self);
-			else
-				_G["Advanced_MaxFPSBKCheckBox"]:SetChecked(true);
-				VideoOptions_Enable(self);
-			end
+			local value = BlizzardOptionsPanel_GetCVarSafe("useMaxFPSBk")
+			VideoOptions_SetEnabled(self, value ~= 0);
 		end,
 }
 
