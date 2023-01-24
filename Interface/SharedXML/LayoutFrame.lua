@@ -56,7 +56,9 @@ end
 
 function LayoutIndexComparator(left, right)
 	if (left.layoutIndex == right.layoutIndex and left ~= right) then
-		GMError("Duplicate layoutIndex found: " .. left.layoutIndex);
+		local leftName = (left.GetDebugName and left:GetDebugName()) or "unnamed";
+		local rightName = (right.GetDebugName and right:GetDebugName()) or "unnamed";
+		GMError(("Duplicate layoutIndex found: %d for %s and %s"):format(left.layoutIndex, leftName, rightName));
 	end
 	return left.layoutIndex < right.layoutIndex;
 end
@@ -363,4 +365,88 @@ function ResizeLayoutMixin:Layout()
 	end
 
 	self:MarkClean();
+end
+
+--------------------------------------------------------------------------------
+-- GridLayoutFrameMixin
+--------------------------------------------------------------------------------
+
+GridLayoutFrameMixin = {}
+
+function GridLayoutFrameMixin:Layout()
+	local layoutChildren = self:GetLayoutChildren();
+	if not self:ShouldUpdateLayout(layoutChildren) then
+		return;
+	end
+
+	-- Multipliers determine the direction the layout grows for grid layouts 
+	-- Positive means right/up
+	-- Negative means left/down
+	local xMultiplier = self.layoutFramesGoingRight and 1 or -1;
+	local yMultiplier = self.layoutFramesGoingUp and 1 or -1;
+
+	-- Create the grid layout according to whether we are horizontal or vertical
+	local layout;
+	if self.isHorizontal then
+		layout = GridLayoutUtil.CreateStandardGridLayout(self.stride, self.childXPadding, self.childYPadding, xMultiplier, yMultiplier);
+	else
+		layout = GridLayoutUtil.CreateVerticalGridLayout(self.stride, self.childXPadding, self.childYPadding, xMultiplier, yMultiplier);
+	end
+
+	-- Need to change where the frames anchor based on how the layout grows
+	local anchorPoint;
+	if self.layoutFramesGoingUp then
+		anchorPoint = self.layoutFramesGoingRight and "BOTTOMLEFT" or "BOTTOMRIGHT";
+	else
+		anchorPoint = self.layoutFramesGoingRight and "TOPLEFT" or "TOPRIGHT";
+	end
+
+	-- Apply the layout and then update our size
+	GridLayoutUtil.ApplyGridLayout(layoutChildren, AnchorUtil.CreateAnchor(anchorPoint, self, anchorPoint), layout);
+	ResizeLayoutMixin.Layout(self);
+	self:CacheLayoutSettings(layoutChildren);
+end
+
+function GridLayoutFrameMixin:CacheLayoutSettings(layoutChildren)
+    self.oldGridSettings = {
+		layoutChildren = layoutChildren;
+        childXPadding = self.childXPadding;
+		childYPadding = self.childYPadding;
+		isHorizontal = self.isHorizontal;
+		stride = self.stride;
+		layoutFramesGoingRight = self.layoutFramesGoingRight;
+		layoutFramesGoingUp = self.layoutFramesGoingUp;
+    };
+end
+
+function GridLayoutFrameMixin:ShouldUpdateLayout(layoutChildren)
+    if not self:IsShown() then
+        return false;
+    end
+
+    if self.oldGridSettings == nil then
+        return true;
+    end
+
+    if #self.oldGridSettings.layoutChildren ~= #layoutChildren
+	or self.oldGridSettings.childXPadding ~= self.childXPadding
+	or self.oldGridSettings.childYPadding ~= self.childYPadding
+    or self.oldGridSettings.isHorizontal ~= self.isHorizontal
+    or self.oldGridSettings.stride ~= self.stride
+    or self.oldGridSettings.layoutFramesGoingRight ~= self.layoutFramesGoingRight
+    or self.oldGridSettings.layoutFramesGoingUp ~= self.layoutFramesGoingUp then
+        return true;
+    end
+
+    for index, child in ipairs(layoutChildren) do
+        if self.oldGridSettings.layoutChildren[index] ~= child then
+            return true;
+        end
+    end
+
+    return false;
+end
+
+function GridLayoutFrameMixin:IgnoreLayoutIndex()
+	return false;
 end

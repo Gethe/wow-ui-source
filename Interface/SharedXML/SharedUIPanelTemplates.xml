@@ -259,6 +259,16 @@
 			<Anchor point="TOPRIGHT" x="1" y="0"/>
 		</Anchors>
 	</Button>
+	<Button name="FloatingFrameCloseButtonDefaultAnchors" inherits="UIPanelCloseButtonNoScripts" virtual="true">
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="2" y="2"/>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				self:GetParent():Hide();
+			</OnClick>
+		</Scripts>
+	</Button>
 	<Button name="UIStaticPopupSpecialCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
 			<OnClick function="UIPanelStaticPopupSpecialCloseButton_OnClick"/>
@@ -843,7 +853,7 @@
 	<Frame name="FlatPanelBackgroundTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="BottomLeft" atlas="uiframebackground-nineslice-cornerbottomleft" useAtlasSize="true" alpha="0.8">
+				<Texture parentKey="BottomLeft" atlas="uiframebackground-nineslice-cornerbottomleft" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
@@ -995,11 +1005,20 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture name="$parentPortrait" parentKey="portrait">
-							<Size x="60" y="60"/>
+							<Size x="62" y="62"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-5" y="7" />
 							</Anchors>
 						</Texture>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.portrait" x="2" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait" x="-2" y="4"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="portrait"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -1045,7 +1064,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="PortraitFrameFlatBaseTemplate" inherits="PortraitFrameBaseTemplate" virtual="true">
+	<Frame name="PortraitFrameFlatBaseTemplate" inherits="PortraitFrameBaseTemplate" mixin="PortraitFrameFlatBaseMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="Bg" inherits="FlatPanelBackgroundTemplate" frameLevel="0">
 				<Anchors>
@@ -1900,8 +1919,8 @@
 				</Texture>
 				<Texture parentKey="MiddleActive" atlas="_uiframe-activetab-center" useAtlasSize="true" horizTile="true" parentArray="TabTextures">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.LeftActive" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.RightActive" relativePoint="LEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftActive" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.RightActive" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Left" atlas="uiframe-tab-left" useAtlasSize="true" parentArray="TabTextures">
@@ -1916,8 +1935,8 @@
 				</Texture>
 				<Texture parentKey="Middle" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" parentArray="TabTextures">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1929,8 +1948,8 @@
 				</Texture>
 				<Texture parentKey="MiddleHighlight" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="LEFT"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Middle" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Middle" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="RightHighlight" atlas="uiframe-tab-right" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
@@ -2419,7 +2438,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<!-- TODO:: This should be using InitButton -->
+			<!-- Note: This isn't using the InitButton pattern from UIButtonTemplate because there are load order issues if we do. -->
 			<OnLoad method="OnLoad"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
@@ -2491,6 +2510,20 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="SubFrameMouseoverButtonTemplate" mixin="SubFrameMouseoverButtonMixin" virtual="true">
+		<KeyValues>
+			<!-- hideDelay: how long (in seconds) before the sub frame is hidden after mousing off the button and the sub frame -->
+			<KeyValue key="hideDelay" value="0.5" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<DropDownToggleButton name="DropDownMouseoverButtonTemplate" mixin="DropDownMouseoverButtonMixin" inherits="SubFrameMouseoverButtonTemplate" virtual="true"/>
 
 	<EditBox name="SharedEditBoxTemplate" mixin="SharedEditBoxMixin" virtual="true">
 		<Size x="343" y="48"/>
@@ -2678,6 +2711,7 @@
 		</Scripts>
 	</EventButton>
 
+	<!-- the selection popout button is provided by the frame inheriting this template -->
 	<Frame name="SelectionPopoutWithButtonsTemplate" mixin="SelectionPopoutWithButtonsMixin" virtual="true">
 		<Size x="223" y="38"/>
 		<Frames>
@@ -2699,6 +2733,7 @@
 		</Scripts>
 	</Frame>
 
+	<!-- the selection popout button is provided by the frame inheriting this template -->
 	<Frame name="SelectionPopoutWithButtonsAndLabelTemplate" inherits="SelectionPopoutWithButtonsTemplate" mixin="SelectionPopoutWithButtonsAndLabelMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -3069,4 +3104,99 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="RingedFrameWithTooltipTemplate" mixin="RingedFrameWithTooltipMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_TOPRIGHT" type="string"/>
+			<KeyValue key="tooltipXOffset" value="10" type="number"/>
+			<KeyValue key="tooltipYOffset" value="0" type="number"/>
+			<KeyValue key="tooltipMinWidth" value="300" type="number"/>
+			<KeyValue key="tooltipPadding" value="5" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<CheckButton name="RingedMaskedButtonTemplate" inherits="RingedFrameWithTooltipTemplate" mixin="RingedMaskedButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+			<KeyValue key="circleMaskSizeOffset" value="2" type="number"/>
+			<KeyValue key="newTagYOffset" value="-5" type="number"/>
+		</KeyValues>
+		<NormalTexture parentKey="NormalTexture"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.5"/>
+		<PushedTexture parentKey="PushedTexture">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="1" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+			</Anchors>
+		</PushedTexture>
+		<CheckedTexture parentKey="CheckedTexture" atlas="charactercreate-ring-select" texelSnappingBias="0.0" snapToPixelGrid="false">
+			<Anchors>
+				<Anchor point="CENTER" />
+			</Anchors>
+		</CheckedTexture>
+
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="DisabledOverlay" hidden="true" setAllPoints="true">
+					<Color r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+				<Texture parentKey="Ring">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" />
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Frame parentKey="Flash" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Portrait" setAllPoints="true" alphaMode="ADD" />
+						<Texture parentKey="Ring" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Ring2" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha order="1" childKey="Portrait" duration="0.8" fromAlpha="0" toAlpha="0.6" />
+						<Alpha order="1" childKey="Portrait" duration="0.8" fromAlpha="0.6" toAlpha="0" startDelay="0.8" />
+						<Alpha order="1" childKey="Ring" duration="0.8" fromAlpha="0" toAlpha="1" />
+						<Alpha order="1" childKey="Ring" duration="0.8" fromAlpha="1" toAlpha="0" startDelay="0.8" />
+						<Alpha order="1" childKey="Ring2" duration="0.8" fromAlpha="1" toAlpha="0" />
+						<Scale order="1" childKey="Ring2" duration="0.8" fromScaleX="1.3" toScaleX="1" fromScaleY="1.3" toScaleY="1" smoothing="NONE" />
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick" inherit="prepend"/>
+		</Scripts>
+	</CheckButton>
+
+
 </Ui>

@@ -2094,6 +2094,11 @@ end
 --end
 
 SlashCmdList["CHAT_AFK"] = function(msg)
+	if C_PvP.IsInRatedMatchWithDeserterPenalty() then
+		ConfirmOrLeaveBattlefield();
+		return;
+	end
+		
 	SendChatMessage(msg, "AFK");
 end
 
@@ -4508,7 +4513,7 @@ end
 
 function ChatEdit_DeactivateChat(editBox)
 	if ( ACTIVE_CHAT_EDIT_BOX == editBox ) then
-		ACTIVE_CHAT_EDIT_BOX = nil;
+		_G.ACTIVE_CHAT_EDIT_BOX = nil;
 	end
 
 	ChatEdit_SetDeactivated(editBox);

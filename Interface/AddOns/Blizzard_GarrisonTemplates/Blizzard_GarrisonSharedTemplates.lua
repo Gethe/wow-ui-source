@@ -146,8 +146,8 @@ function GarrisonFollowerList:OnShow()
 	end
 	if (C_Garrison.GetNumFollowers(self.followerType) >= GarrisonFollowerOptions[self.followerType].minFollowersForThreatCountersFrame) then
 		self:ShowThreatCountersFrame();
-	else 
-		self:HideThreatCountersFrame(); 
+	else
+		self:HideThreatCountersFrame();
 	end
 
 	self:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE");
@@ -165,7 +165,7 @@ end
 
 function GarrisonFollowerList:HideThreatCountersFrame()
 	GarrisonThreatCountersFrame:Hide();
-end		
+end
 
 function GarrisonFollowerList:StopAnimations()
 	if (self.followerTab) then
@@ -222,8 +222,8 @@ function GarrisonFollowerList:OnEvent(event, ...)
 			if (self.followerTab and self.followerTab.followerID and self.followerTab:IsVisible()) then
 				if (C_Garrison.GetNumFollowers(self.followerType) >= GarrisonFollowerOptions[self.followerType].minFollowersForThreatCountersFrame) then
 					self:ShowThreatCountersFrame();
-				else 
-					self:HideThreatCountersFrame(); 
+				else
+					self:HideThreatCountersFrame();
 				end
 			end
 		end
@@ -897,7 +897,7 @@ function GarrisonFollowerButton_CalculateExpandedButtonHeight(collapsedHeight, e
 			abilityHeight = abilityHeight + abilityExtent;
 		end
 	end
-	
+
 	if abilityHeight > 0 then
 		local backgroundPadding = 8;
 		abilityHeight = abilityHeight + backgroundPadding;
@@ -986,7 +986,7 @@ function GarrisonFollowerListButton_OnClick(self, button)
 					followerList.buttonInitializer(button, button:GetElementData());
 				end);
 				followerList.ScrollBox:FullUpdate(ScrollBoxConstants.UpdateQueued);
-				
+
 			else
 				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_CLOSE);
 			end
@@ -1054,6 +1054,14 @@ function GarrisonFollowerListButton_OnModifiedClick(self, button)
 		if ( followerLink ) then
 			ChatEdit_InsertLink(followerLink);
 		end
+	end
+end
+
+function GarrisonFollowerListButton_OnUserClick(self, button)
+	if IsModifiedClick() then
+		GarrisonFollowerListButton_OnModifiedClick(self, button);
+	else
+		GarrisonFollowerListButton_OnClick(self, button);
 	end
 end
 
@@ -2172,16 +2180,16 @@ function GarrisonFollowerTabMixin:UpdateCombatantStats(followerInfo)
 			newAnchorFrame = self:SetupNewStatText(newAnchorFrame, COVENANT_MISSIONS_XP_TO_LEVEL, followerInfo.levelXP - followerInfo.xp);
 		end
 
-		if(self.HealTimeRemainingIcon and self.HealTimeRemaining) then 
-			local shouldShowHealTimeRemaining = autoCombatantStats.minutesHealingRemaining > 0; 
+		if(self.HealTimeRemainingIcon and self.HealTimeRemaining) then
+			local shouldShowHealTimeRemaining = autoCombatantStats.minutesHealingRemaining > 0;
 
-			if(shouldShowHealTimeRemaining) then 
+			if(shouldShowHealTimeRemaining) then
 				self.HealTimeRemaining:SetText(ADVENTURES_FOLLOWER_HEAL_TIME:format(MinutesToTime(autoCombatantStats.minutesHealingRemaining)));
 			end
 
 			self.HealTimeRemainingIcon:SetShown(shouldShowHealTimeRemaining);
 			self.HealTimeRemaining:SetShown(shouldShowHealTimeRemaining);
-		end 
+		end
 		anchorFrame:Show();
 	else
 		anchorFrame:Hide();

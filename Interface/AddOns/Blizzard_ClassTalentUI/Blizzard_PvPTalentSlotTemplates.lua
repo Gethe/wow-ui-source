@@ -86,8 +86,8 @@ function PvPTalentSlotButtonMixin:Update()
 			self.Border:SetAtlas("talents-node-pvp-inspect");
 			self.Border:Show();
 		else
-			self.Texture:SetAtlas("talents-node-pvp-inspect-empty");
-			self.Border:Hide();
+			self.Border:SetAtlas("talents-node-pvp-inspect-empty");
+			self.Border:Show();
 		end
 
 		if GameTooltip:GetOwner() == self then

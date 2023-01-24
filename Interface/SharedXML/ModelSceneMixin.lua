@@ -188,38 +188,40 @@ function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, di
 	end
 end
 
-function ModelSceneMixin:GetPlayerActor(overrideActorName)
+function GetPlayerActorLabelTag()
 	local playerRaceName;
 	local playerGender;
-	local actor;
+	local playerRaceNameActorTag;
+	local hasAlternateForm, inAlternateForm = false, false;
+	if IsOnGlueScreen() then
+		local _, raceName, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
+		playerRaceName = raceFilename;
+		playerGender = genderEnum;
+	else
+		hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
+		local _, raceFilename = UnitRace("player");
+		playerRaceName = raceFilename;
+		playerGender = UnitSex("player");
+	end
+	if not playerRaceName or not playerGender then
+		return playerRaceName, playerRaceNameActorTag;
+	end
+	playerRaceName = playerRaceName:lower();
+	if hasAlternateForm and inAlternateForm then
+		playerRaceName = playerRaceName.."-alt";
+	end
+	playerGender = (playerGender == 2) and "male" or "female";
+	playerRaceNameActorTag = playerRaceName.."-"..playerGender;
+	return playerRaceName, playerRaceNameActorTag;
+end
 
+function ModelSceneMixin:GetPlayerActor(overrideActorName)
+	local actor;
 	if overrideActorName then
 		actor = self:GetActorByTag(overrideActorName);
 	else
-		local hasAlternateForm, inAlternateForm = false, false;
-		if IsOnGlueScreen() then
-			local _, raceName, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
-			playerRaceName = raceFilename;
-			playerGender = genderEnum;
-		else
-			hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
-			local _, raceFilename = UnitRace("player");
-			playerRaceName = raceFilename;
-			playerGender = UnitSex("player");
-		end
-
-		if not playerRaceName or not playerGender then
-			return nil;
-		end
-		playerGender = (playerGender == 2) and "male" or "female";
-		playerRaceName = playerRaceName:lower();
-		
-		if hasAlternateForm and inAlternateForm then
-			playerRaceName = playerRaceName.."-alt";
-		end
-		local playerRaceActor = playerRaceName.."-"..playerGender;
-
-		actor = self:GetActorByTag(playerRaceActor);
+		local playerRaceName, playerRaceNameActorTag = GetPlayerActorLabelTag();
+		actor = self:GetActorByTag(playerRaceNameActorTag);
 		if not actor then		
 			actor = self:GetActorByTag(playerRaceName);
 			if not actor then
@@ -548,4 +550,7 @@ function NoCameraControlModelSceneMixin:OnMouseUp(button)
 end
 
 function NoCameraControlModelSceneMixin:OnMouseWheel(delta)	
+end
+NoZoomModelSceneMixin = CreateFromMixins(ModelSceneMixin);
+function NoZoomModelSceneMixin:OnMouseWheel(delta)	
 end

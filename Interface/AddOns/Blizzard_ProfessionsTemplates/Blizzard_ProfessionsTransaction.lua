@@ -129,6 +129,10 @@ function ProfessionsRecipeTransactionMixin:Init(recipeSchematic)
 	end
 end
 
+function ProfessionsRecipeTransactionMixin:HasReagentSlots()
+	return #self.reagentSlotSchematicTbls > 0;
+end
+
 function ProfessionsRecipeTransactionMixin:SetAllocationsChangedHandler(onChangedFunc)
 	-- onChangedFunc intended to be invoked when any synthesized slots (enchant, recraft, salvage) are changed.
 	self.onChangedFunc = onChangedFunc;

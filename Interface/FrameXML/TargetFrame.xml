@@ -197,13 +197,14 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<StatusBar parentKey="HealthBar" inherits="TextStatusBar" mixin="TargetFrameHealthBarMixin" frameStrata="LOW">
+							<StatusBar parentKey="HealthBar" inherits="TextStatusBar" mixin="TargetFrameHealthBarMixin" frameStrata="LOW" drawLayer="BACKGROUND">
 								<Size x="126" y="20"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.TargetFrameContainer.Portrait" relativePoint="LEFT" x="1" y="-11"/>
 								</Anchors>
 								<Layers>
-									<Layer level="BACKGROUND">
+									<!-- Setting textureSubLevel to 2 to ensure things are layered above the StatusBar's BarTexture. -->
+									<Layer level="BACKGROUND" textureSubLevel="2">
 										<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
 										<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 										<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>

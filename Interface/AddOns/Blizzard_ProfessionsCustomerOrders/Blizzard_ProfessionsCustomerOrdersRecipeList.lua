@@ -10,11 +10,19 @@ function ProfessionsCustomerOrdersRecipeListElementMixin:OnLoad()
 	end);
 	local function OnFavoriteButtonEnter(frame)
 		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
-		GameTooltip_AddHighlightLine(GameTooltip, self:IsFavorite() and AUCTION_HOUSE_DROPDOWN_REMOVE_FAVORITE or AUCTION_HOUSE_DROPDOWN_SET_FAVORITE);
+		if not self:IsFavorite() and C_CraftingOrders.GetNumFavoriteCustomerOptions() >= Constants.CraftingOrderConsts.MAX_CRAFTING_ORDER_FAVORITE_RECIPES then
+			GameTooltip_AddErrorLine(GameTooltip, PROFESSIONS_CRAFTING_ORDERS_FAVORITES_FULL);
+		else
+			GameTooltip_AddHighlightLine(GameTooltip, self:IsFavorite() and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE);
+		end
 		GameTooltip:Show();
 	end
 	self.FavoriteButton:SetScript("OnEnter", OnFavoriteButtonEnter);
 	self.FavoriteButton:SetScript("OnClick", function(frame)
+		if not self:IsFavorite() and C_CraftingOrders.GetNumFavoriteCustomerOptions() >= Constants.CraftingOrderConsts.MAX_CRAFTING_ORDER_FAVORITE_RECIPES then
+			return;
+		end
+
 		C_CraftingOrders.SetCustomerOptionFavorited(self.option.spellID, not self:IsFavorite());
 		OnFavoriteButtonEnter(frame);
 	 end);
@@ -81,7 +89,8 @@ function ProfessionsCustomerOrdersRecipeListElementMixin:OnClick(button)
 	elseif IsModifiedClick("CHATLINK") then
 		UseItemLink(ChatEdit_InsertLink);
 	else
-		EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", self.option.itemID, self.option.spellID, self.option.skillLineAbilityID);
+		local unusableBOP = self.option.bindOnPickup and not self.option.canUse;
+		EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", self.option.itemID, self.option.spellID, self.option.skillLineAbilityID, unusableBOP);
 	end
 	elseif button == "RightButton" then
 		ToggleDropDownMenu(1, self.option.spellID, self.contextMenu, "cursor");

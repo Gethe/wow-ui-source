@@ -181,6 +181,10 @@ function CharacterSelect_OnLoad(self)
 	view:SetPadding(pad, pad, left, pad, spacing);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(CharacterSelectCharacterFrame.ScrollBox, CharacterSelectCharacterFrame.ScrollBar, view);
+	
+	-- Assigning an empty data provider to prevent any scroll box related access errors due to race conditions. 
+	-- When the actual character data arrives, this data provider will be discarded.
+	CharacterSelectCharacterFrame.ScrollBox:SetDataProvider(CreateDataProvider());
 end
 
 function CharacterSelect_OnShow(self)
@@ -313,7 +317,7 @@ function CharacterSelect_OnHide(self)
 	-- FIXME SCROLLBOX REIMPLEMENTATION
 	-- the user may have gotten d/c while dragging
     if CharacterSelect.draggedIndex then
-		local draggedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+		local draggedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame)
 			return frame.index == CharacterSelect.draggedIndex;
 		end);
 		if draggedButton then
@@ -669,8 +673,7 @@ function CharacterSelect_OnEvent(self, event, ...)
         end
     elseif ( event == "VAS_CHARACTER_QUEUE_STATUS_UPDATE" ) then
         local guid, minutes = ...;
-        VAS_QUEUE_TIMES[guid] = minutes;
-		CharacterSelect_UpdateIfUpdateIsNotPending();
+		CharacterSelect_OnVASCharacterQueueStatusUpdate(guid, minutes);
     elseif ( event == "LOGIN_STATE_CHANGED" ) then
         local FROM_LOGIN_STATE_CHANGE = true;
         CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
@@ -690,6 +693,24 @@ end
 function CharacterSelect_UpdateIfUpdateIsNotPending()
 	if ( not IsCharacterListUpdatePending() ) then
 		UpdateCharacterList();
+	end
+end
+
+function CharacterSelect_OnVASCharacterQueueStatusUpdate(guid, minutes)
+	VAS_QUEUE_TIMES[guid] = minutes;
+
+	if not IsCharacterListUpdatePending() then
+		CharacterSelect_UpdateCharacterMatchingGUID(guid);
+	end
+end
+
+function CharacterSelect_UpdateCharacterMatchingGUID(guid)
+	local button = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame)
+		return frame.guid == guid;
+	end);
+
+	if button then
+		CharacterSelect_InitCharacterButton(button, { index = button.index });
 	end
 end
 
@@ -769,7 +790,7 @@ function CharacterSelect_SetCharacterButtonEnabled(button, enabled)
 end
 
 function CharacterSelect_GetCharacterButton(buttonIndex)
-	return CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+	return CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame)
 		return frame.index == buttonIndex;
 	end);
 end
@@ -800,7 +821,7 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 	end
 
 	button.characterID = GetCharIDFromIndex(button.index);
-	button.characterGUID = nil;
+	button.guid = nil;
 
 	local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, faction, lockedByExpansion, mailSenders, PCCDisabled, PFCDisabled = GetCharacterInfo(button.characterID);
 
@@ -810,7 +831,7 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 		return;
 	end
 
-	button.characterGUID = guid;
+	button.guid = guid;
 
 	local productID, vasServiceState, vasServiceErrors, productInfo;
     if (guid) then
@@ -1187,9 +1208,6 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.selectGuid = nil;
 		CharacterSelect.undeleteGuid = nil;
 	end
-
-	-- update the actual list of characters
-	UpdateCharacterSelection(CharacterSelect);
 
     CharacterSelect_UpdateButtonState();
 

@@ -101,5 +101,27 @@
 			</KeyValues>
 			-->
 		</Frame>
+
+		<Frame name="GridLayoutFrame" inherits="ResizeLayoutFrame" virtual="true" mixin="GridLayoutFrameMixin">
+			<!-- 
+			<KeyValues>
+				- Space in between laid out frames
+				<KeyValue key="childXPadding" value="0" type="number"/>
+				<KeyValue key="childYPadding" value="0" type="number"/>
+
+				- This is whether the layout is horizontal. If it is not horizontal then it will be vertical.
+				<KeyValue key="isHorizontal" value="true" type="boolean"/>
+	
+				- This is the number of frames per row/column (based on whether the grid is horizontal or vertical)
+				<KeyValue key="stride" value="1" type="number"/>
+	
+				- This is the direction the layout grows as it adds frames horizontally. If true, new frames will be added to the right. If false, new frames will be added to the left.
+				<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+	
+				- This is the direction the layout grows as it adds frames vertically. If true, new frames will be added to the top. If false, new frames will be added to the bottom.
+				<KeyValue key="layoutFramesGoingUp" value="true" type="boolean"/>
+			</KeyValues>
+			-->
+		</Frame>
 	</ScopedModifier>
 </Ui>

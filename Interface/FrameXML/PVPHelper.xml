@@ -263,35 +263,22 @@
 				<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
-			<Button name="$parentEnterBattleButton" inherits="UIPanelButtonTemplate" text="ENTER_LFG" parentKey="enterButton">
+			<Button name="$parentEnterBattleButton" inherits="UIPanelButtonTemplate" text="ENTER_LFG" parentKey="enterButton" mixin="PVPReadyDialogEnterButtonMixin">
 				<Size x="115" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-7" y="25"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, true) ) then
-							if( StaticPopup_Visible( "DEATH" ) ) then
-								StaticPopup_Hide( "DEATH" );
-							end
-							StaticPopupSpecial_Hide(self:GetParent());
-						end
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-					</OnClick>
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" text="LEAVE_QUEUE" parentKey="leaveButton">
+			<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" text="LEAVE_QUEUE" parentKey="leaveButton" mixin="PVPReadyDialogLeaveButtonMixin">
 				<Size x="115" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="7" y="25"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, false) ) then
-							StaticPopupSpecial_Hide(self:GetParent());
-						end
-						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-					</OnClick>
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
 			<!--This is a frame instead of a texture so that we can add a mouseover.-->

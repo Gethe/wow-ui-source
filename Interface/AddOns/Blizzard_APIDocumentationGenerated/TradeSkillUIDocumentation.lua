@@ -11,10 +11,6 @@ local TradeSkillUI =
 			Type = "Function",
 		},
 		{
-			Name = "ContinueRecast",
-			Type = "Function",
-		},
-		{
 			Name = "CraftEnchant",
 			Type = "Function",
 
@@ -536,6 +532,7 @@ local TradeSkillUI =
 				{ Name = "reagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 				{ Name = "allocationItemGUID", Type = "string", Nilable = true },
 				{ Name = "overrideQualityID", Type = "number", Nilable = true },
+				{ Name = "recraftOrderID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -574,15 +571,6 @@ local TradeSkillUI =
 			},
 		},
 		{
-			Name = "GetRecipeRepeatCount",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "recastTimes", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetRecipeRequirements",
 			Type = "Function",
 
@@ -616,6 +604,11 @@ local TradeSkillUI =
 			Name = "GetRecipesTracked",
 			Type = "Function",
 
+			Arguments =
+			{
+				{ Name = "isRecraft", Type = "bool", Nilable = false },
+			},
+
 			Returns =
 			{
 				{ Name = "recipeIDs", Type = "table", InnerType = "number", Nilable = false },
@@ -633,6 +626,15 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "items", Type = "table", InnerType = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRemainingRecasts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "remaining", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -714,15 +716,6 @@ local TradeSkillUI =
 			},
 		},
 		{
-			Name = "HasRecipesTracked",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "hasRecipesTracked", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsNPCCrafting",
 			Type = "Function",
 
@@ -757,6 +750,20 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "learned", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRecipeFirstCraft",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -809,6 +816,7 @@ local TradeSkillUI =
 			Arguments =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
+				{ Name = "isRecraft", Type = "bool", Nilable = false },
 			},
 
 			Returns =
@@ -933,6 +941,7 @@ local TradeSkillUI =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
 				{ Name = "tracked", Type = "bool", Nilable = false },
+				{ Name = "isRecraft", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -61,7 +61,7 @@ function ClassNameplateBar:Setup()
 		if ( self:MatchesSpec() ) then
 			self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
 			self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
-			self:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit);
+			self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player");
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			showBar = true;
 		else

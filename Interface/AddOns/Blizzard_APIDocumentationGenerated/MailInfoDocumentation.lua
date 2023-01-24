@@ -53,6 +53,15 @@ local MailInfo =
 				{ Name = "isCommandPending", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SetOpeningAll",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "openingAll", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

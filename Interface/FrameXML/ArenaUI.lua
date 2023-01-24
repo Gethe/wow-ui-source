@@ -44,13 +44,20 @@ function ArenaEnemyFramesContainerMixin:UpdateShownState()
 	end
 
 	local _, instanceType = IsInInstance();
-	if instanceType and instanceType == "arena" then
-		local hasArenaStarted = GetNumArenaOpponents() > 0;
-		ArenaEnemyPrepFramesContainer:SetShown(not hasArenaStarted);
-		ArenaEnemyMatchFramesContainer:SetShown(hasArenaStarted);
+	if instanceType then
+		if instanceType == "arena" then
+			local hasArenaStarted = GetNumArenaOpponents() > 0;
+			ArenaEnemyPrepFramesContainer:SetShown(not hasArenaStarted);
+			ArenaEnemyMatchFramesContainer:SetShown(hasArenaStarted);
 
-		self:Show();
-		return;
+			self:Show();
+			return;
+		elseif instanceType == "pvp" then
+			ArenaEnemyPrepFramesContainer:Hide();
+			ArenaEnemyMatchFramesContainer:Show();
+			self:Show();
+			return;
+		end
 	end
 
 	ArenaEnemyPrepFramesContainer:Hide();

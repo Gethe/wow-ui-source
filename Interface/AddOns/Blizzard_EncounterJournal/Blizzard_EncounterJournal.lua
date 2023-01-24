@@ -297,6 +297,18 @@ function EncounterBossButtonMixin:Init(elementData)
 	EncounterJournalBossButton_UpdateDifficultyOverlay(self);
 end
 
+MonthlyActivitiesTabButtonMixin = CreateFromMixins(PanelTabButtonMixin);
+
+function MonthlyActivitiesTabButtonMixin:OnEnter()
+	if not C_PlayerInfo.IsTravelersLogAvailable() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		local factionGroup = UnitFactionGroup("player");
+		local tradingPostLocation = factionGroup == "Alliance" and MONTHLY_ACTIVITIES_TRADING_POST_ALLIANCE or MONTHLY_ACTIVITIES_TRADING_POST_HORDE;
+		GameTooltip_AddErrorLine(GameTooltip, MONTHLY_ACTIVITIES_UNAVAILABLE_TOOLTIP:format(tradingPostLocation));
+		GameTooltip:Show();
+	end
+end
+
 function EncounterJournal_OnLoad(self)
 	self:SetTitle(ADVENTURE_JOURNAL);
 	self:SetPortraitToAsset([[Interface\EncounterJournal\UI-EJ-PortraitIcon]]);
@@ -433,7 +445,7 @@ function EncounterJournal_OnLoad(self)
 			if self.selectedTab then
 				EJ_ContentTab_Select(self.selectedTab);
 			else
-				EJSuggestFrame_OpenFrame();
+				MonthlyActivitiesFrame_OpenFrame();
 			end
 		end,
 	}
@@ -441,8 +453,8 @@ function EncounterJournal_OnLoad(self)
 
 	-- initialize tabs
 	local instanceSelect = self.instanceSelect;
-	PanelTemplates_SetNumTabs(self, 4);
-	EJ_ContentTab_OnClick(self.suggestTab);
+	PanelTemplates_SetNumTabs(self, 5);
+	EJ_ContentTab_OnClick(self.MonthlyActivitiesTab);
 	self.maxTabWidth = self:GetWidth() / #self.Tabs;
 
 	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
@@ -457,8 +469,17 @@ function EncounterJournal_OnLoad(self)
 	if( not raidInstanceID ) then
 		EJ_ContentTab_SetEnabled(self.raidsTab, false);
 	end
-	-- set the suggestion panel frame to open by default
-	EJSuggestFrame_OpenFrame();
+	-- set the monthly activities frame to open by default if available, or default to Suggested Content
+	if C_PlayerInfo.IsTravelersLogAvailable() then
+		MonthlyActivitiesFrame_OpenFrame();
+	else
+		EJSuggestFrame_OpenFrame();
+	end
+
+	-- add lock icon to tab if necessary
+	if AreMonthlyActivitiesRestricted() then
+		self.MonthlyActivitiesTab:SetText(CreateAtlasMarkup("activities-icon-lock", 17, 22) .. MONTHLY_ACTIVITIES_TAB);
+	end
 end
 
 function EncounterItemTemplate_DividerFrameTipOnEnter(self)
@@ -531,7 +552,7 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 	if ( instanceType == "none" ) then
 		EncounterJournal.lastInstance = nil;
 		EncounterJournal.lastDifficulty = nil;
-		EJSuggestFrame_OpenFrame();
+		MonthlyActivitiesFrame_OpenFrame();
 	else
 		EJ_ContentTab_Select(EncounterJournal.dungeonsTab:GetID());
 
@@ -610,6 +631,8 @@ function EncounterJournal_OnShow(self)
 
 	-- Request raid locks to show the defeated overlay for bosses the player has killed this week.
 	RequestRaidInfo();
+
+	PanelTemplates_SetTabEnabled(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID(), C_PlayerInfo.IsTravelersLogAvailable());
 end
 
 function EncounterJournal_CheckAndDisplayLootTab()
@@ -2558,6 +2581,7 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 	ShowUIPanel(EncounterJournal);
 	if instanceID then
 		NavBar_Reset(EncounterJournal.navBar);
+		EJ_ContentTab_Select(EncounterJournal.dungeonsTab:GetID());
 		EncounterJournal_DisplayInstance(instanceID);
 
 		if difficultyID then
@@ -2629,7 +2653,7 @@ function EJ_ContentTab_Select(id)
 
 	-- Setup background
 	local tierData;
-	if ( id == EncounterJournal.suggestTab:GetID() ) then
+	if ( id == EncounterJournal.suggestTab:GetID() or id == EncounterJournal.MonthlyActivitiesTab:GetID()) then
 		tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
 	else
 		tierData = GetEJTierData(EJ_GetCurrentTier());
@@ -2638,10 +2662,11 @@ function EJ_ContentTab_Select(id)
 	EncounterJournal.encounter:Hide();
 	EncounterJournal.instanceSelect:Show();
 
-	if ( id == EncounterJournal.suggestTab:GetID() ) then
+	if ( id == EncounterJournal.MonthlyActivitiesTab:GetID() ) then
+		EJ_HideSuggestPanel();
 		EJ_HideLootJournalPanel();
-		instanceSelect.ScrollBox:Hide();
-		instanceSelect.ScrollBar:Hide();
+	elseif ( id == EncounterJournal.suggestTab:GetID() ) then
+		EJ_HideLootJournalPanel();
 		EncounterJournal.suggestFrame:Show();
 		if ( not EncounterJournal.dungeonsTab.isDisabled or not EncounterJournal.raidsTab.isDisabled ) then
 			EncounterJournal_DisableTierDropDown(true);
@@ -2650,17 +2675,28 @@ function EJ_ContentTab_Select(id)
 		end
 	elseif ( id == EncounterJournal.LootJournalTab:GetID() ) then
 		EJ_HideSuggestPanel();
-		instanceSelect.ScrollBox:Hide();
-		instanceSelect.ScrollBar:Hide();
 		EncounterJournal_DisableTierDropDown(true);
 		EJ_ShowLootJournalPanel();
 	elseif ( id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID() ) then
 		EJ_HideNonInstancePanels();
-		instanceSelect.ScrollBox:Show();
-		instanceSelect.ScrollBar:Show();
 		EncounterJournal_ListInstances();
 		EncounterJournal_EnableTierDropDown();
 	end
+
+	-- Update title bar with the current tab name
+	EJInstanceSelect_UpdateTitle(id);
+
+	local showMonthlyActivities = (id == EncounterJournal.MonthlyActivitiesTab:GetID());
+	EncounterJournal.navBar:SetShown(not showMonthlyActivities);
+	EncounterJournal.instanceSelect.tierDropDown:SetShown(not showMonthlyActivities);
+	EncounterJournal.instanceSelect.bg:SetShown(not showMonthlyActivities);
+	EncounterJournal.searchBox:SetShown(not showMonthlyActivities);
+	EncounterJournal.MonthlyActivitiesFrame:SetShown(showMonthlyActivities);
+
+	local showInstanceSelect = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID());
+	instanceSelect.ScrollBox:SetShown(showInstanceSelect);
+	instanceSelect.ScrollBar:SetShown(showInstanceSelect);
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
     EventRegistry:TriggerEvent("EncounterJournal.TabSet", EncounterJournal, id);
@@ -2705,6 +2741,7 @@ end
 function EJ_HideNonInstancePanels()
 	EJ_HideSuggestPanel();
 	EJ_HideLootJournalPanel();
+	EncounterJournal.MonthlyActivitiesFrame:Hide();
 end
 
 function EJTierDropDown_OnLoad(self)
@@ -3558,4 +3595,20 @@ end
 
 function ModifiedInstanceIconMixin:OnLeave()
 	GameTooltip:Hide();
+end
+
+function EJInstanceSelect_UpdateTitle(tabId)
+	local showTitle = true;
+	local instanceSelect = EncounterJournal.instanceSelect;
+	if ( tabId == EncounterJournal.suggestTab:GetID()) then
+		instanceSelect.Title:SetText(AJ_SUGGESTED_CONTENT_TAB);
+	elseif ( tabId == EncounterJournal.raidsTab:GetID()) then
+		instanceSelect.Title:SetText(RAIDS);
+	elseif ( tabId == EncounterJournal.dungeonsTab:GetID()) then
+		instanceSelect.Title:SetText(DUNGEONS);
+	elseif ( tabId == EncounterJournal.MonthlyActivitiesTab:GetID()) then
+		showTitle = false; -- MonthlyActivities frame has a unique header bar so we hide this title
+	end
+
+	instanceSelect.Title:SetShown(showTitle);
 end

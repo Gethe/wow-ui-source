@@ -73,6 +73,59 @@ local function Register()
 		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_MOTION_SICKNESS);
 	end
 
+	-- Dragonriding Motion Sickness
+	do
+		local function GetValue()
+			local focalCircle = GetCVarBool("motionSicknessFocalCircle");
+			local landscapeDarkening = GetCVarBool("motionSicknessLandscapeDarkening");
+			if focalCircle and not landscapeDarkening then
+				return 1;
+			elseif not focalCircle and landscapeDarkening then
+				return 2;
+			elseif focalCircle and landscapeDarkening then
+				return 3;
+			elseif not focalCircle and not landscapeDarkening then
+				return 4;
+			end
+		end
+		
+		local function SetValue(value)
+			if value == 1 then
+				SetCVar("motionSicknessFocalCircle", "1");
+				SetCVar("motionSicknessLandscapeDarkening", "0");
+			elseif value == 2 then
+				SetCVar("motionSicknessFocalCircle", "0");
+				SetCVar("motionSicknessLandscapeDarkening", "1");
+			elseif value == 3 then
+				SetCVar("motionSicknessFocalCircle", "1");
+				SetCVar("motionSicknessLandscapeDarkening", "1");
+			elseif value == 4 then
+				SetCVar("motionSicknessFocalCircle", "0");
+				SetCVar("motionSicknessLandscapeDarkening", "0");
+			end
+		end
+		
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(4, DEFAULT);
+			container:Add(2, MOTION_SICKNESS_DRAGONRIDING_LANDSCAPE_DARKENING);			
+			container:Add(1, MOTION_SICKNESS_DRAGONRIDING_FOCAL_CIRCLE);
+			container:Add(3, MOTION_SICKNESS_DRAGONRIDING_BOTH);
+			return container:GetData();
+		end
+
+		local defaultValue = 4;
+		local setting = Settings.RegisterProxySetting(category, "PROXY_DRAGONRIDING_SICKNESS", Settings.DefaultVarLocation,
+			Settings.VarType.Number, MOTION_SICKNESS_DRAGONRIDING, defaultValue, GetValue, SetValue);
+		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_MOTION_SICKNESS_DRAGONRIDING);
+	end
+
+	--Dragonriding High Speed Motion Sickness Option
+	do 
+		local setting, initializer = Settings.SetupCVarCheckBox(category, "DisableAdvancedFlyingVelocityVFX", MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS, MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS_TOOLTIP);
+		initializer:AddSearchTags(MOTION_SICKNESS_DROPDOWN);
+	end
+
 	-- Camera Shake
 	do
 		local INTENSITY_NONE = 0;

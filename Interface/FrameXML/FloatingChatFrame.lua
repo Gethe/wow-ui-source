@@ -1768,10 +1768,6 @@ end
 
 -- Reset the chat windows to default
 function FCF_ResetChatWindows()
-	ChatFrame1:ClearAllPoints();
-	ChatFrame1:SetPoint("BOTTOMLEFT", 32, 95);
-	ChatFrame1:SetWidth(430);
-	ChatFrame1:SetHeight(120);
 	FCF_SetButtonSide(ChatFrame1, "left");
 	FCF_ResetChatWindow(ChatFrame1, GENERAL);
 	SELECTED_CHAT_FRAME = ChatFrame1;

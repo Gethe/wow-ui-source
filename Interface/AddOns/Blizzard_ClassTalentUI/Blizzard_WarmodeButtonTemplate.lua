@@ -145,26 +145,31 @@ function WarmodeButtonMixin:OnEnter()
 	-- Confirm there is a reason to show an error message
 	if(not canToggleWarmode or not canToggleWarmodeOFF) then
 
-		local warmodeErrorText;
+		-- player is not high enough level
+		if (not C_PvP.ArePvpTalentsUnlocked()) then
+			GameTooltip_AddErrorLine(GameTooltip, PVP_TALENT_SLOT_LOCKED:format(C_PvP.GetPvpTalentsUnlockedLevel()), wrap);
+		else
+			local warmodeErrorText;
 
-		-- Outdoor world environment
-		if(not C_PvP.CanToggleWarModeInArea()) then
-			if(self:GetWarModeDesired()) then
-				if(not canToggleWarmodeOFF and not IsResting()) then
-					warmodeErrorText = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE_RESTAREA or PVP_WAR_MODE_NOT_NOW_ALLIANCE_RESTAREA;
-				end
-			else
-				if(not canToggleWarmode) then
-					warmodeErrorText = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
+			-- Outdoor world environment
+			if(not C_PvP.CanToggleWarModeInArea()) then
+				if(self:GetWarModeDesired()) then
+					if(not canToggleWarmodeOFF and not IsResting()) then
+						warmodeErrorText = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE_RESTAREA or PVP_WAR_MODE_NOT_NOW_ALLIANCE_RESTAREA;
+					end
+				else
+					if(not canToggleWarmode) then
+						warmodeErrorText = UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0] and PVP_WAR_MODE_NOT_NOW_HORDE or PVP_WAR_MODE_NOT_NOW_ALLIANCE;
+					end
 				end
 			end
-		end
 
-		-- player is not allowed to toggle warmode in combat.
-		if(warmodeErrorText) then
-			GameTooltip_AddColoredLine(GameTooltip, warmodeErrorText, RED_FONT_COLOR, wrap);
-		elseif (UnitAffectingCombat("player")) then
-			GameTooltip_AddColoredLine(GameTooltip, SPELL_FAILED_AFFECTING_COMBAT, RED_FONT_COLOR, wrap);
+			-- player is not allowed to toggle warmode in combat.
+			if(warmodeErrorText) then
+				GameTooltip_AddErrorLine(GameTooltip, warmodeErrorText, wrap);
+			elseif (UnitAffectingCombat("player")) then
+				GameTooltip_AddErrorLine(GameTooltip, SPELL_FAILED_AFFECTING_COMBAT, wrap);
+			end
 		end
 	end
 		

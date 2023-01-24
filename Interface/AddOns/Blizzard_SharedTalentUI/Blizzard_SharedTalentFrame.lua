@@ -130,6 +130,14 @@ TalentFrameBaseMixin.CommitUpdateReasons = {
 	InstantCommit = 4,
 };
 
+TalentFrameBaseMixin.VisualsUpdateReasons = {
+	FrameHidden = 1,
+	CommitOngoing = 2,
+	CommitStoppedComplete = 3,
+	CommitStoppedIncomplete = 4,
+	TalentTreeReset = 5,
+};
+
 function TalentFrameBaseMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
@@ -160,11 +168,16 @@ function TalentFrameBaseMixin:OnLoad()
 	self.dirtyCondIDSet = {};
 	self.panOffsetX = 0;
 	self.panOffsetY = 0;
+	
+	self.areBaseCommitVisualsActive = false;
 
 	-- These need to always be registered so that the entire loadout change process is always captured.
 	self:RegisterEvent("TRAIT_CONFIG_UPDATED");
 	self:RegisterEvent("CONFIG_COMMIT_FAILED");
 	self:RegisterEvent("TRAIT_TREE_CHANGED");
+
+	-- Monitor changes to color blind mode
+	CVarCallbackRegistry:RegisterCallback("colorblindMode", self.UpdateColorBlindModeUI, self);
 end
 
 function TalentFrameBaseMixin:RegisterOnUpdate()
@@ -255,16 +268,16 @@ function TalentFrameBaseMixin:OnShow()
 	if self:IsCommitInProgress() then
 		local active = true;
 		local skipSpinnerDelay = true;
-		self:SetCommitVisualsActive(active, skipSpinnerDelay);
+		self:SetCommitVisualsActive(active, TalentFrameBaseMixin.VisualsUpdateReasons.CommitOngoing, skipSpinnerDelay);
 	else
-		self:SetCommitVisualsActive(false);
+		self:SetCommitVisualsActive(false, TalentFrameBaseMixin.VisualsUpdateReasons.CommitStoppedIncomplete);
 	end
 end
 
 function TalentFrameBaseMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, TalentFrameBaseEvents);
 
-	self:SetCommitVisualsActive(false);
+	self:SetCommitVisualsActive(false, TalentFrameBaseMixin.VisualsUpdateReasons.FrameHidden);
 
 	self:SetCommitCompleteVisualsActive(false);
 
@@ -1063,10 +1076,16 @@ function TalentFrameBaseMixin:SetCommitSpinnerShown(shown)
 	end
 end
 
-function TalentFrameBaseMixin:SetCommitVisualsActive(active, skipSpinnerDelay)
+function TalentFrameBaseMixin:SetCommitVisualsActive(active, reason, skipSpinnerDelay)
 	if active and not self:IsVisible() then
 		return;
 	end
+
+	if self.areBaseCommitVisualsActive == active then
+		return;
+	end
+
+	self.areBaseCommitVisualsActive = active;
 
 	self.DisabledOverlay:SetShown(active);
 
@@ -1138,9 +1157,14 @@ function TalentFrameBaseMixin:SetCommitStarted(configID, reason, skipAnimation)
 	self.commitedConfigID = configID;
 
 	if reason == TalentFrameBaseMixin.CommitUpdateReasons.CommitFailed then
-		self:SetCommitVisualsActive(false);
+		self:SetCommitVisualsActive(false, TalentFrameBaseMixin.VisualsUpdateReasons.CommitStoppedIncomplete);
 	elseif isCommitStarted ~= wasCommitActive then
-		self:SetCommitVisualsActive(isCommitStarted and (reason ~= TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit));
+		local isCommitOngoing = isCommitStarted and (reason ~= TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit);
+		if isCommitOngoing then
+			self:SetCommitVisualsActive(true, TalentFrameBaseMixin.VisualsUpdateReasons.CommitOngoing);
+		else
+			self:SetCommitVisualsActive(false, TalentFrameBaseMixin.VisualsUpdateReasons.CommitStoppedComplete);
+		end
 	end
 
 	if not isCommitStarted and self.commitTimer then
@@ -1233,6 +1257,11 @@ end
 function TalentFrameBaseMixin:CheckAndReportCommitOperation()
 	if self:IsCommitInProgress() then
 		self:ReportConfigCommitError();
+		return false;
+	end
+
+	if not self:GetConfigID() then
+		-- This is a silent error because it should never happen.
 		return false;
 	end
 
@@ -1424,6 +1453,14 @@ function TalentFrameBaseMixin:GetIncomingEdgeInfoForNode(nodeID)
 		end
 	end
 	return incomingEdges;
+end
+
+function TalentFrameBaseMixin:UpdateColorBlindModeUI(isColorBlindModeActive)
+	for talentButton in self:EnumerateAllTalentButtons() do
+		if talentButton and talentButton.UpdateColorBlindVisuals then
+			talentButton:UpdateColorBlindVisuals(isColorBlindModeActive);
+		end
+	end
 end
 
 function TalentFrameBaseMixin:GetSearchPreviewContainer()

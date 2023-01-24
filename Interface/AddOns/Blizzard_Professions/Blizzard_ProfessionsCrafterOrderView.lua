@@ -127,10 +127,12 @@ local ProfessionsCrafterOrderViewEvents =
     "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE",
     "CRAFTINGORDERS_RELEASE_ORDER_RESPONSE",
     "CRAFTINGORDERS_REJECT_ORDER_RESPONSE",
+	"CRAFTINGORDERS_FULFILL_ORDER_RESPONSE",
     "CRAFTINGORDERS_UPDATE_CUSTOMER_NAME",
     "CRAFTINGORDERS_CLAIMED_ORDER_ADDED",
     "CRAFTINGORDERS_CLAIMED_ORDER_REMOVED",
     "CRAFTINGORDERS_CLAIMED_ORDER_UPDATED",
+	"CRAFTINGORDERS_UNEXPECTED_ERROR",
     "UNIT_SPELLCAST_INTERRUPTED",
     "UNIT_SPELLCAST_FAILED",
     "UPDATE_TRADESKILL_CAST_COMPLETE",
@@ -157,20 +159,31 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
             self:CloseOrder();
         end
         -- View will update when the order added event comes in
-    elseif event == "CRAFTINGORDERS_RELEASE_ORDER_RESPONSE" then
+    elseif event == "CRAFTINGORDERS_RELEASE_ORDER_RESPONSE" or event == "CRAFTINGORDERS_REJECT_ORDER_RESPONSE" then
         local result, orderID = ...;
         if orderID ~= self.order.orderID then
             return;
         end
 
-        self:CloseOrder();
-    elseif event == "CRAFTINGORDERS_REJECT_ORDER_RESPONSE" then
-        local result, orderID = ...;
-        if orderID ~= self.order.orderID then
+		local success = result == Enum.CraftingOrderResult.Ok;
+        if success then
+			self:CloseOrder();
+		else
+			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
+        end
+	elseif event == "CRAFTINGORDERS_FULFILL_ORDER_RESPONSE" then
+		local result, orderID = ...;
+		if orderID ~= self.order.orderID then
             return;
         end
 
-        self:CloseOrder();
+		local success = result == Enum.CraftingOrderResult.Ok;
+        if not success then
+			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
+        end
+		-- View will update when the order removed event comes in
+	elseif event == "CRAFTINGORDERS_UNEXPECTED_ERROR" then
+		UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_OP_FAILED);
     elseif event == "CRAFTINGORDERS_UPDATE_CUSTOMER_NAME" then
         local customerName, orderID = ...;
         if orderID ~= self.order.orderID then
@@ -189,9 +202,20 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     elseif event == "CRAFTINGORDERS_CLAIMED_ORDER_UPDATED" then
         local orderID = ...;
         if orderID == self.order.orderID then
-			-- Clear recrafting so that we go back to the order complete view if we were recrafting
-			self.recraftingOrderID = nil;
-            self:SetOrder(C_CraftingOrders.GetClaimedOrder());
+			local function Update()
+				-- Clear recrafting so that we go back to the order complete view if we were recrafting
+				self.recraftingOrderID = nil;
+				self:SetOrder(C_CraftingOrders.GetClaimedOrder());
+			end
+
+			if self.OrderDetails.SchematicForm.Details.QualityMeter.animating then
+				self.OrderDetails.SchematicForm.Details.QualityMeter:SetOnAnimationsFinished(function()
+					Update();
+					self.OrderDetails.SchematicForm.Details.QualityMeter:SetOnAnimationsFinished(nil);
+				end);
+			else
+				Update();
+			end
         end
     elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" or event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
 		self:SetOverrideCastBarActive(false);
@@ -263,6 +287,8 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
             if modification and modification.itemID > 0 then
                 local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
                 transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
+				self.reagentSlotProvidedByCustomer[slotIndex] = true;
+				reagentSlotToItemID[slotIndex] = modification.itemID;
             end
         end
     

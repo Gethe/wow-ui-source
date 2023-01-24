@@ -167,13 +167,14 @@
 					<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="13" y="5"/>
 				</Anchors>
 			</Frame>
-			<StatusBar parentKey="HealthBar" inherits="TextStatusBar">
+			<StatusBar parentKey="HealthBar" inherits="TextStatusBar" drawLayer="BACKGROUND">
 				<Size x="70" y="10"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="45" y="-19"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
+					<!-- Setting textureSubLevel to 2 to ensure things are layered above the StatusBar's BarTexture. -->
+					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
 						<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 						<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>

@@ -2211,19 +2211,28 @@ function Class_EatFood:UNIT_HEALTH(arg1)
 	end
 end
 
-function Class_EatFood:BackpackOpened(inCombat)
+function Class_EatFood:BagOpened(containerFrame)
+	local tutorialData = TutorialData:GetFactionData();
+	local container, slot = TutorialHelper:FindItemInContainer(tutorialData.FoodItem);
+	if not container or not slot then
+		EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
+		TutorialManager:Finished(self:Name());
+		return;
+	end
+
+	if not containerFrame:MatchesBagID(container) then
+		return;
+	end
+	
 	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
+
 	self:HideScreenTutorial();
 
 	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-	local tutorialData = TutorialData:GetFactionData();
 
-	local container, slot = TutorialHelper:FindItemInContainer(tutorialData.FoodItem);
-	if container and slot then
-		local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
+	local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
+	if itemFrame then
 		self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_BEGIN), "RIGHT", itemFrame, 0, 0, nil, "RIGHT");
-	else
-		TutorialManager:Finished(self:Name());
 	end
 end
 
@@ -2751,7 +2760,7 @@ function Class_MountReceived:OnBegin()
 	if container and slot then
 		-- Dirty hack to make sure all bags are closed
 		TutorialHelper:CloseAllBags();
-		self.backpackCallbackID = Dispatcher:RegisterFunction("ToggleBackpack", function() self:BackpackOpened() end, true);
+		EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
 		local key = TutorialHelper:GetBagBinding();
 		local tutorialString = TutorialHelper:FormatString(string.format(NPEV2_MOUNT_TUTORIAL_INTRO, key))
 		self:ShowPointerTutorial(tutorialString, "DOWN", MainMenuBarBackpackButton, 0, 10, nil, "DOWN");
@@ -2768,16 +2777,24 @@ function Class_MountReceived:CheckHasMountItem()
 	return TutorialHelper:FindItemInContainer(mountItem);
 end
 
-function Class_MountReceived:BackpackOpened()
+function Class_MountReceived:BagOpened(containerFrame)
 	local container, slot = self:CheckHasMountItem();
-	if container and slot then
-		local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
-		self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_BEGIN, "DOWN", itemFrame, 0, 10, nil, "RIGHT");
-	else
+	if not container or not slot then
+		EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
+
 		-- the player doesn't have the mount
 		self.proceed = false;
 		TutorialManager:Finished(self:Name());
+		return;
 	end
+
+	if not containerFrame:MatchesBagID(container) then
+		return;
+	end
+
+	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
+	local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
+	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_BEGIN, "DOWN", itemFrame, 0, 10, nil, "RIGHT");
 end
 
 function Class_MountReceived:NEW_MOUNT_ADDED(data)
@@ -2811,10 +2828,9 @@ end
 
 function Class_MountReceived:OnComplete()
 	Dispatcher:UnregisterEvent("NEW_MOUNT_ADDED", self);
-	if self.backpackCallbackID then
-		Dispatcher:UnregisterFunction("ToggleBackpack", self.backpackCallbackID);
-		self.backpackCallbackID = nil;
-	end
+
+	-- This should be redundant.
+	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
 
 	if self.collectionCallbackID then
 		Dispatcher:UnregisterFunction("ToggleCollectionsJournal", self.collectionCallbackID);
@@ -2940,8 +2956,7 @@ function Class_UseMount:TryUseMount()
 end
 
 function Class_UseMount:QUEST_REMOVED(questIDRemoved)
-	local factionData = TutorialData:GetFactionData();
-	if (questIDRemoved == self.factionData.AnUrgentMeeting) then
+	if (questIDRemoved == TutorialData:GetFactionData().AnUrgentMeeting) then
 		TutorialManager:Finished(self:Name());
 	end
 end

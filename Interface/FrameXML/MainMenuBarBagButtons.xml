@@ -44,72 +44,99 @@
 		</Scripts>
 	</ItemButton>
 
-	<ItemButton name="MainMenuBarBackpackButton" mixin="MainMenuBarBackpackMixin" inherits="QuickKeybindButtonTemplate, BaseBagSlotButtonTemplate" parent="MicroButtonAndBagsBar" id="0">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEBACKPACK" type="string"/>
-			<KeyValue key="quickKeybindHighlightAtlas" value="QuickKeybind-MainBag-Iconframe-Glow" type="string"/>
-		</KeyValues>
-		<Size x="48" y="48"/>
+	<Frame name="BagsBar" inherits="EditModeBagsSystemTemplate" mixin="BagsBarMixin" parent="UIParent">
+		<Size x="210" y="47"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="-4" y="2"/>
+			<Anchor point="TOPRIGHT" relativeTo="MicroButtonAndBagsBar"/>
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="direction" value="Enum.BagsDirection.Left" type="global"/>
+		</KeyValues>
+		<Frames>
+			<ItemButton name="MainMenuBarBackpackButton" mixin="MainMenuBarBackpackMixin" inherits="QuickKeybindButtonTemplate, BaseBagSlotButtonTemplate" id="0">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEBACKPACK" type="string"/>
+					<KeyValue key="quickKeybindHighlightAtlas" value="QuickKeybind-MainBag-Iconframe-Glow" type="string"/>
+				</KeyValues>
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEvent method="BackpackOnEvent" inherit="append"/>
+				</Scripts>
+			</ItemButton>
+			<Button name="BagBarExpandToggle" mixin="BagBarExpandToggleMixin" registerForClicks="LeftButtonUp">
+				<Size x="10" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MainMenuBarBackpackButton" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+				<NormalTexture parentKey="NormalTexture" atlas="bag-arrow">
+					<Size x="10" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture parentKey="PushedTexture" atlas="bag-arrow">
+					<Size x="10" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</PushedTexture>
+				<HighlightTexture parentKey="HighlightTexture" atlas="bag-arrow" alpha=".4" alphaMode="ADD">
+					<Size x="10" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<ItemButton name="CharacterBag0Slot" inherits="BaseBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEBAG4" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="BagBarExpandToggle" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton name="CharacterBag1Slot" inherits="BaseBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEBAG3" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CharacterBag0Slot" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton name="CharacterBag2Slot" inherits="BaseBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEBAG2" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CharacterBag1Slot" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton name="CharacterBag3Slot" inherits="BaseBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEBAG1" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton name="CharacterReagentBag0Slot" inherits="BaseBagSlotButtonTemplate" mixin="CharacterReagentBagMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="TOGGLEREAGENTBAG1" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CharacterBag3Slot" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+			</ItemButton>
+		</Frames>
 		<Scripts>
-			<OnEvent method="BackpackOnEvent" inherit="append"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
 		</Scripts>
-	</ItemButton>
-
-	<Button name="BagBarExpandToggle" mixin="BagBarExpandToggleMixin" registerForClicks="LeftButtonUp" parent="MicroButtonAndBagsBar">
-		<Size x="10" y="16"/>
-		<Anchors>
-			<Anchor point="RIGHT" relativeTo="MainMenuBarBackpackButton" relativePoint="LEFT" x="0" y="0"/>
-		</Anchors>
-		<NormalTexture parentKey="NormalTexture" atlas="bag-arrow"/>
-		<PushedTexture parentKey="PushedTexture" atlas="bag-arrow"/>
-		<HighlightTexture parentKey="HighlightTexture" atlas="bag-arrow" alpha=".4" alphaMode="ADD"/>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
-		</Scripts>
-	</Button>
-
-	<ItemButton name="CharacterBag0Slot" inherits="BaseBagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEBAG4" type="string"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="RIGHT" relativeTo="BagBarExpandToggle" relativePoint="LEFT" x="0" y="0"/>
-		</Anchors>
-	</ItemButton>
-	<ItemButton name="CharacterBag1Slot" inherits="BaseBagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEBAG3" type="string"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="RIGHT" relativeTo="CharacterBag0Slot" relativePoint="LEFT" x="0" y="0"/>
-		</Anchors>
-	</ItemButton>
-	<ItemButton name="CharacterBag2Slot" inherits="BaseBagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEBAG2" type="string"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="RIGHT" relativeTo="CharacterBag1Slot" relativePoint="LEFT" x="0" y="0"/>
-		</Anchors>
-	</ItemButton>
-	<ItemButton name="CharacterBag3Slot" inherits="BaseBagSlotButtonTemplate" parent="MicroButtonAndBagsBar">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEBAG1" type="string"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT" x="0" y="0"/>
-		</Anchors>
-	</ItemButton>
-	<ItemButton name="CharacterReagentBag0Slot" inherits="BaseBagSlotButtonTemplate" mixin="CharacterReagentBagMixin" parent="MicroButtonAndBagsBar">
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEREAGENTBAG1" type="string"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="RIGHT" relativeTo="CharacterBag3Slot" relativePoint="LEFT" x="0" y="0"/>
-		</Anchors>
-	</ItemButton>
+	</Frame>
 </Ui>

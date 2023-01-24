@@ -36,12 +36,19 @@ function ProfessionsCustomerOrderFormMixin:InitPaymentContainer()
 	self.PaymentContainer.TipMoneyInputFrame.CopperBox:Hide();
 	
 	self.PaymentContainer.ListOrderButton:SetScript("OnClick", function()
+		local warning = nil;
 		if self:OrderCouldReduceQuality() then
+			warning = CRAFTING_ORDER_RECRAFT_WARNING2;
+		elseif self.order.unusableBOP then
+			warning = PROFESSIONS_ORDER_UNUSABLE_WARNING;
+		end
+
+		if warning then
 			local referenceKey = self;
 			if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
 				local customData = 
 				{
-					text = CRAFTING_ORDER_RECRAFT_WARNING2,
+					text = warning,
 					acceptText = YES,
 					cancelText = NO,
 					callback = function() self:ListOrder(); end,
@@ -103,6 +110,8 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 				flyout:Init(self.RecraftSlot.InputSlot, self.transaction, canModifyFilter);
 				flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, self);
 			end
+		elseif self.order.recraftItemHyperlink then
+			HandleModifiedItemClick(self.order.recraftItemHyperlink);
 		end
 	end);
 
@@ -139,6 +148,16 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		end
 	end);
 
+	self.RecraftSlot.OutputSlot:SetScript("OnClick", function()
+		local itemGUID = self.transaction and self.transaction:GetRecraftAllocation();
+		local optionalReagents = self.transaction:CreateOptionalCraftingReagentInfoTbl();
+		local minimumQuality = self.minQualityIDs and self.minQualityIDs[self.order.minQuality];
+		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.order.spellID, optionalReagents, itemGUID, minimumQuality, self.committed and self.order.orderID or nil);
+		if outputItemInfo and outputItemInfo.hyperlink then
+			HandleModifiedItemClick(outputItemInfo.hyperlink);
+		end
+	end);
+
 	self.PaymentContainer.ViewListingsButton:SetScript("OnClick", function(frame, button, down)
 		if down then
 			frame:SetHighlightAtlas("UI-CraftingOrderIcon-Down");
@@ -159,17 +178,27 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 	 self.TrackRecipeCheckBox.Text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_TRACK_RECIPE));
 	 self.TrackRecipeCheckBox.Checkbox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
-		C_TradeSkillUI.SetRecipeTracked(self.order.spellID, checked);
+		C_TradeSkillUI.SetRecipeTracked(self.order.spellID, checked, self.order.isRecraft);
 		PlaySound(SOUNDKIT.UI_PROFESSION_TRACK_RECIPE_CHECKBOX);
 	 end);
 
 	 local function SetFavoriteTooltip(button)
 		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-		GameTooltip_AddHighlightLine(GameTooltip, button:GetChecked() and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE);
+		local isFavorite = button:GetChecked();
+		if not isFavorite and C_CraftingOrders.GetNumFavoriteCustomerOptions() >= Constants.CraftingOrderConsts.MAX_CRAFTING_ORDER_FAVORITE_RECIPES then
+			GameTooltip_AddErrorLine(GameTooltip, PROFESSIONS_CRAFTING_ORDERS_FAVORITES_FULL);
+		else
+			GameTooltip_AddHighlightLine(GameTooltip, isFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE);
+		end
 		GameTooltip:Show();
 	end
 	 self.FavoriteButton:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
+		if checked and C_CraftingOrders.GetNumFavoriteCustomerOptions() >= Constants.CraftingOrderConsts.MAX_CRAFTING_ORDER_FAVORITE_RECIPES then
+			button:SetChecked(false);
+			return;
+		end
+
 		C_CraftingOrders.SetCustomerOptionFavorited(self.order.spellID, checked);
 
 		button:SetIsFavorite(checked);
@@ -181,6 +210,32 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		SetFavoriteTooltip(button);
 	end);
 	self.FavoriteButton:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.AllocateBestQualityCheckBox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
+	self.AllocateBestQualityCheckBox:SetScript("OnClick", function(button, buttonName, down)
+		local checked = button:GetChecked();
+		local forCustomer = true;
+		Professions.SetShouldAllocateBestQualityReagents(checked, forCustomer);
+
+		Professions.AllocateAllBasicReagents(self.transaction, checked);
+		self:UpdateReagentSlots();
+
+		-- Trick to re-fire the OnEnter script to update the tooltip.
+		self.AllocateBestQualityCheckBox:Hide();
+		self.AllocateBestQualityCheckBox:Show();
+		PlaySound(SOUNDKIT.UI_PROFESSION_USE_BEST_REAGENTS_CHECKBOX);
+	end);
+	self.AllocateBestQualityCheckBox:SetScript("OnEnter", function(button)
+		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+		local checked = button:GetChecked();
+		if checked then
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_USE_LOWEST_QUALITY_REAGENTS);
+		else
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_USE_HIGHEST_QUALITY_REAGENTS);
+		end
+		GameTooltip:Show();
+	end);
+	self.AllocateBestQualityCheckBox:SetScript("OnLeave", GameTooltip_Hide);
 end
 
 function ProfessionsCustomerOrderFormMixin:InitCurrentListings()
@@ -293,6 +348,8 @@ function ProfessionsCustomerOrderFormMixin:OnHide()
 		self.requestCallback:Cancel();
 		self.requestCallback = nil;
 	end
+
+	self.QualityDialog:Close();
 
 	self:HideCurrentListings();
 	StaticPopup_Hide("GENERIC_CONFIRMATION");
@@ -492,7 +549,6 @@ end
 
 function ProfessionsCustomerOrderFormMixin:SetMinimumQualityIndex(index)
 	self.order.minQuality = index;
-	self.ReagentContainer.RecraftWarningText:SetShown(self:OrderCouldReduceQuality());
 
 	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, index);
 
@@ -593,7 +649,8 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 				end
 
 				if canAllocate then
-					local useBestQuality = true;
+					local forCustomer = true;
+					local useBestQuality = Professions.ShouldAllocateBestQualityReagents(forCustomer);
 					Professions.AllocateBasicReagents(transaction, slotIndex, useBestQuality);
 					slot:Update();
 				end
@@ -611,7 +668,8 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 							slot.Button:UpdateCursor();
 							slot:Update();
 						else
-							local useBestQuality = true;
+							local forCustomer = true;
+							local useBestQuality = Professions.ShouldAllocateBestQualityReagents(forCustomer);
 							Professions.AllocateBasicReagents(transaction, slotIndex, useBestQuality);
 							slot:Update();
 						end
@@ -826,8 +884,15 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 	self.ReagentContainer.Reagents:Show();
 	self.ReagentContainer.OptionalReagents:Show();
 	self.ReagentContainer.RecraftInfoText:Hide();
+	self.TrackRecipeCheckBox:Hide();
 
 	local recipeID = self.order.spellID;
+
+	if recipeID and not self.committed then
+		self.TrackRecipeCheckBox:Show();
+		self.TrackRecipeCheckBox.Checkbox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeID, self.order.isRecraft));
+	end
+
 	local recipeSchematic = self.order.spellID and C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, self.order.isRecraft);
 	self.transaction = recipeSchematic and CreateProfessionsRecipeTransaction(recipeSchematic);
 	self.changedOptionalReagents = 0;
@@ -866,7 +931,6 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 
 	if self.order.isRecraft then
 		self.RecraftRecipeName:Show();
-		self.ReagentContainer.RecraftWarningText:SetShown(self:OrderCouldReduceQuality());
 		self.loader = CreateProfessionsRecipeLoader(recipeSchematic, function()
 			local reagents = nil;
 			local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, reagents);
@@ -917,6 +981,14 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 			GameTooltip_Hide();
 			self.OutputIcon:SetScript("OnUpdate", nil);
 		end);
+		self.OutputIcon:SetScript("OnClick", function()
+			local optionalReagents = self.transaction:CreateOptionalCraftingReagentInfoTbl();
+			local minimumQuality = self.minQualityIDs and self.minQualityIDs[self.order.minQuality];
+			local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, optionalReagents, nilRecraftAllocation, minimumQuality);
+			if outputItemInfo.hyperlink then
+				HandleModifiedItemClick(outputItemInfo.hyperlink);
+			end
+		end);
 	end
 
 	local professionName = C_TradeSkillUI.GetProfessionNameForSkillLineAbility(self.order.skillLineAbilityID);
@@ -933,6 +1005,14 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 	self:UpdateMinimumQuality();
 	self:UpdateDepositCost();
 	self:UpdateListOrderButton();
+
+	if not self.committed and Professions.DoesSchematicIncludeReagentQualities(self.transaction:GetRecipeSchematic()) then
+		self.AllocateBestQualityCheckBox:Show();
+		local forCustomer = true;
+		self.AllocateBestQualityCheckBox:SetChecked(Professions.ShouldAllocateBestQualityReagents(forCustomer));
+	else
+		self.AllocateBestQualityCheckBox:Hide();
+	end
 end
 
 function ProfessionsCustomerOrderFormMixin:UpdateMinimumQualityAnchor()
@@ -969,7 +1049,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 	self.RecraftRecipeName:Hide();
 	self.RecraftSlot:SetShown(order.isRecraft);
 	self.ReagentContainer.RecraftInfoText:SetShown(order.isRecraft);
-	self.ReagentContainer.RecraftWarningText:Hide();
+	self.AllocateBestQualityCheckBox:Hide();
 
 	local editBox = self.PaymentContainer.NoteEditBox.ScrollingEditBox;
 	editBox:SetDefaultTextEnabled(not self.committed);
@@ -1005,11 +1085,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 		region:SetShown(self.committed and ShouldShowRegionCompleted(region));
 	end
 
-	local showTrackRecipe = not self.committed and not order.isRecraft;
-	self.TrackRecipeCheckBox:SetShown(showTrackRecipe);
-	if showTrackRecipe then
-		self.TrackRecipeCheckBox.Checkbox:SetChecked(C_TradeSkillUI.IsRecipeTracked(order.spellID));
-	end
+	self.TrackRecipeCheckBox:Hide();
 
 	local showFavoriteButton = not order.isRecraft;
 	self.FavoriteButton:SetShown(showFavoriteButton);
@@ -1080,7 +1156,16 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 		end
 		self.PaymentContainer.TimeRemainingDisplay.Text:SetText(timeRemainingText);
 
-		self.OrderRecipientDisplay.CrafterValue:SetText(order.crafterName or CRAFTING_ORDER_NOT_YET_CLAIMED);
+		local crafterText;
+		if order.crafterName then
+			crafterText = order.crafterName;
+		elseif self.order.orderState == Enum.CraftingOrderState.Created then
+			crafterText = CRAFTING_ORDER_NOT_YET_CLAIMED;
+		else
+			crafterText = CRAFTING_ORDER_NOT_CLAIMED;
+		end
+		self.OrderRecipientDisplay.CrafterValue:SetText(crafterText);
+
 		local orderTypeText;
 		if self.order.orderType == Enum.CraftingOrderType.Public then
 			orderTypeText = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PUBLIC;
@@ -1090,6 +1175,22 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 			orderTypeText = PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PRIVATE;
 		end
 		self.OrderRecipientDisplay.PostedTo:SetText(orderTypeText);
+
+		local orderStateText;
+		if self.order.orderState == Enum.CraftingOrderState.Created then
+			orderStateText = CRAFTING_ORDER_NOT_CLAIMED;
+		elseif self.order.orderState == Enum.CraftingOrderState.Expired then
+			orderStateText = PROFESSIONS_ORDER_EXPIRED;
+		elseif self.order.orderState == Enum.CraftingOrderState.Canceled then
+			orderStateText = PROFESSIONS_ORDER_CANCELLED;
+		elseif self.order.orderState == Enum.CraftingOrderState.Rejected then
+			orderStateText = PROFESSIONS_ORDER_REJECTED;
+		elseif self.order.orderState == Enum.CraftingOrderState.Claimed then
+			orderStateText = PROFESSIONS_CRAFTING_ORDER_IN_PROGRESS;
+		else
+			orderStateText = PROFESSIONS_ORDER_COMPLETE;
+		end
+		self.OrderStateText:SetText(orderStateText);
 
 		self:UpdateCancelOrderButton();
 

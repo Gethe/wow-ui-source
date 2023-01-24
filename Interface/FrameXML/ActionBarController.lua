@@ -116,6 +116,7 @@ function ActionBarController_OnEvent(self, event, ...)
 		local function UpdateActionBar()
 			MultiActionBar_Update();
 			StatusTrackingBarManager:UpdateBarTicks();
+			EventRegistry:TriggerEvent("ActionBarShownSettingUpdated");
 		end
 		
 		for index, variable in ipairs(variables) do

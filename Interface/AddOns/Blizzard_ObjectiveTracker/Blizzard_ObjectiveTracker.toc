@@ -11,4 +11,5 @@ Blizzard_AutoQuestPopUpTracker.xml
 Blizzard_BonusObjectiveTracker.xml
 Blizzard_ScenarioObjectiveTracker.xml
 Blizzard_ProfessionsRecipeTracker.lua
+Blizzard_MonthlyActivitiesObjectiveTracker.lua
 Blizzard_ObjectiveTrackerUIWidgetContainer.xml

@@ -383,7 +383,6 @@ local modernSystemMap =
 				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 11,
 				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
 				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
-				[Enum.EditModeAuraFrameSetting.ShowFull] = 0,
 			},
 			anchorInfo = {
 				point = "TOPRIGHT",
@@ -401,7 +400,6 @@ local modernSystemMap =
 				[Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame] = 8,
 				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
 				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
-				[Enum.EditModeAuraFrameSetting.ShowFull] = 0,
 			},
 			anchorInfo = {
 				point = "TOPRIGHT",
@@ -487,6 +485,74 @@ local modernSystemMap =
 			relativePoint = "TOPRIGHT",
 			offsetX = -110,
 			offsetY = -275,
+		},
+	},
+
+	[Enum.EditModeSystem.MicroMenu] = {
+		settings = {
+			[Enum.EditModeMicroMenuSetting.Orientation] = Enum.MicroMenuOrientation.Horizontal,
+			[Enum.EditModeMicroMenuSetting.Order] = Enum.MicroMenuOrder.Default,
+			[Enum.EditModeMicroMenuSetting.Size] = 0,
+		},
+		anchorInfo = {
+			point = "BOTTOMRIGHT",
+			relativeTo = "MicroButtonAndBagsBar",
+			relativePoint = "BOTTOMRIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.Bags] = {
+		settings = {
+			[Enum.EditModeBagsSetting.Orientation] = Enum.BagsOrientation.Horizontal,
+			[Enum.EditModeBagsSetting.Direction] = Enum.BagsDirection.Left,
+			[Enum.EditModeBagsSetting.Size] = 5,
+		},
+		anchorInfo = {
+			point = "TOPRIGHT",
+			relativeTo = "MicroButtonAndBagsBar",
+			relativePoint = "TOPRIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.StatusTrackingBar] = {
+		[Enum.EditModeStatusTrackingBarSystemIndices.ExperienceBar] = {
+			settings = {
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "StatusTrackingBarManager",
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
+		[Enum.EditModeStatusTrackingBarSystemIndices.ReputationBar] = {
+			settings = {
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "MainStatusTrackingBarContainer",
+				relativePoint = "TOP",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
+	},
+
+	[Enum.EditModeSystem.DurabilityFrame] = {
+		settings = {
+			[Enum.EditModeDurabilityFrameSetting.Size] = 5,
+		},
+		anchorInfo = {
+			point = "RIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "RIGHT",
+			offsetX = 0,
+			offsetY = 0,
 		},
 	},
 };
@@ -872,7 +938,6 @@ local classicSystemMap =
 				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 11,
 				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
 				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
-				[Enum.EditModeAuraFrameSetting.ShowFull] = 0,
 			},
 			anchorInfo = {
 				point = "TOPRIGHT",
@@ -890,7 +955,6 @@ local classicSystemMap =
 				[Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame] = 8,
 				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
 				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
-				[Enum.EditModeAuraFrameSetting.ShowFull] = 0,
 			},
 			anchorInfo = {
 				point = "TOPRIGHT",
@@ -976,6 +1040,74 @@ local classicSystemMap =
 			relativePoint = "TOPRIGHT",
 			offsetX = -110,
 			offsetY = -275,
+		},
+	},
+
+	[Enum.EditModeSystem.MicroMenu] = {
+		settings = {
+			[Enum.EditModeMicroMenuSetting.Orientation] = Enum.MicroMenuOrientation.Horizontal,
+			[Enum.EditModeMicroMenuSetting.Order] = Enum.MicroMenuOrder.Default,
+			[Enum.EditModeMicroMenuSetting.Size] = 0,
+		},
+		anchorInfo = {
+			point = "BOTTOMRIGHT",
+			relativeTo = "MicroButtonAndBagsBar",
+			relativePoint = "BOTTOMRIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.Bags] = {
+		settings = {
+			[Enum.EditModeBagsSetting.Orientation] = Enum.BagsOrientation.Horizontal,
+			[Enum.EditModeBagsSetting.Direction] = Enum.BagsDirection.Left,
+			[Enum.EditModeBagsSetting.Size] = 5,
+		},
+		anchorInfo = {
+			point = "TOPRIGHT",
+			relativeTo = "MicroButtonAndBagsBar",
+			relativePoint = "TOPRIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.StatusTrackingBar] = {
+		[Enum.EditModeStatusTrackingBarSystemIndices.ExperienceBar] = {
+			settings = {
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "StatusTrackingBarManager",
+				relativePoint = "BOTTOM",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
+		[Enum.EditModeStatusTrackingBarSystemIndices.ReputationBar] = {
+			settings = {
+			},
+			anchorInfo = {
+				point = "BOTTOM",
+				relativeTo = "MainStatusTrackingBarContainer",
+				relativePoint = "TOP",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
+	},
+
+	[Enum.EditModeSystem.DurabilityFrame] = {
+		settings = {
+			[Enum.EditModeDurabilityFrameSetting.Size] = 5,
+		},
+		anchorInfo = {
+			point = "RIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "RIGHT",
+			offsetX = 0,
+			offsetY = 0,
 		},
 	},
 };

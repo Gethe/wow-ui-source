@@ -595,7 +595,7 @@ function LFGFrameRoleCheckButton_OnEnter(self)
 end
 
 function LFGConstructDeclinedMessage(dungeonID)
-	local returnVal;
+	local returnVal = "";
 	local hasTimeRestriction = false;
 	for i=1, GetLFDLockPlayerCount() do
 		local playerName, lockedReason, subReason1, subReason2, secondReasonID, secondReasonString = GetLFDLockInfo(dungeonID, i);

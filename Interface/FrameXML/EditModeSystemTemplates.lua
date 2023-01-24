@@ -22,6 +22,7 @@ function EditModeSystemMixin:OnSystemLoad()
 	self.Selection:SetLabelText(self.systemName);
 	self:SetupSettingsDialogAnchor();
 	self.snappedFrames = {};
+	self.downKeys = {};
 
 	self.settingDisplayInfoMap = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(self.system);
 end
@@ -30,6 +31,55 @@ function EditModeSystemMixin:OnSystemHide()
 	if self.isSelected then
 		EditModeManagerFrame:ClearSelectedSystem();
 	end
+end
+
+function EditModeSystemMixin:ProcessMovementKey(key)
+	local deltaAmount = self:IsShiftKeyDown() and 10 or 1;
+	local xDelta, yDelta = 0, 0;
+	if key == "UP" then
+		yDelta = deltaAmount;
+	elseif key == "DOWN" then
+		yDelta = -deltaAmount;
+	elseif key == "LEFT" then
+		xDelta = -deltaAmount;
+	elseif key == "RIGHT" then
+		xDelta = deltaAmount;
+	end
+
+	if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
+		self:SetParent(UIParent);
+	end
+	self:ClearFrameSnap();
+
+	self:StopMovingOrSizing();
+	self:BreakFrameSnap(xDelta, yDelta);
+end
+
+local movementKeys = {
+	UP = true,
+	DOWN = true,
+	LEFT = true,
+	RIGHT = true,
+};
+
+function EditModeSystemMixin:OnKeyDown(key)
+	self.downKeys[key] = true;
+	if movementKeys[key] then
+		self:ProcessMovementKey(key);
+	end
+
+end
+
+function EditModeSystemMixin:OnKeyUp(key)
+	self.downKeys[key] = false;
+end
+
+function EditModeSystemMixin:ClearDownKeys()
+	self.downKeys = {};
+end
+
+function EditModeSystemMixin:IsShiftKeyDown()
+	return self.downKeys["LSHIFT"] or self.downKeys["RSHIFT"];
 end
 
 function EditModeSystemMixin:PrepareForSave()
@@ -65,6 +115,10 @@ function EditModeSystemMixin:SetScaleOverride(newScale)
 
 	if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
 		UIParent_ManageFramePositions();
+
+		if self.isRightManagedFrame and ObjectiveTrackerFrame and ObjectiveTrackerFrame:IsInDefaultPosition() then
+			ObjectiveTracker_Update();
+		end
 	end
 end
 
@@ -128,6 +182,10 @@ function EditModeSystemMixin:UpdateDirtySettings(oldSettingsMap)
 			self.dirtySettings[setting] = true;
 		end
 	end
+end
+
+function EditModeSystemMixin:MarkAllSettingsDirty()
+	self.settingMap = nil;
 end
 
 function EditModeSystemMixin:IsSettingDirty(setting)
@@ -462,23 +520,32 @@ function EditModeSystemMixin:ClearFrameSnap()
 	end
 end
 
-function EditModeSystemMixin:BreakFrameSnap()
+function EditModeSystemMixin:BreakFrameSnap(deltaX, deltaY)
 	local top = self:GetTop();
 	if top then
-		local offsetX, offsetY, anchorPoint;
+		local scale = self:GetScale();
+		local offsetY = -((UIParent:GetHeight() - top * scale) / scale);
+
+		local offsetX, anchorPoint;
 		if self.alwaysUseTopRightAnchor then
-			offsetX = -(UIParent:GetWidth() - self:GetRight());
-			offsetY = -(UIParent:GetHeight() - top);
+			offsetX = -((UIParent:GetWidth() - self:GetRight() * scale) / scale);
 			anchorPoint = "TOPRIGHT";
 		else
 			offsetX = self:GetLeft();
-			offsetY = -(UIParent:GetHeight() - top);
 			anchorPoint = "TOPLEFT";
+		end
+
+		if deltaX then
+			offsetX = offsetX + deltaX;
+		end
+
+		if deltaY then
+			offsetY = offsetY + deltaY;
 		end
 
 		self:ClearAllPoints();
 		self:SetPoint(anchorPoint, UIParent, anchorPoint, offsetX, offsetY);
-		EditModeManagerFrame:UpdateSystemAnchorInfo(self);
+		EditModeManagerFrame:OnSystemPositionChange(self);
 	end
 end
 
@@ -1351,46 +1418,11 @@ end
 
 EditModeAuraFrameSystemMixin = {};
 
-function EditModeAuraFrameSystemMixin:OnEditModeEnter()
-	EditModeSystemMixin.OnEditModeEnter(self);
-
-	if not self.hasInitializedExampleAuras then
-		-- Setup example aura frames
-		local spellIconsOnly = true;
-		self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spell, spellIconsOnly);
-		local iconDataProviderNumIcons = self.iconDataProvider:GetNumIcons();
-
-		self.exampleAuraFrames = {};
-		for i = 1, self.maxAuras, 1 do
-			local auraFrame = self.auraPool:Acquire(self.exampleAuraTemplate);
-			auraFrame:SetScale(self.AuraContainer.iconScale);
-
-			auraFrame.duration:SetFontObject(DEFAULT_AURA_DURATION_FONT);
-			auraFrame.duration:SetFormattedText(SecondsToTimeAbbrev(i * 60));
-
-			auraFrame.Icon:SetTexture(self.iconDataProvider:GetIconByIndex(math.random(1, iconDataProviderNumIcons)));
-
-			if auraFrame.Setup then
-				auraFrame:Setup();
-			end
-
-			auraFrame:Hide();
-			table.insert(self.exampleAuraFrames, auraFrame);
-		end
-
-		self.iconDataProvider:Release();
-		self.iconDataProvider = nil;
-
-		self.hasInitializedExampleAuras = true;
-	end
-end
-
 function EditModeAuraFrameSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);
 
 	self.isInEditMode = false;
 	self:UpdateAuraButtons();
-	self:UpdateGridLayout();
 end
 
 function EditModeAuraFrameSystemMixin:UpdateDisplayInfoOptions(displayInfo)
@@ -1428,17 +1460,6 @@ end
 function EditModeAuraFrameSystemMixin:UpdateSystem(systemInfo)
 	EditModeSystemMixin.UpdateSystem(self, systemInfo);
 	self:UpdateGridLayout();
-end
-
-function EditModeAuraFrameSystemMixin:MarkAuraButtonsDirty()
-	self.auraButtonsDirty = true;
-end
-
-function EditModeAuraFrameSystemMixin:RefreshAuraButtons()
-	if self.auraButtonsDirty then
-		self:UpdateAuraButtons()
-		self.auraButtonsDirty = false;
-	end
 end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSettingOrientation(entireSystemUpdate)
@@ -1535,29 +1556,15 @@ end
 function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconLimit()
 	local setting = self == BuffFrame and Enum.EditModeAuraFrameSetting.IconLimitBuffFrame or Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame;
 	self.AuraContainer.iconStride = self:GetSettingValue(setting);
-
-	-- Only need to update aura buttons if we aren't already showing the full number of auras
-	-- This is because we base the number of buttons we show on the icon limit if we aren't showing a full number of them
-	if not self:GetSettingValueBool(Enum.EditModeAuraFrameSetting.ShowFull) then
-		self:MarkAuraButtonsDirty();
-	end
 end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconSize()
 	local iconSize = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconSize);
 	self.AuraContainer.iconScale = iconSize / 100;
-	for i, auraFrame in pairs(self.auraFrames) do
-		auraFrame:SetScale(self.AuraContainer.iconScale);
-	end
 end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconPadding()
 	self.AuraContainer.iconPadding = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconPadding);
-end
-
-function EditModeAuraFrameSystemMixin:UpdateSystemSettingShowFull()
-	self.ShowFull = self:GetSettingValueBool(Enum.EditModeAuraFrameSetting.ShowFull);
-	self:MarkAuraButtonsDirty();
 end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -1581,12 +1588,9 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		self:UpdateSystemSettingIconSize();
 	elseif setting == Enum.EditModeAuraFrameSetting.IconPadding and self:HasSetting(Enum.EditModeAuraFrameSetting.IconPadding) then
 		self:UpdateSystemSettingIconPadding();
-	elseif setting == Enum.EditModeAuraFrameSetting.ShowFull and self:HasSetting(Enum.EditModeAuraFrameSetting.ShowFull) then
-		self:UpdateSystemSettingShowFull();
 	end
 
 	if not entireSystemUpdate then
-		self:RefreshAuraButtons();
 		self:UpdateGridLayout();
 	end
 
@@ -1629,6 +1633,7 @@ function EditModeChatFrameSystemMixin:EditMode_OnResized()
 	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.WidthTensAndOnes, math.floor(width % 100));
 	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.HeightHundreds, math.floor(height / 100));
 	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.HeightTensAndOnes, math.floor(height % 100));
+	EditModeManagerFrame:OnSystemPositionChange(self);
 end
 
 function EditModeChatFrameSystemMixin:UpdateSystemSettingSize()
@@ -1812,6 +1817,178 @@ function EditModeObjectiveTrackerSystemMixin:ApplySystemAnchor()
 	EditModeSystemMixin.ApplySystemAnchor(self);
 
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MOVED);
+end
+
+EditModeMicroMenuSystemMixin = {};
+
+function EditModeMicroMenuSystemMixin:ApplySystemAnchor()
+	EditModeSystemMixin.ApplySystemAnchor(self);
+
+	self:UpdateHelpTicketButtonAnchor();
+end
+
+function EditModeMicroMenuSystemMixin:UpdateSystem(systemInfo)
+	EditModeSystemMixin.UpdateSystem(self, systemInfo);
+	self:Layout();
+end
+
+function EditModeMicroMenuSystemMixin:UpdateSystemSettingOrientation()
+	self.isHorizontal = self:DoesSettingValueEqual(Enum.EditModeMicroMenuSetting.Orientation, Enum.MicroMenuOrientation.Horizontal);
+end
+
+function EditModeMicroMenuSystemMixin:UpdateSystemSettingOrder()
+	self.layoutFramesGoingRight = self:DoesSettingValueEqual(Enum.EditModeMicroMenuSetting.Order, Enum.MicroMenuOrder.Default);
+	self.layoutFramesGoingUp = not self:DoesSettingValueEqual(Enum.EditModeMicroMenuSetting.Order, Enum.MicroMenuOrder.Default);
+end
+
+function EditModeMicroMenuSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeMicroMenuSetting.Size) / 100);
+end
+
+function EditModeMicroMenuSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeMicroMenuSetting.Orientation and self:HasSetting(Enum.EditModeMicroMenuSetting.Orientation) then
+		self:UpdateSystemSettingOrientation();
+	elseif setting == Enum.EditModeMicroMenuSetting.Order and self:HasSetting(Enum.EditModeMicroMenuSetting.Order) then
+		self:UpdateSystemSettingOrder();
+	elseif setting == Enum.EditModeMicroMenuSetting.Size and self:HasSetting(Enum.EditModeMicroMenuSetting.Size) then
+		self:UpdateSystemSettingSize();
+	end
+
+	if not entireSystemUpdate then
+		self:Layout();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeBagsSystemMixin = {};
+
+local bagsDirectionTextTable =
+{
+	[Enum.BagsOrientation.Horizontal] = {
+		HUD_EDIT_MODE_SETTING_BAGS_DIRECTION_LEFT,
+		HUD_EDIT_MODE_SETTING_BAGS_DIRECTION_RIGHT,
+	};
+	[Enum.BagsOrientation.Vertical] = {
+		HUD_EDIT_MODE_SETTING_BAGS_DIRECTION_UP,
+		HUD_EDIT_MODE_SETTING_BAGS_DIRECTION_DOWN,
+	};
+}
+
+function EditModeBagsSystemMixin:UpdateSystem(systemInfo)
+	EditModeSystemMixin.UpdateSystem(self, systemInfo);
+	self:Layout();
+end
+
+function EditModeBagsSystemMixin:UpdateDisplayInfoOptions(displayInfo)
+	local updatedDisplayInfo = displayInfo;
+
+	if displayInfo.setting == Enum.EditModeBagsSetting.Direction then
+		updatedDisplayInfo = CopyTable(displayInfo);
+
+		local orientation = self:GetSettingValue(Enum.EditModeBagsSetting.Orientation);
+		updatedDisplayInfo.options[1].text = bagsDirectionTextTable[orientation][1];
+		updatedDisplayInfo.options[2].text = bagsDirectionTextTable[orientation][2];
+	end
+
+	return updatedDisplayInfo;
+end
+
+function EditModeBagsSystemMixin:UpdateSystemSettingOrientation()
+	self.isHorizontal = self:DoesSettingValueEqual(Enum.EditModeBagsSetting.Orientation, Enum.BagsOrientation.Horizontal);
+
+	-- If this is for an entire system update then no need to update direction
+	if entireSystemUpdate then
+		return;
+	end
+
+	-- Update direction based on new orientation
+	local newDirection = self.isHorizontal and Enum.BagsDirection.Left or Enum.BagsDirection.Up;
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeBagsSetting.Direction, newDirection);
+end
+
+function EditModeBagsSystemMixin:UpdateSystemSettingDirection()
+	self.direction = self:GetSettingValue(Enum.EditModeBagsSetting.Direction);
+end
+
+function EditModeBagsSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeBagsSetting.Size) / 100);
+end
+
+function EditModeBagsSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeBagsSetting.Orientation and self:HasSetting(Enum.EditModeBagsSetting.Orientation) then
+		self:UpdateSystemSettingOrientation();
+	elseif setting == Enum.EditModeBagsSetting.Direction and self:HasSetting(Enum.EditModeBagsSetting.Direction) then
+		self:UpdateSystemSettingDirection();
+	elseif setting == Enum.EditModeBagsSetting.Size and self:HasSetting(Enum.EditModeBagsSetting.Size) then
+		self:UpdateSystemSettingSize();
+	end
+
+	if not entireSystemUpdate then
+		self:Layout();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeStatusTrackingBarSystemMixin = {};
+
+function EditModeStatusTrackingBarSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
+EditModeExperienceBarSystemMixin = {};
+
+function EditModeExperienceBarSystemMixin:OnEditModeEnter()
+	EditModeSystemMixin.OnEditModeEnter(self);
+
+	self.isInEditMode = true;
+	self:UpdateShownState();
+end
+
+EditModeDurabilityFrameSystemMixin = {};
+
+function EditModeDurabilityFrameSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
+function EditModeDurabilityFrameSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeDurabilityFrameSetting.Size) / 100);
+end
+
+function EditModeDurabilityFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeDurabilityFrameSetting.Size and self:HasSetting(Enum.EditModeDurabilityFrameSetting.Size) then
+		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
 end
 
 local EditModeSystemSelectionLayout =

@@ -243,9 +243,7 @@
 				self:RegisterForDrag("LeftButton");
 				self.PortraitFrame:SetFrameLevel(self.BusyFrame:GetFrameLevel() + 1);
 			</OnLoad>
-			<OnClick>
-				GarrisonFollowerListButton_OnClick(self, button);
-			</OnClick>
+			<OnClick function="GarrisonFollowerListButton_OnUserClick"/>
 			<OnDragStart function="GarrisonFollowerListButton_OnDragStart"/>
 			<OnDragStop function="GarrisonFollowerListButton_OnDragStop"/>
 		</Scripts>

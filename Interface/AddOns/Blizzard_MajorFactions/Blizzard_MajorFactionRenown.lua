@@ -94,7 +94,7 @@ function MajorFactionRenownMixin:OnLoad()
 		allowOtherPanels = 1,
 		width = 820,
 		height = 578,
-		yoffset = 7,
+		yoffset = -2,
 	};
 	RegisterUIPanel(MajorFactionRenownFrame, attributes);
 	

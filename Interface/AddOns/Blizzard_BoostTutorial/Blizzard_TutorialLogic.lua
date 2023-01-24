@@ -75,7 +75,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetItemContainerFrame(container, slot)
-	return ContainerFrame_GetItemButton(container, slot);
+	return ContainerFrameUtil_GetItemButtonAndContainer(container, slot);
 end
 
 -- ------------------------------------------------------------------------------------------------------------

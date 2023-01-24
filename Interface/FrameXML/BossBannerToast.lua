@@ -45,7 +45,7 @@ end
 
 function BossBanner_AnimLootInsert(self, entry)
 	local key, data = next(self.pendingLoot);
-	if ( key ) then
+	if ( key and (self.lootShown < BB_MAX_LOOT) ) then
 		-- we have an item, show it
 		self.pendingLoot[key] = nil;
 		self.lootShown = self.lootShown + 1;
@@ -119,7 +119,10 @@ local BB_ANIMATION_CONTROL = {
 	[BB_STATE_SWITCH] =		{ duration = nil,	onStartFunc = BossBanner_AnimSwitch },
 	[BB_STATE_LOOT_EXPAND] ={ duration = nil,	onStartFunc = BossBanner_AnimLootExpand },
 	[BB_STATE_LOOT_INSERT] ={ duration = nil,	onStartFunc = BossBanner_AnimLootInsert },
-	[BB_STATE_BANNER_OUT] =	{ duration = 0.5,	onStartFunc = BossBanner_AnimBannerOut },
+
+	-- The duration for BB_STATE_BANNER_OUT only needs to be longer than the animation time of AnimOut,
+	-- which is 0.5 seconds. BossBanner_OnAnimOutFinished will then preempt the state machine and end the animation.
+	[BB_STATE_BANNER_OUT] =	{ duration = 5,	onStartFunc = BossBanner_AnimBannerOut },
 };
 
 function BossBanner_BeginAnims(self, animState)
@@ -174,7 +177,7 @@ function BossBanner_OnEvent(self, event, ...)
 	if ( event == "BOSS_KILL" ) then
 		wipe(self.pendingLoot);
 		local encounterID, name = ...;
-		TopBannerManager_Show(self, { encounterID = encounterID, name = name, mode = "KILL" });
+		TopBannerManager_Show(self, { encounterID = encounterID, name = name, mode = "KILL" }, BossBanner_IsExclusiveQueued);
 	elseif ( event == "ENCOUNTER_LOOT_RECEIVED" ) then
 		local encounterID, itemID, itemLink, quantity, playerName, className = ...;
 		local _, instanceType = GetInstanceInfo();
@@ -189,7 +192,7 @@ function BossBanner_OnEvent(self, event, ...)
 			elseif ( not self.animState and self.lootShown == 0 ) then
 				-- banner is not displaying and have not done loot for this encounter yet
 				-- TODO: animate in kill banner
-				TopBannerManager_Show(self, { encounterID = encounterID, name = nil, mode = "LOOT" });
+				TopBannerManager_Show(self, { encounterID = encounterID, name = nil, mode = "LOOT" }, BossBanner_IsExclusiveQueued);
 			end
 		end
 	end
@@ -208,6 +211,10 @@ end
 function BossBanner_OnLootItemLeave(self)
 	GameTooltip:Hide();
 	BossBanner.showingTooltip = false;
+end
+
+function BossBanner_IsExclusiveQueued()
+	return true;
 end
 
 function BossBanner_Play(self, data)
@@ -257,6 +264,7 @@ end
 function BossBanner_OnAnimOutFinished(self)
 	local banner = self:GetParent();
 	banner.animState = nil;
+	banner.lootShown = 0;
 	banner:Hide();
 	banner:SetHeight(banner.baseHeight);
 	banner.BannerTop:SetAlpha(0);
@@ -275,5 +283,6 @@ function BossBanner_OnAnimOutFinished(self)
 	for i = 1, #banner.LootFrames do
 		banner.LootFrames[i]:Hide();
 	end
+	banner:SetHeight(banner.baseHeight);
 	TopBannerManager_BannerFinished();
 end

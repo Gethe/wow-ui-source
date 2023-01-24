@@ -200,6 +200,7 @@
 					</OnEnter>
 					<OnLoad inherit="prepend">
 						self:SetFormattedText(CHARACTER_SPECIFIC_MACROS, UnitName("player"));
+						PanelTemplates_TabResize(self, -15, nil, nil, 150);
 					</OnLoad>
 					<OnClick>
 						self:GetParent():SelectTab(self);

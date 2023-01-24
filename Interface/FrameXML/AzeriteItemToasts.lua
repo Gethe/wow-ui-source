@@ -18,9 +18,9 @@ end
 
 function AzeriteItemLevelUpToastMixin:OnEvent(event, ...)
 	if event == "AZERITE_ITEM_POWER_LEVEL_CHANGED" then
-		local azeriteItemLocation, oldPowerLevel, newPowerLevel, unlockedEmpoweredItemsInfo = ...;
+		local azeriteItemLocation, oldPowerLevel, newPowerLevel, unlockedEmpoweredItemsInfo, azeriteItemID = ...;
 		if oldPowerLevel < newPowerLevel then
-			self:PlayAzeriteItemPowerToast(azeriteItemLocation, newPowerLevel, unlockedEmpoweredItemsInfo);
+			self:PlayAzeriteItemPowerToast(azeriteItemLocation, azeriteItemID, newPowerLevel, unlockedEmpoweredItemsInfo);
 		end
 	elseif event == "UI_MODEL_SCENE_INFO_UPDATED" then
 		local forceUpdate = true;
@@ -28,8 +28,15 @@ function AzeriteItemLevelUpToastMixin:OnEvent(event, ...)
 	end
 end
 
-function AzeriteItemLevelUpToastMixin:PlayAzeriteItemPowerToast(azeriteItemLocation, newPowerLevel, unlockedEmpoweredItemsInfo)
-	local item = Item:CreateFromItemLocation(azeriteItemLocation);
+function AzeriteItemLevelUpToastMixin:PlayAzeriteItemPowerToast(azeriteItemLocation, azeriteItemID, newPowerLevel, unlockedEmpoweredItemsInfo)
+	local item;
+	if AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
+		-- We can't create the Azerite item by GUID or itemLocation if it's in the Player's bank bags.
+		item = Item:CreateFromItemID(azeriteItemID);
+	else
+		item = 	Item:CreateFromItemLocation(azeriteItemLocation);
+	end
+	
 	local EquippedOnly = function(unlockedEmpoweredItemInfo) return unlockedEmpoweredItemInfo.unlockedItem:IsEquipmentSlot() end;
 	local IS_INDEXED = true;
 	local equippedUnlockedEmpoweredItemsInfo = tFilter(unlockedEmpoweredItemsInfo, EquippedOnly, IS_INDEXED);

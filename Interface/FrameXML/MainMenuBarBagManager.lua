@@ -24,24 +24,6 @@ function MainMenuBarBagManager:EnumerateBagButtons()
 	return ipairs(self.allBagButtons);
 end
 
-function MainMenuBarBagManager:SetBagButtonsEnabled(enabled)
-	for i, bagButton in self:EnumerateBagButtons() do
-		bagButton:SetEnabled(enabled);
-		bagButton.icon:SetDesaturated(not enabled);
-	end
-
-	self.enabled = enabled;
-end
-
-function MainMenuBarBagManager:AreBagButtonsEnabled()
-	if self.enabled ~= nil then
-		return self.enabled;
-	end
-
-	return true;
-end
-
-
 function MainMenuBarBagManager:ToggleExpandBar()
 	SetCVar("expandBagBar", not GetCVarBool("expandBagBar"));
 end

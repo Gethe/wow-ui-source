@@ -32,6 +32,11 @@ local textureKitBarInfo =
 	["bastionarmor"] = {barOffset = 28, barWidth = 139, barHeight = 37},
 }
 
+local frameTextureKitBarInfo = 
+{
+	["stormcapture"] = {barOffset = 37, barWidth = 122, barHeight = 26},
+}
+
 local defaultBarInfo = {barOffset = 36, barWidth = 124, barHeight = 26};
 
 local function ConvertToBarPercentage(percent, widgetInfo)
@@ -65,7 +70,7 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 		textureKit = "lfd";
 	end
 
-	local barInfo = textureKitBarInfo[textureKit] or defaultBarInfo;
+	local barInfo = textureKitBarInfo[textureKit] or frameTextureKitBarInfo[frameTextureKit] or defaultBarInfo;
 
 	self:SetHeight(barInfo.barHeight);
 
@@ -140,13 +145,18 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 		self.Glow2:SetPoint("CENTER", self, "CENTER", 0, 0); 
 		self.LeftArrow:SetPoint("RIGHT", self.Spark, "LEFT", 1, 0);
 		self.RightArrow:SetPoint("LEFT", self.Spark, "RIGHT", -1, 0);
+	elseif frameTextureKit == "stormcapture" then
+		self.Glow1:ClearAllPoints();
+		self.Glow1:SetPoint("LEFT", self.BarBackground, "LEFT", 0, 0); 
+		self.Glow2:ClearAllPoints();
+		self.Glow2:SetPoint("RIGHT", self.BarBackground, "RIGHT", 0, 0); 
+		self.LeftArrow:SetPoint("RIGHT", self.Spark, "LEFT", 0, 0);
+		self.RightArrow:SetPoint("LEFT", self.Spark, "RIGHT", 0, 0);
 	else
 		self.Glow1:ClearAllPoints();
 		self.Glow1:SetPoint("LEFT", self, "LEFT", 11, 0); 
 		self.Glow2:ClearAllPoints();
 		self.Glow2:SetPoint("RIGHT", self, "RIGHT", -11, 0); 
-		self.Glow3:ClearAllPoints();
-		self.Glow3:SetPoint("CENTER", self, "CENTER", 0, 0); 
 		self.LeftArrow:SetPoint("RIGHT", self.Spark, "LEFT", 1, 0);
 		self.RightArrow:SetPoint("LEFT", self.Spark, "RIGHT", -1, 0);
 	end

@@ -26,21 +26,21 @@
 				</Texture>
 				<!--SmallItemNameBorder-Left-->
 				<Texture parentKey="NameBorderLeft" file="Interface\LootFrame\LootToast">
-					<Size x="16" y="32"/>	
+					<Size x="16" y="32"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="3" y="0"/>
 					</Anchors>
-					<TexCoords left="0.79101563" right="0.80664063" top="0.57421875" bottom="0.69921875"/>	
+					<TexCoords left="0.79101563" right="0.80664063" top="0.57421875" bottom="0.69921875"/>
 				</Texture>
 				<Texture parentKey="NameBorderRight" file="Interface\LootFrame\LootToast">
-					<Size x="16" y="32"/>	
+					<Size x="16" y="32"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="0" y="-2"/>
 					</Anchors>
-					<TexCoords left="0.73242188" right="0.74804688" top="0.80859375" bottom="0.93359375"/>	
+					<TexCoords left="0.73242188" right="0.74804688" top="0.80859375" bottom="0.93359375"/>
 				</Texture>
 				<Texture parentKey="NameBorderMid" file="Interface\LootFrame\LootToast">
-					<Size x="16" y="32"/>	
+					<Size x="16" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.NameBorderLeft" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NameBorderRight" relativePoint="BOTTOMLEFT"/>
@@ -55,7 +55,7 @@
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.62792969" right="0.65722656" top="0.87500000" bottom="0.99218750"/>	
+					<TexCoords left="0.62792969" right="0.65722656" top="0.87500000" bottom="0.99218750"/>
 				</Texture>
 				<FontString parentKey="ItemName" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
 					<Anchors>
@@ -222,21 +222,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CloseButton">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="2" y="2"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Hide();
-					</OnClick>
-				</Scripts>
-				<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
-			</Button>
+			<Button parentKey="CloseButton" inherits="FloatingFrameCloseButtonDefaultAnchors"/>
 			<Button parentKey="DragButton">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
@@ -305,5 +291,5 @@
 		<Scripts>
 			<OnLoad function="LootHistoryDropDown_OnLoad"/>
 		</Scripts>
-	</Frame>	
+	</Frame>
 </Ui>

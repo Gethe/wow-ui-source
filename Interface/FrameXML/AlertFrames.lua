@@ -259,6 +259,10 @@ AlertContainerMixin = {};
 function AlertContainerMixin:OnLoad()
 	self.alertFrameSubSystems = {};
 
+	self.FullscreenFrame = UIParent;
+	self.FullscreenStrata = "DIALOG";
+	self.baseAnchorFrame = self;
+
 	-- True must always mean that a system is enabled, a single false will cause the system to queue alerts.
 	self.shouldQueueAlertsFlags = {
 		playerEnteredWorld = false,
@@ -357,10 +361,43 @@ do
 	end
 end
 
+function AlertContainerMixin:SetBaseAnchorFrame(newBaseAnchorframe)
+	self.baseAnchorFrame = newBaseAnchorframe or self;
+end
+
+function AlertContainerMixin:ResetBaseAnchorFrame()
+	self.baseAnchorFrame = self;
+end
+
+function AlertContainerMixin:SetFullScreenFrame(frame, strata)
+	if frame then
+		self.FullscreenFrame = frame;
+		self.FullscreenStrata = strata;
+		self:ReparentAlerts();
+	end
+end
+
+function AlertContainerMixin:ClearFullScreenFrame()
+	self.FullscreenFrame = UIParent;
+	self.FullscreenStrata = "DIALOG";
+	self:ReparentAlerts();
+end
+
+function AlertContainerMixin:ReparentAlerts()
+	for i, alertFrameSubSystem in ipairs(self.alertFrameSubSystems) do
+		if alertFrameSubSystem.alertFramePool then
+			for alertFrame in alertFrameSubSystem.alertFramePool:EnumerateActive() do				
+				alertFrame:SetParent(self.FullscreenFrame);
+				alertFrame:SetFrameStrata(self.FullscreenStrata);
+			end
+		end
+	end
+end
+
 function AlertContainerMixin:UpdateAnchors()
 	self:CleanAnchorPriorities();
 
-	local relativeFrame = self;
+	local relativeFrame = self.baseAnchorFrame;
 	for i, alertFrameSubSystem in ipairs(self.alertFrameSubSystems) do
 		local resultFrame = alertFrameSubSystem:AdjustAnchors(relativeFrame);
 		if not resultFrame or not resultFrame.IsInDefaultPosition or resultFrame:IsInDefaultPosition() then
@@ -403,6 +440,10 @@ end
 
 function AlertContainerMixin:AddAlertFrame(frame)
 	self:UpdateAnchors();
+
+	frame:SetParent(self.FullscreenFrame);
+	frame:SetFrameStrata(self.FullscreenStrata);
+
 	AlertFrame_ShowNewAlert(frame);
 end
 
@@ -439,7 +480,10 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("NEW_TOY_ADDED");
 	self:RegisterEvent("NEW_RUNEFORGE_POWER_ADDED");
 	self:RegisterEvent("TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED");
+	self:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED");
 	self:RegisterEvent("SKILL_LINE_SPECS_UNLOCKED");
+	self:RegisterEvent("PERKS_PROGRAM_CURRENCY_AWARDED");
+	self:RegisterEvent("PERKS_ACTIVITY_COMPLETED");
 end
 
 function CreateContinuableContainerForLFGRewards()
@@ -542,6 +586,13 @@ function AlertFrameMixin:OnEvent(event, ...)
 		elseif ( typeIdentifier == "currency" ) then
 			LootAlertSystem:AddAlert(itemLink, quantity, nil, nil, specID, true, false, nil, nil, nil, nil, true);
 		end
+	elseif (event == "PERKS_PROGRAM_CURRENCY_AWARDED") then
+		local currencyAmount = ...;
+		local specID = nil;
+		local lootSource = LOOT_SOURCE_TRADING_POST;
+		local itemLink = C_CurrencyInfo.GetCurrencyLink(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO, currencyAmount);
+		LootAlertSystem:AddAlert(itemLink, currencyAmount, nil, nil, specID, true, false, lootSource, nil, nil, nil, true);
+
 	elseif ( event == "SHOW_LOOT_TOAST_UPGRADE") then
 		local itemLink, quantity, specID, sex, baseQuality, isPersonal, lessAwesome = ...;
 		LootUpgradeAlertSystem:AddAlert(itemLink, quantity, specID, baseQuality, nil, nil, lessAwesome);
@@ -551,7 +602,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 		EntitlementDeliveredAlertSystem:AddAlert(...);
 	elseif ( event == "RAF_ENTITLEMENT_DELIVERED" ) then
 		RafRewardDeliveredAlertSystem:AddAlert(...);
-	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
+	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" and IsGarrisonLandingPageFeatured() ) then
 		local buildingName, garrisonType = ...;
 		if ( garrisonType == C_Garrison.GetLandingPageGarrisonType() ) then
 			GarrisonBuildingAlertSystem:AddAlert(buildingName, garrisonType);
@@ -564,7 +615,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 			local talent = C_Garrison.GetTalentInfo(talentID);
 	        GarrisonTalentAlertSystem:AddAlert(garrisonType, talent);
 		end
-	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
+	elseif ( event == "GARRISON_MISSION_FINISHED" and IsGarrisonLandingPageFeatured() ) then
 		local followerTypeID, missionID = ...;
 		if ( DoesFollowerMatchCurrentGarrisonType(followerTypeID) ) then
 			local validInstance = false;
@@ -639,6 +690,12 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED") then
 		local itemModifiedAppearanceID = ...;
 		NewCosmeticAlertFrameSystem:AddAlert(itemModifiedAppearanceID);
+	elseif (event == "TRANSMOG_COLLECTION_SOURCE_ADDED") and PerksProgramFrame and PerksProgramFrame:IsShown() then
+		local itemModifiedAppearanceID = ...;
+		NewCosmeticAlertFrameSystem:AddAlert(itemModifiedAppearanceID);
+	elseif ( event == "PERKS_ACTIVITY_COMPLETED" ) then
+		local perksActivityID = ...;
+		MonthlyActivityAlertSystem:AddAlert(perksActivityID);
 	end
 end
 

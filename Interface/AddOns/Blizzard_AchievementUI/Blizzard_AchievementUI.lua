@@ -2576,6 +2576,8 @@ function AchievementComparisonTemplateMixin:Init(elementData)
 	local index = elementData.index;
 	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(category, index);
 
+	assertsafe(id ~= nil, "Missing AchievementInfo for category '%d' index '%d'", category, index);
+
 	if ( GetPreviousAchievement(id) ) then
 		-- If this is a progressive achievement, show the total score.
 		points = AchievementButton_GetProgressivePoints(id);

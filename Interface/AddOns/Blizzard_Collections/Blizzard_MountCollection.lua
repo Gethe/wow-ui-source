@@ -584,7 +584,24 @@ function MountJournal_EvaluateListHelpTip(self)
 		local frame = self.ScrollBox:FindFrameByPredicate(function(entry, elementData)
 			return entry.index == self.dragonridingHelpTipMountIndex;
 		end);
-		if ((frame and frame:IsShown()) and frame:GetTop() <= self.ScrollBox:GetTop() + 4 and frame:GetBottom() >= self.ScrollBox:GetBottom() - 4) then
+
+		if not frame or not frame:IsShown() then
+			return;
+		end
+
+		local frameTop = frame:GetTop();
+		local frameBottom = frame:GetBottom();
+		if not frameTop or not frameBottom then
+			return;
+		end
+
+		local scrollTop = self.ScrollBox:GetTop();
+		local scrollBottom = self.ScrollBox:GetBottom();
+		if not scrollTop or not scrollBottom then
+			return;
+		end
+
+		if (frameTop <= scrollTop + 4) and (frameBottom >= scrollBottom - 4) then
 			local helpTipInfo = {
 				text = MOUNT_JOURNAL_DRAGONRIDING_HELPTIP,
 				buttonStyle = HelpTip.ButtonStyle.Close,
@@ -925,7 +942,7 @@ function MountJournalFilterDropDown_Initialize(self, level)
 	FilterDropDownSystem.Initialize(self, filterSystem, level);
 end
 
-function MountJournal_AddInMountTypes(level)
+function MountJournal_AddInMountTypes(filterSystem, level)
 	for i = 1, Enum.MountTypeMeta.NumValues do
 		if not C_MountJournal.IsValidTypeFilter(i) then
 			break;
@@ -936,7 +953,7 @@ function MountJournal_AddInMountTypes(level)
 					MountJournalResetFiltersButton_UpdateVisibility()
 				  end
 		local isSet = function() return C_MountJournal.IsTypeChecked(i) end;
-		FilterDropDownSystem.AddCheckBoxButton(mountTypeStrings[i - 1], set, isSet, level);
+		FilterDropDownSystem.AddCheckBoxButtonToFilterSystem(filterSystem, mountTypeStrings[i - 1], set, isSet, level);
 	end
 end
 

@@ -338,9 +338,9 @@ local BattlePetConstants =
 		{
 			Name = "BattlepetDbFlags",
 			Type = "Enumeration",
-			NumValues = 12,
+			NumValues = 13,
 			MinValue = 0,
-			MaxValue = 512,
+			MaxValue = 1024,
 			Fields =
 			{
 				{ Name = "None", Type = "BattlepetDbFlags", EnumValue = 0 },
@@ -354,6 +354,7 @@ local BattlePetConstants =
 				{ Name = "FanfareNeeded", Type = "BattlepetDbFlags", EnumValue = 128 },
 				{ Name = "DisplayOverridden", Type = "BattlepetDbFlags", EnumValue = 256 },
 				{ Name = "AcquiredViaLicense", Type = "BattlepetDbFlags", EnumValue = 512 },
+				{ Name = "TradingPost", Type = "BattlepetDbFlags", EnumValue = 1024 },
 				{ Name = "LockMask", Type = "BattlepetDbFlags", EnumValue = 12 },
 			},
 		},

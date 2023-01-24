@@ -312,6 +312,38 @@ function SelectionBehaviorMixin:ToggleSelectElementData(elementData)
 	self:SetElementDataSelected_Internal(elementData, newSelected);
 end
 
+function SelectionBehaviorMixin:SelectFirstElementData()
+	local dataProvider = self.scrollBox:GetDataProvider();
+	if dataProvider then
+		local elementData = dataProvider:Find(1);
+		if elementData then
+			self:SelectElementData(elementData);
+		end
+	end
+end
+
+function SelectionBehaviorMixin:SelectNextElementData()
+	return self:SelectOffsetElementData(1);
+end
+
+function SelectionBehaviorMixin:SelectPreviousElementData()
+	return self:SelectOffsetElementData(-1);
+end
+
+function SelectionBehaviorMixin:SelectOffsetElementData(offset)
+	local dataProvider = self.scrollBox:GetDataProvider();
+	if dataProvider then
+		local currentElementData = self:GetFirstSelectedElementData();
+		local currentIndex = dataProvider:FindIndex(currentElementData);
+		local offsetIndex = currentIndex + offset;
+		local offsetElementData = dataProvider:Find(offsetIndex);
+		if offsetElementData then
+			self:SelectElementData(offsetElementData);
+			return offsetElementData, offsetIndex;
+		end
+	end
+end
+
 function SelectionBehaviorMixin:SelectElementData(elementData)
 	self:SetElementDataSelected_Internal(elementData, true);
 end

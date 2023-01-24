@@ -7,6 +7,7 @@ function ActionStatusMixin:OnLoad()
 	self:RegisterEvent("SCREENSHOT_STARTED");
 	self:RegisterEvent("SCREENSHOT_SUCCEEDED");
 	self:RegisterEvent("SCREENSHOT_FAILED");
+	self.alternateParentFrame = nil;
 end
 
 function ActionStatusMixin:OnEvent(event, ...)
@@ -30,6 +31,16 @@ function ActionStatusMixin:OnEvent(event, ...)
 	end
 end
 
+function ActionStatusMixin:SetAlternateParentFrame(alternateParentFrame)
+	self.alternateParentFrame = alternateParentFrame;
+	self:UpdateParent();
+end
+
+function ActionStatusMixin:ClearAlternateParentFrame()
+	self.alternateParentFrame = nil;
+	self:UpdateParent();
+end
+
 function ActionStatusMixin:DisplayMessage(text)
 	self.startTime = GetTime();
 	self:SetAlpha(1.0);
@@ -50,7 +61,11 @@ end
 function ActionStatusMixin:UpdateParent()
 	self:ClearAllPoints();
 
-	if UIParent:IsVisible() then
+	if self.alternateParentFrame then
+		self:SetParent(self.alternateParentFrame);
+		self:SetFrameStrata("TOOLTIP");
+		self:SetScale(1);
+	elseif UIParent:IsVisible() then
 		self:SetParent(UIParent);
 		self:SetFrameStrata("TOOLTIP");
 		self:SetScale(1);

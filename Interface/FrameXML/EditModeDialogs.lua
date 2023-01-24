@@ -6,7 +6,7 @@ end
 
 function EditModeDialogMixin:OnEditModeExit()
 	-- Override this as necessary
-	if self.OnCancel then
+	if self.OnCancel and self:IsShown() then
 		self:OnCancel();
 	end
 end
@@ -39,7 +39,10 @@ function EditModeNewLayoutDialogMixin:OnAccept()
 		local layoutType = self.CharacterSpecificLayoutCheckButton:IsControlChecked() and Enum.EditModeLayoutType.Character or Enum.EditModeLayoutType.Account;
 		local newLayoutInfo = CopyTable(self.copyLayoutInfo);
 		EditModeManagerFrame:RevertAllChanges();
-		EditModeManagerFrame:MakeNewLayout(newLayoutInfo, layoutType, self.LayoutNameEditBox:GetText());
+
+		local isLayoutImportedNo = false;
+		EditModeManagerFrame:MakeNewLayout(newLayoutInfo, layoutType, self.LayoutNameEditBox:GetText(), isLayoutImportedNo);
+
 		StaticPopupSpecial_Hide(self);
 	end
 end
@@ -86,6 +89,7 @@ end
 
 function EditModeNewLayoutDialogMixin:OnCancel()
 	StaticPopupSpecial_Hide(self);
+	EventRegistry:TriggerEvent("EditMode.NewLayoutCancel");
 end
 
 EditModeDialogNameEditBoxMixin = {};
@@ -208,11 +212,23 @@ function EditModeUnsavedChangesDialogMixin:OnLoad()
 	self.SaveAndProceedButton:SetOnClickHandler(GenerateClosure(self.OnSaveAndProceed, self))
 	self.ProceedButton:SetOnClickHandler(GenerateClosure(self.OnProceed, self))
 	self.CancelButton:SetOnClickHandler(GenerateClosure(self.OnCancel, self))
+	EventRegistry:RegisterCallback("EditMode.NewLayoutCancel", self.ResetAndClearCallback, self);
+end
+
+function EditModeUnsavedChangesDialogMixin:OnShow()
+	EventRegistry:RegisterCallback("EditMode.SavedLayouts", self.OnProceed, self);
 end
 
 function EditModeUnsavedChangesDialogMixin:OnHide()
-	self.selectedLayoutIndex = nil;
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+end
+
+function EditModeUnsavedChangesDialogMixin:OnEditModeExit()
+	if self:IsShown() then
+		self:OnCancel();
+	else
+		self:ResetAndClearCallback();
+	end
 end
 
 function EditModeUnsavedChangesDialogMixin:ShowDialog(selectedLayoutIndex)
@@ -229,23 +245,36 @@ function EditModeUnsavedChangesDialogMixin:ShowDialog(selectedLayoutIndex)
 	StaticPopupSpecial_Show(self);
 end
 
+function EditModeUnsavedChangesDialogMixin:HasPendingSelectedLayout()
+	return (self.selectedLayoutIndex ~= nil);
+end
+
 function EditModeUnsavedChangesDialogMixin:OnSaveAndProceed()
 	EditModeManagerFrame:SaveLayoutChanges();
-	self:OnProceed();
 end
 
 function EditModeUnsavedChangesDialogMixin:OnProceed()
 	if self.selectedLayoutIndex then
 		EditModeManagerFrame:SelectLayout(self.selectedLayoutIndex);
+		self:OnCancel();
 	else
 		HideUIPanel(EditModeManagerFrame);
 	end
-
-	StaticPopupSpecial_Hide(self);
 end
 
 function EditModeUnsavedChangesDialogMixin:OnCancel()
+	self:ResetAndClearCallback();
 	StaticPopupSpecial_Hide(self);
+end
+
+function EditModeUnsavedChangesDialogMixin:ResetAndClearCallback()
+	EditModeManagerFrame:ResetDropdownToActiveLayout();
+	self.selectedLayoutIndex = nil;
+	self:ClearSavedLayoutsCallback();
+end
+
+function EditModeUnsavedChangesDialogMixin:ClearSavedLayoutsCallback()
+	EventRegistry:UnregisterCallback("EditMode.SavedLayouts", self);
 end
 
 EditModeSystemSettingsDialogMixin = {};
@@ -272,7 +301,28 @@ function EditModeSystemSettingsDialogMixin:OnLoad()
 end
 
 function EditModeSystemSettingsDialogMixin:OnHide()
+	if self.attachedToSystem then
+		self.attachedToSystem:ClearDownKeys();
+	end
 	self.attachedToSystem = nil;
+end
+
+function EditModeSystemSettingsDialogMixin:OnKeyDown(key)
+	if self.attachedToSystem then
+		if key == "PRINTSCREEN" then
+			Screenshot();
+		elseif key == "ESCAPE" then
+			self.CloseButton:Click();
+		else
+			self.attachedToSystem:OnKeyDown(key);
+		end
+	end
+end
+
+function EditModeSystemSettingsDialogMixin:OnKeyUp(key)
+	if self.attachedToSystem then
+		self.attachedToSystem:OnKeyUp(key);
+	end
 end
 
 function EditModeSystemSettingsDialogMixin:OnDragStart()

@@ -152,6 +152,7 @@ local AzeriteItem =
 				{ Name = "oldPowerLevel", Type = "number", Nilable = false },
 				{ Name = "newPowerLevel", Type = "number", Nilable = false },
 				{ Name = "unlockedEmpoweredItemsInfo", Type = "table", InnerType = "UnlockedAzeriteEmpoweredItems", Nilable = false },
+				{ Name = "azeriteItemID", Type = "number", Nilable = false },
 			},
 		},
 	},

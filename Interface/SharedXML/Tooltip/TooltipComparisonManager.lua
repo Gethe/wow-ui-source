@@ -10,9 +10,9 @@ function TooltipComparisonManager:CreateComparisonItem(tooltipData)
 	local comparisonItem;
 	if tooltipData and tooltipData.type == Enum.TooltipDataType.Item then
 		if tooltipData.guid then
-			comparisonItem = { guid = tooltipData.guid };
+			comparisonItem = { guid = tooltipData.guid, overrideItemLevel = tooltipData.overrideItemLevel };
 		elseif tooltipData.hyperlink and tooltipData.hyperlink ~= "" then
-			comparisonItem = { hyperlink = tooltipData.hyperlink };
+			comparisonItem = { hyperlink = tooltipData.hyperlink, overrideItemLevel = tooltipData.overrideItemLevel };
 		end
 	end
 	return comparisonItem;

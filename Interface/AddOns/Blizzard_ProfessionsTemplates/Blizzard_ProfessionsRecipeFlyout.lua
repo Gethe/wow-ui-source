@@ -21,12 +21,15 @@ function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImpl
 	else
 		self:SetItem(item:GetItemID());
 	end
-
-	local count;
-	if itemLocation and elementData.onlyCountStack then
-		count = C_Item.GetStackCount(itemLocation);
-	else
+	
+	-- Stackable items would all normally be accumulated, however in the case of salvage targets, the stacks
+	-- cannot be combined because the craft API requires a specific item guid target, and that prevents us from
+	-- merging multiple item stacks together to fulfill the reagent count requirement.
+	local accumulateInventory = not itemLocation or (item:IsStackable() and not elementData.onlyCountStack);
+	if accumulateInventory then
 		count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+	elseif itemLocation then
+		count = C_Item.GetStackCount(itemLocation);
 	end
 
 	local stackable = C_Item.GetItemMaxStackSizeByID(item:GetItemID()) > 1;

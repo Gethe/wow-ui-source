@@ -5,9 +5,9 @@ local QuestConstants =
 		{
 			Name = "QuestTagType",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 0,
-			MaxValue = 15,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "Tag", Type = "QuestTagType", EnumValue = 0 },
@@ -26,6 +26,7 @@ local QuestConstants =
 				{ Name = "Islands", Type = "QuestTagType", EnumValue = 13 },
 				{ Name = "Threat", Type = "QuestTagType", EnumValue = 14 },
 				{ Name = "CovenantCalling", Type = "QuestTagType", EnumValue = 15 },
+				{ Name = "DragonRiderRacing", Type = "QuestTagType", EnumValue = 16 },
 			},
 		},
 		{

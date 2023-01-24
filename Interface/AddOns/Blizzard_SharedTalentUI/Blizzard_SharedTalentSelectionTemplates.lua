@@ -241,9 +241,14 @@ function TalentSelectionChoiceMixin:AddTooltipInfo(tooltip)
 end
 
 function TalentSelectionChoiceMixin:AddTooltipCost(tooltip)
-	local combinedCost = self:GetCombinedCost();
-	local selectionChoiceFrame = self:GetParent();
-	selectionChoiceFrame:GetTalentFrame():AddCostToTooltip(tooltip, combinedCost);
+	-- Only show cost if we can refund or increase the rank.
+	local baseButton = self:GetBaseButton();
+	local nodeInfo = baseButton and baseButton:GetNodeInfo() or nil;
+	if (not baseButton or not baseButton:IsMaxed()) or (not nodeInfo or nodeInfo.canRefundRank) then
+		local combinedCost = self:GetCombinedCost();
+		local selectionChoiceFrame = self:GetParent();
+		selectionChoiceFrame:GetTalentFrame():AddCostToTooltip(tooltip, combinedCost);
+	end
 end
 
 function TalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)

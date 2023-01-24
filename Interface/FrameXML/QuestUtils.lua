@@ -65,33 +65,36 @@ QuestUtil = {};
 
 function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineID, questID)
 	local iconAtlas;
-	if ( inProgress ) then
+
+	if inProgress then
 		return "worldquest-questmarker-questionmark", 10, 15;
-	elseif ( worldQuestType == Enum.QuestTagType.PvP ) then
+	elseif worldQuestType == Enum.QuestTagType.PvP then
 		iconAtlas =  "worldquest-icon-pvp-ffa";
-	elseif ( worldQuestType == Enum.QuestTagType.PetBattle ) then
+	elseif worldQuestType == Enum.QuestTagType.PetBattle then
 		iconAtlas =  "worldquest-icon-petbattle";
-	elseif ( worldQuestType == Enum.QuestTagType.Profession and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] ) then
+	elseif worldQuestType == Enum.QuestTagType.Profession and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] then
 		iconAtlas =  WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID];
-	elseif ( worldQuestType == Enum.QuestTagType.Dungeon ) then
+	elseif worldQuestType == Enum.QuestTagType.Dungeon then
 		iconAtlas =  "worldquest-icon-dungeon";
-	elseif ( worldQuestType == Enum.QuestTagType.Raid ) then
+	elseif worldQuestType == Enum.QuestTagType.Raid then
 		iconAtlas =  "worldquest-icon-raid";
-	elseif ( worldQuestType == Enum.QuestTagType.Invasion ) then
+	elseif worldQuestType == Enum.QuestTagType.Invasion then
 		iconAtlas =  "worldquest-icon-burninglegion";
-	elseif ( worldQuestType == Enum.QuestTagType.Islands ) then
+	elseif worldQuestType == Enum.QuestTagType.Islands then
 		iconAtlas ="poi-islands-table";
-	elseif ( worldQuestType == Enum.QuestTagType.FactionAssault ) then
+	elseif worldQuestType == Enum.QuestTagType.FactionAssault then
 		local factionTag = UnitFactionGroup("player");
 		if factionTag == "Alliance" then
 			iconAtlas = "worldquest-icon-alliance";
 		else -- "Horde" or "Neutral"
 			iconAtlas = "worldquest-icon-horde";
 		end
-	elseif ( worldQuestType == Enum.QuestTagType.Threat ) then
+	elseif worldQuestType == Enum.QuestTagType.Threat then
 		iconAtlas = QuestUtil.GetThreatPOIIcon(questID);
+	elseif worldQuestType == Enum.QuestTagType.DragonRiderRacing then
+		iconAtlas = "worldquest-icon-race";
 	else
-		if(questID) then
+		if questID then
 			local theme = C_QuestLog.GetQuestDetailsTheme(questID);
 			if theme then
 				iconAtlas = theme.poiIcon;
@@ -99,7 +102,7 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 		end
 	end
 
-	if(not iconAtlas) then
+	if not iconAtlas then
 		return "worldquest-questmarker-questbang", 6, 15;
 	end
 
@@ -308,7 +311,7 @@ function QuestUtils_GetQuestTagTextureCoords(tagID, worldQuestType)
 		return WORLD_QUEST_TYPE_TCOORDS[worldQuestType];
 	end
 
-	return QUEST_TAG_TCOORDS[tagID];
+	return tagID and QUEST_TAG_TCOORDS[tagID];
 end
 
 function QuestUtils_IsQuestWorldQuest(questID)

@@ -919,7 +919,7 @@ function CharacterCreateClassButtonMixin:OnClick()
 end
 
 function CharacterCreateClassButtonMixin:SetEnabledState(enabled)
-	CharCustomizeMaskedButtonMixin.SetEnabledState(self, enabled);
+	RingedMaskedButtonMixin.SetEnabledState(self, enabled);
 	self.ClassName:SetFontObject(enabled and "GameFontNormalMed2" or "GameFontDisableMed2");
 end
 
@@ -1091,7 +1091,7 @@ function CharacterCreateSpecButtonMixin:OnClick()
 end
 
 function CharacterCreateSpecButtonMixin:SetEnabledState(enabled)
-	CharCustomizeMaskedButtonMixin.SetEnabledState(self, enabled);
+	RingedMaskedButtonMixin.SetEnabledState(self, enabled);
 	self.SpecName:SetFontObject(enabled and "GameFontNormalMed2" or "GameFontDisableMed2");
 	self.RoleName:SetFontObject(enabled and "GameFontHighlight" or "GameFontDisable");
 end

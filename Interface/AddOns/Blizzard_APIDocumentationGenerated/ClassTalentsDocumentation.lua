@@ -187,6 +187,8 @@ local ClassTalents =
 			Returns =
 			{
 				{ Name = "result", Type = "LoadConfigResult", Nilable = false },
+				{ Name = "changeError", Type = "string", Nilable = false },
+				{ Name = "newLearnedNodeIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

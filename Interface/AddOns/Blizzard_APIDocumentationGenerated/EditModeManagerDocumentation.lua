@@ -63,6 +63,8 @@ local EditModeManager =
 			Arguments =
 			{
 				{ Name = "addedLayoutIndex", Type = "number", Nilable = false },
+				{ Name = "activateNewLayout", Type = "bool", Nilable = false },
+				{ Name = "isLayoutImported", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -113,7 +115,7 @@ local EditModeManager =
 			Payload =
 			{
 				{ Name = "layoutInfo", Type = "EditModeLayouts", Nilable = false },
-				{ Name = "fromServer", Type = "bool", Nilable = false },
+				{ Name = "reconcileLayouts", Type = "bool", Nilable = false },
 			},
 		},
 	},

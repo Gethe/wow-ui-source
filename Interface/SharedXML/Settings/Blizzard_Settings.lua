@@ -452,21 +452,21 @@ function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, 
 	local result = selectionDropDown:SetupSelections(options, selectionIndex);
 	selectionDropDown.Button:SetTooltipFunc(initTooltip);
 
-	-- Temporary to be removed once a bug has been fixed.
-	if not result then
-		local errorMsg = ("Failed to setup setting '%s' with value '%s'"):format(setting:GetName(), tostring(settingValue));
-		if UIErrorsFrame then
-			UIErrorsFrame:AddExternalWarningMessage(errorMsg);
-		end
-		if print then
-			print(errorMsg);
-		end
-		assertsafe(false, errorMsg);
-		LoadAddOn("Blizzard_DebugTools");
-		if Dump then
-			Dump(options);
-		end
-	end
+	-- Retained for debugging
+	--if not result then
+		--local errorMsg = ("Failed to setup setting '%s' with value '%s'"):format(setting:GetName(), tostring(settingValue));
+		--if UIErrorsFrame then
+		--	UIErrorsFrame:AddExternalWarningMessage(errorMsg);
+		--end
+		--if print then
+		--	print(errorMsg);
+		--end
+		--assertsafe(false, errorMsg);
+		--LoadAddOn("Blizzard_DebugTools");
+		--if Dump then
+		--	Dump(options);
+		--end
+	--end
 	return selectionIndex;
 end
 

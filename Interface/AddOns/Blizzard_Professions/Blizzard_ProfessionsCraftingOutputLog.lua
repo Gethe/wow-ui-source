@@ -39,14 +39,22 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 	continuableContainer:AddContinuable(item);
 	
 	local function OnItemLoaded()
-		self.ItemContainer.Text:SetText(item:GetItemName());
+		if resultData.isEnchant then
+			self.ItemContainer.Text:SetText(ENCHANTED_TOOLTIP_LINE:format(item:GetItemName()));
+		else
+			self.ItemContainer.Text:SetText(item:GetItemName());
+		end
 		self.ItemContainer.Text:SetTextColor(item:GetItemQualityColorRGB());
 
 		self.ItemContainer.Item:SetItem(resultData.hyperlink);
 		self.ItemContainer.Item:SetItemButtonCount(resultData.quantity);
 		self.ItemContainer.Item:SetScript("OnEnter", function(button)
 			GameTooltip:SetOwner(self.ItemContainer.Item, "ANCHOR_RIGHT");
-			GameTooltip:SetHyperlink(resultData.hyperlink);
+			if resultData.itemGUID then
+				GameTooltip:SetItemByGUID(resultData.itemGUID);
+			else
+				GameTooltip:SetHyperlink(resultData.hyperlink);
+			end
 		end);
 	end
 

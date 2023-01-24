@@ -91,19 +91,20 @@
 						<Frames>
 							<Frame parentKey="HealthBarArea" setAllPoints="true" useParentLevel="true">
 								<Frames>
-									<StatusBar parentKey="PlayerFrameHealthBarAnimatedLoss" mixin="AnimatedHealthLossMixin" hidden="true" useParentLevel="true">
+									<StatusBar parentKey="PlayerFrameHealthBarAnimatedLoss" mixin="AnimatedHealthLossMixin" hidden="true" drawLayer="BACKGROUND" useParentLevel="true">
 										<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health"/>
 										<Scripts>
 											<OnLoad method="OnLoad"/>
 										</Scripts>
 									</StatusBar>
-									<StatusBar parentKey="HealthBar" inherits="TextStatusBar" enableMouseMotion="true" useParentLevel="true">
+									<StatusBar parentKey="HealthBar" inherits="TextStatusBar" enableMouseMotion="true" drawLayer="BACKGROUND" useParentLevel="true">
 										<Size x="124" y="20"/>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="85" y="-40"/>
 										</Anchors>
 										<Layers>
-											<Layer level="BACKGROUND">
+											<!-- Setting textureSubLevel to 2 to ensure things are layered above the StatusBar's BarTexture. -->
+											<Layer level="BACKGROUND" textureSubLevel="2">
 												<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
 												<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 												<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>

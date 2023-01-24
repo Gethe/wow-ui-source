@@ -58,15 +58,16 @@ local TradeSkillUITypes =
 		{
 			Name = "TradeskillRecipeType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 1,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Item", Type = "TradeskillRecipeType", EnumValue = 1 },
 				{ Name = "Salvage", Type = "TradeskillRecipeType", EnumValue = 2 },
 				{ Name = "Enchant", Type = "TradeskillRecipeType", EnumValue = 3 },
 				{ Name = "Recraft", Type = "TradeskillRecipeType", EnumValue = 4 },
+				{ Name = "Gathering", Type = "TradeskillRecipeType", EnumValue = 5 },
 			},
 		},
 		{
@@ -115,6 +116,7 @@ local TradeSkillUITypes =
 			{
 				{ Name = "resourcesReturned", Type = "table", InnerType = "CraftingResourceReturnInfo", Nilable = true },
 				{ Name = "craftingQuality", Type = "number", Nilable = true },
+				{ Name = "qualityProgress", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "itemID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "itemGUID", Type = "string", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false, Default = 0 },
@@ -126,6 +128,7 @@ local TradeSkillUITypes =
 				{ Name = "multicraft", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "operationID", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "firstCraftReward", Type = "bool", Nilable = false, Default = false },
+				{ Name = "isEnchant", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -250,7 +253,6 @@ local TradeSkillUITypes =
 				{ Name = "reagentSlotSchematics", Type = "table", InnerType = "CraftingReagentSlotSchematic", Nilable = false },
 				{ Name = "isRecraft", Type = "bool", Nilable = false },
 				{ Name = "hasCraftingOperationInfo", Type = "bool", Nilable = false },
-				{ Name = "hasGatheringOperationInfo", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -369,7 +371,7 @@ local TradeSkillUITypes =
 				{ Name = "qualityIlvlBonuses", Type = "table", InnerType = "number", Nilable = true },
 				{ Name = "maxQuality", Type = "number", Nilable = true },
 				{ Name = "qualityIDs", Type = "table", InnerType = "number", Nilable = true },
-				{ Name = "createsItem", Type = "bool", Nilable = false, Default = true },
+				{ Name = "canCreateMultiple", Type = "bool", Nilable = false, Default = true },
 				{ Name = "abilityVerb", Type = "string", Nilable = true },
 				{ Name = "abilityAllVerb", Type = "string", Nilable = true },
 				{ Name = "isRecraft", Type = "bool", Nilable = false, Default = false },

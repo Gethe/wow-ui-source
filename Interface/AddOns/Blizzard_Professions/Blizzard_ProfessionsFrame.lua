@@ -62,7 +62,8 @@ function ProfessionsMixin:OnEvent(event, ...)
 		local professionInfo = Professions.GetProfessionInfo();
 		professionInfo.openRecipeID = openRecipeResponse.recipeID;
 		professionInfo.openSpecTab = openRecipeResponse.openSpecTab;
-		self:Refresh();
+		local useLastSkillLine = false;
+		self:SetProfessionInfo(professionInfo, useLastSkillLine);
 		return professionInfo;
 	end
 
@@ -70,6 +71,13 @@ function ProfessionsMixin:OnEvent(event, ...)
 		-- Intended to refresh title.
 		self:Refresh();
 	elseif event == "TRADE_SKILL_LIST_UPDATE" then
+		-- Filter changes can cause trade skill list updates while we're in the process
+		-- of rebuilding our list. Always yield to a subsequent update if the data source
+		-- hasn't been rebuilt yet.'
+		if C_TradeSkillUI.IsDataSourceChanging() then
+			return;
+		end
+
 		local professionInfo;
 
 		local openRecipeResponse = self.openRecipeResponse;
@@ -91,6 +99,14 @@ function ProfessionsMixin:OnEvent(event, ...)
 	elseif event == "OPEN_RECIPE_RESPONSE" then
 		local recipeID, professionSkillLineID, expansionSkillLineID = ...;
 		local openRecipeResponse = {skillLineID = expansionSkillLineID, recipeID = recipeID};
+
+		if C_TradeSkillUI.IsDataSourceChanging() then
+			-- Defer handling the response until the next TRADE_SKILL_LIST_UPDATE otherwise
+			-- it will likely just be overwritten by a default recipe selection.
+			self.openRecipeResponse = openRecipeResponse;
+			return;
+		end
+
 		local professionInfo = Professions.GetProfessionInfo();
 		if expansionSkillLineID == professionInfo.professionID then
 			-- We're in the same expansion profession so the recipe should exist in the list.
@@ -122,15 +138,24 @@ function ProfessionsMixin:SetOpenRecipeResponse(skillLineID, recipeID, openSpecT
 end
 
 function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
-	local professionChanged = (not self.professionInfo) or (self.professionInfo.profession ~= professionInfo.profession);
-	if not self.professionInfo or (self.professionInfo.professionID ~= professionInfo.professionID) then
+	local professionIDChanged = (not self.professionInfo) or (self.professionInfo.professionID ~= professionInfo.professionID);
+	if professionIDChanged then
+		local professionChanged = (not self.professionInfo) or (self.professionInfo.profession ~= professionInfo.profession);
 		local useNewSkillLine = professionChanged or not useLastSkillLine;
+		if not useNewSkillLine then
+			return;
+		end
 		C_TradeSkillUI.SetProfessionChildSkillLineID(useNewSkillLine and professionInfo.professionID or self.professionInfo.professionID);
-		professionInfo = Professions.GetProfessionInfo();
-		self:Refresh();
 	end
 
-	EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
+	-- Always updating the profession info so we're not displaying any stale information in the refresh.
+	self.professionInfo = Professions.GetProfessionInfo();
+
+	if professionIDChanged then
+		EventRegistry:TriggerEvent("Professions.ProfessionSelected", self.professionInfo);
+	end
+
+	self:Refresh();
 end
 
 function ProfessionsMixin:SetTitle(skillLineName)
@@ -159,8 +184,6 @@ function ProfessionsMixin:Refresh()
 	if professionInfo.professionID == 0 then
 		return;
 	end
-
-	self.professionInfo = professionInfo;
 
 	self:SetTitle(self.professionInfo.professionName or self.professionInfo.parentProfessionName);
 	self:SetPortraitToAsset(C_TradeSkillUI.GetTradeSkillTexture(self.professionInfo.professionID));
@@ -210,14 +233,13 @@ function ProfessionsMixin:UpdateTabs()
 	local forceAwayFromOrders = not shouldShowCraftingOrders;
 	if not shouldShowCraftingOrders then
 		self.TabSystem:SetTabShown(self.craftingOrdersTabID, false);
-		self:SetScript("OnUpdate", nil);
+		FrameUtil.UnregisterUpdateFunction(self);
 		self.isCraftingOrdersTabEnabled = false;
 	else
 		self.isCraftingOrdersTabEnabled = C_TradeSkillUI.IsNearProfessionSpellFocus(self.professionInfo.profession);
 		self.TabSystem:SetTabEnabled(self.craftingOrdersTabID, self.isCraftingOrdersTabEnabled, self.isCraftingOrdersTabEnabled and "" or PROFESSIONS_ORDERS_MUST_BE_NEAR_TABLE);
 		forceAwayFromOrders = not self.isCraftingOrdersTabEnabled;
-		-- OnUpdate continuously validates if near a crafting table
-		self:SetScript("OnUpdate", self.OnUpdate);
+		FrameUtil.RegisterUpdateFunction(self, .75, GenerateClosure(self.Update, self));
 	end
 
 	self.TabSystem:Layout();
@@ -341,7 +363,6 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 		local professionInfo = Professions.GetProfessionInfo();
 		local useLastSkillLine = false;
 		self:SetProfessionInfo(professionInfo, useLastSkillLine);
-		self:Refresh();
 	end
 
 	TabSystemOwnerMixin.SetTab(self, tabID);
@@ -360,8 +381,6 @@ function ProfessionsMixin:OnShow()
 	MicroButtonPulseStop(SpellbookMicroButton);
 	MainMenuMicroButton_HideAlert(SpellbookMicroButton);
 	SpellbookMicroButton.suggestedTabButton = nil;
-
-	self:Refresh();
 end
 
 function ProfessionsMixin:OnHide()
@@ -378,11 +397,8 @@ function ProfessionsMixin:OnHide()
 end
 
 -- Set dynamically
-local spellFocusProximityCheckTime = 1;
-function ProfessionsMixin:OnUpdate(dt)
-	self.timeSinceLastFocusCheck = (self.timeSinceLastFocusCheck or 0) + dt;
-	if self.timeSinceLastFocusCheck > spellFocusProximityCheckTime and self.professionInfo and self.professionInfo.profession then
-		self.timeSinceLastFocusCheck = 0;
+function ProfessionsMixin:Update()
+	if self.professionInfo and self.professionInfo.profession then
 		local shouldOrdersTabBeEnabled = C_TradeSkillUI.IsNearProfessionSpellFocus(self.professionInfo.profession);
 		if shouldOrdersTabBeEnabled ~= self.isCraftingOrdersTabEnabled then
 			self:UpdateTabs();

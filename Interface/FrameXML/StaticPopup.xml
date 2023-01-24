@@ -49,6 +49,9 @@
 		<HighlightFont style="GameFontHighlight"/>
 	</Button>
 	<Frame name="StaticPopupTemplate" toplevel="true" enableKeyboard="true" enableMouse="true" frameStrata="DIALOG" hidden="true" hyperlinksEnabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="onCloseCallback" value="StaticPopup_OnCloseButtonClicked" type="global" />
+		</KeyValues>
 		<Size x="320" y="72"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -101,7 +104,7 @@
 				</Scripts>
 			</Frame>
 			<Frame name="$parentExtraFrame" parentKey="extraFrame" enableMouse="true"/>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
 				</Anchors>

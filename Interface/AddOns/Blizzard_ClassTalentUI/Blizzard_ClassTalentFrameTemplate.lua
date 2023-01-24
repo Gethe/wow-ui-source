@@ -16,6 +16,8 @@ function ClassTalentFrameMixin:OnLoad()
 
 	self.CloseButton:SetScript("OnClick", GenerateClosure(self.CheckConfirmClose, self));
 
+	self:SetFrameLevelsFromBaseLevel(5000);
+
 	self:UpdatePortrait();
 end
 
@@ -30,6 +32,8 @@ function ClassTalentFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForUnitEvents(self, ClassTalentFrameUnitEvents, "player");
 
 	self:UpdateTabs();
+
+	MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION);
 	UpdateMicroButtons();
 	EventRegistry:TriggerEvent("TalentFrame.OpenFrame");
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_OPEN_WINDOW);
@@ -47,6 +51,7 @@ function ClassTalentFrameMixin:OnHide()
 		ClearInspectPlayer();
 	end
 
+	MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION);
 	UpdateMicroButtons();
 	self.lockInspect = false;
 end
@@ -150,12 +155,10 @@ end
 function ClassTalentFrameMixin:UpdatePortrait()
 	local masteryIndex = GetSpecialization();
 	if (masteryIndex == nil) then
-		local classFile = PlayerUtil.GetClassFile();
-		local left, right, bottom, top = unpack(CLASS_ICON_TCOORDS[string.upper(classFile)]);
-		self.PortraitOverlay.Portrait:SetTexCoord(left, right, bottom, top);
+		self:SetPortraitToClassIcon(PlayerUtil.GetClassFile());
 	else
 		local _, _, _, icon = GetSpecializationInfo(masteryIndex);
-		self.PortraitOverlay.Portrait:SetTexCoord(0, 1, 0, 1);
-		self.PortraitOverlay.Portrait:SetTexture(icon);
+		self:SetPortraitTexCoord(0, 1, 0, 1);
+		self:SetPortraitToAsset(icon);
 	end
 end

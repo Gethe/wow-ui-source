@@ -3,7 +3,15 @@
 	<Script file="GlowEmitter.lua" />
 
 	<Frame name="GlowEmitterTemplate" mixin="GlowEmitterMixin" virtual="true">
-		<Size y="1"/>
+		<Size x="1" y="1"/>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="layoutType" value="IdenticalCornersLayoutNoCenter" type="string"/>
+					<KeyValue key="layoutTextureKit" value="ButtonGreenGlow" type="string"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Left" atlas="newplayertutorial-greenglow-redbutton-left" useAtlasSize="true" alphaMode="ADD">
@@ -26,16 +34,31 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="FadeAnim" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha smoothing="NONE" childKey="NineSlice" order="1" fromAlpha="1" toAlpha="0"/>
+
 				<Alpha fromAlpha="0" toAlpha="1" duration="1" order="1" smoothing="IN"/>
 				<Alpha fromAlpha="1" toAlpha="0" duration="1" order="2" smoothing="IN"/>
 			</AnimationGroup>
 			
 			<AnimationGroup parentKey="FaintFadeAnim" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha smoothing="NONE" childKey="NineSlice" order="1" fromAlpha="1" toAlpha="0"/>
+
 				<Alpha fromAlpha=".7" toAlpha="1" duration="1" order="1" smoothing="IN"/>
 				<Alpha fromAlpha="1" toAlpha=".7" duration="1" order="2" smoothing="IN"/>
 			</AnimationGroup>
 
 			<AnimationGroup parentKey="NPE_RedButton_GreenGlow" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha smoothing="NONE" childKey="NineSlice" order="1" fromAlpha="1" toAlpha="0"/>
+
+				<Alpha fromAlpha=".5" toAlpha="1" duration="1" order="1" smoothing="NONE"/>
+				<Alpha fromAlpha="1" toAlpha=".5" duration="1" order="2" smoothing="NONE"/>
+			</AnimationGroup>
+
+			<AnimationGroup parentKey="GreenGlow" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha smoothing="NONE" childKey="Left" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha smoothing="NONE" childKey="Right" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha smoothing="NONE" childKey="Middle" order="1" fromAlpha="1" toAlpha="0"/>
+
 				<Alpha fromAlpha=".5" toAlpha="1" duration="1" order="1" smoothing="NONE"/>
 				<Alpha fromAlpha="1" toAlpha=".5" duration="1" order="2" smoothing="NONE"/>
 			</AnimationGroup>

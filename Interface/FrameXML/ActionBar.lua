@@ -171,8 +171,16 @@ function ActionBarMixin:SetShowGrid(showGrid, reason)
         return; -- Don't hide grid if we are in QuickKeybindMode
     end
 
-    if reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT then
-        self.ShowAllButtons = showGrid;
+    -- SetShowGrid overrides "Always Show Buttons" being false, showAllButtons overrides "Bar Visible" setting
+    -- When dragging spells or going through spell collection, we want to override both
+    if reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT or reason == ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION then
+        -- Use bit flags to ensure we don't re-hide the bar for one reason while another reason is still active
+        -- IE dropping a dragged spell while the Spellbook is still open
+        if showGrid then
+            self.showAllButtons = bit.bor(self.showAllButtons or 0, reason);
+        else
+            self.showAllButtons = bit.band(self.showAllButtons or 0, bit.bnot(reason));
+        end
     end
 
     for i, actionButton in pairs(self.actionButtons) do
@@ -189,6 +197,10 @@ function ActionBarMixin:SetShowGrid(showGrid, reason)
     self:UpdateShownButtons();
     self:UpdateVisibility();
     self:UpdateGridLayout();
+end
+
+function ActionBarMixin:GetShowAllButtons()
+	return self.showAllButtons and self.showAllButtons > 0 or false;
 end
 
 function ActionBarMixin:UpdateFrameStrata(shouldBeRaised)
@@ -283,6 +295,15 @@ function EditModeActionBarMixin:EditModeActionBar_OnEvent(event, ...)
     end
 end
 
+function EditModeActionBarMixin:ShouldUpdateGrid(layoutChildren)
+	if self:IsInitialized() and not self.gridInitialized then
+		self.gridInitialized = true;
+		return true;
+	end
+
+	return ActionBarMixin.ShouldUpdateGrid(self, layoutChildren);
+end
+
 function EditModeActionBarMixin:IsShownOverride()
     -- This is needed since the bar may technically be hidden due to visibility settings but we don't actually want things to
     -- interpret it as truly hidden since a lot of things will use this info to know whether they need to show/hide the bar
@@ -324,8 +345,8 @@ function EditModeActionBarMixin:UpdateVisibility()
     elseif not self.isShownExternal then
         -- If we are being hidden externally then don't change that
         self:HideBase();
-    elseif self.ShowAllButtons then
-        -- If we are showing all buttons likely due to an icon being dragged then show the bar
+    elseif self:GetShowAllButtons() then
+        -- If we are showing all buttons likely due to an icon being dragged or viewing spell collection UI then show the bar
         self:ShowBase();
     elseif EditModeManagerFrame:IsEditModeActive() then
         -- If edit mode manager is showing then show

@@ -212,6 +212,7 @@ MajorFactionsDocumentation.lua
 MapDocumentation.lua
 MountJournalDocumentation.lua
 MythicPlusInfoDocumentation.lua
+PerksActivitiesDocumentation.lua
 PetBattlesDocumentation.lua
 PlayerChoiceDocumentation.lua
 PlayerMentorshipDocumentation.lua
@@ -240,6 +241,7 @@ UnitAuraDocumentation.lua
 WarCampaignDocumentation.lua
 WeeklyRewardsDocumentation.lua
 ZoneAbilityDocumentation.lua
+PerksProgramDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
@@ -273,9 +275,11 @@ MinimapConstantsDocumentation.lua
 ModelSceneDocumentation.lua
 NamePlateDocumentation.lua
 PVPMgrConstantsDocumentation.lua
+PerksVendorConstantsDocumentation.lua
 PetBattleConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PlayerDocumentation.lua
+PlayerInfoSharedDocumentation.lua
 PlayerInteractionManagerConstantsDocumentation.lua
 PlayerMentorshipConstantsDocumentation.lua
 ProfessionConstantsDocumentation.lua
@@ -303,6 +307,7 @@ UIFileAssetSharedDocumentation.lua
 UISharedDocumentation.lua
 UITextureAssetSharedDocumentation.lua
 UIWidgetManagerSharedDocumentation.lua
+UiModelSceneConstantsDocumentation.lua
 UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 ValidateNameConstantsDocumentation.lua

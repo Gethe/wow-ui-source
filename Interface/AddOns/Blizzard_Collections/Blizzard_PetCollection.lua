@@ -548,6 +548,11 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 		local loadoutPlate = PetJournal.Loadout["Pet"..i];
 		local petID, ability1ID, ability2ID, ability3ID, locked = C_PetJournal.GetPetLoadOutInfo(i);
 
+		local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType;
+		if petID then
+			speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType = C_PetJournal.GetPetInfoByPetID(petID);
+		end
+
 		if ( not C_PetJournal.IsJournalUnlocked() ) then
 			loadoutPlate.ReadOnlyFrame:Show();
 			loadoutPlate.ReadOnlyFrame.LockIcon.tooltip = PET_JOURNAL_READONLY_TEXT;
@@ -590,7 +595,7 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 			loadoutPlate.helpFrame:Show();
 			loadoutPlate.petTypeIcon:Hide();
 			loadoutPlate.petID = nil;
-		elseif (petID == nil) then
+		elseif (petID == nil or speciesID == nil) then
 			loadoutPlate.name:Hide();
 			loadoutPlate.subName:Hide();
 			loadoutPlate.level:Hide();
@@ -614,7 +619,6 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 			loadoutPlate.petTypeIcon:Hide();
 			loadoutPlate.petID = nil;
 		else -- not locked and petID is not nil
-			local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType = C_PetJournal.GetPetInfoByPetID(petID);
 			C_PetJournal.GetPetAbilityList(speciesID, loadoutPlate.abilities, loadoutPlate.abilityLevels);	--Read ability/ability levels into the correct tables
 
 			--Find out how many abilities are usable due to level
@@ -1465,7 +1469,7 @@ function PetJournalFilterDropDown_Initialize(self, level)
 	FilterDropDownSystem.Initialize(self, filterSystem, level);
 end
 
-function PetJournalFilterDropDown_AddInSortParameters(level)
+function PetJournalFilterDropDown_AddInSortParameters(filterSystem, level)
 	local sortParameters = {
 		{ text = NAME, parameter = LE_SORT_BY_NAME, },
 		{ text = LEVEL, parameter = LE_SORT_BY_LEVEL, },
@@ -1479,7 +1483,7 @@ function PetJournalFilterDropDown_AddInSortParameters(level)
 					PetJournal_UpdatePetList(); 
 				end
 		local isSelected = function() return C_PetJournal.GetPetSortParameter() == sortParameters.parameter end;
-		FilterDropDownSystem.AddRadioButton(sortParameters.text, setSelected, isSelected, level);
+		FilterDropDownSystem.AddRadioButtonToFilterSystem(filterSystem, sortParameters.text, setSelected, isSelected, level);
 	end
 end
 

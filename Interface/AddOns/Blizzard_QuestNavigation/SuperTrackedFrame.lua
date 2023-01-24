@@ -162,9 +162,9 @@ do
 end
 
 local function GetDistanceString()
-	local distance = C_Navigation.GetDistance();
+	local distance = Round(C_Navigation.GetDistance());
 	if distance < 1000 then
-		return Round(distance);
+		return distance;
 	else
 		return AbbreviateNumbers(distance);
 	end

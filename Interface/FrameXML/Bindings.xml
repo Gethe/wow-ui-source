@@ -992,7 +992,7 @@
 			TargetNearestEnemy();
 			TargetPriorityHighlightStart(true);
 		else
-			TargetPriorityHighlightEnd(true);
+			TargetPriorityHighlightEnd();
 		end
 	</Binding>
 	<Binding name="TARGETPREVIOUSENEMY" category="BINDING_HEADER_TARGETING">
@@ -1002,7 +1002,7 @@
 		if ( keystate == "down" ) then
 			TargetPriorityHighlightStart(false);
 		else
-			TargetPriorityHighlightEnd(true);
+			TargetPriorityHighlightEnd();
 		end
 	</Binding>
 	<Binding name="TARGETNEARESTFRIEND" category="BINDING_HEADER_TARGETING">

@@ -2,9 +2,19 @@ PROFESSION_RECIPE_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable("PROFESSI
 PROFESSION_RECIPE_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE;
 PROFESSION_RECIPE_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.ProfessionHeader, PROFESSIONS_TRACKER_HEADER_PROFESSION);
 
+local IsRecrafting = true;
+
 -- *****************************************************************************************************
 -- ***** BLOCK DROPDOWN FUNCTIONS
 -- *****************************************************************************************************
+
+local function GetRecipeID(block)
+	return math.abs(block.id);
+end
+
+local function IsRecraftBlock(block)
+	return block.id < 0;
+end
 
 local function RecipeObjectiveTracker_OnOpenDropDown(self)
 	local block = self.activeFrame;
@@ -12,17 +22,20 @@ local function RecipeObjectiveTracker_OnOpenDropDown(self)
 	info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = 1;
 	
-	info.text = PROFESSIONS_TRACKING_VIEW_RECIPE;
-	info.func = function()
-		C_TradeSkillUI.OpenRecipe(block.id);
-	end;
-	info.arg1 = block.id;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	if not IsRecraftBlock(block) and IsSpellKnown(GetRecipeID(block)) then
+		info.text = PROFESSIONS_TRACKING_VIEW_RECIPE;
+		info.func = function()
+			C_TradeSkillUI.OpenRecipe(recipeID);
+		end;
+		info.arg1 = block.id;
+		info.checked = false;
+		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	end
 	
 	info.text = PROFESSIONS_UNTRACK_RECIPE;
 	info.func = function()
-		C_TradeSkillUI.SetRecipeTracked(block.id, false);
+		local track = false;
+		C_TradeSkillUI.SetRecipeTracked(GetRecipeID(block), track, IsRecraftBlock(block));
 	end;
 	info.arg1 = block.id;
 	info.checked = false;
@@ -31,7 +44,7 @@ end
 
 function PROFESSION_RECIPE_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		local link = C_TradeSkillUI.GetRecipeLink(block.id);
+		local link = C_TradeSkillUI.GetRecipeLink(GetRecipeID(block));
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end
@@ -41,9 +54,12 @@ function PROFESSION_RECIPE_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 			ProfessionsFrame_LoadUI();
 		end
 		if ( IsModifiedClick("RECIPEWATCHTOGGLE") ) then
-			C_TradeSkillUI.SetRecipeTracked(block.id, false);
+			local track = false;
+			C_TradeSkillUI.SetRecipeTracked(GetRecipeID(block), track, IsRecraftBlock(block));
 		else
-			C_TradeSkillUI.OpenRecipe(block.id);
+			if not IsRecraftBlock(block) then
+				C_TradeSkillUI.OpenRecipe(GetRecipeID(block));
+			end
 		end
 	else
 		ObjectiveTracker_ToggleDropDown(block, RecipeObjectiveTracker_OnOpenDropDown);
@@ -63,50 +79,73 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 	end
 
 	self.continuableContainer = ContinuableContainer:Create();
-	for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked()) do
-		local itemIDs = Professions.CreateRecipeItemIDsForAllBasicReagents(recipeID);
-		for _, item in ipairs(ItemUtil.TransformItemIDsToItems(itemIDs)) do
-			self.continuableContainer:AddContinuable(item);
-		end
-	end
-	local function Layout()
-		local colorStyle = OBJECTIVE_TRACKER_COLOR["Normal"];
-		local isRecraft = false;
-
-		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked()) do
-			local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft);
-			local block = self:GetBlock(recipeID);
-			self:SetBlockHeader(block, recipeSchematic.name);
-
-			for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-				if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
-					local reagent = reagentSlotSchematic.reagents[1];
-					if reagent.itemID then
-						local item = Item:CreateFromItemID(reagent.itemID);
-						local itemName = item:GetItemName();
-						local quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
-						local quantityRequired = reagentSlotSchematic.quantityRequired;
-						local text = PROFESSIONS_TRACKER_REAGENT_FORMAT:format(PROFESSIONS_TRACKER_REAGENT_COUNT_FORMAT:format(quantity, quantityRequired), itemName)
-						
-						local metQuantity = quantity >= quantityRequired;
-						local dashStyle = metQuantity and OBJECTIVE_DASH_STYLE_HIDE or OBJECTIVE_DASH_STYLE_SHOW;
-						local colorStyle = OBJECTIVE_TRACKER_COLOR[metQuantity and "Complete" or "Normal"];
-						line = self:AddObjective(block, slotIndex, text, LINE_TYPE_ANIM, nil, dashStyle, colorStyle);
-						line.Check:SetShown(metQuantity);
-					end
+	local function LoadItems(recipes)
+		for _, recipeID in ipairs(recipes) do
+			local reagents = Professions.CreateRecipeReagentsForAllBasicReagents(recipeID);
+			for reagentIndex, reagent in ipairs(reagents) do
+				if reagent.itemID then
+					self.continuableContainer:AddContinuable(Item:CreateFromItemID(reagent.itemID));
 				end
 			end
+		end
+	end
 
-			block:SetHeight(block.height);
+	-- Load regular and recraft recipe items.
+	LoadItems(C_TradeSkillUI.GetRecipesTracked(IsRecrafting));
+	LoadItems(C_TradeSkillUI.GetRecipesTracked(not IsRecrafting));
 
-			if ( ObjectiveTracker_AddBlock(block) ) then
-				block:Show();
-				self:FreeUnusedLines(block);
-			else
-				block.used = false;
-				break;
+	local function Layout()
+		local colorStyle = OBJECTIVE_TRACKER_COLOR["Normal"];
+
+		local function AddObjectives(isRecraft)
+			for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked(isRecraft)) do
+				local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft);
+				local blockID = NegateIf(recipeID, isRecraft);
+				local block = self:GetBlock(blockID);
+				local blockName = isRecraft and PROFESSIONS_CRAFTING_FORM_RECRAFTING_HEADER:format(recipeSchematic.name) or recipeSchematic.name;
+				self:SetBlockHeader(block, blockName);
+
+				for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
+					if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
+						local reagent = reagentSlotSchematic.reagents[1];
+						local quantityRequired = reagentSlotSchematic.quantityRequired;
+						local quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
+						local name = nil;
+						if reagent.itemID then
+							local item = Item:CreateFromItemID(reagent.itemID);
+							name = item:GetItemName();
+						elseif reagent.currencyID then
+							local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
+							if currencyInfo then
+								name = currencyInfo.name;
+							end
+						end
+
+						if name then
+							local text = PROFESSIONS_TRACKER_REAGENT_FORMAT:format(PROFESSIONS_TRACKER_REAGENT_COUNT_FORMAT:format(quantity, quantityRequired), name)
+							local metQuantity = quantity >= quantityRequired;
+							local dashStyle = metQuantity and OBJECTIVE_DASH_STYLE_HIDE or OBJECTIVE_DASH_STYLE_SHOW;
+							local colorStyle = OBJECTIVE_TRACKER_COLOR[metQuantity and "Complete" or "Normal"];
+							line = self:AddObjective(block, slotIndex, text, LINE_TYPE_ANIM, nil, dashStyle, colorStyle);
+							line.Check:SetShown(metQuantity);
+						end
+					end
+				end
+
+				block:SetHeight(block.height);
+
+				if ( ObjectiveTracker_AddBlock(block) ) then
+					block:Show();
+					self:FreeUnusedLines(block);
+				else
+					block.used = false;
+					break;
+				end
 			end
 		end
+
+		AddObjectives(IsRecrafting);
+		AddObjectives(not IsRecrafting);
 	end
 
 	-- We can continue to layout each of the blocks if every item is loaded, otherwise
@@ -128,17 +167,28 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 end
 
 function ProfessionsRecipeTracking_Initialize()
-	local function GetAllBasicReagentItemIDs()
+	local function GetAllBasicReagentIDs()
+		local currencyIDs = {};
 		local itemIDs = {};
-		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked()) do
-			for _, itemID in ipairs(Professions.CreateRecipeItemIDsForAllBasicReagents(recipeID)) do
-				table.insert(itemIDs, itemID);	
+		local function AddIDs(isRecraft)
+			for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked(isRecraft)) do
+				for _, reagent in ipairs(Professions.CreateRecipeReagentsForAllBasicReagents(recipeID)) do
+					if reagent.itemID then
+						table.insert(itemIDs, reagent.itemID);	
+					elseif reagent.currencyID then
+						table.insert(currencyIDs, reagent.currencyID);	
+					end
+				end
 			end
 		end
-		return itemIDs;
+
+		AddIDs(IsRecrafting);
+		AddIDs(not IsRecrafting);
+		return itemIDs, currencyIDs;
 	end
 
-	local itemIDs = GetAllBasicReagentItemIDs();
+	-- itemIDs and currencyIDs captured by OnItemCountChanged will be updated by OnTrackedRecipeUpdate below.
+	local itemIDs, currencyIDs = GetAllBasicReagentIDs();
 
 	local function OnItemCountChanged(o, itemID)
 		if tContains(itemIDs, itemID) then
@@ -148,20 +198,34 @@ function ProfessionsRecipeTracking_Initialize()
 	EventRegistry:RegisterFrameEvent("ITEM_COUNT_CHANGED");
 	EventRegistry:RegisterCallback("ITEM_COUNT_CHANGED", OnItemCountChanged, PROFESSION_RECIPE_TRACKER_MODULE);
 
+	local function OnCurrencyChanged(o, currencyID)
+		if tContains(currencyIDs, currencyID) then
+			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE);
+		end
+	end
+	EventRegistry:RegisterFrameEvent("CURRENCY_DISPLAY_UPDATE");
+	EventRegistry:RegisterCallback("CURRENCY_DISPLAY_UPDATE", OnCurrencyChanged, PROFESSION_RECIPE_TRACKER_MODULE);
+
 	local function OnTrackedRecipeUpdate(o, recipeID, tracked)
-		itemIDs = GetAllBasicReagentItemIDs();
+		itemIDs, currencyIDs = GetAllBasicReagentIDs();
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE);
 	end
 
 	EventRegistry:RegisterFrameEvent("TRACKED_RECIPE_UPDATE");
 	EventRegistry:RegisterCallback("TRACKED_RECIPE_UPDATE", OnTrackedRecipeUpdate, PROFESSION_RECIPE_TRACKER_MODULE);
 
-	local function OnSkillLinesChanged(o)
-		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked()) do
+	local function UntrackRecipeIfUnlearned(isRecraft)
+		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked(isRecraft)) do
 			if not C_TradeSkillUI.IsRecipeProfessionLearned(recipeID) then
-				C_TradeSkillUI.SetRecipeTracked(recipeID, false);
+				local track = false;
+				C_TradeSkillUI.SetRecipeTracked(recipeID, track, isRecraft);
 			end
 		end
+	end
+
+	local function OnSkillLinesChanged(o)
+		UntrackRecipeIfUnlearned(IsRecrafting);
+		UntrackRecipeIfUnlearned(not IsRecrafting);
 	end
 	EventRegistry:RegisterFrameEvent("SKILL_LINES_CHANGED");
 	EventRegistry:RegisterCallback("SKILL_LINES_CHANGED", OnSkillLinesChanged, PROFESSION_RECIPE_TRACKER_MODULE);

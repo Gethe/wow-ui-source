@@ -79,12 +79,17 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 	end
 end
 
-function Professions.FindItemsMatchingItemID(itemID)
+function Professions.FindItemsMatchingItemID(itemID, maxFindCount)
 	local items = {};
+	local max = maxFindCount or math.huge;
 	local function FindMatchingItemID(itemLocation)
 		if C_Item.GetItemID(itemLocation) == itemID then
 			local itemGUID = C_Item.GetItemGUID(itemLocation);
 			table.insert(items, Item:CreateFromItemGUID(itemGUID));
+
+			if #items >= max then
+				return true;
+			end
 		end
 	end
 
@@ -94,14 +99,15 @@ end
 
 function Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned)
 	local items = {};
+	local maxFindCount = 1;
 	if filterOwned then
 		for index, itemID in ipairs(itemIDs) do
-			local foundItems = Professions.FindItemsMatchingItemID(itemID);
+			local foundItems = Professions.FindItemsMatchingItemID(itemID, maxFindCount);
 			tAppendAll(items, foundItems);
 		end
 	else
 		for index, itemID in ipairs(itemIDs) do
-			local foundItems = Professions.FindItemsMatchingItemID(itemID);
+			local foundItems = Professions.FindItemsMatchingItemID(itemID, maxFindCount);
 			if #foundItems == 0 then
 				table.insert(items, Item:CreateFromItemID(itemID));
 			else
@@ -300,7 +306,7 @@ function Professions.SetupOutputIcon(outputIcon, transaction, outputItemInfo)
 	local quantityMin, quantityMax = recipeSchematic.quantityMin, recipeSchematic.quantityMax;
 
 	-- Quantity min and max in the context of salvage recipes means the reagent cost, not the output quantity.
-	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
+	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) or transaction:IsRecipeType(Enum.TradeskillRecipeType.Gathering) then
 		quantityMin, quantityMax = 1, 1;
 	end
 
@@ -524,72 +530,72 @@ function Professions.GetReagentInputMode(reagentSlotSchematic)
 	return Professions.ReagentInputMode.Any;
 end
 
-function Professions.CreateRecipeItemIDListByPredicate(recipeID, predicate)
-	local itemIDs = {};
+function Professions.CreateRecipeReagentListByPredicate(recipeID, predicate)
+	local reagents = {};
 	local isRecraft = false;
 	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft);
 	for _, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
 		if predicate(reagentSlotSchematic) then
-			for _, reagent in ipairs(reagentSlotSchematic.reagents) do
-				if reagent.itemID then
-					table.insert(itemIDs, reagent.itemID);
-				end
-			end
+			tAppendAll(reagents, reagentSlotSchematic.reagents);
 		end
 	end
-	return itemIDs;
+	return reagents;
 end
 
-function Professions.CreateRecipeItemIDsForAllBasicReagents(recipeID, predicate)
+function Professions.CreateRecipeReagentsForAllBasicReagents(recipeID, predicate)
 	local function IsBasicReagent(reagentSlotSchematic)
 		return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic;
 	end
-	return Professions.CreateRecipeItemIDListByPredicate(recipeID, IsBasicReagent);
+	return Professions.CreateRecipeReagentListByPredicate(recipeID, IsBasicReagent);
 end
 
-local function SortNodeData(lhs, rhs)
+local function SortRootData(lhs, rhs)
+	local lhsData = lhs:GetData();
+	local rhsData = rhs:GetData();
+	local lhsGroup = lhsData.group;
+	local rhsGroup = rhsData.group;
+
+	if lhsGroup ~= rhsGroup then
+		return lhsGroup < rhsGroup;
+	end
+
+	local lhsCategoryInfo = lhsData.categoryInfo;
+	local rhsCategoryInfo = rhsData.categoryInfo;
+	local lhsOrder = lhsCategoryInfo.uiOrder;
+	local rhsOrder = rhsCategoryInfo.uiOrder;
+	if lhsOrder ~= rhsOrder then
+		return lhsOrder < rhsOrder;
+	end
+
+	return strcmputf8i(lhsCategoryInfo.name, rhsCategoryInfo.name) < 0;
+end
+
+local function SortCategoryData(lhs, rhs)
 	local lhsData = lhs:GetData();
 	local rhsData = rhs:GetData();
 	local lhsCategoryInfo = lhsData.categoryInfo;
 	local rhsCategoryInfo = rhsData.categoryInfo;
 
 	if lhsCategoryInfo or rhsCategoryInfo then
-		-- Special case for the "Unlearned" divider which only appears adjacent to categories.
-		do
-			local lhsGroup = (lhsCategoryInfo and lhsCategoryInfo.group) or lhsData.group or nil;
-			local rhsGroup = (rhsCategoryInfo and rhsCategoryInfo.group) or rhsData.group or nil;
-			if lhsGroup ~= nil and rhsGroup ~= nil then
-				if lhsGroup < rhsGroup then
-					return true;
-				elseif lhsGroup > rhsGroup then
-					return false;
-				end
-			end
-		end
-
-		if lhsData.categoryInfo and not rhsCategoryInfo then
+		if lhsCategoryInfo and not rhsCategoryInfo then
 			return true;
 		elseif not lhsCategoryInfo and rhsCategoryInfo then
 			return false;
 		elseif lhsCategoryInfo and rhsCategoryInfo then
-			local lhsGroup = lhsCategoryInfo.group;
-			local rhsGroup = rhsCategoryInfo.group;
-			if lhsGroup < rhsGroup then
-				return true;
-			elseif lhsGroup > rhsGroup then
-				return false;
+			local lhsOrder = lhsCategoryInfo.uiOrder;
+			local rhsOrder = rhsCategoryInfo.uiOrder;
+			if lhsOrder ~= rhsOrder then
+				return lhsOrder < rhsOrder;
 			end
 
-			return lhsCategoryInfo.uiOrder < rhsCategoryInfo.uiOrder;
+			return strcmputf8i(lhsCategoryInfo.name, rhsCategoryInfo.name) < 0;
 		end
 	end
 
-	if lhsData.topPadding or rhsData.topPadding then
-		return lhsData.topPadding;
-	end
-
-	if lhsData.bottomPadding or rhsData.bottomPadding then
-		return not lhsData.bottomPadding;
+	local lhsOrder = lhsData.order;
+	local rhsOrder = rhsData.order;
+	if lhsOrder ~= rhsOrder then
+		return lhsOrder < rhsOrder;
 	end
 
 	local lhsRecipeInfo = lhsData.recipeInfo;
@@ -598,19 +604,20 @@ local function SortNodeData(lhs, rhs)
 	local rhsDifficulty = rhsRecipeInfo.difficulty;
 	if lhsDifficulty ~= rhsDifficulty then
 		return lhsDifficulty < rhsDifficulty;
-	else
-		local lhsMaxTrivialLevel = lhsRecipeInfo.maxTrivialLevel;
-		local rhsMaxTrivialLevel = rhsRecipeInfo.maxTrivialLevel;
-		if lhsMaxTrivialLevel ~= rhsMaxTrivialLevel then
-			return lhsMaxTrivialLevel > rhsMaxTrivialLevel;
-		else
-			local lhsItemLevel = lhsRecipeInfo.itemLevel;
-			local rhsItemLevel = rhsRecipeInfo.itemLevel;
-			if lhsItemLevel ~= rhsItemLevel then
-				return lhsItemLevel > rhsItemLevel;
-			end
-		end
 	end
+
+	local lhsMaxTrivialLevel = lhsRecipeInfo.maxTrivialLevel;
+	local rhsMaxTrivialLevel = rhsRecipeInfo.maxTrivialLevel;
+	if lhsMaxTrivialLevel ~= rhsMaxTrivialLevel then
+		return lhsMaxTrivialLevel > rhsMaxTrivialLevel;
+	end
+
+	local lhsItemLevel = lhsRecipeInfo.itemLevel;
+	local rhsItemLevel = rhsRecipeInfo.itemLevel;
+	if lhsItemLevel ~= rhsItemLevel then
+		return lhsItemLevel > rhsItemLevel;
+	end
+
 	return strcmputf8i(lhsRecipeInfo.name, rhsRecipeInfo.name) < 0;
 end
 
@@ -711,7 +718,7 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 			local function SetSortComparator(node)
 				local affectChildren = false;
 				local skipSort = false;
-				node:SetSortComparator(SortNodeData, affectChildren, skipSort);
+				node:SetSortComparator(SortCategoryData, affectChildren, skipSort);
 			end
 			
 			local categoryNodes = {};
@@ -730,7 +737,8 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 
 				local categoryNode = categoryNodes[categoryInfo];
 				if not categoryNode then
-					categoryNode = node:Insert({categoryInfo=categoryInfo});
+					assert(categoryInfo.group ~= nil, "Missing group for category '%s' ", categoryInfo.name);
+					categoryNode = node:Insert({categoryInfo = categoryInfo, group = categoryInfo.group});
 					categoryNodes[categoryInfo] = categoryNode;
 
 					-- The new category can have categories or recipes.
@@ -738,13 +746,13 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 				end
 
 				if categoryInfo.recipes and #categoryInfo.recipes > 0 then
-					categoryNode:Insert({topPadding=true});
+					categoryNode:Insert({topPadding=true, order = -1});
 					for index, recipeInfo in ipairs(categoryInfo.recipes) do
-						categoryNode:Insert({recipeInfo=recipeInfo});
+						categoryNode:Insert({recipeInfo = recipeInfo, order = 0});
 						addedRecipe = true;
 						-- Recipes are leaf-most, so we don't need any sort comparator.
 					end
-					categoryNode:Insert({bottomPadding=true});
+					categoryNode:Insert({bottomPadding=true, order = 1});
 				end	
 
 				return categoryNode;
@@ -752,6 +760,11 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 
 			local addUnlearnedDivider = false;
 			local node = dataProvider:GetRootNode();
+
+			local affectChildren = false;
+			local skipSort = false;
+			node:SetSortComparator(SortRootData, affectChildren, skipSort);
+
 			for _, categoryMap in ipairs(maps) do
 				for _, categoryInfo in pairs(categoryMap) do
 					AttachTreeDataRecursive(categoryMap, categoryNodes, categoryInfo, node);
@@ -770,12 +783,16 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 	return dataProvider;
 end
 
-function Professions.ShouldAllocateBestQualityReagents()
-	return GetCVarBool("professionsAllocateBestQualityReagents");
+local function GetBestQualityCVar(forCustomer)
+	return forCustomer and "professionsAllocateBestQualityReagentsCustomer" or "professionsAllocateBestQualityReagents";
 end
 
-function Professions.SetShouldAllocateBestQualityReagents(shouldUse)
-	SetCVar("professionsAllocateBestQualityReagents", shouldUse and "1" or "0");
+function Professions.ShouldAllocateBestQualityReagents(forCustomer)
+	return GetCVarBool(GetBestQualityCVar(forCustomer));
+end
+
+function Professions.SetShouldAllocateBestQualityReagents(shouldUse, forCustomer)
+	SetCVar(GetBestQualityCVar(forCustomer), shouldUse);
 end
 
 function Professions.SetDefaultOrderDuration(index)
@@ -1232,10 +1249,6 @@ function Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo)
 end
 
 function Professions.CanTrackRecipe(recipeInfo)
-	if recipeInfo.isRecraft then
-		return false;
-	end
-
 	if Professions.IsViewingExternalCraftingList() then
 		return false;
 	end
@@ -1318,7 +1331,7 @@ function Professions.IsRecipeOnCooldown(recipeID)
 	return true;
 end
 
-function Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isRecraft)
+function Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isRecraft, unusableBOP)
 	local newOrder =
 	{
 		itemID = itemID,
@@ -1329,6 +1342,7 @@ function Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isR
 		tipAmount = 0,
 		isRecraft = isRecraft,
 		minQuality = 1,
+		unusableBOP = unusableBOP,
 	};
 
 	return newOrder

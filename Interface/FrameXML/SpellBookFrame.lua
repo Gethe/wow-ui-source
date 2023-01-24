@@ -192,7 +192,7 @@ function SpellBookFrame_OnShow(self)
 	end
 
 	-- Show multibar slots
-	MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLBOOK);
+	MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION);
 	UpdateMicroButtons();
 
 	self:RegisterEvent("SPELLS_CHANGED");
@@ -490,7 +490,7 @@ function SpellBookFrame_OnHide(self)
 	end
 
 	-- Hide multibar slots
-	MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLBOOK);
+	MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION);
 
 	-- Do this last, it can cause taint.
 	UpdateMicroButtons();

@@ -18,6 +18,7 @@
 				<OnMouseWheel method="OnMouseWheel" />
 			</Scripts>
 		</ModelScene>
+		<ModelScene name="NoZoomModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="NoZoomModelSceneMixin" virtual="true"/>
 		<ModelScene name="PanningModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="PanningModelSceneMixin" virtual="true" />
 		<ModelScene name="ReversedLightingModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" virtual="true">
 			<KeyValues>

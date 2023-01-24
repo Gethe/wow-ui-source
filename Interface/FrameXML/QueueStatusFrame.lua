@@ -1119,7 +1119,7 @@ end
 
 local function LeaveQueueWithMatchReadyCheck(idx)
 	local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType = GetBattlefieldStatus(idx);
-	if status == "confirm" and (queueType == "ARENA" or queueType == "ARENASKIRMISH" or (queueType == "BATTLEGROUND" and registeredMatch)) then
+	if status == "confirm" and not PVPHelper_QueueAllowsLeaveQueueWithMatchReady(queueType) then
 		UIErrorsFrame:AddExternalErrorMessage(PVP_MATCH_READY_ERROR);
 	else
 		local acceptPort = false;
@@ -1162,7 +1162,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 		info.arg2 = 1;
 		UIDropDownMenu_AddButton(info);
 
-		if ( teamSize == 0 ) then
+		if ( teamSize == 0 and not queueType == "RATEDSHUFFLE") then
 			info.text = LEAVE_QUEUE;
 			info.func = wrapFunc(LeaveQueueWithMatchReadyCheck);
 			info.arg1 = idx;

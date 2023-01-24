@@ -37,6 +37,7 @@ local HIDE_MOST = {
 	PVPMatchScoreboard = "hidden",
 	PVPMatchResults = "hidden",
 	UIWidgetTopCenterContainerFrame = "hidden",
+	PetActionBar = "hidden",
 }
 
 --------Data on what locks exist and what frames are ruled by them--------
@@ -49,6 +50,7 @@ FRAMELOCK_STATES = {
 		ArenaEnemyFramesContainer 			= "hidden",
 		ChatFrame1							= "hidden",
 		ChatFrameChannelButton				= "hidden",
+		MicroButtonAndBagsBar				= "hidden",
 		--Additional chat frames are added to this list as they are created.
 	}, HIDE_MOST),
 	PETBATTLES = HIDE_MOST,

@@ -1249,8 +1249,10 @@ function WardrobeCollectionFrameMixin:GoToItem(sourceID)
 	self:SetTab(TAB_ITEMS);
 	local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
 	local slot = CollectionWardrobeUtil.GetSlotFromCategoryID(categoryID);
-	local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
-	self.ItemsCollectionFrame:GoToSourceID(sourceID, transmogLocation);
+	if slot then
+		local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+		self.ItemsCollectionFrame:GoToSourceID(sourceID, transmogLocation);
+	end
 end
 
 function WardrobeCollectionFrameMixin:GoToSet(setID)

@@ -103,6 +103,10 @@ function OverrideActionBarMixin:OnEvent(event, ...)
 end
 
 function OverrideActionBarMixin:OnShow()
+	if EditModeManagerFrame:IsEditModeActive() then
+		EditModeManagerFrame:ExitEditMode();
+	end
+
 	self:UpdateMicroButtons();
 
 	UIParentBottomManagedFrameContainer:UpdateManagedFramesAlphaState();
@@ -124,8 +128,7 @@ end
 function OverrideActionBarMixin:UpdateMicroButtons()
 	if ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_OVERRIDE then
 		local anchorX, anchorY = self:GetMicroButtonAnchor();
-		UpdateMicroButtonsParent(self);
-		MoveMicroButtons("BOTTOMLEFT", self, "BOTTOMLEFT", anchorX, anchorY, true);
+		OverrideMicroMenuPosition(self, "BOTTOMLEFT", self, "BOTTOMLEFT", anchorX, anchorY, true);
 	end
 end
 
@@ -190,7 +193,7 @@ end
 
 
 function OverrideActionBarMixin:GetMicroButtonAnchor()
-	local x, y = 562, 42;
+	local x, y = 562, 17;
 	if self.HasExit and self.HasPitch then
 		x = 645;
 	elseif self.HasPitch then

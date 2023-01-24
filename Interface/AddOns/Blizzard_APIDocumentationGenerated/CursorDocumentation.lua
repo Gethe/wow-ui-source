@@ -58,9 +58,9 @@ local Cursor =
 		{
 			Name = "UICursorType",
 			Type = "Enumeration",
-			NumValues = 20,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 21,
 			Fields =
 			{
 				{ Name = "Default", Type = "UICursorType", EnumValue = 0 },
@@ -83,6 +83,7 @@ local Cursor =
 				{ Name = "Mount", Type = "UICursorType", EnumValue = 18 },
 				{ Name = "Toy", Type = "UICursorType", EnumValue = 19 },
 				{ Name = "ConduitCollectionItem", Type = "UICursorType", EnumValue = 20 },
+				{ Name = "PerksProgramVendorItem", Type = "UICursorType", EnumValue = 21 },
 			},
 		},
 		{

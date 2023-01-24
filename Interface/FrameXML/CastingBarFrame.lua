@@ -10,10 +10,10 @@ CASTING_BAR_TYPES = {
 		finishAnim = "CraftingFinish",
 	},
 	applyingtalents = { 
-		filling = "ui-castingbar-filling-applyingcrafting",
-		full = "ui-castingbar-full-applyingcrafting",
-		glow = "ui-castingbar-full-glow-applyingcrafting",
-		sparkFx = "CraftingGlow",
+		filling = "ui-castingbar-filling-standard",
+		full = "ui-castingbar-full-standard",
+		glow = "ui-castingbar-full-glow-standard",
+		sparkFx = "StandardGlow",
 	},
 	standard = { 
 		filling = "ui-castingbar-filling-standard",
@@ -805,6 +805,11 @@ function CastingBarMixin:AddStages(numStages)
 
 	local castBarLeft = self:GetLeft();
 	local castBarRight = self:GetRight();
+
+	if not castBarLeft or not castBarRight then
+		return;
+	end
+
 	local castBarWidth = castBarRight - castBarLeft;
 
 	for i = 1,self.NumStages-1,1 do

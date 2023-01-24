@@ -232,6 +232,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
@@ -316,6 +317,8 @@
 			<OnHide method="OnHide"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnKeyUp method="OnKeyUp"/>
 		</Scripts>
 	</Frame>
 </Ui>

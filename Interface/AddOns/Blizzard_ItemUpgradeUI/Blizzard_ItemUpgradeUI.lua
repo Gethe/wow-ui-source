@@ -221,12 +221,22 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 		self.upgradeAnimationsInProgress = false;
 
 		local checkUpgrade = (self.upgradeInfo.currUpgrade > 1) and self.upgradeInfo.currUpgrade or (self.upgradeInfo.currUpgrade + 1);
-		local currentUpgradeCosts = self:GetUpgradeCostTable(checkUpgrade);
-		if currentUpgradeCosts then
+		local currencyCostTable, itemCostTable = self:GetUpgradeCostTables(checkUpgrade);
+		if currencyCostTable or itemCostTable then
 			self.PlayerCurrencies:Clear();
-			for currencyID, currencyCost in pairs(currentUpgradeCosts) do
-				self.PlayerCurrencies:AddCurrency(currencyID);
+
+			if currencyCostTable then
+				for currencyID, currencyCost in pairs(currencyCostTable) do
+					self.PlayerCurrencies:AddCurrency(currencyID);
+				end
 			end
+
+			if itemCostTable then
+				for itemID, itemCost in pairs(itemCostTable) do
+					self.PlayerCurrencies:AddItem(itemID);
+				end
+			end
+
 			self.PlayerCurrencies:Show();
 		else
 			self.PlayerCurrencies:Hide();
@@ -243,8 +253,8 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 	self.UpgradeCostFrame:Clear();
 	self.PlayerCurrencies:Clear();
 
-	local currentUpgradeCosts = self:GetUpgradeCostTable();
-	for currencyID, currencyCost in pairs(currentUpgradeCosts) do
+	local currencyCostTable, itemCostTable = self:GetUpgradeCostTables();
+	for currencyID, currencyCost in pairs(currencyCostTable) do
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 
 		if currencyCost > currencyInfo.quantity then
@@ -254,6 +264,20 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 			self.UpgradeCostFrame:AddCurrency(currencyID, currencyCost);
 		end
 		self.PlayerCurrencies:AddCurrency(currencyID);
+	end
+
+	for itemID, itemCost in pairs(itemCostTable) do
+		local includeBank = true;
+		local itemCount = GetItemCount(itemID, includeBank);
+
+		if itemCost > itemCount then
+			buttonDisabledState = true;
+			self.UpgradeCostFrame:AddItem(itemID, itemCost, RED_FONT_COLOR);
+		else
+			self.UpgradeCostFrame:AddItem(itemID, itemCost);
+		end
+
+		self.PlayerCurrencies:AddItem(itemID);
 	end
 
 	self:UpdateButtonAndArrowStates(buttonDisabledState, showRightPreview);
@@ -301,51 +325,77 @@ function ItemUpgradeMixin:GetTrinketUpgradeText(string1, string2)
 end
 
 function ItemUpgradeMixin:CalculateTotalCostTable()
-	self.upgradeCosts = {};
+	self.upgradeCurrencyCosts = {};
+	self.upgradeItemCosts = {};
 
 	for _, upgradeLevelInfo in ipairs(self.upgradeInfo.upgradeLevelInfos) do
 		local previousRank = upgradeLevelInfo.upgradeLevel - 1;
 
-		local levelCostTable;
-		if previousRank > self.upgradeInfo.currUpgrade and self.upgradeCosts[previousRank] then
-			levelCostTable = CopyTable(self.upgradeCosts[previousRank], true);
+		local levelCurrencyCostTable;
+		if previousRank > self.upgradeInfo.currUpgrade and self.upgradeCurrencyCosts[previousRank] then
+			levelCurrencyCostTable = CopyTable(self.upgradeCurrencyCosts[previousRank], true);
 		else
-			levelCostTable = {};
+			levelCurrencyCostTable = {};
 		end
 
-		for _, levelCost in ipairs(upgradeLevelInfo.costsToUpgrade) do
-			local currentCost = levelCostTable[levelCost.currencyID] or 0;
-			levelCostTable[levelCost.currencyID] = currentCost + levelCost.cost;
+		for _, levelCost in ipairs(upgradeLevelInfo.currencyCostsToUpgrade) do
+			local currentCost = levelCurrencyCostTable[levelCost.currencyID] or 0;
+			levelCurrencyCostTable[levelCost.currencyID] = currentCost + levelCost.cost;
 		end
 
-		self.upgradeCosts[upgradeLevelInfo.upgradeLevel] = levelCostTable;
+		self.upgradeCurrencyCosts[upgradeLevelInfo.upgradeLevel] = levelCurrencyCostTable;
+
+		local levelItemCostTable;
+		if previousRank > self.upgradeInfo.currUpgrade and self.upgradeItemCosts[previousRank] then
+			levelItemCostTable = CopyTable(self.upgradeItemCosts[previousRank], true);
+		else
+			levelItemCostTable = {};
+		end
+
+		for _, levelCost in ipairs(upgradeLevelInfo.itemCostsToUpgrade) do
+			local currentCost = levelItemCostTable[levelCost.itemID] or 0;
+			levelItemCostTable[levelCost.itemID] = currentCost + levelCost.cost;
+		end
+
+		self.upgradeItemCosts[upgradeLevelInfo.upgradeLevel] = levelItemCostTable;
 	end
 end
 
-function ItemUpgradeMixin:GetUpgradeCostTable(upgradeLevel)
-	return self.upgradeCosts[upgradeLevel or self.targetUpgradeLevel];
+function ItemUpgradeMixin:GetUpgradeCostTables(upgradeLevel)
+	upgradeLevel = upgradeLevel or self.targetUpgradeLevel;
+
+	return self.upgradeCurrencyCosts[upgradeLevel], self.upgradeItemCosts[upgradeLevel];
 end
 
 function ItemUpgradeMixin:GetUpgradeCostString(upgradeLevel)
-	local currencyStringTable = {};
+	local costStringTable = {};
 	local checkQuantity = (upgradeLevel ~= nil);
 
-	local costTable = self:GetUpgradeCostTable(upgradeLevel);
-	for currencyID, currencyCost in pairs(costTable) do
+	local currencyCostTable, itemCostTable = self:GetUpgradeCostTables(upgradeLevel);
+	for currencyID, currencyCost in pairs(currencyCostTable) do
 		local hasEnough = true;
 		if checkQuantity then
 			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 			hasEnough = currencyCost <= currencyInfo.quantity
 		end
 
-		if not hasEnough then
-			table.insert(currencyStringTable, GetCurrencyString(currencyID, currencyCost, RED_FONT_COLOR_CODE));
-		else
-			table.insert(currencyStringTable, GetCurrencyString(currencyID, currencyCost));
-		end
+		local colorCode = not hasEnough and RED_FONT_COLOR_CODE or nil;
+		table.insert(costStringTable, GetCurrencyString(currencyID, currencyCost, colorCode));
 	end
 
-	return table.concat(currencyStringTable, " ");
+	for itemID, itemCost in pairs(itemCostTable) do
+		local hasEnough = true;
+		if checkQuantity then
+			local includeBank = true;
+			local itemCount = GetItemCount(itemID, includeBank);
+			hasEnough = itemCost <= itemCount;
+		end
+
+		local colorCode = not hasEnough and RED_FONT_COLOR_CODE or nil;
+		table.insert(costStringTable, FormattingUtil.GetItemCostString(itemID, itemCost, colorCode));
+	end
+
+	return table.concat(costStringTable, " ");
 end
 
 function ItemUpgradeMixin:InitDropdown()

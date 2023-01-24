@@ -105,7 +105,7 @@ function EditModeManagerFrameMixin:OnLoad()
 	self.LayoutDropdown:SetCustomSetup(layoutEntryCustomSetup);
 
 	local function layoutSelectedCallback(value, isUserInput)
-		if isUserInput then
+		if isUserInput and not self:IsLayoutSelected(value) then
 			if self:HasActiveChanges() then
 				self:ShowRevertWarningDialog(value);
 			else
@@ -627,7 +627,7 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 	end
 
 	for index, bar in ipairs(barsToUpdate) do
-		if bar and bar:IsShown() and bar:IsInDefaultPosition() then
+		if bar and bar:IsInDefaultPosition() then
 			bar:ClearAllPoints();
 			if topMostBar == UIParent then
 				bar:SetPoint("BOTTOM", topMostBar, "BOTTOM", 0, MAIN_ACTION_BAR_DEFAULT_OFFSET_Y);
@@ -643,7 +643,9 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 				bar:UpdateSpellFlyoutDirection();
 			end
 
-			topMostBar = bar;
+			if bar:IsShown() then
+				topMostBar = bar;
+			end
 		end
 	end
 
@@ -839,6 +841,8 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetArenaFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowArenaFrames));
 	self.AccountSettings:SetLootFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowLootFrame));
 	self.AccountSettings:SetHudTooltipShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowHudTooltip));
+	self.AccountSettings:SetReputationBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowReputationBar));
+	self.AccountSettings:SetDurabilityFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDurabilityFrame));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -1025,9 +1029,13 @@ function EditModeManagerFrameMixin:UpdateSystems()
 	secureexecuterange(self.registeredSystemFrames, callUpdateSystem);
 end
 
-function EditModeManagerFrameMixin:UpdateSystem(systemFrame)
+function EditModeManagerFrameMixin:UpdateSystem(systemFrame, forceFullUpdate)
 	local systemInfo = self:GetActiveLayoutSystemInfo(systemFrame.system, systemFrame.systemIndex);
 	if systemInfo then
+		if forceFullUpdate then
+			systemFrame:MarkAllSettingsDirty();
+		end
+
 		systemFrame:UpdateSystem(systemInfo);
 	end
 end
@@ -1060,7 +1068,15 @@ function EditModeManagerFrameMixin:SelectLayout(layoutIndex)
 	end
 end
 
-function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layoutName)
+function EditModeManagerFrameMixin:IsLayoutSelected(layoutIndex)
+	return layoutIndex == self.layoutInfo.activeLayout;
+end
+
+function EditModeManagerFrameMixin:ResetDropdownToActiveLayout()
+	self.LayoutDropdown:SetSelectedValue(self.layoutInfo.activeLayout);
+end
+
+function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layoutName, isLayoutImported)
 	if newLayoutInfo and layoutName and layoutName ~= "" then
 		newLayoutInfo.layoutType = layoutType;
 		newLayoutInfo.layoutName = layoutName;
@@ -1074,9 +1090,11 @@ function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layo
 			newLayoutIndex = Enum.EditModePresetLayoutsMeta.NumValues + 1;
 		end
 
+		local activateNewLayout = not EditModeUnsavedChangesDialog:HasPendingSelectedLayout();
+
 		table.insert(self.layoutInfo.layouts, newLayoutIndex, newLayoutInfo);
 		self:SaveLayouts();
-		C_EditMode.OnLayoutAdded(newLayoutIndex);
+		C_EditMode.OnLayoutAdded(newLayoutIndex, activateNewLayout, isLayoutImported);
 	end
 end
 
@@ -1128,7 +1146,9 @@ end
 
 function EditModeManagerFrameMixin:ImportLayout(newLayoutInfo, layoutType, layoutName)
 	self:RevertAllChanges();
-	self:MakeNewLayout(newLayoutInfo, layoutType, layoutName);
+
+	local isLayoutImportedYes = true;
+	self:MakeNewLayout(newLayoutInfo, layoutType, layoutName, isLayoutImportedYes);
 end
 
 local function callPrepareForSave(index, systemFrame)
@@ -1143,6 +1163,7 @@ function EditModeManagerFrameMixin:SaveLayouts()
 	self:PrepareSystemsForSave();
 	C_EditMode.SaveLayouts(self.layoutInfo);
 	self:ClearActiveChangesFlags();
+	EventRegistry:TriggerEvent("EditMode.SavedLayouts");
 end
 
 function EditModeManagerFrameMixin:SaveLayoutChanges()
@@ -1452,6 +1473,16 @@ function EditModeAccountSettingsMixin:OnLoad()
 		self:SetHudTooltipShown(isChecked, isUserInput);
 	end
 	self.Settings.HudTooltip:SetCallback(onHudTooltipCheckboxChecked);
+
+	local function onReputationBarCheckboxChecked(isChecked, isUserInput)
+		self:SetReputationBarShown(isChecked, isUserInput);
+	end
+	self.Settings.ReputationBar:SetCallback(onReputationBarCheckboxChecked);
+
+	local function onDurabilityFrameCheckboxChecked(isChecked, isUserInput)
+		self:SetDurabilityFrameShown(isChecked, isUserInput);
+	end
+	self.Settings.DurabilityFrame:SetCallback(onDurabilityFrameCheckboxChecked);
 end
 
 function EditModeAccountSettingsMixin:OnEvent(event, ...)
@@ -1480,6 +1511,9 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:SetupActionBar(PetActionBar);
 	self:SetupActionBar(PossessActionBar);
 
+	self:SetupReputationBar();
+	self:SetupDurabilityFrame();
+
 	self:RefreshTargetAndFocus();
 	self:RefreshPartyFrames();
 	self:RefreshRaidFrames()
@@ -1494,6 +1528,8 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:RefreshArenaFrames();
 	self:RefreshLootFrame();
 	self:RefreshHudTooltip();
+	self:RefreshReputationBar();
+	self:RefreshDurabilityFrame();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
@@ -1592,6 +1628,7 @@ end
 function EditModeAccountSettingsMixin:RefreshRaidFrames()
 	local showRaidFrames = self.Settings.RaidFrames:IsControlChecked();
 	if showRaidFrames then
+		CompactRaidFrameManager_SetSetting("IsShown", true);
 		CompactRaidFrameContainer:HighlightSystem();
 	else
 		CompactRaidFrameContainer:ClearHighlight();
@@ -1758,7 +1795,6 @@ function EditModeAccountSettingsMixin:RefreshAuraFrame(frame)
 	end
 
 	frame:UpdateAuraButtons();
-	frame:UpdateGridLayout();
 end
 
 function EditModeAccountSettingsMixin:SetTalkingHeadFrameShown(shown, isUserInput)
@@ -1893,6 +1929,62 @@ end
 
 function EditModeAccountSettingsMixin:ResetHudTooltip()
 	GameTooltipDefaultContainer:Hide();
+end
+
+function EditModeAccountSettingsMixin:SetReputationBarShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowReputationBar, shown);
+		self:RefreshReputationBar();
+	else
+		self.Settings.ReputationBar:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetupReputationBar()
+	if SecondaryStatusTrackingBarContainer:IsShown() then
+		self.Settings.ReputationBar:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshReputationBar()
+	local showReputationBar = self.Settings.ReputationBar:IsControlChecked();
+	if showReputationBar then
+		SecondaryStatusTrackingBarContainer.isInEditMode = true;
+		SecondaryStatusTrackingBarContainer:HighlightSystem();
+	else
+		SecondaryStatusTrackingBarContainer.isInEditMode = false;
+		SecondaryStatusTrackingBarContainer:ClearHighlight();
+	end
+	SecondaryStatusTrackingBarContainer:UpdateShownState();
+end
+
+function EditModeAccountSettingsMixin:SetupDurabilityFrame()
+	-- If the frame is already showing then set control checked
+	if DurabilityFrame:IsShown() then
+		self.Settings.DurabilityFrame:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetDurabilityFrameShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowDurabilityFrame, shown);
+		self:RefreshDurabilityFrame();
+	else
+		self.Settings.DurabilityFrame:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshDurabilityFrame()
+	local showDurabilityFrame = self.Settings.DurabilityFrame:IsControlChecked();
+	if showDurabilityFrame then
+		DurabilityFrame.isInEditMode = true;
+		DurabilityFrame:HighlightSystem();
+	else
+		DurabilityFrame.isInEditMode = false;
+		DurabilityFrame:ClearHighlight();
+	end
+
+	DurabilityFrame:UpdateShownState();
 end
 
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)

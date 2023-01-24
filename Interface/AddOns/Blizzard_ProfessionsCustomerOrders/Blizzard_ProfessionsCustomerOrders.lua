@@ -57,16 +57,17 @@ function ProfessionsCustomerOrdersMixin:OnLoad()
 
 	EventRegistry:RegisterCallback("ProfessionsCustomerOrders.OrderSelected", OnOrderSelected, self);
 
-	local function OnRecipeSelected(o, itemID, spellID, skillLineAbilityID)
+	local function OnRecipeSelected(o, itemID, spellID, skillLineAbilityID, unusableBOP)
 		local isRecraft = false;
-		OpenOrderForm(Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isRecraft));
+		OpenOrderForm(Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isRecraft, unusableBOP));
 	end
 
 	EventRegistry:RegisterCallback("ProfessionsCustomerOrders.RecipeSelected", OnRecipeSelected, self);
 
 	local function OnRecraftCategorySelected()
 		local isRecraft = true;
-		OpenOrderForm(Professions.CreateNewOrderInfo(nilItemID, nilSpellID, nilSkillLineAbilityID, isRecraft));
+		local unusableBOP = false;
+		OpenOrderForm(Professions.CreateNewOrderInfo(nilItemID, nilSpellID, nilSkillLineAbilityID, isRecraft, unusableBOP));
 	end
 
 	EventRegistry:RegisterCallback("ProfessionsCustomerOrders.RecraftCategorySelected", OnRecraftCategorySelected, self);

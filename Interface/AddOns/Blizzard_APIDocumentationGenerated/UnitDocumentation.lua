@@ -747,6 +747,15 @@ local Unit =
 			LiteralName = "PET_UI_UPDATE",
 		},
 		{
+			Name = "PlayerCanGlideChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_CAN_GLIDE_CHANGED",
+			Payload =
+			{
+				{ Name = "canGlide", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerDamageDoneMods",
 			Type = "Event",
 			LiteralName = "PLAYER_DAMAGE_DONE_MODS",

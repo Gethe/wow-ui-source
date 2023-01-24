@@ -81,6 +81,8 @@ function ProfessionsRecraftOutputSlotMixin:Init(item)
 
 	SetItemButtonTexture(self, item:GetItemIcon());
 	SetItemCraftingQualityOverlay(self, item:GetItemLink());
+
+	self:RegisterForClicks("LeftButtonDown");
 end
 
 ProfessionsRecraftInputSlotMixin = {};

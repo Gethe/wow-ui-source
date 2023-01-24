@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_DeathRecap.lua"/>
-	
+
 	<Frame name="DeathRecapEntryTemplate" parentArray="DeathRecapEntry" virtual="true">
 		<Size x="348" y="32"/>
 		<Frames>
@@ -12,7 +12,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Amount" inherits="GameFontNormal" setAllPoints="true" justifyH="RIGHT" justifyV="MIDDLE" mixin="AutoScalingFontStringMixin">		
+						<FontString parentKey="Amount" inherits="GameFontNormal" setAllPoints="true" justifyH="RIGHT" justifyV="MIDDLE" mixin="AutoScalingFontStringMixin">
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="9" type="number"/>
 							</KeyValues>
@@ -36,7 +36,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter function="DeathRecapFrame_Amount_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>	
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="SpellInfo">
@@ -81,7 +81,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="DeathRecapFrame" frameStrata="HIGH" movable="true" clampedToScreen="true" parent="UIParent" hidden="true">
 		<Size x="380" y="326"/>
 		<Anchors>
@@ -172,7 +172,7 @@
 						<Anchor point="TOPRIGHT" x="-4" y="-20"/>
 					</Anchors>
 				</Texture>
-				
+
 				<FontString parentKey="Unavailable" inherits="GameFontNormal" text="DEATH_RECAP_UNAVAILABLE">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -181,20 +181,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CloseXButton">
-				<Size x="32" y="32"/>
+			<Button parentKey="CloseXButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="2" y="1"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						HideUIPanel(self:GetParent());
-					</OnClick>
-				</Scripts>
-				<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button parentKey="DragButton">
 				<Anchors>
